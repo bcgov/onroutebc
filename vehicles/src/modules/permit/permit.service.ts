@@ -262,47 +262,20 @@ export class PermitService {
     searchValue?: string,
     sortDto?: SortDto[],
   ): Promise<PaginationDto<ReadPermitDto>> {
-    const permits = this.buildPermitQuery(
-      pageOptionsDto,
-      userGUID,
-      companyId,
-      expired,
-      searchValue,
-    );
-    const sortedPermits = this.sortPermits(permits, sortDto);
-    const totalItems = await sortedPermits.getCount();
-    const { entities } = await permits.getRawAndEntities();
-    const pageMetaDto = new PageMetaDto({ totalItems, pageOptionsDto });
-    const readPermitDto: ReadPermitDto[] =
-      await this.mapEntitiesToReadPermitDto(entities);
-    return new PaginationDto(readPermitDto, pageMetaDto);
-  }
-
-  private buildPermitQuery(
-    pageOptionsDto: PageOptionsDto,
-    userGUID: string,
-    companyId: number,
-    expired: string,
-    searchValue?: string,
-  ): SelectQueryBuilder<Permit> {
-    let permitsQuery = this.permitRepository
+    const permits = this.permitRepository
       .createQueryBuilder('permit')
-      .innerJoinAndSelect('permit.permitData', 'permitData');
-
-    // Apply conditions based on parameters
-    permitsQuery = permitsQuery
+      .innerJoinAndSelect('permit.permitData', 'permitData')
       .where('permit.permitNumber IS NOT NULL')
-      .andWhere('permit.companyId = :companyId', { companyId });
-
-    if (userGUID) {
-      permitsQuery = permitsQuery.andWhere('permit.userGuid = :userGUID', {
-        userGUID,
-      });
-    }
-
-    if (expired === 'true') {
-      permitsQuery = permitsQuery.andWhere(
-        '(permit.permitStatus IN (:...expiredStatus)OR(permit.permitStatus = :activeStatus AND permitData.expiryDate < :expiryDate))',
+      .andWhere('permit.companyId = :companyId', {
+        companyId: companyId,
+      })
+      .andWhere(userGUID ? 'permit.userGuid = :userGUID' : '1=1', {
+        userGUID: userGUID,
+      })
+      .andWhere(
+        expired === 'true'
+          ? '(permit.permitStatus IN (:...expiredStatus)OR(permit.permitStatus = :activeStatus AND permitData.expiryDate < :expiryDate))'
+          : '(permit.permitStatus = :activeStatus AND permitData.expiryDate >= :expiryDate)',
         {
           expiredStatus: Object.values(PermitStatus).filter(
             (x) => x != PermitStatus.ISSUED && x != PermitStatus.SUPERSEDED,
@@ -310,23 +283,11 @@ export class PermitService {
           activeStatus: PermitStatus.ISSUED,
           expiryDate: new Date(),
         },
-      );
-    } else {
-      permitsQuery = permitsQuery.andWhere(
-        '(permit.permitStatus = :activeStatus AND permitData.expiryDate >= :expiryDate)',
-        {
-          expiredStatus: Object.values(PermitStatus).filter(
-            (x) => x != PermitStatus.ISSUED && x != PermitStatus.SUPERSEDED,
-          ),
-          activeStatus: PermitStatus.ISSUED,
-          expiryDate: new Date(),
-        },
-      );
-    }
-
-    // Handle searchValue
+      )
+      .skip((pageOptionsDto.page - 1) * pageOptionsDto.take)
+      .take(pageOptionsDto.take);
     if (searchValue) {
-      permitsQuery = permitsQuery.andWhere(
+      permits.andWhere(
         new Brackets((query) => {
           query
             .where(
@@ -338,58 +299,64 @@ export class PermitService {
         }),
       );
     }
-
-    // Apply pagination
-    permitsQuery = permitsQuery
-      .skip((pageOptionsDto.page - 1) * pageOptionsDto.take)
-      .take(pageOptionsDto.take);
-
-    return permitsQuery;
-  }
-
-  private sortPermits(
-    permits: SelectQueryBuilder<Permit>,
-    sortDto?: SortDto[],
-  ): SelectQueryBuilder<Permit> {
-    if (!sortDto || sortDto.length === 0) {
-      return permits;
-    }
-
-    sortDto.forEach((value, index) => {
-      const orderByMapping: Record<string, string> = {
-        permitNumber: 'permit.permitNumber',
-        permitType: 'permit.permitType',
-        startDate: 'permitData.startDate',
-        expiryDate: 'permitData.expiryDate',
-        unitNumber: 'permitData.unitNumber',
-        plate: 'permitData.plate',
-        applicant: 'permitData.applicant',
-      };
-
-      const orderByKey = orderByMapping[value.orderBy];
-
-      if (orderByKey) {
-        const orderBy = value.descending ? 'DESC' : 'ASC';
+    if (sortDto.length > 0) {
+      sortDto.forEach((value, index) => {
         if (index === 0) {
-          permits.orderBy(orderByKey, orderBy);
+          if (
+            value.orderBy == 'permitNumber' ||
+            value.orderBy == 'permitType'
+          ) {
+            permits.orderBy(
+              `permit.${value.orderBy}`,
+              value.descending ? 'DESC' : 'ASC',
+            );
+          }
+          if (
+            value.orderBy == 'startDate' ||
+            value.orderBy == 'expiryDate' ||
+            value.orderBy == 'unitNumber' ||
+            value.orderBy == 'plate' ||
+            value.orderBy == 'applicant'
+          ) {
+            permits.orderBy(
+              `permitData.${value.orderBy}`,
+              value.descending ? 'DESC' : 'ASC',
+            );
+          }
         } else {
-          permits.addOrderBy(orderByKey, orderBy);
+          if (
+            value.orderBy == 'permitNumber' ||
+            value.orderBy == 'permitType'
+          ) {
+            permits.addOrderBy(
+              `permit.${value.orderBy}`,
+              value.descending ? 'DESC' : 'ASC',
+            );
+          }
+          if (
+            value.orderBy == 'startDate' ||
+            value.orderBy == 'expiryDate' ||
+            value.orderBy == 'unitNumber' ||
+            value.orderBy == 'plate' ||
+            value.orderBy == 'applicant'
+          ) {
+            permits.addOrderBy(
+              `permitData.${value.orderBy}`,
+              value.descending ? 'DESC' : 'ASC',
+            );
+          }
         }
-      }
-    });
-
-    return permits;
-  }
-
-  private async mapEntitiesToReadPermitDto(
-    entities: Permit[],
-  ): Promise<ReadPermitDto[]> {
+      });
+    }
+    const totalItems = await permits.getCount();
+    const { entities } = await permits.getRawAndEntities();
+    const pageMetaDto = new PageMetaDto({ totalItems, pageOptionsDto });
     const readPermitDto: ReadPermitDto[] = await this.classMapper.mapArrayAsync(
       entities,
       Permit,
       ReadPermitDto,
     );
-    return readPermitDto;
+    return new PaginationDto(readPermitDto, pageMetaDto);
   }
 
   /**

@@ -45,7 +45,14 @@ export const BCeIDAuthWall = ({
     return <Loading />;
   }
 
-  if (isAuthenticated && !isNewBCeIDUser) {
+  /**
+   * If companyId is present or if we know that the user
+   * is not a new BCeID user, we can allow them into the BCeID page
+   * provided they do have a matching role.
+   */
+  const isEstablishedUser = Boolean(companyId) || !isNewBCeIDUser;
+
+  if (isAuthenticated && isEstablishedUser) {
     if (isIDIR(userIDP)) {
       /**
        * This is a placeholder to navigate an IDIR user to an unauthorized page
