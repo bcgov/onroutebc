@@ -1,6 +1,6 @@
 import dayjs, { Dayjs } from "dayjs";
 
-import { Permit } from "../types/permit";
+import { Permit, PermitsActionResponse } from "../types/permit";
 import {
   getDateDiffInDays,
   getEndOfDate,
@@ -8,6 +8,8 @@ import {
   now,
   toLocalDayjs,
 } from "../../../common/helpers/formatDate";
+import { Nullable } from "../../../common/types/common";
+import { removeEmptyIdsFromPermitsActionResponse } from "./mappers";
 
 // Enum indicating the state of a permit
 export const PERMIT_STATES = {
@@ -93,4 +95,26 @@ export const getExpiryDate = (startDate: Dayjs, duration: number) => {
 export const hasPermitExpired = (expiryDate: string): boolean => {
   if (!expiryDate) return false;
   return now().isAfter(getEndOfDate(expiryDate));
+};
+
+/**
+ * Returns a boolean to indicate if an action for permit(s) has failed.
+ * @param res Response data of the permits action
+ * @returns boolean indicating if the action failed.
+ */
+export const hasPermitsActionFailed = (res: Nullable<PermitsActionResponse>) => {
+  // Response of undefined doesn't indicate that action has failed (could be loading)
+  if (typeof res === "undefined") return false;
+
+  // Response of null is explicitly set upon failure
+  if (!res) return true;
+
+  const filteredRes = removeEmptyIdsFromPermitsActionResponse(res);
+  if (filteredRes.success.length === 0 && filteredRes.failure.length === 0) {
+    // No permits were affected by the action, so it's not a failure.
+    return false;
+  }
+
+  // At least some of the permits have succeeded or failed
+  return filteredRes.failure.length > 0 || filteredRes.success.length === 0;
 };

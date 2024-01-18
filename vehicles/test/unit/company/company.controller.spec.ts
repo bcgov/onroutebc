@@ -17,8 +17,8 @@ import {
   readRedCompanyMetadataDtoMock,
   readRedCompanyUserDtoMock,
   updateRedCompanyDtoMock,
+  paginationReadRedCompanyDtoMock,
 } from '../../util/mocks/data/company.mock';
-import { PageOptionsDto } from 'src/common/dto/paginate/page-options';
 
 const COMPANY_ID_99 = 99;
 let companyService: DeepMocked<CompanyService>;
@@ -162,53 +162,25 @@ describe('CompanyController', () => {
     });
   });
 
+  // Mock service call for getCompanyPaginated
   describe('Company controller getCompanyPaginated function', () => {
-    it('should return the company data when company legal name or client id are provided', async () => {
-      const request = createMock<Request>();
-      request.user = redCompanyAdminUserJWTMock;
-      const pageOptionsDto = {
-        page: 1,
-        take: 10,
-      }
-      const retCompanyMetadata = await controller.getCompanyPaginated(pageOptionsDto, 'He', 'R');
-      expect(typeof retCompanyMetadata).toBe('object');
-      expect(retCompanyMetadata.items.length).toBeGreaterThan(0);
-    });
+    const pageOptionsDto = {
+      page: 1,
+      take: 10,
+    };
+    it('should return the company data when company legal name or client number are provided', async () => {
+      companyService.findCompanyPaginated.mockResolvedValue(
+        paginationReadRedCompanyDtoMock,
+      );
 
-    it('should return the company data when company legal name is provided while client id is not provided', async () => {
-      const request = createMock<Request>();
-      request.user = redCompanyAdminUserJWTMock;
-      const pageOptionsDto = {
-        page: 1,
-        take: 10,
-      }
-      const retCompanyMetadata = await controller.getCompanyPaginated(pageOptionsDto, 'He', undefined);
-      expect(typeof retCompanyMetadata).toBe('object');
-      expect(retCompanyMetadata.items.length).toBeGreaterThan(0);
-    });
-
-    it('should return the company data when company legal name is not provided while client id is provided', async () => {
-      const request = createMock<Request>();
-      request.user = redCompanyAdminUserJWTMock;
-      const pageOptionsDto = {
-        page: 1,
-        take: 10,
-      }
-      const retCompanyMetadata = await controller.getCompanyPaginated(pageOptionsDto, undefined, 'R');
-      expect(typeof retCompanyMetadata).toBe('object');
-      expect(retCompanyMetadata.items.length).toBeGreaterThan(0);
-    });
-
-    it('should throw a DataNotFoundException if company is not found', async () => {
-      const pageOptionsDto: PageOptionsDto = {page: 1, take: 10};
-      companyService.findCompanyPaginated.mockResolvedValue(undefined);
-      await expect(async () => {
-        await controller.getCompanyPaginated(
-          pageOptionsDto,
-          'aaaaaaaa',
-          'bbbbbbbb',
-        );
-      }).rejects.toThrow(DataNotFoundException);
+      const retCompanyData = await controller.getCompanyPaginated(
+        pageOptionsDto,
+        'Red Truck Inc',
+        'B3-000005-722',
+      );
+      expect(typeof retCompanyData).toBe('object');
+      expect(retCompanyData).toEqual(paginationReadRedCompanyDtoMock);
+      expect(retCompanyData.items.length).toBe(1);
     });
   });
 });

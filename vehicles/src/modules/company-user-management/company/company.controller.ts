@@ -37,7 +37,6 @@ import { IDP } from '../../../common/enum/idp.enum';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import { PageOptionsDto } from 'src/common/dto/paginate/page-options';
 
-
 @ApiTags('Company and User Management - Company')
 @ApiBadRequestResponse({
   description: 'Bad Request Response',
@@ -86,7 +85,7 @@ export class CompanyController {
 
   /**
    * A GET method defined with the @Get() decorator and a route of /companies/paginated
-   * that retrieves companies data by company's legal name or client number. 
+   * that retrieves companies data by company's legal name or client number.
    *
    * @param legalName The legal name of the company.
    * @param clientNumber The client number of the company.
@@ -107,11 +106,11 @@ export class CompanyController {
     @Query('clientNumber') clientNumber: string,
   ): Promise<PaginationDto<ReadCompanyDto>> {
     const companies: PaginationDto<ReadCompanyDto> =
-      await this.companyService.findCompanyPaginated(pageOptionsDto, legalName, clientNumber);
-
-    if (!companies?.items?.length) {
-      throw new DataNotFoundException();
-    }
+      await this.companyService.findCompanyPaginated(
+        pageOptionsDto,
+        legalName,
+        clientNumber,
+      );
 
     return companies;
   }
@@ -210,9 +209,4 @@ export class CompanyController {
     }
     return retCompany;
   }
-
-  
 }
-
-
-

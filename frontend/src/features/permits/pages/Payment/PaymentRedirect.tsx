@@ -6,13 +6,15 @@ import { Loading } from "../../../../common/pages/Loading";
 import { useCompleteTransaction, useIssuePermits } from "../../hooks/hooks";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { DATE_FORMATS, toUtc } from "../../../../common/helpers/formatDate";
+import { hasPermitsActionFailed } from "../../helpers/permitState";
+import { PaymentCardTypeCode } from "../../../../common/types/paymentMethods";
+import { Nullable } from "../../../../common/types/common";
 import {
   APPLICATIONS_ROUTES,
   ERROR_ROUTES,
   PERMITS_ROUTES,
 } from "../../../../routes/constants";
-import { PaymentCardTypeCode } from "../../../../common/types/paymentMethods";
-import { Nullable } from "../../../../common/types/common";
+
 import {
   CompleteTransactionRequestData,
   PayBCPaymentDetails,
@@ -81,14 +83,7 @@ export const PaymentRedirect = () => {
 
   const { mutation: issuePermitsMutation, issueResults } = useIssuePermits();
 
-  const issueFailed = () => {
-    if (!issueResults) return false; // since issue results might not be ready yet
-    return (
-      issueResults.success.length === 0 ||
-      (issueResults.success.length === 1 && issueResults.success[0] === "") ||
-      (issueResults.failure.length > 0 && issueResults.failure[0] !== "")
-    );
-  };
+  const issueFailed = hasPermitsActionFailed(issueResults);
 
   useEffect(() => {
     if (completedTransaction.current === false) {
@@ -121,13 +116,17 @@ export const PaymentRedirect = () => {
     }
   }, [paymentApproved, permitIds]);
 
-  if (issueResults) {
-    if (issueFailed()) {
-      return <Navigate to={`${ERROR_ROUTES.UNEXPECTED}`} replace={true} />;
-    }
+  if (issueFailed) {
+    return <Navigate to={`${ERROR_ROUTES.UNEXPECTED}`} replace={true} />;
+  }
+  
+  const successIds = getDefaultRequiredVal([], issueResults?.success);
+  const hasValidIssueResults = successIds.length > 0;
+  
+  if (hasValidIssueResults) {
     return (
       <Navigate
-        to={`${PERMITS_ROUTES.SUCCESS(issueResults.success[0])}`}
+        to={`${PERMITS_ROUTES.SUCCESS(successIds[0])}`}
         replace={true}
       />
     );

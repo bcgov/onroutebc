@@ -45,8 +45,6 @@ export const RevokeDialog = ({
 
   const handleRevoke = () => {
     const revokeFormData = getValues();
-    console.log("Revoke"); //
-    console.log(revokeFormData); //
     onRevoke(revokeFormData);
   };
 
