@@ -12,32 +12,32 @@ Create a .env file in the root directory of onRouteBC and add the following vari
 
 ```conf
 
-ACCESS_API_URL=
+ACCESS_API_URL=http://localhost:5000
 PAYBC_REF_NUMBER=
-PAYBC_BASE_URL=
+PAYBC_BASE_URL=https://paydevp.gov.bc.ca/public/directsale
 PAYBC_API_KEY=
-PAYBC_REDIRECT=
+PAYBC_REDIRECT=http://localhost:3000/payment
 GL_CODE=
-VEHICLES_API_LOG_LEVEL=
-VEHICLES_API_MAX_QUERY_EXECUTION_TIME_MS=
-VEHICLES_API_TYPEORM_LOG_LEVEL=
-DOPS_URL=
-FRONT_END_URL=
-NODE_ENV=
-CHES_TOKEN_URL=
+VEHICLES_API_LOG_LEVEL=debug
+VEHICLES_API_MAX_QUERY_EXECUTION_TIME_MS=5000
+VEHICLES_API_TYPEORM_LOG_LEVEL=query,error,warn,info,log,schema
+DOPS_URL=http://localhost:5001
+FRONT_END_URL=http://localhost:3000
+NODE_ENV=local
+CHES_TOKEN_URL=https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token
 CHES_CLIENT_ID=
 CHES_CLIENT_SECRET=
-CHES_URL=
-KEYCLOAK_ISSUER_URL=
+CHES_URL=https://ches-dev.api.gov.bc.ca/api/v1/
+KEYCLOAK_ISSUER_URL=https://dev.loginproxy.gov.bc.ca/auth/realms/standard
 KEYCLOAK_AUDIENCE=
-KEYCLOAK_IGNORE_EXP=
-DB_TYPE=
-MSSQL_HOST=
-MSSQL_PORT=
-MSSQL_DB=
+KEYCLOAK_IGNORE_EXP=true
+DB_TYPE=mssql
+MSSQL_HOST=localhost
+MSSQL_PORT=1433
+MSSQL_DB=ORBC_DEV
 MSSQL_SA_USER=
 MSSQL_SA_PASSWORD=
-MSSQL_ENCRYPT=
+MSSQL_ENCRYPT=false
 
 ```
 
