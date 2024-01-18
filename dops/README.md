@@ -1,6 +1,6 @@
-#  onRouteBC TPS Migration
+#  onRouteBC DOPS
 
-This a [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This a [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository. 
 
 ## Technologies Used
 - [NestJS](https://nestjs.com/)
@@ -12,26 +12,32 @@ Create a .env file in the root directory of onRouteBC and add the following vari
 
 ```conf
 
+ACCESS_API_URL=http://localhost:5000
+NODE_ENV=local
+CDOGS_TOKEN_URL =https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token
+CDOGS_CLIENT_ID=
+CDOGS_CLIENT_SECRET=
+DOPS_API_LOG_LEVEL=debug
+DOPS_API_MAX_QUERY_EXECUTION_TIME_MS=5000
+DOPS_API_TYPEORM_LOG_LEVEL=query,error,warn,info,log,schema
+DOPS_URL=http://localhost:5001
+FRONT_END_URL=http://localhost:3000
+KEYCLOAK_ISSUER_URL=https://dev.loginproxy.gov.bc.ca/auth/realms/standard
+KEYCLOAK_AUDIENCE=
+KEYCLOAK_IGNORE_EXP=
 OCIO_S3_ACCESSKEYID=
 OCIO_S3_BUCKET=
 OCIO_S3_PRESIGNED_URL_EXPIRY=300
 OCIO_S3_ENDPOINT=https://moti-int.objectstore.gov.bc.ca
 OCIO_S3_KEY=
 OCIO_S3_SECRETACCESSKEY=
-TPS_POLL_LIMIT = 50
-TPS_PENDING_POLLING_INTERVAL = '0 */1 * * * *'
-TPS_ERROR_POLLING_INTERVAL = '0 0 */3 * * *'
-TPS_API_LOG_LEVEL= debug
-TPS_API_TYPEORM_LOG_LEVEL= query,error,warn,info,log,schema
-TPS_API_MAX_QUERY_EXECUTION_TIME_MS= 5000
-NODE_ENV=
-DB_TYPE=
-MSSQL_HOST= localhost
-MSSQL_PORT= 1433
-MSSQL_DB= ORBC_DEV
+DB_TYPE=mssql
+MSSQL_HOST=localhost
+MSSQL_PORT=1433
+MSSQL_DB=ORBC_DEV
 MSSQL_SA_USER=
 MSSQL_SA_PASSWORD=
-MSSQL_ENCRYPT= false
+MSSQL_ENCRYPT=false
 
 ```
 
@@ -56,7 +62,7 @@ Install all frontend dependencies
 Runs the app in the development mode.
 
 ### Swagger API
-Open [http://localhost:5050/api/](http://localhost:5050/api) to view the swagger api definitions in the browser.
+Open [http://localhost:5001/api](http://localhost:5001/api) to view the swagger api definitions in the browser.
 
 ### `npm run test`
 

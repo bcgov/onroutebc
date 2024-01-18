@@ -1,4 +1,4 @@
-#  onRouteBC TPS Migration
+#  onRouteBC Vehicles
 
 This a [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
@@ -12,26 +12,32 @@ Create a .env file in the root directory of onRouteBC and add the following vari
 
 ```conf
 
-OCIO_S3_ACCESSKEYID=
-OCIO_S3_BUCKET=
-OCIO_S3_PRESIGNED_URL_EXPIRY=300
-OCIO_S3_ENDPOINT=https://moti-int.objectstore.gov.bc.ca
-OCIO_S3_KEY=
-OCIO_S3_SECRETACCESSKEY=
-TPS_POLL_LIMIT = 50
-TPS_PENDING_POLLING_INTERVAL = '0 */1 * * * *'
-TPS_ERROR_POLLING_INTERVAL = '0 0 */3 * * *'
-TPS_API_LOG_LEVEL= debug
-TPS_API_TYPEORM_LOG_LEVEL= query,error,warn,info,log,schema
-TPS_API_MAX_QUERY_EXECUTION_TIME_MS= 5000
-NODE_ENV=
-DB_TYPE=
-MSSQL_HOST= localhost
-MSSQL_PORT= 1433
-MSSQL_DB= ORBC_DEV
+ACCESS_API_URL=http://localhost:5000
+PAYBC_REF_NUMBER=
+PAYBC_BASE_URL=https://paydevp.gov.bc.ca/public/directsale
+PAYBC_API_KEY=
+PAYBC_REDIRECT=http://localhost:3000/payment
+GL_CODE=
+VEHICLES_API_LOG_LEVEL=debug
+VEHICLES_API_MAX_QUERY_EXECUTION_TIME_MS=5000
+VEHICLES_API_TYPEORM_LOG_LEVEL=query,error,warn,info,log,schema
+DOPS_URL=http://localhost:5001
+FRONT_END_URL=http://localhost:3000
+NODE_ENV=local
+CHES_TOKEN_URL=https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token
+CHES_CLIENT_ID=
+CHES_CLIENT_SECRET=
+CHES_URL=https://ches-dev.api.gov.bc.ca/api/v1/
+KEYCLOAK_ISSUER_URL=https://dev.loginproxy.gov.bc.ca/auth/realms/standard
+KEYCLOAK_AUDIENCE=
+KEYCLOAK_IGNORE_EXP=true
+DB_TYPE=mssql
+MSSQL_HOST=localhost
+MSSQL_PORT=1433
+MSSQL_DB=ORBC_DEV
 MSSQL_SA_USER=
 MSSQL_SA_PASSWORD=
-MSSQL_ENCRYPT= false
+MSSQL_ENCRYPT=false
 
 ```
 
@@ -56,7 +62,7 @@ Install all frontend dependencies
 Runs the app in the development mode.
 
 ### Swagger API
-Open [http://localhost:5050/api/](http://localhost:5050/api) to view the swagger api definitions in the browser.
+Open [http://localhost:5000/api](http://localhost:5000/api) to view the swagger api definitions in the browser.
 
 ### `npm run test`
 
