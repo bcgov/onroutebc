@@ -46,7 +46,7 @@ export interface UserInformation extends Contact {
   statusCode: string;
 }
 
-export interface CompanyAndUserRequest {
+export type CompanyAndUserRequest = {
   companyId: number;
   companyGUID: string;
   legalName: string;
@@ -58,8 +58,8 @@ export interface CompanyAndUserRequest {
   extension?: string;
   fax?: string;
   primaryContact: Contact;
-  adminUser: Contact;
-}
+  adminUser?: Contact;
+};
 
 /**
  * The request object to verify a migrated client
