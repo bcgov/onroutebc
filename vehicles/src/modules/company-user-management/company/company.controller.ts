@@ -84,7 +84,7 @@ export class CompanyController {
   }
 
   /**
-   * A GET method defined with the @Get() decorator and a route of /companies/paginated
+   * A GET method defined with the @Get() decorator and a route of /companies
    * that retrieves companies data by company's legal name or client number.
    *
    * @param legalName The legal name of the company.
@@ -99,7 +99,7 @@ export class CompanyController {
   @ApiQuery({ name: 'legalName', required: false })
   @ApiQuery({ name: 'clientNumber', required: false })
   @Roles(Role.STAFF)
-  @Get('paginated')
+  @Get()
   async getCompanyPaginated(
     @Query() pageOptionsDto: PageOptionsDto,
     @Query('legalName') legalName: string,
@@ -141,7 +141,7 @@ export class CompanyController {
   }
 
   /**
-   * A GET method defined with the @Get() decorator and a route of /companies
+   * A GET method defined with the @Get() decorator and a route of /meta-data
    * that retrieves a company metadata by userGuid. If userGUID is not provided,
    * the guid will be grabbed from the token.
    *
@@ -156,7 +156,7 @@ export class CompanyController {
   })
   @ApiQuery({ name: 'userGUID', required: false })
   @Roles(Role.READ_ORG)
-  @Get()
+  @Get('meta-data')
   async getCompanyMetadata(
     @Req() request: Request,
     @Query('userGUID') userGUID?: string,
