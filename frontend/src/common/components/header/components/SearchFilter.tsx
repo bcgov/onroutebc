@@ -137,7 +137,7 @@ export const SearchFilter = () => {
       .map(([key, value]) => `${key}=${value}`)
       .join("&");
 
-    if (data?.searchEntity === SEARCH_ENTITIES.PERMIT && data?.searchValue?.trim()?.length < 1)
+    if (data?.searchValue?.trim()?.length < 1)
       return;
 
     navigate(`${IDIR_ROUTES.SEARCH_RESULTS}?${searchFields}`);
