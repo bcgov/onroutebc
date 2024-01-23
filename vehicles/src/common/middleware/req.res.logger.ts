@@ -25,7 +25,7 @@ export class HTTPLoggerMiddleware implements NestMiddleware {
       const { statusCode } = response;
       const contentLength = response.get('content-length');
       const responseTime = response.get('X-Response-Time');
-      const hostedHttpLogFormat = `Response: ${method} ${originalUrl} StatusCode: ${statusCode} ContentLength: ${contentLength} ResponseTime: ${responseTime}ms`;
+      const hostedHttpLogFormat = `Response: ${method} ${originalUrl} StatusCode: ${statusCode} ContentLength: ${contentLength} ResponseTime: ${responseTime}`;
       this.logger.log(hostedHttpLogFormat);
     });
     next();
