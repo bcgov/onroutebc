@@ -246,11 +246,8 @@ export class PermitService {
 
     // Apply conditions based on parameters
     permitsQuery = permitsQuery
-      .where('permit.permitNumber IS NOT NULL')
-      .andWhere('permit.companyId = :companyId', { companyId });
+      .where('permit.permitNumber IS NOT NULL');
 
-    // Apply conditions based on parameters
-    permitsQuery = permitsQuery.where('permit.permitNumber IS NOT NULL');
     if (companyId) {
       permitsQuery = permitsQuery.andWhere('permit.companyId = :companyId', {
         companyId,

@@ -89,7 +89,7 @@ export class PermitController {
    * @param status if true get active permits else get others
    *
    */
-  @ApiQuery({ name: 'companyId', required: true })
+  @ApiQuery({ name: 'companyId', required: false })
   @ApiQuery({ name: 'expired', required: false, example: 'true' })
   @ApiQuery({
     name: 'sorting',
@@ -97,7 +97,8 @@ export class PermitController {
     example:
       '[{"orderBy":"unitNumber","descending":false},{"orderBy":"permitType","descending":false}]',
   })
-  @ApiQuery({ name: 'searchValue', required: false, example: 'permitNumber' })
+  @ApiQuery({ name: 'searchColumn', required: false, example: 'permitNumber' })
+  @ApiQuery({ name: 'searchString', required: false, example: 'permitNumber' })
   @ApiPaginatedResponse(ReadPermitDto)
   @Roles(Role.READ_PERMIT)
   @Get()
