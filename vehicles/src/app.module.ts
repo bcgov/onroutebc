@@ -32,6 +32,7 @@ import { getTypeormLogLevel } from './common/helper/logger.helper';
 import { ClsModule } from 'nestjs-cls';
 import { Request } from 'express';
 import { v4 as uuidv4 } from 'uuid';
+import { FeatureFlagsModule } from './modules/feature-flags/feature-flags.module';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
@@ -90,6 +91,7 @@ const envPath = path.resolve(process.cwd() + '/../');
     AuthModule,
     PermitModule,
     PaymentModule,
+    FeatureFlagsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
