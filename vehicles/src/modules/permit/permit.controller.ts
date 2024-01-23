@@ -98,7 +98,7 @@ export class PermitController {
       '[{"orderBy":"unitNumber","descending":false},{"orderBy":"permitType","descending":false}]',
   })
   @ApiQuery({ name: 'searchColumn', required: false, example: 'permitNumber' })
-  @ApiQuery({ name: 'searchString', required: false, example: 'permitNumber' })
+  @ApiQuery({ name: 'searchString', required: false, example: 'P0-08000508-500' })
   @ApiPaginatedResponse(ReadPermitDto)
   @Roles(Role.READ_PERMIT)
   @Get()
