@@ -107,7 +107,8 @@ export class PermitController {
     @Query('expired') expired: string,
     @Query() pageOptionsDto: PageOptionsDto,
     @Query('sorting') sorting?: string,
-    @Query('searchValue') searchValue?: string,
+    @Query('searchColumn') searchColumn?: string,
+    @Query('searchString') searchString?: string,
   ): Promise<PaginationDto<ReadPermitDto>> {
     const currentUser = request.user as IUserJWT;
     let sortDto: SortDto[] = [];
@@ -117,12 +118,13 @@ export class PermitController {
       currentUser.identity_provider === IDP.BCEID
         ? currentUser.bceid_user_guid
         : null;
-    return await this.permitService.findUserPermit(
+    return await this.permitService.findPermit(
       pageOptionsDto,
       userGuid,
       companyId,
       expired,
-      searchValue,
+      searchColumn,
+      searchString,
       sortDto,
     );
   }
@@ -136,14 +138,30 @@ export class PermitController {
   @Roles(Role.STAFF)
   @Get('ppc/search')
   async getPermitData(
-    @Query('searchColumn') searchColumn: string,
-    @Query('searchString') searchString: string,
+    @Req() request: Request,
+    @Query('companyId') companyId: number,
+    @Query('expired') expired: string,
     @Query() pageOptionsDto: PageOptionsDto,
+    @Query('sorting') sorting?: string,
+    @Query('searchColumn') searchColumn?: string,
+    @Query('searchString') searchString?: string,
   ): Promise<PaginationDto<ReadPermitDto>> {
-    return this.permitService.findPermit(
+    const currentUser = request.user as IUserJWT;
+    let sortDto: SortDto[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    if (sorting) sortDto = JSON.parse(sorting);
+    const userGuid =
+      currentUser.identity_provider === IDP.BCEID
+        ? currentUser.bceid_user_guid
+        : null;
+    return await this.permitService.findPermit(
       pageOptionsDto,
+      userGuid,
+      companyId,
+      expired,
       searchColumn,
       searchString,
+      sortDto,
     );
   }
 
