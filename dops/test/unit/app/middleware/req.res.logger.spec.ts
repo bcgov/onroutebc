@@ -41,7 +41,7 @@ describe('HTTPLoggerMiddleware', () => {
     );
     expect(loggerSpy).toHaveBeenNthCalledWith(
       2,
-      'Response: GET /test StatusCode: 200 ContentLength: 100 ResponseTime: 100ms',
+      'Response: GET /test StatusCode: 200 ContentLength: 100 ResponseTime: 100',
     );
   });
 });

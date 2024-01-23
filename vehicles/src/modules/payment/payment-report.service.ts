@@ -284,8 +284,10 @@ export class PaymentReportService {
     const paymentMap = new Map<string, SummaryPaymentsInterface>();
 
     queryResult.forEach((item) => {
-      const payment = item.transactionType === 'P' ? item.amount : null;
-      const refund = item.transactionType === 'R' ? item.amount : null;
+      const payment =
+        item.transactionType === TransactionType.PURCHASE ? item.amount : null;
+      const refund =
+        item.transactionType === TransactionType.REFUND ? item.amount : null;
       const deposit = (payment || 0) - (refund || 0);
       const summaryPayment = paymentMap.get(item.paymentMethod);
       if (summaryPayment) {

@@ -15,11 +15,12 @@ import {
 import { PendingIdirUsersModule } from 'src/modules/company-user-management/pending-idir-users/pending-idir-users.module';
 import { TestUserMiddleware } from './test-user.middleware';
 import { redCompanyAdminUserJWTMock } from 'test/util/mocks/data/jwt.mock';
+import { App } from 'supertest/types';
 
 const repo = createMock<Repository<PendingIdirUser>>();
 
 describe('PendingUsers (e2e)', () => {
-  let app: INestApplication;
+  let app: INestApplication<Express.Application>;
 
   beforeAll(async () => {
     jest.clearAllMocks();
@@ -48,7 +49,7 @@ describe('PendingUsers (e2e)', () => {
   describe('pending-idir-users CREATE', () => {
     it('should create a new pending idir User.', async () => {
       repo.save.mockResolvedValue(pendingIdirUserEntityMock);
-      const response = await request(app.getHttpServer())
+      const response = await request(app.getHttpServer() as unknown as App)
         .post('/pending-idir-users')
         .send(createPendingIdirUserMock)
         .expect(201);
