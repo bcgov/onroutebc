@@ -1,3 +1,7 @@
+-- This is a typical DDL migration script 
+-- Note that a revert script is ALSO needed, so be sure to check out
+-- revert/sample-ddl.sql
+
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON

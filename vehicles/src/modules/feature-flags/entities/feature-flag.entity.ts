@@ -1,4 +1,5 @@
 import { AutoMap } from "@automapper/classes";
+import { FeatureFlagValue } from "src/common/enum/feature-flag-value.enum";
 import { Base } from "src/modules/common/entities/base.entity";
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
@@ -20,9 +21,16 @@ export class FeatureFlag extends Base {
   featureKey: string;
 
   /**
-   * The feature key value.
+   * Feature Flag Value - either 'ENABLED' or 'DISABLED'.
    */
   @AutoMap()
-  @Column({ length: 50, name: 'FEATURE_VALUE', nullable: true })
-  featureValue: string;
+  @Column({
+    type: 'simple-enum',
+    enum: FeatureFlagValue,
+    length: 1,
+    name: 'FEATURE_VALUE',
+    default: FeatureFlagValue.Disabled,
+    nullable: false,
+  })
+  featureValue: FeatureFlagValue;
 }
