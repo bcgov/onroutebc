@@ -20,6 +20,7 @@ import {
   updateRedCompanyPendingUserDtoMock,
 } from '../util/mocks/data/pending-user.mock';
 import { UserAuthGroup } from '../../src/common/enum/user-auth-group.enum';
+import { App } from 'supertest/types';
 
 interface SelectQueryBuilderParameters {
   userName?: string;
@@ -29,7 +30,7 @@ interface SelectQueryBuilderParameters {
 let repo: DeepMocked<Repository<PendingUser>>;
 
 describe('PendingUsers (e2e)', () => {
-  let app: INestApplication;
+  let app: INestApplication<Express.Application>;
 
   beforeAll(async () => {
     jest.clearAllMocks();
@@ -64,7 +65,7 @@ describe('PendingUsers (e2e)', () => {
         companyId: constants.RED_COMPANY_ID,
       };
       findPendingUsersEntityMock(PARAMS);
-      const response = await request(app.getHttpServer())
+      const response = await request(app.getHttpServer() as unknown as App)
         .post('/companies/1/pending-users')
         .send(createRedCompanyPendingUserDtoMock)
         .expect(201);
@@ -79,7 +80,7 @@ describe('PendingUsers (e2e)', () => {
       };
       findPendingUsersEntityMock(PARAMS);
 
-      const response = await request(app.getHttpServer())
+      const response = await request(app.getHttpServer() as unknown as App)
         .get('/companies/1/pending-users')
         .expect(200);
 
@@ -95,7 +96,7 @@ describe('PendingUsers (e2e)', () => {
       };
       findPendingUsersEntityMock(PARAMS);
 
-      const response = await request(app.getHttpServer())
+      const response = await request(app.getHttpServer() as unknown as App)
         .get(
           '/companies/1/pending-users/' +
             constants.RED_COMPANY_PENDING_USER_NAME,
@@ -114,7 +115,7 @@ describe('PendingUsers (e2e)', () => {
       };
       findPendingUsersEntityMock(PARAMS);
 
-      const response = await request(app.getHttpServer())
+      const response = await request(app.getHttpServer() as unknown as App)
         .put(
           '/companies/1/pending-users/' +
             constants.RED_COMPANY_PENDING_USER_NAME,
@@ -137,7 +138,7 @@ describe('PendingUsers (e2e)', () => {
       };
       findPendingUsersEntityMock(PARAMS);
 
-      const response = await request(app.getHttpServer())
+      const response = await request(app.getHttpServer() as unknown as App)
         .delete(
           '/companies/1/pending-users/' +
             constants.RED_COMPANY_PENDING_USER_NAME,

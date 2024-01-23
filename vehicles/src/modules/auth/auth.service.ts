@@ -16,7 +16,7 @@ export class AuthService {
   @LogAsyncMethodExecution()
   async getUserDetails(
     companyId: number,
-    identity_provider: string,
+    identity_provider: IDP,
     userGuid: string,
   ): Promise<ReadUserDto[]> {
     let user: ReadUserDto[];

@@ -56,7 +56,7 @@ export class S3Service {
       },
     });
 
-    return (await upload.done()) as CompleteMultipartUploadCommandOutput;
+    return await upload.done();
   }
 
   @LogAsyncMethodExecution()
