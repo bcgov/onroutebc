@@ -24,7 +24,6 @@ import { getDefaultRequiredVal } from "../../../helpers/util";
 import { IDIR_ROUTES } from "../../../../routes/constants";
 import { Nullable } from "../../../types/common";
 import {
-  SEARCH_ENTITIES,
   SearchByFilter,
   SearchEntity,
   SearchFields,
