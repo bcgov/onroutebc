@@ -24,6 +24,7 @@ import { getDefaultRequiredVal } from "../../../helpers/util";
 import { IDIR_ROUTES } from "../../../../routes/constants";
 import { Nullable } from "../../../types/common";
 import {
+  SEARCH_ENTITIES,
   SearchByFilter,
   SearchEntity,
   SearchFields,
@@ -135,6 +136,9 @@ export const SearchFilter = () => {
     const searchFields = Object.entries(data)
       .map(([key, value]) => `${key}=${value}`)
       .join("&");
+
+    if (data?.searchEntity === SEARCH_ENTITIES.PERMIT && data?.searchValue?.trim()?.length < 1)
+      return;
 
     navigate(`${IDIR_ROUTES.SEARCH_RESULTS}?${searchFields}`);
   };
