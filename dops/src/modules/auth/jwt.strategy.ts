@@ -146,10 +146,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         : undefined,
     ]);
     if (
-      accessApiResponse.at(0).status !== HttpStatus.OK ||
-      (accessApiResponse.at(0).status === HttpStatus.OK &&
+      (accessApiResponse?.at(0)?.status as HttpStatus) !== HttpStatus.OK ||
+      ((accessApiResponse?.at(0)?.status as HttpStatus) === HttpStatus.OK &&
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        accessApiResponse.at(0).data?.statusCode !== UserStatus.ACTIVE)
+        accessApiResponse?.at(0)?.data?.statusCode !== UserStatus.ACTIVE)
     ) {
       throw new UnauthorizedException();
     }

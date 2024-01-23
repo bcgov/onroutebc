@@ -10,6 +10,7 @@ import { TrailerTypesService } from 'src/modules/vehicles/trailer-types/trailer-
 import { CommonService } from 'src/modules/common/common.service';
 import { PermitService } from 'src/modules/permit/permit.service';
 import { PaymentService } from '../../src/modules/payment/payment.service';
+import { App } from 'supertest/types';
 
 let permitServiceMock: DeepMocked<PermitService>;
 let powerUnitTypeServiceMock: DeepMocked<PowerUnitTypesService>;
@@ -18,7 +19,7 @@ let commonServiceMock: DeepMocked<CommonService>;
 let paymentServiceMock: DeepMocked<PaymentService>;
 
 describe('AppController (e2e)', () => {
-  let app: INestApplication;
+  let app: INestApplication<Express.Application>;
 
   beforeAll(async () => {
     permitServiceMock = createMock<PermitService>();
@@ -60,7 +61,7 @@ describe('AppController (e2e)', () => {
   });
 
   it('/ (GET)', () =>
-    request(app.getHttpServer())
+    request(app.getHttpServer() as unknown as App)
       .get('/')
       .expect(200)
       .expect('Vehicles Healthcheck!'));
