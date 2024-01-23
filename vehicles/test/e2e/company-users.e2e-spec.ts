@@ -38,6 +38,7 @@ import { PendingIdirUser } from 'src/modules/company-user-management/pending-idi
 import { PendingIdirUsersService } from 'src/modules/company-user-management/pending-idir-users/pending-idir-users.service';
 import { readRedCompanyPendingUserDtoMock } from 'test/util/mocks/data/pending-user.mock';
 import { redCompanyEntityMock } from 'test/util/mocks/data/company.mock';
+import { App } from 'supertest/types';
 
 let repo: DeepMocked<Repository<User>>;
 let repoIdirUser: DeepMocked<Repository<IdirUser>>;
@@ -47,7 +48,7 @@ let pendingIdirUsersServiceMock: DeepMocked<PendingIdirUsersService>;
 let companyServiceMock: DeepMocked<CompanyService>;
 
 describe('Company Users (e2e)', () => {
-  let app: INestApplication;
+  let app: INestApplication<Express.Application>;
 
   beforeAll(async () => {
     jest.clearAllMocks();
@@ -123,7 +124,7 @@ describe('Company Users (e2e)', () => {
       jest
         .spyOn(companyServiceMock, 'findOneByCompanyGuid')
         .mockReturnValue(Promise.resolve(redCompanyEntityMock));
-      const response = await request(app.getHttpServer())
+      const response = await request(app.getHttpServer() as unknown as App)
         .post('/companies/1/users')
         .send(createRedCompanyAdminUserDtoMock)
         .expect(201);
@@ -141,7 +142,7 @@ describe('Company Users (e2e)', () => {
           createQueryBuilderMock([redCompanyAdminUserEntityMock]),
         );
 
-      const response = await request(app.getHttpServer())
+      const response = await request(app.getHttpServer() as unknown as App)
         .put('/companies/1/users/C23229C862234796BE9DA99F30A44F9A')
         .send(updateRedCompanyCvClientUserDtoMock)
         .expect(200);
@@ -165,7 +166,7 @@ describe('Company Users (e2e)', () => {
           ]),
         );
 
-      const response = await request(app.getHttpServer())
+      const response = await request(app.getHttpServer() as unknown as App)
         .put('/companies/1/users/C23229C862234796BE9DA99F30A44F9A/status')
         .send(updateRedCompanyAdminUserStatusDtoMock)
         .expect(200);

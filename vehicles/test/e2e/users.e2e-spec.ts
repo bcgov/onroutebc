@@ -39,6 +39,7 @@ import { PendingIdirUser } from 'src/modules/company-user-management/pending-idi
 import { PendingIdirUsersService } from 'src/modules/company-user-management/pending-idir-users/pending-idir-users.service';
 import { PendingIdirUsersProfile } from 'src/modules/company-user-management/pending-idir-users/profiles/pending-idir-user.profile';
 import { readRedCompanyMetadataDtoMock } from 'test/util/mocks/data/company.mock';
+import { App } from 'supertest/types';
 
 let repo: DeepMocked<Repository<User>>;
 let repoIdirUser: DeepMocked<Repository<IdirUser>>;
@@ -48,7 +49,7 @@ let pendingIdirUsersServiceMock: DeepMocked<PendingIdirUsersService>;
 let companyServiceMock: DeepMocked<CompanyService>;
 
 describe('Users (e2e)', () => {
-  let app: INestApplication;
+  let app: INestApplication<Express.Application>;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -121,14 +122,14 @@ describe('Users (e2e)', () => {
       companyServiceMock.findCompanyMetadataByUserGuid.mockResolvedValue([
         readRedCompanyMetadataDtoMock,
       ]);
-      await request(app.getHttpServer())
+      await request(app.getHttpServer() as unknown as App)
         .post('/users/user-context')
         .expect(201);
     });
     it('should return the  ORBC IDIR userContext.', async () => {
       TestUserMiddleware.testUser = sysAdminStaffUserJWTMock;
       repoIdirUser.findOne.mockResolvedValue(idirUserEntityMock);
-      await request(app.getHttpServer())
+      await request(app.getHttpServer() as unknown as App)
         .post('/users/user-context')
         .expect(201);
     });
@@ -143,7 +144,7 @@ describe('Users (e2e)', () => {
         { ROLE_TYPE: Role.WRITE_USER },
       ]);
 
-      const response = await request(app.getHttpServer())
+      const response = await request(app.getHttpServer() as unknown as App)
         .get('/users/roles?companyId=1')
         .expect(200);
       expect(response.body).toContainEqual(Role.READ_SELF);
@@ -163,7 +164,7 @@ describe('Users (e2e)', () => {
           ]),
         );
 
-      const response = await request(app.getHttpServer())
+      const response = await request(app.getHttpServer() as unknown as App)
         .get('/users')
         .expect(200);
 
@@ -181,7 +182,7 @@ describe('Users (e2e)', () => {
           createQueryBuilderMock([redCompanyAdminUserEntityMock]),
         );
 
-      const response = await request(app.getHttpServer())
+      const response = await request(app.getHttpServer() as unknown as App)
         .get('/users/' + constants.RED_COMPANY_ADMIN_USER_GUID)
         .expect(200);
 
