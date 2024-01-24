@@ -21,7 +21,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     const response = ctx.getResponse<Response>(),
       request = ctx.getRequest<Request>(),
-      statusCode = exception.getStatus();
+      statusCode: HttpStatus = exception.getStatus();
 
     const cls = ClsServiceManager.getClsService();
     const correlationId = cls.getId();

@@ -1,4 +1,5 @@
 import { Directory } from '../enum/directory.enum';
+import { IDP } from '../enum/idp.enum';
 import { Role } from '../enum/roles.enum';
 import { UserAuthGroup } from '../enum/user-auth-group.enum';
 
@@ -12,7 +13,7 @@ export interface IUserJWT {
   given_name: string;
   display_name: string;
   email: string;
-  identity_provider: string;
+  identity_provider: IDP;
   scope: string;
   azp: string;
   preferred_username: string;

@@ -735,7 +735,7 @@ export class ApplicationService {
    */
   @LogAsyncMethodExecution()
   async generateApplicationNumber(
-    permitApplicationOrigin: string,
+    permitApplicationOrigin: IDP,
     permitId: string,
   ): Promise<string> {
     let seq: string;

@@ -175,9 +175,8 @@ export class DgenService {
   ) {
     await Promise.all(
       documentsToMerge.map(async (externalDocument) => {
-        const documentFromCache: Buffer = await this.cacheManager.get(
-          externalDocument,
-        );
+        const documentFromCache: Buffer =
+          await this.cacheManager.get(externalDocument);
         if (!documentFromCache) {
           const externalDocumentDetails =
             await this.externalDocumentRepository.findOne({
