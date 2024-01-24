@@ -30,5 +30,8 @@ export type SearchByFilter =
 export type SearchFields = {
   searchEntity: SearchEntity;
   searchByFilter: SearchByFilter;
-  searchValue: string;
+  /**
+   * The value entered by the user for searching.
+   */
+  searchString: string;
 };
