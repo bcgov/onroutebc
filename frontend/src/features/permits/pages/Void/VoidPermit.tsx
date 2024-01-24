@@ -72,7 +72,7 @@ export const VoidPermit = () => {
     return permit.permitNumber.substring(0, 11);
   };
 
-  const fullSearchRoute = `${searchRoute}&searchValue=${getBasePermitNumber()}`;
+  const fullSearchRoute = `${searchRoute}&searchString=${getBasePermitNumber()}`;
   const goHome = () => navigate(-1);
   const goHomeSuccess = () => navigate(fullSearchRoute);
   const handleFail = () => navigate(ERROR_ROUTES.UNEXPECTED);

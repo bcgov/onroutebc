@@ -36,9 +36,11 @@ import { UserSelect } from "./subcomponents/UserSelect";
 export const PaymentAndRefundDetail = () => {
   const { idirUserDetails } = useContext(OnRouteBCContext);
   const { user: idirUserFromAuthContext } = useAuth();
-  const isSysAdmin =
+  const canSelectPermitIssuers =
     idirUserDetails?.userAuthGroup ===
-    IDIR_USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR;
+      IDIR_USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR ||
+    idirUserDetails?.userAuthGroup === IDIR_USER_AUTH_GROUP.HQ_ADMINISTRATOR ||
+    idirUserDetails?.userAuthGroup === IDIR_USER_AUTH_GROUP.FINANCE;
   // GET the permit types.
   const permitTypesQuery = usePermitTypesQuery();
   const { setSnackBar } = useContext(SnackBarContext);
@@ -67,7 +69,7 @@ export const PaymentAndRefundDetail = () => {
     },
     keepPreviousData: true,
     // Only query the permit issuers when the user is sysadmin.
-    enabled: isSysAdmin,
+    enabled: canSelectPermitIssuers,
     staleTime: ONE_HOUR,
     retry: false,
     refetchOnWindowFocus: false, // prevents unnecessary queries
@@ -90,7 +92,7 @@ export const PaymentAndRefundDetail = () => {
       permitType: Object.keys(permitTypes ?? []),
       // permitIssuers is a <userName, userGUID> record.
       // So, Object.values is what we need.
-      users: isSysAdmin
+      users: canSelectPermitIssuers
         ? Object.values(permitIssuers ?? {})
         : // If user is not a sys admin, only their own guid is populated.
           [idirUserFromAuthContext?.profile?.idir_user_guid as string],
@@ -237,7 +239,7 @@ export const PaymentAndRefundDetail = () => {
               <Stack>
                 <PaymentMethodSelect />
               </Stack>
-              {isSysAdmin && (
+              {canSelectPermitIssuers && (
                 <Stack direction="row">
                   <UserSelect
                     permitIssuers={permitIssuers}
