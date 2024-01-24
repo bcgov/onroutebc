@@ -89,7 +89,7 @@ export class PermitController {
    * @param status if true get active permits else get others
    *
    */
-  @ApiQuery({ name: 'companyId', required: true })
+  @ApiQuery({ name: 'companyId', required: false })
   @ApiQuery({ name: 'expired', required: false, example: 'true' })
   @ApiQuery({
     name: 'sorting',
@@ -97,7 +97,12 @@ export class PermitController {
     example:
       '[{"orderBy":"unitNumber","descending":false},{"orderBy":"permitType","descending":false}]',
   })
-  @ApiQuery({ name: 'searchValue', required: false, example: 'permitNumber' })
+  @ApiQuery({ name: 'searchColumn', required: false, example: 'permitNumber' })
+  @ApiQuery({
+    name: 'searchString',
+    required: false,
+    example: 'P0-08000508-500',
+  })
   @ApiPaginatedResponse(ReadPermitDto)
   @Roles(Role.READ_PERMIT)
   @Get()
@@ -107,7 +112,8 @@ export class PermitController {
     @Query('expired') expired: string,
     @Query() pageOptionsDto: PageOptionsDto,
     @Query('sorting') sorting?: string,
-    @Query('searchValue') searchValue?: string,
+    @Query('searchColumn') searchColumn?: string,
+    @Query('searchString') searchString?: string,
   ): Promise<PaginationDto<ReadPermitDto>> {
     const currentUser = request.user as IUserJWT;
     let sortDto: SortDto[] = [];
@@ -117,33 +123,14 @@ export class PermitController {
       currentUser.identity_provider === IDP.BCEID
         ? currentUser.bceid_user_guid
         : null;
-    return await this.permitService.findUserPermit(
+    return await this.permitService.findPermit(
       pageOptionsDto,
       userGuid,
       companyId,
       expired,
-      searchValue,
-      sortDto,
-    );
-  }
-
-  /**
-   * @Query searchColumn: Key to search a permit. ex: plate
-   * @Query searchString: Value of key. ex: AB123D
-   * The above example will search for a permit where plate is AB123D.
-   */
-  @ApiPaginatedResponse(ReadPermitDto)
-  @Roles(Role.STAFF)
-  @Get('ppc/search')
-  async getPermitData(
-    @Query('searchColumn') searchColumn: string,
-    @Query('searchString') searchString: string,
-    @Query() pageOptionsDto: PageOptionsDto,
-  ): Promise<PaginationDto<ReadPermitDto>> {
-    return this.permitService.findPermit(
-      pageOptionsDto,
       searchColumn,
       searchString,
+      sortDto,
     );
   }
 
