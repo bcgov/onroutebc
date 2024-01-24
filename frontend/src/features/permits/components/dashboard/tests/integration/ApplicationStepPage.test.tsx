@@ -27,6 +27,7 @@ import {
 } from "./helpers/prepare";
 
 import {
+  additionalEmailInput,
   chooseOption,
   companyClientNumberDisplay,
   companyNameDisplay,
@@ -128,6 +129,7 @@ describe("Application Contact Details", () => {
     const phone1Input = await inputWithValue(phone1);
     const phone2Input = await inputWithValue(phone2);
     const emailInput = await inputWithValue(email);
+    const additionalEmailInputEl = await additionalEmailInput();
 
     // Info banner should be present
     expect(await sendPermitToEmailMsg()).toBeInTheDocument();
@@ -153,6 +155,8 @@ describe("Application Contact Details", () => {
     await replaceValueForInput(user, phone2Input, phone2.length, newPhone2);
     const newEmail = "mc@mycompany.co";
     await replaceValueForInput(user, emailInput, email.length, newEmail);
+    const newAdditionalEmail = "additionalEmail@mycompany.co";
+    await replaceValueForInput(user, additionalEmailInputEl, 0, newAdditionalEmail);
     await saveApplication(user);
 
     // Assert - input fields should contain updated values
@@ -176,6 +180,7 @@ describe("Application Contact Details", () => {
       phone2Extension,
     );
     expect(savedApplication?.permitData?.contactDetails?.email).toBe(newEmail);
+    expect(savedApplication?.permitData?.contactDetails?.additionalEmail).toBe(newAdditionalEmail);
     expect(savedApplication?.permitData?.contactDetails?.fax).toBe(fax);
   });
 

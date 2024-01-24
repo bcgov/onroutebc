@@ -5,7 +5,7 @@ import { RefundFormData } from "../Refund/types/RefundFormData";
 import { Permit } from "../../types/permit";
 import { usePermitHistoryQuery } from "../../hooks/hooks";
 import { calculateAmountForVoid } from "../../helpers/feeSummary";
-import { RefundPage } from "../Refund/RefundPage";
+import { PERMIT_REFUND_ACTIONS, RefundPage } from "../Refund/RefundPage";
 import { mapToVoidRequestData } from "./helpers/mapper";
 import { useVoidPermit } from "./hooks/useVoidPermit";
 import { isValidTransaction } from "../../helpers/payment";
@@ -24,7 +24,7 @@ export const FinishVoid = ({
 }) => {
   const { voidPermitData } = useContext(VoidPermitContext);
 
-  const { email, fax, reason } = voidPermitData;
+  const { email, additionalEmail, fax, reason } = voidPermitData;
 
   const { query: permitHistoryQuery, permitHistory } = usePermitHistoryQuery(
     permit?.originalPermitId,
@@ -69,11 +69,12 @@ export const FinishVoid = ({
       permitHistory={transactionHistory}
       amountToRefund={amountToRefund}
       email={email}
+      additionalEmail={additionalEmail}
       fax={fax}
       reason={reason}
       permitNumber={permit?.permitNumber}
       permitType={permit?.permitType}
-      permitAction="void"
+      permitAction={PERMIT_REFUND_ACTIONS.VOID}
       onFinish={handleFinish}
     />
   );

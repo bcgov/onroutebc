@@ -27,7 +27,7 @@
           resize: none;
         }
 
-        &--email {
+        &--email, &--additional-email {
           max-width: 375px;
 
           .custom-form-control {

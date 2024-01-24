@@ -128,6 +128,10 @@ export const errMsgForVehicleSubtype = async () => {
   );
 };
 
+export const additionalEmailInput = async () => {
+  return await screen.findByTestId("input-permitData.contactDetails.additionalEmail");
+};
+
 export const vinInput = async () => {
   return await screen.findByTestId("input-permitData.vehicleDetails.vin");
 };
