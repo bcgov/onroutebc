@@ -35,3 +35,5 @@ if [[ $TEST_12_4_RESULT -eq 1 ]]; then
 else
     echo "******** Test 12.4 failed: Previous revisions not being marked SUPERSEDED"
 fi
+
+/opt/mssql-tools/bin/sqlcmd -U ${USER} -P "${PASS}" -S ${SERVER} -v DB_NAME=${DATABASE} -h -1 -i ${TESTS_DIR}/v_12_test_cleanup.sql
