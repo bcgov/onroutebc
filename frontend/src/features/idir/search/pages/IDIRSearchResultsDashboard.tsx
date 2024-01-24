@@ -18,10 +18,10 @@ import { IDIRPermitSearchResults } from "../components/IDIRPermitSearchResults";
  * @returns Empty string or an appropriate banner text.
  */
 const getBannerText = (searchFields: SearchFields): string => {
-  if (!searchFields?.searchValue) return "";
-  const { searchByFilter, searchValue } = searchFields;
+  if (!searchFields?.searchString) return "";
+  const { searchByFilter, searchString } = searchFields;
   if (searchByFilter === SEARCH_BY_FILTERS.PERMIT_NUMBER) {
-    return `Search Results: Permit # ${searchValue}`;
+    return `Search Results: Permit # ${searchString}`;
   }
   return "";
 };
@@ -34,7 +34,7 @@ export const IDIRSearchResultsDashboard = memo(() => {
   const searchFields: SearchFields = {
     searchByFilter: searchParams.get("searchByFilter") as SearchByFilter,
     searchEntity: searchParams.get("searchEntity") as SearchEntity,
-    searchValue: searchParams.get("searchValue") as string,
+    searchString: searchParams.get("searchString") as string,
   };
 
   return (
@@ -54,8 +54,12 @@ export const IDIRSearchResultsDashboard = memo(() => {
         id={`layout-tabpanel-search-results`}
         aria-labelledby={`layout-tab-search-results`}
       >
-        {searchFields?.searchEntity === SEARCH_ENTITIES.COMPANY && <IDIRCompanySearchResults searchParams={searchFields} />}
-        {searchFields?.searchEntity === SEARCH_ENTITIES.PERMIT && <IDIRPermitSearchResults searchParams={searchFields} />}
+        {searchFields?.searchEntity === SEARCH_ENTITIES.COMPANY && (
+          <IDIRCompanySearchResults searchParams={searchFields} />
+        )}
+        {searchFields?.searchEntity === SEARCH_ENTITIES.PERMIT && (
+          <IDIRPermitSearchResults searchParams={searchFields} />
+        )}
       </div>
     </>
   );

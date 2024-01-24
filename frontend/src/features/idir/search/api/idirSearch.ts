@@ -2,24 +2,24 @@ import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints"
 import { httpGETRequest } from "../../../../common/apiManager/httpRequestHandler";
 import {
   PaginatedResponse,
-  PaginationOptions
+  PaginationOptions,
 } from "../../../../common/types/common";
 import { Permit } from "../../../permits/types/permit";
 import { SEARCH_ENTITIES, SearchEntity, SearchFields } from "../types/types";
 
 const getSearchURLbyEntity = (searchEntity: SearchEntity): string | URL => {
   let url = "";
-  switch(searchEntity) {
+  switch (searchEntity) {
     case SEARCH_ENTITIES.APPLICATION:
     case SEARCH_ENTITIES.PERMIT:
       url = `${VEHICLES_URL}/${searchEntity}`;
-    break;
+      break;
     case SEARCH_ENTITIES.COMPANY:
       url = `${VEHICLES_URL}/${searchEntity}/paginated`;
-    break;
+      break;
   }
   return url;
-}
+};
 
 /**
  * Searches the data with options and value entered by the user.
@@ -27,12 +27,12 @@ const getSearchURLbyEntity = (searchEntity: SearchEntity): string | URL => {
  * @returns The response from the API.
  */
 export const getDataBySearch = (
-  { searchEntity, searchByFilter, searchValue }: SearchFields,
+  { searchEntity, searchByFilter, searchString }: SearchFields,
   { page = 0, take = 10 }: PaginationOptions,
 ): Promise<PaginatedResponse<Permit>> => {
   const searchURL = new URL(getSearchURLbyEntity(searchEntity));
   searchURL.searchParams.set("searchColumn", searchByFilter);
-  searchURL.searchParams.set("searchString", searchValue);
+  searchURL.searchParams.set("searchString", searchString);
 
   // API pagination index starts at 1. Hence page + 1.
   searchURL.searchParams.set("page", (page + 1).toString());
