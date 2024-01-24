@@ -245,8 +245,7 @@ export class PermitService {
       .innerJoinAndSelect('permit.permitData', 'permitData');
 
     // Apply conditions based on parameters
-    permitsQuery = permitsQuery
-      .where('permit.permitNumber IS NOT NULL');
+    permitsQuery = permitsQuery.where('permit.permitNumber IS NOT NULL');
 
     if (companyId) {
       permitsQuery = permitsQuery.andWhere('permit.companyId = :companyId', {
@@ -284,37 +283,37 @@ export class PermitService {
         },
       );
     }
-    if(searchColumn){
-    if (searchColumn.toLowerCase() === 'plate') {
-      permitsQuery = permitsQuery.andWhere(
-        `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like '%${searchString}%'`,
-      );
+    if (searchColumn) {
+      if (searchColumn.toLowerCase() === 'plate') {
+        permitsQuery = permitsQuery.andWhere(
+          `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like '%${searchString}%'`,
+        );
+      }
+      if (searchColumn.toLowerCase() === 'permitnumber') {
+        permitsQuery = permitsQuery.andWhere(
+          new Brackets((query) => {
+            query
+              .where(`permit.permitNumber like '%${searchString}%'`)
+              .orWhere(`permit.migratedPermitNumber like '%${searchString}%'`);
+          }),
+        );
+      }
+      if (searchColumn.toLowerCase() === 'clientnumber') {
+        permitsQuery = permitsQuery.andWhere(
+          `JSON_VALUE(permitData.permitData, '$.clientNumber') like '%${searchString}%'`,
+        );
+      }
+      if (searchColumn.toLowerCase() === 'companyname') {
+        permitsQuery = permitsQuery.andWhere(
+          `JSON_VALUE(permitData.permitData, '$.companyName') like '%${searchString}%'`,
+        );
+      }
+      if (searchColumn.toLowerCase() === 'applicationnumber') {
+        permitsQuery = permitsQuery.andWhere(
+          `permit.applicationNumber like '%${searchString}%'`,
+        );
+      }
     }
-    if (searchColumn.toLowerCase() === 'permitnumber') {
-      permitsQuery = permitsQuery.andWhere(
-        new Brackets((query) => {
-          query
-            .where(`permit.permitNumber like '%${searchString}%'`)
-            .orWhere(`permit.migratedPermitNumber like '%${searchString}%'`);
-        }),
-      );
-    }
-    if (searchColumn.toLowerCase() === 'clientnumber') {
-      permitsQuery = permitsQuery.andWhere(
-        `JSON_VALUE(permitData.permitData, '$.clientNumber') like '%${searchString}%'`,
-      );
-    }
-    if (searchColumn.toLowerCase() === 'companyname') {
-      permitsQuery = permitsQuery.andWhere(
-        `JSON_VALUE(permitData.permitData, '$.companyName') like '%${searchString}%'`,
-      );
-    }
-    if (searchColumn.toLowerCase() === 'applicationnumber') {
-      permitsQuery = permitsQuery.andWhere(
-        `permit.applicationNumber like '%${searchString}%'`,
-      );
-    }
-  }
 
     // Handle searchString only
     if (!searchColumn && searchString) {
