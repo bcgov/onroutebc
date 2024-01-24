@@ -89,7 +89,7 @@ export const IDIRAuthWall = ({
       DoesUserHaveAuthGroup<IDIRUserAuthGroupType>({
         userAuthGroup: idirUserDetails?.userAuthGroup,
         allowedAuthGroups,
-      }) && DoesUserHaveRole(userRoles, requiredRole);
+      }) || DoesUserHaveRole(userRoles, requiredRole);
 
     if (doesUserHaveAccess) {
       return <Outlet />;
