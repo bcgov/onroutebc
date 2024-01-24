@@ -81,6 +81,8 @@ export const AppRoutes = () => {
             allowedAuthGroups={[
               IDIR_USER_AUTH_GROUP.ENFORCEMENT_OFFICER,
               IDIR_USER_AUTH_GROUP.PPC_CLERK,
+              IDIR_USER_AUTH_GROUP.FINANCE,
+              IDIR_USER_AUTH_GROUP.HQ_ADMINISTRATOR,
             ]}
           />
         }
@@ -114,7 +116,18 @@ export const AppRoutes = () => {
       </Route>
 
       {/* IDIR System Admin Routes */}
-      <Route element={<IDIRAuthWall requiredRole={ROLES.STAFF_ADMIN} />}>
+      <Route
+        element={
+          <IDIRAuthWall
+            requiredRole={ROLES.STAFF_ADMIN}
+            allowedAuthGroups={[
+              IDIR_USER_AUTH_GROUP.PPC_CLERK,
+              IDIR_USER_AUTH_GROUP.FINANCE,
+              IDIR_USER_AUTH_GROUP.HQ_ADMINISTRATOR,
+            ]}
+          />
+        }
+      >
         {/* Only IDIR System Admins can access the reports page */}
         <Route
           path={routes.IDIR_ROUTES.REPORTS}
@@ -138,25 +151,19 @@ export const AppRoutes = () => {
           <Route
             path={`${routes.VEHICLES_ROUTES.TRAILER_DETAILS}/:vehicleId`}
             element={
-              <EditVehicleDashboard
-                editVehicleMode={VEHICLE_TYPES.TRAILER}
-              />
+              <EditVehicleDashboard editVehicleMode={VEHICLE_TYPES.TRAILER} />
             }
           />
           <Route
             path={routes.VEHICLES_ROUTES.ADD_POWER_UNIT}
             element={
-              <AddVehicleDashboard
-                addVehicleMode={VEHICLE_TYPES.POWER_UNIT}
-              />
+              <AddVehicleDashboard addVehicleMode={VEHICLE_TYPES.POWER_UNIT} />
             }
           />
           <Route
             path={routes.VEHICLES_ROUTES.ADD_TRAILER}
             element={
-              <AddVehicleDashboard
-                addVehicleMode={VEHICLE_TYPES.TRAILER}
-              />
+              <AddVehicleDashboard addVehicleMode={VEHICLE_TYPES.TRAILER} />
             }
           />
         </Route>
