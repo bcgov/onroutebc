@@ -198,54 +198,6 @@ export class PermitService {
     return file;
   }
 
-  @LogAsyncMethodExecution()
-  async findPermit(
-    pageOptionsDto: PageOptionsDto,
-    searchColumn: string,
-    searchString: string,
-  ): Promise<PaginationDto<ReadPermitDto>> {
-    const permits = this.permitRepository
-      .createQueryBuilder('permit')
-      .innerJoinAndSelect('permit.permitData', 'permitData')
-      .where('permit.permitNumber IS NOT NULL')
-      .skip((pageOptionsDto.page - 1) * pageOptionsDto.take)
-      .take(pageOptionsDto.take);
-    if (searchColumn.toLowerCase() === 'plate') {
-      permits.andWhere(
-        `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like '%${searchString}%'`,
-      );
-    }
-    if (searchColumn.toLowerCase() === 'permitnumber') {
-      permits.andWhere(`permit.permitNumber like '%${searchString}%'`);
-      permits.orWhere(`permit.migratedPermitNumber like '%${searchString}%'`);
-    }
-    if (searchColumn.toLowerCase() === 'clientnumber') {
-      permits.andWhere(
-        `JSON_VALUE(permitData.permitData, '$.clientNumber') like '%${searchString}%'`,
-      );
-    }
-    if (searchColumn.toLowerCase() === 'companyname') {
-      permits.andWhere(
-        `JSON_VALUE(permitData.permitData, '$.companyName') like '%${searchString}%'`,
-      );
-    }
-    if (searchColumn.toLowerCase() === 'applicationnumber') {
-      permits.andWhere(`permit.applicationNumber like '%${searchString}%'`);
-    }
-
-    const totalItems = await permits.getCount();
-    const { entities } = await permits.getRawAndEntities();
-
-    const pageMetaDto = new PageMetaDto({ totalItems, pageOptionsDto });
-
-    const readPermitDto: ReadPermitDto[] = await this.classMapper.mapArrayAsync(
-      entities,
-      Permit,
-      ReadPermitDto,
-    );
-    return new PaginationDto(readPermitDto, pageMetaDto);
-  }
-
   /**
    * Finds permits for user.
    * @param userGUID if present get permits for this user
@@ -254,12 +206,13 @@ export class PermitService {
    *
    */
   @LogAsyncMethodExecution()
-  public async findUserPermit(
+  public async findPermit(
     pageOptionsDto: PageOptionsDto,
     userGUID: string,
     companyId: number,
     expired: string,
-    searchValue?: string,
+    searchColumn?: string,
+    searchString?: string,
     sortDto?: SortDto[],
   ): Promise<PaginationDto<ReadPermitDto>> {
     const permits = this.buildPermitQuery(
@@ -267,7 +220,8 @@ export class PermitService {
       userGUID,
       companyId,
       expired,
-      searchValue,
+      searchColumn,
+      searchString,
     );
     const sortedPermits = this.sortPermits(permits, sortDto);
     const totalItems = await sortedPermits.getCount();
@@ -282,17 +236,22 @@ export class PermitService {
     pageOptionsDto: PageOptionsDto,
     userGUID: string,
     companyId: number,
-    expired: string,
-    searchValue?: string,
+    expired?: string,
+    searchColumn?: string,
+    searchString?: string,
   ): SelectQueryBuilder<Permit> {
     let permitsQuery = this.permitRepository
       .createQueryBuilder('permit')
       .innerJoinAndSelect('permit.permitData', 'permitData');
 
     // Apply conditions based on parameters
-    permitsQuery = permitsQuery
-      .where('permit.permitNumber IS NOT NULL')
-      .andWhere('permit.companyId = :companyId', { companyId });
+    permitsQuery = permitsQuery.where('permit.permitNumber IS NOT NULL');
+
+    if (companyId) {
+      permitsQuery = permitsQuery.andWhere('permit.companyId = :companyId', {
+        companyId,
+      });
+    }
 
     if (userGUID) {
       permitsQuery = permitsQuery.andWhere('permit.userGuid = :userGUID', {
@@ -300,7 +259,7 @@ export class PermitService {
       });
     }
 
-    if (expired === 'true') {
+    if (expired?.toLowerCase() === 'true') {
       permitsQuery = permitsQuery.andWhere(
         '(permit.permitStatus IN (:...expiredStatus)OR(permit.permitStatus = :activeStatus AND permitData.expiryDate < :expiryDate))',
         {
@@ -311,7 +270,8 @@ export class PermitService {
           expiryDate: new Date(),
         },
       );
-    } else {
+    }
+    if (expired?.toLowerCase() === 'false') {
       permitsQuery = permitsQuery.andWhere(
         '(permit.permitStatus = :activeStatus AND permitData.expiryDate >= :expiryDate)',
         {
@@ -323,17 +283,48 @@ export class PermitService {
         },
       );
     }
+    if (searchColumn) {
+      if (searchColumn.toLowerCase() === 'plate') {
+        permitsQuery = permitsQuery.andWhere(
+          `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like '%${searchString}%'`,
+        );
+      }
+      if (searchColumn.toLowerCase() === 'permitnumber') {
+        permitsQuery = permitsQuery.andWhere(
+          new Brackets((query) => {
+            query
+              .where(`permit.permitNumber like '%${searchString}%'`)
+              .orWhere(`permit.migratedPermitNumber like '%${searchString}%'`);
+          }),
+        );
+      }
+      if (searchColumn.toLowerCase() === 'clientnumber') {
+        permitsQuery = permitsQuery.andWhere(
+          `JSON_VALUE(permitData.permitData, '$.clientNumber') like '%${searchString}%'`,
+        );
+      }
+      if (searchColumn.toLowerCase() === 'companyname') {
+        permitsQuery = permitsQuery.andWhere(
+          `JSON_VALUE(permitData.permitData, '$.companyName') like '%${searchString}%'`,
+        );
+      }
+      if (searchColumn.toLowerCase() === 'applicationnumber') {
+        permitsQuery = permitsQuery.andWhere(
+          `permit.applicationNumber like '%${searchString}%'`,
+        );
+      }
+    }
 
-    // Handle searchValue
-    if (searchValue) {
+    // Handle searchString only
+    if (!searchColumn && searchString) {
       permitsQuery = permitsQuery.andWhere(
         new Brackets((query) => {
           query
             .where(
-              `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like '%${searchValue}%'`,
+              `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like '%${searchString}%'`,
             )
             .orWhere(
-              `JSON_VALUE(permitData.permitData, '$.vehicleDetails.unitNumber') like '%${searchValue}%'`,
+              `JSON_VALUE(permitData.permitData, '$.vehicleDetails.unitNumber') like '%${searchString}%'`,
             );
         }),
       );

@@ -355,7 +355,12 @@ export const getCurrentAmendmentApplication = async (
  */
 export const getPermits = async (
   { expired = false } = {},
-  { page = 0, take = 10, searchValue, sorting = [] }: PaginationAndFilters,
+  {
+    page = 0,
+    take = 10,
+    searchString,
+    sorting = [],
+  }: PaginationAndFilters,
 ): Promise<PaginatedResponse<Permit>> => {
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   const permitsURL = new URL(PERMITS_API_ROUTES.GET);
@@ -368,8 +373,8 @@ export const getPermits = async (
   // API pagination index starts at 1. Hence page + 1.
   permitsURL.searchParams.set("page", (page + 1).toString());
   permitsURL.searchParams.set("take", take.toString());
-  if (searchValue) {
-    permitsURL.searchParams.set("searchValue", searchValue);
+  if (searchString) {
+    permitsURL.searchParams.set("searchString", searchString);
   }
   if (sorting.length > 0) {
     permitsURL.searchParams.set("sorting", JSON.stringify(sorting));

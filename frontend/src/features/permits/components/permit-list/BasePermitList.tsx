@@ -62,7 +62,7 @@ export const BasePermitList = ({
         {
           page: pagination.pageIndex,
           take: pagination.pageSize,
-          searchValue: globalFilter,
+          searchString: globalFilter,
           sorting:
             sorting.length > 0
               ? [
