@@ -134,42 +134,6 @@ export class PermitController {
     );
   }
 
-  /**
-   * @Query searchColumn: Key to search a permit. ex: plate
-   * @Query searchString: Value of key. ex: AB123D
-   * The above example will search for a permit where plate is AB123D.
-   */
-  @ApiPaginatedResponse(ReadPermitDto)
-  @Roles(Role.STAFF)
-  @Get('ppc/search')
-  async getPermitData(
-    @Req() request: Request,
-    @Query('companyId') companyId: number,
-    @Query('expired') expired: string,
-    @Query() pageOptionsDto: PageOptionsDto,
-    @Query('sorting') sorting?: string,
-    @Query('searchColumn') searchColumn?: string,
-    @Query('searchString') searchString?: string,
-  ): Promise<PaginationDto<ReadPermitDto>> {
-    const currentUser = request.user as IUserJWT;
-    let sortDto: SortDto[] = [];
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    if (sorting) sortDto = JSON.parse(sorting);
-    const userGuid =
-      currentUser.identity_provider === IDP.BCEID
-        ? currentUser.bceid_user_guid
-        : null;
-    return await this.permitService.findPermit(
-      pageOptionsDto,
-      userGuid,
-      companyId,
-      expired,
-      searchColumn,
-      searchString,
-      sortDto,
-    );
-  }
-
   @ApiCreatedResponse({
     description: 'The DOPS file Resource with the presigned resource',
     type: ReadFileDto,
