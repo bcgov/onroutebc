@@ -22,4 +22,4 @@ END CATCH
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Reverting initial creation of entities for feature flags.'
 
-INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (12, @VersionDescription, getutcdate())
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (13, @VersionDescription, getutcdate())
