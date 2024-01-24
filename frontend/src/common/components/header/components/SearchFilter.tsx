@@ -92,14 +92,14 @@ export const SearchFilter = () => {
     searchEntity,
     searchParams.get("searchByFilter"),
   );
-  const searchValue = getDefaultRequiredVal(
+  const searchString = getDefaultRequiredVal(
     "",
-    searchParams.get("searchValue"),
+    searchParams.get("searchString"),
   );
   const defaultSearchFilter = {
     searchEntity,
     searchByFilter: searchBy,
-    searchValue,
+    searchString,
   } as SearchFields;
 
   const formMethods = useForm<SearchFields>({
@@ -127,14 +127,16 @@ export const SearchFilter = () => {
   const handleSearchValueChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    const searchValue = event.target.value;
-    setValue("searchValue", searchValue);
+    const searchString = event.target.value;
+    setValue("searchString", searchString);
   };
 
   const onSubmit = (data: FieldValues) => {
     const searchFields = Object.entries(data)
       .map(([key, value]) => `${key}=${value}`)
       .join("&");
+
+    if (data?.searchString?.trim()?.length < 1) return;
 
     navigate(`${IDIR_ROUTES.SEARCH_RESULTS}?${searchFields}`);
   };
@@ -207,7 +209,7 @@ export const SearchFilter = () => {
 
               <Controller
                 control={control}
-                name="searchValue"
+                name="searchString"
                 render={({ field: { value } }) => (
                   <OutlinedInput
                     className="search-by__value"
