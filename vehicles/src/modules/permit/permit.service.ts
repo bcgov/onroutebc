@@ -259,7 +259,7 @@ export class PermitService {
       });
     }
 
-    if (expired === 'true') {
+    if (expired?.toLowerCase() === 'true') {
       permitsQuery = permitsQuery.andWhere(
         '(permit.permitStatus IN (:...expiredStatus)OR(permit.permitStatus = :activeStatus AND permitData.expiryDate < :expiryDate))',
         {
@@ -271,7 +271,7 @@ export class PermitService {
         },
       );
     }
-    if (expired === 'false') {
+    if (expired?.toLowerCase() === 'false') {
       permitsQuery = permitsQuery.andWhere(
         '(permit.permitStatus = :activeStatus AND permitData.expiryDate >= :expiryDate)',
         {
