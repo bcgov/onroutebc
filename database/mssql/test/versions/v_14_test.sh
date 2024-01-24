@@ -16,4 +16,3 @@ if [[ $TEST_14_1_RESULT -eq 1 ]]; then
 else
     echo "******** Test 14.1 failed: Missing one or more feature flag tables"
 fi
-
