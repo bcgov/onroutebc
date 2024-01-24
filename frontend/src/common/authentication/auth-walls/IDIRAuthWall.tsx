@@ -5,8 +5,8 @@ import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { LoadIDIRUserContext } from "../LoadIDIRUserContext";
 import { LoadIDIRUserRoles } from "../LoadIDIRUserRoles";
 import OnRouteBCContext from "../OnRouteBCContext";
-import { IDIRUserAuthGroupType, UserRolesType } from "../types";
-import { DoesUserHaveAuthGroup, DoesUserHaveRole } from "../util";
+import { IDIRUserAuthGroupType } from "../types";
+import { DoesUserHaveAuthGroup } from "../util";
 import { Loading } from "../../pages/Loading";
 import { IDPS } from "../../types/idp";
 import { ERROR_ROUTES, HOME } from "../../../routes/constants";
@@ -19,10 +19,8 @@ const isIDIR = (identityProvider: string) => identityProvider === IDPS.IDIR;
  *
  */
 export const IDIRAuthWall = ({
-  requiredRole,
   allowedAuthGroups,
 }: {
-  requiredRole?: UserRolesType;
   /**
    * The collection of auth groups allowed to have access to a page or action.
    * IDIR System Admin is assumed to be allowed regardless of it being passed.
@@ -89,7 +87,7 @@ export const IDIRAuthWall = ({
       DoesUserHaveAuthGroup<IDIRUserAuthGroupType>({
         userAuthGroup: idirUserDetails?.userAuthGroup,
         allowedAuthGroups,
-      }) || DoesUserHaveRole(userRoles, requiredRole);
+      });
 
     if (doesUserHaveAccess) {
       return <Outlet />;

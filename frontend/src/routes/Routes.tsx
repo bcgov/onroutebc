@@ -77,7 +77,6 @@ export const AppRoutes = () => {
       <Route
         element={
           <IDIRAuthWall
-            requiredRole={ROLES.STAFF}
             allowedAuthGroups={[
               IDIR_USER_AUTH_GROUP.ENFORCEMENT_OFFICER,
               IDIR_USER_AUTH_GROUP.PPC_CLERK,
@@ -100,7 +99,6 @@ export const AppRoutes = () => {
       <Route
         element={
           <IDIRAuthWall
-            requiredRole={ROLES.STAFF}
             allowedAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
           />
         }
@@ -119,7 +117,6 @@ export const AppRoutes = () => {
       <Route
         element={
           <IDIRAuthWall
-            requiredRole={ROLES.STAFF_ADMIN}
             allowedAuthGroups={[
               IDIR_USER_AUTH_GROUP.PPC_CLERK,
               IDIR_USER_AUTH_GROUP.FINANCE,
