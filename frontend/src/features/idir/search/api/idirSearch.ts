@@ -15,7 +15,7 @@ const getSearchURLbyEntity = (searchEntity: SearchEntity): string | URL => {
       url = `${VEHICLES_URL}/${searchEntity}/ppc/search`;
     break;
     case SEARCH_ENTITIES.COMPANY:
-      url = `${VEHICLES_URL}/${searchEntity}/paginated`;
+      url = `${VEHICLES_URL}/${searchEntity}`;
     break;
   }
   return url;
