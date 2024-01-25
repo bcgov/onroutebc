@@ -44,6 +44,12 @@ jobs:
       tag: ${{ needs.vars.outputs.pr }}
       vault_role: nonprod
       vault_zone: test
+      params: |
+        --set-string frontend.containers[0].resources.{limits={cpu: 75m, memory: 150Mi},requests={25m,50Mi}},
+        --set-string vehicles.containers[0].resources.{limits={cpu: 300m, memory: 500Mi},requests={200m,300Mi}},
+        --set-string dops.containers[0].resources.{limits={cpu: 2000m, memory: 4000Mi},requests={1000m,2000Mi}},
+        --set-string tps-migration.containers[0].resources.{limits={cpu: 75m, memory: 150Mi},requests={25m,50Mi}}
+
 
   promote-images-test:
     name: Promote Images - Test
