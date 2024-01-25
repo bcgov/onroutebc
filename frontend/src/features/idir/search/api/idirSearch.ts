@@ -5,21 +5,7 @@ import {
   PaginationOptions,
 } from "../../../../common/types/common";
 import { Permit } from "../../../permits/types/permit";
-import { SEARCH_ENTITIES, SearchEntity, SearchFields } from "../types/types";
-
-const getSearchURLbyEntity = (searchEntity: SearchEntity): string | URL => {
-  let url = "";
-  switch (searchEntity) {
-    case SEARCH_ENTITIES.APPLICATION:
-    case SEARCH_ENTITIES.PERMIT:
-      url = `${VEHICLES_URL}/${searchEntity}`;
-      break;
-    case SEARCH_ENTITIES.COMPANY:
-      url = `${VEHICLES_URL}/${searchEntity}/paginated`;
-      break;
-  }
-  return url;
-};
+import { SearchFields } from "../types/types";
 
 /**
  * Searches the data with options and value entered by the user.
@@ -30,7 +16,7 @@ export const getDataBySearch = (
   { searchEntity, searchByFilter, searchString }: SearchFields,
   { page = 0, take = 10 }: PaginationOptions,
 ): Promise<PaginatedResponse<Permit>> => {
-  const searchURL = new URL(getSearchURLbyEntity(searchEntity));
+  const searchURL = new URL(`${VEHICLES_URL}/${searchEntity}`);
   searchURL.searchParams.set("searchColumn", searchByFilter);
   searchURL.searchParams.set("searchString", searchString);
 
