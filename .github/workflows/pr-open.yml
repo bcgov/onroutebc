@@ -87,7 +87,7 @@ jobs:
       triggers: '' #omit=always;
       vault_role: nonprod
       vault_zone: dev
-      params:
+      params: |
         --set-string frontend.containers[0].resources.{limits={cpu: 75m, memory: 150Mi},requests={25m,50Mi}} \
         --set-string frontend.replicaCount=2 \
         --set-string vehicles.containers[0].resources.{limits={cpu: 300m, memory: 500Mi},requests={200m,300Mi}} \
