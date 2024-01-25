@@ -11,6 +11,7 @@ import { CompanyModule } from '../../src/modules/company-user-management/company
 import {
   COMPANY_LIST,
   createRedCompanyDtoMock,
+  paginationReadRedCompanyDtoMock,
   readRedCompanyDtoMock,
   readRedCompanyMetadataDtoMock,
   readRedCompanyUserDtoMock,
@@ -108,21 +109,16 @@ describe('Company (e2e)', () => {
     });
   });
 
-  describe('/companies/meta-data GETAll', () => {
+  describe('/companies GETAll', () => {
     it('should return an array of company metadata associated with the user', async () => {
       const PARAMS = { userGUID: constants.RED_COMPANY_ADMIN_USER_GUID };
       findCompanywithParams(PARAMS);
 
-      //console.log('testUser', TestUserMiddleware.testUser)
-      console.log('GUID', constants.RED_COMPANY_ADMIN_USER_GUID)
-
       const response = await request(app.getHttpServer() as unknown as App)
-        .get('/companies/meta-data')
+        .get('/companies')
         .expect(200);
-
-      console.log('response', response)
-
-      expect(response.body).toContainEqual(readRedCompanyMetadataDtoMock);
+      
+      expect(response.body).toContainEqual(paginationReadRedCompanyDtoMock);
     });
     it('should throw a forbidden exception when user is not READ_ORG and userGUID is passed as Query Param', async () => {
       const PARAMS = { userGUID: constants.RED_COMPANY_ADMIN_USER_GUID };
@@ -130,7 +126,6 @@ describe('Company (e2e)', () => {
 
       TestUserMiddleware.testUser = redCompanyAdminUserJWTMock;
       
-
       await request(app.getHttpServer() as unknown as App)
         .get(
           '/companies/meta-data?userGUID=' +
