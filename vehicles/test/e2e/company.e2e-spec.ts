@@ -113,17 +113,23 @@ describe('Company (e2e)', () => {
       const PARAMS = { userGUID: constants.RED_COMPANY_ADMIN_USER_GUID };
       findCompanywithParams(PARAMS);
 
+      //console.log('testUser', TestUserMiddleware.testUser)
+      console.log('GUID', constants.RED_COMPANY_ADMIN_USER_GUID)
+
       const response = await request(app.getHttpServer() as unknown as App)
         .get('/companies/meta-data')
         .expect(200);
 
+      console.log('response', response)
+
       expect(response.body).toContainEqual(readRedCompanyMetadataDtoMock);
     });
-    it('should throw a forbidden exception when user is not staff and userGUID is passed as Query Param', async () => {
+    it('should throw a forbidden exception when user is not READ_ORG and userGUID is passed as Query Param', async () => {
       const PARAMS = { userGUID: constants.RED_COMPANY_ADMIN_USER_GUID };
       findCompanywithParams(PARAMS);
 
       TestUserMiddleware.testUser = redCompanyAdminUserJWTMock;
+      
 
       await request(app.getHttpServer() as unknown as App)
         .get(
