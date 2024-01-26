@@ -98,7 +98,7 @@ export class CompanyController {
   })
   @ApiQuery({ name: 'legalName', required: false })
   @ApiQuery({ name: 'clientNumber', required: false })
-  @Roles(Role.STAFF)
+  @Roles(Role.READ_ORG)
   @Get('paginated')
   async getCompanyPaginated(
     @Query() pageOptionsDto: PageOptionsDto,
@@ -113,6 +113,44 @@ export class CompanyController {
       );
 
     return companies;
+  }
+
+  /**
+   * A GET method defined with the @Get() decorator and a route of /meta-data
+   * that retrieves a company metadata by userGuid. If userGUID is not provided,
+   * the guid will be grabbed from the token.
+   *
+   * @param userGUID The user Guid.
+   *
+   * @returns The company details with response object {@link ReadCompanyMetadataDto}.
+   */
+  @ApiOkResponse({
+    description: 'The Company Metadata Resource',
+    type: ReadCompanyMetadataDto,
+    isArray: true,
+  })
+  @ApiQuery({ name: 'userGUID', required: false })
+  @Roles(Role.READ_ORG)
+  @Get('meta-data')
+  async getCompanyMetadata(
+    @Req() request: Request,
+    @Query('userGUID') userGUID?: string,
+  ): Promise<ReadCompanyMetadataDto[]> {
+    const currentUser = request.user as IUserJWT;
+    // Only IDIR users can call this endpoint with an arbitrary
+    // userGUID - other users must use the userGUID from their own
+    // token.
+    if (userGUID && currentUser.identity_provider !== IDP.IDIR) {
+      throw new ForbiddenException();
+    }
+
+    userGUID = userGUID || currentUser.userGUID;
+    const company =
+      await this.companyService.findCompanyMetadataByUserGuid(userGUID);
+    if (!company?.length) {
+      throw new DataNotFoundException();
+    }
+    return company;
   }
 
   /**
@@ -135,44 +173,6 @@ export class CompanyController {
   ): Promise<ReadCompanyDto> {
     const company = await this.companyService.findOne(companyId);
     if (!company) {
-      throw new DataNotFoundException();
-    }
-    return company;
-  }
-
-  /**
-   * A GET method defined with the @Get() decorator and a route of /companies
-   * that retrieves a company metadata by userGuid. If userGUID is not provided,
-   * the guid will be grabbed from the token.
-   *
-   * @param userGUID The user Guid.
-   *
-   * @returns The company details with response object {@link ReadCompanyMetadataDto}.
-   */
-  @ApiOkResponse({
-    description: 'The Company Metadata Resource',
-    type: ReadCompanyMetadataDto,
-    isArray: true,
-  })
-  @ApiQuery({ name: 'userGUID', required: false })
-  @Roles(Role.READ_ORG)
-  @Get()
-  async getCompanyMetadata(
-    @Req() request: Request,
-    @Query('userGUID') userGUID?: string,
-  ): Promise<ReadCompanyMetadataDto[]> {
-    const currentUser = request.user as IUserJWT;
-    // Only IDIR users can call this endpoint with an arbitrary
-    // userGUID - other users must use the userGUID from their own
-    // token.
-    if (userGUID && currentUser.identity_provider !== IDP.IDIR) {
-      throw new ForbiddenException();
-    }
-
-    userGUID = userGUID || currentUser.userGUID;
-    const company =
-      await this.companyService.findCompanyMetadataByUserGuid(userGUID);
-    if (!company?.length) {
       throw new DataNotFoundException();
     }
     return company;

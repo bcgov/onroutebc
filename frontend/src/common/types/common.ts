@@ -70,7 +70,7 @@ export type DataFilterOptions = {
   /**
    * The search value entered by the user.
    */
-  searchValue?: string;
+  searchString?: string;
   /**
    * The sorting configuration selected by the user.
    */
