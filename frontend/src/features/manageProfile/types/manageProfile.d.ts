@@ -1,5 +1,4 @@
 import {
-  ClientInformation,
   MigratedClient,
 } from "../../../common/authentication/types";
 
@@ -81,10 +80,11 @@ export type VerifyMigratedClientResponse = {
 /**
  * The tabs on the user profile management page.
  */
-export enum BCEID_PROFILE_TABS {
-  COMPANY_INFORMATION = 0,
-  MY_INFORMATION = 1,
-  USER_MANAGEMENT_ORGADMIN = 2,
-  PAYMENT_INFORMATION_CVCLIENT = 2,
-  PAYMENT_INFORMATION_ORGADMIN = 3,
-}
+export const BCEID_PROFILE_TABS = {
+  COMPANY_INFORMATION: 0,
+  MY_INFORMATION: 1,
+  USER_MANAGEMENT_ORGADMIN: 2,
+  //PAYMENT_INFORMATION_CVCLIENT: 2,
+  PAYMENT_INFORMATION_ORGADMIN: 3,
+} as const;
+

@@ -1,5 +1,5 @@
 import { setupServer } from "msw/node";
-import { rest } from "msw";
+import { http, HttpResponse } from "msw";
 import { utcToLocalDayjs } from "../../../../../../../common/helpers/formatDate";
 import { MANAGE_PROFILE_API } from "../../../../../../manageProfile/apiManager/endpoints/endpoints";
 import { renderWithClient } from "../../../../../../../common/helpers/testHelper";
@@ -41,12 +41,10 @@ export const permitType = PERMIT_TYPES.TROS;
 
 const server = setupServer(
   // Mock get company info
-  rest.get(`${MANAGE_PROFILE_API.COMPANIES}/:companyId`, (_, res, ctx) => {
-    return res(
-      ctx.json({
-        ...defaultCompanyInfo,
-      }),
-    );
+  http.get(`${MANAGE_PROFILE_API.COMPANIES}/:companyId`, () => {
+    return HttpResponse.json({
+      ...defaultCompanyInfo,
+    });
   }),
 );
 

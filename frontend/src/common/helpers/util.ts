@@ -10,6 +10,7 @@ import { Nullable, Optional, RequiredOrNull } from "../types/common";
 export const removeEmptyValues = (obj: object): object => {
   return Object.fromEntries(
     Object.entries(obj)
+      // eslint-disable-next-line
       .filter(([_key, value]) => {
         if (Array.isArray(value)) {
           return value.length > 0;
@@ -70,7 +71,6 @@ export const replaceEmptyValuesWithNull = (
  *
  * @returns Result of applyFn, or explicitDefaultVal
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const applyWhenNotNullable = <T>(
   applyFn: (val: T) => any,
   inputVal?: Nullable<T>,

@@ -1,8 +1,5 @@
 import { MRT_ColumnDef } from "material-react-table";
-import {
-  dateTimeStringSortingFn,
-  formatCellValuetoDatetime
-} from "../../../../common/helpers/tableHelper";
+
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 
 /*
