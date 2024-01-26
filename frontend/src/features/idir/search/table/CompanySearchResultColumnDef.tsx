@@ -32,13 +32,13 @@ export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
     sortingFn: "alphanumeric",
   },
   {
-    accessorKey: "mailingAddress",
+    accessorKey: "mailingAddress.addressLine1",
     header: "Company Address",
     enableSorting: true,
     sortingFn: "alphanumeric",
   },
   {
-    accessorKey: "primaryContact",
+    accessorKey: "primaryContact.firstName",
     header: "Primary Contact",
     enableSorting: true,
     sortingFn: "alphanumeric",
