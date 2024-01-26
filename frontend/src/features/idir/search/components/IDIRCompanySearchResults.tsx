@@ -12,7 +12,7 @@ import {
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { Optional } from "../../../../common/types/common";
 import { USER_AUTH_GROUP } from "../../../../common/authentication/types";
-import { getDataBySearch } from "../api/idirSearch";
+import { getCompanyDataBySearch } from "../api/idirSearch";
 import { SearchFields } from "../types/types";
 import {
   defaultTableInitialStateOptions,
@@ -81,7 +81,7 @@ export const IDIRCompanySearchResults = memo(
         pagination.pageSize,
       ],
       () =>
-        getDataBySearch(
+          getCompanyDataBySearch(
           {
             searchByFilter,
             searchEntity,
@@ -98,6 +98,8 @@ export const IDIRCompanySearchResults = memo(
     );
 
     const { data, isLoading, isError } = searchResultsQuery;
+
+    console.log('data', data)
 
     // Column definitions for the table
     const columns = useMemo<MRT_ColumnDef<CompanyProfile>[]>(
