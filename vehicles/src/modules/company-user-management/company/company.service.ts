@@ -299,22 +299,32 @@ export class CompanyService {
   @LogAsyncMethodExecution()
   async findCompanyPaginated(
     @Query() pageOptionsDto: PageOptionsDto,
-    @Query() legalName?: string,
-    @Query() clientNumber?: string,
+    @Query() searchColumn?: string,
+    @Query() searchString?: string,
   ): Promise<PaginationDto<ReadCompanyDto>> {
-    const companies = await this.companyRepository
+    let companiesQuery = this.companyRepository
       .createQueryBuilder('company')
       .innerJoinAndSelect('company.mailingAddress', 'mailingAddress')
       .innerJoinAndSelect('company.primaryContact', 'primaryContact')
       .innerJoinAndSelect('primaryContact.province', 'province')
-      .innerJoinAndSelect('mailingAddress.province', 'provinceType')
-      .where('company.legalName LIKE :legalName', {
-        legalName: `%${legalName}%`,
-      })
-      .orWhere('company.clientNumber LIKE :clientNumber', {
-        clientNumber: `%${clientNumber}%`,
-      })
-      .getMany();
+      .innerJoinAndSelect('mailingAddress.province', 'provinceType');
+
+      // Apply conditions based on parameters
+      companiesQuery = companiesQuery.where('company.companyId IS NOT NULL');
+
+      if (searchColumn?.toLowerCase() === 'companyname') {
+        companiesQuery = companiesQuery.andWhere('company.legalName LIKE :legalName', {
+          legalName: `%${searchString}%`
+        });
+      }
+
+      if (searchColumn?.toLowerCase() === 'onroutebcclientnumber') {
+        companiesQuery = companiesQuery.andWhere('company.clientNumber LIKE :clientNumber', {
+          clientNumber: `%${searchString}%`,
+        });
+      }
+
+    const companies = await companiesQuery.getMany();
 
     const companyData = await this.classMapper.mapArrayAsync(
       companies,
