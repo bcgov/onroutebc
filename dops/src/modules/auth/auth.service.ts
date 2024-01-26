@@ -70,7 +70,7 @@ export class AuthService {
   @LogAsyncMethodExecution()
   async getCompaniesForUser(accessToken: string): Promise<AxiosResponse> {
     return lastValueFrom(
-      this.httpService.get(process.env.ACCESS_API_URL + '/companies', {
+      this.httpService.get(process.env.ACCESS_API_URL + '/companies/meta-data', {
         headers: {
           Authorization: accessToken,
           'Content-Type': 'application/json',
