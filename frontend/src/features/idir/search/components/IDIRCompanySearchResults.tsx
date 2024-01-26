@@ -99,8 +99,6 @@ export const IDIRCompanySearchResults = memo(
 
     const { data, isLoading, isError } = searchResultsQuery;
 
-    console.log('data', data)
-
     // Column definitions for the table
     const columns = useMemo<MRT_ColumnDef<CompanyProfile>[]>(
       () => CompanySearchResultColumnDef,
