@@ -84,7 +84,7 @@ export class CompanyController {
   }
 
   /**
-   * A GET method defined with the @Get() decorator and a route of /companies
+   * A GET method defined with the @Get() decorator and a route of /companies/paginated
    * that retrieves companies data by company's legal name or client number.
    *
    * @param legalName The legal name of the company.
