@@ -4,14 +4,12 @@ import { Injectable, Inject, Query } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { LogAsyncMethodExecution } from "src/common/decorator/log-async-method-execution.decorator";
 import { Repository, DataSource } from "typeorm";
-import { Logger } from "winston";
 import { ReadFeatureFlagDto } from "./dto/response/read-feature-flag.dto";
 import { FeatureFlag } from "./entities/feature-flag.entity";
 
 
 @Injectable()
 export class FeatureFlagsService {
-  //private readonly logger = new Logger(FeatureFlagsService.name);
   constructor(
     @InjectRepository(FeatureFlag)
     private featureFlagRepository: Repository<FeatureFlag>,
