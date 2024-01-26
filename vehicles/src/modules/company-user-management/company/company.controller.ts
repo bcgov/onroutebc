@@ -116,31 +116,6 @@ export class CompanyController {
   }
 
   /**
-   * A GET method defined with the @Get(':companyId') decorator and a route of
-   * /company/:companyId that retrieves a company by its id.
-   *
-   * @param companyId The company Id.
-   *
-   * @returns The company details with response object {@link ReadCompanyDto}.
-   */
-  @ApiOkResponse({
-    description: 'The Company Resource',
-    type: ReadCompanyDto,
-  })
-  @Roles(Role.READ_ORG)
-  @Get(':companyId')
-  async get(
-    @Req() request: Request,
-    @Param('companyId') companyId: number,
-  ): Promise<ReadCompanyDto> {
-    const company = await this.companyService.findOne(companyId);
-    if (!company) {
-      throw new DataNotFoundException();
-    }
-    return company;
-  }
-
-  /**
    * A GET method defined with the @Get() decorator and a route of /meta-data
    * that retrieves a company metadata by userGuid. If userGUID is not provided,
    * the guid will be grabbed from the token.
@@ -173,6 +148,31 @@ export class CompanyController {
     const company =
       await this.companyService.findCompanyMetadataByUserGuid(userGUID);
     if (!company?.length) {
+      throw new DataNotFoundException();
+    }
+    return company;
+  }
+
+  /**
+   * A GET method defined with the @Get(':companyId') decorator and a route of
+   * /company/:companyId that retrieves a company by its id.
+   *
+   * @param companyId The company Id.
+   *
+   * @returns The company details with response object {@link ReadCompanyDto}.
+   */
+  @ApiOkResponse({
+    description: 'The Company Resource',
+    type: ReadCompanyDto,
+  })
+  @Roles(Role.READ_ORG)
+  @Get(':companyId')
+  async get(
+    @Req() request: Request,
+    @Param('companyId') companyId: number,
+  ): Promise<ReadCompanyDto> {
+    const company = await this.companyService.findOne(companyId);
+    if (!company) {
       throw new DataNotFoundException();
     }
     return company;

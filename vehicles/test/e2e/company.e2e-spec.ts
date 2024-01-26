@@ -11,7 +11,6 @@ import { CompanyModule } from '../../src/modules/company-user-management/company
 import {
   COMPANY_LIST,
   createRedCompanyDtoMock,
-  paginationReadRedCompanyDtoMock,
   readRedCompanyDtoMock,
   readRedCompanyMetadataDtoMock,
   readRedCompanyUserDtoMock,
@@ -115,17 +114,17 @@ describe('Company (e2e)', () => {
       findCompanywithParams(PARAMS);
 
       const response = await request(app.getHttpServer() as unknown as App)
-        .get('/companies')
+        .get('/companies/meta-data')
         .expect(200);
-      
-      expect(response.body).toContainEqual(paginationReadRedCompanyDtoMock);
+
+      expect(response.body).toContainEqual(readRedCompanyMetadataDtoMock);
     });
     it('should throw a forbidden exception when user is not READ_ORG and userGUID is passed as Query Param', async () => {
       const PARAMS = { userGUID: constants.RED_COMPANY_ADMIN_USER_GUID };
       findCompanywithParams(PARAMS);
 
       TestUserMiddleware.testUser = redCompanyAdminUserJWTMock;
-      
+
       await request(app.getHttpServer() as unknown as App)
         .get(
           '/companies/meta-data?userGUID=' +
