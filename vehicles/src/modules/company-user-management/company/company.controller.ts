@@ -99,7 +99,7 @@ export class CompanyController {
   @ApiQuery({ name: 'legalName', required: false })
   @ApiQuery({ name: 'clientNumber', required: false })
   @Roles(Role.READ_ORG)
-  @Get()
+  @Get('paginated')
   async getCompanyPaginated(
     @Query() pageOptionsDto: PageOptionsDto,
     @Query('legalName') legalName: string,
