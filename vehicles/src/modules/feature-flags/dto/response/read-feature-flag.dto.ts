@@ -4,7 +4,7 @@ import { IsEnum } from 'class-validator';
 import { FeatureFlagValue } from 'src/common/enum/feature-flag-value.enum';
 
 /**
- * JSON representation of response object when retrieving a feature flag.
+ * JSON representation of response object when retrieving a FeatureFlag.
  */
 export class ReadFeatureFlagDto {
     @AutoMap()
