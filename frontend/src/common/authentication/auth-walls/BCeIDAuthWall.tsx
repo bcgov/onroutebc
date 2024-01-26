@@ -2,7 +2,7 @@ import { useContext, useEffect } from "react";
 import { useAuth } from "react-oidc-context";
 import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 
-import { ERROR_ROUTES, HOME } from "../../../routes/constants";
+import { ERROR_ROUTES, HOME, IDIR_ROUTES } from "../../../routes/constants";
 import { Loading } from "../../pages/Loading";
 import { IDPS } from "../../types/idp";
 import { LoadBCeIDUserContext } from "../LoadBCeIDUserContext";
@@ -10,12 +10,13 @@ import { LoadBCeIDUserRolesByCompany } from "../LoadBCeIDUserRolesByCompany";
 import OnRouteBCContext from "../OnRouteBCContext";
 import { IDIRUserAuthGroupType, UserRolesType } from "../types";
 import { DoesUserHaveAuthGroup, DoesUserHaveRole } from "../util";
+import { IDIRAuthWall } from "./IDIRAuthWall";
 
 const isIDIR = (identityProvider: string) => identityProvider === IDPS.IDIR;
 
 export const BCeIDAuthWall = ({
   requiredRole,
-  allowedAuthGroups
+  allowedAuthGroups,
 }: {
   requiredRole?: UserRolesType;
   /**
@@ -62,25 +63,31 @@ export const BCeIDAuthWall = ({
 
   if (isAuthenticated && isEstablishedUser) {
     if (isIDIR(userIDP)) {
-      const doesUserHaveAccess = DoesUserHaveAuthGroup<IDIRUserAuthGroupType>({
-        userAuthGroup: idirUserDetails?.userAuthGroup,
-        allowedAuthGroups,
-      });
-      /**
-       * This is a placeholder to navigate an IDIR user to an unauthorized page
-       * since a companyId is necessary for them to do anything and
-       * that feature is yet to be built.
-       *
-       * Once we set up idir user acting as a company, there will be appropriate
-       * handlers here.
-       */
-      return (
+      if (companyId) {
+        return <IDIRAuthWall allowedAuthGroups={allowedAuthGroups} />;
+      } else {
         <Navigate
-          to={ERROR_ROUTES.UNEXPECTED}
+          to={IDIR_ROUTES.WELCOME}
           state={{ from: location }}
           replace
-        />
-      );
+        />;
+      }
+
+      // const doesUserHaveAccess = DoesUserHaveAuthGroup<IDIRUserAuthGroupType>({
+      //   userAuthGroup: idirUserDetails?.userAuthGroup,
+      //   allowedAuthGroups,
+      // });
+      // if (doesUserHaveAccess) {
+      //   return <Outlet />;
+      // } else {
+      //   return (
+      //     <Navigate
+      //       to={ERROR_ROUTES.UNAUTHORIZED}
+      //       state={{ from: location }}
+      //       replace
+      //     />
+      //   );
+      // }
     }
     if (!isIDIR(userIDP)) {
       if (!companyId) {

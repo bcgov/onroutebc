@@ -70,7 +70,7 @@ export const IDIRCompanySearchResults = memo(
     });
     // TODO: if data is [] AND current_user is PPC_ADMIN then (eventually)
     //  display the UX to allow the creation of a new Company Profile
-    const canCreateCompany = false;
+    const canCreateCompany = true;
     const searchResultsQuery = useQuery(
       [
         "search-entity",
