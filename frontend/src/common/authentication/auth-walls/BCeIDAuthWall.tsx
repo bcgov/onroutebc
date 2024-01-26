@@ -8,15 +8,22 @@ import { IDPS } from "../../types/idp";
 import { LoadBCeIDUserContext } from "../LoadBCeIDUserContext";
 import { LoadBCeIDUserRolesByCompany } from "../LoadBCeIDUserRolesByCompany";
 import OnRouteBCContext from "../OnRouteBCContext";
-import { UserRolesType } from "../types";
-import { DoesUserHaveRole } from "../util";
+import { IDIRUserAuthGroupType, UserRolesType } from "../types";
+import { DoesUserHaveAuthGroup, DoesUserHaveRole } from "../util";
 
 const isIDIR = (identityProvider: string) => identityProvider === IDPS.IDIR;
 
 export const BCeIDAuthWall = ({
   requiredRole,
+  allowedAuthGroups
 }: {
   requiredRole?: UserRolesType;
+  /**
+   * The collection of auth groups allowed to have access to a page or action.
+   * IDIR System Admin is assumed to be allowed regardless of it being passed.
+   * If not provided, only a System Admin will be allowed to access.
+   */
+  allowedAuthGroups?: IDIRUserAuthGroupType[];
 }) => {
   const {
     isAuthenticated,
@@ -24,7 +31,8 @@ export const BCeIDAuthWall = ({
     user: userFromToken,
   } = useAuth();
 
-  const { userRoles, companyId, isNewBCeIDUser } = useContext(OnRouteBCContext);
+  const { userRoles, companyId, isNewBCeIDUser, idirUserDetails } =
+    useContext(OnRouteBCContext);
 
   const userIDP = userFromToken?.profile?.identity_provider as string;
 
@@ -54,6 +62,10 @@ export const BCeIDAuthWall = ({
 
   if (isAuthenticated && isEstablishedUser) {
     if (isIDIR(userIDP)) {
+      const doesUserHaveAccess = DoesUserHaveAuthGroup<IDIRUserAuthGroupType>({
+        userAuthGroup: idirUserDetails?.userAuthGroup,
+        allowedAuthGroups,
+      });
       /**
        * This is a placeholder to navigate an IDIR user to an unauthorized page
        * since a companyId is necessary for them to do anything and
