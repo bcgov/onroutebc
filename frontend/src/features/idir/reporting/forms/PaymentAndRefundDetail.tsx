@@ -4,31 +4,33 @@ import dayjs from "dayjs";
 import { useContext, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAuth } from "react-oidc-context";
+
 import { SnackBarContext } from "../../../../App";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { IDIR_USER_AUTH_GROUP } from "../../../../common/authentication/types";
 import { ONE_HOUR } from "../../../../common/constants/constants";
 import { Loading } from "../../../../common/pages/Loading";
+import { BC_COLOURS } from "../../../../themes/bcGovStyles";
+import { openBlobInNewTab } from "../../../permits/helpers/permitPDFHelper";
+import { getPaymentAndRefundDetail, usePermitTypesQuery } from "../api/reports";
+import { getPermitIssuers } from "../api/users";
+import { IssuedByCheckBox } from "./subcomponents/IssuedByCheckBox";
+import { PaymentMethodSelect } from "./subcomponents/PaymentMethodSelect";
+import { PermitTypeSelect } from "./subcomponents/PermitTypeSelect";
+import { ReportDateTimePickers } from "./subcomponents/ReportDateTimePickers";
+import { UserSelect } from "./subcomponents/UserSelect";
 import {
   ALL_CONSOLIDATED_PAYMENT_METHODS,
   AllPaymentMethodAndCardTypeCodes,
   CONSOLIDATED_PAYMENT_METHODS,
 } from "../../../../common/types/paymentMethods";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
-import { openBlobInNewTab } from "../../../permits/helpers/permitPDFHelper";
-import { getPaymentAndRefundDetail, usePermitTypesQuery } from "../api/reports";
-import { getPermitIssuers } from "../api/users";
+
 import {
   PaymentAndRefundDetailFormData,
   PaymentAndRefundDetailRequest,
   REPORT_ISSUED_BY,
   ReadUserDtoForReport,
 } from "../types/types";
-import { IssuedByCheckBox } from "./subcomponents/IssuedByCheckBox";
-import { PaymentMethodSelect } from "./subcomponents/PaymentMethodSelect";
-import { PermitTypeSelect } from "./subcomponents/PermitTypeSelect";
-import { ReportDateTimePickers } from "./subcomponents/ReportDateTimePickers";
-import { UserSelect } from "./subcomponents/UserSelect";
 
 /**
  * Component for Payment and Refund Detail form

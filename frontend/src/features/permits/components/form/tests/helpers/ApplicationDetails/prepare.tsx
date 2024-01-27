@@ -1,10 +1,11 @@
 import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
+import { Dayjs } from "dayjs";
+
 import { utcToLocalDayjs } from "../../../../../../../common/helpers/formatDate";
 import { MANAGE_PROFILE_API } from "../../../../../../manageProfile/apiManager/endpoints/endpoints";
 import { renderWithClient } from "../../../../../../../common/helpers/testHelper";
 import { ApplicationDetails } from "../../../ApplicationDetails";
-import { Dayjs } from "dayjs";
 import { PERMIT_TYPES } from "../../../../../types/PermitType";
 
 export const defaultCompanyInfo = {
