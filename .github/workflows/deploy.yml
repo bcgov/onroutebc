@@ -222,8 +222,7 @@ jobs:
             --install --wait --atomic ${{ env.repo_release }} \
             --timeout 10m --force \
             --values ${{ inputs.values }} \
-            . 
-            #${{ inputs.params }} 
+            .  
 
 
           # print history 
