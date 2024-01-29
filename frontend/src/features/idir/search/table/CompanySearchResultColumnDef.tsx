@@ -52,8 +52,7 @@ export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
           {mailingAddress?.addressLine1}<br />
           {country[0]?.name}<br />
           {province[0]?.name}<br />
-          {mailingAddress?.city}<br />
-          {mailingAddress?.postalCode}
+          {mailingAddress?.city} {mailingAddress?.postalCode}
         </>
       );
     },
