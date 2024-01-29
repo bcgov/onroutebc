@@ -309,20 +309,26 @@ export class CompanyService {
       .innerJoinAndSelect('primaryContact.province', 'province')
       .innerJoinAndSelect('mailingAddress.province', 'provinceType');
 
-      // Apply conditions based on parameters
-      companiesQuery = companiesQuery.where('company.companyId IS NOT NULL');
+    // Apply conditions based on parameters
+    companiesQuery = companiesQuery.where('company.companyId IS NOT NULL');
 
-      if (legalName) {
-        companiesQuery = companiesQuery.andWhere('company.legalName LIKE :legalName', {
-          legalName: `%${legalName}%`
-        });
-      }
+    if (legalName) {
+      companiesQuery = companiesQuery.andWhere(
+        'company.legalName LIKE :legalName',
+        {
+          legalName: `%${legalName}%`,
+        },
+      );
+    }
 
-      if (clientNumber) {
-        companiesQuery = companiesQuery.andWhere('company.clientNumber LIKE :clientNumber', {
+    if (clientNumber) {
+      companiesQuery = companiesQuery.andWhere(
+        'company.clientNumber LIKE :clientNumber',
+        {
           clientNumber: `%${clientNumber}%`,
-        });
-      }
+        },
+      );
+    }
 
     const companies = await companiesQuery.getMany();
 
