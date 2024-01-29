@@ -88,7 +88,11 @@ jobs:
       vault_role: nonprod
       vault_zone: dev
       params: |
+        --set-string dops.replicaCount=2 \
+        --set-string frontend.replicaCount=2 \
+        --set-string tps-migration.replicaCount=2 \
+        --set-string vehicles.replicaCount=2 \ 
         --set-json dops.containers[0].resources='{"limits": {"cpu": "2000m", "memory": "4000Mi"}, "requests": {"cpu": "1000m", "memory": "2000Mi"}}' \
         --set-json frontend.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
         --set-json tps-migration.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
-        --set-json vehicles.containers[0].resources='{"limits": {"cpu": "300m", "memory": "500Mi"}, "requests": {"cpu": "200m", "memory": "400Mi"}}' 
+        --set-json vehicles.containers[0].resources='{"limits": {"cpu": "300m", "memory": "500Mi"}, "requests": {"cpu": "200m", "memory": "400Mi"}}'
