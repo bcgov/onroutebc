@@ -93,3 +93,17 @@ jobs:
           target: ${{ needs.vars.outputs.pr }}
           tags: prod  #Promote images AFTER successful deploy
   
+  create-release:
+    name: Create release
+    runs-on: ubuntu-22.04
+    needs: [deploys-prod, vars]
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Create Release
+        run: |
+          gh release create "${{ needs.vars.outputs.pr }}" \
+          --repo=${{ github.repository }} \
+          --title="${{ github.repository }}-${{ needs.vars.outputs.pr }}" \
+          --generate-notes
+          
