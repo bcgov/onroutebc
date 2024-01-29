@@ -1,5 +1,6 @@
 ---
 global:
+  autoscaling: true
   license: "c28f0c"
   podAnnotations: |
     app.kubernetes.io/timestamp: {{now | toString }}
@@ -61,6 +62,37 @@ frontend:
         - name: config
           mountPath: "/usr/share/nginx/html/config.js"
           subPath: config.js
+  autoscaling:
+    #-- enable or disable autoscaling.
+    enabled: true
+    #-- the minimum number of replicas.
+    minReplicas: 3
+    #-- the maximum number of replicas.
+    maxReplicas: 7
+    #-- the target cpu utilization percentage, is from request cpu and NOT LIMIT CPU.
+    targetCPUUtilizationPercentage: 80
+    #-- the behavior for the autoscaling. it is optional and is an object.
+    behavior:
+      scaleDown:
+        stabilizationWindowSeconds: 300
+        policies:
+          - type: Percent
+            value: 10
+            periodSeconds: 60
+          - type: Pods
+            value: 2
+            periodSeconds: 60
+        selectPolicy: Min
+      scaleUp:
+        stabilizationWindowSeconds: 0
+        policies:
+          - type: Percent
+            value: 100
+            periodSeconds: 30
+          - type: Pods
+            value: 2
+            periodSeconds: 30
+        selectPolicy: Max
 
   ingress:
     annotations: 
@@ -152,6 +184,37 @@ vehicles:
         requests:
           cpu: 200m
           memory: 300Mi
+  autoscaling:
+    #-- enable or disable autoscaling.
+    enabled: true
+    #-- the minimum number of replicas.
+    minReplicas: 3
+    #-- the maximum number of replicas.
+    maxReplicas: 7
+    #-- the target cpu utilization percentage, is from request cpu and NOT LIMIT CPU.
+    targetCPUUtilizationPercentage: 80
+    #-- the behavior for the autoscaling. it is optional and is an object.
+    behavior:
+      scaleDown:
+        stabilizationWindowSeconds: 300
+        policies:
+          - type: Percent
+            value: 10
+            periodSeconds: 60
+          - type: Pods
+            value: 2
+            periodSeconds: 60
+        selectPolicy: Min
+      scaleUp:
+        stabilizationWindowSeconds: 0
+        policies:
+          - type: Percent
+            value: 100
+            periodSeconds: 30
+          - type: Pods
+            value: 2
+            periodSeconds: 30
+        selectPolicy: Max
   ingress:
     annotations: 
       route.openshift.io/termination: "edge"
@@ -253,6 +316,37 @@ dops:
         requests:
           cpu: 1000m
           memory: 2000Mi
+  autoscaling:
+    #-- enable or disable autoscaling.
+    enabled: true
+    #-- the minimum number of replicas.
+    minReplicas: 3
+    #-- the maximum number of replicas.
+    maxReplicas: 7
+    #-- the target cpu utilization percentage, is from request cpu and NOT LIMIT CPU.
+    targetCPUUtilizationPercentage: 80
+    #-- the behavior for the autoscaling. it is optional and is an object.
+    behavior:
+      scaleDown:
+        stabilizationWindowSeconds: 300
+        policies:
+          - type: Percent
+            value: 10
+            periodSeconds: 60
+          - type: Pods
+            value: 2
+            periodSeconds: 60
+        selectPolicy: Min
+      scaleUp:
+        stabilizationWindowSeconds: 0
+        policies:
+          - type: Percent
+            value: 100
+            periodSeconds: 30
+          - type: Pods
+            value: 2
+            periodSeconds: 30
+        selectPolicy: Max
   ingress:
     annotations: 
       route.openshift.io/termination: "edge"
@@ -344,6 +438,37 @@ tps-migration:
         requests:
           cpu: 25m
           memory: 50Mi
+  autoscaling:
+    #-- enable or disable autoscaling.
+    enabled: true
+    #-- the minimum number of replicas.
+    minReplicas: 3
+    #-- the maximum number of replicas.
+    maxReplicas: 7
+    #-- the target cpu utilization percentage, is from request cpu and NOT LIMIT CPU.
+    targetCPUUtilizationPercentage: 80
+    #-- the behavior for the autoscaling. it is optional and is an object.
+    behavior:
+      scaleDown:
+        stabilizationWindowSeconds: 300
+        policies:
+          - type: Percent
+            value: 10
+            periodSeconds: 60
+          - type: Pods
+            value: 2
+            periodSeconds: 60
+        selectPolicy: Min
+      scaleUp:
+        stabilizationWindowSeconds: 0
+        policies:
+          - type: Percent
+            value: 100
+            periodSeconds: 30
+          - type: Pods
+            value: 2
+            periodSeconds: 30
+        selectPolicy: Max
   ingress:
     annotations: 
       route.openshift.io/termination: "edge"
