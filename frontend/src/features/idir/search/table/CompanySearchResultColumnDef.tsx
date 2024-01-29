@@ -27,20 +27,44 @@ export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
   },
   {
     accessorKey: "clientNumber",
-    header: "onRouteBC Client Number",
+    header: "onRouteBC Client No.",
     enableSorting: true,
     sortingFn: "alphanumeric",
   },
   {
-    accessorKey: "mailingAddress",
+    accessorKey: "mailingAddress.addressLine1",
     header: "Company Address",
     enableSorting: true,
     sortingFn: "alphanumeric",
+    Cell: (props: { row: any }) => {
+      const mailingAddress = props.row?.original?.mailingAddress
+      const country = mailingAddress?.countryCode === 'CA' ? 'Canada' : mailingAddress?.countryCode
+
+      return (
+        <>
+          {mailingAddress?.addressLine1}<br />
+          {mailingAddress?.city}<br />
+          {mailingAddress?.provinceCode}<br />
+          {country} {mailingAddress?.postalCode}
+        </>
+      );
+    },
   },
   {
-    accessorKey: "primaryContact",
+    accessorKey: "primaryContact.firstName",
     header: "Primary Contact",
     enableSorting: true,
     sortingFn: "alphanumeric",
+    Cell: (props: { row: any }) => {
+      const contact = props.row?.original?.primaryContact
+
+      return (
+        <>
+          {contact?.firstName} {contact?.lastName}<br />
+          {contact?.email}<br />
+          {contact?.phone}
+        </>
+      );
+    },
   },
 ];
