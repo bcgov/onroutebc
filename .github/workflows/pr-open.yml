@@ -88,4 +88,4 @@ jobs:
       vault_role: nonprod
       vault_zone: dev
       params: |
-        --set-json {"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}
+        --set-json '{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}'

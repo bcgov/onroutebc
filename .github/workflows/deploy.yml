@@ -219,7 +219,8 @@ jobs:
             --timeout 10m --force \
             --values ${{ inputs.values }} \
             . \
-            ${{ inputs.params }} 
+            #${{ inputs.params }} 
+            --set-json '{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}'
 
 
           # print history 
