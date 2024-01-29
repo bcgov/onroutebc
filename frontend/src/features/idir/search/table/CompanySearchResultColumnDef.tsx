@@ -36,7 +36,7 @@ export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
     header: "Company Address",
     enableSorting: true,
     sortingFn: "alphanumeric",
-    Cell: (props: { cell: any; row: any }) => {
+    Cell: (props: { row: any }) => {
       const mailingAddress = props.row?.original?.mailingAddress
       const country = mailingAddress?.countryCode === 'CA' ? 'Canada' : mailingAddress?.countryCode
 
@@ -55,7 +55,7 @@ export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
     header: "Primary Contact",
     enableSorting: true,
     sortingFn: "alphanumeric",
-    Cell: (props: { cell: any; row: any }) => {
+    Cell: (props: { row: any }) => {
       const contact = props.row?.original?.primaryContact
 
       return (
