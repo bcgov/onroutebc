@@ -66,9 +66,9 @@ frontend:
     #-- enable or disable autoscaling.
     enabled: true
     #-- the minimum number of replicas.
-    minReplicas: 3
+    minReplicas: 2
     #-- the maximum number of replicas.
-    maxReplicas: 7
+    maxReplicas: 3
     #-- the target cpu utilization percentage, is from request cpu and NOT LIMIT CPU.
     targetCPUUtilizationPercentage: 80
     #-- the behavior for the autoscaling. it is optional and is an object.
@@ -188,9 +188,9 @@ vehicles:
     #-- enable or disable autoscaling.
     enabled: true
     #-- the minimum number of replicas.
-    minReplicas: 3
+    minReplicas: 2
     #-- the maximum number of replicas.
-    maxReplicas: 7
+    maxReplicas: 3
     #-- the target cpu utilization percentage, is from request cpu and NOT LIMIT CPU.
     targetCPUUtilizationPercentage: 80
     #-- the behavior for the autoscaling. it is optional and is an object.
@@ -320,9 +320,9 @@ dops:
     #-- enable or disable autoscaling.
     enabled: true
     #-- the minimum number of replicas.
-    minReplicas: 3
+    minReplicas: 2
     #-- the maximum number of replicas.
-    maxReplicas: 7
+    maxReplicas: 3
     #-- the target cpu utilization percentage, is from request cpu and NOT LIMIT CPU.
     targetCPUUtilizationPercentage: 80
     #-- the behavior for the autoscaling. it is optional and is an object.
@@ -442,9 +442,9 @@ tps-migration:
     #-- enable or disable autoscaling.
     enabled: true
     #-- the minimum number of replicas.
-    minReplicas: 3
+    minReplicas: 2
     #-- the maximum number of replicas.
-    maxReplicas: 7
+    maxReplicas: 3
     #-- the target cpu utilization percentage, is from request cpu and NOT LIMIT CPU.
     targetCPUUtilizationPercentage: 80
     #-- the behavior for the autoscaling. it is optional and is an object.
