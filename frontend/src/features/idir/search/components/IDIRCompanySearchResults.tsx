@@ -12,7 +12,7 @@ import {
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { Optional } from "../../../../common/types/common";
 import { USER_AUTH_GROUP } from "../../../../common/authentication/types";
-import { getDataBySearch } from "../api/idirSearch";
+import { getCompanyDataBySearch } from "../api/idirSearch";
 import { SearchFields } from "../types/types";
 import {
   defaultTableInitialStateOptions,
@@ -68,6 +68,7 @@ export const IDIRCompanySearchResults = memo(
       pageIndex: 0,
       pageSize: 10,
     });
+
     // TODO: if data is [] AND current_user is PPC_ADMIN then (eventually)
     //  display the UX to allow the creation of a new Company Profile
     const canCreateCompany = false;
@@ -81,7 +82,7 @@ export const IDIRCompanySearchResults = memo(
         pagination.pageSize,
       ],
       () =>
-        getDataBySearch(
+          getCompanyDataBySearch(
           {
             searchByFilter,
             searchEntity,

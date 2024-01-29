@@ -4,6 +4,7 @@ import {
   formatCellValuetoDatetime
 } from "../../../../common/helpers/tableHelper";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
+import CountriesAndStates from "../../../../common/constants/countries_and_states.json";
 
 /*
  *
@@ -27,20 +28,50 @@ export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
   },
   {
     accessorKey: "clientNumber",
-    header: "onRouteBC Client Number",
+    header: "onRouteBC Client No.",
     enableSorting: true,
     sortingFn: "alphanumeric",
   },
   {
-    accessorKey: "mailingAddress",
+    accessorKey: "mailingAddress.addressLine1",
     header: "Company Address",
     enableSorting: true,
     sortingFn: "alphanumeric",
+    Cell: (props: { row: any }) => {
+      const mailingAddress = props.row?.original?.mailingAddress
+      const country = CountriesAndStates.filter((country) => {
+        return country?.code === mailingAddress?.countryCode
+      })
+
+      const province = country[0]?.states?.filter((state) => {
+        return state?.code === mailingAddress?.provinceCode
+      })
+
+      return (
+        <>
+          {mailingAddress?.addressLine1}<br />
+          {country[0]?.name}<br />
+          {province[0]?.name}<br />
+          {mailingAddress?.city} {mailingAddress?.postalCode}
+        </>
+      );
+    },
   },
   {
-    accessorKey: "primaryContact",
+    accessorKey: "primaryContact.firstName",
     header: "Primary Contact",
     enableSorting: true,
     sortingFn: "alphanumeric",
+    Cell: (props: { row: any }) => {
+      const contact = props.row?.original?.primaryContact
+
+      return (
+        <>
+          {contact?.firstName} {contact?.lastName}<br />
+          {contact?.email}<br />
+          {contact?.phone}
+        </>
+      );
+    },
   },
 ];
