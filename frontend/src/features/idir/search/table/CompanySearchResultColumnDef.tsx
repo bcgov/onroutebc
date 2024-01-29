@@ -47,10 +47,6 @@ export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
         return state?.code === mailingAddress?.provinceCode
       })
 
-
-      console.log('country', country)
-      console.log('province', province)
-
       return (
         <>
           {mailingAddress?.addressLine1}<br />
