@@ -1,29 +1,6 @@
 import { MRT_ColumnDef } from "material-react-table";
-import {
-  dateTimeStringSortingFn,
-  formatCellValuetoDatetime,
-} from "../../../../common/helpers/tableHelper";
+import CountriesAndStates from "../../../../common/constants/countries_and_states.json";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
-import { Link } from "@mui/material";
-import { useContext } from "react";
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { useNavigate } from "react-router-dom";
-
-const useClickCompany = (selectedCompany: CompanyProfile) => {
-  console.log("selectedCompany::", selectedCompany);
-  const {
-    setCompanyId,
-    setCompanyLegalName,
-    setOnRouteBCClientNumber,
-  } = useContext(OnRouteBCContext);
-  // const navigate = useNavigate();
-  const { companyId, legalName, clientNumber } = selectedCompany;
-  setCompanyId?.(() => companyId);
-  setCompanyLegalName?.(() => legalName);
-  setOnRouteBCClientNumber?.(() => clientNumber);
-
-  // navigate('/applications');
-};
 
 /*
  *
@@ -33,25 +10,6 @@ const useClickCompany = (selectedCompany: CompanyProfile) => {
  *
  */
 export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
-  // {
-  //   accessorKey: "legalName",
-  //   header: "Company Name",
-  //   enableSorting: true,
-  //   sortingFn: "alphanumeric",
-  //   Cell: (props: { row: any; cell: any }) => {
-  //     return (
-  //       <>
-  //         <Link
-  //           component="button"
-  //           variant="body2"
-  //           onClick={() => useClickCompany(props.row.original)}
-  //         >
-  //           {props.row.original.legalName}
-  //         </Link>
-  //       </>
-  //     );
-  //   },
-  // },
   {
     accessorKey: "alternateName",
     header: "Doing Business As (DBA)",
@@ -60,20 +18,50 @@ export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
   },
   {
     accessorKey: "clientNumber",
-    header: "onRouteBC Client Number",
+    header: "onRouteBC Client No.",
     enableSorting: true,
     sortingFn: "alphanumeric",
   },
-  // {
-  //   accessorKey: "mailingAddress",
-  //   header: "Company Address",
-  //   enableSorting: true,
-  //   sortingFn: "alphanumeric",
-  // },
-  // {
-  //   accessorKey: "primaryContact",
-  //   header: "Primary Contact",
-  //   enableSorting: true,
-  //   sortingFn: "alphanumeric",
-  // },
+  {
+    accessorKey: "mailingAddress.addressLine1",
+    header: "Company Address",
+    enableSorting: true,
+    sortingFn: "alphanumeric",
+    Cell: (props: { row: any }) => {
+      const mailingAddress = props.row?.original?.mailingAddress
+      const country = CountriesAndStates.filter((country) => {
+        return country?.code === mailingAddress?.countryCode
+      })
+
+      const province = country[0]?.states?.filter((state) => {
+        return state?.code === mailingAddress?.provinceCode
+      })
+
+      return (
+        <>
+          {mailingAddress?.addressLine1}<br />
+          {country[0]?.name}<br />
+          {province[0]?.name}<br />
+          {mailingAddress?.city} {mailingAddress?.postalCode}
+        </>
+      );
+    },
+  },
+  {
+    accessorKey: "primaryContact.firstName",
+    header: "Primary Contact",
+    enableSorting: true,
+    sortingFn: "alphanumeric",
+    Cell: (props: { row: any }) => {
+      const contact = props.row?.original?.primaryContact
+
+      return (
+        <>
+          {contact?.firstName} {contact?.lastName}<br />
+          {contact?.email}<br />
+          {contact?.phone}
+        </>
+      );
+    },
+  },
 ];
