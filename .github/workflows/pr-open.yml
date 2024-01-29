@@ -89,4 +89,5 @@ jobs:
       vault_zone: dev
       params: |
         --set-json frontend.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
-        --set-json tps-migration.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}'
+        --set-json tps-migration.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
+        --set-json dops.containers[0].resources='{"limits": {"cpu": "2000m", "memory": "4000Mi"}, "requests": {"cpu": "1000m", "memory": "2000Mi"}}' 
