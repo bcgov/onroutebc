@@ -99,7 +99,7 @@ export const IDIRCompanySearchResults = memo(
         pagination.pageSize,
       ],
       () =>
-          getCompanyDataBySearch(
+        getCompanyDataBySearch(
           {
             searchByFilter,
             searchEntity,
@@ -129,7 +129,10 @@ export const IDIRCompanySearchResults = memo(
             return (
               <>
                 <Link
-                  component="button"
+                  component="a"
+                  sx={{
+                    cursor: "pointer",
+                  }}
                   variant="body2"
                   onClick={() => onClickCompany(props.row.original)}
                 >

@@ -12,7 +12,8 @@ import { IDIRUserAuthGroupType, UserRolesType } from "../types";
 import { DoesUserHaveAuthGroup, DoesUserHaveRole } from "../util";
 import { IDIRAuthWall } from "./IDIRAuthWall";
 
-const isIDIR = (identityProvider: string) => identityProvider === IDPS.IDIR;
+export const isIDIR = (identityProvider: string) =>
+  identityProvider === IDPS.IDIR;
 
 export const BCeIDAuthWall = ({
   requiredRole,
