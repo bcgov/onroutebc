@@ -96,20 +96,20 @@ export class CompanyController {
     type: ReadCompanyDto,
     isArray: true,
   })
-  @ApiQuery({ name: 'searchColumn', required: false })
-  @ApiQuery({ name: 'searchString', required: false })
+  @ApiQuery({ name: 'legalName', required: false })
+  @ApiQuery({ name: 'clientNumber', required: false })
   @Roles(Role.READ_ORG)
   @Get('paginated')
   async getCompanyPaginated(
     @Query() pageOptionsDto: PageOptionsDto,
-    @Query('searchColumn') searchColumn: string,
-    @Query('searchString') searchString: string,
+    @Query('legalName') legalName: string,
+    @Query('clientNumber') clientNumber: string,
   ): Promise<PaginationDto<ReadCompanyDto>> {
     const companies: PaginationDto<ReadCompanyDto> =
       await this.companyService.findCompanyPaginated(
         pageOptionsDto,
-        searchColumn,
-        searchString,
+        legalName?.trim(),
+        clientNumber?.trim(),
       );
 
     return companies;

@@ -27,7 +27,7 @@ export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
   },
   {
     accessorKey: "clientNumber",
-    header: "onRouteBC Client Number",
+    header: "onRouteBC Client No.",
     enableSorting: true,
     sortingFn: "alphanumeric",
   },
@@ -36,11 +36,36 @@ export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
     header: "Company Address",
     enableSorting: true,
     sortingFn: "alphanumeric",
+    Cell: (props: { cell: any; row: any }) => {
+      const mailingAddress = props.row?.original?.mailingAddress
+      //console.log('mailingAddress', mailingAddress)
+      const country = mailingAddress?.countryCode === 'CA' ? 'Canada' : mailingAddress?.countryCode
+
+      return (
+        <>
+          {mailingAddress?.addressLine1}<br />
+          {mailingAddress?.city}<br />
+          {mailingAddress?.provinceCode}<br />
+          {country} {mailingAddress?.postalCode}
+        </>
+      );
+    },
   },
   {
     accessorKey: "primaryContact.firstName",
     header: "Primary Contact",
     enableSorting: true,
     sortingFn: "alphanumeric",
+    Cell: (props: { cell: any; row: any }) => {
+      const contact = props.row?.original?.primaryContact
+
+      return (
+        <>
+          {contact?.firstName} {contact?.lastName}<br />
+          {contact?.email}<br />
+          {contact?.phone}
+        </>
+      );
+    },
   },
 ];

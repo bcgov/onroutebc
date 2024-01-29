@@ -299,8 +299,8 @@ export class CompanyService {
   @LogAsyncMethodExecution()
   async findCompanyPaginated(
     @Query() pageOptionsDto: PageOptionsDto,
-    @Query() searchColumn?: string,
-    @Query() searchString?: string,
+    @Query() legalName?: string,
+    @Query() clientNumber?: string,
   ): Promise<PaginationDto<ReadCompanyDto>> {
     let companiesQuery = this.companyRepository
       .createQueryBuilder('company')
@@ -312,15 +312,15 @@ export class CompanyService {
       // Apply conditions based on parameters
       companiesQuery = companiesQuery.where('company.companyId IS NOT NULL');
 
-      if (searchColumn?.toLowerCase() === 'companyname') {
+      if (legalName) {
         companiesQuery = companiesQuery.andWhere('company.legalName LIKE :legalName', {
-          legalName: `%${searchString}%`
+          legalName: `%${legalName}%`
         });
       }
 
-      if (searchColumn?.toLowerCase() === 'onroutebcclientnumber') {
+      if (clientNumber) {
         companiesQuery = companiesQuery.andWhere('company.clientNumber LIKE :clientNumber', {
-          clientNumber: `%${searchString}%`,
+          clientNumber: `%${clientNumber}%`,
         });
       }
 
