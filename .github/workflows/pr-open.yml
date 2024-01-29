@@ -87,3 +87,5 @@ jobs:
       triggers: '' #omit=always;
       vault_role: nonprod
       vault_zone: dev
+      params: |
+        --set-json frontend.containers[0].resources={limits={cpu=75m, memory=150Mi},requests={cpu=25m,memory=50Mi}} 
