@@ -38,7 +38,6 @@ export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
     sortingFn: "alphanumeric",
     Cell: (props: { cell: any; row: any }) => {
       const mailingAddress = props.row?.original?.mailingAddress
-      //console.log('mailingAddress', mailingAddress)
       const country = mailingAddress?.countryCode === 'CA' ? 'Canada' : mailingAddress?.countryCode
 
       return (
