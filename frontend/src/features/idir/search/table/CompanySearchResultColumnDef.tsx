@@ -4,6 +4,7 @@ import {
   formatCellValuetoDatetime
 } from "../../../../common/helpers/tableHelper";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
+import CountriesAndStates from "../../../../common/constants/countries_and_states.json";
 
 /*
  *
@@ -38,14 +39,20 @@ export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
     sortingFn: "alphanumeric",
     Cell: (props: { row: any }) => {
       const mailingAddress = props.row?.original?.mailingAddress
-      const country = mailingAddress?.countryCode === 'CA' ? 'Canada' : mailingAddress?.countryCode
+      const country = CountriesAndStates.filter((country) => {
+        return country?.code === mailingAddress?.countryCode
+      })
+
+      const province = country[0]?.states?.filter((state) => {
+        return state?.code === mailingAddress?.provinceCode
+      })
 
       return (
         <>
           {mailingAddress?.addressLine1}<br />
-          {mailingAddress?.city}<br />
-          {mailingAddress?.provinceCode}<br />
-          {country} {mailingAddress?.postalCode}
+          {country[0]?.name}<br />
+          {province[0]?.name}<br />
+          {mailingAddress?.city} {mailingAddress?.postalCode}
         </>
       );
     },
