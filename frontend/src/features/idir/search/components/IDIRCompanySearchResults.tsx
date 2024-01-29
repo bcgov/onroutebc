@@ -22,6 +22,8 @@ import {
 import "./IDIRCompanySearchResults.scss";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import { CompanySearchResultColumnDef } from "../table/CompanySearchResultColumnDef";
+import { Link } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 /**
  * Function to decide whether to show row actions icon or not.
@@ -61,7 +63,22 @@ export const IDIRCompanySearchResults = memo(
       searchByFilter,
       searchEntity,
     } = searchParams;
-    const { idirUserDetails } = useContext(OnRouteBCContext);
+    const { setCompanyId, setCompanyLegalName, setOnRouteBCClientNumber } =
+      useContext(OnRouteBCContext);
+
+    const navigate = useNavigate();
+
+    const onClickCompany = (selectedCompany: CompanyProfile) => {
+      console.log("selectedCompany::", selectedCompany);
+      // const navigate = useNavigate();
+      const { companyId, legalName, clientNumber } = selectedCompany;
+      setCompanyId?.(() => companyId);
+      setCompanyLegalName?.(() => legalName);
+      setOnRouteBCClientNumber?.(() => clientNumber);
+      sessionStorage.setItem("onRouteBC.user.companyId", companyId.toString());
+
+      navigate("/applications");
+    };
     const [isActiveRecordsOnly, setIsActiveRecordsOnly] =
       useState<boolean>(false);
     const [pagination, setPagination] = useState<MRT_PaginationState>({
@@ -101,7 +118,28 @@ export const IDIRCompanySearchResults = memo(
 
     // Column definitions for the table
     const columns = useMemo<MRT_ColumnDef<CompanyProfile>[]>(
-      () => CompanySearchResultColumnDef,
+      () => [
+        {
+          accessorKey: "legalName",
+          header: "Company Name",
+          enableSorting: true,
+          sortingFn: "alphanumeric",
+          Cell: (props: { row: any; cell: any }) => {
+            return (
+              <>
+                <Link
+                  component="button"
+                  variant="body2"
+                  onClick={() => onClickCompany(props.row.original)}
+                >
+                  {props.row.original.legalName}
+                </Link>
+              </>
+            );
+          },
+        },
+        ...CompanySearchResultColumnDef,
+      ],
       [],
     );
 

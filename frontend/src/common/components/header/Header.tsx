@@ -108,12 +108,11 @@ export const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const { isAuthenticated, user } = useAuth();
-  const { userDetails } = useContext(OnRouteBCContext);
+  const { companyId } = useContext(OnRouteBCContext);
   const username = getLoginUsernameFromSession();
   const isIdir = user?.profile?.identity_provider === IDPS.IDIR;
 
-  const shouldDisplayNavBar =
-    !isIdir && Boolean(Object.keys(userDetails ?? {}).length);
+  const shouldDisplayNavBar = Boolean(companyId);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);

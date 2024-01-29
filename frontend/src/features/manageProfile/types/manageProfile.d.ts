@@ -2,6 +2,7 @@ import {
   ClientInformation,
   MigratedClient,
 } from "../../../common/authentication/types";
+import { Nullable } from "../../../common/types/common";
 
 interface Address {
   addressLine1: string;
@@ -37,6 +38,8 @@ export interface CompanyProfile {
   extension?: string;
   fax?: string;
   primaryContact: Contact;
+  migratedClientHash: Nullable<string>;
+  alternateName: Nullable<string>;
 }
 
 export interface UserInformation extends Contact {
