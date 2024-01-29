@@ -45,6 +45,7 @@ jobs:
       vault_role: nonprod
       vault_zone: test
 
+
   promote-images-test:
     name: Promote Images - Test
     needs: [deploys-test, vars]
