@@ -211,7 +211,6 @@ jobs:
             --values ${{ inputs.values }} \
             ${{ inputs.params }} .
 
-
           # print history 
           helm history ${{ env.repo_release }}
           
