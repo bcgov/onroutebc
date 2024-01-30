@@ -79,7 +79,7 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
-      autoscaling: true
+      autoscaling: false
       repository: ${{ github.event.repository.name }}
       environment: dev
       release: ${{ needs.vars.outputs.pr }}
