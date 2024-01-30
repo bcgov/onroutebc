@@ -39,11 +39,13 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
+      autoscaling: false
       environment: test
       release: test
       tag: ${{ needs.vars.outputs.pr }}
       vault_role: nonprod
       vault_zone: test
+
 
   promote-images-test:
     name: Promote Images - Test
@@ -69,6 +71,7 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
+      autoscaling: true
       environment: prod
       tag: ${{ needs.vars.outputs.pr }}
       release: prod
@@ -93,3 +96,17 @@ jobs:
           target: ${{ needs.vars.outputs.pr }}
           tags: prod  #Promote images AFTER successful deploy
   
+  create-release:
+    name: Create release
+    runs-on: ubuntu-22.04
+    needs: [deploys-prod, vars]
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Create Release
+        run: |
+          gh release create "${{ needs.vars.outputs.pr }}" \
+          --repo=${{ github.repository }} \
+          --title="${{ github.repository }}-${{ needs.vars.outputs.pr }}" \
+          --generate-notes
+          

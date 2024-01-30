@@ -1,14 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "react-oidc-context";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 
+import { BCeIDAuthGroup } from "../types/userManagement";
+import { IDPS } from "../../../common/types/idp";
+import { Nullable } from "../../../common/types/common";
 import {
   FIVE_MINUTES,
   FOUR_MINUTES,
 } from "../../../common/constants/constants";
-import { BCeIDAuthGroup } from "../types/userManagement";
-import { IDPS } from "../../../common/types/idp";
-import { RequiredOrNull } from "../../../common/types/common";
+
 import {
   getCompanyInfo,
   getCompanyInfoById,
@@ -58,11 +59,30 @@ export const useCompanyInfoDetailsQuery = (companyId: number) => {
 };
 
 /**
- * Hook to set up the user context after fetching the data from user-context api.
+ * Hook to query the data from the user-context api.
  * @param enabled boolean indicating if the query is enabled. Defaults to true.
  * @returns UseQueryResult containing the query results.
  */
-export const useUserContext = (enabled = true) => {
+export const useUserContextQuery = (enabled = true) => {
+  return useQuery({
+    queryKey: ["userContext"],
+    queryFn: getUserContext,
+    gcTime: 500,
+    refetchOnMount: "always",
+    staleTime: FOUR_MINUTES,
+    enabled,
+    retry: 1, // Retry once on failure
+  });
+};
+
+/**
+ * Hook to set up the user context after fetching the data from user-context api.
+ * @param userContextResponseBody Response data fetched from the user-context api, either bceid or idir user context data.
+ * @returns UseQueryResult containing the query results.
+ */
+export const useUserContext = (
+  userContextResponseBody: Nullable<BCeIDUserContextType | IDIRUserContextType>,
+) => {
   const {
     setCompanyId,
     setUserDetails,
@@ -72,127 +92,146 @@ export const useUserContext = (enabled = true) => {
     setMigratedClient,
     setIsNewBCeIDUser,
   } = useContext(OnRouteBCContext);
-  const { isAuthenticated, user: userFromToken } = useAuth();
-  return useQuery({
-    queryKey: ["userContext"],
-    queryFn: getUserContext,
-    cacheTime: 500,
-    refetchOnMount: "always",
-    staleTime: FOUR_MINUTES,
-    enabled,
-    onSuccess: (
-      userContextResponseBody: BCeIDUserContextType | IDIRUserContextType,
-    ) => {
-      if (
-        isAuthenticated &&
-        userFromToken?.profile?.identity_provider === IDPS.IDIR
-      ) {
-        const { user } = userContextResponseBody as IDIRUserContextType;
-        if (user?.userGUID) {
-          const userDetails = {
-            firstName: user.firstName,
-            lastName: user.lastName,
-            userName: user.userName,
-            email: user.email,
-            userAuthGroup: user.userAuthGroup,
-          } as IDIRUserDetailContext;
-          setIDIRUserDetails?.(() => userDetails);
-        }
-      } else {
-        const { user, associatedCompanies, pendingCompanies, migratedClient } =
-          userContextResponseBody as BCeIDUserContextType;
-        /**
-         * User exists => the user is already in the system.
-         */
-        if (user?.userGUID) {
-          const companyId = associatedCompanies[0].companyId;
-          const legalName = associatedCompanies[0].legalName;
-          const clientNumber = associatedCompanies[0].clientNumber;
-          setCompanyId?.(() => companyId);
-          setCompanyLegalName?.(() => legalName);
-          setOnRouteBCClientNumber?.(() => clientNumber);
-          const userDetails = {
-            firstName: user.firstName,
-            lastName: user.lastName,
-            userName: user.userName,
-            phone1: user.phone1,
-            phone1Extension: user.phone1Extension,
-            phone2: user.phone2,
-            phone2Extension: user.phone2Extension,
-            email: user.email,
-            fax: user.fax,
-            userAuthGroup: user.userAuthGroup as BCeIDAuthGroup,
-          } as BCeIDUserDetailContext;
-          setUserDetails?.(() => userDetails);
 
-          // Setting the companyId to sessionStorage so that it can be
-          // used outside of react components.
-          sessionStorage.setItem(
-            "onRouteBC.user.companyId",
-            companyId.toString(),
-          );
-        }
-        /**
-         * The user has been added to a company.
-         */
-        if (pendingCompanies.length > 0) {
-          const { companyId, legalName } = pendingCompanies[0];
-          setCompanyId?.(() => companyId);
-          setCompanyLegalName?.(() => legalName);
-          sessionStorage.setItem(
-            "onRouteBC.user.companyId",
-            companyId.toString(),
-          );
-        }
-        /**
-         * The user has been migrated.
-         */
-        if (migratedClient?.clientNumber) {
-          setMigratedClient?.(() => migratedClient);
-        }
-        /**
-         * If there is no company in the system (to prevent unauthorized logins)
-         * we can affirmatively say that the logged in user is a new user.
-         */
-        if (associatedCompanies.length === 0) {
-          setIsNewBCeIDUser?.(() => true);
-        }
+  const { isAuthenticated, user: userFromToken } = useAuth();
+
+  useEffect(() => {
+    if (!userContextResponseBody) return;
+
+    const isIdir = isAuthenticated &&
+      userFromToken?.profile?.identity_provider === IDPS.IDIR;
+
+    if (isIdir) {
+      const { user } = userContextResponseBody as IDIRUserContextType;
+      if (user?.userGUID) {
+        const userDetails = {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          userName: user.userName,
+          email: user.email,
+          userAuthGroup: user.userAuthGroup,
+        } as IDIRUserDetailContext;
+        setIDIRUserDetails?.(() => userDetails);
       }
-    },
-    retry: 1, // Retry once on failure
-  });
+    } else {
+      const { user, associatedCompanies, pendingCompanies, migratedClient } =
+        userContextResponseBody as BCeIDUserContextType;
+      /**
+       * User exists => the user is already in the system.
+       */
+      if (user?.userGUID) {
+        const companyId = associatedCompanies[0].companyId;
+        const legalName = associatedCompanies[0].legalName;
+        const clientNumber = associatedCompanies[0].clientNumber;
+        setCompanyId?.(() => companyId);
+        setCompanyLegalName?.(() => legalName);
+        setOnRouteBCClientNumber?.(() => clientNumber);
+        const userDetails = {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          userName: user.userName,
+          phone1: user.phone1,
+          phone1Extension: user.phone1Extension,
+          phone2: user.phone2,
+          phone2Extension: user.phone2Extension,
+          email: user.email,
+          fax: user.fax,
+          userAuthGroup: user.userAuthGroup as BCeIDAuthGroup,
+        } as BCeIDUserDetailContext;
+        setUserDetails?.(() => userDetails);
+  
+        // Setting the companyId to sessionStorage so that it can be
+        // used outside of react components.
+        sessionStorage.setItem(
+          "onRouteBC.user.companyId",
+          companyId.toString(),
+        );
+      }
+      /**
+       * The user has been added to a company.
+       */
+      if (pendingCompanies.length > 0) {
+        const { companyId, legalName } = pendingCompanies[0];
+        setCompanyId?.(() => companyId);
+        setCompanyLegalName?.(() => legalName);
+        sessionStorage.setItem(
+          "onRouteBC.user.companyId",
+          companyId.toString(),
+        );
+      }
+      /**
+       * The user has been migrated.
+       */
+      if (migratedClient?.clientNumber) {
+        setMigratedClient?.(() => migratedClient);
+      }
+      /**
+       * If there is no company in the system (to prevent unauthorized logins)
+       * we can affirmatively say that the logged in user is a new user.
+       */
+      if (associatedCompanies.length === 0) {
+        setIsNewBCeIDUser?.(() => true);
+      }
+    }
+  }, [userContextResponseBody, isAuthenticated, userFromToken]);
 };
 
 /**
- * Hook to set up the user roles after fetching the data from user-context api.
+ * Hook to fetching the user roles data from the api.
  * @returns UseQueryResult containing the query results.
  */
-export const useUserRolesByCompanyId = () => {
-  const { setUserRoles } = useContext(OnRouteBCContext);
+export const useUserRolesByCompanyIdQuery = () => {
   return useQuery({
     queryKey: ["userRoles"],
     refetchInterval: FIVE_MINUTES,
     queryFn: getUserRolesByCompanyId,
-    onSuccess: (userRolesResponseBody: UserRolesType[]) => {
-      setUserRoles?.(() => userRolesResponseBody);
-    },
     retry: 1, // Retry once on failure
   });
 };
 
 /**
- * Hook to set up the user roles after fetching the data from user-context api.
+ * Hook to set up the user roles after fetching the data from the api.
+ * @param userRolesResponseBody Response data for the user roles fetched.
  * @returns UseQueryResult containing the query results.
  */
-export const useIDIRUserRoles = () => {
+export const useUserRolesByCompanyId = (
+  userRolesResponseBody: Nullable<UserRolesType[]>,
+) => {
   const { setUserRoles } = useContext(OnRouteBCContext);
+
+  useEffect(() => {
+    if (userRolesResponseBody) {
+      setUserRoles?.(() => userRolesResponseBody);
+    }
+  }, [userRolesResponseBody]);
+};
+
+/**
+ * Hook to fetching the IDIR user roles data from the api.
+ * @returns UseQueryResult containing the query results.
+ */
+export const useIDIRUserRolesQuery = () => {
   return useQuery({
     queryKey: ["userIDIRRoles"],
     refetchInterval: FIVE_MINUTES,
     queryFn: getIDIRUserRoles,
-    onSuccess: (userRoles: RequiredOrNull<UserRolesType[]>) => {
-      setUserRoles?.(() => userRoles);
-    },
     retry: 1, // Retry once on failure
   });
+};
+
+/**
+ * Hook to set up the IDIR user roles after fetching the data from the api.
+ * @param userRoles User roles data response from the api.
+ * @returns UseQueryResult containing the query results.
+ */
+export const useIDIRUserRoles = (
+  userRoles: Nullable<UserRolesType[]>,
+) => {
+  const { setUserRoles } = useContext(OnRouteBCContext);
+
+  useEffect(() => {
+    if (userRoles) {
+      setUserRoles?.(() => userRoles);
+    }
+  }, [userRoles]);
 };

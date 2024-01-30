@@ -5,15 +5,19 @@ import { useNavigate } from "react-router-dom";
 
 import { BCeIDUserContextType, IDIRUserContextType } from "./types";
 import { Loading } from "../pages/Loading";
-import { useUserContext } from "../../features/manageProfile/apiManager/hooks";
 import { IDPS } from "../types/idp";
+import { Optional } from "../types/common";
 import {
   APPLICATIONS_ROUTES,
   CREATE_PROFILE_WIZARD_ROUTES,
   ERROR_ROUTES,
   IDIR_ROUTES,
 } from "../../routes/constants";
-import { Optional } from "../types/common";
+
+import {
+  useUserContext,
+  useUserContextQuery,
+} from "../../features/manageProfile/apiManager/hooks";
 
 const navigateBCeID = (
   userContextData: BCeIDUserContextType,
@@ -69,17 +73,20 @@ export const LoginRedirect = () => {
   const navigate = useNavigate();
   const { isAuthenticated, user: userFromToken } = useAuth();
 
-  const { isLoading, isError } = useUserContext();
+  const { isPending, isError, data: userContextResponse } = useUserContextQuery();
   const queryClient = useQueryClient();
+
+  useUserContext(userContextResponse);
 
   /**
    * Hook to determine where to navigate to.
    */
   useEffect(() => {
     if (isError) {
-      navigate(ERROR_ROUTES.UNEXPECTED);
+      return navigate(ERROR_ROUTES.UNEXPECTED);
     }
-    if (isAuthenticated && !isLoading) {
+
+    if (isAuthenticated && !isPending) {
       if (userFromToken?.profile?.identity_provider === IDPS.IDIR) {
         const userContextData: Optional<IDIRUserContextType> =
           queryClient.getQueryData<IDIRUserContextType>(["userContext"]);
@@ -95,9 +102,9 @@ export const LoginRedirect = () => {
         navigate(to ?? ERROR_ROUTES.UNEXPECTED);
       }
     }
-  }, [isLoading]);
+  }, [isPending, isError, isAuthenticated, userFromToken]);
 
-  if (isLoading) {
+  if (isPending) {
     return <Loading />;
   }
 

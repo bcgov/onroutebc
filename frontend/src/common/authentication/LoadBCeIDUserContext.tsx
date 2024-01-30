@@ -1,7 +1,11 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import { useUserContext } from "../../features/manageProfile/apiManager/hooks";
+
 import { ERROR_ROUTES } from "../../routes/constants";
+import {
+  useUserContext,
+  useUserContextQuery,
+} from "../../features/manageProfile/apiManager/hooks";
 
 /*
  * A simple component that merely calls a react query hook.
@@ -13,14 +17,18 @@ import { ERROR_ROUTES } from "../../routes/constants";
  * from any protected route.
  */
 export const LoadBCeIDUserContext = () => {
-  const { isLoading, isError } = useUserContext();
   const navigate = useNavigate();
+  const { isPending, isError, data: userContextResponse } = useUserContextQuery();
+
   useEffect(() => {
-    if (!isLoading) {
+    if (!isPending) {
       if (isError) {
         navigate(ERROR_ROUTES.UNAUTHORIZED);
       }
     }
-  }, [isLoading]);
+  }, [isPending, isError]);
+
+  useUserContext(userContextResponse);
+  
   return null;
 };
