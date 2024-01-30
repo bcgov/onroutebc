@@ -1,20 +1,19 @@
+import { faPencil } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Box, Button, Typography } from "@mui/material";
 import { memo } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPencil } from "@fortawesome/free-solid-svg-icons";
 
-import "./DisplayCompanyInfo.scss";
+import { getCompanyEmailFromSession } from "../../../common/apiManager/httpRequestHandler";
+import { ROLES } from "../../../common/authentication/types";
+import { DoesUserHaveRoleWithContext } from "../../../common/authentication/util";
 import { formatPhoneNumber } from "../../../common/components/form/subFormComponents/PhoneNumberInput";
 import {
   formatCountry,
   formatProvince,
 } from "../../../common/helpers/formatCountryProvince";
-import { CompanyProfile } from "../types/manageProfile";
-import { DoesUserHaveRoleWithContext } from "../../../common/authentication/util";
-import { ROLES } from "../../../common/authentication/types";
-import { getCompanyEmailFromSession } from "../../../common/apiManager/httpRequestHandler";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
-import { isIDIR } from "../../../common/authentication/auth-walls/BCeIDAuthWall";
+import { CompanyProfile } from "../types/manageProfile";
+import "./DisplayCompanyInfo.scss";
 // Disable any eslint for references to countries_and_states.json
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

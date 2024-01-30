@@ -9,7 +9,7 @@ import { LoadBCeIDUserContext } from "../LoadBCeIDUserContext";
 import { LoadBCeIDUserRolesByCompany } from "../LoadBCeIDUserRolesByCompany";
 import OnRouteBCContext from "../OnRouteBCContext";
 import { IDIRUserAuthGroupType, UserRolesType } from "../types";
-import { DoesUserHaveAuthGroup, DoesUserHaveRole } from "../util";
+import { DoesUserHaveRole } from "../util";
 import { IDIRAuthWall } from "./IDIRAuthWall";
 
 export const isIDIR = (identityProvider: string) =>
@@ -33,7 +33,7 @@ export const BCeIDAuthWall = ({
     user: userFromToken,
   } = useAuth();
 
-  const { userRoles, companyId, isNewBCeIDUser, idirUserDetails } =
+  const { userRoles, companyId, isNewBCeIDUser } =
     useContext(OnRouteBCContext);
 
   const userIDP = userFromToken?.profile?.identity_provider as string;

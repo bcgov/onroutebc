@@ -59,8 +59,6 @@ export const IDIRCompanySearchResults = memo(
 
       navigate("/applications");
     };
-    const [isActiveRecordsOnly, setIsActiveRecordsOnly] =
-      useState<boolean>(false);
     const [pagination, setPagination] = useState<MRT_PaginationState>({
       pageIndex: 0,
       pageSize: 10,
