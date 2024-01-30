@@ -53,11 +53,11 @@ export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
 
       return (
         <>
-          {addressLine1 ? addressLine1 : null} {addressLine1 && <br />}
-          {addressLine2 ? addressLine2 : null} {addressLine2 && <br />}
-          {countryName ? countryName : null} {countryName && <br />}
-          {provinceName ? provinceName : null} {provinceName && <br />}
-          {cityName ? cityName : null} {postalCodeName ? postalCodeName : null}
+          {addressLine1} {addressLine1 && <br />}
+          {addressLine2} {addressLine2 && <br />}
+          {countryName} {countryName && <br />}
+          {provinceName} {provinceName && <br />}
+          {cityName} {postalCodeName}
         </>
       );
     },
@@ -70,11 +70,16 @@ export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
     Cell: (props: { row: any }) => {
       const contact = props.row?.original?.primaryContact
 
+      const firstName = getDefaultRequiredVal(null, contact?.firstName);
+      const lastName = getDefaultRequiredVal(null, contact?.lastName);
+      const email = getDefaultRequiredVal(null, contact?.email);
+      const phone = getDefaultRequiredVal(null, contact?.phone1);
+
       return (
         <>
-          {contact?.firstName} {contact?.lastName}<br />
-          {contact?.email}<br />
-          {contact?.phone}
+          {firstName} {lastName} {firstName && <br />}
+          {email} {email && <br />}
+          {phone}
         </>
       );
     },
