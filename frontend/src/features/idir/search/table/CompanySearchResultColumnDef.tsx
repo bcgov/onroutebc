@@ -1,8 +1,4 @@
 import { MRT_ColumnDef } from "material-react-table";
-import {
-  dateTimeStringSortingFn,
-  formatCellValuetoDatetime
-} from "../../../../common/helpers/tableHelper";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import CountriesAndStates from "../../../../common/constants/countries_and_states.json";
 
@@ -51,7 +47,7 @@ export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
         <>
           {mailingAddress?.addressLine1}<br />
           {country[0]?.name}<br />
-          {province[0]?.name}<br />
+          {province && province[0]?.name}<br />
           {mailingAddress?.city} {mailingAddress?.postalCode}
         </>
       );
