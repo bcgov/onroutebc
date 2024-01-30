@@ -53,10 +53,10 @@ export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
 
       return (
         <>
-          {addressLine1} {addressLine1 && <br />}
-          {addressLine2} {addressLine2 && <br />}
-          {countryName} {countryName && <br />}
-          {provinceName} {provinceName && <br />}
+          {addressLine1 ? addressLine1 : null} {addressLine1 && <br />}
+          {addressLine2 ? addressLine2 : null} {addressLine2 && <br />}
+          {countryName ? countryName : null} {countryName && <br />}
+          {provinceName ? provinceName : null} {provinceName && <br />}
           {cityName ? cityName : null} {postalCodeName ? postalCodeName : null}
         </>
       );
