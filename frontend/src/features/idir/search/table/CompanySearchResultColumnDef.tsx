@@ -1,6 +1,7 @@
 import { MRT_ColumnDef } from "material-react-table";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import CountriesAndStates from "../../../../common/constants/countries_and_states.json";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 /*
  *
@@ -43,12 +44,20 @@ export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
         return state?.code === mailingAddress?.provinceCode
       })
 
+      const addressLine1 = getDefaultRequiredVal(null, mailingAddress?.addressLine1);
+      const addressLine2 = getDefaultRequiredVal(null, mailingAddress?.addressLine2);
+      const countryName = getDefaultRequiredVal(null, country[0]?.name);
+      const provinceName = getDefaultRequiredVal(null, province[0]?.name);
+      const cityName = getDefaultRequiredVal(null, mailingAddress?.city);
+      const postalCodeName = getDefaultRequiredVal(null, mailingAddress?.postalCode);
+
       return (
         <>
-          {mailingAddress?.addressLine1}<br />
-          {country[0]?.name}<br />
-          {province && province[0]?.name}<br />
-          {mailingAddress?.city} {mailingAddress?.postalCode}
+          {addressLine1} {addressLine1 && <br />}
+          {addressLine2} {addressLine2 && <br />}
+          {countryName} {countryName && <br />}
+          {provinceName} {provinceName && <br />}
+          {cityName ? cityName : null} {postalCodeName ? postalCodeName : null}
         </>
       );
     },
