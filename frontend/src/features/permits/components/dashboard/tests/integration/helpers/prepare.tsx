@@ -1,7 +1,7 @@
 import { ThemeProvider } from "@mui/material/styles";
 import userEvent from "@testing-library/user-event";
 import { setupServer } from "msw/node";
-import { rest } from "msw";
+import { http, HttpResponse } from "msw";
 
 import { renderWithClient } from "../../../../../../../common/helpers/testHelper";
 import { bcGovTheme } from "../../../../../../../themes/bcGovTheme";
@@ -15,6 +15,8 @@ import { getDefaultUserDetails } from "../fixtures/getUserDetails";
 import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
 import { APPLICATION_STEPS } from "../../../../../../../routes/constants";
 import { Nullable, Optional } from "../../../../../../../common/types/common";
+import { PowerUnit, Trailer } from "../../../../../../manageVehicles/types/Vehicle";
+import { ApplicationRequestData } from "../../../../../types/application";
 import {
   dayjsToUtcStr,
   now,
@@ -43,6 +45,7 @@ import {
   getDefaultPowerUnitSubTypes,
   getDefaultTrailerSubTypes,
   updatePowerUnit,
+  updateTrailer,
 } from "../fixtures/getVehicleInfo";
 
 // Use some default user details values to give to the OnRouteBCContext context provider
@@ -55,159 +58,167 @@ export const companyInfo = getDefaultCompanyInfo();
 // Mock API endpoints
 const server = setupServer(
   // Mock creating/saving application
-  rest.post(APPLICATIONS_API_ROUTES.CREATE, async (req, res, ctx) => {
-    const reqBody = await req.json();
+  http.post(APPLICATIONS_API_ROUTES.CREATE, async ({ request }) => {
+    const reqBody = await request.json();
+    const application = reqBody?.valueOf();
+    if (!application) {
+      return HttpResponse.json(null, { status: 400 });
+    }
     const applicationData = {
-      ...reqBody,
+      ...application as ApplicationRequestData,
       applicationNumber: newApplicationNumber,
       permitId: newPermitId,
       createdDateTime: currDtUtcStr,
       updatedDateTime: currDtUtcStr,
     };
     const createdApplication = createApplication(applicationData); // add to mock application store
-    return res(
-      ctx.status(201),
-      ctx.json({
-        ...createdApplication,
-      }),
-    );
+    return HttpResponse.json({
+      ...createdApplication,
+    }, { status: 201 });
   }),
+
   // Mock updating/saving application
-  rest.put(`${APPLICATIONS_API_ROUTES.UPDATE}/:id`, async (req, res, ctx) => {
-    const id = String(req.params.id);
-    const reqBody = await req.json();
+  http.put(`${APPLICATIONS_API_ROUTES.UPDATE}/:id`, async ({ request, params }) => {
+    const { id } = params;
+    const reqBody = await request.json();
+    const application = reqBody?.valueOf();
+    if (!application) {
+      return HttpResponse.json(null, { status: 400 });
+    }
+
     const applicationData = {
-      ...reqBody,
+      ...application as ApplicationRequestData,
       updatedDateTime: currDtUtcStr,
     };
-    const updatedApplication = updateApplication(applicationData, id); // update application in mock application store
+    const updatedApplication = updateApplication(applicationData, String(id)); // update application in mock application store
 
     if (!updatedApplication) {
-      return res(
-        ctx.status(404),
-        ctx.json({
-          message: "Application not found",
-        }),
-      );
+      return HttpResponse.json(null, { status: 404 });
     }
-    return res(
-      ctx.json({
-        ...updatedApplication,
-      }),
-    );
+    return HttpResponse.json({
+      ...updatedApplication,
+    });
   }),
+
   // Mock getting application
-  rest.get(`${APPLICATIONS_API_ROUTES.GET}/:permitId`, (_, res, ctx) => {
-    return res(
-      ctx.json({
-        // get application from mock application store (there's only 1 application or empty), since we're testing save/create/edit behaviour
-        data: getApplication(),
-      }),
-    );
+  http.get(`${APPLICATIONS_API_ROUTES.GET}/:permitId`, () => {
+    return HttpResponse.json({
+      // get application from mock application store (there's only 1 application or empty), since we're testing save/create/edit behaviour
+      data: getApplication(),
+    });
   }),
+
   // Mock getting power unit types
-  rest.get(VEHICLES_API.POWER_UNIT_TYPES, async (_, res, ctx) => {
-    return res(
-      ctx.json([
-        ...getDefaultPowerUnitSubTypes(), // get power unit types from mock vehicle store
-      ]),
-    );
+  http.get(VEHICLES_API.POWER_UNIT_TYPES, () => {
+    return HttpResponse.json([
+      ...getDefaultPowerUnitSubTypes(), // get power unit types from mock vehicle store
+    ]);
   }),
+
   // Mock getting trailer types
-  rest.get(VEHICLES_API.TRAILER_TYPES, async (_, res, ctx) => {
-    return res(
-      ctx.json([
-        ...getDefaultTrailerSubTypes(), // get trailer types from mock vehicle store
-      ]),
-    );
+  http.get(VEHICLES_API.TRAILER_TYPES, () => {
+    return HttpResponse.json([
+      ...getDefaultTrailerSubTypes(), // get trailer types from mock vehicle store
+    ]);
   }),
+
   // Mock getting power unit vehicles
-  rest.get(
+  http.get(
     `${VEHICLES_URL}/companies/:companyId/vehicles/powerUnits`,
-    async (_, res, ctx) => {
-      return res(
-        ctx.json([
-          ...getAllPowerUnits(), // get power unit vehicles from mock vehicle store
-        ]),
-      );
+    () => {
+      return HttpResponse.json([
+        ...getAllPowerUnits(), // get power unit vehicles from mock vehicle store
+      ]);
     },
   ),
+
   // Mock getting trailer vehicles
-  rest.get(
+  http.get(
     `${VEHICLES_URL}/companies/:companyId/vehicles/trailers`,
-    async (_, res, ctx) => {
-      return res(
-        ctx.json([
-          ...getAllTrailers(), // get trailer vehicles from mock vehicle store
-        ]),
-      );
+    () => {
+      return HttpResponse.json([
+        ...getAllTrailers(), // get trailer vehicles from mock vehicle store
+      ]);
     },
   ),
+
   // Mock getting company details
-  rest.get(
+  http.get(
     `${MANAGE_PROFILE_API.COMPANIES}/:companyId`,
-    async (_, res, ctx) => {
-      return res(
-        ctx.json({
-          ...companyInfo,
-        }),
-      );
+    () => {
+      return HttpResponse.json({
+        ...companyInfo,
+      });
     },
   ),
+
   // Mock creating power unit vehicle
-  rest.post(
+  http.post(
     `${VEHICLES_URL}/companies/:companyId/vehicles/powerUnits`,
-    async (req, res, ctx) => {
-      const reqBody = await req.json();
-      const newPowerUnit = createPowerUnit(reqBody); // create power unit vehicle in mock vehicle store
-      return res(
-        ctx.status(201),
-        ctx.json({
-          ...newPowerUnit,
-        }),
-      );
+    async ({ request }) => {
+      const reqBody = await request.json();
+      const powerUnit = reqBody?.valueOf();
+      if (!powerUnit) {
+        return HttpResponse.json(null, { status: 400 });
+      }
+
+      const newPowerUnit = createPowerUnit(powerUnit as PowerUnit); // create power unit vehicle in mock vehicle store
+      return HttpResponse.json({
+        ...newPowerUnit,
+      }, { status: 201 });
     },
   ),
+
   // Mock updating power unit vehicle
-  rest.put(
+  http.put(
     `${VEHICLES_URL}/companies/:companyId/vehicles/powerUnits/:powerUnitId`,
-    async (req, res, ctx) => {
-      const id = String(req.params.powerUnitId);
-      const reqBody = await req.json();
-      const updatedPowerUnit = updatePowerUnit(id, reqBody); // update power unit vehicle in mock vehicle store
-      return res(
-        ctx.json({
-          ...updatedPowerUnit,
-        }),
-      );
+    async ({ request, params }) => {
+      const id = String(params.powerUnitId);
+      const reqBody = await request.json();
+      const powerUnit = reqBody?.valueOf();
+      if (!powerUnit) {
+        return HttpResponse.json(null, { status: 400 });
+      }
+
+      const updatedPowerUnit = updatePowerUnit(id, powerUnit as PowerUnit); // update power unit vehicle in mock vehicle store
+      return HttpResponse.json({
+        ...updatedPowerUnit,
+      });
     },
   ),
+
   // Mock creating trailer vehicle
-  rest.post(
+  http.post(
     `${VEHICLES_URL}/companies/:companyId/vehicles/trailers`,
-    async (req, res, ctx) => {
-      const reqBody = await req.json();
-      const newTrailer = createTrailer(reqBody); // create trailer vehicle in mock vehicle store
-      return res(
-        ctx.status(201),
-        ctx.json({
-          ...newTrailer,
-        }),
-      );
+    async ({ request }) => {
+      const reqBody = await request.json();
+      const trailer = reqBody?.valueOf();
+      if (!trailer) {
+        return HttpResponse.json(null, { status: 400 });
+      }
+
+      const newTrailer = createTrailer(trailer as Trailer); // create trailer vehicle in mock vehicle store
+      return HttpResponse.json({
+        ...newTrailer,
+      }, { status: 201 });
     },
   ),
+
   // Mock updating trailer vehicle
-  rest.put(
+  http.put(
     `${VEHICLES_URL}/companies/:companyId/vehicles/trailers/:trailerId`,
-    async (req, res, ctx) => {
-      const id = String(req.params.trailerId);
-      const reqBody = await req.json();
-      const updatedTrailer = updatePowerUnit(id, reqBody); // update trailer vehicle in mock vehicle store
-      return res(
-        ctx.json({
-          ...updatedTrailer,
-        }),
-      );
+    async ({ request, params }) => {
+      const id = String(params.trailerId);
+      const reqBody = await request.json();
+      const trailer = reqBody?.valueOf();
+      if (!trailer) {
+        return HttpResponse.json(null, { status: 400 });
+      }
+
+      const updatedTrailer = updateTrailer(id, trailer as Trailer); // update trailer vehicle in mock vehicle store
+      return HttpResponse.json({
+        ...updatedTrailer,
+      });
     },
   ),
 );

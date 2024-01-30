@@ -57,7 +57,7 @@ const getColumns = (): MRT_ColumnDef<ApplicationInProgress>[] => {
 export const List = memo(
   ({ query }: { query: UseQueryResult<ApplicationInProgress[]> }) => {
     // Data, fetched from backend API
-    const { data, isError, isFetching, isLoading } = query;
+    const { data, isError, isFetching, isPending } = query;
 
     const columns = useMemo<MRT_ColumnDef<ApplicationInProgress>[]>(
       () => getColumns(),
@@ -139,7 +139,7 @@ export const List = memo(
         showProgressBars: isFetching,
         columnVisibility: { applicationId: true },
         rowSelection: rowSelection,
-        isLoading,
+        isLoading: isPending,
       },
       initialState: {
         ...defaultTableInitialStateOptions,
