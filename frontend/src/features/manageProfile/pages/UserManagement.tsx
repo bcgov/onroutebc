@@ -35,7 +35,7 @@ export const UserManagement = () => {
     queryFn: getCompanyUsers,
     staleTime: FIVE_MINUTES,
   });
-  const { data, isError, isInitialLoading } = query;
+  const { data, isError, isLoading } = query;
   const snackBar = useContext(SnackBarContext);
   const { user: userFromToken } = useAuth();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -89,9 +89,9 @@ export const UserManagement = () => {
     state: {
       ...defaultTableStateOptions,
       showAlertBanner: isError,
-      showProgressBars: isInitialLoading,
+      showProgressBars: isLoading,
       columnVisibility: { applicationId: true },
-      isLoading: isInitialLoading,
+      isLoading: isLoading,
       rowSelection: rowSelection,
     },
     renderEmptyRowsFallback: () => <NoRecordsFound />,

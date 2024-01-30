@@ -1,7 +1,6 @@
 import { Box, FormControlLabel, Switch } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { memo, useCallback, useContext, useMemo, useState } from "react";
-
 import {
   MRT_ColumnDef,
   MRT_PaginationState,
@@ -72,8 +71,8 @@ export const IDIRPermitSearchResults = memo(
       pageIndex: 0,
       pageSize: 10,
     });
-    const searchResultsQuery = useQuery(
-      [
+    const searchResultsQuery = useQuery({
+      queryKey: [
         "search-entity",
         searchString,
         searchByFilter,
@@ -81,24 +80,21 @@ export const IDIRPermitSearchResults = memo(
         pagination.pageIndex,
         pagination.pageSize,
       ],
-      () =>
-        getDataBySearch(
-          {
-            searchByFilter,
-            searchEntity,
-            searchString: searchString,
-          },
-          { page: pagination.pageIndex, take: pagination.pageSize },
-        ),
-      {
-        retry: 1, // retry once.
-        enabled: true,
-        refetchOnWindowFocus: false,
-        keepPreviousData: true,
-      },
-    );
+      queryFn: () => getDataBySearch(
+        {
+          searchByFilter,
+          searchEntity,
+          searchString: searchString,
+        },
+        { page: pagination.pageIndex, take: pagination.pageSize },
+      ),
+      retry: 1, // retry once.
+      enabled: true,
+      refetchOnWindowFocus: false,
+      placeholderData: keepPreviousData,
+    });
 
-    const { data, isLoading, isError } = searchResultsQuery;
+    const { data, isPending, isError } = searchResultsQuery;
 
     // Column definitions for the table
     const columns = useMemo<MRT_ColumnDef<Permit>[]>(
@@ -133,9 +129,9 @@ export const IDIRPermitSearchResults = memo(
       },
       state: {
         ...defaultTableStateOptions,
-        isLoading,
+        isLoading: isPending,
         showAlertBanner: isError,
-        showProgressBars: isLoading,
+        showProgressBars: isPending,
         pagination,
       },
       autoResetPageIndex: false,

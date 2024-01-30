@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { memo, useMemo, useState } from "react";
 import {
   MRT_ColumnDef,
@@ -47,8 +47,8 @@ export const IDIRCompanySearchResults = memo(
     });
     // TODO: if data is [] AND current_user is PPC_ADMIN then (eventually)
     //  display the UX to allow the creation of a new Company Profile
-    const searchResultsQuery = useQuery(
-      [
+    const searchResultsQuery = useQuery({
+      queryKey: [
         "search-entity",
         searchString,
         searchByFilter,
@@ -56,24 +56,21 @@ export const IDIRCompanySearchResults = memo(
         pagination.pageIndex,
         pagination.pageSize,
       ],
-      () =>
-        getDataBySearch(
-          {
-            searchByFilter,
-            searchEntity,
-            searchString,
-          },
-          { page: pagination.pageIndex, take: pagination.pageSize },
-        ),
-      {
-        retry: 1, // retry once.
-        enabled: true,
-        refetchOnWindowFocus: false,
-        keepPreviousData: true,
-      },
-    );
+      queryFn: () => getDataBySearch(
+        {
+          searchByFilter,
+          searchEntity,
+          searchString,
+        },
+        { page: pagination.pageIndex, take: pagination.pageSize },
+      ),
+      retry: 1, // retry once.
+      enabled: true,
+      refetchOnWindowFocus: false,
+      placeholderData: keepPreviousData,
+    });
 
-    const { data, isLoading, isError } = searchResultsQuery;
+    const { data, isPending, isError } = searchResultsQuery;
 
     // Column definitions for the table
     const columns = useMemo<MRT_ColumnDef<CompanyProfile>[]>(
@@ -91,9 +88,9 @@ export const IDIRCompanySearchResults = memo(
       },
       state: {
         ...defaultTableStateOptions,
-        isLoading,
+        isLoading: isPending,
         showAlertBanner: isError,
-        showProgressBars: isLoading,
+        showProgressBars: isPending,
         pagination,
       },
       autoResetPageIndex: false,

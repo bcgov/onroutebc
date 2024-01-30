@@ -1,5 +1,5 @@
 import { Button, Divider, FormGroup, Stack } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useContext, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -48,7 +48,7 @@ export const PaymentAndRefundDetail = () => {
   const { setSnackBar } = useContext(SnackBarContext);
   const [isGeneratingReport, setIsGeneratingReport] = useState<boolean>(false);
 
-  const { data: permitTypes, isLoading: isPermitTypeQueryLoading } =
+  const { data: permitTypes, isPending: isPermitTypeQueryLoading } =
     permitTypesQuery;
 
   // GET the list of users who have issued a permit.
@@ -69,7 +69,7 @@ export const PaymentAndRefundDetail = () => {
         data.map(({ userGUID, userName }) => [userName, userGUID]),
       ) as Record<string, string>;
     },
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
     // Only query the permit issuers when the user is sysadmin.
     enabled: canSelectPermitIssuers,
     staleTime: ONE_HOUR,
@@ -77,7 +77,7 @@ export const PaymentAndRefundDetail = () => {
     refetchOnWindowFocus: false, // prevents unnecessary queries
   });
 
-  const { data: permitIssuers, isLoading: isPermitIssuersQueryLoading } =
+  const { data: permitIssuers, isPending: isPermitIssuersQueryLoading } =
     permitIssuersQuery;
 
   const formMethods = useForm<PaymentAndRefundDetailFormData>({
