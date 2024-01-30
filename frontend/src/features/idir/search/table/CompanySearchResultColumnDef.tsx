@@ -1,7 +1,7 @@
 import { MRT_ColumnDef } from "material-react-table";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import CountriesAndStates from "../../../../common/constants/countries_and_states.json";
-import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { getDefaultNullableVal } from "../../../../common/helpers/util";
 
 /*
  *
@@ -44,12 +44,12 @@ export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
         return state?.code === mailingAddress?.provinceCode
       })
 
-      const addressLine1 = getDefaultRequiredVal(null, mailingAddress?.addressLine1);
-      const addressLine2 = getDefaultRequiredVal(null, mailingAddress?.addressLine2);
-      const countryName = getDefaultRequiredVal(null, country[0]?.name);
-      const provinceName = getDefaultRequiredVal(null, province[0]?.name);
-      const cityName = getDefaultRequiredVal(null, mailingAddress?.city);
-      const postalCodeName = getDefaultRequiredVal(null, mailingAddress?.postalCode);
+      const addressLine1 = getDefaultNullableVal(null, mailingAddress?.addressLine1);
+      const addressLine2 = getDefaultNullableVal(null, mailingAddress?.addressLine2);
+      const countryName = getDefaultNullableVal(null, country[0]?.name);
+      const provinceName = getDefaultNullableVal(null, province[0]?.name);
+      const cityName = getDefaultNullableVal(null, mailingAddress?.city);
+      const postalCodeName = getDefaultNullableVal(null, mailingAddress?.postalCode);
 
       return (
         <>
@@ -70,10 +70,10 @@ export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
     Cell: (props: { row: any }) => {
       const contact = props.row?.original?.primaryContact
 
-      const firstName = getDefaultRequiredVal(null, contact?.firstName);
-      const lastName = getDefaultRequiredVal(null, contact?.lastName);
-      const email = getDefaultRequiredVal(null, contact?.email);
-      const phone = getDefaultRequiredVal(null, contact?.phone1);
+      const firstName = getDefaultNullableVal(null, contact?.firstName);
+      const lastName = getDefaultNullableVal(null, contact?.lastName);
+      const email = getDefaultNullableVal(null, contact?.email);
+      const phone = getDefaultNullableVal(null, contact?.phone1);
 
       return (
         <>
