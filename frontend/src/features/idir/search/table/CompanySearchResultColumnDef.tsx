@@ -1,10 +1,7 @@
 import { MRT_ColumnDef } from "material-react-table";
-import {
-  dateTimeStringSortingFn,
-  formatCellValuetoDatetime
-} from "../../../../common/helpers/tableHelper";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import CountriesAndStates from "../../../../common/constants/countries_and_states.json";
+import { getDefaultNullableVal } from "../../../../common/helpers/util";
 
 /*
  *
@@ -47,12 +44,20 @@ export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
         return state?.code === mailingAddress?.provinceCode
       })
 
+      const addressLine1 = getDefaultNullableVal(null, mailingAddress?.addressLine1);
+      const addressLine2 = getDefaultNullableVal(null, mailingAddress?.addressLine2);
+      const countryName = getDefaultNullableVal(null, country[0]?.name);
+      const provinceName = getDefaultNullableVal(null, province[0]?.name);
+      const cityName = getDefaultNullableVal(null, mailingAddress?.city);
+      const postalCodeName = getDefaultNullableVal(null, mailingAddress?.postalCode);
+
       return (
         <>
-          {mailingAddress?.addressLine1}<br />
-          {country[0]?.name}<br />
-          {province[0]?.name}<br />
-          {mailingAddress?.city} {mailingAddress?.postalCode}
+          {addressLine1} {addressLine1 && <br />}
+          {addressLine2} {addressLine2 && <br />}
+          {countryName} {countryName && <br />}
+          {provinceName} {provinceName && <br />}
+          {cityName} {postalCodeName}
         </>
       );
     },
@@ -65,11 +70,16 @@ export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
     Cell: (props: { row: any }) => {
       const contact = props.row?.original?.primaryContact
 
+      const firstName = getDefaultNullableVal(null, contact?.firstName);
+      const lastName = getDefaultNullableVal(null, contact?.lastName);
+      const email = getDefaultNullableVal(null, contact?.email);
+      const phone = getDefaultNullableVal(null, contact?.phone1);
+
       return (
         <>
-          {contact?.firstName} {contact?.lastName}<br />
-          {contact?.email}<br />
-          {contact?.phone}
+          {firstName} {lastName} {firstName && <br />}
+          {email} {email && <br />}
+          {phone}
         </>
       );
     },
