@@ -86,7 +86,9 @@ export const CompanyAndUserInfoSteps = ({
         sessionStorage.setItem("onRouteBC.user.companyId", companyId);
 
         setClientNumber(() => responseBody["clientNumber"]);
-        queryClient.invalidateQueries(["userContext"]);
+        queryClient.invalidateQueries({
+          queryKey: ["userContext"],
+        });
       }
     },
     onError: () => {

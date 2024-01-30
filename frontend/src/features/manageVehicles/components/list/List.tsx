@@ -85,7 +85,7 @@ export const List = memo(
     companyId: string;
   }) => {
     // Data, fetched from backend API
-    const { data, isError, isFetching, isLoading } = query;
+    const { data, isError, isFetching, isPending } = query;
 
     // Column definitions for the table
     const columns = useMemo<MRT_ColumnDef<Vehicle>[]>(
@@ -213,7 +213,7 @@ export const List = memo(
       },
       state: {
         ...defaultTableStateOptions,
-        isLoading,
+        isLoading: isPending,
         showAlertBanner: isError,
         showProgressBars: isFetching,
         sorting: [{ id: "createdDateTime", desc: true }],

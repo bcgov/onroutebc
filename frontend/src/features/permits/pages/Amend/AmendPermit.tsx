@@ -13,7 +13,7 @@ import { USER_AUTH_GROUP } from "../../../../common/authentication/types";
 import { AmendPermitReview } from "./components/AmendPermitReview";
 import { AmendPermitFinish } from "./components/AmendPermitFinish";
 import { AmendPermitForm } from "./components/AmendPermitForm";
-import { applyWhenNotNullable } from "../../../../common/helpers/util";
+import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { ERROR_ROUTES, IDIR_ROUTES } from "../../../../routes/constants";
 import { hasPermitExpired } from "../../helpers/permitState";
 import {
@@ -82,16 +82,17 @@ export const AmendPermit = () => {
   const navigate = useNavigate();
 
   // Query for permit data whenever this page is rendered, for the permit id
-  const { permit } = usePermitDetailsQuery(permitId);
+  const { data: permit } = usePermitDetailsQuery(permitId);
 
   // Get original permit id for the permit
   const originalPermitId = permit?.originalPermitId;
 
   // Get permit history for original permit id
-  const { permitHistory } = usePermitHistoryQuery(originalPermitId);
+  const permitHistoryQuery = usePermitHistoryQuery(originalPermitId);
+  const permitHistory = getDefaultRequiredVal([], permitHistoryQuery.data);
 
   // Get latest amendment application, if any
-  const { amendmentApplication } =
+  const { data: amendmentApplication } =
     useAmendmentApplicationQuery(originalPermitId);
 
   const permitFormDefaultValues = () => {

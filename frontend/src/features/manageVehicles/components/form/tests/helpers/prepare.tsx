@@ -1,4 +1,4 @@
-import { rest } from "msw";
+import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import userEvent from "@testing-library/user-event";
 
@@ -29,61 +29,75 @@ export const defaultTrailerSubtypes = [
 
 const server = setupServer(
   // Mock getting power unit types
-  rest.get(VEHICLES_API.POWER_UNIT_TYPES, async (_, res, ctx) => {
-    return res(ctx.json([...defaultPowerUnitSubtypes]));
+  http.get(VEHICLES_API.POWER_UNIT_TYPES, () => {
+    return HttpResponse.json([...defaultPowerUnitSubtypes]);
   }),
+
   // Mock getting trailer types
-  rest.get(VEHICLES_API.TRAILER_TYPES, async (_, res, ctx) => {
-    return res(ctx.json([...defaultTrailerSubtypes]));
+  http.get(VEHICLES_API.TRAILER_TYPES, () => {
+    return HttpResponse.json([...defaultTrailerSubtypes]);
   }),
+
   // Mock creating power unit vehicle
-  rest.post(
+  http.post(
     `${VEHICLES_URL}/companies/:companyId/vehicles/powerUnits`,
-    async (req, res, ctx) => {
-      const reqBody = await req.json();
-      return res(
-        ctx.status(201),
-        ctx.json({
-          ...reqBody,
-        }),
-      );
+    async ({ request }) => {
+      const reqBody = await request.json();
+      const powerUnit = reqBody?.valueOf();
+      if (!powerUnit) {
+        return HttpResponse.json(null, { status: 400 });
+      }
+
+      return HttpResponse.json({
+        ...powerUnit as PowerUnit,
+      }, { status: 201 });
     },
   ),
+
   // Mock updating power unit vehicle
-  rest.put(
+  http.put(
     `${VEHICLES_URL}/companies/:companyId/vehicles/powerUnits/:powerUnitId`,
-    async (req, res, ctx) => {
-      const reqBody = await req.json();
-      return res(
-        ctx.json({
-          ...reqBody,
-        }),
-      );
+    async ({ request }) => {
+      const reqBody = await request.json();
+      const powerUnit = reqBody?.valueOf();
+      if (!powerUnit) {
+        return HttpResponse.json(null, { status: 400 });
+      }
+
+      return HttpResponse.json({
+        ...powerUnit as PowerUnit,
+      });
     },
   ),
+
   // Mock creating trailer vehicle
-  rest.post(
+  http.post(
     `${VEHICLES_URL}/companies/:companyId/vehicles/trailers`,
-    async (req, res, ctx) => {
-      const reqBody = await req.json();
-      return res(
-        ctx.status(201),
-        ctx.json({
-          ...reqBody,
-        }),
-      );
+    async ({ request }) => {
+      const reqBody = await request.json();
+      const trailer = reqBody?.valueOf();
+      if (!trailer) {
+        return HttpResponse.json(null, { status: 400 });
+      }
+
+      return HttpResponse.json({
+        ...trailer as Trailer,
+      }, { status: 201 });
     },
   ),
   // Mock updating trailer vehicle
-  rest.put(
+  http.put(
     `${VEHICLES_URL}/companies/:companyId/vehicles/trailers/:trailerId`,
-    async (req, res, ctx) => {
-      const reqBody = await req.json();
-      return res(
-        ctx.json({
-          ...reqBody,
-        }),
-      );
+    async ({ request }) => {
+      const reqBody = await request.json();
+      const trailer = reqBody?.valueOf();
+      if (!trailer) {
+        return HttpResponse.json(null, { status: 400 });
+      }
+      
+      return HttpResponse.json({
+        ...trailer as Trailer,
+      });
     },
   ),
 );

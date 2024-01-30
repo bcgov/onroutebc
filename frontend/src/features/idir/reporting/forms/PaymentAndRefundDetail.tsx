@@ -1,34 +1,36 @@
 import { Button, Divider, FormGroup, Stack } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useContext, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAuth } from "react-oidc-context";
+
 import { SnackBarContext } from "../../../../App";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { IDIR_USER_AUTH_GROUP } from "../../../../common/authentication/types";
 import { ONE_HOUR } from "../../../../common/constants/constants";
 import { Loading } from "../../../../common/pages/Loading";
+import { BC_COLOURS } from "../../../../themes/bcGovStyles";
+import { openBlobInNewTab } from "../../../permits/helpers/permitPDFHelper";
+import { getPaymentAndRefundDetail, usePermitTypesQuery } from "../api/reports";
+import { getPermitIssuers } from "../api/users";
+import { IssuedByCheckBox } from "./subcomponents/IssuedByCheckBox";
+import { PaymentMethodSelect } from "./subcomponents/PaymentMethodSelect";
+import { PermitTypeSelect } from "./subcomponents/PermitTypeSelect";
+import { ReportDateTimePickers } from "./subcomponents/ReportDateTimePickers";
+import { UserSelect } from "./subcomponents/UserSelect";
 import {
   ALL_CONSOLIDATED_PAYMENT_METHODS,
   AllPaymentMethodAndCardTypeCodes,
   CONSOLIDATED_PAYMENT_METHODS,
 } from "../../../../common/types/paymentMethods";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
-import { openBlobInNewTab } from "../../../permits/helpers/permitPDFHelper";
-import { getPaymentAndRefundDetail, usePermitTypesQuery } from "../api/reports";
-import { getPermitIssuers } from "../api/users";
+
 import {
   PaymentAndRefundDetailFormData,
   PaymentAndRefundDetailRequest,
   REPORT_ISSUED_BY,
   ReadUserDtoForReport,
 } from "../types/types";
-import { IssuedByCheckBox } from "./subcomponents/IssuedByCheckBox";
-import { PaymentMethodSelect } from "./subcomponents/PaymentMethodSelect";
-import { PermitTypeSelect } from "./subcomponents/PermitTypeSelect";
-import { ReportDateTimePickers } from "./subcomponents/ReportDateTimePickers";
-import { UserSelect } from "./subcomponents/UserSelect";
 
 /**
  * Component for Payment and Refund Detail form
@@ -46,7 +48,7 @@ export const PaymentAndRefundDetail = () => {
   const { setSnackBar } = useContext(SnackBarContext);
   const [isGeneratingReport, setIsGeneratingReport] = useState<boolean>(false);
 
-  const { data: permitTypes, isLoading: isPermitTypeQueryLoading } =
+  const { data: permitTypes, isPending: isPermitTypeQueryLoading } =
     permitTypesQuery;
 
   // GET the list of users who have issued a permit.
@@ -67,7 +69,7 @@ export const PaymentAndRefundDetail = () => {
         data.map(({ userGUID, userName }) => [userName, userGUID]),
       ) as Record<string, string>;
     },
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
     // Only query the permit issuers when the user is sysadmin.
     enabled: canSelectPermitIssuers,
     staleTime: ONE_HOUR,
@@ -75,7 +77,7 @@ export const PaymentAndRefundDetail = () => {
     refetchOnWindowFocus: false, // prevents unnecessary queries
   });
 
-  const { data: permitIssuers, isLoading: isPermitIssuersQueryLoading } =
+  const { data: permitIssuers, isPending: isPermitIssuersQueryLoading } =
     permitIssuersQuery;
 
   const formMethods = useForm<PaymentAndRefundDetailFormData>({

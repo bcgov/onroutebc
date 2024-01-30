@@ -43,7 +43,8 @@ export const VoidPermit = () => {
   // Must be SYSADMIN to access this page
   const { idirUserDetails } = useContext(OnRouteBCContext);
 
-  const { query: permitQuery, permit } = usePermitDetailsQuery(permitId);
+  const permitQuery = usePermitDetailsQuery(permitId);
+  const permit = permitQuery.data;
 
   const [voidPermitData, setVoidPermitData] = useState<VoidPermitFormData>({
     permitId: getDefaultRequiredVal("", permitId),
@@ -146,7 +147,7 @@ export const VoidPermit = () => {
 
   return (
     <VoidPermitContext.Provider value={contextData}>
-      {permitQuery.isLoading ? (
+      {permitQuery.isPending ? (
         <Loading />
       ) : (
         <div className="void-permit">

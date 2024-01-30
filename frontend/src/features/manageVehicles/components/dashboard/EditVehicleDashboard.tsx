@@ -32,7 +32,7 @@ export const EditVehicleDashboard = React.memo(
     const isEditTrailer = (editVehicleMode: VehicleType) =>
       editVehicleMode === VEHICLE_TYPES.TRAILER;
 
-    const { vehicle: vehicleToEdit } = useVehicleByIdQuery(
+    const { data: vehicleToEdit } = useVehicleByIdQuery(
       companyId,
       isEditPowerUnit(editVehicleMode) ? VEHICLE_TYPES.POWER_UNIT : VEHICLE_TYPES.TRAILER,
       vehicleId,

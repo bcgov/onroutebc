@@ -113,7 +113,9 @@ export const CompanyInfoForm = memo(
       mutationFn: updateCompanyInfo,
       onSuccess: (response) => {
         if (response.status === 200) {
-          queryClient.invalidateQueries(["companyInfo"]);
+          queryClient.invalidateQueries({
+            queryKey: ["companyInfo"],
+          });
           setIsEditting(false);
         } // else { // Display Error in the form }
       },

@@ -90,7 +90,7 @@ export const ApplicationStepPage = ({
     return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
   }
 
-  if (companyInfoQuery.isLoading) {
+  if (companyInfoQuery.isPending) {
     return <Loading />;
   }
 
