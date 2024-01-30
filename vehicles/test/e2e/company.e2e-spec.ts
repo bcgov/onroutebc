@@ -1,6 +1,5 @@
 import * as request from 'supertest';
 import { Test } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
 
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { classes } from '@automapper/classes';
@@ -38,6 +37,7 @@ import { EmailService } from '../../src/modules/email/email.service';
 import { HttpService } from '@nestjs/axios';
 import { EmailModule } from '../../src/modules/email/email.module';
 import { App } from 'supertest/types';
+import { INestApplication } from '@nestjs/common';
 
 let repo: DeepMocked<Repository<Company>>;
 let emailService: DeepMocked<EmailService>;
@@ -114,19 +114,22 @@ describe('Company (e2e)', () => {
       findCompanywithParams(PARAMS);
 
       const response = await request(app.getHttpServer() as unknown as App)
-        .get('/companies')
+        .get('/companies/meta-data')
         .expect(200);
 
       expect(response.body).toContainEqual(readRedCompanyMetadataDtoMock);
     });
-    it('should throw a forbidden exception when user is not staff and userGUID is passed as Query Param', async () => {
+    it('should throw a forbidden exception when user is not READ_ORG and userGUID is passed as Query Param', async () => {
       const PARAMS = { userGUID: constants.RED_COMPANY_ADMIN_USER_GUID };
       findCompanywithParams(PARAMS);
 
       TestUserMiddleware.testUser = redCompanyAdminUserJWTMock;
 
       await request(app.getHttpServer() as unknown as App)
-        .get('/companies?userGUID=' + constants.RED_COMPANY_ADMIN_USER_GUID)
+        .get(
+          '/companies/meta-data?userGUID=' +
+            constants.RED_COMPANY_ADMIN_USER_GUID,
+        )
         .expect(403);
     });
     it('should return an array of company metadata associated with the userGUID Query Param when logged in as Staff', async () => {
@@ -136,7 +139,10 @@ describe('Company (e2e)', () => {
       TestUserMiddleware.testUser = sysAdminStaffUserJWTMock;
 
       const response = await request(app.getHttpServer() as unknown as App)
-        .get('/companies?userGUID=' + constants.RED_COMPANY_ADMIN_USER_GUID)
+        .get(
+          '/companies/meta-data?userGUID=' +
+            constants.RED_COMPANY_ADMIN_USER_GUID,
+        )
         .expect(200);
 
       expect(response.body).toContainEqual(readRedCompanyMetadataDtoMock);

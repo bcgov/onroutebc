@@ -199,7 +199,7 @@ jobs:
           # Deploy Helm release
           helm dependency update
           helm upgrade \
-            --set global.autoscaling=${{ inputs.autoscaling || true }} \
+            --set global.autoscaling=${{ inputs.autoscaling }} \
             --set-string global.repository=${{ github.repository }} \
             --set-string global.tag=${{ inputs.tag }} \
             --set-string global.license=${{ inputs.license }} \
@@ -210,7 +210,6 @@ jobs:
             --timeout 10m --force \
             --values ${{ inputs.values }} \
             ${{ inputs.params }} .
-
 
           # print history 
           helm history ${{ env.repo_release }}

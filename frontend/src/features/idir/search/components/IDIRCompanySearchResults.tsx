@@ -7,7 +7,7 @@ import {
   useMaterialReactTable,
 } from "material-react-table";
 
-import { getDataBySearch } from "../api/idirSearch";
+import { getCompanyDataBySearch } from "../api/idirSearch";
 import { SearchFields } from "../types/types";
 import "./IDIRCompanySearchResults.scss";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
@@ -45,6 +45,7 @@ export const IDIRCompanySearchResults = memo(
       pageIndex: 0,
       pageSize: 10,
     });
+
     // TODO: if data is [] AND current_user is PPC_ADMIN then (eventually)
     //  display the UX to allow the creation of a new Company Profile
     const searchResultsQuery = useQuery({
@@ -56,7 +57,7 @@ export const IDIRCompanySearchResults = memo(
         pagination.pageIndex,
         pagination.pageSize,
       ],
-      queryFn: () => getDataBySearch(
+      queryFn: () => getCompanyDataBySearch(
         {
           searchByFilter,
           searchEntity,

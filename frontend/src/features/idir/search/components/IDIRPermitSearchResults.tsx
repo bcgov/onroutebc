@@ -15,7 +15,7 @@ import { USER_AUTH_GROUP } from "../../../../common/authentication/types";
 import { hasPermitExpired } from "../../../permits/helpers/permitState";
 import { isPermitInactive } from "../../../permits/types/PermitStatus";
 import { Permit } from "../../../permits/types/permit";
-import { getDataBySearch } from "../api/idirSearch";
+import { getPermitDataBySearch } from "../api/idirSearch";
 import { PermitSearchResultColumnDef } from "../table/PermitSearchResultColumnDef";
 import { SearchFields } from "../types/types";
 import { IDIRPermitSearchRowActions } from "./IDIRPermitSearchRowActions";
@@ -80,7 +80,7 @@ export const IDIRPermitSearchResults = memo(
         pagination.pageIndex,
         pagination.pageSize,
       ],
-      queryFn: () => getDataBySearch(
+      queryFn: () => getPermitDataBySearch(
         {
           searchByFilter,
           searchEntity,
