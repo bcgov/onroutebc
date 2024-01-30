@@ -46,7 +46,6 @@ interface CustomFormOptionsProps<T extends FieldValues> {
  * @param fieldPath The field name variable. Either provinceField or countryField
  * @returns Error message as a string
  */
-// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 export const getErrorMessage = (errors: any, fieldPath: string): string => {
   const parts = fieldPath.split(".");
   if (parts.length > 1 && typeof errors[parts[0]] === "object") {
@@ -104,7 +103,6 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
    */
   const isRequired = () => {
     if (rules.required === true) return true;
-    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     if ((rules.required as any).value === true) return true;
     return false;
   };

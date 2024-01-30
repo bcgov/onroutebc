@@ -15,7 +15,9 @@ export const useVoidPermit = () => {
     mutationFn: voidPermit,
     retry: false,
     onSuccess: (voidResponseData) => {
-      queryClient.invalidateQueries(["permit"]);
+      queryClient.invalidateQueries({
+        queryKey: ["permit"],
+      });
       setVoidResults(voidResponseData);
     },
     onError: (err: unknown) => {

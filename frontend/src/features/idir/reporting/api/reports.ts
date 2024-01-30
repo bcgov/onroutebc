@@ -1,4 +1,8 @@
-import { UseQueryResult, useQuery } from "@tanstack/react-query";
+import {
+  UseQueryResult,
+  useQuery,
+  keepPreviousData,
+} from "@tanstack/react-query";
 
 import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints";
 import { ONE_HOUR } from "../../../../common/constants/constants";
@@ -78,7 +82,7 @@ export const usePermitTypesQuery = (): UseQueryResult<
   return useQuery({
     queryKey: ["permitTypes"],
     queryFn: () => getPermitTypes(),
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
     staleTime: ONE_HOUR,
   });
 };

@@ -1,6 +1,6 @@
 import { memo, useState } from "react";
 import { Typography } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { Navigate } from "react-router-dom";
 
@@ -23,17 +23,17 @@ export const MyInfo = memo(() => {
   const [isEditing, setIsEditing] = useState(false);
   const {
     data: myInfo,
-    isLoading,
+    isPending,
     isError,
     error,
   } = useQuery({
     queryKey: ["myInfo"],
     queryFn: getMyInfo,
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
     staleTime: 5000,
   });
 
-  if (isLoading) {
+  if (isPending) {
     return <Loading />;
   }
 

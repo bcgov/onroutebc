@@ -26,11 +26,13 @@ export const FinishVoid = ({
 
   const { email, fax, reason } = voidPermitData;
 
-  const { query: permitHistoryQuery, permitHistory } = usePermitHistoryQuery(
+  const permitHistoryQuery = usePermitHistoryQuery(
     permit?.originalPermitId,
   );
 
-  const transactionHistory = permitHistoryQuery.isInitialLoading
+  const permitHistory = getDefaultRequiredVal([], permitHistoryQuery.data);
+
+  const transactionHistory = permitHistoryQuery.isLoading
     ? []
     : permitHistory.filter((history) =>
         isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),

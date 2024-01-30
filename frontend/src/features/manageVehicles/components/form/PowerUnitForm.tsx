@@ -96,9 +96,7 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
         powerUnit: {
           ...powerUnitToBeUpdated,
           // need to explicitly convert form values to number here (since we can't use valueAsNumber prop)
-          /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
           year: convertToNumberIfValid(data.year, data.year as string) as any,
-          /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
           licensedGvw: convertToNumberIfValid(
             data.licensedGvw,
             data.licensedGvw as string,

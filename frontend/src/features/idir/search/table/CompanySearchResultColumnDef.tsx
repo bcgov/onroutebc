@@ -1,4 +1,5 @@
 import { MRT_ColumnDef } from "material-react-table";
+
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import CountriesAndStates from "../../../../common/constants/countries_and_states.json";
 import { getDefaultNullableVal } from "../../../../common/helpers/util";

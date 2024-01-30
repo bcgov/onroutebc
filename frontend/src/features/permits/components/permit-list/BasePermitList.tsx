@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
 
 import {
@@ -74,12 +74,12 @@ export const BasePermitList = ({
               : [],
         },
       ),
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
     refetchOnWindowFocus: false,
     retry: 1,
   });
 
-  const { data, isError, isLoading, isRefetching } = permitsQuery;
+  const { data, isError, isPending, isRefetching } = permitsQuery;
 
   const table = useMaterialReactTable({
     ...defaultTableOptions,
@@ -94,7 +94,7 @@ export const BasePermitList = ({
       ...defaultTableStateOptions,
       showAlertBanner: isError,
       columnVisibility: { applicationId: true },
-      isLoading: isLoading || isRefetching,
+      isLoading: isPending || isRefetching,
       pagination,
       globalFilter,
       sorting,
