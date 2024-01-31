@@ -24,11 +24,13 @@ export const EditUserDashboard = React.memo(() => {
   const navigate = useNavigate();
   const { userGUID } = useParams();
 
-  const { data: userInfo, isLoading } = useQuery(
-    ["userByuserGUID", userGUID],
-    () => getCompanyUserByUserGUID(userGUID as string),
-    { retry: false, enabled: true, staleTime: Infinity },
-  );
+  const { data: userInfo, isPending } = useQuery({
+    queryKey: ["userByuserGUID", userGUID],
+    queryFn: () => getCompanyUserByUserGUID(userGUID as string),
+    retry: false,
+    enabled: true,
+    staleTime: Infinity,
+  });
 
   const onClickBreadcrumb = () => {
     navigate(PROFILE_ROUTES.MANAGE, {
@@ -96,7 +98,7 @@ export const EditUserDashboard = React.memo(() => {
         <Typography>Edit User</Typography>
       </Box>
 
-      {!isLoading && <EditUserForm userInfo={userInfo} />}
+      {!isPending && <EditUserForm userInfo={userInfo} />}
     </div>
   );
 });

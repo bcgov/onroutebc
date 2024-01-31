@@ -34,10 +34,10 @@ KEYCLOAK_IGNORE_EXP=true
 DB_TYPE=mssql
 MSSQL_HOST=localhost
 MSSQL_PORT=1433
-MSSQL_DB=ORBC_DEV
+MSSQL_DB=
 MSSQL_SA_USER=
 MSSQL_SA_PASSWORD=
-MSSQL_ENCRYPT=false
+MSSQL_ENCRYPT=
 
 ```
 
@@ -46,8 +46,8 @@ MSSQL_ENCRYPT=false
 
 #### [Node.js](https://nodejs.org/en/)
 
-- You’ll need to have Node 18 and npm on your machine. You can use [nvm](https://github.com/nvm-sh/nvm#installation) (macOS/Linux) or [nvm-windows](https://github.com/coreybutler/nvm-windows#node-version-manager-nvm-for-windows) to switch Node versions between different projects.
-- Note: We are using Node 18.16.0-alpine as a base image on our pipeline.
+- You’ll need to have Node 20 and npm on your machine. You can use [nvm](https://github.com/nvm-sh/nvm#installation) (macOS/Linux) or [nvm-windows](https://github.com/coreybutler/nvm-windows#node-version-manager-nvm-for-windows) to switch Node versions between different projects.
+- Note: We are using Node 20.11.0-alpine as a base image on our pipeline.
 
 ### Installation
 

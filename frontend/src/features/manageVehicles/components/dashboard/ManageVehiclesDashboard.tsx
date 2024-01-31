@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { memo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 
 import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
 import { AddVehicleButton } from "./AddVehicleButton";
@@ -35,21 +35,20 @@ const useTabIndexFromURL = (): number => {
  * React component to render the vehicle inventory
  */
 export const ManageVehiclesDashboard = memo(() => {
-  const keepPreviousData = true;
   const staleTime = 5000;
   const companyId = getDefaultRequiredVal("0", getCompanyIdFromSession());
 
   const powerUnitQuery = useQuery({
     queryKey: ["powerUnits"],
     queryFn: () => getAllPowerUnits(companyId),
-    keepPreviousData: keepPreviousData,
+    placeholderData: (prev) => keepPreviousData(prev),
     staleTime: staleTime,
   });
 
   const trailerQuery = useQuery({
     queryKey: ["trailers"],
     queryFn: () => getAllTrailers(companyId),
-    keepPreviousData: keepPreviousData,
+    placeholderData: (prev) => keepPreviousData(prev),
     staleTime: staleTime,
   });
 

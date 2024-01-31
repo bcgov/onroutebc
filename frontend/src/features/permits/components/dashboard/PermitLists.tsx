@@ -17,12 +17,12 @@ export const PermitLists = React.memo(() => {
   const { applicationsInProgressQuery } = useApplicationsInProgressQuery();
   const {
     data: applicationsInProgress,
-    isLoading,
+    isPending,
     isError,
     error,
   } = applicationsInProgressQuery;
 
-  if (isLoading) {
+  if (isPending) {
     return <Loading />;
   }
 

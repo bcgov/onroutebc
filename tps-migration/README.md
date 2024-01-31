@@ -14,7 +14,7 @@ Create a .env file in the root directory of onRouteBC and add the following vari
 
 OCIO_S3_ACCESSKEYID=
 OCIO_S3_BUCKET=
-OCIO_S3_PRESIGNED_URL_EXPIRY=300
+OCIO_S3_PRESIGNED_URL_EXPIRY=
 OCIO_S3_ENDPOINT=https://moti-int.objectstore.gov.bc.ca
 OCIO_S3_KEY=
 OCIO_S3_SECRETACCESSKEY=
@@ -24,14 +24,14 @@ TPS_ERROR_POLLING_INTERVAL = '0 0 */3 * * *'
 TPS_API_LOG_LEVEL= debug
 TPS_API_TYPEORM_LOG_LEVEL= query,error,warn,info,log,schema
 TPS_API_MAX_QUERY_EXECUTION_TIME_MS= 5000
-NODE_ENV=
-DB_TYPE=
+NODE_ENV=local
+DB_TYPE=mssql
 MSSQL_HOST= localhost
 MSSQL_PORT= 1433
-MSSQL_DB= ORBC_DEV
+MSSQL_DB=
 MSSQL_SA_USER=
 MSSQL_SA_PASSWORD=
-MSSQL_ENCRYPT= false
+MSSQL_ENCRYPT=
 
 ```
 
@@ -40,8 +40,8 @@ MSSQL_ENCRYPT= false
 
 #### [Node.js](https://nodejs.org/en/)
 
-- You’ll need to have Node 18 and npm on your machine. You can use [nvm](https://github.com/nvm-sh/nvm#installation) (macOS/Linux) or [nvm-windows](https://github.com/coreybutler/nvm-windows#node-version-manager-nvm-for-windows) to switch Node versions between different projects.
-- Note: We are using Node 18.16.0-alpine as a base image on our pipeline.
+- You’ll need to have Node 20 and npm on your machine. You can use [nvm](https://github.com/nvm-sh/nvm#installation) (macOS/Linux) or [nvm-windows](https://github.com/coreybutler/nvm-windows#node-version-manager-nvm-for-windows) to switch Node versions between different projects.
+- Note: We are using Node 20.11.0-alpine as a base image on our pipeline.
 
 ### Installation
 
