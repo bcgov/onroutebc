@@ -8,7 +8,7 @@ import { viewPermitPdf } from "../../../permits/helpers/permitPDFHelper";
 import { hasPermitExpired } from "../../../permits/helpers/permitState";
 import {
   dateTimeStringSortingFn,
-  formatCellValuetoDatetime
+  formatCellValuetoDatetime,
 } from "../../../../common/helpers/tableHelper";
 
 /*

@@ -15,7 +15,10 @@ import { getDefaultUserDetails } from "../fixtures/getUserDetails";
 import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
 import { APPLICATION_STEPS } from "../../../../../../../routes/constants";
 import { Nullable, Optional } from "../../../../../../../common/types/common";
-import { PowerUnit, Trailer } from "../../../../../../manageVehicles/types/Vehicle";
+import {
+  PowerUnit,
+  Trailer,
+} from "../../../../../../manageVehicles/types/Vehicle";
 import { ApplicationRequestData } from "../../../../../types/application";
 import {
   dayjsToUtcStr,
@@ -65,40 +68,46 @@ const server = setupServer(
       return HttpResponse.json(null, { status: 400 });
     }
     const applicationData = {
-      ...application as ApplicationRequestData,
+      ...(application as ApplicationRequestData),
       applicationNumber: newApplicationNumber,
       permitId: newPermitId,
       createdDateTime: currDtUtcStr,
       updatedDateTime: currDtUtcStr,
     };
     const createdApplication = createApplication(applicationData); // add to mock application store
-    return HttpResponse.json({
-      ...createdApplication,
-    }, { status: 201 });
+    return HttpResponse.json(
+      {
+        ...createdApplication,
+      },
+      { status: 201 },
+    );
   }),
 
   // Mock updating/saving application
-  http.put(`${APPLICATIONS_API_ROUTES.UPDATE}/:id`, async ({ request, params }) => {
-    const { id } = params;
-    const reqBody = await request.json();
-    const application = reqBody?.valueOf();
-    if (!application) {
-      return HttpResponse.json(null, { status: 400 });
-    }
+  http.put(
+    `${APPLICATIONS_API_ROUTES.UPDATE}/:id`,
+    async ({ request, params }) => {
+      const { id } = params;
+      const reqBody = await request.json();
+      const application = reqBody?.valueOf();
+      if (!application) {
+        return HttpResponse.json(null, { status: 400 });
+      }
 
-    const applicationData = {
-      ...application as ApplicationRequestData,
-      updatedDateTime: currDtUtcStr,
-    };
-    const updatedApplication = updateApplication(applicationData, String(id)); // update application in mock application store
+      const applicationData = {
+        ...(application as ApplicationRequestData),
+        updatedDateTime: currDtUtcStr,
+      };
+      const updatedApplication = updateApplication(applicationData, String(id)); // update application in mock application store
 
-    if (!updatedApplication) {
-      return HttpResponse.json(null, { status: 404 });
-    }
-    return HttpResponse.json({
-      ...updatedApplication,
-    });
-  }),
+      if (!updatedApplication) {
+        return HttpResponse.json(null, { status: 404 });
+      }
+      return HttpResponse.json({
+        ...updatedApplication,
+      });
+    },
+  ),
 
   // Mock getting application
   http.get(`${APPLICATIONS_API_ROUTES.GET}/:permitId`, () => {
@@ -123,34 +132,25 @@ const server = setupServer(
   }),
 
   // Mock getting power unit vehicles
-  http.get(
-    `${VEHICLES_URL}/companies/:companyId/vehicles/powerUnits`,
-    () => {
-      return HttpResponse.json([
-        ...getAllPowerUnits(), // get power unit vehicles from mock vehicle store
-      ]);
-    },
-  ),
+  http.get(`${VEHICLES_URL}/companies/:companyId/vehicles/powerUnits`, () => {
+    return HttpResponse.json([
+      ...getAllPowerUnits(), // get power unit vehicles from mock vehicle store
+    ]);
+  }),
 
   // Mock getting trailer vehicles
-  http.get(
-    `${VEHICLES_URL}/companies/:companyId/vehicles/trailers`,
-    () => {
-      return HttpResponse.json([
-        ...getAllTrailers(), // get trailer vehicles from mock vehicle store
-      ]);
-    },
-  ),
+  http.get(`${VEHICLES_URL}/companies/:companyId/vehicles/trailers`, () => {
+    return HttpResponse.json([
+      ...getAllTrailers(), // get trailer vehicles from mock vehicle store
+    ]);
+  }),
 
   // Mock getting company details
-  http.get(
-    `${MANAGE_PROFILE_API.COMPANIES}/:companyId`,
-    () => {
-      return HttpResponse.json({
-        ...companyInfo,
-      });
-    },
-  ),
+  http.get(`${MANAGE_PROFILE_API.COMPANIES}/:companyId`, () => {
+    return HttpResponse.json({
+      ...companyInfo,
+    });
+  }),
 
   // Mock creating power unit vehicle
   http.post(
@@ -163,9 +163,12 @@ const server = setupServer(
       }
 
       const newPowerUnit = createPowerUnit(powerUnit as PowerUnit); // create power unit vehicle in mock vehicle store
-      return HttpResponse.json({
-        ...newPowerUnit,
-      }, { status: 201 });
+      return HttpResponse.json(
+        {
+          ...newPowerUnit,
+        },
+        { status: 201 },
+      );
     },
   ),
 
@@ -198,9 +201,12 @@ const server = setupServer(
       }
 
       const newTrailer = createTrailer(trailer as Trailer); // create trailer vehicle in mock vehicle store
-      return HttpResponse.json({
-        ...newTrailer,
-      }, { status: 201 });
+      return HttpResponse.json(
+        {
+          ...newTrailer,
+        },
+        { status: 201 },
+      );
     },
   ),
 

@@ -99,7 +99,19 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
             rules: {
               required: { value: true, message: requiredMessage() },
             },
-            label: "Email",
+            label: "Company Email",
+          }}
+          disabled={true}
+          readOnly={true}
+        />
+
+        <CustomFormComponent
+          type="input"
+          feature={feature}
+          options={{
+            name: "permitData.contactDetails.additionalEmail",
+            rules: { required: false },
+            label: "Additional Email",
           }}
         />
 

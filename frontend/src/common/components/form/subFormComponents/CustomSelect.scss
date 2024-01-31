@@ -1,22 +1,3 @@
-@import "../../../../themes/orbcStyles";
+@use "../CustomFormComponents";
 
-.custom-select {
-  &#{&}--disabled {
-    .custom-select {
-      &__input-container {
-        z-index: 1;
-        color: $bc-black;
-        -webkit-text-fill-color: $bc-black;
-      }
-    }
-
-    svg {
-      z-index: 1;
-    }
-
-    fieldset {
-      background-color: $bc-background-light-grey;
-      border: 2px solid $bc-text-box-border-grey;
-    }
-  }
-}
+@include CustomFormComponents.custom-form-component(".custom-select");

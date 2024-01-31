@@ -31,8 +31,8 @@ import { Roles } from '../../../common/decorator/roles.decorator';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { ReadUserDto } from './dto/response/read-user.dto';
 import { IDP } from '../../../common/enum/idp.enum';
-import { ReadVerifyMigratedClientDto } from './dto/response/read-verify-migrated-client.dto';
-import { VerifyMigratedClientDto } from './dto/request/verify-migrated-client.dto';
+import { ReadVerifyClientDto } from './dto/response/read-verify-client.dto';
+import { VerifyClientDto } from './dto/request/verify-client.dto';
 
 @ApiTags('Company and User Management - User')
 @ApiBadRequestResponse({
@@ -81,26 +81,23 @@ export class UsersController {
   }
 
   /**
-   * A POST method defined with a route of /verify-migrated-client that verifies
+   * A POST method defined with a route of /verify-client that verifies
    * if the migrated client and permit exists in ORBC
    *
    * @returns The user details with response object {@link ReadVerifyMigratedClientDto}.
    */
   @ApiCreatedResponse({
-    description: 'The Verify Migrated Client Resource',
-    type: ReadVerifyMigratedClientDto,
+    description: 'The Verify Client Resource',
+    type: ReadVerifyClientDto,
   })
   @AuthOnly()
-  @Post('verify-migrated-client')
-  async verifyMigratedClient(
+  @Post('verify-client')
+  async verifyClient(
     @Req() request: Request,
-    @Body() verifyMigratedClientDto: VerifyMigratedClientDto,
-  ): Promise<ReadVerifyMigratedClientDto> {
+    @Body() verifyClientDto: VerifyClientDto,
+  ): Promise<ReadVerifyClientDto> {
     const currentUser = request.user as IUserJWT;
-    return await this.userService.verifyMigratedClient(
-      currentUser,
-      verifyMigratedClientDto,
-    );
+    return await this.userService.verifyClient(currentUser, verifyClientDto);
   }
 
   /**

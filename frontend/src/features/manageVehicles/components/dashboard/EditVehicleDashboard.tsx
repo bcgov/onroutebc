@@ -9,7 +9,12 @@ import { Banner } from "../../../../common/components/dashboard/Banner";
 import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
 import { PowerUnitForm } from "../form/PowerUnitForm";
 import { TrailerForm } from "../form/TrailerForm";
-import { PowerUnit, Trailer, VEHICLE_TYPES, VehicleType } from "../../types/Vehicle";
+import {
+  PowerUnit,
+  Trailer,
+  VEHICLE_TYPES,
+  VehicleType,
+} from "../../types/Vehicle";
 import { DATE_FORMATS, toLocal } from "../../../../common/helpers/formatDate";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import { ERROR_ROUTES, VEHICLES_ROUTES } from "../../../../routes/constants";
@@ -34,7 +39,9 @@ export const EditVehicleDashboard = React.memo(
 
     const { data: vehicleToEdit } = useVehicleByIdQuery(
       companyId,
-      isEditPowerUnit(editVehicleMode) ? VEHICLE_TYPES.POWER_UNIT : VEHICLE_TYPES.TRAILER,
+      isEditPowerUnit(editVehicleMode)
+        ? VEHICLE_TYPES.POWER_UNIT
+        : VEHICLE_TYPES.TRAILER,
       vehicleId,
     );
 
@@ -117,8 +124,7 @@ export const EditVehicleDashboard = React.memo(
           <FontAwesomeIcon className="breadcrumb-icon" icon={faChevronRight} />
 
           <Typography>
-            {editVehicleMode === VEHICLE_TYPES.POWER_UNIT &&
-              "Edit Power Unit"}
+            {editVehicleMode === VEHICLE_TYPES.POWER_UNIT && "Edit Power Unit"}
             {editVehicleMode === VEHICLE_TYPES.TRAILER && "Edit Trailer"}
           </Typography>
         </Box>
@@ -131,8 +137,7 @@ export const EditVehicleDashboard = React.memo(
           <Typography variant={"h2"}>
             {editVehicleMode === VEHICLE_TYPES.POWER_UNIT &&
               "Power Unit Details"}
-            {editVehicleMode === VEHICLE_TYPES.TRAILER &&
-              "Trailer Details"}
+            {editVehicleMode === VEHICLE_TYPES.TRAILER && "Trailer Details"}
           </Typography>
           {isEditPowerUnit(editVehicleMode) ? (
             <PowerUnitForm

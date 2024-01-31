@@ -37,6 +37,10 @@ import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-met
 import { PageOptionsDto } from 'src/common/dto/paginate/page-options';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import { PageMetaDto } from 'src/common/dto/paginate/page-meta';
+import { IDP } from '../../../common/enum/idp.enum';
+import { Directory } from '../../../common/enum/directory.enum';
+import { getDirectory } from '../../../common/helper/auth.helper';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class CompanyService {
@@ -78,7 +82,7 @@ export class CompanyService {
     );
 
     if (!existingCompanyDetails && createCompanyDto?.migratedClientHash) {
-      existingCompanyDetails = await this.findOneByMigratedClientHash(
+      existingCompanyDetails = await this.findOneByLegacyClientHash(
         createCompanyDto?.migratedClientHash,
       );
     }
@@ -93,6 +97,18 @@ export class CompanyService {
       migratedClient = true;
     }
 
+    let accountSource: AccountSource, companyDirectory: Directory;
+
+    if (migratedClient) {
+      accountSource = AccountSource.TpsAccount;
+    } else if (currentUser.identity_provider === IDP.IDIR) {
+      accountSource = AccountSource.PPCStaff;
+      companyDirectory = Directory.ORBC;
+    } else {
+      accountSource = AccountSource.BCeID;
+      companyDirectory = getDirectory(currentUser);
+    }
+
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -103,11 +119,9 @@ export class CompanyService {
         Company,
         {
           extraArgs: () => ({
-            directory: currentUser.orbcUserDirectory,
+            directory: companyDirectory,
             companyGUID: currentUser.bceid_business_guid,
-            accountSource: migratedClient
-              ? AccountSource.TpsAccount
-              : currentUser.accountSource,
+            accountSource: accountSource,
             userName: currentUser.userName,
             userGUID: currentUser.userGUID,
             timestamp: new Date(),
@@ -118,7 +132,7 @@ export class CompanyService {
       if (!migratedClient) {
         newCompany.clientNumber = await this.generateClientNumber(
           newCompany,
-          currentUser,
+          accountSource,
         );
       } else {
         newCompany.companyId = existingCompanyDetails?.companyId;
@@ -133,31 +147,33 @@ export class CompanyService {
 
       newCompany = await queryRunner.manager.save(newCompany);
 
-      let user = this.classMapper.map(
-        createCompanyDto.adminUser,
-        CreateUserDto,
-        User,
-        {
-          extraArgs: () => ({
-            userAuthGroup: UserAuthGroup.COMPANY_ADMINISTRATOR,
-            userName: currentUser.userName,
-            directory: currentUser.orbcUserDirectory,
-            userGUID: currentUser.userGUID,
-            timestamp: new Date(),
-          }),
-        },
-      );
+      if (createCompanyDto.adminUser) {
+        let user = this.classMapper.map(
+          createCompanyDto.adminUser,
+          CreateUserDto,
+          User,
+          {
+            extraArgs: () => ({
+              userAuthGroup: UserAuthGroup.COMPANY_ADMINISTRATOR,
+              userName: currentUser.userName,
+              directory: currentUser.orbcUserDirectory,
+              userGUID: currentUser.userGUID,
+              timestamp: new Date(),
+            }),
+          },
+        );
 
-      const newCompanyUser = new CompanyUser();
-      newCompanyUser.company = new Company();
-      newCompanyUser.company.companyId = newCompany.companyId;
-      newCompanyUser.user = user;
-      newCompanyUser.userAuthGroup = UserAuthGroup.COMPANY_ADMINISTRATOR;
+        const newCompanyUser = new CompanyUser();
+        newCompanyUser.company = new Company();
+        newCompanyUser.company.companyId = newCompany.companyId;
+        newCompanyUser.user = user;
+        newCompanyUser.userAuthGroup = UserAuthGroup.COMPANY_ADMINISTRATOR;
 
-      user.companyUsers = [newCompanyUser];
-      user = await queryRunner.manager.save(user);
-      user.companyUsers = [newCompanyUser]; //To populate Company User Auth Group
-      newUser = await this.classMapper.mapAsync(user, User, ReadUserDto);
+        user.companyUsers = [newCompanyUser];
+        user = await queryRunner.manager.save(user);
+        user.companyUsers = [newCompanyUser]; //To populate Company User Auth Group
+        newUser = await this.classMapper.mapAsync(user, User, ReadUserDto);
+      }
       await queryRunner.commitTransaction();
     } catch (error) {
       await queryRunner.rollbackTransaction();
@@ -387,20 +403,59 @@ export class CompanyService {
   }
 
   /**
-   * The findOneByMigratedClientHash() method returns a Company Entity object corresponding to the
-   * company with that migrated client hash. It retrieves the entity from the database using the
+   * The findOneByLegacyClientHash() method returns a Company Entity object corresponding to the
+   * company with that legacy client hash. It retrieves the entity from the database using the
    * Repository
    *
-   * @param migratedClientHash The migrated client Number.
+   * @param legacyClientHash The migrated client Number.
    *
    * @returns The company details as a promise of type {@link Company}
    */
   @LogAsyncMethodExecution()
-  async findOneByMigratedClientHash(
-    migratedClientHash: string,
-  ): Promise<Company> {
+  async findOneByLegacyClientHash(legacyClientHash: string): Promise<Company> {
     return await this.companyRepository.findOne({
-      where: { migratedClientHash: migratedClientHash?.toUpperCase() },
+      where: { migratedClientHash: legacyClientHash?.toUpperCase() },
+      relations: {
+        mailingAddress: true,
+        primaryContact: true,
+        companyUsers: true,
+      },
+    });
+  }
+
+  /**
+   * The findOneByLegacyClientNumber() method returns a Company Entity object corresponding to the
+   * company with that legacy client number. It retrieves the entity from the database using the
+   * Repository
+   *
+   * @param legacyClientNumber The migrated client Number.
+   *
+   * @returns The company details as a promise of type {@link Company}
+   */
+  @LogAsyncMethodExecution()
+  async findOneByLegacyClientNumber(
+    legacyClientNumber: string,
+  ): Promise<Company> {
+    const legacyClientHash = crypto
+      .createHash('sha256')
+      .update(legacyClientNumber?.replace(/-/g, ''))
+      .digest('hex');
+    return await this.findOneByLegacyClientHash(legacyClientHash);
+  }
+
+  /**
+   * The findOneByClientNumber() method returns a Company Entity object corresponding to the
+   * company with that onRouteBC client number. It retrieves the entity from the database using the
+   * Repository
+   *
+   * @param clientNumber The onRouteBC client Number.
+   *
+   * @returns The company details as a promise of type {@link Company}
+   */
+  @LogAsyncMethodExecution()
+  async findOneByClientNumber(clientNumber: string): Promise<Company> {
+    return await this.companyRepository.findOne({
+      where: { clientNumber: clientNumber?.toUpperCase() },
       relations: {
         mailingAddress: true,
         primaryContact: true,
@@ -448,8 +503,6 @@ export class CompanyService {
    * using the Repository. It then retrieves the updated entity and returns it
    * in a DTO object.
    *
-   * ? Company Directory might not be required once scope of login is finizalied.
-   * ? Should we be able to update company guid?
    *
    * @param companyId The company Id.
    * @param updateCompanyDto Request object of type {@link UpdateCompanyDto} for
@@ -476,10 +529,6 @@ export class CompanyService {
       throw new DataNotFoundException();
     }
 
-    const contactId = company.primaryContact.contactId;
-    const mailingAddressId = company.mailingAddress.addressId;
-    const clientNumber = company.clientNumber;
-
     const newCompany = this.classMapper.map(
       updateCompanyDto,
       UpdateCompanyDto,
@@ -487,10 +536,10 @@ export class CompanyService {
       {
         extraArgs: () => ({
           companyId: company.companyId,
-          clientNumber: clientNumber,
-          directory: currentUser.orbcUserDirectory,
-          mailingAddressId: mailingAddressId,
-          contactId: contactId,
+          clientNumber: company.clientNumber,
+          directory: company.directory,
+          mailingAddressId: company.mailingAddress.addressId,
+          contactId: company.primaryContact.contactId,
           userName: currentUser.userName,
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
@@ -509,7 +558,7 @@ export class CompanyService {
    */
   private async generateClientNumber(
     company: Company,
-    currentUser: IUserJWT,
+    accountSource: AccountSource,
   ): Promise<string> {
     const rnd = randomInt(100, 1000);
     const seq = await callDatabaseSequence(
@@ -518,7 +567,7 @@ export class CompanyService {
     );
     const clientNumber =
       company.accountRegion +
-      currentUser.accountSource +
+      accountSource +
       '-' +
       seq.padStart(6, '0') +
       '-' +

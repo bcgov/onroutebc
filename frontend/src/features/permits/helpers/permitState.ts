@@ -102,7 +102,9 @@ export const hasPermitExpired = (expiryDate: string): boolean => {
  * @param res Response data of the permits action
  * @returns boolean indicating if the action failed.
  */
-export const hasPermitsActionFailed = (res: Nullable<PermitsActionResponse>) => {
+export const hasPermitsActionFailed = (
+  res: Nullable<PermitsActionResponse>,
+) => {
   // Response of undefined doesn't indicate that action has failed (could be loading)
   if (typeof res === "undefined") return false;
 
