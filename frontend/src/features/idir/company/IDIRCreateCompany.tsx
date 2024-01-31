@@ -13,7 +13,10 @@ import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { ERROR_ROUTES } from "../../../routes/constants";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import { createOnRouteBCProfile } from "../../manageProfile/apiManager/manageProfileAPI";
-import { CompanyAndUserRequest } from "../../manageProfile/types/manageProfile";
+import {
+  CompanyAndUserRequest,
+  CompanyProfile,
+} from "../../manageProfile/types/manageProfile";
 import { CompanyInformationWizardForm } from "../../wizard/subcomponents/CompanyInformationWizardForm";
 import { OnRouteBCProfileCreated } from "../../wizard/subcomponents/OnRouteBCProfileCreated";
 
@@ -88,11 +91,12 @@ export const IDIRCreateCompany = React.memo(() => {
     mutationFn: createOnRouteBCProfile,
     onSuccess: async (response) => {
       if (response.status === 200 || response.status === 201) {
-        const responseBody = response.data;
-        const companyId = responseBody["companyId"];
-        const clientNumber = responseBody["clientNumber"];
+        const { companyId, clientNumber } = response.data as CompanyProfile;
         // Handle context updates;
-        sessionStorage.setItem("onRouteBC.user.companyId", companyId);
+        sessionStorage.setItem(
+          "onRouteBC.user.companyId",
+          companyId.toString(),
+        );
 
         setClientNumber(() => clientNumber);
       }

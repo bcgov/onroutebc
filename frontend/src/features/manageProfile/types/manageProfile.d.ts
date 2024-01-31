@@ -1,4 +1,5 @@
 import { VerifiedClient } from "../../../common/authentication/types";
+import { Nullable } from "../../../common/types/common";
 
 interface Address {
   addressLine1: string;
@@ -31,8 +32,8 @@ export interface CompanyProfile {
   mailingAddress: Address;
   email: string;
   phone: string;
-  extension?: string;
-  fax?: string;
+  extension?: Nullable<string>;
+  fax?: Nullable<string>;
   primaryContact: Contact;
 }
 
@@ -47,15 +48,15 @@ export type CompanyAndUserRequest = {
   companyId: number;
   companyGUID: string;
   legalName: string;
-  alternateName?: string; // Doing Business As field
+  alternateName?: Nullable<string>; // Doing Business As field
   migratedClientHash?: string;
   mailingAddress: Address;
   email: string;
   phone: string;
-  extension?: string;
-  fax?: string;
+  extension?: Nullable<string>;
+  fax?: Nullable<string>;
   primaryContact: Contact;
-  adminUser?: Contact;
+  adminUser?: Nullable<Contact>;
 };
 
 /**
