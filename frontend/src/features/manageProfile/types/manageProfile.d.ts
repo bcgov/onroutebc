@@ -72,7 +72,7 @@ export type VerifyMigratedClientRequest = {
 export type VerifyMigratedClientResponse = {
   foundClient: boolean;
   foundPermit: boolean;
-  client?: VerifiedClient;
+  verifiedClient?: VerifiedClient;
 };
 
 /**

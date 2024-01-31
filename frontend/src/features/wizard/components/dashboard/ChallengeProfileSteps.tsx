@@ -94,8 +94,8 @@ export const ChallengeProfileSteps = React.memo(() => {
   const verifyMigratedClientMutation = useMutation({
     mutationFn: verifyMigratedClient,
     onSuccess: async (response: VerifyMigratedClientResponse) => {
-      const { foundClient, foundPermit, client } = response;
-      if (foundClient && foundPermit && client) {
+      const { foundClient, foundPermit, verifiedClient } = response;
+      if (foundClient && foundPermit && verifiedClient) {
         // Clear form errors (if any)
         clearVerifyClientErrors();
 
@@ -106,41 +106,35 @@ export const ChallengeProfileSteps = React.memo(() => {
           ...defaultCompanyAndUserInfoValues,
           migratedClientHash: getDefaultRequiredVal(
             "",
-            client?.migratedClientHash,
+            verifiedClient?.migratedClientHash,
           ),
-          alternateName: getDefaultRequiredVal(
-            "",
-            client?.alternateName,
-          ),
+          alternateName: getDefaultRequiredVal("", verifiedClient?.alternateName),
           mailingAddress: {
             addressLine1: getDefaultRequiredVal(
               "",
-              client?.mailingAddress?.addressLine1,
+              verifiedClient?.mailingAddress?.addressLine1,
             ),
             addressLine2: getDefaultRequiredVal(
               "",
-              client?.mailingAddress?.addressLine2,
+              verifiedClient?.mailingAddress?.addressLine2,
             ),
             provinceCode: getDefaultRequiredVal(
               "",
-              client?.mailingAddress?.provinceCode,
+              verifiedClient?.mailingAddress?.provinceCode,
             ),
             countryCode: getDefaultRequiredVal(
               "",
-              client?.mailingAddress?.countryCode,
+              verifiedClient?.mailingAddress?.countryCode,
             ),
-            city: getDefaultRequiredVal(
-              "",
-              client?.mailingAddress?.city,
-            ),
+            city: getDefaultRequiredVal("", verifiedClient?.mailingAddress?.city),
             postalCode: getDefaultRequiredVal(
               "",
-              client?.mailingAddress?.postalCode,
+              verifiedClient?.mailingAddress?.postalCode,
             ),
           },
-          phone: getDefaultRequiredVal("", client?.phone),
-          extension: getDefaultRequiredVal("", client?.extension),
-          fax: getDefaultRequiredVal("", client?.fax),
+          phone: getDefaultRequiredVal("", verifiedClient?.phone),
+          extension: getDefaultRequiredVal("", verifiedClient?.extension),
+          fax: getDefaultRequiredVal("", verifiedClient?.fax),
         });
       } else {
         if (!foundClient) {
