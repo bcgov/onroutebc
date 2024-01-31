@@ -112,9 +112,10 @@ export class CreateCompanyDto {
   @AutoMap()
   @ApiProperty({
     description: 'The admin user of the company.',
-    required: true,
+    required: false,
   })
+  @IsOptional()
   @ValidateNested()
   @Type(() => CreateUserDto)
-  adminUser: CreateUserDto;
+  adminUser?: CreateUserDto;
 }

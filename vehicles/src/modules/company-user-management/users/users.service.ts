@@ -34,10 +34,10 @@ import { Contact } from '../../common/entities/contact.entity';
 import { getProvinceId } from '../../../common/helper/province-country.helper';
 import { Base } from '../../common/entities/base.entity';
 import { AccountSource } from '../../../common/enum/account-source.enum';
-import { ReadVerifyMigratedClientDto } from './dto/response/read-verify-migrated-client.dto';
-import { VerifyMigratedClientDto } from './dto/request/verify-migrated-client.dto';
 import { Permit } from '../../permit/entities/permit.entity';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
+import { VerifyClientDto } from './dto/request/verify-client.dto';
+import { ReadVerifyClientDto } from './dto/response/read-verify-client.dto';
 
 @Injectable()
 export class UsersService {
@@ -384,44 +384,56 @@ export class UsersService {
   }
 
   /**
-   * The verifyMigratedClient() method searches for migrated client and permit
+   * The verifyMigratedClient() method searches for client and permit
    * in OnRouteBC and returns the status
    *
    * @param currentUser The current logged in User JWT Token.
    *
-   * @returns The {@link ReadVerifyMigratedClientDto} entity.
+   * @returns The {@link ReadVerifyClientDto} entity.
    */
   @LogAsyncMethodExecution()
-  async verifyMigratedClient(
+  async verifyClient(
     currentUser: IUserJWT,
-    verifyMigratedClientDto: VerifyMigratedClientDto,
-  ): Promise<ReadVerifyMigratedClientDto> {
-    const verifyMigratedClient: ReadVerifyMigratedClientDto = {
+    verifyClientDto: VerifyClientDto,
+  ): Promise<ReadVerifyClientDto> {
+    const verifyClient: ReadVerifyClientDto = {
       foundClient: false,
       foundPermit: false,
-      migratedClient: undefined,
+      verifiedClient: undefined,
     };
-    const company = await this.companyService.findOneByMigratedClientHash(
-      verifyMigratedClientDto.clientNumberHash,
+
+    let company = await this.companyService.findOneByClientNumber(
+      verifyClientDto.clientNumber,
     );
+
+    if (!company) {
+      company = await this.companyService.findOneByLegacyClientNumber(
+        verifyClientDto.clientNumber,
+      );
+    }
+
     if (company) {
-      verifyMigratedClient.foundClient = true;
+      verifyClient.foundClient = true;
     }
 
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      const permit = await queryRunner.manager.findOne(Permit, {
-        where: {
-          migratedPermitNumber: verifyMigratedClientDto.permitNumber,
-        },
-      });
+      const permit = await queryRunner.manager
+        .createQueryBuilder(Permit, 'permit')
+        .where('permit.migratedPermitNumber = :permitNumber', {
+          permitNumber: verifyClientDto.permitNumber,
+        })
+        .orWhere('permit.permitNumber = :permitNumber', {
+          permitNumber: verifyClientDto.permitNumber,
+        })
+        .getOne();
 
       if (permit) {
-        verifyMigratedClient.foundPermit = true;
+        verifyClient.foundPermit = true;
         if (permit.companyId === company?.companyId) {
-          verifyMigratedClient.migratedClient =
+          verifyClient.verifiedClient =
             await this.companyService.mapCompanyEntityToCompanyDto(company);
         }
       }
@@ -435,7 +447,7 @@ export class UsersService {
       await queryRunner.release();
     }
 
-    return verifyMigratedClient;
+    return verifyClient;
   }
 
   /**

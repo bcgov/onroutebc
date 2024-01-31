@@ -39,9 +39,9 @@ export type ClientInformation = {
 };
 
 /**
- * The information a migrated client will have.
+ * The information a verified client will have.
  */
-export type MigratedClient = ClientInformation & CompanyMetadata;
+export type VerifiedClient = ClientInformation & CompanyMetadata;
 
 /**
  * User Context object type
@@ -49,7 +49,7 @@ export type MigratedClient = ClientInformation & CompanyMetadata;
 export interface BCeIDUserContextType {
   associatedCompanies: CompanyMetadata[];
   pendingCompanies: CompanyMetadata[];
-  migratedClient: MigratedClient;
+  migratedClient: VerifiedClient;
   user?: {
     userAuthGroup?: string;
     statusCode?: string;

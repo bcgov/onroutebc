@@ -1,4 +1,4 @@
-import { MigratedClient } from "../../../common/authentication/types";
+import { VerifiedClient } from "../../../common/authentication/types";
 
 interface Address {
   addressLine1: string;
@@ -62,7 +62,7 @@ export interface CompanyAndUserRequest {
  * The request object to verify a migrated client
  */
 export type VerifyMigratedClientRequest = {
-  clientNumberHash: string;
+  clientNumber: string;
   permitNumber: string;
 };
 
@@ -72,7 +72,7 @@ export type VerifyMigratedClientRequest = {
 export type VerifyMigratedClientResponse = {
   foundClient: boolean;
   foundPermit: boolean;
-  migratedClient?: MigratedClient;
+  verifiedClient?: VerifiedClient;
 };
 
 /**
