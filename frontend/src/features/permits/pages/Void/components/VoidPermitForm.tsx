@@ -46,9 +46,7 @@ export const VoidPermitForm = ({
   const { formMethods, permitId, setVoidPermitData, next } =
     useVoidPermitForm();
 
-  const permitHistoryQuery = usePermitHistoryQuery(
-    permit?.originalPermitId,
-  );
+  const permitHistoryQuery = usePermitHistoryQuery(permit?.originalPermitId);
 
   const permitHistory = getDefaultRequiredVal([], permitHistoryQuery.data);
 

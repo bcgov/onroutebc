@@ -30,7 +30,10 @@ export const useVoidPermitForm = () => {
   }, [voidPermitData.email]);
 
   useEffect(() => {
-    setValue("additionalEmail", getDefaultRequiredVal("", voidPermitData.additionalEmail));
+    setValue(
+      "additionalEmail",
+      getDefaultRequiredVal("", voidPermitData.additionalEmail),
+    );
   }, [voidPermitData.additionalEmail]);
 
   useEffect(() => {

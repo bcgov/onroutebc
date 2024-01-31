@@ -114,7 +114,7 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>({
             helperText: errorMessage,
             inputProps: {
               className: "custom-date-picker__input-container",
-            }
+            },
           },
         }}
         // This onClose function fixes a bug where the Select component does not immediately

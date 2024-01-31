@@ -118,7 +118,8 @@ export class VoidPermitDto {
 
   @AutoMap()
   @ApiProperty({
-    description: 'The additional email address to send the voided/revoked permit to.',
+    description:
+      'The additional email address to send the voided/revoked permit to.',
     required: false,
     example: 'test@test.gov.bc.ca',
   })

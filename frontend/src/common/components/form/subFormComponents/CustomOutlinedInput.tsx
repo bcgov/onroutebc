@@ -55,9 +55,9 @@ export const CustomOutlinedInput = <T extends ORBC_FormTypes>(
     <OutlinedInput
       inputProps={{
         ...updatedInputProps,
-        className: updatedInputProps.className ? 
-          `${updatedInputProps.className} custom-input__input-container` : 
-          "custom-input__input-container",
+        className: updatedInputProps.className
+          ? `${updatedInputProps.className} custom-input__input-container`
+          : "custom-input__input-container",
       }}
       disabled={props.disabled}
       readOnly={props.readOnly}

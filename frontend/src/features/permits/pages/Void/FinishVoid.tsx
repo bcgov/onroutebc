@@ -26,9 +26,7 @@ export const FinishVoid = ({
 
   const { email, additionalEmail, fax, reason } = voidPermitData;
 
-  const permitHistoryQuery = usePermitHistoryQuery(
-    permit?.originalPermitId,
-  );
+  const permitHistoryQuery = usePermitHistoryQuery(permit?.originalPermitId);
 
   const permitHistory = getDefaultRequiredVal([], permitHistoryQuery.data);
 

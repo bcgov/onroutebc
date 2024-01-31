@@ -1,6 +1,9 @@
 import { SearchFields } from "../../features/idir/search/types/types";
 import { BCeIDAddUserRequest } from "../../features/manageProfile/types/userManagement";
-import { Application, ContactDetails } from "../../features/permits/types/application";
+import {
+  Application,
+  ContactDetails,
+} from "../../features/permits/types/application";
 import {
   CompanyAndUserRequest,
   CompanyProfile,

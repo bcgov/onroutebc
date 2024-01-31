@@ -47,7 +47,10 @@ export const ReviewContactDetails = ({
             contactDetails?.phone2Extension,
           ) !== phoneDisplay(oldFields?.phone2, oldFields?.phone2Extension),
         email: areValuesDifferent(contactDetails?.email, oldFields?.email),
-        additionalEmail: areValuesDifferent(contactDetails?.additionalEmail, oldFields?.additionalEmail),
+        additionalEmail: areValuesDifferent(
+          contactDetails?.additionalEmail,
+          oldFields?.additionalEmail,
+        ),
         fax: areValuesDifferent(contactDetails?.fax, oldFields?.fax),
       }
     : {

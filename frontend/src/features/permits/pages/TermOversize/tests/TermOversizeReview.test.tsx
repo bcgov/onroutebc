@@ -186,7 +186,8 @@ describe("Review and Confirm Application Details", () => {
       };
       const newAdditionalEmail = "additionalEmail@mycompany.co";
       if (defaultApplicationData.permitData.contactDetails) {
-        defaultApplicationData.permitData.contactDetails.additionalEmail = newAdditionalEmail;
+        defaultApplicationData.permitData.contactDetails.additionalEmail =
+          newAdditionalEmail;
       }
 
       renderTestComponent(defaultApplicationData);
@@ -345,9 +346,7 @@ describe("Review and Confirm Application Details", () => {
       const unit = getDefaultRequiredVal("", unitNumber);
       const country = formatCountry(countryCode);
       const province = formatProvince(countryCode, provinceCode);
-      const vehicleTypeStr = vehicleTypeDisplayText(
-        vehicleType as VehicleType,
-      );
+      const vehicleTypeStr = vehicleTypeDisplayText(vehicleType as VehicleType);
       const vehicleSubtypeStr = getDefaultRequiredVal(
         "",
         vehicleSubtypes.find((subtype) => subtype.typeCode === vehicleSubType)

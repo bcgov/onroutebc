@@ -39,7 +39,8 @@ export const PERMIT_REFUND_ACTIONS = {
   AMEND: "amend",
 } as const;
 
-export type PermitAction = typeof PERMIT_REFUND_ACTIONS[keyof typeof PERMIT_REFUND_ACTIONS];
+export type PermitAction =
+  (typeof PERMIT_REFUND_ACTIONS)[keyof typeof PERMIT_REFUND_ACTIONS];
 
 const permitActionText = (permitAction: PermitAction) => {
   switch (permitAction) {
@@ -238,7 +239,10 @@ export const RefundPage = ({
             {additionalEmail ? (
               <div className="refund-info__info">
                 <span className="info-label">Additional Email: </span>
-                <span className="info-value" data-testid="send-to-additional-email">
+                <span
+                  className="info-value"
+                  data-testid="send-to-additional-email"
+                >
                   {additionalEmail}
                 </span>
               </div>

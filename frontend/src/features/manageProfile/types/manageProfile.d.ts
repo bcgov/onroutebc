@@ -1,6 +1,4 @@
-import {
-  MigratedClient,
-} from "../../../common/authentication/types";
+import { MigratedClient } from "../../../common/authentication/types";
 
 interface Address {
   addressLine1: string;
@@ -88,4 +86,3 @@ export const BCEID_PROFILE_TABS = {
   PAYMENT_INFORMATION_CVCLIENT: 2,
   PAYMENT_INFORMATION_ORGADMIN: 3,
 } as const;
-

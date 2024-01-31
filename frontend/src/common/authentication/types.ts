@@ -120,8 +120,7 @@ export const ROLES = {
 /**
  * The enum type for user roles.
  */
-export type UserRolesType =
-  (typeof ROLES)[keyof typeof ROLES];
+export type UserRolesType = (typeof ROLES)[keyof typeof ROLES];
 
 /**
  * The user auth group enum key-value pairs.

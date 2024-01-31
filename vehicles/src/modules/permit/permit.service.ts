@@ -751,7 +751,7 @@ export class PermitService {
           permitDataForTemplate.permitData?.contactDetails?.additionalEmail,
           voidPermitDto.additionalEmail,
           companyInfo.email,
-        ].filter(email => Boolean(email));
+        ].filter((email) => Boolean(email));
 
         const distinctEmailList = Array.from(new Set(emailList));
 

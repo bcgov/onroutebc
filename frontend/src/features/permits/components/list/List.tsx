@@ -34,7 +34,7 @@ import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFou
 import {
   defaultTableOptions,
   defaultTableStateOptions,
-  defaultTableInitialStateOptions
+  defaultTableInitialStateOptions,
 } from "../../../../common/helpers/tableHelper";
 
 /**

@@ -617,7 +617,7 @@ export class ApplicationService {
           permitDataForTemplate.permitData?.contactDetails?.email,
           permitDataForTemplate.permitData?.contactDetails?.additionalEmail,
           companyInfo.email,
-        ].filter(email => Boolean(email));
+        ].filter((email) => Boolean(email));
 
         const distinctEmailList = Array.from(new Set(emailList));
 

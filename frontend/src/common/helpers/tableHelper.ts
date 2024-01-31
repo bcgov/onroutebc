@@ -90,7 +90,7 @@ export const defaultTableOptions: any = {
   enableStickyHeader: true,
   muiTableContainerProps: {
     sx: {
-      outline: "1px solid #DBDCDC"
+      outline: "1px solid #DBDCDC",
     },
   },
 
