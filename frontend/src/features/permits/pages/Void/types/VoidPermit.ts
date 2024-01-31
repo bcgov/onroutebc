@@ -28,6 +28,8 @@ export interface VoidPermitRequestData {
   pgCardType?: PaymentCardTypeCode;
   comment: string;
   transactionTypeId: TransactionType;
+  fax?: Nullable<string>;
+  additionalEmail?: Nullable<string>;
 }
 
 export interface RevokePermitRequestData {
@@ -37,6 +39,8 @@ export interface RevokePermitRequestData {
   transactionAmount: 0;
   comment: string;
   transactionTypeId: typeof TRANSACTION_TYPES.P;
+  fax?: Nullable<string>;
+  additionalEmail?: Nullable<string>;
 }
 
 export type VoidPermitResponseData = PermitsActionResponse;

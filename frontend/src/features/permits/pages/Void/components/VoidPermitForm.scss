@@ -27,7 +27,7 @@
           resize: none;
         }
 
-        &--email, &--additional-email {
+        &--email {
           max-width: 375px;
 
           .custom-form-control {
@@ -35,7 +35,7 @@
           }
         }
 
-        &--fax {
+        &--additional-email, &--fax {
           max-width: 375px;
 
           .custom-form-control {
