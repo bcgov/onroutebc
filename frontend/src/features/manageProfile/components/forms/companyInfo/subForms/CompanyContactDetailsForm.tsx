@@ -13,8 +13,14 @@ export const CompanyContactDetailsForm = ({
   feature,
   disableEmail = true,
 }: {
+  /**
+   * The name of the feature that this form is part of.
+   */
   feature: string;
-  disableEmail: boolean;
+  /**
+   * Should the email be disabled? By default it is.
+   */
+  disableEmail?: boolean;
 }) => (
   <div className="company-contact-details-form">
     <CustomFormComponent
