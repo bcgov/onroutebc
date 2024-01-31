@@ -75,7 +75,13 @@ export const CompanyInformationWizardForm = memo(
           Company Contact Details
         </Typography>
 
-        <CompanyContactDetailsForm feature={FEATURE} />
+        <CompanyContactDetailsForm
+          feature={FEATURE}
+          // Currently, companyName is displayed only for idir users
+          // So, If idir user is creating a company, enable the email field.
+          // i.e., showCompanyName and disableEmail have opposite values.
+          disableEmail={showCompanyName ? false : true }
+        />
 
         <Typography variant="h2" gutterBottom>
           Company Primary Contact
