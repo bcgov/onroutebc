@@ -27,6 +27,7 @@ import {
 } from "./helpers/prepare";
 
 import {
+  additionalEmailInput,
   chooseOption,
   companyClientNumberDisplay,
   companyNameDisplay,
@@ -128,6 +129,7 @@ describe("Application Contact Details", () => {
     const phone1Input = await inputWithValue(phone1);
     const phone2Input = await inputWithValue(phone2);
     const emailInput = await inputWithValue(email);
+    const additionalEmailInputEl = await additionalEmailInput();
 
     // Info banner should be present
     expect(await sendPermitToEmailMsg()).toBeInTheDocument();
@@ -153,6 +155,13 @@ describe("Application Contact Details", () => {
     await replaceValueForInput(user, phone2Input, phone2.length, newPhone2);
     const newEmail = "mc@mycompany.co";
     await replaceValueForInput(user, emailInput, email.length, newEmail);
+    const newAdditionalEmail = "additionalEmail@mycompany.co";
+    await replaceValueForInput(
+      user,
+      additionalEmailInputEl,
+      0,
+      newAdditionalEmail,
+    );
     await saveApplication(user);
 
     // Assert - input fields should contain updated values
@@ -175,7 +184,13 @@ describe("Application Contact Details", () => {
     expect(savedApplication?.permitData?.contactDetails?.phone2Extension).toBe(
       phone2Extension,
     );
-    expect(savedApplication?.permitData?.contactDetails?.email).toBe(newEmail);
+    // The company email should not be changed since it's readonly
+    expect(savedApplication?.permitData?.contactDetails?.email).not.toBe(
+      newEmail,
+    );
+    expect(savedApplication?.permitData?.contactDetails?.additionalEmail).toBe(
+      newAdditionalEmail,
+    );
     expect(savedApplication?.permitData?.contactDetails?.fax).toBe(fax);
   });
 
@@ -340,13 +355,16 @@ describe("Vehicle Details", () => {
     const unitNumber = powerUnit.unitNumber;
     const {
       formDetails,
-      additionalInfo: {
-        updatedProvinceAbbr,
-      },
+      additionalInfo: { updatedProvinceAbbr },
     } = getVehicleDetails("update", true);
 
     // Act
-    await updateVehicleDetails(user, VEHICLE_TYPES.POWER_UNIT, formDetails, unitNumber);
+    await updateVehicleDetails(
+      user,
+      VEHICLE_TYPES.POWER_UNIT,
+      formDetails,
+      unitNumber,
+    );
 
     // Assert
     await waitFor(() => {
@@ -363,13 +381,16 @@ describe("Vehicle Details", () => {
     const unitNumber = powerUnit.unitNumber;
     const {
       formDetails,
-      additionalInfo: {
-        updatedProvinceAbbr,
-      },
+      additionalInfo: { updatedProvinceAbbr },
     } = getVehicleDetails("update", false);
 
     // Act
-    await updateVehicleDetails(user, VEHICLE_TYPES.POWER_UNIT, formDetails, unitNumber);
+    await updateVehicleDetails(
+      user,
+      VEHICLE_TYPES.POWER_UNIT,
+      formDetails,
+      unitNumber,
+    );
 
     // Assert
     await waitFor(() => {
@@ -402,7 +423,9 @@ describe("Vehicle Details", () => {
     await openVehicleSelect(user);
 
     // Assert
-    const updatedPowerUnitOptions = await vehicleOptions(VEHICLE_TYPES.POWER_UNIT);
+    const updatedPowerUnitOptions = await vehicleOptions(
+      VEHICLE_TYPES.POWER_UNIT,
+    );
     const updatedTrailerOptions = await vehicleOptions(VEHICLE_TYPES.TRAILER);
     expect(updatedPowerUnitOptions.length).toBe(powerUnits.length);
     expect(updatedTrailerOptions.length).toBe(trailers.length);
@@ -424,7 +447,9 @@ describe("Vehicle Details", () => {
     const powerUnitOptions = await vehicleOptions(VEHICLE_TYPES.POWER_UNIT);
     expect(powerUnitOptions.length).toBe(1);
     expect(powerUnitOptions[0]).toHaveTextContent(plate);
-    expect(async () => await vehicleOptions(VEHICLE_TYPES.TRAILER)).rejects.toThrow();
+    expect(
+      async () => await vehicleOptions(VEHICLE_TYPES.TRAILER),
+    ).rejects.toThrow();
   });
 
   it("should filter vehicle options by typing in unit number", async () => {
@@ -446,7 +471,9 @@ describe("Vehicle Details", () => {
     const trailerOptions = await vehicleOptions(VEHICLE_TYPES.TRAILER);
     expect(trailerOptions.length).toBe(1);
     expect(trailerOptions[0]).toHaveTextContent(unitNumber);
-    expect(async () => await vehicleOptions(VEHICLE_TYPES.POWER_UNIT)).rejects.toThrow();
+    expect(
+      async () => await vehicleOptions(VEHICLE_TYPES.POWER_UNIT),
+    ).rejects.toThrow();
   });
 
   it("should fill in vehicle details after choosing vehicle option", async () => {

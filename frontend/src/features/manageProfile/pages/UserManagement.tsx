@@ -23,7 +23,7 @@ import { BCeIDUserStatus, ReadCompanyUser } from "../types/userManagement.d";
 import {
   defaultTableOptions,
   defaultTableInitialStateOptions,
-  defaultTableStateOptions
+  defaultTableStateOptions,
 } from "../../../common/helpers/tableHelper";
 
 /**

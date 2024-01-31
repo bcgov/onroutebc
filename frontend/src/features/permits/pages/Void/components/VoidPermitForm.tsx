@@ -46,9 +46,7 @@ export const VoidPermitForm = ({
   const { formMethods, permitId, setVoidPermitData, next } =
     useVoidPermitForm();
 
-  const permitHistoryQuery = usePermitHistoryQuery(
-    permit?.originalPermitId,
-  );
+  const permitHistoryQuery = usePermitHistoryQuery(permit?.originalPermitId);
 
   const permitHistory = getDefaultRequiredVal([], permitHistoryQuery.data);
 
@@ -120,6 +118,8 @@ export const VoidPermitForm = ({
             <CustomFormComponent
               type="input"
               feature={FEATURE}
+              disabled={true}
+              readOnly={true}
               options={{
                 name: "email",
                 rules: {
@@ -129,9 +129,25 @@ export const VoidPermitForm = ({
                       isEmail(email) || invalidEmail(),
                   },
                 },
-                label: "Email",
+                label: "Company Email",
               }}
               className="void-input void-input--email"
+            />
+            <CustomFormComponent
+              type="input"
+              feature={FEATURE}
+              options={{
+                name: "additionalEmail",
+                rules: {
+                  required: false,
+                  validate: {
+                    validateEmail: (email: string) =>
+                      isEmail(email) || invalidEmail(),
+                  },
+                },
+                label: "Additional Email",
+              }}
+              className="void-input void-input--additional-email"
             />
             <CustomFormComponent
               type="phone"

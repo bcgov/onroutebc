@@ -40,7 +40,7 @@ export const IDIRCompanySearchResults = memo(
       searchByFilter,
       searchEntity,
     } = searchParams;
-    
+
     const [pagination, setPagination] = useState<MRT_PaginationState>({
       pageIndex: 0,
       pageSize: 10,
@@ -57,14 +57,15 @@ export const IDIRCompanySearchResults = memo(
         pagination.pageIndex,
         pagination.pageSize,
       ],
-      queryFn: () => getCompanyDataBySearch(
-        {
-          searchByFilter,
-          searchEntity,
-          searchString,
-        },
-        { page: pagination.pageIndex, take: pagination.pageSize },
-      ),
+      queryFn: () =>
+        getCompanyDataBySearch(
+          {
+            searchByFilter,
+            searchEntity,
+            searchString,
+          },
+          { page: pagination.pageIndex, take: pagination.pageSize },
+        ),
       retry: 1, // retry once.
       enabled: true,
       refetchOnWindowFocus: false,

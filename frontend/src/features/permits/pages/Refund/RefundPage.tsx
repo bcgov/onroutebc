@@ -24,6 +24,7 @@ import { FeeSummary } from "../../components/feeSummary/FeeSummary";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { isZeroAmount } from "../../helpers/feeSummary";
 import { isValidTransaction } from "../../helpers/payment";
+import { Nullable, Optional } from "../../../../common/types/common";
 import {
   CONSOLIDATED_PAYMENT_METHODS,
   PAYMENT_METHODS_WITH_CARD,
@@ -31,17 +32,24 @@ import {
   PAYMENT_METHOD_TYPE_DISPLAY,
   getPaymentMethod,
 } from "../../../../common/types/paymentMethods";
-import { Optional } from "../../../../common/types/common";
 
-type PermitAction = "void" | "revoke" | "amend";
+export const PERMIT_REFUND_ACTIONS = {
+  VOID: "void",
+  REVOKE: "revoke",
+  AMEND: "amend",
+} as const;
+
+export type PermitAction =
+  (typeof PERMIT_REFUND_ACTIONS)[keyof typeof PERMIT_REFUND_ACTIONS];
 
 const permitActionText = (permitAction: PermitAction) => {
   switch (permitAction) {
-    case "void":
+    case PERMIT_REFUND_ACTIONS.VOID:
       return "Voiding";
-    case "revoke":
+    case PERMIT_REFUND_ACTIONS.REVOKE:
       return "Revoking";
-    case "amend":
+    case PERMIT_REFUND_ACTIONS.AMEND:
+    default:
       return "Amending";
   }
 };
@@ -67,6 +75,7 @@ const DEFAULT_REFUND_OPTION = PAYMENT_METHOD_TYPE_DISPLAY.CHEQUE;
 export const RefundPage = ({
   permitHistory,
   email,
+  additionalEmail,
   fax,
   reason,
   permitNumber,
@@ -76,11 +85,12 @@ export const RefundPage = ({
   onFinish,
 }: {
   permitHistory: PermitHistory[];
-  email?: string;
-  fax?: string;
-  reason?: string;
-  permitNumber?: string;
-  permitType?: string;
+  email?: Nullable<string>;
+  additionalEmail?: Nullable<string>;
+  fax?: Nullable<string>;
+  reason?: Nullable<string>;
+  permitNumber?: Nullable<string>;
+  permitType?: Nullable<string>;
   permitAction: PermitAction;
   amountToRefund: number;
   onFinish: (refundData: RefundFormData) => void;
@@ -220,9 +230,20 @@ export const RefundPage = ({
             </div>
             {email ? (
               <div className="refund-info__info">
-                <span className="info-label">Email: </span>
+                <span className="info-label">Company Email: </span>
                 <span className="info-value" data-testid="send-to-email">
                   {email}
+                </span>
+              </div>
+            ) : null}
+            {additionalEmail ? (
+              <div className="refund-info__info">
+                <span className="info-label">Additional Email: </span>
+                <span
+                  className="info-value"
+                  data-testid="send-to-additional-email"
+                >
+                  {additionalEmail}
                 </span>
               </div>
             ) : null}
