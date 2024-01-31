@@ -16,16 +16,9 @@ GO
 
 -- Add IS_SUSPENDED flag to ORBC_COMPANY
 ALTER TABLE [dbo].[ORBC_COMPANY]
-   ADD [IS_SUSPENDED] [bit] NULL
-GO
-IF @@ERROR <> 0 SET NOEXEC ON
-GO
-
--- Default value for new company records is 0
-ALTER TABLE [dbo].[ORBC_COMPANY] 
-   ADD CONSTRAINT [DF_ORBC_COMPANY_IS_SUSPENDED] 
-      DEFAULT ((0)) 
-      FOR [IS_SUSPENDED]
+   ADD [IS_SUSPENDED] [char](1) NOT NULL 
+   CONSTRAINT [DF_ORBC_COMP_IS_SUSP_DEFAULT] DEFAULT ('N') 
+   CONSTRAINT [DF_ORBC_COMP_IS_SUSP_DOMAIN] CHECK ([IS_SUSPENDED] IN ('Y','N'))
 GO
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
@@ -33,7 +26,7 @@ GO
 -- Description of IS_SUSPENDED column
 EXEC sys.sp_addextendedproperty 
    @name=N'MS_Description', 
-   @value=N'Whether the company is suspended, 0=not suspended, 1=suspended.',
+   @value=N'Whether the company is suspended, N=not suspended, Y=suspended.',
    @level0type=N'SCHEMA',
    @level0name=N'dbo',
    @level1type=N'TABLE',
@@ -46,7 +39,7 @@ GO
 
 -- Alter ORBC_COMPANY_HIST to track new column
 ALTER TABLE [dbo].[ORBC_COMPANY_HIST]
-   ADD [IS_SUSPENDED] [bit] NULL
+   ADD [IS_SUSPENDED] [char](1) NULL
 GO
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
@@ -168,20 +161,6 @@ AS
 
       EXEC orbc_error_handling
    END CATCH;
-GO
-IF @@ERROR <> 0 SET NOEXEC ON
-GO
-
--- Set value of 0 for all existing companies
-UPDATE [dbo].[ORBC_COMPANY]
-   SET [IS_SUSPENDED] = 0
-GO
-IF @@ERROR <> 0 SET NOEXEC ON
-GO
-
--- Alter column to be non-nullable
-ALTER TABLE [dbo].[ORBC_COMPANY]
-   ALTER COLUMN [IS_SUSPENDED] [bit] NOT NULL
 GO
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
