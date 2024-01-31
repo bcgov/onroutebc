@@ -1,12 +1,12 @@
 import { useState, useMemo } from "react";
-import { rest } from "msw";
+import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import userEvent from "@testing-library/user-event";
 import { ThemeProvider } from "@mui/material/styles";
 
 import { APPLICATIONS_API_ROUTES } from "../../../../../apiManager/endpoints/endpoints";
 import { renderWithClient } from "../../../../../../../common/helpers/testHelper";
-import { Application } from "../../../../../types/application";
+import { Application, ApplicationRequestData } from "../../../../../types/application";
 import { bcGovTheme } from "../../../../../../../themes/bcGovTheme";
 import { ApplicationContext } from "../../../../../context/ApplicationContext";
 import { TermOversizeReview } from "../../../TermOversizeReview";
@@ -55,57 +55,60 @@ export const vehicleSubtypes = [
 ];
 
 const server = setupServer(
-  rest.get(
+  http.get(
     `${MANAGE_PROFILE_API.COMPANIES}/:companyId`,
-    async (_, res, ctx) => {
-      return res(
-        ctx.json({
-          ...companyInfo,
-        }),
-      );
+    () => {
+      return HttpResponse.json({
+        ...companyInfo,
+      });
     },
   ),
-  rest.post(`${APPLICATIONS_API_ROUTES.CREATE}`, async (req, res, ctx) => {
-    const reqBody = await req.json();
+
+  http.post(`${APPLICATIONS_API_ROUTES.CREATE}`, async ({ request }) => {
+    const reqBody = await request.json();
+    const application = reqBody?.valueOf();
+    if (!application) {
+      return HttpResponse.json(null, { status: 400 });
+    }
+
     const applicationData = {
-      ...reqBody,
+      ...application as ApplicationRequestData,
       applicationNumber: newApplicationNumber,
       createdDateTime: dayjsToUtcStr(now()),
       updatedDateTime: dayjsToUtcStr(now()),
     };
-    return res(
-      ctx.status(201),
-      ctx.json({
-        ...applicationData,
-      }),
-    );
+
+    return HttpResponse.json({
+      ...applicationData,
+    }, { status: 201 });
   }),
-  rest.put(`${APPLICATIONS_API_ROUTES.UPDATE}/:id`, async (req, res, ctx) => {
-    const reqBody = await req.json();
+
+  http.put(`${APPLICATIONS_API_ROUTES.UPDATE}/:id`, async ({ request }) => {
+    const reqBody = await request.json();
+    const application = reqBody?.valueOf();
+    if (!application) {
+      return HttpResponse.json(null, { status: 400 });
+    }
+
     const applicationData = {
-      ...reqBody,
+      ...application as ApplicationRequestData,
       updatedDateTime: dayjsToUtcStr(now()),
     };
-    return res(
-      ctx.status(200),
-      ctx.json({
-        ...applicationData,
-      }),
-    );
+    return HttpResponse.json({
+      ...applicationData,
+    }, { status: 200 });
   }),
-  rest.get(VEHICLES_API.POWER_UNIT_TYPES, async (_, res, ctx) => {
-    return res(
-      ctx.json([
-        ...getDefaultPowerUnitSubTypes(), // get power unit subtypes from mock vehicle store
-      ]),
-    );
+
+  http.get(VEHICLES_API.POWER_UNIT_TYPES, () => {
+    return HttpResponse.json([
+      ...getDefaultPowerUnitSubTypes(), // get power unit subtypes from mock vehicle store
+    ]);
   }),
-  rest.get(VEHICLES_API.TRAILER_TYPES, async (_, res, ctx) => {
-    return res(
-      ctx.json([
-        ...getDefaultTrailerSubTypes(), // get trailer subtypes from mock vehicle store
-      ]),
-    );
+
+  http.get(VEHICLES_API.TRAILER_TYPES, () => {
+    return HttpResponse.json([
+      ...getDefaultTrailerSubTypes(), // get trailer subtypes from mock vehicle store
+    ]);
   }),
 );
 

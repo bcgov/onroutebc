@@ -33,7 +33,6 @@ export const CustomOutlinedInput = <T extends ORBC_FormTypes>(
   const { register } = useFormContext();
 
   // Add aria-label to input prop for Jest testing purposes
-  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   const updatedInputProps: any = props.inputProps;
   updatedInputProps["aria-label"] = props.name;
   updatedInputProps["data-testid"] = `input-${props.name}`;

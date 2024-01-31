@@ -1,8 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
 
-import { BaseVehicle, VehicleType } from "../types/Vehicle";
-import { Nullable } from "../../../common/types/common";
+import { VehicleType } from "../types/Vehicle";
 import {
   addPowerUnit,
   addTrailer,
@@ -32,24 +30,14 @@ export const useVehicleByIdQuery = (
   vehicleType: VehicleType,
   vehicleId?: string,
 ) => {
-  const [vehicle, setVehicle] = useState<Nullable<BaseVehicle>>();
-
-  const query = useQuery({
+  return useQuery({
     queryKey: ["vehicle", "vehicleId", "vehicleType"],
     queryFn: () => getVehicleById(companyId, vehicleType, vehicleId),
     retry: false,
     refetchOnMount: "always", // always fetch when component is mounted
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
-    enabled: !!vehicleId, // does not perform the query at all if vehicle id is empty
-    onSuccess: (vehicleData) => {
-      setVehicle(vehicleData);
-    },
+    enabled: Boolean(vehicleId), // does not perform the query at all if vehicle id is empty
   });
-
-  return {
-    vehicleByIdQuery: query,
-    vehicle,
-  };
 };
 
 /**
@@ -76,7 +64,9 @@ export const useAddPowerUnitMutation = () => {
     mutationFn: addPowerUnit,
     onSuccess: (response) => {
       if (response.status === 201) {
-        queryClient.invalidateQueries(["powerUnits"]);
+        queryClient.invalidateQueries({
+          queryKey: ["powerUnits"],
+        });
       } else {
         // Display Error in the form.
       }
@@ -95,7 +85,9 @@ export const useUpdatePowerUnitMutation = () => {
     mutationFn: updatePowerUnit,
     onSuccess: (response) => {
       if (response.status === 200) {
-        queryClient.invalidateQueries(["powerUnits"]);
+        queryClient.invalidateQueries({
+          queryKey: ["powerUnits"],
+        });
       } else {
         // Display Error in the form.
       }
@@ -127,7 +119,9 @@ export const useAddTrailerMutation = () => {
     mutationFn: addTrailer,
     onSuccess: (response) => {
       if (response.status === 200) {
-        queryClient.invalidateQueries(["trailers"]);
+        queryClient.invalidateQueries({
+          queryKey: ["trailers"],
+        });
       } else {
         // Display Error in the form.
       }
@@ -146,7 +140,9 @@ export const useUpdateTrailerMutation = () => {
     mutationFn: updateTrailer,
     onSuccess: (response) => {
       if (response.status === 200) {
-        queryClient.invalidateQueries(["trailers"]);
+        queryClient.invalidateQueries({
+          queryKey: ["trailers"],
+        });
       } else {
         // Display Error in the form.
       }

@@ -302,19 +302,35 @@ export class CompanyService {
     @Query() legalName?: string,
     @Query() clientNumber?: string,
   ): Promise<PaginationDto<ReadCompanyDto>> {
-    const companies = await this.companyRepository
+    let companiesQuery = this.companyRepository
       .createQueryBuilder('company')
       .innerJoinAndSelect('company.mailingAddress', 'mailingAddress')
       .innerJoinAndSelect('company.primaryContact', 'primaryContact')
       .innerJoinAndSelect('primaryContact.province', 'province')
-      .innerJoinAndSelect('mailingAddress.province', 'provinceType')
-      .where('company.legalName LIKE :legalName', {
-        legalName: `%${legalName}%`,
-      })
-      .orWhere('company.clientNumber LIKE :clientNumber', {
-        clientNumber: `%${clientNumber}%`,
-      })
-      .getMany();
+      .innerJoinAndSelect('mailingAddress.province', 'provinceType');
+
+    // Apply conditions based on parameters
+    companiesQuery = companiesQuery.where('company.companyId IS NOT NULL');
+
+    if (legalName) {
+      companiesQuery = companiesQuery.andWhere(
+        'company.legalName LIKE :legalName',
+        {
+          legalName: `%${legalName}%`,
+        },
+      );
+    }
+
+    if (clientNumber) {
+      companiesQuery = companiesQuery.andWhere(
+        'company.clientNumber LIKE :clientNumber',
+        {
+          clientNumber: `%${clientNumber}%`,
+        },
+      );
+    }
+
+    const companies = await companiesQuery.getMany();
 
     const companyData = await this.classMapper.mapArrayAsync(
       companies,

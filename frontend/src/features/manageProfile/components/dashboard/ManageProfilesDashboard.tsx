@@ -1,5 +1,5 @@
 import { Button } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import React, { useContext } from "react";
 import { useLocation, useNavigate } from "react-router";
@@ -33,13 +33,13 @@ export const isBCeIDOrgAdmin = (userRoles: string[]): boolean => {
 export const ManageProfilesDashboard = React.memo(() => {
   const {
     data: companyInfoData,
-    isLoading,
+    isPending,
     isError,
     error,
   } = useQuery({
     queryKey: ["companyInfo"],
     queryFn: getCompanyInfo,
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
     staleTime: FIVE_MINUTES,
   });
 
@@ -54,7 +54,7 @@ export const ManageProfilesDashboard = React.memo(() => {
     selectedTab = stateFromNavigation.selectedTab;
   }
 
-  if (isLoading) {
+  if (isPending) {
     return <Loading />;
   }
 

@@ -45,7 +45,9 @@ export const MyInfoForm = memo(
       mutationFn: updateMyInfo,
       onSuccess: (response) => {
         if (response.status === 200) {
-          queryClient.invalidateQueries(["myInfo"]);
+          queryClient.invalidateQueries({
+            queryKey: ["myInfo"],
+          });
           setIsEditing(false);
         }
       },

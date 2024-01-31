@@ -108,8 +108,8 @@ export class CompanyController {
     const companies: PaginationDto<ReadCompanyDto> =
       await this.companyService.findCompanyPaginated(
         pageOptionsDto,
-        legalName,
-        clientNumber,
+        legalName?.trim(),
+        clientNumber?.trim(),
       );
 
     return companies;
