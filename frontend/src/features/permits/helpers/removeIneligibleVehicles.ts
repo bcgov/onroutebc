@@ -22,8 +22,10 @@ export const removeIneligibleVehicleSubTypes = (
   ineligibleTrailers: VehicleSubType[],
 ) => {
   let ineligibleList: VehicleSubType[] = [];
-  if (vehicleType === VEHICLE_TYPES.POWER_UNIT) ineligibleList = ineligiblePowerUnits;
-  if (vehicleType === VEHICLE_TYPES.TRAILER) ineligibleList = ineligibleTrailers;
+  if (vehicleType === VEHICLE_TYPES.POWER_UNIT)
+    ineligibleList = ineligiblePowerUnits;
+  if (vehicleType === VEHICLE_TYPES.TRAILER)
+    ineligibleList = ineligibleTrailers;
 
   const filteredVehicles = vehicles.filter((vehicle) => {
     return !ineligibleList.some(

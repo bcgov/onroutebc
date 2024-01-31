@@ -3,10 +3,7 @@ import { TRANSACTION_TYPES, TransactionType } from "../types/payment.d";
 import { Permit } from "../types/permit";
 import { isValidTransaction } from "./payment";
 import { Nullable } from "../../../common/types/common";
-import {
-  PERMIT_STATES,
-  getPermitState,
-} from "./permitState";
+import { PERMIT_STATES, getPermitState } from "./permitState";
 
 import {
   applyWhenNotNullable,
@@ -110,9 +107,7 @@ export const calculateAmountForVoid = (
   permitHistory: PermitHistory[],
 ) => {
   const permitState = getPermitState(permit);
-  if (
-    permitState === PERMIT_STATES.EXPIRED
-  ) {
+  if (permitState === PERMIT_STATES.EXPIRED) {
     return 0;
   }
 
