@@ -23,7 +23,7 @@ else
 fi
 
 TEST_13_3_RESULT=$(/opt/mssql-tools/bin/sqlcmd -U ${USER} -P "${PASS}" -S ${SERVER} -v DB_NAME=${DATABASE} -h -1 -i ${TESTS_DIR}/v_13_3_test.sql | xargs)
-if [[ $TEST_13_3_RESULT -eq 25 ]]; then
+if [[ $TEST_13_3_RESULT -eq 28 ]]; then
     echo "Test 13.3 passed: Correct number of role mappings inserted"
 else
     echo "******** Test 13.3 failed: Incorrect number of role mappings inserted"
