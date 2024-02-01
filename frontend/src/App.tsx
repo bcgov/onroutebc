@@ -3,7 +3,7 @@ import { AppRoutes } from "./routes/Routes";
 import { ThemeProvider } from "@mui/material/styles";
 import { createContext, Dispatch, useEffect, useMemo, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AuthProvider } from "react-oidc-context";
+import { AuthProvider, AuthProviderProps } from "react-oidc-context";
 
 import "./App.scss";
 import { Header } from "./common/components/header/Header";
@@ -23,6 +23,7 @@ import OnRouteBCContext, {
   IDIRUserDetailContext,
 } from "./common/authentication/OnRouteBCContext";
 import { VerifiedClient, UserRolesType } from "./common/authentication/types";
+import { WebStorageStateStore } from "oidc-client-ts";
 
 const authority =
   import.meta.env.VITE_KEYCLOAK_ISSUER_URL ||
@@ -34,13 +35,14 @@ const client_id =
 /**
  * The OIDC Configuration needed for authentication.
  */
-const oidcConfig = {
+const oidcConfig: AuthProviderProps = {
   authority: authority,
   client_id: client_id,
   redirect_uri: window.location.origin + "/",
   scope: "openid",
   automaticSilentRenew: true,
   revokeTokensOnSignout: true,
+  userStore: new WebStorageStateStore({ store: localStorage }),
 };
 
 /**
