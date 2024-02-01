@@ -4,8 +4,7 @@ import React, { useContext, useState } from "react";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
-import { Box, Button, Divider, Link, Typography, Stack } from "@mui/material";
-
+import { Box, Button, Divider, Typography, Stack } from "@mui/material";
 import {
   Controller,
   FieldValues,
@@ -23,11 +22,12 @@ import { addUserToCompany } from "../apiManager/manageProfileAPI";
 import { UserAuthRadioGroup } from "../components/forms/userManagement/UserAuthRadioGroup";
 import UserGroupsAndPermissionsModal from "../components/user-management/UserGroupsAndPermissionsModal";
 import { BCEID_PROFILE_TABS } from "../types/manageProfile.d";
+import { PROFILE_ROUTES } from "../../../routes/constants";
+import { CustomActionLink } from "../../../common/components/links/CustomActionLink";
 import {
   BCeIDAddUserRequest,
   BCEID_AUTH_GROUP,
 } from "../types/userManagement.d";
-import { PROFILE_ROUTES } from "../../../routes/constants";
 
 /**
  * BCeID User - Add User Page.
@@ -176,13 +176,11 @@ export const AddUserDashboard = React.memo(() => {
               <Typography variant={"h2"}>Assign User Group</Typography>
 
               <Typography variant={"h2"}>
-                <Link
-                  component="button"
-                  variant="body2"
+                <CustomActionLink
                   onClick={() => setIsUserGroupsModalOpen(() => true)}
                 >
                   User Groups and Permissions
-                </Link>
+                </CustomActionLink>
               </Typography>
             </Stack>
             <Stack spacing={2}>
