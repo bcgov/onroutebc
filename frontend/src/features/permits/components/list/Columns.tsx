@@ -1,8 +1,8 @@
 import { MRT_ColumnDef } from "material-react-table";
-import { Link } from "react-router-dom";
 
 import { ApplicationInProgress } from "../../types/application";
 import { APPLICATIONS_ROUTES } from "../../../../routes/constants";
+import { CustomNavLink } from "../../../../common/components/links/CustomNavLink";
 
 export const ApplicationInProgressColumnDefinition: MRT_ColumnDef<ApplicationInProgress>[] =
   [
@@ -13,12 +13,12 @@ export const ApplicationInProgressColumnDefinition: MRT_ColumnDef<ApplicationInP
       Cell: (props: { cell: any; row: any }) => {
         const permitIdStr = `${props.row.original.permitId}`;
         return (
-          <Link
+          <CustomNavLink
             to={`${APPLICATIONS_ROUTES.DETAILS(permitIdStr)}`}
             className="column-link column-link--application-details"
           >
             {props.cell.getValue()}
-          </Link>
+          </CustomNavLink>
         );
       },
     },
