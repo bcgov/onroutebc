@@ -58,18 +58,6 @@ export const ChallengeProfileSteps = React.memo(() => {
       provinceCode: "",
       city: "",
     },
-    primaryContact: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone1: "",
-      phone1Extension: "",
-      phone2: "",
-      phone2Extension: "",
-      countryCode: "",
-      provinceCode: "",
-      city: "",
-    },
   };
 
   const verifyMigratedClientFormMethods = useForm<VerifyMigratedClientRequest>({
@@ -108,7 +96,10 @@ export const ChallengeProfileSteps = React.memo(() => {
             "",
             verifiedClient?.migratedClientHash,
           ),
-          alternateName: getDefaultRequiredVal("", verifiedClient?.alternateName),
+          alternateName: getDefaultRequiredVal(
+            "",
+            verifiedClient?.alternateName,
+          ),
           mailingAddress: {
             addressLine1: getDefaultRequiredVal(
               "",
@@ -126,7 +117,10 @@ export const ChallengeProfileSteps = React.memo(() => {
               "",
               verifiedClient?.mailingAddress?.countryCode,
             ),
-            city: getDefaultRequiredVal("", verifiedClient?.mailingAddress?.city),
+            city: getDefaultRequiredVal(
+              "",
+              verifiedClient?.mailingAddress?.city,
+            ),
             postalCode: getDefaultRequiredVal(
               "",
               verifiedClient?.mailingAddress?.postalCode,
@@ -135,6 +129,48 @@ export const ChallengeProfileSteps = React.memo(() => {
           phone: getDefaultRequiredVal("", verifiedClient?.phone),
           extension: getDefaultRequiredVal("", verifiedClient?.extension),
           fax: getDefaultRequiredVal("", verifiedClient?.fax),
+          primaryContact: {
+            firstName: getDefaultRequiredVal(
+              "",
+              verifiedClient?.primaryContact?.firstName,
+            ),
+            lastName: getDefaultRequiredVal(
+              "",
+              verifiedClient?.primaryContact?.lastName,
+            ),
+            email: getDefaultRequiredVal(
+              "",
+              verifiedClient?.primaryContact?.email,
+            ),
+            phone1: getDefaultRequiredVal(
+              "",
+              verifiedClient?.primaryContact?.phone1,
+            ),
+            phone1Extension: getDefaultRequiredVal(
+              "",
+              verifiedClient?.primaryContact?.phone1Extension,
+            ),
+            phone2: getDefaultRequiredVal(
+              "",
+              verifiedClient?.primaryContact?.phone2,
+            ),
+            phone2Extension: getDefaultRequiredVal(
+              "",
+              verifiedClient?.primaryContact?.phone2Extension,
+            ),
+            provinceCode: getDefaultRequiredVal(
+              "",
+              verifiedClient?.primaryContact?.provinceCode,
+            ),
+            countryCode: getDefaultRequiredVal(
+              "",
+              verifiedClient?.primaryContact?.countryCode,
+            ),
+            city: getDefaultRequiredVal(
+              "",
+              verifiedClient?.primaryContact?.city,
+            ),
+          },
         });
       } else {
         if (!foundClient) {
