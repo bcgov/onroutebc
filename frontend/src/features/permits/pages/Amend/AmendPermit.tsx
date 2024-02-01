@@ -13,7 +13,10 @@ import { USER_AUTH_GROUP } from "../../../../common/authentication/types";
 import { AmendPermitReview } from "./components/AmendPermitReview";
 import { AmendPermitFinish } from "./components/AmendPermitFinish";
 import { AmendPermitForm } from "./components/AmendPermitForm";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../../common/helpers/util";
 import { ERROR_ROUTES, IDIR_ROUTES } from "../../../../routes/constants";
 import { hasPermitExpired } from "../../helpers/permitState";
 import {

@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction } from "react";
-import { IDIRUserAuthGroupType, MigratedClient, UserRolesType } from "./types";
+import { IDIRUserAuthGroupType, VerifiedClient, UserRolesType } from "./types";
 
 import { Nullable, Optional } from "../types/common";
 
@@ -48,8 +48,8 @@ export type OnRouteBCContextType = {
   setIDIRUserDetails?: Dispatch<
     SetStateAction<Optional<IDIRUserDetailContext>>
   >;
-  setMigratedClient?: Dispatch<SetStateAction<Optional<MigratedClient>>>;
-  migratedClient?: MigratedClient;
+  setMigratedClient?: Dispatch<SetStateAction<Optional<VerifiedClient>>>;
+  migratedClient?: VerifiedClient;
   isNewBCeIDUser?: boolean;
   setIsNewBCeIDUser?: Dispatch<SetStateAction<Optional<boolean>>>;
 };

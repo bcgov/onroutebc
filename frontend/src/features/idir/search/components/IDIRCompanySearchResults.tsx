@@ -75,14 +75,15 @@ export const IDIRCompanySearchResults = memo(
         pagination.pageIndex,
         pagination.pageSize,
       ],
-      queryFn: () => getCompanyDataBySearch(
-        {
-          searchByFilter,
-          searchEntity,
-          searchString,
-        },
-        { page: pagination.pageIndex, take: pagination.pageSize },
-      ),
+      queryFn: () =>
+        getCompanyDataBySearch(
+          {
+            searchByFilter,
+            searchEntity,
+            searchString,
+          },
+          { page: pagination.pageIndex, take: pagination.pageSize },
+        ),
       retry: 1, // retry once.
       enabled: true,
       refetchOnWindowFocus: false,

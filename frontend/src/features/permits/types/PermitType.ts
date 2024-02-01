@@ -91,7 +91,7 @@ export const getPermitTypeName = (permitType?: Nullable<string>) => {
  * @param permitType Permit type (eg. TROS, STOS, etc)
  * @returns display text for the permit type
  */
-export const permitTypeDisplayText = (permitType?: string) => {
+export const permitTypeDisplayText = (permitType?: Nullable<string>) => {
   switch (permitType) {
     case PERMIT_TYPES.TROS:
       return "Oversize: Term";

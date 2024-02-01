@@ -99,7 +99,7 @@ export class ReadCompanyDto {
   @AutoMap()
   @ApiProperty({
     description: 'The primary contact of the company.',
-    required: true,
+    required: false,
   })
   primaryContact: ReadContactDto;
 }

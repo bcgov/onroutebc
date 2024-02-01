@@ -217,7 +217,8 @@ export const getAllPowerUnits = () => vehicleSourceDef.powerUnit.getAll();
 export const getAllTrailers = () => vehicleSourceDef.trailer.getAll();
 export const getAllPowerUnitSubTypes = () =>
   vehicleSourceDef.powerUnitSubType.getAll();
-export const getAllTrailerSubTypes = () => vehicleSourceDef.trailerSubType.getAll();
+export const getAllTrailerSubTypes = () =>
+  vehicleSourceDef.trailerSubType.getAll();
 
 export const resetVehicleSource = () => {
   powerUnitId = 1;
