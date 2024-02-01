@@ -12,9 +12,8 @@ import {
   forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In } from 'typeorm/find-options/operator/In';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
-import { DataSource, IsNull, Repository } from 'typeorm';
+import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import { CreateApplicationDto } from './dto/request/create-application.dto';
 import { ReadApplicationDto } from './dto/response/read-application.dto';
 import { Permit } from './entities/permit.entity';
@@ -58,6 +57,10 @@ import {
 } from '../../common/helper/payment.helper';
 import * as constants from '../../common/constants/api.constant';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
+import { PageOptionsDto } from 'src/common/dto/paginate/page-options';
+import { PageMetaDto } from 'src/common/dto/paginate/page-meta';
+import { PaginationDto } from 'src/common/dto/paginate/pagination';
+import { SortDto } from '../common/dto/request/sort.dto';
 
 @Injectable()
 export class ApplicationService {
@@ -202,56 +205,105 @@ export class ApplicationService {
     return readPermitApplicationdto;
   }
 
-  /* Get all application for a company. 
-     Initially written to facilitate get application in progress for IDIR user.*/
-  @LogAsyncMethodExecution()
-  async findAllApplicationCompany(
-    companyId: number,
-    statuses: ApplicationStatus[],
-  ): Promise<ReadApplicationDto[]> {
-    const applications = await this.permitRepository.find({
-      where: {
-        companyId: +companyId,
-        permitStatus: In([...statuses]),
-        permitNumber: IsNull(),
-      },
-      relations: {
-        permitData: true,
-      },
-    });
-
-    return this.classMapper.mapArrayAsync(
-      applications,
-      Permit,
-      ReadApplicationDto,
-    );
-  }
-
   /*Get all application in progress for a specific user of a specific company.
     Initially written to facilitate get application in progress for company User. */
   @LogAsyncMethodExecution()
-  async findAllApplicationUser(
+  async findAllApplications(
+    pageOptionsDto: PageOptionsDto,
     companyId: number,
     userGuid: string,
     statuses: ApplicationStatus[],
-  ): Promise<ReadApplicationDto[]> {
-    const applications: Permit[] = await this.permitRepository.find({
-      where: {
-        companyId: +companyId,
-        userGuid: userGuid,
-        permitStatus: In([...statuses]),
-        permitNumber: IsNull(),
-      },
-      relations: {
-        permitData: true,
-      },
+    sortDto: SortDto[],
+  ): Promise<PaginationDto<ReadApplicationDto>> {
+    console.log('statuses: ', statuses);
+    const permits = this.buildApplicationQuery(
+      pageOptionsDto,
+      userGuid,
+      companyId,
+      statuses,
+    );
+    const sortedPermits = this.sortPermits(permits, sortDto);
+    const totalItems = await sortedPermits.getCount();
+    const { entities } = await permits.getRawAndEntities();
+    const pageMetaDto = new PageMetaDto({ totalItems, pageOptionsDto });
+    const readApplicationDto: ReadApplicationDto[] =
+      await this.classMapper.mapArrayAsync(
+        entities,
+        Permit,
+        ReadApplicationDto,
+      );
+    return new PaginationDto(readApplicationDto, pageMetaDto);
+  }
+
+  private buildApplicationQuery(
+    pageOptionsDto: PageOptionsDto,
+    userGuid?: string,
+    companyId?: number,
+    statuses?: ApplicationStatus[],
+  ): SelectQueryBuilder<Permit> {
+    let permitsQuery = this.permitRepository
+      .createQueryBuilder('permit')
+      .innerJoinAndSelect('permit.permitData', 'permitData');
+    permitsQuery = permitsQuery.where('permit.permitNumber IS NULL');
+    if (statuses) {
+      permitsQuery = permitsQuery.andWhere(
+        'permit.permitStatus IN (:...statuses)',
+        {
+          statuses,
+        },
+      );
+    }
+    if (companyId) {
+      permitsQuery = permitsQuery.andWhere('permit.companyId = :companyId', {
+        companyId,
+      });
+    }
+
+    if (userGuid) {
+      permitsQuery = permitsQuery.andWhere('permit.userGuid = :userGUID', {
+        userGuid,
+      });
+    }
+    // Apply pagination
+    permitsQuery = permitsQuery
+      .skip((pageOptionsDto.page - 1) * pageOptionsDto.take)
+      .take(pageOptionsDto.take);
+
+    return permitsQuery;
+  }
+
+  private sortPermits(
+    permits: SelectQueryBuilder<Permit>,
+    sortDto?: SortDto[],
+  ): SelectQueryBuilder<Permit> {
+    if (!sortDto || sortDto.length === 0) {
+      return permits;
+    }
+
+    sortDto.forEach((value, index) => {
+      const orderByMapping: Record<string, string> = {
+        permitNumber: 'permit.permitNumber',
+        permitType: 'permit.permitType',
+        startDate: 'permitData.startDate',
+        expiryDate: 'permitData.expiryDate',
+        unitNumber: 'permitData.unitNumber',
+        plate: 'permitData.plate',
+        applicant: 'permitData.applicant',
+      };
+
+      const orderByKey = orderByMapping[value.orderBy];
+
+      if (orderByKey) {
+        const orderBy = value.descending ? 'DESC' : 'ASC';
+        if (index === 0) {
+          permits.orderBy(orderByKey, orderBy);
+        } else {
+          permits.addOrderBy(orderByKey, orderBy);
+        }
+      }
     });
 
-    return this.classMapper.mapArrayAsync(
-      applications,
-      Permit,
-      ReadApplicationDto,
-    );
+    return permits;
   }
 
   /**

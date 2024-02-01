@@ -19,7 +19,6 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { IDP } from 'src/common/enum/idp.enum';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { CreateApplicationDto } from './dto/request/create-application.dto';
 import { ReadApplicationDto } from './dto/response/read-application.dto';
@@ -36,6 +35,11 @@ import { Role } from 'src/common/enum/roles.enum';
 import { IssuePermitDto } from './dto/request/issue-permit.dto';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { ParamToArray } from 'src/common/class/customs.transform';
+import { PageOptionsDto } from 'src/common/dto/paginate/page-options';
+import { PaginationDto } from 'src/common/dto/paginate/pagination';
+import { UserAuthGroup } from 'src/common/enum/user-auth-group.enum';
+import { SortDto } from '../common/dto/request/sort.dto';
+import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
 
 @ApiBearerAuth()
 @ApiTags('Permit Application')
@@ -80,16 +84,20 @@ export class ApplicationController {
    * @param userGUID
    * @param status
    */
-  @ApiOkResponse({
-    description: 'The Permit Application Resource',
-    type: ReadApplicationDto,
-    isArray: true,
-  })
+  @ApiPaginatedResponse(ReadPermitDto)
   @ApiQuery({ name: 'companyId', required: false })
+  @ApiQuery({ name: 'statuses', type:[String] , required: false, example: 'IN_PROGRESS,WAITING_PAYMENT' })
+  @ApiQuery({
+    name: 'sorting',
+    required: false,
+    example:
+      '[{"orderBy":"unitNumber","descending":false},{"orderBy":"permitType","descending":false}]',
+  })
   @Roles(Role.READ_PERMIT)
   @Get()
   async findAllApplication(
     @Req() request: Request,
+    @Query() pageOptionsDto: PageOptionsDto,
     @Query('companyId') companyId?: number,
     @Query(
       'statuses',
@@ -97,20 +105,23 @@ export class ApplicationController {
       ParamToArray<ApplicationStatus>,
     )
     statuses: ApplicationStatus[] = [],
-  ): Promise<ReadApplicationDto[]> {
+    @Query('sorting') sorting?: string,
+  ): Promise<PaginationDto<ReadApplicationDto>> {
     const currentUser = request.user as IUserJWT;
-    if (currentUser.identity_provider == IDP.IDIR) {
-      return this.applicationService.findAllApplicationCompany(
-        companyId,
-        statuses,
-      );
-    } else {
-      return this.applicationService.findAllApplicationUser(
-        companyId,
-        currentUser.userGUID,
-        statuses,
-      );
-    }
+    let sortDto: SortDto[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    if (sorting) sortDto = JSON.parse(sorting);
+    const userGuid =
+      currentUser.orbcUserAuthGroup === UserAuthGroup.CV_CLIENT
+        ? currentUser.userGUID
+        : null;
+    return this.applicationService.findAllApplications(
+      pageOptionsDto,
+      companyId,
+      userGuid,
+      statuses,
+      sortDto,
+    );
   }
 
   /**
