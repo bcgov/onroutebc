@@ -36,7 +36,7 @@ const SEARCH_BY_PERMIT_OPTIONS = [
 
 const SEARCH_BY_COMPANY_OPTIONS = [
   { label: "Company Name", value: "companyName" },
-  { label: "onRouteBC Client Number", value: "onRouteBCClientNumber" },
+  { label: "Client Number", value: "clientNumber" },
 ];
 
 const SEARCH_BY_APPLICATION_OPTIONS = [
