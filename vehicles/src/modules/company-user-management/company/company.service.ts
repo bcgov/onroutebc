@@ -77,9 +77,12 @@ export class CompanyService {
     let newCompany: Company;
     let newUser: ReadUserDto;
     let migratedClient = false;
-    let existingCompanyDetails = await this.findOneByCompanyGuid(
-      currentUser.bceid_business_guid,
-    );
+    let existingCompanyDetails: Company;
+    if(currentUser.bceid_business_guid) {
+      existingCompanyDetails = await this.findOneByCompanyGuid(
+        currentUser.bceid_business_guid,
+      );
+    }
 
     if (!existingCompanyDetails && createCompanyDto?.migratedClientHash) {
       existingCompanyDetails = await this.findOneByLegacyClientHash(
