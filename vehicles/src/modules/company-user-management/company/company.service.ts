@@ -8,7 +8,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { Brackets, DataSource, Repository } from 'typeorm';
 import { UserAuthGroup } from '../../../common/enum/user-auth-group.enum';
 import { ReadUserDto } from '../users/dto/response/read-user.dto';
 import { CreateCompanyDto } from './dto/request/create-company.dto';
@@ -40,7 +40,7 @@ import { PageMetaDto } from 'src/common/dto/paginate/page-meta';
 import { IDP } from '../../../common/enum/idp.enum';
 import { Directory } from '../../../common/enum/directory.enum';
 import { getDirectory } from '../../../common/helper/auth.helper';
-import * as crypto from 'crypto';
+import { stringToSHA256 } from '../../../common/helper/crypto.helper';
 
 @Injectable()
 export class CompanyService {
@@ -339,10 +339,13 @@ export class CompanyService {
 
     if (clientNumber) {
       companiesQuery = companiesQuery.andWhere(
-        'company.clientNumber LIKE :clientNumber',
-        {
-          clientNumber: `%${clientNumber}%`,
-        },
+        new Brackets((qb) => {
+          qb.where('company.clientNumber LIKE :clientNumber', {
+            clientNumber: `%${clientNumber}%`,
+          }).orWhere('company.migratedClientHash = :legacyClientNumberHash', {
+            legacyClientNumberHash: stringToSHA256(clientNumber),
+          });
+        }),
       );
     }
 
@@ -436,10 +439,7 @@ export class CompanyService {
   async findOneByLegacyClientNumber(
     legacyClientNumber: string,
   ): Promise<Company> {
-    const legacyClientHash = crypto
-      .createHash('sha256')
-      .update(legacyClientNumber?.replace(/-/g, ''))
-      .digest('hex');
+    const legacyClientHash = stringToSHA256(legacyClientNumber);
     return await this.findOneByLegacyClientHash(legacyClientHash);
   }
 
