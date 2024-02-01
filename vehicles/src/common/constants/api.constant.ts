@@ -4,3 +4,5 @@ export const PAYMENT_CURRENCY = 'CAD';
 export const SELF_ISSUED = 'Self Issued';
 export const PPC_FULL_TEXT = 'Provincial Permit Centre';
 export const TPS_MIGRATED_USER = 'TPS Migrated User';
+export const CRYPTO_ALGORITHM_MD5 = 'md5';
+export const CRYPTO_ALGORITHM_SHA256 = 'sha256';
