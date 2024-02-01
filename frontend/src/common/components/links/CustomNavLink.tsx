@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 
-import "./CustomLink.scss";
+import "./CustomNavLink.scss";
 import { InternalLinkProps } from "./types/LinkProps";
 import { CustomLinkContent } from "./CustomLinkContent";
 
-export const CustomLink = (props: InternalLinkProps) => {
+export const CustomNavLink = (props: InternalLinkProps) => {
   const { withLinkIcon, ...linkProps } = props;
 
   const className = () => {

@@ -20,7 +20,7 @@ export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
   },
   {
     accessorKey: "clientNumber",
-    header: "onRouteBC Client No.",
+    header: "Client No.",
     enableSorting: true,
     sortingFn: "alphanumeric",
   },

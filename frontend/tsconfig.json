@@ -27,6 +27,7 @@
   },
   "include": [
     ".eslintrc.cjs",
+    "postcss.config.ts",
     "src",
     "public"
   ]
