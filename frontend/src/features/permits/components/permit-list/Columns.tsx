@@ -1,9 +1,10 @@
-import Link from "@mui/material/Link";
 import { MRT_ColumnDef } from "material-react-table";
+
 import { viewPermitPdf } from "../../helpers/permitPDFHelper";
 import { Permit } from "../../types/permit";
 import { PermitChip } from "./PermitChip";
 import { formatCellValuetoDatetime } from "../../../../common/helpers/tableHelper";
+import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
 
 /**
  * The column definition for Permits.
@@ -19,13 +20,11 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
     Cell: (props: { row: any; cell: any }) => {
       return (
         <>
-          <Link
-            component="button"
-            variant="body2"
+          <CustomActionLink
             onClick={() => viewPermitPdf(props.row.original.permitId)}
           >
             {props.cell.getValue()}
-          </Link>
+          </CustomActionLink>
           <PermitChip permitStatus={props.row.original.permitStatus} />
         </>
       );
