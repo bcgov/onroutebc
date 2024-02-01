@@ -40,7 +40,8 @@ import { PageMetaDto } from 'src/common/dto/paginate/page-meta';
 import { IDP } from '../../../common/enum/idp.enum';
 import { Directory } from '../../../common/enum/directory.enum';
 import { getDirectory } from '../../../common/helper/auth.helper';
-import { stringToSHA256 } from '../../../common/helper/crypto.helper';
+import { convertToHash } from '../../../common/helper/crypto.helper';
+import { CRYPTO_ALGORITHM_SHA256 } from '../../../common/constants/api.constant';
 
 @Injectable()
 export class CompanyService {
@@ -343,7 +344,10 @@ export class CompanyService {
           qb.where('company.clientNumber LIKE :clientNumber', {
             clientNumber: `%${clientNumber}%`,
           }).orWhere('company.migratedClientHash = :legacyClientNumberHash', {
-            legacyClientNumberHash: stringToSHA256(clientNumber),
+            legacyClientNumberHash: convertToHash(
+              clientNumber?.replace(/-/g, ''),
+              CRYPTO_ALGORITHM_SHA256,
+            ),
           });
         }),
       );
@@ -439,7 +443,10 @@ export class CompanyService {
   async findOneByLegacyClientNumber(
     legacyClientNumber: string,
   ): Promise<Company> {
-    const legacyClientHash = stringToSHA256(legacyClientNumber);
+    const legacyClientHash = convertToHash(
+      legacyClientNumber?.replace(/-/g, ''),
+      CRYPTO_ALGORITHM_SHA256,
+    );
     return await this.findOneByLegacyClientHash(legacyClientHash);
   }
 
