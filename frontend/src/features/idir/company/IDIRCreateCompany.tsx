@@ -1,15 +1,13 @@
 import { Box, Button, Stack } from "@mui/material";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 
 import { useMutation } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { Nullable } from "vitest";
-import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
 import { InfoBcGovBanner } from "../../../common/components/banners/InfoBcGovBanner";
 import { Banner } from "../../../common/components/dashboard/Banner";
 import { BANNER_MESSAGES } from "../../../common/constants/bannerMessages";
-import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { ERROR_ROUTES } from "../../../routes/constants";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import { createOnRouteBCProfile } from "../../manageProfile/apiManager/manageProfileAPI";
@@ -24,42 +22,26 @@ import { OnRouteBCProfileCreated } from "../../wizard/subcomponents/OnRouteBCPro
  * The form for a staff user to create a company.
  */
 export const IDIRCreateCompany = React.memo(() => {
-  const { migratedClient } = useContext(OnRouteBCContext);
   const navigate = useNavigate();
 
   const [clientNumber, setClientNumber] = useState<Nullable<string>>(null);
 
   const companyAndUserFormMethods = useForm<CompanyAndUserRequest>({
     defaultValues: {
-      legalName: getDefaultRequiredVal("", migratedClient?.legalName),
-      alternateName: getDefaultRequiredVal("", migratedClient?.alternateName),
+      legalName: "",
+      alternateName: "",
       mailingAddress: {
-        addressLine1: getDefaultRequiredVal(
-          "",
-          migratedClient?.mailingAddress?.addressLine1,
-        ),
-        addressLine2: getDefaultRequiredVal(
-          "",
-          migratedClient?.mailingAddress?.addressLine2,
-        ),
-        provinceCode: getDefaultRequiredVal(
-          "",
-          migratedClient?.mailingAddress?.provinceCode,
-        ),
-        countryCode: getDefaultRequiredVal(
-          "",
-          migratedClient?.mailingAddress?.countryCode,
-        ),
-        city: getDefaultRequiredVal("", migratedClient?.mailingAddress?.city),
-        postalCode: getDefaultRequiredVal(
-          "",
-          migratedClient?.mailingAddress?.postalCode,
-        ),
+        addressLine1: "",
+        addressLine2: "",
+        provinceCode: "",
+        countryCode: "",
+        city: "",
+        postalCode: "",
       },
-      email: getDefaultRequiredVal("", migratedClient?.email),
-      phone: getDefaultRequiredVal("", migratedClient?.phone),
-      extension: getDefaultRequiredVal("", migratedClient?.extension),
-      fax: getDefaultRequiredVal("", migratedClient?.fax),
+      email: "",
+      phone: "",
+      extension: "",
+      fax: "",
       primaryContact: {
         firstName: "",
         lastName: "",
