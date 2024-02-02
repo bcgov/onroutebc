@@ -129,9 +129,8 @@ const ChallengeOption = ({
  */
 export const WelcomePage = React.memo(() => {
   const companyNameFromToken = getCompanyNameFromSession();
-  const { companyLegalName: companyNameFromContext } =
+  const { companyLegalName: companyNameFromContext, migratedClient } =
     useContext(OnRouteBCContext);
-
   return (
     <div className="welcome-page">
       <div className="welcome-page__main">
@@ -145,14 +144,37 @@ export const WelcomePage = React.memo(() => {
           <WelcomeCompanyName companyName={companyNameFromToken} />
         )}
         <div className="separator-line"></div>
+        {/**
+         * If the user is an invited user to a company that exists
+         * redirect them to user info wizard.
+         */}
         {isInvitedUser(companyNameFromContext) && (
           <ProfileAction navigateTo={PROFILE_ROUTES.USER_INFO} />
         )}
-        {companyNameFromContext &&
+        {/**
+         * companyNameFromContext will be undefined if there is
+         * no associated company. It is a clear indication that we need to create
+         * a new company.
+         *
+         * But to distinguish further between challenge and no challenge
+         * workflows, we need to check if migratedClient has values.
+         * If yes, it is an already verified legacyClient.
+         * If not, the user gets the option to
+         * 1) create new company 2) verify using permit and client numbers
+         *
+         */}
+        {/**
+         * No challenge Workflow
+         */}
+        {!companyNameFromContext &&
+          migratedClient?.clientNumber &&
           isNewCompanyProfile(companyNameFromContext) && (
             <ProfileAction navigateTo={CREATE_PROFILE_WIZARD_ROUTES.CREATE} />
           )}
-        {!companyNameFromContext && (
+        {/**
+         * Challenge Workflow
+         */}
+        {!companyNameFromContext && !migratedClient && (
           <Stack spacing={2} sx={{ justifyContent: "center" }}>
             <div style={{ alignSelf: "center" }}>
               Has this company purchased a commercial vehicle
