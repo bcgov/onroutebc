@@ -91,19 +91,28 @@ export const LoginRedirect = () => {
     }
 
     if (isAuthenticated && !isPending) {
-      if (userFromToken?.profile?.identity_provider === IDPS.IDIR) {
-        const userContextData: Optional<IDIRUserContextType> =
-          queryClient.getQueryData<IDIRUserContextType>(["userContext"]);
-        if (userContextData?.user?.userGUID) {
-          navigate(IDIR_ROUTES.WELCOME);
-        } else {
-          navigate(ERROR_ROUTES.UNAUTHORIZED);
-        }
+      const redirectURI = sessionStorage.getItem(
+        "onrouteBC.postLogin.redirect",
+      );
+      console.log("redirectURI::", redirectURI);
+      if (redirectURI) {
+        sessionStorage.removeItem("onrouteBC.postLogin.redirect");
+        window.location.href = redirectURI;
       } else {
-        const userContextData: Optional<BCeIDUserContextType> =
-          queryClient.getQueryData<BCeIDUserContextType>(["userContext"]);
-        const to = navigateBCeID(userContextData as BCeIDUserContextType);
-        navigate(to ?? ERROR_ROUTES.UNEXPECTED);
+        if (userFromToken?.profile?.identity_provider === IDPS.IDIR) {
+          const userContextData: Optional<IDIRUserContextType> =
+            queryClient.getQueryData<IDIRUserContextType>(["userContext"]);
+          if (userContextData?.user?.userGUID) {
+            navigate(IDIR_ROUTES.WELCOME);
+          } else {
+            navigate(ERROR_ROUTES.UNAUTHORIZED);
+          }
+        } else {
+          const userContextData: Optional<BCeIDUserContextType> =
+            queryClient.getQueryData<BCeIDUserContextType>(["userContext"]);
+          const to = navigateBCeID(userContextData as BCeIDUserContextType);
+          navigate(to ?? ERROR_ROUTES.UNEXPECTED);
+        }
       }
     }
   }, [isPending, isError, isAuthenticated, userFromToken]);

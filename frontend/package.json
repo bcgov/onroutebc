@@ -1,6 +1,7 @@
 {
   "name": "onroutebc-frontend",
   "version": "0.1.0",
+  "type": "module",
   "private": true,
   "dependencies": {
     "@bcgov/bc-sans": "^2.1.0",

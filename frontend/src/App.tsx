@@ -45,6 +45,20 @@ const oidcConfig: AuthProviderProps = {
   userStore: new WebStorageStateStore({ store: localStorage }),
 };
 
+const setRedirectInSession = () => {
+  const redirectUri = new URL(window.location.href).searchParams.get(
+    "redirect",
+  );
+  if (redirectUri) {
+    sessionStorage.setItem(
+      "onrouteBC.postLogin.redirect",
+      redirectUri.toString(),
+    );
+  }
+
+  return redirectUri ?? window.location.origin + "/";
+};
+
 /**
  * The Snackbar Context for the application.
  */
@@ -81,6 +95,10 @@ const App = () => {
   useEffect(() => {
     setDisplaySnackBar(snackBar.showSnackbar);
   }, [snackBar]);
+
+  useEffect(() => {
+    setRedirectInSession();
+  }, []);
 
   return (
     <AuthProvider {...oidcConfig}>

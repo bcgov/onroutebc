@@ -51,7 +51,20 @@ export const TermOversizePay = () => {
       if (!transaction?.url) {
         navigate(APPLICATIONS_ROUTES.PAY(permitId, true));
       } else {
-        window.open(transaction.url, "_self");
+        console.log("transaction.url::", transaction.url);
+        const paybcURL = new URL(transaction.url);
+        const redirectUri = paybcURL.searchParams.get("redirectUri") as string;
+        paybcURL.searchParams.set(
+          "redirectUri",
+          window.origin + "/" +
+            redirectUri.substring(
+              redirectUri.indexOf("payment"),
+              redirectUri.length,
+            ),
+        );
+        console.log('paybcURL::', paybcURL);
+        console.log("paybcURL.redirectUri::", paybcURL.searchParams.get("redirectUri"));
+        window.open(paybcURL, "_self");
       }
     }
   }, [transaction]);
