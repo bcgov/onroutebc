@@ -1,19 +1,21 @@
 import React from "react";
-import { AxiosError } from "axios";
-import { Navigate } from "react-router-dom";
+//import { AxiosError } from "axios";
+//import { Navigate } from "react-router-dom";
 
 import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
-import { Loading } from "../../../../common/pages/Loading";
-import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
-import { List } from "../list/List";
+//import { Loading } from "../../../../common/pages/Loading";
+//import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
+//import { List } from "../list/List";
 import { StartApplicationAction } from "../../pages/TermOversize/components/dashboard/StartApplicationAction";
 import { ActivePermitList } from "../permit-list/ActivePermitList";
 import { ExpiredPermitList } from "../permit-list/ExpiredPermitList";
-import { useApplicationsInProgressQuery } from "../../hooks/hooks";
-import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
-import { ERROR_ROUTES } from "../../../../routes/constants";
+// import { useApplicationsInProgressQuery } from "../../hooks/hooks";
+//import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
+//import { ERROR_ROUTES } from "../../../../routes/constants";
+import { InProgressApplicationList } from "../permit-list/InProgressApplicationList";
 
 export const PermitLists = React.memo(() => {
+  /*
   const { applicationsInProgressQuery } = useApplicationsInProgressQuery();
   const {
     data: applicationsInProgress,
@@ -33,9 +35,10 @@ export const PermitLists = React.memo(() => {
       }
       return <ErrorFallback error={error.message} />;
     }
-  }
+  }*/
 
   const tabs = [
+    /*
     {
       label: "Applications in Progress",
       count: applicationsInProgress?.length,
@@ -45,6 +48,10 @@ export const PermitLists = React.memo(() => {
         ) : (
           <List query={applicationsInProgressQuery} />
         ),
+    },*/
+    {
+      label: "Applications in Progress",
+      component: <InProgressApplicationList />,
     },
     {
       label: "Active Permits",

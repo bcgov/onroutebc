@@ -1,3 +1,4 @@
+import "./InProgressApplicationList.scss";
 import { Box } from "@mui/material";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
@@ -13,7 +14,7 @@ import {
 } from "material-react-table";
 
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
-import { getPermits } from "../../apiManager/permitsAPI";
+import { getApplicationsInProgress} from "../../apiManager/permitsAPI";
 import { Permit } from "../../types/permit";
 import { PermitsColumnDefinition } from "./Columns";
 import { PermitRowOptions } from "./PermitRowOptions";
@@ -26,22 +27,15 @@ import { useNavigate } from "react-router-dom";
 import { ERROR_ROUTES } from "../../../../routes/constants";
 
 /**
- * A permit list component with common functionalities that can be shared by
- * wrapping components.
+ * A wrapper with the query to load the table with expired permits.
  */
-export const BasePermitList = ({
-  isExpired = false,
-  isInProgress = false,
-}: {
-  isExpired?: boolean;
-  isInProgress?: boolean;
-}) => {
+export const InProgressApplicationList = () => {
+
   const navigate = useNavigate();
   const [pagination, setPagination] = useState<MRT_PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   });
-  const [globalFilter, setGlobalFilter] = useState<string>("");
   const [sorting, setSorting] = useState<MRT_SortingState>([
     {
       id: "startDate",
@@ -49,22 +43,18 @@ export const BasePermitList = ({
     },
   ]);
 
-  const permitsQuery = useQuery({
+  const applicationsQuery = useQuery({
     queryKey: [
-      "permits",
-      isExpired,
-      globalFilter,
+      "applicationsInProgress",
       pagination.pageIndex,
       pagination.pageSize,
       sorting,
     ],
     queryFn: () =>
-      getPermits(
-        { expired: isExpired },
+      getApplicationsInProgress(
         {
           page: pagination.pageIndex,
           take: pagination.pageSize,
-          searchString: globalFilter,
           sorting:
             sorting.length > 0
               ? [
@@ -81,7 +71,7 @@ export const BasePermitList = ({
     retry: 1,
   });
 
-  const { data, isError, isPending, isRefetching } = permitsQuery;
+  const { data, isError, isPending, isRefetching } = applicationsQuery;
 
   const table = useMaterialReactTable({
     ...defaultTableOptions,
@@ -98,7 +88,6 @@ export const BasePermitList = ({
       columnVisibility: { applicationId: true },
       isLoading: isPending || isRefetching,
       pagination,
-      globalFilter,
       sorting,
     },
     renderTopToolbar: useCallback(
@@ -122,7 +111,6 @@ export const BasePermitList = ({
     rowCount: data?.meta?.totalItems ?? 0,
     pageCount: data?.meta?.pageCount ?? 0,
     onSortingChange: setSorting,
-    onGlobalFilterChange: setGlobalFilter,
     onPaginationChange: setPagination,
     enablePagination: true,
     enableBottomToolbar: true,
@@ -131,7 +119,7 @@ export const BasePermitList = ({
       return (
         <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
           <PermitRowOptions
-            isExpired={isExpired}
+            isExpired={false}
             permitId={props.row.original.permitId}
           />
         </Box>

@@ -4,14 +4,12 @@ import {
   useQueryClient,
   useMutation,
   useQuery,
-  keepPreviousData,
 } from "@tanstack/react-query";
 
 import { Application } from "../types/application";
 import { mapApplicationResponseToApplication } from "../helpers/mappers";
 import { IssuePermitsResponse, Permit } from "../types/permit";
 import { StartTransactionResponseData } from "../types/payment";
-import { FIVE_MINUTES } from "../../../common/constants/constants";
 import { APPLICATION_STEPS, ApplicationStep } from "../../../routes/constants";
 import { Nullable, Optional } from "../../../common/types/common";
 import {
@@ -26,7 +24,6 @@ import {
   amendPermit,
   getCurrentAmendmentApplication,
   modifyAmendmentApplication,
-  getApplicationsInProgress,
 } from "../apiManager/permitsAPI";
 
 /**
@@ -346,21 +343,4 @@ export const useAmendmentApplicationQuery = (originalPermitId?: string) => {
     refetchOnMount: "always",
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
   });
-};
-
-/**
- * A custom react query hook that fetches applications in progress.
- * @returns List of applications in progress
- */
-export const useApplicationsInProgressQuery = () => {
-  const applicationsInProgressQuery = useQuery({
-    queryKey: ["applicationInProgress"],
-    queryFn: getApplicationsInProgress,
-    placeholderData: keepPreviousData,
-    staleTime: FIVE_MINUTES,
-  });
-
-  return {
-    applicationsInProgressQuery,
-  };
 };
