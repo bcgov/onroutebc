@@ -15,16 +15,11 @@ import {
 
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import { deleteApplications, getApplicationsInProgress} from "../../apiManager/permitsAPI";
-//import { Permit } from "../../types/permit";
-//import { PermitsColumnDefinition } from "./Columns";
-//import { PermitRowOptions } from "./PermitRowOptions";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
-//import { useNavigate } from "react-router-dom";
-//import { ERROR_ROUTES } from "../../../../routes/constants";
 import { ApplicationInProgressColumnDefinition } from "./ApplicationInProgressColumnDefinition";
 import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
 import { SnackBarContext } from "../../../../App";
@@ -37,7 +32,6 @@ import { Trash } from "../../../../common/components/table/options/Trash";
  */
 export const InProgressApplicationList = () => {
 
-  //const navigate = useNavigate();
   const [pagination, setPagination] = useState<MRT_PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -220,17 +214,6 @@ export const InProgressApplicationList = () => {
     onPaginationChange: setPagination,
     enablePagination: true,
     enableBottomToolbar: true,
-    // renderEmptyRowsFallback: () => <NoRecordsFound />,
-    // renderRowActions: useCallback((props: { row: MRT_Row<Permit> }) => {
-    //   return (
-    //     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-    //       <PermitRowOptions
-    //         isExpired={false}
-    //         permitId={props.row.original.permitId}
-    //       />
-    //     </Box>
-    //   );
-    // }, []),
     muiToolbarAlertBannerProps: isError
       ? {
           color: "error",
@@ -238,12 +221,6 @@ export const InProgressApplicationList = () => {
         }
       : undefined,
   });
-
-  // useEffect(() => {
-  //   if (isError) {
-  //     navigate(ERROR_ROUTES.UNEXPECTED);
-  //   }
-  // }, [isError]);
 
   return (
     <div className="table-container">
