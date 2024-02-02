@@ -1,5 +1,5 @@
 import { memo, useContext, useState } from "react";
-import { Box, Button, Divider, Stack, Typography } from "@mui/material";
+import { Box, Button, Divider, Link, Stack, Typography } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import {
@@ -9,7 +9,6 @@ import {
   useForm,
 } from "react-hook-form";
 
-import { CustomActionLink } from "../../../../../common/components/links/CustomActionLink";
 import { SnackBarContext } from "../../../../../App";
 import { formatPhoneNumber } from "../../../../../common/components/form/subFormComponents/PhoneNumberInput";
 import { requiredMessage } from "../../../../../common/helpers/validationMessages";
@@ -17,15 +16,14 @@ import { PROFILE_ROUTES } from "../../../../../routes/constants";
 import { BC_COLOURS } from "../../../../../themes/bcGovStyles";
 import { updateUserInfo } from "../../../apiManager/manageProfileAPI";
 import { BCEID_PROFILE_TABS } from "../../../types/manageProfile.d";
-import UserGroupsAndPermissionsModal from "../../user-management/UserGroupsAndPermissionsModal";
-import { ReusableUserInfoForm } from "../common/ReusableUserInfoForm";
-import "../myInfo/MyInfoForm.scss";
-import { UserAuthRadioGroup } from "./UserAuthRadioGroup";
 import {
   BCEID_AUTH_GROUP,
   ReadCompanyUser,
 } from "../../../types/userManagement.d";
-
+import UserGroupsAndPermissionsModal from "../../user-management/UserGroupsAndPermissionsModal";
+import { ReusableUserInfoForm } from "../common/ReusableUserInfoForm";
+import "../myInfo/MyInfoForm.scss";
+import { UserAuthRadioGroup } from "./UserAuthRadioGroup";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -159,11 +157,13 @@ export const EditUserForm = memo(
                     borderBottom: "0px",
                   }}
                 >
-                  <CustomActionLink
+                  <Link
+                    component="button"
+                    variant="body2"
                     onClick={() => setIsUserGroupsModalOpen(() => true)}
                   >
                     User Groups and Permissions
-                  </CustomActionLink>
+                  </Link>
                 </Typography>
               </Stack>
               <Stack spacing={2}>

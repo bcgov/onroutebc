@@ -110,7 +110,7 @@ export const verifyMigratedClient = (
   requestPayload: VerifyMigratedClientRequest,
 ): Promise<VerifyMigratedClientResponse> => {
   return httpPOSTRequest(
-    `${VEHICLES_URL}/users/verify-client`,
+    `${VEHICLES_URL}/users/verify-migrated-client`,
     replaceEmptyValuesWithNull(requestPayload),
   ).then((response) => response.data);
 };

@@ -48,12 +48,9 @@ const server = setupServer(
         return HttpResponse.json(null, { status: 400 });
       }
 
-      return HttpResponse.json(
-        {
-          ...(powerUnit as PowerUnit),
-        },
-        { status: 201 },
-      );
+      return HttpResponse.json({
+        ...powerUnit as PowerUnit,
+      }, { status: 201 });
     },
   ),
 
@@ -68,7 +65,7 @@ const server = setupServer(
       }
 
       return HttpResponse.json({
-        ...(powerUnit as PowerUnit),
+        ...powerUnit as PowerUnit,
       });
     },
   ),
@@ -83,12 +80,9 @@ const server = setupServer(
         return HttpResponse.json(null, { status: 400 });
       }
 
-      return HttpResponse.json(
-        {
-          ...(trailer as Trailer),
-        },
-        { status: 201 },
-      );
+      return HttpResponse.json({
+        ...trailer as Trailer,
+      }, { status: 201 });
     },
   ),
   // Mock updating trailer vehicle
@@ -100,9 +94,9 @@ const server = setupServer(
       if (!trailer) {
         return HttpResponse.json(null, { status: 400 });
       }
-
+      
       return HttpResponse.json({
-        ...(trailer as Trailer),
+        ...trailer as Trailer,
       });
     },
   ),

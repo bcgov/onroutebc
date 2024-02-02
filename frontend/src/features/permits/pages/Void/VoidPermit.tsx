@@ -51,7 +51,6 @@ export const VoidPermit = () => {
     reason: "",
     revoke: false,
     email: permit?.permitData?.contactDetails?.email,
-    additionalEmail: permit?.permitData?.contactDetails?.additionalEmail,
     fax: permit?.permitData?.contactDetails?.fax,
   });
 
@@ -59,12 +58,10 @@ export const VoidPermit = () => {
     setVoidPermitData({
       ...voidPermitData,
       email: permit?.permitData?.contactDetails?.email,
-      additionalEmail: permit?.permitData?.contactDetails?.additionalEmail,
       fax: permit?.permitData?.contactDetails?.fax,
     });
   }, [
     permit?.permitData?.contactDetails?.email,
-    permit?.permitData?.contactDetails?.additionalEmail,
     permit?.permitData?.contactDetails?.fax,
   ]);
 

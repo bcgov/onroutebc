@@ -64,14 +64,10 @@ export const TermOversizeForm = () => {
   const { companyLegalName, onRouteBCClientNumber } =
     useContext(OnRouteBCContext);
 
-  const {
-    handleSaveVehicle,
-    vehicleOptions,
-    powerUnitSubTypes,
-    trailerSubTypes,
-  } = usePermitVehicleManagement(
-    applyWhenNotNullable((companyIdNum) => `${companyIdNum}`, companyId, "0"),
-  );
+  const { handleSaveVehicle, vehicleOptions, powerUnitSubTypes, trailerSubTypes } =
+    usePermitVehicleManagement(
+      applyWhenNotNullable((companyIdNum) => `${companyIdNum}`, companyId, "0"),
+    );
 
   // Show leave application dialog
   const [showLeaveApplicationDialog, setShowLeaveApplicationDialog] =
@@ -121,8 +117,8 @@ export const TermOversizeForm = () => {
     const savedVehicleDetails = await handleSaveVehicle(vehicleData);
 
     // Save application before continuing
-    await onSaveApplication(
-      (permitId) => navigate(APPLICATIONS_ROUTES.REVIEW(permitId)),
+    await onSaveApplication((permitId) =>
+      navigate(APPLICATIONS_ROUTES.REVIEW(permitId)),
       savedVehicleDetails,
     );
   };
@@ -153,28 +149,25 @@ export const TermOversizeForm = () => {
     additionalSuccessAction?: (permitId: string) => void,
     savedVehicleInventoryDetails?: Nullable<VehicleDetails>,
   ) => {
-    if (
-      !savedVehicleInventoryDetails &&
-      typeof savedVehicleInventoryDetails !== "undefined"
-    ) {
+    if (!savedVehicleInventoryDetails && typeof savedVehicleInventoryDetails !== "undefined") {
       // save vehicle to inventory failed (result is null), go to unexpected error page
       return onSaveFailure();
     }
 
     const formValues = getValues();
     const termOverSizeToBeAdded = applicationFormData(
-      !savedVehicleInventoryDetails
-        ? formValues
-        : {
-            ...formValues,
-            permitData: {
-              ...formValues.permitData,
-              vehicleDetails: {
-                ...savedVehicleInventoryDetails,
-                saveVehicle: true,
-              },
-            },
-          },
+      !savedVehicleInventoryDetails ?
+      formValues :
+      {
+        ...formValues,
+        permitData: {
+          ...formValues.permitData,
+          vehicleDetails: {
+            ...savedVehicleInventoryDetails,
+            saveVehicle: true,
+          }
+        },
+      }
     );
 
     const response = await submitTermOversizeMutation.mutateAsync(

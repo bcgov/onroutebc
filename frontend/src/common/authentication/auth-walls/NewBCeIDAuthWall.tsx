@@ -1,7 +1,10 @@
 import { useContext } from "react";
 import { useAuth } from "react-oidc-context";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { ERROR_ROUTES, HOME } from "../../../routes/constants";
+import {
+  ERROR_ROUTES,
+  HOME
+} from "../../../routes/constants";
 import { Loading } from "../../pages/Loading";
 import { IDPS } from "../../types/idp";
 import { LoadBCeIDUserContext } from "../LoadBCeIDUserContext";

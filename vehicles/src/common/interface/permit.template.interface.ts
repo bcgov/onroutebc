@@ -48,7 +48,6 @@ interface ContactDetails {
   phone2?: string;
   phone2Extension?: string;
   email: string;
-  additionalEmail?: string;
   fax?: string;
 }
 

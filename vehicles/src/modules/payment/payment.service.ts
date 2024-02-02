@@ -5,6 +5,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import * as CryptoJS from 'crypto-js';
 import { CreateTransactionDto } from './dto/request/create-transaction.dto';
 import { ReadTransactionDto } from './dto/response/read-transaction.dto';
 import { InjectMapper } from '@automapper/nestjs';
@@ -26,9 +27,8 @@ import {
   PAYMENT_DESCRIPTION,
   PAYBC_PAYMENT_METHOD,
   PAYMENT_CURRENCY,
-  CRYPTO_ALGORITHM_MD5,
 } from '../../common/constants/api.constant';
-import { convertToHash } from 'src/common/helper/crypto.helper';
+import { validateHash } from 'src/common/helper/validateHash.helper';
 import { UpdatePaymentGatewayTransactionDto } from './dto/request/update-payment-gateway-transaction.dto';
 import { PaymentCardType } from './entities/payment-card-type.entity';
 import { PaymentMethodType } from './entities/payment-method-type.entity';
@@ -100,10 +100,9 @@ export class PaymentService {
       `&ref2=${transaction.transactionId}`;
 
     // Generate the hash using the query string and the MD5 algorithm
-    const payBCHash: string = convertToHash(
+    const payBCHash: string = CryptoJS.MD5(
       `${queryString}${process.env.PAYBC_API_KEY}`,
-      CRYPTO_ALGORITHM_MD5,
-    );
+    ).toString();
 
     const hashExpiry = this.generateHashExpiry();
 
@@ -372,11 +371,7 @@ export class PaymentService {
       );
     }
 
-    const validHash =
-      convertToHash(
-        `${query}${process.env.PAYBC_API_KEY}`,
-        CRYPTO_ALGORITHM_MD5,
-      ) === hashValue;
+    const validHash = validateHash(query, hashValue);
     const validDto = this.validateUpdateTransactionDto(
       updatePaymentGatewayTransactionDto,
       `${query}&hashValue=${hashValue}`,
@@ -544,12 +539,7 @@ export class PaymentService {
       `&trnDate=${trnDate}` +
       `&ref2=${ref2}` +
       `&pbcTxnNumber=${pbcTxnNumber}`;
-    return (
-      convertToHash(
-        `${query}${process.env.PAYBC_API_KEY}`,
-        CRYPTO_ALGORITHM_MD5,
-      ) === hashValue
-    );
+    return validateHash(query, hashValue);
   }
 
   async findAllPaymentMethodTypeEntities(): Promise<PaymentMethodType[]> {

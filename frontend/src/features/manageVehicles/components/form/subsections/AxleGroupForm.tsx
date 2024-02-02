@@ -7,7 +7,11 @@ import FormLabel from "@mui/material/FormLabel";
 import OutlinedInput from "@mui/material/OutlinedInput";
 
 import "./VehicleForm.scss";
-import { AxleFrontGroup, AxleType, AxleGroup } from "../../../types/Vehicle";
+import {
+  AxleFrontGroup,
+  AxleType,
+  AxleGroup,
+} from "../../../types/Vehicle";
 
 /**
  * The props that can be passed to the axle group form.

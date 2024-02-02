@@ -665,19 +665,14 @@ export class ApplicationService {
           },
         ];
 
-        const emailList = [
-          permitDataForTemplate.permitData?.contactDetails?.email,
-          permitDataForTemplate.permitData?.contactDetails?.additionalEmail,
-          companyInfo.email,
-        ].filter((email) => Boolean(email));
-
-        const distinctEmailList = Array.from(new Set(emailList));
-
         void this.emailService.sendEmailMessage(
           EmailTemplate.ISSUE_PERMIT,
           emailData,
           'onRouteBC Permits - ' + companyInfo.legalName,
-          distinctEmailList,
+          [
+            permitDataForTemplate.permitData?.contactDetails?.email,
+            companyInfo.email,
+          ],
           attachments,
         );
       } catch (error: unknown) {

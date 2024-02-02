@@ -10,7 +10,10 @@ import { useNavigate } from "react-router";
 import { LoadBCeIDUserRolesByCompany } from "../../../../common/authentication/LoadBCeIDUserRolesByCompany";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import "../../../../common/components/dashboard/Dashboard.scss";
-import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import {
+  getDefaultRequiredVal,
+  getSHA256HexValue,
+} from "../../../../common/helpers/util";
 import { Nullable } from "../../../../common/types/common";
 import { ERROR_ROUTES } from "../../../../routes/constants";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
@@ -74,7 +77,7 @@ export const ChallengeProfileSteps = React.memo(() => {
 
   const verifyMigratedClientFormMethods = useForm<VerifyMigratedClientRequest>({
     defaultValues: {
-      clientNumber: "",
+      clientNumberHash: "",
       permitNumber: "",
     },
   });
@@ -94,8 +97,8 @@ export const ChallengeProfileSteps = React.memo(() => {
   const verifyMigratedClientMutation = useMutation({
     mutationFn: verifyMigratedClient,
     onSuccess: async (response: VerifyMigratedClientResponse) => {
-      const { foundClient, foundPermit, verifiedClient } = response;
-      if (foundClient && foundPermit && verifiedClient) {
+      const { foundClient, foundPermit, migratedClient } = response;
+      if (foundClient && foundPermit && migratedClient) {
         // Clear form errors (if any)
         clearVerifyClientErrors();
 
@@ -106,39 +109,45 @@ export const ChallengeProfileSteps = React.memo(() => {
           ...defaultCompanyAndUserInfoValues,
           migratedClientHash: getDefaultRequiredVal(
             "",
-            verifiedClient?.migratedClientHash,
+            migratedClient?.migratedClientHash,
           ),
-          alternateName: getDefaultRequiredVal("", verifiedClient?.alternateName),
+          alternateName: getDefaultRequiredVal(
+            "",
+            migratedClient?.alternateName,
+          ),
           mailingAddress: {
             addressLine1: getDefaultRequiredVal(
               "",
-              verifiedClient?.mailingAddress?.addressLine1,
+              migratedClient?.mailingAddress?.addressLine1,
             ),
             addressLine2: getDefaultRequiredVal(
               "",
-              verifiedClient?.mailingAddress?.addressLine2,
+              migratedClient?.mailingAddress?.addressLine2,
             ),
             provinceCode: getDefaultRequiredVal(
               "",
-              verifiedClient?.mailingAddress?.provinceCode,
+              migratedClient?.mailingAddress?.provinceCode,
             ),
             countryCode: getDefaultRequiredVal(
               "",
-              verifiedClient?.mailingAddress?.countryCode,
+              migratedClient?.mailingAddress?.countryCode,
             ),
-            city: getDefaultRequiredVal("", verifiedClient?.mailingAddress?.city),
+            city: getDefaultRequiredVal(
+              "",
+              migratedClient?.mailingAddress?.city,
+            ),
             postalCode: getDefaultRequiredVal(
               "",
-              verifiedClient?.mailingAddress?.postalCode,
+              migratedClient?.mailingAddress?.postalCode,
             ),
           },
-          phone: getDefaultRequiredVal("", verifiedClient?.phone),
-          extension: getDefaultRequiredVal("", verifiedClient?.extension),
-          fax: getDefaultRequiredVal("", verifiedClient?.fax),
+          phone: getDefaultRequiredVal("", migratedClient?.phone),
+          extension: getDefaultRequiredVal("", migratedClient?.extension),
+          fax: getDefaultRequiredVal("", migratedClient?.fax),
         });
       } else {
         if (!foundClient) {
-          setVerifyClientError("clientNumber", {
+          setVerifyClientError("clientNumberHash", {
             message: "Client No. not found",
           });
         }
@@ -161,7 +170,11 @@ export const ChallengeProfileSteps = React.memo(() => {
   const handleNextVerifyClientStep = async (
     data: VerifyMigratedClientRequest,
   ) => {
-    verifyMigratedClientMutation.mutate(data);
+    const hashHex = await getSHA256HexValue(data.clientNumberHash);
+    verifyMigratedClientMutation.mutate({
+      ...data,
+      clientNumberHash: hashHex,
+    });
   };
 
   if (clientNumber) {

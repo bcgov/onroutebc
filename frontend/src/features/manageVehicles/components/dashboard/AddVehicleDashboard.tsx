@@ -61,7 +61,8 @@ export const AddVehicleDashboard = React.memo(
           <FontAwesomeIcon className="breadcrumb-icon" icon={faChevronRight} />
 
           <Typography>
-            {addVehicleMode === VEHICLE_TYPES.POWER_UNIT && "Add Power Unit"}
+            {addVehicleMode === VEHICLE_TYPES.POWER_UNIT &&
+              "Add Power Unit"}
             {addVehicleMode === VEHICLE_TYPES.TRAILER && "Add Trailer"}
           </Typography>
         </Box>

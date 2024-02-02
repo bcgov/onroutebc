@@ -5,10 +5,8 @@ import {
   RegisterOptions,
   useFormContext,
 } from "react-hook-form";
-
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { ORBC_FormTypes } from "../../../types/common";
-import "./CustomOutlinedInput.scss";
 
 /**
  * Properties of the onrouteBC customized OutlineInput MUI component
@@ -53,15 +51,9 @@ export const CustomOutlinedInput = <T extends ORBC_FormTypes>(
 
   return (
     <OutlinedInput
-      inputProps={{
-        ...updatedInputProps,
-        className: updatedInputProps.className
-          ? `${updatedInputProps.className} custom-input__input-container`
-          : "custom-input__input-container",
-      }}
+      inputProps={updatedInputProps}
       disabled={props.disabled}
       readOnly={props.readOnly}
-      className={`custom-input ${props.disabled ? "custom-input--disabled" : ""}`}
       sx={{
         "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
           borderColor: props.invalid

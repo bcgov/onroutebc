@@ -128,12 +128,6 @@ export const errMsgForVehicleSubtype = async () => {
   );
 };
 
-export const additionalEmailInput = async () => {
-  return await screen.findByTestId(
-    "input-permitData.contactDetails.additionalEmail",
-  );
-};
-
 export const vinInput = async () => {
   return await screen.findByTestId("input-permitData.vehicleDetails.vin");
 };
@@ -271,24 +265,9 @@ export const fillVehicleInfo = async (
 
   // Act
   if (populatedVehicle) {
-    await replaceValueForInput(
-      user,
-      vinTextField,
-      populatedVehicle.vin.length,
-      vehicle.vin,
-    );
-    await replaceValueForInput(
-      user,
-      plateTextField,
-      populatedVehicle.plate.length,
-      vehicle.plate,
-    );
-    await replaceValueForInput(
-      user,
-      makeTextField,
-      populatedVehicle.make.length,
-      vehicle.make,
-    );
+    await replaceValueForInput(user, vinTextField, populatedVehicle.vin.length, vehicle.vin);
+    await replaceValueForInput(user, plateTextField, populatedVehicle.plate.length, vehicle.plate);
+    await replaceValueForInput(user, makeTextField, populatedVehicle.make.length, vehicle.make);
     await replaceValueForInput(user, yearTextField, 4, `${vehicle.year}`);
   } else {
     await replaceValueForInput(user, vinTextField, 0, vehicle.vin);
@@ -296,14 +275,14 @@ export const fillVehicleInfo = async (
     await replaceValueForInput(user, makeTextField, 0, vehicle.make);
     await replaceValueForInput(user, yearTextField, 1, `${vehicle.year}`);
   }
-
+  
   await chooseOption(user, countrySelect, vehicle.country);
   await chooseOption(user, provinceSelect, vehicle.province);
   if (editMode === "create") {
     await chooseOption(user, typeSelect, vehicle.vehicleType);
   }
   await chooseOption(user, subtypeSelect, vehicle.vehicleSubtype);
-
+  
   await chooseSaveVehicleToInventory(user, vehicle.saveVehicle);
   await continueApplication(user);
 };
@@ -319,18 +298,21 @@ export const updateVehicleDetails = async (
   await openVehicleSelect(user);
 
   const powerUnitOptions = await vehicleOptions(vehicleType);
-  const powerUnitToChoose = powerUnitOptions.find(
-    (option) => option.textContent === unitNumber,
-  );
+  const powerUnitToChoose = powerUnitOptions.find(option => option.textContent === unitNumber);
 
   expect(powerUnitToChoose).not.toBeUndefined();
   if (powerUnitToChoose) {
     await user.click(powerUnitToChoose);
   }
 
-  await fillVehicleInfo(user, formDetails, "update", {
-    vin: formDetails.vin,
-    plate: formDetails.plate,
-    make: formDetails.make,
-  });
+  await fillVehicleInfo(
+    user,
+    formDetails,
+    "update",
+    {
+      vin: formDetails.vin,
+      plate: formDetails.plate,
+      make: formDetails.make,
+    }
+  );
 };

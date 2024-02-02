@@ -64,12 +64,8 @@ export const AmendPermitForm = () => {
   const modifyAmendmentMutation = useModifyAmendmentApplication();
   const snackBar = useContext(SnackBarContext);
 
-  const {
-    handleSaveVehicle,
-    vehicleOptions,
-    powerUnitSubTypes,
-    trailerSubTypes,
-  } = usePermitVehicleManagement(`${formData.companyId}`);
+  const { handleSaveVehicle, vehicleOptions, powerUnitSubTypes, trailerSubTypes } =
+    usePermitVehicleManagement(`${formData.companyId}`);
 
   const { handleSubmit, getValues } = formMethods;
 
@@ -100,7 +96,10 @@ export const AmendPermitForm = () => {
     const savedVehicle = await handleSaveVehicle(vehicleData);
 
     // Save application before continuing
-    await onSaveApplication(() => next(), savedVehicle);
+    await onSaveApplication(
+      () => next(),
+      savedVehicle,
+    );
   };
 
   const isSavePermitSuccessful = (status: number) =>
@@ -125,33 +124,30 @@ export const AmendPermitForm = () => {
     additionalSuccessAction?: () => void,
     savedVehicleInventoryDetails?: Nullable<VehicleDetails>,
   ) => {
-    if (
-      !savedVehicleInventoryDetails &&
-      typeof savedVehicleInventoryDetails !== "undefined"
-    ) {
+    if (!savedVehicleInventoryDetails && typeof savedVehicleInventoryDetails !== "undefined") {
       // save vehicle to inventory failed (result is null), go to unexpected error page
       return onSaveFailure();
     }
 
     const formValues = getValues();
     const permitToBeAmended = transformPermitFormData(
-      !savedVehicleInventoryDetails
-        ? formValues
-        : {
-            ...formValues,
-            permitData: {
-              ...formValues.permitData,
-              vehicleDetails: {
-                ...savedVehicleInventoryDetails,
-                saveVehicle: true,
-              },
-            },
-          },
+      !savedVehicleInventoryDetails ?
+      formValues :
+      {
+        ...formValues,
+        permitData: {
+          ...formValues.permitData,
+          vehicleDetails: {
+            ...savedVehicleInventoryDetails,
+            saveVehicle: true,
+          }
+        },
+      }
     );
 
     const shouldUpdateApplication =
       permitToBeAmended.permitId !== permit?.permitId;
-
+    
     const response = shouldUpdateApplication
       ? await modifyAmendmentMutation.mutateAsync({
           applicationNumber: getDefaultRequiredVal(

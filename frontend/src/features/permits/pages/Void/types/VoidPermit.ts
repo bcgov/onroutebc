@@ -1,7 +1,6 @@
 import { PermitStatus, PERMIT_STATUSES } from "../../../types/PermitStatus";
 import { PermitsActionResponse } from "../../../types/permit";
 import { TRANSACTION_TYPES, TransactionType } from "../../../types/payment.d";
-import { Nullable } from "../../../../../common/types/common";
 import {
   PaymentCardTypeCode,
   PaymentMethodTypeCode,
@@ -13,9 +12,8 @@ export interface VoidPermitFormData {
   permitId: string;
   reason: string;
   revoke: boolean;
-  email?: Nullable<string>;
-  additionalEmail?: Nullable<string>;
-  fax?: Nullable<string>;
+  email?: string;
+  fax?: string;
 }
 
 export interface VoidPermitRequestData {
@@ -28,8 +26,6 @@ export interface VoidPermitRequestData {
   pgCardType?: PaymentCardTypeCode;
   comment: string;
   transactionTypeId: TransactionType;
-  fax?: Nullable<string>;
-  additionalEmail?: Nullable<string>;
 }
 
 export interface RevokePermitRequestData {
@@ -39,8 +35,6 @@ export interface RevokePermitRequestData {
   transactionAmount: 0;
   comment: string;
   transactionTypeId: typeof TRANSACTION_TYPES.P;
-  fax?: Nullable<string>;
-  additionalEmail?: Nullable<string>;
 }
 
 export type VoidPermitResponseData = PermitsActionResponse;

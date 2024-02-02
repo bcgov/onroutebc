@@ -73,11 +73,7 @@ export const LoginRedirect = () => {
   const navigate = useNavigate();
   const { isAuthenticated, user: userFromToken } = useAuth();
 
-  const {
-    isPending,
-    isError,
-    data: userContextResponse,
-  } = useUserContextQuery();
+  const { isPending, isError, data: userContextResponse } = useUserContextQuery();
   const queryClient = useQueryClient();
 
   useUserContext(userContextResponse);

@@ -7,7 +7,7 @@ export const VEHICLE_TYPES = {
   TRAILER: "trailer",
 } as const;
 
-export type VehicleType = (typeof VEHICLE_TYPES)[keyof typeof VEHICLE_TYPES];
+export type VehicleType = typeof VEHICLE_TYPES[keyof typeof VEHICLE_TYPES];
 
 /**
  * A base vehicle type. This is an incomplete object and meant to be extended for use.

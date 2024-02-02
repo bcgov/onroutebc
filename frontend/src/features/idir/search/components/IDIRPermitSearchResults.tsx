@@ -59,7 +59,11 @@ export const IDIRPermitSearchResults = memo(
      */
     searchParams: SearchFields;
   }) => {
-    const { searchString, searchByFilter, searchEntity } = searchParams;
+    const {
+      searchString,
+      searchByFilter,
+      searchEntity,
+    } = searchParams;
     const { idirUserDetails } = useContext(OnRouteBCContext);
     const [isActiveRecordsOnly, setIsActiveRecordsOnly] =
       useState<boolean>(false);
@@ -76,15 +80,14 @@ export const IDIRPermitSearchResults = memo(
         pagination.pageIndex,
         pagination.pageSize,
       ],
-      queryFn: () =>
-        getPermitDataBySearch(
-          {
-            searchByFilter,
-            searchEntity,
-            searchString: searchString,
-          },
-          { page: pagination.pageIndex, take: pagination.pageSize },
-        ),
+      queryFn: () => getPermitDataBySearch(
+        {
+          searchByFilter,
+          searchEntity,
+          searchString: searchString,
+        },
+        { page: pagination.pageIndex, take: pagination.pageSize },
+      ),
       retry: 1, // retry once.
       enabled: true,
       refetchOnWindowFocus: false,

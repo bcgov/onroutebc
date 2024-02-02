@@ -26,7 +26,7 @@ export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
   },
   {
     accessorKey: "clientNumber",
-    header: "Client No.",
+    header: "onRouteBC Client No.",
     enableSorting: true,
     sortingFn: "alphanumeric",
   },
@@ -36,30 +36,21 @@ export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
     enableSorting: true,
     sortingFn: "alphanumeric",
     Cell: (props: { row: any }) => {
-      const mailingAddress = props.row?.original?.mailingAddress;
+      const mailingAddress = props.row?.original?.mailingAddress
       const country = CountriesAndStates.filter((country) => {
-        return country?.code === mailingAddress?.countryCode;
-      });
+        return country?.code === mailingAddress?.countryCode
+      })
 
       const province = country[0]?.states?.filter((state) => {
-        return state?.code === mailingAddress?.provinceCode;
-      });
+        return state?.code === mailingAddress?.provinceCode
+      })
 
-      const addressLine1 = getDefaultNullableVal(
-        null,
-        mailingAddress?.addressLine1,
-      );
-      const addressLine2 = getDefaultNullableVal(
-        null,
-        mailingAddress?.addressLine2,
-      );
+      const addressLine1 = getDefaultNullableVal(null, mailingAddress?.addressLine1);
+      const addressLine2 = getDefaultNullableVal(null, mailingAddress?.addressLine2);
       const countryName = getDefaultNullableVal(null, country[0]?.name);
       const provinceName = getDefaultNullableVal(null, province[0]?.name);
       const cityName = getDefaultNullableVal(null, mailingAddress?.city);
-      const postalCodeName = getDefaultNullableVal(
-        null,
-        mailingAddress?.postalCode,
-      );
+      const postalCodeName = getDefaultNullableVal(null, mailingAddress?.postalCode);
 
       return (
         <>
@@ -78,7 +69,7 @@ export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
     enableSorting: true,
     sortingFn: "alphanumeric",
     Cell: (props: { row: any }) => {
-      const contact = props.row?.original?.primaryContact;
+      const contact = props.row?.original?.primaryContact
 
       const firstName = getDefaultNullableVal(null, contact?.firstName);
       const lastName = getDefaultNullableVal(null, contact?.lastName);

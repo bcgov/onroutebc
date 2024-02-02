@@ -1,7 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsEmail,
   IsEnum,
   IsNumber,
   IsOptional,
@@ -102,28 +101,4 @@ export class VoidPermitDto {
   @IsString()
   @MinLength(1)
   comment: string;
-
-  @AutoMap()
-  @ApiProperty({
-    description: 'The fax number to send the voided/revoked permit to.',
-    required: false,
-    maxLength: 20,
-    minLength: 10,
-    example: '9999999999',
-  })
-  @IsOptional()
-  @IsString()
-  @Length(10, 20)
-  fax?: string;
-
-  @AutoMap()
-  @ApiProperty({
-    description:
-      'The additional email address to send the voided/revoked permit to.',
-    required: false,
-    example: 'test@test.gov.bc.ca',
-  })
-  @IsOptional()
-  @IsEmail()
-  additionalEmail?: string;
 }

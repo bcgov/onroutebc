@@ -18,11 +18,7 @@ import {
  */
 export const LoadBCeIDUserContext = () => {
   const navigate = useNavigate();
-  const {
-    isPending,
-    isError,
-    data: userContextResponse,
-  } = useUserContextQuery();
+  const { isPending, isError, data: userContextResponse } = useUserContextQuery();
 
   useEffect(() => {
     if (!isPending) {
@@ -33,6 +29,6 @@ export const LoadBCeIDUserContext = () => {
   }, [isPending, isError]);
 
   useUserContext(userContextResponse);
-
+  
   return null;
 };

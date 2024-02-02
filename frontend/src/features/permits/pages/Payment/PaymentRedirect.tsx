@@ -119,10 +119,10 @@ export const PaymentRedirect = () => {
   if (issueFailed) {
     return <Navigate to={`${ERROR_ROUTES.UNEXPECTED}`} replace={true} />;
   }
-
+  
   const successIds = getDefaultRequiredVal([], issueResults?.success);
   const hasValidIssueResults = successIds.length > 0;
-
+  
   if (hasValidIssueResults) {
     return (
       <Navigate

@@ -17,23 +17,13 @@ import {
 export const mapToRevokeRequestData = (
   voidPermitFormData: VoidPermitFormData,
 ): RevokePermitRequestData => {
-  const reqData: RevokePermitRequestData = {
+  return {
     status: PERMIT_STATUSES.REVOKED,
     paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.NP,
     transactionAmount: 0,
     comment: voidPermitFormData.reason,
     transactionTypeId: TRANSACTION_TYPES.P,
   };
-
-  if (voidPermitFormData.fax) {
-    reqData.fax = voidPermitFormData.fax;
-  }
-
-  if (voidPermitFormData.additionalEmail) {
-    reqData.additionalEmail = voidPermitFormData.additionalEmail;
-  }
-
-  return reqData;
 };
 
 export const mapToVoidRequestData = (
@@ -66,7 +56,7 @@ export const mapToVoidRequestData = (
       ?.paymentCardTypeCode;
   };
 
-  const reqData: VoidPermitRequestData = {
+  return {
     status: PERMIT_STATUSES.VOIDED,
     pgTransactionId: refundData.transactionId,
     paymentMethodTypeCode: getRefundMethodType(),
@@ -80,14 +70,4 @@ export const mapToVoidRequestData = (
       ? TRANSACTION_TYPES.P
       : TRANSACTION_TYPES.R,
   };
-
-  if (voidPermitFormData.fax) {
-    reqData.fax = voidPermitFormData.fax;
-  }
-
-  if (voidPermitFormData.additionalEmail) {
-    reqData.additionalEmail = voidPermitFormData.additionalEmail;
-  }
-
-  return reqData;
 };

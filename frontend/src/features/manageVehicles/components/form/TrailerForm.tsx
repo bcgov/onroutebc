@@ -263,13 +263,11 @@ export const TrailerForm = ({ trailer, companyId }: TrailerFormProps) => {
               label: "Vehicle Sub-type",
               width: formFieldStyle.width,
             }}
-            menuOptions={trailerSubTypesQuery?.data?.map(
-              (data: VehicleSubType) => (
-                <MenuItem key={data.typeCode} value={data.typeCode}>
-                  {data.type}
-                </MenuItem>
-              ),
-            )}
+            menuOptions={trailerSubTypesQuery?.data?.map((data: VehicleSubType) => (
+              <MenuItem key={data.typeCode} value={data.typeCode}>
+                {data.type}
+              </MenuItem>
+            ))}
           />
 
           <CustomFormComponent

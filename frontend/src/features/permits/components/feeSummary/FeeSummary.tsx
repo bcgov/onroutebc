@@ -1,4 +1,3 @@
-import { Nullable } from "../../../../common/types/common";
 import { feeSummaryDisplayText } from "../../helpers/feeSummary";
 import { permitTypeDisplayText } from "../../types/PermitType";
 import "./FeeSummary.scss";
@@ -8,8 +7,8 @@ export const FeeSummary = ({
   feeSummary,
   permitDuration,
 }: {
-  permitType?: Nullable<string>;
-  feeSummary?: Nullable<string>;
+  permitType?: string;
+  feeSummary?: string;
   permitDuration?: number;
 }) => {
   const feeDisplayText = feeSummaryDisplayText(feeSummary, permitDuration);

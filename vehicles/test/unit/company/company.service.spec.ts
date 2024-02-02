@@ -37,7 +37,6 @@ import * as databaseHelper from 'src/common/helper/database.helper';
 import { EmailService } from '../../../src/modules/email/email.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { BadRequestException } from '@nestjs/common';
 
 const COMPANY_ID_99 = 99;
 let repo: DeepMocked<Repository<Company>>;
@@ -135,7 +134,7 @@ describe('CompanyService', () => {
     it('should catch and throw and Internal Error Exceptions user.', async () => {
       await expect(async () => {
         await service.create(null, redCompanyAdminUserJWTMock);
-      }).rejects.toThrow(BadRequestException);
+      }).rejects.toThrowError(TypeError);
     });
   });
 

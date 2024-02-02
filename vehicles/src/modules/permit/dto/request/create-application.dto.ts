@@ -131,7 +131,6 @@ export class CreateApplicationDto {
         lastName: 'Hamilton',
         phone1: '(778) 952-1234',
         email: 'lewis@f1.com',
-        additionalEmail: 'lewis2@f1.com',
         phone1Extension: '1',
         phone2: null,
         phone2Extension: null,

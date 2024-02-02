@@ -1,4 +1,3 @@
-import { LinkProps as MuiLinkProps } from "@mui/material";
 import { LinkHTMLAttributes } from "react";
 import { LinkProps } from "react-router-dom";
 
@@ -12,4 +11,3 @@ type Props<TExternal = boolean> = TExternal extends true
 
 export type ExternalLinkProps = Props<true>;
 export type InternalLinkProps = Props<false>;
-export type CustomActionLinkProps = MuiLinkProps;

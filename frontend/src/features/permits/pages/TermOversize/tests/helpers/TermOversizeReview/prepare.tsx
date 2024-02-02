@@ -6,10 +6,7 @@ import { ThemeProvider } from "@mui/material/styles";
 
 import { APPLICATIONS_API_ROUTES } from "../../../../../apiManager/endpoints/endpoints";
 import { renderWithClient } from "../../../../../../../common/helpers/testHelper";
-import {
-  Application,
-  ApplicationRequestData,
-} from "../../../../../types/application";
+import { Application, ApplicationRequestData } from "../../../../../types/application";
 import { bcGovTheme } from "../../../../../../../themes/bcGovTheme";
 import { ApplicationContext } from "../../../../../context/ApplicationContext";
 import { TermOversizeReview } from "../../../TermOversizeReview";
@@ -58,11 +55,14 @@ export const vehicleSubtypes = [
 ];
 
 const server = setupServer(
-  http.get(`${MANAGE_PROFILE_API.COMPANIES}/:companyId`, () => {
-    return HttpResponse.json({
-      ...companyInfo,
-    });
-  }),
+  http.get(
+    `${MANAGE_PROFILE_API.COMPANIES}/:companyId`,
+    () => {
+      return HttpResponse.json({
+        ...companyInfo,
+      });
+    },
+  ),
 
   http.post(`${APPLICATIONS_API_ROUTES.CREATE}`, async ({ request }) => {
     const reqBody = await request.json();
@@ -72,18 +72,15 @@ const server = setupServer(
     }
 
     const applicationData = {
-      ...(application as ApplicationRequestData),
+      ...application as ApplicationRequestData,
       applicationNumber: newApplicationNumber,
       createdDateTime: dayjsToUtcStr(now()),
       updatedDateTime: dayjsToUtcStr(now()),
     };
 
-    return HttpResponse.json(
-      {
-        ...applicationData,
-      },
-      { status: 201 },
-    );
+    return HttpResponse.json({
+      ...applicationData,
+    }, { status: 201 });
   }),
 
   http.put(`${APPLICATIONS_API_ROUTES.UPDATE}/:id`, async ({ request }) => {
@@ -94,15 +91,12 @@ const server = setupServer(
     }
 
     const applicationData = {
-      ...(application as ApplicationRequestData),
+      ...application as ApplicationRequestData,
       updatedDateTime: dayjsToUtcStr(now()),
     };
-    return HttpResponse.json(
-      {
-        ...applicationData,
-      },
-      { status: 200 },
-    );
+    return HttpResponse.json({
+      ...applicationData,
+    }, { status: 200 });
   }),
 
   http.get(VEHICLES_API.POWER_UNIT_TYPES, () => {

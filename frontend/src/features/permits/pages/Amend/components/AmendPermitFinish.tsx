@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "./AmendPermitFinish.scss";
 import { AmendPermitContext } from "../context/AmendPermitContext";
 import { calculateAmountToRefund } from "../../../helpers/feeSummary";
-import { PERMIT_REFUND_ACTIONS, RefundPage } from "../../Refund/RefundPage";
+import { RefundPage } from "../../Refund/RefundPage";
 import { RefundFormData } from "../../Refund/types/RefundFormData";
 import { Breadcrumb } from "../../../../../common/components/breadcrumb/Breadcrumb";
 import { mapToAmendRequestData } from "./helpers/mapper";
@@ -88,7 +88,7 @@ export const AmendPermitFinish = () => {
         amountToRefund={amountToRefund}
         permitNumber={permit?.permitNumber}
         permitType={permit?.permitType}
-        permitAction={PERMIT_REFUND_ACTIONS.AMEND}
+        permitAction="amend"
         onFinish={handleFinish}
       />
     </div>

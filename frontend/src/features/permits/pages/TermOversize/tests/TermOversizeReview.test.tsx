@@ -36,7 +36,6 @@ import {
   companyMailAddrProvince,
   companyName,
   companyNameLabel,
-  contactInfoAdditionalEmail,
   contactInfoEmail,
   contactInfoFax,
   contactInfoHeaderTitle,
@@ -184,12 +183,6 @@ describe("Review and Confirm Application Details", () => {
       const fullContactInfo = {
         ...defaultApplicationData.permitData.contactDetails,
       };
-      const newAdditionalEmail = "additionalEmail@mycompany.co";
-      if (defaultApplicationData.permitData.contactDetails) {
-        defaultApplicationData.permitData.contactDetails.additionalEmail =
-          newAdditionalEmail;
-      }
-
       renderTestComponent(defaultApplicationData);
 
       // Assert
@@ -208,9 +201,6 @@ describe("Review and Confirm Application Details", () => {
       expect(await contactInfoEmail()).toHaveTextContent(
         `${fullContactInfo.email}`,
       );
-      expect(await contactInfoAdditionalEmail()).toHaveTextContent(
-        `${newAdditionalEmail}`,
-      );
       expect(await contactInfoFax()).toHaveTextContent(
         `${fullContactInfo.fax}`,
       );
@@ -225,7 +215,6 @@ describe("Review and Confirm Application Details", () => {
           ?.lastName as string,
         email: defaultApplicationData.permitData.contactDetails
           ?.email as string,
-        additionalEmail: undefined,
         phone1: defaultApplicationData.permitData.contactDetails
           ?.phone1 as string,
         phone1Extension: undefined,
@@ -258,7 +247,6 @@ describe("Review and Confirm Application Details", () => {
       expect(await contactInfoEmail()).toHaveTextContent(
         `${partialContactInfo.email}`,
       );
-      expect(async () => await contactInfoAdditionalEmail()).rejects.toThrow();
       expect(async () => await contactInfoFax()).rejects.toThrow();
     });
 
@@ -346,7 +334,9 @@ describe("Review and Confirm Application Details", () => {
       const unit = getDefaultRequiredVal("", unitNumber);
       const country = formatCountry(countryCode);
       const province = formatProvince(countryCode, provinceCode);
-      const vehicleTypeStr = vehicleTypeDisplayText(vehicleType as VehicleType);
+      const vehicleTypeStr = vehicleTypeDisplayText(
+        vehicleType as VehicleType,
+      );
       const vehicleSubtypeStr = getDefaultRequiredVal(
         "",
         vehicleSubtypes.find((subtype) => subtype.typeCode === vehicleSubType)

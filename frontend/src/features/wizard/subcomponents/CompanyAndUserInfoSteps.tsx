@@ -77,8 +77,8 @@ export const CompanyAndUserInfoSteps = ({
         // We are not clearing isNewBCeIDUser in the context because,
         // it causes a side-effect where, if cleared, the user is immediately
         // redirected to the applications page.
-
-        // They should instead remain on this page and
+        
+        // They should instead remain on this page and 
         // look at the profile created section which contains the client number.
 
         // Setting the companyId in the sessionStorage so that it can be used

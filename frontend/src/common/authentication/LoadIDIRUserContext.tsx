@@ -18,11 +18,7 @@ import {
  */
 export const LoadIDIRUserContext = () => {
   const navigate = useNavigate();
-  const {
-    isPending,
-    isError,
-    data: userContextResponse,
-  } = useUserContextQuery();
+  const { isPending, isError, data: userContextResponse } = useUserContextQuery();
 
   useEffect(() => {
     if (!isPending) {

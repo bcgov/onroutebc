@@ -51,9 +51,10 @@ export const getCompanyDataBySearch = (
   { page = 0, take = 10 }: PaginationOptions,
 ): Promise<PaginatedResponse<CompanyProfile>> => {
   const searchURL = new URL(getSearchURLbyEntity(searchEntity));
-  if (searchByFilter === "companyName")
+  if (searchByFilter === 'companyName')
     searchURL.searchParams.set("legalName", searchString);
-  else searchURL.searchParams.set("clientNumber", searchString);
+  else
+    searchURL.searchParams.set("clientNumber", searchString);
 
   // API pagination index starts at 1. Hence page + 1.
   searchURL.searchParams.set("page", (page + 1).toString());

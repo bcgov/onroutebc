@@ -1,4 +1,4 @@
-import { VEHICLE_TYPES, VehicleType } from "../../../../types/Vehicle";
+import { VEHICLE_TYPES, VehicleType} from "../../../../types/Vehicle";
 import {
   PowerUnitDetail,
   VehicleFormDetail,

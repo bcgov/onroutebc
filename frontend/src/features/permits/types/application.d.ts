@@ -97,7 +97,6 @@ export interface ContactDetails {
   phone2?: string;
   phone2Extension?: string;
   email: string;
-  additionalEmail?: Nullable<string>;
   fax?: string;
 }
 

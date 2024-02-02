@@ -6,8 +6,7 @@ export const VEHICLE_CHOOSE_FROM = {
   PLATE: "plate",
 } as const;
 
-export type VehicleChooseFrom =
-  (typeof VEHICLE_CHOOSE_FROM)[keyof typeof VEHICLE_CHOOSE_FROM];
+export type VehicleChooseFrom = typeof VEHICLE_CHOOSE_FROM[keyof typeof VEHICLE_CHOOSE_FROM];
 
 export const CHOOSE_FROM_OPTIONS = [
   { value: VEHICLE_CHOOSE_FROM.UNIT_NUMBER, label: "Unit Number" },

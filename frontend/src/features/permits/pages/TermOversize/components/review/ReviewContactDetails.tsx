@@ -47,10 +47,6 @@ export const ReviewContactDetails = ({
             contactDetails?.phone2Extension,
           ) !== phoneDisplay(oldFields?.phone2, oldFields?.phone2Extension),
         email: areValuesDifferent(contactDetails?.email, oldFields?.email),
-        additionalEmail: areValuesDifferent(
-          contactDetails?.additionalEmail,
-          oldFields?.additionalEmail,
-        ),
         fax: areValuesDifferent(contactDetails?.fax, oldFields?.fax),
       }
     : {
@@ -58,7 +54,6 @@ export const ReviewContactDetails = ({
         phone1: false,
         phone2: false,
         email: false,
-        additionalEmail: false,
         fax: false,
       };
 
@@ -113,7 +108,7 @@ export const ReviewContactDetails = ({
             </Typography>
           ) : null}
           <Typography className="contact-details__detail">
-            <span className="contact-details__label">Company Email:</span>
+            <span className="contact-details__label">Email:</span>
             <span
               className="contact-details__data"
               data-testid="review-contact-details-email"
@@ -122,18 +117,6 @@ export const ReviewContactDetails = ({
             </span>
             {changedFields.email ? <DiffChip /> : null}
           </Typography>
-          {contactDetails?.additionalEmail ? (
-            <Typography className="contact-details__detail">
-              <span className="contact-details__label">Additional Email:</span>
-              <span
-                className="contact-details__data"
-                data-testid="review-contact-details-additional-email"
-              >
-                {contactDetails?.additionalEmail}
-              </span>
-              {changedFields.additionalEmail ? <DiffChip /> : null}
-            </Typography>
-          ) : null}
           {contactDetails?.fax ? (
             <Typography className="contact-details__detail">
               <span className="contact-details__label">Fax:</span>

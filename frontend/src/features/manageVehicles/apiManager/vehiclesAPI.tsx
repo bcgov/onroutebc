@@ -72,9 +72,7 @@ export const getPowerUnit = async (
  * Gets the power unit vehicle subtypes.
  * @returns List of vehicle subtypes for power units.
  */
-export const getPowerUnitSubTypes = async (): Promise<
-  Array<VehicleSubType>
-> => {
+export const getPowerUnitSubTypes = async (): Promise<Array<VehicleSubType>> => {
   const url = new URL(VEHICLES_API.POWER_UNIT_TYPES);
   return httpGETRequest(url.toString()).then((response) => response.data);
 };

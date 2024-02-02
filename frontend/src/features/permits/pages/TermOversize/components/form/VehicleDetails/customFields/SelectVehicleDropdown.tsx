@@ -14,10 +14,7 @@ import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/ut
 import { SELECT_FIELD_STYLE } from "../../../../../../../../themes/orbcStyles";
 import { sortVehicles } from "../../../../../../helpers/sorter";
 import { removeIneligibleVehicles } from "../../../../../../helpers/removeIneligibleVehicles";
-import {
-  Nullable,
-  Optional,
-} from "../../../../../../../../common/types/common";
+import { Nullable, Optional } from "../../../../../../../../common/types/common";
 import { VehicleDetails } from "../../../../../../types/application";
 import { VEHICLE_CHOOSE_FROM } from "../../../../../../constants/constants";
 import {
@@ -65,7 +62,7 @@ export const SelectVehicleDropdown = ({
   selectedVehicle: Optional<VehicleDetails>;
   label: string;
   width: string;
-  vehicleOptions: Vehicle[];
+  vehicleOptions: (Vehicle)[];
   handleSelectVehicle: (vehicle: Vehicle) => void;
   handleClearVehicle: () => void;
 }) => {
@@ -78,26 +75,20 @@ export const SelectVehicleDropdown = ({
     TROS_INELIGIBLE_TRAILERS,
   );
 
-  const selectedOption = selectedVehicle
-    ? getDefaultRequiredVal(
-        null,
-        eligibleVehicles.find((vehicle) =>
-          selectedVehicle.vehicleType === VEHICLE_TYPES.TRAILER
-            ? vehicle.vehicleType === VEHICLE_TYPES.TRAILER &&
-              (vehicle as Trailer).trailerId === selectedVehicle.vehicleId
-            : vehicle.vehicleType === VEHICLE_TYPES.POWER_UNIT &&
-              (vehicle as PowerUnit).powerUnitId === selectedVehicle.vehicleId,
-        ),
-      )
-    : null;
+  const selectedOption = selectedVehicle ?
+    getDefaultRequiredVal(null, eligibleVehicles.find(vehicle =>
+      selectedVehicle.vehicleType === VEHICLE_TYPES.TRAILER ?
+      vehicle.vehicleType === VEHICLE_TYPES.TRAILER && (vehicle as Trailer).trailerId === selectedVehicle.vehicleId :
+      vehicle.vehicleType === VEHICLE_TYPES.POWER_UNIT && (vehicle as PowerUnit).powerUnitId === selectedVehicle.vehicleId,
+    )) : null;
 
   const [vehicleTextValue, setVehicleTextValue] = useState<string>("");
 
   useEffect(() => {
     setVehicleTextValue(
-      chooseFrom === VEHICLE_CHOOSE_FROM.PLATE
-        ? getDefaultRequiredVal("", selectedOption?.plate)
-        : getDefaultRequiredVal("", selectedOption?.unitNumber),
+      chooseFrom === VEHICLE_CHOOSE_FROM.PLATE ?
+      getDefaultRequiredVal("", selectedOption?.plate) :
+      getDefaultRequiredVal("", selectedOption?.unitNumber),
     );
   }, [selectedOption]);
 
@@ -136,15 +127,13 @@ export const SelectVehicleDropdown = ({
           if (!option) return "";
 
           const vehicleType =
-            option.vehicleType === VEHICLE_TYPES.POWER_UNIT
-              ? VEHICLE_TYPES.POWER_UNIT
-              : VEHICLE_TYPES.TRAILER;
+            option.vehicleType === VEHICLE_TYPES.POWER_UNIT ? 
+              VEHICLE_TYPES.POWER_UNIT : VEHICLE_TYPES.TRAILER;
 
-          const key =
-            vehicleType === VEHICLE_TYPES.POWER_UNIT
-              ? `power-unit-${(option as PowerUnit).powerUnitId}`
-              : `trailer-${(option as Trailer).trailerId}`;
-
+          const key = vehicleType === VEHICLE_TYPES.POWER_UNIT ?
+            `power-unit-${(option as PowerUnit).powerUnitId}` :
+            `trailer-${(option as Trailer).trailerId}`;
+          
           return (
             <li
               {...props}

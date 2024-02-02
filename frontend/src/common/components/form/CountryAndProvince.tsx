@@ -84,10 +84,7 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
    * @param country string
    * @param province optional string
    */
-  const handleDisplayProvince = (
-    country: string,
-    province: Nullable<string>,
-  ) => {
+  const handleDisplayProvince = (country: string, province: Nullable<string>) => {
     if (!country) {
       // If country is not selected (empty)
       setShouldDisplayProvince(() => true);
@@ -100,10 +97,7 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
     } else {
       setShouldDisplayProvince(() => true);
       const provincesOfCountry = getProvinces(country);
-      if (
-        province &&
-        provincesOfCountry.find((prov) => prov.code === province)
-      ) {
+      if (province && provincesOfCountry.find(prov => prov.code === province)) {
         setValue(provinceField, province);
       } else {
         // Reset province once country changes
