@@ -1,9 +1,10 @@
 import "./InProgressApplicationList.scss";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { RowSelectionState } from "@tanstack/table-core";
 import {
+  MRT_ColumnDef,
   MRT_GlobalFilterTextField,
   MRT_PaginationState,
   MRT_Row,
@@ -26,6 +27,14 @@ import { SnackBarContext } from "../../../../App";
 import { ApplicationInProgress, PermitApplicationInProgress } from "../../types/application";
 import { Delete } from "@mui/icons-material";
 import { Trash } from "../../../../common/components/table/options/Trash";
+
+/**
+ * Dynamically set the column
+ * @returns An array of column headers/accessor keys for Material React Table
+ */
+const getColumns = (): MRT_ColumnDef<ApplicationInProgress>[] => {
+  return ApplicationInProgressColumnDefinition;
+};
 
 /**
  * A wrapper with the query to load the table with expired permits.
@@ -71,12 +80,17 @@ export const InProgressApplicationList = () => {
     retry: 1,
   });
 
-  const { data, isError, isPending, isRefetching } = applicationsQuery;
+  const { data, isError, isPending, isFetching } = applicationsQuery;
 
   const snackBar = useContext(SnackBarContext);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
+
+  const columns = useMemo<MRT_ColumnDef<ApplicationInProgress>[]>(
+    () => getColumns(),
+    [],
+  );
 
   /**
    * Callback function for clicking on the Trash icon above the Table.
@@ -140,18 +154,17 @@ export const InProgressApplicationList = () => {
 
   const table = useMaterialReactTable({
     ...defaultTableOptions,
-    columns: ApplicationInProgressColumnDefinition,
+    columns: columns,
     data: data?.items ?? [],
-    enableRowSelection: false,
     initialState: {
       ...defaultTableInitialStateOptions,
-      sorting: [{ id: "startDate", desc: true }],
     },
     state: {
       ...defaultTableStateOptions,
       showAlertBanner: isError,
+      showProgressBars: isFetching,
       columnVisibility: { applicationId: true },
-      isLoading: isPending || isRefetching,
+      isLoading: isPending,
       rowSelection: rowSelection,
       pagination,
       sorting,
