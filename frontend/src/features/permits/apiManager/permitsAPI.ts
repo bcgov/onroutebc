@@ -92,19 +92,82 @@ export const updateTermOversize = async (
  * Fetch All Permit Application in Progress
  * @return An array of permit applications
  */
-export const getApplicationsInProgress = async (): Promise<
-  PermitApplicationInProgress[]
-> => {
-  try {
-    const companyId = getCompanyIdFromSession();
-    let applicationsUrl = `${APPLICATIONS_API_ROUTES.IN_PROGRESS}`;
-    if (companyId) {
-      applicationsUrl += `&companyId=${companyId}`;
-    }
+export const getApplicationsInProgress = async (
+  {
+    page = 0,
+    take = 10,
+    searchString,
+    sorting = [],
+  }: PaginationAndFilters,
+): Promise<PaginatedResponse<PermitApplicationInProgress>> => {
 
-    const response = await httpGETRequest(applicationsUrl);
+  const companyId = getCompanyIdFromSession();
+  const applicationsURL = new URL(APPLICATIONS_API_ROUTES.IN_PROGRESS);
+  if (companyId) {
+    applicationsURL.searchParams.set("companyId", companyId);
+  }
+
+  // API pagination index starts at 1. Hence page + 1.
+  applicationsURL.searchParams.set("page", (page + 1).toString());
+  applicationsURL.searchParams.set("take", take.toString());
+  if (searchString) {
+    applicationsURL.searchParams.set("searchString", searchString);
+  }
+  if (sorting.length > 0) {
+    applicationsURL.searchParams.set("sorting", JSON.stringify(sorting));
+  }
+
+  console.log('applicationsUrl', applicationsURL.toString())
+
+  const applications = await httpGETRequest(applicationsURL.toString())
+    .then((response) => {
+      const paginatedResponseObject = getDefaultRequiredVal(
+        {},
+        response.data,
+      ) as PaginatedResponse<PermitApplicationInProgress>;
+      return paginatedResponseObject;
+    })
+    .then((paginatedApplications: PaginatedResponse<PermitApplicationInProgress>) => {
+      const applicationsWithDateTransformations = paginatedApplications.items.map(
+        (application) => {
+          console.log('application', application)
+          return {
+            ...application,
+            permitType: getPermitTypeName(application.permitType) as string,
+            createdDateTime: toLocal(
+              application?.createdDateTime,
+              DATE_FORMATS.DATETIME_LONG_TZ,
+            ),
+            updatedDateTime: toLocal(
+              application?.updatedDateTime,
+              DATE_FORMATS.DATETIME_LONG_TZ,
+            ),
+            permitData: {
+              ...application.permitData,
+              startDate: toLocal(
+                application?.permitData?.startDate,
+                DATE_FORMATS.DATEONLY_SHORT_NAME,
+              ),
+              expiryDate: toLocal(
+                application?.permitData?.expiryDate,
+                DATE_FORMATS.DATEONLY_SHORT_NAME,
+              ),
+            }
+          } as PermitApplicationInProgress;
+        },
+      );
+      return {
+        ...paginatedApplications,
+        items: applicationsWithDateTransformations,
+      };
+    });
+
+    return applications;
+
+
+    /*
     const applications = (
-      getDefaultRequiredVal([], response.data) as PermitApplicationInProgress[]
+      getDefaultRequiredVal([], response?.data?.items) as PermitApplicationInProgress[]
     ).map((application) => {
       return {
         ...application,
@@ -134,7 +197,8 @@ export const getApplicationsInProgress = async (): Promise<
   } catch (err) {
     console.error(err);
     return [];
-  }
+  }*/
+
 };
 
 /**
