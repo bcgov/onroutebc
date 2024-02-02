@@ -159,6 +159,7 @@ export const useUserContext = (
           "onRouteBC.user.companyId",
           companyId.toString(),
         );
+        setIsNewBCeIDUser?.(() => true);
       }
       /**
        * The user has been migrated.
