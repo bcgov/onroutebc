@@ -1,5 +1,6 @@
 import { Nullable } from "../../../common/types/common";
 import { VerifiedClient } from "../../../common/authentication/types";
+import { Nullable } from "../../../common/types/common";
 
 interface Address {
   addressLine1: string;
@@ -32,8 +33,8 @@ export interface CompanyProfile {
   mailingAddress: Address;
   email: string;
   phone: string;
-  extension?: string;
-  fax?: string;
+  extension?: Nullable<string>;
+  fax?: Nullable<string>;
   primaryContact: Contact;
   migratedClientHash: Nullable<string>;
   alternateName: Nullable<string>;
@@ -46,20 +47,21 @@ export interface UserInformation extends Contact {
   statusCode: string;
 }
 
-export interface CompanyAndUserRequest {
+export type CompanyAndUserRequest = {
   companyId: number;
   companyGUID: string;
   legalName: string;
-  alternateName?: string; // Doing Business As field
+  alternateName?: Nullable<string>; // Doing Business As field
   migratedClientHash?: string;
   mailingAddress: Address;
   email: string;
   phone: string;
-  extension?: string;
-  fax?: string;
+  extension?: Nullable<string>;
+  fax?: Nullable<string>;
   primaryContact: Contact;
-  adminUser: Contact;
-}
+  adminUser?: Nullable<Contact>;
+  clientNumber?: Nullable<string>;
+};
 
 /**
  * The request object to verify a migrated client

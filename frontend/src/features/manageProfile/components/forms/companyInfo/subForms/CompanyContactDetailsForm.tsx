@@ -9,7 +9,19 @@ import {
   requiredMessage,
 } from "../../../../../../common/helpers/validationMessages";
 
-export const CompanyContactDetailsForm = ({ feature }: { feature: string }) => (
+export const CompanyContactDetailsForm = ({
+  feature,
+  disableEmail = true,
+}: {
+  /**
+   * The name of the feature that this form is part of.
+   */
+  feature: string;
+  /**
+   * Should the email be disabled? By default it is.
+   */
+  disableEmail?: boolean;
+}) => (
   <div className="company-contact-details-form">
     <CustomFormComponent
       type="input"
@@ -25,8 +37,8 @@ export const CompanyContactDetailsForm = ({ feature }: { feature: string }) => (
         label: "Email",
       }}
       className="company-contact-details-form__input"
-      disabled={true}
-      readOnly={true}
+      disabled={disableEmail}
+      readOnly={disableEmail}
     />
     <div className="side-by-side-inputs">
       <CustomFormComponent
