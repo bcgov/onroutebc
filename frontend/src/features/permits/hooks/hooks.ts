@@ -255,7 +255,7 @@ export const usePermitHistoryQuery = (originalPermitId?: string) => {
 export const useIssuePermits = () => {
   const [issueResults, setIssueResults] =
     useState<Nullable<IssuePermitsResponse>>(undefined);
-  
+
   const queryClient = useQueryClient();
 
   const mutation = useMutation({

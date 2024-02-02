@@ -2,6 +2,7 @@ import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import {
   createMap,
   forMember,
+  ignore,
   mapFrom,
   Mapper,
   mapWith,
@@ -40,6 +41,8 @@ export class CompanyProfile extends AutomapperProfile {
         mapper,
         CreateCompanyDto,
         Company,
+        forMember((d) => d.clientNumber, ignore()),
+        forMember((d) => d.migratedClientHash, ignore()),
         forMember(
           (d) => d.createdUserGuid,
           mapWithArguments((source, { userGUID }) => {

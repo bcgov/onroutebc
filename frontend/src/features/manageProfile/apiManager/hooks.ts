@@ -98,7 +98,8 @@ export const useUserContext = (
   useEffect(() => {
     if (!userContextResponseBody) return;
 
-    const isIdir = isAuthenticated &&
+    const isIdir =
+      isAuthenticated &&
       userFromToken?.profile?.identity_provider === IDPS.IDIR;
 
     if (isIdir) {
@@ -139,7 +140,7 @@ export const useUserContext = (
           userAuthGroup: user.userAuthGroup as BCeIDAuthGroup,
         } as BCeIDUserDetailContext;
         setUserDetails?.(() => userDetails);
-  
+
         // Setting the companyId to sessionStorage so that it can be
         // used outside of react components.
         sessionStorage.setItem(
@@ -158,6 +159,7 @@ export const useUserContext = (
           "onRouteBC.user.companyId",
           companyId.toString(),
         );
+        setIsNewBCeIDUser?.(() => true);
       }
       /**
        * The user has been migrated.
@@ -224,9 +226,7 @@ export const useIDIRUserRolesQuery = () => {
  * @param userRoles User roles data response from the api.
  * @returns UseQueryResult containing the query results.
  */
-export const useIDIRUserRoles = (
-  userRoles: Nullable<UserRolesType[]>,
-) => {
+export const useIDIRUserRoles = (userRoles: Nullable<UserRolesType[]>) => {
   const { setUserRoles } = useContext(OnRouteBCContext);
 
   useEffect(() => {

@@ -1,6 +1,6 @@
-import { Link } from "@mui/material";
 import { MRT_ColumnDef } from "material-react-table";
 
+import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
 import { Permit } from "../../../permits/types/permit";
 import { PERMIT_EXPIRED } from "../../../permits/types/PermitStatus";
 import { PermitChip } from "../../../permits/components/permit-list/PermitChip";
@@ -8,7 +8,7 @@ import { viewPermitPdf } from "../../../permits/helpers/permitPDFHelper";
 import { hasPermitExpired } from "../../../permits/helpers/permitState";
 import {
   dateTimeStringSortingFn,
-  formatCellValuetoDatetime
+  formatCellValuetoDatetime,
 } from "../../../../common/helpers/tableHelper";
 
 /*
@@ -34,13 +34,11 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
 
       return (
         <>
-          <Link
-            component="button"
-            variant="body2"
+          <CustomActionLink
             onClick={() => viewPermitPdf(permitId.toString())}
           >
             {props.cell.getValue()}
-          </Link>
+          </CustomActionLink>
           {hasPermitExpired(expiryDate) ? (
             <PermitChip permitStatus={PERMIT_EXPIRED} />
           ) : (

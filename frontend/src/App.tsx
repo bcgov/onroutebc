@@ -22,7 +22,7 @@ import OnRouteBCContext, {
   BCeIDUserDetailContext,
   IDIRUserDetailContext,
 } from "./common/authentication/OnRouteBCContext";
-import { MigratedClient, UserRolesType } from "./common/authentication/types";
+import { VerifiedClient, UserRolesType } from "./common/authentication/types";
 
 const authority =
   import.meta.env.VITE_KEYCLOAK_ISSUER_URL ||
@@ -71,7 +71,7 @@ const App = () => {
   const [idirUserDetails, setIDIRUserDetails] =
     useState<Optional<IDIRUserDetailContext>>();
   const [migratedClient, setMigratedClient] =
-    useState<Optional<MigratedClient>>();
+    useState<Optional<VerifiedClient>>();
   const [isNewBCeIDUser, setIsNewBCeIDUser] = useState<Optional<boolean>>();
 
   // Needed the following usestate and useffect code so that the snackbar would disapear/close

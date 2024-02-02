@@ -98,9 +98,7 @@ export const AppRoutes = () => {
 
       <Route
         element={
-          <IDIRAuthWall
-            allowedAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
-          />
+          <IDIRAuthWall allowedAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]} />
         }
       >
         <Route

@@ -1,7 +1,10 @@
 import { Dayjs } from "dayjs";
 
 import { Permit, PermitsActionResponse } from "../types/permit";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../common/helpers/util";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../common/helpers/util";
 import { Nullable, Optional } from "../../../common/types/common";
 import { getDurationOrDefault } from "./getDefaultApplicationFormData";
 import { getExpiryDate } from "./permitState";
@@ -46,9 +49,11 @@ export const mapToVehicleObjectById = (
   if (!vehicles) return undefined;
 
   return vehicles.find((item) => {
-    return vehicleType === VEHICLE_TYPES.POWER_UNIT ? 
-      (item.vehicleType === VEHICLE_TYPES.POWER_UNIT && (item as PowerUnit).powerUnitId === id) :
-      (item.vehicleType === VEHICLE_TYPES.TRAILER && (item as Trailer).trailerId === id);
+    return vehicleType === VEHICLE_TYPES.POWER_UNIT
+      ? item.vehicleType === VEHICLE_TYPES.POWER_UNIT &&
+          (item as PowerUnit).powerUnitId === id
+      : item.vehicleType === VEHICLE_TYPES.TRAILER &&
+          (item as Trailer).trailerId === id;
   });
 };
 
@@ -298,8 +303,12 @@ export const transformApplicationToPermit = (
 export const removeEmptyIdsFromPermitsActionResponse = (
   res: PermitsActionResponse,
 ): PermitsActionResponse => {
-  const successIds = getDefaultRequiredVal([], res.success).filter(id => Boolean(id));
-  const failedIds = getDefaultRequiredVal([], res.failure).filter(id => Boolean(id));
+  const successIds = getDefaultRequiredVal([], res.success).filter((id) =>
+    Boolean(id),
+  );
+  const failedIds = getDefaultRequiredVal([], res.failure).filter((id) =>
+    Boolean(id),
+  );
   return {
     success: successIds,
     failure: failedIds,
