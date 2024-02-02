@@ -171,6 +171,7 @@ export const ChallengeProfileSteps = React.memo(() => {
               verifiedClient?.primaryContact?.city,
             ),
           },
+          clientNumber: getDefaultRequiredVal("", verifiedClient?.clientNumber),
         });
       } else {
         if (!foundClient) {

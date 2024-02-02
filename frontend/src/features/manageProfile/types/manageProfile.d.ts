@@ -57,6 +57,7 @@ export type CompanyAndUserRequest = {
   fax?: Nullable<string>;
   primaryContact: Contact;
   adminUser?: Nullable<Contact>;
+  clientNumber?: Nullable<string>;
 };
 
 /**
