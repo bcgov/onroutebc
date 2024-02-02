@@ -134,6 +134,7 @@ export const IDIR_ROUTES = {
   WELCOME: `${IDIR_ROUTE_BASE}/welcome`,
   SEARCH_RESULTS: `${IDIR_ROUTE_BASE}/search-results`,
   REPORTS: `${IDIR_ROUTE_BASE}/reports`,
+  CREATE_COMPANY: `${IDIR_ROUTE_BASE}/create-company`,
 };
 
 // Payment

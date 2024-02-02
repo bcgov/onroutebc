@@ -15,7 +15,7 @@ export const OnRouteBCProfileCreated = memo(
             <img
               height="168"
               width="178"
-              src="./Success_Graphic.png"
+              src="/Success_Graphic.png"
               alt="Profile Set-up Successful"
             />
           </div>
