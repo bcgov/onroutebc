@@ -385,10 +385,10 @@ export class CompanyService {
   ): Promise<PaginationDto<ReadCompanyDto>> {
     let companiesQuery = this.companyRepository
       .createQueryBuilder('company')
-      .innerJoinAndSelect('company.mailingAddress', 'mailingAddress')
-      .innerJoinAndSelect('company.primaryContact', 'primaryContact')
-      .innerJoinAndSelect('primaryContact.province', 'province')
-      .innerJoinAndSelect('mailingAddress.province', 'provinceType');
+      .leftJoinAndSelect('company.mailingAddress', 'mailingAddress')
+      .leftJoinAndSelect('company.primaryContact', 'primaryContact')
+      .leftJoinAndSelect('primaryContact.province', 'province')
+      .leftJoinAndSelect('mailingAddress.province', 'provinceType');
 
     // Apply conditions based on parameters
     companiesQuery = companiesQuery.where('company.companyId IS NOT NULL');
