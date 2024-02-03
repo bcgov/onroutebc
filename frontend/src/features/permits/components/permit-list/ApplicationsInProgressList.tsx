@@ -1,4 +1,4 @@
-import "./InProgressApplicationList.scss";
+import "./ApplicationsInProgressList.scss";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
@@ -39,7 +39,7 @@ const getColumns = (): MRT_ColumnDef<ApplicationInProgress>[] => {
 /**
  * A wrapper with the query to load the table with expired permits.
  */
-export const InProgressApplicationList = () => {
+export const ApplicationsInProgressList = () => {
 
   const [pagination, setPagination] = useState<MRT_PaginationState>({
     pageIndex: 0,
