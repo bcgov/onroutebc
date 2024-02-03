@@ -102,18 +102,16 @@ export const IDIRCompanySearchResults = memo(
           sortingFn: "alphanumeric",
           Cell: (props: { row: any; cell: any }) => {
             return (
-              <>
-                <Link
-                  component="a"
-                  sx={{
-                    cursor: "pointer",
-                  }}
-                  variant="body2"
-                  onClick={() => onClickCompany(props.row.original)}
-                >
-                  {props.row.original.legalName}
-                </Link>
-              </>
+              <Link
+                component="a"
+                sx={{
+                  cursor: "pointer",
+                }}
+                variant="body2"
+                onClick={() => onClickCompany(props.row.original)}
+              >
+                {props.row.original.legalName}
+              </Link>
             );
           },
         },
