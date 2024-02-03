@@ -359,8 +359,6 @@ export const useApplicationsInProgressQuery = ({
   const applicationsInProgressQuery = useQuery({
     queryKey: ["applicationInProgress"],
     queryFn: () => getApplicationsInProgress({page, take, searchString, sorting}),
-    //placeholderData: keepPreviousData,
-    //staleTime: FIVE_MINUTES,
   });
 
   return {
