@@ -4,12 +4,16 @@ import { StartApplicationAction } from "../../pages/TermOversize/components/dash
 import { ActivePermitList } from "../permit-list/ActivePermitList";
 import { ExpiredPermitList } from "../permit-list/ExpiredPermitList";
 import { ApplicationsInProgressList } from "../permit-list/ApplicationsInProgressList";
+import { useApplicationsInProgressQuery } from "../../hooks/hooks";
+
 
 export const PermitLists = React.memo(() => {
+  const query = useApplicationsInProgressQuery({});
+
   const tabs = [
     {
       label: "Applications in Progress",
-      count: 20,
+      count: query?.applicationsInProgressQuery?.data?.items?.length,
       component: <ApplicationsInProgressList />,
     },
     {
