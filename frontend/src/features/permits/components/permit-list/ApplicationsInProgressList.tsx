@@ -86,6 +86,7 @@ export const ApplicationsInProgressList = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
+  const [globalFilter, setGlobalFilter] = useState<string>("");
 
   const columns = useMemo<MRT_ColumnDef<ApplicationInProgress>[]>(
     () => getColumns(),
@@ -166,6 +167,7 @@ export const ApplicationsInProgressList = () => {
       columnVisibility: { applicationId: true },
       isLoading: isPending,
       rowSelection: rowSelection,
+      globalFilter,
       pagination,
       sorting,
     },
@@ -223,6 +225,7 @@ export const ApplicationsInProgressList = () => {
     manualSorting: true,
     rowCount: data?.meta?.totalItems ?? 0,
     pageCount: data?.meta?.pageCount ?? 0,
+    onGlobalFilterChange: setGlobalFilter,
     onSortingChange: setSorting,
     onPaginationChange: setPagination,
     enablePagination: true,

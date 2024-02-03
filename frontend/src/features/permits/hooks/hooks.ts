@@ -24,6 +24,7 @@ import {
   amendPermit,
   getCurrentAmendmentApplication,
   modifyAmendmentApplication,
+  getApplicationsInProgress,
 } from "../apiManager/permitsAPI";
 
 /**
@@ -343,4 +344,26 @@ export const useAmendmentApplicationQuery = (originalPermitId?: string) => {
     refetchOnMount: "always",
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
   });
+};
+
+/**
+ * A custom react query hook that fetches applications in progress.
+ * @returns List of applications in progress
+ */
+export const useApplicationsInProgressQuery = ({
+  page = 0,
+  take = 10,
+  searchString = "",
+  sorting = []
+}) => {
+  const applicationsInProgressQuery = useQuery({
+    queryKey: ["applicationInProgress"],
+    queryFn: () => getApplicationsInProgress({page, take, searchString, sorting}),
+    //placeholderData: keepPreviousData,
+    //staleTime: FIVE_MINUTES,
+  });
+
+  return {
+    applicationsInProgressQuery,
+  };
 };
