@@ -42,7 +42,7 @@ const oidcConfig: AuthProviderProps = {
   scope: "openid",
   automaticSilentRenew: true,
   revokeTokensOnSignout: true,
-  userStore: new WebStorageStateStore({ store: localStorage }),
+  userStore: new WebStorageStateStore({ store: sessionStorage }),
 };
 
 const setRedirectInSession = () => {

@@ -23,7 +23,7 @@ axios.interceptors.request.use(
 // Full key structure: oidc.user:${KEYCLOAK_ISSUER_URL}:${KEYCLOAK_AUDIENCE}
 // Full key example:: oidc.user:https://dev.loginproxy.gov.bc.ca/auth/realms/standard:on-route-bc-direct-4598
 const getUserStorageKey = () =>
-  Object.keys(localStorage).find((key) => key.startsWith("oidc.user"));
+  Object.keys(sessionStorage).find((key) => key.startsWith("oidc.user"));
 
 /**
  * Retrieves user's sessionStorage item based on provided key.
@@ -32,7 +32,7 @@ const getUserStorageKey = () =>
  */
 const getUserStorage = () => {
   const storageKey = getDefaultRequiredVal("", getUserStorageKey());
-  return applyWhenNotNullable(JSON.parse, localStorage.getItem(storageKey));
+  return applyWhenNotNullable(JSON.parse, sessionStorage.getItem(storageKey));
 };
 
 /**
