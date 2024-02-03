@@ -3,13 +3,14 @@ import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
 import { StartApplicationAction } from "../../pages/TermOversize/components/dashboard/StartApplicationAction";
 import { ActivePermitList } from "../permit-list/ActivePermitList";
 import { ExpiredPermitList } from "../permit-list/ExpiredPermitList";
-import { InProgressApplicationList } from "../permit-list/InProgressApplicationList";
+import { ApplicationsInProgressList } from "../permit-list/ApplicationsInProgressList";
 
 export const PermitLists = React.memo(() => {
   const tabs = [
     {
       label: "Applications in Progress",
-      component: <InProgressApplicationList />,
+      count: 20,
+      component: <ApplicationsInProgressList />,
     },
     {
       label: "Active Permits",
