@@ -40,6 +40,11 @@ export interface CompanyProfile {
   alternateName?: Nullable<string>;
 }
 
+/**
+ * The request object type for updating company profile.
+ */
+export type UpdateCompanyProfileRequest = Omit<CompanyProfile, "clientNumber">;
+
 export interface UserInformation extends Contact {
   userAuthGroup: string;
   userGUID: string;

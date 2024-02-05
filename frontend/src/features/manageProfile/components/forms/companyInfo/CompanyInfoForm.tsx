@@ -10,7 +10,7 @@ import { CompanyContactDetailsForm } from "./subForms/CompanyContactDetailsForm"
 import { CompanyPrimaryContactForm } from "./subForms/CompanyPrimaryContactForm";
 import { formatPhoneNumber } from "../../../../../common/components/form/subFormComponents/PhoneNumberInput";
 import { InfoBcGovBanner } from "../../../../../common/components/banners/InfoBcGovBanner";
-import { CompanyProfile } from "../../../types/manageProfile";
+import { CompanyProfile, UpdateCompanyProfileRequest } from "../../../types/manageProfile";
 import { getCompanyEmailFromSession } from "../../../../../common/apiManager/httpRequestHandler";
 import {
   applyWhenNotNullable,
@@ -35,7 +35,7 @@ export const CompanyInfoForm = memo(
     const queryClient = useQueryClient();
     const companyEmail = getCompanyEmailFromSession();
 
-    const formMethods = useForm<Omit<CompanyProfile, "clientNumber">>({
+    const formMethods = useForm<UpdateCompanyProfileRequest>({
       defaultValues: {
         legalName: getDefaultRequiredVal("", companyInfo?.legalName),
         mailingAddress: {
@@ -121,10 +121,7 @@ export const CompanyInfoForm = memo(
     });
 
     const onUpdateCompanyInfo = function (data: FieldValues) {
-      const companyInfoToBeUpdated = data as Omit<
-        CompanyProfile,
-        "clientNumber"
-      >;
+      const companyInfoToBeUpdated = data as UpdateCompanyProfileRequest;
       addCompanyInfoQuery.mutate({
         companyInfo: companyInfoToBeUpdated,
       });

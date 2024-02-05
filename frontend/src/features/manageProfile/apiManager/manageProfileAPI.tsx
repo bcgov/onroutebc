@@ -20,6 +20,7 @@ import {
   Contact,
   VerifyMigratedClientRequest,
   VerifyMigratedClientResponse,
+  UpdateCompanyProfileRequest,
 } from "../types/manageProfile";
 
 export const getCompanyInfo = async (): Promise<CompanyProfile> => {
@@ -53,7 +54,7 @@ export const getMyInfo = async (): Promise<UserInformation> => {
 export const updateCompanyInfo = async ({
   companyInfo,
 }: {
-  companyInfo: Omit<CompanyProfile, "clientNumber">;
+  companyInfo: UpdateCompanyProfileRequest;
 }) => {
   return await httpPUTRequest(
     `${MANAGE_PROFILE_API.COMPANIES}/${getCompanyIdFromSession()}`,
