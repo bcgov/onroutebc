@@ -47,8 +47,8 @@ export function exceptionFactory(errors: ValidationError[]) {
 
 export const CustomValidationPipe = new ValidationPipe({
   exceptionFactory,
-  forbidUnknownValues: true,
+  forbidUnknownValues: true, // Fails if an unknown object is passed
   whitelist: true,
-  forbidNonWhitelisted: true,
+  forbidNonWhitelisted: true, // Throws an error for non-whitelisted properties
   validationError: { target: false },
 });
