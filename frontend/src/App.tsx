@@ -24,7 +24,7 @@ import OnRouteBCContext, {
 } from "./common/authentication/OnRouteBCContext";
 import { VerifiedClient, UserRolesType } from "./common/authentication/types";
 import { WebStorageStateStore } from "oidc-client-ts";
-
+// Dummy change
 const authority =
   import.meta.env.VITE_KEYCLOAK_ISSUER_URL ||
   envConfig.VITE_KEYCLOAK_ISSUER_URL;
