@@ -1,3 +1,4 @@
+import { Contact } from "../../features/manageProfile/types/manageProfile";
 import { Nullable } from "../types/common";
 
 /**
@@ -36,6 +37,7 @@ export type ClientInformation = {
   phone: string;
   fax: string;
   extension: string;
+  primaryContact: Contact;
 };
 
 /**

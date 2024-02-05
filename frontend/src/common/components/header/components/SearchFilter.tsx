@@ -81,7 +81,14 @@ const getDefaultSearchBy = (
   );
 };
 
-export const SearchFilter = () => {
+export const SearchFilter = ({
+  closeFilter,
+}: {
+  /**
+   * Callback function to close the search filter.
+   */
+  closeFilter: () => void;
+}) => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const searchEntity = getDefaultSearchEntity(searchParams.get("searchEntity"));
@@ -137,6 +144,8 @@ export const SearchFilter = () => {
       .join("&");
 
     if (data?.searchString?.trim()?.length < 1) return;
+
+    closeFilter();
 
     navigate(`${IDIR_ROUTES.SEARCH_RESULTS}?${searchFields}`);
   };

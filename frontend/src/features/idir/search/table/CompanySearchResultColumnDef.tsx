@@ -1,7 +1,7 @@
 import { MRT_ColumnDef } from "material-react-table";
-
-import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import CountriesAndStates from "../../../../common/constants/countries_and_states.json";
+import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
+
 import { getDefaultNullableVal } from "../../../../common/helpers/util";
 
 /*
@@ -12,12 +12,6 @@ import { getDefaultNullableVal } from "../../../../common/helpers/util";
  *
  */
 export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
-  {
-    accessorKey: "legalName",
-    header: "Company Name",
-    enableSorting: true,
-    sortingFn: "alphanumeric",
-  },
   {
     accessorKey: "alternateName",
     header: "Doing Business As (DBA)",

@@ -28,6 +28,7 @@ import { VEHICLE_TYPES } from "../features/manageVehicles/types/Vehicle";
 import { CreateProfileWizard } from "../features/wizard/CreateProfileWizard";
 import { UserInfoWizard } from "../features/wizard/UserInfoWizard";
 import * as routes from "./constants";
+import { IDIRCreateCompany } from "../features/idir/company/IDIRCreateCompany";
 
 export const AppRoutes = () => {
   return (
@@ -110,6 +111,10 @@ export const AppRoutes = () => {
         <Route
           path={`${routes.PERMITS_ROUTES.AMEND()}`}
           element={<AmendPermit />}
+        />
+        <Route
+          path={routes.IDIR_ROUTES.CREATE_COMPANY}
+          element={<IDIRCreateCompany />}
         />
       </Route>
 
