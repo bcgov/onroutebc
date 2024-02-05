@@ -43,6 +43,7 @@ export class CreateApplicationDto {
   @AutoMap()
   @ApiProperty({
     example: 'A2-00000002-120',
+    required: false,
     description: 'Unique formatted permit application number.',
   })
   @IsOptional()

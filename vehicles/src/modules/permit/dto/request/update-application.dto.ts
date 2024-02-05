@@ -7,23 +7,23 @@ import { PermitStatus } from 'src/common/enum/permit-status.enum';
 import { PermitType } from 'src/common/enum/permit-type.enum';
 
 export class UpdateApplicationDto {
-  // Company id should not be optional as anonymous users can not update applications.
   @AutoMap()
   @ApiProperty({
     description: 'Id of the company requesting the permit.',
     example: 74,
     required: false,
   })
+  @IsOptional()
   @IsNumber()
   companyId: number;
 
-  // UserGuid should not be optional as anonymous users can not update applications.
   @AutoMap()
   @ApiProperty({
     description: 'GUID of the user requesting the permit.',
     example: '06267945F2EB4E31B585932F78B76269',
     required: false,
   })
+  @IsOptional()
   @IsString()
   @MaxLength(32)
   userGuid: string;
@@ -43,6 +43,7 @@ export class UpdateApplicationDto {
   @ApiProperty({
     enum: PermitStatus,
     description: 'Friendly name for the permit type.',
+    required: false,
     example: ApplicationStatus.IN_PROGRESS,
   })
   @IsOptional()
@@ -54,6 +55,7 @@ export class UpdateApplicationDto {
   @ApiProperty({
     enum: PermitApplicationOrigin,
     example: PermitApplicationOrigin.ONLINE,
+    required: false,
     description: 'Unique identifier for the application origin.',
   })
   @IsOptional()

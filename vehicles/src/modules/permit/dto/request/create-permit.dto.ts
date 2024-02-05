@@ -7,6 +7,7 @@ import { Allow, IsEnum, IsNumber, IsOptional } from 'class-validator';
 
 export class CreatePermitDto {
   @AutoMap()
+  @IsOptional()
   @IsNumber()
   @ApiProperty({
     description: 'Id of the company requesting the permit.',
@@ -28,6 +29,7 @@ export class CreatePermitDto {
   @ApiProperty({
     enum: PermitApprovalSource,
     example: PermitApprovalSource.PPC,
+    required: false,
     description: 'Unique identifier for the application approval source.',
   })
   @IsOptional()
@@ -38,6 +40,7 @@ export class CreatePermitDto {
   @ApiProperty({
     enum: PermitApplicationOrigin,
     example: PermitApplicationOrigin.ONLINE,
+    required: false,
     description: 'Unique identifier for the application origin.',
   })
   @IsOptional()

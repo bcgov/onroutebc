@@ -17,6 +17,7 @@ export class CreatePaymentDetailedReportDto {
   @AutoMap()
   @ApiProperty({
     enum: PermitIssuedBy,
+    required: true,
     example: [PermitIssuedBy.SELF_ISSUED, PermitIssuedBy.PPC],
     description: 'Permit Issued By value.',
     isArray: true,
@@ -45,6 +46,7 @@ export class CreatePaymentDetailedReportDto {
       PermitTypeReport.SINGLE_TRIP_OVERSIZE,
     ],
     enum: PermitTypeReport,
+    required: true,
     description: 'The permit types to include in the report.',
     isArray: true,
   })
