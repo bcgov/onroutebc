@@ -31,10 +31,8 @@ import { ERROR_ROUTES } from "../../../../routes/constants";
  */
 export const BasePermitList = ({
   isExpired = false,
-  //isInProgress = false,
 }: {
   isExpired?: boolean;
-  //isInProgress?: boolean;
 }) => {
   const navigate = useNavigate();
   const [pagination, setPagination] = useState<MRT_PaginationState>({
