@@ -8,6 +8,7 @@ import {
   IsOptional,
   IsString,
   Length,
+  MaxLength,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -22,6 +23,8 @@ export class CreateCompanyDto {
     description: 'The legal name of the company.',
     example: 'ABC Carriers Inc.',
   })
+  @IsString()
+  @Length(1, 500)
   legalName: string;
 
   @AutoMap()
@@ -31,6 +34,7 @@ export class CreateCompanyDto {
   })
   @IsOptional()
   @IsString()
+  @MaxLength(150)
   alternateName?: string;
 
   @AutoMap()
@@ -40,6 +44,9 @@ export class CreateCompanyDto {
     example: '1234',
     required: false,
   })
+  @IsOptional()
+  @IsString()
+  @Length(13, 13)
   clientNumber?: string;
 
   @AutoMap()
