@@ -67,7 +67,7 @@ export const BCeIDAuthWall = ({
       if (companyId) {
         return <IDIRAuthWall allowedAuthGroups={allowedAuthGroups} />;
       } else {
-        <Navigate
+        return <Navigate
           to={IDIR_ROUTES.WELCOME}
           state={{ from: location }}
           replace
