@@ -39,7 +39,8 @@ export const BCeIDAuthWall = ({
     user: userFromToken,
   } = useAuth();
 
-  const { userRoles, companyId, isNewBCeIDUser } = useContext(OnRouteBCContext);
+  const { userRoles, companyId, isNewBCeIDUser } =
+    useContext(OnRouteBCContext);
 
   const userIDP = userFromToken?.profile?.identity_provider as string;
 
@@ -87,28 +88,12 @@ export const BCeIDAuthWall = ({
       if (companyId) {
         return <IDIRAuthWall allowedAuthGroups={allowedAuthGroups} />;
       } else {
-        <Navigate
+        return <Navigate
           to={IDIR_ROUTES.WELCOME}
           state={{ from: location }}
           replace
         />;
       }
-
-      // const doesUserHaveAccess = DoesUserHaveAuthGroup<IDIRUserAuthGroupType>({
-      //   userAuthGroup: idirUserDetails?.userAuthGroup,
-      //   allowedAuthGroups,
-      // });
-      // if (doesUserHaveAccess) {
-      //   return <Outlet />;
-      // } else {
-      //   return (
-      //     <Navigate
-      //       to={ERROR_ROUTES.UNAUTHORIZED}
-      //       state={{ from: location }}
-      //       replace
-      //     />
-      //   );
-      // }
     }
     if (!isIDIR(userIDP)) {
       if (!companyId) {

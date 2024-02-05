@@ -1,10 +1,10 @@
 import { useLocation, useNavigate } from "react-router-dom";
 
+import { useContext } from "react";
 import { IDIR_ROUTES } from "../../../routes/constants";
+import OnRouteBCContext from "../../authentication/OnRouteBCContext";
 import { NavButton } from "./NavButton";
 import { NAV_BUTTON_TYPES } from "./types/NavButtonType";
-import { useContext } from "react";
-import OnRouteBCContext from "../../authentication/OnRouteBCContext";
 
 /**
  * Displays the navigation icon for Home on the NavIconSideBar
@@ -12,9 +12,9 @@ import OnRouteBCContext from "../../authentication/OnRouteBCContext";
 export const NavIconHomeButton = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const isActive = pathname === IDIR_ROUTES.WELCOME;
   const { setCompanyId, setCompanyLegalName, setOnRouteBCClientNumber } =
     useContext(OnRouteBCContext);
-  const isActive = pathname === IDIR_ROUTES.WELCOME;
 
   return (
     <NavButton
@@ -23,6 +23,7 @@ export const NavIconHomeButton = () => {
         setCompanyId?.(() => undefined);
         setCompanyLegalName?.(() => undefined);
         setOnRouteBCClientNumber?.(() => undefined);
+        sessionStorage.removeItem("onRouteBC.user.companyId");
         navigate(IDIR_ROUTES.WELCOME);
       }}
       isActive={isActive}

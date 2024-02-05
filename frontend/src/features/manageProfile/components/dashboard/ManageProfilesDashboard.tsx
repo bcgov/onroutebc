@@ -49,9 +49,8 @@ export const ManageProfilesDashboard = React.memo(() => {
   const { userRoles } = useContext(OnRouteBCContext);
   const { user } = useAuth();
   const populatedUserRoles = getDefaultRequiredVal([], userRoles);
-  const isBCeIDAdmin =
-    isBCeIDOrgAdmin(populatedUserRoles) ||
-    isIDIR(user?.profile?.identity_provider as string);
+  const isIDIRUser = isIDIR(user?.profile?.identity_provider as string);
+  const isBCeIDAdmin = isBCeIDOrgAdmin(populatedUserRoles) || isIDIRUser;
 
   const { state: stateFromNavigation } = useLocation();
   let selectedTab = BCEID_PROFILE_TABS.COMPANY_INFORMATION;
@@ -79,7 +78,7 @@ export const ManageProfilesDashboard = React.memo(() => {
     },
   ];
 
-  if (!isIDIR(user?.profile?.identity_provider as string)) {
+  if (!isIDIRUser) {
     tabs.push({
       label: "My Information",
       component: <MyInfo />,

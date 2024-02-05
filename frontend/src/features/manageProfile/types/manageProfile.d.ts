@@ -36,8 +36,8 @@ export interface CompanyProfile {
   extension?: Nullable<string>;
   fax?: Nullable<string>;
   primaryContact: Contact;
-  migratedClientHash: Nullable<string>;
-  alternateName: Nullable<string>;
+  migratedClientHash?: Nullable<string>;
+  alternateName?: Nullable<string>;
 }
 
 export interface UserInformation extends Contact {
