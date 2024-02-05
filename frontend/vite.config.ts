@@ -15,18 +15,13 @@ export default defineConfig({
     port: 3000,
     open: true,
   },
-  plugins: [
-    eslint(),
-    react(),
-    viteTsconfigPaths(),
-    svgrPlugin(),
-  ],
+  plugins: [eslint(), react(), viteTsconfigPaths(), svgrPlugin()],
   css: {
     postcss: {
       plugins: [
         autoprefixer({
           remove: false,
-        }), 
+        }),
       ],
     },
   },
@@ -36,7 +31,7 @@ export default defineConfig({
     setupFiles: ["./src/setupTests.ts"],
     server: {
       deps: {
-        inline: ["vitest-canvas-mock"]
+        inline: ["vitest-canvas-mock"],
       },
     },
     coverage: {
@@ -48,4 +43,5 @@ export default defineConfig({
     emptyOutDir: true,
     outDir: "build",
   },
+  base: "/",
 });

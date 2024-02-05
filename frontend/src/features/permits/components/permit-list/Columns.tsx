@@ -1,35 +1,13 @@
 import { MRT_ColumnDef } from "material-react-table";
 
-import { viewPermitPdf } from "../../helpers/permitPDFHelper";
-import { Permit } from "../../types/permit";
-import { PermitChip } from "./PermitChip";
 import { formatCellValuetoDatetime } from "../../../../common/helpers/tableHelper";
-import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
+import { Permit } from "../../types/permit";
 
 /**
  * The column definition for Permits.
  */
 export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
-  {
-    accessorKey: "permitNumber",
-    id: "permitNumber",
-    header: "Permit #",
-    enableSorting: true,
-    size: 500,
-    accessorFn: (row) => row.permitNumber,
-    Cell: (props: { row: any; cell: any }) => {
-      return (
-        <>
-          <CustomActionLink
-            onClick={() => viewPermitPdf(props.row.original.permitId)}
-          >
-            {props.cell.getValue()}
-          </CustomActionLink>
-          <PermitChip permitStatus={props.row.original.permitStatus} />
-        </>
-      );
-    },
-  },
+  
   {
     accessorKey: "permitType",
     id: "permitType",

@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
   MRT_GlobalFilterTextField,
@@ -24,6 +24,9 @@ import {
 } from "../../../../common/helpers/tableHelper";
 import { useNavigate } from "react-router-dom";
 import { ERROR_ROUTES } from "../../../../routes/constants";
+import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
+import { PermitChip } from "./PermitChip";
+import { openBlobInNewTab } from "../../helpers/permitPDFHelper";
 
 /**
  * A permit list component with common functionalities that can be shared by
@@ -79,11 +82,52 @@ export const BasePermitList = ({
     retry: 1,
   });
 
+  const worker: Worker = useMemo(
+    () => new Worker(new URL("./Worker.js", import.meta.url), { type: "module"}),
+    [],
+  );
+
+  useEffect(() => {
+    if (window.Worker) {
+      worker.onmessage = (e: MessageEvent<Blob>) => {
+        openBlobInNewTab(e.data);
+      };
+    }
+  }, [worker]);
+
   const { data, isError, isPending, isRefetching } = permitsQuery;
 
   const table = useMaterialReactTable({
     ...defaultTableOptions,
-    columns: PermitsColumnDefinition,
+    columns: [
+      {
+        accessorKey: "permitNumber",
+        id: "permitNumber",
+        header: "Permit #",
+        enableSorting: true,
+        size: 500,
+        accessorFn: (row) => row.permitNumber,
+        Cell: (props: { row: any; cell: any }) => {
+          return (
+            <>
+              <CustomActionLink
+                onClick={() => {
+                  console.log(
+                    "props.row.original.permitId::",
+                    props.row.original.permitId,
+                  );
+                  worker.postMessage(props.row.original.permitId);
+                }}
+              >
+                {props.cell.getValue()}
+              </CustomActionLink>
+              <PermitChip permitStatus={props.row.original.permitStatus} />
+            </>
+          );
+        },
+      },
+      ...PermitsColumnDefinition,
+    ],
     data: data?.items ?? [],
     enableRowSelection: false,
     initialState: {
