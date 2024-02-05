@@ -23,7 +23,6 @@ import {
 export const EditUserDashboard = React.memo(() => {
   const navigate = useNavigate();
   const { userGUID } = useParams();
-  console.log("userGUID::", userGUID);
 
   const { data: userInfo, isPending } = useQuery({
     queryKey: ["userByuserGUID", userGUID],

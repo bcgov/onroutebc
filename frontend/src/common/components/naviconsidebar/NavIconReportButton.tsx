@@ -1,8 +1,9 @@
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { NavButton } from "./NavButton";
-import { NAV_BUTTON_TYPES } from "./types/NavButtonType";
 import { IDIR_ROUTES } from "../../../routes/constants";
+import { NavButton } from "./NavButton";
+import { useClearCompanyContext } from "./helper";
+import { NAV_BUTTON_TYPES } from "./types/NavButtonType";
 
 /**
  * Displays the navigation icon for Reports on the NavIconSideBar
@@ -15,7 +16,10 @@ export const NavIconReportButton = () => {
   return (
     <NavButton
       type={NAV_BUTTON_TYPES.REPORT}
-      onClick={() => navigate(IDIR_ROUTES.REPORTS)}
+      onClick={() => {
+        useClearCompanyContext();
+        navigate(IDIR_ROUTES.REPORTS);
+      }}
       isActive={isActive}
     />
   );

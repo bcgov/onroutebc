@@ -73,22 +73,6 @@ export const BCeIDAuthWall = ({
           replace
         />;
       }
-
-      // const doesUserHaveAccess = DoesUserHaveAuthGroup<IDIRUserAuthGroupType>({
-      //   userAuthGroup: idirUserDetails?.userAuthGroup,
-      //   allowedAuthGroups,
-      // });
-      // if (doesUserHaveAccess) {
-      //   return <Outlet />;
-      // } else {
-      //   return (
-      //     <Navigate
-      //       to={ERROR_ROUTES.UNAUTHORIZED}
-      //       state={{ from: location }}
-      //       replace
-      //     />
-      //   );
-      // }
     }
     if (!isIDIR(userIDP)) {
       if (!companyId) {

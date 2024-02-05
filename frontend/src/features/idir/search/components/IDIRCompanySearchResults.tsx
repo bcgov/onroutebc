@@ -48,9 +48,13 @@ export const IDIRCompanySearchResults = memo(
 
     const navigate = useNavigate();
 
+    /**
+     * On click event handler for the company link.
+     * Sets the company context and directs the user to the company page.
+     * 
+     * @param selectedCompany The company that the staff user clicked on.
+     */
     const onClickCompany = (selectedCompany: CompanyProfile) => {
-      console.log("selectedCompany::", selectedCompany);
-      // const navigate = useNavigate();
       const { companyId, legalName, clientNumber } = selectedCompany;
       setCompanyId?.(() => companyId);
       setCompanyLegalName?.(() => legalName);
