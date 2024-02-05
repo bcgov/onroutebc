@@ -20,6 +20,7 @@
     "lottie-web": "^5.12.2",
     "material-react-table": "^2.9.2",
     "mui-nested-menu": "^3.3.0",
+    "oidc-client-ts": "^3.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-error-boundary": "^4.0.12",

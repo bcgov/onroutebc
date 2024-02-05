@@ -1,3 +1,4 @@
+import { Nullable } from "../../../common/types/common";
 import { VerifiedClient } from "../../../common/authentication/types";
 import { Nullable } from "../../../common/types/common";
 
@@ -35,6 +36,8 @@ export interface CompanyProfile {
   extension?: Nullable<string>;
   fax?: Nullable<string>;
   primaryContact: Contact;
+  migratedClientHash?: Nullable<string>;
+  alternateName?: Nullable<string>;
 }
 
 export interface UserInformation extends Contact {
