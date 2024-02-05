@@ -35,9 +35,8 @@ export const CompanyInfoForm = memo(
     const queryClient = useQueryClient();
     const companyEmail = getCompanyEmailFromSession();
 
-    const formMethods = useForm<CompanyProfile>({
+    const formMethods = useForm<Omit<CompanyProfile, "clientNumber">>({
       defaultValues: {
-        clientNumber: getDefaultRequiredVal("", companyInfo?.clientNumber),
         legalName: getDefaultRequiredVal("", companyInfo?.legalName),
         mailingAddress: {
           addressLine1: getDefaultRequiredVal(
@@ -122,7 +121,10 @@ export const CompanyInfoForm = memo(
     });
 
     const onUpdateCompanyInfo = function (data: FieldValues) {
-      const companyInfoToBeUpdated = data as CompanyProfile;
+      const companyInfoToBeUpdated = data as Omit<
+        CompanyProfile,
+        "clientNumber"
+      >;
       addCompanyInfoQuery.mutate({
         companyInfo: companyInfoToBeUpdated,
       });

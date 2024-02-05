@@ -50,11 +50,10 @@ export const getMyInfo = async (): Promise<UserInformation> => {
   return httpGETRequest(url).then((response) => response.data);
 };
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
 export const updateCompanyInfo = async ({
   companyInfo,
 }: {
-  companyInfo: CompanyProfile;
+  companyInfo: Omit<CompanyProfile, "clientNumber">;
 }) => {
   return await httpPUTRequest(
     `${MANAGE_PROFILE_API.COMPANIES}/${getCompanyIdFromSession()}`,
