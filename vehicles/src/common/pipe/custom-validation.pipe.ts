@@ -10,27 +10,27 @@ import { ExceptionDto } from '../exception/exception.dto';
 export function exceptionFactory(errors: ValidationError[]) {
   const badRequestExceptionList: BadRequestExceptionDto[] = [];
 
-  function findLastErrors(error: ValidationError): ValidationError[] {
-    let lastErrors: ValidationError[] = [];
+  function findChildErrors(error: ValidationError): ValidationError[] {
+    let childErrors: ValidationError[] = [];
     if (error?.children?.length) {
       for (const child of error.children) {
-        lastErrors = lastErrors.concat(findLastErrors(child));
+        childErrors = childErrors.concat(findChildErrors(child));
       }
     } else {
-      lastErrors.push(error);
+      childErrors.push(error);
     }
-    return lastErrors;
+    return childErrors;
   }
 
   errors.forEach((error) => {
-    const lastErrors = findLastErrors(error);
-    lastErrors.forEach((lastError) => {
+    const childErrors = findChildErrors(error);
+    childErrors.forEach((childError) => {
       const badRequestExceptionDto = new BadRequestExceptionDto();
-      badRequestExceptionDto.field = lastError?.property
-        ? error?.property?.concat('.', lastError?.property?.toString())
+      badRequestExceptionDto.field = childError?.property
+        ? error?.property?.concat('.', childError?.property?.toString())
         : error?.property;
       badRequestExceptionDto.message = Object.values(
-        lastError?.constraints || error?.constraints,
+        childError?.constraints || error?.constraints,
       );
       badRequestExceptionList.push(badRequestExceptionDto);
     });
