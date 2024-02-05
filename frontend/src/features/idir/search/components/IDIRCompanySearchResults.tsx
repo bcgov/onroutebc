@@ -7,8 +7,6 @@ import {
 } from "material-react-table";
 import { memo, useContext, useMemo, useState } from "react";
 
-import { Link } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import {
   defaultTableInitialStateOptions,
@@ -21,6 +19,7 @@ import { getCompanyDataBySearch } from "../api/idirSearch";
 import { CompanySearchResultColumnDef } from "../table/CompanySearchResultColumnDef";
 import { SearchFields } from "../types/types";
 import "./IDIRCompanySearchResults.scss";
+import { CustomNavLink } from "../../../../common/components/links/CustomNavLink";
 
 /*
  *
@@ -47,12 +46,12 @@ export const IDIRCompanySearchResults = memo(
     const { setCompanyId, setCompanyLegalName, setOnRouteBCClientNumber } =
       useContext(OnRouteBCContext);
 
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     /**
      * On click event handler for the company link.
      * Sets the company context and directs the user to the company page.
-     * 
+     *
      * @param selectedCompany The company that the staff user clicked on.
      */
     const onClickCompany = (selectedCompany: CompanyProfile) => {
@@ -61,8 +60,6 @@ export const IDIRCompanySearchResults = memo(
       setCompanyLegalName?.(() => legalName);
       setOnRouteBCClientNumber?.(() => clientNumber);
       sessionStorage.setItem("onRouteBC.user.companyId", companyId.toString());
-
-      navigate(routes.APPLICATIONS_ROUTES.BASE);
     };
     const [pagination, setPagination] = useState<MRT_PaginationState>({
       pageIndex: 0,
@@ -107,16 +104,12 @@ export const IDIRCompanySearchResults = memo(
           sortingFn: "alphanumeric",
           Cell: (props: { row: any; cell: any }) => {
             return (
-              <Link
-                component="a"
-                sx={{
-                  cursor: "pointer",
-                }}
-                variant="body2"
+              <CustomNavLink
                 onClick={() => onClickCompany(props.row.original)}
+                to={routes.APPLICATIONS_ROUTES.BASE}
               >
                 {props.row.original.legalName}
-              </Link>
+              </CustomNavLink>
             );
           },
         },
