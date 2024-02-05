@@ -1,12 +1,6 @@
 import { useContext, useEffect } from "react";
 import { useAuth } from "react-oidc-context";
-import {
-  Navigate,
-  Outlet,
-  createSearchParams,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import { ERROR_ROUTES, HOME, IDIR_ROUTES } from "../../../routes/constants";
 import { Loading } from "../../pages/Loading";
@@ -39,13 +33,12 @@ export const BCeIDAuthWall = ({
     user: userFromToken,
   } = useAuth();
 
-  const { userRoles, companyId, isNewBCeIDUser } = useContext(OnRouteBCContext);
+  const { userRoles, companyId, isNewBCeIDUser } =
+    useContext(OnRouteBCContext);
 
   const userIDP = userFromToken?.profile?.identity_provider as string;
 
   const location = useLocation();
-  // const { pathname, search } = location;
-
   const navigate = useNavigate();
 
   /**
@@ -54,26 +47,13 @@ export const BCeIDAuthWall = ({
    */
   useEffect(() => {
     if (!isAuthLoading && !isAuthenticated) {
-      navigate({
-        pathname: HOME,
-        search: createSearchParams({
-          redirect: window.location.href,
-        }).toString(),
-      });
+      navigate(HOME);
     }
-    // if (isAuthenticated) {
-    //   const redirectURI = sessionStorage.getItem("onrouteBC.postLogin.redirect");
-    //   if (redirectURI) {
-    //     redirect(redirectURI);
-    //   }
-    // }
   }, [isAuthLoading, isAuthenticated]);
 
   if (isAuthLoading) {
     return <Loading />;
   }
-
-  
 
   /**
    * If companyId is present or if we know that the user
@@ -82,7 +62,7 @@ export const BCeIDAuthWall = ({
    */
   const isEstablishedUser = Boolean(companyId) || !isNewBCeIDUser;
 
-  if (isEstablishedUser) {
+  if (isAuthenticated && isEstablishedUser) {
     if (isIDIR(userIDP)) {
       if (companyId) {
         return <IDIRAuthWall allowedAuthGroups={allowedAuthGroups} />;
@@ -139,8 +119,9 @@ export const BCeIDAuthWall = ({
       );
     }
     return <Outlet />;
+  } else {
+    return <Navigate to={HOME} state={{ from: location }} replace />;
   }
-  return <></>;
 };
 
 BCeIDAuthWall.displayName = "BCeIDAuthWall";
