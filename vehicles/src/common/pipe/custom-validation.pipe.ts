@@ -12,7 +12,7 @@ export function exceptionFactory(errors: ValidationError[]) {
 
   function findLastErrors(error: ValidationError): ValidationError[] {
     let lastErrors: ValidationError[] = [];
-    if (error?.children && error?.children?.length) {
+    if (error.children && error.children?.length) {
       for (const child of error.children) {
         lastErrors = lastErrors.concat(findLastErrors(child));
       }
