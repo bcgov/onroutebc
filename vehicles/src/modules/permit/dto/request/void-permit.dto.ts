@@ -7,6 +7,7 @@ import {
   IsOptional,
   IsString,
   Length,
+  MaxLength,
   Min,
   MinLength,
 } from 'class-validator';
@@ -23,6 +24,7 @@ export class VoidPermitDto {
     example: ApplicationStatus.REVOKED,
     required: false,
   })
+  @IsEnum(ApplicationStatus)
   status: ApplicationStatus;
 
   @AutoMap()
@@ -32,6 +34,8 @@ export class VoidPermitDto {
     required: false,
   })
   @IsOptional()
+  @IsString()
+  @MaxLength(20)
   pgTransactionId: string;
 
   @AutoMap()
@@ -70,6 +74,7 @@ export class VoidPermitDto {
   })
   @IsOptional()
   @IsString()
+  @MaxLength(27)
   pgTransactionDate: string;
 
   @AutoMap()

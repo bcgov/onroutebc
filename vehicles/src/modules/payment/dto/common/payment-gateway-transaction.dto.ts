@@ -6,6 +6,7 @@ import {
   IsString,
   Length,
   Max,
+  MaxLength,
   Min,
 } from 'class-validator';
 
@@ -18,6 +19,7 @@ export class PaymentGatewayTransactionDto {
   })
   @IsOptional()
   @IsString()
+  @MaxLength(20)
   pgTransactionId: string;
 
   @AutoMap()
@@ -59,6 +61,7 @@ export class PaymentGatewayTransactionDto {
   })
   @IsOptional()
   @IsString()
+  @MaxLength(27)
   pgTransactionDate: string;
 
   @AutoMap()

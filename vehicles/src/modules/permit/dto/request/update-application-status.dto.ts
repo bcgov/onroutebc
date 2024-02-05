@@ -15,7 +15,6 @@ export class UpdateApplicationStatusDto {
   applicationIds: string[];
 
   @AutoMap()
-  @IsNumber()
   @ApiProperty({
     description: 'Id of the company requesting the permit.',
     example: 74,
