@@ -359,6 +359,7 @@ export const useApplicationsInProgressQuery = ({
   const applicationsInProgressQuery = useQuery({
     queryKey: ["applicationInProgress"],
     queryFn: () => getApplicationsInProgress({page, take, searchString, sorting}),
+    refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
   });
 
   return {
