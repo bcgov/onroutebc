@@ -1,8 +1,9 @@
 import { useLocation, useNavigate } from "react-router-dom";
 
+import { useContext } from "react";
 import { IDIR_ROUTES } from "../../../routes/constants";
+import OnRouteBCContext from "../../authentication/OnRouteBCContext";
 import { NavButton } from "./NavButton";
-import { useClearCompanyContext } from "./helper";
 import { NAV_BUTTON_TYPES } from "./types/NavButtonType";
 
 /**
@@ -12,12 +13,17 @@ export const NavIconReportButton = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const isActive = pathname === IDIR_ROUTES.REPORTS;
+  const { setCompanyId, setCompanyLegalName, setOnRouteBCClientNumber } =
+    useContext(OnRouteBCContext);
 
   return (
     <NavButton
       type={NAV_BUTTON_TYPES.REPORT}
       onClick={() => {
-        useClearCompanyContext();
+        setCompanyId?.(() => undefined);
+        setCompanyLegalName?.(() => undefined);
+        setOnRouteBCClientNumber?.(() => undefined);
+        sessionStorage.removeItem("onRouteBC.user.companyId");
         navigate(IDIR_ROUTES.REPORTS);
       }}
       isActive={isActive}

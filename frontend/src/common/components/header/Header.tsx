@@ -147,7 +147,7 @@ export const Header = () => {
       {shouldDisplayNavBar && menuOpen ? (
         <Navbar isAuthenticated={isAuthenticated} isMobile={true} />
       ) : null}
-      {filterOpen ? <SearchFilter /> : null}
+      {filterOpen ? <SearchFilter closeFilter={toggleFilter} /> : null}
     </div>
   );
 };
