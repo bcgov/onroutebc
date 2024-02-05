@@ -15,6 +15,7 @@ import {
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
+import * as routes from "../../../../routes/constants";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import { getCompanyDataBySearch } from "../api/idirSearch";
 import { CompanySearchResultColumnDef } from "../table/CompanySearchResultColumnDef";
@@ -61,7 +62,7 @@ export const IDIRCompanySearchResults = memo(
       setOnRouteBCClientNumber?.(() => clientNumber);
       sessionStorage.setItem("onRouteBC.user.companyId", companyId.toString());
 
-      navigate("/applications");
+      navigate(routes.APPLICATIONS_ROUTES.BASE);
     };
     const [pagination, setPagination] = useState<MRT_PaginationState>({
       pageIndex: 0,
