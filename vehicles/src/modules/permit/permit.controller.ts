@@ -29,7 +29,6 @@ import { FileDownloadModes } from '../../common/enum/file-download-modes.enum';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
-import { IDP } from 'src/common/enum/idp.enum';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import { PermitHistoryDto } from './dto/response/permit-history.dto';
 import { ResultDto } from './dto/response/result.dto';
@@ -37,6 +36,7 @@ import { VoidPermitDto } from './dto/request/void-permit.dto';
 import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
 import { PageOptionsDto } from 'src/common/dto/paginate/page-options';
 import { SortDto } from '../common/dto/request/sort.dto';
+import { UserAuthGroup } from 'src/common/enum/user-auth-group.enum';
 
 @ApiBearerAuth()
 @ApiTags('Permit')
@@ -108,9 +108,9 @@ export class PermitController {
   @Get()
   async getPermit(
     @Req() request: Request,
-    @Query('companyId') companyId: number,
-    @Query('expired') expired: string,
     @Query() pageOptionsDto: PageOptionsDto,
+    @Query('companyId') companyId?: number,
+    @Query('expired') expired?: string,
     @Query('sorting') sorting?: string,
     @Query('searchColumn') searchColumn?: string,
     @Query('searchString') searchString?: string,
@@ -120,7 +120,7 @@ export class PermitController {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     if (sorting) sortDto = JSON.parse(sorting);
     const userGuid =
-      currentUser.identity_provider === IDP.BCEID
+      currentUser.orbcUserAuthGroup === UserAuthGroup.CV_CLIENT
         ? currentUser.bceid_user_guid
         : null;
     return await this.permitService.findPermit(

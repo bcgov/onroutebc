@@ -208,9 +208,9 @@ export class PermitService {
   @LogAsyncMethodExecution()
   public async findPermit(
     pageOptionsDto: PageOptionsDto,
-    userGUID: string,
-    companyId: number,
-    expired: string,
+    userGUID?: string,
+    companyId?: number,
+    expired?: string,
     searchColumn?: string,
     searchString?: string,
     sortDto?: SortDto[],
@@ -234,8 +234,8 @@ export class PermitService {
 
   private buildPermitQuery(
     pageOptionsDto: PageOptionsDto,
-    userGUID: string,
-    companyId: number,
+    userGUID?: string,
+    companyId?: number,
     expired?: string,
     searchColumn?: string,
     searchString?: string,
