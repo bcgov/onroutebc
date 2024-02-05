@@ -46,8 +46,6 @@ export const IDIRCompanySearchResults = memo(
     const { setCompanyId, setCompanyLegalName, setOnRouteBCClientNumber } =
       useContext(OnRouteBCContext);
 
-    // const navigate = useNavigate();
-
     /**
      * On click event handler for the company link.
      * Sets the company context and directs the user to the company page.
