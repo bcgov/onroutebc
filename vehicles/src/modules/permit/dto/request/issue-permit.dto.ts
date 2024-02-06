@@ -1,10 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsNumberString,
-  IsNumber,
-  ArrayMinSize,
-} from 'class-validator';
+import { IsNumberString, IsNumber, ArrayMinSize } from 'class-validator';
 
 export class IssuePermitDto {
   @AutoMap()

@@ -22,7 +22,7 @@ export class VoidPermitDto {
     enum: ApplicationStatus,
     description: 'Revoke or void status for permit.',
     example: ApplicationStatus.REVOKED,
-  })  
+  })
   @IsEnum(ApplicationStatus)
   status: ApplicationStatus;
 

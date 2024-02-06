@@ -11,7 +11,8 @@ import { Type } from 'class-transformer';
 
 export class GetPermitQueryParamsDto extends PageOptionsDto {
   @ApiProperty({
-    description: 'Id of the company requesting the permit.',
+    description:
+      "Id of the company requesting the permit. It's optional for UserAuthGroup roles such as PPC_CLERK, SYSTEM_ADMINISTRATOR, ENFORCEMENT_OFFICER, HQ_ADMINISTRATOR, FINANCE.",
     example: 74,
     required: false,
   })

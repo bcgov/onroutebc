@@ -86,7 +86,12 @@ export class ApplicationController {
    */
   @ApiPaginatedResponse(ReadPermitDto)
   @ApiQuery({ name: 'companyId' })
-  @ApiQuery({ name: 'statuses', type:[String] , required: false, example: 'IN_PROGRESS,WAITING_PAYMENT' })
+  @ApiQuery({
+    name: 'statuses',
+    type: [String],
+    required: false,
+    example: 'IN_PROGRESS,WAITING_PAYMENT',
+  })
   @ApiQuery({
     name: 'sorting',
     required: false,
@@ -103,7 +108,8 @@ export class ApplicationController {
       new DefaultValuePipe([]),
       ParamToArray<ApplicationStatus>,
     )
-    @Query('companyId') companyId: number,
+    @Query('companyId')
+    companyId: number,
     statuses: ApplicationStatus[] = [],
     @Query('sorting') sorting?: string,
   ): Promise<PaginationDto<ReadApplicationDto>> {

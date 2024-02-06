@@ -22,7 +22,7 @@ export class CreateApplicationDto {
     example: 74,
     required: true,
   })
-  @IsNumber()  
+  @IsNumber()
   companyId: number;
 
   @AutoMap()
@@ -105,7 +105,7 @@ export class CreateApplicationDto {
     enum: ApplicationStatus,
     description: 'Friendly name for the permit type.',
     example: ApplicationStatus.IN_PROGRESS,
-    required:false
+    required: false,
   })
   @IsOptional()
   @IsEnum(PermitStatus)
@@ -116,7 +116,7 @@ export class CreateApplicationDto {
     enum: PermitApprovalSource,
     example: PermitApprovalSource.PPC,
     description: 'Unique identifier for the application approval source.',
-    required:false
+    required: false,
   })
   @IsOptional()
   @IsEnum(PermitApprovalSource)
@@ -127,7 +127,7 @@ export class CreateApplicationDto {
     enum: PermitApplicationOrigin,
     example: PermitApplicationOrigin.ONLINE,
     description: 'Unique identifier for the application origin.',
-    required:false
+    required: false,
   })
   @IsOptional()
   @IsEnum(PermitApplicationOrigin)

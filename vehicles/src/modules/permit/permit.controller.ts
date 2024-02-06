@@ -109,7 +109,7 @@ export class PermitController {
       !getPermitQueryParamsDto.companyId
     ) {
       throw new BadRequestException(
-        `Company Id is mandatory for roles except ${companyIdNonMandatoryRoles.join(', ')}.`,
+        `Company Id is required for roles except ${companyIdNonMandatoryRoles.join(', ')}.`,
       );
     }
 
