@@ -210,16 +210,16 @@ export class ApplicationService {
   @LogAsyncMethodExecution()
   async findAllApplications(
     pageOptionsDto: PageOptionsDto,
-    companyId: number,
-    userGuid: string,
     statuses: ApplicationStatus[],
-    sortDto: SortDto[],
+    companyId: number,
+    userGuid?: string,
+    sortDto?: SortDto[],
   ): Promise<PaginationDto<ReadApplicationDto>> {
     console.log('statuses: ', statuses);
     const permits = this.buildApplicationQuery(
       pageOptionsDto,
-      userGuid,
       companyId,
+      userGuid,
       statuses,
     );
     const sortedPermits = this.sortPermits(permits, sortDto);
@@ -237,14 +237,17 @@ export class ApplicationService {
 
   private buildApplicationQuery(
     pageOptionsDto: PageOptionsDto,
+    companyId: number,
     userGuid?: string,
-    companyId?: number,
     statuses?: ApplicationStatus[],
   ): SelectQueryBuilder<Permit> {
     let permitsQuery = this.permitRepository
       .createQueryBuilder('permit')
       .innerJoinAndSelect('permit.permitData', 'permitData');
     permitsQuery = permitsQuery.where('permit.permitNumber IS NULL');
+    permitsQuery = permitsQuery.andWhere('permit.companyId = :companyId', {
+      companyId,
+    });
     if (statuses) {
       permitsQuery = permitsQuery.andWhere(
         'permit.permitStatus IN (:...statuses)',
@@ -252,11 +255,6 @@ export class ApplicationService {
           statuses,
         },
       );
-    }
-    if (companyId) {
-      permitsQuery = permitsQuery.andWhere('permit.companyId = :companyId', {
-        companyId,
-      });
     }
 
     if (userGuid) {

@@ -85,7 +85,7 @@ export class ApplicationController {
    * @param status
    */
   @ApiPaginatedResponse(ReadPermitDto)
-  @ApiQuery({ name: 'companyId', required: false })
+  @ApiQuery({ name: 'companyId' })
   @ApiQuery({ name: 'statuses', type:[String] , required: false, example: 'IN_PROGRESS,WAITING_PAYMENT' })
   @ApiQuery({
     name: 'sorting',
@@ -98,12 +98,12 @@ export class ApplicationController {
   async findAllApplication(
     @Req() request: Request,
     @Query() pageOptionsDto: PageOptionsDto,
-    @Query('companyId') companyId?: number,
     @Query(
       'statuses',
       new DefaultValuePipe([]),
       ParamToArray<ApplicationStatus>,
     )
+    @Query('companyId') companyId: number,
     statuses: ApplicationStatus[] = [],
     @Query('sorting') sorting?: string,
   ): Promise<PaginationDto<ReadApplicationDto>> {
@@ -117,9 +117,9 @@ export class ApplicationController {
         : null;
     return this.applicationService.findAllApplications(
       pageOptionsDto,
+      statuses,
       companyId,
       userGuid,
-      statuses,
       sortDto,
     );
   }
