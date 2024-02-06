@@ -215,7 +215,6 @@ export class ApplicationService {
     userGuid?: string,
     sortDto?: SortDto[],
   ): Promise<PaginationDto<ReadApplicationDto>> {
-    console.log('statuses: ', statuses);
     const permits = this.buildApplicationQuery(
       pageOptionsDto,
       companyId,
