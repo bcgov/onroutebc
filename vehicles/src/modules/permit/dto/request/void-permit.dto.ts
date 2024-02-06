@@ -7,6 +7,7 @@ import {
   IsOptional,
   IsString,
   Length,
+  MaxLength,
   Min,
   MinLength,
 } from 'class-validator';
@@ -23,7 +24,9 @@ export class VoidPermitDto {
     example: ApplicationStatus.REVOKED,
     required: false,
   })
-  status: ApplicationStatus;
+  @IsOptional()
+  @IsEnum(ApplicationStatus)
+  status?: ApplicationStatus;
 
   @AutoMap()
   @ApiProperty({
@@ -32,7 +35,9 @@ export class VoidPermitDto {
     required: false,
   })
   @IsOptional()
-  pgTransactionId: string;
+  @IsString()
+  @MaxLength(20)
+  pgTransactionId?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -70,7 +75,8 @@ export class VoidPermitDto {
   })
   @IsOptional()
   @IsString()
-  pgTransactionDate: string;
+  @MaxLength(27)
+  pgTransactionDate?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -81,7 +87,7 @@ export class VoidPermitDto {
   @IsOptional()
   @IsString()
   @Length(1, 2)
-  pgPaymentMethod: string;
+  pgPaymentMethod?: string;
 
   @AutoMap()
   @ApiProperty({

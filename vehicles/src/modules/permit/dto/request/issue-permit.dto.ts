@@ -21,7 +21,6 @@ export class IssuePermitDto {
   applicationIds: string[];
 
   @AutoMap()
-  @IsNumber()
   @ApiProperty({
     description: 'Id of the company requesting the permit.',
     example: 74,
@@ -29,5 +28,5 @@ export class IssuePermitDto {
   })
   @IsOptional()
   @IsNumber()
-  companyId: number;
+  companyId?: number;
 }

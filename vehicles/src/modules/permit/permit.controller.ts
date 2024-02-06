@@ -75,11 +75,11 @@ export class PermitController {
     isArray: true,
   })
   @Roles(Role.READ_PERMIT)
-  @Get('history')
+  @Get('/:permitId/history')
   async getPermitHisory(
-    @Query('originalId') originalId: string,
+    @Param('permitId') permitId: string,
   ): Promise<PermitHistoryDto[]> {
-    return this.permitService.findPermitHistory(originalId);
+    return this.permitService.findPermitHistory(permitId);
   }
 
   /**

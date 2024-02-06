@@ -1,28 +1,41 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber } from 'class-validator';
+import {
+  Allow,
+  IsEnum,
+  IsNumber,
+  IsNumberString,
+  IsOptional,
+  IsString,
+  MaxLength,
+} from 'class-validator';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { PermitApplicationOrigin } from 'src/common/enum/permit-application-origin.enum';
 import { PermitApprovalSource } from 'src/common/enum/permit-approval-source.enum';
+import { PermitStatus } from 'src/common/enum/permit-status.enum';
 import { PermitType } from 'src/common/enum/permit-type.enum';
 
 export class CreateApplicationDto {
   @AutoMap()
+  @IsOptional()
   @IsNumber()
   @ApiProperty({
     description: 'Id of the company requesting the permit.',
     example: 74,
     required: false,
   })
-  companyId: number;
+  companyId?: number;
 
   @AutoMap()
+  @IsOptional()
+  @IsNumberString()
+  @MaxLength(20)
   @ApiProperty({
     description: 'Id of the permit.',
     example: '',
     required: false,
   })
-  permitId: string;
+  permitId?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -30,14 +43,21 @@ export class CreateApplicationDto {
     example: '',
     required: false,
   })
-  originalPermitId: string;
+  @IsOptional()
+  @IsNumberString()
+  @MaxLength(20)
+  originalPermitId?: string;
 
   @AutoMap()
   @ApiProperty({
     example: 'A2-00000002-120',
+    required: false,
     description: 'Unique formatted permit application number.',
   })
-  applicationNumber: string;
+  @IsOptional()
+  @IsString()
+  @MaxLength(19)
+  applicationNumber?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -45,7 +65,10 @@ export class CreateApplicationDto {
     example: '',
     required: false,
   })
-  previousRevision: string;
+  @IsOptional()
+  @IsNumberString()
+  @MaxLength(20)
+  previousRevision?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -53,7 +76,10 @@ export class CreateApplicationDto {
     example: '',
     required: false,
   })
-  revision: number;
+  @IsOptional()
+  @IsNumberString()
+  @MaxLength(3)
+  revision?: number;
 
   @AutoMap()
   @ApiProperty({
@@ -61,7 +87,10 @@ export class CreateApplicationDto {
     example: '06267945F2EB4E31B585932F78B76269',
     required: false,
   })
-  userGuid: string;
+  @IsOptional()
+  @IsString()
+  @MaxLength(32)
+  userGuid?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -69,6 +98,7 @@ export class CreateApplicationDto {
     description: 'Friendly name for the permit type.',
     example: PermitType.TERM_OVERSIZE,
   })
+  @IsEnum(PermitType)
   permitType: PermitType;
 
   @AutoMap()
@@ -77,7 +107,9 @@ export class CreateApplicationDto {
     description: 'Friendly name for the permit type.',
     example: ApplicationStatus.IN_PROGRESS,
   })
-  permitStatus: ApplicationStatus;
+  @IsOptional()
+  @IsEnum(PermitStatus)
+  permitStatus?: ApplicationStatus;
 
   @AutoMap()
   @ApiProperty({
@@ -85,7 +117,9 @@ export class CreateApplicationDto {
     example: PermitApprovalSource.PPC,
     description: 'Unique identifier for the application approval source.',
   })
-  permitApprovalSource: PermitApprovalSource;
+  @IsOptional()
+  @IsEnum(PermitApprovalSource)
+  permitApprovalSource?: PermitApprovalSource;
 
   @AutoMap()
   @ApiProperty({
@@ -93,7 +127,9 @@ export class CreateApplicationDto {
     example: PermitApplicationOrigin.ONLINE,
     description: 'Unique identifier for the application origin.',
   })
-  permitApplicationOrigin: PermitApplicationOrigin;
+  @IsOptional()
+  @IsEnum(PermitApplicationOrigin)
+  permitApplicationOrigin?: PermitApplicationOrigin;
 
   @AutoMap()
   @ApiProperty({
@@ -158,6 +194,7 @@ export class CreateApplicationDto {
       },
     },
   })
+  @Allow()
   permitData: JSON;
 
   @AutoMap()
@@ -166,5 +203,8 @@ export class CreateApplicationDto {
     example: 'This application was amended because of so-and-so reason.',
     required: false,
   })
-  comment: string;
+  @IsOptional()
+  @IsString()
+  @MaxLength(3000)
+  comment?: string;
 }
