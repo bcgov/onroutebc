@@ -17,24 +17,23 @@ import { PermitType } from 'src/common/enum/permit-type.enum';
 
 export class CreateApplicationDto {
   @AutoMap()
-  @IsOptional()
-  @IsNumber()
   @ApiProperty({
     description: 'Id of the company requesting the permit.',
     example: 74,
-    required: false,
+    required: true,
   })
-  companyId?: number;
+  @IsNumber()  
+  companyId: number;
 
   @AutoMap()
-  @IsOptional()
-  @IsNumberString()
-  @MaxLength(20)
   @ApiProperty({
     description: 'Id of the permit.',
     example: '',
     required: false,
   })
+  @IsOptional()
+  @IsNumberString()
+  @MaxLength(20)
   permitId?: string;
 
   @AutoMap()
@@ -106,6 +105,7 @@ export class CreateApplicationDto {
     enum: ApplicationStatus,
     description: 'Friendly name for the permit type.',
     example: ApplicationStatus.IN_PROGRESS,
+    required:false
   })
   @IsOptional()
   @IsEnum(PermitStatus)
@@ -116,6 +116,7 @@ export class CreateApplicationDto {
     enum: PermitApprovalSource,
     example: PermitApprovalSource.PPC,
     description: 'Unique identifier for the application approval source.',
+    required:false
   })
   @IsOptional()
   @IsEnum(PermitApprovalSource)
@@ -126,6 +127,7 @@ export class CreateApplicationDto {
     enum: PermitApplicationOrigin,
     example: PermitApplicationOrigin.ONLINE,
     description: 'Unique identifier for the application origin.',
+    required:false
   })
   @IsOptional()
   @IsEnum(PermitApplicationOrigin)

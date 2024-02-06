@@ -22,15 +22,13 @@ export class VoidPermitDto {
     enum: ApplicationStatus,
     description: 'Revoke or void status for permit.',
     example: ApplicationStatus.REVOKED,
-    required: false,
-  })
-  @IsOptional()
+  })  
   @IsEnum(ApplicationStatus)
-  status?: ApplicationStatus;
+  status: ApplicationStatus;
 
   @AutoMap()
   @ApiProperty({
-    description: 'Permit Transaction ID.',
+    description: 'Provider Transaction ID.',
     example: '10000148',
     required: false,
   })
@@ -75,7 +73,7 @@ export class VoidPermitDto {
   })
   @IsOptional()
   @IsString()
-  @MaxLength(27)
+  //@MaxLength(27) // TODO Should it be Is Date?
   pgTransactionDate?: string;
 
   @AutoMap()

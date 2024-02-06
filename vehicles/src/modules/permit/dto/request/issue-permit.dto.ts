@@ -3,7 +3,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsNumberString,
   IsNumber,
-  IsOptional,
   ArrayMinSize,
 } from 'class-validator';
 
@@ -26,7 +25,6 @@ export class IssuePermitDto {
     example: 74,
     required: false,
   })
-  @IsOptional()
   @IsNumber()
-  companyId?: number;
+  companyId: number;
 }

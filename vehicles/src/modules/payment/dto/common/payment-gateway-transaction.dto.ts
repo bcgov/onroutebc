@@ -66,7 +66,7 @@ export class PaymentGatewayTransactionDto {
   })
   @IsOptional()
   @IsString()
-  @MaxLength(27)
+ //@MaxLength(27) // TODO : Should it be IsDate().
   pgTransactionDate: string;
 
   @AutoMap()
