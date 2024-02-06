@@ -24,8 +24,9 @@ export class VoidPermitDto {
     example: ApplicationStatus.REVOKED,
     required: false,
   })
+  @IsOptional()
   @IsEnum(ApplicationStatus)
-  status: ApplicationStatus;
+  status?: ApplicationStatus;
 
   @AutoMap()
   @ApiProperty({
@@ -36,7 +37,7 @@ export class VoidPermitDto {
   @IsOptional()
   @IsString()
   @MaxLength(20)
-  pgTransactionId: string;
+  pgTransactionId?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -75,7 +76,7 @@ export class VoidPermitDto {
   @IsOptional()
   @IsString()
   @MaxLength(27)
-  pgTransactionDate: string;
+  pgTransactionDate?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -86,7 +87,7 @@ export class VoidPermitDto {
   @IsOptional()
   @IsString()
   @Length(1, 2)
-  pgPaymentMethod: string;
+  pgPaymentMethod?: string;
 
   @AutoMap()
   @ApiProperty({

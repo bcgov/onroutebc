@@ -14,7 +14,7 @@ export class CreatePermitDto {
     example: 74,
     required: false,
   })
-  companyId: number;
+  companyId?: number;
 
   @AutoMap()
   @ApiProperty({
@@ -34,7 +34,7 @@ export class CreatePermitDto {
   })
   @IsOptional()
   @IsEnum(PermitApprovalSource)
-  permitApprovalSource: PermitApprovalSource;
+  permitApprovalSource?: PermitApprovalSource;
 
   @AutoMap()
   @ApiProperty({
@@ -45,7 +45,7 @@ export class CreatePermitDto {
   })
   @IsOptional()
   @IsEnum(PermitApplicationOrigin)
-  permitApplicationOrigin: PermitApplicationOrigin;
+  permitApplicationOrigin?: PermitApplicationOrigin;
 
   @AutoMap()
   @ApiProperty({

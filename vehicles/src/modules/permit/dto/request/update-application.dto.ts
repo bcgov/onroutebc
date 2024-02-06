@@ -22,7 +22,7 @@ export class UpdateApplicationDto {
   })
   @IsOptional()
   @IsNumber()
-  companyId: number;
+  companyId?: number;
 
   @AutoMap()
   @ApiProperty({
@@ -33,7 +33,7 @@ export class UpdateApplicationDto {
   @IsOptional()
   @IsString()
   @MaxLength(32)
-  userGuid: string;
+  userGuid?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -43,7 +43,7 @@ export class UpdateApplicationDto {
   })
   @IsOptional()
   @IsEnum(PermitType)
-  permitType: PermitType;
+  permitType?: PermitType;
 
   //ToDo: remove PermitStatus, update application should not change PermitStatus. there is an existing endpoint to change status.
   @AutoMap()
@@ -55,7 +55,7 @@ export class UpdateApplicationDto {
   })
   @IsOptional()
   @IsEnum(PermitStatus)
-  permitStatus: PermitStatus;
+  permitStatus?: PermitStatus;
 
   //ToDo: remove permitApplicationOrigin, update application should not change permitApplicationOrigin
   @AutoMap()
@@ -67,7 +67,7 @@ export class UpdateApplicationDto {
   })
   @IsOptional()
   @IsEnum(PermitApplicationOrigin)
-  permitApplicationOrigin: PermitApplicationOrigin;
+  permitApplicationOrigin?: PermitApplicationOrigin;
 
   @AutoMap()
   @ApiProperty({
@@ -85,5 +85,5 @@ export class UpdateApplicationDto {
   @IsOptional()
   @IsString()
   @MaxLength(3000)
-  comment: string;
+  comment?: string;
 }

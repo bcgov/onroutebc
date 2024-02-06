@@ -24,7 +24,7 @@ export class CreateApplicationDto {
     example: 74,
     required: false,
   })
-  companyId: number;
+  companyId?: number;
 
   @AutoMap()
   @IsOptional()
@@ -35,7 +35,7 @@ export class CreateApplicationDto {
     example: '',
     required: false,
   })
-  permitId: string;
+  permitId?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -46,7 +46,7 @@ export class CreateApplicationDto {
   @IsOptional()
   @IsNumberString()
   @MaxLength(20)
-  originalPermitId: string;
+  originalPermitId?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -57,7 +57,7 @@ export class CreateApplicationDto {
   @IsOptional()
   @IsString()
   @MaxLength(19)
-  applicationNumber: string;
+  applicationNumber?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -68,7 +68,7 @@ export class CreateApplicationDto {
   @IsOptional()
   @IsNumberString()
   @MaxLength(20)
-  previousRevision: string;
+  previousRevision?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -79,7 +79,7 @@ export class CreateApplicationDto {
   @IsOptional()
   @IsNumberString()
   @MaxLength(3)
-  revision: number;
+  revision?: number;
 
   @AutoMap()
   @ApiProperty({
@@ -90,7 +90,7 @@ export class CreateApplicationDto {
   @IsOptional()
   @IsString()
   @MaxLength(32)
-  userGuid: string;
+  userGuid?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -109,7 +109,7 @@ export class CreateApplicationDto {
   })
   @IsOptional()
   @IsEnum(PermitStatus)
-  permitStatus: ApplicationStatus;
+  permitStatus?: ApplicationStatus;
 
   @AutoMap()
   @ApiProperty({
@@ -119,7 +119,7 @@ export class CreateApplicationDto {
   })
   @IsOptional()
   @IsEnum(PermitApprovalSource)
-  permitApprovalSource: PermitApprovalSource;
+  permitApprovalSource?: PermitApprovalSource;
 
   @AutoMap()
   @ApiProperty({
@@ -129,7 +129,7 @@ export class CreateApplicationDto {
   })
   @IsOptional()
   @IsEnum(PermitApplicationOrigin)
-  permitApplicationOrigin: PermitApplicationOrigin;
+  permitApplicationOrigin?: PermitApplicationOrigin;
 
   @AutoMap()
   @ApiProperty({
@@ -206,5 +206,5 @@ export class CreateApplicationDto {
   @IsOptional()
   @IsString()
   @MaxLength(3000)
-  comment: string;
+  comment?: string;
 }

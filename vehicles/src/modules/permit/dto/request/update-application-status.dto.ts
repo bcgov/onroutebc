@@ -22,7 +22,7 @@ export class UpdateApplicationStatusDto {
   })
   @IsOptional()
   @IsNumber()
-  companyId: number;
+  companyId?: number;
 
   @ApiProperty({
     description: 'Application Status.',

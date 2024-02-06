@@ -28,5 +28,5 @@ export class IssuePermitDto {
   })
   @IsOptional()
   @IsNumber()
-  companyId: number;
+  companyId?: number;
 }
