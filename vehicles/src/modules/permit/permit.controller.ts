@@ -7,6 +7,7 @@ import {
   Param,
   Query,
   Res,
+  BadRequestException,
 } from '@nestjs/common';
 import { PermitService } from './permit.service';
 import { ExceptionDto } from '../../common/exception/exception.dto';
@@ -29,13 +30,13 @@ import { FileDownloadModes } from '../../common/enum/file-download-modes.enum';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
-import { IDP } from 'src/common/enum/idp.enum';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import { PermitHistoryDto } from './dto/response/permit-history.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { VoidPermitDto } from './dto/request/void-permit.dto';
 import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
 import { GetPermitQueryParamsDto } from './dto/request/queryParam/getPermit.query-params.dto';
+import { UserAuthGroup } from 'src/common/enum/user-auth-group.enum';
 
 @ApiBearerAuth()
 @ApiTags('Permit')
@@ -96,11 +97,29 @@ export class PermitController {
     @Query() getPermitQueryParamsDto: GetPermitQueryParamsDto,
   ): Promise<PaginationDto<ReadPermitDto>> {
     const currentUser = request.user as IUserJWT;
-    console.log('getPermitQueryParamsDto', getPermitQueryParamsDto);
-    const userGuid =
-      currentUser.identity_provider === IDP.BCEID
-        ? currentUser.bceid_user_guid
-        : null;
+    const companyIdNonMandatoryRoles: UserAuthGroup[] = [
+      UserAuthGroup.PPC_CLERK,
+      UserAuthGroup.SYSTEM_ADMINISTRATOR,
+      UserAuthGroup.ENFORCEMENT_OFFICER,
+      UserAuthGroup.HQ_ADMINISTRATOR,
+      UserAuthGroup.FINANCE,
+    ];
+    if (
+      !companyIdNonMandatoryRoles.includes(currentUser.orbcUserAuthGroup) &&
+      !getPermitQueryParamsDto.companyId
+    ) {
+      throw new BadRequestException(
+        `Company Id is mandatory for roles except ${companyIdNonMandatoryRoles.join(', ')}.`,
+      );
+    }
+
+    const userGuid = [
+      UserAuthGroup.CV_CLIENT,
+      UserAuthGroup.COMPANY_ADMINISTRATOR,
+    ].includes(currentUser.orbcUserAuthGroup)
+      ? currentUser.bceid_user_guid
+      : null;
+
     return await this.permitService.findPermit(
       getPermitQueryParamsDto,
       userGuid,
