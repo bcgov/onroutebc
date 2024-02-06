@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction } from "react";
-import { IDIRUserAuthGroupType, VerifiedClient, UserRolesType } from "./types";
+import { IDIRUserAuthGroupType, VerifiedClient, UserRolesType, BCeIDUserAuthGroupType } from "./types";
 
 import { Nullable, Optional } from "../types/common";
 
@@ -27,7 +27,7 @@ export interface BCeIDUserDetailContext {
   phone2Extension?: string;
   email: string;
   fax?: string;
-  userAuthGroup: string;
+  userAuthGroup: BCeIDUserAuthGroupType;
 }
 
 /**

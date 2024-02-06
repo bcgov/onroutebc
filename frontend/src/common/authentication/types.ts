@@ -2,15 +2,7 @@ import { Contact } from "../../features/manageProfile/types/manageProfile";
 import { Nullable } from "../types/common";
 
 /**
- * Type for displaying snackbar (aka toast message) after an operation.
- */
-export interface CompanyMetadataContextType {
-  companyMetadata: CompanyMetadata;
-  setCompanyMetadata: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-/**
- * Company Basic Info type
+ * Company Metadata type
  */
 export type CompanyMetadata = {
   companyId: number;
@@ -48,7 +40,7 @@ export type VerifiedClient = ClientInformation & CompanyMetadata;
 /**
  * User Context object type
  */
-export interface BCeIDUserContextType {
+export type BCeIDUserContextType = {
   associatedCompanies: CompanyMetadata[];
   pendingCompanies: CompanyMetadata[];
   migratedClient: VerifiedClient;
@@ -69,7 +61,7 @@ export interface BCeIDUserContextType {
     phone1Extension?: Nullable<string>;
     phone2Extension?: Nullable<string>;
   };
-}
+};
 
 /**
  * The set of user roles.
@@ -176,11 +168,11 @@ export type IDIRUserAuthGroupType =
   (typeof IDIR_USER_AUTH_GROUP)[keyof typeof IDIR_USER_AUTH_GROUP];
 
 /**
- * User Context object type
+ * IDIR User Context object type
  */
-export interface IDIRUserContextType {
+export type IDIRUserContextType = {
   user?: {
-    userAuthGroup?: string;
+    userAuthGroup?: IDIRUserAuthGroupType;
     statusCode?: string;
     userGUID?: string;
     userName?: string;
@@ -188,4 +180,4 @@ export interface IDIRUserContextType {
     lastName?: string;
     email?: string;
   };
-}
+};

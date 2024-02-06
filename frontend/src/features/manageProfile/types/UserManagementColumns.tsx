@@ -2,24 +2,23 @@ import { Stack } from "@mui/material";
 import { MRT_ColumnDef } from "material-react-table";
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
 import { UserManagementChip } from "../components/user-management/UserManagementChip";
+import { ReadUserInformationResponse } from "./userManagement.d";
 import {
-  BCEID_AUTH_GROUP,
-  BCeIDAuthGroup,
-  ReadCompanyUser,
-} from "./userManagement.d";
+  BCeIDUserAuthGroupType,
+  BCeID_USER_AUTH_GROUP,
+} from "../../../common/authentication/types";
 
 /**
  * Translates the userAuthGroup code into a more meaningful text for the user.
  * @param userAuthGroup The userAuthGroup of the user
  * @returns A user-friendly text for the user auth group.
  */
-const translateUserAuth = (userAuthGroup: BCeIDAuthGroup): string => {
+const translateUserAuth = (userAuthGroup: BCeIDUserAuthGroupType): string => {
   if (!userAuthGroup) return "";
   switch (userAuthGroup) {
-    case BCEID_AUTH_GROUP.CVCLIENT:
+    case BCeID_USER_AUTH_GROUP.CV_CLIENT:
       return "Permit Applicant";
-    case BCEID_AUTH_GROUP.ORGADMIN:
-    case BCEID_AUTH_GROUP.PUBLIC:
+    case BCeID_USER_AUTH_GROUP.COMPANY_ADMINISTRATOR:
     default:
       return "Administrator";
   }
@@ -35,7 +34,7 @@ const shouldShowChip = (userStatus: string) => {
 /**
  * The column definition for User Management Table.
  */
-export const UserManagementColumnsDefinition: MRT_ColumnDef<ReadCompanyUser>[] =
+export const UserManagementColumnsDefinition: MRT_ColumnDef<ReadUserInformationResponse>[] =
   [
     {
       accessorKey: "userName",

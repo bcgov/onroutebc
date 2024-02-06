@@ -1,12 +1,31 @@
-import { memo } from "react";
 import { Box, Typography } from "@mui/material";
+import { memo } from "react";
 
-import { UserInformation } from "../../../features/manageProfile/types/manageProfile";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
+import {
+  BCeIDUserAuthGroupType,
+  BCeID_USER_AUTH_GROUP,
+} from "../../authentication/types";
+
+/**
+ * Returns a label for the userAuthGroup.
+ * @param userAuthGroup The userAuthGroup the user belongs to.
+ * @returns A string representing the label of the user.
+ */
+const getLabelForBCeIDUserAuthGroup = (
+  userAuthGroup: BCeIDUserAuthGroupType,
+): string => {
+  switch (userAuthGroup) {
+    case BCeID_USER_AUTH_GROUP.COMPANY_ADMINISTRATOR:
+      return "Administrator";
+    default:
+      return "Permit Applicant";
+  }
+};
 
 export const UserInfoBanner = memo(
-  ({ userInfo }: { userInfo?: UserInformation }) => {
-    return userInfo ? (
+  ({ userAuthGroup }: { userAuthGroup?: BCeIDUserAuthGroupType }) => {
+    return userAuthGroup ? (
       <Box
         sx={{
           height: 100,
@@ -21,7 +40,9 @@ export const UserInfoBanner = memo(
       >
         <div>
           <Typography variant="h5">USER GROUP</Typography>
-          <Typography variant="h4">{userInfo.userAuthGroup}</Typography>
+          <Typography variant="h4">
+            {getLabelForBCeIDUserAuthGroup(userAuthGroup)}
+          </Typography>
         </div>
       </Box>
     ) : null;

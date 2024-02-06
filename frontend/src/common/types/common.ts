@@ -1,14 +1,14 @@
 import { SearchFields } from "../../features/idir/search/types/types";
-import { BCeIDAddUserRequest } from "../../features/manageProfile/types/userManagement";
 import {
   Application,
   ContactDetails,
 } from "../../features/permits/types/application";
 import {
-  CompanyAndUserRequest,
+  CreateCompanyRequest,
   CompanyProfile,
-  UserInformation,
-  VerifyMigratedClientRequest,
+  UserInfoRequest,
+  VerifyClientRequest,
+  BCeIDAddUserRequest,
 } from "../../features/manageProfile/types/manageProfile";
 
 import {
@@ -29,11 +29,11 @@ export type ORBC_FormTypes =
   | PowerUnit
   | Trailer
   | Application
-  | UserInformation
-  | CompanyAndUserRequest
+  | UserInfoRequest
+  | CreateCompanyRequest
   | BCeIDAddUserRequest
   | SearchFields
-  | VerifyMigratedClientRequest
+  | VerifyClientRequest
   | ContactDetails;
 
 /**
