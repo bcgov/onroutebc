@@ -104,7 +104,7 @@ export const getApplicationsInProgress = async (): Promise<
 
     const response = await httpGETRequest(applicationsUrl);
     const applications = (
-      getDefaultRequiredVal([], response.data) as PermitApplicationInProgress[]
+      getDefaultRequiredVal([], response?.data?.items) as PermitApplicationInProgress[]
     ).map((application) => {
       return {
         ...application,
