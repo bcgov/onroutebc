@@ -50,6 +50,7 @@ export const useDefaultApplicationFormData = (
     userDetails?.phone2Extension,
     applicationData?.permitData?.contactDetails?.email,
     userDetails?.email,
+    applicationData?.permitData?.contactDetails?.additionalEmail,
     applicationData?.permitData?.contactDetails?.fax,
     userDetails?.fax,
   ];

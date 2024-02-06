@@ -19,6 +19,8 @@ import { UserManagement } from "../../pages/UserManagement";
 import { BCEID_PROFILE_TABS } from "../../types/manageProfile.d";
 import { ERROR_ROUTES, PROFILE_ROUTES } from "../../../../routes/constants";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { useAuth } from "react-oidc-context";
+import { isIDIR } from "../../../../common/authentication/auth-walls/BCeIDAuthWall";
 
 /**
  * Returns a boolean indicating if the logged in user is a BCeID org admin.
@@ -45,8 +47,10 @@ export const ManageProfilesDashboard = React.memo(() => {
 
   const navigate = useNavigate();
   const { userRoles } = useContext(OnRouteBCContext);
+  const { user } = useAuth();
   const populatedUserRoles = getDefaultRequiredVal([], userRoles);
-  const isBCeIDAdmin = isBCeIDOrgAdmin(populatedUserRoles);
+  const isIDIRUser = isIDIR(user?.profile?.identity_provider as string);
+  const isBCeIDAdmin = isBCeIDOrgAdmin(populatedUserRoles) || isIDIRUser;
 
   const { state: stateFromNavigation } = useLocation();
   let selectedTab = BCEID_PROFILE_TABS.COMPANY_INFORMATION;
@@ -72,11 +76,14 @@ export const ManageProfilesDashboard = React.memo(() => {
       label: "Company Information",
       component: <CompanyInfo companyInfoData={companyInfoData} />,
     },
-    {
+  ];
+
+  if (!isIDIRUser) {
+    tabs.push({
       label: "My Information",
       component: <MyInfo />,
-    },
-  ];
+    });
+  }
 
   if (isBCeIDAdmin) {
     tabs.push({

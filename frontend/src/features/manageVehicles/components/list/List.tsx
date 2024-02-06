@@ -48,7 +48,7 @@ import {
 import {
   defaultTableOptions,
   defaultTableInitialStateOptions,
-  defaultTableStateOptions
+  defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
 
 /**
@@ -56,9 +56,7 @@ import {
  * @param vehicleType Type of the vehicle
  * @returns An array of column headers/accessor keys for Material React Table
  */
-const getColumns = (
-  vehicleType: VehicleType,
-): MRT_ColumnDef<Vehicle>[] => {
+const getColumns = (vehicleType: VehicleType): MRT_ColumnDef<Vehicle>[] => {
   if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
     return PowerUnitColumnDefinition;
   }
@@ -119,9 +117,13 @@ export const List = memo(
     const transformVehicleCode = (code: string) => {
       let val;
       if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
-        val = fetchedPowerUnitSubTypes?.filter((value) => value.typeCode === code);
+        val = fetchedPowerUnitSubTypes?.filter(
+          (value) => value.typeCode === code,
+        );
       } else {
-        val = fetchedTrailerSubTypes?.filter((value) => value.typeCode === code);
+        val = fetchedTrailerSubTypes?.filter(
+          (value) => value.typeCode === code,
+        );
       }
       return val?.at(0)?.type ?? "";
     };

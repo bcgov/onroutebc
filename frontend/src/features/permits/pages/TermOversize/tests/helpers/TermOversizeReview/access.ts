@@ -87,6 +87,10 @@ export const contactInfoEmail = async () => {
   return await screen.findByTestId("review-contact-details-email");
 };
 
+export const contactInfoAdditionalEmail = async () => {
+  return await screen.findByTestId("review-contact-details-additional-email");
+};
+
 export const contactInfoFax = async () => {
   return await screen.findByTestId("review-contact-details-fax");
 };

@@ -19,7 +19,11 @@ import {
  * and hence only has to be executed after the conditions are met.
  */
 export const LoadBCeIDUserRolesByCompany = () => {
-  const { isPending, isError, data: userRolesData } = useUserRolesByCompanyIdQuery();
+  const {
+    isPending,
+    isError,
+    data: userRolesData,
+  } = useUserRolesByCompanyIdQuery();
   const navigate = useNavigate();
 
   useEffect(() => {

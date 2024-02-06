@@ -1,20 +1,22 @@
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker, DateValidationError } from "@mui/x-date-pickers";
+import { useState, useEffect } from "react";
 import {
   FieldValues,
   FieldPath,
   useFormContext,
   useController,
 } from "react-hook-form";
+
+import "./CustomDatePicker.scss";
 import { ORBC_FormTypes, RequiredOrNull } from "../../../types/common";
-import { DatePicker, DateValidationError } from "@mui/x-date-pickers";
-import { useState, useEffect } from "react";
+import { now } from "../../../helpers/formatDate";
 import {
   invalidDate,
   invalidMaxStartDate,
   invalidPastStartDate,
 } from "../../../helpers/validationMessages";
-import { now } from "../../../helpers/formatDate";
 
 /**
  * Properties of the onrouteBC customized Date Picker MUI component
@@ -97,6 +99,7 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>({
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker
+        className={`custom-date-picker ${disabled ? "custom-date-picker--disabled" : ""}`}
         key={`${feature}-date-picker`}
         ref={ref}
         value={value}
@@ -109,6 +112,9 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>({
         slotProps={{
           textField: {
             helperText: errorMessage,
+            inputProps: {
+              className: "custom-date-picker__input-container",
+            },
           },
         }}
         // This onClose function fixes a bug where the Select component does not immediately

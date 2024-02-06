@@ -15,7 +15,7 @@ export const VerifyMigratedClientForm = () => {
         type="input"
         feature={FEATURE}
         options={{
-          name: "clientNumberHash",
+          name: "clientNumber",
           rules: {
             required: {
               value: true,

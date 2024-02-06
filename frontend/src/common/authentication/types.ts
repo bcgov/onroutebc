@@ -1,3 +1,4 @@
+import { Contact } from "../../features/manageProfile/types/manageProfile";
 import { Nullable } from "../types/common";
 
 /**
@@ -36,12 +37,13 @@ export type ClientInformation = {
   phone: string;
   fax: string;
   extension: string;
+  primaryContact: Contact;
 };
 
 /**
- * The information a migrated client will have.
+ * The information a verified client will have.
  */
-export type MigratedClient = ClientInformation & CompanyMetadata;
+export type VerifiedClient = ClientInformation & CompanyMetadata;
 
 /**
  * User Context object type
@@ -49,7 +51,7 @@ export type MigratedClient = ClientInformation & CompanyMetadata;
 export interface BCeIDUserContextType {
   associatedCompanies: CompanyMetadata[];
   pendingCompanies: CompanyMetadata[];
-  migratedClient: MigratedClient;
+  migratedClient: VerifiedClient;
   user?: {
     userAuthGroup?: string;
     statusCode?: string;
@@ -120,8 +122,7 @@ export const ROLES = {
 /**
  * The enum type for user roles.
  */
-export type UserRolesType =
-  (typeof ROLES)[keyof typeof ROLES];
+export type UserRolesType = (typeof ROLES)[keyof typeof ROLES];
 
 /**
  * The user auth group enum key-value pairs.
