@@ -1,6 +1,14 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { Allow, IsEnum, IsNumber, IsNumberString, IsOptional, IsString, MaxLength } from 'class-validator';
+import {
+  Allow,
+  IsEnum,
+  IsNumber,
+  IsNumberString,
+  IsOptional,
+  IsString,
+  MaxLength,
+} from 'class-validator';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { PermitApplicationOrigin } from 'src/common/enum/permit-application-origin.enum';
 import { PermitApprovalSource } from 'src/common/enum/permit-approval-source.enum';

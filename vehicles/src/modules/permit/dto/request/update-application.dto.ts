@@ -1,6 +1,13 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { Allow, IsEnum, IsNumber, IsOptional, IsString, MaxLength } from 'class-validator';
+import {
+  Allow,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  MaxLength,
+} from 'class-validator';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { PermitApplicationOrigin } from 'src/common/enum/permit-application-origin.enum';
 import { PermitStatus } from 'src/common/enum/permit-status.enum';
@@ -38,7 +45,7 @@ export class UpdateApplicationDto {
   @IsEnum(PermitType)
   permitType: PermitType;
 
-//ToDo: remove PermitStatus, update application should not change PermitStatus. there is an existing endpoint to change status.
+  //ToDo: remove PermitStatus, update application should not change PermitStatus. there is an existing endpoint to change status.
   @AutoMap()
   @ApiProperty({
     enum: PermitStatus,
