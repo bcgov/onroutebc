@@ -6,7 +6,6 @@ import {
   useFormContext,
 } from "react-hook-form";
 
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { ORBC_FormTypes } from "../../../types/common";
 import "./CustomOutlinedInput.scss";
 
@@ -51,6 +50,9 @@ export const CustomOutlinedInput = <T extends ORBC_FormTypes>(
     updatedInputProps["pattern"] = "[0-9]*";
   }
 
+  const customInputClassName = 
+    `custom-input ${props.disabled ? "custom-input--disabled" : ""} ${props.invalid ? "custom-input--invalid" : ""}`;
+
   return (
     <OutlinedInput
       inputProps={{
@@ -61,14 +63,7 @@ export const CustomOutlinedInput = <T extends ORBC_FormTypes>(
       }}
       disabled={props.disabled}
       readOnly={props.readOnly}
-      className={`custom-input ${props.disabled ? "custom-input--disabled" : ""}`}
-      sx={{
-        "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-          borderColor: props.invalid
-            ? BC_COLOURS.bc_red
-            : BC_COLOURS.focus_blue,
-        },
-      }}
+      className={customInputClassName}
       {...register(props.name, props.rules)}
     />
   );

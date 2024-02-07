@@ -11,15 +11,15 @@ import {
 
 import "./SelectVehicleDropdown.scss";
 import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";
-import { SELECT_FIELD_STYLE } from "../../../../../../../../themes/orbcStyles";
 import { sortVehicles } from "../../../../../../helpers/sorter";
 import { removeIneligibleVehicles } from "../../../../../../helpers/removeIneligibleVehicles";
+import { VehicleDetails } from "../../../../../../types/application";
+import { VEHICLE_CHOOSE_FROM } from "../../../../../../constants/constants";
 import {
   Nullable,
   Optional,
 } from "../../../../../../../../common/types/common";
-import { VehicleDetails } from "../../../../../../types/application";
-import { VEHICLE_CHOOSE_FROM } from "../../../../../../constants/constants";
+
 import {
   PowerUnit,
   Trailer,
@@ -56,7 +56,6 @@ export const SelectVehicleDropdown = ({
   chooseFrom,
   selectedVehicle,
   label,
-  width,
   vehicleOptions,
   handleSelectVehicle,
   handleClearVehicle,
@@ -64,7 +63,6 @@ export const SelectVehicleDropdown = ({
   chooseFrom: string;
   selectedVehicle: Optional<VehicleDetails>;
   label: string;
-  width: string;
   vehicleOptions: Vehicle[];
   handleSelectVehicle: (vehicle: Vehicle) => void;
   handleClearVehicle: () => void;
@@ -102,8 +100,11 @@ export const SelectVehicleDropdown = ({
   }, [selectedOption]);
 
   return (
-    <FormControl margin="normal">
-      <FormLabel className="select-field-form-label">{label}</FormLabel>
+    <FormControl
+      margin="normal"
+      className="select-vehicle-dropdown"
+    >
+      <FormLabel className="select-vehicle-dropdown__label">{label}</FormLabel>
       <Autocomplete
         id="tros-select-vehicle"
         onChange={(_, value: Nullable<Vehicle>, reason) => {
@@ -123,15 +124,7 @@ export const SelectVehicleDropdown = ({
           if (!option.unitNumber) option.unitNumber = "-";
           return chooseFrom == "plate" ? option.plate : option.unitNumber;
         }}
-        sx={[
-          SELECT_FIELD_STYLE.SELECT_FIELDSET,
-          {
-            ".MuiOutlinedInput-root .MuiAutocomplete-input": {
-              padding: 0,
-            },
-            width: { width },
-          },
-        ]}
+        className="select-vehicle-dropdown__autocomplete"
         renderOption={(props, option) => {
           if (!option) return "";
 
