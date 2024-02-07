@@ -2,11 +2,11 @@ import { Stack } from "@mui/material";
 import { MRT_ColumnDef } from "material-react-table";
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
 import { UserManagementChip } from "../components/user-management/UserManagementChip";
-import { ReadUserInformationResponse } from "./userManagement.d";
 import {
   BCeIDUserAuthGroupType,
   BCeID_USER_AUTH_GROUP,
 } from "../../../common/authentication/types";
+import { ReadUserInformationResponse } from "./manageProfile";
 
 /**
  * Translates the userAuthGroup code into a more meaningful text for the user.
