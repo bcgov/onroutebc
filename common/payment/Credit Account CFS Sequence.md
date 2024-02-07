@@ -27,10 +27,21 @@ sequenceDiagram
         CFS-->>onRouteBC: Return CFS site number
         onRouteBC->>onRouteBC: Save site number to DB
     end
-    onRouteBC->>CFS: Create invoice
-    note over onRouteBC,CFS: Generate transaction number in identical<br/>format to CC transaction number, will be<br/>used as invoice number in CFS.
-    note over onRouteBC,CFS: Include one line per permit included in<br/>the transaction.
-    CFS-->>onRouteBC: Return response (success/fail)
-    onRouteBC->>onRouteBC: Save invoice details to DB
+    onRouteBC->>CFS: Request credit limit and balance
+    CFS-->>onRouteBC: Return credit limit and balance
+    note over onRouteBC,CFS: If CFS down for evening reconcile, use the<br/>last known limit and balance from database.
+    opt CFS is available and returned limit/balance
+        onRouteBC->>onRouteBC: Save last known credit<br/>limit and balance to DB
+    end
+    alt Sufficient available credit
+        onRouteBC->>CFS: Create invoice
+        note over onRouteBC,CFS: Generate transaction number in identical<br/>format to CC transaction number, will be<br/>used as invoice number in CFS.
+        note over onRouteBC,CFS: Include one line per permit included in<br/>the transaction.
+        CFS-->>onRouteBC: Return response (success/fail)
+        onRouteBC->>onRouteBC: Save invoice details to DB
+        onRouteBC->>onRouteBC: Update credit limit and<br/>balance in DB
+    else Insufficient available credit
+        onRouteBC->>onRouteBC: Notify customer
+    end
     note over onRouteBC,CFS: Statements sent out to customers on a<br/>monthly basis (by CAS)
 ```
