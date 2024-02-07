@@ -1,3 +1,7 @@
+import {
+  BCeIDUserAuthGroupType,
+  BCeID_USER_AUTH_GROUP,
+} from "../authentication/types";
 import { Nullable, Optional, RequiredOrNull } from "../types/common";
 
 /**
@@ -204,4 +208,18 @@ export const convertToNumberIfValid = (
   return str != null && str !== "" && !isNaN(Number(str))
     ? Number(str)
     : valueToReturnWhenInvalid;
+};
+
+/**
+ * Returns a label for the userAuthGroup.
+ * @param userAuthGroup The userAuthGroup the user belongs to.
+ * @returns A string representing the label of the user.
+ */
+export const getLabelForBCeIDUserAuthGroup = (
+  userAuthGroup: BCeIDUserAuthGroupType,
+): string => {
+  if (userAuthGroup === BCeID_USER_AUTH_GROUP.COMPANY_ADMINISTRATOR) {
+    return "Administrator";
+  }
+  return "Permit Applicant";
 };
