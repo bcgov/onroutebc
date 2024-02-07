@@ -61,10 +61,10 @@ import {
 import { PaymentMethodType } from 'src/common/enum/payment-method-type.enum';
 import { PageMetaDto } from 'src/common/dto/paginate/page-meta';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
-import { SortDto } from '../common/dto/request/sort.dto';
 import * as constants from '../../common/constants/api.constant';
 import { PermitApprovalSource } from '../../common/enum/permit-approval-source.enum';
 import { GetPermitQueryParamsDto } from './dto/request/queryParam/getPermit.query-params.dto';
+import { OrderBy } from '../../common/enum/orderBy.enum';
 
 @Injectable()
 export class PermitService {
@@ -210,19 +210,19 @@ export class PermitService {
     getPermitQueryParamsDto: GetPermitQueryParamsDto,
     userGUID: string,
   ): Promise<PaginationDto<ReadPermitDto>> {
-    const permits = this.buildPermitQuery(getPermitQueryParamsDto, userGUID);
-    const sortedPermits = this.sortPermits(permits, {
-      orderBy: getPermitQueryParamsDto.orderBy,
-      descending: getPermitQueryParamsDto.descending,
-    });
+    const permitsQB = this.buildPermitQuery(getPermitQueryParamsDto, userGUID);
+    const sortedPermits = this.sortPermits(
+      permitsQB,
+      getPermitQueryParamsDto.orderBy,
+    );
     const totalItems = await sortedPermits.getCount();
-    const { entities } = await permits.getRawAndEntities();
+    const permits = await permitsQB.getMany();
     const pageMetaDto = new PageMetaDto({
       totalItems,
       pageOptionsDto: getPermitQueryParamsDto,
     });
     const readPermitDto: ReadPermitDto[] =
-      await this.mapEntitiesToReadPermitDto(entities);
+      await this.mapEntitiesToReadPermitDto(permits);
     return new PaginationDto(readPermitDto, pageMetaDto);
   }
 
@@ -354,29 +354,39 @@ export class PermitService {
 
   private sortPermits(
     permits: SelectQueryBuilder<Permit>,
-    sortDto?: SortDto,
+    orderBy?: string,
   ): SelectQueryBuilder<Permit> {
-    if (!sortDto.orderBy) {
+    if (!orderBy) {
       return permits;
     }
 
-    const orderByMapping: Record<string, string> = {
-      permitNumber: 'permit.permitNumber',
-      permitType: 'permit.permitType',
-      startDate: 'permitData.startDate',
-      expiryDate: 'permitData.expiryDate',
-      unitNumber: 'permitData.unitNumber',
-      plate: 'permitData.plate',
-      applicant: 'permitData.applicant',
-    };
+    const orderByList = orderBy?.split(',') || [];
 
-    const orderByKey = orderByMapping[sortDto.orderBy];
+    orderByList.forEach((orderByVal, index) => {
+      const [orderByKey, sortDirection] = orderByVal?.split(':') || [];
 
-    if (orderByKey) {
-      const orderBy = sortDto.descending ? 'DESC' : 'ASC';
+      const orderByMapping: Record<string, string> = {
+        permitNumber: 'permit.permitNumber',
+        permitType: 'permit.permitType',
+        startDate: 'permitData.startDate',
+        expiryDate: 'permitData.expiryDate',
+        unitNumber: 'permitData.unitNumber',
+        plate: 'permitData.plate',
+        applicant: 'permitData.applicant',
+      };
 
-      permits.orderBy(orderByKey, orderBy);
-    }
+      const orderByValue = orderByMapping[orderByKey];
+
+      if (orderByValue) {
+        const sortDirectionVal =
+          sortDirection === OrderBy.ASCENDING.valueOf() ? 'ASC' : 'DESC';
+        if (index === 0) {
+          permits.orderBy(orderByValue, sortDirectionVal);
+        } else {
+          permits.addOrderBy(orderByValue, sortDirectionVal);
+        }
+      }
+    });
     return permits;
   }
 

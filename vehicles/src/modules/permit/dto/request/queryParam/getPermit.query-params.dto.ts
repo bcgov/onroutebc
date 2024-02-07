@@ -5,10 +5,12 @@ import {
   IsString,
   Length,
   IsNumber,
+  Validate,
 } from 'class-validator';
 import { PageOptionsDto } from '../../../../../common/dto/paginate/page-options';
 import { Transform, Type } from 'class-transformer';
 import { idirUserAuthGroupList } from '../../../../../common/enum/user-auth-group.enum';
+import { PermitsOrderByConstraint } from '../../../../../common/constraint/permits-orderby.constraint';
 
 export class GetPermitQueryParamsDto extends PageOptionsDto {
   @ApiProperty({
@@ -54,12 +56,11 @@ export class GetPermitQueryParamsDto extends PageOptionsDto {
   searchString?: string;
 
   @ApiProperty({
-    example: 'permitNumber',
-    description:
-      'The field used to determine sort order in query results. For example, sorting by `permitNumber`.',
+    example: 'permitNumber:DESC,permitType:ASC',
     required: false,
   })
   @IsOptional()
+  @Validate(PermitsOrderByConstraint)
   @IsString()
   @Length(1, 150)
   readonly orderBy?: string;

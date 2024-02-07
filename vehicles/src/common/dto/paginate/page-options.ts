@@ -1,16 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
-import {
-  IsBoolean,
-  IsInt,
-  IsOptional,
-  IsString,
-  Length,
-  Max,
-  Min,
-  Validate,
-} from 'class-validator';
-import { DescendingDependsOnOrderByConstraint } from '../../constraint/descending-depends-on-order.constraint';
+import { Type } from 'class-transformer';
+import { IsInt, IsOptional, IsString, Length, Max, Min } from 'class-validator';
 
 export class PageOptionsDto {
   @ApiProperty({
@@ -36,30 +26,20 @@ export class PageOptionsDto {
   readonly take: number = 10;
 
   @ApiProperty({
-    example: 'id',
+    example: '<sortField:sortDirection>',
     description:
-      'The field used to determine sort order in query results. For example, sorting by `id`.',
+      'A string defining the sort order for query results. ' +
+      'If `orderBy` is undefined, the results remain unordered. ' +
+      'Each rule consists of a field name and an optional sort direction, separated by a colon. ' +
+      'Field names are case-sensitive and must match those defined in the schema. ' +
+      'Sort directions can be "ASC" for ascending or "DESC" for descending. ' +
+      'Default sort direction if undefined, default will be DESC. ' +
+      'Multiple sorting rules can be combined using commas. ' +
+      '<sortField:sortDirection,sortField:sortDirection>',
     required: true,
   })
   @IsOptional()
   @IsString()
   @Length(1, 150)
   readonly orderBy?: string;
-
-  @ApiProperty({
-    example: false,
-    description:
-      'Determines the sort order of results. If `orderBy` is undefined, the results remain unordered.' +
-      'When `orderBy` is specified without the `descending` parameter, results sort in descending order by default.' +
-      'If `descending` is explicitly set to false, results sort in ascending order.',
-    default: true,
-    required: false,
-  })
-  @IsOptional()
-  @Validate(DescendingDependsOnOrderByConstraint)
-  @Transform(({ obj, key }: { obj: Record<string, unknown>; key: string }) => {
-    return obj[key] === 'true' ? true : obj[key] === 'false' ? false : obj[key];
-  })
-  @IsBoolean()
-  readonly descending?: boolean = true;
 }
