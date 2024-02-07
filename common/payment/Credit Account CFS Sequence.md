@@ -32,6 +32,7 @@ sequenceDiagram
     note over onRouteBC,CFS: If CFS down for evening reconcile, use the<br/>last known limit and balance from database.
     opt CFS is available and returned limit/balance
         onRouteBC->>onRouteBC: Save last known credit<br/>limit and balance to DB
+        note over onRouteBC,CFS: TBD how to synchronize TPS and onRouteBC<br/>when CFS unavailable.
     end
     alt Sufficient available credit
         onRouteBC->>CFS: Create invoice
