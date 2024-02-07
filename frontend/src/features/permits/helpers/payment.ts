@@ -1,6 +1,6 @@
 import { PayBCPaymentDetails } from "../types/payment";
 import { parseRedirectUriPath } from "../pages/Payment/PaymentRedirect";
-import { Nullable } from "../../../common/types/common";
+import { Nullable, RequiredOrNull } from "../../../common/types/common";
 import {
   PAYMENT_GATEWAY_METHODS,
   PAYMENT_METHOD_TYPE_CODE,
@@ -12,6 +12,10 @@ import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../common/helpers/util";
+import { httpGETRequest } from "../../../common/apiManager/httpRequestHandler";
+//import { ApplicationResponse } from "../types/application";
+import { PAYMENT_API_ROUTES } from "../apiManager/endpoints/endpoints";
+import { PaymentTransaction } from "../../../common/types/paymentTransaction";
 
 /**
  * Extracts PayBCPaymentDetails from the query parameters of a URL.
@@ -24,7 +28,7 @@ export const getPayBCPaymentDetails = (
 ): PayBCPaymentDetails => {
   // Extract the query parameters and assign them to the corresponding properties of PayBCPaymentDetails
   const path = getDefaultRequiredVal("", params.get("path"));
-  const { trnApproved } = parseRedirectUriPath(path);
+  const trnApproved = parseRedirectUriPath(path);
 
   const payBCPaymentDetails: PayBCPaymentDetails = {
     authCode: params.get("authCode"),
@@ -84,4 +88,28 @@ export const isValidTransaction = (
     paymentMethod !== PAYMENT_METHOD_TYPE_CODE.WEB ||
     (!!transactionApproved && transactionApproved > 0)
   );
+};
+
+/**
+ * Fetch application by its permit id.
+ * @param permitId permit id of the application to fetch
+ * @returns ApplicationResponse data as response, or null if fetch failed
+ */
+export const getPaymentByTransactionId = async (
+  transactionId?: string,
+): Promise<RequiredOrNull<PaymentTransaction>> => {
+  try {
+    //const companyId = getCompanyIdFromSession();
+    const url = `${PAYMENT_API_ROUTES.GET}/${transactionId}`;
+    //if (companyId) {
+    //  url += `?companyId=${companyId}`;
+    //}
+
+    console.log('url', url)
+
+    const response = await httpGETRequest(url);
+    return response.data;
+  } catch (err) {
+    return null;
+  }
 };

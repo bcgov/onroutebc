@@ -71,16 +71,16 @@ export class PaymentService {
   };
 
   private queryHash = (transaction: Transaction) => {
-    const permitIds = transaction.permitTransactions.map(
-      (permitTransaction) => {
-        return permitTransaction.permit.permitId;
-      },
-    );
+    //const permitIds = transaction.permitTransactions.map(
+    //  (permitTransaction) => {
+    //    return permitTransaction.permit.permitId;
+    //  },
+    //);
     // Construct the URL with the transaction details for the payment gateway
-    const redirectUrl = permitIds
-      ? `${process.env.PAYBC_REDIRECT}` + `?path=${permitIds.join(',')}`
-      : `${process.env.PAYBC_REDIRECT}`;
-
+    //const redirectUrl = permitIds
+    //  ? `${process.env.PAYBC_REDIRECT}` + `?path=${permitIds.join(',')}`
+    //  : `${process.env.PAYBC_REDIRECT}`;
+    const redirectUrl = process.env.PAYBC_REDIRECT;
     const date = new Date().toISOString().split('T')[0];
 
     // There should be a better way of doing this which is not as rigid - something like

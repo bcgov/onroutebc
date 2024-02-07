@@ -1,7 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 
-import { getPayBCPaymentDetails } from "../../helpers/payment";
+import { getPayBCPaymentDetails, getPaymentByTransactionId } from "../../helpers/payment";
 import { Loading } from "../../../../common/pages/Loading";
 import { useCompleteTransaction, useIssuePermits } from "../../hooks/hooks";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
@@ -20,28 +20,19 @@ import {
   PayBCPaymentDetails,
 } from "../../types/payment";
 
-const PERMIT_ID_DELIM = ",";
 const PATH_DELIM = "?";
 
-const getPermitIdsArray = (permitIds?: Nullable<string>) => {
-  return getDefaultRequiredVal("", permitIds)
-    .split(PERMIT_ID_DELIM)
-    .filter((id) => id !== "");
-};
-
 export const parseRedirectUriPath = (path?: Nullable<string>) => {
+  console.log(path)
   const splitPath = path?.split(PATH_DELIM);
-  let permitIds = "";
   let trnApproved = 0;
-  if (splitPath?.[0]) {
-    permitIds = splitPath[0];
-  }
 
   if (splitPath?.[1]) {
     trnApproved = parseInt(splitPath[1]?.split("=")?.[1]);
   }
 
-  return { permitIds, trnApproved };
+  console.log('trnApproved', trnApproved)
+  return trnApproved;
 };
 
 const exportPathFromSearchParams = (
@@ -67,14 +58,15 @@ export const PaymentRedirect = () => {
   const paymentDetails = getPayBCPaymentDetails(searchParams);
   const transaction = mapTransactionDetails(paymentDetails);
 
+  const transactionId = getDefaultRequiredVal("", searchParams.get("ref2"));
   const path = getDefaultRequiredVal("", searchParams.get("path"));
-  const { permitIds, trnApproved } = parseRedirectUriPath(path);
+  const trnApproved = parseRedirectUriPath(path);
+  const [applicationIds, setApplicationIds] = useState<string[] | []>([]);
   const transactionQueryString = exportPathFromSearchParams(
     searchParams,
     trnApproved,
   );
-  const transactionId = getDefaultRequiredVal("", searchParams.get("ref2"));
-
+  
   const { mutation: completeTransactionMutation, paymentApproved } =
     useCompleteTransaction(
       paymentDetails.messageText,
@@ -82,7 +74,6 @@ export const PaymentRedirect = () => {
     );
 
   const { mutation: issuePermitsMutation, issueResults } = useIssuePermits();
-
   const issueFailed = hasPermitsActionFailed(issueResults);
 
   useEffect(() => {
@@ -97,24 +88,40 @@ export const PaymentRedirect = () => {
   }, [paymentDetails.trnApproved]);
 
   useEffect(() => {
-    if (issuedPermit.current === false) {
-      const permitIdsArray = getPermitIdsArray(permitIds);
+    const ids:string[] = [];
+    getPaymentByTransactionId(transactionId)
+      .then((response) => {
+        response?.applicationDetails?.forEach((application) => {
+          if (application?.applicationId) {
+            ids.push(application.applicationId)
+          }
+        })
+      }).finally(() => {
+        console.log('setting application ids to', ids)
+        setApplicationIds(ids);
+      })
 
-      if (permitIdsArray.length === 0) {
+  }, [transactionId]);
+
+  useEffect(() => {
+    console.log('applicationIds', applicationIds)
+    if (issuedPermit.current === false) {
+
+      if (applicationIds?.length === 0) {
         // permit ids should not be empty, if so then something went wrong
         navigate(ERROR_ROUTES.UNEXPECTED, { replace: true });
       } else if (paymentApproved === true) {
         // Payment successful, proceed to issue permit
-        issuePermitsMutation.mutate(permitIdsArray);
+        issuePermitsMutation.mutate(applicationIds);
         issuedPermit.current = true;
       } else if (paymentApproved === false) {
         // Payment failed, redirect back to pay now page
-        navigate(APPLICATIONS_ROUTES.PAY(permitIdsArray[0], true), {
+        navigate(APPLICATIONS_ROUTES.PAY(applicationIds[0], true), {
           replace: true,
         });
       }
     }
-  }, [paymentApproved, permitIds]);
+  }, [paymentApproved, applicationIds]);
 
   if (issueFailed) {
     return <Navigate to={`${ERROR_ROUTES.UNEXPECTED}`} replace={true} />;
