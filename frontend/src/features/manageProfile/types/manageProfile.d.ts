@@ -57,6 +57,9 @@ export type Contact = {
   countryCode: string;
 };
 
+/**
+ * The company profile type.
+ */
 export type CompanyProfile = {
   companyId: number;
   companyGUID: string;
