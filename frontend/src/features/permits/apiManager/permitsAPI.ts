@@ -34,6 +34,7 @@ import {
   getDefaultRequiredVal,
   replaceEmptyValuesWithNull,
   streamDownloadFile,
+  stringifyOrderBy,
 } from "../../../common/helpers/util";
 
 import {
@@ -92,15 +93,14 @@ export const updateTermOversize = async (
  * Fetch All Permit Application in Progress
  * @return An array of permit applications
  */
-export const getApplicationsInProgress = async (
-  {
-    page = 0,
-    take = 10,
-    searchString,
-    sorting = [],
-  }: PaginationAndFilters,
-): Promise<PaginatedResponse<PermitApplicationInProgress>> => {
-
+export const getApplicationsInProgress = async ({
+  page = 0,
+  take = 10,
+  searchString,
+  orderBy = [],
+}: PaginationAndFilters): Promise<
+  PaginatedResponse<PermitApplicationInProgress>
+> => {
   const companyId = getCompanyIdFromSession();
   const applicationsURL = new URL(APPLICATIONS_API_ROUTES.IN_PROGRESS);
   if (companyId) {
@@ -113,8 +113,8 @@ export const getApplicationsInProgress = async (
   if (searchString) {
     applicationsURL.searchParams.set("searchString", searchString);
   }
-  if (sorting.length > 0) {
-    applicationsURL.searchParams.set("sorting", JSON.stringify(sorting));
+  if (orderBy.length > 0) {
+    applicationsURL.searchParams.set("sorting", stringifyOrderBy(orderBy));
   }
 
   const applications = await httpGETRequest(applicationsURL.toString())
@@ -125,41 +125,44 @@ export const getApplicationsInProgress = async (
       ) as PaginatedResponse<PermitApplicationInProgress>;
       return paginatedResponseObject;
     })
-    .then((paginatedApplications: PaginatedResponse<PermitApplicationInProgress>) => {
-      const applicationsWithDateTransformations = paginatedApplications.items.map(
-        (application) => {
-          return {
-            ...application,
-            permitType: getPermitTypeName(application.permitType) as string,
-            createdDateTime: toLocal(
-              application?.createdDateTime,
-              DATE_FORMATS.DATETIME_LONG_TZ,
-            ),
-            updatedDateTime: toLocal(
-              application?.updatedDateTime,
-              DATE_FORMATS.DATETIME_LONG_TZ,
-            ),
-            permitData: {
-              ...application.permitData,
-              startDate: toLocal(
-                application?.permitData?.startDate,
-                DATE_FORMATS.DATEONLY_SHORT_NAME,
+    .then(
+      (
+        paginatedApplications: PaginatedResponse<PermitApplicationInProgress>,
+      ) => {
+        const applicationsWithDateTransformations =
+          paginatedApplications.items.map((application) => {
+            return {
+              ...application,
+              permitType: getPermitTypeName(application.permitType) as string,
+              createdDateTime: toLocal(
+                application?.createdDateTime,
+                DATE_FORMATS.DATETIME_LONG_TZ,
               ),
-              expiryDate: toLocal(
-                application?.permitData?.expiryDate,
-                DATE_FORMATS.DATEONLY_SHORT_NAME,
+              updatedDateTime: toLocal(
+                application?.updatedDateTime,
+                DATE_FORMATS.DATETIME_LONG_TZ,
               ),
-            }
-          } as PermitApplicationInProgress;
-        },
-      );
-      return {
-        ...paginatedApplications,
-        items: applicationsWithDateTransformations,
-      };
-    });
+              permitData: {
+                ...application.permitData,
+                startDate: toLocal(
+                  application?.permitData?.startDate,
+                  DATE_FORMATS.DATEONLY_SHORT_NAME,
+                ),
+                expiryDate: toLocal(
+                  application?.permitData?.expiryDate,
+                  DATE_FORMATS.DATEONLY_SHORT_NAME,
+                ),
+              },
+            } as PermitApplicationInProgress;
+          });
+        return {
+          ...paginatedApplications,
+          items: applicationsWithDateTransformations,
+        };
+      },
+    );
 
-    return applications;
+  return applications;
 };
 
 /**
@@ -380,7 +383,7 @@ export const getCurrentAmendmentApplication = async (
  */
 export const getPermits = async (
   { expired = false } = {},
-  { page = 0, take = 10, searchString, sorting = [] }: PaginationAndFilters,
+  { page = 0, take = 10, searchString, orderBy = [] }: PaginationAndFilters,
 ): Promise<PaginatedResponse<Permit>> => {
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   const permitsURL = new URL(PERMITS_API_ROUTES.GET);
@@ -396,8 +399,8 @@ export const getPermits = async (
   if (searchString) {
     permitsURL.searchParams.set("searchString", searchString);
   }
-  if (sorting.length > 0) {
-    permitsURL.searchParams.set("sorting", JSON.stringify(sorting));
+  if (orderBy.length > 0) {
+    permitsURL.searchParams.set("orderBy", stringifyOrderBy(orderBy));
   }
   const permits = await httpGETRequest(permitsURL.toString())
     .then((response) => {
