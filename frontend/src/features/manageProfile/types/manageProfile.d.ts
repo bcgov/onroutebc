@@ -10,9 +10,9 @@ import { BCeID_USER_STATUS } from "./userManagement";
  * The types of user statuses for BCeID users.
  */
 export const BCeID_USER_STATUS = {
-  ACTIVE = "ACTIVE",
-  DISABLED = "DISABLED",
-  PENDING = "PENDING",
+  ACTIVE: "ACTIVE",
+  DISABLED: "DISABLED",
+  PENDING: "PENDING",
 } as const;
 /**
  * The enum type for BCeID user status.

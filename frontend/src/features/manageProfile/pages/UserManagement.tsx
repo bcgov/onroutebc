@@ -24,7 +24,7 @@ import {
   defaultTableInitialStateOptions,
   defaultTableStateOptions,
 } from "../../../common/helpers/tableHelper";
-import { BCeID_USER_STATUS, ReadUserInformationResponse } from "../types/manageProfile";
+import { BCeID_USER_STATUS, ReadUserInformationResponse } from "../types/manageProfile.d";
 
 /**
  * User Management Component for CV Client.
