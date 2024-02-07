@@ -6,12 +6,15 @@ import {
   Length,
   IsNumber,
   Validate,
+  IsEnum,
 } from 'class-validator';
 import { PageOptionsDto } from '../../../../../common/dto/paginate/page-options';
 import { Transform, Type } from 'class-transformer';
 import { idirUserAuthGroupList } from '../../../../../common/enum/user-auth-group.enum';
 import { PermitsOrderByConstraint } from '../../../../../common/constraint/permits-orderby.constraint';
 import { PermitOrderBy } from '../../../../../common/enum/permit-orderBy.enum';
+import { PermitSearchByConstraint } from '../../../../../common/constraint/permit-search.constraint';
+import { PermitSearch } from '../../../../../common/enum/permit-search.enum';
 
 export class GetPermitQueryParamsDto extends PageOptionsDto {
   @ApiProperty({
@@ -36,19 +39,22 @@ export class GetPermitQueryParamsDto extends PageOptionsDto {
   })
   @IsBoolean()
   expired?: boolean;
-
   @ApiProperty({
-    name: 'searchColumn',
-    description: 'The column to perform the search on.',
+    description: `The search parameter to filter the results. This field is optional. Available values are: ${Object.values(PermitOrderBy).join(', ')}`,
+    enum: PermitSearch,
+    example: PermitSearch.PERMIT_NUMBER,
     required: false,
-    example: 'permitNumber',
   })
   @IsOptional()
-  @IsString()
-  searchColumn?: string;
+  @Validate(PermitSearchByConstraint)
+  @IsEnum(PermitSearch)
+  searchColumn?: PermitSearch;
 
   @ApiProperty({
-    description: 'The search string used for querying the database.',
+    description:
+      'The search string used for querying the database. ' +
+      'This field is conditionally required. It is mandatory when a searchColumn is defined. ' +
+      'If a searchColumn is not defined, the value is searched against Plate or Unit Number, making the field optional.',
     required: false,
     example: 'P0-08000508-500',
   })

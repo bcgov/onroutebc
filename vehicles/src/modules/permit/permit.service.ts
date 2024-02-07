@@ -65,6 +65,7 @@ import * as constants from '../../common/constants/api.constant';
 import { PermitApprovalSource } from '../../common/enum/permit-approval-source.enum';
 import { GetPermitQueryParamsDto } from './dto/request/queryParam/getPermit.query-params.dto';
 import { OrderBy } from '../../common/enum/orderBy.enum';
+import { PermitSearch } from '../../common/enum/permit-search.enum';
 
 @Injectable()
 export class PermitService {
@@ -234,21 +235,24 @@ export class PermitService {
       .createQueryBuilder('permit')
       .innerJoinAndSelect('permit.permitData', 'permitData');
 
-    // Apply conditions based on parameters
+    // Ensure permit number is not null
     permitsQuery = permitsQuery.where('permit.permitNumber IS NOT NULL');
 
+    // Filter by companyId if provided
     if (getPermitQueryParamsDto.companyId) {
       permitsQuery = permitsQuery.andWhere('permit.companyId = :companyId', {
         companyId: getPermitQueryParamsDto.companyId,
       });
     }
 
+    // Filter by userGUID if provided
     if (userGUID) {
       permitsQuery = permitsQuery.andWhere('permit.userGuid = :userGUID', {
         userGUID,
       });
     }
 
+    // Handle expired permits query condition
     if (getPermitQueryParamsDto.expired === true) {
       permitsQuery = permitsQuery.andWhere(
         new Brackets((qb) => {
@@ -265,15 +269,14 @@ export class PermitService {
         }),
       );
     }
+
+    // Handle active permits query condition
     if (getPermitQueryParamsDto.expired === false) {
       permitsQuery = permitsQuery.andWhere(
         new Brackets((qb) => {
           qb.where(
             '(permit.permitStatus = :activeStatus AND permitData.expiryDate >= :expiryDate)',
             {
-              expiredStatus: Object.values(PermitStatus).filter(
-                (x) => x != PermitStatus.ISSUED && x != PermitStatus.SUPERSEDED,
-              ),
               activeStatus: PermitStatus.ISSUED,
               expiryDate: new Date(),
             },
@@ -281,52 +284,47 @@ export class PermitService {
         }),
       );
     }
+
+    // Handle search conditions
     if (getPermitQueryParamsDto.searchColumn) {
-      if (getPermitQueryParamsDto.searchColumn?.toLowerCase() === 'plate') {
-        permitsQuery = permitsQuery.andWhere(
-          `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like '%${getPermitQueryParamsDto.searchString}%'`,
-        );
-      }
-      if (
-        getPermitQueryParamsDto.searchColumn.toLowerCase() === 'permitnumber'
-      ) {
-        permitsQuery = permitsQuery.andWhere(
-          new Brackets((query) => {
-            query
-              .where(
-                `permit.permitNumber like '%${getPermitQueryParamsDto.searchString}%'`,
-              )
-              .orWhere(
-                `permit.migratedPermitNumber like '%${getPermitQueryParamsDto.searchString}%'`,
-              );
-          }),
-        );
-      }
-      if (
-        getPermitQueryParamsDto.searchColumn.toLowerCase() === 'clientnumber'
-      ) {
-        permitsQuery = permitsQuery.andWhere(
-          `JSON_VALUE(permitData.permitData, '$.clientNumber') like '%${getPermitQueryParamsDto.searchString}%'`,
-        );
-      }
-      if (
-        getPermitQueryParamsDto.searchColumn.toLowerCase() === 'companyname'
-      ) {
-        permitsQuery = permitsQuery.andWhere(
-          `JSON_VALUE(permitData.permitData, '$.companyName') like '%${getPermitQueryParamsDto.searchString}%'`,
-        );
-      }
-      if (
-        getPermitQueryParamsDto.searchColumn.toLowerCase() ===
-        'applicationnumber'
-      ) {
-        permitsQuery = permitsQuery.andWhere(
-          `permit.applicationNumber like '%${getPermitQueryParamsDto.searchString}%'`,
-        );
+      switch (getPermitQueryParamsDto.searchColumn) {
+        case PermitSearch.PLATE:
+          permitsQuery = permitsQuery.andWhere(
+            `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like '%${getPermitQueryParamsDto.searchString}%'`,
+          );
+          break;
+        case PermitSearch.PERMIT_NUMBER:
+          permitsQuery = permitsQuery.andWhere(
+            new Brackets((query) => {
+              query
+                .where(
+                  `permit.permitNumber like '%${getPermitQueryParamsDto.searchString}%'`,
+                )
+                .orWhere(
+                  `permit.migratedPermitNumber like '%${getPermitQueryParamsDto.searchString}%'`,
+                );
+            }),
+          );
+          break;
+        case PermitSearch.CLIENT_NUMBER:
+          permitsQuery = permitsQuery.andWhere(
+            `JSON_VALUE(permitData.permitData, '$.clientNumber') like '%${getPermitQueryParamsDto.searchString}%'`,
+          );
+          break;
+        case PermitSearch.COMPANY_NAME:
+          permitsQuery = permitsQuery.andWhere(
+            `JSON_VALUE(permitData.permitData, '$.companyName') like '%${getPermitQueryParamsDto.searchString}%'`,
+          );
+          break;
+        case PermitSearch.APPLICATION_NUMBER:
+          permitsQuery = permitsQuery.andWhere(
+            `permit.applicationNumber like '%${getPermitQueryParamsDto.searchString}%'`,
+          );
+          break;
       }
     }
 
-    // Handle searchString only
+    // Handle cases where only searchString is provided
     if (
       !getPermitQueryParamsDto.searchColumn &&
       getPermitQueryParamsDto.searchString
