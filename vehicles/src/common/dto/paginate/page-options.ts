@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean,
   IsInt,
@@ -8,7 +8,9 @@ import {
   Length,
   Max,
   Min,
+  Validate,
 } from 'class-validator';
+import { DescendingDependsOnOrderByConstraint } from '../../constraint/descending-depends-on-order.constraint';
 
 export class PageOptionsDto {
   @ApiProperty({
@@ -47,12 +49,17 @@ export class PageOptionsDto {
   @ApiProperty({
     example: false,
     description:
-      'Defines the direction of sorting. Automatically set to false (ascending) if `orderBy` is not provided, true (descending) otherwise. This property is ignored if `orderBy` is not provided.',
+      'Determines the sort order of results. If `orderBy` is undefined, the results remain unordered.' +
+      'When `orderBy` is specified without the `descending` parameter, results sort in descending order by default.' +
+      'If `descending` is explicitly set to false, results sort in ascending order.',
     default: true,
     required: false,
   })
-  @Type(() => Boolean)
   @IsOptional()
+  @Validate(DescendingDependsOnOrderByConstraint)
+  @Transform(({ obj, key }: { obj: Record<string, unknown>; key: string }) => {
+    return obj[key] === 'true' ? true : obj[key] === 'false' ? false : obj[key];
+  })
   @IsBoolean()
-  readonly descending?: boolean = !!this.orderBy;
+  readonly descending?: boolean = true;
 }

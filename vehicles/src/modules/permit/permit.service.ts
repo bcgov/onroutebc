@@ -249,28 +249,36 @@ export class PermitService {
       });
     }
 
-    if (!getPermitQueryParamsDto.expired) {
+    if (getPermitQueryParamsDto.expired === true) {
       permitsQuery = permitsQuery.andWhere(
-        '(permit.permitStatus IN (:...expiredStatus)OR(permit.permitStatus = :activeStatus AND permitData.expiryDate < :expiryDate))',
-        {
-          expiredStatus: Object.values(PermitStatus).filter(
-            (x) => x != PermitStatus.ISSUED && x != PermitStatus.SUPERSEDED,
-          ),
-          activeStatus: PermitStatus.ISSUED,
-          expiryDate: new Date(),
-        },
+        new Brackets((qb) => {
+          qb.where(
+            'permit.permitStatus IN (:...expiredStatus) OR (permit.permitStatus = :activeStatus AND permitData.expiryDate < :expiryDate)',
+            {
+              expiredStatus: Object.values(PermitStatus).filter(
+                (x) => x != PermitStatus.ISSUED && x != PermitStatus.SUPERSEDED,
+              ),
+              activeStatus: PermitStatus.ISSUED,
+              expiryDate: new Date(),
+            },
+          );
+        }),
       );
     }
-    if (getPermitQueryParamsDto.expired) {
+    if (getPermitQueryParamsDto.expired === false) {
       permitsQuery = permitsQuery.andWhere(
-        '(permit.permitStatus = :activeStatus AND permitData.expiryDate >= :expiryDate)',
-        {
-          expiredStatus: Object.values(PermitStatus).filter(
-            (x) => x != PermitStatus.ISSUED && x != PermitStatus.SUPERSEDED,
-          ),
-          activeStatus: PermitStatus.ISSUED,
-          expiryDate: new Date(),
-        },
+        new Brackets((qb) => {
+          qb.where(
+            '(permit.permitStatus = :activeStatus AND permitData.expiryDate >= :expiryDate)',
+            {
+              expiredStatus: Object.values(PermitStatus).filter(
+                (x) => x != PermitStatus.ISSUED && x != PermitStatus.SUPERSEDED,
+              ),
+              activeStatus: PermitStatus.ISSUED,
+              expiryDate: new Date(),
+            },
+          );
+        }),
       );
     }
     if (getPermitQueryParamsDto.searchColumn) {
@@ -348,7 +356,7 @@ export class PermitService {
     permits: SelectQueryBuilder<Permit>,
     sortDto?: SortDto,
   ): SelectQueryBuilder<Permit> {
-    if (!sortDto) {
+    if (!sortDto.orderBy) {
       return permits;
     }
 

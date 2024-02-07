@@ -36,7 +36,10 @@ import { ResultDto } from './dto/response/result.dto';
 import { VoidPermitDto } from './dto/request/void-permit.dto';
 import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
 import { GetPermitQueryParamsDto } from './dto/request/queryParam/getPermit.query-params.dto';
-import { UserAuthGroup } from 'src/common/enum/user-auth-group.enum';
+import {
+  UserAuthGroup,
+  idirUserAuthGroupList,
+} from 'src/common/enum/user-auth-group.enum';
 
 @ApiBearerAuth()
 @ApiTags('Permit')
@@ -97,28 +100,19 @@ export class PermitController {
     @Query() getPermitQueryParamsDto: GetPermitQueryParamsDto,
   ): Promise<PaginationDto<ReadPermitDto>> {
     const currentUser = request.user as IUserJWT;
-    const companyIdNonMandatoryRoles: UserAuthGroup[] = [
-      UserAuthGroup.PPC_CLERK,
-      UserAuthGroup.SYSTEM_ADMINISTRATOR,
-      UserAuthGroup.ENFORCEMENT_OFFICER,
-      UserAuthGroup.HQ_ADMINISTRATOR,
-      UserAuthGroup.FINANCE,
-    ];
     if (
-      !companyIdNonMandatoryRoles.includes(currentUser.orbcUserAuthGroup) &&
+      !idirUserAuthGroupList.includes(currentUser.orbcUserAuthGroup) &&
       !getPermitQueryParamsDto.companyId
     ) {
       throw new BadRequestException(
-        `Company Id is required for roles except ${companyIdNonMandatoryRoles.join(', ')}.`,
+        `Company Id is required for roles except ${idirUserAuthGroupList.join(', ')}.`,
       );
     }
 
-    const userGuid = [
-      UserAuthGroup.CV_CLIENT,
-      UserAuthGroup.COMPANY_ADMINISTRATOR,
-    ].includes(currentUser.orbcUserAuthGroup)
-      ? currentUser.bceid_user_guid
-      : null;
+    const userGuid =
+      UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup
+        ? currentUser.bceid_user_guid
+        : null;
 
     return await this.permitService.findPermit(
       getPermitQueryParamsDto,
