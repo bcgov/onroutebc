@@ -7,6 +7,7 @@ import {
   Param,
   Query,
   Res,
+  BadRequestException,
 } from '@nestjs/common';
 import { PermitService } from './permit.service';
 import { ExceptionDto } from '../../common/exception/exception.dto';
@@ -29,14 +30,16 @@ import { FileDownloadModes } from '../../common/enum/file-download-modes.enum';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
-import { IDP } from 'src/common/enum/idp.enum';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import { PermitHistoryDto } from './dto/response/permit-history.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { VoidPermitDto } from './dto/request/void-permit.dto';
 import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
-import { PageOptionsDto } from 'src/common/dto/paginate/page-options';
-import { SortDto } from '../common/dto/request/sort.dto';
+import { GetPermitQueryParamsDto } from './dto/request/queryParam/getPermit.query-params.dto';
+import {
+  UserAuthGroup,
+  idirUserAuthGroupList,
+} from 'src/common/enum/user-auth-group.enum';
 
 @ApiBearerAuth()
 @ApiTags('Permit')
@@ -76,11 +79,11 @@ export class PermitController {
     isArray: true,
   })
   @Roles(Role.READ_PERMIT)
-  @Get('history')
+  @Get('/:permitId/history')
   async getPermitHisory(
-    @Query('originalId') originalId: string,
+    @Param('permitId') permitId: string,
   ): Promise<PermitHistoryDto[]> {
-    return this.permitService.findPermitHistory(originalId);
+    return this.permitService.findPermitHistory(permitId);
   }
 
   /**
@@ -89,48 +92,31 @@ export class PermitController {
    * @param status if true get active permits else get others
    *
    */
-  @ApiQuery({ name: 'companyId', required: false })
-  @ApiQuery({ name: 'expired', required: false, example: 'true' })
-  @ApiQuery({
-    name: 'sorting',
-    required: false,
-    example:
-      '[{"orderBy":"unitNumber","descending":false},{"orderBy":"permitType","descending":false}]',
-  })
-  @ApiQuery({ name: 'searchColumn', required: false, example: 'permitNumber' })
-  @ApiQuery({
-    name: 'searchString',
-    required: false,
-    example: 'P0-08000508-500',
-  })
   @ApiPaginatedResponse(ReadPermitDto)
   @Roles(Role.READ_PERMIT)
   @Get()
   async getPermit(
     @Req() request: Request,
-    @Query('companyId') companyId: number,
-    @Query('expired') expired: string,
-    @Query() pageOptionsDto: PageOptionsDto,
-    @Query('sorting') sorting?: string,
-    @Query('searchColumn') searchColumn?: string,
-    @Query('searchString') searchString?: string,
+    @Query() getPermitQueryParamsDto: GetPermitQueryParamsDto,
   ): Promise<PaginationDto<ReadPermitDto>> {
     const currentUser = request.user as IUserJWT;
-    let sortDto: SortDto[] = [];
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    if (sorting) sortDto = JSON.parse(sorting);
+    if (
+      !idirUserAuthGroupList.includes(currentUser.orbcUserAuthGroup) &&
+      !getPermitQueryParamsDto.companyId
+    ) {
+      throw new BadRequestException(
+        `Company Id is required for roles except ${idirUserAuthGroupList.join(', ')}.`,
+      );
+    }
+
     const userGuid =
-      currentUser.identity_provider === IDP.BCEID
+      UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup
         ? currentUser.bceid_user_guid
         : null;
+
     return await this.permitService.findPermit(
-      pageOptionsDto,
+      getPermitQueryParamsDto,
       userGuid,
-      companyId,
-      expired,
-      searchColumn,
-      searchString,
-      sortDto,
     );
   }
 

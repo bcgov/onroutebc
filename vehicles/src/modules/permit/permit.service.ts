@@ -59,12 +59,12 @@ import {
   getPaymentCodeFromCache,
 } from '../../common/helper/payment.helper';
 import { PaymentMethodType } from 'src/common/enum/payment-method-type.enum';
-import { PageOptionsDto } from 'src/common/dto/paginate/page-options';
 import { PageMetaDto } from 'src/common/dto/paginate/page-meta';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
-import { SortDto } from '../common/dto/request/sort.dto';
 import * as constants from '../../common/constants/api.constant';
 import { PermitApprovalSource } from '../../common/enum/permit-approval-source.enum';
+import { GetPermitQueryParamsDto } from './dto/request/queryParam/getPermit.query-params.dto';
+import { OrderBy } from '../../common/enum/orderBy.enum';
 
 @Injectable()
 export class PermitService {
@@ -207,38 +207,28 @@ export class PermitService {
    */
   @LogAsyncMethodExecution()
   public async findPermit(
-    pageOptionsDto: PageOptionsDto,
+    getPermitQueryParamsDto: GetPermitQueryParamsDto,
     userGUID: string,
-    companyId: number,
-    expired: string,
-    searchColumn?: string,
-    searchString?: string,
-    sortDto?: SortDto[],
   ): Promise<PaginationDto<ReadPermitDto>> {
-    const permits = this.buildPermitQuery(
-      pageOptionsDto,
-      userGUID,
-      companyId,
-      expired,
-      searchColumn,
-      searchString,
+    const permitsQB = this.buildPermitQuery(getPermitQueryParamsDto, userGUID);
+    const sortedPermits = this.sortPermits(
+      permitsQB,
+      getPermitQueryParamsDto.orderBy,
     );
-    const sortedPermits = this.sortPermits(permits, sortDto);
     const totalItems = await sortedPermits.getCount();
-    const { entities } = await permits.getRawAndEntities();
-    const pageMetaDto = new PageMetaDto({ totalItems, pageOptionsDto });
+    const permits = await permitsQB.getMany();
+    const pageMetaDto = new PageMetaDto({
+      totalItems,
+      pageOptionsDto: getPermitQueryParamsDto,
+    });
     const readPermitDto: ReadPermitDto[] =
-      await this.mapEntitiesToReadPermitDto(entities);
+      await this.mapEntitiesToReadPermitDto(permits);
     return new PaginationDto(readPermitDto, pageMetaDto);
   }
 
   private buildPermitQuery(
-    pageOptionsDto: PageOptionsDto,
+    getPermitQueryParamsDto: GetPermitQueryParamsDto,
     userGUID: string,
-    companyId: number,
-    expired?: string,
-    searchColumn?: string,
-    searchString?: string,
   ): SelectQueryBuilder<Permit> {
     let permitsQuery = this.permitRepository
       .createQueryBuilder('permit')
@@ -247,9 +237,9 @@ export class PermitService {
     // Apply conditions based on parameters
     permitsQuery = permitsQuery.where('permit.permitNumber IS NOT NULL');
 
-    if (companyId) {
+    if (getPermitQueryParamsDto.companyId) {
       permitsQuery = permitsQuery.andWhere('permit.companyId = :companyId', {
-        companyId,
+        companyId: getPermitQueryParamsDto.companyId,
       });
     }
 
@@ -259,72 +249,96 @@ export class PermitService {
       });
     }
 
-    if (expired?.toLowerCase() === 'true') {
+    if (getPermitQueryParamsDto.expired === true) {
       permitsQuery = permitsQuery.andWhere(
-        '(permit.permitStatus IN (:...expiredStatus)OR(permit.permitStatus = :activeStatus AND permitData.expiryDate < :expiryDate))',
-        {
-          expiredStatus: Object.values(PermitStatus).filter(
-            (x) => x != PermitStatus.ISSUED && x != PermitStatus.SUPERSEDED,
-          ),
-          activeStatus: PermitStatus.ISSUED,
-          expiryDate: new Date(),
-        },
+        new Brackets((qb) => {
+          qb.where(
+            'permit.permitStatus IN (:...expiredStatus) OR (permit.permitStatus = :activeStatus AND permitData.expiryDate < :expiryDate)',
+            {
+              expiredStatus: Object.values(PermitStatus).filter(
+                (x) => x != PermitStatus.ISSUED && x != PermitStatus.SUPERSEDED,
+              ),
+              activeStatus: PermitStatus.ISSUED,
+              expiryDate: new Date(),
+            },
+          );
+        }),
       );
     }
-    if (expired?.toLowerCase() === 'false') {
+    if (getPermitQueryParamsDto.expired === false) {
       permitsQuery = permitsQuery.andWhere(
-        '(permit.permitStatus = :activeStatus AND permitData.expiryDate >= :expiryDate)',
-        {
-          expiredStatus: Object.values(PermitStatus).filter(
-            (x) => x != PermitStatus.ISSUED && x != PermitStatus.SUPERSEDED,
-          ),
-          activeStatus: PermitStatus.ISSUED,
-          expiryDate: new Date(),
-        },
+        new Brackets((qb) => {
+          qb.where(
+            '(permit.permitStatus = :activeStatus AND permitData.expiryDate >= :expiryDate)',
+            {
+              expiredStatus: Object.values(PermitStatus).filter(
+                (x) => x != PermitStatus.ISSUED && x != PermitStatus.SUPERSEDED,
+              ),
+              activeStatus: PermitStatus.ISSUED,
+              expiryDate: new Date(),
+            },
+          );
+        }),
       );
     }
-    if (searchColumn) {
-      if (searchColumn.toLowerCase() === 'plate') {
+    if (getPermitQueryParamsDto.searchColumn) {
+      if (getPermitQueryParamsDto.searchColumn?.toLowerCase() === 'plate') {
         permitsQuery = permitsQuery.andWhere(
-          `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like '%${searchString}%'`,
+          `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like '%${getPermitQueryParamsDto.searchString}%'`,
         );
       }
-      if (searchColumn.toLowerCase() === 'permitnumber') {
+      if (
+        getPermitQueryParamsDto.searchColumn.toLowerCase() === 'permitnumber'
+      ) {
         permitsQuery = permitsQuery.andWhere(
           new Brackets((query) => {
             query
-              .where(`permit.permitNumber like '%${searchString}%'`)
-              .orWhere(`permit.migratedPermitNumber like '%${searchString}%'`);
+              .where(
+                `permit.permitNumber like '%${getPermitQueryParamsDto.searchString}%'`,
+              )
+              .orWhere(
+                `permit.migratedPermitNumber like '%${getPermitQueryParamsDto.searchString}%'`,
+              );
           }),
         );
       }
-      if (searchColumn.toLowerCase() === 'clientnumber') {
+      if (
+        getPermitQueryParamsDto.searchColumn.toLowerCase() === 'clientnumber'
+      ) {
         permitsQuery = permitsQuery.andWhere(
-          `JSON_VALUE(permitData.permitData, '$.clientNumber') like '%${searchString}%'`,
+          `JSON_VALUE(permitData.permitData, '$.clientNumber') like '%${getPermitQueryParamsDto.searchString}%'`,
         );
       }
-      if (searchColumn.toLowerCase() === 'companyname') {
+      if (
+        getPermitQueryParamsDto.searchColumn.toLowerCase() === 'companyname'
+      ) {
         permitsQuery = permitsQuery.andWhere(
-          `JSON_VALUE(permitData.permitData, '$.companyName') like '%${searchString}%'`,
+          `JSON_VALUE(permitData.permitData, '$.companyName') like '%${getPermitQueryParamsDto.searchString}%'`,
         );
       }
-      if (searchColumn.toLowerCase() === 'applicationnumber') {
+      if (
+        getPermitQueryParamsDto.searchColumn.toLowerCase() ===
+        'applicationnumber'
+      ) {
         permitsQuery = permitsQuery.andWhere(
-          `permit.applicationNumber like '%${searchString}%'`,
+          `permit.applicationNumber like '%${getPermitQueryParamsDto.searchString}%'`,
         );
       }
     }
 
     // Handle searchString only
-    if (!searchColumn && searchString) {
+    if (
+      !getPermitQueryParamsDto.searchColumn &&
+      getPermitQueryParamsDto.searchString
+    ) {
       permitsQuery = permitsQuery.andWhere(
         new Brackets((query) => {
           query
             .where(
-              `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like '%${searchString}%'`,
+              `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like '%${getPermitQueryParamsDto.searchString}%'`,
             )
             .orWhere(
-              `JSON_VALUE(permitData.permitData, '$.vehicleDetails.unitNumber') like '%${searchString}%'`,
+              `JSON_VALUE(permitData.permitData, '$.vehicleDetails.unitNumber') like '%${getPermitQueryParamsDto.searchString}%'`,
             );
         }),
       );
@@ -332,21 +346,25 @@ export class PermitService {
 
     // Apply pagination
     permitsQuery = permitsQuery
-      .skip((pageOptionsDto.page - 1) * pageOptionsDto.take)
-      .take(pageOptionsDto.take);
+      .skip((getPermitQueryParamsDto.page - 1) * getPermitQueryParamsDto.take)
+      .take(getPermitQueryParamsDto.take);
 
     return permitsQuery;
   }
 
   private sortPermits(
     permits: SelectQueryBuilder<Permit>,
-    sortDto?: SortDto[],
+    orderBy?: string,
   ): SelectQueryBuilder<Permit> {
-    if (!sortDto || sortDto.length === 0) {
+    if (!orderBy) {
       return permits;
     }
 
-    sortDto.forEach((value, index) => {
+    const orderByList = orderBy?.split(',') || [];
+
+    orderByList.forEach((orderByVal, index) => {
+      const [orderByKey, sortDirection] = orderByVal?.split(':') || [];
+
       const orderByMapping: Record<string, string> = {
         permitNumber: 'permit.permitNumber',
         permitType: 'permit.permitType',
@@ -357,18 +375,18 @@ export class PermitService {
         applicant: 'permitData.applicant',
       };
 
-      const orderByKey = orderByMapping[value.orderBy];
+      const orderByValue = orderByMapping[orderByKey];
 
-      if (orderByKey) {
-        const orderBy = value.descending ? 'DESC' : 'ASC';
+      if (orderByValue) {
+        const sortDirectionVal =
+          sortDirection === OrderBy.ASCENDING.valueOf() ? 'ASC' : 'DESC';
         if (index === 0) {
-          permits.orderBy(orderByKey, orderBy);
+          permits.orderBy(orderByValue, sortDirectionVal);
         } else {
-          permits.addOrderBy(orderByKey, orderBy);
+          permits.addOrderBy(orderByValue, sortDirectionVal);
         }
       }
     });
-
     return permits;
   }
 
