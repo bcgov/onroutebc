@@ -11,6 +11,7 @@ import { PageOptionsDto } from '../../../../../common/dto/paginate/page-options'
 import { Transform, Type } from 'class-transformer';
 import { idirUserAuthGroupList } from '../../../../../common/enum/user-auth-group.enum';
 import { PermitsOrderByConstraint } from '../../../../../common/constraint/permits-orderby.constraint';
+import { PermitOrderBy } from '../../../../../common/enum/permit-orderBy.enum';
 
 export class GetPermitQueryParamsDto extends PageOptionsDto {
   @ApiProperty({
@@ -57,6 +58,17 @@ export class GetPermitQueryParamsDto extends PageOptionsDto {
 
   @ApiProperty({
     example: 'permitNumber:DESC,permitType:ASC',
+    description:
+      'A string defining the sort order for query results. ' +
+      'If `orderBy` is undefined, the results remain unordered. ' +
+      'Each rule consists of a field name and an optional sort direction, separated by a colon. ' +
+      'Field names are case-sensitive and must match those defined in the schema. ' +
+      'Sort directions can be "ASC" for ascending or "DESC" for descending. ' +
+      'Default sort direction if undefined, default will be DESC. ' +
+      'Multiple sorting rules can be combined using commas. ' +
+      `sortField can have values ${Object.values(PermitOrderBy).join(', ')}. ` +
+      'Syntax: <sortField:sortDirection,sortField:sortDirection>',
+
     required: false,
   })
   @IsOptional()
