@@ -102,7 +102,7 @@ export const getApplicationsInProgress = async ({
   PaginatedResponse<PermitApplicationInProgress>
 > => {
   const companyId = getCompanyIdFromSession();
-  const applicationsURL = new URL(APPLICATIONS_API_ROUTES.IN_PROGRESS);
+  const applicationsURL = new URL(APPLICATIONS_API_ROUTES.GET);
   if (companyId) {
     applicationsURL.searchParams.set("companyId", companyId);
   }
@@ -114,7 +114,7 @@ export const getApplicationsInProgress = async ({
     applicationsURL.searchParams.set("searchString", searchString);
   }
   if (orderBy.length > 0) {
-    applicationsURL.searchParams.set("sorting", stringifyOrderBy(orderBy));
+    applicationsURL.searchParams.set("orderBy", stringifyOrderBy(orderBy));
   }
 
   const applications = await httpGETRequest(applicationsURL.toString())

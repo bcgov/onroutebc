@@ -235,7 +235,7 @@ export const getLabelForBCeIDUserAuthGroup = (
  *
  * @param sortArray The sorting state of type MRT_SortingState provided
  *                  by Material React Table.
- * @returns A string;
+ * @returns A string of the format: "column1:DESC,column2:ASC"
  *
  */
 export const stringifyOrderBy = (sortArray: SortingConfig[]): string => {
