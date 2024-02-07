@@ -240,8 +240,8 @@ export const getLabelForBCeIDUserAuthGroup = (
  */
 export const stringifyOrderBy = (sortArray: SortingConfig[]): string => {
   return sortArray
-    .map(({ descending, column: orderBy }) => {
-      const stringifiedValue = orderBy + ":";
+    .map(({ descending, column }) => {
+      const stringifiedValue = `${column}:`;
       if (descending) {
         return stringifiedValue.concat(SORT_DIRECTIONS.DESCENDING);
       } else {
