@@ -23,7 +23,6 @@ import {
 const PATH_DELIM = "?";
 
 export const parseRedirectUriPath = (path?: Nullable<string>) => {
-  console.log(path)
   const splitPath = path?.split(PATH_DELIM);
   let trnApproved = 0;
 
@@ -31,7 +30,6 @@ export const parseRedirectUriPath = (path?: Nullable<string>) => {
     trnApproved = parseInt(splitPath[1]?.split("=")?.[1]);
   }
 
-  console.log('trnApproved', trnApproved)
   return trnApproved;
 };
 
@@ -97,15 +95,13 @@ export const PaymentRedirect = () => {
           }
         })
       }).finally(() => {
-        console.log('setting application ids to', ids)
         setApplicationIds(ids);
       })
 
   }, [transactionId]);
 
   useEffect(() => {
-    console.log('applicationIds', applicationIds)
-    if (issuedPermit.current === false) {
+    if (applicationIds?.length > 0 && issuedPermit.current === false) {
 
       if (applicationIds?.length === 0) {
         // permit ids should not be empty, if so then something went wrong
