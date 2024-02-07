@@ -91,22 +91,15 @@ export const isValidTransaction = (
 };
 
 /**
- * Fetch application by its permit id.
- * @param permitId permit id of the application to fetch
- * @returns ApplicationResponse data as response, or null if fetch failed
+ * Fetch payment information by transaction id.
+ * @param transactionId transaction id of the payment details to fetch
+ * @returns PaymentTransaction data as response, or null if fetch failed
  */
 export const getPaymentByTransactionId = async (
   transactionId?: string,
 ): Promise<RequiredOrNull<PaymentTransaction>> => {
   try {
-    //const companyId = getCompanyIdFromSession();
     const url = `${PAYMENT_API_ROUTES.GET}/${transactionId}`;
-    //if (companyId) {
-    //  url += `?companyId=${companyId}`;
-    //}
-
-    console.log('url', url)
-
     const response = await httpGETRequest(url);
     return response.data;
   } catch (err) {
