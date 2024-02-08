@@ -1,13 +1,4 @@
-import {
-  BadRequestException,
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Query,
-  Req,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Req } from '@nestjs/common';
 
 import {
   ApiBadRequestResponse,
@@ -33,6 +24,7 @@ import { ReadUserDto } from './dto/response/read-user.dto';
 import { IDP } from '../../../common/enum/idp.enum';
 import { ReadVerifyClientDto } from './dto/response/read-verify-client.dto';
 import { VerifyClientDto } from './dto/request/verify-client.dto';
+import { GetStaffUserQueryParamsDto } from './dto/request/queryParam/getStaffUser.query-params.dto';
 
 @ApiTags('Company and User Management - User')
 @ApiBadRequestResponse({
@@ -142,34 +134,18 @@ export class UsersController {
     type: ReadUserDto,
     isArray: true,
   })
-  @ApiQuery({ name: 'companyId', required: false })
-  @ApiQuery({ name: 'permitIssuerPPCUser', required: false })
   @Roles(Role.READ_USER)
   @Get()
   async findAll(
-    @Req() request: Request,
-    @Query('companyId') companyId?: number,
-    @Query('permitIssuerPPCUser') permitIssuerPPCUser?: boolean,
+    @Query() getStaffUserQueryParamsDto?: GetStaffUserQueryParamsDto,
   ): Promise<ReadUserDto[]> {
-    const currentUser = request.user as IUserJWT;
-    if (
-      currentUser.identity_provider === IDP.IDIR &&
-      !companyId &&
-      !permitIssuerPPCUser
-    ) {
-      throw new BadRequestException();
-    } else if (
-      currentUser.identity_provider === IDP.IDIR &&
-      !companyId &&
-      permitIssuerPPCUser
-    ) {
+    if (getStaffUserQueryParamsDto.permitIssuerPPCUser) {
       return await this.userService.findPermitIssuerPPCUser();
     }
 
-    const companyIdList = companyId
-      ? [companyId]
-      : currentUser.associatedCompanies;
-    return await this.userService.findUsersDto(undefined, companyIdList);
+    return await this.userService.findIdirUsers(
+      getStaffUserQueryParamsDto.userAuthGroup,
+    );
   }
 
   /**
@@ -199,7 +175,7 @@ export class UsersController {
         currentUser.associatedCompanies,
       );
     } else {
-      users.push(await this.userService.findIdirUser(userGUID));
+      users.push(await this.userService.findOneIdirUser(userGUID));
     }
     if (!users?.length) {
       throw new DataNotFoundException();

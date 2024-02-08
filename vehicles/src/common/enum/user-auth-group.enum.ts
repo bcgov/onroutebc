@@ -18,3 +18,11 @@ export const idirUserAuthGroupList: readonly UserAuthGroup[] = [
   UserAuthGroup.HQ_ADMINISTRATOR,
   UserAuthGroup.FINANCE,
 ];
+
+export enum IDIRUserAuthGroup {
+  PPC_CLERK = 'PPCCLERK',
+  SYSTEM_ADMINISTRATOR = 'SYSADMIN',
+  ENFORCEMENT_OFFICER = 'EOFFICER',
+  HQ_ADMINISTRATOR = 'HQADMIN',
+  FINANCE = 'FINANCE',
+}

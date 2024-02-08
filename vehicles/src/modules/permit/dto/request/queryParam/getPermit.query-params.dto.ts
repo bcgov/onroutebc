@@ -39,6 +39,7 @@ export class GetPermitQueryParamsDto extends PageOptionsDto {
   })
   @IsBoolean()
   expired?: boolean;
+
   @ApiProperty({
     description: `The search parameter to filter the results. This field is optional. Available values are: ${Object.values(PermitSearch).join(', ')}`,
     enum: PermitSearch,
