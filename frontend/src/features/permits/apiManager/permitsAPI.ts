@@ -505,10 +505,25 @@ export const voidPermit = async (voidPermitParams: {
  * @returns response with amended permit data, or error if failed
  */
 export const amendPermit = async (permit: Permit) => {
+  const {
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    permitNumber, 
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    createdDateTime,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    updatedDateTime,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    documentId,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    permitStatus,
+    ...remainingFields
+  } = permit;
+
   return await httpPOSTRequest(
     PERMITS_API_ROUTES.AMEND,
     replaceEmptyValuesWithNull({
-      ...permit,
+      ...remainingFields,
+      permitId: `${remainingFields.permitId}`,
     }),
   );
 };
