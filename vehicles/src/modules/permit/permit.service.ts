@@ -574,7 +574,7 @@ export class PermitService {
       newPermit.issuerUserGuid = currentUser.userGUID;
       newPermit.permitIssueDateTime = new Date();
       newPermit.revision = permit.revision + 1;
-      newPermit.previousRevision = +permitId;
+      newPermit.previousRevision = permitId;
       newPermit.comment = voidPermitDto.comment;
       newPermit = Object.assign(newPermit, userMetadata);
 

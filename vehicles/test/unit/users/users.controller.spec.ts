@@ -70,10 +70,9 @@ describe('UsersController', () => {
       const currentUser = request.user as IUserJWT;
 
       userService.getRolesForUser.mockResolvedValue(currentUser.roles);
-      const retUserRoles = await controller.getRolesForUsers(
-        request,
-        constants.RED_COMPANY_ID,
-      );
+      const retUserRoles = await controller.getRolesForUsers(request, {
+        companyId: constants.RED_COMPANY_ID,
+      });
       expect(typeof retUserRoles).toBe('object');
 
       expect(userService.getRolesForUser).toHaveBeenCalledWith(
