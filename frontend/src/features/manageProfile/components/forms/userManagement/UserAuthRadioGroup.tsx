@@ -6,13 +6,13 @@ import {
   RadioGroup,
 } from "@mui/material";
 import { CustomInputHTMLAttributes } from "../../../../../common/types/formElements";
-import { BCEID_AUTH_GROUP } from "../../../types/userManagement.d";
 import "../myInfo/MyInfoForm.scss";
 import {
   ControllerFieldState,
   ControllerRenderProps,
   FieldValues,
 } from "react-hook-form";
+import { BCeID_USER_AUTH_GROUP } from "../../../../../common/authentication/types";
 
 /**
  * A reusable react component for capturing user auth group in add/edit user forms.
@@ -33,7 +33,7 @@ export const UserAuthRadioGroup = ({
         aria-labelledby="radio-buttons-group-label"
       >
         <FormControlLabel
-          value={BCEID_AUTH_GROUP.ORGADMIN}
+          value={BCeID_USER_AUTH_GROUP.COMPANY_ADMINISTRATOR}
           control={
             <Radio
               key={`radio-bceid-administrator`}
@@ -47,7 +47,7 @@ export const UserAuthRadioGroup = ({
           label="Administrator"
         />
         <FormControlLabel
-          value={BCEID_AUTH_GROUP.CVCLIENT}
+          value={BCeID_USER_AUTH_GROUP.CV_CLIENT}
           control={
             <Radio
               key={`radio-bceid-permit-applicant`}

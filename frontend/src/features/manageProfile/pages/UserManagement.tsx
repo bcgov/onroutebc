@@ -19,12 +19,12 @@ import { Trash } from "../../../common/components/table/options/Trash";
 import { getCompanyUsers } from "../apiManager/manageProfileAPI";
 import { UserManagementTableRowActions } from "../components/user-management/UserManagementRowOptions";
 import { UserManagementColumnsDefinition } from "../types/UserManagementColumns";
-import { BCeIDUserStatus, ReadCompanyUser } from "../types/userManagement.d";
 import {
   defaultTableOptions,
   defaultTableInitialStateOptions,
   defaultTableStateOptions,
 } from "../../../common/helpers/tableHelper";
+import { BCeID_USER_STATUS, ReadUserInformationResponse } from "../types/manageProfile.d";
 
 /**
  * User Management Component for CV Client.
@@ -94,23 +94,27 @@ export const UserManagement = () => {
       isLoading: isLoading,
       rowSelection: rowSelection,
     },
+    enableGlobalFilter: false,
     renderEmptyRowsFallback: () => <NoRecordsFound />,
-    enableRowSelection: (row: MRT_Row<ReadCompanyUser>): boolean => {
+    enableRowSelection: (
+      row: MRT_Row<ReadUserInformationResponse>,
+    ): boolean => {
       if (row?.original?.userGUID === userFromToken?.profile?.bceid_user_guid) {
         return false;
       }
       return true;
     },
     onRowSelectionChange: setRowSelection,
-    getRowId: (originalRow: ReadCompanyUser) => originalRow.userName,
+    getRowId: (originalRow: ReadUserInformationResponse) =>
+      originalRow.userName,
     displayColumnDefOptions: {
       "mrt-row-actions": {
         header: "",
       },
     },
     renderRowActions: useCallback(
-      ({ row }: { row: MRT_Row<ReadCompanyUser> }) => {
-        if (row.original.statusCode === BCeIDUserStatus.ACTIVE) {
+      ({ row }: { row: MRT_Row<ReadUserInformationResponse> }) => {
+        if (row.original.statusCode === BCeID_USER_STATUS.ACTIVE) {
           return (
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
               <UserManagementTableRowActions userGUID={row.original.userGUID} />

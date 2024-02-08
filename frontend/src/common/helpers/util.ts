@@ -1,4 +1,14 @@
-import { Nullable, Optional, RequiredOrNull } from "../types/common";
+import {
+  BCeIDUserAuthGroupType,
+  BCeID_USER_AUTH_GROUP,
+} from "../authentication/types";
+import {
+  Nullable,
+  Optional,
+  RequiredOrNull,
+  SORT_DIRECTIONS,
+  SortingConfig,
+} from "../types/common";
 
 /**
  * Remove all the null, undefined and empty fields (including arrays).
@@ -204,4 +214,39 @@ export const convertToNumberIfValid = (
   return str != null && str !== "" && !isNaN(Number(str))
     ? Number(str)
     : valueToReturnWhenInvalid;
+};
+
+/**
+ * Returns a label for the userAuthGroup.
+ * @param userAuthGroup The userAuthGroup the user belongs to.
+ * @returns A string representing the label of the user.
+ */
+export const getLabelForBCeIDUserAuthGroup = (
+  userAuthGroup: BCeIDUserAuthGroupType,
+): string => {
+  if (userAuthGroup === BCeID_USER_AUTH_GROUP.COMPANY_ADMINISTRATOR) {
+    return "Administrator";
+  }
+  return "Permit Applicant";
+};
+
+/**
+ * Converts sorting state to a format that APIs accept.
+ *
+ * @param sortArray The sorting state of type MRT_SortingState provided
+ *                  by Material React Table.
+ * @returns A string of the format: "column1:DESC,column2:ASC"
+ *
+ */
+export const stringifyOrderBy = (sortArray: SortingConfig[]): string => {
+  return sortArray
+    .map(({ descending, column }) => {
+      const stringifiedValue = `${column}:`;
+      if (descending) {
+        return stringifiedValue.concat(SORT_DIRECTIONS.DESCENDING);
+      } else {
+        return stringifiedValue.concat(SORT_DIRECTIONS.ASCENDING);
+      }
+    }) // Output of map function: ["column1:DESC","column2:ASC"]
+    .join(","); // Output of join: "column1:DESC,column2:ASC"
 };
