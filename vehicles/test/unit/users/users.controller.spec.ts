@@ -4,22 +4,16 @@ import { DataNotFoundException } from '../../../src/common/exception/data-not-fo
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Request } from 'express';
 
-import {
-  redCompanyAdminUserJWTMock,
-  sysAdminStaffUserJWTMock,
-} from '../../util/mocks/data/jwt.mock';
+import { redCompanyAdminUserJWTMock } from '../../util/mocks/data/jwt.mock';
 import * as constants from '../../util/mocks/data/test-data.constants';
 import { UsersController } from '../../../src/modules/company-user-management/users/users.controller';
 import { UsersService } from '../../../src/modules/company-user-management/users/users.service';
 import {
   USER_DTO_LIST,
   readRedAdminUserOrbcStatusDtoMock,
-  readRedCompanyAdminUserDtoMock,
   readSysAdminStaffUserDtoMock,
 } from '../../util/mocks/data/user.mock';
 import { IUserJWT } from '../../../src/common/interface/user-jwt.interface';
-
-import { BadRequestException } from '@nestjs/common';
 import { GetStaffUserQueryParamsDto } from '../../../src/modules/company-user-management/users/dto/request/queryParam/getStaffUser.query-params.dto';
 import { IDIRUserAuthGroup } from '../../../src/common/enum/user-auth-group.enum';
 
