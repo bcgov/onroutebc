@@ -450,7 +450,7 @@ export const getPermitHistory = async (originalPermitId?: string) => {
     if (!originalPermitId) return [];
 
     const response = await httpGETRequest(
-      `${PERMITS_API_ROUTES.HISTORY}?originalId=${originalPermitId}`,
+      `${PERMITS_API_ROUTES.BASE}/${originalPermitId}/history`,
     );
 
     if (response.status === 200) {
