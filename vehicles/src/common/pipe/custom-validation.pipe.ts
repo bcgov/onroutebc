@@ -26,7 +26,7 @@ export function exceptionFactory(errors: ValidationError[]) {
     const childErrors = findChildErrors(error);
     childErrors.forEach((childError) => {
       const badRequestExceptionDto = new BadRequestExceptionDto();
-      badRequestExceptionDto.field = childError?.property
+      badRequestExceptionDto.field = error?.children?.length
         ? error?.property?.concat('.', childError?.property?.toString())
         : error?.property;
       badRequestExceptionDto.message = Object.values(
