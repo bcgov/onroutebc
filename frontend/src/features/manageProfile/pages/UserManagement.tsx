@@ -94,6 +94,7 @@ export const UserManagement = () => {
       isLoading: isLoading,
       rowSelection: rowSelection,
     },
+    enableGlobalFilter: false,
     renderEmptyRowsFallback: () => <NoRecordsFound />,
     enableRowSelection: (
       row: MRT_Row<ReadUserInformationResponse>,
