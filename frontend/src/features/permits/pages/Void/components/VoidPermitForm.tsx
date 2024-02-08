@@ -142,7 +142,7 @@ export const VoidPermitForm = ({
                   required: false,
                   validate: {
                     validateEmail: (email: string) =>
-                      isEmail(email) || invalidEmail(),
+                      email.length === 0 || isEmail(email) || invalidEmail(),
                   },
                 },
                 label: "Additional Email",
