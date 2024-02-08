@@ -77,7 +77,6 @@ export class CreateApplicationDto {
   })
   @IsOptional()
   @IsNumber()
-  @MaxLength(3)
   revision?: number;
 
   @AutoMap()
