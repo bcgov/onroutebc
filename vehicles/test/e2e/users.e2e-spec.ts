@@ -28,7 +28,6 @@ import {
   idirUserEntityMock,
   readRedCompanyAdminUserDtoMock,
   redCompanyAdminUserEntityMock,
-  redCompanyCvClientUserEntityMock,
   sysAdminStaffUserEntityMock,
 } from '../util/mocks/data/user.mock';
 import { createMapper } from '@automapper/core';
@@ -155,9 +154,7 @@ describe('Users (e2e)', () => {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         .mockImplementation(() =>
           // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-          createQueryBuilderMock([
-            sysAdminStaffUserEntityMock,
-          ]),
+          createQueryBuilderMock([sysAdminStaffUserEntityMock]),
         );
 
       const response = await request(app.getHttpServer() as unknown as App)

@@ -76,7 +76,7 @@ export class CreateApplicationDto {
     required: false,
   })
   @IsOptional()
-  @IsNumberString()
+  @IsNumber()
   @MaxLength(3)
   revision?: number;
 
