@@ -21,10 +21,7 @@ import {
   createQueryBuilderMock,
   dataSourceMockFactory,
 } from '../util/mocks/factory/dataSource.factory.mock';
-import {
-  redCompanyAdminUserJWTMock,
-  sysAdminStaffUserJWTMock,
-} from '../util/mocks/data/jwt.mock';
+import { redCompanyAdminUserJWTMock } from '../util/mocks/data/jwt.mock';
 import { TestUserMiddleware } from './test-user.middleware';
 import { AddressProfile } from '../../src/modules/common/profiles/address.profile';
 import { ContactProfile } from '../../src/modules/common/profiles/contact.profile';
@@ -115,34 +112,6 @@ describe('Company (e2e)', () => {
 
       const response = await request(app.getHttpServer() as unknown as App)
         .get('/companies/meta-data')
-        .expect(200);
-
-      expect(response.body).toContainEqual(readRedCompanyMetadataDtoMock);
-    });
-    it('should throw a forbidden exception when user is not READ_ORG and userGUID is passed as Query Param', async () => {
-      const PARAMS = { userGUID: constants.RED_COMPANY_ADMIN_USER_GUID };
-      findCompanywithParams(PARAMS);
-
-      TestUserMiddleware.testUser = redCompanyAdminUserJWTMock;
-
-      await request(app.getHttpServer() as unknown as App)
-        .get(
-          '/companies/meta-data?userGUID=' +
-            constants.RED_COMPANY_ADMIN_USER_GUID,
-        )
-        .expect(403);
-    });
-    it('should return an array of company metadata associated with the userGUID Query Param when logged in as Staff', async () => {
-      const PARAMS = { userGUID: constants.RED_COMPANY_ADMIN_USER_GUID };
-      findCompanywithParams(PARAMS);
-
-      TestUserMiddleware.testUser = sysAdminStaffUserJWTMock;
-
-      const response = await request(app.getHttpServer() as unknown as App)
-        .get(
-          '/companies/meta-data?userGUID=' +
-            constants.RED_COMPANY_ADMIN_USER_GUID,
-        )
         .expect(200);
 
       expect(response.body).toContainEqual(readRedCompanyMetadataDtoMock);

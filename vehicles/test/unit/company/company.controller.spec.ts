@@ -111,10 +111,7 @@ describe('CompanyController', () => {
       companyService.findCompanyMetadataByUserGuid.mockResolvedValue([
         readRedCompanyMetadataDtoMock,
       ]);
-      const retCompanyMetadata = await controller.getCompanyMetadata(
-        request,
-        constants.RED_COMPANY_ADMIN_USER_GUID,
-      );
+      const retCompanyMetadata = await controller.getCompanyMetadata(request);
       expect(typeof retCompanyMetadata).toBe('object');
       expect(retCompanyMetadata).toContainEqual(readRedCompanyMetadataDtoMock);
       expect(retCompanyMetadata.length).toBe(1);
@@ -125,10 +122,7 @@ describe('CompanyController', () => {
       request.user = sysAdminStaffUserJWTMock;
       companyService.findCompanyMetadataByUserGuid.mockResolvedValue(undefined);
       await expect(async () => {
-        await controller.getCompanyMetadata(
-          request,
-          'CC7C7C0CB561437E98CB71A6B1036517',
-        );
+        await controller.getCompanyMetadata(request);
       }).rejects.toThrow(DataNotFoundException);
     });
   });

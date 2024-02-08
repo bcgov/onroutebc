@@ -7,7 +7,6 @@ import {
   Put,
   Query,
   Req,
-  ForbiddenException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { CompanyService } from './company.service';
@@ -19,7 +18,6 @@ import {
   ApiMethodNotAllowedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
-  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
@@ -34,7 +32,6 @@ import { Roles } from '../../../common/decorator/roles.decorator';
 import { Role } from '../../../common/enum/roles.enum';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
-import { IDP } from '../../../common/enum/idp.enum';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import { ApiPaginatedResponse } from '../../../common/decorator/api-paginate-response';
 import { GetCompanyQueryParamsDto } from './dto/request/queryParam/getCompany.query-params.dto';
@@ -133,24 +130,16 @@ export class CompanyController {
     type: ReadCompanyMetadataDto,
     isArray: true,
   })
-  @ApiQuery({ name: 'userGUID', required: false })
   @Roles(Role.READ_ORG)
   @Get('meta-data')
   async getCompanyMetadata(
     @Req() request: Request,
-    @Query('userGUID') userGUID?: string,
   ): Promise<ReadCompanyMetadataDto[]> {
     const currentUser = request.user as IUserJWT;
-    // Only IDIR users can call this endpoint with an arbitrary
-    // userGUID - other users must use the userGUID from their own
-    // token.
-    if (userGUID && currentUser.identity_provider !== IDP.IDIR) {
-      throw new ForbiddenException();
-    }
 
-    userGUID = userGUID || currentUser.userGUID;
-    const company =
-      await this.companyService.findCompanyMetadataByUserGuid(userGUID);
+    const company = await this.companyService.findCompanyMetadataByUserGuid(
+      currentUser.userGUID,
+    );
     if (!company?.length) {
       throw new DataNotFoundException();
     }
