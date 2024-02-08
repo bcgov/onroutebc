@@ -29,6 +29,7 @@ import {
   readRedCompanyAdminUserDtoMock,
   redCompanyAdminUserEntityMock,
   redCompanyCvClientUserEntityMock,
+  sysAdminStaffUserEntityMock,
 } from '../util/mocks/data/user.mock';
 import { createMapper } from '@automapper/core';
 import { UsersService } from '../../src/modules/company-user-management/users/users.service';
@@ -112,10 +113,6 @@ describe('Users (e2e)', () => {
     await app.init();
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   describe('/users/user-context POST', () => {
     it('should return the ORBC userContext.', async () => {
       repo.findOne.mockResolvedValue(redCompanyAdminUserEntityMock);
@@ -152,15 +149,14 @@ describe('Users (e2e)', () => {
   });
 
   describe('/users GETAll', () => {
-    it('should return an array of company metadata associated with the users company.', async () => {
+    it('should return list of IDIR users', async () => {
       jest
         .spyOn(repo, 'createQueryBuilder')
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         .mockImplementation(() =>
           // eslint-disable-next-line @typescript-eslint/no-unsafe-return
           createQueryBuilderMock([
-            redCompanyAdminUserEntityMock,
-            redCompanyCvClientUserEntityMock,
+            sysAdminStaffUserEntityMock,
           ]),
         );
 
