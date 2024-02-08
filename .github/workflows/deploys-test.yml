@@ -2,7 +2,7 @@ name: Merge
 
 on:
   push:
-    branches: [main]
+    branches: [ci/workflow_enhancements]
     paths-ignore:
       - '*.md'
       - '.github/**'
