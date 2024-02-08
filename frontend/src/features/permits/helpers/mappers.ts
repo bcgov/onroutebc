@@ -19,8 +19,9 @@ import {
 
 import {
   Application,
-  ApplicationRequestData,
   ApplicationResponse,
+  CreateApplicationRequestData,
+  UpdateApplicationRequestData,
 } from "../types/application";
 
 import {
@@ -130,25 +131,87 @@ export const mapApplicationResponseToApplication = (
 };
 
 /**
- * Maps/transforms Application form data into ApplicationRequestData so it can be used as payload for backend requests
+ * Maps/transforms Application form data into CreateApplicationRequestData so it can be used as payload for create application requests
  * @param data Application form data
- * @returns ApplicationRequestData object that's used for payload to request to backend
+ * @returns CreateApplicationRequestData object that's used for payload to request to backend
  */
-export const mapApplicationToApplicationRequestData = (
+export const mapApplicationToCreateApplicationRequestData = (
   data: Application,
-): ApplicationRequestData => {
+): CreateApplicationRequestData => {
+  const {
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    permitNumber, 
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    createdDateTime,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    updatedDateTime,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    documentId,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    permitStatus,
+    ...remainingFields
+  } = data;
+
   return {
-    ...data,
-    createdDateTime: applyWhenNotNullable(dayjsToUtcStr, data.createdDateTime),
-    updatedDateTime: applyWhenNotNullable(dayjsToUtcStr, data.updatedDateTime),
+    ...remainingFields,
     permitData: {
-      ...data.permitData,
+      ...remainingFields.permitData,
       startDate: dayjsToLocalStr(
-        data.permitData.startDate,
+        remainingFields.permitData.startDate,
         DATE_FORMATS.DATEONLY,
       ),
       expiryDate: dayjsToLocalStr(
-        data.permitData.expiryDate,
+        remainingFields.permitData.expiryDate,
+        DATE_FORMATS.DATEONLY,
+      ),
+    },
+  };
+};
+
+/**
+ * Maps/transforms Application form data into UpdateApplicationRequestData so it can be used as payload for update application requests
+ * @param data Application form data
+ * @returns UpdateApplicationRequestData object that's used for payload to request to backend
+ */
+export const mapApplicationToUpdateApplicationRequestData = (
+  data: Application,
+): UpdateApplicationRequestData => {
+  const {
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    permitStatus,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    originalPermitId,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    applicationNumber,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    createdDateTime,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    permitNumber,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    permitId,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    documentId,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    updatedDateTime,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    previousRevision,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    revision,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    permitApprovalSource,
+    ...remainingFields
+  } = data;
+
+  return {
+    ...remainingFields,
+    permitData: {
+      ...remainingFields.permitData,
+      startDate: dayjsToLocalStr(
+        remainingFields.permitData.startDate,
+        DATE_FORMATS.DATEONLY,
+      ),
+      expiryDate: dayjsToLocalStr(
+        remainingFields.permitData.expiryDate,
         DATE_FORMATS.DATEONLY,
       ),
     },
@@ -221,10 +284,6 @@ export const transformPermitToApplication = (permit: Permit) => {
   return {
     ...permit,
     permitId: `${permit.permitId}`,
-    previousRevision: applyWhenNotNullable(
-      (prevRev) => `${prevRev}`,
-      permit.previousRevision,
-    ),
     createdDateTime: applyWhenNotNullable(
       (datetimeStr: string): Dayjs => utcToLocalDayjs(datetimeStr),
       permit.createdDateTime,
@@ -269,10 +328,6 @@ export const transformApplicationToPermit = (
   return {
     ...application,
     permitId: applyWhenNotNullable((id) => +id, application.permitId),
-    previousRevision: applyWhenNotNullable(
-      (prevRev) => +prevRev,
-      application.previousRevision,
-    ),
     createdDateTime: applyWhenNotNullable(
       dayjsToUtcStr,
       application.createdDateTime,
