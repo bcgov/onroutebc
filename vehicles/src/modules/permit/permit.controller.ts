@@ -111,13 +111,19 @@ export class PermitController {
 
     const userGuid =
       UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup
-        ? currentUser.bceid_user_guid
+        ? currentUser.userGUID
         : null;
 
-    return await this.permitService.findPermit(
-      getPermitQueryParamsDto,
-      userGuid,
-    );
+    return await this.permitService.findPermit({
+      page: getPermitQueryParamsDto.page,
+      take: getPermitQueryParamsDto.take,
+      orderBy: getPermitQueryParamsDto.orderBy,
+      companyId: getPermitQueryParamsDto.companyId,
+      expired: getPermitQueryParamsDto.expired,
+      searchColumn: getPermitQueryParamsDto.searchColumn,
+      searchString: getPermitQueryParamsDto.searchString,
+      userGUID: userGuid,
+    });
   }
 
   @ApiCreatedResponse({

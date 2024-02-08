@@ -8,6 +8,7 @@ import {
   Query,
   Req,
   ForbiddenException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import {
@@ -35,7 +36,9 @@ import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
 import { IDP } from '../../../common/enum/idp.enum';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
-import { PageOptionsDto } from 'src/common/dto/paginate/page-options';
+import { ApiPaginatedResponse } from '../../../common/decorator/api-paginate-response';
+import { GetCompanyQueryParamsDto } from './dto/request/queryParam/getCompany.query-params.dto';
+import { idirUserAuthGroupList } from '../../../common/enum/user-auth-group.enum';
 
 @ApiTags('Company and User Management - Company')
 @ApiBadRequestResponse({
@@ -84,37 +87,38 @@ export class CompanyController {
   }
 
   /**
-   * A GET method defined with the @Get() decorator and a route of /companies/paginated
-   * that retrieves companies data by company's legal name or client number.
+   * A GET method defined with the @Get() decorator and a route of /companies
+   * that retrieves paginated companies data according to the parameters specified in
+   * GetCompanyQueryParamsDto, such as legal name or client number.
    *
-   * @param legalName The legal name of the company.
-   * @param clientNumber The client number of the company.
-   * @returns The companies with response object {@link ReadCompanyDto}.
+   * @param getCompanyQueryParamsDto The query parameters for fetching paginated companies.
+   * @returns The paginated companies with response object {@link ReadCompanyDto}.
    */
-  @ApiOkResponse({
-    description: 'The Company Resource',
-    type: ReadCompanyDto,
-    isArray: true,
-  })
-  @ApiQuery({ name: 'legalName', required: false })
-  @ApiQuery({ name: 'clientNumber', required: false })
+  @ApiPaginatedResponse(ReadCompanyDto)
   @Roles(Role.READ_ORG)
-  @Get('paginated')
+  @Get()
   async getCompanyPaginated(
-    @Query() pageOptionsDto: PageOptionsDto,
-    @Query('legalName') legalName: string,
-    @Query('clientNumber') clientNumber: string,
+    @Req() request: Request,
+    @Query() getCompanyQueryParamsDto: GetCompanyQueryParamsDto,
   ): Promise<PaginationDto<ReadCompanyDto>> {
-    const companies: PaginationDto<ReadCompanyDto> =
-      await this.companyService.findCompanyPaginated(
-        pageOptionsDto,
-        legalName?.trim(),
-        clientNumber?.trim(),
+    const currentUser = request.user as IUserJWT;
+    if (!idirUserAuthGroupList.includes(currentUser.orbcUserAuthGroup)) {
+      throw new UnauthorizedException(
+        `Unauthorized for ${currentUser.orbcUserAuthGroup} role.`,
       );
+    }
+
+    const companies: PaginationDto<ReadCompanyDto> =
+      await this.companyService.findCompanyPaginated({
+        page: getCompanyQueryParamsDto.page,
+        take: getCompanyQueryParamsDto.take,
+        orderBy: getCompanyQueryParamsDto.orderBy,
+        legalName: getCompanyQueryParamsDto.legalName,
+        clientNumber: getCompanyQueryParamsDto.clientNumber,
+      });
 
     return companies;
   }
-
   /**
    * A GET method defined with the @Get() decorator and a route of /meta-data
    * that retrieves a company metadata by userGuid. If userGUID is not provided,
