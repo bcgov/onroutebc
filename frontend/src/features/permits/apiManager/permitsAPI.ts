@@ -10,7 +10,8 @@ import {
 } from "../../../common/types/common";
 
 import {
-  mapApplicationToApplicationRequestData,
+  mapApplicationToUpdateApplicationRequestData,
+  mapApplicationToCreateApplicationRequestData,
   removeEmptyIdsFromPermitsActionResponse,
 } from "../helpers/mappers";
 
@@ -65,7 +66,7 @@ export const submitTermOversize = async (termOversizePermit: Application) => {
     APPLICATIONS_API_ROUTES.CREATE,
     replaceEmptyValuesWithNull({
       // must convert application to ApplicationRequestData (dayjs fields to strings)
-      ...mapApplicationToApplicationRequestData(termOversizePermit),
+      ...mapApplicationToCreateApplicationRequestData(termOversizePermit),
     }),
   );
 };
@@ -84,7 +85,7 @@ export const updateTermOversize = async (
     `${APPLICATIONS_API_ROUTES.UPDATE}/${applicationNumber}`,
     replaceEmptyValuesWithNull({
       // must convert application to ApplicationRequestData (dayjs fields to strings)
-      ...mapApplicationToApplicationRequestData(termOversizePermit),
+      ...mapApplicationToUpdateApplicationRequestData(termOversizePermit),
     }),
   );
 };
@@ -504,10 +505,25 @@ export const voidPermit = async (voidPermitParams: {
  * @returns response with amended permit data, or error if failed
  */
 export const amendPermit = async (permit: Permit) => {
+  const {
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    permitNumber, 
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    createdDateTime,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    updatedDateTime,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    documentId,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    permitStatus,
+    ...remainingFields
+  } = permit;
+
   return await httpPOSTRequest(
     PERMITS_API_ROUTES.AMEND,
     replaceEmptyValuesWithNull({
-      ...permit,
+      ...remainingFields,
+      permitId: `${remainingFields.permitId}`,
     }),
   );
 };
