@@ -22,7 +22,7 @@ jobs:
         id: pr
         uses: bcgov-nr/action-get-pr@v0.0.1
   
-    deploys-prod:
+  deploys-prod:
     name: Deploys (prod)
     needs: [vars]
     uses: ./.github/workflows/deploy.yml
