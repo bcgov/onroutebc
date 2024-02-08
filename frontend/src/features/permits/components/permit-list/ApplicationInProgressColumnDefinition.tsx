@@ -59,6 +59,13 @@ export const ApplicationInProgressColumnDefinition: MRT_ColumnDef<ApplicationInP
       id: "updatedDateTime",
       header: "Last Updated",
     },
+    {
+      accessorFn: (row) =>
+        `${row.permitData.contactDetails?.firstName} ${row.permitData.contactDetails?.lastName} `,
+      id: "applicant",
+      header: "Applicant",
+      enableSorting: false,
+    },
   ];
 
 export const ApplicationNotFoundColumnDefinition: MRT_ColumnDef<ApplicationInProgress>[] =

@@ -5,7 +5,6 @@ import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { RowSelectionState } from "@tanstack/table-core";
 import {
   MRT_ColumnDef,
-  MRT_GlobalFilterTextField,
   MRT_PaginationState,
   MRT_Row,
   MRT_SortingState,
@@ -52,7 +51,7 @@ export const ApplicationsInProgressList = () => {
   });
   const [sorting, setSorting] = useState<MRT_SortingState>([
     {
-      id: "startDate",
+      id: "startDate", // change to updateDateTime when backend supports it.
       desc: true,
     },
   ]);
@@ -89,7 +88,6 @@ export const ApplicationsInProgressList = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
-  const [globalFilter, setGlobalFilter] = useState<string>("");
 
   const columns = useMemo<MRT_ColumnDef<ApplicationInProgress>[]>(
     () => getColumns(),
@@ -169,8 +167,7 @@ export const ApplicationsInProgressList = () => {
       showProgressBars: isFetching,
       columnVisibility: { applicationId: true },
       isLoading: isPending,
-      rowSelection: rowSelection,
-      globalFilter,
+      rowSelection,
       pagination,
       sorting,
     },
@@ -210,22 +207,19 @@ export const ApplicationsInProgressList = () => {
       ),
       [],
     ),
-    renderTopToolbar: useCallback(
-      ({ table }: { table: MRT_TableInstance<ApplicationInProgress> }) => (
-        <Box className="table-container__top-toolbar">
-          <MRT_GlobalFilterTextField table={table} />
-          <Trash onClickTrash={onClickTrashIcon} disabled={hasNoRowsSelected} />
-        </Box>
+    renderToolbarInternalActions: useCallback(
+      () => (
+        <Trash onClickTrash={onClickTrashIcon} disabled={hasNoRowsSelected} />
       ),
       [hasNoRowsSelected],
     ),
+    enableGlobalFilter: false,
     autoResetPageIndex: false,
     manualFiltering: true,
     manualPagination: true,
     manualSorting: true,
     rowCount: data?.meta?.totalItems ?? 0,
     pageCount: data?.meta?.pageCount ?? 0,
-    onGlobalFilterChange: setGlobalFilter,
     onSortingChange: setSorting,
     onPaginationChange: setPagination,
     enablePagination: true,

@@ -391,9 +391,7 @@ export const getPermits = async (
   if (companyId) {
     permitsURL.searchParams.set("companyId", companyId);
   }
-  if (expired) {
-    permitsURL.searchParams.set("expired", "true");
-  }
+  permitsURL.searchParams.set("expired", expired.toString());
   // API pagination index starts at 1. Hence page + 1.
   permitsURL.searchParams.set("page", (page + 1).toString());
   permitsURL.searchParams.set("take", take.toString());
@@ -507,7 +505,7 @@ export const voidPermit = async (voidPermitParams: {
 export const amendPermit = async (permit: Permit) => {
   const {
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    permitNumber, 
+    permitNumber,
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     createdDateTime,
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
