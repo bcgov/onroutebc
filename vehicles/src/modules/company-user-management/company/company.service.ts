@@ -45,7 +45,6 @@ import { getDirectory } from '../../../common/helper/auth.helper';
 import { convertToHash } from '../../../common/helper/crypto.helper';
 import { CRYPTO_ALGORITHM_SHA256 } from '../../../common/constants/api.constant';
 import { v4 as uuidv4 } from 'uuid';
-import { GetCompanyQueryParamsDto } from './dto/request/queryParam/getCompany.query-params.dto';
 
 @Injectable()
 export class CompanyService {
@@ -384,9 +383,13 @@ export class CompanyService {
    * @returns A PaginationDto containing paginated company data and metadata.
    */
   @LogAsyncMethodExecution()
-  async findCompanyPaginated(
-    getCompanyQueryParamsDto: GetCompanyQueryParamsDto,
-  ): Promise<PaginationDto<ReadCompanyDto>> {
+  async findCompanyPaginated(findCompanyPaginatedOptions?: {
+    page: number;
+    take: number;
+    orderBy?: string;
+    legalName?: string;
+    clientNumber?: string;
+  }): Promise<PaginationDto<ReadCompanyDto>> {
     const companiesQB = this.companyRepository
       .createQueryBuilder('company')
       .leftJoinAndSelect('company.mailingAddress', 'mailingAddress')
@@ -399,22 +402,22 @@ export class CompanyService {
     // Apply mandatory condition to ensure at least one filter is applied
     companiesQB.where('company.companyId IS NOT NULL');
 
-    if (getCompanyQueryParamsDto.legalName) {
+    if (findCompanyPaginatedOptions.legalName) {
       // Add condition for filtering by legal name if provided
       companiesQB.andWhere('company.legalName LIKE :legalName', {
-        legalName: `%${getCompanyQueryParamsDto.legalName}%`,
+        legalName: `%${findCompanyPaginatedOptions.legalName}%`,
       });
     }
 
-    if (getCompanyQueryParamsDto.clientNumber) {
+    if (findCompanyPaginatedOptions.clientNumber) {
       // Add condition to check either direct match with client number or a hash match for migrated client numbers
       companiesQB.andWhere(
         new Brackets((qb) => {
           qb.where('company.clientNumber LIKE :clientNumber', {
-            clientNumber: `%${getCompanyQueryParamsDto.clientNumber}%`,
+            clientNumber: `%${findCompanyPaginatedOptions.clientNumber}%`,
           }).orWhere('company.migratedClientHash = :legacyClientNumberHash', {
             legacyClientNumberHash: convertToHash(
-              getCompanyQueryParamsDto.clientNumber?.replace(/-/g, ''),
+              findCompanyPaginatedOptions.clientNumber?.replace(/-/g, ''),
               CRYPTO_ALGORITHM_SHA256,
             ),
           });
@@ -429,20 +432,20 @@ export class CompanyService {
       legalName: 'company.legalName',
     };
 
-    if (getCompanyQueryParamsDto.orderBy) {
+    if (findCompanyPaginatedOptions.orderBy) {
       // Apply ordering based on parameter, if provided
       sortQuery<Company>(
         companiesQB,
         orderByMapping,
-        getCompanyQueryParamsDto.orderBy,
+        findCompanyPaginatedOptions.orderBy,
       );
     }
-    if (getCompanyQueryParamsDto.page && getCompanyQueryParamsDto.take) {
+    if (findCompanyPaginatedOptions.page && findCompanyPaginatedOptions.take) {
       // Apply pagination based on provided page and take params
       paginate<Company>(
         companiesQB,
-        getCompanyQueryParamsDto.page,
-        getCompanyQueryParamsDto.take,
+        findCompanyPaginatedOptions.page,
+        findCompanyPaginatedOptions.take,
       );
     }
 
@@ -459,7 +462,11 @@ export class CompanyService {
     const totalItems = companyData?.length;
     const pageMetaDto = new PageMetaDto({
       totalItems,
-      pageOptionsDto: getCompanyQueryParamsDto,
+      pageOptionsDto: {
+        page: findCompanyPaginatedOptions.page,
+        take: findCompanyPaginatedOptions.take,
+        orderBy: findCompanyPaginatedOptions.orderBy,
+      },
     });
     // Prepare metadata for pagination response
 

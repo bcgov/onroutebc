@@ -248,9 +248,13 @@ describe('CompanyService', () => {
         legalName: 'B3-000005-722',
       };
 
-      const retCompanies = await service.findCompanyPaginated(
-        getCompanyQueryParamsDto,
-      );
+      const retCompanies = await service.findCompanyPaginated({
+        page: getCompanyQueryParamsDto.page,
+        take: getCompanyQueryParamsDto.take,
+        orderBy: getCompanyQueryParamsDto.orderBy,
+        legalName: getCompanyQueryParamsDto.legalName,
+        clientNumber: getCompanyQueryParamsDto.clientNumber,
+      });
 
       expect(typeof retCompanies).toBe('object');
       expect(retCompanies.items.length).toBeGreaterThan(0);

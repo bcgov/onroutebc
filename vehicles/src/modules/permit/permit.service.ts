@@ -63,7 +63,6 @@ import { PageMetaDto } from 'src/common/dto/paginate/page-meta';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import * as constants from '../../common/constants/api.constant';
 import { PermitApprovalSource } from '../../common/enum/permit-approval-source.enum';
-import { GetPermitQueryParamsDto } from './dto/request/queryParam/getPermit.query-params.dto';
 import { OrderBy } from '../../common/enum/orderBy.enum';
 import { PermitSearch } from '../../common/enum/permit-search.enum';
 import { paginate, sortQuery } from '../../common/helper/database.helper';
@@ -202,16 +201,28 @@ export class PermitService {
 
   /**
    * Retrieves permits based on user GUID, company ID, and expiration status. It allows for sorting, pagination, and filtering of the permit results.
-   * @param getPermitQueryParamsDto - DTO containing query parameters such as companyId, orderBy, expired, page, and take for filtering and pagination.
-   * @param userGUID - Unique identifier for the user. If provided, the query
+   * @param findPermitOptions - Optional object containing query parameters such as page, take, orderBy, companyId, expired, searchColumn, searchString, and userGUID for filtering, pagination, and sorting.
+   * @returns Promise of PaginationDto containing an array of ReadPermitDto.
    */
   @LogAsyncMethodExecution()
-  public async findPermit(
-    getPermitQueryParamsDto: GetPermitQueryParamsDto,
-    userGUID: string,
-  ): Promise<PaginationDto<ReadPermitDto>> {
+  public async findPermit(findPermitOptions?: {
+    page: number;
+    take: number;
+    orderBy?: string;
+    companyId?: number;
+    expired?: boolean;
+    searchColumn?: PermitSearch;
+    searchString?: string;
+    userGUID?: string;
+  }): Promise<PaginationDto<ReadPermitDto>> {
     // Construct the base query to find permits
-    const permitsQB = this.buildPermitQuery(getPermitQueryParamsDto, userGUID);
+    const permitsQB = this.buildPermitQuery(
+      findPermitOptions.companyId,
+      findPermitOptions.expired,
+      findPermitOptions.searchColumn,
+      findPermitOptions.searchString,
+      findPermitOptions.userGUID,
+    );
 
     // Mapping of frontend orderBy parameter to database columns
     const orderByMapping: Record<string, string> = {
@@ -225,19 +236,15 @@ export class PermitService {
     };
 
     // Apply sorting if orderBy parameter is provided
-    if (getPermitQueryParamsDto.orderBy) {
-      sortQuery<Permit>(
-        permitsQB,
-        orderByMapping,
-        getPermitQueryParamsDto.orderBy,
-      );
+    if (findPermitOptions.orderBy) {
+      sortQuery<Permit>(permitsQB, orderByMapping, findPermitOptions.orderBy);
     }
     // Apply pagination if page and take parameters are provided
-    if (getPermitQueryParamsDto.page && getPermitQueryParamsDto.take) {
+    if (findPermitOptions.page && findPermitOptions.take) {
       paginate<Permit>(
         permitsQB,
-        getPermitQueryParamsDto.page,
-        getPermitQueryParamsDto.take,
+        findPermitOptions.page,
+        findPermitOptions.take,
       );
     }
 
@@ -250,7 +257,11 @@ export class PermitService {
     // Prepare pagination metadata
     const pageMetaDto = new PageMetaDto({
       totalItems,
-      pageOptionsDto: getPermitQueryParamsDto,
+      pageOptionsDto: {
+        page: findPermitOptions.page,
+        take: findPermitOptions.take,
+        orderBy: findPermitOptions.orderBy,
+      },
     });
     // Map permit entities to ReadPermitDto objects
     const readPermitDto: ReadPermitDto[] =
@@ -260,7 +271,10 @@ export class PermitService {
   }
 
   private buildPermitQuery(
-    getPermitQueryParamsDto: GetPermitQueryParamsDto,
+    companyId: number,
+    expired: boolean,
+    searchColumn: PermitSearch,
+    searchString: string,
     userGUID: string,
   ): SelectQueryBuilder<Permit> {
     let permitsQuery = this.permitRepository
@@ -271,9 +285,9 @@ export class PermitService {
     permitsQuery = permitsQuery.where('permit.permitNumber IS NOT NULL');
 
     // Filter by companyId if provided
-    if (getPermitQueryParamsDto.companyId) {
+    if (companyId) {
       permitsQuery = permitsQuery.andWhere('permit.companyId = :companyId', {
-        companyId: getPermitQueryParamsDto.companyId,
+        companyId: companyId,
       });
     }
 
@@ -285,7 +299,7 @@ export class PermitService {
     }
 
     // Handle expired permits query condition
-    if (getPermitQueryParamsDto.expired === true) {
+    if (expired === true) {
       permitsQuery = permitsQuery.andWhere(
         new Brackets((qb) => {
           qb.where(
@@ -303,7 +317,7 @@ export class PermitService {
     }
 
     // Handle active permits query condition
-    if (getPermitQueryParamsDto.expired === false) {
+    if (expired === false) {
       permitsQuery = permitsQuery.andWhere(
         new Brackets((qb) => {
           qb.where(
@@ -318,57 +332,52 @@ export class PermitService {
     }
 
     // Handle search conditions
-    if (getPermitQueryParamsDto.searchColumn) {
-      switch (getPermitQueryParamsDto.searchColumn) {
+    if (searchColumn) {
+      switch (searchColumn) {
         case PermitSearch.PLATE:
           permitsQuery = permitsQuery.andWhere(
-            `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like '%${getPermitQueryParamsDto.searchString}%'`,
+            `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like '%${searchString}%'`,
           );
           break;
         case PermitSearch.PERMIT_NUMBER:
           permitsQuery = permitsQuery.andWhere(
             new Brackets((query) => {
               query
-                .where(
-                  `permit.permitNumber like '%${getPermitQueryParamsDto.searchString}%'`,
-                )
+                .where(`permit.permitNumber like '%${searchString}%'`)
                 .orWhere(
-                  `permit.migratedPermitNumber like '%${getPermitQueryParamsDto.searchString}%'`,
+                  `permit.migratedPermitNumber like '%${searchString}%'`,
                 );
             }),
           );
           break;
         case PermitSearch.CLIENT_NUMBER:
           permitsQuery = permitsQuery.andWhere(
-            `JSON_VALUE(permitData.permitData, '$.clientNumber') like '%${getPermitQueryParamsDto.searchString}%'`,
+            `JSON_VALUE(permitData.permitData, '$.clientNumber') like '%${searchString}%'`,
           );
           break;
         case PermitSearch.COMPANY_NAME:
           permitsQuery = permitsQuery.andWhere(
-            `JSON_VALUE(permitData.permitData, '$.companyName') like '%${getPermitQueryParamsDto.searchString}%'`,
+            `JSON_VALUE(permitData.permitData, '$.companyName') like '%${searchString}%'`,
           );
           break;
         case PermitSearch.APPLICATION_NUMBER:
           permitsQuery = permitsQuery.andWhere(
-            `permit.applicationNumber like '%${getPermitQueryParamsDto.searchString}%'`,
+            `permit.applicationNumber like '%${searchString}%'`,
           );
           break;
       }
     }
 
     // Handle cases where only searchString is provided
-    if (
-      !getPermitQueryParamsDto.searchColumn &&
-      getPermitQueryParamsDto.searchString
-    ) {
+    if (!searchColumn && searchString) {
       permitsQuery = permitsQuery.andWhere(
         new Brackets((query) => {
           query
             .where(
-              `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like '%${getPermitQueryParamsDto.searchString}%'`,
+              `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like '%${searchString}%'`,
             )
             .orWhere(
-              `JSON_VALUE(permitData.permitData, '$.vehicleDetails.unitNumber') like '%${getPermitQueryParamsDto.searchString}%'`,
+              `JSON_VALUE(permitData.permitData, '$.vehicleDetails.unitNumber') like '%${searchString}%'`,
             );
         }),
       );

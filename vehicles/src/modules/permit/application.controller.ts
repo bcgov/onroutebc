@@ -105,10 +105,13 @@ export class ApplicationController {
       UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup
         ? currentUser.userGUID
         : null;
-    return this.applicationService.findAllApplications(
-      getApplicationQueryParamsDto,
-      userGuid,
-    );
+    return this.applicationService.findAllApplications({
+      page: getApplicationQueryParamsDto.page,
+      take: getApplicationQueryParamsDto.take,
+      orderBy: getApplicationQueryParamsDto.orderBy,
+      companyId: getApplicationQueryParamsDto.companyId,
+      userGUID: userGuid,
+    });
   }
 
   /**

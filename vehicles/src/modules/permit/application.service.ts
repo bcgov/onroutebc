@@ -63,7 +63,6 @@ import * as constants from '../../common/constants/api.constant';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import { PageMetaDto } from 'src/common/dto/paginate/page-meta';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
-import { GetApplicationQueryParamsDto } from './dto/request/queryParam/getApplication.query-params.dto';
 
 @Injectable()
 export class ApplicationService {
@@ -214,14 +213,17 @@ export class ApplicationService {
    * @param userGUID - Unique identifier for the user. If provided, the query
    */
   @LogAsyncMethodExecution()
-  async findAllApplications(
-    getApplicationQueryParamsDto: GetApplicationQueryParamsDto,
-    userGUID: string,
-  ): Promise<PaginationDto<ReadApplicationDto>> {
+  async findAllApplications(findAllApplicationsOptions?: {
+    page: number;
+    take: number;
+    orderBy?: string;
+    companyId?: number;
+    userGUID?: string;
+  }): Promise<PaginationDto<ReadApplicationDto>> {
     // Construct the base query to find applications
     const applicationsQB = this.buildApplicationQuery(
-      getApplicationQueryParamsDto,
-      userGUID,
+      findAllApplicationsOptions.companyId,
+      findAllApplicationsOptions.userGUID,
     );
 
     // Mapping of frontend orderBy parameter to database columns
@@ -236,22 +238,19 @@ export class ApplicationService {
     };
 
     // Apply sorting if orderBy parameter is provided
-    if (getApplicationQueryParamsDto.orderBy) {
+    if (findAllApplicationsOptions.orderBy) {
       sortQuery<Permit>(
         applicationsQB,
         orderByMapping,
-        getApplicationQueryParamsDto.orderBy,
+        findAllApplicationsOptions.orderBy,
       );
     }
     // Apply pagination if page and take parameters are provided
-    if (
-      getApplicationQueryParamsDto.page &&
-      getApplicationQueryParamsDto.take
-    ) {
+    if (findAllApplicationsOptions.page && findAllApplicationsOptions.take) {
       paginate<Permit>(
         applicationsQB,
-        getApplicationQueryParamsDto.page,
-        getApplicationQueryParamsDto.take,
+        findAllApplicationsOptions.page,
+        findAllApplicationsOptions.take,
       );
     }
 
@@ -262,7 +261,11 @@ export class ApplicationService {
     // Prepare pagination metadata
     const pageMetaDto = new PageMetaDto({
       totalItems,
-      pageOptionsDto: getApplicationQueryParamsDto,
+      pageOptionsDto: {
+        page: findAllApplicationsOptions.page,
+        take: findAllApplicationsOptions.take,
+        orderBy: findAllApplicationsOptions.orderBy,
+      },
     });
     // Map permit entities to ReadPermitDto objects
     const readApplicationDto: ReadApplicationDto[] =
@@ -276,8 +279,8 @@ export class ApplicationService {
   }
 
   private buildApplicationQuery(
-    getApplicationQueryParamsDto: GetApplicationQueryParamsDto,
-    userGUID: string,
+    companyId?: number,
+    userGUID?: string,
   ): SelectQueryBuilder<Permit> {
     let permitsQuery = this.permitRepository
       .createQueryBuilder('permit')
@@ -285,9 +288,9 @@ export class ApplicationService {
     permitsQuery = permitsQuery.where('permit.permitNumber IS NULL');
 
     // Filter by companyId if provided
-    if (getApplicationQueryParamsDto.companyId) {
+    if (companyId) {
       permitsQuery = permitsQuery.andWhere('permit.companyId = :companyId', {
-        companyId: getApplicationQueryParamsDto.companyId,
+        companyId: companyId,
       });
     }
 
