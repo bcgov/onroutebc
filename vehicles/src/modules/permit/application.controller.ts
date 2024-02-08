@@ -97,14 +97,13 @@ export class ApplicationController {
   @Get()
   async findAllApplication(
     @Req() request: Request,
-    @Query() pageOptionsDto: PageOptionsDto,
+    @Query() pageOptionsDto: PageOptionsDto,   
+    @Query('companyId') companyId: number, 
     @Query(
       'statuses',
       new DefaultValuePipe([]),
       ParamToArray<ApplicationStatus>,
-    )
-    @Query('companyId') companyId: number,
-    statuses: ApplicationStatus[] = [],
+    ) statuses: ApplicationStatus[] = [],  
     @Query('sorting') sorting?: string,
   ): Promise<PaginationDto<ReadApplicationDto>> {
     const currentUser = request.user as IUserJWT;
