@@ -66,6 +66,7 @@ import { PermitApprovalSource } from '../../common/enum/permit-approval-source.e
 import { GetPermitQueryParamsDto } from './dto/request/queryParam/getPermit.query-params.dto';
 import { OrderBy } from '../../common/enum/orderBy.enum';
 import { PermitSearch } from '../../common/enum/permit-search.enum';
+import { paginate, sortQuery } from '../../common/helper/database.helper';
 
 @Injectable()
 export class PermitService {
@@ -200,30 +201,58 @@ export class PermitService {
   }
 
   /**
-   * Finds permits for user.
-   * @param userGUID if present get permits for this user
-   *  @param companyId if present get permits for this company
-   * @param expired if true get expired premits else get active permits
-   *
+   * Retrieves permits based on user GUID, company ID, and expiration status. It allows for sorting, pagination, and filtering of the permit results.
+   * @param getPermitQueryParamsDto - DTO containing query parameters such as companyId, orderBy, expired, page, and take for filtering and pagination.
+   * @param userGUID - Unique identifier for the user. If provided, the query
    */
   @LogAsyncMethodExecution()
   public async findPermit(
     getPermitQueryParamsDto: GetPermitQueryParamsDto,
     userGUID: string,
   ): Promise<PaginationDto<ReadPermitDto>> {
+    // Construct the base query to find permits
     const permitsQB = this.buildPermitQuery(getPermitQueryParamsDto, userGUID);
-    const sortedPermits = this.sortPermits(
-      permitsQB,
-      getPermitQueryParamsDto.orderBy,
-    );
-    const totalItems = await sortedPermits.getCount();
+
+    // Mapping of frontend orderBy parameter to database columns
+    const orderByMapping: Record<string, string> = {
+      permitNumber: 'permit.permitNumber',
+      permitType: 'permit.permitType',
+      startDate: 'permitData.startDate',
+      expiryDate: 'permitData.expiryDate',
+      unitNumber: 'permitData.unitNumber',
+      plate: 'permitData.plate',
+      applicant: 'permitData.applicant',
+    };
+
+    // Apply sorting if orderBy parameter is provided
+    if (getPermitQueryParamsDto.orderBy) {
+      sortQuery<Permit>(
+        permitsQB,
+        orderByMapping,
+        getPermitQueryParamsDto.orderBy,
+      );
+    }
+    // Apply pagination if page and take parameters are provided
+    if (getPermitQueryParamsDto.page && getPermitQueryParamsDto.take) {
+      paginate<Permit>(
+        permitsQB,
+        getPermitQueryParamsDto.page,
+        getPermitQueryParamsDto.take,
+      );
+    }
+    // Retrieve total number of items matching the query
+    const totalItems = await permitsQB.getCount();
+    // Get the paginated list of permits
     const permits = await permitsQB.getMany();
+    // Prepare pagination metadata
     const pageMetaDto = new PageMetaDto({
       totalItems,
       pageOptionsDto: getPermitQueryParamsDto,
     });
+    // Map permit entities to ReadPermitDto objects
     const readPermitDto: ReadPermitDto[] =
       await this.mapEntitiesToReadPermitDto(permits);
+    // Return paginated result
     return new PaginationDto(readPermitDto, pageMetaDto);
   }
 
@@ -341,11 +370,6 @@ export class PermitService {
         }),
       );
     }
-
-    // Apply pagination
-    permitsQuery = permitsQuery
-      .skip((getPermitQueryParamsDto.page - 1) * getPermitQueryParamsDto.take)
-      .take(getPermitQueryParamsDto.take);
 
     return permitsQuery;
   }

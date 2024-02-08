@@ -11,10 +11,10 @@ import {
 import { PageOptionsDto } from '../../../../../common/dto/paginate/page-options';
 import { Transform, Type } from 'class-transformer';
 import { idirUserAuthGroupList } from '../../../../../common/enum/user-auth-group.enum';
-import { PermitsOrderByConstraint } from '../../../../../common/constraint/permits-orderby.constraint';
 import { PermitOrderBy } from '../../../../../common/enum/permit-orderBy.enum';
 import { PermitSearchByConstraint } from '../../../../../common/constraint/permit-search.constraint';
 import { PermitSearch } from '../../../../../common/enum/permit-search.enum';
+import { OrderByConstraint } from '../../../../../common/constraint/orderby.constraint';
 
 export class GetPermitQueryParamsDto extends PageOptionsDto {
   @ApiProperty({
@@ -78,7 +78,7 @@ export class GetPermitQueryParamsDto extends PageOptionsDto {
     required: false,
   })
   @IsOptional()
-  @Validate(PermitsOrderByConstraint)
+  @Validate(OrderByConstraint, [PermitOrderBy])
   @IsString()
   @Length(1, 150)
   readonly orderBy?: string;

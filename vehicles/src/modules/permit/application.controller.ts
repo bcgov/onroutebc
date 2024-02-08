@@ -1,7 +1,7 @@
 import {
+  BadRequestException,
   Body,
   Controller,
-  DefaultValuePipe,
   Get,
   Param,
   Post,
@@ -24,7 +24,6 @@ import { CreateApplicationDto } from './dto/request/create-application.dto';
 import { ReadApplicationDto } from './dto/response/read-application.dto';
 import { ApplicationService } from './application.service';
 import { Request } from 'express';
-import { ApplicationStatus } from '../../common/enum/application-status.enum';
 import { ExceptionDto } from '../../common/exception/exception.dto';
 import { UpdateApplicationDto } from './dto/request/update-application.dto';
 import { DataNotFoundException } from 'src/common/exception/data-not-found.exception';
@@ -34,12 +33,13 @@ import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
 import { IssuePermitDto } from './dto/request/issue-permit.dto';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
-import { ParamToArray } from 'src/common/class/customs.transform';
-import { PageOptionsDto } from 'src/common/dto/paginate/page-options';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
-import { UserAuthGroup } from 'src/common/enum/user-auth-group.enum';
-import { SortDto } from '../common/dto/request/sort.dto';
+import {
+  UserAuthGroup,
+  idirUserAuthGroupList,
+} from 'src/common/enum/user-auth-group.enum';
 import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
+import { GetApplicationQueryParamsDto } from './dto/request/queryParam/getApplication.query-params.dto';
 
 @ApiBearerAuth()
 @ApiTags('Permit Application')
@@ -85,48 +85,29 @@ export class ApplicationController {
    * @param status
    */
   @ApiPaginatedResponse(ReadPermitDto)
-  @ApiQuery({ name: 'companyId' })
-  @ApiQuery({
-    name: 'statuses',
-    type: [String],
-    required: false,
-    example: 'IN_PROGRESS,WAITING_PAYMENT',
-  })
-  @ApiQuery({
-    name: 'sorting',
-    required: false,
-    example:
-      '[{"orderBy":"unitNumber","descending":false},{"orderBy":"permitType","descending":false}]',
-  })
   @Roles(Role.READ_PERMIT)
   @Get()
   async findAllApplication(
     @Req() request: Request,
-    @Query() pageOptionsDto: PageOptionsDto,
-    @Query(
-      'statuses',
-      new DefaultValuePipe([]),
-      ParamToArray<ApplicationStatus>,
-    )
-    @Query('companyId')
-    companyId: number,
-    statuses: ApplicationStatus[] = [],
-    @Query('sorting') sorting?: string,
+    @Query() getApplicationQueryParamsDto: GetApplicationQueryParamsDto,
   ): Promise<PaginationDto<ReadApplicationDto>> {
     const currentUser = request.user as IUserJWT;
-    let sortDto: SortDto[] = [];
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    if (sorting) sortDto = JSON.parse(sorting);
+    if (
+      !idirUserAuthGroupList.includes(currentUser.orbcUserAuthGroup) &&
+      !getApplicationQueryParamsDto.companyId
+    ) {
+      throw new BadRequestException(
+        `Company Id is required for roles except ${idirUserAuthGroupList.join(', ')}.`,
+      );
+    }
+
     const userGuid =
-      currentUser.orbcUserAuthGroup === UserAuthGroup.CV_CLIENT
+      UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup
         ? currentUser.userGUID
         : null;
     return this.applicationService.findAllApplications(
-      pageOptionsDto,
-      statuses,
-      companyId,
+      getApplicationQueryParamsDto,
       userGuid,
-      sortDto,
     );
   }
 

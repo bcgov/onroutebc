@@ -111,7 +111,7 @@ export class PermitController {
 
     const userGuid =
       UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup
-        ? currentUser.bceid_user_guid
+        ? currentUser.userGUID
         : null;
 
     return await this.permitService.findPermit(
