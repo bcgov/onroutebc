@@ -15,7 +15,7 @@ export const PERMITS_API_ROUTES = {
   GET: PERMITS_API_BASE,
   ISSUE: `${APPLICATIONS_API_BASE}/issue`,
   AMEND: APPLICATIONS_API_ROUTES.CREATE,
-  DOWNLOAD: `pdf?download=proxy`,
+  DOWNLOAD: `pdf`,
   RECEIPT: `receipt`,
   VOID: `void`,
 };
