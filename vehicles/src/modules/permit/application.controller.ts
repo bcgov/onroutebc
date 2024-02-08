@@ -208,6 +208,16 @@ export class ApplicationController {
     @Body() issuePermitDto: IssuePermitDto,
   ): Promise<ResultDto> {
     const currentUser = request.user as IUserJWT;
+
+    if (
+      !idirUserAuthGroupList.includes(currentUser.orbcUserAuthGroup) &&
+      !issuePermitDto.companyId
+    ) {
+      throw new BadRequestException(
+        `Company Id is required for roles except ${idirUserAuthGroupList.join(', ')}.`,
+      );
+    }
+
     /**Bulk issuance would require changes in issuePermit service method with
      *  respect to Document generation etc. At the moment, it is not handled and
      *  only single permit Id must be passed.

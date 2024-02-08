@@ -1,6 +1,7 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumberString, IsNumber, ArrayMinSize } from 'class-validator';
+import { IsNumberString, IsNumber, ArrayMinSize, IsOptional } from 'class-validator';
+import { idirUserAuthGroupList } from '../../../../common/enum/user-auth-group.enum';
 
 export class IssuePermitDto {
   @AutoMap()
@@ -17,10 +18,12 @@ export class IssuePermitDto {
 
   @AutoMap()
   @ApiProperty({
-    description: 'Id of the company requesting the permit.',
+    description: `Id of the company requesting the application issuance. Optional for ${idirUserAuthGroupList.join(', ')}`,
     example: 74,
     required: false,
   })
+  @IsOptional()
   @IsNumber()
-  companyId: number;
+  companyId?: number;
 }
+
