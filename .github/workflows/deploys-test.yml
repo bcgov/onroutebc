@@ -2,7 +2,7 @@ name: Deploys-test
 
 on:
   push:
-    branches: [ci/workflow_enhancements]
+    branches: [main]
     paths-ignore:
       - '*.md'
       - '.github/**'
