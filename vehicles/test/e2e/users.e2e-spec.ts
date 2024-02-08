@@ -27,7 +27,7 @@ import { PendingUsersService } from '../../src/modules/company-user-management/p
 import {
   idirUserEntityMock,
   readRedCompanyAdminUserDtoMock,
-  redCompanyAdminUserEntityMock,  
+  redCompanyAdminUserEntityMock,
 } from '../util/mocks/data/user.mock';
 import { createMapper } from '@automapper/core';
 import { UsersService } from '../../src/modules/company-user-management/users/users.service';
