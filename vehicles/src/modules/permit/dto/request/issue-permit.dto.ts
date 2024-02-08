@@ -1,6 +1,11 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumberString, IsNumber, ArrayMinSize, IsOptional } from 'class-validator';
+import {
+  IsNumberString,
+  IsNumber,
+  ArrayMinSize,
+  IsOptional,
+} from 'class-validator';
 import { idirUserAuthGroupList } from '../../../../common/enum/user-auth-group.enum';
 
 export class IssuePermitDto {
@@ -26,4 +31,3 @@ export class IssuePermitDto {
   @IsNumber()
   companyId?: number;
 }
-
