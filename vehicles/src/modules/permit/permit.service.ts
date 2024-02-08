@@ -24,7 +24,6 @@ import { DopsService } from '../common/dops.service';
 import { FileDownloadModes } from '../../common/enum/file-download-modes.enum';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { Response } from 'express';
-import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { PermitStatus } from 'src/common/enum/permit-status.enum';
 import { Receipt } from '../payment/entities/receipt.entity';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
@@ -174,29 +173,17 @@ export class PermitService {
     permitId: string,
     downloadMode: FileDownloadModes,
     res?: Response,
-  ): Promise<ReadFileDto> {
+  ): Promise<void> {
     // Retrieve the permit details using the permit ID
     const permit = await this.findOne(permitId);
 
-    let file: ReadFileDto = null;
-    if (downloadMode === FileDownloadModes.PROXY) {
-      await this.dopsService.download(
-        currentUser,
-        permit.documentId,
-        downloadMode,
-        res,
-        permit.companyId,
-      );
-    } else {
-      file = (await this.dopsService.download(
-        currentUser,
-        permit.documentId,
-        downloadMode,
-        res,
-        permit.companyId,
-      )) as ReadFileDto;
-    }
-    return file;
+    await this.dopsService.download(
+      currentUser,
+      permit.documentId,
+      downloadMode,
+      res,
+      permit.companyId,
+    );
   }
 
   /**

@@ -145,31 +145,17 @@ export class PermitController {
   async getPDF(
     @Req() request: Request,
     @Param('permitId') permitId: string,
-    @Query('download') download: FileDownloadModes,
     @Res() res: Response,
   ): Promise<void> {
     const currentUser = request.user as IUserJWT;
 
-    if (download === FileDownloadModes.PROXY) {
-      await this.permitService.findPDFbyPermitId(
-        currentUser,
-        permitId,
-        download,
-        res,
-      );
-      res.status(200);
-    } else {
-      const file = await this.permitService.findPDFbyPermitId(
-        currentUser,
-        permitId,
-        download,
-      );
-      if (download === FileDownloadModes.URL) {
-        res.status(201).send(file);
-      } else {
-        res.status(302).set('Location', file.preSignedS3Url).end();
-      }
-    }
+    await this.permitService.findPDFbyPermitId(
+      currentUser,
+      permitId,
+      FileDownloadModes.PROXY,
+      res,
+    );
+    res.status(200);
   }
 
   @ApiCreatedResponse({
