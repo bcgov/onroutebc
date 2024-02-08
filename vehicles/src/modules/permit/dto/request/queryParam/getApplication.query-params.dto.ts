@@ -9,8 +9,8 @@ import {
 import { PageOptionsDto } from '../../../../../common/dto/paginate/page-options';
 import { Type } from 'class-transformer';
 import { idirUserAuthGroupList } from '../../../../../common/enum/user-auth-group.enum';
-import { ApplicationOrderBy } from '../../../../../common/enum/application-orderBy.enum';
 import { OrderByConstraint } from '../../../../../common/constraint/orderby.constraint';
+import { ApplicationOrderBy } from '../../../../../common/enum/orderBy.enum';
 
 export class GetApplicationQueryParamsDto extends PageOptionsDto {
   @ApiProperty({

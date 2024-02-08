@@ -240,10 +240,13 @@ export class PermitService {
         getPermitQueryParamsDto.take,
       );
     }
-    // Retrieve total number of items matching the query
-    const totalItems = await permitsQB.getCount();
+
     // Get the paginated list of permits
     const permits = await permitsQB.getMany();
+
+    // total number of items
+    const totalItems = permits?.length;
+
     // Prepare pagination metadata
     const pageMetaDto = new PageMetaDto({
       totalItems,

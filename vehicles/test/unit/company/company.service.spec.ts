@@ -38,6 +38,7 @@ import { EmailService } from '../../../src/modules/email/email.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { BadRequestException } from '@nestjs/common';
+import { GetCompanyQueryParamsDto } from '../../../src/modules/company-user-management/company/dto/request/queryParam/getCompany.query-params.dto';
 
 const COMPANY_ID_99 = 99;
 let repo: DeepMocked<Repository<Company>>;
@@ -239,12 +240,16 @@ describe('CompanyService', () => {
         .spyOn(repo, 'createQueryBuilder')
         .mockImplementation(() => createQueryBuilderMock(FILTERED_LIST));
 
-      const pageOptionsDto = { page: 1, take: 10 };
+      const getCompanyQueryParamsDto: GetCompanyQueryParamsDto = {
+        page: 1,
+        take: 10,
+        orderBy: 'companyId:DESC',
+        clientNumber: 'Red Truck Inc',
+        legalName: 'B3-000005-722',
+      };
 
       const retCompanies = await service.findCompanyPaginated(
-        pageOptionsDto,
-        constants.RED_COMPANY_LEGAL_NAME,
-        constants.RED_COMPANY_CLIENT_NUMBER,
+        getCompanyQueryParamsDto,
       );
 
       expect(typeof retCompanies).toBe('object');

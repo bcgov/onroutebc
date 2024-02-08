@@ -5,7 +5,6 @@ import {
   Inject,
   Injectable,
   Logger,
-  Query,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, DataSource, Repository } from 'typeorm';
@@ -22,7 +21,11 @@ import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { CreateUserDto } from '../users/dto/request/create-user.dto';
 import { User } from '../users/entities/user.entity';
 import { CompanyUser } from '../users/entities/company-user.entity';
-import { callDatabaseSequence } from 'src/common/helper/database.helper';
+import {
+  callDatabaseSequence,
+  paginate,
+  sortQuery,
+} from 'src/common/helper/database.helper';
 import { randomInt } from 'crypto';
 import { EmailService } from '../../email/email.service';
 import { EmailTemplate } from '../../../common/enum/email-template.enum';
@@ -34,7 +37,6 @@ import { CacheKey } from '../../../common/enum/cache-key.enum';
 import { AccountSource } from '../../../common/enum/account-source.enum';
 import { PendingUser } from '../pending-users/entities/pending-user.entity';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
-import { PageOptionsDto } from 'src/common/dto/paginate/page-options';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import { PageMetaDto } from 'src/common/dto/paginate/page-meta';
 import { IDP } from '../../../common/enum/idp.enum';
@@ -43,6 +45,7 @@ import { getDirectory } from '../../../common/helper/auth.helper';
 import { convertToHash } from '../../../common/helper/crypto.helper';
 import { CRYPTO_ALGORITHM_SHA256 } from '../../../common/constants/api.constant';
 import { v4 as uuidv4 } from 'uuid';
+import { GetCompanyQueryParamsDto } from './dto/request/queryParam/getCompany.query-params.dto';
 
 @Injectable()
 export class CompanyService {
@@ -369,47 +372,49 @@ export class CompanyService {
   }
 
   /**
-   * The findCompanyPaginated() method returns a ReadCompanyDto object corresponding to the given
-   * company legal name or client number. It retrieves the entity from the database using the
-   * Repository, maps it to a DTO object using the Mapper, and returns it.
+   * The findCompanyPaginated() method performs a paginated search for companies based on given
+   * filter options such as company legal name or client number. It leverages a complex query to
+   * retrieve company entities from the database, optionally applying filters for legal name and
+   * client number, sorting based on certain fields, and paginating the results. After fetching the
+   * entities, it maps them to ReadCompanyDto objects for response.
    *
-   * @param legalName The company legal name.
-   * @param clientNumber The company's client number
-   * @returns The company list as a promise of type {@link ReadCompanyMetadataDto}
+   * @param getCompanyQueryParamsDto Parameters for querying companies including pagination, sorting,
+   * and filtering options.
+   *
+   * @returns A PaginationDto containing paginated company data and metadata.
    */
   @LogAsyncMethodExecution()
   async findCompanyPaginated(
-    @Query() pageOptionsDto: PageOptionsDto,
-    @Query() legalName?: string,
-    @Query() clientNumber?: string,
+    getCompanyQueryParamsDto: GetCompanyQueryParamsDto,
   ): Promise<PaginationDto<ReadCompanyDto>> {
-    let companiesQuery = this.companyRepository
+    const companiesQB = this.companyRepository
       .createQueryBuilder('company')
       .leftJoinAndSelect('company.mailingAddress', 'mailingAddress')
       .leftJoinAndSelect('company.primaryContact', 'primaryContact')
       .leftJoinAndSelect('primaryContact.province', 'province')
       .leftJoinAndSelect('mailingAddress.province', 'provinceType');
 
-    // Apply conditions based on parameters
-    companiesQuery = companiesQuery.where('company.companyId IS NOT NULL');
+    // Initialize query builder and join related entities for a comprehensive response
 
-    if (legalName) {
-      companiesQuery = companiesQuery.andWhere(
-        'company.legalName LIKE :legalName',
-        {
-          legalName: `%${legalName}%`,
-        },
-      );
+    // Apply mandatory condition to ensure at least one filter is applied
+    companiesQB.where('company.companyId IS NOT NULL');
+
+    if (getCompanyQueryParamsDto.legalName) {
+      // Add condition for filtering by legal name if provided
+      companiesQB.andWhere('company.legalName LIKE :legalName', {
+        legalName: `%${getCompanyQueryParamsDto.legalName}%`,
+      });
     }
 
-    if (clientNumber) {
-      companiesQuery = companiesQuery.andWhere(
+    if (getCompanyQueryParamsDto.clientNumber) {
+      // Add condition to check either direct match with client number or a hash match for migrated client numbers
+      companiesQB.andWhere(
         new Brackets((qb) => {
           qb.where('company.clientNumber LIKE :clientNumber', {
-            clientNumber: `%${clientNumber}%`,
+            clientNumber: `%${getCompanyQueryParamsDto.clientNumber}%`,
           }).orWhere('company.migratedClientHash = :legacyClientNumberHash', {
             legacyClientNumberHash: convertToHash(
-              clientNumber?.replace(/-/g, ''),
+              getCompanyQueryParamsDto.clientNumber?.replace(/-/g, ''),
               CRYPTO_ALGORITHM_SHA256,
             ),
           });
@@ -417,17 +422,49 @@ export class CompanyService {
       );
     }
 
-    const companies = await companiesQuery.getMany();
+    // Object to map frontend orderBy parameters to actual database fields
+    const orderByMapping: Record<string, string> = {
+      companyId: 'company.companyId',
+      clientNumber: 'company.clientNumber',
+      legalName: 'company.legalName',
+    };
+
+    if (getCompanyQueryParamsDto.orderBy) {
+      // Apply ordering based on parameter, if provided
+      sortQuery<Company>(
+        companiesQB,
+        orderByMapping,
+        getCompanyQueryParamsDto.orderBy,
+      );
+    }
+    if (getCompanyQueryParamsDto.page && getCompanyQueryParamsDto.take) {
+      // Apply pagination based on provided page and take params
+      paginate<Company>(
+        companiesQB,
+        getCompanyQueryParamsDto.page,
+        getCompanyQueryParamsDto.take,
+      );
+    }
+
+    const companies = await companiesQB.getMany();
+    // Execute query to get list of companies based on filters, sorting, and pagination
 
     const companyData = await this.classMapper.mapArrayAsync(
       companies,
       Company,
       ReadCompanyDto,
     );
+    // Map entities to DTOs for consistent response structure
 
     const totalItems = companyData?.length;
-    const pageMetaDto = new PageMetaDto({ totalItems, pageOptionsDto });
+    const pageMetaDto = new PageMetaDto({
+      totalItems,
+      pageOptionsDto: getCompanyQueryParamsDto,
+    });
+    // Prepare metadata for pagination response
+
     return new PaginationDto(companyData, pageMetaDto);
+    // Return paginated response with company data and metadata
   }
 
   /**

@@ -254,10 +254,11 @@ export class ApplicationService {
         getApplicationQueryParamsDto.take,
       );
     }
-    // Retrieve total number of items matching the query
-    const totalItems = await applicationsQB.getCount();
+
     // Get the paginated list of permits
     const applications = await applicationsQB.getMany();
+    // total number of items
+    const totalItems = applications?.length;
     // Prepare pagination metadata
     const pageMetaDto = new PageMetaDto({
       totalItems,
