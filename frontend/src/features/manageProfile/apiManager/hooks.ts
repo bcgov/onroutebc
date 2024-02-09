@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "react-oidc-context";
 import { useContext, useEffect } from "react";
 
-import { BCeIDAuthGroup } from "../types/userManagement";
 import { IDPS } from "../../../common/types/idp";
 import { Nullable } from "../../../common/types/common";
 import {
@@ -24,6 +23,7 @@ import OnRouteBCContext, {
 } from "../../../common/authentication/OnRouteBCContext";
 
 import {
+  BCeIDUserAuthGroupType,
   BCeIDUserContextType,
   IDIRUserContextType,
   UserRolesType,
@@ -137,7 +137,7 @@ export const useUserContext = (
           phone2Extension: user.phone2Extension,
           email: user.email,
           fax: user.fax,
-          userAuthGroup: user.userAuthGroup as BCeIDAuthGroup,
+          userAuthGroup: user.userAuthGroup as BCeIDUserAuthGroupType,
         } as BCeIDUserDetailContext;
         setUserDetails?.(() => userDetails);
 

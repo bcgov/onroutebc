@@ -17,12 +17,8 @@ import { AmendReason } from "./form/AmendReason";
 import { Nullable } from "../../../../../common/types/common";
 import { VehicleDetails } from "../../../types/application";
 import { ERROR_ROUTES } from "../../../../../routes/constants";
+import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import OnRouteBCContext from "../../../../../common/authentication/OnRouteBCContext";
-import {
-  applyWhenNotNullable,
-  getDefaultRequiredVal,
-} from "../../../../../common/helpers/util";
-
 import {
   dayjsToUtcStr,
   nowUtc,
@@ -171,10 +167,6 @@ export const AmendPermitForm = () => {
           application: {
             ...permitToBeAmended,
             permitId: `${permitToBeAmended.permitId}`,
-            previousRevision: applyWhenNotNullable(
-              (prevRev) => `${prevRev}`,
-              permitToBeAmended.previousRevision,
-            ),
             permitData: {
               ...permitToBeAmended.permitData,
               companyName: getDefaultRequiredVal(

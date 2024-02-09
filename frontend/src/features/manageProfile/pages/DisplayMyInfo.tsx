@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
 
 import "./DisplayMyInfo.scss";
-import { UserInformation } from "../types/manageProfile";
+import { ReadUserInformationResponse } from "../types/manageProfile";
 import { formatPhoneNumber } from "../../../common/components/form/subFormComponents/PhoneNumberInput";
 import {
   formatProvince,
@@ -16,7 +16,7 @@ export const DisplayMyInfo = memo(
     myInfo,
     setIsEditing,
   }: {
-    myInfo?: UserInformation;
+    myInfo?: ReadUserInformationResponse;
     setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
   }) => {
     if (!myInfo) return <></>;

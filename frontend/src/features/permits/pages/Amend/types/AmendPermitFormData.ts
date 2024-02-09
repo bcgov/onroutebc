@@ -70,10 +70,6 @@ export const getDefaultFormDataFromPermit = (
       {
         ...permit,
         permitId: `${permit.permitId}`,
-        previousRevision: applyWhenNotNullable(
-          (prevRev) => `${prevRev}`,
-          permit.previousRevision,
-        ),
         createdDateTime: applyWhenNotNullable(
           (createdAt) => utcToLocalDayjs(createdAt),
           permit.createdDateTime,

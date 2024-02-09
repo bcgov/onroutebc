@@ -33,7 +33,7 @@ export class ReadApplicationDto {
     example: '1',
     description: 'Previous permit id for a revised permit.',
   })
-  previousRevision: number;
+  previousRevision: string;
 
   @AutoMap()
   @ApiProperty({

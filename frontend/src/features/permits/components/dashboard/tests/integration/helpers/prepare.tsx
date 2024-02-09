@@ -15,11 +15,17 @@ import { getDefaultUserDetails } from "../fixtures/getUserDetails";
 import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
 import { APPLICATION_STEPS } from "../../../../../../../routes/constants";
 import { Nullable, Optional } from "../../../../../../../common/types/common";
+import { PERMIT_STATUSES } from "../../../../../types/PermitStatus";
 import {
   PowerUnit,
   Trailer,
 } from "../../../../../../manageVehicles/types/Vehicle";
-import { ApplicationRequestData } from "../../../../../types/application";
+
+import {
+  CreateApplicationRequestData,
+  UpdateApplicationRequestData,
+} from "../../../../../types/application";
+
 import {
   dayjsToUtcStr,
   now,
@@ -67,12 +73,15 @@ const server = setupServer(
     if (!application) {
       return HttpResponse.json(null, { status: 400 });
     }
+
     const applicationData = {
-      ...(application as ApplicationRequestData),
+      ...(application as CreateApplicationRequestData),
       applicationNumber: newApplicationNumber,
       permitId: newPermitId,
+      originalPermitId: newPermitId,
       createdDateTime: currDtUtcStr,
       updatedDateTime: currDtUtcStr,
+      permitStatus: PERMIT_STATUSES.IN_PROGRESS,
     };
     const createdApplication = createApplication(applicationData); // add to mock application store
     return HttpResponse.json(
@@ -95,9 +104,15 @@ const server = setupServer(
       }
 
       const applicationData = {
-        ...(application as ApplicationRequestData),
+        ...(application as UpdateApplicationRequestData),
+        permitId: newPermitId,
+        originalPermitId: newPermitId,
+        applicationNumber: String(id),
+        createdDateTime: currDtUtcStr,
+        permitStatus: PERMIT_STATUSES.IN_PROGRESS,
         updatedDateTime: currDtUtcStr,
       };
+
       const updatedApplication = updateApplication(applicationData, String(id)); // update application in mock application store
 
       if (!updatedApplication) {

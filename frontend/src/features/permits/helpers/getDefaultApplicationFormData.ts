@@ -257,10 +257,7 @@ export const getDefaultValues = (
       vehicleDetails: getDefaultVehicleDetails(
         applicationData?.permitData?.vehicleDetails,
       ),
-      feeSummary: getDefaultRequiredVal(
-        `${calculateFeeByDuration(durationOrDefault)}`,
-        applicationData?.permitData?.feeSummary,
-      ),
+      feeSummary: `${calculateFeeByDuration(durationOrDefault)}`,
     },
   };
 };
