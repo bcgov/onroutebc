@@ -5,7 +5,6 @@ import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { RowSelectionState } from "@tanstack/table-core";
 import {
   MRT_ColumnDef,
-  MRT_GlobalFilterTextField,
   MRT_PaginationState,
   MRT_Row,
   MRT_SortingState,
@@ -15,7 +14,10 @@ import {
 } from "material-react-table";
 
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
-import { deleteApplications, getApplicationsInProgress} from "../../apiManager/permitsAPI";
+import {
+  deleteApplications,
+  getApplicationsInProgress,
+} from "../../apiManager/permitsAPI";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
@@ -24,7 +26,10 @@ import {
 import { ApplicationInProgressColumnDefinition } from "./ApplicationInProgressColumnDefinition";
 import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
 import { SnackBarContext } from "../../../../App";
-import { ApplicationInProgress, PermitApplicationInProgress } from "../../types/application";
+import {
+  ApplicationInProgress,
+  PermitApplicationInProgress,
+} from "../../types/application";
 import { Delete } from "@mui/icons-material";
 import { Trash } from "../../../../common/components/table/options/Trash";
 
@@ -40,14 +45,13 @@ const getColumns = (): MRT_ColumnDef<ApplicationInProgress>[] => {
  * A wrapper with the query to load the table with expired permits.
  */
 export const ApplicationsInProgressList = () => {
-
   const [pagination, setPagination] = useState<MRT_PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   });
   const [sorting, setSorting] = useState<MRT_SortingState>([
     {
-      id: "startDate",
+      id: "startDate", // change to updateDateTime when backend supports it.
       desc: true,
     },
   ]);
@@ -60,21 +64,19 @@ export const ApplicationsInProgressList = () => {
       sorting,
     ],
     queryFn: () =>
-      getApplicationsInProgress(
-        {
-          page: pagination.pageIndex,
-          take: pagination.pageSize,
-          sorting:
-            sorting.length > 0
-              ? [
-                  {
-                    orderBy: sorting.at(0)?.id as string,
-                    descending: Boolean(sorting.at(0)?.desc),
-                  },
-                ]
-              : [],
-        },
-      ),
+      getApplicationsInProgress({
+        page: pagination.pageIndex,
+        take: pagination.pageSize,
+        orderBy:
+          sorting.length > 0
+            ? [
+                {
+                  column: sorting.at(0)?.id as string,
+                  descending: Boolean(sorting.at(0)?.desc),
+                },
+              ]
+            : [],
+      }),
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: false,
     retry: 1,
@@ -86,7 +88,6 @@ export const ApplicationsInProgressList = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
-  const [globalFilter, setGlobalFilter] = useState<string>("");
 
   const columns = useMemo<MRT_ColumnDef<ApplicationInProgress>[]>(
     () => getColumns(),
@@ -166,8 +167,7 @@ export const ApplicationsInProgressList = () => {
       showProgressBars: isFetching,
       columnVisibility: { applicationId: true },
       isLoading: isPending,
-      rowSelection: rowSelection,
-      globalFilter,
+      rowSelection,
       pagination,
       sorting,
     },
@@ -207,25 +207,19 @@ export const ApplicationsInProgressList = () => {
       ),
       [],
     ),
-    renderTopToolbar: useCallback(
-      ({ table }: { table: MRT_TableInstance<ApplicationInProgress> }) => (
-        <Box className="table-container__top-toolbar">
-          <MRT_GlobalFilterTextField table={table} />
-          <Trash
-            onClickTrash={onClickTrashIcon}
-            disabled={hasNoRowsSelected}
-          />
-        </Box>
+    renderToolbarInternalActions: useCallback(
+      () => (
+        <Trash onClickTrash={onClickTrashIcon} disabled={hasNoRowsSelected} />
       ),
       [hasNoRowsSelected],
     ),
+    enableGlobalFilter: false,
     autoResetPageIndex: false,
     manualFiltering: true,
     manualPagination: true,
     manualSorting: true,
     rowCount: data?.meta?.totalItems ?? 0,
     pageCount: data?.meta?.pageCount ?? 0,
-    onGlobalFilterChange: setGlobalFilter,
     onSortingChange: setSorting,
     onPaginationChange: setPagination,
     enablePagination: true,

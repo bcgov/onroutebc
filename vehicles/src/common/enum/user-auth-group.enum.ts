@@ -10,3 +10,19 @@ export enum UserAuthGroup {
   HQ_ADMINISTRATOR = 'HQADMIN',
   FINANCE = 'FINANCE',
 }
+
+export const idirUserAuthGroupList: readonly UserAuthGroup[] = [
+  UserAuthGroup.PPC_CLERK,
+  UserAuthGroup.SYSTEM_ADMINISTRATOR,
+  UserAuthGroup.ENFORCEMENT_OFFICER,
+  UserAuthGroup.HQ_ADMINISTRATOR,
+  UserAuthGroup.FINANCE,
+];
+
+export enum IDIRUserAuthGroup {
+  PPC_CLERK = 'PPCCLERK',
+  SYSTEM_ADMINISTRATOR = 'SYSADMIN',
+  ENFORCEMENT_OFFICER = 'EOFFICER',
+  HQ_ADMINISTRATOR = 'HQADMIN',
+  FINANCE = 'FINANCE',
+}

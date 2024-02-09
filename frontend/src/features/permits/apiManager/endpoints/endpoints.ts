@@ -1,5 +1,4 @@
 import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints";
-import { PERMIT_STATUSES } from "../../types/PermitStatus";
 
 const PERMITS_API_BASE = `${VEHICLES_URL}/permits`;
 const APPLICATIONS_API_BASE = `${PERMITS_API_BASE}/applications`;
@@ -9,16 +8,14 @@ export const APPLICATIONS_API_ROUTES = {
   UPDATE: APPLICATIONS_API_BASE,
   GET: APPLICATIONS_API_BASE,
   STATUS: `${APPLICATIONS_API_BASE}/status`,
-  IN_PROGRESS: `${APPLICATIONS_API_BASE}?statuses=${PERMIT_STATUSES.IN_PROGRESS},${PERMIT_STATUSES.WAITING_PAYMENT}`,
 };
 
 export const PERMITS_API_ROUTES = {
   BASE: PERMITS_API_BASE,
   GET: PERMITS_API_BASE,
   ISSUE: `${APPLICATIONS_API_BASE}/issue`,
-  HISTORY: `${PERMITS_API_BASE}/history`,
   AMEND: APPLICATIONS_API_ROUTES.CREATE,
-  DOWNLOAD: `pdf?download=proxy`,
+  DOWNLOAD: `pdf`,
   RECEIPT: `receipt`,
   VOID: `void`,
 };

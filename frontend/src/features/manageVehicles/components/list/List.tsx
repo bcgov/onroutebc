@@ -27,7 +27,7 @@ import { DeleteConfirmationDialog } from "../../../../common/components/dialog/D
 import { PowerUnitColumnDefinition, TrailerColumnDefinition } from "./Columns";
 import { deleteVehicles } from "../../apiManager/vehiclesAPI";
 import { SnackBarContext } from "../../../../App";
-import { VEHICLES_ROUTES } from "../../../../routes/constants";
+import { ERROR_ROUTES, VEHICLES_ROUTES } from "../../../../routes/constants";
 import { DoesUserHaveRoleWithContext } from "../../../../common/authentication/util";
 import { ROLES } from "../../../../common/authentication/types";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
@@ -84,6 +84,7 @@ export const List = memo(
   }) => {
     // Data, fetched from backend API
     const { data, isError, isFetching, isPending } = query;
+    const navigate = useNavigate();
 
     // Column definitions for the table
     const columns = useMemo<MRT_ColumnDef<Vehicle>[]>(
@@ -156,33 +157,40 @@ export const List = memo(
     const onConfirmDelete = async () => {
       const vehicleIds: string[] = Object.keys(rowSelection);
 
-      const response = await deleteVehicles(vehicleIds, vehicleType, companyId);
-      if (response.status === 200) {
-        const responseBody = response.data;
-        setIsDeleteDialogOpen(() => false);
-        if (responseBody.failure.length > 0) {
-          snackBar.setSnackBar({
-            message: "An unexpected error occurred.",
-            showSnackbar: true,
-            setShowSnackbar: () => true,
-            alertType: "error",
-          });
-        } else {
-          snackBar.setSnackBar({
-            message: "Vehicle Deleted",
-            showSnackbar: true,
-            setShowSnackbar: () => true,
-            alertType: "info",
-          });
-        }
-        setRowSelection(() => {
-          return {};
+      deleteVehicles(vehicleIds, vehicleType, companyId)
+        .then((response) => {
+          if (response.status === 200) {
+            const responseBody = response.data;
+            if (responseBody.failure.length > 0) {
+              snackBar.setSnackBar({
+                message: "An unexpected error occurred.",
+                showSnackbar: true,
+                setShowSnackbar: () => true,
+                alertType: "error",
+              });
+            } else {
+              snackBar.setSnackBar({
+                message: "Vehicle Deleted",
+                showSnackbar: true,
+                setShowSnackbar: () => true,
+                alertType: "info",
+              });
+            }
+            setRowSelection(() => {
+              return {};
+            });
+            query.refetch();
+          } else {
+            navigate(ERROR_ROUTES.UNEXPECTED);
+          }
+        })
+        .catch(() => {
+          navigate(ERROR_ROUTES.UNEXPECTED);
+        })
+        .finally(() => {
+          setIsDeleteDialogOpen(() => false);
         });
-        query.refetch();
-      }
     };
-
-    const navigate = useNavigate();
 
     /**
      * Function that clears the delete related states when the user clicks on cancel.

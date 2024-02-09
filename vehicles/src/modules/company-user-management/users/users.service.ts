@@ -22,7 +22,10 @@ import { PendingUsersService } from '../pending-users/pending-users.service';
 import { CompanyService } from '../company/company.service';
 import { Role } from '../../../common/enum/roles.enum';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
-import { UserAuthGroup } from 'src/common/enum/user-auth-group.enum';
+import {
+  IDIRUserAuthGroup,
+  UserAuthGroup,
+} from 'src/common/enum/user-auth-group.enum';
 import { PendingIdirUser } from '../pending-idir-users/entities/pending-idir-user.entity';
 import { IdirUser } from './entities/idir.user.entity';
 import { PendingIdirUsersService } from '../pending-idir-users/pending-idir-users.service';
@@ -613,7 +616,9 @@ export class UsersService {
   @LogAsyncMethodExecution()
   async checkIdirUser(currentUser: IUserJWT): Promise<ReadUserOrbcStatusDto> {
     let userExists: ReadUserOrbcStatusDto = null;
-    const idirUser = await this.findOneIdirUser(currentUser.idir_user_guid);
+    const idirUser = await this.findOneIdirUserEntity(
+      currentUser.idir_user_guid,
+    );
     if (!idirUser) {
       /**
        * IF IDIR use is not found in DB then check pending user table to see if the user has been invited
@@ -695,7 +700,30 @@ export class UsersService {
   }
 
   @LogAsyncMethodExecution()
-  async findIdirUser(userGUID?: string): Promise<ReadUserDto> {
+  async findIdirUsers(
+    userAuthGroup?: IDIRUserAuthGroup,
+  ): Promise<ReadUserDto[]> {
+    // Find user entities based on the provided filtering criteria
+    const userQB = this.idirUserRepository.createQueryBuilder('user');
+
+    if (userAuthGroup) {
+      userQB.where('user.userAuthGroup=:userAuthGroup', {
+        userAuthGroup: userAuthGroup,
+      });
+    }
+
+    const userDetails = await userQB.getMany();
+    // Map the retrieved user entities to ReadUserDto objects
+    const readUserDto: ReadUserDto[] = await this.classMapper.mapArrayAsync(
+      userDetails,
+      IdirUser,
+      ReadUserDto,
+    );
+    return readUserDto;
+  }
+
+  @LogAsyncMethodExecution()
+  async findOneIdirUser(userGUID?: string): Promise<ReadUserDto> {
     // Find user entities based on the provided filtering criteria
     const userDetails = await this.idirUserRepository.findOne({
       where: { userGUID: userGUID },
@@ -710,7 +738,7 @@ export class UsersService {
   }
 
   @LogAsyncMethodExecution()
-  async findOneIdirUser(userGUID?: string): Promise<IdirUser> {
+  async findOneIdirUserEntity(userGUID?: string): Promise<IdirUser> {
     // Find user entities based on the provided filtering criteria
     const userDetails = await this.idirUserRepository.findOne({
       where: { userGUID: userGUID },
