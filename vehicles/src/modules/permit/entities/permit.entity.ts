@@ -62,8 +62,8 @@ export class Permit extends Base {
     example: '1',
     description: 'Represents the previous permit id for a revised permit.',
   })
-  @Column({ type: 'integer', name: 'PREVIOUS_REV_ID', nullable: true })
-  previousRevision: number;
+  @Column({ type: 'bigint', name: 'PREVIOUS_REV_ID', nullable: true })
+  previousRevision: string;
 
   @AutoMap()
   @ApiProperty({

@@ -9,7 +9,7 @@ import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import "../../../../common/components/dashboard/Dashboard.scss";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { CompanyAndUserRequest } from "../../../manageProfile/types/manageProfile";
+import { CreateCompanyRequest } from "../../../manageProfile/types/manageProfile";
 import { OnRouteBCProfileCreated } from "../../subcomponents/OnRouteBCProfileCreated";
 import "./CreateProfileSteps.scss";
 import { CompanyAndUserInfoSteps } from "../../subcomponents/CompanyAndUserInfoSteps";
@@ -27,7 +27,7 @@ export const CreateProfileSteps = React.memo(() => {
   const [clientNumber, setClientNumber] =
     React.useState<Nullable<string>>(null);
 
-  const companyAndUserFormMethods = useForm<CompanyAndUserRequest>({
+  const companyAndUserFormMethods = useForm<CreateCompanyRequest>({
     defaultValues: {
       legalName: getDefaultRequiredVal(
         "",

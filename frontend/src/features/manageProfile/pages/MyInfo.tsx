@@ -49,7 +49,7 @@ export const MyInfo = memo(() => {
   return (
     <div className="my-info-page">
       {isEditing ? <Header /> : null}
-      <UserInfoBanner userInfo={myInfo} />
+      <UserInfoBanner userAuthGroup={myInfo?.userAuthGroup} />
       {isEditing ? (
         <MyInfoForm myInfo={myInfo} setIsEditing={setIsEditing} />
       ) : (

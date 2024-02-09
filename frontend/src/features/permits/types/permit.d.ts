@@ -11,7 +11,7 @@ interface PartialPermit
     Required<PartialApplication>,
     "previousRevision" | "comment" | "userGuid" | "documentId" | "permitId"
   > {
-  previousRevision?: Nullable<number>;
+  previousRevision?: Nullable<string>;
   comment?: Nullable<string>;
   userGuid?: Nullable<string>;
   documentId?: string;

@@ -10,7 +10,6 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiParam,
-  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
@@ -25,6 +24,7 @@ import { Roles } from '../../../common/decorator/roles.decorator';
 import { Role } from '../../../common/enum/roles.enum';
 import { UpdateUserDto } from './dto/request/update-user.dto';
 import { UpdateUserStatusDto } from './dto/request/update-user-status.dto';
+import { GetCompanyUserQueryParamsDto } from './dto/request/queryParam/getCompanyUser.query-params.dto';
 
 @ApiTags('Company and User Management - Company User')
 @ApiBadRequestResponse({
@@ -49,14 +49,13 @@ export class CompanyUsersController {
   constructor(private readonly userService: UsersService) {}
 
   /**
-   * A GET method defined with the @Get() decorator and a route of
-   * companies/:companyId/users that retrieves a list of users associated with
-   * the company ID
+   * Retrieves a list of users associated with a specified company ID. This method
+   * supports filtering users based on their status (e.g., including pending users).
    *
-   * @param companyId The company Id.
-   * @param pendingUser Optional Query Param to include pending Users.
+   * @param companyId The unique identifier of the company.
+   * @param getCompanyUserQueryParamsDto Query parameters for filtering the users.
    *
-   * @returns The user list with response object {@link ReadUserDto}.
+   * @returns A list of users related to the specified company as defined by {@link ReadUserDto}.
    */
   @ApiOkResponse({
     description: 'The User Resource List',
@@ -64,19 +63,17 @@ export class CompanyUsersController {
     isArray: true,
   })
   @ApiParam({ name: 'companyId', required: true })
-  @ApiQuery({ name: 'includePendingUser', required: false, example: false })
   @Roles(Role.READ_SELF)
   @Get()
   async findAllCompanyUsers(
     @Req() request: Request,
     @Param('companyId') companyId: number,
-    @Query('includePendingUser') includePendingUser?: string,
+    @Query() getCompanyUserQueryParamsDto: GetCompanyUserQueryParamsDto,
   ) {
-    const pendingUser = includePendingUser === 'true';
     return await this.userService.findUsersDto(
       undefined,
       [companyId],
-      pendingUser,
+      getCompanyUserQueryParamsDto.includePendingUser,
     );
   }
 
