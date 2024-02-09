@@ -71,15 +71,6 @@ export class PaymentService {
   };
 
   private queryHash = (transaction: Transaction) => {
-    //const permitIds = transaction.permitTransactions.map(
-    //  (permitTransaction) => {
-    //    return permitTransaction.permit.permitId;
-    //  },
-    //);
-    // Construct the URL with the transaction details for the payment gateway
-    //const redirectUrl = permitIds
-    //  ? `${process.env.PAYBC_REDIRECT}` + `?path=${permitIds.join(',')}`
-    //  : `${process.env.PAYBC_REDIRECT}`;
     const redirectUrl = process.env.PAYBC_REDIRECT;
     const date = new Date().toISOString().split('T')[0];
 
@@ -371,11 +362,6 @@ export class PaymentService {
         queryString.length,
       );
     }
-
-    console.log('query', query)
-    console.log('queryString', queryString)
-    console.log('hashValue', hashValue)
-    console.log('paybc_api_key', process.env.PAYBC_API_KEY)
 
     const validHash =
       convertToHash(
