@@ -32,7 +32,7 @@ export const PaymentRedirect = () => {
   const paymentDetails = getPayBCPaymentDetails(searchParams);
   const transaction = mapTransactionDetails(paymentDetails);
   const transactionId = getDefaultRequiredVal("", searchParams.get("ref2"));
-  const [applicationIds, setApplicationIds] = useState<string[] | []>([]);
+  const [applicationIds, setApplicationIds] = useState<string[]>([]);
   const transactionQueryString = encodeURIComponent(searchParams.toString());
   
   const { mutation: completeTransactionMutation, paymentApproved } =

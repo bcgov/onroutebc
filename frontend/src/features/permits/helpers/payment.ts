@@ -1,4 +1,4 @@
-import { PayBCPaymentDetails } from "../types/payment";
+import { PayBCPaymentDetails, StartTransactionResponseData } from "../types/payment";
 import { Nullable, RequiredOrNull } from "../../../common/types/common";
 import {
   PAYMENT_GATEWAY_METHODS,
@@ -13,7 +13,6 @@ import {
 } from "../../../common/helpers/util";
 import { httpGETRequest } from "../../../common/apiManager/httpRequestHandler";
 import { PAYMENT_API_ROUTES } from "../apiManager/endpoints/endpoints";
-import { PaymentTransaction } from "../../../common/types/paymentTransaction";
 
 /**
  * Extracts PayBCPaymentDetails from the query parameters of a URL.
@@ -38,7 +37,7 @@ export const getPayBCPaymentDetails = (
     trnApproved: applyWhenNotNullable(
       (approved) => Number(approved),
       params.get("trnApproved"),
-    ),
+    0),
     messageId: applyWhenNotNullable(
       (messageId) => Number(messageId),
       params.get("messageId"),
@@ -95,7 +94,7 @@ export const isValidTransaction = (
  */
 export const getPaymentByTransactionId = async (
   transactionId?: string,
-): Promise<RequiredOrNull<PaymentTransaction>> => {
+): Promise<RequiredOrNull<StartTransactionResponseData>> => {
   try {
     const url = `${PAYMENT_API_ROUTES.GET}/${transactionId}`;
     const response = await httpGETRequest(url);
