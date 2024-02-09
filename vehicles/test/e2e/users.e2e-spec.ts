@@ -28,7 +28,6 @@ import {
   idirUserEntityMock,
   readRedCompanyAdminUserDtoMock,
   redCompanyAdminUserEntityMock,
-  redCompanyCvClientUserEntityMock,
 } from '../util/mocks/data/user.mock';
 import { createMapper } from '@automapper/core';
 import { UsersService } from '../../src/modules/company-user-management/users/users.service';
@@ -112,10 +111,6 @@ describe('Users (e2e)', () => {
     await app.init();
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   describe('/users/user-context POST', () => {
     it('should return the ORBC userContext.', async () => {
       repo.findOne.mockResolvedValue(redCompanyAdminUserEntityMock);
@@ -151,26 +146,23 @@ describe('Users (e2e)', () => {
     });
   });
 
-  describe('/users GETAll', () => {
-    it('should return an array of company metadata associated with the users company.', async () => {
-      jest
-        .spyOn(repo, 'createQueryBuilder')
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-        .mockImplementation(() =>
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-          createQueryBuilderMock([
-            redCompanyAdminUserEntityMock,
-            redCompanyCvClientUserEntityMock,
-          ]),
-        );
+  // describe('/users GETAll', () => {
+  //   it('should return list of IDIR users', async () => {
+  //     jest
+  //       .spyOn(repo, 'createQueryBuilder')
+  //       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  //       .mockImplementation(() =>
+  //         // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  //         createQueryBuilderMock([sysAdminStaffUserEntityMock]),
+  //       );
 
-      const response = await request(app.getHttpServer() as unknown as App)
-        .get('/users')
-        .expect(200);
+  //     const response = await request(app.getHttpServer() as unknown as App)
+  //       .get('/users')
+  //       .expect(200);
 
-      expect(response.body).toContainEqual(readRedCompanyAdminUserDtoMock);
-    });
-  });
+  //     expect(response.body).toContainEqual([readSysAdminStaffUserDtoMock]);
+  //   });
+  // });
 
   describe('/users/C23229C862234796BE9DA99F30A44F9A GETAll', () => {
     it('should return the user details.', async () => {

@@ -7,6 +7,8 @@ export const ApplicationInProgressColumnDefinition: MRT_ColumnDef<ApplicationInP
   [
     {
       accessorKey: "applicationNumber",
+      id: "applicationNumber",
+      enableSorting: false,
       header: "Application #",
       accessorFn: (row) => row.applicationNumber,
       Cell: (props: { cell: any; row: any }) => {
@@ -23,27 +25,46 @@ export const ApplicationInProgressColumnDefinition: MRT_ColumnDef<ApplicationInP
     },
     {
       accessorKey: "permitType",
+      id: "permitType",
+      enableSorting: false,
       header: "Permit Type",
     },
     {
-      accessorKey: "permitData.vehicleDetails.unitNumber",
+      accessorKey: "unitNumber",
+      id: "unitNumber",
+      enableSorting: false,
       header: "Unit #",
     },
     {
       accessorKey: "permitData.vehicleDetails.vin",
+      id: "vin",
+      enableSorting: false,
       header: "VIN",
     },
     {
       accessorKey: "permitData.vehicleDetails.plate",
+      id: "plate",
+      enableSorting: false,
       header: "Plate",
     },
     {
       accessorKey: "permitData.startDate",
+      id: "startDate",
+      enableSorting: false,
       header: "Permit Start Date",
     },
     {
       accessorKey: "updatedDateTime",
+      enableSorting: false,
+      id: "updatedDateTime",
       header: "Last Updated",
+    },
+    {
+      accessorFn: (row) =>
+        `${row.permitData.contactDetails?.firstName} ${row.permitData.contactDetails?.lastName} `,
+      id: "applicant",
+      header: "Applicant",
+      enableSorting: false,
     },
   ];
 

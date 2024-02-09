@@ -23,6 +23,7 @@ import {
   getStartOfDate,
 } from "../../../../../../common/helpers/formatDate";
 import { getExpiryDate } from "../../../../helpers/permitState";
+import { calculateFeeByDuration } from "../../../../helpers/feeSummary";
 
 export const PermitDetails = ({
   feature,
@@ -73,6 +74,7 @@ export const PermitDetails = ({
     // this needs useEffect as this form field update process is manual, and needs to happen whenever startDate and duration changes
     // also, the form field component is accepting a dayJS object
     setValue("permitData.expiryDate", dayjs(expiryDate));
+    setValue("permitData.feeSummary", `${calculateFeeByDuration(duration)}`);
   }, [startDate, duration]);
 
   return (

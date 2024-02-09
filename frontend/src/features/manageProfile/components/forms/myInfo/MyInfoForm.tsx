@@ -1,7 +1,7 @@
 import { Button } from "@mui/material";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { memo } from "react";
-import { FieldValues, FormProvider, useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 
 import { formatPhoneNumber } from "../../../../../common/components/form/subFormComponents/PhoneNumberInput";
 import {
@@ -9,20 +9,27 @@ import {
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
 import { updateMyInfo } from "../../../apiManager/manageProfileAPI";
-import { UserInformation } from "../../../types/manageProfile";
+import {
+  ReadUserInformationResponse,
+  UserInfoRequest,
+} from "../../../types/manageProfile";
 import { ReusableUserInfoForm } from "../common/ReusableUserInfoForm";
 import "./MyInfoForm.scss";
+import {
+  BCeIDUserAuthGroupType,
+  BCeID_USER_AUTH_GROUP,
+} from "../../../../../common/authentication/types";
 
 export const MyInfoForm = memo(
   ({
     myInfo,
     setIsEditing,
   }: {
-    myInfo?: UserInformation;
+    myInfo?: ReadUserInformationResponse;
     setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
   }) => {
     const queryClient = useQueryClient();
-    const formMethods = useForm<UserInformation>({
+    const formMethods = useForm<UserInfoRequest>({
       defaultValues: {
         firstName: getDefaultRequiredVal("", myInfo?.firstName),
         lastName: getDefaultRequiredVal("", myInfo?.lastName),
@@ -35,7 +42,10 @@ export const MyInfoForm = memo(
         countryCode: getDefaultRequiredVal("", myInfo?.countryCode),
         provinceCode: getDefaultRequiredVal("", myInfo?.provinceCode),
         city: getDefaultRequiredVal("", myInfo?.city),
-        userAuthGroup: getDefaultRequiredVal("", myInfo?.userAuthGroup),
+        userAuthGroup: getDefaultRequiredVal(
+          BCeID_USER_AUTH_GROUP.CV_CLIENT,
+          myInfo?.userAuthGroup as BCeIDUserAuthGroupType,
+        ),
       },
     });
 
@@ -53,9 +63,9 @@ export const MyInfoForm = memo(
       },
     });
 
-    const onUpdateMyInfo = (data: FieldValues) => {
+    const onUpdateMyInfo = (data: UserInfoRequest) => {
       addMyInfoMutation.mutate({
-        myInfo: data as UserInformation,
+        myInfo: data,
       });
     };
 
