@@ -372,6 +372,11 @@ export class PaymentService {
       );
     }
 
+    console.log('query', query)
+    console.log('queryString', queryString)
+    console.log('hashValue', hashValue)
+    console.log('paybc_api_key', process.env.PAYBC_API_KEY)
+
     const validHash =
       convertToHash(
         `${query}${process.env.PAYBC_API_KEY}`,

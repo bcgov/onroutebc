@@ -8,7 +8,6 @@ import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { DATE_FORMATS, toUtc } from "../../../../common/helpers/formatDate";
 import { hasPermitsActionFailed } from "../../helpers/permitState";
 import { PaymentCardTypeCode } from "../../../../common/types/paymentMethods";
-import { Nullable } from "../../../../common/types/common";
 import {
   APPLICATIONS_ROUTES,
   ERROR_ROUTES,
@@ -19,29 +18,6 @@ import {
   CompleteTransactionRequestData,
   PayBCPaymentDetails,
 } from "../../types/payment";
-
-const PATH_DELIM = "?";
-
-export const parseRedirectUriPath = (path?: Nullable<string>) => {
-  const splitPath = path?.split(PATH_DELIM);
-  let trnApproved = 0;
-
-  if (splitPath?.[1]) {
-    trnApproved = parseInt(splitPath[1]?.split("=")?.[1]);
-  }
-
-  return trnApproved;
-};
-
-const exportPathFromSearchParams = (
-  params: URLSearchParams,
-  trnApproved: number,
-) => {
-  const localParams = new URLSearchParams(params);
-  localParams.delete("path");
-  const updatedPath = localParams.toString();
-  return encodeURIComponent(`trnApproved=${trnApproved}&` + updatedPath);
-};
 
 /**
  * React component that handles the payment redirect and displays the payment status.
@@ -56,14 +32,11 @@ export const PaymentRedirect = () => {
   const paymentDetails = getPayBCPaymentDetails(searchParams);
   const transaction = mapTransactionDetails(paymentDetails);
 
+  console.log('searchParams', searchParams.toString())
+
   const transactionId = getDefaultRequiredVal("", searchParams.get("ref2"));
-  const path = getDefaultRequiredVal("", searchParams.get("path"));
-  const trnApproved = parseRedirectUriPath(path);
   const [applicationIds, setApplicationIds] = useState<string[] | []>([]);
-  const transactionQueryString = exportPathFromSearchParams(
-    searchParams,
-    trnApproved,
-  );
+  const transactionQueryString = searchParams.toString();
   
   const { mutation: completeTransactionMutation, paymentApproved } =
     useCompleteTransaction(

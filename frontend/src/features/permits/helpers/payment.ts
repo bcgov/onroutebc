@@ -1,5 +1,4 @@
 import { PayBCPaymentDetails } from "../types/payment";
-import { parseRedirectUriPath } from "../pages/Payment/PaymentRedirect";
 import { Nullable, RequiredOrNull } from "../../../common/types/common";
 import {
   PAYMENT_GATEWAY_METHODS,
@@ -13,7 +12,6 @@ import {
   getDefaultRequiredVal,
 } from "../../../common/helpers/util";
 import { httpGETRequest } from "../../../common/apiManager/httpRequestHandler";
-//import { ApplicationResponse } from "../types/application";
 import { PAYMENT_API_ROUTES } from "../apiManager/endpoints/endpoints";
 import { PaymentTransaction } from "../../../common/types/paymentTransaction";
 
@@ -27,9 +25,6 @@ export const getPayBCPaymentDetails = (
   params: URLSearchParams,
 ): PayBCPaymentDetails => {
   // Extract the query parameters and assign them to the corresponding properties of PayBCPaymentDetails
-  const path = getDefaultRequiredVal("", params.get("path"));
-  const trnApproved = parseRedirectUriPath(path);
-
   const payBCPaymentDetails: PayBCPaymentDetails = {
     authCode: params.get("authCode"),
     avsAddrMatch: getDefaultRequiredVal("", params.get("avsAddrMatch")),
@@ -40,7 +35,10 @@ export const getPayBCPaymentDetails = (
     avsResult: getDefaultRequiredVal("", params.get("avsResult")),
     cardType: getDefaultRequiredVal("", params.get("cardType")),
     cvdId: applyWhenNotNullable((cvdId) => Number(cvdId), params.get("cvdId")),
-    trnApproved: trnApproved,
+    trnApproved: applyWhenNotNullable(
+      (approved) => Number(approved),
+      params.get("trnApproved"),
+    ),
     messageId: applyWhenNotNullable(
       (messageId) => Number(messageId),
       params.get("messageId"),
