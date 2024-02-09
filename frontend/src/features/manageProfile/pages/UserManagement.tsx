@@ -129,7 +129,7 @@ export const UserManagement = () => {
     renderToolbarInternalActions: useCallback(
       () => (
         <Box className="table-container__toolbar-internal-actions">
-          <Trash onClickTrash={onClickTrashIcon} disabled={hasNoRowsSelected} />
+          <Trash onClickTrash={onClickTrashIcon} disabled />
         </Box>
       ),
       [hasNoRowsSelected],
