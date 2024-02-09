@@ -31,12 +31,9 @@ export const PaymentRedirect = () => {
   const [searchParams] = useSearchParams();
   const paymentDetails = getPayBCPaymentDetails(searchParams);
   const transaction = mapTransactionDetails(paymentDetails);
-
-  console.log('searchParams', searchParams.toString())
-
   const transactionId = getDefaultRequiredVal("", searchParams.get("ref2"));
   const [applicationIds, setApplicationIds] = useState<string[] | []>([]);
-  const transactionQueryString = searchParams.toString();
+  const transactionQueryString = encodeURIComponent(searchParams.toString());
   
   const { mutation: completeTransactionMutation, paymentApproved } =
     useCompleteTransaction(
