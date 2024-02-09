@@ -149,6 +149,7 @@ export class ApplicationService {
         }),
       },
     );
+
     const savedPermitEntity =
       await this.permitRepository.save(permitApplication);
     // In case of new application assign original permit ID
@@ -156,7 +157,13 @@ export class ApplicationService {
       await this.permitRepository
         .createQueryBuilder()
         .update()
-        .set({ originalPermitId: savedPermitEntity.permitId })
+        .set({
+          originalPermitId: savedPermitEntity.permitId,
+          updatedUser: currentUser.userName,
+          updatedDateTime: new Date(),
+          updatedUserDirectory: currentUser.orbcUserDirectory,
+          updatedUserGuid: currentUser.userGUID,
+        })
         .where('permitId = :permitId', { permitId: savedPermitEntity.permitId })
         .execute();
     }
