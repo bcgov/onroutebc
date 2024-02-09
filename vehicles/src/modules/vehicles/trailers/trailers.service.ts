@@ -2,7 +2,7 @@ import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, Repository } from 'typeorm';
+import { DeleteResult, In, Repository } from 'typeorm';
 import { CreateTrailerDto } from './dto/request/create-trailer.dto';
 import { ReadTrailerDto } from './dto/response/read-trailer.dto';
 import { UpdateTrailerDto } from './dto/request/update-trailer.dto';
@@ -112,24 +112,49 @@ export class TrailersService {
     return await this.trailerRepository.delete(trailerId);
   }
 
+  /**
+   * Removes all specified trailers for a given company from the database.
+   *
+   * This method first retrieves the existing trailers by their IDs and company ID. It then identifies
+   * which trailers can be deleted (based on whether their IDs were found or not) and proceeds to delete
+   * them. Finally, it constructs a response detailing which deletions were successful and which were not.
+   *
+   * @param {string[]} powerUnitIds The IDs of the trailers to be deleted.
+   * @param {number} companyId The ID of the company owning the trailers.
+   * @returns {Promise<DeleteDto>} An object containing arrays of successful and failed deletions.
+   */
   @LogAsyncMethodExecution()
   async removeAll(trailerIds: string[], companyId: number): Promise<DeleteDto> {
-    const deletedResult = await this.trailerRepository
+    // Retrieve a list of trailers by their IDs and company ID before deletion
+    const trailersBeforeDelete = await this.trailerRepository.findBy({
+      trailerId: In(trailerIds),
+      companyId: companyId,
+    });
+
+    // Extract only the IDs of the trailers to be deleted
+    const trailerIdsBeforeDelete = trailersBeforeDelete.map(
+      (trailer) => trailer.trailerId,
+    );
+
+    // Identify which IDs were not found (failure to delete)
+    const failure = trailerIds?.filter(
+      (id) => !trailerIdsBeforeDelete?.includes(id),
+    );
+
+    // Execute the deletion of trailers by their IDs within the specified company
+    await this.trailerRepository
       .createQueryBuilder()
       .delete()
-      .whereInIds(trailerIds)
+      .whereInIds(trailerIdsBeforeDelete)
       .andWhere('companyId = :companyId', {
         companyId: companyId,
       })
-      .output('DELETED.TRAILER_ID')
       .execute();
 
-    const trailersDeleted = Array.from(
-      deletedResult?.raw as [{ TRAILER_ID: string }],
-    );
+    // Determine successful deletions by filtering out failures
+    const success = trailerIds?.filter((id) => !failure?.includes(id));
 
-    const success = trailersDeleted?.map((trailer) => trailer.TRAILER_ID);
-    const failure = trailerIds?.filter((id) => !success?.includes(id));
+    // Prepare the response DTO with lists of successful and failed deletions
     const deleteDto: DeleteDto = {
       success: success,
       failure: failure,
