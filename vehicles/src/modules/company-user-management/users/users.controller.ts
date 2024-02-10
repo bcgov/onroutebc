@@ -1,13 +1,4 @@
-import {
-  BadRequestException,
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Query,
-  Req,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Req } from '@nestjs/common';
 
 import {
   ApiBadRequestResponse,
@@ -16,7 +7,6 @@ import {
   ApiMethodNotAllowedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
-  ApiQuery,
   ApiTags,
   ApiCreatedResponse,
 } from '@nestjs/swagger';
@@ -33,6 +23,8 @@ import { ReadUserDto } from './dto/response/read-user.dto';
 import { IDP } from '../../../common/enum/idp.enum';
 import { ReadVerifyClientDto } from './dto/response/read-verify-client.dto';
 import { VerifyClientDto } from './dto/request/verify-client.dto';
+import { GetStaffUserQueryParamsDto } from './dto/request/queryParam/getStaffUser.query-params.dto';
+import { GetUserRolesQueryParamsDto } from './dto/request/queryParam/getUserRoles.query-params.dto';
 
 @ApiTags('Company and User Management - User')
 @ApiBadRequestResponse({
@@ -102,28 +94,27 @@ export class UsersController {
 
   /**
    * A GET method defined with the @Get() decorator and a route of
-   * /user/roles that retrieves a list of users associated with
-   * the company ID
+   * /user/roles that retrieves a list of users' roles associated with
+   * the given company ID.
    *
-   * @param companyId The company Id.
+   * @param companyId The company Id for which roles are retrieved.
    *
-   * @returns The user list with response object {@link ReadUserDto}.
+   * @returns The list of roles associated with the given company ID.
    */
   @ApiOkResponse({
     description: "The list of User's Roles",
     isArray: true,
   })
-  @ApiQuery({ name: 'companyId', required: false })
   @Roles(Role.READ_SELF)
   @Get('/roles')
   async getRolesForUsers(
     @Req() request: Request,
-    @Query('companyId') companyId?: number,
+    @Query() getUserRolesQueryParamsDto: GetUserRolesQueryParamsDto,
   ): Promise<Role[]> {
     const currentUser = request.user as IUserJWT;
     const roles = await this.userService.getRolesForUser(
       currentUser.userGUID,
-      companyId,
+      getUserRolesQueryParamsDto.companyId,
     );
     return roles;
   }
@@ -142,34 +133,18 @@ export class UsersController {
     type: ReadUserDto,
     isArray: true,
   })
-  @ApiQuery({ name: 'companyId', required: false })
-  @ApiQuery({ name: 'permitIssuerPPCUser', required: false })
   @Roles(Role.READ_USER)
   @Get()
   async findAll(
-    @Req() request: Request,
-    @Query('companyId') companyId?: number,
-    @Query('permitIssuerPPCUser') permitIssuerPPCUser?: boolean,
+    @Query() getStaffUserQueryParamsDto?: GetStaffUserQueryParamsDto,
   ): Promise<ReadUserDto[]> {
-    const currentUser = request.user as IUserJWT;
-    if (
-      currentUser.identity_provider === IDP.IDIR &&
-      !companyId &&
-      !permitIssuerPPCUser
-    ) {
-      throw new BadRequestException();
-    } else if (
-      currentUser.identity_provider === IDP.IDIR &&
-      !companyId &&
-      permitIssuerPPCUser
-    ) {
+    if (getStaffUserQueryParamsDto.permitIssuerPPCUser) {
       return await this.userService.findPermitIssuerPPCUser();
     }
 
-    const companyIdList = companyId
-      ? [companyId]
-      : currentUser.associatedCompanies;
-    return await this.userService.findUsersDto(undefined, companyIdList);
+    return await this.userService.findIdirUsers(
+      getStaffUserQueryParamsDto.userAuthGroup,
+    );
   }
 
   /**
@@ -199,7 +174,7 @@ export class UsersController {
         currentUser.associatedCompanies,
       );
     } else {
-      users.push(await this.userService.findIdirUser(userGUID));
+      users.push(await this.userService.findOneIdirUser(userGUID));
     }
     if (!users?.length) {
       throw new DataNotFoundException();

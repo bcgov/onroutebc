@@ -1,28 +1,29 @@
-import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsOptional, IsString, Length } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsBoolean, IsString, Length } from 'class-validator';
 
 /**
  * JSON representation of a physical address
  */
 export class SortDto {
-  @AutoMap()
   @ApiProperty({
-    example: 'startDate',
-    description: 'Name of the column to sort',
+    example: 'id',
+    description:
+      'The field used to determine sort order in query results. For example, sorting by `id`.',
     required: true,
   })
   @IsString()
   @Length(1, 150)
-  orderBy: string;
+  readonly orderBy: string;
 
-  @AutoMap()
   @ApiProperty({
-    example: true,
-    description: 'Decides sorting order i.e. ascending or descending',
+    example: false,
+    description:
+      'Defines the direction of sorting. Set to true for descending or false for ascending order.',
+    default: true,
     required: false,
   })
+  @Type(() => Boolean)
   @IsBoolean()
-  @IsOptional()
-  descending: boolean;
+  readonly descending: boolean = false;
 }

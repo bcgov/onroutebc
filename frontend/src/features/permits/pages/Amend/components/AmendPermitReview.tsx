@@ -89,10 +89,6 @@ export const AmendPermitReview = () => {
         oldFields={{
           ...oldFields,
           permitId: applyWhenNotNullable((id) => `${id}`, oldFields.permitId),
-          previousRevision: applyWhenNotNullable(
-            (prevRev) => `${prevRev}`,
-            oldFields.previousRevision,
-          ),
           permitData: {
             ...oldFields.permitData,
             companyName: getDefaultRequiredVal(

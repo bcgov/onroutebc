@@ -1,10 +1,6 @@
 import { useState, useEffect } from "react";
 import { AxiosError } from "axios";
-import {
-  useQueryClient,
-  useMutation,
-  useQuery,
-} from "@tanstack/react-query";
+import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 
 import { Application } from "../types/application";
 import { mapApplicationResponseToApplication } from "../helpers/mappers";
@@ -354,11 +350,12 @@ export const useApplicationsInProgressQuery = ({
   page = 0,
   take = 10,
   searchString = "",
-  sorting = []
+  sorting = [],
 }) => {
   const applicationsInProgressQuery = useQuery({
     queryKey: ["applicationInProgress"],
-    queryFn: () => getApplicationsInProgress({page, take, searchString, sorting}),
+    queryFn: () =>
+      getApplicationsInProgress({ page, take, searchString, orderBy: sorting }),
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
   });
 

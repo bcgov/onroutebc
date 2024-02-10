@@ -10,7 +10,8 @@ import {
 } from "../../../common/types/common";
 
 import {
-  mapApplicationToApplicationRequestData,
+  mapApplicationToUpdateApplicationRequestData,
+  mapApplicationToCreateApplicationRequestData,
   removeEmptyIdsFromPermitsActionResponse,
 } from "../helpers/mappers";
 
@@ -34,6 +35,7 @@ import {
   getDefaultRequiredVal,
   replaceEmptyValuesWithNull,
   streamDownloadFile,
+  stringifyOrderBy,
 } from "../../../common/helpers/util";
 
 import {
@@ -64,7 +66,7 @@ export const submitTermOversize = async (termOversizePermit: Application) => {
     APPLICATIONS_API_ROUTES.CREATE,
     replaceEmptyValuesWithNull({
       // must convert application to ApplicationRequestData (dayjs fields to strings)
-      ...mapApplicationToApplicationRequestData(termOversizePermit),
+      ...mapApplicationToCreateApplicationRequestData(termOversizePermit),
     }),
   );
 };
@@ -83,7 +85,7 @@ export const updateTermOversize = async (
     `${APPLICATIONS_API_ROUTES.UPDATE}/${applicationNumber}`,
     replaceEmptyValuesWithNull({
       // must convert application to ApplicationRequestData (dayjs fields to strings)
-      ...mapApplicationToApplicationRequestData(termOversizePermit),
+      ...mapApplicationToUpdateApplicationRequestData(termOversizePermit),
     }),
   );
 };
@@ -92,17 +94,16 @@ export const updateTermOversize = async (
  * Fetch All Permit Application in Progress
  * @return An array of permit applications
  */
-export const getApplicationsInProgress = async (
-  {
-    page = 0,
-    take = 10,
-    searchString,
-    sorting = [],
-  }: PaginationAndFilters,
-): Promise<PaginatedResponse<PermitApplicationInProgress>> => {
-
+export const getApplicationsInProgress = async ({
+  page = 0,
+  take = 10,
+  searchString,
+  orderBy = [],
+}: PaginationAndFilters): Promise<
+  PaginatedResponse<PermitApplicationInProgress>
+> => {
   const companyId = getCompanyIdFromSession();
-  const applicationsURL = new URL(APPLICATIONS_API_ROUTES.IN_PROGRESS);
+  const applicationsURL = new URL(APPLICATIONS_API_ROUTES.GET);
   if (companyId) {
     applicationsURL.searchParams.set("companyId", companyId);
   }
@@ -113,8 +114,8 @@ export const getApplicationsInProgress = async (
   if (searchString) {
     applicationsURL.searchParams.set("searchString", searchString);
   }
-  if (sorting.length > 0) {
-    applicationsURL.searchParams.set("sorting", JSON.stringify(sorting));
+  if (orderBy.length > 0) {
+    applicationsURL.searchParams.set("orderBy", stringifyOrderBy(orderBy));
   }
 
   const applications = await httpGETRequest(applicationsURL.toString())
@@ -125,41 +126,44 @@ export const getApplicationsInProgress = async (
       ) as PaginatedResponse<PermitApplicationInProgress>;
       return paginatedResponseObject;
     })
-    .then((paginatedApplications: PaginatedResponse<PermitApplicationInProgress>) => {
-      const applicationsWithDateTransformations = paginatedApplications.items.map(
-        (application) => {
-          return {
-            ...application,
-            permitType: getPermitTypeName(application.permitType) as string,
-            createdDateTime: toLocal(
-              application?.createdDateTime,
-              DATE_FORMATS.DATETIME_LONG_TZ,
-            ),
-            updatedDateTime: toLocal(
-              application?.updatedDateTime,
-              DATE_FORMATS.DATETIME_LONG_TZ,
-            ),
-            permitData: {
-              ...application.permitData,
-              startDate: toLocal(
-                application?.permitData?.startDate,
-                DATE_FORMATS.DATEONLY_SHORT_NAME,
+    .then(
+      (
+        paginatedApplications: PaginatedResponse<PermitApplicationInProgress>,
+      ) => {
+        const applicationsWithDateTransformations =
+          paginatedApplications.items.map((application) => {
+            return {
+              ...application,
+              permitType: getPermitTypeName(application.permitType) as string,
+              createdDateTime: toLocal(
+                application?.createdDateTime,
+                DATE_FORMATS.DATETIME_LONG_TZ,
               ),
-              expiryDate: toLocal(
-                application?.permitData?.expiryDate,
-                DATE_FORMATS.DATEONLY_SHORT_NAME,
+              updatedDateTime: toLocal(
+                application?.updatedDateTime,
+                DATE_FORMATS.DATETIME_LONG_TZ,
               ),
-            }
-          } as PermitApplicationInProgress;
-        },
-      );
-      return {
-        ...paginatedApplications,
-        items: applicationsWithDateTransformations,
-      };
-    });
+              permitData: {
+                ...application.permitData,
+                startDate: toLocal(
+                  application?.permitData?.startDate,
+                  DATE_FORMATS.DATEONLY_SHORT_NAME,
+                ),
+                expiryDate: toLocal(
+                  application?.permitData?.expiryDate,
+                  DATE_FORMATS.DATEONLY_SHORT_NAME,
+                ),
+              },
+            } as PermitApplicationInProgress;
+          });
+        return {
+          ...paginatedApplications,
+          items: applicationsWithDateTransformations,
+        };
+      },
+    );
 
-    return applications;
+  return applications;
 };
 
 /**
@@ -380,24 +384,22 @@ export const getCurrentAmendmentApplication = async (
  */
 export const getPermits = async (
   { expired = false } = {},
-  { page = 0, take = 10, searchString, sorting = [] }: PaginationAndFilters,
+  { page = 0, take = 10, searchString, orderBy = [] }: PaginationAndFilters,
 ): Promise<PaginatedResponse<Permit>> => {
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   const permitsURL = new URL(PERMITS_API_ROUTES.GET);
   if (companyId) {
     permitsURL.searchParams.set("companyId", companyId);
   }
-  if (expired) {
-    permitsURL.searchParams.set("expired", "true");
-  }
+  permitsURL.searchParams.set("expired", expired.toString());
   // API pagination index starts at 1. Hence page + 1.
   permitsURL.searchParams.set("page", (page + 1).toString());
   permitsURL.searchParams.set("take", take.toString());
   if (searchString) {
     permitsURL.searchParams.set("searchString", searchString);
   }
-  if (sorting.length > 0) {
-    permitsURL.searchParams.set("sorting", JSON.stringify(sorting));
+  if (orderBy.length > 0) {
+    permitsURL.searchParams.set("orderBy", stringifyOrderBy(orderBy));
   }
   const permits = await httpGETRequest(permitsURL.toString())
     .then((response) => {
@@ -447,7 +449,7 @@ export const getPermitHistory = async (originalPermitId?: string) => {
     if (!originalPermitId) return [];
 
     const response = await httpGETRequest(
-      `${PERMITS_API_ROUTES.HISTORY}?originalId=${originalPermitId}`,
+      `${PERMITS_API_ROUTES.BASE}/${originalPermitId}/history`,
     );
 
     if (response.status === 200) {
@@ -501,10 +503,25 @@ export const voidPermit = async (voidPermitParams: {
  * @returns response with amended permit data, or error if failed
  */
 export const amendPermit = async (permit: Permit) => {
+  const {
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    permitNumber,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    createdDateTime,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    updatedDateTime,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    documentId,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    permitStatus,
+    ...remainingFields
+  } = permit;
+
   return await httpPOSTRequest(
     PERMITS_API_ROUTES.AMEND,
     replaceEmptyValuesWithNull({
-      ...permit,
+      ...remainingFields,
+      permitId: `${remainingFields.permitId}`,
     }),
   );
 };

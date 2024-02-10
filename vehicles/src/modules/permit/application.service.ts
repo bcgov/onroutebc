@@ -25,7 +25,11 @@ import { IDP } from 'src/common/enum/idp.enum';
 import { PermitApplicationOrigin as PermitApplicationOriginEnum } from 'src/common/enum/permit-application-origin.enum';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { PermitApprovalSource as PermitApprovalSourceEnum } from 'src/common/enum/permit-approval-source.enum';
-import { callDatabaseSequence } from 'src/common/helper/database.helper';
+import {
+  callDatabaseSequence,
+  paginate,
+  sortQuery,
+} from 'src/common/helper/database.helper';
 import { randomInt } from 'crypto';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
@@ -57,10 +61,8 @@ import {
 } from '../../common/helper/payment.helper';
 import * as constants from '../../common/constants/api.constant';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
-import { PageOptionsDto } from 'src/common/dto/paginate/page-options';
 import { PageMetaDto } from 'src/common/dto/paginate/page-meta';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
-import { SortDto } from '../common/dto/request/sort.dto';
 
 @Injectable()
 export class ApplicationService {
@@ -147,6 +149,7 @@ export class ApplicationService {
         }),
       },
     );
+
     const savedPermitEntity =
       await this.permitRepository.save(permitApplication);
     // In case of new application assign original permit ID
@@ -154,7 +157,13 @@ export class ApplicationService {
       await this.permitRepository
         .createQueryBuilder()
         .update()
-        .set({ originalPermitId: savedPermitEntity.permitId })
+        .set({
+          originalPermitId: savedPermitEntity.permitId,
+          updatedUser: currentUser.userName,
+          updatedDateTime: new Date(),
+          updatedUserDirectory: currentUser.orbcUserDirectory,
+          updatedUserGuid: currentUser.userGUID,
+        })
         .where('permitId = :permitId', { permitId: savedPermitEntity.permitId })
         .execute();
     }
@@ -205,102 +214,111 @@ export class ApplicationService {
     return readPermitApplicationdto;
   }
 
-  /*Get all application in progress for a specific user of a specific company.
-    Initially written to facilitate get application in progress for company User. */
+  /**
+   * Retrieves applications based on user GUID, and company ID. It allows for sorting, pagination, and filtering of the applications results.
+   * @param getApplicationQueryParamsDto - DTO containing query parameters such as companyId, orderBy, page, and take for filtering and pagination.
+   * @param userGUID - Unique identifier for the user. If provided, the query
+   */
   @LogAsyncMethodExecution()
-  async findAllApplications(
-    pageOptionsDto: PageOptionsDto,
-    statuses: ApplicationStatus[],
-    companyId: number,
-    userGuid?: string,
-    sortDto?: SortDto[],
-  ): Promise<PaginationDto<ReadApplicationDto>> {
-    const permits = this.buildApplicationQuery(
-      pageOptionsDto,
-      companyId,
-      userGuid,
-      statuses,
+  async findAllApplications(findAllApplicationsOptions?: {
+    page: number;
+    take: number;
+    orderBy?: string;
+    companyId?: number;
+    userGUID?: string;
+  }): Promise<PaginationDto<ReadApplicationDto>> {
+    // Construct the base query to find applications
+    const applicationsQB = this.buildApplicationQuery(
+      findAllApplicationsOptions.companyId,
+      findAllApplicationsOptions.userGUID,
     );
-    const sortedPermits = this.sortPermits(permits, sortDto);
-    const totalItems = await sortedPermits.getCount();
-    const { entities } = await permits.getRawAndEntities();
-    const pageMetaDto = new PageMetaDto({ totalItems, pageOptionsDto });
+
+    // Mapping of frontend orderBy parameter to database columns
+    const orderByMapping: Record<string, string> = {
+      applicationNumber: 'permit.applicationNumber',
+      permitType: 'permit.permitType',
+      startDate: 'permitData.startDate',
+      expiryDate: 'permitData.expiryDate',
+      unitNumber: 'permitData.unitNumber',
+      plate: 'permitData.plate',
+      applicant: 'permitData.applicant',
+    };
+
+    // Apply sorting if orderBy parameter is provided
+    if (findAllApplicationsOptions.orderBy) {
+      sortQuery<Permit>(
+        applicationsQB,
+        orderByMapping,
+        findAllApplicationsOptions.orderBy,
+      );
+    }
+    // Apply pagination if page and take parameters are provided
+    if (findAllApplicationsOptions.page && findAllApplicationsOptions.take) {
+      paginate<Permit>(
+        applicationsQB,
+        findAllApplicationsOptions.page,
+        findAllApplicationsOptions.take,
+      );
+    }
+
+    // Get the paginated list of permits
+    const applications = await applicationsQB.getMany();
+    // total number of items
+    const totalItems = applications?.length;
+    // Prepare pagination metadata
+    const pageMetaDto = new PageMetaDto({
+      totalItems,
+      pageOptionsDto: {
+        page: findAllApplicationsOptions.page,
+        take: findAllApplicationsOptions.take,
+        orderBy: findAllApplicationsOptions.orderBy,
+      },
+    });
+    // Map permit entities to ReadPermitDto objects
     const readApplicationDto: ReadApplicationDto[] =
       await this.classMapper.mapArrayAsync(
-        entities,
+        applications,
         Permit,
         ReadApplicationDto,
       );
+    // Return paginated result
     return new PaginationDto(readApplicationDto, pageMetaDto);
   }
 
   private buildApplicationQuery(
-    pageOptionsDto: PageOptionsDto,
-    companyId: number,
-    userGuid?: string,
-    statuses?: ApplicationStatus[],
+    companyId?: number,
+    userGUID?: string,
   ): SelectQueryBuilder<Permit> {
     let permitsQuery = this.permitRepository
       .createQueryBuilder('permit')
       .innerJoinAndSelect('permit.permitData', 'permitData');
     permitsQuery = permitsQuery.where('permit.permitNumber IS NULL');
-    permitsQuery = permitsQuery.andWhere('permit.companyId = :companyId', {
-      companyId,
-    });
-    if (statuses) {
-      permitsQuery = permitsQuery.andWhere(
-        'permit.permitStatus IN (:...statuses)',
-        {
-          statuses,
-        },
-      );
-    }
 
-    if (userGuid) {
-      permitsQuery = permitsQuery.andWhere('permit.userGuid = :userGUID', {
-        userGuid,
+    // Filter by companyId if provided
+    if (companyId) {
+      permitsQuery = permitsQuery.andWhere('permit.companyId = :companyId', {
+        companyId: companyId,
       });
     }
-    // Apply pagination
-    permitsQuery = permitsQuery
-      .skip((pageOptionsDto.page - 1) * pageOptionsDto.take)
-      .take(pageOptionsDto.take);
 
-    return permitsQuery;
-  }
+    permitsQuery = permitsQuery.andWhere(
+      'permit.permitStatus IN (:...statuses)',
+      {
+        statuses: [
+          ApplicationStatus.IN_PROGRESS,
+          ApplicationStatus.WAITING_PAYMENT,
+        ],
+      },
+    );
 
-  private sortPermits(
-    permits: SelectQueryBuilder<Permit>,
-    sortDto?: SortDto[],
-  ): SelectQueryBuilder<Permit> {
-    if (!sortDto || sortDto.length === 0) {
-      return permits;
+    // Filter by userGUID if provided
+    if (userGUID) {
+      permitsQuery = permitsQuery.andWhere('permit.userGuid = :userGUID', {
+        userGUID,
+      });
     }
 
-    sortDto.forEach((value, index) => {
-      const orderByMapping: Record<string, string> = {
-        permitNumber: 'permit.permitNumber',
-        permitType: 'permit.permitType',
-        startDate: 'permitData.startDate',
-        expiryDate: 'permitData.expiryDate',
-        unitNumber: 'permitData.unitNumber',
-        plate: 'permitData.plate',
-        applicant: 'permitData.applicant',
-      };
-
-      const orderByKey = orderByMapping[value.orderBy];
-
-      if (orderByKey) {
-        const orderBy = value.descending ? 'DESC' : 'ASC';
-        if (index === 0) {
-          permits.orderBy(orderByKey, orderBy);
-        } else {
-          permits.addOrderBy(orderByKey, orderBy);
-        }
-      }
-    });
-
-    return permits;
+    return permitsQuery;
   }
 
   /**
