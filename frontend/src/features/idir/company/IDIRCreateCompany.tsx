@@ -12,7 +12,7 @@ import { ERROR_ROUTES } from "../../../routes/constants";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import { createOnRouteBCProfile } from "../../manageProfile/apiManager/manageProfileAPI";
 import {
-  CompanyAndUserRequest,
+  CreateCompanyRequest,
   CompanyProfile,
 } from "../../manageProfile/types/manageProfile";
 import { CompanyInformationWizardForm } from "../../wizard/subcomponents/CompanyInformationWizardForm";
@@ -26,7 +26,7 @@ export const IDIRCreateCompany = React.memo(() => {
 
   const [clientNumber, setClientNumber] = useState<Nullable<string>>(null);
 
-  const companyAndUserFormMethods = useForm<CompanyAndUserRequest>({
+  const companyAndUserFormMethods = useForm<CreateCompanyRequest>({
     defaultValues: {
       legalName: "",
       alternateName: "",
@@ -64,7 +64,7 @@ export const IDIRCreateCompany = React.memo(() => {
    * Validates and submits the form data to the API
    * @param data The form data.
    */
-  const onClickFinish = function (data: CompanyAndUserRequest) {
+  const onClickFinish = function (data: CreateCompanyRequest) {
     const profileToBeCreated = data;
     createProfileQuery.mutate(profileToBeCreated);
   };
