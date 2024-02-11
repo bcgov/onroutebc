@@ -301,7 +301,7 @@ export class UsersService {
   ): Promise<UpdateResult> {
     const user = new User();
     user.userGUID = userGUID;
-    user.statusCode = statusCode;
+    user.companyUsers[0].statusCode = statusCode;
     user.updatedUserGuid = currentUser.userGUID;
     user.updatedDateTime = new Date();
     user.updatedUser = currentUser.userName;
