@@ -100,6 +100,7 @@ describe('Power Units (e2e)', () => {
 
   describe('/companies/1/vehicles/powerUnits/delete-requests DELETE', () => {
     it('should delete the power unit.', () => {
+      repo.findBy.mockResolvedValue([]);
       return request(app.getHttpServer() as unknown as App)
         .post('/companies/1/vehicles/powerUnits/delete-requests')
         .send(deletePowerUnitMock)
