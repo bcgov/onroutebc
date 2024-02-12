@@ -20,6 +20,8 @@ import { CompanySearchResultColumnDef } from "../table/CompanySearchResultColumn
 import { SearchFields } from "../types/types";
 import "./IDIRCompanySearchResults.scss";
 import { CustomNavLink } from "../../../../common/components/links/CustomNavLink";
+import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
+import { Box, CardMedia, Stack, Typography } from "@mui/material";
 
 /*
  *
@@ -153,8 +155,39 @@ export const IDIRCompanySearchResults = memo(
     });
 
     return (
-      <div className="table-container idir-search-results">
-        <MaterialReactTable table={table} />
+      <div className="table-container idir-company-search-results">
+        {data?.items?.length !== 0 && <MaterialReactTable table={table} />}
+        {data?.items?.length === 0 &&
+          <>
+            <Stack
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              >
+              <NoRecordsFound />
+              <Box
+                className="create-company-btn"
+              >
+                <CustomNavLink to={routes.IDIR_ROUTES.CREATE_COMPANY}>
+                  <div className="button-outline">
+                    <CardMedia
+                      className="create-company-img"
+                      component="img"
+                      src="/Create_Company_Graphic.png"
+                      alt="Create Company"
+                      title="Create Company"
+                    />
+                    <Typography
+                      variant={"h3"}
+                    >
+                      Create<br />Company
+                    </Typography>
+                  </div>
+                </CustomNavLink>
+              </Box>
+            </Stack>
+          </>
+        }
       </div>
     );
   },
