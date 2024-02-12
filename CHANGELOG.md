@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.0.1](https://github.com/bcgov/onroutebc/compare/v1.0.0...v1.0.1) (2024-02-12)
+
+
+### Features
+
+* ORV2-1930 Create Company Button on Empty Search Results ([#1174](https://github.com/bcgov/onroutebc/issues/1174)) ([951a5bd](https://github.com/bcgov/onroutebc/commit/951a5bde4eca5321506f1b299bc8fa14db651388))
+
+
+### Bug Fixes
+
+* **ci:** revise release-please config ([#1180](https://github.com/bcgov/onroutebc/issues/1180)) ([c43fa89](https://github.com/bcgov/onroutebc/commit/c43fa899c5459d4026e7d7699a2748e7b8a8ba86))
+* **ci:** workflow cleanup ([#1178](https://github.com/bcgov/onroutebc/issues/1178)) ([71f9a45](https://github.com/bcgov/onroutebc/commit/71f9a45ca8bd181180f3fecae6d07865dc79e7f1))
+
 ## 1.0.0 (2024-02-12)
 
 
