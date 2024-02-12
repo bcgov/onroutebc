@@ -159,7 +159,11 @@ export const IDIRCompanySearchResults = memo(
         {data?.items?.length !== 0 && <MaterialReactTable table={table} />}
         {data?.items?.length === 0 &&
           <>
-            <Stack style={{ width: "900px" }} spacing={2}>
+            <Stack
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              >
               <NoRecordsFound />
               <Box
                 className="create-company-btn"
