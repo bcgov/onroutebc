@@ -98,7 +98,7 @@ jobs:
             token: SONAR_TOKEN_FRONTEND
             triggers: ('frontend/')
     steps:
-      - uses: bcgov-nr/action-test-and-analyse@v1.1.0
+      - uses: bcgov-nr/action-test-and-analyse@v1.1.1
         with:
           commands: |
             npm ci
