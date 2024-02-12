@@ -28,7 +28,7 @@ import { WebStorageStateStore } from "oidc-client-ts";
 const authority =
   import.meta.env.VITE_KEYCLOAK_ISSUER_URL ||
   envConfig.VITE_KEYCLOAK_ISSUER_URL;
-
+// Dummy comment
 const client_id =
   import.meta.env.VITE_KEYCLOAK_AUDIENCE || envConfig.VITE_KEYCLOAK_AUDIENCE;
 
