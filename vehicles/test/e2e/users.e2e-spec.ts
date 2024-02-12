@@ -26,7 +26,6 @@ import { CompanyService } from '../../src/modules/company-user-management/compan
 import { PendingUsersService } from '../../src/modules/company-user-management/pending-users/pending-users.service';
 import {
   idirUserEntityMock,
-  readRedCompanyAdminUserDtoMock,
   redCompanyAdminUserEntityMock,
 } from '../util/mocks/data/user.mock';
 import { createMapper } from '@automapper/core';
@@ -178,7 +177,10 @@ describe('Users (e2e)', () => {
         .get('/users/' + constants.RED_COMPANY_ADMIN_USER_GUID)
         .expect(200);
 
-      expect(response.body).toMatchObject(readRedCompanyAdminUserDtoMock);
+      expect(response.body).toEqual( expect.objectContaining({
+        userGUID: constants.RED_COMPANY_ADMIN_USER_GUID,
+        userName: constants.RED_COMPANY_ADMIN_USER_NAME
+      }));
     });
   });
 

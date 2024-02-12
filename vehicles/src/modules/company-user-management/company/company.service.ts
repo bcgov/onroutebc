@@ -45,6 +45,7 @@ import { getDirectory } from '../../../common/helper/auth.helper';
 import { convertToHash } from '../../../common/helper/crypto.helper';
 import { CRYPTO_ALGORITHM_SHA256 } from '../../../common/constants/api.constant';
 import { v4 as uuidv4 } from 'uuid';
+import { UserStatus } from 'src/common/enum/user-status.enum';
 
 @Injectable()
 export class CompanyService {
@@ -202,6 +203,7 @@ export class CompanyService {
 
         const newCompanyUser = new CompanyUser();
         newCompanyUser.company = new Company();
+        newCompanyUser.statusCode = UserStatus.ACTIVE;
         newCompanyUser.company.companyId = newCompany.companyId;
         newCompanyUser.user = user;
         newCompanyUser.userAuthGroup = UserAuthGroup.COMPANY_ADMINISTRATOR;

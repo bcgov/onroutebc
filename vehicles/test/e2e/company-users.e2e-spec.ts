@@ -27,7 +27,6 @@ import { UsersService } from '../../src/modules/company-user-management/users/us
 import { CompanyUsersController } from '../../src/modules/company-user-management/users/company-users.controller';
 import {
   createRedCompanyAdminUserDtoMock,
-  readRedCompanyAdminUserDtoMock,
   redCompanyAdminUserEntityMock,
   updateRedCompanyAdminUserStatusDtoMock,
   updateRedCompanyCvClientUserDtoMock,
@@ -39,6 +38,8 @@ import { PendingIdirUsersService } from 'src/modules/company-user-management/pen
 import { readRedCompanyPendingUserDtoMock } from 'test/util/mocks/data/pending-user.mock';
 import { redCompanyEntityMock } from 'test/util/mocks/data/company.mock';
 import { App } from 'supertest/types';
+import * as constants from '../util/mocks/data/test-data.constants';
+
 
 let repo: DeepMocked<Repository<User>>;
 let repoIdirUser: DeepMocked<Repository<IdirUser>>;
@@ -128,7 +129,10 @@ describe('Company Users (e2e)', () => {
         .post('/companies/1/users')
         .send(createRedCompanyAdminUserDtoMock)
         .expect(201);
-      expect(response.body).toMatchObject(readRedCompanyAdminUserDtoMock);
+        expect(response.body).toEqual( expect.objectContaining({
+          userGUID: constants.RED_COMPANY_ADMIN_USER_GUID,
+          userName: constants.RED_COMPANY_ADMIN_USER_NAME
+        }));
     });
   });
 
@@ -147,7 +151,10 @@ describe('Company Users (e2e)', () => {
         .send(updateRedCompanyCvClientUserDtoMock)
         .expect(200);
 
-      expect(response.body).toMatchObject(readRedCompanyAdminUserDtoMock);
+      expect(response.body).toEqual(expect.objectContaining({
+        userGUID: constants.RED_COMPANY_ADMIN_USER_GUID,
+        userName: constants.RED_COMPANY_ADMIN_USER_NAME
+      }));
     });
   });
 

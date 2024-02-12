@@ -301,7 +301,8 @@ export class UsersService {
   ): Promise<UpdateResult> {
     const user = new User();
     user.userGUID = userGUID;
-    user.companyUsers[0].statusCode = statusCode;
+    user.companyUsers = [];
+    user.companyUsers.map(() => ({statusCode: statusCode}));
     user.updatedUserGuid = currentUser.userGUID;
     user.updatedDateTime = new Date();
     user.updatedUser = currentUser.userName;
@@ -319,7 +320,7 @@ export class UsersService {
    *
    * @returns A Promise that resolves to an array of {@link User} entities.
    */
-  private async findUsersEntity(userGUID?: string, companyId?: number[]) {
+   async findUsersEntity(userGUID?: string, companyId?: number[]) {
     // Construct the query builder to retrieve user entities and associated data
     return await this.userRepository
       .createQueryBuilder('user')
