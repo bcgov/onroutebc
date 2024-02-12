@@ -13,7 +13,6 @@
       max-width: 3rem;
     }
 
-
     .create-company-btn {
       display: flex;
       justify-content: center;
@@ -36,5 +35,10 @@
     border: orbcStyles.$bc-border-grey 1px solid;
     border-radius: 0.5rem;
     padding: 2rem 4rem;
+
+    &:hover {
+      background-color: orbcStyles.$bc-background-blue-grey;
+      text-decoration: none;
+    }
   }
 }
