@@ -2,7 +2,7 @@ name: deploys-prod
 
 on:
   release:
-    types: [published]
+    types: [released]
 
 concurrency:
   group: ${{ github.workflow }}
