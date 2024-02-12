@@ -1,4 +1,4 @@
-name: Deploy Demo
+name: deploys-demo
 
 on:
   workflow_dispatch:
@@ -32,6 +32,7 @@ jobs:
     needs: uninstall-demo
     secrets: inherit
     with:
+      autoscaling: false
       environment: ${{inputs.environment}} #test env -> test database
       tag: ${{inputs.environment}}
       release: "demo"
