@@ -162,27 +162,24 @@ export const IDIRCompanySearchResults = memo(
             <Stack style={{ width: "900px" }} spacing={2}>
               <NoRecordsFound />
               <Box
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                minHeight="30vh"
+                className="create-company-btn"
               >
-                <div className="button-outline">
                 <CustomNavLink to={routes.IDIR_ROUTES.CREATE_COMPANY}>
-                  <CardMedia
-                    className="create-company-img"
-                    component="img"
-                    src="/Create_Company_Graphic.png"
-                    alt="Create Company"
-                    title="Create Company"
-                  />
-                  <Typography
-                    variant={"h3"}
-                  >
-                    Create<br />Company
-                  </Typography>
+                  <div className="button-outline">
+                    <CardMedia
+                      className="create-company-img"
+                      component="img"
+                      src="/Create_Company_Graphic.png"
+                      alt="Create Company"
+                      title="Create Company"
+                    />
+                    <Typography
+                      variant={"h3"}
+                    >
+                      Create<br />Company
+                    </Typography>
+                  </div>
                 </CustomNavLink>
-                </div>
               </Box>
             </Stack>
           </>

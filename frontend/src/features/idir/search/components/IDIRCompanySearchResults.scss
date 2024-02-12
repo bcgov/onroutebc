@@ -12,6 +12,15 @@
       min-width: 0;
       max-width: 3rem;
     }
+
+
+    .create-company-btn {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
   }
 
   & &__row-actions {
@@ -25,6 +34,7 @@
 
   .button-outline {
     border: orbcStyles.$bc-border-grey 1px solid;
-    padding: 4rem;
+    border-radius: 0.5rem;
+    padding: 2rem 4rem;
   }
 }
