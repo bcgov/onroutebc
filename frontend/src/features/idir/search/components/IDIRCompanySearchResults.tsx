@@ -20,6 +20,8 @@ import { CompanySearchResultColumnDef } from "../table/CompanySearchResultColumn
 import { SearchFields } from "../types/types";
 import "./IDIRCompanySearchResults.scss";
 import { CustomNavLink } from "../../../../common/components/links/CustomNavLink";
+import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
+import { Box, CardMedia, Stack, Typography } from "@mui/material";
 
 /*
  *
@@ -116,6 +118,8 @@ export const IDIRCompanySearchResults = memo(
       [],
     );
 
+    console.log('data.items', data?.items)
+
     const table = useMaterialReactTable({
       ...defaultTableOptions,
       data: data?.items ?? [],
@@ -153,8 +157,38 @@ export const IDIRCompanySearchResults = memo(
     });
 
     return (
-      <div className="table-container idir-search-results">
-        <MaterialReactTable table={table} />
+      <div className="table-container idir-company-search-results">
+        {data?.items?.length !== 0 && <MaterialReactTable table={table} />}
+        {data?.items?.length === 0 &&
+          <>
+            <Stack style={{ width: "900px" }} spacing={2}>
+              <NoRecordsFound />
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                minHeight="30vh"
+              >
+                <div className="button-outline">
+                <CustomNavLink to={routes.IDIR_ROUTES.CREATE_COMPANY}>
+                  <CardMedia
+                    className="create-company-img"
+                    component="img"
+                    src="/Create_Company_Graphic.png"
+                    alt="Create Company"
+                    title="Create Company"
+                  />
+                  <Typography
+                    variant={"h3"}
+                  >
+                    Create<br />Company
+                  </Typography>
+                </CustomNavLink>
+                </div>
+              </Box>
+            </Stack>
+          </>
+        }
       </div>
     );
   },

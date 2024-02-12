@@ -1,6 +1,7 @@
+@use "../../../../themes/orbcStyles";
 @use "../../../../common/components/table/Table";
 
-.idir-search-results {
+.idir-company-search-results {
   &#{&} {
     margin-top: 0;
     padding-bottom: 12.5rem;
@@ -16,5 +17,14 @@
   & &__row-actions {
     padding: 0;
     max-width: 3rem;
+  }
+
+  .create-company-img {
+    width: 6rem;
+  }
+
+  .button-outline {
+    border: orbcStyles.$bc-border-grey 1px solid;
+    padding: 4rem;
   }
 }
