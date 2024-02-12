@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 
-import { getPayBCPaymentDetails, getPaymentByTransactionId } from "../../helpers/payment";
+import { getPayBCPaymentDetails, usePaymentByTransactionIdQuery } from "../../helpers/payment";
 import { Loading } from "../../../../common/pages/Loading";
 import { useCompleteTransaction, useIssuePermits } from "../../hooks/hooks";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
@@ -34,6 +34,7 @@ export const PaymentRedirect = () => {
   const transactionId = getDefaultRequiredVal("", searchParams.get("ref2"));
   const [applicationIds, setApplicationIds] = useState<string[]>([]);
   const transactionQueryString = encodeURIComponent(searchParams.toString());
+  const foo = usePaymentByTransactionIdQuery(transactionId);
   
   const { mutation: completeTransactionMutation, paymentApproved } =
     useCompleteTransaction(
@@ -55,6 +56,7 @@ export const PaymentRedirect = () => {
     }
   }, [paymentDetails.trnApproved]);
 
+  /*
   useEffect(() => {
     const ids:string[] = [];
     getPaymentByTransactionId(transactionId)
@@ -68,13 +70,23 @@ export const PaymentRedirect = () => {
         setApplicationIds(ids);
       })
 
-  }, [transactionId]);
+  }, [transactionId]);*/
 
   useEffect(() => {
-    if (applicationIds?.length > 0 && issuedPermit.current === false) {
+    console.log('foo', foo)
+    setApplicationIds(['0'])
 
+  }, [foo])
+
+  useEffect(() => {
+    console.log('applicationIds', applicationIds)
+    console.log('paymentApproved', paymentApproved)
+    console.log('issuedPermit', issuedPermit)
+
+    if (issuedPermit?.current === false) {
       if (applicationIds?.length === 0) {
-        // permit ids should not be empty, if so then something went wrong
+        // the application ids (aka. permit Ids) should not be empty,
+        // if so then something went wrong
         navigate(ERROR_ROUTES.UNEXPECTED, { replace: true });
       } else if (paymentApproved === true) {
         // Payment successful, proceed to issue permit

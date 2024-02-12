@@ -13,6 +13,7 @@ import {
 } from "../../../common/helpers/util";
 import { httpGETRequest } from "../../../common/apiManager/httpRequestHandler";
 import { PAYMENT_API_ROUTES } from "../apiManager/endpoints/endpoints";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 /**
  * Extracts PayBCPaymentDetails from the query parameters of a URL.
@@ -103,3 +104,32 @@ export const getPaymentByTransactionId = async (
     return null;
   }
 };
+
+/**
+ * Hook to fetch the permit types.
+ * @returns A query result object containing the permit types
+ */
+/*
+export const usePaymentByTransactionIdQuery = (transactionId: string): UseQueryResult<
+  Record<string, string>,
+  unknown
+> => {
+  return useQuery({
+    queryKey: ["paymentByTransactionId"],
+    queryFn: () => getPaymentByTransactionId(transactionId),
+    placeholderData: keepPreviousData,
+  });
+};*/
+
+/**
+ * Hook to fetch the permit types.
+ * @returns UseQueryResult containing the query results.
+ */
+export const usePaymentByTransactionIdQuery = (transactionId: string) => {
+  return useQuery({
+    queryKey: ["paymentByTransactionId"],
+    queryFn: () => getPaymentByTransactionId(transactionId),
+    placeholderData: keepPreviousData,
+  });
+};
+
