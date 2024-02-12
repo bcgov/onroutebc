@@ -118,8 +118,6 @@ export const IDIRCompanySearchResults = memo(
       [],
     );
 
-    console.log('data.items', data?.items)
-
     const table = useMaterialReactTable({
       ...defaultTableOptions,
       data: data?.items ?? [],
