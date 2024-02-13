@@ -3,17 +3,18 @@ import { ApiProperty } from '@nestjs/swagger';
 import { PermitType } from '../../../../common/enum/permit-type.enum';
 import { PermitApprovalSource } from '../../../../common/enum/permit-approval-source.enum';
 import { PermitApplicationOrigin } from '../../../../common/enum/permit-application-origin.enum';
-import { IsNumber } from 'class-validator';
+import { Allow, IsEnum, IsNumber, IsOptional } from 'class-validator';
 
 export class CreatePermitDto {
   @AutoMap()
+  @IsOptional()
   @IsNumber()
   @ApiProperty({
     description: 'Id of the company requesting the permit.',
     example: 74,
     required: false,
   })
-  companyId: number;
+  companyId?: number;
 
   @AutoMap()
   @ApiProperty({
@@ -21,27 +22,35 @@ export class CreatePermitDto {
     description: 'Friendly name for the permit type.',
     example: PermitType.TERM_OVERSIZE,
   })
+  @IsEnum(PermitType)
   permitType: PermitType;
 
   @AutoMap()
   @ApiProperty({
     enum: PermitApprovalSource,
     example: PermitApprovalSource.PPC,
+    required: false,
     description: 'Unique identifier for the application approval source.',
   })
-  permitApprovalSource: PermitApprovalSource;
+  @IsOptional()
+  @IsEnum(PermitApprovalSource)
+  permitApprovalSource?: PermitApprovalSource;
 
   @AutoMap()
   @ApiProperty({
     enum: PermitApplicationOrigin,
     example: PermitApplicationOrigin.ONLINE,
+    required: false,
     description: 'Unique identifier for the application origin.',
   })
-  permitApplicationOrigin: PermitApplicationOrigin;
+  @IsOptional()
+  @IsEnum(PermitApplicationOrigin)
+  permitApplicationOrigin?: PermitApplicationOrigin;
 
   @AutoMap()
   @ApiProperty({
     description: 'Permit Application JSON.',
   })
+  @Allow()
   permitData: JSON;
 }

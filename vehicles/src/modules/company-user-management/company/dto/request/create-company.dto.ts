@@ -8,6 +8,7 @@ import {
   IsOptional,
   IsString,
   Length,
+  MaxLength,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -22,6 +23,8 @@ export class CreateCompanyDto {
     description: 'The legal name of the company.',
     example: 'ABC Carriers Inc.',
   })
+  @IsString()
+  @Length(1, 500)
   legalName: string;
 
   @AutoMap()
@@ -31,7 +34,20 @@ export class CreateCompanyDto {
   })
   @IsOptional()
   @IsString()
+  @MaxLength(150)
   alternateName?: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description:
+      'The ORBC client number if it exists. The value will not be updated ',
+    example: '1234',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  @Length(13, 13)
+  clientNumber?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -112,9 +128,10 @@ export class CreateCompanyDto {
   @AutoMap()
   @ApiProperty({
     description: 'The admin user of the company.',
-    required: true,
+    required: false,
   })
+  @IsOptional()
   @ValidateNested()
   @Type(() => CreateUserDto)
-  adminUser: CreateUserDto;
+  adminUser?: CreateUserDto;
 }

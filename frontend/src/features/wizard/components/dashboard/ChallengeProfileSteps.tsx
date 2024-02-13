@@ -10,17 +10,14 @@ import { useNavigate } from "react-router";
 import { LoadBCeIDUserRolesByCompany } from "../../../../common/authentication/LoadBCeIDUserRolesByCompany";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import "../../../../common/components/dashboard/Dashboard.scss";
-import {
-  getDefaultRequiredVal,
-  getSHA256HexValue,
-} from "../../../../common/helpers/util";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { Nullable } from "../../../../common/types/common";
 import { ERROR_ROUTES } from "../../../../routes/constants";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { verifyMigratedClient } from "../../../manageProfile/apiManager/manageProfileAPI";
 import {
-  CompanyAndUserRequest,
-  VerifyMigratedClientRequest,
+  CreateCompanyRequest,
+  VerifyClientRequest,
   VerifyMigratedClientResponse,
 } from "../../../manageProfile/types/manageProfile";
 import { ClientAndPermitReferenceInfoBox } from "../../subcomponents/ClientAndPermitReferenceInfoBox";
@@ -61,28 +58,16 @@ export const ChallengeProfileSteps = React.memo(() => {
       provinceCode: "",
       city: "",
     },
-    primaryContact: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone1: "",
-      phone1Extension: "",
-      phone2: "",
-      phone2Extension: "",
-      countryCode: "",
-      provinceCode: "",
-      city: "",
-    },
   };
 
-  const verifyMigratedClientFormMethods = useForm<VerifyMigratedClientRequest>({
+  const verifyMigratedClientFormMethods = useForm<VerifyClientRequest>({
     defaultValues: {
-      clientNumberHash: "",
+      clientNumber: "",
       permitNumber: "",
     },
   });
 
-  const companyAndUserFormMethods = useForm<CompanyAndUserRequest>({
+  const companyAndUserFormMethods = useForm<CreateCompanyRequest>({
     defaultValues: defaultCompanyAndUserInfoValues,
   });
 
@@ -97,8 +82,8 @@ export const ChallengeProfileSteps = React.memo(() => {
   const verifyMigratedClientMutation = useMutation({
     mutationFn: verifyMigratedClient,
     onSuccess: async (response: VerifyMigratedClientResponse) => {
-      const { foundClient, foundPermit, migratedClient } = response;
-      if (foundClient && foundPermit && migratedClient) {
+      const { foundClient, foundPermit, verifiedClient } = response;
+      if (foundClient && foundPermit && verifiedClient) {
         // Clear form errors (if any)
         clearVerifyClientErrors();
 
@@ -109,45 +94,88 @@ export const ChallengeProfileSteps = React.memo(() => {
           ...defaultCompanyAndUserInfoValues,
           migratedClientHash: getDefaultRequiredVal(
             "",
-            migratedClient?.migratedClientHash,
+            verifiedClient?.migratedClientHash,
           ),
           alternateName: getDefaultRequiredVal(
             "",
-            migratedClient?.alternateName,
+            verifiedClient?.alternateName,
           ),
           mailingAddress: {
             addressLine1: getDefaultRequiredVal(
               "",
-              migratedClient?.mailingAddress?.addressLine1,
+              verifiedClient?.mailingAddress?.addressLine1,
             ),
             addressLine2: getDefaultRequiredVal(
               "",
-              migratedClient?.mailingAddress?.addressLine2,
+              verifiedClient?.mailingAddress?.addressLine2,
             ),
             provinceCode: getDefaultRequiredVal(
               "",
-              migratedClient?.mailingAddress?.provinceCode,
+              verifiedClient?.mailingAddress?.provinceCode,
             ),
             countryCode: getDefaultRequiredVal(
               "",
-              migratedClient?.mailingAddress?.countryCode,
+              verifiedClient?.mailingAddress?.countryCode,
             ),
             city: getDefaultRequiredVal(
               "",
-              migratedClient?.mailingAddress?.city,
+              verifiedClient?.mailingAddress?.city,
             ),
             postalCode: getDefaultRequiredVal(
               "",
-              migratedClient?.mailingAddress?.postalCode,
+              verifiedClient?.mailingAddress?.postalCode,
             ),
           },
-          phone: getDefaultRequiredVal("", migratedClient?.phone),
-          extension: getDefaultRequiredVal("", migratedClient?.extension),
-          fax: getDefaultRequiredVal("", migratedClient?.fax),
+          phone: getDefaultRequiredVal("", verifiedClient?.phone),
+          extension: getDefaultRequiredVal("", verifiedClient?.extension),
+          fax: getDefaultRequiredVal("", verifiedClient?.fax),
+          primaryContact: {
+            firstName: getDefaultRequiredVal(
+              "",
+              verifiedClient?.primaryContact?.firstName,
+            ),
+            lastName: getDefaultRequiredVal(
+              "",
+              verifiedClient?.primaryContact?.lastName,
+            ),
+            email: getDefaultRequiredVal(
+              "",
+              verifiedClient?.primaryContact?.email,
+            ),
+            phone1: getDefaultRequiredVal(
+              "",
+              verifiedClient?.primaryContact?.phone1,
+            ),
+            phone1Extension: getDefaultRequiredVal(
+              "",
+              verifiedClient?.primaryContact?.phone1Extension,
+            ),
+            phone2: getDefaultRequiredVal(
+              "",
+              verifiedClient?.primaryContact?.phone2,
+            ),
+            phone2Extension: getDefaultRequiredVal(
+              "",
+              verifiedClient?.primaryContact?.phone2Extension,
+            ),
+            provinceCode: getDefaultRequiredVal(
+              "",
+              verifiedClient?.primaryContact?.provinceCode,
+            ),
+            countryCode: getDefaultRequiredVal(
+              "",
+              verifiedClient?.primaryContact?.countryCode,
+            ),
+            city: getDefaultRequiredVal(
+              "",
+              verifiedClient?.primaryContact?.city,
+            ),
+          },
+          clientNumber: getDefaultRequiredVal("", verifiedClient?.clientNumber),
         });
       } else {
         if (!foundClient) {
-          setVerifyClientError("clientNumberHash", {
+          setVerifyClientError("clientNumber", {
             message: "Client No. not found",
           });
         }
@@ -167,14 +195,8 @@ export const ChallengeProfileSteps = React.memo(() => {
    * Onclick handler for Next button at Verify Profile stage.
    * @param data The form data.
    */
-  const handleNextVerifyClientStep = async (
-    data: VerifyMigratedClientRequest,
-  ) => {
-    const hashHex = await getSHA256HexValue(data.clientNumberHash);
-    verifyMigratedClientMutation.mutate({
-      ...data,
-      clientNumberHash: hashHex,
-    });
+  const handleNextVerifyClientStep = async (data: VerifyClientRequest) => {
+    verifyMigratedClientMutation.mutate(data);
   };
 
   if (clientNumber) {

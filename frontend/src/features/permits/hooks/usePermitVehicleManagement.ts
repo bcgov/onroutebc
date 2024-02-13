@@ -39,9 +39,14 @@ export const usePermitVehicleManagement = (companyId: string) => {
     [],
     powerUnitSubTypesQuery.data,
   );
-  const fetchedTrailerSubTypes = getDefaultRequiredVal([], trailerSubTypesQuery.data);
+  const fetchedTrailerSubTypes = getDefaultRequiredVal(
+    [],
+    trailerSubTypesQuery.data,
+  );
 
-  const handleSaveVehicle = async (vehicleData?: VehicleDetails): Promise<Nullable<VehicleDetails>> => {
+  const handleSaveVehicle = async (
+    vehicleData?: VehicleDetails,
+  ): Promise<Nullable<VehicleDetails>> => {
     // Check if the "add/update vehicle" checkbox was checked by the user
     if (!vehicleData?.saveVehicle) return undefined;
 
@@ -50,7 +55,7 @@ export const usePermitVehicleManagement = (companyId: string) => {
 
     // Check if the vehicle that is to be saved was created from an existing vehicle
     const vehicleId = vehicle.vehicleId;
-    
+
     const existingVehicle = mapToVehicleObjectById(
       fetchedVehicles,
       vehicle.vehicleType as VehicleType,
@@ -103,12 +108,11 @@ export const usePermitVehicleManagement = (companyId: string) => {
         default:
           return {
             ...defaultPowerUnit,
-            unitNumber:
-              getDefaultRequiredVal(
-                "",
-                existingVehicle?.unitNumber,
-                vehicleFormData.unitNumber,
-              ),
+            unitNumber: getDefaultRequiredVal(
+              "",
+              existingVehicle?.unitNumber,
+              vehicleFormData.unitNumber,
+            ),
             powerUnitId: getDefaultRequiredVal(
               "",
               (existingVehicle as PowerUnit)?.powerUnitId,
@@ -128,18 +132,19 @@ export const usePermitVehicleManagement = (companyId: string) => {
       ) as PowerUnit;
 
       // Either send a PUT or POST request based on powerUnitId
-      const res = powerUnit.powerUnitId ?
-        await updatePowerUnitMutation.mutateAsync({
-          powerUnit,
-          powerUnitId: powerUnit.powerUnitId,
-          companyId,
-        }) : await addPowerUnitMutation.mutateAsync({
-          powerUnit: {
-            ...powerUnit,
-            powerUnitId: getDefaultRequiredVal("", vehicle.vehicleId),
-          },
-          companyId,
-        });
+      const res = powerUnit.powerUnitId
+        ? await updatePowerUnitMutation.mutateAsync({
+            powerUnit,
+            powerUnitId: powerUnit.powerUnitId,
+            companyId,
+          })
+        : await addPowerUnitMutation.mutateAsync({
+            powerUnit: {
+              ...powerUnit,
+              powerUnitId: getDefaultRequiredVal("", vehicle.vehicleId),
+            },
+            companyId,
+          });
 
       if (!modifyVehicleSuccess(res.status)) return null;
 
@@ -151,7 +156,7 @@ export const usePermitVehicleManagement = (companyId: string) => {
         vehicleType: VEHICLE_TYPES.POWER_UNIT,
       });
     }
-    
+
     if (vehicle.vehicleType === VEHICLE_TYPES.TRAILER) {
       const trailer = transformByVehicleType(
         vehicle,
@@ -159,28 +164,29 @@ export const usePermitVehicleManagement = (companyId: string) => {
       ) as Trailer;
 
       // Either send a PUT or POST request based on trailerId
-      const res = trailer.trailerId ?
-        await updateTrailerMutation.mutateAsync({
-          trailer,
-          trailerId: trailer.trailerId,
-          companyId,
-        }) : await addTrailerMutation.mutateAsync({
-          trailer: {
-            ...trailer,
-            trailerId: getDefaultRequiredVal("", vehicle.vehicleId),
-          },
-          companyId,
-        });
+      const res = trailer.trailerId
+        ? await updateTrailerMutation.mutateAsync({
+            trailer,
+            trailerId: trailer.trailerId,
+            companyId,
+          })
+        : await addTrailerMutation.mutateAsync({
+            trailer: {
+              ...trailer,
+              trailerId: getDefaultRequiredVal("", vehicle.vehicleId),
+            },
+            companyId,
+          });
 
-        if (!modifyVehicleSuccess(res.status)) return null;
+      if (!modifyVehicleSuccess(res.status)) return null;
 
-        const { trailerId, trailerTypeCode, ...restOfTrailer } = res.data;
-        return getDefaultRequiredVal({
-          ...restOfTrailer,
-          vehicleId: trailerId,
-          vehicleSubType: trailerTypeCode,
-          vehicleType: VEHICLE_TYPES.TRAILER,
-        });
+      const { trailerId, trailerTypeCode, ...restOfTrailer } = res.data;
+      return getDefaultRequiredVal({
+        ...restOfTrailer,
+        vehicleId: trailerId,
+        vehicleSubType: trailerTypeCode,
+        vehicleType: VEHICLE_TYPES.TRAILER,
+      });
     }
 
     return undefined;

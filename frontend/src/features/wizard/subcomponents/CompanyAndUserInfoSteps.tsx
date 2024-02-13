@@ -12,7 +12,7 @@ import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { ERROR_ROUTES } from "../../../routes/constants";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import { createOnRouteBCProfile } from "../../manageProfile/apiManager/manageProfileAPI";
-import { CompanyAndUserRequest } from "../../manageProfile/types/manageProfile";
+import { CreateCompanyRequest } from "../../manageProfile/types/manageProfile";
 import { CompanyInformationWizardForm } from "./CompanyInformationWizardForm";
 import { UserInformationWizardForm } from "./UserInformationWizardForm";
 import { WizardCompanyBanner } from "./WizardCompanyBanner";
@@ -34,7 +34,7 @@ export const CompanyAndUserInfoSteps = ({
 }) => {
   const navigate = useNavigate();
   const { handleSubmit: handleCreateProfileSubmit, register } =
-    useFormContext<CompanyAndUserRequest>();
+    useFormContext<CreateCompanyRequest>();
   const {
     setCompanyId,
     setUserDetails,
@@ -77,8 +77,8 @@ export const CompanyAndUserInfoSteps = ({
         // We are not clearing isNewBCeIDUser in the context because,
         // it causes a side-effect where, if cleared, the user is immediately
         // redirected to the applications page.
-        
-        // They should instead remain on this page and 
+
+        // They should instead remain on this page and
         // look at the profile created section which contains the client number.
 
         // Setting the companyId in the sessionStorage so that it can be used
@@ -109,7 +109,7 @@ export const CompanyAndUserInfoSteps = ({
    * Validates and submits the form data to the API
    * @param data The form data.
    */
-  const onClickFinish = function (data: CompanyAndUserRequest) {
+  const onClickFinish = function (data: CreateCompanyRequest) {
     const profileToBeCreated = data;
     createProfileQuery.mutate(profileToBeCreated);
   };

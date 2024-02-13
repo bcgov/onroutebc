@@ -1,14 +1,13 @@
 import { useEffect, useRef } from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 
-import { getPayBCPaymentDetails } from "../../helpers/payment";
+import { getPayBCPaymentDetails, usePaymentByTransactionIdQuery } from "../../helpers/payment";
 import { Loading } from "../../../../common/pages/Loading";
 import { useCompleteTransaction, useIssuePermits } from "../../hooks/hooks";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { DATE_FORMATS, toUtc } from "../../../../common/helpers/formatDate";
 import { hasPermitsActionFailed } from "../../helpers/permitState";
 import { PaymentCardTypeCode } from "../../../../common/types/paymentMethods";
-import { Nullable } from "../../../../common/types/common";
 import {
   APPLICATIONS_ROUTES,
   ERROR_ROUTES,
@@ -19,40 +18,6 @@ import {
   CompleteTransactionRequestData,
   PayBCPaymentDetails,
 } from "../../types/payment";
-
-const PERMIT_ID_DELIM = ",";
-const PATH_DELIM = "?";
-
-const getPermitIdsArray = (permitIds?: Nullable<string>) => {
-  return getDefaultRequiredVal("", permitIds)
-    .split(PERMIT_ID_DELIM)
-    .filter((id) => id !== "");
-};
-
-export const parseRedirectUriPath = (path?: Nullable<string>) => {
-  const splitPath = path?.split(PATH_DELIM);
-  let permitIds = "";
-  let trnApproved = 0;
-  if (splitPath?.[0]) {
-    permitIds = splitPath[0];
-  }
-
-  if (splitPath?.[1]) {
-    trnApproved = parseInt(splitPath[1]?.split("=")?.[1]);
-  }
-
-  return { permitIds, trnApproved };
-};
-
-const exportPathFromSearchParams = (
-  params: URLSearchParams,
-  trnApproved: number,
-) => {
-  const localParams = new URLSearchParams(params);
-  localParams.delete("path");
-  const updatedPath = localParams.toString();
-  return encodeURIComponent(`trnApproved=${trnApproved}&` + updatedPath);
-};
 
 /**
  * React component that handles the payment redirect and displays the payment status.
@@ -66,14 +31,9 @@ export const PaymentRedirect = () => {
   const [searchParams] = useSearchParams();
   const paymentDetails = getPayBCPaymentDetails(searchParams);
   const transaction = mapTransactionDetails(paymentDetails);
-
-  const path = getDefaultRequiredVal("", searchParams.get("path"));
-  const { permitIds, trnApproved } = parseRedirectUriPath(path);
-  const transactionQueryString = exportPathFromSearchParams(
-    searchParams,
-    trnApproved,
-  );
   const transactionId = getDefaultRequiredVal("", searchParams.get("ref2"));
+  const transactionQueryString = encodeURIComponent(searchParams.toString());
+  const transactionIdQuery = usePaymentByTransactionIdQuery(transactionId);
 
   const { mutation: completeTransactionMutation, paymentApproved } =
     useCompleteTransaction(
@@ -82,7 +42,6 @@ export const PaymentRedirect = () => {
     );
 
   const { mutation: issuePermitsMutation, issueResults } = useIssuePermits();
-
   const issueFailed = hasPermitsActionFailed(issueResults);
 
   useEffect(() => {
@@ -97,32 +56,40 @@ export const PaymentRedirect = () => {
   }, [paymentDetails.trnApproved]);
 
   useEffect(() => {
-    if (issuedPermit.current === false) {
-      const permitIdsArray = getPermitIdsArray(permitIds);
 
-      if (permitIdsArray.length === 0) {
-        // permit ids should not be empty, if so then something went wrong
-        navigate(ERROR_ROUTES.UNEXPECTED, { replace: true });
-      } else if (paymentApproved === true) {
+    const applicationIds:string[] = [];
+    if (transactionIdQuery?.isSuccess && issuedPermit?.current === false) {
+      
+      transactionIdQuery?.data?.applicationDetails?.forEach((application) => {
+        if (application?.applicationId) {
+          applicationIds.push(application.applicationId);
+        }
+      })
+
+      if (paymentApproved === true) {
         // Payment successful, proceed to issue permit
-        issuePermitsMutation.mutate(permitIdsArray);
+        issuePermitsMutation.mutate(applicationIds);
         issuedPermit.current = true;
       } else if (paymentApproved === false) {
         // Payment failed, redirect back to pay now page
-        navigate(APPLICATIONS_ROUTES.PAY(permitIdsArray[0], true), {
+        navigate(APPLICATIONS_ROUTES.PAY(applicationIds[0], true), {
           replace: true,
         });
       }
     }
-  }, [paymentApproved, permitIds]);
+
+    if (transactionIdQuery?.isError)
+      navigate(ERROR_ROUTES.UNEXPECTED, { replace: true });
+
+  }, [paymentApproved, transactionIdQuery]);
 
   if (issueFailed) {
     return <Navigate to={`${ERROR_ROUTES.UNEXPECTED}`} replace={true} />;
   }
-  
+
   const successIds = getDefaultRequiredVal([], issueResults?.success);
   const hasValidIssueResults = successIds.length > 0;
-  
+
   if (hasValidIssueResults) {
     return (
       <Navigate

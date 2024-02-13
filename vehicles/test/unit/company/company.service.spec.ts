@@ -37,6 +37,8 @@ import * as databaseHelper from 'src/common/helper/database.helper';
 import { EmailService } from '../../../src/modules/email/email.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { BadRequestException } from '@nestjs/common';
+import { GetCompanyQueryParamsDto } from '../../../src/modules/company-user-management/company/dto/request/queryParam/getCompany.query-params.dto';
 
 const COMPANY_ID_99 = 99;
 let repo: DeepMocked<Repository<Company>>;
@@ -134,7 +136,7 @@ describe('CompanyService', () => {
     it('should catch and throw and Internal Error Exceptions user.', async () => {
       await expect(async () => {
         await service.create(null, redCompanyAdminUserJWTMock);
-      }).rejects.toThrowError(TypeError);
+      }).rejects.toThrow(BadRequestException);
     });
   });
 
@@ -238,13 +240,21 @@ describe('CompanyService', () => {
         .spyOn(repo, 'createQueryBuilder')
         .mockImplementation(() => createQueryBuilderMock(FILTERED_LIST));
 
-      const pageOptionsDto = { page: 1, take: 10 };
+      const getCompanyQueryParamsDto: GetCompanyQueryParamsDto = {
+        page: 1,
+        take: 10,
+        orderBy: 'companyId:DESC',
+        clientNumber: 'Red Truck Inc',
+        legalName: 'B3-000005-722',
+      };
 
-      const retCompanies = await service.findCompanyPaginated(
-        pageOptionsDto,
-        constants.RED_COMPANY_LEGAL_NAME,
-        constants.RED_COMPANY_CLIENT_NUMBER,
-      );
+      const retCompanies = await service.findCompanyPaginated({
+        page: getCompanyQueryParamsDto.page,
+        take: getCompanyQueryParamsDto.take,
+        orderBy: getCompanyQueryParamsDto.orderBy,
+        legalName: getCompanyQueryParamsDto.legalName,
+        clientNumber: getCompanyQueryParamsDto.clientNumber,
+      });
 
       expect(typeof retCompanies).toBe('object');
       expect(retCompanies.items.length).toBeGreaterThan(0);

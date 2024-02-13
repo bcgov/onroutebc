@@ -1,4 +1,14 @@
-import { Nullable, Optional, RequiredOrNull } from "../types/common";
+import {
+  BCeIDUserAuthGroupType,
+  BCeID_USER_AUTH_GROUP,
+} from "../authentication/types";
+import {
+  Nullable,
+  Optional,
+  RequiredOrNull,
+  SORT_DIRECTIONS,
+  SortingConfig,
+} from "../types/common";
 
 /**
  * Remove all the null, undefined and empty fields (including arrays).
@@ -188,25 +198,6 @@ export const streamDownloadFile = async (response: Response) => {
 };
 
 /**
- * Encrypts a string and returns its hex value.
- * @param message The message to be
- * @returns The hashvalue from SHA256 encryption.
- *
- * Code copied from:
- * @see https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest#converting_a_digest_to_a_hex_string
- */
-export async function getSHA256HexValue(message: string) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(message);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
-  const hashHex = hashArray
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join(""); // convert bytes to hex string
-  return hashHex;
-}
-
-/**
  * Convers a string to a number.
  * (Applicable for number fields in forms).
  *
@@ -223,4 +214,39 @@ export const convertToNumberIfValid = (
   return str != null && str !== "" && !isNaN(Number(str))
     ? Number(str)
     : valueToReturnWhenInvalid;
+};
+
+/**
+ * Returns a label for the userAuthGroup.
+ * @param userAuthGroup The userAuthGroup the user belongs to.
+ * @returns A string representing the label of the user.
+ */
+export const getLabelForBCeIDUserAuthGroup = (
+  userAuthGroup: BCeIDUserAuthGroupType,
+): string => {
+  if (userAuthGroup === BCeID_USER_AUTH_GROUP.COMPANY_ADMINISTRATOR) {
+    return "Administrator";
+  }
+  return "Permit Applicant";
+};
+
+/**
+ * Converts sorting state to a format that APIs accept.
+ *
+ * @param sortArray The sorting state of type MRT_SortingState provided
+ *                  by Material React Table.
+ * @returns A string of the format: "column1:DESC,column2:ASC"
+ *
+ */
+export const stringifyOrderBy = (sortArray: SortingConfig[]): string => {
+  return sortArray
+    .map(({ descending, column }) => {
+      const stringifiedValue = `${column}:`;
+      if (descending) {
+        return stringifiedValue.concat(SORT_DIRECTIONS.DESCENDING);
+      } else {
+        return stringifiedValue.concat(SORT_DIRECTIONS.ASCENDING);
+      }
+    }) // Output of map function: ["column1:DESC","column2:ASC"]
+    .join(","); // Output of join: "column1:DESC,column2:ASC"
 };

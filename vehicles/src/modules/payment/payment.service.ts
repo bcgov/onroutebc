@@ -5,7 +5,6 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import * as CryptoJS from 'crypto-js';
 import { CreateTransactionDto } from './dto/request/create-transaction.dto';
 import { ReadTransactionDto } from './dto/response/read-transaction.dto';
 import { InjectMapper } from '@automapper/nestjs';
@@ -27,8 +26,9 @@ import {
   PAYMENT_DESCRIPTION,
   PAYBC_PAYMENT_METHOD,
   PAYMENT_CURRENCY,
+  CRYPTO_ALGORITHM_MD5,
 } from '../../common/constants/api.constant';
-import { validateHash } from 'src/common/helper/validateHash.helper';
+import { convertToHash } from 'src/common/helper/crypto.helper';
 import { UpdatePaymentGatewayTransactionDto } from './dto/request/update-payment-gateway-transaction.dto';
 import { PaymentCardType } from './entities/payment-card-type.entity';
 import { PaymentMethodType } from './entities/payment-method-type.entity';
@@ -71,16 +71,7 @@ export class PaymentService {
   };
 
   private queryHash = (transaction: Transaction) => {
-    const permitIds = transaction.permitTransactions.map(
-      (permitTransaction) => {
-        return permitTransaction.permit.permitId;
-      },
-    );
-    // Construct the URL with the transaction details for the payment gateway
-    const redirectUrl = permitIds
-      ? `${process.env.PAYBC_REDIRECT}` + `?path=${permitIds.join(',')}`
-      : `${process.env.PAYBC_REDIRECT}`;
-
+    const redirectUrl = process.env.PAYBC_REDIRECT;
     const date = new Date().toISOString().split('T')[0];
 
     // There should be a better way of doing this which is not as rigid - something like
@@ -100,9 +91,10 @@ export class PaymentService {
       `&ref2=${transaction.transactionId}`;
 
     // Generate the hash using the query string and the MD5 algorithm
-    const payBCHash: string = CryptoJS.MD5(
+    const payBCHash: string = convertToHash(
       `${queryString}${process.env.PAYBC_API_KEY}`,
-    ).toString();
+      CRYPTO_ALGORITHM_MD5,
+    );
 
     const hashExpiry = this.generateHashExpiry();
 
@@ -371,7 +363,11 @@ export class PaymentService {
       );
     }
 
-    const validHash = validateHash(query, hashValue);
+    const validHash =
+      convertToHash(
+        `${query}${process.env.PAYBC_API_KEY}`,
+        CRYPTO_ALGORITHM_MD5,
+      ) === hashValue;
     const validDto = this.validateUpdateTransactionDto(
       updatePaymentGatewayTransactionDto,
       `${query}&hashValue=${hashValue}`,
@@ -539,7 +535,12 @@ export class PaymentService {
       `&trnDate=${trnDate}` +
       `&ref2=${ref2}` +
       `&pbcTxnNumber=${pbcTxnNumber}`;
-    return validateHash(query, hashValue);
+    return (
+      convertToHash(
+        `${query}${process.env.PAYBC_API_KEY}`,
+        CRYPTO_ALGORITHM_MD5,
+      ) === hashValue
+    );
   }
 
   async findAllPaymentMethodTypeEntities(): Promise<PaymentMethodType[]> {

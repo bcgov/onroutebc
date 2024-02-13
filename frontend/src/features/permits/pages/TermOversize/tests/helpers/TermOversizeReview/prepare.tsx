@@ -6,7 +6,6 @@ import { ThemeProvider } from "@mui/material/styles";
 
 import { APPLICATIONS_API_ROUTES } from "../../../../../apiManager/endpoints/endpoints";
 import { renderWithClient } from "../../../../../../../common/helpers/testHelper";
-import { Application, ApplicationRequestData } from "../../../../../types/application";
 import { bcGovTheme } from "../../../../../../../themes/bcGovTheme";
 import { ApplicationContext } from "../../../../../context/ApplicationContext";
 import { TermOversizeReview } from "../../../TermOversizeReview";
@@ -15,6 +14,13 @@ import { MANAGE_PROFILE_API } from "../../../../../../manageProfile/apiManager/e
 import { getDefaultCompanyInfo } from "../../../../../components/dashboard/tests/integration/fixtures/getCompanyInfo";
 import { VEHICLES_API } from "../../../../../../manageVehicles/apiManager/endpoints/endpoints";
 import { Nullable } from "../../../../../../../common/types/common";
+import { PERMIT_STATUSES } from "../../../../../types/PermitStatus";
+import {
+  Application,
+  CreateApplicationRequestData,
+  UpdateApplicationRequestData,
+} from "../../../../../types/application";
+
 import {
   dayjsToUtcStr,
   getEndOfDate,
@@ -29,6 +35,7 @@ import {
 } from "../../../../../components/dashboard/tests/integration/fixtures/getVehicleInfo";
 
 export const newApplicationNumber = "A1-00000001-800-R01";
+export const newPermitId = "1";
 const { permitData, ...otherDetails } = getDefaultApplication();
 export const vehicleDetails = permitData.vehicleDetails;
 export const defaultApplicationData = {
@@ -55,14 +62,11 @@ export const vehicleSubtypes = [
 ];
 
 const server = setupServer(
-  http.get(
-    `${MANAGE_PROFILE_API.COMPANIES}/:companyId`,
-    () => {
-      return HttpResponse.json({
-        ...companyInfo,
-      });
-    },
-  ),
+  http.get(`${MANAGE_PROFILE_API.COMPANIES}/:companyId`, () => {
+    return HttpResponse.json({
+      ...companyInfo,
+    });
+  }),
 
   http.post(`${APPLICATIONS_API_ROUTES.CREATE}`, async ({ request }) => {
     const reqBody = await request.json();
@@ -72,18 +76,25 @@ const server = setupServer(
     }
 
     const applicationData = {
-      ...application as ApplicationRequestData,
+      ...(application as CreateApplicationRequestData),
+      permitId: newPermitId,
+      originalPermitId: newPermitId,
       applicationNumber: newApplicationNumber,
       createdDateTime: dayjsToUtcStr(now()),
       updatedDateTime: dayjsToUtcStr(now()),
+      permitStatus: PERMIT_STATUSES.IN_PROGRESS,
     };
 
-    return HttpResponse.json({
-      ...applicationData,
-    }, { status: 201 });
+    return HttpResponse.json(
+      {
+        ...applicationData,
+      },
+      { status: 201 },
+    );
   }),
 
-  http.put(`${APPLICATIONS_API_ROUTES.UPDATE}/:id`, async ({ request }) => {
+  http.put(`${APPLICATIONS_API_ROUTES.UPDATE}/:id`, async ({ request, params }) => {
+    const { id } = params;
     const reqBody = await request.json();
     const application = reqBody?.valueOf();
     if (!application) {
@@ -91,12 +102,21 @@ const server = setupServer(
     }
 
     const applicationData = {
-      ...application as ApplicationRequestData,
+      ...(application as UpdateApplicationRequestData),
+      permitId: newPermitId,
+      originalPermitId: newPermitId,
+      applicationNumber: String(id),
+      createdDateTime: dayjsToUtcStr(now()),
       updatedDateTime: dayjsToUtcStr(now()),
+      permitStatus: PERMIT_STATUSES.IN_PROGRESS,
     };
-    return HttpResponse.json({
-      ...applicationData,
-    }, { status: 200 });
+
+    return HttpResponse.json(
+      {
+        ...applicationData,
+      },
+      { status: 200 },
+    );
   }),
 
   http.get(VEHICLES_API.POWER_UNIT_TYPES, () => {

@@ -12,7 +12,10 @@ import { getDefaultRequiredVal } from "../../common/helpers/util";
 import { ErrorFallback } from "../../common/pages/ErrorFallback";
 import { createMyOnRouteBCUserProfile } from "../manageProfile/apiManager/manageProfileAPI";
 import { ReusableUserInfoForm } from "../manageProfile/components/forms/common/ReusableUserInfoForm";
-import { Contact, UserInformation } from "../manageProfile/types/manageProfile";
+import {
+  Contact,
+  ReadUserInformationResponse,
+} from "../manageProfile/types/manageProfile";
 import { OnRouteBCProfileCreated } from "./subcomponents/OnRouteBCProfileCreated";
 
 /**
@@ -30,7 +33,7 @@ export const UserInfoWizard = React.memo(() => {
     mutationFn: createMyOnRouteBCUserProfile,
     onSuccess: async (response) => {
       if (response.status === 201) {
-        const responseBody = response.data as UserInformation;
+        const responseBody = response.data as ReadUserInformationResponse;
         const userDetails = {
           firstName: responseBody.firstName,
           lastName: responseBody.lastName,

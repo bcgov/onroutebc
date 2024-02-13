@@ -1,11 +1,14 @@
 import { SearchFields } from "../../features/idir/search/types/types";
-import { BCeIDAddUserRequest } from "../../features/manageProfile/types/userManagement";
-import { Application } from "../../features/permits/types/application";
 import {
-  CompanyAndUserRequest,
+  Application,
+  ContactDetails,
+} from "../../features/permits/types/application";
+import {
+  CreateCompanyRequest,
   CompanyProfile,
-  UserInformation,
-  VerifyMigratedClientRequest,
+  UserInfoRequest,
+  VerifyClientRequest,
+  BCeIDAddUserRequest,
 } from "../../features/manageProfile/types/manageProfile";
 
 import {
@@ -26,11 +29,12 @@ export type ORBC_FormTypes =
   | PowerUnit
   | Trailer
   | Application
-  | UserInformation
-  | CompanyAndUserRequest
+  | UserInfoRequest
+  | CreateCompanyRequest
   | BCeIDAddUserRequest
   | SearchFields
-  | VerifyMigratedClientRequest;
+  | VerifyClientRequest
+  | ContactDetails;
 
 /**
  * The options for pagination.
@@ -48,13 +52,24 @@ export type PaginationOptions = {
 };
 
 /**
+ * The sort directions.
+ */
+export const SORT_DIRECTIONS = {
+  ASCENDING: "ASC",
+  DESCENDING: "DESC",
+} as const;
+
+export type SortDirectionsType =
+  (typeof SORT_DIRECTIONS)[keyof typeof SORT_DIRECTIONS];
+
+/**
  * The config for sorting data.
  */
 export type SortingConfig = {
   /**
    * The field to order by.
    */
-  orderBy: string;
+  column: string;
   /**
    * Boolean indicating if the sort is in descending order.
    * If not given a value, defaulted to false.
@@ -74,7 +89,7 @@ export type DataFilterOptions = {
   /**
    * The sorting configuration selected by the user.
    */
-  sorting?: Array<SortingConfig>;
+  orderBy?: Array<SortingConfig>;
 };
 
 /**

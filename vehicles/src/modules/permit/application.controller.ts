@@ -1,7 +1,7 @@
 import {
+  BadRequestException,
   Body,
   Controller,
-  DefaultValuePipe,
   Get,
   Param,
   Post,
@@ -19,13 +19,11 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { IDP } from 'src/common/enum/idp.enum';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { CreateApplicationDto } from './dto/request/create-application.dto';
 import { ReadApplicationDto } from './dto/response/read-application.dto';
 import { ApplicationService } from './application.service';
 import { Request } from 'express';
-import { ApplicationStatus } from '../../common/enum/application-status.enum';
 import { ExceptionDto } from '../../common/exception/exception.dto';
 import { UpdateApplicationDto } from './dto/request/update-application.dto';
 import { DataNotFoundException } from 'src/common/exception/data-not-found.exception';
@@ -35,7 +33,13 @@ import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
 import { IssuePermitDto } from './dto/request/issue-permit.dto';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
-import { ParamToArray } from 'src/common/class/customs.transform';
+import { PaginationDto } from 'src/common/dto/paginate/pagination';
+import {
+  UserAuthGroup,
+  idirUserAuthGroupList,
+} from 'src/common/enum/user-auth-group.enum';
+import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
+import { GetApplicationQueryParamsDto } from './dto/request/queryParam/getApplication.query-params.dto';
 
 @ApiBearerAuth()
 @ApiTags('Permit Application')
@@ -80,37 +84,34 @@ export class ApplicationController {
    * @param userGUID
    * @param status
    */
-  @ApiOkResponse({
-    description: 'The Permit Application Resource',
-    type: ReadApplicationDto,
-    isArray: true,
-  })
-  @ApiQuery({ name: 'companyId', required: false })
+  @ApiPaginatedResponse(ReadPermitDto)
   @Roles(Role.READ_PERMIT)
   @Get()
   async findAllApplication(
     @Req() request: Request,
-    @Query('companyId') companyId?: number,
-    @Query(
-      'statuses',
-      new DefaultValuePipe([]),
-      ParamToArray<ApplicationStatus>,
-    )
-    statuses: ApplicationStatus[] = [],
-  ): Promise<ReadApplicationDto[]> {
+    @Query() getApplicationQueryParamsDto: GetApplicationQueryParamsDto,
+  ): Promise<PaginationDto<ReadApplicationDto>> {
     const currentUser = request.user as IUserJWT;
-    if (currentUser.identity_provider == IDP.IDIR) {
-      return this.applicationService.findAllApplicationCompany(
-        companyId,
-        statuses,
-      );
-    } else {
-      return this.applicationService.findAllApplicationUser(
-        companyId,
-        currentUser.userGUID,
-        statuses,
+    if (
+      !idirUserAuthGroupList.includes(currentUser.orbcUserAuthGroup) &&
+      !getApplicationQueryParamsDto.companyId
+    ) {
+      throw new BadRequestException(
+        `Company Id is required for roles except ${idirUserAuthGroupList.join(', ')}.`,
       );
     }
+
+    const userGuid =
+      UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup
+        ? currentUser.userGUID
+        : null;
+    return this.applicationService.findAllApplications({
+      page: getApplicationQueryParamsDto.page,
+      take: getApplicationQueryParamsDto.take,
+      orderBy: getApplicationQueryParamsDto.orderBy,
+      companyId: getApplicationQueryParamsDto.companyId,
+      userGUID: userGuid,
+    });
   }
 
   /**
@@ -207,6 +208,16 @@ export class ApplicationController {
     @Body() issuePermitDto: IssuePermitDto,
   ): Promise<ResultDto> {
     const currentUser = request.user as IUserJWT;
+
+    if (
+      !idirUserAuthGroupList.includes(currentUser.orbcUserAuthGroup) &&
+      !issuePermitDto.companyId
+    ) {
+      throw new BadRequestException(
+        `Company Id is required for roles except ${idirUserAuthGroupList.join(', ')}.`,
+      );
+    }
+
     /**Bulk issuance would require changes in issuePermit service method with
      *  respect to Document generation etc. At the moment, it is not handled and
      *  only single permit Id must be passed.

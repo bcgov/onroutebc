@@ -258,11 +258,13 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
               label: "Vehicle Sub-type",
               width: formFieldStyle.width,
             }}
-            menuOptions={powerUnitSubTypesQuery?.data?.map((data: VehicleSubType) => (
-              <MenuItem key={data.typeCode} value={data.typeCode}>
-                {data.type}
-              </MenuItem>
-            ))}
+            menuOptions={powerUnitSubTypesQuery?.data?.map(
+              (data: VehicleSubType) => (
+                <MenuItem key={data.typeCode} value={data.typeCode}>
+                  {data.type}
+                </MenuItem>
+              ),
+            )}
           />
           <CountryAndProvince
             feature={FEATURE}

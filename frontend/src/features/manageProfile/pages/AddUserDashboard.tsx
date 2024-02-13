@@ -4,8 +4,7 @@ import React, { useContext, useState } from "react";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
-import { Box, Button, Divider, Link, Typography, Stack } from "@mui/material";
-
+import { Box, Button, Divider, Typography, Stack } from "@mui/material";
 import {
   Controller,
   FieldValues,
@@ -22,12 +21,10 @@ import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import { addUserToCompany } from "../apiManager/manageProfileAPI";
 import { UserAuthRadioGroup } from "../components/forms/userManagement/UserAuthRadioGroup";
 import UserGroupsAndPermissionsModal from "../components/user-management/UserGroupsAndPermissionsModal";
-import { BCEID_PROFILE_TABS } from "../types/manageProfile.d";
-import {
-  BCeIDAddUserRequest,
-  BCEID_AUTH_GROUP,
-} from "../types/userManagement.d";
+import { BCEID_PROFILE_TABS, BCeIDAddUserRequest } from "../types/manageProfile.d";
 import { PROFILE_ROUTES } from "../../../routes/constants";
+import { CustomActionLink } from "../../../common/components/links/CustomActionLink";
+import { BCeID_USER_AUTH_GROUP } from "../../../common/authentication/types";
 
 /**
  * BCeID User - Add User Page.
@@ -39,7 +36,7 @@ export const AddUserDashboard = React.memo(() => {
 
   const formMethods = useForm<BCeIDAddUserRequest>({
     defaultValues: {
-      userAuthGroup: BCEID_AUTH_GROUP.CVCLIENT,
+      userAuthGroup: BCeID_USER_AUTH_GROUP.CV_CLIENT,
     },
     reValidateMode: "onBlur",
   });
@@ -176,13 +173,11 @@ export const AddUserDashboard = React.memo(() => {
               <Typography variant={"h2"}>Assign User Group</Typography>
 
               <Typography variant={"h2"}>
-                <Link
-                  component="button"
-                  variant="body2"
+                <CustomActionLink
                   onClick={() => setIsUserGroupsModalOpen(() => true)}
                 >
                   User Groups and Permissions
-                </Link>
+                </CustomActionLink>
               </Typography>
             </Stack>
             <Stack spacing={2}>

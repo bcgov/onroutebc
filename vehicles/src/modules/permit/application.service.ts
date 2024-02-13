@@ -12,9 +12,8 @@ import {
   forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In } from 'typeorm/find-options/operator/In';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
-import { DataSource, IsNull, Repository } from 'typeorm';
+import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import { CreateApplicationDto } from './dto/request/create-application.dto';
 import { ReadApplicationDto } from './dto/response/read-application.dto';
 import { Permit } from './entities/permit.entity';
@@ -26,7 +25,11 @@ import { IDP } from 'src/common/enum/idp.enum';
 import { PermitApplicationOrigin as PermitApplicationOriginEnum } from 'src/common/enum/permit-application-origin.enum';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { PermitApprovalSource as PermitApprovalSourceEnum } from 'src/common/enum/permit-approval-source.enum';
-import { callDatabaseSequence } from 'src/common/helper/database.helper';
+import {
+  callDatabaseSequence,
+  paginate,
+  sortQuery,
+} from 'src/common/helper/database.helper';
 import { randomInt } from 'crypto';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
@@ -58,6 +61,8 @@ import {
 } from '../../common/helper/payment.helper';
 import * as constants from '../../common/constants/api.constant';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
+import { PageMetaDto } from 'src/common/dto/paginate/page-meta';
+import { PaginationDto } from 'src/common/dto/paginate/pagination';
 
 @Injectable()
 export class ApplicationService {
@@ -144,6 +149,7 @@ export class ApplicationService {
         }),
       },
     );
+
     const savedPermitEntity =
       await this.permitRepository.save(permitApplication);
     // In case of new application assign original permit ID
@@ -151,7 +157,13 @@ export class ApplicationService {
       await this.permitRepository
         .createQueryBuilder()
         .update()
-        .set({ originalPermitId: savedPermitEntity.permitId })
+        .set({
+          originalPermitId: savedPermitEntity.permitId,
+          updatedUser: currentUser.userName,
+          updatedDateTime: new Date(),
+          updatedUserDirectory: currentUser.orbcUserDirectory,
+          updatedUserGuid: currentUser.userGUID,
+        })
         .where('permitId = :permitId', { permitId: savedPermitEntity.permitId })
         .execute();
     }
@@ -202,56 +214,111 @@ export class ApplicationService {
     return readPermitApplicationdto;
   }
 
-  /* Get all application for a company. 
-     Initially written to facilitate get application in progress for IDIR user.*/
+  /**
+   * Retrieves applications based on user GUID, and company ID. It allows for sorting, pagination, and filtering of the applications results.
+   * @param getApplicationQueryParamsDto - DTO containing query parameters such as companyId, orderBy, page, and take for filtering and pagination.
+   * @param userGUID - Unique identifier for the user. If provided, the query
+   */
   @LogAsyncMethodExecution()
-  async findAllApplicationCompany(
-    companyId: number,
-    statuses: ApplicationStatus[],
-  ): Promise<ReadApplicationDto[]> {
-    const applications = await this.permitRepository.find({
-      where: {
-        companyId: +companyId,
-        permitStatus: In([...statuses]),
-        permitNumber: IsNull(),
-      },
-      relations: {
-        permitData: true,
+  async findAllApplications(findAllApplicationsOptions?: {
+    page: number;
+    take: number;
+    orderBy?: string;
+    companyId?: number;
+    userGUID?: string;
+  }): Promise<PaginationDto<ReadApplicationDto>> {
+    // Construct the base query to find applications
+    const applicationsQB = this.buildApplicationQuery(
+      findAllApplicationsOptions.companyId,
+      findAllApplicationsOptions.userGUID,
+    );
+
+    // Mapping of frontend orderBy parameter to database columns
+    const orderByMapping: Record<string, string> = {
+      applicationNumber: 'permit.applicationNumber',
+      permitType: 'permit.permitType',
+      startDate: 'permitData.startDate',
+      expiryDate: 'permitData.expiryDate',
+      unitNumber: 'permitData.unitNumber',
+      plate: 'permitData.plate',
+      applicant: 'permitData.applicant',
+    };
+
+    // Apply sorting if orderBy parameter is provided
+    if (findAllApplicationsOptions.orderBy) {
+      sortQuery<Permit>(
+        applicationsQB,
+        orderByMapping,
+        findAllApplicationsOptions.orderBy,
+      );
+    }
+    // Apply pagination if page and take parameters are provided
+    if (findAllApplicationsOptions.page && findAllApplicationsOptions.take) {
+      paginate<Permit>(
+        applicationsQB,
+        findAllApplicationsOptions.page,
+        findAllApplicationsOptions.take,
+      );
+    }
+
+    // Get the paginated list of permits
+    const applications = await applicationsQB.getMany();
+    // total number of items
+    const totalItems = applications?.length;
+    // Prepare pagination metadata
+    const pageMetaDto = new PageMetaDto({
+      totalItems,
+      pageOptionsDto: {
+        page: findAllApplicationsOptions.page,
+        take: findAllApplicationsOptions.take,
+        orderBy: findAllApplicationsOptions.orderBy,
       },
     });
-
-    return this.classMapper.mapArrayAsync(
-      applications,
-      Permit,
-      ReadApplicationDto,
-    );
+    // Map permit entities to ReadPermitDto objects
+    const readApplicationDto: ReadApplicationDto[] =
+      await this.classMapper.mapArrayAsync(
+        applications,
+        Permit,
+        ReadApplicationDto,
+      );
+    // Return paginated result
+    return new PaginationDto(readApplicationDto, pageMetaDto);
   }
 
-  /*Get all application in progress for a specific user of a specific company.
-    Initially written to facilitate get application in progress for company User. */
-  @LogAsyncMethodExecution()
-  async findAllApplicationUser(
-    companyId: number,
-    userGuid: string,
-    statuses: ApplicationStatus[],
-  ): Promise<ReadApplicationDto[]> {
-    const applications: Permit[] = await this.permitRepository.find({
-      where: {
-        companyId: +companyId,
-        userGuid: userGuid,
-        permitStatus: In([...statuses]),
-        permitNumber: IsNull(),
-      },
-      relations: {
-        permitData: true,
-      },
-    });
+  private buildApplicationQuery(
+    companyId?: number,
+    userGUID?: string,
+  ): SelectQueryBuilder<Permit> {
+    let permitsQuery = this.permitRepository
+      .createQueryBuilder('permit')
+      .innerJoinAndSelect('permit.permitData', 'permitData');
+    permitsQuery = permitsQuery.where('permit.permitNumber IS NULL');
 
-    return this.classMapper.mapArrayAsync(
-      applications,
-      Permit,
-      ReadApplicationDto,
+    // Filter by companyId if provided
+    if (companyId) {
+      permitsQuery = permitsQuery.andWhere('permit.companyId = :companyId', {
+        companyId: companyId,
+      });
+    }
+
+    permitsQuery = permitsQuery.andWhere(
+      'permit.permitStatus IN (:...statuses)',
+      {
+        statuses: [
+          ApplicationStatus.IN_PROGRESS,
+          ApplicationStatus.WAITING_PAYMENT,
+        ],
+      },
     );
+
+    // Filter by userGUID if provided
+    if (userGUID) {
+      permitsQuery = permitsQuery.andWhere('permit.userGuid = :userGUID', {
+        userGUID,
+      });
+    }
+
+    return permitsQuery;
   }
 
   /**
@@ -613,14 +680,19 @@ export class ApplicationService {
           },
         ];
 
+        const emailList = [
+          permitDataForTemplate.permitData?.contactDetails?.email,
+          permitDataForTemplate.permitData?.contactDetails?.additionalEmail,
+          companyInfo.email,
+        ].filter((email) => Boolean(email));
+
+        const distinctEmailList = Array.from(new Set(emailList));
+
         void this.emailService.sendEmailMessage(
           EmailTemplate.ISSUE_PERMIT,
           emailData,
           'onRouteBC Permits - ' + companyInfo.legalName,
-          [
-            permitDataForTemplate.permitData?.contactDetails?.email,
-            companyInfo.email,
-          ],
+          distinctEmailList,
           attachments,
         );
       } catch (error: unknown) {

@@ -1,22 +1,27 @@
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { memo, useMemo, useState } from "react";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
   MRT_ColumnDef,
   MRT_PaginationState,
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
+import { memo, useContext, useMemo, useState } from "react";
 
-import { getCompanyDataBySearch } from "../api/idirSearch";
-import { SearchFields } from "../types/types";
-import "./IDIRCompanySearchResults.scss";
-import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
-import { CompanySearchResultColumnDef } from "../table/CompanySearchResultColumnDef";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
+import * as routes from "../../../../routes/constants";
+import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
+import { getCompanyDataBySearch } from "../api/idirSearch";
+import { CompanySearchResultColumnDef } from "../table/CompanySearchResultColumnDef";
+import { SearchFields } from "../types/types";
+import "./IDIRCompanySearchResults.scss";
+import { CustomNavLink } from "../../../../common/components/links/CustomNavLink";
+import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
+import { Box, CardMedia, Stack, Typography } from "@mui/material";
 
 /*
  *
@@ -40,7 +45,22 @@ export const IDIRCompanySearchResults = memo(
       searchByFilter,
       searchEntity,
     } = searchParams;
-    
+    const { setCompanyId, setCompanyLegalName, setOnRouteBCClientNumber } =
+      useContext(OnRouteBCContext);
+
+    /**
+     * On click event handler for the company link.
+     * Sets the company context and directs the user to the company page.
+     *
+     * @param selectedCompany The company that the staff user clicked on.
+     */
+    const onClickCompany = (selectedCompany: CompanyProfile) => {
+      const { companyId, legalName, clientNumber } = selectedCompany;
+      setCompanyId?.(() => companyId);
+      setCompanyLegalName?.(() => legalName);
+      setOnRouteBCClientNumber?.(() => clientNumber);
+      sessionStorage.setItem("onRouteBC.user.companyId", companyId.toString());
+    };
     const [pagination, setPagination] = useState<MRT_PaginationState>({
       pageIndex: 0,
       pageSize: 10,
@@ -57,14 +77,15 @@ export const IDIRCompanySearchResults = memo(
         pagination.pageIndex,
         pagination.pageSize,
       ],
-      queryFn: () => getCompanyDataBySearch(
-        {
-          searchByFilter,
-          searchEntity,
-          searchString,
-        },
-        { page: pagination.pageIndex, take: pagination.pageSize },
-      ),
+      queryFn: () =>
+        getCompanyDataBySearch(
+          {
+            searchByFilter,
+            searchEntity,
+            searchString,
+          },
+          { page: pagination.pageIndex, take: pagination.pageSize },
+        ),
       retry: 1, // retry once.
       enabled: true,
       refetchOnWindowFocus: false,
@@ -75,7 +96,25 @@ export const IDIRCompanySearchResults = memo(
 
     // Column definitions for the table
     const columns = useMemo<MRT_ColumnDef<CompanyProfile>[]>(
-      () => CompanySearchResultColumnDef,
+      () => [
+        {
+          accessorKey: "legalName",
+          header: "Company Name",
+          enableSorting: true,
+          sortingFn: "alphanumeric",
+          Cell: (props: { row: any; cell: any }) => {
+            return (
+              <CustomNavLink
+                onClick={() => onClickCompany(props.row.original)}
+                to={routes.APPLICATIONS_ROUTES.BASE}
+              >
+                {props.row.original.legalName}
+              </CustomNavLink>
+            );
+          },
+        },
+        ...CompanySearchResultColumnDef,
+      ],
       [],
     );
 
@@ -116,8 +155,39 @@ export const IDIRCompanySearchResults = memo(
     });
 
     return (
-      <div className="table-container idir-search-results">
-        <MaterialReactTable table={table} />
+      <div className="table-container idir-company-search-results">
+        {data?.items?.length !== 0 && <MaterialReactTable table={table} />}
+        {data?.items?.length === 0 &&
+          <>
+            <Stack
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              >
+              <NoRecordsFound />
+              <Box
+                className="create-company-btn"
+              >
+                <CustomNavLink to={routes.IDIR_ROUTES.CREATE_COMPANY}>
+                  <div className="button-outline">
+                    <CardMedia
+                      className="create-company-img"
+                      component="img"
+                      src="/Create_Company_Graphic.png"
+                      alt="Create Company"
+                      title="Create Company"
+                    />
+                    <Typography
+                      variant={"h3"}
+                    >
+                      Create<br />Company
+                    </Typography>
+                  </div>
+                </CustomNavLink>
+              </Box>
+            </Stack>
+          </>
+        }
       </div>
     );
   },

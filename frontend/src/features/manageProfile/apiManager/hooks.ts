@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "react-oidc-context";
 import { useContext, useEffect } from "react";
 
-import { BCeIDAuthGroup } from "../types/userManagement";
 import { IDPS } from "../../../common/types/idp";
 import { Nullable } from "../../../common/types/common";
 import {
@@ -24,6 +23,7 @@ import OnRouteBCContext, {
 } from "../../../common/authentication/OnRouteBCContext";
 
 import {
+  BCeIDUserAuthGroupType,
   BCeIDUserContextType,
   IDIRUserContextType,
   UserRolesType,
@@ -98,7 +98,8 @@ export const useUserContext = (
   useEffect(() => {
     if (!userContextResponseBody) return;
 
-    const isIdir = isAuthenticated &&
+    const isIdir =
+      isAuthenticated &&
       userFromToken?.profile?.identity_provider === IDPS.IDIR;
 
     if (isIdir) {
@@ -136,10 +137,10 @@ export const useUserContext = (
           phone2Extension: user.phone2Extension,
           email: user.email,
           fax: user.fax,
-          userAuthGroup: user.userAuthGroup as BCeIDAuthGroup,
+          userAuthGroup: user.userAuthGroup as BCeIDUserAuthGroupType,
         } as BCeIDUserDetailContext;
         setUserDetails?.(() => userDetails);
-  
+
         // Setting the companyId to sessionStorage so that it can be
         // used outside of react components.
         sessionStorage.setItem(
@@ -158,6 +159,7 @@ export const useUserContext = (
           "onRouteBC.user.companyId",
           companyId.toString(),
         );
+        setIsNewBCeIDUser?.(() => true);
       }
       /**
        * The user has been migrated.
@@ -224,9 +226,7 @@ export const useIDIRUserRolesQuery = () => {
  * @param userRoles User roles data response from the api.
  * @returns UseQueryResult containing the query results.
  */
-export const useIDIRUserRoles = (
-  userRoles: Nullable<UserRolesType[]>,
-) => {
+export const useIDIRUserRoles = (userRoles: Nullable<UserRolesType[]>) => {
   const { setUserRoles } = useContext(OnRouteBCContext);
 
   useEffect(() => {

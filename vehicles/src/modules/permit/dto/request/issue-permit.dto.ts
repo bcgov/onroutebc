@@ -3,9 +3,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsNumberString,
   IsNumber,
-  IsOptional,
   ArrayMinSize,
+  IsOptional,
 } from 'class-validator';
+import { idirUserAuthGroupList } from '../../../../common/enum/user-auth-group.enum';
 
 export class IssuePermitDto {
   @AutoMap()
@@ -21,13 +22,12 @@ export class IssuePermitDto {
   applicationIds: string[];
 
   @AutoMap()
-  @IsNumber()
   @ApiProperty({
-    description: 'Id of the company requesting the permit.',
+    description: `Id of the company requesting the application issuance. Optional for ${idirUserAuthGroupList.join(', ')}`,
     example: 74,
     required: false,
   })
   @IsOptional()
   @IsNumber()
-  companyId: number;
+  companyId?: number;
 }

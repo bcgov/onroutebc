@@ -80,6 +80,30 @@ export type ApplicationRequestData = TransformPermitData<
   ReplaceDayjsWithString<Application>
 >;
 
+export type CreateApplicationRequestData = Omit<
+  ApplicationRequestData,
+  "permitNumber"
+  | "createdDateTime"
+  | "updatedDateTime"
+  | "documentId"
+  | "permitStatus"
+>;
+
+export type UpdateApplicationRequestData = Omit<
+  ApplicationRequestData,
+  "applicationNumber"
+  | "originalPermitId"
+  | "permitId"
+  | "permitNumber"
+  | "createdDateTime"
+  | "updatedDateTime"
+  | "previousRevision"
+  | "revision"
+  | "documentId"
+  | "permitStatus"
+  | "permitApprovalSource"
+>;
+
 export interface MailingAddress {
   addressLine1: string;
   addressLine2?: string;
@@ -97,6 +121,7 @@ export interface ContactDetails {
   phone2?: string;
   phone2Extension?: string;
   email: string;
+  additionalEmail?: Nullable<string>;
   fax?: string;
 }
 
