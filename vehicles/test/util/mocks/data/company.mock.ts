@@ -55,6 +55,7 @@ export const redCompanyEntityMock: Company = {
   primaryContact: { ...redCompanyContactEntityMock },
   accountRegion: constants.RED_COMPANY_ACCOUNT_REGION,
   accountSource: constants.RED_COMPANY_ACCOUNT_SOURCE,
+  isSuspended: constants.RED_COMPANY_SUSPEND,
   companyUsers: [
     { ...redCompanyAdminCompanyUserEntityMock },
     { ...redCompanyCvClientCompanyUserEntityMock },
@@ -97,6 +98,7 @@ export const readRedCompanyDtoMock: ReadCompanyDto = {
   fax: constants.RED_COMPANY_FAX,
   email: constants.RED_COMPANY_EMAIL,
   primaryContact: { ...readRedCompanyContactDtoMock },
+  isSuspended: constants.RED_COMPANY_SUSPEND,
 };
 
 export const paginationReadRedCompanyDtoMock: PaginationDto<ReadCompanyDto> = {
@@ -121,6 +123,8 @@ export const readRedCompanyMetadataDtoMock: ReadCompanyMetadataDto = {
   legalName: constants.RED_COMPANY_LEGAL_NAME,
   alternateName: constants.RED_COMPANY_ALTERNATE_NAME,
   clientNumber: constants.RED_COMPANY_CLIENT_NUMBER,
+  email: constants.RED_COMPANY_EMAIL,
+  isSuspended: constants.RED_COMPANY_SUSPEND,
 };
 
 /**
@@ -142,6 +146,7 @@ export const blueCompanyEntityMock: Company = {
   primaryContact: { ...blueCompanyContactEntityMock },
   accountRegion: constants.BLUE_COMPANY_ACCOUNT_REGION,
   accountSource: constants.BLUE_COMPANY_ACCOUNT_SOURCE,
+  isSuspended: constants.BLUE_COMPANY_SUSPEND,
   companyUsers: [
     { ...blueCompanyAdminCompanyUserEntityMock },
     { ...blueCompanyCvClientCompanyUserEntityMock },
@@ -184,6 +189,7 @@ export const readBlueCompanyDtoMock: ReadCompanyDto = {
   fax: constants.BLUE_COMPANY_FAX,
   email: constants.BLUE_COMPANY_EMAIL,
   primaryContact: { ...readBlueCompanyContactDtoMock },
+  isSuspended: constants.BLUE_COMPANY_SUSPEND,
 };
 
 export const readBlueCompanyUserDtoMock: ReadCompanyUserDto = {
@@ -196,6 +202,8 @@ export const readBlueCompanyMetadataDtoMock: ReadCompanyMetadataDto = {
   legalName: constants.BLUE_COMPANY_LEGAL_NAME,
   alternateName: constants.BLUE_COMPANY_ALTERNATE_NAME,
   clientNumber: constants.BLUE_COMPANY_CLIENT_NUMBER,
+  email: constants.BLUE_COMPANY_EMAIL,
+  isSuspended: constants.BLUE_COMPANY_SUSPEND,
 };
 
 export const COMPANY_LIST: Company[] = [
