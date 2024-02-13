@@ -1,11 +1,14 @@
-name: deploys-test
+name: Deploys-test
 
 on:
   push:
     branches: [main]
     paths-ignore:
-      - '.release-please-manifest.json'
       - '*.md'
+      - '.github/**'
+      - 'common/graphics/**'
+      - '!.github/workflows/deploy.yml'
+      - '!.github/workflows/merge.yml'
   workflow_dispatch:
     inputs:
       pr_no:
@@ -54,7 +57,7 @@ jobs:
         package: [dops, vehicles, frontend, tps-migration]
     timeout-minutes: 2
     steps:
-      - uses: shrink/actions-docker-registry-tag@v4
+      - uses: shrink/actions-docker-registry-tag@v3
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.package }}
