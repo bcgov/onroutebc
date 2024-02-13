@@ -7,7 +7,7 @@ on:
         description: "Deployment environment - test --> vault secrets"
         required: true
         type: choice
-        options: ["test"]
+        options: ["test","tools"]
         default: "test"
   
 
@@ -18,13 +18,13 @@ concurrency:
 jobs:
   uninstall-demo:
     name: Uninstall (demo)
-    environment: test
+    environment: ${{inputs.environment}}
     runs-on: ubuntu-22.04
     steps:
       - name: uninstall
         run: |
-          oc login --token=${{ secrets.oc_token }} --server=${{ vars.oc_server }}
-          oc project ${{ vars.OC_NAMESPACE }} # Safeguard!
+          oc login --token=${{ secrets.oc_token }} --server=${{ secrets.oc_server }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
           helm uninstall onroutebc-demo || true
   deploy-demo:
     name: Deploys (demo)
@@ -33,8 +33,8 @@ jobs:
     secrets: inherit
     with:
       autoscaling: false
-      environment: ${{inputs.environment}} #test env -> test database
-      tag: ${{inputs.environment}}
+      environment: ${{inputs.environment}}
+      tag: "test"
       release: "demo"
       vault_role: "nonprod"
       vault_zone: "staging"
