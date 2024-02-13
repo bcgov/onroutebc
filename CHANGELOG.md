@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/bcgov/onroutebc/compare/v1.0.2...v1.0.3) (2024-02-13)
+
+
+### Bug Fixes
+
+* removing exceptions to deploy test; fix: changing trigger to pub… ([#1187](https://github.com/bcgov/onroutebc/issues/1187)) ([82b0299](https://github.com/bcgov/onroutebc/commit/82b029924cc3a0951bce2f668b6a66f99c9fb6d8))
+
 ## [1.0.2](https://github.com/bcgov/onroutebc/compare/v1.0.1...v1.0.2) (2024-02-13)
 
 
