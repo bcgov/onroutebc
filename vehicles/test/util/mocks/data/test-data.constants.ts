@@ -36,6 +36,7 @@ export const RED_COMPANY_FAX = '(514) 456-8749';
 export const RED_COMPANY_EMAIL = 'red.truck@test.gov.bc.ca';
 export const RED_COMPANY_ACCOUNT_REGION = AccountRegion.BritishColumbia;
 export const RED_COMPANY_ACCOUNT_SOURCE = AccountSource.BCeID;
+export const RED_COMPANY_SUSPEND = false;
 
 export const RED_COMPANY_ADDRESS_ID = 1;
 export const RED_COMPANY_ADDRESS_LINE_1 = '4458 James Street';
@@ -57,6 +58,7 @@ export const BLUE_COMPANY_FAX = '(813) 791-4358';
 export const BLUE_COMPANY_EMAIL = 'blue.truck@test.gov.bc.ca';
 export const BLUE_COMPANY_ACCOUNT_REGION = AccountRegion.ExtraProvincial;
 export const BLUE_COMPANY_ACCOUNT_SOURCE = AccountSource.BCeID;
+export const BLUE_COMPANY_SUSPEND = false;
 
 export const BLUE_COMPANY_ADDRESS_ID = 2;
 export const BLUE_COMPANY_ADDRESS_LINE_1 = '334 Main Street';
