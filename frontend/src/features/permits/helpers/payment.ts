@@ -106,23 +106,7 @@ export const getPaymentByTransactionId = async (
 };
 
 /**
- * Hook to fetch the permit types.
- * @returns A query result object containing the permit types
- */
-/*
-export const usePaymentByTransactionIdQuery = (transactionId: string): UseQueryResult<
-  Record<string, string>,
-  unknown
-> => {
-  return useQuery({
-    queryKey: ["paymentByTransactionId"],
-    queryFn: () => getPaymentByTransactionId(transactionId),
-    placeholderData: keepPreviousData,
-  });
-};*/
-
-/**
- * Hook to fetch the permit types.
+ * Hook to fetch the payment information by the given transactionId
  * @returns UseQueryResult containing the query results.
  */
 export const usePaymentByTransactionIdQuery = (transactionId: string) => {
@@ -130,6 +114,7 @@ export const usePaymentByTransactionIdQuery = (transactionId: string) => {
     queryKey: ["paymentByTransactionId"],
     queryFn: () => getPaymentByTransactionId(transactionId),
     placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false,
+    enabled: true,
   });
 };
-

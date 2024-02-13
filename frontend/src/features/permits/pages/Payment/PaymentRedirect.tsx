@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 
 import { getPayBCPaymentDetails, usePaymentByTransactionIdQuery } from "../../helpers/payment";
@@ -32,10 +32,9 @@ export const PaymentRedirect = () => {
   const paymentDetails = getPayBCPaymentDetails(searchParams);
   const transaction = mapTransactionDetails(paymentDetails);
   const transactionId = getDefaultRequiredVal("", searchParams.get("ref2"));
-  const [applicationIds, setApplicationIds] = useState<string[]>([]);
   const transactionQueryString = encodeURIComponent(searchParams.toString());
-  const foo = usePaymentByTransactionIdQuery(transactionId);
-  
+  const transactionIdQuery = usePaymentByTransactionIdQuery(transactionId);
+
   const { mutation: completeTransactionMutation, paymentApproved } =
     useCompleteTransaction(
       paymentDetails.messageText,
@@ -56,39 +55,18 @@ export const PaymentRedirect = () => {
     }
   }, [paymentDetails.trnApproved]);
 
-  /*
   useEffect(() => {
-    const ids:string[] = [];
-    getPaymentByTransactionId(transactionId)
-      .then((response) => {
-        response?.applicationDetails?.forEach((application) => {
-          if (application?.applicationId) {
-            ids.push(application.applicationId)
-          }
-        })
-      }).finally(() => {
-        setApplicationIds(ids);
+
+    const applicationIds:string[] = [];
+    if (transactionIdQuery?.isSuccess && issuedPermit?.current === false) {
+      
+      transactionIdQuery?.data?.applicationDetails?.forEach((application) => {
+        if (application?.applicationId) {
+          applicationIds.push(application.applicationId);
+        }
       })
 
-  }, [transactionId]);*/
-
-  useEffect(() => {
-    console.log('foo', foo)
-    setApplicationIds(['0'])
-
-  }, [foo])
-
-  useEffect(() => {
-    console.log('applicationIds', applicationIds)
-    console.log('paymentApproved', paymentApproved)
-    console.log('issuedPermit', issuedPermit)
-
-    if (issuedPermit?.current === false) {
-      if (applicationIds?.length === 0) {
-        // the application ids (aka. permit Ids) should not be empty,
-        // if so then something went wrong
-        navigate(ERROR_ROUTES.UNEXPECTED, { replace: true });
-      } else if (paymentApproved === true) {
+      if (paymentApproved === true) {
         // Payment successful, proceed to issue permit
         issuePermitsMutation.mutate(applicationIds);
         issuedPermit.current = true;
@@ -99,7 +77,13 @@ export const PaymentRedirect = () => {
         });
       }
     }
-  }, [paymentApproved, applicationIds]);
+
+    // if the query status has completed (aka. "idle") and the query failed, navigate
+    // to error page
+    if (transactionIdQuery?.fetchStatus === 'idle' && !transactionIdQuery?.isSuccess) {
+      navigate(ERROR_ROUTES.UNEXPECTED, { replace: true });
+    }
+  }, [paymentApproved, transactionIdQuery]);
 
   if (issueFailed) {
     return <Navigate to={`${ERROR_ROUTES.UNEXPECTED}`} replace={true} />;
