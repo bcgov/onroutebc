@@ -3,6 +3,9 @@ name: deploys-test
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '.release-please-manifest.json'
+      - '*.md'
   workflow_dispatch:
     inputs:
       pr_no:
