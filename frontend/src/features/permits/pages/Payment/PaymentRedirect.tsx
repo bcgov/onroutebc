@@ -78,9 +78,9 @@ export const PaymentRedirect = () => {
       }
     }
 
-if (transactionIdQuery?.isError)
+    if (transactionIdQuery?.isError)
       navigate(ERROR_ROUTES.UNEXPECTED, { replace: true });
-    }
+
   }, [paymentApproved, transactionIdQuery]);
 
   if (issueFailed) {
