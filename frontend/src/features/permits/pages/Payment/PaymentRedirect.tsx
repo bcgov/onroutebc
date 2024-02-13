@@ -78,7 +78,7 @@ export const PaymentRedirect = () => {
       }
     }
 
-    if (transactionIdQuery?.status !== 'pending' && !transactionIdQuery?.isSuccess) {
+if (transactionIdQuery?.isError)
       navigate(ERROR_ROUTES.UNEXPECTED, { replace: true });
     }
   }, [paymentApproved, transactionIdQuery]);
