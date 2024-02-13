@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.0.3](https://github.com/bcgov/onroutebc/compare/v1.0.2...v1.0.3) (2024-02-13)
+
+
+### Bug Fixes
+
+* removing exceptions to deploy test; fix: changing trigger to pub… ([#1187](https://github.com/bcgov/onroutebc/issues/1187)) ([82b0299](https://github.com/bcgov/onroutebc/commit/82b029924cc3a0951bce2f668b6a66f99c9fb6d8))
+
+## [1.0.2](https://github.com/bcgov/onroutebc/compare/v1.0.1...v1.0.2) (2024-02-13)
+
+
+### Features
+
+* ORV2-1930 Update company button spacing ([#1182](https://github.com/bcgov/onroutebc/issues/1182)) ([5e1f68d](https://github.com/bcgov/onroutebc/commit/5e1f68d310c2802146fd66a0bb89e426fe4110fd))
+
+
+### Bug Fixes
+
+* deploys-prod event after release ([#1185](https://github.com/bcgov/onroutebc/issues/1185)) ([49666ae](https://github.com/bcgov/onroutebc/commit/49666ae6ab750d4d1c63cd16071b80ab65a67e7b))
+* removing --- header... ([#1186](https://github.com/bcgov/onroutebc/issues/1186)) ([c8d4900](https://github.com/bcgov/onroutebc/commit/c8d49009d1cf6975cb64bc7ab5ad0c0d1cc933a2))
+
 ## [1.0.1](https://github.com/bcgov/onroutebc/compare/v1.0.0...v1.0.1) (2024-02-12)
 
 

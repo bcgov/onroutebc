@@ -1,14 +1,8 @@
-name: Deploys-test
+name: deploys-test
 
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - '*.md'
-      - '.github/**'
-      - 'common/graphics/**'
-      - '!.github/workflows/deploy.yml'
-      - '!.github/workflows/merge.yml'
   workflow_dispatch:
     inputs:
       pr_no:
