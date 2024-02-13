@@ -12,7 +12,6 @@ import {
 } from '@nestjs/swagger';
 import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { CreateCompanySuspendDto } from './dto/request/create-company-suspend.dto';
-import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { ReadCompanySuspendActivityDto } from './dto/response/read-company-suspend-activity.dto';
 import { Request } from 'express';
