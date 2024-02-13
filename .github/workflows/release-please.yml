@@ -4,6 +4,9 @@ name: release-please
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '.release-please-manifest.json'
+      - '*.md'
 
 permissions:
   contents: write
