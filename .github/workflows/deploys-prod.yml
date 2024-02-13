@@ -21,7 +21,7 @@ jobs:
       - name: PR Number
         id: pr
         uses: bcgov-nr/action-get-pr@v0.0.1
-  
+
   deploys-prod:
     name: Deploys (prod)
     needs: [vars]

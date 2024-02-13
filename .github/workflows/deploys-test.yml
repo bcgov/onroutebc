@@ -1,4 +1,5 @@
-name: Deploys-test
+---
+name: deploys-test
 
 on:
   push:
