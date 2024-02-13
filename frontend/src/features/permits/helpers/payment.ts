@@ -1,5 +1,5 @@
 import { PayBCPaymentDetails, StartTransactionResponseData } from "../types/payment";
-import { Nullable, RequiredOrNull } from "../../../common/types/common";
+import { Nullable } from "../../../common/types/common";
 import {
   PAYMENT_GATEWAY_METHODS,
   PAYMENT_METHOD_TYPE_CODE,
