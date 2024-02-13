@@ -1,5 +1,4 @@
-import { PayBCPaymentDetails } from "../types/payment";
-import { parseRedirectUriPath } from "../pages/Payment/PaymentRedirect";
+import { PayBCPaymentDetails, StartTransactionResponseData } from "../types/payment";
 import { Nullable } from "../../../common/types/common";
 import {
   PAYMENT_GATEWAY_METHODS,
@@ -12,6 +11,9 @@ import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../common/helpers/util";
+import { httpGETRequest } from "../../../common/apiManager/httpRequestHandler";
+import { PAYMENT_API_ROUTES } from "../apiManager/endpoints/endpoints";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 /**
  * Extracts PayBCPaymentDetails from the query parameters of a URL.
@@ -23,9 +25,6 @@ export const getPayBCPaymentDetails = (
   params: URLSearchParams,
 ): PayBCPaymentDetails => {
   // Extract the query parameters and assign them to the corresponding properties of PayBCPaymentDetails
-  const path = getDefaultRequiredVal("", params.get("path"));
-  const { trnApproved } = parseRedirectUriPath(path);
-
   const payBCPaymentDetails: PayBCPaymentDetails = {
     authCode: params.get("authCode"),
     avsAddrMatch: getDefaultRequiredVal("", params.get("avsAddrMatch")),
@@ -36,7 +35,10 @@ export const getPayBCPaymentDetails = (
     avsResult: getDefaultRequiredVal("", params.get("avsResult")),
     cardType: getDefaultRequiredVal("", params.get("cardType")),
     cvdId: applyWhenNotNullable((cvdId) => Number(cvdId), params.get("cvdId")),
-    trnApproved: trnApproved,
+    trnApproved: applyWhenNotNullable(
+      (approved) => Number(approved),
+      params.get("trnApproved"),
+    0),
     messageId: applyWhenNotNullable(
       (messageId) => Number(messageId),
       params.get("messageId"),
@@ -84,4 +86,30 @@ export const isValidTransaction = (
     paymentMethod !== PAYMENT_METHOD_TYPE_CODE.WEB ||
     (!!transactionApproved && transactionApproved > 0)
   );
+};
+
+/**
+ * Fetch payment information by transaction id.
+ * @param transactionId transaction id of the payment details to fetch
+ * @returns PaymentTransaction data as response, or null if fetch failed
+ */
+export const getPaymentByTransactionId = async (
+  transactionId?: string,
+): Promise<Required<StartTransactionResponseData>> => {
+  const url = `${PAYMENT_API_ROUTES.GET}/${transactionId}`;
+  return httpGETRequest(url).then((response) => response.data);
+};
+
+/**
+ * Hook to fetch the payment information by the given transactionId
+ * @returns UseQueryResult containing the query results.
+ */
+export const usePaymentByTransactionIdQuery = (transactionId: string) => {
+  return useQuery({
+    queryKey: ["paymentByTransactionId"],
+    queryFn: () => getPaymentByTransactionId(transactionId),
+    placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false,
+    enabled: true,
+  });
 };
