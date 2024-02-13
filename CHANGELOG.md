@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.4](https://github.com/bcgov/onroutebc/compare/v1.0.3...v1.0.4) (2024-02-13)
+
+
+### Bug Fixes
+
+* **ci:** exclude release-please from deploy triggers ([#1190](https://github.com/bcgov/onroutebc/issues/1190)) ([64b296d](https://github.com/bcgov/onroutebc/commit/64b296d621e44368f0cc4c039a256bcdce237fcd))
+* **ci:** trigger prod deploy on file change ([#1192](https://github.com/bcgov/onroutebc/issues/1192)) ([651cd60](https://github.com/bcgov/onroutebc/commit/651cd60d873e70db274e9dcc252f4c1fcc158cb0))
+
 ## [1.0.3](https://github.com/bcgov/onroutebc/compare/v1.0.2...v1.0.3) (2024-02-13)
 
 
