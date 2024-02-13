@@ -5,12 +5,11 @@ on:
     types: [edited, opened, reopened]
 
 concurrency:
-  # Cancel in progress for PR open and close, but not merge_group
-  group: ${{ github.workflow }}-${{ github.event.number || github.event.merge_group.base_sha }}
+  # Cancel in progress for PR open and close
+  group: ${{ github.workflow }}-${{ github.event.number }}
   cancel-in-progress: true
 
 jobs:
-  # PR only, skip for merge_group
   conventional-commits:
     name: Conventional Commits
     runs-on: ubuntu-22.04
@@ -25,7 +24,6 @@ jobs:
           echo "https://www.conventionalcommits.org/en/v1.0.0/"
           exit 1
 
-  # PR only, skip for merge_group
   pr-description-add:
     name: PR Description Add
     env:

@@ -3,7 +3,9 @@ name: Analysis
 on:
   push:
     branches: [main]
-  merge_group:
+    paths-ignore:
+      - '.release-please-manifest.json'
+      - '*.md'
   pull_request:
     types: [opened, reopened, synchronize, ready_for_review, converted_to_draft]
   schedule:
