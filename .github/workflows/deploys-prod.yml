@@ -3,6 +3,9 @@ name: deploys-prod
 on:
   release:
     types: [released]
+  push:
+    branches: [main]
+    paths: ['.release-please-manifest.json']
 
 concurrency:
   group: ${{ github.workflow }}
