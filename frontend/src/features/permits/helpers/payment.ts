@@ -95,14 +95,9 @@ export const isValidTransaction = (
  */
 export const getPaymentByTransactionId = async (
   transactionId?: string,
-): Promise<RequiredOrNull<StartTransactionResponseData>> => {
-  try {
-    const url = `${PAYMENT_API_ROUTES.GET}/${transactionId}`;
-    const response = await httpGETRequest(url);
-    return response.data;
-  } catch (err) {
-    return null;
-  }
+): Promise<Required<StartTransactionResponseData>> => {
+  const url = `${PAYMENT_API_ROUTES.GET}/${transactionId}`;
+  return httpGETRequest(url).then((response) => response.data);
 };
 
 /**

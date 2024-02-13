@@ -78,9 +78,7 @@ export const PaymentRedirect = () => {
       }
     }
 
-    // if the query status has completed (aka. "idle") and the query failed, navigate
-    // to error page
-    if (transactionIdQuery?.fetchStatus === 'idle' && !transactionIdQuery?.isSuccess) {
+    if (transactionIdQuery?.status !== 'pending' && !transactionIdQuery?.isSuccess) {
       navigate(ERROR_ROUTES.UNEXPECTED, { replace: true });
     }
   }, [paymentApproved, transactionIdQuery]);
