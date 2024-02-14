@@ -102,4 +102,11 @@ export class ReadCompanyDto {
     required: false,
   })
   primaryContact: ReadContactDto;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'Indicates whether the company is currently suspended.',
+    example: false,
+  })
+  isSuspended: boolean;
 }
