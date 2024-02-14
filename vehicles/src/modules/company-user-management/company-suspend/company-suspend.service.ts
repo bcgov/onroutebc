@@ -14,6 +14,9 @@ import { CompanyService } from '../company/company.service';
 import { CreateCompanySuspendDto } from './dto/request/create-company-suspend.dto';
 import { ReadCompanySuspendActivityDto } from './dto/response/read-company-suspend-activity.dto';
 import { CompanySuspendActivity } from './entities/company-suspend-activity.entity';
+import { EmailService } from '../../email/email.service';
+import { EmailTemplate } from '../../../common/enum/email-template.enum';
+import { CompanyEmailData } from '../../../common/interface/company-email-data.interface';
 
 @Injectable()
 export class CompanySuspendService {
@@ -24,6 +27,7 @@ export class CompanySuspendService {
     @InjectMapper() private readonly classMapper: Mapper,
     private dataSource: DataSource,
     private readonly companyService: CompanyService,
+    private readonly emailService: EmailService,
   ) {}
 
   /**
@@ -111,6 +115,21 @@ export class CompanySuspendService {
     } finally {
       await queryRunner.release();
     }
+
+    const emailData: CompanyEmailData = {
+      companyName: company.legalName,
+      onRoutebBcClientNumber: company.clientNumber,
+    };
+    await this.emailService.sendEmailMessage(
+      toBeSuspended
+        ? EmailTemplate.COMPANY_SUSPEND
+        : EmailTemplate.COMPANY_UNSUSPEND,
+      emailData,
+      toBeSuspended
+        ? 'onRouteBC Profile Suspended'
+        : 'onRouteBC Profile Unsuspended',
+      [company.email],
+    );
 
     const result = await this.classMapper.mapAsync(
       savedSuspendAcitivity,
