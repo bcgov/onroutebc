@@ -10,7 +10,6 @@ import { TypeormCustomLogger } from './logger/typeorm-logger.config';
 import { getTypeormLogLevel } from './helper/logger.helper';
 
 const envPath = path.resolve(process.cwd() + '/../');
-
 @Module({
   imports: [
     ScheduleModule.forRoot(),

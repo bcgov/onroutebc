@@ -16,6 +16,7 @@ import { UserStatus } from '../../enum/user-status.enum';
 import { AxiosResponse } from 'axios';
 import { UserAuthGroup } from '../../enum/user-auth-group.enum';
 import { getDirectory } from '../../helper/auth.helper';
+import { ICompanyMetadata } from '../../interface/company-metadata.interface';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -120,20 +121,22 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (payload.identity_provider !== IDP.IDIR) {
       const companiesForUsersResponse: AxiosResponse =
         await this.authService.getCompaniesForUser(access_token);
-      associatedCompanies = (
-        companiesForUsersResponse.data as [
-          { companyId: number; clientNumber: string; legalName: string, email: string, isSuspended: boolean },
-        ]
-      ).map((company) => {
-        return company.companyId;
-      });
+      const associatedCompanyMetadataList = companiesForUsersResponse.data as [
+        ICompanyMetadata,
+      ];
 
+      associatedCompanies = associatedCompanyMetadataList?.map(
+        (company) => +company.companyId,
+      );
       //Remove when one login Multiple Companies needs to be activated
       companyId = associatedCompanies?.length
         ? associatedCompanies?.at(0)
         : companyId;
 
-      if (!associatedCompanies.includes(companyId)) {
+      if (
+        !associatedCompanies.includes(companyId) ||
+        associatedCompanyMetadataList?.at(0)?.isSuspended
+      ) {
         throw new ForbiddenException();
       }
     }

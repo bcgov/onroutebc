@@ -139,7 +139,7 @@ describe('UsersService', () => {
         constants.RED_COMPANY_CVCLIENT_USER_GUID,
       );
       expect(typeof retCompanies).toBe('object');
-      expect(retCompanies[0]).toBe(constants.RED_COMPANY_ID);
+      expect(retCompanies[0]).toBe(readRedCompanyMetadataDtoMock);
     });
   });
 
