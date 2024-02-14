@@ -5,4 +5,4 @@ export const readFeatureFlagDtoMock: ReadFeatureFlagDto = {
     featureId: constants.FEATURE_ID,
     featureKey: constants.FEATURE_KEY,
     featureValue: constants.FEATURE_VALUE,
-  };
+};
