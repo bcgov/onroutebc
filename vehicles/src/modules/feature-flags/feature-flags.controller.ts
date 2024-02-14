@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from "@nestjs/common";
+import { Controller, Get } from "@nestjs/common";
 import { ApiTags, ApiBadRequestResponse, ApiNotFoundResponse, ApiMethodNotAllowedResponse, ApiInternalServerErrorResponse, ApiBearerAuth, ApiOkResponse } from "@nestjs/swagger";
 import { ExceptionDto } from "src/common/exception/exception.dto";
 import { ReadFeatureFlagDto } from "./dto/response/read-feature-flag.dto";
@@ -42,8 +42,7 @@ export class FeatureFlagsController {
     @AuthOnly()
     @Get()
     async getFeatureFlags(): Promise<ReadFeatureFlagDto[]> {
-        const featureFlags = await this.featureFlagService.findAll();
-        return featureFlags;
+        return await this.featureFlagService.findAll();
     }
 
 }
