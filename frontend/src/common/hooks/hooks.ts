@@ -3,8 +3,8 @@ import { httpGETRequest } from "../apiManager/httpRequestHandler";
 import { VEHICLES_URL } from "../apiManager/endpoints/endpoints";
 
 /**
- * Fetch payment information by transaction id.
- * @returns PaymentTransaction data as response, or null if fetch failed
+ * Fetch the FeatureFlags from the API
+ * @returns JSON string data of the Feature Flags as response, or null if fetch failed
  */
 export const getFeatureFlags = async () : 
   Promise<Record<string, string>> => {
@@ -13,8 +13,8 @@ export const getFeatureFlags = async () :
 };
 
 /**
- * A custom react query hook that fetches applications in progress.
- * @returns List of applications in progress
+ * A custom react query hook that fetches the feature flags.
+ * @returns List of feature flags
  */
 export const useFeatureFlagsQuery = () => {
     return useQuery({

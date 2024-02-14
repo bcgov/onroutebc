@@ -7,7 +7,7 @@ import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 @Entity({ name: 'ORBC_FEATURE_FLAG' })
 export class FeatureFlag extends Base {
   /**
-   * An auto-generated unique identifier for the company.
+   * An auto-generated unique identifier for the FeatureFlag.
    */
   @AutoMap()
   @PrimaryGeneratedColumn({ type: 'int', name: 'FEATURE_ID' })
