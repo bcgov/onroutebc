@@ -20,6 +20,8 @@ export const useFeatureFlagsQuery = () => {
     return useQuery({
         queryKey: ["featureFlags"],
         queryFn: () => getFeatureFlags(),
+        staleTime: Infinity,
+        refetchInterval: false,
         refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
     });
 };
