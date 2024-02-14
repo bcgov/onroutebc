@@ -116,11 +116,18 @@ export class CompanySuspendService {
       await queryRunner.release();
     }
 
+    const result = await this.classMapper.mapAsync(
+      savedSuspendAcitivity,
+      CompanySuspendActivity,
+      ReadCompanySuspendActivityDto,
+    );
+    result.userName = currentUser.userName?.toUpperCase();
+
     const emailData: CompanyEmailData = {
       companyName: company.legalName,
       onRoutebBcClientNumber: company.clientNumber,
     };
-    
+
     void this.emailService.sendEmailMessage(
       toBeSuspended
         ? EmailTemplate.COMPANY_SUSPEND
@@ -132,12 +139,6 @@ export class CompanySuspendService {
       [company.email],
     );
 
-    const result = await this.classMapper.mapAsync(
-      savedSuspendAcitivity,
-      CompanySuspendActivity,
-      ReadCompanySuspendActivityDto,
-    );
-    result.userName = currentUser.userName?.toUpperCase();
     return result;
   }
 
