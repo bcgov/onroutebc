@@ -14,14 +14,9 @@ export class FeatureFlagsProfile extends AutomapperProfile {
     return (mapper: Mapper) => {
       
       /**
-       * The mapping is between ReadCompanyDto and ReadCompanyUserDto.
+       * The mapping is between the FeatureFlag Entity and ReadFeatureFlagDto.
        */
       createMap(mapper, FeatureFlag, ReadFeatureFlagDto);
-
-      /**
-       * The mapping is between Company and ReadCompanyMetadataDto.
-       */
-      //createMap(mapper, Company, ReadCompanyMetadataDto);
     };
   }
 }
