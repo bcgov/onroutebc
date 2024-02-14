@@ -29,8 +29,10 @@ export class TpsPermitService {
   ) {}
 
   /**
-   * To upload PENDING TPS permits pdf to S3, update ORBC_DOCUMENT and ORBC_PERMIT table. and delete migrated permit and pdf from TPS_MIGRATED_PERMIT table.
-   * If records are stuck in PROCESSING status then something must have gone wrong and needs attention.
+   * To upload PENDING TPS permits pdf to S3, update ORBC_DOCUMENT and
+   * ORBC_PERMIT table. and delete migrated permit and pdf from
+   * TPS_MIGRATED_PERMIT table. If records are stuck in PROCESSING status then
+   * something must have gone wrong and needs attention.
    *
    */
 
@@ -58,8 +60,10 @@ export class TpsPermitService {
   }
 
   /**
-   * To upload ERROR TPS permits pdf to S3, update ORBC_DOCUMENT and ORBC_PERMIT table, and delete migrated permit and pdf from TPS_MIGRATED_PERMIT table.
-   * If records are stuck in PROCESSING status then something must have gone wrong and needs attention.
+   * To upload ERROR TPS permits pdf to S3, update ORBC_DOCUMENT and ORBC_PERMIT
+   * table, and delete migrated permit and pdf from TPS_MIGRATED_PERMIT table.
+   * If records are stuck in PROCESSING status then something must have gone
+   * wrong and needs attention.
    *
    */
   @Cron(`${process.env.TPS_ERROR_POLLING_INTERVAL}`)
@@ -133,8 +137,9 @@ export class TpsPermitService {
       const tpsPermit: TpsPermit = await this.tpsPermitRepository.findOne({
         where: { migrationId: id },
       });
-      //Check to verify if permit document already exists in orbc permit table to avoid duplicate uploads.
-      //Only proceed if permit exists in orbc permit table and it does not have a document id.
+      //Check to verify if permit document already exists in orbc permit table
+      //to avoid duplicate uploads. Only proceed if permit exists in orbc permit
+      //table and it does not have a document id.
       const permit = await this.permitExists(
         tpsPermit.permitNumber,
         tpsPermit.revision,

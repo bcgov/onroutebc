@@ -248,7 +248,7 @@ export class DgenService {
           '--disable-dev-shm-usage',
           '--disable-gpu',
         ],
-        headless: 'new',
+        headless: true,
         env: {
           ELECTRON_DISABLE_SANDBOX: '1',
         },

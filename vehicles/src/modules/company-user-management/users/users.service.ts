@@ -41,6 +41,7 @@ import { Permit } from '../../permit/entities/permit.entity';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
 import { VerifyClientDto } from './dto/request/verify-client.dto';
 import { ReadVerifyClientDto } from './dto/response/read-verify-client.dto';
+import { ReadCompanyMetadataDto } from '../company/dto/response/read-company-metadata.dto';
 
 @Injectable()
 export class UsersService {
@@ -607,11 +608,10 @@ export class UsersService {
    * @returns The associated companies as a promise of type {@link number[]}
    */
   @LogAsyncMethodExecution()
-  async getCompaniesForUser(userGuid: string): Promise<number[]> {
-    const companies = (
-      await this.companyService.findCompanyMetadataByUserGuid(userGuid)
-    ).map((r) => +r.companyId);
-    return companies;
+  async getCompaniesForUser(
+    userGuid: string,
+  ): Promise<ReadCompanyMetadataDto[]> {
+    return await this.companyService.findCompanyMetadataByUserGuid(userGuid);
   }
 
   @LogAsyncMethodExecution()
