@@ -139,6 +139,7 @@ export class CompanySuspendService {
       relations: {
         idirUser: true,
       },
+      order: { activityId: { direction: 'desc' } },
     });
 
     return await this.classMapper.mapArrayAsync(

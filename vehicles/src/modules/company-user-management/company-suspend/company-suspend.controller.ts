@@ -36,7 +36,7 @@ import { Role } from '../../../common/enum/roles.enum';
   type: ExceptionDto,
 })
 @ApiBearerAuth()
-@Controller('companies/:companyId/company-suspend')
+@Controller('companies/:companyId')
 export class CompanySuspendController {
   constructor(private readonly companySuspendService: CompanySuspendService) {}
 
