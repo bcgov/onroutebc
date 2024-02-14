@@ -4,9 +4,9 @@ import { GetCompanyQueryParamsDto } from "src/modules/company-user-management/co
 import { FeatureFlagsController } from "src/modules/feature-flags/feature-flags.controller";
 import { FeatureFlagsService } from "src/modules/feature-flags/feature-flags.service";
 import { paginationReadRedCompanyDtoMock } from "test/util/mocks/data/company.mock";
+import { readFeatureFlagDtoMock } from "test/util/mocks/data/feature-flags.mock";
 import { sysAdminStaffUserJWTMock } from "test/util/mocks/data/jwt.mock";
 
-//const COMPANY_ID_99 = 99;
 let service: DeepMocked<FeatureFlagsService>;
 
 describe('FeatureFlagsController', () => {
@@ -83,4 +83,28 @@ describe('FeatureFlagsController', () => {
       expect(retCompanyData.items.length).toBe(1);
     });
   });*/
+
+  // Mock service call for getAll
+  /*
+  describe('FeatureFlags controller getAll function', () => {
+    it('should return the feature flag data', async () => {
+      service.findAll.mockResolvedValue(
+        readFeatureFlagDtoMock,
+      );
+      const request = createMock<Request>();
+      request.user = sysAdminStaffUserJWTMock;
+      // const getCompanyQueryParamsDto: GetCompanyQueryParamsDto = {
+      //   page: 1,
+      //   take: 10,
+      //   orderBy: 'companyId:DESC',
+      //   clientNumber: 'Red Truck Inc',
+      //   legalName: 'B3-000005-722',
+      // };
+      const retData = await controller.getFeatureFlags();
+      expect(typeof retData).toBe('object');
+      expect(retData).toEqual(paginationReadRedCompanyDtoMock);
+      expect(retData.data.length).toBe(1);
+    });
+  });*/
+
 });

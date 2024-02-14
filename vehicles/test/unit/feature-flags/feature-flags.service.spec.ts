@@ -11,8 +11,6 @@ import { FeatureFlagsProfile } from "src/modules/feature-flags/profiles/feature-
 import { dataSourceMockFactory } from "test/util/mocks/factory/dataSource.factory.mock";
 import { Repository, DataSource } from "typeorm";
 
-
-//const COMPANY_ID_99 = 99;
 let repo: DeepMocked<Repository<FeatureFlag>>;
 let cacheManager: DeepMocked<Cache>;
 
