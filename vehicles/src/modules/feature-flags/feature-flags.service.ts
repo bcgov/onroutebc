@@ -7,7 +7,6 @@ import { Repository } from "typeorm";
 import { ReadFeatureFlagDto } from "./dto/response/read-feature-flag.dto";
 import { FeatureFlag } from "./entities/feature-flag.entity";
 
-
 @Injectable()
 export class FeatureFlagsService {
   constructor(
