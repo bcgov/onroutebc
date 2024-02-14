@@ -1,11 +1,14 @@
 import { Mapper } from "@automapper/core";
 import { InjectMapper } from "@automapper/nestjs";
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { LogAsyncMethodExecution } from "src/common/decorator/log-async-method-execution.decorator";
 import { Repository } from "typeorm";
 import { ReadFeatureFlagDto } from "./dto/response/read-feature-flag.dto";
 import { FeatureFlag } from "./entities/feature-flag.entity";
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import { CacheKey } from '../../common/enum/cache-key.enum';
 
 @Injectable()
 export class FeatureFlagsService {
@@ -13,6 +16,8 @@ export class FeatureFlagsService {
     @InjectRepository(FeatureFlag)
     private featureFlagRepository: Repository<FeatureFlag>,
     @InjectMapper() private readonly classMapper: Mapper,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
 
   /**
@@ -29,5 +34,16 @@ export class FeatureFlagsService {
       FeatureFlag,
       ReadFeatureFlagDto,
     );
+  }
+
+  /**
+   * The findAllFromCache() method returns an array of ReadFeatureFlagDto objects
+   * which were stored in the NestJS system cache upon startup.
+   *
+   * @returns The feature flag list as a promise of type {@link ReadFeatureFlagDto}
+   */
+  @LogAsyncMethodExecution()
+  async findAllFromCache(): Promise<ReadFeatureFlagDto[]> {
+    return await this.cacheManager.get(CacheKey.FEATURE_FLAG_TYPE);
   }
 }

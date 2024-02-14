@@ -42,7 +42,7 @@ export class FeatureFlagsController {
     @AuthOnly()
     @Get()
     async getFeatureFlags(): Promise<ReadFeatureFlagDto[]> {
-        return await this.featureFlagService.findAll();
+        return await this.featureFlagService.findAllFromCache();
     }
 
 }
