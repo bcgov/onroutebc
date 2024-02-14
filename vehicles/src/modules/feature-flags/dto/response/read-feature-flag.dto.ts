@@ -12,7 +12,7 @@ export class ReadFeatureFlagDto {
       description: 'The feature_flag ID.',
       example: 1,
     })
-    id: number;
+    featureId: number;
 
     @AutoMap()
     @ApiProperty({

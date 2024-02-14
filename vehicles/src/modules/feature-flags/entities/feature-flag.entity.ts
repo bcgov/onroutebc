@@ -10,8 +10,8 @@ export class FeatureFlag extends Base {
    * An auto-generated unique identifier for the company.
    */
   @AutoMap()
-  @PrimaryGeneratedColumn({ type: 'int', name: 'ID' })
-  id: number;
+  @PrimaryGeneratedColumn({ type: 'int', name: 'FEATURE_ID' })
+  featureId: number;
 
   /**
    * The feature key.

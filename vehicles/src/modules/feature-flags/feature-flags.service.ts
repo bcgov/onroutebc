@@ -1,9 +1,9 @@
 import { Mapper } from "@automapper/core";
 import { InjectMapper } from "@automapper/nestjs";
-import { Injectable, Inject, Query } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { LogAsyncMethodExecution } from "src/common/decorator/log-async-method-execution.decorator";
-import { Repository, DataSource } from "typeorm";
+import { Repository } from "typeorm";
 import { ReadFeatureFlagDto } from "./dto/response/read-feature-flag.dto";
 import { FeatureFlag } from "./entities/feature-flag.entity";
 
@@ -14,7 +14,6 @@ export class FeatureFlagsService {
     @InjectRepository(FeatureFlag)
     private featureFlagRepository: Repository<FeatureFlag>,
     @InjectMapper() private readonly classMapper: Mapper,
-    private dataSource: DataSource,
   ) {}
 
   /**
@@ -26,12 +25,10 @@ export class FeatureFlagsService {
    */
   @LogAsyncMethodExecution()
   async findAll(): Promise<ReadFeatureFlagDto[]> {
-    const featureFlags = await this.featureFlagRepository.find();
-    const featureFlagData = await this.classMapper.mapArrayAsync(
-        featureFlags,
-        FeatureFlag,
-        ReadFeatureFlagDto,
+    return this.classMapper.mapArrayAsync(
+      await this.featureFlagRepository.find(),
+      FeatureFlag,
+      ReadFeatureFlagDto,
     );
-    return featureFlagData;
   }
 }
