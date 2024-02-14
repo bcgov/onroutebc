@@ -33,6 +33,7 @@ import { getTypeormLogLevel } from './common/helper/logger.helper';
 import { ClsModule } from 'nestjs-cls';
 import { Request } from 'express';
 import { v4 as uuidv4 } from 'uuid';
+import { CompanySuspendModule } from './modules/company-user-management/company-suspend/company-suspend.module';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
@@ -85,6 +86,7 @@ const envPath = path.resolve(process.cwd() + '/../');
     PowerUnitTypesModule,
     TrailerTypesModule,
     CompanyModule,
+    CompanySuspendModule,
     UsersModule,
     CommonModule,
     PendingUsersModule,

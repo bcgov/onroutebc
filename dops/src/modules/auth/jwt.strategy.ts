@@ -122,7 +122,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         await this.authService.getCompaniesForUser(access_token);
       associatedCompanies = (
         companiesForUsersResponse.data as [
-          { companyId: number; clientNumber: string; legalName: string },
+          { companyId: number; clientNumber: string; legalName: string, email: string, isSuspended: boolean },
         ]
       ).map((company) => {
         return company.companyId;

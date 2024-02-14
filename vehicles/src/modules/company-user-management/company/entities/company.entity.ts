@@ -162,4 +162,20 @@ export class Company extends Base {
   @AutoMap(() => [CompanyUser])
   @OneToMany(() => CompanyUser, (CompanyUser) => CompanyUser.company)
   companyUsers: CompanyUser[];
+
+  /**
+   * Specifies whether the account is suspended. 'Y' for yes, 'N' for no.
+   */
+  @AutoMap()
+  @Column({
+    type: 'char',
+    name: 'IS_SUSPENDED',
+    default: false,
+    nullable: false,
+    transformer: {
+      to: (value: boolean): string => (value ? 'Y' : 'N'), // Converts the boolean value to 'Y' or 'N' for storage.
+      from: (value: string): boolean => value === 'Y', // Converts the stored string back to a boolean.
+    },
+  })
+  isSuspended: boolean;
 }
