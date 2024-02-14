@@ -120,7 +120,8 @@ export class CompanySuspendService {
       companyName: company.legalName,
       onRoutebBcClientNumber: company.clientNumber,
     };
-    await this.emailService.sendEmailMessage(
+    
+    void this.emailService.sendEmailMessage(
       toBeSuspended
         ? EmailTemplate.COMPANY_SUSPEND
         : EmailTemplate.COMPANY_UNSUSPEND,
