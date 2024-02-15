@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Logger, Param, Post, Query, Req } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Req } from '@nestjs/common';
 
 import {
   ApiBadRequestResponse,
@@ -46,7 +46,6 @@ import { GetUserRolesQueryParamsDto } from './dto/request/queryParam/getUserRole
 @ApiBearerAuth()
 @Controller('users')
 export class UsersController {
-  private readonly logger = new Logger(UsersController.name);
   constructor(private readonly userService: UsersService) {}
 
   /**
