@@ -1,15 +1,11 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button } from "@mui/material";
+import { useDebounce } from "@uidotdev/usehooks";
+import { useEffect, useState } from "react";
 
 import "./PermitPayFeeSummary.scss";
 import { PermitType } from "../../../../types/PermitType";
 import { FeeSummary } from "../../../../components/feeSummary/FeeSummary";
-import {
-  DEBOUNCE_TIMEOUT,
-  PPC_EMAIL,
-  TOLL_FREE_NUMBER,
-} from "../../../../../../common/constants/constants";
-import { useDebounce } from "@uidotdev/usehooks";
-import { useEffect, useState } from "react";
+import { DEBOUNCE_TIMEOUT } from "../../../../../../common/constants/constants";
 
 export const PermitPayFeeSummary = ({
   calculatedFee,
@@ -43,17 +39,6 @@ export const PermitPayFeeSummary = ({
           Pay Now
         </Button>
       </Box>
-
-      <Typography className="permit-pay-fee-summary__contact" variant="h6">
-        Have questions? Please contact the Provincial Permit Centre. Toll-free:
-        {""}
-        <span className="pay-contact pay-contact--phone">
-          {" "}
-          {TOLL_FREE_NUMBER}
-        </span>{" "}
-        or Email:{" "}
-        <span className="pay-contact pay-contact--email">{PPC_EMAIL}</span>
-      </Typography>
     </Box>
   );
 };

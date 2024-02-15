@@ -1,13 +1,36 @@
 @use "../../../../common/components/dashboard/Dashboard";
 @import "../../../../themes/orbcStyles";
 
-@include Dashboard.layout-box-style(".pay-now-page .payment");
-@include Dashboard.layout-box-style(".pay-now-page .breadcrumb");
+@include Dashboard.layout-box-style(".pay-now-page");
 
-.payment {
-  background-color: $bc-white;
+.pay-now-page {
   display: flex;
-  flex-direction: column;
-  padding-top: 1.5rem;
-  padding-bottom: 0;
+  flex-direction: row;
+  background-color: $white;
+  padding-bottom: 3rem;
+
+  & &__left-container {
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+    margin-right: 2rem;
+  }
+
+  & &__right-container {
+    background-color: $bc-white;
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+    margin-left: 2rem;
+  }
+
+  & &__contact {
+    color: $bc-black;
+    margin-top: 2.5rem;
+    margin-bottom: 10.75rem;
+
+    .pay-contact {
+      font-weight: 700;
+    }
+  }
 }

@@ -1,0 +1,55 @@
+@use "./PaymentOptionStyles";
+@import "../../../../../../../themes/orbcStyles";
+
+@include PaymentOptionStyles.payment-option-style(".payment-option");
+
+.payment-option {
+  .payment-details {
+    display: flex;
+    flex-direction: row;
+
+    &__info {
+      &--card {
+        margin-right: 0.5rem;
+        width: 50%;
+      }
+
+      &--transaction {
+        margin-left: 0.5rem;
+        width: 50%;
+      }
+    }
+
+    &__label {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    &__input {
+      background-color: $white;
+      font-size: 0.9rem;
+
+      .MuiOutlinedInput-notchedOutline {
+        top: -6px;
+      }
+
+      .MuiSelect-icon {
+        display: none;
+      }
+
+      &--card {
+        background-color: $bc-background-light-grey;
+      }
+
+      &--err {
+        .MuiOutlinedInput-notchedOutline {
+          border: 2px solid $bc-red;
+        }
+      }
+    }
+
+    &__err {
+      color: $bc-red;
+    }
+  }
+}
