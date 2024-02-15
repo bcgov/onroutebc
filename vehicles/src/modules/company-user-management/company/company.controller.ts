@@ -110,7 +110,7 @@ export class CompanyController {
         page: getCompanyQueryParamsDto.page,
         take: getCompanyQueryParamsDto.take,
         orderBy: getCompanyQueryParamsDto.orderBy,
-        legalName: getCompanyQueryParamsDto.legalName,
+        companyName: getCompanyQueryParamsDto.companyName,
         clientNumber: getCompanyQueryParamsDto.clientNumber,
       });
 

@@ -245,14 +245,14 @@ describe('CompanyService', () => {
         take: 10,
         orderBy: 'companyId:DESC',
         clientNumber: 'Red Truck Inc',
-        legalName: 'B3-000005-722',
+        companyName: 'B3-000005-722',
       };
 
       const retCompanies = await service.findCompanyPaginated({
         page: getCompanyQueryParamsDto.page,
         take: getCompanyQueryParamsDto.take,
         orderBy: getCompanyQueryParamsDto.orderBy,
-        legalName: getCompanyQueryParamsDto.legalName,
+        companyName: getCompanyQueryParamsDto.companyName,
         clientNumber: getCompanyQueryParamsDto.clientNumber,
       });
 
