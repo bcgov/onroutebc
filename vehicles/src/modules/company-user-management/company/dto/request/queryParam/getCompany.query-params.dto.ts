@@ -8,12 +8,12 @@ export class GetCompanyQueryParamsDto extends PageOptionsDto {
   @ApiProperty({
     example: 'Parisian LLC Trucking',
     description:
-      'Filters the results with the legal name of the company. This field is optional.',
+      'Filters the results with the legal/DBA name of the company. This field is optional.',
     required: false,
   })
   @IsOptional()
   @IsString()
-  legalName?: string;
+  companyName?: string;
 
   @ApiProperty({
     example: 'B3-000005-722',
