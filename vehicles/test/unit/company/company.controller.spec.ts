@@ -170,7 +170,7 @@ describe('CompanyController', () => {
         take: 10,
         orderBy: 'companyId:DESC',
         clientNumber: 'Red Truck Inc',
-        legalName: 'B3-000005-722',
+        companyName: 'B3-000005-722',
       };
       const retCompanyData = await controller.getCompanyPaginated(
         request,
