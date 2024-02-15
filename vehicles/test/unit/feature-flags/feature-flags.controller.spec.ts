@@ -1,7 +1,7 @@
-import { DeepMocked, createMock } from "@golevelup/ts-jest";
-import { TestingModule, Test } from "@nestjs/testing";
-import { FeatureFlagsController } from "src/modules/feature-flags/feature-flags.controller";
-import { FeatureFlagsService } from "src/modules/feature-flags/feature-flags.service";
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { TestingModule, Test } from '@nestjs/testing';
+import { FeatureFlagsController } from 'src/modules/feature-flags/feature-flags.controller';
+import { FeatureFlagsService } from 'src/modules/feature-flags/feature-flags.service';
 
 let service: DeepMocked<FeatureFlagsService>;
 
@@ -26,7 +26,4 @@ describe('FeatureFlagsController', () => {
   it('FeatureFlags Controller should be defined.', () => {
     expect(controller).toBeDefined();
   });
-
- 
-
 });

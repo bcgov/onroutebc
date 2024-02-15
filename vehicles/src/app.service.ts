@@ -91,12 +91,11 @@ export class AppService {
       createCacheMap(paymentTypes, 'paymentCardTypeCode', 'name'),
     );
 
-    const featureFlags =
-      await this.featureFlagsService.findAll();
+    const featureFlags = await this.featureFlagsService.findAll();
     await addToCache(
       this.cacheManager,
       CacheKey.FEATURE_FLAG_TYPE,
-      createCacheMap(featureFlags, 'featureFlags', 'name')
+      createCacheMap(featureFlags, 'featureFlags', 'name'),
     );
 
     const assetsPath =
