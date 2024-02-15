@@ -467,7 +467,6 @@ export class UsersService {
     const userContextDto = new ReadUserOrbcStatusDto();
     userContextDto.associatedCompanies = [];
     userContextDto.pendingCompanies = [];
-    //userContextDto.featureFlags = [];
 
     const user = await this.userRepository.findOne({
       where: { userGUID: currentUser.userGUID },
@@ -521,10 +520,6 @@ export class UsersService {
         ReadUserDto,
       );
       
-      //this.logger.log('AFADSFAFSF')
-      //userContextDto.featureFlags = await this.featureFlagsService.findAllFromCache();
-      //this.logger.log(userContextDto)
-    
       userContextDto.associatedCompanies =
         await this.companyService.findCompanyMetadataByUserGuid(
           currentUser.userGUID,
