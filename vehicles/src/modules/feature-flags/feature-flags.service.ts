@@ -9,7 +9,6 @@ import { FeatureFlag } from './entities/feature-flag.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { CacheKey } from '../../common/enum/cache-key.enum';
-import { getFromCache, getMapFromCache } from 'src/common/helper/cache.helper';
 
 @Injectable()
 export class FeatureFlagsService {
@@ -38,10 +37,10 @@ export class FeatureFlagsService {
   }
 
   /**
-   * The findAllFromCache() method returns an array of ReadFeatureFlagDto objects
-   * which were stored in the NestJS system cache upon startup.
+   * The findAllFromCache() method returns a Map of the feature flags that
+   * were stored in the NestJS system cache upon startup.
    *
-   * @returns The feature flag list as a promise of type {@link ReadFeatureFlagDto}
+   * @returns The feature flag list as a promise of type Map<string, string>
    */
   @LogAsyncMethodExecution()
   async findAllFromCache(): Promise<Map<string, string>> {

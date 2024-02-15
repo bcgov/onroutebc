@@ -476,8 +476,6 @@ export class UsersService {
       },
     });
 
-    this.logger.log("USER", user)
-
     if (!user && currentUser.bceid_business_guid) {
       const company = await this.companyService.findOneByCompanyGuid(
         currentUser.bceid_business_guid,
