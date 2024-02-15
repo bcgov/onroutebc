@@ -32,7 +32,6 @@ import {
 } from "../../types/application";
 import { Delete } from "@mui/icons-material";
 import { Trash } from "../../../../common/components/table/options/Trash";
-import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
 
 /**
  * Dynamically set the column
@@ -89,8 +88,6 @@ export const ApplicationsInProgressList = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
-  const featureFlags = useFeatureFlagsQuery();
-  console.log('feature flags data', featureFlags?.data);
 
   const columns = useMemo<MRT_ColumnDef<ApplicationInProgress>[]>(
     () => getColumns(),
