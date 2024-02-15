@@ -10,13 +10,21 @@ import { CompanyContactDetailsForm } from "./subForms/CompanyContactDetailsForm"
 import { CompanyPrimaryContactForm } from "./subForms/CompanyPrimaryContactForm";
 import { formatPhoneNumber } from "../../../../../common/components/form/subFormComponents/PhoneNumberInput";
 import { InfoBcGovBanner } from "../../../../../common/components/banners/InfoBcGovBanner";
-import { CompanyProfile, UpdateCompanyProfileRequest } from "../../../types/manageProfile";
+import {
+  CompanyProfile,
+  UpdateCompanyProfileRequest,
+} from "../../../types/manageProfile";
 import { getCompanyEmailFromSession } from "../../../../../common/apiManager/httpRequestHandler";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
 import { BANNER_MESSAGES } from "../../../../../common/constants/bannerMessages";
+import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
+import {
+  invalidDBALength,
+  isValidOptionalString,
+} from "../../../../../common/helpers/validationMessages";
 
 /**
  * The Company Information Form contains multiple subs forms including
@@ -38,6 +46,7 @@ export const CompanyInfoForm = memo(
     const formMethods = useForm<UpdateCompanyProfileRequest>({
       defaultValues: {
         legalName: getDefaultRequiredVal("", companyInfo?.legalName),
+        alternateName: getDefaultRequiredVal("", companyInfo?.alternateName),
         mailingAddress: {
           addressLine1: getDefaultRequiredVal(
             "",
@@ -132,6 +141,30 @@ export const CompanyInfoForm = memo(
     return (
       <div className="company-info-form">
         <FormProvider {...formMethods}>
+          <Typography variant="h2" gutterBottom>
+            Doing Business As (DBA)
+          </Typography>
+          <CustomFormComponent
+            type="input"
+            feature={FEATURE}
+            options={{
+              name: "alternateName",
+              rules: {
+                required: false,
+                validate: {
+                  validateAlternateName: (alternateName: string) =>
+                    isValidOptionalString(alternateName, { maxLength: 150 }) ||
+                    invalidDBALength(1, 150),
+                },
+              },
+              label: "DBA",
+            }}
+          />
+
+          <Typography variant="h2" gutterBottom>
+            Company Mailing Address
+          </Typography>
+
           <CompanyInfoGeneralForm feature={FEATURE} />
 
           <Typography variant="h2" gutterBottom>
