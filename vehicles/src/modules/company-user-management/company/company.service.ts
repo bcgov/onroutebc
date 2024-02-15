@@ -403,10 +403,16 @@ export class CompanyService {
     companiesQB.where('company.companyId IS NOT NULL');
 
     if (findCompanyPaginatedOptions.legalName) {
-      // Add condition for filtering by legal name if provided
-      companiesQB.andWhere('company.legalName LIKE :legalName', {
-        legalName: `%${findCompanyPaginatedOptions.legalName}%`,
-      });
+      // Add condition for filtering by legal name or alternate name if provided
+      companiesQB.andWhere(
+        new Brackets((qb) => {
+          qb.where('company.legalName LIKE :legalName', {
+            legalName: `%${findCompanyPaginatedOptions.legalName}%`,
+          }).orWhere('company.alternateName LIKE :legalName', {
+            legalName: `%${findCompanyPaginatedOptions.legalName}%`,
+          });
+        }),
+      );
     }
 
     if (findCompanyPaginatedOptions.clientNumber) {
