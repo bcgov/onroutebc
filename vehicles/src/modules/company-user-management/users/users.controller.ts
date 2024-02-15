@@ -25,7 +25,6 @@ import { ReadVerifyClientDto } from './dto/response/read-verify-client.dto';
 import { VerifyClientDto } from './dto/request/verify-client.dto';
 import { GetStaffUserQueryParamsDto } from './dto/request/queryParam/getStaffUser.query-params.dto';
 import { GetUserRolesQueryParamsDto } from './dto/request/queryParam/getUserRoles.query-params.dto';
-import { FeatureFlagsService } from 'src/modules/feature-flags/feature-flags.service';
 
 @ApiTags('Company and User Management - User')
 @ApiBadRequestResponse({
@@ -48,8 +47,7 @@ import { FeatureFlagsService } from 'src/modules/feature-flags/feature-flags.ser
 @Controller('users')
 export class UsersController {
   private readonly logger = new Logger(UsersController.name);
-  constructor(private readonly userService: UsersService,
-    private readonly featureFlagsService: FeatureFlagsService) {}
+  constructor(private readonly userService: UsersService) {}
 
   /**
    * A POST method defined with a route of
@@ -72,8 +70,6 @@ export class UsersController {
     } else {
       userExists = await this.userService.findORBCUser(currentUser);
     }
-
-    userExists.featureFlags = await this.featureFlagsService.findAllFromCache();
 
     return userExists;
   }

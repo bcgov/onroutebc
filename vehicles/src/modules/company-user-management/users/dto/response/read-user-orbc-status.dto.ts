@@ -37,10 +37,4 @@ export class ReadUserOrbcStatusDto {
     type: ReadCompanyDto,
   })
   migratedClient: ReadCompanyDto;
-
-  @AutoMap()
-  @ApiProperty({
-    description: 'The hashmap of FeatureFlags available.',
-  })
-  featureFlags: Map<string, string>;
 }
