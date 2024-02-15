@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, Req } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Param, Post, Query, Req } from '@nestjs/common';
 
 import {
   ApiBadRequestResponse,
@@ -25,6 +25,7 @@ import { ReadVerifyClientDto } from './dto/response/read-verify-client.dto';
 import { VerifyClientDto } from './dto/request/verify-client.dto';
 import { GetStaffUserQueryParamsDto } from './dto/request/queryParam/getStaffUser.query-params.dto';
 import { GetUserRolesQueryParamsDto } from './dto/request/queryParam/getUserRoles.query-params.dto';
+import { FeatureFlagsService } from 'src/modules/feature-flags/feature-flags.service';
 
 @ApiTags('Company and User Management - User')
 @ApiBadRequestResponse({
@@ -46,7 +47,9 @@ import { GetUserRolesQueryParamsDto } from './dto/request/queryParam/getUserRole
 @ApiBearerAuth()
 @Controller('users')
 export class UsersController {
-  constructor(private readonly userService: UsersService) {}
+  private readonly logger = new Logger(UsersController.name);
+  constructor(private readonly userService: UsersService,
+    private readonly featureFlagsService: FeatureFlagsService) {}
 
   /**
    * A POST method defined with a route of
@@ -69,6 +72,17 @@ export class UsersController {
     } else {
       userExists = await this.userService.findORBCUser(currentUser);
     }
+
+    this.logger.debug("ASFDSAFDSAFDSFASDFDSFASFS")
+    this.logger.log("AAAAAAA")
+    this.logger.error("BBBBBBB")
+    console.log("CCCCCC")
+
+    userExists.featureFlags = [];
+    userExists.featureFlags = await this.featureFlagsService.findAllFromCache();
+
+    this.logger.debug("userExists", userExists)
+
     return userExists;
   }
 

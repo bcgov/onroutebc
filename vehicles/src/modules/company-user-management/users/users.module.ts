@@ -11,6 +11,7 @@ import { UsersService } from './users.service';
 import { IdirUser } from './entities/idir.user.entity';
 import { PendingIdirUser } from '../pending-idir-users/entities/pending-idir-user.entity';
 import { PendingIdirUsersModule } from '../pending-idir-users/pending-idir-users.module';
+import { FeatureFlagsModule } from 'src/modules/feature-flags/feature-flags.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { PendingIdirUsersModule } from '../pending-idir-users/pending-idir-users
     PendingUsersModule,
     PendingIdirUsersModule,
     CompanyModule,
+    FeatureFlagsModule,
   ],
   controllers: [UsersController, CompanyUsersController],
   providers: [UsersService, UsersProfile],

@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { UserAuthGroup } from '../../../../../common/enum/user-auth-group.enum';
 import { UserStatus } from '../../../../../common/enum/user-status.enum';
 import { ReadContactDto } from '../../../../common/dto/response/read-contact.dto';
+import { ReadFeatureFlagDto } from 'src/modules/feature-flags/dto/response/read-feature-flag.dto';
 
 /**
  * JSON representation of response object when retrieving user information from the server.
