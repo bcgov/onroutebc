@@ -1,15 +1,15 @@
-import { classes } from "@automapper/classes";
-import { createMapper } from "@automapper/core";
-import { AutomapperModule, getMapperToken } from "@automapper/nestjs";
-import { DeepMocked, createMock } from "@golevelup/ts-jest";
-import { CACHE_MANAGER } from "@nestjs/cache-manager";
-import { TestingModule, Test } from "@nestjs/testing";
-import { getRepositoryToken } from "@nestjs/typeorm";
-import { FeatureFlag } from "src/modules/feature-flags/entities/feature-flag.entity";
-import { FeatureFlagsService } from "src/modules/feature-flags/feature-flags.service";
-import { FeatureFlagsProfile } from "src/modules/feature-flags/profiles/feature-flags.profile";
-import { dataSourceMockFactory } from "test/util/mocks/factory/dataSource.factory.mock";
-import { Repository, DataSource } from "typeorm";
+import { classes } from '@automapper/classes';
+import { createMapper } from '@automapper/core';
+import { AutomapperModule, getMapperToken } from '@automapper/nestjs';
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { TestingModule, Test } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { FeatureFlag } from 'src/modules/feature-flags/entities/feature-flag.entity';
+import { FeatureFlagsService } from 'src/modules/feature-flags/feature-flags.service';
+import { FeatureFlagsProfile } from 'src/modules/feature-flags/profiles/feature-flags.profile';
+import { dataSourceMockFactory } from 'test/util/mocks/factory/dataSource.factory.mock';
+import { Repository, DataSource } from 'typeorm';
 
 let repo: DeepMocked<Repository<FeatureFlag>>;
 let cacheManager: DeepMocked<Cache>;
@@ -56,5 +56,4 @@ describe('FeatureFlagsService', () => {
   it('FeatureFlags service should be defined', () => {
     expect(service).toBeDefined();
   });
-
 });

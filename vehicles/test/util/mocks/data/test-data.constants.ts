@@ -231,4 +231,4 @@ export const SYS_ADMIN_STAFF_USER_STATUS = UserStatus.ACTIVE;
 
 export const FEATURE_ID = 1;
 export const FEATURE_KEY = 'CompanySearch';
-export const FEATURE_VALUE = FeatureFlagValue.Enabled;
+export const FEATURE_VALUE = FeatureFlagValue.ENABLED;

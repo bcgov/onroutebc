@@ -1,8 +1,7 @@
-import { AutoMap } from "@automapper/classes";
-import { FeatureFlagValue } from "src/common/enum/feature-flag-value.enum";
-import { Base } from "src/modules/common/entities/base.entity";
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-
+import { AutoMap } from '@automapper/classes';
+import { FeatureFlagValue } from 'src/common/enum/feature-flag-value.enum';
+import { Base } from 'src/modules/common/entities/base.entity';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity({ name: 'ORBC_FEATURE_FLAG' })
 export class FeatureFlag extends Base {
@@ -17,7 +16,7 @@ export class FeatureFlag extends Base {
    * The feature key.
    */
   @AutoMap()
-  @Column({ length: 50, name: 'FEATURE_KEY', nullable: true })
+  @Column({ length: 50, name: 'FEATURE_KEY', nullable: false })
   featureKey: string;
 
   /**
@@ -29,7 +28,7 @@ export class FeatureFlag extends Base {
     enum: FeatureFlagValue,
     length: 1,
     name: 'FEATURE_VALUE',
-    default: FeatureFlagValue.Disabled,
+    default: FeatureFlagValue.DISABLED,
     nullable: false,
   })
   featureValue: FeatureFlagValue;

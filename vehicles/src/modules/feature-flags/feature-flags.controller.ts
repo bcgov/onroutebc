@@ -1,10 +1,17 @@
-import { Controller, Get } from "@nestjs/common";
-import { ApiTags, ApiBadRequestResponse, ApiNotFoundResponse, ApiMethodNotAllowedResponse, ApiInternalServerErrorResponse, ApiBearerAuth, ApiOkResponse } from "@nestjs/swagger";
-import { ExceptionDto } from "src/common/exception/exception.dto";
-import { ReadFeatureFlagDto } from "./dto/response/read-feature-flag.dto";
-import { FeatureFlagsService } from "./feature-flags.service";
-import { AuthOnly } from "src/common/decorator/auth-only.decorator";
-
+import { Controller, Get } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiBadRequestResponse,
+  ApiNotFoundResponse,
+  ApiMethodNotAllowedResponse,
+  ApiInternalServerErrorResponse,
+  ApiBearerAuth,
+  ApiOkResponse,
+} from '@nestjs/swagger';
+import { ExceptionDto } from 'src/common/exception/exception.dto';
+import { ReadFeatureFlagDto } from './dto/response/read-feature-flag.dto';
+import { FeatureFlagsService } from './feature-flags.service';
+import { AuthOnly } from 'src/common/decorator/auth-only.decorator';
 
 @ApiTags('Configuration - Feature Flags')
 @ApiBadRequestResponse({
@@ -26,23 +33,22 @@ import { AuthOnly } from "src/common/decorator/auth-only.decorator";
 @ApiBearerAuth()
 @Controller('feature-flags')
 export class FeatureFlagsController {
-    constructor(private readonly featureFlagService: FeatureFlagsService) {}
+  constructor(private readonly featureFlagService: FeatureFlagsService) {}
 
-    /**
-     * A GET method defined with the @Get() decorator and a route of /feature-flags
-     * that retrieves the feature flags data.
-     *
-     * @returns The featureFlags with response object {@link ReadFeatureFlagDto}.
-     */
-    @ApiOkResponse({
-        description: 'The FeatureFlag Resource',
-        type: ReadFeatureFlagDto,
-        isArray: true,
-    })
-    @AuthOnly()
-    @Get()
-    async getFeatureFlags(): Promise<ReadFeatureFlagDto[]> {
-        return await this.featureFlagService.findAllFromCache();
-    }
-
+  /**
+   * A GET method defined with the @Get() decorator and a route of /feature-flags
+   * that retrieves the feature flags data.
+   *
+   * @returns The featureFlags with response object {@link ReadFeatureFlagDto}.
+   */
+  @ApiOkResponse({
+    description: 'The FeatureFlag Resource',
+    type: ReadFeatureFlagDto,
+    isArray: true,
+  })
+  @AuthOnly()
+  @Get()
+  async getFeatureFlags(): Promise<ReadFeatureFlagDto[]> {
+    return await this.featureFlagService.findAllFromCache();
+  }
 }
