@@ -73,15 +73,7 @@ export class UsersController {
       userExists = await this.userService.findORBCUser(currentUser);
     }
 
-    this.logger.debug("ASFDSAFDSAFDSFASDFDSFASFS")
-    this.logger.log("AAAAAAA")
-    this.logger.error("BBBBBBB")
-    console.log("CCCCCC")
-
-    userExists.featureFlags = [];
     userExists.featureFlags = await this.featureFlagsService.findAllFromCache();
-
-    this.logger.debug("userExists", userExists)
 
     return userExists;
   }

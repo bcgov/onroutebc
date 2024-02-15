@@ -48,7 +48,7 @@ export class FeatureFlagsController {
   })
   @AuthOnly()
   @Get()
-  async getFeatureFlags(): Promise<ReadFeatureFlagDto[]> {
+  async getFeatureFlags(): Promise<Map<string, string>> {
     return await this.featureFlagService.findAllFromCache();
   }
 }

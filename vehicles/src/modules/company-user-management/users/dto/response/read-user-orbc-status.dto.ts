@@ -40,7 +40,7 @@ export class ReadUserOrbcStatusDto {
 
   @AutoMap()
   @ApiProperty({
-    description: 'The array of FeatureFlags available.',
+    description: 'The hashmap of FeatureFlags available.',
   })
-  featureFlags: ReadFeatureFlagDto[];
+  featureFlags: Map<string, string>;
 }

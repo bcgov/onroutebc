@@ -9,6 +9,7 @@ import { FeatureFlag } from './entities/feature-flag.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { CacheKey } from '../../common/enum/cache-key.enum';
+import { getFromCache, getMapFromCache } from 'src/common/helper/cache.helper';
 
 @Injectable()
 export class FeatureFlagsService {
@@ -43,7 +44,7 @@ export class FeatureFlagsService {
    * @returns The feature flag list as a promise of type {@link ReadFeatureFlagDto}
    */
   @LogAsyncMethodExecution()
-  async findAllFromCache(): Promise<ReadFeatureFlagDto[]> {
+  async findAllFromCache(): Promise<Map<string, string>> {
     return await this.cacheManager.get(CacheKey.FEATURE_FLAG_TYPE);
   }
 }

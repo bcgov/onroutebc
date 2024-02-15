@@ -95,7 +95,7 @@ export class AppService {
     await addToCache(
       this.cacheManager,
       CacheKey.FEATURE_FLAG_TYPE,
-      createCacheMap(featureFlags, 'featureFlags', 'name'),
+      createCacheMap(featureFlags, 'featureKey', 'featureValue'),
     );
 
     const assetsPath =
