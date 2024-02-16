@@ -156,6 +156,11 @@ export type VerifyMigratedClientResponse = {
 export const BCEID_PROFILE_TABS = {
   COMPANY_INFORMATION: 0,
   MY_INFORMATION: 1,
+  /**
+   * User Management tab is the second tab for IDIR users.
+   */
+  /* eslint-ignore no-duplicate-enum-values */
+  USER_MANAGEMENT_BY_STAFF: 1,
   USER_MANAGEMENT_ORGADMIN: 2,
   /**
    * Payment Information is the third tab for CV Client
