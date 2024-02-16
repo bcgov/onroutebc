@@ -84,6 +84,11 @@ export const IcepayPaymentOption = ({
     >
       <FormControlLabel
         className="payment-option__label"
+        componentsProps={{
+          typography: {
+            className: "label-container"
+          }
+        }}
         label={
           <div className="label-icon-display">
             <div className="label-icon-display__left">
@@ -97,17 +102,17 @@ export const IcepayPaymentOption = ({
               <img
                 src="/Visa_Logo.svg"
                 alt="Visa"
-                className="label-icon-display__icon"
+                className="label-icon-display__icon label-icon-display__icon--visa"
               />
               <img
                 src="/Mastercard_Logo.svg"
                 alt="Mastercard"
-                className="label-icon-display__icon"
+                className="label-icon-display__icon label-icon-display__icon--mc"
               />
               <img
                 src="/Amex_Logo.svg"
                 alt="Amex"
-                className="label-icon-display__icon"
+                className="label-icon-display__icon label-icon-display__icon--amex"
               />
             </div>
           </div>

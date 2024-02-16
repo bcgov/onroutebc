@@ -2,34 +2,63 @@
 
 @mixin payment-option-style($payment-option) {
   #{$payment-option} {
-    padding: 1em;
+    padding: 1.5rem;
     border: 1px solid $bc-text-box-border-grey;
     border-radius: 0.5rem;
-    margin-bottom: 1rem;
+    color: $bc-black;
 
     &--active {
       border: 1px solid $bc-black;
       background-color: $bc-messages-blue-background;
     }
 
+    & &__label {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      margin-bottom: 1rem;
+      margin-right: 0;
+      width: 100%;
+    }
+
+    .label-container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      margin-bottom: 0;
+      width: 100%;
+    }
+
     .label-icon-display {
       display: flex;
       flex-direction: row;
+      align-items: center;
+      flex-grow: 2;
+      width: 100%;
+      justify-content: space-between;
 
-      & &__title {
+      &__title {
         font-size: 1.25rem;
         font-weight: bold;
         margin-right: 0.25rem;
       }
 
-      & &__left {
+      &__left {
         display: flex;
         flex-direction: row;
+        align-items: center;
       }
 
-      & &__right {
+      &__right {
         display: flex;
         flex-direction: row;
+        align-items: center;
+      }
+
+      &__icon {
+        &--mc {
+          margin: 0 1rem;
+        }
       }
     }
   }

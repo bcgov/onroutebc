@@ -22,6 +22,14 @@
     flex-direction: column;
     width: 40%;
     margin-left: 2rem;
+
+    .choose-payment-method {
+      margin-bottom: 2.5rem;
+    }
+
+    .payment-failed-banner {
+      margin: 0;
+    }
   }
 
   & &__contact {
