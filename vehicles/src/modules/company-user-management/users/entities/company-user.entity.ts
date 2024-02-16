@@ -45,7 +45,7 @@ export class CompanyUser extends Base {
       enum: UserStatus,
       length: 10,
       name: 'USER_STATUS_TYPE',
-      default: 'ACTIVE',
+      default: UserStatus.ACTIVE,
       nullable: false,
     })
     statusCode: UserStatus;

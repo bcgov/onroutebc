@@ -21,8 +21,6 @@ import { ReadCompanyDto } from '../dto/response/read-company.dto';
 import { ReadCompanyUserDto } from '../dto/response/read-company-user.dto';
 import { AccountRegion } from '../../../../common/enum/account-region.enum';
 import { ReadCompanyMetadataDto } from '../dto/response/read-company-metadata.dto';
-import { User } from '../../users/entities/user.entity';
-import { ReadUserDto } from '../../users/dto/response/read-user.dto';
 
 @Injectable()
 export class CompanyProfile extends AutomapperProfile {
@@ -234,20 +232,9 @@ export class CompanyProfile extends AutomapperProfile {
       /**
        * The mapping is between Company and ReadCompanyMetadataDto.
        */
+
       createMap(mapper, Company, ReadCompanyMetadataDto);
 
-      createMap(mapper, User, ReadUserDto,forMember(
-        (d) => d.statusCode,
-        mapFrom((s) => {
-          if (s.companyUsers?.length && s.companyUsers[0]?.statusCode) {
-            //the logic to be revisited if the application decide to support
-            //one user id multiple companies
-            return s.companyUsers[0]?.statusCode;
-          } else {
-            return null;
-          }
-        }),
-      ),);
     };
   }
 }
