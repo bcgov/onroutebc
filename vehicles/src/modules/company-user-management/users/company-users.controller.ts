@@ -119,7 +119,6 @@ export class CompanyUsersController {
   @Roles(Role.READ_USER)
   @Get(':userGUID')
   async get(
-    @Req() _request: Request,
     @Param() params: GetCompanyUserByUserGUIDPathParamsDto,
   ): Promise<ReadUserDto> {
     const { companyId, userGUID } = params;
