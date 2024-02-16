@@ -122,11 +122,11 @@ export class CompanyUsersController {
     @Param() params: GetCompanyUserByUserGUIDPathParamsDto,
   ): Promise<ReadUserDto> {
     const { companyId, userGUID } = params;
-    const user = await this.userService.findUsersDto(userGUID, [companyId]);
-    if (user.length === 0) {
+    const users = await this.userService.findUsersDto(userGUID, [companyId]);
+    if (users.length === 0) {
       throw new DataNotFoundException();
     }
-    return user[0];
+    return users[0];
   }
 
   /**
