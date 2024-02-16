@@ -599,12 +599,12 @@ export class UsersService {
   }
 
   /**
-   * The getCompaniesForUser() method finds and returns a {@link number[]} object
+   * The getCompaniesForUser() method finds and returns a {@link ReadCompanyMetadataDto[]} object
    * for a user with a specific userGUID.
    *
    * @param userGUID The user GUID.
    *
-   * @returns The associated companies as a promise of type {@link number[]}
+   * @returns The associated companies as a promise of type {@link ReadCompanyMetadataDto[]}
    */
   @LogAsyncMethodExecution()
   async getCompaniesForUser(

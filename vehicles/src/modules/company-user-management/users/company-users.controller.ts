@@ -25,6 +25,7 @@ import { Role } from '../../../common/enum/roles.enum';
 import { UpdateUserDto } from './dto/request/update-user.dto';
 import { UpdateUserStatusDto } from './dto/request/update-user-status.dto';
 import { GetCompanyUserQueryParamsDto } from './dto/request/queryParam/getCompanyUser.query-params.dto';
+import { GetCompanyUserByUserGUIDPathParamsDto } from './dto/request/pathParam/getCompanyUserByUserGUID.path-params.dto';
 
 @ApiTags('Company and User Management - Company User')
 @ApiBadRequestResponse({
@@ -103,13 +104,40 @@ export class CompanyUsersController {
   }
 
   /**
+   * A GET method defined with the @Get(':userGUID') decorator and a route of
+   * /companies/:companyId/users/:userGUID that retrieves a user details by its GUID.
+   *
+   * @param companyId The company Id.
+   * @param userGUID The GUID of the user.
+   *
+   * @returns The user details with response object {@link ReadUserDto}.
+   */
+  @ApiOkResponse({
+    description: 'The User Resource',
+    type: ReadUserDto,
+  })
+  @Roles(Role.READ_USER)
+  @Get(':userGUID')
+  async get(
+    @Req() _request: Request,
+    @Param() params: GetCompanyUserByUserGUIDPathParamsDto,
+  ): Promise<ReadUserDto> {
+    const { companyId, userGUID } = params;
+    const user = await this.userService.findUsersDto(userGUID, [companyId]);
+    if (user.length === 0) {
+      throw new DataNotFoundException();
+    }
+    return user[0];
+  }
+
+  /**
    * A PUT method defined with the @Put(':userGUID') decorator and a route of
    * /companies/:companyId/users/:userGUID that updates a user details by its GUID.
    *
    * @param companyId The company Id.
    * @param userGUID The GUID of the user.
    *
-   * @returns The updated user deails with response object {@link ReadUserDto}.
+   * @returns The updated user details with response object {@link ReadUserDto}.
    */
   @ApiOkResponse({
     description: 'The User Resource',

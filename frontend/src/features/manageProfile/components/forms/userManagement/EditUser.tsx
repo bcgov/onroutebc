@@ -8,7 +8,7 @@ import { CustomActionLink } from "../../../../../common/components/links/CustomA
 import { SnackBarContext } from "../../../../../App";
 import { formatPhoneNumber } from "../../../../../common/components/form/subFormComponents/PhoneNumberInput";
 import { requiredMessage } from "../../../../../common/helpers/validationMessages";
-import { PROFILE_ROUTES } from "../../../../../routes/constants";
+import { ERROR_ROUTES, PROFILE_ROUTES } from "../../../../../routes/constants";
 import { BC_COLOURS } from "../../../../../themes/bcGovStyles";
 import { updateUserInfo } from "../../../apiManager/manageProfileAPI";
 import {
@@ -74,12 +74,7 @@ export const EditUserForm = memo(
     const updateUserInfoMutation = useMutation({
       mutationFn: updateUserInfo,
       onError: () => {
-        setSnackBar({
-          message: "An unexpected error occurred.",
-          showSnackbar: true,
-          setShowSnackbar: () => true,
-          alertType: "error",
-        });
+        navigate(ERROR_ROUTES.UNEXPECTED);
       },
       onSuccess: (response) => {
         if (response.status === 200) {
