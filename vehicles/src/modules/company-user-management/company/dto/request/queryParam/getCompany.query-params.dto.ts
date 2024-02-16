@@ -21,9 +21,9 @@ export class GetCompanyQueryParamsDto extends PageOptionsDto {
       'Filters the results with the unique identifier for a client. This field is optional.',
     required: false,
   })
-  // @IsOptional()
+  @IsOptional()
   @IsString()
-  clientNumber: string;
+  clientNumber?: string;
 
   @ApiProperty({
     example: 'companyId:DESC',

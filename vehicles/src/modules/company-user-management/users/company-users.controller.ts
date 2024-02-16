@@ -26,7 +26,6 @@ import { UpdateUserDto } from './dto/request/update-user.dto';
 import { UpdateUserStatusDto } from './dto/request/update-user-status.dto';
 import { GetCompanyUserQueryParamsDto } from './dto/request/queryParam/getCompanyUser.query-params.dto';
 import { GetCompanyUserByUserGUIDPathParamsDto } from './dto/request/pathParam/getCompanyUserByUserGUID.path-params.dto';
-import { GetCompanyQueryParamsDto } from '../company/dto/request/queryParam/getCompany.query-params.dto';
 
 @ApiTags('Company and User Management - Company User')
 @ApiBadRequestResponse({
@@ -120,7 +119,6 @@ export class CompanyUsersController {
   @Roles(Role.READ_USER)
   @Get(':userGUID')
   async get(
-    @Query() getCompanyQueryParamsDto: GetCompanyQueryParamsDto,
     @Param() params: GetCompanyUserByUserGUIDPathParamsDto,
   ): Promise<ReadUserDto> {
     const { companyId, userGUID } = params;
