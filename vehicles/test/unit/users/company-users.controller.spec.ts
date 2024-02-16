@@ -69,6 +69,40 @@ describe('CompanyUsersController', () => {
     });
   });
 
+  describe('get user by user guid function', () => {
+    afterAll(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('should return a user whose user guid matches', async () => {
+      userService.findUsersDto.mockResolvedValue([
+        readRedCompanyCvClientUserDtoMock,
+      ]);
+      const retUser = await controller.get({
+        companyId: constants.RED_COMPANY_ID,
+        userGUID: constants.RED_COMPANY_CVCLIENT_USER_GUID,
+      });
+
+      expect(typeof retUser).toBe('object');
+      expect(retUser).toEqual(readRedCompanyCvClientUserDtoMock);
+      expect(userService.findUsersDto).toHaveBeenCalledWith(
+        constants.RED_COMPANY_CVCLIENT_USER_GUID,
+        [constants.RED_COMPANY_ID],
+      );
+    });
+
+    it('should throw DataNotFoundException when user not found', async () => {
+      userService.findUsersDto.mockResolvedValue([]);
+
+      await expect(async () => {
+        await controller.get({
+          companyId: constants.RED_COMPANY_ID,
+          userGUID: constants.RED_COMPANY_CVCLIENT_USER_GUID,
+        });
+      }).rejects.toThrow(DataNotFoundException);
+    });
+  });
+
   describe('Users controller update function', () => {
     it('should return the updated user', async () => {
       const request = createMock<Request>();
