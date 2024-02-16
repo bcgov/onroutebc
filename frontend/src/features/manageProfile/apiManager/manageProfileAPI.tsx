@@ -201,9 +201,11 @@ export const deleteCompanyUsers = (userName: string) => {
 export const getCompanyUserByUserGUID = (
   userGUID: string,
 ): Promise<ReadUserInformationResponse> => {
-  return httpGETRequest(`${VEHICLES_URL}/users/${userGUID}`).then(
-    (response) => response.data,
-  );
+  return httpGETRequest(
+    `${
+      MANAGE_PROFILE_API.COMPANIES
+    }/${getCompanyIdFromSession()}/users/${userGUID}`,
+  ).then((response) => response.data);
 };
 
 /**
