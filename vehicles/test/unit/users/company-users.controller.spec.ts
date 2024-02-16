@@ -70,10 +70,6 @@ describe('CompanyUsersController', () => {
   });
 
   describe('get user by user guid function', () => {
-    afterAll(() => {
-      jest.restoreAllMocks();
-    });
-
     it('should return a user whose user guid matches', async () => {
       userService.findUsersDto.mockResolvedValue([
         readRedCompanyCvClientUserDtoMock,

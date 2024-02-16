@@ -365,7 +365,7 @@ export class UsersService {
     // Find user entities based on the provided filtering criteria
     const userDetails = await this.findUsersEntity(userGUID, companyId);
     let pendingUsersList: ReadUserDto[] = [];
-    if (pendingUser?.valueOf() && companyId?.length) {
+    if (pendingUser && companyId?.length) {
       const pendingUser = await this.pendingUsersService.findPendingUsersDto(
         undefined,
         companyId?.at(0),

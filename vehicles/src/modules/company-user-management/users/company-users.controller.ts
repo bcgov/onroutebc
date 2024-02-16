@@ -123,7 +123,7 @@ export class CompanyUsersController {
   ): Promise<ReadUserDto> {
     const { companyId, userGUID } = params;
     const users = await this.userService.findUsersDto(userGUID, [companyId]);
-    if (users.length === 0) {
+    if (!users?.length) {
       throw new DataNotFoundException();
     }
     return users[0];
