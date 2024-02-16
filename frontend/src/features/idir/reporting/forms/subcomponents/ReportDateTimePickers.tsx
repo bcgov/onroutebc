@@ -37,6 +37,12 @@ export const ReportDateTimePickers = () => {
               .set("s", 0)
               .set("ms", 0)}
             format="YYYY/MM/DD hh:mm A"
+            minDateTime={dayjs()
+              .subtract(30, "day")
+              .set("h", 21)
+              .set("m", 0)
+              .set("s", 0)
+              .set("ms", 0)}
             slotProps={{
               digitalClockSectionItem: {
                 sx: {
