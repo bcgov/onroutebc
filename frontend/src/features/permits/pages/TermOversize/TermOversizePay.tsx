@@ -16,7 +16,7 @@ import { PAYMENT_METHOD_TYPE_CODE } from "../../../../common/types/paymentMethod
 import { PaymentFailedBanner } from "./components/pay/PaymentFailedBanner";
 import { PPC_EMAIL, TOLL_FREE_NUMBER } from "../../../../common/constants/constants";
 import { ChoosePaymentMethod } from "./components/pay/ChoosePaymentMethod";
-import { PaymentMethodData } from "./components/pay/types/PaymentMethodData";
+import { DEFAULT_EMPTY_CARD_TYPE, PaymentMethodData } from "./components/pay/types/PaymentMethodData";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -64,7 +64,7 @@ export const TermOversizePay = () => {
   const formMethods = useForm<PaymentMethodData>({
     defaultValues: {
       paymentMethod: availablePaymentMethods[0],
-      cardType: "",
+      cardType: DEFAULT_EMPTY_CARD_TYPE,
       transactionId: "",
     },
     reValidateMode: "onChange",

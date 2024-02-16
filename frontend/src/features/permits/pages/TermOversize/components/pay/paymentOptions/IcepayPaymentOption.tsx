@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 
 import "./IcepayPaymentOption.scss";
-import { PaymentMethodData } from "../types/PaymentMethodData";
+import { DEFAULT_EMPTY_CARD_TYPE, PaymentMethodData } from "../types/PaymentMethodData";
 import { requiredMessage } from "../../../../../../../common/helpers/validationMessages";
 import { Nullable } from "../../../../../../../common/types/common";
 import { getErrorMessage } from "../../../../../../../common/components/form/CustomFormComponents";
@@ -24,7 +24,7 @@ import {
 const cardTypeOptions = [
   {
     label: "Select",
-    value: "",
+    value: DEFAULT_EMPTY_CARD_TYPE,
   },
   {
     label: PAYMENT_CARD_TYPE_DISPLAY.AM,
@@ -48,7 +48,22 @@ const cardTypeOptions = [
   },
 ];
 
-const requiredRules = {
+const cardTypeRules = {
+  validate: {
+    requiredWhenSelected: (
+      value: Nullable<string>,
+      formValues: PaymentMethodData,
+    ) => {
+      return (
+        (formValues.paymentMethod !== PAYMENT_METHOD_TYPE_CODE.ICEPAY) ||
+        (value != null && value.trim() !== "" && value.trim() !== DEFAULT_EMPTY_CARD_TYPE) ||
+        requiredMessage()
+      );
+    },
+  },
+};
+
+const transactionIdRules = {
   validate: {
     requiredWhenSelected: (
       value: Nullable<string>,
@@ -127,26 +142,31 @@ export const IcepayPaymentOption = ({
         <Controller
           name="cardType"
           control={control}
-          rules={requiredRules}
+          rules={cardTypeRules}
           render={({
             field: { value },
             fieldState: { invalid },
           }) => (
-            <FormControl className="payment-details__info payment-details__info--card">
+            <FormControl
+              className="payment-details__info payment-details__info--card"
+              error={invalid}
+            >
               <FormLabel className="payment-details__label">
                 Card Type
               </FormLabel>
               <Select
-                className="payment-details__input payment-details__input--card"
+                className={`payment-details__input payment-details__input--card ${
+                  invalid ? "payment-details__input--err" : ""
+                }`}
                 value={value}
                 {...register(
                   "cardType",
-                  requiredRules,
+                  cardTypeRules,
                 )}
               >
                 {cardTypeOptions.map((cardTypeOption) => (
                   <MenuItem
-                    key={cardTypeOption.label}
+                    key={cardTypeOption.value}
                     value={cardTypeOption.value}
                   >
                     {cardTypeOption.label}
@@ -168,7 +188,7 @@ export const IcepayPaymentOption = ({
         <Controller
           name="transactionId"
           control={control}
-          rules={requiredRules}
+          rules={transactionIdRules}
           render={({
             field: { value },
             fieldState: { invalid },
@@ -187,7 +207,7 @@ export const IcepayPaymentOption = ({
                 defaultValue={value}
                 {...register(
                   "transactionId",
-                  requiredRules,
+                  transactionIdRules,
                 )}
               />
               {invalid ? (
