@@ -139,6 +139,7 @@ export const TermOversizePay = () => {
       paymentMethodTypeCode: isFeeZero
         ? PAYMENT_METHOD_TYPE_CODE.NP
         : PAYMENT_METHOD_TYPE_CODE.ICEPAY,
+      paymentCardTypeCode: cardType,
       applicationDetails: [
         {
           applicationId: permitId,
