@@ -106,6 +106,20 @@ export class AppService {
       CacheKey.EMAIL_TEMPLATE_ISSUE_PERMIT,
       this.convertFiletoString(assetsPath + 'templates/issue-permit.email.hbs'),
     );
+    await addToCache(
+      this.cacheManager,
+      CacheKey.EMAIL_TEMPLATE_COMPANY_SUSPEND,
+      this.convertFiletoString(
+        assetsPath + 'templates/suspend-company.email.hbs',
+      ),
+    );
+    await addToCache(
+      this.cacheManager,
+      CacheKey.EMAIL_TEMPLATE_COMPANY_UNSUSPEND,
+      this.convertFiletoString(
+        assetsPath + 'templates/unsuspend-company.email.hbs',
+      ),
+    );
 
     const endDateTime = new Date();
     const processingTime = endDateTime.getTime() - startDateTime.getTime();

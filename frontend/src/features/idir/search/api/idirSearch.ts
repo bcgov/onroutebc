@@ -38,7 +38,7 @@ export const getCompanyDataBySearch = (
 ): Promise<PaginatedResponse<CompanyProfile>> => {
   const searchURL = new URL(`${VEHICLES_URL}/${searchEntity}`);
   if (searchByFilter === "companyName") {
-    searchURL.searchParams.set("legalName", searchString);
+    searchURL.searchParams.set("companyName", searchString);
   } else {
     searchURL.searchParams.set("clientNumber", searchString);
   }

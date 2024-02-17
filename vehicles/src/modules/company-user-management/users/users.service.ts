@@ -41,6 +41,7 @@ import { Permit } from '../../permit/entities/permit.entity';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
 import { VerifyClientDto } from './dto/request/verify-client.dto';
 import { ReadVerifyClientDto } from './dto/response/read-verify-client.dto';
+import { ReadCompanyMetadataDto } from '../company/dto/response/read-company-metadata.dto';
 
 @Injectable()
 export class UsersService {
@@ -364,7 +365,7 @@ export class UsersService {
     // Find user entities based on the provided filtering criteria
     const userDetails = await this.findUsersEntity(userGUID, companyId);
     let pendingUsersList: ReadUserDto[] = [];
-    if (pendingUser?.valueOf() && companyId?.length) {
+    if (pendingUser && companyId?.length) {
       const pendingUser = await this.pendingUsersService.findPendingUsersDto(
         undefined,
         companyId?.at(0),
@@ -598,19 +599,18 @@ export class UsersService {
   }
 
   /**
-   * The getCompaniesForUser() method finds and returns a {@link number[]} object
+   * The getCompaniesForUser() method finds and returns a {@link ReadCompanyMetadataDto[]} object
    * for a user with a specific userGUID.
    *
    * @param userGUID The user GUID.
    *
-   * @returns The associated companies as a promise of type {@link number[]}
+   * @returns The associated companies as a promise of type {@link ReadCompanyMetadataDto[]}
    */
   @LogAsyncMethodExecution()
-  async getCompaniesForUser(userGuid: string): Promise<number[]> {
-    const companies = (
-      await this.companyService.findCompanyMetadataByUserGuid(userGuid)
-    ).map((r) => +r.companyId);
-    return companies;
+  async getCompaniesForUser(
+    userGuid: string,
+  ): Promise<ReadCompanyMetadataDto[]> {
+    return await this.companyService.findCompanyMetadataByUserGuid(userGuid);
   }
 
   @LogAsyncMethodExecution()

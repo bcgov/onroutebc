@@ -20,6 +20,7 @@ import { CacheKey } from '../../common/enum/cache-key.enum';
 import { getFromCache } from '../../common/helper/cache.helper';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import { LogMethodExecution } from '../../common/decorator/log-method-execution.decorator';
+import { CompanyEmailData } from '../../common/interface/company-email-data.interface';
 
 @Injectable()
 export class EmailService {
@@ -34,7 +35,10 @@ export class EmailService {
   @LogAsyncMethodExecution()
   async sendEmailMessage(
     template: EmailTemplate,
-    data: ProfileRegistrationEmailData | IssuePermitEmailData,
+    data:
+      | ProfileRegistrationEmailData
+      | IssuePermitEmailData
+      | CompanyEmailData,
     subject: string,
     to: string[],
     attachments?: AttachementEmailData[],
@@ -141,6 +145,10 @@ export class EmailService {
         return CacheKey.EMAIL_TEMPLATE_ISSUE_PERMIT;
       case EmailTemplate.PROFILE_REGISTRATION:
         return CacheKey.EMAIL_TEMPLATE_PROFILE_REGISTRATION;
+      case EmailTemplate.COMPANY_SUSPEND:
+        return CacheKey.EMAIL_TEMPLATE_COMPANY_SUSPEND;
+      case EmailTemplate.COMPANY_UNSUSPEND:
+        return CacheKey.EMAIL_TEMPLATE_COMPANY_UNSUSPEND;
       default:
         throw new Error('Invalid template name');
     }

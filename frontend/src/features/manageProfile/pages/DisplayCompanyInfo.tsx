@@ -31,7 +31,13 @@ export const DisplayInfo = memo(
     return (
       <div className="display-company-info">
         <Box>
-          <Typography variant="h3">Mailing Address</Typography>
+          {companyInfo?.alternateName && (
+            <>
+              <Typography variant="h3">Doing Business As (DBA)</Typography>
+              <Typography>{companyInfo?.alternateName}</Typography>
+            </>
+          )}
+          <Typography variant="h3">Company Mailing Address</Typography>
           <Typography>{companyInfo?.mailingAddress.addressLine1}</Typography>
           <Typography>
             {formatCountry(companyInfo?.mailingAddress.countryCode)}
