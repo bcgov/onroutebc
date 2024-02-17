@@ -10,13 +10,14 @@ import { calculateFeeByDuration, isZeroAmount } from "../../helpers/feeSummary";
 import { ApplicationSummary } from "./components/pay/ApplicationSummary";
 import { PermitPayFeeSummary } from "./components/pay/PermitPayFeeSummary";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { useStartTransaction } from "../../hooks/hooks";
+import { useIssuePermits, useStartTransaction } from "../../hooks/hooks";
 import { TRANSACTION_TYPES } from "../../types/payment.d";
-import { PAYMENT_METHOD_TYPE_CODE } from "../../../../common/types/paymentMethods";
+import { PAYMENT_METHOD_TYPE_CODE, PaymentCardTypeCode } from "../../../../common/types/paymentMethods";
 import { PaymentFailedBanner } from "./components/pay/PaymentFailedBanner";
 import { PPC_EMAIL, TOLL_FREE_NUMBER } from "../../../../common/constants/constants";
 import { ChoosePaymentMethod } from "./components/pay/ChoosePaymentMethod";
 import { DEFAULT_EMPTY_CARD_TYPE, PaymentMethodData } from "./components/pay/types/PaymentMethodData";
+import { hasPermitsActionFailed } from "../../helpers/permitState";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -25,6 +26,8 @@ import {
 import {
   APPLICATIONS_ROUTES,
   APPLICATION_STEPS,
+  ERROR_ROUTES,
+  PERMITS_ROUTES,
 } from "../../../../routes/constants";
 
 const AVAILABLE_STAFF_PAYMENT_METHODS = [
@@ -58,6 +61,8 @@ export const TermOversizePay = () => {
   const { mutation: startTransactionMutation, transaction } =
     useStartTransaction();
 
+  const { mutation: issuePermitMutation, issueResults } = useIssuePermits();
+
   const availablePaymentMethods = 
     isStaffActingAsCompany ? AVAILABLE_STAFF_PAYMENT_METHODS : AVAILABLE_CV_PAYMENT_METHODS;
 
@@ -78,13 +83,37 @@ export const TermOversizePay = () => {
 
   useEffect(() => {
     if (typeof transaction !== "undefined") {
-      if (!transaction?.url) {
-        navigate(APPLICATIONS_ROUTES.PAY(permitId, true));
+      if (!isStaffActingAsCompany) {
+        // CV Client
+        if (!transaction?.url) {
+          navigate(APPLICATIONS_ROUTES.PAY(permitId, true));
+        } else {
+          window.open(transaction.url, "_self");
+        }
       } else {
-        window.open(transaction.url, "_self");
+        // Staff acting on behalf of company
+        if (!transaction) {
+          // payment failed
+          console.error("Payment failed.");
+          navigate(ERROR_ROUTES.UNEXPECTED);
+        } else {
+          // payment transaction created successfully, proceed to issue permit
+          issuePermitMutation.mutate([permitId]);
+        }
       }
     }
-  }, [transaction]);
+  }, [transaction, isStaffActingAsCompany, permitId]);
+
+  useEffect(() => {
+    const issueFailed = hasPermitsActionFailed(issueResults);
+    if (issueFailed) {
+      console.error("Permit issuance failed.");
+      navigate(ERROR_ROUTES.UNEXPECTED);
+    } else if (getDefaultRequiredVal(0, issueResults?.success?.length) > 0) {
+      // Navigate back to search page upon issue success
+      navigate(PERMITS_ROUTES.SUCCESS(permitId), { replace: true });
+    }
+  }, [issueResults, permitId]);
 
   const handlePayWithPayBC = () => {
     startTransactionMutation.mutate({
@@ -101,14 +130,40 @@ export const TermOversizePay = () => {
     });
   };
 
-  const handlePayWithIcepay = () => {
-    console.log("Pay with IcePay");
+  const handlePayWithIcepay = (
+    cardType: PaymentCardTypeCode,
+    transactionId: string,
+  ) => {
+    startTransactionMutation.mutate({
+      transactionTypeId: TRANSACTION_TYPES.P,
+      paymentMethodTypeCode: isFeeZero
+        ? PAYMENT_METHOD_TYPE_CODE.NP
+        : PAYMENT_METHOD_TYPE_CODE.ICEPAY,
+      applicationDetails: [
+        {
+          applicationId: permitId,
+          transactionAmount: calculatedFee,
+        },
+      ],
+      pgTransactionId: transactionId,
+      pgCardType: cardType,
+    });
   };
 
   const handlePay = (paymentMethodData: PaymentMethodData) => {
+    console.log(paymentMethodData);
     const { paymentMethod } = paymentMethodData;
     if (paymentMethod === PAYMENT_METHOD_TYPE_CODE.ICEPAY) {
-      handlePayWithIcepay();
+      if (
+        paymentMethodData.cardType
+        && paymentMethodData.cardType !== DEFAULT_EMPTY_CARD_TYPE
+        && paymentMethodData.transactionId
+      ) {
+        handlePayWithIcepay(
+          paymentMethodData.cardType,
+          paymentMethodData.transactionId,
+        );
+      }
     } else if (paymentMethod === PAYMENT_METHOD_TYPE_CODE.WEB) {
       handlePayWithPayBC();
     }
