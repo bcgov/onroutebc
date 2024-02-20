@@ -152,7 +152,6 @@ export const TermOversizePay = () => {
   };
 
   const handlePay = (paymentMethodData: PaymentMethodData) => {
-    console.log(paymentMethodData);
     const { paymentMethod } = paymentMethodData;
     if (paymentMethod === PAYMENT_METHOD_TYPE_CODE.ICEPAY) {
       if (
