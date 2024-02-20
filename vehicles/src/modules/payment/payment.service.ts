@@ -303,11 +303,10 @@ export class PaymentService {
       }
 
       if (
-        createdTransaction.paymentMethodTypeCode ==
-          PaymentMethodTypeEnum.NO_PAYMENT ||
-        createdTransaction.paymentMethodTypeCode ==
-          PaymentMethodTypeEnum.ICEPAY ||
-        createdTransaction.transactionTypeId == TransactionType.REFUND
+        !this.isWebTransactionPurchase(
+          createdTransaction.paymentMethodTypeCode,
+          createdTransaction.transactionTypeId,
+        )
       ) {
         const receiptNumber = await this.generateReceiptNumber();
         const receipt = new Receipt();
