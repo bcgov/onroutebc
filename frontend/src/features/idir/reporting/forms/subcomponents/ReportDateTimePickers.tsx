@@ -1,6 +1,7 @@
 import { FormControl, FormLabel } from "@mui/material";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import dayjs, { Dayjs } from "dayjs";
 import { useFormContext } from "react-hook-form";
 
@@ -13,6 +14,8 @@ import { RequiredOrNull } from "../../../../../common/types/common";
 export const ReportDateTimePickers = () => {
   const { setValue, watch } = useFormContext<PaymentAndRefundSummaryFormData>();
   const issuedBy = watch("issuedBy");
+  const fromDateTime = watch("fromDateTime");
+  const toDateTime = watch("toDateTime");
   return (
     <>
       <FormControl
@@ -30,14 +33,16 @@ export const ReportDateTimePickers = () => {
         </FormLabel>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DateTimePicker
-            defaultValue={dayjs()
-              .subtract(1, "day")
-              .set("h", 21)
-              .set("m", 0)
-              .set("s", 0)
-              .set("ms", 0)}
+            value={fromDateTime}
+            // defaultValue={dayjs()
+            //   .subtract(1, "day")
+            //   .set("h", 21)
+            //   .set("m", 0)
+            //   .set("s", 0)
+            //   .set("ms", 0)}
+            disableFuture
             format="YYYY/MM/DD hh:mm A"
-            minDateTime={dayjs()
+            minDateTime={toDateTime
               .subtract(30, "day")
               .set("h", 21)
               .set("m", 0)
@@ -78,17 +83,10 @@ export const ReportDateTimePickers = () => {
               setValue("toDateTime", value as Dayjs);
             }}
             format="YYYY/MM/DD hh:mm A"
-            defaultValue={dayjs()
-              .set("h", 20)
-              .set("m", 59)
-              .set("s", 59)
-              .set("ms", 999)}
+            value={toDateTime}
+            minDate={fromDateTime}
+            maxDate={fromDateTime.add(30, "days")}
             views={["year", "month", "day", "hours", "minutes"]}
-            // slotProps={{
-            //   textField: {
-            //     helperText: "Select a from date time",
-            //   },
-            // }}
           />
         </LocalizationProvider>
       </FormControl>
