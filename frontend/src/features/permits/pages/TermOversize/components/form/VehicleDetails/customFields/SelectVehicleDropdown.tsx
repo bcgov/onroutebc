@@ -15,6 +15,7 @@ import { sortVehicles } from "../../../../../../helpers/sorter";
 import { removeIneligibleVehicles } from "../../../../../../helpers/removeIneligibleVehicles";
 import { VehicleDetails } from "../../../../../../types/application";
 import { VEHICLE_CHOOSE_FROM } from "../../../../../../constants/constants";
+import { EMPTY_VEHICLE_UNIT_NUMBER } from "../../../../../../../../common/constants/constants";
 import {
   Nullable,
   Optional,
@@ -121,7 +122,7 @@ export const SelectVehicleDropdown = ({
         groupBy={(option) => getDefaultRequiredVal("", option?.vehicleType)}
         getOptionLabel={(option) => {
           if (!option) return "";
-          if (!option.unitNumber) option.unitNumber = "-";
+          if (!option.unitNumber) option.unitNumber = EMPTY_VEHICLE_UNIT_NUMBER;
           return chooseFrom == "plate" ? option.plate : option.unitNumber;
         }}
         className="select-vehicle-dropdown__autocomplete"
