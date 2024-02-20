@@ -256,11 +256,23 @@ export class PaymentService {
         );
 
         if (
-          this.isTransactionPurchase(
+          this.isWebTransactionPurchase(
+            newTransaction.paymentMethodTypeCode,
             newTransaction.transactionTypeId,
           )
         ) {
           existingApplication.permitStatus = ApplicationStatus.WAITING_PAYMENT;
+          existingApplication.updatedDateTime = new Date();
+          existingApplication.updatedUser = currentUser.userName;
+          existingApplication.updatedUserDirectory =
+            currentUser.orbcUserDirectory;
+          existingApplication.updatedUserGuid = currentUser.userGUID;
+
+          await queryRunner.manager.save(existingApplication);
+        } else if (
+          this.isTransactionPurchase(newTransaction.transactionTypeId)
+        ) {
+          existingApplication.permitStatus = ApplicationStatus.PAYMENT_COMPLETE;
           existingApplication.updatedDateTime = new Date();
           existingApplication.updatedUser = currentUser.userName;
           existingApplication.updatedUserDirectory =
