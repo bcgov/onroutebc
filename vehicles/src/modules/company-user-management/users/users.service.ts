@@ -366,7 +366,7 @@ export class UsersService {
     // Find user entities based on the provided filtering criteria
     const userDetails = await this.findUsersEntity(userGUID, companyId);
     let pendingUsersList: ReadUserDto[] = [];
-    if (pendingUser?.valueOf() && companyId?.length) {
+    if (pendingUser && companyId?.length) {
       const pendingUser = await this.pendingUsersService.findPendingUsersDto(
         undefined,
         companyId?.at(0),
@@ -600,12 +600,12 @@ export class UsersService {
   }
 
   /**
-   * The getCompaniesForUser() method finds and returns a {@link number[]} object
+   * The getCompaniesForUser() method finds and returns a {@link ReadCompanyMetadataDto[]} object
    * for a user with a specific userGUID.
    *
    * @param userGUID The user GUID.
    *
-   * @returns The associated companies as a promise of type {@link number[]}
+   * @returns The associated companies as a promise of type {@link ReadCompanyMetadataDto[]}
    */
   @LogAsyncMethodExecution()
   async getCompaniesForUser(
