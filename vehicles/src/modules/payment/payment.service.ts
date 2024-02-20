@@ -156,23 +156,26 @@ export class PaymentService {
     return receiptNumber;
   }
 
+  private isTransactionPurchase(transactionType: TransactionType) {
+    return transactionType == TransactionType.PURCHASE;
+  }
+
   private isWebTransactionPurchase(
     paymentMethod: PaymentMethodTypeEnum,
     transactionType: TransactionType,
   ) {
     return (
       paymentMethod == PaymentMethodTypeEnum.WEB &&
-      transactionType == TransactionType.PURCHASE
+      this.isTransactionPurchase(transactionType)
     );
   }
 
   private assertApplicationInProgress(
-    paymentMethod: PaymentMethodTypeEnum,
     transactionType: TransactionType,
     permitStatus: ApplicationStatus,
   ) {
     if (
-      this.isWebTransactionPurchase(paymentMethod, transactionType) &&
+      this.isTransactionPurchase(transactionType) &&
       permitStatus != ApplicationStatus.IN_PROGRESS &&
       permitStatus != ApplicationStatus.WAITING_PAYMENT
     ) {
@@ -230,7 +233,6 @@ export class PaymentService {
         });
 
         this.assertApplicationInProgress(
-          newTransaction.paymentMethodTypeCode,
           newTransaction.transactionTypeId,
           existingApplication.permitStatus,
         );
@@ -254,8 +256,7 @@ export class PaymentService {
         );
 
         if (
-          this.isWebTransactionPurchase(
-            newTransaction.paymentMethodTypeCode,
+          this.isTransactionPurchase(
             newTransaction.transactionTypeId,
           )
         ) {
@@ -285,12 +286,15 @@ export class PaymentService {
           createdTransaction.transactionTypeId,
         )
       ) {
+        // Only payment using PayBC should generate the url
         url = this.generateUrl(createdTransaction);
       }
 
       if (
         createdTransaction.paymentMethodTypeCode ==
           PaymentMethodTypeEnum.NO_PAYMENT ||
+        createdTransaction.paymentMethodTypeCode ==
+          PaymentMethodTypeEnum.ICEPAY ||
         createdTransaction.transactionTypeId == TransactionType.REFUND
       ) {
         const receiptNumber = await this.generateReceiptNumber();
