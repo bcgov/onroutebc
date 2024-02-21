@@ -1,9 +1,11 @@
 import * as dayjs from 'dayjs';
 import * as utc from 'dayjs/plugin/utc';
 import * as timezone from 'dayjs/plugin/timezone';
+import * as duration from 'dayjs/plugin/duration';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
+dayjs.extend(duration);
 
 export const convertUtcToPt = (dateTime: Date | string, format: string) => {
   const formattedDate = dayjs.utc(dateTime).tz('Canada/Pacific').format(format);
@@ -22,4 +24,25 @@ export const dateFormat = (dateTime: string, format: string) => {
 
 export const isAfter = (fromDateTime: string, toDateTime: string): boolean => {
   return dayjs.utc(toDateTime).isAfter(dayjs.utc(fromDateTime));
+};
+
+/**
+ * Calculates the difference between two date times.
+ *
+ * @param fromDateTime The from dateTime as a string
+ * @param toDateTime The to dateTime as a string
+ * @param unit The unit to return the difference value in.
+ * @returns A number with the following meaning:
+ *          - Zero: from and to are equal.
+ *          - Negative: to is before from.
+ *          - Positive: to is after from.
+ */
+export const differenceBetween = (
+  fromDateTime: string,
+  toDateTime: string,
+  unit: duration.DurationUnitType = 'days',
+): number => {
+  return dayjs
+    .duration(dayjs.utc(toDateTime).diff(dayjs.utc(fromDateTime)))
+    .as(unit);
 };

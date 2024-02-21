@@ -12,6 +12,7 @@ import { PermitTypeReport } from '../../../../common/enum/permit-type.enum';
 import { Type } from 'class-transformer';
 import { PaymentCodesDto } from '../common/payment-codes.dto';
 import { PermitIssuedBy } from '../../../../common/enum/permit-issued-by.enum';
+import { IsDateTimeAfter } from '../../../../common/decorator/is-after';
 
 export class CreatePaymentDetailedReportDto {
   @AutoMap()
@@ -64,10 +65,17 @@ export class CreatePaymentDetailedReportDto {
 
   @AutoMap()
   @ApiProperty({
-    example: '2025-10-27T23:26:51.170Z',
-    description: 'Include records in the report till the given date and time',
+    example: '2023-10-27T23:26:51.170Z',
+    description:
+      'Include records in the report till the given date and time.' +
+      'The difference between fromDateTime and toDateTime must not be' +
+      ' more than 30 days.',
   })
   @IsDateString()
+  @IsDateTimeAfter<CreatePaymentDetailedReportDto>('fromDateTime', {
+    maxDiff: 30,
+    unit: 'days',
+  })
   toDateTime: string;
 
   @AutoMap()

@@ -1,35 +1,31 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { ValidationOptions, registerDecorator } from 'class-validator';
 import {
-  ValidationArguments,
-  ValidationOptions,
-  registerDecorator,
-} from 'class-validator';
-import dayjs from 'dayjs';
-import * as utc from 'dayjs/plugin/utc';
+  DateRangeConstraint,
+  MaxDifferenceType,
+} from '../constraint/date-range.constraint';
 
-export function IsAfter(
-  property: string,
+/**
+ * Decorator that validates if a date time property is after
+ * another property.
+ *
+ * @param propertyToCompareAgainst The name of the property to compare against
+ * @param validationOptions Validation options, if any.
+ * @returns A function that validates the input to the class.
+ */
+export function IsDateTimeAfter<T>(
+  propertyToCompareAgainst: string,
+  additionalConstraints?: MaxDifferenceType,
   validationOptions?: ValidationOptions,
 ) {
   return function (object: object, propertyName: string) {
     registerDecorator({
-      name: 'isAfter',
+      name: 'IsDateTimeAfter',
       target: object.constructor,
       propertyName: propertyName,
-      constraints: [property],
+      constraints: [propertyToCompareAgainst, additionalConstraints],
       options: validationOptions,
-      validator: {
-        validate(value: string, args: ValidationArguments) {
-          dayjs.extend(utc);
-          const [relatedPropertyName] = args.constraints;
-          const relatedValue = (args.object as any)[
-            relatedPropertyName
-          ] as string;
-          return dayjs.utc(relatedValue).isAfter(dayjs.utc(value));
-        },
-      },
+      async: false,
+      validator: DateRangeConstraint<T>,
     });
   };
 }

@@ -4,11 +4,11 @@ import {
   ArrayMinSize,
   IsDateString,
   IsEnum,
-  Validate,
+  // Validate,
 } from 'class-validator';
 import { PermitIssuedBy } from '../../../../common/enum/permit-issued-by.enum';
-import { DateRangeConstraint } from '../../../../common/constraint/date-range.constraint';
-import { IsAfter } from '../../../../common/decorator/is-after';
+// import { DateRangeConstraint } from '../../../../common/constraint/date-range.constraint';
+import { IsDateTimeAfter } from '../../../../common/decorator/is-after';
 
 export class CreatePaymentSummaryReportDto {
   @AutoMap()
@@ -29,15 +29,20 @@ export class CreatePaymentSummaryReportDto {
     description: 'Include records in the report from the given date and time',
   })
   @IsDateString()
-  @Validate(DateRangeConstraint, [30, 'days'], { always: true })
   fromDateTime: string;
 
   @AutoMap()
   @ApiProperty({
     example: '2023-10-27T23:26:51.170Z',
-    description: 'Include records in the report till the given date and time',
+    description:
+      'Include records in the report till the given date and time.' +
+      'The difference between fromDateTime and toDateTime must not be' +
+      ' more than 30 days.',
   })
   @IsDateString()
-  @IsAfter('fromDateTime')
+  @IsDateTimeAfter<CreatePaymentSummaryReportDto>('fromDateTime', {
+    maxDiff: 30,
+    unit: 'days',
+  })
   toDateTime: string;
 }

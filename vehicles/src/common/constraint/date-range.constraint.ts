@@ -1,26 +1,46 @@
 import {
+  ValidationArguments,
   ValidatorConstraint,
   ValidatorConstraintInterface,
-  ValidationArguments,
 } from 'class-validator';
-import dayjs from 'dayjs';
-import * as utc from 'dayjs/plugin/utc';
+import { DurationUnitType } from 'dayjs/plugin/duration';
+import { differenceBetween } from '../helper/date-time.helper';
 
+/**
+ * The type to define values for a max allowable difference between two datetimes.
+ */
+export type MaxDifferenceType = {
+  unit: DurationUnitType;
+  maxDiff: number;
+};
+
+/**
+ * The constraint implementation for checking if a datetime is after
+ * another datetime and within the allowable difference.
+ */
 @ValidatorConstraint({ name: 'DateRange', async: false })
-export class DateRangeConstraint implements ValidatorConstraintInterface {
-  validate(value: string | undefined, args: ValidationArguments) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { constraints, object, property, targetName } = args;
-    dayjs.extend(utc);
-    dayjs.utc(toDateTime).isAfter(dayjs.utc(fromDateTime));
-    console.log('-----------------------------');
-    console.log('comment::', value);
-    console.log('args::', args);
-    console.log('-----------------------------');
-    return false;
+export class DateRangeConstraint<T> implements ValidatorConstraintInterface {
+  validate(toDateTime: string, args: ValidationArguments) {
+    // Some destructuring
+    const { constraints, object } = args;
+    const [propertyToCompareAgainst, { maxDiff, unit }] = constraints as [
+      string,
+      MaxDifferenceType,
+    ];
+    const fromDateTime = (object as T)[propertyToCompareAgainst] as string;
+
+    const difference = differenceBetween(fromDateTime, toDateTime, unit);
+    return difference > 0 && difference <= maxDiff;
   }
 
-  defaultMessage() {
-    return `Comment is required `;
+  defaultMessage({ property, constraints }: ValidationArguments) {
+    const [propertyToCompareAgainst, { maxDiff, unit }] = constraints as [
+      string,
+      MaxDifferenceType,
+    ];
+    return (
+      `${property} must be after ${propertyToCompareAgainst}.` +
+      `Max difference allowed is ${maxDiff} ${unit}.`
+    );
   }
 }
