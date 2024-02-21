@@ -1,7 +1,14 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { ArrayMinSize, IsDateString, IsEnum } from 'class-validator';
+import {
+  ArrayMinSize,
+  IsDateString,
+  IsEnum,
+  Validate,
+} from 'class-validator';
 import { PermitIssuedBy } from '../../../../common/enum/permit-issued-by.enum';
+import { DateRangeConstraint } from '../../../../common/constraint/date-range.constraint';
+import { IsAfter } from '../../../../common/decorator/is-after';
 
 export class CreatePaymentSummaryReportDto {
   @AutoMap()
@@ -22,6 +29,7 @@ export class CreatePaymentSummaryReportDto {
     description: 'Include records in the report from the given date and time',
   })
   @IsDateString()
+  @Validate(DateRangeConstraint, [30, 'days'], { always: true })
   fromDateTime: string;
 
   @AutoMap()
@@ -30,5 +38,6 @@ export class CreatePaymentSummaryReportDto {
     description: 'Include records in the report till the given date and time',
   })
   @IsDateString()
+  @IsAfter('fromDateTime')
   toDateTime: string;
 }

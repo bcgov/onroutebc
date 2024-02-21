@@ -19,3 +19,7 @@ export const dateFormat = (dateTime: string, format: string) => {
   const formattedDate = dayjs(dateTime).format(format);
   return formattedDate;
 };
+
+export const isAfter = (fromDateTime: string, toDateTime: string): boolean => {
+  return dayjs.utc(toDateTime).isAfter(dayjs.utc(fromDateTime));
+};
