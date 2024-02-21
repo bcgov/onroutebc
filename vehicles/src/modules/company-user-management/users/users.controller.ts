@@ -69,7 +69,6 @@ export class UsersController {
     } else {
       userExists = await this.userService.findORBCUser(currentUser);
     }
-
     return userExists;
   }
 

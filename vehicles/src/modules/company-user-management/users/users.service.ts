@@ -517,7 +517,7 @@ export class UsersService {
         User,
         ReadUserDto,
       );
-      
+
       userContextDto.associatedCompanies =
         await this.companyService.findCompanyMetadataByUserGuid(
           currentUser.userGUID,
@@ -681,7 +681,6 @@ export class UsersService {
         ReadUserOrbcStatusDto,
       );
     }
-
     return userExists;
   }
 
