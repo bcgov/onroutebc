@@ -9,12 +9,14 @@ import { useSaveTermOversizeMutation } from "../../hooks/hooks";
 import { ApplicationBreadcrumb } from "../../components/application-breadcrumb/ApplicationBreadcrumb";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { PermitReview } from "./components/review/PermitReview";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import {
   APPLICATIONS_ROUTES,
   APPLICATION_STEPS,
   ERROR_ROUTES,
 } from "../../../../routes/constants";
-import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+
 import {
   usePowerUnitSubTypesQuery,
   useTrailerSubTypesQuery,
@@ -33,6 +35,15 @@ export const TermOversizeReview = () => {
   const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
   const trailerSubTypesQuery = useTrailerSubTypesQuery();
   const methods = useForm<Application>();
+
+  const {
+    companyLegalName,
+    idirUserDetails,
+  } = useContext(OnRouteBCContext);
+
+  const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
+  const doingBusinessAs = isStaffActingAsCompany && companyLegalName ?
+    companyLegalName : "";
 
   // For the confirmation checkboxes
   const [isChecked, setIsChecked] = useState(false);
@@ -114,6 +125,7 @@ export const TermOversizeReview = () => {
           vehicleWasSaved={
             applicationData?.permitData?.vehicleDetails?.saveVehicle
           }
+          doingBusinessAs={doingBusinessAs}
         />
       </FormProvider>
     </div>

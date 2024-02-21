@@ -20,5 +20,24 @@
         border: 2px solid $bc-text-box-border-grey;
       }
     }
+
+    &#{&}.Mui-focused, &#{&} .Mui-focused {
+      fieldset {
+        border: 2px solid $focus-blue;
+      }
+    }
+
+    &#{&}--invalid.Mui-focused,
+    &#{&}--invalid .Mui-focused,
+    &#{&}--invalid,
+    .Mui-error {
+      fieldset {
+        border: 2px solid $bc-red;
+      }
+    }
+
+    fieldset {
+      border: 2px solid $bc-text-box-border-grey;   
+    }
   }
 }

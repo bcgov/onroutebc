@@ -6,7 +6,6 @@ import {
 } from "@mui/material";
 
 import "./SelectPermitType.scss";
-import { SELECT_FIELD_STYLE } from "../../../../../../themes/orbcStyles";
 import { Optional } from "../../../../../../common/types/common";
 
 export const SelectPermitType = ({
@@ -28,7 +27,7 @@ export const SelectPermitType = ({
       value={value}
       onChange={onChange}
       MenuProps={{
-        ...SELECT_FIELD_STYLE.MENU_PROPS,
+        className: "select-permit-type__menu",
       }}
     >
       {menuItems}
