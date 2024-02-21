@@ -1,0 +1,11 @@
+@use "../../../../themes/orbcStyles";
+
+@include orbcStyles.permit-main-box-style(".company-info");
+@include orbcStyles.permit-left-box-style(".company-info__header");
+@include orbcStyles.permit-right-box-style(".company-info__body");
+
+.company-info {
+  & &__info-msg {
+    width: 320px;
+  }
+}
