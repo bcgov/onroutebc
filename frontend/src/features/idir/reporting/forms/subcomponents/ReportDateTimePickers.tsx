@@ -1,8 +1,7 @@
 import { FormControl, FormLabel } from "@mui/material";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import dayjs, { Dayjs } from "dayjs";
+import { Dayjs } from "dayjs";
 import { useFormContext } from "react-hook-form";
 
 import { PaymentAndRefundSummaryFormData } from "../../types/types";
@@ -34,12 +33,6 @@ export const ReportDateTimePickers = () => {
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DateTimePicker
             value={fromDateTime}
-            // defaultValue={dayjs()
-            //   .subtract(1, "day")
-            //   .set("h", 21)
-            //   .set("m", 0)
-            //   .set("s", 0)
-            //   .set("ms", 0)}
             disableFuture
             format="YYYY/MM/DD hh:mm A"
             minDateTime={toDateTime
