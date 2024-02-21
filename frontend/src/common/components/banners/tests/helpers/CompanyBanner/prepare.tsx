@@ -14,7 +14,7 @@ export const defaultCompanyInfo = {
     countryCode: "CA",
     postalCode: "V1C 2B3",
   },
-  email: "my.company@mycompany.co",
+  email: "companyhq@mycompany.co",
   phone: "604-123-4567",
   primaryContact: {
     firstName: "My",

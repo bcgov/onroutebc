@@ -364,12 +364,10 @@ export const VehicleDetails = ({
                     {data.label}
                   </MenuItem>
                 ))}
-                width={"180px"}
               />
 
               <SelectVehicleDropdown
                 label={"Select vehicle"}
-                width={"268px"}
                 chooseFrom={chooseFrom}
                 selectedVehicle={selectedVehicle}
                 vehicleOptions={vehicleOptions}
