@@ -387,7 +387,7 @@ export class CompanyService {
     page: number;
     take: number;
     orderBy?: string;
-    legalName?: string;
+    companyName?: string;
     clientNumber?: string;
   }): Promise<PaginationDto<ReadCompanyDto>> {
     const companiesQB = this.companyRepository
@@ -402,11 +402,17 @@ export class CompanyService {
     // Apply mandatory condition to ensure at least one filter is applied
     companiesQB.where('company.companyId IS NOT NULL');
 
-    if (findCompanyPaginatedOptions.legalName) {
-      // Add condition for filtering by legal name if provided
-      companiesQB.andWhere('company.legalName LIKE :legalName', {
-        legalName: `%${findCompanyPaginatedOptions.legalName}%`,
-      });
+    if (findCompanyPaginatedOptions.companyName) {
+      // Add condition for filtering by legal name or alternate name if provided
+      companiesQB.andWhere(
+        new Brackets((qb) => {
+          qb.where('company.legalName LIKE :legalName', {
+            legalName: `%${findCompanyPaginatedOptions.companyName}%`,
+          }).orWhere('company.alternateName LIKE :legalName', {
+            legalName: `%${findCompanyPaginatedOptions.companyName}%`,
+          });
+        }),
+      );
     }
 
     if (findCompanyPaginatedOptions.clientNumber) {
