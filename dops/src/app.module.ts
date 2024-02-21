@@ -18,7 +18,7 @@ import { DmsModule } from './modules/dms/dms.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { DgenModule } from './modules/dgen/dgen.module';
 import { CommonModule } from './modules/common/common.module';
-import { FeatureFlagsModule } from './modules/feature-flags/feature-flags.module'
+import { FeatureFlagsModule } from './modules/feature-flags/feature-flags.module';
 import { HTTPLoggerMiddleware } from './middleware/req.res.logger';
 import { TypeormCustomLogger } from './logger/typeorm-logger.config';
 import { getTypeormLogLevel } from './helper/logger.helper';
