@@ -1,6 +1,7 @@
 import { OutlinedInput } from "@mui/material";
 import { useFormContext } from "react-hook-form";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
+
+import "./PhoneNumberInput.scss";
 import { ORBC_FormTypes } from "../../../types/common";
 import { CustomOutlinedInputProps } from "./CustomOutlinedInput";
 
@@ -19,17 +20,14 @@ export const PhoneNumberInput = <T extends ORBC_FormTypes>(
     setValue<string>(props.name, formattedValue, { shouldValidate: true });
   };
 
+  const className =
+    `custom-phone-input ${props.disabled ? "custom-phone-input--disabled" : ""} ${props.invalid ? "custom-phone-input--invalid" : ""}`;
+
   return (
     <OutlinedInput
+      className={className}
       aria-labelledby={`${props.feature}-${props.name}-label`}
       inputProps={props.inputProps}
-      sx={{
-        "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-          borderColor: props.invalid
-            ? BC_COLOURS.bc_red
-            : BC_COLOURS.focus_blue,
-        },
-      }}
       {...register(props.name, props.rules)}
       onChange={handleChange}
       autoComplete="tel"

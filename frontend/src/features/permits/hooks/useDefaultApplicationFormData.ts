@@ -48,6 +48,7 @@ export const useDefaultApplicationFormData = (
     userDetails?.phone2,
     applicationData?.permitData?.contactDetails?.phone2Extension,
     userDetails?.phone2Extension,
+    companyInfo?.email,
     applicationData?.permitData?.contactDetails?.email,
     userDetails?.email,
     applicationData?.permitData?.contactDetails?.additionalEmail,
@@ -149,6 +150,7 @@ export const useDefaultApplicationFormData = (
           "",
         applicationData?.permitData?.contactDetails,
         userDetails,
+        companyInfo?.email,
       ),
     );
   }, contactDetailsDepArray);

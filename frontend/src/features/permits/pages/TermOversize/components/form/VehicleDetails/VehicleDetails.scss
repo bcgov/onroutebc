@@ -30,6 +30,18 @@
     .vehicle-selection {
       display: flex;
       gap: 2.5rem;
+
+      .select-unit-or-plate {
+        &__select {
+          width: 180px;
+        }
+      }
+
+      .select-vehicle-dropdown {
+        &__autocomplete {
+          width: 268px;
+        }
+      }
     }
   }
 }
