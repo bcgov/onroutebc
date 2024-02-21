@@ -1,49 +1,41 @@
-import { Mapper } from '@automapper/core';
-import { InjectMapper } from '@automapper/nestjs';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LogAsyncMethodExecution } from 'src/common/decorator/log-async-method-execution.decorator';
 import { Repository } from 'typeorm';
-import { ReadFeatureFlagDto } from './dto/response/read-feature-flag.dto';
 import { FeatureFlag } from './entities/feature-flag.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { CacheKey } from '../../common/enum/cache-key.enum';
+import { getMapFromCache } from '../../common/helper/cache.helper';
 
 @Injectable()
 export class FeatureFlagsService {
   constructor(
     @InjectRepository(FeatureFlag)
     private featureFlagRepository: Repository<FeatureFlag>,
-    @InjectMapper() private readonly classMapper: Mapper,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
   ) {}
 
   /**
-   * The findAll() method returns an array of ReadFeatureFlagDto objects.
-   * It retrieves the entities from the database using the Repository,
-   * maps it to a DTO object using the Mapper, and returns it.
+   * The findAll() method returns an array of FeatureFlag entities.
+   * It retrieves the entities directly from the database using the Repository.
    *
-   * @returns The feature flag list as a promise of type {@link ReadFeatureFlagDto}
+   * @returns The feature flag entity list as a promise of type {@link FeatureFlag[]}
    */
   @LogAsyncMethodExecution()
-  async findAll(): Promise<ReadFeatureFlagDto[]> {
-    return this.classMapper.mapArrayAsync(
-      await this.featureFlagRepository.find(),
-      FeatureFlag,
-      ReadFeatureFlagDto,
-    );
+  async findAll(): Promise<FeatureFlag[]> {
+    return await this.featureFlagRepository.find();
   }
-
   /**
-   * The findAllFromCache() method returns a Map of the feature flags that
-   * were stored in the NestJS system cache upon startup.
+   * The findAllFromCache() method returns a string representation of the feature flags
+   * that were stored in the NestJS system cache upon startup. This method is crucial for
+   * operations that require a quick lookup without the need to access the database.
    *
-   * @returns The feature flag list as a promise of type Map<string, string>
+   * @returns A promise that resolves to a string representation of the feature flags
    */
   @LogAsyncMethodExecution()
-  async findAllFromCache(): Promise<Map<string, string>> {
-    return await this.cacheManager.get(CacheKey.FEATURE_FLAG_TYPE);
+  async findAllFromCache(): Promise<string> {
+    return await getMapFromCache(this.cacheManager, CacheKey.FEATURE_FLAG_TYPE);
   }
 }

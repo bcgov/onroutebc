@@ -9,7 +9,6 @@ import {
   ApiOkResponse,
 } from '@nestjs/swagger';
 import { ExceptionDto } from 'src/common/exception/exception.dto';
-import { ReadFeatureFlagDto } from './dto/response/read-feature-flag.dto';
 import { FeatureFlagsService } from './feature-flags.service';
 import { AuthOnly } from 'src/common/decorator/auth-only.decorator';
 
@@ -36,19 +35,21 @@ export class FeatureFlagsController {
   constructor(private readonly featureFlagService: FeatureFlagsService) {}
 
   /**
-   * A GET method defined with the @Get() decorator and a route of /feature-flags
-   * that retrieves the feature flags data.
+   * Retrieves the current state of feature flags.
    *
-   * @returns The featureFlags with response object {@link ReadFeatureFlagDto}.
+   * Accessible via GET method on the /feature-flags route, it fetches and returns
+   * the current state of feature flags, cached within the service.
+   *
+   * @returns The state of feature flags in a stringified format, where each flag's name
+   * is a key, and its enabled/disabled state is the value.
    */
   @ApiOkResponse({
     description: 'The FeatureFlag Resource',
-    type: ReadFeatureFlagDto,
-    isArray: true,
+    type: Object,
   })
   @AuthOnly()
   @Get()
-  async getFeatureFlags(): Promise<Map<string, string>> {
+  async getFeatureFlags(): Promise<string> {
     return await this.featureFlagService.findAllFromCache();
   }
 }
