@@ -24,6 +24,7 @@ import OnRouteBCContext, {
 } from "./common/authentication/OnRouteBCContext";
 import { VerifiedClient, UserRolesType } from "./common/authentication/types";
 import { WebStorageStateStore } from "oidc-client-ts";
+import { FeatureFlagContextProvider } from "./common/components/FeatureFlagContext";
 
 const authority =
   import.meta.env.VITE_KEYCLOAK_ISSUER_URL ||
@@ -86,61 +87,63 @@ const App = () => {
     <AuthProvider {...oidcConfig}>
       <ThemeProvider theme={bcGovTheme}>
         <QueryClientProvider client={queryClient}>
-          <OnRouteBCContext.Provider
-            value={useMemo(() => {
-              return {
-                userRoles,
-                setUserRoles,
-                companyId,
-                setCompanyId,
-                userDetails,
-                setUserDetails,
-                companyLegalName,
-                setCompanyLegalName,
-                idirUserDetails,
-                setIDIRUserDetails,
-                onRouteBCClientNumber,
-                setOnRouteBCClientNumber,
-                migratedClient,
-                setMigratedClient,
-                isNewBCeIDUser,
-                setIsNewBCeIDUser,
-              };
-            }, [
-              userRoles,
-              companyId,
-              userDetails,
-              companyLegalName,
-              idirUserDetails,
-              onRouteBCClientNumber,
-              migratedClient,
-              isNewBCeIDUser,
-            ])}
-          >
-            <SnackBarContext.Provider
+          <FeatureFlagContextProvider>
+            <OnRouteBCContext.Provider
               value={useMemo(() => {
-                return { setSnackBar: setSnackBar };
-              }, [setSnackBar])}
+                return {
+                  userRoles,
+                  setUserRoles,
+                  companyId,
+                  setCompanyId,
+                  userDetails,
+                  setUserDetails,
+                  companyLegalName,
+                  setCompanyLegalName,
+                  idirUserDetails,
+                  setIDIRUserDetails,
+                  onRouteBCClientNumber,
+                  setOnRouteBCClientNumber,
+                  migratedClient,
+                  setMigratedClient,
+                  isNewBCeIDUser,
+                  setIsNewBCeIDUser,
+                };
+              }, [
+                userRoles,
+                companyId,
+                userDetails,
+                companyLegalName,
+                idirUserDetails,
+                onRouteBCClientNumber,
+                migratedClient,
+                isNewBCeIDUser,
+              ])}
             >
-              <CustomSnackbar
-                showSnackbar={displaySnackBar}
-                setShowSnackbar={setDisplaySnackBar}
-                message={snackBar.message}
-                alertType={snackBar.alertType}
-              />
-              <div className="page-section">
-                <Router>
-                  <Header />
-                  <NavIconSideBar>
-                    <NavIconHomeButton />
-                    <NavIconReportButton />
-                  </NavIconSideBar>
-                  <AppRoutes />
-                </Router>
-              </div>
-              <Footer />
-            </SnackBarContext.Provider>
-          </OnRouteBCContext.Provider>
+              <SnackBarContext.Provider
+                value={useMemo(() => {
+                  return { setSnackBar: setSnackBar };
+                }, [setSnackBar])}
+              >
+                <CustomSnackbar
+                  showSnackbar={displaySnackBar}
+                  setShowSnackbar={setDisplaySnackBar}
+                  message={snackBar.message}
+                  alertType={snackBar.alertType}
+                />
+                <div className="page-section">
+                  <Router>
+                    <Header />
+                    <NavIconSideBar>
+                      <NavIconHomeButton />
+                      <NavIconReportButton />
+                    </NavIconSideBar>
+                    <AppRoutes />
+                  </Router>
+                </div>
+                <Footer />
+              </SnackBarContext.Provider>
+            </OnRouteBCContext.Provider>
+          </FeatureFlagContextProvider>
         </QueryClientProvider>
       </ThemeProvider>
     </AuthProvider>
