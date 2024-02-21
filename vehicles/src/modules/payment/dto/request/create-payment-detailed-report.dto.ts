@@ -12,7 +12,7 @@ import { PermitTypeReport } from '../../../../common/enum/permit-type.enum';
 import { Type } from 'class-transformer';
 import { PaymentCodesDto } from '../common/payment-codes.dto';
 import { PermitIssuedBy } from '../../../../common/enum/permit-issued-by.enum';
-import { IsDateTimeAfter } from '../../../../common/decorator/is-after';
+import { IsDateTimeAfter } from '../../../../common/decorator/is-date-time-after';
 
 export class CreatePaymentDetailedReportDto {
   @AutoMap()
