@@ -25,5 +25,5 @@ export class FeatureFlagsService {
   @LogAsyncMethodExecution()
   async findAll(): Promise<FeatureFlag[]> {
     return await this.featureFlagRepository.find();
-  }  
+  }
 }
