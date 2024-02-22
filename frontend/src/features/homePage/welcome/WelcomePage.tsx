@@ -203,4 +203,4 @@ export const WelcomePage = React.memo(() => {
   );
 });
 
-WelcomePage.displayName = "WelcomePage -- REMOVEME";
+WelcomePage.displayName = "WelcomePage";
