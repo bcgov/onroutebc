@@ -4,10 +4,8 @@ import {
   ArrayMinSize,
   IsDateString,
   IsEnum,
-  // Validate,
 } from 'class-validator';
 import { PermitIssuedBy } from '../../../../common/enum/permit-issued-by.enum';
-// import { DateRangeConstraint } from '../../../../common/constraint/date-range.constraint';
 import { IsDateTimeAfter } from '../../../../common/decorator/is-date-time-after';
 
 export class CreatePaymentSummaryReportDto {
