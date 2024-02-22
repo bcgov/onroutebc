@@ -1,4 +1,4 @@
-import { tros } from "./termOversizeConstants.json";
+import { tros, trow } from "./termOversizeConstants.json";
 import { Commodities } from "../types/application";
 
 export const TROS_PERMIT_DURATIONS = [
@@ -16,6 +16,12 @@ export const TROS_PERMIT_DURATIONS = [
   { value: 365, label: "1 Year" },
 ];
 
+// TROS
 export const TROS_INELIGIBLE_POWERUNITS = [...tros.ineligiblePowerUnitSubtypes];
 export const TROS_INELIGIBLE_TRAILERS = [...tros.ineligibleTrailerSubtypes];
 export const TROS_COMMODITIES: Commodities[] = [...tros.commodities];
+
+// TROW
+export const TROW_INELIGIBLE_POWERUNITS = [...trow.ineligiblePowerUnitSubtypes];
+export const TROW_INELIGIBLE_TRAILERS = [...trow.ineligibleTrailerSubtypes];
+export const TROW_COMMODITIES: Commodities[] = [...trow.commodities];
