@@ -83,9 +83,10 @@ export const ReportDateTimePickers = () => {
             disabled={issuedBy.length === 0}
             onChange={(value: RequiredOrNull<Dayjs>) => {
               setValue("toDateTime", value as Dayjs);
-              const diff = Math.round(
-                dayjs.duration((value as Dayjs).diff(fromDateTime)).as("days"),
-              );
+              const diff = dayjs
+                .duration((value as Dayjs).diff(fromDateTime))
+                .as("days");
+
               if (Math.round(diff) <= THIRTY_DAYS && diff > 0) {
                 clearErrors("toDateTime");
               }
