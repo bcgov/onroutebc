@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { TestingModule, Test } from '@nestjs/testing';
-import { DataNotFoundException } from '../../../src/common/exception/data-not-found.exception';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Request } from 'express';
 

@@ -39,9 +39,11 @@ import { readRedCompanyPendingUserDtoMock } from 'test/util/mocks/data/pending-u
 import { redCompanyEntityMock } from 'test/util/mocks/data/company.mock';
 import { App } from 'supertest/types';
 import * as constants from '../util/mocks/data/test-data.constants';
+import { CompanyUser } from '../../src/modules/company-user-management/users/entities/company-user.entity';
 
 let repo: DeepMocked<Repository<User>>;
 let repoIdirUser: DeepMocked<Repository<IdirUser>>;
+let repoCompanyUser: DeepMocked<Repository<CompanyUser>>;
 let repoPendingIdirUser: DeepMocked<Repository<PendingIdirUser>>;
 let pendingUsersServiceMock: DeepMocked<PendingUsersService>;
 let pendingIdirUsersServiceMock: DeepMocked<PendingIdirUsersService>;
@@ -54,6 +56,7 @@ describe('Company Users (e2e)', () => {
     jest.clearAllMocks();
     repo = createMock<Repository<User>>();
     repoIdirUser = createMock<Repository<IdirUser>>();
+    repoCompanyUser = createMock<Repository<CompanyUser>>();
     repoPendingIdirUser = createMock<Repository<PendingIdirUser>>();
     pendingUsersServiceMock = createMock<PendingUsersService>();
     pendingIdirUsersServiceMock = createMock<PendingIdirUsersService>();
@@ -74,6 +77,10 @@ describe('Company Users (e2e)', () => {
         {
           provide: getRepositoryToken(PendingIdirUser),
           useValue: repoPendingIdirUser,
+        },
+        {
+          provide: getRepositoryToken(CompanyUser),
+          useValue: repoCompanyUser,
         },
         {
           provide: PendingUsersService,

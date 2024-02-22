@@ -7,7 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository, UpdateResult } from 'typeorm';
+import { DataSource, In, Repository, UpdateResult } from 'typeorm';
 import { User } from './entities/user.entity';
 import { ReadUserDto } from './dto/response/read-user.dto';
 import { CreateUserDto } from './dto/request/create-user.dto';
@@ -42,6 +42,7 @@ import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-met
 import { VerifyClientDto } from './dto/request/verify-client.dto';
 import { ReadVerifyClientDto } from './dto/response/read-verify-client.dto';
 import { ReadCompanyMetadataDto } from '../company/dto/response/read-company-metadata.dto';
+import { DeleteDto } from '../../common/dto/response/delete.dto';
 
 @Injectable()
 export class UsersService {
@@ -49,6 +50,8 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(CompanyUser)
+    private companyUserRepository: Repository<CompanyUser>,
     @InjectRepository(IdirUser)
     private idirUserRepository: Repository<IdirUser>,
     @InjectRepository(PendingIdirUser)
@@ -777,5 +780,69 @@ export class UsersService {
       ReadUserDto,
     );
     return readUserDto;
+  }
+
+  /**
+   * Removes all specified users for a given company from the database.
+   *
+   * This method first retrieves the existing users by their GUIDs and company ID. It then identifies
+   * which users to mark as deleted by updating their status to DELETED and additional metadata. Finally,
+   * it constructs a response detailing which deletions were successful and which were not, based on the
+   * presence or absence of the user GUIDs in the database before the operation.
+   *
+   * @param {string[]} userGUIDS The GUIDs of the users to be deleted.
+   * @param {number} companyId The ID of the company associated with the users.
+   * @param {IUserJWT} currentUser The current user's JWT token details, used for audit purposes.
+   * @returns {Promise<DeleteDto>} An object containing arrays of successful and failed deletions.
+   */
+  @LogAsyncMethodExecution()
+  async removeAll(
+    userGUIDS: string[],
+    companyId: number,
+    currentUser: IUserJWT,
+  ): Promise<DeleteDto> {
+    // Retrieve a list of users by their GUIDs and company ID before deletion
+    const usersBeforeDelete = await this.companyUserRepository.find({
+      where: {
+        user: { userGUID: In(userGUIDS) },
+        company: { companyId: companyId },
+        statusCode: UserStatus.ACTIVE,
+      },
+      relations: {
+        user: true,
+        company: true,
+      },
+    });
+
+    // Extract only the GUIDs of the users to be deleted and modify them.
+    const userToBeDeleted = usersBeforeDelete.map((companyUser) => {
+      return {
+        ...companyUser,
+        statusCode: UserStatus.DELETED,
+        updatedDateTime: new Date(),
+        updatedUser: currentUser.userName,
+        updatedUserDirectory: currentUser.orbcUserDirectory,
+        updatedUserGuid: currentUser.userGUID,
+      } as CompanyUser;
+    });
+
+    // Identify which GUIDs were not found (failure to delete)
+    const failure = userGUIDS?.filter(
+      (id) =>
+        !userToBeDeleted.some((companyUser) => companyUser.user.userGUID == id),
+    );
+
+    // Execute the deletion of users by their GUIDs within the specified company
+    await this.companyUserRepository.save(userToBeDeleted);
+
+    // Determine successful deletions by filtering out failures
+    const success = userGUIDS?.filter((id) => !failure?.includes(id));
+
+    // Prepare the response DTO with lists of successful and failed deletions
+    const deleteDto: DeleteDto = {
+      success: success,
+      failure: failure,
+    };
+    return deleteDto;
   }
 }
