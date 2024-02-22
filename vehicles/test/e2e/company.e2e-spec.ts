@@ -100,8 +100,12 @@ describe('Company (e2e)', () => {
         .post('/companies')
         .send(createRedCompanyDtoMock)
         .expect(201);
-        expect(response.body).toEqual(expect.objectContaining({ companyId: constants.RED_COMPANY_ID,
-          companyGUID: constants.RED_COMPANY_GUID}));
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          companyId: constants.RED_COMPANY_ID,
+          companyGUID: constants.RED_COMPANY_GUID,
+        }),
+      );
     });
   });
 

@@ -303,7 +303,7 @@ export class UsersService {
     const user = new User();
     user.userGUID = userGUID;
     user.companyUsers = [];
-    user.companyUsers.map(() => ({statusCode: statusCode}));
+    user.companyUsers.map(() => ({ statusCode: statusCode }));
     user.updatedUserGuid = currentUser.userGUID;
     user.updatedDateTime = new Date();
     user.updatedUser = currentUser.userName;
@@ -312,42 +312,48 @@ export class UsersService {
   }
 
   /**
-   * Finds user entities based on optional filtering criteria of userGUID and
-   * companyId. Retrieves associated data for userContact, province, companyUser,
-   * and company.
+   * Finds user entities based on optional filtering criteria of userGUID,
+   * companyId, and statusCode. Retrieves associated data for userContact,
+   * province, country, companyUser, and company. It filters users by status
+   * code with a default of 'ACTIVE' if no status code is provided.
    *
    * @param userGUID (Optional) The user GUID for filtering.
    * @param companyId (Optional) The company ID for filtering.
+   * @param statusCode (Optional) The status code(s) for filtering. Defaults to ['ACTIVE'].
    *
    * @returns A Promise that resolves to an array of {@link User} entities.
    */
-   async findUsersEntity(userGUID?: string, companyId?: number[]) {
+  async findUsersEntity(
+    userGUID?: string,
+    companyId?: number[],
+    statusCode = [UserStatus.ACTIVE],
+  ) {
     // Construct the query builder to retrieve user entities and associated data
-    return await this.userRepository
+    const userQB = this.userRepository
       .createQueryBuilder('user')
       .innerJoinAndSelect('user.userContact', 'userContact')
       .innerJoinAndSelect('userContact.province', 'province')
       .innerJoinAndSelect('province.country', 'country')
       .leftJoinAndSelect('user.companyUsers', 'companyUser')
-      .leftJoinAndSelect('companyUser.company', 'company')
-      /* Conditional WHERE clause for userGUID. If userGUID is provided, the
-       WHERE clause is user.userGUID = :userGUID; otherwise, it is 1=1 to
-       include all users.*/
-      .where(userGUID ? 'user.userGUID = :userGUID' : '1=1', {
-        userGUID: userGUID,
-      })
-      /* Conditional WHERE clause for companyId. If companyId is provided, the
-        WHERE clause is company.companyId IN (:...companyId); otherwise, it is 1=1 to
-        include all companies.*/
-      .andWhere(
-        companyId?.length ? 'company.companyId IN (:...companyId)' : '1=1',
-        {
-          companyId: companyId || [],
-        },
-      )
-      .getMany();
-  }
+      .leftJoinAndSelect('companyUser.company', 'company');
 
+    userQB.where('companyUser.statusCode IN (:...statusCode)', {
+      statusCode: statusCode || [],
+    });
+
+    if (userGUID) {
+      userQB.andWhere('user.userGUID = :userGUID', {
+        userGUID: userGUID,
+      });
+    }
+
+    if (companyId?.length) {
+      userQB.andWhere('company.companyId IN (:...companyId)', {
+        companyId: companyId || [],
+      });
+    }
+    return await userQB.getMany();
+  }
   /**
    * Finds and returns an array of ReadUserDto objects for all users with a
    * specific companyId or UserGUID.
@@ -470,7 +476,10 @@ export class UsersService {
     userContextDto.pendingCompanies = [];
 
     const user = await this.userRepository.findOne({
-      where: { userGUID: currentUser.userGUID },
+      where: {
+        userGUID: currentUser.userGUID,
+        companyUsers: { statusCode: UserStatus.ACTIVE },
+      },
       relations: {
         userContact: true,
         companyUsers: true,

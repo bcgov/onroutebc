@@ -340,17 +340,20 @@ export class CompanyService {
   }
 
   /**
-   * The findOne() method returns a ReadCompanyMetadataDto object corresponding to the given
-   * user guid. It retrieves the entity from the database using the
-   * Repository, maps it to a DTO object using the Mapper, and returns it.
+   * The findCompanyMetadataByUserGuid() method returns a list of ReadCompanyMetadataDto objects corresponding to the given
+   * user GUID. It performs a custom SQL query to the database to retrieve company user entities based on the user GUID
+   * and an optional list of user status codes. After obtaining the company user entities, it maps them to
+   * ReadCompanyMetadataDto objects using the Mapper, and returns the list.
    *
-   * @param userGUID The company Id.
+   * @param userGUID The user GUID used to find related company entities.
+   * @param userStatusCode Optional. An array of user status codes to filter the company users. Defaults to [UserStatus.ACTIVE].
    *
-   * @returns The company details list as a promise of type {@link ReadCompanyMetadataDto}
+   * @returns A promise of an array of ReadCompanyMetadataDto objects representing the company metadata related to the given user GUID.
    */
   @LogAsyncMethodExecution()
   async findCompanyMetadataByUserGuid(
     userGUID: string,
+    userStatusCode = [UserStatus.ACTIVE],
   ): Promise<ReadCompanyMetadataDto[]> {
     const companyUsers = await this.companyRepository
       .createQueryBuilder('company')
@@ -360,6 +363,9 @@ export class CompanyService {
       .leftJoinAndSelect('companyUsers.user', 'user')
       .where('user.userGUID= :userGUID', {
         userGUID: userGUID,
+      })
+      .andWhere('companyUsers.statusCode IN (:...statusCode)', {
+        statusCode: userStatusCode || [],
       })
       .getMany();
 

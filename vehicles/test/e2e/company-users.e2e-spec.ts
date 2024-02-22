@@ -40,7 +40,6 @@ import { redCompanyEntityMock } from 'test/util/mocks/data/company.mock';
 import { App } from 'supertest/types';
 import * as constants from '../util/mocks/data/test-data.constants';
 
-
 let repo: DeepMocked<Repository<User>>;
 let repoIdirUser: DeepMocked<Repository<IdirUser>>;
 let repoPendingIdirUser: DeepMocked<Repository<PendingIdirUser>>;
@@ -129,10 +128,12 @@ describe('Company Users (e2e)', () => {
         .post('/companies/1/users')
         .send(createRedCompanyAdminUserDtoMock)
         .expect(201);
-        expect(response.body).toEqual( expect.objectContaining({
+      expect(response.body).toEqual(
+        expect.objectContaining({
           userGUID: constants.RED_COMPANY_ADMIN_USER_GUID,
-          userName: constants.RED_COMPANY_ADMIN_USER_NAME
-        }));
+          userName: constants.RED_COMPANY_ADMIN_USER_NAME,
+        }),
+      );
     });
   });
 
@@ -151,10 +152,12 @@ describe('Company Users (e2e)', () => {
         .send(updateRedCompanyCvClientUserDtoMock)
         .expect(200);
 
-      expect(response.body).toEqual(expect.objectContaining({
-        userGUID: constants.RED_COMPANY_ADMIN_USER_GUID,
-        userName: constants.RED_COMPANY_ADMIN_USER_NAME
-      }));
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          userGUID: constants.RED_COMPANY_ADMIN_USER_GUID,
+          userName: constants.RED_COMPANY_ADMIN_USER_NAME,
+        }),
+      );
     });
   });
 

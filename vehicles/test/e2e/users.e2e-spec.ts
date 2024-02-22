@@ -177,10 +177,12 @@ describe('Users (e2e)', () => {
         .get('/users/' + constants.RED_COMPANY_ADMIN_USER_GUID)
         .expect(200);
 
-      expect(response.body).toEqual( expect.objectContaining({
-        userGUID: constants.RED_COMPANY_ADMIN_USER_GUID,
-        userName: constants.RED_COMPANY_ADMIN_USER_NAME
-      }));
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          userGUID: constants.RED_COMPANY_ADMIN_USER_GUID,
+          userName: constants.RED_COMPANY_ADMIN_USER_NAME,
+        }),
+      );
     });
   });
 
