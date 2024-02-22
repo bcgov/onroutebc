@@ -94,13 +94,13 @@ export const ReportDateTimePickers = () => {
             format="YYYY/MM/DD hh:mm A"
             value={toDateTime}
             minDate={fromDateTime}
-            maxDateTime={fromDateTime.add(30, "days")}
+            maxDateTime={fromDateTime.add(30, "days").add(1, "minute")}
             views={["year", "month", "day", "hours", "minutes"]}
             slotProps={{
               textField: {
                 helperText:
                   errors.toDateTime &&
-                  "To date time must be after From date time.",
+                  "To date time must be after From date time. Maximum date range is 30 days.",
               },
             }}
           />
