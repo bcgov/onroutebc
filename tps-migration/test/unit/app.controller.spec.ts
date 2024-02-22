@@ -3,6 +3,7 @@ import { AppController } from '../../src/app.controller';
 import { AppService } from '../../src/app.service';
 import { FeatureFlagsService } from '../../src/modules/feature-flags/feature-flags.service';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 describe('AppController', () => {
   let appController: AppController;
@@ -14,6 +15,7 @@ describe('AppController', () => {
       controllers: [AppController],
       providers: [
         AppService,
+        { provide: CACHE_MANAGER, useFactory: jest.fn() },
         {
           provide: FeatureFlagsService,
           useValue: featureFlagsService,

@@ -5,7 +5,6 @@ import { FeatureFlag } from './entities/feature-flag.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { LogAsyncMethodExecution } from 'src/decorator/log-async-method-execution.decorator';
-import { CacheKey } from 'src/enum/cache-key.enum';
 
 @Injectable()
 export class FeatureFlagsService {
