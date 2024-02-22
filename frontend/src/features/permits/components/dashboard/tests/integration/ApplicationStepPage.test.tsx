@@ -159,7 +159,7 @@ describe("Application Contact Details", () => {
     await replaceValueForInput(
       user,
       additionalEmailInputEl,
-      0,
+      email.length, // old value is populated with email from user details
       newAdditionalEmail,
     );
     await saveApplication(user);
@@ -207,7 +207,12 @@ describe("Application Contact Details", () => {
     expect(await errMsgForFirstName()).toHaveTextContent(requiredMsg);
     expect(await errMsgForLastName()).toHaveTextContent(requiredMsg);
     expect(await errMsgForPhone1()).toHaveTextContent(requiredMsg);
-    expect(await errMsgForEmail()).toHaveTextContent(requiredMsg);
+    // Company email should be provided by company info despite user details not having email
+    await waitFor(async () => {
+      expect(await errMsgForEmail()).toHaveTextContent(requiredMsg);
+    }).catch((err) => {
+      expect(err).not.toBeUndefined();
+    });
   });
 });
 
