@@ -1,17 +1,24 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { FormControl, FormLabel } from "@mui/material";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
+import duration from "dayjs/plugin/duration";
 import { useFormContext } from "react-hook-form";
 
 import { PaymentAndRefundSummaryFormData } from "../../types/types";
 import { RequiredOrNull } from "../../../../../common/types/common";
 
+dayjs.extend(duration);
+const THIRTY_DAYS = 30;
+
 /**
  * The date time pickers for reports.
  */
 export const ReportDateTimePickers = () => {
-  const { setValue, watch } = useFormContext<PaymentAndRefundSummaryFormData>();
+  const { setValue, watch, setError, formState, clearErrors } =
+    useFormContext<PaymentAndRefundSummaryFormData>();
+  const { errors } = formState;
   const issuedBy = watch("issuedBy");
   const fromDateTime = watch("fromDateTime");
   const toDateTime = watch("toDateTime");
@@ -35,12 +42,6 @@ export const ReportDateTimePickers = () => {
             value={fromDateTime}
             disableFuture
             format="YYYY/MM/DD hh:mm A"
-            minDateTime={toDateTime
-              .subtract(30, "day")
-              .set("h", 21)
-              .set("m", 0)
-              .set("s", 0)
-              .set("ms", 0)}
             slotProps={{
               digitalClockSectionItem: {
                 sx: {
@@ -50,6 +51,14 @@ export const ReportDateTimePickers = () => {
             }}
             onChange={(value: RequiredOrNull<Dayjs>) => {
               setValue("fromDateTime", value as Dayjs);
+              const diff = dayjs.duration(toDateTime.diff(value)).asDays();
+              if (diff <= 0 || Math.round(diff) > THIRTY_DAYS) {
+                setError("toDateTime", {
+                  message: "To date time must be after From date time.",
+                });
+              } else {
+                clearErrors("toDateTime");
+              }
             }}
             disabled={issuedBy.length === 0}
             views={["year", "month", "day", "hours", "minutes"]}
@@ -74,12 +83,25 @@ export const ReportDateTimePickers = () => {
             disabled={issuedBy.length === 0}
             onChange={(value: RequiredOrNull<Dayjs>) => {
               setValue("toDateTime", value as Dayjs);
+              const diff = Math.round(
+                dayjs.duration((value as Dayjs).diff(fromDateTime)).as("days"),
+              );
+              if (Math.round(diff) <= THIRTY_DAYS && diff > 0) {
+                clearErrors("toDateTime");
+              }
             }}
             format="YYYY/MM/DD hh:mm A"
             value={toDateTime}
             minDate={fromDateTime}
-            maxDate={fromDateTime.add(30, "days")}
+            maxDateTime={fromDateTime.add(30, "days")}
             views={["year", "month", "day", "hours", "minutes"]}
+            slotProps={{
+              textField: {
+                helperText:
+                  errors.toDateTime &&
+                  "To date time must be after From date time.",
+              },
+            }}
           />
         </LocalizationProvider>
       </FormControl>

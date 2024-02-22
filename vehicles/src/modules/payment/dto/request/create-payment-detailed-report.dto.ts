@@ -75,6 +75,7 @@ export class CreatePaymentDetailedReportDto {
   @IsDateTimeAfter<CreatePaymentDetailedReportDto>('fromDateTime', {
     maxDiff: 30,
     unit: 'days',
+    isApproximate: true,
   })
   toDateTime: string;
 

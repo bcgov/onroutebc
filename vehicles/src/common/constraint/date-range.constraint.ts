@@ -10,8 +10,22 @@ import { differenceBetween } from '../helper/date-time.helper';
  * The type to define values for a max allowable difference between two datetimes.
  */
 export type MaxDifferenceType = {
+  /**
+   * The unit of comparison.
+   */
   unit: DurationUnitType;
+  /**
+   * The maximum allowable difference.
+   */
   maxDiff: number;
+  /**
+   * Boolean flag to allow approximate comparisons.
+   * This means, the calculated difference will be rounded to nearest
+   * integer.
+   * 
+   * Defaults to false.
+   */
+  isApproximate?: boolean;
 };
 
 /**
@@ -23,13 +37,14 @@ export class DateRangeConstraint<T> implements ValidatorConstraintInterface {
   validate(toDateTime: string, args: ValidationArguments) {
     // Some destructuring
     const { constraints, object } = args;
-    const [propertyToCompareAgainst, { maxDiff, unit }] = constraints as [
-      string,
-      MaxDifferenceType,
-    ];
+    const [propertyToCompareAgainst, { maxDiff, unit, isApproximate }] =
+      constraints as [string, MaxDifferenceType];
     const fromDateTime = (object as T)[propertyToCompareAgainst] as string;
 
     const difference = differenceBetween(fromDateTime, toDateTime, unit);
+    if (isApproximate) {
+      return difference > 0 && Math.round(difference) <= maxDiff;
+    }
     return difference > 0 && difference <= maxDiff;
   }
 
