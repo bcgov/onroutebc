@@ -87,63 +87,63 @@ const App = () => {
     <AuthProvider {...oidcConfig}>
       <ThemeProvider theme={bcGovTheme}>
         <QueryClientProvider client={queryClient}>
-          <FeatureFlagContextProvider>
-            <OnRouteBCContext.Provider
-              value={useMemo(() => {
-                return {
-                  userRoles,
-                  setUserRoles,
-                  companyId,
-                  setCompanyId,
-                  userDetails,
-                  setUserDetails,
-                  companyLegalName,
-                  setCompanyLegalName,
-                  idirUserDetails,
-                  setIDIRUserDetails,
-                  onRouteBCClientNumber,
-                  setOnRouteBCClientNumber,
-                  migratedClient,
-                  setMigratedClient,
-                  isNewBCeIDUser,
-                  setIsNewBCeIDUser,
-                };
-              }, [
+          <OnRouteBCContext.Provider
+            value={useMemo(() => {
+              return {
                 userRoles,
+                setUserRoles,
                 companyId,
+                setCompanyId,
                 userDetails,
+                setUserDetails,
                 companyLegalName,
+                setCompanyLegalName,
                 idirUserDetails,
+                setIDIRUserDetails,
                 onRouteBCClientNumber,
+                setOnRouteBCClientNumber,
                 migratedClient,
+                setMigratedClient,
                 isNewBCeIDUser,
-              ])}
+                setIsNewBCeIDUser,
+              };
+            }, [
+              userRoles,
+              companyId,
+              userDetails,
+              companyLegalName,
+              idirUserDetails,
+              onRouteBCClientNumber,
+              migratedClient,
+              isNewBCeIDUser,
+            ])}
+          >
+            <FeatureFlagContextProvider>
+            <SnackBarContext.Provider
+              value={useMemo(() => {
+                return { setSnackBar: setSnackBar };
+              }, [setSnackBar])}
             >
-              <SnackBarContext.Provider
-                value={useMemo(() => {
-                  return { setSnackBar: setSnackBar };
-                }, [setSnackBar])}
-              >
-                <CustomSnackbar
-                  showSnackbar={displaySnackBar}
-                  setShowSnackbar={setDisplaySnackBar}
-                  message={snackBar.message}
-                  alertType={snackBar.alertType}
-                />
-                <div className="page-section">
-                  <Router>
-                    <Header />
-                    <NavIconSideBar>
-                      <NavIconHomeButton />
-                      <NavIconReportButton />
-                    </NavIconSideBar>
-                    <AppRoutes />
-                  </Router>
-                </div>
-                <Footer />
-              </SnackBarContext.Provider>
-            </OnRouteBCContext.Provider>
-          </FeatureFlagContextProvider>
+              <CustomSnackbar
+                showSnackbar={displaySnackBar}
+                setShowSnackbar={setDisplaySnackBar}
+                message={snackBar.message}
+                alertType={snackBar.alertType}
+              />
+              <div className="page-section">
+                <Router>
+                  <Header />
+                  <NavIconSideBar>
+                    <NavIconHomeButton />
+                    <NavIconReportButton />
+                  </NavIconSideBar>
+                  <AppRoutes />
+                </Router>
+              </div>
+              <Footer />
+            </SnackBarContext.Provider>
+            </FeatureFlagContextProvider>
+          </OnRouteBCContext.Provider>
         </QueryClientProvider>
       </ThemeProvider>
     </AuthProvider>
