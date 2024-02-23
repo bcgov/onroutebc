@@ -135,12 +135,30 @@ export class PermitService {
   }
 
   /**
-   * Find single permit with associated data by permit id.
-   * @param permitId permit id
-   * @returns permit with data
+   * Finds a permit by its ID and verifies if the current user has authorization
+   * to access it. Throws a ForbiddenException if the user does not have the
+   * proper authorization. Returns a mapped ReadPermitDto object of the found
+   * permit.
+   * @param permitId The ID of the permit to find.
+   * @param currentUser The current user's JWT details.
+   * @returns A mapped ReadPermitDto object of the found permit.
    */
-  public async findByPermitId(permitId: string): Promise<ReadPermitDto> {
+  public async findByPermitId(
+    permitId: string,
+    currentUser: IUserJWT,
+  ): Promise<ReadPermitDto> {
     const permit = await this.findOne(permitId);
+    // Check if the current user has the proper authorization to access this receipt.
+    // Throws ForbiddenException if user does not belong to the specified user auth group or does not own the company.
+    if (
+      !idirUserAuthGroupList.includes(
+        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      ) &&
+      permit?.companyId != currentUser.companyId
+    ) {
+      throw new ForbiddenException();
+    }
+
     return this.classMapper.mapAsync(permit, Permit, ReadPermitDto);
   }
 

@@ -178,16 +178,23 @@ export class PermitController {
   }
 
   @ApiOkResponse({
-    description: 'The Permit Resource',
+    description: 'Retrieves a specific Permit Resource by its ID.',
     type: ReadPermitDto,
-    isArray: true,
+    isArray: false,
+  })
+  @ApiOperation({
+    summary: 'Get Permit by ID',
+    description:
+      'Fetches a single permit detail by its permit ID for the current user.',
   })
   @Roles(Role.READ_PERMIT)
   @Get('/:permitId')
   async getByPermitId(
+    @Req() request: Request,
     @Param('permitId') permitId: string,
   ): Promise<ReadPermitDto> {
-    return this.permitService.findByPermitId(permitId);
+    const currentUser = request.user as IUserJWT;
+    return this.permitService.findByPermitId(permitId, currentUser);
   }
 
   /**
