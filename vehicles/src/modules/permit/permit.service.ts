@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   Inject,
   Injectable,
   InternalServerErrorException,
@@ -65,6 +66,10 @@ import { PermitApprovalSource } from '../../common/enum/permit-approval-source.e
 import { OrderBy } from '../../common/enum/orderBy.enum';
 import { PermitSearch } from '../../common/enum/permit-search.enum';
 import { paginate, sortQuery } from '../../common/helper/database.helper';
+import {
+  UserAuthGroup,
+  idirUserAuthGroupList,
+} from '../../common/enum/user-auth-group.enum';
 
 @Injectable()
 export class PermitService {
@@ -177,6 +182,17 @@ export class PermitService {
     // Retrieve the permit details using the permit ID
     const permit = await this.findOne(permitId);
 
+    // Check if current user is in the allowed auth group or owns the company, else throw ForbiddenException
+    if (
+      !idirUserAuthGroupList.includes(
+        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      ) &&
+      permit.companyId != currentUser.companyId
+    ) {
+      throw new ForbiddenException();
+    }
+
+    // Use the DOPS service to download the document associated with the permit
     await this.dopsService.download(
       currentUser,
       permit.documentId,
@@ -434,6 +450,7 @@ export class PermitService {
     permitId: string,
     res?: Response,
   ): Promise<void> {
+    // Query the database to find a permit and its related transactions and receipt based on the permit ID.
     const permit = await this.permitRepository
       .createQueryBuilder('permit')
       .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
@@ -445,10 +462,24 @@ export class PermitService {
       .andWhere('receipt.receiptNumber IS NOT NULL')
       .getOne();
 
+    // If no permit is found, throw a NotFoundException indicating the receipt is not found.
     if (!permit) {
       throw new NotFoundException('Receipt Not Found!');
     }
 
+    // Check if the current user has the proper authorization to access this receipt.
+    // Throws ForbiddenException if user does not belong to the specified user auth group or does not own the company.
+    if (
+      !idirUserAuthGroupList.includes(
+        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      ) &&
+      permit.companyId != currentUser.companyId
+    ) {
+      throw new ForbiddenException();
+    }
+
+    // If authorized, proceed to download the receipt PDF using the dopsService.
+    // This method delegates the request handling based on the provided download mode and sends the file as a response if applicable.
     await this.dopsService.download(
       currentUser,
       permit.permitTransactions[0].transaction.receipt.receiptDocumentId,
