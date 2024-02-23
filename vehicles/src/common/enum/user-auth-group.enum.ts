@@ -11,6 +11,16 @@ export enum UserAuthGroup {
   FINANCE = 'FINANCE',
 }
 
+export const clientUserAuthGroupList: readonly UserAuthGroup[] = [
+  UserAuthGroup.CV_CLIENT,
+  UserAuthGroup.COMPANY_ADMINISTRATOR,
+];
+
+export enum ClientUserAuthGroup {
+  CV_CLIENT = 'CVCLIENT',
+  COMPANY_ADMINISTRATOR = 'ORGADMIN',
+}
+
 export const idirUserAuthGroupList: readonly UserAuthGroup[] = [
   UserAuthGroup.PPC_CLERK,
   UserAuthGroup.SYSTEM_ADMINISTRATOR,

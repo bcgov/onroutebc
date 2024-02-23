@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { TestingModule, Test } from '@nestjs/testing';
-import { DataNotFoundException } from '../../../src/common/exception/data-not-found.exception';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Request } from 'express';
 
@@ -16,6 +15,7 @@ import {
 import { IUserJWT } from '../../../src/common/interface/user-jwt.interface';
 import { GetStaffUserQueryParamsDto } from '../../../src/modules/company-user-management/users/dto/request/queryParam/getStaffUser.query-params.dto';
 import { IDIRUserAuthGroup } from '../../../src/common/enum/user-auth-group.enum';
+import { BadRequestException } from '@nestjs/common';
 
 const COMPANY_ID_99 = 99;
 let userService: DeepMocked<UsersService>;
@@ -119,7 +119,7 @@ describe('UsersController', () => {
       );
     });
 
-    it('should throw DataNotFound Exception when user is not found', async () => {
+    it('should throw BadRequestException when user guid mismatch', async () => {
       const request = createMock<Request>();
       request.user = redCompanyAdminUserJWTMock;
       const params: FindUsersDtoMockParameters = {
@@ -133,7 +133,7 @@ describe('UsersController', () => {
           request,
           'D9AE454841CA4F63812CD91FD8F204D9',
         );
-      }).rejects.toThrow(DataNotFoundException);
+      }).rejects.toThrow(BadRequestException);
     });
   });
 });
