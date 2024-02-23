@@ -187,7 +187,7 @@ export class PermitService {
       !idirUserAuthGroupList.includes(
         currentUser.orbcUserAuthGroup as UserAuthGroup,
       ) &&
-      permit.companyId != currentUser.companyId
+      permit?.companyId != currentUser.companyId
     ) {
       throw new ForbiddenException();
     }
@@ -473,7 +473,7 @@ export class PermitService {
       !idirUserAuthGroupList.includes(
         currentUser.orbcUserAuthGroup as UserAuthGroup,
       ) &&
-      permit.companyId != currentUser.companyId
+      permit?.companyId != currentUser.companyId
     ) {
       throw new ForbiddenException();
     }
