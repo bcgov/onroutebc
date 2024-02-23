@@ -23,6 +23,7 @@ import { CompanyService } from '../company/company.service';
 import { Role } from '../../../common/enum/roles.enum';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import {
+  ClientUserAuthGroup,
   IDIRUserAuthGroup,
   UserAuthGroup,
 } from 'src/common/enum/user-auth-group.enum';
@@ -188,7 +189,7 @@ export class UsersService {
     //A CV user's auth group should not be allowed to be downgraded from CVADMIN
     //if they are the last remaining CVADMIN of the Company
     if (
-      companyUser.userAuthGroup === UserAuthGroup.COMPANY_ADMINISTRATOR &&
+      companyUser.userAuthGroup === ClientUserAuthGroup.COMPANY_ADMINISTRATOR &&
       companyUser.userAuthGroup !== updateUserDto.userAuthGroup
     ) {
       //Find all employees of the company
@@ -199,7 +200,7 @@ export class UsersService {
         (employee) =>
           employee.userGUID != userDetails.at(0).userGUID &&
           employee.companyUsers.at(0).userAuthGroup ===
-            UserAuthGroup.COMPANY_ADMINISTRATOR,
+            ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
       );
 
       //Throw BadRequestException if only one CVAdmin exists for the company.
@@ -260,7 +261,8 @@ export class UsersService {
       // Should be allowed to update userAuthGroupID if current user is an
       // IDIR(PPC Clerk) or CVAdmin
       if (
-        (companyUser.userAuthGroup === UserAuthGroup.COMPANY_ADMINISTRATOR ||
+        (companyUser.userAuthGroup ===
+          ClientUserAuthGroup.COMPANY_ADMINISTRATOR ||
           currentUser.identity_provider === IDP.IDIR) &&
         companyUser.userAuthGroup !== updateUserDto.userAuthGroup
       ) {
@@ -717,7 +719,8 @@ export class UsersService {
     // Mapping users to check against COMPANY_ADMINISTRATOR group before operations
     const companyAdminUserGuids = usersBeforeDelete.map(
       (companyUser) =>
-        companyUser.userAuthGroup === UserAuthGroup.COMPANY_ADMINISTRATOR &&
+        companyUser.userAuthGroup ===
+          ClientUserAuthGroup.COMPANY_ADMINISTRATOR &&
         companyUser?.user?.userGUID,
     );
 

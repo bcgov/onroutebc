@@ -2,7 +2,10 @@ import { AccountRegion } from '../../../../src/common/enum/account-region.enum';
 import { AccountSource } from '../../../../src/common/enum/account-source.enum';
 import { Directory } from '../../../../src/common/enum/directory.enum';
 import { IDP } from '../../../../src/common/enum/idp.enum';
-import { UserAuthGroup } from '../../../../src/common/enum/user-auth-group.enum';
+import {
+  UserAuthGroup,
+  ClientUserAuthGroup,
+} from '../../../../src/common/enum/user-auth-group.enum';
 import { UserStatus } from '../../../../src/common/enum/user-status.enum';
 
 export const SORT_ORDER_1 = '1';
@@ -100,7 +103,7 @@ export const RED_COMPANY_ADMIN_USER_NAME = 'CALDRICH';
 export const RED_COMPANY_ADMIN_PREFFERED_USER_NAME =
   RED_COMPANY_ADMIN_USER_GUID.toLowerCase().concat('@', IDP.BCEID);
 export const RED_COMPANY_ADMIN_USER_AUTH_GROUP =
-  UserAuthGroup.COMPANY_ADMINISTRATOR;
+  ClientUserAuthGroup.COMPANY_ADMINISTRATOR;
 export const RED_COMPANY_ADMIN_USER_STATUS_DIRECOTRY = Directory.BBCEID;
 export const RED_COMPANY_ADMIN_USER_STATUS = UserStatus.ACTIVE;
 
@@ -123,7 +126,8 @@ export const RED_COMPANY_CVCLIENT_USER_GUID =
 export const RED_COMPANY_CVCLIENT_USER_NAME = 'DKINSER';
 export const RED_COMPANY_CVCLIENT_PREFFERED_USER_NAME =
   RED_COMPANY_CVCLIENT_USER_GUID.toLowerCase().concat('@', IDP.BCEID);
-export const RED_COMPANY_CVCLIENT_USER_AUTH_GROUP = UserAuthGroup.CV_CLIENT;
+export const RED_COMPANY_CVCLIENT_USER_AUTH_GROUP =
+  ClientUserAuthGroup.CV_CLIENT;
 export const RED_COMPANY_CVCLIENT_USER_STATUS_DIRECOTRY = Directory.BCEID;
 export const RED_COMPANY_CVCLIENT_USER_STATUS = UserStatus.ACTIVE;
 
@@ -171,7 +175,7 @@ export const BLUE_COMPANY_ADMIN_USER_NAME = 'BTHOMPSON';
 export const BLUE_COMPANY_ADMIN_PREFFERED_USER_NAME =
   BLUE_COMPANY_ADMIN_USER_GUID.toLowerCase().concat('@', IDP.BCEID);
 export const BLUE_COMPANY_ADMIN_USER_AUTH_GROUP =
-  UserAuthGroup.COMPANY_ADMINISTRATOR;
+  ClientUserAuthGroup.COMPANY_ADMINISTRATOR;
 export const BLUE_COMPANY_ADMIN_USER_STATUS_DIRECOTRY = Directory.BCEID;
 export const BLUE_COMPANY_ADMIN_USER_STATUS = UserStatus.ACTIVE;
 
@@ -194,7 +198,8 @@ export const BLUE_COMPANY_CVCLIENT_USER_GUID =
 export const BLUE_COMPANY_CVCLIENT_USER_NAME = 'MGROSS';
 export const BLUE_COMPANY_CVCLIENT_PREFFERED_USER_NAME =
   BLUE_COMPANY_CVCLIENT_USER_GUID.toLowerCase().concat('@', IDP.BCEID);
-export const BLUE_COMPANY_CVCLIENT_USER_AUTH_GROUP = UserAuthGroup.CV_CLIENT;
+export const BLUE_COMPANY_CVCLIENT_USER_AUTH_GROUP =
+  ClientUserAuthGroup.CV_CLIENT;
 export const BLUE_COMPANY_CVCLIENT_USER_STATUS_DIRECOTRY = Directory.BCEID;
 export const BLUE_COMPANY_CVCLIENT_USER_STATUS = UserStatus.ACTIVE;
 

@@ -101,7 +101,9 @@ export class PermitController {
   ): Promise<PaginationDto<ReadPermitDto>> {
     const currentUser = request.user as IUserJWT;
     if (
-      !idirUserAuthGroupList.includes(currentUser.orbcUserAuthGroup) &&
+      !idirUserAuthGroupList.includes(
+        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      ) &&
       !getPermitQueryParamsDto.companyId
     ) {
       throw new BadRequestException(
