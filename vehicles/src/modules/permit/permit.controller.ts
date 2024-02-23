@@ -18,7 +18,6 @@ import {
   ApiInternalServerErrorResponse,
   ApiCreatedResponse,
   ApiBearerAuth,
-  ApiQuery,
   ApiOkResponse,
   ApiOperation,
 } from '@nestjs/swagger';
