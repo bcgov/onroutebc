@@ -64,6 +64,22 @@ export class PendingUsersService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
+      const existingPendingUser = await queryRunner.manager.find<PendingUser>(
+        PendingUser,
+        {
+          where: {
+            userName: createPendingUserDto.userName,
+          },
+        },
+      );
+
+      // If the pending user exists, throw an exception to stop the process
+      if (existingPendingUser?.length) {
+        throw new BadRequestException(
+          'The addition of a pending user is denied as the user is already added as a pending user to a company and is awaiting processing.',
+        );
+      }
+
       const existingUser = await queryRunner.manager.find<User>(User, {
         where: {
           userName: createPendingUserDto.userName,
