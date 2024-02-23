@@ -28,14 +28,14 @@ export class FeatureFlagsService {
     return await this.featureFlagRepository.find();
   }
   /**
-   * The findAllFromCache() method returns a string representation of the feature flags
+   * The findAllFromCache() method returns a key-value map of the feature flags
    * that were stored in the NestJS system cache upon startup. This method is crucial for
-   * operations that require a quick lookup without the need to access the database.
+   * operations that require a quick lookup without the need to access the database directly.
    *
-   * @returns A promise that resolves to a string representation of the feature flags
+   * @returns A promise that resolves to a key-value map where keys and values are strings representing the feature flags.
    */
   @LogAsyncMethodExecution()
-  async findAllFromCache(): Promise<string> {
+  async findAllFromCache(): Promise<Record<string, string>> {
     return await getMapFromCache(this.cacheManager, CacheKey.FEATURE_FLAG_TYPE);
   }
 }

@@ -20,6 +20,7 @@ import {
   ApiBearerAuth,
   ApiQuery,
   ApiOkResponse,
+  ApiOperation,
 } from '@nestjs/swagger';
 import { AuthOnly } from '../../common/decorator/auth-only.decorator';
 import { CreatePermitDto } from './dto/request/create-permit.dto';
@@ -213,15 +214,20 @@ export class PermitController {
     );
     return permit;
   }
-
   /**
-   * A GET method defined with the @Get() decorator and a route of /types
-   * that returns all available permit types from cache.
-   * @returns
+   * Fetches all available permit types from the service layer and returns them.
+   * Uses an @AuthOnly() decorator to enforce authentication.
+   * The route for accessing this method is defined under '/permits/permit-types'.
+   * @returns A promise that resolves to a record object where each key-value pair represents a permit type id and its name.
    */
   @AuthOnly()
-  @Get('types/list')
-  async getPermitTypes(): Promise<string> {
+  @ApiOperation({
+    summary: 'Fetch all permit types',
+    description:
+      'Fetches all available permit types from the service layer and returns them, enforcing authentication.',
+  })
+  @Get('permit-types')
+  async getPermitTypes(): Promise<Record<string, string>> {
     const permitTypes = await this.permitService.getPermitType();
     return permitTypes;
   }

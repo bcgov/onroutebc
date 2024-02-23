@@ -7,6 +7,7 @@ import {
   ApiInternalServerErrorResponse,
   ApiBearerAuth,
   ApiOkResponse,
+  ApiOperation,
 } from '@nestjs/swagger';
 import { ExceptionDto } from 'src/common/exception/exception.dto';
 import { FeatureFlagsService } from './feature-flags.service';
@@ -37,19 +38,25 @@ export class FeatureFlagsController {
   /**
    * Retrieves the current state of feature flags.
    *
-   * Accessible via GET method on the /feature-flags route, it fetches and returns
-   * the current state of feature flags, cached within the service.
+   * It is accessible via the GET method on the `/feature-flags` route. This method fetches
+   * and returns the current state of feature flags, cached within the service, wherein each
+   * flag's name is a key in the returned object, and its enabled/disabled state is represented
+   * as the value in string format.
    *
-   * @returns The state of feature flags in a stringified format, where each flag's name
-   * is a key, and its enabled/disabled state is the value.
+   * @returns A Promise that resolves to an object with feature flag names as keys and their
+   * enabled/disabled states as string values.
    */
   @ApiOkResponse({
     description: 'The FeatureFlag Resource',
     type: Object,
   })
+  @ApiOperation({
+    summary: 'Retrieve Feature Flags',
+    description: 'Fetches and returns the current state of all feature flags.',
+  })
   @AuthOnly()
   @Get()
-  async getFeatureFlags(): Promise<string> {
+  async getFeatureFlags(): Promise<Record<string, string>> {
     return await this.featureFlagService.findAllFromCache();
   }
 }
