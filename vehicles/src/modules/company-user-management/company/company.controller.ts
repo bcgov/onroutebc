@@ -36,7 +36,10 @@ import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import { ApiPaginatedResponse } from '../../../common/decorator/api-paginate-response';
 import { GetCompanyQueryParamsDto } from './dto/request/queryParam/getCompany.query-params.dto';
-import { idirUserAuthGroupList } from '../../../common/enum/user-auth-group.enum';
+import {
+  UserAuthGroup,
+  idirUserAuthGroupList,
+} from '../../../common/enum/user-auth-group.enum';
 import { ReadVerifyClientDto } from './dto/response/read-verify-client.dto';
 import { VerifyClientDto } from './dto/request/verify-client.dto';
 
@@ -102,7 +105,11 @@ export class CompanyController {
     @Query() getCompanyQueryParamsDto: GetCompanyQueryParamsDto,
   ): Promise<PaginationDto<ReadCompanyDto>> {
     const currentUser = request.user as IUserJWT;
-    if (!idirUserAuthGroupList.includes(currentUser.orbcUserAuthGroup)) {
+    if (
+      !idirUserAuthGroupList.includes(
+        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      )
+    ) {
       throw new UnauthorizedException(
         `Unauthorized for ${currentUser.orbcUserAuthGroup} role.`,
       );

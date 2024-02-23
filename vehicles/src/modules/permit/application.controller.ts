@@ -93,7 +93,9 @@ export class ApplicationController {
   ): Promise<PaginationDto<ReadApplicationDto>> {
     const currentUser = request.user as IUserJWT;
     if (
-      !idirUserAuthGroupList.includes(currentUser.orbcUserAuthGroup) &&
+      !idirUserAuthGroupList.includes(
+        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      ) &&
       !getApplicationQueryParamsDto.companyId
     ) {
       throw new BadRequestException(
@@ -210,7 +212,9 @@ export class ApplicationController {
     const currentUser = request.user as IUserJWT;
 
     if (
-      !idirUserAuthGroupList.includes(currentUser.orbcUserAuthGroup) &&
+      !idirUserAuthGroupList.includes(
+        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      ) &&
       !issuePermitDto.companyId
     ) {
       throw new BadRequestException(
