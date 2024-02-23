@@ -7,7 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository, UpdateResult } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { ReadUserDto } from './dto/response/read-user.dto';
 import { CreateUserDto } from './dto/request/create-user.dto';
@@ -285,33 +285,6 @@ export class UsersService {
 
     const userListDto = await this.findUsersDto(userGUID);
     return userListDto[0];
-  }
-
-  /**
-   * The updateStatus() method updates the statusCode of the user with
-   * userGUID and {@link UserStatus} parameters.
-   *
-   * @param companyId The company Id.
-   * @param userGUID The user GUID.
-   * @param statusCode The User status code of type {@link UserStatus}
-   *
-   * @returns The UpdateResult of the operation
-   */
-  @LogAsyncMethodExecution()
-  async updateStatus(
-    userGUID: string,
-    statusCode: UserStatus,
-    currentUser?: IUserJWT,
-  ): Promise<UpdateResult> {
-    const user = new User();
-    user.userGUID = userGUID;
-    user.companyUsers = [];
-    user.companyUsers.map(() => ({ statusCode: statusCode }));
-    user.updatedUserGuid = currentUser.userGUID;
-    user.updatedDateTime = new Date();
-    user.updatedUser = currentUser.userName;
-    user.updatedUserDirectory = currentUser.orbcUserDirectory;
-    return await this.userRepository.update({ userGUID }, user);
   }
 
   /**

@@ -31,7 +31,6 @@ import { Request } from 'express';
 import { Roles } from '../../../common/decorator/roles.decorator';
 import { Role } from '../../../common/enum/roles.enum';
 import { UpdateUserDto } from './dto/request/update-user.dto';
-import { UpdateUserStatusDto } from './dto/request/update-user-status.dto';
 import { GetCompanyUserQueryParamsDto } from './dto/request/queryParam/getCompanyUser.query-params.dto';
 import { GetCompanyUserByUserGUIDPathParamsDto } from './dto/request/pathParam/getCompanyUserByUserGUID.path-params.dto';
 import { DeleteUsersDto } from './dto/request/delete-users.dto';
@@ -175,41 +174,6 @@ export class CompanyUsersController {
       throw new DataNotFoundException();
     }
     return user;
-  }
-
-  /**
-   * A PUT method defined with the @Put(':userGUID/status/:statusCode')
-   * decorator and a route of
-   * company/:companyId/user/:userGUID/status/ that updates the
-   * user status by its GUID.
-   * ? This end point maybe merged with user update endpoint. TBD.
-   *
-   * @param companyId The company Id.
-   * @param userGUID The userGUID
-   *
-   * @returns True on successfull operation.
-   */
-  @ApiOkResponse({
-    description: '{statusUpdated : true}',
-  })
-  @Roles(Role.WRITE_USER)
-  @Put(':userGUID/status')
-  async updateStatus(
-    @Req() request: Request,
-    @Param('companyId') companyId: number,
-    @Param('userGUID') userGUID: string,
-    @Body() updateUserStatusDto: UpdateUserStatusDto,
-  ): Promise<object> {
-    const currentUser = request.user as IUserJWT;
-    const updateResult = await this.userService.updateStatus(
-      userGUID,
-      updateUserStatusDto.statusCode,
-      currentUser,
-    );
-    if (updateResult.affected === 0) {
-      throw new DataNotFoundException();
-    }
-    return { statusUpdated: true };
   }
 
   /**

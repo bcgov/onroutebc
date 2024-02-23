@@ -28,10 +28,8 @@ import { CompanyUsersController } from '../../src/modules/company-user-managemen
 import {
   createRedCompanyAdminUserDtoMock,
   redCompanyAdminUserEntityMock,
-  updateRedCompanyAdminUserStatusDtoMock,
   updateRedCompanyCvClientUserDtoMock,
 } from '../util/mocks/data/user.mock';
-import { UserStatus } from '../../src/common/enum/user-status.enum';
 import { IdirUser } from 'src/modules/company-user-management/users/entities/idir.user.entity';
 import { PendingIdirUser } from 'src/modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
 import { PendingIdirUsersService } from 'src/modules/company-user-management/pending-idir-users/pending-idir-users.service';
@@ -165,30 +163,6 @@ describe('Company Users (e2e)', () => {
           userName: constants.RED_COMPANY_ADMIN_USER_NAME,
         }),
       );
-    });
-  });
-
-  describe('/companies/1/users/C23229C862234796BE9DA99F30A44F9A/status UpdateStatus', () => {
-    it('should update a User Status.', async () => {
-      jest
-        .spyOn(repo, 'createQueryBuilder')
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-        .mockImplementation(() =>
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-          createQueryBuilderMock([
-            {
-              ...redCompanyAdminUserEntityMock,
-              userStatus: UserStatus.DISABLED,
-            },
-          ]),
-        );
-
-      const response = await request(app.getHttpServer() as unknown as App)
-        .put('/companies/1/users/C23229C862234796BE9DA99F30A44F9A/status')
-        .send(updateRedCompanyAdminUserStatusDtoMock)
-        .expect(200);
-
-      expect(response.body).toMatchObject({ statusUpdated: true });
     });
   });
 

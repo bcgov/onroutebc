@@ -21,7 +21,6 @@ import {
 import { PendingUsersService } from '../../../src/modules/company-user-management/pending-users/pending-users.service';
 
 import { BadRequestException } from '@nestjs/common';
-import { UserStatus } from '../../../src/common/enum/user-status.enum';
 import { Role } from '../../../src/common/enum/roles.enum';
 import { DataNotFoundException } from '../../../src/common/exception/data-not-found.exception';
 import * as constants from '../../util/mocks/data/test-data.constants';
@@ -215,23 +214,6 @@ describe('UsersService', () => {
       USER_LIST[1].userContact.phone2 = constants.RED_COMPANY_CVCLIENT_PHONE_2;
       USER_LIST[1].userContact.phone2 =
         constants.RED_COMPANY_CVCLIENT_PHONE_2_EXT;
-    });
-  });
-
-  describe('User service updateStatus function', () => {
-    it('should update the user Status', async () => {
-      repo.update.mockResolvedValue({
-        affected: 1,
-        raw: undefined,
-        generatedMaps: undefined,
-      });
-      const retUpdateResult = await service.updateStatus(
-        constants.BLUE_COMPANY_CVCLIENT_USER_GUID,
-        UserStatus.DISABLED,
-        redCompanyCvClientUserJWTMock,
-      );
-      expect(typeof retUpdateResult).toBe('object');
-      expect(retUpdateResult.affected).toBe(1);
     });
   });
 
