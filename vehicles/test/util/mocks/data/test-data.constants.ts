@@ -1,3 +1,4 @@
+import { FeatureFlagValue } from 'src/common/enum/feature-flag-value.enum';
 import { AccountRegion } from '../../../../src/common/enum/account-region.enum';
 import { AccountSource } from '../../../../src/common/enum/account-source.enum';
 import { Directory } from '../../../../src/common/enum/directory.enum';
@@ -232,3 +233,7 @@ export const SYS_ADMIN_STAFF_USER_AUTH_GROUP =
   UserAuthGroup.SYSTEM_ADMINISTRATOR;
 export const SYS_ADMIN_STAFF_USER_STATUS_DIRECOTRY = Directory.IDIR;
 export const SYS_ADMIN_STAFF_USER_STATUS = UserStatus.ACTIVE;
+
+export const FEATURE_ID = 1;
+export const FEATURE_KEY = 'CompanySearch';
+export const FEATURE_VALUE = FeatureFlagValue.ENABLED;

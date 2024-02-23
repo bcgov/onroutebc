@@ -9,10 +9,11 @@ import { TemplateFile } from './interface/template-file.interface';
 import { FILE_ENCODING_TYPE } from './constants/dops.constant';
 import { S3Service } from './modules/common/s3.service';
 import { createFile } from './helper/file.helper';
-import { addToCache } from './helper/cache.helper';
+import { addToCache, createCacheMap } from './helper/cache.helper';
 import * as fs from 'fs';
 import { DgenService } from './modules/dgen/dgen.service';
 import { LogAsyncMethodExecution } from './decorator/log-async-method-execution.decorator';
+import { FeatureFlagsService } from './modules/feature-flags/feature-flags.service';
 
 @Injectable()
 export class AppService {
@@ -24,6 +25,7 @@ export class AppService {
     private dgenService: DgenService,
     private s3Service: S3Service,
     private dmsService: DmsService,
+    private featureFlagsService: FeatureFlagsService,
   ) {}
 
   getHello(): string {
@@ -71,6 +73,13 @@ export class AppService {
       this.convertFiletoString(
         assetsPath + 'templates/payment-refund-summary.report.hbs',
       ),
+    );
+
+    const featureFlags = await this.featureFlagsService.findAll();
+    await addToCache(
+      this.cacheManager,
+      CacheKey.FEATURE_FLAG_TYPE,
+      createCacheMap(featureFlags, 'featureKey', 'featureValue'),
     );
 
     const endDateTime = new Date();
