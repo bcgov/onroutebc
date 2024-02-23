@@ -149,16 +149,6 @@ describe('PendingUsersService', () => {
       expect(retPendingUser[0].companyId).toBe(constants.RED_COMPANY_ID);
     });
   });
-
-  describe('Pending user service remove function', () => {
-    it('should find delete a Pending user.', async () => {
-      const deleteResult = await service.remove(
-        constants.RED_COMPANY_ID,
-        constants.RED_COMPANY_PENDING_USER_NAME,
-      );
-      expect(typeof deleteResult).toBe('object');
-    });
-  });
 });
 function findPendingUsersEntityMock(
   params: SelectQueryBuilderParameters,

@@ -1,8 +1,8 @@
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DeleteResult } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { CreatePendingUserDto } from './dto/request/create-pending-user.dto';
 import { UpdatePendingUserDto } from './dto/request/update-pending-user.dto';
 import { ReadPendingUserDto } from './dto/response/read-pending-user.dto';
@@ -10,6 +10,7 @@ import { PendingUser } from './entities/pending-user.entity';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { TPS_MIGRATED_USER } from '../../../common/constants/api.constant';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
+import { DeleteDto } from '../../common/dto/response/delete.dto';
 
 @Injectable()
 export class PendingUsersService {
@@ -182,14 +183,58 @@ export class PendingUsersService {
   }
 
   /**
-   * Deletes a pending user from the database based on the companyId and
-   * userName parameters.
-   * @param companyId The company Id.
-   * @param userName The userName of the pending user.
-   * @returns The Result object returned by DeleteQueryBuilder execution.
+   * Performs checks before deletion, updates user statuses to DELETED for specified users within
+   * a given company, and handles the deletion process. This includes retrieving a list of users
+   * by company ID before deletion, executing the deletion, and preparing a response DTO with
+   * details of successful and failed deletions.
+   *
+   * @param {string[]} userNames The names of the users slated for deletion.
+   * @param {number} companyId The ID of the company the users belong to.
+   * @returns {Promise<DeleteDto>} An object containing arrays of successfully deleted user names
+   * and those that failed to delete.
    */
   @LogAsyncMethodExecution()
-  async remove(companyId: number, userName: string): Promise<DeleteResult> {
-    return await this.pendingUserRepository.delete({ companyId, userName });
+  async removeAll(userNames: string[], companyId: number): Promise<DeleteDto> {
+    if (userNames.some((name) => name === TPS_MIGRATED_USER)) {
+      throw new BadRequestException('Cannot delete TPS migrated pending user');
+    }
+
+    // Retrieve a list of users by company ID before deletion
+    const pendingUsersToDelete = await this.pendingUserRepository.find({
+      where: {
+        userName: In(userNames),
+        companyId: companyId,
+      },
+    });
+
+    // Extract only the names of the users to be deleted
+    const pendingUserNamesToDelete = pendingUsersToDelete.map(
+      (pendingUser) => pendingUser.userName,
+    );
+
+    // Identify which names were not found (failure to delete)
+    const failure = userNames?.filter(
+      (name) => !pendingUserNamesToDelete?.includes(name),
+    );
+
+    // Execute the deletion of users by their names within the specified company
+    await this.pendingUserRepository
+      .createQueryBuilder()
+      .delete()
+      .where('userName IN (:...userNames)', { userNames: userNames || [] })
+      .andWhere('companyId = :companyId', {
+        companyId: companyId,
+      })
+      .execute();
+
+    // Determine successful deletions by filtering out failures
+    const success = userNames?.filter((name) => !failure?.includes(name));
+
+    // Prepare the response DTO with lists of successful and failed deletions
+    const deleteDto: DeleteDto = {
+      success: success,
+      failure: failure,
+    };
+    return deleteDto;
   }
 }

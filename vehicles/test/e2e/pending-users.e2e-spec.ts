@@ -130,24 +130,6 @@ describe('PendingUsers (e2e)', () => {
     });
   });
 
-  describe('companies/1/pending-users/FALONSO DEL', () => {
-    it('should remove a pending User.', async () => {
-      const PARAMS = {
-        companyId: constants.RED_COMPANY_ID,
-        userName: constants.RED_COMPANY_PENDING_USER_NAME,
-      };
-      findPendingUsersEntityMock(PARAMS);
-
-      const response = await request(app.getHttpServer() as unknown as App)
-        .delete(
-          '/companies/1/pending-users/' +
-            constants.RED_COMPANY_PENDING_USER_NAME,
-        )
-        .expect(200);
-
-      expect(response.body).toMatchObject({ deleted: true });
-    });
-  });
   afterAll(async () => {
     await app.close();
   });

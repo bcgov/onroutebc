@@ -148,36 +148,4 @@ describe('PendingUsersController', () => {
       }).rejects.toThrow(DataNotFoundException);
     });
   });
-
-  describe('Pending users controller remove function.', () => {
-    it('should delete the pending users', async () => {
-      pendingUserService.remove.mockResolvedValue({
-        raw: undefined,
-        affected: 1,
-      });
-      const deleteResult = await controller.remove(
-        constants.RED_COMPANY_ID,
-        constants.RED_COMPANY_PENDING_USER_NAME,
-      );
-      expect(typeof deleteResult).toBe('object');
-      expect(deleteResult.deleted).toBeTruthy();
-      expect(pendingUserService.remove).toHaveBeenCalledWith(
-        constants.RED_COMPANY_ID,
-        constants.RED_COMPANY_PENDING_USER_NAME,
-      );
-    });
-
-    it('should thrown a DataNotFoundException if the Pending user does not exist', async () => {
-      pendingUserService.remove.mockResolvedValue({
-        raw: undefined,
-        affected: 0,
-      });
-      await expect(async () => {
-        await controller.remove(
-          COMPANY_ID_99,
-          constants.RED_COMPANY_PENDING_USER_NAME,
-        );
-      }).rejects.toThrow(DataNotFoundException);
-    });
-  });
 });

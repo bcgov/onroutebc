@@ -37,8 +37,6 @@ import {
   sysAdminStaffContactEntityMock,
   updateSysAdminStaffContactDtoMock,
 } from './contact.mock';
-import { UpdateUserStatusDto } from '../../../../src/modules/company-user-management/users/dto/request/update-user-status.dto';
-import { UserStatus } from '../../../../src/common/enum/user-status.enum';
 import { IdirUser } from 'src/modules/company-user-management/users/entities/idir.user.entity';
 
 //User list
@@ -79,10 +77,6 @@ export const readRedAdminUserOrbcStatusDtoMock: ReadUserOrbcStatusDto = {
   migratedClient: undefined,
 };
 
-export const updateRedCompanyAdminUserStatusDtoMock: UpdateUserStatusDto = {
-  statusCode: UserStatus.DISABLED,
-};
-
 //Red Company Cv Client User
 export const redCompanyCvClientUserEntityMock: User = {
   userGUID: constants.RED_COMPANY_CVCLIENT_USER_GUID,
@@ -101,10 +95,6 @@ export const createRedCompanyCvClientUserDtoMock: CreateUserDto = {
 export const updateRedCompanyCvClientUserDtoMock: UpdateUserDto = {
   userAuthGroup: constants.RED_COMPANY_CVCLIENT_USER_AUTH_GROUP,
   ...updateRedCompanyCvClientContactDtoMock,
-};
-
-export const updateRedCompanyCvClientUserStatusDtoMock: UpdateUserStatusDto = {
-  statusCode: UserStatus.DISABLED,
 };
 
 export const readRedCompanyCvClientUserDtoMock: ReadUserDto = {
@@ -182,10 +172,6 @@ export const updateBlueCompanyCvClientUserDtoMock: UpdateUserDto = {
   ...updateBlueCompanyCvClientContactDtoMock,
 };
 
-export const updateBlueCompanyCvClientUserStatusDtoMock: UpdateUserStatusDto = {
-  statusCode: UserStatus.DISABLED,
-};
-
 export const readBlueCompanyCvClientUserDtoMock: ReadUserDto = {
   userGUID: constants.BLUE_COMPANY_CVCLIENT_USER_GUID,
   userName: constants.BLUE_COMPANY_CVCLIENT_USER_NAME,
@@ -221,10 +207,6 @@ export const createSysAdminStaffUserDtoMock: CreateUserDto = {
 export const updateSysAdminStaffUserDtoMock: UpdateUserDto = {
   userAuthGroup: constants.SYS_ADMIN_STAFF_USER_AUTH_GROUP,
   ...updateSysAdminStaffContactDtoMock,
-};
-
-export const updateSysAdminStaffUserStatusDtoMock: UpdateUserStatusDto = {
-  statusCode: UserStatus.DISABLED,
 };
 
 export const readSysAdminStaffUserDtoMock: ReadUserDto = {

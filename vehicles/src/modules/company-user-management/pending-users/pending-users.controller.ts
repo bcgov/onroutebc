@@ -8,6 +8,7 @@ import {
   Delete,
   Req,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 
 import {
@@ -18,6 +19,7 @@ import {
   ApiMethodNotAllowedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
@@ -31,6 +33,13 @@ import { Request } from 'express';
 import { Roles } from '../../../common/decorator/roles.decorator';
 import { Role } from '../../../common/enum/roles.enum';
 import { TPS_MIGRATED_USER } from '../../../common/constants/api.constant';
+
+import { DeleteDto } from '../../common/dto/response/delete.dto';
+import { DeletePendingUsersDto } from './dto/request/delete-pending-users.dto';
+import {
+  UserAuthGroup,
+  idirUserAuthGroupList,
+} from '../../../common/enum/user-auth-group.enum';
 
 @ApiTags('Company and User Management - Pending User')
 @ApiBadRequestResponse({
@@ -187,31 +196,43 @@ export class PendingUsersController {
   }
 
   /**
-   * A DELETE method defined with the @Delete(':userName') decorator and a route of
-   * company/:companyId/pending-user/:userName that deletes a pending user by
-   * user name.
-   * @param companyId The company Id.
-   * @param userName The user name of the pending user.
-   * @returns true upon successful deletion.
+   * Deletes pending users by their username, requiring authorization.
+   * Only users with the COMPANY_ADMINISTRATOR role or belonging to certain groups are allowed to perform this action.
+   * Without the required permissions, a ForbiddenException is raised.
+   *
+   * @param companyId The identifier for the company.
+   * @param deletePendingUsersDto Data transfer object containing the usernames of the pending users to be deleted.
+   * @returns A response encapsulated in {@link DeleteDto}, detailing the list of users successfully removed.
+   * If no users are removed, a DataNotFoundException is thrown.
    */
   @Roles(Role.WRITE_USER)
-  @Delete(':userName')
+  @ApiOperation({
+    summary: 'Deletes pending users by username with authorization',
+    description:
+      'Allows authorized deletion of pending users by their username for a specific company. ' +
+      'Authorization requires COMPANY_ADMINISTRATOR role or membership in specific groups. ' +
+      'Returns the list of successfully deleted users or raises exceptions for unauthorized access or no users deleted.',
+  })
+  @Delete()
   async remove(
+    @Req() request: Request,
     @Param('companyId') companyId: number,
-    @Param('userName') userName: string,
-  ) {
-    if (userName?.toUpperCase() === TPS_MIGRATED_USER.toUpperCase()) {
-      throw new BadRequestException(
-        `Delete not allowed for username ${userName}`,
-      );
+    @Body() deletePendingUsersDto: DeletePendingUsersDto,
+  ): Promise<DeleteDto> {
+    const currentUser = request.user as IUserJWT;
+    if (
+      currentUser.orbcUserAuthGroup !== UserAuthGroup.COMPANY_ADMINISTRATOR &&
+      !idirUserAuthGroupList.includes(currentUser.orbcUserAuthGroup)
+    ) {
+      throw new ForbiddenException();
     }
-    const deleteResult = await this.pendingUserService.remove(
+    const deleteResult = await this.pendingUserService.removeAll(
+      deletePendingUsersDto.userNames,
       companyId,
-      userName,
     );
-    if (deleteResult.affected === 0) {
+    if (deleteResult == null) {
       throw new DataNotFoundException();
     }
-    return { deleted: true };
+    return deleteResult;
   }
 }
