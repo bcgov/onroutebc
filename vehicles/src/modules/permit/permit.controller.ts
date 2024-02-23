@@ -18,8 +18,8 @@ import {
   ApiInternalServerErrorResponse,
   ApiCreatedResponse,
   ApiBearerAuth,
-  ApiQuery,
   ApiOkResponse,
+  ApiOperation,
 } from '@nestjs/swagger';
 import { AuthOnly } from '../../common/decorator/auth-only.decorator';
 import { CreatePermitDto } from './dto/request/create-permit.dto';
@@ -101,7 +101,9 @@ export class PermitController {
   ): Promise<PaginationDto<ReadPermitDto>> {
     const currentUser = request.user as IUserJWT;
     if (
-      !idirUserAuthGroupList.includes(currentUser.orbcUserAuthGroup) &&
+      !idirUserAuthGroupList.includes(
+        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      ) &&
       !getPermitQueryParamsDto.companyId
     ) {
       throw new BadRequestException(
@@ -130,15 +132,10 @@ export class PermitController {
     description: 'The DOPS file Resource with the presigned resource',
     type: ReadFileDto,
   })
-  @ApiQuery({
-    name: 'download',
-    required: false,
-    example: 'download=proxy',
-    enum: FileDownloadModes,
+  @ApiOperation({
+    summary: 'Retrieve PDF',
     description:
-      'Download mode behavior.' +
-      'If proxy is specified, the object contents will be available proxied through DMS.' +
-      'If url is specified, expect an HTTP 201 cotaining the presigned URL as a JSON string in the response.',
+      'Retrieves the DOPS file for a given permit ID. Requires READ_PERMIT role.',
   })
   @Roles(Role.READ_PERMIT)
   @Get('/:permitId/pdf')
@@ -162,6 +159,11 @@ export class PermitController {
     description: 'The DOPS file Resource with the presigned resource',
     type: ReadFileDto,
   })
+  @ApiOperation({
+    summary: 'Get Receipt PDF',
+    description:
+      'Retrieves a PDF receipt for a given permit ID, ensuring the user has read permission.',
+  })
   @Roles(Role.READ_PERMIT)
   @Get('/:permitId/receipt')
   async getReceiptPDF(
@@ -176,16 +178,23 @@ export class PermitController {
   }
 
   @ApiOkResponse({
-    description: 'The Permit Resource',
+    description: 'Retrieves a specific Permit Resource by its ID.',
     type: ReadPermitDto,
-    isArray: true,
+    isArray: false,
+  })
+  @ApiOperation({
+    summary: 'Get Permit by ID',
+    description:
+      'Fetches a single permit detail by its permit ID for the current user.',
   })
   @Roles(Role.READ_PERMIT)
   @Get('/:permitId')
   async getByPermitId(
+    @Req() request: Request,
     @Param('permitId') permitId: string,
   ): Promise<ReadPermitDto> {
-    return this.permitService.findByPermitId(permitId);
+    const currentUser = request.user as IUserJWT;
+    return this.permitService.findByPermitId(permitId, currentUser);
   }
 
   /**
