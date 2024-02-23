@@ -232,6 +232,7 @@ export class CompanyProfile extends AutomapperProfile {
       /**
        * The mapping is between Company and ReadCompanyMetadataDto.
        */
+
       createMap(mapper, Company, ReadCompanyMetadataDto);
     };
   }

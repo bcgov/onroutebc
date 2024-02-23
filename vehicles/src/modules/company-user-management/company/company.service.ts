@@ -45,6 +45,10 @@ import { getDirectory } from '../../../common/helper/auth.helper';
 import { convertToHash } from '../../../common/helper/crypto.helper';
 import { CRYPTO_ALGORITHM_SHA256 } from '../../../common/constants/api.constant';
 import { v4 as uuidv4 } from 'uuid';
+import { UserStatus } from 'src/common/enum/user-status.enum';
+import { VerifyClientDto } from './dto/request/verify-client.dto';
+import { ReadVerifyClientDto } from './dto/response/read-verify-client.dto';
+import { Permit } from '../../permit/entities/permit.entity';
 
 @Injectable()
 export class CompanyService {
@@ -202,6 +206,7 @@ export class CompanyService {
 
         const newCompanyUser = new CompanyUser();
         newCompanyUser.company = new Company();
+        newCompanyUser.statusCode = UserStatus.ACTIVE;
         newCompanyUser.company.companyId = newCompany.companyId;
         newCompanyUser.user = user;
         newCompanyUser.userAuthGroup = UserAuthGroup.COMPANY_ADMINISTRATOR;
@@ -338,17 +343,20 @@ export class CompanyService {
   }
 
   /**
-   * The findOne() method returns a ReadCompanyMetadataDto object corresponding to the given
-   * user guid. It retrieves the entity from the database using the
-   * Repository, maps it to a DTO object using the Mapper, and returns it.
+   * The findCompanyMetadataByUserGuid() method returns a list of ReadCompanyMetadataDto objects corresponding to the given
+   * user GUID. It performs a custom SQL query to the database to retrieve company user entities based on the user GUID
+   * and an optional list of user status codes. After obtaining the company user entities, it maps them to
+   * ReadCompanyMetadataDto objects using the Mapper, and returns the list.
    *
-   * @param userGUID The company Id.
+   * @param userGUID The user GUID used to find related company entities.
+   * @param userStatusCode Optional. An array of user status codes to filter the company users. Defaults to [UserStatus.ACTIVE].
    *
-   * @returns The company details list as a promise of type {@link ReadCompanyMetadataDto}
+   * @returns A promise of an array of ReadCompanyMetadataDto objects representing the company metadata related to the given user GUID.
    */
   @LogAsyncMethodExecution()
   async findCompanyMetadataByUserGuid(
     userGUID: string,
+    userStatusCode = [UserStatus.ACTIVE],
   ): Promise<ReadCompanyMetadataDto[]> {
     const companyUsers = await this.companyRepository
       .createQueryBuilder('company')
@@ -358,6 +366,9 @@ export class CompanyService {
       .leftJoinAndSelect('companyUsers.user', 'user')
       .where('user.userGUID= :userGUID', {
         userGUID: userGUID,
+      })
+      .andWhere('companyUsers.statusCode IN (:...statusCode)', {
+        statusCode: userStatusCode || [],
       })
       .getMany();
 
@@ -731,5 +742,87 @@ export class CompanyService {
       '-' +
       String(rnd);
     return clientNumber;
+  }
+
+  /**
+   * The verifyClient() method attempts to validate the existence and correct linkage of a specified client
+   * and their associated permit within the system. The process involves searching for a company using a provided
+   * client number (including handling legacy client number scenarios) and then verifying the existence of a
+   * permit that correlates with the identified company. The outcome is encapsulated in a ReadVerifyClientDto
+   * object indicating the presence of the client, the permit, and the successful verification if applicable.
+   *
+   * @param currentUser The current logged in user's JWT token.
+   * @param verifyClientDto The DTO containing the client and permit number to verify.
+   *
+   * @returns A promise resolved with a ReadVerifyClientDto object that includes the verification status.
+   */
+  @LogAsyncMethodExecution()
+  async verifyClient(
+    currentUser: IUserJWT,
+    verifyClientDto: VerifyClientDto,
+  ): Promise<ReadVerifyClientDto> {
+    // Initialize a default ReadVerifyClientDto object
+    const verifyClient: ReadVerifyClientDto = {
+      foundClient: false,
+      foundPermit: false,
+      verifiedClient: undefined,
+    };
+
+    // Attempt to find a company by the given client number
+    let company = await this.findOneByClientNumber(
+      verifyClientDto.clientNumber,
+    );
+
+    // If no company found, attempt to find by legacy client number
+    if (!company) {
+      company = await this.findOneByLegacyClientNumber(
+        verifyClientDto.clientNumber,
+      );
+    }
+
+    // Mark client as found if company object exists
+    if (company) {
+      verifyClient.foundClient = true;
+    }
+
+    // Create a new queryRunner to manage transaction
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      // Attempt to find a permit by permit number or migrated permit number
+      const permit = await queryRunner.manager
+        .createQueryBuilder(Permit, 'permit')
+        .where('permit.migratedPermitNumber = :permitNumber', {
+          permitNumber: verifyClientDto.permitNumber,
+        })
+        .orWhere('permit.permitNumber = :permitNumber', {
+          permitNumber: verifyClientDto.permitNumber,
+        })
+        .getOne();
+
+      // If permit found, validate company and permit linkage
+      if (permit) {
+        verifyClient.foundPermit = true;
+        if (permit.companyId === company?.companyId) {
+          verifyClient.verifiedClient =
+            await this.mapCompanyEntityToCompanyDto(company);
+        }
+      }
+
+      // Commit the transaction if all operations succeed
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      // Rollback the transaction in case of error
+      await queryRunner.rollbackTransaction();
+      this.logger.error(error);
+      throw error;
+    } finally {
+      // Release the query runner
+      await queryRunner.release();
+    }
+
+    // Return the verifyClient result
+    return verifyClient;
   }
 }
