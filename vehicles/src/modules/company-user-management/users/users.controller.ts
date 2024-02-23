@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  Body,
   Controller,
   Get,
   Param,
@@ -17,7 +16,6 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiTags,
-  ApiCreatedResponse,
   ApiOperation,
 } from '@nestjs/swagger';
 import { ExceptionDto } from '../../../common/exception/exception.dto';
@@ -31,8 +29,6 @@ import { Roles } from '../../../common/decorator/roles.decorator';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { ReadUserDto } from './dto/response/read-user.dto';
 import { IDP } from '../../../common/enum/idp.enum';
-import { ReadVerifyClientDto } from './dto/response/read-verify-client.dto';
-import { VerifyClientDto } from './dto/request/verify-client.dto';
 import { GetStaffUserQueryParamsDto } from './dto/request/queryParam/getStaffUser.query-params.dto';
 import { GetUserRolesQueryParamsDto } from './dto/request/queryParam/getUserRoles.query-params.dto';
 
@@ -87,26 +83,6 @@ export class UsersController {
       userExists = await this.userService.findORBCUser(currentUser);
     }
     return userExists;
-  }
-
-  /**
-   * A POST method defined with a route of /verify-client that verifies
-   * if the migrated client and permit exists in ORBC
-   *
-   * @returns The user details with response object {@link ReadVerifyMigratedClientDto}.
-   */
-  @ApiCreatedResponse({
-    description: 'The Verify Client Resource',
-    type: ReadVerifyClientDto,
-  })
-  @AuthOnly()
-  @Post('verify-client')
-  async verifyClient(
-    @Req() request: Request,
-    @Body() verifyClientDto: VerifyClientDto,
-  ): Promise<ReadVerifyClientDto> {
-    const currentUser = request.user as IUserJWT;
-    return await this.userService.verifyClient(currentUser, verifyClientDto);
   }
 
   /**
