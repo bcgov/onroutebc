@@ -24,7 +24,6 @@ import OnRouteBCContext, {
 } from "./common/authentication/OnRouteBCContext";
 import { VerifiedClient, UserRolesType } from "./common/authentication/types";
 import { WebStorageStateStore } from "oidc-client-ts";
-import { FeatureFlagContextProvider } from "./common/components/FeatureFlagContext";
 
 const authority =
   import.meta.env.VITE_KEYCLOAK_ISSUER_URL ||
@@ -118,7 +117,6 @@ const App = () => {
               isNewBCeIDUser,
             ])}
           >
-            <FeatureFlagContextProvider>
             <SnackBarContext.Provider
               value={useMemo(() => {
                 return { setSnackBar: setSnackBar };
@@ -142,7 +140,6 @@ const App = () => {
               </div>
               <Footer />
             </SnackBarContext.Provider>
-            </FeatureFlagContextProvider>
           </OnRouteBCContext.Provider>
         </QueryClientProvider>
       </ThemeProvider>
