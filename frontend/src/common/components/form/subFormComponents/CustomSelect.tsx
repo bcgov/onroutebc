@@ -8,7 +8,6 @@ import {
 
 import "./CustomSelect.scss";
 import { ORBC_FormTypes } from "../../../types/common";
-import { SELECT_FIELD_STYLE } from "../../../../themes/orbcStyles";
 import { CustomSelectDisplayProps } from "../../../types/formElements";
 
 /**
@@ -54,8 +53,9 @@ export const CustomSelect = <T extends ORBC_FormTypes>({
       }}
       value={value ?? ""}
       {...register(name, rules)}
-      MenuProps={SELECT_FIELD_STYLE.MENU_PROPS}
-      sx={SELECT_FIELD_STYLE.SELECT_FIELDSET}
+      MenuProps={{
+        className: "custom-select__menu"
+      }}
       // This onClose function fixes a bug where the Select component does not immediately
       // revalidate when selecting an option after an invalid form submission.
       // The validation needed to be triggered again manually

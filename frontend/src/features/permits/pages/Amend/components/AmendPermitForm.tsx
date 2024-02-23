@@ -18,6 +18,7 @@ import { Nullable } from "../../../../../common/types/common";
 import { VehicleDetails } from "../../../types/application";
 import { ERROR_ROUTES } from "../../../../../routes/constants";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
+import OnRouteBCContext from "../../../../../common/authentication/OnRouteBCContext";
 import {
   dayjsToUtcStr,
   nowUtc,
@@ -45,6 +46,15 @@ export const AmendPermitForm = () => {
     goHome,
     getLinks,
   } = useContext(AmendPermitContext);
+
+  const {
+    companyLegalName,
+    idirUserDetails,
+  } = useContext(OnRouteBCContext);
+
+  const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
+  const doingBusinessAs = isStaffActingAsCompany && companyLegalName ?
+    companyLegalName : "";
 
   const navigate = useNavigate();
 
@@ -227,6 +237,7 @@ export const AmendPermitForm = () => {
           trailerSubTypes={trailerSubTypes}
           companyInfo={companyInfo}
           durationOptions={durationOptions}
+          doingBusinessAs={doingBusinessAs}
         >
           <AmendRevisionHistory revisionHistory={revisionHistory} />
           <AmendReason feature={FEATURE} />

@@ -50,6 +50,7 @@ interface PermitReviewProps {
   showChangedFields?: boolean;
   oldFields?: Nullable<Partial<Application>>;
   calculatedFee?: string;
+  doingBusinessAs?: Nullable<string>;
 }
 
 export const PermitReview = (props: PermitReviewProps) => {
@@ -73,6 +74,7 @@ export const PermitReview = (props: PermitReviewProps) => {
           createdDateTime={props.createdDateTime}
           updatedDateTime={props.updatedDateTime}
           companyInfo={props.companyInfo}
+          doingBusinessAs={props.doingBusinessAs}
         />
 
         <ReviewContactDetails

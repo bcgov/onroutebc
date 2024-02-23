@@ -5,7 +5,7 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 
-import { SELECT_FIELD_STYLE } from "../../../../../../../../themes/orbcStyles";
+import "./SelectUnitOrPlate.scss";
 import { CustomSelectDisplayProps } from "../../../../../../../../common/types/formElements";
 import { Optional } from "../../../../../../../../common/types/common";
 
@@ -18,17 +18,19 @@ export const SelectUnitOrPlate = ({
   label,
   onChange,
   menuItems,
-  width,
 }: {
   value: string;
   label: string;
   onChange: (event: SelectChangeEvent) => void;
   menuItems: Optional<JSX.Element[]>;
-  width: string;
 }) => (
-  <FormControl margin="normal">
-    <FormLabel sx={SELECT_FIELD_STYLE.FORM_LABEL}>{label}</FormLabel>
+  <FormControl
+    margin="normal"
+    className="select-unit-or-plate"
+  >
+    <FormLabel className="select-unit-or-plate__label">{label}</FormLabel>
     <Select
+      className="select-unit-or-plate__select"
       value={value}
       onChange={onChange}
       SelectDisplayProps={
@@ -37,14 +39,8 @@ export const SelectUnitOrPlate = ({
         } as CustomSelectDisplayProps
       }
       MenuProps={{
-        ...SELECT_FIELD_STYLE.MENU_PROPS,
+        className: "select-unit-or-plate__menu",
       }}
-      sx={[
-        SELECT_FIELD_STYLE.SELECT_FIELDSET,
-        {
-          width: { width },
-        },
-      ]}
     >
       {menuItems}
     </Select>

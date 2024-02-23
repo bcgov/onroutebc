@@ -113,7 +113,7 @@ export const verifyMigratedClient = (
   requestPayload: VerifyClientRequest,
 ): Promise<VerifyMigratedClientResponse> => {
   return httpPOSTRequest(
-    `${VEHICLES_URL}/users/verify-client`,
+    `${VEHICLES_URL}/companies/verify-client`,
     replaceEmptyValuesWithNull(requestPayload),
   ).then((response) => response.data);
 };
@@ -201,9 +201,11 @@ export const deleteCompanyUsers = (userName: string) => {
 export const getCompanyUserByUserGUID = (
   userGUID: string,
 ): Promise<ReadUserInformationResponse> => {
-  return httpGETRequest(`${VEHICLES_URL}/users/${userGUID}`).then(
-    (response) => response.data,
-  );
+  return httpGETRequest(
+    `${
+      MANAGE_PROFILE_API.COMPANIES
+    }/${getCompanyIdFromSession()}/users/${userGUID}`,
+  ).then((response) => response.data);
 };
 
 /**

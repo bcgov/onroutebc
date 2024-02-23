@@ -16,7 +16,6 @@ import {
   createRedCompanyCvClientUserDtoMock,
   readRedCompanyCvClientUserDtoMock,
   updateRedCompanyCvClientUserDtoMock,
-  updateRedCompanyCvClientUserStatusDtoMock,
 } from '../../util/mocks/data/user.mock';
 import { IUserJWT } from '../../../src/common/interface/user-jwt.interface';
 import { CompanyUsersController } from '../../../src/modules/company-user-management/users/company-users.controller';
@@ -69,6 +68,36 @@ describe('CompanyUsersController', () => {
     });
   });
 
+  describe('get user by user guid function', () => {
+    it('should return a user whose user guid matches', async () => {
+      userService.findUsersDto.mockResolvedValue([
+        readRedCompanyCvClientUserDtoMock,
+      ]);
+      const retUser = await controller.get({
+        companyId: constants.RED_COMPANY_ID,
+        userGUID: constants.RED_COMPANY_CVCLIENT_USER_GUID,
+      });
+
+      expect(typeof retUser).toBe('object');
+      expect(retUser).toEqual(readRedCompanyCvClientUserDtoMock);
+      expect(userService.findUsersDto).toHaveBeenCalledWith(
+        constants.RED_COMPANY_CVCLIENT_USER_GUID,
+        [constants.RED_COMPANY_ID],
+      );
+    });
+
+    it('should throw DataNotFoundException when user not found', async () => {
+      userService.findUsersDto.mockResolvedValue([]);
+
+      await expect(async () => {
+        await controller.get({
+          companyId: constants.RED_COMPANY_ID,
+          userGUID: constants.RED_COMPANY_CVCLIENT_USER_GUID,
+        });
+      }).rejects.toThrow(DataNotFoundException);
+    });
+  });
+
   describe('Users controller update function', () => {
     it('should return the updated user', async () => {
       const request = createMock<Request>();
@@ -103,47 +132,6 @@ describe('CompanyUsersController', () => {
           null,
           updateRedCompanyCvClientUserDtoMock,
         );
-      }).rejects.toThrow(DataNotFoundException);
-    });
-  });
-
-  describe('Users controller updateStatus function', () => {
-    it('should return the result of user Status Update', async () => {
-      const request = createMock<Request>();
-      request.user = redCompanyAdminUserJWTMock;
-
-      userService.updateStatus.mockResolvedValue({
-        raw: undefined,
-        affected: 1,
-        generatedMaps: undefined,
-      });
-      const retUser = (await controller.updateStatus(
-        request,
-        constants.RED_COMPANY_ID,
-        constants.RED_COMPANY_CVCLIENT_USER_GUID,
-        updateRedCompanyCvClientUserStatusDtoMock,
-      )) as { statusUpdated: boolean };
-
-      expect(typeof retUser).toBe('object');
-      expect(retUser.statusUpdated).toBeTruthy();
-    });
-    it('should throw DataNotFoundException when user not found', async () => {
-      const request = createMock<Request>();
-      request.user = redCompanyAdminUserJWTMock;
-
-      userService.updateStatus.mockResolvedValue({
-        raw: undefined,
-        affected: 0,
-        generatedMaps: undefined,
-      });
-
-      await expect(async () => {
-        (await controller.updateStatus(
-          request,
-          constants.RED_COMPANY_ID,
-          constants.RED_COMPANY_CVCLIENT_USER_GUID,
-          updateRedCompanyCvClientUserStatusDtoMock,
-        )) as { statusUpdated: boolean };
       }).rejects.toThrow(DataNotFoundException);
     });
   });

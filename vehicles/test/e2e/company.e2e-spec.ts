@@ -13,7 +13,6 @@ import {
   createRedCompanyDtoMock,
   readRedCompanyDtoMock,
   readRedCompanyMetadataDtoMock,
-  readRedCompanyUserDtoMock,
   redCompanyEntityMock,
   updateRedCompanyDtoMock,
 } from '../util/mocks/data/company.mock';
@@ -101,7 +100,12 @@ describe('Company (e2e)', () => {
         .post('/companies')
         .send(createRedCompanyDtoMock)
         .expect(201);
-      expect(response.body).toMatchObject(readRedCompanyUserDtoMock);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          companyId: constants.RED_COMPANY_ID,
+          companyGUID: constants.RED_COMPANY_GUID,
+        }),
+      );
     });
   });
 

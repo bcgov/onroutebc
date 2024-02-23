@@ -1,26 +1,21 @@
 @import "../../../../../../themes/orbcStyles";
 
 .permit-pay-fee-summary {
+  background-color: $banner-grey;
+  border-radius: 0.25rem;
+
   & &__pay {
     max-width: 33rem;
+    display: flex;
+    flex-direction: column;
 
     .fee-summary {
-      margin-bottom: 2em;
+      margin: 0;
     }
   }
 
   & &__pay-btn {
-    width: 100%;
     font-weight: 600;
-  }
-
-  & &__contact {
-    color: $bc-black;
-    margin-top: 2.5rem;
-    margin-bottom: 10.75rem;
-
-    .pay-contact {
-      font-weight: 700;
-    }
+    margin: 0 1.5rem 1.5rem;
   }
 }
