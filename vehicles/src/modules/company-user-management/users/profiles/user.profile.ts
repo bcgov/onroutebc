@@ -247,6 +247,18 @@ export class UsersProfile extends AutomapperProfile {
           }),
         ),
         forMember(
+          (d) => d.statusCode,
+          mapFrom((s) => {
+            if (s.companyUsers?.length && s.companyUsers[0]?.statusCode) {
+              //the logic to be revisited if the application decide to support
+              //one user id multiple companies
+              return s.companyUsers[0]?.statusCode;
+            } else {
+              return null;
+            }
+          }),
+        ),
+        forMember(
           (d) => d.phone1Extension,
           mapFrom((s) => s.userContact.extension1),
         ),
