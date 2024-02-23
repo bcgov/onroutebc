@@ -7,7 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, In, Repository, UpdateResult } from 'typeorm';
+import { DataSource, Repository, UpdateResult } from 'typeorm';
 import { User } from './entities/user.entity';
 import { ReadUserDto } from './dto/response/read-user.dto';
 import { CreateUserDto } from './dto/request/create-user.dto';
@@ -783,17 +783,15 @@ export class UsersService {
   }
 
   /**
-   * Removes all specified users for a given company from the database.
+   * Updates the status of specified users to DELETED for a given company and ensures that
+   * at least one company administrator remains. It performs checks before deletion, updates
+   * user statuses, and returns details on successful and failed deletions.
    *
-   * This method first retrieves the existing users by their GUIDs and company ID. It then identifies
-   * which users to mark as deleted by updating their status to DELETED and additional metadata. Finally,
-   * it constructs a response detailing which deletions were successful and which were not, based on the
-   * presence or absence of the user GUIDs in the database before the operation.
-   *
-   * @param {string[]} userGUIDS The GUIDs of the users to be deleted.
-   * @param {number} companyId The ID of the company associated with the users.
-   * @param {IUserJWT} currentUser The current user's JWT token details, used for audit purposes.
-   * @returns {Promise<DeleteDto>} An object containing arrays of successful and failed deletions.
+   * @param {string[]} userGUIDS The GUIDs of the users slated for deletion.
+   * @param {number} companyId The ID of the company the users belong to.
+   * @param {IUserJWT} currentUser JWT token details of the current user for auditing.
+   * @returns {Promise<DeleteDto>} An object containing arrays of successfully deleted user GUIDs
+   * and those that failed to delete.
    */
   @LogAsyncMethodExecution()
   async removeAll(
@@ -801,10 +799,9 @@ export class UsersService {
     companyId: number,
     currentUser: IUserJWT,
   ): Promise<DeleteDto> {
-    // Retrieve a list of users by their GUIDs and company ID before deletion
+    // Retrieve a list of users by company ID before deletion
     const usersBeforeDelete = await this.companyUserRepository.find({
       where: {
-        user: { userGUID: In(userGUIDS) },
         company: { companyId: companyId },
         statusCode: UserStatus.ACTIVE,
       },
@@ -814,16 +811,37 @@ export class UsersService {
       },
     });
 
+    // Mapping users to check against COMPANY_ADMINISTRATOR group before operations
+    const companyAdminUserGuids = usersBeforeDelete.map(
+      (companyUser) =>
+        companyUser.userAuthGroup === UserAuthGroup.COMPANY_ADMINISTRATOR &&
+        companyUser?.user?.userGUID,
+    );
+
+    // Filter admin GUIDs to exclude those in the deletion list, ensuring at least one remains
+    const filteredCompanyAdminUserGuids = companyAdminUserGuids.filter(
+      (guid) => !userGUIDS.includes(guid),
+    );
+
+    // Check if operation results in zero company admins, throwing an error if true
+    if (!filteredCompanyAdminUserGuids?.length) {
+      throw new BadRequestException(
+        'This operation is not allowed as a company should have atlease one CVAdmin at any given moment.',
+      );
+    }
     // Extract only the GUIDs of the users to be deleted and modify them.
     const userToBeDeleted = usersBeforeDelete.map((companyUser) => {
-      return {
-        ...companyUser,
-        statusCode: UserStatus.DELETED,
-        updatedDateTime: new Date(),
-        updatedUser: currentUser.userName,
-        updatedUserDirectory: currentUser.orbcUserDirectory,
-        updatedUserGuid: currentUser.userGUID,
-      } as CompanyUser;
+      return (
+        userGUIDS.includes(companyUser.user.userGUID) &&
+        ({
+          ...companyUser,
+          statusCode: UserStatus.DELETED,
+          updatedDateTime: new Date(),
+          updatedUser: currentUser.userName,
+          updatedUserDirectory: currentUser.orbcUserDirectory,
+          updatedUserGuid: currentUser.userGUID,
+        } as CompanyUser)
+      );
     });
 
     // Identify which GUIDs were not found (failure to delete)
