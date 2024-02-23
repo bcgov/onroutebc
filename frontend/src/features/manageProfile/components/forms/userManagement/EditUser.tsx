@@ -48,7 +48,10 @@ export const EditUserForm = memo(
         countryCode: getDefaultRequiredVal("", userInfo?.countryCode),
         provinceCode: getDefaultRequiredVal("", userInfo?.provinceCode),
         city: getDefaultRequiredVal("", userInfo?.city),
-        userAuthGroup: BCeID_USER_AUTH_GROUP.COMPANY_ADMINISTRATOR,
+        userAuthGroup: getDefaultRequiredVal(
+          BCeID_USER_AUTH_GROUP.COMPANY_ADMINISTRATOR,
+          userInfo?.userAuthGroup,
+        ),
       },
     });
     const { handleSubmit } = formMethods;

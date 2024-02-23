@@ -17,6 +17,13 @@ export type MockType<T> = {
   [P in keyof T]?: jest.Mock<object>;
 };
 
+export type MockQueryRunnerManager = {
+  delete: jest.Mock;
+  update: jest.Mock;
+  find: jest.Mock;
+  save: jest.Mock;
+};
+
 export const dataSourceMockFactory = () => {
   return {
     ...jest.requireActual('typeorm/data-source/DataSource'),

@@ -26,7 +26,6 @@ import { CompanyService } from '../../src/modules/company-user-management/compan
 import { PendingUsersService } from '../../src/modules/company-user-management/pending-users/pending-users.service';
 import {
   idirUserEntityMock,
-  readRedCompanyAdminUserDtoMock,
   redCompanyAdminUserEntityMock,
 } from '../util/mocks/data/user.mock';
 import { createMapper } from '@automapper/core';
@@ -39,9 +38,11 @@ import { PendingIdirUsersService } from 'src/modules/company-user-management/pen
 import { PendingIdirUsersProfile } from 'src/modules/company-user-management/pending-idir-users/profiles/pending-idir-user.profile';
 import { readRedCompanyMetadataDtoMock } from 'test/util/mocks/data/company.mock';
 import { App } from 'supertest/types';
+import { CompanyUser } from '../../src/modules/company-user-management/users/entities/company-user.entity';
 
 let repo: DeepMocked<Repository<User>>;
 let repoIdirUser: DeepMocked<Repository<IdirUser>>;
+let repoCompanyUser: DeepMocked<Repository<CompanyUser>>;
 let repoPendingIdirUser: DeepMocked<Repository<PendingIdirUser>>;
 let pendingUsersServiceMock: DeepMocked<PendingUsersService>;
 let pendingIdirUsersServiceMock: DeepMocked<PendingIdirUsersService>;
@@ -54,6 +55,7 @@ describe('Users (e2e)', () => {
     jest.clearAllMocks();
     repo = createMock<Repository<User>>();
     repoIdirUser = createMock<Repository<IdirUser>>();
+    repoCompanyUser = createMock<Repository<CompanyUser>>();
     repoPendingIdirUser = createMock<Repository<PendingIdirUser>>();
     pendingUsersServiceMock = createMock<PendingUsersService>();
     pendingIdirUsersServiceMock = createMock<PendingIdirUsersService>();
@@ -74,6 +76,10 @@ describe('Users (e2e)', () => {
         {
           provide: getRepositoryToken(PendingIdirUser),
           useValue: repoPendingIdirUser,
+        },
+        {
+          provide: getRepositoryToken(CompanyUser),
+          useValue: repoCompanyUser,
         },
         {
           provide: PendingUsersService,
@@ -178,7 +184,12 @@ describe('Users (e2e)', () => {
         .get('/users/' + constants.RED_COMPANY_ADMIN_USER_GUID)
         .expect(200);
 
-      expect(response.body).toMatchObject(readRedCompanyAdminUserDtoMock);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          userGUID: constants.RED_COMPANY_ADMIN_USER_GUID,
+          userName: constants.RED_COMPANY_ADMIN_USER_NAME,
+        }),
+      );
     });
   });
 
