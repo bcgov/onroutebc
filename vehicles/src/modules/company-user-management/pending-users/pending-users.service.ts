@@ -1,8 +1,8 @@
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
+import { Repository, In, DataSource } from 'typeorm';
 import { CreatePendingUserDto } from './dto/request/create-pending-user.dto';
 import { UpdatePendingUserDto } from './dto/request/update-pending-user.dto';
 import { ReadPendingUserDto } from './dto/response/read-pending-user.dto';
@@ -11,24 +11,31 @@ import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { TPS_MIGRATED_USER } from '../../../common/constants/api.constant';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
 import { DeleteDto } from '../../common/dto/response/delete.dto';
+import { User } from '../users/entities/user.entity';
+import { UserStatus } from '../../../common/enum/user-status.enum';
 
 @Injectable()
 export class PendingUsersService {
+  private readonly logger = new Logger(PendingUsersService.name);
   constructor(
     @InjectRepository(PendingUser)
     private pendingUserRepository: Repository<PendingUser>,
     @InjectMapper() private readonly classMapper: Mapper,
+    private dataSource: DataSource,
   ) {}
 
   /**
-   * Creates a new pending user in the database.
+   * Retrieves and maps pending user details from the database, based on
+   * provided criteria, and checks against existing entries to prevent duplicate
+   * active associations within a company.
    *
-   * @param companyId The company Id.
-   * @param createPendingUserDto Request object of type
-   * {@link CreatePendingUserDto} for creating a pending user.
-   *
-   * @returns The pending user details as a promise of type
-   * {@link ReadPendingUserDto}
+   * @param companyId The company Id to associate the pending user with.
+   * @param createPendingUserDto The data transfer object containing information
+   * needed to create a pending user.
+   * @param currentUser The current user's information, used to set additional
+   * properties on the pending user entity.
+   * @returns A promise containing the details of the newly created pending
+   * user, mapped to a ReadPendingUserDto object.
    */
   @LogAsyncMethodExecution()
   async create(
@@ -36,7 +43,8 @@ export class PendingUsersService {
     createPendingUserDto: CreatePendingUserDto,
     currentUser: IUserJWT,
   ): Promise<ReadPendingUserDto> {
-    const newPendingUserDto = this.classMapper.map(
+    // Map the DTO to the PendingUser entity, including additional properties like companyId
+    let newPendingUser = this.classMapper.map(
       createPendingUserDto,
       CreatePendingUserDto,
       PendingUser,
@@ -51,13 +59,41 @@ export class PendingUsersService {
       },
     );
 
-    await this.pendingUserRepository.insert(newPendingUserDto);
+    // Check if the user with the provided username already exists in the database
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const existingUser = await queryRunner.manager.find<User>(User, {
+        where: {
+          userName: createPendingUserDto.userName,
+          companyUsers: { statusCode: UserStatus.ACTIVE },
+        },
+        relations: {
+          companyUsers: true,
+        },
+      });
 
-    const retPendingUser = await this.findPendingUsersDto(
-      newPendingUserDto.userName,
-      newPendingUserDto.companyId,
-    );
-    return retPendingUser[0];
+      // If the user exists, throw an exception to stop the process
+      if (existingUser?.length) {
+        throw new BadRequestException(
+          'The addition of a pending user is denied as the user is already associated with a company.',
+        );
+      }
+
+      // Insert the new pending user into the database
+      newPendingUser = await queryRunner.manager.save(newPendingUser);
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      this.logger.error(error);
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+
+    // Return the first pending user object in the list
+    return (await this.mapEntityToDto([newPendingUser]))?.at(0);
   }
 
   /**
@@ -172,14 +208,18 @@ export class PendingUsersService {
     );
 
     // Map the retrieved pending user entities to ReadPendingUserDto objects
-    const readPendingUserDto = await this.classMapper.mapArrayAsync(
+    const readPendingUserDto = await this.mapEntityToDto(pendingUserDetails);
+
+    // Return the array of ReadPendingUserDto objects
+    return readPendingUserDto;
+  }
+
+  private async mapEntityToDto(pendingUserDetails: PendingUser[]) {
+    return await this.classMapper.mapArrayAsync(
       pendingUserDetails,
       PendingUser,
       ReadPendingUserDto,
     );
-
-    // Return the array of ReadPendingUserDto objects
-    return readPendingUserDto;
   }
 
   /**
