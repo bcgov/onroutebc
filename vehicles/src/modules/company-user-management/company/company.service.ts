@@ -8,7 +8,10 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, DataSource, Repository } from 'typeorm';
-import { UserAuthGroup } from '../../../common/enum/user-auth-group.enum';
+import {
+  ClientUserAuthGroup,
+  UserAuthGroup,
+} from '../../../common/enum/user-auth-group.enum';
 import { ReadUserDto } from '../users/dto/response/read-user.dto';
 import { CreateCompanyDto } from './dto/request/create-company.dto';
 import { UpdateCompanyDto } from './dto/request/update-company.dto';
@@ -209,7 +212,8 @@ export class CompanyService {
         newCompanyUser.statusCode = UserStatus.ACTIVE;
         newCompanyUser.company.companyId = newCompany.companyId;
         newCompanyUser.user = user;
-        newCompanyUser.userAuthGroup = UserAuthGroup.COMPANY_ADMINISTRATOR;
+        newCompanyUser.userAuthGroup =
+          ClientUserAuthGroup.COMPANY_ADMINISTRATOR;
 
         user.companyUsers = [newCompanyUser];
         user = await queryRunner.manager.save(user);
