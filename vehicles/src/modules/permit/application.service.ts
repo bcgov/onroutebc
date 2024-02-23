@@ -220,15 +220,19 @@ export class ApplicationService {
    * @param userGUID - Unique identifier for the user. If provided, the query
    */
   @LogAsyncMethodExecution()
-  async findAllApplications(findAllApplicationsOptions?: {
-    page: number;
-    take: number;
-    orderBy?: string;
-    companyId?: number;
-    userGUID?: string;
-  }): Promise<PaginationDto<ReadApplicationDto>> {
+  async findAllApplications(
+    applicationStatus: ApplicationStatus[],
+    findAllApplicationsOptions?: {
+      page: number;
+      take: number;
+      orderBy?: string;
+      companyId?: number;
+      userGUID?: string;
+    },
+  ): Promise<PaginationDto<ReadApplicationDto>> {
     // Construct the base query to find applications
     const applicationsQB = this.buildApplicationQuery(
+      applicationStatus,
       findAllApplicationsOptions.companyId,
       findAllApplicationsOptions.userGUID,
     );
@@ -286,6 +290,7 @@ export class ApplicationService {
   }
 
   private buildApplicationQuery(
+    applicationStatus: ApplicationStatus[],
     companyId?: number,
     userGUID?: string,
   ): SelectQueryBuilder<Permit> {
@@ -301,13 +306,11 @@ export class ApplicationService {
       });
     }
 
+    //Filter by application status
     permitsQuery = permitsQuery.andWhere(
       'permit.permitStatus IN (:...statuses)',
       {
-        statuses: [
-          ApplicationStatus.IN_PROGRESS,
-          ApplicationStatus.WAITING_PAYMENT,
-        ],
+        statuses: applicationStatus,
       },
     );
 
@@ -393,6 +396,8 @@ export class ApplicationService {
     applicationIds: string[],
     applicationStatus: ApplicationStatus,
     currentUser: IUserJWT,
+    companyId: number,
+    userGuid: string,
   ): Promise<ResultDto> {
     let permitApprovalSource: PermitApprovalSourceEnum = null;
     if (applicationIds.length === 1) {
@@ -410,45 +415,21 @@ export class ApplicationService {
           permitApprovalSource = PermitApprovalSourceEnum.AUTO;
       }
     } else if (
-      applicationIds.length > 1 &&
-      applicationStatus != ApplicationStatus.CANCELLED
+      applicationIds.length > 1 ||
+      applicationStatus === ApplicationStatus.CANCELLED ||
+      applicationStatus === ApplicationStatus.DELETED
     ) {
-      throw new ForbiddenException(
-        'Bulk status update is only allowed for Cancellation.',
-      );
+      throw new ForbiddenException('This operation is not allowed.');
     }
-    const updateResult = await this.permitRepository
-      .createQueryBuilder()
-      .update()
-      .set({
-        permitStatus: applicationStatus,
-        ...(permitApprovalSource && {
-          permitApprovalSource: permitApprovalSource,
-        }),
-        updatedUser: currentUser.userName,
-        updatedDateTime: new Date(),
-        updatedUserDirectory: currentUser.orbcUserDirectory,
-        updatedUserGuid: currentUser.userGUID,
-      })
-      .whereInIds(applicationIds)
-      .returning(['permitId'])
-      .execute();
-
-    const updatedApplications = Array.from(
-      updateResult?.raw as [
-        {
-          ID: string;
-        },
-      ],
+    const result = await this.updateApplicationStatusQuery(
+      applicationIds,
+      applicationStatus,
+      companyId,
+      currentUser,
+      userGuid,
+      permitApprovalSource,
     );
-    const success = updatedApplications?.map((permit) => permit.ID);
-    const failure = applicationIds?.filter((id) => !success?.includes(id));
-
-    const resultDto: ResultDto = {
-      success: success,
-      failure: failure,
-    };
-    return resultDto;
+    return result;
   }
 
   /**
@@ -967,5 +948,69 @@ export class ApplicationService {
       })
       .getCount();
     return count;
+  }
+
+  /**
+   * Removes all specified applications for a given company and user (optinal) from the database.
+   *
+   * This method first retrieves the existing applications by their IDs and company ID and userGUID (optinal). It then identifies
+   * which applications can be deleted (based on whether their IDs were found or not) and proceeds to delete
+   * them. Finally, it constructs a response detailing which deletions were successful and which were not.
+   *
+   * @param {string[]} applicationIds The IDs of the applications to be deleted.
+   * @param {number} companyId The ID of the company owning the applications.
+   * @param {number} userGUID The ID of the user owning the applications.
+   * @returns {Promise<DeleteDto>} An object containing arrays of successful and failed deletions.
+   */
+  @LogAsyncMethodExecution()
+  async updateApplicationStatusQuery(
+    applicationIds: string[],
+    applicationStatus: ApplicationStatus,
+    companyId: number,
+    currentUser: IUserJWT,
+    userGuid?: string,
+    permitApprovalSource?: PermitApprovalSourceEnum,
+  ): Promise<ResultDto> {
+    let updateQuery = this.permitRepository
+      .createQueryBuilder()
+      .update()
+      .set({
+        permitStatus: applicationStatus,
+        ...(permitApprovalSource && {
+          permitApprovalSource: permitApprovalSource,
+        }),
+        updatedUser: currentUser.userName,
+        updatedDateTime: new Date(),
+        updatedUserDirectory: currentUser.orbcUserDirectory,
+        updatedUserGuid: currentUser.userGUID,
+      })
+      .whereInIds(applicationIds);
+    updateQuery = updateQuery.andWhere('companiId: companyId', {
+      companyId: companyId,
+    });
+    updateQuery = updateQuery.andWhere('permit.permitNumber IS NULL');
+    updateQuery = updateQuery.returning(['permitId']);
+    if (userGuid) {
+      updateQuery = updateQuery.andWhere('userGuid: userGuid', {
+        userGuid: userGuid,
+      });
+    }
+    const updateResult = await updateQuery.execute();
+
+    const updatedApplications = Array.from(
+      updateResult?.raw as [
+        {
+          ID: string;
+        },
+      ],
+    );
+    const success = updatedApplications?.map((permit) => permit.ID);
+    const failure = applicationIds?.filter((id) => !success?.includes(id));
+
+    const resultDto: ResultDto = {
+      success: success,
+      failure: failure,
+    };
+    return resultDto;
   }
 }

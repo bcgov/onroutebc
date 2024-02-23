@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   Param,
   Post,
   Put,
@@ -40,6 +41,14 @@ import {
 } from 'src/common/enum/user-auth-group.enum';
 import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
 import { GetApplicationQueryParamsDto } from './dto/request/queryParam/getApplication.query-params.dto';
+import { DeleteDto } from '../common/dto/response/delete.dto';
+import { DeleteApplicationDto } from './dto/request/delete-application.dto';
+import {
+  ApplicationStatus,
+  cvClientAIPStatus,
+  deleteCvClientAIP,
+  idirUserAIPStatus,
+} from 'src/common/enum/application-status.enum';
 
 @ApiBearerAuth()
 @ApiTags('Permit Application')
@@ -105,7 +114,11 @@ export class ApplicationController {
       UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup
         ? currentUser.userGUID
         : null;
-    return this.applicationService.findAllApplications({
+    const applicationStatus: ApplicationStatus[] =
+      idirUserAuthGroupList.includes(currentUser.orbcUserAuthGroup)
+        ? idirUserAIPStatus
+        : cvClientAIPStatus;
+    return this.applicationService.findAllApplications(applicationStatus, {
       page: getApplicationQueryParamsDto.page,
       take: getApplicationQueryParamsDto.take,
       orderBy: getApplicationQueryParamsDto.orderBy,
@@ -182,10 +195,16 @@ export class ApplicationController {
     @Body() updateApplicationStatusDto: UpdateApplicationStatusDto,
   ): Promise<ResultDto> {
     const currentUser = request.user as IUserJWT; // TODO: consider security with passing JWT token to DMS microservice
+    const userGuid =
+      UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup
+        ? currentUser.userGUID
+        : null;
     const result = await this.applicationService.updateApplicationStatus(
       updateApplicationStatusDto.applicationIds,
       updateApplicationStatusDto.applicationStatus,
       currentUser,
+      updateApplicationStatusDto.companyId,
+      userGuid,
     );
     if (!result) {
       throw new DataNotFoundException();
@@ -228,5 +247,42 @@ export class ApplicationController {
       issuePermitDto.applicationIds[0],
     );
     return result;
+  }
+
+  @ApiOkResponse({
+    description:
+      'The delete dto resource which includes the success and failure list.',
+    type: DeleteDto,
+  })
+  @Roles(Role.WRITE_VEHICLE)
+  @Post('delete-requests')
+  @HttpCode(200)
+  async deleteApplications(
+    @Req() request: Request,
+    @Body() deleteApplicationDto: DeleteApplicationDto,
+  ): Promise<ResultDto> {
+    const currentUser = request.user as IUserJWT;
+    const userGuid =
+      UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup
+        ? currentUser.userGUID
+        : null;
+    const applicationStatus: ApplicationStatus = idirUserAuthGroupList.includes(
+      currentUser.orbcUserAuthGroup,
+    )
+      ? deleteCvClientAIP
+      : deleteCvClientAIP;
+
+    const deleteResult =
+      await this.applicationService.updateApplicationStatusQuery(
+        deleteApplicationDto.applications,
+        applicationStatus,
+        deleteApplicationDto.companyId,
+        currentUser,
+        userGuid,
+      );
+    if (deleteResult == null) {
+      throw new DataNotFoundException();
+    }
+    return deleteResult;
   }
 }
