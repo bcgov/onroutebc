@@ -261,8 +261,8 @@ export class UsersService {
       // Should be allowed to update userAuthGroupID if current user is an
       // IDIR(PPC Clerk) or CVAdmin
       if (
-        (companyUser.userAuthGroup ===
-          ClientUserAuthGroup.COMPANY_ADMINISTRATOR ||
+        (currentUser.orbcUserAuthGroup ===
+          UserAuthGroup.COMPANY_ADMINISTRATOR ||
           currentUser.identity_provider === IDP.IDIR) &&
         companyUser.userAuthGroup !== updateUserDto.userAuthGroup
       ) {
