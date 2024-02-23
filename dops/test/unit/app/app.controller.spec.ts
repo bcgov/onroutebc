@@ -6,6 +6,7 @@ import { DmsService } from '../../../src/modules/dms/dms.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { S3Service } from '../../../src/modules/common/s3.service';
 import { DgenService } from '../../../src/modules/dgen/dgen.service';
+import { FeatureFlagsService } from '../../../src/modules/feature-flags/feature-flags.service';
 
 describe('AppController', () => {
   let appController: AppController;
@@ -13,11 +14,13 @@ describe('AppController', () => {
   let dgenServiceMock: DeepMocked<DgenService>;
   let s3ServiceMock: DeepMocked<S3Service>;
   let dmsServiceMock: DeepMocked<DmsService>;
+  let featureFlagsService: DeepMocked<FeatureFlagsService>;
 
   beforeEach(async () => {
     dgenServiceMock = createMock<DgenService>();
     s3ServiceMock = createMock<S3Service>();
     dmsServiceMock = createMock<DmsService>();
+    featureFlagsService = createMock<FeatureFlagsService>();
     const app: TestingModule = await Test.createTestingModule({
       controllers: [AppController],
       providers: [
@@ -34,6 +37,10 @@ describe('AppController', () => {
         {
           provide: DmsService,
           useValue: dmsServiceMock,
+        },
+        {
+          provide: FeatureFlagsService,
+          useValue: featureFlagsService,
         },
       ],
     }).compile();

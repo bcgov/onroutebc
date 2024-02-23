@@ -28,6 +28,7 @@ import {
   SearchEntity,
   SearchFields,
 } from "../../../../features/idir/search/types/types";
+import { useFeatureFlagsQuery } from "../../../hooks/hooks";
 
 const SEARCH_BY_PERMIT_OPTIONS = [
   { label: "Permit Number", value: "permitNumber" },
@@ -90,6 +91,7 @@ export const SearchFilter = ({
   closeFilter: () => void;
 }) => {
   const [searchParams] = useSearchParams();
+  const { data: featureFlags } = useFeatureFlagsQuery();
   const navigate = useNavigate();
   const searchEntity = getDefaultSearchEntity(searchParams.get("searchEntity"));
   const [searchByOptions, setSearchByOptions] = useState(
@@ -176,11 +178,13 @@ export const SearchFilter = ({
                     value="companies"
                     control={<Radio key="find-by-company" />}
                   />
-                  <FormControlLabel
-                    label="Application"
-                    value="applications"
-                    control={<Radio key="find-by-application" />}
-                  />
+                  {featureFlags?.["APPLICATION_SEARCH"] === "ENABLED" && (
+                    <FormControlLabel
+                      label="Application"
+                      value="applications"
+                      control={<Radio key="find-by-application" />}
+                    />
+                  )}
                 </RadioGroup>
               )}
             />

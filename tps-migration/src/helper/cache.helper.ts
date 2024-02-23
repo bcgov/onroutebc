@@ -47,13 +47,3 @@ export const getFromCache = async (
     return value as string;
   }
 };
-
-export const getMapFromCache = async (
-  cacheManager: Cache,
-  key: CacheKey,
-): Promise<Record<string, string>> => {
-  const value: Record<string, string> = Object.fromEntries(
-    await cacheManager.get(key),
-  ) as Record<string, string>;
-  return value;
-};

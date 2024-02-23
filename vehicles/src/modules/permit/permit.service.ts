@@ -870,9 +870,12 @@ export class PermitService {
     };
     return resultDto;
   }
-
+  /**
+   * Retrieves permit type information from cache.
+   * @returns A Promise resolving to a map of permit types.
+   */
   @LogAsyncMethodExecution()
-  async getPermitType(): Promise<string> {
+  async getPermitType(): Promise<Record<string, string>> {
     return await getMapFromCache(this.cacheManager, CacheKey.PERMIT_TYPE);
   }
 }
