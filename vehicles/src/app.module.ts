@@ -26,6 +26,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { PermitModule } from './modules/permit/permit.module';
 import { EmailModule } from './modules/email/email.module';
 import { PaymentModule } from './modules/payment/payment.module';
+import { FeatureFlagsModule } from './modules/feature-flags/feature-flags.module';
 import { HTTPLoggerMiddleware } from './common/middleware/req.res.logger';
 import { TypeormCustomLogger } from './common/logger/typeorm-logger.config';
 import { getTypeormLogLevel } from './common/helper/logger.helper';
@@ -92,6 +93,7 @@ const envPath = path.resolve(process.cwd() + '/../');
     AuthModule,
     PermitModule,
     PaymentModule,
+    FeatureFlagsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -10,6 +10,7 @@ import { CacheKey } from './common/enum/cache-key.enum';
 import { addToCache, createCacheMap } from './common/helper/cache.helper';
 import { PaymentService } from './modules/payment/payment.service';
 import { LogAsyncMethodExecution } from './common/decorator/log-async-method-execution.decorator';
+import { FeatureFlagsService } from './modules/feature-flags/feature-flags.service';
 
 @Injectable()
 export class AppService {
@@ -23,6 +24,7 @@ export class AppService {
     private trailerTypeService: TrailerTypesService,
     private commonService: CommonService,
     private paymentService: PaymentService,
+    private featureFlagsService: FeatureFlagsService,
   ) {}
 
   getHello(): string {
@@ -87,6 +89,13 @@ export class AppService {
       this.cacheManager,
       CacheKey.PAYMENT_CARD_TYPE,
       createCacheMap(paymentTypes, 'paymentCardTypeCode', 'name'),
+    );
+
+    const featureFlags = await this.featureFlagsService.findAll();
+    await addToCache(
+      this.cacheManager,
+      CacheKey.FEATURE_FLAG_TYPE,
+      createCacheMap(featureFlags, 'featureKey', 'featureValue'),
     );
 
     const assetsPath =

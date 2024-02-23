@@ -11,12 +11,14 @@ import { CommonService } from 'src/modules/common/common.service';
 import { PermitService } from 'src/modules/permit/permit.service';
 import { PaymentService } from '../../src/modules/payment/payment.service';
 import { App } from 'supertest/types';
+import { FeatureFlagsService } from '../../src/modules/feature-flags/feature-flags.service';
 
 let permitServiceMock: DeepMocked<PermitService>;
 let powerUnitTypeServiceMock: DeepMocked<PowerUnitTypesService>;
 let trailerTypeServiceMock: DeepMocked<TrailerTypesService>;
 let commonServiceMock: DeepMocked<CommonService>;
 let paymentServiceMock: DeepMocked<PaymentService>;
+let featureFlagsServiceMock: DeepMocked<FeatureFlagsService>;
 
 describe('AppController (e2e)', () => {
   let app: INestApplication<Express.Application>;
@@ -27,6 +29,7 @@ describe('AppController (e2e)', () => {
     trailerTypeServiceMock = createMock<TrailerTypesService>();
     commonServiceMock = createMock<CommonService>();
     paymentServiceMock = createMock<PaymentService>();
+    featureFlagsServiceMock = createMock<FeatureFlagsService>();
 
     const moduleFixture = await Test.createTestingModule({
       controllers: [AppController],
@@ -52,6 +55,10 @@ describe('AppController (e2e)', () => {
         {
           provide: PaymentService,
           useValue: paymentServiceMock,
+        },
+        {
+          provide: FeatureFlagsService,
+          useValue: featureFlagsServiceMock,
         },
       ],
     }).compile();

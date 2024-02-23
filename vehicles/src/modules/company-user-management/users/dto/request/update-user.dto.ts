@@ -1,6 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { UserAuthGroup } from '../../../../../common/enum/user-auth-group.enum';
+import { ClientUserAuthGroup } from '../../../../../common/enum/user-auth-group.enum';
 import { UpdateContactDto } from '../../../../common/dto/request/update-contact.dto';
 import { IsEnum } from 'class-validator';
 
@@ -10,10 +10,10 @@ import { IsEnum } from 'class-validator';
 export class UpdateUserDto extends UpdateContactDto {
   @AutoMap()
   @ApiProperty({
-    enum: UserAuthGroup,
+    enum: ClientUserAuthGroup,
     description: 'The user auth group.',
-    example: UserAuthGroup.COMPANY_ADMINISTRATOR,
+    example: ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
   })
-  @IsEnum(UserAuthGroup)
-  userAuthGroup: UserAuthGroup;
+  @IsEnum(ClientUserAuthGroup)
+  userAuthGroup: ClientUserAuthGroup;
 }
