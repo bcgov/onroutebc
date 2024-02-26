@@ -11,6 +11,9 @@ import OnRouteBCContext from "../OnRouteBCContext";
 import { IDIRUserAuthGroupType, UserRolesType } from "../types";
 import { DoesUserHaveRole } from "../util";
 import { IDIRAuthWall } from "./IDIRAuthWall";
+import { useCompanyInfoDetailsQuery } from "../../../features/manageProfile/apiManager/hooks";
+import { getDefaultRequiredVal } from "../../helpers/util";
+import { CompanySuspended } from "../../pages/CompanySuspended";
 
 export const isIDIR = (identityProvider: string) =>
   identityProvider === IDPS.IDIR;
@@ -35,7 +38,8 @@ export const BCeIDAuthWall = ({
 
   const { userRoles, companyId, isNewBCeIDUser } =
     useContext(OnRouteBCContext);
-
+  const { data: companyInfo } =
+    useCompanyInfoDetailsQuery(getDefaultRequiredVal(0, companyId));
   const userIDP = userFromToken?.profile?.identity_provider as string;
 
   const location = useLocation();
@@ -75,6 +79,13 @@ export const BCeIDAuthWall = ({
       }
     }
     if (!isIDIR(userIDP)) {
+      if (companyId && companyInfo?.isSuspended) {
+        return (
+          <>
+            <CompanySuspended />
+          </>
+        );
+      }
       if (!companyId) {
         return (
           <>

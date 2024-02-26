@@ -64,6 +64,7 @@ export type CompanyProfile = {
   companyId: number;
   companyGUID: string;
   clientNumber: string;
+  isSuspended: boolean;
   legalName: string;
   mailingAddress: Address;
   email: string;
