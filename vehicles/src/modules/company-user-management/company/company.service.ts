@@ -5,11 +5,13 @@ import {
   Inject,
   Injectable,
   Logger,
-  Query,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, DataSource, Repository } from 'typeorm';
-import { UserAuthGroup } from '../../../common/enum/user-auth-group.enum';
+import {
+  ClientUserAuthGroup,
+  UserAuthGroup,
+} from '../../../common/enum/user-auth-group.enum';
 import { ReadUserDto } from '../users/dto/response/read-user.dto';
 import { CreateCompanyDto } from './dto/request/create-company.dto';
 import { UpdateCompanyDto } from './dto/request/update-company.dto';
@@ -22,7 +24,11 @@ import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { CreateUserDto } from '../users/dto/request/create-user.dto';
 import { User } from '../users/entities/user.entity';
 import { CompanyUser } from '../users/entities/company-user.entity';
-import { callDatabaseSequence } from 'src/common/helper/database.helper';
+import {
+  callDatabaseSequence,
+  paginate,
+  sortQuery,
+} from 'src/common/helper/database.helper';
 import { randomInt } from 'crypto';
 import { EmailService } from '../../email/email.service';
 import { EmailTemplate } from '../../../common/enum/email-template.enum';
@@ -34,7 +40,6 @@ import { CacheKey } from '../../../common/enum/cache-key.enum';
 import { AccountSource } from '../../../common/enum/account-source.enum';
 import { PendingUser } from '../pending-users/entities/pending-user.entity';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
-import { PageOptionsDto } from 'src/common/dto/paginate/page-options';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import { PageMetaDto } from 'src/common/dto/paginate/page-meta';
 import { IDP } from '../../../common/enum/idp.enum';
@@ -43,6 +48,10 @@ import { getDirectory } from '../../../common/helper/auth.helper';
 import { convertToHash } from '../../../common/helper/crypto.helper';
 import { CRYPTO_ALGORITHM_SHA256 } from '../../../common/constants/api.constant';
 import { v4 as uuidv4 } from 'uuid';
+import { UserStatus } from 'src/common/enum/user-status.enum';
+import { VerifyClientDto } from './dto/request/verify-client.dto';
+import { ReadVerifyClientDto } from './dto/response/read-verify-client.dto';
+import { Permit } from '../../permit/entities/permit.entity';
 
 @Injectable()
 export class CompanyService {
@@ -200,9 +209,11 @@ export class CompanyService {
 
         const newCompanyUser = new CompanyUser();
         newCompanyUser.company = new Company();
+        newCompanyUser.statusCode = UserStatus.ACTIVE;
         newCompanyUser.company.companyId = newCompany.companyId;
         newCompanyUser.user = user;
-        newCompanyUser.userAuthGroup = UserAuthGroup.COMPANY_ADMINISTRATOR;
+        newCompanyUser.userAuthGroup =
+          ClientUserAuthGroup.COMPANY_ADMINISTRATOR;
 
         user.companyUsers = [newCompanyUser];
         user = await queryRunner.manager.save(user);
@@ -336,17 +347,20 @@ export class CompanyService {
   }
 
   /**
-   * The findOne() method returns a ReadCompanyMetadataDto object corresponding to the given
-   * user guid. It retrieves the entity from the database using the
-   * Repository, maps it to a DTO object using the Mapper, and returns it.
+   * The findCompanyMetadataByUserGuid() method returns a list of ReadCompanyMetadataDto objects corresponding to the given
+   * user GUID. It performs a custom SQL query to the database to retrieve company user entities based on the user GUID
+   * and an optional list of user status codes. After obtaining the company user entities, it maps them to
+   * ReadCompanyMetadataDto objects using the Mapper, and returns the list.
    *
-   * @param userGUID The company Id.
+   * @param userGUID The user GUID used to find related company entities.
+   * @param userStatusCode Optional. An array of user status codes to filter the company users. Defaults to [UserStatus.ACTIVE].
    *
-   * @returns The company details list as a promise of type {@link ReadCompanyMetadataDto}
+   * @returns A promise of an array of ReadCompanyMetadataDto objects representing the company metadata related to the given user GUID.
    */
   @LogAsyncMethodExecution()
   async findCompanyMetadataByUserGuid(
     userGUID: string,
+    userStatusCode = [UserStatus.ACTIVE],
   ): Promise<ReadCompanyMetadataDto[]> {
     const companyUsers = await this.companyRepository
       .createQueryBuilder('company')
@@ -356,6 +370,9 @@ export class CompanyService {
       .leftJoinAndSelect('companyUsers.user', 'user')
       .where('user.userGUID= :userGUID', {
         userGUID: userGUID,
+      })
+      .andWhere('companyUsers.statusCode IN (:...statusCode)', {
+        statusCode: userStatusCode || [],
       })
       .getMany();
 
@@ -369,47 +386,59 @@ export class CompanyService {
   }
 
   /**
-   * The findCompanyPaginated() method returns a ReadCompanyDto object corresponding to the given
-   * company legal name or client number. It retrieves the entity from the database using the
-   * Repository, maps it to a DTO object using the Mapper, and returns it.
+   * The findCompanyPaginated() method performs a paginated search for companies based on given
+   * filter options such as company legal name or client number. It leverages a complex query to
+   * retrieve company entities from the database, optionally applying filters for legal name and
+   * client number, sorting based on certain fields, and paginating the results. After fetching the
+   * entities, it maps them to ReadCompanyDto objects for response.
    *
-   * @param legalName The company legal name.
-   * @param clientNumber The company's client number
-   * @returns The company list as a promise of type {@link ReadCompanyMetadataDto}
+   * @param getCompanyQueryParamsDto Parameters for querying companies including pagination, sorting,
+   * and filtering options.
+   *
+   * @returns A PaginationDto containing paginated company data and metadata.
    */
   @LogAsyncMethodExecution()
-  async findCompanyPaginated(
-    @Query() pageOptionsDto: PageOptionsDto,
-    @Query() legalName?: string,
-    @Query() clientNumber?: string,
-  ): Promise<PaginationDto<ReadCompanyDto>> {
-    let companiesQuery = this.companyRepository
+  async findCompanyPaginated(findCompanyPaginatedOptions?: {
+    page: number;
+    take: number;
+    orderBy?: string;
+    companyName?: string;
+    clientNumber?: string;
+  }): Promise<PaginationDto<ReadCompanyDto>> {
+    const companiesQB = this.companyRepository
       .createQueryBuilder('company')
       .leftJoinAndSelect('company.mailingAddress', 'mailingAddress')
       .leftJoinAndSelect('company.primaryContact', 'primaryContact')
       .leftJoinAndSelect('primaryContact.province', 'province')
       .leftJoinAndSelect('mailingAddress.province', 'provinceType');
 
-    // Apply conditions based on parameters
-    companiesQuery = companiesQuery.where('company.companyId IS NOT NULL');
+    // Initialize query builder and join related entities for a comprehensive response
 
-    if (legalName) {
-      companiesQuery = companiesQuery.andWhere(
-        'company.legalName LIKE :legalName',
-        {
-          legalName: `%${legalName}%`,
-        },
+    // Apply mandatory condition to ensure at least one filter is applied
+    companiesQB.where('company.companyId IS NOT NULL');
+
+    if (findCompanyPaginatedOptions.companyName) {
+      // Add condition for filtering by legal name or alternate name if provided
+      companiesQB.andWhere(
+        new Brackets((qb) => {
+          qb.where('company.legalName LIKE :legalName', {
+            legalName: `%${findCompanyPaginatedOptions.companyName}%`,
+          }).orWhere('company.alternateName LIKE :legalName', {
+            legalName: `%${findCompanyPaginatedOptions.companyName}%`,
+          });
+        }),
       );
     }
 
-    if (clientNumber) {
-      companiesQuery = companiesQuery.andWhere(
+    if (findCompanyPaginatedOptions.clientNumber) {
+      // Add condition to check either direct match with client number or a hash match for migrated client numbers
+      companiesQB.andWhere(
         new Brackets((qb) => {
           qb.where('company.clientNumber LIKE :clientNumber', {
-            clientNumber: `%${clientNumber}%`,
+            clientNumber: `%${findCompanyPaginatedOptions.clientNumber}%`,
           }).orWhere('company.migratedClientHash = :legacyClientNumberHash', {
             legacyClientNumberHash: convertToHash(
-              clientNumber?.replace(/-/g, ''),
+              findCompanyPaginatedOptions.clientNumber?.replace(/-/g, ''),
               CRYPTO_ALGORITHM_SHA256,
             ),
           });
@@ -417,17 +446,53 @@ export class CompanyService {
       );
     }
 
-    const companies = await companiesQuery.getMany();
+    // Object to map frontend orderBy parameters to actual database fields
+    const orderByMapping: Record<string, string> = {
+      companyId: 'company.companyId',
+      clientNumber: 'company.clientNumber',
+      legalName: 'company.legalName',
+    };
+
+    if (findCompanyPaginatedOptions.orderBy) {
+      // Apply ordering based on parameter, if provided
+      sortQuery<Company>(
+        companiesQB,
+        orderByMapping,
+        findCompanyPaginatedOptions.orderBy,
+      );
+    }
+    if (findCompanyPaginatedOptions.page && findCompanyPaginatedOptions.take) {
+      // Apply pagination based on provided page and take params
+      paginate<Company>(
+        companiesQB,
+        findCompanyPaginatedOptions.page,
+        findCompanyPaginatedOptions.take,
+      );
+    }
+
+    const companies = await companiesQB.getMany();
+    // Execute query to get list of companies based on filters, sorting, and pagination
 
     const companyData = await this.classMapper.mapArrayAsync(
       companies,
       Company,
       ReadCompanyDto,
     );
+    // Map entities to DTOs for consistent response structure
 
     const totalItems = companyData?.length;
-    const pageMetaDto = new PageMetaDto({ totalItems, pageOptionsDto });
+    const pageMetaDto = new PageMetaDto({
+      totalItems,
+      pageOptionsDto: {
+        page: findCompanyPaginatedOptions.page,
+        take: findCompanyPaginatedOptions.take,
+        orderBy: findCompanyPaginatedOptions.orderBy,
+      },
+    });
+    // Prepare metadata for pagination response
+
     return new PaginationDto(companyData, pageMetaDto);
+    // Return paginated response with company data and metadata
   }
 
   /**
@@ -681,5 +746,87 @@ export class CompanyService {
       '-' +
       String(rnd);
     return clientNumber;
+  }
+
+  /**
+   * The verifyClient() method attempts to validate the existence and correct linkage of a specified client
+   * and their associated permit within the system. The process involves searching for a company using a provided
+   * client number (including handling legacy client number scenarios) and then verifying the existence of a
+   * permit that correlates with the identified company. The outcome is encapsulated in a ReadVerifyClientDto
+   * object indicating the presence of the client, the permit, and the successful verification if applicable.
+   *
+   * @param currentUser The current logged in user's JWT token.
+   * @param verifyClientDto The DTO containing the client and permit number to verify.
+   *
+   * @returns A promise resolved with a ReadVerifyClientDto object that includes the verification status.
+   */
+  @LogAsyncMethodExecution()
+  async verifyClient(
+    currentUser: IUserJWT,
+    verifyClientDto: VerifyClientDto,
+  ): Promise<ReadVerifyClientDto> {
+    // Initialize a default ReadVerifyClientDto object
+    const verifyClient: ReadVerifyClientDto = {
+      foundClient: false,
+      foundPermit: false,
+      verifiedClient: undefined,
+    };
+
+    // Attempt to find a company by the given client number
+    let company = await this.findOneByClientNumber(
+      verifyClientDto.clientNumber,
+    );
+
+    // If no company found, attempt to find by legacy client number
+    if (!company) {
+      company = await this.findOneByLegacyClientNumber(
+        verifyClientDto.clientNumber,
+      );
+    }
+
+    // Mark client as found if company object exists
+    if (company) {
+      verifyClient.foundClient = true;
+    }
+
+    // Create a new queryRunner to manage transaction
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      // Attempt to find a permit by permit number or migrated permit number
+      const permit = await queryRunner.manager
+        .createQueryBuilder(Permit, 'permit')
+        .where('permit.migratedPermitNumber = :permitNumber', {
+          permitNumber: verifyClientDto.permitNumber,
+        })
+        .orWhere('permit.permitNumber = :permitNumber', {
+          permitNumber: verifyClientDto.permitNumber,
+        })
+        .getOne();
+
+      // If permit found, validate company and permit linkage
+      if (permit) {
+        verifyClient.foundPermit = true;
+        if (permit.companyId === company?.companyId) {
+          verifyClient.verifiedClient =
+            await this.mapCompanyEntityToCompanyDto(company);
+        }
+      }
+
+      // Commit the transaction if all operations succeed
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      // Rollback the transaction in case of error
+      await queryRunner.rollbackTransaction();
+      this.logger.error(error);
+      throw error;
+    } finally {
+      // Release the query runner
+      await queryRunner.release();
+    }
+
+    // Return the verifyClient result
+    return verifyClient;
   }
 }

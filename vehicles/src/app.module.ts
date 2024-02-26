@@ -26,12 +26,14 @@ import { AuthModule } from './modules/auth/auth.module';
 import { PermitModule } from './modules/permit/permit.module';
 import { EmailModule } from './modules/email/email.module';
 import { PaymentModule } from './modules/payment/payment.module';
+import { FeatureFlagsModule } from './modules/feature-flags/feature-flags.module';
 import { HTTPLoggerMiddleware } from './common/middleware/req.res.logger';
 import { TypeormCustomLogger } from './common/logger/typeorm-logger.config';
 import { getTypeormLogLevel } from './common/helper/logger.helper';
 import { ClsModule } from 'nestjs-cls';
 import { Request } from 'express';
 import { v4 as uuidv4 } from 'uuid';
+import { CompanySuspendModule } from './modules/company-user-management/company-suspend/company-suspend.module';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
@@ -84,12 +86,14 @@ const envPath = path.resolve(process.cwd() + '/../');
     PowerUnitTypesModule,
     TrailerTypesModule,
     CompanyModule,
+    CompanySuspendModule,
     UsersModule,
     CommonModule,
     PendingUsersModule,
     AuthModule,
     PermitModule,
     PaymentModule,
+    FeatureFlagsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

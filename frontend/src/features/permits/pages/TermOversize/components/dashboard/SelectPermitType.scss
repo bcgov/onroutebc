@@ -1,4 +1,7 @@
+@use "../../../../../../common/components/form/CustomFormComponents";
 @import "../../../../../../themes/orbcStyles";
+
+@include CustomFormComponents.custom-form-component(".select-permit-type__input");
 
 .select-permit-type {
   font-size: 1rem;
@@ -12,13 +15,9 @@
   & &__input {
     background-color: $white;
     width: 15.25rem;
+  }
 
-    fieldset {
-      border: 2px solid $bc-text-box-border-grey;
-    }
-
-    .Mui-focused fieldset {
-      border: 2px solid $focus-blue;
-    }
+  & &__menu {
+    width: calc(100% - 10px);
   }
 }

@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   Inject,
   Injectable,
   InternalServerErrorException,
@@ -24,7 +25,6 @@ import { DopsService } from '../common/dops.service';
 import { FileDownloadModes } from '../../common/enum/file-download-modes.enum';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { Response } from 'express';
-import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { PermitStatus } from 'src/common/enum/permit-status.enum';
 import { Receipt } from '../payment/entities/receipt.entity';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
@@ -59,12 +59,17 @@ import {
   getPaymentCodeFromCache,
 } from '../../common/helper/payment.helper';
 import { PaymentMethodType } from 'src/common/enum/payment-method-type.enum';
-import { PageOptionsDto } from 'src/common/dto/paginate/page-options';
 import { PageMetaDto } from 'src/common/dto/paginate/page-meta';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
-import { SortDto } from '../common/dto/request/sort.dto';
 import * as constants from '../../common/constants/api.constant';
 import { PermitApprovalSource } from '../../common/enum/permit-approval-source.enum';
+import { OrderBy } from '../../common/enum/orderBy.enum';
+import { PermitSearch } from '../../common/enum/permit-search.enum';
+import { paginate, sortQuery } from '../../common/helper/database.helper';
+import {
+  UserAuthGroup,
+  idirUserAuthGroupList,
+} from '../../common/enum/user-auth-group.enum';
 
 @Injectable()
 export class PermitService {
@@ -130,12 +135,30 @@ export class PermitService {
   }
 
   /**
-   * Find single permit with associated data by permit id.
-   * @param permitId permit id
-   * @returns permit with data
+   * Finds a permit by its ID and verifies if the current user has authorization
+   * to access it. Throws a ForbiddenException if the user does not have the
+   * proper authorization. Returns a mapped ReadPermitDto object of the found
+   * permit.
+   * @param permitId The ID of the permit to find.
+   * @param currentUser The current user's JWT details.
+   * @returns A mapped ReadPermitDto object of the found permit.
    */
-  public async findByPermitId(permitId: string): Promise<ReadPermitDto> {
+  public async findByPermitId(
+    permitId: string,
+    currentUser: IUserJWT,
+  ): Promise<ReadPermitDto> {
     const permit = await this.findOne(permitId);
+    // Check if the current user has the proper authorization to access this receipt.
+    // Throws ForbiddenException if user does not belong to the specified user auth group or does not own the company.
+    if (
+      !idirUserAuthGroupList.includes(
+        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      ) &&
+      permit?.companyId != currentUser.companyId
+    ) {
+      throw new ForbiddenException();
+    }
+
     return this.classMapper.mapAsync(permit, Permit, ReadPermitDto);
   }
 
@@ -173,149 +196,200 @@ export class PermitService {
     permitId: string,
     downloadMode: FileDownloadModes,
     res?: Response,
-  ): Promise<ReadFileDto> {
+  ): Promise<void> {
     // Retrieve the permit details using the permit ID
     const permit = await this.findOne(permitId);
 
-    let file: ReadFileDto = null;
-    if (downloadMode === FileDownloadModes.PROXY) {
-      await this.dopsService.download(
-        currentUser,
-        permit.documentId,
-        downloadMode,
-        res,
-        permit.companyId,
-      );
-    } else {
-      file = (await this.dopsService.download(
-        currentUser,
-        permit.documentId,
-        downloadMode,
-        res,
-        permit.companyId,
-      )) as ReadFileDto;
+    // Check if current user is in the allowed auth group or owns the company, else throw ForbiddenException
+    if (
+      !idirUserAuthGroupList.includes(
+        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      ) &&
+      permit?.companyId != currentUser.companyId
+    ) {
+      throw new ForbiddenException();
     }
-    return file;
+
+    // Use the DOPS service to download the document associated with the permit
+    await this.dopsService.download(
+      currentUser,
+      permit.documentId,
+      downloadMode,
+      res,
+      permit.companyId,
+    );
   }
 
   /**
-   * Finds permits for user.
-   * @param userGUID if present get permits for this user
-   *  @param companyId if present get permits for this company
-   * @param expired if true get expired premits else get active permits
-   *
+   * Retrieves permits based on user GUID, company ID, and expiration status. It allows for sorting, pagination, and filtering of the permit results.
+   * @param findPermitOptions - Optional object containing query parameters such as page, take, orderBy, companyId, expired, searchColumn, searchString, and userGUID for filtering, pagination, and sorting.
+   * @returns Promise of PaginationDto containing an array of ReadPermitDto.
    */
   @LogAsyncMethodExecution()
-  public async findPermit(
-    pageOptionsDto: PageOptionsDto,
-    userGUID: string,
-    companyId: number,
-    expired: string,
-    searchColumn?: string,
-    searchString?: string,
-    sortDto?: SortDto[],
-  ): Promise<PaginationDto<ReadPermitDto>> {
-    const permits = this.buildPermitQuery(
-      pageOptionsDto,
-      userGUID,
-      companyId,
-      expired,
-      searchColumn,
-      searchString,
+  public async findPermit(findPermitOptions?: {
+    page: number;
+    take: number;
+    orderBy?: string;
+    companyId?: number;
+    expired?: boolean;
+    searchColumn?: PermitSearch;
+    searchString?: string;
+    userGUID?: string;
+  }): Promise<PaginationDto<ReadPermitDto>> {
+    // Construct the base query to find permits
+    const permitsQB = this.buildPermitQuery(
+      findPermitOptions.companyId,
+      findPermitOptions.expired,
+      findPermitOptions.searchColumn,
+      findPermitOptions.searchString,
+      findPermitOptions.userGUID,
     );
-    const sortedPermits = this.sortPermits(permits, sortDto);
-    const totalItems = await sortedPermits.getCount();
-    const { entities } = await permits.getRawAndEntities();
-    const pageMetaDto = new PageMetaDto({ totalItems, pageOptionsDto });
+
+    // Mapping of frontend orderBy parameter to database columns
+    const orderByMapping: Record<string, string> = {
+      permitNumber: 'permit.permitNumber',
+      permitType: 'permit.permitType',
+      startDate: 'permitData.startDate',
+      expiryDate: 'permitData.expiryDate',
+      unitNumber: 'permitData.unitNumber',
+      plate: 'permitData.plate',
+      applicant: 'permitData.applicant',
+    };
+
+    // Apply sorting if orderBy parameter is provided
+    if (findPermitOptions.orderBy) {
+      sortQuery<Permit>(permitsQB, orderByMapping, findPermitOptions.orderBy);
+    }
+    // Apply pagination if page and take parameters are provided
+    if (findPermitOptions.page && findPermitOptions.take) {
+      paginate<Permit>(
+        permitsQB,
+        findPermitOptions.page,
+        findPermitOptions.take,
+      );
+    }
+
+    // Get the paginated list of permits
+    const permits = await permitsQB.getMany();
+
+    // total number of items
+    const totalItems = permits?.length;
+
+    // Prepare pagination metadata
+    const pageMetaDto = new PageMetaDto({
+      totalItems,
+      pageOptionsDto: {
+        page: findPermitOptions.page,
+        take: findPermitOptions.take,
+        orderBy: findPermitOptions.orderBy,
+      },
+    });
+    // Map permit entities to ReadPermitDto objects
     const readPermitDto: ReadPermitDto[] =
-      await this.mapEntitiesToReadPermitDto(entities);
+      await this.mapEntitiesToReadPermitDto(permits);
+    // Return paginated result
     return new PaginationDto(readPermitDto, pageMetaDto);
   }
 
   private buildPermitQuery(
-    pageOptionsDto: PageOptionsDto,
-    userGUID: string,
     companyId: number,
-    expired?: string,
-    searchColumn?: string,
-    searchString?: string,
+    expired: boolean,
+    searchColumn: PermitSearch,
+    searchString: string,
+    userGUID: string,
   ): SelectQueryBuilder<Permit> {
     let permitsQuery = this.permitRepository
       .createQueryBuilder('permit')
       .innerJoinAndSelect('permit.permitData', 'permitData');
 
-    // Apply conditions based on parameters
+    // Ensure permit number is not null
     permitsQuery = permitsQuery.where('permit.permitNumber IS NOT NULL');
 
+    // Filter by companyId if provided
     if (companyId) {
       permitsQuery = permitsQuery.andWhere('permit.companyId = :companyId', {
-        companyId,
+        companyId: companyId,
       });
     }
 
+    // Filter by userGUID if provided
     if (userGUID) {
       permitsQuery = permitsQuery.andWhere('permit.userGuid = :userGUID', {
         userGUID,
       });
     }
 
-    if (expired?.toLowerCase() === 'true') {
+    // Handle expired permits query condition
+    if (expired === true) {
       permitsQuery = permitsQuery.andWhere(
-        '(permit.permitStatus IN (:...expiredStatus)OR(permit.permitStatus = :activeStatus AND permitData.expiryDate < :expiryDate))',
-        {
-          expiredStatus: Object.values(PermitStatus).filter(
-            (x) => x != PermitStatus.ISSUED && x != PermitStatus.SUPERSEDED,
-          ),
-          activeStatus: PermitStatus.ISSUED,
-          expiryDate: new Date(),
-        },
+        new Brackets((qb) => {
+          qb.where(
+            'permit.permitStatus IN (:...expiredStatus) OR (permit.permitStatus = :activeStatus AND permitData.expiryDate < :expiryDate)',
+            {
+              expiredStatus: Object.values(PermitStatus).filter(
+                (x) => x != PermitStatus.ISSUED && x != PermitStatus.SUPERSEDED,
+              ),
+              activeStatus: PermitStatus.ISSUED,
+              expiryDate: new Date(),
+            },
+          );
+        }),
       );
     }
-    if (expired?.toLowerCase() === 'false') {
+
+    // Handle active permits query condition
+    if (expired === false) {
       permitsQuery = permitsQuery.andWhere(
-        '(permit.permitStatus = :activeStatus AND permitData.expiryDate >= :expiryDate)',
-        {
-          expiredStatus: Object.values(PermitStatus).filter(
-            (x) => x != PermitStatus.ISSUED && x != PermitStatus.SUPERSEDED,
-          ),
-          activeStatus: PermitStatus.ISSUED,
-          expiryDate: new Date(),
-        },
+        new Brackets((qb) => {
+          qb.where(
+            '(permit.permitStatus = :activeStatus AND permitData.expiryDate >= :expiryDate)',
+            {
+              activeStatus: PermitStatus.ISSUED,
+              expiryDate: new Date(),
+            },
+          );
+        }),
       );
     }
+
+    // Handle search conditions
     if (searchColumn) {
-      if (searchColumn.toLowerCase() === 'plate') {
-        permitsQuery = permitsQuery.andWhere(
-          `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like '%${searchString}%'`,
-        );
-      }
-      if (searchColumn.toLowerCase() === 'permitnumber') {
-        permitsQuery = permitsQuery.andWhere(
-          new Brackets((query) => {
-            query
-              .where(`permit.permitNumber like '%${searchString}%'`)
-              .orWhere(`permit.migratedPermitNumber like '%${searchString}%'`);
-          }),
-        );
-      }
-      if (searchColumn.toLowerCase() === 'clientnumber') {
-        permitsQuery = permitsQuery.andWhere(
-          `JSON_VALUE(permitData.permitData, '$.clientNumber') like '%${searchString}%'`,
-        );
-      }
-      if (searchColumn.toLowerCase() === 'companyname') {
-        permitsQuery = permitsQuery.andWhere(
-          `JSON_VALUE(permitData.permitData, '$.companyName') like '%${searchString}%'`,
-        );
-      }
-      if (searchColumn.toLowerCase() === 'applicationnumber') {
-        permitsQuery = permitsQuery.andWhere(
-          `permit.applicationNumber like '%${searchString}%'`,
-        );
+      switch (searchColumn) {
+        case PermitSearch.PLATE:
+          permitsQuery = permitsQuery.andWhere(
+            `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like '%${searchString}%'`,
+          );
+          break;
+        case PermitSearch.PERMIT_NUMBER:
+          permitsQuery = permitsQuery.andWhere(
+            new Brackets((query) => {
+              query
+                .where(`permit.permitNumber like '%${searchString}%'`)
+                .orWhere(
+                  `permit.migratedPermitNumber like '%${searchString}%'`,
+                );
+            }),
+          );
+          break;
+        case PermitSearch.CLIENT_NUMBER:
+          permitsQuery = permitsQuery.andWhere(
+            `JSON_VALUE(permitData.permitData, '$.clientNumber') like '%${searchString}%'`,
+          );
+          break;
+        case PermitSearch.COMPANY_NAME:
+          permitsQuery = permitsQuery.andWhere(
+            `JSON_VALUE(permitData.permitData, '$.companyName') like '%${searchString}%'`,
+          );
+          break;
+        case PermitSearch.APPLICATION_NUMBER:
+          permitsQuery = permitsQuery.andWhere(
+            `permit.applicationNumber like '%${searchString}%'`,
+          );
+          break;
       }
     }
 
-    // Handle searchString only
+    // Handle cases where only searchString is provided
     if (!searchColumn && searchString) {
       permitsQuery = permitsQuery.andWhere(
         new Brackets((query) => {
@@ -330,23 +404,22 @@ export class PermitService {
       );
     }
 
-    // Apply pagination
-    permitsQuery = permitsQuery
-      .skip((pageOptionsDto.page - 1) * pageOptionsDto.take)
-      .take(pageOptionsDto.take);
-
     return permitsQuery;
   }
 
   private sortPermits(
     permits: SelectQueryBuilder<Permit>,
-    sortDto?: SortDto[],
+    orderBy?: string,
   ): SelectQueryBuilder<Permit> {
-    if (!sortDto || sortDto.length === 0) {
+    if (!orderBy) {
       return permits;
     }
 
-    sortDto.forEach((value, index) => {
+    const orderByList = orderBy?.split(',') || [];
+
+    orderByList.forEach((orderByVal, index) => {
+      const [orderByKey, sortDirection] = orderByVal?.split(':') || [];
+
       const orderByMapping: Record<string, string> = {
         permitNumber: 'permit.permitNumber',
         permitType: 'permit.permitType',
@@ -357,18 +430,18 @@ export class PermitService {
         applicant: 'permitData.applicant',
       };
 
-      const orderByKey = orderByMapping[value.orderBy];
+      const orderByValue = orderByMapping[orderByKey];
 
-      if (orderByKey) {
-        const orderBy = value.descending ? 'DESC' : 'ASC';
+      if (orderByValue) {
+        const sortDirectionVal =
+          sortDirection === OrderBy.ASCENDING.valueOf() ? 'ASC' : 'DESC';
         if (index === 0) {
-          permits.orderBy(orderByKey, orderBy);
+          permits.orderBy(orderByValue, sortDirectionVal);
         } else {
-          permits.addOrderBy(orderByKey, orderBy);
+          permits.addOrderBy(orderByValue, sortDirectionVal);
         }
       }
     });
-
     return permits;
   }
 
@@ -395,6 +468,7 @@ export class PermitService {
     permitId: string,
     res?: Response,
   ): Promise<void> {
+    // Query the database to find a permit and its related transactions and receipt based on the permit ID.
     const permit = await this.permitRepository
       .createQueryBuilder('permit')
       .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
@@ -406,10 +480,24 @@ export class PermitService {
       .andWhere('receipt.receiptNumber IS NOT NULL')
       .getOne();
 
+    // If no permit is found, throw a NotFoundException indicating the receipt is not found.
     if (!permit) {
       throw new NotFoundException('Receipt Not Found!');
     }
 
+    // Check if the current user has the proper authorization to access this receipt.
+    // Throws ForbiddenException if user does not belong to the specified user auth group or does not own the company.
+    if (
+      !idirUserAuthGroupList.includes(
+        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      ) &&
+      permit?.companyId != currentUser.companyId
+    ) {
+      throw new ForbiddenException();
+    }
+
+    // If authorized, proceed to download the receipt PDF using the dopsService.
+    // This method delegates the request handling based on the provided download mode and sends the file as a response if applicable.
     await this.dopsService.download(
       currentUser,
       permit.permitTransactions[0].transaction.receipt.receiptDocumentId,
@@ -535,7 +623,7 @@ export class PermitService {
       newPermit.issuerUserGuid = currentUser.userGUID;
       newPermit.permitIssueDateTime = new Date();
       newPermit.revision = permit.revision + 1;
-      newPermit.previousRevision = +permitId;
+      newPermit.previousRevision = permitId;
       newPermit.comment = voidPermitDto.comment;
       newPermit = Object.assign(newPermit, userMetadata);
 
@@ -782,9 +870,12 @@ export class PermitService {
     };
     return resultDto;
   }
-
+  /**
+   * Retrieves permit type information from cache.
+   * @returns A Promise resolving to a map of permit types.
+   */
   @LogAsyncMethodExecution()
-  async getPermitType(): Promise<string> {
+  async getPermitType(): Promise<Record<string, string>> {
     return await getMapFromCache(this.cacheManager, CacheKey.PERMIT_TYPE);
   }
 }

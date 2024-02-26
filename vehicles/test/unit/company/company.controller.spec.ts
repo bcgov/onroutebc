@@ -19,6 +19,7 @@ import {
   updateRedCompanyDtoMock,
   paginationReadRedCompanyDtoMock,
 } from '../../util/mocks/data/company.mock';
+import { GetCompanyQueryParamsDto } from '../../../src/modules/company-user-management/company/dto/request/queryParam/getCompany.query-params.dto';
 
 const COMPANY_ID_99 = 99;
 let companyService: DeepMocked<CompanyService>;
@@ -110,10 +111,7 @@ describe('CompanyController', () => {
       companyService.findCompanyMetadataByUserGuid.mockResolvedValue([
         readRedCompanyMetadataDtoMock,
       ]);
-      const retCompanyMetadata = await controller.getCompanyMetadata(
-        request,
-        constants.RED_COMPANY_ADMIN_USER_GUID,
-      );
+      const retCompanyMetadata = await controller.getCompanyMetadata(request);
       expect(typeof retCompanyMetadata).toBe('object');
       expect(retCompanyMetadata).toContainEqual(readRedCompanyMetadataDtoMock);
       expect(retCompanyMetadata.length).toBe(1);
@@ -124,10 +122,7 @@ describe('CompanyController', () => {
       request.user = sysAdminStaffUserJWTMock;
       companyService.findCompanyMetadataByUserGuid.mockResolvedValue(undefined);
       await expect(async () => {
-        await controller.getCompanyMetadata(
-          request,
-          'CC7C7C0CB561437E98CB71A6B1036517',
-        );
+        await controller.getCompanyMetadata(request);
       }).rejects.toThrow(DataNotFoundException);
     });
   });
@@ -164,19 +159,22 @@ describe('CompanyController', () => {
 
   // Mock service call for getCompanyPaginated
   describe('Company controller getCompanyPaginated function', () => {
-    const pageOptionsDto = {
-      page: 1,
-      take: 10,
-    };
     it('should return the company data when company legal name or client number are provided', async () => {
       companyService.findCompanyPaginated.mockResolvedValue(
         paginationReadRedCompanyDtoMock,
       );
-
+      const request = createMock<Request>();
+      request.user = sysAdminStaffUserJWTMock;
+      const getCompanyQueryParamsDto: GetCompanyQueryParamsDto = {
+        page: 1,
+        take: 10,
+        orderBy: 'companyId:DESC',
+        clientNumber: 'Red Truck Inc',
+        companyName: 'B3-000005-722',
+      };
       const retCompanyData = await controller.getCompanyPaginated(
-        pageOptionsDto,
-        'Red Truck Inc',
-        'B3-000005-722',
+        request,
+        getCompanyQueryParamsDto,
       );
       expect(typeof retCompanyData).toBe('object');
       expect(retCompanyData).toEqual(paginationReadRedCompanyDtoMock);

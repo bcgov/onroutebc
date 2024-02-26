@@ -35,12 +35,14 @@ import {
  * @param isNewApplication true if the application has not been created yet, false if created already
  * @param contactDetails existing contact details for the application, if any
  * @param userDetails existing user details, if any
+ * @param companyEmail company email
  * @returns default values for contact details
  */
 export const getDefaultContactDetails = (
   isNewApplication: boolean,
   contactDetails?: ContactDetails,
   userDetails?: BCeIDUserDetailContext,
+  companyEmail?: string,
 ) => {
   if (isNewApplication) {
     return {
@@ -50,11 +52,12 @@ export const getDefaultContactDetails = (
       phone1Extension: getDefaultRequiredVal("", userDetails?.phone1Extension),
       phone2: getDefaultRequiredVal("", userDetails?.phone2),
       phone2Extension: getDefaultRequiredVal("", userDetails?.phone2Extension),
-      email: getDefaultRequiredVal("", userDetails?.email),
-      additionalEmail: "",
+      email: getDefaultRequiredVal("", companyEmail),
+      additionalEmail: getDefaultRequiredVal("", userDetails?.email),
       fax: getDefaultRequiredVal("", userDetails?.fax),
     };
   }
+
   return {
     firstName: getDefaultRequiredVal("", contactDetails?.firstName),
     lastName: getDefaultRequiredVal("", contactDetails?.lastName),
@@ -62,7 +65,7 @@ export const getDefaultContactDetails = (
     phone1Extension: getDefaultRequiredVal("", contactDetails?.phone1Extension),
     phone2: getDefaultRequiredVal("", contactDetails?.phone2),
     phone2Extension: getDefaultRequiredVal("", contactDetails?.phone2Extension),
-    email: getDefaultRequiredVal("", contactDetails?.email),
+    email: getDefaultRequiredVal("", contactDetails?.email, companyEmail),
     additionalEmail: getDefaultRequiredVal("", contactDetails?.additionalEmail),
     fax: getDefaultRequiredVal("", contactDetails?.fax),
   };
@@ -244,6 +247,7 @@ export const getDefaultValues = (
           "",
         applicationData?.permitData?.contactDetails,
         userDetails,
+        companyInfo?.email,
       ),
       // Default values are updated from companyInfo query in the ContactDetails common component
       mailingAddress: getDefaultMailingAddress(
@@ -253,10 +257,7 @@ export const getDefaultValues = (
       vehicleDetails: getDefaultVehicleDetails(
         applicationData?.permitData?.vehicleDetails,
       ),
-      feeSummary: getDefaultRequiredVal(
-        `${calculateFeeByDuration(durationOrDefault)}`,
-        applicationData?.permitData?.feeSummary,
-      ),
+      feeSummary: `${calculateFeeByDuration(durationOrDefault)}`,
     },
   };
 };

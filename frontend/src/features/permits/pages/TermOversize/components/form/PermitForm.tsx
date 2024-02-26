@@ -46,6 +46,7 @@ interface PermitFormProps {
     value: number;
     label: string;
   }[];
+  doingBusinessAs?: Nullable<string>;
 }
 
 export const PermitForm = (props: PermitFormProps) => {
@@ -62,8 +63,11 @@ export const PermitForm = (props: PermitFormProps) => {
           updatedDateTime={props.updatedDateTime}
           companyInfo={props.companyInfo}
           isAmendAction={props.isAmendAction}
+          doingBusinessAs={props.doingBusinessAs}
         />
+
         <ContactDetails feature={props.feature} />
+
         <PermitDetails
           feature={props.feature}
           defaultStartDate={props.permitStartDate}
@@ -73,6 +77,7 @@ export const PermitForm = (props: PermitFormProps) => {
           durationOptions={props.durationOptions}
           disableStartDate={props.isAmendAction}
         />
+        
         <VehicleDetails
           feature={props.feature}
           vehicleData={props.vehicleDetails}

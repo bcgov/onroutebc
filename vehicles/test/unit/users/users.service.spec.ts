@@ -21,7 +21,6 @@ import {
 import { PendingUsersService } from '../../../src/modules/company-user-management/pending-users/pending-users.service';
 
 import { BadRequestException } from '@nestjs/common';
-import { UserStatus } from '../../../src/common/enum/user-status.enum';
 import { Role } from '../../../src/common/enum/roles.enum';
 import { DataNotFoundException } from '../../../src/common/exception/data-not-found.exception';
 import * as constants from '../../util/mocks/data/test-data.constants';
@@ -48,6 +47,7 @@ import { PendingIdirUsersService } from 'src/modules/company-user-management/pen
 import { pendingIdirUserEntityMock } from 'test/util/mocks/data/pending-idir-user.mock';
 import { Request } from 'express';
 import { IUserJWT } from '../../../src/common/interface/user-jwt.interface';
+import { CompanyUser } from '../../../src/modules/company-user-management/users/entities/company-user.entity';
 
 interface SelectQueryBuilderParameters {
   userGUID?: string;
@@ -56,6 +56,7 @@ interface SelectQueryBuilderParameters {
 
 let repo: DeepMocked<Repository<User>>;
 let repoIdirUser: DeepMocked<Repository<IdirUser>>;
+let repoCompanyUser: DeepMocked<Repository<CompanyUser>>;
 let repoPendingIdirUser: DeepMocked<Repository<PendingIdirUser>>;
 let pendingUsersServiceMock: DeepMocked<PendingUsersService>;
 let pendingIdirUsersServiceMock: DeepMocked<PendingIdirUsersService>;
@@ -73,6 +74,7 @@ describe('UsersService', () => {
     repo = createMock<Repository<User>>();
     repoIdirUser = createMock<Repository<IdirUser>>();
     repoPendingIdirUser = createMock<Repository<PendingIdirUser>>();
+    repoCompanyUser = createMock<Repository<CompanyUser>>();
     const dataSourceMock = dataSourceMockFactory() as DataSource;
 
     const module: TestingModule = await Test.createTestingModule({
@@ -90,6 +92,10 @@ describe('UsersService', () => {
         {
           provide: getRepositoryToken(PendingIdirUser),
           useValue: repoPendingIdirUser,
+        },
+        {
+          provide: getRepositoryToken(CompanyUser),
+          useValue: repoCompanyUser,
         },
         {
           provide: PendingUsersService,
@@ -139,7 +145,7 @@ describe('UsersService', () => {
         constants.RED_COMPANY_CVCLIENT_USER_GUID,
       );
       expect(typeof retCompanies).toBe('object');
-      expect(retCompanies[0]).toBe(constants.RED_COMPANY_ID);
+      expect(retCompanies[0]).toBe(readRedCompanyMetadataDtoMock);
     });
   });
 
@@ -208,23 +214,6 @@ describe('UsersService', () => {
       USER_LIST[1].userContact.phone2 = constants.RED_COMPANY_CVCLIENT_PHONE_2;
       USER_LIST[1].userContact.phone2 =
         constants.RED_COMPANY_CVCLIENT_PHONE_2_EXT;
-    });
-  });
-
-  describe('User service updateStatus function', () => {
-    it('should update the user Status', async () => {
-      repo.update.mockResolvedValue({
-        affected: 1,
-        raw: undefined,
-        generatedMaps: undefined,
-      });
-      const retUpdateResult = await service.updateStatus(
-        constants.BLUE_COMPANY_CVCLIENT_USER_GUID,
-        UserStatus.DISABLED,
-        redCompanyCvClientUserJWTMock,
-      );
-      expect(typeof retUpdateResult).toBe('object');
-      expect(retUpdateResult.affected).toBe(1);
     });
   });
 

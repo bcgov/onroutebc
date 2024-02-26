@@ -5,12 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import * as path from 'path';
 import { TpsPermitModule } from './modules/tps-permit/tps-permit.module';
+import { FeatureFlagsModule } from './modules/feature-flags/feature-flags.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeormCustomLogger } from './logger/typeorm-logger.config';
 import { getTypeormLogLevel } from './helper/logger.helper';
+import { CacheModule } from '@nestjs/cache-manager';
 
 const envPath = path.resolve(process.cwd() + '/../');
-
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -31,7 +32,13 @@ const envPath = path.resolve(process.cwd() + '/../');
         getTypeormLogLevel(process.env.TPS_API_TYPEORM_LOG_LEVEL),
       ),
     }),
+    CacheModule.register({
+      max: 50, //Max cache items in store. Revisit the number when required.
+      ttl: 0, // disable expiration of the cache.
+      isGlobal: true, // Allows access to cache manager globally.
+    }),
     TpsPermitModule,
+    FeatureFlagsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

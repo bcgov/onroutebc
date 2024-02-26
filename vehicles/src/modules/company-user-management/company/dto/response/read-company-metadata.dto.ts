@@ -32,4 +32,19 @@ export class ReadCompanyMetadataDto {
     example: 'ABC Carriers Inc.',
   })
   alternateName?: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'The email address of the company.',
+    required: true,
+    example: 'test@test.gov.bc.ca',
+  })
+  email: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'Indicates whether the company is currently suspended.',
+    example: false,
+  })
+  isSuspended: boolean;
 }

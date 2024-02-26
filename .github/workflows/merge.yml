@@ -58,13 +58,13 @@ jobs:
         package: [dops, vehicles, frontend, tps-migration]
     timeout-minutes: 2
     steps:
-      - uses: shrink/actions-docker-registry-tag@v3
+      - uses: shrink/actions-docker-registry-tag@v4
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.package }}
           target: ${{ needs.vars.outputs.pr }}
           tags: test  #Promote images AFTER successful deploy
-      
+
   deploys-prod:
     name: Deploys (prod)
     needs: [promote-images-test, vars]
@@ -77,7 +77,7 @@ jobs:
       release: prod
       vault_role: prod
       vault_zone: prod
-  
+
   promote-images-prod:
     name: Promote Images - Prod
     needs: [deploys-prod, vars]
@@ -89,13 +89,13 @@ jobs:
         package: [dops, vehicles, frontend, tps-migration]
     timeout-minutes: 2
     steps:
-      - uses: shrink/actions-docker-registry-tag@v3
+      - uses: shrink/actions-docker-registry-tag@v4
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.package }}
           target: ${{ needs.vars.outputs.pr }}
           tags: prod  #Promote images AFTER successful deploy
-  
+
   create-release:
     name: Create release
     runs-on: ubuntu-22.04
@@ -109,4 +109,3 @@ jobs:
           --repo=${{ github.repository }} \
           --title="${{ github.repository }}-${{ needs.vars.outputs.pr }}" \
           --generate-notes
-          

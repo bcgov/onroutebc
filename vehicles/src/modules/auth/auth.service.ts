@@ -5,6 +5,7 @@ import { PendingUsersService } from '../company-user-management/pending-users/pe
 import { Role } from '../../common/enum/roles.enum';
 import { IDP } from '../../common/enum/idp.enum';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
+import { ReadCompanyMetadataDto } from '../company-user-management/company/dto/response/read-company-metadata.dto';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +22,7 @@ export class AuthService {
   ): Promise<ReadUserDto[]> {
     let user: ReadUserDto[];
     if (identity_provider === IDP.IDIR) {
-      user = Array(await this.usersService.findIdirUser(userGuid));
+      user = Array(await this.usersService.findOneIdirUser(userGuid));
     } else {
       if (!companyId) {
         user = await this.usersService.findUsersDto(userGuid);
@@ -57,8 +58,9 @@ export class AuthService {
    * @returns The associated companies as a promise of type {@link number[]}
    */
   @LogAsyncMethodExecution()
-  async getCompaniesForUser(userGuid: string): Promise<number[]> {
-    const companies = await this.usersService.getCompaniesForUser(userGuid);
-    return companies;
+  async getCompaniesForUser(
+    userGuid: string,
+  ): Promise<ReadCompanyMetadataDto[]> {
+    return await this.usersService.getCompaniesForUser(userGuid);
   }
 }

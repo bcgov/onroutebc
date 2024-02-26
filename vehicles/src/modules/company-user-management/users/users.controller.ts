@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  Body,
   Controller,
   Get,
   Param,
@@ -16,9 +15,8 @@ import {
   ApiMethodNotAllowedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
-  ApiQuery,
   ApiTags,
-  ApiCreatedResponse,
+  ApiOperation,
 } from '@nestjs/swagger';
 import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { ReadUserOrbcStatusDto } from './dto/response/read-user-orbc-status.dto';
@@ -31,8 +29,8 @@ import { Roles } from '../../../common/decorator/roles.decorator';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { ReadUserDto } from './dto/response/read-user.dto';
 import { IDP } from '../../../common/enum/idp.enum';
-import { ReadVerifyClientDto } from './dto/response/read-verify-client.dto';
-import { VerifyClientDto } from './dto/request/verify-client.dto';
+import { GetStaffUserQueryParamsDto } from './dto/request/queryParam/getStaffUser.query-params.dto';
+import { GetUserRolesQueryParamsDto } from './dto/request/queryParam/getUserRoles.query-params.dto';
 
 @ApiTags('Company and User Management - User')
 @ApiBadRequestResponse({
@@ -67,6 +65,13 @@ export class UsersController {
     description: 'The User Orbc Status Exists Resource',
     type: ReadUserOrbcStatusDto,
   })
+  @ApiOperation({
+    summary:
+      'Verifies and retrieves user context based on GUID and associated company in ORBC',
+    description:
+      'This method verifies if a user exists in ORBC by their GUID and retrieves the user details along with the associated company, if any. ' +
+      'It supports different identity providers, including IDIR and general ORBC user flows.',
+  })
   @AuthOnly()
   @Post('user-context')
   async find(@Req() request: Request): Promise<ReadUserOrbcStatusDto> {
@@ -81,49 +86,34 @@ export class UsersController {
   }
 
   /**
-   * A POST method defined with a route of /verify-client that verifies
-   * if the migrated client and permit exists in ORBC
-   *
-   * @returns The user details with response object {@link ReadVerifyMigratedClientDto}.
-   */
-  @ApiCreatedResponse({
-    description: 'The Verify Client Resource',
-    type: ReadVerifyClientDto,
-  })
-  @AuthOnly()
-  @Post('verify-client')
-  async verifyClient(
-    @Req() request: Request,
-    @Body() verifyClientDto: VerifyClientDto,
-  ): Promise<ReadVerifyClientDto> {
-    const currentUser = request.user as IUserJWT;
-    return await this.userService.verifyClient(currentUser, verifyClientDto);
-  }
-
-  /**
    * A GET method defined with the @Get() decorator and a route of
-   * /user/roles that retrieves a list of users associated with
-   * the company ID
+   * /user/roles that retrieves a list of users' roles associated with
+   * the given company ID.
    *
-   * @param companyId The company Id.
+   * @param companyId The company Id for which roles are retrieved.
    *
-   * @returns The user list with response object {@link ReadUserDto}.
+   * @returns The list of roles associated with the given company ID.
    */
   @ApiOkResponse({
     description: "The list of User's Roles",
     isArray: true,
   })
-  @ApiQuery({ name: 'companyId', required: false })
+  @ApiOperation({
+    summary: "Retrieves a list of users' roles for a specified company ID.",
+    description:
+      'This endpoint queries all roles associated with the provided company ID for the calling user. ' +
+      "It fetches roles by integrating with the User service, ensuring roles are accurately returned based on the company's context and the user's privileges.",
+  })
   @Roles(Role.READ_SELF)
   @Get('/roles')
   async getRolesForUsers(
     @Req() request: Request,
-    @Query('companyId') companyId?: number,
+    @Query() getUserRolesQueryParamsDto: GetUserRolesQueryParamsDto,
   ): Promise<Role[]> {
     const currentUser = request.user as IUserJWT;
     const roles = await this.userService.getRolesForUser(
       currentUser.userGUID,
-      companyId,
+      getUserRolesQueryParamsDto.companyId,
     );
     return roles;
   }
@@ -142,40 +132,30 @@ export class UsersController {
     type: ReadUserDto,
     isArray: true,
   })
-  @ApiQuery({ name: 'companyId', required: false })
-  @ApiQuery({ name: 'permitIssuerPPCUser', required: false })
   @Roles(Role.READ_USER)
   @Get()
   async findAll(
-    @Req() request: Request,
-    @Query('companyId') companyId?: number,
-    @Query('permitIssuerPPCUser') permitIssuerPPCUser?: boolean,
+    @Query() getStaffUserQueryParamsDto?: GetStaffUserQueryParamsDto,
   ): Promise<ReadUserDto[]> {
-    const currentUser = request.user as IUserJWT;
-    if (
-      currentUser.identity_provider === IDP.IDIR &&
-      !companyId &&
-      !permitIssuerPPCUser
-    ) {
-      throw new BadRequestException();
-    } else if (
-      currentUser.identity_provider === IDP.IDIR &&
-      !companyId &&
-      permitIssuerPPCUser
-    ) {
+    if (getStaffUserQueryParamsDto.permitIssuerPPCUser) {
       return await this.userService.findPermitIssuerPPCUser();
     }
 
-    const companyIdList = companyId
-      ? [companyId]
-      : currentUser.associatedCompanies;
-    return await this.userService.findUsersDto(undefined, companyIdList);
+    return await this.userService.findIdirUsers(
+      getStaffUserQueryParamsDto.userAuthGroup,
+    );
   }
 
   /**
    * A GET method defined with the @Get() decorator and a route of
    * /users/:userGuid that retrieves a user by its GUID
-   * (global unique identifier).
+   * (global unique identifier). It first checks the identity provider of the
+   * current user. If the user identity provider is not IDIR, it validates that
+   * the requested userGUID matches the currentUser's GUID and retrieves user
+   * details based on associated companies. For IDIR users, it fetches both IDIR
+   * and non-IDIR user details for the given userGUID, then combines and returns
+   * the first result if any are found. Throws a BadRequestException if the GUIDs
+   * do not match for non-IDIR users, and DataNotFoundException if no users are found.
    *
    * @param userGUID  The user GUID.
    *
@@ -184,6 +164,19 @@ export class UsersController {
   @ApiOkResponse({
     description: 'The User Resource',
     type: ReadUserDto,
+  })
+  @ApiOperation({
+    summary:
+      'Retrieves comprehensive details for a single user identified by their GUID, ' +
+      'accommodating both IDIR and non-IDIR user inquiries with appropriate access and identity validation.',
+    description:
+      'The endpoint first checks the identity provider of the ' +
+      'current user. If the user identity provider is not IDIR, it validates that ' +
+      "the requested userGUID matches the currentUser's GUID and retrieves user " +
+      'details based on associated companies. For IDIR users, it fetches both IDIR ' +
+      'and non-IDIR user details for the given userGUID, then combines and returns ' +
+      'the first result if any are found. Throws a BadRequestException if the GUIDs ' +
+      'do not match for non-IDIR users, and DataNotFoundException if no users are found.',
   })
   @Roles(Role.READ_SELF)
   @Get(':userGUID')
@@ -194,16 +187,22 @@ export class UsersController {
     const currentUser = request.user as IUserJWT;
     let users: ReadUserDto[] = [];
     if (currentUser.identity_provider !== IDP.IDIR) {
+      if (userGUID !== currentUser.userGUID) {
+        throw new BadRequestException(
+          'The userGuid does not match userGuid in access token',
+        );
+      }
       users = await this.userService.findUsersDto(
         userGUID,
         currentUser.associatedCompanies,
       );
     } else {
-      users.push(await this.userService.findIdirUser(userGUID));
+      users = await this.userService.findUsersDto(userGUID);
+      users.push(await this.userService.findOneIdirUser(userGUID));
     }
     if (!users?.length) {
       throw new DataNotFoundException();
     }
-    return users[0];
+    return users?.at(0);
   }
 }

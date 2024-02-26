@@ -16,8 +16,8 @@ import { ERROR_ROUTES } from "../../../../routes/constants";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { verifyMigratedClient } from "../../../manageProfile/apiManager/manageProfileAPI";
 import {
-  CompanyAndUserRequest,
-  VerifyMigratedClientRequest,
+  CreateCompanyRequest,
+  VerifyClientRequest,
   VerifyMigratedClientResponse,
 } from "../../../manageProfile/types/manageProfile";
 import { ClientAndPermitReferenceInfoBox } from "../../subcomponents/ClientAndPermitReferenceInfoBox";
@@ -60,14 +60,14 @@ export const ChallengeProfileSteps = React.memo(() => {
     },
   };
 
-  const verifyMigratedClientFormMethods = useForm<VerifyMigratedClientRequest>({
+  const verifyMigratedClientFormMethods = useForm<VerifyClientRequest>({
     defaultValues: {
       clientNumber: "",
       permitNumber: "",
     },
   });
 
-  const companyAndUserFormMethods = useForm<CompanyAndUserRequest>({
+  const companyAndUserFormMethods = useForm<CreateCompanyRequest>({
     defaultValues: defaultCompanyAndUserInfoValues,
   });
 
@@ -195,9 +195,7 @@ export const ChallengeProfileSteps = React.memo(() => {
    * Onclick handler for Next button at Verify Profile stage.
    * @param data The form data.
    */
-  const handleNextVerifyClientStep = async (
-    data: VerifyMigratedClientRequest,
-  ) => {
+  const handleNextVerifyClientStep = async (data: VerifyClientRequest) => {
     verifyMigratedClientMutation.mutate(data);
   };
 

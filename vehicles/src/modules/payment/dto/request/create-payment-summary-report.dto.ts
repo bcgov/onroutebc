@@ -7,6 +7,7 @@ export class CreatePaymentSummaryReportDto {
   @AutoMap()
   @ApiProperty({
     enum: PermitIssuedBy,
+    required: true,
     example: [PermitIssuedBy.SELF_ISSUED],
     description: 'Permit Issued By value.',
     isArray: true,

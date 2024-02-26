@@ -99,6 +99,7 @@ describe('Trailers (e2e)', () => {
 
   describe('/companies/1/vehicles/trailers/delete-requests DELETE', () => {
     it('should delete the trailer.', () => {
+      repo.findBy.mockResolvedValue([]);
       return request(app.getHttpServer() as unknown as App)
         .post('/companies/1/vehicles/trailers/delete-requests')
         .send(deleteTrailersMock)

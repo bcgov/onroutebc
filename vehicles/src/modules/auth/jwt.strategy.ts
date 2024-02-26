@@ -17,7 +17,11 @@ import {
   validateUserCompanyAndRoleContext,
 } from '../../common/helper/auth.helper';
 import { DataNotFoundException } from '../../common/exception/data-not-found.exception';
-import { UserAuthGroup } from '../../common/enum/user-auth-group.enum';
+import {
+  ClientUserAuthGroup,
+  IDIRUserAuthGroup,
+  UserAuthGroup,
+} from '../../common/enum/user-auth-group.enum';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -47,7 +51,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       associatedCompanies: number[],
       orbcUserFirstName: string,
       orbcUserLastName: string,
-      orbcUserAuthGroup: UserAuthGroup;
+      orbcUserAuthGroup:
+        | UserAuthGroup
+        | ClientUserAuthGroup
+        | IDIRUserAuthGroup;
 
     let companyId: number;
     if (req.params['companyId']) {
@@ -93,12 +100,23 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       orbcUserAuthGroup = user?.at(0).userAuthGroup;
 
       if (payload.identity_provider !== IDP.IDIR) {
-        associatedCompanies =
+        const associatedCompanyMetadataList =
           await this.authService.getCompaniesForUser(userGUID);
+
+        associatedCompanies = associatedCompanyMetadataList?.map(
+          (company) => +company.companyId,
+        );
         //Remove when one login Multiple Companies needs to be activated
         companyId = associatedCompanies?.length
           ? associatedCompanies?.at(0)
           : companyId;
+
+        if (
+          !associatedCompanies.includes(companyId) ||
+          associatedCompanyMetadataList?.at(0)?.isSuspended
+        ) {
+          throw new ForbiddenException();
+        }
       }
 
       roles = await this.authService.getRolesForUser(userGUID, companyId);
@@ -145,8 +163,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       payload.identity_provider !== IDP.IDIR &&
       userGUIDParam
     ) {
-      const associatedCompanies =
+      const associatedCompaniesMetadata =
         await this.authService.getCompaniesForUser(userGUIDParam);
+
+      const associatedCompanies = associatedCompaniesMetadata?.map(
+        (company) => +company.companyId,
+      );
 
       if (!associatedCompanies?.length) {
         throw new DataNotFoundException();

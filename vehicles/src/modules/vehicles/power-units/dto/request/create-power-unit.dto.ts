@@ -21,7 +21,6 @@ export class CreatePowerUnitDto {
   })
   @IsOptional()
   @IsString()
-  //@IsAlphanumeric()
   @MaxLength(10)
   unitNumber?: string;
 
@@ -31,7 +30,6 @@ export class CreatePowerUnitDto {
     example: 'AS 5895',
   })
   @IsString()
-  //@IsAlphanumeric()
   @MaxLength(10)
   plate: string;
 
@@ -79,7 +77,6 @@ export class CreatePowerUnitDto {
     example: 'Kenworth',
   })
   @IsString()
-  // @IsAlphanumeric()
   @MaxLength(20)
   make: string;
 
@@ -109,6 +106,8 @@ export class CreatePowerUnitDto {
     description: 'Type of the power unit.',
     example: 'CONCRET',
   })
+  @IsString()
+  @Length(1, 7)
   powerUnitTypeCode: string;
 
   @AutoMap()

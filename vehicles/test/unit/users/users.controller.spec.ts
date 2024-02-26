@@ -1,23 +1,20 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { TestingModule, Test } from '@nestjs/testing';
-import { DataNotFoundException } from '../../../src/common/exception/data-not-found.exception';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Request } from 'express';
 
-import {
-  redCompanyAdminUserJWTMock,
-  sysAdminStaffUserJWTMock,
-} from '../../util/mocks/data/jwt.mock';
+import { redCompanyAdminUserJWTMock } from '../../util/mocks/data/jwt.mock';
 import * as constants from '../../util/mocks/data/test-data.constants';
 import { UsersController } from '../../../src/modules/company-user-management/users/users.controller';
 import { UsersService } from '../../../src/modules/company-user-management/users/users.service';
 import {
   USER_DTO_LIST,
   readRedAdminUserOrbcStatusDtoMock,
-  readRedCompanyAdminUserDtoMock,
+  readSysAdminStaffUserDtoMock,
 } from '../../util/mocks/data/user.mock';
 import { IUserJWT } from '../../../src/common/interface/user-jwt.interface';
-
+import { GetStaffUserQueryParamsDto } from '../../../src/modules/company-user-management/users/dto/request/queryParam/getStaffUser.query-params.dto';
+import { IDIRUserAuthGroup } from '../../../src/common/enum/user-auth-group.enum';
 import { BadRequestException } from '@nestjs/common';
 
 const COMPANY_ID_99 = 99;
@@ -73,10 +70,9 @@ describe('UsersController', () => {
       const currentUser = request.user as IUserJWT;
 
       userService.getRolesForUser.mockResolvedValue(currentUser.roles);
-      const retUserRoles = await controller.getRolesForUsers(
-        request,
-        constants.RED_COMPANY_ID,
-      );
+      const retUserRoles = await controller.getRolesForUsers(request, {
+        companyId: constants.RED_COMPANY_ID,
+      });
       expect(typeof retUserRoles).toBe('object');
 
       expect(userService.getRolesForUser).toHaveBeenCalledWith(
@@ -88,46 +84,16 @@ describe('UsersController', () => {
 
   describe('Users controller findAll function', () => {
     it('should return the users', async () => {
-      const request = createMock<Request>();
-      request.user = sysAdminStaffUserJWTMock;
+      jest
+        .spyOn(userService, 'findIdirUsers')
+        .mockResolvedValue([readSysAdminStaffUserDtoMock]);
 
-      const params: FindUsersDtoMockParameters = {
-        companyId: [constants.RED_COMPANY_ID],
+      const getStaffUserQueryParamsDto: GetStaffUserQueryParamsDto = {
+        permitIssuerPPCUser: false,
+        userAuthGroup: IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
       };
-      findUsersDtoMock(params);
-      const retUsers = await controller.findAll(
-        request,
-        constants.RED_COMPANY_ID,
-      );
+      const retUsers = await controller.findAll(getStaffUserQueryParamsDto);
       expect(typeof retUsers).toBe('object');
-
-      expect(userService.findUsersDto).toHaveBeenCalledWith(undefined, [
-        constants.RED_COMPANY_ID,
-      ]);
-    });
-    it('should return the users when Company Id is not provided', async () => {
-      const request = createMock<Request>();
-      request.user = redCompanyAdminUserJWTMock;
-
-      const params: FindUsersDtoMockParameters = {
-        companyId: [constants.RED_COMPANY_ID],
-      };
-      findUsersDtoMock(params);
-      const retUsers = await controller.findAll(request);
-      expect(typeof retUsers).toBe('object');
-
-      expect(userService.findUsersDto).toHaveBeenCalledWith(undefined, [
-        constants.RED_COMPANY_ID,
-      ]);
-      expect(retUsers).toContainEqual(readRedCompanyAdminUserDtoMock);
-      expect(retUsers).toHaveLength(2);
-    });
-    it('should throw Bad Request Exception when the company Id is not provided for Staff User', async () => {
-      const request = createMock<Request>();
-      request.user = sysAdminStaffUserJWTMock;
-      await expect(async () => {
-        await controller.findAll(request);
-      }).rejects.toThrow(BadRequestException);
     });
   });
 
@@ -153,7 +119,7 @@ describe('UsersController', () => {
       );
     });
 
-    it('should throw DataNotFound Exception when user is not found', async () => {
+    it('should throw BadRequestException when user guid mismatch', async () => {
       const request = createMock<Request>();
       request.user = redCompanyAdminUserJWTMock;
       const params: FindUsersDtoMockParameters = {
@@ -167,7 +133,7 @@ describe('UsersController', () => {
           request,
           'D9AE454841CA4F63812CD91FD8F204D9',
         );
-      }).rejects.toThrow(DataNotFoundException);
+      }).rejects.toThrow(BadRequestException);
     });
   });
 });

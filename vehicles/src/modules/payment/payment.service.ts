@@ -71,16 +71,7 @@ export class PaymentService {
   };
 
   private queryHash = (transaction: Transaction) => {
-    const permitIds = transaction.permitTransactions.map(
-      (permitTransaction) => {
-        return permitTransaction.permit.permitId;
-      },
-    );
-    // Construct the URL with the transaction details for the payment gateway
-    const redirectUrl = permitIds
-      ? `${process.env.PAYBC_REDIRECT}` + `?path=${permitIds.join(',')}`
-      : `${process.env.PAYBC_REDIRECT}`;
-
+    const redirectUrl = process.env.PAYBC_REDIRECT;
     const date = new Date().toISOString().split('T')[0];
 
     // There should be a better way of doing this which is not as rigid - something like
@@ -165,23 +156,26 @@ export class PaymentService {
     return receiptNumber;
   }
 
+  private isTransactionPurchase(transactionType: TransactionType) {
+    return transactionType == TransactionType.PURCHASE;
+  }
+
   private isWebTransactionPurchase(
     paymentMethod: PaymentMethodTypeEnum,
     transactionType: TransactionType,
   ) {
     return (
       paymentMethod == PaymentMethodTypeEnum.WEB &&
-      transactionType == TransactionType.PURCHASE
+      this.isTransactionPurchase(transactionType)
     );
   }
 
   private assertApplicationInProgress(
-    paymentMethod: PaymentMethodTypeEnum,
     transactionType: TransactionType,
     permitStatus: ApplicationStatus,
   ) {
     if (
-      this.isWebTransactionPurchase(paymentMethod, transactionType) &&
+      this.isTransactionPurchase(transactionType) &&
       permitStatus != ApplicationStatus.IN_PROGRESS &&
       permitStatus != ApplicationStatus.WAITING_PAYMENT
     ) {
@@ -239,7 +233,6 @@ export class PaymentService {
         });
 
         this.assertApplicationInProgress(
-          newTransaction.paymentMethodTypeCode,
           newTransaction.transactionTypeId,
           existingApplication.permitStatus,
         );
@@ -276,6 +269,17 @@ export class PaymentService {
           existingApplication.updatedUserGuid = currentUser.userGUID;
 
           await queryRunner.manager.save(existingApplication);
+        } else if (
+          this.isTransactionPurchase(newTransaction.transactionTypeId)
+        ) {
+          existingApplication.permitStatus = ApplicationStatus.PAYMENT_COMPLETE;
+          existingApplication.updatedDateTime = new Date();
+          existingApplication.updatedUser = currentUser.userName;
+          existingApplication.updatedUserDirectory =
+            currentUser.orbcUserDirectory;
+          existingApplication.updatedUserGuid = currentUser.userGUID;
+
+          await queryRunner.manager.save(existingApplication);
         }
       }
 
@@ -294,13 +298,15 @@ export class PaymentService {
           createdTransaction.transactionTypeId,
         )
       ) {
+        // Only payment using PayBC should generate the url
         url = this.generateUrl(createdTransaction);
       }
 
       if (
-        createdTransaction.paymentMethodTypeCode ==
-          PaymentMethodTypeEnum.NO_PAYMENT ||
-        createdTransaction.transactionTypeId == TransactionType.REFUND
+        !this.isWebTransactionPurchase(
+          createdTransaction.paymentMethodTypeCode,
+          createdTransaction.transactionTypeId,
+        )
       ) {
         const receiptNumber = await this.generateReceiptNumber();
         const receipt = new Receipt();

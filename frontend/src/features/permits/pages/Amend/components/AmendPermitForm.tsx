@@ -17,11 +17,8 @@ import { AmendReason } from "./form/AmendReason";
 import { Nullable } from "../../../../../common/types/common";
 import { VehicleDetails } from "../../../types/application";
 import { ERROR_ROUTES } from "../../../../../routes/constants";
-import {
-  applyWhenNotNullable,
-  getDefaultRequiredVal,
-} from "../../../../../common/helpers/util";
-
+import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
+import OnRouteBCContext from "../../../../../common/authentication/OnRouteBCContext";
 import {
   dayjsToUtcStr,
   nowUtc,
@@ -49,6 +46,15 @@ export const AmendPermitForm = () => {
     goHome,
     getLinks,
   } = useContext(AmendPermitContext);
+
+  const {
+    companyLegalName,
+    idirUserDetails,
+  } = useContext(OnRouteBCContext);
+
+  const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
+  const doingBusinessAs = isStaffActingAsCompany && companyLegalName ?
+    companyLegalName : "";
 
   const navigate = useNavigate();
 
@@ -161,10 +167,6 @@ export const AmendPermitForm = () => {
           application: {
             ...permitToBeAmended,
             permitId: `${permitToBeAmended.permitId}`,
-            previousRevision: applyWhenNotNullable(
-              (prevRev) => `${prevRev}`,
-              permitToBeAmended.previousRevision,
-            ),
             permitData: {
               ...permitToBeAmended.permitData,
               companyName: getDefaultRequiredVal(
@@ -235,6 +237,7 @@ export const AmendPermitForm = () => {
           trailerSubTypes={trailerSubTypes}
           companyInfo={companyInfo}
           durationOptions={durationOptions}
+          doingBusinessAs={doingBusinessAs}
         >
           <AmendRevisionHistory revisionHistory={revisionHistory} />
           <AmendReason feature={FEATURE} />

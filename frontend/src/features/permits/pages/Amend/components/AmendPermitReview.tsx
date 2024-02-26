@@ -9,6 +9,7 @@ import { getDefaultFormDataFromPermit } from "../types/AmendPermitFormData";
 import { ReviewReason } from "./review/ReviewReason";
 import { calculateAmountToRefund } from "../../../helpers/feeSummary";
 import { isValidTransaction } from "../../../helpers/payment";
+import OnRouteBCContext from "../../../../../common/authentication/OnRouteBCContext";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -22,6 +23,15 @@ import {
 export const AmendPermitReview = () => {
   const { permit, permitFormData, permitHistory, back, next, getLinks } =
     useContext(AmendPermitContext);
+
+  const {
+    companyLegalName,
+    idirUserDetails,
+  } = useContext(OnRouteBCContext);
+
+  const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
+  const doingBusinessAs = isStaffActingAsCompany && companyLegalName ?
+    companyLegalName : "";
 
   const validTransactionHistory = permitHistory.filter((history) =>
     isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
@@ -89,10 +99,6 @@ export const AmendPermitReview = () => {
         oldFields={{
           ...oldFields,
           permitId: applyWhenNotNullable((id) => `${id}`, oldFields.permitId),
-          previousRevision: applyWhenNotNullable(
-            (prevRev) => `${prevRev}`,
-            oldFields.previousRevision,
-          ),
           permitData: {
             ...oldFields.permitData,
             companyName: getDefaultRequiredVal(
@@ -106,6 +112,7 @@ export const AmendPermitReview = () => {
           },
         }}
         calculatedFee={`${amountToRefund}`}
+        doingBusinessAs={doingBusinessAs}
       >
         {permitFormData?.comment ? (
           <ReviewReason reason={permitFormData.comment} />

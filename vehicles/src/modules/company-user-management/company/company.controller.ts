@@ -7,7 +7,7 @@ import {
   Put,
   Query,
   Req,
-  ForbiddenException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import {
@@ -18,7 +18,7 @@ import {
   ApiMethodNotAllowedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
-  ApiQuery,
+  ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
@@ -33,9 +33,15 @@ import { Roles } from '../../../common/decorator/roles.decorator';
 import { Role } from '../../../common/enum/roles.enum';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
-import { IDP } from '../../../common/enum/idp.enum';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
-import { PageOptionsDto } from 'src/common/dto/paginate/page-options';
+import { ApiPaginatedResponse } from '../../../common/decorator/api-paginate-response';
+import { GetCompanyQueryParamsDto } from './dto/request/queryParam/getCompany.query-params.dto';
+import {
+  UserAuthGroup,
+  idirUserAuthGroupList,
+} from '../../../common/enum/user-auth-group.enum';
+import { ReadVerifyClientDto } from './dto/response/read-verify-client.dto';
+import { VerifyClientDto } from './dto/request/verify-client.dto';
 
 @ApiTags('Company and User Management - Company')
 @ApiBadRequestResponse({
@@ -84,37 +90,42 @@ export class CompanyController {
   }
 
   /**
-   * A GET method defined with the @Get() decorator and a route of /companies/paginated
-   * that retrieves companies data by company's legal name or client number.
+   * A GET method defined with the @Get() decorator and a route of /companies
+   * that retrieves paginated companies data according to the parameters specified in
+   * GetCompanyQueryParamsDto, such as legal name or client number.
    *
-   * @param legalName The legal name of the company.
-   * @param clientNumber The client number of the company.
-   * @returns The companies with response object {@link ReadCompanyDto}.
+   * @param getCompanyQueryParamsDto The query parameters for fetching paginated companies.
+   * @returns The paginated companies with response object {@link ReadCompanyDto}.
    */
-  @ApiOkResponse({
-    description: 'The Company Resource',
-    type: ReadCompanyDto,
-    isArray: true,
-  })
-  @ApiQuery({ name: 'legalName', required: false })
-  @ApiQuery({ name: 'clientNumber', required: false })
+  @ApiPaginatedResponse(ReadCompanyDto)
   @Roles(Role.READ_ORG)
-  @Get('paginated')
+  @Get()
   async getCompanyPaginated(
-    @Query() pageOptionsDto: PageOptionsDto,
-    @Query('legalName') legalName: string,
-    @Query('clientNumber') clientNumber: string,
+    @Req() request: Request,
+    @Query() getCompanyQueryParamsDto: GetCompanyQueryParamsDto,
   ): Promise<PaginationDto<ReadCompanyDto>> {
-    const companies: PaginationDto<ReadCompanyDto> =
-      await this.companyService.findCompanyPaginated(
-        pageOptionsDto,
-        legalName?.trim(),
-        clientNumber?.trim(),
+    const currentUser = request.user as IUserJWT;
+    if (
+      !idirUserAuthGroupList.includes(
+        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      )
+    ) {
+      throw new UnauthorizedException(
+        `Unauthorized for ${currentUser.orbcUserAuthGroup} role.`,
       );
+    }
+
+    const companies: PaginationDto<ReadCompanyDto> =
+      await this.companyService.findCompanyPaginated({
+        page: getCompanyQueryParamsDto.page,
+        take: getCompanyQueryParamsDto.take,
+        orderBy: getCompanyQueryParamsDto.orderBy,
+        companyName: getCompanyQueryParamsDto.companyName,
+        clientNumber: getCompanyQueryParamsDto.clientNumber,
+      });
 
     return companies;
   }
-
   /**
    * A GET method defined with the @Get() decorator and a route of /meta-data
    * that retrieves a company metadata by userGuid. If userGUID is not provided,
@@ -129,24 +140,16 @@ export class CompanyController {
     type: ReadCompanyMetadataDto,
     isArray: true,
   })
-  @ApiQuery({ name: 'userGUID', required: false })
   @Roles(Role.READ_ORG)
   @Get('meta-data')
   async getCompanyMetadata(
     @Req() request: Request,
-    @Query('userGUID') userGUID?: string,
   ): Promise<ReadCompanyMetadataDto[]> {
     const currentUser = request.user as IUserJWT;
-    // Only IDIR users can call this endpoint with an arbitrary
-    // userGUID - other users must use the userGUID from their own
-    // token.
-    if (userGUID && currentUser.identity_provider !== IDP.IDIR) {
-      throw new ForbiddenException();
-    }
 
-    userGUID = userGUID || currentUser.userGUID;
-    const company =
-      await this.companyService.findCompanyMetadataByUserGuid(userGUID);
+    const company = await this.companyService.findCompanyMetadataByUserGuid(
+      currentUser.userGUID,
+    );
     if (!company?.length) {
       throw new DataNotFoundException();
     }
@@ -208,5 +211,30 @@ export class CompanyController {
       throw new DataNotFoundException();
     }
     return retCompany;
+  }
+
+  /**
+   * A POST method defined with a route of /verify-client that verifies
+   * the existence of a migrated/onRoute BC client and their permit in the system.
+   *
+   * @returns The verified client details with response object {@link ReadVerifyClientDto}.
+   */
+  @ApiCreatedResponse({
+    description: 'Verifies a client and returns the verification status',
+    type: ReadVerifyClientDto,
+  })
+  @ApiOperation({
+    summary: 'Verify Migrated/onRouteBC Client',
+    description:
+      'Verifies the existence of a migrated/onRouteBC client and their permit in the database',
+  })
+  @AuthOnly()
+  @Post('verify-client')
+  async verifyClient(
+    @Req() request: Request,
+    @Body() verifyClientDto: VerifyClientDto,
+  ): Promise<ReadVerifyClientDto> {
+    const currentUser = request.user as IUserJWT;
+    return await this.companyService.verifyClient(currentUser, verifyClientDto);
   }
 }

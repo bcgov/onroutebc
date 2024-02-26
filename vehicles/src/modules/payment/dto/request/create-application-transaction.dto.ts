@@ -1,6 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsNumberString, Min } from 'class-validator';
+import { IsNumber, IsNumberString, MaxLength, Min } from 'class-validator';
 
 export class CreateApplicationTransactionDto {
   @AutoMap()
@@ -9,6 +9,7 @@ export class CreateApplicationTransactionDto {
     example: '1',
   })
   @IsNumberString()
+  @MaxLength(20)
   applicationId: string;
 
   @AutoMap()

@@ -2,45 +2,40 @@ import { memo, useContext, useState } from "react";
 import { Box, Button, Divider, Stack, Typography } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
-import {
-  Controller,
-  FieldValues,
-  FormProvider,
-  useForm,
-} from "react-hook-form";
+import { Controller, FormProvider, useForm } from "react-hook-form";
 
 import { CustomActionLink } from "../../../../../common/components/links/CustomActionLink";
 import { SnackBarContext } from "../../../../../App";
 import { formatPhoneNumber } from "../../../../../common/components/form/subFormComponents/PhoneNumberInput";
 import { requiredMessage } from "../../../../../common/helpers/validationMessages";
-import { PROFILE_ROUTES } from "../../../../../routes/constants";
+import { ERROR_ROUTES, PROFILE_ROUTES } from "../../../../../routes/constants";
 import { BC_COLOURS } from "../../../../../themes/bcGovStyles";
 import { updateUserInfo } from "../../../apiManager/manageProfileAPI";
-import { BCEID_PROFILE_TABS } from "../../../types/manageProfile.d";
+import {
+  BCEID_PROFILE_TABS,
+  ReadUserInformationResponse,
+  UserInfoRequest,
+} from "../../../types/manageProfile.d";
 import UserGroupsAndPermissionsModal from "../../user-management/UserGroupsAndPermissionsModal";
 import { ReusableUserInfoForm } from "../common/ReusableUserInfoForm";
 import "../myInfo/MyInfoForm.scss";
 import { UserAuthRadioGroup } from "./UserAuthRadioGroup";
 import {
-  BCEID_AUTH_GROUP,
-  ReadCompanyUser,
-} from "../../../types/userManagement.d";
-
-import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
+import { BCeID_USER_AUTH_GROUP } from "../../../../../common/authentication/types";
 
 /**
  * Edit User form for User Management.
  */
 export const EditUserForm = memo(
-  ({ userInfo }: { userInfo?: ReadCompanyUser }) => {
+  ({ userInfo }: { userInfo?: ReadUserInformationResponse }) => {
     const navigate = useNavigate();
 
     const { setSnackBar } = useContext(SnackBarContext);
 
-    const formMethods = useForm<ReadCompanyUser>({
+    const formMethods = useForm<UserInfoRequest>({
       defaultValues: {
         firstName: getDefaultRequiredVal("", userInfo?.firstName),
         lastName: getDefaultRequiredVal("", userInfo?.lastName),
@@ -53,7 +48,10 @@ export const EditUserForm = memo(
         countryCode: getDefaultRequiredVal("", userInfo?.countryCode),
         provinceCode: getDefaultRequiredVal("", userInfo?.provinceCode),
         city: getDefaultRequiredVal("", userInfo?.city),
-        userAuthGroup: BCEID_AUTH_GROUP.ORGADMIN,
+        userAuthGroup: getDefaultRequiredVal(
+          BCeID_USER_AUTH_GROUP.COMPANY_ADMINISTRATOR,
+          userInfo?.userAuthGroup,
+        ),
       },
     });
     const { handleSubmit } = formMethods;
@@ -79,12 +77,7 @@ export const EditUserForm = memo(
     const updateUserInfoMutation = useMutation({
       mutationFn: updateUserInfo,
       onError: () => {
-        setSnackBar({
-          message: "An unexpected error occurred.",
-          showSnackbar: true,
-          setShowSnackbar: () => true,
-          alertType: "error",
-        });
+        navigate(ERROR_ROUTES.UNEXPECTED);
       },
       onSuccess: (response) => {
         if (response.status === 200) {
@@ -106,9 +99,9 @@ export const EditUserForm = memo(
      * On click handler for Save button.
      * @param data The edit user form data.
      */
-    const onUpdateUserInfo = (data: FieldValues) => {
+    const onUpdateUserInfo = (data: UserInfoRequest) => {
       updateUserInfoMutation.mutate({
-        userInfo: data as ReadCompanyUser,
+        userInfo: data,
         userGUID: userInfo?.userGUID as string,
       });
     };

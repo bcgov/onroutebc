@@ -18,6 +18,7 @@ import { DmsModule } from './modules/dms/dms.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { DgenModule } from './modules/dgen/dgen.module';
 import { CommonModule } from './modules/common/common.module';
+import { FeatureFlagsModule } from './modules/feature-flags/feature-flags.module';
 import { HTTPLoggerMiddleware } from './middleware/req.res.logger';
 import { TypeormCustomLogger } from './logger/typeorm-logger.config';
 import { getTypeormLogLevel } from './helper/logger.helper';
@@ -59,7 +60,7 @@ const envPath = path.resolve(process.cwd() + '/../');
       maxQueryExecutionTime:
         +process.env.DOPS_API_MAX_QUERY_EXECUTION_TIME_MS || 5000, //5 seconds by default
       logger: new TypeormCustomLogger(
-        getTypeormLogLevel(process.env.VECHICLES_API_TYPEORM_LOG_LEVEL),
+        getTypeormLogLevel(process.env.DOPS_API_TYPEORM_LOG_LEVEL),
       ),
     }),
     AutomapperModule.forRoot({
@@ -74,6 +75,7 @@ const envPath = path.resolve(process.cwd() + '/../');
     AuthModule,
     DmsModule,
     DgenModule,
+    FeatureFlagsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

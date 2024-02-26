@@ -5,16 +5,20 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { createMapper } from '@automapper/core';
 import { PendingUsersService } from '../../../src/modules/company-user-management/pending-users/pending-users.service';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { PendingUser } from '../../../src/modules/company-user-management/pending-users/entities/pending-user.entity';
 import { PendingUsersProfile } from '../../../src/modules/company-user-management/pending-users/profiles/pending-user.profile';
 import {
   PENDING_USER_LIST,
   createRedCompanyPendingUserDtoMock,
+  readRedCompanyPendingUserDtoMock,
   updateRedCompanyPendingUserDtoMock,
 } from '../../util/mocks/data/pending-user.mock';
-import { createQueryBuilderMock } from '../../util/mocks/factory/dataSource.factory.mock';
-import { UserAuthGroup } from '../../../src/common/enum/user-auth-group.enum';
+import {
+  MockQueryRunnerManager,
+  createQueryBuilderMock,
+} from '../../util/mocks/factory/dataSource.factory.mock';
+import { ClientUserAuthGroup } from '../../../src/common/enum/user-auth-group.enum';
 import * as constants from '../../util/mocks/data/test-data.constants';
 import { redCompanyCvClientUserJWTMock } from 'test/util/mocks/data/jwt.mock';
 
@@ -27,6 +31,12 @@ let repo: DeepMocked<Repository<PendingUser>>;
 
 describe('PendingUsersService', () => {
   let service: PendingUsersService;
+  const mockQueryRunnerManager: MockQueryRunnerManager = {
+    delete: jest.fn(),
+    update: jest.fn(),
+    find: jest.fn(),
+    save: jest.fn(),
+  };
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -38,6 +48,20 @@ describe('PendingUsersService', () => {
         {
           provide: getRepositoryToken(PendingUser),
           useValue: repo,
+        },
+        {
+          provide: DataSource,
+          useFactory: () => ({
+            createQueryRunner: jest.fn().mockImplementation(() => ({
+              connect: jest.fn(),
+              startTransaction: jest.fn(),
+              release: jest.fn(),
+              rollbackTransaction: jest.fn(),
+              commitTransaction: jest.fn(),
+              query: jest.fn(),
+              manager: mockQueryRunnerManager,
+            })),
+          }),
         },
         {
           provide: getMapperToken(),
@@ -62,17 +86,17 @@ describe('PendingUsersService', () => {
 
   describe('Pending user service create function', () => {
     it('should create a Pending user.', async () => {
-      const PARAMS = {
-        userName: constants.RED_COMPANY_PENDING_USER_NAME,
-        companyId: constants.RED_COMPANY_ID,
-      };
-      findPendingUsersEntityMock(PARAMS);
+      // Override the save method for this specific test
+      mockQueryRunnerManager.save.mockResolvedValue(
+        readRedCompanyPendingUserDtoMock,
+      );
 
       const retPendingUser = await service.create(
         constants.RED_COMPANY_ID,
         createRedCompanyPendingUserDtoMock,
         redCompanyCvClientUserJWTMock,
       );
+
       expect(typeof retPendingUser).toBe('object');
       expect(retPendingUser.companyId).toBe(constants.RED_COMPANY_ID);
     });
@@ -84,7 +108,8 @@ describe('PendingUsersService', () => {
         userName: constants.RED_COMPANY_PENDING_USER_NAME,
         companyId: constants.RED_COMPANY_ID,
       };
-      PENDING_USER_LIST[0].userAuthGroup = UserAuthGroup.COMPANY_ADMINISTRATOR;
+      PENDING_USER_LIST[0].userAuthGroup =
+        ClientUserAuthGroup.COMPANY_ADMINISTRATOR;
       findPendingUsersEntityMock(PARAMS, PENDING_USER_LIST);
 
       const retPendingUser = await service.update(
@@ -147,16 +172,6 @@ describe('PendingUsersService', () => {
       const retPendingUser = await service.findPendingUsersDto(null, null);
       expect(typeof retPendingUser).toBe('object');
       expect(retPendingUser[0].companyId).toBe(constants.RED_COMPANY_ID);
-    });
-  });
-
-  describe('Pending user service remove function', () => {
-    it('should find delete a Pending user.', async () => {
-      const deleteResult = await service.remove(
-        constants.RED_COMPANY_ID,
-        constants.RED_COMPANY_PENDING_USER_NAME,
-      );
-      expect(typeof deleteResult).toBe('object');
     });
   });
 });

@@ -39,7 +39,18 @@ export const TermOversizeForm = () => {
   // Context to hold all of the application data related to the TROS application
   const applicationContext = useContext(ApplicationContext);
 
-  const { companyId, userDetails } = useContext(OnRouteBCContext);
+  const {
+    companyId,
+    companyLegalName,
+    userDetails,
+    idirUserDetails,
+    onRouteBCClientNumber,
+  } = useContext(OnRouteBCContext);
+
+  const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
+  const doingBusinessAs = isStaffActingAsCompany && companyLegalName ?
+    companyLegalName : "";
+
   const companyInfoQuery = useCompanyInfoQuery();
 
   // Use a custom hook that performs the following whenever page is rendered (or when application context is updated/changed):
@@ -61,8 +72,6 @@ export const TermOversizeForm = () => {
 
   const submitTermOversizeMutation = useSaveTermOversizeMutation();
   const snackBar = useContext(SnackBarContext);
-  const { companyLegalName, onRouteBCClientNumber } =
-    useContext(OnRouteBCContext);
 
   const {
     handleSaveVehicle,
@@ -241,6 +250,7 @@ export const TermOversizeForm = () => {
           trailerSubTypes={trailerSubTypes}
           companyInfo={companyInfo}
           durationOptions={TROS_PERMIT_DURATIONS}
+          doingBusinessAs={doingBusinessAs}
         />
       </FormProvider>
 
