@@ -18,6 +18,7 @@ import {
   ApiMethodNotAllowedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
@@ -35,7 +36,12 @@ import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import { ApiPaginatedResponse } from '../../../common/decorator/api-paginate-response';
 import { GetCompanyQueryParamsDto } from './dto/request/queryParam/getCompany.query-params.dto';
-import { idirUserAuthGroupList } from '../../../common/enum/user-auth-group.enum';
+import {
+  UserAuthGroup,
+  idirUserAuthGroupList,
+} from '../../../common/enum/user-auth-group.enum';
+import { ReadVerifyClientDto } from './dto/response/read-verify-client.dto';
+import { VerifyClientDto } from './dto/request/verify-client.dto';
 
 @ApiTags('Company and User Management - Company')
 @ApiBadRequestResponse({
@@ -99,7 +105,11 @@ export class CompanyController {
     @Query() getCompanyQueryParamsDto: GetCompanyQueryParamsDto,
   ): Promise<PaginationDto<ReadCompanyDto>> {
     const currentUser = request.user as IUserJWT;
-    if (!idirUserAuthGroupList.includes(currentUser.orbcUserAuthGroup)) {
+    if (
+      !idirUserAuthGroupList.includes(
+        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      )
+    ) {
       throw new UnauthorizedException(
         `Unauthorized for ${currentUser.orbcUserAuthGroup} role.`,
       );
@@ -201,5 +211,30 @@ export class CompanyController {
       throw new DataNotFoundException();
     }
     return retCompany;
+  }
+
+  /**
+   * A POST method defined with a route of /verify-client that verifies
+   * the existence of a migrated/onRoute BC client and their permit in the system.
+   *
+   * @returns The verified client details with response object {@link ReadVerifyClientDto}.
+   */
+  @ApiCreatedResponse({
+    description: 'Verifies a client and returns the verification status',
+    type: ReadVerifyClientDto,
+  })
+  @ApiOperation({
+    summary: 'Verify Migrated/onRouteBC Client',
+    description:
+      'Verifies the existence of a migrated/onRouteBC client and their permit in the database',
+  })
+  @AuthOnly()
+  @Post('verify-client')
+  async verifyClient(
+    @Req() request: Request,
+    @Body() verifyClientDto: VerifyClientDto,
+  ): Promise<ReadVerifyClientDto> {
+    const currentUser = request.user as IUserJWT;
+    return await this.companyService.verifyClient(currentUser, verifyClientDto);
   }
 }

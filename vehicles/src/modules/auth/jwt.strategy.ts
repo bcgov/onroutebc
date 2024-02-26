@@ -17,7 +17,11 @@ import {
   validateUserCompanyAndRoleContext,
 } from '../../common/helper/auth.helper';
 import { DataNotFoundException } from '../../common/exception/data-not-found.exception';
-import { UserAuthGroup } from '../../common/enum/user-auth-group.enum';
+import {
+  ClientUserAuthGroup,
+  IDIRUserAuthGroup,
+  UserAuthGroup,
+} from '../../common/enum/user-auth-group.enum';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -47,7 +51,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       associatedCompanies: number[],
       orbcUserFirstName: string,
       orbcUserLastName: string,
-      orbcUserAuthGroup: UserAuthGroup;
+      orbcUserAuthGroup:
+        | UserAuthGroup
+        | ClientUserAuthGroup
+        | IDIRUserAuthGroup;
 
     let companyId: number;
     if (req.params['companyId']) {

@@ -9,7 +9,8 @@ import { Base } from '../../../common/entities/base.entity';
 import { AutoMap } from '@automapper/classes';
 import { Company } from '../../company/entities/company.entity';
 import { User } from './user.entity';
-import { UserAuthGroup } from '../../../../common/enum/user-auth-group.enum';
+import { ClientUserAuthGroup } from '../../../../common/enum/user-auth-group.enum';
+import { UserStatus } from 'src/common/enum/user-status.enum';
 
 @Entity({ name: 'ORBC_COMPANY_USER' })
 export class CompanyUser extends Base {
@@ -22,17 +23,32 @@ export class CompanyUser extends Base {
 
   /**
    * A property that represents the user's auth group, which is an enum of type
-   * {@link UserAuthGroup}.
+   * {@link ClientUserAuthGroup}.
    */
   @AutoMap()
   @Column({
     type: 'simple-enum',
-    enum: UserAuthGroup,
+    enum: ClientUserAuthGroup,
     length: 10,
     name: 'USER_AUTH_GROUP_TYPE',
     nullable: false,
   })
-  userAuthGroup: UserAuthGroup;
+  userAuthGroup: ClientUserAuthGroup;
+
+  /**
+   * The status of the user in the system. It is an enum of UserStatus type and
+   * has a default value of 'ACTIVE'.
+   */
+  @AutoMap()
+  @Column({
+    type: 'simple-enum',
+    enum: UserStatus,
+    length: 10,
+    name: 'USER_STATUS_TYPE',
+    default: UserStatus.ACTIVE,
+    nullable: false,
+  })
+  statusCode: UserStatus;
 
   /**
    * A many-to-one relationship with the Company entity, which represents the

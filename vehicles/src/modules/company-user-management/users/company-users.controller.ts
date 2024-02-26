@@ -1,5 +1,12 @@
-import { Controller, Post, Body, Param, Put } from '@nestjs/common';
-import { Get, Query, Req } from '@nestjs/common/decorators';
+import {
+  Controller,
+  Post,
+  Body,
+  Param,
+  Put,
+  ForbiddenException,
+} from '@nestjs/common';
+import { Delete, Get, Query, Req } from '@nestjs/common/decorators';
 
 import {
   ApiBadRequestResponse,
@@ -9,6 +16,7 @@ import {
   ApiMethodNotAllowedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
@@ -23,9 +31,14 @@ import { Request } from 'express';
 import { Roles } from '../../../common/decorator/roles.decorator';
 import { Role } from '../../../common/enum/roles.enum';
 import { UpdateUserDto } from './dto/request/update-user.dto';
-import { UpdateUserStatusDto } from './dto/request/update-user-status.dto';
 import { GetCompanyUserQueryParamsDto } from './dto/request/queryParam/getCompanyUser.query-params.dto';
 import { GetCompanyUserByUserGUIDPathParamsDto } from './dto/request/pathParam/getCompanyUserByUserGUID.path-params.dto';
+import { DeleteUsersDto } from './dto/request/delete-users.dto';
+import { DeleteDto } from '../../common/dto/response/delete.dto';
+import {
+  UserAuthGroup,
+  idirUserAuthGroupList,
+} from '../../../common/enum/user-auth-group.enum';
 
 @ApiTags('Company and User Management - Company User')
 @ApiBadRequestResponse({
@@ -164,37 +177,46 @@ export class CompanyUsersController {
   }
 
   /**
-   * A PUT method defined with the @Put(':userGUID/status/:statusCode')
-   * decorator and a route of
-   * company/:companyId/user/:userGUID/status/ that updates the
-   * user status by its GUID.
-   * ? This end point maybe merged with user update endpoint. TBD.
+   * Deletes one or more users associated with a specified company ID based on their GUIDs. This method requires
+   * the current user to have either COMPANY_ADMINISTRATOR role or be part of the idirUserAuthGroupList to proceed.
+   * Throws ForbiddenException if the current user lacks the required role or group.
    *
-   * @param companyId The company Id.
-   * @param userGUID The userGUID
-   *
-   * @returns True on successfull operation.
+   * @param companyId The unique identifier of the company.
+   * @param deleteUsersDto DTO containing the GUIDs of users to delete.
+   * @returns A {@link DeleteDto} object including counts of successfully deleted users. Throws DataNotFoundException
+   * if no delete result is obtained.
    */
-  @ApiOkResponse({
-    description: '{statusUpdated : true}',
-  })
   @Roles(Role.WRITE_USER)
-  @Put(':userGUID/status')
-  async updateStatus(
+  @ApiOperation({
+    summary: 'Delete users associated with a company',
+    description:
+      'Allows deletion of one or more users associated with a given company ID, based on user GUIDs. ' +
+      'Requires specific user roles or group memberships to execute.' +
+      'Returns a list of deleted users or throws exceptions for unauthorized access or operational failures.',
+  })
+  @Delete()
+  async remove(
     @Req() request: Request,
     @Param('companyId') companyId: number,
-    @Param('userGUID') userGUID: string,
-    @Body() updateUserStatusDto: UpdateUserStatusDto,
-  ): Promise<object> {
+    @Body() deleteUsersDto: DeleteUsersDto,
+  ): Promise<DeleteDto> {
     const currentUser = request.user as IUserJWT;
-    const updateResult = await this.userService.updateStatus(
-      userGUID,
-      updateUserStatusDto.statusCode,
+    if (
+      currentUser.orbcUserAuthGroup !== UserAuthGroup.COMPANY_ADMINISTRATOR &&
+      !idirUserAuthGroupList.includes(
+        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      )
+    ) {
+      throw new ForbiddenException();
+    }
+    const deleteResult = await this.userService.removeAll(
+      deleteUsersDto.userGUIDS,
+      companyId,
       currentUser,
     );
-    if (updateResult.affected === 0) {
+    if (deleteResult == null) {
       throw new DataNotFoundException();
     }
-    return { statusUpdated: true };
+    return deleteResult;
   }
 }
