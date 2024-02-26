@@ -68,7 +68,7 @@ frontend:
     #-- the minimum number of replicas.
     minReplicas: 2
     #-- the maximum number of replicas.
-    maxReplicas: 3
+    maxReplicas: 5
     #-- the target cpu utilization percentage, is from request cpu and NOT LIMIT CPU.
     targetCPUUtilizationPercentage: 80
     #-- the behavior for the autoscaling. it is optional and is an object.
@@ -179,18 +179,18 @@ vehicles:
         timeoutSeconds: 5
       resources: # this is optional
         limits:
-          cpu: 300m
-          memory: 500Mi
+          cpu: 75m
+          memory: 150Mi
         requests:
-          cpu: 200m
-          memory: 300Mi
+          cpu: 25m
+          memory: 50Mi
   autoscaling:
     #-- enable or disable autoscaling.
     enabled: true
     #-- the minimum number of replicas.
     minReplicas: 2
     #-- the maximum number of replicas.
-    maxReplicas: 3
+    maxReplicas: 5
     #-- the target cpu utilization percentage, is from request cpu and NOT LIMIT CPU.
     targetCPUUtilizationPercentage: 80
     #-- the behavior for the autoscaling. it is optional and is an object.
@@ -314,15 +314,15 @@ dops:
           cpu: 2000m
           memory: 4000Mi
         requests:
-          cpu: 1000m
-          memory: 2000Mi
+          cpu: 300m
+          memory: 400Mi
   autoscaling:
     #-- enable or disable autoscaling.
     enabled: true
     #-- the minimum number of replicas.
     minReplicas: 2
     #-- the maximum number of replicas.
-    maxReplicas: 3
+    maxReplicas: 2
     #-- the target cpu utilization percentage, is from request cpu and NOT LIMIT CPU.
     targetCPUUtilizationPercentage: 80
     #-- the behavior for the autoscaling. it is optional and is an object.
@@ -444,7 +444,7 @@ tps-migration:
     #-- the minimum number of replicas.
     minReplicas: 2
     #-- the maximum number of replicas.
-    maxReplicas: 3
+    maxReplicas: 5
     #-- the target cpu utilization percentage, is from request cpu and NOT LIMIT CPU.
     targetCPUUtilizationPercentage: 80
     #-- the behavior for the autoscaling. it is optional and is an object.
