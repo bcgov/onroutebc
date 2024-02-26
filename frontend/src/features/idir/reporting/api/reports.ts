@@ -67,7 +67,7 @@ export const getPaymentAndRefundDetail = async (
  * where the key is the permitTypeCode and the value is the display.
  */
 export const getPermitTypes = async (): Promise<Record<string, string>> => {
-  const url = `${VEHICLES_URL}/permits/types/list`;
+  const url = `${VEHICLES_URL}/permits/permit-types`;
   return httpGETRequest(url.toString()).then((response) => response.data);
 };
 
