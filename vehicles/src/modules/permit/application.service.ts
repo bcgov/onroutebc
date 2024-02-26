@@ -2,7 +2,6 @@ import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import {
   BadRequestException,
-  ForbiddenException,
   HttpException,
   Inject,
   Injectable,
@@ -380,56 +379,6 @@ export class ApplicationService {
       Permit,
       ReadApplicationDto,
     );
-  }
-
-  /**
-   * Update status of applications
-   * @param applicationIds array of applications ids to be updated. ex ['1','2']
-   * @param applicationStatus application status to be set to this values. And
-   * can be picked from enum ApplicationStatus i.e. allowed status for an application.
-   *
-   * Assumption has been made that @param applicationIds length > 1 is only applicable for bulk delete.
-   * which means move all the applications to Cancelled status. For every other status length will be one.
-   **/
-  @LogAsyncMethodExecution()
-  async updateApplicationStatus(
-    applicationIds: string[],
-    applicationStatus: ApplicationStatus,
-    currentUser: IUserJWT,
-    companyId: number,
-    userGuid: string,
-  ): Promise<ResultDto> {
-    let permitApprovalSource: PermitApprovalSourceEnum = null;
-    if (applicationIds.length === 1) {
-      if (applicationStatus === ApplicationStatus.ISSUED)
-        throw new ForbiddenException(
-          'Status Change to ISSUE permit is prohibited on this endpoint.',
-        );
-      else if (
-        applicationStatus === ApplicationStatus.APPROVED ||
-        applicationStatus === ApplicationStatus.AUTO_APPROVED
-      ) {
-        if (currentUser.identity_provider == IDP.IDIR)
-          permitApprovalSource = PermitApprovalSourceEnum.PPC;
-        else if (currentUser.identity_provider == IDP.BCEID)
-          permitApprovalSource = PermitApprovalSourceEnum.AUTO;
-      }
-    } else if (
-      applicationIds.length > 1 ||
-      applicationStatus === ApplicationStatus.CANCELLED ||
-      applicationStatus === ApplicationStatus.DELETED
-    ) {
-      throw new ForbiddenException('This operation is not allowed.');
-    }
-    const result = await this.updateApplicationStatusQuery(
-      applicationIds,
-      applicationStatus,
-      companyId,
-      currentUser,
-      userGuid,
-      permitApprovalSource,
-    );
-    return result;
   }
 
   /**
@@ -960,10 +909,10 @@ export class ApplicationService {
    * @param {string[]} applicationIds The IDs of the applications to be deleted.
    * @param {number} companyId The ID of the company owning the applications.
    * @param {number} userGUID The ID of the user owning the applications.
-   * @returns {Promise<DeleteDto>} An object containing arrays of successful and failed deletions.
+   * @returns {Promise<ResultDto>} An object containing arrays of successful and failed deletions.
    */
   @LogAsyncMethodExecution()
-  async updateApplicationStatusQuery(
+  async deleteApplicationInProgress(
     applicationIds: string[],
     applicationStatus: ApplicationStatus,
     companyId: number,
@@ -985,7 +934,7 @@ export class ApplicationService {
         updatedUserGuid: currentUser.userGUID,
       })
       .whereInIds(applicationIds);
-    updateQuery = updateQuery.andWhere('companiId: companyId', {
+    updateQuery = updateQuery.andWhere('companyId: companyId', {
       companyId: companyId,
     });
     updateQuery = updateQuery.andWhere('permit.permitNumber IS NULL');

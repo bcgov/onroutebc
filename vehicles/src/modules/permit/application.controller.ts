@@ -28,7 +28,6 @@ import { Request } from 'express';
 import { ExceptionDto } from '../../common/exception/exception.dto';
 import { UpdateApplicationDto } from './dto/request/update-application.dto';
 import { DataNotFoundException } from 'src/common/exception/data-not-found.exception';
-import { UpdateApplicationStatusDto } from './dto/request/update-application-status.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
@@ -47,6 +46,7 @@ import {
   ApplicationStatus,
   cvClientAIPStatus,
   deleteCvClientAIP,
+  deleteIdirAIP,
   idirUserAIPStatus,
 } from 'src/common/enum/application-status.enum';
 
@@ -117,7 +117,7 @@ export class ApplicationController {
         ? currentUser.userGUID
         : null;
     const applicationStatus: ApplicationStatus[] =
-      idirUserAuthGroupList.includes(currentUser.orbcUserAuthGroup)
+      idirUserAuthGroupList.includes(currentUser.orbcUserAuthGroup as UserAuthGroup)
         ? idirUserAIPStatus
         : cvClientAIPStatus;
     return this.applicationService.findAllApplications(applicationStatus, {
@@ -181,40 +181,6 @@ export class ApplicationController {
   }
 
   /**
-   * Update application Data.
-   * @param request
-   * @param updateApplicationStatusDto
-   */
-  @ApiOkResponse({
-    description:
-      'The Permit Application Resource. Bulk staus updates are only allowed for Cancellation. Application/Permit Status change to ISSUE is prohibited on this endpoint.',
-    type: ResultDto,
-  })
-  @Roles(Role.WRITE_PERMIT)
-  @Post('status')
-  async updateApplicationStatus(
-    @Req() request: Request,
-    @Body() updateApplicationStatusDto: UpdateApplicationStatusDto,
-  ): Promise<ResultDto> {
-    const currentUser = request.user as IUserJWT; // TODO: consider security with passing JWT token to DMS microservice
-    const userGuid =
-      UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup
-        ? currentUser.userGUID
-        : null;
-    const result = await this.applicationService.updateApplicationStatus(
-      updateApplicationStatusDto.applicationIds,
-      updateApplicationStatusDto.applicationStatus,
-      currentUser,
-      updateApplicationStatusDto.companyId,
-      userGuid,
-    );
-    if (!result) {
-      throw new DataNotFoundException();
-    }
-    return result;
-  }
-
-  /**
    * A POST method defined with the @Post() decorator and a route of /:applicationId/issue
    * that issues a ermit for given @param applicationId..
    * @param request
@@ -271,13 +237,13 @@ export class ApplicationController {
         ? currentUser.userGUID
         : null;
     const applicationStatus: ApplicationStatus = idirUserAuthGroupList.includes(
-      currentUser.orbcUserAuthGroup,
+      currentUser.orbcUserAuthGroup as UserAuthGroup,
     )
-      ? deleteCvClientAIP
+      ? deleteIdirAIP
       : deleteCvClientAIP;
 
     const deleteResult =
-      await this.applicationService.updateApplicationStatusQuery(
+      await this.applicationService.deleteApplicationInProgress(
         deleteApplicationDto.applications,
         applicationStatus,
         deleteApplicationDto.companyId,
