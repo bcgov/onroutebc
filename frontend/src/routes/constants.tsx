@@ -1,8 +1,10 @@
 import { Nullable } from "../common/types/common";
 import { IDPS } from "../common/types/idp";
+import { PermitType } from "../features/permits/types/PermitType";
 
 export const ROUTE_PLACEHOLDERS = {
   PERMIT_ID: "permitId",
+  PERMIT_TYPE: "permitType",
 };
 
 /**
@@ -86,6 +88,7 @@ export const PERMITS_ROUTES = {
 
 // Applications
 const APPLICATIONS_ROUTE_BASE = `/applications`;
+const CREATE_APPLICATION_ROUTE_BASE = "/create-application";
 
 export const APPLICATION_STEPS = {
   HOME: 0,
@@ -97,6 +100,7 @@ export const APPLICATION_STEPS = {
 export type ApplicationStep =
   (typeof APPLICATION_STEPS)[keyof typeof APPLICATION_STEPS];
 
+export const NEW_APPLICATION_SEGMENT = "new";
 export const APPLICATIONS_ROUTES = {
   BASE: APPLICATIONS_ROUTE_BASE,
   DETAILS: (permitId?: string) =>
@@ -105,7 +109,12 @@ export const APPLICATIONS_ROUTES = {
       ROUTE_PLACEHOLDERS.PERMIT_ID,
       permitId,
     )}`,
-  START_APPLICATION: `${APPLICATIONS_ROUTE_BASE}/new`,
+  START_APPLICATION: (permitType?: PermitType) =>
+    `${DYNAMIC_ROUTE_URI(
+      `${CREATE_APPLICATION_ROUTE_BASE}`,
+      ROUTE_PLACEHOLDERS.PERMIT_TYPE,
+      permitType,
+    )}`,
   REVIEW: (permitId?: string) =>
     `${DYNAMIC_ROUTE_URI(
       APPLICATIONS_ROUTE_BASE,

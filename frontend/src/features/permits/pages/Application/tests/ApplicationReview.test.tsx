@@ -65,7 +65,7 @@ import {
   vehicleUnitNumber,
   vehicleVIN,
   vehicleYear,
-} from "./helpers/TermOversizeReview/access";
+} from "./helpers/ApplicationReview/access";
 
 import {
   closeMockServer,
@@ -80,7 +80,7 @@ import {
   resetMockServer,
   vehicleDetails,
   vehicleSubtypes,
-} from "./helpers/TermOversizeReview/prepare";
+} from "./helpers/ApplicationReview/prepare";
 
 beforeAll(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment

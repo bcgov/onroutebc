@@ -2,17 +2,19 @@ import dayjs, { Dayjs } from "dayjs";
 
 import { getUserGuidFromSession } from "../../../common/apiManager/httpRequestHandler";
 import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBCContext";
-import { TROS_COMMODITIES } from "../constants/termOversizeConstants";
+import { TROS_COMMODITIES } from "../constants/tros";
+import { TROW_COMMODITIES } from "../constants/trow";
+import { Nullable } from "../../../common/types/common";
+import { PERMIT_STATUSES } from "../types/PermitStatus";
+import { calculateFeeByDuration } from "./feeSummary";
+import { PERMIT_TYPES, PermitType } from "../types/PermitType";
+import { getExpiryDate } from "./permitState";
 import {
   getEndOfDate,
   getStartOfDate,
   now,
 } from "../../../common/helpers/formatDate";
-import { Nullable } from "../../../common/types/common";
-import { PERMIT_STATUSES } from "../types/PermitStatus";
-import { calculateFeeByDuration } from "./feeSummary";
-import { PERMIT_TYPES } from "../types/PermitType";
-import { getExpiryDate } from "./permitState";
+
 import {
   Address,
   CompanyProfile,
@@ -152,14 +154,29 @@ export const getExpiryDateOrDefault = (
   );
 };
 
+export const getDefaultCommodities = (permitType: PermitType) => {
+  if (permitType === PERMIT_TYPES.TROW) {
+    return TROW_COMMODITIES;
+  }
+
+  if (permitType === PERMIT_TYPES.TROS) {
+    return [TROS_COMMODITIES[0], TROS_COMMODITIES[1]];
+  }
+
+  return [];
+};
+
 /**
  * Gets default values for the application data, or populate with values from existing application data and company id/user details.
+ * @param permitType permit type for the application
  * @param applicationData existing application data, if any
  * @param companyId company id of the current user, if any
  * @param userDetails user details of current user, if any
+ * @param companyInfo data from company profile information
  * @returns default values for the application data
  */
 export const getDefaultValues = (
+  permitType: PermitType,
   applicationData?: Nullable<Application>,
   companyId?: number,
   userDetails?: BCeIDUserDetailContext,
@@ -200,7 +217,7 @@ export const getDefaultValues = (
     permitId: getDefaultRequiredVal("", applicationData?.permitId),
     permitNumber: getDefaultRequiredVal("", applicationData?.permitNumber),
     permitType: getDefaultRequiredVal(
-      PERMIT_TYPES.TROS,
+      permitType,
       applicationData?.permitType,
     ),
     permitStatus: getDefaultRequiredVal(
@@ -236,7 +253,7 @@ export const getDefaultValues = (
       permitDuration: durationOrDefault,
       expiryDate: expiryDateOrDefault,
       commodities: getDefaultRequiredVal(
-        [TROS_COMMODITIES[0], TROS_COMMODITIES[1]],
+        getDefaultCommodities(permitType),
         applyWhenNotNullable(
           (commodities) => commodities.map((commodity) => ({ ...commodity })),
           applicationData?.permitData?.commodities,

@@ -39,7 +39,7 @@ import {
 import {
   TROS_INELIGIBLE_POWERUNITS,
   TROS_INELIGIBLE_TRAILERS,
-} from "../../../../../constants/termOversizeConstants";
+} from "../../../../../constants/tros";
 
 import {
   CHOOSE_FROM_OPTIONS,
@@ -193,7 +193,7 @@ export const VehicleDetails = ({
       getSubtypeOptions(vehicleType),
     );
 
-    // Temporary method to remove ineligible vehicles as per TROS policy.
+    // Temporary method to remove ineligible vehicles given policies for the permit type.
     // Will be replaced by backend endpoint with optional query parameter
     const eligibleVehicleSubtypes = removeIneligibleVehicleSubTypes(
       sortedVehicles,

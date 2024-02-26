@@ -8,7 +8,7 @@ import { APPLICATIONS_API_ROUTES } from "../../../../../apiManager/endpoints/end
 import { renderWithClient } from "../../../../../../../common/helpers/testHelper";
 import { bcGovTheme } from "../../../../../../../themes/bcGovTheme";
 import { ApplicationContext } from "../../../../../context/ApplicationContext";
-import { TermOversizeReview } from "../../../TermOversizeReview";
+import { ApplicationReview } from "../../../ApplicationReview";
 import { getDefaultApplication } from "../../../../../components/dashboard/tests/integration/fixtures/getActiveApplication";
 import { MANAGE_PROFILE_API } from "../../../../../../manageProfile/apiManager/endpoints/endpoints";
 import { getDefaultCompanyInfo } from "../../../../../components/dashboard/tests/integration/fixtures/getCompanyInfo";
@@ -163,7 +163,7 @@ const ComponentWithWrapper = ({
           [testApplicationData],
         )}
       >
-        <TermOversizeReview />
+        <ApplicationReview />
       </ApplicationContext.Provider>
     </ThemeProvider>
   );

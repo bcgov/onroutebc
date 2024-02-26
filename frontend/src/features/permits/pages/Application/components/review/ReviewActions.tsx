@@ -17,7 +17,7 @@ export const ReviewActions = ({
     <Box className="review-actions">
       <Button
         className="review-actions__btn review-actions__btn--edit"
-        key="edit-TROS-button"
+        key="edit-application-button"
         aria-label="edit"
         variant="contained"
         color="tertiary"
@@ -28,7 +28,7 @@ export const ReviewActions = ({
       </Button>
       <Button
         className="review-actions__btn review-actions__btn--continue"
-        key="submit-TROS-button"
+        key="submit-application-button"
         aria-label="Submit"
         variant="contained"
         color="primary"

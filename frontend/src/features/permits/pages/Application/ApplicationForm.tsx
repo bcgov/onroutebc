@@ -2,11 +2,11 @@ import { FieldValues, FormProvider } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
 
-import "./TermOversizeForm.scss";
-import { Application, VehicleDetails } from "../../types/application.d";
+import "./ApplicationForm.scss";
+import { Application, VehicleDetails } from "../../types/application";
 import { ApplicationContext } from "../../context/ApplicationContext";
 import { ApplicationBreadcrumb } from "../../components/application-breadcrumb/ApplicationBreadcrumb";
-import { useSaveTermOversizeMutation } from "../../hooks/hooks";
+import { useSaveApplicationMutation } from "../../hooks/hooks";
 import { SnackBarContext } from "../../../../App";
 import { LeaveApplicationDialog } from "../../components/dialog/LeaveApplicationDialog";
 import { areApplicationDataEqual } from "../../helpers/equality";
@@ -15,8 +15,9 @@ import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext
 import { PermitForm } from "./components/form/PermitForm";
 import { usePermitVehicleManagement } from "../../hooks/usePermitVehicleManagement";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
-import { TROS_PERMIT_DURATIONS } from "../../constants/termOversizeConstants";
+import { PERMIT_DURATION_OPTIONS } from "../../constants/constants";
 import { Nullable } from "../../../../common/types/common";
+import { PermitType } from "../../types/PermitType";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -29,14 +30,18 @@ import {
 } from "../../../../routes/constants";
 
 /**
- * The first step in creating and submitting a TROS Application.
- * @returns A form for users to create a Term Oversize Application
+ * The first step in creating and submitting an Application.
+ * @returns A form for users to create an Application
  */
-export const TermOversizeForm = () => {
+export const ApplicationForm = ({
+  permitType,
+}: {
+  permitType: PermitType;
+}) => {
   // The name of this feature that is used for id's, keys, and associating form components
-  const FEATURE = "term-oversize";
+  const FEATURE = "application";
 
-  // Context to hold all of the application data related to the TROS application
+  // Context to hold all of the application data related to the application
   const applicationContext = useContext(ApplicationContext);
 
   const {
@@ -59,9 +64,10 @@ export const TermOversizeForm = () => {
   // 3. Listens for changes to application context (which happens when application is fetched/submitted/updated)
   // 4. Updates form default values when application context data values change
   const {
-    defaultApplicationDataValues: termOversizeDefaultValues,
+    defaultApplicationDataValues: applicationDefaultValues,
     formMethods,
   } = useDefaultApplicationFormData(
+    permitType,
     applicationContext?.applicationData,
     companyId,
     userDetails,
@@ -70,7 +76,7 @@ export const TermOversizeForm = () => {
 
   const companyInfo = companyInfoQuery.data;
 
-  const submitTermOversizeMutation = useSaveTermOversizeMutation();
+  const saveApplicationMutation = useSaveApplicationMutation();
   const snackBar = useContext(SnackBarContext);
 
   const {
@@ -125,8 +131,8 @@ export const TermOversizeForm = () => {
 
   // When "Continue" button is clicked
   const onContinue = async (data: FieldValues) => {
-    const termOverSizeToBeAdded = applicationFormData(data);
-    const vehicleData = termOverSizeToBeAdded.permitData.vehicleDetails;
+    const applicationToBeSaved = applicationFormData(data);
+    const vehicleData = applicationToBeSaved.permitData.vehicleDetails;
     const savedVehicleDetails = await handleSaveVehicle(vehicleData);
 
     // Save application before continuing
@@ -136,7 +142,7 @@ export const TermOversizeForm = () => {
     );
   };
 
-  const isSaveTermOversizeSuccessful = (status: number) =>
+  const isSaveApplicationSuccessful = (status: number) =>
     status === 200 || status === 201;
 
   const onSaveSuccess = (responseData: Application, status: number) => {
@@ -171,7 +177,7 @@ export const TermOversizeForm = () => {
     }
 
     const formValues = getValues();
-    const termOverSizeToBeAdded = applicationFormData(
+    const applicationToBeSaved = applicationFormData(
       !savedVehicleInventoryDetails
         ? formValues
         : {
@@ -186,11 +192,11 @@ export const TermOversizeForm = () => {
           },
     );
 
-    const response = await submitTermOversizeMutation.mutateAsync(
-      termOverSizeToBeAdded,
+    const response = await saveApplicationMutation.mutateAsync(
+      applicationToBeSaved,
     );
 
-    if (isSaveTermOversizeSuccessful(response.status)) {
+    if (isSaveApplicationSuccessful(response.status)) {
       const responseData = response.data;
       const savedPermitId = onSaveSuccess(
         responseData as Application,
@@ -236,20 +242,20 @@ export const TermOversizeForm = () => {
           onSave={onSave}
           onContinue={handleSubmit(onContinue)}
           isAmendAction={false}
-          permitType={termOversizeDefaultValues.permitType}
-          applicationNumber={termOversizeDefaultValues.applicationNumber}
-          permitNumber={termOversizeDefaultValues.permitNumber}
-          createdDateTime={termOversizeDefaultValues.createdDateTime}
-          updatedDateTime={termOversizeDefaultValues.updatedDateTime}
-          permitStartDate={termOversizeDefaultValues.permitData.startDate}
-          permitDuration={termOversizeDefaultValues.permitData.permitDuration}
-          permitCommodities={termOversizeDefaultValues.permitData.commodities}
-          vehicleDetails={termOversizeDefaultValues.permitData.vehicleDetails}
+          permitType={applicationDefaultValues.permitType}
+          applicationNumber={applicationDefaultValues.applicationNumber}
+          permitNumber={applicationDefaultValues.permitNumber}
+          createdDateTime={applicationDefaultValues.createdDateTime}
+          updatedDateTime={applicationDefaultValues.updatedDateTime}
+          permitStartDate={applicationDefaultValues.permitData.startDate}
+          permitDuration={applicationDefaultValues.permitData.permitDuration}
+          permitCommodities={applicationDefaultValues.permitData.commodities}
+          vehicleDetails={applicationDefaultValues.permitData.vehicleDetails}
           vehicleOptions={vehicleOptions}
           powerUnitSubTypes={powerUnitSubTypes}
           trailerSubTypes={trailerSubTypes}
           companyInfo={companyInfo}
-          durationOptions={TROS_PERMIT_DURATIONS}
+          durationOptions={PERMIT_DURATION_OPTIONS}
           doingBusinessAs={doingBusinessAs}
         />
       </FormProvider>

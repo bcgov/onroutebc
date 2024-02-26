@@ -1,8 +1,8 @@
 @use "../../../../common/components/dashboard/Dashboard";
 
-@include Dashboard.layout-box-style(".term-oversize-review .breadcrumb");
+@include Dashboard.layout-box-style(".application-review .breadcrumb");
 
-.term-oversize-review {
+.application-review {
   display: flex;
   flex-direction: column;
 }

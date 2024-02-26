@@ -1,6 +1,6 @@
 @import "../../../../../../themes/orbcStyles";
 
-.tros-form-actions {
+.application-form-actions {
   position: fixed;
   bottom: 46px;
   left: 0;
@@ -70,7 +70,7 @@
 }
 
 @media (width < 1225px) {
-  .tros-form-actions {
+  .application-form-actions {
     & &__btn {
       &--leave {
         margin-left: 0;
@@ -80,13 +80,13 @@
 }
 
 @media (width < 768px) {
-  .tros-form-actions {
+  .application-form-actions {
     padding: 2rem 5.5rem;
   }
 }
 
 @media (width < 576px) {
-  .tros-form-actions {
+  .application-form-actions {
     flex-direction: column;
     align-items: center;
 

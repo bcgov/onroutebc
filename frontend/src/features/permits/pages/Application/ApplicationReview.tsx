@@ -2,10 +2,10 @@ import { useContext, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 
-import "./TermOversizeReview.scss";
+import "./ApplicationReview.scss";
 import { ApplicationContext } from "../../context/ApplicationContext";
 import { Application } from "../../types/application";
-import { useSaveTermOversizeMutation } from "../../hooks/hooks";
+import { useSaveApplicationMutation } from "../../hooks/hooks";
 import { ApplicationBreadcrumb } from "../../components/application-breadcrumb/ApplicationBreadcrumb";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { PermitReview } from "./components/review/PermitReview";
@@ -22,7 +22,7 @@ import {
   useTrailerSubTypesQuery,
 } from "../../../manageVehicles/apiManager/hooks";
 
-export const TermOversizeReview = () => {
+export const ApplicationReview = () => {
   const { applicationData, setApplicationData } =
     useContext(ApplicationContext);
 
@@ -50,7 +50,7 @@ export const TermOversizeReview = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   // Send data to the backend API
-  const submitTermOversizeMutation = useSaveTermOversizeMutation();
+  const saveApplicationMutation = useSaveApplicationMutation();
 
   const saveApplicationSuccessful = (responseStatus: number) => {
     return responseStatus === 200 || responseStatus === 201;
@@ -74,7 +74,7 @@ export const TermOversizeReview = () => {
     }
 
     const response =
-      await submitTermOversizeMutation.mutateAsync(applicationData);
+      await saveApplicationMutation.mutateAsync(applicationData);
 
     const { data, status } = response;
     setApplicationData(data);
@@ -93,7 +93,7 @@ export const TermOversizeReview = () => {
   }, []);
 
   return (
-    <div className="term-oversize-review">
+    <div className="application-review">
       <ApplicationBreadcrumb
         permitId={permitId}
         applicationStep={APPLICATION_STEPS.REVIEW}

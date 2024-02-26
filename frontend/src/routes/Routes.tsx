@@ -188,16 +188,18 @@ export const AppRoutes = () => {
       </Route>
 
       <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
+        <Route
+          path={`${routes.APPLICATIONS_ROUTES.START_APPLICATION()}`}
+          element={
+            <ApplicationSteps
+              applicationStep={routes.APPLICATION_STEPS.DETAILS}
+            />
+          }
+        />
+      </Route>
+      <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
         <Route path={routes.APPLICATIONS_ROUTES.BASE}>
           <Route index={true} element={<PermitDashboard />} />
-          <Route
-            path={`${routes.APPLICATIONS_ROUTES.START_APPLICATION}`}
-            element={
-              <ApplicationSteps
-                applicationStep={routes.APPLICATION_STEPS.DETAILS}
-              />
-            }
-          />
           <Route path={`${routes.APPLICATIONS_ROUTES.DETAILS()}`}>
             <Route
               index={true}

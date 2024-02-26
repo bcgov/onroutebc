@@ -3,7 +3,7 @@ import { useContext, useEffect } from "react";
 import { useSearchParams, useNavigate, useParams } from "react-router-dom";
 import { FormProvider, useForm } from "react-hook-form";
 
-import "./TermOversizePay.scss";
+import "./ApplicationPay.scss";
 import { ApplicationContext } from "../../context/ApplicationContext";
 import { ApplicationBreadcrumb } from "../../components/application-breadcrumb/ApplicationBreadcrumb";
 import { calculateFeeByDuration, isZeroAmount } from "../../helpers/feeSummary";
@@ -11,7 +11,7 @@ import { ApplicationSummary } from "./components/pay/ApplicationSummary";
 import { PermitPayFeeSummary } from "./components/pay/PermitPayFeeSummary";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { useIssuePermits, useStartTransaction } from "../../hooks/hooks";
-import { TRANSACTION_TYPES } from "../../types/payment.d";
+import { TRANSACTION_TYPES } from "../../types/payment";
 import { PAYMENT_METHOD_TYPE_CODE, PaymentCardTypeCode } from "../../../../common/types/paymentMethods";
 import { PaymentFailedBanner } from "./components/pay/PaymentFailedBanner";
 import { PPC_EMAIL, TOLL_FREE_NUMBER } from "../../../../common/constants/constants";
@@ -38,7 +38,7 @@ const AVAILABLE_CV_PAYMENT_METHODS = [
   PAYMENT_METHOD_TYPE_CODE.WEB,
 ];
 
-export const TermOversizePay = () => {
+export const ApplicationPay = () => {
   const { applicationData } = useContext(ApplicationContext);
   const { idirUserDetails } = useContext(OnRouteBCContext);
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);

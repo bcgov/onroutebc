@@ -4,14 +4,14 @@ import dayjs, { Dayjs } from "dayjs";
 import userEvent from "@testing-library/user-event";
 import { Options } from "@testing-library/user-event/dist/types/options";
 
+import { TROS_COMMODITIES } from "../../../../../../constants/tros";
+import { PermitDetails } from "../../PermitDetails";
+import { Commodities } from "../../../../../../types/application";
+import { getExpiryDate } from "../../../../../../helpers/permitState";
 import {
   getStartOfDate,
   now,
 } from "../../../../../../../../common/helpers/formatDate";
-import { TROS_COMMODITIES } from "../../../../../../constants/termOversizeConstants";
-import { PermitDetails } from "../../PermitDetails";
-import { Commodities } from "../../../../../../types/application";
-import { getExpiryDate } from "../../../../../../helpers/permitState";
 
 const feature = "testfeature";
 export const currentDt = getStartOfDate(now());

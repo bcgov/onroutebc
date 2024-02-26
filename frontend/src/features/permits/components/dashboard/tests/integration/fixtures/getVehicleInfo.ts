@@ -9,7 +9,7 @@ import {
 import {
   TROS_INELIGIBLE_POWERUNITS,
   TROS_INELIGIBLE_TRAILERS,
-} from "../../../../../constants/termOversizeConstants";
+} from "../../../../../constants/tros";
 
 let powerUnitId = 1;
 let trailerId = 1;

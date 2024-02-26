@@ -19,11 +19,11 @@ export const FormActions = ({
   enableScroll?: boolean;
 }) => {
   return (
-    <Box className="tros-form-actions">
+    <Box className="application-form-actions">
       {onLeave ? (
         <Button
           key="leave-application-button"
-          className="tros-form-actions__btn tros-form-actions__btn--leave"
+          className="application-form-actions__btn application-form-actions__btn--leave"
           aria-label="leave"
           variant="contained"
           color="secondary"
@@ -34,11 +34,11 @@ export const FormActions = ({
         </Button>
       ) : null}
 
-      <Box className="tros-form-actions__section tros-form-actions__section--main">
+      <Box className="application-form-actions__section application-form-actions__section--main">
         {onSave ? (
           <Button
-            key="save-TROS-button"
-            className="tros-form-actions__btn tros-form-actions__btn--save"
+            key="save-application-button"
+            className="application-form-actions__btn application-form-actions__btn--save"
             aria-label="save"
             variant="contained"
             color="tertiary"
@@ -52,8 +52,8 @@ export const FormActions = ({
 
         {onCancel ? (
           <Button
-            key="cancel-TROS-button"
-            className="tros-form-actions__btn tros-form-actions__btn--cancel"
+            key="cancel-application-button"
+            className="application-form-actions__btn application-form-actions__btn--cancel"
             aria-label="cancel"
             variant="contained"
             color="tertiary"
@@ -65,8 +65,8 @@ export const FormActions = ({
         ) : null}
 
         <Button
-          key="submit-TROS-button"
-          className="tros-form-actions__btn tros-form-actions__btn--continue"
+          key="submit-application-button"
+          className="application-form-actions__btn application-form-actions__btn--continue"
           aria-label="Submit"
           variant="contained"
           color="primary"

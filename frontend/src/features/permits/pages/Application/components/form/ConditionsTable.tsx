@@ -14,7 +14,7 @@ import {
 
 import "./ConditionsTable.scss";
 import { Commodities } from "../../../../types/application";
-import { TROS_COMMODITIES } from "../../../../constants/termOversizeConstants";
+import { TROS_COMMODITIES } from "../../../../constants/tros";
 import { CustomExternalLink } from "../../../../../../common/components/links/CustomExternalLink";
 
 export const ConditionsTable = ({

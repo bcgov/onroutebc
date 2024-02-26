@@ -31,7 +31,7 @@ import {
 import {
   TROS_INELIGIBLE_POWERUNITS,
   TROS_INELIGIBLE_TRAILERS,
-} from "../../../../../../constants/termOversizeConstants";
+} from "../../../../../../constants/tros";
 
 const GroupHeader = styled("div")(({ theme }) => ({
   position: "sticky",
@@ -49,7 +49,7 @@ const GroupItems = styled("ul")({
 });
 
 /**
- * An MUI auto complete component used to search and select a vehicle in the TROS form.
+ * An MUI auto complete component used to search and select a vehicle in the application form.
  *
  * From https://mui.com/material-ui/react-autocomplete/#grouped
  */
@@ -69,7 +69,7 @@ export const SelectVehicleDropdown = ({
   handleClearVehicle: () => void;
 }) => {
   const sortedVehicles = sortVehicles(chooseFrom, vehicleOptions);
-  // Temporary method to remove ineligible vehicles as per TROS policy.
+  // Temporary method to remove ineligible vehicles given policies for the permit type.
   // Will be replaced by backend endpoint with optional query parameter
   const eligibleVehicles = removeIneligibleVehicles(
     sortedVehicles,
@@ -107,7 +107,7 @@ export const SelectVehicleDropdown = ({
     >
       <FormLabel className="select-vehicle-dropdown__label">{label}</FormLabel>
       <Autocomplete
-        id="tros-select-vehicle"
+        id="application-select-vehicle"
         onChange={(_, value: Nullable<Vehicle>, reason) => {
           if (!value || reason === "clear") {
             handleClearVehicle();
