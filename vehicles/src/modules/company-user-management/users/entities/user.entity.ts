@@ -11,7 +11,7 @@ import { AutoMap } from '@automapper/classes';
 import { Contact } from '../../../common/entities/contact.entity';
 import { CompanyUser } from './company-user.entity';
 import { Directory } from '../../../../common/enum/directory.enum';
-import { UserAuthGroup } from '../../../../common/enum/user-auth-group.enum';
+import { ClientUserAuthGroup } from '../../../../common/enum/user-auth-group.enum';
 
 @Entity({ name: 'ORBC_USER' })
 export class User extends Base {
@@ -45,17 +45,17 @@ export class User extends Base {
 
   /**
    * A property that represents the user's auth group in ORBC, which is an enum of type
-   * {@link UserAuthGroup}.
+   * {@link ClientUserAuthGroup}.
    */
   @AutoMap()
   @Column({
     type: 'simple-enum',
-    enum: UserAuthGroup,
+    enum: ClientUserAuthGroup,
     length: 10,
     name: 'USER_AUTH_GROUP_TYPE',
     nullable: true,
   })
-  userAuthGroup: UserAuthGroup;
+  userAuthGroup: ClientUserAuthGroup;
 
   /**
    * A one-to-one relationship with the Contact entity, representing the contact

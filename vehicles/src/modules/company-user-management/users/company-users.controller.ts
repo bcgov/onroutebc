@@ -203,7 +203,9 @@ export class CompanyUsersController {
     const currentUser = request.user as IUserJWT;
     if (
       currentUser.orbcUserAuthGroup !== UserAuthGroup.COMPANY_ADMINISTRATOR &&
-      !idirUserAuthGroupList.includes(currentUser.orbcUserAuthGroup)
+      !idirUserAuthGroupList.includes(
+        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      )
     ) {
       throw new ForbiddenException();
     }

@@ -1,6 +1,10 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { UserAuthGroup } from '../../../../../common/enum/user-auth-group.enum';
+import {
+  ClientUserAuthGroup,
+  IDIRUserAuthGroup,
+  UserAuthGroup,
+} from '../../../../../common/enum/user-auth-group.enum';
 import { UserStatus } from '../../../../../common/enum/user-status.enum';
 import { ReadContactDto } from '../../../../common/dto/response/read-contact.dto';
 
@@ -24,11 +28,11 @@ export class ReadUserDto extends ReadContactDto {
 
   @AutoMap()
   @ApiProperty({
-    enum: UserAuthGroup,
+    enum: ClientUserAuthGroup,
     description: 'The user auth group.',
-    example: UserAuthGroup.COMPANY_ADMINISTRATOR,
+    example: ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
   })
-  userAuthGroup: UserAuthGroup;
+  userAuthGroup: UserAuthGroup | ClientUserAuthGroup | IDIRUserAuthGroup;
 
   @AutoMap()
   @ApiProperty({

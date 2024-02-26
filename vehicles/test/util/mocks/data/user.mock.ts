@@ -34,10 +34,9 @@ import {
   createRedCompanyCvClientContactDtoMock,
   createSysAdminStaffContactDtoMock,
   readSysAdminStaffContactDtoMock,
-  sysAdminStaffContactEntityMock,
-  updateSysAdminStaffContactDtoMock,
 } from './contact.mock';
 import { IdirUser } from 'src/modules/company-user-management/users/entities/idir.user.entity';
+import { UserStatus } from '../../../../src/common/enum/user-status.enum';
 
 //User list
 
@@ -190,23 +189,19 @@ export const readBlueCvClientUserOrbcStatusDtoMock: ReadUserOrbcStatusDto = {
 };
 
 //Blue Company Cv Client User
-export const sysAdminStaffUserEntityMock: User = {
+export const sysAdminStaffUserEntityMock: IdirUser = {
   userGUID: constants.SYS_ADMIN_STAFF_USER_GUID,
   userName: constants.SYS_ADMIN_STAFF_USER_NAME,
-  directory: constants.SYS_ADMIN_STAFF_USER_STATUS_DIRECOTRY,
   userAuthGroup: constants.SYS_ADMIN_STAFF_USER_AUTH_GROUP,
-  userContact: { ...sysAdminStaffContactEntityMock },
-  companyUsers: undefined,
+  firstName: constants.SYS_ADMIN_STAFF_FIRST_NAME,
+  lastName: constants.SYS_ADMIN_STAFF_LAST_NAME,
+  email: constants.SYS_ADMIN_STAFF_EMAIL,
+  statusCode: UserStatus.ACTIVE,
   ...baseEntityMock,
 };
 
 export const createSysAdminStaffUserDtoMock: CreateUserDto = {
   ...createSysAdminStaffContactDtoMock,
-};
-
-export const updateSysAdminStaffUserDtoMock: UpdateUserDto = {
-  userAuthGroup: constants.SYS_ADMIN_STAFF_USER_AUTH_GROUP,
-  ...updateSysAdminStaffContactDtoMock,
 };
 
 export const readSysAdminStaffUserDtoMock: ReadUserDto = {
@@ -231,7 +226,6 @@ export const USER_LIST: User[] = [
   redCompanyCvClientUserEntityMock,
   blueCompanyAdminUserEntityMock,
   blueCompanyCvClientUserEntityMock,
-  sysAdminStaffUserEntityMock,
 ];
 
 export const USER_DTO_LIST = [
@@ -251,7 +245,6 @@ export const USER_DTO_LIST = [
     userDto: readBlueCompanyCvClientUserDtoMock,
     companyId: constants.BLUE_COMPANY_ID,
   },
-  { userDto: readSysAdminStaffUserDtoMock, companyId: undefined },
 ];
 
 export const idirUserEntityMock: IdirUser = {
