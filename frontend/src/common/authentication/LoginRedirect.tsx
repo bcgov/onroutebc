@@ -25,8 +25,8 @@ const navigateBCeID = (
   const { associatedCompanies, pendingCompanies, migratedClient, user } =
     userContextData;
 
-  const isAssociatedSuspended = associatedCompanies?.find((element) => element?.isSuspended);
-  const isPendingSuspended = pendingCompanies?.find((element) => element?.isSuspended);
+  const isAssociatedSuspended = associatedCompanies?.find((company) => company?.isSuspended);
+  const isPendingSuspended = pendingCompanies?.find((company) => company?.isSuspended);
 
   // If the user does not exist
   if (!user?.userGUID) {
