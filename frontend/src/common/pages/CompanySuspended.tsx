@@ -9,11 +9,11 @@ export const CompanySuspended = () => {
         <>
           For further assistance please contact the Provincial Permit
             Centre at{" "}
-            <span className="contact-info contact-info--toll-free">
+            <span>
             <strong>Toll-free: {TOLL_FREE_NUMBER}</strong>
             </span>{" "}
             or{" "}
-            <span className="contact-info contact-info--email">
+            <span>
                 <strong>Email: {PPC_EMAIL}</strong>
             </span>
         </>
