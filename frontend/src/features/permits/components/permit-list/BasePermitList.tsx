@@ -117,6 +117,12 @@ export const BasePermitList = ({
     manualFiltering: true,
     manualPagination: true,
     manualSorting: true,
+    muiSearchTextFieldProps: {
+      helperText: globalFilter.length > 100 && "100 characters maximum.",
+      inputProps: {
+        maxLength: 100,
+      },
+    },
     rowCount: data?.meta?.totalItems ?? 0,
     pageCount: data?.meta?.pageCount ?? 0,
     onSortingChange: setSorting,
