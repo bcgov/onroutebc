@@ -42,7 +42,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       algorithms: ['RS256'],
       passReqToCallback: true,
     });
-
   }
 
   async validate(req: Request, payload: IUserJWT): Promise<IUserJWT> {
