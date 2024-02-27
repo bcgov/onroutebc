@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   Param,
@@ -17,6 +18,7 @@ import {
   ApiMethodNotAllowedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
@@ -221,14 +223,15 @@ export class ApplicationController {
     return result;
   }
 
-  @ApiOkResponse({
+  @Roles(Role.WRITE_PERMIT)
+  @Delete()
+  @ApiOperation({
+    summary: 'Delete application in progress associated with a company and user(optional)',
     description:
-      'The delete dto resource which includes the success and failure list.',
-    type: DeleteDto,
+      'Allows deletion of one or more applications in progress associated with a given company ID, based on user GUIDs(user GUID needed only for CV clients). ' +
+      'Requires specific user roles or group memberships to execute.' +
+      'Returns a list of deleted applications or throws exceptions for unauthorized access or operational failures.',
   })
-  @Roles(Role.WRITE_VEHICLE)
-  @Post('delete-requests')
-  @HttpCode(200)
   async deleteApplications(
     @Req() request: Request,
     @Body() deleteApplicationDto: DeleteApplicationDto,
