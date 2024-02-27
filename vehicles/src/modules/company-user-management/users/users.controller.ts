@@ -110,7 +110,6 @@ export class UsersController {
     @Req() request: Request,
     @Query() getUserRolesQueryParamsDto: GetUserRolesQueryParamsDto,
   ): Promise<Role[]> {
-    console.log('HERE I AM')
     const currentUser = request.user as IUserJWT;
     const roles = await this.userService.getRolesForUser(
       currentUser.userGUID,
