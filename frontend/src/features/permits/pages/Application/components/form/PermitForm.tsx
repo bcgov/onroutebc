@@ -21,6 +21,11 @@ import {
   VehicleDetails as VehicleDetailsType,
 } from "../../../../types/application.d";
 
+import {
+  getIneligiblePowerUnitSubtypes,
+  getIneligibleTrailerSubtypes,
+} from "../../../../helpers/removeIneligibleVehicles";
+
 interface PermitFormProps {
   feature: string;
   onLeave?: () => void;
@@ -72,10 +77,11 @@ export const PermitForm = (props: PermitFormProps) => {
           feature={props.feature}
           defaultStartDate={props.permitStartDate}
           defaultDuration={props.permitDuration}
-          commodities={props.permitCommodities}
+          commoditiesInPermit={props.permitCommodities}
           applicationNumber={props.applicationNumber}
           durationOptions={props.durationOptions}
           disableStartDate={props.isAmendAction}
+          permitType={props.permitType}
         />
         
         <VehicleDetails
@@ -84,6 +90,8 @@ export const PermitForm = (props: PermitFormProps) => {
           vehicleOptions={props.vehicleOptions}
           powerUnitSubTypes={props.powerUnitSubTypes}
           trailerSubTypes={props.trailerSubTypes}
+          ineligiblePowerUnitSubtypes={getIneligiblePowerUnitSubtypes(props.permitType)}
+          ineligibleTrailerSubtypes={getIneligibleTrailerSubtypes(props.permitType)}
         />
         {props.children}
       </Box>

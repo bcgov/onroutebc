@@ -14,36 +14,40 @@ import { Commodities } from "../../../../types/application";
 import { ONROUTE_WEBPAGE_LINKS } from "../../../../../../routes/constants";
 import { CustomExternalLink } from "../../../../../../common/components/links/CustomExternalLink";
 import { BANNER_MESSAGES } from "../../../../../../common/constants/bannerMessages";
+import { getExpiryDate } from "../../../../helpers/permitState";
+import { calculateFeeByDuration } from "../../../../helpers/feeSummary";
+import { PermitType } from "../../../../types/PermitType";
 import {
   PPC_EMAIL,
   TOLL_FREE_NUMBER,
 } from "../../../../../../common/constants/constants";
+
 import {
   DATE_FORMATS,
   getStartOfDate,
 } from "../../../../../../common/helpers/formatDate";
-import { getExpiryDate } from "../../../../helpers/permitState";
-import { calculateFeeByDuration } from "../../../../helpers/feeSummary";
 
 export const PermitDetails = ({
   feature,
   defaultStartDate,
   defaultDuration,
-  commodities,
+  commoditiesInPermit,
   applicationNumber,
   durationOptions,
   disableStartDate,
+  permitType,
 }: {
   feature: string;
   defaultStartDate: Dayjs;
   defaultDuration: number;
-  commodities: Commodities[];
+  commoditiesInPermit: Commodities[];
   applicationNumber?: string;
   durationOptions: {
     value: number;
     label: string;
   }[];
   disableStartDate?: boolean;
+  permitType: PermitType;
 }) => {
   const { watch, register, setValue } = useFormContext();
 
@@ -159,10 +163,11 @@ export const PermitDetails = ({
           />
 
           <ConditionsTable
-            commodities={commodities}
+            commoditiesInPermit={commoditiesInPermit}
             applicationWasCreated={
               applicationNumber != null && applicationNumber !== ""
             }
+            permitType={permitType}
           />
         </Box>
       </Box>

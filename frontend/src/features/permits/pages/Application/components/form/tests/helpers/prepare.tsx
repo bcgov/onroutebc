@@ -4,7 +4,8 @@ import dayjs, { Dayjs } from "dayjs";
 import userEvent from "@testing-library/user-event";
 import { Options } from "@testing-library/user-event/dist/types/options";
 
-import { TROS_COMMODITIES } from "../../../../../../constants/tros";
+import { DEFAULT_PERMIT_TYPE } from "../../../../../../types/PermitType";
+import { getDefaultCommodities, getMandatoryCommodities } from "../../../../../../helpers/commodities";
 import { PermitDetails } from "../../PermitDetails";
 import { Commodities } from "../../../../../../types/application";
 import { getExpiryDate } from "../../../../../../helpers/permitState";
@@ -27,7 +28,7 @@ export const maxFutureYear = maxFutureDate.year();
 export const maxFutureDay = maxFutureDate.date();
 export const daysInFutureMonth = maxFutureDate.daysInMonth();
 
-export const commodities = [...TROS_COMMODITIES];
+export const commodities = getDefaultCommodities(DEFAULT_PERMIT_TYPE);
 export const defaultDuration = 30;
 export const emptyCommodities: Commodities[] = [];
 export const allDurations = [
@@ -45,9 +46,10 @@ export const allDurations = [
   { text: "1 Year", days: 365 },
 ];
 
+const mandatoryConditions = getMandatoryCommodities(DEFAULT_PERMIT_TYPE).map(commodity => commodity.condition);
 export const requiredCommodityIndices = commodities
   .map((commodity, i) =>
-    commodity.condition === "CVSE-1000" || commodity.condition === "CVSE-1070"
+    mandatoryConditions.includes(commodity.condition)
       ? i
       : -1,
   )
@@ -82,12 +84,13 @@ export const renderTestComponent = (
         feature={feature}
         defaultStartDate={startDate}
         defaultDuration={duration}
-        commodities={commodities}
+        commoditiesInPermit={commodities}
         durationOptions={allDurations.map((duration) => ({
           label: duration.text,
           value: duration.days,
         }))}
         disableStartDate={false}
+        permitType={DEFAULT_PERMIT_TYPE}
       />
     </TestFormWrapper>,
   );

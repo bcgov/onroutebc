@@ -14,38 +14,26 @@ import {
 
 import "./ConditionsTable.scss";
 import { Commodities } from "../../../../types/application";
-import { TROS_COMMODITIES } from "../../../../constants/tros";
 import { CustomExternalLink } from "../../../../../../common/components/links/CustomExternalLink";
+import { PermitType } from "../../../../types/PermitType";
+import { getDefaultCommodities } from "../../../../helpers/commodities";
 
 export const ConditionsTable = ({
-  commodities,
+  commoditiesInPermit,
   applicationWasCreated,
+  permitType,
 }: {
-  commodities: Commodities[];
+  commoditiesInPermit: Commodities[];
   applicationWasCreated: boolean;
+  permitType: PermitType;
 }) => {
   const { control, setValue, resetField } = useFormContext();
-  const [allOptions, setAllOptions] = useState<Commodities[]>([]);
-
-  const getOptions = (
-    applicationWasCreated: boolean,
-    existingCommodities: Commodities[],
-  ) => {
-    const isMustSelectOption = (commodity: Commodities) =>
-      commodity.condition === "CVSE-1000" ||
-      commodity.condition === "CVSE-1070";
-
-    const defaultOptions = TROS_COMMODITIES.map((commodity) => ({
-      ...commodity,
-      // must-select options are checked and disabled (for toggling) by default
-      checked: isMustSelectOption(commodity),
-      disabled: isMustSelectOption(commodity),
-    }));
-
-    if (!applicationWasCreated) return defaultOptions; // return default options for new application (not created one)
-    // Application exists at this point, thus select all commodities that were selected in the application
-    return defaultOptions.map((defaultCommodity) => {
-      const existingCommodity = existingCommodities.find(
+  const defaultCommodities = getDefaultCommodities(permitType);
+  const initialCommodities = !applicationWasCreated
+    ? defaultCommodities // return default options for new application (not created one)
+    : defaultCommodities.map((defaultCommodity) => {
+      // Application exists at this point, thus select all commodities that were selected in the application
+      const existingCommodity = commoditiesInPermit.find(
         (c) => c.condition === defaultCommodity.condition,
       );
 
@@ -56,34 +44,28 @@ export const ConditionsTable = ({
           : defaultCommodity.checked,
       };
     });
-  };
+
+  const [allCommodities, setAllCommodities] = useState<Commodities[]>(initialCommodities);
 
   useEffect(() => {
-    const updatedCommodities = getOptions(applicationWasCreated, commodities);
-    resetField("permitData.commodities", { defaultValue: [] }); // reset all options
+    resetField("permitData.commodities", { defaultValue: [] }); // reset all commodities
     setValue(
       "permitData.commodities",
-      updatedCommodities.filter((c) => c.checked),
+      allCommodities.filter((c) => c.checked),
     ); // select the commodities in the existing application
-    setAllOptions(updatedCommodities);
-  }, [applicationWasCreated, commodities]);
+  }, [allCommodities]);
 
-  function handleSelect(checkedCondition: string) {
-    const newOptions = allOptions.map((option) => {
-      if (option.condition === checkedCondition) {
-        option.checked = !option.checked;
+  const handleSelect = (checkedCondition: string) => {
+    const newCommodities = allCommodities.map((commodity) => {
+      if (commodity.condition === checkedCondition) {
+        commodity.checked = !commodity.checked;
       }
-      return option;
+      return commodity;
     });
 
-    setAllOptions(newOptions);
-    resetField("permitData.commodities", { defaultValue: [] }); // reset all options first
-    setValue(
-      "permitData.commodities",
-      newOptions.filter((option) => option.checked),
-    ); // then select the newly selected options
+    setAllCommodities(newCommodities);
 
-    return newOptions;
+    return newCommodities;
   }
 
   return (
@@ -101,7 +83,7 @@ export const ConditionsTable = ({
           </TableRow>
         </TableHead>
         <TableBody>
-          {allOptions.map((row) => (
+          {allCommodities.map((row) => (
             <TableRow key={row.condition} className="conditions-table__row">
               <TableCell
                 className="conditions-table__cell conditions-table__cell--checkbox"

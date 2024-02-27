@@ -26,12 +26,8 @@ import {
   Trailer,
   VEHICLE_TYPES,
   Vehicle,
+  VehicleSubType,
 } from "../../../../../../../manageVehicles/types/Vehicle";
-
-import {
-  TROS_INELIGIBLE_POWERUNITS,
-  TROS_INELIGIBLE_TRAILERS,
-} from "../../../../../../constants/tros";
 
 const GroupHeader = styled("div")(({ theme }) => ({
   position: "sticky",
@@ -60,6 +56,8 @@ export const SelectVehicleDropdown = ({
   vehicleOptions,
   handleSelectVehicle,
   handleClearVehicle,
+  ineligiblePowerUnitSubtypes,
+  ineligibleTrailerSubtypes,
 }: {
   chooseFrom: string;
   selectedVehicle: Optional<VehicleDetails>;
@@ -67,14 +65,17 @@ export const SelectVehicleDropdown = ({
   vehicleOptions: Vehicle[];
   handleSelectVehicle: (vehicle: Vehicle) => void;
   handleClearVehicle: () => void;
+  ineligiblePowerUnitSubtypes: VehicleSubType[];
+  ineligibleTrailerSubtypes: VehicleSubType[];
 }) => {
   const sortedVehicles = sortVehicles(chooseFrom, vehicleOptions);
+
   // Temporary method to remove ineligible vehicles given policies for the permit type.
   // Will be replaced by backend endpoint with optional query parameter
   const eligibleVehicles = removeIneligibleVehicles(
     sortedVehicles,
-    TROS_INELIGIBLE_POWERUNITS,
-    TROS_INELIGIBLE_TRAILERS,
+    ineligiblePowerUnitSubtypes,
+    ineligibleTrailerSubtypes,
   );
 
   const selectedOption = selectedVehicle

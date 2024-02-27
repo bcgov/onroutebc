@@ -37,11 +37,6 @@ import {
 } from "../../../../../../manageVehicles/types/Vehicle";
 
 import {
-  TROS_INELIGIBLE_POWERUNITS,
-  TROS_INELIGIBLE_TRAILERS,
-} from "../../../../../constants/tros";
-
-import {
   CHOOSE_FROM_OPTIONS,
   VEHICLE_CHOOSE_FROM,
   VEHICLE_TYPE_OPTIONS,
@@ -73,12 +68,16 @@ export const VehicleDetails = ({
   vehicleOptions,
   powerUnitSubTypes,
   trailerSubTypes,
+  ineligiblePowerUnitSubtypes,
+  ineligibleTrailerSubtypes,
 }: {
   feature: string;
   vehicleData?: VehicleDetailsType;
   vehicleOptions: Vehicle[];
   powerUnitSubTypes: VehicleSubType[];
   trailerSubTypes: VehicleSubType[];
+  ineligiblePowerUnitSubtypes: VehicleSubType[];
+  ineligibleTrailerSubtypes: VehicleSubType[];
 }) => {
   const formFieldStyle = {
     fontWeight: "bold",
@@ -198,8 +197,8 @@ export const VehicleDetails = ({
     const eligibleVehicleSubtypes = removeIneligibleVehicleSubTypes(
       sortedVehicles,
       vehicleType,
-      TROS_INELIGIBLE_POWERUNITS,
-      TROS_INELIGIBLE_TRAILERS,
+      ineligiblePowerUnitSubtypes,
+      ineligibleTrailerSubtypes,
     );
 
     return eligibleVehicleSubtypes;
@@ -373,6 +372,8 @@ export const VehicleDetails = ({
                 vehicleOptions={vehicleOptions}
                 handleClearVehicle={onClearVehicle}
                 handleSelectVehicle={onSelectVehicle}
+                ineligiblePowerUnitSubtypes={ineligiblePowerUnitSubtypes}
+                ineligibleTrailerSubtypes={ineligibleTrailerSubtypes}
               />
             </Box>
 

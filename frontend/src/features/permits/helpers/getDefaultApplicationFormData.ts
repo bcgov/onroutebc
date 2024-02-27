@@ -2,12 +2,11 @@ import dayjs, { Dayjs } from "dayjs";
 
 import { getUserGuidFromSession } from "../../../common/apiManager/httpRequestHandler";
 import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBCContext";
-import { TROS_COMMODITIES } from "../constants/tros";
-import { TROW_COMMODITIES } from "../constants/trow";
+import { getMandatoryCommodities } from "./commodities";
 import { Nullable } from "../../../common/types/common";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
 import { calculateFeeByDuration } from "./feeSummary";
-import { PERMIT_TYPES, PermitType } from "../types/PermitType";
+import { PermitType } from "../types/PermitType";
 import { getExpiryDate } from "./permitState";
 import {
   getEndOfDate,
@@ -154,18 +153,6 @@ export const getExpiryDateOrDefault = (
   );
 };
 
-export const getDefaultCommodities = (permitType: PermitType) => {
-  if (permitType === PERMIT_TYPES.TROW) {
-    return TROW_COMMODITIES;
-  }
-
-  if (permitType === PERMIT_TYPES.TROS) {
-    return [TROS_COMMODITIES[0], TROS_COMMODITIES[1]];
-  }
-
-  return [];
-};
-
 /**
  * Gets default values for the application data, or populate with values from existing application data and company id/user details.
  * @param permitType permit type for the application
@@ -253,7 +240,7 @@ export const getDefaultValues = (
       permitDuration: durationOrDefault,
       expiryDate: expiryDateOrDefault,
       commodities: getDefaultRequiredVal(
-        getDefaultCommodities(permitType),
+        getMandatoryCommodities(permitType),
         applyWhenNotNullable(
           (commodities) => commodities.map((commodity) => ({ ...commodity })),
           applicationData?.permitData?.commodities,
