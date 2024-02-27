@@ -95,6 +95,7 @@ frontend:
         selectPolicy: Max
 
   ingress:
+    className: openshift-default
     annotations: 
       route.openshift.io/termination: "edge"
     enabled: true
@@ -216,6 +217,7 @@ vehicles:
             periodSeconds: 30
         selectPolicy: Max
   ingress:
+    className: openshift-default
     annotations: 
       route.openshift.io/termination: "edge"
     enabled: true
@@ -348,6 +350,7 @@ dops:
             periodSeconds: 30
         selectPolicy: Max
   ingress:
+    className: openshift-default
     annotations: 
       route.openshift.io/termination: "edge"
     enabled: true
@@ -470,6 +473,7 @@ tps-migration:
             periodSeconds: 30
         selectPolicy: Max
   ingress:
+    className: openshift-default
     annotations: 
       route.openshift.io/termination: "edge"
     enabled: true
