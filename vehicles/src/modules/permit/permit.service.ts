@@ -420,9 +420,6 @@ export class PermitService {
         }),
       );
     }
-    console.log('-------------------');
-    console.log('permitQuery:', permitsQuery.getQueryAndParameters());
-    console.log('-------------------');
 
     return permitsQuery;
   }
