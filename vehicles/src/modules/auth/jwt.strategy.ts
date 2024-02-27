@@ -3,6 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import {
   ForbiddenException,
   Injectable,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { passportJwtSecret } from 'jwks-rsa';
@@ -25,6 +26,7 @@ import {
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
+  private readonly logger = new Logger(JwtStrategy.name);
   constructor(private authService: AuthService) {
     super({
       secretOrKeyProvider: passportJwtSecret({
@@ -42,6 +44,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       algorithms: ['RS256'],
       passReqToCallback: true,
     });
+
   }
 
   async validate(req: Request, payload: IUserJWT): Promise<IUserJWT> {
@@ -111,9 +114,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
           ? associatedCompanies?.at(0)
           : companyId;
 
+        this.logger.log("FOOOOO")
+        this.logger.log(`!associatedCompanies.includes(${companyId}) - ${!associatedCompanies.includes(companyId)}`)
+        this.logger.log(`isSuspended - ${associatedCompanyMetadataList?.at(0)?.isSuspended}`)
+
         if (
-          !associatedCompanies.includes(companyId) ||
-          associatedCompanyMetadataList?.at(0)?.isSuspended
+          !associatedCompanies.includes(companyId)
+          // associatedCompanyMetadataList?.at(0)?.isSuspended
         ) {
           throw new ForbiddenException();
         }

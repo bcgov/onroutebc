@@ -73,6 +73,7 @@ export type CompanyProfile = {
   primaryContact: Contact;
   migratedClientHash?: Nullable<string>;
   alternateName?: Nullable<string>;
+  isSuspended: boolean;
 };
 
 /**

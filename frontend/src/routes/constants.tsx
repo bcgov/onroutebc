@@ -28,6 +28,7 @@ const DYNAMIC_ROUTE_URI = (
 export const HOME = "/";
 
 export const ERROR_ROUTES = {
+  SUSPENDED: "/suspended",
   UNAUTHORIZED: "/unauthorized",
   UNEXPECTED: "/unexpected-error",
 };

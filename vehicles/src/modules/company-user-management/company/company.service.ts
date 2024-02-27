@@ -362,6 +362,10 @@ export class CompanyService {
     userGUID: string,
     userStatusCode = [UserStatus.ACTIVE],
   ): Promise<ReadCompanyMetadataDto[]> {
+
+    this.logger.log("HERE I AM")
+    this.logger.log(`userGUID - ${userGUID}`)
+    this.logger.log(`userStatusCode - ${userStatusCode}`)
     const companyUsers = await this.companyRepository
       .createQueryBuilder('company')
       .innerJoinAndSelect('company.mailingAddress', 'mailingAddress')
@@ -376,11 +380,15 @@ export class CompanyService {
       })
       .getMany();
 
+    this.logger.log(`companyUsers length - ${companyUsers.length}`)
+
     const companyMetadata = await this.classMapper.mapArrayAsync(
       companyUsers,
       Company,
       ReadCompanyMetadataDto,
     );
+
+    this.logger.log(`companyMetadata.isSuspended - ${companyMetadata[0]?.isSuspended}`)
 
     return companyMetadata;
   }
