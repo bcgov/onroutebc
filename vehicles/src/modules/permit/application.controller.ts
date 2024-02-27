@@ -117,7 +117,9 @@ export class ApplicationController {
         ? currentUser.userGUID
         : null;
     const applicationStatus: ApplicationStatus[] =
-      idirUserAuthGroupList.includes(currentUser.orbcUserAuthGroup as UserAuthGroup)
+      idirUserAuthGroupList.includes(
+        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      )
         ? idirUserAIPStatus
         : cvClientAIPStatus;
     return this.applicationService.findAllApplications(applicationStatus, {
@@ -236,7 +238,14 @@ export class ApplicationController {
       UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup
         ? currentUser.userGUID
         : null;
-    const applicationStatus: ApplicationStatus = idirUserAuthGroupList.includes(
+    const applicationStatus: ApplicationStatus[] =
+      idirUserAuthGroupList.includes(
+        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      )
+        ? idirUserAIPStatus
+        : cvClientAIPStatus;
+
+    const deletionStatus: ApplicationStatus = idirUserAuthGroupList.includes(
       currentUser.orbcUserAuthGroup as UserAuthGroup,
     )
       ? deleteIdirAIP
@@ -245,6 +254,7 @@ export class ApplicationController {
     const deleteResult =
       await this.applicationService.deleteApplicationInProgress(
         deleteApplicationDto.applications,
+        deletionStatus,
         applicationStatus,
         deleteApplicationDto.companyId,
         currentUser,

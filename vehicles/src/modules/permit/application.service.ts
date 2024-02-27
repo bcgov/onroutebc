@@ -914,38 +914,42 @@ export class ApplicationService {
   @LogAsyncMethodExecution()
   async deleteApplicationInProgress(
     applicationIds: string[],
-    applicationStatus: ApplicationStatus,
+    deletionStatus: ApplicationStatus,
+    applicationStatus: ApplicationStatus[],
     companyId: number,
     currentUser: IUserJWT,
     userGuid?: string,
-    permitApprovalSource?: PermitApprovalSourceEnum,
   ): Promise<ResultDto> {
     let updateQuery = this.permitRepository
       .createQueryBuilder()
       .update()
       .set({
-        permitStatus: applicationStatus,
-        ...(permitApprovalSource && {
-          permitApprovalSource: permitApprovalSource,
-        }),
+        permitStatus: deletionStatus,
         updatedUser: currentUser.userName,
         updatedDateTime: new Date(),
         updatedUserDirectory: currentUser.orbcUserDirectory,
         updatedUserGuid: currentUser.userGUID,
       })
       .whereInIds(applicationIds);
-    updateQuery = updateQuery.andWhere('companyId: companyId', {
+    updateQuery = updateQuery.andWhere('companyId = :companyId', {
       companyId: companyId,
     });
-    updateQuery = updateQuery.andWhere('permit.permitNumber IS NULL');
-    updateQuery = updateQuery.returning(['permitId']);
+    updateQuery = updateQuery.andWhere(
+      'permitStatus IN (:...applicationStatus)',
+      {
+        applicationStatus: applicationStatus,
+      },
+    );
+    updateQuery = updateQuery.andWhere('permitNumber IS NULL');
+
     if (userGuid) {
-      updateQuery = updateQuery.andWhere('userGuid: userGuid', {
+      updateQuery = updateQuery.andWhere('userGuid = :userGuid', {
         userGuid: userGuid,
       });
     }
-    const updateResult = await updateQuery.execute();
 
+    updateQuery = updateQuery.returning(['permitId']);
+    const updateResult = await updateQuery.execute();
     const updatedApplications = Array.from(
       updateResult?.raw as [
         {
