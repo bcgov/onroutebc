@@ -113,7 +113,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
           : companyId;
 
         if (
-          !associatedCompanies.includes(companyId)
+          !associatedCompanies.includes(companyId) ||
+          associatedCompanyMetadataList?.at(0)?.isSuspended
         ) {
           throw new ForbiddenException();
         }
