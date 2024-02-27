@@ -61,6 +61,7 @@ export class GetPermitQueryParamsDto extends PageOptionsDto {
   })
   @IsOptional()
   @IsString()
+  @Length(1, 100)
   searchString?: string;
 
   @ApiProperty({
