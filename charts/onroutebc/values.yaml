@@ -311,8 +311,8 @@ dops:
         timeoutSeconds: 5
       resources: # this is optional
         limits:
-          cpu: 2000m
-          memory: 4000Mi
+          cpu: 1000m
+          memory: 2000Mi
         requests:
           cpu: 300m
           memory: 400Mi
