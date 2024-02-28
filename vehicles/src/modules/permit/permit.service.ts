@@ -244,6 +244,9 @@ export class PermitService {
       findPermitOptions.userGUID,
     );
 
+    // total number of items
+    const totalItems = await permitsQB.getCount();
+
     // Mapping of frontend orderBy parameter to database columns
     const orderByMapping: Record<string, string> = {
       permitNumber: 'permit.permitNumber',
@@ -270,9 +273,6 @@ export class PermitService {
 
     // Get the paginated list of permits
     const permits = await permitsQB.getMany();
-
-    // total number of items
-    const totalItems = permits?.length;
 
     // Prepare pagination metadata
     const pageMetaDto = new PageMetaDto({
