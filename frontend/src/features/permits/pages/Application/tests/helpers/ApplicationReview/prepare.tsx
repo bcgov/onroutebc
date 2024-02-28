@@ -5,7 +5,7 @@ import userEvent from "@testing-library/user-event";
 import { ThemeProvider } from "@mui/material/styles";
 
 import { APPLICATIONS_API_ROUTES } from "../../../../../apiManager/endpoints/endpoints";
-import { renderWithClient } from "../../../../../../../common/helpers/testHelper";
+import { renderForTests } from "../../../../../../../common/helpers/testHelper";
 import { bcGovTheme } from "../../../../../../../themes/bcGovTheme";
 import { ApplicationContext } from "../../../../../context/ApplicationContext";
 import { ApplicationReview } from "../../../ApplicationReview";
@@ -171,7 +171,7 @@ const ComponentWithWrapper = ({
 
 export const renderTestComponent = (applicationData: Application) => {
   const user = userEvent.setup();
-  const component = renderWithClient(
+  const component = renderForTests(
     <ComponentWithWrapper applicationData={applicationData} />,
   );
 
