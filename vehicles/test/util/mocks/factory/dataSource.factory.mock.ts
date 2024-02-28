@@ -73,6 +73,7 @@ export const createQueryBuilderMock = (
   filteredList: object[],
   customGetOne?: jest.Mock,
   customGetMany?: jest.Mock,
+  customGetCount?: jest.Mock,
 ) => {
   return {
     ...jest.requireActual('typeorm/query-builder/SelectQueryBuilder'),
@@ -92,15 +93,20 @@ export const createQueryBuilderMock = (
     orderBy: jest.fn().mockReturnThis(),
     take: jest.fn().mockReturnThis(),
     skip: jest.fn().mockReturnThis(),
-    getOne: customGetOne
-      ? customGetOne
-      : jest.fn().mockImplementation(() => {
-          return filteredList[0];
-        }),
-    getMany: customGetMany
-      ? customGetMany
-      : jest.fn().mockImplementation(() => {
-          return filteredList;
-        }),
+    getCount:
+      customGetCount ||
+      jest.fn().mockImplementation(() => {
+        return filteredList?.length;
+      }),
+    getOne:
+      customGetOne ||
+      jest.fn().mockImplementation(() => {
+        return filteredList[0];
+      }),
+    getMany:
+      customGetMany ||
+      jest.fn().mockImplementation(() => {
+        return filteredList;
+      }),
   };
 };
