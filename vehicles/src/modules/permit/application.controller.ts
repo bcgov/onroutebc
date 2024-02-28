@@ -224,7 +224,8 @@ export class ApplicationController {
   @Roles(Role.WRITE_PERMIT)
   @Delete()
   @ApiOperation({
-    summary: 'Delete application in progress associated with a company and user(optional)',
+    summary:
+      'Delete application in progress associated with a company and user(optional)',
     description:
       'Allows deletion of one or more applications in progress associated with a given company ID, based on user GUIDs(user GUID needed only for CV clients). ' +
       'Requires specific user roles or group memberships to execute.' +

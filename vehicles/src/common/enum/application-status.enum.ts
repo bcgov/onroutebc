@@ -34,6 +34,8 @@ export const cvClientAIPStatus: Readonly<ApplicationStatus[]> = [
   ApplicationStatus.UNDER_REVIEW,
 ];
 
-export const  deleteCvClientAIP: Readonly <ApplicationStatus> = ApplicationStatus.CANCELLED;
+export const deleteCvClientAIP: Readonly<ApplicationStatus> =
+  ApplicationStatus.CANCELLED;
 
-export const deleteIdirAIP: Readonly <ApplicationStatus> = ApplicationStatus.DELETED;
+export const deleteIdirAIP: Readonly<ApplicationStatus> =
+  ApplicationStatus.DELETED;
