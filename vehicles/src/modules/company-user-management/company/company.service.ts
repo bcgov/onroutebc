@@ -7,7 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, DataSource, Repository } from 'typeorm';
+import { Brackets, DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import {
   ClientUserAuthGroup,
   UserAuthGroup,
@@ -446,6 +446,8 @@ export class CompanyService {
       );
     }
 
+    const countCompaniesQB = new SelectQueryBuilder(companiesQB);
+
     // Object to map frontend orderBy parameters to actual database fields
     const orderByMapping: Record<string, string> = {
       companyId: 'company.companyId',
@@ -480,7 +482,9 @@ export class CompanyService {
     );
     // Map entities to DTOs for consistent response structure
 
-    const totalItems = companyData?.length;
+    // total number of items
+    const totalItems = await countCompaniesQB.getCount();
+
     const pageMetaDto = new PageMetaDto({
       totalItems,
       pageOptionsDto: {
