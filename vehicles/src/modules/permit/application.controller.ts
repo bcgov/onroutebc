@@ -97,10 +97,11 @@ export class ApplicationController {
    * @param status
    */
   @ApiOperation({
-    summary: 'Fetch All the Permit Application of PA or Company Based on Logged in User\'s Claim',
+    summary:
+      "Fetch All the Permit Application of PA or Company Based on Logged in User's Claim",
     description:
-      'Fetch all permit application and return the same , enforcing authentication.'+
-      'If login user is PA then only fetch thier application else fetch all applications associated with logged in user\'s company. ',
+      'Fetch all permit application and return the same , enforcing authentication.' +
+      "If login user is PA then only fetch thier application else fetch all applications associated with logged in user's company. ",
   })
   @ApiPaginatedResponse(ReadPermitDto)
   @Roles(Role.READ_PERMIT)
@@ -146,8 +147,7 @@ export class ApplicationController {
    */
   @ApiOperation({
     summary: 'Fetch One Permit Application for Given Id',
-    description:
-      'Fetch One Permit Application for given id. ',
+    description: 'Fetch One Permit Application for given id. ',
   })
   @ApiOkResponse({
     description: 'The Permit Application Resource',
@@ -170,8 +170,7 @@ export class ApplicationController {
 
   @ApiOperation({
     summary: 'Update Permit Application for Given Id',
-    description:
-      'Update Permit Application for given id. ',
+    description: 'Update Permit Application for given id. ',
   })
   @ApiOkResponse({
     description: 'The Permit Application Resource',
@@ -208,7 +207,7 @@ export class ApplicationController {
   @ApiOperation({
     summary: 'Update Permit Application Status to ISSUED for Given Id',
     description:
-      'Update Permit Application status for given id and set it to ISSUED.'+
+      'Update Permit Application status for given id and set it to ISSUED.' +
       'Returns a list of updated application ids or throws exceptions for unauthorized access or operational failures.',
   })
   @Roles(Role.WRITE_PERMIT)
