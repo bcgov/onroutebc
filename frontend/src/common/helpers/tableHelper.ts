@@ -69,6 +69,7 @@ export const defaultTableOptions: any = {
     },
     variant: "outlined",
     inputProps: {
+      maxLength: 100,
       sx: {
         padding: "10px",
       },
