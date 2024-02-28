@@ -228,6 +228,7 @@ export const SearchFilter = ({
                     className="search-by__value"
                     value={value}
                     onChange={handleSearchValueChange}
+                    inputProps={{ maxLength: 100 }}
                   />
                 )}
               />
