@@ -4,7 +4,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
   Param,
   Post,
   Put,
@@ -42,7 +41,6 @@ import {
 } from 'src/common/enum/user-auth-group.enum';
 import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
 import { GetApplicationQueryParamsDto } from './dto/request/queryParam/getApplication.query-params.dto';
-import { DeleteDto } from '../common/dto/response/delete.dto';
 import { DeleteApplicationDto } from './dto/request/delete-application.dto';
 import {
   ApplicationStatus,
