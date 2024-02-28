@@ -31,7 +31,7 @@ export class CreatePaymentSummaryReportDto {
     description:
       'Include records in the report till the given date and time.' +
       'The difference between fromDateTime and toDateTime must not be' +
-      ' more than 30 days.',
+      ' more than 31 days.',
   })
   @IsDateString()
   @IsDateTimeAfter<CreatePaymentSummaryReportDto>('fromDateTime', {
