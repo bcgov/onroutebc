@@ -70,6 +70,11 @@ export class ApplicationController {
    * @param request
    * @param createApplication
    */
+  @ApiOperation({
+    summary: 'Create Permit Application',
+    description:
+      'Create permit application and return the same , enforcing authentication.',
+  })
   @ApiCreatedResponse({
     description: 'The Permit Application Resource',
     type: ReadApplicationDto,
@@ -91,6 +96,12 @@ export class ApplicationController {
    * @param userGUID
    * @param status
    */
+  @ApiOperation({
+    summary: 'Fetch All the Permit Application of PA or Company Based on Logged in User\'s Claim',
+    description:
+      'Fetch all permit application and return the same , enforcing authentication.'+
+      'If login user is PA then only fetch thier application else fetch all applications associated with logged in user\'s company. ',
+  })
   @ApiPaginatedResponse(ReadPermitDto)
   @Roles(Role.READ_PERMIT)
   @Get()
@@ -133,6 +144,11 @@ export class ApplicationController {
    * @param permitId
    * @param companyId for authorization
    */
+  @ApiOperation({
+    summary: 'Fetch One Permit Application for Given Id',
+    description:
+      'Fetch One Permit Application for given id. ',
+  })
   @ApiOkResponse({
     description: 'The Permit Application Resource',
     type: ReadApplicationDto,
@@ -152,6 +168,11 @@ export class ApplicationController {
       : this.applicationService.findCurrentAmendmentApplication(permitId);
   }
 
+  @ApiOperation({
+    summary: 'Update Permit Application for Given Id',
+    description:
+      'Update Permit Application for given id. ',
+  })
   @ApiOkResponse({
     description: 'The Permit Application Resource',
     type: ReadApplicationDto,
@@ -184,6 +205,12 @@ export class ApplicationController {
    * @returns The id of new voided/revoked permit a in response object {@link ResultDto}
    *
    */
+  @ApiOperation({
+    summary: 'Update Permit Application Status to ISSUED for Given Id',
+    description:
+      'Update Permit Application status for given id and set it to ISSUED.'+
+      'Returns a list of updated application ids or throws exceptions for unauthorized access or operational failures.',
+  })
   @Roles(Role.WRITE_PERMIT)
   @Post('/issue')
   async issuePermit(
@@ -223,7 +250,7 @@ export class ApplicationController {
     description:
       'Allows deletion of one or more applications in progress associated with a given company ID, based on user GUIDs(user GUID needed only for CV clients). ' +
       'Requires specific user roles or group memberships to execute.' +
-      'Returns a list of deleted applications or throws exceptions for unauthorized access or operational failures.',
+      'Returns a list of deleted application id or throws exceptions for unauthorized access or operational failures.',
   })
   async deleteApplications(
     @Req() request: Request,
