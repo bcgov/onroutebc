@@ -8,14 +8,14 @@ import { SuspendActivity } from '../enum/suspend-activity.enum';
 @ValidatorConstraint({ name: 'SuspendComment', async: false })
 export class SuspendCommentConstraint implements ValidatorConstraintInterface {
   validate(comment: string | undefined, args: ValidationArguments) {
-    const suspendAcitivity = (
+    const suspendActivity = (
       args.object as {
-        suspendAcitivity?: SuspendActivity;
+        suspendActivity?: SuspendActivity;
       }
-    ).suspendAcitivity; // Access the searchString property from the same object
+    ).suspendActivity; // Access the searchString property from the same object
 
     // If SuspendActivity.SUSPEND_COMPANY, comment should exists
-    if (suspendAcitivity === SuspendActivity.SUSPEND_COMPANY && !comment) {
+    if (suspendActivity === SuspendActivity.SUSPEND_COMPANY && !comment) {
       return false;
     }
 
