@@ -220,7 +220,7 @@ export class ApplicationService {
    */
   @LogAsyncMethodExecution()
   async findAllApplications(
-    applicationStatus: ApplicationStatus[],
+    applicationStatus: Readonly<ApplicationStatus[]>,
     findAllApplicationsOptions?: {
       page: number;
       take: number;
@@ -289,7 +289,7 @@ export class ApplicationService {
   }
 
   private buildApplicationQuery(
-    applicationStatus: ApplicationStatus[],
+    applicationStatus: Readonly<ApplicationStatus[]>,
     companyId?: number,
     userGUID?: string,
   ): SelectQueryBuilder<Permit> {
@@ -915,7 +915,7 @@ export class ApplicationService {
   async deleteApplicationInProgress(
     applicationIds: string[],
     deletionStatus: ApplicationStatus,
-    applicationStatus: ApplicationStatus[],
+    applicationStatus: Readonly<ApplicationStatus[]>,
     companyId: number,
     currentUser: IUserJWT,
     userGuid?: string,

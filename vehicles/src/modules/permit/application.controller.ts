@@ -116,7 +116,7 @@ export class ApplicationController {
       UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup
         ? currentUser.userGUID
         : null;
-    const applicationStatus: ApplicationStatus[] =
+    const applicationStatus: Readonly<ApplicationStatus[]> =
       idirUserAuthGroupList.includes(
         currentUser.orbcUserAuthGroup as UserAuthGroup,
       )
@@ -239,7 +239,7 @@ export class ApplicationController {
       UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup
         ? currentUser.userGUID
         : null;
-    const applicationStatus: ApplicationStatus[] =
+    const applicationStatus: Readonly<ApplicationStatus[]> =
       idirUserAuthGroupList.includes(
         currentUser.orbcUserAuthGroup as UserAuthGroup,
       )
