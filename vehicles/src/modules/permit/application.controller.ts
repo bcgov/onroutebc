@@ -43,10 +43,7 @@ import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response
 import { GetApplicationQueryParamsDto } from './dto/request/queryParam/getApplication.query-params.dto';
 import { DeleteApplicationDto } from './dto/request/delete-application.dto';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
-import {
-  getActiveApplicationStatus,
-  getInActiveApplicationStatus,
-} from 'src/common/helper/application.status.helper';
+import { getActiveApplicationStatus } from 'src/common/helper/application.status.helper';
 
 @ApiBearerAuth()
 @ApiTags('Permit Application')
@@ -128,7 +125,8 @@ export class ApplicationController {
         : null;
     const applicationStatus: Readonly<ApplicationStatus[]> =
       getActiveApplicationStatus(currentUser);
-    return this.applicationService.findAllApplications(applicationStatus, {
+    return this.applicationService.findAllApplications({
+      applicationStatus: applicationStatus,
       page: getApplicationQueryParamsDto.page,
       take: getApplicationQueryParamsDto.take,
       orderBy: getApplicationQueryParamsDto.orderBy,
@@ -260,17 +258,9 @@ export class ApplicationController {
       UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup
         ? currentUser.userGUID
         : null;
-    const applicationStatus: Readonly<ApplicationStatus[]> =
-      getActiveApplicationStatus(currentUser);
-
-    const deletionStatus: ApplicationStatus =
-      getInActiveApplicationStatus(currentUser);
-
     const deleteResult: ResultDto =
       await this.applicationService.deleteApplicationInProgress(
         deleteApplicationDto.applications,
-        deletionStatus,
-        applicationStatus,
         deleteApplicationDto.companyId,
         currentUser,
         userGuid,

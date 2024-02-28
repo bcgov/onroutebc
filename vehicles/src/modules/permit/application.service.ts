@@ -11,7 +11,11 @@ import {
   forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ApplicationStatus } from 'src/common/enum/application-status.enum';
+import {
+  ApplicationStatus,
+  CVCLIENT_INACTIVE_APPLICATION_STATUS,
+  IDIR_INACTIVE_APPLICATION_STATUS,
+} from 'src/common/enum/application-status.enum';
 import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import { CreateApplicationDto } from './dto/request/create-application.dto';
 import { ReadApplicationDto } from './dto/response/read-application.dto';
@@ -62,6 +66,11 @@ import * as constants from '../../common/constants/api.constant';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import { PageMetaDto } from 'src/common/dto/paginate/page-meta';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
+import { getActiveApplicationStatus } from 'src/common/helper/application.status.helper';
+import {
+  UserAuthGroup,
+  idirUserAuthGroupList,
+} from 'src/common/enum/user-auth-group.enum';
 
 @Injectable()
 export class ApplicationService {
@@ -219,19 +228,17 @@ export class ApplicationService {
    * @param userGUID - Unique identifier for the user. If provided, the query
    */
   @LogAsyncMethodExecution()
-  async findAllApplications(
-    applicationStatus: Readonly<ApplicationStatus[]>,
-    findAllApplicationsOptions?: {
-      page: number;
-      take: number;
-      orderBy?: string;
-      companyId?: number;
-      userGUID?: string;
-    },
-  ): Promise<PaginationDto<ReadApplicationDto>> {
+  async findAllApplications(findAllApplicationsOptions?: {
+    applicationStatus: Readonly<ApplicationStatus[]>;
+    page: number;
+    take: number;
+    orderBy?: string;
+    companyId?: number;
+    userGUID?: string;
+  }): Promise<PaginationDto<ReadApplicationDto>> {
     // Construct the base query to find applications
     const applicationsQB = this.buildApplicationQuery(
-      applicationStatus,
+      findAllApplicationsOptions.applicationStatus,
       findAllApplicationsOptions.companyId,
       findAllApplicationsOptions.userGUID,
     );
@@ -291,7 +298,7 @@ export class ApplicationService {
   }
 
   private buildApplicationQuery(
-    applicationStatus: Readonly<ApplicationStatus[]>,
+    applicationStatus: ReadonlyArray<ApplicationStatus>,
     companyId?: number,
     userGUID?: string,
   ): SelectQueryBuilder<Permit> {
@@ -916,17 +923,21 @@ export class ApplicationService {
   @LogAsyncMethodExecution()
   async deleteApplicationInProgress(
     applicationIds: string[],
-    deletionStatus: ApplicationStatus,
-    applicationStatus: Readonly<ApplicationStatus[]>,
     companyId: number,
     currentUser: IUserJWT,
     userGuid?: string,
   ): Promise<ResultDto> {
+    const applicationStatus: ReadonlyArray<ApplicationStatus> =
+      getActiveApplicationStatus(currentUser);
     let updateQuery = this.permitRepository
       .createQueryBuilder()
       .update()
       .set({
-        permitStatus: deletionStatus,
+        permitStatus: idirUserAuthGroupList.includes(
+          currentUser.orbcUserAuthGroup as UserAuthGroup,
+        )
+          ? IDIR_INACTIVE_APPLICATION_STATUS
+          : CVCLIENT_INACTIVE_APPLICATION_STATUS,
         updatedUser: currentUser.userName,
         updatedDateTime: new Date(),
         updatedUserDirectory: currentUser.orbcUserDirectory,
