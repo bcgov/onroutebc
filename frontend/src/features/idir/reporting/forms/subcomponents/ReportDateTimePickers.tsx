@@ -10,7 +10,7 @@ import { RequiredOrNull } from "../../../../../common/types/common";
 import { PaymentAndRefundSummaryFormData } from "../../types/types";
 
 dayjs.extend(duration);
-const THIRTY_DAYS = 30;
+const THIRTY_ONE_DAYS = 31;
 const roundingBuffer = dayjs.duration(1, "hour").asDays();
 
 /**
@@ -34,7 +34,7 @@ export const ReportDateTimePickers = () => {
    */
   const validateToDateTime = useCallback(() => {
     const diff = dayjs.duration(toDateTime.diff(fromDateTime)).asDays();
-    if (diff <= 0 || diff > THIRTY_DAYS + roundingBuffer) {
+    if (diff <= 0 || diff > THIRTY_ONE_DAYS + roundingBuffer) {
       setError("toDateTime", {});
     } else {
       clearErrors("toDateTime");
@@ -115,7 +115,7 @@ export const ReportDateTimePickers = () => {
              *
              * Hence the decision to add 1 minute to 30 days, to make life easier for user.
              */
-            maxDateTime={fromDateTime.add(THIRTY_DAYS, "days").add(1, "minute")}
+            maxDateTime={fromDateTime.add(THIRTY_ONE_DAYS, "days").add(1, "minute")}
             views={["year", "month", "day", "hours", "minutes"]}
             slotProps={{
               textField: {

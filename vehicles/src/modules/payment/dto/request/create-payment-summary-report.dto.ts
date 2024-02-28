@@ -36,7 +36,7 @@ export class CreatePaymentSummaryReportDto {
   @IsDateString()
   @IsDateTimeAfter<CreatePaymentSummaryReportDto>('fromDateTime', {
     difference: {
-      maxDiff: 30,
+      maxDiff: 31,
       unit: 'days',
     },
     rounding: {
