@@ -240,7 +240,7 @@ export class ApplicationController {
     const deletionStatus: ApplicationStatus =
       getInActiveApplicationStatus(currentUser);
 
-    const deleteResult =
+    const deleteResult: ResultDto =
       await this.applicationService.deleteApplicationInProgress(
         deleteApplicationDto.applications,
         deletionStatus,
