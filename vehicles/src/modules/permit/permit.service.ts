@@ -63,7 +63,6 @@ import { PageMetaDto } from 'src/common/dto/paginate/page-meta';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import * as constants from '../../common/constants/api.constant';
 import { PermitApprovalSource } from '../../common/enum/permit-approval-source.enum';
-import { OrderBy } from '../../common/enum/orderBy.enum';
 import { PermitSearch } from '../../common/enum/permit-search.enum';
 import { paginate, sortQuery } from '../../common/helper/database.helper';
 import {
@@ -245,6 +244,9 @@ export class PermitService {
       findPermitOptions.userGUID,
     );
 
+    // total number of items
+    const totalItems = await permitsQB.getCount();
+
     // Mapping of frontend orderBy parameter to database columns
     const orderByMapping: Record<string, string> = {
       permitNumber: 'permit.permitNumber',
@@ -271,9 +273,6 @@ export class PermitService {
 
     // Get the paginated list of permits
     const permits = await permitsQB.getMany();
-
-    // total number of items
-    const totalItems = permits?.length;
 
     // Prepare pagination metadata
     const pageMetaDto = new PageMetaDto({
@@ -357,33 +356,45 @@ export class PermitService {
       switch (searchColumn) {
         case PermitSearch.PLATE:
           permitsQuery = permitsQuery.andWhere(
-            `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like '%${searchString}%'`,
+            `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like :searchString`,
+            { searchString: `%${searchString}%` },
           );
           break;
         case PermitSearch.PERMIT_NUMBER:
           permitsQuery = permitsQuery.andWhere(
             new Brackets((query) => {
               query
-                .where(`permit.permitNumber like '%${searchString}%'`)
-                .orWhere(
-                  `permit.migratedPermitNumber like '%${searchString}%'`,
-                );
+                .where(`permit.permitNumber like :searchString`, {
+                  searchString: `%${searchString}%`,
+                })
+                .orWhere(`permit.migratedPermitNumber like :searchString`, {
+                  searchString: `%${searchString}%`,
+                });
             }),
           );
           break;
         case PermitSearch.CLIENT_NUMBER:
           permitsQuery = permitsQuery.andWhere(
-            `JSON_VALUE(permitData.permitData, '$.clientNumber') like '%${searchString}%'`,
+            `JSON_VALUE(permitData.permitData, '$.clientNumber') like :searchString'`,
+            {
+              searchString: `%${searchString}%`,
+            },
           );
           break;
         case PermitSearch.COMPANY_NAME:
           permitsQuery = permitsQuery.andWhere(
-            `JSON_VALUE(permitData.permitData, '$.companyName') like '%${searchString}%'`,
+            `JSON_VALUE(permitData.permitData, '$.companyName') like :searchString`,
+            {
+              searchString: `%${searchString}%`,
+            },
           );
           break;
         case PermitSearch.APPLICATION_NUMBER:
           permitsQuery = permitsQuery.andWhere(
-            `permit.applicationNumber like '%${searchString}%'`,
+            `permit.applicationNumber like :searchString`,
+            {
+              searchString: `%${searchString}%`,
+            },
           );
           break;
       }
@@ -395,54 +406,22 @@ export class PermitService {
         new Brackets((query) => {
           query
             .where(
-              `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like '%${searchString}%'`,
+              `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like :searchString`,
+              {
+                searchString: `%${searchString}%`,
+              },
             )
             .orWhere(
-              `JSON_VALUE(permitData.permitData, '$.vehicleDetails.unitNumber') like '%${searchString}%'`,
+              `JSON_VALUE(permitData.permitData, '$.vehicleDetails.unitNumber') like :searchString`,
+              {
+                searchString: `%${searchString}%`,
+              },
             );
         }),
       );
     }
 
     return permitsQuery;
-  }
-
-  private sortPermits(
-    permits: SelectQueryBuilder<Permit>,
-    orderBy?: string,
-  ): SelectQueryBuilder<Permit> {
-    if (!orderBy) {
-      return permits;
-    }
-
-    const orderByList = orderBy?.split(',') || [];
-
-    orderByList.forEach((orderByVal, index) => {
-      const [orderByKey, sortDirection] = orderByVal?.split(':') || [];
-
-      const orderByMapping: Record<string, string> = {
-        permitNumber: 'permit.permitNumber',
-        permitType: 'permit.permitType',
-        startDate: 'permitData.startDate',
-        expiryDate: 'permitData.expiryDate',
-        unitNumber: 'permitData.unitNumber',
-        plate: 'permitData.plate',
-        applicant: 'permitData.applicant',
-      };
-
-      const orderByValue = orderByMapping[orderByKey];
-
-      if (orderByValue) {
-        const sortDirectionVal =
-          sortDirection === OrderBy.ASCENDING.valueOf() ? 'ASC' : 'DESC';
-        if (index === 0) {
-          permits.orderBy(orderByValue, sortDirectionVal);
-        } else {
-          permits.addOrderBy(orderByValue, sortDirectionVal);
-        }
-      }
-    });
-    return permits;
   }
 
   private async mapEntitiesToReadPermitDto(
