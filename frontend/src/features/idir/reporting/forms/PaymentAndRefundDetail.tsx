@@ -102,7 +102,7 @@ export const PaymentAndRefundDetail = () => {
     reValidateMode: "onBlur",
   });
 
-  const { watch, setValue } = formMethods;
+  const { watch, setValue, handleSubmit } = formMethods;
 
   const issuedBy = watch("issuedBy");
   const fromDateTime = watch("fromDateTime");
@@ -260,7 +260,7 @@ export const PaymentAndRefundDetail = () => {
                   variant="contained"
                   color="primary"
                   disabled={issuedBy.length === 0}
-                  onClick={onClickViewReport}
+                  onClick={handleSubmit(onClickViewReport)}
                 >
                   View Report
                 </Button>
