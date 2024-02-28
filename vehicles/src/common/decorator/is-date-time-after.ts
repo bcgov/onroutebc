@@ -1,7 +1,5 @@
 import { ValidationOptions, registerDecorator } from 'class-validator';
-import {
-  DateRangeConstraint,
-} from '../constraint/date-range.constraint';
+import { DateRangeConstraint } from '../constraint/date-range.constraint';
 import { MaxDifferenceType } from '../interface/duration-difference.interface';
 
 /**
