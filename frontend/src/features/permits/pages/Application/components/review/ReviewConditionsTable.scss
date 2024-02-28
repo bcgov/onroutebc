@@ -17,9 +17,10 @@
       border: 0;
     }
 
-    .checkbox {
+    .checkbox.checkbox--readonly {
       padding: 0;
       margin-right: 0.5em;
+      color: $disabled-colour;
     }
   }
 }

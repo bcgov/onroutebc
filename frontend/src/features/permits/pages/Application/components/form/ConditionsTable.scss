@@ -30,9 +30,7 @@
     }
   }
 
-  & &__checkbox {
-    &--disabled {
-      color: $disabled-colour;
-    }
+  & &__checkbox#{&}__checkbox--disabled {
+    color: $disabled-colour;
   }
 }

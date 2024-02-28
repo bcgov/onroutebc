@@ -43,7 +43,7 @@ export const ReviewConditionsTable = ({
               >
                 <TableCell component="td" scope="row">
                   <Checkbox
-                    className="checkbox"
+                    className="checkbox checkbox--readonly"
                     key={row.condition}
                     checked={true}
                     disabled={true}
