@@ -1,8 +1,8 @@
 import { ValidationOptions, registerDecorator } from 'class-validator';
 import {
   DateRangeConstraint,
-  MaxDifferenceType,
 } from '../constraint/date-range.constraint';
+import { MaxDifferenceType } from '../interface/duration-difference.interface';
 
 /**
  * Decorator that validates if a date time property is after

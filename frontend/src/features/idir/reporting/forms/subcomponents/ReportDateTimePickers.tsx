@@ -5,11 +5,13 @@ import dayjs, { Dayjs } from "dayjs";
 import duration from "dayjs/plugin/duration";
 import { useFormContext } from "react-hook-form";
 
-import { PaymentAndRefundSummaryFormData } from "../../types/types";
+import { useCallback, useEffect } from "react";
 import { RequiredOrNull } from "../../../../../common/types/common";
+import { PaymentAndRefundSummaryFormData } from "../../types/types";
 
 dayjs.extend(duration);
 const THIRTY_DAYS = 30;
+const roundingBuffer = dayjs.duration(1, "hour").asDays();
 
 /**
  * The date time pickers for reports.
@@ -21,6 +23,28 @@ export const ReportDateTimePickers = () => {
   const issuedBy = watch("issuedBy");
   const fromDateTime = watch("fromDateTime");
   const toDateTime = watch("toDateTime");
+
+  /**
+   * Validates the 'toDateTime' field by comparing it with 'fromDateTime'.
+   * This function checks if the difference between 'toDateTime' and 'fromDateTime'
+   * falls within a valid range. The valid range is greater than 0 days and up to 30 days
+   * plus a rounding buffer of 1 hour represented in days. If the difference is outside
+   * this valid range, an error is set for 'toDateTime'. If the difference is within the
+   * valid range, any existing error for 'toDateTime' is cleared.
+   */
+  const validateToDateTime = useCallback(() => {
+    const diff = dayjs.duration(toDateTime.diff(fromDateTime)).asDays();
+    if (diff <= 0 || diff > THIRTY_DAYS + roundingBuffer) {
+      setError("toDateTime", {});
+    } else {
+      clearErrors("toDateTime");
+    }
+  }, [fromDateTime, toDateTime]);
+
+  useEffect(() => {
+    validateToDateTime();
+  }, [fromDateTime, toDateTime]);
+
   return (
     <>
       <FormControl
@@ -50,14 +74,6 @@ export const ReportDateTimePickers = () => {
             }}
             onChange={(value: RequiredOrNull<Dayjs>) => {
               setValue("fromDateTime", value as Dayjs);
-              const diff = dayjs.duration(toDateTime.diff(value)).asDays();
-              if (diff <= 0 || Math.round(diff) > THIRTY_DAYS) {
-                setError("toDateTime", {
-                  message: "To date time must be after From date time.",
-                });
-              } else {
-                clearErrors("toDateTime");
-              }
             }}
             disabled={issuedBy.length === 0}
             views={["year", "month", "day", "hours", "minutes"]}
@@ -82,13 +98,6 @@ export const ReportDateTimePickers = () => {
             disabled={issuedBy.length === 0}
             onChange={(value: RequiredOrNull<Dayjs>) => {
               setValue("toDateTime", value as Dayjs);
-              const diff = dayjs
-                .duration((value as Dayjs).diff(fromDateTime))
-                .as("days");
-
-              if (Math.round(diff) <= THIRTY_DAYS && diff > 0) {
-                clearErrors("toDateTime");
-              }
             }}
             format="YYYY/MM/DD hh:mm A"
             value={toDateTime}
@@ -106,7 +115,7 @@ export const ReportDateTimePickers = () => {
              *
              * Hence the decision to add 1 minute to 30 days, to make life easier for user.
              */
-            maxDateTime={fromDateTime.add(30, "days").add(1, "minute")}
+            maxDateTime={fromDateTime.add(THIRTY_DAYS, "days").add(1, "minute")}
             views={["year", "month", "day", "hours", "minutes"]}
             slotProps={{
               textField: {
