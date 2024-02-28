@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { FormControl, FormLabel } from "@mui/material";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -94,6 +93,19 @@ export const ReportDateTimePickers = () => {
             format="YYYY/MM/DD hh:mm A"
             value={toDateTime}
             minDate={fromDateTime}
+            /**
+             * In the scenario where a user wants to select a 30 day window,
+             * if the fromDateTime starts at 9:00PM Jan 1, then by default,
+             * the max toDateTime could be 8:59 PM Jan 30.
+             * However, forcing the user to pick 8:59 PM in the date time picker
+             * is an annoyance to them. Instead, we allow them an additional minute so that
+             * 9:00 PM is the hard limit. This way, they just have to select the date
+             * and can ignore the time if they choose to.
+             *
+             * The reports API account for a rounding value which allows this buffer.
+             *
+             * Hence the decision to add 1 minute to 30 days, to make life easier for user.
+             */
             maxDateTime={fromDateTime.add(30, "days").add(1, "minute")}
             views={["year", "month", "day", "hours", "minutes"]}
             slotProps={{

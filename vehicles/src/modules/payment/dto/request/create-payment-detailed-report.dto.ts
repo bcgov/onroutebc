@@ -68,14 +68,19 @@ export class CreatePaymentDetailedReportDto {
     example: '2023-10-27T23:26:51.170Z',
     description:
       'Include records in the report till the given date and time.' +
-      'The difference between fromDateTime and toDateTime must not be' +
-      ' more than 30 days.',
+      'The toDateTime must be after fromDateTime and the difference between' +
+      ' fromDateTime and toDateTime must not be more than 30 days.',
   })
   @IsDateString()
   @IsDateTimeAfter<CreatePaymentDetailedReportDto>('fromDateTime', {
-    maxDiff: 30,
-    unit: 'days',
-    isApproximate: true,
+    difference: {
+      maxDiff: 30,
+      unit: 'days',
+    },
+    rounding: {
+      maxDiff: 1,
+      unit: 'hour',
+    },
   })
   toDateTime: string;
 

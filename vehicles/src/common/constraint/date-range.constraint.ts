@@ -3,31 +3,8 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { DurationUnitType } from 'dayjs/plugin/duration';
-import { differenceBetween } from '../helper/date-time.helper';
-
-/**
- * The type to define values for a max allowable difference between two datetimes.
- */
-export type MaxDifferenceType = {
-  /**
-   * The unit of comparison.
-   */
-  unit: DurationUnitType;
-  /**
-   * The maximum allowable difference.
-   */
-  maxDiff: number;
-  /**
-   * Boolean flag to allow approximate comparisons.
-   * This means, the calculated difference will be rounded to nearest
-   * integer.
-   * 
-   * Defaults to false.
-   */
-  isApproximate?: boolean;
-};
-
+import { differenceBetween, getDuration } from '../helper/date-time.helper';
+import { MaxDifferenceType } from '../interface/duration-difference.interface';
 /**
  * The constraint implementation for checking if a datetime is after
  * another datetime and within the allowable difference.
@@ -37,22 +14,30 @@ export class DateRangeConstraint<T> implements ValidatorConstraintInterface {
   validate(toDateTime: string, args: ValidationArguments) {
     // Some destructuring
     const { constraints, object } = args;
-    const [propertyToCompareAgainst, { maxDiff, unit, isApproximate }] =
-      constraints as [string, MaxDifferenceType];
+    const [
+      propertyToCompareAgainst,
+      {
+        difference: { maxDiff, unit },
+        rounding,
+      },
+    ] = constraints as [string, MaxDifferenceType];
     const fromDateTime = (object as T)[propertyToCompareAgainst] as string;
 
     const difference = differenceBetween(fromDateTime, toDateTime, unit);
-    if (isApproximate) {
-      return difference > 0 && Math.round(difference) <= maxDiff;
-    }
-    return difference > 0 && difference <= maxDiff;
+
+    // Transform the rounding duration to a unit specified by difference
+    // to allow direct comparison.
+    const roundingDuration = getDuration(rounding).as(unit);
+    return difference > 0 && difference <= maxDiff + roundingDuration;
   }
 
   defaultMessage({ property, constraints }: ValidationArguments) {
-    const [propertyToCompareAgainst, { maxDiff, unit }] = constraints as [
-      string,
-      MaxDifferenceType,
-    ];
+    const [
+      propertyToCompareAgainst,
+      {
+        difference: { maxDiff, unit },
+      },
+    ] = constraints as [string, MaxDifferenceType];
     return (
       `${property} must be after ${propertyToCompareAgainst}.` +
       `Max difference allowed is ${maxDiff} ${unit}.`
