@@ -36,7 +36,7 @@ export const PaymentAndRefundSummary = () => {
     reValidateMode: "onBlur",
   });
 
-  const { watch } = formMethods;
+  const { watch, handleSubmit } = formMethods;
 
   const issuedBy = watch("issuedBy");
   const fromDateTime = watch("fromDateTime");
@@ -104,7 +104,7 @@ export const PaymentAndRefundSummary = () => {
                 aria-label="View Report"
                 variant="contained"
                 color="primary"
-                onClick={onClickViewReport}
+                onClick={handleSubmit(onClickViewReport)}
               >
                 View Report
               </Button>
