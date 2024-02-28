@@ -233,7 +233,8 @@ export class ApplicationService {
       findAllApplicationsOptions.userGUID,
     );
 
-    const countApplicationsQB = new SelectQueryBuilder(applicationsQB);
+    // total number of items
+    const totalItems = await applicationsQB.getCount();
 
     // Mapping of frontend orderBy parameter to database columns
     const orderByMapping: Record<string, string> = {
@@ -265,9 +266,6 @@ export class ApplicationService {
 
     // Get the paginated list of permits
     const applications = await applicationsQB.getMany();
-
-    // total number of items
-    const totalItems = await countApplicationsQB.getCount();
 
     // Prepare pagination metadata
     const pageMetaDto = new PageMetaDto({

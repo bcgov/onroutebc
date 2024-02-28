@@ -92,6 +92,11 @@ export const createQueryBuilderMock = (
     orderBy: jest.fn().mockReturnThis(),
     take: jest.fn().mockReturnThis(),
     skip: jest.fn().mockReturnThis(),
+    getCount: customGetMany
+      ? customGetMany?.length
+      : jest.fn().mockImplementation(() => {
+          return filteredList?.length;
+        }),
     getOne: customGetOne
       ? customGetOne
       : jest.fn().mockImplementation(() => {
