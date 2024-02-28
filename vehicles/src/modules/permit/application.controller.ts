@@ -42,13 +42,11 @@ import {
 import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
 import { GetApplicationQueryParamsDto } from './dto/request/queryParam/getApplication.query-params.dto';
 import { DeleteApplicationDto } from './dto/request/delete-application.dto';
+import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import {
-  ApplicationStatus,
-  cvClientAIPStatus,
-  deleteCvClientAIP,
-  deleteIdirAIP,
-  idirUserAIPStatus,
-} from 'src/common/enum/application-status.enum';
+  getActiveApplicationStatus,
+  getInActiveApplicationStatus,
+} from 'src/common/helper/application.status.helper';
 
 @ApiBearerAuth()
 @ApiTags('Permit Application')
@@ -117,11 +115,7 @@ export class ApplicationController {
         ? currentUser.userGUID
         : null;
     const applicationStatus: Readonly<ApplicationStatus[]> =
-      idirUserAuthGroupList.includes(
-        currentUser.orbcUserAuthGroup as UserAuthGroup,
-      )
-        ? idirUserAIPStatus
-        : cvClientAIPStatus;
+      getActiveApplicationStatus(currentUser);
     return this.applicationService.findAllApplications(applicationStatus, {
       page: getApplicationQueryParamsDto.page,
       take: getApplicationQueryParamsDto.take,
@@ -241,17 +235,10 @@ export class ApplicationController {
         ? currentUser.userGUID
         : null;
     const applicationStatus: Readonly<ApplicationStatus[]> =
-      idirUserAuthGroupList.includes(
-        currentUser.orbcUserAuthGroup as UserAuthGroup,
-      )
-        ? idirUserAIPStatus
-        : cvClientAIPStatus;
+      getActiveApplicationStatus(currentUser);
 
-    const deletionStatus: ApplicationStatus = idirUserAuthGroupList.includes(
-      currentUser.orbcUserAuthGroup as UserAuthGroup,
-    )
-      ? deleteIdirAIP
-      : deleteCvClientAIP;
+    const deletionStatus: ApplicationStatus =
+      getInActiveApplicationStatus(currentUser);
 
     const deleteResult =
       await this.applicationService.deleteApplicationInProgress(
