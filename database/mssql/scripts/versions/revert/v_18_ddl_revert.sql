@@ -15,7 +15,7 @@ IF @@ERROR <> 0 SET NOEXEC ON
 GO
 
 DECLARE @VersionDescription VARCHAR(255)
-SET @VersionDescription = 'Reverting addition of user status to company user table'
+SET @VersionDescription = 'Reverting addition of deleted status to permit status table'
 
 INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (17, @VersionDescription, getutcdate())
 IF @@ERROR <> 0 SET NOEXEC ON
