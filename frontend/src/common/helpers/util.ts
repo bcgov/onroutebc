@@ -250,3 +250,30 @@ export const stringifyOrderBy = (sortArray: SortingConfig[]): string => {
     }) // Output of map function: ["column1:DESC","column2:ASC"]
     .join(","); // Output of join: "column1:DESC,column2:ASC"
 };
+
+/**
+ * Sets a redirect URI in the session storage if valid.
+ *
+ * This function checks if a 'r' query parameter exists in the current window location URL,
+ * parses it, and if it's a valid URL belonging to the same hostname, stores it in the session storage.
+ * This is useful for post-login redirections.
+ *
+ * @returns Nothing is explicitly returned, but may modify session storage.
+ *
+ */
+export const setRedirectInSession = (redirectUri: string) => {
+  if (redirectUri) {
+    try {
+      const url = new URL(redirectUri);
+      // Confirm that the URL is not trying to redirect elsewhere.
+      if (location.hostname === url.hostname) {
+        sessionStorage.setItem(
+          "onrouteBC.postLogin.redirect",
+          url.pathname + url.search, // Save only the subpath and params.
+        );
+      }
+    } catch (error) {
+      console.log("Unable to parse redirect URL:", error);
+    }
+  }
+};
