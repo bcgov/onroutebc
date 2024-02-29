@@ -208,7 +208,7 @@ export const httpPUTRequest = (url: string, data: any) => {
  * @param data The request payload.
  * @returns A Promise<Response> with the response from the API.
  */
-export const httpDELETERequest = (url: string, data: any) => {
+export const httpDELETERequest = (url: string, data?: any) => {
   return axios.delete(url, {
     headers: {
       Authorization: getAccessToken(),
