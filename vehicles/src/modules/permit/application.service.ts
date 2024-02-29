@@ -2,7 +2,6 @@ import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import {
   BadRequestException,
-  ForbiddenException,
   HttpException,
   Inject,
   Injectable,
@@ -12,7 +11,11 @@ import {
   forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ApplicationStatus } from 'src/common/enum/application-status.enum';
+import {
+  ApplicationStatus,
+  CVCLIENT_INACTIVE_APPLICATION_STATUS,
+  IDIR_INACTIVE_APPLICATION_STATUS,
+} from 'src/common/enum/application-status.enum';
 import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import { CreateApplicationDto } from './dto/request/create-application.dto';
 import { ReadApplicationDto } from './dto/response/read-application.dto';
@@ -63,6 +66,11 @@ import * as constants from '../../common/constants/api.constant';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import { PageMetaDto } from 'src/common/dto/paginate/page-meta';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
+import { getActiveApplicationStatus } from 'src/common/helper/application.status.helper';
+import {
+  UserAuthGroup,
+  idirUserAuthGroupList,
+} from 'src/common/enum/user-auth-group.enum';
 
 @Injectable()
 export class ApplicationService {
@@ -221,6 +229,7 @@ export class ApplicationService {
    */
   @LogAsyncMethodExecution()
   async findAllApplications(findAllApplicationsOptions?: {
+    applicationStatus: Readonly<ApplicationStatus[]>;
     page: number;
     take: number;
     orderBy?: string;
@@ -229,6 +238,7 @@ export class ApplicationService {
   }): Promise<PaginationDto<ReadApplicationDto>> {
     // Construct the base query to find applications
     const applicationsQB = this.buildApplicationQuery(
+      findAllApplicationsOptions.applicationStatus,
       findAllApplicationsOptions.companyId,
       findAllApplicationsOptions.userGUID,
     );
@@ -288,6 +298,7 @@ export class ApplicationService {
   }
 
   private buildApplicationQuery(
+    applicationStatus: ReadonlyArray<ApplicationStatus>,
     companyId?: number,
     userGUID?: string,
   ): SelectQueryBuilder<Permit> {
@@ -303,13 +314,11 @@ export class ApplicationService {
       });
     }
 
+    //Filter by application status
     permitsQuery = permitsQuery.andWhere(
       'permit.permitStatus IN (:...statuses)',
       {
-        statuses: [
-          ApplicationStatus.IN_PROGRESS,
-          ApplicationStatus.WAITING_PAYMENT,
-        ],
+        statuses: applicationStatus,
       },
     );
 
@@ -379,78 +388,6 @@ export class ApplicationService {
       Permit,
       ReadApplicationDto,
     );
-  }
-
-  /**
-   * Update status of applications
-   * @param applicationIds array of applications ids to be updated. ex ['1','2']
-   * @param applicationStatus application status to be set to this values. And
-   * can be picked from enum ApplicationStatus i.e. allowed status for an application.
-   *
-   * Assumption has been made that @param applicationIds length > 1 is only applicable for bulk delete.
-   * which means move all the applications to Cancelled status. For every other status length will be one.
-   **/
-  @LogAsyncMethodExecution()
-  async updateApplicationStatus(
-    applicationIds: string[],
-    applicationStatus: ApplicationStatus,
-    currentUser: IUserJWT,
-  ): Promise<ResultDto> {
-    let permitApprovalSource: PermitApprovalSourceEnum = null;
-    if (applicationIds.length === 1) {
-      if (applicationStatus === ApplicationStatus.ISSUED)
-        throw new ForbiddenException(
-          'Status Change to ISSUE permit is prohibited on this endpoint.',
-        );
-      else if (
-        applicationStatus === ApplicationStatus.APPROVED ||
-        applicationStatus === ApplicationStatus.AUTO_APPROVED
-      ) {
-        if (currentUser.identity_provider == IDP.IDIR)
-          permitApprovalSource = PermitApprovalSourceEnum.PPC;
-        else if (currentUser.identity_provider == IDP.BCEID)
-          permitApprovalSource = PermitApprovalSourceEnum.AUTO;
-      }
-    } else if (
-      applicationIds.length > 1 &&
-      applicationStatus != ApplicationStatus.CANCELLED
-    ) {
-      throw new ForbiddenException(
-        'Bulk status update is only allowed for Cancellation.',
-      );
-    }
-    const updateResult = await this.permitRepository
-      .createQueryBuilder()
-      .update()
-      .set({
-        permitStatus: applicationStatus,
-        ...(permitApprovalSource && {
-          permitApprovalSource: permitApprovalSource,
-        }),
-        updatedUser: currentUser.userName,
-        updatedDateTime: new Date(),
-        updatedUserDirectory: currentUser.orbcUserDirectory,
-        updatedUserGuid: currentUser.userGUID,
-      })
-      .whereInIds(applicationIds)
-      .returning(['permitId'])
-      .execute();
-
-    const updatedApplications = Array.from(
-      updateResult?.raw as [
-        {
-          ID: string;
-        },
-      ],
-    );
-    const success = updatedApplications?.map((permit) => permit.ID);
-    const failure = applicationIds?.filter((id) => !success?.includes(id));
-
-    const resultDto: ResultDto = {
-      success: success,
-      failure: failure,
-    };
-    return resultDto;
   }
 
   /**
@@ -969,5 +906,77 @@ export class ApplicationService {
       })
       .getCount();
     return count;
+  }
+
+  /**
+   * Removes all specified applications for a given company and user (optinal) from the database.
+   *
+   * This method first retrieves the existing applications by their IDs and company ID and userGUID (optinal). It then identifies
+   * which applications can be deleted (based on whether their IDs were found or not) and proceeds to delete
+   * them. Finally, it constructs a response detailing which deletions were successful and which were not.
+   *
+   * @param {string[]} applicationIds The IDs of the applications to be deleted.
+   * @param {number} companyId The ID of the company owning the applications.
+   * @param {number} userGUID The ID of the user owning the applications.
+   * @returns {Promise<ResultDto>} An object containing arrays of successful and failed deletions.
+   */
+  @LogAsyncMethodExecution()
+  async deleteApplicationInProgress(
+    applicationIds: string[],
+    companyId: number,
+    currentUser: IUserJWT,
+    userGuid?: string,
+  ): Promise<ResultDto> {
+    const applicationStatus: ReadonlyArray<ApplicationStatus> =
+      getActiveApplicationStatus(currentUser);
+    let updateQuery = this.permitRepository
+      .createQueryBuilder()
+      .update()
+      .set({
+        permitStatus: idirUserAuthGroupList.includes(
+          currentUser.orbcUserAuthGroup as UserAuthGroup,
+        )
+          ? IDIR_INACTIVE_APPLICATION_STATUS
+          : CVCLIENT_INACTIVE_APPLICATION_STATUS,
+        updatedUser: currentUser.userName,
+        updatedDateTime: new Date(),
+        updatedUserDirectory: currentUser.orbcUserDirectory,
+        updatedUserGuid: currentUser.userGUID,
+      })
+      .whereInIds(applicationIds);
+    updateQuery = updateQuery.andWhere('companyId = :companyId', {
+      companyId: companyId,
+    });
+    updateQuery = updateQuery.andWhere(
+      'permitStatus IN (:...applicationStatus)',
+      {
+        applicationStatus: applicationStatus,
+      },
+    );
+    updateQuery = updateQuery.andWhere('permitNumber IS NULL');
+
+    if (userGuid) {
+      updateQuery = updateQuery.andWhere('userGuid = :userGuid', {
+        userGuid: userGuid,
+      });
+    }
+
+    updateQuery = updateQuery.returning(['permitId']);
+    const updateResult = await updateQuery.execute();
+    const updatedApplications = Array.from(
+      updateResult?.raw as [
+        {
+          ID: string;
+        },
+      ],
+    );
+    const success = updatedApplications?.map((permit) => permit.ID);
+    const failure = applicationIds?.filter((id) => !success?.includes(id));
+
+    const resultDto: ResultDto = {
+      success: success,
+      failure: failure,
+    };
+    return resultDto;
   }
 }

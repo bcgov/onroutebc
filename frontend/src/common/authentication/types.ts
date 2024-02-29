@@ -10,6 +10,8 @@ export type CompanyMetadata = {
   legalName: string;
   companyGUID?: string;
   alternateName?: string;
+  isSuspended?: boolean;
+  email?: string;
 };
 
 /**
