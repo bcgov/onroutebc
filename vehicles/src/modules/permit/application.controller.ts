@@ -249,6 +249,10 @@ export class ApplicationController {
       'Requires specific user roles or group memberships to execute.' +
       'Returns a list of deleted application id or throws exceptions for unauthorized access or operational failures.',
   })
+  @ApiOkResponse({
+    description: 'The object containing successful and failed deletions.',
+    type: ResultDto,
+  })
   async deleteApplications(
     @Req() request: Request,
     @Body() deleteApplicationDto: DeleteApplicationDto,
