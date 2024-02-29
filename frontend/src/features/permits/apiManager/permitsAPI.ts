@@ -1,6 +1,5 @@
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
 import { IssuePermitsResponse, Permit } from "../types/permit";
-import { PERMIT_STATUSES } from "../types/PermitStatus";
 import { PermitHistory } from "../types/PermitHistory";
 import { getPermitTypeName } from "../types/PermitType";
 import {
@@ -28,6 +27,7 @@ import {
   httpPUTRequest,
   httpPOSTRequest,
   httpGETRequestStream,
+  httpDELETERequest,
 } from "../../../common/apiManager/httpRequestHandler";
 
 import {
@@ -195,12 +195,12 @@ export const getApplicationByPermitId = async (
  */
 export const deleteApplications = async (applicationIds: Array<string>) => {
   const requestBody = {
-    applicationIds,
-    applicationStatus: PERMIT_STATUSES.CANCELLED,
+    applications: applicationIds,
+    companyId: Number(getCompanyIdFromSession()),
   };
 
-  return await httpPOSTRequest(
-    `${APPLICATIONS_API_ROUTES.STATUS}`,
+  return await httpDELETERequest(
+    `${APPLICATIONS_API_ROUTES.DELETE}`,
     replaceEmptyValuesWithNull(requestBody),
   );
 };
