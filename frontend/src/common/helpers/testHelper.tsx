@@ -12,7 +12,14 @@ const createTestQueryClient = () =>
     },
   });
 
-export function renderWithClient(ui: React.ReactElement) {
+/**
+ * Wrap components to be rendered for tests with QueryClient and routing capabilities.
+ * @param ui Component to be rendered for tests
+ * @returns A customized wrapper component that includes QueryClient and Router that prepares components to be rendered for tests
+ */
+export const renderForTests = (
+  ui: React.ReactElement,
+) => {
   const testQueryClient = createTestQueryClient();
   const { rerender, ...result } = render(
     <QueryClientProvider client={testQueryClient}>
@@ -28,14 +35,4 @@ export function renderWithClient(ui: React.ReactElement) {
         </QueryClientProvider>,
       ),
   };
-}
-
-export function createWrapper() {
-  const testQueryClient = createTestQueryClient();
-  // eslint-disable-next-line react/display-name
-  return ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={testQueryClient}>
-      <Router>{children}</Router>
-    </QueryClientProvider>
-  );
-}
+};

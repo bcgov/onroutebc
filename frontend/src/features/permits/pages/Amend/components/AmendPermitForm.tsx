@@ -3,12 +3,12 @@ import { FieldValues, FormProvider } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
 import "./AmendPermitForm.scss";
-import { TROS_PERMIT_DURATIONS } from "../../../constants/termOversizeConstants";
+import { PERMIT_DURATION_OPTIONS } from "../../../constants/constants";
 import { usePermitVehicleManagement } from "../../../hooks/usePermitVehicleManagement";
 import { useAmendPermit } from "../hooks/useAmendPermit";
 import { SnackBarContext } from "../../../../../App";
 import { AmendPermitContext } from "../context/AmendPermitContext";
-import { PermitForm } from "../../TermOversize/components/form/PermitForm";
+import { PermitForm } from "../../Application/components/form/PermitForm";
 import { Permit } from "../../../types/permit";
 import { useCompanyInfoDetailsQuery } from "../../../../manageProfile/apiManager/hooks";
 import { Breadcrumb } from "../../../../../common/components/breadcrumb/Breadcrumb";
@@ -209,7 +209,7 @@ export const AmendPermitForm = () => {
     30,
     permit?.permitData?.permitDuration,
   );
-  const durationOptions = TROS_PERMIT_DURATIONS.filter(
+  const durationOptions = PERMIT_DURATION_OPTIONS.filter(
     (duration) => duration.value <= permitOldDuration,
   );
 

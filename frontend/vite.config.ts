@@ -15,6 +15,13 @@ export default defineConfig({
     port: 3000,
     open: true,
   },
+  optimizeDeps: {
+    include: [
+      "@emotion/react",
+      "@emotion/styled",
+      "@mui/material/Tooltip"
+    ]
+  },
   plugins: [
     eslint(),
     react(),

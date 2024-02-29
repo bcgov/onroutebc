@@ -29,6 +29,7 @@ import { CreateProfileWizard } from "../features/wizard/CreateProfileWizard";
 import { UserInfoWizard } from "../features/wizard/UserInfoWizard";
 import * as routes from "./constants";
 import { IDIRCreateCompany } from "../features/idir/company/IDIRCreateCompany";
+import { CompanySuspended } from "../common/pages/CompanySuspended";
 
 export const AppRoutes = () => {
   return (
@@ -36,6 +37,10 @@ export const AppRoutes = () => {
       {/* Home and Error Routes */}
       {/* Home and Error routes do no have any constraints. */}
       <Route path={routes.HOME} element={<InitialLandingPage />} />
+      <Route
+        path={routes.ERROR_ROUTES.SUSPENDED}
+        element={<CompanySuspended />}
+      />
       <Route
         path={routes.ERROR_ROUTES.UNAUTHORIZED}
         element={<UniversalUnauthorized />}
@@ -188,16 +193,18 @@ export const AppRoutes = () => {
       </Route>
 
       <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
+        <Route
+          path={`${routes.APPLICATIONS_ROUTES.START_APPLICATION()}`}
+          element={
+            <ApplicationSteps
+              applicationStep={routes.APPLICATION_STEPS.DETAILS}
+            />
+          }
+        />
+      </Route>
+      <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
         <Route path={routes.APPLICATIONS_ROUTES.BASE}>
           <Route index={true} element={<PermitDashboard />} />
-          <Route
-            path={`${routes.APPLICATIONS_ROUTES.START_APPLICATION}`}
-            element={
-              <ApplicationSteps
-                applicationStep={routes.APPLICATION_STEPS.DETAILS}
-              />
-            }
-          />
           <Route path={`${routes.APPLICATIONS_ROUTES.DETAILS()}`}>
             <Route
               index={true}
