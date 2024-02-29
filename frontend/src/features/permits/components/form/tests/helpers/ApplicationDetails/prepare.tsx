@@ -4,7 +4,7 @@ import { Dayjs } from "dayjs";
 
 import { utcToLocalDayjs } from "../../../../../../../common/helpers/formatDate";
 import { MANAGE_PROFILE_API } from "../../../../../../manageProfile/apiManager/endpoints/endpoints";
-import { renderWithClient } from "../../../../../../../common/helpers/testHelper";
+import { renderForTests } from "../../../../../../../common/helpers/testHelper";
 import { ApplicationDetails } from "../../../ApplicationDetails";
 import { PERMIT_TYPES } from "../../../../../types/PermitType";
 
@@ -67,7 +67,7 @@ export const renderTestComponent = (
   createdDt?: Dayjs,
   updatedDt?: Dayjs,
 ) => {
-  return renderWithClient(
+  return renderForTests(
     <ApplicationDetails
       permitType={permitType}
       infoNumberType="application"

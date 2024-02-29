@@ -1,5 +1,6 @@
 import { factory, nullable, primaryKey } from "@mswjs/data";
 
+import { DEFAULT_PERMIT_TYPE } from "../../../../../types/PermitType";
 import {
   PowerUnit,
   Trailer,
@@ -7,9 +8,9 @@ import {
 } from "../../../../../../manageVehicles/types/Vehicle";
 
 import {
-  TROS_INELIGIBLE_POWERUNITS,
-  TROS_INELIGIBLE_TRAILERS,
-} from "../../../../../constants/termOversizeConstants";
+  getIneligiblePowerUnitSubtypes,
+  getIneligibleTrailerSubtypes,
+} from "../../../../../helpers/removeIneligibleVehicles";
 
 let powerUnitId = 1;
 let trailerId = 1;
@@ -111,7 +112,7 @@ export const getDefaultPowerUnitSubTypes = () => [
     type: "Power Unit Type C",
     description: "Power Unit Type C.",
   },
-  { ...TROS_INELIGIBLE_POWERUNITS[0] },
+  { ...getIneligiblePowerUnitSubtypes(DEFAULT_PERMIT_TYPE)[0] },
 ];
 
 export const getDefaultTrailerSubTypes = () => [
@@ -130,7 +131,7 @@ export const getDefaultTrailerSubTypes = () => [
     type: "Trailer Type C",
     description: "Trailer Type C.",
   },
-  { ...TROS_INELIGIBLE_TRAILERS[0] },
+  { ...getIneligibleTrailerSubtypes(DEFAULT_PERMIT_TYPE)[0] },
 ];
 
 export const createPowerUnit = (powerUnit: PowerUnit) => {

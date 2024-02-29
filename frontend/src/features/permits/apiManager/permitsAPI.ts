@@ -1,6 +1,5 @@
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
 import { IssuePermitsResponse, Permit } from "../types/permit";
-import { PERMIT_STATUSES } from "../types/PermitStatus";
 import { PermitHistory } from "../types/PermitHistory";
 import { getPermitTypeName } from "../types/PermitType";
 import {
@@ -28,6 +27,7 @@ import {
   httpPUTRequest,
   httpPOSTRequest,
   httpGETRequestStream,
+  httpDELETERequest,
 } from "../../../common/apiManager/httpRequestHandler";
 
 import {
@@ -57,35 +57,35 @@ import {
 } from "../pages/Void/types/VoidPermit";
 
 /**
- * Submits a new term oversize application.
- * @param termOversizePermit application data for term oversize permit
+ * Create a new application.
+ * @param application application data to be submitted
  * @returns response with created application data, or error if failed
  */
-export const submitTermOversize = async (termOversizePermit: Application) => {
+export const createApplication = async (application: Application) => {
   return await httpPOSTRequest(
     APPLICATIONS_API_ROUTES.CREATE,
     replaceEmptyValuesWithNull({
       // must convert application to ApplicationRequestData (dayjs fields to strings)
-      ...mapApplicationToCreateApplicationRequestData(termOversizePermit),
+      ...mapApplicationToCreateApplicationRequestData(application),
     }),
   );
 };
 
 /**
- * Updates an existing term oversize application.
- * @param termOversizePermit application data for term oversize permit
+ * Update an existing application.
+ * @param application application data
  * @param applicationNumber application number for the application to update
  * @returns response with updated application data, or error if failed
  */
-export const updateTermOversize = async (
-  termOversizePermit: Application,
+export const updateApplication = async (
+  application: Application,
   applicationNumber: string,
 ) => {
   return await httpPUTRequest(
     `${APPLICATIONS_API_ROUTES.UPDATE}/${applicationNumber}`,
     replaceEmptyValuesWithNull({
       // must convert application to ApplicationRequestData (dayjs fields to strings)
-      ...mapApplicationToUpdateApplicationRequestData(termOversizePermit),
+      ...mapApplicationToUpdateApplicationRequestData(application),
     }),
   );
 };
@@ -195,12 +195,12 @@ export const getApplicationByPermitId = async (
  */
 export const deleteApplications = async (applicationIds: Array<string>) => {
   const requestBody = {
-    applicationIds,
-    applicationStatus: PERMIT_STATUSES.CANCELLED,
+    applications: applicationIds,
+    companyId: Number(getCompanyIdFromSession()),
   };
 
-  return await httpPOSTRequest(
-    `${APPLICATIONS_API_ROUTES.STATUS}`,
+  return await httpDELETERequest(
+    `${APPLICATIONS_API_ROUTES.DELETE}`,
     replaceEmptyValuesWithNull(requestBody),
   );
 };
@@ -539,5 +539,5 @@ export const modifyAmendmentApplication = async ({
   application: Application;
   applicationNumber: string;
 }) => {
-  return await updateTermOversize(application, applicationNumber);
+  return await updateApplication(application, applicationNumber);
 };

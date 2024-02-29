@@ -120,3 +120,14 @@ export const hasPermitsActionFailed = (
   // At least some of the permits have succeeded or failed
   return filteredRes.failure.length > 0 || filteredRes.success.length === 0;
 };
+
+/**
+ * Check if the permit id is numeric.
+ * @param permitId string that represents a permit id, if it exists
+ * @returns Whether or not the provided permit id is numeric.
+ */
+export const isPermitIdNumeric = (permitId?: Nullable<string>) => {
+  if (!permitId) return false;
+  if (permitId.trim() === "") return false;
+  return !isNaN(Number(permitId.trim()));
+};

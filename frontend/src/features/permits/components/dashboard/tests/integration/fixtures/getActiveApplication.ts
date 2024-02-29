@@ -4,7 +4,7 @@ import { ApplicationRequestData } from "../../../../../types/application";
 import { getDefaultUserDetails } from "./getUserDetails";
 import { getDefaultPowerUnits } from "./getVehicleInfo";
 import { getDefaultCompanyInfo } from "./getCompanyInfo";
-import { TROS_COMMODITIES } from "../../../../../constants/termOversizeConstants";
+import { TROS_COMMODITIES } from "../../../../../constants/tros";
 import { PERMIT_TYPES } from "../../../../../types/PermitType";
 import { getExpiryDate } from "../../../../../helpers/permitState";
 import { VEHICLE_TYPES } from "../../../../../../manageVehicles/types/Vehicle";
