@@ -14,6 +14,12 @@ GO
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
 
+-- Note that we are not revering the change to add the new DELETED
+-- status to the permit status type table, due to the possibility of
+-- breaking FK constraints with any permits that had changed in the
+-- meantime. This permit type remaining after the revert is a 
+-- reasonable / acceptable outcome of the revert.
+
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Reverting addition of deleted status to permit status table'
 
