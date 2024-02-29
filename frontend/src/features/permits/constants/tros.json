@@ -72,6 +72,11 @@
         "description": "LCV vehicles for approved carriers and routes only."
       },
       {
+        "typeCode": "MUNFITR",
+        "type": "Municipal Fire Trucks",
+        "description": ""
+      },
+      {
         "typeCode": "OGSERVC",
         "type": "Oil and Gas - Service Rigs",
         "description": "Oil and Gas - Service Rigs are fixed equipment oilfield service trucks and includes rathole augers only equiped with heavy front projected crane (must exceed 14,000 kg tare weight)."
