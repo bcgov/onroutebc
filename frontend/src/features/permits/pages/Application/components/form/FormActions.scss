@@ -1,0 +1,119 @@
+@import "../../../../../../themes/orbcStyles";
+
+.application-form-actions {
+  position: fixed;
+  bottom: 46px;
+  left: 0;
+  right: 0;
+  background-color: $bc-white;
+  display: flex;
+  align-items: center;
+  padding: 2rem 8.551vw;
+  justify-content: space-between;
+  border-top: 1px solid $bc-text-box-border-grey;
+  z-index: 2;
+
+  & &__section {
+    display: flex;
+    align-items: center;
+
+    .scroll-btn {
+      position: fixed;
+      bottom: 12.5rem;
+      right: 1.25rem;
+    }
+  }
+
+  & &__btn {
+    position: relative;
+
+    &--leave {
+      background-color: $bc-background-light-grey;
+      padding: 0.875rem 1rem;
+      box-shadow: none;
+      margin-left: 25rem;
+
+      &:hover {
+        background-color: $bc-background-light-grey;
+        border: 2px solid $bc-text-box-border-grey;
+        box-shadow: none;
+      }
+    }
+
+    &--cancel {
+      background-color: $bc-background-light-grey;
+      padding: 0.875rem 1rem;
+      box-shadow: none;
+
+      &:hover {
+        background-color: $bc-background-light-grey;
+        border: 2px solid $bc-text-box-border-grey;
+        box-shadow: none;
+      }
+    }
+
+    &--save {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      padding: 0.875rem 1rem;
+    }
+
+    &--continue {
+      margin-left: 1.5em;
+      margin-top: 0;
+      padding: 0.875rem 2rem;
+      font-weight: bold;
+      background-color: $bc-primary-blue;
+    }
+  }
+}
+
+@media (width < 1225px) {
+  .application-form-actions {
+    & &__btn {
+      &--leave {
+        margin-left: 0;
+      }
+    }
+  }
+}
+
+@media (width < 768px) {
+  .application-form-actions {
+    padding: 2rem 5.5rem;
+  }
+}
+
+@media (width < 576px) {
+  .application-form-actions {
+    flex-direction: column;
+    align-items: center;
+
+    & &__section {
+      flex-direction: column;
+      align-items: center;
+
+      .scroll-btn {
+        position: fixed;
+        bottom: 20.5rem;
+        right: 1.25rem;
+      }
+
+      &--main {
+        margin-top: 1em;
+      }
+    }
+
+    & &__btn {
+      &--continue {
+        margin-left: 0;
+        margin-top: 1em;
+      }
+
+      &--leave {
+        margin-left: 0;
+      }
+    }
+  }
+}

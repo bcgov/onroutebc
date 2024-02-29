@@ -57,35 +57,35 @@ import {
 } from "../pages/Void/types/VoidPermit";
 
 /**
- * Submits a new term oversize application.
- * @param termOversizePermit application data for term oversize permit
+ * Create a new application.
+ * @param application application data to be submitted
  * @returns response with created application data, or error if failed
  */
-export const submitTermOversize = async (termOversizePermit: Application) => {
+export const createApplication = async (application: Application) => {
   return await httpPOSTRequest(
     APPLICATIONS_API_ROUTES.CREATE,
     replaceEmptyValuesWithNull({
       // must convert application to ApplicationRequestData (dayjs fields to strings)
-      ...mapApplicationToCreateApplicationRequestData(termOversizePermit),
+      ...mapApplicationToCreateApplicationRequestData(application),
     }),
   );
 };
 
 /**
- * Updates an existing term oversize application.
- * @param termOversizePermit application data for term oversize permit
+ * Update an existing application.
+ * @param application application data
  * @param applicationNumber application number for the application to update
  * @returns response with updated application data, or error if failed
  */
-export const updateTermOversize = async (
-  termOversizePermit: Application,
+export const updateApplication = async (
+  application: Application,
   applicationNumber: string,
 ) => {
   return await httpPUTRequest(
     `${APPLICATIONS_API_ROUTES.UPDATE}/${applicationNumber}`,
     replaceEmptyValuesWithNull({
       // must convert application to ApplicationRequestData (dayjs fields to strings)
-      ...mapApplicationToUpdateApplicationRequestData(termOversizePermit),
+      ...mapApplicationToUpdateApplicationRequestData(application),
     }),
   );
 };
@@ -539,5 +539,5 @@ export const modifyAmendmentApplication = async ({
   application: Application;
   applicationNumber: string;
 }) => {
-  return await updateTermOversize(application, applicationNumber);
+  return await updateApplication(application, applicationNumber);
 };

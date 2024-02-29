@@ -1,6 +1,7 @@
 import React from "react";
+
 import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
-import { StartApplicationAction } from "../../pages/TermOversize/components/dashboard/StartApplicationAction";
+import { StartApplicationAction } from "../../pages/Application/components/dashboard/StartApplicationAction";
 import { ActivePermitList } from "../permit-list/ActivePermitList";
 import { ExpiredPermitList } from "../permit-list/ExpiredPermitList";
 import { ApplicationsInProgressList } from "../permit-list/ApplicationsInProgressList";
