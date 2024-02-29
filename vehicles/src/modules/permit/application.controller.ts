@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -16,6 +17,7 @@ import {
   ApiMethodNotAllowedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
@@ -27,7 +29,6 @@ import { Request } from 'express';
 import { ExceptionDto } from '../../common/exception/exception.dto';
 import { UpdateApplicationDto } from './dto/request/update-application.dto';
 import { DataNotFoundException } from 'src/common/exception/data-not-found.exception';
-import { UpdateApplicationStatusDto } from './dto/request/update-application-status.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
@@ -40,6 +41,9 @@ import {
 } from 'src/common/enum/user-auth-group.enum';
 import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
 import { GetApplicationQueryParamsDto } from './dto/request/queryParam/getApplication.query-params.dto';
+import { DeleteApplicationDto } from './dto/request/delete-application.dto';
+import { ApplicationStatus } from 'src/common/enum/application-status.enum';
+import { getActiveApplicationStatus } from 'src/common/helper/application.status.helper';
 
 @ApiBearerAuth()
 @ApiTags('Permit Application')
@@ -63,6 +67,11 @@ export class ApplicationController {
    * @param request
    * @param createApplication
    */
+  @ApiOperation({
+    summary: 'Create Permit Application',
+    description:
+      'Create permit application and return the same , enforcing authentication.',
+  })
   @ApiCreatedResponse({
     description: 'The Permit Application Resource',
     type: ReadApplicationDto,
@@ -84,6 +93,13 @@ export class ApplicationController {
    * @param userGUID
    * @param status
    */
+  @ApiOperation({
+    summary:
+      "Fetch All the Permit Application of PA or Company Based on Logged in User's Claim",
+    description:
+      'Fetch all permit application and return the same , enforcing authentication.' +
+      "If login user is PA then only fetch thier application else fetch all applications associated with logged in user's company. ",
+  })
   @ApiPaginatedResponse(ReadPermitDto)
   @Roles(Role.READ_PERMIT)
   @Get()
@@ -107,7 +123,10 @@ export class ApplicationController {
       UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup
         ? currentUser.userGUID
         : null;
+    const applicationStatus: Readonly<ApplicationStatus[]> =
+      getActiveApplicationStatus(currentUser);
     return this.applicationService.findAllApplications({
+      applicationStatus: applicationStatus,
       page: getApplicationQueryParamsDto.page,
       take: getApplicationQueryParamsDto.take,
       orderBy: getApplicationQueryParamsDto.orderBy,
@@ -124,6 +143,10 @@ export class ApplicationController {
    * @param permitId
    * @param companyId for authorization
    */
+  @ApiOperation({
+    summary: 'Fetch One Permit Application for Given Id',
+    description: 'Fetch One Permit Application for given id. ',
+  })
   @ApiOkResponse({
     description: 'The Permit Application Resource',
     type: ReadApplicationDto,
@@ -143,6 +166,10 @@ export class ApplicationController {
       : this.applicationService.findCurrentAmendmentApplication(permitId);
   }
 
+  @ApiOperation({
+    summary: 'Update Permit Application for Given Id',
+    description: 'Update Permit Application for given id. ',
+  })
   @ApiOkResponse({
     description: 'The Permit Application Resource',
     type: ReadApplicationDto,
@@ -168,34 +195,6 @@ export class ApplicationController {
   }
 
   /**
-   * Update application Data.
-   * @param request
-   * @param updateApplicationStatusDto
-   */
-  @ApiOkResponse({
-    description:
-      'The Permit Application Resource. Bulk staus updates are only allowed for Cancellation. Application/Permit Status change to ISSUE is prohibited on this endpoint.',
-    type: ResultDto,
-  })
-  @Roles(Role.WRITE_PERMIT)
-  @Post('status')
-  async updateApplicationStatus(
-    @Req() request: Request,
-    @Body() updateApplicationStatusDto: UpdateApplicationStatusDto,
-  ): Promise<ResultDto> {
-    const currentUser = request.user as IUserJWT; // TODO: consider security with passing JWT token to DMS microservice
-    const result = await this.applicationService.updateApplicationStatus(
-      updateApplicationStatusDto.applicationIds,
-      updateApplicationStatusDto.applicationStatus,
-      currentUser,
-    );
-    if (!result) {
-      throw new DataNotFoundException();
-    }
-    return result;
-  }
-
-  /**
    * A POST method defined with the @Post() decorator and a route of /:applicationId/issue
    * that issues a ermit for given @param applicationId..
    * @param request
@@ -203,6 +202,12 @@ export class ApplicationController {
    * @returns The id of new voided/revoked permit a in response object {@link ResultDto}
    *
    */
+  @ApiOperation({
+    summary: 'Update Permit Application Status to ISSUED for Given Id',
+    description:
+      'Update Permit Application status for given id and set it to ISSUED.' +
+      'Returns a list of updated application ids or throws exceptions for unauthorized access or operational failures.',
+  })
   @Roles(Role.WRITE_PERMIT)
   @Post('/issue')
   async issuePermit(
@@ -232,5 +237,37 @@ export class ApplicationController {
       issuePermitDto.applicationIds[0],
     );
     return result;
+  }
+
+  @Roles(Role.WRITE_PERMIT)
+  @Delete()
+  @ApiOperation({
+    summary:
+      'Delete application in progress associated with a company and user(optional)',
+    description:
+      'Allows deletion of one or more applications in progress associated with a given company ID, based on user GUIDs(user GUID needed only for CV clients). ' +
+      'Requires specific user roles or group memberships to execute.' +
+      'Returns a list of deleted application id or throws exceptions for unauthorized access or operational failures.',
+  })
+  async deleteApplications(
+    @Req() request: Request,
+    @Body() deleteApplicationDto: DeleteApplicationDto,
+  ): Promise<ResultDto> {
+    const currentUser = request.user as IUserJWT;
+    const userGuid =
+      UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup
+        ? currentUser.userGUID
+        : null;
+    const deleteResult: ResultDto =
+      await this.applicationService.deleteApplicationInProgress(
+        deleteApplicationDto.applications,
+        deleteApplicationDto.companyId,
+        currentUser,
+        userGuid,
+      );
+    if (deleteResult == null) {
+      throw new DataNotFoundException();
+    }
+    return deleteResult;
   }
 }
