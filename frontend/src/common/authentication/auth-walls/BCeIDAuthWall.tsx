@@ -40,8 +40,8 @@ export const BCeIDAuthWall = ({
     user: userFromToken,
   } = useAuth();
 
-  const { userRoles, companyId, isNewBCeIDUser } = useContext(OnRouteBCContext);
-
+  const { userRoles, companyId, isNewBCeIDUser } =
+    useContext(OnRouteBCContext);
   const userIDP = userFromToken?.profile?.identity_provider as string;
 
   const location = useLocation();
