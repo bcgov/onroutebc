@@ -17,6 +17,7 @@ import OnRouteBCContext from "../OnRouteBCContext";
 import { IDIRUserAuthGroupType, UserRolesType } from "../types";
 import { DoesUserHaveRole } from "../util";
 import { IDIRAuthWall } from "./IDIRAuthWall";
+import { setRedirectInSession } from "../../helpers/util";
 
 export const isIDIR = (identityProvider: string) =>
   identityProvider === IDPS.IDIR;
@@ -39,8 +40,7 @@ export const BCeIDAuthWall = ({
     user: userFromToken,
   } = useAuth();
 
-  const { userRoles, companyId, isNewBCeIDUser } =
-    useContext(OnRouteBCContext);
+  const { userRoles, companyId, isNewBCeIDUser } = useContext(OnRouteBCContext);
 
   const userIDP = userFromToken?.profile?.identity_provider as string;
 
@@ -55,10 +55,11 @@ export const BCeIDAuthWall = ({
    */
   useEffect(() => {
     if (!isAuthLoading && !isAuthenticated) {
+      setRedirectInSession(window.location.href);
       navigate({
         pathname: HOME,
         search: createSearchParams({
-          redirect: window.location.href,
+          r: window.location.href,
         }).toString(),
       });
     }
@@ -88,11 +89,13 @@ export const BCeIDAuthWall = ({
       if (companyId) {
         return <IDIRAuthWall allowedAuthGroups={allowedAuthGroups} />;
       } else {
-        return <Navigate
-          to={IDIR_ROUTES.WELCOME}
-          state={{ from: location }}
-          replace
-        />;
+        return (
+          <Navigate
+            to={IDIR_ROUTES.WELCOME}
+            state={{ from: location }}
+            replace
+          />
+        );
       }
     }
     if (!isIDIR(userIDP)) {
