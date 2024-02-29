@@ -99,7 +99,14 @@ export const LoginRedirect = () => {
     }
 
     if (isAuthenticated && !isPending) {
-      if (userFromToken?.profile?.identity_provider === IDPS.IDIR) {
+      const redirectURI = sessionStorage.getItem(
+        "onrouteBC.postLogin.redirect",
+      );
+      if (redirectURI) {
+        // Clean up sessionStorage of post login redirect link; we no longer need it.
+        sessionStorage.removeItem("onrouteBC.postLogin.redirect");
+        navigate(redirectURI);
+      } else if (userFromToken?.profile?.identity_provider === IDPS.IDIR) {
         const userContextData: Optional<IDIRUserContextType> =
           queryClient.getQueryData<IDIRUserContextType>(["userContext"]);
         if (userContextData?.user?.userGUID) {
