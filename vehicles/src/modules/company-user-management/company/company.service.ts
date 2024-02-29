@@ -446,6 +446,9 @@ export class CompanyService {
       );
     }
 
+    // total number of items
+    const totalItems = await companiesQB.getCount();
+
     // Object to map frontend orderBy parameters to actual database fields
     const orderByMapping: Record<string, string> = {
       companyId: 'company.companyId',
@@ -480,7 +483,6 @@ export class CompanyService {
     );
     // Map entities to DTOs for consistent response structure
 
-    const totalItems = companyData?.length;
     const pageMetaDto = new PageMetaDto({
       totalItems,
       pageOptionsDto: {

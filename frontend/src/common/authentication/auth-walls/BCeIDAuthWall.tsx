@@ -1,6 +1,12 @@
 import { useContext, useEffect } from "react";
 import { useAuth } from "react-oidc-context";
-import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
+import {
+  Navigate,
+  Outlet,
+  createSearchParams,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 
 import { ERROR_ROUTES, HOME, IDIR_ROUTES } from "../../../routes/constants";
 import { Loading } from "../../pages/Loading";
@@ -11,6 +17,7 @@ import OnRouteBCContext from "../OnRouteBCContext";
 import { IDIRUserAuthGroupType, UserRolesType } from "../types";
 import { DoesUserHaveRole } from "../util";
 import { IDIRAuthWall } from "./IDIRAuthWall";
+import { setRedirectInSession } from "../../helpers/util";
 
 export const isIDIR = (identityProvider: string) =>
   identityProvider === IDPS.IDIR;
@@ -33,8 +40,7 @@ export const BCeIDAuthWall = ({
     user: userFromToken,
   } = useAuth();
 
-  const { userRoles, companyId, isNewBCeIDUser } =
-    useContext(OnRouteBCContext);
+  const { userRoles, companyId, isNewBCeIDUser } = useContext(OnRouteBCContext);
 
   const userIDP = userFromToken?.profile?.identity_provider as string;
 
@@ -47,7 +53,13 @@ export const BCeIDAuthWall = ({
    */
   useEffect(() => {
     if (!isAuthLoading && !isAuthenticated) {
-      navigate(HOME);
+      setRedirectInSession(window.location.href);
+      navigate({
+        pathname: HOME,
+        search: createSearchParams({
+          r: window.location.href,
+        }).toString(),
+      });
     }
   }, [isAuthLoading, isAuthenticated]);
 
@@ -67,11 +79,13 @@ export const BCeIDAuthWall = ({
       if (companyId) {
         return <IDIRAuthWall allowedAuthGroups={allowedAuthGroups} />;
       } else {
-        return <Navigate
-          to={IDIR_ROUTES.WELCOME}
-          state={{ from: location }}
-          replace
-        />;
+        return (
+          <Navigate
+            to={IDIR_ROUTES.WELCOME}
+            state={{ from: location }}
+            replace
+          />
+        );
       }
     }
     if (!isIDIR(userIDP)) {
@@ -103,9 +117,8 @@ export const BCeIDAuthWall = ({
       );
     }
     return <Outlet />;
-  } else {
-    return <Navigate to={HOME} state={{ from: location }} replace />;
   }
+  return <></>;
 };
 
 BCeIDAuthWall.displayName = "BCeIDAuthWall";
