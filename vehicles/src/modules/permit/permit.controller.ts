@@ -128,6 +128,44 @@ export class PermitController {
     });
   }
 
+  /**
+   * Fetches all available permit types from the service layer and returns them.
+   * Uses an @AuthOnly() decorator to enforce authentication.
+   * The route for accessing this method is defined under '/permits/permit-types'.
+   * @returns A promise that resolves to a record object where each key-value pair represents a permit type id and its name.
+   */
+  @AuthOnly()
+  @ApiOperation({
+    summary: 'Fetch all permit types',
+    description:
+      'Fetches all available permit types from the service layer and returns them, enforcing authentication.',
+  })
+  @Get('permit-types')
+  async getPermitTypes(): Promise<Record<string, string>> {
+    const permitTypes = await this.permitService.getPermitType();
+    return permitTypes;
+  }
+
+  @ApiOkResponse({
+    description: 'Retrieves a specific Permit Resource by its ID.',
+    type: ReadPermitDto,
+    isArray: false,
+  })
+  @ApiOperation({
+    summary: 'Get Permit by ID',
+    description:
+      'Fetches a single permit detail by its permit ID for the current user.',
+  })
+  @Roles(Role.READ_PERMIT)
+  @Get('/:permitId')
+  async getByPermitId(
+    @Req() request: Request,
+    @Param('permitId') permitId: string,
+  ): Promise<ReadPermitDto> {
+    const currentUser = request.user as IUserJWT;
+    return this.permitService.findByPermitId(permitId, currentUser);
+  }
+
   @ApiCreatedResponse({
     description: 'The DOPS file Resource with the presigned resource',
     type: ReadFileDto,
@@ -177,26 +215,6 @@ export class PermitController {
     res.status(200);
   }
 
-  @ApiOkResponse({
-    description: 'Retrieves a specific Permit Resource by its ID.',
-    type: ReadPermitDto,
-    isArray: false,
-  })
-  @ApiOperation({
-    summary: 'Get Permit by ID',
-    description:
-      'Fetches a single permit detail by its permit ID for the current user.',
-  })
-  @Roles(Role.READ_PERMIT)
-  @Get('/:permitId')
-  async getByPermitId(
-    @Req() request: Request,
-    @Param('permitId') permitId: string,
-  ): Promise<ReadPermitDto> {
-    const currentUser = request.user as IUserJWT;
-    return this.permitService.findByPermitId(permitId, currentUser);
-  }
-
   /**
    * A POST method defined with the @Post() decorator and a route of /:permitId/void
    * that Voids or revokes a permit for given @param permitId by changing it's status to VOIDED|REVOKED.
@@ -221,22 +239,5 @@ export class PermitController {
       currentUser,
     );
     return permit;
-  }
-  /**
-   * Fetches all available permit types from the service layer and returns them.
-   * Uses an @AuthOnly() decorator to enforce authentication.
-   * The route for accessing this method is defined under '/permits/permit-types'.
-   * @returns A promise that resolves to a record object where each key-value pair represents a permit type id and its name.
-   */
-  @AuthOnly()
-  @ApiOperation({
-    summary: 'Fetch all permit types',
-    description:
-      'Fetches all available permit types from the service layer and returns them, enforcing authentication.',
-  })
-  @Get('permit-types')
-  async getPermitTypes(): Promise<Record<string, string>> {
-    const permitTypes = await this.permitService.getPermitType();
-    return permitTypes;
   }
 }
