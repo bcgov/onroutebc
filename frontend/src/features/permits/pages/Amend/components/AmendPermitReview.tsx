@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import "./AmendPermitReview.scss";
 import { AmendPermitContext } from "../context/AmendPermitContext";
 import { useCompanyInfoDetailsQuery } from "../../../../manageProfile/apiManager/hooks";
-import { PermitReview } from "../../TermOversize/components/review/PermitReview";
+import { PermitReview } from "../../Application/components/review/PermitReview";
 import { Breadcrumb } from "../../../../../common/components/breadcrumb/Breadcrumb";
 import { getDefaultFormDataFromPermit } from "../types/AmendPermitFormData";
 import { ReviewReason } from "./review/ReviewReason";

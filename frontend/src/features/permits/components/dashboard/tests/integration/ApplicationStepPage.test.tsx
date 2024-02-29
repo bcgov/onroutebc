@@ -1,3 +1,4 @@
+import { Params } from "react-router-dom";
 import { waitFor } from "@testing-library/react";
 
 import { formatPhoneNumber } from "../../../../../../common/components/form/subFormComponents/PhoneNumberInput";
@@ -6,6 +7,7 @@ import { resetApplicationSource } from "./fixtures/getActiveApplication";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import { assertVehicleSubtypeOptions } from "./helpers/assert";
 import { VEHICLE_TYPES } from "../../../../../manageVehicles/types/Vehicle";
+import { DEFAULT_PERMIT_TYPE } from "../../../../types/PermitType";
 import {
   findPowerUnit,
   getAllPowerUnitSubTypes,
@@ -93,6 +95,14 @@ beforeEach(async () => {
   resetVehicleSource();
   resetApplicationSource();
   vi.resetModules();
+  // We need to mock "useParams" since application form page needs it for determining permit type (ie. TROS or TROW etc)
+  vi.mock("react-router-dom", async () => {
+    const rrd = await vi.importActual("react-router-dom");
+    return {
+      ...rrd,
+      useParams: (): Readonly<Params<string>> => ({ permitType: DEFAULT_PERMIT_TYPE }),
+    };
+  });
 });
 
 afterEach(() => {

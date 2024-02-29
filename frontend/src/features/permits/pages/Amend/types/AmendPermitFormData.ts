@@ -27,6 +27,7 @@ import {
   toLocalDayjs,
   utcToLocalDayjs,
 } from "../../../../../common/helpers/formatDate";
+import { DEFAULT_PERMIT_TYPE } from "../../../types/PermitType";
 
 export type AmendPermitFormData = Application;
 
@@ -56,10 +57,12 @@ export const mapFormDataToPermit = (data: AmendPermitFormData) => {
 export const getDefaultFormDataFromPermit = (
   permit?: Nullable<Permit>,
 ): AmendPermitFormData => {
+  const defaultPermitType = getDefaultRequiredVal(DEFAULT_PERMIT_TYPE, permit?.permitType);
+
   // Default form values when permit is not available (or period of time when loading)
   if (!permit) {
     return {
-      ...getDefaultValues(),
+      ...getDefaultValues(defaultPermitType),
       permitApplicationOrigin: PERMIT_APPLICATION_ORIGINS.ONLINE,
       permitApprovalSource: PERMIT_APPROVAL_SOURCES.AUTO,
     };
@@ -67,6 +70,7 @@ export const getDefaultFormDataFromPermit = (
 
   return {
     ...getDefaultValues(
+      defaultPermitType,
       {
         ...permit,
         permitId: `${permit.permitId}`,
@@ -113,10 +117,12 @@ export const getDefaultFormDataFromPermit = (
 export const getDefaultFromNullableFormData = (
   permitFormData?: Nullable<AmendPermitFormData>,
 ): AmendPermitFormData => {
+  const defaultPermitType = getDefaultRequiredVal(DEFAULT_PERMIT_TYPE, permitFormData?.permitType);
+
   // Default form values when permit is not available (or period of time when loading)
   if (!permitFormData) {
     return {
-      ...getDefaultValues(),
+      ...getDefaultValues(defaultPermitType),
       permitApplicationOrigin: PERMIT_APPLICATION_ORIGINS.ONLINE,
       permitApprovalSource: PERMIT_APPROVAL_SOURCES.AUTO,
     };
