@@ -207,11 +207,12 @@ export const httpPUTRequest = (url: string, data: any) => {
  * @param url The URL containing the resource id to be deleted.
  * @returns A Promise<Response> with the response from the API.
  */
-export const httpDELETERequest = (url: string) => {
+export const httpDELETERequest = (url: string, data: any) => {
   return axios.delete(url, {
     headers: {
       Authorization: getAccessToken(),
       "X-Correlation-ID": getCorrelationId(),
     },
+    data,
   });
 };
