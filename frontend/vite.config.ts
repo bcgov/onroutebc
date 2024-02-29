@@ -15,7 +15,19 @@ export default defineConfig({
     port: 3000,
     open: true,
   },
-  plugins: [eslint(), react(), viteTsconfigPaths(), svgrPlugin()],
+  optimizeDeps: {
+    include: [
+      "@emotion/react",
+      "@emotion/styled",
+      "@mui/material/Tooltip"
+    ]
+  },
+  plugins: [
+    eslint(),
+    react(),
+    viteTsconfigPaths(),
+    svgrPlugin(),
+  ],
   css: {
     postcss: {
       plugins: [

@@ -28,6 +28,9 @@ export const PERMIT_TYPES = {
 
 export type PermitType = (typeof PERMIT_TYPES)[keyof typeof PERMIT_TYPES];
 
+export const DEFAULT_PERMIT_TYPE = PERMIT_TYPES.TROS;
+export const EMPTY_PERMIT_TYPE_SELECT = "select";
+
 /**
  * Returns the name/description of the permit type.
  * @param permitType String (if any) that represents the permit type
@@ -100,4 +103,13 @@ export const permitTypeDisplayText = (permitType?: Nullable<string>) => {
     default:
       return getPermitTypeName(permitType);
   }
+};
+
+/**
+ * Determines whether or not a string represents a valid permit type.
+ * @param permitType string representing permit type value, if it exists (eg. tros, trow, etc)
+ * @returns true if string is a valid permit type, or false otherwise
+ */
+export const isPermitTypeValid = (permitType?: Nullable<string>) => {
+  return permitType && (Object.values(PERMIT_TYPES) as string[]).includes(permitType.toUpperCase());
 };
