@@ -5,8 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 
 import "./Header.scss";
-import { DoesUserHaveRoleWithContext } from "../../authentication/util";
-import { ROLES } from "../../authentication/types";
+import { DoesUserHaveAuthGroup, DoesUserHaveRoleWithContext } from "../../authentication/util";
 import { Brand } from "./components/Brand";
 import { UserSection } from "./components/UserSection";
 import { getLoginUsernameFromSession } from "../../apiManager/httpRequestHandler";
@@ -14,11 +13,20 @@ import { SearchButton } from "./components/SearchButton";
 import { SearchFilter } from "./components/SearchFilter";
 import { IDPS } from "../../types/idp";
 import OnRouteBCContext from "../../authentication/OnRouteBCContext";
+import { getDefaultNullableVal } from "../../helpers/util";
 import {
   APPLICATIONS_ROUTES,
   PROFILE_ROUTES,
+  SETTINGS_ROUTES,
   VEHICLES_ROUTES,
 } from "../../../routes/constants";
+
+import {
+  BCeIDUserAuthGroupType,
+  IDIRUserAuthGroupType,
+  IDIR_USER_AUTH_GROUP,
+  ROLES,
+} from "../../authentication/types";
 
 const getEnv = () => {
   const env =
@@ -43,9 +51,11 @@ const getEnv = () => {
 const Navbar = ({
   isAuthenticated,
   isMobile = false,
+  userAuthGroup,
 }: {
   isAuthenticated: boolean;
   isMobile?: boolean;
+  userAuthGroup?: BCeIDUserAuthGroupType | IDIRUserAuthGroupType;
 }) => {
   const navbarClassName = isMobile ? "mobile" : "normal";
   return (
@@ -69,6 +79,19 @@ const Navbar = ({
               {DoesUserHaveRoleWithContext(ROLES.READ_ORG) && (
                 <li>
                   <NavLink to={PROFILE_ROUTES.MANAGE}>Profile</NavLink>
+                </li>
+              )}
+              {DoesUserHaveAuthGroup({
+                userAuthGroup,
+                allowedAuthGroups: [
+                  IDIR_USER_AUTH_GROUP.FINANCE,
+                  IDIR_USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
+                  IDIR_USER_AUTH_GROUP.ENFORCEMENT_OFFICER,
+                  // add CTPO later to IDIR_USER_AUTH_GROUP and here as well
+                ],
+              }) && (
+                <li>
+                  <NavLink to={SETTINGS_ROUTES.MANAGE}>Settings</NavLink>
                 </li>
               )}
             </>
@@ -108,9 +131,13 @@ export const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const { isAuthenticated, user } = useAuth();
-  const { companyId } = useContext(OnRouteBCContext);
+  const { companyId, idirUserDetails, userDetails } = useContext(OnRouteBCContext);
   const username = getLoginUsernameFromSession();
   const isIdir = user?.profile?.identity_provider === IDPS.IDIR;
+  const authGroup = getDefaultNullableVal(
+    idirUserDetails?.userAuthGroup,
+    userDetails?.userAuthGroup,
+  );
 
   const shouldDisplayNavBar = Boolean(companyId);
 
@@ -143,9 +170,18 @@ export const Header = () => {
           {isAuthenticated ? <NavButton toggleMenu={toggleMenu} /> : null}
         </div>
       </header>
-      {shouldDisplayNavBar && <Navbar isAuthenticated={isAuthenticated} />}
+      {shouldDisplayNavBar && (
+        <Navbar
+          isAuthenticated={isAuthenticated}
+          userAuthGroup={authGroup}
+        />
+      )}
       {shouldDisplayNavBar && menuOpen ? (
-        <Navbar isAuthenticated={isAuthenticated} isMobile={true} />
+        <Navbar
+          isAuthenticated={isAuthenticated}
+          isMobile={true}
+          userAuthGroup={authGroup}
+        />
       ) : null}
       {filterOpen ? <SearchFilter closeFilter={toggleFilter} /> : null}
     </div>
