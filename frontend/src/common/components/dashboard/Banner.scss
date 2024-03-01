@@ -15,6 +15,7 @@
   &__text-section {
     display: flex;
     justify-content: space-between;
+    min-height: 3rem;
   }
 
   & &__button {
