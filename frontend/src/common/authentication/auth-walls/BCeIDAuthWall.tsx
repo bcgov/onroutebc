@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useContext, useEffect } from "react";
 import { useAuth } from "react-oidc-context";
 import {
@@ -6,6 +7,7 @@ import {
   createSearchParams,
   useLocation,
   useNavigate,
+  useParams,
 } from "react-router-dom";
 
 import { ERROR_ROUTES, HOME, IDIR_ROUTES } from "../../../routes/constants";
@@ -18,6 +20,7 @@ import { IDIRUserAuthGroupType, UserRolesType } from "../types";
 import { DoesUserHaveRole } from "../util";
 import { IDIRAuthWall } from "./IDIRAuthWall";
 import { setRedirectInSession } from "../../helpers/util";
+import { StaffActAsCompanyAuthWall } from "./StaffActAsCompanyAuthWall";
 
 export const isIDIR = (identityProvider: string) =>
   identityProvider === IDPS.IDIR;
@@ -40,11 +43,15 @@ export const BCeIDAuthWall = ({
     user: userFromToken,
   } = useAuth();
 
-  const { userRoles, companyId, isNewBCeIDUser } =
-    useContext(OnRouteBCContext);
+  const {
+    userRoles,
+    companyId: companyIdInContext,
+    isNewBCeIDUser,
+  } = useContext(OnRouteBCContext);
   const userIDP = userFromToken?.profile?.identity_provider as string;
 
   const location = useLocation();
+  const { companyId: companyIdFromUrl } = useParams();
   const navigate = useNavigate();
 
   /**
@@ -72,24 +79,16 @@ export const BCeIDAuthWall = ({
    * is not a new BCeID user, we can allow them into the BCeID page
    * provided they do have a matching role.
    */
-  const isEstablishedUser = Boolean(companyId) || !isNewBCeIDUser;
+  const isEstablishedUser = Boolean(companyIdInContext) || !isNewBCeIDUser;
 
   if (isAuthenticated && isEstablishedUser) {
     if (isIDIR(userIDP)) {
-      if (companyId) {
-        return <IDIRAuthWall allowedAuthGroups={allowedAuthGroups} />;
-      } else {
-        return (
-          <Navigate
-            to={IDIR_ROUTES.WELCOME}
-            state={{ from: location }}
-            replace
-          />
-        );
-      }
+      return (
+        <StaffActAsCompanyAuthWall allowedAuthGroups={allowedAuthGroups} />
+      );
     }
     if (!isIDIR(userIDP)) {
-      if (!companyId) {
+      if (!companyIdInContext) {
         return (
           <>
             <LoadBCeIDUserContext />

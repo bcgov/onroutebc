@@ -106,7 +106,7 @@ export const IDIRCompanySearchResults = memo(
             return (
               <CustomNavLink
                 onClick={() => onClickCompany(props.row.original)}
-                to={routes.APPLICATIONS_ROUTES.BASE}
+                to={`/${props.row.original.companyId}/applications`}
               >
                 {props.row.original.legalName}
               </CustomNavLink>
@@ -157,17 +157,11 @@ export const IDIRCompanySearchResults = memo(
     return (
       <div className="table-container idir-company-search-results">
         {data?.items?.length !== 0 && <MaterialReactTable table={table} />}
-        {data?.items?.length === 0 &&
+        {data?.items?.length === 0 && (
           <>
-            <Stack
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              >
+            <Stack display="flex" justifyContent="center" alignItems="center">
               <NoRecordsFound />
-              <Box
-                className="create-company-btn"
-              >
+              <Box className="create-company-btn">
                 <CustomNavLink to={routes.IDIR_ROUTES.CREATE_COMPANY}>
                   <div className="button-outline">
                     <CardMedia
@@ -177,17 +171,17 @@ export const IDIRCompanySearchResults = memo(
                       alt="Create Company"
                       title="Create Company"
                     />
-                    <Typography
-                      variant={"h3"}
-                    >
-                      Create<br />Company
+                    <Typography variant={"h3"}>
+                      Create
+                      <br />
+                      Company
                     </Typography>
                   </div>
                 </CustomNavLink>
               </Box>
             </Stack>
           </>
-        }
+        )}
       </div>
     );
   },
