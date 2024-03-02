@@ -33,7 +33,7 @@ export const SuspensionHistory = ({
           className:
             "suspension-history__data suspension-history__data--user",
         },
-        size: 150,
+        size: 50,
         enableSorting: false,
         enableColumnActions: false,
       },
@@ -55,7 +55,7 @@ export const SuspensionHistory = ({
           className:
             "suspension-history__data suspension-history__data--date",
         },
-        size: 200,
+        size: 120,
         enableSorting: false,
         enableColumnActions: false,
       },
@@ -75,7 +75,7 @@ export const SuspensionHistory = ({
           className:
             "suspension-history__data suspension-history__data--reason",
         },
-        size: 100,
+        size: 200,
         enableSorting: false,
         enableColumnActions: false,
       },
