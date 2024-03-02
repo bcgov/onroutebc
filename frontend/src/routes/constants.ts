@@ -158,7 +158,6 @@ export const PAYMENT_ROUTES = {
 const SETTINGS_BASE = "/settings";
 export const SETTINGS_ROUTES = {
   MANAGE: SETTINGS_BASE,
-  SUSPEND: `${PROFILE_ROUTE_BASE}/suspend`,
 };
 
 // OnRoute Webpage Links

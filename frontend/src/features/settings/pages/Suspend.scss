@@ -1,0 +1,31 @@
+@import "../../../themes/orbcStyles";
+
+.suspend-page {
+  color: $bc-black;
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: bold;
+
+    &--company {
+      width: 50%;
+    }
+
+    &--history {
+      margin-bottom: 1.5rem;
+    }
+  }
+
+  & &__suspend-company {
+    display: flex;
+    flex-direction: row;
+    padding-top: 1.5rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid $bc-border-grey;
+    align-items: center;
+  }
+
+  & &__suspension-history {
+    padding-top: 2.5rem;
+  }
+}

@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 
 import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
 import { Suspend } from "../../pages/Suspend";
@@ -8,9 +8,10 @@ import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { DoesUserHaveAuthGroup } from "../../../../common/authentication/util";
 import { IDIR_USER_AUTH_GROUP } from "../../../../common/authentication/types";
+import { ERROR_ROUTES } from "../../../../routes/constants";
 
 export const ManageSettingsDashboard = React.memo(() => {
-  const { idirUserDetails } = useContext(OnRouteBCContext);
+  const { idirUserDetails, companyId } = useContext(OnRouteBCContext);
   const allowSettingsDashboard = Boolean(
     DoesUserHaveAuthGroup({
       userAuthGroup: idirUserDetails?.userAuthGroup,
@@ -29,10 +30,14 @@ export const ManageSettingsDashboard = React.memo(() => {
     stateFromNavigation?.selectedTab,
   );
 
+  if (!companyId) {
+    return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
+  }
+
   const tabs = [
     showSuspendTab ? {
       label: "Suspend",
-      component: <Suspend />,
+      component: <Suspend companyId={companyId} />,
     } : null,
   ].filter(tab => Boolean(tab)) as {
     label: string;
