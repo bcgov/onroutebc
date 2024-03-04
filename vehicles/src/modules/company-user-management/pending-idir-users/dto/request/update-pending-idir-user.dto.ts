@@ -1,6 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { UserAuthGroup } from '../../../../../common/enum/user-auth-group.enum';
+import { IDIRUserAuthGroup } from '../../../../../common/enum/user-auth-group.enum';
 import { IsEnum } from 'class-validator';
 
 /**
@@ -10,10 +10,10 @@ import { IsEnum } from 'class-validator';
 export class UpdatePendingIdirUserDto {
   @AutoMap()
   @ApiProperty({
-    enum: UserAuthGroup,
+    enum: IDIRUserAuthGroup,
     description: 'The user auth group.',
-    example: UserAuthGroup.COMPANY_ADMINISTRATOR,
+    example: IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
   })
-  @IsEnum(UserAuthGroup)
-  userAuthGroup: UserAuthGroup;
+  @IsEnum(IDIRUserAuthGroup)
+  userAuthGroup: IDIRUserAuthGroup;
 }

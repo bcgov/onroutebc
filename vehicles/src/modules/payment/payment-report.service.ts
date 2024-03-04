@@ -20,11 +20,11 @@ import { IPaymentCode } from '../../common/interface/payment-code.interface';
 import { PermitTypeReport } from '../../common/enum/permit-type.enum';
 import { CreatePaymentSummaryReportDto } from './dto/request/create-payment-summary-report.dto';
 import { PermitIssuedBy } from '../../common/enum/permit-issued-by.enum';
-import { IdirUser } from '../company-user-management/users/entities/idir.user.entity';
 import { PaymentMethodType } from './entities/payment-method-type.entity';
 import { PaymentCardType } from './entities/payment-card-type.entity';
 import { getPaymentCodeFromCache } from '../../common/helper/payment.helper';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
+import { User } from '../company-user-management/users/entities/user.entity';
 
 @Injectable()
 export class PaymentReportService {
@@ -104,7 +104,7 @@ export class PaymentReportService {
       .innerJoin('trans.receipt', 'receipt')
       .innerJoin('permitTransactions.permit', 'permit')
       .leftJoin(
-        IdirUser,
+        User, //TODO ORV2-1956
         'idirUser',
         'permit.issuerUserGuid = idirUser.userGUID',
       );
