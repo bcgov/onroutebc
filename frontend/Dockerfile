@@ -43,6 +43,7 @@ FROM nginx:1.25.1-alpine as production-stage
 RUN mkdir /app
 COPY --from=builder /app/build /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/nginx.conf
+ADD static_home_page /usr/share/nginx/html
 CMD ["nginx", "-g", "daemon off;"]
 
 # Health check

@@ -1,0 +1,592 @@
+﻿#HeaderTop 
+{
+    background-color:#99c9ed;
+    height:25px;
+    background-image:url(../images/HeaderTopRepeat.png);
+    background-repeat:repeat-x;
+    width:100%;
+}
+
+#HeaderMiddle 
+{
+   background-color:#2884bb;
+   width:100%;
+   height:107px;
+}
+
+#HeaderBottom 
+{
+    background-color:#99c9ed;
+    height:18px;
+    background-image:url(../images/HeaderBottomRepeat.png);
+    background-repeat:repeat-x;
+    width:100%;
+}
+
+.HeaderContainer 
+{
+    margin:0 auto;
+    text-align:center;
+    height: 84px;
+    width:996px;
+}
+
+th.SortLink 
+{
+    color:#0000FF;
+    cursor:pointer;
+}
+
+.HeaderContent
+{
+    background-image:url(../Images/Header_Repeat.png);
+}
+
+.HeaderLeft 
+{
+    height:84px;
+    width:85px;
+}
+
+.HeaderRight 
+{
+    height:84px;
+    width:210px;
+}
+
+.Highlight 
+{
+    background-color:#ffffcc;
+}
+
+.InfoLeft 
+{
+    height:22px;
+    width:19px;
+}
+
+.InfoRight 
+{
+    height:22px;
+    width:14px;
+}
+
+.InfoContent 
+{
+    color:#fff;
+    height:22px;
+    background-image:url(../Images/Info_Repeat.png);
+}
+
+.NavLeft 
+{
+    height:59px;
+    width:19px;
+}
+
+.NavRight 
+{
+    height:59px;
+    width:18px;
+}
+
+.NavContent 
+{
+    color:#fff;
+    height:59px;
+    background-image:url(../Images/Nav_Repeat.png);
+}
+
+.NavContainer 
+{
+    background-color:#e1e1e1;
+    width:100%;
+    /*padding:0px 8px 0px 8px;*/
+    padding:0px;
+    margin-bottom:10px;
+    border-bottom:1px solid #333;
+}
+
+
+.ContentContainer 
+{
+    margin:0 auto;
+    text-align:center;
+    width:996px;
+}
+
+.ContentUpperLeft 
+{
+    height:18px;
+    width:18px;
+    background-image: url(../Images/ContentUpperLeftCorner.png);
+    background-repeat:no-repeat;
+}
+
+.ContentUpperRepeat
+{
+    height:18px;
+    background-image: url(../Images/ContentUpperRepeat.png);
+    background-repeat:repeat-x;
+}
+
+.ContentUpperRight
+{
+    height:18px;
+    width:18px;
+    background-image: url(../Images/ContentUpperRightCorner.png);
+    background-repeat:no-repeat;
+}
+
+.ContentMiddleLeft {
+    width:18px;
+    background-image: url(../Images/ContentLeftRepeat.png);
+    background-repeat:repeat-y;
+}
+
+.ContentMiddleMiddle {
+    background-color:#fff;
+    text-align:left;
+}
+
+.ContentMiddleRight {
+    width:18px;
+    background-image: url(../Images/ContentRightRepeat.png);
+    background-repeat:repeat-y;
+}
+
+.ContentBottomLeft {
+    height:18px;
+    width:18px;
+    background-image: url(../Images/ContentBottomLeftCorner.png);
+    background-repeat:no-repeat;
+}
+
+.ContentBottomRepeat {
+    height:18px;
+    background-image: url(../Images/ContentBottomRepeat.png);
+    background-repeat:repeat-x;
+}
+
+.ContentBottomRight
+{
+    height:18px;
+    width:18px;
+    background-image: url(../Images/ContentBottomRightCorner.png);
+    background-repeat:no-repeat;
+}
+
+#PageTitle 
+{
+    font-size:20px;
+    font-weight:bold;
+    color:#333;
+    text-align:left;
+}
+
+#Instructions 
+{
+    margin: 8px 0px 8px 0px;
+    padding: 4px 4px 4px 4px;
+    font-style:italic;
+    background-color: #F6E797;
+    max-width:500px;
+}
+
+.TableTitle 
+{
+     margin: 4px 4px 6px 0px;
+    font-size:16px;
+    font-weight:bold;
+    color:#333;
+    text-align:left;
+}
+
+.SectionHeader 
+{
+        font-size:16px;
+    font-weight:bold;
+    color:#333;
+    text-align:left;
+}
+
+.SectionHeaderBig 
+{
+        font-size:18px;
+    font-weight:bold;
+    color:#333;
+    text-align:left;
+}
+
+.Button 
+{
+    cursor:pointer;
+}
+
+.DashboardContainer 
+{
+/*padding-left: 40px;
+padding-right: 70px;*/
+padding:0px
+background-color:#fff;
+}
+
+.DashboardButton
+{
+    margin:5px 4px 5px 4px;
+    border:1px solid #333;
+    text-align:left;
+    padding:0px 3px 0px 3px;
+    cursor:pointer;
+   /* background-color:#6195BE;*/
+    background-image:url(../Images/GrayGradient.png);
+    font-weight:bold;
+    -moz-border-radius: 4px;
+    border-radius: 4px; 
+}
+
+.DashboardButton:hover
+{
+    margin:5px 4px 5px 4px;
+    border:1px solid #333;
+    text-align:left;
+    padding:0px 3px 0px 3px;
+    cursor:pointer;
+    background-color:#F6E797;
+    background-image:none;
+    font-weight:bold;
+    color:#333;
+    -moz-border-radius: 4px;
+    border-radius: 4px; 
+}
+
+.ListTableSmall
+{
+
+}
+
+.ListTableSmall td, .ListTableSmall th 
+{
+    padding:2px 14px 2px 2px;
+    border-top:1px solid #333;
+    text-align:left;
+    font-size:12px;
+}
+
+.ListTableSmall th 
+{
+    background-color:#e1e1e1;
+}
+
+.ListTable
+{
+    border-collapse: collapse;
+}
+
+.ListTable td, .ListTable th 
+{
+    padding:2px 14px 2px 2px;
+    border-top:1px solid #333;
+    text-align:left;
+    height:28px;
+    empty-cells:show;
+}
+
+.ListTable th 
+{
+    background-color:#e1e1e1;
+    background-image:none;
+}
+
+.ListTable td 
+{
+    background-image:url(../Images/TableRowGradient.png);
+    background-color:#ecf2ff;
+    background-repeat:repeat-x;
+}
+
+.ListTable td.InfoCell 
+{
+    background-image: none;
+    background-color:#ecf2ff;
+    border-top:none;
+}
+
+.ListTableNestedData td, .ListTableNestedData th
+{
+    padding:1px;
+    font-size:11px;
+    text-align:left;
+    background-image:none;
+    border-top:none;
+    height:13px;
+}
+
+.ListTableTwo
+{
+    border-collapse: collapse;
+}
+
+.ListTableTwo td, .ListTableTwo th 
+{
+    padding:2px 2px 2px 2px;
+    border-top:1px solid #333;
+    text-align:left;
+    height:28px;
+    empty-cells:show;
+}
+
+.ListTableTwo th 
+{
+    background-color:#e1e1e1;
+    background-image:none;
+}
+
+.ListTableTwo td 
+{
+    background-image:url(../Images/TableRowGradient.png);
+    background-color:#ecf2ff;
+    background-repeat:repeat-x;
+}
+
+.ListTableTwo td.InfoCell 
+{
+    background-image: none;
+    background-color:#ecf2ff;
+    border-top:none;
+}
+
+.ListTableTwoNestedData td, .ListTableTwoNestedData th
+{
+    padding:1px;
+    font-size:11px;
+    text-align:left;
+    background-image:none;
+    border-top:none;
+    height:13px;
+}
+
+.FormTable td, .FormTable th
+{
+    padding:4px;
+    font-size:13px;
+    text-align:left;
+    background-image:none;
+    border-top:none;
+
+}
+
+.FormDiv
+{
+    width: auto;
+    float: left;
+    margin-left:8px;
+    padding: 4px;
+}
+
+.FormContainer
+{
+     background-color:#CCCCCC;
+     color:Maroon;
+     border-style:solid;
+     border-color:Black;
+     border-width: 1px;     
+}
+
+td.FormSectionHeader 
+{
+    font-weight:bold;
+    font-size: 14px;
+    background-color:#f2f2f2;
+    background-image:url(../Images/GradientGraySmall.png);
+    background-repeat:repeat-x;
+    border: 1px solid #c0c0c0;
+}
+
+.SectionSpacer 
+{
+    height:12px;
+}
+
+.SmallTextBox 
+{
+    width:50px;
+}
+
+.MediumTextBox
+{
+    width:120px;
+}
+
+.LargeTextBox 
+{
+    width:170px;
+}
+
+.XLTextBox 
+{
+    width:220px;
+}
+
+.WizardStepContainer
+{
+    margin:0 auto;
+    background-color:#333;
+    background-image:url(../Images/GradientDarkGray.png);
+    background-repeat:repeat-x;
+    width:996px;
+
+    border-bottom:1px solid #000;
+}
+
+.StepOff 
+{
+   color:#f2f2f2;
+   font-size:14px;
+   margin-left:22px;
+}
+
+.StepOn 
+{
+   color:#113564;
+   font-size:16px;
+   font-weight:bold;
+   margin-left:22px;
+}
+
+.WizardQuestion
+{
+     margin: 4px 4px 6px 0px;
+    font-size:16px;
+    font-weight:bold;
+    color:#333;
+    text-align:center;
+}
+
+.ImageButton 
+{
+    width:110px;
+    border:1px solid #000;
+    background-color:#f2f2f2;
+    margin-right:10px;
+    padding:2px;
+    cursor:pointer;
+    font-weight:bold;
+    color:#0000ff;
+}
+
+.ImageButton:hover 
+{
+    width:110px;
+    border:1px solid #000;
+    background-color:#ffffcc;
+    margin-right:10px;
+    padding:2px;
+    cursor:pointer;
+    font-weight:bold;
+    color:#000;
+}
+
+a 
+{
+    text-decoration: none;
+}
+
+.TripEntryHeaderON
+{
+    border:1px solid #333;
+    text-align:left;
+    padding:4px;
+    height:22px;
+    background-image:url(../Images/BlueGradient.png);
+    background-repeat:repeat-x;
+    font-weight:bold;
+    color:#fff;
+    font-size:16px;
+}
+
+.TripEntryHeaderOFF
+{
+    border:1px solid #333;
+    text-align:left;
+    padding:4px;
+    height:22px;
+    background-image:url(../Images/GrayGradient.png);
+    background-repeat:repeat-x;
+    font-weight:bold;
+    color:#000;
+    font-size:14px;
+}
+
+td.TripSectionHeader
+{
+    border-bottom:solid 1px #333;
+    border-top:solid 1px #333;
+    text-align:left;
+    padding:4px;
+    height:22px;
+    background-color:#f0ead4;
+    /*background-image:url(../Images/GoldGradient.png);
+    background-repeat:repeat-x;*/
+    font-weight:bold;
+    color:#000;
+    font-size:14px;
+}
+
+.Restricted 
+{
+    text-align:left;
+    border:solid 1px #333;
+    background-color:#800000;
+    color:#fff;
+    padding: 4px;
+    font-weight:bold;
+}
+
+.Conditional
+{
+    text-align:left;
+    border:solid 1px #f2f2f2;
+    background-color:rgb(240,230,140);
+    color:#333;
+    padding: 4px;
+    font-weight:bold;
+}
+
+.Permanent
+{
+    border:solid 1px #f2f2f2;
+    padding: 4px;
+    background-color:#008000;
+    color:#fff;
+    font-weight:bold;
+    text-align:left;
+}
+
+.Note 
+{
+    border:1px solid #333;
+    background-color:#ffffcc;
+    padding:4px;
+    margin:2px 0px 2px 0px;
+    width:450px;
+}
+
+.Warn 
+{
+    padding:10px 6px 10px 6px;
+    font-size: 16px;
+    color:Red;
+    font-weight:bold;
+    background-color:#ffffcc;
+}
+
+.Panel 
+{
+     -moz-border-radius: 10px;
+    border-radius: 10px;
+    border: 1px solid #333;
+    background-color:#f2f2f2;
+    padding:10px;
+    margin-top:10px;
+}
