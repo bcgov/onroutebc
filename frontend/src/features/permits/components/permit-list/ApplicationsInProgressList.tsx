@@ -108,7 +108,7 @@ export const ApplicationsInProgressList = () => {
   const onConfirmApplicationDelete = async () => {
     const applicationIds: string[] = Object.keys(rowSelection);
     const response = await deleteApplications(applicationIds);
-    if (response.status === 201 || response.status === 200) {
+    if (response.status === 200) {
       const responseBody = response.data;
       setIsDeleteDialogOpen(() => false);
       if (responseBody.failure.length > 0) {

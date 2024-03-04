@@ -1,3 +1,6 @@
+import { PERMIT_TYPES, PermitType } from "../types/PermitType";
+import { TROW_INELIGIBLE_POWERUNITS, TROW_INELIGIBLE_TRAILERS } from "../constants/trow";
+import { TROS_INELIGIBLE_POWERUNITS, TROS_INELIGIBLE_TRAILERS } from "../constants/tros";
 import {
   PowerUnit,
   Trailer,
@@ -6,6 +9,28 @@ import {
   VEHICLE_TYPES,
   Vehicle,
 } from "../../manageVehicles/types/Vehicle";
+
+export const getIneligiblePowerUnitSubtypes = (permitType: PermitType) => {
+  switch (permitType) {
+    case PERMIT_TYPES.TROW:
+      return TROW_INELIGIBLE_POWERUNITS;
+    case PERMIT_TYPES.TROS:
+      return TROS_INELIGIBLE_POWERUNITS;
+    default:
+      return [];
+  }
+};
+
+export const getIneligibleTrailerSubtypes = (permitType: PermitType) => {
+  switch (permitType) {
+    case PERMIT_TYPES.TROW:
+      return TROW_INELIGIBLE_TRAILERS;
+    case PERMIT_TYPES.TROS:
+      return TROS_INELIGIBLE_TRAILERS;
+    default:
+      return [];
+  }
+};
 
 /**
  * A helper method that acts as a client side policy check to remove ineligible power unit or trailer subtypes from dropdown lists

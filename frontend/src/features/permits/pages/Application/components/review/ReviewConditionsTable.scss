@@ -1,0 +1,26 @@
+@import "../../../../../../themes/orbcStyles";
+
+.review-conditions-table {
+  min-width: 650px;
+
+  & &__header {
+    font-weight: 600;
+    padding: 1em 0;
+  }
+
+  &__row {
+    td {
+      padding: 1em 0;
+    }
+
+    &:last-child th, &:last-child td {
+      border: 0;
+    }
+
+    .checkbox.checkbox--readonly {
+      padding: 0;
+      margin-right: 0.5em;
+      color: $disabled-colour;
+    }
+  }
+}

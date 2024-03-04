@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
 
-import { renderWithClient } from "../../../../../../../common/helpers/testHelper";
+import { renderForTests } from "../../../../../../../common/helpers/testHelper";
 import { bcGovTheme } from "../../../../../../../themes/bcGovTheme";
 import { ApplicationStepPage } from "../../../ApplicationStepPage";
 import { APPLICATIONS_API_ROUTES } from "../../../../../apiManager/endpoints/endpoints";
@@ -266,9 +266,11 @@ export const ComponentWithWrapper = (userDetails: OnRouteBCContextType) => {
   );
 };
 
-export const renderTestComponent = (userDetails: OnRouteBCContextType) => {
+export const renderTestComponent = (
+  userDetails: OnRouteBCContextType,
+) => {
   const user = userEvent.setup();
-  const component = renderWithClient(ComponentWithWrapper(userDetails));
+  const component = renderForTests(ComponentWithWrapper(userDetails));
 
   return { user, component };
 };

@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 
 import { VEHICLES_URL } from "../../../../../../common/apiManager/endpoints/endpoints";
 import { VEHICLES_API } from "../../../../apiManager/endpoints/endpoints";
-import { renderWithClient } from "../../../../../../common/helpers/testHelper";
+import { renderForTests } from "../../../../../../common/helpers/testHelper";
 import { PowerUnitForm } from "../../PowerUnitForm";
 import { PowerUnit, Trailer } from "../../../../types/Vehicle";
 import { TrailerForm } from "../../TrailerForm";
@@ -122,7 +122,7 @@ export const closeMockServer = () => {
 
 export const renderTestPowerUnitForm = (powerUnit?: PowerUnit) => {
   const user = userEvent.setup();
-  const component = renderWithClient(
+  const component = renderForTests(
     <PowerUnitForm powerUnit={powerUnit} companyId="1" />,
   );
 
@@ -131,7 +131,7 @@ export const renderTestPowerUnitForm = (powerUnit?: PowerUnit) => {
 
 export const renderTestTrailerForm = (trailer?: Trailer) => {
   const user = userEvent.setup();
-  const component = renderWithClient(
+  const component = renderForTests(
     <TrailerForm trailer={trailer} companyId="1" />,
   );
 
