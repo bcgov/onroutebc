@@ -1,3 +1,29 @@
+@font-face {
+    src: url(../fonts/BCSans-Regular.woff) format("woff");
+    font-style: normal;
+    font-family: 'BCSans';
+}
+
+@font-face {
+    src: url(../fonts/BCSans-BoldItalic.woff) format("woff");
+    font-weight: 700;
+    font-style: italic;
+    font-family: 'BCSans';
+}
+
+@font-face {
+    src: url(../fonts/BCSans-Italic.woff) format("woff");
+    font-style: italic;
+    font-family: 'BCSans';
+}
+
+@font-face {
+    src: url(../fonts/BCSans-Bold.woff) format("woff");
+    font-weight: 700;
+    font-family: 'BCSans';
+}
+
+
 :root {
 
     /* Colors: */
@@ -15,7 +41,7 @@
     --bc-background-blue-grey: #F4F5F8;
     
     /* Font/text values */
-    --unnamed-font-family-bc-sans: BC Sans;
+    --unnamed-font-family-bc-sans: 'BCSans';
     --unnamed-font-style-normal: normal;
     --unnamed-font-weight-bold: bold;
     --unnamed-font-weight-normal: normal;
@@ -100,33 +126,6 @@
     color: var(--bc-black);
     }
 
-@font-face {
-    src: url(../fonts/BCSans-Regular.woff) format("woff");
-    font-weight: 400;
-    font-style: normal;
-    font-family: BC Sans
-}
-
-@font-face {
-    src: url(/assets/BCSans-BoldItalic.woff) format("woff");
-    font-weight: 700;
-    font-style: italic;
-    font-family: BC Sans
-}
-
-@font-face {
-    src: url(/assets/BCSans-Italic.woff) format("woff");
-    font-weight: 400;
-    font-style: italic;
-    font-family: BC Sans
-}
-
-@font-face {
-    src: url(/assets/BCSans-Bold.woff) format("woff");
-    font-weight: 700;
-    font-style: normal;
-    font-family: BC Sans
-}
 
 
 .homecanvas {
@@ -194,7 +193,6 @@
     font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-normal) 
     var(--unnamed-font-size-20)/var(--unnamed-line-spacing-30) var(--unnamed-font-family-bc-sans);
     padding : 5px 20px 10px 20px;
-
 }
 
 .homeContent2Col {
