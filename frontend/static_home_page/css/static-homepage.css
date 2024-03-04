@@ -1,24 +1,24 @@
 @font-face {
-    src: url(../fonts/BCSans-Regular.woff) format("woff");
+    src: url('../fonts/BCSans-Regular.woff') format("woff");
     font-style: normal;
     font-family: 'BCSans';
 }
 
 @font-face {
-    src: url(../fonts/BCSans-BoldItalic.woff) format("woff");
+    src: url('../fonts/BCSans-BoldItalic.woff') format("woff");
     font-weight: 700;
     font-style: italic;
     font-family: 'BCSans';
 }
 
 @font-face {
-    src: url(../fonts/BCSans-Italic.woff) format("woff");
+    src: url('../fonts/BCSans-Italic.woff') format("woff");
     font-style: italic;
     font-family: 'BCSans';
 }
 
 @font-face {
-    src: url(../fonts/BCSans-Bold.woff) format("woff");
+    src: url('../fonts/BCSans-Bold.woff') format("woff");
     font-weight: 700;
     font-family: 'BCSans';
 }
@@ -125,7 +125,6 @@
     letter-spacing: var(--unnamed-character-spacing-0);
     color: var(--bc-black);
     }
-
 
 
 .homecanvas {
@@ -249,7 +248,7 @@
 
 }
 
-buttonText {
+.buttonText {
     font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-normal) 
     var(--unnamed-font-size-16)/var(--unnamed-line-spacing-24) var(--unnamed-font-family-bc-sans);
 }
@@ -284,29 +283,59 @@ buttonText {
 
 .link {
     color : var(--bc-text-links-blue);
-
 }
 
 #box2 {
-    top : 0px;
+    top : 0;
 }
 #box3 {
-    top : 0px;
+    top : 0;
 }
 
 #box4 {
-    top : 0px;
+    top : 0;
 }
 
 #box5 {
-    top : 0px;
+    top : 0;
 }
 
-
-
 .homeContentBoxContent3Col {
-
     position: relative;
     top:0px;
     display :flex;    
+}
+
+footer {
+    font-family: var(--unnamed-font-family-bc-sans);
+    border-top: 2px solid #fcba19;
+    color: #fff;
+    width: 100%;
+    padding: 0 8.551vw;
+    height: 70px;
+    background: #1F3564 0% 0% no-repeat padding-box;
+}
+
+footer ul {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin: 0;
+    margin-left: 75px;
+    color : white;
+    list-style: none;
+    align-items: center;
+    height: 100%;
+    padding: 0;
+}
+
+footer ul li {
+    display: list-item;
+}
+
+footer ul li a {
+    color : white;
+    border-right: 1px solid #4b5e7e;
+    padding-left: 5px;
+    padding-right: 5px;
 }
