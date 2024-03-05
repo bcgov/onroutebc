@@ -11,7 +11,12 @@ import { AutoMap } from '@automapper/classes';
 import { Contact } from '../../../common/entities/contact.entity';
 import { CompanyUser } from './company-user.entity';
 import { Directory } from '../../../../common/enum/directory.enum';
-import { ClientUserAuthGroup } from '../../../../common/enum/user-auth-group.enum';
+import {
+  ClientUserAuthGroup,
+  IDIRUserAuthGroup,
+  UserAuthGroup,
+} from '../../../../common/enum/user-auth-group.enum';
+import { UserStatus } from '../../../../common/enum/user-status.enum';
 
 @Entity({ name: 'ORBC_USER' })
 export class User extends Base {
@@ -44,18 +49,33 @@ export class User extends Base {
   directory: Directory;
 
   /**
-   * A property that represents the user's auth group in ORBC, which is an enum of type
-   * {@link ClientUserAuthGroup}.
+   * A property that represents the user's auth group in ORBC. It can be of types {@link UserAuthGroup},
+   * {@link ClientUserAuthGroup}, or {@link IDIRUserAuthGroup}, which are all enum types.
    */
   @AutoMap()
   @Column({
     type: 'simple-enum',
-    enum: ClientUserAuthGroup,
+    enum: [UserAuthGroup, ClientUserAuthGroup, IDIRUserAuthGroup],
     length: 10,
     name: 'USER_AUTH_GROUP_TYPE',
     nullable: true,
   })
-  userAuthGroup: ClientUserAuthGroup;
+  userAuthGroup: UserAuthGroup | ClientUserAuthGroup | IDIRUserAuthGroup;
+
+  /**
+   * The status of the user in the system. It is an enum of UserStatus type and
+   * has a default value of 'ACTIVE'.
+   */
+  @AutoMap()
+  @Column({
+    type: 'simple-enum',
+    enum: UserStatus,
+    length: 10,
+    name: 'USER_STATUS_TYPE',
+    default: UserStatus.ACTIVE,
+    nullable: false,
+  })
+  statusCode: UserStatus;
 
   /**
    * A one-to-one relationship with the Contact entity, representing the contact
@@ -74,5 +94,5 @@ export class User extends Base {
   @OneToMany(() => CompanyUser, (CompanyUser) => CompanyUser.user, {
     cascade: true,
   })
-  companyUsers: CompanyUser[];
+  companyUsers?: CompanyUser[];
 }

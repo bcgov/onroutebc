@@ -9,7 +9,6 @@ import { SuspendActivity } from '../../../common/enum/suspend-activity.enum';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { Company } from '../company/entities/company.entity';
-import { IdirUser } from '../users/entities/idir.user.entity';
 import { CompanyService } from '../company/company.service';
 import { CreateCompanySuspendDto } from './dto/request/create-company-suspend.dto';
 import { ReadCompanySuspendActivityDto } from './dto/response/read-company-suspend-activity.dto';
@@ -17,6 +16,7 @@ import { CompanySuspendActivity } from './entities/company-suspend-activity.enti
 import { EmailService } from '../../email/email.service';
 import { EmailTemplate } from '../../../common/enum/email-template.enum';
 import { CompanyEmailData } from '../../../common/interface/company-email-data.interface';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class CompanySuspendService {
@@ -93,7 +93,7 @@ export class CompanySuspendService {
         createCompanySuspendDtonyDto.suspendActivityType;
       suspendActivity.comment = createCompanySuspendDtonyDto.comment;
       suspendActivity.suspendActivityDateTime = currentDateTime;
-      const idirUser = new IdirUser();
+      const idirUser = new User();
       idirUser.userGUID = currentUser.userGUID;
       suspendActivity.idirUser = idirUser;
       suspendActivity.createdUser = currentUser.userName;
