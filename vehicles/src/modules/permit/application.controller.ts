@@ -44,6 +44,7 @@ import { GetApplicationQueryParamsDto } from './dto/request/queryParam/getApplic
 import { DeleteApplicationDto } from './dto/request/delete-application.dto';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { getActiveApplicationStatus } from 'src/common/helper/application.status.helper';
+import { DeleteDto } from '../common/dto/response/delete.dto';
 
 @ApiBearerAuth()
 @ApiTags('Permit Application')
@@ -160,7 +161,7 @@ export class ApplicationController {
     @Req() request: Request,
     @Param('permitId') permitId: string,
     @Query('amendment') amendment?: boolean,
-  ): Promise<ReadApplicationDto | ReadPermitDto> {
+  ): Promise<ReadApplicationDto> {
     return !amendment
       ? this.applicationService.findApplication(permitId)
       : this.applicationService.findCurrentAmendmentApplication(permitId);
@@ -256,13 +257,13 @@ export class ApplicationController {
   async deleteApplications(
     @Req() request: Request,
     @Body() deleteApplicationDto: DeleteApplicationDto,
-  ): Promise<ResultDto> {
+  ): Promise<DeleteDto> {
     const currentUser = request.user as IUserJWT;
     const userGuid =
       UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup
         ? currentUser.userGUID
         : null;
-    const deleteResult: ResultDto =
+    const deleteResult: DeleteDto =
       await this.applicationService.deleteApplicationInProgress(
         deleteApplicationDto.applications,
         deleteApplicationDto.companyId,

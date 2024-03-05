@@ -3,7 +3,10 @@ import { TestingModule, Test } from '@nestjs/testing';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Request } from 'express';
 
-import { redCompanyAdminUserJWTMock } from '../../util/mocks/data/jwt.mock';
+import {
+  redCompanyAdminUserJWTMock,
+  sysAdminStaffUserJWTMock,
+} from '../../util/mocks/data/jwt.mock';
 import * as constants from '../../util/mocks/data/test-data.constants';
 import { UsersController } from '../../../src/modules/company-user-management/users/users.controller';
 import { UsersService } from '../../../src/modules/company-user-management/users/users.service';
@@ -84,15 +87,22 @@ describe('UsersController', () => {
 
   describe('Users controller findAll function', () => {
     it('should return the users', async () => {
-      jest
-        .spyOn(userService, 'findIdirUsers')
-        .mockResolvedValue([readSysAdminStaffUserDtoMock]);
+      const request = createMock<Request>();
+      request.user = sysAdminStaffUserJWTMock;
+
+      userService.findPermitIssuerPPCUser.mockResolvedValue(null);
+      userService.findUsersDto.mockResolvedValue([
+        readSysAdminStaffUserDtoMock,
+      ]);
 
       const getStaffUserQueryParamsDto: GetStaffUserQueryParamsDto = {
         permitIssuerPPCUser: false,
         userAuthGroup: IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
       };
-      const retUsers = await controller.findAll(getStaffUserQueryParamsDto);
+      const retUsers = await controller.findAll(
+        request,
+        getStaffUserQueryParamsDto,
+      );
       expect(typeof retUsers).toBe('object');
     });
   });
