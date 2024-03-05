@@ -1,0 +1,331 @@
+@font-face {
+    src: url('../fonts/BCSans-Regular.woff') format("woff");
+    font-style: normal;
+    font-family: 'BCSans';
+}
+
+@font-face {
+    src: url('../fonts/BCSans-BoldItalic.woff') format("woff");
+    font-weight: 700;
+    font-style: italic;
+    font-family: 'BCSans';
+}
+
+@font-face {
+    src: url('../fonts/BCSans-Italic.woff') format("woff");
+    font-style: italic;
+    font-family: 'BCSans';
+}
+
+@font-face {
+    src: url('../fonts/BCSans-Bold.woff') format("woff");
+    font-weight: 700;
+    font-family: 'BCSans';
+}
+
+
+:root {
+
+    /* Colors: */
+    --focus-blue: #3B99FC;
+    --formsflow-light-gold: #F9F1C6;
+    --bc-messages-blue-background: #D9EAF7;
+    --bc-black: #313132;
+    --bc-gold: #FCBA19;
+    --bc-text-box-border-grey: #B2B5B6;
+    --white: #FFFFFF;
+    --bc-primary-blue: #003366;
+    --bc-border-grey: #DBDCDC;
+    --bc-text-links-blue: #1A5A96;
+    --bc-background-light-grey: #F2F2F2;
+    --bc-background-blue-grey: #F4F5F8;
+    
+    /* Font/text values */
+    --unnamed-font-family-bc-sans: 'BCSans';
+    --unnamed-font-style-normal: normal;
+    --unnamed-font-weight-bold: bold;
+    --unnamed-font-weight-normal: normal;
+    --unnamed-font-size-16: 16px;
+    --unnamed-font-size-20: 20px;
+    --unnamed-font-size-24: 24px;
+    --unnamed-font-size-40: 40px;
+    --unnamed-character-spacing-0: 0px;
+    --unnamed-character-spacing--0-4: -0.4px;
+    --unnamed-character-spacing--0-48: -0.48px;
+    --unnamed-character-spacing--0-8: -0.8px;
+    --unnamed-line-spacing-24: 24px;
+    --unnamed-line-spacing-30: 30px;
+    --unnamed-line-spacing-36: 36px;
+    --unnamed-line-spacing-52: 52px;
+}
+    
+    /* Character Styles */
+h1 {
+    font-family: var(--unnamed-font-family-bc-sans);
+    font-style: var(--unnamed-font-style-normal);
+    font-weight: var(--unnamed-font-weight-bold);
+    font-size: var(--unnamed-font-size-40);
+    line-height: var(--unnamed-line-spacing-52);
+    letter-spacing: var(--unnamed-character-spacing--0-8);
+    color: var(--white);
+}
+
+h2 {
+    font-family: var(--unnamed-font-family-bc-sans);
+    font-style: var(--unnamed-font-style-normal);
+    font-weight: var(--unnamed-font-weight-bold);
+    font-size: var(--unnamed-font-size-24);
+    line-height: var(--unnamed-line-spacing-52);
+    letter-spacing: var(--unnamed-character-spacing--0-8);
+    color: var(--white);
+}
+    
+p {
+    font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-normal) 
+    var(--unnamed-font-size-16)/var(--unnamed-line-spacing-24) var(--unnamed-font-family-bc-sans);
+    margin-block-start : 0.5em;
+    margin-block-end : 0.5em;
+}
+
+.titleText {
+    font-size: var(--unnamed-font-size-20 );
+    line-height: var(--unnamed-line-spacing-30);
+    letter-spacing: var(--unnamed-character-spacing-0);
+}
+
+h4 {
+    font-family: var(--unnamed-font-family-bc-sans);
+    font-style: var(--unnamed-font-style-normal);
+    font-weight: var(--unnamed-font-weight-bold);
+    font-size: var(--unnamed-font-size-20);
+    line-height: var(--unnamed-line-spacing-30);
+    letter-spacing: var(--unnamed-character-spacing--0-4);
+    color: var(--bc-black);
+    margin-block-start : 0.4em;
+    margin-block-end : 0.4em;
+}
+
+h3 {
+    font-family: var(--unnamed-font-family-bc-sans);
+    font-style: var(--unnamed-font-style-normal);
+    font-weight: var(--unnamed-font-weight-bold);
+    font-size: var(--unnamed-font-size-24);
+    line-height: var(--unnamed-line-spacing-36);
+    letter-spacing: var(--unnamed-character-spacing--0-48);
+    color: var(--bc-black);
+    margin-block-start : 0.5em;
+    margin-block-end : 0.5em
+}
+    
+.subhead {
+    font-family: var(--unnamed-font-family-bc-sans);
+    font-style: var(--unnamed-font-style-normal);
+    font-weight: var(--unnamed-font-weight-normal);
+    font-size: var(--unnamed-font-size-20);
+    line-height: var(--unnamed-line-spacing-30);
+    letter-spacing: var(--unnamed-character-spacing-0);
+    color: var(--bc-black);
+}
+
+.homecanvas {
+    top: 0px;
+    left: 0px;
+    width: 1920px;
+    height: 1796px;
+    background: #F1F1F1 0% 0% no-repeat padding-box;
+    opacity: 1;
+}
+
+.homeheader {
+    width: 1920px;
+    height: 89px;
+    opacity: 1;
+    background-color: var(--bc-primary-blue);
+}
+
+.homeHeaderLogo {
+    position: relative;
+    top: 15px;
+    left: 180px;
+    width: 400px;
+    height: 89px;
+    background: transparent url('../img/BC_Header.png') 0% 0% no-repeat padding-box;
+}
+
+.homeBClogo {
+    top: 0;
+    left: 0;
+    width: 1920px;
+    height: 3444px;
+    background: transparent url('../img/Home - Province of British Columbia.png') 0% 0% no-repeat padding-box;
+    opacity: 1;
+}
+
+.homeTruckImage {
+    position: absolute;
+    top: 89px;
+    width: 1920px;
+    height: 580px;
+    background: transparent url('../img/20061018c_loaded-logging-truck-on-highway-near-cache-creek_002245.png') 0% 0% no-repeat padding-box;
+    opacity: 1;
+}
+
+.homeTruckImageFade {
+    position: absolute;
+    top: 458px;
+    width: 1920px;
+    height: 340px;
+    background: transparent linear-gradient(180deg, #F1F1F100 0%, #F1F1F1 100%) 0% 0% no-repeat padding-box;
+    opacity: 1;
+}
+
+.homeTitleBox {
+    position: absolute;
+    top: 185px;
+    left: 235px;
+    width: 680px;
+    height: 218px;
+    background: #1F3564 0% 0% no-repeat padding-box;
+    opacity: 0.8;
+    color: var(--white);
+    font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-normal) 
+    var(--unnamed-font-size-20)/var(--unnamed-line-spacing-30) var(--unnamed-font-family-bc-sans);
+    padding: 5px 20px 10px 20px;
+}
+
+.homeContent2Col {
+    display: flex;
+    top: 531px;
+    left: 219px;
+    width: 1700px;
+    position: absolute;
+}
+
+.homeContentBox {
+    position: relative;
+    padding : 0px 40px 20px 0px;
+}
+
+.homeContentBoxHeader {
+    background: #1F3564 0% 0% no-repeat padding-box;
+    height: 50px;
+    text-align : center;
+}
+
+.homeContentBoxContent {
+    position: relative;
+    top: 0;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    padding : 10px 20px 10px 20px;
+}
+
+.homeContentBoxContent2Col {
+    position: relative;
+    top: 0;
+    display: flex;
+}
+
+.homeContentCol1 {
+    flex : 2;
+    margin-right : 20px;
+}
+
+.homeContentCol2 {
+    flex : 1;
+    padding-right: 40px
+}
+
+.homeBorderedContentCol {
+    border : 1px solid var(--bc-border-grey);
+    position: relative;
+    flex : 1;
+    padding: 0px 10px 10px 10px;
+}
+
+.btn {
+    padding: 20px;
+    text-decoration: none;
+    display: block;
+    text-align: center;
+    opacity: 1;
+    border-radius: 4px;
+    font-family: var(--unnamed-font-family-bc-sans);
+}
+
+.btnBlue {
+    width: 226px;
+    background: var(--bc-primary-blue) 0% 0% no-repeat padding-box;
+    color : white;
+    font-style: var(--unnamed-font-style-normal);
+    font-weight: var(--unnamed-font-weight-bold);
+}
+
+.btnWhite {
+    width: 226px;
+    background: white 0% 0% no-repeat padding-box;
+    border: 3px solid var(--bc-primary-blue);
+    color: var(--bc-primary-blue);
+    font-style: var(--unnamed-font-style-normal);
+    font-weight: var(--unnamed-font-weight-bold);
+}
+
+.btnWhite:hover {
+    background: var(--bc-primary-blue) 0% 0% no-repeat padding-box;
+    color: var(--white);
+}
+
+.btnGrey {
+    width: 160px;
+    background: var(--bc-background-light-grey) 0% 0% no-repeat padding-box;
+    border-width : 1px;
+    color: black;
+}
+
+.btnGrey:hover {
+    border: 1px solid var(--bc-border-grey);
+}
+
+
+.link {
+    color : var(--bc-text-links-blue);
+}
+
+.homeContentBoxContent3Col {
+    position: relative;
+    top:0px;
+    display :flex;    
+}
+
+footer {
+    font-family: var(--unnamed-font-family-bc-sans);
+    border-top: 2px solid #fcba19;
+    color: #fff;
+    width: 100%;
+    padding: 0 8.551vw;
+    height: 70px;
+    background: #1F3564 0% 0% no-repeat padding-box;
+}
+
+footer ul {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin: 0;
+    margin-left: 75px;
+    color : white;
+    list-style: none;
+    align-items: center;
+    height: 100%;
+    padding: 0;
+}
+
+footer ul li {
+    display: list-item;
+}
+
+footer ul li a {
+    color : white;
+    border-right: 1px solid #4b5e7e;
+    padding-left: 5px;
+    padding-right: 5px;
+}
