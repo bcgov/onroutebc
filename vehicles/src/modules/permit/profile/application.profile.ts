@@ -11,6 +11,8 @@ import { Permit } from '../entities/permit.entity';
 import { CreateApplicationDto } from '../dto/request/create-application.dto';
 import { ReadApplicationDto } from '../dto/response/read-application.dto';
 import { UpdateApplicationDto } from '../dto/request/update-application.dto';
+import { Directory } from '../../../common/enum/directory.enum';
+import { PPC_FULL_TEXT } from '../../../common/constants/api.constant';
 
 @Injectable()
 export class ApplicationProfile extends AutomapperProfile {
@@ -24,6 +26,12 @@ export class ApplicationProfile extends AutomapperProfile {
         mapper,
         CreateApplicationDto,
         Permit,
+        forMember(
+          (permit) => permit.applicationOwner?.userGUID,
+          mapWithArguments((_, { userGUID }) => {
+            return userGUID;
+          }),
+        ),
         forMember(
           (permit) => permit.createdUserGuid,
           mapWithArguments((_, { userGUID }) => {
@@ -146,6 +154,19 @@ export class ApplicationProfile extends AutomapperProfile {
             return s.permitData?.permitData
               ? (JSON.parse(s.permitData?.permitData) as JSON)
               : undefined;
+          }),
+        ),
+        forMember(
+          (d) => d.applicant,
+          mapFrom((s) => {
+            if (s.applicationOwner?.directory === Directory.IDIR) {
+              return PPC_FULL_TEXT;
+            } else {
+              const firstName =
+                s.applicationOwner?.userContact?.firstName ?? '';
+              const lastName = s.applicationOwner?.userContact?.lastName ?? '';
+              return (firstName + ' ' + lastName).trim();
+            }
           }),
         ),
       );

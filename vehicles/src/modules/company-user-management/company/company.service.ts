@@ -198,7 +198,7 @@ export class CompanyService {
           User,
           {
             extraArgs: () => ({
-              userAuthGroup: UserAuthGroup.COMPANY_ADMINISTRATOR,
+              userAuthGroup: UserAuthGroup.PUBLIC_VERIFIED,
               userName: currentUser.userName,
               directory: currentUser.orbcUserDirectory,
               userGUID: currentUser.userGUID,

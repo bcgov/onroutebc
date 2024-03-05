@@ -8,6 +8,14 @@ import { PermitType } from 'src/common/enum/permit-type.enum';
 export class ReadApplicationDto {
   @AutoMap()
   @ApiProperty({
+    description: 'Id of the company requesting the permit.',
+    example: 74,
+    required: false,
+  })
+  companyId: number;
+
+  @AutoMap()
+  @ApiProperty({
     description: 'Id of the permit.',
     example: '',
     required: false,
@@ -44,30 +52,6 @@ export class ReadApplicationDto {
 
   @AutoMap()
   @ApiProperty({
-    description: 'Satus of Permit/Permit Application',
-    example: ApplicationStatus.IN_PROGRESS,
-    required: false,
-  })
-  permitStatus: ApplicationStatus;
-
-  @AutoMap()
-  @ApiProperty({
-    description: 'Id of the company requesting the permit.',
-    example: 74,
-    required: false,
-  })
-  companyId: number;
-
-  @AutoMap()
-  @ApiProperty({
-    description: 'GUID of the user requesting the permit.',
-    example: '6F9619FF8B86D011B42D00C04FC964FF',
-    required: false,
-  })
-  userGuid: string;
-
-  @AutoMap()
-  @ApiProperty({
     enum: PermitType,
     description: 'Friendly name for the permit type.',
     example: PermitType.TERM_OVERSIZE,
@@ -88,6 +72,14 @@ export class ReadApplicationDto {
       'Unique formatted permit number, recorded once the permit is approved and issued.',
   })
   permitNumber: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'Satus of Permit/Permit Application',
+    example: ApplicationStatus.IN_PROGRESS,
+    required: false,
+  })
+  permitStatus: ApplicationStatus;
 
   @AutoMap()
   @ApiProperty({
@@ -128,4 +120,12 @@ export class ReadApplicationDto {
     description: 'Permit document ID.',
   })
   documentId: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'Name of the user who started the application',
+    example: 'John Smith',
+    required: false,
+  })
+  applicant: string;
 }
