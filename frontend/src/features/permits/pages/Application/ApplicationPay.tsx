@@ -28,6 +28,7 @@ import {
   APPLICATION_STEPS,
   ERROR_ROUTES,
   PERMITS_ROUTES,
+  withCompanyId,
 } from "../../../../routes/constants";
 
 const AVAILABLE_STAFF_PAYMENT_METHODS = [
@@ -86,7 +87,7 @@ export const ApplicationPay = () => {
       if (!isStaffActingAsCompany) {
         // CV Client
         if (!transaction?.url) {
-          navigate(APPLICATIONS_ROUTES.PAY(permitId, true));
+          navigate(withCompanyId(APPLICATIONS_ROUTES.PAY(permitId, true)));
         } else {
           window.open(transaction.url, "_self");
         }
@@ -111,7 +112,7 @@ export const ApplicationPay = () => {
       navigate(ERROR_ROUTES.UNEXPECTED);
     } else if (getDefaultRequiredVal(0, issueResults?.success?.length) > 0) {
       // Navigate back to search page upon issue success
-      navigate(PERMITS_ROUTES.SUCCESS(permitId), { replace: true });
+      navigate(withCompanyId(PERMITS_ROUTES.SUCCESS(permitId)), { replace: true });
     }
   }, [issueResults, permitId]);
 

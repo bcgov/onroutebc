@@ -15,6 +15,7 @@ import {
   APPLICATIONS_ROUTES,
   APPLICATION_STEPS,
   ERROR_ROUTES,
+  withCompanyId,
 } from "../../../../routes/constants";
 
 import {
@@ -57,11 +58,11 @@ export const ApplicationReview = () => {
   };
 
   const back = () => {
-    navigate(APPLICATIONS_ROUTES.DETAILS(permitId), { replace: true });
+    navigate(withCompanyId(APPLICATIONS_ROUTES.DETAILS(permitId)), { replace: true });
   };
 
   const next = () => {
-    navigate(APPLICATIONS_ROUTES.PAY(permitId));
+    navigate(withCompanyId(APPLICATIONS_ROUTES.PAY(permitId)));
   };
 
   const onSubmit = async () => {

@@ -12,6 +12,7 @@ import {
   APPLICATIONS_ROUTES,
   ERROR_ROUTES,
   PERMITS_ROUTES,
+  withCompanyId,
 } from "../../../../routes/constants";
 
 import {
@@ -72,7 +73,7 @@ export const PaymentRedirect = () => {
         issuedPermit.current = true;
       } else if (paymentApproved === false) {
         // Payment failed, redirect back to pay now page
-        navigate(APPLICATIONS_ROUTES.PAY(applicationIds[0], true), {
+        navigate(withCompanyId(APPLICATIONS_ROUTES.PAY(applicationIds[0], true)), {
           replace: true,
         });
       }

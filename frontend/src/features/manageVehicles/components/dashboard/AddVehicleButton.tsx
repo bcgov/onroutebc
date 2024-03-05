@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 
-import { VEHICLES_ROUTES } from "../../../../routes/constants";
+import { VEHICLES_ROUTES, withCompanyId } from "../../../../routes/constants";
 import { VEHICLE_TYPES, VehicleType } from "../../types/Vehicle";
 
 /**
@@ -55,9 +55,9 @@ export const AddVehicleButton = () => {
     vehicleMode: VehicleType,
   ) => {
     if (vehicleMode === VEHICLE_TYPES.POWER_UNIT) {
-      navigate(VEHICLES_ROUTES.ADD_POWER_UNIT);
+      navigate(withCompanyId(VEHICLES_ROUTES.ADD_POWER_UNIT));
     } else if (vehicleMode === VEHICLE_TYPES.TRAILER) {
-      navigate(VEHICLES_ROUTES.ADD_TRAILER);
+      navigate(withCompanyId(VEHICLES_ROUTES.ADD_TRAILER));
     }
 
     setIsMenuOpen(false);

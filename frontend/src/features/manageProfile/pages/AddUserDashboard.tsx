@@ -22,7 +22,7 @@ import { addUserToCompany } from "../apiManager/manageProfileAPI";
 import { UserAuthRadioGroup } from "../components/forms/userManagement/UserAuthRadioGroup";
 import UserGroupsAndPermissionsModal from "../components/user-management/UserGroupsAndPermissionsModal";
 import { BCEID_PROFILE_TABS, BCeIDAddUserRequest } from "../types/manageProfile.d";
-import { PROFILE_ROUTES } from "../../../routes/constants";
+import { PROFILE_ROUTES, withCompanyId } from "../../../routes/constants";
 import { CustomActionLink } from "../../../common/components/links/CustomActionLink";
 import { BCeID_USER_AUTH_GROUP } from "../../../common/authentication/types";
 
@@ -46,7 +46,7 @@ export const AddUserDashboard = React.memo(() => {
   const { setSnackBar } = useContext(SnackBarContext);
 
   const onClickBreadCrumb = () => {
-    navigate(PROFILE_ROUTES.MANAGE, {
+    navigate(withCompanyId(PROFILE_ROUTES.MANAGE), {
       state: {
         selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT_ORGADMIN,
       },
@@ -84,7 +84,7 @@ export const AddUserDashboard = React.memo(() => {
           showSnackbar: true,
           setShowSnackbar: () => true,
         });
-        navigate(PROFILE_ROUTES.MANAGE, {
+        navigate(withCompanyId(PROFILE_ROUTES.MANAGE), {
           state: {
             selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT_ORGADMIN,
           },

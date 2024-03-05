@@ -27,7 +27,7 @@ import {
   invalidYearMin,
   requiredMessage,
 } from "../../../../common/helpers/validationMessages";
-import { VEHICLES_ROUTES } from "../../../../routes/constants";
+import { VEHICLES_ROUTES, withCompanyId } from "../../../../routes/constants";
 import { Nullable } from "../../../../common/types/common";
 
 /**
@@ -111,7 +111,7 @@ export const TrailerForm = ({ trailer, companyId }: TrailerFormProps) => {
           message: "Changes Saved",
           alertType: "info",
         });
-        navigate(VEHICLES_ROUTES.TRAILER_TAB);
+        navigate(withCompanyId(VEHICLES_ROUTES.TRAILER_TAB));
       }
     } else {
       const trailerToBeAdded = data as Trailer;
@@ -135,7 +135,7 @@ export const TrailerForm = ({ trailer, companyId }: TrailerFormProps) => {
           message: "Trailer has been added successfully",
           alertType: "success",
         });
-        navigate(VEHICLES_ROUTES.TRAILER_TAB);
+        navigate(withCompanyId(VEHICLES_ROUTES.TRAILER_TAB));
       }
     }
   };
@@ -144,7 +144,7 @@ export const TrailerForm = ({ trailer, companyId }: TrailerFormProps) => {
    * Changed view to the main Vehicle Inventory page
    */
   const handleClose = () => {
-    navigate(VEHICLES_ROUTES.TRAILER_TAB);
+    navigate(withCompanyId(VEHICLES_ROUTES.TRAILER_TAB));
   };
 
   /**

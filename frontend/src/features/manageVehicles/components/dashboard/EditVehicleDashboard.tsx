@@ -17,7 +17,7 @@ import {
 } from "../../types/Vehicle";
 import { DATE_FORMATS, toLocal } from "../../../../common/helpers/formatDate";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
-import { ERROR_ROUTES, VEHICLES_ROUTES } from "../../../../routes/constants";
+import { ERROR_ROUTES, VEHICLES_ROUTES, withCompanyId } from "../../../../routes/constants";
 import { useVehicleByIdQuery } from "../../apiManager/hooks";
 import { Loading } from "../../../../common/pages/Loading";
 import { BANNER_MESSAGES } from "../../../../common/constants/bannerMessages";
@@ -47,9 +47,9 @@ export const EditVehicleDashboard = React.memo(
 
     const backToVehicleInventory = () => {
       if (editVehicleMode === VEHICLE_TYPES.TRAILER) {
-        navigate(VEHICLES_ROUTES.TRAILER_TAB);
+        navigate(withCompanyId(VEHICLES_ROUTES.TRAILER_TAB));
       } else {
-        navigate(VEHICLES_ROUTES.MANAGE);
+        navigate(withCompanyId(VEHICLES_ROUTES.MANAGE));
       }
     };
 

@@ -5,7 +5,7 @@ import { Box, MenuItem, SelectChangeEvent, Button } from "@mui/material";
 import "./StartApplicationAction.scss";
 import { PERMIT_TYPE_CHOOSE_FROM_OPTIONS } from "../../../../constants/constants";
 import { SelectPermitType } from "./SelectPermitType";
-import { APPLICATIONS_ROUTES } from "../../../../../../routes/constants";
+import { APPLICATIONS_ROUTES, withCompanyId } from "../../../../../../routes/constants";
 import { DEFAULT_PERMIT_TYPE, EMPTY_PERMIT_TYPE_SELECT, PermitType } from "../../../../types/PermitType";
 
 /**
@@ -27,7 +27,7 @@ export const StartApplicationAction = () => {
 
   const handleStartButtonClicked = () => {
     if (chooseFrom !== EMPTY_PERMIT_TYPE_SELECT) {
-      navigate(APPLICATIONS_ROUTES.START_APPLICATION(chooseFrom));
+      navigate(withCompanyId(APPLICATIONS_ROUTES.START_APPLICATION(chooseFrom)));
     }
   };
 

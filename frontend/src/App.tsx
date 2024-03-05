@@ -1,4 +1,4 @@
-import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import { AppRoutes } from "./routes/Routes";
 import { ThemeProvider } from "@mui/material/styles";
 import { createContext, Dispatch, useEffect, useMemo, useState } from "react";
@@ -129,14 +129,14 @@ const App = () => {
                 alertType={snackBar.alertType}
               />
               <div className="page-section">
-                <Router>
+                <BrowserRouter>
                   <Header />
                   <NavIconSideBar>
                     <NavIconHomeButton />
                     <NavIconReportButton />
                   </NavIconSideBar>
                   <AppRoutes />
-                </Router>
+                </BrowserRouter>
               </div>
               <Footer />
             </SnackBarContext.Provider>

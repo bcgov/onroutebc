@@ -24,7 +24,10 @@ import {
   defaultTableInitialStateOptions,
   defaultTableStateOptions,
 } from "../../../common/helpers/tableHelper";
-import { BCeID_USER_STATUS, ReadUserInformationResponse } from "../types/manageProfile.d";
+import {
+  BCeID_USER_STATUS,
+  ReadUserInformationResponse,
+} from "../types/manageProfile.d";
 
 /**
  * User Management Component for CV Client.
@@ -129,7 +132,7 @@ export const UserManagement = () => {
     renderToolbarInternalActions: useCallback(
       () => (
         <Box className="table-container__toolbar-internal-actions">
-          <Trash onClickTrash={onClickTrashIcon} disabled />
+          <Trash onClickTrash={onClickTrashIcon} disabled={hasNoRowsSelected} />
         </Box>
       ),
       [hasNoRowsSelected],

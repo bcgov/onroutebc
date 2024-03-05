@@ -11,7 +11,7 @@ import { getCompanyIdFromSession } from "../../../../common/apiManager/httpReque
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { PowerUnitForm } from "../form/PowerUnitForm";
 import { TrailerForm } from "../form/TrailerForm";
-import { VEHICLES_ROUTES } from "../../../../routes/constants";
+import { VEHICLES_ROUTES, withCompanyId } from "../../../../routes/constants";
 import { BANNER_MESSAGES } from "../../../../common/constants/bannerMessages";
 import { VEHICLE_TYPES, VehicleType } from "../../types/Vehicle";
 
@@ -21,9 +21,9 @@ export const AddVehicleDashboard = React.memo(
 
     const backToVehicleInventory = () => {
       if (addVehicleMode === VEHICLE_TYPES.TRAILER) {
-        navigate(VEHICLES_ROUTES.TRAILER_TAB);
+        navigate(withCompanyId(VEHICLES_ROUTES.TRAILER_TAB));
       } else {
-        navigate(VEHICLES_ROUTES.MANAGE);
+        navigate(withCompanyId(VEHICLES_ROUTES.MANAGE));
       }
     };
 

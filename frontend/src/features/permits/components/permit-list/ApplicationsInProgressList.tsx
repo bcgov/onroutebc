@@ -106,11 +106,11 @@ export const ApplicationsInProgressList = () => {
    * in the confirmation dialog.
    */
   const onConfirmApplicationDelete = async () => {
+    setIsDeleteDialogOpen(() => false);
     const applicationIds: string[] = Object.keys(rowSelection);
     const response = await deleteApplications(applicationIds);
     if (response.status === 200) {
       const responseBody = response.data;
-      setIsDeleteDialogOpen(() => false);
       if (responseBody.failure.length > 0) {
         snackBar.setSnackBar({
           alertType: "error",

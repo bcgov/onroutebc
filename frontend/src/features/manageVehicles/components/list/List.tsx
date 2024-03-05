@@ -27,7 +27,11 @@ import { DeleteConfirmationDialog } from "../../../../common/components/dialog/D
 import { PowerUnitColumnDefinition, TrailerColumnDefinition } from "./Columns";
 import { deleteVehicles } from "../../apiManager/vehiclesAPI";
 import { SnackBarContext } from "../../../../App";
-import { ERROR_ROUTES, VEHICLES_ROUTES } from "../../../../routes/constants";
+import {
+  ERROR_ROUTES,
+  VEHICLES_ROUTES,
+  withCompanyId,
+} from "../../../../routes/constants";
 import { DoesUserHaveRoleWithContext } from "../../../../common/authentication/util";
 import { ROLES } from "../../../../common/authentication/types";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
@@ -251,15 +255,19 @@ export const List = memo(
                     onClick={() => {
                       if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
                         navigate(
-                          `${VEHICLES_ROUTES.POWER_UNIT_DETAILS}/${row.getValue(
-                            "powerUnitId",
-                          )}`,
+                          withCompanyId(
+                            `${VEHICLES_ROUTES.POWER_UNIT_DETAILS}/${row.getValue(
+                              "powerUnitId",
+                            )}`,
+                          ),
                         );
                       } else if (vehicleType === VEHICLE_TYPES.TRAILER) {
                         navigate(
-                          `${VEHICLES_ROUTES.TRAILER_DETAILS}/${row.getValue(
-                            "trailerId",
-                          )}`,
+                          withCompanyId(
+                            `${VEHICLES_ROUTES.TRAILER_DETAILS}/${row.getValue(
+                              "trailerId",
+                            )}`,
+                          ),
                         );
                       }
                     }}

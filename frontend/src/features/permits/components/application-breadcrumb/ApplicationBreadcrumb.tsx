@@ -5,6 +5,7 @@ import { Nullable } from "../../../../common/types/common";
 import {
   APPLICATIONS_ROUTES,
   ApplicationStep,
+  withCompanyId,
 } from "../../../../routes/constants";
 
 export const ApplicationBreadcrumb = ({
@@ -20,17 +21,17 @@ export const ApplicationBreadcrumb = ({
     ? [
         {
           text: "Permits",
-          onClick: () => navigate(APPLICATIONS_ROUTES.BASE, { replace: true }),
+          onClick: () => navigate(withCompanyId(APPLICATIONS_ROUTES.BASE), { replace: true }),
         },
         {
           text: "Permit Application",
           onClick: () =>
-            navigate(APPLICATIONS_ROUTES.DETAILS(permitId), { replace: true }),
+            navigate(withCompanyId(APPLICATIONS_ROUTES.DETAILS(permitId)), { replace: true }),
         },
         {
           text: "Review and Confirm Details",
           onClick: () =>
-            navigate(APPLICATIONS_ROUTES.REVIEW(permitId), { replace: true }),
+            navigate(withCompanyId(APPLICATIONS_ROUTES.REVIEW(permitId)), { replace: true }),
         },
         {
           text: "Pay for Permit",
@@ -39,7 +40,7 @@ export const ApplicationBreadcrumb = ({
     : [
         {
           text: "Permits",
-          onClick: () => navigate(APPLICATIONS_ROUTES.BASE, { replace: true }),
+          onClick: () => navigate(withCompanyId(APPLICATIONS_ROUTES.BASE), { replace: true }),
         },
         {
           text: "Permit Application",

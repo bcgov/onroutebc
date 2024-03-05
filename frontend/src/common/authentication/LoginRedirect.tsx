@@ -8,10 +8,12 @@ import { Loading } from "../pages/Loading";
 import { IDPS } from "../types/idp";
 import { Optional } from "../types/common";
 import {
+  APPLICATIONS_ROUTES,
   // APPLICATIONS_ROUTES,
   CREATE_PROFILE_WIZARD_ROUTES,
   ERROR_ROUTES,
   IDIR_ROUTES,
+  withCompanyId,
 } from "../../routes/constants";
 
 import {
@@ -59,7 +61,7 @@ const navigateBCeID = (
   }
   // The user and company exist
   else if (associatedCompanies?.length) {
-    return `${associatedCompanies[0].companyId}/applications`;
+    return withCompanyId(APPLICATIONS_ROUTES.BASE);
   }
   // User exists but company does not exist. This is not a possible scenario.
   else if (!associatedCompanies?.length) {

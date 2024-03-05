@@ -27,17 +27,14 @@ import {
   APPLICATIONS_ROUTES,
   APPLICATION_STEPS,
   ERROR_ROUTES,
+  withCompanyId,
 } from "../../../../routes/constants";
 
 /**
  * The first step in creating and submitting an Application.
  * @returns A form for users to create an Application
  */
-export const ApplicationForm = ({
-  permitType,
-}: {
-  permitType: PermitType;
-}) => {
+export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
   // The name of this feature that is used for id's, keys, and associating form components
   const FEATURE = "application";
 
@@ -53,8 +50,8 @@ export const ApplicationForm = ({
   } = useContext(OnRouteBCContext);
 
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
-  const doingBusinessAs = isStaffActingAsCompany && companyLegalName ?
-    companyLegalName : "";
+  const doingBusinessAs =
+    isStaffActingAsCompany && companyLegalName ? companyLegalName : "";
 
   const companyInfoQuery = useCompanyInfoQuery();
 
@@ -136,10 +133,14 @@ export const ApplicationForm = ({
     const savedVehicleDetails = await handleSaveVehicle(vehicleData);
 
     // Save application before continuing
-    await onSaveApplication(
-      (permitId) => navigate(APPLICATIONS_ROUTES.REVIEW(permitId)),
-      savedVehicleDetails,
-    );
+    await onSaveApplication((permitId) => {
+      console.log("APPLICATIONS_ROUTES.REVIEW::", APPLICATIONS_ROUTES.REVIEW());
+      console.log(
+        "withCompanyId(APPLICATIONS_ROUTES.REVIEW(permitId))::",
+        withCompanyId(APPLICATIONS_ROUTES.REVIEW("2028")),
+      );
+      return navigate(withCompanyId(APPLICATIONS_ROUTES.REVIEW(permitId)));
+    }, savedVehicleDetails);
   };
 
   const isSaveApplicationSuccessful = (status: number) =>
@@ -192,9 +193,10 @@ export const ApplicationForm = ({
           },
     );
 
-    const response = await saveApplicationMutation.mutateAsync(
-      applicationToBeSaved,
-    );
+    const response =
+      await saveApplicationMutation.mutateAsync(applicationToBeSaved);
+
+    console.log("response::", response);
 
     if (isSaveApplicationSuccessful(response.status)) {
       const responseData = response.data;
@@ -202,6 +204,7 @@ export const ApplicationForm = ({
         responseData as Application,
         response.status,
       );
+      console.log("calling additionalSuccessAction");
       additionalSuccessAction?.(savedPermitId);
     } else {
       onSaveFailure();
@@ -210,7 +213,7 @@ export const ApplicationForm = ({
 
   const onSave = async () => {
     await onSaveApplication((permitId) =>
-      navigate(APPLICATIONS_ROUTES.DETAILS(permitId)),
+      navigate(withCompanyId(APPLICATIONS_ROUTES.DETAILS(permitId))),
     );
   };
 
@@ -219,12 +222,12 @@ export const ApplicationForm = ({
     if (!isApplicationSaved()) {
       setShowLeaveApplicationDialog(true);
     } else {
-      navigate(APPLICATIONS_ROUTES.BASE);
+      navigate(withCompanyId(APPLICATIONS_ROUTES.BASE));
     }
   };
 
   const handleLeaveUnsaved = () => {
-    navigate(APPLICATIONS_ROUTES.BASE);
+    navigate(withCompanyId(APPLICATIONS_ROUTES.BASE));
   };
 
   const handleStayOnApplication = () => {

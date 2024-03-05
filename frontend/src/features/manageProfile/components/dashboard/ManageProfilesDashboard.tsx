@@ -17,7 +17,7 @@ import { CompanyInfo } from "../../pages/CompanyInfo";
 import { MyInfo } from "../../pages/MyInfo";
 import { UserManagement } from "../../pages/UserManagement";
 import { BCEID_PROFILE_TABS } from "../../types/manageProfile.d";
-import { ERROR_ROUTES, PROFILE_ROUTES } from "../../../../routes/constants";
+import { ERROR_ROUTES, PROFILE_ROUTES, withCompanyId } from "../../../../routes/constants";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { useAuth } from "react-oidc-context";
 import { isIDIR } from "../../../../common/authentication/auth-walls/BCeIDAuthWall";
@@ -101,7 +101,7 @@ export const ManageProfilesDashboard = React.memo(() => {
         isBCeIDAdmin ? (
           <Button
             variant="contained"
-            onClick={() => navigate(PROFILE_ROUTES.ADD_USER)}
+            onClick={() => navigate(withCompanyId(PROFILE_ROUTES.ADD_USER))}
             sx={{
               marginTop: "45px",
               height: "50px",

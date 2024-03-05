@@ -49,7 +49,7 @@ export const AppRoutes = () => {
         path={routes.ERROR_ROUTES.UNEXPECTED}
         element={<UniversalUnexpected />}
       />
-      <Route path="*" element={<UniversalUnexpected />} />
+      {/* <Route path="*" element={<UniversalUnexpected />} /> */}
 
       {/* Wizard Routes */}
 
@@ -142,69 +142,73 @@ export const AppRoutes = () => {
 
       {/* BCeID Routes */}
       {/* Protected Routes */}
-      <Route element={<BCeIDAuthWall requiredRole={ROLES.READ_VEHICLE} />}>
-        <Route path={routes.VEHICLES_ROUTES.MANAGE}>
-          <Route index={true} element={<ManageVehicles />} />
+      <Route path="/:companyId">
+        <Route element={<BCeIDAuthWall requiredRole={ROLES.READ_VEHICLE} />}>
+          <Route path={routes.VEHICLES_ROUTES.MANAGE} element={<ManageVehicles />} >
+            <Route index={true} element={<ManageVehicles />} />
+            <Route
+              path={`${routes.VEHICLES_ROUTES.POWER_UNIT_DETAILS}/:vehicleId`}
+              element={
+                <EditVehicleDashboard
+                  editVehicleMode={VEHICLE_TYPES.POWER_UNIT}
+                />
+              }
+            />
+            <Route
+              path={`${routes.VEHICLES_ROUTES.TRAILER_DETAILS}/:vehicleId`}
+              element={
+                <EditVehicleDashboard editVehicleMode={VEHICLE_TYPES.TRAILER} />
+              }
+            />
+            <Route
+              path={routes.VEHICLES_ROUTES.ADD_POWER_UNIT}
+              element={
+                <AddVehicleDashboard
+                  addVehicleMode={VEHICLE_TYPES.POWER_UNIT}
+                />
+              }
+            />
+            <Route
+              path={routes.VEHICLES_ROUTES.ADD_TRAILER}
+              element={
+                <AddVehicleDashboard addVehicleMode={VEHICLE_TYPES.TRAILER} />
+              }
+            />
+          </Route>
+        </Route>
+
+        <Route element={<BCeIDAuthWall requiredRole={ROLES.READ_ORG} />}>
           <Route
-            path={`${routes.VEHICLES_ROUTES.POWER_UNIT_DETAILS}/:vehicleId`}
+            path={routes.PROFILE_ROUTES.MANAGE}
+            element={<ManageProfiles />}
+          />
+        </Route>
+
+        <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_USER} />}>
+          <Route
+            path={routes.PROFILE_ROUTES.ADD_USER}
+            element={<AddUserDashboard />}
+          />
+          <Route
+            path={`${routes.PROFILE_ROUTES.EDIT_USER}/:userGUID`}
+            element={<EditUserDashboard />}
+          />
+        </Route>
+
+        <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
+          <Route
+            path={`${routes.APPLICATIONS_ROUTES.START_APPLICATION()}`}
             element={
-              <EditVehicleDashboard
-                editVehicleMode={VEHICLE_TYPES.POWER_UNIT}
+              <ApplicationSteps
+                applicationStep={routes.APPLICATION_STEPS.DETAILS}
               />
             }
           />
-          <Route
-            path={`${routes.VEHICLES_ROUTES.TRAILER_DETAILS}/:vehicleId`}
-            element={
-              <EditVehicleDashboard editVehicleMode={VEHICLE_TYPES.TRAILER} />
-            }
-          />
-          <Route
-            path={routes.VEHICLES_ROUTES.ADD_POWER_UNIT}
-            element={
-              <AddVehicleDashboard addVehicleMode={VEHICLE_TYPES.POWER_UNIT} />
-            }
-          />
-          <Route
-            path={routes.VEHICLES_ROUTES.ADD_TRAILER}
-            element={
-              <AddVehicleDashboard addVehicleMode={VEHICLE_TYPES.TRAILER} />
-            }
-          />
         </Route>
-      </Route>
-
-      <Route element={<BCeIDAuthWall requiredRole={ROLES.READ_ORG} />}>
-        <Route
-          path={routes.PROFILE_ROUTES.MANAGE}
-          element={<ManageProfiles />}
-        />
-      </Route>
-
-      <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_USER} />}>
-        <Route
-          path={routes.PROFILE_ROUTES.ADD_USER}
-          element={<AddUserDashboard />}
-        />
-        <Route
-          path={`${routes.PROFILE_ROUTES.EDIT_USER}/:userGUID`}
-          element={<EditUserDashboard />}
-        />
-      </Route>
-
-      <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
-        <Route
-          path={`${routes.APPLICATIONS_ROUTES.START_APPLICATION()}`}
-          element={
-            <ApplicationSteps
-              applicationStep={routes.APPLICATION_STEPS.DETAILS}
-            />
-          }
-        />
-      </Route>
-      <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
-        <Route path={routes.APPLICATIONS_ROUTES.BASE}>
-          <Route index={true} element={<PermitDashboard />} />
+        <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
+          <Route path={routes.APPLICATIONS_ROUTES.BASE}>
+            <Route index={true} element={<PermitDashboard />} />
+          </Route>
           <Route path={`${routes.APPLICATIONS_ROUTES.DETAILS()}`}>
             <Route
               index={true}
@@ -232,20 +236,20 @@ export const AppRoutes = () => {
             />
           </Route>
         </Route>
-      </Route>
 
-      <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
-        <Route
-          path={`${routes.PERMITS_ROUTES.SUCCESS()}`}
-          element={<SuccessPage />}
-        />
-      </Route>
+        <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
+          <Route
+            path={`${routes.PERMITS_ROUTES.SUCCESS()}`}
+            element={<SuccessPage />}
+          />
+        </Route>
 
-      <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
-        <Route
-          path={routes.PAYMENT_ROUTES.PAYMENT_REDIRECT}
-          element={<PaymentRedirect />}
-        />
+        <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
+          <Route
+            path={routes.PAYMENT_ROUTES.PAYMENT_REDIRECT}
+            element={<PaymentRedirect />}
+          />
+        </Route>
       </Route>
     </Routes>
   );

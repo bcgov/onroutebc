@@ -3,7 +3,7 @@ import { memo } from "react";
 import { useNavigate } from "react-router-dom";
 
 import "./OnRouteBCProfileCreated.scss";
-import { APPLICATIONS_ROUTES, PROFILE_ROUTES } from "../../../routes/constants";
+import { APPLICATIONS_ROUTES, PROFILE_ROUTES, withCompanyId } from "../../../routes/constants";
 
 export const OnRouteBCProfileCreated = memo(
   ({ onRouteBCClientNumber }: { onRouteBCClientNumber?: string }) => {
@@ -40,7 +40,7 @@ export const OnRouteBCProfileCreated = memo(
             <Button
               variant="contained"
               color="primary"
-              onClick={() => navigate(APPLICATIONS_ROUTES.BASE)}
+              onClick={() => navigate(withCompanyId(APPLICATIONS_ROUTES.BASE))}
             >
               Apply for a permit
             </Button>
@@ -49,7 +49,7 @@ export const OnRouteBCProfileCreated = memo(
             <Button
               variant="outlined"
               color="primary"
-              onClick={() => navigate(PROFILE_ROUTES.MANAGE)}
+              onClick={() => navigate(withCompanyId(PROFILE_ROUTES.MANAGE))}
             >
               View Profile
             </Button>

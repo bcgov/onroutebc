@@ -8,7 +8,7 @@ import { CustomActionLink } from "../../../../../common/components/links/CustomA
 import { SnackBarContext } from "../../../../../App";
 import { formatPhoneNumber } from "../../../../../common/components/form/subFormComponents/PhoneNumberInput";
 import { requiredMessage } from "../../../../../common/helpers/validationMessages";
-import { ERROR_ROUTES, PROFILE_ROUTES } from "../../../../../routes/constants";
+import { ERROR_ROUTES, PROFILE_ROUTES, withCompanyId } from "../../../../../routes/constants";
 import { BC_COLOURS } from "../../../../../themes/bcGovStyles";
 import { updateUserInfo } from "../../../apiManager/manageProfileAPI";
 import {
@@ -64,7 +64,7 @@ export const EditUserForm = memo(
      * On click handler for the breadcrumbs. Navigates to the parent pages.
      */
     const onClickBreadcrumb = () => {
-      navigate(PROFILE_ROUTES.MANAGE, {
+      navigate(withCompanyId(PROFILE_ROUTES.MANAGE), {
         state: {
           selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT_ORGADMIN,
         },
@@ -88,7 +88,7 @@ export const EditUserForm = memo(
             setShowSnackbar: () => true,
           });
 
-          navigate(PROFILE_ROUTES.MANAGE, {
+          navigate(withCompanyId(PROFILE_ROUTES.MANAGE), {
             state: { selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT_ORGADMIN },
           });
         }

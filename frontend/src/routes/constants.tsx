@@ -1,3 +1,4 @@
+import { getCompanyIdFromSession } from "../common/apiManager/httpRequestHandler";
 import { Nullable } from "../common/types/common";
 import { IDPS } from "../common/types/idp";
 import { PermitType } from "../features/permits/types/PermitType";
@@ -35,8 +36,11 @@ export const ERROR_ROUTES = {
   UNEXPECTED: "/unexpected-error",
 };
 
+export const withCompanyId = (path: string) =>
+  `/${getCompanyIdFromSession()}/${path}`;
+
 // Manage Vehicles
-const VEHICLES_ROUTE_BASE = "/:companyId/manage-vehicles";
+const VEHICLES_ROUTE_BASE = `manage-vehicles`;
 export const VEHICLES_DASHBOARD_TABS = {
   POWER_UNIT: "#power-unit",
   TRAILER: "#trailer",
@@ -55,7 +59,7 @@ export const VEHICLES_ROUTES = {
 };
 
 // Manage Profile
-const PROFILE_ROUTE_BASE = ":companyId/manage-profiles";
+const PROFILE_ROUTE_BASE = "manage-profiles";
 export const PROFILE_ROUTES = {
   MANAGE: PROFILE_ROUTE_BASE,
   ADD_USER: `${PROFILE_ROUTE_BASE}/add-user`,
@@ -64,7 +68,7 @@ export const PROFILE_ROUTES = {
 };
 
 // Permits
-const PERMITS_ROUTE_BASE = ":companyId/permits";
+const PERMITS_ROUTE_BASE = "permits";
 export const PERMITS_ROUTES = {
   BASE: PERMITS_ROUTE_BASE,
   SUCCESS: (permitId?: string) =>
@@ -88,8 +92,8 @@ export const PERMITS_ROUTES = {
 };
 
 // Applications
-const APPLICATIONS_ROUTE_BASE = `:companyId/applications`;
-const CREATE_APPLICATION_ROUTE_BASE = ":companyId/create-application";
+const APPLICATIONS_ROUTE_BASE = `applications`;
+const CREATE_APPLICATION_ROUTE_BASE = "create-application";
 
 export const APPLICATION_STEPS = {
   HOME: 0,
@@ -148,7 +152,7 @@ export const IDIR_ROUTES = {
 };
 
 // Payment
-const PAYMENT_ROUTE_BASE = ":companyId/payment";
+const PAYMENT_ROUTE_BASE = "payment";
 export const PAYMENT_ROUTES = {
   BASE: PAYMENT_ROUTE_BASE,
   PAYMENT_REDIRECT: PAYMENT_ROUTE_BASE,

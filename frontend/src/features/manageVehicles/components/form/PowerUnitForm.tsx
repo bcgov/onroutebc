@@ -8,7 +8,7 @@ import { PowerUnit, VehicleSubType } from "../../types/Vehicle";
 import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
 import { SnackBarContext } from "../../../../App";
-import { VEHICLES_ROUTES } from "../../../../routes/constants";
+import { VEHICLES_ROUTES, withCompanyId } from "../../../../routes/constants";
 import {
   getDefaultRequiredVal,
   getDefaultNullableVal,
@@ -117,7 +117,7 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
           alertType: "info",
         });
 
-        navigate(VEHICLES_ROUTES.MANAGE);
+        navigate(withCompanyId(VEHICLES_ROUTES.MANAGE));
       }
     } else {
       const powerUnitToBeAdded = data as PowerUnit;
@@ -148,7 +148,7 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
           alertType: "success",
         });
 
-        navigate(VEHICLES_ROUTES.MANAGE);
+        navigate(withCompanyId(VEHICLES_ROUTES.MANAGE));
       }
     }
   };
@@ -157,7 +157,7 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
    * Changed view to the main Vehicle Inventory page
    */
   const handleClose = () => {
-    navigate(VEHICLES_ROUTES.MANAGE);
+    navigate(withCompanyId(VEHICLES_ROUTES.MANAGE));
   };
 
   /**

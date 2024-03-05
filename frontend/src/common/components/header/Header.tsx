@@ -18,6 +18,7 @@ import {
   APPLICATIONS_ROUTES,
   PROFILE_ROUTES,
   VEHICLES_ROUTES,
+  withCompanyId,
 } from "../../../routes/constants";
 
 const getEnv = () => {
@@ -56,19 +57,23 @@ const Navbar = ({
             <>
               {DoesUserHaveRoleWithContext(ROLES.WRITE_PERMIT) && (
                 <li>
-                  <NavLink to={APPLICATIONS_ROUTES.BASE}>Permits</NavLink>
+                  <NavLink to={withCompanyId(APPLICATIONS_ROUTES.BASE)}>
+                    Permits
+                  </NavLink>
                 </li>
               )}
               {DoesUserHaveRoleWithContext(ROLES.READ_VEHICLE) && (
                 <li>
-                  <NavLink to={VEHICLES_ROUTES.MANAGE}>
+                  <NavLink to={withCompanyId(VEHICLES_ROUTES.MANAGE)}>
                     Vehicle Inventory
                   </NavLink>
                 </li>
               )}
               {DoesUserHaveRoleWithContext(ROLES.READ_ORG) && (
                 <li>
-                  <NavLink to={PROFILE_ROUTES.MANAGE}>Profile</NavLink>
+                  <NavLink to={withCompanyId(PROFILE_ROUTES.MANAGE)}>
+                    Profile
+                  </NavLink>
                 </li>
               )}
             </>

@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
 import { OnRouteBCTableRowActions } from "../../../../common/components/table/OnRouteBCTableRowActions";
-import { PROFILE_ROUTES } from "../../../../routes/constants";
+import { PROFILE_ROUTES, withCompanyId } from "../../../../routes/constants";
 
 const USER_MANAGEMENT_OPTION_TYPES = {
   EDIT: "edit",
@@ -29,7 +29,7 @@ export const UserManagementTableRowActions = ({
 
   const onClickCallback = (selectedOption: string) => {
     if (selectedOption === USER_MANAGEMENT_OPTION_TYPES.EDIT) {
-      navigate(`${PROFILE_ROUTES.EDIT_USER}/${userGUID}`, {
+      navigate(withCompanyId(`${PROFILE_ROUTES.EDIT_USER}/${userGUID}`), {
         state: {
           userGUID,
         },
