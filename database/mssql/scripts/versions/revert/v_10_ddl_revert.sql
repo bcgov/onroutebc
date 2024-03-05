@@ -1,0 +1,25 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET NOCOUNT ON
+GO
+
+SET XACT_ABORT ON
+
+BEGIN TRY
+  BEGIN TRANSACTION
+    DROP FUNCTION IF EXISTS [dbo].[ORBC_FORMAT_UTC_TO_PACIFIC_FN]
+  COMMIT
+END TRY
+
+BEGIN CATCH
+  IF @@TRANCOUNT > 0 
+    ROLLBACK;
+  THROW
+END CATCH
+
+DECLARE @VersionDescription VARCHAR(255)
+SET @VersionDescription = 'Reverting function to format a UTC date into Pacific time for reports.'
+
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (9, @VersionDescription, getutcdate())

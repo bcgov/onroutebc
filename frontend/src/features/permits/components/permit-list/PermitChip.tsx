@@ -1,5 +1,5 @@
-import { OnRouteBCChip } from "../../../../common/components/table/OnRouteBCChip";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
+import "./PermitChip.scss";
+import { OnRouteBCChip } from "../../../../common/components/chip/OnRouteBCChip";
 import {
   PERMIT_EXPIRED,
   PERMIT_STATUSES,
@@ -7,36 +7,22 @@ import {
 } from "../../types/PermitStatus";
 
 /**
- * Returns the colors associated with the badge.
- * NOTE: If the permit is inactive or expired, a small badge has to be displayed
+ * Returns the theme name for the chip based on the permit status.
+ * If the permit is inactive or expired, a chip has to be displayed
  * beside the permit number.
  * @param permitStatus string representing the permit status
- * @returns An object containing the text and background colors
+ * @returns A string representing the theme name for the chip
  */
-const getColors = (
-  permitStatus?: string,
-): { background: string; color: string } | undefined => {
+const getTheme = (permitStatus?: string) => {
   switch (permitStatus) {
     case PERMIT_STATUSES.VOIDED:
-      return {
-        background: BC_COLOURS.focus_blue,
-        color: BC_COLOURS.white,
-      };
+      return "voided";
     case PERMIT_STATUSES.REVOKED:
-      return {
-        background: BC_COLOURS.bc_messages_red_text,
-        color: BC_COLOURS.white,
-      };
+      return "revoked";
     case PERMIT_STATUSES.SUPERSEDED:
-      return {
-        background: BC_COLOURS.bc_border_grey,
-        color: BC_COLOURS.bc_black,
-      };
+      return "superseded";
     case PERMIT_EXPIRED:
-      return {
-        background: BC_COLOURS.bc_messages_red_background,
-        color: BC_COLOURS.bc_messages_red_text,
-      };
+      return "expired";
     default:
       return undefined;
   }
@@ -47,7 +33,7 @@ const getColors = (
  * @param permitStatus string representing the permit status
  * @returns Display text string corresponding to permit status
  */
-const getTextForBadge = (permitStatus?: string): string => {
+const getStatusText = (permitStatus?: string): string => {
   switch (permitStatus) {
     case PERMIT_STATUSES.VOIDED:
       return "Void";
@@ -77,11 +63,12 @@ export const PermitChip = ({ permitStatus }: { permitStatus?: string }) => {
     return null;
   }
 
-  const chipColours = getColors(permitStatus);
-  return chipColours ? (
-    <>
-      <OnRouteBCChip {...chipColours} message={getTextForBadge(permitStatus)} />
-    </>
+  const chipTheme = getTheme(permitStatus);
+  return chipTheme ? (
+    <OnRouteBCChip
+      className={`permit-chip permit-chip--${chipTheme}`}
+      message={getStatusText(permitStatus)}
+    />
   ) : null;
 };
 

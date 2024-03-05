@@ -3,11 +3,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { VoidPermitResponseData } from "../types/VoidPermit";
 import { voidPermit } from "../../../apiManager/permitsAPI";
+import { Nullable } from "../../../../../common/types/common";
 
 export const useVoidPermit = () => {
-  const [voidResults, setVoidResults] = useState<
-    VoidPermitResponseData | undefined
-  >(undefined);
+  const [voidResults, setVoidResults] =
+    useState<Nullable<VoidPermitResponseData>>(undefined);
 
   const queryClient = useQueryClient();
 
@@ -15,12 +15,14 @@ export const useVoidPermit = () => {
     mutationFn: voidPermit,
     retry: false,
     onSuccess: (voidResponseData) => {
-      queryClient.invalidateQueries(["permit"]);
+      queryClient.invalidateQueries({
+        queryKey: ["permit"],
+      });
       setVoidResults(voidResponseData);
     },
     onError: (err: unknown) => {
       console.error(err);
-      setVoidResults(undefined);
+      setVoidResults(null);
     },
   });
 

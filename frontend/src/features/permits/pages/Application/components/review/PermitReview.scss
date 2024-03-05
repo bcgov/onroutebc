@@ -1,0 +1,14 @@
+@import "../../../../../../themes/orbcStyles";
+
+.permit-review {
+  padding-top: 1.5rem;
+  background-color: $bc-white;
+
+  &__container {
+    padding-bottom: 5rem;
+
+    .bc-gov-alertbanner {
+      margin-bottom: 1.5rem;
+    }
+  }
+}

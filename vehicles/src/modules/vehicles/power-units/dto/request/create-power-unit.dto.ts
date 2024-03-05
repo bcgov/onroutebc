@@ -3,7 +3,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsAlphanumeric,
   IsNumber,
-  IsNumberString,
   IsOptional,
   IsPositive,
   IsString,
@@ -22,7 +21,6 @@ export class CreatePowerUnitDto {
   })
   @IsOptional()
   @IsString()
-  //@IsAlphanumeric()
   @MaxLength(10)
   unitNumber?: string;
 
@@ -32,7 +30,6 @@ export class CreatePowerUnitDto {
     example: 'AS 5895',
   })
   @IsString()
-  //@IsAlphanumeric()
   @MaxLength(10)
   plate: string;
 
@@ -80,7 +77,6 @@ export class CreatePowerUnitDto {
     example: 'Kenworth',
   })
   @IsString()
-  // @IsAlphanumeric()
   @MaxLength(20)
   make: string;
 
@@ -110,6 +106,8 @@ export class CreatePowerUnitDto {
     description: 'Type of the power unit.',
     example: 'CONCRET',
   })
+  @IsString()
+  @Length(1, 7)
   powerUnitTypeCode: string;
 
   @AutoMap()
@@ -119,8 +117,6 @@ export class CreatePowerUnitDto {
     required: false,
   })
   @IsOptional()
-  // TODO: Temporary solution for a frontend issue with sending an optional number value through React Hook Forms
-  // Ideally, this should be @IsNumber()
-  @IsNumberString()
+  @IsNumber()
   steerAxleTireSize?: number;
 }

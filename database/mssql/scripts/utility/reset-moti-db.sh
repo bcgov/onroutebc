@@ -58,7 +58,8 @@ if [[ "${REPLY}" == "yes" ]] || [[ $1 == "force" ]]; then
   fi
 
   if [[ ${MSSQL_LOAD_SAMPLE_DATA} -eq 1 ]]; then
-    ${SCRIPT_DIR}/utility/refresh-sample-data.sh -u ${TEST_MOTI_USER:-$MSSQL_MOTI_USER} -p "${TEST_MOTI_PASSWORD:-$MSSQL_MOTI_PASSWORD}" -s ${TEST_MOTI_HOST:-$MSSQL_MOTI_HOST} -d ${TEST_MOTI_DB:-$MSSQL_MOTI_DB}
+    ${SCRIPT_DIR}/utility/refresh-sample-data.sh -u ${TEST_MOTI_USER:-$MSSQL_MOTI_USER} -p '"${TEST_MOTI_PASSWORD:-$MSSQL_MOTI_PASSWORD}"' -s ${TEST_MOTI_HOST:-$MSSQL_MOTI_HOST} -d ${TEST_MOTI_DB:-$MSSQL_MOTI_DB}
+    ${SCRIPT_DIR}/utility/refresh-sample-idir-users.sh -u ${TEST_MOTI_USER:-$MSSQL_MOTI_USER} -p '"${TEST_MOTI_PASSWORD:-$MSSQL_MOTI_PASSWORD}"' -s ${TEST_MOTI_HOST:-$MSSQL_MOTI_HOST} -d ${TEST_MOTI_DB:-$MSSQL_MOTI_DB}
   fi
 
   echo "Finished reset of ORBC database."

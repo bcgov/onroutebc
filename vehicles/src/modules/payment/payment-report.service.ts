@@ -5,7 +5,6 @@ import { Transaction } from './entities/transaction.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
-import { ApplicationStatus } from '../../common/enum/application-status.enum';
 import { PaymentMethodTypeReport } from '../../common/enum/payment-method-type.enum';
 import { PaymentCardType as PaymentCardTypeEnum } from '../../common/enum/payment-card-type.enum';
 import { TransactionType } from '../../common/enum/transaction-type.enum';
@@ -25,6 +24,7 @@ import { IdirUser } from '../company-user-management/users/entities/idir.user.en
 import { PaymentMethodType } from './entities/payment-method-type.entity';
 import { PaymentCardType } from './entities/payment-card-type.entity';
 import { getPaymentCodeFromCache } from '../../common/helper/payment.helper';
+import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class PaymentReportService {
@@ -124,14 +124,6 @@ export class PaymentReportService {
       });
     }
 
-    queryBuilder.andWhere('permit.permitStatus IN (:...permitStatus)', {
-      permitStatus: [
-        ApplicationStatus.ISSUED,
-        ApplicationStatus.REVOKED,
-        ApplicationStatus.VOIDED,
-      ],
-    });
-
     queryBuilder.andWhere('permit.permitIssueDateTime >= :fromDateTime', {
       fromDateTime: reportDto.fromDateTime,
     });
@@ -193,6 +185,7 @@ export class PaymentReportService {
     }
   }
 
+  @LogAsyncMethodExecution()
   async findTransactionDataForDetailedReports(
     transactionTypes: TransactionType[],
     createPaymentDetailedReportDto: CreatePaymentDetailedReportDto,
@@ -238,6 +231,7 @@ export class PaymentReportService {
     }
   }
 
+  @LogAsyncMethodExecution()
   async findSummaryPaymentAndRefundDataForDetailedReports(
     transactionType: TransactionType[],
     reportDto: CreatePaymentDetailedReportDto | CreatePaymentSummaryReportDto,
@@ -290,8 +284,10 @@ export class PaymentReportService {
     const paymentMap = new Map<string, SummaryPaymentsInterface>();
 
     queryResult.forEach((item) => {
-      const payment = item.transactionType === 'P' ? item.amount : null;
-      const refund = item.transactionType === 'R' ? item.amount : null;
+      const payment =
+        item.transactionType === TransactionType.PURCHASE ? item.amount : null;
+      const refund =
+        item.transactionType === TransactionType.REFUND ? item.amount : null;
       const deposit = (payment || 0) - (refund || 0);
       const summaryPayment = paymentMap.get(item.paymentMethod);
       if (summaryPayment) {
@@ -336,6 +332,7 @@ export class PaymentReportService {
     }
   }
 
+  @LogAsyncMethodExecution()
   async findSummaryPermitDataForDetailedReports(
     transactionType: TransactionType[],
     reportDto: CreatePaymentDetailedReportDto | CreatePaymentSummaryReportDto,
@@ -412,6 +409,7 @@ export class PaymentReportService {
     return paymentCodes;
   }
 
+  @LogAsyncMethodExecution()
   async createPaymentDetailedReport(
     currentUser: IUserJWT,
     createPaymentDetailedReportDto: CreatePaymentDetailedReportDto,
@@ -517,6 +515,7 @@ export class PaymentReportService {
     await this.dopsService.generateReport(currentUser, generateReportData, res);
   }
 
+  @LogAsyncMethodExecution()
   async createPaymentSummaryReport(
     currentUser: IUserJWT,
     createPaymentSummaryReportDto: CreatePaymentSummaryReportDto,
@@ -602,14 +601,6 @@ export class PaymentReportService {
       });
     }
 
-    queryBuilder.andWhere('permit.permitStatus IN (:...permitStatus)', {
-      permitStatus: [
-        ApplicationStatus.ISSUED,
-        ApplicationStatus.REVOKED,
-        ApplicationStatus.VOIDED,
-      ],
-    });
-
     queryBuilder.andWhere('permit.permitIssueDateTime >= :fromDateTime', {
       fromDateTime: reportDto.fromDateTime,
     });
@@ -624,6 +615,7 @@ export class PaymentReportService {
     }
   }
 
+  @LogAsyncMethodExecution()
   async findTransactionDataForSummaryReports(
     transactionTypes: TransactionType[],
     reportDto: CreatePaymentSummaryReportDto,

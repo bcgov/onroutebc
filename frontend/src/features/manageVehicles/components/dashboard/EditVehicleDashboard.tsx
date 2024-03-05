@@ -1,50 +1,65 @@
 import React from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { Box, Typography } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 
 import "./EditVehicleDashboard.scss";
 import { Banner } from "../../../../common/components/dashboard/Banner";
-import { InfoBcGovBanner } from "../../../../common/components/banners/AlertBanners";
-import { VEHICLE_TYPES_ENUM } from "../form/constants";
+import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
 import { PowerUnitForm } from "../form/PowerUnitForm";
 import { TrailerForm } from "../form/TrailerForm";
-import { getVehicleById } from "../../apiManager/vehiclesAPI";
-import { PowerUnit, Trailer } from "../../types/managevehicles";
+import {
+  PowerUnit,
+  Trailer,
+  VEHICLE_TYPES,
+  VehicleType,
+} from "../../types/Vehicle";
+import { DATE_FORMATS, toLocal } from "../../../../common/helpers/formatDate";
+import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
+import { ERROR_ROUTES, VEHICLES_ROUTES } from "../../../../routes/constants";
+import { useVehicleByIdQuery } from "../../apiManager/hooks";
+import { Loading } from "../../../../common/pages/Loading";
+import { BANNER_MESSAGES } from "../../../../common/constants/bannerMessages";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../common/helpers/util";
-import { DATE_FORMATS, toLocal } from "../../../../common/helpers/formatDate";
-import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 
 export const EditVehicleDashboard = React.memo(
-  ({ editVehicleMode }: { editVehicleMode: VEHICLE_TYPES_ENUM }) => {
+  ({ editVehicleMode }: { editVehicleMode: VehicleType }) => {
     const navigate = useNavigate();
     const { vehicleId } = useParams();
     const companyId = getDefaultRequiredVal("0", getCompanyIdFromSession());
 
-    const isEditPowerUnit = (editVehicleMode: VEHICLE_TYPES_ENUM) =>
-      editVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT;
-    const isEditTrailer = (editVehicleMode: VEHICLE_TYPES_ENUM) =>
-      editVehicleMode === VEHICLE_TYPES_ENUM.TRAILER;
+    const isEditPowerUnit = (editVehicleMode: VehicleType) =>
+      editVehicleMode === VEHICLE_TYPES.POWER_UNIT;
+    const isEditTrailer = (editVehicleMode: VehicleType) =>
+      editVehicleMode === VEHICLE_TYPES.TRAILER;
 
-    const { data: vehicleToEdit, isLoading } = useQuery(
-      ["vehicleById", vehicleId],
-      () =>
-        getVehicleById(
-          vehicleId as string,
-          isEditPowerUnit(editVehicleMode) ? "powerUnit" : "trailer",
-          companyId,
-        ),
-      { retry: false, enabled: true },
+    const { data: vehicleToEdit } = useVehicleByIdQuery(
+      companyId,
+      isEditPowerUnit(editVehicleMode)
+        ? VEHICLE_TYPES.POWER_UNIT
+        : VEHICLE_TYPES.TRAILER,
+      vehicleId,
     );
 
-    const handleShowAddVehicle = () => {
-      navigate("../");
+    const backToVehicleInventory = () => {
+      if (editVehicleMode === VEHICLE_TYPES.TRAILER) {
+        navigate(VEHICLES_ROUTES.TRAILER_TAB);
+      } else {
+        navigate(VEHICLES_ROUTES.MANAGE);
+      }
     };
+
+    if (typeof vehicleToEdit === "undefined") {
+      return <Loading />;
+    }
+
+    if (!vehicleToEdit) {
+      return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
+    }
 
     return (
       <div className="dashboard-page">
@@ -84,7 +99,6 @@ export const EditVehicleDashboard = React.memo(
                   )}
                 </div>
               }
-              extendHeight={true}
             />
           )}
         </Box>
@@ -92,7 +106,7 @@ export const EditVehicleDashboard = React.memo(
         <Box className="dashboard-page__breadcrumb layout-box">
           <Typography
             className="breadcrumb-link breadcrumb-link--parent"
-            onClick={handleShowAddVehicle}
+            onClick={backToVehicleInventory}
           >
             Vehicle Inventory
           </Typography>
@@ -101,42 +115,36 @@ export const EditVehicleDashboard = React.memo(
 
           <Typography
             className="breadcrumb-link breadcrumb-link--parent"
-            onClick={handleShowAddVehicle}
+            onClick={backToVehicleInventory}
           >
-            {editVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT && "Power Unit"}
-            {editVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && "Trailer"}
+            {editVehicleMode === VEHICLE_TYPES.POWER_UNIT && "Power Unit"}
+            {editVehicleMode === VEHICLE_TYPES.TRAILER && "Trailer"}
           </Typography>
 
           <FontAwesomeIcon className="breadcrumb-icon" icon={faChevronRight} />
 
           <Typography>
-            {editVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT &&
-              "Edit Power Unit"}
-            {editVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && "Edit Trailer"}
+            {editVehicleMode === VEHICLE_TYPES.POWER_UNIT && "Edit Power Unit"}
+            {editVehicleMode === VEHICLE_TYPES.TRAILER && "Edit Trailer"}
           </Typography>
         </Box>
 
         <Box className="dashboard-page__info-banner layout-box">
-          <InfoBcGovBanner
-            width="880px"
-            description="Please note, unless stated otherwise, all fields are mandatory."
-          />
+          <InfoBcGovBanner msg={BANNER_MESSAGES.ALL_FIELDS_MANDATORY} />
         </Box>
 
         <Box className="dashboard-page__form layout-box">
           <Typography variant={"h2"}>
-            {editVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT &&
+            {editVehicleMode === VEHICLE_TYPES.POWER_UNIT &&
               "Power Unit Details"}
-            {editVehicleMode === VEHICLE_TYPES_ENUM.TRAILER &&
-              "Trailer Details"}
+            {editVehicleMode === VEHICLE_TYPES.TRAILER && "Trailer Details"}
           </Typography>
-          {!isLoading && editVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT && (
+          {isEditPowerUnit(editVehicleMode) ? (
             <PowerUnitForm
               powerUnit={vehicleToEdit as PowerUnit}
               companyId={companyId}
             />
-          )}
-          {!isLoading && editVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && (
+          ) : (
             <TrailerForm
               trailer={vehicleToEdit as Trailer}
               companyId={companyId}

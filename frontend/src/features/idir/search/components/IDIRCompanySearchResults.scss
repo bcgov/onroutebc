@@ -1,0 +1,44 @@
+@use "../../../../themes/orbcStyles";
+@use "../../../../common/components/table/Table";
+
+.idir-company-search-results {
+  &#{&} {
+    margin-top: 0;
+    padding-bottom: 12.5rem;
+    position: relative;
+
+    th:last-of-type, td:last-of-type {
+      padding: 0;
+      min-width: 0;
+      max-width: 3rem;
+    }
+
+    .create-company-btn {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+  }
+
+  & &__row-actions {
+    padding: 0;
+    max-width: 3rem;
+  }
+
+  .create-company-img {
+    width: 6rem;
+  }
+
+  .button-outline {
+    border: orbcStyles.$bc-border-grey 1px solid;
+    border-radius: 0.5rem;
+    padding: 2rem 4rem;
+
+    &:hover {
+      background-color: orbcStyles.$bc-background-blue-grey;
+      text-decoration: none;
+    }
+  }
+}

@@ -1,0 +1,9 @@
+@use "../CustomFormComponents";
+
+@include CustomFormComponents.custom-form-component(".custom-select");
+
+.custom-select {
+  & &__menu {
+    width: calc(100% - 10px);
+  }
+}

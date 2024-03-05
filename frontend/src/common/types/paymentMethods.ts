@@ -1,3 +1,5 @@
+import { Nullable } from "./common";
+
 /**
  * The payment method type codes.
  */
@@ -101,10 +103,12 @@ export type PaymentMethodAndCardTypeCodes = {
  * This is an additional payment code that specifically includes
  * a code called ALL.
  */
-export type AllPaymentMethodAndCardTypeCodes = PaymentMethodAndCardTypeCodes | {
-  paymentMethodTypeCode: "ALL",
-  paymentCardTypeCode?: undefined
-}
+export type AllPaymentMethodAndCardTypeCodes =
+  | PaymentMethodAndCardTypeCodes
+  | {
+      paymentMethodTypeCode: "ALL";
+      paymentCardTypeCode?: undefined;
+    };
 
 /**
  * The following record contains key value pairs for Payment Methods
@@ -201,11 +205,11 @@ export const CONSOLIDATED_PAYMENT_METHODS: Record<
  */
 export const ALL_CONSOLIDATED_PAYMENT_METHODS: Record<
   string,
-  | AllPaymentMethodAndCardTypeCodes
+  AllPaymentMethodAndCardTypeCodes
 > = {
   "All Payment Methods": {
     paymentMethodTypeCode: "ALL",
-    paymentCardTypeCode: undefined
+    paymentCardTypeCode: undefined,
   },
   ...CONSOLIDATED_PAYMENT_METHODS,
 };
@@ -225,7 +229,7 @@ export const getConsolidatedPaymentMethod = (
 
 export const getPaymentMethod = (
   paymentMethod: PaymentMethodTypeCode,
-  paymentCard?: PaymentCardTypeCode | null,
+  paymentCard?: Nullable<PaymentCardTypeCode>,
 ): string => {
   if (!paymentCard || !PAYMENT_METHODS_WITH_CARD.includes(paymentMethod)) {
     return PAYMENT_METHOD_TYPE_DISPLAY[paymentMethod];
@@ -236,3 +240,11 @@ export const getPaymentMethod = (
     PAYMENT_CARD_TYPE_DISPLAY[paymentCard],
   );
 };
+
+export const PAYMENT_GATEWAY_METHODS = {
+  CC: "CC", // Credit Card Transaction
+  IO: "IO", // Interac Online Transaction
+} as const;
+
+export type PaymentGatewayMethod =
+  (typeof PAYMENT_GATEWAY_METHODS)[keyof typeof PAYMENT_GATEWAY_METHODS];

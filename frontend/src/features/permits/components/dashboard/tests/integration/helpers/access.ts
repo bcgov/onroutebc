@@ -2,7 +2,8 @@ import { screen, waitFor } from "@testing-library/react";
 import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup";
 
 import { getApplication } from "../fixtures/getActiveApplication";
-import { VehicleTypesAsString } from "../../../../../../manageVehicles/types/managevehicles";
+import { VehicleType } from "../../../../../../manageVehicles/types/Vehicle";
+import { Nullable } from "../../../../../../../common/types/common";
 
 export const inputWithValue = async (val: string) => {
   return await screen.findByDisplayValue(val);
@@ -127,6 +128,12 @@ export const errMsgForVehicleSubtype = async () => {
   );
 };
 
+export const additionalEmailInput = async () => {
+  return await screen.findByTestId(
+    "input-permitData.contactDetails.additionalEmail",
+  );
+};
+
 export const vinInput = async () => {
   return await screen.findByTestId("input-permitData.vehicleDetails.vin");
 };
@@ -198,7 +205,7 @@ export const openVehicleSelect = async (user: UserEvent) => {
   await user.click(vehicleSelectEl);
 };
 
-export const vehicleOptions = async (vehicleType: VehicleTypesAsString) => {
+export const vehicleOptions = async (vehicleType: VehicleType) => {
   return await screen.findAllByTestId(`select-vehicle-option-${vehicleType}`);
 };
 
@@ -246,6 +253,12 @@ type VehicleDetail = {
 export const fillVehicleInfo = async (
   user: UserEvent,
   vehicle: VehicleDetail,
+  editMode: "create" | "update",
+  populatedVehicle?: {
+    vin: string;
+    plate: string;
+    make: string;
+  },
 ) => {
   const vinTextField = await vinInput();
   const plateTextField = await plateInput();
@@ -257,14 +270,67 @@ export const fillVehicleInfo = async (
   const subtypeSelect = await vehicleSubtypeSelect();
 
   // Act
-  await replaceValueForInput(user, vinTextField, 0, vehicle.vin);
-  await replaceValueForInput(user, plateTextField, 0, vehicle.plate);
-  await replaceValueForInput(user, makeTextField, 0, vehicle.make);
-  await replaceValueForInput(user, yearTextField, 1, `${vehicle.year}`);
+  if (populatedVehicle) {
+    await replaceValueForInput(
+      user,
+      vinTextField,
+      populatedVehicle.vin.length,
+      vehicle.vin,
+    );
+    await replaceValueForInput(
+      user,
+      plateTextField,
+      populatedVehicle.plate.length,
+      vehicle.plate,
+    );
+    await replaceValueForInput(
+      user,
+      makeTextField,
+      populatedVehicle.make.length,
+      vehicle.make,
+    );
+    await replaceValueForInput(user, yearTextField, 4, `${vehicle.year}`);
+  } else {
+    await replaceValueForInput(user, vinTextField, 0, vehicle.vin);
+    await replaceValueForInput(user, plateTextField, 0, vehicle.plate);
+    await replaceValueForInput(user, makeTextField, 0, vehicle.make);
+    await replaceValueForInput(user, yearTextField, 1, `${vehicle.year}`);
+  }
+
   await chooseOption(user, countrySelect, vehicle.country);
   await chooseOption(user, provinceSelect, vehicle.province);
-  await chooseOption(user, typeSelect, vehicle.vehicleType);
+  if (editMode === "create") {
+    await chooseOption(user, typeSelect, vehicle.vehicleType);
+  }
   await chooseOption(user, subtypeSelect, vehicle.vehicleSubtype);
+
   await chooseSaveVehicleToInventory(user, vehicle.saveVehicle);
   await continueApplication(user);
+};
+
+export const updateVehicleDetails = async (
+  user: UserEvent,
+  vehicleType: VehicleType,
+  formDetails: VehicleDetail,
+  unitNumber: Nullable<string>,
+) => {
+  const unitNumberOrPlate = await unitNumberOrPlateSelect();
+  await chooseOption(user, unitNumberOrPlate, "Unit Number");
+  await openVehicleSelect(user);
+
+  const powerUnitOptions = await vehicleOptions(vehicleType);
+  const powerUnitToChoose = powerUnitOptions.find(
+    (option) => option.textContent === unitNumber,
+  );
+
+  expect(powerUnitToChoose).not.toBeUndefined();
+  if (powerUnitToChoose) {
+    await user.click(powerUnitToChoose);
+  }
+
+  await fillVehicleInfo(user, formDetails, "update", {
+    vin: formDetails.vin,
+    plate: formDetails.plate,
+    make: formDetails.make,
+  });
 };

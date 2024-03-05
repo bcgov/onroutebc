@@ -1,4 +1,4 @@
-import { VehicleTypesAsString } from "../../../../types/managevehicles";
+import { VEHICLE_TYPES, VehicleType } from "../../../../types/Vehicle";
 import {
   PowerUnitDetail,
   VehicleFormDetail,
@@ -17,7 +17,7 @@ import {
 } from "./access";
 
 export const assertSuccessfulSubmit = async (
-  vehicleType: VehicleTypesAsString,
+  vehicleType: VehicleType,
   vehicleDetails: VehicleFormDetail,
 ) => {
   const unitNumber = await unitNumberInput();
@@ -35,7 +35,8 @@ export const assertSuccessfulSubmit = async (
   expect(plate).toHaveValue(vehicleDetails.newPlate);
   expect(country).toHaveTextContent(vehicleDetails.newCountry);
   expect(province).toHaveTextContent(vehicleDetails.newProvince);
-  if (vehicleType === "powerUnit") {
+
+  if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
     const powerUnitDetails = vehicleDetails as PowerUnitDetail;
     const licensedGvw = await licensedGvwInput();
     const steerAxleTireSize = await steerAxleTireSizeInput();

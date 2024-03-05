@@ -107,3 +107,31 @@ export const toTimeZone = (
   ianaId
     ? dayjs(datetimeStr).tz(ianaId).format(formatStr)
     : toLocal(datetimeStr, formatStr);
+
+/**
+ * Gets the number of days between two datetimes (should both be in the same timezone).
+ * @param laterDt Dayjs object representing the later datetime
+ * @param earlierDt Dayjs object representing the earlier datetime
+ * @returns Number of days between the two datetimes.
+ */
+export const getDateDiffInDays = (laterDt: Dayjs, earlierDt: Dayjs) => {
+  return laterDt.diff(earlierDt, "day");
+};
+
+/**
+ * Get the start of any datetime (ie. the date + time of 00:00:00 am).
+ * @param date Any Dayjs object
+ * @returns Dayjs object representing the start of the datetime (with time 00:00:00 am)
+ */
+export const getStartOfDate = (date: Dayjs | string) => {
+  return dayjs(date).hour(0).minute(0).second(0).millisecond(0);
+};
+
+/**
+ * Get the end of any datetime (ie. the date + time of 23:59:59 pm).
+ * @param date Any Dayjs object
+ * @returns Dayjs object representing the end of the datetime (with time 23:59:59 pm)
+ */
+export const getEndOfDate = (date: Dayjs | string) => {
+  return dayjs(date).hour(23).minute(59).second(59).millisecond(999);
+};

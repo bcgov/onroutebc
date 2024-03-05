@@ -1,6 +1,13 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber } from 'class-validator';
+import {
+  Allow,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  MaxLength,
+} from 'class-validator';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { PermitApplicationOrigin } from 'src/common/enum/permit-application-origin.enum';
 import { PermitStatus } from 'src/common/enum/permit-status.enum';
@@ -8,13 +15,14 @@ import { PermitType } from 'src/common/enum/permit-type.enum';
 
 export class UpdateApplicationDto {
   @AutoMap()
-  @IsNumber()
   @ApiProperty({
     description: 'Id of the company requesting the permit.',
     example: 74,
     required: false,
   })
-  companyId: number;
+  @IsOptional()
+  @IsNumber()
+  companyId?: number;
 
   @AutoMap()
   @ApiProperty({
@@ -22,7 +30,10 @@ export class UpdateApplicationDto {
     example: '06267945F2EB4E31B585932F78B76269',
     required: false,
   })
-  userGuid: string;
+  @IsOptional()
+  @IsString()
+  @MaxLength(32)
+  userGuid?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -30,28 +41,39 @@ export class UpdateApplicationDto {
     description: 'Friendly name for the permit type.',
     example: PermitType.TERM_OVERSIZE,
   })
-  permitType: PermitType;
+  @IsOptional()
+  @IsEnum(PermitType)
+  permitType?: PermitType;
 
+  //ToDo: remove PermitStatus, update application should not change PermitStatus. there is an existing endpoint to change status.
   @AutoMap()
   @ApiProperty({
     enum: PermitStatus,
     description: 'Friendly name for the permit type.',
+    required: false,
     example: ApplicationStatus.IN_PROGRESS,
   })
-  permitStatus: PermitStatus;
+  @IsOptional()
+  @IsEnum(PermitStatus)
+  permitStatus?: PermitStatus;
 
+  //ToDo: remove permitApplicationOrigin, update application should not change permitApplicationOrigin
   @AutoMap()
   @ApiProperty({
     enum: PermitApplicationOrigin,
     example: PermitApplicationOrigin.ONLINE,
+    required: false,
     description: 'Unique identifier for the application origin.',
   })
-  permitApplicationOrigin: PermitApplicationOrigin;
+  @IsOptional()
+  @IsEnum(PermitApplicationOrigin)
+  permitApplicationOrigin?: PermitApplicationOrigin;
 
   @AutoMap()
   @ApiProperty({
     description: 'Permit Application JSON.',
   })
+  @Allow()
   permitData: JSON;
 
   @AutoMap()
@@ -60,5 +82,8 @@ export class UpdateApplicationDto {
     example: 'This application was amended because of so-and-so reason.',
     required: false,
   })
-  comment: string;
+  @IsOptional()
+  @IsString()
+  @MaxLength(3000)
+  comment?: string;
 }

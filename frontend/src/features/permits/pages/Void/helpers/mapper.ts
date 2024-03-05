@@ -1,10 +1,13 @@
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
+import { isZeroAmount } from "../../../helpers/feeSummary";
+import { PERMIT_STATUSES } from "../../../types/PermitStatus";
+import { TRANSACTION_TYPES } from "../../../types/payment.d";
+import { RefundFormData } from "../../Refund/types/RefundFormData";
 import {
   CONSOLIDATED_PAYMENT_METHODS,
   PAYMENT_METHOD_TYPE_CODE,
 } from "../../../../../common/types/paymentMethods";
-import { PERMIT_STATUSES } from "../../../types/PermitStatus";
-import { RefundFormData } from "../../Refund/types/RefundFormData";
+
 import {
   RevokePermitRequestData,
   VoidPermitFormData,
@@ -14,12 +17,23 @@ import {
 export const mapToRevokeRequestData = (
   voidPermitFormData: VoidPermitFormData,
 ): RevokePermitRequestData => {
-  return {
+  const reqData: RevokePermitRequestData = {
     status: PERMIT_STATUSES.REVOKED,
-    paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.WEB, // hardcoded to "WEB" for revoke
+    paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.NP,
     transactionAmount: 0,
     comment: voidPermitFormData.reason,
+    transactionTypeId: TRANSACTION_TYPES.P,
   };
+
+  if (voidPermitFormData.fax) {
+    reqData.fax = voidPermitFormData.fax;
+  }
+
+  if (voidPermitFormData.additionalEmail) {
+    reqData.additionalEmail = voidPermitFormData.additionalEmail;
+  }
+
+  return reqData;
 };
 
 export const mapToVoidRequestData = (
@@ -27,10 +41,10 @@ export const mapToVoidRequestData = (
   refundData: RefundFormData,
   amountToRefund: number,
 ): VoidPermitRequestData => {
-  const isZeroAmount = Math.abs(amountToRefund) < 0.000001;
+  const isRefundZeroAmount = isZeroAmount(amountToRefund);
 
   const getRefundMethodType = () => {
-    if (isZeroAmount) return PAYMENT_METHOD_TYPE_CODE.WEB;
+    if (isRefundZeroAmount) return PAYMENT_METHOD_TYPE_CODE.NP;
 
     const refundMethodTypeCode = getDefaultRequiredVal(
       PAYMENT_METHOD_TYPE_CODE.WEB,
@@ -44,7 +58,7 @@ export const mapToVoidRequestData = (
   };
 
   const getRefundCardType = () => {
-    if (isZeroAmount || !refundData.shouldUsePrevPaymentMethod) {
+    if (isRefundZeroAmount || !refundData.shouldUsePrevPaymentMethod) {
       return undefined;
     }
 
@@ -52,7 +66,7 @@ export const mapToVoidRequestData = (
       ?.paymentCardTypeCode;
   };
 
-  return {
+  const reqData: VoidPermitRequestData = {
     status: PERMIT_STATUSES.VOIDED,
     pgTransactionId: refundData.transactionId,
     paymentMethodTypeCode: getRefundMethodType(),
@@ -62,5 +76,18 @@ export const mapToVoidRequestData = (
       : undefined,
     pgCardType: getRefundCardType(),
     comment: voidPermitFormData.reason,
+    transactionTypeId: isRefundZeroAmount
+      ? TRANSACTION_TYPES.P
+      : TRANSACTION_TYPES.R,
   };
+
+  if (voidPermitFormData.fax) {
+    reqData.fax = voidPermitFormData.fax;
+  }
+
+  if (voidPermitFormData.additionalEmail) {
+    reqData.additionalEmail = voidPermitFormData.additionalEmail;
+  }
+
+  return reqData;
 };

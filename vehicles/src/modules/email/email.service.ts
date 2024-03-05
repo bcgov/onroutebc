@@ -2,13 +2,13 @@ import { HttpService } from '@nestjs/axios';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import {
-  HttpException,
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
-import { AxiosRequestConfig } from 'axios';
-import { lastValueFrom, map } from 'rxjs';
+import { AxiosRequestConfig, AxiosError } from 'axios';
+import { lastValueFrom } from 'rxjs';
 import { getAccessToken } from '../../common/helper/gov-common-services.helper';
 import { GovCommonServices } from '../../common/enum/gov-common-services.enum';
 import * as Handlebars from 'handlebars';
@@ -18,9 +18,13 @@ import { IssuePermitEmailData } from '../../common/interface/issue-permit-email-
 import { AttachementEmailData } from '../../common/interface/attachment-email-data.interface';
 import { CacheKey } from '../../common/enum/cache-key.enum';
 import { getFromCache } from '../../common/helper/cache.helper';
+import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
+import { LogMethodExecution } from '../../common/decorator/log-method-execution.decorator';
+import { CompanyEmailData } from '../../common/interface/company-email-data.interface';
 
 @Injectable()
 export class EmailService {
+  private readonly logger = new Logger(EmailService.name);
   constructor(
     private readonly httpService: HttpService,
     @Inject(CACHE_MANAGER)
@@ -28,9 +32,13 @@ export class EmailService {
   ) {}
 
   private chesUrl = process.env.CHES_URL;
+  @LogAsyncMethodExecution()
   async sendEmailMessage(
     template: EmailTemplate,
-    data: ProfileRegistrationEmailData | IssuePermitEmailData,
+    data:
+      | ProfileRegistrationEmailData
+      | IssuePermitEmailData
+      | CompanyEmailData,
     subject: string,
     to: string[],
     attachments?: AttachementEmailData[],
@@ -64,13 +72,11 @@ export class EmailService {
     };
 
     const responseData = await lastValueFrom(
-      this.httpService
-        .post(this.chesUrl.concat('email'), requestData, requestConfig)
-        .pipe(
-          map((response) => {
-            return response;
-          }),
-        ),
+      this.httpService.post(
+        this.chesUrl.concat('email'),
+        requestData,
+        requestConfig,
+      ),
     )
       .then((response) => {
         return response.data as {
@@ -84,13 +90,22 @@ export class EmailService {
           txId: string;
         };
       })
-      .catch((error: HttpException) => {
-        throw error;
+      .catch((error: AxiosError) => {
+        if (error.response) {
+          const errorData = error.response.data;
+          this.logger.error(
+            `Error response from CHES: ${JSON.stringify(errorData, null, 2)}`,
+          );
+        } else {
+          this.logger.error(error?.message, error?.stack);
+        }
+        throw new InternalServerErrorException('Error sending email');
       });
 
     return responseData.txId;
   }
 
+  @LogAsyncMethodExecution()
   async renderTemplate(
     templateName: EmailTemplate,
     data: ProfileRegistrationEmailData | IssuePermitEmailData,
@@ -105,30 +120,35 @@ export class EmailService {
     const compiledTemplate = Handlebars.compile(template);
     const htmlBody = compiledTemplate({
       ...data,
-      headerLogo: process.env.FRONT_END_URL + '/BC_Logo_MOTI.png',
-      footerLogo: process.env.FRONT_END_URL + '/onRouteBC_Logo.png',
-      darkModeHeaderLogo: process.env.FRONT_END_URL + '/BC_Logo_Rev_MOTI.png',
+      headerLogo: process.env.FRONTEND_URL + '/BC_Logo_MOTI.png',
+      footerLogo: process.env.FRONTEND_URL + '/onRouteBC_Logo.png',
+      darkModeHeaderLogo: process.env.FRONTEND_URL + '/BC_Logo_Rev_MOTI.png',
       darkModeMedHeaderLogo:
-        process.env.FRONT_END_URL + '/BC_Logo_Rev_MOTI@2x.png',
-      darkModeFooterLogo: process.env.FRONT_END_URL + '/onRouteBC_Rev_Logo.png',
+        process.env.FRONTEND_URL + '/BC_Logo_Rev_MOTI@2x.png',
+      darkModeFooterLogo: process.env.FRONTEND_URL + '/onRouteBC_Rev_Logo.png',
       darkModeMedFooterLogo:
-        process.env.FRONT_END_URL + '/onRouteBC_Rev_Logo@2x.png',
-      whiteHeaderLogo: process.env.FRONT_END_URL + '/BC_Logo_MOTI_White.jpg',
+        process.env.FRONTEND_URL + '/onRouteBC_Rev_Logo@2x.png',
+      whiteHeaderLogo: process.env.FRONTEND_URL + '/BC_Logo_MOTI_White.jpg',
       whiteMedHeaderLogo:
-        process.env.FRONT_END_URL + '/BC_Logo_MOTI_White@2x.jpg',
-      whiteFooterLogo: process.env.FRONT_END_URL + '/onRouteBC_Logo_White.jpg',
+        process.env.FRONTEND_URL + '/BC_Logo_MOTI_White@2x.jpg',
+      whiteFooterLogo: process.env.FRONTEND_URL + '/onRouteBC_Logo_White.jpg',
       whiteMedFooterLogo:
-        process.env.FRONT_END_URL + '/onRouteBC_Logo_White@2x.jpg',
+        process.env.FRONTEND_URL + '/onRouteBC_Logo_White@2x.jpg',
     });
     return htmlBody;
   }
 
+  @LogMethodExecution()
   getCacheKeyforEmailTemplate(templateName: EmailTemplate): CacheKey {
     switch (templateName) {
       case EmailTemplate.ISSUE_PERMIT:
         return CacheKey.EMAIL_TEMPLATE_ISSUE_PERMIT;
       case EmailTemplate.PROFILE_REGISTRATION:
         return CacheKey.EMAIL_TEMPLATE_PROFILE_REGISTRATION;
+      case EmailTemplate.COMPANY_SUSPEND:
+        return CacheKey.EMAIL_TEMPLATE_COMPANY_SUSPEND;
+      case EmailTemplate.COMPANY_UNSUSPEND:
+        return CacheKey.EMAIL_TEMPLATE_COMPANY_UNSUSPEND;
       default:
         throw new Error('Invalid template name');
     }

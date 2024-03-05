@@ -1,4 +1,8 @@
 import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
+import { BCeIDUserContextType } from "../../../common/authentication/types";
+import { replaceEmptyValuesWithNull } from "../../../common/helpers/util";
+import { RequiredOrNull } from "../../../common/types/common";
+import { MANAGE_PROFILE_API } from "./endpoints/endpoints";
 import {
   httpGETRequest,
   httpPOSTRequest,
@@ -7,15 +11,18 @@ import {
   getUserGuidFromSession,
   httpDELETERequest,
 } from "../../../common/apiManager/httpRequestHandler";
-import { BCeIDUserContextType } from "../../../common/authentication/types";
-import { replaceEmptyValuesWithNull } from "../../../common/helpers/util";
+
 import {
   CompanyProfile,
-  CompanyAndUserRequest,
-  UserInformation,
+  CreateCompanyRequest,
+  ReadUserInformationResponse,
+  Contact,
+  VerifyClientRequest,
+  VerifyMigratedClientResponse,
+  UpdateCompanyProfileRequest,
+  UserInfoRequest,
+  BCeIDAddUserRequest,
 } from "../types/manageProfile";
-import { BCeIDAddUserRequest, ReadCompanyUser } from "../types/userManagement";
-import { MANAGE_PROFILE_API } from "./endpoints/endpoints";
 
 export const getCompanyInfo = async (): Promise<CompanyProfile> => {
   const url = MANAGE_PROFILE_API.COMPANIES + "/" + getCompanyIdFromSession();
@@ -24,7 +31,7 @@ export const getCompanyInfo = async (): Promise<CompanyProfile> => {
 
 export const getCompanyInfoById = async (
   companyId: number,
-): Promise<CompanyProfile | null> => {
+): Promise<RequiredOrNull<CompanyProfile>> => {
   try {
     const response = await httpGETRequest(
       `${MANAGE_PROFILE_API.COMPANIES}/${companyId}`,
@@ -36,20 +43,16 @@ export const getCompanyInfoById = async (
   }
 };
 
-export const getMyInfo = async (): Promise<UserInformation> => {
-  const companyId = getCompanyIdFromSession();
-  let url = `${MANAGE_PROFILE_API.MY_INFO}/${getUserGuidFromSession()}`;
-  if (companyId) {
-    url += `?companyId=${companyId}`;
-  }
+export const getMyInfo = async (): Promise<ReadUserInformationResponse> => {
+  const url = `${MANAGE_PROFILE_API.MY_INFO}/${getUserGuidFromSession()}`;
+
   return httpGETRequest(url).then((response) => response.data);
 };
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
 export const updateCompanyInfo = async ({
   companyInfo,
 }: {
-  companyInfo: CompanyProfile;
+  companyInfo: UpdateCompanyProfileRequest;
 }) => {
   return await httpPUTRequest(
     `${MANAGE_PROFILE_API.COMPANIES}/${getCompanyIdFromSession()}`,
@@ -57,7 +60,12 @@ export const updateCompanyInfo = async ({
   );
 };
 
-export const updateMyInfo = async ({ myInfo }: { myInfo: UserInformation }) => {
+/**
+ * Updates my information (i.e., the logged in user's BCeID profile information)
+ * @param myInfo The request object.
+ * @returns AxiosResponse with the updated user details.
+ */
+export const updateMyInfo = async ({ myInfo }: { myInfo: UserInfoRequest }) => {
   return await httpPUTRequest(
     `${
       MANAGE_PROFILE_API.COMPANIES
@@ -67,14 +75,14 @@ export const updateMyInfo = async ({ myInfo }: { myInfo: UserInformation }) => {
 };
 
 /**
- * For use in the Profile Wizard
- * @param param0
- * @returns
+ * Creates a BCeID user profile for a company.
+ * @param myInfo The request object.
+ * @returns The AxiosResponse containing created user's details.
  */
 export const createMyOnRouteBCUserProfile = async ({
   myInfo,
 }: {
-  myInfo: Omit<UserInformation, "statusCode" | "userName" | "userGUID">;
+  myInfo: Contact;
 }) => {
   return await httpPOSTRequest(
     `${MANAGE_PROFILE_API.COMPANIES}/${getCompanyIdFromSession()}/users`,
@@ -83,17 +91,31 @@ export const createMyOnRouteBCUserProfile = async ({
 };
 
 /**
- * Creates an onRouteBC profile.
+ * Creates an onRouteBC company profile.
  * @param onRouteBCProfileRequestObject The request object containing the profile details
  * @returns A Promise containing the response from the API.
  */
-export const createOnRouteBCProfile = async (
-  onRouteBCProfileRequestObject: CompanyAndUserRequest,
+export const createOnRouteBCProfile = (
+  onRouteBCProfileRequestObject: CreateCompanyRequest,
 ) => {
-  return await httpPOSTRequest(
+  return httpPOSTRequest(
     `${MANAGE_PROFILE_API.COMPANIES}`,
     replaceEmptyValuesWithNull(onRouteBCProfileRequestObject),
   );
+};
+
+/**
+ * Verifies a migrated client through an API call.
+ * @param requestPayload The verify migrated client form values.
+ * @returns A promise containing details of the verification.
+ */
+export const verifyMigratedClient = (
+  requestPayload: VerifyClientRequest,
+): Promise<VerifyMigratedClientResponse> => {
+  return httpPOSTRequest(
+    `${VEHICLES_URL}/companies/verify-client`,
+    replaceEmptyValuesWithNull(requestPayload),
+  ).then((response) => response.data);
 };
 
 /**
@@ -119,27 +141,17 @@ export const getUserRolesByCompanyId = (): Promise<string[]> => {
 /**
  * Retrieves the roles of an IDIR user (i.e., OnRouteBC staff).
  */
-export const getIDIRUserRoles = async (): Promise<string[] | null> => {
-  try {
-    const response = await httpGETRequest(`${VEHICLES_URL}/users/roles`);
-    if (response.status === 200) {
-      return response.data as string[];
-    }
-
-    // Error status code, return null for roles
-    return null;
-  } catch (err) {
-    // If error, return null for roles
-    console.error(err);
-    return null;
-  }
+export const getIDIRUserRoles = async (): Promise<RequiredOrNull<string[]>> => {
+  return httpGETRequest(`${VEHICLES_URL}/users/roles`).then(
+    (response) => response.data,
+  );
 };
 
 /**
  * Retrieves the users of a company by companyId
  * @returns a promise containing the users.
  */
-export const getCompanyUsers = (): Promise<ReadCompanyUser[]> => {
+export const getCompanyUsers = (): Promise<ReadUserInformationResponse[]> => {
   return httpGETRequest(
     `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/users?includePendingUser=true`,
   ).then((response) => response.data);
@@ -149,7 +161,9 @@ export const getCompanyUsers = (): Promise<ReadCompanyUser[]> => {
  * Retrieves the users of a company by companyId
  * @returns a promise containing the users.
  */
-export const getCompanyPendingUsers = (): Promise<ReadCompanyUser[]> => {
+export const getCompanyPendingUsers = (): Promise<
+  ReadUserInformationResponse[]
+> => {
   return httpGETRequest(
     `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/pending-users`,
   ).then((response) => response.data);
@@ -186,22 +200,31 @@ export const deleteCompanyUsers = (userName: string) => {
  */
 export const getCompanyUserByUserGUID = (
   userGUID: string,
-): Promise<ReadCompanyUser> => {
-  return httpGETRequest(`${VEHICLES_URL}/users/${userGUID}`).then(
-    (response) => response.data,
-  );
+): Promise<ReadUserInformationResponse> => {
+  return httpGETRequest(
+    `${
+      MANAGE_PROFILE_API.COMPANIES
+    }/${getCompanyIdFromSession()}/users/${userGUID}`,
+  ).then((response) => response.data);
 };
 
 /**
- *
- * @param userInfo The updated user info object.
+ * Updates the user details for a user identified by the userGuid.
+ * @param userInfo The request object.
+ * @param userGUID The user guid of the user whose details will be updated.
  * @returns A Promise with the API response.
  */
 export const updateUserInfo = async ({
   userInfo,
   userGUID,
 }: {
-  userInfo: ReadCompanyUser;
+  /**
+   * The request object with updated user details.
+   */
+  userInfo: UserInfoRequest;
+  /**
+   * The user guid of the user whose details will be updated.
+   */
   userGUID: string;
 }) => {
   return await httpPUTRequest(

@@ -1,8 +1,10 @@
-import Button from "@mui/material/Button";
-import { useQuery } from "@tanstack/react-query";
+import { Button } from "@mui/material";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import React, { useContext } from "react";
 import { useLocation, useNavigate } from "react-router";
+import { Navigate } from "react-router-dom";
+
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { ROLES } from "../../../../common/authentication/types";
 import { DoesUserHaveRole } from "../../../../common/authentication/util";
@@ -10,14 +12,15 @@ import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
 import { FIVE_MINUTES } from "../../../../common/constants/constants";
 import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
 import { Loading } from "../../../../common/pages/Loading";
-import { Unauthorized } from "../../../../common/pages/Unauthorized";
 import { getCompanyInfo } from "../../apiManager/manageProfileAPI";
 import { CompanyInfo } from "../../pages/CompanyInfo";
 import { MyInfo } from "../../pages/MyInfo";
 import { UserManagement } from "../../pages/UserManagement";
 import { BCEID_PROFILE_TABS } from "../../types/manageProfile.d";
-import { ADD_USER } from "../../../../routes/constants";
+import { ERROR_ROUTES, PROFILE_ROUTES } from "../../../../routes/constants";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { useAuth } from "react-oidc-context";
+import { isIDIR } from "../../../../common/authentication/auth-walls/BCeIDAuthWall";
 
 /**
  * Returns a boolean indicating if the logged in user is a BCeID org admin.
@@ -32,20 +35,22 @@ export const isBCeIDOrgAdmin = (userRoles: string[]): boolean => {
 export const ManageProfilesDashboard = React.memo(() => {
   const {
     data: companyInfoData,
-    isLoading,
+    isPending,
     isError,
     error,
   } = useQuery({
     queryKey: ["companyInfo"],
     queryFn: getCompanyInfo,
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
     staleTime: FIVE_MINUTES,
   });
 
   const navigate = useNavigate();
   const { userRoles } = useContext(OnRouteBCContext);
+  const { user } = useAuth();
   const populatedUserRoles = getDefaultRequiredVal([], userRoles);
-  const isBCeIDAdmin = isBCeIDOrgAdmin(populatedUserRoles);
+  const isIDIRUser = isIDIR(user?.profile?.identity_provider as string);
+  const isBCeIDAdmin = isBCeIDOrgAdmin(populatedUserRoles) || isIDIRUser;
 
   const { state: stateFromNavigation } = useLocation();
   let selectedTab = BCEID_PROFILE_TABS.COMPANY_INFORMATION;
@@ -53,14 +58,14 @@ export const ManageProfilesDashboard = React.memo(() => {
     selectedTab = stateFromNavigation.selectedTab;
   }
 
-  if (isLoading) {
+  if (isPending) {
     return <Loading />;
   }
 
   if (isError) {
     if (error instanceof AxiosError) {
       if (error.response?.status === 401) {
-        return <Unauthorized />;
+        return <Navigate to={ERROR_ROUTES.UNAUTHORIZED} />;
       }
       return <ErrorFallback error={error.message} />;
     }
@@ -71,11 +76,14 @@ export const ManageProfilesDashboard = React.memo(() => {
       label: "Company Information",
       component: <CompanyInfo companyInfoData={companyInfoData} />,
     },
-    {
+  ];
+
+  if (!isIDIRUser) {
+    tabs.push({
       label: "My Information",
       component: <MyInfo />,
-    },
-  ];
+    });
+  }
 
   if (isBCeIDAdmin) {
     tabs.push({
@@ -83,13 +91,6 @@ export const ManageProfilesDashboard = React.memo(() => {
       component: <UserManagement />,
     });
   }
-
-  /**
-   * TODO: Enable Payment Information page navigation when page is ready
-  tabs.push({
-    label: "Payment Information",
-    component: <>TODO</>,
-  });*/
 
   return (
     <TabLayout
@@ -100,7 +101,7 @@ export const ManageProfilesDashboard = React.memo(() => {
         isBCeIDAdmin ? (
           <Button
             variant="contained"
-            onClick={() => navigate(ADD_USER)}
+            onClick={() => navigate(PROFILE_ROUTES.ADD_USER)}
             sx={{
               marginTop: "45px",
               height: "50px",

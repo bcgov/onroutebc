@@ -51,8 +51,9 @@ export const getFromCache = async (
 export const getMapFromCache = async (
   cacheManager: Cache,
   key: CacheKey,
-): Promise<string> => {
-  const value: Map<string, string> = await cacheManager.get(key);
-  const arr = Object.fromEntries(value);
-  return JSON.stringify(arr);
+): Promise<Record<string, string>> => {
+  const value: Record<string, string> = Object.fromEntries(
+    await cacheManager.get(key),
+  ) as Record<string, string>;
+  return value;
 };

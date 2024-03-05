@@ -5,8 +5,9 @@ import {
   RegisterOptions,
   useFormContext,
 } from "react-hook-form";
+
+import "./CustomSelect.scss";
 import { ORBC_FormTypes } from "../../../types/common";
-import { SELECT_FIELD_STYLE } from "../../../../themes/orbcStyles";
 import { CustomSelectDisplayProps } from "../../../types/formElements";
 
 /**
@@ -17,6 +18,8 @@ interface CustomSelectProps<T extends FieldValues> {
   name: FieldPath<T>;
   rules: RegisterOptions;
   menuOptions?: JSX.Element[];
+  disabled?: boolean;
+  readOnly?: boolean;
 }
 
 /**
@@ -28,6 +31,8 @@ export const CustomSelect = <T extends ORBC_FormTypes>({
   name,
   rules,
   menuOptions,
+  disabled,
+  readOnly,
 }: CustomSelectProps<T>): JSX.Element => {
   const {
     register,
@@ -40,13 +45,17 @@ export const CustomSelect = <T extends ORBC_FormTypes>({
   return (
     <Select
       aria-labelledby={`${feature}-${name}-label`}
+      className={`custom-select ${disabled ? "custom-select--disabled" : ""}`}
+      disabled={disabled}
+      readOnly={readOnly}
       inputProps={{
         "aria-label": name,
       }}
       value={value ?? ""}
       {...register(name, rules)}
-      MenuProps={SELECT_FIELD_STYLE.MENU_PROPS}
-      sx={SELECT_FIELD_STYLE.SELECT_FIELDSET}
+      MenuProps={{
+        className: "custom-select__menu"
+      }}
       // This onClose function fixes a bug where the Select component does not immediately
       // revalidate when selecting an option after an invalid form submission.
       // The validation needed to be triggered again manually
@@ -61,6 +70,7 @@ export const CustomSelect = <T extends ORBC_FormTypes>({
       SelectDisplayProps={
         {
           "data-testid": `select-${name}`,
+          className: "custom-select__input-container",
         } as CustomSelectDisplayProps
       }
     >

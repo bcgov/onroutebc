@@ -5,8 +5,9 @@ import {
   RegisterOptions,
   useFormContext,
 } from "react-hook-form";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
+
 import { ORBC_FormTypes } from "../../../types/common";
+import "./CustomOutlinedInput.scss";
 
 /**
  * Properties of the onrouteBC customized OutlineInput MUI component
@@ -33,7 +34,6 @@ export const CustomOutlinedInput = <T extends ORBC_FormTypes>(
   const { register } = useFormContext();
 
   // Add aria-label to input prop for Jest testing purposes
-  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   const updatedInputProps: any = props.inputProps;
   updatedInputProps["aria-label"] = props.name;
   updatedInputProps["data-testid"] = `input-${props.name}`;
@@ -50,18 +50,20 @@ export const CustomOutlinedInput = <T extends ORBC_FormTypes>(
     updatedInputProps["pattern"] = "[0-9]*";
   }
 
+  const customInputClassName = 
+    `custom-input ${props.disabled ? "custom-input--disabled" : ""} ${props.invalid ? "custom-input--invalid" : ""}`;
+
   return (
     <OutlinedInput
-      inputProps={updatedInputProps}
+      inputProps={{
+        ...updatedInputProps,
+        className: updatedInputProps.className
+          ? `${updatedInputProps.className} custom-input__input-container`
+          : "custom-input__input-container",
+      }}
       disabled={props.disabled}
       readOnly={props.readOnly}
-      sx={{
-        "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-          borderColor: props.invalid
-            ? BC_COLOURS.bc_red
-            : BC_COLOURS.focus_blue,
-        },
-      }}
+      className={customInputClassName}
       {...register(props.name, props.rules)}
     />
   );

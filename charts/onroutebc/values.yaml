@@ -1,5 +1,6 @@
 ---
 global:
+  autoscaling: true
   license: "c28f0c"
   podAnnotations: |
     app.kubernetes.io/timestamp: {{now | toString }}
@@ -10,9 +11,15 @@ global:
   secrets:
     annotation:
       helm.sh/policy: "keep"
+  # The image registry of OpenShift. It is used in conjunction with ImageStreams which is a OpenShift specific resource.
+  openshiftImageRegistry: "image-registry.openshift-image-registry.svc:5000"
+  #enable pulling from image streams
+  imagestreams:
+    enabled: true
   domain: "apps.silver.devops.gov.bc.ca" # it is required, apps.silver.devops.gov.bc.ca for silver cluster
   vault:
     role: "nonprod"
+    zone: "dev"
 frontend:
   enabled: true
   deployment: # can be either a statefulSet or a deployment not both
@@ -29,8 +36,8 @@ frontend:
           return {
             "VITE_DEPLOY_ENVIRONMENT":"{{.Values.global.zone}}",
             "VITE_API_VEHICLE_URL":"https://{{.Release.Name}}-vehicles.{{.Values.global.domain}}",
-            "VITE_AUTH0_ISSUER_URL":"https://{{.Values.global.zone}}.loginproxy.gov.bc.ca/auth/realms/standard",
-            "VITE_AUTH0_AUDIENCE":"on-route-bc-direct-4598",
+            "VITE_KEYCLOAK_ISSUER_URL":"https://{{ternary ("") (printf "%s." .Values.global.zone) (contains "prod" .Values.global.zone)}}loginproxy.gov.bc.ca/auth/realms/standard",
+            "VITE_KEYCLOAK_AUDIENCE":"on-route-bc-direct-4598",
             "VITE_SITEMINDER_LOG_OFF_URL": "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi",
           };
         })();
@@ -55,8 +62,40 @@ frontend:
         - name: config
           mountPath: "/usr/share/nginx/html/config.js"
           subPath: config.js
+  autoscaling:
+    #-- enable or disable autoscaling.
+    enabled: true
+    #-- the minimum number of replicas.
+    minReplicas: 2
+    #-- the maximum number of replicas.
+    maxReplicas: 3
+    #-- the target cpu utilization percentage, is from request cpu and NOT LIMIT CPU.
+    targetCPUUtilizationPercentage: 80
+    #-- the behavior for the autoscaling. it is optional and is an object.
+    behavior:
+      scaleDown:
+        stabilizationWindowSeconds: 300
+        policies:
+          - type: Percent
+            value: 10
+            periodSeconds: 60
+          - type: Pods
+            value: 2
+            periodSeconds: 60
+        selectPolicy: Min
+      scaleUp:
+        stabilizationWindowSeconds: 0
+        policies:
+          - type: Percent
+            value: 100
+            periodSeconds: 30
+          - type: Pods
+            value: 2
+            periodSeconds: 30
+        selectPolicy: Max
 
   ingress:
+    className: openshift-default
     annotations: 
       route.openshift.io/termination: "edge"
     enabled: true
@@ -94,16 +133,15 @@ vehicles:
     enabled: true
     data:
       DOPS_URL: "https://{{.Release.Name}}-dops.apps.silver.devops.gov.bc.ca"
-      FRONTEND_URL: "https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca"
+      FRONTEND_URL: "https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca"      
+      ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
       PAYBC_REDIRECT: "https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca/payment"
-      VEHICLES_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
-
   containers:
     - name: vehicles
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/auth0-{{.Values.global.zone}} && source /vault/secrets/ches-{{.Values.global.zone}} && source /vault/secrets/mssql-{{.Values.global.zone}} && source /vault/secrets/payment-{{.Values.global.zone}} && npm run start:prod"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/ches-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/payment-{{.Values.global.vault.zone}} && source /vault/secrets/vehicles-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: vehicles
@@ -114,8 +152,8 @@ vehicles:
             key: DOPS_URL
           - name: FRONTEND_URL
             key: FRONTEND_URL
-          - name: VEHICLES_URL
-            key: VEHICLES_URL
+          - name: ACCESS_API_URL
+            key: ACCESS_API_URL
           - name: PAYBC_REDIRECT
             key: PAYBC_REDIRECT
       ports:
@@ -142,12 +180,44 @@ vehicles:
         timeoutSeconds: 5
       resources: # this is optional
         limits:
-          cpu: 75m
-          memory: 150Mi
+          cpu: 300m
+          memory: 500Mi
         requests:
-          cpu: 25m
-          memory: 50Mi
+          cpu: 200m
+          memory: 300Mi
+  autoscaling:
+    #-- enable or disable autoscaling.
+    enabled: true
+    #-- the minimum number of replicas.
+    minReplicas: 2
+    #-- the maximum number of replicas.
+    maxReplicas: 3
+    #-- the target cpu utilization percentage, is from request cpu and NOT LIMIT CPU.
+    targetCPUUtilizationPercentage: 80
+    #-- the behavior for the autoscaling. it is optional and is an object.
+    behavior:
+      scaleDown:
+        stabilizationWindowSeconds: 300
+        policies:
+          - type: Percent
+            value: 10
+            periodSeconds: 60
+          - type: Pods
+            value: 2
+            periodSeconds: 60
+        selectPolicy: Min
+      scaleUp:
+        stabilizationWindowSeconds: 0
+        policies:
+          - type: Percent
+            value: 100
+            periodSeconds: 30
+          - type: Pods
+            value: 2
+            periodSeconds: 30
+        selectPolicy: Max
   ingress:
+    className: openshift-default
     annotations: 
       route.openshift.io/termination: "edge"
     enabled: true
@@ -180,10 +250,12 @@ vehicles:
     role: "{{.Values.global.vault.role}}"
     license: "{{.Values.global.license}}"
     secretPaths:
-      - auth0-{{.Values.global.zone}}
-      - ches-{{.Values.global.zone}}
-      - mssql-{{.Values.global.zone}}
-      - payment-{{.Values.global.zone}}
+      - "keycloak-{{tpl $.Values.vault.zone $}}"
+      - "ches-{{tpl $.Values.vault.zone $}}"
+      - "mssql-{{tpl $.Values.vault.zone $}}"
+      - "payment-{{tpl $.Values.vault.zone $}}"
+      - "vehicles-{{tpl $.Values.vault.zone $}}"
+    zone: "{{.Values.global.vault.zone}}"
 
 dops:
   enabled: true
@@ -196,19 +268,25 @@ dops:
   configmap:
     enabled: true
     data:
+      DOPS_URL: "https://{{.Release.Name}}-dops.apps.silver.devops.gov.bc.ca"
+      FRONTEND_URL: "https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca"
       ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
   containers:
     - name: dops
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/auth0-{{.Values.global.zone}} && source /vault/secrets/mssql-{{.Values.global.zone}} && source /vault/secrets/cdogs-{{.Values.global.zone}} && source /vault/secrets/dops-{{.Values.global.zone}} && npm run start:prod"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/cdogs-{{.Values.global.vault.zone}} && source /vault/secrets/dops-{{.Values.global.vault.zone}} && source /vault/secrets/s3-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: dops
       tag: "{{tpl .Values.global.tag .}}"
       env:
-        fromLocalConfigmap: 
+        fromLocalConfigmap:
+          - name: DOPS_URL
+            key: DOPS_URL
+          - name: FRONTEND_URL
+            key: FRONTEND_URL
           - name: ACCESS_API_URL
             key: ACCESS_API_URL
       ports:
@@ -233,16 +311,46 @@ dops:
         initialDelaySeconds: 60
         periodSeconds: 30
         timeoutSeconds: 5
-      securityContext:
-        allowPrivilegeEscalation: true
       resources: # this is optional
         limits:
-          cpu: 200m
-          memory: 600Mi
+          cpu: 2000m
+          memory: 4000Mi
         requests:
-          cpu: 100m
-          memory: 200Mi
+          cpu: 1000m
+          memory: 2000Mi
+  autoscaling:
+    #-- enable or disable autoscaling.
+    enabled: true
+    #-- the minimum number of replicas.
+    minReplicas: 2
+    #-- the maximum number of replicas.
+    maxReplicas: 3
+    #-- the target cpu utilization percentage, is from request cpu and NOT LIMIT CPU.
+    targetCPUUtilizationPercentage: 80
+    #-- the behavior for the autoscaling. it is optional and is an object.
+    behavior:
+      scaleDown:
+        stabilizationWindowSeconds: 300
+        policies:
+          - type: Percent
+            value: 10
+            periodSeconds: 60
+          - type: Pods
+            value: 2
+            periodSeconds: 60
+        selectPolicy: Min
+      scaleUp:
+        stabilizationWindowSeconds: 0
+        policies:
+          - type: Percent
+            value: 100
+            periodSeconds: 30
+          - type: Pods
+            value: 2
+            periodSeconds: 30
+        selectPolicy: Max
   ingress:
+    className: openshift-default
     annotations: 
       route.openshift.io/termination: "edge"
     enabled: true
@@ -275,7 +383,131 @@ dops:
     role: "{{.Values.global.vault.role}}"
     license: "{{.Values.global.license}}"
     secretPaths:
-      - auth0-{{.Values.global.zone}}
-      - mssql-{{.Values.global.zone}}
-      - cdogs-{{.Values.global.zone}}
-      - dops-{{.Values.global.zone}}
+      - "keycloak-{{tpl $.Values.vault.zone $}}"
+      - "mssql-{{tpl $.Values.vault.zone $}}"
+      - "cdogs-{{tpl $.Values.vault.zone $}}"
+      - "dops-{{tpl $.Values.vault.zone $}}"
+      - "s3-{{tpl $.Values.vault.zone $}}"
+    zone: "{{.Values.global.vault.zone}}"
+
+tps-migration:
+  enabled: true
+  deployment: # can be either a statefulSet or a deployment not both
+    enabled: true
+  statefulSet: # can be either a statefulSet or a deployment not both
+    enabled: false
+  secret:
+    enabled: false
+  configmap:
+    enabled: true
+  containers:
+    - name: tps-migration
+      command:
+        - "sh"
+        - "-c"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/s3-{{.Values.global.vault.zone}} && source /vault/secrets/tps-{{.Values.global.vault.zone}} && npm run start:prod"
+      registry: '{{ .Values.global.registry }}'
+      repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
+      image: tps-migration
+      tag: "{{tpl .Values.global.tag .}}"
+      ports:
+        - name: tps-api
+          containerPort: 5050
+          protocol: TCP
+      readinessProbe:
+        httpGet:
+          path: /
+          port: 5050
+          scheme: HTTP
+        initialDelaySeconds: 60
+        periodSeconds: 15
+        timeoutSeconds: 5
+      livenessProbe:
+        successThreshold: 1
+        failureThreshold: 3
+        httpGet:
+          path: /
+          port: 5050
+          scheme: HTTP
+        initialDelaySeconds: 60
+        periodSeconds: 30
+        timeoutSeconds: 5
+      securityContext:
+        allowPrivilegeEscalation: true
+      resources: # this is optional
+        limits:
+          cpu: 75m
+          memory: 150Mi
+        requests:
+          cpu: 25m
+          memory: 50Mi
+  autoscaling:
+    #-- enable or disable autoscaling.
+    enabled: true
+    #-- the minimum number of replicas.
+    minReplicas: 2
+    #-- the maximum number of replicas.
+    maxReplicas: 3
+    #-- the target cpu utilization percentage, is from request cpu and NOT LIMIT CPU.
+    targetCPUUtilizationPercentage: 80
+    #-- the behavior for the autoscaling. it is optional and is an object.
+    behavior:
+      scaleDown:
+        stabilizationWindowSeconds: 300
+        policies:
+          - type: Percent
+            value: 10
+            periodSeconds: 60
+          - type: Pods
+            value: 2
+            periodSeconds: 60
+        selectPolicy: Min
+      scaleUp:
+        stabilizationWindowSeconds: 0
+        policies:
+          - type: Percent
+            value: 100
+            periodSeconds: 30
+          - type: Pods
+            value: 2
+            periodSeconds: 30
+        selectPolicy: Max
+  ingress:
+    className: openshift-default
+    annotations: 
+      route.openshift.io/termination: "edge"
+    enabled: true
+    hosts: 
+      - host: "{{.Release.Name}}-tps-migration.apps.silver.devops.gov.bc.ca"
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls:
+      - {}
+  service:
+    enabled: true
+    type: ClusterIP
+    ports:
+      - name: 5050-tcp
+        protocol: TCP
+        port: 80
+        targetPort: 5050
+  serviceAccount:
+    name: "{{ .Values.global.license }}-vault"
+  vault:
+    enabled: true
+    resources: # this is optional
+      limits:
+        cpu: 100m
+        memory: 200Mi
+      requests:
+        cpu: 75m
+        memory: 100Mi
+    role: "{{.Values.global.vault.role}}"
+    license: "{{.Values.global.license}}"
+    secretPaths:
+      - "keycloak-{{tpl $.Values.vault.zone $}}"
+      - "mssql-{{tpl $.Values.vault.zone $}}"      
+      - "tps-{{tpl $.Values.vault.zone $}}"
+      - "s3-{{tpl $.Values.vault.zone $}}"
+    zone: "{{.Values.global.vault.zone}}"

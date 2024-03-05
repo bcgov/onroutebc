@@ -2,13 +2,15 @@ import { Box } from "@mui/material";
 import { memo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Banner } from "../../../../common/components/dashboard/Banner";
-import { IDIRSearchResults } from "../components/IDIRSearchResults";
 import {
   SEARCH_BY_FILTERS,
+  SEARCH_ENTITIES,
   SearchByFilter,
   SearchEntity,
   SearchFields,
 } from "../types/types";
+import { IDIRCompanySearchResults } from "../components/IDIRCompanySearchResults";
+import { IDIRPermitSearchResults } from "../components/IDIRPermitSearchResults";
 
 /**
  * Returns a banner text based on the search criteria.
@@ -16,10 +18,10 @@ import {
  * @returns Empty string or an appropriate banner text.
  */
 const getBannerText = (searchFields: SearchFields): string => {
-  if (!searchFields?.searchValue) return "";
-  const { searchByFilter, searchValue } = searchFields;
+  if (!searchFields?.searchString) return "";
+  const { searchByFilter, searchString } = searchFields;
   if (searchByFilter === SEARCH_BY_FILTERS.PERMIT_NUMBER) {
-    return `Search Results: Permit # ${searchValue}`;
+    return `Search Results: Permit # ${searchString}`;
   }
   return "";
 };
@@ -32,7 +34,7 @@ export const IDIRSearchResultsDashboard = memo(() => {
   const searchFields: SearchFields = {
     searchByFilter: searchParams.get("searchByFilter") as SearchByFilter,
     searchEntity: searchParams.get("searchEntity") as SearchEntity,
-    searchValue: searchParams.get("searchValue") as string,
+    searchString: searchParams.get("searchString") as string,
   };
 
   return (
@@ -52,7 +54,12 @@ export const IDIRSearchResultsDashboard = memo(() => {
         id={`layout-tabpanel-search-results`}
         aria-labelledby={`layout-tab-search-results`}
       >
-        <IDIRSearchResults searchParams={searchFields} />
+        {searchFields?.searchEntity === SEARCH_ENTITIES.COMPANY && (
+          <IDIRCompanySearchResults searchParams={searchFields} />
+        )}
+        {searchFields?.searchEntity === SEARCH_ENTITIES.PERMIT && (
+          <IDIRPermitSearchResults searchParams={searchFields} />
+        )}
       </div>
     </>
   );

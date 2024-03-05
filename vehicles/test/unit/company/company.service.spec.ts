@@ -27,7 +27,6 @@ import {
 } from '../../util/mocks/data/company.mock';
 
 import { DataNotFoundException } from '../../../src/common/exception/data-not-found.exception';
-import { InternalServerErrorException } from '@nestjs/common';
 import * as constants from '../../util/mocks/data/test-data.constants';
 import {
   blueCompanyAdminUserJWTMock,
@@ -38,6 +37,8 @@ import * as databaseHelper from 'src/common/helper/database.helper';
 import { EmailService } from '../../../src/modules/email/email.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { BadRequestException } from '@nestjs/common';
+import { GetCompanyQueryParamsDto } from '../../../src/modules/company-user-management/company/dto/request/queryParam/getCompany.query-params.dto';
 
 const COMPANY_ID_99 = 99;
 let repo: DeepMocked<Repository<Company>>;
@@ -94,6 +95,7 @@ describe('CompanyService', () => {
 
   describe('Company service create function', () => {
     it('should create a company registered in BC and its admin user.', async () => {
+      jest.spyOn(service, 'findOneByCompanyGuid').mockResolvedValue(undefined);
       repo.findOne.mockResolvedValue(redCompanyEntityMock);
       emailService.sendEmailMessage.mockResolvedValue(
         '00000000-0000-0000-0000-000000000000',
@@ -113,6 +115,7 @@ describe('CompanyService', () => {
     });
 
     it('should create a company registered in US and its admin user.', async () => {
+      jest.spyOn(service, 'findOneByCompanyGuid').mockResolvedValue(undefined);
       repo.findOne.mockResolvedValue(blueCompanyEntityMock);
       emailService.sendEmailMessage.mockResolvedValue(
         '00000000-0000-0000-0000-000000000000',
@@ -133,7 +136,7 @@ describe('CompanyService', () => {
     it('should catch and throw and Internal Error Exceptions user.', async () => {
       await expect(async () => {
         await service.create(null, redCompanyAdminUserJWTMock);
-      }).rejects.toThrowError(InternalServerErrorException);
+      }).rejects.toThrow(BadRequestException);
     });
   });
 
@@ -219,6 +222,42 @@ describe('CompanyService', () => {
 
       expect(typeof retCompany).toBe('object');
       expect(retCompany[0].companyId).toBe(constants.RED_COMPANY_ID);
+    });
+  });
+
+  describe('Company service findCompanyPaginated function', () => {
+    it('should return the Paginated Company List', async () => {
+      const PARAMS = {
+        pageOptionsDto: { page: 1, take: 10 },
+        legalName: constants.RED_COMPANY_LEGAL_NAME,
+        clientNumber: constants.RED_COMPANY_CLIENT_NUMBER,
+      };
+      const FILTERED_LIST = COMPANY_LIST.filter(
+        (r) => r.legalName === PARAMS.legalName,
+      ).filter((r) => r.clientNumber === PARAMS.clientNumber);
+
+      jest
+        .spyOn(repo, 'createQueryBuilder')
+        .mockImplementation(() => createQueryBuilderMock(FILTERED_LIST));
+
+      const getCompanyQueryParamsDto: GetCompanyQueryParamsDto = {
+        page: 1,
+        take: 10,
+        orderBy: 'companyId:DESC',
+        clientNumber: 'Red Truck Inc',
+        companyName: 'B3-000005-722',
+      };
+
+      const retCompanies = await service.findCompanyPaginated({
+        page: getCompanyQueryParamsDto.page,
+        take: getCompanyQueryParamsDto.take,
+        orderBy: getCompanyQueryParamsDto.orderBy,
+        companyName: getCompanyQueryParamsDto.companyName,
+        clientNumber: getCompanyQueryParamsDto.clientNumber,
+      });
+
+      expect(typeof retCompanies).toBe('object');
+      expect(retCompanies.items.length).toBeGreaterThan(0);
     });
   });
 });

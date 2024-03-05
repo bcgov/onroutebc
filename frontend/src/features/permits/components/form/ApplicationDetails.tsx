@@ -2,18 +2,20 @@ import { Box, Typography } from "@mui/material";
 import { Dayjs } from "dayjs";
 
 import { CompanyBanner } from "../../../../common/components/banners/CompanyBanner";
-import {
-  DATE_FORMATS,
-  dayjsToLocalStr,
-} from "../../../../common/helpers/formatDate";
-import {
-  applyWhenNotNullable,
-  getDefaultRequiredVal,
-} from "../../../../common/helpers/util";
 import { CompanyInformation } from "./CompanyInformation";
 import "./ApplicationDetails.scss";
 import { permitTypeDisplayText } from "../../types/PermitType";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
+import { Nullable } from "../../../../common/types/common";
+import {
+  DATE_FORMATS,
+  dayjsToLocalStr,
+} from "../../../../common/helpers/formatDate";
+
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../../common/helpers/util";
 
 export const ApplicationDetails = ({
   permitType,
@@ -23,14 +25,16 @@ export const ApplicationDetails = ({
   updatedDateTime,
   companyInfo,
   isAmendAction = false,
+  doingBusinessAs,
 }: {
   permitType?: string;
   infoNumberType?: "application" | "permit";
   infoNumber?: string;
   createdDateTime?: Dayjs;
   updatedDateTime?: Dayjs;
-  companyInfo?: CompanyProfile | null;
+  companyInfo?: Nullable<CompanyProfile>;
   isAmendAction?: boolean;
+  doingBusinessAs?: Nullable<string>;
 }) => {
   const applicationName = permitTypeDisplayText(
     getDefaultRequiredVal("", permitType),
@@ -105,11 +109,16 @@ export const ApplicationDetails = ({
           <Box></Box>
         )}
       </div>
+
       <CompanyBanner
         companyName={companyInfo?.legalName}
         clientNumber={companyInfo?.clientNumber}
       />
-      <CompanyInformation companyInfo={companyInfo} />
+
+      <CompanyInformation
+        companyInfo={companyInfo}
+        doingBusinessAs={doingBusinessAs}
+      />
     </>
   );
 };

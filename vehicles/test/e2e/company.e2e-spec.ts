@@ -1,6 +1,5 @@
 import * as request from 'supertest';
 import { Test } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
 
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { classes } from '@automapper/classes';
@@ -14,7 +13,6 @@ import {
   createRedCompanyDtoMock,
   readRedCompanyDtoMock,
   readRedCompanyMetadataDtoMock,
-  readRedCompanyUserDtoMock,
   redCompanyEntityMock,
   updateRedCompanyDtoMock,
 } from '../util/mocks/data/company.mock';
@@ -22,10 +20,7 @@ import {
   createQueryBuilderMock,
   dataSourceMockFactory,
 } from '../util/mocks/factory/dataSource.factory.mock';
-import {
-  redCompanyAdminUserJWTMock,
-  sysAdminStaffUserJWTMock,
-} from '../util/mocks/data/jwt.mock';
+import { redCompanyAdminUserJWTMock } from '../util/mocks/data/jwt.mock';
 import { TestUserMiddleware } from './test-user.middleware';
 import { AddressProfile } from '../../src/modules/common/profiles/address.profile';
 import { ContactProfile } from '../../src/modules/common/profiles/contact.profile';
@@ -37,6 +32,8 @@ import { Cache } from 'cache-manager';
 import { EmailService } from '../../src/modules/email/email.service';
 import { HttpService } from '@nestjs/axios';
 import { EmailModule } from '../../src/modules/email/email.module';
+import { App } from 'supertest/types';
+import { INestApplication } from '@nestjs/common';
 
 let repo: DeepMocked<Repository<Company>>;
 let emailService: DeepMocked<EmailService>;
@@ -44,7 +41,7 @@ let cacheManager: DeepMocked<Cache>;
 let httpService: DeepMocked<HttpService>;
 
 describe('Company (e2e)', () => {
-  let app: INestApplication;
+  let app: INestApplication<Express.Application>;
 
   beforeAll(async () => {
     jest.clearAllMocks();
@@ -85,7 +82,9 @@ describe('Company (e2e)', () => {
 
   describe('/companies CREATE', () => {
     it('should create a new Company.', async () => {
-      repo.findOne.mockResolvedValue(redCompanyEntityMock);
+      repo.findOne
+        .mockResolvedValueOnce(undefined)
+        .mockResolvedValueOnce(redCompanyEntityMock);
 
       jest
         .spyOn(emailService, 'sendEmailMessage')
@@ -97,11 +96,16 @@ describe('Company (e2e)', () => {
         .mockImplementation(async () => {
           return Promise.resolve('000005');
         });
-      const response = await request(app.getHttpServer())
+      const response = await request(app.getHttpServer() as unknown as App)
         .post('/companies')
         .send(createRedCompanyDtoMock)
         .expect(201);
-      expect(response.body).toMatchObject(readRedCompanyUserDtoMock);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          companyId: constants.RED_COMPANY_ID,
+          companyGUID: constants.RED_COMPANY_GUID,
+        }),
+      );
     });
   });
 
@@ -110,30 +114,8 @@ describe('Company (e2e)', () => {
       const PARAMS = { userGUID: constants.RED_COMPANY_ADMIN_USER_GUID };
       findCompanywithParams(PARAMS);
 
-      const response = await request(app.getHttpServer())
-        .get('/companies')
-        .expect(200);
-
-      expect(response.body).toContainEqual(readRedCompanyMetadataDtoMock);
-    });
-    it('should throw a forbidden exception when user is not staff and userGUID is passed as Query Param', async () => {
-      const PARAMS = { userGUID: constants.RED_COMPANY_ADMIN_USER_GUID };
-      findCompanywithParams(PARAMS);
-
-      TestUserMiddleware.testUser = redCompanyAdminUserJWTMock;
-
-      await request(app.getHttpServer())
-        .get('/companies?userGUID=' + constants.RED_COMPANY_ADMIN_USER_GUID)
-        .expect(403);
-    });
-    it('should return an array of company metadata associated with the userGUID Query Param when logged in as Staff', async () => {
-      const PARAMS = { userGUID: constants.RED_COMPANY_ADMIN_USER_GUID };
-      findCompanywithParams(PARAMS);
-
-      TestUserMiddleware.testUser = sysAdminStaffUserJWTMock;
-
-      const response = await request(app.getHttpServer())
-        .get('/companies?userGUID=' + constants.RED_COMPANY_ADMIN_USER_GUID)
+      const response = await request(app.getHttpServer() as unknown as App)
+        .get('/companies/meta-data')
         .expect(200);
 
       expect(response.body).toContainEqual(readRedCompanyMetadataDtoMock);
@@ -146,7 +128,7 @@ describe('Company (e2e)', () => {
         ...redCompanyEntityMock,
         extension: null,
       });
-      const response = await request(app.getHttpServer())
+      const response = await request(app.getHttpServer() as unknown as App)
         .put('/companies/1')
         .send(updateRedCompanyDtoMock)
         .expect(200);
@@ -161,7 +143,7 @@ describe('Company (e2e)', () => {
   describe('/companies/1 GET', () => {
     it('should return a company with companyId as 1.', async () => {
       repo.findOne.mockResolvedValue(redCompanyEntityMock);
-      const response = await request(app.getHttpServer())
+      const response = await request(app.getHttpServer() as unknown as App)
         .get('/companies/1')
         .expect(200);
 

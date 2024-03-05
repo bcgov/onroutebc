@@ -6,6 +6,7 @@ import viteTsconfigPaths from "vite-tsconfig-paths";
 import svgrPlugin from "vite-plugin-svgr";
 import eslint from "vite-plugin-eslint";
 import path from "path";
+import autoprefixer from "autoprefixer";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -14,16 +15,39 @@ export default defineConfig({
     port: 3000,
     open: true,
   },
-  plugins: [eslint(), react(), viteTsconfigPaths(), svgrPlugin()],
+  optimizeDeps: {
+    include: [
+      "@emotion/react",
+      "@emotion/styled",
+      "@mui/material/Tooltip"
+    ]
+  },
+  plugins: [
+    eslint(),
+    react(),
+    viteTsconfigPaths(),
+    svgrPlugin(),
+  ],
+  css: {
+    postcss: {
+      plugins: [
+        autoprefixer({
+          remove: false,
+        }), 
+      ],
+    },
+  },
   test: {
     globals: true,
     environment: "jsdom",
     setupFiles: ["./src/setupTests.ts"],
-    deps: {
-      inline: ["vitest-canvas-mock"]
+    server: {
+      deps: {
+        inline: ["vitest-canvas-mock"]
+      },
     },
     coverage: {
-      reporter: ["text", "html"],
+      reporter: ["text", "html", "lcov"],
       exclude: ["node_modules/", "src/setupTests.ts"],
     },
   },

@@ -1,4 +1,9 @@
-import { UseQueryResult, useQuery } from "@tanstack/react-query";
+import {
+  UseQueryResult,
+  useQuery,
+  keepPreviousData,
+} from "@tanstack/react-query";
+
 import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints";
 import { httpGETRequest } from "../../../../common/apiManager/httpRequestHandler";
 import { ONE_HOUR } from "../../../../common/constants/constants";
@@ -27,7 +32,7 @@ export const usePermitIssuersQuery = (): UseQueryResult<
   return useQuery({
     queryKey: ["permitIssuers"],
     queryFn: getPermitIssuers,
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
     staleTime: ONE_HOUR,
     retry: false,
     refetchOnWindowFocus: false, // prevents unnecessary queries

@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { PowerUnitTypesService } from './modules/vehicles/power-unit-types/power-unit-types.service';
@@ -9,9 +9,13 @@ import * as fs from 'fs';
 import { CacheKey } from './common/enum/cache-key.enum';
 import { addToCache, createCacheMap } from './common/helper/cache.helper';
 import { PaymentService } from './modules/payment/payment.service';
+import { LogAsyncMethodExecution } from './common/decorator/log-async-method-execution.decorator';
+import { FeatureFlagsService } from './modules/feature-flags/feature-flags.service';
 
 @Injectable()
 export class AppService {
+  private readonly logger = new Logger(AppService.name);
+
   constructor(
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
@@ -20,12 +24,14 @@ export class AppService {
     private trailerTypeService: TrailerTypesService,
     private commonService: CommonService,
     private paymentService: PaymentService,
+    private featureFlagsService: FeatureFlagsService,
   ) {}
 
   getHello(): string {
     return 'Vehicles Healthcheck!';
   }
 
+  @LogAsyncMethodExecution({ printMemoryStats: true })
   async initializeCache() {
     const startDateTime = new Date();
     const countries = await this.commonService.findAllCountries();
@@ -85,6 +91,13 @@ export class AppService {
       createCacheMap(paymentTypes, 'paymentCardTypeCode', 'name'),
     );
 
+    const featureFlags = await this.featureFlagsService.findAll();
+    await addToCache(
+      this.cacheManager,
+      CacheKey.FEATURE_FLAG_TYPE,
+      createCacheMap(featureFlags, 'featureKey', 'featureValue'),
+    );
+
     const assetsPath =
       process.env.NODE_ENV === 'local'
         ? './src/modules/email/assets/'
@@ -102,10 +115,24 @@ export class AppService {
       CacheKey.EMAIL_TEMPLATE_ISSUE_PERMIT,
       this.convertFiletoString(assetsPath + 'templates/issue-permit.email.hbs'),
     );
+    await addToCache(
+      this.cacheManager,
+      CacheKey.EMAIL_TEMPLATE_COMPANY_SUSPEND,
+      this.convertFiletoString(
+        assetsPath + 'templates/suspend-company.email.hbs',
+      ),
+    );
+    await addToCache(
+      this.cacheManager,
+      CacheKey.EMAIL_TEMPLATE_COMPANY_UNSUSPEND,
+      this.convertFiletoString(
+        assetsPath + 'templates/unsuspend-company.email.hbs',
+      ),
+    );
 
     const endDateTime = new Date();
     const processingTime = endDateTime.getTime() - startDateTime.getTime();
-    console.log(
+    this.logger.log(
       `initializeCache() -> Start time: ${startDateTime.toISOString()},` +
         `End time: ${endDateTime.toISOString()},` +
         `Processing time: ${processingTime}ms`,

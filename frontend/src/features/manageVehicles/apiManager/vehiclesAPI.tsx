@@ -1,21 +1,28 @@
 import { VEHICLES_API } from "./endpoints/endpoints";
+import { replaceEmptyValuesWithNull } from "../../../common/helpers/util";
+import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
+import { Nullable, RequiredOrNull } from "../../../common/types/common";
+import { EMPTY_VEHICLE_UNIT_NUMBER } from "../../../common/constants/constants";
 import {
   PowerUnit,
   UpdatePowerUnit,
-  VehicleType,
+  VehicleSubType,
   Trailer,
   UpdateTrailer,
-  VehicleTypesAsString,
-  Vehicle,
-} from "../types/managevehicles";
+  VehicleType,
+  BaseVehicle,
+  VEHICLE_TYPES,
+} from "../types/Vehicle";
 
-import { replaceEmptyValuesWithNull } from "../../../common/helpers/util";
-import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
 import {
   httpPOSTRequest,
   httpPUTRequest,
   httpGETRequest,
 } from "../../../common/apiManager/httpRequestHandler";
+
+const emptyUnitNumberToNull = (unitNumber?: Nullable<string>) => {
+  return !unitNumber || unitNumber === EMPTY_VEHICLE_UNIT_NUMBER ? null : unitNumber;
+};
 
 /**
  * Fetch*
@@ -29,11 +36,11 @@ export const getAllVehicles = async (
   const trailers = await getAllTrailers(companyId);
 
   powerUnits.forEach((p: PowerUnit) => {
-    p.vehicleType = "powerUnit";
+    p.vehicleType = VEHICLE_TYPES.POWER_UNIT;
   });
 
   trailers.forEach((t: Trailer) => {
-    t.vehicleType = "trailer";
+    t.vehicleType = VEHICLE_TYPES.TRAILER;
   });
 
   const allVehicles: (PowerUnit | Trailer)[] = [...powerUnits, ...trailers];
@@ -67,10 +74,12 @@ export const getPowerUnit = async (
 };
 
 /**
- * Gets the power unit types.
- * @returns Array<PowerUnitType>
+ * Gets the power unit vehicle subtypes.
+ * @returns List of vehicle subtypes for power units.
  */
-export const getPowerUnitTypes = async (): Promise<Array<VehicleType>> => {
+export const getPowerUnitSubTypes = async (): Promise<
+  Array<VehicleSubType>
+> => {
   const url = new URL(VEHICLES_API.POWER_UNIT_TYPES);
   return httpGETRequest(url.toString()).then((response) => response.data);
 };
@@ -88,7 +97,16 @@ export const addPowerUnit = async ({
   companyId: string;
 }) => {
   const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/powerUnits`;
-  return await httpPOSTRequest(url, replaceEmptyValuesWithNull(powerUnit));
+  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+  const { powerUnitId, unitNumber, ...powerUnitReqData } = powerUnit;
+  
+  return await httpPOSTRequest(
+    url,
+    {
+      ...replaceEmptyValuesWithNull(powerUnitReqData),
+      unitNumber: emptyUnitNumberToNull(unitNumber),
+    },
+  );
 };
 
 /**
@@ -106,7 +124,15 @@ export const updatePowerUnit = async ({
   companyId: string;
 }) => {
   const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/powerUnits/${powerUnitId}`;
-  return await httpPUTRequest(url, replaceEmptyValuesWithNull(powerUnit));
+  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+  const { powerUnitId: id, unitNumber, ...powerUnitReqData } = powerUnit;
+  return await httpPUTRequest(
+    url,
+    {
+      ...replaceEmptyValuesWithNull(powerUnitReqData),
+      unitNumber: emptyUnitNumberToNull(unitNumber),
+    },
+  );
 };
 
 /**
@@ -137,24 +163,33 @@ export const getTrailer = async (
  * @returns A Promise<Vehicle> with data from the API.
  */
 export const getVehicleById = async (
-  vehicleId: string,
-  vehicleType: VehicleTypesAsString,
   companyId: string,
-): Promise<Vehicle> => {
+  vehicleType: VehicleType,
+  vehicleId?: string,
+): Promise<RequiredOrNull<BaseVehicle>> => {
+  if (!vehicleId) return null;
+
   let url = `${VEHICLES_URL}/companies/${companyId}/vehicles`;
-  if (vehicleType === "powerUnit") {
+  if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
     url += `/powerUnits/${vehicleId}`;
   } else {
     url += `/trailers/${vehicleId}`;
   }
-  return httpGETRequest(url).then((response) => response.data);
+
+  try {
+    const response = await httpGETRequest(url);
+    return response.data;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
 };
 
 /**
- * Gets the trailer types.
- * @returns Array<VehicleType>
+ * Gets the trailer vehicle subtypes.
+ * @returns List of vehicle subtypes for trailers.
  */
-export const getTrailerTypes = async (): Promise<Array<VehicleType>> => {
+export const getTrailerSubTypes = async (): Promise<Array<VehicleSubType>> => {
   const url = new URL(VEHICLES_API.TRAILER_TYPES);
   return httpGETRequest(url.toString()).then((response) => response.data);
 };
@@ -172,7 +207,15 @@ export const addTrailer = async ({
   companyId: string;
 }) => {
   const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/trailers`;
-  return await httpPOSTRequest(url, replaceEmptyValuesWithNull(trailer));
+  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+  const { trailerId, unitNumber, ...trailerReqData } = trailer;
+  return await httpPOSTRequest(
+    url,
+    {
+      ...replaceEmptyValuesWithNull(trailerReqData),
+      unitNumber: emptyUnitNumberToNull(unitNumber),
+    },
+  );
 };
 
 /**
@@ -191,23 +234,31 @@ export const updateTrailer = async ({
   companyId: string;
 }) => {
   const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/trailers/${trailerId}`;
-  return await httpPUTRequest(url, replaceEmptyValuesWithNull(trailer));
+  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+  const { trailerId: id, unitNumber, ...trailerReqData } = trailer;
+  return await httpPUTRequest(
+    url,
+    {
+      ...replaceEmptyValuesWithNull(trailerReqData),
+      unitNumber: emptyUnitNumberToNull(unitNumber),
+    },
+  );
 };
 
 /**
  * Delete one or more vehicles.
  * @param vehicleIds Array of vehicle ids to be deleted.
- * @param vehicleType The {@link VehicleTypesAsString} to be deleted.
+ * @param vehicleType The type of the vehicle to be deleted.
  * @returns A Promise with the API response.
  */
 export const deleteVehicles = async (
   vehicleIds: Array<string>,
-  vehicleType: VehicleTypesAsString,
+  vehicleType: VehicleType,
   companyId: string,
 ) => {
-  let url: string | null = null;
+  let url: RequiredOrNull<string> = null;
   let requestBody: { powerUnits: Array<string> } | { trailers: Array<string> };
-  if (vehicleType === "powerUnit") {
+  if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
     url = `${VEHICLES_URL}/companies/${companyId}/vehicles/powerUnits/delete-requests`;
     requestBody = { powerUnits: vehicleIds };
   } else {

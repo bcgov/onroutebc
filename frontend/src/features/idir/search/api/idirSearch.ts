@@ -1,6 +1,10 @@
 import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints";
 import { httpGETRequest } from "../../../../common/apiManager/httpRequestHandler";
-import { PaginatedResponse } from "../../../../common/types/common";
+import {
+  PaginatedResponse,
+  PaginationOptions,
+} from "../../../../common/types/common";
+import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import { Permit } from "../../../permits/types/permit";
 import { SearchFields } from "../types/types";
 
@@ -9,11 +13,37 @@ import { SearchFields } from "../types/types";
  * @param SearchFields The search parameters.
  * @returns The response from the API.
  */
-export const getDataBySearch = ({
-  searchEntity,
-  searchByFilter,
-  searchValue,
-}: SearchFields): Promise<PaginatedResponse<Permit>> => {
-  const url = `${VEHICLES_URL}/${searchEntity}/ppc/search?searchColumn=${searchByFilter}&searchString=${searchValue}`;
-  return httpGETRequest(url).then((response) => response.data);
+export const getPermitDataBySearch = (
+  { searchEntity, searchByFilter, searchString }: SearchFields,
+  { page = 0, take = 10 }: PaginationOptions,
+): Promise<PaginatedResponse<Permit>> => {
+  const searchURL = new URL(`${VEHICLES_URL}/${searchEntity}`);
+  searchURL.searchParams.set("searchColumn", searchByFilter);
+  searchURL.searchParams.set("searchString", searchString);
+
+  // API pagination index starts at 1. Hence page + 1.
+  searchURL.searchParams.set("page", (page + 1).toString());
+  searchURL.searchParams.set("take", take.toString());
+  return httpGETRequest(searchURL.toString()).then((response) => response.data);
+};
+
+/**
+ * Searches the data with options and value entered by the user.
+ * @param SearchFields The search parameters.
+ * @returns The response from the API.
+ */
+export const getCompanyDataBySearch = (
+  { searchEntity, searchByFilter, searchString }: SearchFields,
+  { page = 0, take = 10 }: PaginationOptions,
+): Promise<PaginatedResponse<CompanyProfile>> => {
+  const searchURL = new URL(`${VEHICLES_URL}/${searchEntity}`);
+  if (searchByFilter === "companyName") {
+    searchURL.searchParams.set("companyName", searchString);
+  } else {
+    searchURL.searchParams.set("clientNumber", searchString);
+  }
+  // API pagination index starts at 1. Hence page + 1.
+  searchURL.searchParams.set("page", (page + 1).toString());
+  searchURL.searchParams.set("take", take.toString());
+  return httpGETRequest(searchURL.toString()).then((response) => response.data);
 };

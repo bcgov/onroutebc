@@ -3,40 +3,46 @@ import { AppRoutes } from "./routes/Routes";
 import { ThemeProvider } from "@mui/material/styles";
 import { createContext, Dispatch, useEffect, useMemo, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AuthProvider } from "react-oidc-context";
+import { AuthProvider, AuthProviderProps } from "react-oidc-context";
 
 import "./App.scss";
 import { Header } from "./common/components/header/Header";
 import { Footer } from "./common/components/footer/Footer";
 import { bcGovTheme } from "./themes/bcGovTheme";
+import { NavIconSideBar } from "./common/components/naviconsidebar/NavIconSideBar";
+import { NavIconHomeButton } from "./common/components/naviconsidebar/NavIconHomeButton";
+import { NavIconReportButton } from "./common/components/naviconsidebar/NavIconReportButton";
+import { Nullable, Optional } from "./common/types/common";
 import {
   CustomSnackbar,
   SnackBarOptions,
 } from "./common/components/snackbar/CustomSnackBar";
+
 import OnRouteBCContext, {
   BCeIDUserDetailContext,
   IDIRUserDetailContext,
 } from "./common/authentication/OnRouteBCContext";
-import { NavIconSideBar } from "./common/components/naviconsidebar/NavIconSideBar";
-import { NavIconHomeButton } from "./common/components/naviconsidebar/NavIconHomeButton";
-import { NavIconReportButton } from "./common/components/naviconsidebar/NavIconReportButton";
+import { VerifiedClient, UserRolesType } from "./common/authentication/types";
+import { WebStorageStateStore } from "oidc-client-ts";
 
 const authority =
-  import.meta.env.VITE_AUTH0_ISSUER_URL || envConfig.VITE_AUTH0_ISSUER_URL;
+  import.meta.env.VITE_KEYCLOAK_ISSUER_URL ||
+  envConfig.VITE_KEYCLOAK_ISSUER_URL;
 
 const client_id =
-  import.meta.env.VITE_AUTH0_AUDIENCE || envConfig.VITE_AUTH0_AUDIENCE;
+  import.meta.env.VITE_KEYCLOAK_AUDIENCE || envConfig.VITE_KEYCLOAK_AUDIENCE;
 
 /**
  * The OIDC Configuration needed for authentication.
  */
-const oidcConfig = {
+const oidcConfig: AuthProviderProps = {
   authority: authority,
   client_id: client_id,
   redirect_uri: window.location.origin + "/",
   scope: "openid",
   automaticSilentRenew: true,
   revokeTokensOnSignout: true,
+  userStore: new WebStorageStateStore({ store: sessionStorage }),
 };
 
 /**
@@ -57,20 +63,18 @@ const App = () => {
     alertType: "info",
   });
 
-  const [userRoles, setUserRoles] = useState<string[] | null | undefined>();
-  const [companyId, setCompanyId] = useState<number | undefined>();
-  const [onRouteBCClientNumber, setOnRouteBCClientNumber] = useState<
-    string | undefined
-  >();
-  const [companyLegalName, setCompanyLegalName] = useState<
-    string | undefined
-  >();
-  const [userDetails, setUserDetails] = useState<
-    BCeIDUserDetailContext | undefined
-  >();
-  const [idirUserDetails, setIDIRUserDetails] = useState<
-    IDIRUserDetailContext | undefined
-  >();
+  const [userRoles, setUserRoles] = useState<Nullable<UserRolesType[]>>();
+  const [companyId, setCompanyId] = useState<Optional<number>>();
+  const [onRouteBCClientNumber, setOnRouteBCClientNumber] =
+    useState<Optional<string>>();
+  const [companyLegalName, setCompanyLegalName] = useState<Optional<string>>();
+  const [userDetails, setUserDetails] =
+    useState<Optional<BCeIDUserDetailContext>>();
+  const [idirUserDetails, setIDIRUserDetails] =
+    useState<Optional<IDIRUserDetailContext>>();
+  const [migratedClient, setMigratedClient] =
+    useState<Optional<VerifiedClient>>();
+  const [isNewBCeIDUser, setIsNewBCeIDUser] = useState<Optional<boolean>>();
 
   // Needed the following usestate and useffect code so that the snackbar would disapear/close
   const [displaySnackBar, setDisplaySnackBar] = useState(false);
@@ -97,10 +101,27 @@ const App = () => {
                 setIDIRUserDetails,
                 onRouteBCClientNumber,
                 setOnRouteBCClientNumber,
+                migratedClient,
+                setMigratedClient,
+                isNewBCeIDUser,
+                setIsNewBCeIDUser,
               };
-            }, [userRoles, companyId, userDetails])}
+            }, [
+              userRoles,
+              companyId,
+              userDetails,
+              companyLegalName,
+              idirUserDetails,
+              onRouteBCClientNumber,
+              migratedClient,
+              isNewBCeIDUser,
+            ])}
           >
-            <SnackBarContext.Provider value={{ setSnackBar: setSnackBar }}>
+            <SnackBarContext.Provider
+              value={useMemo(() => {
+                return { setSnackBar: setSnackBar };
+              }, [setSnackBar])}
+            >
               <CustomSnackbar
                 showSnackbar={displaySnackBar}
                 setShowSnackbar={setDisplaySnackBar}

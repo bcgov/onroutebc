@@ -27,32 +27,34 @@ import { UsersService } from '../../src/modules/company-user-management/users/us
 import { CompanyUsersController } from '../../src/modules/company-user-management/users/company-users.controller';
 import {
   createRedCompanyAdminUserDtoMock,
-  readRedCompanyAdminUserDtoMock,
   redCompanyAdminUserEntityMock,
-  updateRedCompanyAdminUserStatusDtoMock,
   updateRedCompanyCvClientUserDtoMock,
 } from '../util/mocks/data/user.mock';
-import { UserStatus } from '../../src/common/enum/user-status.enum';
 import { IdirUser } from 'src/modules/company-user-management/users/entities/idir.user.entity';
 import { PendingIdirUser } from 'src/modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
 import { PendingIdirUsersService } from 'src/modules/company-user-management/pending-idir-users/pending-idir-users.service';
 import { readRedCompanyPendingUserDtoMock } from 'test/util/mocks/data/pending-user.mock';
-import { readRedCompanyDtoMock } from 'test/util/mocks/data/company.mock';
+import { redCompanyEntityMock } from 'test/util/mocks/data/company.mock';
+import { App } from 'supertest/types';
+import * as constants from '../util/mocks/data/test-data.constants';
+import { CompanyUser } from '../../src/modules/company-user-management/users/entities/company-user.entity';
 
 let repo: DeepMocked<Repository<User>>;
 let repoIdirUser: DeepMocked<Repository<IdirUser>>;
+let repoCompanyUser: DeepMocked<Repository<CompanyUser>>;
 let repoPendingIdirUser: DeepMocked<Repository<PendingIdirUser>>;
 let pendingUsersServiceMock: DeepMocked<PendingUsersService>;
 let pendingIdirUsersServiceMock: DeepMocked<PendingIdirUsersService>;
 let companyServiceMock: DeepMocked<CompanyService>;
 
 describe('Company Users (e2e)', () => {
-  let app: INestApplication;
+  let app: INestApplication<Express.Application>;
 
   beforeAll(async () => {
     jest.clearAllMocks();
     repo = createMock<Repository<User>>();
     repoIdirUser = createMock<Repository<IdirUser>>();
+    repoCompanyUser = createMock<Repository<CompanyUser>>();
     repoPendingIdirUser = createMock<Repository<PendingIdirUser>>();
     pendingUsersServiceMock = createMock<PendingUsersService>();
     pendingIdirUsersServiceMock = createMock<PendingIdirUsersService>();
@@ -73,6 +75,10 @@ describe('Company Users (e2e)', () => {
         {
           provide: getRepositoryToken(PendingIdirUser),
           useValue: repoPendingIdirUser,
+        },
+        {
+          provide: getRepositoryToken(CompanyUser),
+          useValue: repoCompanyUser,
         },
         {
           provide: PendingUsersService,
@@ -110,7 +116,7 @@ describe('Company Users (e2e)', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('/companies/1/users CREATE', () => {
@@ -122,12 +128,17 @@ describe('Company Users (e2e)', () => {
         );
       jest
         .spyOn(companyServiceMock, 'findOneByCompanyGuid')
-        .mockReturnValue(Promise.resolve(readRedCompanyDtoMock));
-      const response = await request(app.getHttpServer())
+        .mockReturnValue(Promise.resolve(redCompanyEntityMock));
+      const response = await request(app.getHttpServer() as unknown as App)
         .post('/companies/1/users')
         .send(createRedCompanyAdminUserDtoMock)
         .expect(201);
-      expect(response.body).toMatchObject(readRedCompanyAdminUserDtoMock);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          userGUID: constants.RED_COMPANY_ADMIN_USER_GUID,
+          userName: constants.RED_COMPANY_ADMIN_USER_NAME,
+        }),
+      );
     });
   });
 
@@ -141,36 +152,17 @@ describe('Company Users (e2e)', () => {
           createQueryBuilderMock([redCompanyAdminUserEntityMock]),
         );
 
-      const response = await request(app.getHttpServer())
+      const response = await request(app.getHttpServer() as unknown as App)
         .put('/companies/1/users/C23229C862234796BE9DA99F30A44F9A')
         .send(updateRedCompanyCvClientUserDtoMock)
         .expect(200);
 
-      expect(response.body).toMatchObject(readRedCompanyAdminUserDtoMock);
-    });
-  });
-
-  describe('/companies/1/users/C23229C862234796BE9DA99F30A44F9A/status UpdateStatus', () => {
-    it('should update a User Status.', async () => {
-      jest
-        .spyOn(repo, 'createQueryBuilder')
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-        .mockImplementation(() =>
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-          createQueryBuilderMock([
-            {
-              ...redCompanyAdminUserEntityMock,
-              userStatus: UserStatus.DISABLED,
-            },
-          ]),
-        );
-
-      const response = await request(app.getHttpServer())
-        .put('/companies/1/users/C23229C862234796BE9DA99F30A44F9A/status')
-        .send(updateRedCompanyAdminUserStatusDtoMock)
-        .expect(200);
-
-      expect(response.body).toMatchObject({ statusUpdated: true });
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          userGUID: constants.RED_COMPANY_ADMIN_USER_GUID,
+          userName: constants.RED_COMPANY_ADMIN_USER_NAME,
+        }),
+      );
     });
   });
 

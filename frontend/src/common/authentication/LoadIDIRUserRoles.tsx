@@ -1,4 +1,13 @@
-import { useIDIRUserRoles } from "../../features/manageProfile/apiManager/hooks";
+import { useEffect } from "react";
+import { useNavigate } from "react-router";
+
+import { ERROR_ROUTES } from "../../routes/constants";
+import { Nullable } from "../types/common";
+import { UserRolesType } from "./types";
+import {
+  useIDIRUserRoles,
+  useIDIRUserRolesQuery,
+} from "../../features/manageProfile/apiManager/hooks";
 
 /*
  * A simple component that merely calls a react query hook.
@@ -10,6 +19,18 @@ import { useIDIRUserRoles } from "../../features/manageProfile/apiManager/hooks"
  * and hence only has to be executed after the conditions are met.
  */
 export const LoadIDIRUserRoles = () => {
-  useIDIRUserRoles();
+  const { isPending, isError, data: userRoles } = useIDIRUserRolesQuery();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isPending) {
+      if (isError) {
+        navigate(ERROR_ROUTES.UNAUTHORIZED);
+      }
+    }
+  }, [isPending, isError]);
+
+  useIDIRUserRoles(userRoles as Nullable<UserRolesType[]>);
+
   return null;
 };

@@ -1,8 +1,12 @@
+import { FeatureFlagValue } from 'src/common/enum/feature-flag-value.enum';
 import { AccountRegion } from '../../../../src/common/enum/account-region.enum';
 import { AccountSource } from '../../../../src/common/enum/account-source.enum';
 import { Directory } from '../../../../src/common/enum/directory.enum';
 import { IDP } from '../../../../src/common/enum/idp.enum';
-import { UserAuthGroup } from '../../../../src/common/enum/user-auth-group.enum';
+import {
+  UserAuthGroup,
+  ClientUserAuthGroup,
+} from '../../../../src/common/enum/user-auth-group.enum';
 import { UserStatus } from '../../../../src/common/enum/user-status.enum';
 
 export const SORT_ORDER_1 = '1';
@@ -26,6 +30,7 @@ export const PROVINCE_ID_US_WA = 'US-WA';
 //Red Company
 export const RED_COMPANY_ID = 1;
 export const RED_COMPANY_LEGAL_NAME = 'Red Truck Inc';
+export const RED_COMPANY_ALTERNATE_NAME = 'Red Truck ALternate Inc';
 export const RED_COMPANY_GUID = 'C6073AA261AC4781A062DD0A59D7BB10';
 export const RED_COMPANY_CLIENT_NUMBER = 'B3-000005-722';
 export const RED_COMPANY_DIRECOTRY = Directory.BBCEID;
@@ -35,6 +40,7 @@ export const RED_COMPANY_FAX = '(514) 456-8749';
 export const RED_COMPANY_EMAIL = 'red.truck@test.gov.bc.ca';
 export const RED_COMPANY_ACCOUNT_REGION = AccountRegion.BritishColumbia;
 export const RED_COMPANY_ACCOUNT_SOURCE = AccountSource.BCeID;
+export const RED_COMPANY_SUSPEND = false;
 
 export const RED_COMPANY_ADDRESS_ID = 1;
 export const RED_COMPANY_ADDRESS_LINE_1 = '4458 James Street';
@@ -46,6 +52,7 @@ export const RED_COMPANY_COUNTRY_CODE = COUNTRY_CODE_CA;
 
 export const BLUE_COMPANY_ID = 2;
 export const BLUE_COMPANY_LEGAL_NAME = 'Blue Truck Inc';
+export const BLUE_COMPANY_ALTERNATE_NAME = 'Blue Truck Alternate Inc';
 export const BLUE_COMPANY_GUID: string = undefined;
 export const BLUE_COMPANY_CLIENT_NUMBER = 'E3-000006-923';
 export const BLUE_COMPANY_DIRECOTRY = Directory.BCEID;
@@ -55,6 +62,7 @@ export const BLUE_COMPANY_FAX = '(813) 791-4358';
 export const BLUE_COMPANY_EMAIL = 'blue.truck@test.gov.bc.ca';
 export const BLUE_COMPANY_ACCOUNT_REGION = AccountRegion.ExtraProvincial;
 export const BLUE_COMPANY_ACCOUNT_SOURCE = AccountSource.BCeID;
+export const BLUE_COMPANY_SUSPEND = false;
 
 export const BLUE_COMPANY_ADDRESS_ID = 2;
 export const BLUE_COMPANY_ADDRESS_LINE_1 = '334 Main Street';
@@ -96,7 +104,7 @@ export const RED_COMPANY_ADMIN_USER_NAME = 'CALDRICH';
 export const RED_COMPANY_ADMIN_PREFFERED_USER_NAME =
   RED_COMPANY_ADMIN_USER_GUID.toLowerCase().concat('@', IDP.BCEID);
 export const RED_COMPANY_ADMIN_USER_AUTH_GROUP =
-  UserAuthGroup.COMPANY_ADMINISTRATOR;
+  ClientUserAuthGroup.COMPANY_ADMINISTRATOR;
 export const RED_COMPANY_ADMIN_USER_STATUS_DIRECOTRY = Directory.BBCEID;
 export const RED_COMPANY_ADMIN_USER_STATUS = UserStatus.ACTIVE;
 
@@ -119,12 +127,23 @@ export const RED_COMPANY_CVCLIENT_USER_GUID =
 export const RED_COMPANY_CVCLIENT_USER_NAME = 'DKINSER';
 export const RED_COMPANY_CVCLIENT_PREFFERED_USER_NAME =
   RED_COMPANY_CVCLIENT_USER_GUID.toLowerCase().concat('@', IDP.BCEID);
-export const RED_COMPANY_CVCLIENT_USER_AUTH_GROUP = UserAuthGroup.CV_CLIENT;
+export const RED_COMPANY_CVCLIENT_USER_AUTH_GROUP =
+  ClientUserAuthGroup.CV_CLIENT;
 export const RED_COMPANY_CVCLIENT_USER_STATUS_DIRECOTRY = Directory.BCEID;
 export const RED_COMPANY_CVCLIENT_USER_STATUS = UserStatus.ACTIVE;
 
+export const RED_COMPANY_PENDING_USER_FIRST_NAME = 'Fernando';
+export const RED_COMPANY_PENDING_USER_LAST_NAME = 'Alonso';
+export const RED_COMPANY_PENDING_USER_FULL_NAME =
+  RED_COMPANY_PENDING_USER_FIRST_NAME.concat(
+    ' ',
+    RED_COMPANY_PENDING_USER_LAST_NAME,
+  );
 export const RED_COMPANY_PENDING_USER_NAME = 'FALONSO';
 export const RED_COMPANY_PENDING_USER_GUID = '5677E451F4614DCD8C3B1E49310B1B01';
+export const RED_COMPANY_PENDING_USER_PREFFERED_USER_NAME =
+  RED_COMPANY_PENDING_USER_GUID.toLowerCase().concat('@', IDP.BCEID);
+export const RED_COMPANY_PENDING_USER_EMAIL = 'f.alonso@test.gov.bc.ca';
 
 //Blue Company
 export const BLUE_COMPANY_PRIMARY_CONTACT_ID = 4;
@@ -157,7 +176,7 @@ export const BLUE_COMPANY_ADMIN_USER_NAME = 'BTHOMPSON';
 export const BLUE_COMPANY_ADMIN_PREFFERED_USER_NAME =
   BLUE_COMPANY_ADMIN_USER_GUID.toLowerCase().concat('@', IDP.BCEID);
 export const BLUE_COMPANY_ADMIN_USER_AUTH_GROUP =
-  UserAuthGroup.COMPANY_ADMINISTRATOR;
+  ClientUserAuthGroup.COMPANY_ADMINISTRATOR;
 export const BLUE_COMPANY_ADMIN_USER_STATUS_DIRECOTRY = Directory.BCEID;
 export const BLUE_COMPANY_ADMIN_USER_STATUS = UserStatus.ACTIVE;
 
@@ -180,7 +199,8 @@ export const BLUE_COMPANY_CVCLIENT_USER_GUID =
 export const BLUE_COMPANY_CVCLIENT_USER_NAME = 'MGROSS';
 export const BLUE_COMPANY_CVCLIENT_PREFFERED_USER_NAME =
   BLUE_COMPANY_CVCLIENT_USER_GUID.toLowerCase().concat('@', IDP.BCEID);
-export const BLUE_COMPANY_CVCLIENT_USER_AUTH_GROUP = UserAuthGroup.CV_CLIENT;
+export const BLUE_COMPANY_CVCLIENT_USER_AUTH_GROUP =
+  ClientUserAuthGroup.CV_CLIENT;
 export const BLUE_COMPANY_CVCLIENT_USER_STATUS_DIRECOTRY = Directory.BCEID;
 export const BLUE_COMPANY_CVCLIENT_USER_STATUS = UserStatus.ACTIVE;
 
@@ -213,3 +233,7 @@ export const SYS_ADMIN_STAFF_USER_AUTH_GROUP =
   UserAuthGroup.SYSTEM_ADMINISTRATOR;
 export const SYS_ADMIN_STAFF_USER_STATUS_DIRECOTRY = Directory.IDIR;
 export const SYS_ADMIN_STAFF_USER_STATUS = UserStatus.ACTIVE;
+
+export const FEATURE_ID = 1;
+export const FEATURE_KEY = 'CompanySearch';
+export const FEATURE_VALUE = FeatureFlagValue.ENABLED;

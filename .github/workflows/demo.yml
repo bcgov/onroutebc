@@ -1,0 +1,40 @@
+name: Deploy Demo
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Deployment environment - test --> vault secrets"
+        required: true
+        type: choice
+        options: ["test","tools"]
+        default: "test"
+  
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  uninstall-demo:
+    name: Uninstall (demo)
+    environment: ${{inputs.environment}}
+    runs-on: ubuntu-22.04
+    steps:
+      - name: uninstall
+        run: |
+          oc login --token=${{ secrets.oc_token }} --server=${{ secrets.oc_server }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+          helm uninstall onroutebc-demo || true
+  deploy-demo:
+    name: Deploys (demo)
+    uses: ./.github/workflows/deploy.yml
+    needs: uninstall-demo
+    secrets: inherit
+    with:
+      autoscaling: false
+      environment: ${{inputs.environment}}
+      tag: "test"
+      release: "demo"
+      vault_role: "nonprod"
+      vault_zone: "staging"

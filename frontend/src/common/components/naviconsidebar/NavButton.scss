@@ -1,4 +1,4 @@
-@import "../../../themes/orbcStyles.scss";
+@import "../../../themes/orbcStyles";
 
 .nav-button {
   width: 4rem;
@@ -11,6 +11,15 @@
   align-items: center;
   justify-content: center;
 
+  &#{&}#{&}--active {
+    .nav-button {
+      &__hover-container {
+        background-color: $bc-white;
+        color: $bc-black;
+      }
+    }
+  }
+
   &__hover-container {
     display: flex;
     align-items: center;
@@ -20,10 +29,30 @@
     background-color: $bc-black;
     color: $bc-white;
     border-radius: 0.25rem;
+    position: relative;
 
     &:hover {
       color: $bc-black;
       background-color: $bc-white;
+
+      .nav-button {
+        &__hover-tooltip {
+          display: block;
+        }
+      }
     }
+  }
+
+  &__hover-tooltip {
+    position: absolute;
+    left: calc(100% + 1rem);
+    padding: 0.5rem;
+    font-size: 1rem;
+    font-weight: normal;
+    font-family: $default-font;
+    color: $white;
+    background-color: $bc-black;
+    border-radius: 0.25rem;
+    display: none;
   }
 }

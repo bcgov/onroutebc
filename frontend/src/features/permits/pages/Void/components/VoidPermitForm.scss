@@ -1,4 +1,4 @@
-@import "../../../../../themes/orbcStyles.scss";
+@import "../../../../../themes/orbcStyles";
 
 .void-permit__form {
   .form-section {
@@ -35,7 +35,7 @@
           }
         }
 
-        &--fax {
+        &--additional-email, &--fax {
           max-width: 375px;
 
           .custom-form-control {

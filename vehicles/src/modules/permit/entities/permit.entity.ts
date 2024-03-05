@@ -62,8 +62,8 @@ export class Permit extends Base {
     example: '1',
     description: 'Represents the previous permit id for a revised permit.',
   })
-  @Column({ type: 'integer', name: 'PREVIOUS_REV_ID', nullable: true })
-  previousRevision: number;
+  @Column({ type: 'bigint', name: 'PREVIOUS_REV_ID', nullable: true })
+  previousRevision: string;
 
   @AutoMap()
   @ApiProperty({
@@ -165,6 +165,21 @@ export class Permit extends Base {
     nullable: true,
   })
   permitNumber: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '08-000-2819',
+    description:
+      'Unique formatted tps permit number, recorded once the permit is migrated from tps.',
+  })
+  @Column({
+    length: '11',
+    name: 'TPS_PERMIT_NUMBER',
+    nullable: true,
+    insert: false,
+    update: false,
+  })
+  migratedPermitNumber?: string;
 
   @AutoMap()
   @ApiProperty({

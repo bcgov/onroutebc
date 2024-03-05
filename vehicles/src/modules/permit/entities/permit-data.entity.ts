@@ -50,4 +50,16 @@ export class PermitData extends Base {
     type: 'date',
   })
   expiryDate: string;
+
+  @AutoMap()
+  @Column({ name: 'UNIT_NUMBER', insert: false, update: false })
+  unitNumber: string;
+
+  @AutoMap()
+  @Column({ name: 'PLATE', insert: false, update: false })
+  plate: string;
+
+  @AutoMap()
+  @Column({ name: 'APPLICANT', insert: false, update: false })
+  applicant: string;
 }

@@ -5,57 +5,58 @@ import { Box, Container, Typography } from "@mui/material";
 import { Loading } from "../pages/Loading";
 import { IDPS } from "../types/idp";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const LoginOptions = ({ auth }: any) => (
-  <>
-    <Box sx={{ margin: "8px" }}>
-      <Button
-        id="login-bceid"
-        variant="contained"
-        onClick={() => {
-          auth.signinRedirect({
-            extraQueryParams: { kc_idp_hint: IDPS.BCEID },
-          });
-        }}
-        sx={{ width: "200px" }}
-      >
-        Log in with BCeID
-      </Button>
-    </Box>
-    <Box sx={{ margin: "8px" }}>
-      <Button
-        id="login-idir"
-        variant="contained"
-        onClick={() => {
-          auth.signinRedirect({
-            extraQueryParams: { kc_idp_hint: IDPS.IDIR },
-          });
-        }}
-        sx={{ width: "200px" }}
-      >
-        Log in with IDIR
-      </Button>
-    </Box>
-  </>
-);
+const LoginOptions = () => {
+  const { signinRedirect } = useAuth();
+  return (
+    <>
+      <Box sx={{ margin: "8px" }}>
+        <Button
+          id="login-bceid"
+          variant="contained"
+          onClick={() => {
+            signinRedirect({
+              extraQueryParams: { kc_idp_hint: IDPS.BCEID },
+            });
+          }}
+          sx={{ width: "200px" }}
+        >
+          Log in with BCeID
+        </Button>
+      </Box>
+      <Box sx={{ margin: "8px" }}>
+        <Button
+          id="login-idir"
+          variant="contained"
+          onClick={() => {
+            signinRedirect({
+              extraQueryParams: { kc_idp_hint: IDPS.IDIR },
+            });
+          }}
+          sx={{ width: "200px" }}
+        >
+          Log in with IDIR
+        </Button>
+      </Box>
+    </>
+  );
+};
+
+const RenderAuth = () => {
+  const auth = useAuth();
+  if (auth.isLoading) {
+    return <Loading />;
+  } else if (auth.isAuthenticated) {
+    return <LoginRedirect />;
+  }
+
+  return <LoginOptions />;
+};
 
 /*
  * The Authentication component handles user login
  *
  */
 export const Authentication = () => {
-  const auth = useAuth();
-
-  const RenderAuth = () => {
-    if (auth.isLoading) {
-      return <Loading />;
-    } else if (auth.isAuthenticated) {
-      return <LoginRedirect />;
-    }
-
-    return <LoginOptions auth={auth} />;
-  };
-
   return (
     <Container
       className="feature-container"
@@ -68,7 +69,7 @@ export const Authentication = () => {
         onRouteBC
       </Typography>
 
-      {RenderAuth()}
+      <RenderAuth />
     </Container>
   );
 };

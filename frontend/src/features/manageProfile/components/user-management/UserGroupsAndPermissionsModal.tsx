@@ -1,8 +1,4 @@
-import {
-  faCircleCheck,
-  faCircleXmark,
-  faUserGroup,
-} from "@fortawesome/free-solid-svg-icons";
+import { faUserGroup } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import CloseIcon from "@mui/icons-material/Close";
 import Dialog from "@mui/material/Dialog";
@@ -17,24 +13,8 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
-
-/**
- * Reusable green check icon.
- */
-const GreenCheckIcon = () => (
-  <span>
-    <FontAwesomeIcon color={BC_COLOURS.bc_green} icon={faCircleCheck} />
-  </span>
-);
-
-/**
- * Reusable red x mark icon.
- */
-const RedXMarkIcon = () => (
-  <span>
-    <FontAwesomeIcon color={BC_COLOURS.bc_red} icon={faCircleXmark} />
-  </span>
-);
+import { GreenCheckIcon } from "../../../../common/components/icons/GreenCheckIcon";
+import { RedXMarkIcon } from "../../../../common/components/icons/RedXMarkIcon";
 
 /**
  *  A stateless modal that displays the user groups and permissions for CV Clients.
@@ -42,7 +22,7 @@ const RedXMarkIcon = () => (
 export default function UserGroupsAndPermissionsModal({
   isOpen,
   onClickClose,
-}: {
+}: Readonly<{
   /**
    * Boolean to control the open and close state of Dialog box.
    */
@@ -52,7 +32,7 @@ export default function UserGroupsAndPermissionsModal({
    * @returns void
    */
   onClickClose: () => void;
-}) {
+}>) {
   return (
     <div>
       <Dialog

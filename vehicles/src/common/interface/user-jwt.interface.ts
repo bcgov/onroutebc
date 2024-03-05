@@ -1,6 +1,11 @@
 import { Directory } from '../enum/directory.enum';
+import { IDP } from '../enum/idp.enum';
 import { Role } from '../enum/roles.enum';
-import { UserAuthGroup } from '../enum/user-auth-group.enum';
+import {
+  ClientUserAuthGroup,
+  IDIRUserAuthGroup,
+  UserAuthGroup,
+} from '../enum/user-auth-group.enum';
 
 export interface IUserJWT {
   jti: string;
@@ -12,7 +17,7 @@ export interface IUserJWT {
   given_name: string;
   display_name: string;
   email: string;
-  identity_provider: string;
+  identity_provider: IDP;
   scope: string;
   azp: string;
   preferred_username: string;
@@ -21,7 +26,6 @@ export interface IUserJWT {
   bceid_username: string;
   bceid_user_guid: string;
   bceid_business_guid: string;
-  accountSource: string;
   bceid_business_name: string;
   userName: string;
   userGUID: string;
@@ -31,6 +35,6 @@ export interface IUserJWT {
   access_token: string;
   orbcUserFirstName: string;
   orbcUserLastName: string;
-  orbcUserAuthGroup: UserAuthGroup;
+  orbcUserAuthGroup: UserAuthGroup | ClientUserAuthGroup | IDIRUserAuthGroup;
   orbcUserDirectory: Directory;
 }

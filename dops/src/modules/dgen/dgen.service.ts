@@ -2,6 +2,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -28,9 +29,12 @@ import puppeteer, { Browser } from 'puppeteer';
 import { IFile } from '../../interface/file.interface';
 import { ReportTemplate } from '../../enum/report-template.enum';
 import { convertUtcToPt } from '../../helper/date-time.helper';
+import { LogAsyncMethodExecution } from '../../decorator/log-async-method-execution.decorator';
+import { LogMethodExecution } from '../../decorator/log-method-execution.decorator';
 
 @Injectable()
 export class DgenService {
+  private readonly logger = new Logger(DgenService.name);
   constructor(
     @InjectRepository(DocumentTemplate)
     private documentTemplateRepository: Repository<DocumentTemplate>,
@@ -49,10 +53,12 @@ export class DgenService {
    * Find all templates registered in ORBC_DOCUMENT_TEMPLATE
    * @returns A list of templates of type {@link DocumentTemplate}
    */
+  @LogAsyncMethodExecution()
   async findAllTemplates(): Promise<DocumentTemplate[]> {
     return await this.documentTemplateRepository.find();
   }
 
+  @LogAsyncMethodExecution()
   async getLatestTemplates(): Promise<DocumentTemplate[]> {
     const latestTemplates = await this.documentTemplateRepository
       .createQueryBuilder('documentTemplate')
@@ -86,6 +92,7 @@ export class DgenService {
     });
   }
 
+  @LogAsyncMethodExecution()
   async generate(
     currentUser: IUserJWT,
     createGeneratedDocumentDto: CreateGeneratedDocumentDto,
@@ -112,8 +119,11 @@ export class DgenService {
         );
         generatedDocument.buffer = Buffer.from(mergedDocument);
         generatedDocument.size = mergedDocument.length;
-      } catch (err) {
-        console.log('Error while trying to merge files', err);
+      } catch (error) {
+        /**
+         * Swallow the error as failure to send email should not break the flow
+         */
+        this.logger.error(error);
       }
     }
 
@@ -165,9 +175,8 @@ export class DgenService {
   ) {
     await Promise.all(
       documentsToMerge.map(async (externalDocument) => {
-        const documentFromCache: Buffer = await this.cacheManager.get(
-          externalDocument,
-        );
+        const documentFromCache: Buffer =
+          await this.cacheManager.get(externalDocument);
         if (!documentFromCache) {
           const externalDocumentDetails =
             await this.externalDocumentRepository.findOne({
@@ -200,6 +209,7 @@ export class DgenService {
     );
   }
 
+  @LogAsyncMethodExecution({ printMemoryStats: true })
   async generateReport(
     currentUser: IUserJWT,
     createGeneratedReportDto: CreateGeneratedReportDto,
@@ -238,7 +248,7 @@ export class DgenService {
           '--disable-dev-shm-usage',
           '--disable-gpu',
         ],
-        headless: 'new',
+        headless: true,
         env: {
           ELECTRON_DISABLE_SANDBOX: '1',
         },
@@ -248,6 +258,7 @@ export class DgenService {
       await page.emulateMediaType('print');
 
       generatedDocument.buffer = await page.pdf({
+        timeout: 0, // Set to 0 for indefinite wait
         format: 'letter',
         displayHeaderFooter: true,
         printBackground: true,
@@ -259,9 +270,9 @@ export class DgenService {
        `,
       });
       generatedDocument.size = generatedDocument.buffer.length;
-    } catch (err) {
-      console.log('error on pup', err);
-      throw new InternalServerErrorException(err);
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
     } finally {
       if (browser) {
         await browser.close();
@@ -314,27 +325,35 @@ export class DgenService {
       return convertUtcToPt(utcDate, 'MMM. D, YYYY, hh:mm A Z');
     });
 
-    Handlebars.registerHelper('formatRefundAmount', function (amount: number) {
-      if (this.paymentMethod === 'No Payment') {
-        return '$0';
-      } else if (amount === 0) {
-        return '';
-      } else {
-        return `-$${Math.abs(amount).toFixed(2)}`;
-      }
-    });
+    Handlebars.registerHelper(
+      'formatAmount',
+      function (amount: number, amountType?: string) {
+        if (!amount) {
+          amount = 0;
+        }
+        if (this.paymentMethod === 'No Payment') {
+          return '$0';
+        }
 
-    Handlebars.registerHelper('formatAmount', function (amount: number) {
-      if (this.paymentMethod === 'No Payment') {
-        return '$0';
-      } else if (amount === 0) {
+        const formattedAmount = `$${Math.abs(amount).toFixed(2)}`;
+        if (amountType === 'Deposit') {
+          if (amount === 0) {
+            return '$0';
+          }
+          return amount > 0 ? formattedAmount : `-${formattedAmount}`;
+        }
+
+        if (amountType === 'Payment') {
+          return amount === 0 ? '' : formattedAmount;
+        }
+
+        if (amountType === 'Refund') {
+          return amount === 0 ? '' : `-${formattedAmount}`;
+        }
+
         return '';
-      } else if (amount > 0) {
-        return `$${Math.abs(amount).toFixed(2)}`;
-      } else if (amount < 0) {
-        return `-$${Math.abs(amount).toFixed(2)}`;
-      }
-    });
+      },
+    );
     /* eslint-enable */
     interface SummaryPaymentsInterface {
       paymentMethod: string;
@@ -364,7 +383,10 @@ export class DgenService {
           const found = summaryPayments.find(
             (x) =>
               x.paymentMethod ===
-              (transactionType === 'totalPayment' ? 'totalAmount' : field),
+              (transactionType === 'totalPayment' ||
+              transactionType === 'totalRefund'
+                ? 'totalAmount'
+                : field),
           );
           return found ? found[property] : null;
         }
@@ -372,6 +394,7 @@ export class DgenService {
     );
   }
 
+  @LogMethodExecution()
   getCacheKeyforReport(reportName: ReportTemplate): CacheKey {
     switch (reportName) {
       case ReportTemplate.PAYMENT_AND_REFUND_DETAILED_REPORT:

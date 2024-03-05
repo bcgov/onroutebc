@@ -4,7 +4,7 @@ import PermitResendDialog from "./PermitResendDialog";
 import { viewReceiptPdf } from "../../../permits/helpers/permitPDFHelper";
 import { useNavigate } from "react-router-dom";
 import * as routes from "../../../../routes/constants";
-import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
+import { USER_AUTH_GROUP } from "../../../../common/authentication/types";
 
 const PERMIT_ACTION_TYPES = {
   RESEND: "resend",
@@ -37,30 +37,32 @@ interface PermitAction {
 }
 
 const PERMIT_ACTIONS: PermitAction[] = [
+  /*
   {
     action: PERMIT_ACTION_TYPES.RESEND,
     isAuthorized: (_: boolean, userAuthGroup?: string) =>
       userAuthGroup === USER_AUTH_GROUP.PPCCLERK ||
       userAuthGroup === USER_AUTH_GROUP.SYSADMIN,
   },
+  */
   {
     action: PERMIT_ACTION_TYPES.VIEW_RECEIPT,
     isAuthorized: (_: boolean, userAuthGroup?: string) =>
-      userAuthGroup === USER_AUTH_GROUP.PPCCLERK ||
-      userAuthGroup === USER_AUTH_GROUP.SYSADMIN ||
-      userAuthGroup === USER_AUTH_GROUP.EOFFICER,
+      userAuthGroup === USER_AUTH_GROUP.PPC_CLERK ||
+      userAuthGroup === USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR ||
+      userAuthGroup === USER_AUTH_GROUP.ENFORCEMENT_OFFICER,
   },
   {
     action: PERMIT_ACTION_TYPES.AMEND,
     isAuthorized: (isExpired: boolean, userAuthGroup?: string) =>
       !isExpired &&
-      (userAuthGroup === USER_AUTH_GROUP.PPCCLERK ||
-        userAuthGroup === USER_AUTH_GROUP.SYSADMIN),
+      (userAuthGroup === USER_AUTH_GROUP.PPC_CLERK ||
+        userAuthGroup === USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR),
   },
   {
     action: PERMIT_ACTION_TYPES.VOID_REVOKE,
     isAuthorized: (isExpired: boolean, userAuthGroup?: string) =>
-      !isExpired && userAuthGroup === USER_AUTH_GROUP.SYSADMIN,
+      !isExpired && userAuthGroup === USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
   },
 ];
 
@@ -122,15 +124,17 @@ export const IDIRPermitSearchRowActions = ({
    * @param selectedOption The selected option as a string.
    */
   const onSelectOption = (selectedOption: string) => {
+    const permitIdStr = `${permitId}`;
+
     if (selectedOption === PERMIT_ACTION_TYPES.RESEND) {
       // For implementation
       setIsResendOpen(() => true);
     } else if (selectedOption === PERMIT_ACTION_TYPES.VIEW_RECEIPT) {
       viewReceiptPdf(permitId.toString());
     } else if (selectedOption === PERMIT_ACTION_TYPES.VOID_REVOKE) {
-      navigate(`/${routes.PERMITS}/${permitId}/${routes.PERMIT_VOID}`);
+      navigate(`${routes.PERMITS_ROUTES.VOID(permitIdStr)}`);
     } else if (selectedOption === PERMIT_ACTION_TYPES.AMEND) {
-      navigate(`/${routes.PERMITS}/${permitId}/${routes.PERMIT_AMEND}`);
+      navigate(`${routes.PERMITS_ROUTES.AMEND(permitIdStr)}`);
     }
   };
 

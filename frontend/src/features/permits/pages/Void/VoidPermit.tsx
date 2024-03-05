@@ -1,32 +1,29 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect, useContext, useMemo } from "react";
 
 import { VoidPermitForm } from "./components/VoidPermitForm";
-import { NotFound } from "../../../../common/pages/NotFound";
 import { usePermitDetailsQuery } from "../../hooks/hooks";
 import { Loading } from "../../../../common/pages/Loading";
 import "./VoidPermit.scss";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import { VoidPermitContext } from "./context/VoidPermitContext";
-import { SEARCH_RESULTS } from "../../../../routes/constants";
+import { ERROR_ROUTES, IDIR_ROUTES } from "../../../../routes/constants";
 import { VoidPermitFormData } from "./types/VoidPermit";
 import { FinishVoid } from "./FinishVoid";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
+import { USER_AUTH_GROUP } from "../../../../common/authentication/types";
+import { isPermitInactive } from "../../types/PermitStatus";
+import { Permit } from "../../types/permit";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { Breadcrumb } from "../../../../common/components/breadcrumb/Breadcrumb";
+import { hasPermitExpired } from "../../helpers/permitState";
 import {
   SEARCH_BY_FILTERS,
   SEARCH_ENTITIES,
 } from "../../../idir/search/types/types";
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
-import { Unauthorized } from "../../../../common/pages/Unauthorized";
-import { Unexpected } from "../../../../common/pages/Unexpected";
-import { isPermitInactive } from "../../types/PermitStatus";
-import { hasPermitExpired } from "../../helpers/permitPDFHelper";
-import { Permit } from "../../types/permit";
-import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { Breadcrumb } from "../../../../common/components/breadcrumb/Breadcrumb";
 
 const searchRoute =
-  `${SEARCH_RESULTS}?searchEntity=${SEARCH_ENTITIES.PERMIT}` +
+  `${IDIR_ROUTES.SEARCH_RESULTS}?searchEntity=${SEARCH_ENTITIES.PERMIT}` +
   `&searchByFilter=${SEARCH_BY_FILTERS.PERMIT_NUMBER}`;
 
 const isVoidable = (permit: Permit) => {
@@ -46,13 +43,15 @@ export const VoidPermit = () => {
   // Must be SYSADMIN to access this page
   const { idirUserDetails } = useContext(OnRouteBCContext);
 
-  const { query: permitQuery, permit } = usePermitDetailsQuery(permitId);
+  const permitQuery = usePermitDetailsQuery(permitId);
+  const permit = permitQuery.data;
 
   const [voidPermitData, setVoidPermitData] = useState<VoidPermitFormData>({
     permitId: getDefaultRequiredVal("", permitId),
     reason: "",
     revoke: false,
     email: permit?.permitData?.contactDetails?.email,
+    additionalEmail: permit?.permitData?.contactDetails?.additionalEmail,
     fax: permit?.permitData?.contactDetails?.fax,
   });
 
@@ -60,10 +59,12 @@ export const VoidPermit = () => {
     setVoidPermitData({
       ...voidPermitData,
       email: permit?.permitData?.contactDetails?.email,
+      additionalEmail: permit?.permitData?.contactDetails?.additionalEmail,
       fax: permit?.permitData?.contactDetails?.fax,
     });
   }, [
     permit?.permitData?.contactDetails?.email,
+    permit?.permitData?.contactDetails?.additionalEmail,
     permit?.permitData?.contactDetails?.fax,
   ]);
 
@@ -71,14 +72,18 @@ export const VoidPermit = () => {
     if (!permit?.permitNumber) return "";
     return permit.permitNumber.substring(0, 11);
   };
-  const fullSearchRoute = `${searchRoute}&searchValue=${getBasePermitNumber()}`;
+
+  const fullSearchRoute = `${searchRoute}&searchString=${getBasePermitNumber()}`;
+  const goHome = () => navigate(-1);
+  const goHomeSuccess = () => navigate(fullSearchRoute);
+  const handleFail = () => navigate(ERROR_ROUTES.UNEXPECTED);
 
   const getLinks = () =>
     currentLink === 0
       ? [
           {
             text: "Search",
-            onClick: () => navigate(fullSearchRoute),
+            onClick: goHome,
           },
           {
             text: "Void Permit",
@@ -87,7 +92,7 @@ export const VoidPermit = () => {
       : [
           {
             text: "Search",
-            onClick: () => navigate(fullSearchRoute),
+            onClick: goHome,
           },
           {
             text: "Void Permit",
@@ -109,44 +114,47 @@ export const VoidPermit = () => {
   );
 
   // If user is not SYSADMIN, show unauthorized page
-  if (idirUserDetails?.userAuthGroup !== USER_AUTH_GROUP.SYSADMIN) {
-    return <Unauthorized />;
+  if (idirUserDetails?.userAuthGroup !== USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR) {
+    return <Navigate to={ERROR_ROUTES.UNAUTHORIZED} />;
   }
 
   // If permitId is not provided in the route, show not found page
   if (!permitId) {
-    return <NotFound />;
+    return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
   }
 
   // When querying permit details hasn't finished, show loading
   if (typeof permit === "undefined") return <Loading />;
 
   // When permit is not available, show not found
-  if (!permit) return <NotFound />;
+  if (!permit) return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
 
   // If permit is not voidable, show unexpected error page
-  if (!isVoidable(permit)) return <Unexpected />;
+  if (!isVoidable(permit)) return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
 
   const pages = [
     <VoidPermitForm
       key="void-permit"
       permit={permit}
-      onRevokeSuccess={() => navigate(fullSearchRoute)}
+      onRevokeSuccess={goHomeSuccess}
+      onCancel={goHome}
+      onFail={handleFail}
     />,
     <FinishVoid
       key="finish-void"
       permit={permit}
-      onSuccess={() => navigate(fullSearchRoute)}
+      onSuccess={goHomeSuccess}
+      onFail={handleFail}
     />,
   ];
 
   return (
     <VoidPermitContext.Provider value={contextData}>
-      {permitQuery.isLoading ? (
+      {permitQuery.isPending ? (
         <Loading />
       ) : (
         <div className="void-permit">
-          <Banner bannerText={getBannerText()} extendHeight={true} />
+          <Banner bannerText={getBannerText()} />
           <Breadcrumb links={getLinks()} />
           {pages[currentLink]}
         </div>

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
+import { Nullable } from "../../../../../common/types/common";
 import {
   AmendPermitFormData,
   getDefaultFromNullableFormData,
@@ -8,7 +9,7 @@ import {
 
 export const useAmendPermit = (
   repopulateFormData: boolean,
-  updatedPermitFormData?: AmendPermitFormData | null,
+  updatedPermitFormData?: Nullable<AmendPermitFormData>,
 ) => {
   const formData = getDefaultFromNullableFormData(updatedPermitFormData);
 

@@ -1,3 +1,5 @@
+import { Nullable } from "../../../common/types/common";
+
 export const PERMIT_TYPES = {
   EPTOP: "EPTOP",
   HC: "HC",
@@ -26,12 +28,15 @@ export const PERMIT_TYPES = {
 
 export type PermitType = (typeof PERMIT_TYPES)[keyof typeof PERMIT_TYPES];
 
+export const DEFAULT_PERMIT_TYPE = PERMIT_TYPES.TROS;
+export const EMPTY_PERMIT_TYPE_SELECT = "select";
+
 /**
  * Returns the name/description of the permit type.
  * @param permitType String (if any) that represents the permit type
  * @returns Name/description of the permit type, or empty string if no mapping exists for permit type
  */
-export const getPermitTypeName = (permitType?: string | null) => {
+export const getPermitTypeName = (permitType?: Nullable<string>) => {
   switch (permitType) {
     case PERMIT_TYPES.EPTOP:
       return "Extra-Provincial Temporary Operating";
@@ -89,7 +94,7 @@ export const getPermitTypeName = (permitType?: string | null) => {
  * @param permitType Permit type (eg. TROS, STOS, etc)
  * @returns display text for the permit type
  */
-export const permitTypeDisplayText = (permitType?: string) => {
+export const permitTypeDisplayText = (permitType?: Nullable<string>) => {
   switch (permitType) {
     case PERMIT_TYPES.TROS:
       return "Oversize: Term";
@@ -98,4 +103,13 @@ export const permitTypeDisplayText = (permitType?: string) => {
     default:
       return getPermitTypeName(permitType);
   }
+};
+
+/**
+ * Determines whether or not a string represents a valid permit type.
+ * @param permitType string representing permit type value, if it exists (eg. tros, trow, etc)
+ * @returns true if string is a valid permit type, or false otherwise
+ */
+export const isPermitTypeValid = (permitType?: Nullable<string>) => {
+  return permitType && (Object.values(PERMIT_TYPES) as string[]).includes(permitType.toUpperCase());
 };

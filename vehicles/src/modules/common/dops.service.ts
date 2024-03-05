@@ -1,21 +1,33 @@
 /**
  * Service responsible for interacting with DOPS (Document Operations Service).
  */
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { lastValueFrom, map } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { DopsGeneratedDocument } from '../../common/interface/dops-generated-document.interface';
 import { IFile } from '../../common/interface/file.interface';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import { Response } from 'express';
 import { FileDownloadModes } from '../../common/enum/file-download-modes.enum';
 import { ReadFileDto } from './dto/response/read-file.dto';
 import { DopsGeneratedReport } from '../../common/interface/dops-generated-report.interface';
+import { ExceptionDto } from '../../common/exception/exception.dto';
+import { ClsService } from 'nestjs-cls';
+import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
+import { LogMethodExecution } from '../../common/decorator/log-method-execution.decorator';
 
 @Injectable()
 export class DopsService {
-  constructor(private readonly httpService: HttpService) {}
+  private readonly logger = new Logger(DopsService.name);
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly cls: ClsService,
+  ) {}
 
   /**
    * Downloads a document from from DOPS.
@@ -26,6 +38,7 @@ export class DopsService {
    * @returns A Promise that resolves to an object of type {@link IFile}. Null
    * is returned if Response object was passed as a parameter.
    */
+  @LogAsyncMethodExecution()
   async download(
     currentUser: IUserJWT,
     dmsId: string,
@@ -44,24 +57,28 @@ export class DopsService {
       headers: {
         Authorization: currentUser.access_token,
         'Content-Type': 'application/json',
+        'x-correlation-id': this.cls.getId(),
       },
       responseType: download === FileDownloadModes.PROXY ? 'stream' : 'json',
     };
 
     // Calls the DOPS service, which converts the the template document into a pdf
     const dopsResponse = await lastValueFrom(
-      this.httpService.get(url, reqConfig).pipe(
-        map((response) => {
-          return response;
-        }),
-      ),
+      this.httpService.get(url, reqConfig),
     )
       .then((response) => {
         return response;
       })
-      .catch((error) => {
-        console.log('DOPS GET DMS url Error: ', error);
-        throw error;
+      .catch((error: AxiosError) => {
+        if (error.response) {
+          const errorData = error.response.data;
+          this.logger.error(
+            `Error response from DOPS: ${JSON.stringify(errorData, null, 2)}`,
+          );
+        } else {
+          this.logger.error(error?.message, error?.stack);
+        }
+        throw new InternalServerErrorException('Error downloading file');
       });
 
     if (download === FileDownloadModes.PROXY) {
@@ -88,6 +105,7 @@ export class DopsService {
    * @returns A Promise that resolves to an object of type {@link IFile}. Null
    * is returned if Response object was passed as a parameter.
    */
+  @LogAsyncMethodExecution()
   async generateDocument(
     currentUser: IUserJWT,
     dopsGeneratedDocument: DopsGeneratedDocument,
@@ -102,6 +120,7 @@ export class DopsService {
       headers: {
         Authorization: currentUser.access_token,
         'Content-Type': 'application/json',
+        'x-correlation-id': this.cls.getId(),
       },
       responseType: 'stream',
     };
@@ -113,9 +132,18 @@ export class DopsService {
       .then((response) => {
         return response;
       })
-      .catch((error) => {
-        console.log('generate Document error: ', error);
-        throw error;
+      .catch((error: AxiosError) => {
+        if (error.response) {
+          const errorData = error.response.data as ExceptionDto;
+          this.logger.error(
+            `Error response from DOPS: ${JSON.stringify(errorData, null, 2)}`,
+          );
+        } else {
+          this.logger.error(error?.message, error?.stack);
+        }
+        throw new InternalServerErrorException(
+          'Error generating document via CDOGS',
+        );
       });
 
     if (res) {
@@ -146,6 +174,7 @@ export class DopsService {
    *                   headers.
    * @param res - The Express {@link Response} object.
    */
+  @LogMethodExecution()
   convertAxiosToExpress(response: AxiosResponse, res: Response) {
     // Get the headers from the Axios response
     const headers = response.headers;
@@ -180,6 +209,7 @@ export class DopsService {
    * @returns A Promise that resolves to an object of type {@link IFile}. Null
    * is returned if Response object was passed as a parameter.
    */
+  @LogAsyncMethodExecution()
   async generateReport(
     currentUser: IUserJWT,
     dopsGeneratedReport: DopsGeneratedReport,
@@ -192,6 +222,7 @@ export class DopsService {
       headers: {
         Authorization: currentUser.access_token,
         'Content-Type': 'application/json',
+        'x-correlation-id': this.cls.getId(),
       },
       responseType: 'stream',
     };
@@ -203,9 +234,17 @@ export class DopsService {
       .then((response) => {
         return response;
       })
-      .catch((error) => {
-        console.log('generate Document error: ', error);
-        throw error;
+      .catch((error: AxiosError) => {
+        if (error.response) {
+          this.logger.error(
+            `Error response from DOPS: ${error.response.status} ${error.response.statusText} `,
+          );
+        } else {
+          this.logger.error(error?.message, error?.stack);
+        }
+        throw new InternalServerErrorException(
+          'Error generating document via Puppeteer',
+        );
       });
 
     if (res) {

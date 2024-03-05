@@ -46,7 +46,6 @@ interface CustomFormOptionsProps<T extends FieldValues> {
  * @param fieldPath The field name variable. Either provinceField or countryField
  * @returns Error message as a string
  */
-// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 export const getErrorMessage = (errors: any, fieldPath: string): string => {
   const parts = fieldPath.split(".");
   if (parts.length > 1 && typeof errors[parts[0]] === "object") {
@@ -104,7 +103,6 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
    */
   const isRequired = () => {
     if (rules.required === true) return true;
-    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     if ((rules.required as any).value === true) return true;
     return false;
   };
@@ -118,6 +116,8 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
             name={name}
             rules={rules}
             menuOptions={menuOptions}
+            disabled={disabled}
+            readOnly={readOnly}
           />
         );
       case "phone":
@@ -148,9 +148,6 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
           <CustomDatePicker
             feature={feature}
             name={name}
-            rules={rules}
-            inputProps={inputProps}
-            invalid={invalid}
             disabled={disabled}
             readOnly={readOnly}
           />
@@ -179,40 +176,38 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
         control={control}
         rules={rules}
         render={({ fieldState: { invalid } }) => (
-          <>
-            <FormControl
-              className="custom-form-control"
-              margin="normal"
-              error={invalid}
-              sx={{ width: "100%" }}
+          <FormControl
+            className="custom-form-control"
+            margin="normal"
+            error={invalid}
+            sx={{ width: "100%" }}
+          >
+            <FormLabel
+              className="custom-form-control__label"
+              id={`${feature}-${name}-label`}
+              sx={{ fontWeight: "bold", marginBottom: "8px" }}
             >
-              <FormLabel
-                className="custom-form-control__label"
-                id={`${feature}-${name}-label`}
-                sx={{ fontWeight: "bold", marginBottom: "8px" }}
-              >
-                {label}
-                {!isRequired() && (
-                  <span style={{ fontWeight: "normal" }}> (optional)</span>
-                )}
-                {customHelperText && (
-                  <span style={{ fontWeight: "normal" }}>
-                    {` (${customHelperText})`}
-                  </span>
-                )}
-              </FormLabel>
-              {renderSubFormComponent(invalid)}
-              {invalid && (
-                <FormHelperText
-                  className="custom-form-control__helper-text"
-                  data-testid={`alert-${name}`}
-                  error
-                >
-                  {getErrorMessage(errors, name)}
-                </FormHelperText>
+              {label}
+              {!isRequired() && (
+                <span style={{ fontWeight: "normal" }}> (optional)</span>
               )}
-            </FormControl>
-          </>
+              {customHelperText && (
+                <span style={{ fontWeight: "normal" }}>
+                  {` (${customHelperText})`}
+                </span>
+              )}
+            </FormLabel>
+            {renderSubFormComponent(invalid)}
+            {invalid && (
+              <FormHelperText
+                className="custom-form-control__helper-text"
+                data-testid={`alert-${name}`}
+                error
+              >
+                {getErrorMessage(errors, name)}
+              </FormHelperText>
+            )}
+          </FormControl>
         )}
       />
     </Box>

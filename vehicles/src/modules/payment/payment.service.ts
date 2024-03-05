@@ -2,9 +2,9 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
-import * as CryptoJS from 'crypto-js';
 import { CreateTransactionDto } from './dto/request/create-transaction.dto';
 import { ReadTransactionDto } from './dto/response/read-transaction.dto';
 import { InjectMapper } from '@automapper/nestjs';
@@ -26,14 +26,18 @@ import {
   PAYMENT_DESCRIPTION,
   PAYBC_PAYMENT_METHOD,
   PAYMENT_CURRENCY,
-} from '../../common/constants/vehicles.constant';
-import { validateHash } from 'src/common/helper/validateHash.helper';
+  CRYPTO_ALGORITHM_MD5,
+} from '../../common/constants/api.constant';
+import { convertToHash } from 'src/common/helper/crypto.helper';
 import { UpdatePaymentGatewayTransactionDto } from './dto/request/update-payment-gateway-transaction.dto';
 import { PaymentCardType } from './entities/payment-card-type.entity';
 import { PaymentMethodType } from './entities/payment-method-type.entity';
+import { LogMethodExecution } from '../../common/decorator/log-method-execution.decorator';
+import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class PaymentService {
+  private readonly logger = new Logger(PaymentService.name);
   constructor(
     private dataSource: DataSource,
     @InjectRepository(Transaction)
@@ -67,17 +71,7 @@ export class PaymentService {
   };
 
   private queryHash = (transaction: Transaction) => {
-    const permitIds = transaction.permitTransactions.map(
-      (permitTransaction) => {
-        return permitTransaction.permit.permitId;
-      },
-    );
-
-    // Construct the URL with the transaction details for the payment gateway
-    const redirectUrl = permitIds
-      ? `${process.env.PAYBC_REDIRECT}` + `?path=${permitIds.join(',')}`
-      : `${process.env.PAYBC_REDIRECT}`;
-
+    const redirectUrl = process.env.PAYBC_REDIRECT;
     const date = new Date().toISOString().split('T')[0];
 
     // There should be a better way of doing this which is not as rigid - something like
@@ -97,20 +91,20 @@ export class PaymentService {
       `&ref2=${transaction.transactionId}`;
 
     // Generate the hash using the query string and the MD5 algorithm
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-
-    const payBCHash: string = CryptoJS.MD5(
+    const payBCHash: string = convertToHash(
       `${queryString}${process.env.PAYBC_API_KEY}`,
-    ).toString();
+      CRYPTO_ALGORITHM_MD5,
+    );
+
     const hashExpiry = this.generateHashExpiry();
 
     return { queryString, payBCHash, hashExpiry };
   };
 
+  @LogMethodExecution()
   generateUrl(transaction: Transaction): string {
     // Construct the URL with the transaction details for the payment gateway
     const { queryString, payBCHash } = this.queryHash(transaction);
-
     const url =
       `${process.env.PAYBC_BASE_URL}?` +
       `${queryString}` +
@@ -123,6 +117,7 @@ export class PaymentService {
    *
    * @returns {string} The Transaction Order Number.
    */
+  @LogAsyncMethodExecution()
   async generateTransactionOrderNumber(): Promise<string> {
     const seq: number = parseInt(
       await callDatabaseSequence(
@@ -130,11 +125,13 @@ export class PaymentService {
         this.dataSource,
       ),
     );
-    const trnNum = seq.toString(16);
-    // const trnNum = 'T' + currDate.getTime().toString().substring(4);
-    const currentDate = Date.now();
-    const transactionOrderNumber =
-      'T' + trnNum.padStart(9, '0').toUpperCase() + String(currentDate);
+    //Current epoch is 13 digit. using 2000000000000 in mod to result into 12 digit. will not generate duplicate value till year 2087. and will result into 8 character base36 string.
+    //Using mod 35 with sequence number to get 35 unique values for each same timestamp mod evaluated earlier. decimal till digit 35 result into single base36 character.
+    //Transaction number can not be more than 10 character hence the mod, to limit the character upto length of 10 character.
+    //Done to minimize duplicate transaction number in dev and test.
+    const trnNum =
+      (Date.now() % 2000000000000).toString(36) + (seq % 35).toString(36);
+    const transactionOrderNumber = 'T' + trnNum.padStart(9, '0').toUpperCase();
 
     return transactionOrderNumber;
   }
@@ -142,6 +139,7 @@ export class PaymentService {
   /**
    * Generate Receipt Number
    */
+  @LogAsyncMethodExecution()
   async generateReceiptNumber(): Promise<string> {
     const currentDate = new Date();
     const year = currentDate.getFullYear();
@@ -158,24 +156,28 @@ export class PaymentService {
     return receiptNumber;
   }
 
+  private isTransactionPurchase(transactionType: TransactionType) {
+    return transactionType == TransactionType.PURCHASE;
+  }
+
   private isWebTransactionPurchase(
     paymentMethod: PaymentMethodTypeEnum,
     transactionType: TransactionType,
   ) {
     return (
       paymentMethod == PaymentMethodTypeEnum.WEB &&
-      transactionType == TransactionType.PURCHASE
+      this.isTransactionPurchase(transactionType)
     );
   }
 
   private assertApplicationInProgress(
-    paymentMethod: PaymentMethodTypeEnum,
     transactionType: TransactionType,
     permitStatus: ApplicationStatus,
   ) {
     if (
-      this.isWebTransactionPurchase(paymentMethod, transactionType) &&
-      permitStatus != ApplicationStatus.IN_PROGRESS
+      this.isTransactionPurchase(transactionType) &&
+      permitStatus != ApplicationStatus.IN_PROGRESS &&
+      permitStatus != ApplicationStatus.WAITING_PAYMENT
     ) {
       throw new BadRequestException('Application should be in Progress!!');
     }
@@ -231,7 +233,6 @@ export class PaymentService {
         });
 
         this.assertApplicationInProgress(
-          newTransaction.paymentMethodTypeCode,
           newTransaction.transactionTypeId,
           existingApplication.permitStatus,
         );
@@ -268,6 +269,17 @@ export class PaymentService {
           existingApplication.updatedUserGuid = currentUser.userGUID;
 
           await queryRunner.manager.save(existingApplication);
+        } else if (
+          this.isTransactionPurchase(newTransaction.transactionTypeId)
+        ) {
+          existingApplication.permitStatus = ApplicationStatus.PAYMENT_COMPLETE;
+          existingApplication.updatedDateTime = new Date();
+          existingApplication.updatedUser = currentUser.userName;
+          existingApplication.updatedUserDirectory =
+            currentUser.orbcUserDirectory;
+          existingApplication.updatedUserGuid = currentUser.userGUID;
+
+          await queryRunner.manager.save(existingApplication);
         }
       }
 
@@ -286,10 +298,16 @@ export class PaymentService {
           createdTransaction.transactionTypeId,
         )
       ) {
+        // Only payment using PayBC should generate the url
         url = this.generateUrl(createdTransaction);
       }
 
-      if (createdTransaction.transactionTypeId == TransactionType.REFUND) {
+      if (
+        !this.isWebTransactionPurchase(
+          createdTransaction.paymentMethodTypeCode,
+          createdTransaction.transactionTypeId,
+        )
+      ) {
         const receiptNumber = await this.generateReceiptNumber();
         const receipt = new Receipt();
         receipt.receiptNumber = receiptNumber;
@@ -315,14 +333,16 @@ export class PaymentService {
           }),
         },
       );
+
       if (!nestedQueryRunner) {
         await queryRunner.commitTransaction();
       }
-    } catch (err) {
+    } catch (error) {
       if (!nestedQueryRunner) {
         await queryRunner.rollbackTransaction();
       }
-      throw new InternalServerErrorException(); // Should handle the typeorm Error handling
+      this.logger.error(error);
+      throw error;
     } finally {
       if (!nestedQueryRunner) {
         await queryRunner.release();
@@ -345,19 +365,29 @@ export class PaymentService {
     updatePaymentGatewayTransactionDto: UpdatePaymentGatewayTransactionDto,
     queryString: string,
   ): Promise<ReadPaymentGatewayTransactionDto> {
-    const query = queryString.substring(
-      0,
-      queryString.indexOf('hashValue=') - 1,
-    );
-    const hashValue = queryString.substring(
-      queryString.indexOf('hashValue=') + 10,
-      queryString.length,
-    );
-    const validHash = validateHash(query, hashValue);
+    let query: string, hashValue: string;
+    //Code QL fixes.
+    if (typeof queryString === 'string') {
+      query = queryString
+        .substring(0, queryString.indexOf('hashValue=') - 1)
+        .replace('+', ' ');
+
+      hashValue = queryString.substring(
+        queryString.indexOf('hashValue=') + 10,
+        queryString.length,
+      );
+    }
+
+    const validHash =
+      convertToHash(
+        `${query}${process.env.PAYBC_API_KEY}`,
+        CRYPTO_ALGORITHM_MD5,
+      ) === hashValue;
     const validDto = this.validateUpdateTransactionDto(
       updatePaymentGatewayTransactionDto,
-      queryString,
+      `${query}&hashValue=${hashValue}`,
     );
+
     if (!validHash) {
       throw new InternalServerErrorException('Invalid Hash');
     }
@@ -461,9 +491,10 @@ export class PaymentService {
       }
 
       await queryRunner.commitTransaction();
-    } catch (err) {
+    } catch (error) {
       await queryRunner.rollbackTransaction();
-      throw new InternalServerErrorException(); // Should handle the typeorm Error handling
+      this.logger.error(error);
+      throw error;
     } finally {
       await queryRunner.release();
     }
@@ -502,7 +533,7 @@ export class PaymentService {
     const trnOrderId = updatePaymentGatewayTransactionDto.pgTransactionId;
     const trnAmount = params.get('trnAmount');
     const paymentMethod = updatePaymentGatewayTransactionDto.pgPaymentMethod;
-    const cardType = updatePaymentGatewayTransactionDto.pgCardType;
+    const cardType = updatePaymentGatewayTransactionDto.pgCardType ?? '';
     const authCode = updatePaymentGatewayTransactionDto.pgAuthCode;
     const trnDate = params.get('trnDate');
     const ref2 = params.get('ref2');
@@ -519,7 +550,12 @@ export class PaymentService {
       `&trnDate=${trnDate}` +
       `&ref2=${ref2}` +
       `&pbcTxnNumber=${pbcTxnNumber}`;
-    return validateHash(query, hashValue);
+    return (
+      convertToHash(
+        `${query}${process.env.PAYBC_API_KEY}`,
+        CRYPTO_ALGORITHM_MD5,
+      ) === hashValue
+    );
   }
 
   async findAllPaymentMethodTypeEntities(): Promise<PaymentMethodType[]> {

@@ -1,23 +1,22 @@
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker, DateValidationError } from "@mui/x-date-pickers";
+import { useState, useEffect } from "react";
 import {
   FieldValues,
   FieldPath,
-  RegisterOptions,
-  ControllerRenderProps,
-  Path,
   useFormContext,
   useController,
 } from "react-hook-form";
-import { ORBC_FormTypes } from "../../../types/common";
-import { DatePicker, DateValidationError } from "@mui/x-date-pickers";
-import { useState, useEffect } from "react";
+
+import "./CustomDatePicker.scss";
+import { ORBC_FormTypes, RequiredOrNull } from "../../../types/common";
+import { now } from "../../../helpers/formatDate";
 import {
   invalidDate,
   invalidMaxStartDate,
   invalidPastStartDate,
 } from "../../../helpers/validationMessages";
-import { now } from "../../../helpers/formatDate";
 
 /**
  * Properties of the onrouteBC customized Date Picker MUI component
@@ -25,10 +24,6 @@ import { now } from "../../../helpers/formatDate";
 export interface CustomDatePickerProps<T extends FieldValues> {
   feature: string;
   name: FieldPath<T>;
-  rules: RegisterOptions;
-  inputProps: RegisterOptions;
-  invalid: boolean;
-  field?: ControllerRenderProps<FieldValues, Path<T>>;
   disabled?: boolean;
   readOnly?: boolean;
 }
@@ -38,9 +33,12 @@ export interface CustomDatePickerProps<T extends FieldValues> {
  * Based on https://mui.com/x/react-date-pickers/date-picker/
  *
  */
-export const CustomDatePicker = <T extends ORBC_FormTypes>(
-  props: CustomDatePickerProps<T>,
-): JSX.Element => {
+export const CustomDatePicker = <T extends ORBC_FormTypes>({
+  feature,
+  name,
+  disabled,
+  readOnly,
+}: CustomDatePickerProps<T>): JSX.Element => {
   const {
     trigger,
     formState: { isSubmitted },
@@ -57,7 +55,6 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>(
    * There may be a better solution.
    * Referenced: https://www.reddit.com/r/reactjs/comments/udzhh7/reacthookform_not_working_with_mui_datepicker/
    */
-  const name: FieldPath<T> = props.name;
   const {
     field: { onChange, value, ref },
   } = useController({ name, control });
@@ -69,11 +66,12 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>(
    * Reference: https://mui.com/x/react-date-pickers/validation/#show-the-error
    */
   const { setError, clearErrors } = useFormContext();
-  const [MUIerror, setMUIError] = useState<DateValidationError | null>(null);
+  const [muiError, setMuiError] =
+    useState<RequiredOrNull<DateValidationError>>(null);
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    switch (MUIerror) {
+    switch (muiError) {
       case "minDate":
       case "disablePast": {
         setError(name, { type: "focus" }, { shouldFocus: true });
@@ -96,22 +94,27 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>(
         break;
       }
     }
-  }, [MUIerror]);
+  }, [muiError]);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker
+        className={`custom-date-picker ${disabled ? "custom-date-picker--disabled" : ""}`}
+        key={`${feature}-date-picker`}
         ref={ref}
         value={value}
-        disabled={props.disabled}
-        readOnly={props.readOnly}
+        disabled={disabled}
+        readOnly={readOnly}
         onChange={onChange}
         disablePast
         maxDate={maxDate}
-        onError={(newError) => setMUIError(newError)}
+        onError={(newError) => setMuiError(newError)}
         slotProps={{
           textField: {
             helperText: errorMessage,
+            inputProps: {
+              className: "custom-date-picker__input-container",
+            },
           },
         }}
         // This onClose function fixes a bug where the Select component does not immediately
@@ -119,9 +122,9 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>(
         // The validation needed to be triggered again manually
         onClose={async () => {
           if (isSubmitted) {
-            const output = await trigger(props.name);
+            const output = await trigger(name);
             if (!output) {
-              trigger(props.name);
+              trigger(name);
             }
           }
         }}

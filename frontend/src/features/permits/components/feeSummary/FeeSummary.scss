@@ -1,16 +1,17 @@
-@import "../../../../themes/orbcStyles.scss";
+@import "../../../../themes/orbcStyles";
 
 .fee-summary {
   display: flex;
   flex-direction: column;
   background-color: $banner-grey;
   color: $bc-primary-blue;
-  padding: 1em;
-  margin-top: 2em;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  border-radius: 0.25rem;
 
   &__title {
-    font-weight: 600;
-    font-size: 1.2rem;
+    font-weight: bold;
+    font-size: 1.5rem;
   }
 
   &__table {
@@ -22,19 +23,19 @@
       flex-direction: row;
       justify-content: space-between;
       font-size: 1rem;
-      border-bottom: 1px solid $bc-border-grey;
-      padding: 1em 0;
+      border-bottom: 1px solid $bc-fee-summary-line-separator;
+      padding: 1rem 0;
 
       &--header {
-        font-weight: 600;
-        padding: 2em 0 1em 0;
+        font-weight: bold;
+        padding: 1.5rem 0 1rem 0;
       }
 
       &--total {
         border-bottom: none;
-        font-weight: 600;
-        font-size: 1.2rem;
-        padding: 1em 0 0 0;
+        font-weight: bold;
+        font-size: 1.5rem;
+        padding: 1rem 0 0 0;
       }
     }
   }

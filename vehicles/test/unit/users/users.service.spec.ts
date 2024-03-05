@@ -20,14 +20,13 @@ import {
 
 import { PendingUsersService } from '../../../src/modules/company-user-management/pending-users/pending-users.service';
 
-import { InternalServerErrorException } from '@nestjs/common';
-import { UserStatus } from '../../../src/common/enum/user-status.enum';
+import { BadRequestException } from '@nestjs/common';
 import { Role } from '../../../src/common/enum/roles.enum';
 import { DataNotFoundException } from '../../../src/common/exception/data-not-found.exception';
 import * as constants from '../../util/mocks/data/test-data.constants';
 import {
-  readRedCompanyDtoMock,
   readRedCompanyMetadataDtoMock,
+  redCompanyEntityMock,
 } from '../../util/mocks/data/company.mock';
 import {
   USER_LIST,
@@ -36,7 +35,9 @@ import {
   updateRedCompanyCvClientUserDtoMock,
 } from '../../util/mocks/data/user.mock';
 import {
+  redCompanyAdminUserJWTMock,
   redCompanyCvClientUserJWTMock,
+  redCompanyPendingUserJWTMock,
   sysAdminStaffUserJWTMock,
 } from '../../util/mocks/data/jwt.mock';
 import { readRedCompanyPendingUserDtoMock } from '../../util/mocks/data/pending-user.mock';
@@ -46,6 +47,7 @@ import { PendingIdirUsersService } from 'src/modules/company-user-management/pen
 import { pendingIdirUserEntityMock } from 'test/util/mocks/data/pending-idir-user.mock';
 import { Request } from 'express';
 import { IUserJWT } from '../../../src/common/interface/user-jwt.interface';
+import { CompanyUser } from '../../../src/modules/company-user-management/users/entities/company-user.entity';
 
 interface SelectQueryBuilderParameters {
   userGUID?: string;
@@ -54,6 +56,7 @@ interface SelectQueryBuilderParameters {
 
 let repo: DeepMocked<Repository<User>>;
 let repoIdirUser: DeepMocked<Repository<IdirUser>>;
+let repoCompanyUser: DeepMocked<Repository<CompanyUser>>;
 let repoPendingIdirUser: DeepMocked<Repository<PendingIdirUser>>;
 let pendingUsersServiceMock: DeepMocked<PendingUsersService>;
 let pendingIdirUsersServiceMock: DeepMocked<PendingIdirUsersService>;
@@ -71,6 +74,7 @@ describe('UsersService', () => {
     repo = createMock<Repository<User>>();
     repoIdirUser = createMock<Repository<IdirUser>>();
     repoPendingIdirUser = createMock<Repository<PendingIdirUser>>();
+    repoCompanyUser = createMock<Repository<CompanyUser>>();
     const dataSourceMock = dataSourceMockFactory() as DataSource;
 
     const module: TestingModule = await Test.createTestingModule({
@@ -88,6 +92,10 @@ describe('UsersService', () => {
         {
           provide: getRepositoryToken(PendingIdirUser),
           useValue: repoPendingIdirUser,
+        },
+        {
+          provide: getRepositoryToken(CompanyUser),
+          useValue: repoCompanyUser,
         },
         {
           provide: PendingUsersService,
@@ -137,12 +145,15 @@ describe('UsersService', () => {
         constants.RED_COMPANY_CVCLIENT_USER_GUID,
       );
       expect(typeof retCompanies).toBe('object');
-      expect(retCompanies[0]).toBe(constants.RED_COMPANY_ID);
+      expect(retCompanies[0]).toBe(readRedCompanyMetadataDtoMock);
     });
   });
 
   describe('User service create function', () => {
     it('should create a user.', async () => {
+      pendingUsersServiceMock.findPendingUsersDto.mockResolvedValue([
+        readRedCompanyPendingUserDtoMock,
+      ]);
       const retUser = await service.create(
         createRedCompanyCvClientUserDtoMock,
         constants.RED_COMPANY_ID,
@@ -153,9 +164,10 @@ describe('UsersService', () => {
     });
 
     it('should catch and throw and Internal Error Exceptions user.', async () => {
+      pendingUsersServiceMock.findPendingUsersDto.mockResolvedValue([]);
       await expect(async () => {
         await service.create(null, null, redCompanyCvClientUserJWTMock);
-      }).rejects.toThrowError(InternalServerErrorException);
+      }).rejects.toThrowError(BadRequestException);
     });
   });
 
@@ -205,23 +217,6 @@ describe('UsersService', () => {
     });
   });
 
-  describe('User service updateStatus function', () => {
-    it('should update the user Status', async () => {
-      repo.update.mockResolvedValue({
-        affected: 1,
-        raw: undefined,
-        generatedMaps: undefined,
-      });
-      const retUpdateResult = await service.updateStatus(
-        constants.BLUE_COMPANY_CVCLIENT_USER_GUID,
-        UserStatus.DISABLED,
-        redCompanyCvClientUserJWTMock,
-      );
-      expect(typeof retUpdateResult).toBe('object');
-      expect(retUpdateResult.affected).toBe(1);
-    });
-  });
-
   describe('User service getRolesForUser function', () => {
     it('should get the user Roles', async () => {
       repo.query.mockResolvedValue([
@@ -248,9 +243,7 @@ describe('UsersService', () => {
         readRedCompanyMetadataDtoMock,
       ]);
       const retUserContext = await service.findORBCUser(
-        constants.RED_COMPANY_ADMIN_USER_GUID,
-        constants.RED_COMPANY_ADMIN_USER_NAME,
-        constants.RED_COMPANY_GUID,
+        redCompanyAdminUserJWTMock,
       );
       expect(typeof retUserContext).toBe('object');
       expect(retUserContext.user.userGUID).toBe(
@@ -267,16 +260,14 @@ describe('UsersService', () => {
       );
 
       companyServiceMock.findOneByCompanyGuid.mockResolvedValue(
-        readRedCompanyDtoMock,
+        redCompanyEntityMock,
       );
       const retUserContext = await service.findORBCUser(
-        constants.RED_COMPANY_PENDING_USER_GUID,
-        constants.RED_COMPANY_PENDING_USER_NAME,
-        constants.RED_COMPANY_GUID,
+        redCompanyPendingUserJWTMock,
       );
 
       expect(typeof retUserContext).toBe('object');
-      expect(retUserContext.associatedCompanies[0].companyId).toBe(
+      expect(retUserContext.pendingCompanies[0].companyId).toBe(
         constants.RED_COMPANY_ID,
       );
     });

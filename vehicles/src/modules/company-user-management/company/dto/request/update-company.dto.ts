@@ -7,6 +7,7 @@ import {
   IsOptional,
   IsString,
   Length,
+  MaxLength,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -20,7 +21,19 @@ export class UpdateCompanyDto {
     description: 'The legal name of the company.',
     example: 'ABC Carriers Inc.',
   })
+  @IsString()
+  @Length(1, 500)
   legalName: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'The Alternate name of the company/Doing Business As (DBA).',
+    example: 'ABC Carriers Inc.',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(150)
+  alternateName?: string;
 
   @AutoMap()
   @ApiProperty({

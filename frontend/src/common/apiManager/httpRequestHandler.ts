@@ -1,12 +1,26 @@
 import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
 import {
   applyWhenNotNullable,
   getDefaultNullableVal,
   getDefaultRequiredVal,
 } from "../helpers/util";
+import { Nullable, RequiredOrNull } from "../types/common";
+
+// Request interceptor to add a correlationId to the header.
+axios.interceptors.request.use(
+  function (config) {
+    const { headers } = config;
+    headers.set("x-correlation-id", uuidv4());
+    return config;
+  },
+  function (error) {
+    console.log("Unable to make a request:", error);
+  },
+);
 
 // Add environment variables to get the full key.
-// Full key structure: oidc.user:${AUTH0_ISSUER_URL}:${AUTH0_AUDIENCE}
+// Full key structure: oidc.user:${KEYCLOAK_ISSUER_URL}:${KEYCLOAK_AUDIENCE}
 // Full key example:: oidc.user:https://dev.loginproxy.gov.bc.ca/auth/realms/standard:on-route-bc-direct-4598
 const getUserStorageKey = () =>
   Object.keys(sessionStorage).find((key) => key.startsWith("oidc.user"));
@@ -53,7 +67,7 @@ const getCorrelationId = () => {
  * Retrieves the companyId from the session.
  * @returns string | null
  */
-export const getCompanyIdFromSession = (): string | null => {
+export const getCompanyIdFromSession = (): RequiredOrNull<string> => {
   return sessionStorage.getItem("onRouteBC.user.companyId");
 };
 
@@ -61,7 +75,7 @@ export const getCompanyIdFromSession = (): string | null => {
  * Retrieves user's GUID from session.
  * @returns string | null
  */
-export const getUserGuidFromSession = (): string | null => {
+export const getUserGuidFromSession = (): RequiredOrNull<string> => {
   const parsedSessionObject = getDefaultRequiredVal(
     { profile: { bceid_user_guid: "" } },
     getUserStorage(),
@@ -72,9 +86,9 @@ export const getUserGuidFromSession = (): string | null => {
 
 /**
  * Retrieves company name from session.
- * @returns string | null
+ * @returns string | null | undefined
  */
-export const getCompanyNameFromSession = (): string | undefined => {
+export const getCompanyNameFromSession = (): Nullable<string> => {
   const parsedSessionObject = getDefaultRequiredVal(
     { profile: { bceid_business_name: "" } },
     getUserStorage(),
@@ -101,9 +115,9 @@ export const getLoginUsernameFromSession = (): string => {
 
 /**
  * Retrieves company email from session.
- * @returns string | undefined
+ * @returns string | null | undefined
  */
-export const getCompanyEmailFromSession = (): string | undefined => {
+export const getCompanyEmailFromSession = (): Nullable<string> => {
   const parsedSessionObject = getDefaultRequiredVal(
     { profile: { email: "" } },
     getUserStorage(),
@@ -134,12 +148,13 @@ export const httpGETRequestStream = (url: string) => {
   return fetch(url, {
     headers: {
       Authorization: getAccessToken(),
+      "x-correlation-id": uuidv4(),
     },
   });
 };
 
 /**
- * A HTTP GET Request for streams
+ * A HTTP POST Request for streams
  * @param url The URL of the resource.
  * @returns A Promise<Response> with the response from the API.
  */
@@ -148,8 +163,9 @@ export const httpPOSTRequestStream = (url: string, data: any) => {
     method: "POST",
     body: JSON.stringify(data),
     headers: {
-      "Authorization": getAccessToken(),
-      "Content-Type": "application/json"
+      Authorization: getAccessToken(),
+      "Content-Type": "application/json",
+      "x-correlation-id": uuidv4(),
     },
   });
 };
@@ -189,13 +205,15 @@ export const httpPUTRequest = (url: string, data: any) => {
 /**
  * HTTP Delete Request
  * @param url The URL containing the resource id to be deleted.
+ * @param data The request payload.
  * @returns A Promise<Response> with the response from the API.
  */
-export const httpDELETERequest = (url: string) => {
+export const httpDELETERequest = (url: string, data?: any) => {
   return axios.delete(url, {
     headers: {
       Authorization: getAccessToken(),
       "X-Correlation-ID": getCorrelationId(),
     },
+    data,
   });
 };

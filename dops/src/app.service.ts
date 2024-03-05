@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 
@@ -9,24 +9,30 @@ import { TemplateFile } from './interface/template-file.interface';
 import { FILE_ENCODING_TYPE } from './constants/dops.constant';
 import { S3Service } from './modules/common/s3.service';
 import { createFile } from './helper/file.helper';
-import { addToCache } from './helper/cache.helper';
+import { addToCache, createCacheMap } from './helper/cache.helper';
 import * as fs from 'fs';
 import { DgenService } from './modules/dgen/dgen.service';
+import { LogAsyncMethodExecution } from './decorator/log-async-method-execution.decorator';
+import { FeatureFlagsService } from './modules/feature-flags/feature-flags.service';
 
 @Injectable()
 export class AppService {
+  private readonly logger = new Logger(AppService.name);
+
   constructor(
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
     private dgenService: DgenService,
     private s3Service: S3Service,
     private dmsService: DmsService,
+    private featureFlagsService: FeatureFlagsService,
   ) {}
 
   getHello(): string {
     return 'DOPS Healthcheck!';
   }
 
+  @LogAsyncMethodExecution({ printMemoryStats: true })
   async initializeCache() {
     const startDateTime = new Date();
     const templates = await this.dgenService.findAllTemplates();
@@ -35,8 +41,9 @@ export class AppService {
         const templateMetadata = await this.dmsService.findLatest(
           template.documentId,
         );
+        //TODO: Temporary stopgap for release 1
         const templatefile = await this.s3Service.getFile(
-          templateMetadata.s3ObjectId,
+          templateMetadata.fileName, //TODO: Should be templateMetadata.s3ObjectId . Using filename as temporary stopgap for release 1 integration with BCBox.
         );
 
         return {
@@ -68,9 +75,16 @@ export class AppService {
       ),
     );
 
+    const featureFlags = await this.featureFlagsService.findAll();
+    await addToCache(
+      this.cacheManager,
+      CacheKey.FEATURE_FLAG_TYPE,
+      createCacheMap(featureFlags, 'featureKey', 'featureValue'),
+    );
+
     const endDateTime = new Date();
     const processingTime = endDateTime.getTime() - startDateTime.getTime();
-    console.info(
+    this.logger.log(
       `initializeCache() -> Start time: ${startDateTime.toISOString()},` +
         `End time: ${endDateTime.toISOString()},` +
         `Processing time: ${processingTime}ms`,

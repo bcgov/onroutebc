@@ -1,4 +1,13 @@
-import { useUserRolesByCompanyId } from "../../features/manageProfile/apiManager/hooks";
+import { useEffect } from "react";
+import { useNavigate } from "react-router";
+
+import { ERROR_ROUTES } from "../../routes/constants";
+import { Nullable } from "../types/common";
+import { UserRolesType } from "./types";
+import {
+  useUserRolesByCompanyId,
+  useUserRolesByCompanyIdQuery,
+} from "../../features/manageProfile/apiManager/hooks";
 
 /*
  * A simple component that merely calls a react query hook.
@@ -10,6 +19,22 @@ import { useUserRolesByCompanyId } from "../../features/manageProfile/apiManager
  * and hence only has to be executed after the conditions are met.
  */
 export const LoadBCeIDUserRolesByCompany = () => {
-  useUserRolesByCompanyId();
+  const {
+    isPending,
+    isError,
+    data: userRolesData,
+  } = useUserRolesByCompanyIdQuery();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isPending) {
+      if (isError) {
+        navigate(ERROR_ROUTES.UNAUTHORIZED);
+      }
+    }
+  }, [isPending, isError]);
+
+  useUserRolesByCompanyId(userRolesData as Nullable<UserRolesType[]>);
+
   return null;
 };

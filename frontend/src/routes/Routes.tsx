@@ -1,149 +1,252 @@
-import { Routes, Route } from "react-router-dom";
-import * as routes from "./constants";
+import { Route, Routes } from "react-router-dom";
+
+import { BCeIDAuthWall } from "../common/authentication/auth-walls/BCeIDAuthWall";
+import { IDIRAuthWall } from "../common/authentication/auth-walls/IDIRAuthWall";
+import { NewBCeIDAuthWall } from "../common/authentication/auth-walls/NewBCeIDAuthWall";
+import { IDIR_USER_AUTH_GROUP, ROLES } from "../common/authentication/types";
+import { UniversalUnauthorized } from "../common/pages/UniversalUnauthorized";
+import { UniversalUnexpected } from "../common/pages/UniversalUnexpected";
 import { InitialLandingPage } from "../features/homePage/InitialLandingPage";
 import { WelcomePage } from "../features/homePage/welcome/WelcomePage";
-import { NotFound } from "../common/pages/NotFound";
-import { ProtectedRoutes } from "./ProtectedRoutes";
+import { IDIRWelcome } from "../features/idir/IDIRWelcome";
+import { IDIRReportsDashboard } from "../features/idir/search/pages/IDIRReportsDashboard";
+import { IDIRSearchResultsDashboard } from "../features/idir/search/pages/IDIRSearchResultsDashboard";
 import { ManageProfiles } from "../features/manageProfile/ManageProfiles";
+import { AddUserDashboard } from "../features/manageProfile/pages/AddUserDashboard";
+import { EditUserDashboard } from "../features/manageProfile/pages/EditUserDashboard";
 import { ManageVehicles } from "../features/manageVehicles/ManageVehicles";
 import { AddVehicleDashboard } from "../features/manageVehicles/components/dashboard/AddVehicleDashboard";
 import { EditVehicleDashboard } from "../features/manageVehicles/components/dashboard/EditVehicleDashboard";
-import { VEHICLE_TYPES_ENUM } from "../features/manageVehicles/components/form/constants";
-import { CreateProfileWizard } from "../features/wizard/CreateProfileWizard";
-import { ManagePermits } from "../features/permits/ManagePermits";
-import { ROLES } from "../common/authentication/types";
-import { ManageApplications } from "../features/permits/ManageApplications";
-import { SuccessPage } from "../features/permits/pages/SuccessPage/SuccessPage";
-import { PaymentRedirect } from "../features/permits/pages/Payment/PaymentRedirect";
-import { PaymentFailureRedirect } from "../features/permits/pages/Payment/PaymentFailureRedirect";
-import { AddUserDashboard } from "../features/manageProfile/pages/AddUserDashboard";
-import { EditUserDashboard } from "../features/manageProfile/pages/EditUserDashboard";
-import { IDIRSearchResultsDashboard } from "../features/idir/search/pages/IDIRSearchResultsDashboard";
-import { IDIRWelcome } from "../features/idir/IDIRWelcome";
-import { UserInfoWizard } from "../features/wizard/UserInfoWizard";
-import { VoidPermit } from "../features/permits/pages/Void/VoidPermit";
-import { IDIRReportsDashboard } from "../features/idir/search/pages/IDIRReportsDashboard";
+import { ApplicationSteps } from "../features/permits/ApplicationSteps";
+import { PermitDashboard } from "../features/permits/PermitDashboard";
 import { AmendPermit } from "../features/permits/pages/Amend/AmendPermit";
-import { Unauthorized } from "../common/pages/Unauthorized";
-import { UniversalUnauthorized } from "../common/pages/UniversalUnauthorized";
+import { PaymentRedirect } from "../features/permits/pages/Payment/PaymentRedirect";
+import { SuccessPage } from "../features/permits/pages/SuccessPage/SuccessPage";
+import { VoidPermit } from "../features/permits/pages/Void/VoidPermit";
+import { ChallengeProfileWizard } from "../features/wizard/ChallengeProfileWizard";
+import { VEHICLE_TYPES } from "../features/manageVehicles/types/Vehicle";
+import { CreateProfileWizard } from "../features/wizard/CreateProfileWizard";
+import { UserInfoWizard } from "../features/wizard/UserInfoWizard";
+import * as routes from "./constants";
+import { IDIRCreateCompany } from "../features/idir/company/IDIRCreateCompany";
+import { CompanySuspended } from "../common/pages/CompanySuspended";
 
 export const AppRoutes = () => {
   return (
     <Routes>
+      {/* Home and Error Routes */}
+      {/* Home and Error routes do no have any constraints. */}
       <Route path={routes.HOME} element={<InitialLandingPage />} />
-      <Route path={routes.WELCOME} element={<WelcomePage />} />
-      <Route path={routes.UNAUTHORIZED} element={<Unauthorized />} />
       <Route
-        path={routes.UNIVERSAL_UNAUTHORIZED}
+        path={routes.ERROR_ROUTES.SUSPENDED}
+        element={<CompanySuspended />}
+      />
+      <Route
+        path={routes.ERROR_ROUTES.UNAUTHORIZED}
         element={<UniversalUnauthorized />}
       />
-      <Route path="*" element={<NotFound />} />
       <Route
-          path={routes.REPORTS}
-          element={<IDIRReportsDashboard />}
+        path={routes.ERROR_ROUTES.UNEXPECTED}
+        element={<UniversalUnexpected />}
+      />
+      <Route path="*" element={<UniversalUnexpected />} />
+
+      {/* Wizard Routes */}
+
+      {/* Wizard Routes only require that a user
+        * 1) is authenticated
+        * 2) is BCeID
+        * 3) has no recorded personal info in the system
+           - i.e., userDetails object in OnRouteBCContext should be empty/undefined.
+      */}
+      <Route element={<NewBCeIDAuthWall />}>
+        <Route
+          path={routes.CREATE_PROFILE_WIZARD_ROUTES.WELCOME}
+          element={<WelcomePage />}
+        />
+        <Route
+          path={routes.CREATE_PROFILE_WIZARD_ROUTES.CREATE}
+          element={<CreateProfileWizard />}
+        />
+        <Route
+          path={routes.CREATE_PROFILE_WIZARD_ROUTES.MIGRATED_CLIENT}
+          element={<ChallengeProfileWizard />}
         />
 
-      {/* IDIR Routes */}
-      <Route element={<ProtectedRoutes requiredRole={ROLES.READ_PERMIT} />}>
-        <Route path={routes.IDIR_WELCOME} element={<IDIRWelcome />} />
         <Route
-          path={routes.SEARCH_RESULTS}
+          path={routes.CREATE_PROFILE_WIZARD_ROUTES.USER_INFO}
+          element={<UserInfoWizard />}
+        />
+      </Route>
+
+      {/* IDIR Routes */}
+      <Route
+        element={
+          <IDIRAuthWall
+            allowedAuthGroups={[
+              IDIR_USER_AUTH_GROUP.ENFORCEMENT_OFFICER,
+              IDIR_USER_AUTH_GROUP.PPC_CLERK,
+              IDIR_USER_AUTH_GROUP.FINANCE,
+              IDIR_USER_AUTH_GROUP.HQ_ADMINISTRATOR,
+            ]}
+          />
+        }
+      >
+        {/* All IDIR users are allowed access to welcome page */}
+        <Route path={routes.IDIR_ROUTES.WELCOME} element={<IDIRWelcome />} />
+
+        {/* All IDIR users are allowed access to search page */}
+        <Route
+          path={routes.IDIR_ROUTES.SEARCH_RESULTS}
           element={<IDIRSearchResultsDashboard />}
+        />
+      </Route>
+
+      <Route
+        element={
+          <IDIRAuthWall allowedAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]} />
+        }
+      >
+        <Route
+          path={`${routes.PERMITS_ROUTES.VOID()}`}
+          element={<VoidPermit />}
+        />
+        <Route
+          path={`${routes.PERMITS_ROUTES.AMEND()}`}
+          element={<AmendPermit />}
+        />
+        <Route
+          path={routes.IDIR_ROUTES.CREATE_COMPANY}
+          element={<IDIRCreateCompany />}
+        />
+      </Route>
+
+      {/* IDIR System Admin Routes */}
+      <Route
+        element={
+          <IDIRAuthWall
+            allowedAuthGroups={[
+              IDIR_USER_AUTH_GROUP.PPC_CLERK,
+              IDIR_USER_AUTH_GROUP.FINANCE,
+              IDIR_USER_AUTH_GROUP.HQ_ADMINISTRATOR,
+            ]}
+          />
+        }
+      >
+        {/* Only IDIR System Admins can access the reports page */}
+        <Route
+          path={routes.IDIR_ROUTES.REPORTS}
+          element={<IDIRReportsDashboard />}
         />
       </Route>
 
       {/* BCeID Routes */}
       {/* Protected Routes */}
-      <Route element={<ProtectedRoutes requiredRole={ROLES.READ_VEHICLE} />}>
-        <Route path={routes.MANAGE_VEHICLES}>
+      <Route element={<BCeIDAuthWall requiredRole={ROLES.READ_VEHICLE} />}>
+        <Route path={routes.VEHICLES_ROUTES.MANAGE}>
           <Route index={true} element={<ManageVehicles />} />
           <Route
-            path="power-units/:vehicleId"
+            path={`${routes.VEHICLES_ROUTES.POWER_UNIT_DETAILS}/:vehicleId`}
             element={
               <EditVehicleDashboard
-                editVehicleMode={VEHICLE_TYPES_ENUM.POWER_UNIT}
+                editVehicleMode={VEHICLE_TYPES.POWER_UNIT}
               />
             }
           />
           <Route
-            path="trailers/:vehicleId"
+            path={`${routes.VEHICLES_ROUTES.TRAILER_DETAILS}/:vehicleId`}
             element={
-              <EditVehicleDashboard
-                editVehicleMode={VEHICLE_TYPES_ENUM.TRAILER}
-              />
+              <EditVehicleDashboard editVehicleMode={VEHICLE_TYPES.TRAILER} />
             }
           />
           <Route
-            path={routes.ADD_POWER_UNIT}
+            path={routes.VEHICLES_ROUTES.ADD_POWER_UNIT}
             element={
-              <AddVehicleDashboard
-                addVehicleMode={VEHICLE_TYPES_ENUM.POWER_UNIT}
-              />
+              <AddVehicleDashboard addVehicleMode={VEHICLE_TYPES.POWER_UNIT} />
             }
           />
           <Route
-            path={routes.ADD_TRAILER}
+            path={routes.VEHICLES_ROUTES.ADD_TRAILER}
             element={
-              <AddVehicleDashboard
-                addVehicleMode={VEHICLE_TYPES_ENUM.TRAILER}
-              />
+              <AddVehicleDashboard addVehicleMode={VEHICLE_TYPES.TRAILER} />
             }
           />
         </Route>
       </Route>
-      <Route element={<ProtectedRoutes requiredRole={ROLES.READ_ORG} />}>
-        <Route path={routes.MANAGE_PROFILES} element={<ManageProfiles />} />
-      </Route>
-      <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_USER} />}>
-        <Route path={routes.ADD_USER} element={<AddUserDashboard />} />
+
+      <Route element={<BCeIDAuthWall requiredRole={ROLES.READ_ORG} />}>
         <Route
-          path={`${routes.EDIT_USER}/:userGUID`}
+          path={routes.PROFILE_ROUTES.MANAGE}
+          element={<ManageProfiles />}
+        />
+      </Route>
+
+      <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_USER} />}>
+        <Route
+          path={routes.PROFILE_ROUTES.ADD_USER}
+          element={<AddUserDashboard />}
+        />
+        <Route
+          path={`${routes.PROFILE_ROUTES.EDIT_USER}/:userGUID`}
           element={<EditUserDashboard />}
         />
       </Route>
-      <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
+
+      <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
         <Route
-          path={`${routes.APPLICATIONS}/${routes.PERMITS}`}
-          element={<ManagePermits />}
+          path={`${routes.APPLICATIONS_ROUTES.START_APPLICATION()}`}
+          element={
+            <ApplicationSteps
+              applicationStep={routes.APPLICATION_STEPS.DETAILS}
+            />
+          }
         />
       </Route>
-      <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
-        <Route path={routes.APPLICATIONS} element={<ManageApplications />} />
-      </Route>
-      <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
-        <Route
-          path={`${routes.APPLICATIONS}/:applicationNumber`}
-          element={<ManagePermits />}
-        />
-      </Route>
-      <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
-        <Route path={routes.APPLICATIONS}>
-          <Route index={true} element={<ManageApplications />} />
-          <Route
-            path={`${routes.APPLICATIONS_SUCCESS}/:permitId`}
-            element={<SuccessPage />}
-          />
-          <Route
-            path={`${routes.APPLICATIONS_FAILURE}/:msg`}
-            element={<PaymentFailureRedirect />}
-          />
+      <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
+        <Route path={routes.APPLICATIONS_ROUTES.BASE}>
+          <Route index={true} element={<PermitDashboard />} />
+          <Route path={`${routes.APPLICATIONS_ROUTES.DETAILS()}`}>
+            <Route
+              index={true}
+              element={
+                <ApplicationSteps
+                  applicationStep={routes.APPLICATION_STEPS.DETAILS}
+                />
+              }
+            />
+            <Route
+              path={routes.APPLICATIONS_ROUTES.REVIEW()}
+              element={
+                <ApplicationSteps
+                  applicationStep={routes.APPLICATION_STEPS.REVIEW}
+                />
+              }
+            />
+            <Route
+              path={routes.APPLICATIONS_ROUTES.PAY()}
+              element={
+                <ApplicationSteps
+                  applicationStep={routes.APPLICATION_STEPS.PAY}
+                />
+              }
+            />
+          </Route>
         </Route>
       </Route>
-      <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
+
+      <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
         <Route
-          path={`${routes.PERMITS}/:permitId/${routes.PERMIT_VOID}`}
-          element={<VoidPermit />}
-        />
-        <Route
-          path={`${routes.PERMITS}/:permitId/${routes.PERMIT_AMEND}`}
-          element={<AmendPermit />}
+          path={`${routes.PERMITS_ROUTES.SUCCESS()}`}
+          element={<SuccessPage />}
         />
       </Route>
-      <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
-        <Route path={routes.PAYMENT_REDIRECT} element={<PaymentRedirect />} />
+
+      <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
+        <Route
+          path={routes.PAYMENT_ROUTES.PAYMENT_REDIRECT}
+          element={<PaymentRedirect />}
+        />
       </Route>
-      <Route path={routes.CREATE_PROFILE} element={<CreateProfileWizard />} />
-      <Route path={routes.USER_INFO} element={<UserInfoWizard />} />
     </Routes>
   );
 };

@@ -2,6 +2,7 @@ import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import {
   createMap,
   forMember,
+  ignore,
   mapFrom,
   Mapper,
   mapWith,
@@ -12,7 +13,6 @@ import { Company } from '../entities/company.entity';
 
 import { CreateAddressDto } from '../../../common/dto/request/create-address.dto';
 import { Address } from '../../../common/entities/address.entity';
-
 import { ReadAddressDto } from '../../../common/dto/response/read-address.dto';
 import { UpdateAddressDto } from '../../../common/dto/request/update-address.dto';
 import { CreateCompanyDto } from '../dto/request/create-company.dto';
@@ -41,6 +41,8 @@ export class CompanyProfile extends AutomapperProfile {
         mapper,
         CreateCompanyDto,
         Company,
+        forMember((d) => d.clientNumber, ignore()),
+        forMember((d) => d.migratedClientHash, ignore()),
         forMember(
           (d) => d.createdUserGuid,
           mapWithArguments((source, { userGUID }) => {
@@ -132,8 +134,8 @@ export class CompanyProfile extends AutomapperProfile {
        * mailingAddress property of UpdateCompanyDto to instances of the Address
        * entity using the mapWith function. It also maps the
        * mailingAddress.addressId property to values provided as arguments to
-       * the mapping function using the mapWithArguments function. The directory
-       * and primaryContact.contactId properties are also mapped to values
+       * the mapping function using the mapWithArguments function. The
+       * primaryContact.contactId properties are also mapped to values
        * provided as arguments using the mapWithArguments function.
        */
       createMap(
@@ -184,12 +186,6 @@ export class CompanyProfile extends AutomapperProfile {
           }),
         ),
         forMember(
-          (d) => d.directory,
-          mapWithArguments((source, { directory }) => {
-            return directory;
-          }),
-        ),
-        forMember(
           (d) => d.clientNumber,
           mapWithArguments((source, { clientNumber }) => {
             return clientNumber;
@@ -236,6 +232,7 @@ export class CompanyProfile extends AutomapperProfile {
       /**
        * The mapping is between Company and ReadCompanyMetadataDto.
        */
+
       createMap(mapper, Company, ReadCompanyMetadataDto);
     };
   }

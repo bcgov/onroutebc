@@ -7,7 +7,6 @@ import { useAuth } from "react-oidc-context";
 import {
   MaterialReactTable,
   MRT_Row,
-  MRT_TableInstance,
   useMaterialReactTable,
 } from "material-react-table";
 
@@ -20,8 +19,12 @@ import { Trash } from "../../../common/components/table/options/Trash";
 import { getCompanyUsers } from "../apiManager/manageProfileAPI";
 import { UserManagementTableRowActions } from "../components/user-management/UserManagementRowOptions";
 import { UserManagementColumnsDefinition } from "../types/UserManagementColumns";
-import { BCeIDUserStatus, ReadCompanyUser } from "../types/userManagement.d";
-import { defaultTableInitialStateOptions, defaultTableOptions, defaultTableStateOptions } from "../../../common/constants/defaultTableOptions";
+import {
+  defaultTableOptions,
+  defaultTableInitialStateOptions,
+  defaultTableStateOptions,
+} from "../../../common/helpers/tableHelper";
+import { BCeID_USER_STATUS, ReadUserInformationResponse } from "../types/manageProfile.d";
 
 /**
  * User Management Component for CV Client.
@@ -32,7 +35,7 @@ export const UserManagement = () => {
     queryFn: getCompanyUsers,
     staleTime: FIVE_MINUTES,
   });
-  const { data, isError, isInitialLoading } = query;
+  const { data, isError, isLoading } = query;
   const snackBar = useContext(SnackBarContext);
   const { user: userFromToken } = useAuth();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -86,33 +89,32 @@ export const UserManagement = () => {
     state: {
       ...defaultTableStateOptions,
       showAlertBanner: isError,
-      showProgressBars: isInitialLoading,
+      showProgressBars: isLoading,
       columnVisibility: { applicationId: true },
-      isLoading: isInitialLoading,
+      isLoading: isLoading,
       rowSelection: rowSelection,
     },
+    enableGlobalFilter: false,
     renderEmptyRowsFallback: () => <NoRecordsFound />,
-    enableRowSelection: (row: MRT_Row<ReadCompanyUser>): boolean => {
+    enableRowSelection: (
+      row: MRT_Row<ReadUserInformationResponse>,
+    ): boolean => {
       if (row?.original?.userGUID === userFromToken?.profile?.bceid_user_guid) {
         return false;
       }
       return true;
     },
     onRowSelectionChange: setRowSelection,
-    getRowId: (originalRow: ReadCompanyUser) => originalRow.userName,
+    getRowId: (originalRow: ReadUserInformationResponse) =>
+      originalRow.userName,
     displayColumnDefOptions: {
       "mrt-row-actions": {
         header: "",
       },
     },
     renderRowActions: useCallback(
-      ({
-        row,
-      }: {
-        table: MRT_TableInstance<ReadCompanyUser>;
-        row: MRT_Row<ReadCompanyUser>;
-      }) => {
-        if (row.original.statusCode === BCeIDUserStatus.ACTIVE) {
+      ({ row }: { row: MRT_Row<ReadUserInformationResponse> }) => {
+        if (row.original.statusCode === BCeID_USER_STATUS.ACTIVE) {
           return (
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
               <UserManagementTableRowActions userGUID={row.original.userGUID} />
@@ -127,7 +129,7 @@ export const UserManagement = () => {
     renderToolbarInternalActions: useCallback(
       () => (
         <Box className="table-container__toolbar-internal-actions">
-          <Trash onClickTrash={onClickTrashIcon} disabled={hasNoRowsSelected} />
+          <Trash onClickTrash={onClickTrashIcon} disabled />
         </Box>
       ),
       [hasNoRowsSelected],

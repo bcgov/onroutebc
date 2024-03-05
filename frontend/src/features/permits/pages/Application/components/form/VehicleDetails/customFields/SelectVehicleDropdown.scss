@@ -1,0 +1,16 @@
+@use "../../../../../../../../common/components/form/CustomFormComponents.scss";
+
+@include CustomFormComponents.custom-form-component(".select-vehicle-dropdown__autocomplete");
+
+.select-vehicle-dropdown {
+  & &__label {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+
+  & &__autocomplete {
+    .MuiOutlinedInput-root .MuiAutocomplete-input {
+      padding: 0;
+    }
+  }
+}

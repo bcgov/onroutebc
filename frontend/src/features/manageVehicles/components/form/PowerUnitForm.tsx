@@ -1,21 +1,26 @@
 import { useForm, FormProvider, FieldValues } from "react-hook-form";
 import { Box, Button, MenuItem } from "@mui/material";
-import "./VehicleForm.scss";
-import { PowerUnit, VehicleType } from "../../types/managevehicles";
-import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
-import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
-import {
-  useAddPowerUnitMutation,
-  usePowerUnitTypesQuery,
-  useUpdatePowerUnitMutation,
-} from "../../apiManager/hooks";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
+
+import "./VehicleForm.scss";
+import { PowerUnit, VehicleSubType } from "../../types/Vehicle";
+import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
+import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
 import { SnackBarContext } from "../../../../App";
+import { VEHICLES_ROUTES } from "../../../../routes/constants";
 import {
   getDefaultRequiredVal,
   getDefaultNullableVal,
+  convertToNumberIfValid,
 } from "../../../../common/helpers/util";
+
+import {
+  useAddPowerUnitMutation,
+  usePowerUnitSubTypesQuery,
+  useUpdatePowerUnitMutation,
+} from "../../apiManager/hooks";
+
 import {
   invalidNumber,
   invalidPlateLength,
@@ -23,6 +28,7 @@ import {
   invalidYearMin,
   requiredMessage,
 } from "../../../../common/helpers/validationMessages";
+import { Nullable } from "../../../../common/types/common";
 
 /**
  * Props used by the power unit form.
@@ -64,7 +70,7 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
 
   const { handleSubmit } = formMethods;
 
-  const powerUnitTypesQuery = usePowerUnitTypesQuery();
+  const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
   const addPowerUnitMutation = useAddPowerUnitMutation();
   const updatePowerUnitMutation = useUpdatePowerUnitMutation();
   const snackBar = useContext(SnackBarContext);
@@ -83,16 +89,6 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
    * Adds a vehicle.
    */
   const onAddOrUpdateVehicle = async (data: FieldValues) => {
-    // return input as a number if it's a valid number value, or original value if invalid number
-    const convertToNumberIfValid = (
-      str?: string | null,
-      valueToReturnWhenInvalid?: 0 | string | null,
-    ) => {
-      return str != null && str !== "" && !isNaN(Number(str))
-        ? Number(str)
-        : valueToReturnWhenInvalid;
-    };
-
     if (powerUnit?.powerUnitId) {
       const powerUnitToBeUpdated = data as PowerUnit;
       const result = await updatePowerUnitMutation.mutateAsync({
@@ -100,16 +96,19 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
         powerUnit: {
           ...powerUnitToBeUpdated,
           // need to explicitly convert form values to number here (since we can't use valueAsNumber prop)
-          /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
           year: convertToNumberIfValid(data.year, data.year as string) as any,
-          /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
           licensedGvw: convertToNumberIfValid(
             data.licensedGvw,
             data.licensedGvw as string,
           ) as any,
+          steerAxleTireSize: convertToNumberIfValid(
+            data.steerAxleTireSize,
+            null,
+          ) as Nullable<number>,
         },
         companyId,
       });
+
       if (result.status === 200) {
         snackBar.setSnackBar({
           showSnackbar: true,
@@ -117,7 +116,8 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
           message: "Changes Saved",
           alertType: "info",
         });
-        navigate("../");
+
+        navigate(VEHICLES_ROUTES.MANAGE);
       }
     } else {
       const powerUnitToBeAdded = data as PowerUnit;
@@ -132,6 +132,10 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
             !isNaN(Number(data.licensedGvw))
               ? Number(data.licensedGvw)
               : data.licensedGvw,
+          steerAxleTireSize: convertToNumberIfValid(
+            data.steerAxleTireSize,
+            null,
+          ) as Nullable<number>,
         },
         companyId,
       });
@@ -143,7 +147,8 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
           message: "Power unit has been added successfully",
           alertType: "success",
         });
-        navigate("../");
+
+        navigate(VEHICLES_ROUTES.MANAGE);
       }
     }
   };
@@ -152,7 +157,7 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
    * Changed view to the main Vehicle Inventory page
    */
   const handleClose = () => {
-    navigate("../");
+    navigate(VEHICLES_ROUTES.MANAGE);
   };
 
   /**
@@ -253,11 +258,13 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
               label: "Vehicle Sub-type",
               width: formFieldStyle.width,
             }}
-            menuOptions={powerUnitTypesQuery?.data?.map((data: VehicleType) => (
-              <MenuItem key={data.typeCode} value={data.typeCode}>
-                {data.type}
-              </MenuItem>
-            ))}
+            menuOptions={powerUnitSubTypesQuery?.data?.map(
+              (data: VehicleSubType) => (
+                <MenuItem key={data.typeCode} value={data.typeCode}>
+                  {data.type}
+                </MenuItem>
+              ),
+            )}
           />
           <CountryAndProvince
             feature={FEATURE}
@@ -299,7 +306,6 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
             }}
           />
         </div>
-        {/* {getAxleGroupForms()} */}
       </FormProvider>
 
       <Box sx={{ margin: "32px 0px" }}>

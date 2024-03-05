@@ -1,14 +1,22 @@
 import {
+  ForbiddenException,
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
   forwardRef,
 } from '@nestjs/common';
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Like, Repository } from 'typeorm';
+import {
+  Brackets,
+  DataSource,
+  Like,
+  Repository,
+  SelectQueryBuilder,
+} from 'typeorm';
 import { CreatePermitDto } from './dto/request/create-permit.dto';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { Permit } from './entities/permit.entity';
@@ -17,15 +25,9 @@ import { DopsService } from '../common/dops.service';
 import { FileDownloadModes } from '../../common/enum/file-download-modes.enum';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { Response } from 'express';
-import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { PermitStatus } from 'src/common/enum/permit-status.enum';
 import { Receipt } from '../payment/entities/receipt.entity';
-import {
-  IPaginationMeta,
-  IPaginationOptions,
-} from 'src/common/interface/pagination.interface';
-import { PaginationDto } from 'src/common/class/pagination';
-import { paginate } from 'src/common/helper/paginate';
+import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import { PermitHistoryDto } from './dto/response/permit-history.dto';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { ApplicationService } from './application.service';
@@ -52,10 +54,25 @@ import { CacheKey } from 'src/common/enum/cache-key.enum';
 import { getMapFromCache } from 'src/common/helper/cache.helper';
 import { Cache } from 'cache-manager';
 import { PermitIssuedBy } from '../../common/enum/permit-issued-by.enum';
-import { getPaymentCodeFromCache } from '../../common/helper/payment.helper';
+import {
+  formatAmount,
+  getPaymentCodeFromCache,
+} from '../../common/helper/payment.helper';
+import { PaymentMethodType } from 'src/common/enum/payment-method-type.enum';
+import { PageMetaDto } from 'src/common/dto/paginate/page-meta';
+import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
+import * as constants from '../../common/constants/api.constant';
+import { PermitApprovalSource } from '../../common/enum/permit-approval-source.enum';
+import { PermitSearch } from '../../common/enum/permit-search.enum';
+import { paginate, sortQuery } from '../../common/helper/database.helper';
+import {
+  UserAuthGroup,
+  idirUserAuthGroupList,
+} from '../../common/enum/user-auth-group.enum';
 
 @Injectable()
 export class PermitService {
+  private readonly logger = new Logger(PermitService.name);
   constructor(
     @InjectMapper() private readonly classMapper: Mapper,
     @InjectRepository(Permit)
@@ -73,6 +90,7 @@ export class PermitService {
     private readonly cacheManager: Cache,
   ) {}
 
+  @LogAsyncMethodExecution()
   async create(
     createPermitDto: CreatePermitDto,
     currentUser: IUserJWT,
@@ -116,12 +134,30 @@ export class PermitService {
   }
 
   /**
-   * Find single permit with associated data by permit id.
-   * @param permitId permit id
-   * @returns permit with data
+   * Finds a permit by its ID and verifies if the current user has authorization
+   * to access it. Throws a ForbiddenException if the user does not have the
+   * proper authorization. Returns a mapped ReadPermitDto object of the found
+   * permit.
+   * @param permitId The ID of the permit to find.
+   * @param currentUser The current user's JWT details.
+   * @returns A mapped ReadPermitDto object of the found permit.
    */
-  public async findByPermitId(permitId: string): Promise<ReadPermitDto> {
+  public async findByPermitId(
+    permitId: string,
+    currentUser: IUserJWT,
+  ): Promise<ReadPermitDto> {
     const permit = await this.findOne(permitId);
+    // Check if the current user has the proper authorization to access this receipt.
+    // Throws ForbiddenException if user does not belong to the specified user auth group or does not own the company.
+    if (
+      !idirUserAuthGroupList.includes(
+        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      ) &&
+      permit?.companyId != currentUser.companyId
+    ) {
+      throw new ForbiddenException();
+    }
+
     return this.classMapper.mapAsync(permit, Permit, ReadPermitDto);
   }
 
@@ -130,6 +166,7 @@ export class PermitService {
    * @param permitNumber partial or full permit number to search
    * @returns an array of permits
    */
+  @LogAsyncMethodExecution()
   public async findByPermitNumber(
     permitNumber: string,
   ): Promise<ReadPermitDto[]> {
@@ -139,6 +176,7 @@ export class PermitService {
     return this.classMapper.mapArrayAsync(permits, Permit, ReadPermitDto);
   }
 
+  @LogAsyncMethodExecution()
   public async findAllPermitTypes(): Promise<PermitType[]> {
     return this.permitTypeRepository.find({});
   }
@@ -150,134 +188,251 @@ export class PermitService {
    * @param downloadMode - The mode for downloading the document (optional).
    * @returns A Promise resolving to a ReadFileDto object representing the found PDF document.
    */
+
+  @LogAsyncMethodExecution()
   public async findPDFbyPermitId(
     currentUser: IUserJWT,
     permitId: string,
     downloadMode: FileDownloadModes,
     res?: Response,
-  ): Promise<ReadFileDto> {
+  ): Promise<void> {
     // Retrieve the permit details using the permit ID
     const permit = await this.findOne(permitId);
 
-    let file: ReadFileDto = null;
-    if (downloadMode === FileDownloadModes.PROXY) {
-      await this.dopsService.download(
-        currentUser,
-        permit.documentId,
-        downloadMode,
-        res,
-        permit.companyId,
-      );
-    } else {
-      file = (await this.dopsService.download(
-        currentUser,
-        permit.documentId,
-        downloadMode,
-        res,
-        permit.companyId,
-      )) as ReadFileDto;
+    // Check if current user is in the allowed auth group or owns the company, else throw ForbiddenException
+    if (
+      !idirUserAuthGroupList.includes(
+        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      ) &&
+      permit?.companyId != currentUser.companyId
+    ) {
+      throw new ForbiddenException();
     }
-    return file;
-  }
 
-  async findPermit(
-    options: IPaginationOptions,
-    searchColumn: string,
-    searchString: string,
-  ): Promise<PaginationDto<ReadPermitDto, IPaginationMeta>> {
-    const permits = this.permitRepository
-      .createQueryBuilder('permit')
-      .innerJoinAndSelect('permit.permitData', 'permitData')
-      .where('permit.permitNumber IS NOT NULL');
-    if (searchColumn.toLowerCase() === 'plate') {
-      permits.andWhere(
-        `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like '%${searchString}%'`,
-      );
-    }
-    if (searchColumn.toLowerCase() === 'permitnumber') {
-      permits.andWhere(`permit.permitNumber like '%${searchString}%'`);
-    }
-    if (searchColumn.toLowerCase() === 'clientnumber') {
-      permits.andWhere(
-        `JSON_VALUE(permitData.permitData, '$.clientNumber') like '%${searchString}%'`,
-      );
-    }
-    if (searchColumn.toLowerCase() === 'companyname') {
-      permits.andWhere(
-        `JSON_VALUE(permitData.permitData, '$.companyName') like '%${searchString}%'`,
-      );
-    }
-    if (searchColumn.toLowerCase() === 'applicationnumber') {
-      permits.andWhere(`permit.applicationNumber like '%${searchString}%'`);
-    }
-    const permit: PaginationDto<Permit, IPaginationMeta> = await paginate(
-      permits,
-      options,
+    // Use the DOPS service to download the document associated with the permit
+    await this.dopsService.download(
+      currentUser,
+      permit.documentId,
+      downloadMode,
+      res,
+      permit.companyId,
     );
-    const readPermitDto: ReadPermitDto[] = await this.classMapper.mapArrayAsync(
-      permit.items,
-      Permit,
-      ReadPermitDto,
-    );
-    const readPermitDtoItems: PaginationDto<ReadPermitDto, IPaginationMeta> =
-      new PaginationDto<ReadPermitDto, IPaginationMeta>(
-        readPermitDto,
-        permit.meta,
-      );
-    return readPermitDtoItems;
   }
 
   /**
-   * Finds permits for user.
-   * @param userGUID if present get permits for this user
-   *  @param companyId if present get permits for this company
-   * @param expired if true get expired premits else get active permits
-   *
+   * Retrieves permits based on user GUID, company ID, and expiration status. It allows for sorting, pagination, and filtering of the permit results.
+   * @param findPermitOptions - Optional object containing query parameters such as page, take, orderBy, companyId, expired, searchColumn, searchString, and userGUID for filtering, pagination, and sorting.
+   * @returns Promise of PaginationDto containing an array of ReadPermitDto.
    */
-  public async findUserPermit(
-    options: IPaginationOptions,
-    userGUID: string,
-    companyId: number,
-    expired: string,
-  ): Promise<PaginationDto<ReadPermitDto, IPaginationMeta>> {
-    const permits = this.permitRepository
-      .createQueryBuilder('permit')
-      .innerJoinAndSelect('permit.permitData', 'permitData')
-      .where('permit.permitNumber IS NOT NULL')
-      .andWhere('permit.companyId = :companyId', {
-        companyId: companyId,
-      })
-      .andWhere(userGUID ? 'permit.userGuid = :userGUID' : '1=1', {
-        userGUID: userGUID,
-      })
-      .andWhere(
-        expired === 'true'
-          ? '(permit.permitStatus IN (:...expiredStatus)OR(permit.permitStatus = :activeStatus AND permitData.expiryDate < :expiryDate))'
-          : '(permit.permitStatus = :activeStatus AND permitData.expiryDate >= :expiryDate)',
-        {
-          expiredStatus: Object.values(PermitStatus).filter(
-            (x) => x != PermitStatus.ISSUED && x != PermitStatus.SUPERSEDED,
-          ),
-          activeStatus: PermitStatus.ISSUED,
-          expiryDate: new Date(),
-        },
-      );
-
-    const permit: PaginationDto<Permit, IPaginationMeta> = await paginate(
-      permits,
-      options,
+  @LogAsyncMethodExecution()
+  public async findPermit(findPermitOptions?: {
+    page: number;
+    take: number;
+    orderBy?: string;
+    companyId?: number;
+    expired?: boolean;
+    searchColumn?: PermitSearch;
+    searchString?: string;
+    userGUID?: string;
+  }): Promise<PaginationDto<ReadPermitDto>> {
+    // Construct the base query to find permits
+    const permitsQB = this.buildPermitQuery(
+      findPermitOptions.companyId,
+      findPermitOptions.expired,
+      findPermitOptions.searchColumn,
+      findPermitOptions.searchString,
+      findPermitOptions.userGUID,
     );
+
+    // total number of items
+    const totalItems = await permitsQB.getCount();
+
+    // Mapping of frontend orderBy parameter to database columns
+    const orderByMapping: Record<string, string> = {
+      permitNumber: 'permit.permitNumber',
+      permitType: 'permit.permitType',
+      startDate: 'permitData.startDate',
+      expiryDate: 'permitData.expiryDate',
+      unitNumber: 'permitData.unitNumber',
+      plate: 'permitData.plate',
+      applicant: 'permitData.applicant',
+    };
+
+    // Apply sorting if orderBy parameter is provided
+    if (findPermitOptions.orderBy) {
+      sortQuery<Permit>(permitsQB, orderByMapping, findPermitOptions.orderBy);
+    }
+    // Apply pagination if page and take parameters are provided
+    if (findPermitOptions.page && findPermitOptions.take) {
+      paginate<Permit>(
+        permitsQB,
+        findPermitOptions.page,
+        findPermitOptions.take,
+      );
+    }
+
+    // Get the paginated list of permits
+    const permits = await permitsQB.getMany();
+
+    // Prepare pagination metadata
+    const pageMetaDto = new PageMetaDto({
+      totalItems,
+      pageOptionsDto: {
+        page: findPermitOptions.page,
+        take: findPermitOptions.take,
+        orderBy: findPermitOptions.orderBy,
+      },
+    });
+    // Map permit entities to ReadPermitDto objects
+    const readPermitDto: ReadPermitDto[] =
+      await this.mapEntitiesToReadPermitDto(permits);
+    // Return paginated result
+    return new PaginationDto(readPermitDto, pageMetaDto);
+  }
+
+  private buildPermitQuery(
+    companyId: number,
+    expired: boolean,
+    searchColumn: PermitSearch,
+    searchString: string,
+    userGUID: string,
+  ): SelectQueryBuilder<Permit> {
+    let permitsQuery = this.permitRepository
+      .createQueryBuilder('permit')
+      .innerJoinAndSelect('permit.permitData', 'permitData');
+
+    // Ensure permit number is not null
+    permitsQuery = permitsQuery.where('permit.permitNumber IS NOT NULL');
+
+    // Filter by companyId if provided
+    if (companyId) {
+      permitsQuery = permitsQuery.andWhere('permit.companyId = :companyId', {
+        companyId: companyId,
+      });
+    }
+
+    // Filter by userGUID if provided
+    if (userGUID) {
+      permitsQuery = permitsQuery.andWhere('permit.userGuid = :userGUID', {
+        userGUID,
+      });
+    }
+
+    // Handle expired permits query condition
+    if (expired === true) {
+      permitsQuery = permitsQuery.andWhere(
+        new Brackets((qb) => {
+          qb.where(
+            'permit.permitStatus IN (:...expiredStatus) OR (permit.permitStatus = :activeStatus AND permitData.expiryDate < :expiryDate)',
+            {
+              expiredStatus: Object.values(PermitStatus).filter(
+                (x) => x != PermitStatus.ISSUED && x != PermitStatus.SUPERSEDED,
+              ),
+              activeStatus: PermitStatus.ISSUED,
+              expiryDate: new Date(),
+            },
+          );
+        }),
+      );
+    }
+
+    // Handle active permits query condition
+    if (expired === false) {
+      permitsQuery = permitsQuery.andWhere(
+        new Brackets((qb) => {
+          qb.where(
+            '(permit.permitStatus = :activeStatus AND permitData.expiryDate >= :expiryDate)',
+            {
+              activeStatus: PermitStatus.ISSUED,
+              expiryDate: new Date(),
+            },
+          );
+        }),
+      );
+    }
+
+    // Handle search conditions
+    if (searchColumn) {
+      switch (searchColumn) {
+        case PermitSearch.PLATE:
+          permitsQuery = permitsQuery.andWhere(
+            `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like :searchString`,
+            { searchString: `%${searchString}%` },
+          );
+          break;
+        case PermitSearch.PERMIT_NUMBER:
+          permitsQuery = permitsQuery.andWhere(
+            new Brackets((query) => {
+              query
+                .where(`permit.permitNumber like :searchString`, {
+                  searchString: `%${searchString}%`,
+                })
+                .orWhere(`permit.migratedPermitNumber like :searchString`, {
+                  searchString: `%${searchString}%`,
+                });
+            }),
+          );
+          break;
+        case PermitSearch.CLIENT_NUMBER:
+          permitsQuery = permitsQuery.andWhere(
+            `JSON_VALUE(permitData.permitData, '$.clientNumber') like :searchString'`,
+            {
+              searchString: `%${searchString}%`,
+            },
+          );
+          break;
+        case PermitSearch.COMPANY_NAME:
+          permitsQuery = permitsQuery.andWhere(
+            `JSON_VALUE(permitData.permitData, '$.companyName') like :searchString`,
+            {
+              searchString: `%${searchString}%`,
+            },
+          );
+          break;
+        case PermitSearch.APPLICATION_NUMBER:
+          permitsQuery = permitsQuery.andWhere(
+            `permit.applicationNumber like :searchString`,
+            {
+              searchString: `%${searchString}%`,
+            },
+          );
+          break;
+      }
+    }
+
+    // Handle cases where only searchString is provided
+    if (!searchColumn && searchString) {
+      permitsQuery = permitsQuery.andWhere(
+        new Brackets((query) => {
+          query
+            .where(
+              `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like :searchString`,
+              {
+                searchString: `%${searchString}%`,
+              },
+            )
+            .orWhere(
+              `JSON_VALUE(permitData.permitData, '$.vehicleDetails.unitNumber') like :searchString`,
+              {
+                searchString: `%${searchString}%`,
+              },
+            );
+        }),
+      );
+    }
+
+    return permitsQuery;
+  }
+
+  private async mapEntitiesToReadPermitDto(
+    entities: Permit[],
+  ): Promise<ReadPermitDto[]> {
     const readPermitDto: ReadPermitDto[] = await this.classMapper.mapArrayAsync(
-      permit.items,
+      entities,
       Permit,
       ReadPermitDto,
     );
-    const readPermitDtoItems: PaginationDto<ReadPermitDto, IPaginationMeta> =
-      new PaginationDto<ReadPermitDto, IPaginationMeta>(
-        readPermitDto,
-        permit.meta,
-      );
-    return readPermitDtoItems;
+    return readPermitDto;
   }
 
   /**
@@ -286,11 +441,13 @@ export class PermitService {
    * @param permitId - The ID of the permit for which to find the receipt PDF document.
    * @returns A Promise resolving to a ReadFileDto object representing the found PDF document.
    */
+  @LogAsyncMethodExecution()
   public async findReceiptPDF(
     currentUser: IUserJWT,
     permitId: string,
     res?: Response,
   ): Promise<void> {
+    // Query the database to find a permit and its related transactions and receipt based on the permit ID.
     const permit = await this.permitRepository
       .createQueryBuilder('permit')
       .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
@@ -302,10 +459,24 @@ export class PermitService {
       .andWhere('receipt.receiptNumber IS NOT NULL')
       .getOne();
 
+    // If no permit is found, throw a NotFoundException indicating the receipt is not found.
     if (!permit) {
       throw new NotFoundException('Receipt Not Found!');
     }
 
+    // Check if the current user has the proper authorization to access this receipt.
+    // Throws ForbiddenException if user does not belong to the specified user auth group or does not own the company.
+    if (
+      !idirUserAuthGroupList.includes(
+        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      ) &&
+      permit?.companyId != currentUser.companyId
+    ) {
+      throw new ForbiddenException();
+    }
+
+    // If authorized, proceed to download the receipt PDF using the dopsService.
+    // This method delegates the request handling based on the provided download mode and sends the file as a response if applicable.
     await this.dopsService.download(
       currentUser,
       permit.permitTransactions[0].transaction.receipt.receiptDocumentId,
@@ -315,6 +486,7 @@ export class PermitService {
     );
   }
 
+  @LogAsyncMethodExecution()
   public async findPermitHistory(
     originalPermitId: string,
   ): Promise<PermitHistoryDto[]> {
@@ -346,6 +518,7 @@ export class PermitService {
         permitId: +permit.permitId,
         transactionSubmitDate:
           permitTransaction.transaction.transactionSubmitDate,
+        pgApproved: permitTransaction.transaction.pgApproved,
       })),
     ) as PermitHistoryDto[];
   }
@@ -356,6 +529,7 @@ export class PermitService {
    * @param status ex: VOIDED|REVOKED
    * Description: This method will update the permit status for given permit id and will set it to either REVOKED or VOIDED stauts.
    */
+  @LogAsyncMethodExecution()
   public async voidPermit(
     permitId: string,
     voidPermitDto: VoidPermitDto,
@@ -420,13 +594,15 @@ export class PermitService {
       newPermit.permitNumber = permitNumber;
       newPermit.applicationNumber = applicationNumber;
       newPermit.permitStatus = voidPermitDto.status;
+      newPermit.permitApprovalSource = PermitApprovalSource.PPC;
       newPermit.permitIssuedBy =
         currentUser.orbcUserDirectory == Directory.IDIR
           ? PermitIssuedBy.PPC
           : PermitIssuedBy.SELF_ISSUED;
+      newPermit.issuerUserGuid = currentUser.userGUID;
       newPermit.permitIssueDateTime = new Date();
       newPermit.revision = permit.revision + 1;
-      newPermit.previousRevision = +permitId;
+      newPermit.previousRevision = permitId;
       newPermit.comment = voidPermitDto.comment;
       newPermit = Object.assign(newPermit, userMetadata);
 
@@ -455,12 +631,20 @@ export class PermitService {
       );
 
       const createTransactionDto = new CreateTransactionDto();
-      createTransactionDto.pgTransactionId = voidPermitDto.pgTransactionId;
-      createTransactionDto.pgPaymentMethod = voidPermitDto.pgPaymentMethod;
-      createTransactionDto.pgCardType = voidPermitDto.pgCardType;
+      createTransactionDto.transactionTypeId = voidPermitDto.transactionTypeId;
       createTransactionDto.paymentMethodTypeCode =
         voidPermitDto.paymentMethodTypeCode;
-      createTransactionDto.transactionTypeId = voidPermitDto.transactionTypeId;
+      createTransactionDto.paymentCardTypeCode = voidPermitDto.pgCardType;
+      createTransactionDto.pgCardType = voidPermitDto.pgCardType;
+      createTransactionDto.pgTransactionId = voidPermitDto.pgTransactionId;
+      createTransactionDto.pgPaymentMethod = voidPermitDto.pgPaymentMethod;
+
+      // Refund for void should automatically set this flag to approved for payment gateway payment methods
+      // Otherwise, the flag is not applicable
+      if (voidPermitDto.paymentMethodTypeCode === PaymentMethodType.WEB) {
+        createTransactionDto.pgApproved = 1;
+      }
+
       createTransactionDto.applicationDetails = [
         {
           applicationId: newPermit.permitId,
@@ -485,9 +669,8 @@ export class PermitService {
         newPermit.companyId,
       );
 
-      const fullNames = await this.applicationService.getFullNamesFromCache(
-        newPermit,
-      );
+      const fullNames =
+        await this.applicationService.getFullNamesFromCache(newPermit);
 
       const revisionHistory = await queryRunner.manager.find(Permit, {
         where: { originalPermitId: permit.originalPermitId },
@@ -531,7 +714,14 @@ export class PermitService {
           ...permitDataForTemplate,
           pgTransactionId: fetchedTransaction.pgTransactionId,
           transactionOrderNumber: fetchedTransaction.transactionOrderNumber,
-          transactionAmount: fetchedTransaction.totalTransactionAmount,
+          transactionAmount: formatAmount(
+            fetchedTransaction.transactionTypeId,
+            fetchedTransaction.totalTransactionAmount,
+          ),
+          totalTransactionAmount: formatAmount(
+            fetchedTransaction.transactionTypeId,
+            fetchedTransaction.totalTransactionAmount,
+          ),
           //Payer Name should be persisted in transacation Table so that it can be used for DocRegen
           payerName:
             currentUser.orbcUserDirectory === Directory.IDIR
@@ -539,6 +729,10 @@ export class PermitService {
               : currentUser.orbcUserFirstName +
                 ' ' +
                 currentUser.orbcUserLastName,
+          issuedBy:
+            currentUser.orbcUserDirectory === Directory.IDIR
+              ? constants.PPC_FULL_TEXT
+              : constants.SELF_ISSUED,
           consolidatedPaymentMethod: (
             await getPaymentCodeFromCache(
               this.cacheManager,
@@ -619,22 +813,31 @@ export class PermitService {
           },
         ];
 
+        const emailList = [
+          permitDataForTemplate.permitData?.contactDetails?.email,
+          permitDataForTemplate.permitData?.contactDetails?.additionalEmail,
+          voidPermitDto.additionalEmail,
+          companyInfo.email,
+        ].filter((email) => Boolean(email));
+
+        const distinctEmailList = Array.from(new Set(emailList));
+
         void this.emailService.sendEmailMessage(
           EmailTemplate.ISSUE_PERMIT,
           emailData,
           'onRouteBC Permits - ' + companyInfo.legalName,
-          [
-            permitDataForTemplate.permitData?.contactDetails?.email,
-            companyInfo.email,
-          ],
+          distinctEmailList,
           attachments,
         );
       } catch (error: unknown) {
-        console.log('Error in Email Service', error);
+        /**
+         * Swallow the error as failure to send email should not break the flow
+         */
+        this.logger.error(error);
       }
-    } catch (err) {
+    } catch (error) {
       await queryRunner.rollbackTransaction();
-      console.log(err);
+      this.logger.error(error);
       success = '';
       failure = permitId;
     } finally {
@@ -646,8 +849,12 @@ export class PermitService {
     };
     return resultDto;
   }
-
-  async getPermitType(): Promise<string> {
+  /**
+   * Retrieves permit type information from cache.
+   * @returns A Promise resolving to a map of permit types.
+   */
+  @LogAsyncMethodExecution()
+  async getPermitType(): Promise<Record<string, string>> {
     return await getMapFromCache(this.cacheManager, CacheKey.PERMIT_TYPE);
   }
 }

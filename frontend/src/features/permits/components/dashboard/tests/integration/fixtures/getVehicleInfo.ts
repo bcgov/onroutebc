@@ -1,12 +1,16 @@
 import { factory, nullable, primaryKey } from "@mswjs/data";
+
+import { DEFAULT_PERMIT_TYPE } from "../../../../../types/PermitType";
 import {
   PowerUnit,
   Trailer,
-} from "../../../../../../manageVehicles/types/managevehicles";
+  VEHICLE_TYPES,
+} from "../../../../../../manageVehicles/types/Vehicle";
+
 import {
-  TROS_INELIGIBLE_POWERUNITS,
-  TROS_INELIGIBLE_TRAILERS,
-} from "../../../../../constants/termOversizeConstants";
+  getIneligiblePowerUnitSubtypes,
+  getIneligibleTrailerSubtypes,
+} from "../../../../../helpers/removeIneligibleVehicles";
 
 let powerUnitId = 1;
 let trailerId = 1;
@@ -27,7 +31,7 @@ const vehicleSourceDef = factory({
     provinceCode: String,
     countryCode: String,
     powerUnitTypeCode: String,
-    vehicleType: () => "powerUnit",
+    vehicleType: (): string => VEHICLE_TYPES.POWER_UNIT,
   },
   trailer: {
     trailerId: primaryKey((): string => `${trailerId++}`),
@@ -43,14 +47,14 @@ const vehicleSourceDef = factory({
     provinceCode: String,
     countryCode: String,
     trailerTypeCode: String,
-    vehicleType: () => "trailer",
+    vehicleType: (): string => VEHICLE_TYPES.TRAILER,
   },
-  trailerType: {
+  trailerSubType: {
     typeCode: primaryKey(String),
     type: String,
     description: String,
   },
-  powerUnitType: {
+  powerUnitSubType: {
     typeCode: primaryKey(String),
     type: String,
     description: String,
@@ -92,7 +96,7 @@ export const getDefaultTrailers = () => [
   },
 ];
 
-export const getDefaultPowerUnitTypes = () => [
+export const getDefaultPowerUnitSubTypes = () => [
   {
     typeCode: "PUTYPEA",
     type: "Power Unit Type A",
@@ -108,10 +112,10 @@ export const getDefaultPowerUnitTypes = () => [
     type: "Power Unit Type C",
     description: "Power Unit Type C.",
   },
-  { ...TROS_INELIGIBLE_POWERUNITS[0] },
+  { ...getIneligiblePowerUnitSubtypes(DEFAULT_PERMIT_TYPE)[0] },
 ];
 
-export const getDefaultTrailerTypes = () => [
+export const getDefaultTrailerSubTypes = () => [
   {
     typeCode: "TRAILTA",
     type: "Trailer Type A",
@@ -127,7 +131,7 @@ export const getDefaultTrailerTypes = () => [
     type: "Trailer Type C",
     description: "Trailer Type C.",
   },
-  { ...TROS_INELIGIBLE_TRAILERS[0] },
+  { ...getIneligibleTrailerSubtypes(DEFAULT_PERMIT_TYPE)[0] },
 ];
 
 export const createPowerUnit = (powerUnit: PowerUnit) => {
@@ -153,11 +157,11 @@ export const updatePowerUnit = (powerUnitId: string, powerUnit: PowerUnit) => {
     console.error(e);
   }
 };
-export const findPowerUnit = (vin: string) => {
+export const findPowerUnit = (id: string) => {
   return vehicleSourceDef.powerUnit.findFirst({
     where: {
-      vin: {
-        equals: vin,
+      powerUnitId: {
+        equals: id,
       },
     },
   });
@@ -185,22 +189,22 @@ export const updateTrailer = (trailerId: string, trailer: Trailer) => {
     console.error(e);
   }
 };
-export const findTrailer = (vin: string) => {
+export const findTrailer = (id: string) => {
   return vehicleSourceDef.trailer.findFirst({
     where: {
-      vin: {
-        equals: vin,
+      trailerId: {
+        equals: id,
       },
     },
   });
 };
 
 const initVehicleSource = () => {
-  getDefaultPowerUnitTypes().forEach((powerUnitType) => {
-    vehicleSourceDef.powerUnitType.create(powerUnitType);
+  getDefaultPowerUnitSubTypes().forEach((powerUnitSubType) => {
+    vehicleSourceDef.powerUnitSubType.create(powerUnitSubType);
   });
-  getDefaultTrailerTypes().forEach((trailerType) => {
-    vehicleSourceDef.trailerType.create(trailerType);
+  getDefaultTrailerSubTypes().forEach((trailerSubType) => {
+    vehicleSourceDef.trailerSubType.create(trailerSubType);
   });
   getDefaultPowerUnits().forEach((powerUnit) => {
     createPowerUnit(powerUnit);
@@ -212,9 +216,10 @@ const initVehicleSource = () => {
 
 export const getAllPowerUnits = () => vehicleSourceDef.powerUnit.getAll();
 export const getAllTrailers = () => vehicleSourceDef.trailer.getAll();
-export const getAllPowerUnitTypes = () =>
-  vehicleSourceDef.powerUnitType.getAll();
-export const getAllTrailerTypes = () => vehicleSourceDef.trailerType.getAll();
+export const getAllPowerUnitSubTypes = () =>
+  vehicleSourceDef.powerUnitSubType.getAll();
+export const getAllTrailerSubTypes = () =>
+  vehicleSourceDef.trailerSubType.getAll();
 
 export const resetVehicleSource = () => {
   powerUnitId = 1;
@@ -233,14 +238,14 @@ export const resetVehicleSource = () => {
       },
     },
   });
-  vehicleSourceDef.powerUnitType.deleteMany({
+  vehicleSourceDef.powerUnitSubType.deleteMany({
     where: {
       typeCode: {
         contains: "",
       },
     },
   });
-  vehicleSourceDef.trailerType.deleteMany({
+  vehicleSourceDef.trailerSubType.deleteMany({
     where: {
       typeCode: {
         contains: "",

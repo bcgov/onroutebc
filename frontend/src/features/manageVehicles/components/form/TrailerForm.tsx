@@ -1,23 +1,25 @@
 import { useForm, FormProvider, FieldValues } from "react-hook-form";
 import { Box, Button, MenuItem } from "@mui/material";
-import * as routes from "../../../../routes/constants";
-import "./VehicleForm.scss";
-// import { AxleGroupForm } from "./AxleGroupForm";
-import { Trailer, VehicleType } from "../../types/managevehicles";
-import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
-import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
-import {
-  useAddTrailerMutation,
-  useTrailerTypesQuery,
-  useUpdateTrailerMutation,
-} from "../../apiManager/hooks";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
+
+import "./VehicleForm.scss";
+import { Trailer, VEHICLE_TYPES, VehicleSubType } from "../../types/Vehicle";
+import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
+import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
 import { SnackBarContext } from "../../../../App";
+import {
+  useAddTrailerMutation,
+  useTrailerSubTypesQuery,
+  useUpdateTrailerMutation,
+} from "../../apiManager/hooks";
+
 import {
   getDefaultRequiredVal,
   getDefaultNullableVal,
+  convertToNumberIfValid,
 } from "../../../../common/helpers/util";
+
 import {
   invalidNumber,
   invalidPlateLength,
@@ -25,6 +27,8 @@ import {
   invalidYearMin,
   requiredMessage,
 } from "../../../../common/helpers/validationMessages";
+import { VEHICLES_ROUTES } from "../../../../routes/constants";
+import { Nullable } from "../../../../common/types/common";
 
 /**
  * Props used by the power unit form.
@@ -66,7 +70,7 @@ export const TrailerForm = ({ trailer, companyId }: TrailerFormProps) => {
 
   const { handleSubmit } = formMethods;
 
-  const trailerTypesQuery = useTrailerTypesQuery();
+  const trailerSubTypesQuery = useTrailerSubTypesQuery();
   const addTrailerMutation = useAddTrailerMutation();
   const updateTrailerMutation = useUpdateTrailerMutation();
   const snackBar = useContext(SnackBarContext);
@@ -93,6 +97,10 @@ export const TrailerForm = ({ trailer, companyId }: TrailerFormProps) => {
           ...trailerToBeUpdated,
           // need to explicitly convert form values to number here (since we can't use valueAsNumber prop)
           year: !isNaN(Number(data.year)) ? Number(data.year) : data.year,
+          emptyTrailerWidth: convertToNumberIfValid(
+            data.emptyTrailerWidth,
+            null,
+          ) as Nullable<number>,
         },
         companyId,
       });
@@ -103,7 +111,7 @@ export const TrailerForm = ({ trailer, companyId }: TrailerFormProps) => {
           message: "Changes Saved",
           alertType: "info",
         });
-        navigate(`/${routes.MANAGE_VEHICLES}#trailer`);
+        navigate(VEHICLES_ROUTES.TRAILER_TAB);
       }
     } else {
       const trailerToBeAdded = data as Trailer;
@@ -112,6 +120,10 @@ export const TrailerForm = ({ trailer, companyId }: TrailerFormProps) => {
           ...trailerToBeAdded,
           // need to explicitly convert form values to number here (since we can't use valueAsNumber prop)
           year: !isNaN(Number(data.year)) ? Number(data.year) : data.year,
+          emptyTrailerWidth: convertToNumberIfValid(
+            data.emptyTrailerWidth,
+            null,
+          ) as Nullable<number>,
         },
         companyId,
       });
@@ -123,7 +135,7 @@ export const TrailerForm = ({ trailer, companyId }: TrailerFormProps) => {
           message: "Trailer has been added successfully",
           alertType: "success",
         });
-        navigate(`/${routes.MANAGE_VEHICLES}#trailer`);
+        navigate(VEHICLES_ROUTES.TRAILER_TAB);
       }
     }
   };
@@ -132,13 +144,13 @@ export const TrailerForm = ({ trailer, companyId }: TrailerFormProps) => {
    * Changed view to the main Vehicle Inventory page
    */
   const handleClose = () => {
-    navigate(`/${routes.MANAGE_VEHICLES}#trailer`);
+    navigate(VEHICLES_ROUTES.TRAILER_TAB);
   };
 
   /**
    * The name of this feature that is used for id's, keys, and associating form components
    */
-  const FEATURE = "trailer";
+  const FEATURE = VEHICLE_TYPES.TRAILER;
 
   return (
     <div>
@@ -251,11 +263,13 @@ export const TrailerForm = ({ trailer, companyId }: TrailerFormProps) => {
               label: "Vehicle Sub-type",
               width: formFieldStyle.width,
             }}
-            menuOptions={trailerTypesQuery?.data?.map((data: VehicleType) => (
-              <MenuItem key={data.typeCode} value={data.typeCode}>
-                {data.type}
-              </MenuItem>
-            ))}
+            menuOptions={trailerSubTypesQuery?.data?.map(
+              (data: VehicleSubType) => (
+                <MenuItem key={data.typeCode} value={data.typeCode}>
+                  {data.type}
+                </MenuItem>
+              ),
+            )}
           />
 
           <CustomFormComponent
@@ -283,7 +297,6 @@ export const TrailerForm = ({ trailer, companyId }: TrailerFormProps) => {
             width={formFieldStyle.width}
           />
         </div>
-        {/* {getAxleGroupForms()} */}
       </FormProvider>
 
       <Box sx={{ margin: "32px 0px" }}>

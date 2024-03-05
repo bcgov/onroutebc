@@ -1,12 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { VehicleType } from "../types/Vehicle";
 import {
   addPowerUnit,
   addTrailer,
   getAllVehicles,
-  getPowerUnit,
-  getPowerUnitTypes,
-  getTrailerTypes,
+  getPowerUnitSubTypes,
+  getTrailerSubTypes,
+  getVehicleById,
   updatePowerUnit,
   updateTrailer,
 } from "./vehiclesAPI";
@@ -24,22 +25,29 @@ export const useVehiclesQuery = (companyId: string) => {
   });
 };
 
-export const useVehicleByIdQuery = (powerUnitId: string, companyId: string) => {
-  return useQuery(
-    ["powerUnitById", powerUnitId],
-    () => getPowerUnit(powerUnitId, companyId),
-    { retry: false },
-  );
+export const useVehicleByIdQuery = (
+  companyId: string,
+  vehicleType: VehicleType,
+  vehicleId?: string,
+) => {
+  return useQuery({
+    queryKey: ["vehicle", "vehicleId", "vehicleType"],
+    queryFn: () => getVehicleById(companyId, vehicleType, vehicleId),
+    retry: false,
+    refetchOnMount: "always", // always fetch when component is mounted
+    refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
+    enabled: Boolean(vehicleId), // does not perform the query at all if vehicle id is empty
+  });
 };
 
 /**
- * Fetches a list of vehicle subtypes for PowerUnit vehicles.
- * @returns List of vehicle subtypes for PowerUnit vehicles
+ * Fetches a list of vehicle subtypes for Power Unit vehicles.
+ * @returns List of vehicle subtypes for Power Unit vehicles
  */
-export const usePowerUnitTypesQuery = () => {
+export const usePowerUnitSubTypesQuery = () => {
   return useQuery({
-    queryKey: ["powerUnitTypes"],
-    queryFn: getPowerUnitTypes,
+    queryKey: ["powerUnitSubTypes"],
+    queryFn: getPowerUnitSubTypes,
     retry: false,
     refetchOnWindowFocus: false, // prevents unnecessary queries
   });
@@ -56,7 +64,9 @@ export const useAddPowerUnitMutation = () => {
     mutationFn: addPowerUnit,
     onSuccess: (response) => {
       if (response.status === 201) {
-        queryClient.invalidateQueries(["powerUnits"]);
+        queryClient.invalidateQueries({
+          queryKey: ["powerUnits"],
+        });
       } else {
         // Display Error in the form.
       }
@@ -75,7 +85,9 @@ export const useUpdatePowerUnitMutation = () => {
     mutationFn: updatePowerUnit,
     onSuccess: (response) => {
       if (response.status === 200) {
-        queryClient.invalidateQueries(["powerUnits"]);
+        queryClient.invalidateQueries({
+          queryKey: ["powerUnits"],
+        });
       } else {
         // Display Error in the form.
       }
@@ -85,12 +97,12 @@ export const useUpdatePowerUnitMutation = () => {
 
 /**
  * Fetches a list of vehicle subtypes for trailer vehicles.
- * @returns list of vehicle subtypes for trailer vehicles
+ * @returns List of vehicle subtypes for trailer vehicles.
  */
-export const useTrailerTypesQuery = () => {
+export const useTrailerSubTypesQuery = () => {
   return useQuery({
-    queryKey: ["trailerTypes"],
-    queryFn: getTrailerTypes,
+    queryKey: ["trailerSubTypes"],
+    queryFn: getTrailerSubTypes,
     retry: false,
     refetchOnWindowFocus: false, // prevents unnecessary queries
   });
@@ -107,7 +119,9 @@ export const useAddTrailerMutation = () => {
     mutationFn: addTrailer,
     onSuccess: (response) => {
       if (response.status === 200) {
-        queryClient.invalidateQueries(["trailers"]);
+        queryClient.invalidateQueries({
+          queryKey: ["trailers"],
+        });
       } else {
         // Display Error in the form.
       }
@@ -126,7 +140,9 @@ export const useUpdateTrailerMutation = () => {
     mutationFn: updateTrailer,
     onSuccess: (response) => {
       if (response.status === 200) {
-        queryClient.invalidateQueries(["trailers"]);
+        queryClient.invalidateQueries({
+          queryKey: ["trailers"],
+        });
       } else {
         // Display Error in the form.
       }

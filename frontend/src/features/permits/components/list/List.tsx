@@ -22,7 +22,6 @@ import {
 
 import "./List.scss";
 import { Trash } from "../../../../common/components/table/options/Trash";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
 import { SnackBarContext } from "../../../../App";
 import {
@@ -32,7 +31,11 @@ import {
 import { ApplicationInProgressColumnDefinition } from "./Columns";
 import { deleteApplications } from "../../apiManager/permitsAPI";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
-import { defaultTableInitialStateOptions, defaultTableOptions, defaultTableStateOptions } from "../../../../common/constants/defaultTableOptions";
+import {
+  defaultTableOptions,
+  defaultTableStateOptions,
+  defaultTableInitialStateOptions,
+} from "../../../../common/helpers/tableHelper";
 
 /**
  * Dynamically set the column
@@ -54,7 +57,7 @@ const getColumns = (): MRT_ColumnDef<ApplicationInProgress>[] => {
 export const List = memo(
   ({ query }: { query: UseQueryResult<ApplicationInProgress[]> }) => {
     // Data, fetched from backend API
-    const { data, isError, isFetching, isLoading } = query;
+    const { data, isError, isFetching, isPending } = query;
 
     const columns = useMemo<MRT_ColumnDef<ApplicationInProgress>[]>(
       () => getColumns(),
@@ -136,7 +139,7 @@ export const List = memo(
         showProgressBars: isFetching,
         columnVisibility: { applicationId: true },
         rowSelection: rowSelection,
-        isLoading,
+        isLoading: isPending,
       },
       initialState: {
         ...defaultTableInitialStateOptions,
@@ -164,7 +167,7 @@ export const List = memo(
                     const newObject: { [key: string]: boolean } = {};
                     // Setting the selected row to false so that
                     // the row appears unchecked.
-                    newObject[row.original.permitId as string] = false;
+                    newObject[row.original.permitId] = false;
                     return newObject;
                   });
                 }}

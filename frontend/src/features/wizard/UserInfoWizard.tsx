@@ -12,23 +12,18 @@ import { getDefaultRequiredVal } from "../../common/helpers/util";
 import { ErrorFallback } from "../../common/pages/ErrorFallback";
 import { createMyOnRouteBCUserProfile } from "../manageProfile/apiManager/manageProfileAPI";
 import { ReusableUserInfoForm } from "../manageProfile/components/forms/common/ReusableUserInfoForm";
-import { UserInformation } from "../manageProfile/types/manageProfile";
-import { BCEID_AUTH_GROUP } from "../manageProfile/types/userManagement.d";
-import { OnRouteBCProfileCreated } from "./pages/OnRouteBCProfileCreated";
+import {
+  Contact,
+  ReadUserInformationResponse,
+} from "../manageProfile/types/manageProfile";
+import { OnRouteBCProfileCreated } from "./subcomponents/OnRouteBCProfileCreated";
 
 /**
  * User Info wizard displays a user information form
  * when an invited user logs in for the first time.
  */
 export const UserInfoWizard = React.memo(() => {
-  const formMethods = useForm<
-    Omit<UserInformation, "statusCode" | "userName" | "userGUID">
-  >({
-    defaultValues: {
-      // Remove this userAuthGroup once backend integrates the auth group.
-      userAuthGroup: BCEID_AUTH_GROUP.CVCLIENT as string,
-    },
-  });
+  const formMethods = useForm<Contact>();
 
   const { setUserDetails } = useContext(OnRouteBCContext);
   const { setSnackBar } = useContext(SnackBarContext);
@@ -38,7 +33,7 @@ export const UserInfoWizard = React.memo(() => {
     mutationFn: createMyOnRouteBCUserProfile,
     onSuccess: async (response) => {
       if (response.status === 201) {
-        const responseBody = response.data as UserInformation;
+        const responseBody = response.data as ReadUserInformationResponse;
         const userDetails = {
           firstName: responseBody.firstName,
           lastName: responseBody.lastName,
@@ -74,10 +69,7 @@ export const UserInfoWizard = React.memo(() => {
    */
   const onClickFinish = (data: FieldValues) => {
     createProfileQuery.mutate({
-      myInfo: data as Omit<
-        UserInformation,
-        "statusCode" | "userName" | "userGUID"
-      >,
+      myInfo: data as Contact,
     });
   };
 
@@ -107,7 +99,6 @@ export const UserInfoWizard = React.memo(() => {
         </Box>
         <div
           className="tabpanel-container create-profile-steps"
-          role="profile-steps"
           id={`profile-steps`}
           aria-labelledby={`profile-steps`}
         >

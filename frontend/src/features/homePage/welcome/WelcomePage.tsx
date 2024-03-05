@@ -1,17 +1,24 @@
+import {
+  CardContent,
+  Container,
+  Paper,
+  Stack,
+  Typography,
+} from "@mui/material";
 import Card from "@mui/material/Card";
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
-import {
-  CardActionArea,
-  CardContent,
-  Chip,
-  Grid,
-  Stack,
-  Typography,
-} from "@mui/material";
 import { getCompanyNameFromSession } from "../../../common/apiManager/httpRequestHandler";
 import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
+import { GreenCheckIcon } from "../../../common/components/icons/GreenCheckIcon";
+import { RedXMarkIcon } from "../../../common/components/icons/RedXMarkIcon";
+import { Nullable } from "../../../common/types/common";
+import {
+  CREATE_PROFILE_WIZARD_ROUTES,
+  PROFILE_ROUTES,
+} from "../../../routes/constants";
+import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import "./welcome.scss";
 
 const isInvitedUser = (companyNameFromContext?: string): boolean =>
@@ -23,7 +30,7 @@ const isNewCompanyProfile = (companyNameFromContext?: string): boolean =>
 const WelcomeCompanyName = ({
   companyName,
 }: {
-  companyName?: string;
+  companyName: Nullable<string>;
 }): React.ReactElement => {
   if (!companyName) return <></>;
   return (
@@ -37,12 +44,93 @@ const WelcomeCompanyName = ({
   );
 };
 
-export const WelcomePage = React.memo(() => {
+/**
+ * Reusable Card component to display a possible action for the user.
+ * @returns A react component.
+ */
+const ProfileAction = ({
+  navigateTo,
+}: {
+  navigateTo: string;
+}): React.ReactElement => {
   const navigate = useNavigate();
-  const companyNameFromToken = getCompanyNameFromSession();
-  const { companyLegalName: companyNameFromContext } =
-    useContext(OnRouteBCContext);
+  return (
+    <div className="welcome-page__profile-actions">
+      <Card
+        className="welcome-cards welcome-cards--new"
+        sx={{
+          ":hover": {
+            boxShadow: 10,
+          },
+        }}
+      >
+        <CardContent onClick={() => navigate(navigateTo)}>
+          <Stack spacing={3}>
+            <div className="welcome-cards__img">
+              <img
+                height="80"
+                width="80"
+                className="welcome-account-graphics"
+                src="./Create_New_Profile_Graphic.svg"
+                alt="New onRouteBC Profile"
+              />
+            </div>
 
+            <Typography variant="body2">
+              Finish creating your onRouteBC Profile
+            </Typography>
+          </Stack>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+const ChallengeOption = ({
+  navigateTo,
+  label,
+  labelIcon,
+}: {
+  navigateTo: string;
+  label: string;
+  labelIcon: JSX.Element;
+}): React.ReactElement => {
+  const navigate = useNavigate();
+  return (
+    <Paper
+      sx={{
+        ":hover": {
+          background: BC_COLOURS.bc_messages_blue_background,
+        },
+        cursor: "pointer",
+        width: "220px",
+        height: "80px",
+      }}
+      onClick={() => navigate(navigateTo)}
+    >
+      <Stack
+        direction="row"
+        spacing={2}
+        sx={{
+          marginLeft: "5em",
+          marginTop: "1.82em",
+        }}
+      >
+        <div>{labelIcon}</div>
+        <div>{label}</div>
+      </Stack>
+    </Paper>
+  );
+};
+
+/**
+ * The BCeID welcome page of the application.
+ * A BCeID user reaches this page on their very first login.
+ */
+export const WelcomePage = React.memo(() => {
+  const companyNameFromToken = getCompanyNameFromSession();
+  const { companyLegalName: companyNameFromContext, migratedClient } =
+    useContext(OnRouteBCContext);
   return (
     <div className="welcome-page">
       <div className="welcome-page__main">
@@ -55,91 +143,60 @@ export const WelcomePage = React.memo(() => {
         ) : (
           <WelcomeCompanyName companyName={companyNameFromToken} />
         )}
-        <div className="separator-line">
-          {isNewCompanyProfile(companyNameFromContext) && (
-            <Chip
-              className="separator-line__label"
-              label="Choose An Option Below"
-            />
-          )}
-        </div>
+        <div className="separator-line"></div>
+        {/**
+         * If the user is an invited user to a company that exists
+         * redirect them to user info wizard.
+         */}
         {isInvitedUser(companyNameFromContext) && (
-          <>
-            <br />
-            <Card elevation={12} sx={{ maxWidth: 200 }}>
-              <CardActionArea onClick={() => navigate("/user-info")}>
-                <Stack>
-                  <Stack direction="row">
-                    <Grid container>
-                      <Grid item xs={3}></Grid>
-                      <Grid item xs={6} sx={{ paddingTop: "2rem" }}>
-                        <div className="welcome-cards__img">
-                          <img
-                            height="80"
-                            width="80"
-                            className="welcome-account-graphics"
-                            src="./Create_New_Profile_Graphic.svg"
-                            alt="New onRouteBC Profile"
-                          />
-                        </div>
-                      </Grid>
-                    </Grid>
-                  </Stack>
-                  <CardContent>
-                    <Typography variant="body2">
-                      Finish creating your <br /> onRouteBC Profile
-                    </Typography>
-                  </CardContent>
-                </Stack>
-
-                <div className="welcome-cards__img"></div>
-              </CardActionArea>
-            </Card>
-          </>
+          <ProfileAction navigateTo={PROFILE_ROUTES.USER_INFO} />
         )}
-        {isNewCompanyProfile(companyNameFromContext) && (
-          <div className="welcome-page__profile-actions">
-            <Card
-              className="welcome-cards welcome-cards--existing"
-              elevation={12}
-            >
-              <CardActionArea>
-                <div className="welcome-cards__img">
-                  <img
-                    height="80"
-                    width="80"
-                    className="welcome-account-graphics"
-                    src="./Existing_Account_Graphic.svg"
-                    alt="Existing TPS Profile"
-                  />
-                </div>
-                <CardContent>
-                  <Typography variant="body2">
-                    Claim an existing TPS Profile
-                  </Typography>
-                </CardContent>
-                <Chip className="welcome-cards__recommend" label="Recommend" />
-              </CardActionArea>
-            </Card>
-            <Card className="welcome-cards welcome-cards--new" elevation={12}>
-              <CardActionArea onClick={() => navigate("/create-profile")}>
-                <div className="welcome-cards__img">
-                  <img
-                    height="80"
-                    width="80"
-                    className="welcome-account-graphics"
-                    src="./Create_New_Profile_Graphic.svg"
-                    alt="New onRouteBC Profile"
-                  />
-                </div>
-                <CardContent>
-                  <Typography variant="body2">
-                    Create a new onRouteBC Profile
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          </div>
+        {/**
+         * companyNameFromContext will be undefined if there is
+         * no associated company. It is a clear indication that we need to create
+         * a new company.
+         *
+         * But to distinguish further between challenge and no challenge
+         * workflows, we need to check if migratedClient has values.
+         * If yes, it is an already verified legacyClient.
+         * If not, the user gets the option to
+         * 1) create new company 2) verify using permit and client numbers
+         *
+         */}
+        {/**
+         * No challenge Workflow
+         */}
+        {!companyNameFromContext &&
+          migratedClient?.clientNumber &&
+          isNewCompanyProfile(companyNameFromContext) && (
+            <ProfileAction navigateTo={CREATE_PROFILE_WIZARD_ROUTES.CREATE} />
+          )}
+        {/**
+         * Challenge Workflow
+         */}
+        {!companyNameFromContext && !migratedClient && (
+          <Stack spacing={2} sx={{ justifyContent: "center" }}>
+            <div style={{ alignSelf: "center" }}>
+              Has this company purchased a commercial vehicle
+            </div>
+            <div style={{ alignSelf: "center", marginTop: "0px" }}>
+              permit in the last 7 years?
+            </div>
+            <Container>
+              <Stack direction="row" spacing={3}>
+                <ChallengeOption
+                  navigateTo={CREATE_PROFILE_WIZARD_ROUTES.CREATE}
+                  label="No"
+                  labelIcon={<RedXMarkIcon size="xl" />}
+                />
+                <ChallengeOption
+                  navigateTo={CREATE_PROFILE_WIZARD_ROUTES.MIGRATED_CLIENT}
+                  label="Yes"
+                  labelIcon={<GreenCheckIcon size="xl" />}
+                />
+              </Stack>
+            </Container>
+          </Stack>
         )}
       </div>
     </div>

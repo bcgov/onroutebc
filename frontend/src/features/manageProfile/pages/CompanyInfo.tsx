@@ -6,6 +6,7 @@ import { CompanyInfoForm } from "../components/forms/companyInfo/CompanyInfoForm
 import { DisplayInfo } from "./DisplayCompanyInfo";
 import { CompanyBanner } from "../../../common/components/banners/CompanyBanner";
 import { CompanyProfile } from "../types/manageProfile";
+import { Optional } from "../../../common/types/common";
 
 const Header = () => {
   return (
@@ -21,7 +22,7 @@ const Header = () => {
 export const CompanyInfo = ({
   companyInfoData,
 }: {
-  companyInfoData: CompanyProfile | undefined;
+  companyInfoData: Optional<CompanyProfile>;
 }) => {
   const [isEditting, setIsEditting] = useState(false);
 

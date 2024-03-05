@@ -8,8 +8,10 @@ import {
   Select,
   SelectChangeEvent,
 } from "@mui/material";
-import { SELECT_FIELD_STYLE } from "../../../../../themes/orbcStyles";
 import { useFormContext } from "react-hook-form";
+
+import { SELECT_FIELD_STYLE } from "../../../../../themes/orbcStyles";
+import { Optional } from "../../../../../common/types/common";
 import {
   PaymentAndRefundDetailFormData,
   REPORT_ISSUED_BY,
@@ -19,7 +21,7 @@ import {
  * The props used by the user select component.
  */
 export type UserSelectProps = {
-  permitIssuers: Record<string, string> | never[] | undefined;
+  permitIssuers: Optional<Record<string, string>> | never[];
 };
 
 /**
@@ -41,11 +43,13 @@ export const UserSelect = ({ permitIssuers }: UserSelectProps) => {
       target: { value },
     } = event;
     if (permitIssuers) {
-      const userNames = Object.keys(permitIssuers);
-      const totalUsers = userNames.length;
+      // permitIssuers is a <userName, userGUID> record.
+      // So, Object.values is what we need.
+      const userGUIDs = Object.values(permitIssuers);
+      const totalUsers = userGUIDs.length;
       let newState: string[];
       if (value[value.length - 1] === "ALL") {
-        newState = selectedUsers?.length === totalUsers ? [] : userNames;
+        newState = selectedUsers?.length === totalUsers ? [] : userGUIDs;
       } else {
         newState = value as string[];
       }
@@ -91,14 +95,16 @@ export const UserSelect = ({ permitIssuers }: UserSelectProps) => {
           <ListItemText primary={"All Users"} />
         </MenuItem>
         {permitIssuers
-          ? Object.keys(permitIssuers).map((key) => (
-              <MenuItem key={key} value={key}>
-                <Checkbox
-                  checked={selectedUsers && selectedUsers.indexOf(key) > -1}
-                />
-                <ListItemText primary={key} />
-              </MenuItem>
-            ))
+          ? Object.entries(permitIssuers).map(([key, value]) => {
+              return (
+                <MenuItem key={key} value={value}>
+                  <Checkbox
+                    checked={selectedUsers && selectedUsers.indexOf(value) > -1}
+                  />
+                  <ListItemText primary={key} />
+                </MenuItem>
+              );
+            })
           : []}
       </Select>
     </FormControl>

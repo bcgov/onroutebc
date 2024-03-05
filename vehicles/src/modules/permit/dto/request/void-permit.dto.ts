@@ -1,17 +1,20 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsEmail,
   IsEnum,
   IsNumber,
   IsOptional,
   IsString,
   Length,
+  MaxLength,
   Min,
   MinLength,
 } from 'class-validator';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { PaymentMethodType } from '../../../../common/enum/payment-method-type.enum';
 import { TransactionType } from '../../../../common/enum/transaction-type.enum';
+import { PaymentCardType } from '../../../../common/enum/payment-card-type.enum';
 
 export class VoidPermitDto {
   @AutoMap()
@@ -19,18 +22,20 @@ export class VoidPermitDto {
     enum: ApplicationStatus,
     description: 'Revoke or void status for permit.',
     example: ApplicationStatus.REVOKED,
-    required: false,
   })
+  @IsEnum(ApplicationStatus)
   status: ApplicationStatus;
 
   @AutoMap()
   @ApiProperty({
-    description: 'Permit Transaction ID.',
+    description: 'Provider Transaction ID.',
     example: '10000148',
     required: false,
   })
   @IsOptional()
-  pgTransactionId: string;
+  @IsString()
+  @MaxLength(20)
+  pgTransactionId?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -68,7 +73,8 @@ export class VoidPermitDto {
   })
   @IsOptional()
   @IsString()
-  pgTransactionDate: string;
+  //@MaxLength(27) // TODO Should it be Is Date?
+  pgTransactionDate?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -79,18 +85,18 @@ export class VoidPermitDto {
   @IsOptional()
   @IsString()
   @Length(1, 2)
-  pgPaymentMethod: string;
+  pgPaymentMethod?: string;
 
   @AutoMap()
   @ApiProperty({
-    example: 'VI',
+    enum: PaymentCardType,
+    example: PaymentCardType.VISA,
     description: 'Represents the card type used for the transaction.',
     required: false,
   })
   @IsOptional()
-  @IsString()
-  @Length(1, 2)
-  pgCardType: string;
+  @IsEnum(PaymentCardType)
+  pgCardType?: PaymentCardType;
 
   @AutoMap()
   @ApiProperty({
@@ -100,4 +106,28 @@ export class VoidPermitDto {
   @IsString()
   @MinLength(1)
   comment: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'The fax number to send the voided/revoked permit to.',
+    required: false,
+    maxLength: 20,
+    minLength: 10,
+    example: '9999999999',
+  })
+  @IsOptional()
+  @IsString()
+  @Length(10, 20)
+  fax?: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description:
+      'The additional email address to send the voided/revoked permit to.',
+    required: false,
+    example: 'test@test.gov.bc.ca',
+  })
+  @IsOptional()
+  @IsEmail()
+  additionalEmail?: string;
 }

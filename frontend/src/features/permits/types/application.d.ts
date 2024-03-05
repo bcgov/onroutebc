@@ -3,6 +3,7 @@ import { Dayjs } from "dayjs";
 import { PermitStatus, PERMIT_STATUSES } from "./PermitStatus";
 import { PermitType } from "./PermitType";
 import { ReplaceDayjsWithString } from "./utility";
+import { Nullable } from "../../../common/types/common";
 
 export const PERMIT_APPLICATION_ORIGINS = {
   ONLINE: "ONLINE",
@@ -28,17 +29,17 @@ export type PermitApprovalSource =
 interface PartialApplication {
   permitId?: string;
   originalPermitId?: string;
-  comment?: string | null;
+  comment?: Nullable<string>;
   permitStatus: PermitStatus;
   companyId: number;
-  userGuid?: string | null;
+  userGuid?: Nullable<string>;
   permitType: PermitType;
   applicationNumber?: string;
   permitNumber?: string;
   permitApprovalSource?: PermitApprovalSource;
   permitApplicationOrigin?: PermitApplicationOrigin;
-  revision?: number | null;
-  previousRevision?: string | null;
+  revision?: Nullable<number>;
+  previousRevision?: Nullable<string>;
   documentId?: string;
 }
 
@@ -79,6 +80,30 @@ export type ApplicationRequestData = TransformPermitData<
   ReplaceDayjsWithString<Application>
 >;
 
+export type CreateApplicationRequestData = Omit<
+  ApplicationRequestData,
+  "permitNumber"
+  | "createdDateTime"
+  | "updatedDateTime"
+  | "documentId"
+  | "permitStatus"
+>;
+
+export type UpdateApplicationRequestData = Omit<
+  ApplicationRequestData,
+  "applicationNumber"
+  | "originalPermitId"
+  | "permitId"
+  | "permitNumber"
+  | "createdDateTime"
+  | "updatedDateTime"
+  | "previousRevision"
+  | "revision"
+  | "documentId"
+  | "permitStatus"
+  | "permitApprovalSource"
+>;
+
 export interface MailingAddress {
   addressLine1: string;
   addressLine2?: string;
@@ -96,6 +121,7 @@ export interface ContactDetails {
   phone2?: string;
   phone2Extension?: string;
   email: string;
+  additionalEmail?: Nullable<string>;
   fax?: string;
 }
 
@@ -103,13 +129,14 @@ export interface VehicleDetails {
   vin: string;
   plate: string;
   make: string;
-  year: number | null;
+  year: Nullable<number>;
   countryCode: string;
   provinceCode: string;
   vehicleType: string;
   vehicleSubType: string;
   saveVehicle?: boolean;
-  unitNumber?: string;
+  unitNumber?: Nullable<string>;
+  vehicleId: Nullable<string>; // either powerUnitId or trailerId, depending on vehicleType
 }
 
 export interface Commodities {
@@ -146,12 +173,12 @@ export interface PermitApplicationInProgress
     | "revision"
     | "previousRevision"
   > {
-  permitApplicationOrigin?: PermitApplicationOrigin | null;
-  permitApprovalSource?: PermitApprovalSource | null;
+  permitApplicationOrigin?: Nullable<PermitApplicationOrigin>;
+  permitApprovalSource?: Nullable<PermitApprovalSource>;
   permitData: ReplaceDayjsWithString<PermitData>;
-  permitNumber?: string | null;
+  permitNumber?: Nullable<string>;
   permitStatus: typeof PERMIT_STATUSES.IN_PROGRESS;
-  documentId?: string | null;
+  documentId?: Nullable<string>;
 }
 
 export type ApplicationInProgress = PermitApplicationInProgress;

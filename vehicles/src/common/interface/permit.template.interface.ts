@@ -6,7 +6,9 @@ export interface PermitTemplateData {
   createdDateTime: string;
   updatedDateTime: string;
   companyName: string;
+  companyAlternateName: string;
   clientNumber: string;
+  issuedBy: string;
   revisions: Revision[];
   permitData?: PermitData;
 }
@@ -46,6 +48,7 @@ interface ContactDetails {
   phone2?: string;
   phone2Extension?: string;
   email: string;
+  additionalEmail?: string;
   fax?: string;
 }
 

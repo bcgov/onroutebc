@@ -6,6 +6,8 @@ import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBC
 import { areCommoditiesEqual } from "../helpers/equality";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { CompanyProfile } from "../../manageProfile/types/manageProfile";
+import { Nullable, Optional } from "../../../common/types/common";
+import { PermitType } from "../types/PermitType";
 import {
   getDefaultContactDetails,
   getDefaultMailingAddress,
@@ -15,21 +17,26 @@ import {
 
 /**
  * Custom hook used to fetch application data and populate the form, as well as fetching current company id and user details.
- * This also involves resetting certain form values when new/updated application data is received through ApplicationContext
+ * This also involves resetting certain form values when new/updated application data is received through ApplicationContext.
+ * @param permitType Permit type for the application
  * @param applicationData Application data received to fill out the form, preferrably from ApplicationContext/backend
+ * @param companyId Company id for the application
+ * @param userDetails User details for filling out the form
+ * @param companyInfo Company information for filling out the form
  * @returns current companyId, user details, default application data values, its setter method, and methods to manage the form
  */
 export const useDefaultApplicationFormData = (
-  applicationData?: Application,
+  permitType: PermitType,
+  applicationData?: Nullable<Application>,
   companyId?: number,
   userDetails?: BCeIDUserDetailContext,
   companyInfo?: CompanyProfile,
 ) => {
   // initialize the entire form data with default values
-  // Use default values (saved data from the TROS application context, or empty values)
+  // Use default values (saved data from the application context, or empty values)
   const [defaultApplicationDataValues, setDefaultApplicationDataValues] =
     useState<Application>(
-      getDefaultValues(applicationData, companyId, userDetails, companyInfo),
+      getDefaultValues(permitType, applicationData, companyId, userDetails, companyInfo),
     );
 
   // Update contact details form fields whenever these values are updated
@@ -47,8 +54,10 @@ export const useDefaultApplicationFormData = (
     userDetails?.phone2,
     applicationData?.permitData?.contactDetails?.phone2Extension,
     userDetails?.phone2Extension,
+    companyInfo?.email,
     applicationData?.permitData?.contactDetails?.email,
     userDetails?.email,
+    applicationData?.permitData?.contactDetails?.additionalEmail,
     applicationData?.permitData?.contactDetails?.fax,
     userDetails?.fax,
   ];
@@ -85,7 +94,7 @@ export const useDefaultApplicationFormData = (
 
   // Recommended way of making deep comparisons (for arrays/objects) in dependency arrays
   // https://stackoverflow.com/questions/59467758/passing-array-to-useeffect-dependency-list
-  const commoditiesRef = useRef<Commodities[] | undefined>(
+  const commoditiesRef = useRef<Optional<Commodities[]>>(
     applicationData?.permitData?.commodities,
   );
   const incomingCommodities = getDefaultRequiredVal(
@@ -109,6 +118,7 @@ export const useDefaultApplicationFormData = (
     applicationData?.permitId,
     applicationData?.permitNumber,
     applicationData?.permitStatus,
+    permitType,
     applicationData?.permitType,
     applicationData?.createdDateTime,
     applicationData?.updatedDateTime,
@@ -127,7 +137,7 @@ export const useDefaultApplicationFormData = (
 
   useEffect(() => {
     setDefaultApplicationDataValues(
-      getDefaultValues(applicationData, companyId, userDetails, companyInfo),
+      getDefaultValues(permitType, applicationData, companyId, userDetails, companyInfo),
     );
   }, applicationFormDataDepArray);
 
@@ -147,6 +157,7 @@ export const useDefaultApplicationFormData = (
           "",
         applicationData?.permitData?.contactDetails,
         userDetails,
+        companyInfo?.email,
       ),
     );
   }, contactDetailsDepArray);

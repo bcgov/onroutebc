@@ -79,7 +79,7 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
                 invalidPhoneLength(10, 20),
             },
           },
-          label: "Phone Number",
+          label: "Primary Phone",
         }}
         className="company-primary-contact-form__input company-primary-contact-form__input--left"
       />
@@ -122,7 +122,7 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
                 invalidPhoneLength(10, 20),
             },
           },
-          label: "Alternate Number",
+          label: "Alternate Phone",
         }}
         className="company-primary-contact-form__input company-primary-contact-form__input--left"
       />

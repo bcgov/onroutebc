@@ -1,74 +1,85 @@
 import { Dayjs } from "dayjs";
 
-import { Permit } from "../types/permit";
-import { applyWhenNotNullable } from "../../../common/helpers/util";
+import { Permit, PermitsActionResponse } from "../types/permit";
 import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../common/helpers/util";
+import { Nullable, Optional } from "../../../common/types/common";
+import { getDurationOrDefault } from "./getDefaultApplicationFormData";
+import { getExpiryDate } from "./permitState";
+import {
+  VehicleSubType,
+  Vehicle,
+  VehicleType,
+  VEHICLE_TYPES,
   PowerUnit,
   Trailer,
-  VehicleType,
-  VehicleTypes,
-  VehicleTypesAsString,
-} from "../../manageVehicles/types/managevehicles";
+} from "../../manageVehicles/types/Vehicle";
 
 import {
   Application,
-  ApplicationRequestData,
   ApplicationResponse,
+  CreateApplicationRequestData,
+  UpdateApplicationRequestData,
 } from "../types/application";
 
 import {
   DATE_FORMATS,
   dayjsToLocalStr,
   dayjsToUtcStr,
+  getEndOfDate,
+  getStartOfDate,
   now,
   toLocalDayjs,
   utcToLocalDayjs,
 } from "../../../common/helpers/formatDate";
 
 /**
- * This helper function is used to get the vehicle object that matches the vin prop
- * If there are multiple vehicles with the same vin, then return the first vehicle
- * @param vehicles list of vehicles
- * @param vin string used as a key to find the existing vehicle
- * @returns a PowerUnit or Trailer object, or undefined
+ * This helper function is used to get the vehicle object that matches the vehicleType and id.
+ * @param vehicles List of existing vehicles
+ * @param vehicleType Type of vehicle
+ * @param id string used as a key to find the existing vehicle
+ * @returns The found Vehicle object in the provided list, or undefined if not found
  */
-export const mapVinToVehicleObject = (
-  vehicles: VehicleTypes[] | undefined,
-  vin: string,
-): PowerUnit | Trailer | undefined => {
+export const mapToVehicleObjectById = (
+  vehicles: Optional<Vehicle[]>,
+  vehicleType: VehicleType,
+  id: Nullable<string>,
+): Optional<Vehicle> => {
   if (!vehicles) return undefined;
 
-  const existingVehicles = vehicles.filter((item) => {
-    return item.vin === vin;
+  return vehicles.find((item) => {
+    return vehicleType === VEHICLE_TYPES.POWER_UNIT
+      ? item.vehicleType === VEHICLE_TYPES.POWER_UNIT &&
+          (item as PowerUnit).powerUnitId === id
+      : item.vehicleType === VEHICLE_TYPES.TRAILER &&
+          (item as Trailer).trailerId === id;
   });
-
-  if (!existingVehicles) return undefined;
-
-  return existingVehicles[0];
 };
 
 /**
- * Maps the typeCode (Example: GRADERS) to the TrailerType or PowerUnitType object, then return that object
+ * Maps the typeCode (Example: GRADERS) to the corresponding Trailer or PowerUnit subtype object, then return that object
  * @param typeCode
  * @param vehicleType
- * @param powerUnitTypes
- * @param trailerTypes
+ * @param powerUnitSubTypes
+ * @param trailerSubTypes
  * @returns A Vehicle Sub type object
  */
 export const mapTypeCodeToObject = (
   typeCode: string,
   vehicleType: string,
-  powerUnitTypes: VehicleType[] | undefined,
-  trailerTypes: VehicleType[] | undefined,
+  powerUnitSubTypes: Optional<VehicleSubType[]>,
+  trailerSubTypes: Optional<VehicleSubType[]>,
 ) => {
   let typeObject = undefined;
 
-  if (powerUnitTypes && vehicleType === "powerUnit") {
-    typeObject = powerUnitTypes.find((v) => {
+  if (powerUnitSubTypes && vehicleType === VEHICLE_TYPES.POWER_UNIT) {
+    typeObject = powerUnitSubTypes.find((v) => {
       return v.typeCode == typeCode;
     });
-  } else if (trailerTypes && vehicleType === "trailer") {
-    typeObject = trailerTypes.find((v) => {
+  } else if (trailerSubTypes && vehicleType === VEHICLE_TYPES.TRAILER) {
+    typeObject = trailerSubTypes.find((v) => {
       return v.typeCode == typeCode;
     });
   }
@@ -84,6 +95,23 @@ export const mapTypeCodeToObject = (
 export const mapApplicationResponseToApplication = (
   response: ApplicationResponse,
 ): Application => {
+  const startDateOrDefault = applyWhenNotNullable(
+    (datetimeStr: string): Dayjs => getStartOfDate(toLocalDayjs(datetimeStr)),
+    response.permitData.startDate,
+    getStartOfDate(now()),
+  );
+
+  const durationOrDefault = getDurationOrDefault(
+    30,
+    response.permitData.permitDuration,
+  );
+
+  const expiryDateOrDefault = applyWhenNotNullable(
+    (datetimeStr: string): Dayjs => getEndOfDate(toLocalDayjs(datetimeStr)),
+    response.permitData.expiryDate,
+    getExpiryDate(startDateOrDefault, durationOrDefault),
+  );
+
   return {
     ...response,
     createdDateTime: applyWhenNotNullable(
@@ -96,40 +124,94 @@ export const mapApplicationResponseToApplication = (
     ),
     permitData: {
       ...response.permitData,
-      startDate: applyWhenNotNullable(
-        (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
-        response.permitData.startDate,
-        now(),
+      startDate: startDateOrDefault,
+      expiryDate: expiryDateOrDefault,
+    },
+  };
+};
+
+/**
+ * Maps/transforms Application form data into CreateApplicationRequestData so it can be used as payload for create application requests
+ * @param data Application form data
+ * @returns CreateApplicationRequestData object that's used for payload to request to backend
+ */
+export const mapApplicationToCreateApplicationRequestData = (
+  data: Application,
+): CreateApplicationRequestData => {
+  const {
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    permitNumber, 
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    createdDateTime,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    updatedDateTime,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    documentId,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    permitStatus,
+    ...remainingFields
+  } = data;
+
+  return {
+    ...remainingFields,
+    permitData: {
+      ...remainingFields.permitData,
+      startDate: dayjsToLocalStr(
+        remainingFields.permitData.startDate,
+        DATE_FORMATS.DATEONLY,
       ),
-      expiryDate: applyWhenNotNullable(
-        (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
-        response.permitData.expiryDate,
-        now(),
+      expiryDate: dayjsToLocalStr(
+        remainingFields.permitData.expiryDate,
+        DATE_FORMATS.DATEONLY,
       ),
     },
   };
 };
 
 /**
- * Maps/transforms Application form data into ApplicationRequestData so it can be used as payload for backend requests
+ * Maps/transforms Application form data into UpdateApplicationRequestData so it can be used as payload for update application requests
  * @param data Application form data
- * @returns ApplicationRequestData object that's used for payload to request to backend
+ * @returns UpdateApplicationRequestData object that's used for payload to request to backend
  */
-export const mapApplicationToApplicationRequestData = (
+export const mapApplicationToUpdateApplicationRequestData = (
   data: Application,
-): ApplicationRequestData => {
+): UpdateApplicationRequestData => {
+  const {
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    permitStatus,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    originalPermitId,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    applicationNumber,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    createdDateTime,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    permitNumber,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    permitId,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    documentId,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    updatedDateTime,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    previousRevision,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    revision,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    permitApprovalSource,
+    ...remainingFields
+  } = data;
+
   return {
-    ...data,
-    createdDateTime: applyWhenNotNullable(dayjsToUtcStr, data.createdDateTime),
-    updatedDateTime: applyWhenNotNullable(dayjsToUtcStr, data.updatedDateTime),
+    ...remainingFields,
     permitData: {
-      ...data.permitData,
+      ...remainingFields.permitData,
       startDate: dayjsToLocalStr(
-        data.permitData.startDate,
+        remainingFields.permitData.startDate,
         DATE_FORMATS.DATEONLY,
       ),
       expiryDate: dayjsToLocalStr(
-        data.permitData.expiryDate,
+        remainingFields.permitData.expiryDate,
         DATE_FORMATS.DATEONLY,
       ),
     },
@@ -141,8 +223,8 @@ export const mapApplicationToApplicationRequestData = (
  * @param vehicleType Vehicle type (powerUnit or trailer)
  * @returns display text for the vehicle type
  */
-export const vehicleTypeDisplayText = (vehicleType: VehicleTypesAsString) => {
-  if (vehicleType === "trailer") {
+export const vehicleTypeDisplayText = (vehicleType: VehicleType) => {
+  if (vehicleType === VEHICLE_TYPES.TRAILER) {
     return "Trailer";
   }
   return "Power Unit";
@@ -182,13 +264,26 @@ export const clonePermit = (permit: Permit): Permit => {
  * @returns Transformed Application object
  */
 export const transformPermitToApplication = (permit: Permit) => {
+  const startDateOrDefault = applyWhenNotNullable(
+    (datetimeStr: string): Dayjs => getStartOfDate(toLocalDayjs(datetimeStr)),
+    permit.permitData.startDate,
+    getStartOfDate(now()),
+  );
+
+  const durationOrDefault = getDurationOrDefault(
+    30,
+    permit.permitData.permitDuration,
+  );
+
+  const expiryDateOrDefault = applyWhenNotNullable(
+    (datetimeStr: string): Dayjs => getEndOfDate(toLocalDayjs(datetimeStr)),
+    permit.permitData.expiryDate,
+    getExpiryDate(startDateOrDefault, durationOrDefault),
+  );
+
   return {
     ...permit,
     permitId: `${permit.permitId}`,
-    previousRevision: applyWhenNotNullable(
-      (prevRev) => `${prevRev}`,
-      permit.previousRevision,
-    ),
     createdDateTime: applyWhenNotNullable(
       (datetimeStr: string): Dayjs => utcToLocalDayjs(datetimeStr),
       permit.createdDateTime,
@@ -199,16 +294,8 @@ export const transformPermitToApplication = (permit: Permit) => {
     ),
     permitData: {
       ...permit.permitData,
-      startDate: applyWhenNotNullable(
-        (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
-        permit.permitData.startDate,
-        now(),
-      ),
-      expiryDate: applyWhenNotNullable(
-        (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
-        permit.permitData.expiryDate,
-        now(),
-      ),
+      startDate: startDateOrDefault,
+      expiryDate: expiryDateOrDefault,
     },
   };
 };
@@ -241,10 +328,6 @@ export const transformApplicationToPermit = (
   return {
     ...application,
     permitId: applyWhenNotNullable((id) => +id, application.permitId),
-    previousRevision: applyWhenNotNullable(
-      (prevRev) => +prevRev,
-      application.previousRevision,
-    ),
     createdDateTime: applyWhenNotNullable(
       dayjsToUtcStr,
       application.createdDateTime,
@@ -264,5 +347,25 @@ export const transformApplicationToPermit = (
         DATE_FORMATS.DATEONLY,
       ),
     },
+  };
+};
+
+/**
+ * Remove empty values from permits action response
+ * @param res Permits action response received from backend
+ * @returns Permits action response having empty values removed
+ */
+export const removeEmptyIdsFromPermitsActionResponse = (
+  res: PermitsActionResponse,
+): PermitsActionResponse => {
+  const successIds = getDefaultRequiredVal([], res.success).filter((id) =>
+    Boolean(id),
+  );
+  const failedIds = getDefaultRequiredVal([], res.failure).filter((id) =>
+    Boolean(id),
+  );
+  return {
+    success: successIds,
+    failure: failedIds,
   };
 };

@@ -4,10 +4,10 @@ import {
   BadRequestException,
   HttpStatus,
   Injectable,
-  InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository, UpdateResult } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { ReadUserDto } from './dto/response/read-user.dto';
 import { CreateUserDto } from './dto/request/create-user.dto';
@@ -22,7 +22,11 @@ import { PendingUsersService } from '../pending-users/pending-users.service';
 import { CompanyService } from '../company/company.service';
 import { Role } from '../../../common/enum/roles.enum';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
-import { UserAuthGroup } from 'src/common/enum/user-auth-group.enum';
+import {
+  ClientUserAuthGroup,
+  IDIRUserAuthGroup,
+  UserAuthGroup,
+} from 'src/common/enum/user-auth-group.enum';
 import { PendingIdirUser } from '../pending-idir-users/entities/pending-idir-user.entity';
 import { IdirUser } from './entities/idir.user.entity';
 import { PendingIdirUsersService } from '../pending-idir-users/pending-idir-users.service';
@@ -30,12 +34,22 @@ import { ReadPendingUserDto } from '../pending-users/dto/response/read-pending-u
 import { BadRequestExceptionDto } from '../../../common/exception/badRequestException.dto';
 import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { IDP } from '../../../common/enum/idp.enum';
+import { Contact } from '../../common/entities/contact.entity';
+import { getProvinceId } from '../../../common/helper/province-country.helper';
+import { Base } from '../../common/entities/base.entity';
+import { AccountSource } from '../../../common/enum/account-source.enum';
+import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
+import { ReadCompanyMetadataDto } from '../company/dto/response/read-company-metadata.dto';
+import { DeleteDto } from '../../common/dto/response/delete.dto';
 
 @Injectable()
 export class UsersService {
+  private readonly logger = new Logger(UsersService.name);
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(CompanyUser)
+    private companyUserRepository: Repository<CompanyUser>,
     @InjectRepository(IdirUser)
     private idirUserRepository: Repository<IdirUser>,
     @InjectRepository(PendingIdirUser)
@@ -62,12 +76,30 @@ export class UsersService {
    *
    * @returns The user details as a promise of type {@link ReadUserDto}
    */
+  @LogAsyncMethodExecution()
   async create(
     createUserDto: CreateUserDto,
     companyId: number,
     currentUser: IUserJWT,
   ): Promise<ReadUserDto> {
     let newUser: ReadUserDto;
+
+    const pendingUsers = await this.pendingUsersService.findPendingUsersDto(
+      currentUser.userName,
+      companyId,
+    );
+
+    pendingUsers.push(
+      ...(await this.pendingUsersService.findPendingUsersDto(
+        null,
+        companyId,
+        currentUser.userGUID,
+      )),
+    );
+
+    if (!pendingUsers?.length) {
+      throw new BadRequestException('User not invited for this company.');
+    }
     //Comment Begin: Business BCeID validation.
     //In case of busines bceid, validate that the user's bceid matches the company bceid.
     //If matches then create user else throw error.
@@ -75,13 +107,8 @@ export class UsersService {
       const company = await this.companyService.findOneByCompanyGuid(
         currentUser.bceid_business_guid,
       );
-      const pendingUser = await this.pendingUsersService.findPendingUsersDto(
-        currentUser.userName,
-      );
-      if (pendingUser.some((e) => e.companyId != company.companyId)) {
-        throw new InternalServerErrorException(
-          'User not invited for this company.',
-        );
+      if (pendingUsers.some((e) => e.companyId != company.companyId)) {
+        throw new BadRequestException('User not invited for this company.');
       }
     }
     //Comment End: Business BCeID validation end
@@ -91,6 +118,7 @@ export class UsersService {
     try {
       let user = this.classMapper.map(createUserDto, CreateUserDto, User, {
         extraArgs: () => ({
+          userAuthGroup: pendingUsers?.at(0).userAuthGroup,
           userName: currentUser.userName,
           directory: currentUser.orbcUserDirectory,
           userGUID: currentUser.userGUID,
@@ -102,7 +130,7 @@ export class UsersService {
       newCompanyUser.company = new Company();
       newCompanyUser.company.companyId = companyId;
       newCompanyUser.user = user;
-      newCompanyUser.userAuthGroup = createUserDto.userAuthGroup;
+      newCompanyUser.userAuthGroup = pendingUsers?.at(0).userAuthGroup;
 
       user.companyUsers = [newCompanyUser];
       user = await queryRunner.manager.save(user);
@@ -113,11 +141,17 @@ export class UsersService {
         companyId: companyId,
         userName: currentUser.userName,
       });
+      //Delete migrated Client. User name would be either null or a constant value
+      await queryRunner.manager.delete(PendingUser, {
+        companyId: companyId,
+        userGUID: currentUser.userGUID,
+      });
 
       await queryRunner.commitTransaction();
-    } catch (err) {
+    } catch (error) {
       await queryRunner.rollbackTransaction();
-      throw new InternalServerErrorException(); // TODO: Handle the typeorm Error handling
+      this.logger.error(error);
+      throw error;
     } finally {
       await queryRunner.release();
     }
@@ -136,6 +170,7 @@ export class UsersService {
    * @param currentUser The details of the current authorized user.
    * @returns The updated user details as a promise of type {@link ReadUserDto}.
    */
+  @LogAsyncMethodExecution()
   async update(
     userGUID: string,
     updateUserDto: UpdateUserDto,
@@ -149,23 +184,13 @@ export class UsersService {
       throw new DataNotFoundException();
     }
 
-    const user = this.classMapper.map(updateUserDto, UpdateUserDto, User, {
-      extraArgs: () => ({
-        userName: currentUser.userName,
-        directory: currentUser.orbcUserDirectory,
-        userGUID: currentUser.userGUID,
-        timestamp: new Date(),
-      }),
-    });
-    user.userContact.contactId = userDetails[0]?.userContact?.contactId;
-
     //Searching with UserGuid will only return one result at max
-    const currentAuthGroup = userDetails.at(0).companyUsers.at(0).userAuthGroup;
+    const companyUser = userDetails.at(0).companyUsers.at(0);
     //A CV user's auth group should not be allowed to be downgraded from CVADMIN
     //if they are the last remaining CVADMIN of the Company
     if (
-      currentAuthGroup === UserAuthGroup.COMPANY_ADMINISTRATOR &&
-      currentAuthGroup !== updateUserDto.userAuthGroup
+      companyUser.userAuthGroup === ClientUserAuthGroup.COMPANY_ADMINISTRATOR &&
+      companyUser.userAuthGroup !== updateUserDto.userAuthGroup
     ) {
       //Find all employees of the company
       const employees = await this.findUsersEntity(undefined, [companyId]);
@@ -175,7 +200,7 @@ export class UsersService {
         (employee) =>
           employee.userGUID != userDetails.at(0).userGUID &&
           employee.companyUsers.at(0).userAuthGroup ===
-            UserAuthGroup.COMPANY_ADMINISTRATOR,
+            ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
       );
 
       //Throw BadRequestException if only one CVAdmin exists for the company.
@@ -194,83 +219,116 @@ export class UsersService {
       }
     }
 
-    // Should be allowed to update userAuthGroupID if current user is an
-    // IDIR(PPC Clerk) or CVAdmin
-    if (
-      (currentAuthGroup === UserAuthGroup.COMPANY_ADMINISTRATOR ||
-        currentUser.identity_provider === IDP.IDIR) &&
-      currentAuthGroup !== updateUserDto.userAuthGroup
-    ) {
-      user.companyUsers = userDetails.at(0).companyUsers;
-      user.companyUsers.at(0).userAuthGroup = updateUserDto.userAuthGroup;
+    //Updates the entities
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const auditMetadata: Base = {
+        createdDateTime: new Date(),
+        createdUser: currentUser.userName,
+        createdUserDirectory: currentUser.orbcUserDirectory,
+        createdUserGuid: currentUser.userGUID,
+        updatedDateTime: new Date(),
+        updatedUser: currentUser.userName,
+        updatedUserDirectory: currentUser.orbcUserDirectory,
+        updatedUserGuid: currentUser.userGUID,
+      };
+
+      await queryRunner.manager.update(
+        Contact,
+        { contactId: userDetails[0]?.userContact?.contactId },
+        {
+          firstName: updateUserDto.firstName,
+          lastName: updateUserDto.lastName,
+          email: updateUserDto.email,
+          phone1: updateUserDto.phone1,
+          extension1: updateUserDto.phone1Extension,
+          phone2: updateUserDto.phone2,
+          extension2: updateUserDto.phone2Extension,
+          fax: updateUserDto.fax,
+          city: updateUserDto.city,
+          province: {
+            provinceId: getProvinceId(
+              updateUserDto.countryCode,
+              updateUserDto.provinceCode,
+            ),
+          },
+          ...auditMetadata,
+        },
+      );
+
+      // Should be allowed to update userAuthGroupID if current user is an
+      // IDIR(PPC Clerk) or CVAdmin
+      if (
+        (currentUser.orbcUserAuthGroup ===
+          UserAuthGroup.COMPANY_ADMINISTRATOR ||
+          currentUser.identity_provider === IDP.IDIR) &&
+        companyUser.userAuthGroup !== updateUserDto.userAuthGroup
+      ) {
+        await queryRunner.manager.update(
+          CompanyUser,
+          { companyUserId: companyUser.companyUserId },
+          { userAuthGroup: updateUserDto.userAuthGroup, ...auditMetadata },
+        );
+      }
+
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      this.logger.error(error);
+      throw error;
+    } finally {
+      await queryRunner.release();
     }
-    await this.userRepository.save(user);
-    const userListDto = await this.findUsersDto(user.userGUID);
+
+    const userListDto = await this.findUsersDto(userGUID);
     return userListDto[0];
   }
 
   /**
-   * The updateStatus() method updates the statusCode of the user with
-   * userGUID and {@link UserStatus} parameters.
-   *
-   * @param companyId The company Id.
-   * @param userGUID The user GUID.
-   * @param statusCode The User status code of type {@link UserStatus}
-   *
-   * @returns The UpdateResult of the operation
-   */
-  async updateStatus(
-    userGUID: string,
-    statusCode: UserStatus,
-    currentUser?: IUserJWT,
-  ): Promise<UpdateResult> {
-    const user = new User();
-    user.userGUID = userGUID;
-    user.statusCode = statusCode;
-    user.updatedUserGuid = currentUser.userGUID;
-    user.updatedDateTime = new Date();
-    user.updatedUser = currentUser.userName;
-    user.updatedUserDirectory = currentUser.orbcUserDirectory;
-    return await this.userRepository.update({ userGUID }, user);
-  }
-
-  /**
-   * Finds user entities based on optional filtering criteria of userGUID and
-   * companyId. Retrieves associated data for userContact, province, companyUser,
-   * and company.
+   * Finds user entities based on optional filtering criteria of userGUID,
+   * companyId, and statusCode. Retrieves associated data for userContact,
+   * province, country, companyUser, and company. It filters users by status
+   * code with a default of 'ACTIVE' if no status code is provided.
    *
    * @param userGUID (Optional) The user GUID for filtering.
    * @param companyId (Optional) The company ID for filtering.
+   * @param statusCode (Optional) The status code(s) for filtering. Defaults to ['ACTIVE'].
    *
    * @returns A Promise that resolves to an array of {@link User} entities.
    */
-  private async findUsersEntity(userGUID?: string, companyId?: number[]) {
+  async findUsersEntity(
+    userGUID?: string,
+    companyId?: number[],
+    statusCode = [UserStatus.ACTIVE],
+  ) {
     // Construct the query builder to retrieve user entities and associated data
-    return await this.userRepository
+    const userQB = this.userRepository
       .createQueryBuilder('user')
       .innerJoinAndSelect('user.userContact', 'userContact')
       .innerJoinAndSelect('userContact.province', 'province')
       .innerJoinAndSelect('province.country', 'country')
       .leftJoinAndSelect('user.companyUsers', 'companyUser')
-      .leftJoinAndSelect('companyUser.company', 'company')
-      /* Conditional WHERE clause for userGUID. If userGUID is provided, the
-       WHERE clause is user.userGUID = :userGUID; otherwise, it is 1=1 to
-       include all users.*/
-      .where(userGUID ? 'user.userGUID = :userGUID' : '1=1', {
-        userGUID: userGUID,
-      })
-      /* Conditional WHERE clause for companyId. If companyId is provided, the
-        WHERE clause is company.companyId IN (:...companyId); otherwise, it is 1=1 to
-        include all companies.*/
-      .andWhere(
-        companyId?.length ? 'company.companyId IN (:...companyId)' : '1=1',
-        {
-          companyId: companyId || [],
-        },
-      )
-      .getMany();
-  }
+      .leftJoinAndSelect('companyUser.company', 'company');
 
+    userQB.where('companyUser.statusCode IN (:...statusCode)', {
+      statusCode: statusCode || [],
+    });
+
+    if (userGUID) {
+      userQB.andWhere('user.userGUID = :userGUID', {
+        userGUID: userGUID,
+      });
+    }
+
+    if (companyId?.length) {
+      userQB.andWhere('company.companyId IN (:...companyId)', {
+        companyId: companyId || [],
+      });
+    }
+    return await userQB.getMany();
+  }
   /**
    * Finds and returns an array of ReadUserDto objects for all users with a
    * specific companyId or UserGUID.
@@ -280,6 +338,7 @@ export class UsersService {
    *
    * @returns A Promise that resolves to an array of {@link ReadUserDto} objects.
    */
+  @LogAsyncMethodExecution()
   async findUsersDto(
     userGUID?: string,
     companyId?: number[],
@@ -288,7 +347,7 @@ export class UsersService {
     // Find user entities based on the provided filtering criteria
     const userDetails = await this.findUsersEntity(userGUID, companyId);
     let pendingUsersList: ReadUserDto[] = [];
-    if (pendingUser?.valueOf() && companyId?.length) {
+    if (pendingUser && companyId?.length) {
       const pendingUser = await this.pendingUsersService.findPendingUsersDto(
         undefined,
         companyId?.at(0),
@@ -314,64 +373,125 @@ export class UsersService {
    * The findORBCUser() method searches ORBC if the user exists by its GUID and
    * returns a DTO with user details and its associated companies.
    *
-   * @param userGUID The user GUID.
-   * @param userName The user Name.
-   * @param companyGUID The company GUID.
+   * @param currentUser The current logged in User JWT Token.
    *
    * @returns The {@link ReadUserOrbcStatusDto} entity.
    */
-  async findORBCUser(
-    userGUID: string,
-    userName: string,
-    companyGUID: string,
-  ): Promise<ReadUserOrbcStatusDto> {
-    const userExistsDto = new ReadUserOrbcStatusDto();
-    userExistsDto.associatedCompanies = [];
-    userExistsDto.pendingCompanies = [];
+  @LogAsyncMethodExecution()
+  async findORBCUser(currentUser: IUserJWT): Promise<ReadUserOrbcStatusDto> {
+    const userContextDto = new ReadUserOrbcStatusDto();
+    userContextDto.associatedCompanies = [];
+    userContextDto.pendingCompanies = [];
 
     const user = await this.userRepository.findOne({
-      where: { userGUID: userGUID },
+      where: {
+        userGUID: currentUser.userGUID,
+        companyUsers: { statusCode: UserStatus.ACTIVE },
+      },
       relations: {
         userContact: true,
         companyUsers: true,
       },
     });
 
-    const pendingCompanies = await this.pendingUsersService.findPendingUsersDto(
-      userName,
-    );
+    if (!user && currentUser.bceid_business_guid) {
+      const company = await this.companyService.findOneByCompanyGuid(
+        currentUser.bceid_business_guid,
+      );
+      if (
+        company &&
+        company.accountSource === AccountSource.TpsAccount &&
+        !company?.companyUsers?.length
+      ) {
+        userContextDto.migratedClient =
+          await this.companyService.mapCompanyEntityToCompanyDto(company);
+      } else if (company) {
+        const companyMetadata =
+          await this.companyService.mapCompanyEntityToCompanyMetadataDto(
+            company,
+          );
+        userContextDto.associatedCompanies.push(companyMetadata);
+      }
+    } else if (user) {
+      //User name sync from BCeID applciation.
+      if (
+        user.userName?.toUpperCase() !== currentUser.userName?.toUpperCase()
+      ) {
+        await this.userRepository.update(
+          { userGUID: currentUser.userGUID },
+          {
+            userName: currentUser.userName,
+            updatedUserGuid: currentUser.userGUID,
+            updatedDateTime: new Date(),
+            updatedUser: currentUser.userName,
+            updatedUserDirectory: currentUser.orbcUserDirectory,
+          },
+        );
+        user.userName = currentUser.userName;
+      }
 
-    if (pendingCompanies?.length) {
-      for (const pendingCompany of pendingCompanies) {
-        userExistsDto.pendingCompanies.push(
-          await this.companyService.findCompanyMetadata(
-            pendingCompany.companyId,
-          ),
-        );
-      }
-    }
-    if (!user) {
-      if (companyGUID) {
-        const company = await this.companyService.findOneByCompanyGuid(
-          companyGUID,
-        );
-        if (company) {
-          userExistsDto.associatedCompanies.push(company);
-          return userExistsDto;
-        }
-      }
-    } else {
-      const readCompanyMetadataDto =
-        await this.companyService.findCompanyMetadataByUserGuid(userGUID);
-      userExistsDto.user = await this.classMapper.mapAsync(
+      userContextDto.user = await this.classMapper.mapAsync(
         user,
         User,
         ReadUserDto,
       );
-      userExistsDto.associatedCompanies = readCompanyMetadataDto;
+
+      userContextDto.associatedCompanies =
+        await this.companyService.findCompanyMetadataByUserGuid(
+          currentUser.userGUID,
+        );
     }
 
-    return userExistsDto;
+    await this.processPendingUserInvitesForUserContextCall(
+      currentUser,
+      userContextDto,
+    );
+
+    return userContextDto;
+  }
+
+  /**
+   * The processPendingUserInvitesForUserContextCall() method finds pending user invites for the username
+   * and finds pushed the metadata of company to which they were invited
+   *
+   * @param currentUser The current logged in User JWT Token.
+   *
+   */
+  private async processPendingUserInvitesForUserContextCall(
+    currentUser: IUserJWT,
+    userContextDto: ReadUserOrbcStatusDto,
+  ) {
+    const pendingUsers = await this.pendingUsersService.findPendingUsersDto(
+      currentUser.userName,
+      null,
+      null,
+    );
+    //Auto invite for TPS migrated client for second user onward.
+    if (!userContextDto.migratedClient) {
+      pendingUsers.push(
+        ...(await this.pendingUsersService.findPendingUsersDto(
+          null,
+          null,
+          currentUser.userGUID,
+        )),
+      );
+    }
+
+    if (pendingUsers?.length) {
+      for (const pendingUser of pendingUsers) {
+        if (
+          !userContextDto.pendingCompanies?.some((company) => {
+            return company.companyId === pendingUser.companyId;
+          })
+        ) {
+          userContextDto.pendingCompanies.push(
+            await this.companyService.findCompanyMetadata(
+              pendingUser.companyId,
+            ),
+          );
+        }
+      }
+    }
   }
 
   /**
@@ -384,6 +504,7 @@ export class UsersService {
    *
    * @returns The Roles as a promise of type {@link Role}
    */
+  @LogAsyncMethodExecution()
   async getRolesForUser(userGUID: string, companyId = 0): Promise<Role[]> {
     const queryResult = (await this.userRepository.query(
       'SELECT ROLE_TYPE FROM access.ORBC_GET_ROLES_FOR_USER_FN(@0,@1)',
@@ -396,23 +517,26 @@ export class UsersService {
   }
 
   /**
-   * The getCompaniesForUser() method finds and returns a {@link number[]} object
+   * The getCompaniesForUser() method finds and returns a {@link ReadCompanyMetadataDto[]} object
    * for a user with a specific userGUID.
    *
    * @param userGUID The user GUID.
    *
-   * @returns The associated companies as a promise of type {@link number[]}
+   * @returns The associated companies as a promise of type {@link ReadCompanyMetadataDto[]}
    */
-  async getCompaniesForUser(userGuid: string): Promise<number[]> {
-    const companies = (
-      await this.companyService.findCompanyMetadataByUserGuid(userGuid)
-    ).map((r) => +r.companyId);
-    return companies;
+  @LogAsyncMethodExecution()
+  async getCompaniesForUser(
+    userGuid: string,
+  ): Promise<ReadCompanyMetadataDto[]> {
+    return await this.companyService.findCompanyMetadataByUserGuid(userGuid);
   }
 
+  @LogAsyncMethodExecution()
   async checkIdirUser(currentUser: IUserJWT): Promise<ReadUserOrbcStatusDto> {
     let userExists: ReadUserOrbcStatusDto = null;
-    const idirUser = await this.findOneIdirUser(currentUser.idir_user_guid);
+    const idirUser = await this.findOneIdirUserEntity(
+      currentUser.idir_user_guid,
+    );
     if (!idirUser) {
       /**
        * IF IDIR use is not found in DB then check pending user table to see if the user has been invited
@@ -445,14 +569,30 @@ export class UsersService {
             IdirUser,
             ReadUserOrbcStatusDto,
           );
-        } catch (err) {
+        } catch (error) {
           await queryRunner.rollbackTransaction();
-          throw new InternalServerErrorException(); // TODO: Handle the typeorm Error handling
+          this.logger.error(error);
+          throw error;
         } finally {
           await queryRunner.release();
         }
       }
     } else {
+      if (
+        idirUser.userName.toUpperCase() !== currentUser.userName.toUpperCase()
+      ) {
+        await this.idirUserRepository.update(
+          { userGUID: currentUser.userGUID },
+          {
+            userName: currentUser.userName,
+            updatedUserGuid: currentUser.userGUID,
+            updatedDateTime: new Date(),
+            updatedUser: currentUser.userName,
+            updatedUserDirectory: currentUser.orbcUserDirectory,
+          },
+        );
+        idirUser.userName = currentUser.userName;
+      }
       userExists = await this.classMapper.mapAsync(
         idirUser,
         IdirUser,
@@ -477,7 +617,31 @@ export class UsersService {
     return user;
   }
 
-  async findIdirUser(userGUID?: string): Promise<ReadUserDto> {
+  @LogAsyncMethodExecution()
+  async findIdirUsers(
+    userAuthGroup?: IDIRUserAuthGroup,
+  ): Promise<ReadUserDto[]> {
+    // Find user entities based on the provided filtering criteria
+    const userQB = this.idirUserRepository.createQueryBuilder('user');
+
+    if (userAuthGroup) {
+      userQB.where('user.userAuthGroup=:userAuthGroup', {
+        userAuthGroup: userAuthGroup,
+      });
+    }
+
+    const userDetails = await userQB.getMany();
+    // Map the retrieved user entities to ReadUserDto objects
+    const readUserDto: ReadUserDto[] = await this.classMapper.mapArrayAsync(
+      userDetails,
+      IdirUser,
+      ReadUserDto,
+    );
+    return readUserDto;
+  }
+
+  @LogAsyncMethodExecution()
+  async findOneIdirUser(userGUID?: string): Promise<ReadUserDto> {
     // Find user entities based on the provided filtering criteria
     const userDetails = await this.idirUserRepository.findOne({
       where: { userGUID: userGUID },
@@ -491,7 +655,8 @@ export class UsersService {
     return readUserDto;
   }
 
-  async findOneIdirUser(userGUID?: string): Promise<IdirUser> {
+  @LogAsyncMethodExecution()
+  async findOneIdirUserEntity(userGUID?: string): Promise<IdirUser> {
     // Find user entities based on the provided filtering criteria
     const userDetails = await this.idirUserRepository.findOne({
       where: { userGUID: userGUID },
@@ -500,6 +665,7 @@ export class UsersService {
     return userDetails;
   }
 
+  @LogAsyncMethodExecution()
   async findPermitIssuerPPCUser(): Promise<ReadUserDto[]> {
     const subQueryBuilder = this.idirUserRepository
       .createQueryBuilder()
@@ -519,5 +685,88 @@ export class UsersService {
       ReadUserDto,
     );
     return readUserDto;
+  }
+
+  /**
+   * Updates the status of specified users to DELETED for a given company and ensures that
+   * at least one company administrator remains. It performs checks before deletion, updates
+   * user statuses, and returns details on successful and failed deletions.
+   *
+   * @param {string[]} userGUIDS The GUIDs of the users slated for deletion.
+   * @param {number} companyId The ID of the company the users belong to.
+   * @param {IUserJWT} currentUser JWT token details of the current user for auditing.
+   * @returns {Promise<DeleteDto>} An object containing arrays of successfully deleted user GUIDs
+   * and those that failed to delete.
+   */
+  @LogAsyncMethodExecution()
+  async removeAll(
+    userGUIDS: string[],
+    companyId: number,
+    currentUser: IUserJWT,
+  ): Promise<DeleteDto> {
+    // Retrieve a list of users by company ID before deletion
+    const usersBeforeDelete = await this.companyUserRepository.find({
+      where: {
+        company: { companyId: companyId },
+        statusCode: UserStatus.ACTIVE,
+      },
+      relations: {
+        user: true,
+        company: true,
+      },
+    });
+
+    // Mapping users to check against COMPANY_ADMINISTRATOR group before operations
+    const companyAdminUserGuids = usersBeforeDelete.map(
+      (companyUser) =>
+        companyUser.userAuthGroup ===
+          ClientUserAuthGroup.COMPANY_ADMINISTRATOR &&
+        companyUser?.user?.userGUID,
+    );
+
+    // Filter admin GUIDs to exclude those in the deletion list, ensuring at least one remains
+    const filteredCompanyAdminUserGuids = companyAdminUserGuids.filter(
+      (guid) => !userGUIDS.includes(guid),
+    );
+
+    // Check if operation results in zero company admins, throwing an error if true
+    if (!filteredCompanyAdminUserGuids?.length) {
+      throw new BadRequestException(
+        'This operation is not allowed as a company should have atlease one CVAdmin at any given moment.',
+      );
+    }
+    // Extract only the GUIDs of the users to be deleted and modify them.
+    const userToBeDeleted = usersBeforeDelete.map((companyUser) => {
+      return (
+        userGUIDS.includes(companyUser.user.userGUID) &&
+        ({
+          ...companyUser,
+          statusCode: UserStatus.DELETED,
+          updatedDateTime: new Date(),
+          updatedUser: currentUser.userName,
+          updatedUserDirectory: currentUser.orbcUserDirectory,
+          updatedUserGuid: currentUser.userGUID,
+        } as CompanyUser)
+      );
+    });
+
+    // Identify which GUIDs were not found (failure to delete)
+    const failure = userGUIDS?.filter(
+      (id) =>
+        !userToBeDeleted.some((companyUser) => companyUser.user.userGUID == id),
+    );
+
+    // Execute the deletion of users by their GUIDs within the specified company
+    await this.companyUserRepository.save(userToBeDeleted);
+
+    // Determine successful deletions by filtering out failures
+    const success = userGUIDS?.filter((id) => !failure?.includes(id));
+
+    // Prepare the response DTO with lists of successful and failed deletions
+    const deleteDto: DeleteDto = {
+      success: success,
+      failure: failure,
+    };
+    return deleteDto;
   }
 }

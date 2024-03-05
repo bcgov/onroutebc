@@ -24,36 +24,40 @@ import {
 import "./List.scss";
 import { Trash } from "../../../../common/components/table/options/Trash";
 import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { PowerUnitColumnDefinition, TrailerColumnDefinition } from "./Columns";
 import { deleteVehicles } from "../../apiManager/vehiclesAPI";
 import { SnackBarContext } from "../../../../App";
-import { MANAGE_VEHICLES } from "../../../../routes/constants";
+import { ERROR_ROUTES, VEHICLES_ROUTES } from "../../../../routes/constants";
 import { DoesUserHaveRoleWithContext } from "../../../../common/authentication/util";
 import { ROLES } from "../../../../common/authentication/types";
+import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import {
-  VehicleTypes,
-  VehicleTypesAsString,
+  Vehicle,
+  VehicleType,
   PowerUnit,
   Trailer,
-} from "../../types/managevehicles";
-import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
+  VEHICLE_TYPES,
+} from "../../types/Vehicle";
+
 import {
-  usePowerUnitTypesQuery,
-  useTrailerTypesQuery,
+  usePowerUnitSubTypesQuery,
+  useTrailerSubTypesQuery,
 } from "../../apiManager/hooks";
-import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { defaultTableInitialStateOptions, defaultTableOptions, defaultTableStateOptions } from "../../../../common/constants/defaultTableOptions";
+
+import {
+  defaultTableOptions,
+  defaultTableInitialStateOptions,
+  defaultTableStateOptions,
+} from "../../../../common/helpers/tableHelper";
 
 /**
  * Dynamically set the column based on vehicle type
- * @param vehicleType Either "powerUnit" | "trailer"
+ * @param vehicleType Type of the vehicle
  * @returns An array of column headers/accessor keys for Material React Table
  */
-const getColumns = (
-  vehicleType: VehicleTypesAsString,
-): MRT_ColumnDef<VehicleTypes>[] => {
-  if (vehicleType === "powerUnit") {
+const getColumns = (vehicleType: VehicleType): MRT_ColumnDef<Vehicle>[] => {
+  if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
     return PowerUnitColumnDefinition;
   }
   return TrailerColumnDefinition;
@@ -74,15 +78,16 @@ export const List = memo(
     query,
     companyId,
   }: {
-    vehicleType: VehicleTypesAsString;
-    query: UseQueryResult<VehicleTypes[]>;
+    vehicleType: VehicleType;
+    query: UseQueryResult<Vehicle[]>;
     companyId: string;
   }) => {
     // Data, fetched from backend API
-    const { data, isError, isFetching, isLoading } = query;
+    const { data, isError, isFetching, isPending } = query;
+    const navigate = useNavigate();
 
     // Column definitions for the table
-    const columns = useMemo<MRT_ColumnDef<VehicleTypes>[]>(
+    const columns = useMemo<MRT_ColumnDef<Vehicle>[]>(
       () => getColumns(vehicleType),
       [],
     );
@@ -92,15 +97,15 @@ export const List = memo(
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
     const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
 
-    const powerUnitTypesQuery = usePowerUnitTypesQuery();
-    const trailerTypesQuery = useTrailerTypesQuery();
-    const fetchedPowerUnitTypes = getDefaultRequiredVal(
+    const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
+    const trailerSubTypesQuery = useTrailerSubTypesQuery();
+    const fetchedPowerUnitSubTypes = getDefaultRequiredVal(
       [],
-      powerUnitTypesQuery.data,
+      powerUnitSubTypesQuery.data,
     );
-    const fetchedTrailerTypes = getDefaultRequiredVal(
+    const fetchedTrailerSubTypes = getDefaultRequiredVal(
       [],
-      trailerTypesQuery.data,
+      trailerSubTypesQuery.data,
     );
 
     const colTypeCodes = columns.filter(
@@ -112,12 +117,16 @@ export const List = memo(
 
     const transformVehicleCode = (code: string) => {
       let val;
-      if (vehicleType === "powerUnit") {
-        val = fetchedPowerUnitTypes?.filter((value) => value.typeCode === code);
+      if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
+        val = fetchedPowerUnitSubTypes?.filter(
+          (value) => value.typeCode === code,
+        );
       } else {
-        val = fetchedTrailerTypes?.filter((value) => value.typeCode === code);
+        val = fetchedTrailerSubTypes?.filter(
+          (value) => value.typeCode === code,
+        );
       }
-      return val?.at(0)?.type || "";
+      return val?.at(0)?.type ?? "";
     };
 
     if (colTypeCodes?.length === 1) {
@@ -148,33 +157,40 @@ export const List = memo(
     const onConfirmDelete = async () => {
       const vehicleIds: string[] = Object.keys(rowSelection);
 
-      const response = await deleteVehicles(vehicleIds, vehicleType, companyId);
-      if (response.status === 200) {
-        const responseBody = response.data;
-        setIsDeleteDialogOpen(() => false);
-        if (responseBody.failure.length > 0) {
-          snackBar.setSnackBar({
-            message: "An unexpected error occurred.",
-            showSnackbar: true,
-            setShowSnackbar: () => true,
-            alertType: "error",
-          });
-        } else {
-          snackBar.setSnackBar({
-            message: "Vehicle Deleted",
-            showSnackbar: true,
-            setShowSnackbar: () => true,
-            alertType: "info",
-          });
-        }
-        setRowSelection(() => {
-          return {};
+      deleteVehicles(vehicleIds, vehicleType, companyId)
+        .then((response) => {
+          if (response.status === 200) {
+            const responseBody = response.data;
+            if (responseBody.failure.length > 0) {
+              snackBar.setSnackBar({
+                message: "An unexpected error occurred.",
+                showSnackbar: true,
+                setShowSnackbar: () => true,
+                alertType: "error",
+              });
+            } else {
+              snackBar.setSnackBar({
+                message: "Vehicle Deleted",
+                showSnackbar: true,
+                setShowSnackbar: () => true,
+                alertType: "info",
+              });
+            }
+            setRowSelection(() => {
+              return {};
+            });
+            query.refetch();
+          } else {
+            navigate(ERROR_ROUTES.UNEXPECTED);
+          }
+        })
+        .catch(() => {
+          navigate(ERROR_ROUTES.UNEXPECTED);
+        })
+        .finally(() => {
+          setIsDeleteDialogOpen(() => false);
         });
-        query.refetch();
-      }
     };
-
-    const navigate = useNavigate();
 
     /**
      * Function that clears the delete related states when the user clicks on cancel.
@@ -207,7 +223,7 @@ export const List = memo(
       },
       state: {
         ...defaultTableStateOptions,
-        isLoading,
+        isLoading: isPending,
         showAlertBanner: isError,
         showProgressBars: isFetching,
         sorting: [{ id: "createdDateTime", desc: true }],
@@ -215,7 +231,7 @@ export const List = memo(
         rowSelection: rowSelection,
       },
       getRowId: (originalRow) => {
-        if (vehicleType === "powerUnit") {
+        if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
           const powerUnitRow = originalRow as PowerUnit;
           return powerUnitRow.powerUnitId as string;
         } else {
@@ -226,27 +242,22 @@ export const List = memo(
       onRowSelectionChange: setRowSelection,
       renderEmptyRowsFallback: () => <NoRecordsFound />,
       renderRowActions: useCallback(
-        ({
-          row,
-        }: {
-          table: MRT_TableInstance<VehicleTypes>;
-          row: MRT_Row<VehicleTypes>;
-        }) => (
+        ({ row }: { row: MRT_Row<Vehicle> }) => (
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
             {DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) && (
               <>
                 <Tooltip arrow placement="left" title="Edit">
                   <IconButton
                     onClick={() => {
-                      if (vehicleType === "powerUnit") {
+                      if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
                         navigate(
-                          `/${MANAGE_VEHICLES}/power-units/${row.getValue(
+                          `${VEHICLES_ROUTES.POWER_UNIT_DETAILS}/${row.getValue(
                             "powerUnitId",
                           )}`,
                         );
-                      } else if (vehicleType === "trailer") {
+                      } else if (vehicleType === VEHICLE_TYPES.TRAILER) {
                         navigate(
-                          `/${MANAGE_VEHICLES}/trailers/${row.getValue(
+                          `${VEHICLES_ROUTES.TRAILER_DETAILS}/${row.getValue(
                             "trailerId",
                           )}`,
                         );
@@ -267,7 +278,7 @@ export const List = memo(
                         const newObject: { [key: string]: boolean } = {};
                         // Setting the selected row to false so that
                         // the row appears unchecked.
-                        newObject[row.getValue(`${vehicleType}Id`) as string] =
+                        newObject[row.getValue<string>(`${vehicleType}Id`)] =
                           false;
                         return newObject;
                       });
@@ -285,7 +296,7 @@ export const List = memo(
       ),
       // Render a custom options Bar (inclues search and trash)
       renderTopToolbar: useCallback(
-        ({ table }: { table: MRT_TableInstance<VehicleTypes> }) => (
+        ({ table }: { table: MRT_TableInstance<Vehicle> }) => (
           <Box className="table-container__top-toolbar">
             <MRT_GlobalFilterTextField table={table} />
             {DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) && (

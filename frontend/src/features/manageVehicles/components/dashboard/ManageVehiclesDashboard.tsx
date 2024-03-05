@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { memo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 
 import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
 import { AddVehicleButton } from "./AddVehicleButton";
@@ -11,6 +11,8 @@ import { DoesUserHaveRoleWithContext } from "../../../../common/authentication/u
 import { ROLES } from "../../../../common/authentication/types";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { VEHICLES_DASHBOARD_TABS } from "../../../../routes/constants";
+import { VEHICLE_TYPES } from "../../types/Vehicle";
 
 /**
  * Returns the selected tab index (if there is one)
@@ -19,11 +21,11 @@ import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 const useTabIndexFromURL = (): number => {
   const { hash: selectedTab } = useLocation();
   switch (selectedTab) {
-    case "#trailer":
+    case VEHICLES_DASHBOARD_TABS.TRAILER:
       return 1;
-    case "#vehicle-configuration":
+    case VEHICLES_DASHBOARD_TABS.VEHICLE_CONFIG:
       return 2;
-    case "#power-unit":
+    case VEHICLES_DASHBOARD_TABS.POWER_UNIT:
     default:
       return 0;
   }
@@ -33,21 +35,20 @@ const useTabIndexFromURL = (): number => {
  * React component to render the vehicle inventory
  */
 export const ManageVehiclesDashboard = memo(() => {
-  const keepPreviousData = true;
   const staleTime = 5000;
   const companyId = getDefaultRequiredVal("0", getCompanyIdFromSession());
 
   const powerUnitQuery = useQuery({
     queryKey: ["powerUnits"],
     queryFn: () => getAllPowerUnits(companyId),
-    keepPreviousData: keepPreviousData,
+    placeholderData: (prev) => keepPreviousData(prev),
     staleTime: staleTime,
   });
 
   const trailerQuery = useQuery({
     queryKey: ["trailers"],
     queryFn: () => getAllTrailers(companyId),
-    keepPreviousData: keepPreviousData,
+    placeholderData: (prev) => keepPreviousData(prev),
     staleTime: staleTime,
   });
 
@@ -56,7 +57,7 @@ export const ManageVehiclesDashboard = memo(() => {
       label: "Power Unit",
       component: (
         <List
-          vehicleType="powerUnit"
+          vehicleType={VEHICLE_TYPES.POWER_UNIT}
           query={powerUnitQuery}
           companyId={companyId}
         />
@@ -66,7 +67,7 @@ export const ManageVehiclesDashboard = memo(() => {
       label: "Trailer",
       component: (
         <List
-          vehicleType="trailer"
+          vehicleType={VEHICLE_TYPES.TRAILER}
           query={trailerQuery}
           companyId={companyId}
         />

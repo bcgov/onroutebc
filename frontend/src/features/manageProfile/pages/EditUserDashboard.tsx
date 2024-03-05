@@ -11,6 +11,7 @@ import { getCompanyUserByUserGUID } from "../apiManager/manageProfileAPI";
 import { EditUserForm } from "../components/forms/userManagement/EditUser";
 import { BCEID_PROFILE_TABS } from "../types/manageProfile.d";
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
+import { PROFILE_ROUTES } from "../../../routes/constants";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -23,14 +24,16 @@ export const EditUserDashboard = React.memo(() => {
   const navigate = useNavigate();
   const { userGUID } = useParams();
 
-  const { data: userInfo, isLoading } = useQuery(
-    ["userByuserGUID", userGUID],
-    () => getCompanyUserByUserGUID(userGUID as string),
-    { retry: false, enabled: true, staleTime: Infinity },
-  );
+  const { data: userInfo, isPending } = useQuery({
+    queryKey: ["userByuserGUID", userGUID],
+    queryFn: () => getCompanyUserByUserGUID(userGUID as string),
+    retry: false,
+    enabled: true,
+    staleTime: Infinity,
+  });
 
   const onClickBreadcrumb = () => {
-    navigate("../", {
+    navigate(PROFILE_ROUTES.MANAGE, {
       state: {
         selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT_ORGADMIN,
       },
@@ -70,7 +73,6 @@ export const EditUserDashboard = React.memo(() => {
               )}
             </div>
           }
-          extendHeight={true}
         />
       </Box>
 
@@ -96,7 +98,7 @@ export const EditUserDashboard = React.memo(() => {
         <Typography>Edit User</Typography>
       </Box>
 
-      {!isLoading && <EditUserForm userInfo={userInfo} />}
+      {!isPending && <EditUserForm userInfo={userInfo} />}
     </div>
   );
 });

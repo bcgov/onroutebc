@@ -1,80 +1,111 @@
 name: Merge
 
 on:
-  workflow_run:
-    workflows: [PR Closed]
-    types: [completed]
+  push:
+    branches: [main]
+    paths-ignore:
+      - '*.md'
+      - '.github/**'
+      - 'common/graphics/**'
+      - '!.github/workflows/deploy.yml'
+      - '!.github/workflows/merge.yml'
+  workflow_dispatch:
+    inputs:
+      pr_no:
+        description: "PR-numbered container set to deploy"
+        type: number
+        required: true
 
 concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: true
 
 jobs:
+  vars:
+    name: Set Variables
+    outputs:
+      pr: ${{ steps.pr.outputs.pr }}
+    runs-on: ubuntu-22.04
+    timeout-minutes: 1
+    steps:
+      # Get PR number for squash merges to main
+      - name: PR Number
+        id: pr
+        uses: bcgov-nr/action-get-pr@v0.0.1
+
   deploys-test:
     name: Deploys (test)
-    uses: ./.github/workflows/.deploy.yml
+    needs: [vars]
+    uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
-      tag: test
-      target: latest
-      values: values.yaml
-      license: c28f0c
+      autoscaling: false
+      environment: test
+      release: test
+      tag: ${{ needs.vars.outputs.pr }}
       vault_role: nonprod
-      zone: test
+      vault_zone: test
 
-#  integration-e2e:
-#    name: Integration and E2E Tests
-#    needs: [deploys-test]
-#    uses: ./.github/workflows/.tests.yml
-#    with:
-#      target: test
-  
+
   promote-images-test:
     name: Promote Images - Test
-    #needs: [deploys-test, integration-e2e]
-    needs: [deploys-test]
+    needs: [deploys-test, vars]
     runs-on: ubuntu-22.04
     permissions:
       packages: write
     strategy:
       matrix:
-        package: [dops, vehicles, frontend]
+        package: [dops, vehicles, frontend, tps-migration]
     timeout-minutes: 2
     steps:
-      - uses: shrink/actions-docker-registry-tag@v3
+      - uses: shrink/actions-docker-registry-tag@v4
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.package }}
-          target: latest
-          tags: test
-  
+          target: ${{ needs.vars.outputs.pr }}
+          tags: test  #Promote images AFTER successful deploy
+
   deploys-prod:
     name: Deploys (prod)
-    needs: [promote-images-test]
-    uses: ./.github/workflows/.deploy.yml
+    needs: [promote-images-test, vars]
+    uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
-      tag: prod
-      target: test
-      values: values.yaml
-      license: c28f0c
+      autoscaling: true
+      environment: prod
+      tag: ${{ needs.vars.outputs.pr }}
+      release: prod
       vault_role: prod
-      zone: prod
-  
+      vault_zone: prod
+
   promote-images-prod:
     name: Promote Images - Prod
-    needs: [deploys-prod]
+    needs: [deploys-prod, vars]
     runs-on: ubuntu-22.04
     permissions:
       packages: write
     strategy:
       matrix:
-        package: [dops, vehicles, frontend]
+        package: [dops, vehicles, frontend, tps-migration]
     timeout-minutes: 2
     steps:
-      - uses: shrink/actions-docker-registry-tag@v3
+      - uses: shrink/actions-docker-registry-tag@v4
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.package }}
-          target: test
+          target: ${{ needs.vars.outputs.pr }}
           tags: prod  #Promote images AFTER successful deploy
+
+  create-release:
+    name: Create release
+    runs-on: ubuntu-22.04
+    needs: [deploys-prod, vars]
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Create Release
+        run: |
+          gh release create "${{ needs.vars.outputs.pr }}" \
+          --repo=${{ github.repository }} \
+          --title="${{ github.repository }}-${{ needs.vars.outputs.pr }}" \
+          --generate-notes

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   RadioGroup,
   FormControlLabel,
@@ -10,22 +11,24 @@ import {
   OutlinedInput,
 } from "@mui/material";
 
-import "./SearchFilter.scss";
 import {
   Controller,
   FieldValues,
   FormProvider,
   useForm,
 } from "react-hook-form";
+
+import "./SearchFilter.scss";
 import { CustomSelectDisplayProps } from "../../../types/formElements";
-import { useNavigate, useSearchParams } from "react-router-dom";
 import { getDefaultRequiredVal } from "../../../helpers/util";
+import { IDIR_ROUTES } from "../../../../routes/constants";
+import { Nullable } from "../../../types/common";
 import {
   SearchByFilter,
   SearchEntity,
   SearchFields,
 } from "../../../../features/idir/search/types/types";
-import { SEARCH_RESULTS } from "../../../../routes/constants";
+import { useFeatureFlagsQuery } from "../../../hooks/hooks";
 
 const SEARCH_BY_PERMIT_OPTIONS = [
   { label: "Permit Number", value: "permitNumber" },
@@ -34,14 +37,14 @@ const SEARCH_BY_PERMIT_OPTIONS = [
 
 const SEARCH_BY_COMPANY_OPTIONS = [
   { label: "Company Name", value: "companyName" },
-  { label: "onRouteBC Client Number", value: "onRouteBCClientNumber" },
+  { label: "Client Number", value: "clientNumber" },
 ];
 
 const SEARCH_BY_APPLICATION_OPTIONS = [
   { label: "Application Number", value: "applicationNumber" },
 ];
 
-const getDefaultSearchEntity = (searchEntity?: string | null) => {
+const getDefaultSearchEntity = (searchEntity?: Nullable<string>) => {
   switch (searchEntity) {
     case "companies":
       return "companies";
@@ -53,7 +56,7 @@ const getDefaultSearchEntity = (searchEntity?: string | null) => {
   }
 };
 
-const getSearchByOptions = (searchEntity?: string | null) => {
+const getSearchByOptions = (searchEntity?: Nullable<string>) => {
   switch (searchEntity) {
     case "companies":
       return SEARCH_BY_COMPANY_OPTIONS;
@@ -66,8 +69,8 @@ const getSearchByOptions = (searchEntity?: string | null) => {
 };
 
 const getDefaultSearchBy = (
-  searchEntity?: string | null,
-  searchBy?: string | null,
+  searchEntity?: Nullable<string>,
+  searchBy?: Nullable<string>,
 ) => {
   const defaultSearchEntity = getDefaultSearchEntity(searchEntity);
   const searchByOptions = getSearchByOptions(defaultSearchEntity).map(
@@ -79,8 +82,16 @@ const getDefaultSearchBy = (
   );
 };
 
-export const SearchFilter = () => {
+export const SearchFilter = ({
+  closeFilter,
+}: {
+  /**
+   * Callback function to close the search filter.
+   */
+  closeFilter: () => void;
+}) => {
   const [searchParams] = useSearchParams();
+  const { data: featureFlags } = useFeatureFlagsQuery();
   const navigate = useNavigate();
   const searchEntity = getDefaultSearchEntity(searchParams.get("searchEntity"));
   const [searchByOptions, setSearchByOptions] = useState(
@@ -90,14 +101,14 @@ export const SearchFilter = () => {
     searchEntity,
     searchParams.get("searchByFilter"),
   );
-  const searchValue = getDefaultRequiredVal(
+  const searchString = getDefaultRequiredVal(
     "",
-    searchParams.get("searchValue"),
+    searchParams.get("searchString"),
   );
   const defaultSearchFilter = {
     searchEntity,
     searchByFilter: searchBy,
-    searchValue,
+    searchString,
   } as SearchFields;
 
   const formMethods = useForm<SearchFields>({
@@ -125,8 +136,8 @@ export const SearchFilter = () => {
   const handleSearchValueChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    const searchValue = event.target.value;
-    setValue("searchValue", searchValue);
+    const searchString = event.target.value;
+    setValue("searchString", searchString);
   };
 
   const onSubmit = (data: FieldValues) => {
@@ -134,7 +145,11 @@ export const SearchFilter = () => {
       .map(([key, value]) => `${key}=${value}`)
       .join("&");
 
-    navigate(`${SEARCH_RESULTS}?${searchFields}`);
+    if (data?.searchString?.trim()?.length < 1) return;
+
+    closeFilter();
+
+    navigate(`${IDIR_ROUTES.SEARCH_RESULTS}?${searchFields}`);
   };
 
   return (
@@ -163,11 +178,13 @@ export const SearchFilter = () => {
                     value="companies"
                     control={<Radio key="find-by-company" />}
                   />
-                  <FormControlLabel
-                    label="Application"
-                    value="applications"
-                    control={<Radio key="find-by-application" />}
-                  />
+                  {featureFlags?.["APPLICATION_SEARCH"] === "ENABLED" && (
+                    <FormControlLabel
+                      label="Application"
+                      value="applications"
+                      control={<Radio key="find-by-application" />}
+                    />
+                  )}
                 </RadioGroup>
               )}
             />
@@ -205,12 +222,13 @@ export const SearchFilter = () => {
 
               <Controller
                 control={control}
-                name="searchValue"
+                name="searchString"
                 render={({ field: { value } }) => (
                   <OutlinedInput
                     className="search-by__value"
                     value={value}
                     onChange={handleSearchValueChange}
+                    inputProps={{ maxLength: 100 }}
                   />
                 )}
               />

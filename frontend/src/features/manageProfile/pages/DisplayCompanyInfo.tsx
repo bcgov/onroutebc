@@ -1,19 +1,19 @@
+import { faPencil } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Box, Button, Typography } from "@mui/material";
 import { memo } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPencil } from "@fortawesome/free-solid-svg-icons";
 
-import "./DisplayCompanyInfo.scss";
+import { getCompanyEmailFromSession } from "../../../common/apiManager/httpRequestHandler";
+import { ROLES } from "../../../common/authentication/types";
+import { DoesUserHaveRoleWithContext } from "../../../common/authentication/util";
 import { formatPhoneNumber } from "../../../common/components/form/subFormComponents/PhoneNumberInput";
 import {
   formatCountry,
   formatProvince,
 } from "../../../common/helpers/formatCountryProvince";
-import { CompanyProfile } from "../types/manageProfile";
-import { DoesUserHaveRoleWithContext } from "../../../common/authentication/util";
-import { ROLES } from "../../../common/authentication/types";
-import { getCompanyEmailFromSession } from "../../../common/apiManager/httpRequestHandler";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
+import { CompanyProfile } from "../types/manageProfile";
+import "./DisplayCompanyInfo.scss";
 // Disable any eslint for references to countries_and_states.json
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -31,7 +31,13 @@ export const DisplayInfo = memo(
     return (
       <div className="display-company-info">
         <Box>
-          <Typography variant="h3">Mailing Address</Typography>
+          {companyInfo?.alternateName && (
+            <>
+              <Typography variant="h3">Doing Business As (DBA)</Typography>
+              <Typography>{companyInfo?.alternateName}</Typography>
+            </>
+          )}
+          <Typography variant="h3">Company Mailing Address</Typography>
           <Typography>{companyInfo?.mailingAddress.addressLine1}</Typography>
           <Typography>
             {formatCountry(companyInfo?.mailingAddress.countryCode)}
@@ -46,7 +52,7 @@ export const DisplayInfo = memo(
 
           <Typography variant="h3">Company Contact Details</Typography>
           <Typography>
-            Email: {getDefaultRequiredVal("", companyEmail, companyInfo?.email)}
+            Email: {getDefaultRequiredVal("", companyInfo?.email, companyEmail)}
           </Typography>
           <Typography>{`Phone: ${formatPhoneNumber(companyInfo?.phone)} ${
             companyInfo?.extension ? `Ext: ${companyInfo?.extension}` : ""

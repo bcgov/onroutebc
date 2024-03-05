@@ -7,8 +7,7 @@ import {
   Param,
   Query,
   Res,
-  DefaultValuePipe,
-  ParseIntPipe,
+  BadRequestException,
 } from '@nestjs/common';
 import { PermitService } from './permit.service';
 import { ExceptionDto } from '../../common/exception/exception.dto';
@@ -19,10 +18,10 @@ import {
   ApiInternalServerErrorResponse,
   ApiCreatedResponse,
   ApiBearerAuth,
-  ApiQuery,
   ApiOkResponse,
+  ApiOperation,
 } from '@nestjs/swagger';
-import { Public } from '../../common/decorator/public.decorator';
+import { AuthOnly } from '../../common/decorator/auth-only.decorator';
 import { CreatePermitDto } from './dto/request/create-permit.dto';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { Request, Response } from 'express';
@@ -31,16 +30,16 @@ import { FileDownloadModes } from '../../common/enum/file-download-modes.enum';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
-import { IDP } from 'src/common/enum/idp.enum';
-import {
-  IPaginationMeta,
-  IPaginationOptions,
-} from 'src/common/interface/pagination.interface';
-import { PaginationDto } from 'src/common/class/pagination';
-import { LessThenPipe } from 'src/common/class/customs.transform';
+import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import { PermitHistoryDto } from './dto/response/permit-history.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { VoidPermitDto } from './dto/request/void-permit.dto';
+import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
+import { GetPermitQueryParamsDto } from './dto/request/queryParam/getPermit.query-params.dto';
+import {
+  UserAuthGroup,
+  idirUserAuthGroupList,
+} from 'src/common/enum/user-auth-group.enum';
 
 @ApiBearerAuth()
 @ApiTags('Permit')
@@ -75,29 +74,16 @@ export class PermitController {
   }
 
   @ApiOkResponse({
-    description: 'The Permit Resource',
-    type: ReadPermitDto,
-    isArray: true,
-  })
-  @Roles(Role.READ_PERMIT)
-  @Get()
-  async get(
-    @Query('permitNumber') permitNumber: string,
-  ): Promise<ReadPermitDto[]> {
-    return this.permitService.findByPermitNumber(permitNumber);
-  }
-
-  @ApiOkResponse({
     description: 'The Permit Resource to get revision and payment history.',
     type: PermitHistoryDto,
     isArray: true,
   })
   @Roles(Role.READ_PERMIT)
-  @Get('history')
+  @Get('/:permitId/history')
   async getPermitHisory(
-    @Query('originalId') originalId: string,
+    @Param('permitId') permitId: string,
   ): Promise<PermitHistoryDto[]> {
-    return this.permitService.findPermitHistory(originalId);
+    return this.permitService.findPermitHistory(permitId);
   }
 
   /**
@@ -106,113 +92,115 @@ export class PermitController {
    * @param status if true get active permits else get others
    *
    */
-  @ApiQuery({ name: 'companyId', required: true })
-  @ApiQuery({ name: 'expired', required: false, example: 'true' })
-  @ApiQuery({ name: 'page', required: false, example: '1' })
-  @ApiQuery({ name: 'limit', required: false, example: '10' })
+  @ApiPaginatedResponse(ReadPermitDto)
   @Roles(Role.READ_PERMIT)
-  @Get('user')
-  async getPaginatedUserPermit(
+  @Get()
+  async getPermit(
     @Req() request: Request,
-    @Query('companyId') companyId: number,
-    @Query('expired') expired: string,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
-    @Query('limit', new DefaultValuePipe(10), ParseIntPipe, LessThenPipe)
-    limit = 10,
-  ): Promise<PaginationDto<ReadPermitDto, IPaginationMeta>> {
-    const options: IPaginationOptions = {
-      limit,
-      page,
-    };
-
+    @Query() getPermitQueryParamsDto: GetPermitQueryParamsDto,
+  ): Promise<PaginationDto<ReadPermitDto>> {
     const currentUser = request.user as IUserJWT;
+    if (
+      !idirUserAuthGroupList.includes(
+        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      ) &&
+      !getPermitQueryParamsDto.companyId
+    ) {
+      throw new BadRequestException(
+        `Company Id is required for roles except ${idirUserAuthGroupList.join(', ')}.`,
+      );
+    }
+
     const userGuid =
-      currentUser.identity_provider === IDP.BCEID
-        ? currentUser.bceid_user_guid
+      UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup
+        ? currentUser.userGUID
         : null;
-    return await this.permitService.findUserPermit(
-      options,
-      userGuid,
-      companyId,
-      expired,
-    );
+
+    return await this.permitService.findPermit({
+      page: getPermitQueryParamsDto.page,
+      take: getPermitQueryParamsDto.take,
+      orderBy: getPermitQueryParamsDto.orderBy,
+      companyId: getPermitQueryParamsDto.companyId,
+      expired: getPermitQueryParamsDto.expired,
+      searchColumn: getPermitQueryParamsDto.searchColumn,
+      searchString: getPermitQueryParamsDto.searchString,
+      userGUID: userGuid,
+    });
+  }
+
+  /**
+   * Fetches all available permit types from the service layer and returns them.
+   * Uses an @AuthOnly() decorator to enforce authentication.
+   * The route for accessing this method is defined under '/permits/permit-types'.
+   * @returns A promise that resolves to a record object where each key-value pair represents a permit type id and its name.
+   */
+  @AuthOnly()
+  @ApiOperation({
+    summary: 'Fetch all permit types',
+    description:
+      'Fetches all available permit types from the service layer and returns them, enforcing authentication.',
+  })
+  @Get('permit-types')
+  async getPermitTypes(): Promise<Record<string, string>> {
+    const permitTypes = await this.permitService.getPermitType();
+    return permitTypes;
   }
 
   @ApiOkResponse({
-    description: 'The Search Permit Resource',
+    description: 'Retrieves a specific Permit Resource by its ID.',
     type: ReadPermitDto,
-    isArray: true,
+    isArray: false,
   })
-  /**
-   * @Query searchColumn: Key to search a permit. ex: plate
-   * @Query searchString: Value of key. ex: AB123D
-   * The above example will search for a permit where plate is AB123D.
-   */
-  @Roles(Role.STAFF)
-  @Get('ppc/search')
-  async getPermitData(
-    @Query('searchColumn') searchColumn: string,
-    @Query('searchString') searchString: string,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
-    @Query('limit', new DefaultValuePipe(10), ParseIntPipe, LessThenPipe)
-    limit = 10,
-  ): Promise<PaginationDto<ReadPermitDto, IPaginationMeta>> {
-    const options: IPaginationOptions = {
-      limit,
-      page,
-    };
-    return this.permitService.findPermit(options, searchColumn, searchString);
+  @ApiOperation({
+    summary: 'Get Permit by ID',
+    description:
+      'Fetches a single permit detail by its permit ID for the current user.',
+  })
+  @Roles(Role.READ_PERMIT)
+  @Get('/:permitId')
+  async getByPermitId(
+    @Req() request: Request,
+    @Param('permitId') permitId: string,
+  ): Promise<ReadPermitDto> {
+    const currentUser = request.user as IUserJWT;
+    return this.permitService.findByPermitId(permitId, currentUser);
   }
 
   @ApiCreatedResponse({
     description: 'The DOPS file Resource with the presigned resource',
     type: ReadFileDto,
   })
-  @ApiQuery({
-    name: 'download',
-    required: false,
-    example: 'download=proxy',
-    enum: FileDownloadModes,
+  @ApiOperation({
+    summary: 'Retrieve PDF',
     description:
-      'Download mode behavior.' +
-      'If proxy is specified, the object contents will be available proxied through DMS.' +
-      'If url is specified, expect an HTTP 201 cotaining the presigned URL as a JSON string in the response.',
+      'Retrieves the DOPS file for a given permit ID. Requires READ_PERMIT role.',
   })
   @Roles(Role.READ_PERMIT)
   @Get('/:permitId/pdf')
   async getPDF(
     @Req() request: Request,
     @Param('permitId') permitId: string,
-    @Query('download') download: FileDownloadModes,
     @Res() res: Response,
   ): Promise<void> {
     const currentUser = request.user as IUserJWT;
 
-    if (download === FileDownloadModes.PROXY) {
-      await this.permitService.findPDFbyPermitId(
-        currentUser,
-        permitId,
-        download,
-        res,
-      );
-      res.status(200);
-    } else {
-      const file = await this.permitService.findPDFbyPermitId(
-        currentUser,
-        permitId,
-        download,
-      );
-      if (download === FileDownloadModes.URL) {
-        res.status(201).send(file);
-      } else {
-        res.status(302).set('Location', file.preSignedS3Url).end();
-      }
-    }
+    await this.permitService.findPDFbyPermitId(
+      currentUser,
+      permitId,
+      FileDownloadModes.PROXY,
+      res,
+    );
+    res.status(200);
   }
 
   @ApiCreatedResponse({
     description: 'The DOPS file Resource with the presigned resource',
     type: ReadFileDto,
+  })
+  @ApiOperation({
+    summary: 'Get Receipt PDF',
+    description:
+      'Retrieves a PDF receipt for a given permit ID, ensuring the user has read permission.',
   })
   @Roles(Role.READ_PERMIT)
   @Get('/:permitId/receipt')
@@ -225,19 +213,6 @@ export class PermitController {
 
     await this.permitService.findReceiptPDF(currentUser, permitId, res);
     res.status(200);
-  }
-
-  @ApiOkResponse({
-    description: 'The Permit Resource',
-    type: ReadPermitDto,
-    isArray: true,
-  })
-  @Roles(Role.READ_PERMIT)
-  @Get('/:permitId')
-  async getByPermitId(
-    @Param('permitId') permitId: string,
-  ): Promise<ReadPermitDto> {
-    return this.permitService.findByPermitId(permitId);
   }
 
   /**
@@ -264,17 +239,5 @@ export class PermitController {
       currentUser,
     );
     return permit;
-  }
-
-  /**
-   * A GET method defined with the @Get() decorator and a route of /types
-   * that returns all available permit types from cache.
-   * @returns
-   */
-  @Public()
-  @Get('types/list')
-  async getPermitTypes(): Promise<string> {
-    const permitTypes = await this.permitService.getPermitType();
-    return permitTypes;
   }
 }

@@ -2,15 +2,49 @@ import { FormControl, FormLabel } from "@mui/material";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
+import duration from "dayjs/plugin/duration";
 import { useFormContext } from "react-hook-form";
+
+import { useCallback, useEffect } from "react";
+import { RequiredOrNull } from "../../../../../common/types/common";
 import { PaymentAndRefundSummaryFormData } from "../../types/types";
+
+dayjs.extend(duration);
+const THIRTY_ONE_DAYS = 31;
+const roundingBuffer = dayjs.duration(1, "hour").asDays();
 
 /**
  * The date time pickers for reports.
  */
 export const ReportDateTimePickers = () => {
-  const { setValue, watch } = useFormContext<PaymentAndRefundSummaryFormData>();
+  const { setValue, watch, setError, formState, clearErrors } =
+    useFormContext<PaymentAndRefundSummaryFormData>();
+  const { errors } = formState;
   const issuedBy = watch("issuedBy");
+  const fromDateTime = watch("fromDateTime");
+  const toDateTime = watch("toDateTime");
+
+  /**
+   * Validates the 'toDateTime' field by comparing it with 'fromDateTime'.
+   * This function checks if the difference between 'toDateTime' and 'fromDateTime'
+   * falls within a valid range. The valid range is greater than 0 days and up to 30 days
+   * plus a rounding buffer of 1 hour represented in days. If the difference is outside
+   * this valid range, an error is set for 'toDateTime'. If the difference is within the
+   * valid range, any existing error for 'toDateTime' is cleared.
+   */
+  const validateToDateTime = useCallback(() => {
+    const diff = dayjs.duration(toDateTime.diff(fromDateTime)).asDays();
+    if (diff <= 0 || diff > THIRTY_ONE_DAYS + roundingBuffer) {
+      setError("toDateTime", {});
+    } else {
+      clearErrors("toDateTime");
+    }
+  }, [fromDateTime, toDateTime]);
+
+  useEffect(() => {
+    validateToDateTime();
+  }, [fromDateTime, toDateTime]);
+
   return (
     <>
       <FormControl
@@ -28,12 +62,8 @@ export const ReportDateTimePickers = () => {
         </FormLabel>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DateTimePicker
-            defaultValue={dayjs()
-              .subtract(1, "day")
-              .set("h", 21)
-              .set("m", 0)
-              .set("s", 0)
-              .set("ms", 0)}
+            value={fromDateTime}
+            disableFuture
             format="YYYY/MM/DD hh:mm A"
             slotProps={{
               digitalClockSectionItem: {
@@ -42,7 +72,7 @@ export const ReportDateTimePickers = () => {
                 },
               },
             }}
-            onChange={(value: Dayjs | null) => {
+            onChange={(value: RequiredOrNull<Dayjs>) => {
               setValue("fromDateTime", value as Dayjs);
             }}
             disabled={issuedBy.length === 0}
@@ -66,21 +96,34 @@ export const ReportDateTimePickers = () => {
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DateTimePicker
             disabled={issuedBy.length === 0}
-            onChange={(value: Dayjs | null) => {
+            onChange={(value: RequiredOrNull<Dayjs>) => {
               setValue("toDateTime", value as Dayjs);
             }}
             format="YYYY/MM/DD hh:mm A"
-            defaultValue={dayjs()
-              .set("h", 20)
-              .set("m", 59)
-              .set("s", 59)
-              .set("ms", 999)}
+            value={toDateTime}
+            minDate={fromDateTime}
+            /**
+             * In the scenario where a user wants to select a 30 day window,
+             * if the fromDateTime starts at 9:00PM Jan 1, then by default,
+             * the max toDateTime could be 8:59 PM Jan 30.
+             * However, forcing the user to pick 8:59 PM in the date time picker
+             * is an annoyance to them. Instead, we allow them an additional minute so that
+             * 9:00 PM is the hard limit. This way, they just have to select the date
+             * and can ignore the time if they choose to.
+             *
+             * The reports API account for a rounding value which allows this buffer.
+             *
+             * Hence the decision to add 1 minute to 30 days, to make life easier for user.
+             */
+            maxDateTime={fromDateTime.add(THIRTY_ONE_DAYS, "days").add(1, "minute")}
             views={["year", "month", "day", "hours", "minutes"]}
-            // slotProps={{
-            //   textField: {
-            //     helperText: "Select a from date time",
-            //   },
-            // }}
+            slotProps={{
+              textField: {
+                helperText:
+                  errors.toDateTime &&
+                  "To date time must be after From date time. Maximum date range is 30 days.",
+              },
+            }}
           />
         </LocalizationProvider>
       </FormControl>

@@ -1,88 +1,64 @@
 import { MRT_ColumnDef } from "material-react-table";
-import { VehicleTypes } from "../../types/managevehicles";
-import { formatCellValuetoDatetime } from "../../../../common/constants/defaultTableOptions";
+
+import { Vehicle } from "../../types/Vehicle";
+import { formatCellValuetoDatetime } from "../../../../common/helpers/tableHelper";
+
+const CommonVehicleColumnDefinition: MRT_ColumnDef<Vehicle>[] = [
+  {
+    accessorKey: "unitNumber",
+    header: "Unit #",
+  },
+  {
+    accessorKey: "make",
+    header: "Make",
+  },
+  {
+    accessorKey: "vin",
+    header: "VIN",
+  },
+  {
+    accessorKey: "plate",
+    header: "Plate",
+    filterVariant: "multi-select",
+  },
+];
+
+const CreatedAtColumnDefinition: MRT_ColumnDef<Vehicle> = {
+  accessorKey: "createdDateTime",
+  header: "Date Created",
+  Cell: (props: { cell: any }) => {
+    const formattedDate = formatCellValuetoDatetime(props.cell.getValue());
+    return <span>{formattedDate}</span>;
+  },
+};
 
 /**
  * The Columns Options are from Material React Table.
  * For a list of options, see here:
  * https://www.material-react-table.com/docs/api/column-options
  */
-export const PowerUnitColumnDefinition: MRT_ColumnDef<VehicleTypes>[] = [
+export const PowerUnitColumnDefinition: MRT_ColumnDef<Vehicle>[] = [
   {
     accessorKey: "powerUnitId",
     header: "Power unit Id",
   },
-  {
-    accessorKey: "unitNumber",
-    header: "Unit #",
-  },
-  {
-    accessorKey: "make",
-    header: "Make",
-  },
-  {
-    accessorKey: "vin",
-    header: "VIN",
-  },
-  {
-    accessorKey: "plate",
-    header: "Plate",
-    filterVariant: "multi-select",
-  },
+  ...CommonVehicleColumnDefinition,
   {
     accessorKey: "powerUnitTypeCode",
     header: "Vehicle Sub-Type",
   },
-  {
-    accessorKey: "createdDateTime",
-    header: "Date Created",
-    Cell: (props: { cell: any }) => {
-      const formattedDate = formatCellValuetoDatetime(props.cell.getValue())
-      return (
-        <span>
-          {formattedDate}
-        </span>
-      );
-    },
-  },
+  CreatedAtColumnDefinition,
 ];
 
-export const TrailerColumnDefinition: MRT_ColumnDef<VehicleTypes>[] = [
+export const TrailerColumnDefinition: MRT_ColumnDef<Vehicle>[] = [
   {
     accessorKey: "trailerId",
     header: "Trailer Id",
   },
-  {
-    accessorKey: "unitNumber",
-    header: "Unit #",
-  },
-  {
-    accessorKey: "make",
-    header: "Make",
-  },
-  {
-    accessorKey: "vin",
-    header: "VIN",
-  },
-  {
-    accessorKey: "plate",
-    header: "Plate",
-    filterVariant: "multi-select",
-  },
+  ...CommonVehicleColumnDefinition,
   {
     accessorKey: "trailerTypeCode",
     header: "Vehicle Sub-Type",
   },
-  {
-    accessorKey: "createdDateTime",
-    header: "Date Created",
-    Cell: (props: { cell: any }) => {
-      const formattedDate = formatCellValuetoDatetime(props.cell.getValue())
-      return (
-        <span>
-          {formattedDate}
-        </span>
-      );
-    },
-  },
+  CreatedAtColumnDefinition,
 ];

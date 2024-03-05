@@ -1,7 +1,7 @@
 /**
  * Service responsible for interacting with S3 Object Store
  */
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import {
   CompleteMultipartUploadCommandOutput,
@@ -13,18 +13,19 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Response } from 'express';
 import { IFile } from '../../interface/file.interface';
 import { Upload } from '@aws-sdk/lib-storage';
-
+import { LogAsyncMethodExecution } from '../../decorator/log-async-method-execution.decorator';
 @Injectable()
 export class S3Service {
+  private readonly logger = new Logger(S3Service.name);
   constructor(private readonly httpService: HttpService) {}
 
-  private readonly _s3AccessKeyId = process.env.DOPS_S3_ACCESSKEYID;
-  private readonly _s3SecretAccessKey = process.env.DOPS_S3_SECRETACCESSKEY;
-  private readonly _s3EndPoint = process.env.DOPS_S3_ENDPOINT;
-  private readonly _s3Bucket = process.env.DOPS_S3_BUCKET;
-  private readonly _s3Key = process.env.DOPS_S3_KEY;
+  private readonly _s3AccessKeyId = process.env.OCIO_S3_ACCESSKEYID;
+  private readonly _s3SecretAccessKey = process.env.OCIO_S3_SECRETACCESSKEY;
+  private readonly _s3EndPoint = process.env.OCIO_S3_ENDPOINT;
+  private readonly _s3Bucket = process.env.OCIO_S3_BUCKET;
+  private readonly _s3Key = process.env.OCIO_S3_KEY;
   private readonly _s3PreSignedUrlExpiry =
-    process.env.DOPS_S3_PRESIGNED_URL_EXPIRY;
+    process.env.OCIO_S3_PRESIGNED_URL_EXPIRY;
 
   private s3client: S3Client = new S3Client({
     apiVersion: '2006-03-01',
@@ -37,6 +38,7 @@ export class S3Service {
     region: 'ca-central-1',
   });
 
+  @LogAsyncMethodExecution()
   async uploadFile(
     file: Express.Multer.File | IFile,
     filePath?: string,
@@ -54,9 +56,10 @@ export class S3Service {
       },
     });
 
-    return (await upload.done()) as CompleteMultipartUploadCommandOutput;
+    return await upload.done();
   }
 
+  @LogAsyncMethodExecution()
   async getFile(
     filePath: string,
     res?: Response,
@@ -71,11 +74,12 @@ export class S3Service {
       if (res) this._processS3Headers(response, res);
       const stream = response.Body as NodeJS.ReadableStream;
       return stream;
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
+      this.logger.error(error);
     }
   }
 
+  @LogAsyncMethodExecution()
   async presignUrl(filePath: string): Promise<string> {
     const params = {
       Bucket: this._s3Bucket,

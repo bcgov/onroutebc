@@ -1,4 +1,10 @@
-@import "../../../../themes/orbcStyles.scss";
+@use "../../../../common/components/dashboard/Dashboard";
+@import "../../../../themes/orbcStyles";
+
+@include Dashboard.layout-box-style(".void-permit .breadcrumb");
+@include Dashboard.layout-box-style(".void-permit .layout-banner");
+@include Dashboard.layout-box-style(".void-permit__header");
+@include Dashboard.layout-box-style(".void-permit__form");
 
 .void-permit {
   display: flex;
@@ -7,61 +13,5 @@
 
   .layout-banner {
     background-color: $bc-background-light-grey;
-    padding-left: 8.551vw;
-    padding-right: 8.551vw;
-  }
-
-  .breadcrumb {
-    padding: 2em 8.551vw;
-  }
-
-  & &__header {
-    padding: 0 8.551vw;
-  }
-
-  & &__form {
-    padding: 0 8.551vw;
-  }
-}
-
-@media (width < 768px) {
-  .void-permit {
-    .layout-banner {
-      padding-left: 5.5rem;
-      padding-right: 5.5rem;
-    }
-
-    .breadcrumb {
-      padding: 2em 5.5rem;
-    }
-
-    & &__header {
-      padding: 0 5.5rem;
-    }
-
-    & &__form {
-      padding: 0 5.5rem;
-    }
-  }
-}
-
-@media (width < 420px) {
-  .void-permit {
-    .layout-banner {
-      padding-left: 1rem;
-      padding-right: 1rem;
-    }
-
-    .breadcrumb {
-      padding: 2em 1rem;
-    }
-
-    & &__header {
-      padding: 0 1rem;
-    }
-
-    & &__form {
-      padding: 0 1rem;
-    }
   }
 }

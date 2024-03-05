@@ -39,11 +39,31 @@ export class Company extends Base {
   clientNumber: string;
 
   /**
+   * The migrated client number of the company encoded SHA-256.
+   */
+  @AutoMap()
+  @Column({
+    length: 64,
+    name: 'TPS_CLIENT_HASH',
+    nullable: true,
+    insert: false,
+    update: false,
+  })
+  migratedClientHash?: string;
+
+  /**
    * The company's legal name.
    */
   @AutoMap()
   @Column({ length: 100, name: 'LEGAL_NAME', nullable: false })
   legalName: string;
+
+  /**
+   * The company's Alternate name/DBA.
+   */
+  @AutoMap()
+  @Column({ length: 150, name: 'ALTERNATE_NAME', nullable: true })
+  alternateName?: string;
 
   /**
    * A property that represents the company's directory, which is an enum of
@@ -56,6 +76,7 @@ export class Company extends Base {
     length: 10,
     name: 'COMPANY_DIRECTORY',
     nullable: false,
+    update: false,
   })
   directory: Directory;
 
@@ -141,4 +162,20 @@ export class Company extends Base {
   @AutoMap(() => [CompanyUser])
   @OneToMany(() => CompanyUser, (CompanyUser) => CompanyUser.company)
   companyUsers: CompanyUser[];
+
+  /**
+   * Specifies whether the account is suspended. 'Y' for yes, 'N' for no.
+   */
+  @AutoMap()
+  @Column({
+    type: 'char',
+    name: 'IS_SUSPENDED',
+    default: false,
+    nullable: false,
+    transformer: {
+      to: (value: boolean): string => (value ? 'Y' : 'N'), // Converts the boolean value to 'Y' or 'N' for storage.
+      from: (value: string): boolean => value === 'Y', // Converts the stored string back to a boolean.
+    },
+  })
+  isSuspended: boolean;
 }

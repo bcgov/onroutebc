@@ -1,25 +1,20 @@
 import { Box, Typography } from "@mui/material";
-import { InfoBcGovBanner } from "../../../../common/components/banners/AlertBanners";
+
+import "./ContactDetails.scss";
+import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
-import {
-  PERMIT_MAIN_BOX_STYLE,
-  PERMIT_LEFT_BOX_STYLE,
-  PERMIT_LEFT_HEADER_STYLE,
-  PERMIT_RIGHT_BOX_STYLE,
-  PHONE_WIDTH,
-  EXT_WIDTH,
-} from "../../../../themes/orbcStyles";
 import { requiredMessage } from "../../../../common/helpers/validationMessages";
+import { PHONE_WIDTH, EXT_WIDTH } from "../../../../themes/orbcStyles";
+import { BANNER_MESSAGES } from "../../../../common/constants/bannerMessages";
 
 export const ContactDetails = ({ feature }: { feature: string }) => {
   return (
-    <Box sx={PERMIT_MAIN_BOX_STYLE}>
-      <Box sx={PERMIT_LEFT_BOX_STYLE}>
-        <Typography variant={"h3"} sx={PERMIT_LEFT_HEADER_STYLE}>
-          Contact Information
-        </Typography>
+    <Box className="contact-details-form">
+      <Box className="contact-details-form__header">
+        <Typography variant={"h3"}>Contact Information</Typography>
       </Box>
-      <Box sx={PERMIT_RIGHT_BOX_STYLE}>
+
+      <Box className="contact-details-form__body">
         <CustomFormComponent
           type="input"
           feature={feature}
@@ -31,6 +26,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
             label: "First Name",
           }}
         />
+
         <CustomFormComponent
           type="input"
           feature={feature}
@@ -56,6 +52,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
               width: PHONE_WIDTH,
             }}
           />
+
           <CustomFormComponent
             type="input"
             feature={feature}
@@ -67,6 +64,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
             }}
           />
         </div>
+
         <div className="mp-side-by-side-container">
           <CustomFormComponent
             type="phone"
@@ -78,6 +76,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
               width: PHONE_WIDTH,
             }}
           />
+
           <CustomFormComponent
             type="input"
             feature={feature}
@@ -90,10 +89,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
           />
         </div>
 
-        <InfoBcGovBanner
-          description="The permit will be sent to the email listed below in addition to the email on your 
-      onRouteBC Company Information. If you would also like to receive the permit by Fax, please enter a fax number."
-        />
+        <InfoBcGovBanner msg={BANNER_MESSAGES.PERMIT_SEND_TO} />
 
         <CustomFormComponent
           type="input"
@@ -103,7 +99,19 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
             rules: {
               required: { value: true, message: requiredMessage() },
             },
-            label: "Email",
+            label: "Company Email",
+          }}
+          disabled={true}
+          readOnly={true}
+        />
+
+        <CustomFormComponent
+          type="input"
+          feature={feature}
+          options={{
+            name: "permitData.contactDetails.additionalEmail",
+            rules: { required: false },
+            label: "Additional Email",
           }}
         />
 

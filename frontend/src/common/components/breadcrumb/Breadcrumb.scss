@@ -1,19 +1,31 @@
-@import "../../../themes/orbcStyles.scss";
+@import "../../../themes/orbcStyles";
 
 .breadcrumb {
   display: flex;
   align-items: center;
   background-color: $white;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
 
   & &__link {
     color: $bc-text-links-blue;
     cursor: pointer;
     text-decoration: underline;
 
+    &:hover {
+      color: $blue;
+      text-decoration: none;
+    }
+
     &--current {
       text-decoration: none;
       color: $bc-black;
-      cursor: auto;
+      cursor: default;
+
+      &:hover {
+        color: $bc-black;
+        text-decoration: none;
+      }
     }
   }
 

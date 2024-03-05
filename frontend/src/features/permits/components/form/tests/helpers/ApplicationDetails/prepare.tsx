@@ -1,10 +1,11 @@
 import { setupServer } from "msw/node";
-import { rest } from "msw";
+import { http, HttpResponse } from "msw";
+import { Dayjs } from "dayjs";
+
 import { utcToLocalDayjs } from "../../../../../../../common/helpers/formatDate";
 import { MANAGE_PROFILE_API } from "../../../../../../manageProfile/apiManager/endpoints/endpoints";
-import { renderWithClient } from "../../../../../../../common/helpers/testHelper";
+import { renderForTests } from "../../../../../../../common/helpers/testHelper";
 import { ApplicationDetails } from "../../../ApplicationDetails";
-import { Dayjs } from "dayjs";
 import { PERMIT_TYPES } from "../../../../../types/PermitType";
 
 export const defaultCompanyInfo = {
@@ -19,7 +20,7 @@ export const defaultCompanyInfo = {
     countryCode: "CA",
     postalCode: "V1C 2B3",
   },
-  email: "my.company@mycompany.co",
+  email: "companyhq@mycompany.co",
   phone: "604-123-4567",
   primaryContact: {
     firstName: "My",
@@ -41,12 +42,10 @@ export const permitType = PERMIT_TYPES.TROS;
 
 const server = setupServer(
   // Mock get company info
-  rest.get(`${MANAGE_PROFILE_API.COMPANIES}/:companyId`, (_, res, ctx) => {
-    return res(
-      ctx.json({
-        ...defaultCompanyInfo,
-      }),
-    );
+  http.get(`${MANAGE_PROFILE_API.COMPANIES}/:companyId`, () => {
+    return HttpResponse.json({
+      ...defaultCompanyInfo,
+    });
   }),
 );
 
@@ -68,7 +67,7 @@ export const renderTestComponent = (
   createdDt?: Dayjs,
   updatedDt?: Dayjs,
 ) => {
-  return renderWithClient(
+  return renderForTests(
     <ApplicationDetails
       permitType={permitType}
       infoNumberType="application"

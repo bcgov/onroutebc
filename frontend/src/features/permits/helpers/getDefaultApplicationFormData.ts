@@ -1,17 +1,24 @@
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 
 import { getUserGuidFromSession } from "../../../common/apiManager/httpRequestHandler";
 import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBCContext";
-import { TROS_COMMODITIES } from "../constants/termOversizeConstants";
-import { now } from "../../../common/helpers/formatDate";
+import { getMandatoryCommodities } from "./commodities";
+import { Nullable } from "../../../common/types/common";
+import { PERMIT_STATUSES } from "../types/PermitStatus";
+import { calculateFeeByDuration } from "./feeSummary";
+import { PermitType } from "../types/PermitType";
+import { getExpiryDate } from "./permitState";
+import {
+  getEndOfDate,
+  getStartOfDate,
+  now,
+} from "../../../common/helpers/formatDate";
+
 import {
   Address,
   CompanyProfile,
 } from "../../manageProfile/types/manageProfile";
-import { PERMIT_STATUSES } from "../types/PermitStatus";
-import { calculateFeeByDuration } from "./feeSummary";
-import { PERMIT_TYPES } from "../types/PermitType";
-import { Permit } from "../types/permit";
+
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -29,12 +36,14 @@ import {
  * @param isNewApplication true if the application has not been created yet, false if created already
  * @param contactDetails existing contact details for the application, if any
  * @param userDetails existing user details, if any
+ * @param companyEmail company email
  * @returns default values for contact details
  */
 export const getDefaultContactDetails = (
   isNewApplication: boolean,
   contactDetails?: ContactDetails,
   userDetails?: BCeIDUserDetailContext,
+  companyEmail?: string,
 ) => {
   if (isNewApplication) {
     return {
@@ -44,10 +53,12 @@ export const getDefaultContactDetails = (
       phone1Extension: getDefaultRequiredVal("", userDetails?.phone1Extension),
       phone2: getDefaultRequiredVal("", userDetails?.phone2),
       phone2Extension: getDefaultRequiredVal("", userDetails?.phone2Extension),
-      email: getDefaultRequiredVal("", userDetails?.email),
+      email: getDefaultRequiredVal("", companyEmail),
+      additionalEmail: getDefaultRequiredVal("", userDetails?.email),
       fax: getDefaultRequiredVal("", userDetails?.fax),
     };
   }
+
   return {
     firstName: getDefaultRequiredVal("", contactDetails?.firstName),
     lastName: getDefaultRequiredVal("", contactDetails?.lastName),
@@ -55,7 +66,8 @@ export const getDefaultContactDetails = (
     phone1Extension: getDefaultRequiredVal("", contactDetails?.phone1Extension),
     phone2: getDefaultRequiredVal("", contactDetails?.phone2),
     phone2Extension: getDefaultRequiredVal("", contactDetails?.phone2Extension),
-    email: getDefaultRequiredVal("", contactDetails?.email),
+    email: getDefaultRequiredVal("", contactDetails?.email, companyEmail),
+    additionalEmail: getDefaultRequiredVal("", contactDetails?.additionalEmail),
     fax: getDefaultRequiredVal("", contactDetails?.fax),
   };
 };
@@ -94,6 +106,7 @@ export const getDefaultMailingAddress = (
  * @returns default values for vehicle details
  */
 export const getDefaultVehicleDetails = (vehicleDetails?: VehicleDetails) => ({
+  vehicleId: getDefaultRequiredVal("", vehicleDetails?.vehicleId),
   unitNumber: getDefaultRequiredVal("", vehicleDetails?.unitNumber),
   vin: getDefaultRequiredVal("", vehicleDetails?.vin),
   plate: getDefaultRequiredVal("", vehicleDetails?.plate),
@@ -103,117 +116,152 @@ export const getDefaultVehicleDetails = (vehicleDetails?: VehicleDetails) => ({
   provinceCode: getDefaultRequiredVal("", vehicleDetails?.provinceCode),
   vehicleType: getDefaultRequiredVal("", vehicleDetails?.vehicleType),
   vehicleSubType: getDefaultRequiredVal("", vehicleDetails?.vehicleSubType),
-  saveVehicle: getDefaultRequiredVal(false, vehicleDetails?.saveVehicle),
+  saveVehicle: false,
 });
 
 export const getDurationOrDefault = (
-  applicationData?: Application | Permit,
+  defaultDuration: number,
+  duration?: Nullable<number | string>,
 ): number => {
   return applyWhenNotNullable(
     (duration) => +duration,
-    applicationData?.permitData?.permitDuration,
-    30,
+    duration,
+    defaultDuration,
+  );
+};
+
+export const getStartDateOrDefault = (
+  defaultStartDate: Dayjs,
+  startDate?: Nullable<Dayjs | string>,
+): Dayjs => {
+  return applyWhenNotNullable(
+    (date) => getStartOfDate(dayjs(date)),
+    startDate,
+    getStartOfDate(defaultStartDate),
+  );
+};
+
+export const getExpiryDateOrDefault = (
+  startDateOrDefault: Dayjs,
+  durationOrDefault: number,
+  expiryDate?: Nullable<Dayjs | string>,
+): Dayjs => {
+  return applyWhenNotNullable(
+    (date) => getEndOfDate(dayjs(date)),
+    expiryDate,
+    getExpiryDate(startDateOrDefault, durationOrDefault),
   );
 };
 
 /**
  * Gets default values for the application data, or populate with values from existing application data and company id/user details.
+ * @param permitType permit type for the application
  * @param applicationData existing application data, if any
  * @param companyId company id of the current user, if any
  * @param userDetails user details of current user, if any
+ * @param companyInfo data from company profile information
  * @returns default values for the application data
  */
 export const getDefaultValues = (
-  applicationData?: Application,
+  permitType: PermitType,
+  applicationData?: Nullable<Application>,
   companyId?: number,
   userDetails?: BCeIDUserDetailContext,
   companyInfo?: CompanyProfile,
-) => ({
-  companyId: +getDefaultRequiredVal(0, companyId),
-  originalPermitId: getDefaultRequiredVal(
-    "",
-    applicationData?.originalPermitId,
-  ),
-  comment: getDefaultRequiredVal("", applicationData?.comment),
-  applicationNumber: getDefaultRequiredVal(
-    "",
-    applicationData?.applicationNumber,
-  ),
-  userGuid: getDefaultRequiredVal(
-    "",
-    applicationData?.userGuid,
-    getUserGuidFromSession(),
-  ),
-  permitId: getDefaultRequiredVal("", applicationData?.permitId),
-  permitNumber: getDefaultRequiredVal("", applicationData?.permitNumber),
-  permitType: getDefaultRequiredVal(
-    PERMIT_TYPES.TROS,
-    applicationData?.permitType,
-  ),
-  permitStatus: getDefaultRequiredVal(
-    PERMIT_STATUSES.IN_PROGRESS,
-    applicationData?.permitStatus,
-  ),
-  createdDateTime: applyWhenNotNullable(
-    (date) => dayjs(date),
-    applicationData?.createdDateTime,
+) => {
+  const startDateOrDefault = getStartDateOrDefault(
     now(),
-  ),
-  updatedDateTime: applyWhenNotNullable(
-    (date) => dayjs(date),
-    applicationData?.updatedDateTime,
-    now(),
-  ),
-  revision: getDefaultRequiredVal(0, applicationData?.revision),
-  previousRevision: getDefaultRequiredVal(
-    "",
-    applicationData?.previousRevision,
-  ),
-  documentId: getDefaultRequiredVal("", applicationData?.documentId),
-  permitData: {
-    companyName: getDefaultRequiredVal(
+    applicationData?.permitData?.startDate,
+  );
+
+  const durationOrDefault = getDurationOrDefault(
+    30,
+    applicationData?.permitData?.permitDuration,
+  );
+
+  const expiryDateOrDefault = getExpiryDateOrDefault(
+    startDateOrDefault,
+    durationOrDefault,
+    applicationData?.permitData?.expiryDate,
+  );
+
+  return {
+    companyId: +getDefaultRequiredVal(0, companyId),
+    originalPermitId: getDefaultRequiredVal(
       "",
-      applicationData?.permitData?.companyName,
+      applicationData?.originalPermitId,
     ),
-    clientNumber: getDefaultRequiredVal(
+    comment: getDefaultRequiredVal("", applicationData?.comment),
+    applicationNumber: getDefaultRequiredVal(
       "",
-      applicationData?.permitData?.clientNumber,
+      applicationData?.applicationNumber,
     ),
-    startDate: applyWhenNotNullable(
+    userGuid: getDefaultRequiredVal(
+      "",
+      applicationData?.userGuid,
+      getUserGuidFromSession(),
+    ),
+    permitId: getDefaultRequiredVal("", applicationData?.permitId),
+    permitNumber: getDefaultRequiredVal("", applicationData?.permitNumber),
+    permitType: getDefaultRequiredVal(
+      permitType,
+      applicationData?.permitType,
+    ),
+    permitStatus: getDefaultRequiredVal(
+      PERMIT_STATUSES.IN_PROGRESS,
+      applicationData?.permitStatus,
+    ),
+    createdDateTime: applyWhenNotNullable(
       (date) => dayjs(date),
-      applicationData?.permitData?.startDate,
+      applicationData?.createdDateTime,
       now(),
     ),
-    permitDuration: getDurationOrDefault(applicationData),
-    expiryDate: applyWhenNotNullable(
+    updatedDateTime: applyWhenNotNullable(
       (date) => dayjs(date),
-      applicationData?.permitData?.expiryDate,
+      applicationData?.updatedDateTime,
       now(),
     ),
-    commodities: getDefaultRequiredVal(
-      [TROS_COMMODITIES[0], TROS_COMMODITIES[1]],
-      applyWhenNotNullable(
-        (commodities) => commodities.map((commodity) => ({ ...commodity })),
-        applicationData?.permitData?.commodities,
-      ),
+    revision: getDefaultRequiredVal(0, applicationData?.revision),
+    previousRevision: getDefaultRequiredVal(
+      "",
+      applicationData?.previousRevision,
     ),
-    contactDetails: getDefaultContactDetails(
-      getDefaultRequiredVal("", applicationData?.applicationNumber).trim() ===
+    documentId: getDefaultRequiredVal("", applicationData?.documentId),
+    permitData: {
+      companyName: getDefaultRequiredVal(
         "",
-      applicationData?.permitData?.contactDetails,
-      userDetails,
-    ),
-    // Default values are updated from companyInfo query in the ContactDetails common component
-    mailingAddress: getDefaultMailingAddress(
-      applicationData?.permitData?.mailingAddress,
-      companyInfo?.mailingAddress,
-    ),
-    vehicleDetails: getDefaultVehicleDetails(
-      applicationData?.permitData?.vehicleDetails,
-    ),
-    feeSummary: getDefaultRequiredVal(
-      `${calculateFeeByDuration(getDurationOrDefault(applicationData))}`,
-      applicationData?.permitData?.feeSummary,
-    ),
-  },
-});
+        applicationData?.permitData?.companyName,
+      ),
+      clientNumber: getDefaultRequiredVal(
+        "",
+        applicationData?.permitData?.clientNumber,
+      ),
+      startDate: startDateOrDefault,
+      permitDuration: durationOrDefault,
+      expiryDate: expiryDateOrDefault,
+      commodities: getDefaultRequiredVal(
+        getMandatoryCommodities(permitType),
+        applyWhenNotNullable(
+          (commodities) => commodities.map((commodity) => ({ ...commodity })),
+          applicationData?.permitData?.commodities,
+        ),
+      ),
+      contactDetails: getDefaultContactDetails(
+        getDefaultRequiredVal("", applicationData?.applicationNumber).trim() ===
+          "",
+        applicationData?.permitData?.contactDetails,
+        userDetails,
+        companyInfo?.email,
+      ),
+      // Default values are updated from companyInfo query in the ContactDetails common component
+      mailingAddress: getDefaultMailingAddress(
+        applicationData?.permitData?.mailingAddress,
+        companyInfo?.mailingAddress,
+      ),
+      vehicleDetails: getDefaultVehicleDetails(
+        applicationData?.permitData?.vehicleDetails,
+      ),
+      feeSummary: `${calculateFeeByDuration(durationOrDefault)}`,
+    },
+  };
+};

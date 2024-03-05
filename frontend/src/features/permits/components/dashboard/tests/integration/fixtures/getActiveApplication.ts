@@ -1,17 +1,19 @@
 import { factory, nullable, primaryKey } from "@mswjs/data";
-import dayjs from "dayjs";
 
 import { ApplicationRequestData } from "../../../../../types/application";
-import {
-  DATE_FORMATS,
-  dayjsToLocalStr,
-  now,
-} from "../../../../../../../common/helpers/formatDate";
 import { getDefaultUserDetails } from "./getUserDetails";
 import { getDefaultPowerUnits } from "./getVehicleInfo";
 import { getDefaultCompanyInfo } from "./getCompanyInfo";
-import { TROS_COMMODITIES } from "../../../../../constants/termOversizeConstants";
+import { TROS_COMMODITIES } from "../../../../../constants/tros";
 import { PERMIT_TYPES } from "../../../../../types/PermitType";
+import { getExpiryDate } from "../../../../../helpers/permitState";
+import { VEHICLE_TYPES } from "../../../../../../manageVehicles/types/Vehicle";
+import {
+  DATE_FORMATS,
+  dayjsToLocalStr,
+  getStartOfDate,
+  now,
+} from "../../../../../../../common/helpers/formatDate";
 
 const activeApplicationSource = factory({
   application: {
@@ -41,6 +43,7 @@ const activeApplicationSource = factory({
         phone2: nullable(String),
         phone2Extension: nullable(String),
         email: nullable(String),
+        additionalEmail: nullable(String),
         fax: nullable(String),
       },
       vehicleDetails: {
@@ -72,6 +75,7 @@ const activeApplicationSource = factory({
 export const createApplication = (application: ApplicationRequestData) => {
   return activeApplicationSource.application.create({ ...application });
 };
+
 export const updateApplication = (
   application: ApplicationRequestData,
   applicationNumber: string,
@@ -87,6 +91,7 @@ export const updateApplication = (
     },
   });
 };
+
 export const getApplication = () => {
   const applications = activeApplicationSource.application.getAll();
   return applications.length > 0 ? applications[0] : undefined;
@@ -103,11 +108,12 @@ export const resetApplicationSource = () => {
 };
 
 export const getDefaultApplication = () => {
-  const currentDt = now();
+  const currentDt = getStartOfDate(now());
   const startDate = dayjsToLocalStr(currentDt, DATE_FORMATS.DATEONLY);
-  const expiryDt = dayjs(currentDt).add(30 - 1, "day");
+  const expiryDt = getExpiryDate(currentDt, 30);
   const expiryDate = dayjsToLocalStr(expiryDt, DATE_FORMATS.DATEONLY);
   const { companyId, userDetails } = getDefaultUserDetails();
+  
   const contactDetails = {
     firstName: userDetails.firstName,
     lastName: userDetails.lastName,
@@ -116,9 +122,12 @@ export const getDefaultApplication = () => {
     phone2: userDetails.phone2,
     phone2Extension: userDetails.phone2Extension,
     email: userDetails.email,
+    additionalEmail: "",
     fax: userDetails.fax,
   };
+
   const vehicle = getDefaultPowerUnits()[0];
+
   const vehicleDetails = {
     vin: vehicle.vin,
     plate: vehicle.plate,
@@ -126,15 +135,18 @@ export const getDefaultApplication = () => {
     year: vehicle.year,
     countryCode: vehicle.countryCode,
     provinceCode: vehicle.provinceCode,
-    vehicleType: "powerUnit",
+    vehicleType: VEHICLE_TYPES.POWER_UNIT,
     vehicleSubType: vehicle.powerUnitTypeCode,
     unitNumber: vehicle.unitNumber,
+    vehicleId: "1",
   };
+
   const commodities = [
     TROS_COMMODITIES[0],
     TROS_COMMODITIES[1],
     { ...TROS_COMMODITIES[2], checked: true },
   ];
+
   const { mailingAddress } = getDefaultCompanyInfo();
 
   return {

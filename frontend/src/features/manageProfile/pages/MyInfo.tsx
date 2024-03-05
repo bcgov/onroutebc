@@ -1,16 +1,17 @@
 import { memo, useState } from "react";
 import { Typography } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+import { Navigate } from "react-router-dom";
 
 import "./MyInfo.scss";
 import { UserInfoBanner } from "../../../common/components/banners/UserInfoBanner";
 import { DisplayMyInfo } from "./DisplayMyInfo";
 import { getMyInfo } from "../apiManager/manageProfileAPI";
 import { Loading } from "../../../common/pages/Loading";
-import { Unauthorized } from "../../../common/pages/Unauthorized";
 import { ErrorFallback } from "../../../common/pages/ErrorFallback";
 import { MyInfoForm } from "../components/forms/myInfo/MyInfoForm";
+import { ERROR_ROUTES } from "../../../routes/constants";
 
 const Header = () => (
   <Typography className="my-info-page__header" variant="h4">
@@ -22,24 +23,24 @@ export const MyInfo = memo(() => {
   const [isEditing, setIsEditing] = useState(false);
   const {
     data: myInfo,
-    isLoading,
+    isPending,
     isError,
     error,
   } = useQuery({
     queryKey: ["myInfo"],
     queryFn: getMyInfo,
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
     staleTime: 5000,
   });
 
-  if (isLoading) {
+  if (isPending) {
     return <Loading />;
   }
 
   if (isError) {
     if (error instanceof AxiosError) {
       if (error.response?.status === 401) {
-        return <Unauthorized />;
+        return <Navigate to={ERROR_ROUTES.UNAUTHORIZED} />;
       }
       return <ErrorFallback error={error.message} />;
     }
@@ -48,7 +49,7 @@ export const MyInfo = memo(() => {
   return (
     <div className="my-info-page">
       {isEditing ? <Header /> : null}
-      <UserInfoBanner userInfo={myInfo} />
+      <UserInfoBanner userAuthGroup={myInfo?.userAuthGroup} />
       {isEditing ? (
         <MyInfoForm myInfo={myInfo} setIsEditing={setIsEditing} />
       ) : (

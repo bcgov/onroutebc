@@ -1,19 +1,20 @@
 import { Button, Divider, FormGroup, Stack } from "@mui/material";
 import dayjs from "dayjs";
 import { FormProvider, useForm } from "react-hook-form";
+import { useContext, useState } from "react";
+
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { openBlobInNewTab } from "../../../permits/helpers/permitPDFHelper";
 import { getPaymentAndRefundSummary } from "../api/reports";
+import { IssuedByCheckBox } from "./subcomponents/IssuedByCheckBox";
+import { ReportDateTimePickers } from "./subcomponents/ReportDateTimePickers";
+import { SnackBarContext } from "../../../../App";
+import { Loading } from "../../../../common/pages/Loading";
 import {
   PaymentAndRefundSummaryFormData,
   PaymentAndRefundSummaryRequest,
   REPORT_ISSUED_BY,
 } from "../types/types";
-import { IssuedByCheckBox } from "./subcomponents/IssuedByCheckBox";
-import { ReportDateTimePickers } from "./subcomponents/ReportDateTimePickers";
-import { SnackBarContext } from "../../../../App";
-import { useContext, useState } from "react";
-import { Loading } from "../../../../common/pages/Loading";
 
 /**
  * Component for Payment and Refund Summary form
@@ -35,7 +36,7 @@ export const PaymentAndRefundSummary = () => {
     reValidateMode: "onBlur",
   });
 
-  const { watch } = formMethods;
+  const { watch, handleSubmit } = formMethods;
 
   const issuedBy = watch("issuedBy");
   const fromDateTime = watch("fromDateTime");
@@ -103,7 +104,7 @@ export const PaymentAndRefundSummary = () => {
                 aria-label="View Report"
                 variant="contained"
                 color="primary"
-                onClick={onClickViewReport}
+                onClick={handleSubmit(onClickViewReport)}
               >
                 View Report
               </Button>

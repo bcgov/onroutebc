@@ -77,10 +77,12 @@ export const OnRouteBCTableRowActions = ({
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
-        PaperProps={{
-          style: {
-            maxHeight: ITEM_HEIGHT * 4.5,
-            width: "15ch",
+        slotProps={{
+          paper: {
+            style: {
+              maxHeight: ITEM_HEIGHT * 4.5,
+              width: "15ch",
+            },
           },
         }}
       >

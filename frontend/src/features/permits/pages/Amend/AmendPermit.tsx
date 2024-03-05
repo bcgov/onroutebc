@@ -1,37 +1,39 @@
 import { useState, useEffect, useContext, useMemo } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { Box } from "@mui/material";
 
 import { Permit } from "../../types/permit";
 import { PERMIT_STATUSES, isPermitInactive } from "../../types/PermitStatus";
-import { hasPermitExpired } from "../../helpers/permitPDFHelper";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import { useMultiStepForm } from "../../hooks/useMultiStepForm";
 import { AmendPermitContext } from "./context/AmendPermitContext";
+import { Loading } from "../../../../common/pages/Loading";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
+import { USER_AUTH_GROUP } from "../../../../common/authentication/types";
+import { AmendPermitReview } from "./components/AmendPermitReview";
+import { AmendPermitFinish } from "./components/AmendPermitFinish";
+import { AmendPermitForm } from "./components/AmendPermitForm";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../../common/helpers/util";
+import { ERROR_ROUTES, IDIR_ROUTES } from "../../../../routes/constants";
+import { hasPermitExpired } from "../../helpers/permitState";
 import {
   useAmendmentApplicationQuery,
   usePermitDetailsQuery,
   usePermitHistoryQuery,
 } from "../../hooks/hooks";
-import { Loading } from "../../../../common/pages/Loading";
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
-import { Unauthorized } from "../../../../common/pages/Unauthorized";
-import { NotFound } from "../../../../common/pages/NotFound";
-import { Unexpected } from "../../../../common/pages/Unexpected";
-import { AmendPermitReview } from "./components/AmendPermitReview";
-import { AmendPermitFinish } from "./components/AmendPermitFinish";
-import { AmendPermitForm } from "./components/AmendPermitForm";
+
 import {
   AmendPermitFormData,
   getDefaultFormDataFromPermit,
 } from "./types/AmendPermitFormData";
-import { SEARCH_RESULTS } from "../../../../routes/constants";
+
 import {
   SEARCH_BY_FILTERS,
   SEARCH_ENTITIES,
 } from "../../../idir/search/types/types";
-import { applyWhenNotNullable } from "../../../../common/helpers/util";
 
 export const AMEND_PERMIT_STEPS = {
   Amend: "Amend",
@@ -68,14 +70,14 @@ const isAmendable = (permit: Permit) => {
 
 const isAmendableByUser = (authGroup?: string) => {
   return (
-    authGroup === USER_AUTH_GROUP.PPCCLERK ||
-    authGroup === USER_AUTH_GROUP.SYSADMIN
+    authGroup === USER_AUTH_GROUP.PPC_CLERK ||
+    authGroup === USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR
   );
 };
 
 const searchRoute =
-  `${SEARCH_RESULTS}?searchEntity=${SEARCH_ENTITIES.PERMIT}` +
-  `&searchByFilter=${SEARCH_BY_FILTERS.PERMIT_NUMBER}&searchValue=`;
+  `${IDIR_ROUTES.SEARCH_RESULTS}?searchEntity=${SEARCH_ENTITIES.PERMIT}` +
+  `&searchByFilter=${SEARCH_BY_FILTERS.PERMIT_NUMBER}&searchString=`;
 
 export const AmendPermit = () => {
   const { permitId } = useParams();
@@ -83,16 +85,17 @@ export const AmendPermit = () => {
   const navigate = useNavigate();
 
   // Query for permit data whenever this page is rendered, for the permit id
-  const { permit } = usePermitDetailsQuery(permitId);
+  const { data: permit } = usePermitDetailsQuery(permitId);
 
   // Get original permit id for the permit
   const originalPermitId = permit?.originalPermitId;
 
   // Get permit history for original permit id
-  const { permitHistory } = usePermitHistoryQuery(originalPermitId);
+  const permitHistoryQuery = usePermitHistoryQuery(originalPermitId);
+  const permitHistory = getDefaultRequiredVal([], permitHistoryQuery.data);
 
   // Get latest amendment application, if any
-  const { amendmentApplication } =
+  const { data: amendmentApplication } =
     useAmendmentApplicationQuery(originalPermitId);
 
   const permitFormDefaultValues = () => {
@@ -132,7 +135,7 @@ export const AmendPermit = () => {
   };
   const fullSearchRoute = `${searchRoute}${getBasePermitNumber()}`;
 
-  const goHome = () => navigate(searchRoute);
+  const goHome = () => navigate(-1);
   const goHomeSuccess = () => navigate(fullSearchRoute);
 
   const allLinks = [
@@ -208,15 +211,15 @@ export const AmendPermit = () => {
   }
 
   if (!isAmendableByUser(idirUserDetails?.userAuthGroup)) {
-    return <Unauthorized />;
+    return <Navigate to={ERROR_ROUTES.UNAUTHORIZED} />;
   }
 
   if (!permit) {
-    return <NotFound />;
+    return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
   }
 
   if (!isAmendable(permit)) {
-    return <Unexpected />;
+    return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
   }
 
   return (
@@ -228,10 +231,7 @@ export const AmendPermit = () => {
           borderColor: "divider",
         }}
       >
-        <Banner
-          bannerText={displayHeaderText(step.key as AmendPermitStep)}
-          extendHeight={true}
-        />
+        <Banner bannerText={displayHeaderText(step.key as AmendPermitStep)} />
       </Box>
 
       {step}

@@ -1,0 +1,23 @@
+@use "../../../../../../common/components/form/CustomFormComponents";
+@import "../../../../../../themes/orbcStyles";
+
+@include CustomFormComponents.custom-form-component(".select-permit-type__input");
+
+.select-permit-type {
+  font-size: 1rem;
+  color: $bc-black;
+
+  & &__label {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+
+  & &__input {
+    background-color: $white;
+    width: 15.25rem;
+  }
+
+  & &__menu {
+    width: calc(100% - 10px);
+  }
+}

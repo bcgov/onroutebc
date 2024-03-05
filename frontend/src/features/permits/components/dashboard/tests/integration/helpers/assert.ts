@@ -1,28 +1,29 @@
-import { VehicleTypesAsString } from "../../../../../../manageVehicles/types/managevehicles";
 import {
-  getDefaultPowerUnitTypes,
-  getDefaultTrailerTypes,
-} from "../fixtures/getVehicleInfo";
+  VEHICLE_TYPES,
+  VehicleType,
+} from "../../../../../../manageVehicles/types/Vehicle";
 import { subtypeOptions } from "./access";
+import {
+  getDefaultPowerUnitSubTypes,
+  getDefaultTrailerSubTypes,
+} from "../fixtures/getVehicleInfo";
 
-export const assertVehicleSubtypeOptions = async (
-  vehicleType: VehicleTypesAsString,
-) => {
+export const assertVehicleSubtypeOptions = async (vehicleType: VehicleType) => {
   const shownSubtypes =
-    vehicleType === "powerUnit"
-      ? getDefaultPowerUnitTypes()
+    vehicleType === VEHICLE_TYPES.POWER_UNIT
+      ? getDefaultPowerUnitSubTypes()
           .slice(0, -1)
           .map((subtype) => subtype.type)
-      : getDefaultTrailerTypes()
+      : getDefaultTrailerSubTypes()
           .slice(0, -1)
           .map((subtype) => subtype.type);
 
   const excludedSubtypes =
-    vehicleType === "powerUnit"
-      ? getDefaultPowerUnitTypes()
+    vehicleType === VEHICLE_TYPES.POWER_UNIT
+      ? getDefaultPowerUnitSubTypes()
           .slice(-1)
           .map((subtype) => subtype.type)
-      : getDefaultTrailerTypes()
+      : getDefaultTrailerSubTypes()
           .slice(-1)
           .map((subtype) => subtype.type);
 

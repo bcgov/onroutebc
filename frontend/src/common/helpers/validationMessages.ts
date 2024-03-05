@@ -76,3 +76,26 @@ export const invalidPlateLength = (max: number) => {
   const { messageTemplate, placeholders } = validationMessages.plate.length.max;
   return replacePlaceholders(messageTemplate, placeholders, max);
 };
+
+export const invalidDBALength = (min: number, max: number) => {
+  const { messageTemplate, placeholders } = validationMessages.dba.length;
+  return replacePlaceholders(messageTemplate, placeholders, min, max);
+};
+
+/**
+ * Checks if a given string is
+ * null, empty or conforms to length requirements if it has a value.
+ *
+ * @param value The value to be validated.
+ * @param {number} options.minLength: The minimum length of the field. Defaults to 1.
+ * @param {number} options.maxLength: The maximum length of the field. Required.
+ * @returns A boolean
+ */
+export const isValidOptionalString = (
+  value: string | undefined,
+  { maxLength, minLength = 1 }: { maxLength: number; minLength?: number },
+): boolean => {
+  return Boolean(
+    !value || (value && value.length >= minLength && value.length <= maxLength),
+  );
+};

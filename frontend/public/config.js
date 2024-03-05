@@ -18,8 +18,8 @@ const envConfig = (() => {
   return {
     VITE_DEPLOY_ENVIRONMENT: "docker",
     VITE_API_VEHICLE_URL: "http://localhost:5000",
-    VITE_AUTH0_ISSUER_URL: "",
-    VITE_AUTH0_AUDIENCE: "",
+    VITE_KEYCLOAK_ISSUER_URL: "",
+    VITE_KEYCLOAK_AUDIENCE: "",
     VITE_SITEMINDER_LOG_OFF_URL: ""
   };
 })();

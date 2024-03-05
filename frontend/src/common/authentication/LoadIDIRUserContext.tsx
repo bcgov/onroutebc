@@ -1,4 +1,11 @@
-import { useUserContext } from "../../features/manageProfile/apiManager/hooks";
+import { useEffect } from "react";
+import { useNavigate } from "react-router";
+
+import { ERROR_ROUTES } from "../../routes/constants";
+import {
+  useUserContext,
+  useUserContextQuery,
+} from "../../features/manageProfile/apiManager/hooks";
 
 /*
  * A simple component that merely calls a react query hook.
@@ -10,6 +17,22 @@ import { useUserContext } from "../../features/manageProfile/apiManager/hooks";
  * from any protected route.
  */
 export const LoadIDIRUserContext = () => {
-  useUserContext();
+  const navigate = useNavigate();
+  const {
+    isPending,
+    isError,
+    data: userContextResponse,
+  } = useUserContextQuery();
+
+  useEffect(() => {
+    if (!isPending) {
+      if (isError) {
+        navigate(ERROR_ROUTES.UNAUTHORIZED);
+      }
+    }
+  }, [isPending, isError]);
+
+  useUserContext(userContextResponse);
+
   return null;
 };

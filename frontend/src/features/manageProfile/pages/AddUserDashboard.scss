@@ -1,5 +1,5 @@
-@use "../../../common/components/dashboard/Dashboard.scss";
-@import "../../../themes/orbcStyles.scss";
+@use "../../../common/components/dashboard/Dashboard";
+@import "../../../themes/orbcStyles";
 
 .dashboard-page {
   &#{&}--add-user &__form {

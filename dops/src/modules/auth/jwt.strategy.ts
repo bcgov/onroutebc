@@ -16,6 +16,7 @@ import { UserStatus } from '../../enum/user-status.enum';
 import { AxiosResponse } from 'axios';
 import { UserAuthGroup } from '../../enum/user-auth-group.enum';
 import { getDirectory } from '../../helper/auth.helper';
+import { ICompanyMetadata } from '../../interface/company-metadata.interface';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -25,13 +26,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         cache: true,
         rateLimit: true,
         jwksRequestsPerMinute: 5,
-        jwksUri: `${process.env.AUTH0_ISSUER_URL}/protocol/openid-connect/certs`,
+        jwksUri: `${process.env.KEYCLOAK_ISSUER_URL}/protocol/openid-connect/certs`,
       }),
 
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: process.env.AUTH0_IGNORE_EXP === 'true' ? true : false,
-      audience: process.env.AUTH0_AUDIENCE,
-      issuer: `${process.env.AUTH0_ISSUER_URL}`,
+      ignoreExpiration:
+        process.env.KEYCLOAK_IGNORE_EXP === 'true' ? true : false,
+      audience: process.env.KEYCLOAK_AUDIENCE,
+      issuer: `${process.env.KEYCLOAK_ISSUER_URL}`,
       algorithms: ['RS256'],
       passReqToCallback: true,
     });
@@ -119,20 +121,22 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (payload.identity_provider !== IDP.IDIR) {
       const companiesForUsersResponse: AxiosResponse =
         await this.authService.getCompaniesForUser(access_token);
-      associatedCompanies = (
-        companiesForUsersResponse.data as [
-          { companyId: number; clientNumber: string; legalName: string },
-        ]
-      ).map((company) => {
-        return company.companyId;
-      });
+      const associatedCompanyMetadataList = companiesForUsersResponse.data as [
+        ICompanyMetadata,
+      ];
 
+      associatedCompanies = associatedCompanyMetadataList?.map(
+        (company) => +company.companyId,
+      );
       //Remove when one login Multiple Companies needs to be activated
       companyId = associatedCompanies?.length
         ? associatedCompanies?.at(0)
         : companyId;
 
-      if (!associatedCompanies.includes(companyId)) {
+      if (
+        !associatedCompanies.includes(companyId) ||
+        associatedCompanyMetadataList?.at(0)?.isSuspended
+      ) {
         throw new ForbiddenException();
       }
     }
@@ -145,10 +149,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         : undefined,
     ]);
     if (
-      accessApiResponse.at(0).status !== HttpStatus.OK ||
-      (accessApiResponse.at(0).status === HttpStatus.OK &&
+      (accessApiResponse?.at(0)?.status as HttpStatus) !== HttpStatus.OK ||
+      ((accessApiResponse?.at(0)?.status as HttpStatus) === HttpStatus.OK &&
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        accessApiResponse.at(0).data?.statusCode !== UserStatus.ACTIVE)
+        accessApiResponse?.at(0)?.data?.statusCode !== UserStatus.ACTIVE)
     ) {
       throw new UnauthorizedException();
     }

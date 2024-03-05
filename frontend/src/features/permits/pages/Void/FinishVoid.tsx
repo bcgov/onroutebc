@@ -4,37 +4,50 @@ import { VoidPermitContext } from "./context/VoidPermitContext";
 import { RefundFormData } from "../Refund/types/RefundFormData";
 import { Permit } from "../../types/permit";
 import { usePermitHistoryQuery } from "../../hooks/hooks";
-import { calculateNetAmount } from "../../helpers/feeSummary";
-import { RefundPage } from "../Refund/RefundPage";
+import { calculateAmountForVoid } from "../../helpers/feeSummary";
+import { PERMIT_REFUND_ACTIONS, RefundPage } from "../Refund/RefundPage";
 import { mapToVoidRequestData } from "./helpers/mapper";
 import { useVoidPermit } from "./hooks/useVoidPermit";
+import { isValidTransaction } from "../../helpers/payment";
+import { Nullable } from "../../../../common/types/common";
+import { hasPermitsActionFailed } from "../../helpers/permitState";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 export const FinishVoid = ({
   permit,
   onSuccess,
+  onFail,
 }: {
-  permit: Permit | null;
+  permit: Nullable<Permit>;
   onSuccess: () => void;
+  onFail: () => void;
 }) => {
   const { voidPermitData } = useContext(VoidPermitContext);
 
-  const { email, fax, reason } = voidPermitData;
+  const { email, additionalEmail, fax, reason } = voidPermitData;
 
-  const { query: permitHistoryQuery, permitHistory } = usePermitHistoryQuery(
-    permit?.originalPermitId,
-  );
+  const permitHistoryQuery = usePermitHistoryQuery(permit?.originalPermitId);
 
-  const transactionHistory = permitHistoryQuery.isInitialLoading
+  const permitHistory = getDefaultRequiredVal([], permitHistoryQuery.data);
+
+  const transactionHistory = permitHistoryQuery.isLoading
     ? []
-    : permitHistory;
+    : permitHistory.filter((history) =>
+        isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
+      );
 
-  const amountToRefund = -1 * calculateNetAmount(transactionHistory);
+  const amountToRefund = !permit
+    ? 0
+    : -1 * calculateAmountForVoid(permit, transactionHistory);
 
   const { mutation: voidPermitMutation, voidResults } = useVoidPermit();
 
   useEffect(() => {
-    if (voidResults && voidResults.success.length > 0) {
-      // Navigate back to search page
+    const voidFailed = hasPermitsActionFailed(voidResults);
+    if (voidFailed) {
+      onFail();
+    } else if (getDefaultRequiredVal(0, voidResults?.success?.length) > 0) {
+      // Void action was triggered, and has results (was successful)
       onSuccess();
     }
   }, [voidResults]);
@@ -56,11 +69,12 @@ export const FinishVoid = ({
       permitHistory={transactionHistory}
       amountToRefund={amountToRefund}
       email={email}
+      additionalEmail={additionalEmail}
       fax={fax}
       reason={reason}
       permitNumber={permit?.permitNumber}
       permitType={permit?.permitType}
-      permitAction="void"
+      permitAction={PERMIT_REFUND_ACTIONS.VOID}
       onFinish={handleFinish}
     />
   );

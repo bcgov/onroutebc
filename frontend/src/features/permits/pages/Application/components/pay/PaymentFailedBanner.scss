@@ -1,0 +1,19 @@
+@import "../../../../../../themes/orbcStyles";
+
+.payment-failed-banner {
+  margin-top: 2.5rem;
+  color: $white;
+  background-color: $bc-messages-red-text;
+  max-width: 33rem;
+  border-radius: 0.5rem;
+
+  & &__container {
+    padding: 1.5rem;
+    display: flex;
+  }
+
+  & &__msg {
+    font-weight: normal;
+    font-size: 1rem;
+  }
+}

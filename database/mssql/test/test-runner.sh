@@ -48,12 +48,6 @@ while test -f "${SCRIPT_DIR}/versions/revert/v_${nextver}_ddl_revert.sql"; do
     #echo "Next migration file to check: ${SCRIPT_DIR}/versions/v_${nextver}_ddl.sql"
 done
 
-echo "Testing the full migrate db schema script..."
-migrate_db_current ${MSSQL_SA_USER} "${MSSQL_SA_PASSWORD}" "${MSSQL_HOST}" ${UNIT_TEST_DB_NAME}
-
-echo "Testing the full revert db schema script..."
-revert_db_complete ${MSSQL_SA_USER} "${MSSQL_SA_PASSWORD}" "${MSSQL_HOST}" ${UNIT_TEST_DB_NAME}
-
 echo "Testing the full reset script (including sample data)..."
 migrate_db_current ${MSSQL_SA_USER} "${MSSQL_SA_PASSWORD}" "${MSSQL_HOST}" ${UNIT_TEST_DB_NAME}
 export TEST_MOTI_USER=${MSSQL_SA_USER}

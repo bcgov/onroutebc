@@ -81,8 +81,12 @@ function revert_db_single {
 
     if (( $? == 0 )); then
       echo "Reverted ORBC database version."
+      # Clean up temp revert script
+      rm ${SCRIPT_DIR}/tmp/revert.tmp.sql
     else
       echo "Error reverting ORBC database version."
+      # Clean up temp revert script
+      rm ${SCRIPT_DIR}/tmp/revert.tmp.sql
       return 1
     fi
   else
@@ -114,7 +118,13 @@ function migrate_db_single {
       # The stripping of the = signs causes problems with base64 decoding because
       # the padding is represented by =. Bash base64 can still decode but it generates
       # an error, and may not always be reliable.
-      export UPDATE_SCRIPT=$( base64 -w 0 <${SCRIPT_DIR}/versions/v_${nextver}_ddl.sql )
+
+      # Jan 8, 2024 - removed the addition of UPDATE_SCRIPT to the database during
+      # migration, since a very long SQL script was encountered at version 11 that overflowed
+      # the linux ARG_MAX command size limit. It was originally added for reference 
+      # only, so is now no longer used. If in the future a REVERT_SCRIPT is encountered
+      # that breaks the ARG_MAX limit we will have to separate into multiple versions.
+      export UPDATE_SCRIPT="Refer to git repository"
       export REVERT_SCRIPT=$( base64 -w 0 <${SCRIPT_DIR}/versions/revert/v_${nextver}_ddl_revert.sql )
       sqlcmd -C -U ${1} -P "${2}" -S ${3} -d ${4} -b -i ${SCRIPT_DIR}/versions/v_${nextver}_ddl.sql
       if (( $? > 0 )); then

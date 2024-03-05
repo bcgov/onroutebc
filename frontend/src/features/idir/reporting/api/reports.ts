@@ -1,15 +1,21 @@
-import { UseQueryResult, useQuery } from "@tanstack/react-query";
+import {
+  UseQueryResult,
+  useQuery,
+  keepPreviousData,
+} from "@tanstack/react-query";
+
 import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints";
+import { ONE_HOUR } from "../../../../common/constants/constants";
 import {
   httpGETRequest,
   httpPOSTRequestStream,
 } from "../../../../common/apiManager/httpRequestHandler";
-import { ONE_HOUR } from "../../../../common/constants/constants";
-import { getFileNameFromHeaders } from "../../../permits/apiManager/permitsAPI";
+
 import {
   PaymentAndRefundDetailRequest,
   PaymentAndRefundSummaryRequest,
 } from "../types/types";
+import { streamDownloadFile } from "../../../../common/helpers/util";
 
 /**
  * Streams a file through a POST request.
@@ -27,33 +33,8 @@ const streamDownloadWithHTTPPost = async (
   filename: string;
 }> => {
   const response = await httpPOSTRequestStream(url, requestBody);
-  const filename = getFileNameFromHeaders(response.headers);
-  if (!filename) {
-    throw new Error("Unable to download pdf, file not available");
-  }
-  if (!response.body) {
-    throw new Error("Unable to download pdf, no response found");
-  }
-  const reader = response.body.getReader();
-  const stream = new ReadableStream({
-    start: (controller) => {
-      const processRead = async () => {
-        const { done, value } = await reader.read();
-        if (done) {
-          // When no more data needs to be consumed, close the stream
-          controller.close();
-          return;
-        }
-        // Enqueue the next data chunk into our target stream
-        controller.enqueue(value);
-        await processRead();
-      };
-      processRead();
-    },
-  });
-  const newRes = new Response(stream);
-  const blobObj = await newRes.blob();
-  return { blobObj, filename };
+  const file = await streamDownloadFile(response);
+  return file;
 };
 
 /**
@@ -86,7 +67,7 @@ export const getPaymentAndRefundDetail = async (
  * where the key is the permitTypeCode and the value is the display.
  */
 export const getPermitTypes = async (): Promise<Record<string, string>> => {
-  const url = `${VEHICLES_URL}/permits/types/list`;
+  const url = `${VEHICLES_URL}/permits/permit-types`;
   return httpGETRequest(url.toString()).then((response) => response.data);
 };
 
@@ -101,7 +82,7 @@ export const usePermitTypesQuery = (): UseQueryResult<
   return useQuery({
     queryKey: ["permitTypes"],
     queryFn: () => getPermitTypes(),
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
     staleTime: ONE_HOUR,
   });
 };

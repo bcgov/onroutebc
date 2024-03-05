@@ -3,29 +3,45 @@ import { useContext, useEffect, useState } from "react";
 import "./AmendPermitReview.scss";
 import { AmendPermitContext } from "../context/AmendPermitContext";
 import { useCompanyInfoDetailsQuery } from "../../../../manageProfile/apiManager/hooks";
-import {
-  applyWhenNotNullable,
-  getDefaultRequiredVal,
-} from "../../../../../common/helpers/util";
-import {
-  usePowerUnitTypesQuery,
-  useTrailerTypesQuery,
-} from "../../../../manageVehicles/apiManager/hooks";
-import { PermitReview } from "../../TermOversize/components/review/PermitReview";
+import { PermitReview } from "../../Application/components/review/PermitReview";
 import { Breadcrumb } from "../../../../../common/components/breadcrumb/Breadcrumb";
 import { getDefaultFormDataFromPermit } from "../types/AmendPermitFormData";
 import { ReviewReason } from "./review/ReviewReason";
 import { calculateAmountToRefund } from "../../../helpers/feeSummary";
+import { isValidTransaction } from "../../../helpers/payment";
+import OnRouteBCContext from "../../../../../common/authentication/OnRouteBCContext";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../../../common/helpers/util";
+
+import {
+  usePowerUnitSubTypesQuery,
+  useTrailerSubTypesQuery,
+} from "../../../../manageVehicles/apiManager/hooks";
 
 export const AmendPermitReview = () => {
   const { permit, permitFormData, permitHistory, back, next, getLinks } =
     useContext(AmendPermitContext);
 
+  const {
+    companyLegalName,
+    idirUserDetails,
+  } = useContext(OnRouteBCContext);
+
+  const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
+  const doingBusinessAs = isStaffActingAsCompany && companyLegalName ?
+    companyLegalName : "";
+
+  const validTransactionHistory = permitHistory.filter((history) =>
+    isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
+  );
+
   const { data: companyInfo } = useCompanyInfoDetailsQuery(
     getDefaultRequiredVal(0, permitFormData?.companyId),
   );
-  const powerUnitTypesQuery = usePowerUnitTypesQuery();
-  const trailerTypesQuery = useTrailerTypesQuery();
+  const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
+  const trailerSubTypesQuery = useTrailerSubTypesQuery();
 
   // For the confirmation checkboxes
   const [isChecked, setIsChecked] = useState(false);
@@ -46,7 +62,7 @@ export const AmendPermitReview = () => {
   const amountToRefund =
     -1 *
     calculateAmountToRefund(
-      permitHistory,
+      validTransactionHistory,
       getDefaultRequiredVal(0, permitFormData?.permitData?.permitDuration),
     );
 
@@ -73,8 +89,8 @@ export const AmendPermitReview = () => {
         allChecked={isChecked}
         setAllChecked={setIsChecked}
         hasAttemptedCheckboxes={isSubmitted}
-        powerUnitTypes={powerUnitTypesQuery.data}
-        trailerTypes={trailerTypesQuery.data}
+        powerUnitSubTypes={powerUnitSubTypesQuery.data}
+        trailerSubTypes={trailerSubTypesQuery.data}
         vehicleDetails={permitFormData?.permitData?.vehicleDetails}
         vehicleWasSaved={
           permitFormData?.permitData?.vehicleDetails?.saveVehicle
@@ -83,10 +99,6 @@ export const AmendPermitReview = () => {
         oldFields={{
           ...oldFields,
           permitId: applyWhenNotNullable((id) => `${id}`, oldFields.permitId),
-          previousRevision: applyWhenNotNullable(
-            (prevRev) => `${prevRev}`,
-            oldFields.previousRevision,
-          ),
           permitData: {
             ...oldFields.permitData,
             companyName: getDefaultRequiredVal(
@@ -100,6 +112,7 @@ export const AmendPermitReview = () => {
           },
         }}
         calculatedFee={`${amountToRefund}`}
+        doingBusinessAs={doingBusinessAs}
       >
         {permitFormData?.comment ? (
           <ReviewReason reason={permitFormData.comment} />

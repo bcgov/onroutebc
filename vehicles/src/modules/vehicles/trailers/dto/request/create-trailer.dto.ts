@@ -3,7 +3,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsAlphanumeric,
   IsNumber,
-  IsNumberString,
   IsOptional,
   IsPositive,
   IsString,
@@ -22,7 +21,6 @@ export class CreateTrailerDto {
   })
   @IsOptional()
   @IsString()
-  //@IsAlphanumeric()
   @MaxLength(10)
   unitNumber?: string;
 
@@ -32,7 +30,6 @@ export class CreateTrailerDto {
     example: 'AS 5895',
   })
   @IsString()
-  //@IsAlphanumeric()
   @MaxLength(10)
   plate: string;
 
@@ -81,7 +78,6 @@ export class CreateTrailerDto {
     example: 'Kenworth',
   })
   @IsString()
-  // @IsAlphanumeric()
   @MaxLength(20)
   make: string;
 
@@ -103,9 +99,7 @@ export class CreateTrailerDto {
     required: false,
   })
   @IsOptional()
-  // TODO: Temporary solution for a frontend issue with sending an optional number value through React Hook Forms
-  // Ideally, this should be @IsNumber()
-  @IsNumberString()
+  @IsNumber()
   emptyTrailerWidth?: number;
 
   @AutoMap()
@@ -113,5 +107,7 @@ export class CreateTrailerDto {
     description: 'Type of the trailer.',
     example: 'BOOSTER',
   })
+  @IsString()
+  @Length(1, 7)
   trailerTypeCode: string;
 }

@@ -1,9 +1,14 @@
+import { PermitHistory } from "../types/PermitHistory";
+import { TRANSACTION_TYPES, TransactionType } from "../types/payment.d";
+import { Permit } from "../types/permit";
+import { isValidTransaction } from "./payment";
+import { Nullable } from "../../../common/types/common";
+import { PERMIT_STATES, getPermitState } from "./permitState";
+
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../common/helpers/util";
-import { PermitHistory } from "../types/PermitHistory";
-import { TRANSACTION_TYPES, TransactionType } from "../types/payment.d";
 
 /**
  * Calculates the fee for a permit only by its duration.
@@ -11,7 +16,8 @@ import { TRANSACTION_TYPES, TransactionType } from "../types/payment.d";
  * @returns Fee to be paid for the permit duration
  */
 export const calculateFeeByDuration = (duration: number) => {
-  return duration;
+  // 1 Year === 365 days, but the fee for one year is only $360
+  return duration > 360 ? 360 : duration;
 };
 
 /**
@@ -21,8 +27,8 @@ export const calculateFeeByDuration = (duration: number) => {
  * @returns display text for the fee summary (currency amount to 2 decimal places)
  */
 export const feeSummaryDisplayText = (
-  feeSummary?: string | null,
-  duration?: number | null,
+  feeSummary?: Nullable<string>,
+  duration?: Nullable<number>,
 ) => {
   const feeFromSummary = applyWhenNotNullable(
     (numericStr) => Number(numericStr).toFixed(2),
@@ -56,6 +62,9 @@ export const isTransactionTypeRefund = (transactionType: TransactionType) => {
  */
 export const calculateNetAmount = (permitHistory: PermitHistory[]) => {
   return permitHistory
+    .filter((permit) =>
+      isValidTransaction(permit.paymentMethodTypeCode, permit.pgApproved),
+    )
     .map((permit) =>
       isTransactionTypeRefund(permit.transactionTypeId)
         ? -1 * permit.transactionAmount
@@ -77,4 +86,31 @@ export const calculateAmountToRefund = (
   const netPaid = calculateNetAmount(permitHistory);
   const feeForCurrDuration = calculateFeeByDuration(currDuration);
   return netPaid - feeForCurrDuration;
+};
+
+/**
+ * Determine whether or not an amount is considered to be zero (due to numerical approximation errors).
+ * @param amount Numerical amount (usually representing currency amount)
+ * @returns Whether or not the amount is considered to be zero
+ */
+export const isZeroAmount = (amount: number) => {
+  return Math.abs(amount) < 0.000001;
+};
+
+/**
+ * Calculates the amount that can be refunded for voiding the permit.
+ * @param permit Permit to void
+ * @param permitHistory List of history objects that make up the history of a permit and its transactions
+ * @returns Amount that can be refunded as a result of the void operation
+ */
+export const calculateAmountForVoid = (
+  permit: Permit,
+  permitHistory: PermitHistory[],
+) => {
+  const permitState = getPermitState(permit);
+  if (permitState === PERMIT_STATES.EXPIRED) {
+    return 0;
+  }
+
+  return calculateNetAmount(permitHistory);
 };

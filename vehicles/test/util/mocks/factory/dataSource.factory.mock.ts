@@ -17,6 +17,13 @@ export type MockType<T> = {
   [P in keyof T]?: jest.Mock<object>;
 };
 
+export type MockQueryRunnerManager = {
+  delete: jest.Mock;
+  update: jest.Mock;
+  find: jest.Mock;
+  save: jest.Mock;
+};
+
 export const dataSourceMockFactory = () => {
   return {
     ...jest.requireActual('typeorm/data-source/DataSource'),
@@ -29,6 +36,7 @@ export const dataSourceMockFactory = () => {
       query: jest.fn(),
       manager: {
         delete: jest.fn(),
+        update: jest.fn(),
         save: jest.fn((saveObject: object) => {
           if (saveObject instanceof Company) {
             if (saveObject.legalName === constants.RED_COMPANY_LEGAL_NAME) {
@@ -65,6 +73,7 @@ export const createQueryBuilderMock = (
   filteredList: object[],
   customGetOne?: jest.Mock,
   customGetMany?: jest.Mock,
+  customGetCount?: jest.Mock,
 ) => {
   return {
     ...jest.requireActual('typeorm/query-builder/SelectQueryBuilder'),
@@ -84,15 +93,20 @@ export const createQueryBuilderMock = (
     orderBy: jest.fn().mockReturnThis(),
     take: jest.fn().mockReturnThis(),
     skip: jest.fn().mockReturnThis(),
-    getOne: customGetOne
-      ? customGetOne
-      : jest.fn().mockImplementation(() => {
-          return filteredList[0];
-        }),
-    getMany: customGetMany
-      ? customGetMany
-      : jest.fn().mockImplementation(() => {
-          return filteredList;
-        }),
+    getCount:
+      customGetCount ||
+      jest.fn().mockImplementation(() => {
+        return filteredList?.length;
+      }),
+    getOne:
+      customGetOne ||
+      jest.fn().mockImplementation(() => {
+        return filteredList[0];
+      }),
+    getMany:
+      customGetMany ||
+      jest.fn().mockImplementation(() => {
+        return filteredList;
+      }),
   };
 };

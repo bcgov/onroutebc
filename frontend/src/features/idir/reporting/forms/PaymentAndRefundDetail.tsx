@@ -1,42 +1,54 @@
 import { Button, Divider, FormGroup, Stack } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useContext, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { useAuth } from "react-oidc-context";
+
 import { SnackBarContext } from "../../../../App";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
+import { IDIR_USER_AUTH_GROUP } from "../../../../common/authentication/types";
 import { ONE_HOUR } from "../../../../common/constants/constants";
+import { Loading } from "../../../../common/pages/Loading";
+import { BC_COLOURS } from "../../../../themes/bcGovStyles";
+import { openBlobInNewTab } from "../../../permits/helpers/permitPDFHelper";
+import { getPaymentAndRefundDetail, usePermitTypesQuery } from "../api/reports";
+import { getPermitIssuers } from "../api/users";
+import { IssuedByCheckBox } from "./subcomponents/IssuedByCheckBox";
+import { PaymentMethodSelect } from "./subcomponents/PaymentMethodSelect";
+import { PermitTypeSelect } from "./subcomponents/PermitTypeSelect";
+import { ReportDateTimePickers } from "./subcomponents/ReportDateTimePickers";
+import { UserSelect } from "./subcomponents/UserSelect";
 import {
   ALL_CONSOLIDATED_PAYMENT_METHODS,
   AllPaymentMethodAndCardTypeCodes,
   CONSOLIDATED_PAYMENT_METHODS,
 } from "../../../../common/types/paymentMethods";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
-import { openBlobInNewTab } from "../../../permits/helpers/permitPDFHelper";
-import { getPaymentAndRefundDetail, usePermitTypesQuery } from "../api/reports";
-import { getPermitIssuers } from "../api/users";
+
 import {
   PaymentAndRefundDetailFormData,
   PaymentAndRefundDetailRequest,
   REPORT_ISSUED_BY,
   ReadUserDtoForReport,
 } from "../types/types";
-import { IssuedByCheckBox } from "./subcomponents/IssuedByCheckBox";
-import { PaymentMethodSelect } from "./subcomponents/PaymentMethodSelect";
-import { PermitTypeSelect } from "./subcomponents/PermitTypeSelect";
-import { ReportDateTimePickers } from "./subcomponents/ReportDateTimePickers";
-import { UserSelect } from "./subcomponents/UserSelect";
-import { Loading } from "../../../../common/pages/Loading";
 
 /**
  * Component for Payment and Refund Detail form
  */
 export const PaymentAndRefundDetail = () => {
+  const { idirUserDetails } = useContext(OnRouteBCContext);
+  const { user: idirUserFromAuthContext } = useAuth();
+  const canSelectPermitIssuers =
+    idirUserDetails?.userAuthGroup ===
+      IDIR_USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR ||
+    idirUserDetails?.userAuthGroup === IDIR_USER_AUTH_GROUP.HQ_ADMINISTRATOR ||
+    idirUserDetails?.userAuthGroup === IDIR_USER_AUTH_GROUP.FINANCE;
   // GET the permit types.
   const permitTypesQuery = usePermitTypesQuery();
   const { setSnackBar } = useContext(SnackBarContext);
   const [isGeneratingReport, setIsGeneratingReport] = useState<boolean>(false);
 
-  const { data: permitTypes, isLoading: isPermitTypeQueryLoading } =
+  const { data: permitTypes, isPending: isPermitTypeQueryLoading } =
     permitTypesQuery;
 
   // GET the list of users who have issued a permit.
@@ -57,18 +69,20 @@ export const PaymentAndRefundDetail = () => {
         data.map(({ userGUID, userName }) => [userName, userGUID]),
       ) as Record<string, string>;
     },
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
+    // Only query the permit issuers when the user is sysadmin.
+    enabled: canSelectPermitIssuers,
     staleTime: ONE_HOUR,
     retry: false,
     refetchOnWindowFocus: false, // prevents unnecessary queries
   });
 
-  const { data: permitIssuers, isLoading: ispermitIssuersQueryLoading } =
+  const { data: permitIssuers, isPending: isPermitIssuersQueryLoading } =
     permitIssuersQuery;
 
   const formMethods = useForm<PaymentAndRefundDetailFormData>({
     defaultValues: {
-      issuedBy: ["SELF_ISSUED", "PPC"],
+      issuedBy: [REPORT_ISSUED_BY.SELF_ISSUED, REPORT_ISSUED_BY.PPC],
       fromDateTime: dayjs()
         .subtract(1, "day")
         .set("h", 21)
@@ -78,12 +92,17 @@ export const PaymentAndRefundDetail = () => {
       toDateTime: dayjs().set("h", 20).set("m", 59).set("s", 59).set("ms", 999),
       paymentMethods: Object.keys(CONSOLIDATED_PAYMENT_METHODS),
       permitType: Object.keys(permitTypes ?? []),
-      users: Object.keys(permitIssuers ?? {}),
+      // permitIssuers is a <userName, userGUID> record.
+      // So, Object.values is what we need.
+      users: canSelectPermitIssuers
+        ? Object.values(permitIssuers ?? {})
+        : // If user is not a sys admin, only their own guid is populated.
+          [idirUserFromAuthContext?.profile?.idir_user_guid as string],
     },
     reValidateMode: "onBlur",
   });
 
-  const { watch, setValue } = formMethods;
+  const { watch, setValue, handleSubmit } = formMethods;
 
   const issuedBy = watch("issuedBy");
   const fromDateTime = watch("fromDateTime");
@@ -108,9 +127,11 @@ export const PaymentAndRefundDetail = () => {
 
   useEffect(() => {
     if (permitIssuers) {
-      setValue("users", Object.keys(permitIssuers));
+      // permitIssuers is a <userName, userGUID> record.
+      // So, Object.values is what we need.
+      setValue("users", Object.values(permitIssuers));
     }
-  }, [ispermitIssuersQueryLoading]);
+  }, [isPermitIssuersQueryLoading]);
 
   /**
    * Uses the CONSOLIDATED PAYMENT METHODS object to get
@@ -220,12 +241,14 @@ export const PaymentAndRefundDetail = () => {
               <Stack>
                 <PaymentMethodSelect />
               </Stack>
-              <Stack direction="row">
-                <UserSelect
-                  permitIssuers={permitIssuers}
-                  key="user-select-subcomponent"
-                />
-              </Stack>
+              {canSelectPermitIssuers && (
+                <Stack direction="row">
+                  <UserSelect
+                    permitIssuers={permitIssuers}
+                    key="user-select-subcomponent"
+                  />
+                </Stack>
+              )}
               <Stack direction="row" spacing={3}>
                 <ReportDateTimePickers />
               </Stack>
@@ -237,7 +260,7 @@ export const PaymentAndRefundDetail = () => {
                   variant="contained"
                   color="primary"
                   disabled={issuedBy.length === 0}
-                  onClick={onClickViewReport}
+                  onClick={handleSubmit(onClickViewReport)}
                 >
                   View Report
                 </Button>

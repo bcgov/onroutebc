@@ -1,4 +1,4 @@
-# Database Schema and Versioning Guide
+#  Database Schema and Versioning Guide
 ## Database Architecture
 
 ### Ministry-Hosted Databases
