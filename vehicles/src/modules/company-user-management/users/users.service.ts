@@ -422,7 +422,7 @@ export class UsersService {
         companyUsers: { statusCode: UserStatus.ACTIVE },
       },
       relations: {
-        userContact: true,
+        userContact: { province: { country: true } },
         companyUsers: true,
       },
     });
@@ -687,8 +687,11 @@ export class UsersService {
 
     // Find user entities based on the provided filtering criteria
     const userDetails = await this.userRepository
-      .createQueryBuilder('idirUser')
-      .where('idirUser.userGUID IN (' + subQueryBuilder.getQuery() + ' )')
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.userContact', 'contact')
+      .leftJoinAndSelect('contact.province', 'province')
+      .leftJoinAndSelect('province.country', 'country')
+      .where('user.userGUID IN (' + subQueryBuilder.getQuery() + ' )')
       .getMany();
 
     // Map the retrieved user entities to ReadUserDto objects
@@ -766,7 +769,9 @@ export class UsersService {
     // Identify which GUIDs were not found (failure to delete)
     const failure = userGUIDS?.filter(
       (id) =>
-        !userToBeDeleted.some((companyUser) => companyUser.user.userGUID == id),
+        !userToBeDeleted.some(
+          (companyUser) => companyUser.user.userGUID === id,
+        ),
     );
 
     // Execute the deletion of users by their GUIDs within the specified company

@@ -24,7 +24,7 @@ import { PaymentMethodType } from './entities/payment-method-type.entity';
 import { PaymentCardType } from './entities/payment-card-type.entity';
 import { getPaymentCodeFromCache } from '../../common/helper/payment.helper';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
-import { User } from '../company-user-management/users/entities/user.entity';
+import { Directory } from '../../common/enum/directory.enum';
 
 @Injectable()
 export class PaymentReportService {
@@ -53,7 +53,7 @@ export class PaymentReportService {
       .addSelect('permit.permitType', 'permitType')
       .addSelect('permitTransactions.transactionAmount', 'amount')
       .addSelect(
-        `ISNULL(idirUser.userName,'${PermitIssuedBy.SELF_ISSUED}')`,
+        `ISNULL(issuer.userName,'${PermitIssuedBy.SELF_ISSUED}')`,
         'users',
       );
   }
@@ -103,11 +103,9 @@ export class PaymentReportService {
       .innerJoin('trans.permitTransactions', 'permitTransactions')
       .innerJoin('trans.receipt', 'receipt')
       .innerJoin('permitTransactions.permit', 'permit')
-      .leftJoin(
-        User, //TODO ORV2-1956
-        'idirUser',
-        'permit.issuerUserGuid = idirUser.userGUID',
-      );
+      .leftJoin('permit.issuer', 'issuer', 'issuer.directory = :directory', {
+        directory: Directory.IDIR,
+      });
   }
 
   private getCondtionQueryBuilderForDetailedReports(
@@ -165,7 +163,7 @@ export class PaymentReportService {
         reportDto.users?.length
       ) {
         queryBuilder.andWhere(
-          '(permit.permitIssuedBy = :issuedBy OR permit.issuerUserGuid IN (:...issuerUserGuids))',
+          '(permit.permitIssuedBy = :issuedBy OR issuer.userGIUD IN (:...issuerUserGuids))',
           {
             issuedBy: PermitIssuedBy.SELF_ISSUED,
             issuerUserGuids: reportDto.users,
@@ -175,12 +173,9 @@ export class PaymentReportService {
         reportDto.issuedBy.includes(PermitIssuedBy.PPC) &&
         reportDto.users?.length
       ) {
-        queryBuilder.andWhere(
-          'permit.issuerUserGuid IN (:...issuerUserGuids)',
-          {
-            issuerUserGuids: reportDto.users,
-          },
-        );
+        queryBuilder.andWhere('issuer.userGIUD IN (:...issuerUserGuids)', {
+          issuerUserGuids: reportDto.users,
+        });
       }
     }
   }
@@ -580,11 +575,11 @@ export class PaymentReportService {
         'paymentMethod',
       )
       .addSelect(
-        `SUM(permitTransactions.transactionAmount) OVER (PARTITION BY trans.paymentMethodTypeCode, trans.paymentCardTypeCode, idirUser.userName)`,
+        `SUM(permitTransactions.transactionAmount) OVER (PARTITION BY trans.paymentMethodTypeCode, trans.paymentCardTypeCode, issuer.userName)`,
         'amount',
       )
       .addSelect(
-        `ISNULL(idirUser.userName,'${PermitIssuedBy.SELF_ISSUED}')`,
+        `ISNULL(issuer.userName,'${PermitIssuedBy.SELF_ISSUED}')`,
         'users',
       )
       .distinct();
