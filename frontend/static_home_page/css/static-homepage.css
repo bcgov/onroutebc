@@ -256,12 +256,6 @@ h3 {
     font-family: var(--unnamed-font-family-bc-sans);
 }
 
-/*
-.btnText {
-    font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-normal) 
-    var(--unnamed-font-size-16)/var(--unnamed-line-spacing-24) var(--unnamed-font-family-bc-sans);
-}*/
-
 .btnBlue {
     width: 226px;
     background: var(--bc-primary-blue) 0% 0% no-repeat padding-box;
@@ -284,20 +278,20 @@ h3 {
     color: var(--white);
 }
 
-.btnGray {
+.btnGrey {
     width: 160px;
     background: var(--bc-background-light-grey) 0% 0% no-repeat padding-box;
-    border-width : 0;
+    border-width : 1px;
     color: black;
+}
+
+.btnGrey:hover {
+    border: 1px solid var(--bc-border-grey);
 }
 
 
 .link {
     color : var(--bc-text-links-blue);
-}
-
-#box2 {
-    top : 0;
 }
 
 #box3 {
