@@ -163,7 +163,7 @@ export class PaymentReportService {
         reportDto.users?.length
       ) {
         queryBuilder.andWhere(
-          '(permit.permitIssuedBy = :issuedBy OR issuer.userGIUD IN (:...issuerUserGuids))',
+          '(permit.permitIssuedBy = :issuedBy OR issuer.userGUID IN (:...issuerUserGuids))',
           {
             issuedBy: PermitIssuedBy.SELF_ISSUED,
             issuerUserGuids: reportDto.users,
@@ -173,7 +173,7 @@ export class PaymentReportService {
         reportDto.issuedBy.includes(PermitIssuedBy.PPC) &&
         reportDto.users?.length
       ) {
-        queryBuilder.andWhere('issuer.userGIUD IN (:...issuerUserGuids)', {
+        queryBuilder.andWhere('issuer.userGUID IN (:...issuerUserGuids)', {
           issuerUserGuids: reportDto.users,
         });
       }
