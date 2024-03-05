@@ -56,6 +56,73 @@ export interface Application extends PartialApplication {
   permitData: PermitData;
 }
 
+/*
+// permit response dto
+companyId: number;
+permitId: number;
+originalPermitId: string;
+revision: number;
+previousRevision: string;
+comment: string;
+permitType: PermitType;
+applicationNumber: string;
+permitNumber: string;
+permitStatus: PermitStatus;
+permitApprovalSource: PermitApprovalSource;
+permitApplicationOrigin: PermitApplicationOrigin;
+permitData: JSON;
+permitIssueDateTime: Date;
+createdDateTime: string;
+updatedDateTime: string;
+documentId: string;
+issuer: string;
+
+// application response dto
+companyId: number;
+permitId: string;
+originalPermitId: string;
+revision: number;
+previousRevision: string;
+comment: string;
+permitType: PermitType;
+applicationNumber: string;
+permitNumber: string;
+permitStatus: ApplicationStatus;
+permitApprovalSource: PermitApprovalSource;
+permitApplicationOrigin: PermitApplicationOrigin;
+permitData: JSON;
+createdDateTime: string;
+updatedDateTime: string;
+documentId: string;
+applicant: string;
+
+// Update application dto
+companyId?: number;
+userGuid?: string;
+permitType?: PermitType;
+//ToDo: remove PermitStatus, update application should not change PermitStatus. there is an existing endpoint to change status.
+permitStatus?: PermitStatus;
+//ToDo: remove permitApplicationOrigin, update application should not change permitApplicationOrigin
+permitApplicationOrigin?: PermitApplicationOrigin;
+permitData: JSON;
+comment?: string;
+
+// Create application dto
+companyId: number;
+permitId?: string;
+originalPermitId?: string;
+applicationNumber?: string;
+previousRevision?: string;
+revision?: number;
+userGuid?: string;
+permitType: PermitType;
+permitStatus?: ApplicationStatus;
+permitApprovalSource?: PermitApprovalSource;
+permitApplicationOrigin?: PermitApplicationOrigin;
+permitData: JSON;
+comment?: string;
+*/
+
 /**
  * Type that replaces all Dayjs types inside direct PermitData entries to string types
  *
