@@ -213,6 +213,10 @@ export class PendingUsersController {
       'Authorization requires COMPANY_ADMINISTRATOR role or membership in specific groups. ' +
       'Returns the list of successfully deleted users or raises exceptions for unauthorized access or no users deleted.',
   })
+  @ApiOkResponse({
+    description: 'The Delete Resource containing successful and failed identifiers.',
+    type: DeleteDto,
+  })
   @Delete()
   async remove(
     @Req() request: Request,

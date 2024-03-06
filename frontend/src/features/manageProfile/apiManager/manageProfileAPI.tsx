@@ -184,12 +184,30 @@ export const addUserToCompany = async (addUserRequest: BCeIDAddUserRequest) => {
 };
 
 /**
- * Deletes a user of the company by companyId
- * @returns a promise containing the users.
+ * Deletes users of a company identified by their user GUIDs.
+ * @param userGuids The array of user GUIDs of the users to be deleted.
+ * @returns A promise indicating the success or failure of the delete operation.
  */
-export const deleteCompanyUsers = (userName: string) => {
+export const deleteCompanyUsers = (userGuids: string[]) => {
   return httpDELETERequest(
-    `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/pending-users/${userName}`,
+    `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/users/`,
+    {
+      userGUIDs: userGuids,
+    },
+  );
+};
+
+/**
+ * Deletes pending users of a company identified by their user GUIDs.
+ * @param userNames The array of usernames of the pending users to be deleted.
+ * @returns A promise indicating the success or failure of the delete operation.
+ */
+export const deleteCompanyPendingUsers = (userNames: string[]) => {
+  return httpDELETERequest(
+    `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/pending-users/`,
+    {
+      userNames,
+    },
   );
 };
 
