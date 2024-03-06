@@ -20,47 +20,8 @@ ALTER TABLE [permit].[ORBC_PERMIT_DATA]
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
 
-ALTER TABLE [permit].[ORBC_PERMIT_DATA]
- ADD [CLIENT_NUMBER]  AS (json_value([PERMIT_DATA],'$.clientNumber'))
-
-IF @@ERROR <> 0 SET NOEXEC ON
-GO
-
-ALTER TABLE [permit].[ORBC_PERMIT_DATA]
- ADD [LEGAL_NAME]  AS (json_value([PERMIT_DATA],'$.companyName'))
-
-IF @@ERROR <> 0 SET NOEXEC ON
-GO
-
 ALTER TABLE [permit].[ORBC_PERMIT_DATA] 
  DROP COLUMN APPLICANT
-GO
-
-IF @@ERROR <> 0 SET NOEXEC ON
-GO
-EXEC sys.sp_addextendedproperty 
-   @name=N'MS_Description', 
-   @value=N'Calculated column for the client number, pulled from the JSON PERMIT_DATA.',
-   @level0type=N'SCHEMA',
-   @level0name=N'permit',
-   @level1type=N'TABLE',
-   @level1name=N'ORBC_PERMIT_DATA',
-   @level2type=N'COLUMN',
-   @level2name=N'CLIENT_NUMBER'
-GO
-
-IF @@ERROR <> 0 SET NOEXEC ON
-GO
-
-EXEC sys.sp_addextendedproperty 
-   @name=N'MS_Description', 
-   @value=N'Calculated column for the company name, pulled from the JSON PERMIT_DATA.',
-   @level0type=N'SCHEMA',
-   @level0name=N'permit',
-   @level1type=N'TABLE',
-   @level1name=N'ORBC_PERMIT_DATA',
-   @level2type=N'COLUMN',
-   @level2name=N'LEGAL_NAME'
 GO
 
 IF @@ERROR <> 0 SET NOEXEC ON

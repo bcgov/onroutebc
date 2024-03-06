@@ -16,9 +16,16 @@ export class ReadPermitMetadataDto {
   @AutoMap()
   @ApiProperty({
     description: 'Id of the Permit.',
-    example: '',
+    example: '1',
   })
   permitId: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '1',
+    description: 'Id of the original permit for a revision',
+  })
+  originalPermitId: string;
 
   @AutoMap()
   @ApiProperty({

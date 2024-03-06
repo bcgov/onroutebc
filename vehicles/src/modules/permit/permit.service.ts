@@ -343,7 +343,7 @@ export class PermitService {
           break;
         case PermitSearch.CLIENT_NUMBER:
           permitsQuery = permitsQuery.andWhere(
-            'permitData.clientNumber like :searchString',
+            'company.clientNumber like :searchString',
             {
               searchString: `%${searchString}%`,
             },
@@ -351,7 +351,7 @@ export class PermitService {
           break;
         case PermitSearch.COMPANY_NAME:
           permitsQuery = permitsQuery.andWhere(
-            'permitData.legalName like :searchString',
+            'company.legalName like :searchString',
             {
               searchString: `%${searchString}%`,
             },
