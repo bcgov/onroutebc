@@ -9,7 +9,7 @@ export const Brand = () => {
     <div className="brand">
       <a className="brand__logo" href={routes.HOME}>
         <img
-          src="https://developer.gov.bc.ca/static/BCID_H_rgb_rev-20eebe74aef7d92e02732a18b6aa6bbb.svg"
+          src="/BCID_H_rgb_rev.svg"
           alt="Go to the onRouteBC Home Page"
         />
       </a>
