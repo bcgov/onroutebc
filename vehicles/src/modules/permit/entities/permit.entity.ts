@@ -5,6 +5,8 @@ import {
   PrimaryGeneratedColumn,
   OneToOne,
   OneToMany,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 import { Base } from '../../common/entities/base.entity';
@@ -15,6 +17,7 @@ import { PermitApprovalSource } from '../../../common/enum/permit-approval-sourc
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { PermitTransaction } from '../../payment/entities/permit-transaction.entity';
 import { PermitIssuedBy } from '../../../common/enum/permit-issued-by.enum';
+import { User } from '../../company-user-management/users/entities/user.entity';
 
 @Entity({ name: 'permit.ORBC_PERMIT' })
 export class Permit extends Base {
@@ -70,16 +73,18 @@ export class Permit extends Base {
     example: '1',
     description: 'GUID of the user requesting the permit.',
   })
-  @Column({ length: 32, name: 'OWNER_USER_GUID', nullable: true })
-  userGuid: string;
+  @ManyToOne(() => User, { eager: true, cascade: false })
+  @JoinColumn({ name: 'OWNER_USER_GUID' })
+  applicationOwner: User;
 
   @AutoMap()
   @ApiProperty({
     example: '1',
     description: 'GUID of the user requesting the permit.',
   })
-  @Column({ length: 32, name: 'ISSUER_USER_GUID', nullable: true })
-  issuerUserGuid: string;
+  @ManyToOne(() => User, { eager: true, cascade: false })
+  @JoinColumn({ name: 'ISSUER_USER_GUID' })
+  issuer: User;
 
   @AutoMap()
   @ApiProperty({

@@ -7,7 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { Brackets, DataSource, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { ReadUserDto } from './dto/response/read-user.dto';
 import { CreateUserDto } from './dto/request/create-user.dto';
@@ -28,7 +28,6 @@ import {
   UserAuthGroup,
 } from 'src/common/enum/user-auth-group.enum';
 import { PendingIdirUser } from '../pending-idir-users/entities/pending-idir-user.entity';
-import { IdirUser } from './entities/idir.user.entity';
 import { PendingIdirUsersService } from '../pending-idir-users/pending-idir-users.service';
 import { ReadPendingUserDto } from '../pending-users/dto/response/read-pending-user.dto';
 import { BadRequestExceptionDto } from '../../../common/exception/badRequestException.dto';
@@ -41,6 +40,7 @@ import { AccountSource } from '../../../common/enum/account-source.enum';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
 import { ReadCompanyMetadataDto } from '../company/dto/response/read-company-metadata.dto';
 import { DeleteDto } from '../../common/dto/response/delete.dto';
+import { Directory } from '../../../common/enum/directory.enum';
 
 @Injectable()
 export class UsersService {
@@ -50,8 +50,6 @@ export class UsersService {
     private userRepository: Repository<User>,
     @InjectRepository(CompanyUser)
     private companyUserRepository: Repository<CompanyUser>,
-    @InjectRepository(IdirUser)
-    private idirUserRepository: Repository<IdirUser>,
     @InjectRepository(PendingIdirUser)
     private pendingIdirUserRepository: Repository<PendingIdirUser>,
     @InjectMapper() private readonly classMapper: Mapper,
@@ -67,7 +65,6 @@ export class UsersService {
    * deletes the corresponding PendingUser entity and commits the transaction if
    * successful. If an error is thrown, it rolls back the transaction and
    * returns the error.
-   * TODO verify the role with PENDING_USER and throw exception on mismatch
    *
    * @param createUserDto Request object of type {@link CreateUserDto} for
    * creating a new user.
@@ -118,7 +115,7 @@ export class UsersService {
     try {
       let user = this.classMapper.map(createUserDto, CreateUserDto, User, {
         extraArgs: () => ({
-          userAuthGroup: pendingUsers?.at(0).userAuthGroup,
+          userAuthGroup: UserAuthGroup.PUBLIC_VERIFIED,
           userName: currentUser.userName,
           directory: currentUser.orbcUserDirectory,
           userGUID: currentUser.userGUID,
@@ -129,6 +126,7 @@ export class UsersService {
       const newCompanyUser = new CompanyUser();
       newCompanyUser.company = new Company();
       newCompanyUser.company.companyId = companyId;
+      newCompanyUser.statusCode = UserStatus.ACTIVE;
       newCompanyUser.user = user;
       newCompanyUser.userAuthGroup = pendingUsers?.at(0).userAuthGroup;
 
@@ -301,20 +299,43 @@ export class UsersService {
   async findUsersEntity(
     userGUID?: string,
     companyId?: number[],
+    userAuthGroup?: UserAuthGroup | IDIRUserAuthGroup | ClientUserAuthGroup,
     statusCode = [UserStatus.ACTIVE],
   ) {
     // Construct the query builder to retrieve user entities and associated data
     const userQB = this.userRepository
       .createQueryBuilder('user')
       .innerJoinAndSelect('user.userContact', 'userContact')
-      .innerJoinAndSelect('userContact.province', 'province')
-      .innerJoinAndSelect('province.country', 'country')
+      .leftJoinAndSelect('userContact.province', 'province')
+      .leftJoinAndSelect('province.country', 'country')
       .leftJoinAndSelect('user.companyUsers', 'companyUser')
       .leftJoinAndSelect('companyUser.company', 'company');
 
-    userQB.where('companyUser.statusCode IN (:...statusCode)', {
-      statusCode: statusCode || [],
-    });
+    userQB.where(
+      new Brackets((qb) => {
+        qb.where(
+          new Brackets((nonIdirQB) => {
+            nonIdirQB
+              .where('user.directory != :directory', {
+                directory: Directory.IDIR,
+              })
+              .andWhere('companyUser.statusCode IN (:...statusCode)', {
+                statusCode: statusCode || [],
+              });
+          }),
+        ).orWhere(
+          new Brackets((idirQB) => {
+            idirQB
+              .where('user.directory = :directory', {
+                directory: Directory.IDIR,
+              })
+              .andWhere('user.statusCode IN (:...statusCode)', {
+                statusCode: statusCode || [],
+              });
+          }),
+        );
+      }),
+    );
 
     if (userGUID) {
       userQB.andWhere('user.userGUID = :userGUID', {
@@ -327,6 +348,13 @@ export class UsersService {
         companyId: companyId || [],
       });
     }
+
+    if (userAuthGroup) {
+      userQB.andWhere('user.userAuthGroup = :userAuthGroup', {
+        userAuthGroup: userAuthGroup,
+      });
+    }
+
     return await userQB.getMany();
   }
   /**
@@ -343,9 +371,14 @@ export class UsersService {
     userGUID?: string,
     companyId?: number[],
     pendingUser?: boolean,
+    userAuthGroup?: UserAuthGroup | IDIRUserAuthGroup | ClientUserAuthGroup,
   ): Promise<ReadUserDto[]> {
     // Find user entities based on the provided filtering criteria
-    const userDetails = await this.findUsersEntity(userGUID, companyId);
+    const userDetails = await this.findUsersEntity(
+      userGUID,
+      companyId,
+      userAuthGroup,
+    );
     let pendingUsersList: ReadUserDto[] = [];
     if (pendingUser && companyId?.length) {
       const pendingUser = await this.pendingUsersService.findPendingUsersDto(
@@ -389,7 +422,7 @@ export class UsersService {
         companyUsers: { statusCode: UserStatus.ACTIVE },
       },
       relations: {
-        userContact: true,
+        userContact: { province: { country: true } },
         companyUsers: true,
       },
     });
@@ -531,43 +564,58 @@ export class UsersService {
     return await this.companyService.findCompanyMetadataByUserGuid(userGuid);
   }
 
+  /**
+   * Checks if the current IDIR user exists or is pending, handles their data accordingly, and
+   * returns a DTO containing the user's ORBC status, including any mapping or transactional operations
+   * required to integrate the user into the system based on their current state (e.g., newly created
+   * from IDIR pending state, or updated if existing).
+   *
+   * @param {IUserJWT} currentUser The current user's information extracted from JWT token.
+   * @returns {Promise<ReadUserOrbcStatusDto>} A Promise containing a DTO with the user's ORBC status.
+   */
   @LogAsyncMethodExecution()
-  async checkIdirUser(currentUser: IUserJWT): Promise<ReadUserOrbcStatusDto> {
-    let userExists: ReadUserOrbcStatusDto = null;
-    const idirUser = await this.findOneIdirUserEntity(
-      currentUser.idir_user_guid,
-    );
-    if (!idirUser) {
-      /**
-       * IF IDIR use is not found in DB then check pending user table to see if the user has been invited
-       */
-      const pendingIdirUser =
+  async validateAndCreateIdirUser(
+    currentUser: IUserJWT,
+  ): Promise<ReadUserOrbcStatusDto> {
+    // Initialize the DTO for returning user and their ORBC status
+    const userContextDto = new ReadUserOrbcStatusDto();
+    // Retrieve the user based on GUID and active status, including their contact details
+    const user = await this.userRepository.findOne({
+      where: {
+        userGUID: currentUser.userGUID,
+        statusCode: UserStatus.ACTIVE,
+      },
+      relations: {
+        userContact: true,
+      },
+    });
+
+    if (!user) {
+      // Check if user exists in the pending IDIR user table indicating an invitation
+      const pendingUser =
         await this.pendingUsersIdirService.findPendingIdirUser(
           currentUser.userName,
         );
-      /**
-       * IF user found in pending idir user table that means user has been invited
-       * in this case create user in the database followed by a deletion from pending user table.
-       * ELSE it implies that user has been been invited and raise unauthorized exception.
-       */
-      if (pendingIdirUser) {
+      if (pendingUser) {
+        // If user is found, initiate transaction to create user and delete the pending record
         const queryRunner = this.dataSource.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();
         try {
-          const user: IdirUser = this.mapIdirUser(
+          let newUser: User = this.mapIdirToUserEntity(
             currentUser,
-            pendingIdirUser.userAuthGroup,
+            pendingUser.userAuthGroup,
           );
-          await queryRunner.manager.save(user);
+          newUser = await queryRunner.manager.save(newUser);
           await queryRunner.manager.delete(PendingIdirUser, {
             userName: currentUser.idir_username,
           });
           await queryRunner.commitTransaction();
-          userExists = await this.classMapper.mapAsync(
-            user,
-            IdirUser,
-            ReadUserOrbcStatusDto,
+          // Map the newly created user entity to ReadUserDto
+          userContextDto.user = await this.classMapper.mapAsync(
+            newUser,
+            User,
+            ReadUserDto,
           );
         } catch (error) {
           await queryRunner.rollbackTransaction();
@@ -578,10 +626,9 @@ export class UsersService {
         }
       }
     } else {
-      if (
-        idirUser.userName.toUpperCase() !== currentUser.userName.toUpperCase()
-      ) {
-        await this.idirUserRepository.update(
+      // Update the user information if the username from JWT token differs
+      if (user.userName.toUpperCase() !== currentUser.userName.toUpperCase()) {
+        await this.userRepository.update(
           { userGUID: currentUser.userGUID },
           {
             userName: currentUser.userName,
@@ -591,97 +638,66 @@ export class UsersService {
             updatedUserDirectory: currentUser.orbcUserDirectory,
           },
         );
-        idirUser.userName = currentUser.userName;
+        user.userName = currentUser.userName;
       }
-      userExists = await this.classMapper.mapAsync(
-        idirUser,
-        IdirUser,
-        ReadUserOrbcStatusDto,
+
+      // Map the existing user entity to ReadUserDto
+      userContextDto.user = await this.classMapper.mapAsync(
+        user,
+        User,
+        ReadUserDto,
       );
     }
-    return userExists;
+    return userContextDto;
   }
 
-  private mapIdirUser(
+  private mapIdirToUserEntity(
     currentUser: IUserJWT,
-    userAuthGroup: UserAuthGroup,
-  ): IdirUser {
-    const user: IdirUser = new IdirUser();
-    user.firstName = currentUser.given_name;
-    user.lastName = currentUser.family_name;
-    user.email = currentUser.email;
-    user.statusCode = UserStatus.ACTIVE;
-    user.userAuthGroup = userAuthGroup;
+    userAuthGroup: IDIRUserAuthGroup,
+  ): User {
+    const user: User = new User();
+    const currentDateTime = new Date();
+    user.userContact = new Contact();
     user.userGUID = currentUser.idir_user_guid;
     user.userName = currentUser.idir_username;
+    user.statusCode = UserStatus.ACTIVE;
+    user.directory = currentUser.orbcUserDirectory;
+    user.userAuthGroup = userAuthGroup;
+    user.userContact.firstName = currentUser.given_name;
+    user.userContact.lastName = currentUser.family_name;
+    user.userContact.email = currentUser.email;
+    user.createdUser = currentUser.userName;
+    user.createdUserDirectory = currentUser.orbcUserDirectory;
+    user.createdUserGuid = currentUser.userGUID;
+    user.createdDateTime = currentDateTime;
+    user.updatedUser = currentUser.userName;
+    user.updatedUserDirectory = currentUser.orbcUserDirectory;
+    user.updatedUserGuid = currentUser.userGUID;
+    user.updatedDateTime = currentDateTime;
+
     return user;
   }
 
   @LogAsyncMethodExecution()
-  async findIdirUsers(
-    userAuthGroup?: IDIRUserAuthGroup,
-  ): Promise<ReadUserDto[]> {
-    // Find user entities based on the provided filtering criteria
-    const userQB = this.idirUserRepository.createQueryBuilder('user');
-
-    if (userAuthGroup) {
-      userQB.where('user.userAuthGroup=:userAuthGroup', {
-        userAuthGroup: userAuthGroup,
-      });
-    }
-
-    const userDetails = await userQB.getMany();
-    // Map the retrieved user entities to ReadUserDto objects
-    const readUserDto: ReadUserDto[] = await this.classMapper.mapArrayAsync(
-      userDetails,
-      IdirUser,
-      ReadUserDto,
-    );
-    return readUserDto;
-  }
-
-  @LogAsyncMethodExecution()
-  async findOneIdirUser(userGUID?: string): Promise<ReadUserDto> {
-    // Find user entities based on the provided filtering criteria
-    const userDetails = await this.idirUserRepository.findOne({
-      where: { userGUID: userGUID },
-    });
-    // Map the retrieved user entities to ReadUserDto objects
-    const readUserDto: ReadUserDto = await this.classMapper.mapAsync(
-      userDetails,
-      IdirUser,
-      ReadUserDto,
-    );
-    return readUserDto;
-  }
-
-  @LogAsyncMethodExecution()
-  async findOneIdirUserEntity(userGUID?: string): Promise<IdirUser> {
-    // Find user entities based on the provided filtering criteria
-    const userDetails = await this.idirUserRepository.findOne({
-      where: { userGUID: userGUID },
-    });
-
-    return userDetails;
-  }
-
-  @LogAsyncMethodExecution()
   async findPermitIssuerPPCUser(): Promise<ReadUserDto[]> {
-    const subQueryBuilder = this.idirUserRepository
+    const subQueryBuilder = this.userRepository
       .createQueryBuilder()
       .select('ISSUER_USER_GUID')
       .from('permit.ORBC_PERMIT_ISSUED_PPC_USER_VW', 'vw');
 
     // Find user entities based on the provided filtering criteria
-    const userDetails = await this.idirUserRepository
-      .createQueryBuilder('idirUser')
-      .where('idirUser.userGUID IN (' + subQueryBuilder.getQuery() + ' )')
+    const userDetails = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.userContact', 'contact')
+      .leftJoinAndSelect('contact.province', 'province')
+      .leftJoinAndSelect('province.country', 'country')
+      .where('user.userGUID IN (' + subQueryBuilder.getQuery() + ' )')
       .getMany();
 
     // Map the retrieved user entities to ReadUserDto objects
     const readUserDto: ReadUserDto[] = await this.classMapper.mapArrayAsync(
       userDetails,
-      IdirUser,
+      User,
       ReadUserDto,
     );
     return readUserDto;
@@ -753,7 +769,9 @@ export class UsersService {
     // Identify which GUIDs were not found (failure to delete)
     const failure = userGUIDs?.filter(
       (id) =>
-        !userToBeDeleted.some((companyUser) => companyUser.user.userGUID == id),
+        !userToBeDeleted.some(
+          (companyUser) => companyUser.user.userGUID === id,
+        ),
     );
 
     // Execute the deletion of users by their GUIDs within the specified company

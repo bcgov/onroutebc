@@ -8,8 +8,13 @@ import {
 } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
 import { Permit } from '../entities/permit.entity';
-import { CreatePermitDto } from '../dto/request/create-permit.dto';
 import { ReadPermitDto } from '../dto/response/read-permit.dto';
+import { Directory } from '../../../common/enum/directory.enum';
+import { PPC_FULL_TEXT } from '../../../common/constants/api.constant';
+import {
+  UserAuthGroup,
+  idirUserAuthGroupList,
+} from '../../../common/enum/user-auth-group.enum';
 
 @Injectable()
 export class PermitProfile extends AutomapperProfile {
@@ -21,122 +26,6 @@ export class PermitProfile extends AutomapperProfile {
     return (mapper: Mapper) => {
       createMap(
         mapper,
-        CreatePermitDto,
-        Permit,
-        forMember(
-          (d) => d.createdUserGuid,
-          mapWithArguments((createPermitDto, { userGUID }) => {
-            return userGUID;
-          }),
-        ),
-        forMember(
-          (d) => d.createdUser,
-          mapWithArguments((createPermitDto, { userName }) => {
-            return userName;
-          }),
-        ),
-        forMember(
-          (d) => d.createdUserDirectory,
-          mapWithArguments((createPermitDto, { directory }) => {
-            return directory;
-          }),
-        ),
-
-        forMember(
-          (d) => d.createdDateTime,
-          mapWithArguments((createPermitDto, { timestamp }) => {
-            return timestamp;
-          }),
-        ),
-
-        forMember(
-          (d) => d.updatedUserGuid,
-          mapWithArguments((createPermitDto, { userGUID }) => {
-            return userGUID;
-          }),
-        ),
-        forMember(
-          (d) => d.updatedUser,
-          mapWithArguments((createPermitDto, { userName }) => {
-            return userName;
-          }),
-        ),
-        forMember(
-          (d) => d.updatedUserDirectory,
-          mapWithArguments((createPermitDto, { directory }) => {
-            return directory;
-          }),
-        ),
-
-        forMember(
-          (d) => d.updatedDateTime,
-          mapWithArguments((createPermitDto, { timestamp }) => {
-            return timestamp;
-          }),
-        ),
-
-        forMember(
-          (d) => d.permitData.createdUserGuid,
-          mapWithArguments((createPermitDto, { userGUID }) => {
-            return userGUID;
-          }),
-        ),
-        forMember(
-          (d) => d.permitData.createdUser,
-          mapWithArguments((createPermitDto, { userName }) => {
-            return userName;
-          }),
-        ),
-        forMember(
-          (d) => d.permitData.createdUserDirectory,
-          mapWithArguments((createPermitDto, { directory }) => {
-            return directory;
-          }),
-        ),
-
-        forMember(
-          (d) => d.permitData.createdDateTime,
-          mapWithArguments((createPermitDto, { timestamp }) => {
-            return timestamp;
-          }),
-        ),
-
-        forMember(
-          (d) => d.permitData.updatedUserGuid,
-          mapWithArguments((createPermitDto, { userGUID }) => {
-            return userGUID;
-          }),
-        ),
-        forMember(
-          (d) => d.permitData.updatedUser,
-          mapWithArguments((createPermitDto, { userName }) => {
-            return userName;
-          }),
-        ),
-        forMember(
-          (d) => d.permitData.updatedUserDirectory,
-          mapWithArguments((createPermitDto, { directory }) => {
-            return directory;
-          }),
-        ),
-
-        forMember(
-          (d) => d.permitData.updatedDateTime,
-          mapWithArguments((createPermitDto, { timestamp }) => {
-            return timestamp;
-          }),
-        ),
-
-        forMember(
-          (d) => d.permitData?.permitData,
-          mapFrom((s) => {
-            return s.permitData ? JSON.stringify(s.permitData) : undefined;
-          }),
-        ),
-      );
-
-      createMap(
-        mapper,
         Permit,
         ReadPermitDto,
         forMember(
@@ -145,6 +34,26 @@ export class PermitProfile extends AutomapperProfile {
             return s.permitData?.permitData
               ? (JSON.parse(s.permitData?.permitData) as JSON)
               : undefined;
+          }),
+        ),
+        forMember(
+          (d) => d.issuer,
+          mapWithArguments((s, { currentUserAuthGroup }) => {
+            if (s.issuer?.directory === Directory.IDIR) {
+              if (
+                idirUserAuthGroupList.includes(
+                  currentUserAuthGroup as UserAuthGroup,
+                )
+              ) {
+                return s.issuer?.userName;
+              } else {
+                return PPC_FULL_TEXT;
+              }
+            } else {
+              const firstName = s.issuer?.userContact?.firstName ?? '';
+              const lastName = s.issuer?.userContact?.lastName ?? '';
+              return (firstName + ' ' + lastName).trim();
+            }
           }),
         ),
       );

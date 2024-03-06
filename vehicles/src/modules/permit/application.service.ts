@@ -11,11 +11,7 @@ import {
   forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  ApplicationStatus,
-  CVCLIENT_INACTIVE_APPLICATION_STATUS,
-  IDIR_INACTIVE_APPLICATION_STATUS,
-} from 'src/common/enum/application-status.enum';
+import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import { CreateApplicationDto } from './dto/request/create-application.dto';
 import { ReadApplicationDto } from './dto/response/read-application.dto';
@@ -56,7 +52,6 @@ import { Transaction } from '../payment/entities/transaction.entity';
 import { Receipt } from '../payment/entities/receipt.entity';
 import { convertUtcToPt } from '../../common/helper/date-time.helper';
 import { Directory } from 'src/common/enum/directory.enum';
-import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { PermitIssuedBy } from '../../common/enum/permit-issued-by.enum';
 import {
   formatAmount,
@@ -71,6 +66,7 @@ import {
   UserAuthGroup,
   idirUserAuthGroupList,
 } from 'src/common/enum/user-auth-group.enum';
+import { DeleteDto } from '../common/dto/response/delete.dto';
 
 @Injectable()
 export class ApplicationService {
@@ -182,6 +178,11 @@ export class ApplicationService {
       refreshedPermitEntity,
       Permit,
       ReadApplicationDto,
+      {
+        extraArgs: () => ({
+          currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
+        }),
+      },
     );
   }
 
@@ -190,6 +191,9 @@ export class ApplicationService {
       where: [{ permitId: permitId }],
       relations: {
         permitData: true,
+        applicationOwner: {
+          userContact: true,
+        },
       },
     });
   }
@@ -203,6 +207,11 @@ export class ApplicationService {
       .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
       .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
       .innerJoinAndSelect('transaction.receipt', 'receipt')
+      .leftJoinAndSelect('permit.applicationOwner', 'applicationOwner')
+      .leftJoinAndSelect(
+        'applicationOwner.userContact',
+        'applicationOwnerContact',
+      )
       .where('permit.permitId = :permitId', {
         permitId: applicationId,
       })
@@ -212,12 +221,20 @@ export class ApplicationService {
 
   /* Get single application By Permit ID*/
   @LogAsyncMethodExecution()
-  async findApplication(permitId: string): Promise<ReadApplicationDto> {
+  async findApplication(
+    permitId: string,
+    currentUser: IUserJWT,
+  ): Promise<ReadApplicationDto> {
     const application = await this.findOne(permitId);
     const readPermitApplicationdto = await this.classMapper.mapAsync(
       application,
       Permit,
       ReadApplicationDto,
+      {
+        extraArgs: () => ({
+          currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
+        }),
+      },
     );
     return readPermitApplicationdto;
   }
@@ -229,16 +246,16 @@ export class ApplicationService {
    */
   @LogAsyncMethodExecution()
   async findAllApplications(findAllApplicationsOptions?: {
-    applicationStatus: Readonly<ApplicationStatus[]>;
     page: number;
     take: number;
     orderBy?: string;
     companyId?: number;
     userGUID?: string;
+    currentUser?: IUserJWT;
   }): Promise<PaginationDto<ReadApplicationDto>> {
     // Construct the base query to find applications
     const applicationsQB = this.buildApplicationQuery(
-      findAllApplicationsOptions.applicationStatus,
+      findAllApplicationsOptions.currentUser,
       findAllApplicationsOptions.companyId,
       findAllApplicationsOptions.userGUID,
     );
@@ -292,19 +309,30 @@ export class ApplicationService {
         applications,
         Permit,
         ReadApplicationDto,
+        {
+          extraArgs: () => ({
+            currentUserAuthGroup:
+              findAllApplicationsOptions?.currentUser?.orbcUserAuthGroup,
+          }),
+        },
       );
     // Return paginated result
     return new PaginationDto(readApplicationDto, pageMetaDto);
   }
 
   private buildApplicationQuery(
-    applicationStatus: ReadonlyArray<ApplicationStatus>,
+    currentUser: IUserJWT,
     companyId?: number,
     userGUID?: string,
   ): SelectQueryBuilder<Permit> {
     let permitsQuery = this.permitRepository
       .createQueryBuilder('permit')
-      .innerJoinAndSelect('permit.permitData', 'permitData');
+      .innerJoinAndSelect('permit.permitData', 'permitData')
+      .leftJoinAndSelect('permit.applicationOwner', 'applicationOwner')
+      .leftJoinAndSelect(
+        'applicationOwner.userContact',
+        'applicationOwnerContact',
+      );
     permitsQuery = permitsQuery.where('permit.permitNumber IS NULL');
 
     // Filter by companyId if provided
@@ -315,18 +343,23 @@ export class ApplicationService {
     }
 
     //Filter by application status
-    permitsQuery = permitsQuery.andWhere(
-      'permit.permitStatus IN (:...statuses)',
-      {
-        statuses: applicationStatus,
-      },
-    );
+    if (currentUser) {
+      permitsQuery = permitsQuery.andWhere(
+        'permit.permitStatus IN (:...statuses)',
+        {
+          statuses: getActiveApplicationStatus(currentUser),
+        },
+      );
+    }
 
     // Filter by userGUID if provided
     if (userGUID) {
-      permitsQuery = permitsQuery.andWhere('permit.userGuid = :userGUID', {
-        userGUID,
-      });
+      permitsQuery = permitsQuery.andWhere(
+        'applicationOwner.userGUID = :userGUID',
+        {
+          userGUID: userGUID,
+        },
+      );
     }
 
     return permitsQuery;
@@ -344,6 +377,7 @@ export class ApplicationService {
       where: [{ applicationNumber: applicationNumber }],
       relations: {
         permitData: true,
+        applicationOwner: { userContact: true },
       },
     });
 
@@ -387,6 +421,11 @@ export class ApplicationService {
       await this.findByApplicationNumber(applicationNumber),
       Permit,
       ReadApplicationDto,
+      {
+        extraArgs: () => ({
+          currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
+        }),
+      },
     );
   }
 
@@ -551,7 +590,7 @@ export class ApplicationService {
           permitStatus: fetchedApplication.permitStatus,
           permitNumber: fetchedApplication.permitNumber,
           documentId: generatedDocuments.at(0).dmsId,
-          issuerUserGuid: currentUser.userGUID,
+          issuer: { userGUID: currentUser.userGUID },
           permitApprovalSource: PermitApprovalSourceEnum.AUTO, //TODO : Hardcoding for release 1
           permitIssuedBy:
             currentUser.orbcUserDirectory == Directory.IDIR
@@ -862,16 +901,23 @@ export class ApplicationService {
   @LogAsyncMethodExecution()
   async findCurrentAmendmentApplication(
     originalPermitId: string,
-  ): Promise<ReadPermitDto> {
+    currentUser: IUserJWT,
+  ): Promise<ReadApplicationDto> {
     const application = await this.permitRepository
       .createQueryBuilder('permit')
       .innerJoinAndSelect('permit.permitData', 'permitData')
+      .leftJoinAndSelect('permit.applicationOwner', 'applicationOwner')
+      .leftJoinAndSelect(
+        'applicationOwner.userContact',
+        'applicationOwnerContact',
+      )
       .where('permit.originalPermitId = :originalPermitId', {
         originalPermitId: originalPermitId,
       })
       .andWhere('permit.permitStatus IN (:...applicationStatus)', {
         applicationStatus: Object.values(ApplicationStatus).filter(
           (x) =>
+            x != ApplicationStatus.DELETED &&
             x != ApplicationStatus.CANCELLED &&
             x != ApplicationStatus.REJECTED &&
             x != ApplicationStatus.ISSUED &&
@@ -883,7 +929,16 @@ export class ApplicationService {
       .orderBy('permit.revision', 'DESC')
       .getOne();
 
-    return await this.classMapper.mapAsync(application, Permit, ReadPermitDto);
+    return await this.classMapper.mapAsync(
+      application,
+      Permit,
+      ReadApplicationDto,
+      {
+        extraArgs: () => ({
+          currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
+        }),
+      },
+    );
   }
 
   @LogAsyncMethodExecution()
@@ -896,6 +951,7 @@ export class ApplicationService {
       .andWhere('permit.permitStatus IN (:...applicationStatus)', {
         applicationStatus: Object.values(ApplicationStatus).filter(
           (x) =>
+            x != ApplicationStatus.DELETED &&
             x != ApplicationStatus.CANCELLED &&
             x != ApplicationStatus.REJECTED &&
             x != ApplicationStatus.ISSUED &&
@@ -909,74 +965,101 @@ export class ApplicationService {
   }
 
   /**
-   * Removes all specified applications for a given company and user (optinal) from the database.
+   * Removes all specified applications for a given company and optionally by a user from the database.
    *
-   * This method first retrieves the existing applications by their IDs and company ID and userGUID (optinal). It then identifies
-   * which applications can be deleted (based on whether their IDs were found or not) and proceeds to delete
-   * them. Finally, it constructs a response detailing which deletions were successful and which were not.
+   * This method retrieves existing applications using their IDs, and company ID. It then identifies
+   * which applications can be marked as deleted or cancelled, based on whether their IDs were found and the user's authorization group,
+   * and updates their statuses accordingly. Finally, it constructs a response detailing which deletions (or cancellations) were successful and which were not.
    *
-   * @param {string[]} applicationIds The IDs of the applications to be deleted.
+   * @param {string[]} applicationIds The IDs of the applications to be deleted/cancelled.
    * @param {number} companyId The ID of the company owning the applications.
-   * @param {number} userGUID The ID of the user owning the applications.
-   * @returns {Promise<ResultDto>} An object containing arrays of successful and failed deletions.
+   * @param {IUserJWT} currentUser The current user performing the operation, with their JWT details.
+   * @returns {Promise<DeleteDto>} An object containing arrays of successful and failed deletions/cancellations.
    */
   @LogAsyncMethodExecution()
   async deleteApplicationInProgress(
     applicationIds: string[],
     companyId: number,
     currentUser: IUserJWT,
-    userGuid?: string,
-  ): Promise<ResultDto> {
+  ): Promise<DeleteDto> {
+    // Retrieve active application statuses based on the current user
     const applicationStatus: ReadonlyArray<ApplicationStatus> =
       getActiveApplicationStatus(currentUser);
-    let updateQuery = this.permitRepository
-      .createQueryBuilder()
-      .update()
-      .set({
-        permitStatus: idirUserAuthGroupList.includes(
-          currentUser.orbcUserAuthGroup as UserAuthGroup,
-        )
-          ? IDIR_INACTIVE_APPLICATION_STATUS
-          : CVCLIENT_INACTIVE_APPLICATION_STATUS,
-        updatedUser: currentUser.userName,
-        updatedDateTime: new Date(),
-        updatedUserDirectory: currentUser.orbcUserDirectory,
-        updatedUserGuid: currentUser.userGUID,
-      })
-      .whereInIds(applicationIds);
-    updateQuery = updateQuery.andWhere('companyId = :companyId', {
-      companyId: companyId,
-    });
-    updateQuery = updateQuery.andWhere(
-      'permitStatus IN (:...applicationStatus)',
-      {
-        applicationStatus: applicationStatus,
-      },
-    );
-    updateQuery = updateQuery.andWhere('permitNumber IS NULL');
 
-    if (userGuid) {
-      updateQuery = updateQuery.andWhere('userGuid = :userGuid', {
-        userGuid: userGuid,
+    // Build query to find applications matching certain criteria like company ID, application status, and undefined permit numbers
+    const applicationsQB = this.permitRepository
+      .createQueryBuilder('permit')
+      .leftJoinAndSelect('permit.applicationOwner', 'applicationOwner')
+      .whereInIds(applicationIds)
+      .andWhere('permit.companyId = :companyId', {
+        companyId: companyId,
+      })
+      .andWhere('permit.permitStatus IN (:...applicationStatus)', {
+        applicationStatus: applicationStatus,
+      })
+      .andWhere('permit.permitNumber IS NULL');
+
+    // Filter applications by user GUID if the current user is a CV_CLIENT or by ONLINE origin if the user is a COMPANY_ADMINISTRATOR
+    if (UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup) {
+      applicationsQB.andWhere('applicationOwner.userGUID = :userGuid', {
+        userGuid: currentUser.userGUID,
       });
+    } else if (
+      UserAuthGroup.COMPANY_ADMINISTRATOR === currentUser.orbcUserAuthGroup
+    ) {
+      applicationsQB.andWhere(
+        'permit.permitApplicationOrigin = :permitApplicationOrigin',
+        {
+          permitApplicationOrigin: PermitApplicationOriginEnum.ONLINE,
+        },
+      );
     }
 
-    updateQuery = updateQuery.returning(['permitId']);
-    const updateResult = await updateQuery.execute();
-    const updatedApplications = Array.from(
-      updateResult?.raw as [
-        {
-          ID: string;
-        },
-      ],
-    );
-    const success = updatedApplications?.map((permit) => permit.ID);
-    const failure = applicationIds?.filter((id) => !success?.includes(id));
+    // Execute the query to retrieve applications before deletion
+    const applicationsBeforeDelete = await applicationsQB.getMany();
 
-    const resultDto: ResultDto = {
+    // Map applications before deletion to their new status (either DELETED or CANCELLED), including auditing fields
+    const applicationsToBeDeleted = applicationsBeforeDelete.map(
+      (application) => {
+        return (
+          applicationIds.includes(application.permitId) &&
+          ({
+            ...application,
+            permitStatus: idirUserAuthGroupList.includes(
+              currentUser.orbcUserAuthGroup as UserAuthGroup,
+            )
+              ? ApplicationStatus.DELETED
+              : ApplicationStatus.CANCELLED,
+            updatedDateTime: new Date(),
+            updatedUser: currentUser.userName,
+            updatedUserDirectory: currentUser.orbcUserDirectory,
+            updatedUserGuid: currentUser.userGUID,
+          } as Permit)
+        );
+      },
+    );
+
+    // Determine which application IDs could not be found for deletion
+    const failure = applicationIds?.filter(
+      (id) =>
+        !applicationsToBeDeleted.some(
+          (application) => application.permitId === id,
+        ),
+    );
+
+    // Persist changes to the applications, effectively deleting or cancelling them
+    await this.permitRepository.save(applicationsToBeDeleted);
+
+    // Determine which application IDs were successfully deleted or cancelled
+    const success = applicationIds?.filter((id) => !failure?.includes(id));
+
+    // Prepare the response DTO with details of successful and failed deletions
+    const deleteDto: DeleteDto = {
       success: success,
       failure: failure,
     };
-    return resultDto;
+
+    // Return the response DTO
+    return deleteDto;
   }
 }

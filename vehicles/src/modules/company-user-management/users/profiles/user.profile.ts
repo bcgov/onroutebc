@@ -16,9 +16,8 @@ import { Contact } from '../../../common/entities/contact.entity';
 import { CreateUserDto } from '../dto/request/create-user.dto';
 import { ReadUserDto } from '../dto/response/read-user.dto';
 import { UpdateUserDto } from '../dto/request/update-user.dto';
-import { IdirUser } from '../entities/idir.user.entity';
-import { ReadUserOrbcStatusDto } from '../dto/response/read-user-orbc-status.dto';
 import { ReadPendingUserDto } from '../../pending-users/dto/response/read-pending-user.dto';
+import { Directory } from '../../../../common/enum/directory.enum';
 
 @Injectable()
 export class UsersProfile extends AutomapperProfile {
@@ -237,11 +236,15 @@ export class UsersProfile extends AutomapperProfile {
         forMember(
           (d) => d.userAuthGroup,
           mapFrom((s) => {
-            if (s.companyUsers?.length && s.companyUsers[0]?.userAuthGroup) {
+            if (
+              s.directory !== Directory.IDIR &&
+              s.companyUsers?.length &&
+              s.companyUsers[0]?.userAuthGroup
+            ) {
               //the logic to be revisited if the application decide to support
               //one user id multiple companies
               return s.companyUsers[0]?.userAuthGroup;
-            } else {
+            } else if (s.directory === Directory.IDIR) {
               return s.userAuthGroup;
             }
           }),
@@ -249,12 +252,16 @@ export class UsersProfile extends AutomapperProfile {
         forMember(
           (d) => d.statusCode,
           mapFrom((s) => {
-            if (s.companyUsers?.length && s.companyUsers[0]?.statusCode) {
+            if (
+              s.directory !== Directory.IDIR &&
+              s.companyUsers?.length &&
+              s.companyUsers[0]?.statusCode
+            ) {
               //the logic to be revisited if the application decide to support
               //one user id multiple companies
               return s.companyUsers[0]?.statusCode;
-            } else {
-              return null;
+            } else if (s.directory === Directory.IDIR) {
+              return s.statusCode;
             }
           }),
         ),
@@ -274,68 +281,6 @@ export class UsersProfile extends AutomapperProfile {
         forMember(
           (d) => d.countryCode,
           mapFrom((s) => s.userContact?.province?.country?.countryCode),
-        ),
-      );
-
-      /**
-       * The mapping is between IdirUser to ReadUserDto mapping.
-       */
-      createMap(
-        mapper,
-        IdirUser,
-        ReadUserDto,
-        forMember(
-          (d) => d.userName,
-          mapFrom((s) => s.userName),
-        ),
-        forMember(
-          (d) => d.userGUID,
-          mapFrom((s) => s.userGUID),
-        ),
-        forMember(
-          (d) => d.userAuthGroup,
-          mapFrom((s) => s.userAuthGroup),
-        ),
-        forMember(
-          (d) => d.statusCode,
-          mapFrom((s) => s.statusCode),
-        ),
-      );
-
-      /**
-       * The mapping is between IdirUser to ReadUserOrbcStatusDto mapping.
-       */
-      createMap(
-        mapper,
-        IdirUser,
-        ReadUserOrbcStatusDto,
-        forMember(
-          (d) => d.user.firstName,
-          mapFrom((s) => s.userName),
-        ),
-        forMember(
-          (d) => d.user.lastName,
-          mapFrom((s) => s.lastName),
-        ),
-        forMember(
-          (d) => d.user.email,
-          mapFrom((s) => s.email),
-        ),
-        forMember(
-          (d) => d.user.userName,
-          mapFrom((s) => s.userName),
-        ),
-        forMember(
-          (d) => d.user.userGUID,
-          mapFrom((s) => s.userGUID),
-        ),
-        forMember(
-          (d) => d.user.userAuthGroup,
-          mapFrom((s) => s.userAuthGroup),
-        ),
-        forMember(
-          (d) => d.user.statusCode,
-          mapFrom((s) => s.statusCode),
         ),
       );
 
