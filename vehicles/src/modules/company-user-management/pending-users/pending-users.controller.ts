@@ -214,7 +214,8 @@ export class PendingUsersController {
       'Returns the list of successfully deleted users or raises exceptions for unauthorized access or no users deleted.',
   })
   @ApiOkResponse({
-    description: 'The Delete Resource containing successful and failed identifiers.',
+    description:
+      'The Delete Resource containing successful and failed identifiers.',
     type: DeleteDto,
   })
   @Delete()
