@@ -799,6 +799,7 @@ export class CompanyService {
       // Attempt to find a permit by permit number or migrated permit number
       const permit = await queryRunner.manager
         .createQueryBuilder(Permit, 'permit')
+        .leftJoinAndSelect('permit.company', 'company')
         .where('permit.migratedPermitNumber = :permitNumber', {
           permitNumber: verifyClientDto.permitNumber,
         })
@@ -810,7 +811,7 @@ export class CompanyService {
       // If permit found, validate company and permit linkage
       if (permit) {
         verifyClient.foundPermit = true;
-        if (permit.companyId === company?.companyId) {
+        if (permit.company?.companyId === company?.companyId) {
           verifyClient.verifiedClient =
             await this.mapCompanyEntityToCompanyDto(company);
         }

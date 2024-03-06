@@ -31,6 +31,10 @@ export class ApplicationProfile extends AutomapperProfile {
         CreateApplicationDto,
         Permit,
         forMember(
+          (d) => d.company.companyId,
+          mapFrom((s) => s.companyId),
+        ),
+        forMember(
           (permit) => permit.applicationOwner?.userGUID,
           mapWithArguments((_, { userGUID }) => {
             return userGUID;
@@ -153,6 +157,10 @@ export class ApplicationProfile extends AutomapperProfile {
         Permit,
         ReadApplicationDto,
         forMember(
+          (d) => d.companyId,
+          mapFrom((s) => s?.company?.companyId),
+        ),
+        forMember(
           (d) => d.permitData,
           mapFrom((s) => {
             return s.permitData?.permitData
@@ -187,6 +195,10 @@ export class ApplicationProfile extends AutomapperProfile {
         mapper,
         UpdateApplicationDto,
         Permit,
+        forMember(
+          (d) => d.company.companyId,
+          mapFrom((s) => s.companyId),
+        ),
         forMember(
           (d) => d.updatedUserGuid,
           mapWithArguments((updateApplicationDto, { userGUID }) => {
