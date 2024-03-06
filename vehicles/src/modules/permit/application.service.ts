@@ -178,6 +178,11 @@ export class ApplicationService {
       refreshedPermitEntity,
       Permit,
       ReadApplicationDto,
+      {
+        extraArgs: () => ({
+          currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
+        }),
+      },
     );
   }
 
@@ -216,12 +221,20 @@ export class ApplicationService {
 
   /* Get single application By Permit ID*/
   @LogAsyncMethodExecution()
-  async findApplication(permitId: string): Promise<ReadApplicationDto> {
+  async findApplication(
+    permitId: string,
+    currentUser: IUserJWT,
+  ): Promise<ReadApplicationDto> {
     const application = await this.findOne(permitId);
     const readPermitApplicationdto = await this.classMapper.mapAsync(
       application,
       Permit,
       ReadApplicationDto,
+      {
+        extraArgs: () => ({
+          currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
+        }),
+      },
     );
     return readPermitApplicationdto;
   }
@@ -233,16 +246,16 @@ export class ApplicationService {
    */
   @LogAsyncMethodExecution()
   async findAllApplications(findAllApplicationsOptions?: {
-    applicationStatus: Readonly<ApplicationStatus[]>;
     page: number;
     take: number;
     orderBy?: string;
     companyId?: number;
     userGUID?: string;
+    currentUser?: IUserJWT;
   }): Promise<PaginationDto<ReadApplicationDto>> {
     // Construct the base query to find applications
     const applicationsQB = this.buildApplicationQuery(
-      findAllApplicationsOptions.applicationStatus,
+      findAllApplicationsOptions.currentUser,
       findAllApplicationsOptions.companyId,
       findAllApplicationsOptions.userGUID,
     );
@@ -296,13 +309,19 @@ export class ApplicationService {
         applications,
         Permit,
         ReadApplicationDto,
+        {
+          extraArgs: () => ({
+            currentUserAuthGroup:
+              findAllApplicationsOptions?.currentUser?.orbcUserAuthGroup,
+          }),
+        },
       );
     // Return paginated result
     return new PaginationDto(readApplicationDto, pageMetaDto);
   }
 
   private buildApplicationQuery(
-    applicationStatus: ReadonlyArray<ApplicationStatus>,
+    currentUser: IUserJWT,
     companyId?: number,
     userGUID?: string,
   ): SelectQueryBuilder<Permit> {
@@ -324,12 +343,14 @@ export class ApplicationService {
     }
 
     //Filter by application status
-    permitsQuery = permitsQuery.andWhere(
-      'permit.permitStatus IN (:...statuses)',
-      {
-        statuses: applicationStatus,
-      },
-    );
+    if (currentUser) {
+      permitsQuery = permitsQuery.andWhere(
+        'permit.permitStatus IN (:...statuses)',
+        {
+          statuses: getActiveApplicationStatus(currentUser),
+        },
+      );
+    }
 
     // Filter by userGUID if provided
     if (userGUID) {
@@ -400,6 +421,11 @@ export class ApplicationService {
       await this.findByApplicationNumber(applicationNumber),
       Permit,
       ReadApplicationDto,
+      {
+        extraArgs: () => ({
+          currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
+        }),
+      },
     );
   }
 
@@ -875,6 +901,7 @@ export class ApplicationService {
   @LogAsyncMethodExecution()
   async findCurrentAmendmentApplication(
     originalPermitId: string,
+    currentUser: IUserJWT,
   ): Promise<ReadApplicationDto> {
     const application = await this.permitRepository
       .createQueryBuilder('permit')
@@ -906,6 +933,11 @@ export class ApplicationService {
       application,
       Permit,
       ReadApplicationDto,
+      {
+        extraArgs: () => ({
+          currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
+        }),
+      },
     );
   }
 
@@ -935,14 +967,13 @@ export class ApplicationService {
   /**
    * Removes all specified applications for a given company and optionally by a user from the database.
    *
-   * This method retrieves existing applications using their IDs, company ID, and optionally, a user GUID. It then identifies
+   * This method retrieves existing applications using their IDs, and company ID. It then identifies
    * which applications can be marked as deleted or cancelled, based on whether their IDs were found and the user's authorization group,
    * and updates their statuses accordingly. Finally, it constructs a response detailing which deletions (or cancellations) were successful and which were not.
    *
    * @param {string[]} applicationIds The IDs of the applications to be deleted/cancelled.
    * @param {number} companyId The ID of the company owning the applications.
    * @param {IUserJWT} currentUser The current user performing the operation, with their JWT details.
-   * @param {string} [userGuid] The GUID of the user owning the applications, if filtering by user is desired.
    * @returns {Promise<DeleteDto>} An object containing arrays of successful and failed deletions/cancellations.
    */
   @LogAsyncMethodExecution()
@@ -950,12 +981,12 @@ export class ApplicationService {
     applicationIds: string[],
     companyId: number,
     currentUser: IUserJWT,
-    userGuid?: string,
   ): Promise<DeleteDto> {
+    // Retrieve active application statuses based on the current user
     const applicationStatus: ReadonlyArray<ApplicationStatus> =
       getActiveApplicationStatus(currentUser);
-    // Retrieve active application statuses based on the current user
 
+    // Build query to find applications matching certain criteria like company ID, application status, and undefined permit numbers
     const applicationsQB = this.permitRepository
       .createQueryBuilder('permit')
       .leftJoinAndSelect('permit.applicationOwner', 'applicationOwner')
@@ -967,18 +998,27 @@ export class ApplicationService {
         applicationStatus: applicationStatus,
       })
       .andWhere('permit.permitNumber IS NULL');
-    // Build query to find applications matching certain criteria like company ID, application status, and undefined permit numbers
 
-    if (userGuid) {
+    // Filter applications by user GUID if the current user is a CV_CLIENT or by ONLINE origin if the user is a COMPANY_ADMINISTRATOR
+    if (UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup) {
       applicationsQB.andWhere('applicationOwner.userGUID = :userGuid', {
-        userGuid: userGuid,
+        userGuid: currentUser.userGUID,
       });
+    } else if (
+      UserAuthGroup.COMPANY_ADMINISTRATOR === currentUser.orbcUserAuthGroup
+    ) {
+      applicationsQB.andWhere(
+        'permit.permitApplicationOrigin = :permitApplicationOrigin',
+        {
+          permitApplicationOrigin: PermitApplicationOriginEnum.ONLINE,
+        },
+      );
     }
-    // Filter applications by user GUID if provided
 
-    const applicationsBeforeDelete = await applicationsQB.getMany();
     // Execute the query to retrieve applications before deletion
+    const applicationsBeforeDelete = await applicationsQB.getMany();
 
+    // Map applications before deletion to their new status (either DELETED or CANCELLED), including auditing fields
     const applicationsToBeDeleted = applicationsBeforeDelete.map(
       (application) => {
         return (
@@ -998,28 +1038,28 @@ export class ApplicationService {
         );
       },
     );
-    // Map applications before deletion to their new status (either DELETED or CANCELLED), including auditing fields
 
+    // Determine which application IDs could not be found for deletion
     const failure = applicationIds?.filter(
       (id) =>
         !applicationsToBeDeleted.some(
           (application) => application.permitId === id,
         ),
     );
-    // Determine which application IDs could not be found for deletion
 
-    await this.permitRepository.save(applicationsToBeDeleted);
     // Persist changes to the applications, effectively deleting or cancelling them
+    await this.permitRepository.save(applicationsToBeDeleted);
 
-    const success = applicationIds?.filter((id) => !failure?.includes(id));
     // Determine which application IDs were successfully deleted or cancelled
+    const success = applicationIds?.filter((id) => !failure?.includes(id));
 
+    // Prepare the response DTO with details of successful and failed deletions
     const deleteDto: DeleteDto = {
       success: success,
       failure: failure,
     };
-    // Prepare the response DTO with details of successful and failed deletions
-    return deleteDto;
+
     // Return the response DTO
+    return deleteDto;
   }
 }

@@ -120,7 +120,11 @@ export class PermitService {
       throw new ForbiddenException();
     }
 
-    return this.classMapper.mapAsync(permit, Permit, ReadPermitDto);
+    return this.classMapper.mapAsync(permit, Permit, ReadPermitDto, {
+      extraArgs: () => ({
+        currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
+      }),
+    });
   }
 
   @LogAsyncMethodExecution()
@@ -181,6 +185,7 @@ export class PermitService {
     searchColumn?: PermitSearch;
     searchString?: string;
     userGUID?: string;
+    currentUser?: IUserJWT;
   }): Promise<PaginationDto<ReadPermitDto>> {
     // Construct the base query to find permits
     const permitsQB = this.buildPermitQuery(
@@ -232,7 +237,10 @@ export class PermitService {
     });
     // Map permit entities to ReadPermitDto objects
     const readPermitDto: ReadPermitDto[] =
-      await this.mapEntitiesToReadPermitDto(permits);
+      await this.mapEntitiesToReadPermitDto(
+        permits,
+        findPermitOptions.currentUser,
+      );
     // Return paginated result
     return new PaginationDto(readPermitDto, pageMetaDto);
   }
@@ -383,11 +391,17 @@ export class PermitService {
 
   private async mapEntitiesToReadPermitDto(
     entities: Permit[],
+    currentUser: IUserJWT,
   ): Promise<ReadPermitDto[]> {
     const readPermitDto: ReadPermitDto[] = await this.classMapper.mapArrayAsync(
       entities,
       Permit,
       ReadPermitDto,
+      {
+        extraArgs: () => ({
+          currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
+        }),
+      },
     );
     return readPermitDto;
   }

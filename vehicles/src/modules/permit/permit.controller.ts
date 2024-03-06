@@ -110,6 +110,7 @@ export class PermitController {
       searchColumn: getPermitQueryParamsDto.searchColumn,
       searchString: getPermitQueryParamsDto.searchString,
       userGUID: userGuid,
+      currentUser: currentUser,
     });
   }
 
