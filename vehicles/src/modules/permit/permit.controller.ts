@@ -39,6 +39,7 @@ import {
   UserAuthGroup,
   idirUserAuthGroupList,
 } from 'src/common/enum/user-auth-group.enum';
+import { ReadPermitMetadataDto } from './dto/response/read-permit-metadata.dto';
 
 @ApiBearerAuth()
 @ApiTags('Permit')
@@ -77,13 +78,13 @@ export class PermitController {
    * @param status if true get active permits else get others
    *
    */
-  @ApiPaginatedResponse(ReadPermitDto)
+  @ApiPaginatedResponse(ReadPermitMetadataDto)
   @Roles(Role.READ_PERMIT)
   @Get()
   async getPermit(
     @Req() request: Request,
     @Query() getPermitQueryParamsDto: GetPermitQueryParamsDto,
-  ): Promise<PaginationDto<ReadPermitDto>> {
+  ): Promise<PaginationDto<ReadPermitMetadataDto>> {
     const currentUser = request.user as IUserJWT;
     if (
       !idirUserAuthGroupList.includes(

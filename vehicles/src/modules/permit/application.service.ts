@@ -67,6 +67,7 @@ import {
   idirUserAuthGroupList,
 } from 'src/common/enum/user-auth-group.enum';
 import { DeleteDto } from '../common/dto/response/delete.dto';
+import { ReadApplicationMetadataDto } from './dto/response/read-application-metadata.dto';
 
 @Injectable()
 export class ApplicationService {
@@ -252,7 +253,7 @@ export class ApplicationService {
     companyId?: number;
     userGUID?: string;
     currentUser?: IUserJWT;
-  }): Promise<PaginationDto<ReadApplicationDto>> {
+  }): Promise<PaginationDto<ReadApplicationMetadataDto>> {
     // Construct the base query to find applications
     const applicationsQB = this.buildApplicationQuery(
       findAllApplicationsOptions.currentUser,
@@ -271,7 +272,7 @@ export class ApplicationService {
       expiryDate: 'permitData.expiryDate',
       unitNumber: 'permitData.unitNumber',
       plate: 'permitData.plate',
-      applicant: 'permitData.applicant',
+      vin: 'permitData.vin',
     };
 
     // Apply sorting if orderBy parameter is provided
@@ -304,11 +305,11 @@ export class ApplicationService {
       },
     });
     // Map permit entities to ReadPermitDto objects
-    const readApplicationDto: ReadApplicationDto[] =
+    const readApplicationMetadataDto: ReadApplicationMetadataDto[] =
       await this.classMapper.mapArrayAsync(
         applications,
         Permit,
-        ReadApplicationDto,
+        ReadApplicationMetadataDto,
         {
           extraArgs: () => ({
             currentUserAuthGroup:
@@ -317,7 +318,7 @@ export class ApplicationService {
         },
       );
     // Return paginated result
-    return new PaginationDto(readApplicationDto, pageMetaDto);
+    return new PaginationDto(readApplicationMetadataDto, pageMetaDto);
   }
 
   private buildApplicationQuery(

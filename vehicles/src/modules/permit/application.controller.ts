@@ -44,6 +44,7 @@ import { GetApplicationQueryParamsDto } from './dto/request/queryParam/getApplic
 import { DeleteApplicationDto } from './dto/request/delete-application.dto';
 import { DeleteDto } from '../common/dto/response/delete.dto';
 import { PermitApplicationOrigin } from '../../common/enum/permit-application-origin.enum';
+import { ReadApplicationMetadataDto } from './dto/response/read-application-metadata.dto';
 
 @ApiBearerAuth()
 @ApiTags('Permit Application')
@@ -100,13 +101,13 @@ export class ApplicationController {
       'Fetch all permit application and return the same , enforcing authentication.' +
       "If login user is PA then only fetch thier application else fetch all applications associated with logged in user's company. ",
   })
-  @ApiPaginatedResponse(ReadApplicationDto)
+  @ApiPaginatedResponse(ReadApplicationMetadataDto)
   @Roles(Role.READ_PERMIT)
   @Get()
   async findAllApplication(
     @Req() request: Request,
     @Query() getApplicationQueryParamsDto: GetApplicationQueryParamsDto,
-  ): Promise<PaginationDto<ReadApplicationDto>> {
+  ): Promise<PaginationDto<ReadApplicationMetadataDto>> {
     const currentUser = request.user as IUserJWT;
     if (
       !idirUserAuthGroupList.includes(
