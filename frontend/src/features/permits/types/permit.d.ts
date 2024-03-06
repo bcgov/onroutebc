@@ -30,7 +30,6 @@ export interface Permit extends PartialPermit {
   createdDateTime: string;
   updatedDateTime: string;
   permitData: ReplaceDayjsWithString<PermitData>;
-  issuer?: Nullable<string>;
 }
 
 /**

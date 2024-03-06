@@ -60,7 +60,8 @@ export const ApplicationInProgressColumnDefinition: MRT_ColumnDef<ApplicationInP
       header: "Last Updated",
     },
     {
-      accessorFn: (row) => row.applicant,
+      accessorFn: (row) =>
+        `${row.permitData.contactDetails?.firstName} ${row.permitData.contactDetails?.lastName} `,
       id: "applicant",
       header: "Applicant",
       enableSorting: false,

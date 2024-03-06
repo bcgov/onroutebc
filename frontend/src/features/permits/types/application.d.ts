@@ -82,7 +82,7 @@ export type ApplicationRequestData = TransformPermitData<
 
 export type CreateApplicationRequestData = Omit<
   ApplicationRequestData,
-  | "permitNumber"
+  "permitNumber"
   | "createdDateTime"
   | "updatedDateTime"
   | "documentId"
@@ -91,7 +91,7 @@ export type CreateApplicationRequestData = Omit<
 
 export type UpdateApplicationRequestData = Omit<
   ApplicationRequestData,
-  | "applicationNumber"
+  "applicationNumber"
   | "originalPermitId"
   | "permitId"
   | "permitNumber"
@@ -179,7 +179,6 @@ export interface PermitApplicationInProgress
   permitNumber?: Nullable<string>;
   permitStatus: typeof PERMIT_STATUSES.IN_PROGRESS;
   documentId?: Nullable<string>;
-  applicant?: Nullable<string>;
 }
 
 export type ApplicationInProgress = PermitApplicationInProgress;
