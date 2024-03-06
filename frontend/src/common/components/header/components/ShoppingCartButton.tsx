@@ -1,8 +1,6 @@
 import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Badge, { BadgeProps } from '@mui/material/Badge';
-
-import "./ShoppingCartButton.scss";
 import { IconButton, styled } from "@mui/material";
 
 const StyledBadge = styled(Badge)<BadgeProps>(() => ({
@@ -15,8 +13,13 @@ const StyledBadge = styled(Badge)<BadgeProps>(() => ({
 }));
 
 export const ShoppingCartButton = ({cartItemCount} : {cartItemCount: number}) => {
+
+  const onClick = () => {
+    console.log('navigate to /shopping-cart');
+  }
+
   return (
-    <IconButton aria-label="cart">
+    <IconButton aria-label="cart" onClick={onClick}>
       <StyledBadge badgeContent={cartItemCount} color="secondary">
         <FontAwesomeIcon icon={faShoppingCart} color="white" />
       </StyledBadge>
