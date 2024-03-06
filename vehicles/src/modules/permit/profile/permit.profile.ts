@@ -30,6 +30,10 @@ export class PermitProfile extends AutomapperProfile {
         Permit,
         ReadPermitDto,
         forMember(
+          (d) => d.companyId,
+          mapFrom((s) => s?.company?.companyId),
+        ),
+        forMember(
           (d) => d.permitData,
           mapFrom((s) => {
             return s.permitData?.permitData

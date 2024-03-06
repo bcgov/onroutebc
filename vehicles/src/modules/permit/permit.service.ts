@@ -89,6 +89,7 @@ export class PermitService {
     return this.permitRepository.findOne({
       where: { permitId: permitId },
       relations: {
+        company: true,
         permitData: true,
         applicationOwner: { userContact: true },
         issuer: { userContact: true },
@@ -116,7 +117,7 @@ export class PermitService {
       !idirUserAuthGroupList.includes(
         currentUser.orbcUserAuthGroup as UserAuthGroup,
       ) &&
-      permit?.companyId != currentUser.companyId
+      permit?.company?.companyId != currentUser.companyId
     ) {
       throw new ForbiddenException();
     }
@@ -156,7 +157,7 @@ export class PermitService {
       !idirUserAuthGroupList.includes(
         currentUser.orbcUserAuthGroup as UserAuthGroup,
       ) &&
-      permit?.companyId != currentUser.companyId
+      permit?.company?.companyId != currentUser.companyId
     ) {
       throw new ForbiddenException();
     }
@@ -167,7 +168,7 @@ export class PermitService {
       permit.documentId,
       downloadMode,
       res,
-      permit.companyId,
+      permit.company?.companyId,
     );
   }
 
@@ -255,6 +256,7 @@ export class PermitService {
   ): SelectQueryBuilder<Permit> {
     let permitsQuery = this.permitRepository
       .createQueryBuilder('permit')
+      .leftJoinAndSelect('permit.company', 'company')
       .innerJoinAndSelect('permit.permitData', 'permitData')
       .leftJoinAndSelect('permit.applicationOwner', 'applicationOwner')
       .leftJoinAndSelect(
@@ -269,7 +271,7 @@ export class PermitService {
 
     // Filter by companyId if provided
     if (companyId) {
-      permitsQuery = permitsQuery.andWhere('permit.companyId = :companyId', {
+      permitsQuery = permitsQuery.andWhere('company.companyId = :companyId', {
         companyId: companyId,
       });
     }
@@ -417,6 +419,7 @@ export class PermitService {
     // Query the database to find a permit and its related transactions and receipt based on the permit ID.
     const permit = await this.permitRepository
       .createQueryBuilder('permit')
+      .leftJoinAndSelect('permit.company', 'company')
       .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
       .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
       .innerJoinAndSelect('transaction.receipt', 'receipt')
@@ -437,7 +440,7 @@ export class PermitService {
       !idirUserAuthGroupList.includes(
         currentUser.orbcUserAuthGroup as UserAuthGroup,
       ) &&
-      permit?.companyId != currentUser.companyId
+      permit?.company?.companyId != currentUser.companyId
     ) {
       throw new ForbiddenException();
     }
@@ -449,7 +452,7 @@ export class PermitService {
       permit.permitTransactions[0].transaction.receipt.receiptDocumentId,
       FileDownloadModes.PROXY,
       res,
-      permit.companyId,
+      permit.company?.companyId,
     );
   }
 
@@ -635,9 +638,7 @@ export class PermitService {
         },
       );
 
-      const companyInfo = await this.companyService.findOne(
-        newPermit.companyId,
-      );
+      const companyInfo = newPermit.company;
 
       const fullNames =
         await this.applicationService.getFullNamesFromCache(newPermit);
