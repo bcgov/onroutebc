@@ -967,14 +967,13 @@ export class ApplicationService {
   /**
    * Removes all specified applications for a given company and optionally by a user from the database.
    *
-   * This method retrieves existing applications using their IDs, company ID, and optionally, a user GUID. It then identifies
+   * This method retrieves existing applications using their IDs, and company ID. It then identifies
    * which applications can be marked as deleted or cancelled, based on whether their IDs were found and the user's authorization group,
    * and updates their statuses accordingly. Finally, it constructs a response detailing which deletions (or cancellations) were successful and which were not.
    *
    * @param {string[]} applicationIds The IDs of the applications to be deleted/cancelled.
    * @param {number} companyId The ID of the company owning the applications.
    * @param {IUserJWT} currentUser The current user performing the operation, with their JWT details.
-   * @param {string} [userGuid] The GUID of the user owning the applications, if filtering by user is desired.
    * @returns {Promise<DeleteDto>} An object containing arrays of successful and failed deletions/cancellations.
    */
   @LogAsyncMethodExecution()
@@ -982,12 +981,12 @@ export class ApplicationService {
     applicationIds: string[],
     companyId: number,
     currentUser: IUserJWT,
-    userGuid?: string,
   ): Promise<DeleteDto> {
+    // Retrieve active application statuses based on the current user
     const applicationStatus: ReadonlyArray<ApplicationStatus> =
       getActiveApplicationStatus(currentUser);
-    // Retrieve active application statuses based on the current user
 
+    // Build query to find applications matching certain criteria like company ID, application status, and undefined permit numbers
     const applicationsQB = this.permitRepository
       .createQueryBuilder('permit')
       .leftJoinAndSelect('permit.applicationOwner', 'applicationOwner')
@@ -999,18 +998,27 @@ export class ApplicationService {
         applicationStatus: applicationStatus,
       })
       .andWhere('permit.permitNumber IS NULL');
-    // Build query to find applications matching certain criteria like company ID, application status, and undefined permit numbers
 
-    if (userGuid) {
+    // Filter applications by user GUID if the current user is a CV_CLIENT or by ONLINE origin if the user is a COMPANY_ADMINISTRATOR
+    if (UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup) {
       applicationsQB.andWhere('applicationOwner.userGUID = :userGuid', {
-        userGuid: userGuid,
+        userGuid: currentUser.userGUID,
       });
+    } else if (
+      UserAuthGroup.COMPANY_ADMINISTRATOR === currentUser.orbcUserAuthGroup
+    ) {
+      applicationsQB.andWhere(
+        'permit.permitApplicationOrigin = :permitApplicationOrigin',
+        {
+          permitApplicationOrigin: PermitApplicationOriginEnum.ONLINE,
+        },
+      );
     }
-    // Filter applications by user GUID if provided
 
-    const applicationsBeforeDelete = await applicationsQB.getMany();
     // Execute the query to retrieve applications before deletion
+    const applicationsBeforeDelete = await applicationsQB.getMany();
 
+    // Map applications before deletion to their new status (either DELETED or CANCELLED), including auditing fields
     const applicationsToBeDeleted = applicationsBeforeDelete.map(
       (application) => {
         return (
@@ -1030,28 +1038,28 @@ export class ApplicationService {
         );
       },
     );
-    // Map applications before deletion to their new status (either DELETED or CANCELLED), including auditing fields
 
+    // Determine which application IDs could not be found for deletion
     const failure = applicationIds?.filter(
       (id) =>
         !applicationsToBeDeleted.some(
           (application) => application.permitId === id,
         ),
     );
-    // Determine which application IDs could not be found for deletion
 
-    await this.permitRepository.save(applicationsToBeDeleted);
     // Persist changes to the applications, effectively deleting or cancelling them
+    await this.permitRepository.save(applicationsToBeDeleted);
 
-    const success = applicationIds?.filter((id) => !failure?.includes(id));
     // Determine which application IDs were successfully deleted or cancelled
+    const success = applicationIds?.filter((id) => !failure?.includes(id));
 
+    // Prepare the response DTO with details of successful and failed deletions
     const deleteDto: DeleteDto = {
       success: success,
       failure: failure,
     };
-    // Prepare the response DTO with details of successful and failed deletions
-    return deleteDto;
+
     // Return the response DTO
+    return deleteDto;
   }
 }

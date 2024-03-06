@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   Param,
   Post,
@@ -42,6 +43,7 @@ import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response
 import { GetApplicationQueryParamsDto } from './dto/request/queryParam/getApplication.query-params.dto';
 import { DeleteApplicationDto } from './dto/request/delete-application.dto';
 import { DeleteDto } from '../common/dto/response/delete.dto';
+import { PermitApplicationOrigin } from '../../common/enum/permit-application-origin.enum';
 
 @ApiBearerAuth()
 @ApiTags('Permit Application')
@@ -160,12 +162,22 @@ export class ApplicationController {
   ): Promise<ReadApplicationDto> {
     const currentUser = request.user as IUserJWT;
 
-    return !amendment
-      ? this.applicationService.findApplication(permitId, currentUser)
-      : this.applicationService.findCurrentAmendmentApplication(
+    const retApplicationDto = !amendment
+      ? await this.applicationService.findApplication(permitId, currentUser)
+      : await this.applicationService.findCurrentAmendmentApplication(
           permitId,
           currentUser,
         );
+    if (
+      currentUser.orbcUserAuthGroup === UserAuthGroup.COMPANY_ADMINISTRATOR &&
+      retApplicationDto.permitApplicationOrigin !==
+        PermitApplicationOrigin.ONLINE
+    ) {
+      throw new ForbiddenException(
+        'Applications created offline by staff users cannot be viewed by the company administrator.',
+      );
+    }
+    return retApplicationDto;
   }
 
   @ApiOperation({
@@ -260,16 +272,11 @@ export class ApplicationController {
     @Body() deleteApplicationDto: DeleteApplicationDto,
   ): Promise<DeleteDto> {
     const currentUser = request.user as IUserJWT;
-    const userGuid =
-      UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup
-        ? currentUser.userGUID
-        : null;
     const deleteResult: DeleteDto =
       await this.applicationService.deleteApplicationInProgress(
         deleteApplicationDto.applications,
         deleteApplicationDto.companyId,
         currentUser,
-        userGuid,
       );
     if (deleteResult == null) {
       throw new DataNotFoundException();
