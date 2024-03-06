@@ -51,6 +51,19 @@ export const UserManagement = () => {
   const { setSnackBar } = useContext(SnackBarContext);
   const { user: userFromToken } = useAuth();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  /**
+   * rowSelection is a Record<string, boolean>. The key follows the pattern
+   * - {userGUID}-{ACTIVE} (if existing user)
+   * - {userName}-{PENDING} (if pending user)
+   * This is a conscious design choice so that we can quickly
+   * recognize whether a selected user is ACTIVE or PENDING.
+   * The alternative will be to create another state with lot more
+   * processing to figure out the distinction between ACTIVE and PENDING.
+   *
+   * Why do we need this distinction?
+   * - Users selected for deletion will use two different APIs for pending and active users
+   *
+   */
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
 
@@ -61,6 +74,12 @@ export const UserManagement = () => {
     setIsDeleteDialogOpen(() => true);
   }, []);
 
+  /**
+   * Retrieves user identifiers based on their status from the row selection state.
+   * @param {BCeIDUserStatusType} userStatus The status of the users to filter by.
+   * @returns {string[]} An array of user identifiers (either user names or GUIDs)
+   *                     based on the requested status.
+   */
   const getSelectedUsers = useCallback(
     (userStatus: BCeIDUserStatusType) =>
       Object.keys(rowSelection)
@@ -76,18 +95,21 @@ export const UserManagement = () => {
     setIsDeleteDialogOpen(() => false);
     const userNames: string[] = getSelectedUsers(BCeID_USER_STATUS.PENDING);
     const userGUIDs: string[] = getSelectedUsers(BCeID_USER_STATUS.ACTIVE);
-    if (userGUIDs.length > 0) {
-      deleteCompanyUsers(userGUIDs).then(({ data: companyUserResponse }) => {
-        const { failure } = companyUserResponse as DeleteResponse;
-        if (failure?.length > 0) {
-          navigate(ERROR_ROUTES.UNEXPECTED);
-        }
-      });
-    }
+    // Because there are two APIs, one for pending users and one for existing users
+    // We await the response of first before proceeding to the next one.
+    // Promise.all isn't feasible because, API does not accept an empty array.
     if (userNames.length > 0) {
-      deleteCompanyPendingUsers(userNames)
-        .then(({ data: pendingUserResponse }) => {
-          const { failure } = pendingUserResponse as DeleteResponse;
+      const { data: pendingUserResponse } =
+        await deleteCompanyPendingUsers(userNames);
+      const { failure } = pendingUserResponse as DeleteResponse;
+      if (failure?.length > 0) {
+        navigate(ERROR_ROUTES.UNEXPECTED);
+      }
+    }
+    if (userGUIDs.length > 0) {
+      deleteCompanyUsers(userGUIDs)
+        .then(({ data: companyUserResponse }) => {
+          const { failure } = companyUserResponse as DeleteResponse;
           if (failure?.length > 0) {
             navigate(ERROR_ROUTES.UNEXPECTED);
           }
