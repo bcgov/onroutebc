@@ -30,7 +30,7 @@ export class ReadPermitMetadataDto {
   @AutoMap()
   @ApiProperty({
     enum: PermitType,
-    description: 'Friendly name for the permit type.',
+    description: 'The Permit type.',
     example: PermitType.TERM_OVERSIZE,
   })
   permitType: PermitType;
@@ -38,14 +38,13 @@ export class ReadPermitMetadataDto {
   @AutoMap()
   @ApiProperty({
     example: 'P2-00000002-120',
-    description:
-      'Unique formatted permit number, recorded once the permit is approved and issued.',
+    description: 'Unique formatted permit number.',
   })
   permitNumber: string;
 
   @AutoMap()
   @ApiProperty({
-    description: 'Satus of Permit',
+    description: 'Status of the Permit',
     example: PermitStatus.ISSUED,
     required: false,
   })
@@ -55,7 +54,7 @@ export class ReadPermitMetadataDto {
   @ApiProperty({
     enum: PermitApprovalSource,
     example: PermitApprovalSource.PPC,
-    description: 'Unique identifier for the permit approval source.',
+    description: 'Source of approval for the permit.',
   })
   permitApprovalSource: PermitApprovalSource;
 
@@ -63,7 +62,8 @@ export class ReadPermitMetadataDto {
   @ApiProperty({
     enum: PermitApplicationOrigin,
     example: PermitApplicationOrigin.ONLINE,
-    description: 'Unique identifier for the application origin.',
+    description:
+      'Specifies the source from which the permit application was submitted.',
   })
   permitApplicationOrigin: PermitApplicationOrigin;
 

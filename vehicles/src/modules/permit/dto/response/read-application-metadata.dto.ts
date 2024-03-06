@@ -22,7 +22,7 @@ export class ReadApplicationMetadataDto {
   @AutoMap()
   @ApiProperty({
     enum: PermitType,
-    description: 'Friendly name for the permit type.',
+    description: 'The Permit Type.',
     example: PermitType.TERM_OVERSIZE,
   })
   permitType: PermitType;
@@ -30,13 +30,13 @@ export class ReadApplicationMetadataDto {
   @AutoMap()
   @ApiProperty({
     example: 'A2-00000002-120',
-    description: 'Unique formatted permit application number.',
+    description: 'Unique formatted application number.',
   })
   applicationNumber: string;
 
   @AutoMap()
   @ApiProperty({
-    description: 'Satus of Permit/Permit Application',
+    description: 'Status of Permit Application.',
     example: ApplicationStatus.IN_PROGRESS,
     required: false,
   })
@@ -46,7 +46,8 @@ export class ReadApplicationMetadataDto {
   @ApiProperty({
     enum: PermitApplicationOrigin,
     example: PermitApplicationOrigin.ONLINE,
-    description: 'Unique identifier for the application origin.',
+    description:
+      'Specifies the source from which the permit application was submitted.',
   })
   permitApplicationOrigin: PermitApplicationOrigin;
 
@@ -58,26 +59,26 @@ export class ReadApplicationMetadataDto {
 
   @AutoMap()
   @ApiProperty({
-    description: 'Permit created Date and Time.',
+    description: 'Application created Date and Time.',
   })
   createdDateTime: string;
 
   @AutoMap()
   @ApiProperty({
-    description: 'Permit updated Date and Time.',
+    description: 'Application updated Date and Time.',
   })
   updatedDateTime: string;
 
   @AutoMap()
   @ApiProperty({
-    description: 'Name of the user who started the application',
+    description: 'Name of the user who started the application.',
     example: 'John Smith',
   })
   applicant: string;
 
   @AutoMap()
   @ApiProperty({
-    description: 'Name of the unit associated with the application',
+    description: 'Name of the unit associated with the application.',
     example: 'Unit 42',
   })
   unitNumber: string;
@@ -85,14 +86,15 @@ export class ReadApplicationMetadataDto {
   @AutoMap()
   @ApiProperty({
     description:
-      'Vehicle Identification Number associated with the application',
+      'Vehicle Identification Number associated with the application.',
     example: '275393',
   })
   vin: string;
 
   @AutoMap()
   @ApiProperty({
-    description: 'License plate number associated with the application vehicle',
+    description:
+      'License plate number associated with the application vehicle.',
     example: 'PRJZZP',
   })
   plate: string;
