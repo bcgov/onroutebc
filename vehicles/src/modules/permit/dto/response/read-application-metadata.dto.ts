@@ -15,7 +15,7 @@ export class ReadApplicationMetadataDto {
   @AutoMap()
   @ApiProperty({
     description: 'Id of the Application.',
-    example: '',
+    example: '1',
   })
   permitId: string;
 
