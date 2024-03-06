@@ -19,8 +19,6 @@ import {
   PROFILE_ROUTES,
   VEHICLES_ROUTES,
 } from "../../../routes/constants";
-import { ShoppingCartButton } from "./components/ShoppingCartButton";
-import { useFeatureFlagsQuery } from "../../hooks/hooks";
 
 const getEnv = () => {
   const env =
@@ -113,8 +111,6 @@ export const Header = () => {
   const { companyId } = useContext(OnRouteBCContext);
   const username = getLoginUsernameFromSession();
   const isIdir = user?.profile?.identity_provider === IDPS.IDIR;
-  const { data: featureFlags } = useFeatureFlagsQuery();
-
   const shouldDisplayNavBar = Boolean(companyId);
 
   const toggleMenu = () => {
@@ -140,7 +136,6 @@ export const Header = () => {
           {isAuthenticated ? (
             <div className="auth-section">
               {isIdir ? <SearchButton onClick={toggleFilter} /> : null}
-              {featureFlags?.["SHOPPING_CART"] === "ENABLED" && <ShoppingCartButton cartItemCount={4} />}
               <UserSection username={username} />
             </div>
           ) : null}
