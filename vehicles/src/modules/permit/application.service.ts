@@ -190,6 +190,7 @@ export class ApplicationService {
     return await this.permitRepository.findOne({
       where: [{ permitId: permitId }],
       relations: {
+        company: true,
         permitData: true,
         applicationOwner: {
           userContact: true,
@@ -203,6 +204,7 @@ export class ApplicationService {
   ): Promise<Permit> {
     return await this.permitRepository
       .createQueryBuilder('permit')
+      .leftJoinAndSelect('permit.company', 'company')
       .innerJoinAndSelect('permit.permitData', 'permitData')
       .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
       .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
@@ -327,6 +329,7 @@ export class ApplicationService {
   ): SelectQueryBuilder<Permit> {
     let permitsQuery = this.permitRepository
       .createQueryBuilder('permit')
+      .leftJoinAndSelect('permit.company', 'company')
       .innerJoinAndSelect('permit.permitData', 'permitData')
       .leftJoinAndSelect('permit.applicationOwner', 'applicationOwner')
       .leftJoinAndSelect(
@@ -337,7 +340,7 @@ export class ApplicationService {
 
     // Filter by companyId if provided
     if (companyId) {
-      permitsQuery = permitsQuery.andWhere('permit.companyId = :companyId', {
+      permitsQuery = permitsQuery.andWhere('company.companyId = :companyId', {
         companyId: companyId,
       });
     }
@@ -376,6 +379,7 @@ export class ApplicationService {
     const application = await this.permitRepository.findOne({
       where: [{ applicationNumber: applicationNumber }],
       relations: {
+        company: true,
         permitData: true,
         applicationOwner: { userContact: true },
       },
@@ -479,9 +483,7 @@ export class ApplicationService {
     fetchedApplication.permitNumber = permitNumber;
     fetchedApplication.permitStatus = ApplicationStatus.ISSUED;
 
-    const companyInfo = await this.companyService.findOne(
-      fetchedApplication.companyId,
-    );
+    const companyInfo = fetchedApplication.company;
 
     const fullNames = await this.getFullNamesFromCache(fetchedApplication);
 
@@ -905,6 +907,7 @@ export class ApplicationService {
   ): Promise<ReadApplicationDto> {
     const application = await this.permitRepository
       .createQueryBuilder('permit')
+      .leftJoinAndSelect('permit.company', 'company')
       .innerJoinAndSelect('permit.permitData', 'permitData')
       .leftJoinAndSelect('permit.applicationOwner', 'applicationOwner')
       .leftJoinAndSelect(
@@ -989,9 +992,10 @@ export class ApplicationService {
     // Build query to find applications matching certain criteria like company ID, application status, and undefined permit numbers
     const applicationsQB = this.permitRepository
       .createQueryBuilder('permit')
+      .leftJoinAndSelect('permit.company', 'company')
       .leftJoinAndSelect('permit.applicationOwner', 'applicationOwner')
       .whereInIds(applicationIds)
-      .andWhere('permit.companyId = :companyId', {
+      .andWhere('company.companyId = :companyId', {
         companyId: companyId,
       })
       .andWhere('permit.permitStatus IN (:...applicationStatus)', {
