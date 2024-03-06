@@ -42,7 +42,7 @@ IF @@ERROR <> 0 SET NOEXEC ON
 GO
 
 DECLARE @VersionDescription VARCHAR(255)
-SET @VersionDescription = 'Add VIN, LEGAL_NAME, CLIENT_NUMBER derived column to Permit Data and drop APPLICANT column'
+SET @VersionDescription = 'Add VIN derived column to Permit Data and drop APPLICANT column'
 
 INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [UPDATE_SCRIPT], [REVERT_SCRIPT], [RELEASE_DATE]) VALUES (21, @VersionDescription, '$(UPDATE_SCRIPT)', '$(REVERT_SCRIPT)', getutcdate())
 IF @@ERROR <> 0 SET NOEXEC ON
