@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Box } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { RowSelectionState } from "@tanstack/table-core";
@@ -31,6 +30,7 @@ import {
 } from "../../../common/helpers/tableHelper";
 import {
   BCeID_USER_STATUS,
+  BCeIDUserStatusType,
   DeleteResponse,
   ReadUserInformationResponse,
 } from "../types/manageProfile.d";
@@ -61,45 +61,44 @@ export const UserManagement = () => {
     setIsDeleteDialogOpen(() => true);
   }, []);
 
+  const getSelectedUsers = useCallback(
+    (userStatus: BCeIDUserStatusType) =>
+      Object.keys(rowSelection)
+        .filter((value: string) => value.split("-")[1] === userStatus)
+        .map((value: string) => value.split("-")[0]),
+    [rowSelection],
+  );
+
   /**
    * Function that deletes one or more users.
    */
   const onConfirmDelete = async () => {
-    const userNames: string[] = Object.keys(rowSelection)
-      .filter(
-        (value: string) => value.split("-")[1] === BCeID_USER_STATUS.PENDING,
-      )
-      .map((value: string) => value.split("-")[0]);
-    const userGUIDs: string[] = Object.keys(rowSelection)
-      .filter(
-        (value: string) => value.split("-")[1] === BCeID_USER_STATUS.ACTIVE,
-      )
-      .map((value: string) => value.split("-")[0]);
-    console.log("rowSelection::", rowSelection);
+    setIsDeleteDialogOpen(() => false);
+    const userNames: string[] = getSelectedUsers(BCeID_USER_STATUS.PENDING);
+    const userGUIDs: string[] = getSelectedUsers(BCeID_USER_STATUS.ACTIVE);
     if (userGUIDs.length > 0) {
       deleteCompanyUsers(userGUIDs).then(({ data: companyUserResponse }) => {
         const { failure } = companyUserResponse as DeleteResponse;
         if (failure?.length > 0) {
-          // navigate(ERROR_ROUTES.UNEXPECTED);
-          console.log("error");
+          navigate(ERROR_ROUTES.UNEXPECTED);
         }
-        // clear row selection.
       });
     }
     if (userNames.length > 0) {
-      deleteCompanyPendingUsers(userNames).then(
-        ({ data: pendingUserResponse }) => {
+      deleteCompanyPendingUsers(userNames)
+        .then(({ data: pendingUserResponse }) => {
           const { failure } = pendingUserResponse as DeleteResponse;
           if (failure?.length > 0) {
-            // navigate(ERROR_ROUTES.UNEXPECTED);
-            console.log("error");
+            navigate(ERROR_ROUTES.UNEXPECTED);
           }
-          // clear row selection.
-        },
-      );
+        })
+        .finally(() => {
+          setRowSelection(() => {
+            return {};
+          });
+          query.refetch();
+        });
     }
-    setIsDeleteDialogOpen(() => false);
-    query.refetch();
   };
 
   /**
