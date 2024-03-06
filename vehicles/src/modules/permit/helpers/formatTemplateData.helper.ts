@@ -4,7 +4,6 @@ import {
   PermitTemplateData,
 } from '../../../common/interface/permit.template.interface';
 import { FullNames } from '../interface/fullNames.interface';
-import { ReadCompanyDto } from 'src/modules/company-user-management/company/dto/response/read-company.dto';
 import {
   convertUtcToPt,
   dateFormat,
