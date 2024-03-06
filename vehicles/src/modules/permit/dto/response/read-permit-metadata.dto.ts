@@ -93,14 +93,14 @@ export class ReadPermitMetadataDto {
 
   @AutoMap()
   @ApiProperty({
-    description: 'Name of the user who started the permit application',
+    description: 'The first name and last name of the logged in user that started the permit application or Provincial Permit Center if started by staff',
     example: 'John Smith',
   })
   applicant: string;
 
   @AutoMap()
   @ApiProperty({
-    description: 'Name of the user who issued the permit',
+    description: 'Applicant is the first name and last name of the CV Client user that issued the permit or Provincial Permit Center if issued by the PPC',
     example: 'John Smith',
     required: false,
   })

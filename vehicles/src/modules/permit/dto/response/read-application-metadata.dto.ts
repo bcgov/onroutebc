@@ -71,7 +71,7 @@ export class ReadApplicationMetadataDto {
 
   @AutoMap()
   @ApiProperty({
-    description: 'Name of the user who started the application.',
+    description: 'The first name and last name of the logged in user that started the permit application or Provincial Permit Center if started by staff',
     example: 'John Smith',
   })
   applicant: string;
