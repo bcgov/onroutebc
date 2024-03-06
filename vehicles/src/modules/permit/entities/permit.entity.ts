@@ -18,6 +18,7 @@ import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { PermitTransaction } from '../../payment/entities/permit-transaction.entity';
 import { PermitIssuedBy } from '../../../common/enum/permit-issued-by.enum';
 import { User } from '../../company-user-management/users/entities/user.entity';
+import { Company } from '../../company-user-management/company/entities/company.entity';
 
 @Entity({ name: 'permit.ORBC_PERMIT' })
 export class Permit extends Base {
@@ -43,14 +44,24 @@ export class Permit extends Base {
   })
   permitData: PermitData;
 
+  // @AutoMap()
+  // @ApiProperty({
+  //   example: '1',
+  //   description:
+  //     'Foreign key to the ORBC_COMPANY table, represents the company requesting the permit.',
+  // })
+  // @Column({ type: 'integer', name: 'COMPANY_ID', nullable: true })
+  // companyId: number;
+
   @AutoMap()
   @ApiProperty({
-    example: '1',
+    example: '74',
     description:
       'Foreign key to the ORBC_COMPANY table, represents the company requesting the permit.',
   })
-  @Column({ type: 'integer', name: 'COMPANY_ID', nullable: true })
-  companyId: number;
+  @ManyToOne(() => Company, { eager: true, cascade: false })
+  @JoinColumn({ name: 'COMPANY_ID' })
+  company: Company;
 
   @AutoMap()
   @ApiProperty({

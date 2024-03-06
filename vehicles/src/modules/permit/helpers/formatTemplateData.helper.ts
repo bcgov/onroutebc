@@ -12,6 +12,7 @@ import {
 import { ApplicationStatus } from '../../../common/enum/application-status.enum';
 import { PermitIssuedBy } from '../../../common/enum/permit-issued-by.enum';
 import * as constants from '../../../common/constants/api.constant';
+import { Company } from '../../company-user-management/company/entities/company.entity';
 /**
  * Formats the permit data so that it can be used in the templated word documents
  * @param permit
@@ -22,7 +23,7 @@ import * as constants from '../../../common/constants/api.constant';
 export const formatTemplateData = (
   permit: Permit,
   fullNames: FullNames,
-  companyInfo: ReadCompanyDto,
+  companyInfo: Company,
   revisitionHisotry: Permit[],
 ) => {
   // Create a new template object that includes the formatted values used in the templated word documents
