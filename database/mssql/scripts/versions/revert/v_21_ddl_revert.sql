@@ -23,6 +23,19 @@ GO
 ALTER TABLE [permit].[ORBC_PERMIT_DATA] 
  ADD [APPLICANT]  AS (CONCAT (json_value([PERMIT_DATA],'$.contactDetails.firstName'), ' ', json_value([PERMIT_DATA],'$.contactDetails.lastName')))
 
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+ EXEC sys.sp_addextendedproperty 
+   @name=N'MS_Description', 
+   @value=N'Calculated column for the applicant full name, pulled from the JSON PERMIT_DATA.',
+   @level0type=N'SCHEMA',
+   @level0name=N'permit',
+   @level1type=N'TABLE',
+   @level1name=N'ORBC_PERMIT_DATA',
+   @level2type=N'COLUMN',
+   @level2name=N'APPLICANT'
+GO
+
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Reverting addition of new columns to ORBC_PERMIT_DATA table'
 
