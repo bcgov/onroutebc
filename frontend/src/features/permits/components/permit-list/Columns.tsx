@@ -69,8 +69,7 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
     },
   },
   {
-    accessorFn: (row) =>
-      `${row.permitData.contactDetails?.firstName} ${row.permitData.contactDetails?.lastName} `,
+    accessorFn: (row) => row.issuer,
     id: "applicant",
     header: "Applicant",
     enableSorting: true,

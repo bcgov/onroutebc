@@ -178,6 +178,11 @@ export class ApplicationService {
       refreshedPermitEntity,
       Permit,
       ReadApplicationDto,
+      {
+        extraArgs: () => ({
+          currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
+        }),
+      },
     );
   }
 
@@ -216,12 +221,20 @@ export class ApplicationService {
 
   /* Get single application By Permit ID*/
   @LogAsyncMethodExecution()
-  async findApplication(permitId: string): Promise<ReadApplicationDto> {
+  async findApplication(
+    permitId: string,
+    currentUser: IUserJWT,
+  ): Promise<ReadApplicationDto> {
     const application = await this.findOne(permitId);
     const readPermitApplicationdto = await this.classMapper.mapAsync(
       application,
       Permit,
       ReadApplicationDto,
+      {
+        extraArgs: () => ({
+          currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
+        }),
+      },
     );
     return readPermitApplicationdto;
   }
@@ -233,16 +246,16 @@ export class ApplicationService {
    */
   @LogAsyncMethodExecution()
   async findAllApplications(findAllApplicationsOptions?: {
-    applicationStatus: Readonly<ApplicationStatus[]>;
     page: number;
     take: number;
     orderBy?: string;
     companyId?: number;
     userGUID?: string;
+    currentUser?: IUserJWT;
   }): Promise<PaginationDto<ReadApplicationDto>> {
     // Construct the base query to find applications
     const applicationsQB = this.buildApplicationQuery(
-      findAllApplicationsOptions.applicationStatus,
+      findAllApplicationsOptions.currentUser,
       findAllApplicationsOptions.companyId,
       findAllApplicationsOptions.userGUID,
     );
@@ -296,13 +309,19 @@ export class ApplicationService {
         applications,
         Permit,
         ReadApplicationDto,
+        {
+          extraArgs: () => ({
+            currentUserAuthGroup:
+              findAllApplicationsOptions?.currentUser?.orbcUserAuthGroup,
+          }),
+        },
       );
     // Return paginated result
     return new PaginationDto(readApplicationDto, pageMetaDto);
   }
 
   private buildApplicationQuery(
-    applicationStatus: ReadonlyArray<ApplicationStatus>,
+    currentUser: IUserJWT,
     companyId?: number,
     userGUID?: string,
   ): SelectQueryBuilder<Permit> {
@@ -324,12 +343,14 @@ export class ApplicationService {
     }
 
     //Filter by application status
-    permitsQuery = permitsQuery.andWhere(
-      'permit.permitStatus IN (:...statuses)',
-      {
-        statuses: applicationStatus,
-      },
-    );
+    if (currentUser) {
+      permitsQuery = permitsQuery.andWhere(
+        'permit.permitStatus IN (:...statuses)',
+        {
+          statuses: getActiveApplicationStatus(currentUser),
+        },
+      );
+    }
 
     // Filter by userGUID if provided
     if (userGUID) {
@@ -400,6 +421,11 @@ export class ApplicationService {
       await this.findByApplicationNumber(applicationNumber),
       Permit,
       ReadApplicationDto,
+      {
+        extraArgs: () => ({
+          currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
+        }),
+      },
     );
   }
 
@@ -875,6 +901,7 @@ export class ApplicationService {
   @LogAsyncMethodExecution()
   async findCurrentAmendmentApplication(
     originalPermitId: string,
+    currentUser: IUserJWT,
   ): Promise<ReadApplicationDto> {
     const application = await this.permitRepository
       .createQueryBuilder('permit')
@@ -906,6 +933,11 @@ export class ApplicationService {
       application,
       Permit,
       ReadApplicationDto,
+      {
+        extraArgs: () => ({
+          currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
+        }),
+      },
     );
   }
 

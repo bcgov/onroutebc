@@ -13,6 +13,10 @@ import { ReadApplicationDto } from '../dto/response/read-application.dto';
 import { UpdateApplicationDto } from '../dto/request/update-application.dto';
 import { Directory } from '../../../common/enum/directory.enum';
 import { PPC_FULL_TEXT } from '../../../common/constants/api.constant';
+import {
+  UserAuthGroup,
+  idirUserAuthGroupList,
+} from '../../../common/enum/user-auth-group.enum';
 
 @Injectable()
 export class ApplicationProfile extends AutomapperProfile {
@@ -158,9 +162,17 @@ export class ApplicationProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.applicant,
-          mapFrom((s) => {
+          mapWithArguments((s, { currentUserAuthGroup }) => {
             if (s.applicationOwner?.directory === Directory.IDIR) {
-              return PPC_FULL_TEXT;
+              if (
+                idirUserAuthGroupList.includes(
+                  currentUserAuthGroup as UserAuthGroup,
+                )
+              ) {
+                return s.applicationOwner?.userName;
+              } else {
+                return PPC_FULL_TEXT;
+              }
             } else {
               const firstName =
                 s.applicationOwner?.userContact?.firstName ?? '';

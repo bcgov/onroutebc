@@ -1,10 +1,20 @@
 import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
-import { createMap, forMember, mapFrom, Mapper } from '@automapper/core';
+import {
+  createMap,
+  forMember,
+  mapFrom,
+  Mapper,
+  mapWithArguments,
+} from '@automapper/core';
 import { Injectable } from '@nestjs/common';
 import { Permit } from '../entities/permit.entity';
 import { ReadPermitDto } from '../dto/response/read-permit.dto';
 import { Directory } from '../../../common/enum/directory.enum';
 import { PPC_FULL_TEXT } from '../../../common/constants/api.constant';
+import {
+  UserAuthGroup,
+  idirUserAuthGroupList,
+} from '../../../common/enum/user-auth-group.enum';
 
 @Injectable()
 export class PermitProfile extends AutomapperProfile {
@@ -28,9 +38,17 @@ export class PermitProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.issuer,
-          mapFrom((s) => {
+          mapWithArguments((s, { currentUserAuthGroup }) => {
             if (s.issuer?.directory === Directory.IDIR) {
-              return PPC_FULL_TEXT;
+              if (
+                idirUserAuthGroupList.includes(
+                  currentUserAuthGroup as UserAuthGroup,
+                )
+              ) {
+                return s.issuer?.userName;
+              } else {
+                return PPC_FULL_TEXT;
+              }
             } else {
               const firstName = s.issuer?.userContact?.firstName ?? '';
               const lastName = s.issuer?.userContact?.lastName ?? '';
