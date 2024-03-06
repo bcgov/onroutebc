@@ -53,8 +53,8 @@ export const UserManagement = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   /**
    * rowSelection is a Record<string, boolean>. The key follows the pattern
-   * - {userGUID}-{ACTIVE} (if existing user)
-   * - {userName}-{PENDING} (if pending user)
+   * - {userGUID},{ACTIVE} (if existing user)
+   * - {userName},{PENDING} (if pending user)
    * This is a conscious design choice so that we can quickly
    * recognize whether a selected user is ACTIVE or PENDING.
    * The alternative will be to create another state with lot more
@@ -83,10 +83,20 @@ export const UserManagement = () => {
   const getSelectedUsers = useCallback(
     (userStatus: BCeIDUserStatusType) =>
       Object.keys(rowSelection)
-        .filter((value: string) => value.split("-")[1] === userStatus)
-        .map((value: string) => value.split("-")[0]),
+        .filter((value: string) => value.split(",")[1] === userStatus)
+        .map((value: string) => value.split(",")[0]),
     [rowSelection],
   );
+
+  /**
+   * Resets the selection list of users and refetches the data.
+   */
+  const resetUsersList = () => {
+    setRowSelection(() => {
+      return {};
+    });
+    query.refetch();
+  };
 
   /**
    * Function that deletes one or more users.
@@ -115,11 +125,10 @@ export const UserManagement = () => {
           }
         })
         .finally(() => {
-          setRowSelection(() => {
-            return {};
-          });
-          query.refetch();
+          resetUsersList();
         });
+    } else {
+      resetUsersList();
     }
   };
 
@@ -173,9 +182,9 @@ export const UserManagement = () => {
     getRowId: (originalRow: ReadUserInformationResponse) => {
       const { statusCode, userName, userGUID } = originalRow;
       if (statusCode === BCeID_USER_STATUS.PENDING) {
-        return `${userName}-${statusCode}`;
+        return `${userName},${statusCode}`;
       } else {
-        return `${userGUID}-${statusCode}`;
+        return `${userGUID},${statusCode}`;
       }
     },
     displayColumnDefOptions: {
