@@ -35,7 +35,7 @@ export const EditUserDashboard = React.memo(() => {
   const onClickBreadcrumb = () => {
     navigate(PROFILE_ROUTES.MANAGE, {
       state: {
-        selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT_ORGADMIN,
+        selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT,
       },
     });
   };
