@@ -272,6 +272,7 @@ export class ApplicationService {
       unitNumber: 'permitData.unitNumber',
       plate: 'permitData.plate',
       applicant: 'permitData.applicant',
+      updatedDateTime: 'permit.updatedDateTime'
     };
 
     // Apply sorting if orderBy parameter is provided
