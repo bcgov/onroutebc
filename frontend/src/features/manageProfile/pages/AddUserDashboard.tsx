@@ -21,7 +21,10 @@ import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import { addUserToCompany } from "../apiManager/manageProfileAPI";
 import { UserAuthRadioGroup } from "../components/forms/userManagement/UserAuthRadioGroup";
 import UserGroupsAndPermissionsModal from "../components/user-management/UserGroupsAndPermissionsModal";
-import { BCEID_PROFILE_TABS, BCeIDAddUserRequest } from "../types/manageProfile.d";
+import {
+  BCEID_PROFILE_TABS,
+  BCeIDAddUserRequest,
+} from "../types/manageProfile.d";
 import { PROFILE_ROUTES } from "../../../routes/constants";
 import { CustomActionLink } from "../../../common/components/links/CustomActionLink";
 import { BCeID_USER_AUTH_GROUP } from "../../../common/authentication/types";
@@ -48,7 +51,7 @@ export const AddUserDashboard = React.memo(() => {
   const onClickBreadCrumb = () => {
     navigate(PROFILE_ROUTES.MANAGE, {
       state: {
-        selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT_ORGADMIN,
+        selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT,
       },
     });
   };
@@ -86,7 +89,7 @@ export const AddUserDashboard = React.memo(() => {
         });
         navigate(PROFILE_ROUTES.MANAGE, {
           state: {
-            selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT_ORGADMIN,
+            selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT,
           },
         });
       } else {
