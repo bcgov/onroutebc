@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   Param,
   Post,
@@ -33,7 +34,6 @@ import { ResultDto } from './dto/response/result.dto';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
 import { IssuePermitDto } from './dto/request/issue-permit.dto';
-import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import {
   UserAuthGroup,
@@ -42,8 +42,8 @@ import {
 import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
 import { GetApplicationQueryParamsDto } from './dto/request/queryParam/getApplication.query-params.dto';
 import { DeleteApplicationDto } from './dto/request/delete-application.dto';
-import { ApplicationStatus } from 'src/common/enum/application-status.enum';
-import { getActiveApplicationStatus } from 'src/common/helper/application.status.helper';
+import { DeleteDto } from '../common/dto/response/delete.dto';
+import { PermitApplicationOrigin } from '../../common/enum/permit-application-origin.enum';
 
 @ApiBearerAuth()
 @ApiTags('Permit Application')
@@ -100,7 +100,7 @@ export class ApplicationController {
       'Fetch all permit application and return the same , enforcing authentication.' +
       "If login user is PA then only fetch thier application else fetch all applications associated with logged in user's company. ",
   })
-  @ApiPaginatedResponse(ReadPermitDto)
+  @ApiPaginatedResponse(ReadApplicationDto)
   @Roles(Role.READ_PERMIT)
   @Get()
   async findAllApplication(
@@ -123,15 +123,14 @@ export class ApplicationController {
       UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup
         ? currentUser.userGUID
         : null;
-    const applicationStatus: Readonly<ApplicationStatus[]> =
-      getActiveApplicationStatus(currentUser);
+
     return this.applicationService.findAllApplications({
-      applicationStatus: applicationStatus,
       page: getApplicationQueryParamsDto.page,
       take: getApplicationQueryParamsDto.take,
       orderBy: getApplicationQueryParamsDto.orderBy,
       companyId: getApplicationQueryParamsDto.companyId,
       userGUID: userGuid,
+      currentUser: currentUser,
     });
   }
 
@@ -160,10 +159,25 @@ export class ApplicationController {
     @Req() request: Request,
     @Param('permitId') permitId: string,
     @Query('amendment') amendment?: boolean,
-  ): Promise<ReadApplicationDto | ReadPermitDto> {
-    return !amendment
-      ? this.applicationService.findApplication(permitId)
-      : this.applicationService.findCurrentAmendmentApplication(permitId);
+  ): Promise<ReadApplicationDto> {
+    const currentUser = request.user as IUserJWT;
+
+    const retApplicationDto = !amendment
+      ? await this.applicationService.findApplication(permitId, currentUser)
+      : await this.applicationService.findCurrentAmendmentApplication(
+          permitId,
+          currentUser,
+        );
+    if (
+      currentUser.orbcUserAuthGroup === UserAuthGroup.COMPANY_ADMINISTRATOR &&
+      retApplicationDto.permitApplicationOrigin !==
+        PermitApplicationOrigin.ONLINE
+    ) {
+      throw new ForbiddenException(
+        'Applications created offline by staff users cannot be viewed by the company administrator.',
+      );
+    }
+    return retApplicationDto;
   }
 
   @ApiOperation({
@@ -256,18 +270,13 @@ export class ApplicationController {
   async deleteApplications(
     @Req() request: Request,
     @Body() deleteApplicationDto: DeleteApplicationDto,
-  ): Promise<ResultDto> {
+  ): Promise<DeleteDto> {
     const currentUser = request.user as IUserJWT;
-    const userGuid =
-      UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup
-        ? currentUser.userGUID
-        : null;
-    const deleteResult: ResultDto =
+    const deleteResult: DeleteDto =
       await this.applicationService.deleteApplicationInProgress(
         deleteApplicationDto.applications,
         deleteApplicationDto.companyId,
         currentUser,
-        userGuid,
       );
     if (deleteResult == null) {
       throw new DataNotFoundException();

@@ -21,15 +21,12 @@ export class AuthService {
     userGuid: string,
   ): Promise<ReadUserDto[]> {
     let user: ReadUserDto[];
-    if (identity_provider === IDP.IDIR) {
-      user = Array(await this.usersService.findOneIdirUser(userGuid));
+    if (!companyId || identity_provider === IDP.IDIR) {
+      user = await this.usersService.findUsersDto(userGuid);
     } else {
-      if (!companyId) {
-        user = await this.usersService.findUsersDto(userGuid);
-      } else {
-        user = await this.usersService.findUsersDto(userGuid, [companyId]);
-      }
+      user = await this.usersService.findUsersDto(userGuid, [companyId]);
     }
+
     return user;
   }
 

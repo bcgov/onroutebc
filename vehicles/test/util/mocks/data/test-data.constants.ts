@@ -4,8 +4,8 @@ import { AccountSource } from '../../../../src/common/enum/account-source.enum';
 import { Directory } from '../../../../src/common/enum/directory.enum';
 import { IDP } from '../../../../src/common/enum/idp.enum';
 import {
-  UserAuthGroup,
   ClientUserAuthGroup,
+  IDIRUserAuthGroup,
 } from '../../../../src/common/enum/user-auth-group.enum';
 import { UserStatus } from '../../../../src/common/enum/user-status.enum';
 
@@ -230,7 +230,7 @@ export const SYS_ADMIN_STAFF_USER_NAME = 'MMARSHALL';
 export const SYS_ADMIN_STAFF_PREFFERED_USER_NAME =
   SYS_ADMIN_STAFF_USER_GUID.toLowerCase().concat('@', IDP.BCEID);
 export const SYS_ADMIN_STAFF_USER_AUTH_GROUP =
-  UserAuthGroup.SYSTEM_ADMINISTRATOR;
+  IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR;
 export const SYS_ADMIN_STAFF_USER_STATUS_DIRECOTRY = Directory.IDIR;
 export const SYS_ADMIN_STAFF_USER_STATUS = UserStatus.ACTIVE;
 
