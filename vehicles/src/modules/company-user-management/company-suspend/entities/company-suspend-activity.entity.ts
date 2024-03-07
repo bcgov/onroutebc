@@ -9,7 +9,7 @@ import {
 import { AutoMap } from '@automapper/classes';
 import { Base } from '../../../common/entities/base.entity';
 import { SuspendActivity } from '../../../../common/enum/suspend-activity.enum';
-import { IdirUser } from '../../users/entities/idir.user.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Entity({ name: 'ORBC_COMPANY_SUSPEND_ACTIVITY' })
 export class CompanySuspendActivity extends Base {
@@ -36,10 +36,10 @@ export class CompanySuspendActivity extends Base {
   /**
    * The User entity linked to company's suspend activity.
    */
-  @AutoMap(() => IdirUser)
-  @OneToOne(() => IdirUser, { nullable: false })
+  @AutoMap(() => User)
+  @OneToOne(() => User, { nullable: false })
   @JoinColumn({ name: 'IDIR_USER_GUID' })
-  idirUser: IdirUser;
+  idirUser: User;
 
   /**
    * The date and time when the company's activity was suspended.

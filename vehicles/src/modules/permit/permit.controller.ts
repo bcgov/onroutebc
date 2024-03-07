@@ -22,7 +22,6 @@ import {
   ApiOperation,
 } from '@nestjs/swagger';
 import { AuthOnly } from '../../common/decorator/auth-only.decorator';
-import { CreatePermitDto } from './dto/request/create-permit.dto';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { Request, Response } from 'express';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
@@ -58,20 +57,6 @@ import {
 @Controller('permits')
 export class PermitController {
   constructor(private readonly permitService: PermitService) {}
-
-  @ApiCreatedResponse({
-    description: 'The Permit Resource',
-    type: ReadPermitDto,
-  })
-  @Roles(Role.WRITE_PERMIT)
-  @Post()
-  async create(
-    @Req() request: Request,
-    @Body() createPermitDto: CreatePermitDto,
-  ): Promise<ReadPermitDto> {
-    const currentUser = request.user as IUserJWT;
-    return this.permitService.create(createPermitDto, currentUser);
-  }
 
   @ApiOkResponse({
     description: 'The Permit Resource to get revision and payment history.',
@@ -112,7 +97,7 @@ export class PermitController {
     }
 
     const userGuid =
-      UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup
+      UserAuthGroup.PERMIT_APPLICANT === currentUser.orbcUserAuthGroup
         ? currentUser.userGUID
         : null;
 
@@ -125,6 +110,7 @@ export class PermitController {
       searchColumn: getPermitQueryParamsDto.searchColumn,
       searchString: getPermitQueryParamsDto.searchString,
       userGUID: userGuid,
+      currentUser: currentUser,
     });
   }
 

@@ -10,14 +10,7 @@ import {
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  Brackets,
-  DataSource,
-  Like,
-  Repository,
-  SelectQueryBuilder,
-} from 'typeorm';
-import { CreatePermitDto } from './dto/request/create-permit.dto';
+import { Brackets, DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { Permit } from './entities/permit.entity';
 import { PermitType } from './entities/permit-type.entity';
@@ -69,6 +62,7 @@ import {
   UserAuthGroup,
   idirUserAuthGroupList,
 } from '../../common/enum/user-auth-group.enum';
+import { User } from '../company-user-management/users/entities/user.entity';
 
 @Injectable()
 export class PermitService {
@@ -91,45 +85,14 @@ export class PermitService {
     private readonly cacheManager: Cache,
   ) {}
 
-  @LogAsyncMethodExecution()
-  async create(
-    createPermitDto: CreatePermitDto,
-    currentUser: IUserJWT,
-  ): Promise<ReadPermitDto> {
-    const permitEntity = await this.classMapper.mapAsync(
-      createPermitDto,
-      CreatePermitDto,
-      Permit,
-      {
-        extraArgs: () => ({
-          userName: currentUser.userName,
-          directory: currentUser.orbcUserDirectory,
-          userGUID: currentUser.userGUID,
-          timestamp: new Date(),
-        }),
-      },
-    );
-
-    const savedPermitEntity = await this.permitRepository.save(permitEntity);
-
-    const refreshedPermitEntity = await this.findOne(
-      savedPermitEntity.permitId,
-    );
-
-    const readPermitDto = await this.classMapper.mapAsync(
-      refreshedPermitEntity,
-      Permit,
-      ReadPermitDto,
-    );
-
-    return readPermitDto;
-  }
-
   async findOne(permitId: string): Promise<Permit> {
     return this.permitRepository.findOne({
       where: { permitId: permitId },
       relations: {
+        company: true,
         permitData: true,
+        applicationOwner: { userContact: true },
+        issuer: { userContact: true },
       },
     });
   }
@@ -154,27 +117,16 @@ export class PermitService {
       !idirUserAuthGroupList.includes(
         currentUser.orbcUserAuthGroup as UserAuthGroup,
       ) &&
-      permit?.companyId != currentUser.companyId
+      permit?.company?.companyId != currentUser.companyId
     ) {
       throw new ForbiddenException();
     }
 
-    return this.classMapper.mapAsync(permit, Permit, ReadPermitDto);
-  }
-
-  /**
-   * Finds permits by permit number.
-   * @param permitNumber partial or full permit number to search
-   * @returns an array of permits
-   */
-  @LogAsyncMethodExecution()
-  public async findByPermitNumber(
-    permitNumber: string,
-  ): Promise<ReadPermitDto[]> {
-    const permits = await this.permitRepository.find({
-      where: { permitNumber: Like(`%${permitNumber}%`) },
+    return this.classMapper.mapAsync(permit, Permit, ReadPermitDto, {
+      extraArgs: () => ({
+        currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
+      }),
     });
-    return this.classMapper.mapArrayAsync(permits, Permit, ReadPermitDto);
   }
 
   @LogAsyncMethodExecution()
@@ -205,7 +157,7 @@ export class PermitService {
       !idirUserAuthGroupList.includes(
         currentUser.orbcUserAuthGroup as UserAuthGroup,
       ) &&
-      permit?.companyId != currentUser.companyId
+      permit?.company?.companyId != currentUser.companyId
     ) {
       throw new ForbiddenException();
     }
@@ -216,7 +168,7 @@ export class PermitService {
       permit.documentId,
       downloadMode,
       res,
-      permit.companyId,
+      permit.company?.companyId,
     );
   }
 
@@ -235,6 +187,7 @@ export class PermitService {
     searchColumn?: PermitSearch;
     searchString?: string;
     userGUID?: string;
+    currentUser?: IUserJWT;
   }): Promise<PaginationDto<ReadPermitDto>> {
     // Construct the base query to find permits
     const permitsQB = this.buildPermitQuery(
@@ -286,7 +239,10 @@ export class PermitService {
     });
     // Map permit entities to ReadPermitDto objects
     const readPermitDto: ReadPermitDto[] =
-      await this.mapEntitiesToReadPermitDto(permits);
+      await this.mapEntitiesToReadPermitDto(
+        permits,
+        findPermitOptions.currentUser,
+      );
     // Return paginated result
     return new PaginationDto(readPermitDto, pageMetaDto);
   }
@@ -300,23 +256,34 @@ export class PermitService {
   ): SelectQueryBuilder<Permit> {
     let permitsQuery = this.permitRepository
       .createQueryBuilder('permit')
-      .innerJoinAndSelect('permit.permitData', 'permitData');
+      .leftJoinAndSelect('permit.company', 'company')
+      .innerJoinAndSelect('permit.permitData', 'permitData')
+      .leftJoinAndSelect('permit.applicationOwner', 'applicationOwner')
+      .leftJoinAndSelect(
+        'applicationOwner.userContact',
+        'applicationOwnerContact',
+      )
+      .leftJoinAndSelect('permit.issuer', 'issuer')
+      .leftJoinAndSelect('issuer.userContact', 'issuerContact');
 
     // Ensure permit number is not null
     permitsQuery = permitsQuery.where('permit.permitNumber IS NOT NULL');
 
     // Filter by companyId if provided
     if (companyId) {
-      permitsQuery = permitsQuery.andWhere('permit.companyId = :companyId', {
+      permitsQuery = permitsQuery.andWhere('company.companyId = :companyId', {
         companyId: companyId,
       });
     }
 
     // Filter by userGUID if provided
     if (userGUID) {
-      permitsQuery = permitsQuery.andWhere('permit.userGuid = :userGUID', {
-        userGUID,
-      });
+      permitsQuery = permitsQuery.andWhere(
+        'applicationOwner.userGUID = :userGUID',
+        {
+          userGUID,
+        },
+      );
     }
 
     // Handle expired permits query condition
@@ -427,11 +394,17 @@ export class PermitService {
 
   private async mapEntitiesToReadPermitDto(
     entities: Permit[],
+    currentUser: IUserJWT,
   ): Promise<ReadPermitDto[]> {
     const readPermitDto: ReadPermitDto[] = await this.classMapper.mapArrayAsync(
       entities,
       Permit,
       ReadPermitDto,
+      {
+        extraArgs: () => ({
+          currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
+        }),
+      },
     );
     return readPermitDto;
   }
@@ -451,6 +424,7 @@ export class PermitService {
     // Query the database to find a permit and its related transactions and receipt based on the permit ID.
     const permit = await this.permitRepository
       .createQueryBuilder('permit')
+      .leftJoinAndSelect('permit.company', 'company')
       .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
       .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
       .innerJoinAndSelect('transaction.receipt', 'receipt')
@@ -471,7 +445,7 @@ export class PermitService {
       !idirUserAuthGroupList.includes(
         currentUser.orbcUserAuthGroup as UserAuthGroup,
       ) &&
-      permit?.companyId != currentUser.companyId
+      permit?.company?.companyId != currentUser.companyId
     ) {
       throw new ForbiddenException();
     }
@@ -483,7 +457,7 @@ export class PermitService {
       permit.permitTransactions[0].transaction.receipt.receiptDocumentId,
       FileDownloadModes.PROXY,
       res,
-      permit.companyId,
+      permit.company?.companyId,
     );
   }
 
@@ -595,7 +569,10 @@ export class PermitService {
             currentUser.orbcUserDirectory == Directory.IDIR
               ? PermitIssuedBy.PPC
               : PermitIssuedBy.SELF_ISSUED;
-          newPermit.issuerUserGuid = currentUser.userGUID;
+      newPermit.applicationOwner = new User();
+      newPermit.applicationOwner.userGUID = currentUser.userGUID;
+      newPermit.issuer = new User();
+      newPermit.issuer.userGUID = currentUser.userGUID;
           newPermit.permitIssueDateTime = new Date();
           newPermit.revision = permit.revision + 1;
           newPermit.previousRevision = permitId;
@@ -669,9 +646,7 @@ export class PermitService {
         },
       );
 
-      const companyInfo = await this.companyService.findOne(
-        newPermit.companyId,
-      );
+      const companyInfo = newPermit.company;
       console.log('Found company info', companyInfo);
 
       const fullNames =

@@ -126,4 +126,12 @@ export class ReadPermitDto {
     description: 'Permit document ID.',
   })
   documentId: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'Name of the user who issued the permit',
+    example: 'John Smith',
+    required: false,
+  })
+  issuer: string;
 }

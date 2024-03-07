@@ -11,6 +11,12 @@ import { Permit } from '../entities/permit.entity';
 import { CreateApplicationDto } from '../dto/request/create-application.dto';
 import { ReadApplicationDto } from '../dto/response/read-application.dto';
 import { UpdateApplicationDto } from '../dto/request/update-application.dto';
+import { Directory } from '../../../common/enum/directory.enum';
+import { PPC_FULL_TEXT } from '../../../common/constants/api.constant';
+import {
+  UserAuthGroup,
+  idirUserAuthGroupList,
+} from '../../../common/enum/user-auth-group.enum';
 
 @Injectable()
 export class ApplicationProfile extends AutomapperProfile {
@@ -24,6 +30,16 @@ export class ApplicationProfile extends AutomapperProfile {
         mapper,
         CreateApplicationDto,
         Permit,
+        forMember(
+          (d) => d.company.companyId,
+          mapFrom((s) => s.companyId),
+        ),
+        forMember(
+          (permit) => permit.applicationOwner?.userGUID,
+          mapWithArguments((_, { userGUID }) => {
+            return userGUID;
+          }),
+        ),
         forMember(
           (permit) => permit.createdUserGuid,
           mapWithArguments((_, { userGUID }) => {
@@ -141,11 +157,36 @@ export class ApplicationProfile extends AutomapperProfile {
         Permit,
         ReadApplicationDto,
         forMember(
+          (d) => d.companyId,
+          mapFrom((s) => s?.company?.companyId),
+        ),
+        forMember(
           (d) => d.permitData,
           mapFrom((s) => {
             return s.permitData?.permitData
               ? (JSON.parse(s.permitData?.permitData) as JSON)
               : undefined;
+          }),
+        ),
+        forMember(
+          (d) => d.applicant,
+          mapWithArguments((s, { currentUserAuthGroup }) => {
+            if (s.applicationOwner?.directory === Directory.IDIR) {
+              if (
+                idirUserAuthGroupList.includes(
+                  currentUserAuthGroup as UserAuthGroup,
+                )
+              ) {
+                return s.applicationOwner?.userName;
+              } else {
+                return PPC_FULL_TEXT;
+              }
+            } else {
+              const firstName =
+                s.applicationOwner?.userContact?.firstName ?? '';
+              const lastName = s.applicationOwner?.userContact?.lastName ?? '';
+              return (firstName + ' ' + lastName).trim();
+            }
           }),
         ),
       );
@@ -154,6 +195,10 @@ export class ApplicationProfile extends AutomapperProfile {
         mapper,
         UpdateApplicationDto,
         Permit,
+        forMember(
+          (d) => d.company.companyId,
+          mapFrom((s) => s.companyId),
+        ),
         forMember(
           (d) => d.updatedUserGuid,
           mapWithArguments((updateApplicationDto, { userGUID }) => {
