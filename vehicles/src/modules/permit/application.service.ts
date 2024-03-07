@@ -1003,8 +1003,8 @@ export class ApplicationService {
       })
       .andWhere('permit.permitNumber IS NULL');
 
-    // Filter applications by user GUID if the current user is a CV_CLIENT or by ONLINE origin if the user is a COMPANY_ADMINISTRATOR
-    if (UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup) {
+    // Filter applications by user GUID if the current user is a PERMIT_APPLICANT or by ONLINE origin if the user is a COMPANY_ADMINISTRATOR
+    if (UserAuthGroup.PERMIT_APPLICANT === currentUser.orbcUserAuthGroup) {
       applicationsQB.andWhere('applicationOwner.userGUID = :userGuid', {
         userGuid: currentUser.userGUID,
       });
