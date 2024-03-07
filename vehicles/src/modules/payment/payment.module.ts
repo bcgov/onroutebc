@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { PaymentController } from './payment.controller';
 import { Transaction } from './entities/transaction.entity';
@@ -9,6 +9,7 @@ import { Receipt } from './entities/receipt.entity';
 import { PaymentCardType } from './entities/payment-card-type.entity';
 import { PaymentMethodType } from './entities/payment-method-type.entity';
 import { PaymentReportService } from './payment-report.service';
+import { PermitModule } from '../permit/permit.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { PaymentReportService } from './payment-report.service';
       PaymentCardType,
       PaymentMethodType,
     ]),
+    forwardRef(() => PermitModule),
   ],
   controllers: [PaymentController],
   providers: [PaymentService, TransactionProfile, PaymentReportService],

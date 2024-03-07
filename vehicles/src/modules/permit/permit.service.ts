@@ -85,6 +85,7 @@ export class PermitService {
     private readonly emailService: EmailService,
     @Inject(forwardRef(() => ApplicationService))
     private readonly applicationService: ApplicationService,
+    @Inject(forwardRef(() => PaymentService))
     private paymentService: PaymentService,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
@@ -124,7 +125,7 @@ export class PermitService {
     return readPermitDto;
   }
 
-  private async findOne(permitId: string): Promise<Permit> {
+  async findOne(permitId: string): Promise<Permit> {
     return this.permitRepository.findOne({
       where: { permitId: permitId },
       relations: {
@@ -571,49 +572,50 @@ export class PermitService {
     );
     let success = '';
     let failure = '';
+    console.log('generated permit number', permitNumber);
+    const userMetadata: Base = {
+      createdDateTime: new Date(),
+      createdUser: currentUser.userName,
+      createdUserDirectory: currentUser.orbcUserDirectory,
+      createdUserGuid: currentUser.userGUID,
+      updatedDateTime: new Date(),
+      updatedUser: currentUser.userName,
+      updatedUserDirectory: currentUser.orbcUserDirectory,
+      updatedUserGuid: currentUser.userGUID,
+    };
+          // to create new permit
+          let newPermit = new Permit();
+          newPermit = Object.assign(newPermit, permit);
+          newPermit.permitId = null;
+          newPermit.permitNumber = permitNumber;
+          newPermit.applicationNumber = applicationNumber;
+          newPermit.permitStatus = voidPermitDto.status;
+          newPermit.permitApprovalSource = PermitApprovalSource.PPC;
+          newPermit.permitIssuedBy =
+            currentUser.orbcUserDirectory == Directory.IDIR
+              ? PermitIssuedBy.PPC
+              : PermitIssuedBy.SELF_ISSUED;
+          newPermit.issuerUserGuid = currentUser.userGUID;
+          newPermit.permitIssueDateTime = new Date();
+          newPermit.revision = permit.revision + 1;
+          newPermit.previousRevision = permitId;
+          newPermit.comment = voidPermitDto.comment;
+          newPermit = Object.assign(newPermit, userMetadata);
+    
+          let permitData = new PermitData();
+          permitData.permitData = permit.permitData.permitData;
+          permitData = Object.assign(permitData, userMetadata);
+          newPermit.permitData = permitData;
+    
+          /* Create application to generate permit id. 
+          this permit id will be used to generate permit number based this id's application number.*/
+          newPermit = await this.permitRepository.save(newPermit);
 
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      const userMetadata: Base = {
-        createdDateTime: new Date(),
-        createdUser: currentUser.userName,
-        createdUserDirectory: currentUser.orbcUserDirectory,
-        createdUserGuid: currentUser.userGUID,
-        updatedDateTime: new Date(),
-        updatedUser: currentUser.userName,
-        updatedUserDirectory: currentUser.orbcUserDirectory,
-        updatedUserGuid: currentUser.userGUID,
-      };
-
-      // to create new permit
-      let newPermit = new Permit();
-      newPermit = Object.assign(newPermit, permit);
-      newPermit.permitId = null;
-      newPermit.permitNumber = permitNumber;
-      newPermit.applicationNumber = applicationNumber;
-      newPermit.permitStatus = voidPermitDto.status;
-      newPermit.permitApprovalSource = PermitApprovalSource.PPC;
-      newPermit.permitIssuedBy =
-        currentUser.orbcUserDirectory == Directory.IDIR
-          ? PermitIssuedBy.PPC
-          : PermitIssuedBy.SELF_ISSUED;
-      newPermit.issuerUserGuid = currentUser.userGUID;
-      newPermit.permitIssueDateTime = new Date();
-      newPermit.revision = permit.revision + 1;
-      newPermit.previousRevision = permitId;
-      newPermit.comment = voidPermitDto.comment;
-      newPermit = Object.assign(newPermit, userMetadata);
-
-      let permitData = new PermitData();
-      permitData.permitData = permit.permitData.permitData;
-      permitData = Object.assign(permitData, userMetadata);
-      newPermit.permitData = permitData;
-
-      /* Create application to generate permit id. 
-      this permit id will be used to generate permit number based this id's application number.*/
-      newPermit = await queryRunner.manager.save(newPermit);
+      
 
       //Update old permit status to SUPERSEDED.
       await queryRunner.manager.update(
@@ -651,10 +653,12 @@ export class PermitService {
           transactionAmount: voidPermitDto.transactionAmount,
         },
       ];
+      const voidStatus = voidPermitDto.status;
       const transactionDto = await this.paymentService.createTransactions(
         currentUser,
         createTransactionDto,
         queryRunner,
+        voidStatus,
       );
 
       const fetchedTransaction = await queryRunner.manager.findOne(
@@ -668,6 +672,7 @@ export class PermitService {
       const companyInfo = await this.companyService.findOne(
         newPermit.companyId,
       );
+      console.log('Found company info', companyInfo);
 
       const fullNames =
         await this.applicationService.getFullNamesFromCache(newPermit);
@@ -699,6 +704,7 @@ export class PermitService {
           },
         ),
       };
+      console.log('Generating Document');
 
       const generatedPermitDocumentPromise =
         this.applicationService.generateDocument(
@@ -774,6 +780,7 @@ export class PermitService {
           updatedUserGuid: currentUser.userGUID,
         },
       );
+      console.log('updated document id');
 
       // Update Document Id on new receipt
       await queryRunner.manager.update(

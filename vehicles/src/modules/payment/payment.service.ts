@@ -1,9 +1,12 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotAcceptableException,
   NotFoundException,
+  forwardRef,
 } from '@nestjs/common';
 import { CreateTransactionDto } from './dto/request/create-transaction.dto';
 import { ReadTransactionDto } from './dto/response/read-transaction.dto';
@@ -34,12 +37,20 @@ import { PaymentCardType } from './entities/payment-card-type.entity';
 import { PaymentMethodType } from './entities/payment-method-type.entity';
 import { LogMethodExecution } from '../../common/decorator/log-method-execution.decorator';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
+import { PermitService } from '../permit/permit.service';
+import { PermitType } from 'src/common/enum/permit-type.enum';
+import {
+  TROS_PRICE_PER_UNIT,
+  TROS_UNIT_OF_MEASURE,
+} from 'src/common/constants/permit.constant';
 
 @Injectable()
 export class PaymentService {
   private readonly logger = new Logger(PaymentService.name);
   constructor(
     private dataSource: DataSource,
+    @Inject(forwardRef(() => PermitService))
+    private readonly permitService: PermitService,
     @InjectRepository(Transaction)
     private transactionRepository: Repository<Transaction>,
     @InjectRepository(PaymentMethodType)
@@ -194,12 +205,49 @@ export class PaymentService {
     currentUser: IUserJWT,
     createTransactionDto: CreateTransactionDto,
     nestedQueryRunner?: QueryRunner,
+    voidStatus?: ApplicationStatus.VOIDED | ApplicationStatus.REVOKED,
   ): Promise<ReadTransactionDto> {
-    const totalTransactionAmount =
-      createTransactionDto.applicationDetails?.reduce(
-        (accumulator, item) => accumulator + item.transactionAmount,
+    console.log('Create Transaction from void permit: ', createTransactionDto);
+    console.log('VoidStatus ',voidStatus)
+    let totalTransactionAmount: number = 0;
+
+    for (const application of createTransactionDto.applicationDetails) {
+      console.log(' Callig permitFeeCalculator')
+      totalTransactionAmount =
+        totalTransactionAmount +
+        (await this.permitFeeCalculator(
+          createTransactionDto.transactionTypeId,
+          application.applicationId,
+          voidStatus,
+        ));
+    }
+    const totalTransactionAmountRequest =
+      createTransactionDto.applicationDetails.reduce(
+        (accumulator, currentValue) =>
+          accumulator + currentValue.transactionAmount,
         0,
       );
+
+    console.log(
+      createTransactionDto.applicationDetails.reduce(
+        (accumulator, currentValue) =>
+          accumulator + currentValue.transactionAmount,
+        0,
+      ),
+    );
+    console.log('totalTransactionAmount: ', totalTransactionAmount);
+    switch (createTransactionDto.transactionTypeId) {
+      case TransactionType.PURCHASE:
+        if (totalTransactionAmountRequest != totalTransactionAmount)
+          throw new BadRequestException('Transaction Amount Mismatch');
+        break;
+      case TransactionType.REFUND:
+        if (totalTransactionAmountRequest * -1 != totalTransactionAmount)
+          throw new BadRequestException('Transaction Amount Mismatch');
+        break;
+      default:
+        throw new NotAcceptableException();
+    }
     const transactionOrderNumber = await this.generateTransactionOrderNumber();
     let readTransactionDto: ReadTransactionDto;
     const queryRunner =
@@ -564,5 +612,95 @@ export class PaymentService {
 
   async findAllPaymentCardTypeEntities(): Promise<PaymentCardType[]> {
     return await this.paymentCardTypeRepository.find();
+  }
+
+  /**
+   * Retrieves permit type information from cache.
+   * @returns A Promise resolving to a map of permit types.
+   */
+  @LogAsyncMethodExecution()
+  async permitFeeCalculator(
+    transastionType: TransactionType,
+    applicationId: string,
+    voidStatus?: ApplicationStatus.VOIDED | ApplicationStatus.REVOKED,
+  ): Promise<number> {
+    let permitAmount = 0;
+    if (voidStatus === ApplicationStatus.REVOKED) return permitAmount;
+    const application = await this.permitService.findOne(applicationId);
+    if (voidStatus === ApplicationStatus.VOIDED) {
+      console.log('Checking history for void permit')
+      const oldAmount = await this.calculatePermitAmount(
+        application.originalPermitId,
+      ); 
+      console.log('Done Checking history for void permit')
+      return -oldAmount};
+    const oldAmount = await this.calculatePermitAmount(
+      application.originalPermitId,
+    );
+
+    const diff =
+      new Date(application.permitData.expiryDate).getTime() -
+      new Date(application.permitData.startDate).getTime();
+    const duration = Math.ceil(diff / (1000 * 3600 * 24)) + 1;
+    console.log('dration is ', duration);
+    switch (application.permitType) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      case PermitType.TERM_OVERSIZE: {
+        permitAmount = this.permitFee(
+          duration,
+          TROS_PRICE_PER_UNIT,
+          TROS_UNIT_OF_MEASURE,
+          oldAmount,
+        );
+        break;
+      }
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      case PermitType.TERM_OVERWEIGHT:
+        break;
+      default:
+        throw new BadRequestException();
+    }
+
+    return permitAmount;
+  }
+
+  permitFee(
+    duration: number,
+    unitPrice: number,
+    permitTypeUnitOfMeasure: number,
+    oldAmount: number,
+  ): number {
+    const unitOfMeasure =
+      duration % permitTypeUnitOfMeasure === 0
+        ? duration / permitTypeUnitOfMeasure
+        : duration / permitTypeUnitOfMeasure + 1;
+    const permitAmount = unitPrice * unitOfMeasure - oldAmount;
+    return permitAmount;
+  }
+  async calculatePermitAmount(originalPermitId: string): Promise<number> {
+    let amount: number = 0;
+    const permitPaymentHistory =
+      await this.permitService.findPermitHistory(originalPermitId);
+    permitPaymentHistory.forEach((payment) => {
+      switch (payment.transactionTypeId) {
+        case TransactionType.REFUND: {
+          amount = amount + payment.transactionAmount * -1;
+          break;
+        }
+        case TransactionType.PURCHASE: {
+          amount = amount + payment.transactionAmount * 1;
+          break;
+        }
+        case TransactionType.VOID_PURHCASE: {
+          throw new NotAcceptableException();
+        }
+        case TransactionType.VOID_REFUND: {
+          throw new NotAcceptableException();
+        }
+        default:
+          throw new NotAcceptableException();
+      }
+    });
+    return amount;
   }
 }

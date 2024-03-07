@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { PermitService } from './permit.service';
 import { PermitController } from './permit.controller';
 
@@ -29,7 +29,7 @@ import { PaymentModule } from '../payment/payment.module';
       Receipt,
     ]),
     CompanyModule,
-    PaymentModule,
+    forwardRef(() => PaymentModule),
   ],
   controllers: [ApplicationController, PermitController],
   providers: [
