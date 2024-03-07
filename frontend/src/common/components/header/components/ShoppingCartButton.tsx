@@ -11,10 +11,12 @@ export const ShoppingCartButton = ({cartItemCount} : {cartItemCount: number}) =>
   }
 
   return (
-    <IconButton aria-label="cart" onClick={onClick} className={"shopping-cart-button"}>
-      <Badge badgeContent={cartItemCount} color="secondary" className={"shopping-cart-button__badge"}>
-        <FontAwesomeIcon icon={faShoppingCart} className={"shopping-cart-button__icon"} />
-      </Badge>
-    </IconButton>
+    <div className={"shopping-cart-button"}>
+      <IconButton aria-label="cart" onClick={onClick}>
+        <Badge badgeContent={cartItemCount} color="secondary" className={"shopping-cart-button__badge"}>
+          <FontAwesomeIcon icon={faShoppingCart} className={"shopping-cart-button__icon"} />
+        </Badge>
+      </IconButton>
+    </div>
   );
 };
