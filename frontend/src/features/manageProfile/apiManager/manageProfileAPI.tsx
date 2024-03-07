@@ -184,11 +184,11 @@ export const addUserToCompany = async (addUserRequest: BCeIDAddUserRequest) => {
 };
 
 /**
- * Deletes users of a company identified by their user GUIDs.
+ * Deletes active users of a company identified by their user GUIDs.
  * @param userGuids The array of user GUIDs of the users to be deleted.
  * @returns A promise indicating the success or failure of the delete operation.
  */
-export const deleteCompanyUsers = (userGuids: string[]) => {
+export const deleteCompanyActiveUsers = (userGuids: string[]) => {
   return httpDELETERequest(
     `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/users/`,
     {

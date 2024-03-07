@@ -10,32 +10,29 @@ import {
   useMaterialReactTable,
 } from "material-react-table";
 
-import "./UserManagement.scss";
 import { SnackBarContext } from "../../../App";
-import { NoRecordsFound } from "../../../common/components/table/NoRecordsFound";
-import { ONE_HOUR } from "../../../common/constants/constants";
 import { DeleteConfirmationDialog } from "../../../common/components/dialog/DeleteConfirmationDialog";
+import { NoRecordsFound } from "../../../common/components/table/NoRecordsFound";
 import { Trash } from "../../../common/components/table/options/Trash";
+import { ONE_HOUR } from "../../../common/constants/constants";
 import {
-  deleteCompanyPendingUsers,
-  deleteCompanyUsers,
-  getCompanyUsers,
-} from "../apiManager/manageProfileAPI";
-import { UserManagementTableRowActions } from "../components/user-management/UserManagementRowOptions";
-import { UserManagementColumnsDefinition } from "../types/UserManagementColumns";
-import {
-  defaultTableOptions,
   defaultTableInitialStateOptions,
+  defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../common/helpers/tableHelper";
 import {
+  useDeleteCompanyActiveUsers,
+  useDeleteCompanyPendingUsers,
+} from "../apiManager/hooks";
+import { getCompanyUsers } from "../apiManager/manageProfileAPI";
+import { UserManagementTableRowActions } from "../components/user-management/UserManagementRowOptions";
+import {
   BCeID_USER_STATUS,
   BCeIDUserStatusType,
-  DeleteResponse,
   ReadUserInformationResponse,
 } from "../types/manageProfile.d";
-import { useNavigate } from "react-router-dom";
-import { ERROR_ROUTES } from "../../../routes/constants";
+import { UserManagementColumnsDefinition } from "../types/UserManagementColumns";
+import "./UserManagement.scss";
 
 /**
  * User Management Component for CV Client.
@@ -46,10 +43,13 @@ export const UserManagement = () => {
     queryFn: getCompanyUsers,
     staleTime: ONE_HOUR,
   });
-  const navigate = useNavigate();
   const { data, isError, isLoading } = query;
   const { setSnackBar } = useContext(SnackBarContext);
   const { user: userFromToken } = useAuth();
+
+  const deletePendingUsersMutation = useDeleteCompanyPendingUsers();
+  const deleteActiveUsersMutation = useDeleteCompanyActiveUsers();
+
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   /**
    * rowSelection is a Record<string, boolean>. The key follows the pattern
@@ -89,47 +89,22 @@ export const UserManagement = () => {
   );
 
   /**
-   * Resets the selection list of users and refetches the data.
-   */
-  const resetUsersList = () => {
-    setRowSelection(() => {
-      return {};
-    });
-    query.refetch();
-  };
-
-  /**
    * Function that deletes one or more users.
    */
   const onConfirmDelete = async () => {
     setIsDeleteDialogOpen(() => false);
     const userNames: string[] = getSelectedUsers(BCeID_USER_STATUS.PENDING);
     const userGUIDs: string[] = getSelectedUsers(BCeID_USER_STATUS.ACTIVE);
-    // Because there are two APIs, one for pending users and one for existing users
-    // We await the response of first before proceeding to the next one.
-    // Promise.all isn't feasible because, API does not accept an empty array.
     if (userNames.length > 0) {
-      const { data: pendingUserResponse } =
-        await deleteCompanyPendingUsers(userNames);
-      const { failure } = pendingUserResponse as DeleteResponse;
-      if (failure?.length > 0) {
-        navigate(ERROR_ROUTES.UNEXPECTED);
-      }
+      await deletePendingUsersMutation.mutateAsync(userNames);
     }
     if (userGUIDs.length > 0) {
-      deleteCompanyUsers(userGUIDs)
-        .then(({ data: companyUserResponse }) => {
-          const { failure } = companyUserResponse as DeleteResponse;
-          if (failure?.length > 0) {
-            navigate(ERROR_ROUTES.UNEXPECTED);
-          }
-        })
-        .finally(() => {
-          resetUsersList();
-        });
-    } else {
-      resetUsersList();
+      await deleteActiveUsersMutation.mutateAsync(userGUIDs);
     }
+    setRowSelection(() => {
+      return {};
+    });
+    query.refetch();
   };
 
   /**
