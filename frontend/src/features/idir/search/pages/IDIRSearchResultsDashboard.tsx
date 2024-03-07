@@ -11,6 +11,7 @@ import {
 } from "../types/types";
 import { IDIRCompanySearchResults } from "../components/IDIRCompanySearchResults";
 import { IDIRPermitSearchResults } from "../components/IDIRPermitSearchResults";
+import { IDIRSearchApplicationLists } from "../components/IDIRSearchApplicationLists";
 
 /**
  * Returns a banner text based on the search criteria.
@@ -37,6 +38,7 @@ export const IDIRSearchResultsDashboard = memo(() => {
     searchString: searchParams.get("searchString") as string,
   };
 
+
   return (
     <>
       <Box
@@ -59,6 +61,9 @@ export const IDIRSearchResultsDashboard = memo(() => {
         )}
         {searchFields?.searchEntity === SEARCH_ENTITIES.PERMIT && (
           <IDIRPermitSearchResults searchParams={searchFields} />
+        )}
+        {searchFields?.searchEntity === SEARCH_ENTITIES.APPLICATION && (
+          <IDIRSearchApplicationLists searchParams={searchFields} />
         )}
       </div>
     </>
