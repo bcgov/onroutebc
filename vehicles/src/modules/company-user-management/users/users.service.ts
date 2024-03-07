@@ -708,7 +708,7 @@ export class UsersService {
    * at least one company administrator remains. It performs checks before deletion, updates
    * user statuses, and returns details on successful and failed deletions.
    *
-   * @param {string[]} userGUIDS The GUIDs of the users slated for deletion.
+   * @param {string[]} userGUIDs The GUIDs of the users slated for deletion.
    * @param {number} companyId The ID of the company the users belong to.
    * @param {IUserJWT} currentUser JWT token details of the current user for auditing.
    * @returns {Promise<DeleteDto>} An object containing arrays of successfully deleted user GUIDs
@@ -716,7 +716,7 @@ export class UsersService {
    */
   @LogAsyncMethodExecution()
   async removeAll(
-    userGUIDS: string[],
+    userGUIDs: string[],
     companyId: number,
     currentUser: IUserJWT,
   ): Promise<DeleteDto> {
@@ -742,7 +742,7 @@ export class UsersService {
 
     // Filter admin GUIDs to exclude those in the deletion list, ensuring at least one remains
     const filteredCompanyAdminUserGuids = companyAdminUserGuids.filter(
-      (guid) => !userGUIDS.includes(guid),
+      (guid) => !userGUIDs.includes(guid),
     );
 
     // Check if operation results in zero company admins, throwing an error if true
@@ -754,7 +754,7 @@ export class UsersService {
     // Extract only the GUIDs of the users to be deleted and modify them.
     const userToBeDeleted = usersBeforeDelete.map((companyUser) => {
       return (
-        userGUIDS.includes(companyUser.user.userGUID) &&
+        userGUIDs.includes(companyUser.user.userGUID) &&
         ({
           ...companyUser,
           statusCode: UserStatus.DELETED,
@@ -767,7 +767,7 @@ export class UsersService {
     });
 
     // Identify which GUIDs were not found (failure to delete)
-    const failure = userGUIDS?.filter(
+    const failure = userGUIDs?.filter(
       (id) =>
         !userToBeDeleted.some(
           (companyUser) => companyUser.user.userGUID === id,
@@ -778,7 +778,7 @@ export class UsersService {
     await this.companyUserRepository.save(userToBeDeleted);
 
     // Determine successful deletions by filtering out failures
-    const success = userGUIDS?.filter((id) => !failure?.includes(id));
+    const success = userGUIDs?.filter((id) => !failure?.includes(id));
 
     // Prepare the response DTO with lists of successful and failed deletions
     const deleteDto: DeleteDto = {

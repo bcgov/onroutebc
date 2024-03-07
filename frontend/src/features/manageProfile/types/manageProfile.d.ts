@@ -150,18 +150,23 @@ export type VerifyMigratedClientResponse = {
 };
 
 /**
+ * Represents the response structure after performing a delete operation.
+ *
+ * @type {Object}
+ * @property {string[]} success - An array of identifiers that were successfully deleted.
+ * @property {string[]} failure - An array of identifiers that failed to be deleted.
+ */
+export type DeleteResponse = {
+  success: string[];
+  failure: string[];
+};
+
+/**
  * The tabs on the user profile management page.
- * Index starts at 0.
  */
 export const BCEID_PROFILE_TABS = {
-  COMPANY_INFORMATION: 0,
-  MY_INFORMATION: 1,
-  USER_MANAGEMENT_ORGADMIN: 2,
-  /**
-   * Payment Information is the third tab for CV Client
-   * but fourth tab for ORGADMIN because of the User Management tab.
-   */
-  /* eslint-ignore no-duplicate-enum-values */
-  PAYMENT_INFORMATION_CVCLIENT: 2,
-  PAYMENT_INFORMATION_ORGADMIN: 3,
+  COMPANY_INFORMATION: "CompanyInformationTab",
+  MY_INFORMATION: "MyInformationTab",
+  USER_MANAGEMENT: "UserManagementTab",
+  PAYMENT_INFORMATION: "PaymentInformationTab",
 } as const;

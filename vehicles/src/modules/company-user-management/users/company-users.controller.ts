@@ -194,6 +194,11 @@ export class CompanyUsersController {
       'Requires specific user roles or group memberships to execute.' +
       'Returns a list of deleted users or throws exceptions for unauthorized access or operational failures.',
   })
+  @ApiOkResponse({
+    description:
+      'The Delete Resource containing successful and failed identifiers.',
+    type: DeleteDto,
+  })
   @Delete()
   async remove(
     @Req() request: Request,
@@ -210,7 +215,7 @@ export class CompanyUsersController {
       throw new ForbiddenException();
     }
     const deleteResult = await this.userService.removeAll(
-      deleteUsersDto.userGUIDS,
+      deleteUsersDto.userGUIDs,
       companyId,
       currentUser,
     );

@@ -121,7 +121,7 @@ export class ApplicationController {
     }
 
     const userGuid =
-      UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup
+      UserAuthGroup.PERMIT_APPLICANT === currentUser.orbcUserAuthGroup
         ? currentUser.userGUID
         : null;
 

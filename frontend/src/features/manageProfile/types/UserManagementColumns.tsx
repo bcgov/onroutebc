@@ -24,7 +24,7 @@ export const UserManagementColumnsDefinition: MRT_ColumnDef<ReadUserInformationR
         return (
           <Stack direction="row">
             <span>{props.row.original.userName}</span>
-            {shouldShowChip(props.row.original.userStatus) && (
+            {shouldShowChip(props.row.original.statusCode) && (
               <UserManagementChip />
             )}
           </Stack>
