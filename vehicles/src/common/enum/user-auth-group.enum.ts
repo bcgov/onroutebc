@@ -3,6 +3,7 @@ export enum UserAuthGroup {
   CV_CLIENT = 'CVCLIENT',
   COMPANY_ADMINISTRATOR = 'ORGADMIN',
   PPC_CLERK = 'PPCCLERK',
+  PPC_SUPERVISOR = 'CTPO',
   PUBLIC_VERIFIED = 'PUBLIC',
   SYSTEM_ADMINISTRATOR = 'SYSADMIN',
   ENFORCEMENT_OFFICER = 'EOFFICER',
@@ -22,6 +23,7 @@ export enum ClientUserAuthGroup {
 
 export const idirUserAuthGroupList: readonly UserAuthGroup[] = [
   UserAuthGroup.PPC_CLERK,
+  UserAuthGroup.PPC_SUPERVISOR,
   UserAuthGroup.SYSTEM_ADMINISTRATOR,
   UserAuthGroup.ENFORCEMENT_OFFICER,
   UserAuthGroup.HQ_ADMINISTRATOR,
@@ -30,6 +32,7 @@ export const idirUserAuthGroupList: readonly UserAuthGroup[] = [
 
 export enum IDIRUserAuthGroup {
   PPC_CLERK = 'PPCCLERK',
+  PPC_SUPERVISOR = 'CTPO',
   SYSTEM_ADMINISTRATOR = 'SYSADMIN',
   ENFORCEMENT_OFFICER = 'EOFFICER',
   HQ_ADMINISTRATOR = 'HQADMIN',
