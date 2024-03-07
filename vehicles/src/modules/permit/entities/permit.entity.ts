@@ -5,6 +5,8 @@ import {
   PrimaryGeneratedColumn,
   OneToOne,
   OneToMany,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 import { Base } from '../../common/entities/base.entity';
@@ -15,6 +17,8 @@ import { PermitApprovalSource } from '../../../common/enum/permit-approval-sourc
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { PermitTransaction } from '../../payment/entities/permit-transaction.entity';
 import { PermitIssuedBy } from '../../../common/enum/permit-issued-by.enum';
+import { User } from '../../company-user-management/users/entities/user.entity';
+import { Company } from '../../company-user-management/company/entities/company.entity';
 
 @Entity({ name: 'permit.ORBC_PERMIT' })
 export class Permit extends Base {
@@ -42,12 +46,13 @@ export class Permit extends Base {
 
   @AutoMap()
   @ApiProperty({
-    example: '1',
+    example: '74',
     description:
       'Foreign key to the ORBC_COMPANY table, represents the company requesting the permit.',
   })
-  @Column({ type: 'integer', name: 'COMPANY_ID', nullable: true })
-  companyId: number;
+  @ManyToOne(() => Company, { eager: true, cascade: false })
+  @JoinColumn({ name: 'COMPANY_ID' })
+  company: Company;
 
   @AutoMap()
   @ApiProperty({
@@ -70,16 +75,18 @@ export class Permit extends Base {
     example: '1',
     description: 'GUID of the user requesting the permit.',
   })
-  @Column({ length: 32, name: 'OWNER_USER_GUID', nullable: true })
-  userGuid: string;
+  @ManyToOne(() => User, { eager: true, cascade: false })
+  @JoinColumn({ name: 'OWNER_USER_GUID' })
+  applicationOwner: User;
 
   @AutoMap()
   @ApiProperty({
     example: '1',
     description: 'GUID of the user requesting the permit.',
   })
-  @Column({ length: 32, name: 'ISSUER_USER_GUID', nullable: true })
-  issuerUserGuid: string;
+  @ManyToOne(() => User, { eager: true, cascade: false })
+  @JoinColumn({ name: 'ISSUER_USER_GUID' })
+  issuer: User;
 
   @AutoMap()
   @ApiProperty({

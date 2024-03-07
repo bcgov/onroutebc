@@ -35,9 +35,3 @@ export const CVCLIENT_ACTIVE_APPLICATION_STATUS: ReadonlyArray<ApplicationStatus
     ApplicationStatus.WAITING_PAYMENT,
     ApplicationStatus.UNDER_REVIEW,
   ];
-
-export const CVCLIENT_INACTIVE_APPLICATION_STATUS: Readonly<ApplicationStatus> =
-  ApplicationStatus.CANCELLED;
-
-export const IDIR_INACTIVE_APPLICATION_STATUS: Readonly<ApplicationStatus> =
-  ApplicationStatus.DELETED;

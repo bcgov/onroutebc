@@ -10,24 +10,29 @@ import {
   useMaterialReactTable,
 } from "material-react-table";
 
-import "./UserManagement.scss";
 import { SnackBarContext } from "../../../App";
-import { NoRecordsFound } from "../../../common/components/table/NoRecordsFound";
-import { FIVE_MINUTES } from "../../../common/constants/constants";
 import { DeleteConfirmationDialog } from "../../../common/components/dialog/DeleteConfirmationDialog";
+import { NoRecordsFound } from "../../../common/components/table/NoRecordsFound";
 import { Trash } from "../../../common/components/table/options/Trash";
-import { getCompanyUsers } from "../apiManager/manageProfileAPI";
-import { UserManagementTableRowActions } from "../components/user-management/UserManagementRowOptions";
-import { UserManagementColumnsDefinition } from "../types/UserManagementColumns";
+import { ONE_HOUR } from "../../../common/constants/constants";
 import {
-  defaultTableOptions,
   defaultTableInitialStateOptions,
+  defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../common/helpers/tableHelper";
 import {
+  useDeleteCompanyActiveUsers,
+  useDeleteCompanyPendingUsers,
+} from "../apiManager/hooks";
+import { getCompanyUsers } from "../apiManager/manageProfileAPI";
+import { UserManagementTableRowActions } from "../components/user-management/UserManagementRowOptions";
+import {
   BCeID_USER_STATUS,
+  BCeIDUserStatusType,
   ReadUserInformationResponse,
 } from "../types/manageProfile.d";
+import { UserManagementColumnsDefinition } from "../types/UserManagementColumns";
+import "./UserManagement.scss";
 
 /**
  * User Management Component for CV Client.
@@ -36,12 +41,29 @@ export const UserManagement = () => {
   const query = useQuery({
     queryKey: ["companyUsers"],
     queryFn: getCompanyUsers,
-    staleTime: FIVE_MINUTES,
+    staleTime: ONE_HOUR,
   });
   const { data, isError, isLoading } = query;
-  const snackBar = useContext(SnackBarContext);
+  const { setSnackBar } = useContext(SnackBarContext);
   const { user: userFromToken } = useAuth();
+
+  const deletePendingUsersMutation = useDeleteCompanyPendingUsers();
+  const deleteActiveUsersMutation = useDeleteCompanyActiveUsers();
+
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  /**
+   * rowSelection is a Record<string, boolean>. The key follows the pattern
+   * - {userGUID},{ACTIVE} (if existing user)
+   * - {userName},{PENDING} (if pending user)
+   * This is a conscious design choice so that we can quickly
+   * recognize whether a selected user is ACTIVE or PENDING.
+   * The alternative will be to create another state with lot more
+   * processing to figure out the distinction between ACTIVE and PENDING.
+   *
+   * Why do we need this distinction?
+   * - Users selected for deletion will use two different APIs for pending and active users
+   *
+   */
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
 
@@ -53,12 +75,36 @@ export const UserManagement = () => {
   }, []);
 
   /**
+   * Retrieves user identifiers based on their status from the row selection state.
+   * @param {BCeIDUserStatusType} userStatus The status of the users to filter by.
+   * @returns {string[]} An array of user identifiers (either user names or GUIDs)
+   *                     based on the requested status.
+   */
+  const getSelectedUsers = useCallback(
+    (userStatus: BCeIDUserStatusType) =>
+      Object.keys(rowSelection)
+        .filter((value: string) => value.split(",")[1] === userStatus)
+        .map((value: string) => value.split(",")[0]),
+    [rowSelection],
+  );
+
+  /**
    * Function that deletes one or more users.
    */
   const onConfirmDelete = async () => {
-    // Uncomment this line -const userNames: string[] = Object.keys(rowSelection);
-    // For implementation.
     setIsDeleteDialogOpen(() => false);
+    const userNames: string[] = getSelectedUsers(BCeID_USER_STATUS.PENDING);
+    const userGUIDs: string[] = getSelectedUsers(BCeID_USER_STATUS.ACTIVE);
+    if (userNames.length > 0) {
+      await deletePendingUsersMutation.mutateAsync(userNames);
+    }
+    if (userGUIDs.length > 0) {
+      await deleteActiveUsersMutation.mutateAsync(userGUIDs);
+    }
+    setRowSelection(() => {
+      return {};
+    });
+    query.refetch();
   };
 
   /**
@@ -73,7 +119,7 @@ export const UserManagement = () => {
 
   useEffect(() => {
     if (isError) {
-      snackBar.setSnackBar({
+      setSnackBar({
         message: "An unexpected error occurred.",
         showSnackbar: true,
         setShowSnackbar: () => true,
@@ -108,8 +154,14 @@ export const UserManagement = () => {
       return true;
     },
     onRowSelectionChange: setRowSelection,
-    getRowId: (originalRow: ReadUserInformationResponse) =>
-      originalRow.userName,
+    getRowId: (originalRow: ReadUserInformationResponse) => {
+      const { statusCode, userName, userGUID } = originalRow;
+      if (statusCode === BCeID_USER_STATUS.PENDING) {
+        return `${userName},${statusCode}`;
+      } else {
+        return `${userGUID},${statusCode}`;
+      }
+    },
     displayColumnDefOptions: {
       "mrt-row-actions": {
         header: "",
