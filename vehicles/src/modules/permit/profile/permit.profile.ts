@@ -72,6 +72,10 @@ export class PermitProfile extends AutomapperProfile {
           mapFrom((s) => s.permitData?.startDate),
         ),
         forMember(
+          (d) => d.expiryDate,
+          mapFrom((s) => s.permitData?.expiryDate),
+        ),
+        forMember(
           (d) => d.vin,
           mapFrom((s) => s.permitData?.vin),
         ),

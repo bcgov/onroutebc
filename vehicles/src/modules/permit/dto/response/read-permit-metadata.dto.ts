@@ -75,6 +75,12 @@ export class ReadPermitMetadataDto {
 
   @AutoMap()
   @ApiProperty({
+    description: 'Permit expiry Date and Time.',
+  })
+  expiryDate: string;
+
+  @AutoMap()
+  @ApiProperty({
     description: 'Permit issue Date and Time.',
   })
   permitIssueDateTime: string;
@@ -93,14 +99,16 @@ export class ReadPermitMetadataDto {
 
   @AutoMap()
   @ApiProperty({
-    description: 'The first name and last name of the logged in user that started the permit application or Provincial Permit Center if started by staff',
+    description:
+      'The first name and last name of the logged in user that started the permit application or Provincial Permit Center if started by staff',
     example: 'John Smith',
   })
   applicant: string;
 
   @AutoMap()
   @ApiProperty({
-    description: 'Applicant is the first name and last name of the CV Client user that issued the permit or Provincial Permit Center if issued by the PPC',
+    description:
+      'Applicant is the first name and last name of the CV Client user that issued the permit or Provincial Permit Center if issued by the PPC',
     example: 'John Smith',
     required: false,
   })
