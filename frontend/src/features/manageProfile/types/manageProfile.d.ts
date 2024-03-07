@@ -150,6 +150,18 @@ export type VerifyMigratedClientResponse = {
 };
 
 /**
+ * Represents the response structure after performing a delete operation.
+ *
+ * @type {Object}
+ * @property {string[]} success - An array of identifiers that were successfully deleted.
+ * @property {string[]} failure - An array of identifiers that failed to be deleted.
+ */
+export type DeleteResponse = {
+  success: string[];
+  failure: string[];
+};
+
+/**
  * The tabs on the user profile management page.
  * Index starts at 0.
  */
