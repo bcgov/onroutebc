@@ -15,6 +15,21 @@ export class ReadPermitMetadataDto {
 
   @AutoMap()
   @ApiProperty({
+    description: 'Legal name of the company associated with the permit.',
+    example: 'Parisian LLC Trucking',
+  })
+  legalName: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'Legal name of the company associated with the permit.',
+    example: 'Parisian Trucking',
+    required: false,
+  })
+  alternateName: string;
+
+  @AutoMap()
+  @ApiProperty({
     description: 'Id of the Permit.',
     example: '1',
   })
@@ -46,7 +61,6 @@ export class ReadPermitMetadataDto {
   @ApiProperty({
     description: 'Status of the Permit',
     example: PermitStatus.ISSUED,
-    required: false,
   })
   permitStatus: PermitStatus;
 
@@ -118,6 +132,7 @@ export class ReadPermitMetadataDto {
   @ApiProperty({
     description: 'Name of the unit associated with the permit',
     example: 'Unit 42',
+    required: false,
   })
   unitNumber: string;
 

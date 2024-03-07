@@ -205,6 +205,14 @@ export class ApplicationProfile extends AutomapperProfile {
           mapFrom((s) => s.permitData?.expiryDate),
         ),
         forMember(
+          (d) => d.legalName,
+          mapFrom((s) => s.company?.legalName),
+        ),
+        forMember(
+          (d) => d.alternateName,
+          mapFrom((s) => s.company?.alternateName),
+        ),
+        forMember(
           (d) => d.vin,
           mapFrom((s) => s.permitData?.vin),
         ),

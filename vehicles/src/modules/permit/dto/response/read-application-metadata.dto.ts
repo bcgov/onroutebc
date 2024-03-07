@@ -14,6 +14,21 @@ export class ReadApplicationMetadataDto {
 
   @AutoMap()
   @ApiProperty({
+    description: 'Legal name of the company associated with the permit.',
+    example: 'Parisian LLC Trucking',
+  })
+  legalName: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'Legal name of the company associated with the permit.',
+    example: 'Parisian Trucking',
+    required: false,
+  })
+  alternateName: string;
+
+  @AutoMap()
+  @ApiProperty({
     description: 'Id of the Application.',
     example: '1',
   })
@@ -38,7 +53,6 @@ export class ReadApplicationMetadataDto {
   @ApiProperty({
     description: 'Status of Permit Application.',
     example: ApplicationStatus.IN_PROGRESS,
-    required: false,
   })
   permitStatus: ApplicationStatus;
 
@@ -54,12 +68,14 @@ export class ReadApplicationMetadataDto {
   @AutoMap()
   @ApiProperty({
     description: 'Permit start Date and Time.',
+    required: false,
   })
   startDate: string;
 
   @AutoMap()
   @ApiProperty({
     description: 'Permit expiry Date and Time.',
+    required: false,
   })
   expiryDate: string;
 
@@ -87,6 +103,7 @@ export class ReadApplicationMetadataDto {
   @ApiProperty({
     description: 'Name of the unit associated with the application.',
     example: 'Unit 42',
+    required: false,
   })
   unitNumber: string;
 
@@ -95,6 +112,7 @@ export class ReadApplicationMetadataDto {
     description:
       'Vehicle Identification Number associated with the application.',
     example: '275393',
+    required: false,
   })
   vin: string;
 
@@ -103,6 +121,7 @@ export class ReadApplicationMetadataDto {
     description:
       'License plate number associated with the application vehicle.',
     example: 'PRJZZP',
+    required: false,
   })
   plate: string;
 }
