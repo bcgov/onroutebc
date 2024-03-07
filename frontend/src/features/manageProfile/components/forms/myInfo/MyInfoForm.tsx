@@ -43,7 +43,7 @@ export const MyInfoForm = memo(
         provinceCode: getDefaultRequiredVal("", myInfo?.provinceCode),
         city: getDefaultRequiredVal("", myInfo?.city),
         userAuthGroup: getDefaultRequiredVal(
-          BCeID_USER_AUTH_GROUP.CV_CLIENT,
+          BCeID_USER_AUTH_GROUP.PERMIT_APPLICANT,
           myInfo?.userAuthGroup as BCeIDUserAuthGroupType,
         ),
       },
