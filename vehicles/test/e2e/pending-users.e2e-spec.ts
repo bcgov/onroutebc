@@ -155,7 +155,7 @@ describe('PendingUsers (e2e)', () => {
 
       expect(response.body).toMatchObject({
         ...readRedCompanyPendingUserDtoMock,
-        userAuthGroup: UserAuthGroup.CV_CLIENT,
+        userAuthGroup: UserAuthGroup.PERMIT_APPLICANT,
       });
     });
   });

@@ -1,6 +1,6 @@
 export enum UserAuthGroup {
   ANONYMOUS = 'ANONYMOUS',
-  CV_CLIENT = 'CVCLIENT',
+  PERMIT_APPLICANT = 'PAPPLICANT',
   COMPANY_ADMINISTRATOR = 'ORGADMIN',
   PPC_CLERK = 'PPCCLERK',
   PPC_SUPERVISOR = 'CTPO',
@@ -12,12 +12,12 @@ export enum UserAuthGroup {
 }
 
 export const clientUserAuthGroupList: readonly UserAuthGroup[] = [
-  UserAuthGroup.CV_CLIENT,
+  UserAuthGroup.PERMIT_APPLICANT,
   UserAuthGroup.COMPANY_ADMINISTRATOR,
 ];
 
 export enum ClientUserAuthGroup {
-  CV_CLIENT = 'CVCLIENT',
+  PERMIT_APPLICANT = 'PAPPLICANT',
   COMPANY_ADMINISTRATOR = 'ORGADMIN',
 }
 

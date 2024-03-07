@@ -123,7 +123,7 @@ export type UserRolesType = (typeof ROLES)[keyof typeof ROLES];
  */
 export const USER_AUTH_GROUP = {
   ANONYMOUS: "ANONYMOUS",
-  CV_CLIENT: "CVCLIENT",
+  PERMIT_APPLICANT: "PAPPLICANT",
   COMPANY_ADMINISTRATOR: "ORGADMIN",
   PPC_CLERK: "PPCCLERK",
   SYSTEM_ADMINISTRATOR: "SYSADMIN",
@@ -142,7 +142,7 @@ export type UserAuthGroupType =
  * The user auth group enum key-value pairs.
  */
 export const BCeID_USER_AUTH_GROUP = {
-  CV_CLIENT: "CVCLIENT",
+  PERMIT_APPLICANT: "PAPPLICANT",
   COMPANY_ADMINISTRATOR: "ORGADMIN",
 } as const;
 

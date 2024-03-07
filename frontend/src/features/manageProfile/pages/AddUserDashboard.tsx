@@ -39,7 +39,7 @@ export const AddUserDashboard = React.memo(() => {
 
   const formMethods = useForm<BCeIDAddUserRequest>({
     defaultValues: {
-      userAuthGroup: BCeID_USER_AUTH_GROUP.CV_CLIENT,
+      userAuthGroup: BCeID_USER_AUTH_GROUP.PERMIT_APPLICANT,
     },
     reValidateMode: "onBlur",
   });
