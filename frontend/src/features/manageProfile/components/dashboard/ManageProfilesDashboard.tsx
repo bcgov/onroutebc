@@ -50,13 +50,10 @@ export const ManageProfilesDashboard = React.memo(() => {
   const { user } = useAuth();
   const populatedUserRoles = getDefaultRequiredVal([], userRoles);
   const isIDIRUser = isIDIR(user?.profile?.identity_provider as string);
-  const isBCeIDAdmin = isBCeIDOrgAdmin(populatedUserRoles) || isIDIRUser;
+  const isBCeIDAdmin = isBCeIDOrgAdmin(populatedUserRoles);
+  const shouldAllowUserManagement = isBCeIDAdmin || isIDIRUser;
 
   const { state: stateFromNavigation } = useLocation();
-  let selectedTab = BCEID_PROFILE_TABS.COMPANY_INFORMATION;
-  if (stateFromNavigation?.selectedTab) {
-    selectedTab = stateFromNavigation.selectedTab;
-  }
 
   if (isPending) {
     return <Loading />;
@@ -71,10 +68,17 @@ export const ManageProfilesDashboard = React.memo(() => {
     }
   }
 
-  const tabs = [
+  const tabs: [
+    {
+      label: string;
+      component: JSX.Element;
+      componentKey: string;
+    },
+  ] = [
     {
       label: "Company Information",
       component: <CompanyInfo companyInfoData={companyInfoData} />,
+      componentKey: BCEID_PROFILE_TABS.COMPANY_INFORMATION,
     },
   ];
 
@@ -82,23 +86,33 @@ export const ManageProfilesDashboard = React.memo(() => {
     tabs.push({
       label: "My Information",
       component: <MyInfo />,
+      componentKey: BCEID_PROFILE_TABS.MY_INFORMATION,
     });
   }
 
-  if (isBCeIDAdmin) {
+  if (shouldAllowUserManagement) {
     tabs.push({
       label: "User Management",
       component: <UserManagement />,
+      componentKey: BCEID_PROFILE_TABS.USER_MANAGEMENT,
     });
   }
+
+  const getSelectedTab = (): number => {
+    const tabIndex = tabs.findIndex(
+      ({ componentKey }) => componentKey === stateFromNavigation?.selectedTab,
+    );
+    if (tabIndex < 0) return 0;
+    return tabIndex;
+  };
 
   return (
     <TabLayout
       bannerText="Profile"
       componentList={tabs}
-      selectedTabIndex={selectedTab}
+      selectedTabIndex={getSelectedTab()}
       bannerButton={
-        isBCeIDAdmin ? (
+        shouldAllowUserManagement ? (
           <Button
             variant="contained"
             onClick={() => navigate(withCompanyId(PROFILE_ROUTES.ADD_USER))}

@@ -66,7 +66,7 @@ export const EditUserForm = memo(
     const onClickBreadcrumb = () => {
       navigate(withCompanyId(PROFILE_ROUTES.MANAGE), {
         state: {
-          selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT_ORGADMIN,
+          selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT,
         },
       });
     };
@@ -89,7 +89,9 @@ export const EditUserForm = memo(
           });
 
           navigate(withCompanyId(PROFILE_ROUTES.MANAGE), {
-            state: { selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT_ORGADMIN },
+            state: {
+              selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT,
+            },
           });
         }
       },
