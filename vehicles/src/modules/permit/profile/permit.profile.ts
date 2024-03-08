@@ -12,9 +12,10 @@ import { ReadPermitDto } from '../dto/response/read-permit.dto';
 import { Directory } from '../../../common/enum/directory.enum';
 import { PPC_FULL_TEXT } from '../../../common/constants/api.constant';
 import {
+  IDIR_USER_AUTH_GROUP_LIST,
   UserAuthGroup,
-  idirUserAuthGroupList,
 } from '../../../common/enum/user-auth-group.enum';
+import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 
 @Injectable()
 export class PermitProfile extends AutomapperProfile {
@@ -45,8 +46,9 @@ export class PermitProfile extends AutomapperProfile {
           mapWithArguments((s, { currentUserAuthGroup }) => {
             if (s.issuer?.directory === Directory.IDIR) {
               if (
-                idirUserAuthGroupList.includes(
+                doesUserHaveAuthGroup(
                   currentUserAuthGroup as UserAuthGroup,
+                  IDIR_USER_AUTH_GROUP_LIST,
                 )
               ) {
                 return s.issuer?.userName;
