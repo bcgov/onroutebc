@@ -207,12 +207,8 @@ export class PaymentService {
     nestedQueryRunner?: QueryRunner,
     voidStatus?: ApplicationStatus.VOIDED | ApplicationStatus.REVOKED,
   ): Promise<ReadTransactionDto> {
-    console.log('Create Transaction from void permit: ', createTransactionDto);
-    console.log('VoidStatus ',voidStatus)
     let totalTransactionAmount: number = 0;
-
     for (const application of createTransactionDto.applicationDetails) {
-      console.log(' Callig permitFeeCalculator')
       totalTransactionAmount =
         totalTransactionAmount +
         (await this.permitFeeCalculator(
@@ -228,14 +224,6 @@ export class PaymentService {
         0,
       );
 
-    console.log(
-      createTransactionDto.applicationDetails.reduce(
-        (accumulator, currentValue) =>
-          accumulator + currentValue.transactionAmount,
-        0,
-      ),
-    );
-    console.log('totalTransactionAmount: ', totalTransactionAmount);
     switch (createTransactionDto.transactionTypeId) {
       case TransactionType.PURCHASE:
         if (totalTransactionAmountRequest != totalTransactionAmount)
@@ -280,10 +268,11 @@ export class PaymentService {
           where: { permitId: application.applicationId },
         });
 
-        this.assertApplicationInProgress(
-          newTransaction.transactionTypeId,
-          existingApplication.permitStatus,
-        );
+        if (!voidStatus)
+          this.assertApplicationInProgress(
+            newTransaction.transactionTypeId,
+            existingApplication.permitStatus,
+          );
 
         let newPermitTransactions = new PermitTransaction();
         newPermitTransactions.transaction = newTransaction;
@@ -307,7 +296,8 @@ export class PaymentService {
           this.isWebTransactionPurchase(
             newTransaction.paymentMethodTypeCode,
             newTransaction.transactionTypeId,
-          )
+          ) &&
+          !voidStatus
         ) {
           existingApplication.permitStatus = ApplicationStatus.WAITING_PAYMENT;
           existingApplication.updatedDateTime = new Date();
@@ -318,7 +308,8 @@ export class PaymentService {
 
           await queryRunner.manager.save(existingApplication);
         } else if (
-          this.isTransactionPurchase(newTransaction.transactionTypeId)
+          this.isTransactionPurchase(newTransaction.transactionTypeId) &&
+          !voidStatus
         ) {
           existingApplication.permitStatus = ApplicationStatus.PAYMENT_COMPLETE;
           existingApplication.updatedDateTime = new Date();
@@ -344,7 +335,8 @@ export class PaymentService {
         this.isWebTransactionPurchase(
           createdTransaction.paymentMethodTypeCode,
           createdTransaction.transactionTypeId,
-        )
+        ) &&
+        !voidStatus
       ) {
         // Only payment using PayBC should generate the url
         url = this.generateUrl(createdTransaction);
@@ -628,12 +620,11 @@ export class PaymentService {
     if (voidStatus === ApplicationStatus.REVOKED) return permitAmount;
     const application = await this.permitService.findOne(applicationId);
     if (voidStatus === ApplicationStatus.VOIDED) {
-      console.log('Checking history for void permit')
       const oldAmount = await this.calculatePermitAmount(
         application.originalPermitId,
-      ); 
-      console.log('Done Checking history for void permit')
-      return -oldAmount};
+      );
+      return -oldAmount;
+    }
     const oldAmount = await this.calculatePermitAmount(
       application.originalPermitId,
     );
@@ -642,7 +633,6 @@ export class PaymentService {
       new Date(application.permitData.expiryDate).getTime() -
       new Date(application.permitData.startDate).getTime();
     const duration = Math.ceil(diff / (1000 * 3600 * 24)) + 1;
-    console.log('dration is ', duration);
     switch (application.permitType) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       case PermitType.TERM_OVERSIZE: {
