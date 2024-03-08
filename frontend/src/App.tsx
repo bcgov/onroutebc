@@ -1,7 +1,7 @@
 import { BrowserRouter as Router } from "react-router-dom";
 import { AppRoutes } from "./routes/Routes";
 import { ThemeProvider } from "@mui/material/styles";
-import { createContext, Dispatch, useEffect, useMemo, useState } from "react";
+import { createContext, Dispatch, useCallback, useEffect, useMemo, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, AuthProviderProps } from "react-oidc-context";
 
@@ -76,6 +76,22 @@ const App = () => {
     useState<Optional<VerifiedClient>>();
   const [isNewBCeIDUser, setIsNewBCeIDUser] = useState<Optional<boolean>>();
 
+  /**
+   * Useful utility function to clear company context.
+   */
+  const clearCompanyContext = useCallback(() => {
+    setCompanyId(() => undefined);
+    setOnRouteBCClientNumber(() => undefined);
+    setCompanyLegalName(() => undefined);
+    setMigratedClient(() => undefined);
+    sessionStorage.removeItem("onRouteBC.user.companyId");
+  }, [
+    setCompanyId,
+    setOnRouteBCClientNumber,
+    setCompanyLegalName,
+    setMigratedClient,
+  ]);
+
   // Needed the following usestate and useffect code so that the snackbar would disapear/close
   const [displaySnackBar, setDisplaySnackBar] = useState(false);
   useEffect(() => {
@@ -105,6 +121,7 @@ const App = () => {
                 setMigratedClient,
                 isNewBCeIDUser,
                 setIsNewBCeIDUser,
+                clearCompanyContext,
               };
             }, [
               userRoles,
@@ -115,6 +132,7 @@ const App = () => {
               onRouteBCClientNumber,
               migratedClient,
               isNewBCeIDUser,
+              clearCompanyContext,
             ])}
           >
             <SnackBarContext.Provider

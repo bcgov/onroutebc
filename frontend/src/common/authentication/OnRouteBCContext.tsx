@@ -112,6 +112,12 @@ export type OnRouteBCContextType = {
    * Used only when the user is new and trying to claim their company.
    */
   setIsNewBCeIDUser?: Dispatch<SetStateAction<Optional<boolean>>>;
+  /**
+   * A utility function to clear the company context.
+   * Intended for use during staff act as company.
+   * @returns void
+   */
+  clearCompanyContext?: () => void;
 };
 
 const defaultBehaviour: OnRouteBCContextType = {};
