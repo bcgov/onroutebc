@@ -36,12 +36,11 @@ import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import { ApiPaginatedResponse } from '../../../common/decorator/api-paginate-response';
 import { GetCompanyQueryParamsDto } from './dto/request/queryParam/getCompany.query-params.dto';
-import {
-  UserAuthGroup,
-  idirUserAuthGroupList,
-} from '../../../common/enum/user-auth-group.enum';
+
 import { ReadVerifyClientDto } from './dto/response/read-verify-client.dto';
 import { VerifyClientDto } from './dto/request/verify-client.dto';
+import { IDIR_USER_AUTH_GROUP_LIST } from '../../../common/enum/user-auth-group.enum';
+import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 
 @ApiTags('Company and User Management - Company')
 @ApiBadRequestResponse({
@@ -106,8 +105,9 @@ export class CompanyController {
   ): Promise<PaginationDto<ReadCompanyDto>> {
     const currentUser = request.user as IUserJWT;
     if (
-      !idirUserAuthGroupList.includes(
-        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      !doesUserHaveAuthGroup(
+        currentUser.orbcUserAuthGroup,
+        IDIR_USER_AUTH_GROUP_LIST,
       )
     ) {
       throw new UnauthorizedException(

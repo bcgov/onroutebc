@@ -24,6 +24,7 @@ import { Role } from '../../../common/enum/roles.enum';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import {
   ClientUserAuthGroup,
+  GenericUserAuthGroup,
   IDIRUserAuthGroup,
   UserAuthGroup,
 } from 'src/common/enum/user-auth-group.enum';
@@ -115,7 +116,7 @@ export class UsersService {
     try {
       let user = this.classMapper.map(createUserDto, CreateUserDto, User, {
         extraArgs: () => ({
-          userAuthGroup: UserAuthGroup.PUBLIC_VERIFIED,
+          userAuthGroup: GenericUserAuthGroup.PUBLIC_VERIFIED,
           userName: currentUser.userName,
           directory: currentUser.orbcUserDirectory,
           userGUID: currentUser.userGUID,
@@ -260,7 +261,7 @@ export class UsersService {
       // IDIR(PPC Clerk) or CVAdmin
       if (
         (currentUser.orbcUserAuthGroup ===
-          UserAuthGroup.COMPANY_ADMINISTRATOR ||
+          ClientUserAuthGroup.COMPANY_ADMINISTRATOR ||
           currentUser.identity_provider === IDP.IDIR) &&
         companyUser.userAuthGroup !== updateUserDto.userAuthGroup
       ) {
