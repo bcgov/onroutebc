@@ -173,18 +173,14 @@ export class ApplicationController {
           currentUser,
         );
 
-    // Verifies user authorization to access the application data:
-    // Throws a ForbiddenException if the user does not have the correct authorization group or if the companyId from
-    // the application does not match the user's companyId. Additionally, checks if a company administrator is trying
-    // to access an application not originated online, which is not allowed.
+    // Validates the current user's permission to access the application or amendment
+    // by comparing user's authentication group, company ID, and the application's origin
     if (
-      (!doesUserHaveAuthGroup(
+      !doesUserHaveAuthGroup(
         currentUser.orbcUserAuthGroup,
         IDIR_USER_AUTH_GROUP_LIST,
       ) &&
-        retApplicationDto?.companyId != currentUser.companyId) ||
-      (currentUser.orbcUserAuthGroup ===
-        ClientUserAuthGroup.COMPANY_ADMINISTRATOR &&
+      (retApplicationDto?.companyId != currentUser.companyId ||
         retApplicationDto.permitApplicationOrigin !==
           PermitApplicationOrigin.ONLINE)
     ) {
@@ -193,6 +189,9 @@ export class ApplicationController {
       );
     }
 
+    if (!retApplicationDto) {
+      throw new DataNotFoundException();
+    }
     // Returns the found application or amendment DTO
     return retApplicationDto;
   }
