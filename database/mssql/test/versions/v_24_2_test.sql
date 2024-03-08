@@ -1,4 +1,4 @@
--- Test that the auth groups have been inserted correctly
+-- Test that the template file names have been updated correctly
 SET NOCOUNT ON
 
 SELECT COUNT(*) FROM $(DB_NAME).[dops].[ORBC_DOCUMENT] 
