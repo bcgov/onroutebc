@@ -22,6 +22,9 @@ import "./IDIRCompanySearchResults.scss";
 import { CustomNavLink } from "../../../../common/components/links/CustomNavLink";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import { Box, CardMedia, Stack, Typography } from "@mui/material";
+import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
+import { useNavigate } from "react-router-dom";
+import { VerifiedClient } from "../../../../common/authentication/types";
 
 /*
  *
@@ -45,21 +48,59 @@ export const IDIRCompanySearchResults = memo(
       searchByFilter,
       searchEntity,
     } = searchParams;
-    const { setCompanyId, setCompanyLegalName, setOnRouteBCClientNumber } =
-      useContext(OnRouteBCContext);
-
+    const {
+      setCompanyId,
+      setCompanyLegalName,
+      setOnRouteBCClientNumber,
+      setMigratedClient,
+    } = useContext(OnRouteBCContext);
+    const navigate = useNavigate();
     /**
      * On click event handler for the company link.
      * Sets the company context and directs the user to the company page.
      *
      * @param selectedCompany The company that the staff user clicked on.
      */
-    const onClickCompany = (selectedCompany: CompanyProfile) => {
-      const { companyId, legalName, clientNumber } = selectedCompany;
-      setCompanyId?.(() => companyId);
-      setCompanyLegalName?.(() => legalName);
-      setOnRouteBCClientNumber?.(() => clientNumber);
-      sessionStorage.setItem("onRouteBC.user.companyId", companyId.toString());
+    const onClickCompany = (
+      selectedCompany: CompanyProfile | VerifiedClient,
+    ) => {
+      const { companyId, legalName, clientNumber, primaryContact } =
+        selectedCompany;
+      if (primaryContact?.firstName) {
+        setCompanyId?.(() => companyId);
+        setCompanyLegalName?.(() => legalName);
+        setOnRouteBCClientNumber?.(() => clientNumber);
+        sessionStorage.setItem(
+          "onRouteBC.user.companyId",
+          companyId.toString(),
+        );
+        navigate(routes.APPLICATIONS_ROUTES.BASE);
+      } else {
+        setMigratedClient?.(() => {
+          const {
+            migratedClientHash,
+            mailingAddress,
+            email,
+            fax,
+            alternateName,
+            phone,
+            extension,
+          } = selectedCompany as VerifiedClient;
+          return {
+            clientNumber,
+            companyId,
+            legalName,
+            migratedClientHash,
+            mailingAddress,
+            email,
+            phone,
+            extension,
+            fax,
+            alternateName,
+          };
+        });
+        navigate(routes.IDIR_ROUTES.CREATE_COMPANY);
+      }
     };
     const [pagination, setPagination] = useState<MRT_PaginationState>({
       pageIndex: 0,
@@ -104,12 +145,11 @@ export const IDIRCompanySearchResults = memo(
           sortingFn: "alphanumeric",
           Cell: (props: { row: any; cell: any }) => {
             return (
-              <CustomNavLink
+              <CustomActionLink
                 onClick={() => onClickCompany(props.row.original)}
-                to={`/${props.row.original.companyId}/applications`}
               >
                 {props.row.original.legalName}
-              </CustomNavLink>
+              </CustomActionLink>
             );
           },
         },
