@@ -663,8 +663,8 @@ export class PermitService {
       let dopsRequestData: DopsGeneratedDocument = {
         templateName:
           voidPermitDto.status == ApplicationStatus.VOIDED
-            ? TemplateName.PERMIT_TROS_VOID
-            : TemplateName.PERMIT_TROS_REVOKED,
+            ? TemplateName.PERMIT_VOID
+            : TemplateName.PERMIT_REVOKED,
         generatedDocumentFileName: permitDataForTemplate.permitNumber,
         templateData: permitDataForTemplate,
         documentsToMerge: permitDataForTemplate.permitData.commodities.map(
