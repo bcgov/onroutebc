@@ -17,7 +17,7 @@ export type CompanyMetadata = {
 /**
  * Partial Information about a company.
  */
-export type ClientInformation = {
+export type PartialCompanyProfile = {
   migratedClientHash?: string;
   mailingAddress: {
     addressLine1: string;
@@ -29,15 +29,15 @@ export type ClientInformation = {
   };
   email: string;
   phone: string;
-  fax: string;
-  extension: string;
-  primaryContact: Contact;
+  fax?: Nullable<string>;
+  extension?: Nullable<string>;
+  primaryContact?: Nullable<Contact>;
 };
 
 /**
  * The information a verified client will have.
  */
-export type VerifiedClient = ClientInformation & CompanyMetadata;
+export type VerifiedClient = PartialCompanyProfile & CompanyMetadata;
 
 /**
  * User Context object type
