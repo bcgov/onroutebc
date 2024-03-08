@@ -18,6 +18,7 @@ import {
 import { CompanyInformationWizardForm } from "../../wizard/subcomponents/CompanyInformationWizardForm";
 import { OnRouteBCProfileCreated } from "../../wizard/subcomponents/OnRouteBCProfileCreated";
 import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
+import { getDefaultRequiredVal } from "../../../common/helpers/util";
 
 /**
  * The form for a staff user to create a company.
@@ -26,25 +27,50 @@ export const IDIRCreateCompany = React.memo(() => {
   const navigate = useNavigate();
 
   const [clientNumber, setClientNumber] = useState<Nullable<string>>(null);
-  const { setCompanyId, setOnRouteBCClientNumber, setCompanyLegalName } =
-    useContext(OnRouteBCContext);
+  const {
+    migratedClient,
+    setCompanyId,
+    setOnRouteBCClientNumber,
+    setCompanyLegalName,
+  } = useContext(OnRouteBCContext);
 
   const companyAndUserFormMethods = useForm<CreateCompanyRequest>({
     defaultValues: {
-      legalName: "",
-      alternateName: "",
+      legalName: getDefaultRequiredVal("", migratedClient?.legalName),
+      alternateName: getDefaultRequiredVal("", migratedClient?.alternateName),
+      clientNumber: getDefaultRequiredVal("", migratedClient?.clientNumber),
+      migratedClientHash: getDefaultRequiredVal(
+        "",
+        migratedClient?.migratedClientHash,
+      ),
       mailingAddress: {
-        addressLine1: "",
-        addressLine2: "",
-        provinceCode: "",
-        countryCode: "",
-        city: "",
-        postalCode: "",
+        addressLine1: getDefaultRequiredVal(
+          "",
+          migratedClient?.mailingAddress?.addressLine1,
+        ),
+        addressLine2: getDefaultRequiredVal(
+          "",
+          migratedClient?.mailingAddress?.addressLine2,
+        ),
+        provinceCode: getDefaultRequiredVal(
+          "",
+          migratedClient?.mailingAddress?.provinceCode,
+        ),
+        countryCode: getDefaultRequiredVal(
+          "",
+          migratedClient?.mailingAddress?.countryCode,
+        ),
+        city: getDefaultRequiredVal("", migratedClient?.mailingAddress?.city),
+        postalCode: getDefaultRequiredVal(
+          "",
+          migratedClient?.mailingAddress?.postalCode,
+        ),
       },
-      email: "",
-      phone: "",
-      extension: "",
-      fax: "",
+      email: getDefaultRequiredVal("", migratedClient?.email),
+      phone: getDefaultRequiredVal("", migratedClient?.phone),
+      extension: getDefaultRequiredVal("", migratedClient?.extension),
+      fax: getDefaultRequiredVal("", migratedClient?.fax),
+      // A migrated but unclaimed company will not have primaryContact.
       primaryContact: {
         firstName: "",
         lastName: "",

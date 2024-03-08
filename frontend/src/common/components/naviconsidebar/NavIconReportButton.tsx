@@ -13,17 +13,13 @@ export const NavIconReportButton = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const isActive = pathname === IDIR_ROUTES.REPORTS;
-  const { setCompanyId, setCompanyLegalName, setOnRouteBCClientNumber } =
-    useContext(OnRouteBCContext);
+  const { clearCompanyContext } = useContext(OnRouteBCContext);
 
   return (
     <NavButton
       type={NAV_BUTTON_TYPES.REPORT}
       onClick={() => {
-        setCompanyId?.(() => undefined);
-        setCompanyLegalName?.(() => undefined);
-        setOnRouteBCClientNumber?.(() => undefined);
-        sessionStorage.removeItem("onRouteBC.user.companyId");
+        clearCompanyContext?.();
         navigate(IDIR_ROUTES.REPORTS);
       }}
       isActive={isActive}
