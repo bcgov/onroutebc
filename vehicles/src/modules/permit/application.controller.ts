@@ -189,7 +189,7 @@ export class ApplicationController {
           PermitApplicationOrigin.ONLINE)
     ) {
       throw new ForbiddenException(
-        `User does not have sufficient privleges to view the application ${permitId}.`,
+        `User does not have sufficient privileges to view the application ${permitId}.`,
       );
     }
 
