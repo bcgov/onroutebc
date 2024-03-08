@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
   MRT_ColumnDef,
@@ -67,7 +66,6 @@ export const IDIRCompanySearchResults = memo(
     ) => {
       const { companyId, legalName, clientNumber, primaryContact } =
         selectedCompany;
-      console.log("primaryContact::", primaryContact);
       if (primaryContact?.firstName) {
         setCompanyId?.(() => companyId);
         setCompanyLegalName?.(() => legalName);
@@ -78,8 +76,6 @@ export const IDIRCompanySearchResults = memo(
         );
         navigate(routes.APPLICATIONS_ROUTES.BASE);
       } else {
-        console.log("coming here");
-
         setMigratedClient?.(() => {
           const {
             migratedClientHash,
