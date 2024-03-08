@@ -5,6 +5,7 @@ import { Directory } from '../../../../src/common/enum/directory.enum';
 import { IDP } from '../../../../src/common/enum/idp.enum';
 import {
   ClientUserAuthGroup,
+  GenericUserAuthGroup,
   IDIRUserAuthGroup,
 } from '../../../../src/common/enum/user-auth-group.enum';
 import { UserStatus } from '../../../../src/common/enum/user-status.enum';
@@ -26,6 +27,8 @@ export const COUNTRY_SORT_ORDER_US = '2';
 export const PROVINCE_CODE_WA = 'WA';
 export const PROVINCE_NAME_WA = 'Washington';
 export const PROVINCE_ID_US_WA = 'US-WA';
+
+export const USER_AUTH_GROUP_PUBLIC = GenericUserAuthGroup.PUBLIC_VERIFIED;
 
 //Red Company
 export const RED_COMPANY_ID = 1;
