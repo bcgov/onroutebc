@@ -10,7 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, DataSource, Repository } from 'typeorm';
 import {
   ClientUserAuthGroup,
-  UserAuthGroup,
+  GenericUserAuthGroup,
 } from '../../../common/enum/user-auth-group.enum';
 import { ReadUserDto } from '../users/dto/response/read-user.dto';
 import { CreateCompanyDto } from './dto/request/create-company.dto';
@@ -198,7 +198,7 @@ export class CompanyService {
           User,
           {
             extraArgs: () => ({
-              userAuthGroup: UserAuthGroup.PUBLIC_VERIFIED,
+              userAuthGroup: GenericUserAuthGroup.PUBLIC_VERIFIED,
               userName: currentUser.userName,
               directory: currentUser.orbcUserDirectory,
               userGUID: currentUser.userGUID,

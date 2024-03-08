@@ -13,10 +13,7 @@ import {
   readRedCompanyPendingUserDtoMock,
   updateRedCompanyPendingUserDtoMock,
 } from '../../util/mocks/data/pending-user.mock';
-import {
-  ClientUserAuthGroup,
-  UserAuthGroup,
-} from '../../../src/common/enum/user-auth-group.enum';
+import { ClientUserAuthGroup } from '../../../src/common/enum/user-auth-group.enum';
 
 const COMPANY_ID_99 = 99;
 let pendingUserService: DeepMocked<PendingUsersService>;
@@ -133,7 +130,7 @@ describe('PendingUsersController', () => {
       expect(typeof retPendingUsers).toBe('object');
       expect(retPendingUsers).toEqual({
         ...readRedCompanyPendingUserDtoMock,
-        userAuthGroup: UserAuthGroup.COMPANY_ADMINISTRATOR,
+        userAuthGroup: ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
       });
     });
     it('should throw a Data Not Found Exception when the pending user is not found', async () => {
