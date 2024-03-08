@@ -36,9 +36,10 @@ import { GetCompanyUserByUserGUIDPathParamsDto } from './dto/request/pathParam/g
 import { DeleteUsersDto } from './dto/request/delete-users.dto';
 import { DeleteDto } from '../../common/dto/response/delete.dto';
 import {
-  UserAuthGroup,
-  idirUserAuthGroupList,
+  ClientUserAuthGroup,
+  IDIR_USER_AUTH_GROUP_LIST,
 } from '../../../common/enum/user-auth-group.enum';
+import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 
 @ApiTags('Company and User Management - Company User')
 @ApiBadRequestResponse({
@@ -207,9 +208,11 @@ export class CompanyUsersController {
   ): Promise<DeleteDto> {
     const currentUser = request.user as IUserJWT;
     if (
-      currentUser.orbcUserAuthGroup !== UserAuthGroup.COMPANY_ADMINISTRATOR &&
-      !idirUserAuthGroupList.includes(
-        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      currentUser.orbcUserAuthGroup !==
+        ClientUserAuthGroup.COMPANY_ADMINISTRATOR &&
+      !doesUserHaveAuthGroup(
+        currentUser.orbcUserAuthGroup,
+        IDIR_USER_AUTH_GROUP_LIST,
       )
     ) {
       throw new ForbiddenException();

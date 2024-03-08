@@ -4,15 +4,14 @@ import {
   CVCLIENT_ACTIVE_APPLICATION_STATUS,
   IDIR_ACTIVE_APPLICATION_STATUS,
 } from '../enum/application-status.enum';
-import {
-  UserAuthGroup,
-  idirUserAuthGroupList,
-} from '../enum/user-auth-group.enum';
+import { IDIR_USER_AUTH_GROUP_LIST } from '../enum/user-auth-group.enum';
+import { doesUserHaveAuthGroup } from './auth.helper';
 
 export const getActiveApplicationStatus = (currentUser: IUserJWT) => {
   const applicationStatus: Readonly<ApplicationStatus[]> =
-    idirUserAuthGroupList.includes(
-      currentUser.orbcUserAuthGroup as UserAuthGroup,
+    doesUserHaveAuthGroup(
+      currentUser.orbcUserAuthGroup,
+      IDIR_USER_AUTH_GROUP_LIST,
     )
       ? IDIR_ACTIVE_APPLICATION_STATUS
       : CVCLIENT_ACTIVE_APPLICATION_STATUS;

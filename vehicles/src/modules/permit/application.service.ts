@@ -63,10 +63,11 @@ import { PageMetaDto } from 'src/common/dto/paginate/page-meta';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import { getActiveApplicationStatus } from 'src/common/helper/application.status.helper';
 import {
-  UserAuthGroup,
-  idirUserAuthGroupList,
+  ClientUserAuthGroup,
+  IDIR_USER_AUTH_GROUP_LIST,
 } from 'src/common/enum/user-auth-group.enum';
 import { DeleteDto } from '../common/dto/response/delete.dto';
+import { doesUserHaveAuthGroup } from '../../common/helper/auth.helper';
 
 @Injectable()
 export class ApplicationService {
@@ -1004,12 +1005,15 @@ export class ApplicationService {
       .andWhere('permit.permitNumber IS NULL');
 
     // Filter applications by user GUID if the current user is a PERMIT_APPLICANT or by ONLINE origin if the user is a COMPANY_ADMINISTRATOR
-    if (UserAuthGroup.PERMIT_APPLICANT === currentUser.orbcUserAuthGroup) {
+    if (
+      ClientUserAuthGroup.PERMIT_APPLICANT === currentUser.orbcUserAuthGroup
+    ) {
       applicationsQB.andWhere('applicationOwner.userGUID = :userGuid', {
         userGuid: currentUser.userGUID,
       });
     } else if (
-      UserAuthGroup.COMPANY_ADMINISTRATOR === currentUser.orbcUserAuthGroup
+      ClientUserAuthGroup.COMPANY_ADMINISTRATOR ===
+      currentUser.orbcUserAuthGroup
     ) {
       applicationsQB.andWhere(
         'permit.permitApplicationOrigin = :permitApplicationOrigin',
@@ -1029,8 +1033,9 @@ export class ApplicationService {
           applicationIds.includes(application.permitId) &&
           ({
             ...application,
-            permitStatus: idirUserAuthGroupList.includes(
-              currentUser.orbcUserAuthGroup as UserAuthGroup,
+            permitStatus: doesUserHaveAuthGroup(
+              currentUser.orbcUserAuthGroup,
+              IDIR_USER_AUTH_GROUP_LIST,
             )
               ? ApplicationStatus.DELETED
               : ApplicationStatus.CANCELLED,
