@@ -5,6 +5,7 @@ export enum ClientUserAuthGroup {
 
 export enum IDIRUserAuthGroup {
   PPC_CLERK = 'PPCCLERK',
+  PPC_SUPERVISOR = 'CTPO',
   SYSTEM_ADMINISTRATOR = 'SYSADMIN',
   ENFORCEMENT_OFFICER = 'EOFFICER',
   HQ_ADMINISTRATOR = 'HQADMIN',
