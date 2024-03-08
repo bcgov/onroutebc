@@ -37,9 +37,10 @@ import { TPS_MIGRATED_USER } from '../../../common/constants/api.constant';
 import { DeleteDto } from '../../common/dto/response/delete.dto';
 import { DeletePendingUsersDto } from './dto/request/delete-pending-users.dto';
 import {
-  UserAuthGroup,
-  idirUserAuthGroupList,
+  ClientUserAuthGroup,
+  IDIR_USER_AUTH_GROUP_LIST,
 } from '../../../common/enum/user-auth-group.enum';
+import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 
 @ApiTags('Company and User Management - Pending User')
 @ApiBadRequestResponse({
@@ -226,9 +227,11 @@ export class PendingUsersController {
   ): Promise<DeleteDto> {
     const currentUser = request.user as IUserJWT;
     if (
-      currentUser.orbcUserAuthGroup !== UserAuthGroup.COMPANY_ADMINISTRATOR &&
-      !idirUserAuthGroupList.includes(
-        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      currentUser.orbcUserAuthGroup !==
+        ClientUserAuthGroup.COMPANY_ADMINISTRATOR &&
+      !doesUserHaveAuthGroup(
+        currentUser.orbcUserAuthGroup,
+        IDIR_USER_AUTH_GROUP_LIST,
       )
     ) {
       throw new ForbiddenException();

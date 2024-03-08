@@ -12,9 +12,8 @@ import { Contact } from '../../../common/entities/contact.entity';
 import { CompanyUser } from './company-user.entity';
 import { Directory } from '../../../../common/enum/directory.enum';
 import {
-  ClientUserAuthGroup,
+  GenericUserAuthGroup,
   IDIRUserAuthGroup,
-  UserAuthGroup,
 } from '../../../../common/enum/user-auth-group.enum';
 import { UserStatus } from '../../../../common/enum/user-status.enum';
 
@@ -49,18 +48,18 @@ export class User extends Base {
   directory: Directory;
 
   /**
-   * A property that represents the user's auth group in ORBC. It can be of types {@link UserAuthGroup},
-   * {@link ClientUserAuthGroup}, or {@link IDIRUserAuthGroup}, which are all enum types.
+   * A property that represents the user's auth group in ORBC. It can be of types {@link GenericUserAuthGroup},
+   * or {@link IDIRUserAuthGroup}, which are all enum types.
    */
   @AutoMap()
   @Column({
     type: 'simple-enum',
-    enum: [UserAuthGroup, ClientUserAuthGroup, IDIRUserAuthGroup],
+    enum: [GenericUserAuthGroup, IDIRUserAuthGroup],
     length: 10,
     name: 'USER_AUTH_GROUP_TYPE',
     nullable: true,
   })
-  userAuthGroup: UserAuthGroup | ClientUserAuthGroup | IDIRUserAuthGroup;
+  userAuthGroup: GenericUserAuthGroup | IDIRUserAuthGroup;
 
   /**
    * The status of the user in the system. It is an enum of UserStatus type and

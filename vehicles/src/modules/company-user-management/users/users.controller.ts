@@ -32,10 +32,8 @@ import { ReadUserDto } from './dto/response/read-user.dto';
 import { IDP } from '../../../common/enum/idp.enum';
 import { GetStaffUserQueryParamsDto } from './dto/request/queryParam/getStaffUser.query-params.dto';
 import { GetUserRolesQueryParamsDto } from './dto/request/queryParam/getUserRoles.query-params.dto';
-import {
-  idirUserAuthGroupList,
-  UserAuthGroup,
-} from '../../../common/enum/user-auth-group.enum';
+import { IDIR_USER_AUTH_GROUP_LIST } from '../../../common/enum/user-auth-group.enum';
+import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 
 @ApiTags('Company and User Management - User')
 @ApiBadRequestResponse({
@@ -146,8 +144,9 @@ export class UsersController {
   ): Promise<ReadUserDto[]> {
     const currentUser = request.user as IUserJWT;
     if (
-      !idirUserAuthGroupList.includes(
-        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      !doesUserHaveAuthGroup(
+        currentUser.orbcUserAuthGroup,
+        IDIR_USER_AUTH_GROUP_LIST,
       )
     ) {
       throw new ForbiddenException(

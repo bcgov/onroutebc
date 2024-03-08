@@ -36,14 +36,15 @@ import { Role } from 'src/common/enum/roles.enum';
 import { IssuePermitDto } from './dto/request/issue-permit.dto';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import {
-  UserAuthGroup,
-  idirUserAuthGroupList,
+  ClientUserAuthGroup,
+  IDIR_USER_AUTH_GROUP_LIST,
 } from 'src/common/enum/user-auth-group.enum';
 import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
 import { GetApplicationQueryParamsDto } from './dto/request/queryParam/getApplication.query-params.dto';
 import { DeleteApplicationDto } from './dto/request/delete-application.dto';
 import { DeleteDto } from '../common/dto/response/delete.dto';
 import { PermitApplicationOrigin } from '../../common/enum/permit-application-origin.enum';
+import { doesUserHaveAuthGroup } from '../../common/helper/auth.helper';
 
 @ApiBearerAuth()
 @ApiTags('Permit Application')
@@ -109,18 +110,19 @@ export class ApplicationController {
   ): Promise<PaginationDto<ReadApplicationDto>> {
     const currentUser = request.user as IUserJWT;
     if (
-      !idirUserAuthGroupList.includes(
-        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      !doesUserHaveAuthGroup(
+        currentUser.orbcUserAuthGroup,
+        IDIR_USER_AUTH_GROUP_LIST,
       ) &&
       !getApplicationQueryParamsDto.companyId
     ) {
       throw new BadRequestException(
-        `Company Id is required for roles except ${idirUserAuthGroupList.join(', ')}.`,
+        `Company Id is required for roles except ${IDIR_USER_AUTH_GROUP_LIST.join(', ')}.`,
       );
     }
 
     const userGuid =
-      UserAuthGroup.PERMIT_APPLICANT === currentUser.orbcUserAuthGroup
+      ClientUserAuthGroup.PERMIT_APPLICANT === currentUser.orbcUserAuthGroup
         ? currentUser.userGUID
         : null;
 
@@ -151,7 +153,6 @@ export class ApplicationController {
     type: ReadApplicationDto,
     isArray: true,
   })
-  @ApiQuery({ name: 'companyId', required: false })
   @ApiQuery({ name: 'amendment', required: false })
   @Roles(Role.READ_PERMIT)
   @Get(':permitId')
@@ -160,23 +161,38 @@ export class ApplicationController {
     @Param('permitId') permitId: string,
     @Query('amendment') amendment?: boolean,
   ): Promise<ReadApplicationDto> {
+    // Extracts the user object from the request, casting it to the expected IUserJWT type
     const currentUser = request.user as IUserJWT;
 
+    // Based on the amendment query parameter, selects the appropriate method to retrieve
+    // either the application or its current amendment, passing the permitId and current user for authorization and filtering
     const retApplicationDto = !amendment
       ? await this.applicationService.findApplication(permitId, currentUser)
       : await this.applicationService.findCurrentAmendmentApplication(
           permitId,
           currentUser,
         );
+
+    // Validates the current user's permission to access the application or amendment
+    // by comparing user's authentication group, company ID, and the application's origin
     if (
-      currentUser.orbcUserAuthGroup === UserAuthGroup.COMPANY_ADMINISTRATOR &&
-      retApplicationDto.permitApplicationOrigin !==
-        PermitApplicationOrigin.ONLINE
+      !doesUserHaveAuthGroup(
+        currentUser.orbcUserAuthGroup,
+        IDIR_USER_AUTH_GROUP_LIST,
+      ) &&
+      (retApplicationDto?.companyId != currentUser.companyId ||
+        retApplicationDto.permitApplicationOrigin !==
+          PermitApplicationOrigin.ONLINE)
     ) {
       throw new ForbiddenException(
-        'Applications created offline by staff users cannot be viewed by the company administrator.',
+        `User does not have sufficient privileges to view the application ${permitId}.`,
       );
     }
+
+    if (!retApplicationDto) {
+      throw new DataNotFoundException();
+    }
+    // Returns the found application or amendment DTO
     return retApplicationDto;
   }
 
@@ -231,13 +247,14 @@ export class ApplicationController {
     const currentUser = request.user as IUserJWT;
 
     if (
-      !idirUserAuthGroupList.includes(
-        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      !doesUserHaveAuthGroup(
+        currentUser.orbcUserAuthGroup,
+        IDIR_USER_AUTH_GROUP_LIST,
       ) &&
       !issuePermitDto.companyId
     ) {
       throw new BadRequestException(
-        `Company Id is required for roles except ${idirUserAuthGroupList.join(', ')}.`,
+        `Company Id is required for roles except ${IDIR_USER_AUTH_GROUP_LIST.join(', ')}.`,
       );
     }
 
