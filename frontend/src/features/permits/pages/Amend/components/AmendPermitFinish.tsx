@@ -16,20 +16,20 @@ import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 
 export const AmendPermitFinish = () => {
   const navigate = useNavigate();
-  const { permit, permitFormData, permitHistory, getLinks, afterFinishAmend } =
+  const { permit, amendmentApplication, permitHistory, getLinks, afterFinishAmend } =
     useContext(AmendPermitContext);
 
   const validTransactionHistory = permitHistory.filter((history) =>
     isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
   );
 
-  const permitId = getDefaultRequiredVal("", permitFormData?.permitId);
+  const permitId = getDefaultRequiredVal("", amendmentApplication?.permitId);
 
   const amountToRefund =
     -1 *
     calculateAmountToRefund(
       validTransactionHistory,
-      getDefaultRequiredVal(0, permitFormData?.permitData?.permitDuration),
+      getDefaultRequiredVal(0, amendmentApplication?.permitData?.permitDuration),
     );
 
   const { mutation: startTransactionMutation, transaction } =

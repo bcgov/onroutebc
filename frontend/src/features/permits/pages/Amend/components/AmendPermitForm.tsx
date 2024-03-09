@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import { FieldValues, FormProvider } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { Dayjs } from "dayjs";
 
 import "./AmendPermitForm.scss";
 import { PERMIT_DURATION_OPTIONS } from "../../../constants/constants";
@@ -20,7 +19,8 @@ import { ERROR_ROUTES } from "../../../../../routes/constants";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import OnRouteBCContext from "../../../../../common/authentication/OnRouteBCContext";
 import { PermitVehicleDetails } from "../../../types/PermitVehicleDetails";
-import { AmendPermitFormData, getDefaultFormDataFromApplication } from "../types/AmendPermitFormData";
+import { AmendPermitFormData } from "../types/AmendPermitFormData";
+import { getDatetimes } from "./helpers/getDatetimes";
 import {
   dayjsToUtcStr,
   nowUtc,
@@ -31,18 +31,12 @@ import {
   useModifyAmendmentApplication,
 } from "../../../hooks/hooks";
 
-export const AmendPermitForm = ({
-  createdDateTime,
-  updatedDateTime,
-}: {
-  createdDateTime?: Nullable<Dayjs>;
-  updatedDateTime?: Nullable<Dayjs>;
-}) => {
+export const AmendPermitForm = () => {
   const {
     permit,
-    permitFormData,
+    amendmentApplication,
     permitHistory,
-    setPermitFormData,
+    setAmendmentApplication,
     currentStepIndex,
     next,
     goHome,
@@ -62,8 +56,11 @@ export const AmendPermitForm = ({
 
   const { formData, formMethods } = useAmendPermitForm(
     currentStepIndex === 0,
-    permitFormData,
+    permit,
+    amendmentApplication,
   );
+
+  const { createdDateTime, updatedDateTime } = getDatetimes(amendmentApplication, permit);
 
   //The name of this feature that is used for id's, keys, and associating form components
   const FEATURE = "amend-permit";
@@ -119,9 +116,7 @@ export const AmendPermitForm = ({
       alertType: "success",
     });
 
-    setPermitFormData(
-      getDefaultFormDataFromApplication(responseData),
-    );
+    setAmendmentApplication(responseData);
   };
 
   const onSaveFailure = () => {

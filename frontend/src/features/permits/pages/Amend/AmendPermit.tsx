@@ -1,7 +1,6 @@
 import { useState, useEffect, useContext, useMemo } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { Box } from "@mui/material";
-import dayjs from "dayjs";
 
 import { Permit } from "../../types/permit";
 import { PERMIT_STATUSES, isPermitInactive } from "../../types/PermitStatus";
@@ -16,12 +15,9 @@ import { AmendPermitFinish } from "./components/AmendPermitFinish";
 import { AmendPermitForm } from "./components/AmendPermitForm";
 import { ERROR_ROUTES, IDIR_ROUTES } from "../../../../routes/constants";
 import { hasPermitExpired } from "../../helpers/permitState";
-import {
-  applyWhenNotNullable,
-  getDefaultNullableVal,
-  getDefaultRequiredVal,
-} from "../../../../common/helpers/util";
-
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { Application } from "../../types/application";
+import { Nullable } from "../../../../common/types/common";
 import {
   useAmendmentApplicationQuery,
   usePermitDetailsQuery,
@@ -29,16 +25,9 @@ import {
 } from "../../hooks/hooks";
 
 import {
-  AmendPermitFormData,
-  getDefaultFormDataFromApplication,
-  getDefaultFormDataFromPermit,
-} from "./types/AmendPermitFormData";
-
-import {
   SEARCH_BY_FILTERS,
   SEARCH_ENTITIES,
 } from "../../../idir/search/types/types";
-import { utcToLocalDayjs } from "../../../../common/helpers/formatDate";
 
 export const AMEND_PERMIT_STEPS = {
   Amend: "Amend",
@@ -99,75 +88,29 @@ export const AmendPermit = () => {
   const permitHistoryQuery = usePermitHistoryQuery(originalPermitId);
   const permitHistory = getDefaultRequiredVal([], permitHistoryQuery.data);
 
-  // Get latest amendment application, if any
-  const { data: amendmentApplication } =
+  // Get latest amendment application for the permit, if any
+  const { data: latestAmendmentApplication } =
     useAmendmentApplicationQuery(originalPermitId);
 
-  // Default form data values to populate the amend form with
-  const permitFormDefaultValues = () => {
-    if (amendmentApplication) {
-      return getDefaultFormDataFromApplication(amendmentApplication);
-    }
-
-    // Permit doesn't have existing amendment application
-    // Populate form data with permit, with initial empty comment
-    return getDefaultFormDataFromPermit(
-      applyWhenNotNullable(
-        (p) => ({
-          ...p,
-          comment: "",
-        }),
-        permit,
-      ),
+  const isLoadingState = () => {
+    return (
+      typeof permit === "undefined" ||
+      typeof latestAmendmentApplication === "undefined"
     );
   };
 
   // Permit form data, populated whenever permit is fetched
-  const [permitFormData, setPermitFormData] = useState<AmendPermitFormData>(
-    permitFormDefaultValues(),
-  );
+  const [amendmentApplication, setAmendmentApplication] = useState<
+    Nullable<Application>
+  >(latestAmendmentApplication);
 
   useEffect(() => {
-    setPermitFormData(permitFormDefaultValues());
-  }, [amendmentApplication, permit]);
-
-  // Try to get createdDateTime from amendment application first
-  // If amendment application doesn't exist, get it from the initial permit being amended
-  const createdDateTime = getDefaultNullableVal(
-    applyWhenNotNullable(
-      (date) => dayjs(date),
-      amendmentApplication?.createdDateTime,
-    ),
-    applyWhenNotNullable(
-      (datetimeStr: string) => utcToLocalDayjs(datetimeStr),
-      permit?.createdDateTime,
-    ),
-  );
-  
-  // Try to get updatedDateTime from amendment application first
-  // If amendment application doesn't exist, get it from the initial permit being amended
-  const updatedDateTime = getDefaultNullableVal(
-    applyWhenNotNullable(
-      (date) => dayjs(date),
-      amendmentApplication?.updatedDateTime,
-    ),
-    applyWhenNotNullable(
-      (datetimeStr: string) => utcToLocalDayjs(datetimeStr),
-      permit?.updatedDateTime,
-    ),
-  );
+    setAmendmentApplication(latestAmendmentApplication);
+  }, [latestAmendmentApplication]);
 
   const { currentStepIndex, step, back, next, goTo } = useMultiStepForm([
-    <AmendPermitForm
-      key={AMEND_PERMIT_STEPS.Amend}
-      createdDateTime={createdDateTime}
-      updatedDateTime={updatedDateTime}
-    />,
-    <AmendPermitReview
-      key={AMEND_PERMIT_STEPS.Review}
-      createdDateTime={createdDateTime}
-      updatedDateTime={updatedDateTime}
-    />,
+    <AmendPermitForm key={AMEND_PERMIT_STEPS.Amend} />,
+    <AmendPermitReview key={AMEND_PERMIT_STEPS.Review} />,
     <AmendPermitFinish key={AMEND_PERMIT_STEPS.Finish} />,
   ]);
 
@@ -212,19 +155,12 @@ export const AmendPermit = () => {
     });
   };
 
-  const isLoadingState = () => {
-    return (
-      typeof permit === "undefined" ||
-      typeof amendmentApplication === "undefined"
-    );
-  };
-
   const contextData = useMemo(
     () => ({
       permit,
-      permitFormData,
+      amendmentApplication,
       permitHistory,
-      setPermitFormData,
+      setAmendmentApplication,
       next,
       back,
       goTo,
@@ -235,9 +171,9 @@ export const AmendPermit = () => {
     }),
     [
       permit,
-      permitFormData,
+      amendmentApplication,
       permitHistory,
-      setPermitFormData,
+      setAmendmentApplication,
       next,
       back,
       goTo,
