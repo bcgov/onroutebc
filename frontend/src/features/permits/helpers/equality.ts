@@ -1,15 +1,14 @@
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
+import { Nullable } from "../../../common/types/common";
+import { PermitMailingAddress } from "../types/PermitMailingAddress";
+import { PermitContactDetails } from "../types/PermitContactDetails";
+import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
+import { PermitData } from "../types/PermitData";
+import { PermitCommodity } from "../types/PermitCommodity";
 import {
   DATE_FORMATS,
   dayjsToLocalStr,
 } from "../../../common/helpers/formatDate";
-import {
-  PermitData,
-  Commodities,
-  VehicleDetails,
-  ContactDetails as ContactDetailsType,
-  MailingAddress,
-} from "../types/application";
 
 /**
  * Compare whether or not two mailing addresses are equal.
@@ -18,8 +17,8 @@ import {
  * @returns true when mailing addresses are equivalent, false otherwise
  */
 const areMailingAddressesEqual = (
-  mailingAddress1?: MailingAddress,
-  mailingAddress2?: MailingAddress,
+  mailingAddress1?: PermitMailingAddress,
+  mailingAddress2?: PermitMailingAddress,
 ) => {
   if (!mailingAddress1 && !mailingAddress2) return true; // considered equal when both are undefined
   if (!mailingAddress1 || !mailingAddress2) return false; // considered not equal when only one is undefined
@@ -42,8 +41,8 @@ const areMailingAddressesEqual = (
  * @returns true when contact details are equivalent, false otherwise
  */
 const areContactDetailsEqual = (
-  contactDetails1?: ContactDetailsType,
-  contactDetails2?: ContactDetailsType,
+  contactDetails1?: Nullable<PermitContactDetails>,
+  contactDetails2?: Nullable<PermitContactDetails>,
 ) => {
   if (!contactDetails1 && !contactDetails2) return true; // considered equal when both are undefined
   if (!contactDetails1 || !contactDetails2) return false; // considered not equal when only one is undefined
@@ -51,7 +50,7 @@ const areContactDetailsEqual = (
   // Equal when all key-value pairs of both contacts details are equal
   return Object.entries(contactDetails1)
     .map(([key, val]) => {
-      const val2 = contactDetails2[key as keyof ContactDetailsType]; // get value from second contact details for this key
+      const val2 = contactDetails2[key as keyof PermitContactDetails]; // get value from second contact details for this key
       return getDefaultRequiredVal("", val) === getDefaultRequiredVal("", val2);
     })
     .reduce((prevIsEqual, currIsEqual) => prevIsEqual && currIsEqual, true);
@@ -64,8 +63,8 @@ const areContactDetailsEqual = (
  * @returns true when commodities lists are equivalent, false otherwise
  */
 export const areCommoditiesEqual = (
-  list1: Commodities[],
-  list2: Commodities[],
+  list1: PermitCommodity[],
+  list2: PermitCommodity[],
 ) => {
   // Instead of comparing arrays directly (as items can be in different orders), transform them into maps and compare key-value pairs
   const commodityMap1 = new Map(
@@ -99,8 +98,8 @@ export const areCommoditiesEqual = (
  * @returns true when vehicle details are equivalent, false otherwise
  */
 const areVehicleDetailsEqual = (
-  vehicleDetails1?: VehicleDetails,
-  vehicleDetails2?: VehicleDetails,
+  vehicleDetails1?: Nullable<PermitVehicleDetails>,
+  vehicleDetails2?: Nullable<PermitVehicleDetails>,
 ) => {
   if (!vehicleDetails1 && !vehicleDetails2) return true; // considered equal when both are undefined
   if (!vehicleDetails1 || !vehicleDetails2) return false; // considered not equal when only one is undefined
@@ -108,7 +107,7 @@ const areVehicleDetailsEqual = (
   // Equal when all key-value pairs of both contacts details are equal
   return Object.entries(vehicleDetails1)
     .map(([key, val]) => {
-      const val2 = vehicleDetails2[key as keyof VehicleDetails]; // get value from second vehicle details for this key
+      const val2 = vehicleDetails2[key as keyof PermitVehicleDetails]; // get value from second vehicle details for this key
       return getDefaultRequiredVal("", val) === getDefaultRequiredVal("", val2);
     })
     .reduce((prevIsEqual, currIsEqual) => prevIsEqual && currIsEqual, true);

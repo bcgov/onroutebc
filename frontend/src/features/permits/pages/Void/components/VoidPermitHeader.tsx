@@ -10,7 +10,11 @@ import {
   toLocal,
 } from "../../../../../common/helpers/formatDate";
 
-export const VoidPermitHeader = ({ permit }: { permit: Nullable<Permit> }) => {
+export const VoidPermitHeader = ({
+  permit,
+}: {
+  permit: Nullable<Permit>;
+}) => {
   return permit ? (
     <div className="void-permit__header">
       <Typography

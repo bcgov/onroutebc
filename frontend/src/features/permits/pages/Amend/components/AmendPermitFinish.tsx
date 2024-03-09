@@ -7,15 +7,12 @@ import { calculateAmountToRefund } from "../../../helpers/feeSummary";
 import { PERMIT_REFUND_ACTIONS, RefundPage } from "../../Refund/RefundPage";
 import { RefundFormData } from "../../Refund/types/RefundFormData";
 import { Breadcrumb } from "../../../../../common/components/breadcrumb/Breadcrumb";
-import { mapToAmendRequestData } from "./helpers/mapper";
+import { serializeAmendRefundData } from "./helpers/serializeAmendRefundData";
 import { useIssuePermits, useStartTransaction } from "../../../hooks/hooks";
 import { isValidTransaction } from "../../../helpers/payment";
 import { hasPermitsActionFailed } from "../../../helpers/permitState";
 import { ERROR_ROUTES } from "../../../../../routes/constants";
-import {
-  applyWhenNotNullable,
-  getDefaultRequiredVal,
-} from "../../../../../common/helpers/util";
+import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 
 export const AmendPermitFinish = () => {
   const navigate = useNavigate();
@@ -26,11 +23,7 @@ export const AmendPermitFinish = () => {
     isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
   );
 
-  const permitId = applyWhenNotNullable(
-    (id) => `${id}`,
-    permitFormData?.permitId,
-    "",
-  );
+  const permitId = getDefaultRequiredVal("", permitFormData?.permitId);
 
   const amountToRefund =
     -1 *
@@ -70,7 +63,7 @@ export const AmendPermitFinish = () => {
   }, [issueResults]);
 
   const handleFinish = (refundData: RefundFormData) => {
-    const requestData = mapToAmendRequestData(
+    const requestData = serializeAmendRefundData(
       refundData,
       -1 * amountToRefund,
       permitId,

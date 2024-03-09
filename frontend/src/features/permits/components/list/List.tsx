@@ -24,10 +24,7 @@ import "./List.scss";
 import { Trash } from "../../../../common/components/table/options/Trash";
 import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
 import { SnackBarContext } from "../../../../App";
-import {
-  ApplicationInProgress,
-  PermitApplicationInProgress,
-} from "../../types/application";
+import { ApplicationListItem } from "../../types/application";
 import { ApplicationInProgressColumnDefinition } from "./Columns";
 import { deleteApplications } from "../../apiManager/permitsAPI";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
@@ -41,7 +38,7 @@ import {
  * Dynamically set the column
  * @returns An array of column headers/accessor keys for Material React Table
  */
-const getColumns = (): MRT_ColumnDef<ApplicationInProgress>[] => {
+const getColumns = (): MRT_ColumnDef<ApplicationListItem>[] => {
   return ApplicationInProgressColumnDefinition;
 };
 
@@ -55,11 +52,11 @@ const getColumns = (): MRT_ColumnDef<ApplicationInProgress>[] => {
  */
 /* eslint-disable react/prop-types */
 export const List = memo(
-  ({ query }: { query: UseQueryResult<ApplicationInProgress[]> }) => {
+  ({ query }: { query: UseQueryResult<ApplicationListItem[]> }) => {
     // Data, fetched from backend API
     const { data, isError, isFetching, isPending } = query;
 
-    const columns = useMemo<MRT_ColumnDef<ApplicationInProgress>[]>(
+    const columns = useMemo<MRT_ColumnDef<ApplicationListItem>[]>(
       () => getColumns(),
       [],
     );
@@ -146,7 +143,7 @@ export const List = memo(
       },
       onRowSelectionChange: setRowSelection,
       getRowId: (originalRow) => {
-        const applicationRow = originalRow as PermitApplicationInProgress;
+        const applicationRow = originalRow as ApplicationListItem;
         return applicationRow.permitId;
       },
       renderEmptyRowsFallback: () => <NoRecordsFound />,
@@ -154,8 +151,8 @@ export const List = memo(
         ({
           row,
         }: {
-          table: MRT_TableInstance<ApplicationInProgress>;
-          row: MRT_Row<ApplicationInProgress>;
+          table: MRT_TableInstance<ApplicationListItem>;
+          row: MRT_Row<ApplicationListItem>;
         }) => (
           <Box className="table-container__row-actions">
             <Tooltip arrow placement="top" title="Delete">
@@ -182,7 +179,7 @@ export const List = memo(
       ),
       // Render a custom options Bar (inclues search and trash)
       renderTopToolbar: useCallback(
-        ({ table }: { table: MRT_TableInstance<ApplicationInProgress> }) => (
+        ({ table }: { table: MRT_TableInstance<ApplicationListItem> }) => (
           <Box className="table-container__top-toolbar">
             <MRT_GlobalFilterTextField table={table} />
             <Trash

@@ -14,16 +14,16 @@ import {
 
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import { getPermits } from "../../apiManager/permitsAPI";
-import { Permit } from "../../types/permit";
+import { PermitListItem } from "../../types/permit";
 import { PermitsColumnDefinition } from "./Columns";
 import { PermitRowOptions } from "./PermitRowOptions";
+import { useNavigate } from "react-router-dom";
+import { ERROR_ROUTES } from "../../../../routes/constants";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
-import { useNavigate } from "react-router-dom";
-import { ERROR_ROUTES } from "../../../../routes/constants";
 
 /**
  * A permit list component with common functionalities that can be shared by
@@ -100,7 +100,7 @@ export const BasePermitList = ({
       sorting,
     },
     renderTopToolbar: useCallback(
-      ({ table }: { table: MRT_TableInstance<Permit> }) => (
+      ({ table }: { table: MRT_TableInstance<PermitListItem> }) => (
         <Box
           sx={{
             display: "flex",
@@ -129,7 +129,7 @@ export const BasePermitList = ({
     enablePagination: true,
     enableBottomToolbar: true,
     renderEmptyRowsFallback: () => <NoRecordsFound />,
-    renderRowActions: useCallback((props: { row: MRT_Row<Permit> }) => {
+    renderRowActions: useCallback((props: { row: MRT_Row<PermitListItem> }) => {
       return (
         <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
           <PermitRowOptions

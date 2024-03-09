@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from "react";
+import { Dayjs } from "dayjs";
 
 import "./AmendPermitReview.scss";
 import { AmendPermitContext } from "../context/AmendPermitContext";
@@ -10,6 +11,7 @@ import { ReviewReason } from "./review/ReviewReason";
 import { calculateAmountToRefund } from "../../../helpers/feeSummary";
 import { isValidTransaction } from "../../../helpers/payment";
 import OnRouteBCContext from "../../../../../common/authentication/OnRouteBCContext";
+import { Nullable } from "../../../../../common/types/common";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -20,7 +22,13 @@ import {
   useTrailerSubTypesQuery,
 } from "../../../../manageVehicles/apiManager/hooks";
 
-export const AmendPermitReview = () => {
+export const AmendPermitReview = ({
+  createdDateTime,
+  updatedDateTime,
+}: {
+  createdDateTime?: Nullable<Dayjs>;
+  updatedDateTime?: Nullable<Dayjs>;
+}) => {
   const { permit, permitFormData, permitHistory, back, next, getLinks } =
     useContext(AmendPermitContext);
 
@@ -72,15 +80,15 @@ export const AmendPermitReview = () => {
 
       <PermitReview
         permitType={permitFormData?.permitType}
-        permitNumber={permitFormData?.permitNumber}
+        permitNumber={permit?.permitNumber}
         applicationNumber={permitFormData?.applicationNumber}
         isAmendAction={true}
         permitStartDate={permitFormData?.permitData?.startDate}
         permitDuration={permitFormData?.permitData?.permitDuration}
         permitExpiryDate={permitFormData?.permitData?.expiryDate}
         permitConditions={permitFormData?.permitData?.commodities}
-        createdDateTime={permitFormData?.createdDateTime}
-        updatedDateTime={permitFormData?.updatedDateTime}
+        createdDateTime={createdDateTime}
+        updatedDateTime={updatedDateTime}
         companyInfo={companyInfo}
         contactDetails={permitFormData?.permitData?.contactDetails}
         continueBtnText="Continue"

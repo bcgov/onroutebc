@@ -1,4 +1,4 @@
-import "./ApplicationsInProgressList.scss";
+import { Delete } from "@mui/icons-material";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
@@ -13,31 +13,29 @@ import {
   useMaterialReactTable,
 } from "material-react-table";
 
+import "./ApplicationsInProgressList.scss";
+import { ApplicationInProgressColumnDefinition } from "./ApplicationInProgressColumnDefinition";
+import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
+import { SnackBarContext } from "../../../../App";
+import { ApplicationListItem } from "../../types/application";
+import { Trash } from "../../../../common/components/table/options/Trash";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import {
   deleteApplications,
   getApplicationsInProgress,
 } from "../../apiManager/permitsAPI";
+
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
-import { ApplicationInProgressColumnDefinition } from "./ApplicationInProgressColumnDefinition";
-import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
-import { SnackBarContext } from "../../../../App";
-import {
-  ApplicationInProgress,
-  PermitApplicationInProgress,
-} from "../../types/application";
-import { Delete } from "@mui/icons-material";
-import { Trash } from "../../../../common/components/table/options/Trash";
 
 /**
  * Dynamically set the column
  * @returns An array of column headers/accessor keys for Material React Table
  */
-const getColumns = (): MRT_ColumnDef<ApplicationInProgress>[] => {
+const getColumns = (): MRT_ColumnDef<ApplicationListItem>[] => {
   return ApplicationInProgressColumnDefinition;
 };
 
@@ -89,7 +87,7 @@ export const ApplicationsInProgressList = () => {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
 
-  const columns = useMemo<MRT_ColumnDef<ApplicationInProgress>[]>(
+  const columns = useMemo<MRT_ColumnDef<ApplicationListItem>[]>(
     () => getColumns(),
     [],
   );
@@ -173,7 +171,7 @@ export const ApplicationsInProgressList = () => {
     },
     onRowSelectionChange: setRowSelection,
     getRowId: (originalRow) => {
-      const applicationRow = originalRow as PermitApplicationInProgress;
+      const applicationRow = originalRow as ApplicationListItem;
       return applicationRow.permitId;
     },
     renderEmptyRowsFallback: () => <NoRecordsFound />,
@@ -181,8 +179,8 @@ export const ApplicationsInProgressList = () => {
       ({
         row,
       }: {
-        table: MRT_TableInstance<ApplicationInProgress>;
-        row: MRT_Row<ApplicationInProgress>;
+        table: MRT_TableInstance<ApplicationListItem>;
+        row: MRT_Row<ApplicationListItem>;
       }) => (
         <Box className="table-container__row-actions">
           <Tooltip arrow placement="top" title="Delete">

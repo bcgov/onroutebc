@@ -1,41 +1,43 @@
 import { useContext } from "react";
 import { FieldValues, FormProvider } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { Dayjs } from "dayjs";
 
 import "./AmendPermitForm.scss";
 import { PERMIT_DURATION_OPTIONS } from "../../../constants/constants";
 import { usePermitVehicleManagement } from "../../../hooks/usePermitVehicleManagement";
-import { useAmendPermit } from "../hooks/useAmendPermit";
+import { useAmendPermitForm } from "../hooks/useAmendPermitForm";
 import { SnackBarContext } from "../../../../../App";
 import { AmendPermitContext } from "../context/AmendPermitContext";
 import { PermitForm } from "../../Application/components/form/PermitForm";
-import { Permit } from "../../../types/permit";
+import { Application } from "../../../types/application";
 import { useCompanyInfoDetailsQuery } from "../../../../manageProfile/apiManager/hooks";
 import { Breadcrumb } from "../../../../../common/components/breadcrumb/Breadcrumb";
 import { AmendRevisionHistory } from "./form/AmendRevisionHistory";
 import { AmendReason } from "./form/AmendReason";
 import { Nullable } from "../../../../../common/types/common";
-import { VehicleDetails } from "../../../types/application";
 import { ERROR_ROUTES } from "../../../../../routes/constants";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import OnRouteBCContext from "../../../../../common/authentication/OnRouteBCContext";
+import { PermitVehicleDetails } from "../../../types/PermitVehicleDetails";
+import { AmendPermitFormData, getDefaultFormDataFromApplication } from "../types/AmendPermitFormData";
 import {
   dayjsToUtcStr,
   nowUtc,
 } from "../../../../../common/helpers/formatDate";
 
 import {
-  AmendPermitFormData,
-  mapFormDataToPermit,
-  mapPermitToFormData,
-} from "../types/AmendPermitFormData";
-
-import {
-  useAmendPermit as useAmendPermitMutation,
+  useAmendPermit,
   useModifyAmendmentApplication,
 } from "../../../hooks/hooks";
 
-export const AmendPermitForm = () => {
+export const AmendPermitForm = ({
+  createdDateTime,
+  updatedDateTime,
+}: {
+  createdDateTime?: Nullable<Dayjs>;
+  updatedDateTime?: Nullable<Dayjs>;
+}) => {
   const {
     permit,
     permitFormData,
@@ -58,7 +60,7 @@ export const AmendPermitForm = () => {
 
   const navigate = useNavigate();
 
-  const { formData, formMethods } = useAmendPermit(
+  const { formData, formMethods } = useAmendPermitForm(
     currentStepIndex === 0,
     permitFormData,
   );
@@ -66,7 +68,7 @@ export const AmendPermitForm = () => {
   //The name of this feature that is used for id's, keys, and associating form components
   const FEATURE = "amend-permit";
 
-  const amendPermitMutation = useAmendPermitMutation();
+  const amendPermitMutation = useAmendPermit();
   const modifyAmendmentMutation = useModifyAmendmentApplication();
   const snackBar = useContext(SnackBarContext);
 
@@ -109,10 +111,7 @@ export const AmendPermitForm = () => {
     await onSaveApplication(() => next(), savedVehicle);
   };
 
-  const isSavePermitSuccessful = (status: number) =>
-    status === 200 || status === 201;
-
-  const onSaveSuccess = (responseData: Permit) => {
+  const onSaveSuccess = (responseData: Application) => {
     snackBar.setSnackBar({
       showSnackbar: true,
       setShowSnackbar: () => true,
@@ -120,7 +119,9 @@ export const AmendPermitForm = () => {
       alertType: "success",
     });
 
-    setPermitFormData(mapPermitToFormData(responseData));
+    setPermitFormData(
+      getDefaultFormDataFromApplication(responseData),
+    );
   };
 
   const onSaveFailure = () => {
@@ -129,7 +130,7 @@ export const AmendPermitForm = () => {
 
   const onSaveApplication = async (
     additionalSuccessAction?: () => void,
-    savedVehicleInventoryDetails?: Nullable<VehicleDetails>,
+    savedVehicleInventoryDetails?: Nullable<PermitVehicleDetails>,
   ) => {
     if (
       !savedVehicleInventoryDetails &&
@@ -164,29 +165,14 @@ export const AmendPermitForm = () => {
             "",
             permitToBeAmended.applicationNumber,
           ),
-          application: {
-            ...permitToBeAmended,
-            permitId: `${permitToBeAmended.permitId}`,
-            permitData: {
-              ...permitToBeAmended.permitData,
-              companyName: getDefaultRequiredVal(
-                "",
-                permitToBeAmended.permitData.companyName,
-              ),
-              clientNumber: getDefaultRequiredVal(
-                "",
-                permitToBeAmended.permitData.clientNumber,
-              ),
-            },
-          },
+          application: permitToBeAmended,
         })
       : await amendPermitMutation.mutateAsync(
-          mapFormDataToPermit(permitToBeAmended) as Permit,
+          permitToBeAmended,
         );
 
-    if (isSavePermitSuccessful(response.status)) {
-      const responseData = response.data;
-      onSaveSuccess(responseData as Permit);
+    if (response.application) {
+      onSaveSuccess(response.application);
       additionalSuccessAction?.();
     } else {
       onSaveFailure();
@@ -225,9 +211,9 @@ export const AmendPermitForm = () => {
           isAmendAction={true}
           permitType={formData.permitType}
           applicationNumber={formData.applicationNumber}
-          permitNumber={formData.permitNumber}
-          createdDateTime={formData.createdDateTime}
-          updatedDateTime={formData.updatedDateTime}
+          permitNumber={permit?.permitNumber}
+          createdDateTime={createdDateTime}
+          updatedDateTime={updatedDateTime}
           permitStartDate={formData.permitData.startDate}
           permitDuration={formData.permitData.permitDuration}
           permitCommodities={formData.permitData.commodities}

@@ -1,10 +1,10 @@
 import { MRT_ColumnDef } from "material-react-table";
 
-import { ApplicationInProgress } from "../../types/application";
+import { ApplicationListItem } from "../../types/application";
 import { APPLICATIONS_ROUTES } from "../../../../routes/constants";
 import { CustomNavLink } from "../../../../common/components/links/CustomNavLink";
 
-export const ApplicationInProgressColumnDefinition: MRT_ColumnDef<ApplicationInProgress>[] =
+export const ApplicationInProgressColumnDefinition: MRT_ColumnDef<ApplicationListItem>[] =
   [
     {
       accessorKey: "applicationNumber",
@@ -27,19 +27,19 @@ export const ApplicationInProgressColumnDefinition: MRT_ColumnDef<ApplicationInP
       header: "Permit Type",
     },
     {
-      accessorKey: "permitData.vehicleDetails.unitNumber",
+      accessorKey: "unitNumber",
       header: "Unit #",
     },
     {
-      accessorKey: "permitData.vehicleDetails.vin",
+      accessorKey: "vin",
       header: "VIN",
     },
     {
-      accessorKey: "permitData.vehicleDetails.plate",
+      accessorKey: "plate",
       header: "Plate",
     },
     {
-      accessorKey: "permitData.startDate",
+      accessorKey: "startDate",
       header: "Permit Start Date",
     },
     {
@@ -48,5 +48,5 @@ export const ApplicationInProgressColumnDefinition: MRT_ColumnDef<ApplicationInP
     },
   ];
 
-export const ApplicationNotFoundColumnDefinition: MRT_ColumnDef<ApplicationInProgress>[] =
+export const ApplicationNotFoundColumnDefinition: MRT_ColumnDef<ApplicationListItem>[] =
   [];

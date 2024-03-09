@@ -1,9 +1,9 @@
 import { MRT_ColumnDef } from "material-react-table";
-import { ApplicationInProgress } from "../../types/application";
+import { ApplicationListItem } from "../../types/application";
 import { APPLICATIONS_ROUTES } from "../../../../routes/constants";
 import { CustomNavLink } from "../../../../common/components/links/CustomNavLink";
 
-export const ApplicationInProgressColumnDefinition: MRT_ColumnDef<ApplicationInProgress>[] =
+export const ApplicationInProgressColumnDefinition: MRT_ColumnDef<ApplicationListItem>[] =
   [
     {
       accessorKey: "applicationNumber",
@@ -36,19 +36,19 @@ export const ApplicationInProgressColumnDefinition: MRT_ColumnDef<ApplicationInP
       header: "Unit #",
     },
     {
-      accessorKey: "permitData.vehicleDetails.vin",
+      accessorKey: "vin",
       id: "vin",
       enableSorting: false,
       header: "VIN",
     },
     {
-      accessorKey: "permitData.vehicleDetails.plate",
+      accessorKey: "plate",
       id: "plate",
       enableSorting: false,
       header: "Plate",
     },
     {
-      accessorKey: "permitData.startDate",
+      accessorKey: "startDate",
       id: "startDate",
       enableSorting: false,
       header: "Permit Start Date",
@@ -60,13 +60,12 @@ export const ApplicationInProgressColumnDefinition: MRT_ColumnDef<ApplicationInP
       header: "Last Updated",
     },
     {
-      accessorFn: (row) =>
-        `${row.permitData.contactDetails?.firstName} ${row.permitData.contactDetails?.lastName} `,
+      accessorKey: "applicant",
       id: "applicant",
       header: "Applicant",
       enableSorting: false,
     },
   ];
 
-export const ApplicationNotFoundColumnDefinition: MRT_ColumnDef<ApplicationInProgress>[] =
+export const ApplicationNotFoundColumnDefinition: MRT_ColumnDef<ApplicationListItem>[] =
   [];

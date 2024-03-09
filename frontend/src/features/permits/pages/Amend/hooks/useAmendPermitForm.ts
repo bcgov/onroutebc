@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { Nullable } from "../../../../../common/types/common";
@@ -7,11 +7,17 @@ import {
   getDefaultFromNullableFormData,
 } from "../types/AmendPermitFormData";
 
-export const useAmendPermit = (
+export const useAmendPermitForm = (
   repopulateFormData: boolean,
   updatedPermitFormData?: Nullable<AmendPermitFormData>,
 ) => {
-  const formData = getDefaultFromNullableFormData(updatedPermitFormData);
+  const [formData, setFormData] = useState(
+    getDefaultFromNullableFormData(updatedPermitFormData),
+  );
+
+  useEffect(() => {
+    setFormData(getDefaultFromNullableFormData(updatedPermitFormData));
+  }, [updatedPermitFormData, repopulateFormData]);
 
   // Register default values with react-hook-form
   const formMethods = useForm<AmendPermitFormData>({
@@ -22,8 +28,8 @@ export const useAmendPermit = (
   const { reset } = formMethods;
 
   useEffect(() => {
-    reset(getDefaultFromNullableFormData(updatedPermitFormData));
-  }, [updatedPermitFormData, repopulateFormData]);
+    reset(formData);
+  }, [formData]);
 
   return {
     formData,

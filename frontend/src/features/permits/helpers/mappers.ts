@@ -1,13 +1,6 @@
-import { Dayjs } from "dayjs";
-
 import { Permit, PermitsActionResponse } from "../types/permit";
-import {
-  applyWhenNotNullable,
-  getDefaultRequiredVal,
-} from "../../../common/helpers/util";
 import { Nullable, Optional } from "../../../common/types/common";
-import { getDurationOrDefault } from "./getDefaultApplicationFormData";
-import { getExpiryDate } from "./permitState";
+import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import {
   VehicleSubType,
   Vehicle,
@@ -16,24 +9,6 @@ import {
   PowerUnit,
   Trailer,
 } from "../../manageVehicles/types/Vehicle";
-
-import {
-  Application,
-  ApplicationResponse,
-  CreateApplicationRequestData,
-  UpdateApplicationRequestData,
-} from "../types/application";
-
-import {
-  DATE_FORMATS,
-  dayjsToLocalStr,
-  dayjsToUtcStr,
-  getEndOfDate,
-  getStartOfDate,
-  now,
-  toLocalDayjs,
-  utcToLocalDayjs,
-} from "../../../common/helpers/formatDate";
 
 /**
  * This helper function is used to get the vehicle object that matches the vehicleType and id.
@@ -69,8 +44,8 @@ export const mapToVehicleObjectById = (
 export const mapTypeCodeToObject = (
   typeCode: string,
   vehicleType: string,
-  powerUnitSubTypes: Optional<VehicleSubType[]>,
-  trailerSubTypes: Optional<VehicleSubType[]>,
+  powerUnitSubTypes: Nullable<VehicleSubType[]>,
+  trailerSubTypes: Nullable<VehicleSubType[]>,
 ) => {
   let typeObject = undefined;
 
@@ -85,137 +60,6 @@ export const mapTypeCodeToObject = (
   }
 
   return typeObject;
-};
-
-/**
- * Maps/transforms an ApplicationResponse (with string for dates) to an Application object (Dayjs object for dates)
- * @param response ApplicationResponse object received as response data from backend
- * @returns converted Application object that can be used by form fields and the front-end app
- */
-export const mapApplicationResponseToApplication = (
-  response: ApplicationResponse,
-): Application => {
-  const startDateOrDefault = applyWhenNotNullable(
-    (datetimeStr: string): Dayjs => getStartOfDate(toLocalDayjs(datetimeStr)),
-    response.permitData.startDate,
-    getStartOfDate(now()),
-  );
-
-  const durationOrDefault = getDurationOrDefault(
-    30,
-    response.permitData.permitDuration,
-  );
-
-  const expiryDateOrDefault = applyWhenNotNullable(
-    (datetimeStr: string): Dayjs => getEndOfDate(toLocalDayjs(datetimeStr)),
-    response.permitData.expiryDate,
-    getExpiryDate(startDateOrDefault, durationOrDefault),
-  );
-
-  return {
-    ...response,
-    createdDateTime: applyWhenNotNullable(
-      (datetimeStr: string): Dayjs => utcToLocalDayjs(datetimeStr),
-      response.createdDateTime,
-    ),
-    updatedDateTime: applyWhenNotNullable(
-      (datetimeStr: string): Dayjs => utcToLocalDayjs(datetimeStr),
-      response.updatedDateTime,
-    ),
-    permitData: {
-      ...response.permitData,
-      startDate: startDateOrDefault,
-      expiryDate: expiryDateOrDefault,
-    },
-  };
-};
-
-/**
- * Maps/transforms Application form data into CreateApplicationRequestData so it can be used as payload for create application requests
- * @param data Application form data
- * @returns CreateApplicationRequestData object that's used for payload to request to backend
- */
-export const mapApplicationToCreateApplicationRequestData = (
-  data: Application,
-): CreateApplicationRequestData => {
-  const {
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    permitNumber, 
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    createdDateTime,
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    updatedDateTime,
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    documentId,
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    permitStatus,
-    ...remainingFields
-  } = data;
-
-  return {
-    ...remainingFields,
-    permitData: {
-      ...remainingFields.permitData,
-      startDate: dayjsToLocalStr(
-        remainingFields.permitData.startDate,
-        DATE_FORMATS.DATEONLY,
-      ),
-      expiryDate: dayjsToLocalStr(
-        remainingFields.permitData.expiryDate,
-        DATE_FORMATS.DATEONLY,
-      ),
-    },
-  };
-};
-
-/**
- * Maps/transforms Application form data into UpdateApplicationRequestData so it can be used as payload for update application requests
- * @param data Application form data
- * @returns UpdateApplicationRequestData object that's used for payload to request to backend
- */
-export const mapApplicationToUpdateApplicationRequestData = (
-  data: Application,
-): UpdateApplicationRequestData => {
-  const {
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    permitStatus,
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    originalPermitId,
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    applicationNumber,
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    createdDateTime,
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    permitNumber,
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    permitId,
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    documentId,
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    updatedDateTime,
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    previousRevision,
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    revision,
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    permitApprovalSource,
-    ...remainingFields
-  } = data;
-
-  return {
-    ...remainingFields,
-    permitData: {
-      ...remainingFields.permitData,
-      startDate: dayjsToLocalStr(
-        remainingFields.permitData.startDate,
-        DATE_FORMATS.DATEONLY,
-      ),
-      expiryDate: dayjsToLocalStr(
-        remainingFields.permitData.expiryDate,
-        DATE_FORMATS.DATEONLY,
-      ),
-    },
-  };
 };
 
 /**
@@ -240,112 +84,16 @@ export const clonePermit = (permit: Permit): Permit => {
     ...permit,
     permitData: {
       ...permit.permitData,
-      contactDetails: permit.permitData.contactDetails
-        ? {
-            ...permit.permitData.contactDetails,
-          }
-        : undefined,
-      vehicleDetails: permit.permitData.vehicleDetails
-        ? {
-            ...permit.permitData.vehicleDetails,
-          }
-        : undefined,
+      contactDetails: {
+        ...permit.permitData.contactDetails,
+      },
+      vehicleDetails:{
+        ...permit.permitData.vehicleDetails,
+      },
       commodities: [...permit.permitData.commodities],
       mailingAddress: {
         ...permit.permitData.mailingAddress,
       },
-    },
-  };
-};
-
-/**
- * Transform a Permit object into an Application object.
- * @param permit Permit object to transform
- * @returns Transformed Application object
- */
-export const transformPermitToApplication = (permit: Permit) => {
-  const startDateOrDefault = applyWhenNotNullable(
-    (datetimeStr: string): Dayjs => getStartOfDate(toLocalDayjs(datetimeStr)),
-    permit.permitData.startDate,
-    getStartOfDate(now()),
-  );
-
-  const durationOrDefault = getDurationOrDefault(
-    30,
-    permit.permitData.permitDuration,
-  );
-
-  const expiryDateOrDefault = applyWhenNotNullable(
-    (datetimeStr: string): Dayjs => getEndOfDate(toLocalDayjs(datetimeStr)),
-    permit.permitData.expiryDate,
-    getExpiryDate(startDateOrDefault, durationOrDefault),
-  );
-
-  return {
-    ...permit,
-    permitId: `${permit.permitId}`,
-    createdDateTime: applyWhenNotNullable(
-      (datetimeStr: string): Dayjs => utcToLocalDayjs(datetimeStr),
-      permit.createdDateTime,
-    ),
-    updatedDateTime: applyWhenNotNullable(
-      (datetimeStr: string): Dayjs => utcToLocalDayjs(datetimeStr),
-      permit.updatedDateTime,
-    ),
-    permitData: {
-      ...permit.permitData,
-      startDate: startDateOrDefault,
-      expiryDate: expiryDateOrDefault,
-    },
-  };
-};
-
-/**
- * Transform an Application object into a Permit object. Some permit fields may not be required.
- * @param application Application object to transform
- * @returns Transformed Permit object
- */
-export const transformApplicationToPermit = (
-  application: Application,
-): Omit<
-  Permit,
-  | "originalPermitId"
-  | "applicationNumber"
-  | "permitNumber"
-  | "permitApplicationOrigin"
-  | "permitApprovalSource"
-  | "revision"
-> &
-  Pick<
-    Application,
-    | "originalPermitId"
-    | "applicationNumber"
-    | "permitNumber"
-    | "permitApplicationOrigin"
-    | "permitApprovalSource"
-    | "revision"
-  > => {
-  return {
-    ...application,
-    permitId: applyWhenNotNullable((id) => +id, application.permitId),
-    createdDateTime: applyWhenNotNullable(
-      dayjsToUtcStr,
-      application.createdDateTime,
-    ),
-    updatedDateTime: applyWhenNotNullable(
-      dayjsToUtcStr,
-      application.updatedDateTime,
-    ),
-    permitData: {
-      ...application.permitData,
-      startDate: dayjsToLocalStr(
-        application.permitData.startDate,
-        DATE_FORMATS.DATEONLY,
-      ),
-      expiryDate: dayjsToLocalStr(
-        application.permitData.expiryDate,
-        DATE_FORMATS.DATEONLY,
-      ),
     },
   };
 };
