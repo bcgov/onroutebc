@@ -114,15 +114,14 @@ export interface ApplicationListItem {
 /**
  * Type used for permit and application form data.
  */
-export interface ApplicationFormData extends Omit<
-  Application,
-  "userGuid"
-  | "createdDateTime"
-  | "updatedDateTime"
-  | "applicant"
-  | "documentId"
-  | "revision"
-  | "previousRevision"
-  | "permitApplicationOrigin"
-  | "permitApprovalSource"
-> {}
+export interface ApplicationFormData {
+  permitId?: Nullable<string>;
+  originalPermitId?: Nullable<string>;
+  comment?: Nullable<string>;
+  permitStatus: PermitStatus;
+  companyId: number;
+  permitType: PermitType;
+  applicationNumber?: Nullable<string>;
+  permitNumber?: Nullable<string>;
+  permitData: PermitData;
+}

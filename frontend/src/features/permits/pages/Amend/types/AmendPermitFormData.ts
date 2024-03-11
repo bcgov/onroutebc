@@ -1,12 +1,10 @@
 import { Permit } from "../../../types/permit";
 import { getDefaultValues } from "../../../helpers/getDefaultApplicationFormData";
 import { Nullable } from "../../../../../common/types/common";
-import { areApplicationDataEqual } from "../../../helpers/equality";
 import { DEFAULT_PERMIT_TYPE } from "../../../types/PermitType";
 import { Application, ApplicationFormData } from "../../../types/application";
 import {
   applyWhenNotNullable,
-  areValuesDifferent,
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
 
@@ -52,7 +50,10 @@ export const getDefaultFormDataFromApplication = (
 export const getDefaultFormDataFromPermit = (
   permit?: Nullable<Permit>,
 ): AmendPermitFormData => {
-  const defaultPermitType = getDefaultRequiredVal(DEFAULT_PERMIT_TYPE, permit?.permitType);
+  const defaultPermitType = getDefaultRequiredVal(
+    DEFAULT_PERMIT_TYPE,
+    permit?.permitType,
+  );
 
   // Default form values when permit is not available (or period of time when loading)
   if (!permit) {
@@ -63,7 +64,7 @@ export const getDefaultFormDataFromPermit = (
 
   const {
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    issuer,
+    issuer, // removes "issuer" field from permit
     ...restOfPermit
   } = permit;
 
@@ -73,18 +74,18 @@ export const getDefaultFormDataFromPermit = (
       {
         ...restOfPermit,
         permitData: {
-          ...permit.permitData,
+          ...restOfPermit.permitData,
           startDate: applyWhenNotNullable(
             (startAt) => getStartOfDate(toLocalDayjs(startAt)),
-            permit.permitData?.startDate,
+            restOfPermit.permitData?.startDate,
           ),
           expiryDate: applyWhenNotNullable(
             (endAt) => getEndOfDate(toLocalDayjs(endAt)),
-            permit.permitData?.expiryDate,
+            restOfPermit.permitData?.expiryDate,
           ),
         },
       } as AmendPermitFormData,
-      permit.companyId,
+      restOfPermit.companyId,
     ),
   };
 };
@@ -113,41 +114,4 @@ export const getDefaultFromNullableFormData = (
       permitFormData.companyId,
     ),
   };
-};
-
-export const areFormDataEqual = (
-  formData1?: Nullable<AmendPermitFormData>,
-  formData2?: Nullable<AmendPermitFormData>,
-) => {
-  if (!formData1 && !formData2) return true; // considered equal when both are undefined
-  if (!formData1 || !formData2) return false; // considered not equal when only one is undefined
-
-  return (
-    formData1.permitId === formData2.permitId &&
-    formData1.originalPermitId === formData2.originalPermitId &&
-    !areValuesDifferent(formData1.comment, formData2.comment) &&
-    formData1.permitStatus === formData2.permitStatus &&
-    formData1.companyId === formData2.companyId &&
-    formData1.permitType === formData2.permitType &&
-    formData1.applicationNumber === formData2.applicationNumber &&
-    formData1.permitNumber === formData2.permitNumber &&
-    areApplicationDataEqual(
-      {
-        ...formData1.permitData,
-        companyName: getDefaultRequiredVal("", formData1.permitData.companyName),
-        clientNumber: getDefaultRequiredVal(
-          "",
-          formData1.permitData.clientNumber,
-        ),
-      },
-      {
-        ...formData2.permitData,
-        companyName: getDefaultRequiredVal("", formData2.permitData.companyName),
-        clientNumber: getDefaultRequiredVal(
-          "",
-          formData2.permitData.clientNumber,
-        ),
-      },
-    )
-  );
 };
