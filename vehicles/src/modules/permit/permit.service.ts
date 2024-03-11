@@ -10,7 +10,13 @@ import {
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, DataSource, Repository, SelectQueryBuilder } from 'typeorm';
+import {
+  Brackets,
+  DataSource,
+  QueryRunner,
+  Repository,
+  SelectQueryBuilder,
+} from 'typeorm';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { Permit } from './entities/permit.entity';
 import { PermitType } from './entities/permit-type.entity';
@@ -464,17 +470,34 @@ export class PermitService {
   @LogAsyncMethodExecution()
   public async findPermitHistory(
     originalPermitId: string,
+    nestedQueryRunner?: QueryRunner,
   ): Promise<PermitHistoryDto[]> {
-    const permits = await this.permitRepository
-      .createQueryBuilder('permit')
-      .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
-      .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
-      .where('permit.permitNumber IS NOT NULL')
-      .andWhere('permit.originalPermitId = :originalPermitId', {
-        originalPermitId: originalPermitId,
-      })
-      .orderBy('transaction.transactionSubmitDate', 'DESC')
-      .getMany();
+    let permits: Permit[];
+    if (nestedQueryRunner) {
+      permits = await nestedQueryRunner.manager
+        .createQueryBuilder()
+        .select('Permit')
+        .from(Permit, 'Permit')
+        .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
+        .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
+        .where('permit.permitNumber IS NOT NULL')
+        .andWhere('permit.originalPermitId = :originalPermitId', {
+          originalPermitId: originalPermitId,
+        })
+        .orderBy('transaction.transactionSubmitDate', 'DESC')
+        .getMany();
+    } else {
+      permits = await this.permitRepository
+        .createQueryBuilder('permit')
+        .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
+        .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
+        .where('permit.permitNumber IS NOT NULL')
+        .andWhere('permit.originalPermitId = :originalPermitId', {
+          originalPermitId: originalPermitId,
+        })
+        .orderBy('transaction.transactionSubmitDate', 'DESC')
+        .getMany();
+    }
 
     return permits.flatMap((permit) =>
       permit.permitTransactions.map((permitTransaction) => ({
@@ -546,80 +569,79 @@ export class PermitService {
     );
     let success = '';
     let failure = '';
-    const userMetadata: Base = {
-      createdDateTime: new Date(),
-      createdUser: currentUser.userName,
-      createdUserDirectory: currentUser.orbcUserDirectory,
-      createdUserGuid: currentUser.userGUID,
-      updatedDateTime: new Date(),
-      updatedUser: currentUser.userName,
-      updatedUserDirectory: currentUser.orbcUserDirectory,
-      updatedUserGuid: currentUser.userGUID,
-    };
-    // to create new permit
-    let newPermit = new Permit();
-    newPermit = Object.assign(newPermit, permit);
-    newPermit.permitId = null;
-    newPermit.permitNumber = permitNumber;
-    newPermit.applicationNumber = applicationNumber;
-    newPermit.permitStatus = voidPermitDto.status;
-    newPermit.permitApprovalSource = PermitApprovalSource.PPC;
-    newPermit.permitIssuedBy =
-      currentUser.orbcUserDirectory == Directory.IDIR
-        ? PermitIssuedBy.PPC
-        : PermitIssuedBy.SELF_ISSUED;
-    newPermit.applicationOwner = new User();
-    newPermit.applicationOwner.userGUID = currentUser.userGUID;
-    newPermit.issuer = new User();
-    newPermit.issuer.userGUID = currentUser.userGUID;
-    newPermit.permitIssueDateTime = new Date();
-    newPermit.revision = permit.revision + 1;
-    newPermit.previousRevision = permitId;
-    newPermit.comment = voidPermitDto.comment;
-    newPermit = Object.assign(newPermit, userMetadata);
-
-    let permitData = new PermitData();
-    permitData.permitData = permit.permitData.permitData;
-    permitData = Object.assign(permitData, userMetadata);
-    newPermit.permitData = permitData;
-
-    /* Create application to generate permit id. 
-          this permit id will be used to generate permit number based this id's application number.*/
-    newPermit = await this.permitRepository.save(newPermit);
-
-    const createTransactionDto = new CreateTransactionDto();
-    createTransactionDto.transactionTypeId = voidPermitDto.transactionTypeId;
-    createTransactionDto.paymentMethodTypeCode =
-      voidPermitDto.paymentMethodTypeCode;
-    createTransactionDto.paymentCardTypeCode = voidPermitDto.pgCardType;
-    createTransactionDto.pgCardType = voidPermitDto.pgCardType;
-    createTransactionDto.pgTransactionId = voidPermitDto.pgTransactionId;
-    createTransactionDto.pgPaymentMethod = voidPermitDto.pgPaymentMethod;
-
-    // Refund for void should automatically set this flag to approved for payment gateway payment methods
-    // Otherwise, the flag is not applicable
-    if (voidPermitDto.paymentMethodTypeCode === PaymentMethodType.WEB) {
-      createTransactionDto.pgApproved = 1;
-    }
-
-    createTransactionDto.applicationDetails = [
-      {
-        applicationId: newPermit.permitId,
-        transactionAmount: voidPermitDto.transactionAmount,
-      },
-    ];
-    const voidStatus = voidPermitDto.status;
-    const transactionDto = await this.paymentService.createTransactions(
-      currentUser,
-      createTransactionDto,
-      null,
-      voidStatus,
-    );
-
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
+      const userMetadata: Base = {
+        createdDateTime: new Date(),
+        createdUser: currentUser.userName,
+        createdUserDirectory: currentUser.orbcUserDirectory,
+        createdUserGuid: currentUser.userGUID,
+        updatedDateTime: new Date(),
+        updatedUser: currentUser.userName,
+        updatedUserDirectory: currentUser.orbcUserDirectory,
+        updatedUserGuid: currentUser.userGUID,
+      };
+      // to create new permit
+      let newPermit = new Permit();
+      newPermit = Object.assign(newPermit, permit);
+      newPermit.permitId = null;
+      newPermit.permitNumber = permitNumber;
+      newPermit.applicationNumber = applicationNumber;
+      newPermit.permitStatus = voidPermitDto.status;
+      newPermit.permitApprovalSource = PermitApprovalSource.PPC;
+      newPermit.permitIssuedBy =
+        currentUser.orbcUserDirectory == Directory.IDIR
+          ? PermitIssuedBy.PPC
+          : PermitIssuedBy.SELF_ISSUED;
+      newPermit.applicationOwner = new User();
+      newPermit.applicationOwner.userGUID = currentUser.userGUID;
+      newPermit.issuer = new User();
+      newPermit.issuer.userGUID = currentUser.userGUID;
+      newPermit.permitIssueDateTime = new Date();
+      newPermit.revision = permit.revision + 1;
+      newPermit.previousRevision = permitId;
+      newPermit.comment = voidPermitDto.comment;
+      newPermit = Object.assign(newPermit, userMetadata);
+
+      let permitData = new PermitData();
+      permitData.permitData = permit.permitData.permitData;
+      permitData = Object.assign(permitData, userMetadata);
+      newPermit.permitData = permitData;
+
+      /* Create application to generate permit id. 
+            this permit id will be used to generate permit number based this id's application number.*/
+      newPermit = await this.permitRepository.save(newPermit);
+
+      const createTransactionDto = new CreateTransactionDto();
+      createTransactionDto.transactionTypeId = voidPermitDto.transactionTypeId;
+      createTransactionDto.paymentMethodTypeCode =
+        voidPermitDto.paymentMethodTypeCode;
+      createTransactionDto.paymentCardTypeCode = voidPermitDto.pgCardType;
+      createTransactionDto.pgCardType = voidPermitDto.pgCardType;
+      createTransactionDto.pgTransactionId = voidPermitDto.pgTransactionId;
+      createTransactionDto.pgPaymentMethod = voidPermitDto.pgPaymentMethod;
+
+      // Refund for void should automatically set this flag to approved for payment gateway payment methods
+      // Otherwise, the flag is not applicable
+      if (voidPermitDto.paymentMethodTypeCode === PaymentMethodType.WEB) {
+        createTransactionDto.pgApproved = 1;
+      }
+
+      createTransactionDto.applicationDetails = [
+        {
+          applicationId: newPermit.permitId,
+          transactionAmount: voidPermitDto.transactionAmount,
+        },
+      ];
+      const voidStatus = voidPermitDto.status;
+      const transactionDto = await this.paymentService.createTransactions(
+        currentUser,
+        createTransactionDto,
+        null,
+        voidStatus,
+      );
       //Update old permit status to SUPERSEDED.
       await queryRunner.manager.update(
         Permit,

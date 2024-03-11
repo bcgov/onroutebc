@@ -215,6 +215,7 @@ export class PaymentService {
           createTransactionDto.transactionTypeId,
           application.applicationId,
           voidStatus,
+          nestedQueryRunner,
         ));
     }
     const totalTransactionAmountRequest =
@@ -615,6 +616,7 @@ export class PaymentService {
     transastionType: TransactionType,
     applicationId: string,
     voidStatus?: ApplicationStatus.VOIDED | ApplicationStatus.REVOKED,
+    nestedQueryRunner?: QueryRunner,
   ): Promise<number> {
     let permitAmount = 0;
     if (voidStatus === ApplicationStatus.REVOKED) return permitAmount;
@@ -622,11 +624,13 @@ export class PaymentService {
     if (voidStatus === ApplicationStatus.VOIDED) {
       const oldAmount = await this.calculatePermitAmount(
         application.originalPermitId,
+        nestedQueryRunner,
       );
       return -oldAmount;
     }
     const oldAmount = await this.calculatePermitAmount(
       application.originalPermitId,
+      nestedQueryRunner,
     );
 
     const diff =
@@ -667,10 +671,15 @@ export class PaymentService {
     const permitAmount = unitPrice * unitOfMeasure - oldAmount;
     return permitAmount;
   }
-  async calculatePermitAmount(originalPermitId: string): Promise<number> {
+  async calculatePermitAmount(
+    originalPermitId: string,
+    nestedQueryRunner?: QueryRunner,
+  ): Promise<number> {
     let amount: number = 0;
-    const permitPaymentHistory =
-      await this.permitService.findPermitHistory(originalPermitId);
+    const permitPaymentHistory = await this.permitService.findPermitHistory(
+      originalPermitId,
+      nestedQueryRunner,
+    );
     permitPaymentHistory.forEach((payment) => {
       switch (payment.transactionTypeId) {
         case TransactionType.REFUND: {
