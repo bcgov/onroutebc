@@ -208,9 +208,10 @@ export class PaymentService {
     voidStatus?: ApplicationStatus.VOIDED | ApplicationStatus.REVOKED,
   ): Promise<ReadTransactionDto> {
     let totalTransactionAmountCalculated: number = 0;
+    // Calculate and add amount for each requested application, as per the available backend data.
     for (const application of createTransactionDto.applicationDetails) {
       totalTransactionAmountCalculated =
-      totalTransactionAmountCalculated +
+        totalTransactionAmountCalculated +
         (await this.permitFeeCalculator(
           createTransactionDto.transactionTypeId,
           application.applicationId,
@@ -624,8 +625,10 @@ export class PaymentService {
     nestedQueryRunner?: QueryRunner,
   ): Promise<number> {
     let permitAmount = 0;
+    //Revoking an application does not result into any refund or payment or is always zero,
     if (voidStatus === ApplicationStatus.REVOKED) return permitAmount;
     const application = await this.permitService.findOne(applicationId);
+    // For voiding an application, current application amount will be zero. Calculating historic payment only.
     if (voidStatus === ApplicationStatus.VOIDED) {
       const oldAmount = await this.calculatePermitAmount(
         application.originalPermitId,
@@ -633,17 +636,18 @@ export class PaymentService {
       );
       return -oldAmount;
     }
+    //Calculate requested application history of fees and/or refunds.
     const oldAmount = await this.calculatePermitAmount(
       application.originalPermitId,
       nestedQueryRunner,
     );
 
+    //Calculate current application fee/or refund.
     const diff =
       new Date(application.permitData.expiryDate).getTime() -
       new Date(application.permitData.startDate).getTime();
     const duration = Math.ceil(diff / (1000 * 3600 * 24)) + 1;
     switch (application.permitType) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       case PermitType.TERM_OVERSIZE: {
         permitAmount = this.permitFee(
           duration,
@@ -653,7 +657,6 @@ export class PaymentService {
         );
         break;
       }
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       case PermitType.TERM_OVERWEIGHT:
         break;
       default:
@@ -662,7 +665,14 @@ export class PaymentService {
 
     return permitAmount;
   }
-
+  /**
+   * Calculates current fee for the given application.
+   * @param duration
+   * @param unitPrice
+   * @param permitTypeUnitOfMeasure
+   * @param oldAmount
+   * @returns
+   */
   permitFee(
     duration: number,
     unitPrice: number,
@@ -676,6 +686,13 @@ export class PaymentService {
     const permitAmount = unitPrice * unitOfMeasure - oldAmount;
     return permitAmount;
   }
+
+  /**
+   * Calculates fee or refund for given application based on all the historic payments that has been made for the application.
+   * @param originalPermitId
+   * @param nestedQueryRunner
+   * @returns
+   */
   async calculatePermitAmount(
     originalPermitId: string,
     nestedQueryRunner?: QueryRunner,
