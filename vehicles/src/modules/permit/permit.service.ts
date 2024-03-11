@@ -64,11 +64,9 @@ import * as constants from '../../common/constants/api.constant';
 import { PermitApprovalSource } from '../../common/enum/permit-approval-source.enum';
 import { PermitSearch } from '../../common/enum/permit-search.enum';
 import { paginate, sortQuery } from '../../common/helper/database.helper';
-import {
-  UserAuthGroup,
-  idirUserAuthGroupList,
-} from '../../common/enum/user-auth-group.enum';
+import { IDIR_USER_AUTH_GROUP_LIST } from '../../common/enum/user-auth-group.enum';
 import { User } from '../company-user-management/users/entities/user.entity';
+import { doesUserHaveAuthGroup } from '../../common/helper/auth.helper';
 
 @Injectable()
 export class PermitService {
@@ -120,8 +118,9 @@ export class PermitService {
     // Check if the current user has the proper authorization to access this receipt.
     // Throws ForbiddenException if user does not belong to the specified user auth group or does not own the company.
     if (
-      !idirUserAuthGroupList.includes(
-        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      !doesUserHaveAuthGroup(
+        currentUser.orbcUserAuthGroup,
+        IDIR_USER_AUTH_GROUP_LIST,
       ) &&
       permit?.company?.companyId != currentUser.companyId
     ) {
@@ -160,8 +159,9 @@ export class PermitService {
 
     // Check if current user is in the allowed auth group or owns the company, else throw ForbiddenException
     if (
-      !idirUserAuthGroupList.includes(
-        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      !doesUserHaveAuthGroup(
+        currentUser.orbcUserAuthGroup,
+        IDIR_USER_AUTH_GROUP_LIST,
       ) &&
       permit?.company?.companyId != currentUser.companyId
     ) {
@@ -448,8 +448,9 @@ export class PermitService {
     // Check if the current user has the proper authorization to access this receipt.
     // Throws ForbiddenException if user does not belong to the specified user auth group or does not own the company.
     if (
-      !idirUserAuthGroupList.includes(
-        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      !doesUserHaveAuthGroup(
+        currentUser.orbcUserAuthGroup,
+        IDIR_USER_AUTH_GROUP_LIST,
       ) &&
       permit?.company?.companyId != currentUser.companyId
     ) {

@@ -6,7 +6,7 @@ import {
   ArrayMinSize,
   IsOptional,
 } from 'class-validator';
-import { idirUserAuthGroupList } from '../../../../common/enum/user-auth-group.enum';
+import { IDIR_USER_AUTH_GROUP_LIST } from '../../../../common/enum/user-auth-group.enum';
 
 export class IssuePermitDto {
   @AutoMap()
@@ -23,7 +23,7 @@ export class IssuePermitDto {
 
   @AutoMap()
   @ApiProperty({
-    description: `Id of the company requesting the application issuance. Optional for ${idirUserAuthGroupList.join(', ')}`,
+    description: `Id of the company requesting the application issuance. Optional for ${IDIR_USER_AUTH_GROUP_LIST.join(', ')}`,
     example: 74,
     required: false,
   })
