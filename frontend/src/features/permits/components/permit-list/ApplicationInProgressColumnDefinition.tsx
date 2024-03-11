@@ -1,9 +1,15 @@
 import { MRT_ColumnDef } from "material-react-table";
+
 import { ApplicationListItem } from "../../types/application";
 import { APPLICATIONS_ROUTES } from "../../../../routes/constants";
 import { CustomNavLink } from "../../../../common/components/links/CustomNavLink";
+import { UserAuthGroupType } from "../../../../common/authentication/types";
+import { canUserAccessApplication } from "../../helpers/mappers";
+import { Nullable } from "../../../../common/types/common";
 
-export const ApplicationInProgressColumnDefinition: MRT_ColumnDef<ApplicationListItem>[] =
+export const ApplicationInProgressColumnDefinition = (
+  userAuthGroup?: Nullable<UserAuthGroupType>,
+): MRT_ColumnDef<ApplicationListItem>[] =>
   [
     {
       accessorKey: "applicationNumber",
@@ -13,13 +19,21 @@ export const ApplicationInProgressColumnDefinition: MRT_ColumnDef<ApplicationLis
       accessorFn: (row) => row.applicationNumber,
       Cell: (props: { cell: any; row: any }) => {
         const permitIdStr = `${props.row.original.permitId}`;
-        return (
+        
+        return canUserAccessApplication(
+          props.row.original.permitApplicationOrigin,
+          userAuthGroup,
+        ) ? (
           <CustomNavLink
             to={`${APPLICATIONS_ROUTES.DETAILS(permitIdStr)}`}
             className="column-link column-link--application-details"
           >
             {props.cell.getValue()}
           </CustomNavLink>
+        ) : (
+          <>
+            {props.cell.getValue()}
+          </>
         );
       },
     },

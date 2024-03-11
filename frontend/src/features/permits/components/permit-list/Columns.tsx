@@ -70,8 +70,8 @@ export const PermitsColumnDefinition: MRT_ColumnDef<PermitListItem>[] = [
     },
   },
   {
-    accessorKey: "applicant",
-    id: "applicant",
+    accessorKey: "issuer",
+    id: "issuer",
     header: "Applicant",
     enableSorting: true,
   },
