@@ -1,7 +1,7 @@
 import { MRT_ColumnDef } from "material-react-table";
 
 import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
-import { Permit } from "../../../permits/types/permit";
+import { PermitListItem } from "../../../permits/types/permit";
 import { PERMIT_EXPIRED } from "../../../permits/types/PermitStatus";
 import { PermitChip } from "../../../permits/components/permit-list/PermitChip";
 import { viewPermitPdf } from "../../../permits/helpers/permitPDFHelper";
@@ -18,18 +18,18 @@ import {
  * https://www.material-react-table.com/docs/api/column-options
  *
  */
-export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
+export const PermitSearchResultColumnDef: MRT_ColumnDef<PermitListItem>[] = [
   {
     accessorKey: "permitNumber",
     header: "Permit #",
     enableSorting: true,
     sortingFn: "alphanumeric",
     Cell: (props: { cell: any; row: any }) => {
-      const permit = props.row.original as Permit;
+      const permit = props.row.original as PermitListItem;
       const {
         permitId,
         permitStatus,
-        permitData: { expiryDate },
+        expiryDate,
       } = permit;
 
       return (
@@ -56,7 +56,6 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     sortingFn: "alphanumeric",
   },
   {
-    accessorKey: "permitData.commodities",
     header: "Commodity",
     enableSorting: true,
     sortingFn: "alphanumeric",
@@ -65,19 +64,19 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     Cell: () => <>NA</>,
   },
   {
-    accessorKey: "permitData.vehicleDetails.plate",
+    accessorKey: "plate",
     header: "Plate",
     enableSorting: true,
     sortingFn: "alphanumeric",
   },
   {
-    accessorKey: "permitData.companyName",
+    accessorKey: "legalName",
     header: "Company Name",
     enableSorting: true,
     sortingFn: "alphanumeric",
   },
   {
-    accessorKey: "permitData.startDate",
+    accessorKey: "startDate",
     header: "Permit Start Date",
     enableSorting: true,
     sortingFn: dateTimeStringSortingFn,
@@ -87,7 +86,7 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     },
   },
   {
-    accessorKey: "permitData.expiryDate",
+    accessorKey: "expiryDate",
     header: "Permit End Date",
     enableSorting: true,
     sortingFn: dateTimeStringSortingFn,

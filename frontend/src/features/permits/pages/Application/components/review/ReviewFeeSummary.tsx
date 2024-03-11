@@ -5,6 +5,7 @@ import "./ReviewFeeSummary.scss";
 import { ConfirmationCheckboxes } from "./ConfirmationCheckboxes";
 import { FeeSummary } from "../../../../components/feeSummary/FeeSummary";
 import { PermitType } from "../../../../types/PermitType";
+import { Nullable } from "../../../../../../common/types/common";
 
 export const ReviewFeeSummary = ({
   isSubmitted,
@@ -16,7 +17,7 @@ export const ReviewFeeSummary = ({
   isSubmitted: boolean;
   isChecked: boolean;
   setIsChecked: Dispatch<SetStateAction<boolean>>;
-  permitType?: PermitType;
+  permitType?: Nullable<PermitType>;
   fee: string;
 }) => {
   return (

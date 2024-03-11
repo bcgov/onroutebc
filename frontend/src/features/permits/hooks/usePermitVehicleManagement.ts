@@ -1,8 +1,8 @@
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
-import { VehicleDetails } from "../types/application.d";
 import { mapToVehicleObjectById } from "../helpers/mappers";
 import { Nullable } from "../../../common/types/common";
 import { getDefaultVehicleDetails } from "../helpers/getDefaultApplicationFormData";
+import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
 import {
   PowerUnit,
   Trailer,
@@ -45,8 +45,8 @@ export const usePermitVehicleManagement = (companyId: string) => {
   );
 
   const handleSaveVehicle = async (
-    vehicleData?: VehicleDetails,
-  ): Promise<Nullable<VehicleDetails>> => {
+    vehicleData?: Nullable<PermitVehicleDetails>,
+  ): Promise<Nullable<PermitVehicleDetails>> => {
     // Check if the "add/update vehicle" checkbox was checked by the user
     if (!vehicleData?.saveVehicle) return undefined;
 
@@ -63,7 +63,7 @@ export const usePermitVehicleManagement = (companyId: string) => {
     );
 
     const transformByVehicleType = (
-      vehicleFormData: VehicleDetails,
+      vehicleFormData: PermitVehicleDetails,
       existingVehicle?: Vehicle,
     ): Vehicle => {
       const defaultPowerUnit: PowerUnit = {
