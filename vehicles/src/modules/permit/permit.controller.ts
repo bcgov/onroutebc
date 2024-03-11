@@ -36,9 +36,11 @@ import { VoidPermitDto } from './dto/request/void-permit.dto';
 import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
 import { GetPermitQueryParamsDto } from './dto/request/queryParam/getPermit.query-params.dto';
 import {
-  UserAuthGroup,
-  idirUserAuthGroupList,
+  ClientUserAuthGroup,
+  IDIR_USER_AUTH_GROUP_LIST,
 } from 'src/common/enum/user-auth-group.enum';
+import { ReadPermitMetadataDto } from './dto/response/read-permit-metadata.dto';
+import { doesUserHaveAuthGroup } from '../../common/helper/auth.helper';
 
 @ApiBearerAuth()
 @ApiTags('Permit')
@@ -77,27 +79,28 @@ export class PermitController {
    * @param status if true get active permits else get others
    *
    */
-  @ApiPaginatedResponse(ReadPermitDto)
+  @ApiPaginatedResponse(ReadPermitMetadataDto)
   @Roles(Role.READ_PERMIT)
   @Get()
   async getPermit(
     @Req() request: Request,
     @Query() getPermitQueryParamsDto: GetPermitQueryParamsDto,
-  ): Promise<PaginationDto<ReadPermitDto>> {
+  ): Promise<PaginationDto<ReadPermitMetadataDto>> {
     const currentUser = request.user as IUserJWT;
     if (
-      !idirUserAuthGroupList.includes(
-        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      !doesUserHaveAuthGroup(
+        currentUser.orbcUserAuthGroup,
+        IDIR_USER_AUTH_GROUP_LIST,
       ) &&
       !getPermitQueryParamsDto.companyId
     ) {
       throw new BadRequestException(
-        `Company Id is required for roles except ${idirUserAuthGroupList.join(', ')}.`,
+        `Company Id is required for roles except ${IDIR_USER_AUTH_GROUP_LIST.join(', ')}.`,
       );
     }
 
     const userGuid =
-      UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup
+      ClientUserAuthGroup.PERMIT_APPLICANT === currentUser.orbcUserAuthGroup
         ? currentUser.userGUID
         : null;
 
@@ -110,6 +113,7 @@ export class PermitController {
       searchColumn: getPermitQueryParamsDto.searchColumn,
       searchString: getPermitQueryParamsDto.searchString,
       userGUID: userGuid,
+      currentUser: currentUser,
     });
   }
 

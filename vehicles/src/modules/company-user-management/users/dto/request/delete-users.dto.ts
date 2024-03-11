@@ -1,6 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { ArrayMinSize, IsArray, IsString } from 'class-validator';
 
 export class DeleteUsersDto {
   @AutoMap()
@@ -11,5 +11,7 @@ export class DeleteUsersDto {
     example: ['6F9619FF8B86D011B42D00C04FC964FF'],
   })
   @IsString({ each: true })
-  userGUIDS: string[];
+  @IsArray()
+  @ArrayMinSize(1)
+  userGUIDs: string[];
 }

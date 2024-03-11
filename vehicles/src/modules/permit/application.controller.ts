@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   Param,
   Post,
@@ -33,18 +34,18 @@ import { ResultDto } from './dto/response/result.dto';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
 import { IssuePermitDto } from './dto/request/issue-permit.dto';
-import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import {
-  UserAuthGroup,
-  idirUserAuthGroupList,
+  ClientUserAuthGroup,
+  IDIR_USER_AUTH_GROUP_LIST,
 } from 'src/common/enum/user-auth-group.enum';
 import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
 import { GetApplicationQueryParamsDto } from './dto/request/queryParam/getApplication.query-params.dto';
 import { DeleteApplicationDto } from './dto/request/delete-application.dto';
-import { ApplicationStatus } from 'src/common/enum/application-status.enum';
-import { getActiveApplicationStatus } from 'src/common/helper/application.status.helper';
 import { DeleteDto } from '../common/dto/response/delete.dto';
+import { PermitApplicationOrigin } from '../../common/enum/permit-application-origin.enum';
+import { ReadApplicationMetadataDto } from './dto/response/read-application-metadata.dto';
+import { doesUserHaveAuthGroup } from '../../common/helper/auth.helper';
 
 @ApiBearerAuth()
 @ApiTags('Permit Application')
@@ -101,38 +102,38 @@ export class ApplicationController {
       'Fetch all permit application and return the same , enforcing authentication.' +
       "If login user is PA then only fetch thier application else fetch all applications associated with logged in user's company. ",
   })
-  @ApiPaginatedResponse(ReadPermitDto)
+  @ApiPaginatedResponse(ReadApplicationMetadataDto)
   @Roles(Role.READ_PERMIT)
   @Get()
   async findAllApplication(
     @Req() request: Request,
     @Query() getApplicationQueryParamsDto: GetApplicationQueryParamsDto,
-  ): Promise<PaginationDto<ReadApplicationDto>> {
+  ): Promise<PaginationDto<ReadApplicationMetadataDto>> {
     const currentUser = request.user as IUserJWT;
     if (
-      !idirUserAuthGroupList.includes(
-        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      !doesUserHaveAuthGroup(
+        currentUser.orbcUserAuthGroup,
+        IDIR_USER_AUTH_GROUP_LIST,
       ) &&
       !getApplicationQueryParamsDto.companyId
     ) {
       throw new BadRequestException(
-        `Company Id is required for roles except ${idirUserAuthGroupList.join(', ')}.`,
+        `Company Id is required for roles except ${IDIR_USER_AUTH_GROUP_LIST.join(', ')}.`,
       );
     }
 
     const userGuid =
-      UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup
+      ClientUserAuthGroup.PERMIT_APPLICANT === currentUser.orbcUserAuthGroup
         ? currentUser.userGUID
         : null;
-    const applicationStatus: Readonly<ApplicationStatus[]> =
-      getActiveApplicationStatus(currentUser);
+
     return this.applicationService.findAllApplications({
-      applicationStatus: applicationStatus,
       page: getApplicationQueryParamsDto.page,
       take: getApplicationQueryParamsDto.take,
       orderBy: getApplicationQueryParamsDto.orderBy,
       companyId: getApplicationQueryParamsDto.companyId,
       userGUID: userGuid,
+      currentUser: currentUser,
     });
   }
 
@@ -153,7 +154,6 @@ export class ApplicationController {
     type: ReadApplicationDto,
     isArray: true,
   })
-  @ApiQuery({ name: 'companyId', required: false })
   @ApiQuery({ name: 'amendment', required: false })
   @Roles(Role.READ_PERMIT)
   @Get(':permitId')
@@ -162,9 +162,39 @@ export class ApplicationController {
     @Param('permitId') permitId: string,
     @Query('amendment') amendment?: boolean,
   ): Promise<ReadApplicationDto> {
-    return !amendment
-      ? this.applicationService.findApplication(permitId)
-      : this.applicationService.findCurrentAmendmentApplication(permitId);
+    // Extracts the user object from the request, casting it to the expected IUserJWT type
+    const currentUser = request.user as IUserJWT;
+
+    // Based on the amendment query parameter, selects the appropriate method to retrieve
+    // either the application or its current amendment, passing the permitId and current user for authorization and filtering
+    const retApplicationDto = !amendment
+      ? await this.applicationService.findApplication(permitId, currentUser)
+      : await this.applicationService.findCurrentAmendmentApplication(
+          permitId,
+          currentUser,
+        );
+
+    // Validates the current user's permission to access the application or amendment
+    // by comparing user's authentication group, company ID, and the application's origin
+    if (
+      !doesUserHaveAuthGroup(
+        currentUser.orbcUserAuthGroup,
+        IDIR_USER_AUTH_GROUP_LIST,
+      ) &&
+      (retApplicationDto?.companyId != currentUser.companyId ||
+        retApplicationDto.permitApplicationOrigin !==
+          PermitApplicationOrigin.ONLINE)
+    ) {
+      throw new ForbiddenException(
+        `User does not have sufficient privileges to view the application ${permitId}.`,
+      );
+    }
+
+    if (!retApplicationDto) {
+      throw new DataNotFoundException();
+    }
+    // Returns the found application or amendment DTO
+    return retApplicationDto;
   }
 
   @ApiOperation({
@@ -218,13 +248,14 @@ export class ApplicationController {
     const currentUser = request.user as IUserJWT;
 
     if (
-      !idirUserAuthGroupList.includes(
-        currentUser.orbcUserAuthGroup as UserAuthGroup,
+      !doesUserHaveAuthGroup(
+        currentUser.orbcUserAuthGroup,
+        IDIR_USER_AUTH_GROUP_LIST,
       ) &&
       !issuePermitDto.companyId
     ) {
       throw new BadRequestException(
-        `Company Id is required for roles except ${idirUserAuthGroupList.join(', ')}.`,
+        `Company Id is required for roles except ${IDIR_USER_AUTH_GROUP_LIST.join(', ')}.`,
       );
     }
 
@@ -259,16 +290,11 @@ export class ApplicationController {
     @Body() deleteApplicationDto: DeleteApplicationDto,
   ): Promise<DeleteDto> {
     const currentUser = request.user as IUserJWT;
-    const userGuid =
-      UserAuthGroup.CV_CLIENT === currentUser.orbcUserAuthGroup
-        ? currentUser.userGUID
-        : null;
     const deleteResult: DeleteDto =
       await this.applicationService.deleteApplicationInProgress(
         deleteApplicationDto.applications,
         deleteApplicationDto.companyId,
         currentUser,
-        userGuid,
       );
     if (deleteResult == null) {
       throw new DataNotFoundException();

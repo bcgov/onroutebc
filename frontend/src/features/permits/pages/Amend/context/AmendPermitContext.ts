@@ -1,15 +1,15 @@
 import { createContext } from "react";
 
 import { Permit } from "../../../types/permit";
-import { AmendPermitFormData } from "../types/AmendPermitFormData";
 import { PermitHistory } from "../../../types/PermitHistory";
 import { Nullable } from "../../../../../common/types/common";
+import { Application } from "../../../types/application";
 
 interface AmendPermitContextType {
   permit?: Nullable<Permit>;
-  permitFormData?: Nullable<AmendPermitFormData>;
+  amendmentApplication?: Nullable<Application>;
   permitHistory: PermitHistory[];
-  setPermitFormData: (formData: AmendPermitFormData) => void;
+  setAmendmentApplication: (application?: Nullable<Application>) => void;
   back: () => void;
   next: () => void;
   goTo: (index: number) => void;
@@ -21,7 +21,7 @@ interface AmendPermitContextType {
 
 export const AmendPermitContext = createContext<AmendPermitContextType>({
   permitHistory: [],
-  setPermitFormData: () => undefined,
+  setAmendmentApplication: () => undefined,
   back: () => undefined,
   next: () => undefined,
   goTo: () => undefined,
