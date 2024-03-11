@@ -224,14 +224,19 @@ export class PaymentService {
           accumulator + currentValue.transactionAmount,
         0,
       );
-
     switch (createTransactionDto.transactionTypeId) {
       case TransactionType.PURCHASE:
-        if (totalTransactionAmountRequest != totalTransactionAmount)
+        if (
+          totalTransactionAmountRequest.toFixed(2) !=
+          totalTransactionAmount.toFixed(2)
+        )
           throw new BadRequestException('Transaction Amount Mismatch');
         break;
       case TransactionType.REFUND:
-        if (totalTransactionAmountRequest * -1 != totalTransactionAmount)
+        if (
+          (totalTransactionAmountRequest * -1).toFixed(2) !=
+          totalTransactionAmount.toFixed(2)
+        )
           throw new BadRequestException('Transaction Amount Mismatch');
         break;
       default:
