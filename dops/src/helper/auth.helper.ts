@@ -3,7 +3,11 @@ import { Directory } from '../enum/directory.enum';
 import { IDP } from '../enum/idp.enum';
 import { Role } from '../enum/roles.enum';
 import { IUserJWT } from '../interface/user-jwt.interface';
-import { UserAuthGroup, ClientUserAuthGroup, IDIRUserAuthGroup } from '../enum/user-auth-group.enum';
+import {
+  UserAuthGroup,
+  ClientUserAuthGroup,
+  IDIRUserAuthGroup,
+} from '../enum/user-auth-group.enum';
 
 /**
  * Determines the directory type based on the identity provider of the user.
