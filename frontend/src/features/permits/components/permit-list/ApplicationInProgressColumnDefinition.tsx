@@ -1,9 +1,15 @@
 import { MRT_ColumnDef } from "material-react-table";
-import { ApplicationInProgress } from "../../types/application";
+
+import { ApplicationListItem } from "../../types/application";
 import { APPLICATIONS_ROUTES } from "../../../../routes/constants";
 import { CustomNavLink } from "../../../../common/components/links/CustomNavLink";
+import { UserAuthGroupType } from "../../../../common/authentication/types";
+import { canUserAccessApplication } from "../../helpers/mappers";
+import { Nullable } from "../../../../common/types/common";
 
-export const ApplicationInProgressColumnDefinition: MRT_ColumnDef<ApplicationInProgress>[] =
+export const ApplicationInProgressColumnDefinition = (
+  userAuthGroup?: Nullable<UserAuthGroupType>,
+): MRT_ColumnDef<ApplicationListItem>[] =>
   [
     {
       accessorKey: "applicationNumber",
@@ -13,13 +19,21 @@ export const ApplicationInProgressColumnDefinition: MRT_ColumnDef<ApplicationInP
       accessorFn: (row) => row.applicationNumber,
       Cell: (props: { cell: any; row: any }) => {
         const permitIdStr = `${props.row.original.permitId}`;
-        return (
+        
+        return canUserAccessApplication(
+          props.row.original.permitApplicationOrigin,
+          userAuthGroup,
+        ) ? (
           <CustomNavLink
             to={`${APPLICATIONS_ROUTES.DETAILS(permitIdStr)}`}
             className="column-link column-link--application-details"
           >
             {props.cell.getValue()}
           </CustomNavLink>
+        ) : (
+          <>
+            {props.cell.getValue()}
+          </>
         );
       },
     },
@@ -36,19 +50,19 @@ export const ApplicationInProgressColumnDefinition: MRT_ColumnDef<ApplicationInP
       header: "Unit #",
     },
     {
-      accessorKey: "permitData.vehicleDetails.vin",
+      accessorKey: "vin",
       id: "vin",
       enableSorting: false,
       header: "VIN",
     },
     {
-      accessorKey: "permitData.vehicleDetails.plate",
+      accessorKey: "plate",
       id: "plate",
       enableSorting: false,
       header: "Plate",
     },
     {
-      accessorKey: "permitData.startDate",
+      accessorKey: "startDate",
       id: "startDate",
       enableSorting: false,
       header: "Permit Start Date",
@@ -60,13 +74,12 @@ export const ApplicationInProgressColumnDefinition: MRT_ColumnDef<ApplicationInP
       header: "Last Updated",
     },
     {
-      accessorFn: (row) =>
-        `${row.permitData.contactDetails?.firstName} ${row.permitData.contactDetails?.lastName} `,
+      accessorKey: "applicant",
       id: "applicant",
       header: "Applicant",
       enableSorting: false,
     },
   ];
 
-export const ApplicationNotFoundColumnDefinition: MRT_ColumnDef<ApplicationInProgress>[] =
+export const ApplicationNotFoundColumnDefinition: MRT_ColumnDef<ApplicationListItem>[] =
   [];

@@ -53,10 +53,6 @@ export const ApplicationReview = () => {
   // Send data to the backend API
   const saveApplicationMutation = useSaveApplicationMutation();
 
-  const saveApplicationSuccessful = (responseStatus: number) => {
-    return responseStatus === 200 || responseStatus === 201;
-  };
-
   const back = () => {
     navigate(withCompanyId(APPLICATIONS_ROUTES.DETAILS(permitId)), { replace: true });
   };
@@ -74,13 +70,11 @@ export const ApplicationReview = () => {
       return navigate(ERROR_ROUTES.UNEXPECTED);
     }
 
-    const response =
+    const { application: savedApplication } =
       await saveApplicationMutation.mutateAsync(applicationData);
 
-    const { data, status } = response;
-    setApplicationData(data);
-
-    if (saveApplicationSuccessful(status)) {
+    if (savedApplication) {
+      setApplicationData(savedApplication);
       next();
     } else {
       navigate(ERROR_ROUTES.UNEXPECTED);

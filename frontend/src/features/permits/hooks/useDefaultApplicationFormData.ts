@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 
-import { Application, Commodities } from "../types/application";
+import { Application, ApplicationFormData } from "../types/application";
 import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBCContext";
 import { areCommoditiesEqual } from "../helpers/equality";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { CompanyProfile } from "../../manageProfile/types/manageProfile";
 import { Nullable, Optional } from "../../../common/types/common";
 import { PermitType } from "../types/PermitType";
+import { PermitCommodity } from "../types/PermitCommodity";
 import {
   getDefaultContactDetails,
   getDefaultMailingAddress,
@@ -35,8 +36,14 @@ export const useDefaultApplicationFormData = (
   // initialize the entire form data with default values
   // Use default values (saved data from the application context, or empty values)
   const [defaultApplicationDataValues, setDefaultApplicationDataValues] =
-    useState<Application>(
-      getDefaultValues(permitType, applicationData, companyId, userDetails, companyInfo),
+    useState<ApplicationFormData>(
+      getDefaultValues(
+        permitType,
+        applicationData,
+        companyId,
+        userDetails,
+        companyInfo,
+      ),
     );
 
   // Update contact details form fields whenever these values are updated
@@ -94,7 +101,7 @@ export const useDefaultApplicationFormData = (
 
   // Recommended way of making deep comparisons (for arrays/objects) in dependency arrays
   // https://stackoverflow.com/questions/59467758/passing-array-to-useeffect-dependency-list
-  const commoditiesRef = useRef<Optional<Commodities[]>>(
+  const commoditiesRef = useRef<Optional<PermitCommodity[]>>(
     applicationData?.permitData?.commodities,
   );
   const incomingCommodities = getDefaultRequiredVal(
@@ -120,13 +127,10 @@ export const useDefaultApplicationFormData = (
     applicationData?.permitStatus,
     permitType,
     applicationData?.permitType,
-    applicationData?.createdDateTime,
-    applicationData?.updatedDateTime,
     applicationData?.permitData?.startDate,
     applicationData?.permitData?.permitDuration,
     applicationData?.permitData?.expiryDate,
     applicationData?.permitData?.feeSummary,
-    applicationData?.documentId,
     applicationData?.revision,
     applicationData?.previousRevision,
     commoditiesRef.current, // array deep comparison used here
@@ -137,12 +141,18 @@ export const useDefaultApplicationFormData = (
 
   useEffect(() => {
     setDefaultApplicationDataValues(
-      getDefaultValues(permitType, applicationData, companyId, userDetails, companyInfo),
+      getDefaultValues(
+        permitType,
+        applicationData,
+        companyId,
+        userDetails,
+        companyInfo,
+      ),
     );
   }, applicationFormDataDepArray);
 
   // Register default values with react-hook-form
-  const formMethods = useForm<Application>({
+  const formMethods = useForm<ApplicationFormData>({
     defaultValues: defaultApplicationDataValues,
     reValidateMode: "onBlur",
   });

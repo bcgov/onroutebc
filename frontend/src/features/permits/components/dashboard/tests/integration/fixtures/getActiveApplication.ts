@@ -1,6 +1,5 @@
 import { factory, nullable, primaryKey } from "@mswjs/data";
 
-import { ApplicationRequestData } from "../../../../../types/application";
 import { getDefaultUserDetails } from "./getUserDetails";
 import { getDefaultPowerUnits } from "./getVehicleInfo";
 import { getDefaultCompanyInfo } from "./getCompanyInfo";
@@ -8,6 +7,8 @@ import { TROS_COMMODITIES } from "../../../../../constants/tros";
 import { PERMIT_TYPES } from "../../../../../types/PermitType";
 import { getExpiryDate } from "../../../../../helpers/permitState";
 import { VEHICLE_TYPES } from "../../../../../../manageVehicles/types/Vehicle";
+import { PermitStatus } from "../../../../../types/PermitStatus";
+import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
 import {
   DATE_FORMATS,
   dayjsToLocalStr,
@@ -15,22 +16,21 @@ import {
   now,
 } from "../../../../../../../common/helpers/formatDate";
 
+import {
+  CreateApplicationRequestData,
+  UpdateApplicationRequestData,
+} from "../../../../../types/application";
+
 const activeApplicationSource = factory({
   application: {
     applicationNumber: primaryKey(String),
     permitId: nullable(String),
     permitStatus: nullable(String),
     companyId: Number,
-    userGuid: nullable(String),
     permitType: String,
     permitNumber: nullable(String),
-    permitApplicationOrigin: nullable(String),
-    permitApprovalSource: nullable(String),
-    revision: nullable(Number),
-    previousRevision: nullable(String),
     createdDateTime: String,
     updatedDateTime: String,
-    documentId: nullable(String),
     permitData: {
       startDate: String,
       permitDuration: Number,
@@ -72,13 +72,29 @@ const activeApplicationSource = factory({
   },
 });
 
-export const createApplication = (application: ApplicationRequestData) => {
-  return activeApplicationSource.application.create({ ...application });
+export const createApplication = (
+  application: CreateApplicationRequestData,
+  applicationNumber: string,
+  permitId: string,
+  createdDateTime: string,
+  updatedDateTime: string,
+) => {
+  return activeApplicationSource.application.create({
+    ...application,
+    applicationNumber,
+    permitId,
+    createdDateTime,
+    updatedDateTime,
+  });
 };
 
 export const updateApplication = (
-  application: ApplicationRequestData,
+  application: UpdateApplicationRequestData,
+  permitId: string,
   applicationNumber: string,
+  createdDateTime: string,
+  updatedDateTime: string,
+  permitStatus: PermitStatus,
 ) => {
   return activeApplicationSource.application.update({
     where: {
@@ -88,6 +104,19 @@ export const updateApplication = (
     },
     data: {
       ...application,
+      applicationNumber,
+      permitStatus,
+      permitId,
+      companyId: getDefaultRequiredVal(
+        getDefaultUserDetails().companyId,
+        application.companyId,
+      ),
+      permitType: getDefaultRequiredVal(
+        PERMIT_TYPES.TROS,
+        application.permitType,
+      ),
+      createdDateTime,
+      updatedDateTime,
     },
   });
 };

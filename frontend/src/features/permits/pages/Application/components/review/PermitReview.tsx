@@ -16,40 +16,38 @@ import { PermitType } from "../../../../types/PermitType";
 import { calculateFeeByDuration } from "../../../../helpers/feeSummary";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import { Nullable } from "../../../../../../common/types/common";
-import {
-  Application,
-  Commodities,
-  ContactDetails,
-  VehicleDetails,
-} from "../../../../types/application";
+import { PermitContactDetails } from "../../../../types/PermitContactDetails";
+import { PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
+import { Application } from "../../../../types/application";
+import { PermitCommodity } from "../../../../types/PermitCommodity";
 
 interface PermitReviewProps {
-  permitType?: PermitType;
-  permitNumber?: string;
-  applicationNumber?: string;
-  createdDateTime?: Dayjs;
-  updatedDateTime?: Dayjs;
+  permitType?: Nullable<PermitType>;
+  permitNumber?: Nullable<string>;
+  applicationNumber?: Nullable<string>;
+  createdDateTime?: Nullable<Dayjs>;
+  updatedDateTime?: Nullable<Dayjs>;
   companyInfo?: Nullable<CompanyProfile>;
-  contactDetails?: ContactDetails;
-  permitStartDate?: Dayjs;
-  permitDuration?: number;
-  permitExpiryDate?: Dayjs;
-  permitConditions?: Commodities[];
+  contactDetails?: Nullable<PermitContactDetails>;
+  permitStartDate?: Nullable<Dayjs>;
+  permitDuration?: Nullable<number>;
+  permitExpiryDate?: Nullable<Dayjs>;
+  permitConditions?: Nullable<PermitCommodity[]>;
   continueBtnText: string;
   isAmendAction: boolean;
   children?: React.ReactNode;
   hasAttemptedCheckboxes: boolean;
   allChecked: boolean;
   setAllChecked: Dispatch<SetStateAction<boolean>>;
-  powerUnitSubTypes?: VehicleSubType[];
-  trailerSubTypes?: VehicleSubType[];
-  vehicleDetails?: VehicleDetails;
-  vehicleWasSaved?: boolean;
+  powerUnitSubTypes?: Nullable<VehicleSubType[]>;
+  trailerSubTypes?: Nullable<VehicleSubType[]>;
+  vehicleDetails?: Nullable<PermitVehicleDetails>;
+  vehicleWasSaved?: Nullable<boolean>;
   onEdit: () => void;
   onContinue: () => Promise<void>;
   showChangedFields?: boolean;
   oldFields?: Nullable<Partial<Application>>;
-  calculatedFee?: string;
+  calculatedFee?: Nullable<string>;
   doingBusinessAs?: Nullable<string>;
 }
 
@@ -71,6 +69,7 @@ export const PermitReview = (props: PermitReviewProps) => {
           infoNumber={
             props.isAmendAction ? props.permitNumber : props.applicationNumber
           }
+          isAmendAction={props.isAmendAction}
           createdDateTime={props.createdDateTime}
           updatedDateTime={props.updatedDateTime}
           companyInfo={props.companyInfo}

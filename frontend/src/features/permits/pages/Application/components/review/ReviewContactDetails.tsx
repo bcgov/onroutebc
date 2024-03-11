@@ -1,20 +1,21 @@
 import { Box, Typography } from "@mui/material";
 
 import "./ReviewContactDetails.scss";
-import { ContactDetails } from "../../../../types/application";
 import { DiffChip } from "./DiffChip";
+import { Nullable } from "../../../../../../common/types/common";
+import { PermitContactDetails } from "../../../../types/PermitContactDetails";
 import {
   areValuesDifferent,
   getDefaultRequiredVal,
 } from "../../../../../../common/helpers/util";
 
-const nameDisplay = (firstName?: string, lastName?: string) => {
+const nameDisplay = (firstName?: Nullable<string>, lastName?: Nullable<string>) => {
   if (!firstName) return getDefaultRequiredVal("", lastName);
   if (!lastName) return getDefaultRequiredVal("", firstName);
   return `${firstName} ${lastName}`;
 };
 
-const phoneDisplay = (phone?: string, ext?: string) => {
+const phoneDisplay = (phone?: Nullable<string>, ext?: Nullable<string>) => {
   if (!phone) return "";
   const firstPart = `${phone}`;
   const secondPart =
@@ -27,9 +28,9 @@ export const ReviewContactDetails = ({
   showChangedFields = false,
   oldFields = undefined,
 }: {
-  contactDetails?: ContactDetails;
+  contactDetails?: Nullable<PermitContactDetails>;
   showChangedFields?: boolean;
-  oldFields?: ContactDetails;
+  oldFields?: Nullable<PermitContactDetails>;
 }) => {
   const changedFields = showChangedFields
     ? {

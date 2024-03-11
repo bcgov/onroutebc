@@ -35,7 +35,7 @@ export const PermitRowOptions = ({
   permitId,
 }: {
   isExpired: boolean;
-  permitId: number;
+  permitId: string;
 }) => {
   /**
    * Action handler upon a select event.
@@ -43,7 +43,7 @@ export const PermitRowOptions = ({
    */
   const onSelectOptionCallback = (selectedOption: string) => {
     if (selectedOption === PERMIT_ACTION_OPTION_TYPES.VIEW_RECEIPT) {
-      viewReceiptPdf(permitId.toString());
+      viewReceiptPdf(permitId);
     }
   };
 

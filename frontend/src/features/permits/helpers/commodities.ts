@@ -1,7 +1,7 @@
 import { MANDATORY_TROS_COMMODITIES, TROS_COMMODITIES } from "../constants/tros";
 import { MANDATORY_TROW_COMMODITIES, TROW_COMMODITIES } from "../constants/trow";
+import { PermitCommodity } from "../types/PermitCommodity";
 import { PERMIT_TYPES, PermitType } from "../types/PermitType";
-import { Commodities } from "../types/application";
 
 /**
  * Get mandatory commodities that must be selected for a permit type.
@@ -30,7 +30,10 @@ const getCommoditiesByPermitType = (permitType: PermitType) => {
   }
 };
 
-const isCommodityMandatory = (commodity: Commodities, mandatoryCommodities: Commodities[]) => {
+const isCommodityMandatory = (
+  commodity: PermitCommodity,
+  mandatoryCommodities: PermitCommodity[],
+) => {
   return mandatoryCommodities
     .map(mandatoryCommodity => mandatoryCommodity.condition)
     .includes(commodity.condition);

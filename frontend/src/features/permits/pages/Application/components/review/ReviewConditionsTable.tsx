@@ -8,15 +8,16 @@ import {
   Checkbox,
 } from "@mui/material";
 
-import { Commodities } from "../../../../types/application";
 import "./ReviewConditionsTable.scss";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import { CustomExternalLink } from "../../../../../../common/components/links/CustomExternalLink";
+import { Nullable } from "../../../../../../common/types/common";
+import { PermitCommodity } from "../../../../types/PermitCommodity";
 
 export const ReviewConditionsTable = ({
   conditions,
 }: {
-  conditions?: Commodities[];
+  conditions?: Nullable<PermitCommodity[]>;
 }) => {
   const commodities = getDefaultRequiredVal([], conditions);
 
@@ -34,7 +35,7 @@ export const ReviewConditionsTable = ({
           </TableRow>
         </TableHead>
         <TableBody>
-          {commodities.map((row: Commodities) => {
+          {commodities.map((row: PermitCommodity) => {
             return (
               <TableRow
                 className="review-conditions-table__row"
