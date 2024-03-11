@@ -207,10 +207,10 @@ export class PaymentService {
     nestedQueryRunner?: QueryRunner,
     voidStatus?: ApplicationStatus.VOIDED | ApplicationStatus.REVOKED,
   ): Promise<ReadTransactionDto> {
-    let totalTransactionAmount: number = 0;
+    let totalTransactionAmountCalculated: number = 0;
     for (const application of createTransactionDto.applicationDetails) {
-      totalTransactionAmount =
-        totalTransactionAmount +
+      totalTransactionAmountCalculated =
+      totalTransactionAmountCalculated +
         (await this.permitFeeCalculator(
           createTransactionDto.transactionTypeId,
           application.applicationId,
@@ -218,7 +218,7 @@ export class PaymentService {
           nestedQueryRunner,
         ));
     }
-    const totalTransactionAmountRequest =
+    const totalTransactionAmount =
       createTransactionDto.applicationDetails.reduce(
         (accumulator, currentValue) =>
           accumulator + currentValue.transactionAmount,
@@ -227,15 +227,15 @@ export class PaymentService {
     switch (createTransactionDto.transactionTypeId) {
       case TransactionType.PURCHASE:
         if (
-          totalTransactionAmountRequest.toFixed(2) !=
-          totalTransactionAmount.toFixed(2)
+          totalTransactionAmount.toFixed(2) !=
+          totalTransactionAmountCalculated.toFixed(2)
         )
           throw new BadRequestException('Transaction Amount Mismatch');
         break;
       case TransactionType.REFUND:
         if (
-          (totalTransactionAmountRequest * -1).toFixed(2) !=
-          totalTransactionAmount.toFixed(2)
+          (totalTransactionAmount * -1).toFixed(2) !=
+          totalTransactionAmountCalculated.toFixed(2)
         )
           throw new BadRequestException('Transaction Amount Mismatch');
         break;
