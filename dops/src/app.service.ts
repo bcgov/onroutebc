@@ -43,7 +43,7 @@ export class AppService {
         );
         //TODO: Temporary stopgap for release 1
         const templatefile = await this.s3Service.getFile(
-          templateMetadata.fileName, //TODO: Should be templateMetadata.s3ObjectId . Using filename as temporary stopgap for release 1 integration with BCBox.
+          templateMetadata.fileName, //TODO: Should be templateMetadata.s3ObjectId. Using filename as temporary stopgap for release 1 integration with BCBox.
         );
 
         return {
