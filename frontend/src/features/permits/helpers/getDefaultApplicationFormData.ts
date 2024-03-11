@@ -1,6 +1,5 @@
 import dayjs, { Dayjs } from "dayjs";
 
-import { getUserGuidFromSession } from "../../../common/apiManager/httpRequestHandler";
 import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBCContext";
 import { getMandatoryCommodities } from "./commodities";
 import { Nullable } from "../../../common/types/common";
@@ -8,6 +7,10 @@ import { PERMIT_STATUSES } from "../types/PermitStatus";
 import { calculateFeeByDuration } from "./feeSummary";
 import { PermitType } from "../types/PermitType";
 import { getExpiryDate } from "./permitState";
+import { PermitMailingAddress } from "../types/PermitMailingAddress";
+import { PermitContactDetails } from "../types/PermitContactDetails";
+import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
+import { Application, ApplicationFormData } from "../types/application";
 import {
   getEndOfDate,
   getStartOfDate,
@@ -24,13 +27,6 @@ import {
   getDefaultRequiredVal,
 } from "../../../common/helpers/util";
 
-import {
-  Application,
-  ContactDetails,
-  MailingAddress,
-  VehicleDetails,
-} from "../types/application";
-
 /**
  * Get default values for contact details, or populate with existing contact details and/or user details
  * @param isNewApplication true if the application has not been created yet, false if created already
@@ -41,9 +37,9 @@ import {
  */
 export const getDefaultContactDetails = (
   isNewApplication: boolean,
-  contactDetails?: ContactDetails,
-  userDetails?: BCeIDUserDetailContext,
-  companyEmail?: string,
+  contactDetails?: Nullable<PermitContactDetails>,
+  userDetails?: Nullable<BCeIDUserDetailContext>,
+  companyEmail?: Nullable<string>,
 ) => {
   if (isNewApplication) {
     return {
@@ -79,8 +75,8 @@ export const getDefaultContactDetails = (
  * @returns default values for mailing address
  */
 export const getDefaultMailingAddress = (
-  mailingAddress?: MailingAddress,
-  alternateAddress?: Address,
+  mailingAddress?: Nullable<PermitMailingAddress>,
+  alternateAddress?: Nullable<Address>,
 ) =>
   mailingAddress
     ? {
@@ -105,7 +101,9 @@ export const getDefaultMailingAddress = (
  * @param vehicleDetails existing vehicle details, if any
  * @returns default values for vehicle details
  */
-export const getDefaultVehicleDetails = (vehicleDetails?: VehicleDetails) => ({
+export const getDefaultVehicleDetails = (
+  vehicleDetails?: Nullable<PermitVehicleDetails>,
+) => ({
   vehicleId: getDefaultRequiredVal("", vehicleDetails?.vehicleId),
   unitNumber: getDefaultRequiredVal("", vehicleDetails?.unitNumber),
   vin: getDefaultRequiredVal("", vehicleDetails?.vin),
@@ -124,7 +122,7 @@ export const getDurationOrDefault = (
   duration?: Nullable<number | string>,
 ): number => {
   return applyWhenNotNullable(
-    (duration) => +duration,
+    (duration: string | number) => +duration,
     duration,
     defaultDuration,
   );
@@ -164,11 +162,11 @@ export const getExpiryDateOrDefault = (
  */
 export const getDefaultValues = (
   permitType: PermitType,
-  applicationData?: Nullable<Application>,
-  companyId?: number,
-  userDetails?: BCeIDUserDetailContext,
-  companyInfo?: CompanyProfile,
-) => {
+  applicationData?: Nullable<Application | ApplicationFormData>,
+  companyId?: Nullable<number>,
+  userDetails?: Nullable<BCeIDUserDetailContext>,
+  companyInfo?: Nullable<CompanyProfile>,
+): ApplicationFormData => {
   const startDateOrDefault = getStartDateOrDefault(
     now(),
     applicationData?.permitData?.startDate,
@@ -196,11 +194,6 @@ export const getDefaultValues = (
       "",
       applicationData?.applicationNumber,
     ),
-    userGuid: getDefaultRequiredVal(
-      "",
-      applicationData?.userGuid,
-      getUserGuidFromSession(),
-    ),
     permitId: getDefaultRequiredVal("", applicationData?.permitId),
     permitNumber: getDefaultRequiredVal("", applicationData?.permitNumber),
     permitType: getDefaultRequiredVal(
@@ -211,22 +204,6 @@ export const getDefaultValues = (
       PERMIT_STATUSES.IN_PROGRESS,
       applicationData?.permitStatus,
     ),
-    createdDateTime: applyWhenNotNullable(
-      (date) => dayjs(date),
-      applicationData?.createdDateTime,
-      now(),
-    ),
-    updatedDateTime: applyWhenNotNullable(
-      (date) => dayjs(date),
-      applicationData?.updatedDateTime,
-      now(),
-    ),
-    revision: getDefaultRequiredVal(0, applicationData?.revision),
-    previousRevision: getDefaultRequiredVal(
-      "",
-      applicationData?.previousRevision,
-    ),
-    documentId: getDefaultRequiredVal("", applicationData?.documentId),
     permitData: {
       companyName: getDefaultRequiredVal(
         "",

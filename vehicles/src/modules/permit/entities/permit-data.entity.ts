@@ -60,6 +60,6 @@ export class PermitData extends Base {
   plate: string;
 
   @AutoMap()
-  @Column({ name: 'APPLICANT', insert: false, update: false })
-  applicant: string;
+  @Column({ name: 'VIN', insert: false, update: false })
+  vin: string;
 }

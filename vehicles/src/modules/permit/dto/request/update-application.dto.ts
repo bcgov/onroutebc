@@ -26,17 +26,6 @@ export class UpdateApplicationDto {
 
   @AutoMap()
   @ApiProperty({
-    description: 'GUID of the user requesting the permit.',
-    example: '06267945F2EB4E31B585932F78B76269',
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  @MaxLength(32)
-  userGuid?: string;
-
-  @AutoMap()
-  @ApiProperty({
     enum: PermitType,
     description: 'Friendly name for the permit type.',
     example: PermitType.TERM_OVERSIZE,

@@ -94,7 +94,7 @@ export const IDIRPermitSearchRowActions = ({
   /**
    * The permit id.
    */
-  permitId: number;
+  permitId: string;
   /**
    * Is the permit inactive (voided/superseded/revoked) or expired?
    */
@@ -124,17 +124,15 @@ export const IDIRPermitSearchRowActions = ({
    * @param selectedOption The selected option as a string.
    */
   const onSelectOption = (selectedOption: string) => {
-    const permitIdStr = `${permitId}`;
-
     if (selectedOption === PERMIT_ACTION_TYPES.RESEND) {
       // For implementation
       setIsResendOpen(() => true);
     } else if (selectedOption === PERMIT_ACTION_TYPES.VIEW_RECEIPT) {
-      viewReceiptPdf(permitId.toString());
+      viewReceiptPdf(permitId);
     } else if (selectedOption === PERMIT_ACTION_TYPES.VOID_REVOKE) {
-      navigate(`${routes.PERMITS_ROUTES.VOID(permitIdStr)}`);
+      navigate(`${routes.PERMITS_ROUTES.VOID(permitId)}`);
     } else if (selectedOption === PERMIT_ACTION_TYPES.AMEND) {
-      navigate(`${routes.PERMITS_ROUTES.AMEND(permitIdStr)}`);
+      navigate(`${routes.PERMITS_ROUTES.AMEND(permitId)}`);
     }
   };
 

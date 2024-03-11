@@ -16,7 +16,6 @@ import "./VehicleDetails.scss";
 import { CountryAndProvince } from "../../../../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../../../../common/components/form/CustomFormComponents";
 import { InfoBcGovBanner } from "../../../../../../../common/components/banners/InfoBcGovBanner";
-import { VehicleDetails as VehicleDetailsType } from "../../../../../types/application";
 import { mapToVehicleObjectById } from "../../../../../helpers/mappers";
 import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
 import { sortVehicleSubTypes } from "../../../../../helpers/sorter";
@@ -25,7 +24,8 @@ import { CustomInputHTMLAttributes } from "../../../../../../../common/types/for
 import { SelectUnitOrPlate } from "./customFields/SelectUnitOrPlate";
 import { SelectVehicleDropdown } from "./customFields/SelectVehicleDropdown";
 import { BANNER_MESSAGES } from "../../../../../../../common/constants/bannerMessages";
-import { Optional } from "../../../../../../../common/types/common";
+import { Nullable } from "../../../../../../../common/types/common";
+import { PermitVehicleDetails } from "../../../../../types/PermitVehicleDetails";
 import {
   PowerUnit,
   Trailer,
@@ -72,7 +72,7 @@ export const VehicleDetails = ({
   ineligibleTrailerSubtypes,
 }: {
   feature: string;
-  vehicleData?: VehicleDetailsType;
+  vehicleData?: Nullable<PermitVehicleDetails>;
   vehicleOptions: Vehicle[];
   powerUnitSubTypes: VehicleSubType[];
   trailerSubTypes: VehicleSubType[];
@@ -129,7 +129,7 @@ export const VehicleDetails = ({
   ]);
 
   const [selectedVehicle, setSelectedVehicle] =
-    useState<Optional<VehicleDetailsType>>();
+    useState<Nullable<PermitVehicleDetails>>();
 
   useEffect(() => {
     // Update subtype options when vehicle type changes
@@ -239,7 +239,7 @@ export const VehicleDetails = ({
   };
 
   // Set new vehicle selection
-  const setNewVehicle = (vehicle: VehicleDetailsType) => {
+  const setNewVehicle = (vehicle: PermitVehicleDetails) => {
     setValue("permitData.vehicleDetails.vehicleId", vehicle.vehicleId);
     setValue("permitData.vehicleDetails.unitNumber", vehicle.unitNumber);
     setValue("permitData.vehicleDetails.vin", vehicle.vin);
@@ -258,7 +258,7 @@ export const VehicleDetails = ({
 
   // Whenever the vehicle selection is cleared
   const onClearVehicle = () => {
-    setSelectedVehicle(emptyVehicleDetails as VehicleDetailsType);
+    setSelectedVehicle(emptyVehicleDetails as PermitVehicleDetails);
   };
 
   // Whenever a new vehicle is selected
