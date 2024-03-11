@@ -13,22 +13,16 @@ import { USER_AUTH_GROUP } from "../../../../common/authentication/types";
 import { AmendPermitReview } from "./components/AmendPermitReview";
 import { AmendPermitFinish } from "./components/AmendPermitFinish";
 import { AmendPermitForm } from "./components/AmendPermitForm";
-import {
-  applyWhenNotNullable,
-  getDefaultRequiredVal,
-} from "../../../../common/helpers/util";
 import { ERROR_ROUTES, IDIR_ROUTES } from "../../../../routes/constants";
 import { hasPermitExpired } from "../../helpers/permitState";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { Application } from "../../types/application";
+import { Nullable } from "../../../../common/types/common";
 import {
   useAmendmentApplicationQuery,
   usePermitDetailsQuery,
   usePermitHistoryQuery,
 } from "../../hooks/hooks";
-
-import {
-  AmendPermitFormData,
-  getDefaultFormDataFromPermit,
-} from "./types/AmendPermitFormData";
 
 import {
   SEARCH_BY_FILTERS,
@@ -94,34 +88,25 @@ export const AmendPermit = () => {
   const permitHistoryQuery = usePermitHistoryQuery(originalPermitId);
   const permitHistory = getDefaultRequiredVal([], permitHistoryQuery.data);
 
-  // Get latest amendment application, if any
-  const { data: amendmentApplication } =
+  // Get latest amendment application for the permit, if any
+  const { data: latestAmendmentApplication } =
     useAmendmentApplicationQuery(originalPermitId);
 
-  const permitFormDefaultValues = () => {
-    if (amendmentApplication) {
-      return getDefaultFormDataFromPermit(amendmentApplication);
-    }
-
-    return getDefaultFormDataFromPermit(
-      applyWhenNotNullable(
-        (p) => ({
-          ...p,
-          comment: "",
-        }),
-        permit,
-      ),
+  const isLoadingState = () => {
+    return (
+      typeof permit === "undefined" ||
+      typeof latestAmendmentApplication === "undefined"
     );
   };
 
   // Permit form data, populated whenever permit is fetched
-  const [permitFormData, setPermitFormData] = useState<AmendPermitFormData>(
-    permitFormDefaultValues(),
-  );
+  const [amendmentApplication, setAmendmentApplication] = useState<
+    Nullable<Application>
+  >(latestAmendmentApplication);
 
   useEffect(() => {
-    setPermitFormData(permitFormDefaultValues());
-  }, [amendmentApplication, permit]);
+    setAmendmentApplication(latestAmendmentApplication);
+  }, [latestAmendmentApplication]);
 
   const { currentStepIndex, step, back, next, goTo } = useMultiStepForm([
     <AmendPermitForm key={AMEND_PERMIT_STEPS.Amend} />,
@@ -170,19 +155,12 @@ export const AmendPermit = () => {
     });
   };
 
-  const isLoadingState = () => {
-    return (
-      typeof permit === "undefined" ||
-      typeof amendmentApplication === "undefined"
-    );
-  };
-
   const contextData = useMemo(
     () => ({
       permit,
-      permitFormData,
+      amendmentApplication,
       permitHistory,
-      setPermitFormData,
+      setAmendmentApplication,
       next,
       back,
       goTo,
@@ -193,9 +171,9 @@ export const AmendPermit = () => {
     }),
     [
       permit,
-      permitFormData,
+      amendmentApplication,
       permitHistory,
-      setPermitFormData,
+      setAmendmentApplication,
       next,
       back,
       goTo,

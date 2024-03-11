@@ -13,17 +13,17 @@ import {
 } from "@mui/material";
 
 import "./ConditionsTable.scss";
-import { Commodities } from "../../../../types/application";
 import { CustomExternalLink } from "../../../../../../common/components/links/CustomExternalLink";
 import { PermitType } from "../../../../types/PermitType";
 import { getDefaultCommodities } from "../../../../helpers/commodities";
+import { PermitCommodity } from "../../../../types/PermitCommodity";
 
 export const ConditionsTable = ({
   commoditiesInPermit,
   applicationWasCreated,
   permitType,
 }: {
-  commoditiesInPermit: Commodities[];
+  commoditiesInPermit: PermitCommodity[];
   applicationWasCreated: boolean;
   permitType: PermitType;
 }) => {
@@ -45,7 +45,8 @@ export const ConditionsTable = ({
       };
     });
 
-  const [allCommodities, setAllCommodities] = useState<Commodities[]>(initialCommodities);
+  const [allCommodities, setAllCommodities] =
+    useState<PermitCommodity[]>(initialCommodities);
 
   useEffect(() => {
     resetField("permitData.commodities", { defaultValue: [] }); // reset all commodities

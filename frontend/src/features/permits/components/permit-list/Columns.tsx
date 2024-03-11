@@ -1,13 +1,36 @@
 import { MRT_ColumnDef } from "material-react-table";
 
+import { viewPermitPdf } from "../../helpers/permitPDFHelper";
+import { PermitListItem } from "../../types/permit";
+import { PermitChip } from "./PermitChip";
 import { formatCellValuetoDatetime } from "../../../../common/helpers/tableHelper";
-import { Permit } from "../../types/permit";
+import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 /**
  * The column definition for Permits.
  */
-export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
-  
+export const PermitsColumnDefinition: MRT_ColumnDef<PermitListItem>[] = [
+  {
+    accessorKey: "permitNumber",
+    id: "permitNumber",
+    header: "Permit #",
+    enableSorting: true,
+    size: 500,
+    accessorFn: (row) => row.permitNumber,
+    Cell: (props: { row: any; cell: any }) => {
+      return (
+        <>
+          <CustomActionLink
+            onClick={() => viewPermitPdf(props.row.original.permitId)}
+          >
+            {props.cell.getValue()}
+          </CustomActionLink>
+          <PermitChip permitStatus={props.row.original.permitStatus} />
+        </>
+      );
+    },
+  },
   {
     accessorKey: "permitType",
     id: "permitType",
@@ -15,19 +38,19 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
     enableSorting: true,
   },
   {
-    accessorFn: (row) => `${row.permitData.vehicleDetails?.unitNumber ?? ""}`,
+    accessorFn: (row) => getDefaultRequiredVal("", row.unitNumber),
     id: "unitNumber",
     header: "Unit #",
     enableSorting: true,
   },
   {
-    accessorKey: "permitData.vehicleDetails.plate",
+    accessorKey: "plate",
     header: "Plate",
     id: "plate",
     enableSorting: true,
   },
   {
-    accessorKey: "permitData.startDate",
+    accessorKey: "startDate",
     id: "startDate",
     header: "Permit Start Date",
     enableSorting: true,
@@ -37,7 +60,7 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
     },
   },
   {
-    accessorKey: "permitData.expiryDate",
+    accessorKey: "expiryDate",
     header: "Permit End Date",
     id: "expiryDate",
     enableSorting: true,
@@ -47,13 +70,12 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
     },
   },
   {
-    accessorFn: (row) =>
-      `${row.permitData.contactDetails?.firstName} ${row.permitData.contactDetails?.lastName} `,
-    id: "applicant",
+    accessorKey: "issuer",
+    id: "issuer",
     header: "Applicant",
     enableSorting: true,
   },
 ];
 
-export const PermitsNotFoundColumnDefinition: MRT_ColumnDef<Permit>[] =
+export const PermitsNotFoundColumnDefinition: MRT_ColumnDef<PermitListItem>[] =
   PermitsColumnDefinition;

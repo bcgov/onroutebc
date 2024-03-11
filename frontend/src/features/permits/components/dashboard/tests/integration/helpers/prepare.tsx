@@ -76,14 +76,17 @@ const server = setupServer(
 
     const applicationData = {
       ...(application as CreateApplicationRequestData),
-      applicationNumber: newApplicationNumber,
-      permitId: newPermitId,
-      originalPermitId: newPermitId,
-      createdDateTime: currDtUtcStr,
-      updatedDateTime: currDtUtcStr,
       permitStatus: PERMIT_STATUSES.IN_PROGRESS,
     };
-    const createdApplication = createApplication(applicationData); // add to mock application store
+
+    const createdApplication = createApplication(
+      applicationData,
+      newApplicationNumber,
+      newPermitId,
+      currDtUtcStr,
+      currDtUtcStr,
+    ); // add to mock application store
+
     return HttpResponse.json(
       {
         ...createdApplication,
@@ -103,17 +106,16 @@ const server = setupServer(
         return HttpResponse.json(null, { status: 400 });
       }
 
-      const applicationData = {
-        ...(application as UpdateApplicationRequestData),
-        permitId: newPermitId,
-        originalPermitId: newPermitId,
-        applicationNumber: String(id),
-        createdDateTime: currDtUtcStr,
-        permitStatus: PERMIT_STATUSES.IN_PROGRESS,
-        updatedDateTime: currDtUtcStr,
-      };
+      const applicationData = application as UpdateApplicationRequestData;
 
-      const updatedApplication = updateApplication(applicationData, String(id)); // update application in mock application store
+      const updatedApplication = updateApplication(
+        applicationData,
+        newPermitId,
+        String(id),
+        currDtUtcStr,
+        currDtUtcStr,
+        PERMIT_STATUSES.IN_PROGRESS,
+      ); // update application in mock application store
 
       if (!updatedApplication) {
         return HttpResponse.json(null, { status: 404 });

@@ -1,7 +1,7 @@
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { isZeroAmount } from "../../../helpers/feeSummary";
 import { PERMIT_STATUSES } from "../../../types/PermitStatus";
-import { TRANSACTION_TYPES } from "../../../types/payment.d";
+import { TRANSACTION_TYPES } from "../../../types/payment";
 import { RefundFormData } from "../../Refund/types/RefundFormData";
 import {
   CONSOLIDATED_PAYMENT_METHODS,

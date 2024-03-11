@@ -1,18 +1,22 @@
+import { AxiosResponse } from "axios";
+
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
-import { IssuePermitsResponse, Permit } from "../types/permit";
+import { IssuePermitsResponse, PermitListItem, PermitResponseData } from "../types/permit";
 import { PermitHistory } from "../types/PermitHistory";
 import { getPermitTypeName } from "../types/PermitType";
+import { removeEmptyIdsFromPermitsActionResponse } from "../helpers/mappers";
+import { AmendPermitFormData } from "../pages/Amend/types/AmendPermitFormData";
 import {
+  Nullable,
   PaginatedResponse,
   PaginationAndFilters,
   RequiredOrNull,
 } from "../../../common/types/common";
 
 import {
-  mapApplicationToUpdateApplicationRequestData,
-  mapApplicationToCreateApplicationRequestData,
-  removeEmptyIdsFromPermitsActionResponse,
-} from "../helpers/mappers";
+  serializeForCreateApplication,
+  serializeForUpdateApplication,
+} from "../helpers/serializeApplication";
 
 import {
   CompleteTransactionRequestData,
@@ -39,9 +43,9 @@ import {
 } from "../../../common/helpers/util";
 
 import {
-  Application,
-  ApplicationResponse,
-  PermitApplicationInProgress,
+  ApplicationResponseData,
+  ApplicationListItem,
+  ApplicationFormData,
 } from "../types/application";
 
 import {
@@ -61,12 +65,14 @@ import {
  * @param application application data to be submitted
  * @returns response with created application data, or error if failed
  */
-export const createApplication = async (application: Application) => {
+export const createApplication = async (
+  application: ApplicationFormData,
+): Promise<AxiosResponse<ApplicationResponseData>> => {
   return await httpPOSTRequest(
     APPLICATIONS_API_ROUTES.CREATE,
     replaceEmptyValuesWithNull({
       // must convert application to ApplicationRequestData (dayjs fields to strings)
-      ...mapApplicationToCreateApplicationRequestData(application),
+      ...serializeForCreateApplication(application),
     }),
   );
 };
@@ -78,14 +84,14 @@ export const createApplication = async (application: Application) => {
  * @returns response with updated application data, or error if failed
  */
 export const updateApplication = async (
-  application: Application,
+  application: ApplicationFormData,
   applicationNumber: string,
-) => {
+): Promise<AxiosResponse<ApplicationResponseData>> => {
   return await httpPUTRequest(
     `${APPLICATIONS_API_ROUTES.UPDATE}/${applicationNumber}`,
     replaceEmptyValuesWithNull({
       // must convert application to ApplicationRequestData (dayjs fields to strings)
-      ...mapApplicationToUpdateApplicationRequestData(application),
+      ...serializeForUpdateApplication(application),
     }),
   );
 };
@@ -100,7 +106,7 @@ export const getApplicationsInProgress = async ({
   searchString,
   orderBy = [],
 }: PaginationAndFilters): Promise<
-  PaginatedResponse<PermitApplicationInProgress>
+  PaginatedResponse<ApplicationListItem>
 > => {
   const companyId = getCompanyIdFromSession();
   const applicationsURL = new URL(APPLICATIONS_API_ROUTES.GET);
@@ -123,12 +129,12 @@ export const getApplicationsInProgress = async ({
       const paginatedResponseObject = getDefaultRequiredVal(
         {},
         response.data,
-      ) as PaginatedResponse<PermitApplicationInProgress>;
+      ) as PaginatedResponse<ApplicationListItem>;
       return paginatedResponseObject;
     })
     .then(
       (
-        paginatedApplications: PaginatedResponse<PermitApplicationInProgress>,
+        paginatedApplications: PaginatedResponse<ApplicationListItem>,
       ) => {
         const applicationsWithDateTransformations =
           paginatedApplications.items.map((application) => {
@@ -143,18 +149,11 @@ export const getApplicationsInProgress = async ({
                 application?.updatedDateTime,
                 DATE_FORMATS.DATETIME_LONG_TZ,
               ),
-              permitData: {
-                ...application.permitData,
-                startDate: toLocal(
-                  application?.permitData?.startDate,
-                  DATE_FORMATS.DATEONLY_SHORT_NAME,
-                ),
-                expiryDate: toLocal(
-                  application?.permitData?.expiryDate,
-                  DATE_FORMATS.DATEONLY_SHORT_NAME,
-                ),
-              },
-            } as PermitApplicationInProgress;
+              startDate: toLocal(
+                application?.startDate,
+                DATE_FORMATS.DATEONLY_SHORT_NAME,
+              ),
+            } as ApplicationListItem;
           });
         return {
           ...paginatedApplications,
@@ -169,11 +168,11 @@ export const getApplicationsInProgress = async ({
 /**
  * Fetch application by its permit id.
  * @param permitId permit id of the application to fetch
- * @returns ApplicationResponse data as response, or null if fetch failed
+ * @returns ApplicationResponseData data as response, or null if fetch failed
  */
 export const getApplicationByPermitId = async (
   permitId?: string,
-): Promise<RequiredOrNull<ApplicationResponse>> => {
+): Promise<RequiredOrNull<ApplicationResponseData>> => {
   try {
     const companyId = getCompanyIdFromSession();
     let url = `${APPLICATIONS_API_ROUTES.GET}/${permitId}`;
@@ -330,22 +329,24 @@ export const issuePermits = async (
  * @returns Permit information if found, or undefined
  */
 export const getPermit = async (
-  permitId?: string,
-): Promise<RequiredOrNull<Permit>> => {
+  permitId?: Nullable<string>,
+): Promise<RequiredOrNull<PermitResponseData>> => {
   if (!permitId) return null;
+
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   let permitsURL = `${PERMITS_API_ROUTES.GET}/${permitId}`;
   const queryParams = [];
   if (companyId) {
     queryParams.push(`companyId=${companyId}`);
   }
+
   if (queryParams.length > 0) {
     permitsURL += `?${queryParams.join("&")}`;
   }
 
   const response = await httpGETRequest(permitsURL);
   if (!response.data) return null;
-  return response.data as Permit;
+  return response.data as PermitResponseData;
 };
 
 /**
@@ -354,8 +355,8 @@ export const getPermit = async (
  * @returns Permit application information, if any
  */
 export const getCurrentAmendmentApplication = async (
-  originalId?: string,
-): Promise<RequiredOrNull<Permit>> => {
+  originalId?: Nullable<string>,
+): Promise<RequiredOrNull<ApplicationResponseData>> => {
   if (!originalId) return null;
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   let permitsURL = `${APPLICATIONS_API_ROUTES.GET}/${originalId}`;
@@ -370,7 +371,7 @@ export const getCurrentAmendmentApplication = async (
   try {
     const response = await httpGETRequest(permitsURL);
     if (!response.data) return null;
-    return response.data as Permit;
+    return response.data as ApplicationResponseData;
   } catch (err) {
     return null;
   }
@@ -385,7 +386,7 @@ export const getCurrentAmendmentApplication = async (
 export const getPermits = async (
   { expired = false } = {},
   { page = 0, take = 10, searchString, orderBy = [] }: PaginationAndFilters,
-): Promise<PaginatedResponse<Permit>> => {
+): Promise<PaginatedResponse<PermitListItem>> => {
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   const permitsURL = new URL(PERMITS_API_ROUTES.GET);
   if (companyId) {
@@ -406,10 +407,10 @@ export const getPermits = async (
       const paginatedResponseObject = getDefaultRequiredVal(
         {},
         response.data,
-      ) as PaginatedResponse<Permit>;
+      ) as PaginatedResponse<PermitListItem>;
       return paginatedResponseObject;
     })
-    .then((paginatedPermits: PaginatedResponse<Permit>) => {
+    .then((paginatedPermits: PaginatedResponse<PermitListItem>) => {
       const permitsWithDateTransformations = paginatedPermits.items.map(
         (permit) => {
           return {
@@ -422,18 +423,15 @@ export const getPermits = async (
               permit.updatedDateTime,
               DATE_FORMATS.DATETIME_LONG_TZ,
             ),
-            permitData: {
-              ...permit.permitData,
-              startDate: toLocal(
-                permit.permitData.startDate,
-                DATE_FORMATS.DATEONLY_SHORT_NAME,
-              ),
-              expiryDate: toLocal(
-                permit.permitData.expiryDate,
-                DATE_FORMATS.DATEONLY_SHORT_NAME,
-              ),
-            },
-          } as Permit;
+            startDate: toLocal(
+              permit.startDate,
+              DATE_FORMATS.DATEONLY_SHORT_NAME,
+            ),
+            expiryDate: toLocal(
+              permit.expiryDate,
+              DATE_FORMATS.DATEONLY_SHORT_NAME,
+            ),
+          } as PermitListItem;
         },
       );
       return {
@@ -444,7 +442,7 @@ export const getPermits = async (
   return permits;
 };
 
-export const getPermitHistory = async (originalPermitId?: string) => {
+export const getPermitHistory = async (originalPermitId?: Nullable<string>) => {
   try {
     if (!originalPermitId) return [];
 
@@ -499,29 +497,17 @@ export const voidPermit = async (voidPermitParams: {
 
 /**
  * Amend a permit.
- * @param permit permit data for permit to be amended
- * @returns response with amended permit data, or error if failed
+ * @param formData data for permit to be amended
+ * @returns Response with amended permit application, or error if failed
  */
-export const amendPermit = async (permit: Permit) => {
-  const {
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    permitNumber,
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    createdDateTime,
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    updatedDateTime,
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    documentId,
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    permitStatus,
-    ...remainingFields
-  } = permit;
-
+export const amendPermit = async (
+  formData: AmendPermitFormData
+): Promise<AxiosResponse<ApplicationResponseData>> => {
   return await httpPOSTRequest(
     PERMITS_API_ROUTES.AMEND,
     replaceEmptyValuesWithNull({
-      ...remainingFields,
-      permitId: `${remainingFields.permitId}`,
+      // must convert application to ApplicationRequestData (dayjs fields to strings)
+    ...serializeForCreateApplication(formData),
     }),
   );
 };
@@ -536,7 +522,7 @@ export const modifyAmendmentApplication = async ({
   application,
   applicationNumber,
 }: {
-  application: Application;
+  application: AmendPermitFormData;
   applicationNumber: string;
 }) => {
   return await updateApplication(application, applicationNumber);

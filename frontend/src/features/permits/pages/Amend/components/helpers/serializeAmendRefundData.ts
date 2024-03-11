@@ -1,5 +1,5 @@
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
-import { TRANSACTION_TYPES } from "../../../../types/payment.d";
+import { TRANSACTION_TYPES } from "../../../../types/payment";
 import { RefundFormData } from "../../../Refund/types/RefundFormData";
 import { isZeroAmount } from "../../../../helpers/feeSummary";
 import {
@@ -7,7 +7,7 @@ import {
   PAYMENT_METHOD_TYPE_CODE,
 } from "../../../../../../common/types/paymentMethods";
 
-export const mapToAmendRequestData = (
+export const serializeAmendRefundData = (
   refundData: RefundFormData,
   amountToRefund: number,
   permitId: string,

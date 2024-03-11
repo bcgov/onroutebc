@@ -3,9 +3,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 
 import "./ReviewVehicleInfo.scss";
-import { VehicleDetails } from "../../../../types/application";
 import { DiffChip } from "./DiffChip";
 import { areValuesDifferent } from "../../../../../../common/helpers/util";
+import { Nullable } from "../../../../../../common/types/common";
+import { PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
 import {
   mapTypeCodeToObject,
   vehicleTypeDisplayText,
@@ -29,12 +30,12 @@ export const ReviewVehicleInfo = ({
   showChangedFields = false,
   oldFields,
 }: {
-  vehicleDetails?: VehicleDetails;
-  vehicleWasSaved?: boolean;
-  powerUnitSubTypes?: VehicleSubType[];
-  trailerSubTypes?: VehicleSubType[];
+  vehicleDetails?: Nullable<PermitVehicleDetails>;
+  vehicleWasSaved?: Nullable<boolean>;
+  powerUnitSubTypes?: Nullable<VehicleSubType[]>;
+  trailerSubTypes?: Nullable<VehicleSubType[]>;
   showChangedFields?: boolean;
-  oldFields?: VehicleDetails;
+  oldFields?: Nullable<PermitVehicleDetails>;
 }) => {
   const DisplayVehicleType = () => {
     const vehicleTypeCode = vehicleDetails?.vehicleType;

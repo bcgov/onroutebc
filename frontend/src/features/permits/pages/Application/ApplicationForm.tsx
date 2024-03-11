@@ -1,9 +1,10 @@
 import { FieldValues, FormProvider } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
+import dayjs from "dayjs";
 
 import "./ApplicationForm.scss";
-import { Application, VehicleDetails } from "../../types/application";
+import { Application, ApplicationFormData } from "../../types/application";
 import { ApplicationContext } from "../../context/ApplicationContext";
 import { ApplicationBreadcrumb } from "../../components/application-breadcrumb/ApplicationBreadcrumb";
 import { useSaveApplicationMutation } from "../../hooks/hooks";
@@ -18,6 +19,7 @@ import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { PERMIT_DURATION_OPTIONS } from "../../constants/constants";
 import { Nullable } from "../../../../common/types/common";
 import { PermitType } from "../../types/PermitType";
+import { PermitVehicleDetails } from "../../types/PermitVehicleDetails";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -74,6 +76,16 @@ export const ApplicationForm = ({
     companyInfoQuery.data,
   );
 
+  const createdDateTime = applyWhenNotNullable(
+    (date) => dayjs(date),
+    applicationContext?.applicationData?.createdDateTime,
+  );
+
+  const updatedDateTime = applyWhenNotNullable(
+    (date) => dayjs(date),
+    applicationContext?.applicationData?.updatedDateTime,
+  );
+
   const companyInfo = companyInfoQuery.data;
 
   const saveApplicationMutation = useSaveApplicationMutation();
@@ -113,7 +125,7 @@ export const ApplicationForm = ({
             : data.permitData.vehicleDetails.year,
         },
       },
-    } as Application;
+    } as ApplicationFormData;
   };
 
   // Check to see if all application values were already saved
@@ -142,21 +154,23 @@ export const ApplicationForm = ({
     );
   };
 
-  const isSaveApplicationSuccessful = (status: number) =>
-    status === 200 || status === 201;
-
-  const onSaveSuccess = (responseData: Application, status: number) => {
+  const onSaveSuccess = (
+    savedApplication: Application,
+    status: number,
+  ) => {
     snackBar.setSnackBar({
       showSnackbar: true,
       setShowSnackbar: () => true,
-      message: `Application ${responseData.applicationNumber} ${
+      message: `Application ${savedApplication.applicationNumber} ${
         status === 201 ? "created" : "updated"
       }.`,
       alertType: "success",
     });
 
-    applicationContext.setApplicationData(responseData);
-    return getDefaultRequiredVal("", responseData.permitId);
+    applicationContext.setApplicationData(
+      savedApplication,
+    );
+    return getDefaultRequiredVal("", savedApplication.permitId);
   };
 
   const onSaveFailure = () => {
@@ -166,7 +180,7 @@ export const ApplicationForm = ({
   // Whenever application is to be saved (either through "Save" or "Continue")
   const onSaveApplication = async (
     additionalSuccessAction?: (permitId: string) => void,
-    savedVehicleInventoryDetails?: Nullable<VehicleDetails>,
+    savedVehicleInventoryDetails?: Nullable<PermitVehicleDetails>,
   ) => {
     if (
       !savedVehicleInventoryDetails &&
@@ -192,15 +206,17 @@ export const ApplicationForm = ({
           },
     );
 
-    const response = await saveApplicationMutation.mutateAsync(
+    const {
+      application: savedApplication,
+      status,
+    } = await saveApplicationMutation.mutateAsync(
       applicationToBeSaved,
     );
 
-    if (isSaveApplicationSuccessful(response.status)) {
-      const responseData = response.data;
+    if (savedApplication) {
       const savedPermitId = onSaveSuccess(
-        responseData as Application,
-        response.status,
+        savedApplication,
+        status,
       );
       additionalSuccessAction?.(savedPermitId);
     } else {
@@ -245,8 +261,8 @@ export const ApplicationForm = ({
           permitType={applicationDefaultValues.permitType}
           applicationNumber={applicationDefaultValues.applicationNumber}
           permitNumber={applicationDefaultValues.permitNumber}
-          createdDateTime={applicationDefaultValues.createdDateTime}
-          updatedDateTime={applicationDefaultValues.updatedDateTime}
+          createdDateTime={createdDateTime}
+          updatedDateTime={updatedDateTime}
           permitStartDate={applicationDefaultValues.permitData.startDate}
           permitDuration={applicationDefaultValues.permitData.permitDuration}
           permitCommodities={applicationDefaultValues.permitData.commodities}
