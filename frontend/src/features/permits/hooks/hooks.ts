@@ -2,14 +2,16 @@ import { useState, useEffect } from "react";
 import { AxiosError } from "axios";
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 
-import { Application } from "../types/application";
-import { mapApplicationResponseToApplication } from "../helpers/mappers";
-import { IssuePermitsResponse, Permit } from "../types/permit";
+import { Application, ApplicationFormData } from "../types/application";
+import { IssuePermitsResponse } from "../types/permit";
 import { StartTransactionResponseData } from "../types/payment";
 import { APPLICATION_STEPS, ApplicationStep } from "../../../routes/constants";
 import { Nullable, Optional } from "../../../common/types/common";
 import { isPermitTypeValid } from "../types/PermitType";
 import { isPermitIdNumeric } from "../helpers/permitState";
+import { deserializeApplicationResponse } from "../helpers/deserializeApplication";
+import { deserializePermitResponse } from "../helpers/deserializePermit";
+import { AmendPermitFormData } from "../pages/Amend/types/AmendPermitFormData";
 import {
   getApplicationByPermitId,
   getPermit,
@@ -32,20 +34,25 @@ import {
 export const useSaveApplicationMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: Application) => {
-      if (data.applicationNumber) {
-        return updateApplication(data, data.applicationNumber);
-      } else {
-        return createApplication(data);
-      }
-    },
-    onSuccess: (response) => {
-      if (response.status === 200 || response.status === 201) {
+    mutationFn: async (data: ApplicationFormData) => {
+      const res = data.applicationNumber ?
+        await updateApplication(data, data.applicationNumber)
+        : await createApplication(data);
+      
+      if (res.status === 200 || res.status === 201) {
         queryClient.invalidateQueries({
           queryKey: ["application"],
         });
-        queryClient.setQueryData(["application"], response.data);
-        return response.data;
+
+        return {
+          application: deserializeApplicationResponse(res.data),
+          status: res.status,
+        };
+      } else {
+        return {
+          application: null,
+          status: res.status,
+        };
       }
     },
   });
@@ -107,7 +114,7 @@ export const useApplicationDetailsQuery = (
       // query is enabled, set application data to whatever's being fetched
       setApplicationData(query.data);
     } else {
-      const application = mapApplicationResponseToApplication(query.data);
+      const application = deserializeApplicationResponse(query.data);
       setApplicationData(application);
     }
   }, [query.data, shouldEnableQuery, isInvalidRoute]);
@@ -126,10 +133,13 @@ export const useApplicationDetailsQuery = (
  * @param permitId permit id for the permit
  * @returns UseQueryResult for permit query.
  */
-export const usePermitDetailsQuery = (permitId?: string) => {
+export const usePermitDetailsQuery = (permitId?: Nullable<string>) => {
   return useQuery({
     queryKey: ["permit"],
-    queryFn: () => getPermit(permitId),
+    queryFn: async () => {
+      const res = await getPermit(permitId);
+      return res ? deserializePermitResponse(res) : res;
+    },
     enabled: Boolean(permitId),
     retry: false,
     refetchOnMount: "always",
@@ -236,7 +246,7 @@ export const useCompleteTransaction = (
  * @param originalPermitId original permit id for the permit
  * @returns UseQueryResult of the fetch query.
  */
-export const usePermitHistoryQuery = (originalPermitId?: string) => {
+export const usePermitHistoryQuery = (originalPermitId?: Nullable<string>) => {
   return useQuery({
     queryKey: ["permitHistory"],
     queryFn: () => getPermitHistory(originalPermitId),
@@ -285,24 +295,28 @@ export const useIssuePermits = () => {
 export const useAmendPermit = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: Permit) => {
-      return amendPermit(data);
-    },
-    onSuccess: (response) => {
-      queryClient.invalidateQueries({
-        queryKey: ["permit"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["amendmentApplication"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["permitHistory"],
-      });
+    mutationFn: async (data: AmendPermitFormData) => {
+      const amendResult = await amendPermit(data);
+      if (amendResult.status === 200 || amendResult.status === 201) {
+        queryClient.invalidateQueries({
+          queryKey: ["permit"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["amendmentApplication"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["permitHistory"],
+        });
 
-      if (response.status === 200 || response.status === 201) {
-        return response;
+        return {
+          application: deserializeApplicationResponse(amendResult.data),
+          status: amendResult.status,
+        };
       }
-      return undefined;
+      return {
+        application: null,
+        status: amendResult.status,
+      };
     },
   });
 };
@@ -310,21 +324,31 @@ export const useAmendPermit = () => {
 export const useModifyAmendmentApplication = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: modifyAmendmentApplication,
-    onSuccess: (response) => {
-      queryClient.invalidateQueries({
-        queryKey: ["permit"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["amendmentApplication"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["permitHistory"],
-      });
-      if (response.status === 200 || response.status === 201) {
-        return response;
+    mutationFn: async (data: {
+      application: AmendPermitFormData;
+      applicationNumber: string;
+    }) => {
+      const amendResult = await modifyAmendmentApplication(data);
+      if (amendResult.status === 200 || amendResult.status === 201) {
+        queryClient.invalidateQueries({
+          queryKey: ["permit"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["amendmentApplication"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["permitHistory"],
+        });
+
+        return {
+          application: deserializeApplicationResponse(amendResult.data),
+          status: amendResult.status,
+        };
       }
-      return undefined;
+      return {
+        application: null,
+        status: amendResult.status,
+      };
     },
   });
 };
@@ -334,10 +358,15 @@ export const useModifyAmendmentApplication = () => {
  * @param originalPermitId Original permit id of the permit that is being amended.
  * @returns UseQueryResult of the fetch query.
  */
-export const useAmendmentApplicationQuery = (originalPermitId?: string) => {
+export const useAmendmentApplicationQuery = (
+  originalPermitId?: Nullable<string>,
+) => {
   return useQuery({
     queryKey: ["amendmentApplication"],
-    queryFn: () => getCurrentAmendmentApplication(originalPermitId),
+    queryFn: async () => {
+      const res = await getCurrentAmendmentApplication(originalPermitId);
+      return res ? deserializeApplicationResponse(res) : res;
+    },
     enabled: Boolean(originalPermitId),
     retry: false,
     refetchOnMount: "always",

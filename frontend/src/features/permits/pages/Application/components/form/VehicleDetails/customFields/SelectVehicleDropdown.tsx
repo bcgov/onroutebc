@@ -13,13 +13,10 @@ import "./SelectVehicleDropdown.scss";
 import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";
 import { sortVehicles } from "../../../../../../helpers/sorter";
 import { removeIneligibleVehicles } from "../../../../../../helpers/removeIneligibleVehicles";
-import { VehicleDetails } from "../../../../../../types/application";
 import { VEHICLE_CHOOSE_FROM } from "../../../../../../constants/constants";
 import { EMPTY_VEHICLE_UNIT_NUMBER } from "../../../../../../../../common/constants/constants";
-import {
-  Nullable,
-  Optional,
-} from "../../../../../../../../common/types/common";
+import { Nullable } from "../../../../../../../../common/types/common";
+import { PermitVehicleDetails } from "../../../../../../types/PermitVehicleDetails";
 
 import {
   PowerUnit,
@@ -60,7 +57,7 @@ export const SelectVehicleDropdown = ({
   ineligibleTrailerSubtypes,
 }: {
   chooseFrom: string;
-  selectedVehicle: Optional<VehicleDetails>;
+  selectedVehicle: Nullable<PermitVehicleDetails>;
   label: string;
   vehicleOptions: Vehicle[];
   handleSelectVehicle: (vehicle: Vehicle) => void;

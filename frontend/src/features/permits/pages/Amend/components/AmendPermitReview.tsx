@@ -10,6 +10,7 @@ import { ReviewReason } from "./review/ReviewReason";
 import { calculateAmountToRefund } from "../../../helpers/feeSummary";
 import { isValidTransaction } from "../../../helpers/payment";
 import OnRouteBCContext from "../../../../../common/authentication/OnRouteBCContext";
+import { getDatetimes } from "./helpers/getDatetimes";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -21,8 +22,10 @@ import {
 } from "../../../../manageVehicles/apiManager/hooks";
 
 export const AmendPermitReview = () => {
-  const { permit, permitFormData, permitHistory, back, next, getLinks } =
+  const { permit, amendmentApplication, permitHistory, back, next, getLinks } =
     useContext(AmendPermitContext);
+
+  const { createdDateTime, updatedDateTime } = getDatetimes(amendmentApplication, permit);
 
   const {
     companyLegalName,
@@ -38,7 +41,7 @@ export const AmendPermitReview = () => {
   );
 
   const { data: companyInfo } = useCompanyInfoDetailsQuery(
-    getDefaultRequiredVal(0, permitFormData?.companyId),
+    getDefaultRequiredVal(0, amendmentApplication?.companyId),
   );
   const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
   const trailerSubTypesQuery = useTrailerSubTypesQuery();
@@ -63,7 +66,7 @@ export const AmendPermitReview = () => {
     -1 *
     calculateAmountToRefund(
       validTransactionHistory,
-      getDefaultRequiredVal(0, permitFormData?.permitData?.permitDuration),
+      getDefaultRequiredVal(0, amendmentApplication?.permitData?.permitDuration),
     );
 
   return (
@@ -71,18 +74,18 @@ export const AmendPermitReview = () => {
       <Breadcrumb links={getLinks()} />
 
       <PermitReview
-        permitType={permitFormData?.permitType}
-        permitNumber={permitFormData?.permitNumber}
-        applicationNumber={permitFormData?.applicationNumber}
+        permitType={amendmentApplication?.permitType}
+        permitNumber={permit?.permitNumber}
+        applicationNumber={amendmentApplication?.applicationNumber}
         isAmendAction={true}
-        permitStartDate={permitFormData?.permitData?.startDate}
-        permitDuration={permitFormData?.permitData?.permitDuration}
-        permitExpiryDate={permitFormData?.permitData?.expiryDate}
-        permitConditions={permitFormData?.permitData?.commodities}
-        createdDateTime={permitFormData?.createdDateTime}
-        updatedDateTime={permitFormData?.updatedDateTime}
+        permitStartDate={amendmentApplication?.permitData?.startDate}
+        permitDuration={amendmentApplication?.permitData?.permitDuration}
+        permitExpiryDate={amendmentApplication?.permitData?.expiryDate}
+        permitConditions={amendmentApplication?.permitData?.commodities}
+        createdDateTime={createdDateTime}
+        updatedDateTime={updatedDateTime}
         companyInfo={companyInfo}
-        contactDetails={permitFormData?.permitData?.contactDetails}
+        contactDetails={amendmentApplication?.permitData?.contactDetails}
         continueBtnText="Continue"
         onEdit={back}
         onContinue={onSubmit}
@@ -91,9 +94,9 @@ export const AmendPermitReview = () => {
         hasAttemptedCheckboxes={isSubmitted}
         powerUnitSubTypes={powerUnitSubTypesQuery.data}
         trailerSubTypes={trailerSubTypesQuery.data}
-        vehicleDetails={permitFormData?.permitData?.vehicleDetails}
+        vehicleDetails={amendmentApplication?.permitData?.vehicleDetails}
         vehicleWasSaved={
-          permitFormData?.permitData?.vehicleDetails?.saveVehicle
+          amendmentApplication?.permitData?.vehicleDetails?.saveVehicle
         }
         showChangedFields={true}
         oldFields={{
@@ -114,8 +117,8 @@ export const AmendPermitReview = () => {
         calculatedFee={`${amountToRefund}`}
         doingBusinessAs={doingBusinessAs}
       >
-        {permitFormData?.comment ? (
-          <ReviewReason reason={permitFormData.comment} />
+        {amendmentApplication?.comment ? (
+          <ReviewReason reason={amendmentApplication.comment} />
         ) : null}
       </PermitReview>
     </div>

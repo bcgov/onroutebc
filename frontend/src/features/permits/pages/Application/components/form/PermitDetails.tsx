@@ -10,13 +10,14 @@ import { CustomFormComponent } from "../../../../../../common/components/form/Cu
 import { PHONE_WIDTH } from "../../../../../../themes/bcGovStyles";
 import { ConditionsTable } from "./ConditionsTable";
 import { requiredMessage } from "../../../../../../common/helpers/validationMessages";
-import { Commodities } from "../../../../types/application";
 import { ONROUTE_WEBPAGE_LINKS } from "../../../../../../routes/constants";
 import { CustomExternalLink } from "../../../../../../common/components/links/CustomExternalLink";
 import { BANNER_MESSAGES } from "../../../../../../common/constants/bannerMessages";
 import { getExpiryDate } from "../../../../helpers/permitState";
 import { calculateFeeByDuration } from "../../../../helpers/feeSummary";
 import { PermitType } from "../../../../types/PermitType";
+import { Nullable } from "../../../../../../common/types/common";
+import { PermitCommodity } from "../../../../types/PermitCommodity";
 import {
   PPC_EMAIL,
   TOLL_FREE_NUMBER,
@@ -40,13 +41,13 @@ export const PermitDetails = ({
   feature: string;
   defaultStartDate: Dayjs;
   defaultDuration: number;
-  commoditiesInPermit: Commodities[];
-  applicationNumber?: string;
+  commoditiesInPermit: PermitCommodity[];
+  applicationNumber?: Nullable<string>;
   durationOptions: {
     value: number;
     label: string;
   }[];
-  disableStartDate?: boolean;
+  disableStartDate: boolean;
   permitType: PermitType;
 }) => {
   const { watch, register, setValue } = useFormContext();

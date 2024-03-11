@@ -7,8 +7,8 @@ import { Options } from "@testing-library/user-event/dist/types/options";
 import { DEFAULT_PERMIT_TYPE } from "../../../../../../types/PermitType";
 import { getDefaultCommodities, getMandatoryCommodities } from "../../../../../../helpers/commodities";
 import { PermitDetails } from "../../PermitDetails";
-import { Commodities } from "../../../../../../types/application";
 import { getExpiryDate } from "../../../../../../helpers/permitState";
+import { PermitCommodity } from "../../../../../../types/PermitCommodity";
 import {
   getStartOfDate,
   now,
@@ -30,7 +30,7 @@ export const daysInFutureMonth = maxFutureDate.daysInMonth();
 
 export const commodities = getDefaultCommodities(DEFAULT_PERMIT_TYPE);
 export const defaultDuration = 30;
-export const emptyCommodities: Commodities[] = [];
+export const emptyCommodities: PermitCommodity[] = [];
 export const allDurations = [
   { text: "30 Days", days: 30 },
   { text: "60 Days", days: 60 },
@@ -74,7 +74,7 @@ const TestFormWrapper = (props: React.PropsWithChildren) => {
 export const renderTestComponent = (
   startDate: Dayjs,
   duration: number,
-  commodities: Commodities[],
+  commodities: PermitCommodity[],
   userEventOptions?: Options,
 ) => {
   const user = userEvent.setup(userEventOptions);

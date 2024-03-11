@@ -66,6 +66,7 @@ import { PermitSearch } from '../../common/enum/permit-search.enum';
 import { paginate, sortQuery } from '../../common/helper/database.helper';
 import { IDIR_USER_AUTH_GROUP_LIST } from '../../common/enum/user-auth-group.enum';
 import { User } from '../company-user-management/users/entities/user.entity';
+import { ReadPermitMetadataDto } from './dto/response/read-permit-metadata.dto';
 import { doesUserHaveAuthGroup } from '../../common/helper/auth.helper';
 
 @Injectable()
@@ -194,7 +195,7 @@ export class PermitService {
     searchString?: string;
     userGUID?: string;
     currentUser?: IUserJWT;
-  }): Promise<PaginationDto<ReadPermitDto>> {
+  }): Promise<PaginationDto<ReadPermitMetadataDto>> {
     // Construct the base query to find permits
     const permitsQB = this.buildPermitQuery(
       findPermitOptions.companyId,
@@ -211,11 +212,12 @@ export class PermitService {
     const orderByMapping: Record<string, string> = {
       permitNumber: 'permit.permitNumber',
       permitType: 'permit.permitType',
+      lastUpdatedDate: 'permit.updatedDateTime',
       startDate: 'permitData.startDate',
       expiryDate: 'permitData.expiryDate',
       unitNumber: 'permitData.unitNumber',
       plate: 'permitData.plate',
-      applicant: 'permitData.applicant',
+      vin: 'permitData.vin',
     };
 
     // Apply sorting if orderBy parameter is provided
@@ -244,13 +246,13 @@ export class PermitService {
       },
     });
     // Map permit entities to ReadPermitDto objects
-    const readPermitDto: ReadPermitDto[] =
-      await this.mapEntitiesToReadPermitDto(
+    const readPermitMetadataDto: ReadPermitMetadataDto[] =
+      await this.mapEntitiesToReadPermitMetadataDto(
         permits,
         findPermitOptions.currentUser,
       );
     // Return paginated result
-    return new PaginationDto(readPermitDto, pageMetaDto);
+    return new PaginationDto(readPermitMetadataDto, pageMetaDto);
   }
 
   private buildPermitQuery(
@@ -330,7 +332,7 @@ export class PermitService {
       switch (searchColumn) {
         case PermitSearch.PLATE:
           permitsQuery = permitsQuery.andWhere(
-            `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like :searchString`,
+            'permitData.plate like :searchString',
             { searchString: `%${searchString}%` },
           );
           break;
@@ -349,7 +351,7 @@ export class PermitService {
           break;
         case PermitSearch.CLIENT_NUMBER:
           permitsQuery = permitsQuery.andWhere(
-            `JSON_VALUE(permitData.permitData, '$.clientNumber') like :searchString'`,
+            'company.clientNumber like :searchString',
             {
               searchString: `%${searchString}%`,
             },
@@ -357,7 +359,7 @@ export class PermitService {
           break;
         case PermitSearch.COMPANY_NAME:
           permitsQuery = permitsQuery.andWhere(
-            `JSON_VALUE(permitData.permitData, '$.companyName') like :searchString`,
+            'company.legalName like :searchString',
             {
               searchString: `%${searchString}%`,
             },
@@ -379,18 +381,12 @@ export class PermitService {
       permitsQuery = permitsQuery.andWhere(
         new Brackets((query) => {
           query
-            .where(
-              `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like :searchString`,
-              {
-                searchString: `%${searchString}%`,
-              },
-            )
-            .orWhere(
-              `JSON_VALUE(permitData.permitData, '$.vehicleDetails.unitNumber') like :searchString`,
-              {
-                searchString: `%${searchString}%`,
-              },
-            );
+            .where('permitData.plate like :searchString', {
+              searchString: `%${searchString}%`,
+            })
+            .orWhere('permitData.unitNumber like :searchString', {
+              searchString: `%${searchString}%`,
+            });
         }),
       );
     }
@@ -398,20 +394,21 @@ export class PermitService {
     return permitsQuery;
   }
 
-  private async mapEntitiesToReadPermitDto(
+  private async mapEntitiesToReadPermitMetadataDto(
     entities: Permit[],
     currentUser: IUserJWT,
-  ): Promise<ReadPermitDto[]> {
-    const readPermitDto: ReadPermitDto[] = await this.classMapper.mapArrayAsync(
-      entities,
-      Permit,
-      ReadPermitDto,
-      {
-        extraArgs: () => ({
-          currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
-        }),
-      },
-    );
+  ): Promise<ReadPermitMetadataDto[]> {
+    const readPermitDto: ReadPermitMetadataDto[] =
+      await this.classMapper.mapArrayAsync(
+        entities,
+        Permit,
+        ReadPermitMetadataDto,
+        {
+          extraArgs: () => ({
+            currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
+          }),
+        },
+      );
     return readPermitDto;
   }
 

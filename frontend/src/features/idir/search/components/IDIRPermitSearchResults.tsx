@@ -14,7 +14,7 @@ import { Optional } from "../../../../common/types/common";
 import { USER_AUTH_GROUP } from "../../../../common/authentication/types";
 import { hasPermitExpired } from "../../../permits/helpers/permitState";
 import { isPermitInactive } from "../../../permits/types/PermitStatus";
-import { Permit } from "../../../permits/types/permit";
+import { PermitListItem } from "../../../permits/types/permit";
 import { getPermitDataBySearch } from "../api/idirSearch";
 import { PermitSearchResultColumnDef } from "../table/PermitSearchResultColumnDef";
 import { SearchFields } from "../types/types";
@@ -94,7 +94,7 @@ export const IDIRPermitSearchResults = memo(
     const { data, isPending, isError } = searchResultsQuery;
 
     // Column definitions for the table
-    const columns = useMemo<MRT_ColumnDef<Permit>[]>(
+    const columns = useMemo<MRT_ColumnDef<PermitListItem>[]>(
       () => PermitSearchResultColumnDef,
       [],
     );
@@ -102,14 +102,14 @@ export const IDIRPermitSearchResults = memo(
     /**
      *
      * @param initialData The initial data to filter by the active data toggle.
-     * @returns Permit[] containing the data to be displayed in table.
+     * @returns List of permit items containing the data to be displayed in table.
      */
-    const getFilteredData = (initialData: Permit[]): Permit[] => {
+    const getFilteredData = (initialData: PermitListItem[]): PermitListItem[] => {
       if (!initialData.length) return [];
       if (isActiveRecordsOnly) {
         // Returns unexpired permits
         return initialData.filter(
-          ({ permitStatus, permitData: { expiryDate } }) =>
+          ({ permitStatus, expiryDate }) =>
             !hasPermitExpired(expiryDate) && !isPermitInactive(permitStatus),
         );
       }
@@ -164,9 +164,9 @@ export const IDIRPermitSearchResults = memo(
           </Box>
         );
       },
-      renderRowActions: useCallback(({ row }: { row: MRT_Row<Permit> }) => {
+      renderRowActions: useCallback(({ row }: { row: MRT_Row<PermitListItem> }) => {
         const isInactive =
-          hasPermitExpired(row.original.permitData.expiryDate) ||
+          hasPermitExpired(row.original.expiryDate) ||
           isPermitInactive(row.original.permitStatus);
 
         if (shouldShowRowActions(idirUserDetails?.userAuthGroup)) {
