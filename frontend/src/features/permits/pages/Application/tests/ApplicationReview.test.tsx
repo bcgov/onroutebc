@@ -1,7 +1,7 @@
 import { Dayjs } from "dayjs";
 import { waitFor } from "@testing-library/react";
 
-import { VehicleDetails } from "../../../types/application";
+import { PermitVehicleDetails } from "../../../types/PermitVehicleDetails";
 import { vehicleTypeDisplayText } from "../../../helpers/mappers";
 import { VehicleType } from "../../../../manageVehicles/types/Vehicle";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
@@ -342,7 +342,7 @@ describe("Review and Confirm Application Details", () => {
         provinceCode,
         vehicleType,
         vehicleSubType,
-      } = defaultApplicationData.permitData.vehicleDetails as VehicleDetails;
+      } = defaultApplicationData.permitData.vehicleDetails as PermitVehicleDetails;
       const unit = getDefaultRequiredVal("", unitNumber);
       const country = formatCountry(countryCode);
       const province = formatProvince(countryCode, provinceCode);

@@ -1,12 +1,12 @@
 import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints";
 import { httpGETRequest } from "../../../../common/apiManager/httpRequestHandler";
+import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
+import { PermitListItem } from "../../../permits/types/permit";
+import { SearchFields } from "../types/types";
 import {
   PaginatedResponse,
   PaginationOptions,
 } from "../../../../common/types/common";
-import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
-import { Permit } from "../../../permits/types/permit";
-import { SearchFields } from "../types/types";
 
 /**
  * Searches the data with options and value entered by the user.
@@ -16,7 +16,7 @@ import { SearchFields } from "../types/types";
 export const getPermitDataBySearch = (
   { searchEntity, searchByFilter, searchString }: SearchFields,
   { page = 0, take = 10 }: PaginationOptions,
-): Promise<PaginatedResponse<Permit>> => {
+): Promise<PaginatedResponse<PermitListItem>> => {
   const searchURL = new URL(`${VEHICLES_URL}/${searchEntity}`);
   searchURL.searchParams.set("searchColumn", searchByFilter);
   searchURL.searchParams.set("searchString", searchString);

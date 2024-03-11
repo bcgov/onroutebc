@@ -1,8 +1,6 @@
 import { SearchFields } from "../../features/idir/search/types/types";
-import {
-  Application,
-  ContactDetails,
-} from "../../features/permits/types/application";
+import { Application } from "../../features/permits/types/application";
+import { PermitContactDetails } from "../../features/permits/types/PermitContactDetails";
 import {
   CreateCompanyRequest,
   CompanyProfile,
@@ -34,7 +32,7 @@ export type ORBC_FormTypes =
   | BCeIDAddUserRequest
   | SearchFields
   | VerifyClientRequest
-  | ContactDetails;
+  | PermitContactDetails;
 
 /**
  * The options for pagination.

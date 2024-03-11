@@ -10,16 +10,13 @@ import { VehicleDetails } from "./VehicleDetails/VehicleDetails";
 import { CompanyProfile } from "../../../../../manageProfile/types/manageProfile.d";
 import { PermitType } from "../../../../types/PermitType";
 import { Nullable } from "../../../../../../common/types/common";
+import { PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
+import { PermitCommodity } from "../../../../types/PermitCommodity";
 import {
   PowerUnit,
   Trailer,
   VehicleSubType,
 } from "../../../../../manageVehicles/types/Vehicle";
-
-import {
-  Commodities,
-  VehicleDetails as VehicleDetailsType,
-} from "../../../../types/application.d";
 
 import {
   getIneligiblePowerUnitSubtypes,
@@ -34,14 +31,14 @@ interface PermitFormProps {
   onContinue: () => Promise<void>;
   isAmendAction: boolean;
   permitType: PermitType;
-  applicationNumber?: string;
-  permitNumber?: string;
-  createdDateTime?: Dayjs;
-  updatedDateTime?: Dayjs;
+  applicationNumber?: Nullable<string>;
+  permitNumber?: Nullable<string>;
+  createdDateTime?: Nullable<Dayjs>;
+  updatedDateTime?: Nullable<Dayjs>;
   permitStartDate: Dayjs;
   permitDuration: number;
-  permitCommodities: Commodities[];
-  vehicleDetails?: VehicleDetailsType;
+  permitCommodities: PermitCommodity[];
+  vehicleDetails?: Nullable<PermitVehicleDetails>;
   vehicleOptions: (PowerUnit | Trailer)[];
   powerUnitSubTypes: VehicleSubType[];
   trailerSubTypes: VehicleSubType[];
