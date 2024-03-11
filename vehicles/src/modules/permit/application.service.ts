@@ -508,7 +508,7 @@ export class ApplicationService {
     await queryRunner.startTransaction();
     try {
       let dopsRequestData: DopsGeneratedDocument = {
-        templateName: TemplateName.PERMIT_TROS,
+        templateName: TemplateName.PERMIT,
         generatedDocumentFileName: permitDataForTemplate.permitNumber,
         templateData: permitDataForTemplate,
         documentsToMerge: permitDataForTemplate.permitData.commodities.map(
