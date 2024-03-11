@@ -8,7 +8,7 @@ export class CreateGeneratedDocumentDto {
   @AutoMap()
   @ApiProperty({
     enum: TemplateName,
-    example: TemplateName.PERMIT_TROS,
+    example: TemplateName.PERMIT,
     description: 'The template that will be used to render the document.',
   })
   @IsEnum(TemplateName)
