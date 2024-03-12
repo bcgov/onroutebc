@@ -18,6 +18,7 @@ export enum PermitOrderBy {
   UNIT_NUMBER = 'unitNumber',
   PLATE = 'plate',
   VIN = 'vin',
+  UPDATED_DATE_TIME = 'updatedDateTime',
 }
 
 export enum ApplicationOrderBy {
@@ -29,4 +30,5 @@ export enum ApplicationOrderBy {
   UNIT_NUMBER = 'unitNumber',
   PLATE = 'plate',
   VIN = 'vin',
+  UPDATED_DATE_TIME = 'updatedDateTime',
 }

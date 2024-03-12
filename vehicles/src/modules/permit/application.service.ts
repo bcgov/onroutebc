@@ -277,6 +277,7 @@ export class ApplicationService {
       unitNumber: 'permitData.unitNumber',
       plate: 'permitData.plate',
       vin: 'permitData.vin',
+      updatedDateTime: 'permit.updatedDateTime'
     };
 
     // Apply sorting if orderBy parameter is provided
