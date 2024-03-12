@@ -158,6 +158,8 @@ objects:
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
+      annotations:
+        rollme: {{ randAlphaNum 5 | quote }}
       labels:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}

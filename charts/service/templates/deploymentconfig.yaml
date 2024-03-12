@@ -23,6 +23,7 @@ spec:
   template:
     metadata:
       annotations:
+        rollme: {{ randAlphaNum 5 | quote }}
         {{- include "service.podAnnotations" . | nindent 8 }}
         {{- include "service.vaultAnnotations" . | nindent 8 }}
       labels:
