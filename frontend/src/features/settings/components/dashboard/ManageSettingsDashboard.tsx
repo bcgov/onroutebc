@@ -6,23 +6,12 @@ import { Suspend } from "../../pages/Suspend";
 import { SETTINGS_TABS } from "../../types/tabs";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { DoesUserHaveAuthGroup } from "../../../../common/authentication/util";
-import { IDIR_USER_AUTH_GROUP } from "../../../../common/authentication/types";
 import { ERROR_ROUTES } from "../../../../routes/constants";
+import { canViewSuspend } from "../../helpers/permissions";
 
 export const ManageSettingsDashboard = React.memo(() => {
-  const { idirUserDetails, companyId } = useContext(OnRouteBCContext);
-  const allowSettingsDashboard = Boolean(
-    DoesUserHaveAuthGroup({
-      userAuthGroup: idirUserDetails?.userAuthGroup,
-      allowedAuthGroups: [
-        IDIR_USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
-        IDIR_USER_AUTH_GROUP.FINANCE,
-        IDIR_USER_AUTH_GROUP.ENFORCEMENT_OFFICER,
-      ],
-    })
-  );
-  const showSuspendTab = allowSettingsDashboard;
+  const { userRoles, companyId } = useContext(OnRouteBCContext);
+  const showSuspendTab = canViewSuspend(userRoles);
 
   const { state: stateFromNavigation } = useLocation();
   const selectedTab = getDefaultRequiredVal(

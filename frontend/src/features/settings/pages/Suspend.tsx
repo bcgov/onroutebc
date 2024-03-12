@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 
 import "./Suspend.scss";
 import { SuspendModal } from "../components/suspend/SuspendModal";
@@ -7,6 +7,8 @@ import { useSuspendCompanyMutation, useSuspensionHistoryQuery } from "../hooks/s
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { SuspensionHistory } from "../components/suspend/SuspensionHistory";
 import { SUSPEND_ACTIVITY_TYPES } from "../types/suspend";
+import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
+import { canUpdateSuspend } from "../helpers/permissions";
 
 export const Suspend = ({
   companyId,
@@ -17,6 +19,9 @@ export const Suspend = ({
     data: suspensionHistory,
     isError: fetchHistoryError,
   } = useSuspensionHistoryQuery(companyId);
+
+  const { userRoles } = useContext(OnRouteBCContext);
+  const canSuspendCompany = canUpdateSuspend(userRoles);
 
   const suspendCompanyMutation = useSuspendCompanyMutation();
 
@@ -74,11 +79,13 @@ export const Suspend = ({
           Suspend Company
         </div>
 
-        <Switch
-          className="suspend-company-switch"
-          checked={companySuspended}
-          onChange={async (_, checked) => await handleSuspendToggle(checked)}
-        />
+        {canSuspendCompany ? (
+          <Switch
+            className="suspend-company-switch"
+            checked={companySuspended}
+            onChange={async (_, checked) => await handleSuspendToggle(checked)}
+          />
+        ): null}
       </div>
 
       {suspensionHistoryList.length > 0 ? (
