@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import "./Suspend.scss";
 import { SuspendModal } from "../components/suspend/SuspendModal";
@@ -20,6 +20,7 @@ export const Suspend = ({
     isError: fetchHistoryError,
   } = useSuspensionHistoryQuery(companyId);
 
+  // Check if user can update suspend
   const { userRoles } = useContext(OnRouteBCContext);
   const canSuspendCompany = canUpdateSuspend(userRoles);
 
@@ -29,7 +30,17 @@ export const Suspend = ({
     [] : getDefaultRequiredVal([], suspensionHistory);
   
   const [showSuspendModal, setShowSuspendModal] = useState<boolean>(false);
-  const [companySuspended, setCompanySuspended] = useState<boolean>(false); // TODO: set based on suspend status fetched from backend
+  const [companySuspended, setCompanySuspended] = useState<boolean>(false);
+
+  useEffect(() => {
+    // Get current suspension status for company from the most recent entry in suspension history
+    // If suspension history is empty, it's assumed that the company has not yet been suspended
+    const isCurrentlySuspended = suspensionHistoryList.length > 0
+      ? suspensionHistoryList[0].suspendActivityType === SUSPEND_ACTIVITY_TYPES.SUSPEND_COMPANY
+      : false;
+
+    setCompanySuspended(isCurrentlySuspended);
+  }, [suspensionHistoryList]);
 
   const isActionSuccessful = (status: number) => {
     return status === 200 || status === 201;
