@@ -1,0 +1,19 @@
+@import "../../../../themes/orbcStyles";
+
+.shopping-cart-button {
+    padding: 0 30px 0 20px;
+
+    &__badge {
+        & .MuiBadge-badge {
+            right: -15px;
+            top: 15px;
+            padding: 0 4px;
+            background-color: transparent;
+            color: white;
+        }    
+    }
+
+    &__icon {
+        color: white;
+    }
+}
