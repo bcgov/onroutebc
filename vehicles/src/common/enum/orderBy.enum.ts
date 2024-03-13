@@ -12,7 +12,6 @@ export enum CompanyOrderBy {
 export enum PermitOrderBy {
   PERMIT_NUMBER = 'permitNumber',
   PERMIT_TYPE = 'permitType',
-  LAST_UPDATED_DATE = 'lastUpdatedDate',
   START_DATE = 'startDate',
   EXPIRY_DATE = 'expiryDate',
   UNIT_NUMBER = 'unitNumber',
@@ -24,7 +23,6 @@ export enum PermitOrderBy {
 export enum ApplicationOrderBy {
   APPLICATION_NUMBER = 'applicationNumber',
   PERMIT_TYPE = 'permitType',
-  LAST_UPDATED_DATE = 'lastUpdatedDate',
   START_DATE = 'startDate',
   EXPIRY_DATE = 'expiryDate',
   UNIT_NUMBER = 'unitNumber',
