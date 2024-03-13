@@ -1,6 +1,6 @@
 import { Dayjs } from "dayjs";
 
-import { Optional } from "../../../common/types/common";
+import { Nullable } from "../../../common/types/common";
 
 /**
  * A type that replaces all direct entries with Dayjs types to string types.
@@ -16,8 +16,8 @@ import { Optional } from "../../../common/types/common";
 export type ReplaceDayjsWithString<T> = {
   [K in keyof T]: T[K] extends Dayjs
     ? string
-    : T[K] extends Optional<Dayjs>
-      ? Optional<string>
+    : T[K] extends Nullable<Dayjs>
+      ? Nullable<string>
       : T[K];
 };
 
@@ -37,8 +37,8 @@ export type DateStringToDayjs<T, Fields> = {
   [K in keyof T]: K extends Fields
     ? T[K] extends string
       ? Dayjs
-      : T[K] extends Optional<string>
-        ? Optional<Dayjs>
+      : T[K] extends Nullable<string>
+        ? Nullable<Dayjs>
         : T[K]
     : T[K];
 };

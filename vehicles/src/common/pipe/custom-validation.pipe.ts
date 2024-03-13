@@ -48,8 +48,7 @@ export function exceptionFactory(errors: ValidationError[]) {
 export const CustomValidationPipe = new ValidationPipe({
   exceptionFactory,
   forbidUnknownValues: true, // Fails if an unknown object is passed
-  //TODO - Disabled temporarily. To be enabled on resolving ORV2-2040
-  // whitelist: true,
-  // forbidNonWhitelisted: true, // Throws an error for non-whitelisted properties
+  whitelist: true,
+  forbidNonWhitelisted: true, // Throws an error for non-whitelisted properties
   validationError: { target: false },
 });

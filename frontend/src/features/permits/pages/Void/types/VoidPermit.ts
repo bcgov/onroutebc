@@ -1,6 +1,6 @@
 import { PermitStatus, PERMIT_STATUSES } from "../../../types/PermitStatus";
 import { PermitsActionResponse } from "../../../types/permit";
-import { TRANSACTION_TYPES, TransactionType } from "../../../types/payment.d";
+import { TRANSACTION_TYPES, TransactionType } from "../../../types/payment";
 import { Nullable } from "../../../../../common/types/common";
 import {
   PaymentCardTypeCode,

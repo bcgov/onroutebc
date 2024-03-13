@@ -20,7 +20,7 @@ export class ReadPermitDto {
     example: 74,
     required: false,
   })
-  permitId: number;
+  permitId: string;
 
   @AutoMap()
   @ApiProperty({

@@ -1,5 +1,5 @@
 import { PermitHistory } from "../types/PermitHistory";
-import { TRANSACTION_TYPES, TransactionType } from "../types/payment.d";
+import { TRANSACTION_TYPES, TransactionType } from "../types/payment";
 import { Permit } from "../types/permit";
 import { isValidTransaction } from "./payment";
 import { Nullable } from "../../../common/types/common";

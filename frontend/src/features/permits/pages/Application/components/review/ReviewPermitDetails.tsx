@@ -3,9 +3,10 @@ import { Dayjs } from "dayjs";
 
 import "./ReviewPermitDetails.scss";
 import { PermitExpiryDateBanner } from "../../../../../../common/components/banners/PermitExpiryDateBanner";
-import { Commodities } from "../../../../types/application";
 import { ReviewConditionsTable } from "./ReviewConditionsTable";
 import { DiffChip } from "./DiffChip";
+import { Nullable } from "../../../../../../common/types/common";
+import { PermitCommodity } from "../../../../types/PermitCommodity";
 import {
   applyWhenNotNullable,
   areValuesDifferent,
@@ -26,13 +27,13 @@ export const ReviewPermitDetails = ({
   oldStartDate,
   oldDuration,
 }: {
-  startDate?: Dayjs;
-  permitDuration?: number;
-  expiryDate?: Dayjs;
-  conditions?: Commodities[];
+  startDate?: Nullable<Dayjs>;
+  permitDuration?: Nullable<number>;
+  expiryDate?: Nullable<Dayjs>;
+  conditions?: Nullable<PermitCommodity[]>;
   showChangedFields?: boolean;
-  oldStartDate?: Dayjs;
-  oldDuration?: number;
+  oldStartDate?: Nullable<Dayjs>;
+  oldDuration?: Nullable<number>;
 }) => {
   const changedFields = showChangedFields
     ? {
