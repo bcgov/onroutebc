@@ -85,19 +85,20 @@ export const Suspend = ({
 
   return (
     <div className="suspend-page">
-      <div className="suspend-page__suspend-company">
-        <div className="suspend-page__title suspend-page__title--company">
-          Suspend Company
-        </div>
+      {canSuspendCompany ? (
+        <div className="suspend-page__suspend-company">
+          <div className="suspend-page__title suspend-page__title--company">
+            Suspend Company
+          </div>
 
-        {canSuspendCompany ? (
-          <Switch
-            className="suspend-company-switch"
-            checked={companySuspended}
-            onChange={async (_, checked) => await handleSuspendToggle(checked)}
-          />
-        ): null}
-      </div>
+          
+            <Switch
+              className="suspend-company-switch"
+              checked={companySuspended}
+              onChange={async (_, checked) => await handleSuspendToggle(checked)}
+            />
+        </div>
+      ) : null}
 
       {suspensionHistoryList.length > 0 ? (
         <div className="suspend-page__suspension-history">
