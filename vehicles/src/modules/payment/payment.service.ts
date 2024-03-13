@@ -636,19 +636,26 @@ export class PaymentService {
       );
       return -oldAmount;
     }
+    const diff =
+      new Date(application.permitData.expiryDate).getTime() -
+      new Date(application.permitData.startDate).getTime();
+    //convert milliseconds into days
+    let duration = Math.ceil(diff / (1000 * 3600 * 24)) + 1;
     //Calculate requested application history of fees and/or refunds.
     const oldAmount = await this.calculatePermitAmount(
       application.originalPermitId,
       nestedQueryRunner,
     );
-
-    //Calculate current application fee/or refund.
-    const diff =
-      new Date(application.permitData.expiryDate).getTime() -
-      new Date(application.permitData.startDate).getTime();
-    const duration = Math.ceil(diff / (1000 * 3600 * 24)) + 1;
     switch (application.permitType) {
       case PermitType.TERM_OVERSIZE: {
+        if (duration < 1 || duration >= 366)
+          throw new NotAcceptableException(
+            'Invalid duration (',
+            +duration + ' days) for TROS permit type.',
+          );
+        // if permit is for one year i.e. 12 months.
+        if (duration <= 365 && duration >= 361) duration = 360;
+        //Calculate current application fee/or refund.
         permitAmount = this.permitFee(
           duration,
           TROS_PRICE_PER_UNIT,
@@ -662,7 +669,6 @@ export class PaymentService {
       default:
         throw new BadRequestException();
     }
-
     return permitAmount;
   }
   /**
@@ -683,7 +689,9 @@ export class PaymentService {
       duration % permitTypeUnitOfMeasure === 0
         ? duration / permitTypeUnitOfMeasure
         : duration / permitTypeUnitOfMeasure + 1;
-    const permitAmount = unitPrice * unitOfMeasure - oldAmount;
+    let permitAmount = 0;
+    if (oldAmount > 0) permitAmount = unitPrice * unitOfMeasure - oldAmount;
+    else permitAmount = unitPrice * unitOfMeasure + oldAmount;
     return permitAmount;
   }
 
