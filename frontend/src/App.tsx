@@ -68,6 +68,7 @@ const App = () => {
   const [onRouteBCClientNumber, setOnRouteBCClientNumber] =
     useState<Optional<string>>();
   const [companyLegalName, setCompanyLegalName] = useState<Optional<string>>();
+  const [isCompanySuspended, setIsCompanySuspended] = useState<Optional<boolean>>();
   const [userDetails, setUserDetails] =
     useState<Optional<BCeIDUserDetailContext>>();
   const [idirUserDetails, setIDIRUserDetails] =
@@ -84,12 +85,14 @@ const App = () => {
     setOnRouteBCClientNumber(() => undefined);
     setCompanyLegalName(() => undefined);
     setMigratedClient(() => undefined);
+    setIsCompanySuspended(() => undefined);
     sessionStorage.removeItem("onRouteBC.user.companyId");
   }, [
     setCompanyId,
     setOnRouteBCClientNumber,
     setCompanyLegalName,
     setMigratedClient,
+    setIsCompanySuspended,
   ]);
 
   // Needed the following usestate and useffect code so that the snackbar would disapear/close
@@ -113,6 +116,8 @@ const App = () => {
                 setUserDetails,
                 companyLegalName,
                 setCompanyLegalName,
+                isCompanySuspended,
+                setIsCompanySuspended,
                 idirUserDetails,
                 setIDIRUserDetails,
                 onRouteBCClientNumber,
@@ -128,6 +133,7 @@ const App = () => {
               companyId,
               userDetails,
               companyLegalName,
+              isCompanySuspended,
               idirUserDetails,
               onRouteBCClientNumber,
               migratedClient,

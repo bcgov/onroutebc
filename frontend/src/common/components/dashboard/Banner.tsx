@@ -32,6 +32,7 @@ export const Banner = ({
           <Box className="layout-banner__button">{bannerButton}</Box>
         ) : null}
       </Grid>
+      
       <Grid xs item>
         <div className="layout-banner__subtext">
           <div>{bannerSubtext}</div>

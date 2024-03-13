@@ -6,7 +6,8 @@ import { Dispatch, SetStateAction, useContext } from "react";
 import { useFormContext } from "react-hook-form";
 import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router-dom";
-import { Nullable } from "vitest";
+
+import { Nullable } from "../../../common/types/common";
 import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { ERROR_ROUTES } from "../../../routes/constants";
@@ -35,6 +36,7 @@ export const CompanyAndUserInfoSteps = ({
   const navigate = useNavigate();
   const { handleSubmit: handleCreateProfileSubmit, register } =
     useFormContext<CreateCompanyRequest>();
+
   const {
     setCompanyId,
     setUserDetails,
@@ -42,6 +44,7 @@ export const CompanyAndUserInfoSteps = ({
     setOnRouteBCClientNumber,
     setMigratedClient,
   } = useContext(OnRouteBCContext);
+
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -69,6 +72,8 @@ export const CompanyAndUserInfoSteps = ({
         setCompanyId?.(() => companyId);
         setCompanyLegalName?.(() => companyName);
         setOnRouteBCClientNumber?.(() => clientNumber);
+
+        // No need for setIsCompanySuspended since the company was just created
 
         // Clear any state in migrated client. We no longer need this
         // once the user has successfully created/claimed their company.
