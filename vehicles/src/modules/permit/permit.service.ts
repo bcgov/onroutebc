@@ -205,7 +205,7 @@ export class PermitService {
     const orderByMapping: Record<string, string> = {
       permitNumber: 'permit.permitNumber',
       permitType: 'permit.permitType',
-      lastUpdatedDate: 'permit.updatedDateTime',
+      updatedDateTime: 'permit.updatedDateTime',
       startDate: 'permitData.startDate',
       expiryDate: 'permitData.expiryDate',
       unitNumber: 'permitData.unitNumber',
