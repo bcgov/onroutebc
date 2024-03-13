@@ -43,6 +43,7 @@ import {
   TROS_PRICE_PER_UNIT,
   TROS_UNIT_OF_MEASURE,
 } from 'src/common/constants/permit.constant';
+import { differenceBetween } from 'src/common/helper/date-time.helper';
 
 @Injectable()
 export class PaymentService {
@@ -636,11 +637,11 @@ export class PaymentService {
       );
       return -oldAmount;
     }
-    const diff =
-      new Date(application.permitData.expiryDate).getTime() -
-      new Date(application.permitData.startDate).getTime();
-    //convert milliseconds into days
-    let duration = Math.ceil(diff / (1000 * 3600 * 24)) + 1;
+    const diff = differenceBetween(
+      application.permitData.startDate,
+      application.permitData.expiryDate,
+    );
+    let duration = diff + 1;
     //Calculate requested application history of fees and/or refunds.
     const oldAmount = await this.calculatePermitAmount(
       application.originalPermitId,
