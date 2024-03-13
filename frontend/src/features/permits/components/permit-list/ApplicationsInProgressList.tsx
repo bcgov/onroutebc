@@ -57,7 +57,7 @@ export const ApplicationsInProgressList = () => {
   });
   const [sorting, setSorting] = useState<MRT_SortingState>([
     {
-      id: "startDate", // change to updateDateTime when backend supports it.
+      id: "updatedDateTime",
       desc: true,
     },
   ]);
