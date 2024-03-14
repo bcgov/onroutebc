@@ -40,8 +40,10 @@ import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method
 import { PermitService } from '../permit/permit.service';
 import { PermitType } from 'src/common/enum/permit-type.enum';
 import {
-  TROS_PRICE_PER_UNIT,
-  TROS_UNIT_OF_MEASURE,
+  TROS_MAX_VALID_DURATION,
+  TROS_MIN_VALID_DURATION,
+  TROS_PRICE_PER_TERM,
+  TROS_TERM,
 } from 'src/common/constants/permit.constant';
 import { differenceBetween } from 'src/common/helper/date-time.helper';
 
@@ -649,7 +651,7 @@ export class PaymentService {
     );
     switch (application.permitType) {
       case PermitType.TERM_OVERSIZE: {
-        if (duration < 1 || duration >= 366)
+        if (duration < TROS_MIN_VALID_DURATION|| duration >= TROS_MAX_VALID_DURATION)
           throw new NotAcceptableException(
             'Invalid duration (',
             +duration + ' days) for TROS permit type.',
@@ -659,8 +661,8 @@ export class PaymentService {
         //Calculate current application fee/or refund.
         permitAmount = this.permitFee(
           duration,
-          TROS_PRICE_PER_UNIT,
-          TROS_UNIT_OF_MEASURE,
+          TROS_PRICE_PER_TERM,
+          TROS_TERM,
           oldAmount,
         );
         break;
@@ -686,13 +688,13 @@ export class PaymentService {
     permitTypeUnitOfMeasure: number,
     oldAmount: number,
   ): number {
-    const unitOfMeasure =
+    const permitTerm =
       duration % permitTypeUnitOfMeasure === 0
         ? duration / permitTypeUnitOfMeasure
         : duration / permitTypeUnitOfMeasure + 1;
     let permitAmount = 0;
-    if (oldAmount > 0) permitAmount = unitPrice * unitOfMeasure - oldAmount;
-    else permitAmount = unitPrice * unitOfMeasure + oldAmount;
+    if (oldAmount > 0) permitAmount = unitPrice * permitTerm - oldAmount;
+    else permitAmount = unitPrice * permitTerm + oldAmount;
     return permitAmount;
   }
 
