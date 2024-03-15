@@ -6,11 +6,13 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { PowerUnitTypesService } from 'src/modules/vehicles/power-unit-types/power-unit-types.service';
 import { TrailerTypesService } from 'src/modules/vehicles/trailer-types/trailer-types.service';
 import { CommonService } from 'src/modules/common/common.service';
-import { PermitService } from 'src/modules/permit/permit.service';
-import { PaymentService } from '../../../src/modules/payment/payment.service';
 import { FeatureFlagsService } from 'src/modules/feature-flags/feature-flags.service';
+import { PermitService } from '../../../src/modules/permit-application-payment/permit/permit.service';
+import { PaymentService } from '../../../src/modules/permit-application-payment/payment/payment.service';
+import { ApplicationService } from '../../../src/modules/permit-application-payment/application/application.service';
 
 let permitServiceMock: DeepMocked<PermitService>;
+let applicationServiceMock: DeepMocked<ApplicationService>;
 let powerUnitTypeServiceMock: DeepMocked<PowerUnitTypesService>;
 let trailerTypeServiceMock: DeepMocked<TrailerTypesService>;
 let commonServiceMock: DeepMocked<CommonService>;
@@ -22,6 +24,7 @@ describe('AppController', () => {
 
   beforeEach(async () => {
     permitServiceMock = createMock<PermitService>();
+    applicationServiceMock = createMock<ApplicationService>();
     powerUnitTypeServiceMock = createMock<PowerUnitTypesService>();
     trailerTypeServiceMock = createMock<TrailerTypesService>();
     commonServiceMock = createMock<CommonService>();
@@ -36,6 +39,10 @@ describe('AppController', () => {
         {
           provide: PermitService,
           useValue: permitServiceMock,
+        },
+        {
+          provide: ApplicationService,
+          useValue: applicationServiceMock,
         },
         {
           provide: PowerUnitTypesService,
