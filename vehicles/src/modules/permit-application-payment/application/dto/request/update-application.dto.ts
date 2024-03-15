@@ -34,30 +34,6 @@ export class UpdateApplicationDto {
   @IsEnum(PermitType)
   permitType?: PermitType;
 
-  //ToDo: remove PermitStatus, update application should not change PermitStatus. there is an existing endpoint to change status.
-  @AutoMap()
-  @ApiProperty({
-    enum: PermitStatus,
-    description: 'Friendly name for the permit type.',
-    required: false,
-    example: ApplicationStatus.IN_PROGRESS,
-  })
-  @IsOptional()
-  @IsEnum(PermitStatus)
-  permitStatus?: PermitStatus;
-
-  //ToDo: remove permitApplicationOrigin, update application should not change permitApplicationOrigin
-  @AutoMap()
-  @ApiProperty({
-    enum: PermitApplicationOrigin,
-    example: PermitApplicationOrigin.ONLINE,
-    required: false,
-    description: 'Unique identifier for the application origin.',
-  })
-  @IsOptional()
-  @IsEnum(PermitApplicationOrigin)
-  permitApplicationOrigin?: PermitApplicationOrigin;
-
   @AutoMap()
   @ApiProperty({
     description: 'Permit Application JSON.',

@@ -18,7 +18,6 @@ import {
 import { IDIR_USER_AUTH_GROUP_LIST } from '../enum/user-auth-group.enum';
 import { IUserJWT } from '../interface/user-jwt.interface';
 import { doesUserHaveAuthGroup } from './auth.helper';
-//import { PermitApprovalSource as PermitApprovalSourceEnum } from '../enum/permit-approval-source.enum';
 
 /**
  * Fetches and resolves various types of names associated with a permit using cache.
