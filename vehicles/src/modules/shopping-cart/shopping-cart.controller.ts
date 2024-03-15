@@ -7,6 +7,7 @@ import { CreateShoppingCartDto } from './dto/create-shopping-cart.dto';
 import { UpdateShoppingCartDto } from './dto/update-shopping-cart.dto';
 import { ShoppingCartService } from './shopping-cart.service';
 import { GetShoppingCartQueryParamsDto } from './dto/request/getShoppingCart.query-params.dto';
+import { ResultDto } from '../permit/dto/response/result.dto';
 
 @ApiBearerAuth()
 @ApiTags('Shopping Cart')
@@ -28,10 +29,19 @@ export class ShoppingCartController {
     const { companyId } = getShoppingCartQueryParamsDto;
     return this.shoppingCartService.findAll();
   }
-
+  
+  
   @Delete()
   @Roles(Role.WRITE_PERMIT)
-  remove(@Body() updateShoppingCartDto: UpdateShoppingCartDto) {
-    return this.shoppingCartService.remove(updateShoppingCartDto);
+  /**
+   * Removes a shopping cart item.
+   *
+   * @param updateShoppingCartDto - The DTO to update a shopping cart.
+   * @returns The result of the removal operation.
+   */
+  async remove(
+    @Body() updateShoppingCartDto: UpdateShoppingCartDto,
+  ): Promise<ResultDto> {
+    return await this.shoppingCartService.remove(updateShoppingCartDto);
   }
 }
