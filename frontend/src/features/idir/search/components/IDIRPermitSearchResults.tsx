@@ -73,6 +73,7 @@ export const IDIRPermitSearchResults = memo(
         searchString,
         searchByFilter,
         searchEntity,
+        isActiveRecordsOnly,
         pagination.pageIndex,
         pagination.pageSize,
       ],
@@ -81,7 +82,10 @@ export const IDIRPermitSearchResults = memo(
           {
             searchByFilter,
             searchEntity,
-            searchString: searchString,
+            searchString,
+          },
+          {
+            expired: !isActiveRecordsOnly,
           },
           { page: pagination.pageIndex, take: pagination.pageSize },
         ),
@@ -99,26 +103,9 @@ export const IDIRPermitSearchResults = memo(
       [],
     );
 
-    /**
-     *
-     * @param initialData The initial data to filter by the active data toggle.
-     * @returns List of permit items containing the data to be displayed in table.
-     */
-    const getFilteredData = (initialData: PermitListItem[]): PermitListItem[] => {
-      if (!initialData.length) return [];
-      if (isActiveRecordsOnly) {
-        // Returns unexpired permits
-        return initialData.filter(
-          ({ permitStatus, expiryDate }) =>
-            !hasPermitExpired(expiryDate) && !isPermitInactive(permitStatus),
-        );
-      }
-      return initialData;
-    };
-
     const table = useMaterialReactTable({
       ...defaultTableOptions,
-      data: getFilteredData(data?.items ?? []),
+      data: data?.items ?? [],
       columns: columns,
       initialState: {
         ...defaultTableInitialStateOptions,
@@ -164,26 +151,29 @@ export const IDIRPermitSearchResults = memo(
           </Box>
         );
       },
-      renderRowActions: useCallback(({ row }: { row: MRT_Row<PermitListItem> }) => {
-        const isInactive =
-          hasPermitExpired(row.original.expiryDate) ||
-          isPermitInactive(row.original.permitStatus);
+      renderRowActions: useCallback(
+        ({ row }: { row: MRT_Row<PermitListItem> }) => {
+          const isInactive =
+            hasPermitExpired(row.original.expiryDate) ||
+            isPermitInactive(row.original.permitStatus);
 
-        if (shouldShowRowActions(idirUserDetails?.userAuthGroup)) {
-          return (
-            <Box className="idir-search-results__row-actions">
-              <IDIRPermitSearchRowActions
-                isPermitInactive={isInactive}
-                permitNumber={row.original.permitNumber}
-                permitId={row.original.permitId}
-                userAuthGroup={idirUserDetails?.userAuthGroup}
-              />
-            </Box>
-          );
-        } else {
-          return <></>;
-        }
-      }, []),
+          if (shouldShowRowActions(idirUserDetails?.userAuthGroup)) {
+            return (
+              <Box className="idir-search-results__row-actions">
+                <IDIRPermitSearchRowActions
+                  isPermitInactive={isInactive}
+                  permitNumber={row.original.permitNumber}
+                  permitId={row.original.permitId}
+                  userAuthGroup={idirUserDetails?.userAuthGroup}
+                />
+              </Box>
+            );
+          } else {
+            return <></>;
+          }
+        },
+        [],
+      ),
       muiToolbarAlertBannerProps: isError
         ? {
             color: "error",
