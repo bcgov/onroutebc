@@ -17,22 +17,23 @@ export enum ApplicationStatus {
 }
 
 /**
- * Apllication statuses to be considered for Application In Progress (AIP) from IDIR User POV.
+ * Application statuses to be considered for Application In Progress (AIP) at time of issuance.
+ */
+export const ACTIVE_APPLICATION_STATUS_FOR_ISSUANCE: ReadonlyArray<ApplicationStatus> =
+  [ApplicationStatus.IN_PROGRESS, ApplicationStatus.WAITING_PAYMENT];
+
+/**
+ * Application statuses to be considered for Application In Progress (AIP) Tab for Cv Client Users.
+ */
+export const CVCLIENT_ACTIVE_APPLICATION_STATUS: ReadonlyArray<ApplicationStatus> =
+  [ApplicationStatus.IN_PROGRESS, ApplicationStatus.WAITING_PAYMENT];
+
+/**
+ * Application statuses to be considered for Application In Progress (AIP) Tab for Staff Users.
  */
 export const IDIR_ACTIVE_APPLICATION_STATUS: ReadonlyArray<ApplicationStatus> =
   [
     ApplicationStatus.IN_PROGRESS,
     ApplicationStatus.WAITING_PAYMENT,
-    ApplicationStatus.CANCELLED,
-    ApplicationStatus.UNDER_REVIEW,
-  ];
-
-/**
- * Apllication statuses to be considered for Application In Progress (AIP) from CV Client POV.
- */
-export const CVCLIENT_ACTIVE_APPLICATION_STATUS: ReadonlyArray<ApplicationStatus> =
-  [
-    ApplicationStatus.IN_PROGRESS,
-    ApplicationStatus.WAITING_PAYMENT,
-    ApplicationStatus.UNDER_REVIEW,
+    //ApplicationStatus.CANCELLED, //! Discovery Pending
   ];
