@@ -8,9 +8,6 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator';
-import { ApplicationStatus } from 'src/common/enum/application-status.enum';
-import { PermitApplicationOrigin } from 'src/common/enum/permit-application-origin.enum';
-import { PermitStatus } from 'src/common/enum/permit-status.enum';
 import { PermitType } from 'src/common/enum/permit-type.enum';
 
 export class UpdateApplicationDto {
