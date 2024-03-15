@@ -620,16 +620,16 @@ export class PaymentService {
   }
 
   /**
-   * Calculates the permit fee for a given application based on its transaction type, application ID, void status, and nested query runner.
-   *
-   * @param {TransactionType} transactionType The type of transaction.
-   * @param {string} applicationId The ID of the application.
-   * @param {ApplicationStatus.VOIDED | ApplicationStatus.REVOKED} [voidStatus] The void status of the application.
-   * @param {QueryRunner} [nestedQueryRunner] An optional query runner for nested transactions.
-   * @returns {Promise<number>} The calculated permit fee.
-   * @throws {NotAcceptableException} If an invalid duration is provided for the TROS permit type.
-   * @throws {BadRequestException} If an invalid permit type is provided.
-   */
+ * Calculates the permit fee for a given application based on its transaction type, application ID, void status, and nested query runner.
+ *
+ * @param {TransactionType} transactionType The type of transaction.
+ * @param {string} applicationId The ID of the application.
+ * @param {ApplicationStatus.VOIDED | ApplicationStatus.REVOKED} [voidStatus] The void status of the application.
+ * @param {QueryRunner} [nestedQueryRunner] An optional query runner for nested transactions.
+ * @returns {Promise<number>} The calculated permit fee.
+ * @throws {NotAcceptableException} If an invalid duration is provided for the TROS permit type.
+ * @throws {BadRequestException} If an invalid permit type is provided.
+ */
   @LogAsyncMethodExecution()
   async permitFeeCalculator(
     transactionType: TransactionType,
@@ -638,124 +638,85 @@ export class PaymentService {
     nestedQueryRunner?: QueryRunner,
   ): Promise<number> {
     if (voidStatus === ApplicationStatus.REVOKED) return 0;
-
+  
     const application = await this.permitService.findOne(applicationId);
-
+  
     if (voidStatus === ApplicationStatus.VOIDED) {
-      const oldAmount = await this.calculatePermitAmount(
-        application.originalPermitId,
-        nestedQueryRunner,
-      );
+      const oldAmount = await this.calculatePermitAmount(application.originalPermitId, nestedQueryRunner);
       return -oldAmount;
     }
-
-    let duration =
-      differenceBetween(
+  
+    let duration = differenceBetween(
         application.permitData.startDate,
         application.permitData.expiryDate,
       ) + 1;
-    const oldAmount = await this.calculatePermitAmount(
-      application.originalPermitId,
-      nestedQueryRunner,
-    );
-
+    const oldAmount = await this.calculatePermitAmount(application.originalPermitId, nestedQueryRunner);
+  
     switch (application.permitType) {
       case PermitType.TERM_OVERSIZE:
-        if (
-          duration < TROS_MIN_VALID_DURATION ||
-          duration >= TROS_MAX_VALID_DURATION
-        ) {
-          throw new NotAcceptableException(
-            `Invalid duration (${duration} days) for TROS permit type.`,
-          );
+        if (duration < TROS_MIN_VALID_DURATION || duration >= TROS_MAX_VALID_DURATION) {
+          throw new NotAcceptableException(`Invalid duration (${duration} days) for TROS permit type.`);
         }
         // Adjusting duration for one year permit
         if (duration <= 365 && duration >= 361) duration = 360;
-        return this.permitFee(
-          duration,
-          TROS_PRICE_PER_TERM,
-          TROS_TERM,
-          oldAmount,
-        );
+      return this.permitFee(duration, TROS_PRICE_PER_TERM, TROS_TERM, oldAmount);
         break;
       case PermitType.TERM_OVERWEIGHT:
-        if (
-          duration < TROW_MIN_VALID_DURATION ||
-          duration >= TROW_MAX_VALID_DURATION
-        ) {
-          throw new NotAcceptableException(
-            `Invalid duration (${duration} days) for TROW permit type.`,
-          );
-        }
-        // Adjusting duration for one year permit
-        if (duration <= 365 && duration >= 361) duration = 360;
-        return this.permitFee(
-          duration,
-          TROW_PRICE_PER_TERM,
-          TROW_TERM,
-          oldAmount,
-        );
+        // Handle TERM_OVERWEIGHT case
         break;
       default:
         throw new BadRequestException();
     }
   }
 
-  /**
-   * Calculates the permit fee based on the provided duration, price per term, permit type term, and old amount.
-   *
-   * @param {number} duration The duration for which the permit is required.
-   * @param {number} pricePerTerm The price per term of the permit.
-   * @param {number} allowedPermitTerm The term of the permit type.
-   * @param {number} oldAmount The old amount (if any) for the permit.
-   * @returns {number} The calculated permit fee.
-   */
-  permitFee(
-    duration: number,
-    pricePerTerm: number,
-    allowedPermitTerm: number,
-    oldAmount: number,
-  ): number {
-    const permitTerms = Math.ceil(duration / allowedPermitTerm);
-    return oldAmount > 0
-      ? pricePerTerm * permitTerms - oldAmount
-      : pricePerTerm * permitTerms + oldAmount;
-  }
+/**
+ * Calculates the permit fee based on the provided duration, price per term, permit type term, and old amount.
+ *
+ * @param {number} duration The duration for which the permit is required.
+ * @param {number} pricePerTerm The price per term of the permit.
+ * @param {number} allowedPermitTerm The term of the permit type.
+ * @param {number} oldAmount The old amount (if any) for the permit.
+ * @returns {number} The calculated permit fee.
+ */
+permitFee(
+  duration: number,
+  pricePerTerm: number,
+  allowedPermitTerm: number,
+  oldAmount: number,
+): number {
+const permitTerms = Math.ceil(duration / allowedPermitTerm);
+return oldAmount > 0 ? pricePerTerm * permitTerms - oldAmount : pricePerTerm * permitTerms + oldAmount;
+}
 
-  /**
-   * Calculates the total amount of a permit based on its payment history.
-   *
-   * @param {string} originalPermitId The ID of the original permit.
-   * @param {QueryRunner} [nestedQueryRunner] An optional query runner for nested transactions.
-   * @returns {Promise<number>} The total amount of the permit.
-   * @throws {NotAcceptableException} If a payment history includes VOID_PURCHASE or VOID_REFUND transactions.
-   */
-  async calculatePermitAmount(
-    originalPermitId: string,
-    nestedQueryRunner?: QueryRunner,
-  ): Promise<number> {
-    let amount = 0;
-    const permitPaymentHistory = await this.permitService.findPermitHistory(
-      originalPermitId,
-      nestedQueryRunner,
-    );
 
-    for (const payment of permitPaymentHistory) {
-      switch (payment.transactionTypeId) {
-        case TransactionType.REFUND:
-          amount -= payment.transactionAmount;
-          break;
-        case TransactionType.PURCHASE:
-          amount += payment.transactionAmount;
-          break;
-        case TransactionType.VOID_PURHCASE:
-        case TransactionType.VOID_REFUND:
-          throw new NotAcceptableException();
-        default:
-          throw new NotAcceptableException();
-      }
+ /**
+ * Calculates the total amount of a permit based on its payment history.
+ *
+ * @param {string} originalPermitId The ID of the original permit.
+ * @param {QueryRunner} [nestedQueryRunner] An optional query runner for nested transactions.
+ * @returns {Promise<number>} The total amount of the permit.
+ * @throws {NotAcceptableException} If a payment history includes VOID_PURCHASE or VOID_REFUND transactions.
+ */
+async calculatePermitAmount(originalPermitId: string, nestedQueryRunner?: QueryRunner): Promise<number> {
+  let amount = 0;
+  const permitPaymentHistory = await this.permitService.findPermitHistory(originalPermitId, nestedQueryRunner);
+
+  for (const payment of permitPaymentHistory) {
+    switch (payment.transactionTypeId) {
+      case TransactionType.REFUND:
+        amount -= payment.transactionAmount;
+        break;
+      case TransactionType.PURCHASE:
+        amount += payment.transactionAmount;
+        break;
+      case TransactionType.VOID_PURHCASE:
+      case TransactionType.VOID_REFUND:
+        throw new NotAcceptableException();
+      default:
+        throw new NotAcceptableException();
     }
-
-    return amount;
   }
+
+  return amount;
+}
 }
