@@ -43,7 +43,7 @@ import * as constants from '../../../common/constants/api.constant';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
 import { PageMetaDto } from '../../../common/dto/paginate/page-meta';
 import { PaginationDto } from '../../../common/dto/paginate/pagination';
-import { getActiveApplicationStatus } from '../../../common/helper/application.status.helper';
+
 import {
   ClientUserAuthGroup,
   IDIR_USER_AUTH_GROUP_LIST,
@@ -53,8 +53,8 @@ import { ReadApplicationMetadataDto } from './dto/response/read-application-meta
 import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 import { formatTemplateData } from '../../../common/helper/format-template-data.helper';
 import {
+  ACTIVE_APPLICATION_STATUS_FOR_ISSUANCE,
   ApplicationStatus,
-  APPLICATION_IN_PROGRESS_STATUS_FOR_ISSUANCE,
 } from '../../../common/enum/application-status.enum';
 import { IDP } from '../../../common/enum/idp.enum';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
@@ -62,6 +62,7 @@ import {
   fetchPermitDataDescriptionValuesFromCache,
   generateApplicationNumber,
   generatePermitNumber,
+  getActiveApplicationStatus,
 } from '../../../common/helper/permit-application.helper';
 
 @Injectable()
@@ -837,7 +838,7 @@ export class ApplicationService {
         originalPermitId: originalPermitId,
       })
       .andWhere('permit.permitStatus IN (:...applicationStatus)', {
-        applicationStatus: APPLICATION_IN_PROGRESS_STATUS_FOR_ISSUANCE,
+        applicationStatus: ACTIVE_APPLICATION_STATUS_FOR_ISSUANCE,
       })
       .getCount();
     return count;

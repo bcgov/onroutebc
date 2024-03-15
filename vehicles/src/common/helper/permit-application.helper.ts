@@ -10,6 +10,14 @@ import { callDatabaseSequence } from './database.helper';
 import { PermitApplicationOrigin as PermitApplicationOriginEnum } from '../enum/permit-application-origin.enum';
 import { PermitApprovalSource as PermitApprovalSourceEnum } from '../enum/permit-approval-source.enum';
 import { randomInt } from 'crypto';
+import {
+  ApplicationStatus,
+  IDIR_ACTIVE_APPLICATION_STATUS,
+  CVCLIENT_ACTIVE_APPLICATION_STATUS,
+} from '../enum/application-status.enum';
+import { IDIR_USER_AUTH_GROUP_LIST } from '../enum/user-auth-group.enum';
+import { IUserJWT } from '../interface/user-jwt.interface';
+import { doesUserHaveAuthGroup } from './auth.helper';
 //import { PermitApprovalSource as PermitApprovalSourceEnum } from '../enum/permit-approval-source.enum';
 
 /**
@@ -189,4 +197,16 @@ export const generatePermitNumber = async (
   // Format and return the permit number
   const permitNumber = `P${approvalSourceId}-${sequence}-${randomNumber}${revision}`;
   return permitNumber;
+};
+
+export const getActiveApplicationStatus = (currentUser: IUserJWT) => {
+  const applicationStatus: Readonly<ApplicationStatus[]> =
+    doesUserHaveAuthGroup(
+      currentUser.orbcUserAuthGroup,
+      IDIR_USER_AUTH_GROUP_LIST,
+    )
+      ? IDIR_ACTIVE_APPLICATION_STATUS
+      : CVCLIENT_ACTIVE_APPLICATION_STATUS;
+
+  return applicationStatus;
 };

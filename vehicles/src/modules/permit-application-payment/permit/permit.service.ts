@@ -22,7 +22,7 @@ import { Receipt } from '../payment/entities/receipt.entity';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import { PermitHistoryDto } from './dto/response/permit-history.dto';
 import {
-  APPLICATION_IN_PROGRESS_STATUS_FOR_ISSUANCE,
+  ACTIVE_APPLICATION_STATUS_FOR_ISSUANCE,
   ApplicationStatus,
 } from 'src/common/enum/application-status.enum';
 import { DopsGeneratedDocument } from 'src/common/interface/dops-generated-document.interface';
@@ -509,7 +509,7 @@ export class PermitService {
         originalPermitId: originalPermitId,
       })
       .andWhere('permit.permitStatus IN (:...applicationStatus)', {
-        applicationStatus: APPLICATION_IN_PROGRESS_STATUS_FOR_ISSUANCE,
+        applicationStatus: ACTIVE_APPLICATION_STATUS_FOR_ISSUANCE,
       })
       .getCount();
     return count;
