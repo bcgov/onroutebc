@@ -1,15 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Inject, Injectable } from '@nestjs/common';
-import { CreateShoppingCartDto } from './dto/create-shopping-cart.dto';
-import { UpdateShoppingCartDto } from './dto/update-shopping-cart.dto';
-import { ApplicationService } from '../permit/application.service';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Permit as Application } from '../permit/entities/permit.entity';
 import { Repository } from 'typeorm';
-import { PermitStatus } from '../../common/enum/permit-status.enum';
 import { ApplicationStatus } from '../../common/enum/application-status.enum';
-import { application } from 'express';
+import { Permit as Application } from '../permit-application-payment/permit/entities/permit.entity';
+import { CreateShoppingCartDto } from './dto/create-shopping-cart.dto';
 import { ResultDto } from './dto/response/result.dto';
+import { UpdateShoppingCartDto } from './dto/update-shopping-cart.dto';
 
 @Injectable()
 export class ShoppingCartService {

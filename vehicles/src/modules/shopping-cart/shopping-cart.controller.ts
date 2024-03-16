@@ -7,7 +7,7 @@ import { CreateShoppingCartDto } from './dto/create-shopping-cart.dto';
 import { UpdateShoppingCartDto } from './dto/update-shopping-cart.dto';
 import { ShoppingCartService } from './shopping-cart.service';
 import { GetShoppingCartQueryParamsDto } from './dto/request/getShoppingCart.query-params.dto';
-import { ResultDto } from '../permit/dto/response/result.dto';
+import { ResultDto } from './dto/response/result.dto';
 
 @ApiBearerAuth()
 @ApiTags('Shopping Cart')
@@ -30,7 +30,7 @@ export class ShoppingCartController {
     return this.shoppingCartService.findAll();
   }
   
-  
+
   @Delete()
   @Roles(Role.WRITE_PERMIT)
   /**
