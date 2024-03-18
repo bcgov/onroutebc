@@ -278,10 +278,10 @@ export class PaymentService {
           where: { permitId: application.applicationId },
         });
         if (!voidStatus)
-        this.assertApplicationInProgress(
-          newTransaction.transactionTypeId,
-          existingApplication.permitStatus,
-        );
+          this.assertApplicationInProgress(
+            newTransaction.transactionTypeId,
+            existingApplication.permitStatus,
+          );
 
         let newPermitTransactions = new PermitTransaction();
         newPermitTransactions.transaction = newTransaction;
@@ -317,8 +317,7 @@ export class PaymentService {
 
           await queryRunner.manager.save(existingApplication);
         } else if (
-          this.isTransactionPurchase(newTransaction.transactionTypeId)
-          &&
+          this.isTransactionPurchase(newTransaction.transactionTypeId) &&
           !voidStatus
         ) {
           existingApplication.permitStatus = ApplicationStatus.PAYMENT_COMPLETE;
@@ -733,15 +732,15 @@ export class PaymentService {
         .orderBy('transaction.transactionSubmitDate', 'DESC')
         .getMany();
     } else {
-    const queryBuilder = this.permitRepository
-    .createQueryBuilder('permit')
-    .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
-    .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
-    .where('permit.permitNumber IS NOT NULL')
-    .andWhere('permit.originalPermitId = :originalPermitId', {
-      originalPermitId,
-    })
-    .orderBy('transaction.transactionSubmitDate', 'DESC');
+      const queryBuilder = this.permitRepository
+        .createQueryBuilder('permit')
+        .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
+        .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
+        .where('permit.permitNumber IS NOT NULL')
+        .andWhere('permit.originalPermitId = :originalPermitId', {
+          originalPermitId,
+        })
+        .orderBy('transaction.transactionSubmitDate', 'DESC');
       permits = await queryBuilder.getMany();
     }
 
