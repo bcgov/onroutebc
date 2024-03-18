@@ -24,7 +24,7 @@ import { Role } from '../../common/enum/roles.enum';
 import { ClientUserAuthGroup } from '../../common/enum/user-auth-group.enum';
 import { ExceptionDto } from '../../common/exception/exception.dto';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
-import { CreateShoppingCartDto } from './dto/create-shopping-cart.dto';
+import { AddToShoppingCartDto } from './dto/create-shopping-cart.dto';
 import { GetShoppingCartQueryParamsDto } from './dto/request/getShoppingCart.query-params.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { UpdateShoppingCartDto } from './dto/update-shopping-cart.dto';
@@ -63,9 +63,9 @@ export class ShoppingCartController {
   @Roles(Role.WRITE_PERMIT)
   async addToCart(
     @Req() request: Request,
-    @Body() createShoppingCartDto: CreateShoppingCartDto,
+    @Body() createShoppingCartDto: AddToShoppingCartDto,
   ): Promise<ResultDto> {
-    return await this.shoppingCartService.create(createShoppingCartDto);
+    return await this.shoppingCartService.addToCart(createShoppingCartDto);
   }
 
   /**

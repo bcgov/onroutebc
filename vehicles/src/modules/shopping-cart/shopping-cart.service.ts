@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import { ApplicationStatus } from '../../common/enum/application-status.enum';
 import { Permit as Application } from '../permit-application-payment/permit/entities/permit.entity';
-import { CreateShoppingCartDto } from './dto/create-shopping-cart.dto';
+import { AddToShoppingCartDto } from './dto/create-shopping-cart.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { UpdateShoppingCartDto } from './dto/update-shopping-cart.dto';
 
@@ -21,15 +21,15 @@ export class ShoppingCartService {
    * Creates a shopping cart by setting the application status of permits to `IN_CART`.
    * The function accepts a DTO containing details to identify and update the necessary permits.
    *
-   * @param createShoppingCartDto - Data Transfer Object containing the details of the permits to be added to the shopping cart.
+   * @param addToCartDto - Data Transfer Object containing the details of the permits to be added to the shopping cart.
    * @returns A ResultDto object which includes arrays of permit application IDs that were successfully added to the cart ('success'), and those that were not ('failure').
    */
   @LogAsyncMethodExecution()
-  async create(
-    createShoppingCartDto: CreateShoppingCartDto,
+  async addToCart(
+    addToCartDto: AddToShoppingCartDto,
   ): Promise<ResultDto> {
     return await this.updateApplicationStatus(
-      createShoppingCartDto,
+      addToCartDto,
       ApplicationStatus.IN_CART,
     );
   }
@@ -74,17 +74,14 @@ export class ShoppingCartService {
    * Updates the status of multiple applications to either `IN_CART` or `IN_PROGRESS`.
    * This private function is utilized internally within the service to reflect changes in the application status based on actions performed on the shopping cart.
    *
-   * @param {UpdateShoppingCartDto | CreateShoppingCartDto} dto - An object that contains arrays of application IDs (`applicationIds`) and the company ID (`companyId`) associated with these applications.
+   * @param {UpdateShoppingCartDto | AddToShoppingCartDto} dto - An object that contains arrays of application IDs (`applicationIds`) and the company ID (`companyId`) associated with these applications.
    * @param {ApplicationStatus.IN_CART | ApplicationStatus.IN_PROGRESS} statusToUpdateTo - The new status to which the applications will be updated. It must be either `IN_CART` for adding to the cart, or `IN_PROGRESS` for removing from the cart.
    * @returns {Promise<ResultDto>} A `ResultDto` instance containing two arrays: `success` with IDs of applications successfully updated, and `failure` with IDs of applications that failed to update.
    */
 
   @LogAsyncMethodExecution()
   private async updateApplicationStatus(
-    {
-      applicationIds,
-      companyId,
-    }: UpdateShoppingCartDto | CreateShoppingCartDto,
+    { applicationIds, companyId }: UpdateShoppingCartDto | AddToShoppingCartDto,
     statusToUpdateTo: ApplicationStatus.IN_CART | ApplicationStatus.IN_PROGRESS,
   ): Promise<ResultDto> {
     const { success, failure } = new ResultDto();

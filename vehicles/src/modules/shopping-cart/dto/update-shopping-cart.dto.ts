@@ -1,3 +1,3 @@
-import { CreateShoppingCartDto } from './create-shopping-cart.dto';
+import { AddToShoppingCartDto } from './create-shopping-cart.dto';
 
-export class UpdateShoppingCartDto extends CreateShoppingCartDto {}
+export class UpdateShoppingCartDto extends AddToShoppingCartDto {}

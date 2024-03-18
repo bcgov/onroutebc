@@ -9,7 +9,7 @@ import { IsNumber, IsNumberString, IsOptional } from 'class-validator';
  * @property {string[]} applicationIds - Application Ids to be added to the cart. Should be an array of number strings without symbols.
  * @property {number} [companyId] - Optional Id of the company the application belongs to. Should be a number.
  */
-export class CreateShoppingCartDto {
+export class AddToShoppingCartDto {
   @AutoMap()
   @ApiProperty({
     description: 'Application Ids to be added to the cart.',
