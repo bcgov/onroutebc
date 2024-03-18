@@ -178,7 +178,7 @@ export class ApplicationService {
     );
   }
 
-  async findOne(permitId: string): Promise<Permit> {
+  private async findOne(permitId: string): Promise<Permit> {
     return await this.permitRepository.findOne({
       where: [{ permitId: permitId }],
       relations: {
