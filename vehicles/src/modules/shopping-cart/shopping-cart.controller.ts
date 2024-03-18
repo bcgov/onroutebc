@@ -24,10 +24,10 @@ import { Role } from '../../common/enum/roles.enum';
 import { ClientUserAuthGroup } from '../../common/enum/user-auth-group.enum';
 import { ExceptionDto } from '../../common/exception/exception.dto';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
-import { AddToShoppingCartDto } from './dto/create-shopping-cart.dto';
-import { GetShoppingCartQueryParamsDto } from './dto/request/getShoppingCart.query-params.dto';
+import { AddToShoppingCartDto } from './dto/request/add-to-shopping-cart.dto';
+import { GetShoppingCartQueryParamsDto } from './dto/request/queryParam/getShoppingCart.query-params.dto';
 import { ResultDto } from './dto/response/result.dto';
-import { UpdateShoppingCartDto } from './dto/update-shopping-cart.dto';
+import { UpdateShoppingCartDto } from './dto/request/update-shopping-cart.dto';
 import { ShoppingCartService } from './shopping-cart.service';
 
 @ApiBearerAuth()

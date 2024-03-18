@@ -5,9 +5,9 @@ import { Repository } from 'typeorm';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import { ApplicationStatus } from '../../common/enum/application-status.enum';
 import { Permit as Application } from '../permit-application-payment/permit/entities/permit.entity';
-import { AddToShoppingCartDto } from './dto/create-shopping-cart.dto';
+import { AddToShoppingCartDto } from './dto/request/add-to-shopping-cart.dto';
 import { ResultDto } from './dto/response/result.dto';
-import { UpdateShoppingCartDto } from './dto/update-shopping-cart.dto';
+import { UpdateShoppingCartDto } from './dto/request/update-shopping-cart.dto';
 
 @Injectable()
 export class ShoppingCartService {
@@ -25,9 +25,7 @@ export class ShoppingCartService {
    * @returns A ResultDto object which includes arrays of permit application IDs that were successfully added to the cart ('success'), and those that were not ('failure').
    */
   @LogAsyncMethodExecution()
-  async addToCart(
-    addToCartDto: AddToShoppingCartDto,
-  ): Promise<ResultDto> {
+  async addToCart(addToCartDto: AddToShoppingCartDto): Promise<ResultDto> {
     return await this.updateApplicationStatus(
       addToCartDto,
       ApplicationStatus.IN_CART,
