@@ -10,6 +10,7 @@ import {
   Req,
 } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
@@ -79,6 +80,10 @@ export class ShoppingCartController {
     summary: 'Returns the applications in the shopping cart.',
     description:
       'Returns one or more applications from the shopping cart, enforcing authentication.',
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad Request Response.',
+    type: ExceptionDto,
   })
   @ApiOkResponse({
     description: 'The result of the changes to cart.',
