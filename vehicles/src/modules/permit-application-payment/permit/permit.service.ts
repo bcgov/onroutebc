@@ -649,10 +649,12 @@ export class PermitService {
           transactionAmount: voidPermitDto.transactionAmount,
         },
       ];
+      const voidStatus = voidPermitDto.status;
       const transactionDto = await this.paymentService.createTransactions(
         currentUser,
         createTransactionDto,
         queryRunner,
+        voidStatus,
       );
 
       const fetchedTransaction = await queryRunner.manager.findOne(

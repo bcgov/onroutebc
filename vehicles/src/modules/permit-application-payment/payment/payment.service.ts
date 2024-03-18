@@ -3,6 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotAcceptableException,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateTransactionDto } from './dto/request/create-transaction.dto';
@@ -34,6 +35,19 @@ import { PaymentCardType } from './entities/payment-card-type.entity';
 import { PaymentMethodType } from './entities/payment-method-type.entity';
 import { LogMethodExecution } from '../../../common/decorator/log-method-execution.decorator';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
+import { differenceBetween } from 'src/common/helper/date-time.helper';
+import { PermitType } from 'src/common/enum/permit-type.enum';
+import { PermitHistoryDto } from '../permit/dto/response/permit-history.dto';
+import {
+  calculatePermitAmount,
+  permitFee,
+} from 'src/common/helper/payment.helper';
+import {
+  TROS_MAX_VALID_DURATION,
+  TROS_MIN_VALID_DURATION,
+  TROS_PRICE_PER_TERM,
+  TROS_TERM,
+} from 'src/common/constants/permit.constant';
 
 @Injectable()
 export class PaymentService {
@@ -46,6 +60,8 @@ export class PaymentService {
     private paymentMethodTypeRepository: Repository<PaymentMethodType>,
     @InjectRepository(PaymentCardType)
     private paymentCardTypeRepository: Repository<PaymentCardType>,
+    @InjectRepository(Permit)
+    private permitRepository: Repository<Permit>,
     @InjectMapper() private readonly classMapper: Mapper,
   ) {}
 
@@ -194,12 +210,42 @@ export class PaymentService {
     currentUser: IUserJWT,
     createTransactionDto: CreateTransactionDto,
     nestedQueryRunner?: QueryRunner,
+    voidStatus?: ApplicationStatus.VOIDED | ApplicationStatus.REVOKED,
   ): Promise<ReadTransactionDto> {
+    let totalTransactionAmountCalculated: number = 0;
+    // Calculate and add amount for each requested application, as per the available backend data.
+    for (const application of createTransactionDto.applicationDetails) {
+      totalTransactionAmountCalculated =
+        totalTransactionAmountCalculated +
+        (await this.permitFeeCalculator(
+          application.applicationId,
+          voidStatus,
+          nestedQueryRunner,
+        ));
+    }
     const totalTransactionAmount =
       createTransactionDto.applicationDetails?.reduce(
         (accumulator, item) => accumulator + item.transactionAmount,
         0,
       );
+    switch (createTransactionDto.transactionTypeId) {
+      case TransactionType.PURCHASE:
+        if (
+          totalTransactionAmount.toFixed(2) !=
+          totalTransactionAmountCalculated.toFixed(2)
+        )
+          throw new BadRequestException('Transaction Amount Mismatch');
+        break;
+      case TransactionType.REFUND:
+        if (
+          (totalTransactionAmount * -1).toFixed(2) !=
+          totalTransactionAmountCalculated.toFixed(2)
+        )
+          throw new BadRequestException('Transaction Amount Mismatch');
+        break;
+      default:
+        throw new NotAcceptableException();
+    }
     const transactionOrderNumber = await this.generateTransactionOrderNumber();
     let readTransactionDto: ReadTransactionDto;
     const queryRunner =
@@ -231,7 +277,7 @@ export class PaymentService {
         const existingApplication = await queryRunner.manager.findOne(Permit, {
           where: { permitId: application.applicationId },
         });
-
+        if (!voidStatus)
         this.assertApplicationInProgress(
           newTransaction.transactionTypeId,
           existingApplication.permitStatus,
@@ -259,7 +305,8 @@ export class PaymentService {
           this.isWebTransactionPurchase(
             newTransaction.paymentMethodTypeCode,
             newTransaction.transactionTypeId,
-          )
+          ) &&
+          !voidStatus
         ) {
           existingApplication.permitStatus = ApplicationStatus.WAITING_PAYMENT;
           existingApplication.updatedDateTime = new Date();
@@ -271,6 +318,8 @@ export class PaymentService {
           await queryRunner.manager.save(existingApplication);
         } else if (
           this.isTransactionPurchase(newTransaction.transactionTypeId)
+          &&
+          !voidStatus
         ) {
           existingApplication.permitStatus = ApplicationStatus.PAYMENT_COMPLETE;
           existingApplication.updatedDateTime = new Date();
@@ -296,7 +345,8 @@ export class PaymentService {
         this.isWebTransactionPurchase(
           createdTransaction.paymentMethodTypeCode,
           createdTransaction.transactionTypeId,
-        )
+        ) &&
+        !voidStatus
       ) {
         // Only payment using PayBC should generate the url
         url = this.generateUrl(createdTransaction);
@@ -564,5 +614,156 @@ export class PaymentService {
 
   async findAllPaymentCardTypeEntities(): Promise<PaymentCardType[]> {
     return await this.paymentCardTypeRepository.find();
+  }
+
+  /**
+   * Calculates the permit fee based on the transaction type, permit ID, void status, and optional query runner.
+   * @param transactionType The type of transaction.
+   * @param permitId The ID of the permit.
+   * @param voidStatus The void status of the application (optional).
+   * @param nestedQueryRunner The nested query runner (optional).
+   * @returns The calculated permit fee.
+   */
+  @LogAsyncMethodExecution()
+  async permitFeeCalculator(
+    permitId: string,
+    voidStatus?: ApplicationStatus.VOIDED | ApplicationStatus.REVOKED,
+    nestedQueryRunner?: QueryRunner,
+  ): Promise<number> {
+    if (voidStatus === ApplicationStatus.REVOKED) return 0;
+    const application = await this.findOne(permitId, nestedQueryRunner);
+    const permitPaymentHistory = await this.findPermitHistory(
+      application.originalPermitId,
+      nestedQueryRunner,
+    );
+
+    if (voidStatus === ApplicationStatus.VOIDED) {
+      const oldAmount = calculatePermitAmount(permitPaymentHistory);
+      if (oldAmount > 0) return -oldAmount;
+      return oldAmount;
+    }
+
+    let duration =
+      differenceBetween(
+        application.permitData.startDate,
+        application.permitData.expiryDate,
+      ) + 1;
+    const oldAmount = calculatePermitAmount(permitPaymentHistory);
+
+    switch (application.permitType) {
+      case PermitType.TERM_OVERSIZE:
+        if (
+          duration < TROS_MIN_VALID_DURATION ||
+          duration >= TROS_MAX_VALID_DURATION
+        ) {
+          throw new NotAcceptableException(
+            `Invalid duration (${duration} days) for TROS permit type.`,
+          );
+        }
+        // Adjusting duration for one year permit
+        if (duration <= 365 && duration >= 361) duration = 360;
+        return permitFee(duration, TROS_PRICE_PER_TERM, TROS_TERM, oldAmount);
+        break;
+      case PermitType.TERM_OVERWEIGHT:
+        // Handle TERM_OVERWEIGHT case
+        break;
+      default:
+        throw new BadRequestException();
+    }
+  }
+
+  /**
+   * Finds a single permit by ID.
+   * @param permitId The ID of the permit to find.
+   * @returns A Promise resolving to the found Permit object.
+   */
+  private async findOne(
+    permitId: string,
+    nestedQueryRunner?: QueryRunner,
+  ): Promise<Permit> {
+    if (nestedQueryRunner) {
+      return nestedQueryRunner.manager.findOne(Permit, {
+        where: { permitId },
+        relations: {
+          company: true,
+          permitData: true,
+          applicationOwner: { userContact: true },
+          issuer: { userContact: true },
+        },
+      });
+    }
+    const queryBuilder = this.permitRepository
+      .createQueryBuilder('permit')
+      .where('permit.permitId = :permitId', { permitId })
+      .leftJoinAndSelect('permit.company', 'company')
+      .leftJoinAndSelect('permit.permitData', 'permitData')
+      .leftJoinAndSelect('permit.applicationOwner', 'applicationOwner')
+      .leftJoinAndSelect('permit.issuer', 'issuer')
+      .leftJoinAndSelect(
+        'applicationOwner.userContact',
+        'applicationOwnerUserContact',
+      )
+      .leftJoinAndSelect('issuer.userContact', 'issuerUserContact');
+    return queryBuilder.getOne();
+  }
+
+  /**
+   * Finds permit history based on the original permit ID.
+   * @param originalPermitId The original permit ID to search for.
+   * @param nestedQueryRunner The nested query runner (optional).
+   * @returns A Promise resolving to an array of PermitHistoryDto objects.
+   */
+  @LogAsyncMethodExecution()
+  async findPermitHistory(
+    originalPermitId: string,
+    nestedQueryRunner?: QueryRunner,
+  ): Promise<PermitHistoryDto[]> {
+    let permits: Permit[];
+    if (nestedQueryRunner) {
+      permits = await nestedQueryRunner.manager
+        .createQueryBuilder()
+        .select('permit')
+        .from(Permit, 'permit')
+        .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
+        .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
+        .where('permit.permitNumber IS NOT NULL')
+        .andWhere('permit.originalPermitId = :originalPermitId', {
+          originalPermitId: originalPermitId,
+        })
+        .orderBy('transaction.transactionSubmitDate', 'DESC')
+        .getMany();
+    } else {
+    const queryBuilder = this.permitRepository
+    .createQueryBuilder('permit')
+    .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
+    .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
+    .where('permit.permitNumber IS NOT NULL')
+    .andWhere('permit.originalPermitId = :originalPermitId', {
+      originalPermitId,
+    })
+    .orderBy('transaction.transactionSubmitDate', 'DESC');
+      permits = await queryBuilder.getMany();
+    }
+
+    return permits.flatMap((permit) =>
+      permit.permitTransactions.map((permitTransaction) => ({
+        permitNumber: permit.permitNumber,
+        comment: permit.comment,
+        transactionOrderNumber:
+          permitTransaction.transaction.transactionOrderNumber,
+        transactionAmount: permitTransaction.transactionAmount,
+        transactionTypeId: permitTransaction.transaction.transactionTypeId,
+        pgPaymentMethod: permitTransaction.transaction.pgPaymentMethod,
+        pgTransactionId: permitTransaction.transaction.pgTransactionId,
+        paymentCardTypeCode: permitTransaction.transaction.paymentCardTypeCode,
+        paymentMethodTypeCode:
+          permitTransaction.transaction.paymentMethodTypeCode,
+        commentUsername: permit.createdUser,
+        permitId: +permit.permitId,
+        transactionSubmitDate:
+          permitTransaction.transaction.transactionSubmitDate,
+        pgApproved: permitTransaction.transaction.pgApproved,
+      })),
+    ) as PermitHistoryDto[];
   }
 }
