@@ -144,7 +144,14 @@ export const AppRoutes = () => {
 
       {/* BCeID Routes */}
       {/* Protected Routes */}
-      <Route element={<BCeIDAuthWall requiredRole={ROLES.READ_VEHICLE} />}>
+      <Route
+        element={
+          <BCeIDAuthWall
+            requiredRole={ROLES.READ_VEHICLE}
+            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+          />
+        }
+      >
         <Route path={routes.VEHICLES_ROUTES.MANAGE}>
           <Route index={true} element={<ManageVehicles />} />
           <Route
@@ -176,14 +183,28 @@ export const AppRoutes = () => {
         </Route>
       </Route>
 
-      <Route element={<BCeIDAuthWall requiredRole={ROLES.READ_ORG} />}>
+      <Route
+        element={
+          <BCeIDAuthWall
+            requiredRole={ROLES.READ_ORG}
+            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+          />
+        }
+      >
         <Route
           path={routes.PROFILE_ROUTES.MANAGE}
           element={<ManageProfiles />}
         />
       </Route>
 
-      <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_USER} />}>
+      <Route
+        element={
+          <BCeIDAuthWall
+            requiredRole={ROLES.WRITE_USER}
+            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+          />
+        }
+      >
         <Route
           path={routes.PROFILE_ROUTES.ADD_USER}
           element={<AddUserDashboard />}
@@ -194,7 +215,14 @@ export const AppRoutes = () => {
         />
       </Route>
 
-      <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
+      <Route
+        element={
+          <BCeIDAuthWall
+            requiredRole={ROLES.WRITE_PERMIT}
+            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+          />
+        }
+      >
         <Route
           path={`${routes.APPLICATIONS_ROUTES.START_APPLICATION()}`}
           element={
@@ -204,7 +232,14 @@ export const AppRoutes = () => {
           }
         />
       </Route>
-      <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
+      <Route
+        element={
+          <BCeIDAuthWall
+            requiredRole={ROLES.WRITE_PERMIT}
+            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+          />
+        }
+      >
         <Route path={routes.APPLICATIONS_ROUTES.BASE}>
           <Route index={true} element={<PermitDashboard />} />
           <Route path={`${routes.APPLICATIONS_ROUTES.DETAILS()}`}>
@@ -236,14 +271,27 @@ export const AppRoutes = () => {
         </Route>
       </Route>
 
-      <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
+      <Route
+        element={
+          <BCeIDAuthWall
+            requiredRole={ROLES.WRITE_PERMIT}
+            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+          />
+        }
+      >
         <Route
           path={`${routes.PERMITS_ROUTES.SUCCESS()}`}
           element={<SuccessPage />}
         />
       </Route>
 
-      <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
+      <Route
+        element={
+          <BCeIDAuthWall
+            requiredRole={ROLES.WRITE_PERMIT}
+          />
+        }
+      >
         <Route
           path={routes.PAYMENT_ROUTES.PAYMENT_REDIRECT}
           element={<PaymentRedirect />}

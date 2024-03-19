@@ -122,7 +122,7 @@ export const CompanyAndUserInfoSteps = ({
   return (
     <>
       <input type="hidden" {...register("legalName")} />
-      {activeStep === totalSteps - 2 && (
+      {activeStep <= totalSteps - 1 && (
         <div className="create-profile-section create-profile-section--info">
           <Alert severity="info">
             <Typography>
@@ -209,22 +209,45 @@ export const CompanyAndUserInfoSteps = ({
         )}
         {activeStep === totalSteps - 1 && (
           <>
-            <Button
-              onClick={handleBack}
-              variant="contained"
-              color="secondary"
-              startIcon={<FontAwesomeIcon icon={faArrowLeft} />}
-              className="proceed-btn proceed-btn--prev"
-            >
-              Previous
-            </Button>
-            <Button
-              onClick={handleCreateProfileSubmit(onClickFinish)}
-              variant="contained"
-              className="proceed-btn proceed-btn--finish"
-            >
-              Finish
-            </Button>
+            <Stack direction="row" spacing={3}>
+              <Button
+                key="cancel-create-profile-button"
+                aria-label="Cancel Create Profile"
+                variant="contained"
+                color="secondary"
+                onClick={() => {
+                  // Go back
+                  navigate(-1);
+                }}
+                disableElevation
+                sx={{
+                  ":hover": {
+                    background: BC_COLOURS.bc_background_light_grey,
+                    border: `2px solid ${BC_COLOURS.bc_text_box_border_grey}`,
+                  },
+                  border: `2px solid ${BC_COLOURS.white}`,
+                  borderRadius: "4px",
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleBack}
+                variant="contained"
+                color="secondary"
+                startIcon={<FontAwesomeIcon icon={faArrowLeft} />}
+                className="proceed-btn proceed-btn--prev"
+              >
+                Previous
+              </Button>
+              <Button
+                onClick={handleCreateProfileSubmit(onClickFinish)}
+                variant="contained"
+                className="proceed-btn proceed-btn--finish"
+              >
+                Finish
+              </Button>
+            </Stack>
           </>
         )}
       </div>

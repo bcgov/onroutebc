@@ -79,6 +79,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (req.headers['AuthOnly'] === 'false') {
       ({
         roles,
+        companyId,
         associatedCompanies,
         orbcUserFirstName,
         orbcUserLastName,
@@ -171,6 +172,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     return {
       roles,
+      companyId,
       associatedCompanies,
       orbcUserFirstName,
       orbcUserLastName,

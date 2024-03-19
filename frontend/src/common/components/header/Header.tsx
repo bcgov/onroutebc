@@ -122,7 +122,6 @@ export const Header = () => {
 
   const username = getLoginUsernameFromSession();
   const isIdir = user?.profile?.identity_provider === IDPS.IDIR;
-
   const shouldDisplayNavBar = Boolean(companyId);
 
   const toggleMenu = () => {
