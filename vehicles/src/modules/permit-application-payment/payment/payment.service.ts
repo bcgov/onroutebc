@@ -634,7 +634,7 @@ export class PaymentService {
       return oldAmount;
     }
     const oldAmount = calculatePermitAmount(permitPaymentHistory);
-    permitFee(application, oldAmount);
+    return permitFee(application, oldAmount);
   }
 
   /**
