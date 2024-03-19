@@ -24,7 +24,7 @@ export const isIDIR = (identityProvider: string) =>
 
 export const BCeIDAuthWall = ({
   requiredRole,
-  allowedAuthGroups,
+  allowedIDIRAuthGroups,
 }: {
   requiredRole?: UserRolesType;
   /**
@@ -32,7 +32,7 @@ export const BCeIDAuthWall = ({
    * IDIR System Admin is assumed to be allowed regardless of it being passed.
    * If not provided, only a System Admin will be allowed to access.
    */
-  allowedAuthGroups?: IDIRUserAuthGroupType[];
+  allowedIDIRAuthGroups?: IDIRUserAuthGroupType[];
 }) => {
   const {
     isAuthenticated,
@@ -40,8 +40,7 @@ export const BCeIDAuthWall = ({
     user: userFromToken,
   } = useAuth();
 
-  const { userRoles, companyId, isNewBCeIDUser } =
-    useContext(OnRouteBCContext);
+  const { userRoles, companyId, isNewBCeIDUser } = useContext(OnRouteBCContext);
   const userIDP = userFromToken?.profile?.identity_provider as string;
 
   const location = useLocation();
@@ -87,7 +86,7 @@ export const BCeIDAuthWall = ({
   if (isEstablishedUser) {
     if (isIDIR(userIDP)) {
       if (companyId) {
-        return <IDIRAuthWall allowedAuthGroups={allowedAuthGroups} />;
+        return <IDIRAuthWall allowedAuthGroups={allowedIDIRAuthGroups} />;
       } else {
         return (
           <Navigate

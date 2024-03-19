@@ -34,15 +34,15 @@ import {
   redCompanyCvClientUserJWTMock,
 } from '../../util/mocks/data/jwt.mock';
 import * as databaseHelper from 'src/common/helper/database.helper';
-import { EmailService } from '../../../src/modules/email/email.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { BadRequestException } from '@nestjs/common';
 import { GetCompanyQueryParamsDto } from '../../../src/modules/company-user-management/company/dto/request/queryParam/getCompany.query-params.dto';
+import { DopsService } from '../../../src/modules/common/dops.service';
 
 const COMPANY_ID_99 = 99;
 let repo: DeepMocked<Repository<Company>>;
-let emailService: DeepMocked<EmailService>;
+let dopsService: DeepMocked<DopsService>;
 let cacheManager: DeepMocked<Cache>;
 
 describe('CompanyService', () => {
@@ -52,7 +52,7 @@ describe('CompanyService', () => {
     jest.clearAllMocks();
 
     repo = createMock<Repository<Company>>();
-    emailService = createMock<EmailService>();
+    dopsService = createMock<DopsService>();
     cacheManager = createMock<Cache>();
     const dataSourceMock = dataSourceMockFactory() as DataSource;
     const module: TestingModule = await Test.createTestingModule({
@@ -77,7 +77,7 @@ describe('CompanyService', () => {
         ContactProfile,
         AddressProfile,
         UsersProfile,
-        { provide: EmailService, useValue: emailService },
+        { provide: DopsService, useValue: dopsService },
         { provide: CACHE_MANAGER, useValue: cacheManager },
       ],
     }).compile();
@@ -97,9 +97,10 @@ describe('CompanyService', () => {
     it('should create a company registered in BC and its admin user.', async () => {
       jest.spyOn(service, 'findOneByCompanyGuid').mockResolvedValue(undefined);
       repo.findOne.mockResolvedValue(redCompanyEntityMock);
-      emailService.sendEmailMessage.mockResolvedValue(
-        '00000000-0000-0000-0000-000000000000',
-      );
+      dopsService.notificationWithDocumentsFromDops.mockResolvedValue({
+        message: 'Notification sent successfully.',
+        transactionId: '00000000-0000-0000-0000-000000000000',
+      });
 
       jest
         .spyOn(databaseHelper, 'callDatabaseSequence')
@@ -117,9 +118,10 @@ describe('CompanyService', () => {
     it('should create a company registered in US and its admin user.', async () => {
       jest.spyOn(service, 'findOneByCompanyGuid').mockResolvedValue(undefined);
       repo.findOne.mockResolvedValue(blueCompanyEntityMock);
-      emailService.sendEmailMessage.mockResolvedValue(
-        '00000000-0000-0000-0000-000000000000',
-      );
+      dopsService.notificationWithDocumentsFromDops.mockResolvedValue({
+        message: 'Notification sent successfully.',
+        transactionId: '00000000-0000-0000-0000-000000000000',
+      });
       jest
         .spyOn(databaseHelper, 'callDatabaseSequence')
         .mockImplementation(async () => {
