@@ -27,7 +27,7 @@ export const isIDIR = (identityProvider: string) =>
 
 export const BCeIDAuthWall = ({
   requiredRole,
-  allowedAuthGroups,
+  allowedIDIRAuthGroups,
 }: {
   requiredRole?: UserRolesType;
   /**
@@ -35,7 +35,7 @@ export const BCeIDAuthWall = ({
    * IDIR System Admin is assumed to be allowed regardless of it being passed.
    * If not provided, only a System Admin will be allowed to access.
    */
-  allowedAuthGroups?: IDIRUserAuthGroupType[];
+  allowedIDIRAuthGroups?: IDIRUserAuthGroupType[];
 }) => {
   const {
     isAuthenticated,
@@ -84,7 +84,7 @@ export const BCeIDAuthWall = ({
   if (isAuthenticated && isEstablishedUser) {
     if (isIDIR(userIDP)) {
       return (
-        <StaffActAsCompanyAuthWall allowedAuthGroups={allowedAuthGroups} />
+        <StaffActAsCompanyAuthWall allowedAuthGroups={allowedIDIRAuthGroups} />
       );
     }
     if (!isIDIR(userIDP)) {

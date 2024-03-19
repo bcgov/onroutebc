@@ -100,38 +100,6 @@ export class AppService {
       createCacheMap(featureFlags, 'featureKey', 'featureValue'),
     );
 
-    const assetsPath =
-      process.env.NODE_ENV === 'local'
-        ? './src/modules/email/assets/'
-        : './dist/modules/email/assets/';
-
-    await addToCache(
-      this.cacheManager,
-      CacheKey.EMAIL_TEMPLATE_PROFILE_REGISTRATION,
-      this.convertFiletoString(
-        assetsPath + 'templates/profile-registration.email.hbs',
-      ),
-    );
-    await addToCache(
-      this.cacheManager,
-      CacheKey.EMAIL_TEMPLATE_ISSUE_PERMIT,
-      this.convertFiletoString(assetsPath + 'templates/issue-permit.email.hbs'),
-    );
-    await addToCache(
-      this.cacheManager,
-      CacheKey.EMAIL_TEMPLATE_COMPANY_SUSPEND,
-      this.convertFiletoString(
-        assetsPath + 'templates/suspend-company.email.hbs',
-      ),
-    );
-    await addToCache(
-      this.cacheManager,
-      CacheKey.EMAIL_TEMPLATE_COMPANY_UNSUSPEND,
-      this.convertFiletoString(
-        assetsPath + 'templates/unsuspend-company.email.hbs',
-      ),
-    );
-
     const permitApplicationOrigins =
       await this.applicationService.findAllPermitApplicationOrigin();
     await addToCache(

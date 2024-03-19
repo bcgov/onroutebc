@@ -13,10 +13,11 @@ import { CompanyService } from '../company/company.service';
 import { CreateCompanySuspendDto } from './dto/request/create-company-suspend.dto';
 import { ReadCompanySuspendActivityDto } from './dto/response/read-company-suspend-activity.dto';
 import { CompanySuspendActivity } from './entities/company-suspend-activity.entity';
-import { EmailService } from '../../email/email.service';
-import { EmailTemplate } from '../../../common/enum/email-template.enum';
-import { CompanyEmailData } from '../../../common/interface/company-email-data.interface';
+import { NotificationTemplate } from '../../../common/enum/notification-template.enum';
 import { User } from '../users/entities/user.entity';
+import { DopsService } from '../../common/dops.service';
+import { INotificationDocument } from '../../../common/interface/notification-document.interface';
+import { CompanyDataNotification } from '../../../common/interface/company-data.notification.interface';
 
 @Injectable()
 export class CompanySuspendService {
@@ -27,7 +28,7 @@ export class CompanySuspendService {
     @InjectMapper() private readonly classMapper: Mapper,
     private dataSource: DataSource,
     private readonly companyService: CompanyService,
-    private readonly emailService: EmailService,
+    private readonly dopsService: DopsService,
   ) {}
 
   /**
@@ -123,20 +124,23 @@ export class CompanySuspendService {
     );
     result.userName = currentUser.userName?.toUpperCase();
 
-    const emailData: CompanyEmailData = {
+    const notificationData: CompanyDataNotification = {
       companyName: company.legalName,
       onRoutebBcClientNumber: company.clientNumber,
     };
-
-    void this.emailService.sendEmailMessage(
-      toBeSuspended
-        ? EmailTemplate.COMPANY_SUSPEND
-        : EmailTemplate.COMPANY_UNSUSPEND,
-      emailData,
-      toBeSuspended
+    const notificationDocument: INotificationDocument = {
+      templateName: toBeSuspended
+        ? NotificationTemplate.COMPANY_SUSPEND
+        : NotificationTemplate.COMPANY_UNSUSPEND,
+      to: [company.email],
+      subject: toBeSuspended
         ? 'onRouteBC Profile Suspended'
         : 'onRouteBC Profile Unsuspended',
-      [company.email],
+      data: notificationData,
+    };
+    void this.dopsService.notificationWithDocumentsFromDops(
+      currentUser,
+      notificationDocument,
     );
 
     return result;

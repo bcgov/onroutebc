@@ -28,7 +28,7 @@ import {
 import { ExceptionDto } from '../../exception/exception.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateFileDto } from './dto/request/create-file.dto';
-import { ReadFileDto } from './dto/response/read-file.dto';
+import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { FileDownloadModes } from '../../enum/file-download-modes.enum';
 import { Request, Response } from 'express';
 import { UpdateFileDto } from './dto/request/update-file.dto';
