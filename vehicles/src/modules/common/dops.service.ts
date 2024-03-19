@@ -103,16 +103,15 @@ export class DopsService {
    * @param dopsGeneratedDocument - The template details and data of type
    *               {@link DopsGeneratedDocument}.
    * @param res - An optional Response object.
-   * @returns A Promise that resolves to an object of type {@link IFile}. Null
+   * @returns A Promise that resolves to an object of type {@link ReadFileDto}. Null
    * is returned if Response object was passed as a parameter.
    */
   @LogAsyncMethodExecution()
   async generateDocument(
     currentUser: IUserJWT,
     dopsGeneratedDocument: DopsGeneratedDocument,
-    res?: Response,
     companyId?: number,
-  ): Promise<IFile> {
+  ): Promise<ReadFileDto> {
     // Construct the URL for the request
     const url = process.env.DOPS_URL + `/dgen/template/render`;
 
@@ -123,7 +122,7 @@ export class DopsService {
         'Content-Type': 'application/json',
         'x-correlation-id': this.cls.getId(),
       },
-      responseType: 'stream',
+      responseType: 'json',
     };
 
     // Calls the DOPS service, which converts the the template document into a pdf
@@ -147,26 +146,7 @@ export class DopsService {
         );
       });
 
-    if (res) {
-      this.convertAxiosToExpress(dopsResponse, res);
-      const responseData = dopsResponse.data as NodeJS.ReadableStream;
-      responseData.pipe(res);
-      return null;
-    }
-    const file = await this.createFile(
-      dopsResponse.data as NodeJS.ReadableStream,
-    );
-
-    const generatedDocument: IFile = {
-      originalname: dopsGeneratedDocument.generatedDocumentFileName,
-      encoding: dopsResponse.headers['Content-Transfer-Encoding'] as string,
-      mimetype: dopsResponse.headers['Content-Type'] as string,
-      buffer: file,
-      size: dopsResponse.headers['Content-Length'] as number,
-      dmsId: dopsResponse.headers['x-orbc-dms-id'] as string,
-    };
-
-    return generatedDocument;
+    return dopsResponse.data as ReadFileDto;
   }
 
   /**

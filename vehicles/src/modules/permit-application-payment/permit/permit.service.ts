@@ -28,7 +28,6 @@ import {
 import { DopsGeneratedDocument } from 'src/common/interface/dops-generated-document.interface';
 import { TemplateName } from 'src/common/enum/template-name.enum';
 import { convertUtcToPt } from 'src/common/helper/date-time.helper';
-import { IFile } from 'src/common/interface/file.interface';
 import { IssuePermitDataNotification } from 'src/common/interface/issue-permit-data.notification.interface';
 import { NotificationTemplate } from 'src/common/enum/notification-template.enum';
 import { ResultDto } from './dto/response/result.dto';
@@ -68,6 +67,7 @@ import {
 import { IDP } from '../../../common/enum/idp.enum';
 import { PermitApplicationOrigin as PermitApplicationOriginEnum } from '../../../common/enum/permit-application-origin.enum';
 import { INotificationDocument } from '../../../common/interface/notification-document.interface';
+import { ReadFileDto } from '../../common/dto/response/read-file.dto';
 
 @Injectable()
 export class PermitService {
@@ -749,7 +749,7 @@ export class PermitService {
         companyInfo.companyId,
       );
 
-      const generatedDocuments: IFile[] = await Promise.all([
+      const generatedDocuments: ReadFileDto[] = await Promise.all([
         generatedPermitDocumentPromise,
         generatedReceiptDocumentPromise,
       ]);
@@ -761,7 +761,7 @@ export class PermitService {
           permitId: newPermit.permitId,
         },
         {
-          documentId: generatedDocuments.at(0).dmsId,
+          documentId: generatedDocuments.at(0).documentId,
           updatedDateTime: new Date(),
           updatedUser: currentUser.userName,
           updatedUserDirectory: currentUser.orbcUserDirectory,
@@ -776,7 +776,7 @@ export class PermitService {
           receiptId: fetchedTransaction.receipt.receiptId,
         },
         {
-          receiptDocumentId: generatedDocuments.at(1).dmsId,
+          receiptDocumentId: generatedDocuments.at(1).documentId,
           updatedDateTime: new Date(),
           updatedUser: currentUser.userName,
           updatedUserDirectory: currentUser.orbcUserDirectory,
@@ -806,7 +806,10 @@ export class PermitService {
           to: distinctEmailList,
           subject: 'onRouteBC Permits - ' + companyInfo.legalName,
           data: notificationData,
-          documentIds: [],
+          documentIds: [
+            generatedDocuments?.at(0)?.documentId,
+            generatedDocuments?.at(1)?.documentId,
+          ],
         };
 
         void this.dopsService.notificationWithDocumentsFromDops(
@@ -851,7 +854,6 @@ export class PermitService {
     return await this.dopsService.generateDocument(
       currentUser,
       dopsRequestData,
-      undefined,
       companyId,
     );
   }

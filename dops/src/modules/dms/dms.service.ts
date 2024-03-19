@@ -8,7 +8,7 @@ import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ReadFileDto } from './dto/response/read-file.dto';
+import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { IUserJWT } from '../../interface/user-jwt.interface';
 import { FileDownloadModes } from '../../enum/file-download-modes.enum';
 import { IFile } from '../../interface/file.interface';
