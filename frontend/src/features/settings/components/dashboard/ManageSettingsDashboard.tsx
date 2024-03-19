@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 
 import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
@@ -11,7 +11,8 @@ import { canViewSuspend } from "../../helpers/permissions";
 
 export const ManageSettingsDashboard = React.memo(() => {
   const { userRoles, companyId } = useContext(OnRouteBCContext);
-  const showSuspendTab = canViewSuspend(userRoles);
+  const [hideSuspendTab, setHideSuspendTab] = useState<boolean>(false);
+  const showSuspendTab = canViewSuspend(userRoles) && !hideSuspendTab;
 
   const { state: stateFromNavigation } = useLocation();
   const selectedTab = getDefaultRequiredVal(
@@ -19,14 +20,24 @@ export const ManageSettingsDashboard = React.memo(() => {
     stateFromNavigation?.selectedTab,
   );
 
+  const handleHideSuspendTab = (hide: boolean) => {
+    setHideSuspendTab(hide);
+  };
+
   if (!companyId) {
     return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
   }
 
+  // Add more tabs here later when needed (eg. "Special Authorization", "Credit Account")
   const tabs = [
     showSuspendTab ? {
       label: "Suspend",
-      component: <Suspend companyId={companyId} />,
+      component: (
+        <Suspend
+          companyId={companyId}
+          onHideTab={handleHideSuspendTab}
+        />
+      ),
     } : null,
   ].filter(tab => Boolean(tab)) as {
     label: string;

@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from "react";
+import { Switch } from "@mui/material";
 
 import "./Suspend.scss";
 import { SuspendModal } from "../components/suspend/SuspendModal";
-import { Switch } from "@mui/material";
 import { useSuspendCompanyMutation, useSuspensionHistoryQuery } from "../hooks/suspend";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { SuspensionHistory } from "../components/suspend/SuspensionHistory";
@@ -12,8 +12,10 @@ import { canUpdateSuspend } from "../helpers/permissions";
 
 export const Suspend = ({
   companyId,
+  onHideTab,
 }: {
   companyId: number;
+  onHideTab?: (hide: boolean) => void;
 }) => {
   const {
     data: suspensionHistory,
@@ -21,7 +23,12 @@ export const Suspend = ({
   } = useSuspensionHistoryQuery(companyId);
 
   // Check if user can update suspend
-  const { userRoles } = useContext(OnRouteBCContext);
+  const {
+    userRoles,
+    isCompanySuspended,
+    setIsCompanySuspended,
+  } = useContext(OnRouteBCContext);
+
   const canSuspendCompany = canUpdateSuspend(userRoles);
 
   const suspendCompanyMutation = useSuspendCompanyMutation();
@@ -30,16 +37,26 @@ export const Suspend = ({
     [] : getDefaultRequiredVal([], suspensionHistory);
   
   const [showSuspendModal, setShowSuspendModal] = useState<boolean>(false);
-  const [companySuspended, setCompanySuspended] = useState<boolean>(false);
+
+  // Let Settings dashboard hide "Suspend" tab if:
+  // User isn't allowed to suspend company AND company has never been suspended before
+  useEffect(() => {
+    onHideTab?.(
+      !canSuspendCompany
+      && (suspensionHistory != null)
+      && (suspensionHistory.length === 0)
+    );
+  }, [canSuspendCompany, suspensionHistory]);
 
   useEffect(() => {
     // Get current suspension status for company from the most recent entry in suspension history
     // If suspension history is empty, it's assumed that the company has not yet been suspended
+    // This should be used as the source of truth for determining if the company is currently suspended.
     const isCurrentlySuspended = suspensionHistoryList.length > 0
       ? suspensionHistoryList[0].suspendActivityType === SUSPEND_ACTIVITY_TYPES.SUSPEND_COMPANY
       : false;
 
-    setCompanySuspended(isCurrentlySuspended);
+    setIsCompanySuspended?.(isCurrentlySuspended);
   }, [suspensionHistoryList]);
 
   const isActionSuccessful = (status: number) => {
@@ -56,7 +73,7 @@ export const Suspend = ({
     });
 
     if (isActionSuccessful(suspendResult.status)) {
-      setCompanySuspended(true);
+      setIsCompanySuspended?.(true);
       setShowSuspendModal(false);
     }
   };
@@ -70,7 +87,7 @@ export const Suspend = ({
     });
 
     if (isActionSuccessful(unsuspendResult.status)) {
-      setCompanySuspended(false);
+      setIsCompanySuspended?.(false);
       setShowSuspendModal(false);
     }
   };
@@ -94,7 +111,7 @@ export const Suspend = ({
           
             <Switch
               className="suspend-company-switch"
-              checked={companySuspended}
+              checked={Boolean(isCompanySuspended)}
               onChange={async (_, checked) => await handleSuspendToggle(checked)}
             />
         </div>
