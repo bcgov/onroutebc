@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 import { Nullable } from "../../../common/types/common";
 import { InfoBcGovBanner } from "../../../common/components/banners/InfoBcGovBanner";
-import { Banner } from "../../../common/components/dashboard/Banner";
+import { Banner } from "../../../common/components/dashboard/components/banner/Banner";
 import { BANNER_MESSAGES } from "../../../common/constants/bannerMessages";
 import { ERROR_ROUTES } from "../../../routes/constants";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
