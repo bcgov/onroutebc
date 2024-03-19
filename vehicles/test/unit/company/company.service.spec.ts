@@ -97,11 +97,10 @@ describe('CompanyService', () => {
     it('should create a company registered in BC and its admin user.', async () => {
       jest.spyOn(service, 'findOneByCompanyGuid').mockResolvedValue(undefined);
       repo.findOne.mockResolvedValue(redCompanyEntityMock);
-      dopsService.notificationWithDocumentsFromDops.mockResolvedValue(
-       {message: 'Notification sent successfully.',
-       transactionId: '00000000-0000-0000-0000-000000000000'
-      }
-      );
+      dopsService.notificationWithDocumentsFromDops.mockResolvedValue({
+        message: 'Notification sent successfully.',
+        transactionId: '00000000-0000-0000-0000-000000000000',
+      });
 
       jest
         .spyOn(databaseHelper, 'callDatabaseSequence')
@@ -119,10 +118,10 @@ describe('CompanyService', () => {
     it('should create a company registered in US and its admin user.', async () => {
       jest.spyOn(service, 'findOneByCompanyGuid').mockResolvedValue(undefined);
       repo.findOne.mockResolvedValue(blueCompanyEntityMock);
-      dopsService.notificationWithDocumentsFromDops.mockResolvedValue(
-        {message: 'Notification sent successfully.',
-        transactionId: '00000000-0000-0000-0000-000000000000'
-       });
+      dopsService.notificationWithDocumentsFromDops.mockResolvedValue({
+        message: 'Notification sent successfully.',
+        transactionId: '00000000-0000-0000-0000-000000000000',
+      });
       jest
         .spyOn(databaseHelper, 'callDatabaseSequence')
         .mockImplementation(async () => {
