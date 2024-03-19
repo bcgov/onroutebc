@@ -896,6 +896,8 @@ export class PermitService {
         'applicationOwner.userContact',
         'applicationOwnerContact',
       )
+      .leftJoinAndSelect('permit.issuer', 'issuer')
+      .leftJoinAndSelect('issuer.userContact', 'issuerOwnerContact')
       .where('permit.permitId = :permitId', {
         permitId: permitId,
       })
@@ -919,6 +921,7 @@ export class PermitService {
       permit?.permitTransactions?.at(0)?.transaction?.receipt
         ?.receiptDocumentId;
 
+    //If permit Document or receipt is not attached to the permit
     if (!permitDocumentId || !receiptDocumentId) {
       const fullNames = await fetchPermitDataDescriptionValuesFromCache(
         this.cacheManager,
@@ -941,9 +944,19 @@ export class PermitService {
         companyInfo,
         revisionHistory,
       );
+      //Regenerate permit document if not available
       if (!permitDocumentId) {
         const dopsRequestData: DopsGeneratedDocument = {
-          templateName: TemplateName.PERMIT,
+          templateName: (() => {
+            switch (permit.permitStatus) {
+              case ApplicationStatus.ISSUED:
+                return TemplateName.PERMIT;
+              case ApplicationStatus.VOIDED:
+                return TemplateName.PERMIT_VOID;
+              case ApplicationStatus.REVOKED:
+                return TemplateName.PERMIT_REVOKED;
+            }
+          })(),
           generatedDocumentFileName: permitDataForTemplate.permitNumber,
           templateData: permitDataForTemplate,
           documentsToMerge: permitDataForTemplate.permitData.commodities.map(
@@ -975,7 +988,7 @@ export class PermitService {
           .where('permitId = :permitId', { permitId: permit.permitId })
           .execute();
       }
-
+      //Regenerate receipt document if not available
       if (!receiptDocumentId) {
         const receiptNumber =
           permit.permitTransactions?.at(0).transaction.receipt.receiptNumber;
@@ -998,15 +1011,12 @@ export class PermitService {
               permit.permitTransactions[0].transaction.transactionTypeId,
               permit.permitTransactions[0].transaction.totalTransactionAmount,
             ),
-            //Payer Name should be persisted in transacation Table so that it can be used for DocRegen
             payerName:
-              currentUser.orbcUserDirectory === Directory.IDIR
+              permit.permitIssuedBy === PermitIssuedBy.PPC
                 ? constants.PPC_FULL_TEXT
-                : currentUser.orbcUserFirstName +
-                  ' ' +
-                  currentUser.orbcUserLastName,
+                : `${permit?.issuer?.userContact?.firstName} ${permit?.issuer?.userContact?.lastName}`,
             issuedBy:
-              currentUser.orbcUserDirectory === Directory.IDIR
+              permit.permitIssuedBy === PermitIssuedBy.PPC
                 ? constants.PPC_FULL_TEXT
                 : constants.SELF_ISSUED,
             consolidatedPaymentMethod: (
