@@ -34,7 +34,7 @@ GO
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Reverting addition of IN_CART status to ORBC_PERMIT_STATUS_TYPE table'
 
-INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (19, @VersionDescription, getutcdate())
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (25, @VersionDescription, getutcdate())
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
 
@@ -45,7 +45,7 @@ GO
 DECLARE @Success AS BIT
 SET @Success = 1
 SET NOEXEC OFF
-IF (@Success = 1) PRINT 'The database update succeeded'
+IF (@Success = 1) PRINT 'IN_CART status added to ORBC_PERMIT_STATUS_TYPE'
 ELSE BEGIN
    IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION
    PRINT 'The database update failed'

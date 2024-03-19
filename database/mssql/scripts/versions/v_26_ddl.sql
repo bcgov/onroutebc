@@ -21,7 +21,7 @@ GO
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Add IN_CART - shopping cart status'
 
-INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [UPDATE_SCRIPT], [REVERT_SCRIPT], [RELEASE_DATE]) VALUES (27, @VersionDescription, '$(UPDATE_SCRIPT)', '$(REVERT_SCRIPT)', getutcdate())
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [UPDATE_SCRIPT], [REVERT_SCRIPT], [RELEASE_DATE]) VALUES (25, @VersionDescription, '$(UPDATE_SCRIPT)', '$(REVERT_SCRIPT)', getutcdate())
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
 
@@ -32,9 +32,9 @@ GO
 DECLARE @Success AS BIT
 SET @Success = 1
 SET NOEXEC OFF
-IF (@Success = 1) PRINT 'The database update succeeded'
+IF (@Success = 1) PRINT 'IN_CART status added to ORBC_PERMIT_STATUS_TYPE'
 ELSE BEGIN
    IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION
-   PRINT 'The database update failed'
+   PRINT 'The database update failed; could not add IN_CART status ORBC_PERMIT_STATUS_TYPE'
 END
 GO

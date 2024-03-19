@@ -82,7 +82,7 @@ export class ShoppingCartService {
     { applicationIds, companyId }: UpdateShoppingCartDto | AddToShoppingCartDto,
     statusToUpdateTo: ApplicationStatus.IN_CART | ApplicationStatus.IN_PROGRESS,
   ): Promise<ResultDto> {
-    const { success, failure } = new ResultDto();
+    const { success = [], failure = [] } = new ResultDto();
     for (const applicationId of applicationIds) {
       try {
         const { affected } = await this.applicationRepository.update(
