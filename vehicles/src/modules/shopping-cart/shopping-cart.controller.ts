@@ -115,6 +115,51 @@ export class ShoppingCartController {
   }
 
   /**
+   * Retrieves applications within the shopping cart based on the user's permissions and optional query parameters.
+   *
+   * @param request - The incoming request object, used to extract the user's authentication details.
+   * @param getShoppingCartQueryParamsDto - DTO containing optional query parameters for filtering the shopping cart contents.
+   * @returns A promise resolved with the applications found in the shopping cart for the authenticated user.
+   */
+  @ApiOperation({
+    summary: 'Returns the applications in the shopping cart.',
+    description:
+      'Returns one or more applications from the shopping cart, enforcing authentication.',
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad Request Response.',
+    type: ExceptionDto,
+  })
+  @ApiOkResponse({
+    description: 'The result of the changes to cart.',
+    type: ResultDto,
+  })
+  @Get()
+  @Roles(Role.WRITE_PERMIT)
+  async getCartCount(
+    @Req() request: Request,
+    @Query() getShoppingCartQueryParamsDto: GetShoppingCartQueryParamsDto,
+  ) {
+    const currentUser = request.user as IUserJWT;
+    if (currentUser.idir_user_guid && !currentUser.companyId) {
+      const { companyId } = getShoppingCartQueryParamsDto;
+      return await this.shoppingCartService.getCartCount(companyId);
+    } else if (
+      currentUser.orbcUserAuthGroup ===
+      ClientUserAuthGroup.COMPANY_ADMINISTRATOR
+    ) {
+      const { companyId } = currentUser;
+      return await this.shoppingCartService.getCartCount(companyId);
+    } else {
+      const { companyId, userGUID } = currentUser;
+      return await this.shoppingCartService.getCartCount(
+        companyId,
+        userGUID,
+      );
+    }
+  }
+
+  /**
    * Removes one or more applications from the shopping cart.
    *
    * @param updateShoppingCartDto - The DTO to update a shopping cart.

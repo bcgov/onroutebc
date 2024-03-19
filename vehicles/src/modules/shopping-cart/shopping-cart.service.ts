@@ -8,6 +8,13 @@ import { Permit as Application } from '../permit-application-payment/permit/enti
 import { AddToShoppingCartDto } from './dto/request/add-to-shopping-cart.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { UpdateShoppingCartDto } from './dto/request/update-shopping-cart.dto';
+import {
+  ClientUserAuthGroup,
+  IDIRUserAuthGroup,
+  IDIR_USER_AUTH_GROUP_LIST,
+  UserAuthGroup,
+} from '../../common/enum/user-auth-group.enum';
+import { doesUserHaveAuthGroup } from '../../common/helper/auth.helper';
 
 @Injectable()
 export class ShoppingCartService {
@@ -49,6 +56,46 @@ export class ShoppingCartService {
         applicationOwner: { userGUID: userGUID ? userGUID : '1=1' },
       },
     });
+  }
+
+  /**
+   * Calculates the number of item permits within a shopping cart for a specific company. Optionally, the count can be filtered by the user GUID if provided.
+   *
+   * @param companyId - The ID of the company for which to count permit applications in the shopping cart.
+   * @param userGUID - (Optional) The GUID of a user to further filter the applications by the application owner.
+   * @returns A promise resolved with the count of permit applications currently in the shopping cart that match the criteria.
+   */
+  @LogAsyncMethodExecution()
+  async getCartCount(
+    companyId: number,
+    userGUID?: string,
+    orbcUserAuthGroup?: UserAuthGroup,
+  ): Promise<number> {
+    let applicationOwner: string;
+    if (userGUID) {
+      applicationOwner = userGUID;
+    } else if (
+      doesUserHaveAuthGroup(orbcUserAuthGroup, IDIR_USER_AUTH_GROUP_LIST)
+    ) {
+      applicationOwner = '1=1';
+    } else if (
+      orbcUserAuthGroup === ClientUserAuthGroup.COMPANY_ADMINISTRATOR
+    ) {
+      applicationOwner;
+    }
+    return await this.applicationRepository.countBy({
+      permitStatus: ApplicationStatus.IN_CART,
+      company: { companyId },
+      ...(userGUID && { applicationOwner: { userGUID } }
+        ),
+    });
+    // return await this.applicationRepository.count({
+    //   where: {
+    //     permitStatus: ApplicationStatus.IN_CART,
+    //     company: { companyId },
+    //     ...(applicationOwner && { applicationOwner: { userGUID } }),
+    //   },
+    // });
   }
 
   /**
