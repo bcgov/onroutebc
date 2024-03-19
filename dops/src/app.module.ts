@@ -25,6 +25,7 @@ import { getTypeormLogLevel } from './helper/logger.helper';
 import { ClsModule } from 'nestjs-cls';
 import { Request } from 'express';
 import { v4 as uuidv4 } from 'uuid';
+import { NotificationModule } from './modules/notification/notification.module';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
@@ -75,6 +76,7 @@ const envPath = path.resolve(process.cwd() + '/../');
     AuthModule,
     DmsModule,
     DgenModule,
+    NotificationModule,
     FeatureFlagsModule,
   ],
   controllers: [AppController],

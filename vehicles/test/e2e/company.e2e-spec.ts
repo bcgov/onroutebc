@@ -3,11 +3,10 @@ import { Test } from '@nestjs/testing';
 
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { classes } from '@automapper/classes';
-import { AutomapperModule } from '@automapper/nestjs';
+import { AutomapperModule, getMapperToken } from '@automapper/nestjs';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { DataSource, Repository } from 'typeorm';
 import { Company } from '../../src/modules/company-user-management/company/entities/company.entity';
-import { CompanyModule } from '../../src/modules/company-user-management/company/company.module';
 import {
   COMPANY_LIST,
   createRedCompanyDtoMock,
@@ -29,16 +28,17 @@ import { UsersProfile } from '../../src/modules/company-user-management/users/pr
 import * as constants from '../util/mocks/data/test-data.constants';
 import * as databaseHelper from 'src/common/helper/database.helper';
 import { Cache } from 'cache-manager';
-import { EmailService } from '../../src/modules/email/email.service';
-import { HttpService } from '@nestjs/axios';
-import { EmailModule } from '../../src/modules/email/email.module';
 import { App } from 'supertest/types';
 import { INestApplication } from '@nestjs/common';
+import { DopsService } from '../../src/modules/common/dops.service';
+import { createMapper } from '@automapper/core';
+import { CompanyController } from '../../src/modules/company-user-management/company/company.controller';
+import { CompanyService } from '../../src/modules/company-user-management/company/company.service';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 let repo: DeepMocked<Repository<Company>>;
-let emailService: DeepMocked<EmailService>;
+let dopsService: DeepMocked<DopsService>;
 let cacheManager: DeepMocked<Cache>;
-let httpService: DeepMocked<HttpService>;
 
 describe('Company (e2e)', () => {
   let app: INestApplication<Express.Application>;
@@ -46,29 +46,39 @@ describe('Company (e2e)', () => {
   beforeAll(async () => {
     jest.clearAllMocks();
     repo = createMock<Repository<Company>>();
-    emailService = createMock<EmailService>();
+    dopsService = createMock<DopsService>();
     cacheManager = createMock<Cache>();
-    httpService = createMock<HttpService>();
     const dataSourceMock = dataSourceMockFactory() as DataSource;
     const moduleFixture = await Test.createTestingModule({
-      imports: [
-        CompanyModule.forRoot(dataSourceMock, cacheManager),
-        AutomapperModule.forRoot({
-          strategyInitializer: classes(),
-        }),
-        EmailModule.forRoot(httpService, cacheManager),
-      ],
+      imports: [AutomapperModule],
       providers: [
+        CompanyService,
         CompanyProfile,
         ContactProfile,
         AddressProfile,
         UsersProfile,
-        { provide: EmailService, useValue: emailService },
+        {
+          provide: getRepositoryToken(Company),
+          useValue: repo,
+        },
+        {
+          provide: getMapperToken(),
+          useValue: createMapper({
+            strategyInitializer: classes(),
+          }),
+        },
+        {
+          provide: CACHE_MANAGER,
+          useValue: cacheManager,
+        },
+        { provide: DopsService, useValue: dopsService },
+        {
+          provide: DataSource,
+          useValue: dataSourceMock,
+        },
       ],
-    })
-      .overrideProvider(getRepositoryToken(Company))
-      .useValue(repo)
-      .compile();
+      controllers: [CompanyController],
+    }).compile();
 
     app = moduleFixture.createNestApplication();
     TestUserMiddleware.testUser = redCompanyAdminUserJWTMock;
@@ -86,11 +96,10 @@ describe('Company (e2e)', () => {
         .mockResolvedValueOnce(undefined)
         .mockResolvedValueOnce(redCompanyEntityMock);
 
-      jest
-        .spyOn(emailService, 'sendEmailMessage')
-        .mockImplementation(async () => {
-          return Promise.resolve('00000000-0000-0000-0000-000000000000');
-        });
+      dopsService.notificationWithDocumentsFromDops.mockResolvedValue({
+        message: 'Notification sent successfully.',
+        transactionId: '00000000-0000-0000-0000-000000000000',
+      });
       jest
         .spyOn(databaseHelper, 'callDatabaseSequence')
         .mockImplementation(async () => {

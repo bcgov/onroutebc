@@ -48,6 +48,8 @@ export class PaymentService {
     private dataSource: DataSource,
     @InjectRepository(Transaction)
     private transactionRepository: Repository<Transaction>,
+    @InjectRepository(Receipt)
+    private receiptRepository: Repository<Receipt>,
     @InjectRepository(PaymentMethodType)
     private paymentMethodTypeRepository: Repository<PaymentMethodType>,
     @InjectRepository(PaymentCardType)
@@ -386,6 +388,30 @@ export class PaymentService {
     }
 
     return readTransactionDto;
+  }
+
+  async updateReceiptDocument(
+    currentUser: IUserJWT,
+    receiptId: string,
+    documentId: string,
+  ) {
+    const updateResult = await this.receiptRepository
+      .createQueryBuilder()
+      .update()
+      .set({
+        receiptDocumentId: documentId,
+        updatedUser: currentUser.userName,
+        updatedDateTime: new Date(),
+        updatedUserDirectory: currentUser.orbcUserDirectory,
+        updatedUserGuid: currentUser.userGUID,
+      })
+      .where('receiptId = :receiptId', { receiptId: receiptId })
+      .execute();
+
+    if (updateResult.affected === 0) {
+      throw new InternalServerErrorException('Update failed');
+    }
+    return true;
   }
 
   /**

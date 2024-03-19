@@ -19,7 +19,6 @@ import {
 } from '@nestjs/swagger';
 import { ExceptionDto } from '../../exception/exception.dto';
 import { Request, Response } from 'express';
-import { ReadGeneratedDocumentDto } from './dto/response/read-generated-document.dto';
 import { IUserJWT } from '../../interface/user-jwt.interface';
 import { CreateGeneratedDocumentDto } from './dto/request/create-generated-document.dto';
 import { IDP } from '../../enum/idp.enum';
@@ -27,6 +26,7 @@ import { Roles } from '../../decorator/roles.decorator';
 import { Role } from '../../enum/roles.enum';
 import { CreateGeneratedReportDto } from './dto/request/create-generated-report.dto';
 import { DgenService } from './dgen.service';
+import { ReadFileDto } from '../common/dto/response/read-file.dto';
 
 @ApiTags('Document Generator (DGEN)')
 @ApiBadRequestResponse({
@@ -52,7 +52,7 @@ export class DgenController {
 
   @ApiCreatedResponse({
     description: 'The Generated Document Resource',
-    type: ReadGeneratedDocumentDto,
+    type: ReadFileDto,
   })
   @ApiQuery({
     name: 'companyId',
@@ -64,24 +64,22 @@ export class DgenController {
   @Post('/template/render')
   async generate(
     @Req() request: Request,
-    @Res() res: Response,
     @Query('companyId') companyId: number,
     @Body() createGeneratedDocumentDto: CreateGeneratedDocumentDto,
-  ) {
+  ): Promise<ReadFileDto> {
     const currentUser = request.user as IUserJWT;
     if (currentUser.identity_provider !== IDP.IDIR && !companyId) {
       throw new BadRequestException(
         'Company Id is manadatory for all IDP but IDIR',
       );
     }
-    await this.dgenService.generate(
+    const readFileDto = await this.dgenService.generate(
       currentUser,
       createGeneratedDocumentDto,
-      res,
       companyId,
     );
 
-    res.status(201);
+    return readFileDto;
   }
 
   @Roles(Role.GENERATE_REPORT)
