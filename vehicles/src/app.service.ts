@@ -4,13 +4,14 @@ import { Cache } from 'cache-manager';
 import { PowerUnitTypesService } from './modules/vehicles/power-unit-types/power-unit-types.service';
 import { TrailerTypesService } from './modules/vehicles/trailer-types/trailer-types.service';
 import { CommonService } from './modules/common/common.service';
-import { PermitService } from './modules/permit/permit.service';
+import { PermitService } from './modules/permit-application-payment/permit/permit.service';
 import * as fs from 'fs';
 import { CacheKey } from './common/enum/cache-key.enum';
 import { addToCache, createCacheMap } from './common/helper/cache.helper';
-import { PaymentService } from './modules/payment/payment.service';
+import { PaymentService } from './modules/permit-application-payment/payment/payment.service';
 import { LogAsyncMethodExecution } from './common/decorator/log-async-method-execution.decorator';
 import { FeatureFlagsService } from './modules/feature-flags/feature-flags.service';
+import { ApplicationService } from './modules/permit-application-payment/application/application.service';
 
 @Injectable()
 export class AppService {
@@ -25,6 +26,7 @@ export class AppService {
     private commonService: CommonService,
     private paymentService: PaymentService,
     private featureFlagsService: FeatureFlagsService,
+    private applicationService: ApplicationService,
   ) {}
 
   getHello(): string {
@@ -128,6 +130,22 @@ export class AppService {
       this.convertFiletoString(
         assetsPath + 'templates/unsuspend-company.email.hbs',
       ),
+    );
+
+    const permitApplicationOrigins =
+      await this.applicationService.findAllPermitApplicationOrigin();
+    await addToCache(
+      this.cacheManager,
+      CacheKey.PERMIT_APPLICATION_ORIGIN,
+      createCacheMap(permitApplicationOrigins, 'id', 'code'),
+    );
+
+    const permitApprovalSource =
+      await this.applicationService.findAllPermitApprovalSource();
+    await addToCache(
+      this.cacheManager,
+      CacheKey.PERMIT_APPROVAL_SOURCE,
+      createCacheMap(permitApprovalSource, 'id', 'code'),
     );
 
     const endDateTime = new Date();
