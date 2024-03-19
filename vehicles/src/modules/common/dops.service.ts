@@ -21,6 +21,7 @@ import { ClsService } from 'nestjs-cls';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import { LogMethodExecution } from '../../common/decorator/log-method-execution.decorator';
 import { INotificationDocument } from '../../common/interface/notification-document.interface';
+import { ReadNotificationDto } from './dto/response/read-notification.dto';
 
 @Injectable()
 export class DopsService {
@@ -298,6 +299,6 @@ export class DopsService {
       });
 
     // Return the response data after casting it to the expected type
-    return dopsResponse.data as { message: string; transactionId: string };
+    return dopsResponse.data as ReadNotificationDto;
   }
 }
