@@ -16,7 +16,7 @@ import { GovCommonServices } from '../../enum/gov-common-services.enum';
 import { getAccessToken } from '../../helper/gov-common-services.helper';
 import { getFromCache } from '../../helper/cache.helper';
 import { CacheKey } from '../../enum/cache-key.enum';
-import { EmailTemplate } from '../../enum/email-template.enum';
+import { NotificationTemplate } from '../../enum/notification-template.enum';
 import { IChesAttachment } from '../../interface/attachment.ches.interface';
 
 @Injectable()
@@ -45,7 +45,7 @@ export class NotificationService {
    */
   @LogAsyncMethodExecution()
   async sendEmailMessage(
-    template: EmailTemplate,
+    template: NotificationTemplate,
     data: object,
     subject: string,
     to: string[],
@@ -134,7 +134,7 @@ export class NotificationService {
    */
   @LogAsyncMethodExecution()
   async renderTemplate(
-    templateName: EmailTemplate,
+    templateName: NotificationTemplate,
     data: object,
   ): Promise<string> {
     const template = await getFromCache(
@@ -166,15 +166,15 @@ export class NotificationService {
   }
 
   @LogMethodExecution()
-  getCacheKeyforEmailTemplate(templateName: EmailTemplate): CacheKey {
+  getCacheKeyforEmailTemplate(templateName: NotificationTemplate): CacheKey {
     switch (templateName) {
-      case EmailTemplate.ISSUE_PERMIT:
+      case NotificationTemplate.ISSUE_PERMIT:
         return CacheKey.EMAIL_TEMPLATE_ISSUE_PERMIT;
-      case EmailTemplate.PROFILE_REGISTRATION:
+      case NotificationTemplate.PROFILE_REGISTRATION:
         return CacheKey.EMAIL_TEMPLATE_PROFILE_REGISTRATION;
-      case EmailTemplate.COMPANY_SUSPEND:
+      case NotificationTemplate.COMPANY_SUSPEND:
         return CacheKey.EMAIL_TEMPLATE_COMPANY_SUSPEND;
-      case EmailTemplate.COMPANY_UNSUSPEND:
+      case NotificationTemplate.COMPANY_UNSUSPEND:
         return CacheKey.EMAIL_TEMPLATE_COMPANY_UNSUSPEND;
       default:
         throw new Error('Invalid template name');
