@@ -220,24 +220,18 @@ export class PaymentService {
         (accumulator, item) => accumulator + item.transactionAmount,
         0,
       );
-    switch (createTransactionDto.transactionTypeId) {
-      case TransactionType.PURCHASE:
-        if (
-          totalTransactionAmount.toFixed(2) !=
-          totalTransactionAmountCalculated.toFixed(2)
-        )
-          throw new BadRequestException('Transaction Amount Mismatch');
-        break;
-      case TransactionType.REFUND:
-        if (
-          (totalTransactionAmount * -1).toFixed(2) !=
-          totalTransactionAmountCalculated.toFixed(2)
-        )
-          throw new BadRequestException('Transaction Amount Mismatch');
-        break;
-      default:
-        throw new NotAcceptableException();
-    }
+      if (
+        (totalTransactionAmount).toFixed(2) !=
+         Math.abs(totalTransactionAmountCalculated).toFixed(2)
+        ){
+         throw new BadRequestException('Transaction Amount Mismatch');
+        }
+    
+        //For transaction type refund, total transaction amount in backend should be less than zero and vice a versa. 
+        if (totalTransactionAmountCalculated < 0 && createTransactionDto.transactionTypeId != TransactionType.REFUND)
+         {
+          throw new BadRequestException('Transaction Type Mismatch');
+         }
     const transactionOrderNumber = await this.generateTransactionOrderNumber();
     let readTransactionDto: ReadTransactionDto;
     const queryRunner =
@@ -297,8 +291,7 @@ export class PaymentService {
           this.isWebTransactionPurchase(
             newTransaction.paymentMethodTypeCode,
             newTransaction.transactionTypeId,
-          ) &&
-          !voidStatus
+          ) 
         ) {
           existingApplication.permitStatus = ApplicationStatus.WAITING_PAYMENT;
           existingApplication.updatedDateTime = new Date();
@@ -336,8 +329,7 @@ export class PaymentService {
         this.isWebTransactionPurchase(
           createdTransaction.paymentMethodTypeCode,
           createdTransaction.transactionTypeId,
-        ) &&
-        !voidStatus
+        ) 
       ) {
         // Only payment using PayBC should generate the url
         url = this.generateUrl(createdTransaction);
