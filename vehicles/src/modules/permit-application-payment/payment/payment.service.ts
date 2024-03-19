@@ -35,19 +35,11 @@ import { PaymentCardType } from './entities/payment-card-type.entity';
 import { PaymentMethodType } from './entities/payment-method-type.entity';
 import { LogMethodExecution } from '../../../common/decorator/log-method-execution.decorator';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
-import { differenceBetween } from 'src/common/helper/date-time.helper';
-import { PermitType } from 'src/common/enum/permit-type.enum';
 import { PermitHistoryDto } from '../permit/dto/response/permit-history.dto';
 import {
   calculatePermitAmount,
   permitFee,
-} from 'src/common/helper/payment.helper';
-import {
-  TROS_MAX_VALID_DURATION,
-  TROS_MIN_VALID_DURATION,
-  TROS_PRICE_PER_TERM,
-  TROS_TERM,
-} from 'src/common/constants/permit.constant';
+} from 'src/common/helper/permit-fee.helper';
 
 @Injectable()
 export class PaymentService {
@@ -641,34 +633,8 @@ export class PaymentService {
       if (oldAmount > 0) return -oldAmount;
       return oldAmount;
     }
-
-    let duration =
-      differenceBetween(
-        application.permitData.startDate,
-        application.permitData.expiryDate,
-      ) + 1;
     const oldAmount = calculatePermitAmount(permitPaymentHistory);
-
-    switch (application.permitType) {
-      case PermitType.TERM_OVERSIZE:
-        if (
-          duration < TROS_MIN_VALID_DURATION ||
-          duration >= TROS_MAX_VALID_DURATION
-        ) {
-          throw new NotAcceptableException(
-            `Invalid duration (${duration} days) for TROS permit type.`,
-          );
-        }
-        // Adjusting duration for one year permit
-        if (duration <= 365 && duration >= 361) duration = 360;
-        return permitFee(duration, TROS_PRICE_PER_TERM, TROS_TERM, oldAmount);
-        break;
-      case PermitType.TERM_OVERWEIGHT:
-        // Handle TERM_OVERWEIGHT case
-        break;
-      default:
-        throw new BadRequestException();
-    }
+    permitFee(application, oldAmount);
   }
 
   /**
