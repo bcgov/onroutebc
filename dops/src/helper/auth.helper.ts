@@ -43,21 +43,21 @@ function isRoleArray(obj: Role[] | IRole[]): obj is Role[] {
   return Array.isArray(obj) && obj.every((item) => typeof item === 'string');
 }
 
+/**
+ * Evaluates if a user has at least one of the specified roles or meets complex role criteria.
+ *
+ * This method supports two kinds of inputs for role requirements:
+ * 1. Simple list of roles (Role[]): In this case, it checks if any of the roles assigned to the user matches at least one of
+ *    the roles specified in the 'roles' parameter. It returns true if there's a match, indicating the user has one of the necessary roles.
+ * 2. Complex role requirements (IRole[]): When 'roles' is an array of objects implementing the IRole interface (meaning it can specify
+ *    complex role combinations with 'allOf' and 'oneOf' properties), it evaluates these conditions for each role object. It returns true
+ *    if for any role object, either all of the 'allOf' roles or at least one of the 'oneOf' roles are present in the 'userRoles' array.
+ *
+ * @param {Role[] | IRole[]} roles - An array of roles or role requirement objects to be matched against the user's roles.
+ * @param {Role[]} userRoles - An array of roles assigned to the user.
+ * @returns {boolean} Returns true if the user has at least one of the required roles or meets the complex role requirements, false otherwise.
+ */
 export const matchRoles = (roles: Role[] | IRole[], userRoles: Role[]) => {
-  /**
-   * Evaluates if a user has at least one of the specified roles or meets complex role criteria.
-   *
-   * This method supports two kinds of inputs for role requirements:
-   * 1. Simple list of roles (Role[]): In this case, it checks if any of the roles assigned to the user matches at least one of
-   *    the roles specified in the 'roles' parameter. It returns true if there's a match, indicating the user has one of the necessary roles.
-   * 2. Complex role requirements (IRole[]): When 'roles' is an array of objects implementing the IRole interface (meaning it can specify
-   *    complex role combinations with 'allOf' and 'oneOf' properties), it evaluates these conditions for each role object. It returns true
-   *    if for any role object, either all of the 'allOf' roles or at least one of the 'oneOf' roles are present in the 'userRoles' array.
-   *
-   * @param {Role[] | IRole[]} roles - An array of roles or role requirement objects to be matched against the user's roles.
-   * @param {Role[]} userRoles - An array of roles assigned to the user.
-   * @returns {boolean} Returns true if the user has at least one of the required roles or meets the complex role requirements, false otherwise.
-   */
   if (isRoleArray(roles)) {
     // Scenario: roles is a simple list of Role objects.
     // This block checks if any of the roles assigned to the user (userRoles)
