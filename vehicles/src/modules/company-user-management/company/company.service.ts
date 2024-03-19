@@ -51,7 +51,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { UserStatus } from 'src/common/enum/user-status.enum';
 import { VerifyClientDto } from './dto/request/verify-client.dto';
 import { ReadVerifyClientDto } from './dto/response/read-verify-client.dto';
-import { Permit } from '../../permit/entities/permit.entity';
+import { Permit } from '../../permit-application-payment/permit/entities/permit.entity';
 
 @Injectable()
 export class CompanyService {
