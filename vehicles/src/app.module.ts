@@ -23,7 +23,6 @@ import { UsersModule } from './modules/company-user-management/users/users.modul
 import { CompanyModule } from './modules/company-user-management/company/company.module';
 import { PendingUsersModule } from './modules/company-user-management/pending-users/pending-users.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { EmailModule } from './modules/email/email.module';
 import { FeatureFlagsModule } from './modules/feature-flags/feature-flags.module';
 import { HTTPLoggerMiddleware } from './common/middleware/req.res.logger';
 import { TypeormCustomLogger } from './common/logger/typeorm-logger.config';
@@ -82,7 +81,6 @@ const envPath = path.resolve(process.cwd() + '/../');
       ttl: 0, // disable expiration of the cache.
       isGlobal: true, // Allows access to cache manager globally.
     }),
-    EmailModule,
     PowerUnitsModule,
     TrailersModule,
     PowerUnitTypesModule,

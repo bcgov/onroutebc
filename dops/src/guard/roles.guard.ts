@@ -4,13 +4,14 @@ import { Role } from '../enum/roles.enum';
 import { Request } from 'express';
 import { IUserJWT } from '../interface/user-jwt.interface';
 import { matchRoles } from '../helper/auth.helper';
+import { IRole } from '../interface/role.interface';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const roles = this.reflector.getAllAndOverride<Role[]>('roles', [
+    const roles = this.reflector.getAllAndOverride<Role[] | IRole[]>('roles', [
       context.getHandler(),
       context.getClass(),
     ]);
