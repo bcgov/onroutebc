@@ -29,10 +29,8 @@ import { DopsGeneratedDocument } from 'src/common/interface/dops-generated-docum
 import { TemplateName } from 'src/common/enum/template-name.enum';
 import { convertUtcToPt } from 'src/common/helper/date-time.helper';
 import { IFile } from 'src/common/interface/file.interface';
-import { IssuePermitEmailData } from 'src/common/interface/issue-permit-email-data.interface';
-import { AttachementEmailData } from 'src/common/interface/attachment-email-data.interface';
-import { EmailService } from '../../email/email.service';
-import { EmailTemplate } from 'src/common/enum/email-template.enum';
+import { IssuePermitDataNotification } from 'src/common/interface/issue-permit-data.notification.interface';
+import { NotificationTemplate } from 'src/common/enum/notification-template.enum';
 import { ResultDto } from './dto/response/result.dto';
 import { VoidPermitDto } from './dto/request/void-permit.dto';
 import { PaymentService } from '../payment/payment.service';
@@ -69,6 +67,7 @@ import {
 } from '../../../common/helper/permit-application.helper';
 import { IDP } from '../../../common/enum/idp.enum';
 import { PermitApplicationOrigin as PermitApplicationOriginEnum } from '../../../common/enum/permit-application-origin.enum';
+import { INotificationDocument } from '../../../common/interface/notification-document.interface';
 
 @Injectable()
 export class PermitService {
@@ -81,7 +80,6 @@ export class PermitService {
     private permitTypeRepository: Repository<PermitType>,
     private dataSource: DataSource,
     private readonly dopsService: DopsService,
-    private readonly emailService: EmailService,
     private paymentService: PaymentService,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
@@ -790,24 +788,9 @@ export class PermitService {
       success = permit.permitId;
 
       try {
-        const emailData: IssuePermitEmailData = {
+        const notificationData: IssuePermitDataNotification = {
           companyName: companyInfo.legalName,
         };
-
-        const attachments: AttachementEmailData[] = [
-          {
-            filename: newPermit.permitNumber + '.pdf',
-            contentType: 'application/pdf',
-            encoding: 'base64',
-            content: generatedDocuments.at(0).buffer.toString('base64'),
-          },
-          {
-            filename: `Receipt_No_${fetchedTransaction.receipt.receiptNumber}.pdf`,
-            contentType: 'application/pdf',
-            encoding: 'base64',
-            content: generatedDocuments.at(1).buffer.toString('base64'),
-          },
-        ];
 
         const emailList = [
           permitDataForTemplate.permitData?.contactDetails?.email,
@@ -818,16 +801,21 @@ export class PermitService {
 
         const distinctEmailList = Array.from(new Set(emailList));
 
-        void this.emailService.sendEmailMessage(
-          EmailTemplate.ISSUE_PERMIT,
-          emailData,
-          'onRouteBC Permits - ' + companyInfo.legalName,
-          distinctEmailList,
-          attachments,
+        const notificationDocument: INotificationDocument = {
+          templateName: NotificationTemplate.ISSUE_PERMIT,
+          to: distinctEmailList,
+          subject: 'onRouteBC Permits - ' + companyInfo.legalName,
+          data: notificationData,
+          documentIds: [],
+        };
+
+        void this.dopsService.notificationWithDocumentsFromDops(
+          currentUser,
+          notificationDocument,
         );
       } catch (error: unknown) {
         /**
-         * Swallow the error as failure to send email should not break the flow
+         * Swallow the error as failure to send notification should not break the flow
          */
         this.logger.error(error);
       }

@@ -13,14 +13,14 @@ import { Role } from '../../enum/roles.enum';
 import { Roles } from '../../decorator/roles.decorator';
 import { DmsService } from '../dms/dms.service';
 import { IUserJWT } from '../../interface/user-jwt.interface';
-import { EmailDocumentDto } from './dto/request/email-document.dto';
 import { FileDownloadModes } from '../../enum/file-download-modes.enum';
 import { IChesAttachment } from '../../interface/attachment.ches.interface';
 import { createFile } from '../../helper/file.helper';
 import { FILE_ENCODING_TYPE } from '../../constants/dops.constant';
 import { NotificationService } from './notification.service';
 import { ExceptionDto } from '../../exception/exception.dto';
-import { EmailDto } from './dto/request/email.dto';
+import { NotificationDocumentDto } from './dto/request/notification-document.dto';
+import { NotificationDto } from './dto/request/notification.dto';
 
 @ApiBearerAuth()
 @ApiBadRequestResponse({
@@ -39,7 +39,7 @@ import { EmailDto } from './dto/request/email.dto';
   description: 'The Notification Api Internal Server Error Response',
   type: ExceptionDto,
 })
-@ApiTags('Notifications - Email & Fax')
+@ApiTags('Notifications')
 @Controller('notification')
 export class NotificationController {
   constructor(
@@ -48,29 +48,30 @@ export class NotificationController {
   ) {}
 
   /**
-   * Sends an email with document attachments to a specified recipient.
+   * Sends an notification with document attachments to a specified recipient.
    *
    * @param req The current user request object, containing user details.
-   * @param emailDto The data transfer object containing email details such as subject, recipient(s), template name, data for the template, and IDs of documents to attach.
-   * @returns A success message and the transaction ID of the sent email.
+   * @param notificationDocumentDto The data transfer object containing notification details such as subject, recipient(s), template name, data for the template, and IDs of documents to attach.
+   * @returns A success message and the transaction ID of the sent notification.
    */
   @ApiOperation({
-    summary: 'Send Email with Document Attachments',
+    summary: 'Send Notification with Document Attachments',
     description:
-      'Processes and sends an email with specified documents as attachments to the given recipient(s), and returns a transaction ID for the operation.',
+      'Processes and sends an notification with specified documents as attachments to the given recipient(s), and returns a transaction ID for the operation.',
   })
-  @Post('/email/document')
-  @Roles({ allOf: [Role.SEND_EMAIL, Role.READ_DOCUMENT] })
-  async emailwithDocuments(
+  @Post('/document')
+  @Roles({ allOf: [Role.SEND_NOTIFICATION, Role.READ_DOCUMENT] })
+  async notificationWithDocumentsFromDops(
     @Req() req: Request,
-    @Body() emailDto: EmailDocumentDto,
+    @Body() notificationDocumentDto: NotificationDocumentDto,
   ) {
     // Retrieves the current user details from the request
     const currentUser = req.user as IUserJWT;
-    // Destructures the required fields from the EmailDocumentDto
-    const { subject, to, templateName, data, documentIds } = emailDto;
+    // Destructures the required fields from the NotificationDocumentDto
+    const { subject, to, templateName, data, documentIds } =
+      notificationDocumentDto;
 
-    // Processes document IDs to attach them to the email
+    // Processes document IDs to attach them to the notification
     const attachments: IChesAttachment[] = await Promise.all(
       documentIds.map(async (documentId) => {
         // Downloads the document specified by documentId for the current user
@@ -95,7 +96,7 @@ export class NotificationController {
       }),
     );
 
-    // Sends the email with attachments and returns the transaction ID
+    // Sends the notification with attachments and returns the transaction ID
     const transactionId = await this.notificationService.sendEmailMessage(
       templateName,
       data,
@@ -104,32 +105,35 @@ export class NotificationController {
       attachments,
     );
 
-    // Returns a success message and the transaction ID of the sent email
+    // Returns a success message and the transaction ID of the sent notification
     return {
-      message: 'Email sent successfully.',
+      message: 'Notification sent successfully.',
       transactionId: transactionId,
     };
   }
 
   /**
-   * Sends a simple email without document attachments to a specified recipient.
+   * Sends a simple notification without document attachments to a specified recipient.
    *
    * @param req The current user request object, containing user details.
-   * @param emailDto The data transfer object containing email details such as subject, recipients, template name, and data for the template.
-   * @returns A success message and the transaction ID of the sent email.
+   * @param notificationDocumentDto The data transfer object containing notification details such as subject, recipients, template name, and data for the template.
+   * @returns A success message and the transaction ID of the sent notification.
    */
   @ApiOperation({
-    summary: 'Send Simple Email',
+    summary: 'Send Simple Notification',
     description:
-      'Sends a simple email using the specified template to the given recipient(s), and returns a transaction ID for the operation.',
+      'Sends a simple notification using the specified template to the given recipient(s), and returns a transaction ID for the operation.',
   })
-  @Post('/email')
-  @Roles(Role.SEND_EMAIL)
-  async emailWithoutDocument(@Req() req: Request, @Body() emailDto: EmailDto) {
-    // Destructures the required fields from the EmailDocumentDto
-    const { subject, to, templateName, data } = emailDto;
+  @Post()
+  @Roles(Role.SEND_NOTIFICATION)
+  async notificationWithoutDocument(
+    @Req() req: Request,
+    @Body() notificationDocumentDto: NotificationDto,
+  ) {
+    // Destructures the required fields from the NotificationDocumentDto
+    const { subject, to, templateName, data } = notificationDocumentDto;
 
-    // Sends the email with attachments and returns the transaction ID
+    // Sends the notification with attachments and returns the transaction ID
     const transactionId = await this.notificationService.sendEmailMessage(
       templateName,
       data,
@@ -137,9 +141,9 @@ export class NotificationController {
       to,
     );
 
-    // Returns a success message and the transaction ID of the sent email
+    // Returns a success message and the transaction ID of the sent notification
     return {
-      message: 'Email sent successfully.',
+      message: 'Notification sent successfully.',
       transactionId: transactionId,
     };
   }

@@ -23,10 +23,8 @@ import { PermitApprovalSource as PermitApprovalSourceEnum } from '../../../commo
 import { paginate, sortQuery } from '../../../common/helper/database.helper';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { EmailService } from '../../email/email.service';
-import { EmailTemplate } from '../../../common/enum/email-template.enum';
-import { IssuePermitEmailData } from '../../../common/interface/issue-permit-email-data.interface';
-import { AttachementEmailData } from '../../../common/interface/attachment-email-data.interface';
+import { NotificationTemplate } from '../../../common/enum/notification-template.enum';
+import { IssuePermitDataNotification } from '../../../common/interface/issue-permit-data.notification.interface';
 import { DopsService } from '../../common/dops.service';
 import { DopsGeneratedDocument } from '../../../common/interface/dops-generated-document.interface';
 import { TemplateName } from '../../../common/enum/template-name.enum';
@@ -64,6 +62,7 @@ import {
   generatePermitNumber,
   getActiveApplicationStatus,
 } from '../../../common/helper/permit-application.helper';
+import { INotificationDocument } from '../../../common/interface/notification-document.interface';
 
 @Injectable()
 export class ApplicationService {
@@ -80,7 +79,6 @@ export class ApplicationService {
     private permitApprovalSourceRepository: Repository<PermitApprovalSource>,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
-    private readonly emailService: EmailService,
   ) {}
 
   /**
@@ -631,24 +629,9 @@ export class ApplicationService {
       await queryRunner.commitTransaction();
       success = applicationId;
       try {
-        const emailData: IssuePermitEmailData = {
+        const notificationData: IssuePermitDataNotification = {
           companyName: companyInfo.legalName,
         };
-
-        const attachments: AttachementEmailData[] = [
-          {
-            filename: fetchedApplication.permitNumber + '.pdf',
-            contentType: 'application/pdf',
-            encoding: 'base64',
-            content: generatedDocuments.at(0).buffer.toString('base64'),
-          },
-          {
-            filename: `Receipt_No_${receiptNumber}.pdf`,
-            contentType: 'application/pdf',
-            encoding: 'base64',
-            content: generatedDocuments.at(1).buffer.toString('base64'),
-          },
-        ];
 
         const emailList = [
           permitDataForTemplate.permitData?.contactDetails?.email,
@@ -658,16 +641,21 @@ export class ApplicationService {
 
         const distinctEmailList = Array.from(new Set(emailList));
 
-        void this.emailService.sendEmailMessage(
-          EmailTemplate.ISSUE_PERMIT,
-          emailData,
-          'onRouteBC Permits - ' + companyInfo.legalName,
-          distinctEmailList,
-          attachments,
+        const notificationDocument: INotificationDocument = {
+          templateName: NotificationTemplate.ISSUE_PERMIT,
+          to: distinctEmailList,
+          subject: 'onRouteBC Permits - ' + companyInfo.legalName,
+          data: notificationData,
+          documentIds: [],
+        };
+
+        void this.dopsService.notificationWithDocumentsFromDops(
+          currentUser,
+          notificationDocument,
         );
       } catch (error: unknown) {
         /**
-         * Swallow the error as failure to send email should not break the flow
+         * Swallow the error as failure to send notification should not break the flow
          */
         this.logger.error(error);
       }

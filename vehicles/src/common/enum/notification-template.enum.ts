@@ -1,4 +1,4 @@
-export enum EmailTemplate {
+export enum NotificationTemplate {
   PROFILE_REGISTRATION = 'PROFILE_REGISTRATION',
   ISSUE_PERMIT = 'ISSUE_PERMIT',
   COMPANY_SUSPEND = 'COMPANY_SUSPEND',

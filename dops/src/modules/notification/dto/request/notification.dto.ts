@@ -7,18 +7,18 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { EmailTemplate } from '../../../../enum/email-template.enum';
+import { NotificationTemplate } from '../../../../enum/notification-template.enum';
 
-export class EmailDto {
+export class NotificationDto {
   @ApiProperty({
-    description: 'The subject of the email.',
+    description: 'The subject of the notification.',
     example: 'onRouteBC Suspended',
   })
   @IsString()
   subject: string;
 
   @ApiProperty({
-    description: 'Emails of recipients.',
+    description: 'Notification email ids.',
     example: ['someguy@mycompany.co', 'somegirl@mycompany.co'],
   })
   @IsEmail(undefined, {
@@ -28,7 +28,7 @@ export class EmailDto {
   to: string[];
 
   @ApiProperty({
-    description: 'Emails of CC.',
+    description: 'Notification cc email ids.',
     example: ['someguy@mycompany.co', 'somegirl@mycompany.co'],
   })
   @IsOptional()
@@ -38,12 +38,12 @@ export class EmailDto {
   cc: string[];
 
   @ApiProperty({
-    enum: EmailTemplate,
-    example: EmailTemplate.COMPANY_SUSPEND,
-    description: 'The template that will be used to render the email.',
+    enum: NotificationTemplate,
+    example: NotificationTemplate.COMPANY_SUSPEND,
+    description: 'The template that will be used to render the notification.',
   })
-  @IsEnum(EmailTemplate)
-  templateName: EmailTemplate;
+  @IsEnum(NotificationTemplate)
+  templateName: NotificationTemplate;
 
   @ApiProperty({
     example: {

@@ -20,6 +20,7 @@ import { ExceptionDto } from '../../common/exception/exception.dto';
 import { ClsService } from 'nestjs-cls';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import { LogMethodExecution } from '../../common/decorator/log-method-execution.decorator';
+import { INotificationDocument } from '../../common/interface/notification-document.interface';
 
 @Injectable()
 export class DopsService {
@@ -267,5 +268,56 @@ export class DopsService {
     };
 
     return generatedDocument;
+  }
+
+  /**
+   * Sends an notification with documents fetched from S3 using DOPS service.
+   * @param currentUser - The current authenticated user's JWT details.
+   * @param notificationWithDocuments - The details of the notification and documents to be sent.
+   * @returns A Promise resolving to the response from DOPS service containing
+   *          the message and the transaction ID of the notification sent.
+   */
+  @LogAsyncMethodExecution()
+  async notificationWithDocumentsFromDops(
+    currentUser: IUserJWT,
+    notificationWithDocuments: INotificationDocument,
+  ) {
+    // Construct the request URL by appending endpoint to the DOPS base URL
+    const url = process.env.DOPS_URL + `/notification/document`;
+
+    // Configuration for the Axios request, including headers and response type
+    const reqConfig: AxiosRequestConfig = {
+      headers: {
+        Authorization: currentUser.access_token, // User's access token for authorization
+        'Content-Type': 'application/json', // Setting content type as JSON
+        'x-correlation-id': this.cls.getId(), // Correlation ID for tracking the request
+      },
+      responseType: 'json', // Expecting a JSON response
+    };
+
+    // Send POST request to the DOPS service and handle the response or error
+    const dopsResponse = await lastValueFrom(
+      this.httpService.post(url, notificationWithDocuments, reqConfig),
+    )
+      .then((response) => {
+        // Return the Axios response directly on success
+        return response;
+      })
+      .catch((error: AxiosError) => {
+        // Log and throw error if the request fails
+        if (error.response) {
+          this.logger.error(
+            `Error response from DOPS: ${error.response.status} ${error.response.statusText} `,
+          );
+        } else {
+          this.logger.error(error?.message, error?.stack);
+        }
+        throw new InternalServerErrorException(
+          'Error generating while sending notification',
+        );
+      });
+
+    // Return the response data after casting it to the expected type
+    return dopsResponse.data as { message: string; transactionId: string };
   }
 }
