@@ -1,4 +1,4 @@
-export interface ProfileRegistrationEmailData {
+export interface ProfileRegistrationDataNotification {
   companyName: string;
   onRoutebBcClientNumber: string;
   companyAddressLine1: string;

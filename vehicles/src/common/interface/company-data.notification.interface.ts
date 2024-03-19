@@ -1,4 +1,4 @@
-export interface CompanyEmailData {
+export interface CompanyDataNotification {
   companyName: string;
   onRoutebBcClientNumber: string;
 }

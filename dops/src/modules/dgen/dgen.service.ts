@@ -31,6 +31,7 @@ import { ReportTemplate } from '../../enum/report-template.enum';
 import { convertUtcToPt } from '../../helper/date-time.helper';
 import { LogAsyncMethodExecution } from '../../decorator/log-async-method-execution.decorator';
 import { LogMethodExecution } from '../../decorator/log-method-execution.decorator';
+import { ReadFileDto } from '../common/dto/response/read-file.dto';
 
 @Injectable()
 export class DgenService {
@@ -96,9 +97,8 @@ export class DgenService {
   async generate(
     currentUser: IUserJWT,
     createGeneratedDocumentDto: CreateGeneratedDocumentDto,
-    res: Response,
     companyId?: number,
-  ) {
+  ): Promise<ReadFileDto> {
     const generatedDocument = await this.cdogsService.generateDocument(
       currentUser,
       createGeneratedDocumentDto,
@@ -122,37 +122,18 @@ export class DgenService {
       } catch (error) {
         /**
          * Swallow the error as failure to send email should not break the flow
-         */
+         */ //TODO ORV2-1217
         this.logger.error(error);
       }
     }
 
-    const dmsObject = await this.dmsService.create(
+    const readFileDto = await this.dmsService.create(
       currentUser,
       generatedDocument,
       companyId,
     );
-    res.setHeader('x-orbc-dms-id', dmsObject.documentId);
-    res.setHeader(
-      'Content-Disposition',
-      `attachment; filename=${generatedDocument.originalname}`,
-    );
-    res.setHeader('Content-Length', generatedDocument.size);
-    res.setHeader('Content-Type', generatedDocument.mimetype);
-    const stream = new Readable();
-    stream.push(generatedDocument.buffer);
-    stream.push(null); // indicates end-of-file basically - the end of the stream
-    stream.pipe(res);
-    /*Wait for the stream to end before sending the response status and
-        headers. This ensures that the client receives a complete response and
-        prevents any issues with partial responses or response headers being
-        sent prematurely.*/
-    stream.on('end', () => {
-      return null;
-    });
-    stream.on('error', () => {
-      throw new Error('An error occurred while reading the file.');
-    });
+
+    return readFileDto;
   }
 
   private async mergeDocuments(
