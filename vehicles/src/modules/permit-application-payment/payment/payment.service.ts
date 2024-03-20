@@ -208,7 +208,6 @@ export class PaymentService {
     currentUser: IUserJWT,
     createTransactionDto: CreateTransactionDto,
     nestedQueryRunner?: QueryRunner,
-    voidStatus?: ApplicationStatus.VOIDED | ApplicationStatus.REVOKED,
   ): Promise<ReadTransactionDto> {
     let readTransactionDto: ReadTransactionDto;
     const queryRunner =

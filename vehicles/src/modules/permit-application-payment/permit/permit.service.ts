@@ -654,13 +654,11 @@ export class PermitService {
           applicationId: newPermit.permitId,
           transactionAmount: voidPermitDto.transactionAmount,
         },
-      ];
-      const voidStatus = voidPermitDto.status;
+      ];      
       const transactionDto = await this.paymentService.createTransactions(
         currentUser,
         createTransactionDto,
-        queryRunner,
-        voidStatus,
+        queryRunner
       );
 
       const fetchedTransaction = await queryRunner.manager.findOne(
