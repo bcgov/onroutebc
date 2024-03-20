@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { AxiosError } from "axios";
-import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { useQueryClient, useMutation, useQuery, keepPreviousData } from "@tanstack/react-query";
 
 import { Application, ApplicationFormData } from "../types/application";
 import { IssuePermitsResponse } from "../types/permit";
 import { StartTransactionResponseData } from "../types/payment";
 import { APPLICATION_STEPS, ApplicationStep } from "../../../routes/constants";
-import { Nullable, Optional } from "../../../common/types/common";
+import { Nullable, Optional, SortingConfig } from "../../../common/types/common";
 import { isPermitTypeValid } from "../types/PermitType";
 import { isPermitIdNumeric } from "../helpers/permitState";
 import { deserializeApplicationResponse } from "../helpers/deserializeApplication";
@@ -382,16 +382,20 @@ export const useApplicationsInProgressQuery = ({
   page = 0,
   take = 10,
   searchString = "",
-  sorting = [],
+  orderBy = [],
+}: {
+  page?: number,
+  take?: number,
+  searchString?: string,
+  orderBy?: SortingConfig[]
 }) => {
-  const applicationsInProgressQuery = useQuery({
+  return useQuery({
     queryKey: ["applicationInProgress"],
     queryFn: () =>
-      getApplicationsInProgress({ page, take, searchString, orderBy: sorting }),
+      getApplicationsInProgress({ page, take, searchString, orderBy }),
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
+    refetchOnMount: "always",
+    placeholderData: keepPreviousData,
   });
-
-  return {
-    applicationsInProgressQuery,
-  };
 };
+

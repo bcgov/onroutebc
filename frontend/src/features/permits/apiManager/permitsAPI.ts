@@ -120,7 +120,7 @@ export const getApplicationsInProgress = async ({
   if (searchString) {
     applicationsURL.searchParams.set("searchString", searchString);
   }
-  if (orderBy.length > 0) {
+  if (orderBy?.length > 0) {
     applicationsURL.searchParams.set("orderBy", stringifyOrderBy(orderBy));
   }
 
@@ -173,8 +173,10 @@ export const getApplicationsInProgress = async ({
 export const getApplicationByPermitId = async (
   permitId?: string,
 ): Promise<RequiredOrNull<ApplicationResponseData>> => {
+  console.log('raw applications')
   try {
     const companyId = getCompanyIdFromSession();
+    console.log('companyId', companyId)
     let url = `${APPLICATIONS_API_ROUTES.GET}/${permitId}`;
     if (companyId) {
       url += `?companyId=${companyId}`;
