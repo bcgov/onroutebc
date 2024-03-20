@@ -16,6 +16,9 @@
     width: 60%;
 
     .create-profile-section {
+      .Mui-completed path {
+        color: orbcStyles.$bc-green;
+      }
       width: 100%;
 
       &--steps {
