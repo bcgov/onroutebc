@@ -179,21 +179,17 @@ export class PaymentService {
     );
   }
 
-  private isTransactionPurchaseAndApplicationInProgress(
-    transactionType: TransactionType,
-    permitStatus: ApplicationStatus,
-  ) {
+  private isApplicationInProgress(permitStatus: ApplicationStatus) {
     return (
-      this.isTransactionPurchase(transactionType) &&
-      permitStatus != ApplicationStatus.IN_PROGRESS &&
-      permitStatus != ApplicationStatus.WAITING_PAYMENT
+      permitStatus === ApplicationStatus.IN_PROGRESS ||
+      permitStatus === ApplicationStatus.WAITING_PAYMENT
     );
   }
 
   private isVoidorRevoked(permitStatus: ApplicationStatus) {
     return (
-      permitStatus != ApplicationStatus.VOIDED &&
-      permitStatus != ApplicationStatus.REVOKED
+      permitStatus === ApplicationStatus.VOIDED ||
+      permitStatus === ApplicationStatus.REVOKED
     );
   }
 
@@ -210,6 +206,7 @@ export class PaymentService {
     nestedQueryRunner?: QueryRunner,
   ): Promise<ReadTransactionDto> {
     let readTransactionDto: ReadTransactionDto;
+    let existingApplications: Permit[] = [];
     const queryRunner =
       nestedQueryRunner || this.dataSource.createQueryRunner();
     if (!nestedQueryRunner) {
@@ -217,24 +214,21 @@ export class PaymentService {
       await queryRunner.startTransaction();
     }
     try {
-      const existingApplications: Permit[] = [];
-
       for (const application of createTransactionDto.applicationDetails) {
-        const fetchedAppliation = await queryRunner.manager.findOne(Permit, {
+        existingApplications = await queryRunner.manager.find(Permit, {
           where: { permitId: application.applicationId },
+          relations: { permitData: true },
         });
 
-        if (
-          !this.isVoidorRevoked(fetchedAppliation.permitStatus) &&
-          this.isTransactionPurchaseAndApplicationInProgress(
-            createTransactionDto.transactionTypeId,
-            fetchedAppliation.permitStatus,
-          )
-        ) {
+        const validStatus = existingApplications.some(
+          (existingApplication) =>
+            this.isVoidorRevoked(existingApplication.permitStatus) ||
+            this.isApplicationInProgress(existingApplication.permitStatus),
+        );
+
+        if (!validStatus) {
           throw new BadRequestException('Application should be in Progress!!');
         }
-
-        existingApplications.push(fetchedAppliation);
       }
 
       const totalTransactionAmount =
