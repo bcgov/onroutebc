@@ -14,7 +14,7 @@ export const PermitLists = React.memo(() => {
   const tabs = [
     {
       label: "Applications in Progress",
-      count: query?.data?.items?.length,
+      count: query?.data?.meta?.totalItems,
       component: <ApplicationsInProgressList />,
     },
     {
