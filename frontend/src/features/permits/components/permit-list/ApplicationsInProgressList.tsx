@@ -65,7 +65,7 @@ export const ApplicationsInProgressList = ({ onCountChange }:
   const applicationsQuery = useApplicationsInProgressQuery({
     page: pagination.pageIndex,
     take: pagination.pageSize,
-    orderBy: sorting.length > 0
+    sorting: sorting.length > 0
     ? [
         {
           column: sorting.at(0)?.id as string,
