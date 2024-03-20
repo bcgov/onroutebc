@@ -24,7 +24,7 @@ export class VoidPermitDto {
     example: ApplicationStatus.REVOKED,
   })
   @IsEnum(ApplicationStatus)
-  status: ApplicationStatus;
+  status: ApplicationStatus.VOIDED | ApplicationStatus.REVOKED;
 
   @AutoMap()
   @ApiProperty({
