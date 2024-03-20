@@ -241,7 +241,7 @@ export class PaymentService {
         await this.validatePaymentAndCalculateAmount(
           createTransactionDto,
           existingApplications,
-          nestedQueryRunner,
+          queryRunner,
         );
 
       const transactionOrderNumber =
@@ -407,14 +407,14 @@ export class PaymentService {
   private async validatePaymentAndCalculateAmount(
     createTransactionDto: CreateTransactionDto,
     applications: Permit[],
-    nestedQueryRunner: QueryRunner,
+    queryRunner: QueryRunner,
   ) {
     let totalTransactionAmountCalculated: number = 0;
     // Calculate and add amount for each requested application, as per the available backend data.
     for (const application of applications) {
       totalTransactionAmountCalculated =
         totalTransactionAmountCalculated +
-        (await this.permitFeeCalculator(application, nestedQueryRunner));
+        (await this.permitFeeCalculator(application, queryRunner));
     }
     const totalTransactionAmount =
       createTransactionDto.applicationDetails?.reduce(
@@ -683,19 +683,19 @@ export class PaymentService {
    * Otherwise, it calculates the fee based on existing payments and current permit data.
    *
    * @param application - The Permit application for which to calculate the fee.
-   * @param nestedQueryRunner - An optional QueryRunner for database transactions.
+   * @param queryRunner - An optional QueryRunner for database transactions.
    * @returns {Promise<number>} - The calculated permit fee or refund amount.
    */
   @LogAsyncMethodExecution()
   async permitFeeCalculator(
     application: Permit,
-    nestedQueryRunner?: QueryRunner,
+    queryRunner?: QueryRunner,
   ): Promise<number> {
     if (application.permitStatus === ApplicationStatus.REVOKED) return 0;
 
     const permitPaymentHistory = await this.findPermitHistory(
       application.originalPermitId,
-      nestedQueryRunner,
+      queryRunner,
     );
 
     if (application.permitStatus === ApplicationStatus.VOIDED) {
@@ -710,13 +710,13 @@ export class PaymentService {
   @LogAsyncMethodExecution()
   async findPermitHistory(
     originalPermitId: string,
-    nestedQueryRunner: QueryRunner,
+    queryRunner: QueryRunner,
   ): Promise<PermitHistoryDto[]> {
     // Fetches the permit history for a given originalPermitId using the provided QueryRunner
     // This includes all related transactions and filters permits by non-null permit numbers
     // Orders the results by transaction submission date in descending order
 
-    const permits = await nestedQueryRunner.manager
+    const permits = await queryRunner.manager
       .createQueryBuilder()
       .select('permit')
       .from(Permit, 'permit')
