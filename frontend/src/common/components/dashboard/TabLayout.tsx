@@ -3,6 +3,7 @@ import { Box, Tabs, Tab, Chip } from "@mui/material";
 
 import "./Dashboard.scss";
 import { Banner } from "./Banner";
+import { Nullable } from "../../types/common";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -12,7 +13,7 @@ interface TabPanelProps {
 
 interface ComponentProps {
   label: string;
-  count?: number;
+  count?: Nullable<number>;
   component: JSX.Element;
 }
 

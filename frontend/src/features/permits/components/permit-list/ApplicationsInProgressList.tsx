@@ -21,7 +21,7 @@ import { Trash } from "../../../../common/components/table/options/Trash";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import { canUserAccessApplication } from "../../helpers/mappers";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { getDefaultNullableVal } from "../../../../common/helpers/util";
+import { getDefaultNullableVal, getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { UserAuthGroupType } from "../../../../common/authentication/types";
 import { Nullable } from "../../../../common/types/common";
 import {
@@ -79,9 +79,8 @@ export const ApplicationsInProgressList = ({ onCountChange }:
 
   useEffect(() => {
 
-    if (data?.meta?.totalItems) {
-      onCountChange(data?.meta?.totalItems);
-    }
+    const totalCount = getDefaultRequiredVal(0, data?.meta?.totalItems);
+    onCountChange(totalCount);
     
   }, [data?.meta?.totalItems])
 

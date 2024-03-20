@@ -5,10 +5,11 @@ import { StartApplicationAction } from "../../pages/Application/components/dashb
 import { ActivePermitList } from "../permit-list/ActivePermitList";
 import { ExpiredPermitList } from "../permit-list/ExpiredPermitList";
 import { ApplicationsInProgressList } from "../permit-list/ApplicationsInProgressList";
+import { Nullable } from "../../../../common/types/common";
 
 export const PermitLists = React.memo(() => {
 
-  const [applicationsInProgressCount, setApplicationsInProgressCount] = useState<number>();
+  const [applicationsInProgressCount, setApplicationsInProgressCount] = useState<Nullable<number>>();
   const handleApplicationsCountChange = (count: number) => {
       setApplicationsInProgressCount(count);
   };
