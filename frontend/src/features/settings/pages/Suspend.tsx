@@ -20,6 +20,7 @@ export const Suspend = ({
   const {
     data: suspensionHistory,
     isError: fetchHistoryError,
+    refetch: refetchSuspensionHistory,
   } = useSuspensionHistoryQuery(companyId);
 
   // Check if user can update suspend
@@ -73,7 +74,7 @@ export const Suspend = ({
     });
 
     if (isActionSuccessful(suspendResult.status)) {
-      setIsCompanySuspended?.(true);
+      refetchSuspensionHistory();
       setShowSuspendModal(false);
     }
   };
@@ -87,8 +88,7 @@ export const Suspend = ({
     });
 
     if (isActionSuccessful(unsuspendResult.status)) {
-      setIsCompanySuspended?.(false);
-      setShowSuspendModal(false);
+      refetchSuspensionHistory();
     }
   };
 
