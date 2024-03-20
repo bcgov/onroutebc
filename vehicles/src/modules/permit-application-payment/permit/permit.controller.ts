@@ -8,6 +8,7 @@ import {
   Query,
   Res,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { PermitService } from './permit.service';
 import { ExceptionDto } from '../../../common/exception/exception.dto';
@@ -41,6 +42,8 @@ import {
 } from 'src/common/enum/user-auth-group.enum';
 import { ReadPermitMetadataDto } from './dto/response/read-permit-metadata.dto';
 import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
+import { CreateNotificationDto } from '../../common/dto/request/create-notification.dto';
+import { ReadNotificationDto } from '../../common/dto/response/read-notification.dto';
 
 @ApiBearerAuth()
 @ApiTags('Permit')
@@ -228,5 +231,52 @@ export class PermitController {
       currentUser,
     );
     return permit;
+  }
+
+  /**
+   * Sends a notification related to a specific permit.
+   *
+   * This method checks if the current user belongs to the specified user authentication group before proceeding.
+   * If the user does not belong to the required auth group, a ForbiddenException is thrown.
+   *
+   * @param request The incoming request object containing the current user information.
+   * @param permitId The ID of the permit to associate the notification with.
+   * @param createNotificationDto The data transfer object containing the notification details.
+   * @returns A promise resolved with the details of the sent notification.
+   */
+  @ApiCreatedResponse({
+    description: 'The Notification resource with transaction details',
+    type: ReadNotificationDto,
+  })
+  @ApiOperation({
+    summary: 'Send Permit Notification',
+    description:
+      'Sends a notification related to a specific permit after checking user authorization.',
+  })
+  @Roles(Role.SEND_NOTIFICATION)
+  @Post('/:permitId/notification')
+  async notification(
+    @Req() request: Request,
+    @Param('permitId') permitId: string,
+    @Body()
+    createNotificationDto: CreateNotificationDto,
+  ): Promise<ReadNotificationDto> {
+    const currentUser = request.user as IUserJWT;
+
+    // Throws ForbiddenException if user does not belong to the specified user auth group.
+    if (
+      !doesUserHaveAuthGroup(
+        currentUser.orbcUserAuthGroup,
+        IDIR_USER_AUTH_GROUP_LIST,
+      )
+    ) {
+      throw new ForbiddenException();
+    }
+
+    return await this.permitService.sendNotification(
+      currentUser,
+      permitId,
+      createNotificationDto,
+    );
   }
 }
