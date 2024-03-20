@@ -390,7 +390,7 @@ export const useApplicationsInProgressQuery = ({
   orderBy?: SortingConfig[];
 }) => {
   return useQuery({
-    queryKey: ["applicationInProgress"],
+    queryKey: ["applicationsInProgress", page],
     queryFn: () =>
       getApplicationsInProgress({ page, take, searchString, orderBy }),
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
