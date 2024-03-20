@@ -384,10 +384,10 @@ export const useApplicationsInProgressQuery = ({
   searchString = "",
   orderBy = [],
 }: {
-  page?: number,
-  take?: number,
-  searchString?: string,
-  orderBy?: SortingConfig[]
+  page?: number;
+  take?: number;
+  searchString?: string;
+  orderBy?: SortingConfig[];
 }) => {
   return useQuery({
     queryKey: ["applicationInProgress"],
