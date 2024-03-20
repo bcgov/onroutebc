@@ -49,7 +49,8 @@ const getColumns = (
 /**
  * A wrapper with the query to load the table with expired permits.
  */
-export const ApplicationsInProgressList = () => {
+export const ApplicationsInProgressList = ({ onCountChange }: 
+  { onCountChange: (count: number) => void; }) => {
   const [pagination, setPagination] = useState<MRT_PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -75,6 +76,14 @@ export const ApplicationsInProgressList = () => {
   });
 
   const { data, isError, isPending, isFetching } = applicationsQuery;
+
+  useEffect(() => {
+
+    if (data?.meta?.totalItems) {
+      onCountChange(data?.meta?.totalItems);
+    }
+    
+  }, [data?.meta?.totalItems])
 
   const { idirUserDetails, userDetails } = useContext(OnRouteBCContext);
   const userAuthGroup = getDefaultNullableVal(

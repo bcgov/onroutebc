@@ -1,21 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
 import { StartApplicationAction } from "../../pages/Application/components/dashboard/StartApplicationAction";
 import { ActivePermitList } from "../permit-list/ActivePermitList";
 import { ExpiredPermitList } from "../permit-list/ExpiredPermitList";
 import { ApplicationsInProgressList } from "../permit-list/ApplicationsInProgressList";
-import { useApplicationsInProgressQuery } from "../../hooks/hooks";
-
 
 export const PermitLists = React.memo(() => {
-  const query = useApplicationsInProgressQuery({});
 
+  const [applicationsInProgressCount, setApplicationsInProgressCount] = useState<number>();
+  const handleApplicationsCountChange = (count: number) => {
+      setApplicationsInProgressCount(count);
+  };
+  
   const tabs = [
     {
       label: "Applications in Progress",
-      count: query?.data?.meta?.totalItems,
-      component: <ApplicationsInProgressList />,
+      count: applicationsInProgressCount,
+      component: <ApplicationsInProgressList onCountChange={handleApplicationsCountChange} />,
     },
     {
       label: "Active Permits",
