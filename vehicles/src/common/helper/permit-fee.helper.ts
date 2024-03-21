@@ -81,7 +81,7 @@ export const isValidDuration = (
   minDuration: number,
   maxDuration: number,
 ): boolean => {
-  return duration < minDuration || duration > maxDuration ? false : true;
+  return duration >= minDuration && duration <= maxDuration;
 };
 
 /**
