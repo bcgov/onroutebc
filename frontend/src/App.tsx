@@ -4,6 +4,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import { createContext, Dispatch, useCallback, useEffect, useMemo, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, AuthProviderProps } from "react-oidc-context";
+import { WebStorageStateStore } from "oidc-client-ts";
 
 import "./App.scss";
 import { Header } from "./common/components/header/Header";
@@ -13,6 +14,8 @@ import { NavIconSideBar } from "./common/components/naviconsidebar/NavIconSideBa
 import { NavIconHomeButton } from "./common/components/naviconsidebar/NavIconHomeButton";
 import { NavIconReportButton } from "./common/components/naviconsidebar/NavIconReportButton";
 import { Nullable, Optional } from "./common/types/common";
+import { VerifiedClient, UserRolesType } from "./common/authentication/types";
+import { SuspendSnackBar } from "./common/components/snackbar/SuspendSnackBar";
 import {
   CustomSnackbar,
   SnackBarOptions,
@@ -22,8 +25,6 @@ import OnRouteBCContext, {
   BCeIDUserDetailContext,
   IDIRUserDetailContext,
 } from "./common/authentication/OnRouteBCContext";
-import { VerifiedClient, UserRolesType } from "./common/authentication/types";
-import { WebStorageStateStore } from "oidc-client-ts";
 
 const authority =
   import.meta.env.VITE_KEYCLOAK_ISSUER_URL ||
@@ -155,6 +156,7 @@ const App = () => {
               <div className="page-section">
                 <Router>
                   <Header />
+                  <SuspendSnackBar />
                   <NavIconSideBar>
                     <NavIconHomeButton />
                     <NavIconReportButton />

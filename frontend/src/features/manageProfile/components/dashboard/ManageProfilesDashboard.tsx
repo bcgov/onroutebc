@@ -4,6 +4,7 @@ import { AxiosError } from "axios";
 import React, { useContext, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { Navigate } from "react-router-dom";
+import { useAuth } from "react-oidc-context";
 
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { ROLES } from "../../../../common/authentication/types";
@@ -19,7 +20,6 @@ import { UserManagement } from "../../pages/UserManagement";
 import { BCEID_PROFILE_TABS } from "../../types/manageProfile.d";
 import { ERROR_ROUTES, PROFILE_ROUTES } from "../../../../routes/constants";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { useAuth } from "react-oidc-context";
 import { isIDIR } from "../../../../common/authentication/auth-walls/BCeIDAuthWall";
 
 interface ProfileDashboardTab {

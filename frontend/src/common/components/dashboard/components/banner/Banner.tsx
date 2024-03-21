@@ -1,8 +1,6 @@
-import { ReactNode, useContext } from "react";
+import { ReactNode } from "react";
 
 import "./Banner.scss";
-import { ErrorBcGovBanner } from "../../../banners/ErrorBcGovBanner";
-import OnRouteBCContext from "../../../../authentication/OnRouteBCContext";
 
 /**
  * The Banner component is a common component that is used to display a banner in a dashboard
@@ -18,8 +16,6 @@ export const Banner = ({
   bannerText: string;
   bannerSubtext?: string | ReactNode;
 }) => {
-  const { isCompanySuspended } = useContext(OnRouteBCContext);
-
   return (
     <div className="layout-banner">
       <div className="layout-banner__left">
@@ -34,13 +30,6 @@ export const Banner = ({
             </div>
           ): null}
         </div>
-
-        {isCompanySuspended ? (
-          <ErrorBcGovBanner
-            msg="Company suspended"
-            className="layout-banner__suspended"
-          />
-        ) : null}
       </div>
     </div>
   );
