@@ -8,6 +8,8 @@ import {
   TROS_MIN_VALID_DURATION,
   TROS_PRICE_PER_TERM,
   TROS_TERM,
+  TROW_MAX_VALID_DURATION,
+  TROW_MIN_VALID_DURATION,
 } from '../constants/permit.constant';
 import { differenceBetween } from './date-time.helper';
 
@@ -30,9 +32,9 @@ export const permitFee = (application: Permit, oldAmount: number): number => {
     case PermitType.TERM_OVERSIZE:
       if (
         duration < TROS_MIN_VALID_DURATION ||
-        duration >= TROS_MAX_VALID_DURATION
+        duration > TROS_MAX_VALID_DURATION
       ) {
-        throw new NotAcceptableException(
+        throw new BadRequestException(
           `Invalid duration (${duration} days) for TROS permit type.`,
         );
       }
@@ -45,7 +47,22 @@ export const permitFee = (application: Permit, oldAmount: number): number => {
         oldAmount,
       );
     case PermitType.TERM_OVERWEIGHT:
-      // Handle TERM_OVERWEIGHT case
+      if (
+        duration < TROW_MIN_VALID_DURATION ||
+        duration > TROW_MAX_VALID_DURATION
+      ) {
+        throw new BadRequestException(
+          `Invalid duration (${duration} days) for TROS permit type.`,
+        );
+      }
+      // Adjusting duration for one year term permit
+      if (duration <= 365 && duration >= 361) duration = 360;
+      return currentPermitFee(
+        duration,
+        TROS_PRICE_PER_TERM,
+        TROS_TERM,
+        oldAmount,
+      );
       break;
     default:
       throw new BadRequestException(
