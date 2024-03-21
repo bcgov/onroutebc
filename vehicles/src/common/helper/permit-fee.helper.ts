@@ -38,8 +38,7 @@ export const permitFee = (application: Permit, oldAmount: number): number => {
       if (!validDuration) {
         throw new BadRequestException(
           `Invalid duration (${duration} days) for ${application.permitType} permit type.`,
-        );
-      }
+      );
       // Adjusting duration for one year term permit
       if (duration <= 365 && duration >= 361) duration = 360;
       return currentPermitFee(
@@ -73,6 +72,19 @@ export const permitFee = (application: Permit, oldAmount: number): number => {
       throw new BadRequestException(
         `Invalid permit type: ${application.permitType}`,
       );
+  }
+};
+
+export const validateDuration = (
+  duration: number,
+  minDuration: number,
+  maxDuration: number,
+  permitType: string,
+): void => {
+  if (duration < minDuration || duration > maxDuration) {
+    throw new BadRequestException(
+      `Invalid duration (${duration} days) for ${permitType} permit type.`,
+    );
   }
 };
 
