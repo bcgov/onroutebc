@@ -8,6 +8,8 @@ import {
   TROS_MIN_VALID_DURATION,
   TROS_PRICE_PER_TERM,
   TROS_TERM,
+  TROW_MAX_VALID_DURATION,
+  TROW_MIN_VALID_DURATION,
 } from '../constants/permit.constant';
 import { differenceBetween } from './date-time.helper';
 
@@ -28,14 +30,12 @@ export const permitFee = (application: Permit, oldAmount: number): number => {
 
   switch (application.permitType) {
     case PermitType.TERM_OVERSIZE:
-      if (
-        duration < TROS_MIN_VALID_DURATION ||
-        duration >= TROS_MAX_VALID_DURATION
-      ) {
-        throw new NotAcceptableException(
-          `Invalid duration (${duration} days) for TROS permit type.`,
-        );
-      }
+      validateDuration(
+        duration,
+        TROS_MIN_VALID_DURATION,
+        TROS_MAX_VALID_DURATION,
+        application.permitType,
+      );
       // Adjusting duration for one year term permit
       if (duration <= 365 && duration >= 361) duration = 360;
       return currentPermitFee(
@@ -45,12 +45,38 @@ export const permitFee = (application: Permit, oldAmount: number): number => {
         oldAmount,
       );
     case PermitType.TERM_OVERWEIGHT:
-      // Handle TERM_OVERWEIGHT case
+      validateDuration(
+        duration,
+        TROW_MIN_VALID_DURATION,
+        TROW_MAX_VALID_DURATION,
+        application.permitType,
+      );
+      // Adjusting duration for one year term permit
+      if (duration <= 365 && duration >= 361) duration = 360;
+      return currentPermitFee(
+        duration,
+        TROS_PRICE_PER_TERM,
+        TROS_TERM,
+        oldAmount,
+      );
       break;
     default:
       throw new BadRequestException(
         `Invalid permit type: ${application.permitType}`,
       );
+  }
+};
+
+export const validateDuration = (
+  duration: number,
+  minDuration: number,
+  maxDuration: number,
+  permitType: string,
+): void => {
+  if (duration < minDuration || duration > maxDuration) {
+    throw new BadRequestException(
+      `Invalid duration (${duration} days) for ${permitType} permit type.`,
+    );
   }
 };
 
