@@ -352,14 +352,6 @@ export class PermitService {
             }),
           );
           break;
-        case PermitSearch.APPLICATION_NUMBER:
-          permitsQuery = permitsQuery.andWhere(
-            `permit.applicationNumber like :searchString`,
-            {
-              searchString: `%${searchString}%`,
-            },
-          );
-          break;
       }
     }
 
