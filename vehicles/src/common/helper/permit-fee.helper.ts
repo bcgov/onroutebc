@@ -29,13 +29,17 @@ export const permitFee = (application: Permit, oldAmount: number): number => {
     ) + 1;
 
   switch (application.permitType) {
-    case PermitType.TERM_OVERSIZE:
-      validateDuration(
+    case PermitType.TERM_OVERSIZE: {
+      const validDuration = isValidDuration(
         duration,
         TROS_MIN_VALID_DURATION,
         TROS_MAX_VALID_DURATION,
-        application.permitType,
       );
+      if (!validDuration) {
+        throw new BadRequestException(
+          `Invalid duration (${duration} days) for ${application.permitType} permit type.`,
+        );
+      }
       // Adjusting duration for one year term permit
       if (duration <= 365 && duration >= 361) duration = 360;
       return currentPermitFee(
@@ -44,13 +48,18 @@ export const permitFee = (application: Permit, oldAmount: number): number => {
         TROS_TERM,
         oldAmount,
       );
-    case PermitType.TERM_OVERWEIGHT:
-      validateDuration(
+    }
+    case PermitType.TERM_OVERWEIGHT: {
+      const validDuration = isValidDuration(
         duration,
         TROW_MIN_VALID_DURATION,
         TROW_MAX_VALID_DURATION,
-        application.permitType,
       );
+      if (!validDuration) {
+        throw new BadRequestException(
+          `Invalid duration (${duration} days) for ${application.permitType} permit type.`,
+        );
+      }
       // Adjusting duration for one year term permit
       if (duration <= 365 && duration >= 361) duration = 360;
       return currentPermitFee(
@@ -59,7 +68,7 @@ export const permitFee = (application: Permit, oldAmount: number): number => {
         TROS_TERM,
         oldAmount,
       );
-      break;
+    }
     default:
       throw new BadRequestException(
         `Invalid permit type: ${application.permitType}`,
@@ -67,17 +76,12 @@ export const permitFee = (application: Permit, oldAmount: number): number => {
   }
 };
 
-export const validateDuration = (
+export const isValidDuration = (
   duration: number,
   minDuration: number,
   maxDuration: number,
-  permitType: string,
-): void => {
-  if (duration < minDuration || duration > maxDuration) {
-    throw new BadRequestException(
-      `Invalid duration (${duration} days) for ${permitType} permit type.`,
-    );
-  }
+): boolean => {
+  return duration >= minDuration && duration <= maxDuration;
 };
 
 /**
