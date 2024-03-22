@@ -120,7 +120,7 @@ export const getApplicationsInProgress = async ({
   if (searchString) {
     applicationsURL.searchParams.set("searchString", searchString);
   }
-  if (orderBy.length > 0) {
+  if (orderBy?.length > 0) {
     applicationsURL.searchParams.set("orderBy", stringifyOrderBy(orderBy));
   }
 
