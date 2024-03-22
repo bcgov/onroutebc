@@ -154,6 +154,12 @@ export const PAYMENT_ROUTES = {
   PAYMENT_REDIRECT: PAYMENT_ROUTE_BASE,
 };
 
+// Settings
+const SETTINGS_BASE = "/settings";
+export const SETTINGS_ROUTES = {
+  MANAGE: SETTINGS_BASE,
+};
+
 // OnRoute Webpage Links
 export const ONROUTE_WEBPAGE_LINKS = {
   HOME: "https://onroutebc.gov.bc.ca",

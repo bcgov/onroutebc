@@ -7,7 +7,6 @@ import { ExpiredPermitList } from "../permit-list/ExpiredPermitList";
 import { ApplicationsInProgressList } from "../permit-list/ApplicationsInProgressList";
 import { useApplicationsInProgressQuery } from "../../hooks/hooks";
 
-
 export const PermitLists = React.memo(() => {
   const query = useApplicationsInProgressQuery({});
 
