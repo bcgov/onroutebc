@@ -1,0 +1,59 @@
+@import "../../../../themes/orbcStyles";
+
+.suspension-history {
+  &#{&} {
+    overflow: visible;
+    box-shadow: none;
+  }
+
+  & &__table {
+    width: 100%;
+    border: 1px solid $bc-border-grey;
+  }
+
+  & &__header {
+    background-color: $bc-background-light-grey;
+
+    &--user {
+      padding-left: 1rem;
+      padding-right: 0.5rem;
+    }
+
+    &--date {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+
+    &--reason {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+
+    &--status {
+      padding-left: 0.5rem;
+      padding-right: 1rem;
+    }
+  }
+
+  & &__data {
+    &--user {
+      padding-left: 1rem;
+      padding-right: 0.5rem;
+    }
+
+    &--date {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+
+    &--reason {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+
+    &--status {
+      padding-left: 0.5rem;
+      padding-right: 1rem;
+    }
+  }
+}
