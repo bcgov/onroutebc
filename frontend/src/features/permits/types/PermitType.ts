@@ -111,5 +111,8 @@ export const permitTypeDisplayText = (permitType?: Nullable<string>) => {
  * @returns true if string is a valid permit type, or false otherwise
  */
 export const isPermitTypeValid = (permitType?: Nullable<string>) => {
-  return permitType && (Object.values(PERMIT_TYPES) as string[]).includes(permitType.toUpperCase());
+  return (
+    permitType &&
+    (Object.values(PERMIT_TYPES) as string[]).includes(permitType.toUpperCase())
+  );
 };

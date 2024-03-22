@@ -1,7 +1,10 @@
 import { useEffect, useRef } from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 
-import { getPayBCPaymentDetails, usePaymentByTransactionIdQuery } from "../../helpers/payment";
+import {
+  getPayBCPaymentDetails,
+  usePaymentByTransactionIdQuery,
+} from "../../helpers/payment";
 import { Loading } from "../../../../common/pages/Loading";
 import { useCompleteTransaction, useIssuePermits } from "../../hooks/hooks";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
@@ -56,15 +59,13 @@ export const PaymentRedirect = () => {
   }, [paymentDetails.trnApproved]);
 
   useEffect(() => {
-
-    const applicationIds:string[] = [];
+    const applicationIds: string[] = [];
     if (transactionIdQuery?.isSuccess && issuedPermit?.current === false) {
-      
       transactionIdQuery?.data?.applicationDetails?.forEach((application) => {
         if (application?.applicationId) {
           applicationIds.push(application.applicationId);
         }
-      })
+      });
 
       if (paymentApproved === true) {
         // Payment successful, proceed to issue permit
@@ -80,7 +81,6 @@ export const PaymentRedirect = () => {
 
     if (transactionIdQuery?.isError)
       navigate(ERROR_ROUTES.UNEXPECTED, { replace: true });
-
   }, [paymentApproved, transactionIdQuery]);
 
   if (issueFailed) {

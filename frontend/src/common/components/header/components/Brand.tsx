@@ -8,10 +8,7 @@ export const Brand = () => {
   return (
     <div className="brand">
       <a className="brand__logo" href={routes.HOME}>
-        <img
-          src="/BCID_H_rgb_rev.svg"
-          alt="Go to the onRouteBC Home Page"
-        />
+        <img src="/BCID_H_rgb_rev.svg" alt="Go to the onRouteBC Home Page" />
       </a>
       <h1 className="brand__title">onRouteBC</h1>
       {companyLegalName ? (

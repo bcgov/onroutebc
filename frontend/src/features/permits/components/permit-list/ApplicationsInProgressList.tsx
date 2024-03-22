@@ -21,12 +21,13 @@ import { Trash } from "../../../../common/components/table/options/Trash";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import { canUserAccessApplication } from "../../helpers/mappers";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { getDefaultNullableVal, getDefaultRequiredVal } from "../../../../common/helpers/util";
+import {
+  getDefaultNullableVal,
+  getDefaultRequiredVal,
+} from "../../../../common/helpers/util";
 import { UserAuthGroupType } from "../../../../common/authentication/types";
 import { Nullable } from "../../../../common/types/common";
-import {
-  deleteApplications,
-} from "../../apiManager/permitsAPI";
+import { deleteApplications } from "../../apiManager/permitsAPI";
 
 import {
   defaultTableInitialStateOptions,
@@ -49,8 +50,11 @@ const getColumns = (
 /**
  * A wrapper with the query to load the table with expired permits.
  */
-export const ApplicationsInProgressList = ({ onCountChange }: 
-  { onCountChange: (count: number) => void; }) => {
+export const ApplicationsInProgressList = ({
+  onCountChange,
+}: {
+  onCountChange: (count: number) => void;
+}) => {
   const [pagination, setPagination] = useState<MRT_PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -65,24 +69,23 @@ export const ApplicationsInProgressList = ({ onCountChange }:
   const applicationsQuery = useApplicationsInProgressQuery({
     page: pagination.pageIndex,
     take: pagination.pageSize,
-    sorting: sorting.length > 0
-    ? [
-        {
-          column: sorting.at(0)?.id as string,
-          descending: Boolean(sorting.at(0)?.desc),
-        },
-      ]
-    : [],
+    sorting:
+      sorting.length > 0
+        ? [
+            {
+              column: sorting.at(0)?.id as string,
+              descending: Boolean(sorting.at(0)?.desc),
+            },
+          ]
+        : [],
   });
 
   const { data, isError, isPending, isFetching } = applicationsQuery;
 
   useEffect(() => {
-
     const totalCount = getDefaultRequiredVal(0, data?.meta?.totalItems);
     onCountChange(totalCount);
-    
-  }, [data?.meta?.totalItems])
+  }, [data?.meta?.totalItems]);
 
   const { idirUserDetails, userDetails } = useContext(OnRouteBCContext);
   const userAuthGroup = getDefaultNullableVal(
@@ -144,10 +147,7 @@ export const ApplicationsInProgressList = ({ onCountChange }:
    */
   const canRowBeSelected = useCallback(
     (permitApplicationOrigin?: Nullable<PermitApplicationOrigin>) =>
-      canUserAccessApplication(
-        permitApplicationOrigin,
-        userAuthGroup,
-      ),
+      canUserAccessApplication(permitApplicationOrigin, userAuthGroup),
     [userAuthGroup],
   );
 
@@ -189,14 +189,9 @@ export const ApplicationsInProgressList = ({ onCountChange }:
       pagination,
       sorting,
     },
-    enableRowSelection:
-      (row) => canRowBeSelected(
-        row?.original?.permitApplicationOrigin,
-      ),
-    onRowSelectionChange: useCallback(
-      setRowSelection,
-      [userAuthGroup],
-    ),
+    enableRowSelection: (row) =>
+      canRowBeSelected(row?.original?.permitApplicationOrigin),
+    onRowSelectionChange: useCallback(setRowSelection, [userAuthGroup]),
     getRowId: (originalRow) => {
       const applicationRow = originalRow as ApplicationListItem;
       return applicationRow.permitId;
@@ -208,33 +203,34 @@ export const ApplicationsInProgressList = ({ onCountChange }:
       }: {
         table: MRT_TableInstance<ApplicationListItem>;
         row: MRT_Row<ApplicationListItem>;
-      }) => canUserAccessApplication(
-        row?.original?.permitApplicationOrigin,
-        userAuthGroup,
-      ) ? (
-        <Box className="table-container__row-actions">
-          <Tooltip arrow placement="top" title="Delete">
-            <IconButton
-              color="error"
-              onClick={() => {
-                setIsDeleteDialogOpen(() => true);
-                setRowSelection(() => {
-                  const newObject: { [key: string]: boolean } = {};
-                  // Setting the selected row to false so that
-                  // the row appears unchecked.
-                  newObject[row.original.permitId] = false;
-                  return newObject;
-                });
-              }}
-              disabled={false}
-            >
-              <Delete />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      ) : (
-        <></>
-      ),
+      }) =>
+        canUserAccessApplication(
+          row?.original?.permitApplicationOrigin,
+          userAuthGroup,
+        ) ? (
+          <Box className="table-container__row-actions">
+            <Tooltip arrow placement="top" title="Delete">
+              <IconButton
+                color="error"
+                onClick={() => {
+                  setIsDeleteDialogOpen(() => true);
+                  setRowSelection(() => {
+                    const newObject: { [key: string]: boolean } = {};
+                    // Setting the selected row to false so that
+                    // the row appears unchecked.
+                    newObject[row.original.permitId] = false;
+                    return newObject;
+                  });
+                }}
+                disabled={false}
+              >
+                <Delete />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        ) : (
+          <></>
+        ),
       [userAuthGroup],
     ),
     renderToolbarInternalActions: useCallback(

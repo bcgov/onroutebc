@@ -80,15 +80,19 @@ export const PermitForm = (props: PermitFormProps) => {
           disableStartDate={props.isAmendAction}
           permitType={props.permitType}
         />
-        
+
         <VehicleDetails
           feature={props.feature}
           vehicleData={props.vehicleDetails}
           vehicleOptions={props.vehicleOptions}
           powerUnitSubTypes={props.powerUnitSubTypes}
           trailerSubTypes={props.trailerSubTypes}
-          ineligiblePowerUnitSubtypes={getIneligiblePowerUnitSubtypes(props.permitType)}
-          ineligibleTrailerSubtypes={getIneligibleTrailerSubtypes(props.permitType)}
+          ineligiblePowerUnitSubtypes={getIneligiblePowerUnitSubtypes(
+            props.permitType,
+          )}
+          ineligibleTrailerSubtypes={getIneligibleTrailerSubtypes(
+            props.permitType,
+          )}
         />
         {props.children}
       </Box>

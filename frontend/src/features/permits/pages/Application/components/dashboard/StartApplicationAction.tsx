@@ -6,7 +6,11 @@ import "./StartApplicationAction.scss";
 import { PERMIT_TYPE_CHOOSE_FROM_OPTIONS } from "../../../../constants/constants";
 import { SelectPermitType } from "./SelectPermitType";
 import { APPLICATIONS_ROUTES } from "../../../../../../routes/constants";
-import { DEFAULT_PERMIT_TYPE, EMPTY_PERMIT_TYPE_SELECT, PermitType } from "../../../../types/PermitType";
+import {
+  DEFAULT_PERMIT_TYPE,
+  EMPTY_PERMIT_TYPE_SELECT,
+  PermitType,
+} from "../../../../types/PermitType";
 
 /**
  *
@@ -17,12 +21,14 @@ import { DEFAULT_PERMIT_TYPE, EMPTY_PERMIT_TYPE_SELECT, PermitType } from "../..
  */
 export const StartApplicationAction = () => {
   const navigate = useNavigate();
-  const [chooseFrom, setChooseFrom] = useState<PermitType | typeof EMPTY_PERMIT_TYPE_SELECT>(
-    DEFAULT_PERMIT_TYPE
-  );
+  const [chooseFrom, setChooseFrom] = useState<
+    PermitType | typeof EMPTY_PERMIT_TYPE_SELECT
+  >(DEFAULT_PERMIT_TYPE);
 
   const handleChooseFrom = (event: SelectChangeEvent) => {
-    setChooseFrom(event.target.value as PermitType | typeof EMPTY_PERMIT_TYPE_SELECT);
+    setChooseFrom(
+      event.target.value as PermitType | typeof EMPTY_PERMIT_TYPE_SELECT,
+    );
   };
 
   const handleStartButtonClicked = () => {

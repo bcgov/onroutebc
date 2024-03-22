@@ -268,9 +268,7 @@ export const ComponentWithWrapper = (userDetails: OnRouteBCContextType) => {
   );
 };
 
-export const renderTestComponent = (
-  userDetails: OnRouteBCContextType,
-) => {
+export const renderTestComponent = (userDetails: OnRouteBCContextType) => {
   const user = userEvent.setup();
   const component = renderForTests(ComponentWithWrapper(userDetails));
 

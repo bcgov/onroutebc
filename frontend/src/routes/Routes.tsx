@@ -285,29 +285,25 @@ export const AppRoutes = () => {
         />
       </Route>
 
-      <Route
-        element={
-          <BCeIDAuthWall
-            requiredRole={ROLES.WRITE_PERMIT}
-          />
-        }
-      >
+      <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
         <Route
           path={routes.PAYMENT_ROUTES.PAYMENT_REDIRECT}
           element={<PaymentRedirect />}
         />
       </Route>
 
-      <Route element={
-        <IDIRAuthWall 
-          allowedAuthGroups={[
-            IDIR_USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
-            IDIR_USER_AUTH_GROUP.FINANCE,
-            IDIR_USER_AUTH_GROUP.PPC_CLERK,
-            IDIR_USER_AUTH_GROUP.CTPO,
-          ]}
-        />
-      }>
+      <Route
+        element={
+          <IDIRAuthWall
+            allowedAuthGroups={[
+              IDIR_USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
+              IDIR_USER_AUTH_GROUP.FINANCE,
+              IDIR_USER_AUTH_GROUP.PPC_CLERK,
+              IDIR_USER_AUTH_GROUP.CTPO,
+            ]}
+          />
+        }
+      >
         <Route
           path={routes.SETTINGS_ROUTES.MANAGE}
           element={<ManageSettings />}

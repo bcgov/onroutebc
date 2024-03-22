@@ -9,77 +9,74 @@ import { Nullable } from "../../../../common/types/common";
 
 export const ApplicationInProgressColumnDefinition = (
   userAuthGroup?: Nullable<UserAuthGroupType>,
-): MRT_ColumnDef<ApplicationListItem>[] =>
-  [
-    {
-      accessorKey: "applicationNumber",
-      id: "applicationNumber",
-      enableSorting: false,
-      header: "Application #",
-      accessorFn: (row) => row.applicationNumber,
-      Cell: (props: { cell: any; row: any }) => {
-        const permitIdStr = `${props.row.original.permitId}`;
-        
-        return canUserAccessApplication(
-          props.row.original.permitApplicationOrigin,
-          userAuthGroup,
-        ) ? (
-          <CustomNavLink
-            to={`${APPLICATIONS_ROUTES.DETAILS(permitIdStr)}`}
-            className="column-link column-link--application-details"
-          >
-            {props.cell.getValue()}
-          </CustomNavLink>
-        ) : (
-          <>
-            {props.cell.getValue()}
-          </>
-        );
-      },
+): MRT_ColumnDef<ApplicationListItem>[] => [
+  {
+    accessorKey: "applicationNumber",
+    id: "applicationNumber",
+    enableSorting: false,
+    header: "Application #",
+    accessorFn: (row) => row.applicationNumber,
+    Cell: (props: { cell: any; row: any }) => {
+      const permitIdStr = `${props.row.original.permitId}`;
+
+      return canUserAccessApplication(
+        props.row.original.permitApplicationOrigin,
+        userAuthGroup,
+      ) ? (
+        <CustomNavLink
+          to={`${APPLICATIONS_ROUTES.DETAILS(permitIdStr)}`}
+          className="column-link column-link--application-details"
+        >
+          {props.cell.getValue()}
+        </CustomNavLink>
+      ) : (
+        <>{props.cell.getValue()}</>
+      );
     },
-    {
-      accessorKey: "permitType",
-      id: "permitType",
-      enableSorting: false,
-      header: "Permit Type",
-    },
-    {
-      accessorKey: "unitNumber",
-      id: "unitNumber",
-      enableSorting: false,
-      header: "Unit #",
-    },
-    {
-      accessorKey: "vin",
-      id: "vin",
-      enableSorting: false,
-      header: "VIN",
-    },
-    {
-      accessorKey: "plate",
-      id: "plate",
-      enableSorting: false,
-      header: "Plate",
-    },
-    {
-      accessorKey: "startDate",
-      id: "startDate",
-      enableSorting: false,
-      header: "Permit Start Date",
-    },
-    {
-      accessorKey: "updatedDateTime",
-      enableSorting: false,
-      id: "updatedDateTime",
-      header: "Last Updated",
-    },
-    {
-      accessorKey: "applicant",
-      id: "applicant",
-      header: "Applicant",
-      enableSorting: false,
-    },
-  ];
+  },
+  {
+    accessorKey: "permitType",
+    id: "permitType",
+    enableSorting: false,
+    header: "Permit Type",
+  },
+  {
+    accessorKey: "unitNumber",
+    id: "unitNumber",
+    enableSorting: false,
+    header: "Unit #",
+  },
+  {
+    accessorKey: "vin",
+    id: "vin",
+    enableSorting: false,
+    header: "VIN",
+  },
+  {
+    accessorKey: "plate",
+    id: "plate",
+    enableSorting: false,
+    header: "Plate",
+  },
+  {
+    accessorKey: "startDate",
+    id: "startDate",
+    enableSorting: false,
+    header: "Permit Start Date",
+  },
+  {
+    accessorKey: "updatedDateTime",
+    enableSorting: false,
+    id: "updatedDateTime",
+    header: "Last Updated",
+  },
+  {
+    accessorKey: "applicant",
+    id: "applicant",
+    header: "Applicant",
+    enableSorting: false,
+  },
+];
 
 export const ApplicationNotFoundColumnDefinition: MRT_ColumnDef<ApplicationListItem>[] =
   [];

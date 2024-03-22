@@ -19,9 +19,7 @@ export const useAmendPermitForm = (
   // Default form data values to populate the amend form with
   const permitFormDefaultValues = () => {
     if (amendmentApplication) {
-      return getDefaultFormDataFromApplication(
-        amendmentApplication,
-      );
+      return getDefaultFormDataFromApplication(amendmentApplication);
     }
 
     // Permit doesn't have existing amendment application

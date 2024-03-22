@@ -10,12 +10,7 @@ import { Nullable } from "../../../common/types/common";
 export const canViewSuspend = (
   userRoles?: Nullable<UserRolesType[]>,
 ): boolean => {
-  return Boolean(
-    DoesUserHaveRole(
-      userRoles,
-      ROLES.READ_SUSPEND,
-    ),
-  );
+  return Boolean(DoesUserHaveRole(userRoles, ROLES.READ_SUSPEND));
 };
 
 /**
@@ -26,12 +21,7 @@ export const canViewSuspend = (
 export const canUpdateSuspend = (
   userRoles?: Nullable<UserRolesType[]>,
 ): boolean => {
-  return Boolean(
-    DoesUserHaveRole(
-      userRoles,
-      ROLES.WRITE_SUSPEND,
-    ),
-  );
+  return Boolean(DoesUserHaveRole(userRoles, ROLES.WRITE_SUSPEND));
 };
 
 /**
@@ -43,6 +33,5 @@ export const canViewSettingsTab = (
   userRoles?: Nullable<UserRolesType[]>,
 ): boolean => {
   // Need to update this check once Special Authorization and Credit Accounts tabs/features are added
-  return canViewSuspend(userRoles)
-    || canUpdateSuspend(userRoles);
+  return canViewSuspend(userRoles) || canUpdateSuspend(userRoles);
 };

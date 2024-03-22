@@ -30,16 +30,15 @@ export const ManageSettingsDashboard = React.memo(() => {
 
   // Add more tabs here later when needed (eg. "Special Authorization", "Credit Account")
   const tabs = [
-    showSuspendTab ? {
-      label: "Suspend",
-      component: (
-        <Suspend
-          companyId={companyId}
-          hideTab={handleHideSuspendTab}
-        />
-      ),
-    } : null,
-  ].filter(tab => Boolean(tab)) as {
+    showSuspendTab
+      ? {
+          label: "Suspend",
+          component: (
+            <Suspend companyId={companyId} hideTab={handleHideSuspendTab} />
+          ),
+        }
+      : null,
+  ].filter((tab) => Boolean(tab)) as {
     label: string;
     component: JSX.Element;
   }[];

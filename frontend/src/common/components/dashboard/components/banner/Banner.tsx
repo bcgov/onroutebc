@@ -20,15 +20,13 @@ export const Banner = ({
     <div className="layout-banner">
       <div className="layout-banner__left">
         <div className="layout-banner__text-section">
-          <h2 className="layout-banner__text">
-            {bannerText}
-          </h2>
+          <h2 className="layout-banner__text">{bannerText}</h2>
 
           {bannerSubtext ? (
             <div className="layout-banner__subtext">
               <div>{bannerSubtext}</div>
             </div>
-          ): null}
+          ) : null}
         </div>
       </div>
     </div>

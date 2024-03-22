@@ -18,10 +18,7 @@ export const CompanyInformation = ({
   return (
     <Box className="company-info">
       <Box className="company-info__header">
-        <Typography
-          variant={"h3"}
-          data-testid="company-info-header-title"
-        >
+        <Typography variant={"h3"} data-testid="company-info-header-title">
           Company Information
         </Typography>
         <Typography

@@ -115,7 +115,9 @@ export const ReportDateTimePickers = () => {
              *
              * Hence the decision to add 1 minute to 30 days, to make life easier for user.
              */
-            maxDateTime={fromDateTime.add(THIRTY_ONE_DAYS, "days").add(1, "minute")}
+            maxDateTime={fromDateTime
+              .add(THIRTY_ONE_DAYS, "days")
+              .add(1, "minute")}
             views={["year", "month", "day", "hours", "minutes"]}
             slotProps={{
               textField: {

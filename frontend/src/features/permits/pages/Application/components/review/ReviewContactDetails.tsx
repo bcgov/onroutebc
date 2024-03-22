@@ -9,7 +9,10 @@ import {
   getDefaultRequiredVal,
 } from "../../../../../../common/helpers/util";
 
-const nameDisplay = (firstName?: Nullable<string>, lastName?: Nullable<string>) => {
+const nameDisplay = (
+  firstName?: Nullable<string>,
+  lastName?: Nullable<string>,
+) => {
   if (!firstName) return getDefaultRequiredVal("", lastName);
   if (!lastName) return getDefaultRequiredVal("", firstName);
   return `${firstName} ${lastName}`;

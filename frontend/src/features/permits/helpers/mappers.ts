@@ -1,8 +1,14 @@
 import { Permit, PermitsActionResponse } from "../types/permit";
 import { Nullable, Optional } from "../../../common/types/common";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
-import { PERMIT_APPLICATION_ORIGINS, PermitApplicationOrigin } from "../types/PermitApplicationOrigin";
-import { IDIR_USER_AUTH_GROUP, UserAuthGroupType } from "../../../common/authentication/types";
+import {
+  PERMIT_APPLICATION_ORIGINS,
+  PermitApplicationOrigin,
+} from "../types/PermitApplicationOrigin";
+import {
+  IDIR_USER_AUTH_GROUP,
+  UserAuthGroupType,
+} from "../../../common/authentication/types";
 import {
   VehicleSubType,
   Vehicle,
@@ -89,7 +95,7 @@ export const clonePermit = (permit: Permit): Permit => {
       contactDetails: {
         ...permit.permitData.contactDetails,
       },
-      vehicleDetails:{
+      vehicleDetails: {
         ...permit.permitData.vehicleDetails,
       },
       commodities: [...permit.permitData.commodities],
@@ -134,6 +140,10 @@ export const canUserAccessApplication = (
 
   // CV/PA can only access/delete applications whose origins are not "PPC"
   // Staff can access/delete any application they have access to (including each others')
-  return permitApplicationOrigin !== PERMIT_APPLICATION_ORIGINS.PPC
-    || (Object.values(IDIR_USER_AUTH_GROUP) as UserAuthGroupType[]).includes(authGroup);
+  return (
+    permitApplicationOrigin !== PERMIT_APPLICATION_ORIGINS.PPC ||
+    (Object.values(IDIR_USER_AUTH_GROUP) as UserAuthGroupType[]).includes(
+      authGroup,
+    )
+  );
 };

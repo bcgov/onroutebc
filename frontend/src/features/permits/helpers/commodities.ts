@@ -1,5 +1,11 @@
-import { MANDATORY_TROS_COMMODITIES, TROS_COMMODITIES } from "../constants/tros";
-import { MANDATORY_TROW_COMMODITIES, TROW_COMMODITIES } from "../constants/trow";
+import {
+  MANDATORY_TROS_COMMODITIES,
+  TROS_COMMODITIES,
+} from "../constants/tros";
+import {
+  MANDATORY_TROW_COMMODITIES,
+  TROW_COMMODITIES,
+} from "../constants/trow";
 import { PermitCommodity } from "../types/PermitCommodity";
 import { PERMIT_TYPES, PermitType } from "../types/PermitType";
 
@@ -35,7 +41,7 @@ const isCommodityMandatory = (
   mandatoryCommodities: PermitCommodity[],
 ) => {
   return mandatoryCommodities
-    .map(mandatoryCommodity => mandatoryCommodity.condition)
+    .map((mandatoryCommodity) => mandatoryCommodity.condition)
     .includes(commodity.condition);
 };
 

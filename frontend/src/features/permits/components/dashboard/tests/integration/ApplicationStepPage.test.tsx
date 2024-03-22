@@ -100,7 +100,9 @@ beforeEach(async () => {
     const rrd = await vi.importActual("react-router-dom");
     return {
       ...rrd,
-      useParams: (): Readonly<Params<string>> => ({ permitType: DEFAULT_PERMIT_TYPE }),
+      useParams: (): Readonly<Params<string>> => ({
+        permitType: DEFAULT_PERMIT_TYPE,
+      }),
     };
   });
 });

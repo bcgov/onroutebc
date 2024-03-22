@@ -196,10 +196,7 @@ export const getDefaultValues = (
     ),
     permitId: getDefaultRequiredVal("", applicationData?.permitId),
     permitNumber: getDefaultRequiredVal("", applicationData?.permitNumber),
-    permitType: getDefaultRequiredVal(
-      permitType,
-      applicationData?.permitType,
-    ),
+    permitType: getDefaultRequiredVal(permitType, applicationData?.permitType),
     permitStatus: getDefaultRequiredVal(
       PERMIT_STATUSES.IN_PROGRESS,
       applicationData?.permitStatus,

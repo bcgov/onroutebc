@@ -21,7 +21,9 @@ import {
 } from "../../../common/apiManager/httpRequestHandler";
 
 const emptyUnitNumberToNull = (unitNumber?: Nullable<string>) => {
-  return !unitNumber || unitNumber === EMPTY_VEHICLE_UNIT_NUMBER ? null : unitNumber;
+  return !unitNumber || unitNumber === EMPTY_VEHICLE_UNIT_NUMBER
+    ? null
+    : unitNumber;
 };
 
 /**
@@ -99,14 +101,11 @@ export const addPowerUnit = async ({
   const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/powerUnits`;
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   const { powerUnitId, unitNumber, ...powerUnitReqData } = powerUnit;
-  
-  return await httpPOSTRequest(
-    url,
-    {
-      ...replaceEmptyValuesWithNull(powerUnitReqData),
-      unitNumber: emptyUnitNumberToNull(unitNumber),
-    },
-  );
+
+  return await httpPOSTRequest(url, {
+    ...replaceEmptyValuesWithNull(powerUnitReqData),
+    unitNumber: emptyUnitNumberToNull(unitNumber),
+  });
 };
 
 /**
@@ -126,13 +125,10 @@ export const updatePowerUnit = async ({
   const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/powerUnits/${powerUnitId}`;
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   const { powerUnitId: id, unitNumber, ...powerUnitReqData } = powerUnit;
-  return await httpPUTRequest(
-    url,
-    {
-      ...replaceEmptyValuesWithNull(powerUnitReqData),
-      unitNumber: emptyUnitNumberToNull(unitNumber),
-    },
-  );
+  return await httpPUTRequest(url, {
+    ...replaceEmptyValuesWithNull(powerUnitReqData),
+    unitNumber: emptyUnitNumberToNull(unitNumber),
+  });
 };
 
 /**
@@ -209,13 +205,10 @@ export const addTrailer = async ({
   const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/trailers`;
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   const { trailerId, unitNumber, ...trailerReqData } = trailer;
-  return await httpPOSTRequest(
-    url,
-    {
-      ...replaceEmptyValuesWithNull(trailerReqData),
-      unitNumber: emptyUnitNumberToNull(unitNumber),
-    },
-  );
+  return await httpPOSTRequest(url, {
+    ...replaceEmptyValuesWithNull(trailerReqData),
+    unitNumber: emptyUnitNumberToNull(unitNumber),
+  });
 };
 
 /**
@@ -236,13 +229,10 @@ export const updateTrailer = async ({
   const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/trailers/${trailerId}`;
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   const { trailerId: id, unitNumber, ...trailerReqData } = trailer;
-  return await httpPUTRequest(
-    url,
-    {
-      ...replaceEmptyValuesWithNull(trailerReqData),
-      unitNumber: emptyUnitNumberToNull(unitNumber),
-    },
-  );
+  return await httpPUTRequest(url, {
+    ...replaceEmptyValuesWithNull(trailerReqData),
+    unitNumber: emptyUnitNumberToNull(unitNumber),
+  });
 };
 
 /**

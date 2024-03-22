@@ -12,11 +12,20 @@ import { PermitPayFeeSummary } from "./components/pay/PermitPayFeeSummary";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { useIssuePermits, useStartTransaction } from "../../hooks/hooks";
 import { TRANSACTION_TYPES } from "../../types/payment";
-import { PAYMENT_METHOD_TYPE_CODE, PaymentCardTypeCode } from "../../../../common/types/paymentMethods";
+import {
+  PAYMENT_METHOD_TYPE_CODE,
+  PaymentCardTypeCode,
+} from "../../../../common/types/paymentMethods";
 import { PaymentFailedBanner } from "./components/pay/PaymentFailedBanner";
-import { PPC_EMAIL, TOLL_FREE_NUMBER } from "../../../../common/constants/constants";
+import {
+  PPC_EMAIL,
+  TOLL_FREE_NUMBER,
+} from "../../../../common/constants/constants";
 import { ChoosePaymentMethod } from "./components/pay/ChoosePaymentMethod";
-import { DEFAULT_EMPTY_CARD_TYPE, PaymentMethodData } from "./components/pay/types/PaymentMethodData";
+import {
+  DEFAULT_EMPTY_CARD_TYPE,
+  PaymentMethodData,
+} from "./components/pay/types/PaymentMethodData";
 import { hasPermitsActionFailed } from "../../helpers/permitState";
 import {
   applyWhenNotNullable,
@@ -30,13 +39,9 @@ import {
   PERMITS_ROUTES,
 } from "../../../../routes/constants";
 
-const AVAILABLE_STAFF_PAYMENT_METHODS = [
-  PAYMENT_METHOD_TYPE_CODE.ICEPAY,
-];
+const AVAILABLE_STAFF_PAYMENT_METHODS = [PAYMENT_METHOD_TYPE_CODE.ICEPAY];
 
-const AVAILABLE_CV_PAYMENT_METHODS = [
-  PAYMENT_METHOD_TYPE_CODE.WEB,
-];
+const AVAILABLE_CV_PAYMENT_METHODS = [PAYMENT_METHOD_TYPE_CODE.WEB];
 
 export const ApplicationPay = () => {
   const { applicationData } = useContext(ApplicationContext);
@@ -63,8 +68,9 @@ export const ApplicationPay = () => {
 
   const { mutation: issuePermitMutation, issueResults } = useIssuePermits();
 
-  const availablePaymentMethods = 
-    isStaffActingAsCompany ? AVAILABLE_STAFF_PAYMENT_METHODS : AVAILABLE_CV_PAYMENT_METHODS;
+  const availablePaymentMethods = isStaffActingAsCompany
+    ? AVAILABLE_STAFF_PAYMENT_METHODS
+    : AVAILABLE_CV_PAYMENT_METHODS;
 
   const formMethods = useForm<PaymentMethodData>({
     defaultValues: {
@@ -155,9 +161,9 @@ export const ApplicationPay = () => {
     const { paymentMethod } = paymentMethodData;
     if (paymentMethod === PAYMENT_METHOD_TYPE_CODE.ICEPAY) {
       if (
-        paymentMethodData.cardType
-        && paymentMethodData.cardType !== DEFAULT_EMPTY_CARD_TYPE
-        && paymentMethodData.transactionId
+        paymentMethodData.cardType &&
+        paymentMethodData.cardType !== DEFAULT_EMPTY_CARD_TYPE &&
+        paymentMethodData.transactionId
       ) {
         handlePayWithIcepay(
           paymentMethodData.cardType,
@@ -184,7 +190,8 @@ export const ApplicationPay = () => {
 
         {!isStaffActingAsCompany ? (
           <Typography className="pay-now-page__contact" variant="h6">
-            Have questions? Please contact the Provincial Permit Centre. Toll-free:
+            Have questions? Please contact the Provincial Permit Centre.
+            Toll-free:
             {""}
             <span className="pay-contact pay-contact--phone">
               {" "}
@@ -198,7 +205,9 @@ export const ApplicationPay = () => {
 
       <Box className="pay-now-page__right-container">
         <FormProvider {...formMethods}>
-          <ChoosePaymentMethod availablePaymentMethods={availablePaymentMethods} />
+          <ChoosePaymentMethod
+            availablePaymentMethods={availablePaymentMethods}
+          />
 
           {paymentFailed ? <PaymentFailedBanner /> : null}
 

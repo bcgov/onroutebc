@@ -1,5 +1,9 @@
 import { VEHICLE_TYPES } from "../../manageVehicles/types/Vehicle";
-import { EMPTY_PERMIT_TYPE_SELECT, PERMIT_TYPES, getPermitTypeName } from "../types/PermitType";
+import {
+  EMPTY_PERMIT_TYPE_SELECT,
+  PERMIT_TYPES,
+  getPermitTypeName,
+} from "../types/PermitType";
 
 export const VEHICLE_CHOOSE_FROM = {
   UNIT_NUMBER: "unitNumber",

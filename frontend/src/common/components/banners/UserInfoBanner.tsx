@@ -2,11 +2,8 @@ import { Box, Typography } from "@mui/material";
 import { memo } from "react";
 
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
-import {
-  BCeIDUserAuthGroupType,
-} from "../../authentication/types";
+import { BCeIDUserAuthGroupType } from "../../authentication/types";
 import { getLabelForBCeIDUserAuthGroup } from "../../helpers/util";
-
 
 export const UserInfoBanner = memo(
   ({ userAuthGroup }: { userAuthGroup?: BCeIDUserAuthGroupType }) => {

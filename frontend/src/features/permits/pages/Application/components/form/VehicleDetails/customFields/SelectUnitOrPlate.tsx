@@ -24,10 +24,7 @@ export const SelectUnitOrPlate = ({
   onChange: (event: SelectChangeEvent) => void;
   menuItems: Optional<JSX.Element[]>;
 }) => (
-  <FormControl
-    margin="normal"
-    className="select-unit-or-plate"
-  >
+  <FormControl margin="normal" className="select-unit-or-plate">
     <FormLabel className="select-unit-or-plate__label">{label}</FormLabel>
     <Select
       className="select-unit-or-plate__select"

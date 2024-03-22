@@ -99,10 +99,7 @@ export const SelectVehicleDropdown = ({
   }, [selectedOption]);
 
   return (
-    <FormControl
-      margin="normal"
-      className="select-vehicle-dropdown"
-    >
+    <FormControl margin="normal" className="select-vehicle-dropdown">
       <FormLabel className="select-vehicle-dropdown__label">{label}</FormLabel>
       <Autocomplete
         id="application-select-vehicle"

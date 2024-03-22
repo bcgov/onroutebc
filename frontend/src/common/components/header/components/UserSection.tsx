@@ -10,7 +10,9 @@ export const UserSection = ({ username }: { username: string }) => {
   return (
     <div className="user-section">
       <UserSectionInfo username={username} />
-      {featureFlags?.["SHOPPING_CART"] === "ENABLED" && <ShoppingCartButton cartItemCount={4} />}
+      {featureFlags?.["SHOPPING_CART"] === "ENABLED" && (
+        <ShoppingCartButton cartItemCount={4} />
+      )}
       <LogoutButton />
     </div>
   );

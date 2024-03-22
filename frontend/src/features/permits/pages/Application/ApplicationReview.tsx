@@ -36,14 +36,11 @@ export const ApplicationReview = () => {
   const trailerSubTypesQuery = useTrailerSubTypesQuery();
   const methods = useForm<Application>();
 
-  const {
-    companyLegalName,
-    idirUserDetails,
-  } = useContext(OnRouteBCContext);
+  const { companyLegalName, idirUserDetails } = useContext(OnRouteBCContext);
 
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
-  const doingBusinessAs = isStaffActingAsCompany && companyLegalName ?
-    companyLegalName : "";
+  const doingBusinessAs =
+    isStaffActingAsCompany && companyLegalName ? companyLegalName : "";
 
   // For the confirmation checkboxes
   const [isChecked, setIsChecked] = useState(false);

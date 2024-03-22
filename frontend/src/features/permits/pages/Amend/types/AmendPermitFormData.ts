@@ -14,7 +14,7 @@ import {
   toLocalDayjs,
 } from "../../../../../common/helpers/formatDate";
 
-export interface AmendPermitFormData extends ApplicationFormData {};
+export interface AmendPermitFormData extends ApplicationFormData {}
 
 /**
  * Get default values for form data from received Application object.
@@ -24,7 +24,10 @@ export interface AmendPermitFormData extends ApplicationFormData {};
 export const getDefaultFormDataFromApplication = (
   application?: Nullable<Application>,
 ): AmendPermitFormData => {
-  const defaultPermitType = getDefaultRequiredVal(DEFAULT_PERMIT_TYPE, application?.permitType);
+  const defaultPermitType = getDefaultRequiredVal(
+    DEFAULT_PERMIT_TYPE,
+    application?.permitType,
+  );
 
   // Default form values when application is not available (or period of time when loading)
   if (!application) {
@@ -34,11 +37,7 @@ export const getDefaultFormDataFromApplication = (
   }
 
   return {
-    ...getDefaultValues(
-      defaultPermitType,
-      application,
-      application.companyId,
-    ),
+    ...getDefaultValues(defaultPermitType, application, application.companyId),
   };
 };
 
@@ -98,7 +97,10 @@ export const getDefaultFormDataFromPermit = (
 export const getDefaultFromNullableFormData = (
   permitFormData?: Nullable<AmendPermitFormData>,
 ): AmendPermitFormData => {
-  const defaultPermitType = getDefaultRequiredVal(DEFAULT_PERMIT_TYPE, permitFormData?.permitType);
+  const defaultPermitType = getDefaultRequiredVal(
+    DEFAULT_PERMIT_TYPE,
+    permitFormData?.permitType,
+  );
 
   // Default form values when form data is not available (or period of time when loading)
   if (!permitFormData) {

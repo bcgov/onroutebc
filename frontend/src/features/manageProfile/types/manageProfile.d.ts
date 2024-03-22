@@ -81,8 +81,7 @@ export type CompanyProfile = {
  */
 export type UpdateCompanyProfileRequest = Omit<
   CompanyProfile,
-  "clientNumber"
-  | "isSuspended"
+  "clientNumber" | "isSuspended"
 >;
 
 /**

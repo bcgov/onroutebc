@@ -120,13 +120,13 @@ export const useUserContext = (
           email: user.email,
           userAuthGroup: user.userAuthGroup,
         } as IDIRUserDetailContext;
-        
+
         setIDIRUserDetails?.(() => userDetails);
       }
     } else {
       const { user, associatedCompanies, pendingCompanies, migratedClient } =
         userContextResponseBody as BCeIDUserContextType;
-      
+
       /**
        * User exists => the user is already in the system.
        */

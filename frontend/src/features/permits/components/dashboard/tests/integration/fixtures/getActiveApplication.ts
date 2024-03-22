@@ -142,7 +142,7 @@ export const getDefaultApplication = () => {
   const expiryDt = getExpiryDate(currentDt, 30);
   const expiryDate = dayjsToLocalStr(expiryDt, DATE_FORMATS.DATEONLY);
   const { companyId, userDetails } = getDefaultUserDetails();
-  
+
   const contactDetails = {
     firstName: userDetails.firstName,
     lastName: userDetails.lastName,

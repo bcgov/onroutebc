@@ -1,6 +1,12 @@
 import { PERMIT_TYPES, PermitType } from "../types/PermitType";
-import { TROW_INELIGIBLE_POWERUNITS, TROW_INELIGIBLE_TRAILERS } from "../constants/trow";
-import { TROS_INELIGIBLE_POWERUNITS, TROS_INELIGIBLE_TRAILERS } from "../constants/tros";
+import {
+  TROW_INELIGIBLE_POWERUNITS,
+  TROW_INELIGIBLE_TRAILERS,
+} from "../constants/trow";
+import {
+  TROS_INELIGIBLE_POWERUNITS,
+  TROS_INELIGIBLE_TRAILERS,
+} from "../constants/tros";
 import {
   PowerUnit,
   Trailer,

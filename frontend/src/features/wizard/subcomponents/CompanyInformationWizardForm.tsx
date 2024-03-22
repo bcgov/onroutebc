@@ -80,7 +80,7 @@ export const CompanyInformationWizardForm = memo(
           // Currently, companyName is displayed only for idir users
           // So, If idir user is creating a company, enable the email field.
           // i.e., showCompanyName and disableEmail have opposite values.
-          disableEmail={showCompanyName ? false : true }
+          disableEmail={showCompanyName ? false : true}
         />
 
         <Typography variant="h2" gutterBottom>

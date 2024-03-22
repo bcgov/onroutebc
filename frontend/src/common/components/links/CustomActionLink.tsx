@@ -4,9 +4,7 @@ import "./CustomActionLink.scss";
 import { CustomActionLinkProps } from "./types/LinkProps";
 import { getDefaultRequiredVal } from "../../helpers/util";
 
-export const CustomActionLink = (
-  props: CustomActionLinkProps
-) => {
+export const CustomActionLink = (props: CustomActionLinkProps) => {
   const component = getDefaultRequiredVal("button", props.component);
   const variant = getDefaultRequiredVal("body2", props.variant);
   const className = () => {
@@ -15,7 +13,7 @@ export const CustomActionLink = (
       ? `${baseClassName} ${props.className}`
       : baseClassName;
   };
-    
+
   return (
     <Link
       {...props}

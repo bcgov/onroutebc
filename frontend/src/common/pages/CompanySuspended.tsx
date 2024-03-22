@@ -9,15 +9,15 @@ export const CompanySuspended = () => {
         errorTitle="Company suspended"
         msgNode={
           <>
-            For further assistance please contact the Provincial Permit
-              Centre at{" "}
-              <span>
+            For further assistance please contact the Provincial Permit Centre
+            at{" "}
+            <span>
               <strong>Toll-free: {TOLL_FREE_NUMBER}</strong>
-              </span>{" "}
-              or{" "}
-              <span>
-                <strong>Email: {PPC_EMAIL}</strong>
-              </span>
+            </span>{" "}
+            or{" "}
+            <span>
+              <strong>Email: {PPC_EMAIL}</strong>
+            </span>
           </>
         }
       />

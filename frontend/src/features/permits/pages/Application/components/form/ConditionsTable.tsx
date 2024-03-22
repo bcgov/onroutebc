@@ -32,18 +32,18 @@ export const ConditionsTable = ({
   const initialCommodities = !applicationWasCreated
     ? defaultCommodities // return default options for new application (not created one)
     : defaultCommodities.map((defaultCommodity) => {
-      // Application exists at this point, thus select all commodities that were selected in the application
-      const existingCommodity = commoditiesInPermit.find(
-        (c) => c.condition === defaultCommodity.condition,
-      );
+        // Application exists at this point, thus select all commodities that were selected in the application
+        const existingCommodity = commoditiesInPermit.find(
+          (c) => c.condition === defaultCommodity.condition,
+        );
 
-      return {
-        ...defaultCommodity,
-        checked: existingCommodity
-          ? existingCommodity.checked
-          : defaultCommodity.checked,
-      };
-    });
+        return {
+          ...defaultCommodity,
+          checked: existingCommodity
+            ? existingCommodity.checked
+            : defaultCommodity.checked,
+        };
+      });
 
   const [allCommodities, setAllCommodities] =
     useState<PermitCommodity[]>(initialCommodities);
@@ -67,7 +67,7 @@ export const ConditionsTable = ({
     setAllCommodities(newCommodities);
 
     return newCommodities;
-  }
+  };
 
   return (
     <TableContainer className="conditions-table" component={Paper}>

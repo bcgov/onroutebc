@@ -8,9 +8,6 @@ export const SuspendSnackBar = () => {
   const { isCompanySuspended } = useContext(OnRouteBCContext);
 
   return isCompanySuspended ? (
-    <ErrorBcGovBanner
-      msg="Company suspended"
-      className="suspend-snackbar"
-    />
+    <ErrorBcGovBanner msg="Company suspended" className="suspend-snackbar" />
   ) : null;
 };

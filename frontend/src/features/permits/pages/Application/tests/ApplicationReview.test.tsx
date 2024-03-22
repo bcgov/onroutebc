@@ -342,7 +342,8 @@ describe("Review and Confirm Application Details", () => {
         provinceCode,
         vehicleType,
         vehicleSubType,
-      } = defaultApplicationData.permitData.vehicleDetails as PermitVehicleDetails;
+      } = defaultApplicationData.permitData
+        .vehicleDetails as PermitVehicleDetails;
       const unit = getDefaultRequiredVal("", unitNumber);
       const country = formatCountry(countryCode);
       const province = formatProvince(countryCode, provinceCode);

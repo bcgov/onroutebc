@@ -5,7 +5,10 @@ import userEvent from "@testing-library/user-event";
 import { Options } from "@testing-library/user-event/dist/types/options";
 
 import { DEFAULT_PERMIT_TYPE } from "../../../../../../types/PermitType";
-import { getDefaultCommodities, getMandatoryCommodities } from "../../../../../../helpers/commodities";
+import {
+  getDefaultCommodities,
+  getMandatoryCommodities,
+} from "../../../../../../helpers/commodities";
 import { PermitDetails } from "../../PermitDetails";
 import { getExpiryDate } from "../../../../../../helpers/permitState";
 import { PermitCommodity } from "../../../../../../types/PermitCommodity";
@@ -46,12 +49,12 @@ export const allDurations = [
   { text: "1 Year", days: 365 },
 ];
 
-const mandatoryConditions = getMandatoryCommodities(DEFAULT_PERMIT_TYPE).map(commodity => commodity.condition);
+const mandatoryConditions = getMandatoryCommodities(DEFAULT_PERMIT_TYPE).map(
+  (commodity) => commodity.condition,
+);
 export const requiredCommodityIndices = commodities
   .map((commodity, i) =>
-    mandatoryConditions.includes(commodity.condition)
-      ? i
-      : -1,
+    mandatoryConditions.includes(commodity.condition) ? i : -1,
   )
   .filter((i) => i >= 0);
 

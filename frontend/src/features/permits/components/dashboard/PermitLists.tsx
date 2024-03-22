@@ -8,17 +8,21 @@ import { ApplicationsInProgressList } from "../permit-list/ApplicationsInProgres
 import { Nullable } from "../../../../common/types/common";
 
 export const PermitLists = React.memo(() => {
-
-  const [applicationsInProgressCount, setApplicationsInProgressCount] = useState<Nullable<number>>();
+  const [applicationsInProgressCount, setApplicationsInProgressCount] =
+    useState<Nullable<number>>();
   const handleApplicationsCountChange = (count: number) => {
-      setApplicationsInProgressCount(count);
+    setApplicationsInProgressCount(count);
   };
-  
+
   const tabs = [
     {
       label: "Applications in Progress",
       count: applicationsInProgressCount,
-      component: <ApplicationsInProgressList onCountChange={handleApplicationsCountChange} />,
+      component: (
+        <ApplicationsInProgressList
+          onCountChange={handleApplicationsCountChange}
+        />
+      ),
     },
     {
       label: "Active Permits",

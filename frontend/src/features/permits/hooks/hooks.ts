@@ -1,12 +1,21 @@
 import { useState, useEffect } from "react";
 import { AxiosError } from "axios";
-import { useQueryClient, useMutation, useQuery, keepPreviousData } from "@tanstack/react-query";
+import {
+  useQueryClient,
+  useMutation,
+  useQuery,
+  keepPreviousData,
+} from "@tanstack/react-query";
 
 import { Application, ApplicationFormData } from "../types/application";
 import { IssuePermitsResponse } from "../types/permit";
 import { StartTransactionResponseData } from "../types/payment";
 import { APPLICATION_STEPS, ApplicationStep } from "../../../routes/constants";
-import { Nullable, Optional, SortingConfig } from "../../../common/types/common";
+import {
+  Nullable,
+  Optional,
+  SortingConfig,
+} from "../../../common/types/common";
 import { isPermitTypeValid } from "../types/PermitType";
 import { isPermitIdNumeric } from "../helpers/permitState";
 import { deserializeApplicationResponse } from "../helpers/deserializeApplication";
@@ -35,10 +44,10 @@ export const useSaveApplicationMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: ApplicationFormData) => {
-      const res = data.applicationNumber ?
-        await updateApplication(data, data.applicationNumber)
+      const res = data.applicationNumber
+        ? await updateApplication(data, data.applicationNumber)
         : await createApplication(data);
-      
+
       if (res.status === 200 || res.status === 201) {
         queryClient.invalidateQueries({
           queryKey: ["application"],
@@ -78,8 +87,7 @@ export const useApplicationDetailsQuery = (
   const permitTypeValid = isPermitTypeValid(permitType);
 
   const isCreateNewApplication =
-    permitTypeValid &&
-    applicationStep === APPLICATION_STEPS.DETAILS;
+    permitTypeValid && applicationStep === APPLICATION_STEPS.DETAILS;
 
   // Currently, creating new application route doesn't contain valid permitId
   // ie. route === "/applications/new/tros" instead of "/applications/:permitId"
@@ -90,7 +98,8 @@ export const useApplicationDetailsQuery = (
   // eg. "/applications/new/abcde" is NOT VALID - provided permitType is not valid
   // eg. "/applications/new/review" is NOT VALID - "new" is not a valid (numeric) permit id
   // We also need applicationStep to determine which page (route) we're on, and check the permit type route param
-  const isInvalidRoute = !isPermitIdNumeric(permitId) && !isCreateNewApplication;
+  const isInvalidRoute =
+    !isPermitIdNumeric(permitId) && !isCreateNewApplication;
   const shouldEnableQuery = isPermitIdNumeric(permitId);
 
   // This won't fetch anything (ie. query.data will be undefined) if shouldEnableQuery is false
@@ -398,4 +407,3 @@ export const useApplicationsInProgressQuery = ({
     placeholderData: keepPreviousData,
   });
 };
-

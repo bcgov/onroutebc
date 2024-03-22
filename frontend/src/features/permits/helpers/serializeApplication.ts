@@ -1,4 +1,7 @@
-import { DATE_FORMATS, dayjsToLocalStr } from "../../../common/helpers/formatDate";
+import {
+  DATE_FORMATS,
+  dayjsToLocalStr,
+} from "../../../common/helpers/formatDate";
 import {
   ApplicationFormData,
   CreateApplicationRequestData,
@@ -19,11 +22,7 @@ export const serializeForCreateApplication = (
     originalPermitId,
     applicationNumber,
     permitType,
-    permitData: {
-      startDate,
-      expiryDate,
-      ...restOfPermitData
-    },
+    permitData: { startDate, expiryDate, ...restOfPermitData },
     comment,
   } = application;
 
@@ -36,14 +35,8 @@ export const serializeForCreateApplication = (
     comment,
     permitData: {
       ...restOfPermitData,
-      startDate: dayjsToLocalStr(
-        startDate,
-        DATE_FORMATS.DATEONLY,
-      ),
-      expiryDate: dayjsToLocalStr(
-        expiryDate,
-        DATE_FORMATS.DATEONLY,
-      ),
+      startDate: dayjsToLocalStr(startDate, DATE_FORMATS.DATEONLY),
+      expiryDate: dayjsToLocalStr(expiryDate, DATE_FORMATS.DATEONLY),
     },
   };
 };
@@ -60,11 +53,7 @@ export const serializeForUpdateApplication = (
     companyId,
     permitType,
     comment,
-    permitData: {
-      startDate,
-      expiryDate,
-      ...restOfPermitData
-    },
+    permitData: { startDate, expiryDate, ...restOfPermitData },
   } = application;
 
   return {
@@ -73,14 +62,8 @@ export const serializeForUpdateApplication = (
     comment,
     permitData: {
       ...restOfPermitData,
-      startDate: dayjsToLocalStr(
-        startDate,
-        DATE_FORMATS.DATEONLY,
-      ),
-      expiryDate: dayjsToLocalStr(
-        expiryDate,
-        DATE_FORMATS.DATEONLY,
-      ),
+      startDate: dayjsToLocalStr(startDate, DATE_FORMATS.DATEONLY),
+      expiryDate: dayjsToLocalStr(expiryDate, DATE_FORMATS.DATEONLY),
     },
   };
 };

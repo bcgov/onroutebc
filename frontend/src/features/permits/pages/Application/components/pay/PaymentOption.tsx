@@ -14,13 +14,9 @@ export const PaymentOption = ({
 }) => {
   switch (paymentMethod) {
     case PAYMENT_METHOD_TYPE_CODE.ICEPAY:
-      return (
-        <IcepayPaymentOption isSelected={isSelected} />
-      );
+      return <IcepayPaymentOption isSelected={isSelected} />;
     case PAYMENT_METHOD_TYPE_CODE.WEB:
-      return (
-        <PayBCPaymentOption isSelected={isSelected} />
-      );
+      return <PayBCPaymentOption isSelected={isSelected} />;
     default:
       return null;
   }

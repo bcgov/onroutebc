@@ -16,7 +16,7 @@ export const SuspendModal = ({
   onCancel: () => void;
   onConfirm: (reason: string) => void;
 }) => {
-  const formMethods = useForm<{ comment: string; }>({
+  const formMethods = useForm<{ comment: string }>({
     defaultValues: {
       comment: "",
     },
@@ -45,7 +45,7 @@ export const SuspendModal = ({
       open={showModal}
       onClose={handleCancel}
       PaperProps={{
-        className: "suspend-modal__container"
+        className: "suspend-modal__container",
       }}
     >
       <div className="suspend-modal__header">
@@ -53,9 +53,7 @@ export const SuspendModal = ({
           <FontAwesomeIcon className="icon" icon={faExclamationCircle} />
         </div>
 
-        <span className="suspend-modal__title">
-          Suspend this company?
-        </span>
+        <span className="suspend-modal__title">Suspend this company?</span>
       </div>
 
       <FormProvider {...formMethods}>

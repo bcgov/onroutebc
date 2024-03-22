@@ -50,8 +50,7 @@ export const CustomOutlinedInput = <T extends ORBC_FormTypes>(
     updatedInputProps["pattern"] = "[0-9]*";
   }
 
-  const customInputClassName = 
-    `custom-input ${props.disabled ? "custom-input--disabled" : ""} ${props.invalid ? "custom-input--invalid" : ""}`;
+  const customInputClassName = `custom-input ${props.disabled ? "custom-input--disabled" : ""} ${props.invalid ? "custom-input--invalid" : ""}`;
 
   return (
     <OutlinedInput
