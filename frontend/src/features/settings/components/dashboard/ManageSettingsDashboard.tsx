@@ -35,7 +35,7 @@ export const ManageSettingsDashboard = React.memo(() => {
       component: (
         <Suspend
           companyId={companyId}
-          onHideTab={handleHideSuspendTab}
+          hideTab={handleHideSuspendTab}
         />
       ),
     } : null,

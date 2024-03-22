@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { Switch } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 import "./Suspend.scss";
 import { SuspendModal } from "../components/suspend/SuspendModal";
@@ -9,14 +10,17 @@ import { SuspensionHistory } from "../components/suspend/SuspensionHistory";
 import { SUSPEND_ACTIVITY_TYPES } from "../types/suspend";
 import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
 import { canUpdateSuspend } from "../helpers/permissions";
+import { ERROR_ROUTES } from "../../../routes/constants";
 
 export const Suspend = ({
   companyId,
-  onHideTab,
+  hideTab,
 }: {
   companyId: number;
-  onHideTab?: (hide: boolean) => void;
+  hideTab?: (hide: boolean) => void;
 }) => {
+  const navigate = useNavigate();
+
   const {
     data: suspensionHistory,
     isError: fetchHistoryError,
@@ -42,7 +46,7 @@ export const Suspend = ({
   // Let Settings dashboard hide "Suspend" tab if:
   // User isn't allowed to suspend company AND company has never been suspended before
   useEffect(() => {
-    onHideTab?.(
+    hideTab?.(
       !canSuspendCompany
       && (suspensionHistory != null)
       && (suspensionHistory.length === 0)
@@ -61,7 +65,7 @@ export const Suspend = ({
   }, [suspensionHistoryList]);
 
   const isActionSuccessful = (status: number) => {
-    return status === 200 || status === 201;
+    return status === 201;
   };
 
   const handleSuspendCompany = async (reason: string) => {
@@ -76,6 +80,8 @@ export const Suspend = ({
     if (isActionSuccessful(suspendResult.status)) {
       refetchSuspensionHistory();
       setShowSuspendModal(false);
+    } else {
+      navigate(ERROR_ROUTES.UNEXPECTED);
     }
   };
 
@@ -89,6 +95,8 @@ export const Suspend = ({
 
     if (isActionSuccessful(unsuspendResult.status)) {
       refetchSuspensionHistory();
+    } else {
+      navigate(ERROR_ROUTES.UNEXPECTED);
     }
   };
 

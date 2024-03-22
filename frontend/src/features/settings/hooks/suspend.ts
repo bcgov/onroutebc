@@ -1,7 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { getSuspensionHistory, suspendCompany } from "../apiManager/suspend";
-import { SuspendData } from "../types/suspend";
 
 /**
  * Hook to fetch the company suspension history list.
@@ -23,22 +22,7 @@ export const useSuspensionHistoryQuery = (companyId: number) => {
  * @returns Result of the suspension action
  */
 export const useSuspendCompanyMutation = () => {
-  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (suspendData: {
-      companyId: number;
-      data: SuspendData;
-    }) => {
-      const response = await suspendCompany(suspendData);
-      if (response.status === 200 || response.status === 201) {
-        queryClient.invalidateQueries({
-          queryKey: ["suspensionHistory"],
-        });
-      }
-
-      return {
-        status: response.status,
-      };
-    },
+    mutationFn: suspendCompany,
   });
 };
