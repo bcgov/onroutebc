@@ -1,127 +1,152 @@
-import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import { useEffect } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { faEnvelope } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { FormLabel, Grid, OutlinedInput } from "@mui/material";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
-import Typography from "@mui/material/Typography";
-import { useState } from "react";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
+import { Button, Dialog } from "@mui/material";
+
+import "./PermitResendDialog.scss";
+import { Nullable } from "../../../../common/types/common";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { requiredMessage } from "../../../../common/helpers/validationMessages";
+import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
+
+interface PermitResendFormData {
+  permitId: string;
+  email: string;
+  fax?: Nullable<string>;
+}
+
+const FEATURE = "permit-resend";
 
 /**
  *  A dialog box for resending permit by email or fax.
  */
 export default function PermitResendDialog({
-  isOpen,
-  onClickResend,
-  onClickCancel,
+  shouldOpen,
+  onResend,
+  onCancel,
+  permitId,
+  permitNumber,
   email,
   fax,
-  permitNumber,
 }: Readonly<{
-  /**
-   * Boolean to control the open and close state of Dialog box.
-   */
-  isOpen: boolean;
-  /**
-   * A callback function on clicking resend button.
-   * @returns void
-   */
-  onClickResend?: () => void;
-
-  /**
-   * A callback function on clicking cancel button.
-   * @returns void
-   */
-  onClickCancel?: () => void;
-  /**
-   * The permit number to be displayed in the dialog box.
-   */
+  shouldOpen: boolean;
+  onResend: (
+    permitId: string,
+    email: string,
+    fax?: Nullable<string>,
+  ) => Promise<void>;
+  onCancel: () => void;
+  permitId: string;
   permitNumber: string;
-  /**
-   * The email address if available.
-   */
   email?: string;
-  /**
-   * The fax if available.
-   */
   fax?: string;
 }>) {
-  const [emailState, setEmailState] = useState<string>(email ?? "");
-  const [faxState, setFaxState] = useState<string>(fax ?? "");
+  const formMethods = useForm<PermitResendFormData>({
+    defaultValues: {
+      permitId,
+      email: getDefaultRequiredVal("", email),
+      fax: getDefaultRequiredVal("", fax),
+    },
+    reValidateMode: "onChange",
+  });
+
+  const { setValue, handleSubmit } = formMethods;
+
+  useEffect(() => {
+    setValue("permitId", permitId);
+  }, [permitId]);
+
+  useEffect(() => {
+    setValue("email", getDefaultRequiredVal("", email));
+  }, [email]);
+
+  useEffect(() => {
+    setValue("fax", getDefaultRequiredVal("", fax));
+  }, [fax]);
+
+  const handleCancel = () => {
+    onCancel();
+  };
+
+  const handleResend = (formData: PermitResendFormData) => {
+    const { permitId, email, fax } = formData;
+    onResend(permitId, email, fax);
+  };
+
   return (
-    <div>
+    <FormProvider {...formMethods}>
       <Dialog
-        onClose={onClickCancel}
+        className="permit-resend-dialog"
+        onClose={handleCancel}
         aria-labelledby="confirmation-dialog-title"
-        open={isOpen}
+        open={shouldOpen}
       >
-        <DialogTitle
-          sx={{
-            background: BC_COLOURS.bc_background_light_grey,
-            color: BC_COLOURS.bc_black,
-          }}
-        >
-          <FontAwesomeIcon icon={faEnvelope} /> &nbsp;
-          <strong>Resend Permit and Receipt</strong>
-        </DialogTitle>
-        <DialogContent dividers>
-          <Typography gutterBottom>
-            {<strong>Permit #: {permitNumber}</strong>}
-          </Typography>
-          <br />
-          <Grid container>
-            <Grid xs={12} item>
-              <FormLabel>
-                <strong>Email</strong>
-              </FormLabel>
-              <br />
-              <OutlinedInput
-                name="email"
-                value={emailState}
-                sx={{
-                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                    borderColor: BC_COLOURS.focus_blue,
-                  },
-                }}
-                style={{ width: "100%" }}
-                onChange={(event) => {
-                  setEmailState(() => event.target?.value);
-                }}
-              />
-            </Grid>
-            <Grid xs={12} item>
-              <FormLabel>
-                <strong>Fax</strong>
-              </FormLabel>
-              <br />
-              <OutlinedInput
-                name="fax"
-                value={faxState}
-                style={{ width: "100%" }}
-                sx={{
-                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                    borderColor: BC_COLOURS.focus_blue,
-                  },
-                }}
-                onChange={(event) => {
-                  setFaxState(() => event.target?.value);
-                }}
-              />
-            </Grid>
-          </Grid>
-        </DialogContent>
-        <DialogActions>
-          <Button variant="contained" color="secondary" onClick={onClickCancel}>
+        <div className="permit-resend-dialog__header">
+          <div className="permit-resend-dialog__icon">
+            <FontAwesomeIcon
+              className="icon"
+              icon={faEnvelope}
+            />
+          </div>
+
+          <span className="permit-resend-dialog__title">
+            Resend Permit and Receipt
+          </span>
+        </div>
+
+        <div className="permit-resend-info">
+          <span className="permit-resend-info__permit-number">
+            Permit #: {permitNumber}
+          </span>
+
+          <CustomFormComponent
+            className="permit-resend-info__input permit-resend-info__input--email"
+            type="input"
+            feature={FEATURE}
+            options={{
+              name: "email",
+              rules: {
+                required: { value: true, message: requiredMessage() },
+              },
+              label: "Email",
+            }}
+          />
+
+          <CustomFormComponent
+            className="permit-resend-info__input permit-resend-info__input--fax"
+            type="phone"
+            feature={FEATURE}
+            options={{
+              name: "fax",
+              rules: {
+                required: false,
+              },
+              label: "Fax",
+            }}
+          />
+        </div>
+
+        <div className="permit-resend-dialog__actions">
+          <Button
+            className="permit-resend-dialog__btn permit-resend-dialog__btn--cancel"
+            variant="contained"
+            color="secondary"
+            onClick={handleCancel}
+          >
             Cancel
           </Button>
-          <Button variant="contained" color="primary" onClick={onClickResend}>
+
+          <Button
+            className="permit-resend-dialog__btn permit-resend-dialog__btn--resend"
+            variant="contained"
+            color="primary"
+            onClick={handleSubmit(handleResend)}
+          >
             Resend
           </Button>
-        </DialogActions>
+        </div>
       </Dialog>
-    </div>
+    </FormProvider>
   );
 }
