@@ -25,6 +25,7 @@ import {
   getCurrentAmendmentApplication,
   modifyAmendmentApplication,
   getApplicationsInProgress,
+  resendPermit,
 } from "../apiManager/permitsAPI";
 
 /**
@@ -399,3 +400,12 @@ export const useApplicationsInProgressQuery = ({
   });
 };
 
+/**
+ * Hook used for resending a permit.
+ * @returns Mutation object to be used for resending a permit
+ */
+export const useResendPermit = () => {
+  return useMutation({
+    mutationFn: resendPermit,
+  });
+};
