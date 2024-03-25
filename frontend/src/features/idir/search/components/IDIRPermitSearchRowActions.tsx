@@ -150,8 +150,8 @@ export const IDIRPermitSearchRowActions = ({
       fax,
     });
 
+    setOpenResendDialog(false);
     if (response.status === 201) {
-      setOpenResendDialog(false);
       setSnackBar({
         showSnackbar: true,
         setShowSnackbar: () => true,
@@ -159,7 +159,6 @@ export const IDIRPermitSearchRowActions = ({
         alertType: "success",
       });
     } else {
-      setOpenResendDialog(false);
       navigate(routes.ERROR_ROUTES.UNEXPECTED);
     }
   };

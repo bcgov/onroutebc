@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { faEnvelope } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -51,19 +50,7 @@ export default function PermitResendDialog({
     reValidateMode: "onChange",
   });
 
-  const { setValue, handleSubmit } = formMethods;
-
-  useEffect(() => {
-    setValue("permitId", permitId);
-  }, [permitId]);
-
-  useEffect(() => {
-    setValue("email", getDefaultRequiredVal("", email));
-  }, [email]);
-
-  useEffect(() => {
-    setValue("fax", getDefaultRequiredVal("", fax));
-  }, [fax]);
+  const { handleSubmit } = formMethods;
 
   const handleCancel = () => {
     onCancel();
