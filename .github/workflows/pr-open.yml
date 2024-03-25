@@ -66,7 +66,7 @@ jobs:
     steps:
       - uses: bcgov-nr/action-builder-ghcr@v2.0.2
         with:
-          keep_versions: 50
+          #keep_versions: 50
           package: ${{ matrix.package }}
           tag: ${{ needs.vars.outputs.pr }}
           tag_fallback: latest
