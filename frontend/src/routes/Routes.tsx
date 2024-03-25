@@ -31,7 +31,7 @@ import * as routes from "./constants";
 import { IDIRCreateCompany } from "../features/idir/company/IDIRCreateCompany";
 import { CompanySuspended } from "../common/pages/CompanySuspended";
 import { ManageSettings } from "../features/settings/ManageSettings";
-import { IssuanceErrorPage } from "../features/permits/pages/IssuanceErrorPage/IssuanceErrorPage";
+import { IssuanceErrorPage } from "../common/pages/IssuanceErrorPage";
 
 export const AppRoutes = () => {
   return (

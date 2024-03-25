@@ -83,9 +83,10 @@ export const PaymentRedirect = () => {
 
   }, [paymentApproved, transactionIdQuery]);
 
-  if (issueFailed) {
+  //if (issueFailed) {
+    console.log(issueFailed)
     return <Navigate to={`${ERROR_ROUTES.ISSUANCE}`} replace={true} />;
-  }
+  //}
 
   const successIds = getDefaultRequiredVal([], issueResults?.success);
   const hasValidIssueResults = successIds.length > 0;
