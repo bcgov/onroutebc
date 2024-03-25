@@ -1,4 +1,4 @@
-import { Box, Step, StepLabel, Stepper } from "@mui/material";
+import { Box, Step, StepConnector, StepLabel, Stepper } from "@mui/material";
 import React, { useContext } from "react";
 
 import { FormProvider, useForm } from "react-hook-form";
@@ -118,13 +118,40 @@ export const CreateProfileSteps = React.memo(() => {
       >
         <div className="create-profile-steps__create-profile">
           <div className="create-profile-section create-profile-section--steps">
-            <Stepper activeStep={activeStep} alternativeLabel>
+            <Stepper
+              className="stepper"
+              activeStep={activeStep}
+              alternativeLabel
+              connector={
+                <StepConnector
+                  className="step__connector"
+                  classes={{ line: "step__connector-line" }}
+                />
+              }
+            >
               {steps.map((label) => (
                 <Step className="step" key={label}>
-                  <StepLabel className="step__label">{label}</StepLabel>
+                  <StepLabel
+                    className="step__label"
+                    classes={{
+                      labelContainer: "step__label-container",
+                      active: "step__label--active",
+                      disabled: "step__label--disabled",
+                      completed: "step__label--completed",
+                    }}
+                    StepIconProps={{
+                      className: "step__icon",
+                      classes: {
+                        text: "step__step-number",
+                        active: "step__icon--active",
+                        completed: "step__icon--completed",
+                      }
+                    }}
+                  >{label}</StepLabel>
                 </Step>
               ))}
             </Stepper>
+
           </div>
           <FormProvider {...companyAndUserFormMethods}>
             <CompanyAndUserInfoSteps

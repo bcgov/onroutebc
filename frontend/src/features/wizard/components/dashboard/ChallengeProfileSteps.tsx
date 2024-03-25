@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Step, StepLabel, Stepper } from "@mui/material";
+import { Box, Button, Stack, Step, StepConnector, StepLabel, Stepper } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -233,10 +233,44 @@ export const ChallengeProfileSteps = React.memo(() => {
           style={{ width: "50%" }}
         >
           <div className="create-profile-section create-profile-section--steps">
-            <Stepper activeStep={activeStep} alternativeLabel>
+            {/* <Stepper activeStep={activeStep} alternativeLabel>
               {steps.map((label) => (
                 <Step className="step" key={label}>
                   <StepLabel className="step__label">{label}</StepLabel>
+                </Step>
+              ))}
+            </Stepper> */}
+                      {/* bruce test */}
+            <Stepper
+              className="stepper"
+              activeStep={activeStep}
+              alternativeLabel
+              connector={
+                <StepConnector
+                  className="step__connector"
+                  classes={{ line: "step__connector-line" }}
+                />
+              }
+            >
+              {steps.map((label) => (
+                <Step className="step" key={label}>
+                  <StepLabel
+                    className="step__label"
+                    classes={{
+                      labelContainer: "step__label-container",
+                      active: "step__label--active",
+                      disabled: "step__label--disabled",
+                      completed: "step__label--completed",
+                    }}
+                    StepIconProps={{
+                      className: "step__icon",
+                      classes: {
+                        text: "step__step-number",
+                        active: "step__icon--active",
+                        completed: "step__icon--completed",
+                      }
+                    }}
+                  >{label}</StepLabel>
                 </Step>
               ))}
             </Stepper>

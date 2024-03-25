@@ -16,63 +16,63 @@
     width: 60%;
 
     .create-profile-section {
-      .Mui-completed path {
-        color: orbcStyles.$bc-green;
-      }
-
-      .Mui-active circle {
-        fill: white;
-        stroke: orbcStyles.$bc-primary-blue;
-        stroke-width: 4px;
-        transform: scale(0.8) translate(2px, 4px);
-      }
-
-      .Mui-disabled circle {
-        fill: white;
-        stroke: orbcStyles.$bc-border-grey;
-        stroke-width: 4px;    
-        transform: scale(0.8) translate(2px, 4px); 
-      }
-
-      span.MuiStepLabel-label.Mui-completed.MuiStepLabel-alternativeLabel {
-        color: orbcStyles.$bc-green;
-        font-weight: bold;
-      }
-
-      span.MuiStepLabel-label.Mui-active.MuiStepLabel-alternativeLabel {
-        color: orbcStyles.$bc-primary-blue;
-        font-weight: bold;
-      }
-
-      span.MuiStepLabel-label.Mui-disabled.MuiStepLabel-alternativeLabel {
-        color: orbcStyles.$bc-border-grey;
-        font-weight: bold;
-      }
-
-      span.MuiStepConnector-line.MuiStepConnector-lineHorizontal {
-        border-width: 4px;
-      }
-      
-      .MuiStepIcon-text {
-        font-size: 0;
-      }
-      
       width: 100%;
 
       &--steps {
         margin: 1em 0;
         padding-top: 1.5em;
-
+        
         .step {
           &__label {
             align-items: flex-start;
 
-            .MuiStepLabel-labelContainer {
+            &-container {
               text-align: start;
+            }
+
+            &--active {
+              color: orbcStyles.$bc-background-blue;
+              font-weight: bold;
+            }
+
+            &--completed {
+              color: orbcStyles.$bc-green;
+              font-weight: bold;
+            }
+
+            &--disabled {
+              color: orbcStyles.$bc-text-box-border-grey;
+              font-weight: bold;
             }
           }
 
-          .MuiStepConnector-root {
+          &__icon {
+            overflow: visible;
+            fill: orbcStyles.$white;
+            stroke-width: 0.25rem;
+            stroke: orbcStyles.$bc-text-box-border-grey;
+
+            &--active {
+              stroke: orbcStyles.$bc-background-blue;
+            }
+
+            &--completed {
+              stroke: orbcStyles.$white;
+              stroke-width: 0;
+              fill: orbcStyles.$bc-green;
+              transform: scale(1.2);
+            }
+          }
+
+          &__step-number {
+            display: none;
+          }
+
+          &__connector-line {
+            border-width: 0.25rem;
+          }
+
+          &__connector {
             left: calc(-100% + 3em);
             right: calc(100% + 0.25em);
           }
