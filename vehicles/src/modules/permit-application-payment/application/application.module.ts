@@ -9,6 +9,7 @@ import { PaymentModule } from '../payment/payment.module';
 import { PermitData } from '../permit/entities/permit-data.entity';
 import { PermitType } from '../permit/entities/permit-type.entity';
 import { Permit } from '../permit/entities/permit.entity';
+import { CompanyApplicationController } from './company-application.controller';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { Permit } from '../permit/entities/permit.entity';
     ]),
     PaymentModule,
   ],
-  controllers: [ApplicationController],
+  controllers: [ApplicationController, CompanyApplicationController],
   providers: [ApplicationService, ApplicationProfile],
   exports: [ApplicationService],
 })
