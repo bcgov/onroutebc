@@ -33,6 +33,7 @@ export const ERROR_ROUTES = {
   SUSPENDED: "/suspended",
   UNAUTHORIZED: "/unauthorized",
   UNEXPECTED: "/unexpected-error",
+  ISSUANCE: "/issuance-error",
 };
 
 // Manage Vehicles
