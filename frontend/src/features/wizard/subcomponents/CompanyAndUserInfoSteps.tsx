@@ -1,6 +1,6 @@
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Alert, Button, Stack, Typography } from "@mui/material";
+import { Button, Stack } from "@mui/material";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Dispatch, SetStateAction, useContext } from "react";
 import { useFormContext } from "react-hook-form";
@@ -17,6 +17,8 @@ import { CreateCompanyRequest } from "../../manageProfile/types/manageProfile";
 import { CompanyInformationWizardForm } from "./CompanyInformationWizardForm";
 import { UserInformationWizardForm } from "./UserInformationWizardForm";
 import { WizardCompanyBanner } from "./WizardCompanyBanner";
+import { InfoBcGovBanner } from "../../../common/components/banners/InfoBcGovBanner";
+import { BANNER_MESSAGES } from "../../../common/constants/bannerMessages";
 
 /**
  * The company info and user info steps to be shared between
@@ -123,15 +125,10 @@ export const CompanyAndUserInfoSteps = ({
     <>
       <input type="hidden" {...register("legalName")} />
       {activeStep <= totalSteps - 1 && (
-        <div className="create-profile-section create-profile-section--info">
-          <Alert severity="info">
-            <Typography>
-              <strong>
-                Please note, unless stated otherwise, all fields are mandatory.
-              </strong>
-            </Typography>
-          </Alert>
-        </div>
+        <InfoBcGovBanner
+          className="create-profile-section create-profile-section--info"
+          msg={BANNER_MESSAGES.ALL_FIELDS_MANDATORY}
+        />
       )}
       {activeStep === totalSteps - 2 && (
         <div className="create-profile-section create-profile-section--company">

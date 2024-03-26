@@ -11,4 +11,5 @@ export const BANNER_MESSAGES = {
   POLICY_REMINDER:
     "The applicant is responsible for ensuring they are following Legislation, policies, standards and guidelines in the operation of a commercial transportation business in British Columbia.",
   CANNOT_FIND_VEHICLE: "Can't find a vehicle from your inventory?",
+  ISSUED_PERMIT_NUMBER_7_YEARS: "Enter any Permit No. issued to the above Client No. in the last 7 years",
 };
