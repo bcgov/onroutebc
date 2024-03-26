@@ -1,7 +1,3 @@
-# Sequence to create a new credit account in onRouteBC
-Note that this is used for clients who do not have a pre-existing credit account in TPS.
-
-```mermaid
 sequenceDiagram
     participant PPC
     participant onRouteBC
@@ -23,8 +19,12 @@ sequenceDiagram
         note over CFS, onRouteBC: Assuming success for all transactions.<br/>If any failures, these will result in failure<br/>message being returned to PPC.
         onRouteBC->>onRouteBC: Save credit account details to DB
         onRouteBC->>CFS: Create site for account
+        note over onRouteBC,CFS: Supply physical site address
         CFS-->>onRouteBC: Return CFS site number
         onRouteBC->>onRouteBC: Save site number to DB
+        onRouteBC->>CFS: Create contact for site
+        note over onRouteBC,CFS: Supply name, phone, and email
+        CFS-->>onRouteBC: Return CFS contact number        
+        onRouteBC->>onRouteBC: Save contact number to DB
         onRouteBC-->>PPC: Return success message<br/>with credit account number
     end
-```
