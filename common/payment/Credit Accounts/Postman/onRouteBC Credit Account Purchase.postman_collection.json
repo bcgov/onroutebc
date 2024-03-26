@@ -133,7 +133,7 @@
 									"    pm.response.to.have.status(200);\r",
 									"    var jsonData = pm.response.json();\r",
 									"    pm.expect(jsonData).to.have.property('invoice_number');\r",
-									"    pm.collectionVariables.set('invoice_number', jsonData.invoice_number);\r",
+									"    pm.environment.set('invoice_number', jsonData.invoice_number);\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -286,46 +286,6 @@
 	],
 	"variable": [
 		{
-			"key": "access_token",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "business_number",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "party_number",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "customer_name",
-			"value": "ABC Trucking Inc.",
-			"type": "string"
-		},
-		{
-			"key": "account_description",
-			"value": "Test account for ABC Trucking",
-			"type": "string"
-		},
-		{
-			"key": "account_number",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "site_number",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "invoice_number",
-			"value": "",
-			"type": "string"
-		},
-		{
 			"key": "transaction_date",
 			"value": "",
 			"type": "string"
@@ -333,11 +293,6 @@
 		{
 			"key": "gl_date",
 			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "onroute_client_number",
-			"value": "B2-000067-245",
 			"type": "string"
 		},
 		{
@@ -358,21 +313,6 @@
 		{
 			"key": "transaction_amount_2",
 			"value": "90.00",
-			"type": "string"
-		},
-		{
-			"key": "receipt_number",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "receipt_date",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "receipt_amount",
-			"value": "20",
 			"type": "string"
 		}
 	]
