@@ -1,8 +1,9 @@
-import { Alert, Box, Button, Typography } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import React, { useContext, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { FieldValues, FormProvider, useForm } from "react-hook-form";
+
 import { SnackBarContext } from "../../App";
 import { LoadBCeIDUserContext } from "../../common/authentication/LoadBCeIDUserContext";
 import { LoadBCeIDUserRolesByCompany } from "../../common/authentication/LoadBCeIDUserRolesByCompany";
@@ -12,11 +13,13 @@ import { getDefaultRequiredVal } from "../../common/helpers/util";
 import { ErrorFallback } from "../../common/pages/ErrorFallback";
 import { createMyOnRouteBCUserProfile } from "../manageProfile/apiManager/manageProfileAPI";
 import { ReusableUserInfoForm } from "../manageProfile/components/forms/common/ReusableUserInfoForm";
+import { OnRouteBCProfileCreated } from "./subcomponents/OnRouteBCProfileCreated";
+import { InfoBcGovBanner } from "../../common/components/banners/InfoBcGovBanner";
+import { BANNER_MESSAGES } from "../../common/constants/bannerMessages";
 import {
   Contact,
   ReadUserInformationResponse,
 } from "../manageProfile/types/manageProfile";
-import { OnRouteBCProfileCreated } from "./subcomponents/OnRouteBCProfileCreated";
 
 /**
  * User Info wizard displays a user information form
@@ -87,15 +90,8 @@ export const UserInfoWizard = React.memo(() => {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <FormProvider {...formMethods}>
-        <Box
-          className="layout-box"
-          sx={{
-            borderBottom: 1,
-            borderColor: "divider",
-          }}
-        >
+        <Box className="layout-box">
           <Banner bannerText="Create a new onRouteBC Profile" />
-          <br></br>
         </Box>
         <div
           className="tabpanel-container create-profile-steps"
@@ -103,17 +99,13 @@ export const UserInfoWizard = React.memo(() => {
           aria-labelledby={`profile-steps`}
         >
           <div className="create-profile-steps__create-profile">
-            <div className="create-profile-section create-profile-section--info">
-              <Alert severity="info">
-                <Typography>
-                  <strong>
-                    Please note, unless stated otherwise, all fields are
-                    mandatory.
-                  </strong>
-                </Typography>
-              </Alert>
-            </div>
+            <InfoBcGovBanner
+              className="create-profile-section create-profile-section--info"
+              msg={BANNER_MESSAGES.ALL_FIELDS_MANDATORY}
+            />
+
             <ReusableUserInfoForm feature="my-info-wizard" />
+
             <div className="create-profile-section create-profile-section--nav">
               <Button
                 onClick={handleSubmit(onClickFinish)}
