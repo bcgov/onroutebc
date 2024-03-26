@@ -21,4 +21,5 @@ export const getDefaultCompanyInfo = () => ({
     provinceCode: "BC",
     countryCode: "CA",
   },
+  isSuspended: false,
 });

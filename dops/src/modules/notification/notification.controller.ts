@@ -65,6 +65,7 @@ export class NotificationController {
     @Req() req: Request,
     @Body() notificationDocumentDto: NotificationDocumentDto,
   ) {
+    let attachments: IChesAttachment[];
     // Retrieves the current user details from the request
     const currentUser = req.user as IUserJWT;
     // Destructures the required fields from the NotificationDocumentDto
@@ -72,29 +73,31 @@ export class NotificationController {
       notificationDocumentDto;
 
     // Processes document IDs to attach them to the notification
-    const attachments: IChesAttachment[] = await Promise.all(
-      documentIds.map(async (documentId) => {
-        // Downloads the document specified by documentId for the current user
-        const { file, s3Object } = await this.dmsService.download(
-          currentUser,
-          documentId,
-          FileDownloadModes.PROXY,
-          undefined,
-          currentUser.companyId,
-        );
-        // Converts the downloaded content to the specified file encoding type
-        const content = (await createFile(s3Object)).toString(
-          FILE_ENCODING_TYPE,
-        );
-        // Returns the attachment configuration for each document
-        return {
-          contentType: file.objectMimeType,
-          encoding: FILE_ENCODING_TYPE,
-          filename: file.fileName,
-          content: content,
-        };
-      }),
-    );
+    if (documentIds?.length) {
+      attachments = await Promise.all(
+        documentIds.map(async (documentId) => {
+          // Downloads the document specified by documentId for the current user
+          const { file, s3Object } = await this.dmsService.download(
+            currentUser,
+            documentId,
+            FileDownloadModes.PROXY,
+            undefined,
+            currentUser.companyId,
+          );
+          // Converts the downloaded content to the specified file encoding type
+          const content = (await createFile(s3Object)).toString(
+            FILE_ENCODING_TYPE,
+          );
+          // Returns the attachment configuration for each document
+          return {
+            contentType: file.objectMimeType,
+            encoding: FILE_ENCODING_TYPE,
+            filename: file.fileName,
+            content: content,
+          };
+        }),
+      );
+    }
 
     // Sends the notification with attachments and returns the transaction ID
     const transactionId = await this.notificationService.sendEmailMessage(

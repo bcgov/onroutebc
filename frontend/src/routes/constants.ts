@@ -34,6 +34,7 @@ export const ERROR_ROUTES = {
   SUSPENDED: "/suspended",
   UNAUTHORIZED: "/unauthorized",
   UNEXPECTED: "/unexpected-error",
+  ISSUANCE: "/issuance-error",
 };
 
 export const withCompanyId = (path: string) =>
@@ -156,6 +157,12 @@ const PAYMENT_ROUTE_BASE = "payment";
 export const PAYMENT_ROUTES = {
   BASE: PAYMENT_ROUTE_BASE,
   PAYMENT_REDIRECT: PAYMENT_ROUTE_BASE,
+};
+
+// Settings
+const SETTINGS_BASE = "/settings";
+export const SETTINGS_ROUTES = {
+  MANAGE: SETTINGS_BASE,
 };
 
 // OnRoute Webpage Links
