@@ -1,6 +1,5 @@
 import { Delete } from "@mui/icons-material";
 import { Box, IconButton, Tooltip } from "@mui/material";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { RowSelectionState } from "@tanstack/table-core";
 import {
@@ -22,12 +21,11 @@ import { Trash } from "../../../../common/components/table/options/Trash";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import { canUserAccessApplication } from "../../helpers/mappers";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { getDefaultNullableVal } from "../../../../common/helpers/util";
+import { getDefaultNullableVal, getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { UserAuthGroupType } from "../../../../common/authentication/types";
 import { Nullable } from "../../../../common/types/common";
 import {
   deleteApplications,
-  getApplicationsInProgress,
 } from "../../apiManager/permitsAPI";
 
 import {
@@ -36,6 +34,7 @@ import {
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
 import { PermitApplicationOrigin } from "../../types/PermitApplicationOrigin";
+import { useApplicationsInProgressQuery } from "../../hooks/hooks";
 
 /**
  * Dynamically set the column
@@ -50,7 +49,8 @@ const getColumns = (
 /**
  * A wrapper with the query to load the table with expired permits.
  */
-export const ApplicationsInProgressList = () => {
+export const ApplicationsInProgressList = ({ onCountChange }: 
+  { onCountChange: (count: number) => void; }) => {
   const [pagination, setPagination] = useState<MRT_PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -62,33 +62,27 @@ export const ApplicationsInProgressList = () => {
     },
   ]);
 
-  const applicationsQuery = useQuery({
-    queryKey: [
-      "applicationsInProgress",
-      pagination.pageIndex,
-      pagination.pageSize,
-      sorting,
-    ],
-    queryFn: () =>
-      getApplicationsInProgress({
-        page: pagination.pageIndex,
-        take: pagination.pageSize,
-        orderBy:
-          sorting.length > 0
-            ? [
-                {
-                  column: sorting.at(0)?.id as string,
-                  descending: Boolean(sorting.at(0)?.desc),
-                },
-              ]
-            : [],
-      }),
-    placeholderData: keepPreviousData,
-    refetchOnWindowFocus: false,
-    retry: 1,
+  const applicationsQuery = useApplicationsInProgressQuery({
+    page: pagination.pageIndex,
+    take: pagination.pageSize,
+    sorting: sorting.length > 0
+    ? [
+        {
+          column: sorting.at(0)?.id as string,
+          descending: Boolean(sorting.at(0)?.desc),
+        },
+      ]
+    : [],
   });
 
   const { data, isError, isPending, isFetching } = applicationsQuery;
+
+  useEffect(() => {
+
+    const totalCount = getDefaultRequiredVal(0, data?.meta?.totalItems);
+    onCountChange(totalCount);
+    
+  }, [data?.meta?.totalItems])
 
   const { idirUserDetails, userDetails } = useContext(OnRouteBCContext);
   const userAuthGroup = getDefaultNullableVal(

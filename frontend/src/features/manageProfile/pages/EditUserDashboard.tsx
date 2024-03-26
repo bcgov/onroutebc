@@ -6,7 +6,7 @@ import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import "./EditUserDashboard.scss";
-import { Banner } from "../../../common/components/dashboard/Banner";
+import { Banner } from "../../../common/components/dashboard/components/banner/Banner";
 import { getCompanyUserByUserGUID } from "../apiManager/manageProfileAPI";
 import { EditUserForm } from "../components/forms/userManagement/EditUser";
 import { BCEID_PROFILE_TABS } from "../types/manageProfile.d";
