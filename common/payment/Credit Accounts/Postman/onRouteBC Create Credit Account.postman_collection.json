@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "eaf993a7-5934-473b-b111-74f618a35130",
-		"name": "onRouteBC Credit Account Payment",
+		"_postman_id": "67af01e8-aa69-40ca-a134-64a13af3d674",
+		"name": "onRouteBC Create Credit Account",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "11120889"
 	},
@@ -214,6 +214,32 @@
 					"response": []
 				},
 				{
+					"name": "Get Account",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"cfs",
+								"parties",
+								"{{party_number}}",
+								"accs",
+								"{{account_number}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sites",
+			"item": [
+				{
 					"name": "Create Account Site",
 					"event": [
 						{
@@ -282,10 +308,10 @@
 			]
 		},
 		{
-			"name": "Invoices",
+			"name": "Contacts",
 			"item": [
 				{
-					"name": "Create Invoice",
+					"name": "Create Site Contact",
 					"event": [
 						{
 							"listen": "test",
@@ -294,20 +320,9 @@
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData).to.have.property('invoice_number');\r",
-									"    pm.collectionVariables.set('invoice_number', jsonData.invoice_number);\r",
+									"    pm.expect(jsonData).to.have.property('site_number');\r",
+									"    pm.collectionVariables.set('site_number', jsonData.site_number);\r",
 									"});"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"pm.collectionVariables.set('transaction_date', new Date().toString());\r",
-									"let transactionNum = 'T-' + (new Date()).getTime();\r",
-									"pm.collectionVariables.set('transaction_number', transactionNum);"
 								],
 								"type": "text/javascript"
 							}
@@ -318,10 +333,34 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"transaction_number\":\"{{transaction_number}}\",\r\n    \"batch_source\":\"ONROUTE MANUAL\",\r\n    \"cust_trx_type\":\"Onroute\",\r\n    \"transaction_date\":\"{{transaction_date}}\",\r\n    \"gl_date\":\"{{transaction_date}}\",\r\n    \"comments\":\"\",\r\n    \"term_name\" :\"IMMEDIATE\",\r\n    \"lines\":[\r\n        {\r\n        \"line_number\":\"1\",\r\n        \"line_type\":\"LINE\",\r\n        \"memo_line_name\":\"Onroute BC\",\r\n        \"description\":\"{{permit_number}}\",\r\n        \"unit_price\":\"{{transaction_amount}}\",\r\n        \"quantity\":\"1\"\r\n        },\r\n        {\r\n        \"line_number\":\"2\",\r\n        \"line_type\":\"LINE\",\r\n        \"memo_line_name\":\"Onroute BC\",\r\n        \"description\":\"{{permit_number}}\",\r\n        \"unit_price\":\"{{transaction_amount_2}}\",\r\n        \"quantity\":\"1\"\r\n        }\r\n    ]\r\n}"
+							"raw": "{\r\n    \"first_name\":\"{{contact_first_name}}\",\r\n    \"middle_name\":\"{{contact_middle_name}}\",\r\n    \"last_name\":\"{{contact_last_name}}\",\r\n    \"phone_number\":\"{{contact_phone}}\",\r\n    \"email_address\":\"{{contact_email}}\"\r\n}\r\n"
 						},
 						"url": {
-							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}/sites/{{site_number}}/invs/",
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}sites/{{site_number}}/conts/",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"cfs",
+								"parties",
+								"{{party_number}}",
+								"accs",
+								"{{account_number}}sites",
+								"{{site_number}}",
+								"conts",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Site Contact",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}/sites/{{site_number}}",
 							"host": [
 								"{{cfs_base_url}}"
 							],
@@ -332,82 +371,7 @@
 								"accs",
 								"{{account_number}}",
 								"sites",
-								"{{site_number}}",
-								"invs",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Invoice",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}/sites/{{site_number}}/invs/{{invoice_number}}",
-							"host": [
-								"{{cfs_base_url}}"
-							],
-							"path": [
-								"cfs",
-								"parties",
-								"{{party_number}}",
-								"accs",
-								"{{account_number}}",
-								"sites",
-								"{{site_number}}",
-								"invs",
-								"{{invoice_number}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get All Invoices for Account",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}/invs/",
-							"host": [
-								"{{cfs_base_url}}"
-							],
-							"path": [
-								"cfs",
-								"parties",
-								"{{party_number}}",
-								"accs",
-								"{{account_number}}",
-								"invs",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get All Invoices for Site",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}/sites/{{site_number}}/invs/",
-							"host": [
-								"{{cfs_base_url}}"
-							],
-							"path": [
-								"cfs",
-								"parties",
-								"{{party_number}}",
-								"accs",
-								"{{account_number}}",
-								"sites",
-								"{{site_number}}",
-								"invs",
-								""
+								"{{site_number}}"
 							]
 						}
 					},
@@ -520,6 +484,46 @@
 		{
 			"key": "transaction_amount_2",
 			"value": "90.00",
+			"type": "string"
+		},
+		{
+			"key": "receipt_number",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "receipt_date",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "receipt_amount",
+			"value": "20",
+			"type": "string"
+		},
+		{
+			"key": "contact_first_name",
+			"value": "John",
+			"type": "string"
+		},
+		{
+			"key": "contact_middle_name",
+			"value": "Paul",
+			"type": "string"
+		},
+		{
+			"key": "contact_last_name",
+			"value": "Jones",
+			"type": "string"
+		},
+		{
+			"key": "contact_phone",
+			"value": "250-555-5555",
+			"type": "string"
+		},
+		{
+			"key": "contact_email",
+			"value": "jpj@abctruxx.com",
 			"type": "string"
 		}
 	]
