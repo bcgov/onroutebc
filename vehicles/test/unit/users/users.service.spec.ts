@@ -14,8 +14,8 @@ import { User } from '../../../src/modules/company-user-management/users/entitie
 import { UsersProfile } from '../../../src/modules/company-user-management/users/profiles/user.profile';
 import { UsersService } from '../../../src/modules/company-user-management/users/users.service';
 import {
+  MockQueryRunnerManager,
   createQueryBuilderMock,
-  dataSourceMockFactory,
 } from '../../util/mocks/factory/dataSource.factory.mock';
 
 import { PendingUsersService } from '../../../src/modules/company-user-management/pending-users/pending-users.service';
@@ -32,6 +32,8 @@ import {
   USER_LIST,
   createRedCompanyCvClientUserDtoMock,
   redCompanyAdminUserEntityMock,
+  redCompanyCvClientUserEntityMock,
+  sysAdminStaffUserEntityMock,
   updateRedCompanyCvClientUserDtoMock,
 } from '../../util/mocks/data/user.mock';
 import {
@@ -41,10 +43,9 @@ import {
   sysAdminStaffUserJWTMock,
 } from '../../util/mocks/data/jwt.mock';
 import { readRedCompanyPendingUserDtoMock } from '../../util/mocks/data/pending-user.mock';
-import { IdirUser } from 'src/modules/company-user-management/users/entities/idir.user.entity';
 import { PendingIdirUser } from 'src/modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
 import { PendingIdirUsersService } from 'src/modules/company-user-management/pending-idir-users/pending-idir-users.service';
-import { pendingIdirUserEntityMock } from 'test/util/mocks/data/pending-idir-user.mock';
+import { readPendingIdirUserMock } from 'test/util/mocks/data/pending-idir-user.mock';
 import { Request } from 'express';
 import { IUserJWT } from '../../../src/common/interface/user-jwt.interface';
 import { CompanyUser } from '../../../src/modules/company-user-management/users/entities/company-user.entity';
@@ -55,7 +56,6 @@ interface SelectQueryBuilderParameters {
 }
 
 let repo: DeepMocked<Repository<User>>;
-let repoIdirUser: DeepMocked<Repository<IdirUser>>;
 let repoCompanyUser: DeepMocked<Repository<CompanyUser>>;
 let repoPendingIdirUser: DeepMocked<Repository<PendingIdirUser>>;
 let pendingUsersServiceMock: DeepMocked<PendingUsersService>;
@@ -65,6 +65,13 @@ let companyServiceMock: DeepMocked<CompanyService>;
 describe('UsersService', () => {
   let service: UsersService;
 
+  const mockQueryRunnerManager: MockQueryRunnerManager = {
+    delete: jest.fn(),
+    update: jest.fn(),
+    find: jest.fn(),
+    save: jest.fn(),
+  };
+
   beforeEach(async () => {
     jest.clearAllMocks();
     jest.resetAllMocks();
@@ -72,10 +79,8 @@ describe('UsersService', () => {
     pendingIdirUsersServiceMock = createMock<PendingIdirUsersService>();
     companyServiceMock = createMock<CompanyService>();
     repo = createMock<Repository<User>>();
-    repoIdirUser = createMock<Repository<IdirUser>>();
     repoPendingIdirUser = createMock<Repository<PendingIdirUser>>();
     repoCompanyUser = createMock<Repository<CompanyUser>>();
-    const dataSourceMock = dataSourceMockFactory() as DataSource;
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [AutomapperModule],
@@ -84,10 +89,6 @@ describe('UsersService', () => {
         {
           provide: getRepositoryToken(User),
           useValue: repo,
-        },
-        {
-          provide: getRepositoryToken(IdirUser),
-          useValue: repoIdirUser,
         },
         {
           provide: getRepositoryToken(PendingIdirUser),
@@ -117,7 +118,17 @@ describe('UsersService', () => {
         },
         {
           provide: DataSource,
-          useValue: dataSourceMock,
+          useFactory: () => ({
+            createQueryRunner: jest.fn().mockImplementation(() => ({
+              connect: jest.fn(),
+              startTransaction: jest.fn(),
+              release: jest.fn(),
+              rollbackTransaction: jest.fn(),
+              commitTransaction: jest.fn(),
+              query: jest.fn(),
+              manager: mockQueryRunnerManager,
+            })),
+          }),
         },
         ContactProfile,
         AddressProfile,
@@ -154,6 +165,12 @@ describe('UsersService', () => {
       pendingUsersServiceMock.findPendingUsersDto.mockResolvedValue([
         readRedCompanyPendingUserDtoMock,
       ]);
+
+      // Override the save method for this specific test
+      mockQueryRunnerManager.save.mockResolvedValue(
+        redCompanyCvClientUserEntityMock,
+      );
+
       const retUser = await service.create(
         createRedCompanyCvClientUserDtoMock,
         constants.RED_COMPANY_ID,
@@ -274,11 +291,20 @@ describe('UsersService', () => {
   });
 
   //check Idir user
-  describe('User service check Idir User function', () => {
+  describe('User service validateAndCreateIdirUser function', () => {
     it('should create and return idir user', async () => {
-      repoPendingIdirUser.findOne.mockResolvedValue(pendingIdirUserEntityMock);
-      repoIdirUser.findOne.mockResolvedValue(null);
-      const userExists = await service.checkIdirUser(sysAdminStaffUserJWTMock);
+      repo.findOne.mockResolvedValue(null);
+      pendingIdirUsersServiceMock.findPendingIdirUser.mockResolvedValue(
+        readPendingIdirUserMock,
+      );
+      // Override the save method for this specific test
+      mockQueryRunnerManager.save.mockResolvedValue(
+        sysAdminStaffUserEntityMock,
+      );
+      mockQueryRunnerManager.delete.mockResolvedValue(null);
+      const userExists = await service.validateAndCreateIdirUser(
+        sysAdminStaffUserJWTMock,
+      );
       expect(typeof userExists).toBe('object');
       expect(userExists.user.userName).toBe(
         constants.SYS_ADMIN_STAFF_USER_NAME,

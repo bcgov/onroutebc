@@ -16,7 +16,8 @@ export enum PermitOrderBy {
   EXPIRY_DATE = 'expiryDate',
   UNIT_NUMBER = 'unitNumber',
   PLATE = 'plate',
-  APPLICANT = 'applicant',
+  VIN = 'vin',
+  UPDATED_DATE_TIME = 'updatedDateTime',
 }
 
 export enum ApplicationOrderBy {
@@ -26,5 +27,6 @@ export enum ApplicationOrderBy {
   EXPIRY_DATE = 'expiryDate',
   UNIT_NUMBER = 'unitNumber',
   PLATE = 'plate',
-  APPLICANT = 'applicant',
+  VIN = 'vin',
+  UPDATED_DATE_TIME = 'updatedDateTime',
 }

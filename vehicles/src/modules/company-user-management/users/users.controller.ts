@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Controller,
+  ForbiddenException,
   Get,
   Param,
   Post,
@@ -31,6 +32,8 @@ import { ReadUserDto } from './dto/response/read-user.dto';
 import { IDP } from '../../../common/enum/idp.enum';
 import { GetStaffUserQueryParamsDto } from './dto/request/queryParam/getStaffUser.query-params.dto';
 import { GetUserRolesQueryParamsDto } from './dto/request/queryParam/getUserRoles.query-params.dto';
+import { IDIR_USER_AUTH_GROUP_LIST } from '../../../common/enum/user-auth-group.enum';
+import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 
 @ApiTags('Company and User Management - User')
 @ApiBadRequestResponse({
@@ -77,8 +80,9 @@ export class UsersController {
   async find(@Req() request: Request): Promise<ReadUserOrbcStatusDto> {
     const currentUser = request.user as IUserJWT;
     let userExists: ReadUserOrbcStatusDto;
-    if (currentUser.identity_provider == IDP.IDIR) {
-      userExists = await this.userService.checkIdirUser(currentUser);
+    if (currentUser.identity_provider === IDP.IDIR) {
+      userExists =
+        await this.userService.validateAndCreateIdirUser(currentUser);
     } else {
       userExists = await this.userService.findORBCUser(currentUser);
     }
@@ -135,13 +139,29 @@ export class UsersController {
   @Roles(Role.READ_USER)
   @Get()
   async findAll(
+    @Req() request: Request,
     @Query() getStaffUserQueryParamsDto?: GetStaffUserQueryParamsDto,
   ): Promise<ReadUserDto[]> {
+    const currentUser = request.user as IUserJWT;
+    if (
+      !doesUserHaveAuthGroup(
+        currentUser.orbcUserAuthGroup,
+        IDIR_USER_AUTH_GROUP_LIST,
+      )
+    ) {
+      throw new ForbiddenException(
+        `Forbidden for ${currentUser.orbcUserAuthGroup} role.`,
+      );
+    }
+
     if (getStaffUserQueryParamsDto.permitIssuerPPCUser) {
       return await this.userService.findPermitIssuerPPCUser();
     }
 
-    return await this.userService.findIdirUsers(
+    return await this.userService.findUsersDto(
+      null,
+      null,
+      false,
       getStaffUserQueryParamsDto.userAuthGroup,
     );
   }
@@ -198,7 +218,6 @@ export class UsersController {
       );
     } else {
       users = await this.userService.findUsersDto(userGUID);
-      users.push(await this.userService.findOneIdirUser(userGUID));
     }
     if (!users?.length) {
       throw new DataNotFoundException();

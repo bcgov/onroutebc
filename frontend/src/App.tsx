@@ -1,9 +1,10 @@
 import { BrowserRouter as Router } from "react-router-dom";
 import { AppRoutes } from "./routes/Routes";
 import { ThemeProvider } from "@mui/material/styles";
-import { createContext, Dispatch, useEffect, useMemo, useState } from "react";
+import { createContext, Dispatch, useCallback, useEffect, useMemo, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, AuthProviderProps } from "react-oidc-context";
+import { WebStorageStateStore } from "oidc-client-ts";
 
 import "./App.scss";
 import { Header } from "./common/components/header/Header";
@@ -13,6 +14,8 @@ import { NavIconSideBar } from "./common/components/naviconsidebar/NavIconSideBa
 import { NavIconHomeButton } from "./common/components/naviconsidebar/NavIconHomeButton";
 import { NavIconReportButton } from "./common/components/naviconsidebar/NavIconReportButton";
 import { Nullable, Optional } from "./common/types/common";
+import { VerifiedClient, UserRolesType } from "./common/authentication/types";
+import { SuspendSnackBar } from "./common/components/snackbar/SuspendSnackBar";
 import {
   CustomSnackbar,
   SnackBarOptions,
@@ -22,8 +25,6 @@ import OnRouteBCContext, {
   BCeIDUserDetailContext,
   IDIRUserDetailContext,
 } from "./common/authentication/OnRouteBCContext";
-import { VerifiedClient, UserRolesType } from "./common/authentication/types";
-import { WebStorageStateStore } from "oidc-client-ts";
 
 const authority =
   import.meta.env.VITE_KEYCLOAK_ISSUER_URL ||
@@ -68,6 +69,7 @@ const App = () => {
   const [onRouteBCClientNumber, setOnRouteBCClientNumber] =
     useState<Optional<string>>();
   const [companyLegalName, setCompanyLegalName] = useState<Optional<string>>();
+  const [isCompanySuspended, setIsCompanySuspended] = useState<Optional<boolean>>();
   const [userDetails, setUserDetails] =
     useState<Optional<BCeIDUserDetailContext>>();
   const [idirUserDetails, setIDIRUserDetails] =
@@ -75,6 +77,24 @@ const App = () => {
   const [migratedClient, setMigratedClient] =
     useState<Optional<VerifiedClient>>();
   const [isNewBCeIDUser, setIsNewBCeIDUser] = useState<Optional<boolean>>();
+
+  /**
+   * Useful utility function to clear company context.
+   */
+  const clearCompanyContext = useCallback(() => {
+    setCompanyId(() => undefined);
+    setOnRouteBCClientNumber(() => undefined);
+    setCompanyLegalName(() => undefined);
+    setMigratedClient(() => undefined);
+    setIsCompanySuspended(() => undefined);
+    sessionStorage.removeItem("onRouteBC.user.companyId");
+  }, [
+    setCompanyId,
+    setOnRouteBCClientNumber,
+    setCompanyLegalName,
+    setMigratedClient,
+    setIsCompanySuspended,
+  ]);
 
   // Needed the following usestate and useffect code so that the snackbar would disapear/close
   const [displaySnackBar, setDisplaySnackBar] = useState(false);
@@ -97,6 +117,8 @@ const App = () => {
                 setUserDetails,
                 companyLegalName,
                 setCompanyLegalName,
+                isCompanySuspended,
+                setIsCompanySuspended,
                 idirUserDetails,
                 setIDIRUserDetails,
                 onRouteBCClientNumber,
@@ -105,16 +127,19 @@ const App = () => {
                 setMigratedClient,
                 isNewBCeIDUser,
                 setIsNewBCeIDUser,
+                clearCompanyContext,
               };
             }, [
               userRoles,
               companyId,
               userDetails,
               companyLegalName,
+              isCompanySuspended,
               idirUserDetails,
               onRouteBCClientNumber,
               migratedClient,
               isNewBCeIDUser,
+              clearCompanyContext,
             ])}
           >
             <SnackBarContext.Provider
@@ -131,6 +156,7 @@ const App = () => {
               <div className="page-section">
                 <Router>
                   <Header />
+                  <SuspendSnackBar />
                   <NavIconSideBar>
                     <NavIconHomeButton />
                     <NavIconReportButton />

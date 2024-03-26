@@ -24,6 +24,10 @@ const navigateBCeID = (
 ): string | undefined => {
   const { associatedCompanies, pendingCompanies, migratedClient, user } =
     userContextData;
+
+  const isAssociatedSuspended = associatedCompanies?.find((company) => company?.isSuspended);
+  const isPendingSuspended = pendingCompanies?.find((company) => company?.isSuspended);
+
   // If the user does not exist
   if (!user?.userGUID) {
     // The user is in pending companies => Redirect them to User Info Page.
@@ -48,6 +52,10 @@ const navigateBCeID = (
     else {
       return ERROR_ROUTES.UNAUTHORIZED;
     }
+  }
+  // The user exists but either the associated company or pending company is suspended
+  else if (isAssociatedSuspended || isPendingSuspended) {
+    return ERROR_ROUTES.SUSPENDED;
   }
   // The user and company exist
   else if (associatedCompanies?.length) {
@@ -91,7 +99,14 @@ export const LoginRedirect = () => {
     }
 
     if (isAuthenticated && !isPending) {
-      if (userFromToken?.profile?.identity_provider === IDPS.IDIR) {
+      const redirectURI = sessionStorage.getItem(
+        "onrouteBC.postLogin.redirect",
+      );
+      if (redirectURI) {
+        // Clean up sessionStorage of post login redirect link; we no longer need it.
+        sessionStorage.removeItem("onrouteBC.postLogin.redirect");
+        navigate(redirectURI);
+      } else if (userFromToken?.profile?.identity_provider === IDPS.IDIR) {
         const userContextData: Optional<IDIRUserContextType> =
           queryClient.getQueryData<IDIRUserContextType>(["userContext"]);
         if (userContextData?.user?.userGUID) {

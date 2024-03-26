@@ -25,14 +25,13 @@ import { User } from '../../src/modules/company-user-management/users/entities/u
 import { CompanyService } from '../../src/modules/company-user-management/company/company.service';
 import { PendingUsersService } from '../../src/modules/company-user-management/pending-users/pending-users.service';
 import {
-  idirUserEntityMock,
+  sysAdminStaffUserEntityMock,
   redCompanyAdminUserEntityMock,
 } from '../util/mocks/data/user.mock';
 import { createMapper } from '@automapper/core';
 import { UsersService } from '../../src/modules/company-user-management/users/users.service';
 import { UsersController } from '../../src/modules/company-user-management/users/users.controller';
 import { Role } from '../../src/common/enum/roles.enum';
-import { IdirUser } from 'src/modules/company-user-management/users/entities/idir.user.entity';
 import { PendingIdirUser } from 'src/modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
 import { PendingIdirUsersService } from 'src/modules/company-user-management/pending-idir-users/pending-idir-users.service';
 import { PendingIdirUsersProfile } from 'src/modules/company-user-management/pending-idir-users/profiles/pending-idir-user.profile';
@@ -41,7 +40,6 @@ import { App } from 'supertest/types';
 import { CompanyUser } from '../../src/modules/company-user-management/users/entities/company-user.entity';
 
 let repo: DeepMocked<Repository<User>>;
-let repoIdirUser: DeepMocked<Repository<IdirUser>>;
 let repoCompanyUser: DeepMocked<Repository<CompanyUser>>;
 let repoPendingIdirUser: DeepMocked<Repository<PendingIdirUser>>;
 let pendingUsersServiceMock: DeepMocked<PendingUsersService>;
@@ -54,7 +52,6 @@ describe('Users (e2e)', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     repo = createMock<Repository<User>>();
-    repoIdirUser = createMock<Repository<IdirUser>>();
     repoCompanyUser = createMock<Repository<CompanyUser>>();
     repoPendingIdirUser = createMock<Repository<PendingIdirUser>>();
     pendingUsersServiceMock = createMock<PendingUsersService>();
@@ -68,10 +65,6 @@ describe('Users (e2e)', () => {
         {
           provide: getRepositoryToken(User),
           useValue: repo,
-        },
-        {
-          provide: getRepositoryToken(IdirUser),
-          useValue: repoIdirUser,
         },
         {
           provide: getRepositoryToken(PendingIdirUser),
@@ -129,7 +122,7 @@ describe('Users (e2e)', () => {
     });
     it('should return the  ORBC IDIR userContext.', async () => {
       TestUserMiddleware.testUser = sysAdminStaffUserJWTMock;
-      repoIdirUser.findOne.mockResolvedValue(idirUserEntityMock);
+      repo.findOne.mockResolvedValue(sysAdminStaffUserEntityMock);
       await request(app.getHttpServer() as unknown as App)
         .post('/users/user-context')
         .expect(201);

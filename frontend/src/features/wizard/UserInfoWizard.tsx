@@ -7,7 +7,7 @@ import { SnackBarContext } from "../../App";
 import { LoadBCeIDUserContext } from "../../common/authentication/LoadBCeIDUserContext";
 import { LoadBCeIDUserRolesByCompany } from "../../common/authentication/LoadBCeIDUserRolesByCompany";
 import OnRouteBCContext from "../../common/authentication/OnRouteBCContext";
-import { Banner } from "../../common/components/dashboard/Banner";
+import { Banner } from "../../common/components/dashboard/components/banner/Banner";
 import { getDefaultRequiredVal } from "../../common/helpers/util";
 import { ErrorFallback } from "../../common/pages/ErrorFallback";
 import { createMyOnRouteBCUserProfile } from "../manageProfile/apiManager/manageProfileAPI";

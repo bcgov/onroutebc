@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
 
-import { renderWithClient } from "../../../../../../../common/helpers/testHelper";
+import { renderForTests } from "../../../../../../../common/helpers/testHelper";
 import { bcGovTheme } from "../../../../../../../themes/bcGovTheme";
 import { ApplicationStepPage } from "../../../ApplicationStepPage";
 import { APPLICATIONS_API_ROUTES } from "../../../../../apiManager/endpoints/endpoints";
@@ -76,14 +76,17 @@ const server = setupServer(
 
     const applicationData = {
       ...(application as CreateApplicationRequestData),
-      applicationNumber: newApplicationNumber,
-      permitId: newPermitId,
-      originalPermitId: newPermitId,
-      createdDateTime: currDtUtcStr,
-      updatedDateTime: currDtUtcStr,
       permitStatus: PERMIT_STATUSES.IN_PROGRESS,
     };
-    const createdApplication = createApplication(applicationData); // add to mock application store
+
+    const createdApplication = createApplication(
+      applicationData,
+      newApplicationNumber,
+      newPermitId,
+      currDtUtcStr,
+      currDtUtcStr,
+    ); // add to mock application store
+
     return HttpResponse.json(
       {
         ...createdApplication,
@@ -103,17 +106,16 @@ const server = setupServer(
         return HttpResponse.json(null, { status: 400 });
       }
 
-      const applicationData = {
-        ...(application as UpdateApplicationRequestData),
-        permitId: newPermitId,
-        originalPermitId: newPermitId,
-        applicationNumber: String(id),
-        createdDateTime: currDtUtcStr,
-        permitStatus: PERMIT_STATUSES.IN_PROGRESS,
-        updatedDateTime: currDtUtcStr,
-      };
+      const applicationData = application as UpdateApplicationRequestData;
 
-      const updatedApplication = updateApplication(applicationData, String(id)); // update application in mock application store
+      const updatedApplication = updateApplication(
+        applicationData,
+        newPermitId,
+        String(id),
+        currDtUtcStr,
+        currDtUtcStr,
+        PERMIT_STATUSES.IN_PROGRESS,
+      ); // update application in mock application store
 
       if (!updatedApplication) {
         return HttpResponse.json(null, { status: 404 });
@@ -266,9 +268,11 @@ export const ComponentWithWrapper = (userDetails: OnRouteBCContextType) => {
   );
 };
 
-export const renderTestComponent = (userDetails: OnRouteBCContextType) => {
+export const renderTestComponent = (
+  userDetails: OnRouteBCContextType,
+) => {
   const user = userEvent.setup();
-  const component = renderWithClient(ComponentWithWrapper(userDetails));
+  const component = renderForTests(ComponentWithWrapper(userDetails));
 
   return { user, component };
 };

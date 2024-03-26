@@ -1,18 +1,22 @@
 import dayjs, { Dayjs } from "dayjs";
 
-import { getUserGuidFromSession } from "../../../common/apiManager/httpRequestHandler";
 import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBCContext";
-import { TROS_COMMODITIES } from "../constants/termOversizeConstants";
+import { getMandatoryCommodities } from "./commodities";
+import { Nullable } from "../../../common/types/common";
+import { PERMIT_STATUSES } from "../types/PermitStatus";
+import { calculateFeeByDuration } from "./feeSummary";
+import { PermitType } from "../types/PermitType";
+import { getExpiryDate } from "./permitState";
+import { PermitMailingAddress } from "../types/PermitMailingAddress";
+import { PermitContactDetails } from "../types/PermitContactDetails";
+import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
+import { Application, ApplicationFormData } from "../types/application";
 import {
   getEndOfDate,
   getStartOfDate,
   now,
 } from "../../../common/helpers/formatDate";
-import { Nullable } from "../../../common/types/common";
-import { PERMIT_STATUSES } from "../types/PermitStatus";
-import { calculateFeeByDuration } from "./feeSummary";
-import { PERMIT_TYPES } from "../types/PermitType";
-import { getExpiryDate } from "./permitState";
+
 import {
   Address,
   CompanyProfile,
@@ -22,13 +26,6 @@ import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../common/helpers/util";
-
-import {
-  Application,
-  ContactDetails,
-  MailingAddress,
-  VehicleDetails,
-} from "../types/application";
 
 /**
  * Get default values for contact details, or populate with existing contact details and/or user details
@@ -40,9 +37,9 @@ import {
  */
 export const getDefaultContactDetails = (
   isNewApplication: boolean,
-  contactDetails?: ContactDetails,
-  userDetails?: BCeIDUserDetailContext,
-  companyEmail?: string,
+  contactDetails?: Nullable<PermitContactDetails>,
+  userDetails?: Nullable<BCeIDUserDetailContext>,
+  companyEmail?: Nullable<string>,
 ) => {
   if (isNewApplication) {
     return {
@@ -78,8 +75,8 @@ export const getDefaultContactDetails = (
  * @returns default values for mailing address
  */
 export const getDefaultMailingAddress = (
-  mailingAddress?: MailingAddress,
-  alternateAddress?: Address,
+  mailingAddress?: Nullable<PermitMailingAddress>,
+  alternateAddress?: Nullable<Address>,
 ) =>
   mailingAddress
     ? {
@@ -104,7 +101,9 @@ export const getDefaultMailingAddress = (
  * @param vehicleDetails existing vehicle details, if any
  * @returns default values for vehicle details
  */
-export const getDefaultVehicleDetails = (vehicleDetails?: VehicleDetails) => ({
+export const getDefaultVehicleDetails = (
+  vehicleDetails?: Nullable<PermitVehicleDetails>,
+) => ({
   vehicleId: getDefaultRequiredVal("", vehicleDetails?.vehicleId),
   unitNumber: getDefaultRequiredVal("", vehicleDetails?.unitNumber),
   vin: getDefaultRequiredVal("", vehicleDetails?.vin),
@@ -123,7 +122,7 @@ export const getDurationOrDefault = (
   duration?: Nullable<number | string>,
 ): number => {
   return applyWhenNotNullable(
-    (duration) => +duration,
+    (duration: string | number) => +duration,
     duration,
     defaultDuration,
   );
@@ -154,17 +153,20 @@ export const getExpiryDateOrDefault = (
 
 /**
  * Gets default values for the application data, or populate with values from existing application data and company id/user details.
+ * @param permitType permit type for the application
  * @param applicationData existing application data, if any
  * @param companyId company id of the current user, if any
  * @param userDetails user details of current user, if any
+ * @param companyInfo data from company profile information
  * @returns default values for the application data
  */
 export const getDefaultValues = (
-  applicationData?: Nullable<Application>,
-  companyId?: number,
-  userDetails?: BCeIDUserDetailContext,
-  companyInfo?: CompanyProfile,
-) => {
+  permitType: PermitType,
+  applicationData?: Nullable<Application | ApplicationFormData>,
+  companyId?: Nullable<number>,
+  userDetails?: Nullable<BCeIDUserDetailContext>,
+  companyInfo?: Nullable<CompanyProfile>,
+): ApplicationFormData => {
   const startDateOrDefault = getStartDateOrDefault(
     now(),
     applicationData?.permitData?.startDate,
@@ -192,37 +194,16 @@ export const getDefaultValues = (
       "",
       applicationData?.applicationNumber,
     ),
-    userGuid: getDefaultRequiredVal(
-      "",
-      applicationData?.userGuid,
-      getUserGuidFromSession(),
-    ),
     permitId: getDefaultRequiredVal("", applicationData?.permitId),
     permitNumber: getDefaultRequiredVal("", applicationData?.permitNumber),
     permitType: getDefaultRequiredVal(
-      PERMIT_TYPES.TROS,
+      permitType,
       applicationData?.permitType,
     ),
     permitStatus: getDefaultRequiredVal(
       PERMIT_STATUSES.IN_PROGRESS,
       applicationData?.permitStatus,
     ),
-    createdDateTime: applyWhenNotNullable(
-      (date) => dayjs(date),
-      applicationData?.createdDateTime,
-      now(),
-    ),
-    updatedDateTime: applyWhenNotNullable(
-      (date) => dayjs(date),
-      applicationData?.updatedDateTime,
-      now(),
-    ),
-    revision: getDefaultRequiredVal(0, applicationData?.revision),
-    previousRevision: getDefaultRequiredVal(
-      "",
-      applicationData?.previousRevision,
-    ),
-    documentId: getDefaultRequiredVal("", applicationData?.documentId),
     permitData: {
       companyName: getDefaultRequiredVal(
         "",
@@ -236,7 +217,7 @@ export const getDefaultValues = (
       permitDuration: durationOrDefault,
       expiryDate: expiryDateOrDefault,
       commodities: getDefaultRequiredVal(
-        [TROS_COMMODITIES[0], TROS_COMMODITIES[1]],
+        getMandatoryCommodities(permitType),
         applyWhenNotNullable(
           (commodities) => commodities.map((commodity) => ({ ...commodity })),
           applicationData?.permitData?.commodities,

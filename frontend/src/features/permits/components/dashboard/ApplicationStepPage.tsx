@@ -4,16 +4,18 @@ import { Navigate, useParams } from "react-router-dom";
 import { useMemo } from "react";
 
 import "../../../../common/components/dashboard/Dashboard.scss";
-import { Banner } from "../../../../common/components/dashboard/Banner";
-import { TermOversizeForm } from "../../pages/TermOversize/TermOversizeForm";
+import { Banner } from "../../../../common/components/dashboard/components/banner/Banner";
+import { ApplicationForm } from "../../pages/Application/ApplicationForm";
 import { ApplicationContext } from "../../context/ApplicationContext";
-import { TermOversizePay } from "../../pages/TermOversize/TermOversizePay";
-import { TermOversizeReview } from "../../pages/TermOversize/TermOversizeReview";
+import { ApplicationPay } from "../../pages/Application/ApplicationPay";
+import { ApplicationReview } from "../../pages/Application/ApplicationReview";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { Loading } from "../../../../common/pages/Loading";
 import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
 import { useApplicationDetailsQuery } from "../../hooks/hooks";
 import { PERMIT_STATUSES } from "../../types/PermitStatus";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { DEFAULT_PERMIT_TYPE, PermitType, isPermitTypeValid } from "../../types/PermitType";
 import {
   APPLICATION_STEPS,
   ApplicationStep,
@@ -40,7 +42,10 @@ export const ApplicationStepPage = ({
   applicationStep: ApplicationStep;
 }) => {
   const companyInfoQuery = useCompanyInfoQuery();
-  const { permitId } = useParams(); // Get application number from route, if there is one (for edit applications)
+
+  // Get application number from route, if there is one (for edit applications)
+  // or get the permit type for creating a new application
+  const { permitId, permitType } = useParams();
 
   // Query for the application data whenever this page is rendered
   const {
@@ -48,7 +53,7 @@ export const ApplicationStepPage = ({
     setApplicationData,
     shouldEnableQuery,
     isInvalidRoute,
-  } = useApplicationDetailsQuery(applicationStep, permitId);
+  } = useApplicationDetailsQuery(applicationStep, permitId, permitType);
 
   const contextData = useMemo(
     () => ({
@@ -64,6 +69,12 @@ export const ApplicationStepPage = ({
     (typeof applicationData !== "undefined" && !applicationData) ||
     isInvalidRoute;
 
+  const applicationPermitType = getDefaultRequiredVal(
+    DEFAULT_PERMIT_TYPE,
+    isPermitTypeValid(permitType) ? permitType?.toUpperCase() as PermitType : null,
+    applicationData?.permitType,
+  );
+
   // Permit must be an application in order to allow application-related steps
   // (ie. empty status for new application, or in progress or incomplete payment status)
   const isValidApplicationStatus = () => {
@@ -78,11 +89,11 @@ export const ApplicationStepPage = ({
   const renderApplicationStep = () => {
     switch (applicationStep) {
       case APPLICATION_STEPS.REVIEW:
-        return <TermOversizeReview />;
+        return <ApplicationReview />;
       case APPLICATION_STEPS.PAY:
-        return <TermOversizePay />;
+        return <ApplicationPay />;
       default:
-        return <TermOversizeForm />;
+        return <ApplicationForm permitType={applicationPermitType} />;
     }
   };
 

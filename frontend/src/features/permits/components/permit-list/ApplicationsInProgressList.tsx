@@ -1,6 +1,5 @@
-import "./ApplicationsInProgressList.scss";
+import { Delete } from "@mui/icons-material";
 import { Box, IconButton, Tooltip } from "@mui/material";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { RowSelectionState } from "@tanstack/table-core";
 import {
@@ -13,85 +12,92 @@ import {
   useMaterialReactTable,
 } from "material-react-table";
 
+import "./ApplicationsInProgressList.scss";
+import { ApplicationInProgressColumnDefinition } from "./ApplicationInProgressColumnDefinition";
+import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
+import { SnackBarContext } from "../../../../App";
+import { ApplicationListItem } from "../../types/application";
+import { Trash } from "../../../../common/components/table/options/Trash";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
+import { canUserAccessApplication } from "../../helpers/mappers";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
+import { getDefaultNullableVal, getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { UserAuthGroupType } from "../../../../common/authentication/types";
+import { Nullable } from "../../../../common/types/common";
 import {
   deleteApplications,
-  getApplicationsInProgress,
 } from "../../apiManager/permitsAPI";
+
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
-import { ApplicationInProgressColumnDefinition } from "./ApplicationInProgressColumnDefinition";
-import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
-import { SnackBarContext } from "../../../../App";
-import {
-  ApplicationInProgress,
-  PermitApplicationInProgress,
-} from "../../types/application";
-import { Delete } from "@mui/icons-material";
-import { Trash } from "../../../../common/components/table/options/Trash";
+import { PermitApplicationOrigin } from "../../types/PermitApplicationOrigin";
+import { useApplicationsInProgressQuery } from "../../hooks/hooks";
 
 /**
  * Dynamically set the column
  * @returns An array of column headers/accessor keys for Material React Table
  */
-const getColumns = (): MRT_ColumnDef<ApplicationInProgress>[] => {
-  return ApplicationInProgressColumnDefinition;
+const getColumns = (
+  userAuthGroup?: Nullable<UserAuthGroupType>,
+): MRT_ColumnDef<ApplicationListItem>[] => {
+  return ApplicationInProgressColumnDefinition(userAuthGroup);
 };
 
 /**
  * A wrapper with the query to load the table with expired permits.
  */
-export const ApplicationsInProgressList = () => {
+export const ApplicationsInProgressList = ({ onCountChange }: 
+  { onCountChange: (count: number) => void; }) => {
   const [pagination, setPagination] = useState<MRT_PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   });
   const [sorting, setSorting] = useState<MRT_SortingState>([
     {
-      id: "startDate", // change to updateDateTime when backend supports it.
+      id: "updatedDateTime",
       desc: true,
     },
   ]);
 
-  const applicationsQuery = useQuery({
-    queryKey: [
-      "applicationsInProgress",
-      pagination.pageIndex,
-      pagination.pageSize,
-      sorting,
-    ],
-    queryFn: () =>
-      getApplicationsInProgress({
-        page: pagination.pageIndex,
-        take: pagination.pageSize,
-        orderBy:
-          sorting.length > 0
-            ? [
-                {
-                  column: sorting.at(0)?.id as string,
-                  descending: Boolean(sorting.at(0)?.desc),
-                },
-              ]
-            : [],
-      }),
-    placeholderData: keepPreviousData,
-    refetchOnWindowFocus: false,
-    retry: 1,
+  const applicationsQuery = useApplicationsInProgressQuery({
+    page: pagination.pageIndex,
+    take: pagination.pageSize,
+    sorting: sorting.length > 0
+    ? [
+        {
+          column: sorting.at(0)?.id as string,
+          descending: Boolean(sorting.at(0)?.desc),
+        },
+      ]
+    : [],
   });
 
   const { data, isError, isPending, isFetching } = applicationsQuery;
+
+  useEffect(() => {
+
+    const totalCount = getDefaultRequiredVal(0, data?.meta?.totalItems);
+    onCountChange(totalCount);
+    
+  }, [data?.meta?.totalItems])
+
+  const { idirUserDetails, userDetails } = useContext(OnRouteBCContext);
+  const userAuthGroup = getDefaultNullableVal(
+    idirUserDetails?.userAuthGroup,
+    userDetails?.userAuthGroup,
+  );
 
   const snackBar = useContext(SnackBarContext);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
 
-  const columns = useMemo<MRT_ColumnDef<ApplicationInProgress>[]>(
-    () => getColumns(),
-    [],
+  const columns = useMemo<MRT_ColumnDef<ApplicationListItem>[]>(
+    () => getColumns(userAuthGroup),
+    [userAuthGroup],
   );
 
   /**
@@ -108,7 +114,7 @@ export const ApplicationsInProgressList = () => {
   const onConfirmApplicationDelete = async () => {
     const applicationIds: string[] = Object.keys(rowSelection);
     const response = await deleteApplications(applicationIds);
-    if (response.status === 201 || response.status === 200) {
+    if (response.status === 200) {
       const responseBody = response.data;
       setIsDeleteDialogOpen(() => false);
       if (responseBody.failure.length > 0) {
@@ -132,6 +138,18 @@ export const ApplicationsInProgressList = () => {
       applicationsQuery.refetch();
     }
   };
+
+  /**
+   * Determines if a row can be selected
+   */
+  const canRowBeSelected = useCallback(
+    (permitApplicationOrigin?: Nullable<PermitApplicationOrigin>) =>
+      canUserAccessApplication(
+        permitApplicationOrigin,
+        userAuthGroup,
+      ),
+    [userAuthGroup],
+  );
 
   useEffect(() => {
     if (isError) {
@@ -171,9 +189,16 @@ export const ApplicationsInProgressList = () => {
       pagination,
       sorting,
     },
-    onRowSelectionChange: setRowSelection,
+    enableRowSelection:
+      (row) => canRowBeSelected(
+        row?.original?.permitApplicationOrigin,
+      ),
+    onRowSelectionChange: useCallback(
+      setRowSelection,
+      [userAuthGroup],
+    ),
     getRowId: (originalRow) => {
-      const applicationRow = originalRow as PermitApplicationInProgress;
+      const applicationRow = originalRow as ApplicationListItem;
       return applicationRow.permitId;
     },
     renderEmptyRowsFallback: () => <NoRecordsFound />,
@@ -181,9 +206,12 @@ export const ApplicationsInProgressList = () => {
       ({
         row,
       }: {
-        table: MRT_TableInstance<ApplicationInProgress>;
-        row: MRT_Row<ApplicationInProgress>;
-      }) => (
+        table: MRT_TableInstance<ApplicationListItem>;
+        row: MRT_Row<ApplicationListItem>;
+      }) => canUserAccessApplication(
+        row?.original?.permitApplicationOrigin,
+        userAuthGroup,
+      ) ? (
         <Box className="table-container__row-actions">
           <Tooltip arrow placement="top" title="Delete">
             <IconButton
@@ -204,8 +232,10 @@ export const ApplicationsInProgressList = () => {
             </IconButton>
           </Tooltip>
         </Box>
+      ) : (
+        <></>
       ),
-      [],
+      [userAuthGroup],
     ),
     renderToolbarInternalActions: useCallback(
       () => (

@@ -10,7 +10,7 @@ export const redCompanyPendingUserEntityMock: PendingUser = {
   pendingUserId: 1,
   companyId: constants.RED_COMPANY_ID,
   userName: constants.RED_COMPANY_PENDING_USER_NAME,
-  userAuthGroup: ClientUserAuthGroup.CV_CLIENT,
+  userAuthGroup: ClientUserAuthGroup.PERMIT_APPLICANT,
   ...baseEntityMock,
 };
 
@@ -20,7 +20,7 @@ export const updateRedCompanyPendingUserDtoMock: UpdatePendingUserDto = {
 
 export const createRedCompanyPendingUserDtoMock: CreatePendingUserDto = {
   userName: constants.RED_COMPANY_PENDING_USER_NAME,
-  userAuthGroup: ClientUserAuthGroup.CV_CLIENT,
+  userAuthGroup: ClientUserAuthGroup.PERMIT_APPLICANT,
 };
 
 export const readRedCompanyPendingUserDtoMock: ReadPendingUserDto = {
@@ -34,7 +34,7 @@ export const blueCompanyPendingUserEntityMock: PendingUser = {
   pendingUserId: 2,
   companyId: constants.BLUE_COMPANY_ID,
   userName: constants.BLUE_COMPANY_PENDING_USER_NAME,
-  userAuthGroup: ClientUserAuthGroup.CV_CLIENT,
+  userAuthGroup: ClientUserAuthGroup.PERMIT_APPLICANT,
   ...baseEntityMock,
 };
 
@@ -44,7 +44,7 @@ export const updateBlueCompanyPendingUserDtoMock: UpdatePendingUserDto = {
 
 export const createBlueCompanyPendingUserDtoMock: CreatePendingUserDto = {
   userName: constants.BLUE_COMPANY_PENDING_USER_NAME,
-  userAuthGroup: ClientUserAuthGroup.CV_CLIENT,
+  userAuthGroup: ClientUserAuthGroup.PERMIT_APPLICANT,
 };
 export const readBlueCompanyPendingUserDtoMock: ReadPendingUserDto = {
   companyId: constants.BLUE_COMPANY_ID,

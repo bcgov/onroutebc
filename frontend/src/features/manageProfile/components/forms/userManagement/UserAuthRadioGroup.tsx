@@ -47,7 +47,7 @@ export const UserAuthRadioGroup = ({
           label="Administrator"
         />
         <FormControlLabel
-          value={BCeID_USER_AUTH_GROUP.CV_CLIENT}
+          value={BCeID_USER_AUTH_GROUP.PERMIT_APPLICANT}
           control={
             <Radio
               key={`radio-bceid-permit-applicant`}

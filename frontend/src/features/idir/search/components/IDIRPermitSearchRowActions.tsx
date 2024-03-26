@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { OnRouteBCTableRowActions } from "../../../../common/components/table/OnRouteBCTableRowActions";
 import PermitResendDialog from "./PermitResendDialog";
 import { viewReceiptPdf } from "../../../permits/helpers/permitPDFHelper";
-import { useNavigate } from "react-router-dom";
 import * as routes from "../../../../routes/constants";
 import { USER_AUTH_GROUP } from "../../../../common/authentication/types";
+import { Nullable } from "../../../../common/types/common";
+import { useResendPermit } from "../../../permits/hooks/hooks";
+import { SnackBarContext } from "../../../../App";
 
 const PERMIT_ACTION_TYPES = {
   RESEND: "resend",
@@ -37,14 +41,12 @@ interface PermitAction {
 }
 
 const PERMIT_ACTIONS: PermitAction[] = [
-  /*
   {
     action: PERMIT_ACTION_TYPES.RESEND,
     isAuthorized: (_: boolean, userAuthGroup?: string) =>
-      userAuthGroup === USER_AUTH_GROUP.PPCCLERK ||
-      userAuthGroup === USER_AUTH_GROUP.SYSADMIN,
+      userAuthGroup === USER_AUTH_GROUP.PPC_CLERK ||
+      userAuthGroup === USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
   },
-  */
   {
     action: PERMIT_ACTION_TYPES.VIEW_RECEIPT,
     isAuthorized: (_: boolean, userAuthGroup?: string) =>
@@ -69,7 +71,7 @@ const PERMIT_ACTIONS: PermitAction[] = [
 /**
  * Returns options for the row actions.
  * @param isExpired Has the permit expired?
- * @returns string[]
+ * @returns Action options that can be performed for the permit.
  */
 const getOptions = (isExpired: boolean, userAuthGroup?: string) => {
   return PERMIT_ACTIONS.filter((action) =>
@@ -94,7 +96,7 @@ export const IDIRPermitSearchRowActions = ({
   /**
    * The permit id.
    */
-  permitId: number;
+  permitId: string;
   /**
    * Is the permit inactive (voided/superseded/revoked) or expired?
    */
@@ -116,25 +118,48 @@ export const IDIRPermitSearchRowActions = ({
    */
   userAuthGroup?: string;
 }) => {
-  const [isResendOpen, setIsResendOpen] = useState<boolean>(false);
+  const [openResendDialog, setOpenResendDialog] = useState<boolean>(false);
   const navigate = useNavigate();
+  const resendPermitMutation = useResendPermit();
+  const { setSnackBar } = useContext(SnackBarContext);
 
   /**
    * Function to handle user selection from the options.
    * @param selectedOption The selected option as a string.
    */
   const onSelectOption = (selectedOption: string) => {
-    const permitIdStr = `${permitId}`;
-
     if (selectedOption === PERMIT_ACTION_TYPES.RESEND) {
-      // For implementation
-      setIsResendOpen(() => true);
+      setOpenResendDialog(() => true);
     } else if (selectedOption === PERMIT_ACTION_TYPES.VIEW_RECEIPT) {
-      viewReceiptPdf(permitId.toString());
+      viewReceiptPdf(permitId);
     } else if (selectedOption === PERMIT_ACTION_TYPES.VOID_REVOKE) {
-      navigate(`${routes.PERMITS_ROUTES.VOID(permitIdStr)}`);
+      navigate(`${routes.PERMITS_ROUTES.VOID(permitId)}`);
     } else if (selectedOption === PERMIT_ACTION_TYPES.AMEND) {
-      navigate(`${routes.PERMITS_ROUTES.AMEND(permitIdStr)}`);
+      navigate(`${routes.PERMITS_ROUTES.AMEND(permitId)}`);
+    }
+  };
+
+  const handleResend = async (
+    permitId: string,
+    email: string,
+    fax?: Nullable<string>,
+  ) => {
+    const response = await resendPermitMutation.mutateAsync({
+      permitId,
+      email,
+      fax,
+    });
+
+    setOpenResendDialog(false);
+    if (response.status === 201) {
+      setSnackBar({
+        showSnackbar: true,
+        setShowSnackbar: () => true,
+        message: "Successfully sent",
+        alertType: "success",
+      });
+    } else {
+      navigate(routes.ERROR_ROUTES.UNEXPECTED);
     }
   };
 
@@ -146,9 +171,10 @@ export const IDIRPermitSearchRowActions = ({
         key={`idir-search-row-${permitNumber}`}
       />
       <PermitResendDialog
-        isOpen={isResendOpen}
-        onClickCancel={() => setIsResendOpen(false)}
-        onClickResend={() => setIsResendOpen(false)}
+        shouldOpen={openResendDialog}
+        onCancel={() => setOpenResendDialog(false)}
+        onResend={handleResend}
+        permitId={permitId}
         email={email}
         fax={fax}
         permitNumber={permitNumber}

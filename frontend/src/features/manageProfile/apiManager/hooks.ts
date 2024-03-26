@@ -1,15 +1,21 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAuth } from "react-oidc-context";
 import { useContext, useEffect } from "react";
+import { useNavigate } from "react-router";
+import { AxiosResponse } from "axios";
 
 import { IDPS } from "../../../common/types/idp";
 import { Nullable } from "../../../common/types/common";
+import { ERROR_ROUTES } from "../../../routes/constants";
+import { DeleteResponse } from "../types/manageProfile";
 import {
   FIVE_MINUTES,
   FOUR_MINUTES,
 } from "../../../common/constants/constants";
 
 import {
+  deleteCompanyPendingUsers,
+  deleteCompanyActiveUsers,
   getCompanyInfo,
   getCompanyInfoById,
   getIDIRUserRoles,
@@ -87,6 +93,7 @@ export const useUserContext = (
     setCompanyId,
     setUserDetails,
     setCompanyLegalName,
+    setIsCompanySuspended,
     setIDIRUserDetails,
     setOnRouteBCClientNumber,
     setMigratedClient,
@@ -104,6 +111,7 @@ export const useUserContext = (
 
     if (isIdir) {
       const { user } = userContextResponseBody as IDIRUserContextType;
+
       if (user?.userGUID) {
         const userDetails = {
           firstName: user.firstName,
@@ -112,11 +120,13 @@ export const useUserContext = (
           email: user.email,
           userAuthGroup: user.userAuthGroup,
         } as IDIRUserDetailContext;
+        
         setIDIRUserDetails?.(() => userDetails);
       }
     } else {
       const { user, associatedCompanies, pendingCompanies, migratedClient } =
         userContextResponseBody as BCeIDUserContextType;
+      
       /**
        * User exists => the user is already in the system.
        */
@@ -124,9 +134,13 @@ export const useUserContext = (
         const companyId = associatedCompanies[0].companyId;
         const legalName = associatedCompanies[0].legalName;
         const clientNumber = associatedCompanies[0].clientNumber;
+        const isCompanySuspended = associatedCompanies[0].isSuspended;
+
         setCompanyId?.(() => companyId);
         setCompanyLegalName?.(() => legalName);
         setOnRouteBCClientNumber?.(() => clientNumber);
+        setIsCompanySuspended?.(() => isCompanySuspended);
+
         const userDetails = {
           firstName: user.firstName,
           lastName: user.lastName,
@@ -139,6 +153,7 @@ export const useUserContext = (
           fax: user.fax,
           userAuthGroup: user.userAuthGroup as BCeIDUserAuthGroupType,
         } as BCeIDUserDetailContext;
+
         setUserDetails?.(() => userDetails);
 
         // Setting the companyId to sessionStorage so that it can be
@@ -148,25 +163,31 @@ export const useUserContext = (
           companyId.toString(),
         );
       }
+
       /**
        * The user has been added to a company.
        */
       if (pendingCompanies.length > 0) {
-        const { companyId, legalName } = pendingCompanies[0];
+        const { companyId, legalName, isSuspended } = pendingCompanies[0];
+
         setCompanyId?.(() => companyId);
         setCompanyLegalName?.(() => legalName);
+        setIsCompanySuspended?.(() => isSuspended);
+
         sessionStorage.setItem(
           "onRouteBC.user.companyId",
           companyId.toString(),
         );
         setIsNewBCeIDUser?.(() => true);
       }
+
       /**
        * The user has been migrated.
        */
       if (migratedClient?.clientNumber) {
         setMigratedClient?.(() => migratedClient);
       }
+
       /**
        * If there is no company in the system (to prevent unauthorized logins)
        * we can affirmatively say that the logged in user is a new user.
@@ -234,4 +255,42 @@ export const useIDIRUserRoles = (userRoles: Nullable<UserRolesType[]>) => {
       setUserRoles?.(() => userRoles);
     }
   }, [userRoles]);
+};
+
+/**
+ * Custom hook for deleting company users.
+ * @returns Mutation object with methods to interact with the delete operation.
+ */
+export const useDeleteCompanyActiveUsers = () => {
+  const navigate = useNavigate();
+  return useMutation({
+    mutationFn: deleteCompanyActiveUsers,
+    onError: () => navigate(ERROR_ROUTES.UNEXPECTED),
+    onSuccess: (response: AxiosResponse) => {
+      const { data: companyUserResponse } = response;
+      const { failure } = companyUserResponse as DeleteResponse;
+      if (failure?.length > 0) {
+        navigate(ERROR_ROUTES.UNEXPECTED);
+      }
+    },
+  });
+};
+
+/**
+ * Custom hook for deleting company pending users.
+ * @returns Mutation object with methods to interact with the delete operation.
+ */
+export const useDeleteCompanyPendingUsers = () => {
+  const navigate = useNavigate();
+  return useMutation({
+    mutationFn: deleteCompanyPendingUsers,
+    onError: () => navigate(ERROR_ROUTES.UNEXPECTED),
+    onSuccess: (response: AxiosResponse) => {
+      const { data: companyUserResponse } = response;
+      const { failure } = companyUserResponse as DeleteResponse;
+      if (failure?.length > 0) {
+        navigate(ERROR_ROUTES.UNEXPECTED);
+      }
+    },
+  });
 };

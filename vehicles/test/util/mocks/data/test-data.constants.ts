@@ -4,8 +4,9 @@ import { AccountSource } from '../../../../src/common/enum/account-source.enum';
 import { Directory } from '../../../../src/common/enum/directory.enum';
 import { IDP } from '../../../../src/common/enum/idp.enum';
 import {
-  UserAuthGroup,
   ClientUserAuthGroup,
+  GenericUserAuthGroup,
+  IDIRUserAuthGroup,
 } from '../../../../src/common/enum/user-auth-group.enum';
 import { UserStatus } from '../../../../src/common/enum/user-status.enum';
 
@@ -26,6 +27,8 @@ export const COUNTRY_SORT_ORDER_US = '2';
 export const PROVINCE_CODE_WA = 'WA';
 export const PROVINCE_NAME_WA = 'Washington';
 export const PROVINCE_ID_US_WA = 'US-WA';
+
+export const USER_AUTH_GROUP_PUBLIC = GenericUserAuthGroup.PUBLIC_VERIFIED;
 
 //Red Company
 export const RED_COMPANY_ID = 1;
@@ -128,7 +131,7 @@ export const RED_COMPANY_CVCLIENT_USER_NAME = 'DKINSER';
 export const RED_COMPANY_CVCLIENT_PREFFERED_USER_NAME =
   RED_COMPANY_CVCLIENT_USER_GUID.toLowerCase().concat('@', IDP.BCEID);
 export const RED_COMPANY_CVCLIENT_USER_AUTH_GROUP =
-  ClientUserAuthGroup.CV_CLIENT;
+  ClientUserAuthGroup.PERMIT_APPLICANT;
 export const RED_COMPANY_CVCLIENT_USER_STATUS_DIRECOTRY = Directory.BCEID;
 export const RED_COMPANY_CVCLIENT_USER_STATUS = UserStatus.ACTIVE;
 
@@ -200,7 +203,7 @@ export const BLUE_COMPANY_CVCLIENT_USER_NAME = 'MGROSS';
 export const BLUE_COMPANY_CVCLIENT_PREFFERED_USER_NAME =
   BLUE_COMPANY_CVCLIENT_USER_GUID.toLowerCase().concat('@', IDP.BCEID);
 export const BLUE_COMPANY_CVCLIENT_USER_AUTH_GROUP =
-  ClientUserAuthGroup.CV_CLIENT;
+  ClientUserAuthGroup.PERMIT_APPLICANT;
 export const BLUE_COMPANY_CVCLIENT_USER_STATUS_DIRECOTRY = Directory.BCEID;
 export const BLUE_COMPANY_CVCLIENT_USER_STATUS = UserStatus.ACTIVE;
 
@@ -230,7 +233,7 @@ export const SYS_ADMIN_STAFF_USER_NAME = 'MMARSHALL';
 export const SYS_ADMIN_STAFF_PREFFERED_USER_NAME =
   SYS_ADMIN_STAFF_USER_GUID.toLowerCase().concat('@', IDP.BCEID);
 export const SYS_ADMIN_STAFF_USER_AUTH_GROUP =
-  UserAuthGroup.SYSTEM_ADMINISTRATOR;
+  IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR;
 export const SYS_ADMIN_STAFF_USER_STATUS_DIRECOTRY = Directory.IDIR;
 export const SYS_ADMIN_STAFF_USER_STATUS = UserStatus.ACTIVE;
 

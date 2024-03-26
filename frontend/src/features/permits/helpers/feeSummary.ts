@@ -1,5 +1,5 @@
 import { PermitHistory } from "../types/PermitHistory";
-import { TRANSACTION_TYPES, TransactionType } from "../types/payment.d";
+import { TRANSACTION_TYPES, TransactionType } from "../types/payment";
 import { Permit } from "../types/permit";
 import { isValidTransaction } from "./payment";
 import { Nullable } from "../../../common/types/common";
@@ -16,7 +16,8 @@ import {
  * @returns Fee to be paid for the permit duration
  */
 export const calculateFeeByDuration = (duration: number) => {
-  return duration;
+  // 1 Year === 365 days, but the fee for one year is only $360
+  return duration > 360 ? 360 : duration;
 };
 
 /**

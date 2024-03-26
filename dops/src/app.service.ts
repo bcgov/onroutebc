@@ -43,7 +43,7 @@ export class AppService {
         );
         //TODO: Temporary stopgap for release 1
         const templatefile = await this.s3Service.getFile(
-          templateMetadata.fileName, //TODO: Should be templateMetadata.s3ObjectId . Using filename as temporary stopgap for release 1 integration with BCBox.
+          templateMetadata.fileName, //TODO: Should be templateMetadata.s3ObjectId. Using filename as temporary stopgap for release 1 integration with BCBox.
         );
 
         return {
@@ -72,6 +72,33 @@ export class AppService {
       CacheKey.PAYMENT_AND_REFUND_SUMMARY_REPORT,
       this.convertFiletoString(
         assetsPath + 'templates/payment-refund-summary.report.hbs',
+      ),
+    );
+
+    await addToCache(
+      this.cacheManager,
+      CacheKey.EMAIL_TEMPLATE_PROFILE_REGISTRATION,
+      this.convertFiletoString(
+        assetsPath + 'templates/profile-registration.email.hbs',
+      ),
+    );
+    await addToCache(
+      this.cacheManager,
+      CacheKey.EMAIL_TEMPLATE_ISSUE_PERMIT,
+      this.convertFiletoString(assetsPath + 'templates/issue-permit.email.hbs'),
+    );
+    await addToCache(
+      this.cacheManager,
+      CacheKey.EMAIL_TEMPLATE_COMPANY_SUSPEND,
+      this.convertFiletoString(
+        assetsPath + 'templates/suspend-company.email.hbs',
+      ),
+    );
+    await addToCache(
+      this.cacheManager,
+      CacheKey.EMAIL_TEMPLATE_COMPANY_UNSUSPEND,
+      this.convertFiletoString(
+        assetsPath + 'templates/unsuspend-company.email.hbs',
       ),
     );
 

@@ -22,6 +22,9 @@ import "./IDIRCompanySearchResults.scss";
 import { CustomNavLink } from "../../../../common/components/links/CustomNavLink";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import { Box, CardMedia, Stack, Typography } from "@mui/material";
+import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
+import { useNavigate } from "react-router-dom";
+import { VerifiedClient } from "../../../../common/authentication/types";
 
 /*
  *
@@ -45,8 +48,16 @@ export const IDIRCompanySearchResults = memo(
       searchByFilter,
       searchEntity,
     } = searchParams;
-    const { setCompanyId, setCompanyLegalName, setOnRouteBCClientNumber } =
-      useContext(OnRouteBCContext);
+
+    const {
+      setCompanyId,
+      setCompanyLegalName,
+      setOnRouteBCClientNumber,
+      setMigratedClient,
+      setIsCompanySuspended,
+    } = useContext(OnRouteBCContext);
+
+    const navigate = useNavigate();
 
     /**
      * On click event handler for the company link.
@@ -54,13 +65,61 @@ export const IDIRCompanySearchResults = memo(
      *
      * @param selectedCompany The company that the staff user clicked on.
      */
-    const onClickCompany = (selectedCompany: CompanyProfile) => {
-      const { companyId, legalName, clientNumber } = selectedCompany;
-      setCompanyId?.(() => companyId);
-      setCompanyLegalName?.(() => legalName);
-      setOnRouteBCClientNumber?.(() => clientNumber);
-      sessionStorage.setItem("onRouteBC.user.companyId", companyId.toString());
+    const onClickCompany = (
+      selectedCompany: CompanyProfile | VerifiedClient,
+    ) => {
+      const {
+        companyId,
+        legalName,
+        clientNumber,
+        primaryContact,
+        isSuspended,
+      } = selectedCompany;
+
+      if (primaryContact?.firstName) {
+        setCompanyId?.(() => companyId);
+        setCompanyLegalName?.(() => legalName);
+        setOnRouteBCClientNumber?.(() => clientNumber);
+        setIsCompanySuspended?.(() => isSuspended);
+        sessionStorage.setItem(
+          "onRouteBC.user.companyId",
+          companyId.toString(),
+        );
+        navigate(routes.APPLICATIONS_ROUTES.BASE);
+      } else {
+        setMigratedClient?.(() => {
+          const {
+            migratedClientHash,
+            mailingAddress,
+            email,
+            fax,
+            alternateName,
+            phone,
+            extension,
+            isSuspended,
+          } = selectedCompany as VerifiedClient;
+
+          return {
+            clientNumber,
+            companyId,
+            legalName,
+            migratedClientHash,
+            mailingAddress,
+            email,
+            phone,
+            extension,
+            fax,
+            alternateName,
+            isSuspended,
+          };
+        });
+        
+        setIsCompanySuspended?.(() => isSuspended);
+
+        navigate(routes.IDIR_ROUTES.CREATE_COMPANY);
+      }
     };
+
     const [pagination, setPagination] = useState<MRT_PaginationState>({
       pageIndex: 0,
       pageSize: 10,
@@ -104,12 +163,11 @@ export const IDIRCompanySearchResults = memo(
           sortingFn: "alphanumeric",
           Cell: (props: { row: any; cell: any }) => {
             return (
-              <CustomNavLink
+              <CustomActionLink
                 onClick={() => onClickCompany(props.row.original)}
-                to={routes.APPLICATIONS_ROUTES.BASE}
               >
                 {props.row.original.legalName}
-              </CustomNavLink>
+              </CustomActionLink>
             );
           },
         },
@@ -157,17 +215,11 @@ export const IDIRCompanySearchResults = memo(
     return (
       <div className="table-container idir-company-search-results">
         {data?.items?.length !== 0 && <MaterialReactTable table={table} />}
-        {data?.items?.length === 0 &&
+        {data?.items?.length === 0 && (
           <>
-            <Stack
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              >
+            <Stack display="flex" justifyContent="center" alignItems="center">
               <NoRecordsFound />
-              <Box
-                className="create-company-btn"
-              >
+              <Box className="create-company-btn">
                 <CustomNavLink to={routes.IDIR_ROUTES.CREATE_COMPANY}>
                   <div className="button-outline">
                     <CardMedia
@@ -177,17 +229,17 @@ export const IDIRCompanySearchResults = memo(
                       alt="Create Company"
                       title="Create Company"
                     />
-                    <Typography
-                      variant={"h3"}
-                    >
-                      Create<br />Company
+                    <Typography variant={"h3"}>
+                      Create
+                      <br />
+                      Company
                     </Typography>
                   </div>
                 </CustomNavLink>
               </Box>
             </Stack>
           </>
-        }
+        )}
       </div>
     );
   },

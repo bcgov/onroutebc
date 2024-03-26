@@ -7,11 +7,7 @@ import "./ApplicationDetails.scss";
 import { permitTypeDisplayText } from "../../types/PermitType";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import { Nullable } from "../../../../common/types/common";
-import {
-  DATE_FORMATS,
-  dayjsToLocalStr,
-} from "../../../../common/helpers/formatDate";
-
+import { DATE_FORMATS, dayjsToLocalStr } from "../../../../common/helpers/formatDate";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -27,13 +23,13 @@ export const ApplicationDetails = ({
   isAmendAction = false,
   doingBusinessAs,
 }: {
-  permitType?: string;
-  infoNumberType?: "application" | "permit";
-  infoNumber?: string;
-  createdDateTime?: Dayjs;
-  updatedDateTime?: Dayjs;
+  permitType?: Nullable<string>;
+  infoNumberType?: Nullable<"application" | "permit">;
+  infoNumber?: Nullable<string>;
+  createdDateTime?: Nullable<Dayjs>;
+  updatedDateTime?: Nullable<Dayjs>;
   companyInfo?: Nullable<CompanyProfile>;
-  isAmendAction?: boolean;
+  isAmendAction?: Nullable<boolean>;
   doingBusinessAs?: Nullable<string>;
 }) => {
   const applicationName = permitTypeDisplayText(

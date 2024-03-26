@@ -7,7 +7,7 @@ export const APPLICATIONS_API_ROUTES = {
   CREATE: APPLICATIONS_API_BASE,
   UPDATE: APPLICATIONS_API_BASE,
   GET: APPLICATIONS_API_BASE,
-  STATUS: `${APPLICATIONS_API_BASE}/status`,
+  DELETE: APPLICATIONS_API_BASE,
 };
 
 export const PERMITS_API_ROUTES = {
@@ -18,6 +18,7 @@ export const PERMITS_API_ROUTES = {
   DOWNLOAD: `pdf`,
   RECEIPT: `receipt`,
   VOID: `void`,
+  RESEND: `notification`,
 };
 
 const PAYMENT_API_BASE = `${VEHICLES_URL}/payment`;

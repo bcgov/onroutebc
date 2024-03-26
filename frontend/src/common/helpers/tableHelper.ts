@@ -3,7 +3,7 @@ import { Row } from "@tanstack/table-core/build/lib/types";
 import { BC_COLOURS } from "../../themes/bcGovStyles";
 import { DATE_FORMATS, toLocal, utcToLocalDayjs } from "../helpers/formatDate";
 import { applyWhenNotNullable } from "../helpers/util";
-import { Permit } from "../../features/permits/types/permit";
+import { PermitListItem } from "../../features/permits/types/permit";
 import { Nullable } from "../types/common";
 
 /**
@@ -27,8 +27,8 @@ export const formatCellValuetoDatetime = (rawDateTime: Nullable<string>) => {
  * @returns -1 if A < B, 0 if A == B and 1 if A > B
  */
 export const dateTimeStringSortingFn = (
-  rowA: Row<Permit>,
-  rowB: Row<Permit>,
+  rowA: Row<PermitListItem>,
+  rowB: Row<PermitListItem>,
   columnId: string,
 ) => {
   const day1 = utcToLocalDayjs(rowA.getValue(columnId));
@@ -69,6 +69,7 @@ export const defaultTableOptions: any = {
     },
     variant: "outlined",
     inputProps: {
+      maxLength: 100,
       sx: {
         padding: "10px",
       },

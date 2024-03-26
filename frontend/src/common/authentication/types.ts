@@ -10,12 +10,14 @@ export type CompanyMetadata = {
   legalName: string;
   companyGUID?: string;
   alternateName?: string;
+  isSuspended?: boolean;
+  email?: string;
 };
 
 /**
  * Partial Information about a company.
  */
-export type ClientInformation = {
+export type PartialCompanyProfile = {
   migratedClientHash?: string;
   mailingAddress: {
     addressLine1: string;
@@ -27,15 +29,15 @@ export type ClientInformation = {
   };
   email: string;
   phone: string;
-  fax: string;
-  extension: string;
-  primaryContact: Contact;
+  fax?: Nullable<string>;
+  extension?: Nullable<string>;
+  primaryContact?: Nullable<Contact>;
 };
 
 /**
  * The information a verified client will have.
  */
-export type VerifiedClient = ClientInformation & CompanyMetadata;
+export type VerifiedClient = PartialCompanyProfile & CompanyMetadata;
 
 /**
  * User Context object type
@@ -109,6 +111,8 @@ export const ROLES = {
   WRITE_LCV_FLAG: "ORBC-WRITE-LCV-FLAG",
   READ_LOA: "ORBC-READ-LOA",
   WRITE_LOA: "ORBC-WRITE-LOA",
+  READ_SUSPEND: "ORBC-READ-SUSPEND",
+  WRITE_SUSPEND: "ORBC-WRITE-SUSPEND",
 } as const;
 
 /**
@@ -121,13 +125,14 @@ export type UserRolesType = (typeof ROLES)[keyof typeof ROLES];
  */
 export const USER_AUTH_GROUP = {
   ANONYMOUS: "ANONYMOUS",
-  CV_CLIENT: "CVCLIENT",
+  PERMIT_APPLICANT: "PAPPLICANT",
   COMPANY_ADMINISTRATOR: "ORGADMIN",
   PPC_CLERK: "PPCCLERK",
   SYSTEM_ADMINISTRATOR: "SYSADMIN",
   ENFORCEMENT_OFFICER: "EOFFICER",
   HQ_ADMINISTRATOR: "HQADMIN",
   FINANCE: "FINANCE",
+  CTPO: "CTPO",
 } as const;
 
 /**
@@ -140,7 +145,7 @@ export type UserAuthGroupType =
  * The user auth group enum key-value pairs.
  */
 export const BCeID_USER_AUTH_GROUP = {
-  CV_CLIENT: "CVCLIENT",
+  PERMIT_APPLICANT: "PAPPLICANT",
   COMPANY_ADMINISTRATOR: "ORGADMIN",
 } as const;
 
@@ -159,6 +164,7 @@ export const IDIR_USER_AUTH_GROUP = {
   ENFORCEMENT_OFFICER: "EOFFICER",
   HQ_ADMINISTRATOR: "HQADMIN",
   FINANCE: "FINANCE",
+  CTPO: "CTPO",
 } as const;
 
 /**

@@ -1,0 +1,16 @@
+.suspend-snackbar {
+  height: fit-content;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  position: fixed;
+  left: 50%;
+  top: 8.25rem;
+  transform: translate(-50%, 0);
+  z-index: 4;
+
+  .bc-gov-alertbanner {
+    &__icon {
+      margin-right: 0.5rem;
+    }
+  }
+}

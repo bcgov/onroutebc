@@ -83,6 +83,17 @@ export type OnRouteBCContextType = {
    */
   companyLegalName?: string;
   /**
+   * Whether or not the company in context is suspended.
+   * Value is set and available only if
+   *  - user is a BCeID user with a company in the system.
+   *  - staff acts a company.
+   */
+  isCompanySuspended?: boolean;
+  /**
+   * React state setter for if the company in context is suspended.
+   */
+  setIsCompanySuspended?: Dispatch<SetStateAction<Optional<boolean>>>;
+  /**
    * The user details of a IDIR user logged in.
    * Will have values only when the user is idir and set up in the system.
    */
@@ -112,6 +123,12 @@ export type OnRouteBCContextType = {
    * Used only when the user is new and trying to claim their company.
    */
   setIsNewBCeIDUser?: Dispatch<SetStateAction<Optional<boolean>>>;
+  /**
+   * A utility function to clear the company context.
+   * Intended for use during staff act as company.
+   * @returns void
+   */
+  clearCompanyContext?: () => void;
 };
 
 const defaultBehaviour: OnRouteBCContextType = {};

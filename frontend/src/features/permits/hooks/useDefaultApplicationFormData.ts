@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 
-import { Application, Commodities } from "../types/application";
+import { Application, ApplicationFormData } from "../types/application";
 import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBCContext";
 import { areCommoditiesEqual } from "../helpers/equality";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { CompanyProfile } from "../../manageProfile/types/manageProfile";
 import { Nullable, Optional } from "../../../common/types/common";
+import { PermitType } from "../types/PermitType";
+import { PermitCommodity } from "../types/PermitCommodity";
 import {
   getDefaultContactDetails,
   getDefaultMailingAddress,
@@ -16,21 +18,32 @@ import {
 
 /**
  * Custom hook used to fetch application data and populate the form, as well as fetching current company id and user details.
- * This also involves resetting certain form values when new/updated application data is received through ApplicationContext
+ * This also involves resetting certain form values when new/updated application data is received through ApplicationContext.
+ * @param permitType Permit type for the application
  * @param applicationData Application data received to fill out the form, preferrably from ApplicationContext/backend
+ * @param companyId Company id for the application
+ * @param userDetails User details for filling out the form
+ * @param companyInfo Company information for filling out the form
  * @returns current companyId, user details, default application data values, its setter method, and methods to manage the form
  */
 export const useDefaultApplicationFormData = (
+  permitType: PermitType,
   applicationData?: Nullable<Application>,
   companyId?: number,
   userDetails?: BCeIDUserDetailContext,
   companyInfo?: CompanyProfile,
 ) => {
   // initialize the entire form data with default values
-  // Use default values (saved data from the TROS application context, or empty values)
+  // Use default values (saved data from the application context, or empty values)
   const [defaultApplicationDataValues, setDefaultApplicationDataValues] =
-    useState<Application>(
-      getDefaultValues(applicationData, companyId, userDetails, companyInfo),
+    useState<ApplicationFormData>(
+      getDefaultValues(
+        permitType,
+        applicationData,
+        companyId,
+        userDetails,
+        companyInfo,
+      ),
     );
 
   // Update contact details form fields whenever these values are updated
@@ -88,7 +101,7 @@ export const useDefaultApplicationFormData = (
 
   // Recommended way of making deep comparisons (for arrays/objects) in dependency arrays
   // https://stackoverflow.com/questions/59467758/passing-array-to-useeffect-dependency-list
-  const commoditiesRef = useRef<Optional<Commodities[]>>(
+  const commoditiesRef = useRef<Optional<PermitCommodity[]>>(
     applicationData?.permitData?.commodities,
   );
   const incomingCommodities = getDefaultRequiredVal(
@@ -112,14 +125,12 @@ export const useDefaultApplicationFormData = (
     applicationData?.permitId,
     applicationData?.permitNumber,
     applicationData?.permitStatus,
+    permitType,
     applicationData?.permitType,
-    applicationData?.createdDateTime,
-    applicationData?.updatedDateTime,
     applicationData?.permitData?.startDate,
     applicationData?.permitData?.permitDuration,
     applicationData?.permitData?.expiryDate,
     applicationData?.permitData?.feeSummary,
-    applicationData?.documentId,
     applicationData?.revision,
     applicationData?.previousRevision,
     commoditiesRef.current, // array deep comparison used here
@@ -130,12 +141,18 @@ export const useDefaultApplicationFormData = (
 
   useEffect(() => {
     setDefaultApplicationDataValues(
-      getDefaultValues(applicationData, companyId, userDetails, companyInfo),
+      getDefaultValues(
+        permitType,
+        applicationData,
+        companyId,
+        userDetails,
+        companyInfo,
+      ),
     );
   }, applicationFormDataDepArray);
 
   // Register default values with react-hook-form
-  const formMethods = useForm<Application>({
+  const formMethods = useForm<ApplicationFormData>({
     defaultValues: defaultApplicationDataValues,
     reValidateMode: "onBlur",
   });

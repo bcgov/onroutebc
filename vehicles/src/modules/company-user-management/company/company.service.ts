@@ -10,7 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, DataSource, Repository } from 'typeorm';
 import {
   ClientUserAuthGroup,
-  UserAuthGroup,
+  GenericUserAuthGroup,
 } from '../../../common/enum/user-auth-group.enum';
 import { ReadUserDto } from '../users/dto/response/read-user.dto';
 import { CreateCompanyDto } from './dto/request/create-company.dto';
@@ -30,9 +30,8 @@ import {
   sortQuery,
 } from 'src/common/helper/database.helper';
 import { randomInt } from 'crypto';
-import { EmailService } from '../../email/email.service';
-import { EmailTemplate } from '../../../common/enum/email-template.enum';
-import { ProfileRegistrationEmailData } from '../../../common/interface/profile-registration-email-data.interface';
+import { NotificationTemplate } from '../../../common/enum/notification-template.enum';
+import { ProfileRegistrationDataNotification } from '../../../common/interface/profile-registration-data.notification.interface';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { getFromCache } from '../../../common/helper/cache.helper';
@@ -51,7 +50,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { UserStatus } from 'src/common/enum/user-status.enum';
 import { VerifyClientDto } from './dto/request/verify-client.dto';
 import { ReadVerifyClientDto } from './dto/response/read-verify-client.dto';
-import { Permit } from '../../permit/entities/permit.entity';
+import { Permit } from '../../permit-application-payment/permit/entities/permit.entity';
+import { DopsService } from '../../common/dops.service';
+import { INotificationDocument } from '../../../common/interface/notification-document.interface';
 
 @Injectable()
 export class CompanyService {
@@ -61,7 +62,7 @@ export class CompanyService {
     private companyRepository: Repository<Company>,
     @InjectMapper() private readonly classMapper: Mapper,
     private dataSource: DataSource,
-    private readonly emailService: EmailService,
+    private readonly dopsService: DopsService,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
   ) {}
@@ -198,7 +199,7 @@ export class CompanyService {
           User,
           {
             extraArgs: () => ({
-              userAuthGroup: UserAuthGroup.COMPANY_ADMINISTRATOR,
+              userAuthGroup: GenericUserAuthGroup.PUBLIC_VERIFIED,
               userName: currentUser.userName,
               directory: currentUser.orbcUserDirectory,
               userGUID: currentUser.userGUID,
@@ -238,7 +239,7 @@ export class CompanyService {
     readCompanyUserDto.adminUser = newUser;
 
     try {
-      const emailData: ProfileRegistrationEmailData = {
+      const notificationData: ProfileRegistrationDataNotification = {
         companyName: readCompanyUserDto.legalName,
         onRoutebBcClientNumber: readCompanyUserDto.clientNumber,
         companyAddressLine1: readCompanyUserDto.mailingAddress.addressLine1,
@@ -279,11 +280,16 @@ export class CompanyService {
         primaryContactCity: readCompanyUserDto.primaryContact.city,
       };
 
-      await this.emailService.sendEmailMessage(
-        EmailTemplate.PROFILE_REGISTRATION,
-        emailData,
-        'Welcome to onRouteBC',
-        [readCompanyUserDto.email, readCompanyUserDto.primaryContact.email],
+      const notificationDocument: INotificationDocument = {
+        templateName: NotificationTemplate.PROFILE_REGISTRATION,
+        to: [readCompanyUserDto.email, readCompanyUserDto.primaryContact.email],
+        subject: 'Welcome to onRouteBC',
+        data: notificationData,
+      };
+
+      await this.dopsService.notificationWithDocumentsFromDops(
+        currentUser,
+        notificationDocument,
       );
     } catch (error: unknown) {
       this.logger.error(error);
@@ -446,6 +452,9 @@ export class CompanyService {
       );
     }
 
+    // total number of items
+    const totalItems = await companiesQB.getCount();
+
     // Object to map frontend orderBy parameters to actual database fields
     const orderByMapping: Record<string, string> = {
       companyId: 'company.companyId',
@@ -480,7 +489,6 @@ export class CompanyService {
     );
     // Map entities to DTOs for consistent response structure
 
-    const totalItems = companyData?.length;
     const pageMetaDto = new PageMetaDto({
       totalItems,
       pageOptionsDto: {
@@ -797,6 +805,7 @@ export class CompanyService {
       // Attempt to find a permit by permit number or migrated permit number
       const permit = await queryRunner.manager
         .createQueryBuilder(Permit, 'permit')
+        .leftJoinAndSelect('permit.company', 'company')
         .where('permit.migratedPermitNumber = :permitNumber', {
           permitNumber: verifyClientDto.permitNumber,
         })
@@ -808,7 +817,7 @@ export class CompanyService {
       // If permit found, validate company and permit linkage
       if (permit) {
         verifyClient.foundPermit = true;
-        if (permit.companyId === company?.companyId) {
+        if (permit.company?.companyId === company?.companyId) {
           verifyClient.verifiedClient =
             await this.mapCompanyEntityToCompanyDto(company);
         }

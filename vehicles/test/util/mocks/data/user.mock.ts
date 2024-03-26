@@ -34,8 +34,8 @@ import {
   createRedCompanyCvClientContactDtoMock,
   createSysAdminStaffContactDtoMock,
   readSysAdminStaffContactDtoMock,
+  sysAdminStaffContactEntityMock,
 } from './contact.mock';
-import { IdirUser } from 'src/modules/company-user-management/users/entities/idir.user.entity';
 import { UserStatus } from '../../../../src/common/enum/user-status.enum';
 
 //User list
@@ -44,9 +44,10 @@ export const redCompanyAdminUserEntityMock: User = {
   userGUID: constants.RED_COMPANY_ADMIN_USER_GUID,
   userName: constants.RED_COMPANY_ADMIN_USER_NAME,
   directory: constants.RED_COMPANY_ADMIN_USER_STATUS_DIRECOTRY,
-  userAuthGroup: constants.RED_COMPANY_ADMIN_USER_AUTH_GROUP,
+  userAuthGroup: constants.USER_AUTH_GROUP_PUBLIC,
   userContact: { ...redCompanyAdminContactEntityMock },
   companyUsers: [{ ...redCompanyAdminCompanyUserEntityMock }],
+  statusCode: constants.RED_COMPANY_ADMIN_USER_STATUS,
   ...baseEntityMock,
 };
 
@@ -81,9 +82,10 @@ export const redCompanyCvClientUserEntityMock: User = {
   userGUID: constants.RED_COMPANY_CVCLIENT_USER_GUID,
   userName: constants.RED_COMPANY_CVCLIENT_USER_NAME,
   directory: constants.RED_COMPANY_CVCLIENT_USER_STATUS_DIRECOTRY,
-  userAuthGroup: constants.RED_COMPANY_CVCLIENT_USER_AUTH_GROUP,
+  userAuthGroup: constants.USER_AUTH_GROUP_PUBLIC,
   userContact: { ...redCompanyCvClientContactEntityMock },
   companyUsers: [{ ...redCompanyCvClientCompanyUserEntityMock }],
+  statusCode: constants.RED_COMPANY_CVCLIENT_USER_STATUS,
   ...baseEntityMock,
 };
 
@@ -119,9 +121,10 @@ export const blueCompanyAdminUserEntityMock: User = {
   userGUID: constants.BLUE_COMPANY_ADMIN_USER_GUID,
   userName: constants.BLUE_COMPANY_ADMIN_USER_NAME,
   directory: constants.BLUE_COMPANY_ADMIN_USER_STATUS_DIRECOTRY,
-  userAuthGroup: constants.BLUE_COMPANY_ADMIN_USER_AUTH_GROUP,
+  userAuthGroup: constants.USER_AUTH_GROUP_PUBLIC,
   userContact: { ...blueCompanyAdminContactEntityMock },
   companyUsers: [{ ...blueCompanyAdminCompanyUserEntityMock }],
+  statusCode: constants.BLUE_COMPANY_ADMIN_USER_STATUS,
   ...baseEntityMock,
 };
 
@@ -156,9 +159,10 @@ export const blueCompanyCvClientUserEntityMock: User = {
   userGUID: constants.BLUE_COMPANY_CVCLIENT_USER_GUID,
   userName: constants.BLUE_COMPANY_CVCLIENT_USER_NAME,
   directory: constants.BLUE_COMPANY_CVCLIENT_USER_STATUS_DIRECOTRY,
-  userAuthGroup: constants.BLUE_COMPANY_CVCLIENT_USER_AUTH_GROUP,
+  userAuthGroup: constants.USER_AUTH_GROUP_PUBLIC,
   userContact: { ...blueCompanyCvClientContactEntityMock },
   companyUsers: [{ ...blueCompanyCvClientCompanyUserEntityMock }],
+  statusCode: constants.BLUE_COMPANY_CVCLIENT_USER_STATUS,
   ...baseEntityMock,
 };
 
@@ -189,13 +193,12 @@ export const readBlueCvClientUserOrbcStatusDtoMock: ReadUserOrbcStatusDto = {
 };
 
 //Blue Company Cv Client User
-export const sysAdminStaffUserEntityMock: IdirUser = {
+export const sysAdminStaffUserEntityMock: User = {
   userGUID: constants.SYS_ADMIN_STAFF_USER_GUID,
   userName: constants.SYS_ADMIN_STAFF_USER_NAME,
+  directory: constants.SYS_ADMIN_STAFF_USER_STATUS_DIRECOTRY,
   userAuthGroup: constants.SYS_ADMIN_STAFF_USER_AUTH_GROUP,
-  firstName: constants.SYS_ADMIN_STAFF_FIRST_NAME,
-  lastName: constants.SYS_ADMIN_STAFF_LAST_NAME,
-  email: constants.SYS_ADMIN_STAFF_EMAIL,
+  userContact: { ...sysAdminStaffContactEntityMock },
   statusCode: UserStatus.ACTIVE,
   ...baseEntityMock,
 };
@@ -246,14 +249,3 @@ export const USER_DTO_LIST = [
     companyId: constants.BLUE_COMPANY_ID,
   },
 ];
-
-export const idirUserEntityMock: IdirUser = {
-  userGUID: constants.SYS_ADMIN_STAFF_USER_GUID,
-  userName: constants.SYS_ADMIN_STAFF_USER_NAME,
-  userAuthGroup: constants.SYS_ADMIN_STAFF_USER_AUTH_GROUP,
-  statusCode: constants.SYS_ADMIN_STAFF_USER_STATUS,
-  email: constants.SYS_ADMIN_STAFF_EMAIL,
-  firstName: constants.SYS_ADMIN_STAFF_FIRST_NAME,
-  lastName: constants.SYS_ADMIN_STAFF_LAST_NAME,
-  ...baseEntityMock,
-};

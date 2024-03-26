@@ -6,7 +6,8 @@ import { Dispatch, SetStateAction, useContext } from "react";
 import { useFormContext } from "react-hook-form";
 import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router-dom";
-import { Nullable } from "vitest";
+
+import { Nullable } from "../../../common/types/common";
 import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { ERROR_ROUTES } from "../../../routes/constants";
@@ -35,6 +36,7 @@ export const CompanyAndUserInfoSteps = ({
   const navigate = useNavigate();
   const { handleSubmit: handleCreateProfileSubmit, register } =
     useFormContext<CreateCompanyRequest>();
+
   const {
     setCompanyId,
     setUserDetails,
@@ -42,6 +44,7 @@ export const CompanyAndUserInfoSteps = ({
     setOnRouteBCClientNumber,
     setMigratedClient,
   } = useContext(OnRouteBCContext);
+
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -69,6 +72,8 @@ export const CompanyAndUserInfoSteps = ({
         setCompanyId?.(() => companyId);
         setCompanyLegalName?.(() => companyName);
         setOnRouteBCClientNumber?.(() => clientNumber);
+
+        // No need for setIsCompanySuspended since the company was just created
 
         // Clear any state in migrated client. We no longer need this
         // once the user has successfully created/claimed their company.
@@ -117,7 +122,7 @@ export const CompanyAndUserInfoSteps = ({
   return (
     <>
       <input type="hidden" {...register("legalName")} />
-      {activeStep === totalSteps - 2 && (
+      {activeStep <= totalSteps - 1 && (
         <div className="create-profile-section create-profile-section--info">
           <Alert severity="info">
             <Typography>
@@ -204,22 +209,45 @@ export const CompanyAndUserInfoSteps = ({
         )}
         {activeStep === totalSteps - 1 && (
           <>
-            <Button
-              onClick={handleBack}
-              variant="contained"
-              color="secondary"
-              startIcon={<FontAwesomeIcon icon={faArrowLeft} />}
-              className="proceed-btn proceed-btn--prev"
-            >
-              Previous
-            </Button>
-            <Button
-              onClick={handleCreateProfileSubmit(onClickFinish)}
-              variant="contained"
-              className="proceed-btn proceed-btn--finish"
-            >
-              Finish
-            </Button>
+            <Stack direction="row" spacing={3}>
+              <Button
+                key="cancel-create-profile-button"
+                aria-label="Cancel Create Profile"
+                variant="contained"
+                color="secondary"
+                onClick={() => {
+                  // Go back
+                  navigate(-1);
+                }}
+                disableElevation
+                sx={{
+                  ":hover": {
+                    background: BC_COLOURS.bc_background_light_grey,
+                    border: `2px solid ${BC_COLOURS.bc_text_box_border_grey}`,
+                  },
+                  border: `2px solid ${BC_COLOURS.white}`,
+                  borderRadius: "4px",
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleBack}
+                variant="contained"
+                color="secondary"
+                startIcon={<FontAwesomeIcon icon={faArrowLeft} />}
+                className="proceed-btn proceed-btn--prev"
+              >
+                Previous
+              </Button>
+              <Button
+                onClick={handleCreateProfileSubmit(onClickFinish)}
+                variant="contained"
+                className="proceed-btn proceed-btn--finish"
+              >
+                Finish
+              </Button>
+            </Stack>
           </>
         )}
       </div>

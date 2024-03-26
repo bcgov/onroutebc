@@ -28,6 +28,6 @@ export const getEmptyUserDetails = () => ({
     phone2Extension: "",
     email: "",
     fax: "",
-    userAuthGroup: USER_AUTH_GROUP.CV_CLIENT,
+    userAuthGroup: USER_AUTH_GROUP.PERMIT_APPLICANT,
   },
 });

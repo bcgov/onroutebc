@@ -20,6 +20,8 @@ import { ExceptionDto } from '../../common/exception/exception.dto';
 import { ClsService } from 'nestjs-cls';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import { LogMethodExecution } from '../../common/decorator/log-method-execution.decorator';
+import { INotificationDocument } from '../../common/interface/notification-document.interface';
+import { ReadNotificationDto } from './dto/response/read-notification.dto';
 
 @Injectable()
 export class DopsService {
@@ -102,16 +104,15 @@ export class DopsService {
    * @param dopsGeneratedDocument - The template details and data of type
    *               {@link DopsGeneratedDocument}.
    * @param res - An optional Response object.
-   * @returns A Promise that resolves to an object of type {@link IFile}. Null
+   * @returns A Promise that resolves to an object of type {@link ReadFileDto}. Null
    * is returned if Response object was passed as a parameter.
    */
   @LogAsyncMethodExecution()
   async generateDocument(
     currentUser: IUserJWT,
     dopsGeneratedDocument: DopsGeneratedDocument,
-    res?: Response,
     companyId?: number,
-  ): Promise<IFile> {
+  ): Promise<ReadFileDto> {
     // Construct the URL for the request
     const url = process.env.DOPS_URL + `/dgen/template/render`;
 
@@ -122,7 +123,7 @@ export class DopsService {
         'Content-Type': 'application/json',
         'x-correlation-id': this.cls.getId(),
       },
-      responseType: 'stream',
+      responseType: 'json',
     };
 
     // Calls the DOPS service, which converts the the template document into a pdf
@@ -146,26 +147,7 @@ export class DopsService {
         );
       });
 
-    if (res) {
-      this.convertAxiosToExpress(dopsResponse, res);
-      const responseData = dopsResponse.data as NodeJS.ReadableStream;
-      responseData.pipe(res);
-      return null;
-    }
-    const file = await this.createFile(
-      dopsResponse.data as NodeJS.ReadableStream,
-    );
-
-    const generatedDocument: IFile = {
-      originalname: dopsGeneratedDocument.generatedDocumentFileName,
-      encoding: dopsResponse.headers['Content-Transfer-Encoding'] as string,
-      mimetype: dopsResponse.headers['Content-Type'] as string,
-      buffer: file,
-      size: dopsResponse.headers['Content-Length'] as number,
-      dmsId: dopsResponse.headers['x-orbc-dms-id'] as string,
-    };
-
-    return generatedDocument;
+    return dopsResponse.data as ReadFileDto;
   }
 
   /**
@@ -267,5 +249,56 @@ export class DopsService {
     };
 
     return generatedDocument;
+  }
+
+  /**
+   * Sends an notification with documents fetched from S3 using DOPS service.
+   * @param currentUser - The current authenticated user's JWT details.
+   * @param notificationWithDocuments - The details of the notification and documents to be sent.
+   * @returns A Promise resolving to the response from DOPS service containing
+   *          the message and the transaction ID of the notification sent.
+   */
+  @LogAsyncMethodExecution()
+  async notificationWithDocumentsFromDops(
+    currentUser: IUserJWT,
+    notificationWithDocuments: INotificationDocument,
+  ) {
+    // Construct the request URL by appending endpoint to the DOPS base URL
+    const url = process.env.DOPS_URL + `/notification/document`;
+
+    // Configuration for the Axios request, including headers and response type
+    const reqConfig: AxiosRequestConfig = {
+      headers: {
+        Authorization: currentUser.access_token, // User's access token for authorization
+        'Content-Type': 'application/json', // Setting content type as JSON
+        'x-correlation-id': this.cls.getId(), // Correlation ID for tracking the request
+      },
+      responseType: 'json', // Expecting a JSON response
+    };
+
+    // Send POST request to the DOPS service and handle the response or error
+    const dopsResponse = await lastValueFrom(
+      this.httpService.post(url, notificationWithDocuments, reqConfig),
+    )
+      .then((response) => {
+        // Return the Axios response directly on success
+        return response;
+      })
+      .catch((error: AxiosError) => {
+        // Log and throw error if the request fails
+        if (error.response) {
+          this.logger.error(
+            `Error response from DOPS: ${error.response.status} ${error.response.statusText} `,
+          );
+        } else {
+          this.logger.error(error?.message, error?.stack);
+        }
+        throw new InternalServerErrorException(
+          'Error generating while sending notification',
+        );
+      });
+
+    // Return the response data after casting it to the expected type
+    return dopsResponse.data as ReadNotificationDto;
   }
 }
