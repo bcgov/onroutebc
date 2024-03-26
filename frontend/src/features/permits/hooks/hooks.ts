@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { AxiosError } from "axios";
-import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { useQueryClient, useMutation, useQuery, keepPreviousData } from "@tanstack/react-query";
 
 import { Application, ApplicationFormData } from "../types/application";
 import { IssuePermitsResponse } from "../types/permit";
 import { StartTransactionResponseData } from "../types/payment";
 import { APPLICATION_STEPS, ApplicationStep } from "../../../routes/constants";
-import { Nullable, Optional } from "../../../common/types/common";
+import { Nullable, Optional, SortingConfig } from "../../../common/types/common";
 import { isPermitTypeValid } from "../types/PermitType";
 import { isPermitIdNumeric } from "../helpers/permitState";
 import { deserializeApplicationResponse } from "../helpers/deserializeApplication";
@@ -25,6 +25,7 @@ import {
   getCurrentAmendmentApplication,
   modifyAmendmentApplication,
   getApplicationsInProgress,
+  resendPermit,
 } from "../apiManager/permitsAPI";
 
 /**
@@ -383,15 +384,28 @@ export const useApplicationsInProgressQuery = ({
   take = 10,
   searchString = "",
   sorting = [],
+}: {
+  page: number;
+  take: number;
+  searchString?: string;
+  sorting: SortingConfig[];
 }) => {
-  const applicationsInProgressQuery = useQuery({
-    queryKey: ["applicationInProgress"],
+  return useQuery({
+    queryKey: ["applicationsInProgress", page, take, sorting],
     queryFn: () =>
       getApplicationsInProgress({ page, take, searchString, orderBy: sorting }),
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
+    refetchOnMount: "always",
+    placeholderData: keepPreviousData,
   });
+};
 
-  return {
-    applicationsInProgressQuery,
-  };
+/**
+ * Hook used for resending a permit.
+ * @returns Mutation object to be used for resending a permit
+ */
+export const useResendPermit = () => {
+  return useMutation({
+    mutationFn: resendPermit,
+  });
 };

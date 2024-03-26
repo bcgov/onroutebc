@@ -9,12 +9,14 @@ import { Receipt } from './entities/receipt.entity';
 import { PaymentCardType } from './entities/payment-card-type.entity';
 import { PaymentMethodType } from './entities/payment-method-type.entity';
 import { PaymentReportService } from './payment-report.service';
+import { Permit } from '../permit/entities/permit.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       Transaction,
       PermitTransaction,
+      Permit,
       Receipt,
       PaymentCardType,
       PaymentMethodType,

@@ -29,6 +29,7 @@ export const defaultCompanyInfo = {
     provinceCode: "BC",
     countryCode: "CA",
   },
+  isSuspended: false,
 };
 
 export const country = formatCountry(

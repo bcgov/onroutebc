@@ -34,6 +34,11 @@ import { PaymentCardType } from './entities/payment-card-type.entity';
 import { PaymentMethodType } from './entities/payment-method-type.entity';
 import { LogMethodExecution } from '../../../common/decorator/log-method-execution.decorator';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
+import { PermitHistoryDto } from '../permit/dto/response/permit-history.dto';
+import {
+  calculatePermitAmount,
+  permitFee,
+} from 'src/common/helper/permit-fee.helper';
 
 @Injectable()
 export class PaymentService {
@@ -42,10 +47,14 @@ export class PaymentService {
     private dataSource: DataSource,
     @InjectRepository(Transaction)
     private transactionRepository: Repository<Transaction>,
+    @InjectRepository(Receipt)
+    private receiptRepository: Repository<Receipt>,
     @InjectRepository(PaymentMethodType)
     private paymentMethodTypeRepository: Repository<PaymentMethodType>,
     @InjectRepository(PaymentCardType)
     private paymentCardTypeRepository: Repository<PaymentCardType>,
+    @InjectRepository(Permit)
+    private permitRepository: Repository<Permit>,
     @InjectMapper() private readonly classMapper: Mapper,
   ) {}
 
@@ -170,17 +179,18 @@ export class PaymentService {
     );
   }
 
-  private assertApplicationInProgress(
-    transactionType: TransactionType,
-    permitStatus: ApplicationStatus,
-  ) {
-    if (
-      this.isTransactionPurchase(transactionType) &&
-      permitStatus != ApplicationStatus.IN_PROGRESS &&
-      permitStatus != ApplicationStatus.WAITING_PAYMENT
-    ) {
-      throw new BadRequestException('Application should be in Progress!!');
-    }
+  private isApplicationInProgress(permitStatus: ApplicationStatus) {
+    return (
+      permitStatus === ApplicationStatus.IN_PROGRESS ||
+      permitStatus === ApplicationStatus.WAITING_PAYMENT
+    );
+  }
+
+  private isVoidorRevoked(permitStatus: ApplicationStatus) {
+    return (
+      permitStatus === ApplicationStatus.VOIDED ||
+      permitStatus === ApplicationStatus.REVOKED
+    );
   }
 
   /**
@@ -195,13 +205,8 @@ export class PaymentService {
     createTransactionDto: CreateTransactionDto,
     nestedQueryRunner?: QueryRunner,
   ): Promise<ReadTransactionDto> {
-    const totalTransactionAmount =
-      createTransactionDto.applicationDetails?.reduce(
-        (accumulator, item) => accumulator + item.transactionAmount,
-        0,
-      );
-    const transactionOrderNumber = await this.generateTransactionOrderNumber();
     let readTransactionDto: ReadTransactionDto;
+    let existingApplications: Permit[] = [];
     const queryRunner =
       nestedQueryRunner || this.dataSource.createQueryRunner();
     if (!nestedQueryRunner) {
@@ -209,6 +214,33 @@ export class PaymentService {
       await queryRunner.startTransaction();
     }
     try {
+      for (const application of createTransactionDto.applicationDetails) {
+        existingApplications = await queryRunner.manager.find(Permit, {
+          where: { permitId: application.applicationId },
+          relations: { permitData: true },
+        });
+
+        const validStatus = existingApplications.some(
+          (existingApplication) =>
+            this.isVoidorRevoked(existingApplication.permitStatus) ||
+            this.isApplicationInProgress(existingApplication.permitStatus),
+        );
+
+        if (!validStatus) {
+          throw new BadRequestException('Application should be in Progress!!');
+        }
+      }
+
+      const totalTransactionAmount =
+        await this.validatePaymentAndCalculateAmount(
+          createTransactionDto,
+          existingApplications,
+          queryRunner,
+        );
+
+      const transactionOrderNumber =
+        await this.generateTransactionOrderNumber();
+
       let newTransaction = await this.classMapper.mapAsync(
         createTransactionDto,
         CreateTransactionDto,
@@ -227,16 +259,7 @@ export class PaymentService {
 
       newTransaction = await queryRunner.manager.save(newTransaction);
 
-      for (const application of createTransactionDto.applicationDetails) {
-        const existingApplication = await queryRunner.manager.findOne(Permit, {
-          where: { permitId: application.applicationId },
-        });
-
-        this.assertApplicationInProgress(
-          newTransaction.transactionTypeId,
-          existingApplication.permitStatus,
-        );
-
+      for (const existingApplication of existingApplications) {
         let newPermitTransactions = new PermitTransaction();
         newPermitTransactions.transaction = newTransaction;
         newPermitTransactions.permit = existingApplication;
@@ -250,7 +273,13 @@ export class PaymentService {
         newPermitTransactions.updatedUserDirectory =
           currentUser.orbcUserDirectory;
         newPermitTransactions.updatedUserGuid = currentUser.userGUID;
-        newPermitTransactions.transactionAmount = application.transactionAmount;
+        newPermitTransactions.transactionAmount =
+          createTransactionDto.applicationDetails
+            .filter(
+              (application) =>
+                application.applicationId === existingApplication.permitId,
+            )
+            .map((application) => application.transactionAmount)[0];
         newPermitTransactions = await queryRunner.manager.save(
           newPermitTransactions,
         );
@@ -270,7 +299,8 @@ export class PaymentService {
 
           await queryRunner.manager.save(existingApplication);
         } else if (
-          this.isTransactionPurchase(newTransaction.transactionTypeId)
+          this.isTransactionPurchase(newTransaction.transactionTypeId) &&
+          !this.isVoidorRevoked(existingApplication.permitStatus)
         ) {
           existingApplication.permitStatus = ApplicationStatus.PAYMENT_COMPLETE;
           existingApplication.updatedDateTime = new Date();
@@ -350,6 +380,81 @@ export class PaymentService {
     }
 
     return readTransactionDto;
+  }
+
+  /**
+   * Validates the payment information in the request against the backend data, calculates the transaction amount,
+   * and checks for transaction type and amount consistency.
+   *
+   * This method first calculates the total transaction amount based on the backend permit data and
+   * compares it with the transaction amount sent in the request to ensure they match. If there's a mismatch, it throws an error.
+   * Additionally, for refund transactions, it checks if the total calculated transaction amount is negative as expected;
+   * if not, it throws an error.
+   *
+   * @param {CreateTransactionDto} createTransactionDto - The DTO containing the transaction details from the request.
+   * @param {Permit[]} applications - A list of permits associated with the transaction.
+   * @param {QueryRunner} nestedQueryRunner - The query runner to use for database operations within the method.
+   * @returns {Promise<number>} The total transaction amount calculated from the backend data.
+   * @throws {BadRequestException} When the transaction amount in the request doesn't match with the calculated amount,
+   * or if there's a transaction type and amount mismatch in case of refunds.
+   */
+  private async validatePaymentAndCalculateAmount(
+    createTransactionDto: CreateTransactionDto,
+    applications: Permit[],
+    queryRunner: QueryRunner,
+  ) {
+    let totalTransactionAmountCalculated: number = 0;
+    // Calculate and add amount for each requested application, as per the available backend data.
+    for (const application of applications) {
+      totalTransactionAmountCalculated =
+        totalTransactionAmountCalculated +
+        (await this.permitFeeCalculator(application, queryRunner));
+    }
+    const totalTransactionAmount =
+      createTransactionDto.applicationDetails?.reduce(
+        (accumulator, item) => accumulator + item.transactionAmount,
+        0,
+      );
+    if (
+      totalTransactionAmount.toFixed(2) !=
+      Math.abs(totalTransactionAmountCalculated).toFixed(2)
+    ) {
+      throw new BadRequestException('Transaction Amount Mismatch');
+    }
+
+    //For transaction type refund, total transaction amount in backend should be less than zero and vice a versa.
+    //This extra check to compare transaction type and amount is only needed in case of refund, for other trasaction types, comparing amount is sufficient.
+    if (
+      totalTransactionAmountCalculated < 0 &&
+      createTransactionDto.transactionTypeId != TransactionType.REFUND
+    ) {
+      throw new BadRequestException('Transaction Type Mismatch');
+    }
+    return totalTransactionAmount;
+  }
+
+  async updateReceiptDocument(
+    currentUser: IUserJWT,
+    receiptId: string,
+    documentId: string,
+  ) {
+    const updateResult = await this.receiptRepository
+      .createQueryBuilder()
+      .update()
+      .set({
+        receiptDocumentId: documentId,
+        updatedUser: currentUser.userName,
+        updatedDateTime: new Date(),
+        updatedUserDirectory: currentUser.orbcUserDirectory,
+        updatedUserGuid: currentUser.userGUID,
+      })
+      .where('receiptId = :receiptId', { receiptId: receiptId })
+      .execute();
+
+    if (updateResult.affected === 0) {
+      throw new InternalServerErrorException('Update failed');
+    }
+    return true;
   }
 
   /**
@@ -564,5 +669,79 @@ export class PaymentService {
 
   async findAllPaymentCardTypeEntities(): Promise<PaymentCardType[]> {
     return await this.paymentCardTypeRepository.find();
+  }
+
+  /**
+   * Calculates the permit fee based on the application status, historical payments, and current permit data.
+   * If the application is revoked, it returns 0. For voided applications, it calculates the refund amount.
+   * Otherwise, it calculates the fee based on existing payments and current permit data.
+   *
+   * @param application - The Permit application for which to calculate the fee.
+   * @param queryRunner - An optional QueryRunner for database transactions.
+   * @returns {Promise<number>} - The calculated permit fee or refund amount.
+   */
+  @LogAsyncMethodExecution()
+  async permitFeeCalculator(
+    application: Permit,
+    queryRunner?: QueryRunner,
+  ): Promise<number> {
+    if (application.permitStatus === ApplicationStatus.REVOKED) return 0;
+
+    const permitPaymentHistory = await this.findPermitHistory(
+      application.originalPermitId,
+      queryRunner,
+    );
+
+    if (application.permitStatus === ApplicationStatus.VOIDED) {
+      const oldAmount = calculatePermitAmount(permitPaymentHistory);
+      if (oldAmount > 0) return -oldAmount;
+      return oldAmount;
+    }
+    const oldAmount = calculatePermitAmount(permitPaymentHistory);
+    return permitFee(application, oldAmount);
+  }
+
+  @LogAsyncMethodExecution()
+  async findPermitHistory(
+    originalPermitId: string,
+    queryRunner: QueryRunner,
+  ): Promise<PermitHistoryDto[]> {
+    // Fetches the permit history for a given originalPermitId using the provided QueryRunner
+    // This includes all related transactions and filters permits by non-null permit numbers
+    // Orders the results by transaction submission date in descending order
+
+    const permits = await queryRunner.manager
+      .createQueryBuilder()
+      .select('permit')
+      .from(Permit, 'permit')
+      .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
+      .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
+      .where('permit.permitNumber IS NOT NULL')
+      .andWhere('permit.originalPermitId = :originalPermitId', {
+        originalPermitId: originalPermitId,
+      })
+      .orderBy('transaction.transactionSubmitDate', 'DESC')
+      .getMany();
+
+    return permits.flatMap((permit) =>
+      permit.permitTransactions.map((permitTransaction) => ({
+        permitNumber: permit.permitNumber,
+        comment: permit.comment,
+        transactionOrderNumber:
+          permitTransaction.transaction.transactionOrderNumber,
+        transactionAmount: permitTransaction.transactionAmount,
+        transactionTypeId: permitTransaction.transaction.transactionTypeId,
+        pgPaymentMethod: permitTransaction.transaction.pgPaymentMethod,
+        pgTransactionId: permitTransaction.transaction.pgTransactionId,
+        paymentCardTypeCode: permitTransaction.transaction.paymentCardTypeCode,
+        paymentMethodTypeCode:
+          permitTransaction.transaction.paymentMethodTypeCode,
+        commentUsername: permit.createdUser,
+        permitId: +permit.permitId,
+        transactionSubmitDate:
+          permitTransaction.transaction.transactionSubmitDate,
+        pgApproved: permitTransaction.transaction.pgApproved,
+      })),
+    ) as PermitHistoryDto[];
   }
 }
