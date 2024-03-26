@@ -22,7 +22,8 @@ export class AddToShoppingCartDto {
 
   @AutoMap()
   @ApiPropertyOptional({
-    description: 'Id of the company the application belongs to.',
+    description:
+      'Id of the company the application belongs to. Required for IDIR; Ignored if sent by BCeID users.',
     example: 74,
   })
   @IsOptional()

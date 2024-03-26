@@ -1,20 +1,21 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { NotBrackets, Repository, SelectQueryBuilder } from 'typeorm';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import { ApplicationStatus } from '../../common/enum/application-status.enum';
-import { Permit as Application } from '../permit-application-payment/permit/entities/permit.entity';
-import { AddToShoppingCartDto } from './dto/request/add-to-shopping-cart.dto';
-import { ResultDto } from './dto/response/result.dto';
-import { UpdateShoppingCartDto } from './dto/request/update-shopping-cart.dto';
+import { Directory } from '../../common/enum/directory.enum';
 import {
   ClientUserAuthGroup,
   IDIRUserAuthGroup,
   IDIR_USER_AUTH_GROUP_LIST,
   UserAuthGroup,
 } from '../../common/enum/user-auth-group.enum';
-import { doesUserHaveAuthGroup } from '../../common/helper/auth.helper';
+import { Permit as Application } from '../permit-application-payment/permit/entities/permit.entity';
+import { AddToShoppingCartDto } from './dto/request/add-to-shopping-cart.dto';
+import { UpdateShoppingCartDto } from './dto/request/update-shopping-cart.dto';
+import { ResultDto } from './dto/response/result.dto';
+import { IUserJWT } from '../../common/interface/user-jwt.interface';
 
 @Injectable()
 export class ShoppingCartService {
@@ -40,62 +41,90 @@ export class ShoppingCartService {
   }
 
   /**
-   * Fetches all permit applications within a shopping cart for a specific company.
-   * Optionally filters the results by the user GUID if provided.
+   * Finds all permit applications in a shopping cart based on the current user's information and optionally filtered by a company ID.
    *
-   * @param companyId - The ID of the company for which to retrieve permit applications.
-   * @param userGUID - (Optional) The GUID of a user to further filter the applications by the application owner.
-   * @returns A promise resolved with a list of permit applications currently in the shopping cart that match the criteria.
+   * @param currentUser - An object containing the current user's GUID and authorization group.
+   * @param companyId - (Optional) The ID of the company to filter the permit applications. If not provided, applications are not filtered by company.
+   * @returns A promise resolved with an array of Application entities that are currently in the shopping cart.
    */
   @LogAsyncMethodExecution()
-  async findApplicationsInCart(companyId: number, userGUID?: string) {
-    return await this.applicationRepository.find({
-      where: {
-        permitStatus: ApplicationStatus.IN_CART,
-        company: { companyId },
-        applicationOwner: { userGUID: userGUID ? userGUID : '1=1' },
-      },
-    });
+  async findApplicationsInCart(
+    currentUser: IUserJWT,
+    companyId?: number,
+  ): Promise<Application[]> {
+    const { userGUID, orbcUserAuthGroup } = currentUser;
+    return await this.getSelectShoppingCartQB(
+      companyId,
+      userGUID,
+      orbcUserAuthGroup,
+    )
+      .orderBy({ 'application.updatedDateTime': 'DESC' })
+      .getMany();
   }
 
   /**
-   * Calculates the number of item permits within a shopping cart for a specific company. Optionally, the count can be filtered by the user GUID if provided.
+   * Retrieves the count of permit applications currently in the shopping cart for a specific company.
+   * Optionally considers the user's GUID and authorization group for further filtering.
    *
-   * @param companyId - The ID of the company for which to count permit applications in the shopping cart.
-   * @param userGUID - (Optional) The GUID of a user to further filter the applications by the application owner.
-   * @returns A promise resolved with the count of permit applications currently in the shopping cart that match the criteria.
+   * @param currentUser - The current user's credentials and information.
+   * @param companyId - (Optional) The ID of the company for which to count permit applications in the shopping cart.
+   * @returns A promise resolved with the number of permit applications in the shopping cart that match the criteria.
    */
   @LogAsyncMethodExecution()
   async getCartCount(
+    currentUser: IUserJWT,
+    companyId?: number,
+  ): Promise<number> {
+    const { userGUID, orbcUserAuthGroup } = currentUser;
+    return await this.getSelectShoppingCartQB(
+      companyId,
+      userGUID,
+      orbcUserAuthGroup,
+    ).getCount();
+  }
+
+  /**
+   * Retrieves a `SelectQueryBuilder` for permit applications based on specified criteria.
+   * This method prepares a query to fetch applications with the status `IN_CART`, further filtered by company ID,
+   * and optionally by the user's GUID and authorization group for more fine-grained control.
+   *
+   * @param companyId - The ID of the company to filter permit applications by.
+   * @param userGUID - (Optional) The user's GUID to filter applications by, depending on the user's authorization group.
+   * @param orbcUserAuthGroup - (Optional) The user's authorization group which determines the level of access and filtering applied to the query.
+   * @returns A `SelectQueryBuilder` configured with the appropriate conditions to fetch the desired permit applications.
+   */
+  private getSelectShoppingCartQB(
     companyId: number,
     userGUID?: string,
     orbcUserAuthGroup?: UserAuthGroup,
-  ): Promise<number> {
-    let applicationOwner: string;
-    if (userGUID) {
-      applicationOwner = userGUID;
-    } else if (
-      doesUserHaveAuthGroup(orbcUserAuthGroup, IDIR_USER_AUTH_GROUP_LIST)
-    ) {
-      applicationOwner = '1=1';
-    } else if (
-      orbcUserAuthGroup === ClientUserAuthGroup.COMPANY_ADMINISTRATOR
-    ) {
-      applicationOwner;
-    }
-    return await this.applicationRepository.countBy({
+  ): SelectQueryBuilder<Application> {
+    const queryBuilder = this.applicationRepository
+      .createQueryBuilder('application')
+      .leftJoin('application.applicationOwner', 'applicationOwner');
+
+    queryBuilder.where('application.permitStatus = :permitStatus', {
       permitStatus: ApplicationStatus.IN_CART,
-      company: { companyId },
-      ...(userGUID && { applicationOwner: { userGUID } }
-        ),
     });
-    // return await this.applicationRepository.count({
-    //   where: {
-    //     permitStatus: ApplicationStatus.IN_CART,
-    //     company: { companyId },
-    //     ...(applicationOwner && { applicationOwner: { userGUID } }),
-    //   },
-    // });
+    queryBuilder.andWhere('application.companyId = :companyId', { companyId });
+
+    // If user is a Permit Applicant, get only their own applications in cart
+    if (orbcUserAuthGroup === ClientUserAuthGroup.PERMIT_APPLICANT) {
+      queryBuilder.andWhere('applicationOwner.userGUID = :userGUID', {
+        userGUID,
+      });
+    }
+    // If user is a Company Admin, get all applications in cart for that company
+    // EXCEPT for those created by staff user.
+    else if (orbcUserAuthGroup === ClientUserAuthGroup.COMPANY_ADMINISTRATOR) {
+      queryBuilder.andWhere(
+        new NotBrackets((qb) => {
+          qb.where('applicationOwner.directory = :directory', {
+            directory: Directory.IDIR,
+          });
+        }),
+      );
+    }
+    return queryBuilder;
   }
 
   /**
@@ -107,12 +136,42 @@ export class ShoppingCartService {
    */
   @LogAsyncMethodExecution()
   async remove(
+    currentUser: IUserJWT,
     updateShoppingCartDto: UpdateShoppingCartDto,
   ): Promise<ResultDto> {
-    return await this.updateApplicationStatus(
-      updateShoppingCartDto,
-      ApplicationStatus.IN_PROGRESS,
-    );
+    const { orbcUserAuthGroup, userGUID } = currentUser;
+    const { applicationIds } = updateShoppingCartDto;
+    if (orbcUserAuthGroup === ClientUserAuthGroup.COMPANY_ADMINISTRATOR) {
+      return await this.updateApplicationStatus(
+        {
+          applicationIds,
+          companyId: currentUser.companyId,
+        },
+        ApplicationStatus.IN_PROGRESS,
+      );
+    } else if (orbcUserAuthGroup === ClientUserAuthGroup.PERMIT_APPLICANT) {
+      return await this.updateApplicationStatus(
+        {
+          applicationIds,
+          companyId: currentUser.companyId,
+        },
+        ApplicationStatus.IN_PROGRESS,
+      );
+    }
+    if (
+      IDIR_USER_AUTH_GROUP_LIST.includes(orbcUserAuthGroup as IDIRUserAuthGroup)
+    ) {
+      const { companyId } = updateShoppingCartDto;
+      return await this.updateApplicationStatus(
+        {
+          applicationIds,
+          companyId,
+        },
+        ApplicationStatus.IN_PROGRESS,
+      );
+    } else {
+      return { failure: updateShoppingCartDto.applicationIds, success: [] };
+    }
   }
 
   /**
@@ -123,8 +182,6 @@ export class ShoppingCartService {
    * @param {ApplicationStatus.IN_CART | ApplicationStatus.IN_PROGRESS} statusToUpdateTo - The new status to which the applications will be updated. It must be either `IN_CART` for adding to the cart, or `IN_PROGRESS` for removing from the cart.
    * @returns {Promise<ResultDto>} A `ResultDto` instance containing two arrays: `success` with IDs of applications successfully updated, and `failure` with IDs of applications that failed to update.
    */
-
-  @LogAsyncMethodExecution()
   private async updateApplicationStatus(
     { applicationIds, companyId }: UpdateShoppingCartDto | AddToShoppingCartDto,
     statusToUpdateTo: ApplicationStatus.IN_CART | ApplicationStatus.IN_PROGRESS,

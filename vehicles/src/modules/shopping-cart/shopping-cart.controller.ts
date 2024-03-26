@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -22,13 +23,12 @@ import {
 import { Request } from 'express';
 import { Roles } from '../../common/decorator/roles.decorator';
 import { Role } from '../../common/enum/roles.enum';
-import { ClientUserAuthGroup } from '../../common/enum/user-auth-group.enum';
 import { ExceptionDto } from '../../common/exception/exception.dto';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { AddToShoppingCartDto } from './dto/request/add-to-shopping-cart.dto';
 import { GetShoppingCartQueryParamsDto } from './dto/request/queryParam/getShoppingCart.query-params.dto';
-import { ResultDto } from './dto/response/result.dto';
 import { UpdateShoppingCartDto } from './dto/request/update-shopping-cart.dto';
+import { ResultDto } from './dto/response/result.dto';
 import { ShoppingCartService } from './shopping-cart.service';
 
 @ApiBearerAuth()
@@ -98,19 +98,17 @@ export class ShoppingCartController {
     const currentUser = request.user as IUserJWT;
     if (currentUser.idir_user_guid && !currentUser.companyId) {
       const { companyId } = getShoppingCartQueryParamsDto;
-      return await this.shoppingCartService.findApplicationsInCart(companyId);
-    } else if (
-      currentUser.orbcUserAuthGroup ===
-      ClientUserAuthGroup.COMPANY_ADMINISTRATOR
-    ) {
-      const { companyId } = currentUser;
-      return await this.shoppingCartService.findApplicationsInCart(companyId);
-    } else {
-      const { companyId, userGUID } = currentUser;
+      if (!companyId) {
+        throw new BadRequestException(
+          'companyId is required for all IDIR users.',
+        );
+      }
       return await this.shoppingCartService.findApplicationsInCart(
+        currentUser,
         companyId,
-        userGUID,
       );
+    } else {
+      return await this.shoppingCartService.findApplicationsInCart(currentUser);
     }
   }
 
@@ -143,19 +141,12 @@ export class ShoppingCartController {
     const currentUser = request.user as IUserJWT;
     if (currentUser.idir_user_guid && !currentUser.companyId) {
       const { companyId } = getShoppingCartQueryParamsDto;
-      return await this.shoppingCartService.getCartCount(companyId);
-    } else if (
-      currentUser.orbcUserAuthGroup ===
-      ClientUserAuthGroup.COMPANY_ADMINISTRATOR
-    ) {
-      const { companyId } = currentUser;
-      return await this.shoppingCartService.getCartCount(companyId);
-    } else {
-      const { companyId, userGUID } = currentUser;
       return await this.shoppingCartService.getCartCount(
+        currentUser,
         companyId,
-        userGUID,
       );
+    } else {
+      return await this.shoppingCartService.getCartCount(currentUser);
     }
   }
 
@@ -182,6 +173,10 @@ export class ShoppingCartController {
     @Body() updateShoppingCartDto: UpdateShoppingCartDto,
   ): Promise<ResultDto> {
     const currentUser = request.user as IUserJWT;
-    return await this.shoppingCartService.remove(updateShoppingCartDto);
+    const { applicationIds } = updateShoppingCartDto;
+    return await this.shoppingCartService.remove(
+      currentUser,
+      updateShoppingCartDto,
+    );
   }
 }
