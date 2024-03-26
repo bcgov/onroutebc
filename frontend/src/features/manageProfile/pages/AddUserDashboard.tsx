@@ -14,7 +14,7 @@ import {
 
 import "./AddUserDashboard.scss";
 import { SnackBarContext } from "../../../App";
-import { Banner } from "../../../common/components/dashboard/Banner";
+import { Banner } from "../../../common/components/dashboard/components/banner/Banner";
 import { CustomFormComponent } from "../../../common/components/form/CustomFormComponents";
 import { requiredMessage } from "../../../common/helpers/validationMessages";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";

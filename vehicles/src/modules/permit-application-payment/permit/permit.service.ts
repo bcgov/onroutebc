@@ -352,30 +352,6 @@ export class PermitService {
             }),
           );
           break;
-        case PermitSearch.CLIENT_NUMBER:
-          permitsQuery = permitsQuery.andWhere(
-            'company.clientNumber like :searchString',
-            {
-              searchString: `%${searchString}%`,
-            },
-          );
-          break;
-        case PermitSearch.COMPANY_NAME:
-          permitsQuery = permitsQuery.andWhere(
-            'company.legalName like :searchString',
-            {
-              searchString: `%${searchString}%`,
-            },
-          );
-          break;
-        case PermitSearch.APPLICATION_NUMBER:
-          permitsQuery = permitsQuery.andWhere(
-            `permit.applicationNumber like :searchString`,
-            {
-              searchString: `%${searchString}%`,
-            },
-          );
-          break;
       }
     }
 

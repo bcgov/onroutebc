@@ -7,7 +7,7 @@ import {
   Stack,
 } from "@mui/material";
 import { memo, useState } from "react";
-import { Banner } from "../../../../common/components/dashboard/Banner";
+import { Banner } from "../../../../common/components/dashboard/components/banner/Banner";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { PaymentAndRefundDetail } from "../../reporting/forms/PaymentAndRefundDetail";
 import { PaymentAndRefundSummary } from "../../reporting/forms/PaymentAndRefundSummary";

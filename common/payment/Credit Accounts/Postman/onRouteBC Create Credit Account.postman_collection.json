@@ -1,0 +1,530 @@
+{
+	"info": {
+		"_postman_id": "67af01e8-aa69-40ca-a134-64a13af3d674",
+		"name": "onRouteBC Create Credit Account",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11120889"
+	},
+	"item": [
+		{
+			"name": "Request a Token",
+			"item": [
+				{
+					"name": "Request a CFS Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('access_token');\r",
+									"    pm.collectionVariables.set('access_token', jsonData.access_token);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{cfs_client_secret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{cfs_client_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cfs_base_url}}/oauth/token",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"oauth",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Parties",
+			"item": [
+				{
+					"name": "Create Party",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('party_number');\r",
+									"    pm.collectionVariables.set('party_number', jsonData.party_number);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"business_number\":\"{{business_number}}\",\r\n    \"customer_name\":\"{{customer_name}} ({{onroute_client_number}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{cfs_base_url}}/cfs/parties/",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"cfs",
+								"parties",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Party",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"cfs",
+								"parties",
+								"{{party_number}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Accounts",
+			"item": [
+				{
+					"name": "Create Account",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('account_number');\r",
+									"    pm.collectionVariables.set('account_number', jsonData.account_number);    \r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let acctNum = 'WS' + (new Date()).getTime();\r",
+									"pm.collectionVariables.set('account_number', acctNum);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"account_number\":\"{{account_number}}\",\r\n   \"account_description\":\"{{account_description}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"cfs",
+								"parties",
+								"{{party_number}}",
+								"accs",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Accounts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"cfs",
+								"parties",
+								"{{party_number}}",
+								"accs",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Account",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"cfs",
+								"parties",
+								"{{party_number}}",
+								"accs",
+								"{{account_number}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sites",
+			"item": [
+				{
+					"name": "Create Account Site",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('site_number');\r",
+									"    pm.collectionVariables.set('site_number', jsonData.site_number);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"customer_site_id\":\"orbc-default\",\r\n    \"site_name\":\"DEFAULT SITE\",\r\n    \"primary_bill_to\":\"Y\",\r\n    \"address_line_1\":\"940 Blanshard Street\",\r\n    \"address_line_2\":\"Suite #200\",\r\n    \"city\":\"Victoria\",\r\n    \"postal_code\":\"V8W 3E6\",\r\n    \"province\":\"BC\",\r\n    \"country\":\"CA\",\r\n    \"customer_profile_class\":\"CAS_IND_DEFAULT\"\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}/sites/",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"cfs",
+								"parties",
+								"{{party_number}}",
+								"accs",
+								"{{account_number}}",
+								"sites",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Account Site",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}/sites/{{site_number}}",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"cfs",
+								"parties",
+								"{{party_number}}",
+								"accs",
+								"{{account_number}}",
+								"sites",
+								"{{site_number}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Contacts",
+			"item": [
+				{
+					"name": "Create Site Contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('site_number');\r",
+									"    pm.collectionVariables.set('site_number', jsonData.site_number);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"first_name\":\"{{contact_first_name}}\",\r\n    \"middle_name\":\"{{contact_middle_name}}\",\r\n    \"last_name\":\"{{contact_last_name}}\",\r\n    \"phone_number\":\"{{contact_phone}}\",\r\n    \"email_address\":\"{{contact_email}}\"\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}sites/{{site_number}}/conts/",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"cfs",
+								"parties",
+								"{{party_number}}",
+								"accs",
+								"{{account_number}}sites",
+								"{{site_number}}",
+								"conts",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Site Contact",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}/sites/{{site_number}}",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"cfs",
+								"parties",
+								"{{party_number}}",
+								"accs",
+								"{{account_number}}",
+								"sites",
+								"{{site_number}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "oauth2",
+		"oauth2": [
+			{
+				"key": "addTokenTo",
+				"value": "header",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "business_number",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "party_number",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "customer_name",
+			"value": "ABC Trucking Inc.",
+			"type": "string"
+		},
+		{
+			"key": "account_description",
+			"value": "Test account for ABC Trucking",
+			"type": "string"
+		},
+		{
+			"key": "account_number",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "site_number",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "invoice_number",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "transaction_date",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "gl_date",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "onroute_client_number",
+			"value": "B2-000067-245",
+			"type": "string"
+		},
+		{
+			"key": "transaction_number",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "transaction_amount",
+			"value": "30.00",
+			"type": "string"
+		},
+		{
+			"key": "permit_number",
+			"value": "P2-00100022-123",
+			"type": "string"
+		},
+		{
+			"key": "transaction_amount_2",
+			"value": "90.00",
+			"type": "string"
+		},
+		{
+			"key": "receipt_number",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "receipt_date",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "receipt_amount",
+			"value": "20",
+			"type": "string"
+		},
+		{
+			"key": "contact_first_name",
+			"value": "John",
+			"type": "string"
+		},
+		{
+			"key": "contact_middle_name",
+			"value": "Paul",
+			"type": "string"
+		},
+		{
+			"key": "contact_last_name",
+			"value": "Jones",
+			"type": "string"
+		},
+		{
+			"key": "contact_phone",
+			"value": "250-555-5555",
+			"type": "string"
+		},
+		{
+			"key": "contact_email",
+			"value": "jpj@abctruxx.com",
+			"type": "string"
+		}
+	]
+}

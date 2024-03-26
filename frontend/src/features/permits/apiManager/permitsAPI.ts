@@ -120,7 +120,7 @@ export const getApplicationsInProgress = async ({
   if (searchString) {
     applicationsURL.searchParams.set("searchString", searchString);
   }
-  if (orderBy.length > 0) {
+  if (orderBy?.length > 0) {
     applicationsURL.searchParams.set("orderBy", stringifyOrderBy(orderBy));
   }
 
@@ -526,4 +526,31 @@ export const modifyAmendmentApplication = async ({
   applicationNumber: string;
 }) => {
   return await updateApplication(application, applicationNumber);
+};
+
+/**
+ * Resend permit to email (and fax if provided).
+ * @param permitId Permit id of the permit to resend
+ * @param email Email to resend to
+ * @param fax Fax to resend to (if provided)
+ * @returns Response if the resend action was successful
+ */
+export const resendPermit = async ({
+  permitId,
+  email,
+  fax,
+}: {
+  permitId: string;
+  email: string;
+  fax?: Nullable<string>;
+}) => {
+  return await httpPOSTRequest(
+    `${PERMITS_API_ROUTES.BASE}/${permitId}/${PERMITS_API_ROUTES.RESEND}`,
+    replaceEmptyValuesWithNull({
+      to: [
+        email,
+      ],
+      fax,
+    }),
+  );
 };
