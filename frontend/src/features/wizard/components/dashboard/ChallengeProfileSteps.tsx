@@ -233,14 +233,6 @@ export const ChallengeProfileSteps = React.memo(() => {
           style={{ width: "50%" }}
         >
           <div className="create-profile-section create-profile-section--steps">
-            {/* <Stepper activeStep={activeStep} alternativeLabel>
-              {steps.map((label) => (
-                <Step className="step" key={label}>
-                  <StepLabel className="step__label">{label}</StepLabel>
-                </Step>
-              ))}
-            </Stepper> */}
-                      {/* bruce test */}
             <Stepper
               className="stepper"
               activeStep={activeStep}
