@@ -96,7 +96,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"business_number\":\"{{business_number}}\",\r\n    \"customer_name\":\"{{customer_name}} ({{onroute_client_number}})\"\r\n}"
+							"raw": "{\r\n    \"customer_name\":\"{{customer_name}} ({{onroute_client_number}})\"\r\n}"
 						},
 						"url": {
 							"raw": "{{cfs_base_url}}/cfs/parties/",
@@ -320,8 +320,8 @@
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData).to.have.property('site_number');\r",
-									"    pm.collectionVariables.set('site_number', jsonData.site_number);\r",
+									"    pm.expect(jsonData).to.have.property('contact_number');\r",
+									"    pm.collectionVariables.set('contact_number', jsonData.contact_number);\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -336,7 +336,7 @@
 							"raw": "{\r\n    \"first_name\":\"{{contact_first_name}}\",\r\n    \"middle_name\":\"{{contact_middle_name}}\",\r\n    \"last_name\":\"{{contact_last_name}}\",\r\n    \"phone_number\":\"{{contact_phone}}\",\r\n    \"email_address\":\"{{contact_email}}\"\r\n}\r\n"
 						},
 						"url": {
-							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}sites/{{site_number}}/conts/",
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}/sites/{{site_number}}/conts/",
 							"host": [
 								"{{cfs_base_url}}"
 							],
@@ -345,7 +345,8 @@
 								"parties",
 								"{{party_number}}",
 								"accs",
-								"{{account_number}}sites",
+								"{{account_number}}",
+								"sites",
 								"{{site_number}}",
 								"conts",
 								""
@@ -360,7 +361,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}/sites/{{site_number}}",
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}/sites/{{site_number}}/conts/{{contact_number}}",
 							"host": [
 								"{{cfs_base_url}}"
 							],
@@ -371,7 +372,9 @@
 								"accs",
 								"{{account_number}}",
 								"sites",
-								"{{site_number}}"
+								"{{site_number}}",
+								"conts",
+								"{{contact_number}}"
 							]
 						}
 					},
@@ -524,6 +527,11 @@
 		{
 			"key": "contact_email",
 			"value": "jpj@abctruxx.com",
+			"type": "string"
+		},
+		{
+			"key": "contact_number",
+			"value": "",
 			"type": "string"
 		}
 	]
