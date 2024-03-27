@@ -36,7 +36,7 @@ export class TpsPermitService {
    *
    */
 
-  @Cron(`${process.env.TPS_PENDING_POLLING_INTERVAL}`)
+  @Cron(`${process.env.TPS_PENDING_POLLING_INTERVAL || "0 0 */3 * * *"}`)
   @LogAsyncMethodExecution()
   async uploadTpsPermit() {
     const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
@@ -66,7 +66,7 @@ export class TpsPermitService {
    * wrong and needs attention.
    *
    */
-  @Cron(`${process.env.TPS_ERROR_POLLING_INTERVAL}`)
+  @Cron(`${process.env.TPS_ERROR_POLLING_INTERVAL || "0 */1 * * * *"}`)
   @LogAsyncMethodExecution()
   async reprocessTpsPermit() {
     const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
