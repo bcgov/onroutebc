@@ -734,21 +734,17 @@ export class UsersService {
     });
 
     // Collect the company admin userGUIDs.
-    const companyAdminUserGuids = usersBeforeDelete
+    const remainingCompanyAdmins = usersBeforeDelete
       .filter(
-        ({ userAuthGroup }) =>
-          userAuthGroup === ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+        ({ userAuthGroup, user }) =>
+          userAuthGroup === ClientUserAuthGroup.COMPANY_ADMINISTRATOR &&
+          Boolean(user?.userGUID),
       )
-      .map(({ user: { userGUID } }) => userGUID);
-
-    // Does the company have one admin at least
-    const doesCompanyHaveAtleastOneAdmin =
-      companyAdminUserGuids.filter(
-        (guid) => !userGUIDsFromRequest.includes(guid),
-      ).length > 0;
+      .map(({ user: { userGUID } }) => userGUID)
+      .filter((guid) => !userGUIDsFromRequest.includes(guid));
 
     // Throw a bad request if there are no remaining admins.
-    if (!doesCompanyHaveAtleastOneAdmin) {
+    if (!remainingCompanyAdmins.length) {
       throw new BadRequestException(
         'This operation is not allowed as a company should have atlease one CVAdmin at any given moment.',
       );
