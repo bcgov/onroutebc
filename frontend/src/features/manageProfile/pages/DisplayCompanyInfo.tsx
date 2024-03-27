@@ -3,17 +3,18 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Box, Button, Typography } from "@mui/material";
 import { memo } from "react";
 
+import "./DisplayCompanyInfo.scss";
 import { getCompanyEmailFromSession } from "../../../common/apiManager/httpRequestHandler";
 import { ROLES } from "../../../common/authentication/types";
 import { DoesUserHaveRoleWithContext } from "../../../common/authentication/util";
 import { formatPhoneNumber } from "../../../common/components/form/subFormComponents/PhoneNumberInput";
+import { getDefaultRequiredVal } from "../../../common/helpers/util";
+import { CompanyProfile } from "../types/manageProfile";
 import {
   formatCountry,
   formatProvince,
 } from "../../../common/helpers/formatCountryProvince";
-import { getDefaultRequiredVal } from "../../../common/helpers/util";
-import { CompanyProfile } from "../types/manageProfile";
-import "./DisplayCompanyInfo.scss";
+
 // Disable any eslint for references to countries_and_states.json
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import { memo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Banner } from "../../../../common/components/dashboard/Banner";
+import { Banner } from "../../../../common/components/dashboard/components/banner/Banner";
 import {
   SEARCH_BY_FILTERS,
   SEARCH_ENTITIES,

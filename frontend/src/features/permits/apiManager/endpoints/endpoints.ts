@@ -18,6 +18,7 @@ export const PERMITS_API_ROUTES = {
   DOWNLOAD: `pdf`,
   RECEIPT: `receipt`,
   VOID: `void`,
+  RESEND: `notification`,
 };
 
 const PAYMENT_API_BASE = `${VEHICLES_URL}/payment`;

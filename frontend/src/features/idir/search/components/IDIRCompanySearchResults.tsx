@@ -48,13 +48,17 @@ export const IDIRCompanySearchResults = memo(
       searchByFilter,
       searchEntity,
     } = searchParams;
+
     const {
       setCompanyId,
       setCompanyLegalName,
       setOnRouteBCClientNumber,
       setMigratedClient,
+      setIsCompanySuspended,
     } = useContext(OnRouteBCContext);
+
     const navigate = useNavigate();
+
     /**
      * On click event handler for the company link.
      * Sets the company context and directs the user to the company page.
@@ -64,12 +68,19 @@ export const IDIRCompanySearchResults = memo(
     const onClickCompany = (
       selectedCompany: CompanyProfile | VerifiedClient,
     ) => {
-      const { companyId, legalName, clientNumber, primaryContact } =
-        selectedCompany;
+      const {
+        companyId,
+        legalName,
+        clientNumber,
+        primaryContact,
+        isSuspended,
+      } = selectedCompany;
+
       if (primaryContact?.firstName) {
         setCompanyId?.(() => companyId);
         setCompanyLegalName?.(() => legalName);
         setOnRouteBCClientNumber?.(() => clientNumber);
+        setIsCompanySuspended?.(() => isSuspended);
         sessionStorage.setItem(
           "onRouteBC.user.companyId",
           companyId.toString(),
@@ -85,7 +96,9 @@ export const IDIRCompanySearchResults = memo(
             alternateName,
             phone,
             extension,
+            isSuspended,
           } = selectedCompany as VerifiedClient;
+
           return {
             clientNumber,
             companyId,
@@ -97,11 +110,16 @@ export const IDIRCompanySearchResults = memo(
             extension,
             fax,
             alternateName,
+            isSuspended,
           };
         });
+        
+        setIsCompanySuspended?.(() => isSuspended);
+
         navigate(routes.IDIR_ROUTES.CREATE_COMPANY);
       }
     };
+
     const [pagination, setPagination] = useState<MRT_PaginationState>({
       pageIndex: 0,
       pageSize: 10,

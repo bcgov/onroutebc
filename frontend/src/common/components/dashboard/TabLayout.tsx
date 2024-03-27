@@ -1,106 +1,17 @@
 import React, { useState } from "react";
-import { Box, Tabs, Tab, Chip } from "@mui/material";
 
 import "./Dashboard.scss";
-import { Banner } from "./Banner";
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-interface ComponentProps {
-  label: string;
-  count?: number;
-  component: JSX.Element;
-}
+import { TabComponentProps } from "./components/tab/types/TabComponentProps";
+import { TabPanels } from "./components/tab/TabPanels";
+import { TabBanner } from "./components/banner/TabBanner";
 
 interface TabLayoutProps {
   bannerText: string;
   bannerButton?: JSX.Element;
-  componentList: ComponentProps[];
+  componentList: TabComponentProps[];
   selectedTabIndex?: number;
+  onTabChange?: (tabIndex: number) => void;
 }
-
-const TabPanel = (props: TabPanelProps) => {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      className="tabpanel-container"
-      role="tabpanel"
-      hidden={value !== index}
-      id={`layout-tabpanel-${index}`}
-      aria-labelledby={`layout-tab-${index}`}
-      {...other}
-    >
-      {value === index && children}
-    </div>
-  );
-};
-
-const TabProps = (index: number) => {
-  return {
-    id: `layout-tab-${index}`,
-    "aria-controls": `layout-tabpanel-${index}`,
-  };
-};
-
-const DisplayTabs = ({
-  value,
-  handleChange,
-  componentList,
-}: {
-  value: number;
-  handleChange: (event: React.SyntheticEvent, newValue: number) => void;
-  componentList: ComponentProps[];
-}) => {
-  return (
-    <Tabs
-      className="display-tabs"
-      value={value}
-      onChange={handleChange}
-      variant="scrollable"
-      scrollButtons="auto"
-      aria-label="scrollable profile tabs"
-    >
-      {componentList.map(({ label, count }, index) => {
-        return (
-          <Tab
-            key={label}
-            className="display-tab"
-            label={
-              <div className="tab">
-                <div className="tab__label">{label}</div>
-                {count ? <Chip className="tab__count" label={count} /> : null}
-              </div>
-            }
-            {...TabProps(index)}
-          />
-        );
-      })}
-    </Tabs>
-  );
-};
-
-const DisplayTabPanels = ({
-  value,
-  componentList,
-}: {
-  value: number;
-  componentList: ComponentProps[];
-}) => (
-  <>
-    {componentList.map(({ label, component }, index) => {
-      return (
-        <TabPanel key={label} value={value} index={index}>
-          {component}
-        </TabPanel>
-      );
-    })}
-  </>
-);
 
 /**
  * The TabLayout component is a common component that includes a Banner, Tabs, and TabPanels.
@@ -121,36 +32,26 @@ export const TabLayout = React.memo(
     bannerButton,
     componentList,
     selectedTabIndex = 0,
+    onTabChange,
   }: TabLayoutProps) => {
-    const [value, setValue] = useState<number>(selectedTabIndex);
+    const [selectedTab, setSelectedTab] = useState<number>(selectedTabIndex);
 
-    const handleChange = (_: React.SyntheticEvent, newValue: number) => {
-      setValue(newValue);
+    const handleChange = (_: React.SyntheticEvent, newTabIndex: number) => {
+      setSelectedTab(newTabIndex);
+      onTabChange?.(newTabIndex);
     };
 
     return (
       <>
-        <Box
-          className="layout-box"
-          sx={{
-            borderBottom: 1,
-            borderColor: "divider",
-          }}
-        >
-          <Banner
-            bannerText={bannerText}
-            bannerButton={bannerButton}
-            isTabBanner={true}
-          />
+        <TabBanner
+          bannerText={bannerText}
+          bannerButton={bannerButton}
+          componentList={componentList}
+          tabIndex={selectedTab}
+          onTabChange={handleChange}
+        />
 
-          <DisplayTabs
-            value={value}
-            handleChange={handleChange}
-            componentList={componentList}
-          />
-        </Box>
-
-        <DisplayTabPanels value={value} componentList={componentList} />
+        <TabPanels value={selectedTab} componentList={componentList} />
       </>
     );
   },

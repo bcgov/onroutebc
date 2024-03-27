@@ -1,24 +1,24 @@
 import { Box, Button, Stack } from "@mui/material";
 import React, { useContext, useState } from "react";
-
 import { useMutation } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { Nullable } from "vitest";
+
+import { Nullable } from "../../../common/types/common";
 import { InfoBcGovBanner } from "../../../common/components/banners/InfoBcGovBanner";
-import { Banner } from "../../../common/components/dashboard/Banner";
+import { Banner } from "../../../common/components/dashboard/components/banner/Banner";
 import { BANNER_MESSAGES } from "../../../common/constants/bannerMessages";
 import { ERROR_ROUTES } from "../../../routes/constants";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import { createOnRouteBCProfile } from "../../manageProfile/apiManager/manageProfileAPI";
-import {
-  CreateCompanyRequest,
-  CompanyProfile,
-} from "../../manageProfile/types/manageProfile";
 import { CompanyInformationWizardForm } from "../../wizard/subcomponents/CompanyInformationWizardForm";
 import { OnRouteBCProfileCreated } from "../../wizard/subcomponents/OnRouteBCProfileCreated";
 import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
+import {
+  CreateCompanyRequest,
+  CompanyProfile,
+} from "../../manageProfile/types/manageProfile";
 
 /**
  * The form for a staff user to create a company.
@@ -112,7 +112,7 @@ export const IDIRCreateCompany = React.memo(() => {
         setCompanyId?.(() => companyId);
         setCompanyLegalName?.(() => legalName);
         setOnRouteBCClientNumber?.(() => clientNumber);
-
+        // By default a newly created company shouldn't be suspended, so no need for setIsCompanySuspended
         setClientNumber(() => clientNumber);
       }
     },

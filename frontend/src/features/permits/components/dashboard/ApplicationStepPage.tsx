@@ -4,7 +4,7 @@ import { Navigate, useParams } from "react-router-dom";
 import { useMemo } from "react";
 
 import "../../../../common/components/dashboard/Dashboard.scss";
-import { Banner } from "../../../../common/components/dashboard/Banner";
+import { Banner } from "../../../../common/components/dashboard/components/banner/Banner";
 import { ApplicationForm } from "../../pages/Application/ApplicationForm";
 import { ApplicationContext } from "../../context/ApplicationContext";
 import { ApplicationPay } from "../../pages/Application/ApplicationPay";

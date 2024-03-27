@@ -1,10 +1,9 @@
 import { Nullable } from "../../../common/types/common";
+import { BCeID_USER_STATUS } from "./userManagement";
 import {
   BCeIDUserAuthGroupType,
   VerifiedClient,
 } from "../../../common/authentication/types";
-import { Nullable } from "../../../common/types/common";
-import { BCeID_USER_STATUS } from "./userManagement";
 
 /**
  * The types of user statuses for BCeID users.
@@ -14,6 +13,7 @@ export const BCeID_USER_STATUS = {
   DISABLED: "DISABLED",
   PENDING: "PENDING",
 } as const;
+
 /**
  * The enum type for BCeID user status.
  */
@@ -73,12 +73,17 @@ export type CompanyProfile = {
   primaryContact: Contact;
   migratedClientHash?: Nullable<string>;
   alternateName?: Nullable<string>;
+  isSuspended: boolean;
 };
 
 /**
  * The request object type for updating company profile.
  */
-export type UpdateCompanyProfileRequest = Omit<CompanyProfile, "clientNumber">;
+export type UpdateCompanyProfileRequest = Omit<
+  CompanyProfile,
+  "clientNumber"
+  | "isSuspended"
+>;
 
 /**
  * The response structure of get user info API.

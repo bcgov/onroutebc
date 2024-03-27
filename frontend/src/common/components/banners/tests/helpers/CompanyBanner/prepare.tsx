@@ -1,4 +1,5 @@
 import { render } from "@testing-library/react";
+
 import { CompanyProfile } from "../../../../../../features/manageProfile/types/manageProfile";
 import { CompanyBanner } from "../../../CompanyBanner";
 
@@ -25,6 +26,7 @@ export const defaultCompanyInfo = {
     provinceCode: "BC",
     countryCode: "CA",
   },
+  isSuspended: false,
 };
 
 export const renderTestComponent = (companyInfo?: CompanyProfile) => {

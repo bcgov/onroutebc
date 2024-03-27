@@ -30,6 +30,8 @@ import { UserInfoWizard } from "../features/wizard/UserInfoWizard";
 import * as routes from "./constants";
 import { IDIRCreateCompany } from "../features/idir/company/IDIRCreateCompany";
 import { CompanySuspended } from "../common/pages/CompanySuspended";
+import { ManageSettings } from "../features/settings/ManageSettings";
+import { IssuanceErrorPage } from "../common/pages/IssuanceErrorPage";
 
 export const AppRoutes = () => {
   return (
@@ -48,6 +50,10 @@ export const AppRoutes = () => {
       <Route
         path={routes.ERROR_ROUTES.UNEXPECTED}
         element={<UniversalUnexpected />}
+      />
+      <Route
+        path={routes.ERROR_ROUTES.ISSUANCE}
+        element={<IssuanceErrorPage />}
       />
       <Route path="*" element={<UniversalUnexpected />} />
 
@@ -88,6 +94,7 @@ export const AppRoutes = () => {
               IDIR_USER_AUTH_GROUP.PPC_CLERK,
               IDIR_USER_AUTH_GROUP.FINANCE,
               IDIR_USER_AUTH_GROUP.HQ_ADMINISTRATOR,
+              IDIR_USER_AUTH_GROUP.CTPO,
             ]}
           />
         }
@@ -293,6 +300,22 @@ export const AppRoutes = () => {
         <Route
           path={routes.PAYMENT_ROUTES.PAYMENT_REDIRECT}
           element={<PaymentRedirect />}
+        />
+      </Route>
+
+      <Route element={
+        <IDIRAuthWall 
+          allowedAuthGroups={[
+            IDIR_USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
+            IDIR_USER_AUTH_GROUP.FINANCE,
+            IDIR_USER_AUTH_GROUP.PPC_CLERK,
+            IDIR_USER_AUTH_GROUP.CTPO,
+          ]}
+        />
+      }>
+        <Route
+          path={routes.SETTINGS_ROUTES.MANAGE}
+          element={<ManageSettings />}
         />
       </Route>
     </Routes>

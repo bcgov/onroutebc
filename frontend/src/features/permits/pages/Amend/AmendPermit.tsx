@@ -4,7 +4,7 @@ import { Box } from "@mui/material";
 
 import { Permit } from "../../types/permit";
 import { PERMIT_STATUSES, isPermitInactive } from "../../types/PermitStatus";
-import { Banner } from "../../../../common/components/dashboard/Banner";
+import { Banner } from "../../../../common/components/dashboard/components/banner/Banner";
 import { useMultiStepForm } from "../../hooks/useMultiStepForm";
 import { AmendPermitContext } from "./context/AmendPermitContext";
 import { Loading } from "../../../../common/pages/Loading";

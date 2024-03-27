@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 
 import "./EditVehicleDashboard.scss";
-import { Banner } from "../../../../common/components/dashboard/Banner";
+import { Banner } from "../../../../common/components/dashboard/components/banner/Banner";
 import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
 import { PowerUnitForm } from "../form/PowerUnitForm";
 import { TrailerForm } from "../form/TrailerForm";

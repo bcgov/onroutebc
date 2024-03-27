@@ -1,0 +1,438 @@
+{
+	"info": {
+		"_postman_id": "0ccf5a6d-362f-4ae5-ba4b-fdc5cdaff846",
+		"name": "onRouteBC Credit Account Refund or Adjustment",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11120889"
+	},
+	"item": [
+		{
+			"name": "Request a Token",
+			"item": [
+				{
+					"name": "Request a CFS Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('access_token');\r",
+									"    pm.collectionVariables.set('access_token', jsonData.access_token);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{cfs_client_secret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{cfs_client_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cfs_base_url}}/oauth/token",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"oauth",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Accounts",
+			"item": [
+				{
+					"name": "Get Account",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"cfs",
+								"parties",
+								"{{party_number}}",
+								"accs",
+								"{{account_number}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Account Site",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}/sites/{{site_number}}",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"cfs",
+								"parties",
+								"{{party_number}}",
+								"accs",
+								"{{account_number}}",
+								"sites",
+								"{{site_number}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Invoices",
+			"item": [
+				{
+					"name": "Get Invoice",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}/sites/{{site_number}}/invs/{{invoice_number}}",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"cfs",
+								"parties",
+								"{{party_number}}",
+								"accs",
+								"{{account_number}}",
+								"sites",
+								"{{site_number}}",
+								"invs",
+								"{{invoice_number}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Invoices for Account",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}/invs/",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"cfs",
+								"parties",
+								"{{party_number}}",
+								"accs",
+								"{{account_number}}",
+								"invs",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Invoices for Site",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}/sites/{{site_number}}/invs/",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"cfs",
+								"parties",
+								"{{party_number}}",
+								"accs",
+								"{{account_number}}",
+								"sites",
+								"{{site_number}}",
+								"invs",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Receipts",
+			"item": [
+				{
+					"name": "Create Receipt",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('receipt_number');\r",
+									"    pm.collectionVariables.set('receipt_number', jsonData.receipt_number);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set('receipt_date', new Date().toString());\r",
+									"let receiptNum = 'R' + (new Date()).getTime();\r",
+									"pm.collectionVariables.set('receipt_number', receiptNum);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"receipt_number\":\"{{receipt_number}}\",\r\n    \"receipt_date\":\"{{receipt_date}}\",\r\n    \"receipt_amount\":\"{{receipt_amount}}\",\r\n    \"payment_method\":\"OL\"\r\n}"
+						},
+						"url": {
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}/sites/{{site_number}}/rcpts/",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"cfs",
+								"parties",
+								"{{party_number}}",
+								"accs",
+								"{{account_number}}",
+								"sites",
+								"{{site_number}}",
+								"rcpts",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Receipt",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}/sites/{{site_number}}/rcpts/{{receipt_number}}",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"cfs",
+								"parties",
+								"{{party_number}}",
+								"accs",
+								"{{account_number}}",
+								"sites",
+								"{{site_number}}",
+								"rcpts",
+								"{{receipt_number}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Receipts for Site",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}/sites/{{site_number}}/rcpts/",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"cfs",
+								"parties",
+								"{{party_number}}",
+								"accs",
+								"{{account_number}}",
+								"sites",
+								"{{site_number}}",
+								"rcpts",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Credit Memos",
+			"item": []
+		}
+	],
+	"auth": {
+		"type": "oauth2",
+		"oauth2": [
+			{
+				"key": "addTokenTo",
+				"value": "header",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "business_number",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "party_number",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "customer_name",
+			"value": "ABC Trucking Inc.",
+			"type": "string"
+		},
+		{
+			"key": "account_description",
+			"value": "Test account for ABC Trucking",
+			"type": "string"
+		},
+		{
+			"key": "account_number",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "site_number",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "invoice_number",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "transaction_date",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "gl_date",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "onroute_client_number",
+			"value": "B2-000067-245",
+			"type": "string"
+		},
+		{
+			"key": "transaction_number",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "transaction_amount",
+			"value": "30.00",
+			"type": "string"
+		},
+		{
+			"key": "permit_number",
+			"value": "P2-00100022-123",
+			"type": "string"
+		},
+		{
+			"key": "transaction_amount_2",
+			"value": "90.00",
+			"type": "string"
+		},
+		{
+			"key": "receipt_number",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "receipt_date",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "receipt_amount",
+			"value": "20",
+			"type": "string"
+		}
+	]
+}

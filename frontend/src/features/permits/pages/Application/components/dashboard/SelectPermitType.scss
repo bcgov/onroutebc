@@ -4,8 +4,11 @@
 @include CustomFormComponents.custom-form-component(".select-permit-type__input");
 
 .select-permit-type {
-  font-size: 1rem;
-  color: $bc-black;
+  &#{&} {
+    font-size: 1rem;
+    color: $bc-black;
+    margin: 0;
+  }
 
   & &__label {
     font-weight: bold;
@@ -15,6 +18,7 @@
   & &__input {
     background-color: $white;
     width: 15.25rem;
+    margin-bottom: 0;
   }
 
   & &__menu {

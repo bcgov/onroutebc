@@ -5,7 +5,7 @@ import { VoidPermitForm } from "./components/VoidPermitForm";
 import { usePermitDetailsQuery } from "../../hooks/hooks";
 import { Loading } from "../../../../common/pages/Loading";
 import "./VoidPermit.scss";
-import { Banner } from "../../../../common/components/dashboard/Banner";
+import { Banner } from "../../../../common/components/dashboard/components/banner/Banner";
 import { VoidPermitContext } from "./context/VoidPermitContext";
 import { ERROR_ROUTES, IDIR_ROUTES } from "../../../../routes/constants";
 import { VoidPermitFormData } from "./types/VoidPermit";

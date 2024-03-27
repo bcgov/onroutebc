@@ -6,7 +6,6 @@ import { faBars } from "@fortawesome/free-solid-svg-icons";
 
 import "./Header.scss";
 import { DoesUserHaveRoleWithContext } from "../../authentication/util";
-import { ROLES } from "../../authentication/types";
 import { Brand } from "./components/Brand";
 import { UserSection } from "./components/UserSection";
 import { getLoginUsernameFromSession } from "../../apiManager/httpRequestHandler";
@@ -14,9 +13,13 @@ import { SearchButton } from "./components/SearchButton";
 import { SearchFilter } from "./components/SearchFilter";
 import { IDPS } from "../../types/idp";
 import OnRouteBCContext from "../../authentication/OnRouteBCContext";
+import { ROLES, UserRolesType } from "../../authentication/types";
+import { Nullable } from "../../types/common";
+import { canViewSettingsTab } from "../../../features/settings/helpers/permissions";
 import {
   APPLICATIONS_ROUTES,
   PROFILE_ROUTES,
+  SETTINGS_ROUTES,
   VEHICLES_ROUTES,
 } from "../../../routes/constants";
 
@@ -43,9 +46,11 @@ const getEnv = () => {
 const Navbar = ({
   isAuthenticated,
   isMobile = false,
+  userRoles,
 }: {
   isAuthenticated: boolean;
   isMobile?: boolean;
+  userRoles?: Nullable<UserRolesType[]>;
 }) => {
   const navbarClassName = isMobile ? "mobile" : "normal";
   return (
@@ -69,6 +74,11 @@ const Navbar = ({
               {DoesUserHaveRoleWithContext(ROLES.READ_ORG) && (
                 <li>
                   <NavLink to={PROFILE_ROUTES.MANAGE}>Profile</NavLink>
+                </li>
+              )}
+              {canViewSettingsTab(userRoles) && (
+                <li>
+                  <NavLink to={SETTINGS_ROUTES.MANAGE}>Settings</NavLink>
                 </li>
               )}
             </>
@@ -108,7 +118,8 @@ export const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const { isAuthenticated, user } = useAuth();
-  const { companyId } = useContext(OnRouteBCContext);
+  const { companyId, userRoles } = useContext(OnRouteBCContext);
+
   const username = getLoginUsernameFromSession();
   const isIdir = user?.profile?.identity_provider === IDPS.IDIR;
   const shouldDisplayNavBar = Boolean(companyId);
@@ -142,9 +153,18 @@ export const Header = () => {
           {isAuthenticated ? <NavButton toggleMenu={toggleMenu} /> : null}
         </div>
       </header>
-      {shouldDisplayNavBar && <Navbar isAuthenticated={isAuthenticated} />}
+      {shouldDisplayNavBar && (
+        <Navbar
+          isAuthenticated={isAuthenticated}
+          userRoles={userRoles}
+        />
+      )}
       {shouldDisplayNavBar && menuOpen ? (
-        <Navbar isAuthenticated={isAuthenticated} isMobile={true} />
+        <Navbar
+          isAuthenticated={isAuthenticated}
+          isMobile={true}
+          userRoles={userRoles}
+        />
       ) : null}
       {filterOpen ? <SearchFilter closeFilter={toggleFilter} /> : null}
     </div>
