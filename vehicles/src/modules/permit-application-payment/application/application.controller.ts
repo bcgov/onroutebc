@@ -180,8 +180,8 @@ export class ApplicationController {
         currentUser.orbcUserAuthGroup,
         IDIR_USER_AUTH_GROUP_LIST,
       ) &&
-      (retApplicationDto.permitApplicationOrigin !==
-          PermitApplicationOrigin.ONLINE)
+      retApplicationDto.permitApplicationOrigin !==
+        PermitApplicationOrigin.ONLINE
     ) {
       throw new ForbiddenException(
         `User does not have sufficient privileges to view the application ${applicationId}.`,
