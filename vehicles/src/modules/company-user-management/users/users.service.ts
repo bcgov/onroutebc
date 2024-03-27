@@ -754,19 +754,20 @@ export class UsersService {
       );
     }
     // Modify user status and other housekeeping fields for deletion.
-    const usersToBeDeleted = usersBeforeDelete.map((companyUser) => {
-      return (
-        userGUIDsFromRequest.includes(companyUser.user.userGUID) &&
-        ({
+    const usersToBeDeleted = usersBeforeDelete
+      .filter(({ user: { userGUID } }) =>
+        userGUIDsFromRequest.includes(userGUID),
+      )
+      .map((companyUser) => {
+        return {
           ...companyUser,
           statusCode: UserStatus.DELETED,
           updatedDateTime: new Date(),
           updatedUser: currentUser.userName,
           updatedUserDirectory: currentUser.orbcUserDirectory,
           updatedUserGuid: currentUser.userGUID,
-        } as CompanyUser)
-      );
-    });
+        } as CompanyUser;
+      });
 
     // Identify which GUIDs were not found (failure to delete)
     const failure = userGUIDsFromRequest?.filter(
@@ -792,9 +793,7 @@ export class UsersService {
     }
 
     // Determine successful deletions by filtering out failures
-    const success = userGUIDsFromRequest?.filter(
-      (id) => !failure.includes(id),
-    );
+    const success = userGUIDsFromRequest?.filter((id) => !failure.includes(id));
 
     // Prepare the response DTO with lists of successful and failed deletions
     return {
