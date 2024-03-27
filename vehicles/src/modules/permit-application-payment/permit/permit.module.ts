@@ -8,13 +8,14 @@ import { PermitData } from './entities/permit-data.entity';
 import { Permit } from './entities/permit.entity';
 import { PermitType } from './entities/permit-type.entity';
 import { PaymentModule } from '../payment/payment.module';
+import { CompanyPermitController } from './company-permit.controller';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Permit, PermitData, PermitType]),
     PaymentModule,
   ],
-  controllers: [PermitController],
+  controllers: [PermitController, CompanyPermitController],
   providers: [PermitService, PermitProfile],
   exports: [PermitService],
 })

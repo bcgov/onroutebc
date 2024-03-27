@@ -1,5 +1,4 @@
 import {
-  ForbiddenException,
   Inject,
   Injectable,
   InternalServerErrorException,
@@ -60,10 +59,8 @@ import * as constants from '../../../common/constants/api.constant';
 import { PermitApprovalSource } from '../../../common/enum/permit-approval-source.enum';
 import { PermitSearch } from '../../../common/enum/permit-search.enum';
 import { paginate, sortQuery } from '../../../common/helper/database.helper';
-import { IDIR_USER_AUTH_GROUP_LIST } from '../../../common/enum/user-auth-group.enum';
 import { User } from '../../company-user-management/users/entities/user.entity';
 import { ReadPermitMetadataDto } from './dto/response/read-permit-metadata.dto';
-import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 import { formatTemplateData } from '../../../common/helper/format-template-data.helper';
 import {
   fetchPermitDataDescriptionValuesFromCache,
@@ -93,16 +90,25 @@ export class PermitService {
     private readonly cacheManager: Cache,
   ) {}
 
-  private async findOne(permitId: string): Promise<Permit> {
-    return this.permitRepository.findOne({
-      where: { permitId: permitId },
-      relations: {
-        company: true,
-        permitData: true,
-        applicationOwner: { userContact: true },
-        issuer: { userContact: true },
-      },
-    });
+  private async findOne(permitId: string, companyId?: number): Promise<Permit> {
+    let query = this.permitRepository
+      .createQueryBuilder('permit')
+      .leftJoinAndSelect('permit.company', 'company')
+      .innerJoinAndSelect('permit.permitData', 'permitData')
+      .leftJoinAndSelect('permit.applicationOwner', 'applicationOwner')
+      .leftJoinAndSelect(
+        'applicationOwner.userContact',
+        'applicationOwnerContact',
+      )
+      .where('permit.permitId = :permitId', {
+        permitId: permitId,
+      })
+      .andWhere('permit.permitNumber IS NOT NULL');
+    if (companyId)
+      query = query.andWhere('company.companyId = :companyId', {
+        companyId: companyId,
+      });
+    return await query.getOne();
   }
 
   /**
@@ -117,20 +123,9 @@ export class PermitService {
   public async findByPermitId(
     permitId: string,
     currentUser: IUserJWT,
+    companyId?: number,
   ): Promise<ReadPermitDto> {
-    const permit = await this.findOne(permitId);
-    // Check if the current user has the proper authorization to access this receipt.
-    // Throws ForbiddenException if user does not belong to the specified user auth group or does not own the company.
-    if (
-      !doesUserHaveAuthGroup(
-        currentUser.orbcUserAuthGroup,
-        IDIR_USER_AUTH_GROUP_LIST,
-      ) &&
-      permit?.company?.companyId != currentUser.companyId
-    ) {
-      throw new ForbiddenException();
-    }
-
+    const permit = await this.findOne(permitId, companyId);
     return this.classMapper.mapAsync(permit, Permit, ReadPermitDto, {
       extraArgs: () => ({
         currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
@@ -152,25 +147,15 @@ export class PermitService {
    */
 
   @LogAsyncMethodExecution()
-  public async findPDFbyPermitId(
+  public async findDocumentbyPermitId(
     currentUser: IUserJWT,
     permitId: string,
     downloadMode: FileDownloadModes,
+    companyId?: number,
     res?: Response,
   ): Promise<void> {
     // Retrieve the permit details using the permit ID
-    const permit = await this.findOne(permitId);
-
-    // Check if current user is in the allowed auth group or owns the company, else throw ForbiddenException
-    if (
-      !doesUserHaveAuthGroup(
-        currentUser.orbcUserAuthGroup,
-        IDIR_USER_AUTH_GROUP_LIST,
-      ) &&
-      permit?.company?.companyId != currentUser.companyId
-    ) {
-      throw new ForbiddenException();
-    }
+    const permit = await this.findOne(permitId, companyId);
 
     // Use the DOPS service to download the document associated with the permit
     await this.dopsService.download(
@@ -401,10 +386,11 @@ export class PermitService {
   public async findReceiptPDF(
     currentUser: IUserJWT,
     permitId: string,
+    companyId?: number,
     res?: Response,
   ): Promise<void> {
     // Query the database to find a permit and its related transactions and receipt based on the permit ID.
-    const permit = await this.permitRepository
+    let permitQuery = this.permitRepository
       .createQueryBuilder('permit')
       .leftJoinAndSelect('permit.company', 'company')
       .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
@@ -413,24 +399,16 @@ export class PermitService {
       .where('permit.permitId = :permitId', {
         permitId: permitId,
       })
-      .andWhere('receipt.receiptNumber IS NOT NULL')
-      .getOne();
+      .andWhere('receipt.receiptNumber IS NOT NULL');
+    if (companyId)
+      permitQuery = permitQuery.andWhere('company.companyId = :companyId', {
+        companyId: companyId,
+      });
+    const permit = await permitQuery.getOne();
 
     // If no permit is found, throw a NotFoundException indicating the receipt is not found.
     if (!permit) {
       throw new NotFoundException('Receipt Not Found!');
-    }
-
-    // Check if the current user has the proper authorization to access this receipt.
-    // Throws ForbiddenException if user does not belong to the specified user auth group or does not own the company.
-    if (
-      !doesUserHaveAuthGroup(
-        currentUser.orbcUserAuthGroup,
-        IDIR_USER_AUTH_GROUP_LIST,
-      ) &&
-      permit?.company?.companyId != currentUser.companyId
-    ) {
-      throw new ForbiddenException();
     }
 
     // If authorized, proceed to download the receipt PDF using the dopsService.

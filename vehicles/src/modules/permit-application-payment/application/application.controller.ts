@@ -34,22 +34,22 @@ import { ResultDto } from './dto/response/result.dto';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
 import { IssuePermitDto } from './dto/request/issue-permit.dto';
-import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import {
   ClientUserAuthGroup,
   IDIR_USER_AUTH_GROUP_LIST,
 } from 'src/common/enum/user-auth-group.enum';
-import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
-import { GetApplicationQueryParamsDto } from './dto/request/queryParam/getApplication.query-params.dto';
 import { DeleteApplicationDto } from './dto/request/delete-application.dto';
 import { DeleteDto } from '../../common/dto/response/delete.dto';
 import { PermitApplicationOrigin } from '../../../common/enum/permit-application-origin.enum';
-import { ReadApplicationMetadataDto } from './dto/response/read-application-metadata.dto';
 import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
+import { PaginationDto } from 'src/common/dto/paginate/pagination';
+import { ReadApplicationMetadataDto } from './dto/response/read-application-metadata.dto';
+import { GetApplicationQueryParamsDto } from './dto/request/queryParam/getApplication.query-params.dto';
+import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
 
 @ApiBearerAuth()
-@ApiTags('Permit Application')
-@Controller('permits/applications')
+@ApiTags('Application')
+@Controller('company/:companyId/applications')
 @ApiNotFoundResponse({
   description: 'The Application Api Not Found Response',
   type: ExceptionDto,
@@ -64,30 +64,6 @@ import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 })
 export class ApplicationController {
   constructor(private readonly applicationService: ApplicationService) {}
-  /**
-   * Create Permit application
-   * @param request
-   * @param createApplication
-   */
-  @ApiOperation({
-    summary: 'Create Permit Application',
-    description:
-      'Create permit application and return the same , enforcing authentication.',
-  })
-  @ApiCreatedResponse({
-    description: 'The Permit Application Resource',
-    type: ReadApplicationDto,
-  })
-  @Roles(Role.WRITE_PERMIT)
-  @Post()
-  async createPermitApplication(
-    @Req() request: Request,
-    @Body() createApplication: CreateApplicationDto,
-  ): Promise<ReadApplicationDto> {
-    const currentUser = request.user as IUserJWT;
-    return await this.applicationService.create(createApplication, currentUser);
-  }
-
   /**
    * Find all application for given status of a company for current logged in user
    * @param request
@@ -107,21 +83,10 @@ export class ApplicationController {
   @Get()
   async findAllApplication(
     @Req() request: Request,
+    @Param('companyId') companyId: number,
     @Query() getApplicationQueryParamsDto: GetApplicationQueryParamsDto,
   ): Promise<PaginationDto<ReadApplicationMetadataDto>> {
     const currentUser = request.user as IUserJWT;
-    if (
-      !doesUserHaveAuthGroup(
-        currentUser.orbcUserAuthGroup,
-        IDIR_USER_AUTH_GROUP_LIST,
-      ) &&
-      !getApplicationQueryParamsDto.companyId
-    ) {
-      throw new BadRequestException(
-        `Company Id is required for roles except ${IDIR_USER_AUTH_GROUP_LIST.join(', ')}.`,
-      );
-    }
-
     const userGuid =
       ClientUserAuthGroup.PERMIT_APPLICANT === currentUser.orbcUserAuthGroup
         ? currentUser.userGUID
@@ -131,10 +96,38 @@ export class ApplicationController {
       page: getApplicationQueryParamsDto.page,
       take: getApplicationQueryParamsDto.take,
       orderBy: getApplicationQueryParamsDto.orderBy,
-      companyId: getApplicationQueryParamsDto.companyId,
+      companyId: companyId,
       userGUID: userGuid,
       currentUser: currentUser,
     });
+  }
+  /**
+   * Create Permit application
+   * @param request
+   * @param createApplication
+   */
+  @ApiOperation({
+    summary: 'Create Permit Application',
+    description:
+      'Create permit application and return the same , enforcing authentication.',
+  })
+  @ApiCreatedResponse({
+    description: 'The Permit Application Resource',
+    type: ReadApplicationDto,
+  })
+  @Roles(Role.WRITE_PERMIT)
+  @Post()
+  async createPermitApplication(
+    @Req() request: Request,
+    @Param('companyId') companyId: number,
+    @Body() createApplication: CreateApplicationDto,
+  ): Promise<ReadApplicationDto> {
+    const currentUser = request.user as IUserJWT;
+    return await this.applicationService.create(
+      createApplication,
+      currentUser,
+      companyId,
+    );
   }
 
   /**
@@ -156,10 +149,11 @@ export class ApplicationController {
   })
   @ApiQuery({ name: 'amendment', required: false })
   @Roles(Role.READ_PERMIT)
-  @Get(':permitId')
+  @Get(':applicationId')
   async findOneApplication(
     @Req() request: Request,
-    @Param('permitId') permitId: string,
+    @Param('companyId') companyId: number,
+    @Param('applicationId') applicationId: string,
     @Query('amendment') amendment?: boolean,
   ): Promise<ReadApplicationDto> {
     // Extracts the user object from the request, casting it to the expected IUserJWT type
@@ -168,10 +162,15 @@ export class ApplicationController {
     // Based on the amendment query parameter, selects the appropriate method to retrieve
     // either the application or its current amendment, passing the permitId and current user for authorization and filtering
     const retApplicationDto = !amendment
-      ? await this.applicationService.findApplication(permitId, currentUser)
-      : await this.applicationService.findCurrentAmendmentApplication(
-          permitId,
+      ? await this.applicationService.findApplication(
+          applicationId,
           currentUser,
+          companyId,
+        )
+      : await this.applicationService.findCurrentAmendmentApplication(
+          applicationId,
+          currentUser,
+          companyId,
         );
 
     // Validates the current user's permission to access the application or amendment
@@ -181,12 +180,11 @@ export class ApplicationController {
         currentUser.orbcUserAuthGroup,
         IDIR_USER_AUTH_GROUP_LIST,
       ) &&
-      (retApplicationDto?.companyId != currentUser.companyId ||
-        retApplicationDto.permitApplicationOrigin !==
-          PermitApplicationOrigin.ONLINE)
+      retApplicationDto.permitApplicationOrigin !==
+        PermitApplicationOrigin.ONLINE
     ) {
       throw new ForbiddenException(
-        `User does not have sufficient privileges to view the application ${permitId}.`,
+        `User does not have sufficient privileges to view the application ${applicationId}.`,
       );
     }
 
@@ -206,17 +204,19 @@ export class ApplicationController {
     type: ReadApplicationDto,
   })
   @Roles(Role.WRITE_PERMIT)
-  @Put(':applicationNumber')
+  @Put(':applicationId')
   async update(
     @Req() request: Request,
-    @Param('applicationNumber') applicationNumber: string,
+    @Param('applicationId') applicationId: string,
+    @Param('companyId') companyId: number,
     @Body() updateApplicationDto: UpdateApplicationDto,
   ): Promise<ReadApplicationDto> {
     const currentUser = request.user as IUserJWT;
     const application = await this.applicationService.update(
-      applicationNumber,
+      applicationId,
       updateApplicationDto,
       currentUser,
+      companyId,
     );
 
     if (!application) {
@@ -243,6 +243,7 @@ export class ApplicationController {
   @Post('/issue')
   async issuePermit(
     @Req() request: Request,
+    @Param('companyId') companyId: number,
     @Body() issuePermitDto: IssuePermitDto,
   ): Promise<ResultDto> {
     const currentUser = request.user as IUserJWT;
@@ -252,7 +253,7 @@ export class ApplicationController {
         currentUser.orbcUserAuthGroup,
         IDIR_USER_AUTH_GROUP_LIST,
       ) &&
-      !issuePermitDto.companyId
+      !companyId
     ) {
       throw new BadRequestException(
         `Company Id is required for roles except ${IDIR_USER_AUTH_GROUP_LIST.join(', ')}.`,
@@ -267,6 +268,7 @@ export class ApplicationController {
     const result = await this.applicationService.issuePermit(
       currentUser,
       issuePermitDto.applicationIds[0],
+      companyId,
     );
     return result;
   }
@@ -287,13 +289,14 @@ export class ApplicationController {
   })
   async deleteApplications(
     @Req() request: Request,
+    @Param('companyId') companyId: number,
     @Body() deleteApplicationDto: DeleteApplicationDto,
   ): Promise<DeleteDto> {
     const currentUser = request.user as IUserJWT;
     const deleteResult: DeleteDto =
       await this.applicationService.deleteApplicationInProgress(
         deleteApplicationDto.applications,
-        deleteApplicationDto.companyId,
+        companyId,
         currentUser,
       );
     if (deleteResult == null) {

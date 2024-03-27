@@ -3,7 +3,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   Allow,
   IsEnum,
-  IsNumber,
   IsOptional,
   IsString,
   MaxLength,
@@ -11,16 +10,6 @@ import {
 import { PermitType } from 'src/common/enum/permit-type.enum';
 
 export class UpdateApplicationDto {
-  @AutoMap()
-  @ApiProperty({
-    description: 'Id of the company requesting the permit.',
-    example: 74,
-    required: false,
-  })
-  @IsOptional()
-  @IsNumber()
-  companyId?: number;
-
   @AutoMap()
   @ApiProperty({
     enum: PermitType,
