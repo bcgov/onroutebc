@@ -87,7 +87,10 @@ export const CompanyInformationWizardForm = memo(
           Company Primary Contact
         </Typography>
 
-        <InfoBcGovBanner msg={BANNER_MESSAGES.COMPANY_CONTACT} />
+        <InfoBcGovBanner
+          className="company-info-wizard-form__info-banner"
+          msg={BANNER_MESSAGES.COMPANY_CONTACT}
+        />
 
         <CompanyPrimaryContactForm feature={FEATURE} />
       </div>
