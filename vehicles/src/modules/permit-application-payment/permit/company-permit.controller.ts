@@ -19,7 +19,6 @@ import {
   ApiOkResponse,
   ApiOperation,
 } from '@nestjs/swagger';
-import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { Request, Response } from 'express';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
@@ -36,6 +35,7 @@ import {
 } from 'src/common/enum/user-auth-group.enum';
 import { ReadPermitMetadataDto } from './dto/response/read-permit-metadata.dto';
 import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
+import { PermitHistoryDto } from './dto/response/permit-history.dto';
 
 @ApiBearerAuth()
 @ApiTags('Permit')
@@ -100,24 +100,19 @@ export class CompanyPermitController {
     });
   }
 
-  /**
-   * Fetches all available permit types from the service layer and returns them.
-   * Uses an @AuthOnly() decorator to enforce authentication.
-   * The route for accessing this method is defined under '/permits/permit-types'.
-   * @returns A promise that resolves to a record object where each key-value pair represents a permit type id and its name.
-   */
-  @AuthOnly()
-  @ApiOperation({
-    summary: 'Fetch all permit types',
-    description:
-      'Fetches all available permit types from the service layer and returns them, enforcing authentication.',
+  @ApiOkResponse({
+    description: 'The Permit Resource to get revision and payment history.',
+    type: PermitHistoryDto,
+    isArray: true,
   })
-  @Get('permit-types')
-  async getPermitTypes(): Promise<Record<string, string>> {
-    const permitTypes = await this.permitService.getPermitType();
-    return permitTypes;
+  @Roles(Role.READ_PERMIT)
+  @Get('/:permitId/history')
+  async getPermitHisory(
+    @Param('permitId') permitId: string,
+    @Param('companyId') companyId: number,
+  ): Promise<PermitHistoryDto[]> {
+    return this.permitService.findPermitHistory(permitId, companyId);
   }
-
   @ApiOkResponse({
     description: 'Retrieves a specific Permit Resource by its ID.',
     type: ReadPermitDto,

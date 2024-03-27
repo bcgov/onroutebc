@@ -425,15 +425,18 @@ export class PermitService {
   @LogAsyncMethodExecution()
   public async findPermitHistory(
     originalPermitId: string,
+    companyId: number,
   ): Promise<PermitHistoryDto[]> {
     const permits = await this.permitRepository
       .createQueryBuilder('permit')
+      .leftJoinAndSelect('permit.company', 'company')
       .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
       .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
       .where('permit.permitNumber IS NOT NULL')
       .andWhere('permit.originalPermitId = :originalPermitId', {
         originalPermitId: originalPermitId,
       })
+      .andWhere('company.companyId = : companyId', { companyId: companyId })
       .orderBy('transaction.transactionSubmitDate', 'DESC')
       .getMany();
 
