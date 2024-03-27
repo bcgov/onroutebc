@@ -709,7 +709,7 @@ export class UsersService {
    * at least one company administrator remains. It performs checks before deletion, updates
    * user statuses, and returns details on successful and failed deletions.
    *
-   * @param {string[]} userGUIDs The GUIDs of the users slated for deletion.
+   * @param {string[]} userGUIDsFromRequest The GUIDs of the users slated for deletion.
    * @param {number} companyId The ID of the company the users belong to.
    * @param {IUserJWT} currentUser JWT token details of the current user for auditing.
    * @returns {Promise<DeleteDto>} An object containing arrays of successfully deleted user GUIDs
@@ -717,7 +717,7 @@ export class UsersService {
    */
   @LogAsyncMethodExecution()
   async removeAll(
-    userGUIDs: string[],
+    userGUIDsFromRequest: string[],
     companyId: number,
     currentUser: IUserJWT,
   ): Promise<DeleteDto> {
@@ -733,29 +733,30 @@ export class UsersService {
       },
     });
 
-    // Mapping users to check against COMPANY_ADMINISTRATOR group before operations
-    const companyAdminUserGuids = usersBeforeDelete.map(
-      (companyUser) =>
-        companyUser.userAuthGroup ===
-          ClientUserAuthGroup.COMPANY_ADMINISTRATOR &&
-        companyUser?.user?.userGUID,
-    );
+    // Collect the company admin userGUIDs.
+    const companyAdminUserGuids = usersBeforeDelete
+      .filter(
+        ({ userAuthGroup }) =>
+          userAuthGroup === ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+      )
+      .map(({ user: { userGUID } }) => userGUID);
 
-    // Filter admin GUIDs to exclude those in the deletion list, ensuring at least one remains
-    const filteredCompanyAdminUserGuids = companyAdminUserGuids.filter(
-      (guid) => !userGUIDs.includes(guid),
-    );
+    // Does the company have one admin at least
+    const doesCompanyHaveAtleastOneAdmin =
+      companyAdminUserGuids.filter(
+        (guid) => !userGUIDsFromRequest.includes(guid),
+      ).length > 0;
 
-    // Check if operation results in zero company admins, throwing an error if true
-    if (!filteredCompanyAdminUserGuids?.length) {
+    // Throw a bad request if there are no remaining admins.
+    if (!doesCompanyHaveAtleastOneAdmin) {
       throw new BadRequestException(
         'This operation is not allowed as a company should have atlease one CVAdmin at any given moment.',
       );
     }
-    // Extract only the GUIDs of the users to be deleted and modify them.
-    const userToBeDeleted = usersBeforeDelete.map((companyUser) => {
+    // Modify user status and other housekeeping fields for deletion.
+    const usersToBeDeleted = usersBeforeDelete.map((companyUser) => {
       return (
-        userGUIDs.includes(companyUser.user.userGUID) &&
+        userGUIDsFromRequest.includes(companyUser.user.userGUID) &&
         ({
           ...companyUser,
           statusCode: UserStatus.DELETED,
@@ -768,24 +769,37 @@ export class UsersService {
     });
 
     // Identify which GUIDs were not found (failure to delete)
-    const failure = userGUIDs?.filter(
+    const failure = userGUIDsFromRequest?.filter(
       (id) =>
-        !userToBeDeleted.some(
-          (companyUser) => companyUser.user.userGUID === id,
-        ),
+        !usersToBeDeleted.some(({ user: { userGUID } }) => userGUID === id),
     );
 
-    // Execute the deletion of users by their GUIDs within the specified company
-    await this.companyUserRepository.save(userToBeDeleted);
+    for (const userToDelete of usersToBeDeleted) {
+      const {
+        user: { userGUID },
+      } = userToDelete;
+      try {
+        // Execute the deletion of users by their GUIDs within the specified company
+        const { statusCode } =
+          await this.companyUserRepository.save(userToDelete);
+        if (statusCode !== UserStatus.DELETED) {
+          failure.push(userGUID);
+        }
+      } catch (error) {
+        this.logger.error(error);
+        failure.push(userGUID);
+      }
+    }
 
     // Determine successful deletions by filtering out failures
-    const success = userGUIDs?.filter((id) => !failure?.includes(id));
+    const success = userGUIDsFromRequest?.filter(
+      (id) => !failure.includes(id),
+    );
 
     // Prepare the response DTO with lists of successful and failed deletions
-    const deleteDto: DeleteDto = {
-      success: success,
-      failure: failure,
+    return {
+      success,
+      failure,
     };
-    return deleteDto;
   }
 }
