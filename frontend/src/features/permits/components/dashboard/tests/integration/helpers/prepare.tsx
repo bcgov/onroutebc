@@ -67,7 +67,7 @@ export const companyInfo = getDefaultCompanyInfo();
 // Mock API endpoints
 const server = setupServer(
   // Mock creating/saving application
-  http.post(APPLICATIONS_API_ROUTES.CREATE, async ({ request }) => {
+  http.post(`${VEHICLES_URL}/company/:companyId/applications`, async ({ request }) => {
     const reqBody = await request.json();
     const application = reqBody?.valueOf();
     if (!application) {
@@ -97,7 +97,7 @@ const server = setupServer(
 
   // Mock updating/saving application
   http.put(
-    `${APPLICATIONS_API_ROUTES.UPDATE}/:id`,
+    `${VEHICLES_URL}/company/:companyId/applications/:id`,
     async ({ request, params }) => {
       const { id } = params;
       const reqBody = await request.json();

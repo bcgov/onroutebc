@@ -11,12 +11,14 @@ import {
   updatePowerUnit,
   updateTrailer,
 } from "./vehiclesAPI";
+import { getCompanyIdFromSession } from "../../../common/apiManager/httpRequestHandler";
 
 /**
  * Fetches all vehicles.
  * @returns An array of vehicles (both Powerunits and Trailers)
  */
-export const useVehiclesQuery = (companyId: string) => {
+export const useVehiclesQuery = () => {
+  const companyId = getCompanyIdFromSession() as string;
   return useQuery({
     queryKey: ["vehicles"],
     queryFn: () => getAllVehicles(companyId),

@@ -74,11 +74,11 @@ export const AmendPermitForm = () => {
     vehicleOptions,
     powerUnitSubTypes,
     trailerSubTypes,
-  } = usePermitVehicleManagement(`${formData.companyId}`);
+  } = usePermitVehicleManagement();
 
   const { handleSubmit, getValues } = formMethods;
 
-  const companyInfoQuery = useCompanyInfoDetailsQuery(formData.companyId);
+  const companyInfoQuery = useCompanyInfoDetailsQuery();
   const companyInfo = companyInfoQuery.data;
 
   // Helper method to return form field values as an Permit object

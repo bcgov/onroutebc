@@ -1,13 +1,17 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints";
 
 const PERMITS_API_BASE = `${VEHICLES_URL}/permits`;
 const APPLICATIONS_API_BASE = `${PERMITS_API_BASE}/applications`;
 
+const APPLICATIONS_API_BASE_2 = (companyId: string) =>
+  `${VEHICLES_URL}/company/${companyId}/applications`;
+
 export const APPLICATIONS_API_ROUTES = {
-  CREATE: APPLICATIONS_API_BASE,
-  UPDATE: APPLICATIONS_API_BASE,
-  GET: APPLICATIONS_API_BASE,
-  DELETE: APPLICATIONS_API_BASE,
+  CREATE: (companyId: string) => APPLICATIONS_API_BASE_2(companyId),
+  UPDATE: (companyId: string) => APPLICATIONS_API_BASE_2(companyId),
+  GET: (companyId: string) => APPLICATIONS_API_BASE_2(companyId),
+  DELETE: (companyId: string) => APPLICATIONS_API_BASE_2(companyId),
 };
 
 export const PERMITS_API_ROUTES = {

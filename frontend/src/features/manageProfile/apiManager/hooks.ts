@@ -34,6 +34,7 @@ import {
   IDIRUserContextType,
   UserRolesType,
 } from "../../../common/authentication/types";
+import { getCompanyIdFromSession } from "../../../common/apiManager/httpRequestHandler";
 
 /**
  * Fetches company info of current user.
@@ -53,7 +54,8 @@ export const useCompanyInfoQuery = () => {
  * Fetches company info of specific company.
  * @returns company info or error if failed
  */
-export const useCompanyInfoDetailsQuery = (companyId: number) => {
+export const useCompanyInfoDetailsQuery = () => {
+  const companyId = Number(getCompanyIdFromSession());
   return useQuery({
     queryKey: ["companyInfo"],
     queryFn: () => getCompanyInfoById(companyId),
