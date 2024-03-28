@@ -17,7 +17,6 @@ import {
   ApiInternalServerErrorResponse,
   ApiCreatedResponse,
   ApiBearerAuth,
-  ApiOkResponse,
   ApiOperation,
 } from '@nestjs/swagger';
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
@@ -26,7 +25,6 @@ import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
-import { PermitHistoryDto } from './dto/response/permit-history.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { VoidPermitDto } from './dto/request/void-permit.dto';
 import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
@@ -54,20 +52,6 @@ import { ReadNotificationDto } from '../../common/dto/response/read-notification
 @Controller('permits')
 export class PermitController {
   constructor(private readonly permitService: PermitService) {}
-
-  @ApiOkResponse({
-    description: 'The Permit Resource to get revision and payment history.',
-    type: PermitHistoryDto,
-    isArray: true,
-  })
-  @Roles(Role.READ_PERMIT)
-  @Get('/:permitId/history')
-  async getPermitHisory(
-    @Param('permitId') permitId: string,
-  ): Promise<PermitHistoryDto[]> {
-    return this.permitService.findPermitHistory(permitId);
-  }
-
   /**
    * Get Permits of Logged in user
    * @Query companyId Company id of logged in user
