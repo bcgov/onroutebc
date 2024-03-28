@@ -34,7 +34,9 @@ export class ApplicationProfile extends AutomapperProfile {
         Permit,
         forMember(
           (d) => d.company.companyId,
-          mapFrom((s) => s.companyId),
+          mapWithArguments((_, { companyId }) => {
+            return companyId;
+          }),
         ),
         forMember(
           (permit) => permit.permitApplicationOrigin,
@@ -262,7 +264,9 @@ export class ApplicationProfile extends AutomapperProfile {
         Permit,
         forMember(
           (d) => d.company.companyId,
-          mapFrom((s) => s.companyId),
+          mapWithArguments((_, { companyId }) => {
+            return companyId;
+          }),
         ),
         forMember(
           (d) => d.updatedUserGuid,
