@@ -51,7 +51,7 @@ import { PermitHistoryDto } from './dto/response/permit-history.dto';
   description: 'The Permit Api Internal Server Error Response',
   type: ExceptionDto,
 })
-@Controller('company/:companyId/permits')
+@Controller('companies/:companyId/permits')
 export class CompanyPermitController {
   constructor(private readonly permitService: PermitService) {}
 

@@ -49,7 +49,7 @@ import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response
 
 @ApiBearerAuth()
 @ApiTags('Application')
-@Controller('company/:companyId/applications')
+@Controller('companies/:companyId/applications')
 @ApiNotFoundResponse({
   description: 'The Application Api Not Found Response',
   type: ExceptionDto,
