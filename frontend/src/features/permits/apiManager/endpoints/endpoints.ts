@@ -5,14 +5,14 @@ const PERMITS_API_BASE = `${VEHICLES_URL}/permits`;
 const APPLICATIONS_API_BASE = `${PERMITS_API_BASE}/applications`;
 
 const APPLICATIONS_API_BASE_2 = (companyId: string) =>
-  `${VEHICLES_URL}/company/${companyId}/applications`;
+  `${VEHICLES_URL}/companies/${companyId}/applications`;
 
 const APPLICATIONS_API_BASE_22 = (_s: any, companyId: string) => {
-  return `${VEHICLES_URL}/company/${companyId}/applications`;
+  return `${VEHICLES_URL}/companies/${companyId}/applications`;
 };
 
 const PERMITS_API_BASE_2 = (companyId: string) =>
-  `${VEHICLES_URL}/company/${companyId}/permits`;
+  `${VEHICLES_URL}/companies/${companyId}/permits`;
 
 export const APPLICATIONS_API_ROUTES = {
   CREATE: (companyId: string) => APPLICATIONS_API_BASE_22`${companyId}`,
