@@ -207,6 +207,10 @@ export class ApplicationProfile extends AutomapperProfile {
         Permit,
         ReadApplicationMetadataDto,
         forMember(
+          (d) => d.companyId,
+          mapFrom((s) => s?.company?.companyId),
+        ),
+        forMember(
           (d) => d.startDate,
           mapFrom((s) => s.permitData?.startDate),
         ),
