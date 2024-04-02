@@ -4,7 +4,7 @@ import { IDPS } from "../../types/idp";
 import { useAuth } from "react-oidc-context";
 import { InitialLandingPage } from "../../../features/homePage/InitialLandingPage";
 
-const SearchParamRouter = () => {
+const IDPRedirect = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { signinRedirect } = useAuth();
@@ -32,4 +32,4 @@ const SearchParamRouter = () => {
     return <InitialLandingPage />;
 };
 
-export default SearchParamRouter;
+export default IDPRedirect;

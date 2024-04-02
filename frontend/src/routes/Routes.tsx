@@ -31,7 +31,7 @@ import { IDIRCreateCompany } from "../features/idir/company/IDIRCreateCompany";
 import { CompanySuspended } from "../common/pages/CompanySuspended";
 import { ManageSettings } from "../features/settings/ManageSettings";
 import { IssuanceErrorPage } from "../common/pages/IssuanceErrorPage";
-import SearchParamRouter from "../common/components/searchparamrouter/SearchParamRouter";
+import IDPRedirect from "../common/components/idpredirect/IDPRedirect";
 
 export const AppRoutes = () => {
 
@@ -41,7 +41,7 @@ export const AppRoutes = () => {
       {/* Home and Error routes do no have any constraints. */}
       <Route
         path={routes.HOME} 
-        element={<SearchParamRouter />}
+        element={<IDPRedirect />}
       />
       <Route
         path={routes.ERROR_ROUTES.SUSPENDED}
