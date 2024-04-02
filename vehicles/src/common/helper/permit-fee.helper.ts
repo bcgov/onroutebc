@@ -41,7 +41,7 @@ export const permitFee = (application: Permit, oldAmount: number): number => {
         );
       }
       // Adjusting duration for one year term permit
-      if (duration <= 365 && duration >= 361) duration = 360;
+      if (yearlyPermit) duration = 360;
       return currentPermitFee(
         duration,
         TROS_PRICE_PER_TERM,
@@ -61,7 +61,7 @@ export const permitFee = (application: Permit, oldAmount: number): number => {
         );
       }
       // Adjusting duration for one year term permit
-      if (duration <= 365 && duration >= 361) duration = 360;
+      if (yearlyPermit) duration = 360;
       return currentPermitFee(
         duration,
         TROS_PRICE_PER_TERM,
@@ -75,6 +75,10 @@ export const permitFee = (application: Permit, oldAmount: number): number => {
       );
   }
 };
+
+export const yearlyPermit = (duration: number): boolean => {
+  return duration <= 366 && duration >= 361
+}
 
 export const isValidDuration = (
   duration: number,
