@@ -452,9 +452,8 @@ export const voidPermit = async (voidPermitParams: {
 }) => {
   const { permitId, voidData } = voidPermitParams;
   try {
-    const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
     const response = await httpPOSTRequest(
-      `${PERMITS_API_ROUTES.BASE(companyId)}/${permitId}/${PERMITS_API_ROUTES.VOID}`,
+      `${PERMITS_API_ROUTES.VOID(permitId)}`,
       replaceEmptyValuesWithNull(voidData),
     );
 
@@ -527,9 +526,8 @@ export const resendPermit = async ({
   email: string;
   fax?: Nullable<string>;
 }) => {
-  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   return await httpPOSTRequest(
-    `${PERMITS_API_ROUTES.BASE(companyId)}/${permitId}/${PERMITS_API_ROUTES.RESEND}`,
+    `${PERMITS_API_ROUTES.RESEND(permitId)}`,
     replaceEmptyValuesWithNull({
       to: [email],
       fax,

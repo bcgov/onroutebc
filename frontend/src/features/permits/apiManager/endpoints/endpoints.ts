@@ -1,9 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints";
 
-const PERMITS_API_BASE = `${VEHICLES_URL}/permits`;
-const APPLICATIONS_API_BASE = `${PERMITS_API_BASE}/applications`;
-
 const APPLICATIONS_API_BASE_2 = (companyId: string) =>
   `${VEHICLES_URL}/companies/${companyId}/applications`;
 
@@ -13,6 +10,8 @@ const APPLICATIONS_API_BASE_22 = (_s: any, companyId: string) => {
 
 const PERMITS_API_BASE_2 = (companyId: string) =>
   `${VEHICLES_URL}/companies/${companyId}/permits`;
+
+const STAFF_PERMIT_API_BASE = `${VEHICLES_URL}/permits`;
 
 export const APPLICATIONS_API_ROUTES = {
   CREATE: (companyId: string) => APPLICATIONS_API_BASE_22`${companyId}`,
@@ -30,8 +29,9 @@ export const PERMITS_API_ROUTES = {
     `${PERMITS_API_BASE_2(companyId)}/${permitId}/document`,
   RECEIPT: (companyId: string, permitId: string) =>
     `${PERMITS_API_BASE_2(companyId)}/${permitId}/receipt`,
-  VOID: `void`,
-  RESEND: `notification`,
+  VOID: (permitId: string) => `${STAFF_PERMIT_API_BASE}/${permitId}/void`,
+  RESEND: (permitId: string) =>
+    `${STAFF_PERMIT_API_BASE}/${permitId}/notification`,
 };
 
 const PAYMENT_API_BASE = `${VEHICLES_URL}/payment`;
