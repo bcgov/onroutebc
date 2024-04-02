@@ -7,20 +7,29 @@ const APPLICATIONS_API_BASE = `${PERMITS_API_BASE}/applications`;
 const APPLICATIONS_API_BASE_2 = (companyId: string) =>
   `${VEHICLES_URL}/company/${companyId}/applications`;
 
+const APPLICATIONS_API_BASE_22 = (_s: any, companyId: string) => {
+  return `${VEHICLES_URL}/company/${companyId}/applications`;
+};
+
+const PERMITS_API_BASE_2 = (companyId: string) =>
+  `${VEHICLES_URL}/company/${companyId}/permits`;
+
 export const APPLICATIONS_API_ROUTES = {
-  CREATE: (companyId: string) => APPLICATIONS_API_BASE_2(companyId),
+  CREATE: (companyId: string) => APPLICATIONS_API_BASE_22`${companyId}`,
   UPDATE: (companyId: string) => APPLICATIONS_API_BASE_2(companyId),
   GET: (companyId: string) => APPLICATIONS_API_BASE_2(companyId),
   DELETE: (companyId: string) => APPLICATIONS_API_BASE_2(companyId),
 };
 
 export const PERMITS_API_ROUTES = {
-  BASE: PERMITS_API_BASE,
-  GET: PERMITS_API_BASE,
-  ISSUE: `${APPLICATIONS_API_BASE}/issue`,
+  BASE: (companyId: string) => PERMITS_API_BASE_2(companyId),
+  GET: (companyId: string) => PERMITS_API_BASE_2(companyId),
+  ISSUE: (companyId: string) => `${APPLICATIONS_API_BASE_2(companyId)}/issue`,
   AMEND: APPLICATIONS_API_ROUTES.CREATE,
-  DOWNLOAD: `pdf`,
-  RECEIPT: `receipt`,
+  DOWNLOAD: (companyId: string, permitId: string) =>
+    `${PERMITS_API_BASE_2(companyId)}/${permitId}/document`,
+  RECEIPT: (companyId: string, permitId: string) =>
+    `${PERMITS_API_BASE_2(companyId)}/${permitId}/receipt`,
   VOID: `void`,
   RESEND: `notification`,
 };
