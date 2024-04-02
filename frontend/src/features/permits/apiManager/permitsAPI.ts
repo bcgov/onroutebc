@@ -39,7 +39,6 @@ import {
 } from "../../../common/apiManager/httpRequestHandler";
 
 import {
-  applyWhenNotNullable,
   getDefaultRequiredVal,
   replaceEmptyValuesWithNull,
   streamDownloadFile,
@@ -280,29 +279,25 @@ export const completeTransaction = async (transactionData: {
 
 /**
  * Issues the permits indicated by the application/permit ids.
- * @param ids Application/permit ids for the permits to be issued.
+ * @param applicationIds Application/permit ids for the permits to be issued.
  * @returns Successful and failed permit ids that were issued.
  */
 export const issuePermits = async (
-  ids: string[],
+  applicationIds: string[],
 ): Promise<IssuePermitsResponse> => {
   try {
     const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
     const response = await httpPOSTRequest(
       PERMITS_API_ROUTES.ISSUE(companyId),
       replaceEmptyValuesWithNull({
-        applicationIds: [...ids],
-        companyId: applyWhenNotNullable(
-          (companyId) => Number(companyId),
-          companyId,
-        ),
+        applicationIds,
       }),
     );
 
     if (response.status !== 201 || !response.data) {
       return removeEmptyIdsFromPermitsActionResponse({
         success: [],
-        failure: [...ids],
+        failure: [...applicationIds],
       });
     }
 
@@ -313,7 +308,7 @@ export const issuePermits = async (
     console.error(err);
     return removeEmptyIdsFromPermitsActionResponse({
       success: [],
-      failure: [...ids],
+      failure: [...applicationIds],
     });
   }
 };
