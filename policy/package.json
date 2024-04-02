@@ -1,0 +1,13 @@
+{
+  "name": "orbc-policy-engine",
+  "version": "0.1.0",
+  "description": "Policy Engine library for onRouteBC",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.3"
+  }
+}
