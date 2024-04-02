@@ -6,7 +6,6 @@ import { NewBCeIDAuthWall } from "../common/authentication/auth-walls/NewBCeIDAu
 import { IDIR_USER_AUTH_GROUP, ROLES } from "../common/authentication/types";
 import { UniversalUnauthorized } from "../common/pages/UniversalUnauthorized";
 import { UniversalUnexpected } from "../common/pages/UniversalUnexpected";
-import { InitialLandingPage } from "../features/homePage/InitialLandingPage";
 import { WelcomePage } from "../features/homePage/welcome/WelcomePage";
 import { IDIRWelcome } from "../features/idir/IDIRWelcome";
 import { IDIRReportsDashboard } from "../features/idir/search/pages/IDIRReportsDashboard";
@@ -32,13 +31,18 @@ import { IDIRCreateCompany } from "../features/idir/company/IDIRCreateCompany";
 import { CompanySuspended } from "../common/pages/CompanySuspended";
 import { ManageSettings } from "../features/settings/ManageSettings";
 import { IssuanceErrorPage } from "../common/pages/IssuanceErrorPage";
+import SearchParamRouter from "../common/components/searchparamrouter/SearchParamRouter";
 
 export const AppRoutes = () => {
+
   return (
     <Routes>
       {/* Home and Error Routes */}
       {/* Home and Error routes do no have any constraints. */}
-      <Route path={routes.HOME} element={<InitialLandingPage />} />
+      <Route
+        path={routes.HOME} 
+        element={<SearchParamRouter />}
+      />
       <Route
         path={routes.ERROR_ROUTES.SUSPENDED}
         element={<CompanySuspended />}
