@@ -44,20 +44,27 @@ function isRoleArray(obj: Role[] | IRole[]): obj is Role[] {
 }
 
 /**
- * Evaluates if a user has at least one of the specified roles or meets complex role criteria.
+ * Evaluates if a user has at least one of the specified roles, belongs to the specified user authorization group, or meets complex role criteria.
  *
  * This method supports two kinds of inputs for role requirements:
- * 1. Simple list of roles (Role[]): In this case, it checks if any of the roles assigned to the user matches at least one of
- *    the roles specified in the 'roles' parameter. It returns true if there's a match, indicating the user has one of the necessary roles.
- * 2. Complex role requirements (IRole[]): When 'roles' is an array of objects implementing the IRole interface (meaning it can specify
- *    complex role combinations with 'allOf' and 'oneOf' properties), it evaluates these conditions for each role object. It returns true
- *    if for any role object, either all of the 'allOf' roles or at least one of the 'oneOf' roles are present in the 'userRoles' array.
+ * 1. Simple list of roles (Role[]): It checks if the user holds any role from the specified list. True indicates possession of a required role.
+ * 2. Complex role requirements (IRole[]): For each object defining roles with 'allOf', 'oneOf', and/or 'userAuthGroup', it evaluates:
+ *    - If 'userAuthGroup' is defined, the user must belong to it.
+ *    - For 'allOf', the user must have all specified roles.
+ *    - For 'oneOf', the user must have at least one of the specified roles.
+ * If any role object's criteria are met (considering 'userAuthGroup' if defined), it returns true.
+ * Throws an error if both 'allOf' and 'oneOf' are defined in a role object.
  *
  * @param {Role[] | IRole[]} roles - An array of roles or role requirement objects to be matched against the user's roles.
  * @param {Role[]} userRoles - An array of roles assigned to the user.
- * @returns {boolean} Returns true if the user has at least one of the required roles or meets the complex role requirements, false otherwise.
+ * @param {UserAuthGroup} userAuthGroup - Optional. The user authorization group to which the user belongs.
+ * @returns {boolean} Returns true if the user meets any of the defined role criteria or belongs to the specified user authorization group; false otherwise.
  */
-export const matchRoles = (roles: Role[] | IRole[], userRoles: Role[]) => {
+export const matchRoles = (
+  roles: Role[] | IRole[],
+  userRoles: Role[],
+  userAuthGroup?: UserAuthGroup,
+) => {
   if (isRoleArray(roles)) {
     // Scenario: roles is a simple list of Role objects.
     // This block checks if any of the roles assigned to the user (userRoles)
@@ -67,26 +74,43 @@ export const matchRoles = (roles: Role[] | IRole[], userRoles: Role[]) => {
   } else {
     // Scenario: roles is not a simple list, but an object or objects implementing IRole,
     // meaning complex role requirements can be specified.
-    // This block checks two conditions for each role object:
+    // This block first checks for an invalid case where both 'allOf' and 'oneOf' are defined in a roleObject,
+    // then verifies if the user belongs to the specified 'userAuthGroup' if defined.
+    // Following, it checks two conditions for each role object:
     // 1. allOf - every role listed must be included in userRoles.
     // 2. oneOf - at least one of the roles listed must be included in userRoles.
     // It returns true if either condition is met for any role object, indicating the user meets the role requirements.
+    // An error is thrown if 'allOf' and 'oneOf' are both defined, as it's considered an invalid configuration.
     return roles.some((roleObject) => {
       if (roleObject.allOf?.length && roleObject.oneOf?.length) {
         throw new InternalServerErrorException(
           'Cannot define both allOf and oneOf at the same time!',
         );
       }
+
+      if (roleObject.userAuthGroup?.length) {
+        const userAuthGroupMatch = roleObject.userAuthGroup?.some(
+          (authGroup) => authGroup === userAuthGroup,
+        );
+        if (!userAuthGroupMatch) {
+          return false;
+        } else if (!roleObject.allOf?.length && !roleObject.oneOf?.length) {
+          return true;
+        }
+      }
+
       const allOfMatch = roleObject.allOf?.every((role) =>
         userRoles.includes(role),
       );
       const oneOfMatch = roleObject.oneOf?.some((role) =>
         userRoles.includes(role),
       );
+
       return oneOfMatch || allOfMatch;
     });
   }
 };
+
 /**
  * Checks if any company from a list of associated companies matches any of the current user's associated companies.
  *

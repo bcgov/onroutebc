@@ -49,7 +49,7 @@ import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response
 
 @ApiBearerAuth()
 @ApiTags('Application')
-@Controller('company/:companyId/applications')
+@Controller('companies/:companyId/applications')
 @ApiNotFoundResponse({
   description: 'The Application Api Not Found Response',
   type: ExceptionDto,
@@ -62,7 +62,7 @@ import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response
   description: 'The Application Api Internal Server Error Response',
   type: ExceptionDto,
 })
-export class ApplicationController {
+export class CompanyApplicationController {
   constructor(private readonly applicationService: ApplicationService) {}
   /**
    * Find all application for given status of a company for current logged in user

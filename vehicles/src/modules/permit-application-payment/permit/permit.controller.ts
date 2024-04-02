@@ -59,7 +59,10 @@ export class PermitController {
    *
    */
   @ApiPaginatedResponse(ReadPermitMetadataDto)
-  @Roles(Role.READ_PERMIT)
+  @Roles({
+    userAuthGroup: IDIR_USER_AUTH_GROUP_LIST,
+    oneOf: [Role.READ_PERMIT],
+  })
   @Get()
   async getPermit(
     @Req() request: Request,
@@ -107,7 +110,10 @@ export class PermitController {
    * @returns The id of new voided/revoked permit a in response object {@link ResultDto}
    *
    */
-  @Roles(Role.VOID_PERMIT)
+  @Roles({
+    userAuthGroup: IDIR_USER_AUTH_GROUP_LIST,
+    oneOf: [Role.VOID_PERMIT],
+  })
   @Post('/:permitId/void')
   async voidpermit(
     @Req() request: Request,
@@ -144,7 +150,10 @@ export class PermitController {
     description:
       'Sends a notification related to a specific permit after checking user authorization.',
   })
-  @Roles(Role.SEND_NOTIFICATION)
+  @Roles({
+    userAuthGroup: IDIR_USER_AUTH_GROUP_LIST,
+    oneOf: [Role.SEND_NOTIFICATION],
+  })
   @Post('/:permitId/notification')
   async notification(
     @Req() request: Request,

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ApplicationController } from './application.controller';
+import { CompanyApplicationController } from './company-application.controller';
 import { ApplicationService } from './application.service';
 import { ApplicationProfile } from './profile/application.profile';
 import { PermitApplicationOrigin } from './entities/permit-application-origin.entity';
@@ -21,7 +21,7 @@ import { Permit } from '../permit/entities/permit.entity';
     ]),
     PaymentModule,
   ],
-  controllers: [ApplicationController],
+  controllers: [CompanyApplicationController],
   providers: [ApplicationService, ApplicationProfile],
   exports: [ApplicationService],
 })
