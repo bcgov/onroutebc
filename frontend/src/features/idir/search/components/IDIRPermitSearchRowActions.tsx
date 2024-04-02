@@ -92,6 +92,7 @@ export const IDIRPermitSearchRowActions = ({
   email,
   fax,
   userAuthGroup,
+  companyId,
 }: {
   /**
    * The permit id.
@@ -117,6 +118,8 @@ export const IDIRPermitSearchRowActions = ({
    * The auth group for the current user (eg. PPCCLERK or EOFFICER)
    */
   userAuthGroup?: string;
+
+  companyId?: string;
 }) => {
   const [openResendDialog, setOpenResendDialog] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -131,7 +134,7 @@ export const IDIRPermitSearchRowActions = ({
     if (selectedOption === PERMIT_ACTION_TYPES.RESEND) {
       setOpenResendDialog(() => true);
     } else if (selectedOption === PERMIT_ACTION_TYPES.VIEW_RECEIPT) {
-      viewReceiptPdf(permitId);
+      viewReceiptPdf(permitId, companyId);
     } else if (selectedOption === PERMIT_ACTION_TYPES.VOID_REVOKE) {
       navigate(`${routes.PERMITS_ROUTES.VOID(permitId)}`);
     } else if (selectedOption === PERMIT_ACTION_TYPES.AMEND) {

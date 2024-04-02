@@ -207,8 +207,15 @@ const streamDownload = async (url: string) => {
  * @param permitId permit id of the permit application.
  * @returns A Promise of dms reference string.
  */
-export const downloadPermitApplicationPdf = async (permitId: string) => {
-  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
+export const downloadPermitApplicationPdf = async (
+  permitId: string,
+  companyIdParam?: string,
+) => {
+  const companyId = getDefaultRequiredVal(
+    "",
+    getCompanyIdFromSession(),
+    companyIdParam,
+  );
   const url = PERMITS_API_ROUTES.DOWNLOAD(companyId, permitId);
   return await streamDownload(url);
 };
@@ -218,8 +225,15 @@ export const downloadPermitApplicationPdf = async (permitId: string) => {
  * @param permitId permit id of the permit application associated with the receipt.
  * @returns A Promise of dms reference string.
  */
-export const downloadReceiptPdf = async (permitId: string) => {
-  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
+export const downloadReceiptPdf = async (
+  permitId: string,
+  companyIdParam?: string,
+) => {
+  const companyId = getDefaultRequiredVal(
+    "",
+    getCompanyIdFromSession(),
+    companyIdParam,
+  );
   const url = PERMITS_API_ROUTES.RECEIPT(companyId, permitId);
   return await streamDownload(url);
 };
@@ -320,10 +334,15 @@ export const issuePermits = async (
  */
 export const getPermit = async (
   permitId?: Nullable<string>,
+  companyIdParam?: Nullable<string>,
 ): Promise<RequiredOrNull<PermitResponseData>> => {
   if (!permitId) return null;
 
-  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
+  const companyId = getDefaultRequiredVal(
+    "",
+    getCompanyIdFromSession(),
+    companyIdParam,
+  );
   const permitsURL = `${PERMITS_API_ROUTES.GET(companyId)}/${permitId}`;
 
   const response = await httpGETRequest(permitsURL);

@@ -26,16 +26,14 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<PermitListItem>[] = [
     sortingFn: "alphanumeric",
     Cell: (props: { cell: any; row: any }) => {
       const permit = props.row.original as PermitListItem;
-      const {
-        permitId,
-        permitStatus,
-        expiryDate,
-      } = permit;
+      const { permitId, permitStatus, expiryDate, companyId } = permit;
 
       return (
         <>
           <CustomActionLink
-            onClick={() => viewPermitPdf(permitId.toString())}
+            onClick={() =>
+              viewPermitPdf(permitId.toString(), companyId.toString())
+            }
           >
             {props.cell.getValue()}
           </CustomActionLink>
