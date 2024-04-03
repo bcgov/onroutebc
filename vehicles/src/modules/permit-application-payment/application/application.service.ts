@@ -10,7 +10,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
+import { Brackets, DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import { CreateApplicationDto } from './dto/request/create-application.dto';
 import { ReadApplicationDto } from './dto/response/read-application.dto';
 import { Permit } from '../permit/entities/permit.entity';
@@ -50,7 +50,9 @@ import { ReadApplicationMetadataDto } from './dto/response/read-application-meta
 import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 import { formatTemplateData } from '../../../common/helper/format-template-data.helper';
 import {
+  ACTIVE_APPLICATION_STATUS,
   ACTIVE_APPLICATION_STATUS_FOR_ISSUANCE,
+  ALL_APPLICATION_STATUS,
   ApplicationStatus,
 } from '../../../common/enum/application-status.enum';
 import { IDP } from '../../../common/enum/idp.enum';
@@ -59,7 +61,6 @@ import {
   fetchPermitDataDescriptionValuesFromCache,
   generateApplicationNumber,
   generatePermitNumber,
-  getActiveApplicationStatus,
 } from '../../../common/helper/permit-application.helper';
 import { INotificationDocument } from '../../../common/interface/notification-document.interface';
 import { ReadFileDto } from '../../common/dto/response/read-file.dto';
@@ -241,6 +242,7 @@ export class ApplicationService {
     page: number;
     take: number;
     orderBy?: string;
+    pendingPermits?: boolean;
     companyId?: number;
     userGUID?: string;
     currentUser?: IUserJWT;
@@ -249,6 +251,7 @@ export class ApplicationService {
     const applicationsQB = this.buildApplicationQuery(
       findAllApplicationsOptions.currentUser,
       findAllApplicationsOptions.companyId,
+      findAllApplicationsOptions.pendingPermits,
       findAllApplicationsOptions.userGUID,
     );
     // total number of items
@@ -315,6 +318,7 @@ export class ApplicationService {
   private buildApplicationQuery(
     currentUser: IUserJWT,
     companyId?: number,
+    pendingPermits?: boolean,
     userGUID?: string,
   ): SelectQueryBuilder<Permit> {
     let permitsQuery = this.permitRepository
@@ -335,13 +339,30 @@ export class ApplicationService {
       });
     }
 
-    //Filter by application status
-    if (currentUser) {
+    // Handle pending permits query condition
+    if (pendingPermits) {
       permitsQuery = permitsQuery.andWhere(
-        'permit.permitStatus IN (:...statuses)',
-        {
-          statuses: getActiveApplicationStatus(currentUser),
-        },
+        new Brackets((qb) => {
+          qb.where('permit.permitStatus IN (:...statuses)', {
+            statuses: [ApplicationStatus.PAYMENT_COMPLETE],
+          });
+        }),
+      );
+    } else if (pendingPermits === false) {
+      permitsQuery = permitsQuery.andWhere(
+        new Brackets((qb) => {
+          qb.where('permit.permitStatus IN (:...statuses)', {
+            statuses: ACTIVE_APPLICATION_STATUS,
+          });
+        }),
+      );
+    } else if (pendingPermits === undefined) {
+      permitsQuery = permitsQuery.andWhere(
+        new Brackets((qb) => {
+          qb.where('permit.permitStatus IN (:...statuses)', {
+            statuses: ALL_APPLICATION_STATUS,
+          });
+        }),
       );
     }
 
@@ -788,10 +809,6 @@ export class ApplicationService {
     companyId: number,
     currentUser: IUserJWT,
   ): Promise<DeleteDto> {
-    // Retrieve active application statuses based on the current user
-    const applicationStatus: ReadonlyArray<ApplicationStatus> =
-      getActiveApplicationStatus(currentUser);
-
     // Build query to find applications matching certain criteria like company ID, application status, and undefined permit numbers
     const applicationsQB = this.permitRepository
       .createQueryBuilder('permit')
@@ -802,7 +819,7 @@ export class ApplicationService {
         companyId: companyId,
       })
       .andWhere('permit.permitStatus IN (:...applicationStatus)', {
-        applicationStatus: applicationStatus,
+        applicationStatus: ACTIVE_APPLICATION_STATUS,
       })
       .andWhere('permit.permitNumber IS NULL');
 
