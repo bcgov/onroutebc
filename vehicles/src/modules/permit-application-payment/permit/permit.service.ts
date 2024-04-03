@@ -100,6 +100,8 @@ export class PermitService {
         'applicationOwner.userContact',
         'applicationOwnerContact',
       )
+      .leftJoinAndSelect('permit.issuer', 'issuer')
+      .leftJoinAndSelect('issuer.userContact', 'issuerContact')
       .where('permit.permitId = :permitId', {
         permitId: permitId,
       })
