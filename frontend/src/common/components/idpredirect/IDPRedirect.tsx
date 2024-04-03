@@ -15,15 +15,12 @@ const IDPRedirect = () => {
 
         switch(paramValue) {
             case IDPS.IDIR:
-                signinRedirect({
-                    extraQueryParams: { kc_idp_hint: IDPS.IDIR },
-                });
-            break;
             case IDPS.BCEID:
                 signinRedirect({
-                    extraQueryParams: { kc_idp_hint: IDPS.BCEID },
+                    extraQueryParams: { kc_idp_hint: paramValue },
                 });
             break;
+            
             default:
             break;
         }
