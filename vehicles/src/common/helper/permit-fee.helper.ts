@@ -84,7 +84,10 @@ export const yearlyPermit = (duration: number): boolean => {
 }
 
 export const leapYear = (duration: number, startDate: string , expiryDate: string ): boolean => {
-  return duration === 366 && (dayjs(startDate, "YYYY-MM-DD").add(1, 'year').subtract(1, 'day').toDate() === dayjs(expiryDate, "YYYY-MM-DD").toDate())
+  const start = dayjs(startDate, 'YYYY-MM-DD');
+  const expiry = dayjs(expiryDate, 'YYYY-MM-DD');
+  const isOneYear = start.add(1, 'year').subtract(1, 'day').toDate() === expiry.toDate()
+  return duration === 366 && isOneYear;
 }
 export const isValidDuration = (
   duration: number,
