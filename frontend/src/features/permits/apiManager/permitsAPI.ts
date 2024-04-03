@@ -7,7 +7,6 @@ import {
   PermitResponseData,
 } from "../types/permit";
 import { PermitHistory } from "../types/PermitHistory";
-import { getPermitTypeName } from "../types/PermitType";
 import { removeEmptyIdsFromPermitsActionResponse } from "../helpers/mappers";
 import { AmendPermitFormData } from "../pages/Amend/types/AmendPermitFormData";
 import {
@@ -141,7 +140,7 @@ export const getApplicationsInProgress = async ({
         paginatedApplications.items.map((application) => {
           return {
             ...application,
-            permitType: getPermitTypeName(application.permitType) as string,
+            permitType: application?.permitType,
             createdDateTime: toLocal(
               application?.createdDateTime,
               DATE_FORMATS.DATETIME_LONG_TZ,
