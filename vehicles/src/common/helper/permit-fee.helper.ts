@@ -43,7 +43,14 @@ export const permitFee = (application: Permit, oldAmount: number): number => {
       }
       // Adjusting duration for one year term permit
       if (yearlyPermit(duration)) duration = 360;
-      if(leapYear(duration, application.permitData.startDate, application.permitData.expiryDate)) duration = 360;
+      if (
+        leapYear(
+          duration,
+          application.permitData.startDate,
+          application.permitData.expiryDate,
+        )
+      )
+        duration = 360;
       return currentPermitFee(
         duration,
         TROS_PRICE_PER_TERM,
@@ -64,7 +71,14 @@ export const permitFee = (application: Permit, oldAmount: number): number => {
       }
       // Adjusting duration for one year term permit
       if (yearlyPermit(duration)) duration = 360;
-      if(leapYear(duration, application.permitData.startDate, application.permitData.expiryDate)) duration = 360;
+      if (
+        leapYear(
+          duration,
+          application.permitData.startDate,
+          application.permitData.expiryDate,
+        )
+      )
+        duration = 360;
       return currentPermitFee(
         duration,
         TROS_PRICE_PER_TERM,
@@ -80,19 +94,20 @@ export const permitFee = (application: Permit, oldAmount: number): number => {
 };
 
 export const yearlyPermit = (duration: number): boolean => {
-  return duration <= 366 && duration >= 361
-}
+  return duration <= 365 && duration >= 361;
+};
 
-export const yearlyPermit = (duration: number): boolean => {
-  return duration <= 365 && duration >= 361
-}
-
-export const leapYear = (duration: number, startDate: string , expiryDate: string ): boolean => {
+export const leapYear = (
+  duration: number,
+  startDate: string,
+  expiryDate: string,
+): boolean => {
   const start = dayjs(startDate, 'YYYY-MM-DD');
   const expiry = dayjs(expiryDate, 'YYYY-MM-DD');
-  const isOneYear = start.add(1, 'year').subtract(1, 'day').toDate() === expiry.toDate()
+  const isOneYear =
+    start.add(1, 'year').subtract(1, 'day').toDate() === expiry.toDate();
   return duration === 366 && isOneYear;
-}
+};
 export const isValidDuration = (
   duration: number,
   minDuration: number,
