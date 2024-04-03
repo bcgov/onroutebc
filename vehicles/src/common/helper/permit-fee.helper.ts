@@ -12,7 +12,7 @@ import {
   TROW_MIN_VALID_DURATION,
 } from '../constants/permit.constant';
 import { differenceBetween } from './date-time.helper';
-import dayjs from 'dayjs';
+import * as dayjs from 'dayjs';
 
 /**
  * Calculates the permit fee based on the application and old amount.
