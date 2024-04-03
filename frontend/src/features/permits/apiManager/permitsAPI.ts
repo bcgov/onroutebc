@@ -1,7 +1,11 @@
 import { AxiosResponse } from "axios";
 
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
-import { IssuePermitsResponse, PermitListItem, PermitResponseData } from "../types/permit";
+import {
+  IssuePermitsResponse,
+  PermitListItem,
+  PermitResponseData,
+} from "../types/permit";
 import { PermitHistory } from "../types/PermitHistory";
 import { getPermitTypeName } from "../types/PermitType";
 import { removeEmptyIdsFromPermitsActionResponse } from "../helpers/mappers";
@@ -105,9 +109,7 @@ export const getApplicationsInProgress = async ({
   take = 10,
   searchString,
   orderBy = [],
-}: PaginationAndFilters): Promise<
-  PaginatedResponse<ApplicationListItem>
-> => {
+}: PaginationAndFilters): Promise<PaginatedResponse<ApplicationListItem>> => {
   const companyId = getCompanyIdFromSession();
   const applicationsURL = new URL(APPLICATIONS_API_ROUTES.GET);
   if (companyId) {
@@ -117,6 +119,8 @@ export const getApplicationsInProgress = async ({
   // API pagination index starts at 1. Hence page + 1.
   applicationsURL.searchParams.set("page", (page + 1).toString());
   applicationsURL.searchParams.set("take", take.toString());
+  //For the time being, we are hardcoding false as we do not want pendingPermits to be displayed in AIP tab
+  applicationsURL.searchParams.set("pendingPermits", false.toString());
   if (searchString) {
     applicationsURL.searchParams.set("searchString", searchString);
   }
@@ -132,35 +136,31 @@ export const getApplicationsInProgress = async ({
       ) as PaginatedResponse<ApplicationListItem>;
       return paginatedResponseObject;
     })
-    .then(
-      (
-        paginatedApplications: PaginatedResponse<ApplicationListItem>,
-      ) => {
-        const applicationsWithDateTransformations =
-          paginatedApplications.items.map((application) => {
-            return {
-              ...application,
-              permitType: getPermitTypeName(application.permitType) as string,
-              createdDateTime: toLocal(
-                application?.createdDateTime,
-                DATE_FORMATS.DATETIME_LONG_TZ,
-              ),
-              updatedDateTime: toLocal(
-                application?.updatedDateTime,
-                DATE_FORMATS.DATETIME_LONG_TZ,
-              ),
-              startDate: toLocal(
-                application?.startDate,
-                DATE_FORMATS.DATEONLY_SHORT_NAME,
-              ),
-            } as ApplicationListItem;
-          });
-        return {
-          ...paginatedApplications,
-          items: applicationsWithDateTransformations,
-        };
-      },
-    );
+    .then((paginatedApplications: PaginatedResponse<ApplicationListItem>) => {
+      const applicationsWithDateTransformations =
+        paginatedApplications.items.map((application) => {
+          return {
+            ...application,
+            permitType: getPermitTypeName(application.permitType) as string,
+            createdDateTime: toLocal(
+              application?.createdDateTime,
+              DATE_FORMATS.DATETIME_LONG_TZ,
+            ),
+            updatedDateTime: toLocal(
+              application?.updatedDateTime,
+              DATE_FORMATS.DATETIME_LONG_TZ,
+            ),
+            startDate: toLocal(
+              application?.startDate,
+              DATE_FORMATS.DATEONLY_SHORT_NAME,
+            ),
+          } as ApplicationListItem;
+        });
+      return {
+        ...paginatedApplications,
+        items: applicationsWithDateTransformations,
+      };
+    });
 
   return applications;
 };
@@ -501,13 +501,13 @@ export const voidPermit = async (voidPermitParams: {
  * @returns Response with amended permit application, or error if failed
  */
 export const amendPermit = async (
-  formData: AmendPermitFormData
+  formData: AmendPermitFormData,
 ): Promise<AxiosResponse<ApplicationResponseData>> => {
   return await httpPOSTRequest(
     PERMITS_API_ROUTES.AMEND,
     replaceEmptyValuesWithNull({
       // must convert application to ApplicationRequestData (dayjs fields to strings)
-    ...serializeForCreateApplication(formData),
+      ...serializeForCreateApplication(formData),
     }),
   );
 };
@@ -547,9 +547,7 @@ export const resendPermit = async ({
   return await httpPOSTRequest(
     `${PERMITS_API_ROUTES.BASE}/${permitId}/${PERMITS_API_ROUTES.RESEND}`,
     replaceEmptyValuesWithNull({
-      to: [
-        email,
-      ],
+      to: [email],
       fax,
     }),
   );
