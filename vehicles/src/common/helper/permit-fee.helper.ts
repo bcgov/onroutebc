@@ -80,6 +80,10 @@ export const permitFee = (application: Permit, oldAmount: number): number => {
 };
 
 export const yearlyPermit = (duration: number): boolean => {
+  return duration <= 366 && duration >= 361
+}
+
+export const yearlyPermit = (duration: number): boolean => {
   return duration <= 365 && duration >= 361
 }
 
