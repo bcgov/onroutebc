@@ -97,6 +97,7 @@ export class CompanyApplicationController {
       take: getApplicationQueryParamsDto.take,
       orderBy: getApplicationQueryParamsDto.orderBy,
       companyId: companyId,
+      pendingPermits: getApplicationQueryParamsDto.pendingPermits,
       userGUID: userGuid,
       currentUser: currentUser,
     });

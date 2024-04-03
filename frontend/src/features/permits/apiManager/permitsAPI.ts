@@ -117,6 +117,8 @@ export const getApplicationsInProgress = async ({
   // API pagination index starts at 1. Hence page + 1.
   applicationsURL.searchParams.set("page", (page + 1).toString());
   applicationsURL.searchParams.set("take", take.toString());
+  //For the time being, we are hardcoding false as we do not want pendingPermits to be displayed in AIP tab
+  applicationsURL.searchParams.set("pendingPermits", false.toString());
   if (searchString) {
     applicationsURL.searchParams.set("searchString", searchString);
   }

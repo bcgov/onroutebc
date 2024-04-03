@@ -27,17 +27,18 @@ export const ACTIVE_APPLICATION_STATUS_FOR_ISSUANCE: ReadonlyArray<ApplicationSt
   ];
 
 /**
- * Application statuses to be considered for Application In Progress (AIP) Tab for Cv Client Users.
+ * Application statuses to be considered for Application In Progress (AIP) Tab for All Users.
  */
-export const CVCLIENT_ACTIVE_APPLICATION_STATUS: ReadonlyArray<ApplicationStatus> =
-  [ApplicationStatus.IN_PROGRESS, ApplicationStatus.WAITING_PAYMENT];
+export const ACTIVE_APPLICATION_STATUS: ReadonlyArray<ApplicationStatus> = [
+  ApplicationStatus.IN_PROGRESS,
+  ApplicationStatus.WAITING_PAYMENT,
+];
 
 /**
- * Application statuses to be considered for Application In Progress (AIP) Tab for Staff Users.
+ * Application statuses including Application In Progress (AIP) and Pending Permits/Applications
  */
-export const IDIR_ACTIVE_APPLICATION_STATUS: ReadonlyArray<ApplicationStatus> =
-  [
-    ApplicationStatus.IN_PROGRESS,
-    ApplicationStatus.WAITING_PAYMENT,
-    //ApplicationStatus.CANCELLED, //! Discovery Pending
-  ];
+export const ALL_APPLICATION_STATUS: ReadonlyArray<ApplicationStatus> = [
+  ApplicationStatus.IN_PROGRESS,
+  ApplicationStatus.WAITING_PAYMENT,
+  ApplicationStatus.PAYMENT_COMPLETE,
+];

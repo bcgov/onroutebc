@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, Length, Validate } from 'class-validator';
+import { Transform } from 'class-transformer';
+import {
+  IsOptional,
+  IsBoolean,
+  IsString,
+  Length,
+  Validate,
+} from 'class-validator';
 import { OrderByConstraint } from '../../../../../../common/constraint/orderby.constraint';
 import { PageOptionsDto } from '../../../../../../common/dto/paginate/page-options';
 import { ApplicationOrderBy } from '../../../../../../common/enum/orderBy.enum';
@@ -25,4 +32,17 @@ export class GetApplicationQueryParamsDto extends PageOptionsDto {
   @IsString()
   @Length(1, 150)
   readonly orderBy?: string;
+
+  @ApiProperty({
+    description:
+      'Setting to false confines the search to only applications awaiting payment, while true limits it to applications that have received payment but are awaiting issuance. If unspecified, all applications, including those awaiting issuance, are also fetched.',
+    example: true,
+    required: false,
+  })
+  @IsOptional()
+  @Transform(({ obj, key }: { obj: Record<string, unknown>; key: string }) => {
+    return obj[key] === 'true' ? true : obj[key] === 'false' ? false : obj[key];
+  })
+  @IsBoolean()
+  pendingPermits?: boolean;
 }
