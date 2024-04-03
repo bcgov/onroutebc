@@ -21,7 +21,7 @@ import {
   useVehiclesQuery,
 } from "../../manageVehicles/apiManager/hooks";
 
-export const usePermitVehicleManagement = () => {
+export const usePermitVehicleManagement = (companyId?: Nullable<string>) => {
   // Mutations used to add/update vehicle details
   const addPowerUnitMutation = useAddPowerUnitMutation();
   const updatePowerUnitMutation = useUpdatePowerUnitMutation();
@@ -29,7 +29,7 @@ export const usePermitVehicleManagement = () => {
   const updateTrailerMutation = useUpdateTrailerMutation();
 
   // Queries used to populate select options for vehicle details
-  const allVehiclesQuery = useVehiclesQuery();
+  const allVehiclesQuery = useVehiclesQuery(companyId);
   const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
   const trailerSubTypesQuery = useTrailerSubTypesQuery();
 

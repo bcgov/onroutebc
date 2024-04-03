@@ -35,6 +35,7 @@ import {
   UserRolesType,
 } from "../../../common/authentication/types";
 import { getCompanyIdFromSession } from "../../../common/apiManager/httpRequestHandler";
+import { getDefaultRequiredVal } from "../../../common/helpers/util";
 
 /**
  * Fetches company info of current user.
@@ -54,11 +55,17 @@ export const useCompanyInfoQuery = () => {
  * Fetches company info of specific company.
  * @returns company info or error if failed
  */
-export const useCompanyInfoDetailsQuery = () => {
-  const companyId = Number(getCompanyIdFromSession());
+export const useCompanyInfoDetailsQuery = (
+  companyIdParam?: Nullable<string>,
+) => {
+  const companyId = getDefaultRequiredVal(
+    "",
+    getCompanyIdFromSession(),
+    companyIdParam,
+  );
   return useQuery({
     queryKey: ["companyInfo"],
-    queryFn: () => getCompanyInfoById(companyId),
+    queryFn: () => getCompanyInfoById(Number(companyId)),
     enabled: !!companyId,
     refetchInterval: FIVE_MINUTES,
     refetchOnWindowFocus: false, // fixes issue where a query is run everytime the screen is brought to foreground
@@ -122,13 +129,13 @@ export const useUserContext = (
           email: user.email,
           userAuthGroup: user.userAuthGroup,
         } as IDIRUserDetailContext;
-        
+
         setIDIRUserDetails?.(() => userDetails);
       }
     } else {
       const { user, associatedCompanies, pendingCompanies, migratedClient } =
         userContextResponseBody as BCeIDUserContextType;
-      
+
       /**
        * User exists => the user is already in the system.
        */

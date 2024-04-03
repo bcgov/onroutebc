@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { FieldValues, FormProvider } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import "./AmendPermitForm.scss";
 import { PERMIT_DURATION_OPTIONS } from "../../../constants/constants";
@@ -47,6 +47,7 @@ export const AmendPermitForm = () => {
     companyLegalName,
     idirUserDetails,
   } = useContext(OnRouteBCContext);
+  const { companyId } = useParams();
 
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
   const doingBusinessAs = isStaffActingAsCompany && companyLegalName ?
@@ -74,11 +75,11 @@ export const AmendPermitForm = () => {
     vehicleOptions,
     powerUnitSubTypes,
     trailerSubTypes,
-  } = usePermitVehicleManagement();
+  } = usePermitVehicleManagement(companyId);
 
   const { handleSubmit, getValues } = formMethods;
 
-  const companyInfoQuery = useCompanyInfoDetailsQuery();
+  const companyInfoQuery = useCompanyInfoDetailsQuery(companyId);
   const companyInfo = companyInfoQuery.data;
 
   // Helper method to return form field values as an Permit object

@@ -12,13 +12,19 @@ import {
   updateTrailer,
 } from "./vehiclesAPI";
 import { getCompanyIdFromSession } from "../../../common/apiManager/httpRequestHandler";
+import { Nullable } from "../../../common/types/common";
+import { getDefaultRequiredVal } from "../../../common/helpers/util";
 
 /**
  * Fetches all vehicles.
  * @returns An array of vehicles (both Powerunits and Trailers)
  */
-export const useVehiclesQuery = () => {
-  const companyId = getCompanyIdFromSession() as string;
+export const useVehiclesQuery = (companyIdParam?: Nullable<string>) => {
+  const companyId = getDefaultRequiredVal(
+    "",
+    getCompanyIdFromSession(),
+    companyIdParam,
+  );
   return useQuery({
     queryKey: ["vehicles"],
     queryFn: () => getAllVehicles(companyId),

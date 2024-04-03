@@ -357,20 +357,21 @@ export const getPermit = async (
  */
 export const getCurrentAmendmentApplication = async (
   originalId?: Nullable<string>,
+  companyIdParam?: Nullable<string>,
 ): Promise<RequiredOrNull<ApplicationResponseData>> => {
   if (!originalId) return null;
-  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
-  let permitsURL = `${APPLICATIONS_API_ROUTES.GET(companyId)}/${originalId}`;
-  const queryParams = [`amendment=true`];
-  if (companyId) {
-    queryParams.push(`companyId=${companyId}`);
-  }
-  if (queryParams.length > 0) {
-    permitsURL += `?${queryParams.join("&")}`;
-  }
+  const companyId = getDefaultRequiredVal(
+    "",
+    getCompanyIdFromSession(),
+    companyIdParam,
+  );
+  const permitsURL = new URL(
+    `${APPLICATIONS_API_ROUTES.GET(companyId)}/${originalId}`,
+  );
+  permitsURL.searchParams.set("amendment", "true");
 
   try {
-    const response = await httpGETRequest(permitsURL);
+    const response = await httpGETRequest(permitsURL.toString());
     if (!response.data) return null;
     return response.data as ApplicationResponseData;
   } catch (err) {
@@ -441,11 +442,18 @@ export const getPermits = async (
   return permits;
 };
 
-export const getPermitHistory = async (originalPermitId?: Nullable<string>) => {
+export const getPermitHistory = async (
+  originalPermitId?: Nullable<string>,
+  companyIdParam?: Nullable<string>,
+) => {
   try {
     if (!originalPermitId) return [];
 
-    const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
+    const companyId = getDefaultRequiredVal(
+      "",
+      getCompanyIdFromSession(),
+      companyIdParam,
+    );
     const response = await httpGETRequest(
       `${PERMITS_API_ROUTES.BASE(companyId)}/${originalPermitId}/history`,
     );

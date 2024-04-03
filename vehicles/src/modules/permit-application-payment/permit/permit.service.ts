@@ -436,7 +436,7 @@ export class PermitService {
       .andWhere('permit.originalPermitId = :originalPermitId', {
         originalPermitId: originalPermitId,
       })
-      .andWhere('company.companyId = : companyId', { companyId: companyId })
+      .andWhere('company.companyId = :companyId', { companyId: companyId })
       .orderBy('transaction.transactionSubmitDate', 'DESC')
       .getMany();
 
