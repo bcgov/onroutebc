@@ -131,6 +131,7 @@ export class ApplicationController {
       page: getApplicationQueryParamsDto.page,
       take: getApplicationQueryParamsDto.take,
       orderBy: getApplicationQueryParamsDto.orderBy,
+      pendingPermits: getApplicationQueryParamsDto.pendingPermits,
       companyId: getApplicationQueryParamsDto.companyId,
       userGUID: userGuid,
       currentUser: currentUser,
