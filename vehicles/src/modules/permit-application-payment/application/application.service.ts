@@ -191,9 +191,10 @@ export class ApplicationService {
 
   private async findOneWithSuccessfulTransaction(
     applicationId: string,
+    companyId?: number,
   ): Promise<Permit> {
-    return await this.permitRepository
-      .createQueryBuilder('permit')
+    const permitQB = this.permitRepository.createQueryBuilder('permit');
+    permitQB
       .leftJoinAndSelect('permit.company', 'company')
       .innerJoinAndSelect('permit.permitData', 'permitData')
       .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
@@ -207,8 +208,44 @@ export class ApplicationService {
       .where('permit.permitId = :permitId', {
         permitId: applicationId,
       })
-      .andWhere('receipt.receiptNumber IS NOT NULL')
-      .getOne();
+      .andWhere('receipt.receiptNumber IS NOT NULL');
+
+    if (companyId) {
+      permitQB.andWhere('company.companyId = :companyId', {
+        companyId: companyId,
+      });
+    }
+    return await permitQB.getOne();
+  }
+
+  private async findManyWithSuccessfulTransaction(
+    applicationIds: string[],
+    companyId?: number,
+  ): Promise<Permit[]> {
+    const permitQB = this.permitRepository.createQueryBuilder('permit');
+    permitQB
+      .leftJoinAndSelect('permit.company', 'company')
+      .innerJoinAndSelect('permit.permitData', 'permitData')
+      .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
+      .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
+      .innerJoinAndSelect('transaction.receipt', 'receipt')
+      .leftJoinAndSelect('permit.applicationOwner', 'applicationOwner')
+      .leftJoinAndSelect(
+        'applicationOwner.userContact',
+        'applicationOwnerContact',
+      )
+      .where('permit.permitId IN (:...permitIds)', {
+        permitIds: applicationIds,
+      })
+      .andWhere('receipt.receiptNumber IS NOT NULL');
+
+    if (companyId) {
+      permitQB.andWhere('company.companyId = :companyId', {
+        companyId: companyId,
+      });
+    }
+
+    return await permitQB.getMany();
   }
 
   /* Get single application By Permit ID*/
@@ -421,6 +458,200 @@ export class ApplicationService {
         }),
       },
     );
+  }
+
+  /**
+   * This function is responsible for issuing a permit based on a given application.
+   * It performs various operations, including generating a permit number, calling the PDF generation service, and updating the permit record in the database.
+   * @param currentUser
+   * @param applicationId applicationId to identify the application to be issued. It is the same as permitId.
+   * @returns a resultDto that describes if the transaction was successful or if it failed
+   */
+  @LogAsyncMethodExecution()
+  async issuePermits(
+    currentUser: IUserJWT,
+    applicationIds: string[],
+    companyId?: number,
+  ): Promise<ResultDto> {
+    const resultDto: ResultDto = {
+      success: [],
+      failure: [],
+    };
+
+    const fetchedApplications = await this.findManyWithSuccessfulTransaction(
+      applicationIds,
+      companyId,
+    );
+
+    if (!fetchedApplications?.length) {
+      resultDto.failure = applicationIds;
+      return resultDto;
+    }
+
+    for (const fetchedApplication of fetchedApplications) {
+      try {
+        // Check if a PDF document already exists for the permit.
+        // It's important that a PDF does not get overwritten.
+        // Once its created, it is a permanent legal document.
+
+        if (fetchedApplication.permitNumber) {
+          throw new NotFoundException('Application has already been issued!');
+        }
+        if (fetchedApplication.documentId) {
+          throw new HttpException('Document already exists', 409);
+        }
+        if (
+          fetchedApplication.permitStatus == ApplicationStatus.WAITING_PAYMENT
+        ) {
+          throw new BadRequestException(
+            'Application must be ready for issuance with payment complete status!',
+          );
+        }
+        const permitNumber = await generatePermitNumber(
+          this.cacheManager,
+          fetchedApplication.permitId !== fetchedApplication.originalPermitId
+            ? await this.findOne(fetchedApplication.previousRevision.toString())
+            : fetchedApplication,
+        );
+
+        fetchedApplication.permitNumber = permitNumber;
+        fetchedApplication.permitStatus = ApplicationStatus.ISSUED;
+        fetchedApplication.permitIssueDateTime = new Date();
+
+        await this.permitRepository.update(
+          { permitId: fetchedApplication.permitId },
+          {
+            permitStatus: fetchedApplication.permitStatus,
+            permitNumber: fetchedApplication.permitNumber,
+            issuer: { userGUID: currentUser.userGUID },
+            permitApprovalSource: PermitApprovalSourceEnum.AUTO, //TODO : Hardcoding for release 1
+            permitIssuedBy:
+              currentUser.orbcUserDirectory == Directory.IDIR
+                ? PermitIssuedBy.PPC
+                : PermitIssuedBy.SELF_ISSUED,
+            permitIssueDateTime: fetchedApplication.permitIssueDateTime,
+            updatedDateTime: new Date(),
+            updatedUser: currentUser.userName,
+            updatedUserDirectory: currentUser.orbcUserDirectory,
+            updatedUserGuid: currentUser.userGUID,
+          },
+        );
+
+        resultDto.success.push(fetchedApplication.permitId);
+      } catch (error) {
+        this.logger.error(error);
+        resultDto.failure.push(fetchedApplication.permitId);
+      }
+    }
+    return resultDto;
+  }
+
+  @LogAsyncMethodExecution()
+  async generatePermitDocuments(
+    currentUser: IUserJWT,
+    applicationIds: string[],
+    companyId?: number,
+  ): Promise<ResultDto> {
+    if (!applicationIds?.length) {
+      throw new InternalServerErrorException(
+        'ApplicationId list cannot be empty',
+      );
+    }
+
+    const resultDto: ResultDto = {
+      success: [],
+      failure: [],
+    };
+
+    const fetchedApplications = await this.findManyWithSuccessfulTransaction(
+      applicationIds,
+      companyId,
+    );
+
+    if (!fetchedApplications?.length) {
+      resultDto.failure = applicationIds;
+      return resultDto;
+    }
+
+    await Promise.allSettled(
+      fetchedApplications?.map(async (fetchedApplication) => {
+        try {
+          if (fetchedApplication.documentId) {
+            throw new HttpException('Document already exists', 409);
+          }
+          if (fetchedApplication.permitStatus != ApplicationStatus.ISSUED) {
+            throw new BadRequestException(
+              'Application must be in ISSUED status for document Generation!',
+            );
+          }
+
+          const fullNames = await fetchPermitDataDescriptionValuesFromCache(
+            this.cacheManager,
+            fetchedApplication,
+          );
+
+          const revisionHistory = await this.permitRepository.find({
+            where: [{ originalPermitId: fetchedApplication.originalPermitId }],
+            order: { permitId: 'DESC' },
+          });
+
+          const permitDataForTemplate = formatTemplateData(
+            fetchedApplication,
+            fullNames,
+            fetchedApplication.company,
+            revisionHistory,
+          );
+
+          const dopsRequestData = {
+            templateName: TemplateName.PERMIT,
+            generatedDocumentFileName: permitDataForTemplate.permitNumber,
+            templateData: permitDataForTemplate,
+            documentsToMerge: permitDataForTemplate.permitData.commodities.map(
+              (commodity) => {
+                if (commodity.checked) {
+                  return commodity.condition;
+                }
+              },
+            ),
+          };
+
+          const generatedDocument = await this.dopsService.generateDocument(
+            currentUser,
+            dopsRequestData,
+            fetchedApplication?.company?.companyId,
+          );
+
+          fetchedApplication.documentId = generatedDocument?.documentId;
+
+          await this.permitRepository.update(
+            { permitId: fetchedApplication.permitId },
+            {
+              documentId: fetchedApplication.documentId,
+              updatedDateTime: new Date(),
+              updatedUser: currentUser.userName,
+              updatedUserDirectory: currentUser.orbcUserDirectory,
+              updatedUserGuid: currentUser.userGUID,
+            },
+          );
+          resultDto.success.push(fetchedApplication.permitId);
+          return Promise.resolve(fetchedApplication);
+        } catch (error: unknown) {
+          this.logger.error(error);
+          resultDto.failure.push(fetchedApplication.permitId);
+          // Return the error for failed operations
+          return Promise.reject(error);
+        }
+      }),
+    );
+
+    // resultDto.success = results
+    //   ?.filter(
+    //     (result): result is PromiseFulfilledResult<Permit> =>
+    //       result?.status === 'fulfilled',
+    //   )
+    //   ?.map((result) => result.value?.permitId);
+
+    return resultDto;
   }
 
   /**
