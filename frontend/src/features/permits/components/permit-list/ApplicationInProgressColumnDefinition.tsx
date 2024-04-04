@@ -6,6 +6,8 @@ import { CustomNavLink } from "../../../../common/components/links/CustomNavLink
 import { UserAuthGroupType } from "../../../../common/authentication/types";
 import { canUserAccessApplication } from "../../helpers/mappers";
 import { Nullable } from "../../../../common/types/common";
+import { getPermitTypeName } from "../../types/PermitType";
+import { Tooltip } from "@mui/material";
 
 export const ApplicationInProgressColumnDefinition = (
   userAuthGroup?: Nullable<UserAuthGroupType>,
@@ -42,6 +44,12 @@ export const ApplicationInProgressColumnDefinition = (
       id: "permitType",
       enableSorting: false,
       header: "Permit Type",
+      Cell: (props: {cell: any; row: any }) => {
+        const permitTypeName = getPermitTypeName(props.cell.getValue())
+        return <Tooltip title={permitTypeName}>
+          {props.cell.getValue()}
+        </Tooltip>
+      }
     },
     {
       accessorKey: "unitNumber",
