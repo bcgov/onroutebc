@@ -92,7 +92,7 @@ export class CompanyApplicationController {
         ? currentUser.userGUID
         : null;
 
-    return this.applicationService.findAllApplications({
+    return await this.applicationService.findAllApplications({
       page: getApplicationQueryParamsDto.page,
       take: getApplicationQueryParamsDto.take,
       orderBy: getApplicationQueryParamsDto.orderBy,

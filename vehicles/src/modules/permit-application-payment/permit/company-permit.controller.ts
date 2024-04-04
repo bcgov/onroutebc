@@ -111,7 +111,7 @@ export class CompanyPermitController {
     @Param('permitId') permitId: string,
     @Param('companyId') companyId: number,
   ): Promise<PermitHistoryDto[]> {
-    return this.permitService.findPermitHistory(permitId, companyId);
+    return await this.permitService.findPermitHistory(permitId, companyId);
   }
   @ApiOkResponse({
     description: 'Retrieves a specific Permit Resource by its ID.',
@@ -131,7 +131,11 @@ export class CompanyPermitController {
     @Param('permitId') permitId: string,
   ): Promise<ReadPermitDto> {
     const currentUser = request.user as IUserJWT;
-    return this.permitService.findByPermitId(permitId, currentUser, companyId);
+    return await this.permitService.findByPermitId(
+      permitId,
+      currentUser,
+      companyId,
+    );
   }
 
   @ApiCreatedResponse({

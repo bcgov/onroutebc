@@ -614,7 +614,7 @@ export class PaymentService {
   }
 
   async findTransaction(transactionId: string): Promise<ReadTransactionDto> {
-    return this.classMapper.mapAsync(
+    return await this.classMapper.mapAsync(
       await this.findTransactionEntity(transactionId),
       Transaction,
       ReadTransactionDto,

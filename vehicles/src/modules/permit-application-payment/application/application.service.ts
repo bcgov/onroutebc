@@ -427,7 +427,7 @@ export class ApplicationService {
 
     const applicationData: Permit = newApplication;
     await this.permitRepository.save(applicationData);
-    return this.classMapper.mapAsync(
+    return await this.classMapper.mapAsync(
       await this.findOne(applicationId, companyId),
       Permit,
       ReadApplicationDto,

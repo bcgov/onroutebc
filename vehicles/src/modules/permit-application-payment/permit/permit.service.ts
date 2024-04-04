@@ -73,6 +73,7 @@ import { INotificationDocument } from '../../../common/interface/notification-do
 import { ReadFileDto } from '../../common/dto/response/read-file.dto';
 import { CreateNotificationDto } from '../../common/dto/request/create-notification.dto';
 import { ReadNotificationDto } from '../../common/dto/response/read-notification.dto';
+import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 
 @Injectable()
 export class PermitService {
@@ -128,7 +129,10 @@ export class PermitService {
     companyId?: number,
   ): Promise<ReadPermitDto> {
     const permit = await this.findOne(permitId, companyId);
-    return this.classMapper.mapAsync(permit, Permit, ReadPermitDto, {
+    if (!permit) {
+      throw new DataNotFoundException();
+    }
+    return await this.classMapper.mapAsync(permit, Permit, ReadPermitDto, {
       extraArgs: () => ({
         currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
       }),
@@ -159,10 +163,15 @@ export class PermitService {
     // Retrieve the permit details using the permit ID
     const permit = await this.findOne(permitId, companyId);
 
+    // If no permit is found, throw a NotFoundException indicating the receipt is not found.
+    if (!permit) {
+      throw new NotFoundException('Permit Document Not Found!');
+    }
+
     // Use the DOPS service to download the document associated with the permit
     await this.dopsService.download(
       currentUser,
-      permit.documentId,
+      permit?.documentId,
       downloadMode,
       res,
       permit.company?.companyId,
