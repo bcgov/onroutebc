@@ -140,7 +140,6 @@ export const getApplicationsInProgress = async ({
         paginatedApplications.items.map((application) => {
           return {
             ...application,
-            permitType: application?.permitType,
             createdDateTime: toLocal(
               application?.createdDateTime,
               DATE_FORMATS.DATETIME_LONG_TZ,
