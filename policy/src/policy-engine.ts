@@ -2,14 +2,35 @@ import IdentifiedObject from './interface/identified-object.interface';
 import PolicyDefinition from './interface/policy-definition.interface';
 import { extractIdentifiedObjects } from './helper/lists.helper';
 import PermitType from './interface/permit-type.interface';
-import { PowerUnitType, TrailerType } from './interface/vehicle-type.interface';
+import { PowerUnitType } from './interface/vehicle-type.interface';
 import { PowerUnitCategory } from './interface/vehicle-category.interface';
+import { Engine, EngineResult } from 'json-rules-engine';
+import { getRulesEngines } from './helper/rules-engine.helper';
+import PermitApplication from './type/permit-application.type';
+import ValidationResult from './validation-result';
+import { addRuntimeFacts } from './helper/facts.helper';
 
 class Policy { 
   policyDefinition: PolicyDefinition;
+  rulesEngines: Map<string, Engine>;
 
   constructor(definition: PolicyDefinition) {
     this.policyDefinition = definition;
+
+    this.rulesEngines = getRulesEngines(this);
+  }
+
+  async validate(permit: PermitApplication): Promise<ValidationResult> {
+    const engine = this.rulesEngines.get(permit.permitType);
+    if (!engine) {
+      const validationResult: ValidationResult = new ValidationResult();
+      validationResult.violations.push(`Permit type ${permit.permitType} not permittable`);
+      return validationResult;
+    } else {
+      addRuntimeFacts(engine);
+      const engineResult: EngineResult = await engine.run(permit);
+      return new ValidationResult(engineResult);
+    }
   }
 
   getPermitTypes(): Array<IdentifiedObject> {
@@ -87,45 +108,6 @@ class Policy {
     }
     return null;
   }
-
-  getTrailerTypeDefinition(type: string): TrailerType | null {
-    let trailerType: TrailerType | undefined;
-    if (this.policyDefinition.vehicleTypes.trailerTypes) {
-      trailerType = this.policyDefinition.vehicleTypes.trailerTypes.find((p) => p.id === type);
-
-      if (trailerType) {
-        let trailerTypeClone: TrailerType;
-        trailerTypeClone = JSON.parse(JSON.stringify(trailerType));
-
-        // Fill in dimensions with default values if necessary
-        let category: PowerUnitCategory | undefined;
-        category = this.policyDefinition.vehicleCategories?.trailerCategories?.find((c) => c.id === trailerTypeClone.id);
-
-        if (!(trailerTypeClone.defaultWeightDimensions)) {
-          // Look for a category weight default
-          if (category?.defaultWeightDimensions) {
-            trailerTypeClone.defaultWeightDimensions = category.defaultWeightDimensions;
-          } else {
-            // Retrieve global weight default
-            trailerTypeClone.defaultWeightDimensions = this.policyDefinition.globalWeightDefaults.powerUnits;
-          }
-        }
-
-        if (!(trailerTypeClone.defaultSizeDimensions)) {
-          // Look for a category size default
-          if (category?.defaultSizeDimensions) {
-            trailerTypeClone.defaultSizeDimensions = category.defaultSizeDimensions;
-          } else {
-            // Retrieve global size default
-            trailerTypeClone.defaultSizeDimensions = this.policyDefinition.globalSizeDefaults;
-          }
-        }
-        return trailerTypeClone;
-      }
-    }
-    return null;
-  }
-
 }
 
 export default Policy;
