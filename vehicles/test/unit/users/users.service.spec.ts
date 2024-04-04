@@ -69,6 +69,7 @@ describe('UsersService', () => {
     delete: jest.fn(),
     update: jest.fn(),
     find: jest.fn(),
+    findOne: jest.fn(),
     save: jest.fn(),
   };
 
