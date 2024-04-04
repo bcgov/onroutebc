@@ -114,6 +114,16 @@ export class UsersService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
+      const existingUser = await queryRunner.manager.findOne<User>(User, {
+        where: {
+          userGUID: currentUser.userGUID,
+        },
+        relations: {
+          companyUsers: true,
+          userContact: true,
+        },
+      });
+
       let user = this.classMapper.map(createUserDto, CreateUserDto, User, {
         extraArgs: () => ({
           userAuthGroup: GenericUserAuthGroup.PUBLIC_VERIFIED,
@@ -124,7 +134,11 @@ export class UsersService {
         }),
       });
 
+      user.userContact.contactId = existingUser?.userContact?.contactId;
+
       const newCompanyUser = new CompanyUser();
+      newCompanyUser.companyUserId =
+        existingUser?.companyUsers?.at(0)?.companyUserId;
       newCompanyUser.company = new Company();
       newCompanyUser.company.companyId = companyId;
       newCompanyUser.statusCode = UserStatus.ACTIVE;
