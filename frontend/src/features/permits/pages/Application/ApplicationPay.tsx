@@ -1,12 +1,15 @@
 import { Box, Typography } from "@mui/material";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useSearchParams, useNavigate, useParams } from "react-router-dom";
 import { FormProvider, useForm } from "react-hook-form";
 
 import "./ApplicationPay.scss";
 import { ApplicationContext } from "../../context/ApplicationContext";
 import { ApplicationBreadcrumb } from "../../components/application-breadcrumb/ApplicationBreadcrumb";
-import { calculateFeeByDuration, isZeroAmount } from "../../helpers/feeSummary";
+import {
+  //calculateFeeByDuration,
+  isZeroAmount,
+} from "../../helpers/feeSummary";
 import { ApplicationSummary } from "./components/pay/ApplicationSummary";
 import { PermitPayFeeSummary } from "./components/pay/PermitPayFeeSummary";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
@@ -29,6 +32,7 @@ import {
   ERROR_ROUTES,
   PERMITS_ROUTES,
 } from "../../../../routes/constants";
+import { ShoppingCart } from "../../components/cart/ShoppingCart";
 
 const AVAILABLE_STAFF_PAYMENT_METHODS = [
   PAYMENT_METHOD_TYPE_CODE.ICEPAY,
@@ -52,9 +56,12 @@ export const ApplicationPay = () => {
     false,
   );
 
+  /*
   const calculatedFee = calculateFeeByDuration(
     getDefaultRequiredVal(0, applicationData?.permitData?.permitDuration),
   );
+  */
+  const [calculatedFee, setCalculatedFee] = useState<number>(0);
 
   const isFeeZero = isZeroAmount(calculatedFee);
 
@@ -169,6 +176,10 @@ export const ApplicationPay = () => {
     }
   };
 
+  const handleTotalFeeChange = (totalFee: number) => {
+    setCalculatedFee(totalFee);
+  };
+
   return (
     <div className="pay-now-page">
       <Box className="pay-now-page__left-container">
@@ -176,6 +187,8 @@ export const ApplicationPay = () => {
           permitId={permitId}
           applicationStep={APPLICATION_STEPS.PAY}
         />
+
+        <ShoppingCart onCartSelectionChange={handleTotalFeeChange} />
 
         <ApplicationSummary
           permitType={applicationData?.permitType}

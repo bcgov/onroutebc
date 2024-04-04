@@ -12,16 +12,15 @@
   & &__left-container {
     display: flex;
     flex-direction: column;
-    width: 60%;
-    margin-right: 2rem;
+    margin-right: 0;
   }
 
   & &__right-container {
     background-color: $bc-white;
     display: flex;
     flex-direction: column;
-    width: 40%;
-    margin-left: 2rem;
+    width: 33rem;
+    margin-left: 5rem;
 
     .choose-payment-method {
       margin-bottom: 2.5rem;

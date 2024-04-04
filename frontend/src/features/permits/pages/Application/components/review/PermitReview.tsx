@@ -45,6 +45,7 @@ interface PermitReviewProps {
   vehicleWasSaved?: Nullable<boolean>;
   onEdit: () => void;
   onContinue: () => Promise<void>;
+  onAddToCart?: () => Promise<void>;
   showChangedFields?: boolean;
   oldFields?: Nullable<Partial<Application>>;
   calculatedFee?: Nullable<string>;
@@ -114,6 +115,8 @@ export const PermitReview = (props: PermitReviewProps) => {
         <ReviewActions
           onEdit={props.onEdit}
           onContinue={props.onContinue}
+          hasToCartButton={!props.isAmendAction}
+          onAddToCart={props.onAddToCart}
           continueBtnText={props.continueBtnText}
         />
       </Box>

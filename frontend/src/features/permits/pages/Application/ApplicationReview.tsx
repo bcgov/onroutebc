@@ -11,6 +11,7 @@ import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { PermitReview } from "./components/review/PermitReview";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { SnackBarContext } from "../../../../App";
 import {
   APPLICATIONS_ROUTES,
   APPLICATION_STEPS,
@@ -25,6 +26,8 @@ import {
 export const ApplicationReview = () => {
   const { applicationData, setApplicationData } =
     useContext(ApplicationContext);
+
+  const { setSnackBar } = useContext(SnackBarContext);
 
   const routeParams = useParams();
   const permitId = getDefaultRequiredVal("", routeParams.permitId);
@@ -60,7 +63,7 @@ export const ApplicationReview = () => {
     navigate(APPLICATIONS_ROUTES.PAY(permitId));
   };
 
-  const onSubmit = async () => {
+  const handleContinue = async () => {
     setIsSubmitted(true);
 
     if (!isChecked) return;
@@ -80,6 +83,26 @@ export const ApplicationReview = () => {
     }
 
     next();
+  };
+
+  const handleAddToCart = async () => {
+    setIsSubmitted(true);
+
+    if (!isChecked) return;
+
+    if (!applicationData) {
+      return navigate(ERROR_ROUTES.UNEXPECTED);
+    }
+
+    // Perform add application to cart here, waiting for backend
+    // On Success
+    setSnackBar({
+      showSnackbar: true,
+      setShowSnackbar: () => true,
+      message: `Application ${applicationData.applicationNumber} added to cart`,
+      alertType: "success",
+    });
+    navigate(APPLICATIONS_ROUTES.BASE);
   };
 
   useEffect(() => {
@@ -107,9 +130,10 @@ export const ApplicationReview = () => {
           updatedDateTime={applicationData?.updatedDateTime}
           companyInfo={companyQuery.data}
           contactDetails={applicationData?.permitData?.contactDetails}
-          continueBtnText="Proceed To Pay"
+          continueBtnText="Checkout"
           onEdit={back}
-          onContinue={methods.handleSubmit(onSubmit)}
+          onContinue={methods.handleSubmit(handleContinue)}
+          onAddToCart={handleAddToCart}
           allChecked={isChecked}
           setAllChecked={setIsChecked}
           hasAttemptedCheckboxes={isSubmitted}
