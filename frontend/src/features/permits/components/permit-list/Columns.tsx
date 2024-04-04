@@ -7,7 +7,7 @@ import { formatCellValuetoDatetime } from "../../../../common/helpers/tableHelpe
 import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { getPermitTypeName } from "../../types/PermitType";
-import { Tooltip } from "@mui/material";
+import { Box, Tooltip } from "@mui/material";
 
 /**
  * The column definition for Permits.
@@ -41,7 +41,9 @@ export const PermitsColumnDefinition: MRT_ColumnDef<PermitListItem>[] = [
     Cell: (props: { cell: any; }) => {
       const permitTypeName = getPermitTypeName(props.cell.getValue())
       return <Tooltip title={permitTypeName}>
-        {props.cell.getValue()}
+        <Box>
+          {props.cell.getValue()}
+        </Box>
       </Tooltip>
     }
   },

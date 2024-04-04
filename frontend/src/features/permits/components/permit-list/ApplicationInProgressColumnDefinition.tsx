@@ -7,7 +7,7 @@ import { UserAuthGroupType } from "../../../../common/authentication/types";
 import { canUserAccessApplication } from "../../helpers/mappers";
 import { Nullable } from "../../../../common/types/common";
 import { getPermitTypeName } from "../../types/PermitType";
-import { Tooltip } from "@mui/material";
+import { Box, Tooltip } from "@mui/material";
 
 export const ApplicationInProgressColumnDefinition = (
   userAuthGroup?: Nullable<UserAuthGroupType>,
@@ -47,7 +47,9 @@ export const ApplicationInProgressColumnDefinition = (
       Cell: (props: { cell: any; }) => {
         const permitTypeName = getPermitTypeName(props.cell.getValue())
         return <Tooltip title={permitTypeName}>
-          {props.cell.getValue()}
+          <Box>
+            {props.cell.getValue()}
+          </Box>
         </Tooltip>
       }
     },
