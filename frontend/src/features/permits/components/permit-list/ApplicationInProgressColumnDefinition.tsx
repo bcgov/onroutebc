@@ -44,7 +44,7 @@ export const ApplicationInProgressColumnDefinition = (
       id: "permitType",
       enableSorting: false,
       header: "Permit Type",
-      Cell: (props: {cell: any; row: any }) => {
+      Cell: (props: { cell: any; }) => {
         const permitTypeName = getPermitTypeName(props.cell.getValue())
         return <Tooltip title={permitTypeName}>
           {props.cell.getValue()}

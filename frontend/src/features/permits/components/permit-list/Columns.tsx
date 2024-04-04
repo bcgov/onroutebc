@@ -38,7 +38,7 @@ export const PermitsColumnDefinition: MRT_ColumnDef<PermitListItem>[] = [
     id: "permitType",
     header: "Permit Type",
     enableSorting: true,
-    Cell: (props: {cell: any; row: any }) => {
+    Cell: (props: { cell: any; }) => {
       const permitTypeName = getPermitTypeName(props.cell.getValue())
       return <Tooltip title={permitTypeName}>
         {props.cell.getValue()}
