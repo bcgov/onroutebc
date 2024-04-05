@@ -1,13 +1,12 @@
 import { AutoMap } from '@automapper/classes';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNumber, IsNumberString, IsOptional } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNumberString } from 'class-validator';
 
 /**
  * DTO (Data Transfer Object) for creating a shopping cart.
  * It includes the necessary properties and validations for the creation process.
  *
  * @property {string[]} applicationIds - Application Ids to be added to the cart. Should be an array of number strings without symbols.
- * @property {number} [companyId] - Optional Id of the company the application belongs to. Should be a number.
  */
 export class AddToShoppingCartDto {
   @AutoMap()
@@ -19,14 +18,4 @@ export class AddToShoppingCartDto {
   })
   @IsNumberString({ no_symbols: true }, { each: true })
   applicationIds: string[];
-
-  @AutoMap()
-  @ApiPropertyOptional({
-    description:
-      'Id of the company the application belongs to. Required for IDIR; Ignored if sent by BCeID users.',
-    example: 74,
-  })
-  @IsOptional()
-  @IsNumber()
-  companyId?: number;
 }

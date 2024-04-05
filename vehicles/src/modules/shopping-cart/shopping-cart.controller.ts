@@ -1,13 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
+  Param,
   Post,
-  Query,
   Req,
 } from '@nestjs/common';
 import {
@@ -26,14 +23,14 @@ import { Role } from '../../common/enum/roles.enum';
 import { ExceptionDto } from '../../common/exception/exception.dto';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { AddToShoppingCartDto } from './dto/request/add-to-shopping-cart.dto';
-import { GetShoppingCartQueryParamsDto } from './dto/request/queryParam/getShoppingCart.query-params.dto';
+import { CompanyIdPathParamDto } from './dto/request/pathParam/companyId.path-param.dto';
 import { UpdateShoppingCartDto } from './dto/request/update-shopping-cart.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { ShoppingCartService } from './shopping-cart.service';
 
 @ApiBearerAuth()
 @ApiTags('Shopping Cart')
-@Controller('/shopping-cart')
+@Controller('companies/:companyId/shopping-cart')
 @ApiMethodNotAllowedResponse({
   description: 'The Application Api Method Not Allowed Response',
   type: ExceptionDto,
@@ -64,16 +61,20 @@ export class ShoppingCartController {
   @Roles(Role.WRITE_PERMIT)
   async addToCart(
     @Req() request: Request,
-    @Body() createShoppingCartDto: AddToShoppingCartDto,
+    @Param() { companyId }: CompanyIdPathParamDto,
+    @Body() { applicationIds }: AddToShoppingCartDto,
   ): Promise<ResultDto> {
-    return await this.shoppingCartService.addToCart(createShoppingCartDto);
+    return await this.shoppingCartService.addToCart(request.user as IUserJWT, {
+      applicationIds,
+      companyId,
+    });
   }
 
   /**
    * Retrieves applications within the shopping cart based on the user's permissions and optional query parameters.
    *
    * @param request - The incoming request object, used to extract the user's authentication details.
-   * @param getShoppingCartQueryParamsDto - DTO containing optional query parameters for filtering the shopping cart contents.
+   * @param companyIdPathParamDto - DTO containing companyId path parameter.
    * @returns A promise resolved with the applications found in the shopping cart for the authenticated user.
    */
   @ApiOperation({
@@ -93,23 +94,12 @@ export class ShoppingCartController {
   @Roles(Role.WRITE_PERMIT)
   async getApplicationsInCart(
     @Req() request: Request,
-    @Query() getShoppingCartQueryParamsDto: GetShoppingCartQueryParamsDto,
+    @Param() { companyId }: CompanyIdPathParamDto,
   ) {
-    const currentUser = request.user as IUserJWT;
-    if (currentUser.idir_user_guid && !currentUser.companyId) {
-      const { companyId } = getShoppingCartQueryParamsDto;
-      if (!companyId) {
-        throw new BadRequestException(
-          'companyId is required for all IDIR users.',
-        );
-      }
-      return await this.shoppingCartService.findApplicationsInCart(
-        currentUser,
-        companyId,
-      );
-    } else {
-      return await this.shoppingCartService.findApplicationsInCart(currentUser);
-    }
+    return await this.shoppingCartService.findApplicationsInCart(
+      request.user as IUserJWT,
+      companyId,
+    );
   }
 
   /**
@@ -120,9 +110,9 @@ export class ShoppingCartController {
    * @returns A promise resolved with the applications found in the shopping cart for the authenticated user.
    */
   @ApiOperation({
-    summary: 'Returns the applications in the shopping cart.',
+    summary: 'Returns the number of applications in the shopping cart.',
     description:
-      'Returns one or more applications from the shopping cart, enforcing authentication.',
+      'Returns the number of applications from the shopping cart, enforcing authentication.',
   })
   @ApiBadRequestResponse({
     description: 'Bad Request Response.',
@@ -132,22 +122,16 @@ export class ShoppingCartController {
     description: 'The result of the changes to cart.',
     type: ResultDto,
   })
-  @Get()
+  @Get('count')
   @Roles(Role.WRITE_PERMIT)
   async getCartCount(
     @Req() request: Request,
-    @Query() getShoppingCartQueryParamsDto: GetShoppingCartQueryParamsDto,
+    @Param() { companyId }: CompanyIdPathParamDto,
   ) {
-    const currentUser = request.user as IUserJWT;
-    if (currentUser.idir_user_guid && !currentUser.companyId) {
-      const { companyId } = getShoppingCartQueryParamsDto;
-      return await this.shoppingCartService.getCartCount(
-        currentUser,
-        companyId,
-      );
-    } else {
-      return await this.shoppingCartService.getCartCount(currentUser);
-    }
+    return await this.shoppingCartService.getCartCount(
+      request.user as IUserJWT,
+      companyId,
+    );
   }
 
   /**
@@ -170,13 +154,12 @@ export class ShoppingCartController {
   })
   async removeFromCart(
     @Req() request: Request,
-    @Body() updateShoppingCartDto: UpdateShoppingCartDto,
+    @Param() { companyId }: CompanyIdPathParamDto,
+    @Body() { applicationIds }: UpdateShoppingCartDto,
   ): Promise<ResultDto> {
-    const currentUser = request.user as IUserJWT;
-    const { applicationIds } = updateShoppingCartDto;
-    return await this.shoppingCartService.remove(
-      currentUser,
-      updateShoppingCartDto,
-    );
+    return await this.shoppingCartService.remove(request.user as IUserJWT, {
+      companyId,
+      applicationIds,
+    });
   }
 }
