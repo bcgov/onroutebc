@@ -260,15 +260,26 @@ export class ApplicationController {
       );
     }
 
-    /**Bulk issuance would require changes in issuePermit service method with
-     *  respect to Document generation etc. At the moment, it is not handled and
-     *  only single permit Id must be passed.
-     *
-     */
-    const result = await this.applicationService.issuePermit(
+    const result = await this.applicationService.issuePermits(
       currentUser,
-      issuePermitDto.applicationIds[0],
+      issuePermitDto.applicationIds,
+      issuePermitDto.companyId,
     );
+
+    if (result?.success?.length) {
+      await Promise.allSettled([
+        this.applicationService.generatePermitDocuments(
+          currentUser,
+          result.success,
+          issuePermitDto.companyId,
+        ),
+        this.applicationService.generateReceiptDocuments(
+          currentUser,
+          result.success,
+          issuePermitDto.companyId,
+        ),
+      ]);
+    }
     return result;
   }
 
