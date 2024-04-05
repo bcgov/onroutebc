@@ -5,7 +5,7 @@ import { ValidationResultType } from './enum/validation-result-type.enum';
 class ValidationResult {
   /** Array of policy violations found during validation. */
   violations: Array<string> = [];
-  /** 
+  /**
    * Array of additional requirements found during validation. For example,
    * a permit may require that other additional permits be applied for in
    * order to be legal.
@@ -13,7 +13,7 @@ class ValidationResult {
   requirements: Array<string> = [];
   /** Array of policy warnings found during validation. */
   warnings: Array<string> = [];
-  /** 
+  /**
    * Array of policy messages found during validation. These should be
    * considered informational only and do not impact the validity of the
    * permit.

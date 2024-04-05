@@ -12,7 +12,7 @@ class Policy {
   /** Object representation of policy definition and rules. */
   policyDefinition: PolicyDefinition;
 
-  /** 
+  /**
    * Map of json-rules-engine instances, one for each
    * permit type defined in the permit definition. Keyed
    * on permit type id.

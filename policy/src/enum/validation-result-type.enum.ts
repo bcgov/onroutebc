@@ -3,4 +3,4 @@ export enum ValidationResultType {
   Requirement = 'requirement',
   Warning = 'warning',
   Information = 'information',
-};
+}

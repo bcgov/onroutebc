@@ -73,7 +73,7 @@ export const trosOnly: PolicyDefinition = {
                   fact: 'duration',
                   operator: 'in',
                   value: [30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330],
-                }
+                },
               },
               {
                 not: {

@@ -6,4 +6,4 @@ export interface PermitFacts {
   vehicleIdentificationNumber?: string;
   vehiclePlate?: string;
   vehicleType?: string;
-};
+}
