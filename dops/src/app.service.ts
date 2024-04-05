@@ -89,6 +89,13 @@ export class AppService {
     );
     await addToCache(
       this.cacheManager,
+      CacheKey.EMAIL_TEMPLATE_PAYMENT_RECEIPT,
+      this.convertFiletoString(
+        assetsPath + 'templates/payment-receipt.email.hbs',
+      ),
+    );
+    await addToCache(
+      this.cacheManager,
       CacheKey.EMAIL_TEMPLATE_COMPANY_SUSPEND,
       this.convertFiletoString(
         assetsPath + 'templates/suspend-company.email.hbs',

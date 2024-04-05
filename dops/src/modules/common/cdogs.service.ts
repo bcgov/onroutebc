@@ -123,7 +123,7 @@ export class CdogsService {
         if (error.response) {
           const errorData = error.response.data;
           this.logger.error(
-            `Error response from CHES: ${JSON.stringify(errorData, null, 2)}`,
+            `Error response from CDOGS: ${JSON.stringify(errorData, null, 2)}`,
           );
         } else {
           this.logger.error(error?.message, error?.stack);

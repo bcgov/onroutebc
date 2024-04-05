@@ -294,7 +294,7 @@ export class DopsService {
           this.logger.error(error?.message, error?.stack);
         }
         throw new InternalServerErrorException(
-          'Error generating while sending notification',
+          'Error while sending notification',
         );
       });
 
