@@ -12,7 +12,7 @@ function dateStringValidator(a: any): boolean {
 
 const CustomOperators: Array<Operator> = [];
 
-CustomOperators.push(new Operator("stringMinimumLength", (a: string, b: number) => a?.trim().length >= b, stringValidator));
+CustomOperators.push(new Operator("stringMinimumLength", (a: string, b: number) => a.trim().length >= b, stringValidator));
 
 CustomOperators.push(new Operator("dateLessThan", (a: string, b: string) => {
   const firstDate = dayjs(a, 'YYYY-MM-DD');

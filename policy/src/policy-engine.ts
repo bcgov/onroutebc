@@ -1,16 +1,13 @@
-import IdentifiedObject from './interface/identified-object.interface';
 import PolicyDefinition from './interface/policy-definition.interface';
 import { extractIdentifiedObjects } from './helper/lists.helper';
 import PermitType from './interface/permit-type.interface';
-import { PowerUnitType } from './interface/vehicle-type.interface';
-import { PowerUnitCategory } from './interface/vehicle-category.interface';
 import { Engine, EngineResult } from 'json-rules-engine';
 import { getRulesEngines } from './helper/rules-engine.helper';
 import PermitApplication from './type/permit-application.type';
 import ValidationResult from './validation-result';
 import { addRuntimeFacts } from './helper/facts.helper';
 
-class Policy { 
+class Policy {
   policyDefinition: PolicyDefinition;
   rulesEngines: Map<string, Engine>;
 
@@ -33,28 +30,28 @@ class Policy {
     }
   }
 
-  getPermitTypes(): Array<IdentifiedObject> {
-    let permitTypes = extractIdentifiedObjects(this.policyDefinition.permitTypes);
+  getPermitTypes(): Map<string, string> {
+    const permitTypes = extractIdentifiedObjects(this.policyDefinition.permitTypes);
     return permitTypes;
   }
 
-  getGeographicRegions(): Array<IdentifiedObject> {
-    let geographicRegions = extractIdentifiedObjects(this.policyDefinition.geographicRegions);
+  getGeographicRegions(): Map<string, string> {
+    const geographicRegions = extractIdentifiedObjects(this.policyDefinition.geographicRegions);
     return geographicRegions;
   }
 
-  getCommodities(): Array<IdentifiedObject> {
-    let commodities = extractIdentifiedObjects(this.policyDefinition.commodities);
+  getCommodities(): Map<string, string> {
+    const commodities = extractIdentifiedObjects(this.policyDefinition.commodities);
     return commodities;
   }
 
-  getPowerUnitTypes(): Array<IdentifiedObject> {
-    let powerUnitTypes = extractIdentifiedObjects(this.policyDefinition.vehicleTypes.powerUnitTypes);
+  getPowerUnitTypes(): Map<string, string> {
+    const powerUnitTypes = extractIdentifiedObjects(this.policyDefinition.vehicleTypes.powerUnitTypes);
     return powerUnitTypes;
   }
 
-  getTrailerTypes(): Array<IdentifiedObject> {
-    let trailerTypes = extractIdentifiedObjects(this.policyDefinition.vehicleTypes.trailerTypes);
+  getTrailerTypes(): Map<string, string> {
+    const trailerTypes = extractIdentifiedObjects(this.policyDefinition.vehicleTypes.trailerTypes);
     return trailerTypes;
   }
 
@@ -69,44 +66,6 @@ class Policy {
     } else {
       return null;
     }
-  }
-
-  getPowerUnitTypeDefinition(type: string): PowerUnitType | null {
-    let powerUnitType: PowerUnitType | undefined;
-    if (this.policyDefinition.vehicleTypes.powerUnitTypes) {
-      powerUnitType = this.policyDefinition.vehicleTypes.powerUnitTypes.find((p) => p.id === type);
-
-      if (powerUnitType) {
-        let powerUnitTypeClone: PowerUnitType;
-        powerUnitTypeClone = JSON.parse(JSON.stringify(powerUnitType));
-
-        // Fill in dimensions with default values if necessary
-        let category: PowerUnitCategory | undefined;
-        category = this.policyDefinition.vehicleCategories?.powerUnitCategories?.find((c) => c.id === powerUnitTypeClone.id);
-
-        if (!(powerUnitTypeClone.defaultWeightDimensions)) {
-          // Look for a category weight default
-          if (category?.defaultWeightDimensions) {
-            powerUnitTypeClone.defaultWeightDimensions = category.defaultWeightDimensions;
-          } else {
-            // Retrieve global weight default
-            powerUnitTypeClone.defaultWeightDimensions = this.policyDefinition.globalWeightDefaults.powerUnits;
-          }
-        }
-
-        if (!(powerUnitTypeClone.defaultSizeDimensions)) {
-          // Look for a category size default
-          if (category?.defaultSizeDimensions) {
-            powerUnitTypeClone.defaultSizeDimensions = category.defaultSizeDimensions;
-          } else {
-            // Retrieve global size default
-            powerUnitTypeClone.defaultSizeDimensions = this.policyDefinition.globalSizeDefaults;
-          }
-        }
-        return powerUnitTypeClone;
-      }
-    }
-    return null;
   }
 }
 

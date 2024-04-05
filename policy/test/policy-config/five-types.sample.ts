@@ -1,4 +1,6 @@
-export const fullSample = {
+import PolicyDefinition from "../../src/interface/policy-definition.interface"
+
+export const fiveTypes: PolicyDefinition = {
   "version": "2024.03.18.001",
   "geographicRegions": [
     {
@@ -14,35 +16,63 @@ export const fullSample = {
       "name": "Peace"
     }
   ],
-  "commonPermitDataValidations": [
+  "commonRules": [
     {
-      "field": "company",
-      "required": true
-    },
-    {
-      "field": "startDate",
-      "required": true,
-      "conditions": [
-        {
-          "comparison": "gte",
-          "value": "!today"
+      "conditions": {
+        "not": {
+          "fact": "permitData",
+          "path": "$.companyName",
+          "operator": "stringMinimumLength",
+          "value": 1
         }
-      ]
+      },
+      "event": {
+        "type": "violation",
+        "params": {
+          "message": "Company is required"
+        }
+      }
     },
     {
-      "field": "vin",
-      "required": true,
-      "conditions": [
-        {
-          "comparison": "regex",
+      "conditions": {
+        "any": [
+          {
+            "fact": "permitData",
+            "path": "$.startDate",
+            "operator": "dateLessThan",
+            "value": {
+              "fact": "validation-date"
+            }
+          }
+        ]
+      },
+      "event": {
+        "type": "violation",
+        "params": {
+          "message": "Permit start date cannot be in the past"
+        }
+      }
+    },
+    {
+      "conditions": {
+        "not": {
+          "fact": "permitData",
+          "path": "$.vehicleDetails.vin",
+          "operator": "regex",
           "value": "^[a-zA-Z0-9]{6}$"
         }
-      ]
+      },
+      "event": {
+        "type": "violation",
+        "params": {
+          "message": "Vehicle Identification Number (vin) must be 6 alphanumeric characters"
+        }
+      }
     }
   ],
   "permitTypes": [
     {
-      "id": "tros",
+      "id": "TROS",
       "name": "Term Oversize",
       "routingRequired": false,
       "weightDimensionRequired": false,
@@ -55,36 +85,38 @@ export const fullSample = {
         "platform",
         "ogoilfieldsemi"
       ],
-      "dataValidations": [
+      "rules": [
         {
-          "field": "permitDuration",
-          "required": true,
-          "conditions": [
-            {
-              "any": [
-                {
-                  "all": [
-                    {
-                      "comparison": "multiple",
-                      "value": 30
-                    },
-                    {
-                      "comparison": "lessThanInclusive",
-                      "value": 330
-                    }
-                  ]
-                },
-                {
-                  "comparison": "fullYear"
+          "conditions": {
+            "all": [{
+              "not": {
+                "fact": "permitData",
+                "path": "$.permitDuration",
+                "operator": "in",
+                "value": [30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]
+              }
+            }, {
+              "not": {
+                "fact": "permitData",
+                "path": "$.duration",
+                "operator": "equal",
+                "value": {
+                  "fact": "days-in-current-year"
                 }
-              ]
+              }
+            }]
+          },
+          "event": {
+            "type": "violation",
+            "params": {
+              "message": "Duration must be in 30 day increments or a full year"
             }
-          ]
+          }
         }
       ]
     },
     {
-      "id": "trow",
+      "id": "TROW",
       "name": "Term Overweight",
       "routingRequired": false,
       "weightDimensionRequired": false,
@@ -99,7 +131,7 @@ export const fullSample = {
       ]
     },
     {
-      "id": "stow",
+      "id": "STOW",
       "name": "Single Trip Overweight",
       "routingRequired": true,
       "weightDimensionRequired": true,
@@ -125,7 +157,7 @@ export const fullSample = {
       ]
     },
     {
-      "id": "stos",
+      "id": "STOS",
       "name": "Single Trip Oversize",
       "routingRequired": true,
       "weightDimensionRequired": false,
@@ -149,7 +181,7 @@ export const fullSample = {
       ]
     },
     {
-      "id": "stws",
+      "id": "STWS",
       "name": "Single Trip Oversize Overweight",
       "routingRequired": true,
       "weightDimensionRequired": true,
@@ -261,21 +293,21 @@ export const fullSample = {
           },
           {
             "axles": 3,
-            "modifier": {
+            "modifiers": [{
               "position": "after",
               "type": "booster",
               "axles": 2
-            },
+            }],
             "legal": 24000,
             "permittable": 28000
           },
           {
             "axles": 3,
-            "modifier": {
+            "modifiers": [{
               "position": "after",
               "type": "booster",
               "axles": 3
-            },
+            }],
             "legal": 24000,
             "permittable": 28000
           }
@@ -298,21 +330,21 @@ export const fullSample = {
           },
           {
             "axles": 3,
-            "modifier": {
+            "modifiers": [{
               "position": "after",
               "type": "booster",
               "axles": 2
-            },
+            }],
             "legal": 24000,
             "permittable": 28000
           },
           {
             "axles": 3,
-            "modifier": {
+            "modifiers": [{
               "position": "after",
               "type": "booster",
               "axles": 3
-            },
+            }],
             "legal": 24000,
             "permittable": 28000
           }
@@ -563,13 +595,13 @@ export const fullSample = {
           },
           {
             "axles": 1,
-            "modifier": {
+            "modifiers": [{
               "position": "before",
               "category": "semitrailer",
               "axles": 3,
               "minInterAxleSpacing": 0,
               "maxInterAxleSpacing": 419
-            },
+            }],
             "legal": 9100,
             "permittable": 9100
           }
@@ -703,10 +735,10 @@ export const fullSample = {
                   "height": 5.33
                 }
               ],
-              "modifier": {
+              "modifiers": [{
                 "position": "first",
                 "type": "trucktractor"
-              }
+              }]
             },
             {
               "frontProjection": 3,
@@ -721,10 +753,10 @@ export const fullSample = {
                   "length": 27.5
                 }
               ],
-              "modifier": {
+              "modifiers": [{
                 "position": "first",
                 "type": "pickertrucktractor"
-              }
+              }]
             }
           ]
         },

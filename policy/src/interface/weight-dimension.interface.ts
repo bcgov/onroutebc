@@ -1,6 +1,7 @@
 import DimensionModifier from "./dimension-modifier.interface";
+import SelfIssuable from "./self-issuable.interface";
 
-interface WeightDimension {
+interface WeightDimension extends SelfIssuable {
   axles: number;
   modifiers?: Array<DimensionModifier>
 }

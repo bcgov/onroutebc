@@ -1,4 +1,4 @@
-import { EngineResult, Event } from "json-rules-engine";
+import { EngineResult } from "json-rules-engine";
 import { ValidationResultType } from "./enum/validation-result-type.enum";
 
 class ValidationResult {
@@ -11,8 +11,8 @@ class ValidationResult {
     if (engineResult) {
       engineResult.events.forEach((e) => {
         let message: string;
-        if (e.params?.message) {
-          message = e.params?.message;
+        if (e.params && e.params.message) {
+          message = e.params.message;
         } else {
           message = `Unknown message: params=${JSON.stringify(e.params)}`;
         }
@@ -28,7 +28,7 @@ class ValidationResult {
             this.warnings.push(message);
             break;
           case ValidationResultType.Message:
-            this.warnings.push(message);
+            this.messages.push(message);
             break;
           default:
             console.log('Unknown validation event encountered');

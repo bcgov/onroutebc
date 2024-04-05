@@ -1,7 +1,7 @@
-import { RelativePosition } from "../enum/relative-position.enum";
+import SelfIssuable from "./self-issuable.interface";
 
-interface DimensionModifier {
-  position: RelativePosition;
+interface DimensionModifier extends SelfIssuable {
+  position: string;
   type?: string;
   category?: string;
   axles?: number;

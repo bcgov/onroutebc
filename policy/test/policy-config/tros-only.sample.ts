@@ -7,14 +7,10 @@ export const trosOnly: PolicyDefinition = {
     {
       "conditions": {
         "not": {
-          "any": [
-            {
-              "fact": "permitData",
-              "path": "$.companyName",
-              "operator": "stringMinimumLength",
-              "value": 1
-            }
-          ]
+          "fact": "permitData",
+          "path": "$.companyName",
+          "operator": "stringMinimumLength",
+          "value": 1
         }
       },
       "event": {
@@ -47,14 +43,10 @@ export const trosOnly: PolicyDefinition = {
     {
       "conditions": {
         "not": {
-          "any": [
-            {
-              "fact": "permitData",
-              "path": "$.vehicleDetails.vin",
-              "operator": "regex",
-              "value": "^[a-zA-Z0-9]{6}$"
-            }
-          ]
+          "fact": "permitData",
+          "path": "$.vehicleDetails.vin",
+          "operator": "regex",
+          "value": "^[a-zA-Z0-9]{6}$"
         }
       },
       "event": {
@@ -74,38 +66,30 @@ export const trosOnly: PolicyDefinition = {
       "sizeDimensionRequired": false,
       "commodityRequired": false,
       "allowedVehicles": [
-        "trucktractor",
-        "truck",
-        "semi",
-        "platform",
-        "ogoilfieldsemi"
+        "TRKTRAK",
+        "TRUCK",
+        "SEMITRL",
+        "PLTFRM",
+        "OGSEMI"
       ],
       "rules": [
         {
           "conditions": {
             "all": [{
               "not": {
-                "any": [
-                  {
-                    "fact": "permitData",
-                    "path": "$.permitDuration",
-                    "operator": "in",
-                    "value": [30,60,90,120,150,180,210,240,270,300,330]
-                  }
-                ]
+                "fact": "permitData",
+                "path": "$.permitDuration",
+                "operator": "in",
+                "value": [30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]
               }
             }, {
               "not": {
-                "any": [
-                  {
-                    "fact": "permitData",
-                    "path": "$.duration",
-                    "operator": "equal",
-                    "value": {
-                      "fact": "days-in-current-year"
-                    }
-                  }
-                ]
+                "fact": "permitData",
+                "path": "$.duration",
+                "operator": "equal",
+                "value": {
+                  "fact": "days-in-current-year"
+                }
               }
             }]
           },
@@ -113,6 +97,24 @@ export const trosOnly: PolicyDefinition = {
             "type": "violation",
             "params": {
               "message": "Duration must be in 30 day increments or a full year"
+            }
+          }
+        },
+        {
+          "conditions": {
+            "not": {
+              "fact": "permitData",
+              "path": "$.vehicleDetails.vehicleSubType",
+              "operator": "in",
+              "value": {
+                "fact": "allowed-vehicles"
+              }
+            }
+          },
+          "event": {
+            "type": "violation",
+            "params": {
+              "message": "Vehicle type not permittable for this permit type"
             }
           }
         }

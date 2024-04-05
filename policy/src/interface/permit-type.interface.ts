@@ -8,7 +8,7 @@ interface PermitType extends IdentifiedObject {
   commodityRequired: boolean;
   allowedVehicles: Array<string>;
   allowedCommodities?: Array<string>;
-  rules: Array<RuleProperties>;
+  rules?: Array<RuleProperties>;
 }
 
 export default PermitType;

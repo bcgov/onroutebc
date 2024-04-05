@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { Engine } from "json-rules-engine"
 
-export const addRuntimeFacts = (engine: Engine) => {
+export function addRuntimeFacts(engine: Engine): void {
   const today: string = dayjs().format('YYYY-MM-DD');
   engine.addFact('validation-date', today);
 
