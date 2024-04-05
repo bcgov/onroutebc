@@ -7,8 +7,7 @@ export const trosOnly: PolicyDefinition = {
     {
       conditions: {
         not: {
-          fact: 'permitData',
-          path: '$.companyName',
+          fact: 'companyName',
           operator: 'stringMinimumLength',
           value: 1,
         },
@@ -24,11 +23,10 @@ export const trosOnly: PolicyDefinition = {
       conditions: {
         any: [
           {
-            fact: 'permitData',
-            path: '$.startDate',
+            fact: 'startDate',
             operator: 'dateLessThan',
             value: {
-              fact: 'validation-date',
+              fact: 'validationDate',
             },
           },
         ],
@@ -43,8 +41,7 @@ export const trosOnly: PolicyDefinition = {
     {
       conditions: {
         not: {
-          fact: 'permitData',
-          path: '$.vehicleDetails.vin',
+          fact: 'vehicleIdentificationNumber',
           operator: 'regex',
           value: '^[a-zA-Z0-9]{6}$',
         },
@@ -73,19 +70,17 @@ export const trosOnly: PolicyDefinition = {
             all: [
               {
                 not: {
-                  fact: 'permitData',
-                  path: '$.permitDuration',
+                  fact: 'duration',
                   operator: 'in',
                   value: [30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330],
                 },
               },
               {
                 not: {
-                  fact: 'permitData',
-                  path: '$.duration',
+                  fact: 'duration',
                   operator: 'equal',
                   value: {
-                    fact: 'days-in-current-year',
+                    fact: 'daysInPermitYear',
                   },
                 },
               },
@@ -101,11 +96,10 @@ export const trosOnly: PolicyDefinition = {
         {
           conditions: {
             not: {
-              fact: 'permitData',
-              path: '$.vehicleDetails.vehicleSubType',
+              fact: 'vehicleType',
               operator: 'in',
               value: {
-                fact: 'allowed-vehicles',
+                fact: 'allowedVehicles',
               },
             },
           },

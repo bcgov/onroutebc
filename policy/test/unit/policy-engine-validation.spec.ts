@@ -2,8 +2,10 @@ import Policy from '../../src/policy-engine';
 import { trosOnly } from '../policy-config/tros-only.sample';
 import { trosNoAllowedVehicles } from '../policy-config/tros-no-allowed-vehicles.sample';
 import { validTros30Day } from '../permit-app/valid-tros-30day';
-import { allEventTypes } from '../policy-config/all-event-types..sample';
+import { allEventTypes } from '../policy-config/all-event-types.sample';
+import { transformPermitFacts } from '../../src/helper/facts.helper';
 import dayjs from 'dayjs';
+import PermitApplication from '../../src/type/permit-application.type';
 
 describe('Permit Engine Constructor', () => {
   it('should construct without error', () => {
@@ -69,6 +71,14 @@ describe('Permit Engine Validator', () => {
   });
 });
 
+describe('Permit Application Transformer', () => {
+  it('should return empty facts for null application', () => {
+    let nullApp: PermitApplication = JSON.parse('null');
+    const permitFacts = transformPermitFacts(nullApp);
+    expect(permitFacts.companyName).toBeFalsy();
+  });
+});
+
 describe('Permit Engine Validation Results Aggregator', () => {
   const policy: Policy = new Policy(allEventTypes);
 
@@ -81,9 +91,9 @@ describe('Permit Engine Validation Results Aggregator', () => {
     expect(validationResult.violations).toHaveLength(2);
     expect(validationResult.requirements).toHaveLength(1);
     expect(validationResult.warnings).toHaveLength(1);
-    // Message 1: expected structure
-    // Message 2: params object, but no message property
-    // Message 3: no params object in the event
-    expect(validationResult.messages).toHaveLength(3);
+    // Information 1: expected structure
+    // Information 2: params object, but no message property
+    // Information 3: no params object in the event
+    expect(validationResult.information).toHaveLength(3);
   });
 });

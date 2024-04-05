@@ -3,4 +3,4 @@ export enum RelativePosition {
   After = 'after',
   First = 'first',
   Last = 'last',
-}
+};

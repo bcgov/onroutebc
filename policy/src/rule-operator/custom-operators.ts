@@ -35,7 +35,7 @@ CustomOperators.push(
 CustomOperators.push(
   new Operator(
     'regex',
-    (a: string, b: string) => a.search(new RegExp(b)) > -1,
+    (a: string, b: string) => a.match(b) !== null,
     stringValidator,
   ),
 );

@@ -17,11 +17,10 @@ export const trosNoAllowedVehicles: PolicyDefinition = {
         {
           conditions: {
             not: {
-              fact: 'permitData',
-              path: '$.vehicleDetails.vehicleSubType',
+              fact: 'vehicleType',
               operator: 'in',
               value: {
-                fact: 'allowed-vehicles',
+                fact: 'allowedVehicles',
               },
             },
           },

@@ -23,8 +23,7 @@ export const allEventTypes: PolicyDefinition = {
         {
           conditions: {
             not: {
-              fact: 'permitData',
-              path: '$.duration',
+              fact: 'duration',
               operator: 'equal',
               value: 31,
             },
@@ -39,8 +38,7 @@ export const allEventTypes: PolicyDefinition = {
         {
           conditions: {
             not: {
-              fact: 'permitData',
-              path: '$.duration',
+              fact: 'duration',
               operator: 'equal',
               value: 32,
             },
@@ -55,8 +53,7 @@ export const allEventTypes: PolicyDefinition = {
         {
           conditions: {
             not: {
-              fact: 'permitData',
-              path: '$.duration',
+              fact: 'duration',
               operator: 'equal',
               value: 33,
             },
@@ -71,14 +68,13 @@ export const allEventTypes: PolicyDefinition = {
         {
           conditions: {
             not: {
-              fact: 'permitData',
-              path: '$.duration',
+              fact: 'duration',
               operator: 'equal',
               value: 34,
             },
           },
           event: {
-            type: 'message',
+            type: 'information',
             params: {
               message: 'Message A',
             },
@@ -87,14 +83,13 @@ export const allEventTypes: PolicyDefinition = {
         {
           conditions: {
             not: {
-              fact: 'permitData',
-              path: '$.duration',
+              fact: 'duration',
               operator: 'equal',
               value: 35,
             },
           },
           event: {
-            type: 'message',
+            type: 'information',
             params: {
               invalid_message: 'Message B',
             },
@@ -103,21 +98,19 @@ export const allEventTypes: PolicyDefinition = {
         {
           conditions: {
             not: {
-              fact: 'permitData',
-              path: '$.duration',
+              fact: 'duration',
               operator: 'equal',
               value: 35,
             },
           },
           event: {
-            type: 'message',
+            type: 'information',
           },
         },
         {
           conditions: {
             not: {
-              fact: 'permitData',
-              path: '$.duration',
+              fact: 'duration',
               operator: 'equal',
               value: 36,
             },
