@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  Allow,
   ArrayMinSize,
   IsEmail,
   IsEnum,
@@ -52,6 +51,6 @@ export class NotificationDto {
     },
     description: 'Data to be inserted into the template',
   })
-  @Allow()
+  @IsOptional()
   data: object;
 }
