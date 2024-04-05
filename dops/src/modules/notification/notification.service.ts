@@ -170,6 +170,8 @@ export class NotificationService {
     switch (templateName) {
       case NotificationTemplate.ISSUE_PERMIT:
         return CacheKey.EMAIL_TEMPLATE_ISSUE_PERMIT;
+      case NotificationTemplate.PAYMENT_RECEIPT:
+        return CacheKey.EMAIL_TEMPLATE_PAYMENT_RECEIPT;
       case NotificationTemplate.PROFILE_REGISTRATION:
         return CacheKey.EMAIL_TEMPLATE_PROFILE_REGISTRATION;
       case NotificationTemplate.COMPANY_SUSPEND:

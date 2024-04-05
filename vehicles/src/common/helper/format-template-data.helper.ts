@@ -21,7 +21,7 @@ export const formatTemplateData = (
   permit: Permit,
   fullNames: FullNamesForDgen,
   companyInfo: Company,
-  revisitionHisotry: Permit[],
+  revisionHistory?: Permit[],
 ) => {
   // Create a new template object that includes the formatted values used in the templated word documents
   const template: PermitTemplateData = {
@@ -89,7 +89,7 @@ export const formatTemplateData = (
   template.permitData.feeSummary =
     template.permitData.permitDuration.toString(); // TODO: get from frontend
 
-  revisitionHisotry.forEach((revision) => {
+  revisionHistory?.forEach((revision) => {
     if (
       revision.permitStatus == ApplicationStatus.ISSUED ||
       revision.permitStatus == ApplicationStatus.VOIDED ||
