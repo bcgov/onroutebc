@@ -1,25 +1,25 @@
-import Policy from "../../src/policy-engine";
-import { trosOnly } from "../policy-config/tros-only.sample";
-import { trosNoAllowedVehicles } from "../policy-config/tros-no-allowed-vehicles.sample";
-import { validTros30Day } from "../permit-app/valid-tros-30day";
-import { allEventTypes } from "../policy-config/all-event-types..sample";
-import dayjs from "dayjs";
+import Policy from '../../src/policy-engine';
+import { trosOnly } from '../policy-config/tros-only.sample';
+import { trosNoAllowedVehicles } from '../policy-config/tros-no-allowed-vehicles.sample';
+import { validTros30Day } from '../permit-app/valid-tros-30day';
+import { allEventTypes } from '../policy-config/all-event-types..sample';
+import dayjs from 'dayjs';
 
-describe("Permit Engine Constructor", () => {
-  it("should construct without error", () => {
-    expect(() => new Policy(trosOnly)).not.toThrow()
+describe('Permit Engine Constructor', () => {
+  it('should construct without error', () => {
+    expect(() => new Policy(trosOnly)).not.toThrow();
   });
 
-  it("should assign policy definition correctly", () => {
+  it('should assign policy definition correctly', () => {
     const policy: Policy = new Policy(trosOnly);
     expect(policy.policyDefinition).toBeTruthy();
   });
 });
 
-describe("Permit Engine Validator", () => {
+describe('Permit Engine Validator', () => {
   const policy: Policy = new Policy(trosOnly);
 
-  it("should validate TROS successfully", async () => {
+  it('should validate TROS successfully', async () => {
     const permit = JSON.parse(JSON.stringify(validTros30Day));
     // Set startDate to today
     permit.permitData.startDate = dayjs().format('YYYY-MM-DD');
@@ -31,7 +31,9 @@ describe("Permit Engine Validator", () => {
   it('should raise violation for start date in the past', async () => {
     const permit = JSON.parse(JSON.stringify(validTros30Day));
     // Set startDate to yesterday
-    permit.permitData.startDate = dayjs().subtract(1, 'day').format('YYYY-MM-DD');
+    permit.permitData.startDate = dayjs()
+      .subtract(1, 'day')
+      .format('YYYY-MM-DD');
 
     const validationResult = await policy.validate(permit);
     expect(validationResult.violations).toHaveLength(1);
@@ -52,7 +54,7 @@ describe("Permit Engine Validator", () => {
     // Set startDate to today
     permit.permitData.startDate = dayjs().format('YYYY-MM-DD');
     // Set an invalid vehicle type
-    permit.permitData.vehicleDetails.vehicleSubType = "__INVALID";
+    permit.permitData.vehicleDetails.vehicleSubType = '__INVALID';
 
     const validationResult = await policy.validate(permit);
     expect(validationResult.violations).toHaveLength(1);
@@ -67,10 +69,10 @@ describe("Permit Engine Validator", () => {
   });
 });
 
-describe("Permit Engine Validation Results Aggregator", () => {
+describe('Permit Engine Validation Results Aggregator', () => {
   const policy: Policy = new Policy(allEventTypes);
 
-  it("should process all event types", async () => {
+  it('should process all event types', async () => {
     const permit = JSON.parse(JSON.stringify(validTros30Day));
 
     const validationResult = await policy.validate(permit);

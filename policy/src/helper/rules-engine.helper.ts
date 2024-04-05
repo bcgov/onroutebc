@@ -1,8 +1,7 @@
-import { Engine } from "json-rules-engine";
-import CustomOperators from "../rule-operator/custom-operators";
-import Policy from "../policy-engine";
-import PolicyDefinition from "../interface/policy-definition.interface";
-
+import { Engine } from 'json-rules-engine';
+import CustomOperators from '../rule-operator/custom-operators';
+import Policy from '../policy-engine';
+import PolicyDefinition from '../interface/policy-definition.interface';
 
 function getEngine(policyDefinition: PolicyDefinition): Engine {
   const engine = new Engine();
@@ -18,7 +17,7 @@ export function getRulesEngines(policy: Policy): Map<string, Engine> {
     const engine = getEngine(policy.policyDefinition);
 
     permitType.rules?.forEach((r) => engine.addRule(r));
-    
+
     let allowedVehicles: Array<string>;
     if (permitType.allowedVehicles.length > 0) {
       allowedVehicles = permitType.allowedVehicles;
@@ -29,7 +28,7 @@ export function getRulesEngines(policy: Policy): Map<string, Engine> {
     engine.addFact('allowed-vehicles', allowedVehicles);
 
     engineMap.set(permitType.id, engine);
-  })
-  
+  });
+
   return engineMap;
 }

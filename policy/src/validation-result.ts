@@ -1,5 +1,5 @@
-import { EngineResult } from "json-rules-engine";
-import { ValidationResultType } from "./enum/validation-result-type.enum";
+import { EngineResult } from 'json-rules-engine';
+import { ValidationResultType } from './enum/validation-result-type.enum';
 
 class ValidationResult {
   violations: Array<string> = [];

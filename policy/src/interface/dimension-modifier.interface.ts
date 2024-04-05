@@ -1,4 +1,4 @@
-import SelfIssuable from "./self-issuable.interface";
+import SelfIssuable from './self-issuable.interface';
 
 interface DimensionModifier extends SelfIssuable {
   position: string;

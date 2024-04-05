@@ -1,6 +1,9 @@
-import IdentifiedObject from "./identified-object.interface";
-import { SizeDimension } from "./size-dimension.interface";
-import { PowerUnitWeightDimension, TrailerWeightDimension } from "./weight-dimension.interface";
+import IdentifiedObject from './identified-object.interface';
+import { SizeDimension } from './size-dimension.interface';
+import {
+  PowerUnitWeightDimension,
+  TrailerWeightDimension,
+} from './weight-dimension.interface';
 
 interface VehicleType extends IdentifiedObject {
   category: string;
@@ -15,8 +18,4 @@ interface TrailerType extends VehicleType {
   defaultWeightDimensions?: Array<TrailerWeightDimension>;
 }
 
-export {
-  VehicleType,
-  PowerUnitType,
-  TrailerType
-}
+export { VehicleType, PowerUnitType, TrailerType };

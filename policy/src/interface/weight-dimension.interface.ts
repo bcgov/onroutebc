@@ -1,9 +1,9 @@
-import DimensionModifier from "./dimension-modifier.interface";
-import SelfIssuable from "./self-issuable.interface";
+import DimensionModifier from './dimension-modifier.interface';
+import SelfIssuable from './self-issuable.interface';
 
 interface WeightDimension extends SelfIssuable {
   axles: number;
-  modifiers?: Array<DimensionModifier>
+  modifiers?: Array<DimensionModifier>;
 }
 
 interface PowerUnitWeightDimension extends WeightDimension {
@@ -18,8 +18,4 @@ interface TrailerWeightDimension extends WeightDimension {
   permittable?: number;
 }
 
-export {
-  WeightDimension,
-  PowerUnitWeightDimension,
-  TrailerWeightDimension
-}
+export { WeightDimension, PowerUnitWeightDimension, TrailerWeightDimension };

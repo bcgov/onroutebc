@@ -1,10 +1,16 @@
 import GeographicRegion from './geographic-region.interface';
 import PermitType from './permit-type.interface';
-import { PowerUnitWeightDimension, TrailerWeightDimension } from './weight-dimension.interface';
+import {
+  PowerUnitWeightDimension,
+  TrailerWeightDimension,
+} from './weight-dimension.interface';
 import { PowerUnitType, TrailerType } from './vehicle-type.interface';
 import Commodity from './commodity.interface';
 import { SizeDimension } from './size-dimension.interface';
-import { PowerUnitCategory, TrailerCategory } from './vehicle-category.interface';
+import {
+  PowerUnitCategory,
+  TrailerCategory,
+} from './vehicle-category.interface';
 import { RuleProperties } from 'json-rules-engine';
 
 type DefaultWeightDimensions = {

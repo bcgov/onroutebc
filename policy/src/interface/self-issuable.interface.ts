@@ -1,5 +1,5 @@
 interface SelfIssuable {
-  canSelfIssue?: boolean
+  canSelfIssue?: boolean;
 }
 
 export default SelfIssuable;

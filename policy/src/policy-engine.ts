@@ -21,7 +21,9 @@ class Policy {
     const engine = this.rulesEngines.get(permit.permitType);
     if (!engine) {
       const validationResult: ValidationResult = new ValidationResult();
-      validationResult.violations.push(`Permit type ${permit.permitType} not permittable`);
+      validationResult.violations.push(
+        `Permit type ${permit.permitType} not permittable`,
+      );
       return validationResult;
     } else {
       addRuntimeFacts(engine);
@@ -31,27 +33,37 @@ class Policy {
   }
 
   getPermitTypes(): Map<string, string> {
-    const permitTypes = extractIdentifiedObjects(this.policyDefinition.permitTypes);
+    const permitTypes = extractIdentifiedObjects(
+      this.policyDefinition.permitTypes,
+    );
     return permitTypes;
   }
 
   getGeographicRegions(): Map<string, string> {
-    const geographicRegions = extractIdentifiedObjects(this.policyDefinition.geographicRegions);
+    const geographicRegions = extractIdentifiedObjects(
+      this.policyDefinition.geographicRegions,
+    );
     return geographicRegions;
   }
 
   getCommodities(): Map<string, string> {
-    const commodities = extractIdentifiedObjects(this.policyDefinition.commodities);
+    const commodities = extractIdentifiedObjects(
+      this.policyDefinition.commodities,
+    );
     return commodities;
   }
 
   getPowerUnitTypes(): Map<string, string> {
-    const powerUnitTypes = extractIdentifiedObjects(this.policyDefinition.vehicleTypes.powerUnitTypes);
+    const powerUnitTypes = extractIdentifiedObjects(
+      this.policyDefinition.vehicleTypes.powerUnitTypes,
+    );
     return powerUnitTypes;
   }
 
   getTrailerTypes(): Map<string, string> {
-    const trailerTypes = extractIdentifiedObjects(this.policyDefinition.vehicleTypes.trailerTypes);
+    const trailerTypes = extractIdentifiedObjects(
+      this.policyDefinition.vehicleTypes.trailerTypes,
+    );
     return trailerTypes;
   }
 

@@ -1,4 +1,4 @@
-import IdentifiedObject from "./identified-object.interface";
+import IdentifiedObject from './identified-object.interface';
 
 interface GeographicRegion extends IdentifiedObject {
   description?: string;
