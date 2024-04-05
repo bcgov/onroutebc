@@ -34,7 +34,6 @@ import {
 import { DopsGeneratedDocument } from 'src/common/interface/dops-generated-document.interface';
 import { TemplateName } from 'src/common/enum/template-name.enum';
 import { convertUtcToPt } from 'src/common/helper/date-time.helper';
-import { IssuePermitDataNotification } from 'src/common/interface/issue-permit-data.notification.interface';
 import { NotificationTemplate } from 'src/common/enum/notification-template.enum';
 import { ResultDto } from './dto/response/result.dto';
 import { VoidPermitDto } from './dto/request/void-permit.dto';
@@ -772,10 +771,6 @@ export class PermitService {
       success = permit.permitId;
 
       try {
-        const notificationData: IssuePermitDataNotification = {
-          companyName: companyInfo.legalName,
-        };
-
         const emailList = [
           permitDataForTemplate.permitData?.contactDetails?.email,
           permitDataForTemplate.permitData?.contactDetails?.additionalEmail,
@@ -789,7 +784,6 @@ export class PermitService {
           templateName: NotificationTemplate.ISSUE_PERMIT,
           to: distinctEmailList,
           subject: 'onRouteBC Permits - ' + companyInfo.legalName,
-          data: notificationData,
           documentIds: [
             generatedDocuments?.at(0)?.documentId,
             generatedDocuments?.at(1)?.documentId,
@@ -887,10 +881,6 @@ export class PermitService {
     if (!permit) throw new NotFoundException('Valid permit not found.');
 
     const companyInfo = permit.company;
-
-    const notificationData: IssuePermitDataNotification = {
-      companyName: companyInfo.legalName,
-    };
 
     permitDocumentId = permit?.documentId;
     receiptDocumentId =
@@ -1029,7 +1019,6 @@ export class PermitService {
       templateName: NotificationTemplate.ISSUE_PERMIT,
       to: createNotificationDto.to,
       subject: 'onRouteBC Permits - ' + companyInfo.legalName,
-      data: notificationData,
       documentIds: [permitDocumentId, receiptDocumentId],
     };
 

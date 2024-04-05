@@ -266,11 +266,18 @@ export class ApplicationController {
     );
 
     if (result?.success?.length) {
-      void this.applicationService.generatePermitDocuments(
-        currentUser,
-        result.success,
-        issuePermitDto.companyId,
-      );
+      await Promise.allSettled([
+        this.applicationService.generatePermitDocuments(
+          currentUser,
+          result.success,
+          issuePermitDto.companyId,
+        ),
+        this.applicationService.generateReceiptDocuments(
+          currentUser,
+          result.success,
+          issuePermitDto.companyId,
+        ),
+      ]);
     }
     return result;
   }
