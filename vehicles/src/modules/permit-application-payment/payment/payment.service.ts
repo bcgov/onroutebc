@@ -747,21 +747,4 @@ export class PaymentService {
       })),
     ) as PermitHistoryDto[];
   }
-
-  // await this.permitRepository.manager.update(
-  //   Receipt,
-  //   {
-  //     receiptId:
-  //     permit?.permitTransactions[0].transaction.receipt
-  //         .receiptId,
-  //     receiptDocumentId: IsNull()
-  //   },
-  //   {
-  //     receiptDocumentId: generatedDocument?.documentId,
-  //     updatedDateTime: new Date(),
-  //     updatedUser: currentUser.userName,
-  //     updatedUserDirectory: currentUser.orbcUserDirectory,
-  //     updatedUserGuid: currentUser.userGUID,
-  //   },
-  // );
 }

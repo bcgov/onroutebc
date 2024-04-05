@@ -10,7 +10,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, DataSource, IsNull, Repository, SelectQueryBuilder } from 'typeorm';
+import {
+  Brackets,
+  DataSource,
+  IsNull,
+  Repository,
+  SelectQueryBuilder,
+} from 'typeorm';
 import { CreateApplicationDto } from './dto/request/create-application.dto';
 import { ReadApplicationDto } from './dto/response/read-application.dto';
 import { Permit } from '../permit/entities/permit.entity';
@@ -602,92 +608,91 @@ export class ApplicationService {
       return resultDto;
     }
 
-    for (const fetchedApplication of fetchedApplications) {
-      try {
-        // Check if a PDF document already exists for the permit.
-        // It's important that a PDF does not get overwritten.
-        // Once its created, it is a permanent legal document.
-
-        if (fetchedApplication.permitNumber) {
-          throw new NotFoundException('Application has already been issued!');
-        }
-        if (fetchedApplication.documentId) {
-          throw new HttpException('Document already exists', 409);
-        }
-        if (
-          fetchedApplication.permitStatus == ApplicationStatus.WAITING_PAYMENT
-        ) {
-          throw new BadRequestException(
-            'Application must be ready for issuance with payment complete status!',
-          );
-        }
-        const permitNumber = await generatePermitNumber(
-          this.cacheManager,
-          fetchedApplication.permitId !== fetchedApplication.originalPermitId
-            ? await this.findOne(fetchedApplication.previousRevision.toString())
-            : fetchedApplication,
-        );
-
-        fetchedApplication.permitNumber = permitNumber;
-        fetchedApplication.permitStatus = ApplicationStatus.ISSUED;
-        fetchedApplication.permitIssueDateTime = new Date();
-
-        const queryRunner = this.dataSource.createQueryRunner();
-        await queryRunner.connect();
-        await queryRunner.startTransaction();
+    await Promise.allSettled(
+      fetchedApplications.map(async (fetchedApplication) => {
         try {
-          await queryRunner.manager.update(
-            Permit,
-            { permitId: fetchedApplication.permitId },
-            {
-              permitStatus: fetchedApplication.permitStatus,
-              permitNumber: fetchedApplication.permitNumber,
-              issuer: { userGUID: currentUser.userGUID },
-              permitApprovalSource: PermitApprovalSourceEnum.AUTO, //TODO : Hardcoding for release 1
-              permitIssuedBy:
-                currentUser.orbcUserDirectory == Directory.IDIR
-                  ? PermitIssuedBy.PPC
-                  : PermitIssuedBy.SELF_ISSUED,
-              permitIssueDateTime: fetchedApplication.permitIssueDateTime,
-              updatedDateTime: new Date(),
-              updatedUser: currentUser.userName,
-              updatedUserDirectory: currentUser.orbcUserDirectory,
-              updatedUserGuid: currentUser.userGUID,
-            },
+          this.validateApplicationForIssuance(fetchedApplication);
+          const permitNumber = await generatePermitNumber(
+            this.cacheManager,
+            fetchedApplication.permitId !== fetchedApplication.originalPermitId
+              ? await this.findOne(
+                  fetchedApplication.previousRevision.toString(),
+                )
+              : fetchedApplication,
           );
 
-          // In case of amendment move the parent permit to SUPERSEDED Status.
-          if (fetchedApplication.previousRevision) {
+          fetchedApplication.permitNumber = permitNumber;
+          fetchedApplication.permitStatus = ApplicationStatus.ISSUED;
+          fetchedApplication.permitIssueDateTime = new Date();
+          const queryRunner = this.dataSource.createQueryRunner();
+          await queryRunner.connect();
+          await queryRunner.startTransaction();
+          try {
             await queryRunner.manager.update(
               Permit,
+              { permitId: fetchedApplication.permitId },
               {
-                permitId: fetchedApplication.previousRevision,
-              },
-              {
-                permitStatus: ApplicationStatus.SUPERSEDED,
+                permitStatus: fetchedApplication.permitStatus,
+                permitNumber: fetchedApplication.permitNumber,
+                issuer: { userGUID: currentUser.userGUID },
+                permitApprovalSource: PermitApprovalSourceEnum.AUTO, //TODO : Hardcoding for release 1
+                permitIssuedBy:
+                  currentUser.orbcUserDirectory == Directory.IDIR
+                    ? PermitIssuedBy.PPC
+                    : PermitIssuedBy.SELF_ISSUED,
+                permitIssueDateTime: fetchedApplication.permitIssueDateTime,
                 updatedDateTime: new Date(),
                 updatedUser: currentUser.userName,
                 updatedUserDirectory: currentUser.orbcUserDirectory,
                 updatedUserGuid: currentUser.userGUID,
               },
             );
-          }
-          await queryRunner.commitTransaction();
-        } catch (error) {
-          await queryRunner.rollbackTransaction();
-          this.logger.error(error);
-          throw error;
-        } finally {
-          await queryRunner.release();
-        }
 
-        resultDto.success.push(fetchedApplication.permitId);
-      } catch (error) {
-        this.logger.error(error);
-        resultDto.failure.push(fetchedApplication.permitId);
-      }
-    }
+            if (fetchedApplication.previousRevision) {
+              await queryRunner.manager.update(
+                Permit,
+                {
+                  permitId: fetchedApplication.previousRevision,
+                },
+                {
+                  permitStatus: ApplicationStatus.SUPERSEDED,
+                  updatedDateTime: new Date(),
+                  updatedUser: currentUser.userName,
+                  updatedUserDirectory: currentUser.orbcUserDirectory,
+                  updatedUserGuid: currentUser.userGUID,
+                },
+              );
+            }
+            await queryRunner.commitTransaction();
+          } catch (error) {
+            await queryRunner.rollbackTransaction();
+            throw error;
+          } finally {
+            await queryRunner.release();
+          }
+          resultDto.success.push(fetchedApplication.permitId);
+        } catch (error) {
+          this.logger.error(error);
+          resultDto.failure.push(fetchedApplication.permitId);
+        }
+      }),
+    );
+
     return resultDto;
+  }
+
+  private validateApplicationForIssuance(fetchedApplication: Permit) {
+    if (fetchedApplication.permitNumber) {
+      throw new NotFoundException('Application has already been issued!');
+    }
+    if (fetchedApplication.documentId) {
+      throw new HttpException('Document already exists', 409);
+    }
+    if (fetchedApplication.permitStatus == ApplicationStatus.WAITING_PAYMENT) {
+      throw new BadRequestException(
+        'Application must be ready for issuance with payment complete status!',
+      );
+    }
   }
 
   /**
@@ -826,7 +831,7 @@ export class ApplicationService {
           this.logger.error(error);
           resultDto.failure.push(fetchedApplication.permitId);
           // Return the error for failed operations
-          return Promise.reject(error);
+          return Promise.reject(error as Error);
         }
       }),
     );
@@ -996,7 +1001,7 @@ export class ApplicationService {
             this.logger.error(error);
             resultDto.failure.push(...permitIds);
             // Return the error for failed operations
-            return Promise.reject(error);
+            return Promise.reject(error as Error);
           }
         }
       }),
