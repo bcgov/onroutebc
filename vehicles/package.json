@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "BCGov devops quickstart. For reference, testing and new projects.",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
@@ -113,7 +114,8 @@
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.4.3"
+    "typescript": "^5.4.4",
+    "typescript-eslint": "^7.5.0"
   },
   "jest": {
     "moduleFileExtensions": [
