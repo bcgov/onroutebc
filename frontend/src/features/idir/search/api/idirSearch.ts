@@ -15,13 +15,11 @@ import {
  */
 export const getPermitDataBySearch = (
   { searchEntity, searchByFilter, searchString }: SearchFields,
-  { expired = false }: { expired: boolean },
   { page = 0, take = 10 }: PaginationOptions,
 ): Promise<PaginatedResponse<PermitListItem>> => {
   const searchURL = new URL(`${VEHICLES_URL}/${searchEntity}`);
   searchURL.searchParams.set("searchColumn", searchByFilter);
   searchURL.searchParams.set("searchString", searchString);
-  searchURL.searchParams.set("expired", expired.toString());
 
   // API pagination index starts at 1. Hence page + 1.
   searchURL.searchParams.set("page", (page + 1).toString());
