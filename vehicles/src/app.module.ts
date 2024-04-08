@@ -34,6 +34,7 @@ import { CompanySuspendModule } from './modules/company-user-management/company-
 import { PermitModule } from './modules/permit-application-payment/permit/permit.module';
 import { ApplicationModule } from './modules/permit-application-payment/application/application.module';
 import { PaymentModule } from './modules/permit-application-payment/payment/payment.module';
+import { ShoppingCartModule } from './modules/shopping-cart/shopping-cart.module';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
@@ -91,6 +92,7 @@ const envPath = path.resolve(process.cwd() + '/../');
     PendingUsersModule,
     AuthModule,
     PaymentModule,
+    ShoppingCartModule,
     ApplicationModule, //! Application Module should be imported before PermitModule to avoid URI conflict
     PermitModule,
     FeatureFlagsModule,
