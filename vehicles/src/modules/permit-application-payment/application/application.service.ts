@@ -1045,6 +1045,7 @@ export class ApplicationService {
     void this.dopsService.notificationWithDocumentsFromDops(
       currentUser,
       notificationDocument,
+      true,
     );
   }
 
