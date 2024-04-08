@@ -15,6 +15,7 @@ import { AddToShoppingCartDto } from './dto/request/add-to-shopping-cart.dto';
 import { UpdateShoppingCartDto } from './dto/request/update-shopping-cart.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
+import { doesUserHaveAuthGroup } from '../../common/helper/auth.helper';
 
 @Injectable()
 export class ShoppingCartService {
@@ -55,9 +56,8 @@ export class ShoppingCartService {
         ApplicationStatus.IN_CART,
       );
     }
-    if (
-      IDIR_USER_AUTH_GROUP_LIST.includes(orbcUserAuthGroup as IDIRUserAuthGroup)
-    ) {
+
+    if (doesUserHaveAuthGroup(orbcUserAuthGroup, IDIR_USER_AUTH_GROUP_LIST)) {
       return await this.updateApplicationStatus(
         {
           applicationIds,

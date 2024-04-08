@@ -1,6 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumberString } from 'class-validator';
+import { ArrayMinSize, IsNumberString } from 'class-validator';
 
 /**
  * DTO (Data Transfer Object) for creating a shopping cart.
@@ -16,6 +16,7 @@ export class AddToShoppingCartDto {
     type: String,
     example: ['74'],
   })
+  @ArrayMinSize(1)
   @IsNumberString({ no_symbols: true }, { each: true })
   applicationIds: string[];
 }
