@@ -43,14 +43,7 @@ export const AmendPermitForm = () => {
     getLinks,
   } = useContext(AmendPermitContext);
 
-  const {
-    companyLegalName,
-    idirUserDetails,
-  } = useContext(OnRouteBCContext);
-
-  const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
-  const doingBusinessAs = isStaffActingAsCompany && companyLegalName ?
-    companyLegalName : "";
+  const { companyLegalName } = useContext(OnRouteBCContext);
 
   const navigate = useNavigate();
 
@@ -218,7 +211,7 @@ export const AmendPermitForm = () => {
           trailerSubTypes={trailerSubTypes}
           companyInfo={companyInfo}
           durationOptions={durationOptions}
-          doingBusinessAs={doingBusinessAs}
+          doingBusinessAs={companyLegalName}
         >
           <AmendRevisionHistory revisionHistory={revisionHistory} />
           <AmendReason feature={FEATURE} />

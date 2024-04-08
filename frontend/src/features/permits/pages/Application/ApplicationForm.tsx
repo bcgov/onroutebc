@@ -50,13 +50,8 @@ export const ApplicationForm = ({
     companyId,
     companyLegalName,
     userDetails,
-    idirUserDetails,
     onRouteBCClientNumber,
   } = useContext(OnRouteBCContext);
-
-  const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
-  const doingBusinessAs = isStaffActingAsCompany && companyLegalName ?
-    companyLegalName : "";
 
   const companyInfoQuery = useCompanyInfoQuery();
 
@@ -272,7 +267,7 @@ export const ApplicationForm = ({
           trailerSubTypes={trailerSubTypes}
           companyInfo={companyInfo}
           durationOptions={PERMIT_DURATION_OPTIONS}
-          doingBusinessAs={doingBusinessAs}
+          doingBusinessAs={companyLegalName}
         />
       </FormProvider>
 

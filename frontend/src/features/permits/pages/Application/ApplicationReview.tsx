@@ -36,14 +36,7 @@ export const ApplicationReview = () => {
   const trailerSubTypesQuery = useTrailerSubTypesQuery();
   const methods = useForm<Application>();
 
-  const {
-    companyLegalName,
-    idirUserDetails,
-  } = useContext(OnRouteBCContext);
-
-  const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
-  const doingBusinessAs = isStaffActingAsCompany && companyLegalName ?
-    companyLegalName : "";
+  const { companyLegalName } = useContext(OnRouteBCContext);
 
   // For the confirmation checkboxes
   const [isChecked, setIsChecked] = useState(false);
@@ -119,7 +112,7 @@ export const ApplicationReview = () => {
           vehicleWasSaved={
             applicationData?.permitData?.vehicleDetails?.saveVehicle
           }
-          doingBusinessAs={doingBusinessAs}
+          doingBusinessAs={companyLegalName}
         />
       </FormProvider>
     </div>

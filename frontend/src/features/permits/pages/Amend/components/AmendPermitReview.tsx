@@ -27,14 +27,7 @@ export const AmendPermitReview = () => {
 
   const { createdDateTime, updatedDateTime } = getDatetimes(amendmentApplication, permit);
 
-  const {
-    companyLegalName,
-    idirUserDetails,
-  } = useContext(OnRouteBCContext);
-
-  const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
-  const doingBusinessAs = isStaffActingAsCompany && companyLegalName ?
-    companyLegalName : "";
+  const { companyLegalName } = useContext(OnRouteBCContext);
 
   const validTransactionHistory = permitHistory.filter((history) =>
     isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
@@ -115,7 +108,7 @@ export const AmendPermitReview = () => {
           },
         }}
         calculatedFee={`${amountToRefund}`}
-        doingBusinessAs={doingBusinessAs}
+        doingBusinessAs={companyLegalName}
       >
         {amendmentApplication?.comment ? (
           <ReviewReason reason={amendmentApplication.comment} />
