@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger, Scope } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { NotBrackets, Repository, SelectQueryBuilder } from 'typeorm';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
@@ -15,14 +15,11 @@ import { AddToShoppingCartDto } from './dto/request/add-to-shopping-cart.dto';
 import { UpdateShoppingCartDto } from './dto/request/update-shopping-cart.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
-import { REQUEST } from '@nestjs/core';
-import { Request } from 'express';
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class ShoppingCartService {
   private readonly logger = new Logger(ShoppingCartService.name);
   constructor(
-    @Inject(REQUEST) private request: Request,
     @InjectRepository(Application)
     private readonly applicationRepository: Repository<Application>,
   ) {}
@@ -42,7 +39,6 @@ export class ShoppingCartService {
     { applicationIds, companyId }: AddToShoppingCartDto & { companyId: number },
   ): Promise<ResultDto> {
     const { orbcUserAuthGroup } = currentUser;
-    console.log('dsjj::', this.request.user);
     if (orbcUserAuthGroup === ClientUserAuthGroup.COMPANY_ADMINISTRATOR) {
       return await this.updateApplicationStatus(
         { applicationIds, companyId },
