@@ -67,6 +67,8 @@ import {
 } from '../../../common/helper/permit-application.helper';
 import { INotificationDocument } from '../../../common/interface/notification-document.interface';
 import { PaymentService } from '../payment/payment.service';
+import { CacheKey } from '../../../common/enum/cache-key.enum';
+import { getFromCache } from '../../../common/helper/cache.helper';
 
 @Injectable()
 export class ApplicationService {
@@ -893,8 +895,9 @@ export class ApplicationService {
           try {
             const permit = permits?.at(0);
             const company = permit?.company;
-            const receipt =
-              permit?.permitTransactions?.at(0)?.transaction?.receipt;
+            const permitTransactions = permit?.permitTransactions;
+            const transaction = permitTransactions?.at(0)?.transaction;
+            const receipt = transaction?.receipt;
             if (receipt.receiptDocumentId) {
               throw new HttpException('Document already exists', 409);
             }
@@ -906,32 +909,33 @@ export class ApplicationService {
               permit,
             );
 
-            const permitDataForTemplate = formatTemplateData(
-              permit,
-              fullNames,
-              company,
+            const { companyName, companyAlternateName, permitData } =
+              formatTemplateData(permit, fullNames, company);
+            const permitDetails = await Promise.all(
+              permits?.map(async (permit) => {
+                return {
+                  permitName: await getFromCache(
+                    this.cacheManager,
+                    CacheKey.PERMIT_TYPE,
+                    permit?.permitType,
+                  ),
+                  permitNumber: permit?.permitNumber,
+                  transactionAmount: formatAmount(
+                    transaction?.transactionTypeId,
+                    permit?.permitTransactions?.at(0)?.transactionAmount,
+                  ),
+                };
+              }),
             );
 
             const dopsRequestData = {
               templateName: TemplateName.PAYMENT_RECEIPT,
               generatedDocumentFileName: `Receipt_No_${receiptNumber}`,
               templateData: {
-                ...permitDataForTemplate,
-                // transaction details still needs to be reworked to support multiple permits
-                pgTransactionId:
-                  permit?.permitTransactions[0].transaction.pgTransactionId,
-                transactionOrderNumber:
-                  permit?.permitTransactions[0].transaction
-                    .transactionOrderNumber,
-                transactionAmount: formatAmount(
-                  permit?.permitTransactions[0].transaction.transactionTypeId,
-                  permit?.permitTransactions[0].transactionAmount,
-                ),
-                totalTransactionAmount: formatAmount(
-                  permit?.permitTransactions[0].transaction.transactionTypeId,
-                  permit?.permitTransactions[0].transaction
-                    .totalTransactionAmount,
-                ),
+                receiptNo: receiptNumber,
+                companyName: companyName,
+                companyAlternateName: companyAlternateName,
+                permitData: permitData,
                 //Payer Name should be persisted in transacation Table so that it can be used for DocRegen
                 payerName:
                   currentUser.orbcUserDirectory === Directory.IDIR
@@ -943,21 +947,26 @@ export class ApplicationService {
                   currentUser.orbcUserDirectory === Directory.IDIR
                     ? constants.PPC_FULL_TEXT
                     : constants.SELF_ISSUED,
+                totalTransactionAmount: formatAmount(
+                  transaction?.transactionTypeId,
+                  transaction?.totalTransactionAmount,
+                ),
+                permitDetails: permitDetails,
+                //Transaction Details
+                pgTransactionId: transaction?.pgTransactionId,
+                transactionOrderNumber: transaction?.transactionOrderNumber,
                 consolidatedPaymentMethod: (
                   await getPaymentCodeFromCache(
                     this.cacheManager,
-                    permit?.permitTransactions[0].transaction
-                      .paymentMethodTypeCode,
-                    permit?.permitTransactions[0].transaction
-                      .paymentCardTypeCode,
+                    transaction?.paymentMethodTypeCode,
+                    transaction?.paymentCardTypeCode,
                   )
                 ).consolidatedPaymentMethod,
                 transactionDate: convertUtcToPt(
-                  permit?.permitTransactions[0].transaction
-                    .transactionSubmitDate,
+                  permit?.permitTransactions?.at(0)?.transaction
+                    ?.transactionSubmitDate,
                   'MMM. D, YYYY, hh:mm a Z',
                 ),
-                receiptNo: receiptNumber,
               },
             };
 
@@ -975,9 +984,8 @@ export class ApplicationService {
 
             try {
               const emailList = [
-                permitDataForTemplate.permitData?.contactDetails?.email,
-                permitDataForTemplate.permitData?.contactDetails
-                  ?.additionalEmail,
+                permitData?.contactDetails?.email,
+                permitData?.contactDetails?.additionalEmail,
                 company?.email,
               ];
               const subject = `onRouteBC Permit Receipt - ${receiptNumber}`;
@@ -1045,6 +1053,7 @@ export class ApplicationService {
     void this.dopsService.notificationWithDocumentsFromDops(
       currentUser,
       notificationDocument,
+      true,
     );
   }
 
