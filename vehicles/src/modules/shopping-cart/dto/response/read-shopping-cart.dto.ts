@@ -87,5 +87,4 @@ export class ReadShoppingCartDto {
     example: 200,
   })
   fee: number;
-  
 }

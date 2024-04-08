@@ -97,7 +97,7 @@ export class ShoppingCartController {
   async getApplicationsInCart(
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
-  ):Promise<ReadShoppingCartDto[]> {
+  ): Promise<ReadShoppingCartDto[]> {
     return await this.shoppingCartService.findApplicationsInCart(
       request.user as IUserJWT,
       companyId,

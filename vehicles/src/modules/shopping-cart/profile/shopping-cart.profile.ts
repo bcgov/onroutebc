@@ -12,6 +12,7 @@ import { UserAuthGroup } from '../../../common/enum/user-auth-group.enum';
 import { getApplicantDisplay } from '../../../common/helper/permit-application.helper';
 import { Permit as Application } from '../../permit-application-payment/permit/entities/permit.entity';
 import { ReadShoppingCartDto } from '../dto/response/read-shopping-cart.dto';
+import { PermitData } from '../../../common/interface/permit.template.interface';
 
 @Injectable()
 export class ShoppingCartProfile extends AutomapperProfile {
@@ -50,8 +51,10 @@ export class ShoppingCartProfile extends AutomapperProfile {
         forMember(
           (d) => d.fee,
           mapFrom((s) => {
-            const parsedPermitData = JSON.parse(s?.permitData?.permitData);
-            return Number(parsedPermitData?.feeSummary);
+            const parsedPermitData = JSON.parse(
+              s?.permitData?.permitData,
+            ) as PermitData;
+            return +parsedPermitData?.feeSummary;
           }),
         ),
         forMember(

@@ -94,7 +94,7 @@ export class ShoppingCartService {
       {
         extraArgs: () => ({
           currentUserAuthGroup: orbcUserAuthGroup,
-          companyId
+          companyId,
         }),
       },
     );
