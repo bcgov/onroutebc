@@ -25,6 +25,7 @@ import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { AddToShoppingCartDto } from './dto/request/add-to-shopping-cart.dto';
 import { CompanyIdPathParamDto } from './dto/request/pathParam/companyId.path-param.dto';
 import { UpdateShoppingCartDto } from './dto/request/update-shopping-cart.dto';
+import { ReadShoppingCartDto } from './dto/response/read-shopping-cart.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { ShoppingCartService } from './shopping-cart.service';
 
@@ -45,13 +46,14 @@ export class ShoppingCartController {
   /**
    * Adds a new item to the shopping cart.
    *
-   * @param createShoppingCartDto - The DTO to create a new shopping cart item.
+   * @param { companyId } - The companyId path parameter.
+   * @param { applicationIds } - The DTO to create a new shopping cart item.
    * @returns The result of the creation operation.
    */
   @ApiOperation({
-    summary: 'Adds one or more applications from the shopping cart.',
+    summary: 'Adds one or more applications to the shopping cart.',
     description:
-      'Adds one or more applications from the shopping cart, enforcing authentication.',
+      'Adds one or more applications to the shopping cart, enforcing authentication.',
   })
   @ApiCreatedResponse({
     description: 'The result of the changes to cart.',
@@ -95,7 +97,7 @@ export class ShoppingCartController {
   async getApplicationsInCart(
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
-  ) {
+  ):Promise<ReadShoppingCartDto[]> {
     return await this.shoppingCartService.findApplicationsInCart(
       request.user as IUserJWT,
       companyId,
@@ -106,7 +108,7 @@ export class ShoppingCartController {
    * Retrieves applications within the shopping cart based on the user's permissions and optional query parameters.
    *
    * @param request - The incoming request object, used to extract the user's authentication details.
-   * @param getShoppingCartQueryParamsDto - DTO containing optional query parameters for filtering the shopping cart contents.
+   * @param { companyId } - The companyId path parameter.
    * @returns A promise resolved with the applications found in the shopping cart for the authenticated user.
    */
   @ApiOperation({
@@ -127,7 +129,7 @@ export class ShoppingCartController {
   async getCartCount(
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
-  ) {
+  ): Promise<number> {
     return await this.shoppingCartService.getCartCount(
       request.user as IUserJWT,
       companyId,
@@ -137,7 +139,8 @@ export class ShoppingCartController {
   /**
    * Removes one or more applications from the shopping cart.
    *
-   * @param updateShoppingCartDto - The DTO to update a shopping cart.
+   * @param { companyId } - The companyId path parameter.
+   * @param { applicationIds } - The DTO to update a shopping cart.
    * @returns The result of the removal operation.
    */
   @Delete()

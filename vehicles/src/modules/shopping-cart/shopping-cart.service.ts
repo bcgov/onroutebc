@@ -6,7 +6,6 @@ import { ApplicationStatus } from '../../common/enum/application-status.enum';
 import { Directory } from '../../common/enum/directory.enum';
 import {
   ClientUserAuthGroup,
-  IDIRUserAuthGroup,
   IDIR_USER_AUTH_GROUP_LIST,
   UserAuthGroup,
 } from '../../common/enum/user-auth-group.enum';
@@ -16,11 +15,15 @@ import { UpdateShoppingCartDto } from './dto/request/update-shopping-cart.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { doesUserHaveAuthGroup } from '../../common/helper/auth.helper';
+import { InjectMapper } from '@automapper/nestjs';
+import { Mapper } from '@automapper/core';
+import { ReadShoppingCartDto } from './dto/response/read-shopping-cart.dto';
 
 @Injectable()
 export class ShoppingCartService {
   private readonly logger = new Logger(ShoppingCartService.name);
   constructor(
+    @InjectMapper() private readonly classMapper: Mapper,
     @InjectRepository(Application)
     private readonly applicationRepository: Repository<Application>,
   ) {}
@@ -40,7 +43,10 @@ export class ShoppingCartService {
     { applicationIds, companyId }: AddToShoppingCartDto & { companyId: number },
   ): Promise<ResultDto> {
     const { orbcUserAuthGroup } = currentUser;
-    if (orbcUserAuthGroup === ClientUserAuthGroup.COMPANY_ADMINISTRATOR) {
+    if (
+      orbcUserAuthGroup === ClientUserAuthGroup.COMPANY_ADMINISTRATOR ||
+      doesUserHaveAuthGroup(orbcUserAuthGroup, IDIR_USER_AUTH_GROUP_LIST)
+    ) {
       return await this.updateApplicationStatus(
         { applicationIds, companyId },
         ApplicationStatus.IN_CART,
@@ -55,16 +61,6 @@ export class ShoppingCartService {
         },
         ApplicationStatus.IN_CART,
       );
-    }
-
-    if (doesUserHaveAuthGroup(orbcUserAuthGroup, IDIR_USER_AUTH_GROUP_LIST)) {
-      return await this.updateApplicationStatus(
-        {
-          applicationIds,
-          companyId,
-        },
-        ApplicationStatus.IN_CART,
-      );
     } else {
       return { failure: applicationIds, success: [] };
     }
@@ -74,22 +70,34 @@ export class ShoppingCartService {
    * Finds all permit applications in a shopping cart based on the current user's information and optionally filtered by a company ID.
    *
    * @param currentUser - An object containing the current user's GUID and authorization group.
-   * @param companyId - (Optional) The ID of the company to filter the permit applications. If not provided, applications are not filtered by company.
+   * @param companyId - The ID of the company to filter the permit applications. If not provided, applications are not filtered by company.
    * @returns A promise resolved with an array of Application entities that are currently in the shopping cart.
    */
   @LogAsyncMethodExecution()
   async findApplicationsInCart(
     currentUser: IUserJWT,
     companyId: number,
-  ): Promise<Application[]> {
+  ): Promise<ReadShoppingCartDto[]> {
     const { userGUID, orbcUserAuthGroup } = currentUser;
-    return await this.getSelectShoppingCartQB(
+    const applications = await this.getSelectShoppingCartQB(
       companyId,
       userGUID,
       orbcUserAuthGroup,
     )
       .orderBy({ 'application.updatedDateTime': 'DESC' })
       .getMany();
+
+    return await this.classMapper.mapArrayAsync(
+      applications,
+      Application,
+      ReadShoppingCartDto,
+      {
+        extraArgs: () => ({
+          currentUserAuthGroup: orbcUserAuthGroup,
+          companyId
+        }),
+      },
+    );
   }
 
   /**
@@ -97,7 +105,7 @@ export class ShoppingCartService {
    * Optionally considers the user's GUID and authorization group for further filtering.
    *
    * @param currentUser - The current user's credentials and information.
-   * @param companyId - (Optional) The ID of the company for which to count permit applications in the shopping cart.
+   * @param companyId - The ID of the company for which to count permit applications in the shopping cart.
    * @returns A promise resolved with the number of permit applications in the shopping cart that match the criteria.
    */
   @LogAsyncMethodExecution()
@@ -131,7 +139,9 @@ export class ShoppingCartService {
     const queryBuilder = this.applicationRepository
       .createQueryBuilder('application')
       .leftJoin('application.company', 'company')
-      .leftJoin('application.applicationOwner', 'applicationOwner');
+      .leftJoinAndSelect('application.permitData', 'permitData')
+      .leftJoinAndSelect('application.applicationOwner', 'applicationOwner')
+      .leftJoinAndSelect('applicationOwner.userContact', 'userContact');
 
     queryBuilder.where('application.permitStatus = :permitStatus', {
       permitStatus: ApplicationStatus.IN_CART,
@@ -190,9 +200,7 @@ export class ShoppingCartService {
         ApplicationStatus.IN_PROGRESS,
       );
     }
-    if (
-      IDIR_USER_AUTH_GROUP_LIST.includes(orbcUserAuthGroup as IDIRUserAuthGroup)
-    ) {
+    if (doesUserHaveAuthGroup(orbcUserAuthGroup, IDIR_USER_AUTH_GROUP_LIST)) {
       return await this.updateApplicationStatus(
         {
           applicationIds,
@@ -206,13 +214,15 @@ export class ShoppingCartService {
   }
 
   /**
-   * Updates the status of applications specified by application IDs to either 'IN_CART' or 'IN_PROGRESS'.
-   * This method is used internally by `addToCart` and `remove` methods for adding or removing applications from the shopping cart.
-   * The operation might be limited by the user's authorization group and optionally by their GUID.
+   * Updates the status of selected applications based on provided IDs, company ID, and optional user GUID.
+   * It's mainly used for adding applications to the shopping cart or moving them back to the in-progress state.
    *
-   * @param params - An object containing the application IDs to be updated, the company ID, and optionally the user's GUID.
-   * @param statusToUpdateTo - The desired application status to update to, either `ApplicationStatus.IN_CART` or `ApplicationStatus.IN_PROGRESS`.
-   * @returns A `Promise` resolving to a `ResultDto` object containing two arrays: `success` with IDs of applications successfully updated, and `failure` with IDs of applications that failed to update.
+   * @param params - An object containing application IDs, company ID, and an optional user GUID.
+   *  The `applicationIds` are the IDs of the applications to update.
+   *  The `companyId` is used to ensure applications belong to the correct company.
+   *  The `userGUID` is optional and used for filtering applications by the user, if applicable.
+   * @param statusToUpdateTo - The target status to update the applications to. Can be either `IN_CART` to add applications to the shopping cart or `IN_PROGRESS` to move them back to the in-progress state.
+   * @returns A promise that resolves with a `ResultDto` object, which contains arrays of `success` and `failure`. `success` includes IDs of applications successfully updated to the target status, while `failure` includes IDs of applications that failed to update.
    */
   private async updateApplicationStatus(
     {

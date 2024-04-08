@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import { IsInt, IsPositive } from 'class-validator';
 
 export class CompanyIdPathParamDto {
@@ -8,5 +9,6 @@ export class CompanyIdPathParamDto {
   })
   @IsInt()
   @IsPositive()
+  @Type(() => Number)
   companyId: number;
 }
