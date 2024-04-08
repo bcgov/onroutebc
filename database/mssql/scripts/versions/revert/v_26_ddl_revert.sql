@@ -44,4 +44,3 @@ ELSE BEGIN
    PRINT 'The database update failed'
 END
 GO
-
