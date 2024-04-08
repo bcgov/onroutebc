@@ -119,7 +119,7 @@ export class UsersService {
           userGUID: currentUser.userGUID,
         },
         relations: {
-          companyUsers: true,
+          companyUsers: { company: true },
           userContact: true,
         },
       });
@@ -137,8 +137,9 @@ export class UsersService {
       user.userContact.contactId = existingUser?.userContact?.contactId;
 
       const newCompanyUser = new CompanyUser();
-      newCompanyUser.companyUserId =
-        existingUser?.companyUsers?.at(0)?.companyUserId;
+      newCompanyUser.companyUserId = existingUser?.companyUsers
+        ?.filter((companyUser) => companyUser.company?.companyId === companyId)
+        ?.at(0).companyUserId;
       newCompanyUser.company = new Company();
       newCompanyUser.company.companyId = companyId;
       newCompanyUser.statusCode = UserStatus.ACTIVE;

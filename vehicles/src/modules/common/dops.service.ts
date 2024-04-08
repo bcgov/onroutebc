@@ -112,6 +112,7 @@ export class DopsService {
     currentUser: IUserJWT,
     dopsGeneratedDocument: DopsGeneratedDocument,
     companyId?: number,
+    ignoreErrors?: boolean,
   ): Promise<ReadFileDto> {
     // Construct the URL for the request
     const url = process.env.DOPS_URL + `/dgen/template/render`;
@@ -126,14 +127,15 @@ export class DopsService {
       responseType: 'json',
     };
 
-    // Calls the DOPS service, which converts the the template document into a pdf
-    const dopsResponse = await lastValueFrom(
-      this.httpService.post(url, dopsGeneratedDocument, reqConfig),
-    )
-      .then((response) => {
-        return response;
-      })
-      .catch((error: AxiosError) => {
+    try {
+      // Calls the DOPS service, which converts the the template document into a pdf
+      const dopsResponse = await lastValueFrom(
+        this.httpService.post(url, dopsGeneratedDocument, reqConfig),
+      );
+      return dopsResponse.data as ReadFileDto;
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        // Log and throw error if the request fails
         if (error.response) {
           const errorData = error.response.data as ExceptionDto;
           this.logger.error(
@@ -142,12 +144,14 @@ export class DopsService {
         } else {
           this.logger.error(error?.message, error?.stack);
         }
+      }
+      // Handle other types of errors
+      if (!ignoreErrors) {
         throw new InternalServerErrorException(
           'Error generating document via CDOGS',
         );
-      });
-
-    return dopsResponse.data as ReadFileDto;
+      }
+    }
   }
 
   /**
@@ -252,9 +256,10 @@ export class DopsService {
   }
 
   /**
-   * Sends an notification with documents fetched from S3 using DOPS service.
+   * Sends a notification with documents using DOPS service, allowing optional error ignoring.
    * @param currentUser - The current authenticated user's JWT details.
    * @param notificationWithDocuments - The details of the notification and documents to be sent.
+   * @param ignoreErrors - Optional parameter to determine whether to ignore errors.
    * @returns A Promise resolving to the response from DOPS service containing
    *          the message and the transaction ID of the notification sent.
    */
@@ -262,6 +267,7 @@ export class DopsService {
   async notificationWithDocumentsFromDops(
     currentUser: IUserJWT,
     notificationWithDocuments: INotificationDocument,
+    ignoreErrors?: boolean,
   ) {
     // Construct the request URL by appending endpoint to the DOPS base URL
     const url = process.env.DOPS_URL + `/notification/document`;
@@ -276,29 +282,30 @@ export class DopsService {
       responseType: 'json', // Expecting a JSON response
     };
 
-    // Send POST request to the DOPS service and handle the response or error
-    const dopsResponse = await lastValueFrom(
-      this.httpService.post(url, notificationWithDocuments, reqConfig),
-    )
-      .then((response) => {
-        // Return the Axios response directly on success
-        return response;
-      })
-      .catch((error: AxiosError) => {
+    try {
+      // Send POST request to the DOPS service and handle the response or error
+      const dopsResponse = await lastValueFrom(
+        this.httpService.post(url, notificationWithDocuments, reqConfig),
+      );
+      return dopsResponse.data as ReadNotificationDto;
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
         // Log and throw error if the request fails
         if (error.response) {
+          const errorData = error.response.data as ExceptionDto;
           this.logger.error(
-            `Error response from DOPS: ${error.response.status} ${error.response.statusText} `,
+            `Error response from DOPS: ${JSON.stringify(errorData, null, 2)}`,
           );
         } else {
           this.logger.error(error?.message, error?.stack);
         }
+      }
+      // Handle other types of errors
+      if (!ignoreErrors) {
         throw new InternalServerErrorException(
-          'Error generating while sending notification',
+          'Error while sending notification',
         );
-      });
-
-    // Return the response data after casting it to the expected type
-    return dopsResponse.data as ReadNotificationDto;
+      }
+    }
   }
 }
