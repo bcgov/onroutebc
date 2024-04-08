@@ -585,10 +585,10 @@ export class PermitService {
       newPermit.comment = voidPermitDto.comment;
       newPermit = Object.assign(newPermit, userMetadata);
 
-      let permitData = new PermitData();
-      permitData.permitData = permit.permitData.permitData;
-      permitData = Object.assign(permitData, userMetadata);
-      newPermit.permitData = permitData;
+      let newPermitData = new PermitData();
+      newPermitData.permitData = permit.permitData.permitData;
+      newPermitData = Object.assign(newPermitData, userMetadata);
+      newPermit.permitData = newPermitData;
 
       /* Create application to generate permit id. 
       this permit id will be used to generate permit number based this id's application number.*/
@@ -679,28 +679,20 @@ export class PermitService {
         ),
       };
 
-      const generatedPermitDocumentPromise = this.generateDocument(
+      const generatedPermitDocumentPromise = this.dopsService.generateDocument(
         currentUser,
         dopsRequestData,
-        companyInfo.companyId,
+        companyInfo?.companyId,
       );
 
       dopsRequestData = {
         templateName: TemplateName.PAYMENT_RECEIPT,
         generatedDocumentFileName: `Receipt_No_${fetchedTransaction.receipt.receiptNumber}`,
         templateData: {
-          ...permitDataForTemplate,
-          pgTransactionId: fetchedTransaction.pgTransactionId,
-          transactionOrderNumber: fetchedTransaction.transactionOrderNumber,
-          transactionAmount: formatAmount(
-            fetchedTransaction.transactionTypeId,
-            fetchedTransaction.totalTransactionAmount,
-          ),
-          totalTransactionAmount: formatAmount(
-            fetchedTransaction.transactionTypeId,
-            fetchedTransaction.totalTransactionAmount,
-          ),
-          //Payer Name should be persisted in transacation Table so that it can be used for DocRegen
+          receiptNo: fetchedTransaction.receipt.receiptNumber,
+          companyName: permitDataForTemplate.companyName,
+          companyAlternateName: permitDataForTemplate.companyAlternateName,
+          permitData: permitDataForTemplate.permitData,
           payerName:
             currentUser.orbcUserDirectory === Directory.IDIR
               ? 'Provincial Permit Centre'
@@ -711,6 +703,30 @@ export class PermitService {
             currentUser.orbcUserDirectory === Directory.IDIR
               ? constants.PPC_FULL_TEXT
               : constants.SELF_ISSUED,
+          totalTransactionAmount: formatAmount(
+            fetchedTransaction.transactionTypeId,
+            fetchedTransaction.totalTransactionAmount,
+          ),
+          transactionAmount: formatAmount(
+            fetchedTransaction.transactionTypeId,
+            fetchedTransaction.totalTransactionAmount,
+          ),
+          permitDetails: [
+            {
+              permitName: permitDataForTemplate.permitName,
+              permitNumber: permitDataForTemplate.permitNumber,
+              transactionAmount: formatAmount(
+                fetchedTransaction.transactionTypeId,
+                fetchedTransaction.totalTransactionAmount,
+              ),
+            },
+          ],
+          //Transaction Details
+          pgTransactionId: fetchedTransaction.pgTransactionId,
+          transactionOrderNumber: fetchedTransaction.transactionOrderNumber,
+
+          //Payer Name should be persisted in transacation Table so that it can be used for DocRegen
+
           consolidatedPaymentMethod: (
             await getPaymentCodeFromCache(
               this.cacheManager,
@@ -722,14 +738,13 @@ export class PermitService {
             fetchedTransaction.transactionSubmitDate,
             'MMM. D, YYYY, hh:mm a Z',
           ),
-          receiptNo: fetchedTransaction.receipt.receiptNumber,
         },
       };
 
-      const generatedReceiptDocumentPromise = this.generateDocument(
+      const generatedReceiptDocumentPromise = this.dopsService.generateDocument(
         currentUser,
         dopsRequestData,
-        companyInfo.companyId,
+        companyInfo?.companyId,
       );
 
       const generatedDocuments: ReadFileDto[] = await Promise.all([
@@ -770,36 +785,40 @@ export class PermitService {
       await queryRunner.commitTransaction();
       success = permit.permitId;
 
-      try {
-        const emailList = [
-          permitDataForTemplate.permitData?.contactDetails?.email,
-          permitDataForTemplate.permitData?.contactDetails?.additionalEmail,
-          voidPermitDto.additionalEmail,
-          companyInfo.email,
-        ].filter((email) => Boolean(email));
+      const emailList = [
+        permitDataForTemplate.permitData?.contactDetails?.email,
+        permitDataForTemplate.permitData?.contactDetails?.additionalEmail,
+        voidPermitDto.additionalEmail,
+        companyInfo.email,
+      ].filter((email) => Boolean(email));
 
-        const distinctEmailList = Array.from(new Set(emailList));
+      const distinctEmailList = Array.from(new Set(emailList));
 
-        const notificationDocument: INotificationDocument = {
-          templateName: NotificationTemplate.ISSUE_PERMIT,
-          to: distinctEmailList,
-          subject: 'onRouteBC Permits - ' + companyInfo.legalName,
-          documentIds: [
-            generatedDocuments?.at(0)?.documentId,
-            generatedDocuments?.at(1)?.documentId,
-          ],
-        };
+      let notificationDocument: INotificationDocument = {
+        templateName: NotificationTemplate.ISSUE_PERMIT,
+        to: distinctEmailList,
+        subject: 'onRouteBC Permits - ' + companyInfo.legalName,
+        documentIds: [generatedDocuments?.at(0)?.documentId],
+      };
 
-        void this.dopsService.notificationWithDocumentsFromDops(
-          currentUser,
-          notificationDocument,
-        );
-      } catch (error: unknown) {
-        /**
-         * Swallow the error as failure to send notification should not break the flow
-         */
-        this.logger.error(error);
-      }
+      void this.dopsService.notificationWithDocumentsFromDops(
+        currentUser,
+        notificationDocument,
+        true,
+      );
+
+      notificationDocument = {
+        templateName: NotificationTemplate.PAYMENT_RECEIPT,
+        to: distinctEmailList,
+        subject: `onRouteBC Permit Receipt - ${fetchedTransaction?.receipt?.receiptNumber}`,
+        documentIds: [generatedDocuments?.at(1)?.documentId],
+      };
+
+      void this.dopsService.notificationWithDocumentsFromDops(
+        currentUser,
+        notificationDocument,
+        true,
+      );
     } catch (error) {
       await queryRunner.rollbackTransaction();
       this.logger.error(error);
