@@ -13,7 +13,8 @@ export class GetApplicationInCartQueryParams {
   })
   @Type(() => Boolean)
   @Transform(({ obj, key }: { obj: Record<string, unknown>; key: string }) => {
-    return obj[key] === 'true' ? true : obj[key] === 'false' ? false : obj[key];
+    if (obj[key] === 'true') return true;
+    return obj[key] === 'false' ? false : obj[key];
   })
   @IsOptional()
   @IsBoolean()
