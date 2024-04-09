@@ -52,7 +52,6 @@ import { PermitReceiptDocumentService } from '../permit-receipt-document/permit-
 })
 @Controller('permits')
 export class PermitController {
-
   constructor(
     private readonly permitService: PermitService,
     private readonly permitReceiptDocumentService: PermitReceiptDocumentService,
