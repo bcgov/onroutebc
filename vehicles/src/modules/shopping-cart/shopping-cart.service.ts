@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { NotBrackets, Repository, SelectQueryBuilder } from 'typeorm';
@@ -77,12 +78,14 @@ export class ShoppingCartService {
   async findApplicationsInCart(
     currentUser: IUserJWT,
     companyId: number,
+    allApplications: boolean,
   ): Promise<ReadShoppingCartDto[]> {
     const { userGUID, orbcUserAuthGroup } = currentUser;
     const applications = await this.getSelectShoppingCartQB(
       companyId,
       userGUID,
       orbcUserAuthGroup,
+      allApplications,
     )
       .orderBy({ 'application.updatedDateTime': 'DESC' })
       .getMany();
@@ -118,6 +121,7 @@ export class ShoppingCartService {
       companyId,
       userGUID,
       orbcUserAuthGroup,
+      true
     ).getCount();
   }
 
@@ -135,6 +139,7 @@ export class ShoppingCartService {
     companyId: number,
     userGUID?: string,
     orbcUserAuthGroup?: UserAuthGroup,
+    allApplications?: boolean,
   ): SelectQueryBuilder<Application> {
     const queryBuilder = this.applicationRepository
       .createQueryBuilder('application')
@@ -149,14 +154,18 @@ export class ShoppingCartService {
     queryBuilder.andWhere('company.companyId = :companyId', { companyId });
 
     // If user is a Permit Applicant, get only their own applications in cart
-    if (orbcUserAuthGroup === ClientUserAuthGroup.PERMIT_APPLICANT) {
+    if (
+      orbcUserAuthGroup === ClientUserAuthGroup.PERMIT_APPLICANT 
+      // ||
+      // !allApplications
+    ) {
       queryBuilder.andWhere('applicationOwner.userGUID = :userGUID', {
         userGUID,
       });
     }
     // If user is a Company Admin, get all applications in cart for that company
     // EXCEPT for those created by staff user.
-    else if (orbcUserAuthGroup === ClientUserAuthGroup.COMPANY_ADMINISTRATOR) {
+    if (!doesUserHaveAuthGroup(orbcUserAuthGroup, IDIR_USER_AUTH_GROUP_LIST)) {
       queryBuilder.andWhere(
         new NotBrackets((qb) => {
           qb.where('applicationOwner.directory = :directory', {
@@ -243,7 +252,7 @@ export class ShoppingCartService {
           {
             permitId: applicationId,
             company: { companyId },
-            ...(userGUID && { userGUID }),
+            ...(userGUID && { applicationOwner: { userGUID } }),
           },
           {
             permitStatus: statusToUpdateTo,

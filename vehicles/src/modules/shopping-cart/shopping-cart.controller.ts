@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Query,
   Req,
 } from '@nestjs/common';
 import {
@@ -28,6 +29,7 @@ import { UpdateShoppingCartDto } from './dto/request/update-shopping-cart.dto';
 import { ReadShoppingCartDto } from './dto/response/read-shopping-cart.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { ShoppingCartService } from './shopping-cart.service';
+import { GetApplicationInCartQueryParams } from './dto/request/queryParam/getApplicationsInCart.query-param.dto';
 
 @ApiBearerAuth()
 @ApiTags('Shopping Cart')
@@ -97,11 +99,14 @@ export class ShoppingCartController {
   async getApplicationsInCart(
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
+    @Query() { allApplications }: GetApplicationInCartQueryParams
   ): Promise<ReadShoppingCartDto[]> {
     return await this.shoppingCartService.findApplicationsInCart(
       request.user as IUserJWT,
       companyId,
+      allApplications
     );
+    // console.
   }
 
   /**

@@ -1,4 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform, Type } from 'class-transformer';
 import { IsBoolean, IsOptional } from 'class-validator';
 
 export class GetApplicationInCartQueryParams {
@@ -11,7 +12,11 @@ export class GetApplicationInCartQueryParams {
     example: true,
     default: true,
   })
-  @IsBoolean()
+  @Type(() => Boolean)
+  @Transform(({ obj, key }: { obj: Record<string, unknown>; key: string }) => {
+    return obj[key] === 'true' ? true : obj[key] === 'false' ? false : obj[key];
+  })
   @IsOptional()
-  allApplications?: boolean = true;
+  @IsBoolean()
+  allApplications?: boolean;
 }
