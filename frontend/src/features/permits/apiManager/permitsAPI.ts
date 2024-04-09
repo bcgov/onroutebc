@@ -13,6 +13,7 @@ import {
   Nullable,
   PaginatedResponse,
   PaginationAndFilters,
+  PaginationAndFiltersAndPending,
   RequiredOrNull,
 } from "../../../common/types/common";
 
@@ -109,7 +110,7 @@ export const getApplicationsInProgress = async ({
   searchString,
   orderBy = [],
   pendingPermits = false,
-}: PaginationAndFilters): Promise<PaginatedResponse<ApplicationListItem>> => {
+}: PaginationAndFiltersAndPending): Promise<PaginatedResponse<ApplicationListItem>> => {
   const companyId = getCompanyIdFromSession();
   const applicationsURL = new URL(APPLICATIONS_API_ROUTES.GET);
   if (companyId) {

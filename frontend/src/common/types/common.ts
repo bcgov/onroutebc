@@ -95,9 +95,14 @@ export type PendingOption = {
 }
 
 /**
+ * The options for pagination, filtering and pending data.
+ */
+export type PaginationAndFiltersAndPending = PaginationOptions & DataFilterOptions & PendingOption;
+
+/**
  * The options for pagination and filtering data.
  */
-export type PaginationAndFilters = PaginationOptions & DataFilterOptions & PendingOption;
+export type PaginationAndFilters = PaginationOptions & DataFilterOptions;
 
 /**
  * A generic paginated response structure for all the paginated responses from APIs.
