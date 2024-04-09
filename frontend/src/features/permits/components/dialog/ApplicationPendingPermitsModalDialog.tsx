@@ -60,24 +60,24 @@ export const ApplicationPendingPermitsModalDialog = ({
   
     return (
       <Dialog
-        className="suspend-modal"
+        className="pending-permits-modal"
         open={showModal}
         onClose={handleCancel}
         PaperProps={{
-          className: "suspend-modal__container"
+          className: "pending-permits-modal__container"
         }}
       >
-        <div className="suspend-modal__header">
-          <div className="suspend-modal__icon">
+        <div className="pending-permits-modal__header">
+          <div className="pending-permits-modal__icon">
             <FontAwesomeIcon className="icon" icon={faExclamationTriangle} />
           </div>
   
-          <span className="suspend-modal__title">
+          <span className="pending-permits-modal__title">
             Pending Permits
           </span>
         </div>
   
-        <div className="suspend-modal__body">
+        <div className="pending-permits-modal__body">
             <p>You have {data?.items?.length} Pending Permits</p>
             <InfoBcGovBanner 
                 msg={"There was an unexpected error in issuing the following permits. No action from you is required."}
@@ -92,15 +92,15 @@ export const ApplicationPendingPermitsModalDialog = ({
             <MaterialReactTable table={table} />
         </div>
 
-        <div className="suspend-modal__footer">
+        <div className="pending-permits-modal__footer">
         <Button
-            key="cancel-suspend-button"
+            key="cancel-pending-permits-button"
             aria-label="Cancel"
             variant="contained"
             color="tertiary"
-            className="suspend-button suspend-button--cancel"
+            className="pending-permits-button pending-permits-button--cancel"
             onClick={handleCancel}
-            data-testid="cancel-suspend-button"
+            data-testid="cancel-pending-permits-button"
         >
             Cancel
         </Button>

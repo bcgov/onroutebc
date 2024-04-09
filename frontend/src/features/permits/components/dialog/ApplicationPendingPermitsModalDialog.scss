@@ -1,1 +1,58 @@
 @use "../../../../themes/orbcStyles";
+
+.pending-permits-modal {
+    & &__container {
+      width: 100%;
+      min-width: 900px;
+      display: flex;
+      flex-direction: column;
+    }
+  
+    &__header {
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      background-color: orbcStyles.$bc-background-light-grey;
+    }
+  
+    &__icon {
+      .icon {
+        color: orbcStyles.$bc-black;
+        height: 2rem;
+      }
+    }
+  
+    &__title {
+      font-weight: 600;
+      font-size: 1.5rem;
+      margin-left: 0.5em;
+      color: orbcStyles.$bc-black;
+    }
+  
+    &__body {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    &__footer {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      padding: 0 1.5rem 1.5rem 1.5rem;
+  
+      .pending-permits-button {
+            &--cancel {
+                margin-right: 1.5rem;
+                cursor: pointer;
+                background-color: orbcStyles.$bc-background-light-grey;
+                color: orbcStyles.$bc-black;
+                border: none;
+            }
+  
+        }
+    }
+}
+  
