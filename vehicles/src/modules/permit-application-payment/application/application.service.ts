@@ -177,35 +177,6 @@ export class ApplicationService {
     });
   }
 
-  private async findOneWithSuccessfulTransaction(
-    applicationId: string,
-    companyId?: number,
-  ): Promise<Permit> {
-    const permitQB = this.permitRepository.createQueryBuilder('permit');
-    permitQB
-      .leftJoinAndSelect('permit.company', 'company')
-      .innerJoinAndSelect('permit.permitData', 'permitData')
-      .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
-      .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
-      .innerJoinAndSelect('transaction.receipt', 'receipt')
-      .leftJoinAndSelect('permit.applicationOwner', 'applicationOwner')
-      .leftJoinAndSelect(
-        'applicationOwner.userContact',
-        'applicationOwnerContact',
-      )
-      .where('permit.permitId = :permitId', {
-        permitId: applicationId,
-      })
-      .andWhere('receipt.receiptNumber IS NOT NULL');
-
-    if (companyId) {
-      permitQB.andWhere('company.companyId = :companyId', {
-        companyId: companyId,
-      });
-    }
-    return await permitQB.getOne();
-  }
-
   /**
    * Finds multiple permits by application IDs or a single transaction ID with successful transactions,
    * optionally filtering by companyId.
