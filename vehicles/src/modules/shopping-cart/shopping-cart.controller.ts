@@ -99,12 +99,12 @@ export class ShoppingCartController {
   async getApplicationsInCart(
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
-    @Query() { allApplications }: GetApplicationInCartQueryParams
+    @Query() { allApplications }: GetApplicationInCartQueryParams,
   ): Promise<ReadShoppingCartDto[]> {
     return await this.shoppingCartService.findApplicationsInCart(
       request.user as IUserJWT,
       companyId,
-      allApplications
+      allApplications,
     );
   }
 

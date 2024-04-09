@@ -94,7 +94,7 @@ const envPath = path.resolve(process.cwd() + '/../');
     AuthModule,
     PaymentModule,
     ShoppingCartModule,
-    PermitReceiptDocumentModule,    
+    PermitReceiptDocumentModule,
     ApplicationModule, //! Application Module should be imported before PermitModule to avoid URI conflict
     PermitModule,
     FeatureFlagsModule,
