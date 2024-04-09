@@ -225,12 +225,21 @@ export class PermitController {
     voidPermitDto: VoidPermitDto,
   ): Promise<ResultDto> {
     const currentUser = request.user as IUserJWT;
-    const permit = await this.permitService.voidPermit(
+    const result = await this.permitService.voidPermit(
       permitId,
       voidPermitDto,
       currentUser,
     );
-    return permit;
+    if (result?.success?.length) {
+      await Promise.allSettled([
+        this.permitService.generatePermitDocuments(currentUser, result.success),
+        this.permitService.generateReceiptDocuments(
+          currentUser,
+          result.success,
+        ),
+      ]);
+    }
+    return result;
   }
 
   /**
