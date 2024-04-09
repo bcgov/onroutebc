@@ -4,7 +4,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { TpsPermit } from './entities/tps-permit.entity';
-import { LessThan, Repository } from 'typeorm';
+import { DataSource, LessThan, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { S3uploadStatus } from '../common/enum/s3-upload-status.enum';
 import { S3Service } from './s3.service';
@@ -26,6 +26,7 @@ export class TpsPermitService {
     @InjectRepository(Document)
     private documentRepository: Repository<Document>,
     private readonly s3Service: S3Service,
+    private dataSource: DataSource,
   ) {}
 
   /**
@@ -36,7 +37,7 @@ export class TpsPermitService {
    *
    */
 
-  @Cron(`${process.env.TPS_PENDING_POLLING_INTERVAL || "0 */1 * * * *"}`)
+  @Cron(`${process.env.TPS_PENDING_POLLING_INTERVAL || '0 */1 * * * *'}`)
   @LogAsyncMethodExecution()
   async uploadTpsPermit() {
     const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
@@ -66,7 +67,7 @@ export class TpsPermitService {
    * wrong and needs attention.
    *
    */
-  @Cron(`${process.env.TPS_ERROR_POLLING_INTERVAL || "0 0 */3 * * *"}`)
+  @Cron(`${process.env.TPS_ERROR_POLLING_INTERVAL || '0 0 */3 * * *'}`)
   @LogAsyncMethodExecution()
   async reprocessTpsPermit() {
     const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
@@ -126,7 +127,7 @@ export class TpsPermitService {
     return await this.permitRepository.findOne({
       where: {
         tpsPermitNumber: permitNumber,
-        revision: revision - 1,
+        revision: revision - 1, //The revision number in the permit table is one less than the revision number in the tpsPermit table.
       },
     });
   }
@@ -137,88 +138,167 @@ export class TpsPermitService {
       const tpsPermit: TpsPermit = await this.tpsPermitRepository.findOne({
         where: { migrationId: id },
       });
-      //Check to verify if permit document already exists in orbc permit table
-      //to avoid duplicate uploads. Only proceed if permit exists in orbc permit
-      //table and it does not have a document id.
-      const permit = await this.permitExists(
+
+      const permitExists = await this.permitExists(
         tpsPermit.permitNumber,
         tpsPermit.revision,
       );
-      if (!permit) {
-        await this.tpsPermitRepository.update(
-          { migrationId: tpsPermit.migrationId },
-          {
-            s3UploadStatus: S3uploadStatus.Error,
-            retryCount: tpsPermit.retryCount + 1,
-          },
-        );
+
+      if (!permitExists) {
+        await this.handlePermitNotExist(tpsPermit);
         continue;
       }
-      if (permit?.documentId) {
-        await this.tpsPermitRepository.delete({
-          migrationId: tpsPermit.migrationId,
-        });
+
+      if (permitExists.documentId) {
+        await this.deleteTpsPermit(tpsPermit.migrationId);
         continue;
       }
-      let s3Object: CompleteMultipartUploadCommandOutput = null;
-      const s3ObjectId = uuidv4();
+
       try {
-        s3Object = await this.s3Service.uploadFile(
-          tpsPermit.pdf,
-          tpsPermit.permitNumber + '.pdf',
+        const s3ObjectId = uuidv4();
+        const s3Object = await this.uploadToS3AndHandleErrors(
+          tpsPermit,
           s3ObjectId,
         );
+
+        const document = await this.createDocumentAndHandleErrors(
+          s3ObjectId,
+          s3Object,
+          tpsPermit,
+          permitExists.companyId,
+        );
+
+        await this.updatePermitWithDocumentId(tpsPermit, document.documentId);
+
+        await this.deleteTpsPermit(tpsPermit.migrationId);
       } catch (error) {
-        this.logger.log(
-          `Error while uploading permit# ${tpsPermit.permitNumber} docs to S3`,
-        );
-        this.logger.error(error);
-        await this.tpsPermitRepository.update(
-          {
-            migrationId: tpsPermit.migrationId,
-          },
-          {
-            s3UploadStatus: S3uploadStatus.Error,
-            retryCount: tpsPermit.retryCount + 1,
-          },
-        );
+        this.handleUploadError(tpsPermit, error);
       }
+    }
+  }
+
+  async handlePermitNotExist(tpsPermit: TpsPermit) {
+    await this.tpsPermitRepository.update(
+      { migrationId: tpsPermit.migrationId },
+      {
+        s3UploadStatus: S3uploadStatus.Error,
+        retryCount: tpsPermit.retryCount + 1,
+      },
+    );
+  }
+
+  async uploadToS3AndHandleErrors(tpsPermit: TpsPermit, s3ObjectId: string) {
+    try {
+      const s3Object = await this.s3Service.uploadFile(
+        tpsPermit.pdf,
+        tpsPermit.permitNumber + '.pdf',
+        s3ObjectId,
+      );
       this.logger.log(
         `${tpsPermit.permitNumber} uploaded successfully to ${s3Object.Location}`,
       );
-      try {
-        if (s3Object) {
-          const document = await this.createDocument(
-            s3ObjectId,
-            s3Object,
-            tpsPermit,
-            permit.companyId,
-          );
-          await this.permitRepository.update(
-            {
-              tpsPermitNumber: tpsPermit.permitNumber,
-              revision: tpsPermit.revision - 1,
-            },
-            {
-              documentId: document.documentId,
-            },
-          );
+      return s3Object;
+    } catch (error) {
+      this.logger.log(
+        `Error while uploading permit# ${tpsPermit.permitNumber} docs to S3`,
+      );
+      this.logger.error(error);
+      await this.tpsPermitRepository.update(
+        { migrationId: tpsPermit.migrationId },
+        {
+          s3UploadStatus: S3uploadStatus.Error,
+          retryCount: tpsPermit.retryCount + 1,
+        },
+      );
+      throw new InternalServerErrorException(
+        'S3 Upload Failed for TPS Permit Number ' + tpsPermit.permitNumber,
+      );
+    }
+  }
 
-          await this.tpsPermitRepository.delete({
-            migrationId: tpsPermit.migrationId,
-          });
-        } else {
-          throw new InternalServerErrorException(
-            'S3 Upload Failed for TPS Permit Number ',
-            permit.tpsPermitNumber,
-          );
-        }
-      } catch (error) {
-        this.logger.log(
-          `Error while processing permit# ${tpsPermit.permitNumber}`,
+  async createDocumentAndHandleErrors(
+    s3ObjectId: string,
+    s3Object: CompleteMultipartUploadCommandOutput,
+    tpsPermit: TpsPermit,
+    companyId: number,
+  ) {
+    try {
+      const document = await this.createDocument(
+        s3ObjectId,
+        s3Object,
+        tpsPermit,
+        companyId,
+      );
+      return document;
+    } catch (error) {
+      this.logger.log(
+        `Error while processing permit# ${tpsPermit.permitNumber}`,
+      );
+      this.logger.error(error);
+      throw new InternalServerErrorException(
+        `Error while processing permit# ${tpsPermit.permitNumber}`,
+      );
+    }
+  }
+
+  async updatePermitWithDocumentId(tpsPermit: TpsPermit, documentId: string) {
+    await this.permitRepository.update(
+      {
+        tpsPermitNumber: tpsPermit.permitNumber,
+        revision: tpsPermit.revision - 1,
+      },
+      { documentId: documentId },
+    );
+  }
+
+  async deleteTpsPermit(tpsPermitId: number) {
+    await this.tpsPermitRepository.delete({
+      migrationId: tpsPermitId,
+    });
+  }
+
+  handleUploadError(tpsPermit: TpsPermit, error: unknown) {
+    this.logger.log(`Error while processing permit# ${tpsPermit.permitNumber}`);
+    this.logger.error(error);
+  }
+
+  @Cron('0 */1 * * * *')
+  async monitorTpsStuckRecords() {
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    console.log('monitorTpsStuckRecords');
+    console.log('today: ', today);
+    console.log('yesterday: ', yesterday);
+    const stuckTpsPermits = await this.tpsPermitRepository
+      .createQueryBuilder()
+      .select()
+      .where('tpsPermit.s3UploadStatus = PROCESSING')
+      .andWhere('tpsPermit.lastUpdatedTimestamp <= :date', { date: yesterday })
+      .getMany();
+
+    if (stuckTpsPermits) {
+      for (const permit of stuckTpsPermits) {
+        const success = await this.checkDocumentIdInPermitTable(
+          permit.permitNumber,
+          permit.revision,
         );
-        this.logger.error(error);
+
+        if (success) {
+          await this.deleteTpsPermit(permit.migrationId);
+        } else {
+          await this.uploadToS3([permit.migrationId]);
+        }
       }
     }
+  }
+
+  async checkDocumentIdInPermitTable(
+    tpsPermitNumber: string,
+    revision: number,
+  ): Promise<boolean> {
+    const permit = await this.permitExists(tpsPermitNumber, revision - 1);
+    if (permit.documentId) return true;
+    else return false;
   }
 }

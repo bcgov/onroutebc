@@ -77,4 +77,15 @@ export class TpsPermit {
     nullable: true,
   })
   pdf: Buffer;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '2023-07-13T17:31:17.470Z',
+    description: 'Permit Last Updated Date ',
+  })
+  @Column({
+    name: 'DB_LAST_UPDATE_TIMESTAMP',
+    nullable: true,
+  })
+  lastUpdatedTimestamp: Date;
 }
