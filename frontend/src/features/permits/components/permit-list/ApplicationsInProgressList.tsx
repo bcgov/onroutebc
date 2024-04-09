@@ -35,6 +35,9 @@ import {
 } from "../../../../common/helpers/tableHelper";
 import { PermitApplicationOrigin } from "../../types/PermitApplicationOrigin";
 import { useApplicationsInProgressQuery } from "../../hooks/hooks";
+import { WarningBcGovBanner } from "../../../../common/components/banners/WarningBcGovBanner";
+import { ApplicationPendingPermitsModalDialog } from "../dialog/ApplicationPendingPermitsModalDialog";
+import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
 
 /**
  * Dynamically set the column
@@ -75,7 +78,18 @@ export const ApplicationsInProgressList = ({ onCountChange }:
     : [],
   });
 
+  const applicationPermitsPendingQuery = useApplicationsInProgressQuery({
+    pendingPermits: true,
+  });
+
   const { data, isError, isPending, isFetching } = applicationsQuery;
+  console.log('data', data);
+  console.log('data1', applicationPermitsPendingQuery.data);
+
+  const showPendingBanner = 
+    (applicationPermitsPendingQuery?.data?.items &&
+      applicationPermitsPendingQuery?.data?.items?.length > 0
+    ) ?? false;
 
   useEffect(() => {
 
@@ -94,6 +108,7 @@ export const ApplicationsInProgressList = ({ onCountChange }:
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
+  const [showPendingPermitsModal, setShowPendingPermitsModal] = useState<boolean>(false);
 
   const columns = useMemo<MRT_ColumnDef<ApplicationListItem>[]>(
     () => getColumns(userAuthGroup),
@@ -264,6 +279,19 @@ export const ApplicationsInProgressList = ({ onCountChange }:
 
   return (
     <div className="table-container">
+      {showPendingBanner && 
+      <WarningBcGovBanner
+        msg="Some of your applications weren't processed. See your "
+        additionalInfo={
+          <CustomActionLink onClick={() => setShowPendingPermitsModal(true)}>
+            Pending Permits
+          </CustomActionLink>
+        }
+      />}
+      <ApplicationPendingPermitsModalDialog
+          showModal={showPendingPermitsModal}
+          onCancel={() => setShowPendingPermitsModal(false)}
+      />
       <MaterialReactTable table={table} />
       <DeleteConfirmationDialog
         onClickDelete={onConfirmApplicationDelete}

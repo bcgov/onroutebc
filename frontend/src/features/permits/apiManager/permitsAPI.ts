@@ -108,6 +108,7 @@ export const getApplicationsInProgress = async ({
   take = 10,
   searchString,
   orderBy = [],
+  pendingPermits = false,
 }: PaginationAndFilters): Promise<PaginatedResponse<ApplicationListItem>> => {
   const companyId = getCompanyIdFromSession();
   const applicationsURL = new URL(APPLICATIONS_API_ROUTES.GET);
@@ -119,7 +120,7 @@ export const getApplicationsInProgress = async ({
   applicationsURL.searchParams.set("page", (page + 1).toString());
   applicationsURL.searchParams.set("take", take.toString());
   //For the time being, we are hardcoding false as we do not want pendingPermits to be displayed in AIP tab
-  applicationsURL.searchParams.set("pendingPermits", false.toString());
+  applicationsURL.searchParams.set("pendingPermits", pendingPermits.toString());
   if (searchString) {
     applicationsURL.searchParams.set("searchString", searchString);
   }

@@ -90,10 +90,14 @@ export type DataFilterOptions = {
   orderBy?: Array<SortingConfig>;
 };
 
+export type PendingOption = {
+  pendingPermits?: boolean;
+}
+
 /**
  * The options for pagination and filtering data.
  */
-export type PaginationAndFilters = PaginationOptions & DataFilterOptions;
+export type PaginationAndFilters = PaginationOptions & DataFilterOptions & PendingOption;
 
 /**
  * A generic paginated response structure for all the paginated responses from APIs.
