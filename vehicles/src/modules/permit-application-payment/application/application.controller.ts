@@ -46,6 +46,7 @@ import { DeleteDto } from '../../common/dto/response/delete.dto';
 import { PermitApplicationOrigin } from '../../../common/enum/permit-application-origin.enum';
 import { ReadApplicationMetadataDto } from './dto/response/read-application-metadata.dto';
 import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
+import { PermitReceiptDocumentService } from '../permit-receipt-document/permit-receipt-document.service';
 
 @ApiBearerAuth()
 @ApiTags('Permit Application')
@@ -63,7 +64,10 @@ import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
   type: ExceptionDto,
 })
 export class ApplicationController {
-  constructor(private readonly applicationService: ApplicationService) {}
+  constructor(
+    private readonly applicationService: ApplicationService,
+    private readonly permitReceiptDocumentService: PermitReceiptDocumentService,
+  ) {}
   /**
    * Create Permit application
    * @param request
@@ -268,12 +272,12 @@ export class ApplicationController {
 
     if (result?.success?.length) {
       await Promise.allSettled([
-        this.applicationService.generatePermitDocuments(
+        this.permitReceiptDocumentService.generatePermitDocuments(
           currentUser,
           result.success,
           issuePermitDto.companyId,
         ),
-        this.applicationService.generateReceiptDocuments(
+        this.permitReceiptDocumentService.generateReceiptDocuments(
           currentUser,
           result.success,
           issuePermitDto.companyId,
