@@ -1,7 +1,5 @@
 import {
-  BadRequestException,
   ForbiddenException,
-  HttpException,
   Inject,
   Injectable,
   InternalServerErrorException,
@@ -11,14 +9,7 @@ import {
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  Brackets,
-  DataSource,
-  IsNull,
-  LessThanOrEqual,
-  Repository,
-  SelectQueryBuilder,
-} from 'typeorm';
+import { Brackets, DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { Permit } from './entities/permit.entity';
 import { PermitType } from './entities/permit-type.entity';
@@ -34,8 +25,6 @@ import {
   ApplicationStatus,
 } from 'src/common/enum/application-status.enum';
 import { DopsGeneratedDocument } from 'src/common/interface/dops-generated-document.interface';
-import { TemplateName } from 'src/common/enum/template-name.enum';
-import { convertUtcToPt } from 'src/common/helper/date-time.helper';
 import { NotificationTemplate } from 'src/common/enum/notification-template.enum';
 import { ResultDto } from './dto/response/result.dto';
 import { VoidPermitDto } from './dto/request/void-permit.dto';
@@ -46,17 +35,12 @@ import { PermitData } from './entities/permit-data.entity';
 import { Base } from '../../common/entities/base.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { CacheKey } from 'src/common/enum/cache-key.enum';
-import { getFromCache, getMapFromCache } from 'src/common/helper/cache.helper';
+import { getMapFromCache } from 'src/common/helper/cache.helper';
 import { Cache } from 'cache-manager';
 import { PermitIssuedBy } from '../../../common/enum/permit-issued-by.enum';
-import {
-  formatAmount,
-  getPaymentCodeFromCache,
-} from '../../../common/helper/payment.helper';
 import { PaymentMethodType } from 'src/common/enum/payment-method-type.enum';
 import { PageMetaDto } from 'src/common/dto/paginate/page-meta';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
-import * as constants from '../../../common/constants/api.constant';
 import { PermitApprovalSource } from '../../../common/enum/permit-approval-source.enum';
 import { PermitSearch } from '../../../common/enum/permit-search.enum';
 import { paginate, sortQuery } from '../../../common/helper/database.helper';
@@ -64,9 +48,7 @@ import { IDIR_USER_AUTH_GROUP_LIST } from '../../../common/enum/user-auth-group.
 import { User } from '../../company-user-management/users/entities/user.entity';
 import { ReadPermitMetadataDto } from './dto/response/read-permit-metadata.dto';
 import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
-import { formatTemplateData } from '../../../common/helper/format-template-data.helper';
 import {
-  fetchPermitDataDescriptionValuesFromCache,
   generateApplicationNumber,
   generatePermitNumber,
 } from '../../../common/helper/permit-application.helper';
@@ -75,6 +57,7 @@ import { PermitApplicationOrigin as PermitApplicationOriginEnum } from '../../..
 import { INotificationDocument } from '../../../common/interface/notification-document.interface';
 import { CreateNotificationDto } from '../../common/dto/request/create-notification.dto';
 import { ReadNotificationDto } from '../../common/dto/response/read-notification.dto';
+import { NotificationType } from '../../../common/enum/notification-type.enum';
 
 @Injectable()
 export class PermitService {
@@ -507,7 +490,7 @@ export class PermitService {
     permitId: string,
     voidPermitDto: VoidPermitDto,
     currentUser: IUserJWT,
-  ): Promise<ResultDto> {
+  ): Promise<{ result: ResultDto; voidRevokedPermitId: string }> {
     const permit = await this.findOne(permitId);
     /**
      * If permit not found raise error.
@@ -547,6 +530,7 @@ export class PermitService {
 
     let success = '';
     let failure = '';
+    let voidRevokedPermitId: string = null;
 
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -567,6 +551,7 @@ export class PermitService {
       let newPermit = new Permit();
       newPermit = Object.assign(newPermit, permit);
       newPermit.permitId = null;
+      newPermit.documentId = null;
       newPermit.permitNumber = permitNumber;
       newPermit.applicationNumber = applicationNumber;
       newPermit.permitStatus = voidPermitDto.status;
@@ -637,7 +622,8 @@ export class PermitService {
       );
 
       await queryRunner.commitTransaction();
-      success = newPermit.permitId;
+      success = permitId;
+      voidRevokedPermitId = newPermit.permitId;
     } catch (error) {
       await queryRunner.rollbackTransaction();
       this.logger.error(error);
@@ -650,503 +636,7 @@ export class PermitService {
       success: [success],
       failure: [failure],
     };
-    return resultDto;
-  }
-
-  /**
-   * Finds multiple permits with their transactionId, filtered by application IDs and an optional companyId. Permits are only included if they have a receipt.
-   * @param applicationIds Array of application IDs to filter permits.
-   * @param companyId Optional company ID for further filtering.
-   * @returns Promise resolving to an array of objects, each containing a transactionId and its associated permits.
-   */
-  private async findApplicationsForReceiptGeneration(
-    applicationIds: string[],
-    companyId?: number,
-  ): Promise<{ transactionId: string; permits: Permit[] }[]> {
-    const permitQB = this.permitRepository.createQueryBuilder('permit');
-    permitQB
-      .select('transaction.transactionId', 'transactionId')
-      .addSelect(
-        'COUNT(permit.permitId) OVER (PARTITION BY transaction.transactionId)',
-        'permitCountPerTransactionId',
-      )
-      .distinct(true)
-      .leftJoin('permit.company', 'company')
-      .innerJoin('permit.permitTransactions', 'permitTransactions')
-      .innerJoin('permitTransactions.transaction', 'transaction')
-      .innerJoin('transaction.receipt', 'receipt')
-      .where('permit.permitId IN (:...permitIds)', {
-        permitIds: applicationIds,
-      })
-      .andWhere('receipt.receiptNumber IS NOT NULL')
-      .andWhere('permit.permitNumber IS NOT NULL');
-
-    if (companyId) {
-      permitQB.andWhere('company.companyId = :companyId', {
-        companyId: companyId,
-      });
-    }
-
-    const transactions = await permitQB.getRawMany<{
-      transactionId: string;
-      permitCountPerTransactionId: number;
-    }>();
-
-    const transactionPermitList: {
-      transactionId: string;
-      permits: Permit[];
-    }[] = [];
-
-    for (const transaction of transactions) {
-      const fetchedApplications = await this.findManyWithSuccessfulTransaction(
-        null,
-        companyId,
-        transaction.transactionId,
-      );
-
-      if (
-        fetchedApplications?.length === transaction.permitCountPerTransactionId
-      ) {
-        transactionPermitList.push({
-          transactionId: transaction.transactionId,
-          permits: fetchedApplications,
-        });
-      }
-    }
-
-    return transactionPermitList;
-  }
-
-  /**
-   * Finds multiple permits by application IDs or a single transaction ID with successful transactions,
-   * optionally filtering by companyId.
-   *
-   * @param applicationIds Array of application IDs to filter the permits. If empty, will search by transactionId.
-   * @param companyId The ID of the company to which the permits may belong, optional.
-   * @param transactionId A specific transaction ID to find the related permit, optional. If provided, applicationIds should be empty.
-   * @returns A promise that resolves with an array of permits matching the criteria.
-   */
-  private async findManyWithSuccessfulTransaction(
-    permitIds: string[],
-    companyId?: number,
-    transactionId?: string,
-  ): Promise<Permit[]> {
-    if (
-      (!permitIds?.length && !transactionId) ||
-      (permitIds?.length && transactionId)
-    ) {
-      throw new InternalServerErrorException(
-        'Either permitIds or transactionId must be exclusively present!',
-      );
-    }
-    const permitQB = this.permitRepository.createQueryBuilder('permit');
-    permitQB
-      .leftJoinAndSelect('permit.company', 'company')
-      .innerJoinAndSelect('permit.permitData', 'permitData')
-      .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
-      .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
-      .innerJoinAndSelect('transaction.receipt', 'receipt')
-      .leftJoinAndSelect('permit.applicationOwner', 'applicationOwner')
-      .leftJoinAndSelect(
-        'applicationOwner.userContact',
-        'applicationOwnerContact',
-      )
-      .where('receipt.receiptNumber IS NOT NULL')
-      .where('permit.permitNumber IS NOT NULL');
-
-    if (permitIds?.length) {
-      permitQB.andWhere('permit.permitId IN (:...permitIds)', {
-        permitIds: permitIds,
-      });
-    } else if (transactionId) {
-      permitQB.andWhere('transaction.transactionId =:transactionId', {
-        transactionId: transactionId,
-      });
-    }
-    if (companyId) {
-      permitQB.andWhere('company.companyId = :companyId', {
-        companyId: companyId,
-      });
-    }
-
-    return await permitQB.getMany();
-  }
-
-  private emailDocument(
-    notificationTemplate:
-      | NotificationTemplate.ISSUE_PERMIT
-      | NotificationTemplate.PAYMENT_RECEIPT,
-    to: string[],
-    subject: string,
-    documentId: string,
-    currentUser: IUserJWT,
-  ) {
-    const distinctEmailList = Array.from(new Set(to?.filter(Boolean)));
-
-    const notificationDocument: INotificationDocument = {
-      templateName: notificationTemplate,
-      to: distinctEmailList,
-      subject: subject,
-      documentIds: [documentId],
-    };
-
-    void this.dopsService.notificationWithDocumentsFromDops(
-      currentUser,
-      notificationDocument,
-      true,
-    );
-  }
-
-  /**
-   * Generates permit documents for a set of application IDs, optionally filtering by company ID.
-   * The method checks if applications exist and have an ISSUED status, generates document data based
-   * on the application details, and then updates the permit repository with the document IDs obtained
-   * from generating documents. It handles and logs errors during document generation and updates.
-   * It returns a list of application IDs for which document generation succeeded or failed.
-   *
-   * @param currentUser - The user who is currently logged in.
-   * @param applicationIds - Array of application IDs for which to generate documents.
-   * @param companyId - Optional company ID to filter applications by.
-   * @returns A Promise resolving to a ResultDto containing lists of application IDs that succeeded
-   * or failed in document generation.
-   */
-  @LogAsyncMethodExecution()
-  async generatePermitDocuments(
-    currentUser: IUserJWT,
-    permitIds: string[],
-    companyId?: number,
-  ): Promise<ResultDto> {
-    if (!permitIds?.length) {
-      throw new InternalServerErrorException('permitIds list cannot be empty');
-    }
-
-    const resultDto: ResultDto = {
-      success: [],
-      failure: [],
-    };
-
-    const fetchedPermits = await this.findManyWithSuccessfulTransaction(
-      permitIds,
-      companyId,
-    );
-
-    if (!fetchedPermits?.length) {
-      resultDto.failure = permitIds;
-      return resultDto;
-    }
-
-    await Promise.allSettled(
-      fetchedPermits?.map(async (fetchedPermit) => {
-        try {
-          if (fetchedPermit.documentId) {
-            throw new HttpException('Document already exists', 409);
-          }
-          if (
-            fetchedPermit.permitStatus !== ApplicationStatus.ISSUED &&
-            fetchedPermit.permitStatus !== ApplicationStatus.VOIDED &&
-            fetchedPermit.permitStatus !== ApplicationStatus.REVOKED
-          ) {
-            throw new BadRequestException(
-              'Application must be in ISSUED/VOIDED/REVOKED status for document Generation!',
-            );
-          }
-
-          const fullNames = await fetchPermitDataDescriptionValuesFromCache(
-            this.cacheManager,
-            fetchedPermit,
-          );
-
-          const revisionHistory = await this.permitRepository.find({
-            where: [{ originalPermitId: fetchedPermit.originalPermitId }],
-            order: { permitId: 'DESC' },
-          });
-
-          const { company } = fetchedPermit;
-
-          const permitDataForTemplate = formatTemplateData(
-            fetchedPermit,
-            fullNames,
-            company,
-            revisionHistory,
-          );
-          console.log('ORV2-2070',fetchedPermit.permitStatus)
-
-          const dopsRequestData = {
-            templateName: (() => {
-              switch (fetchedPermit.permitStatus) {
-                case ApplicationStatus.ISSUED:
-                  return TemplateName.PERMIT;
-                case ApplicationStatus.VOIDED:
-                  return TemplateName.PERMIT_VOID;
-                case ApplicationStatus.REVOKED:
-                  return TemplateName.PERMIT_REVOKED;
-                default:
-                  // Handle the default case here, for example:
-                  throw new InternalServerErrorException(
-                    'Invalid status for document generation',
-                  );
-              }
-            })(),
-            generatedDocumentFileName: permitDataForTemplate.permitNumber,
-            templateData: permitDataForTemplate,
-            documentsToMerge: permitDataForTemplate.permitData.commodities.map(
-              (commodity) => {
-                if (commodity.checked) {
-                  return commodity.condition;
-                }
-              },
-            ),
-          };
-
-          const generatedDocument = await this.dopsService.generateDocument(
-            currentUser,
-            dopsRequestData,
-            company?.companyId,
-          );
-
-          const documentId = generatedDocument?.documentId;
-
-          const updateResult = await this.permitRepository.update(
-            { permitId: fetchedPermit.permitId, documentId: IsNull() },
-            {
-              documentId: documentId,
-              updatedDateTime: new Date(),
-              updatedUser: currentUser.userName,
-              updatedUserDirectory: currentUser.orbcUserDirectory,
-              updatedUserGuid: currentUser.userGUID,
-            },
-          );
-          if (updateResult.affected === 0) {
-            throw new InternalServerErrorException(
-              'Update permit document failed',
-            );
-          }
-
-          try {
-            const emailList = [
-              permitDataForTemplate.permitData?.contactDetails?.email,
-              permitDataForTemplate.permitData?.contactDetails?.additionalEmail,
-              company?.email,
-            ];
-
-            const subject = `onRouteBC Permits - ${company?.legalName}`;
-            this.emailDocument(
-              NotificationTemplate.ISSUE_PERMIT,
-              emailList,
-              subject,
-              documentId,
-              currentUser,
-            );
-          } catch (error: unknown) {
-            /**
-             * Swallow the error as failure to send notification should not break the flow
-             */
-            this.logger.error(error);
-          }
-
-          resultDto.success.push(fetchedPermit.permitId);
-          return Promise.resolve(fetchedPermit);
-        } catch (error: unknown) {
-          this.logger.error(error);
-          resultDto.failure.push(fetchedPermit.permitId);
-          // Return the error for failed operations
-          return Promise.reject(error as Error);
-        }
-      }),
-    );
-
-    if (resultDto?.failure?.length) {
-      this.logger.error(
-        `Failed Permit Document Generation: ${resultDto?.failure?.toString()}`,
-      );
-    }
-
-    return resultDto;
-  }
-
-  /**
-   * Generates receipt documents for the provided application IDs and optionally filters by company ID.
-   * Each receipt document corresponds to a transaction within an application permit.
-   * The method attempts to generate a receipt document for each permit associated with the provided application
-   * IDs, handling document existence checks, data formatting for the document template, and updating receipt IDs with
-   * the generated document IDs. It also attempts to send out emails with the generated document. Successes and failures
-   * are tracked and returned in the result.
-   *
-   * @param currentUser - The user currently logged in.
-   * @param applicationIds - Array of application IDs to generate receipt documents for.
-   * @param companyId - Optional company ID to filter applications by.
-   * @returns A Promise of a ResultDto indicating which operations succeeded or failed.
-   */
-  @LogAsyncMethodExecution()
-  async generateReceiptDocuments(
-    currentUser: IUserJWT,
-    permitIds: string[],
-    companyId?: number,
-  ): Promise<ResultDto> {
-    if (!permitIds?.length) {
-      throw new InternalServerErrorException(
-        'ApplicationId list cannot be empty',
-      );
-    }
-
-    const resultDto: ResultDto = {
-      success: [],
-      failure: [],
-    };
-
-    const fetchedPermits = await this.findApplicationsForReceiptGeneration(
-      permitIds,
-      companyId,
-    );
-
-    if (!fetchedPermits?.length) {
-      resultDto.failure = permitIds;
-      return resultDto;
-    }
-
-    await Promise.allSettled(
-      fetchedPermits?.map(async (fetchedPermit) => {
-        const permits = fetchedPermit.permits;
-        const permitIds = permits?.map((permit) => permit.permitId);
-        if (permits?.length) {
-          try {
-            const permit = permits?.at(0);
-            const company = permit?.company;
-            const permitTransactions = permit?.permitTransactions;
-            const transaction = permitTransactions?.at(0)?.transaction;
-            const receipt = transaction?.receipt;
-            if (receipt.receiptDocumentId) {
-              throw new HttpException('Document already exists', 409);
-            }
-
-            const receiptNumber = receipt.receiptNumber;
-
-            const fullNames = await fetchPermitDataDescriptionValuesFromCache(
-              this.cacheManager,
-              permit,
-            );
-
-            const { companyName, companyAlternateName, permitData } =
-              formatTemplateData(permit, fullNames, company);
-            const permitDetails = await Promise.all(
-              permits?.map(async (permit) => {
-                return {
-                  permitName: await getFromCache(
-                    this.cacheManager,
-                    CacheKey.PERMIT_TYPE,
-                    permit?.permitType,
-                  ),
-                  permitNumber: permit?.permitNumber,
-                  transactionAmount: formatAmount(
-                    transaction?.transactionTypeId,
-                    permit?.permitTransactions?.at(0)?.transactionAmount,
-                  ),
-                };
-              }),
-            );
-
-            const dopsRequestData = {
-              templateName: TemplateName.PAYMENT_RECEIPT,
-              generatedDocumentFileName: `Receipt_No_${receiptNumber}`,
-              templateData: {
-                receiptNo: receiptNumber,
-                companyName: companyName,
-                companyAlternateName: companyAlternateName,
-                permitData: permitData,
-                //Payer Name should be persisted in transacation Table so that it can be used for DocRegen
-                payerName:
-                  currentUser.orbcUserDirectory === Directory.IDIR
-                    ? constants.PPC_FULL_TEXT
-                    : currentUser.orbcUserFirstName +
-                      ' ' +
-                      currentUser.orbcUserLastName,
-                issuedBy:
-                  currentUser.orbcUserDirectory === Directory.IDIR
-                    ? constants.PPC_FULL_TEXT
-                    : constants.SELF_ISSUED,
-                totalTransactionAmount: formatAmount(
-                  transaction?.transactionTypeId,
-                  transaction?.totalTransactionAmount,
-                ),
-                permitDetails: permitDetails,
-                //Transaction Details
-                pgTransactionId: transaction?.pgTransactionId,
-                transactionOrderNumber: transaction?.transactionOrderNumber,
-                consolidatedPaymentMethod: (
-                  await getPaymentCodeFromCache(
-                    this.cacheManager,
-                    transaction?.paymentMethodTypeCode,
-                    transaction?.paymentCardTypeCode,
-                  )
-                ).consolidatedPaymentMethod,
-                transactionDate: convertUtcToPt(
-                  permit?.permitTransactions?.at(0)?.transaction
-                    ?.transactionSubmitDate,
-                  'MMM. D, YYYY, hh:mm a Z',
-                ),
-              },
-            };
-
-            const { documentId } = await this.dopsService.generateDocument(
-              currentUser,
-              dopsRequestData,
-              company?.companyId,
-            );
-
-            await this.paymentService.updateReceiptDocument(
-              currentUser,
-              receipt?.receiptId,
-              documentId,
-            );
-
-            try {
-              const emailList = [
-                permitData?.contactDetails?.email,
-                permitData?.contactDetails?.additionalEmail,
-                company?.email,
-              ];
-              const subject = `onRouteBC Permit Receipt - ${receiptNumber}`;
-              this.emailDocument(
-                NotificationTemplate.PAYMENT_RECEIPT,
-                emailList,
-                subject,
-                documentId,
-                currentUser,
-              );
-            } catch (error: unknown) {
-              /**
-               * Swallow the error as failure to send notification should not break the flow
-               */
-              this.logger.error(error);
-            }
-            resultDto.success.push(...permitIds);
-
-            return Promise.resolve(fetchedPermit);
-          } catch (error: unknown) {
-            this.logger.error(error);
-            resultDto.failure.push(...permitIds);
-            // Return the error for failed operations
-            return Promise.reject(error as Error);
-          }
-        }
-      }),
-    );
-    permitIds?.forEach((id) => {
-      if (
-        !resultDto?.success?.includes(id) &&
-        !resultDto.failure?.includes(id)
-      ) {
-        resultDto?.failure?.push(id);
-      }
-    });
-
-    if (resultDto?.failure?.length) {
-      this.logger.error(
-        `Failed Permit Receipt Document Generation: ${resultDto?.failure?.toString()}`,
-      );
-    }
-
-    return resultDto;
+    return { result: resultDto, voidRevokedPermitId };
   }
 
   /**
@@ -1172,12 +662,12 @@ export class PermitService {
   }
 
   /**
-   * Sends a notification associated with a permit, including generating and sending document(s) based on permit details and transactions.
-   * It handles fetching the permit details, generating required documents if they don't exist, and constructing a notification request.
+   * Sends a notification associated with a permit, sending document(s) based on permit details and transactions.
+   * This includes handling permit details retrieval, and constructing the notification request.
    *
    * @param currentUser The current user's JWT details.
    * @param permitId The permit ID for which the notification will be sent.
-   * @param createNotificationDto DTO containing details such as recipients for the notification.
+   * @param createNotificationDto DTO specifying notification recipients and type.
    * @returns The result of the notification sending operation wrapped in a Promise.
    */
   @LogAsyncMethodExecution()
@@ -1185,29 +675,19 @@ export class PermitService {
     currentUser: IUserJWT,
     permitId: string,
     createNotificationDto: CreateNotificationDto,
-  ): Promise<ReadNotificationDto> {
-    let permitDocumentId: string;
-    let receiptDocumentId: string;
+  ): Promise<ReadNotificationDto[]> {
     // Retrieve detailed information about the permit, including company, transactions, and the receipt for notifications
     const permit = await this.permitRepository
       .createQueryBuilder('permit')
       .leftJoinAndSelect('permit.company', 'company')
-      .innerJoinAndSelect('permit.permitData', 'permitData')
       .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
       .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
       .innerJoinAndSelect('transaction.receipt', 'receipt')
-      .leftJoinAndSelect('permit.applicationOwner', 'applicationOwner')
-      .leftJoinAndSelect(
-        'applicationOwner.userContact',
-        'applicationOwnerContact',
-      )
-      .leftJoinAndSelect('permit.issuer', 'issuer')
-      .leftJoinAndSelect('issuer.userContact', 'issuerOwnerContact')
       .where('permit.permitId = :permitId', {
         permitId: permitId,
       })
       .andWhere('permit.permitNumber IS NOT NULL')
-      .andWhere('transaction.pgApproved = 1')
+      .andWhere('receipt.receiptNumber IS NOT NULL')
       .getOne();
 
     /**
@@ -1217,150 +697,56 @@ export class PermitService {
 
     const companyInfo = permit.company;
 
-    permitDocumentId = permit?.documentId;
-    receiptDocumentId =
-      permit?.permitTransactions?.at(0)?.transaction?.receipt
-        ?.receiptDocumentId;
+    const permitDocumentId = permit?.documentId;
 
-    //If permit Document or receipt is not attached to the permit
-    if (!permitDocumentId || !receiptDocumentId) {
-      const fullNames = await fetchPermitDataDescriptionValuesFromCache(
-        this.cacheManager,
-        permit,
-      );
+    const receipt = permit?.permitTransactions?.at(0)?.transaction?.receipt;
 
-      const revisionHistory = await this.permitRepository.find({
-        where: [
-          {
-            originalPermitId: permit.originalPermitId,
-            permitId: LessThanOrEqual(permit.permitId),
-          },
-        ],
-        order: { permitId: 'DESC' },
-      });
+    const readNotificationDtoList: ReadNotificationDto[] = [];
+    let notificationDocument: INotificationDocument;
+    if (
+      createNotificationDto?.notificationType?.includes(
+        NotificationType.EMAIL_PERMIT,
+      )
+    ) {
+      notificationDocument = {
+        templateName: NotificationTemplate.ISSUE_PERMIT,
+        to: createNotificationDto.to,
+        subject: `onRouteBC Permits - ${companyInfo.legalName}`,
+        documentIds: [permitDocumentId],
+      };
 
-      const permitDataForTemplate = formatTemplateData(
-        permit,
-        fullNames,
-        companyInfo,
-        revisionHistory,
-      );
-      //Regenerate permit document if not available
-      if (!permitDocumentId) {
-        const dopsRequestData: DopsGeneratedDocument = {
-          templateName: (() => {
-            switch (permit.permitStatus) {
-              case ApplicationStatus.ISSUED:
-                return TemplateName.PERMIT;
-              case ApplicationStatus.VOIDED:
-                return TemplateName.PERMIT_VOID;
-              case ApplicationStatus.REVOKED:
-                return TemplateName.PERMIT_REVOKED;
-            }
-          })(),
-          generatedDocumentFileName: permitDataForTemplate.permitNumber,
-          templateData: permitDataForTemplate,
-          documentsToMerge: permitDataForTemplate.permitData.commodities.map(
-            (commodity) => {
-              if (commodity.checked) {
-                return commodity.condition;
-              }
-            },
-          ),
-        };
-        const permitDocument = await this.generateDocument(
+      // Send the constructed notification via the DOPS service and return the result
+      const readNotificationDto =
+        await this.dopsService.notificationWithDocumentsFromDops(
           currentUser,
-          dopsRequestData,
-          companyInfo.companyId,
+          notificationDocument,
         );
-
-        permitDocumentId = permitDocument.documentId;
-
-        await this.permitRepository
-          .createQueryBuilder()
-          .update()
-          .set({
-            documentId: permitDocumentId,
-            updatedUser: currentUser.userName,
-            updatedDateTime: new Date(),
-            updatedUserDirectory: currentUser.orbcUserDirectory,
-            updatedUserGuid: currentUser.userGUID,
-          })
-          .where('permitId = :permitId', { permitId: permit.permitId })
-          .execute();
-      }
-      //Regenerate receipt document if not available
-      if (!receiptDocumentId) {
-        const receiptNumber =
-          permit.permitTransactions?.at(0).transaction.receipt.receiptNumber;
-
-        const dopsRequestData: DopsGeneratedDocument = {
-          templateName: TemplateName.PAYMENT_RECEIPT,
-          generatedDocumentFileName: `Receipt_No_${receiptNumber}`,
-          templateData: {
-            ...permitDataForTemplate,
-            // transaction details still needs to be reworked to support multiple permits
-            pgTransactionId:
-              permit.permitTransactions[0].transaction.pgTransactionId,
-            transactionOrderNumber:
-              permit.permitTransactions[0].transaction.transactionOrderNumber,
-            transactionAmount: formatAmount(
-              permit.permitTransactions[0].transaction.transactionTypeId,
-              permit.permitTransactions[0].transactionAmount,
-            ),
-            totalTransactionAmount: formatAmount(
-              permit.permitTransactions[0].transaction.transactionTypeId,
-              permit.permitTransactions[0].transaction.totalTransactionAmount,
-            ),
-            payerName:
-              permit.permitIssuedBy === PermitIssuedBy.PPC
-                ? constants.PPC_FULL_TEXT
-                : `${permit?.issuer?.userContact?.firstName} ${permit?.issuer?.userContact?.lastName}`,
-            issuedBy:
-              permit.permitIssuedBy === PermitIssuedBy.PPC
-                ? constants.PPC_FULL_TEXT
-                : constants.SELF_ISSUED,
-            consolidatedPaymentMethod: (
-              await getPaymentCodeFromCache(
-                this.cacheManager,
-                permit.permitTransactions[0].transaction.paymentMethodTypeCode,
-                permit.permitTransactions[0].transaction.paymentCardTypeCode,
-              )
-            ).consolidatedPaymentMethod,
-            transactionDate: convertUtcToPt(
-              permit.permitTransactions[0].transaction.transactionSubmitDate,
-              'MMM. D, YYYY, hh:mm a Z',
-            ),
-            receiptNo: receiptNumber,
-          },
-        };
-        const receiptDocument = await this.generateDocument(
-          currentUser,
-          dopsRequestData,
-          companyInfo.companyId,
-        );
-        receiptDocumentId = receiptDocument.documentId;
-
-        await this.paymentService.updateReceiptDocument(
-          currentUser,
-          permit?.permitTransactions[0]?.transaction?.receipt?.receiptId,
-          receiptDocumentId,
-        );
-      }
+      readNotificationDto.notificationType = NotificationType.EMAIL_PERMIT;
+      readNotificationDtoList.push(readNotificationDto);
     }
 
-    // Construct the notification document including template name, recipients, subject, data, and related document IDs
-    const notificationDocument: INotificationDocument = {
-      templateName: NotificationTemplate.ISSUE_PERMIT,
-      to: createNotificationDto.to,
-      subject: 'onRouteBC Permits - ' + companyInfo.legalName,
-      documentIds: [permitDocumentId, receiptDocumentId],
-    };
+    if (
+      createNotificationDto?.notificationType?.includes(
+        NotificationType.EMAIL_RECEIPT,
+      )
+    ) {
+      notificationDocument = {
+        templateName: NotificationTemplate.PAYMENT_RECEIPT,
+        to: createNotificationDto.to,
+        subject: `onRouteBC Permit Receipt - ${receipt?.receiptNumber}`,
+        documentIds: [receipt?.receiptDocumentId],
+      };
 
-    // Send the constructed notification via the DOPS service and return the result
-    return await this.dopsService.notificationWithDocumentsFromDops(
-      currentUser,
-      notificationDocument,
-    );
+      // Send the constructed notification via the DOPS service and return the result
+      const readNotificationDto =
+        await this.dopsService.notificationWithDocumentsFromDops(
+          currentUser,
+          notificationDocument,
+        );
+      readNotificationDto.notificationType = NotificationType.EMAIL_RECEIPT;
+      readNotificationDtoList.push(readNotificationDto);
+    }
+
+    return readNotificationDtoList;
   }
 }

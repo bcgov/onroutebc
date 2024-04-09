@@ -44,6 +44,7 @@ import { ReadPermitMetadataDto } from './dto/response/read-permit-metadata.dto';
 import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 import { CreateNotificationDto } from '../../common/dto/request/create-notification.dto';
 import { ReadNotificationDto } from '../../common/dto/response/read-notification.dto';
+import { PermitReceiptDocumentService } from '../permit-receipt-document/permit-receipt-document.service';
 
 @ApiBearerAuth()
 @ApiTags('Permit')
@@ -61,7 +62,10 @@ import { ReadNotificationDto } from '../../common/dto/response/read-notification
 })
 @Controller('permits')
 export class PermitController {
-  constructor(private readonly permitService: PermitService) {}
+  constructor(
+    private readonly permitService: PermitService,
+    private readonly permitReceiptDocumentService: PermitReceiptDocumentService,
+  ) {}
 
   @ApiOkResponse({
     description: 'The Permit Resource to get revision and payment history.',
@@ -225,17 +229,20 @@ export class PermitController {
     voidPermitDto: VoidPermitDto,
   ): Promise<ResultDto> {
     const currentUser = request.user as IUserJWT;
-    const result = await this.permitService.voidPermit(
+    const { result, voidRevokedPermitId } = await this.permitService.voidPermit(
       permitId,
       voidPermitDto,
       currentUser,
     );
-    if (result?.success?.length) {
+
+    if (voidRevokedPermitId) {
       await Promise.allSettled([
-        this.permitService.generatePermitDocuments(currentUser, result.success),
-        this.permitService.generateReceiptDocuments(
+        this.permitReceiptDocumentService.generatePermitDocuments(currentUser, [
+          voidRevokedPermitId,
+        ]),
+        this.permitReceiptDocumentService.generateReceiptDocuments(
           currentUser,
-          result.success,
+          [voidRevokedPermitId],
         ),
       ]);
     }
@@ -269,9 +276,8 @@ export class PermitController {
     @Param('permitId') permitId: string,
     @Body()
     createNotificationDto: CreateNotificationDto,
-  ): Promise<ReadNotificationDto> {
+  ): Promise<ReadNotificationDto[]> {
     const currentUser = request.user as IUserJWT;
-
     // Throws ForbiddenException if user does not belong to the specified user auth group.
     if (
       !doesUserHaveAuthGroup(
