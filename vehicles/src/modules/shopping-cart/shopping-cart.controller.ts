@@ -106,7 +106,6 @@ export class ShoppingCartController {
       companyId,
       allApplications
     );
-    // console.
   }
 
   /**

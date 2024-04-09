@@ -7,10 +7,9 @@ export class GetApplicationInCartQueryParams {
     description:
       `If true, all applications in the company are retrieved; ` +
       `if false, only the current user's own applications are retrieved.` +
-      `This field only applies to company administrators or staff;` +
-      `permit applicants will receive a bad request.`,
+      `This field is only accepted for company administrators or staff;` +
+      `Ignored otherwise.`,
     example: true,
-    default: true,
   })
   @Type(() => Boolean)
   @Transform(({ obj, key }: { obj: Record<string, unknown>; key: string }) => {
