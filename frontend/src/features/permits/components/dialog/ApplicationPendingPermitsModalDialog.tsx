@@ -1,6 +1,6 @@
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Dialog, Button } from "@mui/material";
+import { Dialog, Button, Typography } from "@mui/material";
 import "./ApplicationPendingPermitsModalDialog.scss";
 import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
 import { MRT_ColumnDef, MaterialReactTable, useMaterialReactTable } from "material-react-table";
@@ -12,6 +12,7 @@ import { getDefaultNullableVal } from "../../../../common/helpers/util";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { defaultTableInitialStateOptions, defaultTableOptions } from "../../../../common/helpers/tableHelper";
 import { useApplicationsInProgressQuery } from "../../hooks/hooks";
+import { PPC_EMAIL, TOLL_FREE_NUMBER } from "../../../../common/constants/constants";
 
 /**
  * Dynamically set the column
@@ -56,6 +57,12 @@ export const ApplicationPendingPermitsModalDialog = ({
         enableTopToolbar: false,
         enableRowSelection: false,
         renderEmptyRowsFallback: () => <NoRecordsFound />,
+        muiTableContainerProps: {
+            sx: {
+              outline: "1px solid #DBDCDC",
+              width: "100%"
+            },
+        },
     });
   
     return (
@@ -79,17 +86,26 @@ export const ApplicationPendingPermitsModalDialog = ({
   
         <div className="pending-permits-modal__body">
             <p>You have {data?.items?.length} Pending Permits</p>
-            <InfoBcGovBanner 
+            <InfoBcGovBanner
+                className="pending-permits-modal__banner" 
                 msg={"There was an unexpected error in issuing the following permits. No action from you is required."}
                 additionalInfo={
-                    <>
+                    <Typography sx={{ marginBottom: "8px" }}>
                     onRouteBC will keep trying to issue these permits once the error is resolved. If
                     you need immediate assistance, please contact the Provincial Permit Centre at
-                    Toll-free: 1-800-559-9688 or Email: ppcpermit@gov.bc.ca.
-                    </>
+                    {" "}
+                    <span>
+                        <strong>Toll-free: {TOLL_FREE_NUMBER}</strong>
+                    </span> or {" "}
+                    <span>
+                        <strong>Email: {PPC_EMAIL}</strong>
+                    </span>
+                    </Typography>
                 }
             />
-            <MaterialReactTable table={table} />
+            <div className="table-container">
+                <MaterialReactTable table={table} />
+            </div>
         </div>
 
         <div className="pending-permits-modal__footer">
