@@ -75,7 +75,7 @@ export class ReadPermitDto {
 
   @AutoMap()
   @ApiProperty({
-    description: 'Satus of Permit/Permit Application',
+    description: 'Status of Permit/Permit Application',
     example: PermitStatus.ISSUED,
     required: false,
   })
