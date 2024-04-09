@@ -83,8 +83,6 @@ export const ApplicationsInProgressList = ({ onCountChange }:
   });
 
   const { data, isError, isPending, isFetching } = applicationsQuery;
-  console.log('data', data);
-  console.log('data1', applicationPermitsPendingQuery.data);
 
   const showPendingBanner = 
     (applicationPermitsPendingQuery?.data?.items &&
