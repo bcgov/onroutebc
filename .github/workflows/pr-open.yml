@@ -92,3 +92,19 @@ jobs:
         --set-json frontend.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
         --set-json tps-migration.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
         --set-json vehicles.containers[0].resources='{"limits": {"cpu": "300m", "memory": "500Mi"}, "requests": {"cpu": "200m", "memory": "400Mi"}}' \
+
+  tests:
+    name: Tests
+    if: needs.deploys.triggered == 'true'
+    needs: [deploys]
+    uses: ./.github/workflows/.tests.yml
+    with:
+      target: ${{ github.event.number }}
+
+  results:
+    name: PR Results
+    if: always() && !failure()
+    needs: [tests]
+    runs-on: ubuntu-22.04
+    steps:
+      - run: echo "Workflow completed successfully!"
