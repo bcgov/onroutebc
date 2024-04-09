@@ -34,6 +34,7 @@ import { ReadPermitMetadataDto } from './dto/response/read-permit-metadata.dto';
 import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 import { CreateNotificationDto } from '../../common/dto/request/create-notification.dto';
 import { ReadNotificationDto } from '../../common/dto/response/read-notification.dto';
+import { PermitReceiptDocumentService } from '../permit-receipt-document/permit-receipt-document.service';
 
 @ApiBearerAuth()
 @ApiTags('Permit: API accessible exclusively to staff users.')
@@ -51,7 +52,12 @@ import { ReadNotificationDto } from '../../common/dto/response/read-notification
 })
 @Controller('permits')
 export class PermitController {
-  constructor(private readonly permitService: PermitService) {}
+
+  constructor(
+    private readonly permitService: PermitService,
+    private readonly permitReceiptDocumentService: PermitReceiptDocumentService,
+  ) {}
+
   /**
    * Get Permits of Logged in user
    * @Query companyId Company id of logged in user
@@ -122,12 +128,24 @@ export class PermitController {
     voidPermitDto: VoidPermitDto,
   ): Promise<ResultDto> {
     const currentUser = request.user as IUserJWT;
-    const permit = await this.permitService.voidPermit(
+    const { result, voidRevokedPermitId } = await this.permitService.voidPermit(
       permitId,
       voidPermitDto,
       currentUser,
     );
-    return permit;
+
+    if (voidRevokedPermitId) {
+      await Promise.allSettled([
+        this.permitReceiptDocumentService.generatePermitDocuments(currentUser, [
+          voidRevokedPermitId,
+        ]),
+        this.permitReceiptDocumentService.generateReceiptDocuments(
+          currentUser,
+          [voidRevokedPermitId],
+        ),
+      ]);
+    }
+    return result;
   }
 
   /**
@@ -160,9 +178,8 @@ export class PermitController {
     @Param('permitId') permitId: string,
     @Body()
     createNotificationDto: CreateNotificationDto,
-  ): Promise<ReadNotificationDto> {
+  ): Promise<ReadNotificationDto[]> {
     const currentUser = request.user as IUserJWT;
-
     // Throws ForbiddenException if user does not belong to the specified user auth group.
     if (
       !doesUserHaveAuthGroup(

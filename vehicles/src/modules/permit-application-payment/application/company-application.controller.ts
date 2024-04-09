@@ -46,6 +46,7 @@ import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import { ReadApplicationMetadataDto } from './dto/response/read-application-metadata.dto';
 import { GetApplicationQueryParamsDto } from './dto/request/queryParam/getApplication.query-params.dto';
 import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
+import { PermitReceiptDocumentService } from '../permit-receipt-document/permit-receipt-document.service';
 
 @ApiBearerAuth()
 @ApiTags('Application')
@@ -63,7 +64,10 @@ import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response
   type: ExceptionDto,
 })
 export class CompanyApplicationController {
-  constructor(private readonly applicationService: ApplicationService) {}
+  constructor(
+    private readonly applicationService: ApplicationService,
+    private readonly permitReceiptDocumentService: PermitReceiptDocumentService,
+  ) {}
   /**
    * Find all application for given status of a company for current logged in user
    * @param request
@@ -269,12 +273,12 @@ export class CompanyApplicationController {
 
     if (result?.success?.length) {
       await Promise.allSettled([
-        this.applicationService.generatePermitDocuments(
+        this.permitReceiptDocumentService.generatePermitDocuments(
           currentUser,
           result.success,
           companyId,
         ),
-        this.applicationService.generateReceiptDocuments(
+        this.permitReceiptDocumentService.generateReceiptDocuments(
           currentUser,
           result.success,
           companyId,
