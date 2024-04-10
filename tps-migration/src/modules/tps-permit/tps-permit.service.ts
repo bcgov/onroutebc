@@ -69,7 +69,7 @@ export class TpsPermitService {
    * wrong and needs attention.
    *
    */
-  @Cron(`${process.env.TPS_ERROR_POLLING_INTERVAL || '0 0 */3 * * *'}`)
+  @Cron(`${process.env.TPS_MONITORING_POLLING_INTERVAL || '0 0 1 * * *'}`)
   @LogAsyncMethodExecution()
   async reprocessTpsPermit() {
     const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
