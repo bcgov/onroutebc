@@ -40,7 +40,8 @@
     "start": "vite",
     "test": "vitest watch --reporter verbose",
     "test:no-watch": "vitest run",
-    "test:cov": "vitest run --coverage"
+    "test:cov": "vitest run --coverage",
+    "test:cypress": "cypress run"
   },
   "browserslist": {
     "production": [
