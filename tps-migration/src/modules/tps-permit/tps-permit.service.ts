@@ -53,6 +53,8 @@ export class TpsPermitService {
         .update(TpsPermit)
         .set({
           s3UploadStatus: S3uploadStatus.Processing,
+          lastUpdateTimestamp: new Date(),
+          lastUpdateUser: 'dbo',
         })
         .where('migrationId IN (:...ids)', { ids: ids })
         .execute();
@@ -84,6 +86,8 @@ export class TpsPermitService {
         .update(TpsPermit)
         .set({
           s3UploadStatus: S3uploadStatus.Processing,
+          lastUpdateTimestamp: new Date(),
+          lastUpdateUser: 'dbo',
         })
         .where('migrationId IN (:...ids)', { ids: ids })
         .execute();
@@ -183,6 +187,8 @@ export class TpsPermitService {
       {
         s3UploadStatus: S3uploadStatus.Error,
         retryCount: tpsPermit.retryCount + 1,
+        lastUpdateTimestamp: new Date(),
+        lastUpdateUser: 'dbo',
       },
     );
   }
@@ -208,6 +214,8 @@ export class TpsPermitService {
         {
           s3UploadStatus: S3uploadStatus.Error,
           retryCount: tpsPermit.retryCount + 1,
+          lastUpdateTimestamp: new Date(),
+          lastUpdateUser: 'dbo',
         },
       );
       throw new InternalServerErrorException(
@@ -247,7 +255,11 @@ export class TpsPermitService {
         tpsPermitNumber: tpsPermit.permitNumber,
         revision: tpsPermit.revision - 1,
       },
-      { documentId: documentId },
+      {
+        documentId: documentId,
+        lastUpdateTimestamp: new Date(),
+        lastUpdateUser: 'dbo',
+      },
     );
   }
 
@@ -267,14 +279,10 @@ export class TpsPermitService {
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(today.getDate() - 1);
-    console.log('monitorTpsStuckRecords');
-    console.log('today: ', today);
-    console.log('yesterday: ', yesterday);
     const stuckTpsPermits = await this.tpsPermitRepository
-      .createQueryBuilder()
-      .select()
-      .where('tpsPermit.s3UploadStatus = PROCESSING')
-      .andWhere('tpsPermit.lastUpdatedTimestamp <= :date', { date: yesterday })
+      .createQueryBuilder('tpsPermit')
+      .where(`tpsPermit.s3UploadStatus = 'PROCESSING'`)
+      .andWhere('tpsPermit.lastUpdateTimestamp <= :date', { date: yesterday })
       .getMany();
 
     if (stuckTpsPermits) {
@@ -298,7 +306,7 @@ export class TpsPermitService {
     revision: number,
   ): Promise<boolean> {
     const permit = await this.permitExists(tpsPermitNumber, revision - 1);
-    if (permit.documentId) return true;
+    if (permit?.documentId) return true;
     else return false;
   }
 }
