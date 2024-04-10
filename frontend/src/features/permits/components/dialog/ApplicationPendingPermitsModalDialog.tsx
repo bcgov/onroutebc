@@ -19,7 +19,7 @@ import { PPC_EMAIL, TOLL_FREE_NUMBER } from "../../../../common/constants/consta
  * @returns An array of column headers/accessor keys for Material React Table
  */
 const getColumns = (): MRT_ColumnDef<ApplicationListItem>[] => {
-    return ApplicationPendingPermitsModalColumnDefinition();
+    return ApplicationPendingPermitsModalColumnDefinition;
   };
 
 export const ApplicationPendingPermitsModalDialog = ({
