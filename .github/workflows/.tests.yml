@@ -60,7 +60,7 @@ jobs:
       - uses: cypress-io/github-action@v6
         name: Cypress run
         env:
-          CYPRESS_baseUrl: https://${{ github.event.repository.name }}-${{ inputs.target }}-frontend.apps.silver.devops.gov.bc.ca/
+          baseUrl: https://${{ github.event.repository.name }}-${{ inputs.target }}-frontend.apps.silver.devops.gov.bc.ca/
         with:
           config: pageLoadTimeout=10000
           working-directory: ./frontend
