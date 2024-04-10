@@ -58,6 +58,7 @@ export const ApplicationsInProgressList = ({ onCountChange }:
     pageIndex: 0,
     pageSize: 10,
   });
+
   const [sorting, setSorting] = useState<MRT_SortingState>([
     {
       id: "updatedDateTime",
@@ -79,13 +80,17 @@ export const ApplicationsInProgressList = ({ onCountChange }:
   });
 
   const applicationPermitsPendingQuery = useApplicationsInProgressQuery({
+    page: 0,
+    take: pagination.pageSize,
     pendingPermits: true,
   });
 
   const { data, isError, isPending, isFetching } = applicationsQuery;
 
-  const showPendingBanner = 
-    applicationPermitsPendingQuery?.data?.items?.length > 0;
+  const canShowPendingBanner = 
+    (applicationPermitsPendingQuery?.data?.items &&
+      applicationPermitsPendingQuery?.data?.items?.length > 0
+    ) ?? false;
 
   useEffect(() => {
 
@@ -275,7 +280,7 @@ export const ApplicationsInProgressList = ({ onCountChange }:
 
   return (
     <div className="table-container">
-      {showPendingBanner && 
+      {canShowPendingBanner && 
       <WarningBcGovBanner
         msg="Some of your applications weren't processed. See your "
         additionalInfo={

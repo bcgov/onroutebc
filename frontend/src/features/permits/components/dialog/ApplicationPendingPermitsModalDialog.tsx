@@ -3,9 +3,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog, Button, Typography } from "@mui/material";
 import "./ApplicationPendingPermitsModalDialog.scss";
 import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
-import { MRT_ColumnDef, MaterialReactTable, useMaterialReactTable } from "material-react-table";
+import { MRT_ColumnDef, MRT_PaginationState, MaterialReactTable, useMaterialReactTable } from "material-react-table";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
-import { useContext, useMemo } from "react";
+import { useContext, useMemo, useState } from "react";
 import { ApplicationListItem } from "../../types/application";
 import { ApplicationPendingPermitsModalColumnDefinition } from "./ApplicationPendingPermitsModalColumnDefinition";
 import { getDefaultNullableVal } from "../../../../common/helpers/util";
@@ -29,10 +29,17 @@ export const ApplicationPendingPermitsModalDialog = ({
     showModal: boolean;
     onCancel: () => void;
   }) => {
+
+    const [pagination, setPagination] = useState<MRT_PaginationState>({
+      pageIndex: 0,
+      pageSize: 10,
+    });
     
     const applicationPermitsPendingQuery = useApplicationsInProgressQuery({
-        pendingPermits: true,
-      });
+      page: pagination.pageIndex,
+      take: pagination.pageSize,
+      pendingPermits: true,
+    });
     
     const { data } = applicationPermitsPendingQuery;
     const handleCancel = () => onCancel();
@@ -53,9 +60,21 @@ export const ApplicationPendingPermitsModalDialog = ({
             ...defaultTableInitialStateOptions,
             showGlobalFilter: false,
         },
+        state: {
+          pagination,
+        },
         enableGlobalFilter: false,
         enableTopToolbar: false,
         enableRowSelection: false,
+        autoResetPageIndex: false,
+        manualFiltering: true,
+        manualPagination: true,
+        manualSorting: true,
+        rowCount: data?.meta?.totalItems ?? 0,
+        pageCount: data?.meta?.pageCount ?? 0,
+        onPaginationChange: setPagination,
+        enablePagination: true,
+        enableBottomToolbar: true,
         renderEmptyRowsFallback: () => <NoRecordsFound />,
         muiTableContainerProps: {
             sx: {

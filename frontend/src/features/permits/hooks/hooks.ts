@@ -386,8 +386,8 @@ export const useApplicationsInProgressQuery = ({
   sorting = [],
   pendingPermits = false,
 }: {
-  page?: number;
-  take?: number;
+  page: number;
+  take: number;
   searchString?: string;
   sorting?: SortingConfig[];
   pendingPermits?: boolean;
