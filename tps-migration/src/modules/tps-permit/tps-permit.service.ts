@@ -30,11 +30,8 @@ export class TpsPermitService {
   ) {}
 
   /**
-   * To upload PENDING TPS permits pdf to S3, update ORBC_DOCUMENT and
-   * ORBC_PERMIT table. and delete migrated permit and pdf from
-   * TPS_MIGRATED_PERMIT table. If records are stuck in PROCESSING status then
-   * something must have gone wrong and needs attention.
-   *
+   * This method uploads PENDING TPS permits pdf to S3, update ORBC_DOCUMENT and
+   * ORBC_PERMIT table. and delete migrated permit and pdf from TPS_MIGRATED_PERMIT table.
    */
 
   @Cron(`${process.env.TPS_PENDING_POLLING_INTERVAL || '0 */1 * * * *'}`)
@@ -63,11 +60,8 @@ export class TpsPermitService {
   }
 
   /**
-   * To upload ERROR TPS permits pdf to S3, update ORBC_DOCUMENT and ORBC_PERMIT
-   * table, and delete migrated permit and pdf from TPS_MIGRATED_PERMIT table.
-   * If records are stuck in PROCESSING status then something must have gone
-   * wrong and needs attention.
-   *
+   * This method processes errored out TPS permits pdf upload to S3, and after successfull processing
+   * update ORBC_DOCUMENT and ORBC_PERMIT table, and delete migrated permit and pdf from TPS_MIGRATED_PERMIT table.
    */
   @Cron(`${process.env.TPS_MONITORING_POLLING_INTERVAL || '0 0 1 * * *'}`)
   @LogAsyncMethodExecution()
@@ -274,8 +268,13 @@ export class TpsPermitService {
     this.logger.error(error);
   }
 
+  /**
+   * This method identifies stuck permits and verifies if their corresponding documents have been uploaded.
+   * If a document already exists, the process takes no further action.
+   * Otherwise, it attempts to upload the permit document again to S3 storage and updates the reference in the ORBC permit table.
+   */
   @Cron('0 */1 * * * *')
-  async monitorTpsStuckRecords() {
+  async processTpsStuckRecords() {
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(today.getDate() - 1);
