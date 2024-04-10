@@ -31,7 +31,7 @@ jobs:
           API_NAME: nest
           BASE_URL: https://${{ github.event.repository.name }}-${{ inputs.target }}-frontend.apps.silver.devops.gov.bc.ca
         run: |
-          cd integration-tests
+          cd tests/integration
           npm ci
           node src/main.js
 
