@@ -68,56 +68,62 @@ const server = setupServer(
     });
   }),
 
-  http.post(`${APPLICATIONS_API_ROUTES.CREATE(`${companyInfo.companyId}`)}`, async ({ request }) => {
-    const reqBody = await request.json();
-    const application = reqBody?.valueOf();
-    if (!application) {
-      return HttpResponse.json(null, { status: 400 });
-    }
+  http.post(
+    `${APPLICATIONS_API_ROUTES.CREATE(companyInfo.companyId.toString())}`,
+    async ({ request }) => {
+      const reqBody = await request.json();
+      const application = reqBody?.valueOf();
+      if (!application) {
+        return HttpResponse.json(null, { status: 400 });
+      }
 
-    const applicationData = {
-      ...(application as CreateApplicationRequestData),
-      permitId: newPermitId,
-      originalPermitId: newPermitId,
-      applicationNumber: newApplicationNumber,
-      createdDateTime: dayjsToUtcStr(now()),
-      updatedDateTime: dayjsToUtcStr(now()),
-      permitStatus: PERMIT_STATUSES.IN_PROGRESS,
-    };
+      const applicationData = {
+        ...(application as CreateApplicationRequestData),
+        permitId: newPermitId,
+        originalPermitId: newPermitId,
+        applicationNumber: newApplicationNumber,
+        createdDateTime: dayjsToUtcStr(now()),
+        updatedDateTime: dayjsToUtcStr(now()),
+        permitStatus: PERMIT_STATUSES.IN_PROGRESS,
+      };
 
-    return HttpResponse.json(
-      {
-        ...applicationData,
-      },
-      { status: 201 },
-    );
-  }),
+      return HttpResponse.json(
+        {
+          ...applicationData,
+        },
+        { status: 201 },
+      );
+    },
+  ),
 
-  http.put(`${APPLICATIONS_API_ROUTES.UPDATE}/:id`, async ({ request, params }) => {
-    const { id } = params;
-    const reqBody = await request.json();
-    const application = reqBody?.valueOf();
-    if (!application) {
-      return HttpResponse.json(null, { status: 400 });
-    }
+  http.put(
+    `${APPLICATIONS_API_ROUTES.UPDATE}/:id`,
+    async ({ request, params }) => {
+      const { id } = params;
+      const reqBody = await request.json();
+      const application = reqBody?.valueOf();
+      if (!application) {
+        return HttpResponse.json(null, { status: 400 });
+      }
 
-    const applicationData = {
-      ...(application as UpdateApplicationRequestData),
-      permitId: newPermitId,
-      originalPermitId: newPermitId,
-      applicationNumber: String(id),
-      createdDateTime: dayjsToUtcStr(now()),
-      updatedDateTime: dayjsToUtcStr(now()),
-      permitStatus: PERMIT_STATUSES.IN_PROGRESS,
-    };
+      const applicationData = {
+        ...(application as UpdateApplicationRequestData),
+        permitId: newPermitId,
+        originalPermitId: newPermitId,
+        applicationNumber: String(id),
+        createdDateTime: dayjsToUtcStr(now()),
+        updatedDateTime: dayjsToUtcStr(now()),
+        permitStatus: PERMIT_STATUSES.IN_PROGRESS,
+      };
 
-    return HttpResponse.json(
-      {
-        ...applicationData,
-      },
-      { status: 200 },
-    );
-  }),
+      return HttpResponse.json(
+        {
+          ...applicationData,
+        },
+        { status: 200 },
+      );
+    },
+  ),
 
   http.get(VEHICLES_API.POWER_UNIT_TYPES, () => {
     return HttpResponse.json([

@@ -46,7 +46,7 @@ export const useSaveApplicationMutation = () => {
   return useMutation({
     mutationFn: async (data: ApplicationFormData) => {
       const res = data.permitId
-        ? await updateApplication(data, data.permitId as string)
+        ? await updateApplication(data, data.permitId)
         : await createApplication(data);
 
       if (res.status === 200 || res.status === 201) {

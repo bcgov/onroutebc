@@ -131,7 +131,7 @@ const server = setupServer(
 
   // Mock getting application
   http.get(
-    `${APPLICATIONS_API_ROUTES.GET(`${getDefaultUserDetails().companyId}`)}/:permitId`,
+    `${APPLICATIONS_API_ROUTES.GET(getDefaultUserDetails().companyId.toString())}/:permitId`,
     () => {
       return HttpResponse.json({
         // get application from mock application store (there's only 1 application or empty), since we're testing save/create/edit behaviour
