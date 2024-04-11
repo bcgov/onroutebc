@@ -89,7 +89,6 @@ beforeAll(() => {
   resetVehicleSource();
   resetApplicationSource();
   listenToMockServer();
-  sessionStorage.setItem('onRouteBC.user.companyId', "74");
 });
 
 beforeEach(async () => {
@@ -104,6 +103,7 @@ beforeEach(async () => {
       useParams: (): Readonly<Params<string>> => ({ permitType: DEFAULT_PERMIT_TYPE }),
     };
   });
+  sessionStorage.setItem('onRouteBC.user.companyId', "74");
 });
 
 afterEach(() => {
