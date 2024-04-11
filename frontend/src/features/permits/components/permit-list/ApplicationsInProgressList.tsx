@@ -282,11 +282,15 @@ export const ApplicationsInProgressList = ({ onCountChange }:
     <div className="table-container">
       {canShowPendingBanner && 
       <WarningBcGovBanner
-        msg="Some of your applications weren't processed. See your "
+        msg=""
         additionalInfo={
-          <CustomActionLink onClick={() => setShowPendingPermitsModal(true)}>
-            Pending Permits
-          </CustomActionLink>
+          <>
+            <span>Some of your applications weren&apos;t processed. See your {" "}
+              <CustomActionLink onClick={() => setShowPendingPermitsModal(true)}>
+                <strong>Pending Permits</strong>
+              </CustomActionLink>
+            </span>
+          </>
         }
       />}
       <ApplicationPendingPermitsModalDialog
