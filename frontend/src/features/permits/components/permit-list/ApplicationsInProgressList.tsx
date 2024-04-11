@@ -87,10 +87,8 @@ export const ApplicationsInProgressList = ({ onCountChange }:
 
   const { data, isError, isPending, isFetching } = applicationsQuery;
 
-  const canShowPendingBanner = 
-    (applicationPermitsPendingQuery?.data?.items &&
-      applicationPermitsPendingQuery?.data?.items?.length > 0
-    ) ?? false;
+  const pendingCount = getDefaultRequiredVal(0, applicationPermitsPendingQuery.data?.meta?.totalItems);
+  const canShowPendingBanner = pendingCount > 0;
 
   useEffect(() => {
 
