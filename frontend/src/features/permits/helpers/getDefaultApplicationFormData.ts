@@ -155,7 +155,6 @@ export const getExpiryDateOrDefault = (
  * Gets default values for the application data, or populate with values from existing application data and company id/user details.
  * @param permitType permit type for the application
  * @param applicationData existing application data, if any
- * @param companyId company id of the current user, if any
  * @param userDetails user details of current user, if any
  * @param companyInfo data from company profile information
  * @returns default values for the application data
@@ -163,7 +162,6 @@ export const getExpiryDateOrDefault = (
 export const getDefaultValues = (
   permitType: PermitType,
   applicationData?: Nullable<Application | ApplicationFormData>,
-  companyId?: Nullable<number>,
   userDetails?: Nullable<BCeIDUserDetailContext>,
   companyInfo?: Nullable<CompanyProfile>,
 ): ApplicationFormData => {
@@ -184,7 +182,6 @@ export const getDefaultValues = (
   );
 
   return {
-    companyId: +getDefaultRequiredVal(0, companyId),
     originalPermitId: getDefaultRequiredVal(
       "",
       applicationData?.originalPermitId,

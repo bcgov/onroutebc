@@ -89,6 +89,7 @@ beforeAll(() => {
   resetVehicleSource();
   resetApplicationSource();
   listenToMockServer();
+  sessionStorage.setItem('onRouteBC.user.companyId', "74");
 });
 
 beforeEach(async () => {

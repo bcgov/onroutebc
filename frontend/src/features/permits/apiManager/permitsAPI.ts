@@ -38,7 +38,6 @@ import {
 } from "../../../common/apiManager/httpRequestHandler";
 
 import {
-  applyWhenNotNullable,
   getDefaultRequiredVal,
   replaceEmptyValuesWithNull,
   streamDownloadFile,
@@ -71,8 +70,9 @@ import {
 export const createApplication = async (
   application: ApplicationFormData,
 ): Promise<AxiosResponse<ApplicationResponseData>> => {
+  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   return await httpPOSTRequest(
-    APPLICATIONS_API_ROUTES.CREATE,
+    APPLICATIONS_API_ROUTES.CREATE(companyId),
     replaceEmptyValuesWithNull({
       // must convert application to ApplicationRequestData (dayjs fields to strings)
       ...serializeForCreateApplication(application),
@@ -83,15 +83,16 @@ export const createApplication = async (
 /**
  * Update an existing application.
  * @param application application data
- * @param applicationNumber application number for the application to update
+ * @param applicationId application number for the application to update
  * @returns response with updated application data, or error if failed
  */
 export const updateApplication = async (
   application: ApplicationFormData,
-  applicationNumber: string,
+  applicationId: string,
 ): Promise<AxiosResponse<ApplicationResponseData>> => {
+  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   return await httpPUTRequest(
-    `${APPLICATIONS_API_ROUTES.UPDATE}/${applicationNumber}`,
+    `${APPLICATIONS_API_ROUTES.UPDATE(companyId)}/${applicationId}`,
     replaceEmptyValuesWithNull({
       // must convert application to ApplicationRequestData (dayjs fields to strings)
       ...serializeForUpdateApplication(application),
@@ -109,11 +110,8 @@ export const getApplicationsInProgress = async ({
   searchString,
   orderBy = [],
 }: PaginationAndFilters): Promise<PaginatedResponse<ApplicationListItem>> => {
-  const companyId = getCompanyIdFromSession();
-  const applicationsURL = new URL(APPLICATIONS_API_ROUTES.GET);
-  if (companyId) {
-    applicationsURL.searchParams.set("companyId", companyId);
-  }
+  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
+  const applicationsURL = new URL(APPLICATIONS_API_ROUTES.GET(companyId));
 
   // API pagination index starts at 1. Hence page + 1.
   applicationsURL.searchParams.set("page", (page + 1).toString());
@@ -172,11 +170,8 @@ export const getApplicationByPermitId = async (
   permitId?: string,
 ): Promise<RequiredOrNull<ApplicationResponseData>> => {
   try {
-    const companyId = getCompanyIdFromSession();
-    let url = `${APPLICATIONS_API_ROUTES.GET}/${permitId}`;
-    if (companyId) {
-      url += `?companyId=${companyId}`;
-    }
+    const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
+    const url = `${APPLICATIONS_API_ROUTES.GET(companyId)}/${permitId}`;
 
     const response = await httpGETRequest(url);
     return response.data;
@@ -193,11 +188,10 @@ export const getApplicationByPermitId = async (
 export const deleteApplications = async (applicationIds: Array<string>) => {
   const requestBody = {
     applications: applicationIds,
-    companyId: Number(getCompanyIdFromSession()),
   };
-
+  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   return await httpDELETERequest(
-    `${APPLICATIONS_API_ROUTES.DELETE}`,
+    `${APPLICATIONS_API_ROUTES.DELETE(companyId)}`,
     replaceEmptyValuesWithNull(requestBody),
   );
 };
@@ -213,8 +207,16 @@ const streamDownload = async (url: string) => {
  * @param permitId permit id of the permit application.
  * @returns A Promise of dms reference string.
  */
-export const downloadPermitApplicationPdf = async (permitId: string) => {
-  const url = `${PERMITS_API_ROUTES.BASE}/${permitId}/${PERMITS_API_ROUTES.DOWNLOAD}`;
+export const downloadPermitApplicationPdf = async (
+  permitId: string,
+  companyIdParam?: string,
+) => {
+  const companyId = getDefaultRequiredVal(
+    "",
+    getCompanyIdFromSession(),
+    companyIdParam,
+  );
+  const url = PERMITS_API_ROUTES.DOWNLOAD(companyId, permitId);
   return await streamDownload(url);
 };
 
@@ -223,8 +225,16 @@ export const downloadPermitApplicationPdf = async (permitId: string) => {
  * @param permitId permit id of the permit application associated with the receipt.
  * @returns A Promise of dms reference string.
  */
-export const downloadReceiptPdf = async (permitId: string) => {
-  const url = `${PERMITS_API_ROUTES.BASE}/${permitId}/${PERMITS_API_ROUTES.RECEIPT}`;
+export const downloadReceiptPdf = async (
+  permitId: string,
+  companyIdParam?: string,
+) => {
+  const companyId = getDefaultRequiredVal(
+    "",
+    getCompanyIdFromSession(),
+    companyIdParam,
+  );
+  const url = PERMITS_API_ROUTES.RECEIPT(companyId, permitId);
   return await streamDownload(url);
 };
 
@@ -283,29 +293,30 @@ export const completeTransaction = async (transactionData: {
 
 /**
  * Issues the permits indicated by the application/permit ids.
- * @param ids Application/permit ids for the permits to be issued.
+ * @param applicationIds Application/permit ids for the permits to be issued.
  * @returns Successful and failed permit ids that were issued.
  */
 export const issuePermits = async (
-  ids: string[],
+  applicationIds: string[],
+  companyIdParam?: Nullable<string>,
 ): Promise<IssuePermitsResponse> => {
   try {
-    const companyId = getCompanyIdFromSession();
+    const companyId = getDefaultRequiredVal(
+      "",
+      getCompanyIdFromSession(),
+      companyIdParam,
+    );
     const response = await httpPOSTRequest(
-      PERMITS_API_ROUTES.ISSUE,
+      PERMITS_API_ROUTES.ISSUE(companyId),
       replaceEmptyValuesWithNull({
-        applicationIds: [...ids],
-        companyId: applyWhenNotNullable(
-          (companyId) => Number(companyId),
-          companyId,
-        ),
+        applicationIds,
       }),
     );
 
     if (response.status !== 201 || !response.data) {
       return removeEmptyIdsFromPermitsActionResponse({
         success: [],
-        failure: [...ids],
+        failure: [...applicationIds],
       });
     }
 
@@ -316,7 +327,7 @@ export const issuePermits = async (
     console.error(err);
     return removeEmptyIdsFromPermitsActionResponse({
       success: [],
-      failure: [...ids],
+      failure: [...applicationIds],
     });
   }
 };
@@ -328,19 +339,16 @@ export const issuePermits = async (
  */
 export const getPermit = async (
   permitId?: Nullable<string>,
+  companyIdParam?: Nullable<string>,
 ): Promise<RequiredOrNull<PermitResponseData>> => {
   if (!permitId) return null;
 
-  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
-  let permitsURL = `${PERMITS_API_ROUTES.GET}/${permitId}`;
-  const queryParams = [];
-  if (companyId) {
-    queryParams.push(`companyId=${companyId}`);
-  }
-
-  if (queryParams.length > 0) {
-    permitsURL += `?${queryParams.join("&")}`;
-  }
+  const companyId = getDefaultRequiredVal(
+    "",
+    getCompanyIdFromSession(),
+    companyIdParam,
+  );
+  const permitsURL = `${PERMITS_API_ROUTES.GET(companyId)}/${permitId}`;
 
   const response = await httpGETRequest(permitsURL);
   if (!response.data) return null;
@@ -354,20 +362,21 @@ export const getPermit = async (
  */
 export const getCurrentAmendmentApplication = async (
   originalId?: Nullable<string>,
+  companyIdParam?: Nullable<string>,
 ): Promise<RequiredOrNull<ApplicationResponseData>> => {
   if (!originalId) return null;
-  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
-  let permitsURL = `${APPLICATIONS_API_ROUTES.GET}/${originalId}`;
-  const queryParams = [`amendment=true`];
-  if (companyId) {
-    queryParams.push(`companyId=${companyId}`);
-  }
-  if (queryParams.length > 0) {
-    permitsURL += `?${queryParams.join("&")}`;
-  }
+  const companyId = getDefaultRequiredVal(
+    "",
+    getCompanyIdFromSession(),
+    companyIdParam,
+  );
+  const permitsURL = new URL(
+    `${APPLICATIONS_API_ROUTES.GET(companyId)}/${originalId}`,
+  );
+  permitsURL.searchParams.set("amendment", "true");
 
   try {
-    const response = await httpGETRequest(permitsURL);
+    const response = await httpGETRequest(permitsURL.toString());
     if (!response.data) return null;
     return response.data as ApplicationResponseData;
   } catch (err) {
@@ -386,10 +395,8 @@ export const getPermits = async (
   { page = 0, take = 10, searchString, orderBy = [] }: PaginationAndFilters,
 ): Promise<PaginatedResponse<PermitListItem>> => {
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
-  const permitsURL = new URL(PERMITS_API_ROUTES.GET);
-  if (companyId) {
-    permitsURL.searchParams.set("companyId", companyId);
-  }
+  const permitsURL = new URL(PERMITS_API_ROUTES.GET(companyId));
+
   permitsURL.searchParams.set("expired", expired.toString());
   // API pagination index starts at 1. Hence page + 1.
   permitsURL.searchParams.set("page", (page + 1).toString());
@@ -440,12 +447,20 @@ export const getPermits = async (
   return permits;
 };
 
-export const getPermitHistory = async (originalPermitId?: Nullable<string>) => {
+export const getPermitHistory = async (
+  originalPermitId?: Nullable<string>,
+  companyIdParam?: Nullable<string>,
+) => {
   try {
     if (!originalPermitId) return [];
 
+    const companyId = getDefaultRequiredVal(
+      "",
+      getCompanyIdFromSession(),
+      companyIdParam,
+    );
     const response = await httpGETRequest(
-      `${PERMITS_API_ROUTES.BASE}/${originalPermitId}/history`,
+      `${PERMITS_API_ROUTES.BASE(companyId)}/${originalPermitId}/history`,
     );
 
     if (response.status === 200) {
@@ -470,7 +485,7 @@ export const voidPermit = async (voidPermitParams: {
   const { permitId, voidData } = voidPermitParams;
   try {
     const response = await httpPOSTRequest(
-      `${PERMITS_API_ROUTES.BASE}/${permitId}/${PERMITS_API_ROUTES.VOID}`,
+      `${PERMITS_API_ROUTES.VOID(permitId)}`,
       replaceEmptyValuesWithNull(voidData),
     );
 
@@ -500,9 +515,15 @@ export const voidPermit = async (voidPermitParams: {
  */
 export const amendPermit = async (
   formData: AmendPermitFormData,
+  companyIdParam?: Nullable<string>,
 ): Promise<AxiosResponse<ApplicationResponseData>> => {
+  const companyId = getDefaultRequiredVal(
+    "",
+    getCompanyIdFromSession(),
+    companyIdParam,
+  );
   return await httpPOSTRequest(
-    PERMITS_API_ROUTES.AMEND,
+    PERMITS_API_ROUTES.AMEND(companyId),
     replaceEmptyValuesWithNull({
       // must convert application to ApplicationRequestData (dayjs fields to strings)
       ...serializeForCreateApplication(formData),
@@ -543,7 +564,7 @@ export const resendPermit = async ({
   fax?: Nullable<string>;
 }) => {
   return await httpPOSTRequest(
-    `${PERMITS_API_ROUTES.BASE}/${permitId}/${PERMITS_API_ROUTES.RESEND}`,
+    `${PERMITS_API_ROUTES.RESEND(permitId)}`,
     replaceEmptyValuesWithNull({
       to: [email],
       fax,
