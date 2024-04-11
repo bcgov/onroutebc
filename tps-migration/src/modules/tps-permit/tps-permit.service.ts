@@ -62,7 +62,7 @@ export class TpsPermitService {
    * This method processes errored out TPS permits pdf upload to S3, and after successfull processing
    * update ORBC_DOCUMENT and ORBC_PERMIT table, and delete migrated permit and pdf from TPS_MIGRATED_PERMIT table.
    */
-  @Cron(`${process.env.TPS_MONITORING_POLLING_INTERVAL || '0 0 1 * * *'}`)
+  @Cron(`${process.env.TPS_ERROR_POLLING_INTERVAL || '0 0 */3 * * *'}`)
   @LogAsyncMethodExecution()
   async reprocessTpsPermit() {
     const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
@@ -174,6 +174,7 @@ export class TpsPermitService {
     }
   }
 
+  @LogAsyncMethodExecution()
   async handlePermitNotExist(tpsPermit: TpsPermit) {
     await this.tpsPermitRepository.update(
       { migrationId: tpsPermit.migrationId },
@@ -186,6 +187,7 @@ export class TpsPermitService {
     );
   }
 
+  @LogAsyncMethodExecution()
   async uploadToS3AndHandleErrors(tpsPermit: TpsPermit, s3ObjectId: string) {
     try {
       const s3Object = await this.s3Service.uploadFile(
@@ -217,6 +219,7 @@ export class TpsPermitService {
     }
   }
 
+  @LogAsyncMethodExecution()
   async createDocumentAndHandleErrors(
     s3ObjectId: string,
     s3Object: CompleteMultipartUploadCommandOutput,
@@ -242,6 +245,7 @@ export class TpsPermitService {
     }
   }
 
+  @LogAsyncMethodExecution()
   async updatePermitWithDocumentId(tpsPermit: TpsPermit, documentId: string) {
     await this.permitRepository.update(
       {
@@ -256,12 +260,14 @@ export class TpsPermitService {
     );
   }
 
+  @LogAsyncMethodExecution()
   async deleteTpsPermit(tpsPermitId: number) {
     await this.tpsPermitRepository.delete({
       migrationId: tpsPermitId,
     });
   }
 
+  @LogAsyncMethodExecution()
   handleUploadError(tpsPermit: TpsPermit, error: unknown) {
     this.logger.log(`Error while processing permit# ${tpsPermit.permitNumber}`);
     this.logger.error(error);
@@ -272,7 +278,8 @@ export class TpsPermitService {
    * If a document already exists, the process takes no further action.
    * Otherwise, it attempts to upload the permit document again to S3 storage and updates the reference in the ORBC permit table.
    */
-  @Cron('0 */1 * * * *')
+  @Cron(`${process.env.TPS_MONITORING_POLLING_INTERVAL || '0 0 1 * * *'}`)
+  @LogAsyncMethodExecution()
   async processTpsStuckRecords() {
     const today = new Date();
     const yesterday = new Date(today);
@@ -299,6 +306,7 @@ export class TpsPermitService {
     }
   }
 
+  @LogAsyncMethodExecution()
   async checkDocumentIdInPermitTable(
     tpsPermitNumber: string,
     revision: number,
