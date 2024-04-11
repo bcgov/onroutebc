@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import "./AmendPermitReview.scss";
 import { AmendPermitContext } from "../context/AmendPermitContext";
@@ -25,6 +25,7 @@ import {
 
 export const AmendPermitReview = () => {
   const navigate = useNavigate();
+  const { companyId } = useParams();
 
   const {
     permit,
@@ -46,9 +47,7 @@ export const AmendPermitReview = () => {
     isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
   );
 
-  const { data: companyInfo } = useCompanyInfoDetailsQuery(
-    getDefaultRequiredVal(0, amendmentApplication?.companyId),
-  );
+  const { data: companyInfo } = useCompanyInfoDetailsQuery(companyId);
   const doingBusinessAs = companyInfo?.alternateName;
 
   const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
@@ -98,7 +97,10 @@ export const AmendPermitReview = () => {
     -1 *
     calculateAmountToRefund(
       validTransactionHistory,
-      getDefaultRequiredVal(0, amendmentApplication?.permitData?.permitDuration),
+      getDefaultRequiredVal(
+        0,
+        amendmentApplication?.permitData?.permitDuration,
+      ),
     );
 
   return (

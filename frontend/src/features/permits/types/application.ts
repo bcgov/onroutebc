@@ -66,7 +66,6 @@ export interface ApplicationResponseData extends TransformPermitData<
  * Type for create application request payload.
  */
 export interface CreateApplicationRequestData {
-  companyId: number;
   permitId?: Nullable<string>;
   originalPermitId?: Nullable<string>;
   applicationNumber?: Nullable<string>;
@@ -83,7 +82,6 @@ export interface CreateApplicationRequestData {
  * Type for update application request payload.
  */
 export interface UpdateApplicationRequestData {
-  companyId?: Nullable<number>;
   permitType?: Nullable<PermitType>;
   permitData: ReplaceDayjsWithString<PermitData>;
   comment?: Nullable<string>;
@@ -119,7 +117,6 @@ export interface ApplicationFormData {
   originalPermitId?: Nullable<string>;
   comment?: Nullable<string>;
   permitStatus: PermitStatus;
-  companyId: number;
   permitType: PermitType;
   applicationNumber?: Nullable<string>;
   permitNumber?: Nullable<string>;

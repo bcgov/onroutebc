@@ -35,7 +35,7 @@ const isVoidable = (permit: Permit) => {
 
 export const VoidPermit = () => {
   const navigate = useNavigate();
-  const { permitId } = useParams();
+  const { permitId, companyId } = useParams();
   const [currentLink, setCurrentLink] = useState(0);
   const getBannerText = () =>
     currentLink === 0 ? "Void Permit" : "Finish Voiding";
@@ -43,7 +43,7 @@ export const VoidPermit = () => {
   // Must be SYSADMIN to access this page
   const { idirUserDetails } = useContext(OnRouteBCContext);
 
-  const permitQuery = usePermitDetailsQuery(permitId);
+  const permitQuery = usePermitDetailsQuery(companyId, permitId);
   const permit = permitQuery.data;
 
   const [voidPermitData, setVoidPermitData] = useState<VoidPermitFormData>({

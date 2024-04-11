@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { FieldValues, FormProvider } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import "./AmendPermitForm.scss";
 import { PERMIT_DURATION_OPTIONS } from "../../../constants/constants";
@@ -42,11 +42,10 @@ export const AmendPermitForm = () => {
     getLinks,
   } = useContext(AmendPermitContext);
 
+  const { companyId } = useParams();
   const navigate = useNavigate();
 
-  const { data: companyInfo } = useCompanyInfoDetailsQuery(
-    getDefaultRequiredVal(0, amendmentApplication?.companyId, permit?.companyId),
-  );
+  const { data: companyInfo } = useCompanyInfoDetailsQuery(companyId);
   const doingBusinessAs = companyInfo?.alternateName;
 
   const { formData, formMethods } = useAmendPermitForm(
@@ -61,7 +60,7 @@ export const AmendPermitForm = () => {
   //The name of this feature that is used for id's, keys, and associating form components
   const FEATURE = "amend-permit";
 
-  const amendPermitMutation = useAmendPermit();
+  const amendPermitMutation = useAmendPermit(companyId);
   const modifyAmendmentMutation = useModifyAmendmentApplication();
   const snackBar = useContext(SnackBarContext);
 
@@ -70,7 +69,7 @@ export const AmendPermitForm = () => {
     vehicleOptions,
     powerUnitSubTypes,
     trailerSubTypes,
-  } = usePermitVehicleManagement(`${formData.companyId}`);
+  } = usePermitVehicleManagement(companyId);
 
   const { handleSubmit, getValues } = formMethods;
   

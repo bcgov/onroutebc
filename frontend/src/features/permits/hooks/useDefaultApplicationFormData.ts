@@ -41,7 +41,6 @@ export const useDefaultApplicationFormData = (
         permitType,
         companyInfo,
         applicationData,
-        companyId,
         userDetails,
       ),
     );
@@ -148,7 +147,6 @@ export const useDefaultApplicationFormData = (
         permitType,
         companyInfo,
         applicationData,
-        companyId,
         userDetails,
       ),
     );

@@ -41,7 +41,6 @@ export const getDefaultFormDataFromApplication = (
       defaultPermitType,
       companyInfo,
       application,
-      application.companyId,
     ),
   };
 };
@@ -92,7 +91,6 @@ export const getDefaultFormDataFromPermit = (
           ),
         },
       } as AmendPermitFormData,
-      restOfPermit.companyId,
     ),
   };
 };
