@@ -54,7 +54,8 @@ export const ApplicationForm = ({
   } = useContext(OnRouteBCContext);
 
   const companyInfoQuery = useCompanyInfoQuery();
-
+  const companyInfo = companyInfoQuery.data;
+  
   // Use a custom hook that performs the following whenever page is rendered (or when application context is updated/changed):
   // 1. Get all data needed to generate default values for the application form (from application context, company, user details)
   // 2. Generate those default values and register them to the form
@@ -65,10 +66,10 @@ export const ApplicationForm = ({
     formMethods,
   } = useDefaultApplicationFormData(
     permitType,
+    companyInfo,
     applicationContext?.applicationData,
     companyId,
     userDetails,
-    companyInfoQuery.data,
   );
 
   const createdDateTime = applyWhenNotNullable(
@@ -81,7 +82,7 @@ export const ApplicationForm = ({
     applicationContext?.applicationData?.updatedDateTime,
   );
 
-  const companyInfo = companyInfoQuery.data;
+  const doingBusinessAs = companyInfo?.alternateName;
 
   const saveApplicationMutation = useSaveApplicationMutation();
   const snackBar = useContext(SnackBarContext);
@@ -267,7 +268,7 @@ export const ApplicationForm = ({
           trailerSubTypes={trailerSubTypes}
           companyInfo={companyInfo}
           durationOptions={PERMIT_DURATION_OPTIONS}
-          doingBusinessAs={companyLegalName}
+          doingBusinessAs={doingBusinessAs}
         />
       </FormProvider>
 

@@ -16,5 +16,6 @@ export interface PermitData {
   mailingAddress: PermitMailingAddress;
   feeSummary?: Nullable<string>;
   companyName?: Nullable<string>;
+  doingBusinessAs?: Nullable<string>;
   clientNumber?: Nullable<string>;
 }

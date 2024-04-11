@@ -57,7 +57,7 @@ export const useCompanyInfoDetailsQuery = (companyId: number) => {
   return useQuery({
     queryKey: ["companyInfo"],
     queryFn: () => getCompanyInfoById(companyId),
-    enabled: !!companyId,
+    enabled: Boolean(companyId),
     refetchInterval: FIVE_MINUTES,
     refetchOnWindowFocus: false, // fixes issue where a query is run everytime the screen is brought to foreground
     retry: false,

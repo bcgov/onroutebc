@@ -5,6 +5,7 @@ import { Nullable } from "../../../../../common/types/common";
 import { Permit } from "../../../types/permit";
 import { Application } from "../../../types/application";
 import { applyWhenNotNullable } from "../../../../../common/helpers/util";
+import { CompanyProfile } from "../../../../manageProfile/types/manageProfile";
 import {
   AmendPermitFormData,
   getDefaultFormDataFromApplication,
@@ -13,6 +14,7 @@ import {
 
 export const useAmendPermitForm = (
   repopulateFormData: boolean,
+  companyInfo: Nullable<CompanyProfile>,
   permit?: Nullable<Permit>,
   amendmentApplication?: Nullable<Application>,
 ) => {
@@ -20,6 +22,7 @@ export const useAmendPermitForm = (
   const permitFormDefaultValues = () => {
     if (amendmentApplication) {
       return getDefaultFormDataFromApplication(
+        companyInfo,
         amendmentApplication,
       );
     }
@@ -27,6 +30,7 @@ export const useAmendPermitForm = (
     // Permit doesn't have existing amendment application
     // Populate form data with permit, with initial empty comment
     return getDefaultFormDataFromPermit(
+      companyInfo,
       applyWhenNotNullable(
         (p) => ({
           ...p,

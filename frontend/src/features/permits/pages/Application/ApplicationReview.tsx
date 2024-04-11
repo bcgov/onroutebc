@@ -9,7 +9,6 @@ import { useSaveApplicationMutation } from "../../hooks/hooks";
 import { ApplicationBreadcrumb } from "../../components/application-breadcrumb/ApplicationBreadcrumb";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { PermitReview } from "./components/review/PermitReview";
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import {
   APPLICATIONS_ROUTES,
@@ -31,12 +30,12 @@ export const ApplicationReview = () => {
 
   const navigate = useNavigate();
 
-  const companyQuery = useCompanyInfoQuery();
+  const { data: companyInfo } = useCompanyInfoQuery();
   const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
   const trailerSubTypesQuery = useTrailerSubTypesQuery();
   const methods = useForm<Application>();
 
-  const { companyLegalName } = useContext(OnRouteBCContext);
+  const doingBusinessAs = companyInfo?.alternateName;
 
   // For the confirmation checkboxes
   const [isChecked, setIsChecked] = useState(false);
@@ -63,7 +62,13 @@ export const ApplicationReview = () => {
     }
 
     const { application: savedApplication } =
-      await saveApplicationMutation.mutateAsync(applicationData);
+      await saveApplicationMutation.mutateAsync({
+        ...applicationData,
+        permitData: {
+          ...applicationData.permitData,
+          doingBusinessAs, // always set most recent DBA from company info
+        }
+      });
 
     if (savedApplication) {
       setApplicationData(savedApplication);
@@ -71,8 +76,6 @@ export const ApplicationReview = () => {
     } else {
       navigate(ERROR_ROUTES.UNEXPECTED);
     }
-
-    next();
   };
 
   useEffect(() => {
@@ -98,7 +101,7 @@ export const ApplicationReview = () => {
           permitConditions={applicationData?.permitData?.commodities}
           createdDateTime={applicationData?.createdDateTime}
           updatedDateTime={applicationData?.updatedDateTime}
-          companyInfo={companyQuery.data}
+          companyInfo={companyInfo}
           contactDetails={applicationData?.permitData?.contactDetails}
           continueBtnText="Proceed To Pay"
           onEdit={back}
@@ -112,7 +115,7 @@ export const ApplicationReview = () => {
           vehicleWasSaved={
             applicationData?.permitData?.vehicleDetails?.saveVehicle
           }
-          doingBusinessAs={companyLegalName}
+          doingBusinessAs={doingBusinessAs}
         />
       </FormProvider>
     </div>

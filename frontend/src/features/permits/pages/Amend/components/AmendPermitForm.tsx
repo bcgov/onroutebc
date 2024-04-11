@@ -17,7 +17,6 @@ import { AmendReason } from "./form/AmendReason";
 import { Nullable } from "../../../../../common/types/common";
 import { ERROR_ROUTES } from "../../../../../routes/constants";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
-import OnRouteBCContext from "../../../../../common/authentication/OnRouteBCContext";
 import { PermitVehicleDetails } from "../../../types/PermitVehicleDetails";
 import { AmendPermitFormData } from "../types/AmendPermitFormData";
 import { getDatetimes } from "./helpers/getDatetimes";
@@ -43,12 +42,16 @@ export const AmendPermitForm = () => {
     getLinks,
   } = useContext(AmendPermitContext);
 
-  const { companyLegalName } = useContext(OnRouteBCContext);
-
   const navigate = useNavigate();
+
+  const { data: companyInfo } = useCompanyInfoDetailsQuery(
+    getDefaultRequiredVal(0, amendmentApplication?.companyId, permit?.companyId),
+  );
+  const doingBusinessAs = companyInfo?.alternateName;
 
   const { formData, formMethods } = useAmendPermitForm(
     currentStepIndex === 0,
+    companyInfo,
     permit,
     amendmentApplication,
   );
@@ -70,10 +73,7 @@ export const AmendPermitForm = () => {
   } = usePermitVehicleManagement(`${formData.companyId}`);
 
   const { handleSubmit, getValues } = formMethods;
-
-  const companyInfoQuery = useCompanyInfoDetailsQuery(formData.companyId);
-  const companyInfo = companyInfoQuery.data;
-
+  
   // Helper method to return form field values as an Permit object
   const transformPermitFormData = (data: FieldValues) => {
     return {
@@ -211,7 +211,7 @@ export const AmendPermitForm = () => {
           trailerSubTypes={trailerSubTypes}
           companyInfo={companyInfo}
           durationOptions={durationOptions}
-          doingBusinessAs={companyLegalName}
+          doingBusinessAs={doingBusinessAs}
         >
           <AmendRevisionHistory revisionHistory={revisionHistory} />
           <AmendReason feature={FEATURE} />
