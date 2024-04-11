@@ -67,37 +67,40 @@ export const companyInfo = getDefaultCompanyInfo();
 // Mock API endpoints
 const server = setupServer(
   // Mock creating/saving application
-  http.post(`${VEHICLES_URL}/company/:companyId/applications`, async ({ request }) => {
-    const reqBody = await request.json();
-    const application = reqBody?.valueOf();
-    if (!application) {
-      return HttpResponse.json(null, { status: 400 });
-    }
+  http.post(
+    `${VEHICLES_URL}/companies/:companyId/applications`,
+    async ({ request }) => {
+      const reqBody = await request.json();
+      const application = reqBody?.valueOf();
+      if (!application) {
+        return HttpResponse.json(null, { status: 400 });
+      }
 
-    const applicationData = {
-      ...(application as CreateApplicationRequestData),
-      permitStatus: PERMIT_STATUSES.IN_PROGRESS,
-    };
+      const applicationData = {
+        ...(application as CreateApplicationRequestData),
+        permitStatus: PERMIT_STATUSES.IN_PROGRESS,
+      };
 
-    const createdApplication = createApplication(
-      applicationData,
-      newApplicationNumber,
-      newPermitId,
-      currDtUtcStr,
-      currDtUtcStr,
-    ); // add to mock application store
+      const createdApplication = createApplication(
+        applicationData,
+        newApplicationNumber,
+        newPermitId,
+        currDtUtcStr,
+        currDtUtcStr,
+      ); // add to mock application store
 
-    return HttpResponse.json(
-      {
-        ...createdApplication,
-      },
-      { status: 201 },
-    );
-  }),
+      return HttpResponse.json(
+        {
+          ...createdApplication,
+        },
+        { status: 201 },
+      );
+    },
+  ),
 
   // Mock updating/saving application
   http.put(
-    `${VEHICLES_URL}/company/:companyId/applications/:id`,
+    `${VEHICLES_URL}/companies/:companyId/applications/:id`,
     async ({ request, params }) => {
       const { id } = params;
       const reqBody = await request.json();
@@ -127,12 +130,15 @@ const server = setupServer(
   ),
 
   // Mock getting application
-  http.get(`${APPLICATIONS_API_ROUTES.GET}/:permitId`, () => {
-    return HttpResponse.json({
-      // get application from mock application store (there's only 1 application or empty), since we're testing save/create/edit behaviour
-      data: getApplication(),
-    });
-  }),
+  http.get(
+    `${APPLICATIONS_API_ROUTES.GET(`${getDefaultUserDetails().companyId}`)}/:permitId`,
+    () => {
+      return HttpResponse.json({
+        // get application from mock application store (there's only 1 application or empty), since we're testing save/create/edit behaviour
+        data: getApplication(),
+      });
+    },
+  ),
 
   // Mock getting power unit types
   http.get(VEHICLES_API.POWER_UNIT_TYPES, () => {
@@ -268,9 +274,7 @@ export const ComponentWithWrapper = (userDetails: OnRouteBCContextType) => {
   );
 };
 
-export const renderTestComponent = (
-  userDetails: OnRouteBCContextType,
-) => {
+export const renderTestComponent = (userDetails: OnRouteBCContextType) => {
   const user = userEvent.setup();
   const component = renderForTests(ComponentWithWrapper(userDetails));
 

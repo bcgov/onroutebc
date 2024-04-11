@@ -10,7 +10,7 @@ const PERMITS_API_BASE = (companyId: string) =>
 const STAFF_PERMIT_API_BASE = `${VEHICLES_URL}/permits`;
 
 export const APPLICATIONS_API_ROUTES = {
-  CREATE: (companyId: string) => APPLICATIONS_API_BASE(`${companyId}`),
+  CREATE: (companyId: string) => APPLICATIONS_API_BASE(companyId),
   UPDATE: (companyId: string) => APPLICATIONS_API_BASE(companyId),
   GET: (companyId: string) => APPLICATIONS_API_BASE(companyId),
   DELETE: (companyId: string) => APPLICATIONS_API_BASE(companyId),
