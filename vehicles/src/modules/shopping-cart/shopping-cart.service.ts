@@ -77,13 +77,14 @@ export class ShoppingCartService {
   async findApplicationsInCart(
     currentUser: IUserJWT,
     companyId: number,
+    allApplications?: boolean,
   ): Promise<ReadShoppingCartDto[]> {
     const { userGUID, orbcUserAuthGroup } = currentUser;
-    const applications = await this.getSelectShoppingCartQB(
-      companyId,
+    const applications = await this.getSelectShoppingCartQB(companyId, {
       userGUID,
       orbcUserAuthGroup,
-    )
+      allApplications,
+    })
       .orderBy({ 'application.updatedDateTime': 'DESC' })
       .getMany();
 
@@ -114,11 +115,13 @@ export class ShoppingCartService {
     companyId: number,
   ): Promise<number> {
     const { userGUID, orbcUserAuthGroup } = currentUser;
-    return await this.getSelectShoppingCartQB(
-      companyId,
+    return await this.getSelectShoppingCartQB(companyId, {
       userGUID,
       orbcUserAuthGroup,
-    ).getCount();
+      // For a company admin, the cart count is the count of all the
+      // applications of the company with IN_CART status.
+      allApplications: true,
+    }).getCount();
   }
 
   /**
@@ -133,8 +136,15 @@ export class ShoppingCartService {
    */
   private getSelectShoppingCartQB(
     companyId: number,
-    userGUID?: string,
-    orbcUserAuthGroup?: UserAuthGroup,
+    {
+      userGUID,
+      orbcUserAuthGroup,
+      allApplications,
+    }: {
+      userGUID?: string;
+      orbcUserAuthGroup?: UserAuthGroup;
+      allApplications?: boolean;
+    },
   ): SelectQueryBuilder<Application> {
     const queryBuilder = this.applicationRepository
       .createQueryBuilder('application')
@@ -148,15 +158,20 @@ export class ShoppingCartService {
     });
     queryBuilder.andWhere('company.companyId = :companyId', { companyId });
 
-    // If user is a Permit Applicant, get only their own applications in cart
-    if (orbcUserAuthGroup === ClientUserAuthGroup.PERMIT_APPLICANT) {
+    // Get only their own applications in cart.
+    //  - If the user is a Permit Applicant
+    //  - If the user has passed the allApplications query parameter
+    if (
+      orbcUserAuthGroup === ClientUserAuthGroup.PERMIT_APPLICANT ||
+      !allApplications
+    ) {
       queryBuilder.andWhere('applicationOwner.userGUID = :userGUID', {
         userGUID,
       });
     }
-    // If user is a Company Admin, get all applications in cart for that company
-    // EXCEPT for those created by staff user.
-    else if (orbcUserAuthGroup === ClientUserAuthGroup.COMPANY_ADMINISTRATOR) {
+    // If the user is a BCeID user, select only those applications
+    // where the applicationOwner isn't a staff user.
+    if (!doesUserHaveAuthGroup(orbcUserAuthGroup, IDIR_USER_AUTH_GROUP_LIST)) {
       queryBuilder.andWhere(
         new NotBrackets((qb) => {
           qb.where('applicationOwner.directory = :directory', {
@@ -243,7 +258,7 @@ export class ShoppingCartService {
           {
             permitId: applicationId,
             company: { companyId },
-            ...(userGUID && { userGUID }),
+            ...(userGUID && { applicationOwner: { userGUID } }),
           },
           {
             permitStatus: statusToUpdateTo,
