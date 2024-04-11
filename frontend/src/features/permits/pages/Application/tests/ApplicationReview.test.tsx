@@ -87,6 +87,7 @@ beforeAll(() => {
   // @ts-ignore
   window.scrollTo = vi.fn();
   listenToMockServer();
+  sessionStorage.setItem('onRouteBC.user.companyId', "74");
 });
 
 beforeEach(() => {
@@ -454,7 +455,6 @@ describe("Review and Confirm Application Details", () => {
     });
 
     it("should not show error message when all attestation checkboxes are checked", async () => {
-      sessionStorage.setItem("onRouteBC.user.companyId", "74");
       const { user } = renderTestComponent(defaultApplicationData);
 
       // Act

@@ -68,7 +68,7 @@ const server = setupServer(
     });
   }),
 
-  http.post(`${APPLICATIONS_API_ROUTES.CREATE}`, async ({ request }) => {
+  http.post(`${APPLICATIONS_API_ROUTES.CREATE(`${companyInfo.companyId}`)}`, async ({ request }) => {
     const reqBody = await request.json();
     const application = reqBody?.valueOf();
     if (!application) {
