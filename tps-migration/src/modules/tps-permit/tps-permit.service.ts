@@ -276,7 +276,7 @@ export class TpsPermitService {
   /**
    * This method identifies stuck permits and verifies if their corresponding documents have been uploaded.
    * If a document already exists, the process takes no further action.
-   * Otherwise, it attempts to upload the permit document again to S3 storage and updates the reference in the ORBC permit table.
+   * Otherwise, it attempts to upload the permit document again to S3 storage and updates the reference in the ORBC permit tables.
    */
   @Cron(`${process.env.TPS_MONITORING_POLLING_INTERVAL || '0 0 1 * * *'}`)
   @LogAsyncMethodExecution()
