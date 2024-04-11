@@ -104,7 +104,7 @@ export const ApplicationPendingPermitsModalDialog = ({
         </div>
   
         <div className="pending-permits-modal__body">
-            <p>You have {data?.items?.length} Pending Permits</p>
+            <p>You have {data?.meta?.totalItems} Pending Permits</p>
             <InfoBcGovBanner
                 className="pending-permits-modal__banner" 
                 msg={"There was an unexpected error in issuing the following permits. No action from you is required."}
