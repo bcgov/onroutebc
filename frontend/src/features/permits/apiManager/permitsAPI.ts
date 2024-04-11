@@ -298,9 +298,14 @@ export const completeTransaction = async (transactionData: {
  */
 export const issuePermits = async (
   applicationIds: string[],
+  companyIdParam?: Nullable<string>,
 ): Promise<IssuePermitsResponse> => {
   try {
-    const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
+    const companyId = getDefaultRequiredVal(
+      "",
+      getCompanyIdFromSession(),
+      companyIdParam,
+    );
     const response = await httpPOSTRequest(
       PERMITS_API_ROUTES.ISSUE(companyId),
       replaceEmptyValuesWithNull({
@@ -510,8 +515,13 @@ export const voidPermit = async (voidPermitParams: {
  */
 export const amendPermit = async (
   formData: AmendPermitFormData,
+  companyIdParam?: Nullable<string>,
 ): Promise<AxiosResponse<ApplicationResponseData>> => {
-  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
+  const companyId = getDefaultRequiredVal(
+    "",
+    getCompanyIdFromSession(),
+    companyIdParam,
+  );
   return await httpPOSTRequest(
     PERMITS_API_ROUTES.AMEND(companyId),
     replaceEmptyValuesWithNull({

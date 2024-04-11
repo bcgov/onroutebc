@@ -66,7 +66,7 @@ export const AmendPermitForm = () => {
   //The name of this feature that is used for id's, keys, and associating form components
   const FEATURE = "amend-permit";
 
-  const amendPermitMutation = useAmendPermit();
+  const amendPermitMutation = useAmendPermit(companyId);
   const modifyAmendmentMutation = useModifyAmendmentApplication();
   const snackBar = useContext(SnackBarContext);
 

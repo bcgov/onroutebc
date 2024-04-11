@@ -278,14 +278,14 @@ export const usePermitHistoryQuery = (
  * @param ids Application/permit ids for the permits to be issued.
  * @returns Mutation object, and the issued results response.
  */
-export const useIssuePermits = () => {
+export const useIssuePermits = (companyIdParam?: Nullable<string>) => {
   const [issueResults, setIssueResults] =
     useState<Nullable<IssuePermitsResponse>>(undefined);
 
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: issuePermits,
+    mutationFn: (applicationIds: string[]) => issuePermits(applicationIds, companyIdParam),
     retry: false,
     onSuccess: (issueResponseData) => {
       queryClient.invalidateQueries({
@@ -308,11 +308,13 @@ export const useIssuePermits = () => {
 /**
  * A custom react query mutation hook that requests the backend API to amend the permit.
  */
-export const useAmendPermit = () => {
+export const useAmendPermit = (companyIdParam?: Nullable<string>) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (data: AmendPermitFormData) => {
-      const amendResult = await amendPermit(data);
+    mutationFn: async (
+      data: AmendPermitFormData,
+    ) => {
+      const amendResult = await amendPermit(data, companyIdParam);
       if (amendResult.status === 200 || amendResult.status === 201) {
         queryClient.invalidateQueries({
           queryKey: ["permit"],
