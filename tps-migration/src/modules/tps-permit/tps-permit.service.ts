@@ -4,7 +4,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { TpsPermit } from './entities/tps-permit.entity';
-import { DataSource, LessThan, Repository } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { S3uploadStatus } from '../common/enum/s3-upload-status.enum';
 import { S3Service } from './s3.service';
@@ -26,7 +26,6 @@ export class TpsPermitService {
     @InjectRepository(Document)
     private documentRepository: Repository<Document>,
     private readonly s3Service: S3Service,
-    private dataSource: DataSource,
   ) {}
 
   /**
