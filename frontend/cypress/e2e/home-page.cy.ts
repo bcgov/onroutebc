@@ -2,6 +2,7 @@
 
 describe('Default Page Test', () => {
     it('Visits the default page and checks for "onRouteBC"', () => {
+      const baseUrl = Cypress.env('CYPRESS_baseUrl');
       if (!baseUrl) {
         throw new Error('Base URL is not defined in environment variables');
       }
