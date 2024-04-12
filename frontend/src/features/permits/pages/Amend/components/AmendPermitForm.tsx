@@ -61,7 +61,7 @@ export const AmendPermitForm = () => {
   const FEATURE = "amend-permit";
 
   const amendPermitMutation = useAmendPermit(companyId);
-  const modifyAmendmentMutation = useModifyAmendmentApplication();
+  const modifyAmendmentMutation = useModifyAmendmentApplication(companyId);
   const snackBar = useContext(SnackBarContext);
 
   const {
@@ -72,7 +72,7 @@ export const AmendPermitForm = () => {
   } = usePermitVehicleManagement(companyId);
 
   const { handleSubmit, getValues } = formMethods;
-  
+
   // Helper method to return form field values as an Permit object
   const transformPermitFormData = (data: FieldValues) => {
     return {

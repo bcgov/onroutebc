@@ -339,14 +339,18 @@ export const useAmendPermit = (companyIdParam?: Nullable<string>) => {
   });
 };
 
-export const useModifyAmendmentApplication = () => {
+export const useModifyAmendmentApplication = (companyIdParam: Nullable<string>) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: {
       application: AmendPermitFormData;
       applicationNumber: string;
     }) => {
-      const amendResult = await modifyAmendmentApplication(data);
+      const amendResult = await modifyAmendmentApplication({
+        ...data,
+        companyIdParam,
+      });
+
       if (amendResult.status === 200 || amendResult.status === 201) {
         queryClient.invalidateQueries({
           queryKey: ["permit"],

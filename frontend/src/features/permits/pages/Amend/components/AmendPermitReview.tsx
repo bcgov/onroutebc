@@ -39,7 +39,7 @@ export const AmendPermitReview = () => {
     useContext(AmendPermitContext);
 
   // Send data to the backend API
-  const modifyAmendmentMutation = useModifyAmendmentApplication();
+  const modifyAmendmentMutation = useModifyAmendmentApplication(companyId);
 
   const { createdDateTime, updatedDateTime } = getDatetimes(amendmentApplication, permit);
 
