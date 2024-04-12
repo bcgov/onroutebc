@@ -9,4 +9,7 @@ export default defineConfig({
     experimentalStudio: true,
     experimentalWebKitSupport: true,
   },
+  env: {
+    CYPRESS_baseUrl: 'https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/',
+  }
 });
