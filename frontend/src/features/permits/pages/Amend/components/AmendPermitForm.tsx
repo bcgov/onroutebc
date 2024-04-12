@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { FieldValues, FormProvider } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import "./AmendPermitForm.scss";
 import { PERMIT_DURATION_OPTIONS } from "../../../constants/constants";
@@ -43,14 +43,12 @@ export const AmendPermitForm = () => {
     getLinks,
   } = useContext(AmendPermitContext);
 
-  const {
-    companyLegalName,
-    idirUserDetails,
-  } = useContext(OnRouteBCContext);
+  const { companyLegalName, idirUserDetails } = useContext(OnRouteBCContext);
+  const { companyId } = useParams();
 
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
-  const doingBusinessAs = isStaffActingAsCompany && companyLegalName ?
-    companyLegalName : "";
+  const doingBusinessAs =
+    isStaffActingAsCompany && companyLegalName ? companyLegalName : "";
 
   const navigate = useNavigate();
 
@@ -60,12 +58,15 @@ export const AmendPermitForm = () => {
     amendmentApplication,
   );
 
-  const { createdDateTime, updatedDateTime } = getDatetimes(amendmentApplication, permit);
+  const { createdDateTime, updatedDateTime } = getDatetimes(
+    amendmentApplication,
+    permit,
+  );
 
   //The name of this feature that is used for id's, keys, and associating form components
   const FEATURE = "amend-permit";
 
-  const amendPermitMutation = useAmendPermit();
+  const amendPermitMutation = useAmendPermit(companyId);
   const modifyAmendmentMutation = useModifyAmendmentApplication();
   const snackBar = useContext(SnackBarContext);
 
@@ -74,11 +75,11 @@ export const AmendPermitForm = () => {
     vehicleOptions,
     powerUnitSubTypes,
     trailerSubTypes,
-  } = usePermitVehicleManagement(`${formData.companyId}`);
+  } = usePermitVehicleManagement(companyId);
 
   const { handleSubmit, getValues } = formMethods;
 
-  const companyInfoQuery = useCompanyInfoDetailsQuery(formData.companyId);
+  const companyInfoQuery = useCompanyInfoDetailsQuery(companyId);
   const companyInfo = companyInfoQuery.data;
 
   // Helper method to return form field values as an Permit object
@@ -156,15 +157,14 @@ export const AmendPermitForm = () => {
 
     const response = shouldUpdateApplication
       ? await modifyAmendmentMutation.mutateAsync({
-          applicationNumber: getDefaultRequiredVal(
+          applicationId: getDefaultRequiredVal(
             "",
-            permitToBeAmended.applicationNumber,
+            permitToBeAmended.permitId,
           ),
           application: permitToBeAmended,
+          companyId: companyId as string,
         })
-      : await amendPermitMutation.mutateAsync(
-          permitToBeAmended,
-        );
+      : await amendPermitMutation.mutateAsync(permitToBeAmended);
 
     if (response.application) {
       onSaveSuccess(response.application);

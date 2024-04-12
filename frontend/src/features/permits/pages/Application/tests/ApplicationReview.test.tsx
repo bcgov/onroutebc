@@ -87,6 +87,7 @@ beforeAll(() => {
   // @ts-ignore
   window.scrollTo = vi.fn();
   listenToMockServer();
+  sessionStorage.setItem('onRouteBC.user.companyId', "74");
 });
 
 beforeEach(() => {

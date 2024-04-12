@@ -109,7 +109,6 @@ export const updateApplication = (
       permitId,
       companyId: getDefaultRequiredVal(
         getDefaultUserDetails().companyId,
-        application.companyId,
       ),
       permitType: getDefaultRequiredVal(
         PERMIT_TYPES.TROS,

@@ -18,15 +18,6 @@ import { PermitType } from 'src/common/enum/permit-type.enum';
 export class CreateApplicationDto {
   @AutoMap()
   @ApiProperty({
-    description: 'Id of the company requesting the permit.',
-    example: 74,
-    required: true,
-  })
-  @IsNumber()
-  companyId: number;
-
-  @AutoMap()
-  @ApiProperty({
     description: 'Id of the permit.',
     example: '',
     required: false,

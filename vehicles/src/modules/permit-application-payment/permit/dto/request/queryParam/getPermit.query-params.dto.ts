@@ -1,11 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type, Transform } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import {
   IsOptional,
   IsBoolean,
   IsString,
   Length,
-  IsNumber,
   Validate,
   IsEnum,
 } from 'class-validator';
@@ -14,19 +13,8 @@ import { PermitSearchByConstraint } from '../../../../../../common/constraint/pe
 import { PageOptionsDto } from '../../../../../../common/dto/paginate/page-options';
 import { PermitOrderBy } from '../../../../../../common/enum/orderBy.enum';
 import { PermitSearch } from '../../../../../../common/enum/permit-search.enum';
-import { IDIR_USER_AUTH_GROUP_LIST } from '../../../../../../common/enum/user-auth-group.enum';
 
 export class GetPermitQueryParamsDto extends PageOptionsDto {
-  @ApiProperty({
-    description: `Id of the company requesting the permit. It's optional for UserAuthGroup roles such as ${IDIR_USER_AUTH_GROUP_LIST.join(', ')}.`,
-    example: 74,
-    required: false,
-  })
-  @Type(() => Number)
-  @IsOptional()
-  @IsNumber()
-  companyId?: number;
-
   @ApiProperty({
     description:
       'Determines the expiration status of the permit. Setting to false confines the search to active permits only, while true limits it to expired permits. If unspecified, both active and expired permits are included in the results.',

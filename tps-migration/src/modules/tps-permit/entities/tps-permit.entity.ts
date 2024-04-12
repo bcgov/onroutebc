@@ -77,4 +77,24 @@ export class TpsPermit {
     nullable: true,
   })
   pdf: Buffer;
+
+  @AutoMap()
+  @ApiProperty({
+    example: 'dbo',
+    description: 'Permit Last Updated User ID ',
+  })
+  @Column({
+    name: 'DB_LAST_UPDATE_USERID',
+  })
+  lastUpdateUser: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '2023-07-13T17:31:17.470Z',
+    description: 'Permit Last Updated Date ',
+  })
+  @Column({
+    name: 'DB_LAST_UPDATE_TIMESTAMP',
+  })
+  lastUpdateTimestamp: Date;
 }

@@ -20,29 +20,29 @@ import {
   usePowerUnitSubTypesQuery,
   useTrailerSubTypesQuery,
 } from "../../../../manageVehicles/apiManager/hooks";
+import { useParams } from "react-router-dom";
 
 export const AmendPermitReview = () => {
   const { permit, amendmentApplication, permitHistory, back, next, getLinks } =
     useContext(AmendPermitContext);
 
-  const { createdDateTime, updatedDateTime } = getDatetimes(amendmentApplication, permit);
+  const { createdDateTime, updatedDateTime } = getDatetimes(
+    amendmentApplication,
+    permit,
+  );
 
-  const {
-    companyLegalName,
-    idirUserDetails,
-  } = useContext(OnRouteBCContext);
+  const { companyLegalName, idirUserDetails } = useContext(OnRouteBCContext);
 
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
-  const doingBusinessAs = isStaffActingAsCompany && companyLegalName ?
-    companyLegalName : "";
+  const doingBusinessAs =
+    isStaffActingAsCompany && companyLegalName ? companyLegalName : "";
 
   const validTransactionHistory = permitHistory.filter((history) =>
     isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
   );
 
-  const { data: companyInfo } = useCompanyInfoDetailsQuery(
-    getDefaultRequiredVal(0, amendmentApplication?.companyId),
-  );
+  const { companyId } = useParams();
+  const { data: companyInfo } = useCompanyInfoDetailsQuery(companyId);
   const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
   const trailerSubTypesQuery = useTrailerSubTypesQuery();
 
@@ -66,7 +66,10 @@ export const AmendPermitReview = () => {
     -1 *
     calculateAmountToRefund(
       validTransactionHistory,
-      getDefaultRequiredVal(0, amendmentApplication?.permitData?.permitDuration),
+      getDefaultRequiredVal(
+        0,
+        amendmentApplication?.permitData?.permitDuration,
+      ),
     );
 
   return (
