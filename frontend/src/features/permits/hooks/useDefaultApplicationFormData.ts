@@ -40,7 +40,6 @@ export const useDefaultApplicationFormData = (
       getDefaultValues(
         permitType,
         applicationData,
-        companyId,
         userDetails,
         companyInfo,
       ),
@@ -144,7 +143,6 @@ export const useDefaultApplicationFormData = (
       getDefaultValues(
         permitType,
         applicationData,
-        companyId,
         userDetails,
         companyInfo,
       ),

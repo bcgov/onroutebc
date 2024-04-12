@@ -37,7 +37,6 @@ export const getDefaultFormDataFromApplication = (
     ...getDefaultValues(
       defaultPermitType,
       application,
-      application.companyId,
     ),
   };
 };
@@ -85,7 +84,6 @@ export const getDefaultFormDataFromPermit = (
           ),
         },
       } as AmendPermitFormData,
-      restOfPermit.companyId,
     ),
   };
 };
@@ -111,7 +109,6 @@ export const getDefaultFromNullableFormData = (
     ...getDefaultValues(
       defaultPermitType,
       permitFormData,
-      permitFormData.companyId,
     ),
   };
 };

@@ -70,6 +70,10 @@ export class PermitProfile extends AutomapperProfile {
         Permit,
         ReadPermitMetadataDto,
         forMember(
+          (d) => d.companyId,
+          mapFrom((s) => s?.company?.companyId),
+        ),
+        forMember(
           (d) => d.startDate,
           mapFrom((s) => s.permitData?.startDate),
         ),

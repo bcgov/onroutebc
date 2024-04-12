@@ -74,23 +74,25 @@ const searchRoute =
   `&searchByFilter=${SEARCH_BY_FILTERS.PERMIT_NUMBER}&searchString=`;
 
 export const AmendPermit = () => {
-  const { permitId } = useParams();
+  const { permitId, companyId } = useParams();
   const { idirUserDetails } = useContext(OnRouteBCContext);
   const navigate = useNavigate();
 
   // Query for permit data whenever this page is rendered, for the permit id
-  const { data: permit } = usePermitDetailsQuery(permitId);
+  const { data: permit } = usePermitDetailsQuery(companyId, permitId);
 
   // Get original permit id for the permit
   const originalPermitId = permit?.originalPermitId;
 
   // Get permit history for original permit id
-  const permitHistoryQuery = usePermitHistoryQuery(originalPermitId);
+  const permitHistoryQuery = usePermitHistoryQuery(originalPermitId, companyId);
   const permitHistory = getDefaultRequiredVal([], permitHistoryQuery.data);
 
   // Get latest amendment application for the permit, if any
-  const { data: latestAmendmentApplication } =
-    useAmendmentApplicationQuery(originalPermitId);
+  const { data: latestAmendmentApplication } = useAmendmentApplicationQuery(
+    originalPermitId,
+    companyId,
+  );
 
   const isLoadingState = () => {
     return (
