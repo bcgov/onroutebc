@@ -48,7 +48,7 @@ export const useAmendPermitForm = (
 
   useEffect(() => {
     setFormData(permitFormDefaultValues());
-  }, [amendmentApplication, permit, repopulateFormData]);
+  }, [amendmentApplication, permit, repopulateFormData, companyInfo]);
 
   // Register default values with react-hook-form
   const formMethods = useForm<AmendPermitFormData>({
