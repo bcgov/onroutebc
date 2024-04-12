@@ -544,14 +544,14 @@ export const amendPermit = async (
  */
 export const modifyAmendmentApplication = async ({
   application,
-  applicationNumber,
+  applicationId,
   companyId,
 }: {
   application: AmendPermitFormData;
-  applicationNumber: string;
+  applicationId: string;
   companyId: string;
 }) => {
-  return await updateApplication(application, applicationNumber, companyId);
+  return await updateApplication(application, applicationId, companyId);
 };
 
 /**

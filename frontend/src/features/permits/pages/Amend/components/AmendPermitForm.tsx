@@ -157,9 +157,9 @@ export const AmendPermitForm = () => {
 
     const response = shouldUpdateApplication
       ? await modifyAmendmentMutation.mutateAsync({
-          applicationNumber: getDefaultRequiredVal(
+          applicationId: getDefaultRequiredVal(
             "",
-            permitToBeAmended.applicationNumber,
+            permitToBeAmended.permitId,
           ),
           application: permitToBeAmended,
           companyId: companyId as string,
