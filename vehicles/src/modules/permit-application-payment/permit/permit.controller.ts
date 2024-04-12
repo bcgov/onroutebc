@@ -6,8 +6,6 @@ import {
   Get,
   Param,
   Query,
-  Res,
-  BadRequestException,
   ForbiddenException,
 } from '@nestjs/common';
 import { PermitService } from './permit.service';
@@ -19,27 +17,19 @@ import {
   ApiInternalServerErrorResponse,
   ApiCreatedResponse,
   ApiBearerAuth,
-  ApiOkResponse,
   ApiOperation,
 } from '@nestjs/swagger';
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
-import { ReadPermitDto } from './dto/response/read-permit.dto';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
-import { FileDownloadModes } from '../../../common/enum/file-download-modes.enum';
-import { ReadFileDto } from '../../common/dto/response/read-file.dto';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
-import { PermitHistoryDto } from './dto/response/permit-history.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { VoidPermitDto } from './dto/request/void-permit.dto';
 import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
 import { GetPermitQueryParamsDto } from './dto/request/queryParam/getPermit.query-params.dto';
-import {
-  ClientUserAuthGroup,
-  IDIR_USER_AUTH_GROUP_LIST,
-} from 'src/common/enum/user-auth-group.enum';
+import { IDIR_USER_AUTH_GROUP_LIST } from 'src/common/enum/user-auth-group.enum';
 import { ReadPermitMetadataDto } from './dto/response/read-permit-metadata.dto';
 import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 import { CreateNotificationDto } from '../../common/dto/request/create-notification.dto';
@@ -47,7 +37,7 @@ import { ReadNotificationDto } from '../../common/dto/response/read-notification
 import { PermitReceiptDocumentService } from '../permit-receipt-document/permit-receipt-document.service';
 
 @ApiBearerAuth()
-@ApiTags('Permit')
+@ApiTags('Permit: API accessible exclusively to staff users.')
 @ApiNotFoundResponse({
   description: 'The Permit Api Not Found Response',
   type: ExceptionDto,
@@ -67,19 +57,6 @@ export class PermitController {
     private readonly permitReceiptDocumentService: PermitReceiptDocumentService,
   ) {}
 
-  @ApiOkResponse({
-    description: 'The Permit Resource to get revision and payment history.',
-    type: PermitHistoryDto,
-    isArray: true,
-  })
-  @Roles(Role.READ_PERMIT)
-  @Get('/:permitId/history')
-  async getPermitHisory(
-    @Param('permitId') permitId: string,
-  ): Promise<PermitHistoryDto[]> {
-    return this.permitService.findPermitHistory(permitId);
-  }
-
   /**
    * Get Permits of Logged in user
    * @Query companyId Company id of logged in user
@@ -87,39 +64,26 @@ export class PermitController {
    *
    */
   @ApiPaginatedResponse(ReadPermitMetadataDto)
-  @Roles(Role.READ_PERMIT)
+  @Roles({
+    userAuthGroup: IDIR_USER_AUTH_GROUP_LIST,
+    oneOf: [Role.READ_PERMIT],
+  })
   @Get()
   async getPermit(
     @Req() request: Request,
     @Query() getPermitQueryParamsDto: GetPermitQueryParamsDto,
   ): Promise<PaginationDto<ReadPermitMetadataDto>> {
     const currentUser = request.user as IUserJWT;
-    if (
-      !doesUserHaveAuthGroup(
-        currentUser.orbcUserAuthGroup,
-        IDIR_USER_AUTH_GROUP_LIST,
-      ) &&
-      !getPermitQueryParamsDto.companyId
-    ) {
-      throw new BadRequestException(
-        `Company Id is required for roles except ${IDIR_USER_AUTH_GROUP_LIST.join(', ')}.`,
-      );
-    }
-
-    const userGuid =
-      ClientUserAuthGroup.PERMIT_APPLICANT === currentUser.orbcUserAuthGroup
-        ? currentUser.userGUID
-        : null;
 
     return await this.permitService.findPermit({
       page: getPermitQueryParamsDto.page,
       take: getPermitQueryParamsDto.take,
       orderBy: getPermitQueryParamsDto.orderBy,
-      companyId: getPermitQueryParamsDto.companyId,
+      companyId: null,
       expired: getPermitQueryParamsDto.expired,
       searchColumn: getPermitQueryParamsDto.searchColumn,
       searchString: getPermitQueryParamsDto.searchString,
-      userGUID: userGuid,
+      userGUID: null,
       currentUser: currentUser,
     });
   }
@@ -142,75 +106,6 @@ export class PermitController {
     return permitTypes;
   }
 
-  @ApiOkResponse({
-    description: 'Retrieves a specific Permit Resource by its ID.',
-    type: ReadPermitDto,
-    isArray: false,
-  })
-  @ApiOperation({
-    summary: 'Get Permit by ID',
-    description:
-      'Fetches a single permit detail by its permit ID for the current user.',
-  })
-  @Roles(Role.READ_PERMIT)
-  @Get('/:permitId')
-  async getByPermitId(
-    @Req() request: Request,
-    @Param('permitId') permitId: string,
-  ): Promise<ReadPermitDto> {
-    const currentUser = request.user as IUserJWT;
-    return this.permitService.findByPermitId(permitId, currentUser);
-  }
-
-  @ApiCreatedResponse({
-    description: 'The DOPS file Resource with the presigned resource',
-    type: ReadFileDto,
-  })
-  @ApiOperation({
-    summary: 'Retrieve PDF',
-    description:
-      'Retrieves the DOPS file for a given permit ID. Requires READ_PERMIT role.',
-  })
-  @Roles(Role.READ_PERMIT)
-  @Get('/:permitId/pdf')
-  async getPDF(
-    @Req() request: Request,
-    @Param('permitId') permitId: string,
-    @Res() res: Response,
-  ): Promise<void> {
-    const currentUser = request.user as IUserJWT;
-
-    await this.permitService.findPDFbyPermitId(
-      currentUser,
-      permitId,
-      FileDownloadModes.PROXY,
-      res,
-    );
-    res.status(200);
-  }
-
-  @ApiCreatedResponse({
-    description: 'The DOPS file Resource with the presigned resource',
-    type: ReadFileDto,
-  })
-  @ApiOperation({
-    summary: 'Get Receipt PDF',
-    description:
-      'Retrieves a PDF receipt for a given permit ID, ensuring the user has read permission.',
-  })
-  @Roles(Role.READ_PERMIT)
-  @Get('/:permitId/receipt')
-  async getReceiptPDF(
-    @Req() request: Request,
-    @Param('permitId') permitId: string,
-    @Res() res: Response,
-  ): Promise<void> {
-    const currentUser = request.user as IUserJWT;
-
-    await this.permitService.findReceiptPDF(currentUser, permitId, res);
-    res.status(200);
-  }
-
   /**
    * A POST method defined with the @Post() decorator and a route of /:permitId/void
    * that Voids or revokes a permit for given @param permitId by changing it's status to VOIDED|REVOKED.
@@ -220,7 +115,10 @@ export class PermitController {
    * @returns The id of new voided/revoked permit a in response object {@link ResultDto}
    *
    */
-  @Roles(Role.VOID_PERMIT)
+  @Roles({
+    userAuthGroup: IDIR_USER_AUTH_GROUP_LIST,
+    oneOf: [Role.VOID_PERMIT],
+  })
   @Post('/:permitId/void')
   async voidpermit(
     @Req() request: Request,
@@ -269,7 +167,10 @@ export class PermitController {
     description:
       'Sends a notification related to a specific permit after checking user authorization.',
   })
-  @Roles(Role.SEND_NOTIFICATION)
+  @Roles({
+    userAuthGroup: IDIR_USER_AUTH_GROUP_LIST,
+    oneOf: [Role.SEND_NOTIFICATION],
+  })
   @Post('/:permitId/notification')
   async notification(
     @Req() request: Request,
