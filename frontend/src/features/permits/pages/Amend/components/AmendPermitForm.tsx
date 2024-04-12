@@ -43,15 +43,12 @@ export const AmendPermitForm = () => {
     getLinks,
   } = useContext(AmendPermitContext);
 
-  const {
-    companyLegalName,
-    idirUserDetails,
-  } = useContext(OnRouteBCContext);
+  const { companyLegalName, idirUserDetails } = useContext(OnRouteBCContext);
   const { companyId } = useParams();
 
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
-  const doingBusinessAs = isStaffActingAsCompany && companyLegalName ?
-    companyLegalName : "";
+  const doingBusinessAs =
+    isStaffActingAsCompany && companyLegalName ? companyLegalName : "";
 
   const navigate = useNavigate();
 
@@ -61,7 +58,10 @@ export const AmendPermitForm = () => {
     amendmentApplication,
   );
 
-  const { createdDateTime, updatedDateTime } = getDatetimes(amendmentApplication, permit);
+  const { createdDateTime, updatedDateTime } = getDatetimes(
+    amendmentApplication,
+    permit,
+  );
 
   //The name of this feature that is used for id's, keys, and associating form components
   const FEATURE = "amend-permit";
@@ -157,15 +157,14 @@ export const AmendPermitForm = () => {
 
     const response = shouldUpdateApplication
       ? await modifyAmendmentMutation.mutateAsync({
-          applicationNumber: getDefaultRequiredVal(
+          applicationId: getDefaultRequiredVal(
             "",
-            permitToBeAmended.applicationNumber,
+            permitToBeAmended.permitId,
           ),
           application: permitToBeAmended,
+          companyId: companyId as string,
         })
-      : await amendPermitMutation.mutateAsync(
-          permitToBeAmended,
-        );
+      : await amendPermitMutation.mutateAsync(permitToBeAmended);
 
     if (response.application) {
       onSaveSuccess(response.application);
