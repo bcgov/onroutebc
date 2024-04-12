@@ -89,8 +89,13 @@ export const createApplication = async (
 export const updateApplication = async (
   application: ApplicationFormData,
   applicationId: string,
+  companyIdParam?: Nullable<string>,
 ): Promise<AxiosResponse<ApplicationResponseData>> => {
-  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
+  const companyId = getDefaultRequiredVal(
+    "",
+    getCompanyIdFromSession(),
+    companyIdParam,
+  );
   return await httpPUTRequest(
     `${APPLICATIONS_API_ROUTES.UPDATE(companyId)}/${applicationId}`,
     replaceEmptyValuesWithNull({
@@ -540,11 +545,13 @@ export const amendPermit = async (
 export const modifyAmendmentApplication = async ({
   application,
   applicationNumber,
+  companyId,
 }: {
   application: AmendPermitFormData;
   applicationNumber: string;
+  companyId: string;
 }) => {
-  return await updateApplication(application, applicationNumber);
+  return await updateApplication(application, applicationNumber, companyId);
 };
 
 /**

@@ -345,6 +345,7 @@ export const useModifyAmendmentApplication = () => {
     mutationFn: async (data: {
       application: AmendPermitFormData;
       applicationNumber: string;
+      companyId: string;
     }) => {
       const amendResult = await modifyAmendmentApplication(data);
       if (amendResult.status === 200 || amendResult.status === 201) {
