@@ -93,9 +93,7 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     vehicleOptions,
     powerUnitSubTypes,
     trailerSubTypes,
-  } = usePermitVehicleManagement(
-    applyWhenNotNullable((companyIdNum) => `${companyIdNum}`, companyId, "0"),
-  );
+  } = usePermitVehicleManagement();
 
   // Show leave application dialog
   const [showLeaveApplicationDialog, setShowLeaveApplicationDialog] =
@@ -155,10 +153,7 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     }, savedVehicleDetails);
   };
 
-  const onSaveSuccess = (
-    savedApplication: Application,
-    status: number,
-  ) => {
+  const onSaveSuccess = (savedApplication: Application, status: number) => {
     snackBar.setSnackBar({
       showSnackbar: true,
       setShowSnackbar: () => true,
@@ -168,9 +163,7 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
       alertType: "success",
     });
 
-    applicationContext.setApplicationData(
-      savedApplication,
-    );
+    applicationContext.setApplicationData(savedApplication);
     return getDefaultRequiredVal("", savedApplication.permitId);
   };
 
@@ -207,19 +200,11 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
           },
     );
 
-    const {
-      application: savedApplication,
-      status,
-    } = await saveApplicationMutation.mutateAsync(
-      applicationToBeSaved,
-    );
+    const { application: savedApplication, status } =
+      await saveApplicationMutation.mutateAsync(applicationToBeSaved);
 
     if (savedApplication) {
-      const savedPermitId = onSaveSuccess(
-        savedApplication,
-        status,
-      );
-      console.log("calling additionalSuccessAction");
+      const savedPermitId = onSaveSuccess(savedApplication, status);
       additionalSuccessAction?.(savedPermitId);
     } else {
       onSaveFailure();

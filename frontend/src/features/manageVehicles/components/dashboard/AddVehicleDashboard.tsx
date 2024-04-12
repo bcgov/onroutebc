@@ -7,8 +7,6 @@ import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import "./AddVehicleDashboard.scss";
 import { Banner } from "../../../../common/components/dashboard/components/banner/Banner";
 import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
-import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
-import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { PowerUnitForm } from "../form/PowerUnitForm";
 import { TrailerForm } from "../form/TrailerForm";
 import { VEHICLES_ROUTES, withCompanyId } from "../../../../routes/constants";
@@ -26,8 +24,6 @@ export const AddVehicleDashboard = React.memo(
         navigate(withCompanyId(VEHICLES_ROUTES.MANAGE));
       }
     };
-
-    const companyId = getDefaultRequiredVal("0", getCompanyIdFromSession());
 
     return (
       <div className="dashboard-page">
@@ -77,10 +73,10 @@ export const AddVehicleDashboard = React.memo(
             {addVehicleMode === VEHICLE_TYPES.TRAILER && "Trailer Details"}
           </Typography>
           {addVehicleMode === VEHICLE_TYPES.POWER_UNIT && (
-            <PowerUnitForm companyId={companyId} />
+            <PowerUnitForm />
           )}
           {addVehicleMode === VEHICLE_TYPES.TRAILER && (
-            <TrailerForm companyId={companyId} />
+            <TrailerForm />
           )}
         </Box>
       </div>

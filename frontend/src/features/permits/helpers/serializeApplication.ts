@@ -14,7 +14,6 @@ export const serializeForCreateApplication = (
   application: ApplicationFormData,
 ): CreateApplicationRequestData => {
   const {
-    companyId,
     permitId,
     originalPermitId,
     applicationNumber,
@@ -28,7 +27,6 @@ export const serializeForCreateApplication = (
   } = application;
 
   return {
-    companyId,
     permitId,
     originalPermitId,
     applicationNumber,
@@ -57,7 +55,6 @@ export const serializeForUpdateApplication = (
   application: ApplicationFormData,
 ): UpdateApplicationRequestData => {
   const {
-    companyId,
     permitType,
     comment,
     permitData: {
@@ -68,7 +65,6 @@ export const serializeForUpdateApplication = (
   } = application;
 
   return {
-    companyId,
     permitType,
     comment,
     permitData: {

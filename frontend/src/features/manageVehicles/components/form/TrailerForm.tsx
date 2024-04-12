@@ -41,14 +41,12 @@ interface TrailerFormProps {
    * If valid and available, the form will be in an editable state.
    */
   trailerId?: string;
-
-  companyId: string;
 }
 
 /**
  * @returns React component containing the form for adding or editing a power unit.
  */
-export const TrailerForm = ({ trailer, companyId }: TrailerFormProps) => {
+export const TrailerForm = ({ trailer }: TrailerFormProps) => {
   // Default values to register with React Hook Forms
   // If data was passed to this component, then use that data, otherwise use empty or undefined values
   const trailerDefaultValues = {
@@ -102,7 +100,6 @@ export const TrailerForm = ({ trailer, companyId }: TrailerFormProps) => {
             null,
           ) as Nullable<number>,
         },
-        companyId,
       });
       if (result.status === 200) {
         snackBar.setSnackBar({
@@ -125,7 +122,6 @@ export const TrailerForm = ({ trailer, companyId }: TrailerFormProps) => {
             null,
           ) as Nullable<number>,
         },
-        companyId,
       });
 
       if (result.status === 200 || result.status === 201) {

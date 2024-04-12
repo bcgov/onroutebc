@@ -78,14 +78,14 @@ export const PERMITS_ROUTES = {
       ROUTE_PLACEHOLDERS.PERMIT_ID,
       permitId,
     )}/success`,
-  VOID: (permitId?: string) =>
-    `${DYNAMIC_ROUTE_URI(
+  VOID: (companyId?: string, permitId?: string) =>
+    `/companies/${companyId}${DYNAMIC_ROUTE_URI(
       PERMITS_ROUTE_BASE,
       ROUTE_PLACEHOLDERS.PERMIT_ID,
       permitId,
     )}/void`,
-  AMEND: (permitId?: string) =>
-    `${DYNAMIC_ROUTE_URI(
+  AMEND: (companyId?: string, permitId?: string) =>
+    `/companies/${companyId}${DYNAMIC_ROUTE_URI(
       PERMITS_ROUTE_BASE,
       ROUTE_PLACEHOLDERS.PERMIT_ID,
       permitId,
