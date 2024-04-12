@@ -20,6 +20,7 @@ import {
   usePowerUnitSubTypesQuery,
   useTrailerSubTypesQuery,
 } from "../../../../manageVehicles/apiManager/hooks";
+import { useParams } from "react-router-dom";
 
 export const AmendPermitReview = () => {
   const { permit, amendmentApplication, permitHistory, back, next, getLinks } =
@@ -40,7 +41,8 @@ export const AmendPermitReview = () => {
     isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
   );
 
-  const { data: companyInfo } = useCompanyInfoDetailsQuery();
+  const { companyId } = useParams();
+  const { data: companyInfo } = useCompanyInfoDetailsQuery(companyId);
   const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
   const trailerSubTypesQuery = useTrailerSubTypesQuery();
 
