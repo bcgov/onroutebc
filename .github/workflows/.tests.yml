@@ -63,6 +63,7 @@ jobs:
           config: pageLoadTimeout=10000,baseUrl=https://${{ github.event.repository.name }}-${{ inputs.target }}-frontend.apps.silver.devops.gov.bc.ca
           working-directory: ./frontend
           browser: ${{ matrix.browser }}
+          config-file: cypress.config.ts
 
       - uses: actions/upload-artifact@v4
         if: failure()
