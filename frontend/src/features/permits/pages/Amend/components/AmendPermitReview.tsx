@@ -39,7 +39,7 @@ export const AmendPermitReview = () => {
     useContext(AmendPermitContext);
 
   // Send data to the backend API
-  const modifyAmendmentMutation = useModifyAmendmentApplication(companyId);
+  const modifyAmendmentMutation = useModifyAmendmentApplication();
 
   const { createdDateTime, updatedDateTime } = getDatetimes(amendmentApplication, permit);
 
@@ -66,9 +66,9 @@ export const AmendPermitReview = () => {
     }
 
     const { application: savedApplication } = await modifyAmendmentMutation.mutateAsync({
-      applicationNumber: getDefaultRequiredVal(
+      applicationId: getDefaultRequiredVal(
         "",
-        amendmentApplication?.applicationNumber,
+        amendmentApplication?.permitId,
       ),
       application: {
         ...amendmentApplication,
@@ -77,6 +77,7 @@ export const AmendPermitReview = () => {
           doingBusinessAs, // always set most recent company info DBA
         },
       },
+      companyId: companyId as string,
     });
 
     if (savedApplication) {

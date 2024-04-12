@@ -55,13 +55,16 @@ export const AmendPermitForm = () => {
     amendmentApplication,
   );
 
-  const { createdDateTime, updatedDateTime } = getDatetimes(amendmentApplication, permit);
+  const { createdDateTime, updatedDateTime } = getDatetimes(
+    amendmentApplication,
+    permit,
+  );
 
   //The name of this feature that is used for id's, keys, and associating form components
   const FEATURE = "amend-permit";
 
   const amendPermitMutation = useAmendPermit(companyId);
-  const modifyAmendmentMutation = useModifyAmendmentApplication(companyId);
+  const modifyAmendmentMutation = useModifyAmendmentApplication();
   const snackBar = useContext(SnackBarContext);
 
   const {
@@ -148,15 +151,14 @@ export const AmendPermitForm = () => {
 
     const response = shouldUpdateApplication
       ? await modifyAmendmentMutation.mutateAsync({
-          applicationNumber: getDefaultRequiredVal(
+          applicationId: getDefaultRequiredVal(
             "",
-            permitToBeAmended.applicationNumber,
+            permitToBeAmended.permitId,
           ),
           application: permitToBeAmended,
+          companyId: companyId as string,
         })
-      : await amendPermitMutation.mutateAsync(
-          permitToBeAmended,
-        );
+      : await amendPermitMutation.mutateAsync(permitToBeAmended);
 
     if (response.application) {
       onSaveSuccess(response.application);

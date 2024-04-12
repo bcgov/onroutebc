@@ -97,7 +97,6 @@ export const updateApplication = async (
     getCompanyIdFromSession(),
     companyIdParam,
   );
-
   return await httpPUTRequest(
     `${APPLICATIONS_API_ROUTES.UPDATE(companyId)}/${applicationId}`,
     replaceEmptyValuesWithNull({
@@ -547,18 +546,14 @@ export const amendPermit = async (
  */
 export const modifyAmendmentApplication = async ({
   application,
-  applicationNumber,
-  companyIdParam,
+  applicationId,
+  companyId,
 }: {
   application: AmendPermitFormData;
-  applicationNumber: string;
-  companyIdParam: Nullable<string>;
+  applicationId: string;
+  companyId: string;
 }) => {
-  return await updateApplication(
-    application,
-    applicationNumber,
-    companyIdParam,
-  );
+  return await updateApplication(application, applicationId, companyId);
 };
 
 /**
