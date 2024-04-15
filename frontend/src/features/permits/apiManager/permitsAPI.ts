@@ -119,9 +119,6 @@ export const getApplicationsInProgress = async ({
 }: PaginationAndFiltersAndPending): Promise<PaginatedResponse<ApplicationListItem>> => {
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   const applicationsURL = new URL(APPLICATIONS_API_ROUTES.GET(companyId));
-  if (companyId) {
-    applicationsURL.searchParams.set("companyId", companyId);
-  }
 
   // API pagination index starts at 1. Hence page + 1.
   applicationsURL.searchParams.set("page", `${page + 1}`);
