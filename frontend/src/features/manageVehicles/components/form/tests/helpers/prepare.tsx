@@ -122,18 +122,14 @@ export const closeMockServer = () => {
 
 export const renderTestPowerUnitForm = (powerUnit?: PowerUnit) => {
   const user = userEvent.setup();
-  const component = renderForTests(
-    <PowerUnitForm powerUnit={powerUnit} companyId="1" />,
-  );
+  const component = renderForTests(<PowerUnitForm powerUnit={powerUnit} />);
 
   return { user, component };
 };
 
 export const renderTestTrailerForm = (trailer?: Trailer) => {
   const user = userEvent.setup();
-  const component = renderForTests(
-    <TrailerForm trailer={trailer} companyId="1" />,
-  );
+  const component = renderForTests(<TrailerForm trailer={trailer} />);
 
   return { user, component };
 };

@@ -79,13 +79,14 @@ export class ApplicationService {
   async create(
     createApplicationDto: CreateApplicationDto,
     currentUser: IUserJWT,
+    companyId: number,
   ): Promise<ReadApplicationDto> {
     const id = createApplicationDto.permitId;
     let fetchExistingApplication: Permit;
     //If permit id exists assign it to null to create new application.
     //Existing permit id also implies that this new application is an amendment.
     if (id) {
-      fetchExistingApplication = await this.findOne(id);
+      fetchExistingApplication = await this.findOne(id, companyId);
       //to check if there is already an appliation in database
       const count = await this.checkApplicationInProgress(
         fetchExistingApplication.originalPermitId,
@@ -117,6 +118,7 @@ export class ApplicationService {
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
           directory: currentUser.orbcUserDirectory,
+          companyId: companyId,
         }),
       },
     );
@@ -164,17 +166,24 @@ export class ApplicationService {
     );
   }
 
-  private async findOne(permitId: string): Promise<Permit> {
-    return await this.permitRepository.findOne({
-      where: [{ permitId: permitId }],
-      relations: {
-        company: true,
-        permitData: true,
-        applicationOwner: {
-          userContact: true,
-        },
-      },
-    });
+  private async findOne(permitId: string, companyId?: number): Promise<Permit> {
+    let query = this.permitRepository
+      .createQueryBuilder('permit')
+      .leftJoinAndSelect('permit.company', 'company')
+      .innerJoinAndSelect('permit.permitData', 'permitData')
+      .leftJoinAndSelect('permit.applicationOwner', 'applicationOwner')
+      .leftJoinAndSelect(
+        'applicationOwner.userContact',
+        'applicationOwnerContact',
+      )
+      .where('permit.permitId = :permitId', {
+        permitId: permitId,
+      });
+    if (companyId)
+      query = query.andWhere('company.companyId = :companyId', {
+        companyId: companyId,
+      });
+    return await query.getOne();
   }
 
   /**
@@ -234,10 +243,11 @@ export class ApplicationService {
   /* Get single application By Permit ID*/
   @LogAsyncMethodExecution()
   async findApplication(
-    permitId: string,
+    applicationId: string,
     currentUser: IUserJWT,
+    companyId?: number,
   ): Promise<ReadApplicationDto> {
-    const application = await this.findOne(permitId);
+    const application = await this.findOne(applicationId, companyId);
     const readPermitApplicationdto = await this.classMapper.mapAsync(
       application,
       Permit,
@@ -399,26 +409,6 @@ export class ApplicationService {
   }
 
   /**
-   * Get a single application by application number
-   * @param applicationNumber example: "A2-00000004-373"
-   * @returns Permit object associated with the given applicationNumber
-   */
-  private async findByApplicationNumber(
-    applicationNumber: string,
-  ): Promise<Permit> {
-    const application = await this.permitRepository.findOne({
-      where: [{ applicationNumber: applicationNumber }],
-      relations: {
-        company: true,
-        permitData: true,
-        applicationOwner: { userContact: true },
-      },
-    });
-
-    return application;
-  }
-
-  /**
    * Update an application
    * @param applicationNumber The key used to find the existing application
    * @param updateApplicationDto
@@ -426,12 +416,12 @@ export class ApplicationService {
    */
   @LogAsyncMethodExecution()
   async update(
-    applicationNumber: string,
+    applicationId: string,
     updateApplicationDto: UpdateApplicationDto,
     currentUser: IUserJWT,
+    companyId: number,
   ): Promise<ReadApplicationDto> {
-    const existingApplication =
-      await this.findByApplicationNumber(applicationNumber);
+    const existingApplication = await this.findOne(applicationId, companyId);
 
     const newApplication = this.classMapper.map(
       updateApplicationDto,
@@ -445,14 +435,15 @@ export class ApplicationService {
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
           directory: currentUser.orbcUserDirectory,
+          companyId: companyId,
         }),
       },
     );
 
     const applicationData: Permit = newApplication;
     await this.permitRepository.save(applicationData);
-    return this.classMapper.mapAsync(
-      await this.findByApplicationNumber(applicationNumber),
+    return await this.classMapper.mapAsync(
+      await this.findOne(applicationId, companyId),
       Permit,
       ReadApplicationDto,
       {
@@ -609,8 +600,9 @@ export class ApplicationService {
   async findCurrentAmendmentApplication(
     originalPermitId: string,
     currentUser: IUserJWT,
+    companyId?: number,
   ): Promise<ReadApplicationDto> {
-    const application = await this.permitRepository
+    let applicationQuery = this.permitRepository
       .createQueryBuilder('permit')
       .leftJoinAndSelect('permit.company', 'company')
       .innerJoinAndSelect('permit.permitData', 'permitData')
@@ -621,8 +613,10 @@ export class ApplicationService {
       )
       .where('permit.originalPermitId = :originalPermitId', {
         originalPermitId: originalPermitId,
-      })
-      .andWhere('permit.permitStatus IN (:...applicationStatus)', {
+      });
+    applicationQuery = applicationQuery.andWhere(
+      'permit.permitStatus IN (:...applicationStatus)',
+      {
         applicationStatus: Object.values(ApplicationStatus).filter(
           (x) =>
             x != ApplicationStatus.DELETED &&
@@ -633,9 +627,15 @@ export class ApplicationService {
             x != ApplicationStatus.VOIDED &&
             x != ApplicationStatus.SUPERSEDED,
         ),
-      })
-      .orderBy('permit.revision', 'DESC')
-      .getOne();
+      },
+    );
+    if (companyId)
+      applicationQuery = applicationQuery.andWhere(
+        'company.companyId = :companyId',
+        { companyId: companyId },
+      );
+    applicationQuery = applicationQuery.orderBy('permit.revision', 'DESC');
+    const application = await applicationQuery.getOne();
 
     return await this.classMapper.mapAsync(
       application,
