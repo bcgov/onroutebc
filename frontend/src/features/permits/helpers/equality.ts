@@ -135,6 +135,8 @@ export const areApplicationDataEqual = (
     areMailingAddressesEqual(data1.mailingAddress, data2.mailingAddress) &&
     ((!data1.companyName && !data2.companyName) ||
       data1.companyName === data2.companyName) &&
+    ((!data1.doingBusinessAs && !data2.doingBusinessAs) ||
+      data1.doingBusinessAs === data2.doingBusinessAs) &&
     ((!data1.clientNumber && !data2.clientNumber) ||
       data1.clientNumber === data2.clientNumber)
   );
