@@ -27,7 +27,7 @@ export const VoidPermitHeader = ({
 
       <Box className="permit-number">
         <Box component="span" className="permit-number__label">
-          Voiding Permit #:
+          Voiding/Revoking Permit #:
         </Box>
         <Box
           component="span"

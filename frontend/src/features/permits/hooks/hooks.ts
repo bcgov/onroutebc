@@ -347,6 +347,7 @@ export const useModifyAmendmentApplication = () => {
       companyId: string;
     }) => {
       const amendResult = await modifyAmendmentApplication(data);
+
       if (amendResult.status === 200 || amendResult.status === 201) {
         queryClient.invalidateQueries({
           queryKey: ["permit"],
