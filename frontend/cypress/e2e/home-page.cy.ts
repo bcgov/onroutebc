@@ -90,6 +90,7 @@ import cypress from "cypress";
           cy.get('[name="submitButton"]').click();     
         })
 
+        // verify if payment succeeded
         cy.contains('Success').should('exist');
       });
   })
