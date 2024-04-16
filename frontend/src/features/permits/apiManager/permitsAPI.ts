@@ -84,13 +84,19 @@ export const createApplication = async (
  * Update an existing application.
  * @param application application data
  * @param applicationId application number for the application to update
+ * @param companyIdParam company id
  * @returns response with updated application data, or error if failed
  */
 export const updateApplication = async (
   application: ApplicationFormData,
   applicationId: string,
+  companyIdParam?: Nullable<string>,
 ): Promise<AxiosResponse<ApplicationResponseData>> => {
-  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
+  const companyId = getDefaultRequiredVal(
+    "",
+    getCompanyIdFromSession(),
+    companyIdParam,
+  );
   return await httpPUTRequest(
     `${APPLICATIONS_API_ROUTES.UPDATE(companyId)}/${applicationId}`,
     replaceEmptyValuesWithNull({
@@ -535,16 +541,19 @@ export const amendPermit = async (
  * Modify amendment application.
  * @param application amendment application data to be modified
  * @param applicationNumber application number of the amendment application
+ * @param companyIdParam company id
  * @returns response with amended permit data, or error if failed
  */
 export const modifyAmendmentApplication = async ({
   application,
-  applicationNumber,
+  applicationId,
+  companyId,
 }: {
   application: AmendPermitFormData;
-  applicationNumber: string;
+  applicationId: string;
+  companyId: string;
 }) => {
-  return await updateApplication(application, applicationNumber);
+  return await updateApplication(application, applicationId, companyId);
 };
 
 /**

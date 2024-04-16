@@ -285,7 +285,8 @@ export const useIssuePermits = (companyIdParam?: Nullable<string>) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: (applicationIds: string[]) => issuePermits(applicationIds, companyIdParam),
+    mutationFn: (applicationIds: string[]) =>
+      issuePermits(applicationIds, companyIdParam),
     retry: false,
     onSuccess: (issueResponseData) => {
       queryClient.invalidateQueries({
@@ -311,9 +312,7 @@ export const useIssuePermits = (companyIdParam?: Nullable<string>) => {
 export const useAmendPermit = (companyIdParam?: Nullable<string>) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (
-      data: AmendPermitFormData,
-    ) => {
+    mutationFn: async (data: AmendPermitFormData) => {
       const amendResult = await amendPermit(data, companyIdParam);
       if (amendResult.status === 200 || amendResult.status === 201) {
         queryClient.invalidateQueries({
@@ -344,9 +343,11 @@ export const useModifyAmendmentApplication = () => {
   return useMutation({
     mutationFn: async (data: {
       application: AmendPermitFormData;
-      applicationNumber: string;
+      applicationId: string;
+      companyId: string;
     }) => {
       const amendResult = await modifyAmendmentApplication(data);
+
       if (amendResult.status === 200 || amendResult.status === 201) {
         queryClient.invalidateQueries({
           queryKey: ["permit"],

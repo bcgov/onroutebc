@@ -2,13 +2,14 @@ import { Typography } from "@mui/material";
 
 import "./CompanyBanner.scss";
 import { getDefaultRequiredVal } from "../../helpers/util";
+import { Nullable } from "../../types/common";
 
 export const CompanyBanner = ({
   companyName,
   clientNumber,
 }: {
-  companyName?: string;
-  clientNumber?: string;
+  companyName?: Nullable<string>;
+  clientNumber?: Nullable<string>;
 }) => {
   return (
     <div className="company-banner">

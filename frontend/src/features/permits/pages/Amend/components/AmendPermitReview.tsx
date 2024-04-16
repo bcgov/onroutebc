@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 import "./AmendPermitReview.scss";
 import { AmendPermitContext } from "../context/AmendPermitContext";
@@ -9,8 +10,9 @@ import { getDefaultFormDataFromPermit } from "../types/AmendPermitFormData";
 import { ReviewReason } from "./review/ReviewReason";
 import { calculateAmountToRefund } from "../../../helpers/feeSummary";
 import { isValidTransaction } from "../../../helpers/payment";
-import OnRouteBCContext from "../../../../../common/authentication/OnRouteBCContext";
 import { getDatetimes } from "./helpers/getDatetimes";
+import { useModifyAmendmentApplication } from "../../../hooks/hooks";
+import { ERROR_ROUTES } from "../../../../../routes/constants";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -22,25 +24,32 @@ import {
 } from "../../../../manageVehicles/apiManager/hooks";
 
 export const AmendPermitReview = () => {
-  const { permit, amendmentApplication, permitHistory, back, next, getLinks } =
+  const navigate = useNavigate();
+  const { companyId } = useParams();
+
+  const {
+    permit,
+    amendmentApplication,
+    setAmendmentApplication,
+    permitHistory,
+    back,
+    next,
+    getLinks,
+  } =
     useContext(AmendPermitContext);
 
-  const { createdDateTime, updatedDateTime } = getDatetimes(
-    amendmentApplication,
-    permit,
-  );
+  // Send data to the backend API
+  const modifyAmendmentMutation = useModifyAmendmentApplication();
 
-  const { companyLegalName, idirUserDetails } = useContext(OnRouteBCContext);
-
-  const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
-  const doingBusinessAs =
-    isStaffActingAsCompany && companyLegalName ? companyLegalName : "";
+  const { createdDateTime, updatedDateTime } = getDatetimes(amendmentApplication, permit);
 
   const validTransactionHistory = permitHistory.filter((history) =>
     isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
   );
 
-  const { data: companyInfo } = useCompanyInfoDetailsQuery();
+  const { data: companyInfo } = useCompanyInfoDetailsQuery(companyId);
+  const doingBusinessAs = companyInfo?.alternateName;
+
   const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
   const trailerSubTypesQuery = useTrailerSubTypesQuery();
 
@@ -51,14 +60,39 @@ export const AmendPermitReview = () => {
   const onSubmit = async () => {
     setIsSubmitted(true);
     if (!isChecked) return;
-    next();
+
+    if (!amendmentApplication) {
+      return navigate(ERROR_ROUTES.UNEXPECTED);
+    }
+
+    const { application: savedApplication } = await modifyAmendmentMutation.mutateAsync({
+      applicationId: getDefaultRequiredVal(
+        "",
+        amendmentApplication?.permitId,
+      ),
+      application: {
+        ...amendmentApplication,
+        permitData: {
+          ...amendmentApplication.permitData,
+          doingBusinessAs, // always set most recent company info DBA
+        },
+      },
+      companyId: companyId as string,
+    });
+
+    if (savedApplication) {
+      setAmendmentApplication(savedApplication);
+      next();
+    } else {
+      navigate(ERROR_ROUTES.UNEXPECTED);
+    }
   };
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  const oldFields = getDefaultFormDataFromPermit(permit);
+  const oldFields = getDefaultFormDataFromPermit(companyInfo, permit);
 
   const amountToRefund =
     -1 *

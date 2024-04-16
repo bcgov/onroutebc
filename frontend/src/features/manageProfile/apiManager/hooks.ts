@@ -8,6 +8,8 @@ import { IDPS } from "../../../common/types/idp";
 import { Nullable } from "../../../common/types/common";
 import { ERROR_ROUTES } from "../../../routes/constants";
 import { DeleteResponse } from "../types/manageProfile";
+import { getCompanyIdFromSession } from "../../../common/apiManager/httpRequestHandler";
+import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import {
   FIVE_MINUTES,
   FOUR_MINUTES,
@@ -34,8 +36,6 @@ import {
   IDIRUserContextType,
   UserRolesType,
 } from "../../../common/authentication/types";
-import { getCompanyIdFromSession } from "../../../common/apiManager/httpRequestHandler";
-import { getDefaultRequiredVal } from "../../../common/helpers/util";
 
 /**
  * Fetches company info of current user.
@@ -66,7 +66,7 @@ export const useCompanyInfoDetailsQuery = (
   return useQuery({
     queryKey: ["companyInfo"],
     queryFn: () => getCompanyInfoById(Number(companyId)),
-    enabled: !!companyId,
+    enabled: Boolean(companyId),
     refetchInterval: FIVE_MINUTES,
     refetchOnWindowFocus: false, // fixes issue where a query is run everytime the screen is brought to foreground
     retry: false,
