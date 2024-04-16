@@ -84,6 +84,7 @@ export const createApplication = async (
  * Update an existing application.
  * @param application application data
  * @param applicationId application number for the application to update
+ * @param companyIdParam company id
  * @returns response with updated application data, or error if failed
  */
 export const updateApplication = async (
@@ -540,6 +541,7 @@ export const amendPermit = async (
  * Modify amendment application.
  * @param application amendment application data to be modified
  * @param applicationNumber application number of the amendment application
+ * @param companyIdParam company id
  * @returns response with amended permit data, or error if failed
  */
 export const modifyAmendmentApplication = async ({

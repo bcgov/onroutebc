@@ -16,7 +16,7 @@
         "disabled": true
       },
       {
-        "description": "Permit Scope and Limitation",
+        "description": "Highways and Restrictive Load Limits",
         "condition": "CVSE-1011",
         "conditionLink": "https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1258",
         "checked": true,
