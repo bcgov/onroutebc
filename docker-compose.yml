@@ -1,6 +1,3 @@
----
-version: "3.8"
-
 services:
   sql-server-db:
     container_name: sql-server-db
