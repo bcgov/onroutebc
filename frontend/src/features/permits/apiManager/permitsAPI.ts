@@ -1,14 +1,16 @@
 import { AxiosResponse } from "axios";
 
+import { PermitHistory } from "../types/PermitHistory";
+import { removeEmptyIdsFromPermitsActionResponse } from "../helpers/mappers";
+import { AmendPermitFormData } from "../pages/Amend/types/AmendPermitFormData";
+import { EmailNotificationType } from "../types/EmailNotificationType";
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
 import {
   IssuePermitsResponse,
   PermitListItem,
   PermitResponseData,
 } from "../types/permit";
-import { PermitHistory } from "../types/PermitHistory";
-import { removeEmptyIdsFromPermitsActionResponse } from "../helpers/mappers";
-import { AmendPermitFormData } from "../pages/Amend/types/AmendPermitFormData";
+
 import {
   Nullable,
   PaginatedResponse,
@@ -559,26 +561,28 @@ export const modifyAmendmentApplication = async ({
 };
 
 /**
- * Resend permit to email (and fax if provided).
+ * Resend permit and/or receipt to email.
  * @param permitId Permit id of the permit to resend
  * @param email Email to resend to
- * @param fax Fax to resend to (if provided)
+ * @param notificationTypes Types of email notifications to send (EMAIL_PERMIT and/or EMAIL_RECEIPT)
  * @returns Response if the resend action was successful
  */
 export const resendPermit = async ({
   permitId,
   email,
-  fax,
+  notificationTypes,
 }: {
   permitId: string;
   email: string;
-  fax?: Nullable<string>;
+  notificationTypes: EmailNotificationType[];
 }) => {
   return await httpPOSTRequest(
     `${PERMITS_API_ROUTES.RESEND(permitId)}`,
     replaceEmptyValuesWithNull({
       to: [email],
-      fax,
+      notificationType: [
+        ...notificationTypes,
+      ],
     }),
   );
 };
