@@ -14,7 +14,10 @@ import { Optional } from "../../../../common/types/common";
 interface PermitResendFormData {
   permitId: string;
   email: string;
-  notificationTypes: EmailNotificationType[];
+  notificationTypes: {
+    EMAIL_PERMIT: boolean;
+    EMAIL_RECEIPT: boolean;
+  };
 }
 
 const FEATURE = "permit-resend";
@@ -22,11 +25,15 @@ const FEATURE = "permit-resend";
 const notificationTypesRules = {
   validate: {
     requiredSelection: (
-      value: Optional<EmailNotificationType[]>,
+      value: Optional<{
+        EMAIL_PERMIT: boolean;
+        EMAIL_RECEIPT: boolean;
+      }>,
     ) => {
       return (
-        getDefaultRequiredVal(0, value?.length) > 0 ||
-        selectionRequired()
+        value?.EMAIL_PERMIT
+        || value?.EMAIL_RECEIPT
+        || selectionRequired()
       );
     },
   },
@@ -54,27 +61,16 @@ export default function PermitResendDialog({
   permitNumber: string;
   email?: string;
 }>) {
-  const [notificationTypes, setNotificationTypes] = useState([
-    { type: EMAIL_NOTIFICATION_TYPES.PERMIT, checked: false },
-    { type: EMAIL_NOTIFICATION_TYPES.RECEIPT, checked: false },
-  ]);
-
-  const selectedNotificationTypes = () => notificationTypes
-    .filter(notificationType => notificationType.checked)
-    .map(notificationType => notificationType.type);
-
-  const isNotificationTypeSelected = (type: EmailNotificationType) => {
-    const notificationTypeState = notificationTypes
-      .find(notificationType => notificationType.type === type);
-    
-    return Boolean(notificationTypeState?.checked);
-  };
+  const [notificationTypes, setNotificationTypes] = useState({
+    EMAIL_PERMIT: false,
+    EMAIL_RECEIPT: false,
+  });
 
   const formMethods = useForm<PermitResendFormData>({
     defaultValues: {
       permitId,
       email: getDefaultRequiredVal("", email),
-      notificationTypes: selectedNotificationTypes(),
+      notificationTypes,
     },
     reValidateMode: "onChange",
   });
@@ -88,9 +84,8 @@ export default function PermitResendDialog({
   } = formMethods;
 
   useEffect(() => {
-    const selectedTypes = selectedNotificationTypes();
-    setValue("notificationTypes", selectedTypes);
-    if (selectedTypes.length > 0) {
+    setValue("notificationTypes", notificationTypes);
+    if (notificationTypes.EMAIL_PERMIT || notificationTypes.EMAIL_RECEIPT) {
       clearErrors();
     }
   }, [notificationTypes]);
@@ -101,15 +96,21 @@ export default function PermitResendDialog({
 
   const handleResend = (formData: PermitResendFormData) => {
     const { permitId, email, notificationTypes } = formData;
-    onResend(permitId, email, notificationTypes);
+    const selectedNotificationTypes = [
+      notificationTypes.EMAIL_PERMIT ? EMAIL_NOTIFICATION_TYPES.PERMIT : undefined,
+      notificationTypes.EMAIL_RECEIPT ? EMAIL_NOTIFICATION_TYPES.RECEIPT : undefined,
+    ].filter(type => Boolean(type)) as EmailNotificationType[];
+
+    onResend(permitId, email, selectedNotificationTypes);
   };
 
   const toggleNotificationType = (type: EmailNotificationType) => {
-    setNotificationTypes(notificationTypes.map(notificationType => ({
-      ...notificationType,
-      checked: notificationType.type === type ?
-        !notificationType.checked : notificationType.checked,
-    })));
+    setNotificationTypes({
+      EMAIL_PERMIT: type === EMAIL_NOTIFICATION_TYPES.PERMIT ?
+        !notificationTypes.EMAIL_PERMIT : notificationTypes.EMAIL_PERMIT,
+      EMAIL_RECEIPT: type === EMAIL_NOTIFICATION_TYPES.RECEIPT ?
+        !notificationTypes.EMAIL_RECEIPT : notificationTypes.EMAIL_RECEIPT,
+    });
   };
 
   return (
@@ -152,7 +153,7 @@ export default function PermitResendDialog({
                 <div className="notification-type notification-type--permit">
                   <Checkbox
                     className={`notification-type__checkbox ${invalid ? "notification-type__checkbox--invalid" : ""}`}
-                    checked={isNotificationTypeSelected(EMAIL_NOTIFICATION_TYPES.PERMIT)}
+                    checked={notificationTypes.EMAIL_PERMIT}
                     onChange={() => toggleNotificationType(EMAIL_NOTIFICATION_TYPES.PERMIT)}
                   />
                   <div className="notification-type__label">Permit</div>
@@ -161,7 +162,7 @@ export default function PermitResendDialog({
                 <div className="notification-type notification-type--receipt">
                   <Checkbox
                     className={`notification-type__checkbox ${invalid ? "notification-type__checkbox--invalid" : ""}`}
-                    checked={isNotificationTypeSelected(EMAIL_NOTIFICATION_TYPES.RECEIPT)}
+                    checked={notificationTypes.EMAIL_RECEIPT}
                     onChange={() => toggleNotificationType(EMAIL_NOTIFICATION_TYPES.RECEIPT)}
                   />
                   <div className="notification-type__label">Receipt</div>
