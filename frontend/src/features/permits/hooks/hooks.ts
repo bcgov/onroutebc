@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { AxiosError } from "axios";
+import { MRT_PaginationState } from "material-react-table";
 import {
   useQueryClient,
   useMutation,
@@ -422,6 +423,29 @@ export const useApplicationsInProgressQuery = ({
     refetchOnMount: "always",
     placeholderData: keepPreviousData,
   });
+};
+
+/**
+ * Hook that fetches pending permits and manages its pagination state.
+ * @returns Pending permits along with pagination state and setter
+ */
+export const usePendingPermitsQuery = () => {
+  const [pagination, setPagination] = useState<MRT_PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const { data: pendingPermits } = useApplicationsInProgressQuery({
+    page: pagination.pageIndex,
+    take: pagination.pageSize,
+    pendingPermits: true,
+  });
+
+  return {
+    pendingPermits,
+    pagination,
+    setPagination,
+  };
 };
 
 /**

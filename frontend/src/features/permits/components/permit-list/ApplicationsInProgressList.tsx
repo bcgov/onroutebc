@@ -24,20 +24,18 @@ import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext
 import { getDefaultNullableVal, getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { UserAuthGroupType } from "../../../../common/authentication/types";
 import { Nullable } from "../../../../common/types/common";
-import {
-  deleteApplications,
-} from "../../apiManager/permitsAPI";
+import { deleteApplications } from "../../apiManager/permitsAPI";
+import { PermitApplicationOrigin } from "../../types/PermitApplicationOrigin";
+import { useApplicationsInProgressQuery, usePendingPermitsQuery } from "../../hooks/hooks";
+import { WarningBcGovBanner } from "../../../../common/components/banners/WarningBcGovBanner";
+import { ApplicationPendingPermitsModalDialog } from "../dialog/ApplicationPendingPermitsModalDialog";
+import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
 
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
-import { PermitApplicationOrigin } from "../../types/PermitApplicationOrigin";
-import { useApplicationsInProgressQuery } from "../../hooks/hooks";
-import { WarningBcGovBanner } from "../../../../common/components/banners/WarningBcGovBanner";
-import { ApplicationPendingPermitsModalDialog } from "../dialog/ApplicationPendingPermitsModalDialog";
-import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
 
 /**
  * Dynamically set the column
@@ -79,22 +77,20 @@ export const ApplicationsInProgressList = ({ onCountChange }:
     : [],
   });
 
-  const applicationPermitsPendingQuery = useApplicationsInProgressQuery({
-    page: 0,
-    take: pagination.pageSize,
-    pendingPermits: true,
-  });
+  const {
+    pendingPermits,
+    pagination: pendingPermitPagination,
+    setPagination: setPendingPermitPagination,
+  } = usePendingPermitsQuery();
 
   const { data, isError, isPending, isFetching } = applicationsQuery;
 
-  const pendingCount = getDefaultRequiredVal(0, applicationPermitsPendingQuery.data?.meta?.totalItems);
+  const pendingCount = getDefaultRequiredVal(0, pendingPermits?.meta?.totalItems);
   const canShowPendingBanner = pendingCount > 0;
 
   useEffect(() => {
-
     const totalCount = getDefaultRequiredVal(0, data?.meta?.totalItems);
     onCountChange(totalCount);
-    
   }, [data?.meta?.totalItems])
 
   const { idirUserDetails, userDetails } = useContext(OnRouteBCContext);
@@ -278,24 +274,31 @@ export const ApplicationsInProgressList = ({ onCountChange }:
 
   return (
     <div className="table-container">
-      {canShowPendingBanner && 
-      <WarningBcGovBanner
-        msg=""
-        additionalInfo={
-          <>
-            <span>Some of your applications weren&apos;t processed. See your {" "}
-              <CustomActionLink onClick={() => setShowPendingPermitsModal(true)}>
-                <strong>Pending Permits</strong>
-              </CustomActionLink>
-            </span>
-          </>
-        }
-      />}
+      {canShowPendingBanner ? (
+        <WarningBcGovBanner
+          msg=""
+          additionalInfo={
+            <>
+              <span>Some of your applications weren&apos;t processed. See your {" "}
+                <CustomActionLink onClick={() => setShowPendingPermitsModal(true)}>
+                  <strong>Pending Permits</strong>
+                </CustomActionLink>
+              </span>
+            </>
+          }
+        />
+      ) : null}
+
       <ApplicationPendingPermitsModalDialog
-          showModal={showPendingPermitsModal}
-          onCancel={() => setShowPendingPermitsModal(false)}
+        showModal={showPendingPermitsModal}
+        onCancel={() => setShowPendingPermitsModal(false)}
+        pendingPermits={pendingPermits}
+        pagination={pendingPermitPagination}
+        setPagination={setPendingPermitPagination}
       />
+
       <MaterialReactTable table={table} />
+
       <DeleteConfirmationDialog
         onClickDelete={onConfirmApplicationDelete}
         isOpen={isDeleteDialogOpen}
