@@ -96,10 +96,8 @@ export default function PermitResendDialog({
 
   const handleResend = (formData: PermitResendFormData) => {
     const { permitId, email, notificationTypes } = formData;
-    const selectedNotificationTypes = [
-      notificationTypes.EMAIL_PERMIT ? EMAIL_NOTIFICATION_TYPES.PERMIT : undefined,
-      notificationTypes.EMAIL_RECEIPT ? EMAIL_NOTIFICATION_TYPES.RECEIPT : undefined,
-    ].filter(type => Boolean(type)) as EmailNotificationType[];
+    const selectedNotificationTypes = Object.keys(notificationTypes)
+      .filter(type => notificationTypes[type as EmailNotificationType]) as EmailNotificationType[];
 
     onResend(permitId, email, selectedNotificationTypes);
   };
