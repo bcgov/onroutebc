@@ -33,7 +33,7 @@ export type BCeIDAddUserRequest = {
  */
 type Address = {
   addressLine1: string;
-  addressLine2?: string;
+  addressLine2?: Nullable<string>;
   city: string;
   provinceCode: string;
   countryCode: string;
