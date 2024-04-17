@@ -1,29 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type, Transform } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import {
   IsOptional,
   IsBoolean,
   IsString,
   Length,
-  IsNumber,
   Validate,
 } from 'class-validator';
 import { OrderByConstraint } from '../../../../../../common/constraint/orderby.constraint';
 import { PageOptionsDto } from '../../../../../../common/dto/paginate/page-options';
 import { ApplicationOrderBy } from '../../../../../../common/enum/orderBy.enum';
-import { IDIR_USER_AUTH_GROUP_LIST } from '../../../../../../common/enum/user-auth-group.enum';
 
 export class GetApplicationQueryParamsDto extends PageOptionsDto {
-  @ApiProperty({
-    description: `Id of the company requesting the permit. It's optional for UserAuthGroup roles such as ${IDIR_USER_AUTH_GROUP_LIST.join(', ')}.`,
-    example: 74,
-    required: false,
-  })
-  @Type(() => Number)
-  @IsOptional()
-  @IsNumber()
-  companyId?: number;
-
   @ApiProperty({
     example: 'applicationNumber:DESC,permitType:ASC',
     description:

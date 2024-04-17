@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { FieldValues, FormProvider } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import "./AmendPermitForm.scss";
 import { PERMIT_DURATION_OPTIONS } from "../../../constants/constants";
@@ -17,7 +17,6 @@ import { AmendReason } from "./form/AmendReason";
 import { Nullable } from "../../../../../common/types/common";
 import { ERROR_ROUTES } from "../../../../../routes/constants";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
-import OnRouteBCContext from "../../../../../common/authentication/OnRouteBCContext";
 import { PermitVehicleDetails } from "../../../types/PermitVehicleDetails";
 import { AmendPermitFormData } from "../types/AmendPermitFormData";
 import { getDatetimes } from "./helpers/getDatetimes";
@@ -43,29 +42,28 @@ export const AmendPermitForm = () => {
     getLinks,
   } = useContext(AmendPermitContext);
 
-  const {
-    companyLegalName,
-    idirUserDetails,
-  } = useContext(OnRouteBCContext);
-
-  const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
-  const doingBusinessAs = isStaffActingAsCompany && companyLegalName ?
-    companyLegalName : "";
-
+  const { companyId } = useParams();
   const navigate = useNavigate();
+
+  const { data: companyInfo } = useCompanyInfoDetailsQuery(companyId);
+  const doingBusinessAs = companyInfo?.alternateName;
 
   const { formData, formMethods } = useAmendPermitForm(
     currentStepIndex === 0,
+    companyInfo,
     permit,
     amendmentApplication,
   );
 
-  const { createdDateTime, updatedDateTime } = getDatetimes(amendmentApplication, permit);
+  const { createdDateTime, updatedDateTime } = getDatetimes(
+    amendmentApplication,
+    permit,
+  );
 
   //The name of this feature that is used for id's, keys, and associating form components
   const FEATURE = "amend-permit";
 
-  const amendPermitMutation = useAmendPermit();
+  const amendPermitMutation = useAmendPermit(companyId);
   const modifyAmendmentMutation = useModifyAmendmentApplication();
   const snackBar = useContext(SnackBarContext);
 
@@ -74,12 +72,9 @@ export const AmendPermitForm = () => {
     vehicleOptions,
     powerUnitSubTypes,
     trailerSubTypes,
-  } = usePermitVehicleManagement(`${formData.companyId}`);
+  } = usePermitVehicleManagement(companyId);
 
   const { handleSubmit, getValues } = formMethods;
-
-  const companyInfoQuery = useCompanyInfoDetailsQuery(formData.companyId);
-  const companyInfo = companyInfoQuery.data;
 
   // Helper method to return form field values as an Permit object
   const transformPermitFormData = (data: FieldValues) => {
@@ -156,15 +151,14 @@ export const AmendPermitForm = () => {
 
     const response = shouldUpdateApplication
       ? await modifyAmendmentMutation.mutateAsync({
-          applicationNumber: getDefaultRequiredVal(
+          applicationId: getDefaultRequiredVal(
             "",
-            permitToBeAmended.applicationNumber,
+            permitToBeAmended.permitId,
           ),
           application: permitToBeAmended,
+          companyId: companyId as string,
         })
-      : await amendPermitMutation.mutateAsync(
-          permitToBeAmended,
-        );
+      : await amendPermitMutation.mutateAsync(permitToBeAmended);
 
     if (response.application) {
       onSaveSuccess(response.application);
