@@ -1,6 +1,3 @@
----
-version: "3.8"
-
 services:
   sql-server-db:
     container_name: sql-server-db
@@ -193,6 +190,7 @@ services:
       TPS_POLL_LIMIT: ${TPS_POLL_LIMIT}
       TPS_PENDING_POLLING_INTERVAL: ${TPS_PENDING_POLLING_INTERVAL}
       TPS_ERROR_POLLING_INTERVAL: ${TPS_ERROR_POLLING_INTERVAL}
+      TPS_MONITORING_POLLING_INTERVAL: ${TPS_MONITORING_POLLING_INTERVAL}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5050/"]
       interval: 1m30s

@@ -200,6 +200,7 @@ export class PaymentService {
    *                                {@link CreateTransactionDto} for creating a new Transaction.
    * @returns {ReadTransactionDto} The created transaction of type {@link ReadTransactionDto}.
    */
+  @LogAsyncMethodExecution()
   async createTransactions(
     currentUser: IUserJWT,
     createTransactionDto: CreateTransactionDto,
@@ -433,6 +434,7 @@ export class PaymentService {
     return totalTransactionAmount;
   }
 
+  @LogAsyncMethodExecution()
   async updateReceiptDocument(
     currentUser: IUserJWT,
     receiptId: string,
@@ -449,10 +451,11 @@ export class PaymentService {
         updatedUserGuid: currentUser.userGUID,
       })
       .where('receiptId = :receiptId', { receiptId: receiptId })
+      .andWhere('receiptDocumentId IS NULL')
       .execute();
 
     if (updateResult.affected === 0) {
-      throw new InternalServerErrorException('Update failed');
+      throw new InternalServerErrorException('Update receipt document failed');
     }
     return true;
   }
@@ -614,7 +617,7 @@ export class PaymentService {
   }
 
   async findTransaction(transactionId: string): Promise<ReadTransactionDto> {
-    return this.classMapper.mapAsync(
+    return await this.classMapper.mapAsync(
       await this.findTransactionEntity(transactionId),
       Transaction,
       ReadTransactionDto,

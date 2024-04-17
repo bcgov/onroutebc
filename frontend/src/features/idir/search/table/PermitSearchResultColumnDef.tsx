@@ -10,6 +10,8 @@ import {
   dateTimeStringSortingFn,
   formatCellValuetoDatetime,
 } from "../../../../common/helpers/tableHelper";
+import { getPermitTypeName } from "../../../permits/types/PermitType";
+import { Box, Tooltip } from "@mui/material";
 
 /*
  *
@@ -26,16 +28,14 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<PermitListItem>[] = [
     sortingFn: "alphanumeric",
     Cell: (props: { cell: any; row: any }) => {
       const permit = props.row.original as PermitListItem;
-      const {
-        permitId,
-        permitStatus,
-        expiryDate,
-      } = permit;
+      const { permitId, permitStatus, expiryDate, companyId } = permit;
 
       return (
         <>
           <CustomActionLink
-            onClick={() => viewPermitPdf(permitId.toString())}
+            onClick={() =>
+              viewPermitPdf(permitId.toString(), companyId.toString())
+            }
           >
             {props.cell.getValue()}
           </CustomActionLink>
@@ -54,6 +54,14 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<PermitListItem>[] = [
     header: "Permit Type",
     enableSorting: true,
     sortingFn: "alphanumeric",
+    Cell: (props: { cell: any; }) => {
+      const permitTypeName = getPermitTypeName(props.cell.getValue())
+      return <Tooltip title={permitTypeName}>
+        <Box>
+          {props.cell.getValue()}
+        </Box>
+      </Tooltip>
+    }
   },
   {
     header: "Commodity",

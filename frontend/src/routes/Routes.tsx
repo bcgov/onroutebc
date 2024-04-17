@@ -6,7 +6,6 @@ import { NewBCeIDAuthWall } from "../common/authentication/auth-walls/NewBCeIDAu
 import { IDIR_USER_AUTH_GROUP, ROLES } from "../common/authentication/types";
 import { UniversalUnauthorized } from "../common/pages/UniversalUnauthorized";
 import { UniversalUnexpected } from "../common/pages/UniversalUnexpected";
-import { InitialLandingPage } from "../features/homePage/InitialLandingPage";
 import { WelcomePage } from "../features/homePage/welcome/WelcomePage";
 import { IDIRWelcome } from "../features/idir/IDIRWelcome";
 import { IDIRReportsDashboard } from "../features/idir/search/pages/IDIRReportsDashboard";
@@ -32,13 +31,18 @@ import { IDIRCreateCompany } from "../features/idir/company/IDIRCreateCompany";
 import { CompanySuspended } from "../common/pages/CompanySuspended";
 import { ManageSettings } from "../features/settings/ManageSettings";
 import { IssuanceErrorPage } from "../common/pages/IssuanceErrorPage";
+import IDPRedirect from "../common/components/idpredirect/IDPRedirect";
 
 export const AppRoutes = () => {
+
   return (
     <Routes>
       {/* Home and Error Routes */}
       {/* Home and Error routes do no have any constraints. */}
-      <Route path={routes.HOME} element={<InitialLandingPage />} />
+      <Route
+        path={routes.HOME} 
+        element={<IDPRedirect />}
+      />
       <Route
         path={routes.ERROR_ROUTES.SUSPENDED}
         element={<CompanySuspended />}
@@ -115,11 +119,11 @@ export const AppRoutes = () => {
         }
       >
         <Route
-          path={`${routes.PERMITS_ROUTES.VOID()}`}
+          path={`companies/:companyId/permits/:permitId/void`}
           element={<VoidPermit />}
         />
         <Route
-          path={`${routes.PERMITS_ROUTES.AMEND()}`}
+          path={`companies/:companyId/permits/:permitId/amend`}
           element={<AmendPermit />}
         />
         <Route
@@ -290,29 +294,25 @@ export const AppRoutes = () => {
         />
       </Route>
 
-      <Route
-        element={
-          <BCeIDAuthWall
-            requiredRole={ROLES.WRITE_PERMIT}
-          />
-        }
-      >
+      <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
         <Route
           path={routes.PAYMENT_ROUTES.PAYMENT_REDIRECT}
           element={<PaymentRedirect />}
         />
       </Route>
 
-      <Route element={
-        <IDIRAuthWall 
-          allowedAuthGroups={[
-            IDIR_USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
-            IDIR_USER_AUTH_GROUP.FINANCE,
-            IDIR_USER_AUTH_GROUP.PPC_CLERK,
-            IDIR_USER_AUTH_GROUP.CTPO,
-          ]}
-        />
-      }>
+      <Route
+        element={
+          <IDIRAuthWall
+            allowedAuthGroups={[
+              IDIR_USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
+              IDIR_USER_AUTH_GROUP.FINANCE,
+              IDIR_USER_AUTH_GROUP.PPC_CLERK,
+              IDIR_USER_AUTH_GROUP.CTPO,
+            ]}
+          />
+        }
+      >
         <Route
           path={routes.SETTINGS_ROUTES.MANAGE}
           element={<ManageSettings />}

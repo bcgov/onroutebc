@@ -1,5 +1,5 @@
 #  Build container
-FROM node:20.11.1-alpine AS builder
+FROM node:20.12.1-alpine AS builder
 
 # Set the working directory to /app inside the container
 WORKDIR /app
@@ -18,7 +18,7 @@ RUN npm prune --production
 
 
 # Deployment container
-FROM node:20.11.1-alpine
+FROM node:20.12.1-alpine
 RUN npm cache clean --force
 
 # Create and Assign permissions to npm folder
@@ -53,6 +53,7 @@ ENV OCIO_S3_SECRETACCESSKEY ${OCIO_S3_SECRETACCESSKEY}
 ENV TPS_POLL_LIMIT ${TPS_POLL_LIMIT}
 ENV TPS_PENDING_POLLING_INTERVAL ${TPS_PENDING_POLLING_INTERVAL}
 ENV TPS_ERROR_POLLING_INTERVAL ${TPS_ERROR_POLLING_INTERVAL}
+ENV TPS_MONITORING_POLLING_INTERVAL ${TPS_MONITORING_POLLING_INTERVAL}
 
 # Copy production files from build
 COPY --from=builder /app/package*.json ./

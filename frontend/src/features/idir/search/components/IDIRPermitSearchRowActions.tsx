@@ -6,9 +6,9 @@ import PermitResendDialog from "./PermitResendDialog";
 import { viewReceiptPdf } from "../../../permits/helpers/permitPDFHelper";
 import * as routes from "../../../../routes/constants";
 import { USER_AUTH_GROUP } from "../../../../common/authentication/types";
-import { Nullable } from "../../../../common/types/common";
 import { useResendPermit } from "../../../permits/hooks/hooks";
 import { SnackBarContext } from "../../../../App";
+import { EmailNotificationType } from "../../../permits/types/EmailNotificationType";
 
 const PERMIT_ACTION_TYPES = {
   RESEND: "resend",
@@ -90,8 +90,8 @@ export const IDIRPermitSearchRowActions = ({
   isPermitInactive,
   permitNumber,
   email,
-  fax,
   userAuthGroup,
+  companyId,
 }: {
   /**
    * The permit id.
@@ -110,13 +110,11 @@ export const IDIRPermitSearchRowActions = ({
    */
   email?: string;
   /**
-   * The fax number (for use in resend dialog)
-   */
-  fax?: string;
-  /**
    * The auth group for the current user (eg. PPCCLERK or EOFFICER)
    */
   userAuthGroup?: string;
+
+  companyId?: string;
 }) => {
   const [openResendDialog, setOpenResendDialog] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -131,23 +129,23 @@ export const IDIRPermitSearchRowActions = ({
     if (selectedOption === PERMIT_ACTION_TYPES.RESEND) {
       setOpenResendDialog(() => true);
     } else if (selectedOption === PERMIT_ACTION_TYPES.VIEW_RECEIPT) {
-      viewReceiptPdf(permitId);
+      viewReceiptPdf(permitId, companyId);
     } else if (selectedOption === PERMIT_ACTION_TYPES.VOID_REVOKE) {
-      navigate(`${routes.PERMITS_ROUTES.VOID(permitId)}`);
+      navigate(`${routes.PERMITS_ROUTES.VOID(companyId, permitId)}`);
     } else if (selectedOption === PERMIT_ACTION_TYPES.AMEND) {
-      navigate(`${routes.PERMITS_ROUTES.AMEND(permitId)}`);
+      navigate(`${routes.PERMITS_ROUTES.AMEND(companyId, permitId)}`);
     }
   };
 
   const handleResend = async (
     permitId: string,
     email: string,
-    fax?: Nullable<string>,
+    notificationTypes: EmailNotificationType[],
   ) => {
     const response = await resendPermitMutation.mutateAsync({
       permitId,
       email,
-      fax,
+      notificationTypes,
     });
 
     setOpenResendDialog(false);
@@ -170,13 +168,13 @@ export const IDIRPermitSearchRowActions = ({
         options={getOptions(isPermitInactive, userAuthGroup)}
         key={`idir-search-row-${permitNumber}`}
       />
+
       <PermitResendDialog
         shouldOpen={openResendDialog}
         onCancel={() => setOpenResendDialog(false)}
         onResend={handleResend}
         permitId={permitId}
         email={email}
-        fax={fax}
         permitNumber={permitNumber}
       />
     </>

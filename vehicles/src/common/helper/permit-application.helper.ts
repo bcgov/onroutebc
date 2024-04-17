@@ -10,14 +10,14 @@ import { callDatabaseSequence } from './database.helper';
 import { PermitApplicationOrigin as PermitApplicationOriginEnum } from '../enum/permit-application-origin.enum';
 import { PermitApprovalSource as PermitApprovalSourceEnum } from '../enum/permit-approval-source.enum';
 import { randomInt } from 'crypto';
-import {
-  ApplicationStatus,
-  IDIR_ACTIVE_APPLICATION_STATUS,
-  CVCLIENT_ACTIVE_APPLICATION_STATUS,
-} from '../enum/application-status.enum';
-import { IDIR_USER_AUTH_GROUP_LIST } from '../enum/user-auth-group.enum';
-import { IUserJWT } from '../interface/user-jwt.interface';
+import { Directory } from '../enum/directory.enum';
 import { doesUserHaveAuthGroup } from './auth.helper';
+import {
+  IDIR_USER_AUTH_GROUP_LIST,
+  UserAuthGroup,
+} from '../enum/user-auth-group.enum';
+import { PPC_FULL_TEXT } from '../constants/api.constant';
+import { User } from '../../modules/company-user-management/users/entities/user.entity';
 
 /**
  * Fetches and resolves various types of names associated with a permit using cache.
@@ -198,14 +198,31 @@ export const generatePermitNumber = async (
   return permitNumber;
 };
 
-export const getActiveApplicationStatus = (currentUser: IUserJWT) => {
-  const applicationStatus: Readonly<ApplicationStatus[]> =
-    doesUserHaveAuthGroup(
-      currentUser.orbcUserAuthGroup,
-      IDIR_USER_AUTH_GROUP_LIST,
-    )
-      ? IDIR_ACTIVE_APPLICATION_STATUS
-      : CVCLIENT_ACTIVE_APPLICATION_STATUS;
-
-  return applicationStatus;
+/**
+ * Determines the appropriate display name for the applicant based on their directory type and the
+ * current user's authorization group.
+ * - For users from the IDIR directory, it returns the user's username if the current user has the
+ *   correct authorization group. Otherwise, it returns a predefined full text constant.
+ * - For users from other directories, it returns the user's first and last name, concatenated.
+ * @param applicationOwner The user object representing the owner of the application.
+ * @param currentUserAuthGroup The authorization group of the current user.
+ * @returns The display name of the application owner as a string.
+ */
+export const getApplicantDisplay = (
+  applicationOwner: User,
+  currentUserAuthGroup: UserAuthGroup,
+): string => {
+  if (applicationOwner?.directory === Directory.IDIR) {
+    if (
+      doesUserHaveAuthGroup(currentUserAuthGroup, IDIR_USER_AUTH_GROUP_LIST)
+    ) {
+      return applicationOwner?.userName;
+    } else {
+      return PPC_FULL_TEXT;
+    }
+  } else {
+    const firstName = applicationOwner?.userContact?.firstName ?? '';
+    const lastName = applicationOwner?.userContact?.lastName ?? '';
+    return (firstName + ' ' + lastName).trim();
+  }
 };
