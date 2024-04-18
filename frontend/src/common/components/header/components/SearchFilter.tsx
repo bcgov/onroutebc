@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   RadioGroup,
@@ -29,6 +29,7 @@ import {
   SearchFields,
 } from "../../../../features/idir/search/types/types";
 import { useFeatureFlagsQuery } from "../../../hooks/hooks";
+import OnRouteBCContext from "../../../authentication/OnRouteBCContext";
 
 const SEARCH_BY_PERMIT_OPTIONS = [
   { label: "Permit Number", value: "permitNumber" },
@@ -90,6 +91,7 @@ export const SearchFilter = ({
    */
   closeFilter: () => void;
 }) => {
+  const { clearCompanyContext } = useContext(OnRouteBCContext);
   const [searchParams] = useSearchParams();
   const { data: featureFlags } = useFeatureFlagsQuery();
   const navigate = useNavigate();
@@ -147,6 +149,7 @@ export const SearchFilter = ({
 
     if (data?.searchString?.trim()?.length < 1) return;
 
+    clearCompanyContext?.();
     closeFilter();
 
     navigate(`${IDIR_ROUTES.SEARCH_RESULTS}?${searchFields}`);
