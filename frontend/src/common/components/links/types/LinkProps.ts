@@ -10,6 +10,9 @@ type Props<TExternal = boolean> = TExternal extends true
   ? CustomLinkProps & LinkHTMLAttributes<HTMLAnchorElement>
   : CustomLinkProps & LinkProps;
 
-export type ExternalLinkProps = Props<true>;
+export type ExternalLinkProps = Props<true> & {
+  openInNewTab?: boolean;
+};
+
 export type InternalLinkProps = Props<false>;
 export type CustomActionLinkProps = MuiLinkProps;
