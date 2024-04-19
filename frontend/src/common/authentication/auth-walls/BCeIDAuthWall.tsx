@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useContext, useEffect } from "react";
 import { useAuth } from "react-oidc-context";
 import {
@@ -19,6 +18,7 @@ import { IDIRUserAuthGroupType, UserRolesType } from "../types";
 import { DoesUserHaveRole } from "../util";
 import { IDIRAuthWall } from "./IDIRAuthWall";
 import { setRedirectInSession } from "../../helpers/util";
+import { getUserStorage } from "../../apiManager/httpRequestHandler";
 
 export const isIDIR = (identityProvider: string) =>
   identityProvider === IDPS.IDIR;
@@ -48,6 +48,11 @@ export const BCeIDAuthWall = ({
   const location = useLocation();
   const navigate = useNavigate();
 
+  /**
+   * Redirects the user to the login page after storing the current location.
+   * It sets the redirection target in the session storage and then navigates to the home route
+   * while passing the current URL as a search parameter for potential redirects post-login.
+   */
   const redirectToLoginPage = () => {
     setRedirectInSession(window.location.href);
     navigate({
@@ -59,37 +64,45 @@ export const BCeIDAuthWall = ({
   };
 
   /**
+   * Attempts to refresh the authentication token using a silent sign-in process.
+   * If the silent sign-in succeeds, the system checks if the response includes an `access_token`.
+   * If not, or if the silent sign-in fails, the user is redirected to the login page.
+   *
+   * @param {string} userStringFromSessionStorage - The JSON string from session storage containing user details.
+   */
+  const tryTokenRefresh = (userStringFromSessionStorage: string) => {
+    const obj = JSON.parse(userStringFromSessionStorage);
+    if (obj?.refresh_token) {
+      signinSilent()
+        .then((value) => {
+          if (!value?.access_token) {
+            redirectToLoginPage();
+          }
+          // Else, the token refresh is now complete
+          // and the AuthContext will update and rerender this component.
+        })
+        .catch(() => {
+          redirectToLoginPage();
+        });
+    } else {
+      redirectToLoginPage();
+    }
+  };
+
+  /**
    * Redirect the user back to login page if they are trying to directly access
    * a protected page but are unauthenticated.
    */
   useEffect(() => {
     if (!isAuthLoading && !isAuthenticated) {
-      const storageKey = Object.keys(sessionStorage).find((key) =>
-        key.startsWith("oidc.user"),
-      );
-      const userString = sessionStorage.getItem(storageKey ?? "");
+      const userStringFromSessionStorage = getUserStorage();
       try {
-        if (userString) {
-          const obj = JSON.parse(userString);
-          if (obj?.refresh_token) {
-            signinSilent()
-              .then((value) => {
-                if (value?.access_token) {
-                  // sign in complete.
-                  console.log("sign in complete");
-                } else {
-                  redirectToLoginPage();
-                }
-              })
-              .catch(() => {
-                redirectToLoginPage();
-              });
-          }
+        if (userStringFromSessionStorage) {
+          tryTokenRefresh(userStringFromSessionStorage);
         } else {
           redirectToLoginPage();
         }
       } catch (e) {
-        console.error("Unable to process token refresh::", e);
         redirectToLoginPage();
       }
     }
