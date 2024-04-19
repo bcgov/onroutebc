@@ -30,7 +30,7 @@ const getUserStorageKey = () =>
  *
  * @returns JSON parsed object, or undefined if item not found in sessionStorage.
  */
-const getUserStorage = () => {
+export const getUserStorage = () => {
   const storageKey = getDefaultRequiredVal("", getUserStorageKey());
   return applyWhenNotNullable(JSON.parse, sessionStorage.getItem(storageKey));
 };

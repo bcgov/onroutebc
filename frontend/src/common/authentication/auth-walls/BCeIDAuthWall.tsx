@@ -19,6 +19,7 @@ import { IDIRUserAuthGroupType, UserRolesType } from "../types";
 import { DoesUserHaveRole } from "../util";
 import { IDIRAuthWall } from "./IDIRAuthWall";
 import { setRedirectInSession } from "../../helpers/util";
+import { getUserStorage } from "../../apiManager/httpRequestHandler";
 
 export const isIDIR = (identityProvider: string) =>
   identityProvider === IDPS.IDIR;
@@ -64,10 +65,7 @@ export const BCeIDAuthWall = ({
    */
   useEffect(() => {
     if (!isAuthLoading && !isAuthenticated) {
-      const storageKey = Object.keys(sessionStorage).find((key) =>
-        key.startsWith("oidc.user"),
-      );
-      const userString = sessionStorage.getItem(storageKey ?? "");
+      const userString = getUserStorage();
       try {
         if (userString) {
           const obj = JSON.parse(userString);
@@ -84,6 +82,8 @@ export const BCeIDAuthWall = ({
               .catch(() => {
                 redirectToLoginPage();
               });
+          } else {
+            redirectToLoginPage();
           }
         } else {
           redirectToLoginPage();
