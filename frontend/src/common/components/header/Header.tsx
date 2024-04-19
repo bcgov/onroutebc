@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext } from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "react-oidc-context";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -118,19 +117,13 @@ const NavButton = ({ toggleMenu }: { toggleMenu: () => void }) => (
 export const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
-  const { isAuthenticated, user, events : { addAccessTokenExpired}, signinSilent } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const { companyId, userRoles } = useContext(OnRouteBCContext);
 
   const username = getLoginUsernameFromSession();
   const isIdir = user?.profile?.identity_provider === IDPS.IDIR;
   const shouldDisplayNavBar = Boolean(companyId);
 
-
-  useEffect(() => {
-    sessionStorage.getItem
-    signinSilent({ })
-    // addAccessTokenExpired(())
-  }, []);
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
     setFilterOpen(false);
@@ -161,10 +154,7 @@ export const Header = () => {
         </div>
       </header>
       {shouldDisplayNavBar && (
-        <Navbar
-          isAuthenticated={isAuthenticated}
-          userRoles={userRoles}
-        />
+        <Navbar isAuthenticated={isAuthenticated} userRoles={userRoles} />
       )}
       {shouldDisplayNavBar && menuOpen ? (
         <Navbar
