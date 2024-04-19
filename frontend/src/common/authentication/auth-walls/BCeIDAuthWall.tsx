@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useContext, useEffect } from "react";
 import { useAuth } from "react-oidc-context";
 import {
