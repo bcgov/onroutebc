@@ -44,7 +44,6 @@ const oidcConfig: AuthProviderProps = {
   automaticSilentRenew: true,
   revokeTokensOnSignout: true,
   userStore: new WebStorageStateStore({ store: sessionStorage }),
-  
 };
 
 /**
