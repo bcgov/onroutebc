@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
-import { useSearchParams, useNavigate, useParams } from "react-router-dom";
+import { useSearchParams, useNavigate, useParams, Navigate } from "react-router-dom";
 import { FormProvider, useForm } from "react-hook-form";
 
 import "./ApplicationPay.scss";
@@ -33,6 +33,7 @@ import {
   PERMITS_ROUTES,
 } from "../../../../routes/constants";
 import { ShoppingCart } from "../../components/cart/ShoppingCart";
+import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 
 const AVAILABLE_STAFF_PAYMENT_METHODS = [
   PAYMENT_METHOD_TYPE_CODE.ICEPAY,
@@ -55,6 +56,8 @@ export const ApplicationPay = () => {
     searchParams.get("paymentFailed"),
     false,
   );
+
+  const companyId = getCompanyIdFromSession();
 
   /*
   const calculatedFee = calculateFeeByDuration(
@@ -180,6 +183,10 @@ export const ApplicationPay = () => {
     setCalculatedFee(totalFee);
   };
 
+  if (!companyId) {
+    return <Navigate to={ERROR_ROUTES.UNAUTHORIZED} />;
+  }
+
   return (
     <div className="pay-now-page">
       <Box className="pay-now-page__left-container">
@@ -188,7 +195,10 @@ export const ApplicationPay = () => {
           applicationStep={APPLICATION_STEPS.PAY}
         />
 
-        <ShoppingCart onCartSelectionChange={handleTotalFeeChange} />
+        <ShoppingCart
+          onCartSelectionChange={handleTotalFeeChange}
+          companyId={companyId}
+        />
 
         <ApplicationSummary
           permitType={applicationData?.permitType}

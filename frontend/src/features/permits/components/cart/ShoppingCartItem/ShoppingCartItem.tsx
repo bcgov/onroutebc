@@ -21,9 +21,9 @@ export const ShoppingCartItem = ({
     if (isDisabled) return;
 
     if (selected) {
-      onSelect(cartItemData.permitId);
+      onSelect(cartItemData.applicationId);
     } else {
-      onDeselect(cartItemData.permitId);
+      onDeselect(cartItemData.applicationId);
     }
   };
 
@@ -138,7 +138,7 @@ export const ShoppingCartItem = ({
               <span
                 className="shopping-cart-item__info shopping-cart-item__info--fee"
               >
-                {cartItemData.feeSummary}
+                {cartItemData.fee}
               </span>
             </div>
           </div>

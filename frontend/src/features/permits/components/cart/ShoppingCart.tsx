@@ -3,100 +3,41 @@ import { FormControlLabel, Radio, RadioGroup } from "@mui/material";
 
 import "./ShoppingCart.scss";
 import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
-import { CartItem, SelectableCartItem } from "../../types/CartItem";
+import { SelectableCartItem } from "../../types/CartItem";
 import { RemoveCartButton } from "./RemoveCartButton/RemoveCartButton";
-import { PERMIT_TYPES } from "../../types/PermitType";
 import { ShoppingCartItem } from "./ShoppingCartItem/ShoppingCartItem";
+import { useFetchCart, useRemoveFromCart } from "../../hooks/cart";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { hasPermitsActionFailed } from "../../helpers/permitState";
 
 export const ShoppingCart = ({
   onCartSelectionChange,
+  companyId,
 }: {
   onCartSelectionChange: (totalFee: number) => void;
+  companyId: string;
 }) => {
-  // Temporarily hardcoded test
-  const myApplicationItems: CartItem[] = [
-    {
-      permitId: "1",
-      companyId: 73,
-      permitType: PERMIT_TYPES.TROS,
-      applicationNumber: "A2-00408617-873",
-      startDate: "2023-09-14",
-      expiryDate: "2023-10-25",
-      createdDateTime: "2023-09-13 00:00:00",
-      updatedDateTime: "2023-09-13 00:00:00",
-      applicant: "Connie Corleone Rizzi",
-      plate: "6CR-A824",
-      feeSummary: "100.00",
-    },
-    {
-      permitId: "2",
-      companyId: 73,
-      permitType: PERMIT_TYPES.TROS,
-      applicationNumber: "A2-72303011-028",
-      startDate: "2023-07-22",
-      expiryDate: "2023-08-14",
-      createdDateTime: "2023-07-21 00:00:00",
-      updatedDateTime: "2023-07-21 00:00:00",
-      applicant: "Connie Corleone Rizzi",
-      plate: "LHR-6572",
-      feeSummary: "100.00",
-    },
-  ];
-
-  //const allApplicationItems: CartItem[] = [];
-  const allApplicationItems: CartItem[] = [
-    ...myApplicationItems,
-    {
-      permitId: "3",
-      companyId: 73,
-      permitType: PERMIT_TYPES.TROS,
-      applicationNumber: "A2-30815429-164",
-      startDate: "2023-05-02",
-      expiryDate: "2023-06-08",
-      createdDateTime: "2023-05-01 00:00:00",
-      updatedDateTime: "2023-05-01 00:00:00",
-      applicant: "Connie Corleone Rizzi",
-      plate: "4RL-F009",
-      feeSummary: "350.00",
-    },
-    {
-      permitId: "4",
-      companyId: 73,
-      permitType: PERMIT_TYPES.TROS,
-      applicationNumber: "A2-72303011-027",
-      startDate: "2023-04-12",
-      expiryDate: "2023-05-30",
-      createdDateTime: "2023-04-11 00:00:00",
-      updatedDateTime: "2023-04-11 00:00:00",
-      applicant: "Connie Corleone Rizzi",
-      plate: "LHR-6571",
-      feeSummary: "225.00",
-    },
-  ];
-  
   const [showAllApplications, setShowAllApplications] = useState<boolean>(true); // only applicable for CA
+  const removeFromCartMutation = useRemoveFromCart();
+  const cartQuery = useFetchCart(companyId, showAllApplications);
+  const { data: cartItems } = cartQuery;
   const [cartItemSelection, setCartItemSelection] = useState<SelectableCartItem[]>([]);
   const cartItemsTotalCount = cartItemSelection.length;
   const selectedTotalFee = cartItemSelection
     .filter(cartItem => cartItem.selected)
-    .map(cartItem => Number(cartItem.feeSummary))
+    .map(cartItem => cartItem.fee)
     .reduce((prevTotal, currFee) => prevTotal + currFee, 0);
 
   useEffect(() => {
+    const items = getDefaultRequiredVal([], cartItems);
     setCartItemSelection(
-      showAllApplications ?
-        allApplicationItems.map(cartItem => ({
-          ...cartItem,
-          selected: true, // all selected by default
-          isSelectable: true, // add user permission check (ie. CA can't select staff cart items)
-        }))
-        : myApplicationItems.map(cartItem => ({
-          ...cartItem,
-          selected: true, // all selected by default
-          isSelectable: true, // add user permission check (ie. CA can't select staff cart items)
-        })),
+      items.map(cartItem => ({
+        ...cartItem,
+        selected: true, // all selected by default
+        isSelectable: true, // add user permission check (ie. CA can't select staff cart items)
+      })),
     );
-  }, [showAllApplications]);
+  }, [cartItems]);
 
   useEffect(() => {
     onCartSelectionChange(selectedTotalFee);
@@ -127,20 +68,29 @@ export const ShoppingCart = ({
   const handleRemoveSelected = async () => {
     if (selectedItemsCount === 0) return;
 
-    const selectedPermitIds = cartItemSelection.filter(cartItem => cartItem.selected).map(cartItem => cartItem.permitId);
-    // call backend endpoint to remove selected cart items
+    const selectedApplicationIds = cartItemSelection
+      .filter(cartItem => cartItem.selected)
+      .map(cartItem => cartItem.applicationId);
+    
+    const removeResult = await removeFromCartMutation.mutateAsync({
+      companyId,
+      applicationIds: selectedApplicationIds,
+    });
 
-    // update the following logic to first refetch all cart items, then set cart item selection based on what's fetched
-    setCartItemSelection(
-      cartItemSelection.filter(cartItem => !selectedPermitIds.includes(cartItem.permitId)),
-    );
+    if (hasPermitsActionFailed(removeResult)) {
+      // Display warning banner showing failed ids
+    } else {
+      // Hide warning banner
+    }
+
+    cartQuery.refetch();
   };
 
   const handleSelectItem = (id: string) => {
     setCartItemSelection(
       cartItemSelection.map(cartItem => ({
         ...cartItem,
-        selected: cartItem.permitId === id && cartItem.isSelectable ?
+        selected: cartItem.applicationId === id && cartItem.isSelectable ?
           true : cartItem.selected,
       })),
     );
@@ -150,7 +100,7 @@ export const ShoppingCart = ({
     setCartItemSelection(
       cartItemSelection.map(cartItem => ({
         ...cartItem,
-        selected: cartItem.permitId === id && cartItem.isSelectable ?
+        selected: cartItem.applicationId === id && cartItem.isSelectable ?
           false : cartItem.selected,
       })),
     );
@@ -242,7 +192,7 @@ export const ShoppingCart = ({
       <div className="shopping-cart__items">
         {cartItemsTotalCount > 0 ? cartItemSelection.map(cartItem => (
           <ShoppingCartItem
-            key={cartItem.permitId}
+            key={cartItem.applicationId}
             cartItemData={cartItem}
             isSelected={cartItem.selected}
             isDisabled={!cartItem.isSelectable}

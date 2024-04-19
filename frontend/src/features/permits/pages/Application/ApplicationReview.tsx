@@ -11,6 +11,8 @@ import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { PermitReview } from "./components/review/PermitReview";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { SnackBarContext } from "../../../../App";
+import { useAddToCart } from "../../hooks/cart";
+import { hasPermitsActionFailed } from "../../helpers/permitState";
 import {
   APPLICATIONS_ROUTES,
   APPLICATION_STEPS,
@@ -46,6 +48,7 @@ export const ApplicationReview = () => {
 
   // Send data to the backend API
   const saveApplicationMutation = useSaveApplicationMutation();
+  const addToCartMutation = useAddToCart();
 
   const back = () => {
     navigate(APPLICATIONS_ROUTES.DETAILS(permitId), { replace: true });
@@ -86,19 +89,27 @@ export const ApplicationReview = () => {
 
     if (!isChecked) return;
 
-    if (!applicationData) {
+    if (!applicationData || !applicationData.companyId || !applicationData.permitId) {
       return navigate(ERROR_ROUTES.UNEXPECTED);
     }
 
-    // Perform add application to cart here, waiting for backend
-    // On Success
-    setSnackBar({
-      showSnackbar: true,
-      setShowSnackbar: () => true,
-      message: `Application ${applicationData.applicationNumber} added to cart`,
-      alertType: "success",
+    const addResult = await addToCartMutation.mutateAsync({
+      companyId: `${applicationData.companyId}`,
+      applicationIds: [applicationData.permitId],
     });
-    navigate(APPLICATIONS_ROUTES.BASE);
+
+    if (hasPermitsActionFailed(addResult)) {
+      navigate(ERROR_ROUTES.UNEXPECTED);
+    } else {
+      setSnackBar({
+        showSnackbar: true,
+        setShowSnackbar: () => true,
+        message: `Application ${applicationData.applicationNumber} added to cart`,
+        alertType: "success",
+      });
+
+      navigate(APPLICATIONS_ROUTES.BASE);
+    }
   };
 
   useEffect(() => {

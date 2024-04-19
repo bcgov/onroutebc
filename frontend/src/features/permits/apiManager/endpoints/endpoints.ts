@@ -3,7 +3,6 @@ import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints"
 const APPLICATIONS_API_BASE = (companyId: string) =>
   `${VEHICLES_URL}/companies/${companyId}/applications`;
 
-
 const PERMITS_API_BASE = (companyId: string) =>
   `${VEHICLES_URL}/companies/${companyId}/permits`;
 
@@ -37,4 +36,20 @@ export const PAYMENT_API_ROUTES = {
   COMPLETE: PAYMENT_API_BASE,
   GET: PAYMENT_API_BASE,
   PAYMENT_GATEWAY: `payment-gateway`,
+};
+
+const CART_API_BASE = (companyId: string) =>
+  `${VEHICLES_URL}/companies/${companyId}/shopping-cart`;
+
+export const CART_API_ROUTES = {
+  GET: (companyId: string, fetchAllApplications?: boolean) => {
+    if (typeof fetchAllApplications === "undefined") {
+      return CART_API_BASE(companyId);
+    }
+
+    return `${CART_API_BASE(companyId)}?allApplications=${Boolean(fetchAllApplications)}`;
+  },
+  ADD: (companyId: string) => CART_API_BASE(companyId),
+  REMOVE: (companyId: string) => CART_API_BASE(companyId),
+  COUNT: (companyId: string) => `${CART_API_BASE(companyId)}/count`,
 };
