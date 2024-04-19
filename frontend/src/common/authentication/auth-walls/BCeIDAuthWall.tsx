@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useContext, useEffect } from "react";
 import { useAuth } from "react-oidc-context";
 import {
@@ -38,6 +39,9 @@ export const BCeIDAuthWall = ({
     isAuthenticated,
     isLoading: isAuthLoading,
     user: userFromToken,
+    signinSilent,
+    stopSilentRenew,
+    startSilentRenew,
   } = useAuth();
 
   const { userRoles, companyId, isNewBCeIDUser } = useContext(OnRouteBCContext);
@@ -52,13 +56,50 @@ export const BCeIDAuthWall = ({
    */
   useEffect(() => {
     if (!isAuthLoading && !isAuthenticated) {
-      setRedirectInSession(window.location.href);
-      navigate({
-        pathname: HOME,
-        search: createSearchParams({
-          r: window.location.href,
-        }).toString(),
-      });
+      const storageKey = Object.keys(sessionStorage).find((key) =>
+        key.startsWith("oidc.user"),
+      );
+      const userString = sessionStorage.getItem(storageKey ?? "");
+      try {
+        if (userString) {
+          const obj = JSON.parse(userString);
+          if (obj?.refresh_token) {
+            signinSilent()
+              .then((value) => {
+                if (value?.access_token) {
+                  // sign in complete.
+                  console.log('sign in complete');
+                } else {
+                  setRedirectInSession(window.location.href);
+                  navigate({
+                    pathname: HOME,
+                    search: createSearchParams({
+                      r: window.location.href,
+                    }).toString(),
+                  });
+                }
+              })
+              .catch(() => {
+                setRedirectInSession(window.location.href);
+                navigate({
+                  pathname: HOME,
+                  search: createSearchParams({
+                    r: window.location.href,
+                  }).toString(),
+                });
+              });
+          }
+        }
+      } catch (e) {
+        console.error("Unable to process token refresh::", e);
+        setRedirectInSession(window.location.href);
+        navigate({
+          pathname: HOME,
+          search: createSearchParams({
+            r: window.location.href,
+          }).toString(),
+        });
+      }
     }
   }, [isAuthLoading, isAuthenticated]);
 
