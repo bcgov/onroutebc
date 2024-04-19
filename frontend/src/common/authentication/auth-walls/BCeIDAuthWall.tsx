@@ -40,8 +40,6 @@ export const BCeIDAuthWall = ({
     isLoading: isAuthLoading,
     user: userFromToken,
     signinSilent,
-    stopSilentRenew,
-    startSilentRenew,
   } = useAuth();
 
   const { userRoles, companyId, isNewBCeIDUser } = useContext(OnRouteBCContext);
@@ -49,6 +47,16 @@ export const BCeIDAuthWall = ({
 
   const location = useLocation();
   const navigate = useNavigate();
+
+  const redirectToLoginPage = () => {
+    setRedirectInSession(window.location.href);
+    navigate({
+      pathname: HOME,
+      search: createSearchParams({
+        r: window.location.href,
+      }).toString(),
+    });
+  };
 
   /**
    * Redirect the user back to login page if they are trying to directly access
@@ -68,37 +76,21 @@ export const BCeIDAuthWall = ({
               .then((value) => {
                 if (value?.access_token) {
                   // sign in complete.
-                  console.log('sign in complete');
+                  console.log("sign in complete");
                 } else {
-                  setRedirectInSession(window.location.href);
-                  navigate({
-                    pathname: HOME,
-                    search: createSearchParams({
-                      r: window.location.href,
-                    }).toString(),
-                  });
+                  redirectToLoginPage();
                 }
               })
               .catch(() => {
-                setRedirectInSession(window.location.href);
-                navigate({
-                  pathname: HOME,
-                  search: createSearchParams({
-                    r: window.location.href,
-                  }).toString(),
-                });
+                redirectToLoginPage();
               });
           }
+        } else {
+          redirectToLoginPage();
         }
       } catch (e) {
         console.error("Unable to process token refresh::", e);
-        setRedirectInSession(window.location.href);
-        navigate({
-          pathname: HOME,
-          search: createSearchParams({
-            r: window.location.href,
-          }).toString(),
-        });
+        redirectToLoginPage();
       }
     }
   }, [isAuthLoading, isAuthenticated]);
