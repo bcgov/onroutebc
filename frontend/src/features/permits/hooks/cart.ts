@@ -31,7 +31,7 @@ export const useFetchCart = (
   fetchAllApplications?: boolean,
 ) => {
   return useQuery({
-    queryKey: [CART_KEY],
+    queryKey: [CART_KEY, fetchAllApplications],
     queryFn: () => fetchCart(companyId, fetchAllApplications),
     enabled: Boolean(companyId),
     retry: false,

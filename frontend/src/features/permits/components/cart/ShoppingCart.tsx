@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FormControlLabel, Radio, RadioGroup } from "@mui/material";
 
 import "./ShoppingCart.scss";
@@ -9,6 +9,8 @@ import { ShoppingCartItem } from "./ShoppingCartItem/ShoppingCartItem";
 import { useFetchCart, useRemoveFromCart } from "../../hooks/cart";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { hasPermitsActionFailed } from "../../helpers/permitState";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
+import { BCeID_USER_AUTH_GROUP } from "../../../../common/authentication/types";
 
 export const ShoppingCart = ({
   onCartSelectionChange,
@@ -17,7 +19,9 @@ export const ShoppingCart = ({
   onCartSelectionChange: (totalFee: number) => void;
   companyId: string;
 }) => {
-  const [showAllApplications, setShowAllApplications] = useState<boolean>(true); // only applicable for CA
+  const { userDetails } = useContext(OnRouteBCContext);
+  const isCompanyAdmin = Boolean(userDetails?.userAuthGroup === BCeID_USER_AUTH_GROUP.COMPANY_ADMINISTRATOR);
+  const [showAllApplications, setShowAllApplications] = useState<boolean>(isCompanyAdmin);
   const removeFromCartMutation = useRemoveFromCart();
   const cartQuery = useFetchCart(companyId, showAllApplications);
   const { data: cartItems } = cartQuery;
@@ -71,7 +75,7 @@ export const ShoppingCart = ({
     const selectedApplicationIds = cartItemSelection
       .filter(cartItem => cartItem.selected)
       .map(cartItem => cartItem.applicationId);
-    
+
     const removeResult = await removeFromCartMutation.mutateAsync({
       companyId,
       applicationIds: selectedApplicationIds,
@@ -128,57 +132,59 @@ export const ShoppingCart = ({
             </div>
           </div>
 
-          <RadioGroup
-            className="shopping-cart__filter"
-            defaultValue={showAllApplications}
-            value={showAllApplications}
-            onChange={(e) => handleCartFilterChange(e.target.value)}
-          >
-            <div
-              className={`cart-filter ${
-                showAllApplications
-                  ? "cart-filter--active"
-                  : ""
-              }`}
+          {isCompanyAdmin ? (
+            <RadioGroup
+              className="shopping-cart__filter"
+              defaultValue={showAllApplications}
+              value={showAllApplications}
+              onChange={(e) => handleCartFilterChange(e.target.value)}
             >
-              <FormControlLabel
-                className="cart-filter__label"
-                label="All applications"
-                value={true}
-                control={
-                  <Radio
-                    key="all-applications"
-                    className="cart-filter__radio"
-                    classes={{
-                      checked: "cart-filter__radio--checked"
-                    }}
-                  />}
-              />
-            </div>
+              <div
+                className={`cart-filter ${
+                  showAllApplications
+                    ? "cart-filter--active"
+                    : ""
+                }`}
+              >
+                <FormControlLabel
+                  className="cart-filter__label"
+                  label="All applications"
+                  value={true}
+                  control={
+                    <Radio
+                      key="all-applications"
+                      className="cart-filter__radio"
+                      classes={{
+                        checked: "cart-filter__radio--checked"
+                      }}
+                    />}
+                />
+              </div>
 
-            <div
-              className={`cart-filter ${
-                !showAllApplications
-                  ? "cart-filter--active"
-                  : ""
-              }`}
-            >
-              <FormControlLabel
-                className="cart-filter__label"
-                label="My applications"
-                value={false}
-                control={
-                  <Radio
-                    key="my-applications"
-                    className="cart-filter__radio"
-                    classes={{
-                      checked: "cart-filter__radio--checked"
-                    }}
-                  />
-                }
-              />
-            </div>
-          </RadioGroup>
+              <div
+                className={`cart-filter ${
+                  !showAllApplications
+                    ? "cart-filter--active"
+                    : ""
+                }`}
+              >
+                <FormControlLabel
+                  className="cart-filter__label"
+                  label="My applications"
+                  value={false}
+                  control={
+                    <Radio
+                      key="my-applications"
+                      className="cart-filter__radio"
+                      classes={{
+                        checked: "cart-filter__radio--checked"
+                      }}
+                    />
+                  }
+                />
+              </div>
+            </RadioGroup>
+          ) : null}
         </div>
 
         <div className="shopping-cart__header-section shopping-cart__header-section--actions">
