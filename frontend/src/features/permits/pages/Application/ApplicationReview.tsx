@@ -13,6 +13,7 @@ import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { SnackBarContext } from "../../../../App";
 import { useAddToCart } from "../../hooks/cart";
 import { hasPermitsActionFailed } from "../../helpers/permitState";
+import { CartContext } from "../../context/CartContext";
 import {
   APPLICATIONS_ROUTES,
   APPLICATION_STEPS,
@@ -29,6 +30,7 @@ export const ApplicationReview = () => {
     useContext(ApplicationContext);
 
   const { setSnackBar } = useContext(SnackBarContext);
+  const { refetchCartCount } = useContext(CartContext);
 
   const routeParams = useParams();
   const permitId = getDefaultRequiredVal("", routeParams.permitId);
@@ -108,6 +110,7 @@ export const ApplicationReview = () => {
         alertType: "success",
       });
 
+      refetchCartCount();
       navigate(APPLICATIONS_ROUTES.BASE);
     }
   };

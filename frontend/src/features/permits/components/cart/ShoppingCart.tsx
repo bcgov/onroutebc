@@ -11,6 +11,7 @@ import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { hasPermitsActionFailed } from "../../helpers/permitState";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { BCeID_USER_AUTH_GROUP } from "../../../../common/authentication/types";
+import { CartContext } from "../../context/CartContext";
 
 export const ShoppingCart = ({
   onCartSelectionChange,
@@ -20,6 +21,7 @@ export const ShoppingCart = ({
   companyId: string;
 }) => {
   const { userDetails } = useContext(OnRouteBCContext);
+  const { refetchCartCount } = useContext(CartContext);
   const isCompanyAdmin = Boolean(userDetails?.userAuthGroup === BCeID_USER_AUTH_GROUP.COMPANY_ADMINISTRATOR);
   const [showAllApplications, setShowAllApplications] = useState<boolean>(isCompanyAdmin);
   const removeFromCartMutation = useRemoveFromCart();
@@ -88,6 +90,7 @@ export const ShoppingCart = ({
     }
 
     cartQuery.refetch();
+    refetchCartCount();
   };
 
   const handleSelectItem = (id: string) => {

@@ -1,5 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { addToCart, fetchCart, getCartCount, removeFromCart } from "../apiManager/cart";
+import { Nullable } from "../../../common/types/common";
+import { getDefaultRequiredVal } from "../../../common/helpers/util";
 
 const CART_KEY = "cart";
 const CART_COUNT_KEY = "cart-count";
@@ -61,10 +63,12 @@ export const useRemoveFromCart = () => {
  * @param companyId id of company to get cart item count for
  * @returns Query object used for getting cart item count
  */
-export const useGetCartCount = (companyId: string) => {
+export const useGetCartCount = (companyId?: Nullable<string>) => {
+  const cartCompanyId = getDefaultRequiredVal("", companyId);
+
   return useQuery({
-    queryKey: [CART_COUNT_KEY],
-    queryFn: () => getCartCount(companyId),
+    queryKey: [CART_COUNT_KEY, companyId],
+    queryFn: () => getCartCount(cartCompanyId),
     enabled: Boolean(companyId),
     retry: false,
     refetchOnMount: "always",
