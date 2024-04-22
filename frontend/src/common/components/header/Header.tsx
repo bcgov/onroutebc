@@ -159,10 +159,7 @@ export const Header = () => {
         </div>
       </header>
       {shouldDisplayNavBar && (
-        <Navbar
-          isAuthenticated={isAuthenticated}
-          userRoles={userRoles}
-        />
+        <Navbar isAuthenticated={isAuthenticated} userRoles={userRoles} />
       )}
       {shouldDisplayNavBar && menuOpen ? (
         <Navbar

@@ -21,6 +21,7 @@ import { DoesUserHaveRole } from "../util";
 import { IDIRAuthWall } from "./IDIRAuthWall";
 import { setRedirectInSession } from "../../helpers/util";
 import { StaffActAsCompanyAuthWall } from "./StaffActAsCompanyAuthWall";
+import { getUserStorage } from "../../apiManager/httpRequestHandler";
 
 export const isIDIR = (identityProvider: string) =>
   identityProvider === IDPS.IDIR;
@@ -41,6 +42,7 @@ export const BCeIDAuthWall = ({
     isAuthenticated,
     isLoading: isAuthLoading,
     user: userFromToken,
+    signinSilent,
   } = useAuth();
 
   const {
@@ -55,18 +57,51 @@ export const BCeIDAuthWall = ({
   const navigate = useNavigate();
 
   /**
-   * Redirect the user back to login page if they are trying to directly access
-   * a protected page but are unauthenticated.
+   * Redirects the user to the login page.
+   * This function captures the current URL and passes it as a redirect parameter
+   * to the login page so that after successful authentication, the user can be
+   * redirected back to the page they initially requested.
+   */
+  const redirectToLoginPage = () => {
+    setRedirectInSession(window.location.href);
+    navigate({
+      pathname: HOME,
+      search: createSearchParams({
+        r: window.location.href,
+      }).toString(),
+    });
+  };
+
+  /**
+   * Try refreshing the access token,
+   * if still logged out redirect the user back to login page if
+   * they are trying to directly access a protected page but are unauthenticated.
    */
   useEffect(() => {
     if (!isAuthLoading && !isAuthenticated) {
-      setRedirectInSession(window.location.href);
-      navigate({
-        pathname: HOME,
-        search: createSearchParams({
-          r: window.location.href,
-        }).toString(),
-      });
+      try {
+        const userSessionJSON = getUserStorage();
+        if (userSessionJSON?.refresh_token) {
+          signinSilent()
+            .then((value) => {
+              if (!value?.access_token) {
+                // If sign in is unsuccessful, redirect to home page.
+                redirectToLoginPage();
+              }
+              // else, silent sign in is complete and token is refreshed.
+              // AuthContext will be updated and the component rerenders which
+              // takes care of directing the user as appropriate.
+            })
+            .catch(() => {
+              redirectToLoginPage();
+            });
+        } else {
+          redirectToLoginPage();
+        }
+      } catch (e) {
+        console.error("Unable to process token refresh; redirecting to login");
+        redirectToLoginPage();
+      }
     }
   }, [isAuthLoading, isAuthenticated]);
 
