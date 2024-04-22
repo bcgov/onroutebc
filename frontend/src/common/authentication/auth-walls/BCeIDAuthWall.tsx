@@ -48,6 +48,12 @@ export const BCeIDAuthWall = ({
   const location = useLocation();
   const navigate = useNavigate();
 
+  /**
+   * Redirects the user to the login page.
+   * This function captures the current URL and passes it as a redirect parameter
+   * to the login page so that after successful authentication, the user can be
+   * redirected back to the page they initially requested.
+   */
   const redirectToLoginPage = () => {
     setRedirectInSession(window.location.href);
     navigate({
@@ -59,8 +65,9 @@ export const BCeIDAuthWall = ({
   };
 
   /**
-   * Redirect the user back to login page if they are trying to directly access
-   * a protected page but are unauthenticated.
+   * Try refreshing the access token,
+   * if still logged out redirect the user back to login page if
+   * they are trying to directly access a protected page but are unauthenticated.
    */
   useEffect(() => {
     if (!isAuthLoading && !isAuthenticated) {
@@ -74,6 +81,8 @@ export const BCeIDAuthWall = ({
                 redirectToLoginPage();
               }
               // else, silent sign in is complete and token is refreshed.
+              // AuthContext will be updated and the component rerenders which
+              // takes care of directing the user as appropriate.
             })
             .catch(() => {
               redirectToLoginPage();
