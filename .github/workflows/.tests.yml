@@ -57,11 +57,7 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
-          config: |
-            pageLoadTimeout=10000
-            baseUrl=https://${{ github.event.repository.name }}-${{ inputs.target }}-frontend.apps.silver.devops.gov.bc.ca
-            TEST_USER=${{github.config.CYPRESS_USERNAME}}
-            TEST_PASSWORD=${{github.config.CYPRESS_PASSWORD}}
+          config: pageLoadTimeout=10000,baseUrl=https://${{ github.event.repository.name }}-${{ inputs.target }}-frontend.apps.silver.devops.gov.bc.ca,TEST_USER=${{github.config.CYPRESS_USERNAME}},TEST_PASSWORD=${{github.config.CYPRESS_PASSWORD}}
 
           working-directory: ./frontend
           browser: ${{ matrix.browser }}
