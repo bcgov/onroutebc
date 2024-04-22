@@ -64,24 +64,19 @@ export const BCeIDAuthWall = ({
    */
   useEffect(() => {
     if (!isAuthLoading && !isAuthenticated) {
-      const userString = getUserStorage();
       try {
-        if (userString) {
-          const obj = JSON.parse(userString);
-          if (obj?.refresh_token) {
-            signinSilent()
-              .then((value) => {
-                if (!value?.access_token) {
-                  redirectToLoginPage();
-                }
-                // else, sign in is complete and token is refreshed.
-              })
-              .catch(() => {
+        const userSessionJSON = getUserStorage();
+        if (userSessionJSON?.refresh_token) {
+          signinSilent()
+            .then((value) => {
+              if (!value?.access_token) {
                 redirectToLoginPage();
-              });
-          } else {
-            redirectToLoginPage();
-          }
+              }
+              // else, silent sign in is complete and token is refreshed.
+            })
+            .catch(() => {
+              redirectToLoginPage();
+            });
         } else {
           redirectToLoginPage();
         }
