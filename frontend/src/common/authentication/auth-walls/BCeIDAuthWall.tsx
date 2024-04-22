@@ -71,12 +71,10 @@ export const BCeIDAuthWall = ({
           if (obj?.refresh_token) {
             signinSilent()
               .then((value) => {
-                if (value?.access_token) {
-                  // sign in complete.
-                  console.log("sign in complete");
-                } else {
+                if (!value?.access_token) {
                   redirectToLoginPage();
                 }
+                // else, sign in is complete and token is refreshed.
               })
               .catch(() => {
                 redirectToLoginPage();
