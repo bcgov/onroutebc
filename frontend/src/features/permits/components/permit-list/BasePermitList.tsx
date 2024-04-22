@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 import {
   MRT_GlobalFilterTextField,
@@ -17,8 +17,6 @@ import { getPermits } from "../../apiManager/permitsAPI";
 import { PermitListItem } from "../../types/permit";
 import { PermitsColumnDefinition } from "./Columns";
 import { PermitRowOptions } from "./PermitRowOptions";
-import { useNavigate } from "react-router-dom";
-import { ERROR_ROUTES } from "../../../../routes/constants";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
@@ -29,6 +27,12 @@ import { ERROR_ROUTES } from "../../../../routes/constants";
 import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
 import { PermitChip } from "./PermitChip";
 import { openBlobInNewTab } from "../../helpers/permitPDFHelper";
+import { IDIRPermitSearchRowActions } from "../../../idir/search/components/IDIRPermitSearchRowActions";
+import { hasPermitExpired } from "../../helpers/permitState";
+import { isPermitInactive } from "../../types/PermitStatus";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
+import { DoesUserHaveAuthGroup } from "../../../../common/authentication/util";
+import { IDIR_USER_AUTH_GROUP } from "../../../../common/authentication/types";
 
 /**
  * A permit list component with common functionalities that can be shared by
@@ -39,6 +43,7 @@ export const BasePermitList = ({
 }: {
   isExpired?: boolean;
 }) => {
+  const { idirUserDetails } = useContext(OnRouteBCContext);
   const navigate = useNavigate();
   const [pagination, setPagination] = useState<MRT_PaginationState>({
     pageIndex: 0,
@@ -175,16 +180,35 @@ export const BasePermitList = ({
     enablePagination: true,
     enableBottomToolbar: true,
     renderEmptyRowsFallback: () => <NoRecordsFound />,
-    renderRowActions: useCallback((props: { row: MRT_Row<PermitListItem> }) => {
-      return (
-        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-          <PermitRowOptions
-            isExpired={isExpired}
-            permitId={props.row.original.permitId}
-          />
-        </Box>
-      );
-    }, []),
+    renderRowActions: useCallback(
+      ({ row }: { row: MRT_Row<PermitListItem> }) => {
+        const isInactive =
+          hasPermitExpired(row.original.expiryDate) ||
+          isPermitInactive(row.original.permitStatus);
+        return (
+          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+            {DoesUserHaveAuthGroup({
+              userAuthGroup: idirUserDetails?.userAuthGroup,
+              allowedAuthGroups: [IDIR_USER_AUTH_GROUP.PPC_CLERK],
+            }) ? (
+              <IDIRPermitSearchRowActions
+                isPermitInactive={isInactive}
+                permitNumber={row.original.permitNumber}
+                permitId={row.original.permitId}
+                userAuthGroup={idirUserDetails?.userAuthGroup}
+                companyId={row.original.companyId?.toString()}
+              />
+            ) : (
+              <PermitRowOptions
+                isExpired={isExpired}
+                permitId={row.original.permitId}
+              />
+            )}
+          </Box>
+        );
+      },
+      [],
+    ),
     muiToolbarAlertBannerProps: isError
       ? {
           color: "error",
