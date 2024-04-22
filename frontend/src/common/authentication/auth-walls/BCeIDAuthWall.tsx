@@ -70,6 +70,7 @@ export const BCeIDAuthWall = ({
           signinSilent()
             .then((value) => {
               if (!value?.access_token) {
+                // If sign in is unsuccessful, redirect to home page.
                 redirectToLoginPage();
               }
               // else, silent sign in is complete and token is refreshed.
@@ -81,7 +82,7 @@ export const BCeIDAuthWall = ({
           redirectToLoginPage();
         }
       } catch (e) {
-        console.error("Unable to process token refresh::", e);
+        console.error("Unable to process token refresh; redirecting to login");
         redirectToLoginPage();
       }
     }
