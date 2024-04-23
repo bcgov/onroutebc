@@ -67,6 +67,7 @@
     "helmet": "^7.1.0",
     "jwks-rsa": "^3.1.0",
     "mssql": "^10.0.2",
+    "nest-sftp": "^3.0.0",
     "nest-winston": "^1.9.4",
     "nestjs-cls": "^4.3.0",
     "nestjs-typeorm-paginate": "^4.0.4",

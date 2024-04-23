@@ -36,6 +36,7 @@ import { ApplicationModule } from './modules/permit-application-payment/applicat
 import { PaymentModule } from './modules/permit-application-payment/payment/payment.module';
 import { PermitReceiptDocumentModule } from './modules/permit-application-payment/permit-receipt-document/permit-receipt-document.module';
 import { ShoppingCartModule } from './modules/shopping-cart/shopping-cart.module';
+import { CgiSftpModule } from './modules/cgi-sftp/cgi-sftp.module';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
@@ -98,6 +99,7 @@ const envPath = path.resolve(process.cwd() + '/../');
     ApplicationModule, //! Application Module should be imported before PermitModule to avoid URI conflict
     PermitModule,
     FeatureFlagsModule,
+    CgiSftpModule,
   ],
   controllers: [AppController],
   providers: [AppService],
