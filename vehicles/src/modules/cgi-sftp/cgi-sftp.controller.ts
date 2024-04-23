@@ -2,7 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 import { CgiSftpService } from './cgi-sftp.service';
 import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 
-@Controller('cgi-sftp')
+@Controller('cgisftp')
 export class CgiSftpController {
   constructor(private readonly cgiSftpService: CgiSftpService) {}
   @ApiOkResponse({

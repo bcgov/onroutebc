@@ -7,11 +7,11 @@ import { CgiSftpController } from './cgi-sftp.controller';
   imports: [
     SftpModule.forRoot(
       {
-        host: 'Trooper.cas.gov.bc.ca',
-        port: 21,
-        username: 'f3535t',
+        host: process.env.CFS_SFTP_HOST,
+        port: Number(process.env.CFS_SFTP_PORT),
+        username: process.env.CFS_SFTP_USERNAME,
         privateKey: process.env.CFS_PRIVATE_KEY,
-        passphrase: 'Amsterdam!99',
+        passphrase: process.env.CFS_PRIVATE_KEY_PASSPHRASE,
         debug: console.log,
       },
       false,
