@@ -4,9 +4,7 @@ import cypress from "cypress";
 
   describe('Login and start application till payment complete', () => {
     it('should complete an application from scratch with an existing test acount', () => {
-    const baseUrl = Cypress.env('baseUrl');
-    const url = baseUrl + 'applications'
-    cy.visit(url)
+    cy.visit('applications')
     cy.url().as('url')
     // cy.get('@url').should('eq', url)
     cy.wait(5000);
