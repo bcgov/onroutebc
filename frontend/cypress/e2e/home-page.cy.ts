@@ -31,8 +31,8 @@ import cypress from "cypress";
 
 
     cy.get("#user").should('exist'); 
-      const testUser = Cypress.env('TEST_USER');
-      const testPassword = Cypress.env('TEST_PASSWORD');
+      const testUser = Cypress.env('CYPRESS_USERNAME');
+      const testPassword = Cypress.env('CYPRESS_PASSWORD');
       cy.get('#user').type(testUser)
       cy.get('#password').type(testPassword)
       cy.get('.btn-primary').click()
@@ -56,7 +56,7 @@ import cypress from "cypress";
         
         // select vehicle
         cy.get('[data-testid="select-vehicle-autocomplete"]').invoke('attr', 'value', '61');
-        const selectVehicle = Cypress.env('SELECT_VEHICLE')
+        const selectVehicle = Cypress.env('CYPRESS_SELECT_VEHICLE')
         cy.get('[data-testid="select-vehicle-autocomplete"]').type(selectVehicle);
         cy.get('[data-testid="select-vehicle-autocomplete"]').trigger('mousemove', { clientX: 0, clientY: 50 }).click().type('{enter}');
         cy.contains(selectVehicle).click();
@@ -77,15 +77,15 @@ import cypress from "cypress";
         cy.wait(5000);
         // redirect to pay bc
         // cy.url().should('include', 'https://'); 
-        const paybcUrl = Cypress.env('PAYBC_URL');
+        const paybcUrl = Cypress.env('CYPRESS_PAYBC_URL');
         cy.origin(paybcUrl, () => {
-          const trnCardNumber = Cypress.env('DEV_CC_NUMBER');
-          const trnExpMonth = Cypress.env('DEV_CC_EXPMONTH');
-          const trnExpYear = Cypress.env('DEV_CC_NUMBER');
-          const trnCardCvd = Cypress.env('DEV_CC_CVD');
+          const trnCardNumber = Cypress.env('CYPRESS_CC_NUMBER');
+          const trnExpMonth = Cypress.env('CYPRESS_CC_EXPMONTH');
+          const trnExpYear = Cypress.env('CYPRESS_CC_EXPYEAR');
+          const trnCardCvd = Cypress.env('CYPRESS_CC_CVD');
           cy.get("#trnCardNumber").type(trnCardNumber);
           cy.get('[name="trnExpMonth"]').select(trnExpMonth);
-          cy.get('[name="trnExpYear"]').select('2025');
+          cy.get('[name="trnExpYear"]').select(trnExpYear);
           cy.get('#trnCardCvd').type(trnCardCvd);
           cy.get('[name="submitButton"]').click();     
         })
