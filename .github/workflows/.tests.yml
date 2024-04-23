@@ -57,7 +57,7 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
-          config: pageLoadTimeout=10000,baseUrl=https://${{ github.event.repository.name }}-${{ inputs.target }}-frontend.apps.silver.devops.gov.bc.ca,CYPRESS_USERNAME=${{github.secret.CYPRESS_USERNAME}},CYPRESS_PASSWORD=${{github.secret.CYPRESS_PASSWORD}},CYPRESS_SELECT_VEHICLE=${{github.config.CYPRESS_SELECT_VEHICLE}},CYPRESS_PAYBC_URL=${{github.config.CYPRESS_PAYBC_URL}},CYPRESS_CC_NUMBER=${{github.secret.CYPRESS_CC_NUMBER}},CYPRESS_CC_EXPMONTH=${{github.secret.CYPRESS_CC_EXPMONTH}},CYPRESS_CC_EXPYEAR=${{github.secret.CYPRESS_CC_EXPYEAR}},CYPRESS_CC_CVD=${{github.secret.CYPRESS_CC_CVD}}
+          config: pageLoadTimeout=10000,baseUrl=https://${{ github.event.repository.name }}-${{ inputs.target }}-frontend.apps.silver.devops.gov.bc.ca,CYPRESS_USERNAME=${{secrets.CYPRESS_USERNAME}},CYPRESS_PASSWORD=${{secrets.CYPRESS_PASSWORD}},CYPRESS_SELECT_VEHICLE=${{vars.CYPRESS_SELECT_VEHICLE}},CYPRESS_PAYBC_URL=${{vars.CYPRESS_PAYBC_URL}},CYPRESS_CC_NUMBER=${{secrets.CYPRESS_CC_NUMBER}},CYPRESS_CC_EXPMONTH=${{secrets.CYPRESS_CC_EXPMONTH}},CYPRESS_CC_EXPYEAR=${{secrets.CYPRESS_CC_EXPYEAR}},CYPRESS_CC_CVD=${{secrets.CYPRESS_CC_CVD}}
 
 
           working-directory: ./frontend
