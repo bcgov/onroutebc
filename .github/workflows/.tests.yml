@@ -56,9 +56,9 @@ jobs:
 
       - name: Cypress run
         uses: cypress-io/github-action@v6
+        environment: dev
         with:
           config: pageLoadTimeout=10000,baseUrl=https://${{ github.event.repository.name }}-${{ inputs.target }}-frontend.apps.silver.devops.gov.bc.ca
-          environment: dev
           working-directory: ./frontend
           browser: ${{ matrix.browser }}
         env:
