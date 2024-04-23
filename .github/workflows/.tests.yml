@@ -38,6 +38,7 @@ jobs:
   cypress-e2e:
     name: E2E Tests
     environment: dev
+    secrets: inherit
     runs-on: ubuntu-22.04
     strategy:
       matrix:
