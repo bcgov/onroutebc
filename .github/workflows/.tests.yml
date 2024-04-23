@@ -57,11 +57,18 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
-          config: pageLoadTimeout=10000,baseUrl=https://${{ github.event.repository.name }}-${{ inputs.target }}-frontend.apps.silver.devops.gov.bc.ca,CYPRESS_USERNAME=${{secrets.CYPRESS_USERNAME}},CYPRESS_PASSWORD=${{secrets.CYPRESS_PASSWORD}},CYPRESS_SELECT_VEHICLE=${{vars.CYPRESS_SELECT_VEHICLE}},CYPRESS_PAYBC_URL=${{vars.CYPRESS_PAYBC_URL}},CYPRESS_CC_NUMBER=${{secrets.CYPRESS_CC_NUMBER}},CYPRESS_CC_EXPMONTH=${{secrets.CYPRESS_CC_EXPMONTH}},CYPRESS_CC_EXPYEAR=${{secrets.CYPRESS_CC_EXPYEAR}},CYPRESS_CC_CVD=${{secrets.CYPRESS_CC_CVD}}
-
-
+          config: pageLoadTimeout=10000,baseUrl=https://${{ github.event.repository.name }}-${{ inputs.target }}-frontend.apps.silver.devops.gov.bc.ca
           working-directory: ./frontend
           browser: ${{ matrix.browser }}
+          env:
+            CYPRESS_USERNAME: ${{secrets.CYPRESS_USERNAME}}
+            CYPRESS_PASSWORD: ${{secrets.CYPRESS_PASSWORD}}
+            CYPRESS_SELECT_VEHICLE: ${{vars.CYPRESS_SELECT_VEHICLE}}
+            CYPRESS_PAYBC_URL: ${{vars.CYPRESS_PAYBC_URL}}
+            CYPRESS_CC_NUMBER: ${{secrets.CYPRESS_CC_NUMBER}}
+            CYPRESS_CC_EXPMONTH: ${{secrets.CYPRESS_CC_EXPMONTH}}
+            CYPRESS_CC_EXPYEAR: ${{secrets.CYPRESS_CC_EXPYEAR}}
+            CYPRESS_CC_CVD: ${{secrets.CYPRESS_CC_CVD}}
 
       - uses: actions/upload-artifact@v4
         if: failure()
