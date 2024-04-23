@@ -62,10 +62,11 @@ jobs:
           working-directory: ./frontend
           browser: ${{ matrix.browser }}
         env:
-          CYPRESS_USERNAME: ${{secrets.CYPRESS_USERNAME}}
-          CYPRESS_PASSWORD: ${{secrets.CYPRESS_PASSWORD}}
           CYPRESS_SELECT_VEHICLE: ${{vars.CYPRESS_SELECT_VEHICLE}}
           CYPRESS_PAYBC_URL: ${{vars.CYPRESS_PAYBC_URL}}
+        secrets:
+          CYPRESS_USERNAME: ${{secrets.CYPRESS_USERNAME}}
+          CYPRESS_PASSWORD: ${{secrets.CYPRESS_PASSWORD}}
           CYPRESS_CC_NUMBER: ${{secrets.CYPRESS_CC_NUMBER}}
           CYPRESS_CC_EXPMONTH: ${{secrets.CYPRESS_CC_EXPMONTH}}
           CYPRESS_CC_EXPYEAR: ${{secrets.CYPRESS_CC_EXPYEAR}}
