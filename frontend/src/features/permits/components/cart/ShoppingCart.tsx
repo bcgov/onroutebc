@@ -12,6 +12,7 @@ import { hasPermitsActionFailed } from "../../helpers/permitState";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { BCeID_USER_AUTH_GROUP } from "../../../../common/authentication/types";
 import { CartContext } from "../../context/CartContext";
+import { CartChangedWarningBanner } from "./CartChangedWarningBanner/CartChangedWarningBanner";
 
 export const ShoppingCart = ({
   onCartSelectionChange,
@@ -33,6 +34,8 @@ export const ShoppingCart = ({
     .filter(cartItem => cartItem.selected)
     .map(cartItem => cartItem.fee)
     .reduce((prevTotal, currFee) => prevTotal + currFee, 0);
+
+  const [problematicApplications, setProblematicApplications] = useState<string[]>([]);
 
   useEffect(() => {
     const items = getDefaultRequiredVal([], cartItems);
@@ -84,9 +87,15 @@ export const ShoppingCart = ({
     });
 
     if (hasPermitsActionFailed(removeResult)) {
-      // Display warning banner showing failed ids
+      // Display warning banner showing failed application numbers
+      const problematicApplicationNumbers = cartItemSelection
+        .filter(cartItem => removeResult.failure.includes(cartItem.applicationId))
+        .map(cartItem => cartItem.applicationNumber);
+      
+      setProblematicApplications(problematicApplicationNumbers);
     } else {
       // Hide warning banner
+      setProblematicApplications([]);
     }
 
     cartQuery.refetch();
@@ -115,6 +124,10 @@ export const ShoppingCart = ({
   
   return (
     <div className="shopping-cart">
+      {problematicApplications.length > 0 ? (
+        <CartChangedWarningBanner removedItems={problematicApplications} />
+      ) : null}
+
       <div className="shopping-cart__header">
         <div className="shopping-cart__header-section shopping-cart__header-section--main">
           <div className="shopping-cart__main-header">
@@ -143,7 +156,7 @@ export const ShoppingCart = ({
               onChange={(e) => handleCartFilterChange(e.target.value)}
             >
               <div
-                className={`cart-filter ${
+                className={`cart-filter cart-filter--all ${
                   showAllApplications
                     ? "cart-filter--active"
                     : ""
@@ -165,7 +178,7 @@ export const ShoppingCart = ({
               </div>
 
               <div
-                className={`cart-filter ${
+                className={`cart-filter cart-filter--my ${
                   !showAllApplications
                     ? "cart-filter--active"
                     : ""

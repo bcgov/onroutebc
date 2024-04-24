@@ -28,7 +28,11 @@ export const PermitPayFeeSummary = ({
   return (
     <Box className="permit-pay-fee-summary">
       <Box className="permit-pay-fee-summary__pay">
-        <FeeSummary permitType={permitType} feeSummary={`${calculatedFee}`} />
+        <FeeSummary
+          permitType={permitType}
+          feeSummary={`${calculatedFee}`}
+          hideDescriptions={true}
+        />
 
         <Button
           data-testid="pay-now-btn"

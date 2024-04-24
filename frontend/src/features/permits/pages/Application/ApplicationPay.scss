@@ -13,13 +13,13 @@
     display: flex;
     flex-direction: column;
     margin-right: 0;
+    width: 100%;
   }
 
   & &__right-container {
     background-color: $bc-white;
     display: flex;
     flex-direction: column;
-    width: 33rem;
     margin-left: 5rem;
 
     .choose-payment-method {

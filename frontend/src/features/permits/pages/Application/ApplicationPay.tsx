@@ -6,10 +6,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import "./ApplicationPay.scss";
 import { ApplicationContext } from "../../context/ApplicationContext";
 import { ApplicationBreadcrumb } from "../../components/application-breadcrumb/ApplicationBreadcrumb";
-import {
-  //calculateFeeByDuration,
-  isZeroAmount,
-} from "../../helpers/feeSummary";
+import { calculateFeeByDuration, isZeroAmount } from "../../helpers/feeSummary";
 import { ApplicationSummary } from "./components/pay/ApplicationSummary";
 import { PermitPayFeeSummary } from "./components/pay/PermitPayFeeSummary";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
@@ -21,6 +18,9 @@ import { PPC_EMAIL, TOLL_FREE_NUMBER } from "../../../../common/constants/consta
 import { ChoosePaymentMethod } from "./components/pay/ChoosePaymentMethod";
 import { DEFAULT_EMPTY_CARD_TYPE, PaymentMethodData } from "./components/pay/types/PaymentMethodData";
 import { hasPermitsActionFailed } from "../../helpers/permitState";
+import { ShoppingCart } from "../../components/cart/ShoppingCart";
+import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
+import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -31,9 +31,8 @@ import {
   APPLICATION_STEPS,
   ERROR_ROUTES,
   PERMITS_ROUTES,
+  SHOPPING_CART_ROUTES,
 } from "../../../../routes/constants";
-import { ShoppingCart } from "../../components/cart/ShoppingCart";
-import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 
 const AVAILABLE_STAFF_PAYMENT_METHODS = [
   PAYMENT_METHOD_TYPE_CODE.ICEPAY,
@@ -57,14 +56,17 @@ export const ApplicationPay = () => {
     false,
   );
 
+  const { data: featureFlags } = useFeatureFlagsQuery();
+  const enableShoppingCart = Boolean(featureFlags?.["SHOPPING_CART"] === "ENABLED");
+
   const companyId = getCompanyIdFromSession();
 
-  /*
-  const calculatedFee = calculateFeeByDuration(
+  const oldFee = calculateFeeByDuration(
     getDefaultRequiredVal(0, applicationData?.permitData?.permitDuration),
   );
-  */
-  const [calculatedFee, setCalculatedFee] = useState<number>(0);
+  const [calculatedFee, setCalculatedFee] = useState<number>(
+    enableShoppingCart ? 0 : oldFee,
+  );
 
   const isFeeZero = isZeroAmount(calculatedFee);
 
@@ -96,7 +98,12 @@ export const ApplicationPay = () => {
       if (!isStaffActingAsCompany) {
         // CV Client
         if (!transaction?.url) {
-          navigate(APPLICATIONS_ROUTES.PAY(permitId, true));
+          // Failed to generate transaction url
+          if (permitId) {
+            navigate(APPLICATIONS_ROUTES.PAY(permitId, true));
+          } else {
+            navigate(SHOPPING_CART_ROUTES.DETAILS(true));
+          }
         } else {
           window.open(transaction.url, "_self");
         }
@@ -190,33 +197,39 @@ export const ApplicationPay = () => {
   return (
     <div className="pay-now-page">
       <Box className="pay-now-page__left-container">
-        <ApplicationBreadcrumb
-          permitId={permitId}
-          applicationStep={APPLICATION_STEPS.PAY}
-        />
-
-        <ShoppingCart
-          onCartSelectionChange={handleTotalFeeChange}
-          companyId={companyId}
-        />
-
-        <ApplicationSummary
-          permitType={applicationData?.permitType}
-          applicationNumber={applicationData?.applicationNumber}
-        />
-
-        {!isStaffActingAsCompany ? (
-          <Typography className="pay-now-page__contact" variant="h6">
-            Have questions? Please contact the Provincial Permit Centre. Toll-free:
-            {""}
-            <span className="pay-contact pay-contact--phone">
-              {" "}
-              {TOLL_FREE_NUMBER}
-            </span>{" "}
-            or Email:{" "}
-            <span className="pay-contact pay-contact--email">{PPC_EMAIL}</span>
-          </Typography>
+        {permitId ? (
+          <ApplicationBreadcrumb
+            permitId={permitId}
+            applicationStep={APPLICATION_STEPS.PAY}
+          />
         ) : null}
+
+        {enableShoppingCart ? (
+          <ShoppingCart
+            onCartSelectionChange={handleTotalFeeChange}
+            companyId={companyId}
+          />
+        ) : (
+          <>
+            <ApplicationSummary
+              permitType={applicationData?.permitType}
+              applicationNumber={applicationData?.applicationNumber}
+            />
+
+            {!isStaffActingAsCompany ? (
+              <Typography className="pay-now-page__contact" variant="h6">
+                Have questions? Please contact the Provincial Permit Centre. Toll-free:
+                {""}
+                <span className="pay-contact pay-contact--phone">
+                  {" "}
+                  {TOLL_FREE_NUMBER}
+                </span>{" "}
+                or Email:{" "}
+                <span className="pay-contact pay-contact--email">{PPC_EMAIL}</span>
+              </Typography>
+            ) : null}
+          </>
+        )}
       </Box>
 
       <Box className="pay-now-page__right-container">

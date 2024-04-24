@@ -1,6 +1,10 @@
 @import "../../../../themes/orbcStyles";
 
 .shopping-cart {
+  .cart-changed-warning-banner {
+    margin-bottom: 1.5rem;
+  }
+
   &__header {
     display: flex;
     align-items: flex-end;
@@ -42,7 +46,9 @@
     margin-left: 2.5rem;
 
     .cart-filter {
-      margin-right: 1.5rem;
+      &--my {
+        margin-left: 1.5rem;
+      }
 
       &__label {
         margin: 0;

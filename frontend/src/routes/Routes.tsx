@@ -32,6 +32,7 @@ import { CompanySuspended } from "../common/pages/CompanySuspended";
 import { ManageSettings } from "../features/settings/ManageSettings";
 import { IssuanceErrorPage } from "../common/pages/IssuanceErrorPage";
 import IDPRedirect from "../common/components/idpredirect/IDPRedirect";
+import { ApplicationPay } from "../features/permits/pages/Application/ApplicationPay";
 
 export const AppRoutes = () => {
 
@@ -241,6 +242,23 @@ export const AppRoutes = () => {
           }
         />
       </Route>
+
+      <Route
+        element={
+          <BCeIDAuthWall
+            requiredRole={ROLES.WRITE_PERMIT}
+            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+          />
+        }
+      >
+        <Route
+          path={`${routes.SHOPPING_CART_ROUTES.DETAILS()}`}
+          element={
+            <ApplicationPay />
+          }
+        />
+      </Route>
+
       <Route
         element={
           <BCeIDAuthWall

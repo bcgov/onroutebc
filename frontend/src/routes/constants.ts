@@ -131,6 +131,14 @@ export const APPLICATIONS_ROUTES = {
     )}/pay${failed ? "?paymentFailed=true" : ""}`,
 };
 
+// Shopping Cart
+export const SHOPPING_CART_ROUTE_BASE = "/cart";
+export const SHOPPING_CART_ROUTES = {
+  BASE: SHOPPING_CART_ROUTE_BASE,
+  DETAILS: (failed?: boolean) =>
+    `${SHOPPING_CART_ROUTE_BASE}${failed ? "?paymentFailed=true" : ""}`,
+}; 
+
 // Create Profile Wizard
 export const CREATE_PROFILE_WIZARD_ROUTES = {
   CREATE: "/create-profile",
