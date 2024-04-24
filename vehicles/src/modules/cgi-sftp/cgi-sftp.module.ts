@@ -7,18 +7,11 @@ import { CgiSftpController } from './cgi-sftp.controller';
   imports: [
     SftpModule.forRoot(
       {
-        host: "Trooper.cas.gov.bc.ca",
-        port: "22",
-        username: "f3535t",
-        privateKey: `-----BEGIN OPENSSH PRIVATE KEY-----
-        b3BlbnNzaC1rZXktdjEAAAAACmFlczI1Ni1jdHIAAAAGYmNyeXB0AAAAGAAAABC/PmR4Pu
-        1h52p1K4JrRttiAAAAEAAAAAEAAAAzAAAAC3NzaC1lZDI1NTE5AAAAIHoMPb7P9MSB3SGd
-        rsUOqzro6NZ8Q8cT73NrCC2bm7gZAAAAoDTz01E7tfEqGAG0hU9A/ZhoEfKmopH/USXpQs
-        S+qxxTPdgxhfO+p4hbLySFB8/4CYuRaKROiTURbjJo1pRUcVS4deEsgyUDdwLlQpshhBeS
-        NC1S3VZq6NaTei83x4aqA4dVkRF0aLsnG7IqJSUuhATcrhN94veKjyeEeAAjzJI8XpiJj0
-        uvbkwilrUZzjYrB4EsDyHqPHla2zj3XoeUYuI=
-        -----END OPENSSH PRIVATE KEY-----`,
-        passphrase: "Amsterdam!99",
+        host: process.env.CFS_SFTP_HOST,
+        port: Number(process.env.CFS_SFTP_PORT),
+        username: process.env.CFS_SFTP_USERNAME,
+        privateKey:process.env.CFS_PRIVATE_KEY,
+        passphrase: process.env.CFS_PRIVATE_KEY_PASSPHRASE,
         debug: console.log,
       },
       false,

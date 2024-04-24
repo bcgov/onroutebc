@@ -3,10 +3,10 @@ services:
     image: atmoz/sftp
     volumes:
         - C:\Users\chauh\.ssh\share:/home/f3535t/share
-        - .\cfs-key-2.pub:/home/f3535t/.ssh/keys/demo_ssh_key.pub:ro
+        - .\cfs_key.pub:/home/f3535t/.ssh/keys/cfs_key.pub:ro
     ports:
         - "22:22"
-    command: f3535t:pass:1001
+    command: f3535t::1001
   sql-server-db:
     container_name: sql-server-db
     build:
