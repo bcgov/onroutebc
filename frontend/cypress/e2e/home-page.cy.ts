@@ -31,6 +31,9 @@ import cypress from "cypress";
     cy.get("#user").should('exist'); 
       const testUser = Cypress.env('CYPRESS_USERNAME');
       const testPassword = Cypress.env('CYPRESS_PASSWORD');
+      cy.log('testUser:',testUser);
+      cy.log('testPassword:',testPassword);
+      // expect(url).to.include(baseUrl);
       cy.get('#user').type(testUser)
       cy.get('#password').type(testPassword)
       cy.get('.btn-primary').click()
