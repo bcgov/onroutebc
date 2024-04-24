@@ -50,7 +50,7 @@ import cypress from "cypress";
         // cy.get('@url').should('include', 'applications')
         cy.wait(5000)
         cy.url().then((url) => {
-        expect(url).to.include(baseUrl);
+        expect(url).to.include(Cypress.config().baseUrl);
 
         // click start application button
         cy.get('.start-application-action__btn').first().click({ force: true });
