@@ -1,4 +1,12 @@
 services:
+  sftp:
+    image: atmoz/sftp
+    volumes:
+        - C:\Users\chauh\.ssh\share:/home/f3535t/share
+        - .\cfs-key-2.pub:/home/f3535t/.ssh/keys/demo_ssh_key.pub:ro
+    ports:
+        - "2222:22"
+    command: f3535t:pass:1001
   sql-server-db:
     container_name: sql-server-db
     build:
@@ -64,6 +72,11 @@ services:
       PAYBC_BASE_URL: ${PAYBC_BASE_URL}
       PAYBC_REDIRECT: ${PAYBC_REDIRECT}
       GL_CODE: ${GL_CODE}
+      CFS_PRIVATE_KEY: ${CFS_PRIVATE_KEY}
+      CFS_PRIVATE_KEY_PASSPHRASE: ${CFS_PRIVATE_KEY_PASSPHRASE}
+      CFS_SFTP_USERNAME: ${CFS_SFTP_USERNAME}
+      CFS_SFTP_HOST: ${CFS_SFTP_HOST}
+      CFS_SFTP_PORT: ${CFS_SFTP_PORT}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/"]
       interval: 1m30s
