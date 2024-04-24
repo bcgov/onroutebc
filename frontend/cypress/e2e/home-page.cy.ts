@@ -29,8 +29,8 @@ import cypress from "cypress";
 
 
     cy.get("#user").should('exist'); 
-      const testUser = Cypress.env('username');
-      const testPassword = Cypress.env('password');
+      const testUser = Cypress.env('CYPRESS_USERNAME');
+      const testPassword = Cypress.env('CYPRESS_PASSWORD');
       cy.log('testUser:',testUser);
       cy.log('testPassword:',testPassword);
       // expect(url).to.include(baseUrl);
@@ -57,7 +57,7 @@ import cypress from "cypress";
         
         // select vehicle
         cy.get('[data-testid="select-vehicle-autocomplete"]').invoke('attr', 'value', '61');
-        const selectVehicle = Cypress.env('selectVehicle')
+        const selectVehicle = Cypress.env('CYPRESS_SELECT_VEHICLE')
         cy.get('[data-testid="select-vehicle-autocomplete"]').type(selectVehicle);
         cy.get('[data-testid="select-vehicle-autocomplete"]').trigger('mousemove', { clientX: 0, clientY: 50 }).click().type('{enter}');
         cy.contains(selectVehicle).click();
@@ -78,12 +78,12 @@ import cypress from "cypress";
         cy.wait(5000);
         // redirect to pay bc
         // cy.url().should('include', 'https://'); 
-        const paybcUrl = Cypress.env('paybcUrl');
+        const paybcUrl = Cypress.env('CYPRESS_PAYBC_URL');
         cy.origin(paybcUrl, () => {
-          const trnCardNumber = Cypress.env('ccNumber');
-          const trnExpMonth = Cypress.env('ccExpmonth');
-          const trnExpYear = Cypress.env('ccExpyear');
-          const trnCardCvd = Cypress.env('ccCvd');
+          const trnCardNumber = Cypress.env('CYPRESS_CC_NUMBER');
+          const trnExpMonth = Cypress.env('CYPRESS_CC_EXPMONTH');
+          const trnExpYear = Cypress.env('CYPRESS_CC_EXPYEAR');
+          const trnCardCvd = Cypress.env('CYPRESS_CC_CVD');
           cy.get("#trnCardNumber").type(trnCardNumber);
           cy.get('[name="trnExpMonth"]').select(trnExpMonth);
           cy.get('[name="trnExpYear"]').select(trnExpYear);
