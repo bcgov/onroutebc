@@ -1,16 +1,20 @@
 import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 import "./ShoppingCartButton.scss";
+import { SHOPPING_CART_ROUTES } from "../../../../routes/constants";
 
 export const ShoppingCartButton = ({
   cartItemCount,
 }: {
   cartItemCount: number;
 }) => {
+  const navigate = useNavigate();
+
   const onClick = () => {
-    // Navigate to shopping cart page
+    navigate(SHOPPING_CART_ROUTES.DETAILS());
   };
 
   return (
