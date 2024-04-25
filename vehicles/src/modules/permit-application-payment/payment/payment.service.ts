@@ -182,7 +182,8 @@ export class PaymentService {
   private isApplicationInProgress(permitStatus: ApplicationStatus) {
     return (
       permitStatus === ApplicationStatus.IN_PROGRESS ||
-      permitStatus === ApplicationStatus.WAITING_PAYMENT
+      permitStatus === ApplicationStatus.WAITING_PAYMENT ||
+      permitStatus === ApplicationStatus.IN_CART
     );
   }
 
