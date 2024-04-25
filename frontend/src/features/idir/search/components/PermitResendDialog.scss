@@ -70,4 +70,35 @@
     margin-bottom: 0;
     margin-top: 1.5rem;
   }
+
+  & &__notification-types {
+    display: block;
+    margin-top: 1.5rem;
+
+    .notification-type {
+      display: flex;
+      align-items: center;
+  
+      &__checkbox {
+        padding: 0;
+
+        &--invalid {
+          color: $bc-red;
+        }
+      }
+  
+      &__label {
+        margin-left: 0.5rem;
+      }
+  
+      &--receipt {
+        margin-top: 1.5rem;
+      }
+    }
+  }
+
+  & &__error-msg {
+    color: $bc-red;
+    margin-top: 0.5rem;
+  }
 }
