@@ -31,7 +31,6 @@
 
 
 :root {
-
     /* Colors: */
     --focus-blue: #0000FF;
     --formsflow-light-gold: #F9F1C6;
@@ -112,7 +111,7 @@ p:last-child {
     letter-spacing: var(--unnamed-character-spacing-0);
 }
 
-h5 {
+h5, .h5 {
     font-family: var(--unnamed-font-family-bc-sans);
     font-style: var(--unnamed-font-style-normal);
     font-weight: var(--unnamed-font-weight-bold);
@@ -124,7 +123,7 @@ h5 {
     margin-block-end : 16px;
 }
 
-h4 {
+h4, .h4 {
     font-family: var(--unnamed-font-family-bc-sans);
     font-style: var(--unnamed-font-style-normal);
     font-weight: var(--unnamed-font-weight-bold);
@@ -136,7 +135,7 @@ h4 {
     margin-block-end : 16px;
 }
 
-h3 {
+h3, .h3 {
     font-family: var(--unnamed-font-family-bc-sans);
     font-style: var(--unnamed-font-style-normal);
     font-weight: var(--unnamed-font-weight-bold);
