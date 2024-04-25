@@ -60,6 +60,23 @@ export const ApplicationReview = () => {
     navigate(APPLICATIONS_ROUTES.PAY(permitId));
   };
 
+  const proceedWithAddToCart = async (
+    companyId: string,
+    applicationIds: string[],
+    onSuccess: () => void,
+  ) => {
+    const addResult = await addToCartMutation.mutateAsync({
+      companyId,
+      applicationIds,
+    });
+
+    if (hasPermitsActionFailed(addResult)) {
+      navigate(ERROR_ROUTES.UNEXPECTED);
+    } else {
+      onSuccess();
+    }
+  };
+
   const handleContinue = async () => {
     setIsSubmitted(true);
 
@@ -80,7 +97,22 @@ export const ApplicationReview = () => {
 
     if (savedApplication) {
       setApplicationData(savedApplication);
-      next();
+
+      await proceedWithAddToCart(
+        `${savedApplication.companyId}`,
+        [savedApplication.permitId] as string[],
+        () => {
+          setSnackBar({
+            showSnackbar: true,
+            setShowSnackbar: () => true,
+            message: `Application ${savedApplication.applicationNumber} added to cart`,
+            alertType: "success",
+          });
+    
+          refetchCartCount();
+          next();
+        },
+      );
     } else {
       navigate(ERROR_ROUTES.UNEXPECTED);
     }
@@ -95,24 +127,21 @@ export const ApplicationReview = () => {
       return navigate(ERROR_ROUTES.UNEXPECTED);
     }
 
-    const addResult = await addToCartMutation.mutateAsync({
-      companyId: `${applicationData.companyId}`,
-      applicationIds: [applicationData.permitId],
-    });
-
-    if (hasPermitsActionFailed(addResult)) {
-      navigate(ERROR_ROUTES.UNEXPECTED);
-    } else {
-      setSnackBar({
-        showSnackbar: true,
-        setShowSnackbar: () => true,
-        message: `Application ${applicationData.applicationNumber} added to cart`,
-        alertType: "success",
-      });
-
-      refetchCartCount();
-      navigate(APPLICATIONS_ROUTES.BASE);
-    }
+    await proceedWithAddToCart(
+      `${applicationData.companyId}`,
+      [applicationData.permitId],
+      () => {
+        setSnackBar({
+          showSnackbar: true,
+          setShowSnackbar: () => true,
+          message: `Application ${applicationData.applicationNumber} added to cart`,
+          alertType: "success",
+        });
+  
+        refetchCartCount();
+        navigate(APPLICATIONS_ROUTES.BASE);
+      },
+    );
   };
 
   useEffect(() => {
