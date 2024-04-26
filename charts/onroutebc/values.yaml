@@ -390,7 +390,7 @@ dops:
       - "s3-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
 
-tps-migration:
+scheduler:
   enabled: true
   deployment: # can be either a statefulSet or a deployment not both
     enabled: true
@@ -401,14 +401,14 @@ tps-migration:
   configmap:
     enabled: true
   containers:
-    - name: tps-migration
+    - name: scheduler
       command:
         - "sh"
         - "-c"
         - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/s3-{{.Values.global.vault.zone}} && source /vault/secrets/tps-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
-      image: tps-migration
+      image: scheduler
       tag: "{{tpl .Values.global.tag .}}"
       ports:
         - name: tps-api
@@ -478,7 +478,7 @@ tps-migration:
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
-      - host: "{{.Release.Name}}-tps-migration.apps.silver.devops.gov.bc.ca"
+      - host: "{{.Release.Name}}-scheduler.apps.silver.devops.gov.bc.ca"
         paths:
           - path: /
             pathType: ImplementationSpecific

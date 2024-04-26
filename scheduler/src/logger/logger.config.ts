@@ -13,7 +13,7 @@ const localLoggerFormat: winston.Logform.Format = winston.format.combine(
   winston.format.colorize(),
   winston.format.align(),
   winston.format.splat(),
-  utilities.format.nestLike('Tps-migration', {
+  utilities.format.nestLike('scheduler', {
     colors: true,
     prettyPrint: true,
   }),
