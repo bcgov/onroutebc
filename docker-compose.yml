@@ -1,5 +1,6 @@
 services:
   sftp:
+    container_name: sftp
     image: atmoz/sftp
     volumes:
         - C:\Users\chauh\.ssh\share:/home/f3535t/share
