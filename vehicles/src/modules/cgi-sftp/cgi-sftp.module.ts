@@ -10,7 +10,7 @@ import { CgiSftpController } from './cgi-sftp.controller';
         host: process.env.CFS_SFTP_HOST,
         port: process.env.CFS_SFTP_PORT,
         username: process.env.CFS_SFTP_USERNAME,
-        privateKey:process.env.CFS_PRIVATE_KEY,
+        privateKey: process.env.CFS_PRIVATE_KEY,
         passphrase: process.env.CFS_PRIVATE_KEY_PASSPHRASE,
         debug: console.log,
       },
