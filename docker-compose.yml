@@ -3,7 +3,7 @@ services:
     image: atmoz/sftp
     volumes:
         - C:\Users\chauh\.ssh\share:/home/f3535t/share
-        - .\cfs_key.pub:/home/f3535t/.ssh/keys/cfs_key.pub:ro
+        - C:\Repository\keys\cfs_key.pub:/home/f3535t/.ssh/keys/cfs_key.pub:ro
     ports:
         - "22:22"
     command: f3535t::1001
