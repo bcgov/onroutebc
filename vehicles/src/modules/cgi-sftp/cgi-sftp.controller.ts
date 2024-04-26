@@ -52,7 +52,7 @@ export class CgiSftpController {
   })
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
-  uploadCGIFile(@UploadedFile(new ParseFilePipe({
+  async uploadCGIFile(@UploadedFile(new ParseFilePipe({
     validators: [
       new MaxFileSizeValidator({ maxSize: 100000000 }),
       /**
@@ -62,6 +62,6 @@ export class CgiSftpController {
     ],
   }),
 ) file: Express.Multer.File) {
-    console.log(file);
+   await this.cgiSftpService.upload(file);
   }
 }
