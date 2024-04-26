@@ -96,7 +96,8 @@ export const addPowerUnit = async ({ powerUnit }: { powerUnit: PowerUnit }) => {
   const companyId = getCompanyIdFromSession();
   const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/powerUnits`;
 
-  const { unitNumber, ...powerUnitReqData } = powerUnit;
+  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+  const { powerUnitId: id, unitNumber, ...powerUnitReqData } = powerUnit;
 
   return await httpPOSTRequest(url, {
     ...replaceEmptyValuesWithNull(powerUnitReqData),
@@ -119,7 +120,8 @@ export const updatePowerUnit = async ({
   const companyId = getCompanyIdFromSession();
   const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/powerUnits/${powerUnitId}`;
 
-  const { unitNumber, ...powerUnitReqData } = powerUnit;
+  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+  const { powerUnitId: id, unitNumber, ...powerUnitReqData } = powerUnit;
   return await httpPUTRequest(url, {
     ...replaceEmptyValuesWithNull(powerUnitReqData),
     unitNumber: emptyUnitNumberToNull(unitNumber),

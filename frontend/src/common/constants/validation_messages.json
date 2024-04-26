@@ -4,6 +4,9 @@
     "messageTemplate": ":fieldName is required",
     "placeholders": [":fieldName"]
   },
+  "selectionRequired": {
+    "defaultMessage": "Select at least one item"
+  },
   "NaN": {
     "defaultMessage": "Must be a number"
   },

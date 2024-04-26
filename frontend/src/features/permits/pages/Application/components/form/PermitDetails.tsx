@@ -139,6 +139,7 @@ export const PermitDetails = ({
                   <CustomExternalLink
                     className="procedures-link"
                     href={ONROUTE_WEBPAGE_LINKS.COMMERCIAL_TRANSPORT_PROCEDURES}
+                    openInNewTab={true}
                     withLinkIcon={true}
                   >
                     <span className="procedures-link__title">
