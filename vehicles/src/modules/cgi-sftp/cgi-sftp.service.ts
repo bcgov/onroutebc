@@ -9,8 +9,8 @@ export class CgiSftpService {
   }
 
   async list() {
-    console.log(await this.sftpClient.realPath('.'));
-    console.log(await this.sftpClient.list('.'));
+    console.log(await this.sftpClient.realPath('./data'));
+    console.log(await this.sftpClient.list('./data'));
     return 'hello  ';
   }
 
