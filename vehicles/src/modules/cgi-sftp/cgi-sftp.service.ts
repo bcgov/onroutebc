@@ -1,4 +1,4 @@
-import { Injectable, Logger, UploadedFile } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { SftpClientService } from 'nest-sftp';
 
 @Injectable()
@@ -9,12 +9,12 @@ export class CgiSftpService {
   }
 
   async list() {
-    console.log(await this.sftpClient.realPath('data'));
-    console.log(await this.sftpClient.list('data'));
+    console.log(await this.sftpClient.realPath('/data'));
+    console.log(await this.sftpClient.list('/data'));
     return 'hello  ';
   }
 
   async upload(file: Express.Multer.File) {
-    console.log(await this.sftpClient.upload('data', file.buffer.toString()));
+    console.log(await this.sftpClient.upload('/data', file.buffer.toString()));
   }
 }
