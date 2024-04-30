@@ -9,12 +9,12 @@ export class CgiSftpService {
   }
 
   async list() {
-    console.log(await this.sftpClient.realPath('/data'));
-    console.log(await this.sftpClient.list('/data'));
+    console.log(await this.sftpClient.realPath('.'));
+    console.log(await this.sftpClient.list('.'));
     return 'hello  ';
   }
 
   async upload(file: Express.Multer.File) {
-    console.log(await this.sftpClient.upload('/data', file.buffer.toString()));
+    console.log(await this.sftpClient.upload('./data', file.buffer.toString()));
   }
 }
