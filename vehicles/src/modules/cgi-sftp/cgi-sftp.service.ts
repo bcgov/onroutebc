@@ -15,6 +15,6 @@ export class CgiSftpService {
   }
 
   async upload(file: Express.Multer.File) {
-    console.log(await this.sftpClient.upload('/data', file.buffer.toString()));
+    console.log(await this.sftpClient.upload('data', file.buffer.toString()));
   }
 }
