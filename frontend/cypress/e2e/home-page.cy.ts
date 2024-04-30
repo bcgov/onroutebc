@@ -79,7 +79,8 @@ import cypress from "cypress";
         // redirect to pay bc
         // cy.url().should('include', 'https://'); 
         const paybcUrl = Cypress.env('PAYBC_URL');
-        cy.origin(paybcUrl, () => {
+        //cy.origin(paybcUrl, () => {
+    	cy.origin(paybcUrl).then(origin => {
           const trnCardNumber = Cypress.env('CC_NUMBER');
           const trnExpMonth = Cypress.env('CC_EXPMONTH');
           const trnExpYear = Cypress.env('CC_EXPYEAR');
