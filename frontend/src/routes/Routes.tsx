@@ -32,7 +32,7 @@ import { CompanySuspended } from "../common/pages/CompanySuspended";
 import { ManageSettings } from "../features/settings/ManageSettings";
 import { IssuanceErrorPage } from "../common/pages/IssuanceErrorPage";
 import IDPRedirect from "../common/components/idpredirect/IDPRedirect";
-import { ApplicationPay } from "../features/permits/pages/Application/ApplicationPay";
+import { ShoppingCartDashboard } from "../features/permits/ShoppingCartDashboard";
 
 export const AppRoutes = () => {
 
@@ -254,7 +254,7 @@ export const AppRoutes = () => {
         <Route
           path={`${routes.SHOPPING_CART_ROUTES.DETAILS()}`}
           element={
-            <ApplicationPay />
+            <ShoppingCartDashboard />
           }
         />
       </Route>
@@ -283,14 +283,6 @@ export const AppRoutes = () => {
               element={
                 <ApplicationSteps
                   applicationStep={routes.APPLICATION_STEPS.REVIEW}
-                />
-              }
-            />
-            <Route
-              path={routes.APPLICATIONS_ROUTES.PAY()}
-              element={
-                <ApplicationSteps
-                  applicationStep={routes.APPLICATION_STEPS.PAY}
                 />
               }
             />

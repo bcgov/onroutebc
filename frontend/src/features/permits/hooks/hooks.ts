@@ -11,16 +11,17 @@ import { Application, ApplicationFormData } from "../types/application";
 import { IssuePermitsResponse } from "../types/permit";
 import { StartTransactionResponseData } from "../types/payment";
 import { APPLICATION_STEPS, ApplicationStep } from "../../../routes/constants";
-import {
-  Nullable,
-  Optional,
-  SortingConfig,
-} from "../../../common/types/common";
 import { isPermitTypeValid } from "../types/PermitType";
 import { isPermitIdNumeric } from "../helpers/permitState";
 import { deserializeApplicationResponse } from "../helpers/deserializeApplication";
 import { deserializePermitResponse } from "../helpers/deserializePermit";
 import { AmendPermitFormData } from "../pages/Amend/types/AmendPermitFormData";
+import {
+  Nullable,
+  Optional,
+  SortingConfig,
+} from "../../../common/types/common";
+
 import {
   getApplicationByPermitId,
   getPermit,

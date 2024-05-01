@@ -18,6 +18,7 @@ import {
   APPLICATIONS_ROUTES,
   APPLICATION_STEPS,
   ERROR_ROUTES,
+  SHOPPING_CART_ROUTES,
 } from "../../../../routes/constants";
 
 import {
@@ -57,7 +58,7 @@ export const ApplicationReview = () => {
   };
 
   const next = () => {
-    navigate(APPLICATIONS_ROUTES.PAY(permitId));
+    navigate(SHOPPING_CART_ROUTES.DETAILS());
   };
 
   const proceedWithAddToCart = async (

@@ -96,7 +96,6 @@ export const APPLICATION_STEPS = {
   HOME: 0,
   DETAILS: 1,
   REVIEW: 2,
-  PAY: 3,
 } as const;
 
 export type ApplicationStep =
@@ -123,12 +122,6 @@ export const APPLICATIONS_ROUTES = {
       ROUTE_PLACEHOLDERS.PERMIT_ID,
       permitId,
     )}/review`,
-  PAY: (permitId?: string, failed?: boolean) =>
-    `${DYNAMIC_ROUTE_URI(
-      APPLICATIONS_ROUTE_BASE,
-      ROUTE_PLACEHOLDERS.PERMIT_ID,
-      permitId,
-    )}/pay${failed ? "?paymentFailed=true" : ""}`,
 };
 
 // Shopping Cart

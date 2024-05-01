@@ -9,9 +9,9 @@ import { DATE_FORMATS, toUtc } from "../../../../common/helpers/formatDate";
 import { hasPermitsActionFailed } from "../../helpers/permitState";
 import { PaymentCardTypeCode } from "../../../../common/types/paymentMethods";
 import {
-  APPLICATIONS_ROUTES,
   ERROR_ROUTES,
   PERMITS_ROUTES,
+  SHOPPING_CART_ROUTES,
 } from "../../../../routes/constants";
 
 import {
@@ -72,7 +72,7 @@ export const PaymentRedirect = () => {
         issuedPermit.current = true;
       } else if (paymentApproved === false) {
         // Payment failed, redirect back to pay now page
-        navigate(APPLICATIONS_ROUTES.PAY(applicationIds[0], true), {
+        navigate(SHOPPING_CART_ROUTES.DETAILS(true), {
           replace: true,
         });
       }

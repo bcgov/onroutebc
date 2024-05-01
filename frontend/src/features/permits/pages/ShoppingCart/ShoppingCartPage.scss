@@ -1,19 +1,20 @@
 @use "../../../../common/components/dashboard/Dashboard";
 @import "../../../../themes/orbcStyles";
 
-@include Dashboard.layout-box-style(".pay-now-page");
+@include Dashboard.layout-box-style(".shopping-cart-page");
 
-.pay-now-page {
+.shopping-cart-page {
   display: flex;
   flex-direction: row;
   background-color: $white;
-  padding-bottom: 3rem;
+  padding-bottom: 9rem;
 
   & &__left-container {
     display: flex;
     flex-direction: column;
     margin-right: 0;
     width: 100%;
+    padding-top: 1.5rem;
   }
 
   & &__right-container {

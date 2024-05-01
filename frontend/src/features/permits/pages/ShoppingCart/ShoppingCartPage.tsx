@@ -3,22 +3,21 @@ import { useContext, useEffect, useState } from "react";
 import { useSearchParams, useNavigate, useParams, Navigate } from "react-router-dom";
 import { FormProvider, useForm } from "react-hook-form";
 
-import "./ApplicationPay.scss";
+import "./ShoppingCartPage.scss";
 import { ApplicationContext } from "../../context/ApplicationContext";
-import { ApplicationBreadcrumb } from "../../components/application-breadcrumb/ApplicationBreadcrumb";
 import { calculateFeeByDuration, isZeroAmount } from "../../helpers/feeSummary";
-import { ApplicationSummary } from "./components/pay/ApplicationSummary";
-import { PermitPayFeeSummary } from "./components/pay/PermitPayFeeSummary";
+import { ApplicationSummary } from "../Application/components/pay/ApplicationSummary";
+import { PermitPayFeeSummary } from "../Application/components/pay/PermitPayFeeSummary";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { useIssuePermits, useStartTransaction } from "../../hooks/hooks";
 import { TRANSACTION_TYPES } from "../../types/payment";
 import { PAYMENT_METHOD_TYPE_CODE, PaymentCardTypeCode } from "../../../../common/types/paymentMethods";
-import { PaymentFailedBanner } from "./components/pay/PaymentFailedBanner";
+import { PaymentFailedBanner } from "../Application/components/pay/PaymentFailedBanner";
 import { PPC_EMAIL, TOLL_FREE_NUMBER } from "../../../../common/constants/constants";
-import { ChoosePaymentMethod } from "./components/pay/ChoosePaymentMethod";
-import { DEFAULT_EMPTY_CARD_TYPE, PaymentMethodData } from "./components/pay/types/PaymentMethodData";
+import { ChoosePaymentMethod } from "../Application/components/pay/ChoosePaymentMethod";
+import { DEFAULT_EMPTY_CARD_TYPE, PaymentMethodData } from "../Application/components/pay/types/PaymentMethodData";
 import { hasPermitsActionFailed } from "../../helpers/permitState";
-import { ShoppingCart } from "../../components/cart/ShoppingCart";
+import { ShoppingCart } from "./components/ShoppingCart";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
 import {
@@ -27,8 +26,6 @@ import {
 } from "../../../../common/helpers/util";
 
 import {
-  APPLICATIONS_ROUTES,
-  APPLICATION_STEPS,
   ERROR_ROUTES,
   PERMITS_ROUTES,
   SHOPPING_CART_ROUTES,
@@ -42,7 +39,7 @@ const AVAILABLE_CV_PAYMENT_METHODS = [
   PAYMENT_METHOD_TYPE_CODE.WEB,
 ];
 
-export const ApplicationPay = () => {
+export const ShoppingCartPage = () => {
   const { applicationData } = useContext(ApplicationContext);
   const { idirUserDetails } = useContext(OnRouteBCContext);
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
@@ -99,11 +96,7 @@ export const ApplicationPay = () => {
         // CV Client
         if (!transaction?.url) {
           // Failed to generate transaction url
-          if (permitId) {
-            navigate(APPLICATIONS_ROUTES.PAY(permitId, true));
-          } else {
-            navigate(SHOPPING_CART_ROUTES.DETAILS(true));
-          }
+          navigate(SHOPPING_CART_ROUTES.DETAILS(true));
         } else {
           window.open(transaction.url, "_self");
         }
@@ -195,15 +188,8 @@ export const ApplicationPay = () => {
   }
 
   return (
-    <div className="pay-now-page">
-      <Box className="pay-now-page__left-container">
-        {permitId ? (
-          <ApplicationBreadcrumb
-            permitId={permitId}
-            applicationStep={APPLICATION_STEPS.PAY}
-          />
-        ) : null}
-
+    <div className="shopping-cart-page">
+      <Box className="shopping-cart-page__left-container">
         {enableShoppingCart ? (
           <ShoppingCart
             onCartSelectionChange={handleTotalFeeChange}
@@ -217,7 +203,7 @@ export const ApplicationPay = () => {
             />
 
             {!isStaffActingAsCompany ? (
-              <Typography className="pay-now-page__contact" variant="h6">
+              <Typography className="shopping-cart-page__contact" variant="h6">
                 Have questions? Please contact the Provincial Permit Centre. Toll-free:
                 {""}
                 <span className="pay-contact pay-contact--phone">
@@ -232,7 +218,7 @@ export const ApplicationPay = () => {
         )}
       </Box>
 
-      <Box className="pay-now-page__right-container">
+      <Box className="shopping-cart-page__right-container">
         <FormProvider {...formMethods}>
           <ChoosePaymentMethod availablePaymentMethods={availablePaymentMethods} />
 

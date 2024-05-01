@@ -3,26 +3,26 @@ import { FormControlLabel, Radio, RadioGroup } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 import "./ShoppingCart.scss";
-import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
-import { CartItem, SelectableCartItem } from "../../types/CartItem";
-import { RemoveCartButton } from "./RemoveCartButton/RemoveCartButton";
-import { ShoppingCartItem } from "./ShoppingCartItem/ShoppingCartItem";
-import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { hasPermitsActionFailed } from "../../helpers/permitState";
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { BCeID_USER_AUTH_GROUP } from "../../../../common/authentication/types";
-import { CartContext } from "../../context/CartContext";
-import { CartChangedWarningBanner } from "./CartChangedWarningBanner/CartChangedWarningBanner";
-import { PERMIT_STATUSES } from "../../types/PermitStatus";
-import { EditCartItemDialog } from "./EditCartItemDialog/EditCartItemDialog";
-import { UpdateCartDialog } from "./UpdateCartDialog/UpdateCartDialog";
-import { APPLICATIONS_ROUTES } from "../../../../routes/constants";
-import { getOutdatedCartItems } from "../../helpers/cart";
+import { CustomActionLink } from "../../../../../common/components/links/CustomActionLink";
+import { CartItem, SelectableCartItem } from "../../../types/CartItem";
+import { RemoveCartButton } from "./RemoveCartButton";
+import { ShoppingCartItem } from "./ShoppingCartItem";
+import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
+import { hasPermitsActionFailed } from "../../../helpers/permitState";
+import OnRouteBCContext from "../../../../../common/authentication/OnRouteBCContext";
+import { BCeID_USER_AUTH_GROUP } from "../../../../../common/authentication/types";
+import { CartContext } from "../../../context/CartContext";
+import { CartChangedWarningBanner } from "./CartChangedWarningBanner";
+import { PERMIT_STATUSES } from "../../../types/PermitStatus";
+import { EditCartItemDialog } from "../../../components/cart/EditCartItemDialog";
+import { UpdateCartDialog } from "../../../components/cart/UpdateCartDialog";
+import { APPLICATIONS_ROUTES } from "../../../../../routes/constants";
+import { getOutdatedCartItems } from "../../../helpers/cart";
 import {
   useFetchCart,
   useRemoveFromCart,
   useFetchCartItemStatus,
-} from "../../hooks/cart";
+} from "../../../hooks/cart";
 
 export const ShoppingCart = ({
   onCartSelectionChange,
