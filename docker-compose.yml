@@ -3,7 +3,7 @@ services:
     container_name: sftp
     image: atmoz/sftp
     volumes:
-        - C:\Users\chauh\.ssh\share:/home/f3535t/share
+        - C:\Users\chauh\.ssh\share:/home/f3535t/data
         - C:\Repository\keys\cfs_key.pub:/home/f3535t/.ssh/keys/cfs_key.pub:ro
     ports:
         - "22:22"

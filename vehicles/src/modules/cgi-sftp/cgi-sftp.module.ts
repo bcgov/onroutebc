@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { CgiSftpService } from './cgi-sftp.service';
-import { SftpModule } from 'nest-sftp';
+//import { SftpModule } from 'nest-sftp';
 import { CgiSftpController } from './cgi-sftp.controller';
 
 @Module({
-  imports: [
+ /* imports: [
     SftpModule.forRoot(
       {
         host: process.env.CFS_SFTP_HOST,
@@ -16,7 +16,7 @@ import { CgiSftpController } from './cgi-sftp.controller';
       },
       false,
     ),
-  ],
+  ],*/
   providers: [CgiSftpService],
   controllers: [CgiSftpController],
 })

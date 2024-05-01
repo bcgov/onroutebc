@@ -8,7 +8,13 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { CgiSftpService } from './cgi-sftp.service';
-import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiConsumes,
+  ApiBody,
+} from '@nestjs/swagger';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { IDIR_USER_AUTH_GROUP_LIST } from 'src/common/enum/user-auth-group.enum';
 import { Role } from 'src/common/enum/roles.enum';
@@ -30,10 +36,9 @@ export class CgiSftpController {
     oneOf: [Role.READ_PERMIT],
   })
   @Get()
-  async list(): Promise<string> {
-    return await this.cgiSftpService.list();
-  }
-  
+   list(): string {
+return 'hello'  }
+
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -52,16 +57,20 @@ export class CgiSftpController {
   })
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
-  async uploadCGIFile(@UploadedFile(new ParseFilePipe({
-    validators: [
-      new MaxFileSizeValidator({ maxSize: 100000000 }),
-      /**
-       * TODO explore custom validator to verify files magic number rather
-       * than extention in the filename. Also, accept multiple file types */
-      //new FileTypeValidator({ fileType: 'pdf' }),
-    ],
-  }),
-) file: Express.Multer.File) {
-   await this.cgiSftpService.upload(file);
+  async  uploadCGIFile(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 100000000 }),
+          /**
+           * TODO explore custom validator to verify files magic number rather
+           * than extention in the filename. Also, accept multiple file types */
+          //new FileTypeValidator({ fileType: 'pdf' }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+     await this.cgiSftpService.upload(file);
   }
 }

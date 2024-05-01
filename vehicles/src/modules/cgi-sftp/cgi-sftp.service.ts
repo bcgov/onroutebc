@@ -1,20 +1,37 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { SftpClientService } from 'nest-sftp';
+import { Injectable } from '@nestjs/common';
+import * as Client from 'ssh2-sftp-client';
+import { writeFile } from 'fs/promises';
+import { join } from 'path';
+import fs from 'fs';
 
 @Injectable()
 export class CgiSftpService {
-  private readonly logger: Logger;
-  constructor(private readonly sftpClient: SftpClientService) {
-    this.logger = new Logger();
-  }
 
-  async list() {
-    console.log('Real Path ',await this.sftpClient.realPath('.'));
-    console.log('Listing ',await this.sftpClient.list('data'));
-    return 'hello  ';
-  }
+  upload(file: Express.Multer.File) {
+    const sftp = new Client();
+       sftp.connect({
+        host: process.env.CFS_SFTP_HOST,
+        port: Number(process.env.CFS_SFTP_PORT),
+        privateKey: process.env.CFS_PRIVATE_KEY,
+        passphrase: process.env.CFS_PRIVATE_KEY_PASSPHRASE,
+        username: process.env.CFS_SFTP_USERNAME,
+      }).then(async () => { 
+        console.log('current working directory ',await sftp.cwd())
+        console.log('list current working directory ',await sftp.list('.'))
+        console.log('list data folder ',await sftp.list('./data'))
+        const filePath = join(__dirname,'../../../../tmp','abc.txt');
+        console.log('file path ',filePath)
+        console.log ('writing file ',await writeFile(filePath, file.buffer, 'utf-8'));
+        console.log('put file ',await sftp.put(`${filePath}`,'./data/test.txt'))
+        console.log(file.buffer);
+      })
 
-  async upload(file: Express.Multer.File) {
-    console.log(await this.sftpClient.upload('data', file.buffer.toString()));
+      .then(() => {
+        return sftp.end();
+      })
+      .catch(err => {
+        console.error(err);
+      });
+
   }
 }
