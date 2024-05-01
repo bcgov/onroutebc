@@ -3,6 +3,7 @@ import { Checkbox } from "@mui/material";
 import "./ShoppingCartItem.scss";
 import { CartItem } from "../../../types/CartItem";
 import { DATE_FORMATS, toLocal } from "../../../../../common/helpers/formatDate";
+import { CustomActionLink } from "../../../../../common/components/links/CustomActionLink";
 
 export const ShoppingCartItem = ({
   cartItemData,
@@ -10,12 +11,14 @@ export const ShoppingCartItem = ({
   isDisabled,
   onSelect,
   onDeselect,
+  onEditCartItem,
 }: {
   cartItemData: CartItem;
   isSelected: boolean;
   isDisabled?: boolean;
   onSelect: (id: string) => void;
   onDeselect: (id: string) => void;
+  onEditCartItem: (id: string) => void;
 }) => {
   const handleToggleItem = (selected: boolean) => {
     if (isDisabled) return;
@@ -45,11 +48,12 @@ export const ShoppingCartItem = ({
             Application #:
           </span>
 
-          <span
+          <CustomActionLink
             className="shopping-cart-item__info shopping-cart-item__info--application-number"
+            onClick={() => onEditCartItem(cartItemData.applicationId)}
           >
             {cartItemData.applicationNumber}
-          </span>
+          </CustomActionLink>
         </div>
 
         <div className="shopping-cart-item__details-container">

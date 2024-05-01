@@ -11,6 +11,11 @@
     width: 100%;
   }
 
+  &__header {
+    display: flex;
+    align-items: center;
+  }
+
   &__label {
     font-weight: bold;
     color: $bc-black;
@@ -26,7 +31,7 @@
     font-size: 1rem;
     color: $bc-black;
 
-    &--application-number {
+    &#{&}--application-number {
       font-size: 1.25rem;
     }
   }

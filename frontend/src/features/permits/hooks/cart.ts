@@ -1,11 +1,14 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { addToCart, fetchCart, getCartCount, removeFromCart } from "../apiManager/cart";
 import { Nullable } from "../../../common/types/common";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
+import { getApplicationByPermitId } from "../apiManager/permitsAPI";
 
 const CART_KEY = "cart";
 const CART_COUNT_KEY = "cart-count";
+const CART_ITEM = "cart-item";
 
 /**
  * Hook used to manage adding items to cart.
@@ -75,4 +78,39 @@ export const useGetCartCount = (companyId?: Nullable<string>) => {
     refetchOnMount: "always",
     refetchOnWindowFocus: false,
   });
+};
+
+/**
+ * Hook used to fetch the latest status of a cart item./
+ * @returns Latest status of selected cart item and method to fetch its latest status
+ */
+export const useFetchCartItemStatus = () => {
+  const queryClient = useQueryClient();
+  const [cartItemId, setCartItemId] = useState<Nullable<string>>();
+
+  const cartItemDetailQuery = useQuery({
+    queryKey: [CART_ITEM, cartItemId],
+    queryFn: () => getApplicationByPermitId(cartItemId),
+    enabled: Boolean(cartItemId),
+    retry: false,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: false,
+  });
+
+  const { data: cartItemData } = cartItemDetailQuery;
+
+  return {
+    cartItemId,
+    cartItemData,
+    fetchStatusFor: (id: string) => {
+      if (id !== cartItemId) {
+        setCartItemId(id);
+      } else {
+        // Force refetch and update of query data
+        queryClient.resetQueries({
+          queryKey: [CART_ITEM, id],
+        });
+      }
+    },
+  };
 };

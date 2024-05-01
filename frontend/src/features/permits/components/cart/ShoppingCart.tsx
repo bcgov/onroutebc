@@ -1,18 +1,28 @@
 import { useContext, useEffect, useState } from "react";
 import { FormControlLabel, Radio, RadioGroup } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 import "./ShoppingCart.scss";
 import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
-import { SelectableCartItem } from "../../types/CartItem";
+import { CartItem, SelectableCartItem } from "../../types/CartItem";
 import { RemoveCartButton } from "./RemoveCartButton/RemoveCartButton";
 import { ShoppingCartItem } from "./ShoppingCartItem/ShoppingCartItem";
-import { useFetchCart, useRemoveFromCart } from "../../hooks/cart";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { hasPermitsActionFailed } from "../../helpers/permitState";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { BCeID_USER_AUTH_GROUP } from "../../../../common/authentication/types";
 import { CartContext } from "../../context/CartContext";
 import { CartChangedWarningBanner } from "./CartChangedWarningBanner/CartChangedWarningBanner";
+import { PERMIT_STATUSES } from "../../types/PermitStatus";
+import { EditCartItemDialog } from "./EditCartItemDialog/EditCartItemDialog";
+import { UpdateCartDialog } from "./UpdateCartDialog/UpdateCartDialog";
+import { APPLICATIONS_ROUTES } from "../../../../routes/constants";
+import { getOutdatedCartItems } from "../../helpers/cart";
+import {
+  useFetchCart,
+  useRemoveFromCart,
+  useFetchCartItemStatus,
+} from "../../hooks/cart";
 
 export const ShoppingCart = ({
   onCartSelectionChange,
@@ -21,6 +31,7 @@ export const ShoppingCart = ({
   onCartSelectionChange: (totalFee: number) => void;
   companyId: string;
 }) => {
+  const navigate = useNavigate();
   const { userDetails } = useContext(OnRouteBCContext);
   const { refetchCartCount } = useContext(CartContext);
   const isCompanyAdmin = Boolean(userDetails?.userAuthGroup === BCeID_USER_AUTH_GROUP.COMPANY_ADMINISTRATOR);
@@ -34,8 +45,22 @@ export const ShoppingCart = ({
     .filter(cartItem => cartItem.selected)
     .map(cartItem => cartItem.fee)
     .reduce((prevTotal, currFee) => prevTotal + currFee, 0);
+  
+  const [showEditCartItemDialog, setShowEditCartItemDialog] = useState<boolean>(false);
+  const {
+    cartItemId: idOfCartItemToEdit,
+    cartItemData: cartItemToEdit,
+    fetchStatusFor,
+  } = useFetchCartItemStatus();
 
-  const [problematicApplications, setProblematicApplications] = useState<string[]>([]);
+  const [oldCartItems, setOldCartItems] = useState<CartItem[]>([]);
+
+  const [showUpdateCartDialog, setShowUpdateCartDialog] = useState<boolean>(false);
+
+  useEffect(() => {
+    // Reset old cart items whenever radio button filter is changed
+    setOldCartItems([]); 
+  }, [showAllApplications]);
 
   useEffect(() => {
     const items = getDefaultRequiredVal([], cartItems);
@@ -51,6 +76,21 @@ export const ShoppingCart = ({
   useEffect(() => {
     onCartSelectionChange(selectedTotalFee);
   }, [selectedTotalFee]);
+
+  useEffect(() => {
+    if (cartItemToEdit) {
+      if (cartItemToEdit.permitStatus === PERMIT_STATUSES.IN_CART) {
+        setShowEditCartItemDialog(true);
+      } else {
+        setShowUpdateCartDialog(true);
+      }
+    }
+  }, [cartItemToEdit]);
+
+  const outdatedApplicationNumbers = getOutdatedCartItems(
+    oldCartItems,
+    getDefaultRequiredVal([], cartItems),
+  ).map(cartItem => cartItem.applicationNumber);
 
   const selectedItemsCount = cartItemSelection.filter(cartItem => cartItem.selected).length;
 
@@ -87,19 +127,14 @@ export const ShoppingCart = ({
     });
 
     if (hasPermitsActionFailed(removeResult)) {
-      // Display warning banner showing failed application numbers
-      const problematicApplicationNumbers = cartItemSelection
-        .filter(cartItem => removeResult.failure.includes(cartItem.applicationId))
-        .map(cartItem => cartItem.applicationNumber);
-      
-      setProblematicApplications(problematicApplicationNumbers);
+      // Removal failed, show update cart dialog
+      setShowUpdateCartDialog(true);
     } else {
-      // Hide warning banner
-      setProblematicApplications([]);
+      // Reset old items since remove succeeded (no need to compare and display warning)
+      setOldCartItems([]);
+      cartQuery.refetch();
+      refetchCartCount();
     }
-
-    cartQuery.refetch();
-    refetchCartCount();
   };
 
   const handleSelectItem = (id: string) => {
@@ -121,11 +156,44 @@ export const ShoppingCart = ({
       })),
     );
   };
+
+  const handleEditCartItem = (id: string) => {
+    fetchStatusFor(id);
+  };
+
+  const handleConfirmEdit = async () => {
+    if (idOfCartItemToEdit) {
+      const removeResult = await removeFromCartMutation.mutateAsync({
+        companyId,
+        applicationIds: [idOfCartItemToEdit],
+      });
+
+      if (hasPermitsActionFailed(removeResult)) {
+        // Record current items (before refetch) as old items for comparison
+        setOldCartItems([...cartItemSelection]);
+        cartQuery.refetch();
+        refetchCartCount();
+      } else {
+        // Close the edit dialog and navigate to edit application
+        setOldCartItems([]);
+        setShowEditCartItemDialog(false);
+        refetchCartCount();
+        navigate(APPLICATIONS_ROUTES.DETAILS(idOfCartItemToEdit));
+      }
+    }
+  };
+
+  const handleForceUpdateCart = () => {
+    setOldCartItems([...cartItemSelection]);
+    cartQuery.refetch();
+    refetchCartCount();
+    setShowUpdateCartDialog(false);
+  };
   
   return (
     <div className="shopping-cart">
-      {problematicApplications.length > 0 ? (
-        <CartChangedWarningBanner removedItems={problematicApplications} />
+      {outdatedApplicationNumbers.length > 0 ? (
+        <CartChangedWarningBanner removedItems={outdatedApplicationNumbers} />
       ) : null}
 
       <div className="shopping-cart__header">
@@ -214,6 +282,7 @@ export const ShoppingCart = ({
       <div className="shopping-cart__items">
         {cartItemsTotalCount > 0 ? cartItemSelection.map(cartItem => (
           <ShoppingCartItem
+            onEditCartItem={handleEditCartItem}
             key={cartItem.applicationId}
             cartItemData={cartItem}
             isSelected={cartItem.selected}
@@ -227,6 +296,17 @@ export const ShoppingCart = ({
           </div>
         )}
       </div>
+
+      <EditCartItemDialog
+        shouldOpen={showEditCartItemDialog}
+        handleCancel={() => setShowEditCartItemDialog(false)}
+        handleEdit={handleConfirmEdit}
+      />
+
+      <UpdateCartDialog
+        shouldOpen={showUpdateCartDialog}
+        onUpdateCart={handleForceUpdateCart}
+      />
     </div>
   );
 };
