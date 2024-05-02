@@ -92,7 +92,7 @@ export class ShoppingCartController {
   })
   @ApiOkResponse({
     description: 'The result of the changes to cart.',
-    type: ResultDto,
+    type: Array<ReadShoppingCartDto>,
   })
   @Get()
   @Roles(Role.WRITE_PERMIT)

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { NotBrackets, Repository, SelectQueryBuilder } from 'typeorm';
@@ -258,6 +259,12 @@ export class ShoppingCartService {
           {
             permitId: applicationId,
             company: { companyId },
+            // Check if the application status is IN_PROGRESS
+            // 
+            permitStatus:
+              statusToUpdateTo === ApplicationStatus.IN_PROGRESS
+                ? ApplicationStatus.IN_CART
+                : ApplicationStatus.IN_PROGRESS,
             ...(userGUID && { applicationOwner: { userGUID } }),
           },
           {
