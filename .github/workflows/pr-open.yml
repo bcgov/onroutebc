@@ -6,7 +6,7 @@ on:
 
 concurrency:
   # Cancel in progress for PR open and close, but not merge_group
-  group: ${{ github.workflow }}-${{ github.event.number || github.event.merge_group.base_sha }}
+  group: ${{ github.event.number }}
   cancel-in-progress: true
 
 jobs:
