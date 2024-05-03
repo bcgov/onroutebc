@@ -219,6 +219,7 @@ export class PaymentService {
       createTransactionDto.applicationDetails.map(
         ({ applicationId }) => applicationId,
       );
+
     try {
       const existingApplications: Permit[] = await queryRunner.manager.find(
         Permit,
@@ -227,16 +228,15 @@ export class PaymentService {
           relations: { permitData: true },
         },
       );
-      const validStatus = existingApplications.some(
-        (existingApplication) =>
-          this.isVoidorRevoked(existingApplication.permitStatus) ||
-          this.isApplicationInProgress(existingApplication.permitStatus),
-      );
-
-      if (!validStatus) {
-        throw new BadRequestException('Application should be in Progress!!');
+      for (const application of existingApplications) {
+        if (
+          !(
+            this.isVoidorRevoked(application.permitStatus) ||
+            this.isApplicationInProgress(application.permitStatus)
+          )
+        )
+          throw new BadRequestException('Application should be in Progress!!');
       }
-
       const totalTransactionAmount =
         await this.validatePaymentAndCalculateAmount(
           createTransactionDto,
