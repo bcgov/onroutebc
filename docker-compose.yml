@@ -160,10 +160,10 @@ services:
       - ./frontend:/app:z
       - /app/node_modules
 
-  tps-migration:
-    container_name: tps-migration
+  scheduler:
+    container_name: scheduler
     build:
-      context: ./tps-migration/
+      context: ./scheduler/
       dockerfile: Dockerfile
     environment:
       NODE_ENV: development
@@ -200,7 +200,7 @@ services:
     depends_on:
       sql-server-db:
         condition: service_healthy
-    hostname: tps-migration
+    hostname: scheduler
     links:
       - sql-server-db
     ports:
