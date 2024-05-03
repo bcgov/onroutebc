@@ -87,6 +87,7 @@ export const PaymentRedirect = () => {
     return <Navigate to={`${ERROR_ROUTES.ISSUANCE}`} replace={true} />;
   }
 
+  // At this point, the permits are either being issued or all of them have been issued successfully
   const successIds = getDefaultRequiredVal([], issueResults?.success);
   const hasValidIssueResults = successIds.length > 0;
 

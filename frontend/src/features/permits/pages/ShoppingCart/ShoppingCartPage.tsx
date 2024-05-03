@@ -123,8 +123,7 @@ export const ShoppingCartPage = () => {
         // Staff acting on behalf of company
         if (!transaction) {
           // payment failed
-          console.error("Payment failed.");
-          navigate(ERROR_ROUTES.UNEXPECTED);
+          navigate(SHOPPING_CART_ROUTES.DETAILS(true));
         } else {
           // payment transaction created successfully, proceed to issue permit
           issuePermitMutation.mutate([
@@ -138,8 +137,7 @@ export const ShoppingCartPage = () => {
   useEffect(() => {
     const issueFailed = hasPermitsActionFailed(issueResults);
     if (issueFailed) {
-      console.error("Permit issuance failed.");
-      navigate(ERROR_ROUTES.UNEXPECTED);
+      navigate(ERROR_ROUTES.ISSUANCE, { replace: true });
     } else if (getDefaultRequiredVal(0, issueResults?.success?.length) > 0) {
       // Navigate back to search page upon issue success
       navigate(PERMITS_ROUTES.SUCCESS, { replace: true });
