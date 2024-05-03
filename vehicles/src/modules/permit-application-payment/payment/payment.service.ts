@@ -215,7 +215,7 @@ export class PaymentService {
       await queryRunner.startTransaction();
     }
     //converting to comma separated string using join and then string array using split.
-    const idArr: string[] = createTransactionDto.applicationDetails
+    const permitIdArr: string[] = createTransactionDto.applicationDetails
       .map((item) => {
         return item.applicationId;
       })
@@ -225,7 +225,7 @@ export class PaymentService {
       const existingApplications: Permit[] = await queryRunner.manager.find(
         Permit,
         {
-          where: { permitId: In(idArr) },
+          where: { permitId: In(permitIdArr) },
           relations: { permitData: true },
         },
       );
