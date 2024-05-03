@@ -91,7 +91,7 @@ export class ShoppingCartController {
     type: ExceptionDto,
   })
   @ApiOkResponse({
-    description: 'The result of the changes to cart.',
+    description: 'The items in the cart.',
     type: Array<ReadShoppingCartDto>,
   })
   @Get()
@@ -109,11 +109,11 @@ export class ShoppingCartController {
   }
 
   /**
-   * Retrieves applications within the shopping cart based on the user's permissions and optional query parameters.
+   * Retrieves the number of applications within the shopping cart based on the user's permissions and optional query parameters.
    *
    * @param request - The incoming request object, used to extract the user's authentication details.
    * @param { companyId } - The companyId path parameter.
-   * @returns A promise resolved with the applications found in the shopping cart for the authenticated user.
+   * @returns A promise resolved with the number of applications found in the shopping cart for the authenticated user.
    */
   @ApiOperation({
     summary: 'Returns the number of applications in the shopping cart.',
@@ -125,8 +125,8 @@ export class ShoppingCartController {
     type: ExceptionDto,
   })
   @ApiOkResponse({
-    description: 'The result of the changes to cart.',
-    type: ResultDto,
+    description: 'The number of items in the cart.',
+    type: Number,
   })
   @Get('count')
   @Roles(Role.WRITE_PERMIT)
