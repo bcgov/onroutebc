@@ -250,14 +250,17 @@ export class ShoppingCartService {
     },
     statusToUpdateTo: ApplicationStatus.IN_CART | ApplicationStatus.IN_PROGRESS,
   ): Promise<ResultDto> {
-    const success = [];
-    const failure = [];
+    const success: string[] = [];
+    const failure: string[] = [];
+    const currentApplicationStatusToCheckAgainst =
+      this.getCurrentApplicationStatus(statusToUpdateTo);
     for (const applicationId of applicationIds) {
       try {
         const { affected } = await this.applicationRepository.update(
           {
             permitId: applicationId,
             company: { companyId },
+            permitStatus: currentApplicationStatusToCheckAgainst,
             ...(userGUID && { applicationOwner: { userGUID } }),
           },
           {
@@ -275,5 +278,20 @@ export class ShoppingCartService {
       }
     }
     return { success, failure };
+  }
+
+  /**
+   * Returns the current application based on the status to update to.
+   * @param statusToUpdateTo The status to update to.
+   * @returns an ApplicationStatus
+   */
+  private getCurrentApplicationStatus(
+    statusToUpdateTo: ApplicationStatus.IN_CART | ApplicationStatus.IN_PROGRESS,
+  ): ApplicationStatus {
+    if (statusToUpdateTo === ApplicationStatus.IN_PROGRESS) {
+      return ApplicationStatus.IN_CART;
+    } else {
+      return ApplicationStatus.IN_PROGRESS;
+    }
   }
 }
