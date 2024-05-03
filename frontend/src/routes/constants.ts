@@ -68,12 +68,7 @@ export const PROFILE_ROUTES = {
 const PERMITS_ROUTE_BASE = "/permits";
 export const PERMITS_ROUTES = {
   BASE: PERMITS_ROUTE_BASE,
-  SUCCESS: (permitId?: string) =>
-    `${DYNAMIC_ROUTE_URI(
-      PERMITS_ROUTE_BASE,
-      ROUTE_PLACEHOLDERS.PERMIT_ID,
-      permitId,
-    )}/success`,
+  SUCCESS: `${PERMITS_ROUTE_BASE}/success`,
   VOID: (companyId?: string, permitId?: string) =>
     `/companies/${companyId}${DYNAMIC_ROUTE_URI(
       PERMITS_ROUTE_BASE,

@@ -299,7 +299,7 @@ export const AppRoutes = () => {
         }
       >
         <Route
-          path={`${routes.PERMITS_ROUTES.SUCCESS()}`}
+          path={`${routes.PERMITS_ROUTES.SUCCESS}`}
           element={<SuccessPage />}
         />
       </Route>

@@ -93,7 +93,7 @@ export const PaymentRedirect = () => {
   if (hasValidIssueResults) {
     return (
       <Navigate
-        to={`${PERMITS_ROUTES.SUCCESS(successIds[0])}`}
+        to={`${PERMITS_ROUTES.SUCCESS}`}
         replace={true}
       />
     );

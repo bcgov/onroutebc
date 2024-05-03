@@ -1,31 +1,34 @@
-import { Box, Typography } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
-import { useSearchParams, useNavigate, useParams, Navigate } from "react-router-dom";
+import { Box } from "@mui/material";
+import { useContext, useEffect } from "react";
+import { useSearchParams, useNavigate, Navigate } from "react-router-dom";
 import { FormProvider, useForm } from "react-hook-form";
 
 import "./ShoppingCartPage.scss";
 import { ApplicationContext } from "../../context/ApplicationContext";
-import { calculateFeeByDuration, isZeroAmount } from "../../helpers/feeSummary";
-import { ApplicationSummary } from "../Application/components/pay/ApplicationSummary";
+import { isZeroAmount } from "../../helpers/feeSummary";
 import { PermitPayFeeSummary } from "../Application/components/pay/PermitPayFeeSummary";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { useIssuePermits, useStartTransaction } from "../../hooks/hooks";
 import { TRANSACTION_TYPES } from "../../types/payment";
 import { PAYMENT_METHOD_TYPE_CODE, PaymentCardTypeCode } from "../../../../common/types/paymentMethods";
 import { PaymentFailedBanner } from "../Application/components/pay/PaymentFailedBanner";
-import { PPC_EMAIL, TOLL_FREE_NUMBER } from "../../../../common/constants/constants";
 import { ChoosePaymentMethod } from "../Application/components/pay/ChoosePaymentMethod";
 import { DEFAULT_EMPTY_CARD_TYPE, PaymentMethodData } from "../Application/components/pay/types/PaymentMethodData";
 import { hasPermitsActionFailed } from "../../helpers/permitState";
 import { ShoppingCart } from "./components/ShoppingCart";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
-import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
+import { useShoppingCart } from "./hooks/useShoppingCart";
+import { useCheckOutdatedCart } from "./hooks/useCheckOutdatedCart";
+import { EditCartItemDialog } from "../../components/cart/EditCartItemDialog";
+import { UpdateCartDialog } from "../../components/cart/UpdateCartDialog";
+import { BCeID_USER_AUTH_GROUP } from "../../../../common/authentication/types";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../common/helpers/util";
 
 import {
+  APPLICATIONS_ROUTES,
   ERROR_ROUTES,
   PERMITS_ROUTES,
   SHOPPING_CART_ROUTES,
@@ -40,32 +43,48 @@ const AVAILABLE_CV_PAYMENT_METHODS = [
 ];
 
 export const ShoppingCartPage = () => {
-  const { applicationData } = useContext(ApplicationContext);
-  const { idirUserDetails } = useContext(OnRouteBCContext);
-  const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
-  const routeParams = useParams();
-  const permitId = getDefaultRequiredVal("", routeParams.permitId);
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { applicationData } = useContext(ApplicationContext);
+  const { idirUserDetails, userDetails } = useContext(OnRouteBCContext);
+  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
+  const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
+  const isCompanyAdmin = Boolean(userDetails?.userAuthGroup === BCeID_USER_AUTH_GROUP.COMPANY_ADMINISTRATOR);
+  const enableCartFilter = isStaffActingAsCompany || isCompanyAdmin;
+  const [searchParams] = useSearchParams();
   const paymentFailed = applyWhenNotNullable(
     (queryParam) => queryParam === "true",
     searchParams.get("paymentFailed"),
     false,
   );
+  
+  const {
+    removeFromCartMutation,
+    cartQuery,
+    cartItems,
+    cartItemSelection,
+    selectedTotalFee,
+    showAllApplications,
+    toggleSelectAll,
+    handleCartFilterChange,
+    handleSelectItem,
+    handleDeselectItem,
+    refetchCartCount,
+  } = useShoppingCart(companyId, enableCartFilter);
 
-  const { data: featureFlags } = useFeatureFlagsQuery();
-  const enableShoppingCart = Boolean(featureFlags?.["SHOPPING_CART"] === "ENABLED");
+  const isFeeZero = isZeroAmount(selectedTotalFee);
+  const selectedApplications = cartItemSelection.filter(cartItem => cartItem.selected);
+  const selectedIds = selectedApplications.map(cartItem => cartItem.applicationId);
 
-  const companyId = getCompanyIdFromSession();
-
-  const oldFee = calculateFeeByDuration(
-    getDefaultRequiredVal(0, applicationData?.permitData?.permitDuration),
-  );
-  const [calculatedFee, setCalculatedFee] = useState<number>(
-    enableShoppingCart ? 0 : oldFee,
-  );
-
-  const isFeeZero = isZeroAmount(calculatedFee);
+  const {
+    showEditCartItemDialog,
+    showUpdateCartDialog,
+    outdatedApplicationNumbers,
+    idOfCartItemToEdit,
+    setOldCartItems,
+    fetchStatusFor,
+    setShowEditCartItemDialog,
+    setShowUpdateCartDialog,
+  } = useCheckOutdatedCart(showAllApplications, cartItems);
 
   const { mutation: startTransactionMutation, transaction } =
     useStartTransaction();
@@ -108,11 +127,13 @@ export const ShoppingCartPage = () => {
           navigate(ERROR_ROUTES.UNEXPECTED);
         } else {
           // payment transaction created successfully, proceed to issue permit
-          issuePermitMutation.mutate([permitId]);
+          issuePermitMutation.mutate([
+            ...selectedIds,
+          ]);
         }
       }
     }
-  }, [transaction, isStaffActingAsCompany, permitId]);
+  }, [transaction, isStaffActingAsCompany]);
 
   useEffect(() => {
     const issueFailed = hasPermitsActionFailed(issueResults);
@@ -121,9 +142,9 @@ export const ShoppingCartPage = () => {
       navigate(ERROR_ROUTES.UNEXPECTED);
     } else if (getDefaultRequiredVal(0, issueResults?.success?.length) > 0) {
       // Navigate back to search page upon issue success
-      navigate(PERMITS_ROUTES.SUCCESS(permitId), { replace: true });
+      navigate(PERMITS_ROUTES.SUCCESS, { replace: true });
     }
-  }, [issueResults, permitId]);
+  }, [issueResults]);
 
   const handlePayWithPayBC = () => {
     startTransactionMutation.mutate({
@@ -132,10 +153,10 @@ export const ShoppingCartPage = () => {
         ? PAYMENT_METHOD_TYPE_CODE.NP
         : PAYMENT_METHOD_TYPE_CODE.WEB,
       applicationDetails: [
-        {
-          applicationId: permitId,
-          transactionAmount: calculatedFee,
-        },
+        ...selectedApplications.map(application => ({
+          applicationId: application.applicationId,
+          transactionAmount: application.fee,
+        })),
       ],
     });
   };
@@ -151,10 +172,10 @@ export const ShoppingCartPage = () => {
         : PAYMENT_METHOD_TYPE_CODE.ICEPAY,
       paymentCardTypeCode: cardType,
       applicationDetails: [
-        {
-          applicationId: permitId,
-          transactionAmount: calculatedFee,
-        },
+        ...selectedApplications.map(application => ({
+          applicationId: application.applicationId,
+          transactionAmount: application.fee,
+        })),
       ],
       pgTransactionId: transactionId,
       pgCardType: cardType,
@@ -162,6 +183,11 @@ export const ShoppingCartPage = () => {
   };
 
   const handlePay = (paymentMethodData: PaymentMethodData) => {
+    if (startTransactionMutation.isPending) {
+      // Disable pay action while transaction is being created/processed (ie. "Pay Now" button has been clicked)
+      return;
+    }
+
     const { paymentMethod } = paymentMethodData;
     if (paymentMethod === PAYMENT_METHOD_TYPE_CODE.ICEPAY) {
       if (
@@ -179,8 +205,62 @@ export const ShoppingCartPage = () => {
     }
   };
 
-  const handleTotalFeeChange = (totalFee: number) => {
-    setCalculatedFee(totalFee);
+  const handleRemoveSelected = async () => {
+    const selectedApplications = cartItemSelection
+      .filter(cartItem => cartItem.selected);
+    
+    if (selectedApplications.length === 0) return;
+
+    const selectedApplicationIds = selectedApplications
+      .map(cartItem => cartItem.applicationId);
+
+    const removeResult = await removeFromCartMutation.mutateAsync({
+      companyId,
+      applicationIds: selectedApplicationIds,
+    });
+
+    if (hasPermitsActionFailed(removeResult)) {
+      // Removal failed, show update cart dialog
+      setShowUpdateCartDialog(true);
+    } else {
+      // Reset old items since remove succeeded (no need to compare and display warning)
+      setOldCartItems([]);
+      cartQuery.refetch();
+      refetchCartCount();
+    }
+  };
+
+  const handleEditCartItem = (id: string) => {
+    fetchStatusFor(id);
+  };
+
+  const handleConfirmEdit = async () => {
+    if (idOfCartItemToEdit) {
+      const removeResult = await removeFromCartMutation.mutateAsync({
+        companyId,
+        applicationIds: [idOfCartItemToEdit],
+      });
+
+      if (hasPermitsActionFailed(removeResult)) {
+        // Record current items (before refetch) as old items for comparison
+        setOldCartItems([...cartItemSelection]);
+        cartQuery.refetch();
+        refetchCartCount();
+      } else {
+        // Close the edit dialog and navigate to edit application
+        setOldCartItems([]);
+        setShowEditCartItemDialog(false);
+        refetchCartCount();
+        navigate(APPLICATIONS_ROUTES.DETAILS(idOfCartItemToEdit));
+      }
+    }
+  };
+
+  const handleForceUpdateCart = () => {
+    setOldCartItems([...cartItemSelection]);
+    cartQuery.refetch();
+    refetchCartCount();
+    setShowUpdateCartDialog(false);
   };
 
   if (!companyId) {
@@ -190,32 +270,18 @@ export const ShoppingCartPage = () => {
   return (
     <div className="shopping-cart-page">
       <Box className="shopping-cart-page__left-container">
-        {enableShoppingCart ? (
-          <ShoppingCart
-            onCartSelectionChange={handleTotalFeeChange}
-            companyId={companyId}
-          />
-        ) : (
-          <>
-            <ApplicationSummary
-              permitType={applicationData?.permitType}
-              applicationNumber={applicationData?.applicationNumber}
-            />
-
-            {!isStaffActingAsCompany ? (
-              <Typography className="shopping-cart-page__contact" variant="h6">
-                Have questions? Please contact the Provincial Permit Centre. Toll-free:
-                {""}
-                <span className="pay-contact pay-contact--phone">
-                  {" "}
-                  {TOLL_FREE_NUMBER}
-                </span>{" "}
-                or Email:{" "}
-                <span className="pay-contact pay-contact--email">{PPC_EMAIL}</span>
-              </Typography>
-            ) : null}
-          </>
-        )}
+        <ShoppingCart
+          outdatedApplicationNumbers={outdatedApplicationNumbers}
+          showCartFilter={enableCartFilter}
+          showAllApplications={showAllApplications}
+          cartItemSelection={cartItemSelection}
+          toggleSelectAll={toggleSelectAll}
+          handleCartFilterChange={handleCartFilterChange}
+          handleSelectItem={handleSelectItem}
+          handleDeselectItem={handleDeselectItem}
+          handleRemoveSelected={handleRemoveSelected}
+          handleEditCartItem={handleEditCartItem}
+        />
       </Box>
 
       <Box className="shopping-cart-page__right-container">
@@ -225,12 +291,23 @@ export const ShoppingCartPage = () => {
           {paymentFailed ? <PaymentFailedBanner /> : null}
 
           <PermitPayFeeSummary
-            calculatedFee={calculatedFee}
+            calculatedFee={selectedTotalFee}
             permitType={applicationData?.permitType}
             onPay={handleSubmit(handlePay)}
           />
         </FormProvider>
       </Box>
+
+      <EditCartItemDialog
+        shouldOpen={showEditCartItemDialog}
+        handleCancel={() => setShowEditCartItemDialog(false)}
+        handleEdit={handleConfirmEdit}
+      />
+
+      <UpdateCartDialog
+        shouldOpen={showUpdateCartDialog}
+        onUpdateCart={handleForceUpdateCart}
+      />
     </div>
   );
 };
