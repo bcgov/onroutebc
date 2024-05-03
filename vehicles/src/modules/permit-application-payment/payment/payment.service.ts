@@ -11,7 +11,7 @@ import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { Transaction } from './entities/transaction.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, QueryRunner, Repository, UpdateResult } from 'typeorm';
+import { DataSource, In, QueryRunner, Repository, UpdateResult } from 'typeorm';
 import { PermitTransaction } from './entities/permit-transaction.entity';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { callDatabaseSequence } from 'src/common/helper/database.helper';
@@ -208,29 +208,35 @@ export class PaymentService {
     nestedQueryRunner?: QueryRunner,
   ): Promise<ReadTransactionDto> {
     let readTransactionDto: ReadTransactionDto;
-    let existingApplications: Permit[] = [];
     const queryRunner =
       nestedQueryRunner || this.dataSource.createQueryRunner();
     if (!nestedQueryRunner) {
       await queryRunner.connect();
       await queryRunner.startTransaction();
     }
+    //converting to comma separated string using join and then string array using split.
+    const idArr: string[] = createTransactionDto.applicationDetails
+      .map((item) => {
+        return item.applicationId;
+      })
+      .join(',')
+      .split(',');
     try {
-      for (const application of createTransactionDto.applicationDetails) {
-        existingApplications = await queryRunner.manager.find(Permit, {
-          where: { permitId: application.applicationId },
+      const existingApplications: Permit[] = await queryRunner.manager.find(
+        Permit,
+        {
+          where: { permitId: In(idArr) },
           relations: { permitData: true },
-        });
+        },
+      );
+      const validStatus = existingApplications.some(
+        (existingApplication) =>
+          this.isVoidorRevoked(existingApplication.permitStatus) ||
+          this.isApplicationInProgress(existingApplication.permitStatus),
+      );
 
-        const validStatus = existingApplications.some(
-          (existingApplication) =>
-            this.isVoidorRevoked(existingApplication.permitStatus) ||
-            this.isApplicationInProgress(existingApplication.permitStatus),
-        );
-
-        if (!validStatus) {
-          throw new BadRequestException('Application should be in Progress!!');
-        }
+      if (!validStatus) {
+        throw new BadRequestException('Application should be in Progress!!');
       }
 
       const totalTransactionAmount =
@@ -239,7 +245,6 @@ export class PaymentService {
           existingApplications,
           queryRunner,
         );
-
       const transactionOrderNumber =
         await this.generateTransactionOrderNumber();
 
