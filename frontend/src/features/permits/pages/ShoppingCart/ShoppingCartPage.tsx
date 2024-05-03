@@ -291,6 +291,7 @@ export const ShoppingCartPage = () => {
           <PermitPayFeeSummary
             calculatedFee={selectedTotalFee}
             permitType={applicationData?.permitType}
+            selectedItemsCount={selectedApplications.length}
             onPay={handleSubmit(handlePay)}
           />
         </FormProvider>
