@@ -22,9 +22,11 @@ export const useShoppingCart = (
     .reduce((prevTotal, currFee) => prevTotal + currFee, 0);
 
   useEffect(() => {
-    // Always refetch cart count upon rendering shopping cart
+    // Always refetch cart count upon initial rendering of shopping cart and when cart filter changes
+    // This is due to the possibility of other users modifying the cart, and the count needs to be
+    // updated to keep in sync with the latest cart item query
     refetchCartCount();
-  }, []);
+  }, [showAllApplications]);
 
   useEffect(() => {
     const items = getDefaultRequiredVal([], cartItems);

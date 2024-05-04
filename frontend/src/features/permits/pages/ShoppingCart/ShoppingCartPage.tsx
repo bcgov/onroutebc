@@ -129,6 +129,10 @@ export const ShoppingCartPage = () => {
           issuePermitMutation.mutate([
             ...selectedIds,
           ]);
+
+          // also update the cart and cart count
+          cartQuery.refetch();
+          refetchCartCount();
         }
       }
     }
