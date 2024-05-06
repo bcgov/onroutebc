@@ -15,9 +15,11 @@ import cypress from "cypress";
       // expect(url).to.include(baseUrl);
       });
 
-    // // Visit the login page and log in with credentials
-    // const loginUrl = Cypress.env('LOGIN_URL');
-    // cy.log('bruce test 1: ', loginUrl);
+    // Visit the login page and log in with credentials
+    const loginUrl = Cypress.env('LOGIN_URL');
+    cy.log('bruce test 1: ', loginUrl);
+
+
     // cy.origin(loginUrl, () => {
     //   cy.get("#user").should('exist'); 
     //   const testUser = Cypress.env('TEST_USER');
@@ -28,9 +30,10 @@ import cypress from "cypress";
     // })
 
 
+
     cy.get("#user").should('exist'); 
-      const testUser = Cypress.env('USERNAME');
-      const testPassword = Cypress.env('PASSWORD');
+      const testUser = Cypress.env('TEST_USER');
+      const testPassword = Cypress.env('TEST_PASSWORD');
       cy.log('testUser:',testUser);
       cy.log('testPassword:',testPassword);
       // expect(url).to.include(baseUrl);
@@ -61,8 +64,11 @@ import cypress from "cypress";
         cy.get('[data-testid="select-vehicle-autocomplete"]').type(selectVehicle);
         cy.get('[data-testid="select-vehicle-autocomplete"]').trigger('mousemove', { clientX: 0, clientY: 50 }).click().type('{enter}');
         cy.contains(selectVehicle).click();
-        cy.get('[data-testid="continue-application-button"]').click();
 
+        cy.wait(3000)
+        cy.get('[data-testid="continue-application-button"]').wait(1000).click();
+
+        cy.wait(3000)
         // enable checkboxes
         cy.get('[data-testid="permit-attestation-checkbox"]').each(($checkbox) => {
           cy.wrap($checkbox).click();
@@ -84,7 +90,7 @@ import cypress from "cypress";
           const trnExpMonth = Cypress.env('CC_EXPMONTH');
           const trnExpYear = Cypress.env('CC_EXPYEAR');
           const trnCardCvd = Cypress.env('CC_CVD');
-          cy.get("#trnCardNumber").type(trnCardNumber);
+          cy.get('[name="trnCardNumber"]').type(trnCardNumber);
           cy.get('[name="trnExpMonth"]').select(trnExpMonth);
           cy.get('[name="trnExpYear"]').select(trnExpYear);
           cy.get('#trnCardCvd').type(trnCardCvd);
