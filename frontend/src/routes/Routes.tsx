@@ -35,15 +35,11 @@ import IDPRedirect from "../common/components/idpredirect/IDPRedirect";
 import { ShoppingCartDashboard } from "../features/permits/ShoppingCartDashboard";
 
 export const AppRoutes = () => {
-
   return (
     <Routes>
       {/* Home and Error Routes */}
       {/* Home and Error routes do no have any constraints. */}
-      <Route
-        path={routes.HOME} 
-        element={<IDPRedirect />}
-      />
+      <Route path={routes.HOME} element={<IDPRedirect />} />
       <Route
         path={routes.ERROR_ROUTES.SUSPENDED}
         element={<CompanySuspended />}
