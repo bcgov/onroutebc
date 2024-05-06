@@ -4,6 +4,7 @@ import "./ShoppingCartItem.scss";
 import { CartItem } from "../../../types/CartItem";
 import { DATE_FORMATS, toLocal } from "../../../../../common/helpers/formatDate";
 import { CustomActionLink } from "../../../../../common/components/links/CustomActionLink";
+import { feeSummaryDisplayText } from "../../../helpers/feeSummary";
 
 export const ShoppingCartItem = ({
   cartItemData,
@@ -142,7 +143,7 @@ export const ShoppingCartItem = ({
               <span
                 className="shopping-cart-item__info shopping-cart-item__info--fee"
               >
-                {cartItemData.fee}
+                {feeSummaryDisplayText(`${cartItemData.fee}`)}
               </span>
             </div>
           </div>
