@@ -41,6 +41,7 @@ export const ReviewActions = ({
           aria-label="Add To Cart"
           variant="outlined"
           color="tertiary"
+          data-testid="add-to-cart-btn"
           onClick={onAddToCart}
         >
           Add to Cart
