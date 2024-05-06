@@ -14,6 +14,7 @@ export class CgiSftpService {
     const sftpWrapper: SFTPWrapper = await this.client.connect(sftpConfig)
     try{
      sftpWrapper.writeFile(remoteFilePath,file.buffer);
+     sftpWrapper.writeFile(remoteFilePath,localFilePath);
      console.log('lst file::',sftpWrapper.readdir('./data',(err, files) => {
       files.forEach( file => {
           console.log(file);
