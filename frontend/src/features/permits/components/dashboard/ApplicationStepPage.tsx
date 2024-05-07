@@ -84,12 +84,11 @@ export const ApplicationStepPage = ({
   };
 
   const renderApplicationStep = () => {
-    switch (applicationStep) {
-      case APPLICATION_STEPS.REVIEW:
-        return <ApplicationReview />;
-      default:
-        return <ApplicationForm permitType={applicationPermitType} />;
+    if (applicationStep === APPLICATION_STEPS.REVIEW) {
+      return <ApplicationReview />;
     }
+    
+    return <ApplicationForm permitType={applicationPermitType} />;
   };
 
   if (isInvalidApplication || !isValidApplicationStatus()) {

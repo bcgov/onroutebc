@@ -124,18 +124,21 @@ export const ApplicationReview = () => {
 
     if (!isChecked) return;
 
-    if (!applicationData || !applicationData.companyId || !applicationData.permitId) {
+    const companyId = applicationData?.companyId;
+    const permitId = applicationData?.permitId;
+    const applicationNumber = applicationData?.applicationNumber;
+    if (!companyId || !permitId || !applicationNumber) {
       return navigate(ERROR_ROUTES.UNEXPECTED);
     }
 
     await proceedWithAddToCart(
-      `${applicationData.companyId}`,
-      [applicationData.permitId],
+      `${companyId}`,
+      [permitId],
       () => {
         setSnackBar({
           showSnackbar: true,
           setShowSnackbar: () => true,
-          message: `Application ${applicationData.applicationNumber} added to cart`,
+          message: `Application ${applicationNumber} added to cart`,
           alertType: "success",
         });
   

@@ -119,21 +119,18 @@ export const ShoppingCartPage = () => {
         } else {
           window.open(transaction.url, "_self");
         }
+      } else if (!transaction) {
+        // Staff payment failed
+        navigate(SHOPPING_CART_ROUTES.DETAILS(true));
       } else {
-        // Staff acting on behalf of company
-        if (!transaction) {
-          // payment failed
-          navigate(SHOPPING_CART_ROUTES.DETAILS(true));
-        } else {
-          // payment transaction created successfully, proceed to issue permit
-          issuePermitMutation.mutate([
-            ...selectedIds,
-          ]);
+        // Staff payment transaction created successfully, proceed to issue permit
+        issuePermitMutation.mutate([
+          ...selectedIds,
+        ]);
 
-          // also update the cart and cart count
-          cartQuery.refetch();
-          refetchCartCount();
-        }
+        // also update the cart and cart count
+        cartQuery.refetch();
+        refetchCartCount();
       }
     }
   }, [transaction, isStaffActingAsCompany]);
