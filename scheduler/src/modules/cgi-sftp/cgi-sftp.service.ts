@@ -1,26 +1,33 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { getSFTPConnection } from 'src/helper/sftp.helper';
-import { SFTPWrapper } from 'ssh2';
+import { Injectable } from '@nestjs/common';
+import { getSFTPConnectionInfo } from 'src/helper/sftp.helper';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as Client from 'ssh2-sftp-client';
 
 @Injectable()
 export class CgiSftpService {
-  async uploadToSFTP(filename: string, file: Express.Multer.File) {
-    const sftpWrapper: SFTPWrapper = await getSFTPConnection();
-    try {
-      sftpWrapper.fastPut(`/tmp/${filename}`,`./data/${filename}`, (err) => {
-        throw new InternalServerErrorException(err);
-      });
-      console.log(
-        sftpWrapper.readdir('./data', (err, files) => {
-          files.forEach((file) => {
-            console.log(file.filename);
-          });
-        }),
-      );
-    } catch (err) {
-      throw new InternalServerErrorException(err);
-    } finally {
-      sftpWrapper.end();
-    }
+  upload() {
+    const localPath = '/tmp';
+    const remotePath = './data/';
+    const sftp = new Client();
+    const connectionInfo: Client.ConnectOptions = getSFTPConnectionInfo();
+    const files: string[] = [];
+    fs.readdirSync(localPath).forEach((file) => {
+      if (fs.statSync(path.join(localPath, file)).isFile()) files.push(file);
+    });
+    files.forEach((file) => {
+      const data = fs.createReadStream(path.join(localPath, file));
+      sftp
+        .connect(connectionInfo)
+        .then(() => {
+          return sftp.put(data, remotePath + file);
+        })
+        .then(() => {
+          return sftp.end();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    });
   }
 }
