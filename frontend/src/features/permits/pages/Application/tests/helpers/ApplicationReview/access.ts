@@ -198,6 +198,11 @@ export const attestationErrorMsg = async () => {
   return await screen.findByTestId("permit-attestation-checkbox-error");
 };
 
+export const proceedToAddToCart = async (user: UserEvent) => {
+  const addToCartBtn = await screen.findByTestId("add-to-cart-btn");
+  await user.click(addToCartBtn);
+};
+
 export const proceedToPay = async (user: UserEvent) => {
   const payBtn = await screen.findByTestId("continue-btn");
   await user.click(payBtn);

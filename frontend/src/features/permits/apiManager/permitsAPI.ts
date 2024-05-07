@@ -175,7 +175,7 @@ export const getApplicationsInProgress = async ({
  * @returns ApplicationResponseData data as response, or null if fetch failed
  */
 export const getApplicationByPermitId = async (
-  permitId?: string,
+  permitId?: Nullable<string>,
 ): Promise<RequiredOrNull<ApplicationResponseData>> => {
   try {
     const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
