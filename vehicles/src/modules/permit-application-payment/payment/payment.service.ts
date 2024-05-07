@@ -179,12 +179,8 @@ export class PaymentService {
     );
   }
 
-  private isApplicationInProgress(permitStatus: ApplicationStatus) {
-    return (
-      permitStatus === ApplicationStatus.IN_PROGRESS ||
-      permitStatus === ApplicationStatus.WAITING_PAYMENT ||
-      permitStatus === ApplicationStatus.IN_CART
-    );
+  private isApplicationInCart(permitStatus: ApplicationStatus) {
+    return permitStatus === ApplicationStatus.IN_CART;
   }
 
   private isVoidorRevoked(permitStatus: ApplicationStatus) {
@@ -232,7 +228,7 @@ export class PaymentService {
         if (
           !(
             this.isVoidorRevoked(application.permitStatus) ||
-            this.isApplicationInProgress(application.permitStatus)
+            this.isApplicationInCart(application.permitStatus)
           )
         )
           throw new BadRequestException('Application should be in Progress!!');
