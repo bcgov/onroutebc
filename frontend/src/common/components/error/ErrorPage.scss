@@ -23,23 +23,23 @@
   }
 
   &__img {
-    margin: 1em 0;
+    width: 178px;
+    height: 160px;
+    margin-bottom: 0.5rem;
   }
 
   &__title {
-    font-size: 1.5rem;
+    font-size: 2rem;
     font-weight: bold;
     color: $bc-black;
-    margin: 1em 0;
+    margin-bottom: 2.5rem;
   }
 
   &__msg {
     color: $bc-black;
-    margin: 1em 0;
     text-align: center;
-
-    .msg {
-      margin: 1.25rem 1rem;
-    }
+    padding: 2.5rem 0;
+    border-top: 1px solid $bc-border-grey;
+    border-bottom: 1px solid $bc-border-grey;
   }
 }
