@@ -1,4 +1,10 @@
-import { Controller, Post, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Query,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { CgiSftpService } from './cgi-sftp.service';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiQuery } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -26,9 +32,8 @@ export class CgiSftpController {
   })
   async upload(
     @Query('fileName') fileName: string,
-    @Query('filePath') filePath: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return await this.cgiSftpService.uploadToSFTP(fileName, filePath, file);
+    return await this.cgiSftpService.uploadToSFTP(fileName, file);
   }
 }
