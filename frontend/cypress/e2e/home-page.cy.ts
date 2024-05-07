@@ -17,40 +17,22 @@ import cypress from "cypress";
 
     // Visit the login page and log in with credentials
     const loginUrl = Cypress.env('LOGIN_URL');
-    cy.log('bruce test 1: ', loginUrl);
-
-
-    // cy.origin(loginUrl, () => {
-    //   cy.get("#user").should('exist'); 
-    //   const testUser = Cypress.env('TEST_USER');
-    //   const testPassword = Cypress.env('TEST_PASSWORD');
-    //   cy.get('#user').type(testUser)
-    //   cy.get('#password').type(testPassword)
-    //   cy.get('.btn-primary').click()
-    // })
-
-
-
     cy.get("#user").should('exist'); 
       const testUser = Cypress.env('TEST_USER');
       const testPassword = Cypress.env('TEST_PASSWORD');
       cy.log('testUser:',testUser);
       cy.log('testPassword:',testPassword);
-      // expect(url).to.include(baseUrl);
       cy.get('#user').type(testUser)
       cy.get('#password').type(testPassword)
       cy.get('.btn-primary').click()
 
       cy.url().then((url) => {
         cy.log('Current URL:', url);
-        // expect(url).to.include('applications');
         cy.contains('onRouteBC').should('exist');
         cy.contains('Start Application').should('exist');
-        // cy.contains('Start Application').should('be.visible').click();
         });
 
         cy.url().as('url')
-        // cy.get('@url').should('include', 'applications')
         cy.wait(5000)
         cy.url().then((url) => {
         expect(url).to.include(Cypress.config().baseUrl);
@@ -68,7 +50,7 @@ import cypress from "cypress";
         cy.wait(3000)
         cy.get('[data-testid="continue-application-button"]').wait(1000).click();
 
-        cy.wait(3000)
+        cy.wait(10000)
         // enable checkboxes
         cy.get('[data-testid="permit-attestation-checkbox"]').each(($checkbox) => {
           cy.wrap($checkbox).click();
@@ -80,6 +62,24 @@ import cypress from "cypress";
         // //pay now click
         cy.contains('Pay Now').should('exist');
         cy.contains('Pay Now').click();
+
+        // cy.wait(3000);
+
+
+        // // Get the paybc url after the redirect
+        // cy.location().then(location => {
+        //   const paybcUrl = location.href;
+        //   // Use the new URL as needed
+        //   cy.log('paybc URL:', paybcUrl);
+
+        //   cy.visit(paybcUrl);
+
+        //   // After visiting the new URL, you can access the body contents
+        //   cy.get('body').then($body => {
+        //     // Do something with the body contents
+        //     cy.log('Body contents:', $body.text());
+        //   });
+        // });
 
         cy.wait(5000);
         // redirect to pay bc
