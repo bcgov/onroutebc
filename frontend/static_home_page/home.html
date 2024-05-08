@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-CA">
   <head>
     <meta charset="utf-8" />
@@ -23,6 +23,7 @@
     <link rel="apple-touch-icon" href="img/BCID_V_rgb_pos.png" />
 
     <!-- CSS -->
+    <link href="./css/reset.css" rel="stylesheet" type="text/css" />
     <link href="./css/styles.css" rel="stylesheet" type="text/css" />
 
     <!-- Preload Assets -->
@@ -59,85 +60,87 @@
     <title>onRouteBC - Home</title>
   </head>
   <body>
-    <header class="homeheader">
+    <header class="header">
       <div class="container">
         <a href="https://www2.gov.bc.ca/gov/content/home" target="_blank">
           <img
-            src="./img/BC_Header.png"
-            class="homeHeaderLogo"
+            src="./img/logo.png"
+            class="header__logo"
             alt="Government of B.C."
           />
         </a>
       </div>
     </header>
-    <!-- HERO -->
-    <!-- <div class="homeTruckImage"></div> -->
-    <picture class="heroImage">
-      <source media="(max-width: 576px)" srcset="./img/hero-sm.webp" />
-      <source media="(max-width: 1100px)" srcset="./img/hero-md.webp" />
-      <source media="(max-width: 1440px)" srcset="./img/hero-lg.webp" />
-      <source media="(min-width: 1441px)" srcset="./img/hero-xl.webp" />
-      <img
-        src="./img/hero.png"
-        alt="Loaded logging truck on highway"
-        loading="eager"
-        decoding="async"
-        aria-hidden="true"
-      />
-    </picture>
-    <div class="homeTruckImageFade"></div>
-    <div class="verticalContainer">
-      <main class="homeMain">
+    <section class="hero">
+      <div class="container">
+        <div class="hero__box">
+          <h1 class="hero__heading">onroutebc.gov.bc.ca</h1>
+          <p class="hero__subheading">
+            Online permitting and routing for commercial trucking in British
+            Columbia
+          </p>
+        </div>
+      </div>
+      <picture class="hero__image">
+        <source media="(max-width: 576px)" srcset="./img/hero-sm.webp" />
+        <source media="(max-width: 1100px)" srcset="./img/hero-md.webp" />
+        <source media="(max-width: 1440px)" srcset="./img/hero-lg.webp" />
+        <source media="(min-width: 1441px)" srcset="./img/hero-xl.webp" />
+        <img
+          src="./img/hero.png"
+          alt="Loaded logging truck on highway"
+          loading="eager"
+          decoding="async"
+          aria-hidden="true"
+        />
+      </picture>
+      <div class="hero__fade"></div>
+    </section>
+    <div class="vertical-offset">
+      <main class="main">
         <div class="container">
-          <div class="homeTitleBox">
-            <h1>onroutebc.gov.bc.ca</h1>
-            <p class="titleText">
-              Online permitting and routing for commercial trucking in British
-              Columbia
-            </p>
-          </div>
-          <div class="homeContent2Col">
-            <div class="homeContentCol1">
-              <section class="homeContentBox" id="permitOverview">
-                <div class="homeContentBoxHeader">
+          <div class="main__flex">
+            <div class="main__left">
+              <!-- Permit Overview -->
+              <section class="permit-overview box">
+                <div class="box-header">
                   <h2>Commercial Vehicle Permits Online</h2>
                 </div>
+                <div class="permit-overview__content box-content">
+                  <p>
+                    The Ministry of Transportation and Infrastructure's
+                    commercial vehicle permitting system is transitioning to a
+                    new system called onRouteBC. The first phase of onRouteBC
+                    includes support for Term Oversize permits, payable by
+                    credit card only. Over time onRouteBC will offer more permit
+                    types and payment methods. During transition, permits that
+                    are not available in onRouteBC continue to be available from
+                    the existing system by contacting the Provincial Permit
+                    Center.
+                  </p>
+                </div>
                 <div>
-                  <div class="homeContentBoxContent">
-                    <p>
-                      The Ministry of Transportation and Infrastructure's
-                      commercial vehicle permitting system is transitioning to a
-                      new system called onRouteBC. The first phase of onRouteBC
-                      includes support for Term Oversize permits, payable by
-                      credit card only. Over time onRouteBC will offer more
-                      permit types and payment methods. During transition,
-                      permits that are not available in onRouteBC continue to be
-                      available from the existing system by contacting the
-                      Provincial Permit Center.
-                    </p>
-                  </div>
-                  <div class="homeContentBoxContent2Col">
-                    <div class="homeBorderedContentCol">
-                      <h3 class="h4">Term Oversize Permits Only</h3>
+                  <div class="box-flex">
+                    <section class="box-content term-oversize">
+                      <h3>Term Oversize Permits Only</h3>
                       <p>
                         Login with your Business BCeID and pay online with your
                         credit card.
                       </p>
                       <a
                         role="button"
-                        class="btn btnBlue"
+                        class="btn btn--blue"
                         href="/?idpHint=bceidboth"
                       >
                         Log into onRouteBC
                       </a>
-                    </div>
-                    <div class="homeBorderedContentCol">
-                      <h3 class="h4">Other permit types and payment methods</h3>
+                    </section>
+                    <section class="box-content other-permits">
+                      <h3>Other permit types and payment methods</h3>
                       <a
                         role="button"
-                        class="btn btnWhite"
+                        class="btn"
                         href="https://www2.gov.bc.ca/gov/content/transportation/vehicle-safety-enforcement/services/permitting/commercial-transport-permits"
-                        target="_blank"
                       >
                         Buy online permits
                       </a>
@@ -147,119 +150,130 @@
                           >1-800-559-9688</a
                         >
                       </p>
-                    </div>
+                    </section>
                   </div>
                 </div>
               </section>
-              <section class="homeContentBox" id="permitInformation">
-                <div class="homeContentBoxHeader">
-                  <h2>Permit information</h2>
+              <!-- Permit Information -->
+              <section class="permit-info box">
+                <div class="box-header">
+                  <h2>Permit Information</h2>
                 </div>
-                <div class="homeContentBoxContent3Col">
-                  <div class="homeBorderedContentCol">
-                    <h3 class="h4">Commercial Transport Procedures</h3>
+                <div class="box-flex">
+                  <section class="box-content">
+                    <h3>Commerical Transport Procedures</h3>
                     <p>
                       Legislation, policies, standards and guidelines to be
                       followed in the operation of a commercial transportation
                       business in British Columbia.
                     </p>
-                  </div>
-                  <div class="homeBorderedContentCol">
-                    <h3 class="h4">Out of Province Permits</h3>
+                  </section>
+                  <section class="box-content">
+                    <h3>Out of Province Permits</h3>
+
                     <p>
                       Commercial drivers transporting loads across BC borders
                       need to take into account intra-provincial and
                       cross-border issues, procedures, laws, regulations, and
                       required permits.
                     </p>
-                  </div>
-                  <div class="homeBorderedContentCol">
-                    <h3 class="h4">Forms, Circulars, Bulletins and Notices</h3>
+                  </section>
+                  <section class="box-content">
+                    <h3>Forms, Circulars, Bulletins & Notices</h3>
                     <p>
                       Stay up-to-date with current standards, procedures and
-                      policies. Check what's new at CVSE and download the most
+                      polices. Check what’s new at CVSE and download the most
                       current forms.
                     </p>
-                  </div>
+                  </section>
                 </div>
-                <div class="homeContentBoxContent">
-                  <h3 class="margin-none">
+                <div class="box-content permit-info__bottom-content">
+                  <h3>
                     <a class="link" href="https://www.cvse.ca" target="_blank"
-                      >Get more information at CVSE.ca</a
-                    >
+                      >Get more information at CVSE.ca
+                    </a>
                   </h3>
                 </div>
               </section>
-              <section class="homeContentBox" id="permitCentre">
-                <div class="homeContentBoxHeader">
+              <!-- Permit Centre -->
+              <section class="permit-centre box">
+                <div class="box-header">
                   <h2>Provincial Permit Centre</h2>
                 </div>
-                <div class="homeContentBoxContent">
+                <div class="box-content">
                   <h3>Contact Us</h3>
                   <p>
                     If you need assistance, or have questions about processing
                     your permit, you can contact the Provincial Permit Centre.
                   </p>
-                  <div class="homeContentBoxContent2Col border-none">
-                    <div class="homeContentCol">
-                      <h4 class="h5 margin-none">Phone</h4>
-                      <p>
-                        <a href="tel:+18005599688" class="link"
+                </div>
+                <div>
+                  <div class="box-flex contact">
+                    <address class="box-content contact__col">
+                      <div class="contact__row">
+                        <p class="contact__label">Phone</p>
+                        <a href="tel:+18005599688" class="contact__value link"
                           >1-800-559-9688</a
                         >
-                      </p>
-                      <h4 class="h5 margin-none">Email</h4>
-                      <p>
-                        <a href="mailto:PPCPermit@gov.bc.ca" class="link"
+                      </div>
+                      <div class="contact__row">
+                        <p class="contact__label">Email</p>
+                        <a
+                          href="mailto:PPCPermit@gov.bc.ca"
+                          class="contact__value link"
                           >PPCPermit@gov.bc.ca</a
                         >
-                      </p>
-                      <p>
                         <a
-                          class="link"
+                          class="contact__value link"
                           href="https://www2.gov.bc.ca/gov/content/transportation/vehicle-safety-enforcement/information-education/contacts"
                           target="_blank"
                           >Other CVSE Contacts</a
                         >
-                      </p>
-                    </div>
-                    <div class="homeContentCol">
-                      <h4 class="margin-none">Hours</h4>
-                      <p>
-                        Hours 6am to 10pm PDT (Apr. - Oct.)
-                        <br />5am to 9pm PST (Nov. - Mar.) <br />Seven days a
-                        week
-                      </p>
-                      <p class="margin-none">
-                        The Provincial Permit Centre is closed on Christmas Day,
-                        Boxing Day, and New Year's Day.
-                      </p>
-                    </div>
+                      </div>
+                    </address>
+                    <section class="box-content contact__col">
+                      <p class="contact__label">Hours</p>
+                      <div class="contact__row">
+                        <p>
+                          Hours 6am to 10pm PDT (Apr. - Oct.)
+                          <br />5am to 9pm PST (Nov. - Mar.) <br />Seven days a
+                          week
+                        </p>
+                      </div>
+                      <div class="contact__row">
+                        <p>
+                          The Provincial Permit Centre is closed on Christmas
+                          Day, Boxing Day, and New Year's Day.
+                        </p>
+                      </div>
+                    </section>
                   </div>
                 </div>
               </section>
             </div>
-            <div class="homeContentCol2">
-              <section class="homeContentBox" id="publicSector">
-                <div class="homeContentBoxHeader">
+            <div class="main__right">
+              <!-- Public Sector -->
+              <section class="public-sector box">
+                <div class="box-header">
                   <h2>Public Sector Employees</h2>
                 </div>
-                <div class="homeContentBoxContent">
+                <div class="public-sector__content box-content">
                   <p>Use your IDIR to sign in to onRouteBC.</p>
                   <a
                     role="button"
-                    class="btn btnSm btnGrey"
+                    class="btn btn--sm btn--grey"
                     href="/?idpHint=idir"
                   >
-                    Login using IDIR
+                    Log in using IDIR
                   </a>
                 </div>
               </section>
-              <section class="homeContentBox" id="routesAndConditions">
-                <div class="homeContentBoxHeader">
+              <!-- Routes -->
+              <section class="routes box">
+                <div class="box-header">
                   <h2>Routes and Driving Conditions</h2>
                 </div>
-                <div class="homeContentBoxContent">
+                <div class="routes__content box-content">
                   <p>
                     <a
                       href="https://www.drivebc.ca/"
@@ -293,7 +307,7 @@
           </div>
         </div>
       </main>
-      <footer class="homefooter">
+      <footer class="footer">
         <div class="container">
           <ul>
             <li><a href="https://www.cvse.ca/" target="_blank">Home</a></li>
