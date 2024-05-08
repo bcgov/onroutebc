@@ -16,7 +16,9 @@ export class CgiSftpService {
       if (fs.statSync(path.join(localPath, file)).isFile()) files.push(file);
     });
     files.forEach((file) => {
+      console.log('file::',file);
       const data = fs.createReadStream(path.join(localPath, file));
+      console.log('filepath::',path.join(localPath, file))
       sftp
         .connect(connectionInfo)
         .then(() => {
