@@ -25,6 +25,9 @@ export class CgiSftpService {
         .then(() => {
           return sftp.end();
         })
+        .then(() => {
+          fs.rmSync(path.join(localPath, file), { force: true });
+        })
         .catch((err) => {
           console.log(err);
         });
