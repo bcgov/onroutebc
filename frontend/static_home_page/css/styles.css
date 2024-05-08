@@ -51,6 +51,7 @@
     --bc-hover-blue: #2D5992;
     --bc-disabled-grey: #B5C0CF;
     --bc-footer-grey: #4B5E7E;
+    --fade-top: #F1F1F100;
 
     /* Sizing */
     --4: 4px;
@@ -111,7 +112,7 @@ h3 {
 /* Button */
 .btn {
     padding: var(--12) var(--32);
-    font-size: 16px;
+    font-size: var(--16);
     font-weight: bold;
     text-decoration: none;
     color: var(--bc-primary-blue);
@@ -247,7 +248,7 @@ h3 {
     top: calc(369px + var(--header-height));
     width: 100%;
     height: 340px;
-    background: transparent linear-gradient(180deg, #F1F1F100 0%, #F1F1F1 50%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(180deg, var(--fade-top) 0%, var(--bc-background-light-grey) 50%) 0% 0% no-repeat padding-box;
 }
 
 @media screen and (min-width: 576px) {
@@ -346,25 +347,17 @@ h3 {
     margin-bottom: var(--16);
 }
 
+.permit-centre .box-content:first-child {
+    padding-top: 0;
+}
+
 .contact {
     display: flex;
     flex-direction: column;
 }
 
-@media screen and (min-width: 576px) {
-    .contact{
-        flex-direction: row;
-    }
-}
-
 .contact address  {
     font-style: normal;
-}
-
-@media screen and (min-width: 576px) {
-    .contact__col {
-        padding-top: 0;
-    }
 }
 
 .contact__row:not(:last-child) {
@@ -377,6 +370,17 @@ h3 {
 
 .contact__value {
     display: block;
+}
+
+@media screen and (min-width: 576px) {
+    .contact{
+        flex-direction: row;
+    }
+
+    .permit-centre .contact__col {
+        padding-top: 0;
+        border-bottom: none;
+    }
 }
 
 /* Public Sector */
