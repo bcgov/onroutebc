@@ -8,15 +8,33 @@
   justify-content: flex-end;
 
   & &__btn {
+    .button-icon {
+      margin-right: 0.5rem;
+    }
+
     &--edit {
-      margin-right: 1.5rem;
       display: flex;
       align-items: center;
-      gap: 0.625rem;
+    }
+
+    &--cart {
+      padding-left: 2rem;
+      padding-right: 2rem;
+      margin-left: 2.5rem;
+      font-weight: bold;
+      border-color: $bc-primary-blue;
+      color: $bc-primary-blue;
+      background-color: $white;
+
+      &:hover {
+        background-color: $bc-text-links-blue;
+        color: $white;
+      }
     }
 
     &--continue {
-      font-weight: 600;
+      font-weight: bold;
+      margin-left: 2.5rem;
     }
   }
 }

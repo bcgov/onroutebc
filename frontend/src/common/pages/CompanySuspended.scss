@@ -4,4 +4,16 @@
   position: relative;
   z-index: 5;
   background-color: $bc-background-light-grey;
+
+  &__contact {
+    font-weight: bold;
+
+    &--toll {
+      margin: 0 0.25rem;
+    }
+
+    &--email {
+      margin-left: 0.25rem;
+    }
+  }
 }
