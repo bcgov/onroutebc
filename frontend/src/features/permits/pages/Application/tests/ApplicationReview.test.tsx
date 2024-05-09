@@ -53,7 +53,7 @@ import {
   permitDuration,
   permitExpiryDate,
   permitStartDate,
-  proceedToPay,
+  proceedToAddToCart,
   reviewConfirmWarning,
   vehicleCountry,
   vehicleMake,
@@ -446,7 +446,7 @@ describe("Review and Confirm Application Details", () => {
 
       // Act
       await checkAttestations(user, [0, 1]);
-      await proceedToPay(user);
+      await proceedToAddToCart(user);
 
       // Assert
       expect(await attestationErrorMsg()).toHaveTextContent(
@@ -459,7 +459,7 @@ describe("Review and Confirm Application Details", () => {
 
       // Act
       await checkAttestations(user, [0, 1, 2]);
-      await proceedToPay(user);
+      await proceedToAddToCart(user);
 
       // Assert
       expect(async () => await attestationErrorMsg()).rejects.toThrow();

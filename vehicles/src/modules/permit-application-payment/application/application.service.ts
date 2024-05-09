@@ -423,6 +423,13 @@ export class ApplicationService {
   ): Promise<ReadApplicationDto> {
     const existingApplication = await this.findOne(applicationId, companyId);
 
+    // Enforce that application is editable only if it is currently IN_PROGRESS
+    if (existingApplication.permitStatus !== ApplicationStatus.IN_PROGRESS) {
+      throw new BadRequestException(
+        'Only an Application currently in progress can be modified.',
+      );
+    }
+
     const newApplication = this.classMapper.map(
       updateApplicationDto,
       UpdateApplicationDto,

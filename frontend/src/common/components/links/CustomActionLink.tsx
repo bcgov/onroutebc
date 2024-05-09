@@ -7,23 +7,29 @@ import { getDefaultRequiredVal } from "../../helpers/util";
 export const CustomActionLink = (
   props: CustomActionLinkProps
 ) => {
-  const component = getDefaultRequiredVal("button", props.component);
-  const variant = getDefaultRequiredVal("body2", props.variant);
+  const { disabled, onClick, ...linkProps } = props;
+  const component = getDefaultRequiredVal("button", linkProps.component);
+  const variant = getDefaultRequiredVal("body2", linkProps.variant);
+
   const className = () => {
-    const baseClassName = "custom-action-link";
-    return props.className
-      ? `${baseClassName} ${props.className}`
-      : baseClassName;
+    const baseClassName = disabled ? 
+      "custom-action-link custom-action-link--disabled" :
+      "custom-action-link";
+    
+    return linkProps.className
+      ? `${baseClassName} ${linkProps.className}`
+      : `${baseClassName}`;
   };
     
   return (
     <Link
-      {...props}
+      {...linkProps}
+      onClick={disabled ? undefined : onClick}
       component={component}
       variant={variant}
       className={className()}
     >
-      {props.children}
+      {linkProps.children}
     </Link>
   );
 };
