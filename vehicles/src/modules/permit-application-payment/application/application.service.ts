@@ -423,11 +423,8 @@ export class ApplicationService {
   ): Promise<ReadApplicationDto> {
     const existingApplication = await this.findOne(applicationId, companyId);
 
-    // Disallow edits on IN_CART and WAITING_PAYMENT statuses
-    if (
-      existingApplication.permitStatus === ApplicationStatus.IN_CART ||
-      existingApplication.permitStatus === ApplicationStatus.WAITING_PAYMENT
-    ) {
+    // Enforce that application is editable only if it is currently IN_PROGRESS
+    if (existingApplication.permitStatus !== ApplicationStatus.IN_PROGRESS) {
       throw new BadRequestException(
         'Application must not be in the cart or waiting for payment',
       );
