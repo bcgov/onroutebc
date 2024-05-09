@@ -7,6 +7,7 @@ export class CgiSftpService {
   upload(fileData: Express.Multer.File, fileName: string) {
     const sftp = new Client();
     const connectionInfo: Client.ConnectOptions = getSFTPConnectionInfo();
+    console.log(connectionInfo);
     const remotePath = './data/';
     sftp
       .connect(connectionInfo)
