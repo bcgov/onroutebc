@@ -7,7 +7,6 @@ import "../../../../common/components/dashboard/Dashboard.scss";
 import { Banner } from "../../../../common/components/dashboard/components/banner/Banner";
 import { ApplicationForm } from "../../pages/Application/ApplicationForm";
 import { ApplicationContext } from "../../context/ApplicationContext";
-import { ApplicationPay } from "../../pages/Application/ApplicationPay";
 import { ApplicationReview } from "../../pages/Application/ApplicationReview";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { Loading } from "../../../../common/pages/Loading";
@@ -28,8 +27,6 @@ const displayHeaderText = (stepKey: ApplicationStep) => {
       return "Permit Application";
     case APPLICATION_STEPS.REVIEW:
       return "Review and Confirm Details";
-    case APPLICATION_STEPS.PAY:
-      return "Pay for Permit";
     case APPLICATION_STEPS.HOME:
     default:
       return "Permits";
@@ -87,14 +84,11 @@ export const ApplicationStepPage = ({
   };
 
   const renderApplicationStep = () => {
-    switch (applicationStep) {
-      case APPLICATION_STEPS.REVIEW:
-        return <ApplicationReview />;
-      case APPLICATION_STEPS.PAY:
-        return <ApplicationPay />;
-      default:
-        return <ApplicationForm permitType={applicationPermitType} />;
+    if (applicationStep === APPLICATION_STEPS.REVIEW) {
+      return <ApplicationReview />;
     }
+    
+    return <ApplicationForm permitType={applicationPermitType} />;
   };
 
   if (isInvalidApplication || !isValidApplicationStatus()) {

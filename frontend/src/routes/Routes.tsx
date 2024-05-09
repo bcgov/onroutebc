@@ -32,6 +32,7 @@ import { CompanySuspended } from "../common/pages/CompanySuspended";
 import { ManageSettings } from "../features/settings/ManageSettings";
 import { IssuanceErrorPage } from "../common/pages/IssuanceErrorPage";
 import IDPRedirect from "../common/components/idpredirect/IDPRedirect";
+import { ShoppingCartDashboard } from "../features/permits/ShoppingCartDashboard";
 
 export const AppRoutes = () => {
   return (
@@ -237,6 +238,23 @@ export const AppRoutes = () => {
           }
         />
       </Route>
+
+      <Route
+        element={
+          <BCeIDAuthWall
+            requiredRole={ROLES.WRITE_PERMIT}
+            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+          />
+        }
+      >
+        <Route
+          path={`${routes.SHOPPING_CART_ROUTES.DETAILS()}`}
+          element={
+            <ShoppingCartDashboard />
+          }
+        />
+      </Route>
+
       <Route
         element={
           <BCeIDAuthWall
@@ -264,14 +282,6 @@ export const AppRoutes = () => {
                 />
               }
             />
-            <Route
-              path={routes.APPLICATIONS_ROUTES.PAY()}
-              element={
-                <ApplicationSteps
-                  applicationStep={routes.APPLICATION_STEPS.PAY}
-                />
-              }
-            />
           </Route>
         </Route>
       </Route>
@@ -285,7 +295,7 @@ export const AppRoutes = () => {
         }
       >
         <Route
-          path={`${routes.PERMITS_ROUTES.SUCCESS()}`}
+          path={`${routes.PERMITS_ROUTES.SUCCESS}`}
           element={<SuccessPage />}
         />
       </Route>

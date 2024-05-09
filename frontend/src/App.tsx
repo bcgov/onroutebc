@@ -16,6 +16,7 @@ import { NavIconReportButton } from "./common/components/naviconsidebar/NavIconR
 import { Nullable, Optional } from "./common/types/common";
 import { VerifiedClient, UserRolesType } from "./common/authentication/types";
 import { SuspendSnackBar } from "./common/components/snackbar/SuspendSnackBar";
+import { CartContextProvider } from "./features/permits/context/CartContextProvider";
 import {
   CustomSnackbar,
   SnackBarOptions,
@@ -172,15 +173,17 @@ const App = () => {
                 alertType={snackBar.alertType}
               />
               <div className="page-section">
-                <Router>
-                  <Header />
-                  <SuspendSnackBar />
-                  <NavIconSideBar>
-                    <NavIconHomeButton />
-                    <NavIconReportButton />
-                  </NavIconSideBar>
-                  <AppRoutes />
-                </Router>
+                <CartContextProvider>
+                  <Router>
+                    <Header />
+                    <SuspendSnackBar />
+                    <NavIconSideBar>
+                      <NavIconHomeButton />
+                      <NavIconReportButton />
+                    </NavIconSideBar>
+                    <AppRoutes />
+                  </Router>
+                </CartContextProvider>
               </div>
               <Footer />
             </SnackBarContext.Provider>
