@@ -1,5 +1,13 @@
+@import "../../../themes/orbcStyles";
+
 .custom-action-link {
   &#{&} {
     user-select: text;
+  }
+
+  &#{&}--disabled {
+    color: $disabled-colour;
+    text-decoration-color: $disabled-colour;
+    cursor: default;
   }
 }

@@ -10,11 +10,16 @@ import { ApplicationBreadcrumb } from "../../components/application-breadcrumb/A
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { PermitReview } from "./components/review/PermitReview";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { SnackBarContext } from "../../../../App";
+import { useAddToCart } from "../../hooks/cart";
+import { hasPermitsActionFailed } from "../../helpers/permitState";
+import { CartContext } from "../../context/CartContext";
 import {
   APPLICATIONS_ROUTES,
   APPLICATION_STEPS,
   ERROR_ROUTES,
   withCompanyId,
+  SHOPPING_CART_ROUTES,
 } from "../../../../routes/constants";
 
 import {
@@ -25,6 +30,9 @@ import {
 export const ApplicationReview = () => {
   const { applicationData, setApplicationData } =
     useContext(ApplicationContext);
+
+  const { setSnackBar } = useContext(SnackBarContext);
+  const { refetchCartCount } = useContext(CartContext);
 
   const routeParams = useParams();
   const permitId = getDefaultRequiredVal("", routeParams.permitId);
@@ -44,16 +52,34 @@ export const ApplicationReview = () => {
 
   // Send data to the backend API
   const saveApplicationMutation = useSaveApplicationMutation();
+  const addToCartMutation = useAddToCart();
 
   const back = () => {
     navigate(withCompanyId(APPLICATIONS_ROUTES.DETAILS(permitId)), { replace: true });
   };
 
   const next = () => {
-    navigate(withCompanyId(APPLICATIONS_ROUTES.PAY(permitId)));
+    navigate(SHOPPING_CART_ROUTES.DETAILS());
   };
 
-  const onSubmit = async () => {
+  const proceedWithAddToCart = async (
+    companyId: string,
+    applicationIds: string[],
+    onSuccess: () => void,
+  ) => {
+    const addResult = await addToCartMutation.mutateAsync({
+      companyId,
+      applicationIds,
+    });
+
+    if (hasPermitsActionFailed(addResult)) {
+      navigate(ERROR_ROUTES.UNEXPECTED);
+    } else {
+      onSuccess();
+    }
+  };
+
+  const handleContinue = async () => {
     setIsSubmitted(true);
 
     if (!isChecked) return;
@@ -73,10 +99,54 @@ export const ApplicationReview = () => {
 
     if (savedApplication) {
       setApplicationData(savedApplication);
-      next();
+
+      await proceedWithAddToCart(
+        `${savedApplication.companyId}`,
+        [savedApplication.permitId] as string[],
+        () => {
+          setSnackBar({
+            showSnackbar: true,
+            setShowSnackbar: () => true,
+            message: `Application ${savedApplication.applicationNumber} added to cart`,
+            alertType: "success",
+          });
+    
+          refetchCartCount();
+          next();
+        },
+      );
     } else {
       navigate(ERROR_ROUTES.UNEXPECTED);
     }
+  };
+
+  const handleAddToCart = async () => {
+    setIsSubmitted(true);
+
+    if (!isChecked) return;
+
+    const companyId = applicationData?.companyId;
+    const permitId = applicationData?.permitId;
+    const applicationNumber = applicationData?.applicationNumber;
+    if (!companyId || !permitId || !applicationNumber) {
+      return navigate(ERROR_ROUTES.UNEXPECTED);
+    }
+
+    await proceedWithAddToCart(
+      `${companyId}`,
+      [permitId],
+      () => {
+        setSnackBar({
+          showSnackbar: true,
+          setShowSnackbar: () => true,
+          message: `Application ${applicationNumber} added to cart`,
+          alertType: "success",
+        });
+  
+        refetchCartCount();
+        navigate(APPLICATIONS_ROUTES.BASE);
+      },
+    );
   };
 
   useEffect(() => {
@@ -104,9 +174,10 @@ export const ApplicationReview = () => {
           updatedDateTime={applicationData?.updatedDateTime}
           companyInfo={companyInfo}
           contactDetails={applicationData?.permitData?.contactDetails}
-          continueBtnText="Proceed To Pay"
+          continueBtnText="Checkout"
           onEdit={back}
-          onContinue={methods.handleSubmit(onSubmit)}
+          onContinue={methods.handleSubmit(handleContinue)}
+          onAddToCart={handleAddToCart}
           allChecked={isChecked}
           setAllChecked={setIsChecked}
           hasAttemptedCheckboxes={isSubmitted}

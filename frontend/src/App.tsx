@@ -1,7 +1,14 @@
 import { BrowserRouter } from "react-router-dom";
 import { AppRoutes } from "./routes/Routes";
 import { ThemeProvider } from "@mui/material/styles";
-import { createContext, Dispatch, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, AuthProviderProps } from "react-oidc-context";
 import { WebStorageStateStore } from "oidc-client-ts";
@@ -16,6 +23,7 @@ import { NavIconReportButton } from "./common/components/naviconsidebar/NavIconR
 import { Nullable, Optional } from "./common/types/common";
 import { VerifiedClient, UserRolesType } from "./common/authentication/types";
 import { SuspendSnackBar } from "./common/components/snackbar/SuspendSnackBar";
+import { CartContextProvider } from "./features/permits/context/CartContextProvider";
 import {
   CustomSnackbar,
   SnackBarOptions,
@@ -69,7 +77,8 @@ const App = () => {
   const [onRouteBCClientNumber, setOnRouteBCClientNumber] =
     useState<Optional<string>>();
   const [companyLegalName, setCompanyLegalName] = useState<Optional<string>>();
-  const [isCompanySuspended, setIsCompanySuspended] = useState<Optional<boolean>>();
+  const [isCompanySuspended, setIsCompanySuspended] =
+    useState<Optional<boolean>>();
   const [userDetails, setUserDetails] =
     useState<Optional<BCeIDUserDetailContext>>();
   const [idirUserDetails, setIDIRUserDetails] =
@@ -154,15 +163,17 @@ const App = () => {
                 alertType={snackBar.alertType}
               />
               <div className="page-section">
-                <BrowserRouter>
-                  <Header />
-                  <SuspendSnackBar />
-                  <NavIconSideBar>
-                    <NavIconHomeButton />
-                    <NavIconReportButton />
-                  </NavIconSideBar>
-                  <AppRoutes />
-                </BrowserRouter>
+                <CartContextProvider>
+                  <BrowserRouter>
+                    <Header />
+                    <SuspendSnackBar />
+                    <NavIconSideBar>
+                      <NavIconHomeButton />
+                      <NavIconReportButton />
+                    </NavIconSideBar>
+                    <AppRoutes />
+                  </BrowserRouter>
+                </CartContextProvider>
               </div>
               <Footer />
             </SnackBarContext.Provider>

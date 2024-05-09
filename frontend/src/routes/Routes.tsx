@@ -32,6 +32,7 @@ import { CompanySuspended } from "../common/pages/CompanySuspended";
 import { ManageSettings } from "../features/settings/ManageSettings";
 import { IssuanceErrorPage } from "../common/pages/IssuanceErrorPage";
 import IDPRedirect from "../common/components/idpredirect/IDPRedirect";
+import { ShoppingCartDashboard } from "../features/permits/ShoppingCartDashboard";
 
 export const AppRoutes = () => {
   return (
@@ -212,10 +213,84 @@ export const AppRoutes = () => {
             }
           />
         </Route>
-        <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
-          <Route path={routes.APPLICATIONS_ROUTES.BASE}>
-            <Route index={true} element={<PermitDashboard />} />
-          </Route>
+      </Route>
+
+      <Route
+        element={
+          <BCeIDAuthWall
+            requiredRole={ROLES.READ_ORG}
+            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+          />
+        }
+      >
+        <Route
+          path={routes.PROFILE_ROUTES.MANAGE}
+          element={<ManageProfiles />}
+        />
+      </Route>
+
+      <Route
+        element={
+          <BCeIDAuthWall
+            requiredRole={ROLES.WRITE_USER}
+            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+          />
+        }
+      >
+        <Route
+          path={routes.PROFILE_ROUTES.ADD_USER}
+          element={<AddUserDashboard />}
+        />
+        <Route
+          path={`${routes.PROFILE_ROUTES.EDIT_USER}/:userGUID`}
+          element={<EditUserDashboard />}
+        />
+      </Route>
+
+      <Route
+        element={
+          <BCeIDAuthWall
+            requiredRole={ROLES.WRITE_PERMIT}
+            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+          />
+        }
+      >
+        <Route
+          path={`${routes.APPLICATIONS_ROUTES.START_APPLICATION()}`}
+          element={
+            <ApplicationSteps
+              applicationStep={routes.APPLICATION_STEPS.DETAILS}
+            />
+          }
+        />
+      </Route>
+
+      <Route
+        element={
+          <BCeIDAuthWall
+            requiredRole={ROLES.WRITE_PERMIT}
+            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+          />
+        }
+      >
+        <Route
+          path={`${routes.SHOPPING_CART_ROUTES.DETAILS()}`}
+          element={
+            <ShoppingCartDashboard />
+          }
+        />
+      </Route>
+
+      <Route
+        element={
+          <BCeIDAuthWall
+            requiredRole={ROLES.WRITE_PERMIT}
+            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+          />
+        }
+      >
+        <Route path={routes.APPLICATIONS_ROUTES.BASE}>
+          <Route index={true} element={<PermitDashboard />} />
           <Route path={`${routes.APPLICATIONS_ROUTES.DETAILS()}`}>
             <Route
               index={true}
@@ -233,20 +308,12 @@ export const AppRoutes = () => {
                 />
               }
             />
-            <Route
-              path={routes.APPLICATIONS_ROUTES.PAY()}
-              element={
-                <ApplicationSteps
-                  applicationStep={routes.APPLICATION_STEPS.PAY}
-                />
-              }
-            />
           </Route>
         </Route>
 
         <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
           <Route
-            path={`${routes.PERMITS_ROUTES.SUCCESS()}`}
+            path={`${routes.PERMITS_ROUTES.SUCCESS}`}
             element={<SuccessPage />}
           />
         </Route>
