@@ -426,7 +426,7 @@ export class ApplicationService {
     // Enforce that application is editable only if it is currently IN_PROGRESS
     if (existingApplication.permitStatus !== ApplicationStatus.IN_PROGRESS) {
       throw new BadRequestException(
-        'Application must not be in the cart or waiting for payment',
+        'Only an Application currently in progress can be modified.',
       );
     }
 
