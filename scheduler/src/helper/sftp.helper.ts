@@ -20,13 +20,15 @@ export const getSFTPConnection = async (): Promise<SFTPWrapper> => {
 export const getSFTPConnectionInfo = (): Client.ConnectOptions => {
   const host = process.env.CFS_SFTP_HOST;
   const port = Number(process.env.CFS_SFTP_PORT);
-  const connectionOptions: Client.ConnectOptions = { host, port };
-
   const username = process.env.CFS_SFTP_USERNAME;
   const privateKey = process.env.CFS_PRIVATE_KEY;
   const passphrase = process.env.CFS_PRIVATE_KEY_PASSPHRASE;
-  connectionOptions.username = username;
-  connectionOptions.privateKey = privateKey;
-  connectionOptions.passphrase = passphrase;
+  const connectionOptions = {
+    host: host,
+    port: port,
+    username: username,
+    privateKey: privateKey,
+    passphrase: passphrase,
+  };
   return connectionOptions;
 };
