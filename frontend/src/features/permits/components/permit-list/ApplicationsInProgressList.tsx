@@ -4,9 +4,7 @@ import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { RowSelectionState } from "@tanstack/table-core";
 import {
   MRT_ColumnDef,
-  MRT_PaginationState,
   MRT_Row,
-  MRT_SortingState,
   MRT_TableInstance,
   MaterialReactTable,
   useMaterialReactTable,
@@ -28,7 +26,7 @@ import { deleteApplications } from "../../apiManager/permitsAPI";
 import { PermitApplicationOrigin } from "../../types/PermitApplicationOrigin";
 import { useApplicationsInProgressQuery, usePendingPermitsQuery } from "../../hooks/hooks";
 import { WarningBcGovBanner } from "../../../../common/components/banners/WarningBcGovBanner";
-import { ApplicationPendingPermitsModalDialog } from "../dialog/ApplicationPendingPermitsModalDialog";
+import { PendingPermitsDialog } from "../dialog/PendingPermitsDialog/PendingPermitsDialog";
 import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
 
 import {
@@ -50,32 +48,18 @@ const getColumns = (
 /**
  * A wrapper with the query to load the table with expired permits.
  */
-export const ApplicationsInProgressList = ({ onCountChange }: 
-  { onCountChange: (count: number) => void; }) => {
-  const [pagination, setPagination] = useState<MRT_PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
-
-  const [sorting, setSorting] = useState<MRT_SortingState>([
-    {
-      id: "updatedDateTime",
-      desc: true,
-    },
-  ]);
-
-  const applicationsQuery = useApplicationsInProgressQuery({
-    page: pagination.pageIndex,
-    take: pagination.pageSize,
-    sorting: sorting.length > 0
-    ? [
-        {
-          column: sorting.at(0)?.id as string,
-          descending: Boolean(sorting.at(0)?.desc),
-        },
-      ]
-    : [],
-  });
+export const ApplicationsInProgressList = ({
+  onCountChange,
+}: {
+  onCountChange: (count: number) => void;
+}) => {
+  const {
+    applicationsInProgressQuery,
+    pagination,
+    setPagination,
+    sorting,
+    setSorting,
+  } = useApplicationsInProgressQuery();
 
   const {
     pendingPermits,
@@ -83,15 +67,20 @@ export const ApplicationsInProgressList = ({ onCountChange }:
     setPagination: setPendingPermitPagination,
   } = usePendingPermitsQuery();
 
-  const { data, isError, isPending, isFetching } = applicationsQuery;
+  const {
+    data: applicationsInProgress,
+    isError,
+    isPending,
+    isFetching,
+  } = applicationsInProgressQuery;
 
   const pendingCount = getDefaultRequiredVal(0, pendingPermits?.meta?.totalItems);
   const canShowPendingBanner = pendingCount > 0;
 
   useEffect(() => {
-    const totalCount = getDefaultRequiredVal(0, data?.meta?.totalItems);
+    const totalCount = getDefaultRequiredVal(0, applicationsInProgress?.meta?.totalItems);
     onCountChange(totalCount);
-  }, [data?.meta?.totalItems])
+  }, [applicationsInProgress?.meta?.totalItems])
 
   const { idirUserDetails, userDetails } = useContext(OnRouteBCContext);
   const userAuthGroup = getDefaultNullableVal(
@@ -145,7 +134,7 @@ export const ApplicationsInProgressList = ({ onCountChange }:
       setRowSelection(() => {
         return {};
       });
-      applicationsQuery.refetch();
+      applicationsInProgressQuery.refetch();
     }
   };
 
@@ -185,7 +174,7 @@ export const ApplicationsInProgressList = ({ onCountChange }:
   const table = useMaterialReactTable({
     ...defaultTableOptions,
     columns: columns,
-    data: data?.items ?? [],
+    data: getDefaultRequiredVal([], applicationsInProgress?.items),
     initialState: {
       ...defaultTableInitialStateOptions,
     },
@@ -258,8 +247,8 @@ export const ApplicationsInProgressList = ({ onCountChange }:
     manualFiltering: true,
     manualPagination: true,
     manualSorting: true,
-    rowCount: data?.meta?.totalItems ?? 0,
-    pageCount: data?.meta?.pageCount ?? 0,
+    rowCount: getDefaultRequiredVal(0, applicationsInProgress?.meta?.totalItems),
+    pageCount: getDefaultRequiredVal(0, applicationsInProgress?.meta?.pageCount),
     onSortingChange: setSorting,
     onPaginationChange: setPagination,
     enablePagination: true,
@@ -273,23 +262,24 @@ export const ApplicationsInProgressList = ({ onCountChange }:
   });
 
   return (
-    <div className="table-container">
+    <div className="applications-in-progress-list table-container">
       {canShowPendingBanner ? (
         <WarningBcGovBanner
-          msg=""
-          additionalInfo={
-            <>
-              <span>Some of your applications weren&apos;t processed. See your {" "}
-                <CustomActionLink onClick={() => setShowPendingPermitsModal(true)}>
-                  <strong>Pending Permits</strong>
-                </CustomActionLink>
-              </span>
-            </>
+          className="pending-permits-warning"
+          msg={
+            <span>Some of your applications weren&apos;t processed. See your {" "}
+              <CustomActionLink
+                className="pending-permit-warning__link"
+                onClick={() => setShowPendingPermitsModal(true)}
+              >
+                <strong>Pending Permits</strong>
+              </CustomActionLink>
+            </span>
           }
         />
       ) : null}
 
-      <ApplicationPendingPermitsModalDialog
+      <PendingPermitsDialog
         showModal={showPendingPermitsModal}
         onCancel={() => setShowPendingPermitsModal(false)}
         pendingPermits={pendingPermits}

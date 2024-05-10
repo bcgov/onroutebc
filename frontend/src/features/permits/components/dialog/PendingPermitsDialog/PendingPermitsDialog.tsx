@@ -9,26 +9,26 @@ import {
   useMaterialReactTable,
 } from "material-react-table";
 
-import "./ApplicationPendingPermitsModalDialog.scss";
-import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
-import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
-import { ApplicationListItem } from "../../types/application";
-import { ApplicationPendingPermitsModalColumnDefinition } from "./ApplicationPendingPermitsModalColumnDefinition";
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { defaultTableInitialStateOptions, defaultTableOptions } from "../../../../common/helpers/tableHelper";
-import { PPC_EMAIL, TOLL_FREE_NUMBER } from "../../../../common/constants/constants";
-import { Optional, PaginatedResponse } from "../../../../common/types/common";
-import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import "./PendingPermitsDialog.scss";
+import { InfoBcGovBanner } from "../../../../../common/components/banners/InfoBcGovBanner";
+import { NoRecordsFound } from "../../../../../common/components/table/NoRecordsFound";
+import { ApplicationListItem } from "../../../types/application";
+import { PendingPermitsColumnDefinition } from "./PendingPermitsColumnDefinition";
+import OnRouteBCContext from "../../../../../common/authentication/OnRouteBCContext";
+import { defaultTableInitialStateOptions, defaultTableOptions } from "../../../../../common/helpers/tableHelper";
+import { PPC_EMAIL, TOLL_FREE_NUMBER } from "../../../../../common/constants/constants";
+import { Optional, PaginatedResponse } from "../../../../../common/types/common";
+import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 
 /**
  * Dynamically set the column
  * @returns An array of column headers/accessor keys for Material React Table
  */
 const getColumns = (): MRT_ColumnDef<ApplicationListItem>[] => {
-  return ApplicationPendingPermitsModalColumnDefinition;
+  return PendingPermitsColumnDefinition;
 };
 
-export const ApplicationPendingPermitsModalDialog = ({
+export const PendingPermitsDialog = ({
   showModal,
   onCancel,
   pendingPermits,
@@ -50,6 +50,9 @@ export const ApplicationPendingPermitsModalDialog = ({
     [userAuthGroup],
   );
 
+  const pendingCount = getDefaultRequiredVal(0, pendingPermits?.meta?.totalItems);
+  const pendingMsg = `You have ${pendingCount} Pending Permit${pendingCount === 1 ? "" : "s"}`;
+
   const table = useMaterialReactTable({
     ...defaultTableOptions,
     columns: columns,
@@ -64,48 +67,48 @@ export const ApplicationPendingPermitsModalDialog = ({
     enableGlobalFilter: false,
     enableTopToolbar: false,
     enableRowSelection: false,
+    enableRowActions: false,
     autoResetPageIndex: false,
     manualFiltering: true,
     manualPagination: true,
     manualSorting: true,
-    rowCount: getDefaultRequiredVal(0, pendingPermits?.meta?.totalItems),
+    rowCount: pendingCount,
     pageCount: getDefaultRequiredVal(0, pendingPermits?.meta?.pageCount),
     onPaginationChange: setPagination,
     enablePagination: true,
     enableBottomToolbar: true,
     renderEmptyRowsFallback: () => <NoRecordsFound />,
-    muiTableContainerProps: {
-      sx: {
-        outline: "1px solid #DBDCDC",
-        width: "100%"
-      },
+    muiTablePaperProps: {
+      className: "pending-permits-dialog__table-container"
     },
   });
 
   return (
     <Dialog
-      className="pending-permits-modal"
+      className="pending-permits-dialog"
       open={showModal}
       onClose={handleCancel}
       PaperProps={{
-        className: "pending-permits-modal__container"
+        className: "pending-permits-dialog__container"
       }}
     >
-      <div className="pending-permits-modal__header">
-        <div className="pending-permits-modal__icon">
+      <div className="pending-permits-dialog__header">
+        <div className="pending-permits-dialog__icon">
           <FontAwesomeIcon className="icon" icon={faExclamationTriangle} />
         </div>
 
-        <span className="pending-permits-modal__title">
+        <span className="pending-permits-dialog__title">
           Pending Permits
         </span>
       </div>
 
-      <div className="pending-permits-modal__body">
-        <p>You have {getDefaultRequiredVal(0, pendingPermits?.meta?.totalItems)} Pending Permits</p>
+      <div className="pending-permits-dialog__body">
+        <p className="pending-permits-dialog__msg">
+          {pendingMsg}
+        </p>
 
         <InfoBcGovBanner
-          className="pending-permits-modal__banner" 
+          className="pending-permits-dialog__banner" 
           msg={"There was an unexpected error in issuing the following permits. No action from you is required."}
           additionalInfo={
             <Typography sx={{ marginBottom: "8px" }}>
@@ -121,12 +124,11 @@ export const ApplicationPendingPermitsModalDialog = ({
             </Typography>
           }
         />
-        <div className="table-container">
-          <MaterialReactTable table={table} />
-        </div>
+
+        <MaterialReactTable table={table} />
       </div>
 
-      <div className="pending-permits-modal__footer">
+      <div className="pending-permits-dialog__footer">
         <Button
           key="cancel-pending-permits-button"
           aria-label="Cancel"

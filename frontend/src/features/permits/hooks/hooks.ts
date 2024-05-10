@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { AxiosError } from "axios";
-import { MRT_PaginationState } from "material-react-table";
+import { MRT_PaginationState, MRT_SortingState } from "material-react-table";
 import {
   useQueryClient,
   useMutation,
@@ -17,12 +17,7 @@ import { isPermitIdNumeric } from "../helpers/permitState";
 import { deserializeApplicationResponse } from "../helpers/deserializeApplication";
 import { deserializePermitResponse } from "../helpers/deserializePermit";
 import { AmendPermitFormData } from "../pages/Amend/types/AmendPermitFormData";
-import {
-  Nullable,
-  Optional,
-  SortingConfig,
-} from "../../../common/types/common";
-
+import { Nullable, Optional } from "../../../common/types/common";
 import {
   getApplicationByPermitId,
   getPermit,
@@ -37,6 +32,7 @@ import {
   modifyAmendmentApplication,
   getApplicationsInProgress,
   resendPermit,
+  getPendingPermits,
 } from "../apiManager/permitsAPI";
 
 /**
@@ -400,30 +396,49 @@ export const useAmendmentApplicationQuery = (
 };
 
 /**
- * A custom react query hook that fetches applications in progress.
- * @returns List of applications in progress
+ * A custom react query hook that fetches applications in progress and manages its pagination state.
+ * @returns Query object containing fetched applications in progress, along with pagination state and setters
  */
-export const useApplicationsInProgressQuery = ({
-  page = 0,
-  take = 10,
-  searchString = "",
-  sorting = [],
-  pendingPermits = false,
-}: {
-  page: number;
-  take: number;
-  searchString?: string;
-  sorting?: SortingConfig[];
-  pendingPermits?: boolean;
-}) => {
-  return useQuery({
-    queryKey: ["applicationsInProgress", page, take, sorting, pendingPermits],
+export const useApplicationsInProgressQuery = () => {
+  const [pagination, setPagination] = useState<MRT_PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const [sorting, setSorting] = useState<MRT_SortingState>([
+    {
+      id: "updatedDateTime",
+      desc: true,
+    },
+  ]);
+
+  const orderBy = sorting.length > 0 ? [
+    {
+      column: sorting.at(0)?.id as string,
+      descending: Boolean(sorting.at(0)?.desc),
+    },
+  ] : [];
+
+  const applicationsInProgressQuery = useQuery({
+    queryKey: ["applicationsInProgress", pagination.pageIndex, pagination.pageSize, sorting],
     queryFn: () =>
-      getApplicationsInProgress({ page, take, searchString, orderBy: sorting, pendingPermits }),
+      getApplicationsInProgress({
+        page: pagination.pageIndex,
+        take: pagination.pageSize,
+        orderBy, 
+      }),
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
     refetchOnMount: "always",
     placeholderData: keepPreviousData,
   });
+
+  return {
+    applicationsInProgressQuery,
+    pagination,
+    setPagination,
+    sorting,
+    setSorting,
+  };
 };
 
 /**
@@ -436,10 +451,16 @@ export const usePendingPermitsQuery = () => {
     pageSize: 10,
   });
 
-  const { data: pendingPermits } = useApplicationsInProgressQuery({
-    page: pagination.pageIndex,
-    take: pagination.pageSize,
-    pendingPermits: true,
+  const { data: pendingPermits } = useQuery({
+    queryKey: ["pendingPermits", pagination.pageIndex, pagination.pageSize],
+    queryFn: () =>
+      getPendingPermits({
+        page: pagination.pageIndex,
+        take: pagination.pageSize,
+      }),
+    refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
+    refetchOnMount: "always",
+    placeholderData: keepPreviousData,
   });
 
   return {

@@ -37,7 +37,7 @@ export type ORBC_FormTypes =
 /**
  * The options for pagination.
  */
-export type PaginationOptions = {
+export interface PaginationOptions {
   /**
    * The page number to fetch.
    */
@@ -63,7 +63,7 @@ export type SortDirectionsType =
 /**
  * The config for sorting data.
  */
-export type SortingConfig = {
+export interface SortingConfig {
   /**
    * The field to order by.
    */
@@ -79,7 +79,7 @@ export type SortingConfig = {
  * Additional data filters that could be used for
  * filtering data further.
  */
-export type DataFilterOptions = {
+export interface DataFilterOptions {
   /**
    * The search value entered by the user.
    */
@@ -90,38 +90,15 @@ export type DataFilterOptions = {
   orderBy?: Array<SortingConfig>;
 };
 
-export type PendingOption = {
-  pendingPermits?: boolean;
-}
-
-/**
- * The options for pagination, filtering and pending data.
- */
-export type PaginationAndFiltersAndPending = PaginationOptions & DataFilterOptions & PendingOption;
-
 /**
  * The options for pagination and filtering data.
  */
-export type PaginationAndFilters = PaginationOptions & DataFilterOptions;
-
-/**
- * A generic paginated response structure for all the paginated responses from APIs.
- */
-export type PaginatedResponse<T> = {
-  /**
-   * An array of items containing the response T.
-   */
-  items: T[];
-  /**
-   * Metadata about a page.
-   */
-  meta: PageMetadataInResponse;
-};
+export interface PaginationAndFilters extends PaginationOptions, DataFilterOptions {};
 
 /**
  * The metadata containing info about a page in the paginated response.
  */
-export type PageMetadataInResponse = {
+export interface PageMetadataInResponse extends PaginationOptions {
   /**
    * The total items matching the query in the database.
    */
@@ -138,7 +115,21 @@ export type PageMetadataInResponse = {
    * Is there a next page?
    */
   hasNextPage: boolean;
-} & PaginationOptions;
+};
+
+/**
+ * A generic paginated response structure for all the paginated responses from APIs.
+ */
+export interface PaginatedResponse<T> {
+  /**
+   * An array of items containing the response T.
+   */
+  items: T[];
+  /**
+   * Metadata about a page.
+   */
+  meta: PageMetadataInResponse;
+};
 
 export type Optional<T> = T | undefined;
 export type RequiredOrNull<T> = T | null;
