@@ -206,6 +206,7 @@ jobs:
             --set-string global.zone=${{ inputs.environment }} \
             --set-string global.vault.role=${{ inputs.vault_role }} \
             --set-string global.vault.zone=${{ inputs.vault_zone }} \
+            --set-string global.pr_num=${{inputs.release}} \
             --install --wait --atomic ${{ env.repo_release }} \
             --timeout 10m --force \
             --values ${{ inputs.values }} \

@@ -47,6 +47,10 @@ frontend:
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: frontend
       tag: "{{tpl .Values.global.tag .}}"
+      env: 
+        fromValues:
+          - name: PR_NUM
+            value: '{{.Values.global.pr_num}}'
       ports:
         - name: http
           containerPort: 3000
@@ -156,6 +160,9 @@ vehicles:
             key: ACCESS_API_URL
           - name: PAYBC_REDIRECT
             key: PAYBC_REDIRECT
+        fromValues:
+          - name: PR_NUM
+            value: '{{.Values.global.pr_num}}'
       ports:
         - name: vehicles-api
           containerPort: 5000
@@ -288,6 +295,9 @@ dops:
             key: FRONTEND_URL
           - name: ACCESS_API_URL
             key: ACCESS_API_URL
+        fromValues:
+          - name: PR_NUM
+            value: '{{.Values.global.pr_num}}'
       ports:
         - name: dops-api
           containerPort: 5001
@@ -410,6 +420,10 @@ scheduler:
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: scheduler
       tag: "{{tpl .Values.global.tag .}}"
+      env: 
+        fromValues:
+          - name: PR_NUM
+            value: '{{.Values.global.pr_num}}'
       ports:
         - name: scheduler
           containerPort: 5050
