@@ -267,14 +267,15 @@ export const ApplicationsInProgressList = ({
         <WarningBcGovBanner
           className="pending-permits-warning"
           msg={
-            <span>Some of your applications weren&apos;t processed. See your {" "}
+            <div className="pending-permits-warning__msg">
+              <span>Some of your applications weren&apos;t processed. See your</span>
               <CustomActionLink
-                className="pending-permit-warning__link"
+                className="pending-permits-warning__link"
                 onClick={() => setShowPendingPermitsModal(true)}
               >
-                <strong>Pending Permits</strong>
+                Pending Permits
               </CustomActionLink>
-            </span>
+            </div>
           }
         />
       ) : null}
