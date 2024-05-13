@@ -31,21 +31,6 @@ on:
         required: false
         type: string
         default: ${{ github.event.number }}
-      license:
-        description: 'BC Gov LICENSE_PLATE of deployment env'
-        required: false
-        type: string
-        default: "c28f0c"
-      vault_role:
-        description: "nonprod/prod"
-        required: true
-        type: string
-        default: "nonprod"
-      vault_zone:
-        description: "secret zone"
-        required: true
-        type: string
-        default: "dev"
       triggers:
         description: Paths to trigger a deploy; omit=always; e.g. ('backend/' 'frontend/')
         required: false
@@ -100,22 +85,6 @@ on:
         required: false
         type: string
         default: "latest"
-      license:
-        description: 'BC Gov LICENSE_PLATE of deployment env'
-        required: false
-        type: string
-        default: "c28f0c"
-      vault_role:
-        description: "nonprod/prod"
-        required: true
-        type: choice
-        options: ["nonprod","prod"]
-      vault_zone:
-        description: "secret zone"
-        required: true
-        type: string
-        default: "dev"
-
       ### Usually a bad idea / not recommended
       directory:
         description: 'Chart directory.'

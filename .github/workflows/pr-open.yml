@@ -88,11 +88,11 @@ jobs:
       vault_role: nonprod
       vault_zone: dev
       params: |
-        --set-string global.license=${{ inputs.license }} \
-        --set-string global.zone=${{ inputs.environment }} \
-        --set-string global.vault.role=${{ inputs.vault_role }} \
-        --set-string global.vault.zone=${{ inputs.vault_zone }} \
-        --set-string global.pr_num=${{inputs.release}} \
+        --set-string global.license='c28f0c' \
+        --set-string global.zone='dev' \
+        --set-string global.vault.role='nonprod' \
+        --set-string global.vault.zone='dev' \
+        --set-string global.pr_num='${{ needs.vars.outputs.pr }}' \
         --set-json dops.containers[0].resources='{"limits": {"cpu": "1000m", "memory": "2000Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
         --set-json frontend.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
         --set-json scheduler.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
