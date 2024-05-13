@@ -49,7 +49,7 @@ frontend:
       tag: "{{tpl .Values.global.tag .}}"
       env: 
         fromValues:
-          - name: VITE_PR_NUM
+          - name: VITE_FRONTEND_PR_NUM
             value: '{{.Values.global.pr_num}}'
       ports:
         - name: http
@@ -161,7 +161,7 @@ vehicles:
           - name: PAYBC_REDIRECT
             key: PAYBC_REDIRECT
         fromValues:
-          - name: PR_NUM
+          - name: VEHICLES_PR_NUM
             value: '{{.Values.global.pr_num}}'
       ports:
         - name: vehicles-api
@@ -296,7 +296,7 @@ dops:
           - name: ACCESS_API_URL
             key: ACCESS_API_URL
         fromValues:
-          - name: PR_NUM
+          - name: DOPS_PR_NUM
             value: '{{.Values.global.pr_num}}'
       ports:
         - name: dops-api
@@ -422,7 +422,7 @@ scheduler:
       tag: "{{tpl .Values.global.tag .}}"
       env: 
         fromValues:
-          - name: PR_NUM
+          - name: SCHEDULER_PR_NUM
             value: '{{.Values.global.pr_num}}'
       ports:
         - name: scheduler
