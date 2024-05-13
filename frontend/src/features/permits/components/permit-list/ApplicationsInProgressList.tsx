@@ -4,9 +4,7 @@ import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { RowSelectionState } from "@tanstack/table-core";
 import {
   MRT_ColumnDef,
-  MRT_PaginationState,
   MRT_Row,
-  MRT_SortingState,
   MRT_TableInstance,
   MaterialReactTable,
   useMaterialReactTable,
@@ -24,17 +22,18 @@ import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext
 import { getDefaultNullableVal, getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { UserAuthGroupType } from "../../../../common/authentication/types";
 import { Nullable } from "../../../../common/types/common";
-import {
-  deleteApplications,
-} from "../../apiManager/permitsAPI";
+import { deleteApplications } from "../../apiManager/permitsAPI";
+import { PermitApplicationOrigin } from "../../types/PermitApplicationOrigin";
+import { useApplicationsInProgressQuery, usePendingPermitsQuery } from "../../hooks/hooks";
+import { WarningBcGovBanner } from "../../../../common/components/banners/WarningBcGovBanner";
+import { PendingPermitsDialog } from "../dialog/PendingPermitsDialog/PendingPermitsDialog";
+import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
 
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
-import { PermitApplicationOrigin } from "../../types/PermitApplicationOrigin";
-import { useApplicationsInProgressQuery } from "../../hooks/hooks";
 
 /**
  * Dynamically set the column
@@ -49,40 +48,39 @@ const getColumns = (
 /**
  * A wrapper with the query to load the table with expired permits.
  */
-export const ApplicationsInProgressList = ({ onCountChange }: 
-  { onCountChange: (count: number) => void; }) => {
-  const [pagination, setPagination] = useState<MRT_PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
-  const [sorting, setSorting] = useState<MRT_SortingState>([
-    {
-      id: "updatedDateTime",
-      desc: true,
-    },
-  ]);
+export const ApplicationsInProgressList = ({
+  onCountChange,
+}: {
+  onCountChange: (count: number) => void;
+}) => {
+  const {
+    applicationsInProgressQuery,
+    pagination,
+    setPagination,
+    sorting,
+    setSorting,
+  } = useApplicationsInProgressQuery();
 
-  const applicationsQuery = useApplicationsInProgressQuery({
-    page: pagination.pageIndex,
-    take: pagination.pageSize,
-    sorting: sorting.length > 0
-    ? [
-        {
-          column: sorting.at(0)?.id as string,
-          descending: Boolean(sorting.at(0)?.desc),
-        },
-      ]
-    : [],
-  });
+  const {
+    pendingPermits,
+    pagination: pendingPermitPagination,
+    setPagination: setPendingPermitPagination,
+  } = usePendingPermitsQuery();
 
-  const { data, isError, isPending, isFetching } = applicationsQuery;
+  const {
+    data: applicationsInProgress,
+    isError,
+    isPending,
+    isFetching,
+  } = applicationsInProgressQuery;
+
+  const pendingCount = getDefaultRequiredVal(0, pendingPermits?.meta?.totalItems);
+  const canShowPendingBanner = pendingCount > 0;
 
   useEffect(() => {
-
-    const totalCount = getDefaultRequiredVal(0, data?.meta?.totalItems);
+    const totalCount = getDefaultRequiredVal(0, applicationsInProgress?.meta?.totalItems);
     onCountChange(totalCount);
-    
-  }, [data?.meta?.totalItems])
+  }, [applicationsInProgress?.meta?.totalItems])
 
   const { idirUserDetails, userDetails } = useContext(OnRouteBCContext);
   const userAuthGroup = getDefaultNullableVal(
@@ -94,6 +92,7 @@ export const ApplicationsInProgressList = ({ onCountChange }:
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
+  const [showPendingPermitsModal, setShowPendingPermitsModal] = useState<boolean>(false);
 
   const columns = useMemo<MRT_ColumnDef<ApplicationListItem>[]>(
     () => getColumns(userAuthGroup),
@@ -135,7 +134,7 @@ export const ApplicationsInProgressList = ({ onCountChange }:
       setRowSelection(() => {
         return {};
       });
-      applicationsQuery.refetch();
+      applicationsInProgressQuery.refetch();
     }
   };
 
@@ -175,7 +174,7 @@ export const ApplicationsInProgressList = ({ onCountChange }:
   const table = useMaterialReactTable({
     ...defaultTableOptions,
     columns: columns,
-    data: data?.items ?? [],
+    data: getDefaultRequiredVal([], applicationsInProgress?.items),
     initialState: {
       ...defaultTableInitialStateOptions,
     },
@@ -248,8 +247,8 @@ export const ApplicationsInProgressList = ({ onCountChange }:
     manualFiltering: true,
     manualPagination: true,
     manualSorting: true,
-    rowCount: data?.meta?.totalItems ?? 0,
-    pageCount: data?.meta?.pageCount ?? 0,
+    rowCount: getDefaultRequiredVal(0, applicationsInProgress?.meta?.totalItems),
+    pageCount: getDefaultRequiredVal(0, applicationsInProgress?.meta?.pageCount),
     onSortingChange: setSorting,
     onPaginationChange: setPagination,
     enablePagination: true,
@@ -263,8 +262,34 @@ export const ApplicationsInProgressList = ({ onCountChange }:
   });
 
   return (
-    <div className="table-container">
+    <div className="applications-in-progress-list table-container">
+      {canShowPendingBanner ? (
+        <WarningBcGovBanner
+          className="pending-permits-warning"
+          msg={
+            <div className="pending-permits-warning__msg">
+              <span>Some of your applications weren&apos;t processed. See your</span>
+              <CustomActionLink
+                className="pending-permits-warning__link"
+                onClick={() => setShowPendingPermitsModal(true)}
+              >
+                Pending Permits
+              </CustomActionLink>
+            </div>
+          }
+        />
+      ) : null}
+
+      <PendingPermitsDialog
+        showModal={showPendingPermitsModal}
+        onCancel={() => setShowPendingPermitsModal(false)}
+        pendingPermits={pendingPermits}
+        pagination={pendingPermitPagination}
+        setPagination={setPendingPermitPagination}
+      />
+
       <MaterialReactTable table={table} />
+
       <DeleteConfirmationDialog
         onClickDelete={onConfirmApplicationDelete}
         isOpen={isDeleteDialogOpen}
