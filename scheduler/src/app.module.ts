@@ -41,6 +41,7 @@ const envPath = path.resolve(process.cwd() + '/../');
     CgiSftpModule,
     TpsPermitModule,
     FeatureFlagsModule,
+    CgiSftpModule,
   ],
   controllers: [AppController],
   providers: [AppService],
