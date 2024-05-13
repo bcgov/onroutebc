@@ -43,8 +43,12 @@ jobs:
       environment: test
       release: test
       tag: ${{ needs.vars.outputs.pr }}
-      vault_role: nonprod
-      vault_zone: test
+      params: |
+        --set-string global.license='c28f0c' \
+        --set-string global.zone='test' \
+        --set-string global.vault.role='nonprod' \
+        --set-string global.vault.zone='test' \
+        --set-string global.pr_num='${{ needs.vars.outputs.pr }}' \
 
 
   promote-images-test:
@@ -75,8 +79,11 @@ jobs:
       environment: prod
       tag: ${{ needs.vars.outputs.pr }}
       release: prod
-      vault_role: prod
-      vault_zone: prod
+        --set-string global.license='c28f0c' \
+        --set-string global.zone='prod' \
+        --set-string global.vault.role='prod' \
+        --set-string global.vault.zone='prod' \
+        --set-string global.pr_num='${{ needs.vars.outputs.pr }}' \
 
   promote-images-prod:
     name: Promote Images - Prod

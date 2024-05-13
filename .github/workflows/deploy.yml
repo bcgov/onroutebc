@@ -14,7 +14,6 @@ on:
         required: false
         type: string
         default: "onroutebc"
-
       ### Typical / recommended
       autoscaling:
         description: 'Autoscaling enabled or not for the deployments'
@@ -74,6 +73,11 @@ on:
         default: "onroutebc"
 
       ### Typical / recommended
+      autoscaling:
+        description: 'Autoscaling enabled or not for the deployments'
+        required: false
+        type: boolean
+        default: true
       environment:
         description: "Deployment environment - dev/test/prod"
         required: true

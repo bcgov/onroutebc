@@ -85,8 +85,6 @@ jobs:
       release: ${{ needs.vars.outputs.pr }}
       tag: ${{ needs.vars.outputs.pr }}
       triggers: '' #omit=always;
-      vault_role: nonprod
-      vault_zone: dev
       params: |
         --set-string global.license='c28f0c' \
         --set-string global.zone='dev' \
