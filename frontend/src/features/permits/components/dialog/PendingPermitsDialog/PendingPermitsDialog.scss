@@ -1,0 +1,88 @@
+@use "../../../../../common/components/table/Table";
+@use "../../../../../themes/orbcStyles";
+
+.pending-permits-dialog {
+  & &__container {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__header {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: orbcStyles.$bc-background-light-grey;
+  }
+
+  &__icon {
+    border-radius: 50%;
+    background-color: orbcStyles.$bc-black;
+    padding: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .icon {
+      color: orbcStyles.$white;
+      height: 1.5rem;
+    }
+  }
+
+  &__title {
+    font-weight: bold;
+    font-size: 1.5rem;
+    margin-left: 1rem;
+    color: orbcStyles.$bc-black;
+  }
+
+  &__body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  &__msg {
+    margin: 0 0 1.5rem 0;
+    color: orbcStyles.$bc-black;
+    font-size: 1.25rem;
+    font-weight: bold;
+  }
+
+  &__banner {
+    margin-bottom: 1.5rem;
+  }
+
+  & &__table-container {
+    width: 100%;
+    border: 1px solid orbcStyles.$bc-border-grey;
+    box-shadow: none;
+  }
+
+  &__footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding: 0 1.5rem 1.5rem 1.5rem;
+
+    .pending-permits-button {
+      &--cancel {
+        cursor: pointer;
+        background-color: orbcStyles.$bc-background-light-grey;
+        color: orbcStyles.$bc-black;
+        border: none;
+
+        &:hover {
+          border: 2px solid orbcStyles.$bc-text-box-border-grey;
+          background-color: orbcStyles.$bc-background-light-grey;
+          cursor: pointer;
+          box-shadow: none;
+        }
+      }
+    }
+  }
+}
+  
