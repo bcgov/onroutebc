@@ -3,10 +3,13 @@ import { getSFTPConnectionInfo } from 'src/helper/sftp.helper';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as Client from 'ssh2-sftp-client';
+import { generate} from 'src/helper/generator.helper';
 
 @Injectable()
 export class CgiSftpService {
-  upload() {
+  async upload() {
+    // Generate cig files
+    await this.generateCgi();
     const localPath = '/tmp';
     const remotePath = './data/';
     const sftp = new Client();
@@ -34,5 +37,10 @@ export class CgiSftpService {
           console.log(err);
         });
     });
+  }
+
+  async generateCgi() {
+    console.log('cgi file generating...');
+    await generate();
   }
 }
