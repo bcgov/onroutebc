@@ -1,9 +1,14 @@
 import { config as dotenvConfig } from "dotenv";
 import * as fs from 'fs';
 import { ConnectionPool, connect} from 'mssql';
-import { join } from 'path';
+import { join, resolve } from 'path';
 
-dotenvConfig();
+const envFilePath = resolve(__dirname, "../../../.env");
+const result = dotenvConfig({ path: envFilePath });
+
+if (result.error) {
+  throw result.error;
+}
 
 const maxBatchId: string = '';
 let transactions: Promise<Transaction[]>;
@@ -19,10 +24,10 @@ interface DbConfig {
 }
 
 const dbConfig: DbConfig = {
-  user: 'SA', // process.env.DB_USER,
-  password: 'YourStrong@Passw0rd', // process.env.DB_PASSWORD,
-  server: '127.0.0.1',// process.env.DB_SERVER,
-  database: 'ORBC_DEV', // process.env.DB_NAME,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  server: process.env.DB_SERVER,
+  database: process.env.DB_NAME,
   options: {
     encrypt: false, // Use encryption if needed
   },
