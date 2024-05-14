@@ -5,6 +5,7 @@ import { Application, ApplicationResponseData } from "../types/application";
 import { getEndOfDate, getStartOfDate, now, toLocalDayjs, utcToLocalDayjs } from "../../../common/helpers/formatDate";
 import { getDurationOrDefault } from "./getDefaultApplicationFormData";
 import { getExpiryDate } from "./permitState";
+import { minDurationForPermitType } from "./dateSelection";
 
 /**
  * Deserializes an ApplicationResponseData object (received from backend) to an Application object
@@ -20,8 +21,9 @@ export const deserializeApplicationResponse = (
     getStartOfDate(now()),
   );
 
+  const permitType = response.permitType;
   const durationOrDefault = getDurationOrDefault(
-    30,
+    minDurationForPermitType(permitType),
     response.permitData.permitDuration,
   );
 
