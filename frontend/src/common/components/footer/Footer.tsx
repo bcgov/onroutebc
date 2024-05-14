@@ -55,7 +55,7 @@ export const Footer = () => {
             </a>
           </li>
           <li>
-              Build:%VITE_FRONTEND_PR_NUM%
+              Build:%VITE_KEYCLOAK_ISSUER_URL%
           </li>
         </ul>
       </div>
