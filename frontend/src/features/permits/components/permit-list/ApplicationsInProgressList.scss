@@ -1,1 +1,24 @@
 @use "../list/List";
+@import "../../../../themes/orbcStyles";
+
+.applications-in-progress-list {
+  .pending-permits-warning {
+    margin-bottom: 0;
+
+    &__msg {
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+    }
+
+    &__link {
+      font-weight: bold;
+      color: $bc-text-links-blue;
+      margin-left: 0.25rem;
+
+      &:hover {
+        color: $blue;
+      }
+    }
+  }
+}

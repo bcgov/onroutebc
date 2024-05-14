@@ -25,7 +25,7 @@ export const BcGovAlertBanner = ({
   bannerType,
   className,
 }: {
-  msg: string;
+  msg: string | JSX.Element;
   additionalInfo?: JSX.Element;
   bannerType: AlertBannerType;
   className?: string;
@@ -61,9 +61,9 @@ export const BcGovAlertBanner = ({
       />
 
       <div className="bc-gov-alertbanner__info">
-        <p className="bc-gov-alertbanner__msg" id={msgId}>
+        <div className="bc-gov-alertbanner__msg" id={msgId}>
           {msg}
-        </p>
+        </div>
 
         {additionalInfo ? (
           <div className="bc-gov-alertbanner__additional-info">
