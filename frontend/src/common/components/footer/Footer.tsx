@@ -1,6 +1,11 @@
 import { ONROUTE_WEBPAGE_LINKS } from "../../../routes/constants";
 import "./Footer.scss";
 
+const getEnv = () => {
+  const env =
+    return import.meta.env.VITE_DEPLOY_ENVIRONMENT || envConfig.VITE_DEPLOY_ENVIRONMENT;
+};
+
 export const Footer = () => {
   return (
     <footer className="footer">
@@ -55,7 +60,7 @@ export const Footer = () => {
             </a>
           </li>
           <li>
-              Build:{import.meta.env.VITE_DEPLOY_ENVIRONMENT()}
+              Build:{getEnv()}
           </li>
         </ul>
       </div>
