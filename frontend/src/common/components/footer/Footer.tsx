@@ -75,7 +75,7 @@ export const Footer = () => {
             </a>
           </li>
           <li>
-              Build:foo
+              Build: {getEnv()}
           </li>
         </ul>
       </div>
