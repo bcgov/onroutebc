@@ -60,7 +60,7 @@ export const Footer = () => {
             </a>
           </li>
           <li>
-              Build:{${getEnv()}}
+              Build:foo
           </li>
         </ul>
       </div>
