@@ -55,7 +55,7 @@ export const Footer = () => {
             </a>
           </li>
           <li>
-              Build:{import.meta.env.VITE_DEPLOY_ENVIRONMENT}
+              Build:{import.meta.env.VITE_DEPLOY_ENVIRONMENT()}
           </li>
         </ul>
       </div>
