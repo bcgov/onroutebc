@@ -54,6 +54,9 @@ export const Footer = () => {
               Contact Us
             </a>
           </li>
+          <li>
+              Build: import.meta.env.VITE_KEYCLOAK_ISSUER_URL
+          </li>
         </ul>
       </div>
     </footer>
