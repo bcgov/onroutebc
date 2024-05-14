@@ -205,6 +205,7 @@ services:
       CFS_SFTP_USERNAME: ${CFS_SFTP_USERNAME}
       CFS_SFTP_HOST: ${CFS_SFTP_HOST}
       CFS_SFTP_PORT: ${CFS_SFTP_PORT}
+      CFS_REMOTE_PATH: ${CFS_REMOTE_PATH}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5050/"]
       interval: 1m30s
