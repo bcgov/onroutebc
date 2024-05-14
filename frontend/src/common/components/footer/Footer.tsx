@@ -55,7 +55,7 @@ export const Footer = () => {
             </a>
           </li>
           <li>
-              Build:%VITE_KEYCLOAK_ISSUER_URL%
+              Build:{import.meta.env.VITE_DEPLOY_ENVIRONMENT}
           </li>
         </ul>
       </div>
