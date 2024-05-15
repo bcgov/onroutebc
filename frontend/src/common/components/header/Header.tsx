@@ -80,8 +80,10 @@ const Navbar = ({
                 <li>
                   <NavLink to={SETTINGS_ROUTES.MANAGE}>Settings</NavLink>
                 </li>
+              )}
+              {(
                 <li>
-		  {getEnv()}
+                  <NavLink to={APPLICATIONS_ROUTES.BASE}>${getEnv()}</NavLink>
                 </li>
               )}
             </>
