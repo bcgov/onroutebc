@@ -81,7 +81,7 @@ const Navbar = ({
                   <NavLink to={SETTINGS_ROUTES.MANAGE}>Settings</NavLink>
                 </li>
                 <li>
-			{import.meta.env.VITE_FRONTEND_PR_NUM}
+			{import.meta.env.VITE_FRONTEND_PR_NUM()}
                 </li>
               )}
             </>
