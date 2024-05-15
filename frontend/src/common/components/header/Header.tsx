@@ -86,7 +86,7 @@ const Navbar = ({
                   <NavLink to={SETTINGS_ROUTES.MANAGE}>Settings</NavLink>
                 </li>
                 <li>
-			
+		  {getPrNum()}
                 </li>
               )}
             </>
