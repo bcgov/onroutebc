@@ -91,17 +91,17 @@ jobs:
         --set-string global.vault.role='nonprod' \
         --set-string global.vault.zone='dev' \
         --set-string global.pr_num='${{ needs.vars.outputs.pr }}' \
-        --set-string frontend.configmap.data='
-      config.js: |-
-        const envConfig = (() => {
-          return {
-            "VITE_DEPLOY_ENVIRONMENT":"{{.Values.global.zone}}",
-            "VITE_API_VEHICLE_URL":"https://{{.Release.Name}}-vehicles.{{.Values.global.domain}}",
-            "VITE_KEYCLOAK_ISSUER_URL":"https://{{ternary ("") (printf "%s." .Values.global.zone) (contains "prod" .Values.global.zone)}}loginproxy.gov.bc.ca/auth/realms/standard",
-            "VITE_KEYCLOAK_AUDIENCE":"on-route-bc-direct-4598",
-            "VITE_SITEMINDER_LOG_OFF_URL": "https://logon{{ternary ("") ("test") (contains "prod" .Values.global.zone)}}7.gov.bc.ca/clp-cgi/logoff.cgi",
-          };
-        })();'
+        --set-json frontend.configmap.data='
+          config.js: |-
+            const envConfig = (() => {
+              return {
+                "VITE_DEPLOY_ENVIRONMENT":"{{.Values.global.zone}}",
+                "VITE_API_VEHICLE_URL":"https://{{.Release.Name}}-vehicles.{{.Values.global.domain}}",
+                "VITE_KEYCLOAK_ISSUER_URL":"https://{{ternary ("") (printf "%s." .Values.global.zone) (contains "prod" .Values.global.zone)}}loginproxy.gov.bc.ca/auth/realms/standard",
+                "VITE_KEYCLOAK_AUDIENCE":"on-route-bc-direct-4598",
+                "VITE_SITEMINDER_LOG_OFF_URL": "https://logon{{ternary ("") ("test") (contains "prod" .Values.global.zone)}}7.gov.bc.ca/clp-cgi/logoff.cgi",
+              };
+            })();'
         --set-json dops.containers[0].resources='{"limits": {"cpu": "1000m", "memory": "2000Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
         --set-json frontend.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
         --set-json scheduler.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
