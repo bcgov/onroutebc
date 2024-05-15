@@ -43,6 +43,11 @@ const getEnv = () => {
   }
 };
 
+const getPrNum = () => {
+  const PrNum = import.meta.env.VITE_FRONTEND_PR_NUM || envConfig.VITE_FRONTEND_PR_NUM;
+  return PrNum;
+}
+
 const Navbar = ({
   isAuthenticated,
   isMobile = false,
@@ -81,7 +86,7 @@ const Navbar = ({
                   <NavLink to={SETTINGS_ROUTES.MANAGE}>Settings</NavLink>
                 </li>
                 <li>
-			{import.meta.env.VITE_FRONTEND_PR_NUM()}
+			
                 </li>
               )}
             </>
