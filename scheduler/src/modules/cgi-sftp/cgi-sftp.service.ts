@@ -1,9 +1,10 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { getSFTPConnectionInfo } from 'src/helper/sftp.helper';
 import * as Client from 'ssh2-sftp-client';
 
 @Injectable()
 export class CgiSftpService {
+  private readonly logger = new Logger(CgiSftpService.name);
   upload(fileData: Express.Multer.File, fileName: string) {
     const sftp = new Client();
     const connectionInfo: Client.ConnectOptions = getSFTPConnectionInfo();
@@ -11,14 +12,15 @@ export class CgiSftpService {
     sftp
       .connect(connectionInfo)
       .then(() => {
-        console.log('writing file', remotePath + fileName);
+        this.logger.log(`writing file ${remotePath}${fileName}`);
         return sftp.put(fileData.buffer, remotePath + fileName);
       })
       .catch((err) => {
+        this.logger.error(err);
         throw new InternalServerErrorException(err);
       })
       .finally(() => {
-        console.log('closing connection');
+        this.logger.log('closing connection');
         void sftp.end();
       });
   }
