@@ -83,7 +83,7 @@ const Navbar = ({
               )}
               {(
                 <li>
-                  <NavLink to={APPLICATIONS_ROUTES.BASE}>${getEnv()}</NavLink>
+                  <NavLink to={APPLICATIONS_ROUTES.BASE}>{import.meta.env.VITE_DEPLOY_ENVIRONMENT}</NavLink>
                 </li>
               )}
             </>
