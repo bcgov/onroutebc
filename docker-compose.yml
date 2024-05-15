@@ -7,7 +7,7 @@ services:
         - ${LOCAL_PUBLIC_KEY_LOCATION}:${SFTP_PUBLIC_KEY_LOCATION}
     ports:
         - "22:22"
-    command: f3535t::1001
+    command: ${CFS_SFTP_USERNAME}::1001
   sql-server-db:
     container_name: sql-server-db
     build:
