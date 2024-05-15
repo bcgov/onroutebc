@@ -1,6 +1,10 @@
 import dayjs, { Dayjs } from "dayjs";
 
 import { Permit, PermitsActionResponse } from "../types/permit";
+import { Nullable } from "../../../common/types/common";
+import { removeEmptyIdsFromPermitsActionResponse } from "./mappers";
+import { minDurationForPermitType } from "./dateSelection";
+import { BASE_DAYS_IN_YEAR } from "../constants/constants";
 import {
   getDateDiffInDays,
   getEndOfDate,
@@ -8,14 +12,12 @@ import {
   now,
   toLocalDayjs,
 } from "../../../common/helpers/formatDate";
-import { Nullable } from "../../../common/types/common";
-import { removeEmptyIdsFromPermitsActionResponse } from "./mappers";
 
 // Enum indicating the state of a permit
 export const PERMIT_STATES = {
   ISSUED: "ISSUED",
   ACTIVE: "ACTIVE",
-  EXPIRES_IN_30: "EXPIRES_IN_30",
+  EXPIRES_SOON: "EXPIRES_SOON", // Expiring within min duration for given permit (eg. <30 days left for term permit)
   EXPIRED: "EXPIRED",
 } as const;
 
@@ -67,8 +69,8 @@ export const getPermitState = (permit: Permit): PermitState => {
   }
 
   const daysLeft = daysLeftBeforeExpiry(permit);
-  if (daysLeft < 30) {
-    return PERMIT_STATES.EXPIRES_IN_30;
+  if (daysLeft < minDurationForPermitType(permit.permitType)) {
+    return PERMIT_STATES.EXPIRES_SOON;
   }
 
   if (currDate.isAfter(permitStartDate) || currDate.isSame(permitStartDate)) {
@@ -84,6 +86,11 @@ export const getPermitState = (permit: Permit): PermitState => {
  * @param duration Number representing duration period
  */
 export const getExpiryDate = (startDate: Dayjs, duration: number) => {
+  if (duration === BASE_DAYS_IN_YEAR) {
+    // This is when user selects "1 year", and the library will take handle the leap year situation
+    return getEndOfDate(dayjs(startDate).add(1, "year").subtract(1, "day"));
+  }
+
   return getEndOfDate(dayjs(startDate).add(duration - 1, "day"));
 };
 
