@@ -91,7 +91,7 @@ jobs:
         --set-string global.vault.role='nonprod' \
         --set-string global.vault.zone='dev' \
         --set-string global.pr_num='${{ needs.vars.outputs.pr }}' \
-        --set-json frontend.configmap.data='
+        --set-string frontend.configmap.data='
           config.js: |-
             const envConfig = (() => {
               return {
