@@ -7,16 +7,18 @@ import { SETTINGS_TABS } from "../../types/tabs";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { ERROR_ROUTES } from "../../../../routes/constants";
-import { canViewSuspend } from "../../helpers/permissions";
+import { canViewSpecialAuthorizations, canViewSuspend } from "../../helpers/permissions";
+import { SpecialAuthorizations } from "../../pages/SpecialAuthorizations/SpecialAuthorizations";
 
 export const ManageSettingsDashboard = React.memo(() => {
   const { userRoles, companyId } = useContext(OnRouteBCContext);
   const [hideSuspendTab, setHideSuspendTab] = useState<boolean>(false);
   const showSuspendTab = canViewSuspend(userRoles) && !hideSuspendTab;
+  const showSpecialAuth = canViewSpecialAuthorizations(userRoles);
 
   const { state: stateFromNavigation } = useLocation();
   const selectedTab = getDefaultRequiredVal(
-    SETTINGS_TABS.SUSPEND,
+    SETTINGS_TABS.SPECIAL_AUTH,
     stateFromNavigation?.selectedTab,
   );
 
@@ -28,8 +30,16 @@ export const ManageSettingsDashboard = React.memo(() => {
     return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
   }
 
-  // Add more tabs here later when needed (eg. "Special Authorization", "Credit Account")
+  // Add more tabs here later when needed (eg. "Credit Account")
   const tabs = [
+    showSpecialAuth ? {
+      label: "Special Authorizations",
+      component: (
+        <SpecialAuthorizations
+          companyId={companyId}
+        />
+      ),
+    } : null,
     showSuspendTab ? {
       label: "Suspend",
       component: (

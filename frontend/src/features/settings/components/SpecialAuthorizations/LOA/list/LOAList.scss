@@ -1,0 +1,16 @@
+@import "../../../../../../themes/orbcStyles";
+
+.loa-list {
+  & &__row-actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  & &__delete-btn {
+    color: $bc-black;
+  }
+
+  & &__link {
+    color: $bc-text-links-blue;
+  }
+}

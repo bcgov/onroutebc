@@ -3,5 +3,6 @@
  * Index starts at 0.
  */
 export const SETTINGS_TABS = {
-  SUSPEND: 0,
+  SPECIAL_AUTH: 0,
+  SUSPEND: 1,
 } as const;
