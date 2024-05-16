@@ -11,6 +11,7 @@ import { PermitMailingAddress } from "../types/PermitMailingAddress";
 import { PermitContactDetails } from "../types/PermitContactDetails";
 import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
 import { Application, ApplicationFormData } from "../types/application";
+import { minDurationForPermitType } from "./dateSelection";
 import {
   getEndOfDate,
   getStartOfDate,
@@ -171,7 +172,7 @@ export const getDefaultValues = (
   );
 
   const durationOrDefault = getDurationOrDefault(
-    30,
+    minDurationForPermitType(permitType),
     applicationData?.permitData?.permitDuration,
   );
 

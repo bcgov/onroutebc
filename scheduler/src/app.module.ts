@@ -10,6 +10,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TypeormCustomLogger } from './logger/typeorm-logger.config';
 import { getTypeormLogLevel } from './helper/logger.helper';
 import { CacheModule } from '@nestjs/cache-manager';
+import { CgiSftpModule } from './modules/cgi-sftp/cgi-sftp.module';
 
 const envPath = path.resolve(process.cwd() + '/../');
 @Module({
@@ -39,6 +40,7 @@ const envPath = path.resolve(process.cwd() + '/../');
     }),
     TpsPermitModule,
     FeatureFlagsModule,
+    CgiSftpModule,
   ],
   controllers: [AppController],
   providers: [AppService],
