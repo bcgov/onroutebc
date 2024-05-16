@@ -3,16 +3,26 @@ import { Navigate, useLocation } from "react-router-dom";
 
 import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
 import { Suspend } from "../../pages/Suspend";
+import { CreditAccount } from "../../pages/CreditAccount";
 import { SETTINGS_TABS } from "../../types/tabs";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { ERROR_ROUTES } from "../../../../routes/constants";
-import { canViewSuspend } from "../../helpers/permissions";
+import {
+  canViewSuspend,
+  // canViewCreditAccount,
+} from "../../helpers/permissions";
 
 export const ManageSettingsDashboard = React.memo(() => {
   const { userRoles, companyId } = useContext(OnRouteBCContext);
+
   const [hideSuspendTab, setHideSuspendTab] = useState<boolean>(false);
   const showSuspendTab = canViewSuspend(userRoles) && !hideSuspendTab;
+
+  const [hideCreditAccountTab, setHideCreditAccountTab] =
+    useState<boolean>(false);
+  // check for canViewCreditAccount(userRoles) here?
+  const showCreditAccountTab = !hideCreditAccountTab;
 
   const { state: stateFromNavigation } = useLocation();
   const selectedTab = getDefaultRequiredVal(
@@ -24,22 +34,36 @@ export const ManageSettingsDashboard = React.memo(() => {
     setHideSuspendTab(hide);
   };
 
+  const handleHideCreditAccountTab = (hide: boolean) => {
+    setHideCreditAccountTab(hide);
+  };
+
   if (!companyId) {
     return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
   }
 
   // Add more tabs here later when needed (eg. "Special Authorization", "Credit Account")
   const tabs = [
-    showSuspendTab ? {
-      label: "Suspend",
-      component: (
-        <Suspend
-          companyId={companyId}
-          hideTab={handleHideSuspendTab}
-        />
-      ),
-    } : null,
-  ].filter(tab => Boolean(tab)) as {
+    showSuspendTab
+      ? {
+          label: "Suspend",
+          component: (
+            <Suspend companyId={companyId} hideTab={handleHideSuspendTab} />
+          ),
+        }
+      : null,
+    showCreditAccountTab
+      ? {
+          label: "Credit Account",
+          component: (
+            <CreditAccount
+              companyId={companyId}
+              hideTab={handleHideCreditAccountTab}
+            />
+          ),
+        }
+      : null,
+  ].filter((tab) => Boolean(tab)) as {
     label: string;
     component: JSX.Element;
   }[];

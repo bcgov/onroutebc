@@ -1,0 +1,47 @@
+@import "../../../themes/orbcStyles";
+
+.credit-account-page {
+  color: $bc-black;
+  padding-top: 1.5rem;
+  padding-bottom:  3rem;
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.add-credit-account-action {
+  display: flex;
+  flex-direction: row;
+  // align-items: flex-end;
+  width: 100%;
+
+  & &__btn {
+    margin-left: 1.5rem;
+    margin-bottom: 0;
+    padding: 0 2rem;
+    font-size: 1rem;
+    font-weight: bold;
+    align-self: flex-end;
+
+    &--error {
+      align-self: center;
+    }
+  }
+  
+}
+
+@media (width < 1200px) {
+  .add-credit-account-action {
+    flex-direction: column;
+    align-items: flex-start;
+
+    & &__btn {
+      margin-left: 0;
+      margin-top: 0.5rem;
+    }
+  }
+}

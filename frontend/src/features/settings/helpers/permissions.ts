@@ -46,3 +46,19 @@ export const canViewSettingsTab = (
   return canViewSuspend(userRoles)
     || canUpdateSuspend(userRoles);
 };
+
+/**
+ * Determine whether or not a user can view/access credit account page/features given their roles.
+ * @param userRoles Roles that a user have
+ * @returns Whether or not the user can view the credit account page/features
+ */
+export const canViewCreditAccount = (
+  userRoles?: Nullable<UserRolesType[]>,
+): boolean => {
+  return Boolean(
+    DoesUserHaveRole(
+      userRoles,
+      ROLES.READ_CREDIT_ACCOUNT,
+    ),
+  );
+};
