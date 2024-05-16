@@ -2,6 +2,8 @@ import { ONROUTE_WEBPAGE_LINKS } from "../../../routes/constants";
 import "./Footer.scss";
 
 export const Footer = () => {
+  const prNumber =
+  import.meta.env.VITE_FRONTEND_PR_NUM || envConfig.VITE_FRONTEND_PR_NUM;
   return (
     <footer className="footer">
       <div className="container">
@@ -55,7 +57,7 @@ export const Footer = () => {
             </a>
           </li>
           <li>
-              Build: foo
+              Build: {prNumber}
           </li>
         </ul>
       </div>
