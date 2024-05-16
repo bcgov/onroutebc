@@ -8,6 +8,7 @@ import { RequiredOrNull } from "../../../../common/types/common";
 import { NO_FEE_PERMIT_TYPES, NoFeePermitType, noFeePermitTypeDescription } from "../../types/SpecialAuthorization";
 import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
 import { LOAList } from "../../components/SpecialAuthorizations/LOA/list/LOAList";
+import { ExpiredLOAModal } from "../../components/SpecialAuthorizations/LOA/expired/ExpiredLOAModal";
 
 export const SpecialAuthorizations = ({
   companyId,
@@ -17,6 +18,7 @@ export const SpecialAuthorizations = ({
   const [enableNoFeePermits, setEnableNoFeePermits] = useState<boolean>(false);
   const [noFeePermitType, setNoFeePermitType] = useState<RequiredOrNull<NoFeePermitType>>(null);
   const [enableLCV, setEnableLCV] = useState<boolean>(false);
+  const [showExpiredLOAs, setShowExpiredLOAs] = useState<boolean>(false);
 
   useEffect(() => {
     if (!enableNoFeePermits) {
@@ -25,7 +27,7 @@ export const SpecialAuthorizations = ({
   }, [enableNoFeePermits]);
 
   const handleShowExpiredLOA = () => {
-    console.log("Show Expired LOA modal"); //
+    setShowExpiredLOAs(true);
   };
 
   const handleAddLOA = () => {
@@ -43,6 +45,106 @@ export const SpecialAuthorizations = ({
       loaNumber: "100425",
       startDate: "2023-02-10 00:00:00",
       documentId: 2,
+    },
+  ];
+
+  const expiredLOAs = [
+    {
+      loaNumber: "100638",
+      startDate: "2023-02-10 00:00:00",
+      expiryDate: "2023-02-10 00:00:00",
+      documentId: 1,
+    },
+    {
+      loaNumber: "100638",
+      startDate: "2023-02-10 00:00:00",
+      expiryDate: "2023-02-10 00:00:00",
+      documentId: 1,
+    },
+    {
+      loaNumber: "100638",
+      startDate: "2023-02-10 00:00:00",
+      expiryDate: "2023-02-10 00:00:00",
+      documentId: 1,
+    },
+    {
+      loaNumber: "100638",
+      startDate: "2023-02-10 00:00:00",
+      expiryDate: "2023-02-10 00:00:00",
+      documentId: 1,
+    },
+    {
+      loaNumber: "100638",
+      startDate: "2023-02-10 00:00:00",
+      expiryDate: "2023-02-10 00:00:00",
+      documentId: 1,
+    },
+    {
+      loaNumber: "100638",
+      startDate: "2023-02-10 00:00:00",
+      expiryDate: "2023-02-10 00:00:00",
+      documentId: 1,
+    },
+    {
+      loaNumber: "100638",
+      startDate: "2023-02-10 00:00:00",
+      expiryDate: "2023-02-10 00:00:00",
+      documentId: 1,
+    },
+    {
+      loaNumber: "100638",
+      startDate: "2023-02-10 00:00:00",
+      expiryDate: "2023-02-10 00:00:00",
+      documentId: 1,
+    },
+    //
+    {
+      loaNumber: "100638",
+      startDate: "2023-02-10 00:00:00",
+      expiryDate: "2023-02-10 00:00:00",
+      documentId: 1,
+    },
+    {
+      loaNumber: "100638",
+      startDate: "2023-02-10 00:00:00",
+      expiryDate: "2023-02-10 00:00:00",
+      documentId: 1,
+    },
+    {
+      loaNumber: "100638",
+      startDate: "2023-02-10 00:00:00",
+      expiryDate: "2023-02-10 00:00:00",
+      documentId: 1,
+    },
+    {
+      loaNumber: "100638",
+      startDate: "2023-02-10 00:00:00",
+      expiryDate: "2023-02-10 00:00:00",
+      documentId: 1,
+    },
+    {
+      loaNumber: "100638",
+      startDate: "2023-02-10 00:00:00",
+      expiryDate: "2023-02-10 00:00:00",
+      documentId: 1,
+    },
+    {
+      loaNumber: "100638",
+      startDate: "2023-02-10 00:00:00",
+      expiryDate: "2023-02-10 00:00:00",
+      documentId: 1,
+    },
+    {
+      loaNumber: "100638",
+      startDate: "2023-02-10 00:00:00",
+      expiryDate: "2023-02-10 00:00:00",
+      documentId: 1,
+    },
+    {
+      loaNumber: "100638",
+      startDate: "2023-02-10 00:00:00",
+      expiryDate: "2023-02-10 00:00:00",
+      documentId: 1,
     },
   ];
 
@@ -149,6 +251,14 @@ export const SpecialAuthorizations = ({
 
             <LOAList loas={activeLOAs} isActive={true} />
           </div>
+        ) : null}
+
+        {showExpiredLOAs ? (
+          <ExpiredLOAModal
+            showModal={showExpiredLOAs}
+            handleCancel={() => setShowExpiredLOAs(false)}
+            expiredLOAs={expiredLOAs}
+          />
         ) : null}
       </div>
 
