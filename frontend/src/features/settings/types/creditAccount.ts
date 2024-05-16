@@ -1,3 +1,5 @@
+
+
 export const CREDIT_ACCOUNT_LIMITS = {
     PREPAID: "PREPAID",
     500: "500",
@@ -20,7 +22,6 @@ export type CreditAccountLimitType = (typeof CREDIT_ACCOUNT_LIMITS)[keyof typeof
 export const DEFAULT_CREDIT_ACCOUNT_LIMIT = "select";
 export const EMPTY_CREDIT_ACCOUNT_LIMIT_SELECT = "select";
 
-
 export const CREDIT_ACCOUNT_LIMIT_CHOOSE_FROM_OPTIONS = [
     { value: EMPTY_CREDIT_ACCOUNT_LIMIT_SELECT, label: "Select" },
     { value: CREDIT_ACCOUNT_LIMITS.PREPAID, label: "Prepaid" },
@@ -38,3 +39,16 @@ export const CREDIT_ACCOUNT_LIMIT_CHOOSE_FROM_OPTIONS = [
     { value: CREDIT_ACCOUNT_LIMITS[90000], label: "$90000" },
     { value: CREDIT_ACCOUNT_LIMITS[100000], label: "$100,000" }
 ];
+
+export const CREDIT_ACCOUNT_ACTIVITY_TYPES = {
+    CREATE: "CREATE",
+}
+
+export type CreditAccountActivityType = typeof CREDIT_ACCOUNT_ACTIVITY_TYPES[keyof typeof CREDIT_ACCOUNT_ACTIVITY_TYPES]
+
+export interface CreditAccountData {
+    accountActivityType?: CreditAccountActivityType;
+    creditLimit: CreditAccountLimitType;
+    creditBalance?: number;
+    creditAvailable?: number;
+}

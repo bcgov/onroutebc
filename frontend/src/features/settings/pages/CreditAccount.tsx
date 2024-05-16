@@ -8,6 +8,7 @@ import {
   CreditAccountLimitType,
 } from "../types/creditAccount";
 import { SelectChangeEvent, MenuItem, Button, Box } from "@mui/material";
+import { useCreateCreditAccountMutation } from "../hooks/creditAccount";
 
 export const CreditAccount = ({
   companyId,
@@ -33,11 +34,26 @@ export const CreditAccount = ({
     );
   };
 
-  const handleStartButtonClicked = () => {
+  const createCreditAccountMutation = useCreateCreditAccountMutation();
+
+  const isActionSuccessful = (status: number) => {
+    return status === 201;
+  };
+
+  const handleCreateCreditAccount = async () => {
     if (chooseFrom !== EMPTY_CREDIT_ACCOUNT_LIMIT_SELECT) {
       setInvalid(false);
-      console.log(chooseFrom);
-      //   navigate(APPLICATIONS_ROUTES.START_APPLICATION(chooseFrom));
+      const createCreditAccountResult =
+        await createCreditAccountMutation.mutateAsync({
+          companyId,
+          data: {
+            creditLimit: chooseFrom,
+          },
+        });
+
+      if (isActionSuccessful(createCreditAccountResult.status)) {
+        console.log(createCreditAccountResult);
+      }
     } else {
       setInvalid(true);
     }
@@ -63,7 +79,7 @@ export const CreditAccount = ({
         <Button
           className={`add-credit-account-action__btn ${invalid && "add-credit-account-action__btn--error"}`}
           variant="contained"
-          onClick={handleStartButtonClicked}
+          onClick={handleCreateCreditAccount}
         >
           Add Credit Account
         </Button>
