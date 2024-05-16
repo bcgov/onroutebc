@@ -3,7 +3,6 @@ import { FieldValues, FormProvider } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 
 import "./AmendPermitForm.scss";
-import { PERMIT_DURATION_OPTIONS } from "../../../constants/constants";
 import { usePermitVehicleManagement } from "../../../hooks/usePermitVehicleManagement";
 import { useAmendPermitForm } from "../hooks/useAmendPermitForm";
 import { SnackBarContext } from "../../../../../App";
@@ -29,6 +28,11 @@ import {
   useAmendPermit,
   useModifyAmendmentApplication,
 } from "../../../hooks/hooks";
+
+import {
+  durationOptionsForPermitType,
+  minDurationForPermitType,
+} from "../../../helpers/dateSelection";
 
 export const AmendPermitForm = () => {
   const {
@@ -181,10 +185,11 @@ export const AmendPermitForm = () => {
     }));
 
   const permitOldDuration = getDefaultRequiredVal(
-    30,
+    minDurationForPermitType(formData.permitType),
     permit?.permitData?.permitDuration,
   );
-  const durationOptions = PERMIT_DURATION_OPTIONS.filter(
+
+  const durationOptions = durationOptionsForPermitType(formData.permitType).filter(
     (duration) => duration.value <= permitOldDuration,
   );
 

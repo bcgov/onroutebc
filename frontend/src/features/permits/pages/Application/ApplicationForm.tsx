@@ -16,10 +16,10 @@ import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext
 import { PermitForm } from "./components/form/PermitForm";
 import { usePermitVehicleManagement } from "../../hooks/usePermitVehicleManagement";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
-import { PERMIT_DURATION_OPTIONS } from "../../constants/constants";
 import { Nullable } from "../../../../common/types/common";
 import { PermitType } from "../../types/PermitType";
 import { PermitVehicleDetails } from "../../types/PermitVehicleDetails";
+import { durationOptionsForPermitType } from "../../helpers/dateSelection";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -249,7 +249,7 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
           powerUnitSubTypes={powerUnitSubTypes}
           trailerSubTypes={trailerSubTypes}
           companyInfo={companyInfo}
-          durationOptions={PERMIT_DURATION_OPTIONS}
+          durationOptions={durationOptionsForPermitType(permitType)}
           doingBusinessAs={doingBusinessAs}
         />
       </FormProvider>
