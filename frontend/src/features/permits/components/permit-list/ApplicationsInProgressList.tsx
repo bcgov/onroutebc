@@ -291,10 +291,10 @@ export const ApplicationsInProgressList = ({
       <MaterialReactTable table={table} />
 
       <DeleteConfirmationDialog
-        onClickDelete={onConfirmApplicationDelete}
-        isOpen={isDeleteDialogOpen}
-        onClickCancel={onCancelApplicationDelete}
-        caption="application"
+        onDelete={onConfirmApplicationDelete}
+        showDialog={isDeleteDialogOpen}
+        onCancel={onCancelApplicationDelete}
+        itemToDelete="application"
       />
     </div>
   );

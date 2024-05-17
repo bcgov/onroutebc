@@ -9,6 +9,7 @@ import { NO_FEE_PERMIT_TYPES, NoFeePermitType, noFeePermitTypeDescription } from
 import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
 import { LOAList } from "../../components/SpecialAuthorizations/LOA/list/LOAList";
 import { ExpiredLOAModal } from "../../components/SpecialAuthorizations/LOA/expired/ExpiredLOAModal";
+import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
 
 export const SpecialAuthorizations = ({
   companyId,
@@ -19,6 +20,7 @@ export const SpecialAuthorizations = ({
   const [noFeePermitType, setNoFeePermitType] = useState<RequiredOrNull<NoFeePermitType>>(null);
   const [enableLCV, setEnableLCV] = useState<boolean>(false);
   const [showExpiredLOAs, setShowExpiredLOAs] = useState<boolean>(false);
+  const [LOAToDelete, setLOAToDelete] = useState<RequiredOrNull<string>>(null);
 
   useEffect(() => {
     if (!enableNoFeePermits) {
@@ -32,6 +34,19 @@ export const SpecialAuthorizations = ({
 
   const handleAddLOA = () => {
     console.log("Open Add LOA Page"); //
+  };
+
+  const handleOpenDeleteModal = (loaNumber: string) => {
+    setLOAToDelete(loaNumber);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setLOAToDelete(null);
+  };
+
+  const handleDeleteLOA = (loaNumber: string) => {
+    console.log(`Deleting LOA ${loaNumber}...`); //
+    setLOAToDelete(null);
   };
 
   const activeLOAs = [
@@ -249,18 +264,32 @@ export const SpecialAuthorizations = ({
               Active LOA(s)
             </div>
 
-            <LOAList loas={activeLOAs} isActive={true} />
+            <LOAList
+              loas={activeLOAs}
+              isActive={true}
+              onDelete={handleOpenDeleteModal}
+            />
           </div>
         ) : null}
-
-        {showExpiredLOAs ? (
-          <ExpiredLOAModal
-            showModal={showExpiredLOAs}
-            handleCancel={() => setShowExpiredLOAs(false)}
-            expiredLOAs={expiredLOAs}
-          />
-        ) : null}
       </div>
+
+      {showExpiredLOAs ? (
+        <ExpiredLOAModal
+          showModal={showExpiredLOAs}
+          handleCancel={() => setShowExpiredLOAs(false)}
+          expiredLOAs={expiredLOAs}
+        />
+      ) : null}
+
+      {LOAToDelete ? (
+        <DeleteConfirmationDialog
+          showDialog={Boolean(LOAToDelete)}
+          onCancel={handleCloseDeleteModal}
+          onDelete={() => handleDeleteLOA(LOAToDelete)}
+          itemToDelete="item"
+          confirmationMsg={"Are you sure you want to delete this?"}
+        />
+      ) : null}
 
       {companyId}
     </div>

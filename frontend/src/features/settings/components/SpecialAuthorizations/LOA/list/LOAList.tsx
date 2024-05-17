@@ -24,9 +24,11 @@ import {
 export const LOAList = ({
   loas,
   isActive,
+  onDelete,
 }: {
   loas: LOA[];
   isActive: boolean;
+  onDelete?: (loaNumber: string) => void;
 }) => {
   const handleEditLOA = (loaNumber: string) => {
     console.log(`Edit LOA ${loaNumber}`); //
@@ -153,7 +155,8 @@ export const LOAList = ({
                 root: "loa-list__delete-btn",
               }}
               onClick={() => {
-                console.log(`Delete LOA ${row.getValue("loaNumber")}`); //
+                if (!isActive) return;
+                onDelete?.(row.getValue("loaNumber"));
               }}
               disabled={false}
             >

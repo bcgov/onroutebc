@@ -201,10 +201,10 @@ export const UserManagement = () => {
     <div className="table-container">
       <MaterialReactTable table={table} />
       <DeleteConfirmationDialog
-        onClickDelete={onConfirmDelete}
-        isOpen={isDeleteDialogOpen}
-        onClickCancel={onCancelDelete}
-        caption="user"
+        onDelete={onConfirmDelete}
+        showDialog={isDeleteDialogOpen}
+        onCancel={onCancelDelete}
+        itemToDelete="user"
       />
     </div>
   );
