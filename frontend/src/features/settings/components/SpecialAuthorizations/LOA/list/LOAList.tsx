@@ -24,14 +24,16 @@ import {
 export const LOAList = ({
   loas,
   isActive,
+  onEdit,
   onDelete,
 }: {
   loas: LOA[];
   isActive: boolean;
+  onEdit: (loaNumber: string) => void;
   onDelete?: (loaNumber: string) => void;
 }) => {
   const handleEditLOA = (loaNumber: string) => {
-    console.log(`Edit LOA ${loaNumber}`); //
+    onEdit(loaNumber);
   };
 
   const handleDownloadLOA = (documentId: number | string) => {

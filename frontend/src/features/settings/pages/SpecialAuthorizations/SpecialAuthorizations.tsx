@@ -10,6 +10,7 @@ import { CustomActionLink } from "../../../../common/components/links/CustomActi
 import { LOAList } from "../../components/SpecialAuthorizations/LOA/list/LOAList";
 import { ExpiredLOAModal } from "../../components/SpecialAuthorizations/LOA/expired/ExpiredLOAModal";
 import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
+import { LOASteps } from "./LOA/LOASteps";
 
 export const SpecialAuthorizations = ({
   companyId,
@@ -21,6 +22,8 @@ export const SpecialAuthorizations = ({
   const [enableLCV, setEnableLCV] = useState<boolean>(false);
   const [showExpiredLOAs, setShowExpiredLOAs] = useState<boolean>(false);
   const [LOAToDelete, setLOAToDelete] = useState<RequiredOrNull<string>>(null);
+  const [showLOASteps, setShowLOASteps] = useState<boolean>(false);
+  const [LOAToEdit, setLOAToEdit] = useState<RequiredOrNull<string>>(null);
 
   useEffect(() => {
     if (!enableNoFeePermits) {
@@ -33,7 +36,18 @@ export const SpecialAuthorizations = ({
   };
 
   const handleAddLOA = () => {
-    console.log("Open Add LOA Page"); //
+    setShowLOASteps(true);
+    setLOAToEdit(null);
+  };
+
+  const handleEditLOA = (loaNumber: string) => {
+    setShowLOASteps(true);
+    setLOAToEdit(loaNumber);
+  };
+
+  const handleExitLOASteps = () => {
+    setShowLOASteps(false);
+    setLOAToEdit(null);
   };
 
   const handleOpenDeleteModal = (loaNumber: string) => {
@@ -163,7 +177,7 @@ export const SpecialAuthorizations = ({
     },
   ];
 
-  return (
+  return !showLOASteps ? (
     <div className="special-authorizations">
       <div className="special-authorizations__no-fee">
         <div className="special-authorizations__section-header">
@@ -268,6 +282,7 @@ export const SpecialAuthorizations = ({
               loas={activeLOAs}
               isActive={true}
               onDelete={handleOpenDeleteModal}
+              onEdit={handleEditLOA}
             />
           </div>
         ) : null}
@@ -278,6 +293,10 @@ export const SpecialAuthorizations = ({
           showModal={showExpiredLOAs}
           handleCancel={() => setShowExpiredLOAs(false)}
           expiredLOAs={expiredLOAs}
+          handleEdit={(loaNumber) => {
+            setShowExpiredLOAs(false);
+            handleEditLOA(loaNumber);
+          }}
         />
       ) : null}
 
@@ -293,5 +312,10 @@ export const SpecialAuthorizations = ({
 
       {companyId}
     </div>
+  ) : (
+    <LOASteps
+      loaNumber={LOAToEdit}
+      onExit={handleExitLOASteps}
+    />
   );
 };

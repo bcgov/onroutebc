@@ -9,10 +9,12 @@ import { LOA } from "../../../../types/SpecialAuthorization";
 export const ExpiredLOAModal = ({
   showModal,
   handleCancel,
+  handleEdit,
   expiredLOAs,
 }: {
   showModal: boolean;
   handleCancel: () => void;
+  handleEdit: (loaNumber: string) => void;
   expiredLOAs: LOA[];
 }) => {
   return (
@@ -38,6 +40,7 @@ export const ExpiredLOAModal = ({
         <LOAList
           isActive={false}
           loas={expiredLOAs}
+          onEdit={handleEdit}
         />
       </div>
 
