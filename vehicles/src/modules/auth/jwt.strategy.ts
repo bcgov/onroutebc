@@ -24,7 +24,7 @@ import {
 } from '../../common/enum/user-auth-group.enum';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(private authService: AuthService) {
     super({
       secretOrKeyProvider: passportJwtSecret({

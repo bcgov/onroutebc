@@ -7,6 +7,7 @@ import {
   Post,
   Query,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 
 import {
@@ -34,6 +35,7 @@ import { GetStaffUserQueryParamsDto } from './dto/request/queryParam/getStaffUse
 import { GetUserRolesQueryParamsDto } from './dto/request/queryParam/getUserRoles.query-params.dto';
 import { IDIR_USER_AUTH_GROUP_LIST } from '../../../common/enum/user-auth-group.enum';
 import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
+import { BasicAuthGuard } from 'src/common/guard/basic-auth.guard';
 
 @ApiTags('Company and User Management - User')
 @ApiBadRequestResponse({
@@ -223,5 +225,11 @@ export class UsersController {
       throw new DataNotFoundException();
     }
     return users?.at(0);
+  }
+
+  @UseGuards(BasicAuthGuard)
+  @Post('auth/login')
+  login() {
+    return 'Hi';
   }
 }

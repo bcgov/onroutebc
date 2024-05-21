@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../company-user-management/users/users.service';
 import { ReadUserDto } from '../company-user-management/users/dto/response/read-user.dto';
 import { PendingUsersService } from '../company-user-management/pending-users/pending-users.service';
@@ -6,6 +6,7 @@ import { Role } from '../../common/enum/roles.enum';
 import { IDP } from '../../common/enum/idp.enum';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import { ReadCompanyMetadataDto } from '../company-user-management/company/dto/response/read-company-metadata.dto';
+import { User } from '../company-user-management/users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -59,5 +60,15 @@ export class AuthService {
     userGuid: string,
   ): Promise<ReadCompanyMetadataDto[]> {
     return await this.usersService.getCompaniesForUser(userGuid);
+  }
+
+  @LogAsyncMethodExecution()
+  validateUser(userName: string, password: string): unknown {
+    if (
+      userName === process.env.BASIC_AUTH_ORBC_USER &&
+      password === process.env.BASIC_AUTH_ORBC_PASSWORD
+    )
+      return { userName: userName, password: password };
+    else throw new UnauthorizedException();
   }
 }
