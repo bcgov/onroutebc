@@ -1,0 +1,39 @@
+@import "../../../../themes/orbcStyles";
+
+.account-details {
+  &__table {
+   width: 529px; 
+   border-radius: 4px;
+   overflow: hidden;
+  }
+
+  &__header {
+    padding: 1rem;
+    background-color: $bc-black;
+  }
+
+  &__body {
+    padding: 0 1rem;
+    background-color: $banner-grey;
+  }
+
+  &__row {
+    padding: 1rem 0;
+    display: flex;
+    justify-content: space-between;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid $bc-border-grey;
+    }
+  }
+
+  &__text{
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: $bc-primary-blue;
+    
+    &--white {
+      color: $white;
+    }
+  }
+}

@@ -9,7 +9,9 @@ export const SUSPEND_API_ROUTES = {
 
 const CREDIT_ACCOUNT_API_BASE = `${VEHICLES_URL}/companies`;
 
-// placeholder route subject to change
+// placeholder routes subject to change
 export const CREDIT_ACCOUNT_API_ROUTES = {
-  CREATE: (companyId: number) => `${CREDIT_ACCOUNT_API_BASE}/${companyId}/credit-account/create`,
+  CREATE_CREDIT_ACCOUNT: (companyId: number) => `${CREDIT_ACCOUNT_API_BASE}/${companyId}/credit-account/create-credit-account`,
+  GET_CREDIT_ACCOUNT: (companyId: number) => `${CREDIT_ACCOUNT_API_BASE}/${companyId}/credit-account/get-credit-account`,
+  GET_COMPANY: (clientNumber: string) => `${CREDIT_ACCOUNT_API_BASE}/companies?page=1&take=1&clientNumber=${clientNumber}`
 };

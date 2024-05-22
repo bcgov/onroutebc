@@ -1,0 +1,35 @@
+@import "../../../../themes/orbcStyles";
+
+.add-user {
+
+  label.Mui-error {
+    color: $bc-black;
+  }
+
+  & &__form {
+    display: flex;
+    align-items: flex-start;
+    max-width: 507px;
+  }
+  
+  & &__input {
+    flex-grow: 1;
+  }
+
+  & &__button {
+    position: relative;
+    top: 47px;
+    min-width: 87px;
+    box-shadow: none;
+    border: 2px solid $bc-background-light-grey;
+    padding: .75rem 1rem;
+    line-height: normal;
+    margin-left: 1.5rem;
+
+    &:hover {
+      box-shadow: none;
+      background-color: $bc-background-light-grey;
+      border-color: $bc-text-box-border-grey;
+    }
+  }
+}
