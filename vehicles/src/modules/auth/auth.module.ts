@@ -8,6 +8,7 @@ import { UsersModule } from '../company-user-management/users/users.module';
 import { PendingUsersModule } from '../company-user-management/pending-users/pending-users.module';
 import { RolesGuard } from '../../common/guard/roles.guard';
 import { BasicStrategy } from './basic.strategy';
+import { JwtServiceAccountStrategy } from './jwt-sa.strategy';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { BasicStrategy } from './basic.strategy';
     AuthService,
     JwtStrategy,
     BasicStrategy,
+    JwtServiceAccountStrategy,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,

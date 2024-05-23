@@ -73,6 +73,8 @@ services:
       PAYBC_BASE_URL: ${PAYBC_BASE_URL}
       PAYBC_REDIRECT: ${PAYBC_REDIRECT}
       GL_CODE: ${GL_CODE}
+      BASIC_AUTH_ORBC_USER: ${BASIC_AUTH_ORBC_USER}
+      BASIC_AUTH_ORBC_PASSWORD: ${BASIC_AUTH_ORBC_PASSWORD}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/"]
       interval: 1m30s
@@ -206,6 +208,8 @@ services:
       CFS_SFTP_HOST: ${CFS_SFTP_HOST}
       CFS_SFTP_PORT: ${CFS_SFTP_PORT}
       CFS_REMOTE_PATH: ${CFS_REMOTE_PATH}
+      BASIC_AUTH_ORBC_USER: ${BASIC_AUTH_ORBC_USER}
+      BASIC_AUTH_ORBC_PASSWORD: ${BASIC_AUTH_ORBC_PASSWORD}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5050/"]
       interval: 1m30s
