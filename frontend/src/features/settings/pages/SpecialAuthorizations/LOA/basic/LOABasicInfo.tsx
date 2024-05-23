@@ -11,7 +11,7 @@ import { LOAFormData } from "../../../../types/LOAFormData";
 import { PERMIT_TYPES } from "../../../../../permits/types/PermitType";
 import { Checkbox } from "@mui/material";
 import { CustomFormComponent } from "../../../../../../common/components/form/CustomFormComponents";
-import { requiredMessage } from "../../../../../../common/helpers/validationMessages";
+import { expiryMustBeAfterStart, invalidUploadFormat, requiredMessage, requiredUpload, uploadSizeExceeded } from "../../../../../../common/helpers/validationMessages";
 import { Nullable } from "../../../../../../common/types/common";
 import { Dayjs } from "dayjs";
 import { UploadedFile } from "../../../../components/SpecialAuthorizations/LOA/upload/UploadedFile";
@@ -24,9 +24,55 @@ const expiryRules = {
   validate: {
     requiredIfLOAExpires: (value: Nullable<Dayjs>, formValues: FieldValues) => {
       return (!value && formValues.neverExpires)
+        || (Boolean(value) && !formValues.neverExpires)
         || requiredMessage();
     },
+    mustBeAfterStartDate: (value: Nullable<Dayjs>, formValues: FieldValues) => {
+      return !value
+        || (value.isAfter(formValues.startDate))
+        || expiryMustBeAfterStart();
+    },
   },
+};
+
+const uploadRules = {
+  validate: {
+    requiredLOAUpload: (
+      value: Nullable<{
+        fileName: string;
+        fileSize: number;
+        fileMimeType: string;
+      }> | File,
+    ) => {
+      return Boolean(value) || requiredUpload("LOA");
+    },
+    lessThanSizeLimit: (
+      value: Nullable<{
+        fileName: string;
+        fileSize: number;
+        fileMimeType: string;
+      }> | File,
+    ) => {
+      const fileSizeLimit = 10 * 1024 * 1024;
+      return !value
+        || (value instanceof File && value.size < fileSizeLimit)
+        || ("fileSize" in value && value.fileSize < fileSizeLimit)
+        || uploadSizeExceeded();
+    },
+    mustBePdf: (
+      value: Nullable<{
+        fileName: string;
+        fileSize: number;
+        fileMimeType: string;
+      }> | File,
+    ) => {
+      const fileFormat = "application/pdf";
+      return !value
+        || (value instanceof File && value.type === fileFormat)
+        || ("fileFormat" in value && value.fileFormat === fileFormat)
+        || invalidUploadFormat();
+    },
+  }
 };
 
 export const LOABasicInfo = ({
@@ -40,6 +86,7 @@ export const LOABasicInfo = ({
     watch,
     setValue,
     clearErrors,
+    trigger,
   } = useFormContext<LOAFormData>();
 
   const permitTypes = watch("permitTypes");
@@ -59,14 +106,6 @@ export const LOABasicInfo = ({
     0,
   );
 
-  /*
-  const fileMimeType = applyWhenNotNullable(
-    file => (file instanceof File) ? file.type : file?.fileMimeType,
-    uploadFile,
-    "",
-  );
-  */
-
   const selectPermitType = (
     permitType: keyof FieldPathValue<LOAFormData, "permitTypes">,
     selected: boolean,
@@ -75,6 +114,7 @@ export const LOABasicInfo = ({
     if (Object.values(permitTypes).filter(selected => selected).length > 0) {
       clearErrors("permitTypes");
     }
+    trigger("permitTypes");
   };
 
   const toggleLOANeverExpires = (shouldNeverExpire: boolean) => {
@@ -82,14 +122,17 @@ export const LOABasicInfo = ({
     if (shouldNeverExpire) {
       setValue("expiryDate", null);
     }
+    trigger("expiryDate");
   };
 
   const selectFile = (file: File) => {
     setValue("uploadFile", file);
+    trigger("uploadFile");
   };
 
   const deleteFile = () => {
     setValue("uploadFile", null);
+    clearErrors("uploadFile");
   };
 
   return (
@@ -103,7 +146,7 @@ export const LOABasicInfo = ({
 
         {errors.permitTypes ? (
           <div className="loa-basic-info__error">
-            Select at least one item
+            {errors.permitTypes.message}
           </div>
         ) : null}
 
@@ -234,25 +277,40 @@ export const LOABasicInfo = ({
         </div>
       </div>
 
-      <div 
-        className="loa-basic-info__section loa-basic-info__section--upload"
-      >
-        <div className="loa-basic-info__header">
-          Upload LOA
-        </div>
+      <Controller
+        name="uploadFile"
+        control={control}
+        rules={uploadRules}
+        render={({
+          fieldState: { error },
+        }) => (
+          <div 
+            className="loa-basic-info__section loa-basic-info__section--upload"
+          >
+            <div className="loa-basic-info__header">
+              Upload LOA
+            </div>
 
-        {fileExists ? (
-          <UploadedFile
-            fileName={fileName}
-            fileSize={fileSize}
-            onDelete={deleteFile}
-          />
-        ) : (
-          <UploadInput
-            onChooseFile={selectFile}
-          />
+            {fileExists ? (
+              <UploadedFile
+                fileName={fileName}
+                fileSize={fileSize}
+                onDelete={deleteFile}
+              />
+            ) : (
+              <UploadInput
+                onChooseFile={selectFile}
+              />
+            )}
+
+            {error?.message ? (
+              <div className="loa-basic-info__error">
+                {error.message}
+              </div>
+            ) : null}
+          </div>
         )}
-      </div>
+      />
 
       <div 
         className="loa-basic-info__section loa-basic-info__section--notes"

@@ -11,6 +11,7 @@ import { LOABasicInfo } from "./basic/LOABasicInfo";
 import { Nullable, Optional } from "../../../../../common/types/common";
 import { LOAFormData, defaultLOAFormData } from "../../../types/LOAFormData";
 import { FormProvider, useForm } from "react-hook-form";
+import { selectionRequired } from "../../../../../common/helpers/validationMessages";
 
 export const LOASteps = ({
   loaNumber,
@@ -31,7 +32,7 @@ export const LOASteps = ({
 
   const formMethods = useForm<LOAFormData>({
     defaultValues: defaultLOAFormData(),
-    reValidateMode: "onBlur",
+    reValidateMode: "onChange",
   });
 
   const { handleSubmit } = formMethods;
@@ -82,7 +83,7 @@ export const LOASteps = ({
           value?.TROW ||
           value?.STOL ||
           value?.STWS ||
-          "Select at least one item"
+          selectionRequired()
         );
       },
     },
