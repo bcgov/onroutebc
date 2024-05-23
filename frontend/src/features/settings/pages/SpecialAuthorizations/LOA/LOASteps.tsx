@@ -8,7 +8,9 @@ import { LOAStep, LOA_STEPS, labelForLOAStep } from "../../../types/LOAStep";
 import { LOADesignateVehicles } from "./vehicles/LOADesignateVehicles";
 import { LOAReview } from "./review/LOAReview";
 import { LOABasicInfo } from "./basic/LOABasicInfo";
-import { Nullable } from "../../../../../common/types/common";
+import { Nullable, Optional } from "../../../../../common/types/common";
+import { LOAFormData, defaultLOAFormData } from "../../../types/LOAFormData";
+import { FormProvider, useForm } from "react-hook-form";
 
 export const LOASteps = ({
   loaNumber,
@@ -26,6 +28,13 @@ export const LOASteps = ({
   useEffect(() => {
     console.log(loaNumber); //
   }, []);
+
+  const formMethods = useForm<LOAFormData>({
+    defaultValues: defaultLOAFormData(),
+    reValidateMode: "onBlur",
+  });
+
+  const { handleSubmit } = formMethods;
 
   const [activeStep, setActiveStep] = useState<LOAStep>(LOA_STEPS.BASIC);
 
@@ -54,6 +63,31 @@ export const LOASteps = ({
     onExit();
   };
 
+  const permitTypeRules =  {
+    validate: {
+      requiredPermitTypes: (
+        value: Optional<{
+          STOS: boolean;
+          TROS: boolean;
+          STOW: boolean;
+          TROW: boolean;
+          STOL: boolean;
+          STWS: boolean;
+        }>,
+      ) => {
+        return (
+          value?.STOS ||
+          value?.TROS ||
+          value?.STOW ||
+          value?.TROW ||
+          value?.STOL ||
+          value?.STWS ||
+          "Select at least one item"
+        );
+      },
+    },
+  };
+
   const stepComponent = useMemo(() => {
     switch (activeStep) {
       case LOA_STEPS.VEHICLES:
@@ -61,107 +95,109 @@ export const LOASteps = ({
       case LOA_STEPS.REVIEW:
         return <LOAReview />;
       default:
-        return <LOABasicInfo />;
+        return <LOABasicInfo permitTypeRules={permitTypeRules} />;
     }
   }, [activeStep]);
   
   return (
-    <div className="loa-steps">
-      <Stepper
-        className="stepper"
-        activeStep={activeStep}
-        alternativeLabel
-        connector={
-          <StepConnector
-            className="step__connector"
-            classes={{ line: "step__connector-line" }}
-          />
-        }
-      >
-        {steps.map((label, stepIndex) => (
-          <Step
-            className={`step ${stepIndex === 0 ? "step--first" : ""}`}
-            key={label}
-          >
-            <StepLabel
-              className="step__label"
-              classes={{
-                labelContainer: "step__label-container",
-                active: "step__label--active",
-                disabled: "step__label--disabled",
-                completed: "step__label--completed",
-              }}
-              StepIconProps={{
-                className: "step__icon",
-                classes: {
-                  text: "step__step-number",
-                  active: "step__icon--active",
-                  completed: "step__icon--completed",
-                }
-              }}
-            >{label}</StepLabel>
-          </Step>
-        ))}
-      </Stepper>
-
-      <div className="loa-steps__step-component">
-        {stepComponent}
-      </div>
-
-      <div className="steps-navigation">
-        <Button
-          key="exit-loa-button"
-          aria-label="Exit LOA Details"
-          variant="contained"
-          color="tertiary"
-          className="steps-navigation__btn steps-navigation__btn--cancel"
-          onClick={onExit}
-          data-testid="exit-loa-button"
+    <FormProvider {...formMethods}>
+      <div className="loa-steps">
+        <Stepper
+          className="stepper"
+          activeStep={activeStep}
+          alternativeLabel
+          connector={
+            <StepConnector
+              className="step__connector"
+              classes={{ line: "step__connector-line" }}
+            />
+          }
         >
-          Cancel
-        </Button>
+          {steps.map((label, stepIndex) => (
+            <Step
+              className={`step ${stepIndex === 0 ? "step--first" : ""}`}
+              key={label}
+            >
+              <StepLabel
+                className="step__label"
+                classes={{
+                  labelContainer: "step__label-container",
+                  active: "step__label--active",
+                  disabled: "step__label--disabled",
+                  completed: "step__label--completed",
+                }}
+                StepIconProps={{
+                  className: "step__icon",
+                  classes: {
+                    text: "step__step-number",
+                    active: "step__icon--active",
+                    completed: "step__icon--completed",
+                  }
+                }}
+              >{label}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
 
-        {showPrevBtn ? (
-          <Button
-            key="loa-prev-button"
-            data-testid="loa-prev-button"
-            onClick={handlePrev}
-            variant="contained"
-            color="secondary"
-            startIcon={<FontAwesomeIcon icon={faArrowLeft} />}
-            className="steps-navigation__btn steps-navigation__btn--prev"
-          >
-            <strong>Previous</strong>
-          </Button>
-        ) : null}
+        <div className="loa-steps__step-component">
+          {stepComponent}
+        </div>
 
-        {showNextBtn ? (
+        <div className="steps-navigation">
           <Button
-            key="loa-next-button"
-            data-testid="loa-next-button"
-            className="steps-navigation__btn steps-navigation__btn--next"
-            onClick={handleNext}
+            key="exit-loa-button"
+            aria-label="Exit LOA Details"
             variant="contained"
-            color="primary"
-            endIcon={<FontAwesomeIcon icon={faArrowRight} />}
+            color="tertiary"
+            className="steps-navigation__btn steps-navigation__btn--cancel"
+            onClick={onExit}
+            data-testid="exit-loa-button"
           >
-            Next
+            Cancel
           </Button>
-        ) : null}
 
-        {showFinishBtn ? (
-          <Button
-            key="loa-finish-button"
-            data-testid="loa-finish-button"
-            onClick={handleFinish}
-            variant="contained"
-            color="primary"
-            className="steps-navigation__btn steps-navigation__btn--finish"
-          >
-            Finish
-          </Button>
-        ) : null}
+          {showPrevBtn ? (
+            <Button
+              key="loa-prev-button"
+              data-testid="loa-prev-button"
+              onClick={handlePrev}
+              variant="contained"
+              color="secondary"
+              startIcon={<FontAwesomeIcon icon={faArrowLeft} />}
+              className="steps-navigation__btn steps-navigation__btn--prev"
+            >
+              <strong>Previous</strong>
+            </Button>
+          ) : null}
+
+          {showNextBtn ? (
+            <Button
+              key="loa-next-button"
+              data-testid="loa-next-button"
+              className="steps-navigation__btn steps-navigation__btn--next"
+              onClick={handleSubmit(handleNext)}
+              variant="contained"
+              color="primary"
+              endIcon={<FontAwesomeIcon icon={faArrowRight} />}
+            >
+              Next
+            </Button>
+          ) : null}
+
+          {showFinishBtn ? (
+            <Button
+              key="loa-finish-button"
+              data-testid="loa-finish-button"
+              onClick={handleFinish}
+              variant="contained"
+              color="primary"
+              className="steps-navigation__btn steps-navigation__btn--finish"
+            >
+              Finish
+            </Button>
+          ) : null}
+        </div>
       </div>
-    </div>
+    </FormProvider>
   );
 };
