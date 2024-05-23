@@ -36,6 +36,7 @@ import { Role } from 'src/common/enum/roles.enum';
 import { IssuePermitDto } from './dto/request/issue-permit.dto';
 import {
   ClientUserAuthGroup,
+  IDIRUserAuthGroup,
   IDIR_USER_AUTH_GROUP_LIST,
 } from 'src/common/enum/user-auth-group.enum';
 import { DeleteApplicationDto } from './dto/request/delete-application.dto';
@@ -128,6 +129,17 @@ export class CompanyApplicationController {
     @Body() createApplication: CreateApplicationDto,
   ): Promise<ReadApplicationDto> {
     const currentUser = request.user as IUserJWT;
+    if (
+      currentUser.orbcUserAuthGroup !== IDIRUserAuthGroup.FINANCE &&
+      currentUser.orbcUserAuthGroup !== IDIRUserAuthGroup.PPC_SUPERVISOR &&
+      currentUser.orbcUserAuthGroup !== IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR
+    ) {
+      const isSuspended =
+        await this.applicationService.isCompanySuspended(companyId);
+      if (isSuspended) {
+        throw new ForbiddenException('Suspended Company');
+      }
+    }
     return await this.applicationService.create(
       createApplication,
       currentUser,
@@ -217,6 +229,17 @@ export class CompanyApplicationController {
     @Body() updateApplicationDto: UpdateApplicationDto,
   ): Promise<ReadApplicationDto> {
     const currentUser = request.user as IUserJWT;
+    if (
+      currentUser.orbcUserAuthGroup !== IDIRUserAuthGroup.FINANCE &&
+      currentUser.orbcUserAuthGroup !== IDIRUserAuthGroup.PPC_SUPERVISOR &&
+      currentUser.orbcUserAuthGroup !== IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR
+    ) {
+      const isSuspended =
+        await this.applicationService.isCompanySuspended(companyId);
+      if (isSuspended) {
+        throw new ForbiddenException('Suspended Company');
+      }
+    }
     const application = await this.applicationService.update(
       applicationId,
       updateApplicationDto,
@@ -308,6 +331,17 @@ export class CompanyApplicationController {
     @Body() deleteApplicationDto: DeleteApplicationDto,
   ): Promise<DeleteDto> {
     const currentUser = request.user as IUserJWT;
+    if (
+      currentUser.orbcUserAuthGroup !== IDIRUserAuthGroup.FINANCE &&
+      currentUser.orbcUserAuthGroup !== IDIRUserAuthGroup.PPC_SUPERVISOR &&
+      currentUser.orbcUserAuthGroup !== IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR
+    ) {
+      const isSuspended =
+        await this.applicationService.isCompanySuspended(companyId);
+      if (isSuspended) {
+        throw new ForbiddenException('Suspended Company.');
+      }
+    }
     const deleteResult: DeleteDto =
       await this.applicationService.deleteApplicationInProgress(
         deleteApplicationDto.applications,

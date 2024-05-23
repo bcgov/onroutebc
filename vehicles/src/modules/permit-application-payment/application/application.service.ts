@@ -23,7 +23,6 @@ import { PermitApprovalSource as PermitApprovalSourceEnum } from '../../../commo
 import { paginate, sortQuery } from '../../../common/helper/database.helper';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { DopsService } from '../../common/dops.service';
 import { Directory } from '../../../common/enum/directory.enum';
 import { PermitIssuedBy } from '../../../common/enum/permit-issued-by.enum';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
@@ -49,7 +48,7 @@ import {
   generateApplicationNumber,
   generatePermitNumber,
 } from '../../../common/helper/permit-application.helper';
-import { PaymentService } from '../payment/payment.service';
+import { Company } from '../../company-user-management/company/entities/company.entity';
 
 @Injectable()
 export class ApplicationService {
@@ -59,8 +58,6 @@ export class ApplicationService {
     @InjectRepository(Permit)
     private permitRepository: Repository<Permit>,
     private dataSource: DataSource,
-    private readonly dopsService: DopsService,
-    private readonly paymentService: PaymentService,
     @InjectRepository(PermitApplicationOrigin)
     private permitApplicationOriginRepository: Repository<PermitApplicationOrigin>,
     @InjectRepository(PermitApprovalSource)
@@ -768,5 +765,24 @@ export class ApplicationService {
 
     // Return the response DTO
     return deleteDto;
+  }
+
+  /** Check if company is suspended by company ID
+   * @param {number} companyId The ID of the company.
+   * @returns {Promise<boolean>} An Promise of boolean stating if a company is
+   * suspended or active.
+   **/
+  @LogAsyncMethodExecution()
+  async isCompanySuspended(companyId?: number): Promise<boolean> {
+    const company = await this.dataSource
+      .createQueryBuilder()
+      .select(['company'])
+      .from(Company, 'company')
+      .where('company.companyId = :companyId', {
+        companyId: companyId,
+      })
+      .getOne();
+
+    return company.isSuspended;
   }
 }
