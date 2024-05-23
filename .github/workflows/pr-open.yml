@@ -46,17 +46,11 @@ jobs:
     name: Set Variables
     outputs:
       pr: ${{ steps.pr.outputs.pr }}
-      build_sha: 
     runs-on: ubuntu-22.04
     steps:
       - name: PR Number
         id: pr
         uses: bcgov-nr/action-get-pr@v0.0.1
-      - name: Build Sha
-        id: build_sha
-        shell: bash
-        run: |
-         docker manifest inspect ghcr.io/bcgov/onroutebc/frontend:latest | jq -r .manifests[0].digest 
 
   # https://github.com/bcgov-nr/action-builder-ghcr
   builds:
@@ -78,10 +72,25 @@ jobs:
           tag_fallback: latest
           triggers: '${{ matrix.package }}/' #omit to build everything
 
+  build_sha:
+    name: Get Build Sha
+    runs-on: ubuntu-22.04
+    permissions:
+      packages: write
+    strategy:
+      matrix:
+        package: [dops, vehicles, frontend, scheduler]
+    timeout-minutes: 10
+    steps:
+      - name: Build Sha
+        id: build_sha
+        shell: bash
+        run: echo ${{ matrix.package }}="docker manifest inspect ghcr.io/bcgov/onroutebc/${{ matrix.package }}:latest | jq -r .manifests[0].digest" >> $GITHUB_OUTPUT
+
   # https://github.com/bcgov-nr/action-deployer-openshift
   deploys:
     name: Deploys
-    needs: [builds, vars]
+    needs: [builds, vars, build_sha]
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
@@ -97,7 +106,7 @@ jobs:
         --set-string global.vault.role='nonprod' \
         --set-string global.vault.zone='dev' \
         --set-string global.pr_num='${{ needs.vars.outputs.pr }}' \
-        --set-string frontend.configmap.data.BUILD_SHA='${{ needs.vars.outputs.build_sha }}' \
+        --set-string frontend.configmap.data.BUILD_SHA='${{ needs.build_sha.outputs.frontend }}' \
         --set-json dops.containers[0].resources='{"limits": {"cpu": "1000m", "memory": "2000Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
         --set-json frontend.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
         --set-json scheduler.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
