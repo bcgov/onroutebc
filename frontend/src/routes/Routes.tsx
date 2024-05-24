@@ -199,6 +199,7 @@ export const AppRoutes = () => {
             requiredRole={ROLES.READ_ORG}
             allowedIDIRAuthGroups={[
               IDIR_USER_AUTH_GROUP.PPC_CLERK,
+              IDIR_USER_AUTH_GROUP.CTPO,
               IDIR_USER_AUTH_GROUP.FINANCE,
               IDIR_USER_AUTH_GROUP.HQ_ADMINISTRATOR,
             ]}
@@ -217,6 +218,7 @@ export const AppRoutes = () => {
             requiredRole={ROLES.WRITE_USER}
             allowedIDIRAuthGroups={[
               IDIR_USER_AUTH_GROUP.PPC_CLERK,
+              IDIR_USER_AUTH_GROUP.CTPO,
               IDIR_USER_AUTH_GROUP.FINANCE,
               IDIR_USER_AUTH_GROUP.HQ_ADMINISTRATOR,
             ]}
