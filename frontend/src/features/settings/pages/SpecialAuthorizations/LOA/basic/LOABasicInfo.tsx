@@ -1,5 +1,6 @@
+import { Dayjs } from "dayjs";
+import { Checkbox } from "@mui/material";
 import {
-  RegisterOptions,
   useFormContext,
   FieldPathValue,
   Controller,
@@ -9,16 +10,46 @@ import {
 import "./LOABasicInfo.scss";
 import { LOAFormData } from "../../../../types/LOAFormData";
 import { PERMIT_TYPES } from "../../../../../permits/types/PermitType";
-import { Checkbox } from "@mui/material";
 import { CustomFormComponent } from "../../../../../../common/components/form/CustomFormComponents";
-import { expiryMustBeAfterStart, invalidUploadFormat, requiredMessage, requiredUpload, uploadSizeExceeded } from "../../../../../../common/helpers/validationMessages";
-import { Nullable } from "../../../../../../common/types/common";
-import { Dayjs } from "dayjs";
+import { Nullable, Optional } from "../../../../../../common/types/common";
 import { UploadedFile } from "../../../../components/SpecialAuthorizations/LOA/upload/UploadedFile";
 import { UploadInput } from "../../../../components/SpecialAuthorizations/LOA/upload/UploadInput";
 import { applyWhenNotNullable } from "../../../../../../common/helpers/util";
+import {
+  expiryMustBeAfterStart,
+  invalidUploadFormat,
+  requiredMessage,
+  requiredUpload,
+  selectionRequired,
+  uploadSizeExceeded,
+} from "../../../../../../common/helpers/validationMessages";
 
 const FEATURE = "loa";
+
+const permitTypeRules =  {
+  validate: {
+    requiredPermitTypes: (
+      value: Optional<{
+        STOS: boolean;
+        TROS: boolean;
+        STOW: boolean;
+        TROW: boolean;
+        STOL: boolean;
+        STWS: boolean;
+      }>,
+    ) => {
+      return (
+        value?.STOS ||
+        value?.TROS ||
+        value?.STOW ||
+        value?.TROW ||
+        value?.STOL ||
+        value?.STWS ||
+        selectionRequired()
+      );
+    },
+  },
+};
 
 const expiryRules = {
   validate: {
@@ -75,11 +106,7 @@ const uploadRules = {
   }
 };
 
-export const LOABasicInfo = ({
-  permitTypeRules,
-}: {
-  permitTypeRules: RegisterOptions;
-}) => {
+export const LOABasicInfo = () => {
   const {
     control,
     formState: { errors },

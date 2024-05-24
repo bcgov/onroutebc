@@ -2,16 +2,15 @@ import { useEffect, useMemo, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { Button, Step, StepConnector, StepLabel, Stepper } from "@mui/material";
+import { FormProvider, useForm } from "react-hook-form";
 
 import "./LOASteps.scss";
 import { LOAStep, LOA_STEPS, labelForLOAStep } from "../../../types/LOAStep";
 import { LOADesignateVehicles } from "./vehicles/LOADesignateVehicles";
 import { LOAReview } from "./review/LOAReview";
 import { LOABasicInfo } from "./basic/LOABasicInfo";
-import { Nullable, Optional } from "../../../../../common/types/common";
+import { Nullable } from "../../../../../common/types/common";
 import { LOAFormData, defaultLOAFormData } from "../../../types/LOAFormData";
-import { FormProvider, useForm } from "react-hook-form";
-import { selectionRequired } from "../../../../../common/helpers/validationMessages";
 
 export const LOASteps = ({
   loaNumber,
@@ -64,31 +63,6 @@ export const LOASteps = ({
     onExit();
   };
 
-  const permitTypeRules =  {
-    validate: {
-      requiredPermitTypes: (
-        value: Optional<{
-          STOS: boolean;
-          TROS: boolean;
-          STOW: boolean;
-          TROW: boolean;
-          STOL: boolean;
-          STWS: boolean;
-        }>,
-      ) => {
-        return (
-          value?.STOS ||
-          value?.TROS ||
-          value?.STOW ||
-          value?.TROW ||
-          value?.STOL ||
-          value?.STWS ||
-          selectionRequired()
-        );
-      },
-    },
-  };
-
   const stepComponent = useMemo(() => {
     switch (activeStep) {
       case LOA_STEPS.VEHICLES:
@@ -96,7 +70,7 @@ export const LOASteps = ({
       case LOA_STEPS.REVIEW:
         return <LOAReview />;
       default:
-        return <LOABasicInfo permitTypeRules={permitTypeRules} />;
+        return <LOABasicInfo />;
     }
   }, [activeStep]);
   
