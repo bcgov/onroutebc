@@ -1,9 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/require-await */
-import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, NotBrackets, Repository, SelectQueryBuilder } from 'typeorm';
+import { NotBrackets, Repository, SelectQueryBuilder } from 'typeorm';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import { ApplicationStatus } from '../../common/enum/application-status.enum';
 import { Directory } from '../../common/enum/directory.enum';
@@ -300,9 +297,6 @@ export class ShoppingCartService {
     statusToUpdateTo: ApplicationStatus.IN_CART | ApplicationStatus.IN_PROGRESS,
     currentUser: IUserJWT,
   ): Promise<ResultDto> {
-    console.log('--------------------------------');
-    console.log('Inside query builder function');
-    console.log('--------------------------------');
     const success: string[] = [];
     const failure: string[] = [];
     const currentApplicationStatusToCheckAgainst =
@@ -336,9 +330,6 @@ export class ShoppingCartService {
       raw: unknown;
       affected: number;
     };
-    console.log('--------------------------------');
-    console.log('affected::', affected);
-    console.log('--------------------------------');
     if (affected === applicationIds.length) {
       success.concat(applicationIds);
     } else {
