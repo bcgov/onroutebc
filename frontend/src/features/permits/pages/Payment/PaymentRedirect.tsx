@@ -80,18 +80,19 @@ export const PaymentRedirect = () => {
         if (!addToCartMutation.isPending && addToCartMutation.isIdle) {
           addToCartMutation
             .mutateAsync({
-              companyId: (companyId as number).toString(),
+              companyId: `${companyId}`,
               applicationIds,
             })
             .then(({ failure }) => {
-              // Cannot add back to cart
+              // Cannot add applications back to cart
               if (failure.length > 0) {
                 navigate(ERROR_ROUTES.UNEXPECTED);
+              } else {
+                // Payment failed, redirect back to pay now page
+                navigate(SHOPPING_CART_ROUTES.DETAILS(true), {
+                  replace: true,
+                });
               }
-              // Payment failed, redirect back to pay now page
-              navigate(SHOPPING_CART_ROUTES.DETAILS(true), {
-                replace: true,
-              });
             })
             .catch(() => {
               navigate(ERROR_ROUTES.UNEXPECTED);
