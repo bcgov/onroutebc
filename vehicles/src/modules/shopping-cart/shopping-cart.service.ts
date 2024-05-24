@@ -1,6 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/require-await */
+import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { NotBrackets, Repository, SelectQueryBuilder } from 'typeorm';
+import { In, NotBrackets, Repository, SelectQueryBuilder } from 'typeorm';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import { ApplicationStatus } from '../../common/enum/application-status.enum';
 import { Directory } from '../../common/enum/directory.enum';
@@ -47,19 +50,21 @@ export class ShoppingCartService {
       orbcUserAuthGroup === ClientUserAuthGroup.COMPANY_ADMINISTRATOR ||
       doesUserHaveAuthGroup(orbcUserAuthGroup, IDIR_USER_AUTH_GROUP_LIST)
     ) {
-      return await this.updateApplicationStatus(
+      return await this.updateApplicationStatusWithQB(
         { applicationIds, companyId },
         ApplicationStatus.IN_CART,
+        currentUser,
       );
     } else if (orbcUserAuthGroup === ClientUserAuthGroup.PERMIT_APPLICANT) {
       const { userGUID } = currentUser;
-      return await this.updateApplicationStatus(
+      return await this.updateApplicationStatusWithQB(
         {
           applicationIds,
           companyId,
           userGUID,
         },
         ApplicationStatus.IN_CART,
+        currentUser,
       );
     } else {
       return { failure: applicationIds, success: [] };
@@ -200,28 +205,31 @@ export class ShoppingCartService {
   ): Promise<ResultDto> {
     const { orbcUserAuthGroup } = currentUser;
     if (orbcUserAuthGroup === ClientUserAuthGroup.COMPANY_ADMINISTRATOR) {
-      return await this.updateApplicationStatus(
+      return await this.updateApplicationStatusWithQB(
         { applicationIds, companyId },
         ApplicationStatus.IN_PROGRESS,
+        currentUser,
       );
     } else if (orbcUserAuthGroup === ClientUserAuthGroup.PERMIT_APPLICANT) {
       const { userGUID } = currentUser;
-      return await this.updateApplicationStatus(
+      return await this.updateApplicationStatusWithQB(
         {
           applicationIds,
           companyId,
           userGUID,
         },
         ApplicationStatus.IN_PROGRESS,
+        currentUser,
       );
     }
     if (doesUserHaveAuthGroup(orbcUserAuthGroup, IDIR_USER_AUTH_GROUP_LIST)) {
-      return await this.updateApplicationStatus(
+      return await this.updateApplicationStatusWithQB(
         {
           applicationIds,
           companyId,
         },
         ApplicationStatus.IN_PROGRESS,
+        currentUser,
       );
     } else {
       return { failure: applicationIds, success: [] };
@@ -278,6 +286,109 @@ export class ShoppingCartService {
       }
     }
     return { success, failure };
+  }
+
+  private async updateApplicationStatusWithQB(
+    {
+      applicationIds,
+      companyId,
+      userGUID,
+    }: (UpdateShoppingCartDto | AddToShoppingCartDto) & {
+      companyId: number;
+      userGUID?: string;
+    },
+    statusToUpdateTo: ApplicationStatus.IN_CART | ApplicationStatus.IN_PROGRESS,
+    currentUser: IUserJWT,
+  ): Promise<ResultDto> {
+    console.log('--------------------------------');
+    console.log('Inside query builder function');
+    console.log('--------------------------------');
+    const success: string[] = [];
+    const failure: string[] = [];
+    const currentApplicationStatusToCheckAgainst =
+      this.getCurrentApplicationStatusWithQB(statusToUpdateTo);
+    const applicationQB = this.applicationRepository
+      .createQueryBuilder('application')
+      .update()
+      .set({
+        permitStatus: statusToUpdateTo,
+        updatedUser: currentUser.userName,
+        updatedDateTime: new Date(),
+        updatedUserDirectory: currentUser.orbcUserDirectory,
+        updatedUserGuid: currentUser.userGUID,
+      })
+      .where('permitId IN (:...applicationIds)', {
+        applicationIds,
+      })
+      .andWhere('company.companyId = :companyId', {
+        companyId,
+      })
+      .andWhere('permitStatus IN (:...status)', {
+        status: currentApplicationStatusToCheckAgainst,
+      });
+    if (userGUID) {
+      applicationQB.andWhere('applicationOwner.userGUID = :userGUID', {
+        userGUID,
+      });
+    }
+    const { affected } = (await applicationQB.execute()) as {
+      generatedMaps: unknown[];
+      raw: unknown;
+      affected: number;
+    };
+    console.log('--------------------------------');
+    console.log('affected::', affected);
+    console.log('--------------------------------');
+    if (affected === applicationIds.length) {
+      success.concat(applicationIds);
+    } else {
+      const selectResult = await this.applicationRepository
+        .createQueryBuilder('application')
+        .where('permitId IN (:...applicationIds)', {
+          applicationIds,
+        })
+        .andWhere('company.companyId = :companyId', {
+          companyId,
+        })
+        .getMany();
+
+      failure.concat(
+        selectResult
+          .filter(({ permitStatus }) => permitStatus !== statusToUpdateTo)
+          .map(({ permitId: applicationId }) => applicationId),
+      );
+    }
+
+    // const queryBuilder = this.applicationRepository
+    //   .createQueryBuilder('application')
+    //   .leftJoin('application.company', 'company')
+    //   .leftJoin('application.applicationOwner', 'applicationOwner')
+    //   .leftJoin('applicationOwner.userContact', 'userContact')
+    //   .where('application.permitId in :applicationIds', {
+    //     applicationIds: In(applicationIds),
+    //   })
+    //   .andWhere('company.companyId = :companyId', { companyId })
+    //   .andWhere('company.companyId = :companyId', { companyId })
+    //   .andWhere('application.permitStatus in :permitStatuses', {
+    //     permitStatuses: In([currentApplicationStatusToCheckAgainst]),
+    //   });
+    // if (userGUID) {
+    //   queryBuilder.andWhere('applicationOwner.userGUID = :userGUID', {
+    //     userGUID,
+    //   });
+    // }
+    // queryBuilder.update()
+    return { success, failure };
+  }
+
+  private getCurrentApplicationStatusWithQB(
+    statusToUpdateTo: ApplicationStatus.IN_CART | ApplicationStatus.IN_PROGRESS,
+  ): ApplicationStatus[] {
+    if (statusToUpdateTo === ApplicationStatus.IN_PROGRESS) {
+      return [ApplicationStatus.IN_CART];
+    } else {
+      return [ApplicationStatus.IN_PROGRESS, ApplicationStatus.WAITING_PAYMENT];
+    }
   }
 
   /**
