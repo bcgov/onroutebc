@@ -154,7 +154,11 @@ export const AppRoutes = () => {
         element={
           <BCeIDAuthWall
             requiredRole={ROLES.READ_VEHICLE}
-            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+            allowedIDIRAuthGroups={[
+              IDIR_USER_AUTH_GROUP.PPC_CLERK,
+              IDIR_USER_AUTH_GROUP.FINANCE,
+              IDIR_USER_AUTH_GROUP.HQ_ADMINISTRATOR,
+            ]}
           />
         }
       >
@@ -193,7 +197,11 @@ export const AppRoutes = () => {
         element={
           <BCeIDAuthWall
             requiredRole={ROLES.READ_ORG}
-            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+            allowedIDIRAuthGroups={[
+              IDIR_USER_AUTH_GROUP.PPC_CLERK,
+              IDIR_USER_AUTH_GROUP.FINANCE,
+              IDIR_USER_AUTH_GROUP.HQ_ADMINISTRATOR,
+            ]}
           />
         }
       >
@@ -207,7 +215,11 @@ export const AppRoutes = () => {
         element={
           <BCeIDAuthWall
             requiredRole={ROLES.WRITE_USER}
-            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+            allowedIDIRAuthGroups={[
+              IDIR_USER_AUTH_GROUP.PPC_CLERK,
+              IDIR_USER_AUTH_GROUP.FINANCE,
+              IDIR_USER_AUTH_GROUP.HQ_ADMINISTRATOR,
+            ]}
           />
         }
       >
@@ -225,7 +237,12 @@ export const AppRoutes = () => {
         element={
           <BCeIDAuthWall
             requiredRole={ROLES.WRITE_PERMIT}
-            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+            allowedIDIRAuthGroups={[
+              IDIR_USER_AUTH_GROUP.PPC_CLERK,
+              IDIR_USER_AUTH_GROUP.CTPO,
+              IDIR_USER_AUTH_GROUP.FINANCE,
+              IDIR_USER_AUTH_GROUP.HQ_ADMINISTRATOR,
+            ]}
           />
         }
       >
@@ -243,15 +260,18 @@ export const AppRoutes = () => {
         element={
           <BCeIDAuthWall
             requiredRole={ROLES.WRITE_PERMIT}
-            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+            allowedIDIRAuthGroups={[
+              IDIR_USER_AUTH_GROUP.PPC_CLERK,
+              IDIR_USER_AUTH_GROUP.CTPO,
+              IDIR_USER_AUTH_GROUP.FINANCE,
+              IDIR_USER_AUTH_GROUP.HQ_ADMINISTRATOR,
+            ]}
           />
         }
       >
         <Route
           path={`${routes.SHOPPING_CART_ROUTES.DETAILS()}`}
-          element={
-            <ShoppingCartDashboard />
-          }
+          element={<ShoppingCartDashboard />}
         />
       </Route>
 
@@ -259,7 +279,12 @@ export const AppRoutes = () => {
         element={
           <BCeIDAuthWall
             requiredRole={ROLES.WRITE_PERMIT}
-            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+            allowedIDIRAuthGroups={[
+              IDIR_USER_AUTH_GROUP.PPC_CLERK,
+              IDIR_USER_AUTH_GROUP.CTPO,
+              IDIR_USER_AUTH_GROUP.FINANCE,
+              IDIR_USER_AUTH_GROUP.HQ_ADMINISTRATOR,
+            ]}
           />
         }
       >
@@ -290,7 +315,12 @@ export const AppRoutes = () => {
         element={
           <BCeIDAuthWall
             requiredRole={ROLES.WRITE_PERMIT}
-            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+            allowedIDIRAuthGroups={[
+              IDIR_USER_AUTH_GROUP.PPC_CLERK,
+              IDIR_USER_AUTH_GROUP.CTPO,
+              IDIR_USER_AUTH_GROUP.FINANCE,
+              IDIR_USER_AUTH_GROUP.HQ_ADMINISTRATOR,
+            ]}
           />
         }
       >
