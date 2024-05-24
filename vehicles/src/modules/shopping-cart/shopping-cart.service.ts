@@ -326,8 +326,14 @@ export class ShoppingCartService {
     statusToUpdateTo: ApplicationStatus.IN_CART | ApplicationStatus.IN_PROGRESS,
   ): ApplicationStatus[] {
     if (statusToUpdateTo === ApplicationStatus.IN_PROGRESS) {
+      // If the status to update to is IN_PROGRESS, the application must be in cart.
+      // No other status is allowed to be back in progress.
       return [ApplicationStatus.IN_CART];
     } else {
+      // If the status to update to is IN_CART, application can either be 
+      // 1) in progress (e.g., a net new application)
+      // 2) waiting for payment 
+      //    - a user tried to pay for it but clicked cancel on payment screen
       return [ApplicationStatus.IN_PROGRESS, ApplicationStatus.WAITING_PAYMENT];
     }
   }
