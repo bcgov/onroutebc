@@ -47,14 +47,14 @@ export class ShoppingCartService {
       orbcUserAuthGroup === ClientUserAuthGroup.COMPANY_ADMINISTRATOR ||
       doesUserHaveAuthGroup(orbcUserAuthGroup, IDIR_USER_AUTH_GROUP_LIST)
     ) {
-      return await this.updateApplicationStatusWithQB(
+      return await this.updateApplicationStatus(
         { applicationIds, companyId },
         ApplicationStatus.IN_CART,
         currentUser,
       );
     } else if (orbcUserAuthGroup === ClientUserAuthGroup.PERMIT_APPLICANT) {
       const { userGUID } = currentUser;
-      return await this.updateApplicationStatusWithQB(
+      return await this.updateApplicationStatus(
         {
           applicationIds,
           companyId,
@@ -202,14 +202,14 @@ export class ShoppingCartService {
   ): Promise<ResultDto> {
     const { orbcUserAuthGroup } = currentUser;
     if (orbcUserAuthGroup === ClientUserAuthGroup.COMPANY_ADMINISTRATOR) {
-      return await this.updateApplicationStatusWithQB(
+      return await this.updateApplicationStatus(
         { applicationIds, companyId },
         ApplicationStatus.IN_PROGRESS,
         currentUser,
       );
     } else if (orbcUserAuthGroup === ClientUserAuthGroup.PERMIT_APPLICANT) {
       const { userGUID } = currentUser;
-      return await this.updateApplicationStatusWithQB(
+      return await this.updateApplicationStatus(
         {
           applicationIds,
           companyId,
@@ -220,7 +220,7 @@ export class ShoppingCartService {
       );
     }
     if (doesUserHaveAuthGroup(orbcUserAuthGroup, IDIR_USER_AUTH_GROUP_LIST)) {
-      return await this.updateApplicationStatusWithQB(
+      return await this.updateApplicationStatus(
         {
           applicationIds,
           companyId,
@@ -242,50 +242,10 @@ export class ShoppingCartService {
    *  The `companyId` is used to ensure applications belong to the correct company.
    *  The `userGUID` is optional and used for filtering applications by the user, if applicable.
    * @param statusToUpdateTo - The target status to update the applications to. Can be either `IN_CART` to add applications to the shopping cart or `IN_PROGRESS` to move them back to the in-progress state.
+   * @param currentUser - The current user from access token.
    * @returns A promise that resolves with a `ResultDto` object, which contains arrays of `success` and `failure`. `success` includes IDs of applications successfully updated to the target status, while `failure` includes IDs of applications that failed to update.
    */
   private async updateApplicationStatus(
-    {
-      applicationIds,
-      companyId,
-      userGUID,
-    }: (UpdateShoppingCartDto | AddToShoppingCartDto) & {
-      companyId: number;
-      userGUID?: string;
-    },
-    statusToUpdateTo: ApplicationStatus.IN_CART | ApplicationStatus.IN_PROGRESS,
-  ): Promise<ResultDto> {
-    const success: string[] = [];
-    const failure: string[] = [];
-    const currentApplicationStatusToCheckAgainst =
-      this.getCurrentApplicationStatus(statusToUpdateTo);
-    for (const applicationId of applicationIds) {
-      try {
-        const { affected } = await this.applicationRepository.update(
-          {
-            permitId: applicationId,
-            company: { companyId },
-            permitStatus: currentApplicationStatusToCheckAgainst,
-            ...(userGUID && { applicationOwner: { userGUID } }),
-          },
-          {
-            permitStatus: statusToUpdateTo,
-          },
-        );
-        if (affected === 1) {
-          success.push(applicationId);
-        } else {
-          failure.push(applicationId);
-        }
-      } catch (error) {
-        this.logger.error(error);
-        failure.push(applicationId);
-      }
-    }
-    return { success, failure };
-  }
-
-  private async updateApplicationStatusWithQB(
     {
       applicationIds,
       companyId,
@@ -300,7 +260,7 @@ export class ShoppingCartService {
     const success: string[] = [];
     const failure: string[] = [];
     const currentApplicationStatusToCheckAgainst =
-      this.getCurrentApplicationStatusWithQB(statusToUpdateTo);
+      this.getCurrentApplicationStatus(statusToUpdateTo);
     const applicationQB = this.applicationRepository
       .createQueryBuilder('application')
       .update()
@@ -348,38 +308,13 @@ export class ShoppingCartService {
           .filter(({ permitStatus }) => permitStatus !== statusToUpdateTo)
           .map(({ permitId: applicationId }) => applicationId),
       );
+      success.concat(
+        applicationIds.filter(
+          (applicationId) => !failure.includes(applicationId),
+        ),
+      );
     }
-
-    // const queryBuilder = this.applicationRepository
-    //   .createQueryBuilder('application')
-    //   .leftJoin('application.company', 'company')
-    //   .leftJoin('application.applicationOwner', 'applicationOwner')
-    //   .leftJoin('applicationOwner.userContact', 'userContact')
-    //   .where('application.permitId in :applicationIds', {
-    //     applicationIds: In(applicationIds),
-    //   })
-    //   .andWhere('company.companyId = :companyId', { companyId })
-    //   .andWhere('company.companyId = :companyId', { companyId })
-    //   .andWhere('application.permitStatus in :permitStatuses', {
-    //     permitStatuses: In([currentApplicationStatusToCheckAgainst]),
-    //   });
-    // if (userGUID) {
-    //   queryBuilder.andWhere('applicationOwner.userGUID = :userGUID', {
-    //     userGUID,
-    //   });
-    // }
-    // queryBuilder.update()
     return { success, failure };
-  }
-
-  private getCurrentApplicationStatusWithQB(
-    statusToUpdateTo: ApplicationStatus.IN_CART | ApplicationStatus.IN_PROGRESS,
-  ): ApplicationStatus[] {
-    if (statusToUpdateTo === ApplicationStatus.IN_PROGRESS) {
-      return [ApplicationStatus.IN_CART];
-    } else {
-      return [ApplicationStatus.IN_PROGRESS, ApplicationStatus.WAITING_PAYMENT];
-    }
   }
 
   /**
@@ -389,11 +324,11 @@ export class ShoppingCartService {
    */
   private getCurrentApplicationStatus(
     statusToUpdateTo: ApplicationStatus.IN_CART | ApplicationStatus.IN_PROGRESS,
-  ): ApplicationStatus {
+  ): ApplicationStatus[] {
     if (statusToUpdateTo === ApplicationStatus.IN_PROGRESS) {
-      return ApplicationStatus.IN_CART;
+      return [ApplicationStatus.IN_CART];
     } else {
-      return ApplicationStatus.IN_PROGRESS;
+      return [ApplicationStatus.IN_PROGRESS, ApplicationStatus.WAITING_PAYMENT];
     }
   }
 }
