@@ -291,10 +291,6 @@ export class PaymentService {
         );
 
         if (isCfsPaymentMethodType(newTransaction.paymentMethodTypeCode)) {
-          console.log(
-            'payment method type is: ',
-            newTransaction.paymentMethodTypeCode,
-          );
           const newCfsTransaction: CfsTransactionDetail =
             new CfsTransactionDetail();
           newCfsTransaction.transaction = newTransaction;
