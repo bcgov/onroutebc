@@ -7,6 +7,9 @@
 # Vehicles:
 /vehicles/**  @gchauhan-aot @praju-aot
 
+# Scheduler:
+/scheduler/**  @gchauhan-aot 
+
 # Dops:
 /dops/**  @gchauhan-aot @praju-aot
 
