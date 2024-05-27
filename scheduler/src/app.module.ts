@@ -7,8 +7,8 @@ import * as path from 'path';
 import { TpsPermitModule } from './modules/tps-permit/tps-permit.module';
 import { FeatureFlagsModule } from './modules/feature-flags/feature-flags.module';
 import { ScheduleModule } from '@nestjs/schedule';
-import { TypeormCustomLogger } from './logger/typeorm-logger.config';
-import { getTypeormLogLevel } from './helper/logger.helper';
+import { TypeormCustomLogger } from './common/logger/typeorm-logger.config';
+import { getTypeormLogLevel } from './common/helper/logger.helper';
 import { CacheModule } from '@nestjs/cache-manager';
 import { CgiSftpModule } from './modules/cgi-sftp/cgi-sftp.module';
 

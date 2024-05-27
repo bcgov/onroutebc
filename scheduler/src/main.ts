@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { customLogger } from './logger/logger.config';
+import { customLogger } from './common/logger/logger.config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
