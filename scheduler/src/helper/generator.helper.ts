@@ -1,7 +1,19 @@
 import { config as dotenvConfig } from "dotenv";
 import * as fs from 'fs';
-import { ConnectionPool, connect} from 'mssql';
+// import { ConnectionPool, connect} from 'mssql';
 import { join, resolve } from 'path';
+// import { CgiGenerator } from "./cgigenerator.helper";
+// import { TransactionService } from "src/modules/transactions/transaction.service";
+// import { Repository, getRepository } from "typeorm";
+
+import { Transaction } from "src/modules/transactions/transaction.entity";
+// import { MyService } from "./myservice";
+// import { createConnections } from 'typeorm';
+
+// const transactionRepository = getRepositoryForEntity();
+// const transactionService = new TransactionService(transactionRepository);
+// const cgiGenerator = new CgiGenerator(transactionService);
+
 
 const envFilePath = resolve(__dirname, "../../../.env");
 const result = dotenvConfig({ path: envFilePath });
@@ -11,37 +23,8 @@ if (result.error) {
 }
 
 const maxBatchId: string = '';
-let transactions: Promise<Transaction[]>;
+// let transactions: Promise<Transaction[]>;
 
-interface DbConfig {
-  user: string;
-  password: string;
-  server: string;
-  database: string;
-  options?: {
-    encrypt?: boolean;
-  };
-}
-
-const dbConfig: DbConfig = {
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  server: process.env.DB_SERVER,
-  database: process.env.DB_NAME,
-  options: {
-    encrypt: false, // Use encryption if needed
-  },
-};
-
-class Transaction {
-  transactionId: string;
-  transactionAmount: number;
-
-  constructor(transactionId: string, transactionAmount: number) {
-    this.transactionId = transactionId;
-    this.transactionAmount = transactionAmount;
-  } 
-}
 
 class BatchHeader {
   feederNumber: string;
@@ -61,149 +44,7 @@ class BatchHeader {
   } 
 }
 
-async function getTransactions(): Promise<Transaction[]> {
 
-  let pool: ConnectionPool | null = null;
-  try {
-    pool = await connect(dbConfig);
-
-    // Execute the SQL query to retrieve transaction data
-    const result = await pool.query('SELECT TRANSACTION_ID, TOTAL_TRANSACTION_AMOUNT FROM permit.ORBC_TRANSACTION');
-
-    // Process the result set and populate Transaction objects
-    const transactions: Transaction[] = result.recordset.map((record: { TRANSACTION_ID: string, TOTAL_TRANSACTION_AMOUNT: number }) => {
-      return new Transaction(record.TRANSACTION_ID, record.TOTAL_TRANSACTION_AMOUNT);
-    });
-
-    return transactions;
-  } catch (error) {
-    console.error('Error fetching transactions:', error);
-    throw error;
-  } finally {
-    // Close the database connection
-    if (pool) {
-      try {
-        await pool.close();
-      } catch (error) {
-        console.error('Error closing database connection:', error);
-      }
-    }
-  }
-  
-}
-
-
-
-  // async function getTransactions(): Promise<Transaction[]> {
-  //   try {
-  //     // Connect to the database
-  //     const pool = new ConnectionPool(dbConfig);
-  //     await pool.connect();
-  
-  //     // Execute the SQL query to retrieve transaction data
-  //     const result = await pool.query('SELECT TRANSACTION_ID, TOTAL_TRANSACTION_AMOUNT FROM permit.ORBC_TRANSACTION');
-  
-  //     // Process the result set and populate Transaction objects
-  //     const transactions: Transaction[] = result.recordset.map((record: any) => {
-  //       return new Transaction(record.TRANSACTION_ID, record.TOTAL_TRANSACTION_AMOUNT);
-  //     });
-  
-  //     return transactions;
-  //   } catch (error) {
-  //     console.error('Error fetching transactions:', error);
-  //     throw error;
-  //   } finally {
-  //     // Close the database connection
-  //     await pool.close();
-  //   }
-  // }
-  
-  // async function insertBatchHeader(batchHeader: BatchHeader, filename: string, ackFilename: string): Promise<void> {
-  //   try {
-  //     await sql.connect(dbConfig);
-  //     const result = await sql.query`
-  //       BEGIN TRANSACTION
-  //       SET ANSI_NULLS ON
-  //       SET QUOTED_IDENTIFIER ON
-  //       INSERT INTO cgi.ORBC_CGI_FILE_LOG (FILE_NAME, ACK_FILE) VALUES (${filename}, ${ackFilename})
-  //       COMMIT
-  //     `;
-  //     console.log('Record inserted into ORBC_CGI_FILE_LOG successfully:', result);
-  
-  //     const result1 = await sql.query("SELECT MAX(ID) AS ID FROM cgi.ORBC_CGI_FILE_LOG");
-  //     const maxID = result1.recordset[0].ID;
-  //     console.log(maxID);
-  
-  //     const result2 = await sql.query`
-  //       BEGIN TRANSACTION
-  //       SET ANSI_NULLS ON
-  //       SET QUOTED_IDENTIFIER ON
-  //       INSERT INTO cgi.ORBC_CGI_BATCH_HEADER (CGI_FILE_ID, BATCH_NUMBER) VALUES (${maxID}, ${batchHeader.batchNumber})
-  //       COMMIT
-  //     `;
-  //     console.log('Record inserted into ORBC_CGI_BATCH_HEADER successfully:', result2);
-  
-  //     const result3 = await sql.query("SELECT MAX(BATCH_ID) AS BATCH_ID FROM cgi.ORBC_CGI_BATCH_HEADER");
-  //     maxBatchId = result3.recordset[0].BATCH_ID;
-  //     console.log(maxBatchId);
-  //   } catch (error) {
-  //     console.error('Error inserting data:', error);
-  //   } finally {
-  //   //   sql.close();
-  //   }
-  // }
-  
-  // async function insertJournalHeader(batchId: string): Promise<void> {
-  //   try {
-  //     await sql.connect(dbConfig);
-  //     const result = await sql.query`
-  //       BEGIN TRANSACTION
-  //       SET ANSI_NULLS ON
-  //       SET QUOTED_IDENTIFIER ON
-  //       INSERT INTO cgi.ORBC_CGI_JOURNAL_HEADER (BATCH_ID, JOURNAL_BATCH_NAME, FLOW_THROUGH) VALUES (${batchId}, 'j_b_name_001', 'flow_thru_001')
-  //       COMMIT
-  //     `;
-  //     console.log('Record inserted into ORBC_CGI_JOURNAL_HEADER successfully:', result);
-  
-  //     const result1 = await sql.query("SELECT MAX(JOURNAL_HEADER_ID) AS ID FROM cgi.ORBC_CGI_JOURNAL_HEADER");
-  //     maxJournalHeaderId = result1.recordset[0].ID;
-  //     console.log(maxJournalHeaderId);
-  //   } catch (error) {
-  //     console.error('Error inserting data:', error);
-  //   } finally {
-  //   //   sql.close();
-  //   }
-  // }
-  
-  // async function insertJournalVoucher(journalHeaderId: string, transaction: Transaction): Promise<void> {
-  //   try {
-  //     await sql.connect(dbConfig);
-  //     const result = await sql.query`
-  //       BEGIN TRANSACTION
-  //       SET ANSI_NULLS ON
-  //       SET QUOTED_IDENTIFIER ON
-  //       INSERT INTO cgi.ORBC_CGI_JOURNAL_VOUCHER (JOURNAL_HEADER_ID, JV_LINE_NUMBER, TRANSACTION_ID) VALUES (${journalHeaderId}, ${transaction.transactionAmount}, ${transaction.transactionId})
-  //       COMMIT
-  //     `;
-  //     console.log('Record inserted into ORBC_CGI_JOURNAL_VOUCHER successfully:', result);
-  //   } catch (error) {
-  //     console.error('Error inserting data:', error);
-  //   } finally {
-  //   //   sql.close();
-  //   }
-  // }
-  
-  // async function callSqlFunction(companyId: string): Promise<void> {
-  //   try {
-  //     await sql.connect(dbConfig);
-  //     const result = await sql.query`SELECT dbo.CalculateTotalAmount(${companyId}) AS totalAmount`;
-  //     console.log("Total Amount:", result.recordset[0].totalAmount);
-  //   } catch (error) {
-  //     console.error("Error calling function:", error);
-  //   } finally {
-  //   //   await sql.close();
-  //   }
-  // }
 
 
   function formatDateToCustomString(date: Date): string {
@@ -226,11 +67,12 @@ async function getTransactions(): Promise<Transaction[]> {
     return `000000001`;
   }
   
+  // Journal name: 10 characters
   let globalJournalName: string = '';
   
   function getJournalName(): string {
-    const prefix = 'MT-'; // Ministry Alpha identifier prefix
-    const randomChars = generateRandomChars(7); // Generate 7 random characters
+    const prefix = 'MT'; // Ministry Alpha identifier prefix
+    const randomChars = generateRandomChars(8); // Generate 8 random characters
     const journalName: string = prefix + randomChars;
     return journalName;
   }
@@ -246,8 +88,8 @@ async function getTransactions(): Promise<Transaction[]> {
   
   function getJournalBatchName(): string {
     // 25 characters
-    const prefix = 'MT-'; // Ministry Alpha identifier prefix
-    const randomChars = generateRandomChars(22); // Generate 22 random characters
+    const prefix = 'MT'; // Ministry Alpha identifier prefix
+    const randomChars = generateRandomChars(23); // Generate 23 random characters
     return prefix + randomChars;
   }
   
@@ -255,7 +97,7 @@ async function getTransactions(): Promise<Transaction[]> {
     // 15 characters
     let total: number = 0.0;
     for (const transaction of transactions) {
-      total += Number(transaction.transactionAmount);
+      total += Number(transaction.TOTAL_TRANSACTION_AMOUNT);
     }
   
     let totalString: string = total.toFixed(2); // Ensure two decimal places
@@ -264,7 +106,7 @@ async function getTransactions(): Promise<Transaction[]> {
     const paddingLength: number = 15 - integerPartLength;
   
     if (paddingLength > 0) {
-      totalString = totalString.padStart(totalString.length + paddingLength, '0');
+      totalString = totalString.padStart(totalString.length + paddingLength, ' ');
     }
   
     return totalString;
@@ -272,12 +114,13 @@ async function getTransactions(): Promise<Transaction[]> {
   
   function getExternalReferenceSource(): string {
     // 100 chars, optional
-    return `QP`;
+    // return `QP`;
+    return ``;
   }
   
   function getFlowThru(): string {
     // 110 chars
-    return ``;
+    return `                                                                                                              `;
   }
   
   let jvLineNumberCounter: number = 0;
@@ -299,7 +142,25 @@ async function getTransactions(): Promise<Transaction[]> {
   
   function getAck(): string {
     // 50 chars
-    return `0000`;
+    // Client - (3 Characters)
+    // Responsibility - (5 Characters)
+    // Service Line - (5 Characters)
+    // STOB - (4 Characters)
+    // Project - (7 Characters)
+    // Location - (6 Characters)
+    // Future - (4 Characters)
+    // Unused Filler - (16 Characters)
+    const client = 'abc';
+    const responsibility = '12345';
+    const serviceLine = 'abcde';
+    const stob = 'defj';
+    const project = 'proj123';
+    const location = 'abc123';
+    const future = 'abcd';
+    const unusedFiller = '                ';//16 spaces
+    let result = '';
+    result = result + client + responsibility + serviceLine + stob + project + location + future + unusedFiller;
+    return result;
   }
   
   function getClient(): string {
@@ -359,17 +220,22 @@ async function getTransactions(): Promise<Transaction[]> {
   
   function getLineDescription(): string {
     // 100 chars
-    return `aaaaaaaaaa`;
+    return `                                                                                                    `;
   }
   
   function getFeederNumberClientSystem(): string {
     // 4 chars
-    return `abcd`;
+    return ``;
   }
   
-  function getControlCount(): string {
+  function getControlCount(transactions: Transaction[]): string {
     // 15 chars
-    return `123451234512.34`;
+    // return `123451234512.34`;
+    const numberStr = transactions.length.toString();
+    const desiredLength = 15;
+    const paddedString = numberStr.padStart(desiredLength, '0');
+    return paddedString;
+    
   }
   
   function populateBatchHeader(filename: string, ackFilename: string): string {
@@ -377,7 +243,9 @@ async function getTransactions(): Promise<Transaction[]> {
     const feederNumber: string = `3535`;
     const batchType: string = `GA`;
     const transactionType: string = `BH`;
-    const delimiter: string = `1D`;
+    // const delimiter: string = `1D`;
+    const delimiterHex = 0x1D;
+    const delimiter = String.fromCharCode(delimiterHex);
     const fiscalYear: number = getFiscalYear();
     const batchNumber: string = getBatchNumber();
     const messageVersion: string = `4010`;
@@ -402,7 +270,9 @@ function populateJournalHeader(transactions: Transaction[]): string {
   const feederNumber: string = `3535`;
   const batchType: string = `GA`;
   const transactionType: string = `JH`;
-  const delimiter: string = `1D`;
+  // const delimiter: string = `1D`;
+  const delimiterHex = 0x1D;
+  const delimiter = String.fromCharCode(delimiterHex);
   const journalName: string = globalJournalName;
   const journalBatchName: string = getJournalBatchName();
   const controlTotal: string = getControlTotal(transactions);
@@ -420,7 +290,9 @@ function populateJournalVoucherDetail(cgiFileName: string, transactions: Transac
   const feederNumber: string = `3535`;
   const batchType: string = `GA`;
   const transactionType: string = `JD`;
-  const delimiter: string = `1D`;
+  // const delimiter: string = `1D`;
+  const delimiterHex = 0x1D;
+  const delimiter = String.fromCharCode(delimiterHex);
   const journalName: string = globalJournalName;
   const flowThru: string = getFlowThru();
   const jvLineNumber: string = getJvLiineNumber();
@@ -440,6 +312,9 @@ function populateJournalVoucherDetail(cgiFileName: string, transactions: Transac
   const lineDescription: string = getLineDescription();
 
   for (const transaction of transactions) {
+
+    const lineTotal = getLineTotle(transaction.TOTAL_TRANSACTION_AMOUNT);
+
     let journalVoucher: string = `${feederNumber}`;
     journalVoucher += `${batchType}`;
     journalVoucher += `${transactionType}`;
@@ -456,7 +331,7 @@ function populateJournalVoucherDetail(cgiFileName: string, transactions: Transac
     journalVoucher += `${future}`;
     journalVoucher += `${unusedFiller}`;
     journalVoucher += `${supplierNumber}`;
-    journalVoucher += `${transaction.transactionAmount}`;
+    journalVoucher += `${lineTotal}`;
     journalVoucher += `${lineCode}`;
     journalVoucher += `${lineDescription}`;
     journalVoucher += `${flowThru}`;
@@ -468,21 +343,39 @@ function populateJournalVoucherDetail(cgiFileName: string, transactions: Transac
   }
 }
 
+function getLineTotle(total: number) {
+  let totalString: string = total.toFixed(2); // Ensure two decimal places
+    const isNegative: boolean = totalString.startsWith('-');
+    const integerPartLength: number = isNegative ? totalString.length - 1 : totalString.length;
+    const paddingLength: number = 15 - integerPartLength;
+  
+    if (paddingLength > 0) {
+      totalString = totalString.padStart(totalString.length + paddingLength, ' ');
+    }
+  
+    return totalString;
+
+}
+
 function populateBatchTrailer(transactions: Transaction[]): string {
   let batchTrailer: string = ``;
   const feederNumber: string = `3535`;
   const batchType: string = `GA`;
   const transactionType: string = `BT`;
-  const delimiter: string = `1D`;
+  // const delimiter: string = `1D`;
+  const delimiterHex = 0x1D;
+  const delimiter = String.fromCharCode(delimiterHex);
   const fiscalYear: number = getFiscalYear();
 
   const batchNumber: string = getBatchNumber();
   const controlTotal: string = getControlTotal(transactions);
   const feederNumberClientSystem: string = getFeederNumberClientSystem();
-  const controlCount: string = getControlCount();
+  const controlCount: string = getControlCount(transactions);
+
+  
 
   batchTrailer = batchTrailer + feederNumber + batchType + transactionType + delimiter + feederNumber
-    + fiscalYear + batchNumber + controlCount + controlTotal + feederNumberClientSystem + delimiter + `\n`;
+    + fiscalYear + batchNumber + controlCount + controlTotal + feederNumberClientSystem + delimiter  + `\n`;
   return batchTrailer;
 }
 
@@ -531,9 +424,29 @@ async function moveFile(): Promise<void> {
   }
 }
 
-export const generate = async (): Promise<void> => {
-  transactions = getTransactions();
+export const generate = async (transactions: Transaction[]): Promise<void> => {
+
+
+  // try {
+  //   await cgiGenerator.getAllTransactions();
+  // } catch (error) {
+  //   // Handle error
+  //   console.error('Error fetching transactions:', error);
+  // }
+
+
+
+
+  // transactions = getTransactions();
   globalJournalName = getJournalName();
-  generateCgiFile(await transactions);
+  generateCgiFile(transactions);
+  // generateCgiFile(await transactions);
   await moveFile();
 }
+
+// function getRepositoryForEntity(): Repository<Transaction> {
+//   return getRepository(Transaction);
+// }
+
+
+

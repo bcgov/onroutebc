@@ -1,14 +1,20 @@
 
-import { generate} from 'src/helper/generator.helper'
+// import { generate} from 'src/helper/generator.helper'
 import { Injectable } from '@nestjs/common';
 import { getSFTPConnectionInfo } from 'src/helper/sftp.helper';
 import * as Client from 'ssh2-sftp-client';
 
+// import { MyService } from 'src/helper/myservice';
+
+// import { TransactionService } from '../transactions/transaction.service';
+
 @Injectable()
 export class CgiSftpService {
-  async upload(fileData: Express.Multer.File, fileName: string) {
+  upload(fileData: Express.Multer.File, fileName: string) {
     // Generate cig files
-    await this.generateCgi();
+
+    // await myservice.fetchTransactions();
+    // await this.generateCgi();
     const sftp = new Client();
     const connectionInfo: Client.ConnectOptions = getSFTPConnectionInfo();
     const remotePath = './data/';
@@ -28,8 +34,9 @@ export class CgiSftpService {
       });
   }
 
-  async generateCgi() {
-    console.log('cgi file generating...');
-    await generate();
-  }
+  // async generateCgi() {
+  //   console.log('cgi file generating...');
+
+  //   await generate();
+  // }
 }

@@ -11,10 +11,17 @@ import { TypeormCustomLogger } from './logger/typeorm-logger.config';
 import { getTypeormLogLevel } from './helper/logger.helper';
 import { CacheModule } from '@nestjs/cache-manager';
 import { CgiSftpModule } from './modules/cgi-sftp/cgi-sftp.module';
+import { TransactionModule } from './modules/transactions/transaction.module';
+// import { MyService } from './helper/myservice';
+// import { DatabaseModule } from './modules/database/database.module';
+
+
 
 const envPath = path.resolve(process.cwd() + '/../');
 @Module({
   imports: [
+    ConfigModule.forRoot({isGlobal: true}),
+
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({ envFilePath: `${envPath}/.env` }),
     TypeOrmModule.forRoot({
@@ -42,6 +49,7 @@ const envPath = path.resolve(process.cwd() + '/../');
     TpsPermitModule,
     FeatureFlagsModule,
     CgiSftpModule,
+    TransactionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

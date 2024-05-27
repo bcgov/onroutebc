@@ -8,6 +8,9 @@ import {
 import { CgiSftpService } from './cgi-sftp.service';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiQuery } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
+// import { MyService } from 'src/helper/myservice';
+// import { TransactionService } from '../transactions/transaction.service';
+// import { Repository, Transaction } from 'typeorm';
 
 @ApiBearerAuth()
 @Controller('cgi-sftp')
@@ -29,10 +32,12 @@ export class CgiSftpController {
       },
     },
   })
-  async upload(
+  upload(
     @UploadedFile() file: Express.Multer.File,
     @Query('fileName') fileName: string,
   ) {
-    await this.cgiSftpService.upload(file, fileName);
+    // const myservice = new MyService();
+    // const transactionService = new TransactionService(new Repository<Transaction>());
+    this.cgiSftpService.upload(file, fileName);
   }
 }
