@@ -17,10 +17,7 @@ import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { callDatabaseSequence } from 'src/common/helper/database.helper';
 import { Permit } from '../permit/entities/permit.entity';
 import { ApplicationStatus } from '../../../common/enum/application-status.enum';
-import {
-  PaymentMethodType as PaymentMethodTypeEnum,
-  isCfsPaymentMethodType,
-} from '../../../common/enum/payment-method-type.enum';
+import { PaymentMethodType as PaymentMethodTypeEnum } from '../../../common/enum/payment-method-type.enum';
 import { TransactionType } from '../../../common/enum/transaction-type.enum';
 
 import { ReadPaymentGatewayTransactionDto } from './dto/response/read-payment-gateway-transaction.dto';
@@ -44,6 +41,7 @@ import {
 } from 'src/common/helper/permit-fee.helper';
 import { CfsTransactionDetail } from './entities/cfs-transaction.entity';
 import { CfsFileStatus } from 'src/common/enum/cfs-file-status.enum';
+import { isCfsPaymentMethodType } from 'src/common/helper/payment.helper';
 
 @Injectable()
 export class PaymentService {
@@ -295,13 +293,6 @@ export class PaymentService {
             new CfsTransactionDetail();
           newCfsTransaction.transaction = newTransaction;
           newCfsTransaction.fileStatus = CfsFileStatus.READY;
-          newCfsTransaction.createdUser = currentUser.userName;
-          newCfsTransaction.createdDateTime = new Date();
-          newCfsTransaction.createdUserDirectory =
-            currentUser.orbcUserDirectory;
-          newCfsTransaction.createdUserGuid = currentUser.userGUID;
-          (newCfsTransaction.updatedDateTime = new Date()),
-            (newCfsTransaction.updatedUser = currentUser.userName);
           await queryRunner.manager.save(newCfsTransaction);
         }
         if (
