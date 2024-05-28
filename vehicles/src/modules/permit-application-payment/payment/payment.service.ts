@@ -44,6 +44,7 @@ import {
 } from 'src/common/helper/permit-fee.helper';
 import { CfsTransactionDetail } from './entities/cfs-transaction.entity';
 import { CfsFileStatus } from 'src/common/enum/cfs-file-status.enum';
+import { isAmendmentApplication } from '../../../common/helper/permit-application.helper';
 
 @Injectable()
 export class PaymentService {
@@ -184,19 +185,6 @@ export class PaymentService {
     );
   }
 
-  private isAmendmentApplication({
-    permitStatus,
-    originalPermitId,
-    permitId,
-    revision,
-  }: Permit) {
-    return (
-      permitStatus === ApplicationStatus.IN_PROGRESS &&
-      originalPermitId !== permitId &&
-      revision > 0
-    );
-  }
-
   private isApplicationInCart(permitStatus: ApplicationStatus) {
     return permitStatus === ApplicationStatus.IN_CART;
   }
@@ -247,7 +235,7 @@ export class PaymentService {
           !(
             this.isVoidorRevoked(application.permitStatus) ||
             this.isApplicationInCart(application.permitStatus) ||
-            this.isAmendmentApplication(application)
+            isAmendmentApplication(application)
           )
         )
           throw new BadRequestException(
