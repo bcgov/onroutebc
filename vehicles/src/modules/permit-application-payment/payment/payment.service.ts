@@ -179,6 +179,19 @@ export class PaymentService {
     );
   }
 
+  private isAmendmentApplication({
+    permitStatus,
+    originalPermitId,
+    permitId,
+    revision,
+  }: Permit) {
+    return (
+      permitStatus === ApplicationStatus.IN_PROGRESS &&
+      originalPermitId !== permitId &&
+      revision > 0
+    );
+  }
+
   private isApplicationInCart(permitStatus: ApplicationStatus) {
     return permitStatus === ApplicationStatus.IN_CART;
   }
@@ -228,10 +241,13 @@ export class PaymentService {
         if (
           !(
             this.isVoidorRevoked(application.permitStatus) ||
-            this.isApplicationInCart(application.permitStatus)
+            this.isApplicationInCart(application.permitStatus) ||
+            this.isAmendmentApplication(application)
           )
         )
-          throw new BadRequestException('Application should be in Progress!!');
+          throw new BadRequestException(
+            'Application in its current status cannot be processed for payment.',
+          );
       }
       const totalTransactionAmount =
         await this.validatePaymentAndCalculateAmount(

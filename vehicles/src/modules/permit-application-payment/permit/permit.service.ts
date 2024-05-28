@@ -111,7 +111,7 @@ export class PermitService {
     companyId?: number,
   ): Promise<ReadPermitDto> {
     const permit = await this.findOne(permitId, companyId);
-    if (!permit) {
+    if (!permit || !permit.documentId) {
       throw new DataNotFoundException();
     }
     return await this.classMapper.mapAsync(permit, Permit, ReadPermitDto, {
@@ -400,7 +400,7 @@ export class PermitService {
     const permit = await permitQuery.getOne();
 
     // If no permit is found, throw a NotFoundException indicating the receipt is not found.
-    if (!permit) {
+    if (!permit || !permit.documentId) {
       throw new NotFoundException('Receipt Not Found!');
     }
 
