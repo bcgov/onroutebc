@@ -1,7 +1,9 @@
 @import "../../../../themes/orbcStyles";
 
 .add-user {
-
+  padding-bottom: 2rem;
+  border-bottom: 1px solid $bc-border-grey;
+  
   label.Mui-error {
     color: $bc-black;
   }

@@ -1,0 +1,84 @@
+@import "../../../../themes/orbcStyles";
+
+.user-table {
+  padding-top: 2.5rem;
+  & &__paper {
+    overflow: visible;
+    box-shadow: none;
+  }
+  & &__container {
+    border: 1px solid $bc-border-grey;
+    box-sizing: border-box;
+  }
+
+  & &__toolbar {
+    padding-bottom: .25rem;
+    overflow: visible;
+    .MuiBox-root {
+      padding: 0;
+      width: 100%;
+
+      &:last-child {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+  }
+
+  & &__heading {
+    padding: 0;
+  }
+ 
+  & &__button {
+    font-size: 1rem;
+    border: 2px solid;
+    
+    &:focus {
+      outline-offset: 2px;
+    }
+
+    &--remove {
+      background-color: $white;
+      border-color: $bc-messages-red-background;
+      color: $bc-red;
+
+      &:hover {
+        background-color: $bc-messages-red-background;
+      }
+     
+    }
+    &:disabled {
+      background-color: $white;
+      border-color: $disabled-colour;
+      color: $disabled-colour;
+    }
+  }
+  
+  & &__body {
+    
+  }
+  & &__row {
+    &--selected {
+      background-color: rgba($bc-messages-blue-background, 0.5);
+    }
+  }
+
+  & &__cell {
+    vertical-align: top;
+    padding: 1rem;
+  }
+
+  .cell {
+    &__text {
+      &:first-child {
+        padding-bottom: 1rem;
+      }
+      &--bold {
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+

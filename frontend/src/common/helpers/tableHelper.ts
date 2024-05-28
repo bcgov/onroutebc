@@ -47,11 +47,11 @@ export const defaultTableInitialStateOptions = {
 };
 
 export const defaultTableOptions: any = {
-  defaultColumn: {
-    maxSize: 200, //allow columns to get larger than default
-    minSize: 25,
-    size: 50,
-  },
+  // defaultColumn: {
+  //   maxSize: 200, //allow columns to get larger than default
+  //   minSize: 25,
+  //   size: 50,
+  // },
   displayColumnDefOptions: {
     "mrt-row-actions": {
       header: "",

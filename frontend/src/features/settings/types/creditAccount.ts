@@ -1,4 +1,4 @@
-
+import { CompanyProfile } from "../../manageProfile/types/manageProfile";
 
 export const CREDIT_ACCOUNT_LIMITS = {
     PREPAID: "PREPAID",
@@ -40,23 +40,11 @@ export const CREDIT_ACCOUNT_LIMIT_CHOOSE_FROM_OPTIONS = [
     { value: CREDIT_ACCOUNT_LIMITS[100000], label: "$100,000" }
 ];
 
-// export const CREDIT_ACCOUNT_ACTIVITY_TYPES = {
-//     CREATE: "CREATE",
-// }
-
-// export type CreditAccountActivityType = typeof CREDIT_ACCOUNT_ACTIVITY_TYPES[keyof typeof CREDIT_ACCOUNT_ACTIVITY_TYPES]
-
 export interface CreditAccountData {
     accountNumber: string;
     userDesignation: "account holder";
     creditLimit: number;
     creditBalance: number;
     creditAvailable: number;
-}
-
-export interface UserData {
-    clientNumber: string;
-    companyName: string;
-    userDesignation: string;
-    doingBusinessAs: string;
+    users: CompanyProfile[]
 }

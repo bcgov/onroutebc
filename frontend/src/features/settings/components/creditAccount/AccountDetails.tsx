@@ -3,9 +3,8 @@ import "./AccountDetails.scss";
 import { useGetCreditAccountQuery } from "../../hooks/creditAccount";
 import { CreditAccountData } from "../../types/creditAccount";
 
-export const AccountDetails = ({ companyId }: { companyId: number }) => {
-  const { data }: { data?: CreditAccountData } =
-    useGetCreditAccountQuery(companyId);
+export const AccountDetails = () => {
+  const { data }: { data?: CreditAccountData } = useGetCreditAccountQuery();
 
   const formatNumber = (number: number) => {
     return new Intl.NumberFormat("en-US", {

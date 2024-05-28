@@ -21,8 +21,10 @@ import {
 import { AddUser } from "../components/creditAccount/AddUser";
 import { AccountDetails } from "../components/creditAccount/AccountDetails";
 import { SnackBarContext } from "../../../App";
+import { UserTable } from "../components/creditAccount/UserTable";
 
 export const CreditAccount = ({
+  // eslint-disable-next-line
   companyId,
   // eslint-disable-next-line
   hideTab,
@@ -57,10 +59,7 @@ export const CreditAccount = ({
     if (selectedCreditLimit !== EMPTY_CREDIT_ACCOUNT_LIMIT_SELECT) {
       setInvalid(false);
       const createCreditAccountResult =
-        await createCreditAccountMutation.mutateAsync({
-          companyId,
-          selectedCreditLimit,
-        });
+        await createCreditAccountMutation.mutateAsync(selectedCreditLimit);
       if (isActionSuccessful(createCreditAccountResult.status)) {
         refetchCreditAccount();
         setSnackBar({
@@ -75,13 +74,8 @@ export const CreditAccount = ({
     }
   };
 
-  const {
-    data: existingCreditAccount,
-    // isError: getCreditAccountError,
-    refetch: refetchCreditAccount,
-  } = useGetCreditAccountQuery(companyId);
-
-  // let companyHasCreditAccount: boolean
+  const { data: existingCreditAccount, refetch: refetchCreditAccount } =
+    useGetCreditAccountQuery();
 
   // Re-render if credit account exists
   useEffect(() => {}, [existingCreditAccount]);
@@ -101,8 +95,9 @@ export const CreditAccount = ({
             </Box>
 
             <AddUser />
+            <UserTable />
           </Box>
-          <AccountDetails companyId={companyId} />
+          <AccountDetails />
         </Box>
       ) : (
         <Box>

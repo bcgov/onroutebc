@@ -16,7 +16,7 @@ const FEATURE = "client-search";
 
 export const AddUser = () => {
   const [showAddUserModal, setShowAddUserModal] = useState<boolean>(false);
-  const [companyData, setCompanyData] = useState<CompanyProfile>();
+  const [userData, setUserData] = useState<CompanyProfile>();
 
   const formMethods = useForm<SearchClientFormData>({
     defaultValues: {
@@ -24,11 +24,7 @@ export const AddUser = () => {
     },
   });
 
-  const {
-    handleSubmit,
-    setError,
-    // formState: { errors },
-  } = formMethods;
+  const { handleSubmit, setError } = formMethods;
 
   const onSubmit = async (data: FieldValues) => {
     const response = await getCompanyDataBySearch(
@@ -43,7 +39,7 @@ export const AddUser = () => {
       },
     );
     if (response.items.length !== 0) {
-      setCompanyData(response.items[0]);
+      setUserData(response.items[0]);
       setShowAddUserModal(true);
     } else {
       setError("clientNumber", {
@@ -54,7 +50,7 @@ export const AddUser = () => {
   };
 
   const handleAddUser = () => {
-    console.log("user added");
+    console.log("User added");
     setShowAddUserModal(false);
   };
 
@@ -96,12 +92,12 @@ export const AddUser = () => {
           </Button>
         </Box>
       </FormProvider>
-      {companyData && showAddUserModal ? (
+      {userData && showAddUserModal ? (
         <AddUserModal
           showModal={showAddUserModal}
           onCancel={() => setShowAddUserModal(false)}
           onConfirm={handleAddUser}
-          company={companyData}
+          userData={userData}
         />
       ) : null}
     </div>

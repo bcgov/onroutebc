@@ -4,17 +4,18 @@ import { faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { FormProvider, useForm } from "react-hook-form";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import "./AddUserModal.scss";
+import { useAddCreditAccountUserMutation } from "../../hooks/creditAccount";
 
 export const AddUserModal = ({
   showModal,
   onCancel,
   onConfirm,
-  company,
+  userData,
 }: {
   showModal: boolean;
   onCancel: () => void;
   onConfirm: () => void;
-  company: CompanyProfile;
+  userData: CompanyProfile;
 }) => {
   const formMethods = useForm<{ comment: string }>({
     reValidateMode: "onChange",
@@ -24,8 +25,18 @@ export const AddUserModal = ({
 
   const handleCancel = () => onCancel();
 
-  const handleAddUser = () => {
-    onConfirm();
+  const isActionSuccessful = (status: number) => {
+    return status === 200;
+  };
+
+  const addCreditAccountUserResult = useAddCreditAccountUserMutation(userData);
+
+  const handleAddUser = async () => {
+    const { status, data } = await addCreditAccountUserResult.mutateAsync();
+    if (isActionSuccessful(status)) {
+      console.log(data);
+      onConfirm();
+    }
   };
 
   return (
@@ -50,19 +61,19 @@ export const AddUserModal = ({
           <dl>
             <div className="add-user-modal__item">
               <dt className="add-user-modal__key">Company Name</dt>
-              <dd className="add-user-modal__value">{company.legalName}</dd>
+              <dd className="add-user-modal__value">{userData.legalName}</dd>
             </div>
-            {company.alternateName ? (
+            {userData.alternateName ? (
               <div className="add-user-modal__item">
                 <dt className="add-user-modal__key">Doing Buisness As (DBA)</dt>
                 <dd className="add-user-modal__value">
-                  {company.alternateName}
+                  {userData.alternateName}
                 </dd>
               </div>
             ) : null}
             <div className="add-user-modal__item">
               <dt className="add-user-modal__key">OnRouteBC Client No.</dt>
-              <dd className="add-user-modal__value">{company.clientNumber}</dd>
+              <dd className="add-user-modal__value">{userData.clientNumber}</dd>
             </div>
           </dl>
         </div>
@@ -82,7 +93,6 @@ export const AddUserModal = ({
 
           <Button
             key="add-user-button"
-            aria-label="Add-user Company"
             onClick={handleSubmit(handleAddUser)}
             className="add-user-button add-user-button--add-user"
             data-testid="add-user-button"

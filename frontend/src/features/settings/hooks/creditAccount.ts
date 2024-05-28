@@ -1,26 +1,28 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createCreditAccount, getCreditAccount } from '../apiManager/creditAccount'
+import { addCreditAccountUser, createCreditAccount, getCreditAccount, removeCreditAccountUsers } from '../apiManager/creditAccount'
 import { getCompanyDataBySearch } from "../../idir/search/api/idirSearch";
+import { CompanyProfile } from "../../manageProfile/types/manageProfile";
+import { useNavigate } from "react-router-dom";
+import { ERROR_ROUTES } from "../../../routes/constants";
 
 /**
  * Hook to create a credit account.
  * @returns Result of the create credit account action
  */
 export const useCreateCreditAccountMutation = () => {
-    return useMutation({
-      mutationFn: createCreditAccount,
-    });
-  };
+  return useMutation({
+    mutationFn: createCreditAccount,
+  });
+};
 
 /**
  * Hook to fetch the company credit account information.
- * @param companyId Company id of the company to get credit account information for
  * @returns Query result of the company credit account information
  */
-export const useGetCreditAccountQuery = (companyId: number) => {
+export const useGetCreditAccountQuery = () => {
   return useQuery({
     queryKey: ["credit-account-information"],
-    queryFn: () => getCreditAccount(companyId),
+    queryFn: () => getCreditAccount(),
     retry: false,
     refetchOnMount: "always",
     refetchOnWindowFocus: false,
@@ -43,5 +45,29 @@ export const useGetCompanyQuery = (clientNumber: string) => {
     retry: false,
     refetchOnMount: "always",
     refetchOnWindowFocus: false,
+  });
+};
+
+/**
+ * Hook to add a user to a credit account
+ * @returns Result of the add user to credit account action
+ */
+export const useAddCreditAccountUserMutation = (userData: CompanyProfile) => {
+  return useMutation({
+    mutationFn: () => addCreditAccountUser(userData),
+  });
+};
+
+
+/**
+ * Hook to remove a user from a credit account
+ * @returns Result of the remove user from credit account action
+ */
+export const useRemoveCreditAccountUsersMutation = () => {
+  const navigate = useNavigate();
+  return useMutation({
+    mutationFn: removeCreditAccountUsers,
+    onError: () => navigate(ERROR_ROUTES.UNEXPECTED),
+    onSuccess: () => console.log("Credit account user removed")
   });
 };
