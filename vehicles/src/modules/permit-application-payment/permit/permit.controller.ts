@@ -7,6 +7,7 @@ import {
   Param,
   Query,
   ForbiddenException,
+  UseGuards,
 } from '@nestjs/common';
 import { PermitService } from './permit.service';
 import { ExceptionDto } from '../../../common/exception/exception.dto';
@@ -35,6 +36,7 @@ import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 import { CreateNotificationDto } from '../../common/dto/request/create-notification.dto';
 import { ReadNotificationDto } from '../../common/dto/response/read-notification.dto';
 import { PermitReceiptDocumentService } from '../permit-receipt-document/permit-receipt-document.service';
+import { JwtServiceAccountAuthGuard } from 'src/common/guard/jwt-sa-auth.guard';
 
 @ApiBearerAuth()
 @ApiTags('Permit: API accessible exclusively to staff users.')
@@ -194,5 +196,19 @@ export class PermitController {
       permitId,
       createNotificationDto,
     );
+  }
+
+  @UseGuards(JwtServiceAccountAuthGuard)
+  @Post('/scheduler/issue')
+  issuePermit() {
+    console.log('Issue Permit Scheduler');
+    return 'success';
+  }
+
+  @UseGuards(JwtServiceAccountAuthGuard)
+  @Post('/scheduler/document')
+  generateDocument() {
+    console.log('Generate Document Scheduler');
+    return 'success';
   }
 }

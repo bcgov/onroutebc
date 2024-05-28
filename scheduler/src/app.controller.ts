@@ -9,14 +9,21 @@ import { Cache } from 'cache-manager';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService,  private readonly httpService: HttpService,
+  constructor(
+    private readonly appService: AppService,
+    private readonly httpService: HttpService,
     @Inject(CACHE_MANAGER)
-    private readonly cacheManager: Cache,) {}
+    private readonly cacheManager: Cache,
+  ) {}
 
   @ApiTags('Health Check')
   @Get()
   getHealthCheck(): string {
-    const result = getAccessToken(GovCommonServices.ORBC_SERVICE_ACCOUNT,this.httpService,this.cacheManager)
+    const result = getAccessToken(
+      GovCommonServices.ORBC_SERVICE_ACCOUNT,
+      this.httpService,
+      this.cacheManager,
+    );
     console.log(result);
     return this.appService.getHealthCheck();
   }
