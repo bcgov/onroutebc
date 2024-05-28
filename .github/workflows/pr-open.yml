@@ -109,12 +109,12 @@ jobs:
         uses: amitsingh-007/next-release-tag@v5.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          tag_prefix: '${{ github.event.repository.name }}-release-'
+          tag_prefix: '${{ github.event.repository.name }}-release'
           tag_template: 'i'
 
       - name: Create Release
         run: |
           gh release create "${{ steps.generate_release_tag.outputs.next_release_tag }}" \
           --repo=${{ github.repository }} \
-          --title="${{ github.repository }}-${{ needs.vars.outputs.pr }}" \
+          --title="${{ steps.generate_release_tag.outputs.next_release_tag }}" \
           --generate-notes
