@@ -111,7 +111,7 @@ export class PermitService {
     companyId?: number,
   ): Promise<ReadPermitDto> {
     const permit = await this.findOne(permitId, companyId);
-    if (!permit || !permit.documentId) {
+    if (!permit) {
       throw new DataNotFoundException();
     }
     return await this.classMapper.mapAsync(permit, Permit, ReadPermitDto, {
@@ -146,7 +146,7 @@ export class PermitService {
     const permit = await this.findOne(permitId, companyId);
 
     // If no permit is found, throw a NotFoundException indicating the receipt is not found.
-    if (!permit) {
+    if (!permit?.documentId) {
       throw new NotFoundException('Permit Document Not Found!');
     }
 
@@ -398,9 +398,10 @@ export class PermitService {
         companyId: companyId,
       });
     const permit = await permitQuery.getOne();
+    const successfulTransaction = permit.permitTransactions[0];
 
     // If no permit is found, throw a NotFoundException indicating the receipt is not found.
-    if (!permit || !permit.documentId) {
+    if (!successfulTransaction?.transaction?.receipt?.receiptDocumentId) {
       throw new NotFoundException('Receipt Not Found!');
     }
 
@@ -408,7 +409,7 @@ export class PermitService {
     // This method delegates the request handling based on the provided download mode and sends the file as a response if applicable.
     await this.dopsService.download(
       currentUser,
-      permit.permitTransactions[0].transaction.receipt.receiptDocumentId,
+      successfulTransaction.transaction.receipt.receiptDocumentId,
       FileDownloadModes.PROXY,
       res,
       permit.company?.companyId,
