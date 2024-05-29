@@ -18,6 +18,7 @@ import {
 } from '../enum/user-auth-group.enum';
 import { PPC_FULL_TEXT } from '../constants/api.constant';
 import { User } from '../../modules/company-user-management/users/entities/user.entity';
+import { ApplicationStatus } from '../enum/application-status.enum';
 
 /**
  * Fetches and resolves various types of names associated with a permit using cache.
@@ -225,4 +226,31 @@ export const getApplicantDisplay = (
     const lastName = applicationOwner?.userContact?.lastName ?? '';
     return (firstName + ' ' + lastName).trim();
   }
+};
+
+/**
+ * Determines if the given permit application is an amendment.
+ * An application is considered an amendment if:
+ * - The application status is 'IN_PROGRESS'
+ * - The original permit ID is different from the current permit ID
+ * - The revision number is greater than 0
+ *
+ * @param {Permit} permit - The permit object to check.
+ * @param {ApplicationStatus} permit.permitStatus - The current status of the permit application.
+ * @param {string} permit.originalPermitId - The ID of the original permit.
+ * @param {string} permit.permitId - The ID of the current permit.
+ * @param {number} permit.revision - The revision number of the permit.
+ * @returns {boolean} - Returns true if the application is an amendment, otherwise false.
+ */
+export const isAmendmentApplication = ({
+  permitStatus,
+  originalPermitId,
+  permitId,
+  revision,
+}: Permit) => {
+  return (
+    permitStatus === ApplicationStatus.IN_PROGRESS &&
+    originalPermitId !== permitId &&
+    revision > 0
+  );
 };

@@ -14,6 +14,11 @@ import {
   now,
 } from "../../../../../../../../common/helpers/formatDate";
 
+import {
+  durationOptionsForPermitType,
+  minDurationForPermitType,
+} from "../../../../../../helpers/dateSelection";
+
 const feature = "testfeature";
 export const currentDt = getStartOfDate(now());
 export const tomorrow = dayjs(currentDt).add(1, "day");
@@ -28,25 +33,17 @@ export const maxFutureYear = maxFutureDate.year();
 export const maxFutureDay = maxFutureDate.date();
 export const daysInFutureMonth = maxFutureDate.daysInMonth();
 
-export const commodities = getDefaultCommodities(DEFAULT_PERMIT_TYPE);
-export const defaultDuration = 30;
+const permitType = DEFAULT_PERMIT_TYPE;
+export const commodities = getDefaultCommodities(permitType);
+export const defaultDuration = minDurationForPermitType(permitType);
 export const emptyCommodities: PermitCommodity[] = [];
-export const allDurations = [
-  { text: "30 Days", days: 30 },
-  { text: "60 Days", days: 60 },
-  { text: "90 Days", days: 90 },
-  { text: "120 Days", days: 120 },
-  { text: "150 Days", days: 150 },
-  { text: "180 Days", days: 180 },
-  { text: "210 Days", days: 210 },
-  { text: "240 Days", days: 240 },
-  { text: "270 Days", days: 270 },
-  { text: "300 Days", days: 300 },
-  { text: "330 Days", days: 330 },
-  { text: "1 Year", days: 365 },
-];
+export const allDurations = durationOptionsForPermitType(permitType)
+  .map(durationOption => ({
+    text: durationOption.label,
+    days: durationOption.value,
+  }));
 
-const mandatoryConditions = getMandatoryCommodities(DEFAULT_PERMIT_TYPE).map(commodity => commodity.condition);
+const mandatoryConditions = getMandatoryCommodities(permitType).map(commodity => commodity.condition);
 export const requiredCommodityIndices = commodities
   .map((commodity, i) =>
     mandatoryConditions.includes(commodity.condition)
@@ -60,8 +57,8 @@ const TestFormWrapper = (props: React.PropsWithChildren) => {
     defaultValues: {
       permitData: {
         startDate: currentDt,
-        permitDuration: 30,
-        expiryDate: getExpiryDate(currentDt, 30),
+        permitDuration: defaultDuration,
+        expiryDate: getExpiryDate(currentDt, defaultDuration),
         commodities: [],
       },
     },
@@ -90,7 +87,7 @@ export const renderTestComponent = (
           value: duration.days,
         }))}
         disableStartDate={false}
-        permitType={DEFAULT_PERMIT_TYPE}
+        permitType={permitType}
       />
     </TestFormWrapper>,
   );

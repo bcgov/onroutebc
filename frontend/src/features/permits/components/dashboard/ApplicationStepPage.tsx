@@ -72,14 +72,13 @@ export const ApplicationStepPage = ({
     applicationData?.permitType,
   );
 
-  // Permit must be an application in order to allow application-related steps
-  // (ie. empty status for new application, or in progress or incomplete payment status)
+  // Permit must be an application in progress in order to allow application-related edit/review/add to cart steps
+  // (ie. empty status for new application, or in progress)
   const isValidApplicationStatus = () => {
     return (
       !isInvalidApplication &&
       (!applicationData?.permitStatus ||
-        applicationData?.permitStatus === PERMIT_STATUSES.IN_PROGRESS ||
-        applicationData?.permitStatus === PERMIT_STATUSES.WAITING_PAYMENT)
+        applicationData?.permitStatus === PERMIT_STATUSES.IN_PROGRESS)
     );
   };
 

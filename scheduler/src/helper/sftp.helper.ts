@@ -14,4 +14,8 @@ export const getSFTPConnectionInfo = (): Client.ConnectOptions => {
     passphrase: passphrase,
   };
   return connectionOptions;
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> main

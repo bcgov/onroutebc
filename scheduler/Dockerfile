@@ -59,6 +59,10 @@ ENV CFS_PRIVATE_KEY_PASSPHRASE ${CFS_PRIVATE_KEY_PASSPHRASE}
 ENV CFS_SFTP_USERNAME ${CFS_SFTP_USERNAME}
 ENV CFS_SFTP_HOST ${CFS_SFTP_HOST}
 ENV CFS_SFTP_PORT ${CFS_SFTP_PORT}
+<<<<<<< HEAD
+=======
+ENV CFS_REMOTE_PATH ${CFS_REMOTE_PATH}
+>>>>>>> main
 
 # Copy production files from build
 COPY --from=builder /app/package*.json ./
