@@ -413,6 +413,7 @@ describe("Review and Confirm Application Details", () => {
         permitData: {
           ...defaultApplicationData.permitData,
           feeSummary: `${calculateFeeByDuration(
+            defaultApplicationData.permitType,
             defaultApplicationData.permitData.permitDuration,
           )}`,
         },
