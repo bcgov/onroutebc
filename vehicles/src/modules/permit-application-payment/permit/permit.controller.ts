@@ -198,17 +198,26 @@ export class PermitController {
     );
   }
 
+  /**
+   * Get all the payment comlete permits and Issue them.
+   * This method only works for ORBC Service account.
+   */
   @UseGuards(JwtServiceAccountAuthGuard)
   @Post('/scheduler/issue')
   issuePermit() {
-    console.log('Issue Permit Scheduler');
+    console.log('Issue Permit Scheduler Controller');
     return 'success';
   }
 
+  /**
+   * Get all the Issued permits for which document and receipt does not exist.
+   * Then generate missing documents.
+   * This method only works for ORBC Service account.
+   */
   @UseGuards(JwtServiceAccountAuthGuard)
   @Post('/scheduler/document')
   generateDocument() {
-    console.log('Generate Document Scheduler');
+    console.log('Generate Document Scheduler Controller');
     return 'success';
   }
 }

@@ -11,12 +11,30 @@ import { TypeormCustomLogger } from './common/logger/typeorm-logger.config';
 import { getTypeormLogLevel } from './common/helper/logger.helper';
 import { CacheModule } from '@nestjs/cache-manager';
 import { CgiSftpModule } from './modules/cgi-sftp/cgi-sftp.module';
+import { PermitModule } from './modules/permit/permit.module';
+import { ClsModule } from 'nestjs-cls';
+import { v4 as uuidv4 } from 'uuid';
 
 const envPath = path.resolve(process.cwd() + '/../');
 @Module({
   imports: [
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({ envFilePath: `${envPath}/.env` }),
+    ClsModule.forRoot({
+      global: true,
+      middleware: {
+        // automatically mount the
+        // ClsMiddleware for all routes
+        mount: true,
+        generateId: true,
+        idGenerator: (req: Request) => {
+          const correlationId = req.headers['x-correlation-id'];
+          return Array.isArray(correlationId)
+            ? correlationId[0]
+            : correlationId ?? uuidv4();
+        },
+      },
+    }),
     TypeOrmModule.forRoot({
       type: 'mssql',
       host: process.env.MSSQL_HOST,
@@ -41,6 +59,7 @@ const envPath = path.resolve(process.cwd() + '/../');
     TpsPermitModule,
     FeatureFlagsModule,
     CgiSftpModule,
+    PermitModule,
   ],
   controllers: [AppController],
   providers: [AppService],
