@@ -60,4 +60,8 @@ export class AuthService {
   ): Promise<ReadCompanyMetadataDto[]> {
     return await this.usersService.getCompaniesForUser(userGuid);
   }
+
+  validateServiceAccountUser(clientId: string): boolean{
+    return clientId === process.env.ORBC_SERVICE_ACCOUNT_CLIENT_ID;
+  }
 }
