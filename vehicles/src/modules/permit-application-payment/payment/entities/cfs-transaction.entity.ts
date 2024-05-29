@@ -6,13 +6,12 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
-import { Base } from '../../../common/entities/base.entity';
 import { Transaction } from './transaction.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { CfsFileStatus } from 'src/common/enum/cfs-file-status.enum';
 
 @Entity({ name: 'permit.ORBC_CFS_TRANSACTION_DETAIL' })
-export class CfsTransactionDetail extends Base {
+export class CfsTransactionDetail {
   /**
    * A unique auto-generated ID for each permit transaction entity.
    */
@@ -39,13 +38,13 @@ export class CfsTransactionDetail extends Base {
 
   @AutoMap()
   @ApiProperty({
-    example: 'READY',
+    example: CfsFileStatus.READY,
     description: 'Represents the file status',
   })
   @Column({
     type: 'simple-enum',
     enum: CfsFileStatus,
-    name: 'CFS_FILE_STATUS',
+    name: 'CFS_FILE_STATUS_TYPE',
     nullable: false,
   })
   fileStatus: CfsFileStatus;

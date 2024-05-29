@@ -2,6 +2,7 @@ import { Cache } from 'cache-manager';
 import { CacheKey } from '../enum/cache-key.enum';
 import { PaymentCardType } from '../enum/payment-card-type.enum';
 import {
+  CfsPaymentMethodType,
   ExtendedPaymentMethodType,
   PaymentMethodType,
 } from '../enum/payment-method-type.enum';
@@ -46,4 +47,10 @@ export const formatAmount = (
   } else {
     return `${formattedAmount}`;
   }
+};
+
+export const isCfsPaymentMethodType = (
+  paymentMethodType: PaymentMethodType,
+): paymentMethodType is CfsPaymentMethodType => {
+  return paymentMethodType in CfsPaymentMethodType;
 };
