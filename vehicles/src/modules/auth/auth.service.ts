@@ -61,7 +61,7 @@ export class AuthService {
     return await this.usersService.getCompaniesForUser(userGuid);
   }
 
-  validateServiceAccountUser(clientId: string): boolean{
+  validateServiceAccountUser(clientId: string): boolean {
     return clientId === process.env.ORBC_SERVICE_ACCOUNT_CLIENT_ID;
   }
 }

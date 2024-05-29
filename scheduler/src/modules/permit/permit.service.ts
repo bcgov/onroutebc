@@ -7,7 +7,6 @@ import { AxiosRequestConfig } from 'axios';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { lastValueFrom } from 'rxjs';
-import axios from 'axios';
 import { getAccessToken } from 'src/common/helper/gov-common-services.helper';
 import { GovCommonServices } from 'src/common/enum/gov-common-services.enum';
 
@@ -28,9 +27,8 @@ export class PermitService {
   @Cron(`${process.env.ISSUE_PERMIT_POLLING_INTERVAL || '0 */1 * * * *'}`)
   @LogAsyncMethodExecution()
   async triggerIssuePermitSchedule() {
-    console.log('Issue Permit Schedule');
     const url = process.env.ACCESS_API_URL + `/permits/scheduler/issue`;
-    console.log(await this.accessApi(url));
+    await this.accessApi(url);
   }
 
   /**
@@ -40,19 +38,19 @@ export class PermitService {
   @Cron(`${process.env.GENERATE_DOCUMENT_POLLING_INTERVAL || '0 */1 * * * *'}`)
   @LogAsyncMethodExecution()
   async triggerGenerateDocumentSchedule() {
-    console.log('Generate Document Schedule');
     const url = process.env.ACCESS_API_URL + `/permits/scheduler/document`;
-    console.log(await this.accessApi(url));
+    await this.accessApi(url);
   }
 
   async accessApi(url: string) {
-    const token = await getAccessToken(GovCommonServices.ORBC_SERVICE_ACCOUNT, this.httpService,this.cacheManager);
-    console.log(token);
+    const token = await getAccessToken(
+      GovCommonServices.ORBC_SERVICE_ACCOUNT,
+      this.httpService,
+      this.cacheManager,
+    );
     const reqConfig: AxiosRequestConfig = {
-      headers: {
-        Authorization: token,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     };
-    await lastValueFrom(this.httpService.post(url, reqConfig));
+    await lastValueFrom(this.httpService.post(url, null, reqConfig));
   }
 }

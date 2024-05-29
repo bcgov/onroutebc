@@ -25,8 +25,10 @@ export class JwtServiceAccountStrategy extends PassportStrategy(
     });
   }
 
-   validate(payload: IUserJWT) {
-    console.log('payload from jwt sa',payload)
-    return  this.authService.validateServiceAccountUser(payload.clientId)
+  validate(payload: IUserJWT) {
+    const result = this.authService.validateServiceAccountUser(
+      payload.clientId,
+    );
+    return result;
   }
 }

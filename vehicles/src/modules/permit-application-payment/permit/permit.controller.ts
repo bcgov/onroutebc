@@ -205,7 +205,6 @@ export class PermitController {
   @UseGuards(JwtServiceAccountAuthGuard)
   @Post('/scheduler/issue')
   issuePermit() {
-    console.log('Issue Permit Scheduler Controller');
     return 'success';
   }
 
@@ -217,7 +216,6 @@ export class PermitController {
   @UseGuards(JwtServiceAccountAuthGuard)
   @Post('/scheduler/document')
   generateDocument() {
-    console.log('Generate Document Scheduler Controller');
     return 'success';
   }
 }
