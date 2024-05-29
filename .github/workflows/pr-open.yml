@@ -103,7 +103,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Generate release tag
-        id: generate_release_tag
+        id: release_tag
         shell: bash
         run: |  
           echo next_release_tag=$(expr $(echo $(curl https://api.github.com/repos/bcgov/onroutebc/releases | grep tag_name | cut -d '-' -f3 - | cut -d '"' -f1 -) + 1)) >> $GITHUB_OUTPUT
@@ -131,4 +131,4 @@ jobs:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.package }}
           target: ${{ needs.vars.outputs.pr }} 
-          tags: ${{ needs.create-release.outputs.generate_release_tag.outputs.next_release_tag }}  #Promote images AFTER successful deploy
+          tags: ${{ needs.create-release.outputs.release_tag }}  #Promote images AFTER successful deploy
