@@ -4,6 +4,7 @@ import "./LOAReview.scss";
 import { LOAFormData } from "../../../../types/LOAFormData";
 import { DATE_FORMATS, dayjsToLocalStr } from "../../../../../../common/helpers/formatDate";
 import { applyWhenNotNullable } from "../../../../../../common/helpers/util";
+import { VEHICLE_TYPES } from "../../../../../manageVehicles/types/Vehicle";
 
 export const LOAReview = () => {
   const { getValues } = useFormContext<LOAFormData>();
@@ -35,8 +36,14 @@ export const LOAReview = () => {
   );
 
   const selectedVehicles = [
-    ...formData.selectedPowerUnits,
-    ...formData.selectedTrailers,
+    ...Object.values(formData.selectedVehicles.powerUnits).map(powerUnit => ({
+      ...powerUnit,
+      vehicleType: VEHICLE_TYPES.POWER_UNIT,
+    })),
+    ...Object.values(formData.selectedVehicles.trailers).map(trailer => ({
+      ...trailer,
+      vehicleType: VEHICLE_TYPES.TRAILER,
+    })),
   ];
 
   return (

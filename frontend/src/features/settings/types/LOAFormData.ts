@@ -4,6 +4,7 @@ import { Nullable } from "../../../common/types/common";
 import { PERMIT_TYPES } from "../../permits/types/PermitType";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { now } from "../../../common/helpers/formatDate";
+import { LOAVehicle } from "./LOAVehicle";
 
 export interface LOAFormData {
   permitTypes: {
@@ -23,22 +24,10 @@ export interface LOAFormData {
     fileMimeType: string;
   }> | File;
   additionalNotes?: Nullable<string>;
-  selectedPowerUnits: {
-    vehicleId: string;
-    unitNumber?: Nullable<string>;
-    make: string;
-    vin: string;
-    plate: string;
-    vehicleSubType: string;
-  }[];
-  selectedTrailers: {
-    vehicleId: string;
-    unitNumber?: Nullable<string>;
-    make: string;
-    vin: string;
-    plate: string;
-    vehicleSubType: string;
-  }[];
+  selectedVehicles: {
+    powerUnits: Record<string, Nullable<LOAVehicle>>;
+    trailers: Record<string, Nullable<LOAVehicle>>;
+  };
 }
 
 export const defaultLOAFormData = (
@@ -57,8 +46,8 @@ export const defaultLOAFormData = (
   const neverExpires = getDefaultRequiredVal(false, formData?.neverExpires);
   const expiryDate = neverExpires ? null : getDefaultRequiredVal(null, formData?.expiryDate);
   const additionalNotes = getDefaultRequiredVal("", formData?.additionalNotes);
-  const selectedPowerUnits = getDefaultRequiredVal([], formData?.selectedPowerUnits);
-  const selectedTrailers = getDefaultRequiredVal([], formData?.selectedTrailers);
+  const powerUnits = getDefaultRequiredVal({}, formData?.selectedVehicles?.powerUnits);
+  const trailers = getDefaultRequiredVal({}, formData?.selectedVehicles?.trailers);
   const defaultFile = formData?.uploadFile ? formData.uploadFile : null;
 
   return {
@@ -68,7 +57,9 @@ export const defaultLOAFormData = (
     neverExpires,
     uploadFile: defaultFile,
     additionalNotes,
-    selectedPowerUnits,
-    selectedTrailers,
+    selectedVehicles: {
+      powerUnits,
+      trailers,
+    },
   };
 };
