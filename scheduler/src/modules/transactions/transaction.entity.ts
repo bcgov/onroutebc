@@ -7,5 +7,8 @@ export class Transaction {
 
   @Column()
   TOTAL_TRANSACTION_AMOUNT: number;
+
+  @Column()
+  TRANSACTION_TYPE: string;
   
 }

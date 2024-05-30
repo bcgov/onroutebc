@@ -38,6 +38,7 @@ export class CgiSftpController {
   ) {
     // const myservice = new MyService();
     // const transactionService = new TransactionService(new Repository<Transaction>());
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     this.cgiSftpService.upload(file, fileName);
   }
 }

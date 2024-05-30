@@ -1,19 +1,8 @@
 import { config as dotenvConfig } from "dotenv";
 import * as fs from 'fs';
-// import { ConnectionPool, connect} from 'mssql';
 import { join, resolve } from 'path';
-// import { CgiGenerator } from "./cgigenerator.helper";
-// import { TransactionService } from "src/modules/transactions/transaction.service";
-// import { Repository, getRepository } from "typeorm";
-
 import { Transaction } from "src/modules/transactions/transaction.entity";
-// import { MyService } from "./myservice";
-// import { createConnections } from 'typeorm';
-
-// const transactionRepository = getRepositoryForEntity();
-// const transactionService = new TransactionService(transactionRepository);
-// const cgiGenerator = new CgiGenerator(transactionService);
-
+import { Readable } from "typeorm/platform/PlatformTools";
 
 const envFilePath = resolve(__dirname, "../../../.env");
 const result = dotenvConfig({ path: envFilePath });
@@ -23,8 +12,6 @@ if (result.error) {
 }
 
 const maxBatchId: string = '';
-// let transactions: Promise<Transaction[]>;
-
 
 class BatchHeader {
   feederNumber: string;
@@ -44,9 +31,6 @@ class BatchHeader {
   } 
 }
 
-
-
-
   function formatDateToCustomString(date: Date): string {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1
@@ -59,12 +43,15 @@ class BatchHeader {
   }
   
   function getFiscalYear(): number {
-    return 2024;
+    const currentYear = new Date().getFullYear();
+    return currentYear + 1;
   }
   
+  let batchCounter = 0;
+
   function getBatchNumber(): string {
-    // 9 characters
-    return `000000001`;
+    batchCounter++;
+    return batchCounter.toString().padStart(9, '0');
   }
   
   // Journal name: 10 characters
@@ -97,6 +84,9 @@ class BatchHeader {
     // 15 characters
     let total: number = 0.0;
     for (const transaction of transactions) {
+      if(transaction.TRANSACTION_TYPE === `R`)
+        if(transaction.TOTAL_TRANSACTION_AMOUNT > 0.0)
+          transaction.TOTAL_TRANSACTION_AMOUNT = 0.0 - transaction.TOTAL_TRANSACTION_AMOUNT;
       total += Number(transaction.TOTAL_TRANSACTION_AMOUNT);
     }
   
@@ -208,11 +198,6 @@ class BatchHeader {
     return `abcdefghi`;
   }
   
-  // function getAmountOfLine(): string {
-  //   // 15 chars
-  //   return `111112222233.33`;
-  // }
-  
   function getLineCode(): string {
     // 1 char, C or D
     return `C`;
@@ -243,7 +228,6 @@ class BatchHeader {
     const feederNumber: string = `3535`;
     const batchType: string = `GA`;
     const transactionType: string = `BH`;
-    // const delimiter: string = `1D`;
     const delimiterHex = 0x1D;
     const delimiter = String.fromCharCode(delimiterHex);
     const fiscalYear: number = getFiscalYear();
@@ -263,14 +247,11 @@ class BatchHeader {
     return batchHeader;
   }
 
-
-
 function populateJournalHeader(transactions: Transaction[]): string {
   let journalHeader: string = ``;
   const feederNumber: string = `3535`;
   const batchType: string = `GA`;
   const transactionType: string = `JH`;
-  // const delimiter: string = `1D`;
   const delimiterHex = 0x1D;
   const delimiter = String.fromCharCode(delimiterHex);
   const journalName: string = globalJournalName;
@@ -289,8 +270,6 @@ function populateJournalHeader(transactions: Transaction[]): string {
 function populateJournalVoucherDetail(cgiFileName: string, transactions: Transaction[]): void {
   const feederNumber: string = `3535`;
   const batchType: string = `GA`;
-  const transactionType: string = `JD`;
-  // const delimiter: string = `1D`;
   const delimiterHex = 0x1D;
   const delimiter = String.fromCharCode(delimiterHex);
   const journalName: string = globalJournalName;
@@ -312,9 +291,9 @@ function populateJournalVoucherDetail(cgiFileName: string, transactions: Transac
   const lineDescription: string = getLineDescription();
 
   for (const transaction of transactions) {
-
-    const lineTotal = getLineTotle(transaction.TOTAL_TRANSACTION_AMOUNT);
-
+    const transactionType = transaction.TRANSACTION_TYPE;
+    let lineTotal = '';    
+    lineTotal = getLineTotle(transaction.TOTAL_TRANSACTION_AMOUNT);
     let journalVoucher: string = `${feederNumber}`;
     journalVoucher += `${batchType}`;
     journalVoucher += `${transactionType}`;
@@ -362,17 +341,13 @@ function populateBatchTrailer(transactions: Transaction[]): string {
   const feederNumber: string = `3535`;
   const batchType: string = `GA`;
   const transactionType: string = `BT`;
-  // const delimiter: string = `1D`;
   const delimiterHex = 0x1D;
   const delimiter = String.fromCharCode(delimiterHex);
   const fiscalYear: number = getFiscalYear();
-
   const batchNumber: string = getBatchNumber();
   const controlTotal: string = getControlTotal(transactions);
   const feederNumberClientSystem: string = getFeederNumberClientSystem();
   const controlCount: string = getControlCount(transactions);
-
-  
 
   batchTrailer = batchTrailer + feederNumber + batchType + transactionType + delimiter + feederNumber
     + fiscalYear + batchNumber + controlCount + controlTotal + feederNumberClientSystem + delimiter  + `\n`;
@@ -385,24 +360,19 @@ function generateCgiFile(transactions: Transaction[]): void {
   const cgiFileName: string = `INBOX.F3535.${cgiCustomString}`;
   const batchHeader: string = populateBatchHeader('test_cgi_file', 'test_cgi_ack_file');
   fs.writeFileSync(cgiFileName, batchHeader);
-
   console.log(maxBatchId);
-
   const journalHeader: string = populateJournalHeader(transactions);
   fs.appendFileSync(cgiFileName, journalHeader);
-
   populateJournalVoucherDetail(cgiFileName, transactions);
-
   const batchTrailer: string = populateBatchTrailer(transactions);
   fs.appendFileSync(cgiFileName, batchTrailer);
   console.log(`${cgiFileName} generated.`);
-
   const cgiTrigerFileName: string = `INBOX.F3535.${cgiCustomString}.TRG`;
   fs.writeFileSync(cgiTrigerFileName, ``);
   console.log(`${cgiTrigerFileName} generated.`);
 }
 
-async function moveFile(): Promise<void> {
+async function moveFile(): Promise<{ file: Express.Multer.File, fileName: string } | null> {
   const currentDir = process.cwd();
   const sourceDir = currentDir;
   // Destination directory
@@ -411,42 +381,50 @@ async function moveFile(): Promise<void> {
   try {
     const files = await fs.promises.readdir(sourceDir);
     const inboxFiles = files.filter(file => file.startsWith('INBOX.'));
-    // Move each file to the destination directory
-    for (const file of inboxFiles) {
-      const sourceFile = join(sourceDir, file);
-      const destinationFile = join(destinationDir, file);
-
-      await fs.promises.rename(sourceFile, destinationFile);
-      console.log(`File ${sourceFile} moved to ${destinationFile}`);
+    if (inboxFiles.length === 0) {
+      console.log('No files to move');
+      return null;
     }
+
+    const file = inboxFiles[0];
+    const sourceFile = join(sourceDir, file);
+    const destinationFile = join(destinationDir, file);
+
+    // Move the file to the destination directory
+    await fs.promises.rename(sourceFile, destinationFile);
+    console.log(`File ${sourceFile} moved to ${destinationFile}`);
+
+    // Read the file's data
+    const fileData = await fs.promises.readFile(destinationFile);
+
+    // Create a readable stream from the buffer
+    const fileStream = new Readable();
+    fileStream.push(fileData);
+    fileStream.push(null); // Indicate the end of the stream
+
+    // Construct the file object
+    const multerFile: Express.Multer.File = {
+      fieldname: 'file',
+      originalname: file,
+      encoding: '7bit',
+      mimetype: 'application/octet-stream',
+      size: fileData.length,
+      destination: destinationDir,
+      filename: file,
+      path: destinationFile,
+      buffer: fileData,
+      stream: fileStream,
+    };
+
+    return { file: multerFile, fileName: file };
   } catch (err) {
     console.error('Error moving files:', err);
+    return null;
   }
 }
 
-export const generate = async (transactions: Transaction[]): Promise<void> => {
-
-
-  // try {
-  //   await cgiGenerator.getAllTransactions();
-  // } catch (error) {
-  //   // Handle error
-  //   console.error('Error fetching transactions:', error);
-  // }
-
-
-
-
-  // transactions = getTransactions();
+export const generate = async (transactions: Transaction[]): Promise<{ file: Express.Multer.File, fileName: string } | null> => {
   globalJournalName = getJournalName();
   generateCgiFile(transactions);
-  // generateCgiFile(await transactions);
-  await moveFile();
+  return await moveFile();
 }
-
-// function getRepositoryForEntity(): Repository<Transaction> {
-//   return getRepository(Transaction);
-// }
-
-
-
