@@ -30,4 +30,22 @@ export class TransactionService {
     }
   }
 
+  async updateCfsFileStatusType(): Promise<void> {
+    const transactionDetails: ORBC_CFSTransactionDetail[] = await this.cfsTransactionDetailRepo.find({ where: { CFS_FILE_STATUS_TYPE: 'READY' } });
+    // Update the CFS_FILE_STATUS_TYPE to "SENT" for all found transactionDetails
+    const updatedTransactionDetails: ORBC_CFSTransactionDetail[] = transactionDetails.map(detail => {
+      detail.CFS_FILE_STATUS_TYPE = 'SENT';
+      return detail;
+    });
+
+    // Save the updated transactionDetails to the database
+    try {
+      await this.cfsTransactionDetailRepo.save(updatedTransactionDetails);
+      console.log(`Updated transaction details`);
+    } catch (error) {
+      console.error('Error updating transaction details:', error);
+      throw error; // Optional: rethrow the error to propagate it
+    }
+  }
+
 }

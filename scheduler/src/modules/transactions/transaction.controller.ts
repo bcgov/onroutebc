@@ -22,6 +22,10 @@ export class TransactionController {
     const fileName: string = result.fileName;
     cgiSftpService.upload(fileData, fileName);
 
+    // update CFS_FILE_STATUS_TYPE
+    await this.transactionService.updateCfsFileStatusType();
+
+
     // return transactions;
     return transactions;
   }
