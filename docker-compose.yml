@@ -1,4 +1,13 @@
 services:
+  sftp:
+    container_name: sftp
+    image: atmoz/sftp
+    volumes:
+        - ${LOCAL_SHARE_FOLDER}:${SFTP_SHARE_FOLDER}
+        - ${LOCAL_PUBLIC_KEY_LOCATION}:${SFTP_PUBLIC_KEY_LOCATION}
+    ports:
+        - "22:22"
+    command: ${CFS_SFTP_USERNAME}::1001
   sql-server-db:
     container_name: sql-server-db
     build:
@@ -191,6 +200,12 @@ services:
       TPS_PENDING_POLLING_INTERVAL: ${TPS_PENDING_POLLING_INTERVAL}
       TPS_ERROR_POLLING_INTERVAL: ${TPS_ERROR_POLLING_INTERVAL}
       TPS_MONITORING_POLLING_INTERVAL: ${TPS_MONITORING_POLLING_INTERVAL}
+      CFS_PRIVATE_KEY: ${CFS_PRIVATE_KEY}
+      CFS_PRIVATE_KEY_PASSPHRASE: ${CFS_PRIVATE_KEY_PASSPHRASE}
+      CFS_SFTP_USERNAME: ${CFS_SFTP_USERNAME}
+      CFS_SFTP_HOST: ${CFS_SFTP_HOST}
+      CFS_SFTP_PORT: ${CFS_SFTP_PORT}
+      CFS_REMOTE_PATH: ${CFS_REMOTE_PATH}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5050/"]
       interval: 1m30s

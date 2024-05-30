@@ -1,7 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 
-import { getPayBCPaymentDetails, usePaymentByTransactionIdQuery } from "../../helpers/payment";
+import {
+  getPayBCPaymentDetails,
+  usePaymentByTransactionIdQuery,
+} from "../../helpers/payment";
 import { Loading } from "../../../../common/pages/Loading";
 import { useCompleteTransaction, useIssuePermits } from "../../hooks/hooks";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
@@ -18,6 +21,8 @@ import {
   CompleteTransactionRequestData,
   PayBCPaymentDetails,
 } from "../../types/payment";
+import { useAddToCart } from "../../hooks/cart";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 
 /**
  * React component that handles the payment redirect and displays the payment status.
@@ -27,6 +32,7 @@ import {
 export const PaymentRedirect = () => {
   const navigate = useNavigate();
   const completedTransaction = useRef(false);
+  const { companyId } = useContext(OnRouteBCContext);
   const issuedPermit = useRef(false);
   const [searchParams] = useSearchParams();
   const paymentDetails = getPayBCPaymentDetails(searchParams);
@@ -34,6 +40,7 @@ export const PaymentRedirect = () => {
   const transactionId = getDefaultRequiredVal("", searchParams.get("ref2"));
   const transactionQueryString = encodeURIComponent(searchParams.toString());
   const transactionIdQuery = usePaymentByTransactionIdQuery(transactionId);
+  const addToCartMutation = useAddToCart();
 
   const { mutation: completeTransactionMutation, paymentApproved } =
     useCompleteTransaction(
@@ -56,31 +63,46 @@ export const PaymentRedirect = () => {
   }, [paymentDetails.trnApproved]);
 
   useEffect(() => {
-
-    const applicationIds:string[] = [];
+    const applicationIds: string[] = [];
     if (transactionIdQuery?.isSuccess && issuedPermit?.current === false) {
-      
       transactionIdQuery?.data?.applicationDetails?.forEach((application) => {
         if (application?.applicationId) {
           applicationIds.push(application.applicationId);
         }
-      })
+      });
 
       if (paymentApproved === true) {
         // Payment successful, proceed to issue permit
         issuePermitsMutation.mutate(applicationIds);
         issuedPermit.current = true;
       } else if (paymentApproved === false) {
-        // Payment failed, redirect back to pay now page
-        navigate(SHOPPING_CART_ROUTES.DETAILS(true), {
-          replace: true,
-        });
+        // Add back to cart and then redirect to shopping cart.
+        if (!addToCartMutation.isPending && addToCartMutation.isIdle) {
+          addToCartMutation
+            .mutateAsync({
+              companyId: `${companyId}`,
+              applicationIds,
+            })
+            .then(({ failure }) => {
+              // Cannot add applications back to cart
+              if (failure.length > 0) {
+                navigate(ERROR_ROUTES.UNEXPECTED);
+              } else {
+                // Payment failed, redirect back to pay now page
+                navigate(SHOPPING_CART_ROUTES.DETAILS(true), {
+                  replace: true,
+                });
+              }
+            })
+            .catch(() => {
+              navigate(ERROR_ROUTES.UNEXPECTED);
+            });
+        }
       }
     }
 
     if (transactionIdQuery?.isError)
       navigate(ERROR_ROUTES.UNEXPECTED, { replace: true });
-
   }, [paymentApproved, transactionIdQuery]);
 
   if (issueFailed) {
@@ -92,12 +114,7 @@ export const PaymentRedirect = () => {
   const hasValidIssueResults = successIds.length > 0;
 
   if (hasValidIssueResults) {
-    return (
-      <Navigate
-        to={`${PERMITS_ROUTES.SUCCESS}`}
-        replace={true}
-      />
-    );
+    return <Navigate to={`${PERMITS_ROUTES.SUCCESS}`} replace={true} />;
   }
 
   return <Loading />;
