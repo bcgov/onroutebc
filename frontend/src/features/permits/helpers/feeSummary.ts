@@ -5,7 +5,6 @@ import { isValidTransaction } from "./payment";
 import { Nullable } from "../../../common/types/common";
 import { PERMIT_STATES, getPermitState } from "./permitState";
 import { PERMIT_TYPES, PermitType } from "../types/PermitType";
-
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -115,12 +114,11 @@ export const isZeroAmount = (amount: number) => {
  */
 export const calculateAmountForVoid = (
   permit: Permit,
-  permitHistory: PermitHistory[],
 ) => {
   const permitState = getPermitState(permit);
   if (permitState === PERMIT_STATES.EXPIRED) {
     return 0;
   }
 
-  return calculateNetAmount(permitHistory);
+  return calculateFeeByDuration(permit.permitType, permit.permitData.permitDuration);
 };
