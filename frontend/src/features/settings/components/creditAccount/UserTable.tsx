@@ -36,8 +36,6 @@ export const UserTable = () => {
     refetch: refetchCreditAccount,
   } = useGetCreditAccountQuery();
 
-  console.log(data?.users);
-
   const { setSnackBar } = useContext(SnackBarContext);
   const { user: userFromToken } = useAuth();
 

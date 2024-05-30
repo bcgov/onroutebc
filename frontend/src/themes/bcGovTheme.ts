@@ -192,6 +192,45 @@ export const bcGovTheme = createTheme({
         },
       },
     },
+    MuiSnackbar: {
+      styleOverrides: {
+        anchorOriginTopCenter: {
+          "@media (min-width: 600px)": {
+            top: 115
+          }
+        }
+      }
+    },
+    MuiAlert: {
+      styleOverrides: {
+        root: {
+          border: "1px solid",
+          borderRadius: "40px",
+          fontSize: "20px",
+          fontWeight: 700,
+          padding: ".5rem 1.5rem",
+          ".MuiAlert-icon": {
+            alignItems: "center",
+            fontSize: "1.5rem"
+          },
+          "&.MuiAlert-standardSuccess": {
+            backgroundColor: BC_COLOURS.bc_messages_green_background,
+            borderColor: BC_COLOURS.bc_messages_green_text,
+            color: BC_COLOURS.bc_messages_green_text,
+          },
+          "&.MuiAlert-standardInfo": {
+            backgroundColor: BC_COLOURS.bc_messages_blue_background,
+            borderColor: BC_COLOURS.bc_primary_blue,
+            color: BC_COLOURS.bc_primary_blue,
+          },
+          "&.MuiAlert-standardError": {
+            backgroundColor: BC_COLOURS.bc_messages_red_background,
+            borderColor: BC_COLOURS.bc_messages_red_text,
+            color: BC_COLOURS.bc_messages_red_text,
+          },
+        }
+      }
+    }
   },
 });
 

@@ -1,7 +1,14 @@
 import { BrowserRouter as Router } from "react-router-dom";
 import { AppRoutes } from "./routes/Routes";
 import { ThemeProvider } from "@mui/material/styles";
-import { createContext, Dispatch, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, AuthProviderProps } from "react-oidc-context";
 import { WebStorageStateStore } from "oidc-client-ts";
@@ -70,7 +77,8 @@ const App = () => {
   const [onRouteBCClientNumber, setOnRouteBCClientNumber] =
     useState<Optional<string>>();
   const [companyLegalName, setCompanyLegalName] = useState<Optional<string>>();
-  const [isCompanySuspended, setIsCompanySuspended] = useState<Optional<boolean>>();
+  const [isCompanySuspended, setIsCompanySuspended] =
+    useState<Optional<boolean>>();
   const [userDetails, setUserDetails] =
     useState<Optional<BCeIDUserDetailContext>>();
   const [idirUserDetails, setIDIRUserDetails] =
