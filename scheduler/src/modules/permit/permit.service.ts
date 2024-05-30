@@ -26,7 +26,7 @@ export class PermitService {
    */
   @Cron(`${process.env.ISSUE_PERMIT_POLLING_INTERVAL || '0 */1 * * * *'}`)
   @LogAsyncMethodExecution()
-  async triggerIssuePermitSchedule() {
+  async issuePermitSchedule() {
     const url = process.env.ACCESS_API_URL + `/permits/scheduler/issue`;
     await this.accessApi(url);
   }
@@ -37,7 +37,7 @@ export class PermitService {
    */
   @Cron(`${process.env.GENERATE_DOCUMENT_POLLING_INTERVAL || '0 */1 * * * *'}`)
   @LogAsyncMethodExecution()
-  async triggerGenerateDocumentSchedule() {
+  async generateDocumentSchedule() {
     const url = process.env.ACCESS_API_URL + `/permits/scheduler/document`;
     await this.accessApi(url);
   }
