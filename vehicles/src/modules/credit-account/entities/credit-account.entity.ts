@@ -70,10 +70,10 @@ export class CreditAccount extends Base {
   cfsPartyNumber: number;
 
   /**
-   * The unique number associated with the credit account. Its same as the onRouteBC Client number from ORBC_COMPANY
+   * The unique number associated with the credit account. Its the ORBC_CREDIT_ACCOUNT_NUMBER_SEQ prefixed with WS.
    */
   @AutoMap()
-  @Column({ length: 13, name: 'CREDIT_ACCOUNT_NUMBER', nullable: false })
+  @Column({ length: 6, name: 'CREDIT_ACCOUNT_NUMBER', nullable: false })
   creditAccountNumber: string;
 
   /**
