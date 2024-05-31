@@ -36,6 +36,7 @@ import { ApplicationModule } from './modules/permit-application-payment/applicat
 import { PaymentModule } from './modules/permit-application-payment/payment/payment.module';
 import { PermitReceiptDocumentModule } from './modules/permit-application-payment/permit-receipt-document/permit-receipt-document.module';
 import { ShoppingCartModule } from './modules/shopping-cart/shopping-cart.module';
+import { CreditAccount } from './modules/credit-account/entities/credit-account.entity';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
@@ -97,6 +98,7 @@ const envPath = path.resolve(process.cwd() + '/../');
     PermitReceiptDocumentModule,
     ApplicationModule, //! Application Module should be imported before PermitModule to avoid URI conflict
     PermitModule,
+    CreditAccount,
     FeatureFlagsModule,
   ],
   controllers: [AppController],
