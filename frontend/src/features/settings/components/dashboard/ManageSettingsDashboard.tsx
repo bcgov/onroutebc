@@ -44,14 +44,6 @@ export const ManageSettingsDashboard = React.memo(() => {
 
   // Add more tabs here later when needed (eg. "Special Authorization", "Credit Account")
   const tabs = [
-    showSuspendTab
-      ? {
-          label: "Suspend",
-          component: (
-            <Suspend companyId={companyId} hideTab={handleHideSuspendTab} />
-          ),
-        }
-      : null,
     showCreditAccountTab
       ? {
           label: "Credit Account",
@@ -60,6 +52,14 @@ export const ManageSettingsDashboard = React.memo(() => {
               companyId={companyId}
               hideTab={handleHideCreditAccountTab}
             />
+          ),
+        }
+      : null,
+    showSuspendTab
+      ? {
+          label: "Suspend",
+          component: (
+            <Suspend companyId={companyId} hideTab={handleHideSuspendTab} />
           ),
         }
       : null,

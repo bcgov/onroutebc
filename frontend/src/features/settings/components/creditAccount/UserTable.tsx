@@ -1,11 +1,11 @@
 import { Box, Button, Typography } from "@mui/material";
 import { RowSelectionState } from "@tanstack/table-core";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { useAuth } from "react-oidc-context";
-
+// import { useAuth } from "react-oidc-context";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import {
   MaterialReactTable,
-  MRT_Row,
+  // MRT_Row,
   useMaterialReactTable,
 } from "material-react-table";
 
@@ -24,6 +24,7 @@ import {
 import { CreditAccountUserColumnsDefinition } from "../../types/CreditAccountUserColumns";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile.d";
 import "./UserTable.scss";
+import { canUpdateCreditAccount } from "../../helpers/permissions";
 
 /**
  * User Management Component for CV Client.
@@ -37,55 +38,54 @@ export const UserTable = () => {
   } = useGetCreditAccountQuery();
 
   const { setSnackBar } = useContext(SnackBarContext);
-  const { user: userFromToken } = useAuth();
+  const { userRoles } = useContext(OnRouteBCContext);
+  // const { user: userFromToken } = useAuth();
 
   const removeCreditAccountUsersMutation =
     useRemoveCreditAccountUsersMutation();
 
   const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
-  /**
-   * rowSelection is a Record<string, boolean>. The key follows the pattern
-   * - {userGUID},{ACTIVE} (if existing user)
-   * - {userName},{PENDING} (if pending user)
-   * This is a conscious design choice so that we can quickly
-   * recognize whether a selected user is ACTIVE or PENDING.
-   * The alternative will be to create another state with lot more
-   * processing to figure out the distinction between ACTIVE and PENDING.
-   *
-   * Why do we need this distinction?
-   * - Users selected for deletion will use two different APIs for pending and active users
-   *
-   */
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
 
   /**
-   * Callback function for clicking on the Trash icon above the Table.
+   * Callback function for clicking on the 'remove user' button above the Table.
    */
   const onClickRemoveButton = useCallback(() => {
     setIsRemoveDialogOpen(() => true);
   }, []);
 
   /**
-   * Retrieves user identifiers based on their status from the row selection state.
-   * @param {BCeIDUserStatusType} userStatus The status of the users to filter by.
-   * @returns {string[]} An array of user identifiers (either user names or GUIDs)
-   *                     based on the requested status.
+   * Retrieves user identifiers from the row selection state.
    */
   const getSelectedUsers = useCallback(
     () => Object.keys(rowSelection).map((value: string) => value.split(",")[1]),
     [rowSelection],
   );
 
+  const isActionSuccessful = (status: number) => {
+    return status === 200;
+  };
+
   /**
    * Function that removes one or more users.
    */
   const onConfirmRemove = async () => {
-    setIsRemoveDialogOpen(() => false);
     const userClientNumbers: string[] = getSelectedUsers();
-    if (userClientNumbers.length > 0) {
-      await removeCreditAccountUsersMutation.mutateAsync(userClientNumbers);
+    if (userClientNumbers.length !== 0) {
+      const { status } =
+        await removeCreditAccountUsersMutation.mutateAsync(userClientNumbers);
+      if (isActionSuccessful(status)) {
+        setIsRemoveDialogOpen(() => false);
+        setSnackBar({
+          message: "Account User(s) Removed",
+          showSnackbar: true,
+          setShowSnackbar: () => true,
+          alertType: "info",
+        });
+      }
     }
+
     setRowSelection(() => {
       return {};
     });
@@ -129,14 +129,18 @@ export const UserTable = () => {
     },
     enableGlobalFilter: false,
     renderEmptyRowsFallback: () => <NoRecordsFound />,
-    enableRowSelection: (row: MRT_Row<CompanyProfile>): boolean => {
-      if (
-        row?.original?.companyGUID === userFromToken?.profile?.bceid_user_guid
-      ) {
-        return false;
-      }
-      return true;
-    },
+    // enableRowSelection: (row: MRT_Row<CompanyProfile>): boolean => {
+    //   if (
+    //     row?.original?.companyGUID === userFromToken?.profile?.bceid_user_guid
+    //   ) {
+    //     return false;
+    //   }
+    //   if (!canUpdateCreditAccount(userRoles)) {
+    //     return false;
+    //   }
+    //   return true;
+    // },
+    enableRowSelection: canUpdateCreditAccount(userRoles),
     onRowSelectionChange: setRowSelection,
     getRowId: (originalRow: CompanyProfile) => {
       return originalRow.companyGUID;
@@ -149,19 +153,22 @@ export const UserTable = () => {
         size: 1,
       },
     },
+
     renderToolbarInternalActions: useCallback(
       () => (
         <Box className="toolbar__inner">
           <Typography variant="h3" className="user-table__heading">
             Credit Account Users
           </Typography>
-          <Button
-            className="user-table__button user-table__button--remove"
-            onClick={onClickRemoveButton}
-            disabled={hasNoRowsSelected}
-          >
-            Remove User
-          </Button>
+          {canUpdateCreditAccount(userRoles) && (
+            <Button
+              className="user-table__button user-table__button--remove"
+              onClick={onClickRemoveButton}
+              disabled={hasNoRowsSelected}
+            >
+              Remove User
+            </Button>
+          )}
         </Box>
       ),
       [hasNoRowsSelected],
@@ -177,6 +184,9 @@ export const UserTable = () => {
     },
     muiTopToolbarProps: {
       className: "user-table__toolbar",
+    },
+    muiTableHeadProps: {
+      className: "user-table__head",
     },
     muiTableHeadCellProps: {
       className: "user-table__cell",

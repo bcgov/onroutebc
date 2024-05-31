@@ -53,8 +53,10 @@ export const useGetCompanyQuery = (clientNumber: string) => {
  * @returns Result of the add user to credit account action
  */
 export const useAddCreditAccountUserMutation = (userData: CompanyProfile) => {
+  const navigate = useNavigate();
   return useMutation({
     mutationFn: () => addCreditAccountUser(userData),
+    onError: () => navigate(ERROR_ROUTES.UNEXPECTED)
   });
 };
 
@@ -67,7 +69,6 @@ export const useRemoveCreditAccountUsersMutation = () => {
   const navigate = useNavigate();
   return useMutation({
     mutationFn: removeCreditAccountUsers,
-    onError: () => navigate(ERROR_ROUTES.UNEXPECTED),
-    onSuccess: () => console.log("Credit account user removed")
+    onError: () => navigate(ERROR_ROUTES.UNEXPECTED)
   });
 };

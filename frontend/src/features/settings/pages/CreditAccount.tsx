@@ -21,7 +21,9 @@ import {
 import { AddUser } from "../components/creditAccount/AddUser";
 import { AccountDetails } from "../components/creditAccount/AccountDetails";
 import { SnackBarContext } from "../../../App";
+import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
 import { UserTable } from "../components/creditAccount/UserTable";
+import { canUpdateCreditAccount } from "../helpers/permissions";
 
 export const CreditAccount = ({
   // eslint-disable-next-line
@@ -33,6 +35,7 @@ export const CreditAccount = ({
   hideTab?: (hide: boolean) => void;
 }) => {
   const { setSnackBar } = useContext(SnackBarContext);
+  const { userRoles } = useContext(OnRouteBCContext);
 
   const [invalid, setInvalid] = useState<boolean>(false);
 
@@ -93,8 +96,7 @@ export const CreditAccount = ({
                 {existingCreditAccount.userDesignation}
               </Typography>
             </Box>
-
-            <AddUser />
+            {canUpdateCreditAccount(userRoles) && <AddUser />}
             <UserTable />
           </Box>
           <AccountDetails />

@@ -62,3 +62,19 @@ export const canViewCreditAccount = (
     ),
   );
 };
+
+/**
+ * Determine whether or not a user can add/remove users from and hold/remove credit accounts.
+ * @param userRoles Roles that a user have
+ * @returns Whether or not the user can update the credit account
+ */
+export const canUpdateCreditAccount = (
+  userRoles?: Nullable<UserRolesType[]>,
+): boolean => {
+  return Boolean(
+    DoesUserHaveRole(
+      userRoles,
+      ROLES.WRITE_CREDIT_ACCOUNT,
+    ),
+  );
+};

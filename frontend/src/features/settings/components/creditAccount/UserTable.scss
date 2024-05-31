@@ -25,6 +25,12 @@
       }
     }
   }
+  
+  & &__head {
+    tr {
+      box-shadow: none;
+    }
+  }
 
   & &__heading {
     padding: 0;

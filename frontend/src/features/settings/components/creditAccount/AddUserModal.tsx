@@ -32,9 +32,8 @@ export const AddUserModal = ({
   const addCreditAccountUserResult = useAddCreditAccountUserMutation(userData);
 
   const handleAddUser = async () => {
-    const { status, data } = await addCreditAccountUserResult.mutateAsync();
+    const { status } = await addCreditAccountUserResult.mutateAsync();
     if (isActionSuccessful(status)) {
-      console.log(data);
       onConfirm();
     }
   };

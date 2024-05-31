@@ -9,17 +9,21 @@
     display: flex;
     align-items: flex-start;
     gap: 80px;
+    
+    
   }
 
+
   .account-info {
-    width: 100%;
+    width: 60%;
     .overview {
       padding-bottom: 2rem;
       border-bottom: 1px solid $bc-border-grey;
 
-      & &__title {
+      &__title {
         font-size: 1.25rem;
         font-weight: bold;
+        padding-top: .5rem;
         padding-bottom: 1rem;
       }
     
@@ -28,6 +32,11 @@
       }
     }
   }
+}
+
+.account-details {
+  width: 40%;
+  max-width: 529px; 
 }
 
 .add-credit-account-action {
@@ -60,4 +69,23 @@
       margin-left: 0;
     }
   }
+}
+
+@media screen and (max-width: 1024px) {
+  .credit-account-page {
+    &__split-container {
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+
+    .account-info {
+      width: 100%;
+    }
+
+    .account-details {
+      width: 100%;
+      max-width: none;
+    }
+  }
+ 
 }

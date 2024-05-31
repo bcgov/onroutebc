@@ -2,11 +2,12 @@ import { CustomFormComponent } from "../../../../common/components/form/CustomFo
 import { FormProvider, useForm, FieldValues } from "react-hook-form";
 import { requiredMessage } from "../../../../common/helpers/validationMessages";
 import { Box, Button, Typography } from "@mui/material";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { AddUserModal } from "./AddUserModal";
 import { getCompanyDataBySearch } from "../../../idir/search/api/idirSearch";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import "./AddUser.scss";
+import { SnackBarContext } from "../../../../App";
 
 interface SearchClientFormData {
   clientNumber: string;
@@ -15,6 +16,8 @@ interface SearchClientFormData {
 const FEATURE = "client-search";
 
 export const AddUser = () => {
+  const { setSnackBar } = useContext(SnackBarContext);
+
   const [showAddUserModal, setShowAddUserModal] = useState<boolean>(false);
   const [userData, setUserData] = useState<CompanyProfile>();
 
@@ -50,8 +53,13 @@ export const AddUser = () => {
   };
 
   const handleAddUser = () => {
-    console.log("User added");
     setShowAddUserModal(false);
+    setSnackBar({
+      showSnackbar: true,
+      setShowSnackbar: () => true,
+      alertType: "success",
+      message: "Account User Added",
+    });
   };
 
   return (

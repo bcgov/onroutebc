@@ -126,7 +126,7 @@ export const createCreditAccount = async (
  * @returns Credit account information for the given company
  */
 export const getCreditAccount = async () => {
-  const response = await mockGetCreditAccountFail(CREDIT_ACCOUNT_API_ROUTES.GET_CREDIT_ACCOUNT());
+  const response = await mockGetCreditAccountSuccess(CREDIT_ACCOUNT_API_ROUTES.GET_CREDIT_ACCOUNT());
   return response.data;
 };
 
