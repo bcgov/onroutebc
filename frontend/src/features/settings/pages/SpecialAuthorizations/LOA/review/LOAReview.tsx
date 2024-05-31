@@ -5,6 +5,8 @@ import { LOAFormData } from "../../../../types/LOAFormData";
 import { DATE_FORMATS, dayjsToLocalStr } from "../../../../../../common/helpers/formatDate";
 import { applyWhenNotNullable } from "../../../../../../common/helpers/util";
 import { VEHICLE_TYPES } from "../../../../../manageVehicles/types/Vehicle";
+import { VehicleTable } from "../../../../components/SpecialAuthorizations/LOA/vehicles/VehicleTable";
+import { LOAVehicle } from "../../../../types/LOAVehicle";
 
 export const LOAReview = () => {
   const { getValues } = useFormContext<LOAFormData>();
@@ -51,7 +53,7 @@ export const LOAReview = () => {
       <div className="loa-review__section loa-review__section--permit-types">
         <div className="loa-review__header">Permit Type(s)</div>
         <div className="loa-review__data">
-          {selectedPermitTypes.join(",")}
+          {selectedPermitTypes.join(", ")}
         </div>
       </div>
 
@@ -88,6 +90,9 @@ export const LOAReview = () => {
       {selectedVehicles.length > 0 ? (
         <div className="loa-review__section loa-review__section--vehicles">
           <div className="loa-review__header">Designated Vehicle(s)</div>
+          <VehicleTable
+            vehicles={selectedVehicles as LOAVehicle[]}
+          />
         </div>
       ) : null}
     </div>

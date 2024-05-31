@@ -4,6 +4,7 @@ import React, { useContext, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { FieldValues, FormProvider, useForm } from "react-hook-form";
 
+import "./UserInfoWizard.scss";
 import { SnackBarContext } from "../../App";
 import { LoadBCeIDUserContext } from "../../common/authentication/LoadBCeIDUserContext";
 import { LoadBCeIDUserRolesByCompany } from "../../common/authentication/LoadBCeIDUserRolesByCompany";
@@ -94,7 +95,7 @@ export const UserInfoWizard = React.memo(() => {
           <Banner bannerText="Create a new onRouteBC Profile" />
         </Box>
         <div
-          className="tabpanel-container create-profile-steps"
+          className="user-info-wizard create-profile-steps"
           id={`profile-steps`}
           aria-labelledby={`profile-steps`}
         >

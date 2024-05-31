@@ -5,6 +5,7 @@
 
   &.table-container {
     padding-bottom: 0;
+    margin-top: 0;
   }
 
   &__search {
@@ -25,6 +26,21 @@
           border: none;
         }
       }
+    }
+  }
+
+  & &__container {
+    border: 1px solid $bc-border-grey;
+    width: auto;
+  }
+
+  & &__paper-container {
+    border-radius: 0;
+  }
+
+  & &__checkbox {
+    &--error {
+      color: $bc-red;
     }
   }
 }

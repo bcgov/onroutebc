@@ -1,5 +1,10 @@
-import { useContext, useEffect } from "react";
-import { useFormContext } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
+import {
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 import "./LOADesignateVehicles.scss";
 import { InfoBcGovBanner } from "../../../../../../common/components/banners/InfoBcGovBanner";
@@ -9,12 +14,38 @@ import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../../c
 import { PowerUnit, Trailer, VEHICLE_TYPES } from "../../../../../manageVehicles/types/Vehicle";
 import { LOAFormData } from "../../../../types/LOAFormData";
 import { LOAVehicle } from "../../../../types/LOAVehicle";
+import { VehicleTable } from "../../../../components/SpecialAuthorizations/LOA/vehicles/VehicleTable";
+import { LOAVehicleTabLayout } from "../../../../components/SpecialAuthorizations/LOA/vehicles/LOAVehicleTabLayout";
+import { LOAVehicleTab, LOA_VEHICLE_TABS } from "../../../../types/LOAVehicleTab";
+import { selectionRequired } from "../../../../../../common/helpers/validationMessages";
+import { Nullable, Optional } from "../../../../../../common/types/common";
 import {
   usePowerUnitSubTypesQuery,
   useTrailerSubTypesQuery,
   useVehiclesQuery,
 } from "../../../../../manageVehicles/apiManager/hooks";
-import { VehicleTable } from "../../../../components/SpecialAuthorizations/LOA/vehicles/VehicleTable";
+
+const vehicleSelectionRules =  {
+  validate: {
+    requiredVehicleSelection: (
+      value: Optional<{
+        powerUnits: Record<string, Nullable<LOAVehicle>>;
+        trailers: Record<string, Nullable<LOAVehicle>>;
+      }>,
+    ) => {
+      return (
+        applyWhenNotNullable(
+          selection =>
+            Object.keys(selection.powerUnits).length > 0
+            || Object.keys(selection.trailers).length > 0,
+          value,
+          false,
+        ) ||
+        selectionRequired()
+      );
+    },
+  },
+};
 
 const getVehicleDetailsForSelected = (
   selectedVehicles: string[],
@@ -43,7 +74,16 @@ export const LOADesignateVehicles = () => {
     companyId,
   );
 
-  const { setValue, getValues, watch } = useFormContext<LOAFormData>();
+  const [vehicleTab, setVehicleTab] = useState<LOAVehicleTab>(LOA_VEHICLE_TABS.POWER_UNITS);
+
+  const {
+    setValue,
+    getValues,
+    watch,
+    control,
+    formState: { errors },
+    trigger,
+  } = useFormContext<LOAFormData>();
 
   const selectedPowerUnits = watch("selectedVehicles.powerUnits");
   const selectedTrailers = watch("selectedVehicles.trailers");
@@ -51,18 +91,18 @@ export const LOADesignateVehicles = () => {
   const vehiclesQuery = useVehiclesQuery(companyIdStr);
   const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
   const trailerSubTypesQuery = useTrailerSubTypesQuery();
-  const powerUnitSubTypes = getDefaultRequiredVal(
+  const powerUnitSubTypes = useMemo(() => getDefaultRequiredVal(
     [],
     powerUnitSubTypesQuery.data,
-  );
+  ), [powerUnitSubTypesQuery.data]);
 
-  const trailerSubTypes = getDefaultRequiredVal(
+  const trailerSubTypes = useMemo(() => getDefaultRequiredVal(
     [],
     trailerSubTypesQuery.data,
-  );
+  ), [trailerSubTypesQuery.data]);
 
   const { data: vehicles } = vehiclesQuery;
-  const powerUnits = getDefaultRequiredVal([], vehicles)
+  const powerUnits = useMemo(() => getDefaultRequiredVal([], vehicles)
     .filter(vehicle => vehicle.vehicleType === VEHICLE_TYPES.POWER_UNIT)
     .map((vehicle) => ({
       vehicleId: (vehicle as PowerUnit).powerUnitId,
@@ -76,9 +116,10 @@ export const LOADesignateVehicles = () => {
         type: powerUnitSubTypes
           .find(subType => subType.typeCode === (vehicle as PowerUnit).powerUnitTypeCode)?.type,
       },
-    })) as LOAVehicle[];
+    })) as LOAVehicle[]
+  , [vehicles]);
   
-  const trailers = getDefaultRequiredVal([], vehicles)
+  const trailers = useMemo(() => getDefaultRequiredVal([], vehicles)
     .filter(vehicle => vehicle.vehicleType === VEHICLE_TYPES.TRAILER)
     .map((vehicle) => ({
       vehicleId: (vehicle as Trailer).trailerId,
@@ -92,7 +133,8 @@ export const LOADesignateVehicles = () => {
         type: trailerSubTypes
           .find(subType => subType.typeCode === (vehicle as Trailer).trailerTypeCode)?.type,
       },
-    })) as LOAVehicle[];
+    })) as LOAVehicle[]
+  , [vehicles]);
 
   useEffect(() => {
     // If the fetched power units have ones that have been selected, fill the form data with vehicle information
@@ -121,7 +163,6 @@ export const LOADesignateVehicles = () => {
       Object.fromEntries(detailsOfSelectedIds.map(detail => [detail.vehicleId, {...detail}])),
     );
   }, [trailers, trailerSubTypes]);
-
   
   const selectionForPowerUnitTable = Object.fromEntries(
     Object.keys(selectedPowerUnits).map(id => [`${VEHICLE_TYPES.POWER_UNIT}-${id}`, true]),
@@ -148,6 +189,7 @@ export const LOADesignateVehicles = () => {
       "selectedVehicles.powerUnits",
       Object.fromEntries(detailsOfSelectedIds.map(detail => [detail.vehicleId, {...detail}])),
     );
+    trigger("selectedVehicles");
   };
 
   const handleTrailerSelectionChange = (
@@ -167,7 +209,38 @@ export const LOADesignateVehicles = () => {
       "selectedVehicles.trailers",
       Object.fromEntries(detailsOfSelectedIds.map(detail => [detail.vehicleId, {...detail}])),
     );
+    trigger("selectedVehicles");
   };
+
+  const hasSelectionErrors = Boolean(errors.selectedVehicles?.message);
+  const tabComponents = [
+    {
+      label: "Power Unit",
+      component: (
+        <VehicleTable
+          vehicles={powerUnits}
+          selectedVehicles={selectionForPowerUnitTable}
+          enablePagination={true}
+          enableTopToolbar={true}
+          onUpdateSelection={handlePowerUnitSelectionChange}
+          hasError={hasSelectionErrors}
+        />
+      ),
+    },
+    {
+      label: "Trailer",
+      component: (
+        <VehicleTable
+          vehicles={trailers}
+          selectedVehicles={selectionForTrailerTable}
+          enablePagination={true}
+          enableTopToolbar={true}
+          onUpdateSelection={handleTrailerSelectionChange}
+          hasError={hasSelectionErrors}
+        />
+      ),
+    },
+  ];
 
   return (
     <div className="loa-designate-vehicles">
@@ -185,20 +258,27 @@ export const LOADesignateVehicles = () => {
         className="loa-designate-vehicles__info-banner"
       />
 
-      <VehicleTable
-        vehicles={powerUnits}
-        selectedVehicles={selectionForPowerUnitTable}
-        enablePagination={true}
-        enableTopToolbar={true}
-        onUpdateSelection={handlePowerUnitSelectionChange}
-      />
+      <Controller
+        name="selectedVehicles"
+        control={control}
+        rules={vehicleSelectionRules}
+        render={({
+          fieldState: { error },
+        }) => (
+          <div className="loa-designate-vehicles__selection">
+            <LOAVehicleTabLayout
+              tabComponents={tabComponents}
+              selectedTabIndex={vehicleTab}
+              onTabChange={(tabIndex) => setVehicleTab(tabIndex as LOAVehicleTab)}
+            />
 
-      <VehicleTable
-        vehicles={trailers}
-        selectedVehicles={selectionForTrailerTable}
-        enablePagination={true}
-        enableTopToolbar={true}
-        onUpdateSelection={handleTrailerSelectionChange}
+            {error?.message ? (
+              <div className="loa-designate-vehicles__selection-error">
+                {error.message}
+              </div>
+            ) : null}
+          </div>
+        )}
       />
     </div>
   );

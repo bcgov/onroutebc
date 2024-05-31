@@ -15,4 +15,8 @@
   &__info-message {
     font-weight: normal;
   }
+
+  &__selection-error {
+    color: $bc-red;
+  }
 }

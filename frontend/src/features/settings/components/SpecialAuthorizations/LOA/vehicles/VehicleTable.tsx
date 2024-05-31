@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import {
   MRT_GlobalFilterTextField,
+  MRT_Row,
   MRT_RowSelectionState,
   MRT_TableInstance,
   MaterialReactTable,
@@ -19,10 +20,11 @@ import {
 
 export const VehicleTable = ({
   vehicles,
-  enablePagination,
+  enablePagination = false,
   selectedVehicles,
   onUpdateSelection,
-  enableTopToolbar,
+  enableTopToolbar = false,
+  hasError,
 }: {
   vehicles: LOAVehicle[];
   enablePagination?: boolean;
@@ -31,40 +33,39 @@ export const VehicleTable = ({
   };
   onUpdateSelection?: (selectedVehicles: { [id: string]: boolean; }) => void;
   enableTopToolbar?: boolean;
+  hasError?: boolean;
 }) => {
-  const table = useMaterialReactTable({
-    ...defaultTableOptions,
-    enablePagination,
-    enableBottomToolbar: enablePagination,
-    enableSorting: false,
-    enableRowSelection: Boolean(onUpdateSelection),
-    data: vehicles,
-    columns: LOAVehicleColumnDefinition,
-    initialState: {
-      ...defaultTableInitialStateOptions,
+  const enableRowSelection = Boolean(onUpdateSelection);
+  const enableFilter = Boolean(enableTopToolbar);
+
+  const selectionConfig = enableRowSelection ? {
+    enableRowSelection: true,
+    muiSelectCheckboxProps: {
+      className: `loa-vehicle-table__checkbox ${hasError ? "loa-vehicle-table__checkbox--error" : ""}`,
     },
-    state: {
-      ...defaultTableStateOptions,
-      rowSelection: selectedVehicles,
-    },
-    getRowId: (originalRow) => {
-      return `${originalRow.vehicleType}-${originalRow.vehicleId}`;
-    },
-    onRowSelectionChange: useCallback((updaterFn?: ((old: MRT_RowSelectionState) => MRT_RowSelectionState)) => {
-      if (updaterFn && onUpdateSelection && selectedVehicles) {
-        onUpdateSelection(updaterFn(selectedVehicles));
-      }
-    }, [selectedVehicles]),
-    renderEmptyRowsFallback: () => <NoRecordsFound />,
-    filterFns: enableTopToolbar ? {
-      filterByVINAndPlate: (row, columnId, filterValue) => {
+    onRowSelectionChange: useCallback(
+      (updaterFn?: ((old: MRT_RowSelectionState) => MRT_RowSelectionState)) => {
+        if (updaterFn && onUpdateSelection && selectedVehicles) {
+          onUpdateSelection(updaterFn(selectedVehicles));
+        }
+      },
+      [selectedVehicles, onUpdateSelection]
+    ),
+  } : {
+    enableRowSelection: false,
+  };
+
+  const filterConfig = enableFilter ? {
+    enableTopToolbar: true,
+    filterFns: {
+      filterByVINAndPlate: (row: MRT_Row<any>, columnId: string, filterValue: string) => {
         return (columnId === "plate" && row.getValue<string>(columnId).includes(filterValue))
           || (columnId === "vin" && row.getValue<string>(columnId).endsWith(filterValue));
       },
-    } : undefined,
+    },
     globalFilterFn: enableTopToolbar ? "filterByVINAndPlate" : undefined,
     renderTopToolbar: useCallback(
-      ({ table }: { table: MRT_TableInstance<LOAVehicle> }) => enableTopToolbar ? (
+      ({ table }: { table: MRT_TableInstance<LOAVehicle> }) => enableFilter ? (
         <div className="table-container__top-toolbar">
           <div className="loa-vehicle-table__search">
             <div className="search-label">
@@ -85,8 +86,47 @@ export const VehicleTable = ({
           </div>
         </div>
       ) : null,
-      [enableTopToolbar],
+      [enableFilter],
     ),
+  } : {
+    enableTopToolbar: false,
+  };
+
+  const initialState = enableTopToolbar ? {
+    ...defaultTableInitialStateOptions,
+  } : {
+    showGlobalFilter: false,
+  };
+
+  const state = enableRowSelection ? {
+    ...defaultTableStateOptions,
+    rowSelection: selectedVehicles,
+  } : {
+    ...defaultTableStateOptions,
+  };
+
+  const table = useMaterialReactTable({
+    ...defaultTableOptions,
+    data: vehicles,
+    columns: LOAVehicleColumnDefinition,
+    initialState,
+    state,
+    ...filterConfig,
+    ...selectionConfig,
+    enablePagination,
+    enableBottomToolbar: enablePagination,
+    enableSorting: false,
+    enableRowActions: false,
+    getRowId: (originalRow) => {
+      return `${originalRow.vehicleType}-${originalRow.vehicleId}`;
+    },
+    renderEmptyRowsFallback: () => <NoRecordsFound />,
+    muiTableContainerProps: {
+      className: "loa-vehicle-table__container",
+    },
+    muiTablePaperProps: {
+      className: "loa-vehicle-table__paper-container",
+    },
   });
 
   return (
