@@ -62,7 +62,6 @@ export class CreditAccountActivity extends Base {
   })
   creditAccountActivityType: CreditAccountActivityType;
 
-
   /**
    * A field to store optional comments related to the credit account activity. This can include any contextual information or reason for the activity. Allows up to 4000 characters.
    */

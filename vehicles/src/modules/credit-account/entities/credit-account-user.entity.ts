@@ -37,7 +37,7 @@ export class CreditAccountUser extends Base {
   @ManyToOne(
     () => CreditAccount,
     (creditAccount) => creditAccount.creditAccountUsers,
-    { cascade: false, nullable: false }
+    { cascade: false, nullable: false },
   )
   @JoinColumn({ name: 'CREDIT_ACCOUNT_ID' })
   public creditAccount: CreditAccount;
