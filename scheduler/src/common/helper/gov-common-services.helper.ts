@@ -13,7 +13,7 @@ export async function getAccessToken(
   govCommonServices: GovCommonServices,
   httpService: HttpService,
   cacheManager: Cache,
-) {
+): Promise<string> {
   let tokenCacheKey: CacheKey = undefined;
   let tokenUrl: string = undefined;
   let username: string = undefined;

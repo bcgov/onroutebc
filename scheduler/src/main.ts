@@ -3,7 +3,6 @@ import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { customLogger } from './common/logger/logger.config';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { CorrelationIdInterceptor } from './common/interceptor/correlationId.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -28,7 +27,6 @@ async function bootstrap() {
       },
     });
   }
-  app.useGlobalInterceptors(new CorrelationIdInterceptor());
   await app.listen(5050);
 }
 void bootstrap();

@@ -22,10 +22,14 @@ export class JwtServiceAccountStrategy extends PassportStrategy(
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration:
         process.env.KEYCLOAK_IGNORE_EXP === 'true' ? true : false,
+      audience: process.env.KEYCLOAK_SERVICE_ACCOUNT_AUDIENCE,
+      issuer: `${process.env.KEYCLOAK_ISSUER_URL}`,
+      algorithms: ['RS256'],
+      passReqToCallback: true
     });
   }
 
-  validate(payload: IUserJWT) {
+  validate(req: Request, payload: IUserJWT) {
     const result = this.authService.validateServiceAccountUser(
       payload.clientId,
     );

@@ -2,7 +2,6 @@ import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { LogAsyncMethodExecution } from 'src/common/decorator/log-async-method-execution.decorator';
-import { ClsService } from 'nestjs-cls';
 import { AxiosRequestConfig } from 'axios';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
@@ -15,7 +14,6 @@ export class PermitService {
   private readonly logger = new Logger(PermitService.name);
   constructor(
     private readonly httpService: HttpService,
-    private readonly cls: ClsService,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
   ) {}
