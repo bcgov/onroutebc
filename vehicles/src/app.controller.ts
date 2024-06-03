@@ -3,6 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { AppService } from './app.service';
 import { Public } from './common/decorator/public.decorator';
 
+//  sample commnt
 @ApiTags('Health Check')
 @Controller()
 export class AppController {
