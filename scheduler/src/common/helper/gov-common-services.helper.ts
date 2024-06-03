@@ -6,6 +6,7 @@ import { InternalServerErrorException, Logger } from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import { GovCommonServicesToken } from '../interface/gov-common-services-token.interface';
 import { CacheKey } from '../enum/cache-key.enum';
+import { TOKEN_EXPIRY_BUFFER } from '../constants/api.constant';
 
 const logger = new Logger('GocCommonServicesHelper');
 
@@ -83,7 +84,7 @@ export async function getAccessToken(
         `Error acquiring token from ${tokenUrl}`,
       );
     });
-  token.expires_at = Date.now() + (token.expires_in - 15) * 1000;
+  token.expires_at = Date.now() + (token.expires_in - TOKEN_EXPIRY_BUFFER) * 1000;
 
   await cacheManager.set(tokenCacheKey, token);
 
