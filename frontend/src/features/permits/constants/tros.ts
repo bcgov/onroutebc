@@ -1,6 +1,7 @@
 import { tros } from "./tros.json";
 import { PermitCommodity } from "../types/PermitCommodity";
 import {
+  BASE_DAYS_IN_YEAR,
   COMMON_DURATION_OPTIONS,
   COMMON_MIN_DURATION,
   TERM_DURATION_INTERVAL_DAYS,
@@ -16,5 +17,6 @@ export const MANDATORY_TROS_COMMODITIES: PermitCommodity[] =
   );
 
 export const MIN_TROS_DURATION = COMMON_MIN_DURATION;
+export const MAX_TROS_DURATION = BASE_DAYS_IN_YEAR;
 export const TROS_DURATION_OPTIONS = [...COMMON_DURATION_OPTIONS];
 export const TROS_DURATION_INTERVAL_DAYS = TERM_DURATION_INTERVAL_DAYS;
