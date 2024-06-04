@@ -125,6 +125,8 @@ export class DopsService {
         'x-correlation-id': this.cls.getId(),
       },
       responseType: 'json',
+      // Set the timeout to 120 seconds (120000 milliseconds)
+      timeout: 120000,
     };
 
     try {
