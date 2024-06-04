@@ -115,7 +115,7 @@ export class CdogsService {
           responseType: 'arraybuffer',
           decompress: false,
           // Set the timeout to 120 seconds (120000 milliseconds)
-          timeout: 120000,
+          // timeout: 120000,
         },
       ),
     )
