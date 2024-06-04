@@ -226,7 +226,7 @@ vehicles:
   ingress:
     className: openshift-default
     annotations: 
-      haproxy.router.openshift.io/timeout: 1m
+      haproxy.router.openshift.io/timeout: 5m
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
@@ -362,6 +362,7 @@ dops:
   ingress:
     className: openshift-default
     annotations: 
+      haproxy.router.openshift.io/timeout: 5m
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
