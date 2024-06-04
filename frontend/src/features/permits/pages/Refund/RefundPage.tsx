@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 
 import "./RefundPage.scss";
-import { permitTypeDisplayText } from "../../types/PermitType";
+import { PermitType, permitTypeDisplayText } from "../../types/PermitType";
 import { RefundFormData } from "./types/RefundFormData";
 import { requiredMessage } from "../../../../common/helpers/validationMessages";
 import { getErrorMessage } from "../../../../common/components/form/CustomFormComponents";
@@ -90,7 +90,7 @@ export const RefundPage = ({
   fax?: Nullable<string>;
   reason?: Nullable<string>;
   permitNumber?: Nullable<string>;
-  permitType?: Nullable<string>;
+  permitType?: Nullable<PermitType>;
   permitAction: PermitAction;
   amountToRefund: number;
   onFinish: (refundData: RefundFormData) => void;

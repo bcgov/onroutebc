@@ -330,9 +330,9 @@ export class ShoppingCartService {
       // No other status is allowed to be back in progress.
       return [ApplicationStatus.IN_CART];
     } else {
-      // If the status to update to is IN_CART, application can either be 
+      // If the status to update to is IN_CART, application can either be
       // 1) in progress (e.g., a net new application)
-      // 2) waiting for payment 
+      // 2) waiting for payment
       //    - a user tried to pay for it but clicked cancel on payment screen
       return [ApplicationStatus.IN_PROGRESS, ApplicationStatus.WAITING_PAYMENT];
     }
