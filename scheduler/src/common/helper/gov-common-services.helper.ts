@@ -6,7 +6,7 @@ import { InternalServerErrorException, Logger } from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import { GovCommonServicesToken } from '../interface/gov-common-services-token.interface';
 import { CacheKey } from '../enum/cache-key.enum';
-import { TOKEN_EXPIRY_BUFFER } from 'src/constants/dops.constant';
+import { TOKEN_EXPIRY_BUFFER } from '../constants/api.constant';
 
 const logger = new Logger('GocCommonServicesHelper');
 
@@ -14,7 +14,7 @@ export async function getAccessToken(
   govCommonServices: GovCommonServices,
   httpService: HttpService,
   cacheManager: Cache,
-) {
+): Promise<string> {
   let tokenCacheKey: CacheKey = undefined;
   let tokenUrl: string = undefined;
   let username: string = undefined;
@@ -31,6 +31,11 @@ export async function getAccessToken(
     tokenUrl = process.env.CDOGS_TOKEN_URL;
     username = process.env.CDOGS_CLIENT_ID;
     password = process.env.CDOGS_CLIENT_SECRET;
+  } else if (govCommonServices === GovCommonServices.ORBC_SERVICE_ACCOUNT) {
+    tokenCacheKey = CacheKey.ORBC_SERVICE_ACCOUNT_ACCESS_TOKEN;
+    tokenUrl = process.env.ORBC_SERVICE_ACCOUNT_TOKEN_URL;
+    username = process.env.ORBC_SERVICE_ACCOUNT_CLIENT_ID;
+    password = process.env.ORBC_SERVICE_ACCOUNT_CLIENT_SECRET;
   }
 
   const tokenFromCache: GovCommonServicesToken =
@@ -59,7 +64,6 @@ export async function getAccessToken(
     .then((response) => {
       return response.data as GovCommonServicesToken;
     })
-
     .catch((error: AxiosError) => {
       if (error.response) {
         const errorData = error.response.data as {
@@ -80,8 +84,8 @@ export async function getAccessToken(
         `Error acquiring token from ${tokenUrl}`,
       );
     });
-
-  token.expires_at = Date.now() + (token.expires_in - TOKEN_EXPIRY_BUFFER) * 1000;
+  token.expires_at =
+    Date.now() + (token.expires_in - TOKEN_EXPIRY_BUFFER) * 1000;
 
   await cacheManager.set(tokenCacheKey, token);
 
