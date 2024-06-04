@@ -79,7 +79,8 @@ export async function getAccessToken(
         `Error acquiring token from ${tokenUrl}`,
       );
     });
-  token.expires_at = Date.now() + (token.expires_in - TOKEN_EXPIRY_BUFFER) * 1000;
+  token.expires_at =
+    Date.now() + (token.expires_in - TOKEN_EXPIRY_BUFFER) * 1000;
 
   await cacheManager.set(tokenCacheKey, token);
 

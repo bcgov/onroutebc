@@ -25,7 +25,7 @@ export class JwtServiceAccountStrategy extends PassportStrategy(
       audience: process.env.KEYCLOAK_SERVICE_ACCOUNT_AUDIENCE,
       issuer: `${process.env.KEYCLOAK_ISSUER_URL}`,
       algorithms: ['RS256'],
-      passReqToCallback: true
+      passReqToCallback: true,
     });
   }
 

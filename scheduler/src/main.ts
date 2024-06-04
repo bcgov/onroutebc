@@ -11,9 +11,9 @@ async function bootstrap() {
 
   if (process.env.NODE_ENV !== 'production') {
     const config = new DocumentBuilder()
-      .setTitle('Tps Migration API')
+      .setTitle('Scheduler API')
       .setDescription(
-        'TPS Migration API to migrate TPS pdf from database to S3. This API is responsible for pdf migration to S3. updating document details in ORBC Doument and Permit table. And deleting migrated pdf from TPS_MIGRATED_PERMTI table.',
+        'Scheduler API is to maintain the scheduled processes for different applications. For example migrate tps permits document to S3, transfer CGI files to CAS etc.',
       )
       .setVersion('1.0')
       .addBearerAuth()
