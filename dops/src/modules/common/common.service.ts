@@ -25,10 +25,6 @@ export class CommonService {
           error.response?.status >= 500
         );
       },
-      onRetry(retryCount, error, requestConfig) {
-        console.log('retryCount', retryCount);
-        console.log('error', error.message);
-      },
     });
   }
 }
