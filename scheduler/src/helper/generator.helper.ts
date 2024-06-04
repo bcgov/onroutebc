@@ -1,6 +1,7 @@
 import { config as dotenvConfig } from "dotenv";
 import * as fs from 'fs';
 import { join, resolve } from 'path';
+import { CgiSftpService } from "src/modules/cgi-sftp/cgi-sftp.service";
 import { Transaction } from "src/modules/transactions/transaction.entity";
 import { Readable } from "typeorm/platform/PlatformTools";
 
@@ -318,7 +319,6 @@ function populateJournalVoucherDetail(cgiFileName: string, transactions: Transac
     journalVoucher += `\n`;
 
     fs.appendFileSync(cgiFileName, journalVoucher);
-    // await insertJournalVoucher(maxJournalHeaderId, transaction);
   }
 }
 
@@ -372,59 +372,59 @@ function generateCgiFile(transactions: Transaction[]): void {
   console.log(`${cgiTrigerFileName} generated.`);
 }
 
-async function moveFile(): Promise<{ file: Express.Multer.File, fileName: string } | null> {
+async function uploadFile(): Promise<void> {
   const currentDir = process.cwd();
   const sourceDir = currentDir;
-  // Destination directory
-  const destinationDir = '/tmp';
+  const destinationDir = currentDir;
 
   try {
     const files = await fs.promises.readdir(sourceDir);
     const inboxFiles = files.filter(file => file.startsWith('INBOX.'));
     if (inboxFiles.length === 0) {
-      console.log('No files to move');
+      console.log('No files can be uploaded');
       return null;
     }
 
-    const file = inboxFiles[0];
-    const sourceFile = join(sourceDir, file);
-    const destinationFile = join(destinationDir, file);
+    for (let index = 0; index < inboxFiles.length; index++) {
+      const file = inboxFiles[index];
+      
+      const sourceFile = join(sourceDir, file);
+      const destinationFile = join(destinationDir, file);
 
-    // Move the file to the destination directory
-    await fs.promises.rename(sourceFile, destinationFile);
-    console.log(`File ${sourceFile} moved to ${destinationFile}`);
+      // Read the file's data
+      const fileData = await fs.promises.readFile(sourceFile);
 
-    // Read the file's data
-    const fileData = await fs.promises.readFile(destinationFile);
+      // Create a readable stream from the buffer
+      const fileStream = new Readable();
+      fileStream.push(fileData);
+      fileStream.push(null); // Indicate the end of the stream
 
-    // Create a readable stream from the buffer
-    const fileStream = new Readable();
-    fileStream.push(fileData);
-    fileStream.push(null); // Indicate the end of the stream
+      // Construct the file object
+      const multerFile: Express.Multer.File = {
+        fieldname: 'file',
+        originalname: file,
+        encoding: '7bit',
+        mimetype: 'application/octet-stream',
+        size: fileData.length,
+        destination: destinationDir,
+        filename: file,
+        path: destinationFile,
+        buffer: fileData,
+        stream: fileStream,
+      };
 
-    // Construct the file object
-    const multerFile: Express.Multer.File = {
-      fieldname: 'file',
-      originalname: file,
-      encoding: '7bit',
-      mimetype: 'application/octet-stream',
-      size: fileData.length,
-      destination: destinationDir,
-      filename: file,
-      path: destinationFile,
-      buffer: fileData,
-      stream: fileStream,
-    };
-
-    return { file: multerFile, fileName: file };
+      const cgiSftpService: CgiSftpService = new CgiSftpService();
+      const fileContent: Express.Multer.File = multerFile; 
+      const fileName: string = file;
+      cgiSftpService.upload(fileContent, fileName);   
+    }
   } catch (err) {
     console.error('Error moving files:', err);
-    return null;
   }
 }
 
-export const generate = async (transactions: Transaction[]): Promise<{ file: Express.Multer.File, fileName: string } | null> => {
+export const generate = async (transactions: Transaction[]): Promise<void> => {
   globalJournalName = getJournalName();
   generateCgiFile(transactions);
-  return await moveFile();
+  return await uploadFile();
 }
