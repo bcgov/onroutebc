@@ -1,4 +1,4 @@
-import { customLogger } from '../../../src/logger/logger.config';
+import { customLogger } from '../../../src/common/logger/logger.config';
 
 describe('CustomLogger', () => {
   it('should be defined', () => {

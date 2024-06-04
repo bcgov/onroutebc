@@ -410,6 +410,8 @@ scheduler:
     enabled: false
   configmap:
     enabled: true
+    data:
+      ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
   containers:
     - name: scheduler
       command:
@@ -421,6 +423,9 @@ scheduler:
       image: scheduler
       tag: "{{tpl .Values.global.tag .}}"
       env: 
+        fromLocalConfigmap:
+          - name: ACCESS_API_URL
+            key: ACCESS_API_URL
         fromValues:
           - name: SCHEDULER_PR_NUM
             value: '{{.Values.global.pr_num}}'
