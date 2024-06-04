@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { FeatureFlag } from './entities/feature-flag.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { LogAsyncMethodExecution } from 'src/decorator/log-async-method-execution.decorator';
+import { LogAsyncMethodExecution } from 'src/common/decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class FeatureFlagsService {
