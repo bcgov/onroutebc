@@ -10,7 +10,7 @@ SET XACT_ABORT ON
 BEGIN TRY
   BEGIN TRANSACTION
     DROP TABLE [permit].[ORBC_CFS_TRANSACTION_DETAIL]
-    DROP TABLE [permit].[ORBC_CFS_FILE_STATUS]
+    DROP TABLE [permit].[ORBC_CFS_FILE_STATUS_TYPE]
   COMMIT
 END TRY
 
@@ -21,6 +21,6 @@ BEGIN CATCH
 END CATCH
 
 DECLARE @VersionDescription VARCHAR(255)
-SET @VersionDescription = 'Reverting initial creation of entities for Payment.'
+SET @VersionDescription = 'Reverting initial creation of entities for Cfs Transaction Detail.'
 
 INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (26, @VersionDescription, getutcdate())

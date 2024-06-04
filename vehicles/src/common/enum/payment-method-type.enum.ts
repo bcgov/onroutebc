@@ -33,9 +33,3 @@ export const CfsPaymentMethodType = {
   [PaymentMethodType.CASH]: PaymentMethodType.CASH,
   [PaymentMethodType.CHEQUE]: PaymentMethodType.CHEQUE,
 } as const;
-
-export const isCfsPaymentMethodType = (
-  paymentMethodType: PaymentMethodType,
-): paymentMethodType is CfsPaymentMethodType => {
-  return paymentMethodType in CfsPaymentMethodType;
-};
