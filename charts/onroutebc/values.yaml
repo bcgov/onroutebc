@@ -104,7 +104,7 @@ frontend:
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
-      - host: "{{.Release.Name}}.apps.silver.devops.gov.bc.ca"
+      - host: "{{.Release.Name}}.{{.Values.global.domain}}"
         paths:
           - path: /frontend
             pathType: ImplementationSpecific
