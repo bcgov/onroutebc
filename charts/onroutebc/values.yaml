@@ -15,7 +15,7 @@ global:
   openshiftImageRegistry: "image-registry.openshift-image-registry.svc:5000"
   #enable pulling from image streams
   imagestreams:
-    enabled: true
+    enabled: false
   domain: "apps.silver.devops.gov.bc.ca" # it is required, apps.silver.devops.gov.bc.ca for silver cluster
   vault:
     role: "nonprod"
@@ -226,6 +226,7 @@ vehicles:
   ingress:
     className: openshift-default
     annotations: 
+      haproxy.router.openshift.io/timeout: 2m
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
@@ -361,6 +362,7 @@ dops:
   ingress:
     className: openshift-default
     annotations: 
+      haproxy.router.openshift.io/timeout: 2m
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
