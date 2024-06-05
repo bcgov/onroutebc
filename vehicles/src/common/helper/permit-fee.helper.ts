@@ -25,7 +25,7 @@ import { ApplicationStatus } from '../enum/application-status.enum';
  * @throws {NotAcceptableException} If the duration is invalid for TROS permit type.
  * @throws {BadRequestException} If the permit type is not recognized.
  */
-export const permitFee = (application: Permit, oldAmount: number): number => {
+export const permitFee = (application: Permit, oldAmount?: number): number => {
   let duration = calculateDuration(application);
   switch (application.permitType) {
     case PermitType.TERM_OVERSIZE: {
@@ -147,7 +147,7 @@ export const currentPermitFee = (
   duration: number,
   pricePerTerm: number,
   allowedPermitTerm: number,
-  oldAmount: number,
+  oldAmount?: number,
   permitStatus?: ApplicationStatus,
 ): number => {
   let permitTerms = Math.ceil(duration / allowedPermitTerm); // ex: if duraion is 40 days then charge for 60 days.

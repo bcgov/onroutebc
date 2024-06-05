@@ -710,8 +710,7 @@ export class PaymentService {
     );
 
     if (application.permitStatus === ApplicationStatus.VOIDED) {
-      const oldAmount = calculatePermitAmount(permitPaymentHistory);
-      const newAmount = permitFee(application, -oldAmount);
+      const newAmount = permitFee(application);
       return newAmount;
     }
     const oldAmount = calculatePermitAmount(permitPaymentHistory);
