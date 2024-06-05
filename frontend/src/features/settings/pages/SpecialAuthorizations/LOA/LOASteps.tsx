@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { Button, Step, StepConnector, StepLabel, Stepper } from "@mui/material";
@@ -10,13 +10,16 @@ import { LOADesignateVehicles } from "./vehicles/LOADesignateVehicles";
 import { LOAReview } from "./review/LOAReview";
 import { LOABasicInfo } from "./basic/LOABasicInfo";
 import { Nullable } from "../../../../../common/types/common";
-import { LOAFormData, defaultLOAFormData } from "../../../types/LOAFormData";
+import { LOAFormData, loaDetailToFormData } from "../../../types/LOAFormData";
+import { useFetchLOADetail } from "../../../hooks/LOA";
 
 export const LOASteps = ({
   loaNumber,
+  companyId,
   onExit,
 }: {
   loaNumber?: Nullable<string>;
+  companyId: number;
   onExit: () => void;
 }) => {
   const steps = [
@@ -25,12 +28,11 @@ export const LOASteps = ({
     labelForLOAStep(LOA_STEPS.REVIEW),
   ];
 
-  useEffect(() => {
-    console.log(loaNumber); //
-  }, []);
+  const { data: loaDetail } = useFetchLOADetail(companyId, loaNumber);
+  const loaFormData = loaDetailToFormData(loaDetail);
 
   const formMethods = useForm<LOAFormData>({
-    defaultValues: defaultLOAFormData(),
+    defaultValues: loaFormData,
     reValidateMode: "onChange",
   });
 

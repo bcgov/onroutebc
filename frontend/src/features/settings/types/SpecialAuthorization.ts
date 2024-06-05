@@ -1,4 +1,5 @@
 import { Nullable } from "../../../common/types/common";
+import { PermitType } from "../../permits/types/PermitType";
 
 export const NO_FEE_PERMIT_TYPES = {
   GOV_PROV_CAN: 1,
@@ -31,3 +32,24 @@ export interface LOA {
   expiryDate?: Nullable<string>;
   documentId: number;
 };
+
+export interface LOADetail extends LOA {
+  permitTypes: PermitType[];
+  neverExpires: boolean;
+  documentName: string;
+  documentSize: number;
+  additionalNotes?: Nullable<string>;
+  selectedVehicles: {
+    powerUnits: string[];
+    trailers: string[];
+  };
+}
+
+export interface LOARequestData extends Omit<
+  LOADetail,
+  "documentId"
+  | "loaNumber"
+> {
+  loaNumber?: Nullable<string>;
+  documentId?: Nullable<number>;
+}

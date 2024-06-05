@@ -100,7 +100,7 @@ const uploadRules = {
       const fileFormat = "application/pdf";
       return !value
         || (value instanceof File && value.type === fileFormat)
-        || ("fileFormat" in value && value.fileFormat === fileFormat)
+        || ("fileMimeType" in value && value.fileMimeType === fileFormat)
         || invalidUploadFormat();
     },
   }

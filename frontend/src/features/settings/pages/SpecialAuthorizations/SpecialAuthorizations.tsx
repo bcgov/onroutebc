@@ -1,16 +1,28 @@
-import { Button, FormControlLabel, Radio, RadioGroup, Switch } from "@mui/material";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  Button,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+  Switch,
+} from "@mui/material";
 
 import "./SpecialAuthorizations.scss";
 import { RequiredOrNull } from "../../../../common/types/common";
-import { NO_FEE_PERMIT_TYPES, NoFeePermitType, noFeePermitTypeDescription } from "../../types/SpecialAuthorization";
 import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
 import { LOAList } from "../../components/SpecialAuthorizations/LOA/list/LOAList";
 import { ExpiredLOAModal } from "../../components/SpecialAuthorizations/LOA/expired/ExpiredLOAModal";
 import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
 import { LOASteps } from "./LOA/LOASteps";
+import { useFetchLOAs } from "../../hooks/LOA";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import {
+  NO_FEE_PERMIT_TYPES,
+  NoFeePermitType,
+  noFeePermitTypeDescription,
+} from "../../types/SpecialAuthorization";
 
 export const SpecialAuthorizations = ({
   companyId,
@@ -24,6 +36,12 @@ export const SpecialAuthorizations = ({
   const [LOAToDelete, setLOAToDelete] = useState<RequiredOrNull<string>>(null);
   const [showLOASteps, setShowLOASteps] = useState<boolean>(false);
   const [LOAToEdit, setLOAToEdit] = useState<RequiredOrNull<string>>(null);
+
+  const activeLOAsQuery = useFetchLOAs(companyId, false);
+  const expiredLOAsQuery = useFetchLOAs(companyId, true);
+
+  const activeLOAs = getDefaultRequiredVal([], activeLOAsQuery.data);
+  const expiredLOAs = getDefaultRequiredVal([], expiredLOAsQuery.data);
 
   useEffect(() => {
     if (!enableNoFeePermits) {
@@ -62,121 +80,7 @@ export const SpecialAuthorizations = ({
     console.log(`Deleting LOA ${loaNumber}...`); //
     setLOAToDelete(null);
   };
-
-  const activeLOAs = [
-    {
-      loaNumber: "100638",
-      startDate: "2023-02-10 00:00:00",
-      expiryDate: "2023-02-10 00:00:00",
-      documentId: 1,
-    },
-    {
-      loaNumber: "100425",
-      startDate: "2023-02-10 00:00:00",
-      documentId: 2,
-    },
-  ];
-
-  const expiredLOAs = [
-    {
-      loaNumber: "100638",
-      startDate: "2023-02-10 00:00:00",
-      expiryDate: "2023-02-10 00:00:00",
-      documentId: 1,
-    },
-    {
-      loaNumber: "100638",
-      startDate: "2023-02-10 00:00:00",
-      expiryDate: "2023-02-10 00:00:00",
-      documentId: 1,
-    },
-    {
-      loaNumber: "100638",
-      startDate: "2023-02-10 00:00:00",
-      expiryDate: "2023-02-10 00:00:00",
-      documentId: 1,
-    },
-    {
-      loaNumber: "100638",
-      startDate: "2023-02-10 00:00:00",
-      expiryDate: "2023-02-10 00:00:00",
-      documentId: 1,
-    },
-    {
-      loaNumber: "100638",
-      startDate: "2023-02-10 00:00:00",
-      expiryDate: "2023-02-10 00:00:00",
-      documentId: 1,
-    },
-    {
-      loaNumber: "100638",
-      startDate: "2023-02-10 00:00:00",
-      expiryDate: "2023-02-10 00:00:00",
-      documentId: 1,
-    },
-    {
-      loaNumber: "100638",
-      startDate: "2023-02-10 00:00:00",
-      expiryDate: "2023-02-10 00:00:00",
-      documentId: 1,
-    },
-    {
-      loaNumber: "100638",
-      startDate: "2023-02-10 00:00:00",
-      expiryDate: "2023-02-10 00:00:00",
-      documentId: 1,
-    },
-    //
-    {
-      loaNumber: "100638",
-      startDate: "2023-02-10 00:00:00",
-      expiryDate: "2023-02-10 00:00:00",
-      documentId: 1,
-    },
-    {
-      loaNumber: "100638",
-      startDate: "2023-02-10 00:00:00",
-      expiryDate: "2023-02-10 00:00:00",
-      documentId: 1,
-    },
-    {
-      loaNumber: "100638",
-      startDate: "2023-02-10 00:00:00",
-      expiryDate: "2023-02-10 00:00:00",
-      documentId: 1,
-    },
-    {
-      loaNumber: "100638",
-      startDate: "2023-02-10 00:00:00",
-      expiryDate: "2023-02-10 00:00:00",
-      documentId: 1,
-    },
-    {
-      loaNumber: "100638",
-      startDate: "2023-02-10 00:00:00",
-      expiryDate: "2023-02-10 00:00:00",
-      documentId: 1,
-    },
-    {
-      loaNumber: "100638",
-      startDate: "2023-02-10 00:00:00",
-      expiryDate: "2023-02-10 00:00:00",
-      documentId: 1,
-    },
-    {
-      loaNumber: "100638",
-      startDate: "2023-02-10 00:00:00",
-      expiryDate: "2023-02-10 00:00:00",
-      documentId: 1,
-    },
-    {
-      loaNumber: "100638",
-      startDate: "2023-02-10 00:00:00",
-      expiryDate: "2023-02-10 00:00:00",
-      documentId: 1,
-    },
-  ];
-
+  
   return !showLOASteps ? (
     <div className="special-authorizations">
       <div className="special-authorizations__no-fee">
@@ -315,6 +219,7 @@ export const SpecialAuthorizations = ({
   ) : (
     <LOASteps
       loaNumber={LOAToEdit}
+      companyId={companyId}
       onExit={handleExitLOASteps}
     />
   );
