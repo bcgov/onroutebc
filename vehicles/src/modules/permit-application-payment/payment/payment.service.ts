@@ -711,11 +711,12 @@ export class PaymentService {
 
     if (application.permitStatus === ApplicationStatus.VOIDED) {
       const oldAmount = calculatePermitAmount(permitPaymentHistory);
-      if (oldAmount > 0) return -oldAmount;
-      return oldAmount;
+      const newAmount = permitFee(application, -oldAmount);
+      return newAmount;
     }
     const oldAmount = calculatePermitAmount(permitPaymentHistory);
-    return permitFee(application, oldAmount);
+    const fee = permitFee(application, oldAmount);
+    return fee;
   }
 
   @LogAsyncMethodExecution()
