@@ -7,10 +7,10 @@ import { ReviewConditionsTable } from "./ReviewConditionsTable";
 import { DiffChip } from "./DiffChip";
 import { Nullable } from "../../../../../../common/types/common";
 import { PermitCommodity } from "../../../../types/PermitCommodity";
+import { BASE_DAYS_IN_YEAR } from "../../../../constants/constants";
 import {
   applyWhenNotNullable,
   areValuesDifferent,
-  getDefaultRequiredVal,
 } from "../../../../../../common/helpers/util";
 
 import {
@@ -89,7 +89,11 @@ export const ReviewPermitDetails = ({
             className="permit-dates__data"
             data-testid="permit-duration"
           >
-            {getDefaultRequiredVal(30, permitDuration)} Days
+            {applyWhenNotNullable(
+              (duration) => duration === BASE_DAYS_IN_YEAR ? "1 Year" : `${duration} Days`,
+              permitDuration,
+              "",
+            )}
           </Typography>
         </Box>
         <Box className="permit-expiry-banner">

@@ -108,28 +108,28 @@ export const updateApplication = async (
   );
 };
 
-/**
- * Fetch All Permit Application in Progress
- * @return An array of permit applications
- */
-export const getApplicationsInProgress = async ({
-  page = 0,
-  take = 10,
-  searchString,
-  orderBy = [],
-}: PaginationAndFilters): Promise<PaginatedResponse<ApplicationListItem>> => {
+const getApplications = async (
+  {
+    page = 0,
+    take = 10,
+    searchString = "",
+    orderBy = [],
+  }: PaginationAndFilters,
+  pendingPermitsOnly?: boolean,
+): Promise<PaginatedResponse<ApplicationListItem>> => {
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   const applicationsURL = new URL(APPLICATIONS_API_ROUTES.GET(companyId));
 
   // API pagination index starts at 1. Hence page + 1.
-  applicationsURL.searchParams.set("page", (page + 1).toString());
-  applicationsURL.searchParams.set("take", take.toString());
-  //For the time being, we are hardcoding false as we do not want pendingPermits to be displayed in AIP tab
-  applicationsURL.searchParams.set("pendingPermits", false.toString());
+  applicationsURL.searchParams.set("page", `${page + 1}`);
+  applicationsURL.searchParams.set("take", `${take}`);
+  applicationsURL.searchParams.set("pendingPermits", `${Boolean(pendingPermitsOnly)}`);
+
   if (searchString) {
     applicationsURL.searchParams.set("searchString", searchString);
   }
-  if (orderBy?.length > 0) {
+
+  if (orderBy.length > 0) {
     applicationsURL.searchParams.set("orderBy", stringifyOrderBy(orderBy));
   }
 
@@ -170,12 +170,32 @@ export const getApplicationsInProgress = async ({
 };
 
 /**
+ * Fetch all applications in progress.
+ * @return A list of applications in the IN_PROGRESS and WAITING_PAYMENT statuses
+ */
+export const getApplicationsInProgress = async (
+  paginationFilters: PaginationAndFilters,
+): Promise<PaginatedResponse<ApplicationListItem>> => {
+  return await getApplications(paginationFilters, false);
+};
+
+/**
+ * Fetch all pending permits.
+ * @return A list of pending permits in the PAYMENT_COMPLETE status
+ */
+export const getPendingPermits = async (
+  paginationFilters: PaginationAndFilters,
+): Promise<PaginatedResponse<ApplicationListItem>> => {
+  return await getApplications(paginationFilters, true);
+};
+
+/**
  * Fetch application by its permit id.
  * @param permitId permit id of the application to fetch
  * @returns ApplicationResponseData data as response, or null if fetch failed
  */
 export const getApplicationByPermitId = async (
-  permitId?: string,
+  permitId?: Nullable<string>,
 ): Promise<RequiredOrNull<ApplicationResponseData>> => {
   try {
     const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());

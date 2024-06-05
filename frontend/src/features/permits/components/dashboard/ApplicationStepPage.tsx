@@ -7,7 +7,6 @@ import "../../../../common/components/dashboard/Dashboard.scss";
 import { Banner } from "../../../../common/components/dashboard/components/banner/Banner";
 import { ApplicationForm } from "../../pages/Application/ApplicationForm";
 import { ApplicationContext } from "../../context/ApplicationContext";
-import { ApplicationPay } from "../../pages/Application/ApplicationPay";
 import { ApplicationReview } from "../../pages/Application/ApplicationReview";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { Loading } from "../../../../common/pages/Loading";
@@ -28,8 +27,6 @@ const displayHeaderText = (stepKey: ApplicationStep) => {
       return "Permit Application";
     case APPLICATION_STEPS.REVIEW:
       return "Review and Confirm Details";
-    case APPLICATION_STEPS.PAY:
-      return "Pay for Permit";
     case APPLICATION_STEPS.HOME:
     default:
       return "Permits";
@@ -75,26 +72,22 @@ export const ApplicationStepPage = ({
     applicationData?.permitType,
   );
 
-  // Permit must be an application in order to allow application-related steps
-  // (ie. empty status for new application, or in progress or incomplete payment status)
+  // Permit must be an application in progress in order to allow application-related edit/review/add to cart steps
+  // (ie. empty status for new application, or in progress)
   const isValidApplicationStatus = () => {
     return (
       !isInvalidApplication &&
       (!applicationData?.permitStatus ||
-        applicationData?.permitStatus === PERMIT_STATUSES.IN_PROGRESS ||
-        applicationData?.permitStatus === PERMIT_STATUSES.WAITING_PAYMENT)
+        applicationData?.permitStatus === PERMIT_STATUSES.IN_PROGRESS)
     );
   };
 
   const renderApplicationStep = () => {
-    switch (applicationStep) {
-      case APPLICATION_STEPS.REVIEW:
-        return <ApplicationReview />;
-      case APPLICATION_STEPS.PAY:
-        return <ApplicationPay />;
-      default:
-        return <ApplicationForm permitType={applicationPermitType} />;
+    if (applicationStep === APPLICATION_STEPS.REVIEW) {
+      return <ApplicationReview />;
     }
+    
+    return <ApplicationForm permitType={applicationPermitType} />;
   };
 
   if (isInvalidApplication || !isValidApplicationStatus()) {

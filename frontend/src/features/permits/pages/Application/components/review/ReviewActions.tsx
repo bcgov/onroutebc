@@ -7,10 +7,14 @@ import "./ReviewActions.scss";
 export const ReviewActions = ({
   onEdit,
   onContinue,
+  hasToCartButton,
+  onAddToCart,
   continueBtnText,
 }: {
   onEdit: () => void;
   onContinue: () => Promise<void>;
+  hasToCartButton: boolean;
+  onAddToCart?: () => Promise<void>;
   continueBtnText: string;
 }) => {
   return (
@@ -18,14 +22,32 @@ export const ReviewActions = ({
       <Button
         className="review-actions__btn review-actions__btn--edit"
         key="edit-application-button"
-        aria-label="edit"
+        aria-label="Edit"
         variant="contained"
         color="tertiary"
         onClick={onEdit}
       >
-        <FontAwesomeIcon icon={faPencil} />
+        <FontAwesomeIcon
+          className="button-icon button-icon--edit"
+          icon={faPencil}
+        />
         Edit
       </Button>
+
+      {hasToCartButton ? (
+        <Button
+          className="review-actions__btn review-actions__btn--cart"
+          key="add-to-cart-button"
+          aria-label="Add To Cart"
+          variant="outlined"
+          color="tertiary"
+          data-testid="add-to-cart-btn"
+          onClick={onAddToCart}
+        >
+          Add to Cart
+        </Button>
+      ) : null}
+
       <Button
         className="review-actions__btn review-actions__btn--continue"
         key="submit-application-button"

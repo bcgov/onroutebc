@@ -39,6 +39,10 @@ import {
   calculatePermitAmount,
   permitFee,
 } from 'src/common/helper/permit-fee.helper';
+import { CfsTransactionDetail } from './entities/cfs-transaction.entity';
+import { CfsFileStatus } from 'src/common/enum/cfs-file-status.enum';
+import { isAmendmentApplication } from '../../../common/helper/permit-application.helper';
+import { isCfsPaymentMethodType } from 'src/common/helper/payment.helper';
 
 @Injectable()
 export class PaymentService {
@@ -179,12 +183,8 @@ export class PaymentService {
     );
   }
 
-  private isApplicationInProgress(permitStatus: ApplicationStatus) {
-    return (
-      permitStatus === ApplicationStatus.IN_PROGRESS ||
-      permitStatus === ApplicationStatus.WAITING_PAYMENT ||
-      permitStatus === ApplicationStatus.IN_CART
-    );
+  private isApplicationInCart(permitStatus: ApplicationStatus) {
+    return permitStatus === ApplicationStatus.IN_CART;
   }
 
   private isVoidorRevoked(permitStatus: ApplicationStatus) {
@@ -232,10 +232,13 @@ export class PaymentService {
         if (
           !(
             this.isVoidorRevoked(application.permitStatus) ||
-            this.isApplicationInProgress(application.permitStatus)
+            this.isApplicationInCart(application.permitStatus) ||
+            isAmendmentApplication(application)
           )
         )
-          throw new BadRequestException('Application should be in Progress!!');
+          throw new BadRequestException(
+            'Application in its current status cannot be processed for payment.',
+          );
       }
       const totalTransactionAmount =
         await this.validatePaymentAndCalculateAmount(
@@ -289,6 +292,13 @@ export class PaymentService {
           newPermitTransactions,
         );
 
+        if (isCfsPaymentMethodType(newTransaction.paymentMethodTypeCode)) {
+          const newCfsTransaction: CfsTransactionDetail =
+            new CfsTransactionDetail();
+          newCfsTransaction.transaction = newTransaction;
+          newCfsTransaction.fileStatus = CfsFileStatus.READY;
+          await queryRunner.manager.save(newCfsTransaction);
+        }
         if (
           this.isWebTransactionPurchase(
             newTransaction.paymentMethodTypeCode,

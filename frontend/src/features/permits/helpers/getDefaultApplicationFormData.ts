@@ -11,6 +11,7 @@ import { PermitMailingAddress } from "../types/PermitMailingAddress";
 import { PermitContactDetails } from "../types/PermitContactDetails";
 import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
 import { Application, ApplicationFormData } from "../types/application";
+import { minDurationForPermitType } from "./dateSelection";
 import {
   getEndOfDate,
   getStartOfDate,
@@ -171,7 +172,7 @@ export const getDefaultValues = (
   );
 
   const durationOrDefault = getDurationOrDefault(
-    30,
+    minDurationForPermitType(permitType),
     applicationData?.permitData?.permitDuration,
   );
 
@@ -179,6 +180,11 @@ export const getDefaultValues = (
     startDateOrDefault,
     durationOrDefault,
     applicationData?.permitData?.expiryDate,
+  );
+
+  const defaultPermitType = getDefaultRequiredVal(
+    permitType,
+    applicationData?.permitType,
   );
 
   return {
@@ -193,10 +199,7 @@ export const getDefaultValues = (
     ),
     permitId: getDefaultRequiredVal("", applicationData?.permitId),
     permitNumber: getDefaultRequiredVal("", applicationData?.permitNumber),
-    permitType: getDefaultRequiredVal(
-      permitType,
-      applicationData?.permitType,
-    ),
+    permitType: defaultPermitType,
     permitStatus: getDefaultRequiredVal(
       PERMIT_STATUSES.IN_PROGRESS,
       applicationData?.permitStatus,
@@ -241,7 +244,7 @@ export const getDefaultValues = (
       vehicleDetails: getDefaultVehicleDetails(
         applicationData?.permitData?.vehicleDetails,
       ),
-      feeSummary: `${calculateFeeByDuration(durationOrDefault)}`,
+      feeSummary: `${calculateFeeByDuration(defaultPermitType, durationOrDefault)}`,
     },
   };
 };

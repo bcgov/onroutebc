@@ -20,6 +20,7 @@ const envConfig = (() => {
     VITE_API_VEHICLE_URL: "http://localhost:5000",
     VITE_KEYCLOAK_ISSUER_URL: "",
     VITE_KEYCLOAK_AUDIENCE: "",
-    VITE_SITEMINDER_LOG_OFF_URL: ""
+    VITE_SITEMINDER_LOG_OFF_URL: "",
+    VITE_FRONTEND_PR_NUM: ""
   };
 })();

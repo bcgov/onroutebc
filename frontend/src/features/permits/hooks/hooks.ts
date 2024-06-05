@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { AxiosError } from "axios";
+import { MRT_PaginationState, MRT_SortingState } from "material-react-table";
 import {
   useQueryClient,
   useMutation,
@@ -11,16 +12,12 @@ import { Application, ApplicationFormData } from "../types/application";
 import { IssuePermitsResponse } from "../types/permit";
 import { StartTransactionResponseData } from "../types/payment";
 import { APPLICATION_STEPS, ApplicationStep } from "../../../routes/constants";
-import {
-  Nullable,
-  Optional,
-  SortingConfig,
-} from "../../../common/types/common";
 import { isPermitTypeValid } from "../types/PermitType";
 import { isPermitIdNumeric } from "../helpers/permitState";
 import { deserializeApplicationResponse } from "../helpers/deserializeApplication";
 import { deserializePermitResponse } from "../helpers/deserializePermit";
 import { AmendPermitFormData } from "../pages/Amend/types/AmendPermitFormData";
+import { Nullable, Optional } from "../../../common/types/common";
 import {
   getApplicationByPermitId,
   getPermit,
@@ -35,6 +32,7 @@ import {
   modifyAmendmentApplication,
   getApplicationsInProgress,
   resendPermit,
+  getPendingPermits,
 } from "../apiManager/permitsAPI";
 
 /**
@@ -398,28 +396,78 @@ export const useAmendmentApplicationQuery = (
 };
 
 /**
- * A custom react query hook that fetches applications in progress.
- * @returns List of applications in progress
+ * A custom react query hook that fetches applications in progress and manages its pagination state.
+ * @returns Query object containing fetched applications in progress, along with pagination state and setters
  */
-export const useApplicationsInProgressQuery = ({
-  page = 0,
-  take = 10,
-  searchString = "",
-  sorting = [],
-}: {
-  page: number;
-  take: number;
-  searchString?: string;
-  sorting: SortingConfig[];
-}) => {
-  return useQuery({
-    queryKey: ["applicationsInProgress", page, take, sorting],
+export const useApplicationsInProgressQuery = () => {
+  const [pagination, setPagination] = useState<MRT_PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const [sorting, setSorting] = useState<MRT_SortingState>([
+    {
+      id: "updatedDateTime",
+      desc: true,
+    },
+  ]);
+
+  const orderBy = sorting.length > 0 ? [
+    {
+      column: sorting.at(0)?.id as string,
+      descending: Boolean(sorting.at(0)?.desc),
+    },
+  ] : [];
+
+  const applicationsInProgressQuery = useQuery({
+    queryKey: ["applicationsInProgress", pagination.pageIndex, pagination.pageSize, sorting],
     queryFn: () =>
-      getApplicationsInProgress({ page, take, searchString, orderBy: sorting }),
+      getApplicationsInProgress({
+        page: pagination.pageIndex,
+        take: pagination.pageSize,
+        orderBy, 
+      }),
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
     refetchOnMount: "always",
     placeholderData: keepPreviousData,
   });
+
+  return {
+    applicationsInProgressQuery,
+    pagination,
+    setPagination,
+    sorting,
+    setSorting,
+  };
+};
+
+/**
+ * Hook that fetches pending permits and manages its pagination state.
+ * @returns Pending permits along with pagination state and setter
+ */
+export const usePendingPermitsQuery = () => {
+  const [pagination, setPagination] = useState<MRT_PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const { data: pendingPermits } = useQuery({
+    queryKey: ["pendingPermits", pagination.pageIndex, pagination.pageSize],
+    queryFn: () =>
+      getPendingPermits({
+        page: pagination.pageIndex,
+        take: pagination.pageSize,
+      }),
+    refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
+    refetchOnMount: "always",
+    placeholderData: keepPreviousData,
+  });
+
+  return {
+    pendingPermits,
+    pagination,
+    setPagination,
+  };
 };
 
 /**

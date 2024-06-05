@@ -80,14 +80,6 @@ export interface PermitsActionResponse {
 }
 
 /**
- * Type used to describe the request payload object for issuing permits.
- */
-export interface IssuePermitRequest {
-  applicationIds: string[];
-  companyId?: number;
-}
-
-/**
  * Type used to describe the response object for issuing permits.
  */
 export interface IssuePermitsResponse extends PermitsActionResponse {};

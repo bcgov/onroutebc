@@ -32,13 +32,13 @@ frontend:
     enabled: true
     data:
       config.js: |-
-        const envConfig = (() => {
-          return {
+        const envConfig = (() => { return {
             "VITE_DEPLOY_ENVIRONMENT":"{{.Values.global.zone}}",
             "VITE_API_VEHICLE_URL":"https://{{.Release.Name}}-vehicles.{{.Values.global.domain}}",
             "VITE_KEYCLOAK_ISSUER_URL":"https://{{ternary ("") (printf "%s." .Values.global.zone) (contains "prod" .Values.global.zone)}}loginproxy.gov.bc.ca/auth/realms/standard",
             "VITE_KEYCLOAK_AUDIENCE":"on-route-bc-direct-4598",
             "VITE_SITEMINDER_LOG_OFF_URL": "https://logon{{ternary ("") ("test") (contains "prod" .Values.global.zone)}}7.gov.bc.ca/clp-cgi/logoff.cgi",
+            "VITE_FRONTEND_PR_NUM":"{{.Values.global.pr_num}}",
           };
         })();
   containers:
@@ -47,6 +47,10 @@ frontend:
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: frontend
       tag: "{{tpl .Values.global.tag .}}"
+      env: 
+        fromValues:
+          - name: VITE_FRONTEND_PR_NUM
+            value: '{{.Values.global.pr_num}}'
       ports:
         - name: http
           containerPort: 3000
@@ -156,6 +160,9 @@ vehicles:
             key: ACCESS_API_URL
           - name: PAYBC_REDIRECT
             key: PAYBC_REDIRECT
+        fromValues:
+          - name: VEHICLES_PR_NUM
+            value: '{{.Values.global.pr_num}}'
       ports:
         - name: vehicles-api
           containerPort: 5000
@@ -219,6 +226,7 @@ vehicles:
   ingress:
     className: openshift-default
     annotations: 
+      haproxy.router.openshift.io/timeout: 2m
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
@@ -288,6 +296,9 @@ dops:
             key: FRONTEND_URL
           - name: ACCESS_API_URL
             key: ACCESS_API_URL
+        fromValues:
+          - name: DOPS_PR_NUM
+            value: '{{.Values.global.pr_num}}'
       ports:
         - name: dops-api
           containerPort: 5001
@@ -351,6 +362,7 @@ dops:
   ingress:
     className: openshift-default
     annotations: 
+      haproxy.router.openshift.io/timeout: 2m
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
@@ -400,16 +412,25 @@ scheduler:
     enabled: false
   configmap:
     enabled: true
+    data:
+      ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
   containers:
     - name: scheduler
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/s3-{{.Values.global.vault.zone}} && source /vault/secrets/tps-{{.Values.global.vault.zone}} && npm run start:prod"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/s3-{{.Values.global.vault.zone}} && source /vault/secrets/scheduler-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: scheduler
       tag: "{{tpl .Values.global.tag .}}"
+      env: 
+        fromLocalConfigmap:
+          - name: ACCESS_API_URL
+            key: ACCESS_API_URL
+        fromValues:
+          - name: SCHEDULER_PR_NUM
+            value: '{{.Values.global.pr_num}}'
       ports:
         - name: scheduler
           containerPort: 5050
@@ -508,6 +529,6 @@ scheduler:
     secretPaths:
       - "keycloak-{{tpl $.Values.vault.zone $}}"
       - "mssql-{{tpl $.Values.vault.zone $}}"      
-      - "tps-{{tpl $.Values.vault.zone $}}"
+      - "scheduler-{{tpl $.Values.vault.zone $}}"
       - "s3-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"

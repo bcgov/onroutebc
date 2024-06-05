@@ -12,7 +12,7 @@ import { ReviewFeeSummary } from "./ReviewFeeSummary";
 import { ReviewActions } from "./ReviewActions";
 import { CompanyProfile } from "../../../../../manageProfile/types/manageProfile";
 import { VehicleSubType } from "../../../../../manageVehicles/types/Vehicle";
-import { PermitType } from "../../../../types/PermitType";
+import { DEFAULT_PERMIT_TYPE, PermitType } from "../../../../types/PermitType";
 import { calculateFeeByDuration } from "../../../../helpers/feeSummary";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import { Nullable } from "../../../../../../common/types/common";
@@ -45,6 +45,7 @@ interface PermitReviewProps {
   vehicleWasSaved?: Nullable<boolean>;
   onEdit: () => void;
   onContinue: () => Promise<void>;
+  onAddToCart?: () => Promise<void>;
   showChangedFields?: boolean;
   oldFields?: Nullable<Partial<Application>>;
   calculatedFee?: Nullable<string>;
@@ -55,6 +56,7 @@ export const PermitReview = (props: PermitReviewProps) => {
   const feeSummary = props.calculatedFee
     ? props.calculatedFee
     : `${calculateFeeByDuration(
+        getDefaultRequiredVal(DEFAULT_PERMIT_TYPE, props.permitType),
         getDefaultRequiredVal(0, props.permitDuration),
       )}`;
 
@@ -114,6 +116,8 @@ export const PermitReview = (props: PermitReviewProps) => {
         <ReviewActions
           onEdit={props.onEdit}
           onContinue={props.onContinue}
+          hasToCartButton={!props.isAmendAction}
+          onAddToCart={props.onAddToCart}
           continueBtnText={props.continueBtnText}
         />
       </Box>
