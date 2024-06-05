@@ -226,6 +226,7 @@ vehicles:
   ingress:
     className: openshift-default
     annotations: 
+      haproxy.router.openshift.io/timeout: 2m
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
@@ -361,6 +362,7 @@ dops:
   ingress:
     className: openshift-default
     annotations: 
+      haproxy.router.openshift.io/timeout: 2m
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
@@ -410,6 +412,8 @@ scheduler:
     enabled: false
   configmap:
     enabled: true
+    data:
+      ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
   containers:
     - name: scheduler
       command:
@@ -421,6 +425,9 @@ scheduler:
       image: scheduler
       tag: "{{tpl .Values.global.tag .}}"
       env: 
+        fromLocalConfigmap:
+          - name: ACCESS_API_URL
+            key: ACCESS_API_URL
         fromValues:
           - name: SCHEDULER_PR_NUM
             value: '{{.Values.global.pr_num}}'
