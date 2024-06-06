@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "description": "BCGov devops quickstart. For reference, testing and new projects.",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",

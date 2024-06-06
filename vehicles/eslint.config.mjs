@@ -9,6 +9,10 @@ export default tseslint.config(
   ...tseslint.configs.stylisticTypeChecked,
   {
     ignores: ["dist/**", "node_modules/**", "coverage/**"],
+    rules: {
+      // Disable the prefer-nullish-coalescing rule temporarily. To be enabled when strictNullChecks enabled and resolved.
+      "@typescript-eslint/prefer-nullish-coalescing": "off",
+    },
  },
   { files: ["**/*.ts"],
     languageOptions: {
