@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { Button, Step, StepConnector, StepLabel, Stepper } from "@mui/material";
@@ -36,7 +36,11 @@ export const LOASteps = ({
     reValidateMode: "onChange",
   });
 
-  const { handleSubmit } = formMethods;
+  const { handleSubmit, reset } = formMethods;
+
+  useEffect(() => {
+    reset(loaDetailToFormData(loaDetail));
+  }, [loaDetail]);
 
   const [activeStep, setActiveStep] = useState<LOAStep>(LOA_STEPS.BASIC);
 

@@ -50,21 +50,23 @@ const vehicleSelectionRules =  {
 const getVehicleDetailsForSelected = (
   selectedVehicles: string[],
   vehicleSource: LOAVehicle[],
-) => {
+): Record<string, LOAVehicle | null> => {
   const selectedVehicleIds = new Set(selectedVehicles);
-  const detailsOfSelectedIds = vehicleSource.filter(
-    vehicle => vehicle.vehicleId && selectedVehicleIds.has(vehicle.vehicleId),
-  ).map(vehicle => ({
-    vehicleId: vehicle.vehicleId,
-    unitNumber: vehicle.unitNumber,
-    make: vehicle.make,
-    vehicleType: vehicle.vehicleType,
-    vin: vehicle.vin,
-    plate: vehicle.plate,
-    vehicleSubType: vehicle.vehicleSubType,
-  }));
+  const detailsOfSelectedIds = [...selectedVehicleIds].map(vehicleId => {
+    const vehicleDetail = vehicleSource.find(vehicle => vehicle.vehicleId === vehicleId);
+    if (!vehicleDetail) return [vehicleId, null];
+    return [vehicleId, {
+      vehicleId: vehicleDetail.vehicleId,
+      unitNumber: vehicleDetail.unitNumber,
+      make: vehicleDetail.make,
+      vehicleType: vehicleDetail.vehicleType,
+      vin: vehicleDetail.vin,
+      plate: vehicleDetail.plate,
+      vehicleSubType: vehicleDetail.vehicleSubType,
+    }];
+  });
 
-  return detailsOfSelectedIds;
+  return Object.fromEntries(detailsOfSelectedIds);
 };
 
 export const LOADesignateVehicles = () => {
@@ -146,7 +148,7 @@ export const LOADesignateVehicles = () => {
 
     setValue(
       "selectedVehicles.powerUnits",
-      Object.fromEntries(detailsOfSelectedIds.map(detail => [detail.vehicleId, {...detail}])),
+      detailsOfSelectedIds,
     );
   }, [powerUnits, powerUnitSubTypes]);
 
@@ -160,16 +162,20 @@ export const LOADesignateVehicles = () => {
 
     setValue(
       "selectedVehicles.trailers",
-      Object.fromEntries(detailsOfSelectedIds.map(detail => [detail.vehicleId, {...detail}])),
+      detailsOfSelectedIds,
     );
   }, [trailers, trailerSubTypes]);
   
   const selectionForPowerUnitTable = Object.fromEntries(
-    Object.keys(selectedPowerUnits).map(id => [`${VEHICLE_TYPES.POWER_UNIT}-${id}`, true]),
+    Object.entries(selectedPowerUnits)
+      .filter(selected => Boolean(selected[1]))
+      .map(([id]) => [`${VEHICLE_TYPES.POWER_UNIT}-${id}`, true]),
   );
 
   const selectionForTrailerTable = Object.fromEntries(
-    Object.keys(selectedTrailers).map(id => [`${VEHICLE_TYPES.TRAILER}-${id}`, true]),
+    Object.entries(selectedTrailers)
+      .filter(selected => Boolean(selected[1]))
+      .map(([id]) => [`${VEHICLE_TYPES.TRAILER}-${id}`, true]),
   );
 
   const handlePowerUnitSelectionChange = (
@@ -187,7 +193,7 @@ export const LOADesignateVehicles = () => {
     const detailsOfSelectedIds = getVehicleDetailsForSelected(updatedSelection, powerUnits);
     setValue(
       "selectedVehicles.powerUnits",
-      Object.fromEntries(detailsOfSelectedIds.map(detail => [detail.vehicleId, {...detail}])),
+      detailsOfSelectedIds,
     );
     trigger("selectedVehicles");
   };
@@ -207,7 +213,7 @@ export const LOADesignateVehicles = () => {
     const detailsOfSelectedIds = getVehicleDetailsForSelected(updatedSelection, trailers);
     setValue(
       "selectedVehicles.trailers",
-      Object.fromEntries(detailsOfSelectedIds.map(detail => [detail.vehicleId, {...detail}])),
+      detailsOfSelectedIds,
     );
     trigger("selectedVehicles");
   };
