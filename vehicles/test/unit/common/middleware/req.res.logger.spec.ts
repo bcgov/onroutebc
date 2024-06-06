@@ -30,7 +30,7 @@ describe('HTTPLoggerMiddleware', () => {
       },
     } as unknown as Response;
 
-    const loggerSpy = jest.spyOn(middleware['logger'], 'log');
+    const loggerSpy = jest.spyOn(middleware.logger, 'log');
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     middleware.use(request, response, () => {});
