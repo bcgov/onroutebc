@@ -14,7 +14,7 @@ export async function getAccessToken(
   govCommonServices: GovCommonServices,
   httpService: HttpService,
   cacheManager: Cache,
-) {
+): Promise<string> {
   let tokenCacheKey: CacheKey = undefined;
   let tokenUrl: string = undefined;
   let username: string = undefined;
@@ -31,6 +31,11 @@ export async function getAccessToken(
     tokenUrl = process.env.CDOGS_TOKEN_URL;
     username = process.env.CDOGS_CLIENT_ID;
     password = process.env.CDOGS_CLIENT_SECRET;
+  } else if (govCommonServices === GovCommonServices.ORBC_SERVICE_ACCOUNT) {
+    tokenCacheKey = CacheKey.ORBC_SERVICE_ACCOUNT_ACCESS_TOKEN;
+    tokenUrl = process.env.ORBC_SERVICE_ACCOUNT_TOKEN_URL;
+    username = process.env.ORBC_SERVICE_ACCOUNT_CLIENT_ID;
+    password = process.env.ORBC_SERVICE_ACCOUNT_CLIENT_SECRET;
   }
 
   const tokenFromCache: GovCommonServicesToken =

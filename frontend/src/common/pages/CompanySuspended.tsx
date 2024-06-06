@@ -6,7 +6,7 @@ export const CompanySuspended = () => {
   return (
     <div className="company-suspended">
       <ErrorPage
-        errorTitle="Company suspended"
+        errorTitle="Company Access Restricted"
         msgNode={
           <div className="company-suspended__msg">
             <span className="company-suspended__text">
