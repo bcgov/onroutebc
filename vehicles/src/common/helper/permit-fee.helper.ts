@@ -103,7 +103,7 @@ export const calculateDuration = (application: Permit): number => {
   const today = dayjs(new Date()).format('YYYY-MM-DD');
   if (
     application.permitStatus === ApplicationStatus.VOIDED &&
-    today < startDate
+    startDate < today
   )
     startDate = today;
   if (
