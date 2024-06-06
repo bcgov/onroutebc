@@ -442,7 +442,9 @@ export class PaymentService {
       totalTransactionAmount.toFixed(2) !=
       Math.abs(totalTransactionAmountCalculated).toFixed(2)
     ) {
-      throw new BadRequestException(`Transaction Amount Mismatch. Amount received is $${totalTransactionAmount.toFixed(2)} but amount calculated is $${Math.abs(totalTransactionAmountCalculated).toFixed(2)}`);
+      throw new BadRequestException(
+        `Transaction Amount Mismatch. Amount received is $${totalTransactionAmount.toFixed(2)} but amount calculated is $${Math.abs(totalTransactionAmountCalculated).toFixed(2)}`,
+      );
     }
 
     //For transaction type refund, total transaction amount in backend should be less than zero and vice a versa.
@@ -749,7 +751,10 @@ export class PaymentService {
         new Brackets((qb) => {
           qb.where(
             'transaction.paymentMethodTypeCode != :paymentType OR ( transaction.paymentMethodTypeCode = :paymentType AND transaction.pgApproved = :approved)',
-            { paymentType: PaymentMethodTypeEnum.WEB, approved: PgApprovesStatus.APPROVED },
+            {
+              paymentType: PaymentMethodTypeEnum.WEB,
+              approved: PgApprovesStatus.APPROVED,
+            },
           );
         }),
       )
