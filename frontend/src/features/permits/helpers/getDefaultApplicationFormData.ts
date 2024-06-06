@@ -11,6 +11,7 @@ import { PermitMailingAddress } from "../types/PermitMailingAddress";
 import { PermitContactDetails } from "../types/PermitContactDetails";
 import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
 import { Application, ApplicationFormData } from "../types/application";
+import { minDurationForPermitType } from "./dateSelection";
 import {
   getEndOfDate,
   getStartOfDate,
@@ -154,18 +155,16 @@ export const getExpiryDateOrDefault = (
 /**
  * Gets default values for the application data, or populate with values from existing application data and company id/user details.
  * @param permitType permit type for the application
- * @param applicationData existing application data, if any
- * @param companyId company id of the current user, if any
- * @param userDetails user details of current user, if any
  * @param companyInfo data from company profile information
+ * @param applicationData existing application data, if any
+ * @param userDetails user details of current user, if any
  * @returns default values for the application data
  */
 export const getDefaultValues = (
   permitType: PermitType,
+  companyInfo: Nullable<CompanyProfile>, // can be undefined, but must be passed as param
   applicationData?: Nullable<Application | ApplicationFormData>,
-  companyId?: Nullable<number>,
   userDetails?: Nullable<BCeIDUserDetailContext>,
-  companyInfo?: Nullable<CompanyProfile>,
 ): ApplicationFormData => {
   const startDateOrDefault = getStartDateOrDefault(
     now(),
@@ -173,7 +172,7 @@ export const getDefaultValues = (
   );
 
   const durationOrDefault = getDurationOrDefault(
-    30,
+    minDurationForPermitType(permitType),
     applicationData?.permitData?.permitDuration,
   );
 
@@ -183,8 +182,12 @@ export const getDefaultValues = (
     applicationData?.permitData?.expiryDate,
   );
 
+  const defaultPermitType = getDefaultRequiredVal(
+    permitType,
+    applicationData?.permitType,
+  );
+
   return {
-    companyId: +getDefaultRequiredVal(0, companyId),
     originalPermitId: getDefaultRequiredVal(
       "",
       applicationData?.originalPermitId,
@@ -196,10 +199,7 @@ export const getDefaultValues = (
     ),
     permitId: getDefaultRequiredVal("", applicationData?.permitId),
     permitNumber: getDefaultRequiredVal("", applicationData?.permitNumber),
-    permitType: getDefaultRequiredVal(
-      permitType,
-      applicationData?.permitType,
-    ),
+    permitType: defaultPermitType,
     permitStatus: getDefaultRequiredVal(
       PERMIT_STATUSES.IN_PROGRESS,
       applicationData?.permitStatus,
@@ -208,10 +208,16 @@ export const getDefaultValues = (
       companyName: getDefaultRequiredVal(
         "",
         applicationData?.permitData?.companyName,
+        companyInfo?.legalName,
+      ),
+      doingBusinessAs: getDefaultRequiredVal(
+        "",
+        companyInfo?.alternateName, // always use the latest DBA fetched from company info
       ),
       clientNumber: getDefaultRequiredVal(
         "",
         applicationData?.permitData?.clientNumber,
+        companyInfo?.clientNumber,
       ),
       startDate: startDateOrDefault,
       permitDuration: durationOrDefault,
@@ -238,7 +244,7 @@ export const getDefaultValues = (
       vehicleDetails: getDefaultVehicleDetails(
         applicationData?.permitData?.vehicleDetails,
       ),
-      feeSummary: `${calculateFeeByDuration(durationOrDefault)}`,
+      feeSummary: `${calculateFeeByDuration(defaultPermitType, durationOrDefault)}`,
     },
   };
 };

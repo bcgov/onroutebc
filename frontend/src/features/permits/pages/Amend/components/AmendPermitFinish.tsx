@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import "./AmendPermitFinish.scss";
 import { AmendPermitContext } from "../context/AmendPermitContext";
@@ -13,11 +13,18 @@ import { isValidTransaction } from "../../../helpers/payment";
 import { hasPermitsActionFailed } from "../../../helpers/permitState";
 import { ERROR_ROUTES } from "../../../../../routes/constants";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
+import { DEFAULT_PERMIT_TYPE } from "../../../types/PermitType";
 
 export const AmendPermitFinish = () => {
   const navigate = useNavigate();
-  const { permit, amendmentApplication, permitHistory, getLinks, afterFinishAmend } =
-    useContext(AmendPermitContext);
+  const { companyId } = useParams();
+  const {
+    permit,
+    amendmentApplication,
+    permitHistory,
+    getLinks,
+    afterFinishAmend,
+  } = useContext(AmendPermitContext);
 
   const validTransactionHistory = permitHistory.filter((history) =>
     isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
@@ -29,13 +36,22 @@ export const AmendPermitFinish = () => {
     -1 *
     calculateAmountToRefund(
       validTransactionHistory,
-      getDefaultRequiredVal(0, amendmentApplication?.permitData?.permitDuration),
+      getDefaultRequiredVal(
+        0,
+        amendmentApplication?.permitData?.permitDuration,
+      ),
+      getDefaultRequiredVal(
+        DEFAULT_PERMIT_TYPE,
+        amendmentApplication?.permitType,
+        permit?.permitType,
+      ),
     );
 
   const { mutation: startTransactionMutation, transaction } =
     useStartTransaction();
 
-  const { mutation: issuePermitMutation, issueResults } = useIssuePermits();
+  const { mutation: issuePermitMutation, issueResults } =
+    useIssuePermits(companyId);
 
   useEffect(() => {
     if (typeof transaction !== "undefined") {

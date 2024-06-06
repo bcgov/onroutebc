@@ -16,10 +16,10 @@ import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext
 import { PermitForm } from "./components/form/PermitForm";
 import { usePermitVehicleManagement } from "../../hooks/usePermitVehicleManagement";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
-import { PERMIT_DURATION_OPTIONS } from "../../constants/constants";
 import { Nullable } from "../../../../common/types/common";
 import { PermitType } from "../../types/PermitType";
 import { PermitVehicleDetails } from "../../types/PermitVehicleDetails";
+import { durationOptionsForPermitType } from "../../helpers/dateSelection";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -35,11 +35,7 @@ import {
  * The first step in creating and submitting an Application.
  * @returns A form for users to create an Application
  */
-export const ApplicationForm = ({
-  permitType,
-}: {
-  permitType: PermitType;
-}) => {
+export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
   // The name of this feature that is used for id's, keys, and associating form components
   const FEATURE = "application";
 
@@ -50,16 +46,12 @@ export const ApplicationForm = ({
     companyId,
     companyLegalName,
     userDetails,
-    idirUserDetails,
     onRouteBCClientNumber,
   } = useContext(OnRouteBCContext);
 
-  const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
-  const doingBusinessAs = isStaffActingAsCompany && companyLegalName ?
-    companyLegalName : "";
-
   const companyInfoQuery = useCompanyInfoQuery();
-
+  const companyInfo = companyInfoQuery.data;
+  
   // Use a custom hook that performs the following whenever page is rendered (or when application context is updated/changed):
   // 1. Get all data needed to generate default values for the application form (from application context, company, user details)
   // 2. Generate those default values and register them to the form
@@ -70,10 +62,10 @@ export const ApplicationForm = ({
     formMethods,
   } = useDefaultApplicationFormData(
     permitType,
+    companyInfo,
     applicationContext?.applicationData,
     companyId,
     userDetails,
-    companyInfoQuery.data,
   );
 
   const createdDateTime = applyWhenNotNullable(
@@ -86,7 +78,7 @@ export const ApplicationForm = ({
     applicationContext?.applicationData?.updatedDateTime,
   );
 
-  const companyInfo = companyInfoQuery.data;
+  const doingBusinessAs = companyInfo?.alternateName;
 
   const saveApplicationMutation = useSaveApplicationMutation();
   const snackBar = useContext(SnackBarContext);
@@ -96,9 +88,7 @@ export const ApplicationForm = ({
     vehicleOptions,
     powerUnitSubTypes,
     trailerSubTypes,
-  } = usePermitVehicleManagement(
-    applyWhenNotNullable((companyIdNum) => `${companyIdNum}`, companyId, "0"),
-  );
+  } = usePermitVehicleManagement();
 
   // Show leave application dialog
   const [showLeaveApplicationDialog, setShowLeaveApplicationDialog] =
@@ -154,10 +144,7 @@ export const ApplicationForm = ({
     );
   };
 
-  const onSaveSuccess = (
-    savedApplication: Application,
-    status: number,
-  ) => {
+  const onSaveSuccess = (savedApplication: Application, status: number) => {
     snackBar.setSnackBar({
       showSnackbar: true,
       setShowSnackbar: () => true,
@@ -167,9 +154,7 @@ export const ApplicationForm = ({
       alertType: "success",
     });
 
-    applicationContext.setApplicationData(
-      savedApplication,
-    );
+    applicationContext.setApplicationData(savedApplication);
     return getDefaultRequiredVal("", savedApplication.permitId);
   };
 
@@ -206,18 +191,11 @@ export const ApplicationForm = ({
           },
     );
 
-    const {
-      application: savedApplication,
-      status,
-    } = await saveApplicationMutation.mutateAsync(
-      applicationToBeSaved,
-    );
+    const { application: savedApplication, status } =
+      await saveApplicationMutation.mutateAsync(applicationToBeSaved);
 
     if (savedApplication) {
-      const savedPermitId = onSaveSuccess(
-        savedApplication,
-        status,
-      );
+      const savedPermitId = onSaveSuccess(savedApplication, status);
       additionalSuccessAction?.(savedPermitId);
     } else {
       onSaveFailure();
@@ -271,7 +249,7 @@ export const ApplicationForm = ({
           powerUnitSubTypes={powerUnitSubTypes}
           trailerSubTypes={trailerSubTypes}
           companyInfo={companyInfo}
-          durationOptions={PERMIT_DURATION_OPTIONS}
+          durationOptions={durationOptionsForPermitType(permitType)}
           doingBusinessAs={doingBusinessAs}
         />
       </FormProvider>

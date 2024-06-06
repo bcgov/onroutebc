@@ -68,20 +68,15 @@ export const PROFILE_ROUTES = {
 const PERMITS_ROUTE_BASE = "/permits";
 export const PERMITS_ROUTES = {
   BASE: PERMITS_ROUTE_BASE,
-  SUCCESS: (permitId?: string) =>
-    `${DYNAMIC_ROUTE_URI(
-      PERMITS_ROUTE_BASE,
-      ROUTE_PLACEHOLDERS.PERMIT_ID,
-      permitId,
-    )}/success`,
-  VOID: (permitId?: string) =>
-    `${DYNAMIC_ROUTE_URI(
+  SUCCESS: `${PERMITS_ROUTE_BASE}/success`,
+  VOID: (companyId?: string, permitId?: string) =>
+    `/companies/${companyId}${DYNAMIC_ROUTE_URI(
       PERMITS_ROUTE_BASE,
       ROUTE_PLACEHOLDERS.PERMIT_ID,
       permitId,
     )}/void`,
-  AMEND: (permitId?: string) =>
-    `${DYNAMIC_ROUTE_URI(
+  AMEND: (companyId?: string, permitId?: string) =>
+    `/companies/${companyId}${DYNAMIC_ROUTE_URI(
       PERMITS_ROUTE_BASE,
       ROUTE_PLACEHOLDERS.PERMIT_ID,
       permitId,
@@ -96,7 +91,6 @@ export const APPLICATION_STEPS = {
   HOME: 0,
   DETAILS: 1,
   REVIEW: 2,
-  PAY: 3,
 } as const;
 
 export type ApplicationStep =
@@ -123,13 +117,15 @@ export const APPLICATIONS_ROUTES = {
       ROUTE_PLACEHOLDERS.PERMIT_ID,
       permitId,
     )}/review`,
-  PAY: (permitId?: string, failed?: boolean) =>
-    `${DYNAMIC_ROUTE_URI(
-      APPLICATIONS_ROUTE_BASE,
-      ROUTE_PLACEHOLDERS.PERMIT_ID,
-      permitId,
-    )}/pay${failed ? "?paymentFailed=true" : ""}`,
 };
+
+// Shopping Cart
+export const SHOPPING_CART_ROUTE_BASE = "/cart";
+export const SHOPPING_CART_ROUTES = {
+  BASE: SHOPPING_CART_ROUTE_BASE,
+  DETAILS: (failed?: boolean) =>
+    `${SHOPPING_CART_ROUTE_BASE}${failed ? "?paymentFailed=true" : ""}`,
+}; 
 
 // Create Profile Wizard
 export const CREATE_PROFILE_WIZARD_ROUTES = {

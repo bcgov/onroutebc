@@ -19,11 +19,13 @@ export const openBlobInNewTab = (blob: Blob) => {
  * Opens the receipt pdf in a new tab.
  * @param permitId The permit id.
  */
-export const viewReceiptPdf = async (permitId: string) => {
+export const viewReceiptPdf = async (permitId: string, companyId?: string) => {
   if (permitId) {
     try {
-      const { blobObj: blobObjWithoutType } =
-        await downloadReceiptPdf(permitId);
+      const { blobObj: blobObjWithoutType } = await downloadReceiptPdf(
+        permitId,
+        companyId,
+      );
       openBlobInNewTab(blobObjWithoutType);
     } catch (err) {
       console.error(err);
@@ -35,10 +37,12 @@ export const viewReceiptPdf = async (permitId: string) => {
  * Opens the permit PDF in a new tab.
  * @param permitId The permitId of the permit.
  */
-export const viewPermitPdf = async (permitId: string) => {
+export const viewPermitPdf = async (permitId: string, companyId?: string) => {
   try {
-    const { blobObj: blobObjWithoutType } =
-      await downloadPermitApplicationPdf(permitId);
+    const { blobObj: blobObjWithoutType } = await downloadPermitApplicationPdf(
+      permitId,
+      companyId,
+    );
     openBlobInNewTab(blobObjWithoutType);
   } catch (err) {
     console.error(err);

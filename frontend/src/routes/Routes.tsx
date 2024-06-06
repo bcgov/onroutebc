@@ -32,17 +32,14 @@ import { CompanySuspended } from "../common/pages/CompanySuspended";
 import { ManageSettings } from "../features/settings/ManageSettings";
 import { IssuanceErrorPage } from "../common/pages/IssuanceErrorPage";
 import IDPRedirect from "../common/components/idpredirect/IDPRedirect";
+import { ShoppingCartDashboard } from "../features/permits/ShoppingCartDashboard";
 
 export const AppRoutes = () => {
-
   return (
     <Routes>
       {/* Home and Error Routes */}
       {/* Home and Error routes do no have any constraints. */}
-      <Route
-        path={routes.HOME} 
-        element={<IDPRedirect />}
-      />
+      <Route path={routes.HOME} element={<IDPRedirect />} />
       <Route
         path={routes.ERROR_ROUTES.SUSPENDED}
         element={<CompanySuspended />}
@@ -119,11 +116,11 @@ export const AppRoutes = () => {
         }
       >
         <Route
-          path={`${routes.PERMITS_ROUTES.VOID()}`}
+          path={`companies/:companyId/permits/:permitId/void`}
           element={<VoidPermit />}
         />
         <Route
-          path={`${routes.PERMITS_ROUTES.AMEND()}`}
+          path={`companies/:companyId/permits/:permitId/amend`}
           element={<AmendPermit />}
         />
         <Route
@@ -241,6 +238,23 @@ export const AppRoutes = () => {
           }
         />
       </Route>
+
+      <Route
+        element={
+          <BCeIDAuthWall
+            requiredRole={ROLES.WRITE_PERMIT}
+            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+          />
+        }
+      >
+        <Route
+          path={`${routes.SHOPPING_CART_ROUTES.DETAILS()}`}
+          element={
+            <ShoppingCartDashboard />
+          }
+        />
+      </Route>
+
       <Route
         element={
           <BCeIDAuthWall
@@ -268,14 +282,6 @@ export const AppRoutes = () => {
                 />
               }
             />
-            <Route
-              path={routes.APPLICATIONS_ROUTES.PAY()}
-              element={
-                <ApplicationSteps
-                  applicationStep={routes.APPLICATION_STEPS.PAY}
-                />
-              }
-            />
           </Route>
         </Route>
       </Route>
@@ -289,34 +295,30 @@ export const AppRoutes = () => {
         }
       >
         <Route
-          path={`${routes.PERMITS_ROUTES.SUCCESS()}`}
+          path={`${routes.PERMITS_ROUTES.SUCCESS}`}
           element={<SuccessPage />}
         />
       </Route>
 
-      <Route
-        element={
-          <BCeIDAuthWall
-            requiredRole={ROLES.WRITE_PERMIT}
-          />
-        }
-      >
+      <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
         <Route
           path={routes.PAYMENT_ROUTES.PAYMENT_REDIRECT}
           element={<PaymentRedirect />}
         />
       </Route>
 
-      <Route element={
-        <IDIRAuthWall 
-          allowedAuthGroups={[
-            IDIR_USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
-            IDIR_USER_AUTH_GROUP.FINANCE,
-            IDIR_USER_AUTH_GROUP.PPC_CLERK,
-            IDIR_USER_AUTH_GROUP.CTPO,
-          ]}
-        />
-      }>
+      <Route
+        element={
+          <IDIRAuthWall
+            allowedAuthGroups={[
+              IDIR_USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
+              IDIR_USER_AUTH_GROUP.FINANCE,
+              IDIR_USER_AUTH_GROUP.PPC_CLERK,
+              IDIR_USER_AUTH_GROUP.CTPO,
+            ]}
+          />
+        }
+      >
         <Route
           path={routes.SETTINGS_ROUTES.MANAGE}
           element={<ManageSettings />}

@@ -10,7 +10,7 @@ import { IS_AUTH_ONLY_KEY } from '../decorator/auth-only.decorator';
 import { Request } from 'express';
 
 @Injectable()
-export class JwtAuthGuard extends AuthGuard('jwt') {
+export class JwtAuthGuard extends AuthGuard(['jwt', 'jwt-service-account']) {
   constructor(private reflector: Reflector) {
     super();
   }

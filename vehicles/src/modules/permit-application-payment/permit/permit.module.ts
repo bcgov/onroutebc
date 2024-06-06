@@ -8,13 +8,16 @@ import { PermitData } from './entities/permit-data.entity';
 import { Permit } from './entities/permit.entity';
 import { PermitType } from './entities/permit-type.entity';
 import { PaymentModule } from '../payment/payment.module';
+import { CompanyPermitController } from './company-permit.controller';
+import { PermitReceiptDocumentModule } from '../permit-receipt-document/permit-receipt-document.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Permit, PermitData, PermitType]),
     PaymentModule,
+    PermitReceiptDocumentModule,
   ],
-  controllers: [PermitController],
+  controllers: [PermitController, CompanyPermitController],
   providers: [PermitService, PermitProfile],
   exports: [PermitService],
 })

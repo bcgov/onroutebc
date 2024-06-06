@@ -21,7 +21,7 @@ import {
   useVehiclesQuery,
 } from "../../manageVehicles/apiManager/hooks";
 
-export const usePermitVehicleManagement = (companyId: string) => {
+export const usePermitVehicleManagement = (companyId?: Nullable<string>) => {
   // Mutations used to add/update vehicle details
   const addPowerUnitMutation = useAddPowerUnitMutation();
   const updatePowerUnitMutation = useUpdatePowerUnitMutation();
@@ -136,14 +136,12 @@ export const usePermitVehicleManagement = (companyId: string) => {
         ? await updatePowerUnitMutation.mutateAsync({
             powerUnit,
             powerUnitId: powerUnit.powerUnitId,
-            companyId,
           })
         : await addPowerUnitMutation.mutateAsync({
             powerUnit: {
               ...powerUnit,
               powerUnitId: getDefaultRequiredVal("", vehicle.vehicleId),
             },
-            companyId,
           });
 
       if (!modifyVehicleSuccess(res.status)) return null;
@@ -168,14 +166,12 @@ export const usePermitVehicleManagement = (companyId: string) => {
         ? await updateTrailerMutation.mutateAsync({
             trailer,
             trailerId: trailer.trailerId,
-            companyId,
           })
         : await addTrailerMutation.mutateAsync({
             trailer: {
               ...trailer,
               trailerId: getDefaultRequiredVal("", vehicle.vehicleId),
             },
-            companyId,
           });
 
       if (!modifyVehicleSuccess(res.status)) return null;

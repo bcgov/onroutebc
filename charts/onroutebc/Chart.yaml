@@ -20,5 +20,5 @@ dependencies: # A list of the chart requirements (optional)
     version: 0.3.0
   - name: component
     repository: "https://bcgov.github.io/helm-service"
-    alias: tps-migration
+    alias: scheduler
     version: 0.3.0

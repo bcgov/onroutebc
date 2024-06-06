@@ -9,12 +9,16 @@ import { useSaveApplicationMutation } from "../../hooks/hooks";
 import { ApplicationBreadcrumb } from "../../components/application-breadcrumb/ApplicationBreadcrumb";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { PermitReview } from "./components/review/PermitReview";
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { SnackBarContext } from "../../../../App";
+import { useAddToCart } from "../../hooks/cart";
+import { hasPermitsActionFailed } from "../../helpers/permitState";
+import { CartContext } from "../../context/CartContext";
 import {
   APPLICATIONS_ROUTES,
   APPLICATION_STEPS,
   ERROR_ROUTES,
+  SHOPPING_CART_ROUTES,
 } from "../../../../routes/constants";
 
 import {
@@ -26,24 +30,20 @@ export const ApplicationReview = () => {
   const { applicationData, setApplicationData } =
     useContext(ApplicationContext);
 
+  const { setSnackBar } = useContext(SnackBarContext);
+  const { refetchCartCount } = useContext(CartContext);
+
   const routeParams = useParams();
   const permitId = getDefaultRequiredVal("", routeParams.permitId);
 
   const navigate = useNavigate();
 
-  const companyQuery = useCompanyInfoQuery();
+  const { data: companyInfo } = useCompanyInfoQuery();
   const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
   const trailerSubTypesQuery = useTrailerSubTypesQuery();
   const methods = useForm<Application>();
 
-  const {
-    companyLegalName,
-    idirUserDetails,
-  } = useContext(OnRouteBCContext);
-
-  const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
-  const doingBusinessAs = isStaffActingAsCompany && companyLegalName ?
-    companyLegalName : "";
+  const doingBusinessAs = companyInfo?.alternateName;
 
   // For the confirmation checkboxes
   const [isChecked, setIsChecked] = useState(false);
@@ -51,16 +51,34 @@ export const ApplicationReview = () => {
 
   // Send data to the backend API
   const saveApplicationMutation = useSaveApplicationMutation();
+  const addToCartMutation = useAddToCart();
 
   const back = () => {
     navigate(APPLICATIONS_ROUTES.DETAILS(permitId), { replace: true });
   };
 
   const next = () => {
-    navigate(APPLICATIONS_ROUTES.PAY(permitId));
+    navigate(SHOPPING_CART_ROUTES.DETAILS());
   };
 
-  const onSubmit = async () => {
+  const proceedWithAddToCart = async (
+    companyId: string,
+    applicationIds: string[],
+    onSuccess: () => void,
+  ) => {
+    const addResult = await addToCartMutation.mutateAsync({
+      companyId,
+      applicationIds,
+    });
+
+    if (hasPermitsActionFailed(addResult)) {
+      navigate(ERROR_ROUTES.UNEXPECTED);
+    } else {
+      onSuccess();
+    }
+  };
+
+  const handleContinue = async () => {
     setIsSubmitted(true);
 
     if (!isChecked) return;
@@ -70,16 +88,64 @@ export const ApplicationReview = () => {
     }
 
     const { application: savedApplication } =
-      await saveApplicationMutation.mutateAsync(applicationData);
+      await saveApplicationMutation.mutateAsync({
+        ...applicationData,
+        permitData: {
+          ...applicationData.permitData,
+          doingBusinessAs, // always set most recent DBA from company info
+        }
+      });
 
     if (savedApplication) {
       setApplicationData(savedApplication);
-      next();
+
+      await proceedWithAddToCart(
+        `${savedApplication.companyId}`,
+        [savedApplication.permitId] as string[],
+        () => {
+          setSnackBar({
+            showSnackbar: true,
+            setShowSnackbar: () => true,
+            message: `Application ${savedApplication.applicationNumber} added to cart`,
+            alertType: "success",
+          });
+    
+          refetchCartCount();
+          next();
+        },
+      );
     } else {
       navigate(ERROR_ROUTES.UNEXPECTED);
     }
+  };
 
-    next();
+  const handleAddToCart = async () => {
+    setIsSubmitted(true);
+
+    if (!isChecked) return;
+
+    const companyId = applicationData?.companyId;
+    const permitId = applicationData?.permitId;
+    const applicationNumber = applicationData?.applicationNumber;
+    if (!companyId || !permitId || !applicationNumber) {
+      return navigate(ERROR_ROUTES.UNEXPECTED);
+    }
+
+    await proceedWithAddToCart(
+      `${companyId}`,
+      [permitId],
+      () => {
+        setSnackBar({
+          showSnackbar: true,
+          setShowSnackbar: () => true,
+          message: `Application ${applicationNumber} added to cart`,
+          alertType: "success",
+        });
+  
+        refetchCartCount();
+        navigate(APPLICATIONS_ROUTES.BASE);
+      },
+    );
   };
 
   useEffect(() => {
@@ -105,11 +171,12 @@ export const ApplicationReview = () => {
           permitConditions={applicationData?.permitData?.commodities}
           createdDateTime={applicationData?.createdDateTime}
           updatedDateTime={applicationData?.updatedDateTime}
-          companyInfo={companyQuery.data}
+          companyInfo={companyInfo}
           contactDetails={applicationData?.permitData?.contactDetails}
-          continueBtnText="Proceed To Pay"
+          continueBtnText="Checkout"
           onEdit={back}
-          onContinue={methods.handleSubmit(onSubmit)}
+          onContinue={methods.handleSubmit(handleContinue)}
+          onAddToCart={handleAddToCart}
           allChecked={isChecked}
           setAllChecked={setIsChecked}
           hasAttemptedCheckboxes={isSubmitted}

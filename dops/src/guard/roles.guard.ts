@@ -20,6 +20,6 @@ export class RolesGuard implements CanActivate {
     }
     const request: Request = context.switchToHttp().getRequest();
     const currentUser = request.user as IUserJWT;
-    return matchRoles(roles, currentUser.roles);
+    return matchRoles(roles, currentUser.roles, currentUser.orbcUserAuthGroup);
   }
 }

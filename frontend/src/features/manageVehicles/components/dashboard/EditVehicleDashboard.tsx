@@ -140,15 +140,9 @@ export const EditVehicleDashboard = React.memo(
             {editVehicleMode === VEHICLE_TYPES.TRAILER && "Trailer Details"}
           </Typography>
           {isEditPowerUnit(editVehicleMode) ? (
-            <PowerUnitForm
-              powerUnit={vehicleToEdit as PowerUnit}
-              companyId={companyId}
-            />
+            <PowerUnitForm powerUnit={vehicleToEdit as PowerUnit} />
           ) : (
-            <TrailerForm
-              trailer={vehicleToEdit as Trailer}
-              companyId={companyId}
-            />
+            <TrailerForm trailer={vehicleToEdit as Trailer} />
           )}
         </Box>
       </div>

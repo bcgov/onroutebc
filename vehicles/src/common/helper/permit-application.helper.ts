@@ -10,6 +10,15 @@ import { callDatabaseSequence } from './database.helper';
 import { PermitApplicationOrigin as PermitApplicationOriginEnum } from '../enum/permit-application-origin.enum';
 import { PermitApprovalSource as PermitApprovalSourceEnum } from '../enum/permit-approval-source.enum';
 import { randomInt } from 'crypto';
+import { Directory } from '../enum/directory.enum';
+import { doesUserHaveAuthGroup } from './auth.helper';
+import {
+  IDIR_USER_AUTH_GROUP_LIST,
+  UserAuthGroup,
+} from '../enum/user-auth-group.enum';
+import { PPC_FULL_TEXT } from '../constants/api.constant';
+import { User } from '../../modules/company-user-management/users/entities/user.entity';
+import { ApplicationStatus } from '../enum/application-status.enum';
 
 /**
  * Fetches and resolves various types of names associated with a permit using cache.
@@ -188,4 +197,60 @@ export const generatePermitNumber = async (
   // Format and return the permit number
   const permitNumber = `P${approvalSourceId}-${sequence}-${randomNumber}${revision}`;
   return permitNumber;
+};
+
+/**
+ * Determines the appropriate display name for the applicant based on their directory type and the
+ * current user's authorization group.
+ * - For users from the IDIR directory, it returns the user's username if the current user has the
+ *   correct authorization group. Otherwise, it returns a predefined full text constant.
+ * - For users from other directories, it returns the user's first and last name, concatenated.
+ * @param applicationOwner The user object representing the owner of the application.
+ * @param currentUserAuthGroup The authorization group of the current user.
+ * @returns The display name of the application owner as a string.
+ */
+export const getApplicantDisplay = (
+  applicationOwner: User,
+  currentUserAuthGroup: UserAuthGroup,
+): string => {
+  if (applicationOwner?.directory === Directory.IDIR) {
+    if (
+      doesUserHaveAuthGroup(currentUserAuthGroup, IDIR_USER_AUTH_GROUP_LIST)
+    ) {
+      return applicationOwner?.userName;
+    } else {
+      return PPC_FULL_TEXT;
+    }
+  } else {
+    const firstName = applicationOwner?.userContact?.firstName ?? '';
+    const lastName = applicationOwner?.userContact?.lastName ?? '';
+    return (firstName + ' ' + lastName).trim();
+  }
+};
+
+/**
+ * Determines if the given permit application is an amendment.
+ * An application is considered an amendment if:
+ * - The application status is 'IN_PROGRESS'
+ * - The original permit ID is different from the current permit ID
+ * - The revision number is greater than 0
+ *
+ * @param {Permit} permit - The permit object to check.
+ * @param {ApplicationStatus} permit.permitStatus - The current status of the permit application.
+ * @param {string} permit.originalPermitId - The ID of the original permit.
+ * @param {string} permit.permitId - The ID of the current permit.
+ * @param {number} permit.revision - The revision number of the permit.
+ * @returns {boolean} - Returns true if the application is an amendment, otherwise false.
+ */
+export const isAmendmentApplication = ({
+  permitStatus,
+  originalPermitId,
+  permitId,
+  revision,
+}: Permit) => {
+  return (
+    permitStatus === ApplicationStatus.IN_PROGRESS &&
+    originalPermitId !== permitId &&
+    revision > 0
+  );
 };

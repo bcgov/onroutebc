@@ -1,0 +1,45 @@
+@use "../../../../common/components/dashboard/Dashboard";
+@import "../../../../themes/orbcStyles";
+
+@include Dashboard.layout-box-style(".shopping-cart-page");
+
+.shopping-cart-page {
+  display: flex;
+  flex-direction: row;
+  background-color: $white;
+  padding-bottom: 9rem;
+
+  & &__left-container {
+    display: flex;
+    flex-direction: column;
+    margin-right: 0;
+    width: 100%;
+    padding-top: 1.5rem;
+  }
+
+  & &__right-container {
+    background-color: $bc-white;
+    display: flex;
+    flex-direction: column;
+    margin-left: 5rem;
+
+    .choose-payment-method {
+      margin-bottom: 2.5rem;
+    }
+
+    .payment-failed-banner {
+      margin: 0;
+      margin-bottom: 1.5rem;
+    }
+  }
+
+  & &__contact {
+    color: $bc-black;
+    margin-top: 2.5rem;
+    margin-bottom: 10.75rem;
+
+    .pay-contact {
+      font-weight: 700;
+    }
+  }
+}

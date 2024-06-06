@@ -4,6 +4,7 @@ import { Permit } from "../types/permit";
 import { isValidTransaction } from "./payment";
 import { Nullable } from "../../../common/types/common";
 import { PERMIT_STATES, getPermitState } from "./permitState";
+import { PERMIT_TYPES, PermitType } from "../types/PermitType";
 
 import {
   applyWhenNotNullable,
@@ -12,10 +13,16 @@ import {
 
 /**
  * Calculates the fee for a permit only by its duration.
+ * @param permitType Type of permit
  * @param duration Number of days for duration of permit
  * @returns Fee to be paid for the permit duration
  */
-export const calculateFeeByDuration = (duration: number) => {
+export const calculateFeeByDuration = (permitType: PermitType, duration: number) => {
+  if (permitType === PERMIT_TYPES.TROW) {
+    // Only for TROW
+    return duration > 360 ? 1200 : Math.floor(duration / 30) * 100;
+  }
+  // Add more conditions for other permit types if needed
   // 1 Year === 365 days, but the fee for one year is only $360
   return duration > 360 ? 360 : duration;
 };
@@ -24,20 +31,21 @@ export const calculateFeeByDuration = (duration: number) => {
  * Gets full display text for fee summary.
  * @param feeSummary fee summary field for a permit (if exists)
  * @param duration duration field for a permit (if exists)
+ * @param permitType type of permit (if exists)
  * @returns display text for the fee summary (currency amount to 2 decimal places)
  */
 export const feeSummaryDisplayText = (
   feeSummary?: Nullable<string>,
   duration?: Nullable<number>,
+  permitType?: Nullable<PermitType>,
 ) => {
   const feeFromSummary = applyWhenNotNullable(
     (numericStr) => Number(numericStr).toFixed(2),
     feeSummary,
   );
-  const feeFromDuration = applyWhenNotNullable(
-    (num) => calculateFeeByDuration(num).toFixed(2),
-    duration,
-  );
+  const feeFromDuration = duration && permitType ?
+    calculateFeeByDuration(permitType, duration).toFixed(2) : null;
+  
   const fee = getDefaultRequiredVal("0.00", feeFromSummary, feeFromDuration);
   const numericFee = Number(fee);
   return numericFee >= 0 ? `$${fee}` : `-$${(numericFee * -1).toFixed(2)}`;
@@ -77,14 +85,16 @@ export const calculateNetAmount = (permitHistory: PermitHistory[]) => {
  * Calculates the amount that needs to be refunded (or paid if amount is negative) for a permit given a new duration period.
  * @param permitHistory List of history objects that make up the history of a permit and its transactions
  * @param currDuration Current (updated) duration of the permit
+ * @param currPermitType Permit type of current permit to refund
  * @returns Amount that needs to be refunded, or if negative then the amount that still needs to be paid
  */
 export const calculateAmountToRefund = (
   permitHistory: PermitHistory[],
   currDuration: number,
+  currPermitType: PermitType,
 ) => {
   const netPaid = calculateNetAmount(permitHistory);
-  const feeForCurrDuration = calculateFeeByDuration(currDuration);
+  const feeForCurrDuration = calculateFeeByDuration(currPermitType, currDuration);
   return netPaid - feeForCurrDuration;
 };
 

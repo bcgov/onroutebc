@@ -38,16 +38,12 @@ interface PowerUnitFormProps {
    * The power unit details to be displayed if in edit mode.
    */
   powerUnit?: PowerUnit;
-  /**
-   * The company id that the power unit belongs to.
-   */
-  companyId: string;
 }
 
 /**
  * @returns React component containing the form for adding or editing a power unit.
  */
-export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
+export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
   // Default values to register with React Hook Forms
   // If data was passed to this component, then use that data, otherwise use empty or undefined values
   const powerUnitDefaultValues = {
@@ -106,7 +102,6 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
             null,
           ) as Nullable<number>,
         },
-        companyId,
       });
 
       if (result.status === 200) {
@@ -137,7 +132,6 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
             null,
           ) as Nullable<number>,
         },
-        companyId,
       });
 
       if (result.status === 200 || result.status === 201) {

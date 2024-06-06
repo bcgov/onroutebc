@@ -30,7 +30,7 @@ const getUserStorageKey = () =>
  *
  * @returns JSON parsed object, or undefined if item not found in sessionStorage.
  */
-const getUserStorage = () => {
+export const getUserStorage = () => {
   const storageKey = getDefaultRequiredVal("", getUserStorageKey());
   return applyWhenNotNullable(JSON.parse, sessionStorage.getItem(storageKey));
 };
@@ -114,10 +114,10 @@ export const getLoginUsernameFromSession = (): string => {
 };
 
 /**
- * Retrieves company email from session.
+ * Retrieves user email from session.
  * @returns string | null | undefined
  */
-export const getCompanyEmailFromSession = (): Nullable<string> => {
+export const getUserEmailFromSession = (): Nullable<string> => {
   const parsedSessionObject = getDefaultRequiredVal(
     { profile: { email: "" } },
     getUserStorage(),

@@ -11,7 +11,7 @@ import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { Transaction } from './entities/transaction.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, QueryRunner, Repository, UpdateResult } from 'typeorm';
+import { DataSource, In, QueryRunner, Repository, UpdateResult } from 'typeorm';
 import { PermitTransaction } from './entities/permit-transaction.entity';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { callDatabaseSequence } from 'src/common/helper/database.helper';
@@ -39,6 +39,10 @@ import {
   calculatePermitAmount,
   permitFee,
 } from 'src/common/helper/permit-fee.helper';
+import { CfsTransactionDetail } from './entities/cfs-transaction.entity';
+import { CfsFileStatus } from 'src/common/enum/cfs-file-status.enum';
+import { isAmendmentApplication } from '../../../common/helper/permit-application.helper';
+import { isCfsPaymentMethodType } from 'src/common/helper/payment.helper';
 
 @Injectable()
 export class PaymentService {
@@ -179,11 +183,8 @@ export class PaymentService {
     );
   }
 
-  private isApplicationInProgress(permitStatus: ApplicationStatus) {
-    return (
-      permitStatus === ApplicationStatus.IN_PROGRESS ||
-      permitStatus === ApplicationStatus.WAITING_PAYMENT
-    );
+  private isApplicationInCart(permitStatus: ApplicationStatus) {
+    return permitStatus === ApplicationStatus.IN_CART;
   }
 
   private isVoidorRevoked(permitStatus: ApplicationStatus) {
@@ -207,38 +208,44 @@ export class PaymentService {
     nestedQueryRunner?: QueryRunner,
   ): Promise<ReadTransactionDto> {
     let readTransactionDto: ReadTransactionDto;
-    let existingApplications: Permit[] = [];
     const queryRunner =
       nestedQueryRunner || this.dataSource.createQueryRunner();
     if (!nestedQueryRunner) {
       await queryRunner.connect();
       await queryRunner.startTransaction();
     }
+    //converting to comma separated string using join and then string array using split.
+    const applicationIds: string[] =
+      createTransactionDto.applicationDetails.map(
+        ({ applicationId }) => applicationId,
+      );
+
     try {
-      for (const application of createTransactionDto.applicationDetails) {
-        existingApplications = await queryRunner.manager.find(Permit, {
-          where: { permitId: application.applicationId },
+      const existingApplications: Permit[] = await queryRunner.manager.find(
+        Permit,
+        {
+          where: { permitId: In(applicationIds) },
           relations: { permitData: true },
-        });
-
-        const validStatus = existingApplications.some(
-          (existingApplication) =>
-            this.isVoidorRevoked(existingApplication.permitStatus) ||
-            this.isApplicationInProgress(existingApplication.permitStatus),
-        );
-
-        if (!validStatus) {
-          throw new BadRequestException('Application should be in Progress!!');
-        }
+        },
+      );
+      for (const application of existingApplications) {
+        if (
+          !(
+            this.isVoidorRevoked(application.permitStatus) ||
+            this.isApplicationInCart(application.permitStatus) ||
+            isAmendmentApplication(application)
+          )
+        )
+          throw new BadRequestException(
+            'Application in its current status cannot be processed for payment.',
+          );
       }
-
       const totalTransactionAmount =
         await this.validatePaymentAndCalculateAmount(
           createTransactionDto,
           existingApplications,
           queryRunner,
         );
-
       const transactionOrderNumber =
         await this.generateTransactionOrderNumber();
 
@@ -285,6 +292,13 @@ export class PaymentService {
           newPermitTransactions,
         );
 
+        if (isCfsPaymentMethodType(newTransaction.paymentMethodTypeCode)) {
+          const newCfsTransaction: CfsTransactionDetail =
+            new CfsTransactionDetail();
+          newCfsTransaction.transaction = newTransaction;
+          newCfsTransaction.fileStatus = CfsFileStatus.READY;
+          await queryRunner.manager.save(newCfsTransaction);
+        }
         if (
           this.isWebTransactionPurchase(
             newTransaction.paymentMethodTypeCode,
@@ -617,7 +631,7 @@ export class PaymentService {
   }
 
   async findTransaction(transactionId: string): Promise<ReadTransactionDto> {
-    return this.classMapper.mapAsync(
+    return await this.classMapper.mapAsync(
       await this.findTransactionEntity(transactionId),
       Transaction,
       ReadTransactionDto,

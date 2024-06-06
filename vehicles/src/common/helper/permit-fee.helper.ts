@@ -10,6 +10,8 @@ import {
   TROS_TERM,
   TROW_MAX_VALID_DURATION,
   TROW_MIN_VALID_DURATION,
+  TROW_PRICE_PER_TERM,
+  TROW_TERM,
 } from '../constants/permit.constant';
 import { differenceBetween } from './date-time.helper';
 import * as dayjs from 'dayjs';
@@ -81,8 +83,8 @@ export const permitFee = (application: Permit, oldAmount: number): number => {
         duration = 360;
       return currentPermitFee(
         duration,
-        TROS_PRICE_PER_TERM,
-        TROS_TERM,
+        TROW_PRICE_PER_TERM,
+        TROW_TERM,
         oldAmount,
       );
     }

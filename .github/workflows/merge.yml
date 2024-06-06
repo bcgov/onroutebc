@@ -43,8 +43,12 @@ jobs:
       environment: test
       release: test
       tag: ${{ needs.vars.outputs.pr }}
-      vault_role: nonprod
-      vault_zone: test
+      params: |
+        --set-string global.license='c28f0c' \
+        --set-string global.zone='test' \
+        --set-string global.vault.role='nonprod' \
+        --set-string global.vault.zone='test' \
+        --set-string global.pr_num='${{ needs.vars.outputs.pr }}' \
 
 
   promote-images-test:
@@ -55,7 +59,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        package: [dops, vehicles, frontend, tps-migration]
+        package: [dops, vehicles, frontend, scheduler]
     timeout-minutes: 2
     steps:
       - uses: shrink/actions-docker-registry-tag@v4
@@ -75,8 +79,12 @@ jobs:
       environment: prod
       tag: ${{ needs.vars.outputs.pr }}
       release: prod
-      vault_role: prod
-      vault_zone: prod
+      params: |
+        --set-string global.license='c28f0c' \
+        --set-string global.zone='prod' \
+        --set-string global.vault.role='prod' \
+        --set-string global.vault.zone='prod' \
+        --set-string global.pr_num='${{ needs.vars.outputs.pr }}' \
 
   promote-images-prod:
     name: Promote Images - Prod
@@ -86,7 +94,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        package: [dops, vehicles, frontend, tps-migration]
+        package: [dops, vehicles, frontend, scheduler]
     timeout-minutes: 2
     steps:
       - uses: shrink/actions-docker-registry-tag@v4
@@ -103,9 +111,15 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
+      - name: Generate release tag
+        id: generate_release_tag
+        shell: bash
+        run: |  
+          echo next_release_tag=$(expr $(echo $(curl https://api.github.com/repos/bcgov/onroutebc/releases | grep tag_name | cut -d '-' -f3 - | cut -d '"' -f1 -) + 1)) >> $GITHUB_OUTPUT
+            
       - name: Create Release
         run: |
-          gh release create "${{ needs.vars.outputs.pr }}" \
+          gh release create "${{ github.event.repository.name }}-Release-${{ steps.generate_release_tag.outputs.next_release_tag }}" \
           --repo=${{ github.repository }} \
-          --title="${{ github.repository }}-${{ needs.vars.outputs.pr }}" \
+          --title="${{ github.event.repository.name }}-Release-${{ steps.generate_release_tag.outputs.next_release_tag }}" \
           --generate-notes

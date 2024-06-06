@@ -1,17 +1,23 @@
 import { useState, useEffect } from "react";
 import { AxiosError } from "axios";
-import { useQueryClient, useMutation, useQuery, keepPreviousData } from "@tanstack/react-query";
+import { MRT_PaginationState, MRT_SortingState } from "material-react-table";
+import {
+  useQueryClient,
+  useMutation,
+  useQuery,
+  keepPreviousData,
+} from "@tanstack/react-query";
 
 import { Application, ApplicationFormData } from "../types/application";
 import { IssuePermitsResponse } from "../types/permit";
 import { StartTransactionResponseData } from "../types/payment";
 import { APPLICATION_STEPS, ApplicationStep } from "../../../routes/constants";
-import { Nullable, Optional, SortingConfig } from "../../../common/types/common";
 import { isPermitTypeValid } from "../types/PermitType";
 import { isPermitIdNumeric } from "../helpers/permitState";
 import { deserializeApplicationResponse } from "../helpers/deserializeApplication";
 import { deserializePermitResponse } from "../helpers/deserializePermit";
 import { AmendPermitFormData } from "../pages/Amend/types/AmendPermitFormData";
+import { Nullable, Optional } from "../../../common/types/common";
 import {
   getApplicationByPermitId,
   getPermit,
@@ -26,6 +32,7 @@ import {
   modifyAmendmentApplication,
   getApplicationsInProgress,
   resendPermit,
+  getPendingPermits,
 } from "../apiManager/permitsAPI";
 
 /**
@@ -36,10 +43,10 @@ export const useSaveApplicationMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: ApplicationFormData) => {
-      const res = data.applicationNumber ?
-        await updateApplication(data, data.applicationNumber)
+      const res = data.permitId
+        ? await updateApplication(data, data.permitId)
         : await createApplication(data);
-      
+
       if (res.status === 200 || res.status === 201) {
         queryClient.invalidateQueries({
           queryKey: ["application"],
@@ -79,8 +86,7 @@ export const useApplicationDetailsQuery = (
   const permitTypeValid = isPermitTypeValid(permitType);
 
   const isCreateNewApplication =
-    permitTypeValid &&
-    applicationStep === APPLICATION_STEPS.DETAILS;
+    permitTypeValid && applicationStep === APPLICATION_STEPS.DETAILS;
 
   // Currently, creating new application route doesn't contain valid permitId
   // ie. route === "/applications/new/tros" instead of "/applications/:permitId"
@@ -91,7 +97,8 @@ export const useApplicationDetailsQuery = (
   // eg. "/applications/new/abcde" is NOT VALID - provided permitType is not valid
   // eg. "/applications/new/review" is NOT VALID - "new" is not a valid (numeric) permit id
   // We also need applicationStep to determine which page (route) we're on, and check the permit type route param
-  const isInvalidRoute = !isPermitIdNumeric(permitId) && !isCreateNewApplication;
+  const isInvalidRoute =
+    !isPermitIdNumeric(permitId) && !isCreateNewApplication;
   const shouldEnableQuery = isPermitIdNumeric(permitId);
 
   // This won't fetch anything (ie. query.data will be undefined) if shouldEnableQuery is false
@@ -134,14 +141,17 @@ export const useApplicationDetailsQuery = (
  * @param permitId permit id for the permit
  * @returns UseQueryResult for permit query.
  */
-export const usePermitDetailsQuery = (permitId?: Nullable<string>) => {
+export const usePermitDetailsQuery = (
+  companyId: Nullable<string>,
+  permitId?: Nullable<string>,
+) => {
   return useQuery({
     queryKey: ["permit"],
     queryFn: async () => {
-      const res = await getPermit(permitId);
+      const res = await getPermit(permitId, companyId);
       return res ? deserializePermitResponse(res) : res;
     },
-    enabled: Boolean(permitId),
+    enabled: Boolean(permitId) && Boolean(companyId),
     retry: false,
     refetchOnMount: "always",
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
@@ -247,11 +257,14 @@ export const useCompleteTransaction = (
  * @param originalPermitId original permit id for the permit
  * @returns UseQueryResult of the fetch query.
  */
-export const usePermitHistoryQuery = (originalPermitId?: Nullable<string>) => {
+export const usePermitHistoryQuery = (
+  originalPermitId?: Nullable<string>,
+  companyId?: Nullable<string>,
+) => {
   return useQuery({
     queryKey: ["permitHistory"],
-    queryFn: () => getPermitHistory(originalPermitId),
-    enabled: Boolean(originalPermitId),
+    queryFn: () => getPermitHistory(originalPermitId, companyId),
+    enabled: Boolean(originalPermitId) && Boolean(companyId),
     retry: false,
     refetchOnMount: "always",
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
@@ -263,14 +276,15 @@ export const usePermitHistoryQuery = (originalPermitId?: Nullable<string>) => {
  * @param ids Application/permit ids for the permits to be issued.
  * @returns Mutation object, and the issued results response.
  */
-export const useIssuePermits = () => {
+export const useIssuePermits = (companyIdParam?: Nullable<string>) => {
   const [issueResults, setIssueResults] =
     useState<Nullable<IssuePermitsResponse>>(undefined);
 
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: issuePermits,
+    mutationFn: (applicationIds: string[]) =>
+      issuePermits(applicationIds, companyIdParam),
     retry: false,
     onSuccess: (issueResponseData) => {
       queryClient.invalidateQueries({
@@ -293,11 +307,11 @@ export const useIssuePermits = () => {
 /**
  * A custom react query mutation hook that requests the backend API to amend the permit.
  */
-export const useAmendPermit = () => {
+export const useAmendPermit = (companyIdParam?: Nullable<string>) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: AmendPermitFormData) => {
-      const amendResult = await amendPermit(data);
+      const amendResult = await amendPermit(data, companyIdParam);
       if (amendResult.status === 200 || amendResult.status === 201) {
         queryClient.invalidateQueries({
           queryKey: ["permit"],
@@ -327,9 +341,11 @@ export const useModifyAmendmentApplication = () => {
   return useMutation({
     mutationFn: async (data: {
       application: AmendPermitFormData;
-      applicationNumber: string;
+      applicationId: string;
+      companyId: string;
     }) => {
       const amendResult = await modifyAmendmentApplication(data);
+
       if (amendResult.status === 200 || amendResult.status === 201) {
         queryClient.invalidateQueries({
           queryKey: ["permit"],
@@ -361,11 +377,15 @@ export const useModifyAmendmentApplication = () => {
  */
 export const useAmendmentApplicationQuery = (
   originalPermitId?: Nullable<string>,
+  companyId?: Nullable<string>,
 ) => {
   return useQuery({
     queryKey: ["amendmentApplication"],
     queryFn: async () => {
-      const res = await getCurrentAmendmentApplication(originalPermitId);
+      const res = await getCurrentAmendmentApplication(
+        originalPermitId,
+        companyId,
+      );
       return res ? deserializeApplicationResponse(res) : res;
     },
     enabled: Boolean(originalPermitId),
@@ -376,28 +396,78 @@ export const useAmendmentApplicationQuery = (
 };
 
 /**
- * A custom react query hook that fetches applications in progress.
- * @returns List of applications in progress
+ * A custom react query hook that fetches applications in progress and manages its pagination state.
+ * @returns Query object containing fetched applications in progress, along with pagination state and setters
  */
-export const useApplicationsInProgressQuery = ({
-  page = 0,
-  take = 10,
-  searchString = "",
-  sorting = [],
-}: {
-  page: number;
-  take: number;
-  searchString?: string;
-  sorting: SortingConfig[];
-}) => {
-  return useQuery({
-    queryKey: ["applicationsInProgress", page, take, sorting],
+export const useApplicationsInProgressQuery = () => {
+  const [pagination, setPagination] = useState<MRT_PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const [sorting, setSorting] = useState<MRT_SortingState>([
+    {
+      id: "updatedDateTime",
+      desc: true,
+    },
+  ]);
+
+  const orderBy = sorting.length > 0 ? [
+    {
+      column: sorting.at(0)?.id as string,
+      descending: Boolean(sorting.at(0)?.desc),
+    },
+  ] : [];
+
+  const applicationsInProgressQuery = useQuery({
+    queryKey: ["applicationsInProgress", pagination.pageIndex, pagination.pageSize, sorting],
     queryFn: () =>
-      getApplicationsInProgress({ page, take, searchString, orderBy: sorting }),
+      getApplicationsInProgress({
+        page: pagination.pageIndex,
+        take: pagination.pageSize,
+        orderBy, 
+      }),
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
     refetchOnMount: "always",
     placeholderData: keepPreviousData,
   });
+
+  return {
+    applicationsInProgressQuery,
+    pagination,
+    setPagination,
+    sorting,
+    setSorting,
+  };
+};
+
+/**
+ * Hook that fetches pending permits and manages its pagination state.
+ * @returns Pending permits along with pagination state and setter
+ */
+export const usePendingPermitsQuery = () => {
+  const [pagination, setPagination] = useState<MRT_PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const { data: pendingPermits } = useQuery({
+    queryKey: ["pendingPermits", pagination.pageIndex, pagination.pageSize],
+    queryFn: () =>
+      getPendingPermits({
+        page: pagination.pageIndex,
+        take: pagination.pageSize,
+      }),
+    refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
+    refetchOnMount: "always",
+    placeholderData: keepPreviousData,
+  });
+
+  return {
+    pendingPermits,
+    pagination,
+    setPagination,
+  };
 };
 
 /**
