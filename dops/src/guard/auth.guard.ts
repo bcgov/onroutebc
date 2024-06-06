@@ -31,9 +31,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     const request: Request = context.switchToHttp().getRequest();
 
     if (isAuthOnly) {
-      request.headers['AuthOnly'] = 'true';
+      request.headers.AuthOnly = 'true';
     } else {
-      request.headers['AuthOnly'] = 'false';
+      request.headers.AuthOnly = 'false';
     }
     return super.canActivate(context);
   }
