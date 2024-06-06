@@ -418,7 +418,7 @@ export class PaymentService {
     applications: Permit[],
     queryRunner: QueryRunner,
   ) {
-    let totalTransactionAmountCalculated: number = 0;
+    let totalTransactionAmountCalculated = 0;
     // Calculate and add amount for each requested application, as per the available backend data.
     for (const application of applications) {
       totalTransactionAmountCalculated =
