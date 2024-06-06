@@ -3,7 +3,7 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import { getSFTPConnectionInfo } from 'src/helper/sftp.helper';
+import { getSFTPConnectionInfo } from 'src/common/helper/sftp.helper';
 import * as Client from 'ssh2-sftp-client';
 
 @Injectable()
