@@ -498,18 +498,17 @@ export class PaymentService {
     queryString: string,
   ): Promise<ReadPaymentGatewayTransactionDto> {
     let query: string, hashValue: string;
-    //Code QL fixes.
+    //Code QL fixes
     if (typeof queryString === 'string') {
+      const re = /\+/gi;
       query = queryString
         .substring(0, queryString.indexOf('hashValue=') - 1)
-        .replace('+', ' ');
-
+        .replace(re, ' ');
       hashValue = queryString.substring(
         queryString.indexOf('hashValue=') + 10,
         queryString.length,
       );
     }
-
     const validHash =
       convertToHash(
         `${query}${process.env.PAYBC_API_KEY}`,
