@@ -146,7 +146,7 @@ export const usePermitDetailsQuery = (
   permitId?: Nullable<string>,
 ) => {
   return useQuery({
-    queryKey: ["permit"],
+    queryKey: ["permit", permitId, companyId],
     queryFn: async () => {
       const res = await getPermit(permitId, companyId);
       return res ? deserializePermitResponse(res) : res;
@@ -262,7 +262,7 @@ export const usePermitHistoryQuery = (
   companyId?: Nullable<string>,
 ) => {
   return useQuery({
-    queryKey: ["permitHistory"],
+    queryKey: ["permitHistory", originalPermitId, companyId],
     queryFn: () => getPermitHistory(originalPermitId, companyId),
     enabled: Boolean(originalPermitId) && Boolean(companyId),
     retry: false,
@@ -380,7 +380,7 @@ export const useAmendmentApplicationQuery = (
   companyId?: Nullable<string>,
 ) => {
   return useQuery({
-    queryKey: ["amendmentApplication"],
+    queryKey: ["amendmentApplication", originalPermitId, companyId],
     queryFn: async () => {
       const res = await getCurrentAmendmentApplication(
         originalPermitId,
