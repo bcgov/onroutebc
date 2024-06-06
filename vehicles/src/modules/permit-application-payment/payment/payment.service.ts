@@ -442,7 +442,7 @@ export class PaymentService {
       totalTransactionAmount.toFixed(2) !=
       Math.abs(totalTransactionAmountCalculated).toFixed(2)
     ) {
-      throw new BadRequestException('Transaction Amount Mismatch');
+      throw new BadRequestException(`Transaction Amount Mismatch. Amount received is $${totalTransactionAmount.toFixed(2)} but amount calculated is $${Math.abs(totalTransactionAmountCalculated).toFixed(2)}`);
     }
 
     //For transaction type refund, total transaction amount in backend should be less than zero and vice a versa.
