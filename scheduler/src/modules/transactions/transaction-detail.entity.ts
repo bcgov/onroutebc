@@ -12,6 +12,12 @@ export class ORBC_CFSTransactionDetail {
     @Column()
     CFS_FILE_STATUS_TYPE: string;
 
+    @Column()
+    PROCESSSING_DATE_TIME: string;
+
+    @Column()
+    FILE_NAME: string;
+
     @OneToOne(() => Transaction, transaction => transaction.detail)
     @JoinColumn({ name: 'TRANSACTION_ID' })
     transaction: Transaction;

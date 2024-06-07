@@ -357,7 +357,7 @@ function populateBatchTrailer(transactions: Transaction[]): string {
 function generateCgiFile(transactions: Transaction[]): void {
   const now: Date = new Date();
   const cgiCustomString: string = formatDateToCustomString(now);
-  const cgiFileName: string = `INBOX.F3535.${cgiCustomString}`;
+  const cgiFileName: string = `F3535.${cgiCustomString}`;
   const batchHeader: string = populateBatchHeader('test_cgi_file', 'test_cgi_ack_file');
   fs.writeFileSync(cgiFileName, batchHeader);
   console.log(maxBatchId);
@@ -367,19 +367,19 @@ function generateCgiFile(transactions: Transaction[]): void {
   const batchTrailer: string = populateBatchTrailer(transactions);
   fs.appendFileSync(cgiFileName, batchTrailer);
   console.log(`${cgiFileName} generated.`);
-  const cgiTrigerFileName: string = `INBOX.F3535.${cgiCustomString}.TRG`;
+  const cgiTrigerFileName: string = `F3535.${cgiCustomString}.TRG`;
   fs.writeFileSync(cgiTrigerFileName, ``);
   console.log(`${cgiTrigerFileName} generated.`);
 }
 
-async function uploadFile(): Promise<void> {
+async function uploadFile(): Promise<string> {
   const currentDir = process.cwd();
   const sourceDir = currentDir;
   const destinationDir = currentDir;
 
   try {
     const files = await fs.promises.readdir(sourceDir);
-    const inboxFiles = files.filter(file => file.startsWith('INBOX.'));
+    const inboxFiles = files.filter(file => file.startsWith('F3535.'));
     if (inboxFiles.length === 0) {
       console.log('No files can be uploaded');
       return null;
@@ -416,14 +416,15 @@ async function uploadFile(): Promise<void> {
       const cgiSftpService: CgiSftpService = new CgiSftpService();
       const fileContent: Express.Multer.File = multerFile; 
       const fileName: string = file;
-      cgiSftpService.upload(fileContent, fileName);   
+      cgiSftpService.upload(fileContent, fileName);  
+      return file; 
     }
   } catch (err) {
-    console.error('Error moving files:', err);
+    console.error('Error uploading files:', err);
   }
 }
 
-export const generate = async (transactions: Transaction[]): Promise<void> => {
+export const generate = async (transactions: Transaction[]): Promise<string> => {
   globalJournalName = getJournalName();
   generateCgiFile(transactions);
   return await uploadFile();
