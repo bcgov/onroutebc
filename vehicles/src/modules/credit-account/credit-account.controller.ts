@@ -47,7 +47,7 @@ export class CreditAccountController {
   })
   @Post()
   @Roles()
-  async addToCart(
+  async createCreditAccount(
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
     @Body() { creditLimit }: CreateCreditAccountDto,
