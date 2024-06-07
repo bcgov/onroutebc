@@ -9,7 +9,7 @@ import * as Client from 'ssh2-sftp-client';
 @Injectable()
 export class CgiSftpService {
   private readonly logger = new Logger(CgiSftpService.name);
-  
+
   upload(fileData: Express.Multer.File, fileName: string) {
     const sftp = new Client();
     const connectionInfo: Client.ConnectOptions = getSFTPConnectionInfo();
