@@ -182,7 +182,7 @@ export const generatePermitNumber = async (
 
   let sequence: string;
   let randomNumber: string;
-  let revision: string = ''; // Initialize as empty string
+  let revision = ''; // Initialize as empty string
 
   // Use permitNumber for amendments and applicationNumber for new applications
   if (permit.permitNumber) {

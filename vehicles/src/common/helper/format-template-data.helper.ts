@@ -36,6 +36,7 @@ export const formatTemplateData = (
     issuedBy: '',
     revisions: [],
     permitData: null,
+    loas: '',
   };
 
   template.permitData = JSON.parse(permit.permitData.permitData) as PermitData;
@@ -107,6 +108,11 @@ export const formatTemplateData = (
       });
     }
   });
+
+  template.loas = template?.permitData?.loas
+    ?.filter((item) => item.checked)
+    ?.map((item) => item?.loaId)
+    .join(', ');
 
   return template;
 };

@@ -207,9 +207,7 @@ export const validateUserCompanyAndRoleContext = (
  */
 export const doesUserHaveAuthGroup = (
   value: UserAuthGroup,
-  enumObject:
-    | ReadonlyArray<ClientUserAuthGroup>
-    | ReadonlyArray<IDIRUserAuthGroup>,
+  enumObject: readonly ClientUserAuthGroup[] | readonly IDIRUserAuthGroup[],
 ): boolean => {
   // This function checks if the given value is present in the enumObject array
   return Object.values(enumObject).includes(value);
