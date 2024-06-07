@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 import { Base } from '../../common/entities/base.entity';
+import { ApplicationStatus } from 'src/modules/common/enum/application-status.enum';
 
 @Entity({ name: 'permit.ORBC_PERMIT' })
 export class Permit extends Base {
@@ -64,6 +65,19 @@ export class Permit extends Base {
   })
   @Column({ type: 'integer', name: 'REVISION' })
   revision: number;
+
+  @AutoMap()
+  @ApiProperty({
+    example: ApplicationStatus.IN_PROGRESS,
+    description:
+      'State of a permit or permit application, at any given point in time',
+  })
+  @Column({
+    length: 20,
+    name: 'PERMIT_STATUS_TYPE',
+    nullable: true,
+  })
+  permitStatus: ApplicationStatus;
 
   @AutoMap()
   @ApiProperty({

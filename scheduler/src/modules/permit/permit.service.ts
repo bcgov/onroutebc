@@ -8,6 +8,10 @@ import { Cache } from 'cache-manager';
 import { lastValueFrom } from 'rxjs';
 import { getAccessToken } from 'src/common/helper/gov-common-services.helper';
 import { GovCommonServices } from 'src/common/enum/gov-common-services.enum';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Permit } from '../tps-permit/entities/permit.entity';
+import { IsNull, Repository } from 'typeorm';
+import { ApplicationStatus } from '../common/enum/application-status.enum';
 
 @Injectable()
 export class PermitService {
@@ -16,6 +20,8 @@ export class PermitService {
     private readonly httpService: HttpService,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
+    @InjectRepository(Permit)
+    private permitRepository: Repository<Permit>,
   ) {}
 
   /**
@@ -25,6 +31,12 @@ export class PermitService {
   @Cron(`${process.env.ISSUE_PERMIT_POLLING_INTERVAL || '0 */1 * * * *'}`)
   @LogAsyncMethodExecution()
   async issuePermitSchedule() {
+    const permitIds = this.permitRepository.find(
+      {
+        where: { permitStatus: ApplicationStatus.PAYMENT_COMPLETE },
+        take: Number(process.env.PERMIT_ISSUE_LIMIT),
+      },
+    );
     const url = process.env.ACCESS_API_URL + `/permits/scheduler/issue`;
     await this.accessApi(url);
   }
@@ -36,6 +48,16 @@ export class PermitService {
   @Cron(`${process.env.GENERATE_DOCUMENT_POLLING_INTERVAL || '0 */1 * * * *'}`)
   @LogAsyncMethodExecution()
   async generateDocumentSchedule() {
+    const permitQuery = this.permitRepository
+    .createQueryBuilder('permit')
+    .leftJoinAndSelect('permit.company', 'company')
+    .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
+    .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
+    .innerJoinAndSelect('transaction.receipt', 'receipt')
+    .where('permit.permitId = :permitId', {
+      permitId: permitId,
+    })
+    .andWhere('receipt.receiptNumber IS NOT NULL');
     const url = process.env.ACCESS_API_URL + `/permits/scheduler/document`;
     await this.accessApi(url);
   }
