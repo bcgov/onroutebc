@@ -26,15 +26,18 @@ export const calculateFeeByDuration = (permitType: PermitType, duration: number)
     : (duration > maxAllowableDuration) ? maxAllowableDuration : duration;
 
   const intervalDays = getDurationIntervalDays(permitType);
+
+  const intervalPeriodsToPay = safeDuration > 360
+    ? Math.ceil(360 / intervalDays) : Math.ceil(safeDuration / intervalDays);
   
   if (permitType === PERMIT_TYPES.TROW) {
     // Only for TROW, $100 per interval (30 days)
-    return Math.ceil(safeDuration / intervalDays) * 100;
+    return intervalPeriodsToPay * 100;
   }
   // Add more conditions for other permit types if needed
   
   // For TROS, $30 per interval (30 days)
-  return Math.ceil(safeDuration / intervalDays) * 30;
+  return intervalPeriodsToPay * 30;
 };
 
 /**
