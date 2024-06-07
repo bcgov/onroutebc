@@ -75,7 +75,7 @@ interface Commodities {
 }
 
 interface Loas {
-  loa: string;
+  loaId: string;
   checked: boolean;
   disabled?: boolean;
 }

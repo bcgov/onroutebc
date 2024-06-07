@@ -111,7 +111,7 @@ export const formatTemplateData = (
 
   template.loas = template?.permitData?.loas
     ?.filter((item) => item.checked)
-    ?.map((item) => item?.loa)
+    ?.map((item) => item?.loaId)
     .join(', ');
 
   return template;
