@@ -1,7 +1,7 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum } from 'class-validator';
-import { CreditAccountLimit } from '../../../../common/enum/credit-account-limit.enum';
+import { CreditAccountLimit, CreditAccountLimitType } from '../../../../common/enum/credit-account-limit.enum';
 
 export class CreateCreditAccountDto {
   @AutoMap()
@@ -12,5 +12,5 @@ export class CreateCreditAccountDto {
     enum: CreditAccountLimit,
   })
   @IsEnum(CreditAccountLimit)
-  creditLimit: string;
+  creditLimit: CreditAccountLimitType;
 }

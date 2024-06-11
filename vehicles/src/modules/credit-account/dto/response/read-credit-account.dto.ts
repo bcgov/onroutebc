@@ -1,7 +1,8 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { CreditAccountUserDto } from './credit-account-user.dto';
+import { ReadCreditAccountUserDto } from './read-credit-account-user.dto';
 import { CreditAccountStatusType } from '../../../../common/enum/credit-account-status-type.enum';
+import { CreditAccountLimitType } from '../../../../common/enum/credit-account-limit.enum';
 
 export class ReadCreditAccountDto {
   @AutoMap()
@@ -23,7 +24,7 @@ export class ReadCreditAccountDto {
     description: 'The credit limit of the account.',
     example: 74,
   })
-  creditLimit: number;
+  creditLimit: CreditAccountLimitType;
 
   @AutoMap()
   @ApiProperty({
@@ -51,7 +52,7 @@ export class ReadCreditAccountDto {
     description: 'The collection of companies using this credit account.',
     example: 74,
   })
-  creditAccountUsers: CreditAccountUserDto[];
+  creditAccountUsers: ReadCreditAccountUserDto[];
 
   @AutoMap()
   @ApiProperty({
