@@ -1,5 +1,4 @@
 import { Body, Controller, Param, Post, Req } from '@nestjs/common';
-import { CreditAccountService } from './credit-account.service';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -8,11 +7,12 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { ExceptionDto } from '../../common/exception/exception.dto';
-import { Role } from '../../common/enum/roles.enum';
+import { Request } from 'express';
 import { Roles } from '../../common/decorator/roles.decorator';
-import { RolesGuard } from '../../common/guard/roles.guard';
+import { ExceptionDto } from '../../common/exception/exception.dto';
+import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { CompanyIdPathParamDto } from '../shopping-cart/dto/request/pathParam/companyId.path-param.dto';
+import { CreditAccountService } from './credit-account.service';
 import { CreateCreditAccountDto } from './dto/request/create-credit-account.dto';
 
 @ApiBearerAuth()
@@ -78,7 +78,10 @@ export class CreditAccountController {
     @Param() { companyId }: CompanyIdPathParamDto,
     @Body() { creditLimit }: CreateCreditAccountDto,
   ): Promise<string> {
-    return await this.creditAccountService.close();
+    return await this.creditAccountService.close(
+      request.user as IUserJWT,
+      companyId,
+    );
   }
 
   /**
@@ -102,6 +105,9 @@ export class CreditAccountController {
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
   ): Promise<string> {
-    return await this.creditAccountService.putOnHold();
+    return await this.creditAccountService.putOnHold(
+      request.user as IUserJWT,
+      companyId,
+    );
   }
 }

@@ -8,7 +8,7 @@ import { GovCommonServicesToken } from '../interface/gov-common-services-token.i
 import { CacheKey } from '../enum/cache-key.enum';
 import { TOKEN_EXPIRY_BUFFER } from '../constants/api.constant';
 
-const logger = new Logger('GocCommonServicesHelper');
+const logger = new Logger('GovCommonServicesHelper');
 
 export async function getAccessToken(
   govCommonServices: GovCommonServices,
