@@ -48,9 +48,9 @@ frontend:
             key: ACCESS_API_URL
         fromValues:
           - name: FRONTEND_BUILD_NUM
-            value: "{{.Values.global.pr_num}}"
+            value: '{{.Values.global.pr_num}}'
           - name: DEPLOY_ENVIRONMENT
-            key: "{{.Release.Namespace}}"
+            key: '{{.Release.Namespace}}'
       ports:
         - name: http
           containerPort: 3000
