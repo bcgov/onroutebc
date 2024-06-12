@@ -17,7 +17,10 @@ import { CreditAccountUser } from './entities/credit-account-user.entity';
 import { DeleteCreditAccountUserDto } from './dto/request/delete-credit-account-user.dto';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import { DeleteDto } from '../common/dto/response/delete.dto';
-import { isActiveCreditAccount } from '../../common/helper/credit-account.helper';
+import {
+  isActiveCreditAccount,
+  isClosedCreditAccount,
+} from '../../common/helper/credit-account.helper';
 
 @Injectable()
 export class CreditAccountService {
@@ -112,6 +115,10 @@ export class CreditAccountService {
       throw new BadRequestException(
         'Invalid CreditAccount/Company combination',
       );
+    }
+
+    if (isClosedCreditAccount(creditAccount)) {
+      throw new BadRequestException('Credit Account closed - Cannot add user');
     }
 
     // Find if there is an existing credit account by companyId as holder

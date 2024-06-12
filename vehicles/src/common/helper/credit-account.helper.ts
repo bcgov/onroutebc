@@ -1,13 +1,18 @@
 import { CreditAccount } from '../../modules/credit-account/entities/credit-account.entity';
 import { CreditAccountStatusType } from '../enum/credit-account-status-type.enum';
 
-export const isActiveCreditAccount = (
-  existingHolderOfCreditAccount: CreditAccount,
-) => {
+export const isActiveCreditAccount = (creditAccount: CreditAccount) => {
   return (
-    existingHolderOfCreditAccount?.creditAccountStatusType ===
+    creditAccount?.creditAccountStatusType ===
       CreditAccountStatusType.ACCOUNT_ACTIVE ||
-    existingHolderOfCreditAccount?.creditAccountStatusType ===
+    creditAccount?.creditAccountStatusType ===
       CreditAccountStatusType.ACCOUNT_SETUP
+  );
+};
+
+export const isClosedCreditAccount = (creditAccount: CreditAccount) => {
+  return (
+    creditAccount?.creditAccountStatusType ===
+    CreditAccountStatusType.ACCOUNT_CLOSED
   );
 };
