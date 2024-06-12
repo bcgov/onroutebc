@@ -5,9 +5,13 @@ import { CreditAccountController } from './credit-account.controller';
 import { CreditAccount } from './entities/credit-account.entity';
 import { CreditAccountActivity } from './entities/credit-account-activity.entity';
 import { CreditAccountUser } from './entities/credit-account-user.entity';
+import { HttpModule } from '@nestjs/axios';
+import { CompanyModule } from '../company-user-management/company/company.module';
 
 @Module({
   imports: [
+    HttpModule,
+    CompanyModule,
     TypeOrmModule.forFeature([
       CreditAccount,
       CreditAccountActivity,

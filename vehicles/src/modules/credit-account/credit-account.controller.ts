@@ -11,9 +11,9 @@ import { Request } from 'express';
 import { Roles } from '../../common/decorator/roles.decorator';
 import { ExceptionDto } from '../../common/exception/exception.dto';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
-import { CompanyIdPathParamDto } from '../shopping-cart/dto/request/pathParam/companyId.path-param.dto';
 import { CreditAccountService } from './credit-account.service';
 import { CreateCreditAccountDto } from './dto/request/create-credit-account.dto';
+import { CompanyIdPathParamDto } from '../common/dto/request/pathParam/companyId.path-param.dto';
 
 @ApiBearerAuth()
 @ApiTags('Credit Accounts')
@@ -52,7 +52,9 @@ export class CreditAccountController {
     @Param() { companyId }: CompanyIdPathParamDto,
     @Body() { creditLimit }: CreateCreditAccountDto,
   ): Promise<string> {
-    return await this.creditAccountService.create();
+    return await this.creditAccountService.create(request.user as IUserJWT, {
+      companyId, creditLimit
+    });
   }
 
   /**
@@ -71,12 +73,11 @@ export class CreditAccountController {
     description: 'The result of the changes to cart.',
     type: String,
   })
-  @Post('close')
+  @Post(':creditAccountId/close')
   @Roles()
   async closeCreditAccount(
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
-    @Body() { creditLimit }: CreateCreditAccountDto,
   ): Promise<string> {
     return await this.creditAccountService.close(
       request.user as IUserJWT,
@@ -99,7 +100,7 @@ export class CreditAccountController {
     description: 'The result of the changes to cart.',
     type: String,
   })
-  @Post('hold')
+  @Post(':creditAccountId/hold')
   @Roles()
   async putOnHoldCreditAccount(
     @Req() request: Request,

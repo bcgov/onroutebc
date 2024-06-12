@@ -51,6 +51,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       associatedCompanies: number[],
       orbcUserFirstName: string,
       orbcUserLastName: string,
+      orbcClientNumber: string,
       orbcUserAuthGroup:
         | UserAuthGroup
         | ClientUserAuthGroup
@@ -110,7 +111,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         companyId = associatedCompanies?.length
           ? associatedCompanies?.at(0)
           : companyId;
-
+        orbcClientNumber = associatedCompanyMetadataList?.at(0).clientNumber;
         if (
           !associatedCompanies.includes(companyId) ||
           associatedCompanyMetadataList?.at(0)?.isSuspended
@@ -135,6 +136,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       orbcUserLastName,
       orbcUserAuthGroup,
       orbcUserDirectory,
+      orbcClientNumber,
     };
 
     Object.assign(payload, currentUser);

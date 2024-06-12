@@ -31,6 +31,11 @@ export async function getAccessToken(
     tokenUrl = process.env.CDOGS_TOKEN_URL;
     username = process.env.CDOGS_CLIENT_ID;
     password = process.env.CDOGS_CLIENT_SECRET;
+  } else if (govCommonServices === GovCommonServices.CREDIT_ACCOUNT_SERVICE) {
+    tokenCacheKey = CacheKey.CREDIT_ACCOUNT_ACCESS_TOKEN;
+    tokenUrl = process.env.CREDIT_ACCOUNT_TOKEN_URL;
+    username = process.env.CREDIT_ACCOUNT_CLIENT_ID;
+    password = process.env.CREDIT_ACCOUNT_CLIENT_SECRET;
   }
 
   const tokenFromCache: GovCommonServicesToken =
@@ -58,6 +63,72 @@ export async function getAccessToken(
   )
     .then((response) => {
       return response.data as GovCommonServicesToken;
+    })
+    .catch((error: AxiosError) => {
+      if (error.response) {
+        const errorData = error.response.data as {
+          error: string;
+          error_description?: string;
+        };
+        logger.error(
+          `Error response from token issuer: ${JSON.stringify(
+            errorData,
+            null,
+            2,
+          )}`,
+        );
+      } else {
+        logger.error(error?.message, error?.stack);
+      }
+      throw new InternalServerErrorException(
+        `Error acquiring token from ${tokenUrl}`,
+      );
+    });
+  token.expires_at =
+    Date.now() + (token.expires_in - TOKEN_EXPIRY_BUFFER) * 1000;
+
+  await cacheManager.set(tokenCacheKey, token);
+
+  return token.access_token;
+}
+
+export async function getCreditAccessToken(
+  httpService: HttpService,
+  cacheManager: Cache,
+): Promise<string> {
+  const tokenCacheKey = CacheKey.CREDIT_ACCOUNT_ACCESS_TOKEN;
+  const tokenUrl = `${process.env.CREDIT_ACCOUNT_URL}/oauth/token`;
+  const username = process.env.CREDIT_ACCOUNT_CLIENT_ID;
+  const password = process.env.CREDIT_ACCOUNT_CLIENT_SECRET;
+
+  const tokenFromCache: GovCommonServicesToken =
+    await cacheManager.get(tokenCacheKey);
+  if (tokenFromCache) {
+    if (Date.now() < tokenFromCache.expires_at) {
+      return tokenFromCache.access_token;
+    }
+  }
+
+  const reqData = 'grant_type=client_credentials';
+
+  const reqConfig: AxiosRequestConfig = {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    auth: {
+      username: username,
+      password: password,
+    },
+  };
+
+  const token = await lastValueFrom(
+    httpService.post(tokenUrl, reqData, reqConfig),
+  )
+    .then((response) => {
+      return response.data as Pick<
+        GovCommonServicesToken,
+        'access_token' | 'expires_in' | 'token_type' | 'expires_at'
+      >;
     })
     .catch((error: AxiosError) => {
       if (error.response) {

@@ -34,4 +34,5 @@ export interface IUserJWT {
   orbcUserLastName: string;
   orbcUserAuthGroup: UserAuthGroup;
   orbcUserDirectory: Directory;
+  orbcClientNumber?: string;
 }
