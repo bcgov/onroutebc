@@ -210,6 +210,14 @@ export class CreditAccountService {
     return 'created';
   }
 
+  async getCreditAccount(currentUser: IUserJWT, companyId: number) {
+    return await this.creditAccountRepository.findOne({
+      where: {
+        company: { companyId },
+      },
+    });
+  }
+
   async close(currentUser: IUserJWT, companyId: number) {
     return this.updateCreditAccountStatus(
       { companyId, statusToUpdateTo: CreditAccountStatusType.ACCOUNT_CLOSED },
@@ -220,6 +228,20 @@ export class CreditAccountService {
   async putOnHold(currentUser: IUserJWT, companyId: number) {
     return this.updateCreditAccountStatus(
       { companyId, statusToUpdateTo: CreditAccountStatusType.ACCOUNT_ON_HOLD },
+      currentUser,
+    );
+  }
+
+  async unHold(currentUser: IUserJWT, companyId: number) {
+    return this.updateCreditAccountStatus(
+      { companyId, statusToUpdateTo: CreditAccountStatusType.ACCOUNT_ACTIVE },
+      currentUser,
+    );
+  }
+
+  async reopen(currentUser: IUserJWT, companyId: number) {
+    return this.updateCreditAccountStatus(
+      { companyId, statusToUpdateTo: CreditAccountStatusType.ACCOUNT_ACTIVE },
       currentUser,
     );
   }
@@ -249,12 +271,9 @@ export class CreditAccountService {
       })
       .execute();
     if (affected === 1) {
-      // const sss = await this.creditAccountRepository
-      //   .createQueryBuilder('creditAccount')
-      //   .select();
+      return await this.getCreditAccount(currentUser, companyId);
     } else {
       throw new BadRequestExceptionDto();
     }
-    return 'put on hold';
   }
 }

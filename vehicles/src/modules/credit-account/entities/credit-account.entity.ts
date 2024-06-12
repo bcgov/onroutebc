@@ -14,7 +14,10 @@ import { CreditAccountStatusType } from '../../../common/enum/credit-account-sta
 import { CreditAccountType } from '../../../common/enum/credit-account-type.enum';
 import { CreditAccountActivity } from './credit-account-activity.entity';
 import { CreditAccountUser } from './credit-account-user.entity';
-import { CreditAccountLimit, CreditAccountLimitType } from '../../../common/enum/credit-account-limit.enum';
+import {
+  CreditAccountLimit,
+  CreditAccountLimitType,
+} from '../../../common/enum/credit-account-limit.enum';
 
 @Entity({ name: 'ORBC_CREDIT_ACCOUNT' })
 export class CreditAccount extends Base {
@@ -31,7 +34,7 @@ export class CreditAccount extends Base {
   @AutoMap(() => Company)
   @OneToOne(() => Company, { nullable: false, cascade: false })
   @JoinColumn({ name: 'COMPANY_ID' })
-  companyId: Company;
+  company: Company;
 
   /**
    * A property that specifies the status type of a credit account,
