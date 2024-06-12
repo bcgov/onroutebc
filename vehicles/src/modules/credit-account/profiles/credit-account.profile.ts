@@ -3,6 +3,7 @@ import {
   Mapper,
   createMap,
   forMember,
+  forSelf,
   fromValue,
   mapFrom,
   mapWithArguments,
@@ -10,6 +11,9 @@ import {
 import { Injectable } from '@nestjs/common';
 import { CreditAccountUser } from '../entities/credit-account-user.entity';
 import { CreateCreditAccountUserDto } from '../dto/request/create-credit-account-user.dto';
+import { ReadCreditAccountUserDto } from '../dto/response/read-credit-account-user.dto';
+import { Company } from '../../company-user-management/company/entities/company.entity';
+import { CreditAccountUserType } from '../../../common/enum/credit-accounts.enum';
 
 @Injectable()
 export class CreditAccountProfile extends AutomapperProfile {
@@ -19,6 +23,28 @@ export class CreditAccountProfile extends AutomapperProfile {
 
   override get profile() {
     return (mapper: Mapper) => {
+      createMap(
+        mapper,
+        CreditAccountUser,
+        ReadCreditAccountUserDto,
+        forSelf(Company, (source) => source.company),
+        forMember(
+          (d) => d.userType,
+          fromValue(CreditAccountUserType.ACCOUNT_USER),
+        ),
+      );
+
+      //To Map the credit Account Holder to Credit Account User
+      createMap(
+        mapper,
+        Company,
+        ReadCreditAccountUserDto,
+        forMember(
+          (d) => d.userType,
+          fromValue(CreditAccountUserType.ACCOUNT_OWNER),
+        ),
+      );
+
       createMap(
         mapper,
         CreateCreditAccountUserDto,

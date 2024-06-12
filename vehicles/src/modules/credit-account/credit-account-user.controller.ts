@@ -2,9 +2,11 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Param,
   Post,
   Put,
+  Query,
   Req,
 } from '@nestjs/common';
 import {
@@ -12,6 +14,7 @@ import {
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiMethodNotAllowedResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
@@ -26,6 +29,8 @@ import { creditAccountIdPathParamDto } from './dto/request/pathParam/creditAccou
 import { CreateCreditAccountUserDto } from './dto/request/create-credit-account-user.dto';
 import { DeleteCreditAccountUserDto } from './dto/request/delete-credit-account-user.dto';
 import { DeleteDto } from '../common/dto/response/delete.dto';
+import { ReadCreditAccountUserDto } from './dto/response/read-credit-account-user.dto';
+import { GetCreditAccountUserQueryParamsDto } from './dto/request/queryParam/getCreditAccountUser.query-params.dto';
 
 @ApiBearerAuth()
 @ApiTags('Credit Account Users')
@@ -66,8 +71,7 @@ export class CreditAccountUserController {
     @Req() request: Request,
     @Param() { companyId, creditAccountId }: creditAccountIdPathParamDto,
     @Body() createCreditAccountUserDto: CreateCreditAccountUserDto,
-  ): Promise<string> {
-    //TODO : ORV2-2296 Return the proper output
+  ): Promise<ReadCreditAccountUserDto> {
     const currentUser = request.user as IUserJWT;
     return await this.creditAccountService.addOrActivateCreditAccountUser(
       currentUser,
@@ -107,6 +111,35 @@ export class CreditAccountUserController {
       companyId,
       creditAccountId,
       deleteCreditAccountUserDto,
+    );
+  }
+
+  /**
+   * Retrieves credit account users.
+   *
+   * @param { companyId } - The companyId path parameter.
+   * @param { creditAccountId } - The creditAccountId path parameter.
+   * @returns List of credit account users.
+   */
+  @ApiOperation({
+    summary: 'Retrieves credit account users and the holder.',
+    description:
+      'Fetches a list of credit account users and the holder for the specified credit account, enforcing authentication.',
+  })
+  @ApiOkResponse({
+    description: 'The list of credit account users.',
+    type: [ReadCreditAccountUserDto],
+  })
+  @Get()
+  @Roles(Role.READ_CREDIT_ACCOUNT)
+  async getCreditAccountUsers(
+    @Param() { companyId, creditAccountId }: creditAccountIdPathParamDto,
+    @Query() { includeAccountHolder }: GetCreditAccountUserQueryParamsDto,
+  ): Promise<ReadCreditAccountUserDto[]> {
+    return await this.creditAccountService.getCreditAccountUsers(
+      companyId,
+      creditAccountId,
+      includeAccountHolder,
     );
   }
 }

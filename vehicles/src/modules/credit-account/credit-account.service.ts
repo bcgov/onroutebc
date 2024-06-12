@@ -21,6 +21,10 @@ import {
   isActiveCreditAccount,
   isClosedCreditAccount,
 } from '../../common/helper/credit-account.helper';
+import { Nullable } from '../../common/types/common';
+import { ReadCreditAccountUserDto } from './dto/response/read-credit-account-user.dto';
+import { CreditAccountUserType } from '../../common/enum/credit-accounts.enum';
+import { Company } from '../company-user-management/company/entities/company.entity';
 
 @Injectable()
 export class CreditAccountService {
@@ -102,7 +106,7 @@ export class CreditAccountService {
     creditAccountHolderId: number,
     creditAccountId: number,
     createCreditAccountUserDto: CreateCreditAccountUserDto,
-  ): Promise<string> {
+  ): Promise<ReadCreditAccountUserDto> {
     // Find the credit account by creditAccountId and creditAccountHolderId
     const creditAccount =
       await this.findOneCreditAccountByCreditAccountIdAndAccountHolder(
@@ -130,10 +134,9 @@ export class CreditAccountService {
     let existingCreditAccountUserList: CreditAccountUser[] = null;
     // If the credit account is not active, find many credit account users by companyId
     if (!isActiveCreditAccount(existingCreditAccountAsHolder)) {
-      existingCreditAccountUserList =
-        await this.findManyCreditAccountUsersByCompanyId(
-          createCreditAccountUserDto.companyId,
-        );
+      existingCreditAccountUserList = await this.findManyCreditAccountUsers(
+        createCreditAccountUserDto.companyId,
+      );
     }
 
     // Check if there is an active credit account or if there are any active credit account users
@@ -186,7 +189,12 @@ export class CreditAccountService {
           'Credit Account user update failed!!',
         );
       }
-      return 'Updated Credit Account user'; //TODO : ORV2-2296 Return the proper output
+      return this.classMapper.mapAsync(
+        creditAccountUserMappedToCreditAccount,
+        CreditAccountUser,
+        ReadCreditAccountUserDto,
+      );
+
       //return creditAccountUserMappedToCreditAccount;
     } else {
       // If no user is found, create a new credit account user
@@ -207,7 +215,11 @@ export class CreditAccountService {
 
       newCreditAccountUser =
         await this.creditAccountUserRepository.save(newCreditAccountUser);
-      return 'Created Credit Account user'; //TODO : ORV2-2296 Return the proper output
+      return this.classMapper.mapAsync(
+        newCreditAccountUser,
+        CreditAccountUser,
+        ReadCreditAccountUserDto,
+      );
       //return newCreditAccountUser;
     }
   }
@@ -408,19 +420,131 @@ export class CreditAccountService {
   }
 
   /**
-   * Finds many credit account users by company ID.
+   * Finds many credit account users with optional filters.
    *
-   * @param companyId - The ID of the company to find.
+   * @param creditAccountUserCompanyId - The ID of the user's company to filter by.
+   * @param creditAccountHolderCompanyId - The ID of the holder's company to filter by.
+   * @param creditAccountId - The ID of the credit account to filter by.
+   * @param creditAccountUserId - The ID of the credit account user to filter by.
+   * @returns {Promise<CreditAccountUser[]>} - The found credit account users.
+   */
+  private async findManyCreditAccountUsers(
+    creditAccountUserCompanyId?: Nullable<number>,
+    creditAccountHolderCompanyId?: Nullable<number>,
+    creditAccountId?: Nullable<number>,
+    creditAccountUserId?: Nullable<number>,
+  ) {
+    // Initializing query builder for credit account user repository.
+    const creditAccountUserQB = this.creditAccountUserRepository
+      .createQueryBuilder('creditAccountUser')
+      .leftJoinAndSelect(
+        'creditAccountUser.company',
+        'creditAccountUserCompany',
+      )
+      .leftJoinAndSelect('creditAccountUser.creditAccount', 'creditAccount')
+      .leftJoinAndSelect('creditAccount.company', 'creditAccountHolderCompany');
+
+    /* Conditional WHERE clause for creditAccountUserId. If creditAccountUserId is provided, the
+       WHERE clause is creditAccountUser.creditAccountUserId = :creditAccountUserId; otherwise, it is 1=1 to
+       include all credit account users. */
+    creditAccountUserQB.where(
+      creditAccountUserId
+        ? 'creditAccountUser.creditAccountUserId = :creditAccountUserId'
+        : '1=1',
+      {
+        creditAccountUserId: creditAccountUserId,
+      },
+    );
+
+    // Adding condition if creditAccountId is provided.
+    if (creditAccountId) {
+      creditAccountUserQB.andWhere(
+        'creditAccount.creditAccountId = :creditAccountId',
+        {
+          creditAccountId: creditAccountId,
+        },
+      );
+    }
+
+    // Adding condition if creditAccountHolderCompanyId is provided.
+    if (creditAccountHolderCompanyId) {
+      creditAccountUserQB.andWhere(
+        'creditAccountHolderCompany.companyId = :creditAccountHolderCompanyId',
+        {
+          creditAccountHolderCompanyId: creditAccountHolderCompanyId,
+        },
+      );
+    }
+
+    // Adding condition if creditAccountUserCompanyId is provided.
+    if (creditAccountUserCompanyId) {
+      creditAccountUserQB.andWhere(
+        'creditAccountUserCompany.companyId = :creditAccountUserCompanyId',
+        {
+          creditAccountUserCompanyId: creditAccountUserCompanyId,
+        },
+      );
+    }
+
+    // Executing the query and returning the results.
+    return await creditAccountUserQB.getMany();
+  }
+
+  /**
+   * Retrieves credit account users based on account holder and credit account ID.
+   *
+   * @param creditAccountHolder - The ID of the account holder.
+   * @param creditAccountId - The ID of the credit account.
    * @returns {Promise<CreditAccountUser[]>} - The found credit account users.
    */
   @LogAsyncMethodExecution()
-  public async findManyCreditAccountUsersByCompanyId(companyId: number) {
-    return await this.creditAccountUserRepository.find({
-      where: { company: { companyId: companyId } },
-      relations: {
-        company: true,
-        creditAccount: true,
-      },
-    });
+  private async getCreditAccountUsersEntity(
+    creditAccountHolder: number,
+    creditAccountId: number,
+  ) {
+    return await this.findManyCreditAccountUsers(
+      null,
+      creditAccountHolder,
+      creditAccountId,
+    );
+  }
+
+  /**
+   * Retrieves credit account users based on account holder and credit account ID.
+   *
+   * @param creditAccountHolder - The ID of the account holder.
+   * @param creditAccountId - The ID of the credit account.
+   * @param includeAccountHolder - Whether to include the account holder's information.
+   * @returns {Promise<ReadCreditAccountUserDto[]>} - The list of credit account users.
+   */
+  @LogAsyncMethodExecution()
+  public async getCreditAccountUsers(
+    creditAccountHolder: number,
+    creditAccountId: number,
+    includeAccountHolder?: Nullable<boolean>,
+  ): Promise<ReadCreditAccountUserDto[]> {
+    const creditAccountUsers = await this.getCreditAccountUsersEntity(
+      creditAccountHolder,
+      creditAccountId,
+    );
+
+    const readCreditAccountUserDtoList = await this.classMapper.mapArrayAsync(
+      creditAccountUsers,
+      CreditAccountUser,
+      ReadCreditAccountUserDto,
+    );
+
+    if (includeAccountHolder) {
+      const creditAccountHolderInfo =
+        creditAccountUsers?.at(0)?.creditAccount?.company;
+      const mappedCreditAccountHolderInfo = await this.classMapper.mapAsync(
+        creditAccountHolderInfo,
+        Company,
+        ReadCreditAccountUserDto,
+      );
+
+      readCreditAccountUserDtoList.push(mappedCreditAccountHolderInfo);
+    }
+    return readCreditAccountUserDtoList;
   }
 }
