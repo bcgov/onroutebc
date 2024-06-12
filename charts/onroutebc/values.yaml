@@ -50,7 +50,7 @@ frontend:
           - name: FRONTEND_BUILD_NUM
             value: '{{.Values.global.pr_num}}'
           - name: DEPLOY_ENVIRONMENT
-            key: '{{printf %s .Release.Namespace}}'
+            value: '{{.Release.Namespace}}'
       ports:
         - name: http
           containerPort: 3000
