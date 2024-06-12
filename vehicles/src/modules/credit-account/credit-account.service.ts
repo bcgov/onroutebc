@@ -26,6 +26,7 @@ import { CompanyService } from '../company-user-management/company/company.servi
 import { CreditAccountType } from '../../common/enum/credit-account-type.enum';
 import { callDatabaseSequence } from '../../common/helper/database.helper';
 import { CreditAccountUser } from './entities/credit-account-user.entity';
+import { Company } from '../company-user-management/company/entities/company.entity';
 
 @Injectable()
 export class CreditAccountService {
@@ -40,7 +41,6 @@ export class CreditAccountService {
     private readonly creditAccountRepository: Repository<CreditAccount>,
     @InjectRepository(CreditAccountUser)
     private readonly creditAccountUserRepository: Repository<CreditAccountUser>,
-    private readonly companyService: CompanyService,
   ) {}
 
   async create(
@@ -74,7 +74,17 @@ export class CreditAccountService {
       throw new BadRequestException('Company already has a credit account.');
     }
 
-    const companyInfo = await this.companyService.findOne(companyId);
+    const companyInfo = await this.dataSource
+      .createQueryBuilder()
+      .select(['company'])
+      .leftJoinAndSelect('company.mailingAddress', 'mailingAddress')
+      .leftJoinAndSelect('company.primaryContact', 'primaryContact')
+      .from(Company, 'company')
+      .where('company.companyId = :companyId', {
+        companyId,
+      })
+      .getOne();
+    // const companyInfo = await this.companyService.findOne(companyId);
 
     const BASE_URL = process.env.CREDIT_ACCOUNT_URL;
     const partiesResponse = await this.httpService.axiosRef.post(
@@ -87,10 +97,7 @@ export class CreditAccountService {
         },
       },
     );
-    if (
-      partiesResponse.status === HttpStatus.OK ||
-      partiesResponse.status === HttpStatus.CREATED
-    ) {
+    if (partiesResponse.status === HttpStatus.OK) {
       const { data } = partiesResponse;
       const { party_number: cfsPartyNumber, links } = data as {
         party_number: string;
@@ -99,11 +106,16 @@ export class CreditAccountService {
         links: Array<{ rel: string; href: string }>;
       };
 
-      const creditAccountSequenceNumber = await callDatabaseSequence(
+      const rawCreditAccountSequenceNumber = await callDatabaseSequence(
         'permit.ORBC_CREDIT_ACCOUNT_NUMBER_SEQ',
         this.dataSource,
       );
-      const creditAccountNumber = `WS${creditAccountSequenceNumber}`;
+      let paddedCreditAccountSequenceNumber = rawCreditAccountSequenceNumber;
+      while (paddedCreditAccountSequenceNumber.length < 4) {
+        paddedCreditAccountSequenceNumber =
+          '0' + paddedCreditAccountSequenceNumber;
+      }
+      const creditAccountNumber = `WS${paddedCreditAccountSequenceNumber}`;
       const { href: accountsURL } = links.find(({ rel }) => rel === 'accounts');
       const accountsResponse = await this.httpService.axiosRef.post(
         accountsURL,
@@ -138,8 +150,8 @@ export class CreditAccountService {
             address_line_2: companyInfo.mailingAddress.addressLine2,
             city: companyInfo.mailingAddress.city,
             postal_code: companyInfo.mailingAddress.postalCode,
-            province: companyInfo.mailingAddress.provinceCode,
-            country: companyInfo.mailingAddress.countryCode,
+            province: companyInfo.mailingAddress.province.provinceCode,
+            country: companyInfo.mailingAddress.province.country,
             customer_profile_class: 'CAS_IND_DEFAULT',
           },
           {
