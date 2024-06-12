@@ -1,32 +1,39 @@
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
+import { HttpService } from '@nestjs/axios';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import {
   BadRequestException,
   HttpStatus,
   Inject,
   Injectable,
+  InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreditAccount } from './entities/credit-account.entity';
+import { Cache } from 'cache-manager';
 import { DataSource, Repository } from 'typeorm';
-import { CreditAccountStatusType } from '../../common/enum/credit-account-status-type.enum';
-import { IUserJWT } from '../../common/interface/user-jwt.interface';
-import { BadRequestExceptionDto } from '../../common/exception/badRequestException.dto';
 import {
   CreditAccountLimit,
   CreditAccountLimitType,
 } from '../../common/enum/credit-account-limit.enum';
-import { getCreditAccessToken } from '../../common/helper/gov-common-services.helper';
-import { HttpService } from '@nestjs/axios';
-import { Cache } from 'cache-manager';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Nullable } from '../../common/types/common';
-import { CompanyService } from '../company-user-management/company/company.service';
+import { CreditAccountStatusType } from '../../common/enum/credit-account-status-type.enum';
 import { CreditAccountType } from '../../common/enum/credit-account-type.enum';
+import { BadRequestExceptionDto } from '../../common/exception/badRequestException.dto';
 import { callDatabaseSequence } from '../../common/helper/database.helper';
-import { CreditAccountUser } from './entities/credit-account-user.entity';
+import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { Company } from '../company-user-management/company/entities/company.entity';
+import { cfsPostRequest } from './cfs-integration/api-helper';
+import { CreateAccountRequestDto } from './cfs-integration/request/create-account-request.dto';
+import { CreatePartyRequestDto } from './cfs-integration/request/create-party-request.dto';
+import { CreateSiteContactRequestDto } from './cfs-integration/request/create-site-contact-request.dto';
+import { CreateSiteRequestDto } from './cfs-integration/request/create-site-request.dto';
+import { CreateAccountResponseDto } from './cfs-integration/response/create-account-response.dto';
+import { CreatePartyResponseDto } from './cfs-integration/response/create-party-response.dto';
+import { CreateSiteContactResponseDto } from './cfs-integration/response/create-site-contact-response.dto';
+import { CreateSiteResponseDto } from './cfs-integration/response/create-site-response.dto';
+import { CreditAccountUser } from './entities/credit-account-user.entity';
+import { CreditAccount } from './entities/credit-account.entity';
 
 @Injectable()
 export class CreditAccountService {
@@ -50,11 +57,6 @@ export class CreditAccountService {
       creditLimit,
     }: { companyId: number; creditLimit: CreditAccountLimitType },
   ) {
-    const token = await getCreditAccessToken(
-      this.httpService,
-      this.cacheManager,
-    );
-
     const companyIsAlreadyAUser = await this.creditAccountUserRepository.exists(
       {
         where: { company: { companyId } },
@@ -79,175 +81,72 @@ export class CreditAccountService {
       .select(['company'])
       .leftJoinAndSelect('company.mailingAddress', 'mailingAddress')
       .leftJoinAndSelect('company.primaryContact', 'primaryContact')
+      .leftJoinAndSelect('mailingAddress.province', 'province')
+      .leftJoinAndSelect('province.country', 'country')
       .from(Company, 'company')
       .where('company.companyId = :companyId', {
         companyId,
       })
       .getOne();
-    // const companyInfo = await this.companyService.findOne(companyId);
 
-    const BASE_URL = process.env.CREDIT_ACCOUNT_URL;
-    const partiesResponse = await this.httpService.axiosRef.post(
-      `${BASE_URL}/cfs/parties/`,
-      { customer_name: companyInfo.clientNumber },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      },
+    // 1) Create Party
+    const partyResponse = await this.createParty(companyInfo);
+    const { party_number: cfsPartyNumber, links: partiesLinks } = partyResponse;
+    const { href: accountsURL } = partiesLinks.find(
+      ({ rel }) => rel === 'accounts',
     );
-    if (partiesResponse.status === HttpStatus.OK) {
-      const { data } = partiesResponse;
-      const { party_number: cfsPartyNumber, links } = data as {
-        party_number: string;
-        business_number: Nullable<string>;
-        customer_name: string;
-        links: Array<{ rel: string; href: string }>;
-      };
 
-      const rawCreditAccountSequenceNumber = await callDatabaseSequence(
-        'permit.ORBC_CREDIT_ACCOUNT_NUMBER_SEQ',
-        this.dataSource,
-      );
-      let paddedCreditAccountSequenceNumber = rawCreditAccountSequenceNumber;
-      while (paddedCreditAccountSequenceNumber.length < 4) {
-        paddedCreditAccountSequenceNumber =
-          '0' + paddedCreditAccountSequenceNumber;
-      }
-      const creditAccountNumber = `WS${paddedCreditAccountSequenceNumber}`;
-      const { href: accountsURL } = links.find(({ rel }) => rel === 'accounts');
-      const accountsResponse = await this.httpService.axiosRef.post(
-        accountsURL,
-        {
-          account_number: creditAccountNumber,
-          account_description: 'OnRouteBC Credit Account',
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        },
-      );
-      if (accountsResponse.status === HttpStatus.OK) {
-        const { data } = accountsResponse;
-        const { account_number: accountNumber, links } = data as {
-          account_number: string;
-          party_number: string;
-          account_description: string;
-          customer_profile_class: 'CAS_CORP_DEFAULT';
-          links: Array<{ rel: string; href: string }>;
-        };
-        const { href: sitesURL } = links.find(({ rel }) => rel === 'sites');
-        const sitesResponse = await this.httpService.axiosRef.post(
-          sitesURL,
-          {
-            customer_site_id: 'orbc-default',
-            site_name: 'DEFAULT SITE',
-            primary_bill_to: 'Y',
-            address_line_1: companyInfo.mailingAddress.addressLine1,
-            address_line_2: companyInfo.mailingAddress.addressLine2,
-            city: companyInfo.mailingAddress.city,
-            postal_code: companyInfo.mailingAddress.postalCode,
-            province: companyInfo.mailingAddress.province.provinceCode,
-            country: companyInfo.mailingAddress.province.country,
-            customer_profile_class: 'CAS_IND_DEFAULT',
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          },
-        );
-        if (sitesResponse.status === HttpStatus.OK) {
-          const { data } = sitesResponse;
-          const { site_number: cfsSiteNumber, links } = data as {
-            site_number: string;
-            party_number: string;
-            account_number: string;
-            customer_site_id: string;
-            site_name: string;
-            primary_bill_to: Nullable<'Y' | 'N'>;
-            address_line_1: string;
-            address_line_2: Nullable<string>;
-            address_line_3: Nullable<string>;
-            city: string;
-            postal_code: string;
-            province: Nullable<string>;
-            state: Nullable<string>;
-            country: string;
-            customer_profile_class: 'CAS_IND_DEFAULT';
-            receipt_method: null;
-            provider: 'Transportation and Infrastructure';
-            links: Array<{ rel: string; href: string }>;
-          };
+    // 2) Create Account for the Party created in step 1.
+    const {
+      account_number: creditAccountNumber,
+      links: accountsResponseLinks,
+    } = await this.createAccount({
+      url: accountsURL,
+      clientNumber: companyInfo.clientNumber,
+    });
 
-          const { href: siteContactURL } = links.find(
-            ({ rel }) => rel === 'contacts',
-          );
+    // Should I commit to db now?
 
-          const siteContactResponse = await this.httpService.axiosRef.post(
-            siteContactURL,
-            {
-              first_name: companyInfo.primaryContact.firstName,
-              middle_name: '',
-              last_name: companyInfo.primaryContact.lastName,
-              phone_number: companyInfo.phone,
-              email_address: companyInfo.email,
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-              },
-            },
-          );
-          if (siteContactResponse.status === HttpStatus.OK) {
-            const { data } = siteContactResponse;
-            data as {
-              contact_number: string;
-              party_number: string;
-              account_number: string;
-              site_number: string;
-              full_name: string;
-              first_name: string;
-              middle_name: Nullable<string>;
-              last_name: string;
-              phone_number: string;
-              email_address: string;
-              provider: 'Transportation and Infrastructure';
-              links: Array<{ rel: string; href: string }>;
-            };
-          }
+    // 3) Create Site for the Party and Account created in steps 1 and 2.
+    const { href: sitesURL } = accountsResponseLinks.find(
+      ({ rel }) => rel === 'sites',
+    );
+    const sitesResponse = await this.createSite({ url: sitesURL, companyInfo });
+    const { site_number: cfsSiteNumber, links: sitesResponseLinks } =
+      sitesResponse;
 
-          const savedCreditAccount = await this.creditAccountRepository.save({
-            companyId: { companyId },
-            cfsPartyNumber: +cfsPartyNumber,
-            cfsSiteNumber: +cfsSiteNumber,
-            creditAccountStatusType: CreditAccountStatusType.ACCOUNT_ACTIVE,
-            creditLimit,
-            creditAccountType:
-              creditLimit === CreditAccountLimit.PREPAID
-                ? CreditAccountType.PREPAID
-                : CreditAccountType.SECURED,
-            creditAccountNumber,
-            createdUser: currentUser.userName,
-            createdDateTime: new Date(),
-            createdUserDirectory: currentUser.orbcUserDirectory,
-            createdUserGuid: currentUser.userGUID,
-            updatedUser: currentUser.userName,
-            updatedDateTime: new Date(),
-            updatedUserDirectory: currentUser.orbcUserDirectory,
-            updatedUserGuid: currentUser.userGUID,
-          });
-          return savedCreditAccount;
-        }
-      }
-    }
+    // 4) Create Site Contact for the site created in step 3.
+    const { href: siteContactURL } = sitesResponseLinks.find(
+      ({ rel }) => rel === 'contacts',
+    );
+    const siteContactCreated = await this.createSiteContact({
+      url: siteContactURL,
+      companyInfo,
+    });
 
-    return 'created';
+    const savedCreditAccount = await this.creditAccountRepository.save({
+      companyId: { companyId },
+      cfsPartyNumber: +cfsPartyNumber,
+      cfsSiteNumber: +cfsSiteNumber,
+      creditAccountStatusType: siteContactCreated
+        ? CreditAccountStatusType.ACCOUNT_ACTIVE
+        : CreditAccountStatusType.ACCOUNT_ERROR,
+      creditLimit,
+      creditAccountType:
+        creditLimit === CreditAccountLimit.PREPAID
+          ? CreditAccountType.PREPAID
+          : CreditAccountType.SECURED,
+      creditAccountNumber,
+      createdUser: currentUser.userName,
+      createdDateTime: new Date(),
+      createdUserDirectory: currentUser.orbcUserDirectory,
+      createdUserGuid: currentUser.userGUID,
+      updatedUser: currentUser.userName,
+      updatedDateTime: new Date(),
+      updatedUserDirectory: currentUser.orbcUserDirectory,
+      updatedUserGuid: currentUser.userGUID,
+    });
+    return savedCreditAccount;
   }
 
   async getCreditAccount(currentUser: IUserJWT, companyId: number) {
@@ -286,7 +185,7 @@ export class CreditAccountService {
     );
   }
 
-  async updateCreditAccountStatus(
+  private async updateCreditAccountStatus(
     {
       companyId,
       statusToUpdateTo,
@@ -315,5 +214,163 @@ export class CreditAccountService {
     } else {
       throw new BadRequestExceptionDto();
     }
+  }
+
+  private async getPaddedCreditAccountNumber(): Promise<string> {
+    const rawCreditAccountSequenceNumber = await callDatabaseSequence(
+      'permit.ORBC_CREDIT_ACCOUNT_NUMBER_SEQ',
+      this.dataSource,
+    );
+    let paddedCreditAccountSequenceNumber = rawCreditAccountSequenceNumber;
+    while (paddedCreditAccountSequenceNumber.length < 4) {
+      paddedCreditAccountSequenceNumber =
+        '0' + paddedCreditAccountSequenceNumber;
+    }
+    return paddedCreditAccountSequenceNumber;
+  }
+
+  private async createParty({
+    companyId,
+    ...companyInfo
+  }: Company): Promise<CreatePartyResponseDto> {
+    const BASE_URL = process.env.CREDIT_ACCOUNT_URL;
+    const { status, statusText, data } = await this.processCFSPostRequest<
+      CreatePartyRequestDto,
+      CreatePartyResponseDto
+    >({
+      url: `${BASE_URL}/cfs/parties/`,
+      data: {
+        customer_name: companyInfo.clientNumber,
+      } as CreatePartyRequestDto,
+    });
+    if (
+      (status === HttpStatus.OK || status === HttpStatus.CREATED) &&
+      data.party_number
+    ) {
+      return data;
+    } else {
+      this.logger.error('Step 1 - Unable to create a party for the company');
+      throw new InternalServerErrorException(
+        'Unable to create a party for the company.',
+        statusText,
+      );
+    }
+  }
+
+  private async createAccount({
+    url,
+    clientNumber,
+  }: {
+    url: string;
+    clientNumber: string;
+  }) {
+    const paddedCreditAccountSequenceNumber =
+      await this.getPaddedCreditAccountNumber();
+    const creditAccountNumber = `WS${paddedCreditAccountSequenceNumber}`;
+    const { status, statusText, data } = await this.processCFSPostRequest<
+      CreateAccountRequestDto,
+      CreateAccountResponseDto
+    >({
+      url,
+      data: {
+        account_number: creditAccountNumber,
+        account_description: `OnRouteBC Credit Account for ${clientNumber}`,
+      } as CreateAccountRequestDto,
+    });
+    if (
+      (status === HttpStatus.OK || status === HttpStatus.CREATED) &&
+      data.account_number
+    ) {
+      return data;
+    } else {
+      this.logger.error('Step 2 - Unable to create an account for the company');
+      throw new InternalServerErrorException(
+        'Unable to create an account for the company.',
+        statusText,
+      );
+    }
+  }
+
+  private async createSite({
+    url,
+    companyInfo,
+  }: {
+    url: string;
+    companyInfo: Company;
+  }) {
+    const { status, statusText, data } = await this.processCFSPostRequest<
+      CreateSiteRequestDto,
+      CreateSiteResponseDto
+    >({
+      url,
+      data: {
+        customer_site_id: 'orbc-default',
+        site_name: 'DEFAULT SITE',
+        primary_bill_to: 'Y',
+        address_line_1: companyInfo.mailingAddress.addressLine1,
+        address_line_2: companyInfo.mailingAddress.addressLine2,
+        city: companyInfo.mailingAddress.city,
+        postal_code: companyInfo.mailingAddress.postalCode,
+        province: companyInfo.mailingAddress.province.provinceCode,
+        country: companyInfo.mailingAddress.province.country.countryCode,
+        customer_profile_class: 'CAS_IND_DEFAULT',
+      } as CreateSiteRequestDto,
+    });
+    if (
+      (status === HttpStatus.OK || status === HttpStatus.CREATED) &&
+      data.site_number
+    ) {
+      return data;
+    } else {
+      this.logger.error('Step 3 - Unable to create a site for the company');
+      throw new InternalServerErrorException(
+        'Unable to create a site for the company.',
+        statusText,
+      );
+    }
+  }
+
+  private async createSiteContact({
+    url,
+    companyInfo,
+  }: {
+    url: string;
+    companyInfo: Company;
+  }) {
+    const { status, statusText, data } = await this.processCFSPostRequest<
+      CreateSiteContactRequestDto,
+      CreateSiteContactResponseDto
+    >({
+      url,
+      data: {
+        first_name: companyInfo.primaryContact.firstName,
+        last_name: companyInfo.primaryContact.lastName,
+        phone_number: companyInfo.phone,
+        email_address: companyInfo.email,
+      } as CreateSiteContactRequestDto,
+    });
+    if (
+      (status === HttpStatus.OK || status === HttpStatus.CREATED) &&
+      data.contact_number
+    ) {
+      return true;
+    } else {
+      this.logger.error(
+        'Step 4 - Unable to create a site contact for the company',
+      );
+    }
+  }
+
+  private async processCFSPostRequest<Request, Response>({
+    url,
+    data,
+  }: {
+    url: string;
+    data: Request;
+  }) {
+    return await cfsPostRequest<Request, Response>(
+      { httpService: this.httpService, cacheManager: this.cacheManager },
+      { url, data },
+    );
   }
 }
