@@ -23,7 +23,6 @@ import {
 } from '../../common/helper/credit-account.helper';
 import { Nullable } from '../../common/types/common';
 import { ReadCreditAccountUserDto } from './dto/response/read-credit-account-user.dto';
-import { CreditAccountUserType } from '../../common/enum/credit-accounts.enum';
 import { Company } from '../company-user-management/company/entities/company.entity';
 
 @Injectable()
@@ -189,13 +188,19 @@ export class CreditAccountService {
           'Credit Account user update failed!!',
         );
       }
+
+      const updatedCreditAccountUserInfo =
+        await this.findManyCreditAccountUsers(
+          null,
+          null,
+          null,
+          creditAccountUserMappedToCreditAccount.creditAccountUserId,
+        );
       return this.classMapper.mapAsync(
-        creditAccountUserMappedToCreditAccount,
+        updatedCreditAccountUserInfo?.at(0),
         CreditAccountUser,
         ReadCreditAccountUserDto,
       );
-
-      //return creditAccountUserMappedToCreditAccount;
     } else {
       // If no user is found, create a new credit account user
       let newCreditAccountUser = await this.classMapper.mapAsync(
@@ -215,12 +220,18 @@ export class CreditAccountService {
 
       newCreditAccountUser =
         await this.creditAccountUserRepository.save(newCreditAccountUser);
+
+      const newCreditAccountUserInfo = await this.findManyCreditAccountUsers(
+        null,
+        null,
+        null,
+        newCreditAccountUser.creditAccountUserId,
+      );
       return this.classMapper.mapAsync(
-        newCreditAccountUser,
+        newCreditAccountUserInfo?.at(0),
         CreditAccountUser,
         ReadCreditAccountUserDto,
       );
-      //return newCreditAccountUser;
     }
   }
 
