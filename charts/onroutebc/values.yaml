@@ -37,7 +37,7 @@ frontend:
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && caddy fmt --overwrite /etc/caddy/Caddyfile"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}}"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: frontend
