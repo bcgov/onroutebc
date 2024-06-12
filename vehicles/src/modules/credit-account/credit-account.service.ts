@@ -1,6 +1,12 @@
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
-import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreditAccount } from './entities/credit-account.entity';
 import { DataSource, Repository } from 'typeorm';
@@ -19,6 +25,7 @@ import { Nullable } from '../../common/types/common';
 import { CompanyService } from '../company-user-management/company/company.service';
 import { CreditAccountType } from '../../common/enum/credit-account-type.enum';
 import { callDatabaseSequence } from '../../common/helper/database.helper';
+import { CreditAccountUser } from './entities/credit-account-user.entity';
 
 @Injectable()
 export class CreditAccountService {
@@ -31,6 +38,8 @@ export class CreditAccountService {
     private readonly cacheManager: Cache,
     @InjectRepository(CreditAccount)
     private readonly creditAccountRepository: Repository<CreditAccount>,
+    @InjectRepository(CreditAccountUser)
+    private readonly creditAccountUserRepository: Repository<CreditAccountUser>,
     private readonly companyService: CompanyService,
   ) {}
 
@@ -45,6 +54,25 @@ export class CreditAccountService {
       this.httpService,
       this.cacheManager,
     );
+
+    const companyIsAlreadyAUser = await this.creditAccountUserRepository.exists(
+      {
+        where: { company: { companyId } },
+      },
+    );
+    if (companyIsAlreadyAUser) {
+      throw new BadRequestException(
+        'Company is already a user of another credit account.',
+      );
+    }
+
+    const companyAlreadyHasCreditAccount =
+      await this.creditAccountRepository.exists({
+        where: { company: { companyId } },
+      });
+    if (companyAlreadyHasCreditAccount) {
+      throw new BadRequestException('Company already has a credit account.');
+    }
 
     const companyInfo = await this.companyService.findOne(companyId);
 
