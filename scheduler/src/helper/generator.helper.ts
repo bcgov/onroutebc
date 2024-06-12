@@ -109,9 +109,13 @@ class BatchHeader {
     return ``;
   }
   
-  function getFlowThru(): string {
-    // 110 chars
-    return `                                                                                                              `;
+  // function getFlowThru(): string {
+  //   // 110 chars
+  //   return `                                                                                                              `;
+  // }
+
+  function getFlowThru(length: number): string {
+    return ' '.repeat(length);
   }
   
   let jvLineNumberCounter: number = 0;
@@ -141,14 +145,14 @@ class BatchHeader {
     // Location - (6 Characters)
     // Future - (4 Characters)
     // Unused Filler - (16 Characters)
-    const client = 'abc';
-    const responsibility = '12345';
-    const serviceLine = 'abcde';
-    const stob = 'defj';
-    const project = 'proj123';
-    const location = 'abc123';
+    const client = getClient();
+    const responsibility = getResponsibility();
+    const serviceLine = getServiceLine();
+    const stob = getStob();
+    const project = getProject();
+    const location = getLocation();
     const future = 'abcd';
-    const unusedFiller = '                ';//16 spaces
+    const unusedFiller = ' '.repeat(16);//16 spaces
     let result = '';
     result = result + client + responsibility + serviceLine + stob + project + location + future + unusedFiller;
     return result;
@@ -181,17 +185,17 @@ class BatchHeader {
   
   function getLocation(): string {
     // 6 chars
-    return `000000`;
+    return `0`.repeat(6);
   }
   
   function getFuture(): string {
     // 4 chars
-    return `0000`;
+    return `0`.repeat(4);
   }
   
   function getUnusedFiller(): string {
     // 16 chars
-    return `0000000000000000`;
+    return `0`.repeat(16);
   }
   
   function getSupplierNumber(): string {
@@ -206,12 +210,12 @@ class BatchHeader {
   
   function getLineDescription(): string {
     // 100 chars
-    return `                                                                                                    `;
+    return ` `.repeat(100);
   }
   
   function getFeederNumberClientSystem(): string {
     // 4 chars
-    return ``;
+    return `0`.repeat(4);
   }
   
   function getControlCount(transactions: Transaction[]): string {
@@ -242,7 +246,6 @@ class BatchHeader {
     bt.fiscalYear = fiscalYear;
     bt.batchNumber = batchNumber;
     bt.messageVersion = messageVersion;
-    // const batchId: string = await insertBatchHeader(bt, filename, ackFilename);
     console.log(filename);
     console.log(ackFilename);
     return batchHeader;
@@ -261,10 +264,9 @@ function populateJournalHeader(transactions: Transaction[]): string {
   const recordType: string = `A`;
   const countryCurrencyCode: string = `CAD`;
   const externalReferenceSource: string = getExternalReferenceSource();
-  const flowThru: string = getFlowThru();
+  const flowThru: string = getFlowThru(110);
   journalHeader = journalHeader + feederNumber + batchType + transactionType + delimiter + journalName + journalBatchName + controlTotal
     + recordType + countryCurrencyCode + externalReferenceSource + flowThru + delimiter + `\n`;
-  // await insertJournalHeader(maxBatchId);
   return journalHeader;
 }
 
@@ -274,7 +276,7 @@ function populateJournalVoucherDetail(cgiFileName: string, transactions: Transac
   const delimiterHex = 0x1D;
   const delimiter = String.fromCharCode(delimiterHex);
   const journalName: string = globalJournalName;
-  const flowThru: string = getFlowThru();
+  const flowThru: string = getFlowThru(110);
   const jvLineNumber: string = getJvLiineNumber();
   const glEffectiveDate: string = getGlEffectiveDate();
   const ack: string = getAck();
