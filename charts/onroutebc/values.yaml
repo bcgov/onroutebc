@@ -62,10 +62,6 @@ frontend:
         requests:
           cpu: 25m
           memory: 50Mi
-      volumeMounts:
-        - name: config
-          mountPath: "/usr/share/nginx/html/config.js"
-          subPath: config.js
   autoscaling:
     #-- enable or disable autoscaling.
     enabled: true
@@ -134,10 +130,6 @@ frontend:
     secretPaths:
       - "keycloak-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
-  volumes:
-    - name: config
-      configMap:
-        name: "{{ .Release.Name}}-frontend"
 
 vehicles:
   enabled: true
