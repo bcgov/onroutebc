@@ -1,14 +1,24 @@
 # Build static files
-# Node Bullseye has npm
-FROM node:20.14.0-bullseye-slim AS build
+FROM node:20.12.0-alpine AS builder
 
 # Install packages, build and keep only prod packages
 WORKDIR /app
-COPY *.json *.ts index.html ./
-COPY public ./public
-COPY ./src ./src
-RUN npm ci --ignore-scripts --no-update-notifier --omit=dev && \
-    npm run build
+
+# Install app dependencies
+COPY ./package*.json ./
+
+# Assign permissions to npm folder
+RUN mkdir /.npm && chmod 777 /.npm
+
+# Install dependencies (npm ci makes sure the exact versions in the lockfile gets installed)
+RUN npm ci
+
+# Copy app files
+COPY . .
+
+# Build
+RUN npm run build
+
 
 # Deploy container
 # Caddy serves static files
@@ -16,11 +26,15 @@ FROM caddy:2.8.4-alpine
 RUN apk add --no-cache ca-certificates
 
 # Copy static files and run formatting
-COPY --from=build /app/dist /srv
+COPY --from=builder /app/dist /srv
 COPY Caddyfile /etc/caddy/Caddyfile
 RUN caddy fmt --overwrite /etc/caddy/Caddyfile
 
-# Ports, health check and non-root user
+# Ports
 EXPOSE 3000 3001
+
+# Health check
 HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost/:3001/health
+
+# Non-root user
 USER 1001
