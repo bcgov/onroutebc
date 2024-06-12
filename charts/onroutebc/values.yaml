@@ -49,6 +49,8 @@ frontend:
         fromValues:
           - name: FRONTEND_BUILD_NUM
             value: '{{.Values.global.pr_num}}'
+          - name: FRONTEND_LOG_LEVEL
+            value: 'INFO'
           - name: DEPLOY_ENVIRONMENT
             value: '{{.Release.Namespace}}'
       ports:
