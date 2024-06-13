@@ -1,7 +1,8 @@
 import { HttpService } from '@nestjs/axios';
 import { AxiosResponse } from 'axios';
 import { Cache } from 'cache-manager';
-import { getCreditAccessToken } from '../../../common/helper/gov-common-services.helper';
+import { getAccessToken } from '../../../common/helper/gov-common-services.helper';
+import { GovCommonServices } from '../../../common/enum/gov-common-services.enum';
 
 export async function cfsPostRequest<RequestBody, ResponseBody>(
   {
@@ -13,9 +14,16 @@ export async function cfsPostRequest<RequestBody, ResponseBody>(
   },
   { url, data }: { url: string; data: RequestBody },
 ) {
-  const token = await getCreditAccessToken(httpService, cacheManager);
-  //  Axios.post<any, AxiosResponse<any, any>, RequestBody>
-  const response = await httpService.axiosRef.post<any, AxiosResponse<ResponseBody>, RequestBody> (url, data as RequestBody, {
+  const token = await getAccessToken(
+    GovCommonServices.CREDIT_ACCOUNT_SERVICE,
+    httpService,
+    cacheManager,
+  );
+  const response = await httpService.axiosRef.post<
+    any,
+    AxiosResponse<ResponseBody>,
+    RequestBody
+  >(url, data as RequestBody, {
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
