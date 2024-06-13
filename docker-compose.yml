@@ -234,6 +234,12 @@ services:
     container_name: caddy
     profiles: ["caddy"]
     build: ./frontend
+    environment:
+      ACCESS_API_URL: "http://vehicles-api:5000"
+      VITE_KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL}
+      VITE_KEYCLOAK_AUDIENCE: ${KEYCLOAK_AUDIENCE}
+      VITE_SITEMINDER_LOG_OFF_URL: ${SITEMINDER_LOG_OFF_URL}
+      CADDY_LOG_LEVEL: ${CADDY_LOG_LEVEL}
     ports: ["3005:3000"]
     volumes: ["./frontend/Caddyfile:/etc/caddy/Caddyfile"]
     healthcheck:
