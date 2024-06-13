@@ -18,12 +18,12 @@
 		header {
 		  Content-Type text/javascript
 		}
-		respond 'window.env.VITE_DEPLOY_ENVIRONMENT="{$DEPLOY_ENVIRONMENT}";
-			 window.env.VITE_API_VEHICLE_URL="{$ACCESS_API_URL}";
-			 window.env.VITE_KEYCLOAK_ISSUER_URL="{$KEYCLOAK_ISSUER_URL}";
-			 window.env.VITE_KEYCLOAK_AUDIENCE="{$KEYCLOAK_AUDIENCE}";
-			 window.env.VITE_SITEMINDER_LOG_OFF_URL="{$SITEMINDER_LOG_OFF_URL}";
-			 window.env.VITE_FRONTEND_BUILD_NUM="{$FRONTEND_BUILD_NUM}"'
+		respond 'import.meta.env.VITE_DEPLOY_ENVIRONMENT="{$DEPLOY_ENVIRONMENT}";
+			 import.meta.env.VITE_API_VEHICLE_URL="{$ACCESS_API_URL}";
+			 import.meta.env.VITE_KEYCLOAK_ISSUER_URL="{$KEYCLOAK_ISSUER_URL}";
+			 import.meta.env.VITE_KEYCLOAK_AUDIENCE="{$KEYCLOAK_AUDIENCE}";
+			 import.meta.env.VITE_SITEMINDER_LOG_OFF_URL="{$SITEMINDER_LOG_OFF_URL}";
+			 import.meta.env.VITE_FRONTEND_BUILD_NUM="{$FRONTEND_BUILD_NUM}"'
 	}
 	root * /srv
 	encode zstd gzip
