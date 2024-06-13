@@ -227,3 +227,13 @@ services:
       - sql-server-db
     ports:
       - "5050:5050"
+
+  # Run Caddy alone (and fail!) with: docker compose up caddy --build
+  caddy:
+    container_name: caddy
+    profiles: ["caddy"]
+    build: ./frontend
+    ports: ["3005:3000"]
+    volumes: ["./frontend/Caddyfile:/etc/caddy/Caddyfile"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
