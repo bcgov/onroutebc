@@ -464,35 +464,7 @@ scheduler:
           memory: 50Mi
   autoscaling:
     #-- enable or disable autoscaling.
-    enabled: true
-    #-- the minimum number of replicas.
-    minReplicas: 2
-    #-- the maximum number of replicas.
-    maxReplicas: 3
-    #-- the target cpu utilization percentage, is from request cpu and NOT LIMIT CPU.
-    targetCPUUtilizationPercentage: 80
-    #-- the behavior for the autoscaling. it is optional and is an object.
-    behavior:
-      scaleDown:
-        stabilizationWindowSeconds: 300
-        policies:
-          - type: Percent
-            value: 10
-            periodSeconds: 60
-          - type: Pods
-            value: 2
-            periodSeconds: 60
-        selectPolicy: Min
-      scaleUp:
-        stabilizationWindowSeconds: 0
-        policies:
-          - type: Percent
-            value: 100
-            periodSeconds: 30
-          - type: Pods
-            value: 2
-            periodSeconds: 30
-        selectPolicy: Max
+    enabled: false 
   ingress:
     className: openshift-default
     annotations: 
