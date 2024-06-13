@@ -2,18 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Transaction } from './transaction.entity';
 import { ORBC_CFSTransactionDetail } from './transaction-detail.entity';
-import { ORBC_CFSTransactionDetailRepository } from './transaction-detail.repository';
-import { TransactionRepository } from './transaction.repository';
 import { Cron } from '@nestjs/schedule';
 import { LogAsyncMethodExecution } from 'src/common/decorator/log-async-method-execution.decorator';
 import { generate } from 'src/helper/generator.helper';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class TransactionService {
   constructor(
-    @InjectRepository(TransactionRepository)
-    private readonly transactionRepository: TransactionRepository,
-    private readonly cfsTransactionDetailRepo: ORBC_CFSTransactionDetailRepository
+    @InjectRepository(Transaction)
+    private readonly transactionRepository: Repository<Transaction>,
+    @InjectRepository(ORBC_CFSTransactionDetail)
+    private readonly cfsTransactionDetailRepo: Repository<ORBC_CFSTransactionDetail>
   ) {}
 
   async getAllTransactions(): Promise<Transaction[]> {
@@ -57,19 +57,63 @@ export class TransactionService {
 
   private currentDate = new Date();
   private holidays: string[] = [
-    '2024-01-01', // New Year's Day
+    this.getNewYearsDay(), // New Year's Day
     this.getThirdMondayOfFeb(this.currentDate.getFullYear()), // Family Day (3rd Monday in February)
-    '2024-03-29', // Good Friday
-    '2024-04-01', // Easter Monday
+    this.getGoodFriday(this.currentDate.getFullYear()), // Good Friday
+    this.getEasterMonday(this.currentDate.getFullYear()), // Easter Monday
     this.getMondayBeforMay25(this.currentDate.getFullYear()), // Victoria Day (Monday before May 25)
-    '2024-07-01', // Canada Day
+    this.getCanadaDay(this.currentDate.getFullYear()), // Canada Day
     this.getFirstMondayOfAugust(this.currentDate.getFullYear()), // British Columbia Day (1st Monday in August)
     this.getFirstMondayOfSeptember(this.currentDate.getFullYear()), // Labour Day (1st Monday in September)
     this.getSecondMondayOfOctober(this.currentDate.getFullYear()), // Thanksgiving Day (2nd Monday in October)
-    '2024-11-11', // Remembrance Day
-    '2024-12-25', // Christmas Day
-    '2024-12-26', // Boxing Day
+    this.getRemembranceDay(this.currentDate.getFullYear()), // Remembrance Day
+    this.getChristmasDay(this.currentDate.getFullYear()), // Christmas Day
+    this.getBoxingDay(this.currentDate.getFullYear()), // Boxing Day
   ];
+
+  private getNewYearsDay(): string {
+    const currentYear = new Date().getFullYear();
+    const newYearsDay = new Date(currentYear, 0, 1); // January is 0
+    const dateString = newYearsDay.toISOString().slice(0, 10);
+    return dateString;
+  }
+
+  private getEasterSunday(year: number): Date {
+    const f = Math.floor;
+    const G = year % 19;
+    const C = f(year / 100);
+    const H = (C - f(C / 4) - f((8 * C + 13) / 25) + 19 * G + 15) % 30;
+    const I = H - f(H / 28) * (1 - f(H / 28) * f(29 / (H + 1)) * f((21 - G) / 11));
+    const J = (year + f(year / 4) + I + 2 - C + f(C / 4)) % 7;
+    const L = I - J;
+    const month = 3 + f((L + 40) / 44);
+    const day = L + 28 - 31 * f(month / 4);
+
+    return new Date(year, month - 1, day);
+  }
+
+  private getGoodFriday(year: number): string {
+    const easterSunday = this.getEasterSunday(year);
+    const goodFriday = new Date(easterSunday);
+    goodFriday.setDate(easterSunday.getDate() - 2);
+    const dateString = goodFriday.toISOString().slice(0, 10);
+    return dateString;
+  }
+
+  private getEasterMonday(year: number): string {
+    const easterSunday = this.getEasterSunday(year);
+    const easterMonday = new Date(easterSunday);
+    easterMonday.setDate(easterSunday.getDate() + 1);
+    const dateString = easterMonday.toISOString().slice(0, 10);
+    return dateString;
+  }
+
+  private getCanadaDay(year: number): string {
+    const canadaDay = new Date(year, 6, 1); // July is 6
+    const dateString = canadaDay.toISOString().slice(0, 10);
+    return dateString;
+  }
+  
 
   private getThirdMondayOfFeb(year: number): string {
     const februaryFirst = new Date(year, 1, 1);
@@ -115,6 +159,24 @@ export class TransactionService {
     const secondMondayOffset = (8 + 7 - dayOfWeek) % 7;
     const secondMonday = new Date(year, 9, 1 + secondMondayOffset + 7);
     const dateString = secondMonday.toISOString().slice(0, 10);
+    return dateString;
+  }
+
+  private getRemembranceDay(year: number): string {
+    const remembranceDay = new Date(year, 10, 11); // November is 10
+    const dateString = remembranceDay.toISOString().slice(0, 10);
+    return dateString;
+  }
+
+  private getChristmasDay(year: number): string {
+    const christmasDay = new Date(year, 11, 25); // December is 11
+    const dateString = christmasDay.toISOString().slice(0, 10);
+    return dateString;
+  }
+
+  private getBoxingDay(year: number): string {
+    const boxingDay = new Date(year, 11, 26); // December is 11
+    const dateString = boxingDay.toISOString().slice(0, 10);
     return dateString;
   }
 

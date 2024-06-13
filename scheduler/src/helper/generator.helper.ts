@@ -4,6 +4,7 @@ import { join, resolve } from 'path';
 import { CgiSftpService } from "src/modules/cgi-sftp/cgi-sftp.service";
 import { Transaction } from "src/modules/transactions/transaction.entity";
 import { Readable } from "typeorm/platform/PlatformTools";
+import { CgiConstants } from "src/common/constants/cgi.constant";
 
 const envFilePath = resolve(__dirname, "../../../.env");
 const result = dotenvConfig({ path: envFilePath });
@@ -23,12 +24,12 @@ class BatchHeader {
   messageVersion: string;
 
   constructor() {
-    this.feederNumber = '3535';
-    this.batchType = `GA`;
-    this.transactionType = `BH`;
+    this.feederNumber = CgiConstants.FEEDER_NUMBER;
+    this.batchType = CgiConstants.BATCH_TYPE;
+    this.transactionType = CgiConstants.TRANSACTION_TYPE_BH;
     this.fiscalYear = getFiscalYear();
     this.batchNumber = getBatchNumber();
-    this.messageVersion = `4010`;
+    this.messageVersion = CgiConstants.MESSAGE_VERSION;
   } 
 }
 
@@ -59,7 +60,7 @@ class BatchHeader {
   let globalJournalName: string = '';
   
   function getJournalName(): string {
-    const prefix = 'MT'; // Ministry Alpha identifier prefix
+    const prefix = CgiConstants.PREFIX;
     const randomChars = generateRandomChars(8); // Generate 8 random characters
     const journalName: string = prefix + randomChars;
     return journalName;
@@ -76,7 +77,7 @@ class BatchHeader {
   
   function getJournalBatchName(): string {
     // 25 characters
-    const prefix = 'MT'; // Ministry Alpha identifier prefix
+    const prefix = CgiConstants.PREFIX; // Ministry Alpha identifier prefix
     const randomChars = generateRandomChars(23); // Generate 23 random characters
     return prefix + randomChars;
   }
@@ -108,11 +109,6 @@ class BatchHeader {
     // return `QP`;
     return ``;
   }
-  
-  // function getFlowThru(): string {
-  //   // 110 chars
-  //   return `                                                                                                              `;
-  // }
 
   function getFlowThru(length: number): string {
     return ' '.repeat(length);
@@ -151,7 +147,7 @@ class BatchHeader {
     const stob = getStob();
     const project = getProject();
     const location = getLocation();
-    const future = 'abcd';
+    const future = CgiConstants.FUTURE;
     const unusedFiller = ' '.repeat(16);//16 spaces
     let result = '';
     result = result + client + responsibility + serviceLine + stob + project + location + future + unusedFiller;
@@ -160,27 +156,27 @@ class BatchHeader {
   
   function getClient(): string {
     // 3 chars
-    return `034`;
+    return CgiConstants.CLIENT;
   }
   
   function getResponsibility(): string {
     // 5 chars
-    return `55331`;
+    return CgiConstants.RESPONSIBILITY;
   }
   
   function getServiceLine(): string {
     // 5 chars
-    return `10435`;
+    return CgiConstants.SERVICE_LINE;
   }
   
   function getStob(): string {
     // 4 chars
-    return `1474`;
+    return CgiConstants.STOB;
   }
   
   function getProject(): string {
     // 7 chars
-    return `5500000`;
+    return CgiConstants.PROJECT;
   }
   
   function getLocation(): string {
@@ -200,12 +196,12 @@ class BatchHeader {
   
   function getSupplierNumber(): string {
     // 9 chars
-    return `abcdefghi`;
+    return CgiConstants.SUPPLIER_NUMBER;
   }
   
   function getLineCode(): string {
     // 1 char, C or D
-    return `C`;
+    return CgiConstants.LINE_CODE;
   }
   
   function getLineDescription(): string {
@@ -220,7 +216,6 @@ class BatchHeader {
   
   function getControlCount(transactions: Transaction[]): string {
     // 15 chars
-    // return `123451234512.34`;
     const numberStr = transactions.length.toString();
     const desiredLength = 15;
     const paddedString = numberStr.padStart(desiredLength, '0');
@@ -230,14 +225,14 @@ class BatchHeader {
   
   function populateBatchHeader(filename: string, ackFilename: string): string {
     let batchHeader: string = ``;
-    const feederNumber: string = `3535`;
-    const batchType: string = `GA`;
-    const transactionType: string = `BH`;
+    const feederNumber: string = CgiConstants.FEEDER_NUMBER;
+    const batchType: string = CgiConstants.BATCH_TYPE;
+    const transactionType: string = CgiConstants.TRANSACTION_TYPE_BH;
     const delimiterHex = 0x1D;
     const delimiter = String.fromCharCode(delimiterHex);
     const fiscalYear: number = getFiscalYear();
     const batchNumber: string = getBatchNumber();
-    const messageVersion: string = `4010`;
+    const messageVersion: string = CgiConstants.MESSAGE_VERSION;
     batchHeader = batchHeader + feederNumber + batchType + transactionType + delimiter + feederNumber + fiscalYear + batchNumber + messageVersion + delimiter + `\n`;
     const bt: BatchHeader = new BatchHeader();
     bt.feederNumber = feederNumber;
@@ -253,16 +248,16 @@ class BatchHeader {
 
 function populateJournalHeader(transactions: Transaction[]): string {
   let journalHeader: string = ``;
-  const feederNumber: string = `3535`;
-  const batchType: string = `GA`;
-  const transactionType: string = `JH`;
+  const feederNumber: string = CgiConstants.FEEDER_NUMBER;
+  const batchType: string = CgiConstants.BATCH_TYPE;
+  const transactionType: string = CgiConstants.TRANSACTION_TYPE_JH;
   const delimiterHex = 0x1D;
   const delimiter = String.fromCharCode(delimiterHex);
   const journalName: string = globalJournalName;
   const journalBatchName: string = getJournalBatchName();
   const controlTotal: string = getControlTotal(transactions);
-  const recordType: string = `A`;
-  const countryCurrencyCode: string = `CAD`;
+  const recordType: string = CgiConstants.RECORD_TYPE;
+  const countryCurrencyCode: string = CgiConstants.COUNTRY_CURRENCY_CODE;
   const externalReferenceSource: string = getExternalReferenceSource();
   const flowThru: string = getFlowThru(110);
   journalHeader = journalHeader + feederNumber + batchType + transactionType + delimiter + journalName + journalBatchName + controlTotal
@@ -271,8 +266,8 @@ function populateJournalHeader(transactions: Transaction[]): string {
 }
 
 function populateJournalVoucherDetail(cgiFileName: string, transactions: Transaction[]): void {
-  const feederNumber: string = `3535`;
-  const batchType: string = `GA`;
+  const feederNumber: string = CgiConstants.FEEDER_NUMBER;
+  const batchType: string = CgiConstants.BATCH_TYPE;
   const delimiterHex = 0x1D;
   const delimiter = String.fromCharCode(delimiterHex);
   const journalName: string = globalJournalName;
@@ -340,9 +335,9 @@ function getLineTotle(total: number) {
 
 function populateBatchTrailer(transactions: Transaction[]): string {
   let batchTrailer: string = ``;
-  const feederNumber: string = `3535`;
-  const batchType: string = `GA`;
-  const transactionType: string = `BT`;
+  const feederNumber: string = CgiConstants.FEEDER_NUMBER;
+  const batchType: string = CgiConstants.BATCH_TYPE;
+  const transactionType: string = CgiConstants.TRANSACTION_TYPE_BT;
   const delimiterHex = 0x1D;
   const delimiter = String.fromCharCode(delimiterHex);
   const fiscalYear: number = getFiscalYear();
