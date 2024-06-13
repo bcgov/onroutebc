@@ -57,24 +57,7 @@ export class CreditAccountService {
       creditLimit,
     }: { companyId: number; creditLimit: CreditAccountLimitType },
   ) {
-    const companyIsAlreadyAUser = await this.creditAccountUserRepository.exists(
-      {
-        where: { company: { companyId } },
-      },
-    );
-    if (companyIsAlreadyAUser) {
-      throw new BadRequestException(
-        'Company is already a user of another credit account.',
-      );
-    }
-
-    const companyAlreadyHasCreditAccount =
-      await this.creditAccountRepository.exists({
-        where: { company: { companyId } },
-      });
-    if (companyAlreadyHasCreditAccount) {
-      throw new BadRequestException('Company already has a credit account.');
-    }
+    await this.validateCreateCreditAccount(companyId);
 
     const companyInfo = await this.dataSource
       .createQueryBuilder()
@@ -105,32 +88,39 @@ export class CreditAccountService {
       clientNumber: companyInfo.clientNumber,
     });
 
-    // Should I commit to db now?
-
     // 3) Create Site for the Party and Account created in steps 1 and 2.
     const { href: sitesURL } = accountsResponseLinks.find(
       ({ rel }) => rel === 'sites',
     );
     const sitesResponse = await this.createSite({ url: sitesURL, companyInfo });
-    const { site_number: cfsSiteNumber, links: sitesResponseLinks } =
-      sitesResponse;
+    const siteCreated = Boolean(sitesResponse);
 
-    // 4) Create Site Contact for the site created in step 3.
-    const { href: siteContactURL } = sitesResponseLinks.find(
-      ({ rel }) => rel === 'contacts',
-    );
-    const siteContactCreated = await this.createSiteContact({
-      url: siteContactURL,
-      companyInfo,
-    });
+    let cfsSiteNumber: number;
+    let siteContactCreated: boolean = false;
+
+    // Only if site was created in step 3, step 4 can execute.
+    if (siteCreated) {
+      const { site_number, links: sitesResponseLinks } = sitesResponse;
+      cfsSiteNumber = +site_number;
+
+      // 4) Create Site Contact for the site created in step 3.
+      const { href: siteContactURL } = sitesResponseLinks.find(
+        ({ rel }) => rel === 'contacts',
+      );
+      siteContactCreated = await this.createSiteContact({
+        url: siteContactURL,
+        companyInfo,
+      });
+    }
 
     const savedCreditAccount = await this.creditAccountRepository.save({
       companyId: { companyId },
       cfsPartyNumber: +cfsPartyNumber,
-      cfsSiteNumber: +cfsSiteNumber,
-      creditAccountStatusType: siteContactCreated
-        ? CreditAccountStatusType.ACCOUNT_ACTIVE
-        : CreditAccountStatusType.ACCOUNT_ERROR,
+      cfsSiteNumber: cfsSiteNumber ?? -1,
+      creditAccountStatusType:
+        siteCreated && siteContactCreated
+          ? CreditAccountStatusType.ACCOUNT_ACTIVE
+          : CreditAccountStatusType.ACCOUNT_SETUP_FAIL,
       creditLimit,
       creditAccountType:
         creditLimit === CreditAccountLimit.PREPAID
@@ -323,10 +313,9 @@ export class CreditAccountService {
       return data;
     } else {
       this.logger.error('Step 3 - Unable to create a site for the company');
-      throw new InternalServerErrorException(
-        'Unable to create a site for the company.',
-        statusText,
-      );
+      // Returning null here because, we can still save the
+      // outcome of step 1 and 2 in the DB and account status can be
+      return null;
     }
   }
 
@@ -361,6 +350,28 @@ export class CreditAccountService {
     }
   }
 
+  private async validateCreateCreditAccount(companyId: number): Promise<void> {
+    const companyIsAlreadyAUser = await this.creditAccountUserRepository.exists(
+      {
+        where: { company: { companyId } },
+      },
+    );
+    if (companyIsAlreadyAUser) {
+      throw new BadRequestException(
+        'Company is already a user of another credit account.',
+      );
+    }
+
+    const companyAlreadyHasCreditAccount =
+      await this.creditAccountRepository.exists({
+        where: { company: { companyId } },
+      });
+    if (companyAlreadyHasCreditAccount) {
+      throw new BadRequestException('Company already has a credit account.');
+    }
+  }
+
+  
   private async processCFSPostRequest<Request, Response>({
     url,
     data,

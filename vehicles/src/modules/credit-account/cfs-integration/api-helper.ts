@@ -1,8 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { AxiosResponse } from 'axios';
-import { getCreditAccessToken } from '../../../common/helper/gov-common-services.helper';
 import { Cache } from 'cache-manager';
-import { HttpStatus } from '@nestjs/common';
+import { getCreditAccessToken } from '../../../common/helper/gov-common-services.helper';
 
 export async function cfsPostRequest<RequestBody, ResponseBody>(
   {
