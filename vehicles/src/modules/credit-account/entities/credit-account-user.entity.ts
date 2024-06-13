@@ -11,13 +11,13 @@ import { Base } from '../../common/entities/base.entity';
 import { Company } from '../../company-user-management/company/entities/company.entity';
 import { CreditAccount } from './credit-account.entity';
 
-@Entity({ name: 'ORBC_CREDIT_ACCOUNT_USER' })
+@Entity({ name: 'permit.ORBC_CREDIT_ACCOUNT_USER' })
 export class CreditAccountUser extends Base {
   /**
    * An auto-generated unique identifier for the credit account.
    */
   @AutoMap()
-  @PrimaryGeneratedColumn({ type: 'int', name: 'CREDIT_ACCOUNT_COMPANY_ID' })
+  @PrimaryGeneratedColumn({ type: 'int', name: 'CREDIT_ACCOUNT_USER_ID' })
   creditAccountUserId: number;
 
   /**

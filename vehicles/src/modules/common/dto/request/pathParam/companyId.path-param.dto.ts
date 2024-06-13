@@ -4,7 +4,7 @@ import { IsInt, IsPositive } from 'class-validator';
 
 export class CompanyIdPathParamDto {
   @ApiProperty({
-    description: `Id of the company the cart belongs to.`,
+    description: `Id of the company to which the resource belongs to.`,
     example: 74,
   })
   @IsInt()
