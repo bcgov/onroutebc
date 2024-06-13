@@ -525,7 +525,8 @@ export class ApplicationService {
                 issuer: { userGUID: currentUser.userGUID },
                 permitApprovalSource: PermitApprovalSourceEnum.AUTO, //TODO : Hardcoding for release 1
                 permitIssuedBy:
-                  currentUser.orbcUserDirectory == Directory.IDIR || currentUser.orbcUserDirectory === Directory.SERVICE_ACCOUNT
+                  currentUser.orbcUserDirectory == Directory.IDIR ||
+                  currentUser.orbcUserDirectory === Directory.SERVICE_ACCOUNT
                     ? PermitIssuedBy.PPC
                     : PermitIssuedBy.SELF_ISSUED,
                 permitIssueDateTime: fetchedApplication.permitIssueDateTime,

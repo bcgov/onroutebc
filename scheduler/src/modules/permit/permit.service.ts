@@ -44,7 +44,7 @@ export class PermitService {
     try {
       const now = new Date();
       const date = dayjs(now).subtract(1, 'minute').toDate();
-      const count = Number(process.env.ISSUE_PERMIT_LIMIT)
+      const count = Number(process.env.ISSUE_PERMIT_LIMIT);
       const permits: Permit[] = await this.permitRepository
         .createQueryBuilder('permit')
         .where('permit.permitStatus = :permitStatus', {
@@ -74,7 +74,7 @@ export class PermitService {
     try {
       const now = new Date();
       const date = dayjs(now).subtract(30, 'minute').toDate();
-      const count = Number(process.env.DOC_GEN_LIMIT)
+      const count = Number(process.env.DOC_GEN_LIMIT);
       const permits: Permit[] = await this.permitRepository
         .createQueryBuilder('permit')
         .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')

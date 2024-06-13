@@ -109,6 +109,17 @@ export class Transaction extends Base {
 
   @AutoMap()
   @ApiProperty({
+    example: 'Provincial Permit Center',
+    description: 'Represents who paid for the transaction',
+  })
+  @Column({
+    length: '100',
+    name: 'PAYER_NAME',
+  })
+  payerName: string;
+
+  @AutoMap()
+  @ApiProperty({
     example: '10000148',
     description:
       'Bambora-assigned eight-digit unique id number used to identify an individual transaction.',

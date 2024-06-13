@@ -4,5 +4,5 @@ export enum Directory {
   BCSC = 'BCSC',
   ORBC = 'ORBC',
   IDIR = 'IDIR',
-  SERVICE_ACCOUNT = 'SERVICE_ACCOUNT',
+  SERVICE_ACCOUNT = 'SA',
 }
