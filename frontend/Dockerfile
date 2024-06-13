@@ -33,8 +33,11 @@ RUN caddy fmt --overwrite /etc/caddy/Caddyfile
 # Ports
 EXPOSE 3000 3001
 
+# Non-root user
+USER node
+
+# Start the app
+CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
+
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost/:3001/health
-
-# Non-root user
-USER 1001
