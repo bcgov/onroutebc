@@ -18,7 +18,7 @@
 		header {
 		  Content-Type text/javascript
 		}
-		respond `window.VITE_DEPLOY_ENVIRONMENT="{$DEPLOY_ENVIRONMENT}";
+		respond 'window.VITE_DEPLOY_ENVIRONMENT="{$DEPLOY_ENVIRONMENT}";
 			 window.VITE_API_VEHICLE_URL="{$ACCESS_API_URL}";
 			 window.VITE_KEYCLOAK_ISSUER_URL="{$KEYCLOAK_ISSUER_URL}";
 			 window.VITE_KEYCLOAK_AUDIENCE="{$KEYCLOAK_AUDIENCE}";
