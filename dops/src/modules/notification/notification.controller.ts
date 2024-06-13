@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req } from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -21,6 +21,8 @@ import { NotificationService } from './notification.service';
 import { ExceptionDto } from '../../exception/exception.dto';
 import { NotificationDocumentDto } from './dto/request/notification-document.dto';
 import { NotificationDto } from './dto/request/notification.dto';
+import { JwtAuthGuard } from 'src/guard/auth.guard';
+import { JwtServiceAccountAuthGuard } from 'src/guard/jwt-sa-auth.guard';
 
 @ApiBearerAuth()
 @ApiBadRequestResponse({
@@ -59,6 +61,7 @@ export class NotificationController {
     description:
       'Processes and sends an notification with specified documents as attachments to the given recipient(s), and returns a transaction ID for the operation.',
   })
+  @UseGuards(JwtAuthGuard,JwtServiceAccountAuthGuard)
   @Post('/document')
   @Roles({ allOf: [Role.SEND_NOTIFICATION, Role.READ_DOCUMENT] })
   async notificationWithDocumentsFromDops(
