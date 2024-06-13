@@ -175,8 +175,9 @@ jobs:
             --set global.autoscaling=${{ inputs.autoscaling }} \
             --set-string global.repository=${{ github.repository }} \
             --set-string global.tag=${{ inputs.tag }} \
-            --install --wait --atomic ${{ env.repo_release }} \
-            --timeout 10m --force \
+            ${{ github.event_name == 'pull_request' && '--atomic --timeout 10m' || '' }} \
+            --install --wait  ${{ env.repo_release }} \
+            --force \
             --values ${{ inputs.values }} \
             ${{ inputs.params }} .
 
