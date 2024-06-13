@@ -150,7 +150,7 @@ export class TransactionProfile extends AutomapperProfile {
           mapWithArguments((source, { directory, firstName, lastName }) => {
             if (directory === Directory.IDIR || Directory.SERVICE_ACCOUNT)
               return PPC_FULL_TEXT;
-            else return firstName + ' ' + lastName;
+            else return String(firstName) + ' ' + String(lastName);
           }),
         ),
         forMember(
