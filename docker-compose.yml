@@ -232,6 +232,7 @@ services:
   # Run Caddy alone (and fail!) with: docker compose up caddy --build
   caddy:
     container_name: caddy
+    command: sh -c "cat /etc/caddy/Caddyfile && caddy fmt /etc/caddy/Caddyfile && caddy run --config /etc/caddy/Caddyfile --adapter caddyfile"
     profiles: ["caddy"]
     build: ./frontend
     environment:
@@ -239,7 +240,7 @@ services:
       VITE_KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL}
       VITE_KEYCLOAK_AUDIENCE: ${KEYCLOAK_AUDIENCE}
       VITE_SITEMINDER_LOG_OFF_URL: ${SITEMINDER_LOG_OFF_URL}
-      CADDY_LOG_LEVEL: ${CADDY_LOG_LEVEL}
+      CADDY_LOG_LEVEL: ${CADDY_LOG_LEVEL:-"INFO"}
     ports: ["3005:3000"]
     volumes: ["./frontend/Caddyfile:/etc/caddy/Caddyfile"]
     healthcheck:
