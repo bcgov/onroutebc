@@ -15,7 +15,7 @@ import { getAccessToken } from 'src/common/helper/gov-common-services.helper';
 import { GovCommonServices } from 'src/common/enum/gov-common-services.enum';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Permit } from './entities/permit.entity';
-import { Brackets, In, Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { ApplicationStatus } from '../common/enum/application-status.enum';
 import { PermitIdDto } from '../common/dto/permit-id.dto';
 import * as dayjs from 'dayjs';
@@ -23,8 +23,8 @@ import * as dayjs from 'dayjs';
 @Injectable()
 export class PermitService {
   private readonly logger = new Logger(PermitService.name);
-  private runningIssuePermit: boolean = false;
-  private runningDocGen: boolean = false;
+  private runningIssuePermit = false;
+  private runningDocGen = false;
   constructor(
     private readonly httpService: HttpService,
     @Inject(CACHE_MANAGER)
@@ -59,10 +59,10 @@ export class PermitService {
         const permitDto: PermitIdDto = { ids: permitIds };
         const url =
           process.env.ACCESS_API_URL + `/applications/scheduler/issue`;
-        const response = await this.accessApi(url, permitDto);
+         await this.accessApi(url, permitDto);
       }
     } catch (error) {
-      this.logger.error(`Error in Permit Issuance Job ${error.message}`);
+      this.logger.error(`Error in Permit Issuance Job ${error}`);
       throw new Error('Error in Permit Issuance Job');
     } finally {
       this.runningIssuePermit = false;
@@ -99,17 +99,17 @@ export class PermitService {
         const permitDto: PermitIdDto = { ids: permitIds };
         const url =
           process.env.ACCESS_API_URL + `/applications/scheduler/document`;
-        const response = await this.accessApi(url, permitDto);
+        await this.accessApi(url, permitDto);
       }
     } catch (error) {
-      this.logger.error(`Error in GeneratePermitDocument Job ${error.message}`);
+      this.logger.error(`Error in GeneratePermitDocument Job ${error}`);
       throw new Error('Error in GeneratePermitDocument cron job');
     } finally {
       this.runningDocGen = false;
     }
   }
 
-  async accessApi(url: string, body: PermitIdDto): Promise<any> {
+  async accessApi(url: string, body: PermitIdDto) {
     try {
       const token = await getAccessToken(
         GovCommonServices.ORBC_SERVICE_ACCOUNT,
@@ -124,15 +124,13 @@ export class PermitService {
         },
       };
 
-      const response = await lastValueFrom(
+      await lastValueFrom(
         this.httpService
           .post(url, body, reqConfig)
           .pipe(map((response) => response.data)),
       );
-
-      return response;
     } catch (error) {
-      this.logger.error(`Error in calling ${url}: ${error.message}`);
+      this.logger.error(`Error in calling ${url}: ${error}`);
       throw new InternalServerErrorException('Unable to call Access API.');
     }
   }
@@ -145,7 +143,7 @@ export class PermitService {
     } else {
       this.logger.log('Running IssuePermit Job.');
       this.runningIssuePermit = true;
-      const response = await this.getPermitForIssuance();
+      await this.getPermitForIssuance();
     }
 
     if (this.runningDocGen) {
@@ -153,7 +151,7 @@ export class PermitService {
     } else {
       this.logger.log('Running GeneratePermitDocument Job.');
       this.runningDocGen = true;
-      const response = await this.generateDocument();
+      await this.generateDocument();
     }
   }
 }
