@@ -1,8 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 import { Base } from '../../common/entities/base.entity';
-import { ApplicationStatus } from 'src/modules/common/enum/application-status.enum';
+import { ApplicationStatus } from '../../common/enum/application-status.enum';
+import { PermitTransaction } from './permit-transaction.entity';
 
 @Entity({ name: 'permit.ORBC_PERMIT' })
 export class Permit extends Base {
@@ -26,6 +34,7 @@ export class Permit extends Base {
     nullable: true,
   })
   permitNumber: string;
+
   @AutoMap()
   @ApiProperty({
     example: '1',
@@ -78,6 +87,12 @@ export class Permit extends Base {
     nullable: true,
   })
   permitStatus: ApplicationStatus;
+
+  @OneToMany(
+    () => PermitTransaction,
+    (permitTransaction) => permitTransaction.permit,
+  )
+  public permitTransactions: PermitTransaction[];
 
   @AutoMap()
   @ApiProperty({

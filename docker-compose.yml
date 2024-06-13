@@ -130,6 +130,9 @@ services:
       ACCESS_API_URL: "http://vehicles-api:5000"
       DOPS_URL: "http://dops-api:5001"
       FRONTEND_URL: "http://frontend:3000"
+      ORBC_SERVICE_ACCOUNT_CLIENT_ID: ${ORBC_SERVICE_ACCOUNT_CLIENT_ID}
+      ORBC_SERVICE_ACCOUNT_CLIENT_SECRET: ${ORBC_SERVICE_ACCOUNT_CLIENT_SECRET}
+      KEYCLOAK_SERVICE_ACCOUNT_AUDIENCE: ${KEYCLOAK_SERVICE_ACCOUNT_AUDIENCE}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5001/"]
       interval: 1m30s
@@ -215,6 +218,8 @@ services:
       ACCESS_API_URL: "http://vehicles-api:5000"
       PERMIT_DOCUMENT_GENERATION_LIMIT: ${PERMIT_DOCUMENT_GENERATION_LIMIT}
       PERMIT_ISSUE_LIMIT: ${PERMIT_ISSUE_LIMIT}
+      ISSUE_PERMIT_LIMIT: ${ISSUE_PERMIT_LIMIT}
+      DOC_GEN_LIMIT: ${DOC_GEN_LIMIT}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5050/"]
       interval: 1m30s

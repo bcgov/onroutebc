@@ -6,6 +6,7 @@ import {
   Res,
   Query,
   BadRequestException,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -27,6 +28,8 @@ import { Role } from '../../enum/roles.enum';
 import { CreateGeneratedReportDto } from './dto/request/create-generated-report.dto';
 import { DgenService } from './dgen.service';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
+import { JwtAuthGuard } from 'src/guard/auth.guard';
+import { JwtServiceAccountAuthGuard } from 'src/guard/jwt-sa-auth.guard';
 
 @ApiTags('Document Generator (DGEN)')
 @ApiBadRequestResponse({
@@ -61,6 +64,7 @@ export class DgenController {
     description: 'Required when IDP is not IDIR .',
   })
   @Roles(Role.GENERATE_DOCUMENT)
+  @UseGuards(JwtAuthGuard,JwtServiceAccountAuthGuard)
   @Post('/template/render')
   async generate(
     @Req() request: Request,

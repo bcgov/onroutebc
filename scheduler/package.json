@@ -63,6 +63,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "crypto-js": "^4.2.0",
+    "dayjs": "^1.11.11",
     "dotenv": "^16.4.5",
     "jwks-rsa": "^3.1.0",
     "mssql": "^10.0.2",
