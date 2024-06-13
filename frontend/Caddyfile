@@ -25,7 +25,7 @@
               "VITE_KEYCLOAK_AUDIENCE": "{$KEYCLOAK_AUDIENCE}",
               "VITE_SITEMINDER_LOG_OFF_URL": "{$SITEMINDER_LOG_OFF_URL}",
               "VITE_FRONTEND_BUILD_NUM": "{$FRONTEND_BUILD_NUM}",
-          }'
+          };'
   }
   root * /srv
   encode zstd gzip
