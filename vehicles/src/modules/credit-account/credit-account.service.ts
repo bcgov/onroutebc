@@ -24,14 +24,14 @@ import { callDatabaseSequence } from '../../common/helper/database.helper';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { Company } from '../company-user-management/company/entities/company.entity';
 import { cfsPostRequest } from './cfs-integration/api-helper';
-import { CreateAccountRequestDto } from './cfs-integration/request/create-account-request.dto';
-import { CreatePartyRequestDto } from './cfs-integration/request/create-party-request.dto';
-import { CreateSiteContactRequestDto } from './cfs-integration/request/create-site-contact-request.dto';
-import { CreateSiteRequestDto } from './cfs-integration/request/create-site-request.dto';
-import { CreateAccountResponseDto } from './cfs-integration/response/create-account-response.dto';
-import { CreatePartyResponseDto } from './cfs-integration/response/create-party-response.dto';
-import { CreateSiteContactResponseDto } from './cfs-integration/response/create-site-contact-response.dto';
-import { CreateSiteResponseDto } from './cfs-integration/response/create-site-response.dto';
+import { CreateAccountRequestDto } from './cfs-integration/request/create-account.request.dto';
+import { CreatePartyRequestDto } from './cfs-integration/request/create-party.request.dto';
+import { CreateSiteContactRequestDto } from './cfs-integration/request/create-site-contact.request.dto';
+import { CreateSiteRequestDto } from './cfs-integration/request/create-site.request.dto';
+import { CreateAccountResponseDto } from './cfs-integration/response/create-account.response.dto';
+import { CreatePartyResponseDto } from './cfs-integration/response/create-party.response.dto';
+import { CreateSiteContactResponseDto } from './cfs-integration/response/create-site-contact.response.dto';
+import { CreateSiteResponseDto } from './cfs-integration/response/create-site.response.dto';
 import { CreditAccountUser } from './entities/credit-account-user.entity';
 import { CreditAccount } from './entities/credit-account.entity';
 
@@ -353,7 +353,7 @@ export class CreditAccountService {
   private async validateCreateCreditAccount(companyId: number): Promise<void> {
     const companyIsAlreadyAUser = await this.creditAccountUserRepository.exists(
       {
-        where: { company: { companyId } },
+        where: { company: { companyId }, isActive: true },
       },
     );
     if (companyIsAlreadyAUser) {
@@ -364,7 +364,11 @@ export class CreditAccountService {
 
     const companyAlreadyHasCreditAccount =
       await this.creditAccountRepository.exists({
-        where: { company: { companyId } },
+        where: {
+          company: { companyId },
+          // What to do if there's a credit account not in ACTIVE status?
+          // creditAccountStatusType: In([CreditAccountStatusType.ACCOUNT_ACTIVE, ]),
+        },
       });
     if (companyAlreadyHasCreditAccount) {
       throw new BadRequestException('Company already has a credit account.');

@@ -2,7 +2,11 @@ import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { ReadCreditAccountUserDto } from './read-credit-account-user.dto';
 import { CreditAccountStatusType } from '../../../../common/enum/credit-account-status-type.enum';
-import { CreditAccountLimitType } from '../../../../common/enum/credit-account-limit.enum';
+import {
+  CreditAccountLimit,
+  CreditAccountLimitType,
+} from '../../../../common/enum/credit-account-limit.enum';
+import { CreditAccountUserType } from '../../../../common/enum/credit-accounts.enum';
 
 export class ReadCreditAccountDto {
   @AutoMap()
@@ -15,49 +19,55 @@ export class ReadCreditAccountDto {
   @AutoMap()
   @ApiProperty({
     description: 'The credit account id.',
-    example: 74,
+    example: 62,
   })
   creditAccountId: number;
 
   @AutoMap()
   @ApiProperty({
     description: 'The credit limit of the account.',
-    example: 74,
+    example: CreditAccountLimit[10000],
   })
   creditLimit: CreditAccountLimitType;
 
   @AutoMap()
   @ApiProperty({
     description: 'The credit balance of the account.',
-    example: 74,
+    example: 1200,
   })
   creditBalance: number;
 
   @AutoMap()
   @ApiProperty({
     description: 'The available credit of the account.',
-    example: 74,
+    example: 800,
   })
   availableCredit: number;
 
   @AutoMap()
   @ApiProperty({
     description: 'The credit account number.',
-    example: 74,
+    example: 'WS5667',
   })
   creditAccountNumber: string;
 
   @AutoMap()
   @ApiProperty({
     description: 'The collection of companies using this credit account.',
-    example: 74,
+    example: [
+      {
+        companyId: 123,
+        clientNumber: '1234',
+        userType: CreditAccountUserType.ACCOUNT_OWNER,
+      },
+    ],
   })
   creditAccountUsers: ReadCreditAccountUserDto[];
 
   @AutoMap()
   @ApiProperty({
     description: 'The status of the credit account.',
-    example: 74,
+    example: CreditAccountStatusType.ACCOUNT_ACTIVE,
   })
   creditAccountStatus: CreditAccountStatusType;
 }
