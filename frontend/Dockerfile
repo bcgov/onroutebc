@@ -34,7 +34,7 @@ RUN caddy fmt --overwrite /etc/caddy/Caddyfile
 EXPOSE 3000 3001
 
 # Non-root user
-USER node
+USER 1001
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost/:3001/health
