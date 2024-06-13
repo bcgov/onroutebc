@@ -19,7 +19,7 @@ import {
   CreditAccountLimitType,
 } from '../../../common/enum/credit-account-limit.enum';
 
-@Entity({ name: 'ORBC_CREDIT_ACCOUNT' })
+@Entity({ name: 'permit.ORBC_CREDIT_ACCOUNT' })
 export class CreditAccount extends Base {
   /**
    * An auto-generated unique identifier for the credit account.
