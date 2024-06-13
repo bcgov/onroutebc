@@ -53,7 +53,8 @@ export class CreditAccountController {
     @Body() { creditLimit }: CreateCreditAccountDto,
   ): Promise<string> {
     return await this.creditAccountService.create(request.user as IUserJWT, {
-      companyId, creditLimit
+      companyId,
+      creditLimit,
     });
   }
 

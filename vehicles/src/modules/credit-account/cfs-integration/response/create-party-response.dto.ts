@@ -4,5 +4,5 @@ export interface CreatePartyResponseDto {
   party_number: string;
   business_number: Nullable<string>;
   customer_name: string;
-  links: Array<{ rel: string; href: string }>;
+  links: { rel: string; href: string }[];
 }

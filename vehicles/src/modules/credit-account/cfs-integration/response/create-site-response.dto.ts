@@ -18,5 +18,5 @@ export interface CreateSiteResponseDto {
   customer_profile_class: 'CAS_IND_DEFAULT';
   receipt_method: null;
   provider: 'Transportation and Infrastructure';
-  links: Array<{ rel: string; href: string }>;
+  links: { rel: string; href: string }[];
 }

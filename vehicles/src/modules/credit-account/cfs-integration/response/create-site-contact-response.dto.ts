@@ -12,5 +12,5 @@ export interface CreateSiteContactResponseDto {
   phone_number: string;
   email_address: string;
   provider: 'Transportation and Infrastructure';
-  links: Array<{ rel: string; href: string }>;
+  links: { rel: string; href: string }[];
 }

@@ -23,11 +23,11 @@ export async function cfsPostRequest<RequestBody, ResponseBody>(
     any,
     AxiosResponse<ResponseBody>,
     RequestBody
-  >(url, data as RequestBody, {
+  >(url, data, {
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
   });
-  return response as AxiosResponse<ResponseBody, any>;
+  return response;
 }

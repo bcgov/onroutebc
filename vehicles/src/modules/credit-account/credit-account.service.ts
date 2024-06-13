@@ -96,7 +96,7 @@ export class CreditAccountService {
     const siteCreated = Boolean(sitesResponse);
 
     let cfsSiteNumber: number;
-    let siteContactCreated: boolean = false;
+    let siteContactCreated = false;
 
     // Only if site was created in step 3, step 4 can execute.
     if (siteCreated) {
@@ -371,7 +371,6 @@ export class CreditAccountService {
     }
   }
 
-  
   private async processCFSPostRequest<Request, Response>({
     url,
     data,
