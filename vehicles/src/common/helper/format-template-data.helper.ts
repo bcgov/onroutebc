@@ -87,8 +87,9 @@ export const formatTemplateData = (
   template.companyAlternateName = companyInfo.alternateName;
 
   // Format Fee Summary
-  template.permitData.feeSummary =
-    template.permitData.permitDuration.toString(); // TODO: get from frontend
+  template.permitData.feeSummary = permit.permitTransactions
+    ?.at(0)
+    ?.transactionAmount.toString();
 
   revisionHistory?.forEach((revision) => {
     if (
