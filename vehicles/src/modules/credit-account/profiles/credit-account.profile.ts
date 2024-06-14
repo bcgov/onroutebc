@@ -50,13 +50,13 @@ export class CreditAccountProfile extends AutomapperProfile {
           (d) => d.creditBalance,
           mapWithArguments((_s, { creditBalance }) => creditBalance as number),
         ),
-        forMember(
-          (d) => d.creditAccountUsers,
-          mapWithArguments(
-            (_s, { creditAccountUsers }) =>
-              creditAccountUsers as ReadCreditAccountUserDto[],
-          ),
-        ),
+        // forMember(
+        //   (d) => d.creditAccountUsers,
+        //   mapWithArguments(
+        //     (_s, { creditAccountUsers }) =>
+        //       creditAccountUsers as ReadCreditAccountUserDto[],
+        //   ),
+        // ),
       );
       createMap(
         mapper,

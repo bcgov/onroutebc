@@ -141,6 +141,7 @@ export class CreditAccountService {
           ? CreditAccountType.PREPAID
           : CreditAccountType.SECURED,
       creditAccountNumber,
+      creditAccountUsers: [],
       createdUser: currentUser.userName,
       createdDateTime: new Date(),
       createdUserDirectory: currentUser.orbcUserDirectory,
@@ -150,7 +151,13 @@ export class CreditAccountService {
       updatedUserDirectory: currentUser.orbcUserDirectory,
       updatedUserGuid: currentUser.userGUID,
     });
-    return this.classMapper.mapAsync(
+    const creditAccountHolder = await this.classMapper.mapAsync(
+      companyInfo,
+      Company,
+      ReadCreditAccountUserDto,
+    );
+    
+    const createdCreditAccountDto =  await this.classMapper.mapAsync(
       savedCreditAccount,
       CreditAccount,
       ReadCreditAccountDto,
@@ -161,10 +168,13 @@ export class CreditAccountService {
           creditBalance: 0,
           availableCredit: creditLimit,
           creditLimit,
-          creditAccountUsers: [],
         }),
       },
     );
+    console.log('createdCreditAccountDto::', createdCreditAccountDto);
+    createdCreditAccountDto.creditAccountUsers = [];
+    createdCreditAccountDto.creditAccountUsers.push(creditAccountHolder);
+    return createdCreditAccountDto;
   }
 
   @LogAsyncMethodExecution()
