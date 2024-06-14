@@ -14,7 +14,7 @@
 		}
 		level {$CADDY_LOG_LEVEL}
 	}
-	handle /srv/config.js {
+	handle /static/js/config.js {
 		header {
 			Content-Type text/javascript
 		}
