@@ -27,7 +27,7 @@ import { DeleteDto } from '../common/dto/response/delete.dto';
 import { CreditAccountService } from './credit-account.service';
 import { CreateCreditAccountUserDto } from './dto/request/create-credit-account-user.dto';
 import { DeleteCreditAccountUserDto } from './dto/request/delete-credit-account-user.dto';
-import { creditAccountIdPathParamDto } from './dto/request/pathParam/creditAccountUsers.path-params.dto';
+import { CreditAccountIdPathParamDto } from './dto/request/pathParam/creditAccountUsers.path-params.dto';
 import { GetCreditAccountUserQueryParamsDto } from './dto/request/queryParam/getCreditAccountUser.query-params.dto';
 import { ReadCreditAccountUserDto } from './dto/response/read-credit-account-user.dto';
 
@@ -68,7 +68,7 @@ export class CreditAccountUserController {
   @Roles(Role.WRITE_CREDIT_ACCOUNT)
   async addOrActivateCreditAccountUser(
     @Req() request: Request,
-    @Param() { companyId, creditAccountId }: creditAccountIdPathParamDto,
+    @Param() { companyId, creditAccountId }: CreditAccountIdPathParamDto,
     @Body() createCreditAccountUserDto: CreateCreditAccountUserDto,
   ): Promise<ReadCreditAccountUserDto> {
     const currentUser = request.user as IUserJWT;
@@ -101,7 +101,7 @@ export class CreditAccountUserController {
   @Roles(Role.WRITE_CREDIT_ACCOUNT)
   async deactivateCreditAccountUser(
     @Req() request: Request,
-    @Param() { companyId, creditAccountId }: creditAccountIdPathParamDto,
+    @Param() { companyId, creditAccountId }: CreditAccountIdPathParamDto,
     @Body() deleteCreditAccountUserDto: DeleteCreditAccountUserDto,
   ): Promise<DeleteDto> {
     const currentUser = request.user as IUserJWT;
@@ -132,7 +132,7 @@ export class CreditAccountUserController {
   @Get()
   @Roles(Role.READ_CREDIT_ACCOUNT)
   async getCreditAccountUsers(
-    @Param() { companyId, creditAccountId }: creditAccountIdPathParamDto,
+    @Param() { companyId, creditAccountId }: CreditAccountIdPathParamDto,
     @Query() { includeAccountHolder }: GetCreditAccountUserQueryParamsDto,
   ): Promise<ReadCreditAccountUserDto[]> {
     return await this.creditAccountService.getCreditAccountUsers(

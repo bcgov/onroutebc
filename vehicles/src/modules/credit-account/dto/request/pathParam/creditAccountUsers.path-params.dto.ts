@@ -3,7 +3,7 @@ import { IsInt, IsPositive } from 'class-validator';
 import { CompanyIdPathParamDto } from '../../../../common/dto/request/pathParam/companyId.path-param.dto';
 import { Type } from 'class-transformer';
 
-export class creditAccountIdPathParamDto extends CompanyIdPathParamDto {
+export class CreditAccountIdPathParamDto extends CompanyIdPathParamDto {
   @ApiProperty({
     example: 12345,
     description:
