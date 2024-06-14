@@ -10,7 +10,6 @@ export class CreateCreditAccountDto {
   @AutoMap()
   @ApiProperty({
     description: 'The credit limit',
-    type: String,
     example: '10000',
     enum: CreditAccountLimit,
   })
