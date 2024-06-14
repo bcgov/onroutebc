@@ -4,9 +4,7 @@ import { CreditAccountStatusType } from '../enum/credit-account-status-type.enum
 export const isActiveCreditAccount = (creditAccount: CreditAccount) => {
   return (
     creditAccount?.creditAccountStatusType ===
-      CreditAccountStatusType.ACCOUNT_ACTIVE ||
-    creditAccount?.creditAccountStatusType ===
-      CreditAccountStatusType.ACCOUNT_SETUP
+      CreditAccountStatusType.ACCOUNT_ACTIVE
   );
 };
 
