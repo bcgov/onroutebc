@@ -1,23 +1,19 @@
 import {
-  Entity,
   Column,
+  Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
-  OneToMany,
 } from 'typeorm';
 
 import { AutoMap } from '@automapper/classes';
-import { Base } from '../../common/entities/base.entity';
-import { Company } from '../../company-user-management/company/entities/company.entity';
 import { CreditAccountStatusType } from '../../../common/enum/credit-account-status-type.enum';
 import { CreditAccountType } from '../../../common/enum/credit-account-type.enum';
+import { Base } from '../../common/entities/base.entity';
+import { Company } from '../../company-user-management/company/entities/company.entity';
 import { CreditAccountActivity } from './credit-account-activity.entity';
 import { CreditAccountUser } from './credit-account-user.entity';
-import {
-  CreditAccountLimit,
-  CreditAccountLimitType,
-} from '../../../common/enum/credit-account-limit.enum';
 
 @Entity({ name: 'permit.ORBC_CREDIT_ACCOUNT' })
 export class CreditAccount extends Base {
@@ -49,20 +45,6 @@ export class CreditAccount extends Base {
     nullable: false,
   })
   creditAccountStatusType: CreditAccountStatusType;
-
-  /**
-   * A property that specifies the status type of a credit account,
-   * represented as an enumeration.
-   */
-  @AutoMap()
-  @Column({
-    type: 'simple-enum',
-    enum: CreditAccountLimit,
-    length: 10,
-    name: 'CREDIT_ACCOUNT_LIMIT',
-    nullable: false,
-  })
-  creditLimit: CreditAccountLimitType;
 
   /**
    * A property that specifies the type of a credit account,

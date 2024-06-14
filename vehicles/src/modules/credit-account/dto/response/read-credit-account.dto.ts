@@ -6,6 +6,7 @@ import {
 } from '../../../../common/enum/credit-account-limit.enum';
 import { CreditAccountStatusType } from '../../../../common/enum/credit-account-status-type.enum';
 import { ReadCreditAccountUserDto } from './read-credit-account-user.dto';
+import { CreditAccountType } from '../../../../common/enum/credit-account-type.enum';
 
 export class ReadCreditAccountDto {
   @AutoMap()
@@ -21,6 +22,14 @@ export class ReadCreditAccountDto {
     example: 62,
   })
   creditAccountId: number;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'The credit account id.',
+    example: CreditAccountType.PREPAID,
+    enum: CreditAccountType,
+  })
+  creditAccountType: CreditAccountType;
 
   @AutoMap()
   @ApiProperty({
@@ -61,5 +70,5 @@ export class ReadCreditAccountDto {
     description: 'The status of the credit account.',
     example: CreditAccountStatusType.ACCOUNT_ACTIVE,
   })
-  creditAccountStatus: CreditAccountStatusType;
+  creditAccountStatusType: CreditAccountStatusType;
 }

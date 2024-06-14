@@ -4,10 +4,9 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
-  Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import {
   CreditAccountLimit,
@@ -25,6 +24,7 @@ import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { Nullable } from '../../common/types/common';
 import { CFSCreditAccountService } from '../common/cfsCreditAccountService';
 import { DeleteDto } from '../common/dto/response/delete.dto';
+import { CompanyService } from '../company-user-management/company/company.service';
 import { Company } from '../company-user-management/company/entities/company.entity';
 import { CreateCreditAccountUserDto } from './dto/request/create-credit-account-user.dto';
 import { DeleteCreditAccountUserDto } from './dto/request/delete-credit-account-user.dto';
@@ -35,15 +35,14 @@ import { CreditAccount } from './entities/credit-account.entity';
 
 @Injectable()
 export class CreditAccountService {
-  private readonly logger = new Logger(CreditAccountService.name);
   constructor(
-    private dataSource: DataSource,
     @InjectMapper() private readonly classMapper: Mapper,
     @InjectRepository(CreditAccount)
     private readonly creditAccountRepository: Repository<CreditAccount>,
     @InjectRepository(CreditAccountUser)
     private readonly creditAccountUserRepository: Repository<CreditAccountUser>,
     private readonly cfsCreditAccountService: CFSCreditAccountService,
+    private readonly companyService: CompanyService,
   ) {}
 
   @LogAsyncMethodExecution()
@@ -55,19 +54,8 @@ export class CreditAccountService {
     }: { companyId: number; creditLimit: CreditAccountLimitType },
   ) {
     await this.validateCreateCreditAccount(companyId);
-
-    const companyInfo = await this.dataSource
-      .createQueryBuilder()
-      .select(['company'])
-      .leftJoinAndSelect('company.mailingAddress', 'mailingAddress')
-      .leftJoinAndSelect('company.primaryContact', 'primaryContact')
-      .leftJoinAndSelect('mailingAddress.province', 'province')
-      .leftJoinAndSelect('province.country', 'country')
-      .from(Company, 'company')
-      .where('company.companyId = :companyId', {
-        companyId,
-      })
-      .getOne();
+    const companyInfo =
+      await this.companyService.findOneCompanyWithAllDetails(companyId);
 
     // 1) Create Party
     const partyResponse = await this.cfsCreditAccountService.createParty({
@@ -132,7 +120,6 @@ export class CreditAccountService {
         siteCreated && siteContactCreated
           ? CreditAccountStatusType.ACCOUNT_ACTIVE
           : CreditAccountStatusType.ACCOUNT_SETUP_FAIL,
-      creditLimit,
       creditAccountType:
         creditLimit === CreditAccountLimit.PREPAID
           ? CreditAccountType.PREPAID
@@ -157,6 +144,8 @@ export class CreditAccountService {
           companyId,
           creditBalance: 0,
           availableCredit: creditLimit,
+          creditLimit,
+          creditAccountUsers: [],
         }),
       },
     );

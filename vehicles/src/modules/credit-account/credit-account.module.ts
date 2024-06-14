@@ -7,6 +7,7 @@ import { CreditAccountUser } from './entities/credit-account-user.entity';
 import { CreditAccount } from './entities/credit-account.entity';
 import { CreditAccountUserController } from './credit-account-user.controller';
 import { CreditAccountProfile } from './profiles/credit-account.profile';
+import { CompanyModule } from '../company-user-management/company/company.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { CreditAccountProfile } from './profiles/credit-account.profile';
       CreditAccountActivity,
       CreditAccountUser,
     ]),
+    CompanyModule,
   ],
   controllers: [CreditAccountController, CreditAccountUserController],
   providers: [CreditAccountService, CreditAccountProfile],

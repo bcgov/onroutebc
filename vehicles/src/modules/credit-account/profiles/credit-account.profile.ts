@@ -14,6 +14,9 @@ import { CreateCreditAccountUserDto } from '../dto/request/create-credit-account
 import { ReadCreditAccountUserDto } from '../dto/response/read-credit-account-user.dto';
 import { Company } from '../../company-user-management/company/entities/company.entity';
 import { CreditAccountUserType } from '../../../common/enum/credit-accounts.enum';
+import { CreditAccount } from '../entities/credit-account.entity';
+import { ReadCreditAccountDto } from '../dto/response/read-credit-account.dto';
+import { CreditAccountLimitType } from '../../../common/enum/credit-account-limit.enum';
 
 @Injectable()
 export class CreditAccountProfile extends AutomapperProfile {
@@ -23,6 +26,38 @@ export class CreditAccountProfile extends AutomapperProfile {
 
   override get profile() {
     return (mapper: Mapper) => {
+      createMap(
+        mapper,
+        CreditAccount,
+        ReadCreditAccountDto,
+        forMember(
+          (d) => d.companyId,
+          mapWithArguments((_s, { companyId }) => companyId as number),
+        ),
+        forMember(
+          (d) => d.availableCredit,
+          mapWithArguments(
+            (_s, { availableCredit }) => availableCredit as number,
+          ),
+        ),
+        forMember(
+          (d) => d.creditLimit,
+          mapWithArguments(
+            (_s, { creditLimit }) => creditLimit as CreditAccountLimitType,
+          ),
+        ),
+        forMember(
+          (d) => d.creditBalance,
+          mapWithArguments((_s, { creditBalance }) => creditBalance as number),
+        ),
+        forMember(
+          (d) => d.creditAccountUsers,
+          mapWithArguments(
+            (_s, { creditAccountUsers }) =>
+              creditAccountUsers as ReadCreditAccountUserDto[],
+          ),
+        ),
+      );
       createMap(
         mapper,
         CreditAccountUser,
