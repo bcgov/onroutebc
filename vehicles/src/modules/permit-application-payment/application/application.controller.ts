@@ -2,7 +2,6 @@ import {
   BadRequestException,
   Body,
   Controller,
-  Param,
   Post,
   Req,
   UseGuards,
@@ -20,11 +19,6 @@ import { ApplicationService } from './application.service';
 import { Request } from 'express';
 import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { ResultDto } from './dto/response/result.dto';
-import { Roles } from 'src/common/decorator/roles.decorator';
-import { Role } from 'src/common/enum/roles.enum';
-import { IssuePermitDto } from './dto/request/issue-permit.dto';
-import { IDIR_USER_AUTH_GROUP_LIST } from 'src/common/enum/user-auth-group.enum';
-import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 import { PermitReceiptDocumentService } from '../permit-receipt-document/permit-receipt-document.service';
 import { JwtServiceAccountAuthGuard } from 'src/common/guard/jwt-sa-auth.guard';
 import { PermitIdDto } from 'src/modules/common/dto/request/permit-id.dto';
@@ -51,67 +45,20 @@ export class ApplicationController {
   ) {}
 
   /**
-   * A POST method defined with the @Post() decorator and a route of /:applicationId/issue
-   * that issues a ermit for given @param applicationId..
+   * A POST method defined with the @Post() decorator and a route of /scheduler/issue
+   * that issues permits for given application ids
+   * This method only works for ORBC Service account.
    * @param request
-   * @param issuePermitDto
+   * @param PermitIdDto
    * @returns The id of new voided/revoked permit a in response object {@link ResultDto}
    *
    */
   @ApiOperation({
     summary: 'Update Permit Application Status to ISSUED for Given Id',
     description:
-      'Update Permit Application status for given id and set it to ISSUED.' +
+      'Update Permit Application status for given ids and set it to ISSUED.' +
       'Returns a list of updated application ids or throws exceptions for unauthorized access or operational failures.',
   })
-  @Roles(Role.WRITE_PERMIT)
-  @Post('/issue')
-  async issuePermit(
-    @Req() request: Request,
-    @Param('companyId') companyId: number,
-    @Body() issuePermitDto: IssuePermitDto,
-  ): Promise<ResultDto> {
-    const currentUser = request.user as IUserJWT;
-
-    if (
-      !doesUserHaveAuthGroup(
-        currentUser.orbcUserAuthGroup,
-        IDIR_USER_AUTH_GROUP_LIST,
-      ) &&
-      !companyId
-    ) {
-      throw new BadRequestException(
-        `Company Id is required for roles except ${IDIR_USER_AUTH_GROUP_LIST.join(', ')}.`,
-      );
-    }
-
-    const result = await this.applicationService.issuePermits(
-      currentUser,
-      issuePermitDto.applicationIds,
-      companyId,
-    );
-
-    if (result?.success?.length) {
-      await Promise.allSettled([
-        this.permitReceiptDocumentService.generatePermitDocuments(
-          currentUser,
-          result.success,
-          companyId,
-        ),
-        this.permitReceiptDocumentService.generateReceiptDocuments(
-          currentUser,
-          result.success,
-          companyId,
-        ),
-      ]);
-    }
-    return result;
-  }
-
-  /**
-   * Get all the payment comlete permits and Issue them.
-   * This method only works for ORBC Service account.
-   */
   @UseGuards(JwtServiceAccountAuthGuard)
   @Post('/scheduler/issue')
   async issuePermitSchedule(
@@ -127,10 +74,19 @@ export class ApplicationController {
   }
 
   /**
-   * Get all the Issued permits for which document and receipt does not exist.
-   * Then generate missing documents.
+   * A POST method defined with the @Post() decorator and a route of /scheduler/document
+   * that generates permit and receipt document for given application ids
    * This method only works for ORBC Service account.
+   * @param request
+   * @param PermitIdDto
+   * @returns The ids of new voided/revoked permit a in response object {@link string}
+   *
    */
+  @ApiOperation({
+    summary: 'Generate permit and receipt document for given application ids',
+    description:
+      'Generate permit and receipt document for given application ids',
+  })
   @UseGuards(JwtServiceAccountAuthGuard)
   @Post('/scheduler/document')
   async generateDocument(@Req() request: Request, @Body() permit: PermitIdDto) {

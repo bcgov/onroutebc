@@ -19,6 +19,10 @@ import { Brackets, Repository } from 'typeorm';
 import { ApplicationStatus } from '../common/enum/application-status.enum';
 import { PermitIdDto } from '../common/dto/permit-id.dto';
 import * as dayjs from 'dayjs';
+import {
+  DOC_GEN_WAIT_DURATION,
+  ISSUE_PERMIT_WAIT_DURATION,
+} from 'src/common/constants/permit.constant';
 
 @Injectable()
 export class PermitService {
@@ -43,7 +47,9 @@ export class PermitService {
   async getPermitForIssuance() {
     try {
       const now = new Date();
-      const date = dayjs(now).subtract(1, 'minute').toDate();
+      const date = dayjs(now)
+        .subtract(ISSUE_PERMIT_WAIT_DURATION, 'minute')
+        .toDate();
       const count = Number(process.env.ISSUE_PERMIT_LIMIT);
       const permits: Permit[] = await this.permitRepository
         .createQueryBuilder('permit')
@@ -73,7 +79,9 @@ export class PermitService {
   async generateDocument() {
     try {
       const now = new Date();
-      const date = dayjs(now).subtract(30, 'minute').toDate();
+      const date = dayjs(now)
+        .subtract(DOC_GEN_WAIT_DURATION, 'minute')
+        .toDate();
       const count = Number(process.env.DOC_GEN_LIMIT);
       const permits: Permit[] = await this.permitRepository
         .createQueryBuilder('permit')
