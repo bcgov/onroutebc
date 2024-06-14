@@ -81,19 +81,24 @@ export class ApplicationController {
       'Generate permit and receipt document for given application ids',
   })
   @UseGuards(JwtServiceAccountAuthGuard)
-  @Post('/scheduler/document')
+  @Post('/documents')
   async generateDocument(@Req() request: Request, @Body() permit: PermitIdDto) {
     const currentUser = request.user as IUserJWT;
-    await Promise.allSettled([
-      this.permitReceiptDocumentService.generatePermitDocuments(
-        currentUser,
-        permit.ids,
-      ),
-      this.permitReceiptDocumentService.generateReceiptDocuments(
-        currentUser,
-        permit.ids,
-      ),
-    ]);
+    await this.permitReceiptDocumentService.generatePermitDocuments(
+      currentUser,
+      permit.ids,
+    );
+    return 'success';
+  }
+
+  @UseGuards(JwtServiceAccountAuthGuard)
+  @Post('/receipts')
+  async generateReceipt(@Req() request: Request, @Body() permit: PermitIdDto) {
+    const currentUser = request.user as IUserJWT;
+    await this.permitReceiptDocumentService.generateReceiptDocuments(
+      currentUser,
+      permit.ids,
+    );
     return 'success';
   }
 }

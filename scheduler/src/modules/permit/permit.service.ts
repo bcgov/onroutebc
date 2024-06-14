@@ -29,6 +29,7 @@ export class PermitService {
   private readonly logger = new Logger(PermitService.name);
   private runningIssuePermit = false;
   private runningDocGen = false;
+  private runningReceiptGen = false;
   constructor(
     private readonly httpService: HttpService,
     @Inject(CACHE_MANAGER)
@@ -85,19 +86,10 @@ export class PermitService {
       const count = Number(process.env.DOC_GEN_LIMIT);
       const permits: Permit[] = await this.permitRepository
         .createQueryBuilder('permit')
-        .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
-        .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
-        .innerJoinAndSelect('transaction.receipt', 'receipt')
         .where('permit.permitStatus = :permitStatus', {
           permitStatus: ApplicationStatus.ISSUED,
         })
-        .andWhere(
-          new Brackets((qb) => {
-            qb.where('permit.documentId IS NULL').orWhere(
-              'receipt.receiptDocumentId IS NULL',
-            );
-          }),
-        )
+        .andWhere('permit.documentId IS NULL')
         .andWhere('permit.updatedDateTime < :date', { date: date })
         .take(count)
         .getMany();
@@ -105,8 +97,7 @@ export class PermitService {
       this.logger.log('permit IDS ', permitIds);
       if (permitIds.length) {
         const permitDto: PermitIdDto = { ids: permitIds };
-        const url =
-          process.env.ACCESS_API_URL + `/applications/scheduler/document`;
+        const url = process.env.ACCESS_API_URL + `/applications/documents`;
         await this.accessApi(url, permitDto);
       }
     } catch (error) {
@@ -114,6 +105,43 @@ export class PermitService {
       throw new Error('Error in GeneratePermitDocument cron job');
     } finally {
       this.runningDocGen = false;
+    }
+  }
+
+  @LogAsyncMethodExecution()
+  async generateReceipt() {
+    try {
+      const now = new Date();
+      const date = dayjs(now)
+        .subtract(DOC_GEN_WAIT_DURATION, 'minute')
+        .toDate();
+      const count = Number(process.env.DOC_GEN_LIMIT);
+      const permits: Permit[] = await this.permitRepository
+        .createQueryBuilder('permit')
+        .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
+        .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
+        .innerJoinAndSelect('transaction.receipt', 'receipt')
+        .where('permit.permitStatus = :permitStatus', {
+          permitStatus: ApplicationStatus.ISSUED,
+        })
+        .andWhere('receipt.receiptDocumentId IS NULL')
+        .andWhere('permit.updatedDateTime < :date', { date: date })
+        .groupBy('transaction.transactionId')
+        .take(count)
+        .getMany();
+      console.log('permits:: ', permits);
+      const permitIds: string[] = permits.map((permit) => permit.permitId);
+      this.logger.log('permit IDS ', permitIds);
+      if (permitIds.length) {
+        const permitDto: PermitIdDto = { ids: permitIds };
+        const url = process.env.ACCESS_API_URL + `/applications/documents`;
+        await this.accessApi(url, permitDto);
+      }
+    } catch (error) {
+      this.logger.error(`Error in GeneratePermitDocument Job ${error}`);
+      throw new Error('Error in GeneratePermitDocument cron job');
+    } finally {
+      this.runningReceiptGen = false;
     }
   }
 
@@ -161,6 +189,14 @@ export class PermitService {
     } else {
       this.logger.log('Running GeneratePermitDocument Job.');
       this.runningDocGen = true;
+      await this.generateDocument();
+    }
+
+    if (this.runningReceiptGen) {
+      this.logger.log('GenerateReceipt job is running already.');
+    } else {
+      this.logger.log('Running GenerateReceipt Job.');
+      this.runningReceiptGen = true;
       await this.generateDocument();
     }
   }
