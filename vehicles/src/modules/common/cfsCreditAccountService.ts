@@ -3,10 +3,8 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
 import { Cache } from 'cache-manager';
-import { DataSource } from 'typeorm';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import { GovCommonServices } from '../../common/enum/gov-common-services.enum';
-import { callDatabaseSequence } from '../../common/helper/database.helper';
 import { getAccessToken } from '../../common/helper/gov-common-services.helper';
 import { Company } from '../company-user-management/company/entities/company.entity';
 import { CreateAccountRequestDto } from '../credit-account/cfs-integration/request/create-account.request.dto';
@@ -23,19 +21,10 @@ import { Address } from './entities/address.entity';
 export class CFSCreditAccountService {
   private readonly logger = new Logger(CFSCreditAccountService.name);
   constructor(
-    private dataSource: DataSource,
     private readonly httpService: HttpService,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
   ) {}
-
-  private async getPaddedCreditAccountNumber(): Promise<string> {
-    const rawCreditAccountSequenceNumber = await callDatabaseSequence(
-      'permit.ORBC_CREDIT_ACCOUNT_NUMBER_SEQ',
-      this.dataSource,
-    );
-    return rawCreditAccountSequenceNumber.padStart(4, '0');
-  }
 
   private static isSuccess(status: number) {
     return (
@@ -73,13 +62,12 @@ export class CFSCreditAccountService {
   public async createAccount({
     url,
     clientNumber,
+    creditAccountNumber,
   }: {
     url: string;
     clientNumber: string;
+    creditAccountNumber: string;
   }) {
-    const paddedCreditAccountSequenceNumber =
-      await this.getPaddedCreditAccountNumber();
-    const creditAccountNumber = `WS${paddedCreditAccountSequenceNumber}`;
     const { status, data } = await this.cfsPostRequest<
       CreateAccountRequestDto,
       CreateAccountResponseDto

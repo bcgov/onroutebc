@@ -4,9 +4,10 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import {
   CreditAccountLimit,
@@ -32,11 +33,14 @@ import { ReadCreditAccountUserDto } from './dto/response/read-credit-account-use
 import { ReadCreditAccountDto } from './dto/response/read-credit-account.dto';
 import { CreditAccountUser } from './entities/credit-account-user.entity';
 import { CreditAccount } from './entities/credit-account.entity';
+import { callDatabaseSequence } from '../../common/helper/database.helper';
 
 @Injectable()
 export class CreditAccountService {
+  private readonly logger = new Logger(CreditAccountService.name);
   constructor(
     @InjectMapper() private readonly classMapper: Mapper,
+    private dataSource: DataSource,
     @InjectRepository(CreditAccount)
     private readonly creditAccountRepository: Repository<CreditAccount>,
     @InjectRepository(CreditAccountUser)
@@ -57,15 +61,22 @@ export class CreditAccountService {
     const companyInfo =
       await this.companyService.findOneCompanyWithAllDetails(companyId);
 
+    /**
+     * There are 4 steps in credit account creation in the CFS system
+     * 1. Create Party
+     * 2. Create Account
+     * 3. Create Site
+     * 4. Create Site Contact
+     */
+
     // 1) Create Party
     const partyResponse = await this.cfsCreditAccountService.createParty({
       url: `${process.env.CREDIT_ACCOUNT_URL}/cfs/parties/`,
       clientNumber: companyInfo.clientNumber,
     });
     if (!partyResponse) {
-      throw new InternalServerErrorException(
-        'Unable to create a party for the company.',
-      );
+      this.logger.error('Unable to create a party for the company.');
+      throw new InternalServerErrorException();
     }
     const { party_number: cfsPartyNumber, links: partiesLinks } = partyResponse;
     const { href: accountsURL } = partiesLinks.find(
@@ -73,48 +84,53 @@ export class CreditAccountService {
     );
 
     // 2) Create Account for the Party created in step 1.
-    const {
-      account_number: creditAccountNumber,
-      links: accountsResponseLinks,
-    } = await this.cfsCreditAccountService.createAccount({
+    const creditAccountNumber = await this.getCreditAccountNumber();
+    const accountResponse = await this.cfsCreditAccountService.createAccount({
       url: accountsURL,
       clientNumber: companyInfo.clientNumber,
+      creditAccountNumber,
     });
+    const accountCreated = Boolean(accountResponse);
 
-    // 3) Create Site for the Party and Account created in steps 1 and 2.
-    const { href: sitesURL } = accountsResponseLinks.find(
-      ({ rel }) => rel === 'sites',
-    );
-    const sitesResponse = await this.cfsCreditAccountService.createSite({
-      url: sitesURL,
-      mailingAddress: companyInfo.mailingAddress,
-    });
-    const siteCreated = Boolean(sitesResponse);
-
+    let siteCreated: boolean;
     let cfsSiteNumber: number;
-    let siteContactCreated = false;
+    let siteContactCreated: boolean;
+    // Only if step 2 succeeded, we can move on to step 3 and 4.
+    if (accountCreated) {
+      const { links: accountsResponseLinks } = accountResponse;
 
-    // Only if site was created in step 3, step 4 can execute.
-    if (siteCreated) {
-      const { site_number, links: sitesResponseLinks } = sitesResponse;
-      cfsSiteNumber = +site_number;
+      // 3) Create Site for the Party and Account created in steps 1 and 2.
+      const { href: sitesURL } = accountsResponseLinks.find(
+        ({ rel }) => rel === 'sites',
+      );
+      const sitesResponse = await this.cfsCreditAccountService.createSite({
+        url: sitesURL,
+        mailingAddress: companyInfo.mailingAddress,
+      });
+      siteCreated = Boolean(sitesResponse);
 
-      // 4) Create Site Contact for the site created in step 3.
-      const { href: siteContactURL } = sitesResponseLinks.find(
-        ({ rel }) => rel === 'contacts',
-      );
-      siteContactCreated = await this.cfsCreditAccountService.createSiteContact(
-        {
-          url: siteContactURL,
-          companyInfo,
-        },
-      );
+      // Only if site was created in step 3, step 4 can execute.
+      if (siteCreated) {
+        const { site_number, links: sitesResponseLinks } = sitesResponse;
+        cfsSiteNumber = +site_number;
+
+        // 4) Create Site Contact for the site created in step 3.
+        const { href: siteContactURL } = sitesResponseLinks.find(
+          ({ rel }) => rel === 'contacts',
+        );
+        siteContactCreated =
+          await this.cfsCreditAccountService.createSiteContact({
+            url: siteContactURL,
+            companyInfo,
+          });
+      }
+    } else {
+      this.logger.error('Account not created for the company.');
     }
 
     const savedCreditAccount = await this.creditAccountRepository.save({
       company: { companyId },
       cfsPartyNumber: +cfsPartyNumber,
-      // cfsSiteNumber: cfsSiteNumber ?? null,
       cfsSiteNumber,
       creditAccountStatusType:
         siteCreated && siteContactCreated
@@ -184,6 +200,14 @@ export class CreditAccountService {
       { companyId, statusToUpdateTo: CreditAccountStatusType.ACCOUNT_ON_HOLD },
       currentUser,
     );
+  }
+
+  private async getCreditAccountNumber(): Promise<string> {
+    const rawCreditAccountSequenceNumber = await callDatabaseSequence(
+      'permit.ORBC_CREDIT_ACCOUNT_NUMBER_SEQ',
+      this.dataSource,
+    );
+    return `WS${rawCreditAccountSequenceNumber.padStart(4, '0')}`;
   }
 
   private async updateCreditAccountStatus(
