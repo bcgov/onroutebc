@@ -87,6 +87,7 @@ export class DgenController {
   }
 
   @Roles(Role.GENERATE_REPORT)
+  @UseGuards(JwtAuthGuard,JwtServiceAccountAuthGuard)
   @Post('/report/render')
   async generateReport(
     @Req() request: Request,
