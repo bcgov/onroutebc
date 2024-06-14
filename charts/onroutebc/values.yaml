@@ -32,13 +32,14 @@ frontend:
     enabled: true
     data:
       ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
+      FRONTEND_BUILD_NUM: "{{.Values.global.pr_num}}"
   containers:
     - name: frontend
       command:
         - "sh"
         - "-c"
           #- "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && cat /etc/caddy/Caddyfile && caddy fmt /etc/caddy/Caddyfile && caddy run"
-        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && caddy run --config /etc/caddy/Caddyfile --adapter caddyfile"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && printenv | sort | grep KEYCLOAK && cat /proc/1/environ | sort | grep KEYCLOAK && cat /etc/caddy/Caddyfile && caddy fmt /etc/caddy/Caddyfile && caddy run --config /etc/caddy/Caddyfile --adapter caddyfile"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: frontend
@@ -47,9 +48,9 @@ frontend:
         fromLocalConfigmap: 
           - name: ACCESS_API_URL
             key: ACCESS_API_URL
-        fromValues:
           - name: FRONTEND_BUILD_NUM
-            value: '{{.Values.global.pr_num}}'
+            key: FRONTEND_BUILD_NUM 
+        fromValues:
           - name: CADDY_LOG_LEVEL
             value: '"INFO"'
           - name: DEPLOY_ENVIRONMENT
