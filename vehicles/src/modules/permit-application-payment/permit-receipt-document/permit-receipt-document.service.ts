@@ -451,8 +451,7 @@ export class PermitReceiptDocumentService {
                 companyAlternateName: companyAlternateName,
                 permitData: permitData,
                 //Payer Name should be persisted in transacation Table so that it can be used for DocRegen
-                payerName:
-                  transaction?.payerName,
+                payerName: transaction?.payerName,
                 issuedBy:
                   currentUser.orbcUserDirectory === Directory.IDIR ||
                   currentUser.orbcUserDirectory === Directory.SERVICE_ACCOUNT

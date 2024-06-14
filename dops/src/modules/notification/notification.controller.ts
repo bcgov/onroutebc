@@ -61,7 +61,7 @@ export class NotificationController {
     description:
       'Processes and sends an notification with specified documents as attachments to the given recipient(s), and returns a transaction ID for the operation.',
   })
-  @UseGuards(JwtAuthGuard,JwtServiceAccountAuthGuard)
+  @UseGuards(JwtAuthGuard, JwtServiceAccountAuthGuard)
   @Post('/document')
   @Roles({ allOf: [Role.SEND_NOTIFICATION, Role.READ_DOCUMENT] })
   async notificationWithDocumentsFromDops(

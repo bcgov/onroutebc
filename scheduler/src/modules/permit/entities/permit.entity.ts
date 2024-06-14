@@ -1,10 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  OneToMany,
-} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 import { Base } from '../../common/entities/base.entity';
 import { ApplicationStatus } from '../../common/enum/application-status.enum';

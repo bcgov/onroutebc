@@ -64,7 +64,7 @@ export class DgenController {
     description: 'Required when IDP is not IDIR .',
   })
   @Roles(Role.GENERATE_DOCUMENT)
-  @UseGuards(JwtAuthGuard,JwtServiceAccountAuthGuard)
+  @UseGuards(JwtAuthGuard, JwtServiceAccountAuthGuard)
   @Post('/template/render')
   async generate(
     @Req() request: Request,
@@ -87,7 +87,7 @@ export class DgenController {
   }
 
   @Roles(Role.GENERATE_REPORT)
-  @UseGuards(JwtAuthGuard,JwtServiceAccountAuthGuard)
+  @UseGuards(JwtAuthGuard, JwtServiceAccountAuthGuard)
   @Post('/report/render')
   async generateReport(
     @Req() request: Request,

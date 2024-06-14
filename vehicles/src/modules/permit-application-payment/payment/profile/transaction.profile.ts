@@ -148,7 +148,10 @@ export class TransactionProfile extends AutomapperProfile {
         forMember(
           (transaction) => transaction.payerName,
           mapWithArguments((source, { directory, firstName, lastName }) => {
-            if (directory === Directory.IDIR || directory === Directory.SERVICE_ACCOUNT)
+            if (
+              directory === Directory.IDIR ||
+              directory === Directory.SERVICE_ACCOUNT
+            )
               return PPC_FULL_TEXT;
             else return String(firstName) + ' ' + String(lastName);
           }),

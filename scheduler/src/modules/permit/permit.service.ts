@@ -59,7 +59,7 @@ export class PermitService {
         const permitDto: PermitIdDto = { ids: permitIds };
         const url =
           process.env.ACCESS_API_URL + `/applications/scheduler/issue`;
-         await this.accessApi(url, permitDto);
+        await this.accessApi(url, permitDto);
       }
     } catch (error) {
       this.logger.error(`Error in Permit Issuance Job ${error}`);
