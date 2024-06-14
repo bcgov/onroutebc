@@ -143,7 +143,7 @@ export class PermitService {
     }
   }
 
-  @Cron('0 */1 * * * *', { name: 'GeneratePermitDocument' })
+  @Cron(`${process.env.PERMIT_SCHEDULE_POLLING_INTERVAL || '0 */1 * * * *'}`, { name: 'GeneratePermitDocument' })
   @LogAsyncMethodExecution()
   async runJobs() {
     if (this.runningIssuePermit) {
