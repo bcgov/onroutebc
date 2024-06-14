@@ -50,7 +50,7 @@ frontend:
           - name: FRONTEND_BUILD_NUM
             value: '{{.Values.global.pr_num}}'
           - name: CADDY_LOG_LEVEL
-            value: 'INFO'
+            value: '"INFO"'
           - name: DEPLOY_ENVIRONMENT
             value: '{{.Release.Namespace}}'
       ports:
