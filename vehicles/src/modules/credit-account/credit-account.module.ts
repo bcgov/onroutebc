@@ -8,6 +8,8 @@ import { CreditAccount } from './entities/credit-account.entity';
 import { CreditAccountUserController } from './credit-account-user.controller';
 import { CreditAccountProfile } from './profiles/credit-account.profile';
 import { CompanyModule } from '../company-user-management/company/company.module';
+import { APP_GUARD } from '@nestjs/core';
+import { FeatureFlagGuard } from '../../common/decorator/feature-flag';
 
 @Module({
   imports: [
@@ -19,6 +21,9 @@ import { CompanyModule } from '../company-user-management/company/company.module
     CompanyModule,
   ],
   controllers: [CreditAccountController, CreditAccountUserController],
-  providers: [CreditAccountService, CreditAccountProfile],
+  providers: [CreditAccountService, CreditAccountProfile, {
+    provide: APP_GUARD,
+    useClass: FeatureFlagGuard,
+  },],
 })
 export class CreditAccountModule {}

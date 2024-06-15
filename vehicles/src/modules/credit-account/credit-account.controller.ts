@@ -18,6 +18,7 @@ import { CreditAccountService } from './credit-account.service';
 import { CreateCreditAccountDto } from './dto/request/create-credit-account.dto';
 import { ReadCreditAccountUserDto } from './dto/response/read-credit-account-user.dto';
 import { ReadCreditAccountDto } from './dto/response/read-credit-account.dto';
+import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-enabled.decorator';
 
 @ApiBearerAuth()
 @ApiTags('Credit Accounts')
@@ -30,6 +31,7 @@ import { ReadCreditAccountDto } from './dto/response/read-credit-account.dto';
   type: ExceptionDto,
 })
 @Controller('companies/:companyId/credit-account')
+@IsFeatureFlagEnabled('CREDIT-ACCOUNT')
 export class CreditAccountController {
   constructor(private readonly creditAccountService: CreditAccountService) {}
 
