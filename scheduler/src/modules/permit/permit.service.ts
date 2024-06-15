@@ -23,6 +23,7 @@ import {
   DOC_GEN_WAIT_DURATION,
   ISSUE_PERMIT_WAIT_DURATION,
 } from 'src/common/constants/permit.constant';
+import { transactionDto } from '../common/dto/trasaction.dto';
 
 @Injectable()
 export class PermitService {
@@ -93,6 +94,7 @@ export class PermitService {
         .andWhere('permit.updatedDateTime < :date', { date: date })
         .take(count)
         .getMany();
+      this.logger.log('permits document generation :: ', permits);
       const permitIds: string[] = permits.map((permit) => permit.permitId);
       this.logger.log('permit IDS ', permitIds);
       if (permitIds.length) {
@@ -126,16 +128,35 @@ export class PermitService {
         })
         .andWhere('receipt.receiptDocumentId IS NULL')
         .andWhere('permit.updatedDateTime < :date', { date: date })
-        .groupBy('transaction.transactionId')
         .take(count)
         .getMany();
-      console.log('permits:: ', permits);
-      const permitIds: string[] = permits.map((permit) => permit.permitId);
-      this.logger.log('permit IDS ', permitIds);
-      if (permitIds.length) {
-        const permitDto: PermitIdDto = { ids: permitIds };
-        const url = process.env.ACCESS_API_URL + `/applications/documents`;
-        await this.accessApi(url, permitDto);
+      let transactions: transactionDto[] = [];
+      console.log('permits');
+
+      permits.forEach((permit) => {
+        permit.permitTransactions.forEach((permitTransaction) => {
+          const existingTransaction = transactions.find(
+            (t) => t.id === permitTransaction.transaction.transactionId,
+          );
+
+          if (existingTransaction) {
+            existingTransaction.permitIds.ids.push(permit.permitId);
+          } else {
+            const newTransaction: transactionDto = {
+              id: permitTransaction.transaction.transactionId,
+              permitIds: { ids: [permit.permitId] },
+            };
+            transactions.push(newTransaction);
+          }
+        });
+      });
+
+      if (transactions.length) {
+        for (const transaction of transactions) {
+          const permitDto: PermitIdDto = transaction.permitIds;
+          const url = process.env.ACCESS_API_URL + `/applications/receipts`;
+          await this.accessApi(url, permitDto);
+        }
       }
     } catch (error) {
       this.logger.error(`Error in GeneratePermitDocument Job ${error}`);
@@ -197,7 +218,7 @@ export class PermitService {
     } else {
       this.logger.log('Running GenerateReceipt Job.');
       this.runningReceiptGen = true;
-      await this.generateDocument();
+      await this.generateReceipt();
     }
   }
 }
