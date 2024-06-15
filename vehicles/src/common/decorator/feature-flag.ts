@@ -10,6 +10,7 @@ import { Cache } from 'cache-manager';
 import { CacheKey } from '../enum/cache-key.enum';
 import { getMapFromCache } from '../helper/cache.helper';
 import { IsFeatureFlagEnabled } from './is-feature-enabled.decorator';
+import { FeatureFlagValue } from '../enum/feature-flag-value.enum';
 
 @Injectable()
 export class FeatureFlagGuard implements CanActivate {
@@ -30,7 +31,11 @@ export class FeatureFlagGuard implements CanActivate {
       CacheKey.FEATURE_FLAG_TYPE,
     ).then((featureFlags: Record<string, string>) => {
       console.log('featureFlags::', featureFlags);
-      return Boolean(featureFlags && featureFlags[featureFlagKey]);
+
+      return (
+        featureFlags &&
+        featureFlags[featureFlagKey] === FeatureFlagValue.ENABLED
+      );
     });
 
     return isFeatureEnabled;

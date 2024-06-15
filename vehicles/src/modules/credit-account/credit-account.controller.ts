@@ -31,7 +31,6 @@ import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-enabled.
   type: ExceptionDto,
 })
 @Controller('companies/:companyId/credit-account')
-@IsFeatureFlagEnabled('CREDIT-ACCOUNT')
 export class CreditAccountController {
   constructor(private readonly creditAccountService: CreditAccountService) {}
 
@@ -55,6 +54,7 @@ export class CreditAccountController {
   })
   @Post()
   @Roles(Role.WRITE_CREDIT_ACCOUNT)
+  @IsFeatureFlagEnabled('CREDIT-ACCOUNT')
   async createCreditAccount(
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
