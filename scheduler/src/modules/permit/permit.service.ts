@@ -62,7 +62,7 @@ export class PermitService {
         .take(count)
         .getMany();
       const permitIds: string[] = permits.map((permit) => permit.permitId);
-      this.logger.log('permit IDS ', permitIds);
+      this.logger.log('permit IDS for issuance: ', permitIds);
       if (permitIds.length) {
         const permitDto: PermitIdDto = { ids: permitIds };
         const url =
@@ -94,9 +94,8 @@ export class PermitService {
         .andWhere('permit.updatedDateTime < :date', { date: date })
         .take(count)
         .getMany();
-      this.logger.log('permits document generation :: ', permits);
       const permitIds: string[] = permits.map((permit) => permit.permitId);
-      this.logger.log('permit IDS ', permitIds);
+      this.logger.log('permit IDS for document generation: ', permitIds);
       if (permitIds.length) {
         const permitDto: PermitIdDto = { ids: permitIds };
         const url = process.env.ACCESS_API_URL + `/applications/documents`;
@@ -128,11 +127,8 @@ export class PermitService {
         })
         .andWhere('receipt.receiptDocumentId IS NULL')
         .andWhere('permit.updatedDateTime < :date', { date: date })
-        .take(count)
         .getMany();
       let transactions: transactionDto[] = [];
-      console.log('permits');
-
       permits.forEach((permit) => {
         permit.permitTransactions.forEach((permitTransaction) => {
           const existingTransaction = transactions.find(
@@ -150,7 +146,6 @@ export class PermitService {
           }
         });
       });
-
       if (transactions.length) {
         for (const transaction of transactions) {
           const permitDto: PermitIdDto = transaction.permitIds;
