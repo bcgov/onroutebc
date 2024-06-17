@@ -25,6 +25,11 @@ export class CommonService {
           error.response?.status >= 500
         );
       },
+      onRetry(retryCount, error, requestConfig) {
+        this.logger.error(
+          `URL: ${requestConfig?.baseURL}, error status: ${error?.status}, Retry Count: ${retryCount}`,
+        );
+      },
     });
   }
 }
