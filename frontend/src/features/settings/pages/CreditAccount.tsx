@@ -71,6 +71,7 @@ export const CreditAccount = ({
         await createCreditAccountMutation.mutateAsync(selectedCreditLimit);
       if (isActionSuccessful(createCreditAccountResult.status)) {
         refetchCreditAccount();
+        // manually set query data with the response here
         setSnackBar({
           showSnackbar: true,
           setShowSnackbar: () => true,
