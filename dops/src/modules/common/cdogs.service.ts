@@ -113,6 +113,7 @@ export class CdogsService {
             'Content-Type': 'application/json',
           },
           responseType: 'arraybuffer',
+          decompress: false,
         },
       ),
     )

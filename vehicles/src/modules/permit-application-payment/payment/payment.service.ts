@@ -11,7 +11,14 @@ import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { Transaction } from './entities/transaction.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, In, QueryRunner, Repository, UpdateResult } from 'typeorm';
+import {
+  Brackets,
+  DataSource,
+  In,
+  QueryRunner,
+  Repository,
+  UpdateResult,
+} from 'typeorm';
 import { PermitTransaction } from './entities/permit-transaction.entity';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { callDatabaseSequence } from 'src/common/helper/database.helper';
@@ -39,6 +46,11 @@ import {
   calculatePermitAmount,
   permitFee,
 } from 'src/common/helper/permit-fee.helper';
+import { CfsTransactionDetail } from './entities/cfs-transaction.entity';
+import { CfsFileStatus } from 'src/common/enum/cfs-file-status.enum';
+import { isAmendmentApplication } from '../../../common/helper/permit-application.helper';
+import { isCfsPaymentMethodType } from 'src/common/helper/payment.helper';
+import { PgApprovesStatus } from 'src/common/enum/pg-approved-status-type.enum';
 
 @Injectable()
 export class PaymentService {
@@ -228,10 +240,13 @@ export class PaymentService {
         if (
           !(
             this.isVoidorRevoked(application.permitStatus) ||
-            this.isApplicationInCart(application.permitStatus)
+            this.isApplicationInCart(application.permitStatus) ||
+            isAmendmentApplication(application)
           )
         )
-          throw new BadRequestException('Application should be in Progress!!');
+          throw new BadRequestException(
+            'Application in its current status cannot be processed for payment.',
+          );
       }
       const totalTransactionAmount =
         await this.validatePaymentAndCalculateAmount(
@@ -285,6 +300,13 @@ export class PaymentService {
           newPermitTransactions,
         );
 
+        if (isCfsPaymentMethodType(newTransaction.paymentMethodTypeCode)) {
+          const newCfsTransaction: CfsTransactionDetail =
+            new CfsTransactionDetail();
+          newCfsTransaction.transaction = newTransaction;
+          newCfsTransaction.fileStatus = CfsFileStatus.READY;
+          await queryRunner.manager.save(newCfsTransaction);
+        }
         if (
           this.isWebTransactionPurchase(
             newTransaction.paymentMethodTypeCode,
@@ -404,7 +426,7 @@ export class PaymentService {
     applications: Permit[],
     queryRunner: QueryRunner,
   ) {
-    let totalTransactionAmountCalculated: number = 0;
+    let totalTransactionAmountCalculated = 0;
     // Calculate and add amount for each requested application, as per the available backend data.
     for (const application of applications) {
       totalTransactionAmountCalculated =
@@ -420,7 +442,9 @@ export class PaymentService {
       totalTransactionAmount.toFixed(2) !=
       Math.abs(totalTransactionAmountCalculated).toFixed(2)
     ) {
-      throw new BadRequestException('Transaction Amount Mismatch');
+      throw new BadRequestException(
+        `Transaction Amount Mismatch. Amount received is $${totalTransactionAmount.toFixed(2)} but amount calculated is $${Math.abs(totalTransactionAmountCalculated).toFixed(2)}`,
+      );
     }
 
     //For transaction type refund, total transaction amount in backend should be less than zero and vice a versa.
@@ -474,18 +498,17 @@ export class PaymentService {
     queryString: string,
   ): Promise<ReadPaymentGatewayTransactionDto> {
     let query: string, hashValue: string;
-    //Code QL fixes.
+    //Code QL fixes
     if (typeof queryString === 'string') {
+      const re = /\+/gi;
       query = queryString
         .substring(0, queryString.indexOf('hashValue=') - 1)
-        .replace('+', ' ');
-
+        .replace(re, ' ');
       hashValue = queryString.substring(
         queryString.indexOf('hashValue=') + 10,
         queryString.length,
       );
     }
-
     const validHash =
       convertToHash(
         `${query}${process.env.PAYBC_API_KEY}`,
@@ -696,12 +719,12 @@ export class PaymentService {
     );
 
     if (application.permitStatus === ApplicationStatus.VOIDED) {
-      const oldAmount = calculatePermitAmount(permitPaymentHistory);
-      if (oldAmount > 0) return -oldAmount;
-      return oldAmount;
+      const newAmount = permitFee(application);
+      return newAmount;
     }
     const oldAmount = calculatePermitAmount(permitPaymentHistory);
-    return permitFee(application, oldAmount);
+    const fee = permitFee(application, oldAmount);
+    return fee;
   }
 
   @LogAsyncMethodExecution()
@@ -723,6 +746,17 @@ export class PaymentService {
       .andWhere('permit.originalPermitId = :originalPermitId', {
         originalPermitId: originalPermitId,
       })
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where(
+            'transaction.paymentMethodTypeCode != :paymentType OR ( transaction.paymentMethodTypeCode = :paymentType AND transaction.pgApproved = :approved)',
+            {
+              paymentType: PaymentMethodTypeEnum.WEB,
+              approved: PgApprovesStatus.APPROVED,
+            },
+          );
+        }),
+      )
       .orderBy('transaction.transactionSubmitDate', 'DESC')
       .getMany();
 
