@@ -13,7 +13,7 @@ import {
 import { SnackBarContext } from "../../../App";
 import { DeleteConfirmationDialog } from "../../../common/components/dialog/DeleteConfirmationDialog";
 import { NoRecordsFound } from "../../../common/components/table/NoRecordsFound";
-import { Trash } from "../../../common/components/table/options/Trash";
+import { TrashButton } from "../../../common/components/buttons/TrashButton";
 import { ONE_HOUR } from "../../../common/constants/constants";
 import {
   defaultTableInitialStateOptions,
@@ -184,7 +184,10 @@ export const UserManagement = () => {
     renderToolbarInternalActions: useCallback(
       () => (
         <Box className="table-container__toolbar-internal-actions">
-          <Trash onClickTrash={onClickTrashIcon} disabled={hasNoRowsSelected} />
+          <TrashButton
+            onClickTrash={onClickTrashIcon}
+            disabled={hasNoRowsSelected}
+          />
         </Box>
       ),
       [hasNoRowsSelected],
