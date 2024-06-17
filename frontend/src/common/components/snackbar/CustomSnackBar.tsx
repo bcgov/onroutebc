@@ -53,6 +53,9 @@ export const CustomSnackbar = ({
       <Alert
         onClose={handleClose}
         severity={alertType}
+        sx={{
+          boxShadow: "0 0 1rem #31313229",
+        }}
         // hide close button
         action={<></>}
         iconMapping={{

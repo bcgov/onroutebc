@@ -1,3 +1,4 @@
+import { Nullable } from "../../../common/types/common";
 import { CompanyProfile } from "../../manageProfile/types/manageProfile";
 
 export const CREDIT_ACCOUNT_LIMITS = {
@@ -40,11 +41,57 @@ export const CREDIT_ACCOUNT_LIMIT_CHOOSE_FROM_OPTIONS = [
     { value: CREDIT_ACCOUNT_LIMITS[100000], label: "$100,000" }
 ];
 
+
+
+export type CreditAccountType = "SECURED"
+export type CreditAccountStatus = "ACTIVE" | "ON HOLD" | "CLOSED"
+export type CreditAccountUserType = "OWNER" | "USER"
+
 export interface CreditAccountData {
-    accountNumber: string;
-    userDesignation: "account holder";
-    creditLimit: number;
-    creditBalance: number;
-    creditAvailable: number;
-    users: CompanyProfile[]
+  creditAccountId: number,
+  creditAccountType: CreditAccountType,
+  creditAccountNumber: string,
+  creditAccountStatusType: CreditAccountStatus,
+  companyId: number,
+  availableCredit: number,
+  creditLimit: number,
+  creditBalance: number,
+  creditAccountUsers: CreditAccountUser[]
+}
+
+export interface CreditAccountUser extends CompanyProfile {
+  isSuspended: boolean,
+  userType: CreditAccountUserType
+}
+
+export const HOLD_ACTIVITY_TYPES = {
+    HOLD_CREDIT_ACCOUNT: "HOLD",
+    UNHOLD_CREDIT_ACCOUNT: "UNHOLD",
+}
+
+export type HoldActivityType = typeof HOLD_ACTIVITY_TYPES[keyof typeof HOLD_ACTIVITY_TYPES]
+
+export interface HoldData {
+    reason?: string;
+    holdActivityType: HoldActivityType;
+}
+
+export const CLOSE_ACTIVITY_TYPES = {
+    CLOSE_CREDIT_ACCOUNT: "CLOSE",
+    REOPEN_CREDIT_ACCOUNT: "REOPEN"
+}
+
+export type CloseActivityType = typeof CLOSE_ACTIVITY_TYPES[keyof typeof CLOSE_ACTIVITY_TYPES]
+
+export interface CloseData {
+    reason?: string;
+    closeActivityType: CloseActivityType;
+}
+
+export interface CreditAccountHistoryData {
+    activityId: string;
+    activityType: HoldActivityType | CloseActivityType
+    activityDateTime?: Nullable<string>
+    IDIR: string
+    reason?: string
 }

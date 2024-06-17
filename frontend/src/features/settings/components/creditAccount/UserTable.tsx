@@ -116,7 +116,7 @@ export const UserTable = () => {
   const table = useMaterialReactTable({
     ...defaultTableOptions,
     columns: CreditAccountUserColumnsDefinition,
-    data: data?.users ?? [],
+    data: data?.creditAccountUsers ?? [],
     initialState: {
       ...defaultTableInitialStateOptions,
     },

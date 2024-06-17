@@ -2,12 +2,11 @@ import { CustomFormComponent } from "../../../../common/components/form/CustomFo
 import { FormProvider, useForm, FieldValues } from "react-hook-form";
 import { requiredMessage } from "../../../../common/helpers/validationMessages";
 import { Box, Button, Typography } from "@mui/material";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AddUserModal } from "./AddUserModal";
-import { getCompanyDataBySearch } from "../../../idir/search/api/idirSearch";
-import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import "./AddUser.scss";
 import { SnackBarContext } from "../../../../App";
+import { useGetCompanyQuery } from "../../hooks/creditAccount";
 
 interface SearchClientFormData {
   clientNumber: string;
@@ -19,7 +18,9 @@ export const AddUser = () => {
   const { setSnackBar } = useContext(SnackBarContext);
 
   const [showAddUserModal, setShowAddUserModal] = useState<boolean>(false);
-  const [userData, setUserData] = useState<CompanyProfile>();
+  const [clientNumber, setClientNumber] = useState<string>("");
+
+  const { data, isLoading } = useGetCompanyQuery(clientNumber);
 
   const formMethods = useForm<SearchClientFormData>({
     defaultValues: {
@@ -30,27 +31,21 @@ export const AddUser = () => {
   const { handleSubmit, setError } = formMethods;
 
   const onSubmit = async (data: FieldValues) => {
-    const response = await getCompanyDataBySearch(
-      {
-        searchEntity: "companies",
-        searchByFilter: "onRouteBCClientNumber",
-        searchString: data.clientNumber,
-      },
-      {
-        page: 0,
-        take: 1,
-      },
-    );
-    if (response.items.length !== 0) {
-      setUserData(response.items[0]);
-      setShowAddUserModal(true);
-    } else {
-      setError("clientNumber", {
-        type: "manual",
-        message: "Client No. not found",
-      });
-    }
+    setClientNumber(data.clientNumber);
   };
+
+  useEffect(() => {
+    if (data) {
+      if (data.items.length === 0) {
+        setError("clientNumber", {
+          type: "manual",
+          message: "Client No. not found",
+        });
+      } else {
+        setShowAddUserModal(true);
+      }
+    }
+  }, [data]);
 
   const handleAddUser = () => {
     setShowAddUserModal(false);
@@ -94,18 +89,19 @@ export const AddUser = () => {
             className="add-user__button"
             variant="contained"
             color="secondary"
+            disabled={isLoading}
             onClick={handleSubmit(onSubmit)}
           >
             Search
           </Button>
         </Box>
       </FormProvider>
-      {userData && showAddUserModal ? (
+      {showAddUserModal && data ? (
         <AddUserModal
           showModal={showAddUserModal}
           onCancel={() => setShowAddUserModal(false)}
           onConfirm={handleAddUser}
-          userData={userData}
+          userData={{ ...data.items[0], isSuspended: false, userType: "USER" }}
         />
       ) : null}
     </div>

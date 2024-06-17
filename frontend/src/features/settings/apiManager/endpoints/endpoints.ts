@@ -16,5 +16,8 @@ export const CREDIT_ACCOUNT_API_ROUTES = {
   GET_CREDIT_ACCOUNT: () => `${CREDIT_ACCOUNT_API_BASE}/${getCompanyIdFromSession()}/credit-account/get-credit-account`,
   GET_COMPANY: (clientNumber: string) => `${CREDIT_ACCOUNT_API_BASE}/companies?page=1&take=1&clientNumber=${clientNumber}`,
   ADD_CREDIT_ACCOUNT_USER: () => `${CREDIT_ACCOUNT_API_BASE}/${getCompanyIdFromSession()}/credit-account/add-user`,
-  REMOVE_CREDIT_ACCOUNT_USERS: () => `${CREDIT_ACCOUNT_API_BASE}/${getCompanyIdFromSession()}/credit-account/remove-users`
+  REMOVE_CREDIT_ACCOUNT_USERS: () => `${CREDIT_ACCOUNT_API_BASE}/${getCompanyIdFromSession()}/credit-account/remove-users`,
+  HOLD_CREDIT_ACCOUNT: () => `${CREDIT_ACCOUNT_API_BASE}/${getCompanyIdFromSession()}/credit-account/hold-credit-account`,
+  CLOSE_CREDIT_ACCOUNT: () => `${CREDIT_ACCOUNT_API_BASE}/${getCompanyIdFromSession()}/credit-account/close-credit-account`,
+  GET_HISTORY: () => `${CREDIT_ACCOUNT_API_BASE}/${getCompanyIdFromSession()}/credit-account/history`
 };

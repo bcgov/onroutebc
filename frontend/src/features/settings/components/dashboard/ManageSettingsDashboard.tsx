@@ -10,7 +10,7 @@ import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext
 import { ERROR_ROUTES } from "../../../../routes/constants";
 import {
   canViewSuspend,
-  // canViewCreditAccount,
+  canViewCreditAccount,
 } from "../../helpers/permissions";
 
 export const ManageSettingsDashboard = React.memo(() => {
@@ -21,8 +21,8 @@ export const ManageSettingsDashboard = React.memo(() => {
 
   const [hideCreditAccountTab, setHideCreditAccountTab] =
     useState<boolean>(false);
-  // check for canViewCreditAccount(userRoles) here?
-  const showCreditAccountTab = !hideCreditAccountTab;
+  const showCreditAccountTab =
+    canViewCreditAccount(userRoles) && !hideCreditAccountTab;
 
   const { state: stateFromNavigation } = useLocation();
   const selectedTab = getDefaultRequiredVal(

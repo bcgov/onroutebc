@@ -53,14 +53,16 @@ export const canViewSettingsTab = (
  * @returns Whether or not the user can view the credit account page/features
  */
 export const canViewCreditAccount = (
+  // eslint-disable-next-line
   userRoles?: Nullable<UserRolesType[]>,
 ): boolean => {
-  return Boolean(
-    DoesUserHaveRole(
-      userRoles,
-      ROLES.READ_CREDIT_ACCOUNT,
-    ),
-  );
+  return true
+  // return Boolean(
+  //   DoesUserHaveRole(
+  //     userRoles,
+  //     ROLES.READ_CREDIT_ACCOUNT,
+  //   ),
+  // );
 };
 
 /**
@@ -69,12 +71,14 @@ export const canViewCreditAccount = (
  * @returns Whether or not the user can update the credit account
  */
 export const canUpdateCreditAccount = (
+  // eslint-disable-next-line
   userRoles?: Nullable<UserRolesType[]>,
 ): boolean => {
-  return Boolean(
-    DoesUserHaveRole(
-      userRoles,
-      ROLES.WRITE_CREDIT_ACCOUNT,
-    ),
-  );
+  return true
+  // return Boolean(
+  //   DoesUserHaveRole(
+  //     userRoles,
+  //     ROLES.WRITE_CREDIT_ACCOUNT,
+  //   ),
+  // );
 };

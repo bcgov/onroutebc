@@ -17,6 +17,7 @@ import {
 import {
   useCreateCreditAccountMutation,
   useGetCreditAccountQuery,
+  useCreditAccountHistoryQuery,
 } from "../hooks/creditAccount";
 import { AddUser } from "../components/creditAccount/AddUser";
 import { AccountDetails } from "../components/creditAccount/AccountDetails";
@@ -24,6 +25,8 @@ import { SnackBarContext } from "../../../App";
 import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
 import { UserTable } from "../components/creditAccount/UserTable";
 import { canUpdateCreditAccount } from "../helpers/permissions";
+import { HistoryTable } from "../components/creditAccount/HistoryTable";
+import { StatusChip } from "../components/creditAccount/StatusChip";
 
 export const CreditAccount = ({
   // eslint-disable-next-line
@@ -53,6 +56,9 @@ export const CreditAccount = ({
   };
 
   const createCreditAccountMutation = useCreateCreditAccountMutation();
+  const { data: creditAccountHistory } = useCreditAccountHistoryQuery();
+  const { data: existingCreditAccount, refetch: refetchCreditAccount } =
+    useGetCreditAccountQuery();
 
   const isActionSuccessful = (status: number) => {
     return status === 201;
@@ -77,9 +83,6 @@ export const CreditAccount = ({
     }
   };
 
-  const { data: existingCreditAccount, refetch: refetchCreditAccount } =
-    useGetCreditAccountQuery();
-
   // Re-render if credit account exists
   useEffect(() => {}, [existingCreditAccount]);
 
@@ -89,13 +92,21 @@ export const CreditAccount = ({
         <Box className="credit-account-page__split-container">
           <Box className="account-info">
             <Box className="overview">
-              <Typography variant="h3" className="overview__title">
-                Credit Account No: {existingCreditAccount.accountNumber}
-              </Typography>
+              <Box className="overview__flex">
+                <Typography variant="h3" className="overview__title">
+                  Credit Account No: {existingCreditAccount.creditAccountNumber}
+                </Typography>
+                {existingCreditAccount.creditAccountStatusType !== "ACTIVE" && (
+                  <StatusChip
+                    status={existingCreditAccount.creditAccountStatusType}
+                  />
+                )}
+              </Box>
               <Typography className="overview__user-designation">
-                {existingCreditAccount.userDesignation}
+                Account Holder
               </Typography>
             </Box>
+            {creditAccountHistory && <HistoryTable />}
             {canUpdateCreditAccount(userRoles) && <AddUser />}
             <UserTable />
           </Box>

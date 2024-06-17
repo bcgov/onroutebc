@@ -2,9 +2,9 @@ import { Button, Dialog } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { FormProvider, useForm } from "react-hook-form";
-import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import "./AddUserModal.scss";
 import { useAddCreditAccountUserMutation } from "../../hooks/creditAccount";
+import { CreditAccountUser } from "../../types/creditAccount";
 
 export const AddUserModal = ({
   showModal,
@@ -15,7 +15,7 @@ export const AddUserModal = ({
   showModal: boolean;
   onCancel: () => void;
   onConfirm: () => void;
-  userData: CompanyProfile;
+  userData: CreditAccountUser;
 }) => {
   const formMethods = useForm<{ comment: string }>({
     reValidateMode: "onChange",

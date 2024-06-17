@@ -7,8 +7,29 @@
   }
 
   &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: 1rem;
     background-color: $bc-black;
+  }
+
+  & &__button, .button {
+    border: 1px solid transparent;
+    padding: .75rem 1.25rem;
+    &:hover {
+      background-color: transparent;
+      border-color: $white;        
+    }
+
+    &__icon {
+      color: $white;
+      font-size: 1.5rem;
+    }
+  }
+
+  &__menu {
+    transform: translateX(-120px);
   }
 
   &__body {

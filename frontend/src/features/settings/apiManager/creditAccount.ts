@@ -1,9 +1,9 @@
 // eslint-disable-next-line
-import { CreditAccountData, CreditAccountLimitType } from "../types/creditAccount"
+import { CreditAccountData, CreditAccountLimitType, HoldData, HOLD_ACTIVITY_TYPES, CloseData, CLOSE_ACTIVITY_TYPES, CreditAccountHistoryData } from "../types/creditAccount"
 import { CREDIT_ACCOUNT_API_ROUTES } from "../apiManager/endpoints/endpoints"
-import { CompanyProfile } from "../../manageProfile/types/manageProfile";
+import { CreditAccountUser } from "../types/creditAccount"
 
-const companyProfileA: CompanyProfile = {
+const companyProfileA: CreditAccountUser = {
   "companyId": 18,
   "companyGUID": "1FC2222DD96441EF907858A17665A57B",
   "clientNumber": "E2-000061-640",
@@ -27,7 +27,6 @@ const companyProfileA: CompanyProfile = {
     "phone1Extension": undefined,
     "phone2Extension": undefined
   },
-  "isSuspended": false,
   "mailingAddress": {
     "addressLine1": "593 6th Trail",
     "addressLine2": null,
@@ -35,10 +34,12 @@ const companyProfileA: CompanyProfile = {
     "postalCode": "I1A 1U3",
     "provinceCode": "BC",
     "countryCode": "CA"
-  }
+  },
+  "isSuspended": false,
+  "userType": "USER"
 }
 
-const companyProfileB: CompanyProfile = {
+const companyProfileB: CreditAccountUser = {
   "companyId": 19,
   "companyGUID": "22723C3E423142A5B66834B1F9694FC2",
   "clientNumber": "B1-000083-390",
@@ -62,7 +63,6 @@ const companyProfileB: CompanyProfile = {
     "phone1Extension": undefined,
     "phone2Extension": undefined
   },
-  "isSuspended": false,
   "mailingAddress": {
     "addressLine1": "1024 Anniversary Court",
     "addressLine2": null,
@@ -70,10 +70,12 @@ const companyProfileB: CompanyProfile = {
     "postalCode": "R3Y 9A4",
     "provinceCode": "BC",
     "countryCode": "CA"
-  }
+  },
+  "isSuspended": false,
+  "userType": "USER"
 }
 
-const companyProfileC: CompanyProfile = {
+const companyProfileC: CreditAccountUser = {
   "companyId": 20,
   "companyGUID": "258DEBB0B3114FE68AD4A19BFDE4529D",
   "clientNumber": "R1-000079-847",
@@ -97,7 +99,6 @@ const companyProfileC: CompanyProfile = {
     "phone1Extension": undefined,
     "phone2Extension": undefined
   },
-  "isSuspended": false,
   "mailingAddress": {
     "addressLine1": "475 Scoville Place",
     "addressLine2": null,
@@ -105,7 +106,9 @@ const companyProfileC: CompanyProfile = {
     "postalCode": "Z3C 0I2",
     "provinceCode": "BC",
     "countryCode": "CA"
-  }
+  },
+  "isSuspended": false,
+  "userType": "USER"
 }
 
 /**
@@ -120,28 +123,6 @@ export const createCreditAccount = async (
     return await mockCreateCreditAccountSuccess(CREDIT_ACCOUNT_API_ROUTES.CREATE_CREDIT_ACCOUNT()) 
 }
 
-/**
- * Get the active credit account for a given company.
- * @param companyId Company id of the company to get credit account information for
- * @returns Credit account information for the given company
- */
-export const getCreditAccount = async () => {
-  const response = await mockGetCreditAccountSuccess(CREDIT_ACCOUNT_API_ROUTES.GET_CREDIT_ACCOUNT());
-  return response.data;
-};
-
-/**
- * Add a user to credit account
- * @param companyId Id of the company whose credit account we wish to add a user to 
- * @param userData Data of the company who is being added to the credit account
- * @returns Updated credit account information
- */
-export const addCreditAccountUser = async (
-  userData: CompanyProfile
-) => {
-  const response = await mockAddCreditAccountUserSuccess(CREDIT_ACCOUNT_API_ROUTES.ADD_CREDIT_ACCOUNT_USER(), userData);
-  return response;
-};
 
 // create a method the posts (using httpPOST...), then create a query hook that calls this method, and use that hook inside the page component
 // eslint-disable-next-line 
@@ -151,17 +132,31 @@ const mockCreateCreditAccountSuccess = async (url: string): Promise<CreditAccoun
       resolve({
         status: 201,
         data: {
-          accountNumber: "WS7456",
-          userDesignation: "account holder",
+          creditAccountId: 1,
+          creditAccountType: "SECURED",
+          creditAccountNumber: "WS7456",
+          creditAccountStatusType: "ACTIVE",
+          companyId: 1,
           creditLimit: 100000,
           creditBalance: 0,
-          creditAvailable: 100000,
-          users: []
+          availableCredit: 100000,
+          creditAccountUsers: []
         },
       });
     }, 1000);
   });
 }
+
+/**
+ * Get the active credit account for a given company.
+ * @param companyId Company id of the company to get credit account information for
+ * @returns Credit account information for the given company
+ */
+export const getCreditAccount = async () => {
+  const response = await mockGetCreditAccountFail(CREDIT_ACCOUNT_API_ROUTES.GET_CREDIT_ACCOUNT());
+  return response.data;
+};
+
 
 // create a method the gets (using httpGET...), then create a query hook that calls this method, and use that hook inside the page component
 // eslint-disable-next-line 
@@ -171,13 +166,16 @@ const mockGetCreditAccountSuccess = async (url: string): Promise<CreditAccountRe
       resolve({
         status: 200,
         data: {
-          accountNumber: "WS7456",
-          userDesignation: "account holder",
+          creditAccountId: 1,
+          creditAccountType: "SECURED",
+          creditAccountNumber: "WS7456",
+          creditAccountStatusType: "CLOSED",
+          companyId: 1,
           creditLimit: 100000,
           creditBalance: 25000,
-          creditAvailable: 75000,
-          users: [companyProfileA, companyProfileB, companyProfileC]
-        },
+          availableCredit: 75000,
+          creditAccountUsers: [companyProfileA, companyProfileB, companyProfileC]
+        }
       });
     }, 1000);
   });
@@ -194,21 +192,37 @@ const mockGetCreditAccountFail = async (url: string): Promise<CreditAccountRespo
   });
 }
 
+/**
+ * Add a user to credit account
+ * @param companyId Id of the company whose credit account we wish to add a user to 
+ * @param userData Data of the company who is being added to the credit account
+ * @returns Updated credit account information
+ */
+export const addCreditAccountUser = async (
+  userData: CreditAccountUser
+) => {
+  const response = await mockAddCreditAccountUserSuccess(CREDIT_ACCOUNT_API_ROUTES.ADD_CREDIT_ACCOUNT_USER(), userData);
+  return response;
+};
+
 // create a method the gets (using httpGET...), then create a query hook that calls this method, and use that hook inside the page component
 // eslint-disable-next-line 
-const mockAddCreditAccountUserSuccess = async (url: string, newUser: CompanyProfile): Promise<CreditAccountResponse> => {
+const mockAddCreditAccountUserSuccess = async (url: string, newUser: CreditAccountUser): Promise<CreditAccountResponse> => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
         status: 200,
         data: {
-          accountNumber: "WS7456",
-          userDesignation: "account holder",
+          creditAccountId: 1,
+          creditAccountType: "SECURED",
+          creditAccountNumber: "WS7456",
+          creditAccountStatusType: "ACTIVE",
+          companyId: 1,
           creditLimit: 100000,
           creditBalance: 25000,
-          creditAvailable: 75000,
-          users: [newUser]
-        },
+          availableCredit: 75000,
+          creditAccountUsers: [newUser]
+        }
       });
     }, 1000);
   });
@@ -237,9 +251,111 @@ const mockRemoveCreditAccountUsersSuccess = async (url: string, userClientNumber
   });
 }
 
+/**
+ * Backend request to hold/unhold a credit account.
+ * @param holdData Information about the hold action for the credit account
+ * @returns Result of the hold action, or error on fail
+ */
+export const holdCreditAccount = async (
+  holdData: HoldData
+) => {
+  return await mockHoldCreditAccountSuccess(
+    CREDIT_ACCOUNT_API_ROUTES.HOLD_CREDIT_ACCOUNT(),
+    holdData,
+  );
+};
 
+// eslint-disable-next-line
+const mockHoldCreditAccountSuccess = async (url: string, holdData: HoldData): Promise<CreditAccountResponse> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        status: 200
+      })
+    }, 1000)
+  })
+}
+
+/**
+ * Backend request to close/reopen a credit account.
+ * @param closeData Information about the close action for the credit account
+ * @returns Result of the close action, or error on fail
+ */
+export const closeCreditAccount = async (
+  closeData: CloseData
+) => {
+  return await mockCloseCreditAccountSuccess(
+    CREDIT_ACCOUNT_API_ROUTES.CLOSE_CREDIT_ACCOUNT(),
+    closeData,
+  );
+};
+
+// eslint-disable-next-line
+const mockCloseCreditAccountSuccess = async (url: string, closeData: CloseData): Promise<CreditAccountResponse> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        status: 200
+      })
+    }, 1000)
+  })
+}
+
+/**
+ * Get the hold/close history list for a given company.
+ * @param companyId Company id of the company to get hold/close history for
+ * @returns List of hold/close history for the given company
+ */
+export const getCreditAccountHistory = async () => {
+  const response = await mockGetCreditAccountHistorySuccess(CREDIT_ACCOUNT_API_ROUTES.GET_HISTORY());
+  return response.data;
+};
+
+
+// create a method the gets (using httpGET...), then create a query hook that calls this method, and use that hook inside the page component
+// eslint-disable-next-line 
+const mockGetCreditAccountHistorySuccess = async (url: string): Promise<CreditAccountHistoryResponse> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        status: 200,
+        data: [{
+          activityId: "A1",
+          activityType:  CLOSE_ACTIVITY_TYPES.CLOSE_CREDIT_ACCOUNT,
+          activityDateTime: "Jan. 16, 2024, 10:14 am PDT",
+          IDIR: "RFARREL",
+          reason: "I'm baby yes plz chambray seitan master cleanse, actually banh mi same plaid art party cloud bread blog. Wayfarers praxis bodega boys ramps brunch. Cardigan kinfolk viral brunch flannel keytar. Franzen stumptown lomo mixtape vape, fingerstache organic.",
+        },
+        {
+          activityId: "A2",
+          activityType:  CLOSE_ACTIVITY_TYPES.REOPEN_CREDIT_ACCOUNT,
+          activityDateTime: "Jan. 18, 2023, 9:07 am PDT",
+          IDIR: "RFARREL",
+          reason: "",
+        }],
+      });
+    }, 1000);
+  });
+}
+
+// create a method the gets (using httpGET...), then create a query hook that calls this method, and use that hook inside the page component
+// eslint-disable-next-line 
+const mockGetCreditAccountHistoryFail = async (url: string): Promise<CreditAccountHistoryResponse> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        status: 404,
+      });
+    }, 1000);
+  });
+}
 
 interface CreditAccountResponse {
   status: number;
   data?: CreditAccountData
+}
+
+interface CreditAccountHistoryResponse {
+  status: number;
+  data?: CreditAccountHistoryData[]
 }

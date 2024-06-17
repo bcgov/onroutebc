@@ -20,11 +20,18 @@
       padding-bottom: 2rem;
       border-bottom: 1px solid $bc-border-grey;
 
+      &__flex {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding-top: .5rem;
+        padding-bottom: 1rem;
+      }
+
       &__title {
         font-size: 1.25rem;
         font-weight: bold;
-        padding-top: .5rem;
-        padding-bottom: 1rem;
+        padding: 0;
       }
     
       &__user-designation {
