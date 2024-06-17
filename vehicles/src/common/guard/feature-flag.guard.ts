@@ -7,10 +7,10 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Cache } from 'cache-manager';
+import { IsFeatureFlagEnabled } from '../decorator/is-feature-enabled.decorator';
 import { CacheKey } from '../enum/cache-key.enum';
-import { getMapFromCache } from '../helper/cache.helper';
-import { IsFeatureFlagEnabled } from './is-feature-enabled.decorator';
 import { FeatureFlagValue } from '../enum/feature-flag-value.enum';
+import { getMapFromCache } from '../helper/cache.helper';
 
 @Injectable()
 export class FeatureFlagGuard implements CanActivate {
@@ -25,6 +25,8 @@ export class FeatureFlagGuard implements CanActivate {
       IsFeatureFlagEnabled,
       context.getHandler(),
     );
+    if (!featureFlagKey) return Promise.resolve(true);
+    console.log('featureFlag executing--------------------::');
     console.log('featureFlagKey::', featureFlagKey);
     const isFeatureEnabled = getMapFromCache(
       this.cacheManager,
@@ -33,8 +35,9 @@ export class FeatureFlagGuard implements CanActivate {
       console.log('featureFlags::', featureFlags);
 
       return (
-        featureFlags &&
-        featureFlags[featureFlagKey] === FeatureFlagValue.ENABLED
+        featureFlags?.[featureFlagKey] &&
+        (featureFlags[featureFlagKey] as FeatureFlagValue) ===
+          FeatureFlagValue.ENABLED
       );
     });
 

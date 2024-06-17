@@ -156,8 +156,8 @@ export class CreditAccountService {
       Company,
       ReadCreditAccountUserDto,
     );
-    
-    const createdCreditAccountDto =  await this.classMapper.mapAsync(
+
+    const createdCreditAccountDto = await this.classMapper.mapAsync(
       savedCreditAccount,
       CreditAccount,
       ReadCreditAccountDto,
