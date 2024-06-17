@@ -39,7 +39,7 @@ frontend:
         - "sh"
         - "-c"
           #- "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && cat /etc/caddy/Caddyfile && caddy fmt /etc/caddy/Caddyfile && caddy run"
-        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && cat /etc/caddy/Caddyfile && caddy fmt /etc/caddy/Caddyfile && caddy run --config /etc/caddy/Caddyfile --adapter caddyfile"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}}  && caddy fmt /etc/caddy/Caddyfile && cat /etc/caddy/Caddyfile && caddy run --config /etc/caddy/Caddyfile --adapter caddyfile"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: frontend
