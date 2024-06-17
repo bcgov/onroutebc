@@ -213,8 +213,6 @@ export const SpecialAuthorizations = ({
           confirmationMsg={"Are you sure you want to delete this?"}
         />
       ) : null}
-
-      {companyId}
     </div>
   ) : (
     <LOASteps
