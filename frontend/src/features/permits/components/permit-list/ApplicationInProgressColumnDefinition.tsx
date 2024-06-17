@@ -38,6 +38,7 @@ export const ApplicationInProgressColumnDefinition = (
           </>
         );
       },
+      size: 180,
     },
     {
       accessorKey: "permitType",
@@ -51,7 +52,8 @@ export const ApplicationInProgressColumnDefinition = (
             {props.cell.getValue()}
           </Box>
         </Tooltip>
-      }
+      },
+      size: 50,
     },
     {
       accessorKey: "unitNumber",
@@ -64,30 +66,35 @@ export const ApplicationInProgressColumnDefinition = (
       id: "vin",
       enableSorting: false,
       header: "VIN",
+      size: 50,
     },
     {
       accessorKey: "plate",
       id: "plate",
       enableSorting: false,
       header: "Plate",
+      size: 50,
     },
     {
       accessorKey: "startDate",
       id: "startDate",
       enableSorting: false,
       header: "Permit Start Date",
+      size: 100,
     },
     {
       accessorKey: "updatedDateTime",
       enableSorting: false,
       id: "updatedDateTime",
       header: "Last Updated",
+      size: 200,
     },
     {
       accessorKey: "applicant",
       id: "applicant",
       header: "Applicant",
       enableSorting: false,
+      size: 200,
     },
   ];
 
