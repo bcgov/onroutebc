@@ -27,14 +27,34 @@ export class NotificationDto {
   to: string[];
 
   @ApiProperty({
-    description: 'Notification cc email ids.',
+    description: 'Notification cc emails.',
     example: ['someguy@mycompany.co', 'somegirl@mycompany.co'],
   })
   @IsOptional()
   @IsEmail(undefined, {
     each: true,
   })
-  cc: string[];
+  cc?: string[];
+
+  @ApiProperty({
+    description: 'Notification bcc emails.',
+    example: ['someguy@mycompany.co', 'somegirl@mycompany.co'],
+  })
+  @IsOptional()
+  @IsEmail(undefined, {
+    each: true,
+  })
+  bcc?: string[];
+
+  @ApiProperty({
+    description: 'Notification fax emails.',
+    example: ['<faxnumber>@mycompany.co'],
+  })
+  @IsOptional()
+  @IsEmail(undefined, {
+    each: true,
+  })
+  fax?: string[];
 
   @ApiProperty({
     enum: NotificationTemplate,
