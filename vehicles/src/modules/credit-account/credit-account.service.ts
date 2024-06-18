@@ -95,7 +95,7 @@ export class CreditAccountService {
 
     // 1) Create Party
     const partyResponse = await this.cfsCreditAccountService.createParty({
-      url: `${process.env.CREDIT_ACCOUNT_URL}/cfs/parties/`,
+      url: `${process.env.CFS_CREDIT_ACCOUNT_URL}/cfs/parties/`,
       clientNumber: companyInfo.clientNumber,
     });
     if (!partyResponse) {
@@ -180,20 +180,34 @@ export class CreditAccountService {
     });
 
     if (creditAccountStatusType === CreditAccountStatusType.ACCOUNT_ACTIVE) {
-      await this.creditAccountActivityRepository.save({
-        idirUser: { userGUID: currentUser.userGUID },
-        creditAccountActivityType: CreditAccountActivityType.ACCOUNT_OPENED,
-        creditAccountActivityDateTime: new Date(),
-        creditAccount: { creditAccountId: savedCreditAccount.creditAccountId },
-        createdUser: currentUser.userName,
-        createdDateTime: new Date(),
-        createdUserDirectory: currentUser.orbcUserDirectory,
-        createdUserGuid: currentUser.userGUID,
-        updatedUser: currentUser.userName,
-        updatedDateTime: new Date(),
-        updatedUserDirectory: currentUser.orbcUserDirectory,
-        updatedUserGuid: currentUser.userGUID,
-      });
+      try {
+        const savedActivity = await this.creditAccountActivityRepository.save({
+          idirUser: { userGUID: currentUser.userGUID },
+          creditAccountActivityType: CreditAccountActivityType.ACCOUNT_OPENED,
+          creditAccountActivityDateTime: new Date(),
+          creditAccount: {
+            creditAccountId: savedCreditAccount.creditAccountId,
+          },
+          comment: `Opening account for client number: ${companyInfo.clientNumber}`,
+          createdUser: currentUser.userName,
+          createdDateTime: new Date(),
+          createdUserDirectory: currentUser.orbcUserDirectory,
+          createdUserGuid: currentUser.userGUID,
+          updatedUser: currentUser.userName,
+          updatedDateTime: new Date(),
+          updatedUserDirectory: currentUser.orbcUserDirectory,
+          updatedUserGuid: currentUser.userGUID,
+        });
+        if (!savedActivity?.activityId) {
+          this.logger.error(
+            `Could not save ${CreditAccountActivityType.ACCOUNT_OPENED} activity to the database for companyId: ${companyId}.`,
+          );
+        }
+      } catch (error) {
+        this.logger.error(
+          `Could not save ${CreditAccountActivityType.ACCOUNT_OPENED} activity to the database for companyId: ${companyId}.`,
+        );
+      }
     }
 
     const creditAccountHolder = await this.classMapper.mapAsync(

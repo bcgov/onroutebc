@@ -120,9 +120,9 @@ function getTokenCredentials(govCommonServices: GovCommonServices): {
       break;
     case GovCommonServices.CREDIT_ACCOUNT_SERVICE:
       tokenCacheKey = CacheKey.CREDIT_ACCOUNT_ACCESS_TOKEN;
-      tokenUrl = `${process.env.CREDIT_ACCOUNT_URL}/oauth/token`;
-      username = process.env.CREDIT_ACCOUNT_CLIENT_ID;
-      password = process.env.CREDIT_ACCOUNT_CLIENT_SECRET;
+      tokenUrl = `${process.env.CFS_CREDIT_ACCOUNT_URL}/oauth/token`;
+      username = process.env.CFS_CREDIT_ACCOUNT_CLIENT_ID;
+      password = process.env.CFS_CREDIT_ACCOUNT_CLIENT_SECRET;
       break;
 
     default:

@@ -64,7 +64,7 @@ export class CFSCreditAccountService {
     url: string;
     clientNumber: string;
   }): Promise<CreatePartyResponseDto> {
-    const { status, data } = await this.cfsPostRequest<
+    const partyResponse = await this.cfsPostRequest<
       CreatePartyRequestDto,
       CreatePartyResponseDto
     >({
@@ -73,8 +73,11 @@ export class CFSCreditAccountService {
         customer_name: clientNumber,
       } as CreatePartyRequestDto,
     });
-    if (CFSCreditAccountService.isSuccess(status) && data.party_number) {
-      return data;
+    if (
+      CFSCreditAccountService.isSuccess(partyResponse.status) &&
+      partyResponse?.data.party_number
+    ) {
+      return partyResponse?.data;
     } else {
       this.logger.error('Step 1 - Unable to create a party for the company');
       return null;
