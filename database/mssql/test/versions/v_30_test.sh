@@ -16,7 +16,7 @@ else
 fi
 
 TEST_30_2_RESULT=$(/opt/mssql-tools/bin/sqlcmd -U ${USER} -P "${PASS}" -S ${SERVER} -v DB_NAME=${DATABASE} -h -1 -i ${TESTS_DIR}/v_30_2_test.sql | xargs)
-if [[ $TEST_30_2_RESULT -eq 1 ]]; then
+if [[ $TEST_30_2_RESULT -eq 100 ]]; then
     echo "Test 30.2 passed: Directory type inserted correctly"
 else
     echo "******** Test 30.2 failed: Directory type not inserted correctly"
