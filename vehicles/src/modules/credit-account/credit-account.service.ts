@@ -209,7 +209,6 @@ export class CreditAccountService {
       {
         extraArgs: () => ({
           userType: CreditAccountUserType.ACCOUNT_OWNER,
-          companyId,
           creditBalance: 0,
           availableCredit: creditLimit,
           creditLimit,
@@ -235,6 +234,9 @@ export class CreditAccountService {
         extraArgs: () => ({
           userType: CreditAccountUserType.ACCOUNT_OWNER,
           companyId,
+          creditBalance: 0,
+          availableCredit: 0,
+          creditLimit: 0,
         }),
       },
     );
