@@ -227,7 +227,6 @@ export const List = memo(
         isLoading: isPending,
         showAlertBanner: isError,
         showProgressBars: isFetching,
-        // sorting: [{ id: "createdDateTime", desc: true }],
         columnVisibility: { powerUnitId: false, trailerId: false },
         rowSelection: rowSelection,
       },
