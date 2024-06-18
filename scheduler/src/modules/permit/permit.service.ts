@@ -128,15 +128,15 @@ export class PermitService {
         .take(count)
         .getMany();
         const permitIds: string[] = permits.map((permit) => permit.permitId);
-        this.logger.log('permit IDS for document generation: ', permitIds);
+        this.logger.log('permit IDS for receipt generation: ', permitIds);
         if (permitIds.length) {
           const permitDto: PermitIdDto = { ids: permitIds };
           const url = process.env.ACCESS_API_URL + `/permits/receipts`;
           await this.accessApi(url, permitDto)
       }
     } catch (error) {
-      this.logger.error(`Error in GeneratePermitDocument Job ${error}`);
-      throw new Error('Error in GeneratePermitDocument cron job');
+      this.logger.error(`Error in GenerateReceipt Job ${error}`);
+      throw new Error('Error in GenerateReceipt cron job');
     } finally {
       this.runningReceiptGen = false;
     }
