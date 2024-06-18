@@ -9,15 +9,12 @@ import {
 } from '@nestjs/common';
 import { AxiosRequestConfig, AxiosError } from 'axios';
 import { lastValueFrom } from 'rxjs';
-import * as Handlebars from 'handlebars';
 import { LogAsyncMethodExecution } from '../../decorator/log-async-method-execution.decorator';
-import { LogMethodExecution } from '../../decorator/log-method-execution.decorator';
 import { GovCommonServices } from '../../enum/gov-common-services.enum';
 import { getAccessToken } from '../../helper/gov-common-services.helper';
-import { getFromCache } from '../../helper/cache.helper';
-import { CacheKey } from '../../enum/cache-key.enum';
 import { NotificationTemplate } from '../../enum/notification-template.enum';
 import { IChesAttachment } from '../../interface/attachment.ches.interface';
+import { renderTemplate } from '../../helper/notification.helper';
 
 @Injectable()
 export class NotificationService {
@@ -40,6 +37,7 @@ export class NotificationService {
    * @param data The data object to fill in the template.
    * @param subject The subject line of the email.
    * @param to An array of recipient email addresses.
+   * @param isEmbedBase64Image Whether to embed images as Base64 images.
    * @param attachments An optional array of attachments to include in the email.
    * @returns A promise that resolves with the transaction ID of the sent email.
    */
@@ -49,12 +47,18 @@ export class NotificationService {
     data: object,
     subject: string,
     to: string[],
+    isEmbedBase64Image = false,
     attachments?: IChesAttachment[],
     cc?: string[],
     bcc?: string[],
   ): Promise<string> {
     // Generates the email body using the specified template and data
-    const messageBody = await this.renderTemplate(template, data);
+    const messageBody = await renderTemplate(
+      template,
+      data,
+      this.cacheManager,
+      isEmbedBase64Image,
+    );
     // Retrieves the access token for the email service
     const token = await getAccessToken(
       GovCommonServices.COMMON_HOSTED_EMAIL_SERVICE,
@@ -120,68 +124,5 @@ export class NotificationService {
       });
 
     return responseData.txId;
-  }
-
-  /**
-   * Compiles an HTML email body from a specified template and data.
-   *
-   * This method retrieves an email template by name from the cache, then uses Handlebars to compile the template
-   * with the provided data object. It automatically adds URLs for various logos based on environment variables
-   * and returns the compiled HTML as a string.
-   *
-   * @param templateName The name of the email template to render.
-   * @param data The data object to pass to the Handlebars template.
-   * @returns A promise that resolves with the compiled HTML string of the email body.
-   * @throws InternalServerErrorException If the template is not found in the cache.
-   */
-  @LogAsyncMethodExecution()
-  async renderTemplate(
-    templateName: NotificationTemplate,
-    data: object,
-  ): Promise<string> {
-    const template = await getFromCache(
-      this.cacheManager,
-      this.getCacheKeyforEmailTemplate(templateName),
-    );
-    if (!template?.length) {
-      throw new InternalServerErrorException('Template not found');
-    }
-    const compiledTemplate = Handlebars.compile(template);
-    const htmlBody = compiledTemplate({
-      ...data,
-      headerLogo: process.env.FRONTEND_URL + '/BC_Logo_MOTI.png',
-      footerLogo: process.env.FRONTEND_URL + '/onRouteBC_Logo.png',
-      darkModeHeaderLogo: process.env.FRONTEND_URL + '/BC_Logo_Rev_MOTI.png',
-      darkModeMedHeaderLogo:
-        process.env.FRONTEND_URL + '/BC_Logo_Rev_MOTI@2x.png',
-      darkModeFooterLogo: process.env.FRONTEND_URL + '/onRouteBC_Rev_Logo.png',
-      darkModeMedFooterLogo:
-        process.env.FRONTEND_URL + '/onRouteBC_Rev_Logo@2x.png',
-      whiteHeaderLogo: process.env.FRONTEND_URL + '/BC_Logo_MOTI_White.jpg',
-      whiteMedHeaderLogo:
-        process.env.FRONTEND_URL + '/BC_Logo_MOTI_White@2x.jpg',
-      whiteFooterLogo: process.env.FRONTEND_URL + '/onRouteBC_Logo_White.jpg',
-      whiteMedFooterLogo:
-        process.env.FRONTEND_URL + '/onRouteBC_Logo_White@2x.jpg',
-    });
-    return htmlBody;
-  }
-
-  @LogMethodExecution()
-  getCacheKeyforEmailTemplate(templateName: NotificationTemplate): CacheKey {
-    switch (templateName) {
-      case NotificationTemplate.ISSUE_PERMIT:
-        return CacheKey.EMAIL_TEMPLATE_ISSUE_PERMIT;
-      case NotificationTemplate.PAYMENT_RECEIPT:
-        return CacheKey.EMAIL_TEMPLATE_PAYMENT_RECEIPT;
-      case NotificationTemplate.PROFILE_REGISTRATION:
-        return CacheKey.EMAIL_TEMPLATE_PROFILE_REGISTRATION;
-      case NotificationTemplate.COMPANY_SUSPEND:
-        return CacheKey.EMAIL_TEMPLATE_COMPANY_SUSPEND;
-      case NotificationTemplate.COMPANY_UNSUSPEND:
-        return CacheKey.EMAIL_TEMPLATE_COMPANY_UNSUSPEND;
-      default:
-        throw new Error('Invalid template name');
-    }
   }
 }
