@@ -69,7 +69,7 @@ export class NotificationController {
     // Retrieves the current user details from the request
     const currentUser = req.user as IUserJWT;
     // Destructures the required fields from the NotificationDocumentDto
-    const { subject, to, templateName, data, documentIds } =
+    const { subject, to, cc, bcc, fax, templateName, data, documentIds } =
       notificationDocumentDto;
 
     // Processes document IDs to attach them to the notification
@@ -99,19 +99,36 @@ export class NotificationController {
       );
     }
 
-    // Sends the notification with attachments and returns the transaction ID
-    const transactionId = await this.notificationService.sendEmailMessage(
+    // Sends the email notification with attachments and returns the transaction ID
+    const emailTransactionId = await this.notificationService.sendEmailMessage(
       templateName,
       data,
       subject,
       to,
+      false,
       attachments,
+      cc,
+      bcc,
     );
+
+    let faxTransactionId: string;
+
+    if (fax?.length) {
+      faxTransactionId = await this.notificationService.sendEmailMessage(
+        templateName,
+        data,
+        subject,
+        fax,
+        true,
+        attachments,
+      );
+    }
 
     // Returns a success message and the transaction ID of the sent notification
     return {
       message: 'Notification sent successfully.',
-      transactionId: transactionId,
+      emailTransactionId: emailTransactionId,
+      faxTransactionId: faxTransactionId,
     };
   }
 
@@ -134,7 +151,8 @@ export class NotificationController {
     @Body() notificationDocumentDto: NotificationDto,
   ) {
     // Destructures the required fields from the NotificationDocumentDto
-    const { subject, to, templateName, data } = notificationDocumentDto;
+    const { subject, to, cc, bcc, fax, templateName, data } =
+      notificationDocumentDto;
 
     // Sends the notification with attachments and returns the transaction ID
     const transactionId = await this.notificationService.sendEmailMessage(
@@ -142,12 +160,29 @@ export class NotificationController {
       data,
       subject,
       to,
+      false,
+      null,
+      cc,
+      bcc,
     );
+
+    let faxTransactionId: string;
+
+    if (fax?.length) {
+      faxTransactionId = await this.notificationService.sendEmailMessage(
+        templateName,
+        data,
+        subject,
+        fax,
+        true,
+      );
+    }
 
     // Returns a success message and the transaction ID of the sent notification
     return {
       message: 'Notification sent successfully.',
       transactionId: transactionId,
+      faxTransactionId: faxTransactionId,
     };
   }
 }

@@ -79,6 +79,7 @@ services:
       CREDIT_ACCOUNT_URL: ${CREDIT_ACCOUNT_URL}
       CREDIT_ACCOUNT_CLIENT_ID: ${CREDIT_ACCOUNT_CLIENT_ID}
       CREDIT_ACCOUNT_CLIENT_SECRET: ${CREDIT_ACCOUNT_CLIENT_SECRET}
+      BCGOV_FAX_EMAIL: ${BCGOV_FAX_EMAIL}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/"]
       interval: 1m30s
