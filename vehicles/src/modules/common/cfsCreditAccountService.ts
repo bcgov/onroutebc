@@ -26,6 +26,15 @@ export class CFSCreditAccountService {
     private readonly cacheManager: Cache,
   ) {}
 
+  /**
+   * Determines if the provided HTTP status code represents a successful response.
+   *
+   * @param {number} status - The HTTP status code to check.
+   *
+   * @returns {boolean}
+   * Returns `true` if the status code is either `HttpStatus.OK` (200) or `HttpStatus.CREATED` (201);
+   * otherwise, returns `false`.
+   */
   private static isSuccess(status: number) {
     return (
       (status as HttpStatus) === HttpStatus.OK ||
@@ -33,6 +42,20 @@ export class CFSCreditAccountService {
     );
   }
 
+  /**
+   * Creates a new party by making a POST request to the provided URL with the client's number.
+   *
+   * @param {Object} params - The parameters for creating a party.
+   * @param {string} params.url - The URL to which the request will be made.
+   * @param {string} params.clientNumber - The client number to be used in the request.
+   *
+   * @returns {Promise<CreatePartyResponseDto>}
+   * A promise that resolves to an instance of CreatePartyResponseDto containing the party data
+   * if the request is successful, or null if the request fails.
+   *
+   * @throws {Error}
+   * Throws an error if there is any issue with the HTTP request or response.
+   */
   @LogAsyncMethodExecution()
   public async createParty({
     clientNumber,
@@ -58,6 +81,21 @@ export class CFSCreditAccountService {
     }
   }
 
+  /**
+   * Creates a new account by making a POST request to the provided URL with the client's number and credit account number.
+   *
+   * @param {Object} params - The parameters for creating an account.
+   * @param {string} params.url - The URL to which the request will be made.
+   * @param {string} params.clientNumber - The client number to be used in the request.
+   * @param {string} params.creditAccountNumber - The credit account number to be used in the request.
+   *
+   * @returns {Promise<CreateAccountResponseDto | null>}
+   * A promise that resolves to an instance of CreateAccountResponseDto containing the account data
+   * if the request is successful, or null if the request fails.
+   *
+   * @throws {Error}
+   * Throws an error if there is any issue with the HTTP request or response.
+   */
   @LogAsyncMethodExecution()
   public async createAccount({
     url,
@@ -86,6 +124,20 @@ export class CFSCreditAccountService {
     }
   }
 
+  /**
+   * Creates a new site by making a POST request to the provided URL with the specified mailing address.
+   *
+   * @param {Object} params - The parameters for creating a site.
+   * @param {string} params.url - The URL to which the request will be made.
+   * @param {Address} params.mailingAddress - The mailing address to be used in the request.
+   *
+   * @returns {Promise<CreateSiteResponseDto | null>}
+   * A promise that resolves to an instance of CreateSiteResponseDto containing the site data
+   * if the request is successful, or null if the request fails.
+   *
+   * @throws {Error}
+   * Throws an error if there is any issue with the HTTP request or response.
+   */
   @LogAsyncMethodExecution()
   public async createSite({
     url,
@@ -122,6 +174,19 @@ export class CFSCreditAccountService {
     }
   }
 
+  /**
+   * Creates a new site contact by making a POST request to the provided URL with the specified company information.
+   *
+   * @param {Object} params - The parameters for creating a site contact.
+   * @param {string} params.url - The URL to which the request will be made.
+   * @param {Company} params.companyInfo - The company information to be used in the request.
+   *
+   * @returns {Promise<boolean>}
+   * A promise that resolves to a boolean indicating success (true) or failure (false) of the site contact creation.
+   *
+   * @throws {Error}
+   * Throws an error if there is any issue with the HTTP request or response.
+   */
   @LogAsyncMethodExecution()
   public async createSiteContact({
     url,
@@ -152,6 +217,22 @@ export class CFSCreditAccountService {
     }
   }
 
+  /**
+   * Makes a POST request to the specified URL with the given data and returns the response.
+   *
+   * @template Request - The type of the request payload.
+   * @template Response - The type of the response payload.
+   *
+   * @param {Object} params - The parameters for the POST request.
+   * @param {string} params.url - The URL to which the request will be made.
+   * @param {Request} params.data - The data to be sent in the POST request.
+   *
+   * @returns {Promise<AxiosResponse<Response>>}
+   * A promise that resolves to the Axios response containing the response data if the request is successful.
+   *
+   * @throws {Error}
+   * Throws an error if there is any issue with the HTTP request or response.
+   */
   private async cfsPostRequest<Request, Response>({
     url,
     data,
@@ -179,6 +260,20 @@ export class CFSCreditAccountService {
     return response;
   }
 
+  /**
+   * Makes a GET request to the specified URL and returns the response.
+   *
+   * @template Response - The type of the response payload.
+   *
+   * @param {Object} params - The parameters for the GET request.
+   * @param {string} params.url - The URL to which the request will be made.
+   *
+   * @returns {Promise<AxiosResponse<Response>>}
+   * A promise that resolves to the Axios response containing the response data if the request is successful.
+   *
+   * @throws {Error}
+   * Throws an error if there is any issue with the HTTP request or response.
+   */
   async cfsGetRequest<Response>({ url }: { url: string }) {
     const token = await getAccessToken(
       GovCommonServices.CREDIT_ACCOUNT_SERVICE,
