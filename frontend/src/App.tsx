@@ -27,12 +27,17 @@ import OnRouteBCContext, {
   IDIRUserDetailContext,
 } from "./common/authentication/OnRouteBCContext";
 
+import { env } from '../env'
+
 const authority =
+  import env.VITE_KEYCLOAK_ISSUER_URL ||
   import.meta.env.VITE_KEYCLOAK_ISSUER_URL ||
   envConfig.VITE_KEYCLOAK_ISSUER_URL;
 
 const client_id =
-  import.meta.env.VITE_KEYCLOAK_AUDIENCE || envConfig.VITE_KEYCLOAK_AUDIENCE;
+  env.VITE_KEYCLOAK_ISSUER_URL ||
+  import.meta.env.VITE_KEYCLOAK_AUDIENCE || 
+  envConfig.VITE_KEYCLOAK_AUDIENCE;
 
 /**
  * The OIDC Configuration needed for authentication.
