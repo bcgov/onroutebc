@@ -34,6 +34,8 @@ import { ReadCreditAccountDto } from './dto/response/read-credit-account.dto';
 import { CreditAccountUser } from './entities/credit-account-user.entity';
 import { CreditAccount } from './entities/credit-account.entity';
 import { callDatabaseSequence } from '../../common/helper/database.helper';
+import { CreditAccountActivity } from './entities/credit-account-activity.entity';
+import { CreditAccountActivityType } from '../../common/enum/credit-account-activity-type.enum';
 
 /**
  * Service functions for credit account operations.
@@ -46,6 +48,8 @@ export class CreditAccountService {
     private dataSource: DataSource,
     @InjectRepository(CreditAccount)
     private readonly creditAccountRepository: Repository<CreditAccount>,
+    @InjectRepository(CreditAccountActivity)
+    private readonly creditAccountActivityRepository: Repository<CreditAccountActivity>,
     @InjectRepository(CreditAccountUser)
     private readonly creditAccountUserRepository: Repository<CreditAccountUser>,
     private readonly cfsCreditAccountService: CFSCreditAccountService,
@@ -147,19 +151,22 @@ export class CreditAccountService {
     } else {
       this.logger.error('Account not created for the company.');
     }
+    let creditAccountStatusType: CreditAccountStatusType;
+    if (siteCreated && siteContactCreated) {
+      creditAccountStatusType = CreditAccountStatusType.ACCOUNT_ACTIVE;
+    } else {
+      creditAccountStatusType = CreditAccountStatusType.ACCOUNT_SETUP_FAIL;
+    }
 
     const savedCreditAccount = await this.creditAccountRepository.save({
       company: { companyId },
       cfsPartyNumber: +cfsPartyNumber,
       cfsSiteNumber,
-      creditAccountStatusType:
-        siteCreated && siteContactCreated
-          ? CreditAccountStatusType.ACCOUNT_ACTIVE
-          : CreditAccountStatusType.ACCOUNT_SETUP_FAIL,
+      creditAccountStatusType,
       creditAccountType:
         creditLimit === CreditAccountLimit.PREPAID
           ? CreditAccountType.PREPAID
-          : CreditAccountType.SECURED,
+          : CreditAccountType.UNSECURED,
       creditAccountNumber,
       creditAccountUsers: [],
       createdUser: currentUser.userName,
@@ -171,6 +178,24 @@ export class CreditAccountService {
       updatedUserDirectory: currentUser.orbcUserDirectory,
       updatedUserGuid: currentUser.userGUID,
     });
+
+    if (creditAccountStatusType === CreditAccountStatusType.ACCOUNT_ACTIVE) {
+      await this.creditAccountActivityRepository.save({
+        idirUser: { userGUID: currentUser.userGUID },
+        creditAccountActivityType: CreditAccountActivityType.ACCOUNT_OPENED,
+        creditAccountActivityDateTime: new Date(),
+        creditAccount: { creditAccountId: savedCreditAccount.creditAccountId },
+        createdUser: currentUser.userName,
+        createdDateTime: new Date(),
+        createdUserDirectory: currentUser.orbcUserDirectory,
+        createdUserGuid: currentUser.userGUID,
+        updatedUser: currentUser.userName,
+        updatedDateTime: new Date(),
+        updatedUserDirectory: currentUser.orbcUserDirectory,
+        updatedUserGuid: currentUser.userGUID,
+      });
+    }
+
     const creditAccountHolder = await this.classMapper.mapAsync(
       companyInfo,
       Company,
