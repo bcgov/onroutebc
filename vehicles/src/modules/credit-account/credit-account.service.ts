@@ -191,8 +191,7 @@ export class CreditAccountService {
         }),
       },
     );
-    createdCreditAccountDto.creditAccountUsers = [];
-    createdCreditAccountDto.creditAccountUsers.push(creditAccountHolder);
+    createdCreditAccountDto.creditAccountUsers = [creditAccountHolder];
     return createdCreditAccountDto;
   }
 
