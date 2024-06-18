@@ -191,7 +191,6 @@ export class CreditAccountService {
         }),
       },
     );
-    console.log('createdCreditAccountDto::', createdCreditAccountDto);
     createdCreditAccountDto.creditAccountUsers = [];
     createdCreditAccountDto.creditAccountUsers.push(creditAccountHolder);
     return createdCreditAccountDto;
