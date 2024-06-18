@@ -14,6 +14,8 @@ import { PermitTransaction } from '../entities/permit-transaction.entity';
 import { ReadApplicationTransactionDto } from '../dto/response/read-application-transaction.dto';
 import { UpdatePaymentGatewayTransactionDto } from '../dto/request/update-payment-gateway-transaction.dto';
 import { ReadPaymentGatewayTransactionDto } from '../dto/response/read-payment-gateway-transaction.dto';
+import { Directory } from 'src/common/enum/directory.enum';
+import { PPC_FULL_TEXT } from 'src/common/constants/api.constant';
 
 @Injectable()
 export class TransactionProfile extends AutomapperProfile {
@@ -141,6 +143,17 @@ export class TransactionProfile extends AutomapperProfile {
           (transaction) => transaction.updatedUserGuid,
           mapWithArguments((source, { userGUID }) => {
             return userGUID;
+          }),
+        ),
+        forMember(
+          (transaction) => transaction.payerName,
+          mapWithArguments((source, { directory, firstName, lastName }) => {
+            if (
+              directory === Directory.IDIR ||
+              directory === Directory.SERVICE_ACCOUNT
+            )
+              return PPC_FULL_TEXT;
+            else return String(firstName) + ' ' + String(lastName);
           }),
         ),
         forMember(

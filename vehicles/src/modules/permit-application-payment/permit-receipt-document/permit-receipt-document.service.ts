@@ -467,14 +467,10 @@ export class PermitReceiptDocumentService {
                 companyAlternateName: companyAlternateName,
                 permitData: permitData,
                 //Payer Name should be persisted in transacation Table so that it can be used for DocRegen
-                payerName:
-                  currentUser.orbcUserDirectory === Directory.IDIR
-                    ? constants.PPC_FULL_TEXT
-                    : currentUser.orbcUserFirstName +
-                      ' ' +
-                      currentUser.orbcUserLastName,
+                payerName: transaction?.payerName,
                 issuedBy:
-                  currentUser.orbcUserDirectory === Directory.IDIR
+                  currentUser.orbcUserDirectory === Directory.IDIR ||
+                  currentUser.orbcUserDirectory === Directory.SERVICE_ACCOUNT
                     ? constants.PPC_FULL_TEXT
                     : constants.SELF_ISSUED,
                 totalTransactionAmount: formatAmount(
