@@ -1,16 +1,19 @@
-import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common';
+import { Body, Controller, Param, Post, Req } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiMethodNotAllowedResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 import { Request } from 'express';
+import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-flag-enabled.decorator';
 import { Roles } from '../../common/decorator/roles.decorator';
 import { Role } from '../../common/enum/roles.enum';
+import { DataNotFoundException } from '../../common/exception/data-not-found.exception';
 import { ExceptionDto } from '../../common/exception/exception.dto';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { CompanyIdPathParamDto } from '../common/dto/request/pathParam/companyId.path-param.dto';
@@ -18,7 +21,6 @@ import { CreditAccountService } from './credit-account.service';
 import { CreateCreditAccountDto } from './dto/request/create-credit-account.dto';
 import { ReadCreditAccountUserDto } from './dto/response/read-credit-account-user.dto';
 import { ReadCreditAccountDto } from './dto/response/read-credit-account.dto';
-import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-enabled.decorator';
 
 @ApiBearerAuth()
 @ApiTags('Credit Accounts')
@@ -38,7 +40,7 @@ export class CreditAccountController {
    * Creates a credit account.
    *
    * @param { companyId } - The companyId path parameter.
-   * @returns The result of the creation operation.
+   * @returns The result of the creation operation OR a relevant exception.
    */
   @ApiOperation({
     summary: 'Creates a credit account.',
@@ -67,30 +69,36 @@ export class CreditAccountController {
   }
 
   /**
-   * Adds a new item to the shopping cart.
+   * Retrieves a credit account.
    *
    * @param { companyId } - The companyId path parameter.
-   * @param { applicationIds } - The DTO to create a new shopping cart item.
    * @returns The result of the creation operation.
    */
   @ApiOperation({
-    summary: 'Adds one or more applications to the shopping cart.',
+    summary:
+      'Retrieves a credit account (if available) associated with a company.',
     description:
-      'Adds one or more applications to the shopping cart, enforcing authentication.',
+      'Retrieves a credit account (if available) associated with a company, enforcing authentication.',
   })
-  @ApiCreatedResponse({
-    description: 'The result of the changes to cart.',
-    type: String,
+  @ApiOkResponse({
+    description: 'The retrieved credit account.',
+    type: ReadCreditAccountDto,
   })
-  @Get()
+  @IsFeatureFlagEnabled('CREDIT-ACCOUNT')
+  // @Get() - Uncomment when feature is ready
   @Roles(Role.READ_CREDIT_ACCOUNT)
   async getCreditAccount(
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
   ): Promise<ReadCreditAccountDto> {
-    return await this.creditAccountService.getCreditAccount(
-      request.user as IUserJWT,
-      companyId,
-    );
+    const readCreditAccountDto =
+      await this.creditAccountService.getCreditAccount(
+        request.user as IUserJWT,
+        companyId,
+      );
+    if (!readCreditAccountDto) {
+      throw new DataNotFoundException();
+    }
+    return readCreditAccountDto;
   }
 }

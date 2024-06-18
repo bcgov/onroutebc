@@ -30,6 +30,7 @@ import { DeleteCreditAccountUserDto } from './dto/request/delete-credit-account-
 import { CreditAccountIdPathParamDto } from './dto/request/pathParam/creditAccountUsers.path-params.dto';
 import { GetCreditAccountUserQueryParamsDto } from './dto/request/queryParam/getCreditAccountUser.query-params.dto';
 import { ReadCreditAccountUserDto } from './dto/response/read-credit-account-user.dto';
+import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-flag-enabled.decorator';
 
 @ApiBearerAuth()
 @ApiTags('Credit Account Users')
@@ -64,6 +65,7 @@ export class CreditAccountUserController {
     description: 'The result of the changes to the credit account user.',
     type: String,
   })
+  @IsFeatureFlagEnabled('CREDIT-ACCOUNT')
   @Put()
   @Roles(Role.WRITE_CREDIT_ACCOUNT)
   async addOrActivateCreditAccountUser(
@@ -97,6 +99,7 @@ export class CreditAccountUserController {
     description: 'The result of the changes to the credit account user.',
     type: String,
   })
+  @IsFeatureFlagEnabled('CREDIT-ACCOUNT')
   @Delete()
   @Roles(Role.WRITE_CREDIT_ACCOUNT)
   async deactivateCreditAccountUser(
@@ -129,6 +132,7 @@ export class CreditAccountUserController {
     description: 'The list of credit account users.',
     type: [ReadCreditAccountUserDto],
   })
+  @IsFeatureFlagEnabled('CREDIT-ACCOUNT')
   @Get()
   @Roles(Role.READ_CREDIT_ACCOUNT)
   async getCreditAccountUsers(

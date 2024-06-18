@@ -35,6 +35,9 @@ import { CreditAccountUser } from './entities/credit-account-user.entity';
 import { CreditAccount } from './entities/credit-account.entity';
 import { callDatabaseSequence } from '../../common/helper/database.helper';
 
+/**
+ * Service functions for credit account operations.
+ */
 @Injectable()
 export class CreditAccountService {
   private readonly logger = new Logger(CreditAccountService.name);
@@ -49,6 +52,23 @@ export class CreditAccountService {
     private readonly companyService: CompanyService,
   ) {}
 
+  /**
+   * Creates a new credit account for a company.
+   *
+   * The `create` method orchestrates the creation of a new credit account, including the creation
+   * of associated entities such as Party, Account, Site, and Site Contact within the CFS system.
+   * The method ensures that the credit account is created with the proper references and initial
+   * data, and then saves it to the local repository.
+   *
+   * @param {IUserJWT} currentUser - The current user creating the credit account.
+   * @param {Object} createParams - Parameters required for creating the credit account.
+   * @param {number} createParams.companyId - The ID of the company for which the credit account is being created.
+   * @param {CreditAccountLimitType} createParams.creditLimit - The credit limit type for the new account.
+   * @returns {Promise<ReadCreditAccountDto>} - The created credit account data transfer object.
+   * @throws {BadRequestException} - If validation of the credit account creation fails.
+   * @throws {InternalServerErrorException} - If the creation of any required entity in the CFS system fails.
+   * @memberof CreditAccountService
+   */
   @LogAsyncMethodExecution()
   async create(
     currentUser: IUserJWT,
@@ -212,6 +232,16 @@ export class CreditAccountService {
     );
   }
 
+  /**
+   * Generates a unique credit account number.
+   *
+   * This method interacts with the database to retrieve a sequence value and formats it
+   * to produce a unique credit account number. The formatted number starts with
+   * the prefix 'WS' followed by a zero-padded sequence number.
+   *
+   * @returns {Promise<string>} The generated credit account number.
+   * @throws {InternalServerErrorException} If the sequence retrieval fails.
+   */
   private async getCreditAccountNumber(): Promise<string> {
     const rawCreditAccountSequenceNumber = await callDatabaseSequence(
       'permit.ORBC_CREDIT_ACCOUNT_NUMBER_SEQ',
@@ -220,13 +250,30 @@ export class CreditAccountService {
     return `WS${rawCreditAccountSequenceNumber.padStart(4, '0')}`;
   }
 
+  /**
+   * Updates the status of a credit account.
+   *
+   * This method changes the status of a specified credit account to a new status.
+   * The status is updated only if the current status is active. The method also updates
+   * the audit fields of the credit account with the information of the user who performed
+   * the update. If the update is successful, the method retrieves the updated credit
+   * account and returns it.
+   *
+   * @param {Object} params - The parameters for updating the credit account status.
+   * @param {number} params.companyId - The ID of the company associated with the credit account.
+   * @param {CreditAccountStatusType} params.statusToUpdateTo - The new status to update the credit account to.
+   * @param {IUserJWT} currentUser - The current user performing the update.
+   * @returns {Promise<ReadCreditAccountDto>} - The updated credit account data transfer object.
+   * @throws {BadRequestExceptionDto} - If the update fails (e.g., if the account is not in active status).
+   * @memberof CreditAccountService
+   */
   private async updateCreditAccountStatus(
     {
       companyId,
       statusToUpdateTo,
     }: { companyId: number; statusToUpdateTo: CreditAccountStatusType },
     currentUser: IUserJWT,
-  ) {
+  ): Promise<ReadCreditAccountDto> {
     const { affected } = await this.creditAccountRepository
       .createQueryBuilder('creditAccount')
       .update()
@@ -251,6 +298,19 @@ export class CreditAccountService {
     }
   }
 
+  /**
+   * Validates the creation of a credit account for a company.
+   *
+   * This method checks whether the company associated with the provided company ID is already a user
+   * of another credit account or if the company already has a credit account. If either condition
+   * is met, it throws a BadRequestException to prevent the creation of a duplicate credit account.
+   *
+   * @param {number} companyId - The ID of the company for which the credit account is being created.
+   * @throws {BadRequestException} - If the company is already a user of another credit account
+   *                                 or if the company already has a credit account.
+   * @private
+   * @memberof CreditAccountService
+   */
   private async validateCreateCreditAccount(companyId: number): Promise<void> {
     const companyIsAlreadyAUser = await this.creditAccountUserRepository.exists(
       {

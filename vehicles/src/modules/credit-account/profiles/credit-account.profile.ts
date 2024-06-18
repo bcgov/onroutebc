@@ -32,7 +32,7 @@ export class CreditAccountProfile extends AutomapperProfile {
         ReadCreditAccountDto,
         forMember(
           (d) => d.companyId,
-          mapWithArguments((_s, { companyId }) => companyId as number),
+          mapFrom(({ company: { companyId } }) => companyId),
         ),
         forMember(
           (d) => d.availableCredit,
@@ -50,13 +50,6 @@ export class CreditAccountProfile extends AutomapperProfile {
           (d) => d.creditBalance,
           mapWithArguments((_s, { creditBalance }) => creditBalance as number),
         ),
-        // forMember(
-        //   (d) => d.creditAccountUsers,
-        //   mapWithArguments(
-        //     (_s, { creditAccountUsers }) =>
-        //       creditAccountUsers as ReadCreditAccountUserDto[],
-        //   ),
-        // ),
       );
       createMap(
         mapper,
