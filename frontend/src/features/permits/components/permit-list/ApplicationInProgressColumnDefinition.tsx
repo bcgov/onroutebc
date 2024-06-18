@@ -38,7 +38,7 @@ export const ApplicationInProgressColumnDefinition = (
           </>
         );
       },
-      size: 180,
+      size: 160,
     },
     {
       accessorKey: "permitType",
@@ -60,6 +60,8 @@ export const ApplicationInProgressColumnDefinition = (
       id: "unitNumber",
       enableSorting: false,
       header: "Unit #",
+      minSize: 50,
+      maxSize: 100,
     },
     {
       accessorKey: "vin",

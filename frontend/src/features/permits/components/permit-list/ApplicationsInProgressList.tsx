@@ -186,6 +186,12 @@ export const ApplicationsInProgressList = ({
       pagination,
       sorting,
     },
+    displayColumnDefOptions: {
+      "mrt-row-select": {
+        size: 10,
+      },
+    },
+    enableRowActions: false,
     enableRowSelection:
       (row) => canRowBeSelected(
         row?.original?.permitApplicationOrigin,
