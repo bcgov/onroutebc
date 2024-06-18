@@ -65,8 +65,7 @@ export class PermitService {
       this.logger.log('permit IDS for issuance: ', permitIds);
       if (permitIds.length) {
         const permitDto: PermitIdDto = { ids: permitIds };
-        const url =
-          process.env.ACCESS_API_URL + `/applications/issue`;
+        const url = process.env.ACCESS_API_URL + `/applications/issue`;
         await this.accessApi(url, permitDto);
       }
     } catch (error) {

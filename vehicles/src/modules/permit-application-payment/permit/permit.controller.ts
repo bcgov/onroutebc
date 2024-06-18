@@ -198,7 +198,7 @@ export class PermitController {
       createNotificationDto,
     );
   }
-    /**
+  /**
    * A POST method defined with the @Post() decorator and a route of /scheduler/document
    * that generates permit and receipt document for given application ids
    * This method only works for ORBC Service account.
@@ -207,30 +207,30 @@ export class PermitController {
    * @returns The ids of new voided/revoked permit a in response object {@link string}
    *
    */
-    @ApiOperation({
-      summary: 'Generate permit and receipt document for given application ids',
-      description:
-        'Generate permit and receipt document for given application ids',
-    })
-    @UseGuards(JwtServiceAccountAuthGuard)
-    @Post('/documents')
-    async generateDocument(@Req() request: Request, @Body() permit: PermitIdDto) {
-      const currentUser = request.user as IUserJWT;
-      await this.permitReceiptDocumentService.generatePermitDocuments(
-        currentUser,
-        permit.ids,
-      );
-      return 'success';
-    }
-  
-    @UseGuards(JwtServiceAccountAuthGuard)
-    @Post('/receipts')
-    async generateReceipt(@Req() request: Request, @Body() permit: PermitIdDto) {
-      const currentUser = request.user as IUserJWT;
-      await this.permitReceiptDocumentService.generateReceiptDocuments(
-        currentUser,
-        permit.ids,
-      );
-      return 'success';
-    }
+  @ApiOperation({
+    summary: 'Generate permit and receipt document for given application ids',
+    description:
+      'Generate permit and receipt document for given application ids',
+  })
+  @UseGuards(JwtServiceAccountAuthGuard)
+  @Post('/documents')
+  async generateDocument(@Req() request: Request, @Body() permit: PermitIdDto) {
+    const currentUser = request.user as IUserJWT;
+    await this.permitReceiptDocumentService.generatePermitDocuments(
+      currentUser,
+      permit.ids,
+    );
+    return 'success';
+  }
+
+  @UseGuards(JwtServiceAccountAuthGuard)
+  @Post('/receipts')
+  async generateReceipt(@Req() request: Request, @Body() permit: PermitIdDto) {
+    const currentUser = request.user as IUserJWT;
+    await this.permitReceiptDocumentService.generateReceiptDocuments(
+      currentUser,
+      permit.ids,
+    );
+    return 'success';
+  }
 }
