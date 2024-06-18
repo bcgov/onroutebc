@@ -27,6 +27,24 @@ export default defineConfig({
     react(),
     viteTsconfigPaths(),
     svgrPlugin(),
+    {
+      name: 'build-html',
+      apply: 'build',
+      transformIndexHtml: (html) => {
+        return {
+          html,
+          tags: [
+            {
+              tag: 'script',
+              attrs: {
+                src: '/env.js'
+              },
+              injectTo: 'head'
+            }
+          ]
+        }
+      }
+    },
   ],
   css: {
     postcss: {
