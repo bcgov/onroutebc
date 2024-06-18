@@ -69,7 +69,7 @@ export class CreditAccountProfile extends AutomapperProfile {
         ReadCreditAccountUserDto,
         forMember(
           (d) => d.userType,
-          fromValue(CreditAccountUserType.ACCOUNT_OWNER),
+          fromValue(CreditAccountUserType.ACCOUNT_HOLDER),
         ),
       );
 

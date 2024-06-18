@@ -222,7 +222,7 @@ export class CreditAccountService {
       ReadCreditAccountDto,
       {
         extraArgs: () => ({
-          userType: CreditAccountUserType.ACCOUNT_OWNER,
+          userType: CreditAccountUserType.ACCOUNT_HOLDER,
           creditBalance: 0,
           availableCredit: creditLimit,
           creditLimit,
@@ -246,7 +246,7 @@ export class CreditAccountService {
       ReadCreditAccountDto,
       {
         extraArgs: () => ({
-          userType: CreditAccountUserType.ACCOUNT_OWNER,
+          userType: CreditAccountUserType.ACCOUNT_HOLDER,
           companyId,
           creditBalance: 0,
           availableCredit: 0,

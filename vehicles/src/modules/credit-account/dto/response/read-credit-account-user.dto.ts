@@ -7,7 +7,7 @@ export class ReadCreditAccountUserDto extends ReadCompanyMetadataDto {
   @AutoMap()
   @ApiProperty({
     description: 'The credit account user type.',
-    example: CreditAccountUserType.ACCOUNT_OWNER,
+    example: CreditAccountUserType.ACCOUNT_HOLDER,
   })
   userType: CreditAccountUserType;
 }

@@ -1,4 +1,4 @@
 export enum CreditAccountUserType {
-  ACCOUNT_OWNER = 'OWNER',
+  ACCOUNT_HOLDER = 'HOLDER',
   ACCOUNT_USER = 'USER',
 }
