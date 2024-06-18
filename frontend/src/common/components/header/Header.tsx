@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import { useAuth } from "react-oidc-context";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
+
 import "./Header.scss";
 import { DoesUserHaveRoleWithContext } from "../../authentication/util";
 import { Brand } from "./components/Brand";
@@ -21,12 +22,10 @@ import {
   SETTINGS_ROUTES,
   VEHICLES_ROUTES,
 } from "../../../routes/constants";
-import {env} from '../../../env';
 
 const getEnv = () => {
   const env =
     import.meta.env.VITE_DEPLOY_ENVIRONMENT ||
-    env.VITE_DEPLOY_ENVIRONMENT ||
     envConfig.VITE_DEPLOY_ENVIRONMENT;
 
   switch (!isNaN(Number(env)) || env) {
