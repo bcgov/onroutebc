@@ -15,15 +15,15 @@ import { getAccessToken } from 'src/common/helper/gov-common-services.helper';
 import { GovCommonServices } from 'src/common/enum/gov-common-services.enum';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Permit } from './entities/permit.entity';
-import { Brackets, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { ApplicationStatus } from '../common/enum/application-status.enum';
-import { PermitIdDto } from '../common/dto/permit-id.dto';
+import { PermitIdDto } from './dto/permit-id.dto';
 import * as dayjs from 'dayjs';
 import {
   DOC_GEN_WAIT_DURATION,
   ISSUE_PERMIT_WAIT_DURATION,
 } from 'src/common/constants/permit.constant';
-import { transactionDto } from '../common/dto/trasaction.dto';
+import { transactionDto } from './dto/trasaction.dto';
 
 @Injectable()
 export class PermitService {
@@ -66,7 +66,7 @@ export class PermitService {
       if (permitIds.length) {
         const permitDto: PermitIdDto = { ids: permitIds };
         const url =
-          process.env.ACCESS_API_URL + `/applications/scheduler/issue`;
+          process.env.ACCESS_API_URL + `/applications/issue`;
         await this.accessApi(url, permitDto);
       }
     } catch (error) {
@@ -98,7 +98,7 @@ export class PermitService {
       this.logger.log('permit IDS for document generation: ', permitIds);
       if (permitIds.length) {
         const permitDto: PermitIdDto = { ids: permitIds };
-        const url = process.env.ACCESS_API_URL + `/applications/documents`;
+        const url = process.env.ACCESS_API_URL + `/permits/documents`;
         await this.accessApi(url, permitDto);
       }
     } catch (error) {
@@ -116,7 +116,6 @@ export class PermitService {
       const date = dayjs(now)
         .subtract(DOC_GEN_WAIT_DURATION, 'minute')
         .toDate();
-      const count = Number(process.env.DOC_GEN_LIMIT);
       const permits: Permit[] = await this.permitRepository
         .createQueryBuilder('permit')
         .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
@@ -149,7 +148,7 @@ export class PermitService {
       if (transactions.length) {
         for (const transaction of transactions) {
           const permitDto: PermitIdDto = transaction.permitIds;
-          const url = process.env.ACCESS_API_URL + `/applications/receipts`;
+          const url = process.env.ACCESS_API_URL + `/permits/receipts`;
           await this.accessApi(url, permitDto);
         }
       }
