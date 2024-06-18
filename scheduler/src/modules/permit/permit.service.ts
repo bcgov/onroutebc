@@ -102,8 +102,6 @@ export class PermitService {
     } catch (error) {
       this.logger.error(`Error in GeneratePermitDocument Job ${error}`);
       throw new Error('Error in GeneratePermitDocument cron job');
-    } finally {
-      this.runningDocGen = false;
     }
   }
 
@@ -127,18 +125,16 @@ export class PermitService {
         .andWhere('permit.updatedDateTime < :date', { date: date })
         .take(count)
         .getMany();
-        const permitIds: string[] = permits.map((permit) => permit.permitId);
-        this.logger.log('permit IDS for receipt generation: ', permitIds);
-        if (permitIds.length) {
-          const permitDto: PermitIdDto = { ids: permitIds };
-          const url = process.env.ACCESS_API_URL + `/permits/receipts`;
-          await this.accessApi(url, permitDto)
+      const permitIds: string[] = permits.map((permit) => permit.permitId);
+      this.logger.log('permit IDS for receipt generation: ', permitIds);
+      if (permitIds.length) {
+        const permitDto: PermitIdDto = { ids: permitIds };
+        const url = process.env.ACCESS_API_URL + `/permits/receipts`;
+        await this.accessApi(url, permitDto);
       }
     } catch (error) {
       this.logger.error(`Error in GenerateReceipt Job ${error}`);
       throw new Error('Error in GenerateReceipt cron job');
-    } finally {
-      this.runningReceiptGen = false;
     }
   }
 
@@ -186,15 +182,16 @@ export class PermitService {
     } else {
       this.logger.log('Running GeneratePermitDocument Job.');
       this.runningDocGen = true;
-      await this.generateDocument();
-    }
-
-    if (this.runningReceiptGen) {
-      this.logger.log('GenerateReceipt job is running already.');
-    } else {
-      this.logger.log('Running GenerateReceipt Job.');
-      this.runningReceiptGen = true;
-      await this.generateReceipt();
+      try {
+        await Promise.allSettled([
+          this.generateDocument(),
+          this.generateReceipt(),
+        ]);
+      } catch (err) {
+        this.logger.log('Document or receipt generation failed: ', err);
+      } finally {
+        this.runningDocGen = false;
+      }
     }
   }
 }
