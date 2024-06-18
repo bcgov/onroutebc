@@ -23,7 +23,6 @@ import {
   DOC_GEN_WAIT_DURATION,
   ISSUE_PERMIT_WAIT_DURATION,
 } from 'src/common/constants/permit.constant';
-import { transactionDto } from './dto/trasaction.dto';
 
 @Injectable()
 export class PermitService {
@@ -115,6 +114,7 @@ export class PermitService {
       const date = dayjs(now)
         .subtract(DOC_GEN_WAIT_DURATION, 'minute')
         .toDate();
+      const count = Number(process.env.DOC_GEN_LIMIT);
       const permits: Permit[] = await this.permitRepository
         .createQueryBuilder('permit')
         .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
@@ -125,31 +125,14 @@ export class PermitService {
         })
         .andWhere('receipt.receiptDocumentId IS NULL')
         .andWhere('permit.updatedDateTime < :date', { date: date })
+        .take(count)
         .getMany();
-      let transactions: transactionDto[] = [];
-      permits.forEach((permit) => {
-        permit.permitTransactions.forEach((permitTransaction) => {
-          const existingTransaction = transactions.find(
-            (t) => t.id === permitTransaction.transaction.transactionId,
-          );
-
-          if (existingTransaction) {
-            existingTransaction.permitIds.ids.push(permit.permitId);
-          } else {
-            const newTransaction: transactionDto = {
-              id: permitTransaction.transaction.transactionId,
-              permitIds: { ids: [permit.permitId] },
-            };
-            transactions.push(newTransaction);
-          }
-        });
-      });
-      if (transactions.length) {
-        for (const transaction of transactions) {
-          const permitDto: PermitIdDto = transaction.permitIds;
+        const permitIds: string[] = permits.map((permit) => permit.permitId);
+        this.logger.log('permit IDS for document generation: ', permitIds);
+        if (permitIds.length) {
+          const permitDto: PermitIdDto = { ids: permitIds };
           const url = process.env.ACCESS_API_URL + `/permits/receipts`;
-          await this.accessApi(url, permitDto);
-        }
+          await this.accessApi(url, permitDto)
       }
     } catch (error) {
       this.logger.error(`Error in GeneratePermitDocument Job ${error}`);

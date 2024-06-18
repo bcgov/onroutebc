@@ -10,7 +10,6 @@ import { PermitData } from '../permit/entities/permit-data.entity';
 import { PermitType } from '../permit/entities/permit-type.entity';
 import { Permit } from '../permit/entities/permit.entity';
 import { PermitReceiptDocumentModule } from '../permit-receipt-document/permit-receipt-document.module';
-import { ApplicationController } from './application.controller';
 
 @Module({
   imports: [
