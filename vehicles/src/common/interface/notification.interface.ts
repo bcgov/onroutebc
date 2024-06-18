@@ -6,6 +6,7 @@ export interface INotification {
   subject: string;
   to: string[];
   cc?: string[];
+  bcc?: string[];
   templateName: NotificationTemplate;
   data?: CompanyDataNotification | ProfileRegistrationDataNotification;
 }

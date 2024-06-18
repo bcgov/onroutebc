@@ -37,6 +37,16 @@ export class NotificationDto {
   cc: string[];
 
   @ApiProperty({
+    description: 'Notification bcc email ids.',
+    example: ['someguy@mycompany.co', 'somegirl@mycompany.co'],
+  })
+  @IsOptional()
+  @IsEmail(undefined, {
+    each: true,
+  })
+  bcc: string[];
+
+  @ApiProperty({
     enum: NotificationTemplate,
     example: NotificationTemplate.COMPANY_SUSPEND,
     description: 'The template that will be used to render the notification.',

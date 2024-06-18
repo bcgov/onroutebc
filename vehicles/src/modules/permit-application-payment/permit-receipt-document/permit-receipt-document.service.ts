@@ -176,6 +176,8 @@ export class PermitReceiptDocumentService {
     subject: string,
     documentId: string,
     currentUser: IUserJWT,
+    cc?: string[],
+    bcc?: string[],
   ) {
     const distinctEmailList = Array.from(new Set(to?.filter(Boolean)));
 
@@ -184,6 +186,8 @@ export class PermitReceiptDocumentService {
       to: distinctEmailList,
       subject: subject,
       documentIds: [documentId],
+      cc: Array.from(new Set(cc?.filter(Boolean))),
+      bcc: Array.from(new Set(bcc?.filter(Boolean))),
     };
 
     void this.dopsService.notificationWithDocumentsFromDops(
@@ -317,12 +321,28 @@ export class PermitReceiptDocumentService {
             );
           }
 
+          const faxNumber =
+            permitDataForTemplate.permitData?.contactDetails?.fax?.replace(
+              /[\D-]/g,
+              '',
+            );
+
           try {
             const emailList = [
               permitDataForTemplate.permitData?.contactDetails?.email,
               permitDataForTemplate.permitData?.contactDetails?.additionalEmail,
               company?.email,
             ];
+
+            const bccEmailList = [];
+            if (faxNumber) {
+              // Replacing the placeholder with the actual fax number
+              const faxEmail = process.env.BCGOV_FAX_EMAIL?.replace(
+                '<faxnumber>',
+                faxNumber,
+              );
+              // bccEmailList.push(faxEmail);
+            }
 
             const subject = `onRouteBC Permits - ${company?.legalName}`;
             this.emailDocument(
@@ -331,6 +351,8 @@ export class PermitReceiptDocumentService {
               subject,
               documentId,
               currentUser,
+              null,
+              bccEmailList,
             );
           } catch (error: unknown) {
             /**
@@ -496,12 +518,29 @@ export class PermitReceiptDocumentService {
               documentId,
             );
 
+            const faxNumber = permitData?.contactDetails?.fax?.replace(
+              /[\D-]/g,
+              '',
+            );
+
             try {
               const emailList = [
                 permitData?.contactDetails?.email,
                 permitData?.contactDetails?.additionalEmail,
                 company?.email,
               ];
+
+              const bccEmailList = [];
+              if (faxNumber) {
+                // Replacing the placeholder with the actual fax number
+                // const faxEmail = process.env.BCGOV_FAX_EMAIL?.replace(
+                //   '<faxnumber>',
+                //   faxNumber,
+                // );
+                // bccEmailList.push('faxEmail');
+                bccEmailList.push('8555910264@fax.gov.bc.ca');
+
+              }
               const subject = `onRouteBC Permit Receipt - ${receiptNumber}`;
               this.emailDocument(
                 NotificationTemplate.PAYMENT_RECEIPT,
@@ -509,6 +548,8 @@ export class PermitReceiptDocumentService {
                 subject,
                 documentId,
                 currentUser,
+                null,
+                bccEmailList,
               );
             } catch (error: unknown) {
               /**

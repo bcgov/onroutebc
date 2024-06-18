@@ -50,6 +50,8 @@ export class NotificationService {
     subject: string,
     to: string[],
     attachments?: IChesAttachment[],
+    cc?: string[],
+    bcc?: string[],
   ): Promise<string> {
     // Generates the email body using the specified template and data
     const messageBody = await this.renderTemplate(template, data);
@@ -62,16 +64,16 @@ export class NotificationService {
 
     // Preparing the request data for the email
     const requestData = {
-      bcc: [],
       bodyType: 'html',
       body: messageBody,
-      cc: [],
       delayTS: 0,
       encoding: 'utf-8',
       from: 'noreply-OnRouteBC@gov.bc.ca',
       priority: 'normal',
       subject: subject,
       to: to,
+      cc: cc,
+      bcc: bcc,
       attachments: attachments?.length ? attachments : undefined,
     };
 
