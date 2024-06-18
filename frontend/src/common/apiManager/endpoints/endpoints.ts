@@ -1,4 +1,4 @@
-import {env} from '../../../'
+import {env} from '../../../';
 export const VEHICLES_URL =
   import.meta.env.VITE_API_VEHICLE_URL || 
   env.VITE_API_VEHICLE_URL ||

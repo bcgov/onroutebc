@@ -27,7 +27,7 @@ import OnRouteBCContext, {
   IDIRUserDetailContext,
 } from "./common/authentication/OnRouteBCContext";
 
-import { env } from '../env'
+import { env } from '../env';
 
 const authority =
   import env.VITE_KEYCLOAK_ISSUER_URL ||

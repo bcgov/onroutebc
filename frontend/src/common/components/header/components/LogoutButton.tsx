@@ -3,7 +3,7 @@ import { useAuth } from "react-oidc-context";
 import "./LogoutButton.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
-import {env} from '../../../env'
+import {env} from '../../../env';
 
 export const LogoutButton = () => {
   const { signoutRedirect, removeUser } = useAuth();

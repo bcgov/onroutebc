@@ -21,7 +21,7 @@ import {
   SETTINGS_ROUTES,
   VEHICLES_ROUTES,
 } from "../../../routes/constants";
-import {env} from '../../../env'
+import {env} from '../../../env';
 
 const getEnv = () => {
   const env =
