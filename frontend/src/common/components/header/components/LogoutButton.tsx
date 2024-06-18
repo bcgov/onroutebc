@@ -8,8 +8,8 @@ import {env} from '../../../env';
 export const LogoutButton = () => {
   const { signoutRedirect, removeUser } = useAuth();
   const siteMinderLogOffURL =
-    env.VITE_SITEMINDER_LOG_OFF_URL ||
     import.meta.env.VITE_SITEMINDER_LOG_OFF_URL ||
+    env.VITE_SITEMINDER_LOG_OFF_URL ||
     envConfig.VITE_SITEMINDER_LOG_OFF_URL;
 
   return (

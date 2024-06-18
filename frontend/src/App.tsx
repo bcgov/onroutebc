@@ -30,8 +30,8 @@ import OnRouteBCContext, {
 import { env } from '../env';
 
 const authority =
-  import env.VITE_KEYCLOAK_ISSUER_URL ||
   import.meta.env.VITE_KEYCLOAK_ISSUER_URL ||
+  env.VITE_KEYCLOAK_ISSUER_URL ||
   envConfig.VITE_KEYCLOAK_ISSUER_URL;
 
 const client_id =
