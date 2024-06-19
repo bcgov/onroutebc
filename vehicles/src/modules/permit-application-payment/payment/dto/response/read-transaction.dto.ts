@@ -42,6 +42,13 @@ export class ReadTransactionDto extends PaymentGatewayTransactionDto {
 
   @AutoMap()
   @ApiProperty({
+    example: 'Provincial Permit Center',
+    description: 'Represents who paid for the transaction.',
+  })
+  payerName: string;
+
+  @AutoMap()
+  @ApiProperty({
     example: '30.00',
     description: 'Represents the total amount of the transaction.',
   })
