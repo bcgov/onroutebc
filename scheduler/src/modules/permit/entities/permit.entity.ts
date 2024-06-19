@@ -1,7 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 import { Base } from '../../common/entities/base.entity';
+import { ApplicationStatus } from '../../common/enum/application-status.enum';
+import { PermitTransaction } from './permit-transaction.entity';
 
 @Entity({ name: 'permit.ORBC_PERMIT' })
 export class Permit extends Base {
@@ -25,6 +27,7 @@ export class Permit extends Base {
     nullable: true,
   })
   permitNumber: string;
+
   @AutoMap()
   @ApiProperty({
     example: '1',
@@ -64,6 +67,25 @@ export class Permit extends Base {
   })
   @Column({ type: 'integer', name: 'REVISION' })
   revision: number;
+
+  @AutoMap()
+  @ApiProperty({
+    example: ApplicationStatus.IN_PROGRESS,
+    description:
+      'State of a permit or permit application, at any given point in time',
+  })
+  @Column({
+    length: 20,
+    name: 'PERMIT_STATUS_TYPE',
+    nullable: true,
+  })
+  permitStatus: ApplicationStatus;
+
+  @OneToMany(
+    () => PermitTransaction,
+    (permitTransaction) => permitTransaction.permit,
+  )
+  public permitTransactions: PermitTransaction[];
 
   @AutoMap()
   @ApiProperty({

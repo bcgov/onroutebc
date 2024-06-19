@@ -561,6 +561,8 @@ export class PaymentService {
         {
           extraArgs: () => ({
             userName: currentUser.userName,
+            firstName: currentUser.orbcUserFirstName,
+            lastName: currentUser.orbcUserLastName,
             userGUID: currentUser.userGUID,
             timestamp: new Date(),
             directory: currentUser.orbcUserDirectory,
