@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'ty
 import { Transaction } from './transaction.entity';
 
 @Entity('ORBC_CFS_TRANSACTION_DETAIL', { schema: 'permit' })
-export class ORBC_CFSTransactionDetail {
+export class TransactionDetail {
   @PrimaryGeneratedColumn()
     id: number;
 

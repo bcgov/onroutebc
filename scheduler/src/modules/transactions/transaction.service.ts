@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Transaction } from './transaction.entity';
-import { ORBC_CFSTransactionDetail } from './transaction-detail.entity';
+import { TransactionDetail } from './transaction-detail.entity';
 import { Cron } from '@nestjs/schedule';
 import { LogAsyncMethodExecution } from 'src/common/decorator/log-async-method-execution.decorator';
 import { generate } from 'src/helper/generator.helper';
@@ -12,8 +12,8 @@ export class TransactionService {
   constructor(
     @InjectRepository(Transaction)
     private readonly transactionRepository: Repository<Transaction>,
-    @InjectRepository(ORBC_CFSTransactionDetail)
-    private readonly cfsTransactionDetailRepo: Repository<ORBC_CFSTransactionDetail>
+    @InjectRepository(TransactionDetail)
+    private readonly cfsTransactionDetailRepo: Repository<TransactionDetail>
   ) {}
 
   async getAllTransactions(): Promise<Transaction[]> {
@@ -22,7 +22,7 @@ export class TransactionService {
 
   async getTransactionDetails(): Promise<Transaction[]> {
     const transactions = await this.transactionRepository.createQueryBuilder('transaction')
-    .innerJoinAndSelect('ORBC_CFSTransactionDetail', 'detail', 'transaction.TRANSACTION_ID = detail.TRANSACTION_ID')
+    .innerJoinAndSelect('TransactionDetail', 'detail', 'transaction.TRANSACTION_ID = detail.TRANSACTION_ID')
     .where('detail.CFS_FILE_STATUS_TYPE = :status', { status: 'READY' })
     .getMany();
 
@@ -38,8 +38,8 @@ export class TransactionService {
   async updateCfsFileStatusType(fileName: string): Promise<void> {
     const currentDate = new Date();
     const currentUTCTimestamp = currentDate.toISOString();
-    const transactionDetails: ORBC_CFSTransactionDetail[] = await this.cfsTransactionDetailRepo.find({ where: { CFS_FILE_STATUS_TYPE: 'READY' } });
-    const updatedTransactionDetails: ORBC_CFSTransactionDetail[] = transactionDetails.map(detail => {
+    const transactionDetails: TransactionDetail[] = await this.cfsTransactionDetailRepo.find({ where: { CFS_FILE_STATUS_TYPE: 'READY' } });
+    const updatedTransactionDetails: TransactionDetail[] = transactionDetails.map(detail => {
       detail.CFS_FILE_STATUS_TYPE = 'SENT';
       detail.PROCESSSING_DATE_TIME = currentUTCTimestamp;
       detail.FILE_NAME = fileName;
