@@ -11,7 +11,6 @@ export interface PermitTemplateData {
   issuedBy: string;
   revisions: Revision[];
   permitData?: PermitData;
-  loas?: string;
 }
 
 interface Revision {
@@ -27,7 +26,6 @@ export interface PermitData {
   contactDetails?: ContactDetails;
   vehicleDetails?: VehicleDetails;
   commodities: Commodities[];
-  loas: Loas[]; //Letter of Authorizations
   mailingAddress: MailingAddress;
   companyName: string;
   clientNumber: string;
@@ -70,12 +68,6 @@ interface Commodities {
   description: string;
   condition: string;
   conditionLink: string;
-  checked: boolean;
-  disabled?: boolean;
-}
-
-interface Loas {
-  loaId: string;
   checked: boolean;
   disabled?: boolean;
 }

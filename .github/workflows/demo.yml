@@ -36,9 +36,5 @@ jobs:
       environment: ${{inputs.environment}}
       tag: "test"
       release: "demo"
-      params: |
-        --set-string global.license='c28f0c' \
-        --set-string global.zone='test' \
-        --set-string global.vault.role='nonprod' \
-        --set-string global.vault.zone='staging' \
-        --set-string global.pr_num='${{ needs.vars.outputs.pr }}' \
+      vault_role: "nonprod"
+      vault_zone: "staging"

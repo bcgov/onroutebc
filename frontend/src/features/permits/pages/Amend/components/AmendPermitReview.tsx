@@ -13,7 +13,6 @@ import { isValidTransaction } from "../../../helpers/payment";
 import { getDatetimes } from "./helpers/getDatetimes";
 import { useModifyAmendmentApplication } from "../../../hooks/hooks";
 import { ERROR_ROUTES } from "../../../../../routes/constants";
-import { DEFAULT_PERMIT_TYPE } from "../../../types/PermitType";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -102,11 +101,6 @@ export const AmendPermitReview = () => {
       getDefaultRequiredVal(
         0,
         amendmentApplication?.permitData?.permitDuration,
-      ),
-      getDefaultRequiredVal(
-        DEFAULT_PERMIT_TYPE,
-        amendmentApplication?.permitType,
-        permit?.permitType,
       ),
     );
 

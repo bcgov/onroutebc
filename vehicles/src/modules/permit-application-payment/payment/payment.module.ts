@@ -10,7 +10,6 @@ import { PaymentCardType } from './entities/payment-card-type.entity';
 import { PaymentMethodType } from './entities/payment-method-type.entity';
 import { PaymentReportService } from './payment-report.service';
 import { Permit } from '../permit/entities/permit.entity';
-import { CfsTransactionDetail } from './entities/cfs-transaction.entity';
 
 @Module({
   imports: [
@@ -21,7 +20,6 @@ import { CfsTransactionDetail } from './entities/cfs-transaction.entity';
       Receipt,
       PaymentCardType,
       PaymentMethodType,
-      CfsTransactionDetail,
     ]),
   ],
   controllers: [PaymentController],

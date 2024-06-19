@@ -6,4 +6,3 @@ export const PPC_FULL_TEXT = 'Provincial Permit Centre';
 export const TPS_MIGRATED_USER = 'TPS Migrated User';
 export const CRYPTO_ALGORITHM_MD5 = 'md5';
 export const CRYPTO_ALGORITHM_SHA256 = 'sha256';
-export const TOKEN_EXPIRY_BUFFER = 15;

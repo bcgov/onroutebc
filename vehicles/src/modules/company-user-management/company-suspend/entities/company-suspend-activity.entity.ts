@@ -37,7 +37,7 @@ export class CompanySuspendActivity extends Base {
    * The User entity linked to company's suspend activity.
    */
   @AutoMap(() => User)
-  @OneToOne(() => User, { nullable: false, cascade: false })
+  @OneToOne(() => User, { nullable: false })
   @JoinColumn({ name: 'IDIR_USER_GUID' })
   idirUser: User;
 

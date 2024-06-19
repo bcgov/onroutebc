@@ -182,11 +182,6 @@ export const getDefaultValues = (
     applicationData?.permitData?.expiryDate,
   );
 
-  const defaultPermitType = getDefaultRequiredVal(
-    permitType,
-    applicationData?.permitType,
-  );
-
   return {
     originalPermitId: getDefaultRequiredVal(
       "",
@@ -199,7 +194,10 @@ export const getDefaultValues = (
     ),
     permitId: getDefaultRequiredVal("", applicationData?.permitId),
     permitNumber: getDefaultRequiredVal("", applicationData?.permitNumber),
-    permitType: defaultPermitType,
+    permitType: getDefaultRequiredVal(
+      permitType,
+      applicationData?.permitType,
+    ),
     permitStatus: getDefaultRequiredVal(
       PERMIT_STATUSES.IN_PROGRESS,
       applicationData?.permitStatus,
@@ -244,7 +242,7 @@ export const getDefaultValues = (
       vehicleDetails: getDefaultVehicleDetails(
         applicationData?.permitData?.vehicleDetails,
       ),
-      feeSummary: `${calculateFeeByDuration(defaultPermitType, durationOrDefault)}`,
+      feeSummary: `${calculateFeeByDuration(durationOrDefault)}`,
     },
   };
 };

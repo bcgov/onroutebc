@@ -22,11 +22,11 @@ export type UserAuthGroup =
   | IDIRUserAuthGroup
   | GenericUserAuthGroup;
 
-export const GENERIC_USER_AUTH_GROUP_LIST: readonly GenericUserAuthGroup[] =
+export const GENERIC_USER_AUTH_GROUP_LIST: ReadonlyArray<GenericUserAuthGroup> =
   Object.values(GenericUserAuthGroup);
 
-export const CLIENT_USER_AUTH_GROUP_LIST: readonly ClientUserAuthGroup[] =
+export const CLIENT_USER_AUTH_GROUP_LIST: ReadonlyArray<ClientUserAuthGroup> =
   Object.values(ClientUserAuthGroup);
 
-export const IDIR_USER_AUTH_GROUP_LIST: readonly IDIRUserAuthGroup[] =
+export const IDIR_USER_AUTH_GROUP_LIST: ReadonlyArray<IDIRUserAuthGroup> =
   Object.values(IDIRUserAuthGroup);

@@ -35,21 +35,6 @@ import {
   getPendingPermits,
 } from "../apiManager/permitsAPI";
 
-const QUERY_KEYS = {
-  PERMIT_DETAIL: (
-    permitId?: Nullable<string>,
-    companyId?: Nullable<string>,
-  ) => ["permit", permitId, companyId],
-  AMEND_APPLICATION: (
-    originalPermitId?: Nullable<string>,
-    companyId?: Nullable<string>,
-  ) => ["amendmentApplication", originalPermitId, companyId],
-  PERMIT_HISTORY: (
-    originalPermitId?: Nullable<string>,
-    companyId?: Nullable<string>,
-  ) => ["permitHistory", originalPermitId, companyId],
-};
-
 /**
  * A custom react query mutation hook that saves the application data to the backend API
  * The hook checks for an existing application number to decide whether to send an update or create request
@@ -161,7 +146,7 @@ export const usePermitDetailsQuery = (
   permitId?: Nullable<string>,
 ) => {
   return useQuery({
-    queryKey: QUERY_KEYS.PERMIT_DETAIL(permitId, companyId),
+    queryKey: ["permit"],
     queryFn: async () => {
       const res = await getPermit(permitId, companyId);
       return res ? deserializePermitResponse(res) : res;
@@ -277,7 +262,7 @@ export const usePermitHistoryQuery = (
   companyId?: Nullable<string>,
 ) => {
   return useQuery({
-    queryKey: QUERY_KEYS.PERMIT_HISTORY(originalPermitId, companyId),
+    queryKey: ["permitHistory"],
     queryFn: () => getPermitHistory(originalPermitId, companyId),
     enabled: Boolean(originalPermitId) && Boolean(companyId),
     retry: false,
@@ -303,7 +288,7 @@ export const useIssuePermits = (companyIdParam?: Nullable<string>) => {
     retry: false,
     onSuccess: (issueResponseData) => {
       queryClient.invalidateQueries({
-        queryKey: ["application"],
+        queryKey: ["application", "permit"],
       });
       setIssueResults(issueResponseData);
     },
@@ -329,13 +314,13 @@ export const useAmendPermit = (companyIdParam?: Nullable<string>) => {
       const amendResult = await amendPermit(data, companyIdParam);
       if (amendResult.status === 200 || amendResult.status === 201) {
         queryClient.invalidateQueries({
-          queryKey: QUERY_KEYS.PERMIT_DETAIL(data.permitId, companyIdParam),
+          queryKey: ["permit"],
         });
         queryClient.invalidateQueries({
-          queryKey: QUERY_KEYS.AMEND_APPLICATION(data.originalPermitId, companyIdParam),
+          queryKey: ["amendmentApplication"],
         });
         queryClient.invalidateQueries({
-          queryKey: QUERY_KEYS.PERMIT_HISTORY(data.originalPermitId, companyIdParam),
+          queryKey: ["permitHistory"],
         });
 
         return {
@@ -363,16 +348,13 @@ export const useModifyAmendmentApplication = () => {
 
       if (amendResult.status === 200 || amendResult.status === 201) {
         queryClient.invalidateQueries({
-          queryKey: QUERY_KEYS.AMEND_APPLICATION(
-            data.application.originalPermitId,
-            data.companyId,
-          ),
+          queryKey: ["permit"],
         });
         queryClient.invalidateQueries({
-          queryKey: QUERY_KEYS.PERMIT_HISTORY(
-            data.application.originalPermitId,
-            data.companyId,
-          ),
+          queryKey: ["amendmentApplication"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["permitHistory"],
         });
 
         return {
@@ -398,7 +380,7 @@ export const useAmendmentApplicationQuery = (
   companyId?: Nullable<string>,
 ) => {
   return useQuery({
-    queryKey: QUERY_KEYS.AMEND_APPLICATION(originalPermitId, companyId),
+    queryKey: ["amendmentApplication"],
     queryFn: async () => {
       const res = await getCurrentAmendmentApplication(
         originalPermitId,

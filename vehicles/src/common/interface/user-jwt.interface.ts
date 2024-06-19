@@ -23,7 +23,6 @@ export interface IUserJWT {
   bceid_user_guid: string;
   bceid_business_guid: string;
   bceid_business_name: string;
-  clientId: string;
   userName: string;
   userGUID: string;
   companyId: number;

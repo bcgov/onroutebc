@@ -14,7 +14,7 @@ import {
   CompanyProfile,
   UpdateCompanyProfileRequest,
 } from "../../../types/manageProfile";
-import { getUserEmailFromSession } from "../../../../../common/apiManager/httpRequestHandler";
+import { getCompanyEmailFromSession } from "../../../../../common/apiManager/httpRequestHandler";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -41,7 +41,7 @@ export const CompanyInfoForm = memo(
     setIsEditting: React.Dispatch<React.SetStateAction<boolean>>;
   }) => {
     const queryClient = useQueryClient();
-    const userEmail = getUserEmailFromSession();
+    const companyEmail = getCompanyEmailFromSession();
 
     const formMethods = useForm<UpdateCompanyProfileRequest>({
       defaultValues: {
@@ -70,7 +70,7 @@ export const CompanyInfoForm = memo(
             companyInfo?.mailingAddress?.postalCode,
           ),
         },
-        email: getDefaultRequiredVal("", companyInfo?.email, userEmail),
+        email: getDefaultRequiredVal("", companyEmail, companyInfo?.email),
         phone: applyWhenNotNullable(formatPhoneNumber, companyInfo?.phone, ""),
         extension: getDefaultRequiredVal("", companyInfo?.extension),
         fax: applyWhenNotNullable(formatPhoneNumber, companyInfo?.fax, ""),

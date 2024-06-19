@@ -44,7 +44,8 @@ export const daysLeftBeforeExpiry = (permit: Permit) => {
   }
 
   // Active permit (current datetime is between the start date and end date)
-  return getDateDiffInDays(permitExpiryDate, currDate);
+  const tomorrow = dayjs(getStartOfDate(currDate)).add(1, "day");
+  return getDateDiffInDays(permitExpiryDate, tomorrow);
 };
 
 /**

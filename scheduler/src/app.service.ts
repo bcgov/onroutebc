@@ -1,10 +1,10 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { LogAsyncMethodExecution } from './common/decorator/log-async-method-execution.decorator';
-import { CacheKey } from './common/enum/cache-key.enum';
+import { LogAsyncMethodExecution } from './decorator/log-async-method-execution.decorator';
+import { CacheKey } from './enum/cache-key.enum';
 import { FeatureFlagsService } from './modules/feature-flags/feature-flags.service';
-import { addToCache, createCacheMap } from './common/helper/cache.helper';
+import { addToCache, createCacheMap } from './helper/cache.helper';
 
 @Injectable()
 export class AppService {

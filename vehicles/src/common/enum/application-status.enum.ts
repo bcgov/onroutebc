@@ -19,7 +19,7 @@ export enum ApplicationStatus {
 /**
  * Application statuses to be considered for Application In Progress (AIP) at time of issuance.
  */
-export const ACTIVE_APPLICATION_STATUS_FOR_ISSUANCE: readonly ApplicationStatus[] =
+export const ACTIVE_APPLICATION_STATUS_FOR_ISSUANCE: ReadonlyArray<ApplicationStatus> =
   [
     ApplicationStatus.IN_PROGRESS,
     ApplicationStatus.WAITING_PAYMENT,
@@ -29,7 +29,7 @@ export const ACTIVE_APPLICATION_STATUS_FOR_ISSUANCE: readonly ApplicationStatus[
 /**
  * Application statuses to be considered for Application In Progress (AIP) Tab for All Users.
  */
-export const ACTIVE_APPLICATION_STATUS: readonly ApplicationStatus[] = [
+export const ACTIVE_APPLICATION_STATUS: ReadonlyArray<ApplicationStatus> = [
   ApplicationStatus.IN_PROGRESS,
   ApplicationStatus.WAITING_PAYMENT,
 ];
@@ -37,7 +37,7 @@ export const ACTIVE_APPLICATION_STATUS: readonly ApplicationStatus[] = [
 /**
  * Application statuses including Application In Progress (AIP) and Pending Permits/Applications
  */
-export const ALL_APPLICATION_STATUS: readonly ApplicationStatus[] = [
+export const ALL_APPLICATION_STATUS: ReadonlyArray<ApplicationStatus> = [
   ApplicationStatus.IN_PROGRESS,
   ApplicationStatus.WAITING_PAYMENT,
   ApplicationStatus.PAYMENT_COMPLETE,

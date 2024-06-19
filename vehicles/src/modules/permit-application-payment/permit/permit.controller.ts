@@ -7,7 +7,6 @@ import {
   Param,
   Query,
   ForbiddenException,
-  UseGuards,
 } from '@nestjs/common';
 import { PermitService } from './permit.service';
 import { ExceptionDto } from '../../../common/exception/exception.dto';
@@ -36,7 +35,6 @@ import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 import { CreateNotificationDto } from '../../common/dto/request/create-notification.dto';
 import { ReadNotificationDto } from '../../common/dto/response/read-notification.dto';
 import { PermitReceiptDocumentService } from '../permit-receipt-document/permit-receipt-document.service';
-import { JwtServiceAccountAuthGuard } from 'src/common/guard/jwt-sa-auth.guard';
 
 @ApiBearerAuth()
 @ApiTags('Permit: API accessible exclusively to staff users.')
@@ -196,26 +194,5 @@ export class PermitController {
       permitId,
       createNotificationDto,
     );
-  }
-
-  /**
-   * Get all the payment comlete permits and Issue them.
-   * This method only works for ORBC Service account.
-   */
-  @UseGuards(JwtServiceAccountAuthGuard)
-  @Post('/scheduler/issue')
-  issuePermit() {
-    return 'success';
-  }
-
-  /**
-   * Get all the Issued permits for which document and receipt does not exist.
-   * Then generate missing documents.
-   * This method only works for ORBC Service account.
-   */
-  @UseGuards(JwtServiceAccountAuthGuard)
-  @Post('/scheduler/document')
-  generateDocument() {
-    return 'success';
   }
 }

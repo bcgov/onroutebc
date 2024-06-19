@@ -11,7 +11,7 @@ import { useVoidPermit } from "./hooks/useVoidPermit";
 import { isValidTransaction } from "../../helpers/payment";
 import { Nullable } from "../../../../common/types/common";
 import { hasPermitsActionFailed } from "../../helpers/permitState";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 export const FinishVoid = ({
   permit,
@@ -26,13 +26,7 @@ export const FinishVoid = ({
 
   const { email, additionalEmail, fax, reason } = voidPermitData;
 
-  const permitHistoryQuery = usePermitHistoryQuery(
-    permit?.originalPermitId,
-    applyWhenNotNullable(
-      id => `${id}`,
-      permit?.companyId,
-    ),
-  );
+  const permitHistoryQuery = usePermitHistoryQuery(permit?.originalPermitId);
 
   const permitHistory = getDefaultRequiredVal([], permitHistoryQuery.data);
 
@@ -44,7 +38,7 @@ export const FinishVoid = ({
 
   const amountToRefund = !permit
     ? 0
-    : -1 * calculateAmountForVoid(permit);
+    : -1 * calculateAmountForVoid(permit, transactionHistory);
 
   const { mutation: voidPermitMutation, voidResults } = useVoidPermit();
 

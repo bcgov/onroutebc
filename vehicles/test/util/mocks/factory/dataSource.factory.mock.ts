@@ -17,13 +17,13 @@ export type MockType<T> = {
   [P in keyof T]?: jest.Mock<object>;
 };
 
-export interface MockQueryRunnerManager {
+export type MockQueryRunnerManager = {
   delete: jest.Mock;
   update: jest.Mock;
   find: jest.Mock;
   findOne?: jest.Mock;
   save: jest.Mock;
-}
+};
 
 export const dataSourceMockFactory = () => {
   return {

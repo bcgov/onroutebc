@@ -9,7 +9,6 @@ import { ContactProfile } from './profiles/contact.profile';
 import { CommonService } from './common.service';
 import { HttpModule } from '@nestjs/axios';
 import { DopsService } from './dops.service';
-import { CFSCreditAccountService } from './cfsCreditAccountService';
 
 @Global()
 @Module({
@@ -17,20 +16,13 @@ import { CFSCreditAccountService } from './cfsCreditAccountService';
     HttpModule,
     TypeOrmModule.forFeature([Country, Province, Address, Contact]),
   ],
-  providers: [
-    AddressProfile,
-    ContactProfile,
-    CommonService,
-    DopsService,
-    CFSCreditAccountService,
-  ],
+  providers: [AddressProfile, ContactProfile, CommonService, DopsService],
   exports: [
     HttpModule,
     AddressProfile,
     ContactProfile,
     CommonService,
     DopsService,
-    CFSCreditAccountService,
   ],
 })
 export class CommonModule {}

@@ -67,7 +67,7 @@ export const paginate = <T>(
   query: SelectQueryBuilder<T>,
   page: number,
   take: number,
-  limitOffset = false,
+  limitOffset: boolean = false,
 ): void => {
   // Implementing pagination
   if (!limitOffset) {

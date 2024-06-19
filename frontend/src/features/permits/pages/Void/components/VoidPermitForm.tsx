@@ -8,11 +8,13 @@ import { useVoidPermitForm } from "../hooks/useVoidPermitForm";
 import { VoidPermitHeader } from "./VoidPermitHeader";
 import { Permit } from "../../../types/permit";
 import { RevokeDialog } from "./RevokeDialog";
+import { usePermitHistoryQuery } from "../../../hooks/hooks";
 import { calculateAmountForVoid } from "../../../helpers/feeSummary";
 import { FeeSummary } from "../../../components/feeSummary/FeeSummary";
 import { VoidPermitFormData } from "../types/VoidPermit";
 import { useVoidPermit } from "../hooks/useVoidPermit";
 import { mapToRevokeRequestData } from "../helpers/mapper";
+import { isValidTransaction } from "../../../helpers/payment";
 import { Nullable } from "../../../../../common/types/common";
 import { hasPermitsActionFailed } from "../../../helpers/permitState";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
@@ -44,6 +46,14 @@ export const VoidPermitForm = ({
   const { formMethods, permitId, setVoidPermitData, next } =
     useVoidPermitForm();
 
+  const permitHistoryQuery = usePermitHistoryQuery(permit?.originalPermitId);
+
+  const permitHistory = getDefaultRequiredVal([], permitHistoryQuery.data);
+
+  const validTransactionHistory = permitHistory.filter((history) =>
+    isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
+  );
+
   const { mutation: revokePermitMutation, voidResults } = useVoidPermit();
 
   useEffect(() => {
@@ -57,7 +67,10 @@ export const VoidPermitForm = ({
     }
   }, [voidResults]);
 
-  const amountToRefund = !permit ? 0 : -1 * calculateAmountForVoid(permit);
+  const amountToRefund =
+    permitHistoryQuery.isLoading || !permit
+      ? 0
+      : -1 * calculateAmountForVoid(permit, validTransactionHistory);
 
   const {
     control,

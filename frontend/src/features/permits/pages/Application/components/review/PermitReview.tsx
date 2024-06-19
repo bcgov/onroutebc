@@ -12,7 +12,7 @@ import { ReviewFeeSummary } from "./ReviewFeeSummary";
 import { ReviewActions } from "./ReviewActions";
 import { CompanyProfile } from "../../../../../manageProfile/types/manageProfile";
 import { VehicleSubType } from "../../../../../manageVehicles/types/Vehicle";
-import { DEFAULT_PERMIT_TYPE, PermitType } from "../../../../types/PermitType";
+import { PermitType } from "../../../../types/PermitType";
 import { calculateFeeByDuration } from "../../../../helpers/feeSummary";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import { Nullable } from "../../../../../../common/types/common";
@@ -56,7 +56,6 @@ export const PermitReview = (props: PermitReviewProps) => {
   const feeSummary = props.calculatedFee
     ? props.calculatedFee
     : `${calculateFeeByDuration(
-        getDefaultRequiredVal(DEFAULT_PERMIT_TYPE, props.permitType),
         getDefaultRequiredVal(0, props.permitDuration),
       )}`;
 

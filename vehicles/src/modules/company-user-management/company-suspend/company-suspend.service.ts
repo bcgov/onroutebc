@@ -134,8 +134,8 @@ export class CompanySuspendService {
         : NotificationTemplate.COMPANY_UNSUSPEND,
       to: [company.email],
       subject: toBeSuspended
-        ? 'onRouteBC Access Restricted'
-        : 'onRouteBC Access Restored',
+        ? 'onRouteBC Profile Suspended'
+        : 'onRouteBC Profile Unsuspended',
       data: notificationData,
     };
     void this.dopsService.notificationWithDocumentsFromDops(

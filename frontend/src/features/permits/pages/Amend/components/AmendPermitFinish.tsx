@@ -13,7 +13,6 @@ import { isValidTransaction } from "../../../helpers/payment";
 import { hasPermitsActionFailed } from "../../../helpers/permitState";
 import { ERROR_ROUTES } from "../../../../../routes/constants";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
-import { DEFAULT_PERMIT_TYPE } from "../../../types/PermitType";
 
 export const AmendPermitFinish = () => {
   const navigate = useNavigate();
@@ -39,11 +38,6 @@ export const AmendPermitFinish = () => {
       getDefaultRequiredVal(
         0,
         amendmentApplication?.permitData?.permitDuration,
-      ),
-      getDefaultRequiredVal(
-        DEFAULT_PERMIT_TYPE,
-        amendmentApplication?.permitType,
-        permit?.permitType,
       ),
     );
 

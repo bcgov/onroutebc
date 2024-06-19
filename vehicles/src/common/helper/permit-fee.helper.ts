@@ -10,12 +10,9 @@ import {
   TROS_TERM,
   TROW_MAX_VALID_DURATION,
   TROW_MIN_VALID_DURATION,
-  TROW_PRICE_PER_TERM,
-  TROW_TERM,
 } from '../constants/permit.constant';
 import { differenceBetween } from './date-time.helper';
 import * as dayjs from 'dayjs';
-import { ApplicationStatus } from '../enum/application-status.enum';
 
 /**
  * Calculates the permit fee based on the application and old amount.
@@ -25,8 +22,13 @@ import { ApplicationStatus } from '../enum/application-status.enum';
  * @throws {NotAcceptableException} If the duration is invalid for TROS permit type.
  * @throws {BadRequestException} If the permit type is not recognized.
  */
-export const permitFee = (application: Permit, oldAmount?: number): number => {
-  let duration = calculateDuration(application);
+export const permitFee = (application: Permit, oldAmount: number): number => {
+  let duration =
+    differenceBetween(
+      application.permitData.startDate,
+      application.permitData.expiryDate,
+    ) + 1;
+
   switch (application.permitType) {
     case PermitType.TERM_OVERSIZE: {
       const validDuration = isValidDuration(
@@ -54,7 +56,6 @@ export const permitFee = (application: Permit, oldAmount?: number): number => {
         TROS_PRICE_PER_TERM,
         TROS_TERM,
         oldAmount,
-        application.permitStatus,
       );
     }
     case PermitType.TERM_OVERWEIGHT: {
@@ -80,10 +81,9 @@ export const permitFee = (application: Permit, oldAmount?: number): number => {
         duration = 360;
       return currentPermitFee(
         duration,
-        TROW_PRICE_PER_TERM,
-        TROW_TERM,
+        TROS_PRICE_PER_TERM,
+        TROS_TERM,
         oldAmount,
-        application.permitStatus,
       );
     }
     default:
@@ -95,24 +95,6 @@ export const permitFee = (application: Permit, oldAmount?: number): number => {
 
 export const yearlyPermit = (duration: number): boolean => {
   return duration <= 365 && duration >= 361;
-};
-
-export const calculateDuration = (application: Permit): number => {
-  let startDate = application.permitData.startDate;
-  const endDate = application.permitData.expiryDate;
-  const today = dayjs(new Date()).format('YYYY-MM-DD');
-  if (
-    application.permitStatus === ApplicationStatus.VOIDED &&
-    startDate < today
-  )
-    startDate = today;
-  if (
-    application.permitStatus === ApplicationStatus.VOIDED &&
-    today === startDate
-  )
-    startDate = dayjs(today).add(1, 'day').format('YYYY-MM-DD');
-  const duration = differenceBetween(startDate, endDate) + 1;
-  return duration;
 };
 
 export const leapYear = (
@@ -147,14 +129,9 @@ export const currentPermitFee = (
   duration: number,
   pricePerTerm: number,
   allowedPermitTerm: number,
-  oldAmount?: number,
-  permitStatus?: ApplicationStatus,
+  oldAmount: number,
 ): number => {
-  let permitTerms = Math.ceil(duration / allowedPermitTerm); // ex: if duraion is 40 days then charge for 60 days.
-  if (permitStatus === ApplicationStatus.VOIDED) {
-    permitTerms = Math.floor(duration / allowedPermitTerm); //ex: if duration is 40 days then refund only 30 days.
-    return pricePerTerm * permitTerms * -1;
-  }
+  const permitTerms = Math.ceil(duration / allowedPermitTerm);
   return oldAmount > 0
     ? pricePerTerm * permitTerms - oldAmount
     : pricePerTerm * permitTerms + oldAmount;

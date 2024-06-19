@@ -15,7 +15,7 @@ global:
   openshiftImageRegistry: "image-registry.openshift-image-registry.svc:5000"
   #enable pulling from image streams
   imagestreams:
-    enabled: false
+    enabled: true
   domain: "apps.silver.devops.gov.bc.ca" # it is required, apps.silver.devops.gov.bc.ca for silver cluster
   vault:
     role: "nonprod"
@@ -32,13 +32,13 @@ frontend:
     enabled: true
     data:
       config.js: |-
-        const envConfig = (() => { return {
+        const envConfig = (() => {
+          return {
             "VITE_DEPLOY_ENVIRONMENT":"{{.Values.global.zone}}",
             "VITE_API_VEHICLE_URL":"https://{{.Release.Name}}-vehicles.{{.Values.global.domain}}",
             "VITE_KEYCLOAK_ISSUER_URL":"https://{{ternary ("") (printf "%s." .Values.global.zone) (contains "prod" .Values.global.zone)}}loginproxy.gov.bc.ca/auth/realms/standard",
             "VITE_KEYCLOAK_AUDIENCE":"on-route-bc-direct-4598",
             "VITE_SITEMINDER_LOG_OFF_URL": "https://logon{{ternary ("") ("test") (contains "prod" .Values.global.zone)}}7.gov.bc.ca/clp-cgi/logoff.cgi",
-            "VITE_FRONTEND_PR_NUM":"{{.Values.global.pr_num}}",
           };
         })();
   containers:
@@ -47,10 +47,6 @@ frontend:
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: frontend
       tag: "{{tpl .Values.global.tag .}}"
-      env: 
-        fromValues:
-          - name: VITE_FRONTEND_PR_NUM
-            value: '{{.Values.global.pr_num}}'
       ports:
         - name: http
           containerPort: 3000
@@ -160,9 +156,6 @@ vehicles:
             key: ACCESS_API_URL
           - name: PAYBC_REDIRECT
             key: PAYBC_REDIRECT
-        fromValues:
-          - name: VEHICLES_PR_NUM
-            value: '{{.Values.global.pr_num}}'
       ports:
         - name: vehicles-api
           containerPort: 5000
@@ -226,7 +219,6 @@ vehicles:
   ingress:
     className: openshift-default
     annotations: 
-      haproxy.router.openshift.io/timeout: 2m
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
@@ -296,9 +288,6 @@ dops:
             key: FRONTEND_URL
           - name: ACCESS_API_URL
             key: ACCESS_API_URL
-        fromValues:
-          - name: DOPS_PR_NUM
-            value: '{{.Values.global.pr_num}}'
       ports:
         - name: dops-api
           containerPort: 5001
@@ -362,7 +351,6 @@ dops:
   ingress:
     className: openshift-default
     annotations: 
-      haproxy.router.openshift.io/timeout: 2m
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
@@ -412,8 +400,6 @@ scheduler:
     enabled: false
   configmap:
     enabled: true
-    data:
-      ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
   containers:
     - name: scheduler
       command:
@@ -424,13 +410,6 @@ scheduler:
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: scheduler
       tag: "{{tpl .Values.global.tag .}}"
-      env: 
-        fromLocalConfigmap:
-          - name: ACCESS_API_URL
-            key: ACCESS_API_URL
-        fromValues:
-          - name: SCHEDULER_PR_NUM
-            value: '{{.Values.global.pr_num}}'
       ports:
         - name: scheduler
           containerPort: 5050
@@ -464,7 +443,35 @@ scheduler:
           memory: 50Mi
   autoscaling:
     #-- enable or disable autoscaling.
-    enabled: false 
+    enabled: true
+    #-- the minimum number of replicas.
+    minReplicas: 2
+    #-- the maximum number of replicas.
+    maxReplicas: 3
+    #-- the target cpu utilization percentage, is from request cpu and NOT LIMIT CPU.
+    targetCPUUtilizationPercentage: 80
+    #-- the behavior for the autoscaling. it is optional and is an object.
+    behavior:
+      scaleDown:
+        stabilizationWindowSeconds: 300
+        policies:
+          - type: Percent
+            value: 10
+            periodSeconds: 60
+          - type: Pods
+            value: 2
+            periodSeconds: 60
+        selectPolicy: Min
+      scaleUp:
+        stabilizationWindowSeconds: 0
+        policies:
+          - type: Percent
+            value: 100
+            periodSeconds: 30
+          - type: Pods
+            value: 2
+            periodSeconds: 30
+        selectPolicy: Max
   ingress:
     className: openshift-default
     annotations: 

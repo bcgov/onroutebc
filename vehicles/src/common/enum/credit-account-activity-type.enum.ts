@@ -1,6 +1,0 @@
-export enum CreditAccountActivityType {
-  ACCOUNT_ON_HOLD = 'ONHOLD',
-  ACCOUNT_HOLD_REMOVED = 'HOLDRMVD',
-  ACCOUNT_CLOSED = 'CLOSED',
-  ACCOUNT_REOPENED = 'REOPENED',
-}

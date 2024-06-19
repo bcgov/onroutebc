@@ -114,10 +114,10 @@ export const getLoginUsernameFromSession = (): string => {
 };
 
 /**
- * Retrieves user email from session.
+ * Retrieves company email from session.
  * @returns string | null | undefined
  */
-export const getUserEmailFromSession = (): Nullable<string> => {
+export const getCompanyEmailFromSession = (): Nullable<string> => {
   const parsedSessionObject = getDefaultRequiredVal(
     { profile: { email: "" } },
     getUserStorage(),

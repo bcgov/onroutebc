@@ -55,7 +55,6 @@ export const redCompanyAdminUserJWTMock: IUserJWT = {
   orbcUserLastName: constants.RED_COMPANY_ADMIN_LAST_NAME,
   orbcUserAuthGroup: constants.RED_COMPANY_ADMIN_USER_AUTH_GROUP,
   orbcUserDirectory: constants.RED_COMPANY_ADMIN_USER_STATUS_DIRECOTRY,
-  clientId: null,
 };
 
 export const redCompanyCvClientUserJWTMock: IUserJWT = {
@@ -110,7 +109,6 @@ export const redCompanyCvClientUserJWTMock: IUserJWT = {
   orbcUserLastName: constants.RED_COMPANY_CVCLIENT_LAST_NAME,
   orbcUserAuthGroup: constants.RED_COMPANY_CVCLIENT_USER_AUTH_GROUP,
   orbcUserDirectory: constants.RED_COMPANY_CVCLIENT_USER_STATUS_DIRECOTRY,
-  clientId: null,
 };
 
 export const redCompanyPendingUserJWTMock: IUserJWT = {
@@ -143,7 +141,6 @@ export const redCompanyPendingUserJWTMock: IUserJWT = {
   orbcUserLastName: undefined,
   orbcUserAuthGroup: undefined,
   orbcUserDirectory: undefined,
-  clientId: null,
 };
 
 export const blueCompanyAdminUserJWTMock: IUserJWT = {
@@ -198,7 +195,6 @@ export const blueCompanyAdminUserJWTMock: IUserJWT = {
   orbcUserLastName: constants.BLUE_COMPANY_ADMIN_LAST_NAME,
   orbcUserAuthGroup: constants.BLUE_COMPANY_ADMIN_USER_AUTH_GROUP,
   orbcUserDirectory: constants.BLUE_COMPANY_ADMIN_USER_STATUS_DIRECOTRY,
-  clientId: null,
 };
 
 export const blueCompanyCvClientUserJWTMock: IUserJWT = {
@@ -253,7 +249,6 @@ export const blueCompanyCvClientUserJWTMock: IUserJWT = {
   orbcUserLastName: constants.BLUE_COMPANY_CVCLIENT_LAST_NAME,
   orbcUserAuthGroup: constants.BLUE_COMPANY_CVCLIENT_USER_AUTH_GROUP,
   orbcUserDirectory: constants.BLUE_COMPANY_CVCLIENT_USER_STATUS_DIRECOTRY,
-  clientId: null,
 };
 
 export const sysAdminStaffUserJWTMock: IUserJWT = {
@@ -308,5 +303,4 @@ export const sysAdminStaffUserJWTMock: IUserJWT = {
   orbcUserLastName: constants.SYS_ADMIN_STAFF_LAST_NAME,
   orbcUserAuthGroup: constants.SYS_ADMIN_STAFF_USER_AUTH_GROUP,
   orbcUserDirectory: constants.SYS_ADMIN_STAFF_USER_STATUS_DIRECOTRY,
-  clientId: null,
 };

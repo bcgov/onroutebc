@@ -13,7 +13,7 @@ import { CompleteMultipartUploadCommandOutput } from '@aws-sdk/client-s3';
 import { Permit } from './entities/permit.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { Cron } from '@nestjs/schedule';
-import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
+import { LogAsyncMethodExecution } from '../../decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class TpsPermitService {

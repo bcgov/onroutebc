@@ -352,17 +352,6 @@ export class CompanyService {
     );
   }
 
-  @LogAsyncMethodExecution()
-  async findOneCompanyWithAllDetails(companyId: number): Promise<Company> {
-    return await this.companyRepository.findOne({
-      where: { companyId: companyId },
-      relations: {
-        mailingAddress: { province: { country: true } },
-        primaryContact: { province: { country: true } },
-      },
-    });
-  }
-
   /**
    * The findCompanyMetadataByUserGuid() method returns a list of ReadCompanyMetadataDto objects corresponding to the given
    * user GUID. It performs a custom SQL query to the database to retrieve company user entities based on the user GUID
