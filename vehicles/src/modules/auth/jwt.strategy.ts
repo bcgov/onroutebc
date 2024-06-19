@@ -57,10 +57,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         | IDIRUserAuthGroup;
 
     let companyId: number;
-    if (req.params['companyId']) {
-      companyId = +req.params['companyId'];
-    } else if (req.query['companyId']) {
-      companyId = +req.query['companyId'];
+    if (req.params.companyId) {
+      companyId = +req.params.companyId;
+    } else if (req.query.companyId) {
+      companyId = +req.query.companyId;
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     } else if (req.body.companyId) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -86,7 +86,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     const orbcUserDirectory = getDirectory(payload);
 
-    if (req.headers['AuthOnly'] === 'false') {
+    if (req.headers.AuthOnly === 'false') {
       const user = await this.authService.getUserDetails(
         companyId,
         payload.identity_provider,
@@ -152,14 +152,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     companyId: number,
   ) {
     let userGUIDParam: string;
-    if (req.params['userGUID']) {
-      userGUIDParam = req.params['userGUID'];
-    } else if (typeof req.query['userGUID'] === 'string') {
-      userGUIDParam = req.query['userGUID'];
+    if (req.params.userGUID) {
+      userGUIDParam = req.params.userGUID;
+    } else if (typeof req.query.userGUID === 'string') {
+      userGUIDParam = req.query.userGUID;
     }
 
     if (
-      req.headers['AuthOnly'] === 'false' &&
+      req.headers.AuthOnly === 'false' &&
       payload.identity_provider !== IDP.IDIR &&
       userGUIDParam
     ) {

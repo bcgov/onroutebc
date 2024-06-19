@@ -3,7 +3,7 @@ import { DurationUnitType } from 'dayjs/plugin/duration';
 /**
  * The type to specify a max allowable to difference between two datetimes.
  */
-export type DurationDifference = {
+export interface DurationDifference {
   /**
    * The unit of comparison.
    */
@@ -12,12 +12,12 @@ export type DurationDifference = {
    * The maximum allowable difference.
    */
   maxDiff: number;
-};
+}
 
 /**
  * The type to define values for a max allowable difference between two datetimes.
  */
-export type MaxDifferenceType = {
+export interface MaxDifferenceType {
   /**
    * The max allowable difference between two datetimes.
    */
@@ -28,4 +28,4 @@ export type MaxDifferenceType = {
    * will be the hard limit.
    */
   rounding?: DurationDifference;
-};
+}
