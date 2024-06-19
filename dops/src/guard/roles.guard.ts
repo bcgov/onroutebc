@@ -5,6 +5,7 @@ import { Request } from 'express';
 import { IUserJWT } from '../interface/user-jwt.interface';
 import { matchRoles } from '../helper/auth.helper';
 import { IRole } from '../interface/role.interface';
+import { IDP } from 'src/enum/idp.enum';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -20,6 +21,9 @@ export class RolesGuard implements CanActivate {
     }
     const request: Request = context.switchToHttp().getRequest();
     const currentUser = request.user as IUserJWT;
+    if (currentUser.identity_provider === IDP.SERVICE_ACCOUNT) {
+      return true;
+    }
     return matchRoles(roles, currentUser.roles, currentUser.orbcUserAuthGroup);
   }
 }
