@@ -56,6 +56,7 @@ import { CreateNotificationDto } from '../../common/dto/request/create-notificat
 import { ReadNotificationDto } from '../../common/dto/response/read-notification.dto';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { NotificationType } from '../../../common/enum/notification-type.enum';
+import { validateEmailandFaxList } from '../../../common/helper/notification.helper';
 
 @Injectable()
 export class PermitService {
@@ -146,7 +147,7 @@ export class PermitService {
     const permit = await this.findOne(permitId, companyId);
 
     // If no permit is found, throw a NotFoundException indicating the receipt is not found.
-    if (!permit) {
+    if (!permit?.documentId) {
       throw new NotFoundException('Permit Document Not Found!');
     }
 
@@ -398,9 +399,10 @@ export class PermitService {
         companyId: companyId,
       });
     const permit = await permitQuery.getOne();
+    const successfulTransaction = permit.permitTransactions[0];
 
     // If no permit is found, throw a NotFoundException indicating the receipt is not found.
-    if (!permit) {
+    if (!successfulTransaction?.transaction?.receipt?.receiptDocumentId) {
       throw new NotFoundException('Receipt Not Found!');
     }
 
@@ -408,7 +410,7 @@ export class PermitService {
     // This method delegates the request handling based on the provided download mode and sends the file as a response if applicable.
     await this.dopsService.download(
       currentUser,
-      permit.permitTransactions[0].transaction.receipt.receiptDocumentId,
+      successfulTransaction.transaction.receipt.receiptDocumentId,
       FileDownloadModes.PROXY,
       res,
       permit.company?.companyId,
@@ -702,7 +704,8 @@ export class PermitService {
     ) {
       notificationDocument = {
         templateName: NotificationTemplate.ISSUE_PERMIT,
-        to: createNotificationDto.to,
+        to: validateEmailandFaxList(createNotificationDto.to),
+        fax: validateEmailandFaxList(createNotificationDto.fax),
         subject: `onRouteBC Permits - ${companyInfo.legalName}`,
         documentIds: [permitDocumentId],
       };
@@ -724,7 +727,8 @@ export class PermitService {
     ) {
       notificationDocument = {
         templateName: NotificationTemplate.PAYMENT_RECEIPT,
-        to: createNotificationDto.to,
+        to: validateEmailandFaxList(createNotificationDto.to),
+        fax: validateEmailandFaxList(createNotificationDto.fax),
         subject: `onRouteBC Permit Receipt - ${receipt?.receiptNumber}`,
         documentIds: [receipt?.receiptDocumentId],
       };

@@ -1,0 +1,2 @@
+export const ISSUE_PERMIT_WAIT_DURATION = 10;
+export const DOC_GEN_WAIT_DURATION = 30;

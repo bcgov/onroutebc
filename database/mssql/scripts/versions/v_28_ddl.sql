@@ -237,8 +237,13 @@ INSERT [permit].[ORBC_CREDIT_ACCOUNT_STATUS_TYPE] (
    [DESCRIPTION]
    )
 VALUES (
+<<<<<<< HEAD
    N'SETUP',
    N'SETUP'
+=======
+   N'SETUP_FAIL',
+   N'SETUP_FAIL'
+>>>>>>> origin/credit
    )
 
 IF @@ERROR <> 0 SET NOEXEC ON
@@ -291,7 +296,11 @@ IF @@ERROR <> 0 SET NOEXEC ON
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique auto-generated surrogate primary key' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_CREDIT_ACCOUNT', @level2type=N'COLUMN',@level2name=N'CREDIT_ACCOUNT_ID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The company who is the account holder of the credit account' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1Name=N'ORBC_CREDIT_ACCOUNT', @level2type=N'COLUMN',@level2name=N'COMPANY_ID'
+<<<<<<< HEAD
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The status of the credit account - ONHOLD, ACTIVE, CLOSED, SETUP' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1Name=N'ORBC_CREDIT_ACCOUNT', @level2type=N'COLUMN',@level2name=N'CREDIT_ACCOUNT_STATUS_TYPE'
+=======
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The status of the credit account - ONHOLD, ACTIVE, CLOSED, SETUP_FAIL' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1Name=N'ORBC_CREDIT_ACCOUNT', @level2type=N'COLUMN',@level2name=N'CREDIT_ACCOUNT_STATUS_TYPE'
+>>>>>>> origin/credit
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The type of credit account - PREPAID, UNSECURED, SECURED' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1Name=N'ORBC_CREDIT_ACCOUNT', @level2type=N'COLUMN',@level2name=N'CREDIT_ACCOUNT_TYPE'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The primary key of the client in CFS' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1Name=N'ORBC_CREDIT_ACCOUNT', @level2type=N'COLUMN',@level2name=N'CFS_PARTY_NUMBER'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The primary key of the site associated with the party in CFS' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1Name=N'ORBC_CREDIT_ACCOUNT', @level2type=N'COLUMN',@level2name=N'CFS_SITE_NUMBER'
@@ -470,6 +479,21 @@ VALUES (
    )
 GO
 
+<<<<<<< HEAD
+=======
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+INSERT [permit].[ORBC_CREDIT_ACCOUNT_ACTIVITY_TYPE] (
+   [CREDIT_ACCOUNT_ACTIVITY_TYPE],
+   [DESCRIPTION]
+   )
+VALUES (
+   N'OPENED',
+   N'Account Opened'
+   )
+GO
+
+>>>>>>> origin/credit
 CREATE TABLE [permit].[ORBC_CREDIT_ACCOUNT_ACTIVITY] (
    [ACTIVITY_ID] [int] IDENTITY(1, 1) NOT NULL,
    [CREDIT_ACCOUNT_ID] [int] NOT NULL,
@@ -581,7 +605,11 @@ EXEC sys.sp_addextendedproperty
    @level2name=N'DATE'
 EXEC sys.sp_addextendedproperty 
    @name=N'MS_Description', 
+<<<<<<< HEAD
    @value=N'Type of activity (e.g. ONHOLD, HOLDRMVD, CLOSED, REOPENED).' , 
+=======
+   @value=N'Type of activity (e.g. ONHOLD, HOLDRMVD, CLOSED, REOPENED, OPENED).' , 
+>>>>>>> origin/credit
    @level0type=N'SCHEMA',
    @level0name=N'permit', 
    @level1type=N'TABLE',

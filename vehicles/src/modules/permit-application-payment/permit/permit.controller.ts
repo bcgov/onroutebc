@@ -7,6 +7,7 @@ import {
   Param,
   Query,
   ForbiddenException,
+  UseGuards,
 } from '@nestjs/common';
 import { PermitService } from './permit.service';
 import { ExceptionDto } from '../../../common/exception/exception.dto';
@@ -35,6 +36,8 @@ import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 import { CreateNotificationDto } from '../../common/dto/request/create-notification.dto';
 import { ReadNotificationDto } from '../../common/dto/response/read-notification.dto';
 import { PermitReceiptDocumentService } from '../permit-receipt-document/permit-receipt-document.service';
+import { JwtServiceAccountAuthGuard } from 'src/common/guard/jwt-sa-auth.guard';
+import { PermitIdDto } from 'src/modules/permit-application-payment/permit/dto/request/permit-id.dto';
 
 @ApiBearerAuth()
 @ApiTags('Permit: API accessible exclusively to staff users.')
@@ -194,5 +197,40 @@ export class PermitController {
       permitId,
       createNotificationDto,
     );
+  }
+  /**
+   * A POST method defined with the @Post() decorator and a route of /scheduler/document
+   * that generates permit and receipt document for given application ids
+   * This method only works for ORBC Service account.
+   * @param request
+   * @param PermitIdDto
+   * @returns The ids of new voided/revoked permit a in response object {@link string}
+   *
+   */
+  @ApiOperation({
+    summary: 'Generate permit and receipt document for given application ids',
+    description:
+      'Generate permit and receipt document for given application ids',
+  })
+  @UseGuards(JwtServiceAccountAuthGuard)
+  @Post('/documents')
+  async generateDocument(@Req() request: Request, @Body() permit: PermitIdDto) {
+    const currentUser = request.user as IUserJWT;
+    await this.permitReceiptDocumentService.generatePermitDocuments(
+      currentUser,
+      permit.ids,
+    );
+    return 'success';
+  }
+
+  @UseGuards(JwtServiceAccountAuthGuard)
+  @Post('/receipts')
+  async generateReceipt(@Req() request: Request, @Body() permit: PermitIdDto) {
+    const currentUser = request.user as IUserJWT;
+    await this.permitReceiptDocumentService.generateReceiptDocuments(
+      currentUser,
+      permit.ids,
+    );
+    return 'success';
   }
 }
