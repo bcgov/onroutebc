@@ -22,7 +22,7 @@ import {
 } from "material-react-table";
 
 import "./List.scss";
-import { Trash } from "../../../../common/components/table/options/Trash";
+import { TrashButton } from "../../../../common/components/buttons/TrashButton";
 import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
 import { PowerUnitColumnDefinition, TrailerColumnDefinition } from "./Columns";
 import { deleteVehicles } from "../../apiManager/vehiclesAPI";
@@ -308,7 +308,7 @@ export const List = memo(
           <Box className="table-container__top-toolbar">
             <MRT_GlobalFilterTextField table={table} />
             {DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) && (
-              <Trash
+              <TrashButton
                 onClickTrash={onClickTrashIcon}
                 disabled={hasNoRowsSelected}
               />

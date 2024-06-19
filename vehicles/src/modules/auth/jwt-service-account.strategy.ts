@@ -1,9 +1,12 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { passportJwtSecret } from 'jwks-rsa';
 import { AuthService } from './auth.service';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { IDP } from 'src/common/enum/idp.enum';
+import { Directory } from 'src/common/enum/directory.enum';
+import { Request } from 'express';
 
 @Injectable()
 export class JwtServiceAccountStrategy extends PassportStrategy(
@@ -22,7 +25,7 @@ export class JwtServiceAccountStrategy extends PassportStrategy(
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration:
         process.env.KEYCLOAK_IGNORE_EXP === 'true' ? true : false,
-      audience: process.env.KEYCLOAK_SERVICE_ACCOUNT_AUDIENCE,
+      audience: process.env.ORBC_SERVICE_ACCOUNT_AUDIENCE,
       issuer: `${process.env.KEYCLOAK_ISSUER_URL}`,
       algorithms: ['RS256'],
       passReqToCallback: true,
@@ -33,6 +36,21 @@ export class JwtServiceAccountStrategy extends PassportStrategy(
     const result = this.authService.validateServiceAccountUser(
       payload.clientId,
     );
-    return result;
+    if (result) {
+      const userName = 'service-account-on-route-bc';
+      const userGUID = payload.clientId;
+      const orbcUserDirectory = Directory.SERVICE_ACCOUNT;
+      const identity_provider = IDP.SERVICE_ACCOUNT;
+      const access_token = req.headers.authorization;
+      const currentUser = {
+        userName,
+        userGUID,
+        identity_provider,
+        access_token,
+        orbcUserDirectory,
+      };
+      Object.assign(payload, currentUser);
+      return payload;
+    } else throw new UnauthorizedException();
   }
 }

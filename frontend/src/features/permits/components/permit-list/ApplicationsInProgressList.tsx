@@ -1,11 +1,7 @@
-import { Delete } from "@mui/icons-material";
-import { Box, IconButton, Tooltip } from "@mui/material";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { RowSelectionState } from "@tanstack/table-core";
 import {
   MRT_ColumnDef,
-  MRT_Row,
-  MRT_TableInstance,
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
@@ -15,7 +11,7 @@ import { ApplicationInProgressColumnDefinition } from "./ApplicationInProgressCo
 import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
 import { SnackBarContext } from "../../../../App";
 import { ApplicationListItem } from "../../types/application";
-import { Trash } from "../../../../common/components/table/options/Trash";
+import { DeleteButton } from "../../../../common/components/buttons/DeleteButton";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import { canUserAccessApplication } from "../../helpers/mappers";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
@@ -28,7 +24,6 @@ import { useApplicationsInProgressQuery, usePendingPermitsQuery } from "../../ho
 import { WarningBcGovBanner } from "../../../../common/components/banners/WarningBcGovBanner";
 import { PendingPermitsDialog } from "../dialog/PendingPermitsDialog/PendingPermitsDialog";
 import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
-
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
@@ -77,8 +72,11 @@ export const ApplicationsInProgressList = ({
   const pendingCount = getDefaultRequiredVal(0, pendingPermits?.meta?.totalItems);
   const canShowPendingBanner = pendingCount > 0;
 
+  const [showAIPTable, setShowAIPTable] = useState<boolean>(false);
+
   useEffect(() => {
     const totalCount = getDefaultRequiredVal(0, applicationsInProgress?.meta?.totalItems);
+    setShowAIPTable(totalCount > 0);
     onCountChange(totalCount);
   }, [applicationsInProgress?.meta?.totalItems])
 
@@ -102,7 +100,7 @@ export const ApplicationsInProgressList = ({
   /**
    * Callback function for clicking on the Trash icon above the Table.
    */
-  const onClickTrashIcon = useCallback(() => {
+  const onClickDelete = useCallback(() => {
     setIsDeleteDialogOpen(() => true);
   }, []);
 
@@ -188,6 +186,12 @@ export const ApplicationsInProgressList = ({
       pagination,
       sorting,
     },
+    displayColumnDefOptions: {
+      "mrt-row-select": {
+        size: 10,
+      },
+    },
+    enableRowActions: false,
     enableRowSelection:
       (row) => canRowBeSelected(
         row?.original?.permitApplicationOrigin,
@@ -200,45 +204,14 @@ export const ApplicationsInProgressList = ({
       const applicationRow = originalRow as ApplicationListItem;
       return applicationRow.permitId;
     },
-    renderEmptyRowsFallback: () => <NoRecordsFound />,
-    renderRowActions: useCallback(
-      ({
-        row,
-      }: {
-        table: MRT_TableInstance<ApplicationListItem>;
-        row: MRT_Row<ApplicationListItem>;
-      }) => canUserAccessApplication(
-        row?.original?.permitApplicationOrigin,
-        userAuthGroup,
-      ) ? (
-        <Box className="table-container__row-actions">
-          <Tooltip arrow placement="top" title="Delete">
-            <IconButton
-              color="error"
-              onClick={() => {
-                setIsDeleteDialogOpen(() => true);
-                setRowSelection(() => {
-                  const newObject: { [key: string]: boolean } = {};
-                  // Setting the selected row to false so that
-                  // the row appears unchecked.
-                  newObject[row.original.permitId] = false;
-                  return newObject;
-                });
-              }}
-              disabled={false}
-            >
-              <Delete />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      ) : (
-        <></>
-      ),
-      [userAuthGroup],
-    ),
-    renderToolbarInternalActions: useCallback(
+    renderTopToolbar: useCallback(
       () => (
-        <Trash onClickTrash={onClickTrashIcon} disabled={hasNoRowsSelected} />
+        <div className="applications-in-progress-list__top-toolbar">
+          <DeleteButton
+            onClick={onClickDelete}
+            disabled={hasNoRowsSelected}
+          />
+        </div>
       ),
       [hasNoRowsSelected],
     ),
@@ -288,7 +261,11 @@ export const ApplicationsInProgressList = ({
         setPagination={setPendingPermitPagination}
       />
 
-      <MaterialReactTable table={table} />
+      {showAIPTable ? (
+        <MaterialReactTable table={table} />
+      ) : (
+        <NoRecordsFound />
+      )}
 
       <DeleteConfirmationDialog
         onClickDelete={onConfirmApplicationDelete}
