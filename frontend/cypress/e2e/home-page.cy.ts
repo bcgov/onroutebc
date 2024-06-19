@@ -2,7 +2,7 @@
 
 import cypress from "cypress";
 
-  describe('Login and start application till payment complete', () => {
+  describe('Login and start application till payment complete with pay bc', () => {
     it('should complete an application from scratch with an existing test acount', () => {
     cy.visit('applications')
     cy.url().as('url')
