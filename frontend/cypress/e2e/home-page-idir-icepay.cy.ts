@@ -14,10 +14,21 @@ import cypress from "cypress";
       cy.log('Current URL:', url);
       });
 
-    // Interact with a different origin using cy.origin()
-    cy.origin('https://logontest7.gov.bc.ca', () => {
-      // Commands to be run against the new origin
-      const loginUrl = Cypress.env('LOGIN_URL');
+    // // Interact with a different origin using cy.origin()
+    // cy.origin('https://logontest7.gov.bc.ca', () => {
+    //   // Commands to be run against the new origin
+    //   const loginUrl = Cypress.env('LOGIN_URL');
+    //   cy.get("#user").should('exist'); 
+    //   const testUser = Cypress.env('TEST_USER');
+    //   const testPassword = Cypress.env('TEST_PASSWORD');
+    //   cy.log('testUser:',testUser);
+    //   cy.log('testPassword:',testPassword);
+    //   cy.get('#user').type(testUser)
+    //   cy.get('#password').type(testPassword)
+    //   cy.get('.btn-primary').click()  
+    // });
+
+    const loginUrl = Cypress.env('LOGIN_URL');
       cy.get("#user").should('exist'); 
       const testUser = Cypress.env('TEST_USER');
       const testPassword = Cypress.env('TEST_PASSWORD');
@@ -26,7 +37,6 @@ import cypress from "cypress";
       cy.get('#user').type(testUser)
       cy.get('#password').type(testPassword)
       cy.get('.btn-primary').click()  
-    });
 
       cy.url().then((url) => {
         cy.log('Current URL:', url);
@@ -85,7 +95,7 @@ import cypress from "cypress";
 
         // verify if payment succeeded
         cy.contains('Success').should('exist');
-        
+
       });
   })
 
