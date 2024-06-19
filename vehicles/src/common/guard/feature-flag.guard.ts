@@ -41,23 +41,21 @@ export class FeatureFlagGuard implements CanActivate {
    * @param {ExecutionContext} context - The context of the current execution (e.g., request).
    * @returns {Promise<boolean>} - A promise that resolves to true if the feature flag is enabled, otherwise false.
    */
-  canActivate(context: ExecutionContext): Promise<boolean> {
-    const featureFlagKey = this.reflector.get(
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const featureFlagKey = this.reflector.getAllAndOverride<string>(
       IsFeatureFlagEnabled,
-      context.getHandler(),
+      [context.getHandler(), context.getClass()],
     );
+    // Guard is invoked regardless of the decorator being actively called
     if (!featureFlagKey) return Promise.resolve(true);
-    const isFeatureEnabled = getMapFromCache(
+    const featureFlags = await getMapFromCache(
       this.cacheManager,
       CacheKey.FEATURE_FLAG_TYPE,
-    ).then((featureFlags: Record<string, string>) => {
-      return (
-        featureFlags?.[featureFlagKey] &&
-        (featureFlags[featureFlagKey] as FeatureFlagValue) ===
-          FeatureFlagValue.ENABLED
-      );
-    });
-
+    );
+    const isFeatureEnabled =
+      featureFlags?.[featureFlagKey] &&
+      (featureFlags[featureFlagKey] as FeatureFlagValue) ===
+        FeatureFlagValue.ENABLED;
     return isFeatureEnabled;
   }
 }

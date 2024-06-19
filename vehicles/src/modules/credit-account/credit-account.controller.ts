@@ -32,6 +32,7 @@ import { ReadCreditAccountDto } from './dto/response/read-credit-account.dto';
   description: 'The Credit Account Api Internal Server Error Response',
   type: ExceptionDto,
 })
+@IsFeatureFlagEnabled('CREDIT-ACCOUNT')
 @Controller('companies/:companyId/credit-account')
 export class CreditAccountController {
   constructor(private readonly creditAccountService: CreditAccountService) {}
@@ -56,7 +57,6 @@ export class CreditAccountController {
   })
   @Post()
   @Roles(Role.WRITE_CREDIT_ACCOUNT)
-  @IsFeatureFlagEnabled('CREDIT-ACCOUNT')
   async createCreditAccount(
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
@@ -84,7 +84,6 @@ export class CreditAccountController {
     description: 'The retrieved credit account.',
     type: ReadCreditAccountDto,
   })
-  @IsFeatureFlagEnabled('CREDIT-ACCOUNT')
   // @Get() - Uncomment when feature is ready
   @Roles(Role.READ_CREDIT_ACCOUNT)
   async getCreditAccount(
