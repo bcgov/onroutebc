@@ -7,23 +7,18 @@ const CommonVehicleColumnDefinition: MRT_ColumnDef<Vehicle>[] = [
   {
     accessorKey: "unitNumber",
     header: "Unit #",
-    enableSorting: true,
   },
   {
     accessorKey: "make",
     header: "Make",
-    enableSorting: true,
   },
   {
     accessorKey: "vin",
     header: "VIN",
-    enableSorting: true,
   },
   {
     accessorKey: "plate",
     header: "Plate",
-    filterVariant: "multi-select",
-    enableSorting: true,
   },
 ];
 
