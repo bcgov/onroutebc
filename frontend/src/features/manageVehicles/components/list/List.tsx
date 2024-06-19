@@ -241,7 +241,6 @@ export const List = memo(
       },
       onRowSelectionChange: setRowSelection,
       enableMultiSort: true,
-      enableSorting: true,
       renderEmptyRowsFallback: () => <NoRecordsFound />,
       renderRowActions: useCallback(
         ({ row }: { row: MRT_Row<Vehicle> }) => (
