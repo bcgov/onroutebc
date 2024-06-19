@@ -85,6 +85,7 @@ import cypress from "cypress";
 
         // verify if payment succeeded
         cy.contains('Success').should('exist');
+        
       });
   })
 
