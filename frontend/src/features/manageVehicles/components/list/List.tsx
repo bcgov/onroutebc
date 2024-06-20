@@ -220,13 +220,13 @@ export const List = memo(
       columns: newColumns,
       initialState: {
         ...defaultTableInitialStateOptions,
+        sorting: [{ id: "createdDateTime", desc: true }],
       },
       state: {
         ...defaultTableStateOptions,
         isLoading: isPending,
         showAlertBanner: isError,
         showProgressBars: isFetching,
-        sorting: [{ id: "createdDateTime", desc: true }],
         columnVisibility: { powerUnitId: false, trailerId: false },
         rowSelection: rowSelection,
       },
@@ -240,6 +240,7 @@ export const List = memo(
         }
       },
       onRowSelectionChange: setRowSelection,
+      enableMultiSort: true,
       renderEmptyRowsFallback: () => <NoRecordsFound />,
       renderRowActions: useCallback(
         ({ row }: { row: MRT_Row<Vehicle> }) => (
