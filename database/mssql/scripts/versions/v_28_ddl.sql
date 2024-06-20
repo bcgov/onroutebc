@@ -470,6 +470,18 @@ VALUES (
    )
 GO
 
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+INSERT [permit].[ORBC_CREDIT_ACCOUNT_ACTIVITY_TYPE] (
+   [CREDIT_ACCOUNT_ACTIVITY_TYPE],
+   [DESCRIPTION]
+   )
+VALUES (
+   N'OPENED',
+   N'Account Opened'
+   )
+GO
+
 CREATE TABLE [permit].[ORBC_CREDIT_ACCOUNT_ACTIVITY] (
    [ACTIVITY_ID] [int] IDENTITY(1, 1) NOT NULL,
    [CREDIT_ACCOUNT_ID] [int] NOT NULL,
@@ -581,7 +593,7 @@ EXEC sys.sp_addextendedproperty
    @level2name=N'DATE'
 EXEC sys.sp_addextendedproperty 
    @name=N'MS_Description', 
-   @value=N'Type of activity (e.g. ONHOLD, HOLDRMVD, CLOSED, REOPENED).' , 
+   @value=N'Type of activity (e.g. ONHOLD, HOLDRMVD, CLOSED, REOPENED, OPENED).' , 
    @level0type=N'SCHEMA',
    @level0name=N'permit', 
    @level1type=N'TABLE',

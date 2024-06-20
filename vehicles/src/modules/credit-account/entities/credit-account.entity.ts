@@ -1,21 +1,21 @@
 import {
-  Entity,
   Column,
+  Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
-  OneToMany,
 } from 'typeorm';
 
 import { AutoMap } from '@automapper/classes';
-import { Base } from '../../common/entities/base.entity';
-import { Company } from '../../company-user-management/company/entities/company.entity';
 import { CreditAccountStatusType } from '../../../common/enum/credit-account-status-type.enum';
 import { CreditAccountType } from '../../../common/enum/credit-account-type.enum';
+import { Base } from '../../common/entities/base.entity';
+import { Company } from '../../company-user-management/company/entities/company.entity';
 import { CreditAccountActivity } from './credit-account-activity.entity';
 import { CreditAccountUser } from './credit-account-user.entity';
 
-@Entity({ name: 'ORBC_CREDIT_ACCOUNT' })
+@Entity({ name: 'permit.ORBC_CREDIT_ACCOUNT' })
 export class CreditAccount extends Base {
   /**
    * An auto-generated unique identifier for the credit account.
@@ -30,7 +30,7 @@ export class CreditAccount extends Base {
   @AutoMap(() => Company)
   @OneToOne(() => Company, { nullable: false, cascade: false })
   @JoinColumn({ name: 'COMPANY_ID' })
-  companyId: Company;
+  company: Company;
 
   /**
    * A property that specifies the status type of a credit account,
