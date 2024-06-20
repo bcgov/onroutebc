@@ -262,6 +262,7 @@ vehicles:
       - "mssql-{{tpl $.Values.vault.zone $}}"
       - "payment-{{tpl $.Values.vault.zone $}}"
       - "vehicles-{{tpl $.Values.vault.zone $}}"
+      - "cfs-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
 
 dops:
