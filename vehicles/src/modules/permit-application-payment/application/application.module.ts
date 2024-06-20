@@ -24,7 +24,7 @@ import { ApplicationController } from './application.controller';
     PaymentModule,
     PermitReceiptDocumentModule,
   ],
-  controllers: [CompanyApplicationController,ApplicationController],
+  controllers: [CompanyApplicationController, ApplicationController],
   providers: [ApplicationService, ApplicationProfile],
   exports: [ApplicationService],
 })
