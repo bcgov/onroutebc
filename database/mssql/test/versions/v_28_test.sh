@@ -30,7 +30,7 @@ else
 fi
 
 TEST_28_4_RESULT=$(/opt/mssql-tools/bin/sqlcmd -U ${USER} -P "${PASS}" -S ${SERVER} -v DB_NAME=${DATABASE} -h -1 -i ${TESTS_DIR}/v_28_4_test.sql | xargs)
-if [[ $TEST_28_4_RESULT -eq 4 ]]; then
+if [[ $TEST_28_4_RESULT -eq 5 ]]; then
     echo "Test 28.4 passed: Correct number of credit account activity types inserted"
 else
     echo "******** Test 28.4 failed: Incorrect number of credit account activity types inserted"
