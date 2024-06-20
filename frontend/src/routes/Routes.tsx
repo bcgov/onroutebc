@@ -158,10 +158,10 @@ export const AppRoutes = () => {
           />
         }
       >
-        <Route path={routes.VEHICLES_ROUTES.MANAGE}>
+        <Route path={`companies/:companyId${routes.VEHICLES_ROUTES.MANAGE}`}>
           <Route index={true} element={<ManageVehicles />} />
           <Route
-            path={`${routes.VEHICLES_ROUTES.POWER_UNIT_DETAILS}/:vehicleId`}
+            path={`companies/:companyId${routes.VEHICLES_ROUTES.POWER_UNIT_DETAILS}/:vehicleId`}
             element={
               <EditVehicleDashboard
                 editVehicleMode={VEHICLE_TYPES.POWER_UNIT}
@@ -169,19 +169,19 @@ export const AppRoutes = () => {
             }
           />
           <Route
-            path={`${routes.VEHICLES_ROUTES.TRAILER_DETAILS}/:vehicleId`}
+            path={`companies/:companyId${routes.VEHICLES_ROUTES.TRAILER_DETAILS}/:vehicleId`}
             element={
               <EditVehicleDashboard editVehicleMode={VEHICLE_TYPES.TRAILER} />
             }
           />
           <Route
-            path={routes.VEHICLES_ROUTES.ADD_POWER_UNIT}
+            path={`companies/:companyId${routes.VEHICLES_ROUTES.ADD_POWER_UNIT}`}
             element={
               <AddVehicleDashboard addVehicleMode={VEHICLE_TYPES.POWER_UNIT} />
             }
           />
           <Route
-            path={routes.VEHICLES_ROUTES.ADD_TRAILER}
+            path={`companies/:companyId${routes.VEHICLES_ROUTES.ADD_TRAILER}`}
             element={
               <AddVehicleDashboard addVehicleMode={VEHICLE_TYPES.TRAILER} />
             }
