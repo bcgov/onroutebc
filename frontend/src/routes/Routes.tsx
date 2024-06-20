@@ -154,7 +154,10 @@ export const AppRoutes = () => {
         element={
           <BCeIDAuthWall
             requiredRole={ROLES.READ_VEHICLE}
-            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+            allowedIDIRAuthGroups={[
+              IDIR_USER_AUTH_GROUP.PPC_CLERK,
+              IDIR_USER_AUTH_GROUP.FINANCE,
+            ]}
           />
         }
       >
@@ -193,7 +196,10 @@ export const AppRoutes = () => {
         element={
           <BCeIDAuthWall
             requiredRole={ROLES.READ_ORG}
-            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+            allowedIDIRAuthGroups={[
+              IDIR_USER_AUTH_GROUP.PPC_CLERK,
+              IDIR_USER_AUTH_GROUP.FINANCE,
+            ]}
           />
         }
       >
@@ -249,9 +255,7 @@ export const AppRoutes = () => {
       >
         <Route
           path={`${routes.SHOPPING_CART_ROUTES.DETAILS()}`}
-          element={
-            <ShoppingCartDashboard />
-          }
+          element={<ShoppingCartDashboard />}
         />
       </Route>
 
