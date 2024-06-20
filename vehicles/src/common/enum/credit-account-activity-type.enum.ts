@@ -3,4 +3,5 @@ export enum CreditAccountActivityType {
   ACCOUNT_HOLD_REMOVED = 'HOLDRMVD',
   ACCOUNT_CLOSED = 'CLOSED',
   ACCOUNT_REOPENED = 'REOPENED',
+  ACCOUNT_OPENED = 'OPENED',
 }
