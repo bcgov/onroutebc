@@ -25,13 +25,14 @@ import "./List.scss";
 import { TrashButton } from "../../../../common/components/buttons/TrashButton";
 import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
 import { PowerUnitColumnDefinition, TrailerColumnDefinition } from "./Columns";
-import { deleteVehicles } from "../../apiManager/vehiclesAPI";
 import { SnackBarContext } from "../../../../App";
 import { ERROR_ROUTES, VEHICLES_ROUTES } from "../../../../routes/constants";
 import { DoesUserHaveRoleWithContext } from "../../../../common/authentication/util";
 import { ROLES } from "../../../../common/authentication/types";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { useDeletePowerUnitsMutation, usePowerUnitSubTypesQuery } from "../../hooks/powerUnits";
+import { useDeleteTrailersMutation, useTrailerSubTypesQuery } from "../../hooks/trailers";
 import {
   Vehicle,
   VehicleType,
@@ -39,11 +40,6 @@ import {
   Trailer,
   VEHICLE_TYPES,
 } from "../../types/Vehicle";
-
-import {
-  usePowerUnitSubTypesQuery,
-  useTrailerSubTypesQuery,
-} from "../../apiManager/hooks";
 
 import {
   defaultTableOptions,
@@ -63,14 +59,6 @@ const getColumns = (vehicleType: VehicleType): MRT_ColumnDef<Vehicle>[] => {
   return TrailerColumnDefinition;
 };
 
-/*
- *
- * The List component uses Material React Table (MRT)
- * For detailed documentation, see here:
- * https://www.material-react-table.com/docs/getting-started/usage
- *
- *
- */
 /* eslint-disable react/prop-types */
 export const List = memo(
   ({
@@ -82,11 +70,14 @@ export const List = memo(
     query: UseQueryResult<Vehicle[]>;
     companyId: string;
   }) => {
-    // Data, fetched from backend API
-    const { data, isError, isFetching, isPending } = query;
     const navigate = useNavigate();
-
-    // Column definitions for the table
+    const {
+      data: vehiclesData,
+      isError: fetchVehiclesFailed,
+      isFetching: isFetchingVehicles,
+      isPending: vehiclesPending,
+    } = query;
+    
     const columns = useMemo<MRT_ColumnDef<Vehicle>[]>(
       () => getColumns(vehicleType),
       [],
@@ -97,16 +88,20 @@ export const List = memo(
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
     const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
 
-    const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
-    const trailerSubTypesQuery = useTrailerSubTypesQuery();
-    const fetchedPowerUnitSubTypes = getDefaultRequiredVal(
-      [],
-      powerUnitSubTypesQuery.data,
-    );
-    const fetchedTrailerSubTypes = getDefaultRequiredVal(
-      [],
-      trailerSubTypesQuery.data,
-    );
+    const { data: powerUnitSubtypesData } = usePowerUnitSubTypesQuery();
+    const { data: trailerSubtypesData } = useTrailerSubTypesQuery();
+    const powerUnitSubTypes = getDefaultRequiredVal([], powerUnitSubtypesData);
+    const trailerSubTypes = getDefaultRequiredVal([], trailerSubtypesData);
+
+    const {
+      mutateAsync: deletePowerUnits,
+      isError: deletePowerUnitsFailed,
+    } = useDeletePowerUnitsMutation();
+
+    const {
+      mutateAsync: deleteTrailers,
+      isError: deleteTrailersFailed,
+    } = useDeleteTrailersMutation();
 
     const colTypeCodes = columns.filter(
       (item) => item.accessorKey === `${vehicleType}TypeCode`,
@@ -116,17 +111,13 @@ export const List = memo(
     );
 
     const transformVehicleCode = (code: string) => {
-      let val;
-      if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
-        val = fetchedPowerUnitSubTypes?.filter(
+      const vehicleSubtypesForCode = vehicleType === VEHICLE_TYPES.POWER_UNIT
+        ? powerUnitSubTypes.filter(
+          (value) => value.typeCode === code,
+        ) : trailerSubTypes.filter(
           (value) => value.typeCode === code,
         );
-      } else {
-        val = fetchedTrailerSubTypes?.filter(
-          (value) => value.typeCode === code,
-        );
-      }
-      return val?.at(0)?.type ?? "";
+      return getDefaultRequiredVal("", vehicleSubtypesForCode?.at(0)?.type);
     };
 
     if (colTypeCodes?.length === 1) {
@@ -143,58 +134,50 @@ export const List = memo(
       }
     }
 
-    /**
-     * Callback function for clicking on the Trash icon above the Table.
-     */
     const onClickTrashIcon = useCallback(() => {
       setIsDeleteDialogOpen(() => true);
     }, []);
 
-    /**
-     * Function that deletes a vehicle once the user confirms the delete action
-     * in the confirmation dialog.
-     */
-    const onConfirmDelete = async () => {
-      const vehicleIds: string[] = Object.keys(rowSelection);
+    const handleError = () => {
+      setIsDeleteDialogOpen(() => false);
+      navigate(ERROR_ROUTES.UNEXPECTED);
+    };
 
-      deleteVehicles(vehicleIds, vehicleType, companyId)
-        .then((response) => {
-          if (response.status === 200) {
-            const responseBody = response.data;
-            if (responseBody.failure.length > 0) {
-              snackBar.setSnackBar({
-                message: "An unexpected error occurred.",
-                showSnackbar: true,
-                setShowSnackbar: () => true,
-                alertType: "error",
-              });
-            } else {
-              snackBar.setSnackBar({
-                message: "Vehicle Deleted",
-                showSnackbar: true,
-                setShowSnackbar: () => true,
-                alertType: "info",
-              });
-            }
+    const onConfirmDelete = async () => {
+      const vehicleIds = Object.keys(rowSelection);
+
+      try {
+        const response = vehicleType === VEHICLE_TYPES.POWER_UNIT
+          ? await deletePowerUnits({ companyId, vehicleIds })
+          : await deleteTrailers({ companyId, vehicleIds });
+
+        if (response.status === 200) {
+          const responseBody = response.data;
+          if (responseBody.failure.length > 0) {
+            // Delete action for some vehicles failed
+            handleError();
+          } else {
+            setIsDeleteDialogOpen(() => false);
+            snackBar.setSnackBar({
+              message: "Vehicle Deleted",
+              showSnackbar: true,
+              setShowSnackbar: () => true,
+              alertType: "info",
+            });
+
             setRowSelection(() => {
               return {};
             });
             query.refetch();
-          } else {
-            navigate(ERROR_ROUTES.UNEXPECTED);
           }
-        })
-        .catch(() => {
-          navigate(ERROR_ROUTES.UNEXPECTED);
-        })
-        .finally(() => {
-          setIsDeleteDialogOpen(() => false);
-        });
+        } else {
+          handleError();
+        }
+      } catch {
+        handleError();
+      }
     };
 
-    /**
-     * Function that clears the delete related states when the user clicks on cancel.
-     */
     const onCancelDelete = useCallback(() => {
       setIsDeleteDialogOpen(() => false);
       setRowSelection(() => {
@@ -203,32 +186,35 @@ export const List = memo(
     }, []);
 
     useEffect(() => {
-      if (isError) {
-        snackBar.setSnackBar({
-          message: "An unexpected error occurred.",
-          showSnackbar: true,
-          setShowSnackbar: () => true,
-          alertType: "error",
-        });
+      if (
+        fetchVehiclesFailed
+        || deletePowerUnitsFailed
+        || deleteTrailersFailed
+      ) {
+        handleError();
       }
-    }, [isError]);
-    // End snackbar code for error handling
+    }, [
+      fetchVehiclesFailed,
+      deletePowerUnitsFailed,
+      deleteTrailersFailed,
+      handleError,
+    ]);
 
     const table = useMaterialReactTable({
       ...defaultTableOptions,
-      data: data ?? [],
+      data: getDefaultRequiredVal([], vehiclesData),
       columns: newColumns,
       initialState: {
         ...defaultTableInitialStateOptions,
       },
       state: {
         ...defaultTableStateOptions,
-        isLoading: isPending,
-        showAlertBanner: isError,
-        showProgressBars: isFetching,
+        isLoading: vehiclesPending,
+        showAlertBanner: fetchVehiclesFailed,
+        showProgressBars: isFetchingVehicles,
         sorting: [{ id: "createdDateTime", desc: true }],
         columnVisibility: { powerUnitId: false, trailerId: false },
-        rowSelection: rowSelection,
+        rowSelection,
       },
       getRowId: (originalRow) => {
         if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
@@ -268,6 +254,7 @@ export const List = memo(
                     <Edit />
                   </IconButton>
                 </Tooltip>
+
                 <Tooltip arrow placement="top" title="Delete">
                   {/*tslint:disable-next-line*/}
                   <IconButton
@@ -294,7 +281,7 @@ export const List = memo(
         ),
         [],
       ),
-      // Render a custom options Bar (inclues search and trash)
+      // Include search filter and delete button in top toolbar
       renderTopToolbar: useCallback(
         ({ table }: { table: MRT_TableInstance<Vehicle> }) => (
           <Box className="table-container__top-toolbar">
@@ -309,12 +296,6 @@ export const List = memo(
         ),
         [hasNoRowsSelected],
       ),
-      muiToolbarAlertBannerProps: isError
-        ? {
-            color: "error",
-            children: "Error loading data",
-          }
-        : undefined,
     });
 
     return (

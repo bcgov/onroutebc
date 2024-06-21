@@ -14,15 +14,12 @@ import { getDatetimes } from "./helpers/getDatetimes";
 import { useModifyAmendmentApplication } from "../../../hooks/hooks";
 import { ERROR_ROUTES } from "../../../../../routes/constants";
 import { DEFAULT_PERMIT_TYPE } from "../../../types/PermitType";
+import { usePowerUnitSubTypesQuery } from "../../../../manageVehicles/hooks/powerUnits";
+import { useTrailerSubTypesQuery } from "../../../../manageVehicles/hooks/trailers";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
-
-import {
-  usePowerUnitSubTypesQuery,
-  useTrailerSubTypesQuery,
-} from "../../../../manageVehicles/apiManager/hooks";
 
 export const AmendPermitReview = () => {
   const navigate = useNavigate();

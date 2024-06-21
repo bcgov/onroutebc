@@ -4,15 +4,17 @@ import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 
 import "./VehicleForm.scss";
-import { Trailer, VEHICLE_TYPES, VehicleSubType } from "../../types/Vehicle";
+import { Trailer, VehicleSubType } from "../../types/Vehicle";
 import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
 import { SnackBarContext } from "../../../../App";
+import { VEHICLES_ROUTES } from "../../../../routes/constants";
+import { Nullable } from "../../../../common/types/common";
 import {
-  useAddTrailerMutation,
   useTrailerSubTypesQuery,
+  useAddTrailerMutation,
   useUpdateTrailerMutation,
-} from "../../apiManager/hooks";
+} from "../../hooks/trailers";
 
 import {
   getDefaultRequiredVal,
@@ -27,28 +29,19 @@ import {
   invalidYearMin,
   requiredMessage,
 } from "../../../../common/helpers/validationMessages";
-import { VEHICLES_ROUTES } from "../../../../routes/constants";
-import { Nullable } from "../../../../common/types/common";
 
-/**
- * Props used by the power unit form.
- */
-interface TrailerFormProps {
+const FEATURE = "trailer";
+
+export const TrailerForm = ({
+  companyId,
+  trailer,
+}: {
+  companyId: string;
   trailer?: Trailer;
+}) => {
+  const isEditMode = Boolean(trailer?.trailerId);
 
-  /**
-   * The trailer id to be retrieved.
-   * If valid and available, the form will be in an editable state.
-   */
-  trailerId?: string;
-}
-
-/**
- * @returns React component containing the form for adding or editing a power unit.
- */
-export const TrailerForm = ({ trailer }: TrailerFormProps) => {
-  // Default values to register with React Hook Forms
-  // If data was passed to this component, then use that data, otherwise use empty or undefined values
+  // If data was passed to this component, then use that data, otherwise set fields to empty
   const trailerDefaultValues = {
     provinceCode: getDefaultRequiredVal("", trailer?.provinceCode),
     countryCode: getDefaultRequiredVal("", trailer?.countryCode),
@@ -87,10 +80,11 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
    * Adds or updates a vehicle.
    */
   const onAddOrUpdateVehicle = async (data: FieldValues) => {
-    if (trailer?.trailerId) {
+    if (isEditMode) {
       const trailerToBeUpdated = data as Trailer;
       const result = await updateTrailerMutation.mutateAsync({
-        trailerId: trailer?.trailerId,
+        companyId,
+        trailerId: (trailer as Trailer).trailerId as string,
         trailer: {
           ...trailerToBeUpdated,
           // need to explicitly convert form values to number here (since we can't use valueAsNumber prop)
@@ -113,6 +107,7 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
     } else {
       const trailerToBeAdded = data as Trailer;
       const result = await addTrailerMutation.mutateAsync({
+        companyId,
         trailer: {
           ...trailerToBeAdded,
           // need to explicitly convert form values to number here (since we can't use valueAsNumber prop)
@@ -136,17 +131,12 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
     }
   };
 
-  /**
-   * Changed view to the main Vehicle Inventory page
-   */
+  // Go back to the main Vehicle Inventory page on close
   const handleClose = () => {
     navigate(VEHICLES_ROUTES.TRAILER_TAB);
   };
-
-  /**
-   * The name of this feature that is used for id's, keys, and associating form components
-   */
-  const FEATURE = VEHICLE_TYPES.TRAILER;
+  
+  const saveButtonText = isEditMode ? "Save" : "Add To Inventory";
 
   return (
     <div>
@@ -306,6 +296,7 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
         >
           Cancel
         </Button>
+
         <Button
           key="add-vehicle-button"
           aria-label="Add To Inventory"
@@ -313,8 +304,7 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
           color="primary"
           onClick={handleSubmit(onAddOrUpdateVehicle)}
         >
-          {trailer?.trailerId && "Save"}
-          {!trailer?.trailerId && "Add To Inventory"}
+          {saveButtonText}
         </Button>
       </Box>
     </div>

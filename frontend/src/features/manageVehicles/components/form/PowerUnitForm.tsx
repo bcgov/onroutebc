@@ -9,17 +9,18 @@ import { CountryAndProvince } from "../../../../common/components/form/CountryAn
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
 import { SnackBarContext } from "../../../../App";
 import { VEHICLES_ROUTES } from "../../../../routes/constants";
+import { Nullable } from "../../../../common/types/common";
+import {
+  usePowerUnitSubTypesQuery,
+  useAddPowerUnitMutation,
+  useUpdatePowerUnitMutation,
+} from "../../hooks/powerUnits";
+
 import {
   getDefaultRequiredVal,
   getDefaultNullableVal,
   convertToNumberIfValid,
 } from "../../../../common/helpers/util";
-
-import {
-  useAddPowerUnitMutation,
-  usePowerUnitSubTypesQuery,
-  useUpdatePowerUnitMutation,
-} from "../../apiManager/hooks";
 
 import {
   invalidNumber,
@@ -28,24 +29,19 @@ import {
   invalidYearMin,
   requiredMessage,
 } from "../../../../common/helpers/validationMessages";
-import { Nullable } from "../../../../common/types/common";
 
-/**
- * Props used by the power unit form.
- */
-interface PowerUnitFormProps {
-  /**
-   * The power unit details to be displayed if in edit mode.
-   */
+const FEATURE = "power-unit";
+
+export const PowerUnitForm = ({
+  companyId,
+  powerUnit,
+}: {
+  companyId: string;
   powerUnit?: PowerUnit;
-}
+}) => {
+  const isEditMode = Boolean(powerUnit?.powerUnitId);
 
-/**
- * @returns React component containing the form for adding or editing a power unit.
- */
-export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
-  // Default values to register with React Hook Forms
-  // If data was passed to this component, then use that data, otherwise use empty or undefined values
+  // If data was passed to this component, then use that data, otherwise set fields to empty
   const powerUnitDefaultValues = {
     provinceCode: getDefaultRequiredVal("", powerUnit?.provinceCode),
     countryCode: getDefaultRequiredVal("", powerUnit?.countryCode),
@@ -72,23 +68,20 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
   const snackBar = useContext(SnackBarContext);
   const navigate = useNavigate();
 
-  /**
-   * Custom css overrides for the form fields
-   */
+  // Custom css overrides for the form fields
   const formFieldStyle = {
     fontWeight: "bold",
     width: "490px",
     marginLeft: "8px",
   };
 
-  /**
-   * Adds a vehicle.
-   */
+  // Saving a vehicle
   const onAddOrUpdateVehicle = async (data: FieldValues) => {
-    if (powerUnit?.powerUnitId) {
+    if (isEditMode) {
       const powerUnitToBeUpdated = data as PowerUnit;
       const result = await updatePowerUnitMutation.mutateAsync({
-        powerUnitId: powerUnit?.powerUnitId,
+        companyId,
+        powerUnitId: (powerUnit as PowerUnit).powerUnitId as string,
         powerUnit: {
           ...powerUnitToBeUpdated,
           // need to explicitly convert form values to number here (since we can't use valueAsNumber prop)
@@ -117,6 +110,7 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
     } else {
       const powerUnitToBeAdded = data as PowerUnit;
       const result = await addPowerUnitMutation.mutateAsync({
+        companyId,
         powerUnit: {
           ...powerUnitToBeAdded,
           // need to explicitly convert form values to number here (since we can't use valueAsNumber prop)
@@ -147,17 +141,12 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
     }
   };
 
-  /**
-   * Changed view to the main Vehicle Inventory page
-   */
+  // Go back to the main Vehicle Inventory page on close
   const handleClose = () => {
     navigate(VEHICLES_ROUTES.MANAGE);
   };
 
-  /**
-   * The name of this feature that is used for id's, keys, and associating form components
-   */
-  const FEATURE = "power-unit";
+  const saveButtonText = isEditMode ? "Save" : "Add To Inventory";
 
   return (
     <div>
@@ -313,6 +302,7 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
         >
           Cancel
         </Button>
+
         <Button
           key="add-vehicle-button"
           aria-label="Add To Inventory"
@@ -320,8 +310,7 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
           color="primary"
           onClick={handleSubmit(onAddOrUpdateVehicle)}
         >
-          {powerUnit?.powerUnitId && "Save"}
-          {!powerUnit?.powerUnitId && "Add To Inventory"}
+          {saveButtonText}
         </Button>
       </Box>
     </div>
