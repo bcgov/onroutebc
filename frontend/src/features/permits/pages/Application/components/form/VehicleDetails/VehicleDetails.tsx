@@ -116,7 +116,7 @@ export const VehicleDetails = ({
 
   // Radio button value to decide if the user wants to save the vehicle in inventory
   // Reset to false every reload
-  const [saveVehicle, setSaveVehicle] = useState(false);
+  const [saveVehicle, setSaveVehicle] = useState<boolean>(false);
 
   // Disable vehicle type selection when a vehicle has been selected from dropdown
   // Enable only when user chooses to manually enter new vehicle info by clearing the vehicle details
@@ -143,6 +143,11 @@ export const VehicleDetails = ({
     const subtypes = getEligibleSubtypeOptions(typeValue);
     setSubtypeOptions(subtypes);
   }, [typeValue, powerUnitSubTypes, trailerSubTypes]);
+
+  // Set the "Save to Inventory" radio button to false on render
+  useEffect(() => {
+    setValue("permitData.vehicleDetails.saveVehicle", saveVehicle);
+  }, [saveVehicle]);
 
   // Returns correct subtype options based on vehicle type
   const getSubtypeOptions = (vehicleType: string) => {
@@ -236,18 +241,12 @@ export const VehicleDetails = ({
     });
   };
 
-  // Set the "Save to Inventory" radio button to false on render
-  useEffect(() => {
-    setValue("permitData.vehicleDetails.saveVehicle", saveVehicle);
-  }, [saveVehicle]);
-
   const handleChooseFrom = (event: SelectChangeEvent) => {
     setChooseFrom(event.target.value as VehicleChooseFrom);
   };
 
-  const handleSaveVehicleRadioBtns = (isSave: string) => {
-    const isTrue = isSave === "true";
-    setSaveVehicle(isTrue);
+  const handleSaveVehicleRadioBtns = (saveToInventory: string) => {
+    setSaveVehicle(saveToInventory === "true");
   };
 
   // Reset the vehicle subtype field whenever a different vehicle type is selected
@@ -439,12 +438,13 @@ export const VehicleDetails = ({
                 Would you like to add/update this vehicle to your Vehicle
                 Inventory?
               </FormLabel>
+
               <RadioGroup
                 aria-labelledby="radio-buttons-group-label"
                 defaultValue={saveVehicle}
                 value={saveVehicle}
                 name="radio-buttons-group"
-                onChange={(x) => handleSaveVehicleRadioBtns(x.target.value)}
+                onChange={(e) => handleSaveVehicleRadioBtns(e.target.value)}
               >
                 <Box sx={{ display: "flex" }}>
                   <FormControlLabel
