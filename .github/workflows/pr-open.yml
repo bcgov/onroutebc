@@ -106,4 +106,4 @@ jobs:
         id: generate_release_tag
         shell: bash
         run: |  
-          echo next_release_tag=$(expr $(gh release list  | grep Latest  | cut -f1 - | cut -d '-' -f3 - ) + 1) >> $GITHUB_OUTPUT
+          echo next_release_tag=$(expr $(echo $(curl https://api.github.com/repos/bcgov/onroutebc/releases/latest | grep tag_name | cut -d '-' -f3 - | cut -d '"' -f1 -) + 1)) >> $GITHUB_OUTPUT
