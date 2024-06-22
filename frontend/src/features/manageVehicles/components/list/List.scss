@@ -1,20 +1,41 @@
 @use "../../../../common/components/table/Table";
 @import "../../../../themes/orbcStyles";
 
-.table-container {
+.vehicles-list {
   & &__top-toolbar {
     display: flex;
-    padding: 1.25rem 0;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
     background-color: $white;
     align-items: center;
 
     .filter-btn {
       margin-left: 0.5rem;
     }
-    
-    .trash-btn {
-      margin-left: 0.5rem;
-      padding: 0.75rem 0.865rem;
+  }
+
+  &__search {
+    .search-input {
+      &__input-container {
+        border: 2px solid $bc-text-box-border-grey;
+        padding-left: 0.75rem;
+        display: flex;
+        align-items: center;
+      
+        fieldset {
+          border: none;
+        }
+
+        .search-icon, .clear-icon {
+          font-size: 1rem;
+          color: $bc-form-elements-grey;
+        }
+      }
+
+      &__input-textfield {
+        padding-left: 0.25rem;
+        font-size: 1rem;
+      }
     }
   }
 }

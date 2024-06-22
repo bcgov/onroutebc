@@ -1,8 +1,10 @@
 import { RowSelectionState } from "@tanstack/table-core";
-import { Box, IconButton, Tooltip } from "@mui/material";
+import { Box, IconButton, InputAdornment, Tooltip } from "@mui/material";
 import { Delete, Edit } from "@mui/icons-material";
 import { UseQueryResult } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleXmark, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import {
   memo,
   useCallback,
@@ -22,7 +24,7 @@ import {
 } from "material-react-table";
 
 import "./List.scss";
-import { TrashButton } from "../../../../common/components/buttons/TrashButton";
+import { DeleteButton } from "../../../../common/components/buttons/DeleteButton";
 import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
 import { PowerUnitColumnDefinition, TrailerColumnDefinition } from "./Columns";
 import { SnackBarContext } from "../../../../App";
@@ -33,6 +35,7 @@ import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFou
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { useDeletePowerUnitsMutation, usePowerUnitSubTypesQuery } from "../../hooks/powerUnits";
 import { useDeleteTrailersMutation, useTrailerSubTypesQuery } from "../../hooks/trailers";
+import { Nullable } from "../../../../common/types/common";
 import {
   Vehicle,
   VehicleType,
@@ -185,6 +188,8 @@ export const List = memo(
       });
     }, []);
 
+    const [searchFilterValue, setSearchFilterValue] = useState<string>("");
+
     useEffect(() => {
       if (
         fetchVehiclesFailed
@@ -215,15 +220,13 @@ export const List = memo(
         showProgressBars: isFetchingVehicles,
         columnVisibility: { powerUnitId: false, trailerId: false },
         rowSelection,
+        globalFilter: searchFilterValue,
       },
       getRowId: (originalRow) => {
-        if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
-          const powerUnitRow = originalRow as PowerUnit;
-          return powerUnitRow.powerUnitId as string;
-        } else {
-          const trailerRow = originalRow as Trailer;
-          return trailerRow.trailerId as string;
+        if (vehicleType === VEHICLE_TYPES.TRAILER) {
+          return (originalRow as Trailer).trailerId as string;
         }
+        return (originalRow as PowerUnit).powerUnitId as string;
       },
       onRowSelectionChange: setRowSelection,
       enableMultiSort: true,
@@ -282,25 +285,60 @@ export const List = memo(
         ),
         [],
       ),
+      filterFns: {
+        "defaultSearchFilter": (row, columnId, filterValue) => {
+          return (columnId === "plate" && row.getValue<string>(columnId).includes(filterValue))
+            || (columnId === "vin" && row.getValue<string>(columnId).includes(filterValue))
+            || (columnId === "unitNumber" && row.getValue<Nullable<string>>(columnId)?.includes(filterValue));
+        },
+      },
+      globalFilterFn: "defaultSearchFilter",
+      onGlobalFilterChange: setSearchFilterValue,
       // Include search filter and delete button in top toolbar
       renderTopToolbar: useCallback(
         ({ table }: { table: MRT_TableInstance<Vehicle> }) => (
-          <Box className="table-container__top-toolbar">
-            <MRT_GlobalFilterTextField table={table} />
-            {DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) && (
-              <TrashButton
-                onClickTrash={onClickTrashIcon}
+          <Box className="vehicles-list__top-toolbar">
+            <div className="vehicles-list__search">
+              <MRT_GlobalFilterTextField
+                table={table}
+                className="search-input"
+                InputProps={{
+                  className: "search-input__input-container",
+                  startAdornment: (
+                    <FontAwesomeIcon icon={faMagnifyingGlass} className="search-icon" />
+                  ),
+                  endAdornment: searchFilterValue !== "" ? (
+                    <InputAdornment position="end">
+                      <IconButton
+                        className="search-input__clear-button"
+                        onClick={() => table.setGlobalFilter("")}
+                      >
+                        <FontAwesomeIcon icon={faCircleXmark} className="clear-icon" />
+                      </IconButton>
+                    </InputAdornment>
+                  ) : null,
+                }}
+                inputProps={{
+                  className: "search-input__input-textfield",
+                }}
+                onChange={(e) => table.setGlobalFilter(e.target.value)}
+              />
+            </div>
+            
+            {DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) ? (
+              <DeleteButton
+                onClick={onClickTrashIcon}
                 disabled={hasNoRowsSelected}
               />
-            )}
+            ) : null}
           </Box>
         ),
-        [hasNoRowsSelected],
+        [hasNoRowsSelected, searchFilterValue],
       ),
     });
 
     return (
-      <div className="table-container">
+      <div className="vehicles-list table-container">
         <MaterialReactTable table={table} />
         <DeleteConfirmationDialog
           onClickDelete={onConfirmDelete}
