@@ -30,6 +30,10 @@
           font-size: 1rem;
           color: $bc-form-elements-grey;
         }
+
+        &:focus, &:focus-within {
+          border: 2px solid $focus-blue;
+        }
       }
 
       &__input-textfield {
