@@ -1,11 +1,11 @@
 import { Stack } from "@mui/material";
-import { MRT_ColumnDef } from "material-react-table";
-import { CompanyProfile } from "../../../features/manageProfile/types/manageProfile";
+import { MRT_ColumnDef, MRT_Row } from "material-react-table";
+import { CreditAccountUser } from "./creditAccount";
 
 /**
  * The column definition for User Management Table.
  */
-export const CreditAccountUserColumnsDefinition: MRT_ColumnDef<CompanyProfile>[] =
+export const CreditAccountUserColumnsDefinition: MRT_ColumnDef<CreditAccountUser>[] =
   [
     {
       accessorKey: "legalName",
@@ -31,5 +31,18 @@ export const CreditAccountUserColumnsDefinition: MRT_ColumnDef<CompanyProfile>[]
     {
       accessorKey: "clientNumber",
       header: "onRouteBC Client No.",
+    },
+    {
+      accessorKey: "userType",
+      header: "",
+      Cell: (props: { row: MRT_Row<CreditAccountUser> }) => {
+        return (
+          <>
+            {props.row.original.userType === "HOLDER" && (
+              <span className="cell__text">Account Holder</span>
+            )}
+          </>
+        );
+      },
     },
   ];

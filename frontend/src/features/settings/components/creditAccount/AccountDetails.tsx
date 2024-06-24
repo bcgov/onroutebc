@@ -205,13 +205,13 @@ export const AccountDetails = () => {
             <dt className="account-details__text">Credit Limit</dt>
             <dd className="account-details__text">
               {creditAccountData?.creditLimit &&
-                `$${formatNumber(creditAccountData.creditLimit)}`}
+                `$${formatNumber(Number(creditAccountData.creditLimit))}`}
             </dd>
           </Box>
           <Box className="account-details__row">
             <dt className="account-details__text">Credit Balance</dt>
             <dd className="account-details__text">
-              {creditAccountData?.creditBalance &&
+              {creditAccountData?.creditBalance !== undefined &&
                 `$${formatNumber(creditAccountData.creditBalance)}`}
             </dd>
           </Box>
@@ -219,7 +219,7 @@ export const AccountDetails = () => {
             <dt className="account-details__text">Available Credit</dt>
             <dd className="account-details__text">
               {creditAccountData?.availableCredit &&
-                `$${formatNumber(creditAccountData.availableCredit)}`}
+                `$${formatNumber(Number(creditAccountData.availableCredit))}`}
             </dd>
           </Box>
         </Box>

@@ -2,9 +2,12 @@ import { Button, Dialog } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { FormProvider, useForm } from "react-hook-form";
-import "./AddUserModal.scss";
-import { useAddCreditAccountUserMutation } from "../../hooks/creditAccount";
+import {
+  useAddCreditAccountUserMutation,
+  useGetCreditAccountQuery,
+} from "../../hooks/creditAccount";
 import { CreditAccountUser } from "../../types/creditAccount";
+import "./AddUserModal.scss";
 
 export const AddUserModal = ({
   showModal,
@@ -29,12 +32,20 @@ export const AddUserModal = ({
     return status === 200;
   };
 
-  const addCreditAccountUserResult = useAddCreditAccountUserMutation(userData);
+  const { data: creditAccount } = useGetCreditAccountQuery();
+
+  const addCreditAccountUserMutation = useAddCreditAccountUserMutation();
 
   const handleAddUser = async () => {
-    const { status } = await addCreditAccountUserResult.mutateAsync();
-    if (isActionSuccessful(status)) {
-      onConfirm();
+    if (creditAccount?.creditAccountId) {
+      const { status } = await addCreditAccountUserMutation.mutateAsync({
+        creditAccountId: creditAccount.creditAccountId,
+        companyId: userData.companyId,
+      });
+
+      if (isActionSuccessful(status)) {
+        onConfirm();
+      }
     }
   };
 

@@ -1,122 +1,85 @@
 import { Box, Button, Typography } from "@mui/material";
 import { RowSelectionState } from "@tanstack/table-core";
 import { useCallback, useContext, useEffect, useState } from "react";
-// import { useAuth } from "react-oidc-context";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import {
+  MRT_Row,
   MaterialReactTable,
   // MRT_Row,
   useMaterialReactTable,
 } from "material-react-table";
-
-import { SnackBarContext } from "../../../../App";
-import { RemoveUserModal } from "./RemoveUserModal";
+import { RemoveUsersModal } from "./RemoveUsersModal";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
-import {
-  useGetCreditAccountQuery,
-  useRemoveCreditAccountUsersMutation,
-} from "../../hooks/creditAccount";
+import { useGetCreditAccountQuery } from "../../hooks/creditAccount";
 import { CreditAccountUserColumnsDefinition } from "../../types/CreditAccountUserColumns";
-import { CompanyProfile } from "../../../manageProfile/types/manageProfile.d";
-import "./UserTable.scss";
 import { canUpdateCreditAccount } from "../../helpers/permissions";
+import { CreditAccountUser } from "../../types/creditAccount";
+import "./UserTable.scss";
 
 /**
- * User Management Component for CV Client.
+ * User Management Component for Credit Accounts.
  */
 export const UserTable = () => {
   const {
-    data,
+    data: creditAccount,
     isError,
     isLoading,
-    refetch: refetchCreditAccount,
   } = useGetCreditAccountQuery();
 
-  const { setSnackBar } = useContext(SnackBarContext);
   const { userRoles } = useContext(OnRouteBCContext);
-  // const { user: userFromToken } = useAuth();
 
-  const removeCreditAccountUsersMutation =
-    useRemoveCreditAccountUsersMutation();
-
-  const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
+  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
+  const [userIds, setUserIds] = useState<number[]>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
 
   /**
    * Callback function for clicking on the 'remove user' button above the Table.
    */
-  const onClickRemoveButton = useCallback(() => {
-    setIsRemoveDialogOpen(() => true);
+  const handleRemoveButton = useCallback(() => {
+    setIsRemoveModalOpen(() => true);
   }, []);
 
   /**
    * Retrieves user identifiers from the row selection state.
    */
-  const getSelectedUsers = useCallback(
-    () => Object.keys(rowSelection).map((value: string) => value.split(",")[1]),
-    [rowSelection],
-  );
-
-  const isActionSuccessful = (status: number) => {
-    return status === 200;
-  };
+  const getSelectedUsers = useCallback(() => {
+    return Object.keys(rowSelection).map((value: string) => Number(value));
+  }, [rowSelection]);
 
   /**
-   * Function that removes one or more users.
+   * Close RemoveUserModal and clear row selection state
    */
-  const onConfirmRemove = async () => {
-    const userClientNumbers: string[] = getSelectedUsers();
-    if (userClientNumbers.length !== 0) {
-      const { status } =
-        await removeCreditAccountUsersMutation.mutateAsync(userClientNumbers);
-      if (isActionSuccessful(status)) {
-        setIsRemoveDialogOpen(() => false);
-        setSnackBar({
-          message: "Account User(s) Removed",
-          showSnackbar: true,
-          setShowSnackbar: () => true,
-          alertType: "info",
-        });
-      }
-    }
-
+  const handleConfirmRemove = async () => {
+    setIsRemoveModalOpen(() => false);
     setRowSelection(() => {
       return {};
     });
-    refetchCreditAccount();
   };
 
   /**
    * Function that clears the delete related states when the user clicks on cancel.
    */
-  const onCancelDelete = useCallback(() => {
-    setIsRemoveDialogOpen(() => false);
+  const handleCancelRemove = useCallback(() => {
+    setIsRemoveModalOpen(() => false);
     setRowSelection(() => {
       return {};
     });
   }, []);
 
   useEffect(() => {
-    if (isError) {
-      setSnackBar({
-        message: "An unexpected error occurred.",
-        showSnackbar: true,
-        setShowSnackbar: () => true,
-        alertType: "error",
-      });
-    }
-  }, [isError]);
+    setUserIds(getSelectedUsers());
+  }, [rowSelection]);
 
   const table = useMaterialReactTable({
     ...defaultTableOptions,
     columns: CreditAccountUserColumnsDefinition,
-    data: data?.creditAccountUsers ?? [],
+    data: creditAccount?.creditAccountUsers ?? [],
     initialState: {
       ...defaultTableInitialStateOptions,
     },
@@ -129,21 +92,19 @@ export const UserTable = () => {
     },
     enableGlobalFilter: false,
     renderEmptyRowsFallback: () => <NoRecordsFound />,
-    // enableRowSelection: (row: MRT_Row<CompanyProfile>): boolean => {
-    //   if (
-    //     row?.original?.companyGUID === userFromToken?.profile?.bceid_user_guid
-    //   ) {
-    //     return false;
-    //   }
-    //   if (!canUpdateCreditAccount(userRoles)) {
-    //     return false;
-    //   }
-    //   return true;
-    // },
-    enableRowSelection: canUpdateCreditAccount(userRoles),
+    enableRowSelection: (row: MRT_Row<CreditAccountUser>): boolean => {
+      if (row?.original?.companyId === creditAccount?.companyId) {
+        return false;
+      }
+      if (!canUpdateCreditAccount(userRoles)) {
+        return false;
+      }
+      return true;
+    },
+    // enableRowSelection: canUpdateCreditAccount(userRoles),
     onRowSelectionChange: setRowSelection,
-    getRowId: (originalRow: CompanyProfile) => {
-      return originalRow.companyGUID;
+    getRowId: (originalRow: CreditAccountUser) => {
+      return originalRow.companyId;
     },
     displayColumnDefOptions: {
       "mrt-row-actions": {
@@ -163,7 +124,7 @@ export const UserTable = () => {
           {canUpdateCreditAccount(userRoles) && (
             <Button
               className="user-table__button user-table__button--remove"
-              onClick={onClickRemoveButton}
+              onClick={handleRemoveButton}
               disabled={hasNoRowsSelected}
             >
               Remove User
@@ -213,10 +174,11 @@ export const UserTable = () => {
   return (
     <div className="user-table">
       <MaterialReactTable table={table} />
-      <RemoveUserModal
-        onClickRemove={onConfirmRemove}
-        isOpen={isRemoveDialogOpen}
-        onClickCancel={onCancelDelete}
+      <RemoveUsersModal
+        isOpen={isRemoveModalOpen}
+        onCancel={handleCancelRemove}
+        onConfirm={handleConfirmRemove}
+        userIds={userIds}
       />
     </div>
   );

@@ -7,37 +7,61 @@ import Typography from "@mui/material/Typography";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMinus } from "@fortawesome/free-solid-svg-icons";
 
-import "./RemoveUserModal.scss";
+import "./RemoveUsersModal.scss";
+import {
+  useGetCreditAccountQuery,
+  useRemoveCreditAccountUsersMutation,
+} from "../../hooks/creditAccount";
 
 /**
  *  A stateless confirmation dialog box for remove Operations.
  */
-export const RemoveUserModal = ({
+export const RemoveUsersModal = ({
   isOpen,
-  onClickRemove,
-  onClickCancel,
+  onCancel,
+  onConfirm,
+  userIds,
 }: {
   /**
    * Boolean to control the open and close state of Dialog box.
    */
   isOpen: boolean;
   /**
-   * A callback function on clicking remove button.
-   * @returns void
-   */
-  onClickRemove: () => void;
-
-  /**
    * A callback function on clicking cancel button.
    * @returns void
    */
-  onClickCancel: () => void;
+  onCancel: () => void;
+  onConfirm: () => void;
+  userIds: number[];
 }) => {
+  const { data: creditAccount } = useGetCreditAccountQuery();
+
+  const removeCreditAccountUsersMutation = creditAccount?.creditAccountId
+    ? useRemoveCreditAccountUsersMutation({
+        creditAccountId: creditAccount?.creditAccountId,
+        companyIds: userIds,
+      })
+    : undefined;
+
+  const isActionSuccessful = (status: number) => {
+    return status === 200;
+  };
+
+  const handleRemoveUsers = async () => {
+    if (removeCreditAccountUsersMutation) {
+      const { status } = await removeCreditAccountUsersMutation.mutateAsync();
+
+      if (isActionSuccessful(status)) {
+        onConfirm();
+      }
+    }
+  };
+
   return (
     <div>
       <Dialog
         className="remove-user-dialog"
-        onClose={onClickCancel}
+        onClose={onCancel}
         aria-labelledby="confirmation-dialog-title"
         open={isOpen}
       >
@@ -60,7 +84,7 @@ export const RemoveUserModal = ({
             className="remove-user-btn remove-user-btn--cancel"
             variant="contained"
             color="secondary"
-            onClick={onClickCancel}
+            onClick={onCancel}
           >
             Cancel
           </Button>
@@ -69,7 +93,7 @@ export const RemoveUserModal = ({
             className="remove-user-btn remove-user-btn--delete"
             variant="contained"
             color="error"
-            onClick={onClickRemove}
+            onClick={handleRemoveUsers}
           >
             Remove
           </Button>

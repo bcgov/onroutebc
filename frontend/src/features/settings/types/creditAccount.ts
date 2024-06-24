@@ -43,24 +43,23 @@ export const CREDIT_ACCOUNT_LIMIT_CHOOSE_FROM_OPTIONS = [
 
 
 
-export type CreditAccountType = "SECURED"
-export type CreditAccountStatus = "ACTIVE" | "ON HOLD" | "CLOSED"
-export type CreditAccountUserType = "OWNER" | "USER"
+export type CreditAccountType = "SECURED" | "UNSECURED"
+export type CreditAccountStatusType = "ACTIVE" | "ON HOLD" | "CLOSED"
+export type CreditAccountUserType = "HOLDER" | "USER"
 
 export interface CreditAccountData {
-  creditAccountId: number,
-  creditAccountType: CreditAccountType,
-  creditAccountNumber: string,
-  creditAccountStatusType: CreditAccountStatus,
+  availableCredit: string,
   companyId: number,
-  availableCredit: number,
-  creditLimit: number,
-  creditBalance: number,
+  creditAccountId: number,
+  creditAccountNumber: string,
+  creditAccountStatusType: CreditAccountStatusType,
+  creditAccountType: CreditAccountType,
   creditAccountUsers: CreditAccountUser[]
+  creditBalance: number,
+  creditLimit: CreditAccountLimitType,
 }
 
-export interface CreditAccountUser extends CompanyProfile {
-  isSuspended: boolean,
+export interface CreditAccountUser extends Omit<CompanyProfile, "companyGUID" | "mailingAddress" | "phone" | "extension" | "fax" | "primaryContact" | "migratedClientHash"> {
   userType: CreditAccountUserType
 }
 

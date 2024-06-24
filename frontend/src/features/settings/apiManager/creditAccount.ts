@@ -2,125 +2,73 @@
 import { CreditAccountData, CreditAccountLimitType, HoldData, HOLD_ACTIVITY_TYPES, CloseData, CLOSE_ACTIVITY_TYPES, CreditAccountHistoryData } from "../types/creditAccount"
 import { CREDIT_ACCOUNT_API_ROUTES } from "../apiManager/endpoints/endpoints"
 import { CreditAccountUser } from "../types/creditAccount"
+import { httpDELETERequest, httpPOSTRequest, httpPUTRequest } from "../../../common/apiManager/httpRequestHandler"
 
-const companyProfileA: CreditAccountUser = {
-  "companyId": 18,
-  "companyGUID": "1FC2222DD96441EF907858A17665A57B",
-  "clientNumber": "E2-000061-640",
-  "migratedClientHash": null,
-  "legalName": "Herzog-Blick Trucking",
-  "alternateName": "Werner's Convoy",
-  "phone": "763-356-8852",
-  "extension": null,
-  "fax": null,
-  "email": "cmaciunas1o@amazon.co.jp",
-  "primaryContact": {
-    "firstName": "Adelaida",
-    "lastName": "Winterton",
-    "phone1": "851-454-2329",
-    "phone2": undefined,
-    "fax": "798-158-5884",
-    "email": "awinterton1o@pagesperso-orange.fr",
-    "city": "Lysekil",
-    "provinceCode": "BC",
-    "countryCode": "CA",
-    "phone1Extension": undefined,
-    "phone2Extension": undefined
-  },
-  "mailingAddress": {
-    "addressLine1": "593 6th Trail",
-    "addressLine2": null,
-    "city": "Muke",
-    "postalCode": "I1A 1U3",
-    "provinceCode": "BC",
-    "countryCode": "CA"
-  },
+// eslint-disable-next-line
+const creditAccountUserA: CreditAccountUser = {
+  "companyId": 3,
+  "clientNumber": "B1-000096-763",
+  "legalName": "Abshire, Rempel and O'Keefe Trucking",
+  "alternateName": null,
+  "email": "dmccarter2n@webeden.co.uk",
   "isSuspended": false,
   "userType": "USER"
 }
-
-const companyProfileB: CreditAccountUser = {
+// eslint-disable-next-line
+const creditAccountUserB: CreditAccountUser = {
   "companyId": 19,
-  "companyGUID": "22723C3E423142A5B66834B1F9694FC2",
   "clientNumber": "B1-000083-390",
-  "migratedClientHash": null,
   "legalName": "Jacobson, Bechtelar and Walker Trucking",
   "alternateName": null,
-  "phone": "278-286-5357",
-  "extension": null,
-  "fax": null,
   "email": "clumly2a@nba.com",
-  "primaryContact": {
-    "firstName": "Jarrid",
-    "lastName": "Cristofanini",
-    "phone1": "837-837-2993",
-    "phone2": "728-452-3114",
-    "fax": "658-799-9980",
-    "email": "jcristofanini2a@telegraph.co.uk",
-    "city": "Müllendorf",
-    "provinceCode": "BC",
-    "countryCode": "CA",
-    "phone1Extension": undefined,
-    "phone2Extension": undefined
-  },
-  "mailingAddress": {
-    "addressLine1": "1024 Anniversary Court",
-    "addressLine2": null,
-    "city": "Monguno",
-    "postalCode": "R3Y 9A4",
-    "provinceCode": "BC",
-    "countryCode": "CA"
-  },
+  "isSuspended": false,
+  "userType": "USER"
+}
+// eslint-disable-next-line
+const creditAccountUserC: CreditAccountUser = {
+  "companyId": 20,
+  "clientNumber": "R1-000079-847",
+  "legalName": "Roberts, Kautzer and Pouros Trucking",
+  "alternateName": null,
+  "email": "ltrobe26@sakura.ne.jp",
   "isSuspended": false,
   "userType": "USER"
 }
 
-const companyProfileC: CreditAccountUser = {
-  "companyId": 20,
-  "companyGUID": "258DEBB0B3114FE68AD4A19BFDE4529D",
-  "clientNumber": "R1-000079-847",
-  "migratedClientHash": null,
-  "legalName": "Roberts, Kautzer and Pouros Trucking",
-  "alternateName": null,
-  "phone": "666-329-8805",
-  "extension": null,
-  "fax": null,
-  "email": "ltrobe26@sakura.ne.jp",
-  "primaryContact": {
-    "firstName": "Lucita",
-    "lastName": "Cuttell",
-    "phone1": "321-798-8332",
-    "phone2": undefined,
-    "fax": "240-352-0095",
-    "email": "lcuttell26@tamu.edu",
-    "city": "Zhemtala",
-    "provinceCode": "BC",
-    "countryCode": "CA",
-    "phone1Extension": undefined,
-    "phone2Extension": undefined
-  },
-  "mailingAddress": {
-    "addressLine1": "475 Scoville Place",
-    "addressLine2": null,
-    "city": "Saint-Pierre-Montlimart",
-    "postalCode": "Z3C 0I2",
-    "provinceCode": "BC",
-    "countryCode": "CA"
-  },
-  "isSuspended": false,
-  "userType": "USER"
+// eslint-disable-next-line
+const creditAccount: CreditAccountData = {
+  creditAccountId: 1012,
+  creditAccountType: "UNSECURED",
+  creditAccountNumber: "WS5005",
+  creditAccountStatusType: "ACTIVE",
+  companyId: 74,
+  availableCredit: "1000",
+  creditLimit: "1000",
+  creditBalance: 0,
+  creditAccountUsers: [
+    {
+      companyId: 74,
+      clientNumber: "B3-000005-722",
+      legalName: "Parisian LLC Trucking",
+      alternateName: null,
+      email: "gspoure4@mtv.com",
+      isSuspended: false,
+      userType: "HOLDER"
+    },
+    creditAccountUserA,
+    creditAccountUserB,
+    creditAccountUserC,
+  ]
 }
+
 
 /**
  * Backend request to create a credit account.
  * @param creditAccountData Information about the credit account action for the company
  * @returns Result of the credit account action, or error on fail
  */
-export const createCreditAccount = async (
-  // eslint-disable-next-line 
-        selectedCreditLimit: CreditAccountLimitType 
-) => {
-    return await mockCreateCreditAccountSuccess(CREDIT_ACCOUNT_API_ROUTES.CREATE_CREDIT_ACCOUNT()) 
+export const createCreditAccount = async (creditLimit: CreditAccountLimitType) => {
+  return await httpPOSTRequest(CREDIT_ACCOUNT_API_ROUTES.CREATE_CREDIT_ACCOUNT(), {creditLimit})
 }
 
 
@@ -130,6 +78,7 @@ const mockCreateCreditAccountSuccess = async (url: string): Promise<CreditAccoun
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
+        ok: true,
         status: 201,
         data: {
           creditAccountId: 1,
@@ -137,9 +86,9 @@ const mockCreateCreditAccountSuccess = async (url: string): Promise<CreditAccoun
           creditAccountNumber: "WS7456",
           creditAccountStatusType: "ACTIVE",
           companyId: 1,
-          creditLimit: 100000,
+          creditLimit: "100000",
           creditBalance: 0,
-          availableCredit: 100000,
+          availableCredit: "100000",
           creditAccountUsers: []
         },
       });
@@ -148,13 +97,18 @@ const mockCreateCreditAccountSuccess = async (url: string): Promise<CreditAccoun
 }
 
 /**
- * Get the active credit account for a given company.
- * @param companyId Company id of the company to get credit account information for
- * @returns Credit account information for the given company
+ * Get credit account information for the active company.
+ * @returns Credit account information for the active company
  */
 export const getCreditAccount = async () => {
-  const response = await mockGetCreditAccountFail(CREDIT_ACCOUNT_API_ROUTES.GET_CREDIT_ACCOUNT());
-  return response.data;
+  const response = await mockGetCreditAccountSuccess(CREDIT_ACCOUNT_API_ROUTES.GET_CREDIT_ACCOUNT());
+
+  if (response.ok) {
+    const data = response.data
+    return data
+  } else {
+    throw new Error(`Request failed with status: ${response.status}`)
+  }
 };
 
 
@@ -164,18 +118,9 @@ const mockGetCreditAccountSuccess = async (url: string): Promise<CreditAccountRe
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
+        ok: true,
         status: 200,
-        data: {
-          creditAccountId: 1,
-          creditAccountType: "SECURED",
-          creditAccountNumber: "WS7456",
-          creditAccountStatusType: "CLOSED",
-          companyId: 1,
-          creditLimit: 100000,
-          creditBalance: 25000,
-          availableCredit: 75000,
-          creditAccountUsers: [companyProfileA, companyProfileB, companyProfileC]
-        }
+        data: creditAccount
       });
     }, 1000);
   });
@@ -186,6 +131,7 @@ const mockGetCreditAccountFail = async (url: string): Promise<CreditAccountRespo
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
+        ok: false,
         status: 404
       });
     }, 1000);
@@ -194,14 +140,17 @@ const mockGetCreditAccountFail = async (url: string): Promise<CreditAccountRespo
 
 /**
  * Add a user to credit account
- * @param companyId Id of the company whose credit account we wish to add a user to 
- * @param userData Data of the company who is being added to the credit account
- * @returns Updated credit account information
+ * @param {number} creditAccountId Id of the credit account we wish to add a user to 
+ * @param {number} companyId Id of the company who is being added to the credit account
+ * @returns {CreditAccountUser}
  */
 export const addCreditAccountUser = async (
-  userData: CreditAccountUser
+  data: {creditAccountId: number, companyId: number}
 ) => {
-  const response = await mockAddCreditAccountUserSuccess(CREDIT_ACCOUNT_API_ROUTES.ADD_CREDIT_ACCOUNT_USER(), userData);
+  const {creditAccountId, companyId} = data
+  const response = await httpPUTRequest(CREDIT_ACCOUNT_API_ROUTES.ADD_CREDIT_ACCOUNT_USER(creditAccountId), {
+    companyId
+  });
   return response;
 };
 
@@ -211,6 +160,7 @@ const mockAddCreditAccountUserSuccess = async (url: string, newUser: CreditAccou
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
+        ok: true,
         status: 200,
         data: {
           creditAccountId: 1,
@@ -218,9 +168,9 @@ const mockAddCreditAccountUserSuccess = async (url: string, newUser: CreditAccou
           creditAccountNumber: "WS7456",
           creditAccountStatusType: "ACTIVE",
           companyId: 1,
-          creditLimit: 100000,
+          creditLimit: "100000",
           creditBalance: 25000,
-          availableCredit: 75000,
+          availableCredit: "75000",
           creditAccountUsers: [newUser]
         }
       });
@@ -233,11 +183,14 @@ const mockAddCreditAccountUserSuccess = async (url: string, newUser: CreditAccou
  * @param userClientNumbers The array of user client numbers of the users to be removed.
  * @returns A promise indicating the success or failure of the remove operation.
  */
-export const removeCreditAccountUsers = (userClientNumbers: string[]) => {
-  return mockRemoveCreditAccountUsersSuccess(
-    CREDIT_ACCOUNT_API_ROUTES.REMOVE_CREDIT_ACCOUNT_USERS(),
-    userClientNumbers
-  );
+export const removeCreditAccountUsers = async ( 
+  data: {creditAccountId: number, companyIds: number[]}
+) => {
+  const {creditAccountId, companyIds} = data
+  const response = await httpDELETERequest(CREDIT_ACCOUNT_API_ROUTES.REMOVE_CREDIT_ACCOUNT_USER(creditAccountId), {
+    companyIds
+  })
+  return response;
 };
 
 // eslint-disable-next-line 
@@ -245,6 +198,7 @@ const mockRemoveCreditAccountUsersSuccess = async (url: string, userClientNumber
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
+        ok: true,
         status: 200,
       });
     }, 1000);
@@ -270,6 +224,7 @@ const mockHoldCreditAccountSuccess = async (url: string, holdData: HoldData): Pr
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
+        ok: true,
         status: 200
       })
     }, 1000)
@@ -295,6 +250,7 @@ const mockCloseCreditAccountSuccess = async (url: string, closeData: CloseData):
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
+        ok: true,
         status: 200
       })
     }, 1000)
@@ -318,6 +274,7 @@ const mockGetCreditAccountHistorySuccess = async (url: string): Promise<CreditAc
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
+        ok: true,
         status: 200,
         data: [{
           activityId: "A1",
@@ -344,6 +301,7 @@ const mockGetCreditAccountHistoryFail = async (url: string): Promise<CreditAccou
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
+        ok: false,
         status: 404,
       });
     }, 1000);
@@ -351,11 +309,13 @@ const mockGetCreditAccountHistoryFail = async (url: string): Promise<CreditAccou
 }
 
 interface CreditAccountResponse {
+  ok: boolean;
   status: number;
   data?: CreditAccountData
 }
 
 interface CreditAccountHistoryResponse {
+  ok: boolean;
   status: number;
   data?: CreditAccountHistoryData[]
 }
