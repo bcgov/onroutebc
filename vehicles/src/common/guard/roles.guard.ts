@@ -16,6 +16,7 @@ export class RolesGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
+    // Guard is invoked regardless of the decorator being actively called
     if (!roles) {
       return true;
     }
