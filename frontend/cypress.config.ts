@@ -11,10 +11,9 @@ export default defineConfig({
   },
   
   env: {
-    baseUrl: 'https://onroutebc-1327-frontend.apps.silver.devops.gov.bc.ca/',
-    LOGIN_URL: 'https://logontest7.gov.bc.ca',
-    PAYBC_URL: 'https://www.beanstream.com',
-    ICEPAY_USERNAME: '',
-    ICEPAY_PASSWORD: '',
+    baseUrl: 'http://localhost:3000', 
+    IDIR_LOGIN_URL: 'https://logontest7.gov.bc.ca', //lower env idir login
+    IDIR_USERNAME: '',
+    IDIR_PASSWORD: '',
   }
 });

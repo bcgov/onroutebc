@@ -102,6 +102,7 @@ jobs:
     secrets: inherit
     uses: ./.github/workflows/.tests.yml
     with:
+      environment: dev
       target: ${{ github.event.number }}
 
   results:
