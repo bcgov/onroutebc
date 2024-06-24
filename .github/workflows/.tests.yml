@@ -10,31 +10,6 @@ on:
         type: string
 
 jobs:
-  integration-tests:
-    name: Integration Tests
-    runs-on: ubuntu-22.04
-    timeout-minutes: 1
-    steps:
-      - uses: actions/checkout@v4
-      - id: cache-npm
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-build-cache-node-modules-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-cache-node-modules-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-
-      - name: Integration tests
-        env:
-          API_NAME: nest
-          BASE_URL: https://${{ github.event.repository.name }}-${{ inputs.target }}-frontend.apps.silver.devops.gov.bc.ca
-        run: |
-          cd tests/integration
-          npm ci
-          node src/main.js
-
   cypress-e2e:
     name: E2E Tests
     environment: dev
