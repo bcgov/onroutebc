@@ -14,24 +14,10 @@ import cypress from "cypress";
       cy.log('Current URL:', url);
       });
 
-    // // Interact with a different origin using cy.origin()
-    // cy.origin('https://logontest7.gov.bc.ca', () => {
-    //   // Commands to be run against the new origin
-    //   const loginUrl = Cypress.env('LOGIN_URL');
-    //   cy.get("#user").should('exist'); 
-    //   const testUser = Cypress.env('TEST_USER');
-    //   const testPassword = Cypress.env('TEST_PASSWORD');
-    //   cy.log('testUser:',testUser);
-    //   cy.log('testPassword:',testPassword);
-    //   cy.get('#user').type(testUser)
-    //   cy.get('#password').type(testPassword)
-    //   cy.get('.btn-primary').click()  
-    // });
-
     const loginUrl = Cypress.env('LOGIN_URL');
       cy.get("#user").should('exist'); 
-      const testUser = Cypress.env('TEST_USER');
-      const testPassword = Cypress.env('TEST_PASSWORD');
+      const testUser = Cypress.env('ICEPAY_USER');
+      const testPassword = Cypress.env('ICEPAY_PASSWORD');
       cy.log('testUser:',testUser);
       cy.log('testPassword:',testPassword);
       cy.get('#user').type(testUser)
@@ -64,11 +50,11 @@ import cypress from "cypress";
 
         cy.get('[data-testid="input-permitData.contactDetails.firstName"]').type('Bruce');
         cy.get('[data-testid="input-permitData.contactDetails.lastName"]').type('Wang');
-        cy.get('[name="permitData.contactDetails.phone1"]').type('+1 (250) 986-6235');
+        cy.get('[name="permitData.contactDetails.phone1"]').type('+1 (250) 111- 1111');
         
         // select vehicle
         cy.get('[data-testid="select-vehicle-autocomplete"]').invoke('attr', 'value', '61');
-        const selectVehicle = Cypress.env('SELECT_VEHICLE')
+        const selectVehicle = '61';
         cy.get('[data-testid="select-vehicle-autocomplete"]').type(selectVehicle);
         cy.get('[data-testid="select-vehicle-autocomplete"]').trigger('mousemove', { clientX: 0, clientY: 50 }).click().type('{enter}');
         cy.contains(selectVehicle).click();
