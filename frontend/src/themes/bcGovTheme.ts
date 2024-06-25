@@ -230,7 +230,7 @@ export const bcGovTheme = createTheme({
           },
         }
       }
-    }
+    },
   },
 });
 

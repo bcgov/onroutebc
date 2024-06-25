@@ -482,6 +482,7 @@ export class CreditAccountService {
           null,
           null,
           creditAccountUserMappedToCreditAccount.creditAccountUserId,
+          true,
         );
       return this.classMapper.mapAsync(
         updatedCreditAccountUserInfo?.at(0),
@@ -513,6 +514,7 @@ export class CreditAccountService {
         null,
         null,
         newCreditAccountUser.creditAccountUserId,
+        true,
       );
       return this.classMapper.mapAsync(
         newCreditAccountUserInfo?.at(0),
@@ -731,6 +733,7 @@ export class CreditAccountService {
     creditAccountHolderCompanyId?: Nullable<number>,
     creditAccountId?: Nullable<number>,
     creditAccountUserId?: Nullable<number>,
+    isActive?: Nullable<boolean>,
   ) {
     // Initializing query builder for credit account user repository.
     const creditAccountUserQB = this.creditAccountUserRepository
@@ -784,6 +787,13 @@ export class CreditAccountService {
       );
     }
 
+    // Adding condition to filter out disbled creditAccount Users.
+    if (isActive === true || isActive === false) {
+      creditAccountUserQB.andWhere('creditAccountUser.isActive = :isActive', {
+        isActive: isActive ? 'Y' : 'N',
+      });
+    }
+
     // Executing the query and returning the results.
     return await creditAccountUserQB.getMany();
   }
@@ -804,6 +814,8 @@ export class CreditAccountService {
       null,
       creditAccountHolder,
       creditAccountId,
+      null,
+      true,
     );
   }
 
@@ -834,7 +846,8 @@ export class CreditAccountService {
 
     if (includeAccountHolder) {
       const creditAccountHolderInfo =
-        creditAccountUsers?.at(0)?.creditAccount?.company;
+        await this.companyService.findOneEntity(creditAccountHolder);
+
       const mappedCreditAccountHolderInfo = await this.classMapper.mapAsync(
         creditAccountHolderInfo,
         Company,

@@ -19,7 +19,6 @@ const CommonVehicleColumnDefinition: MRT_ColumnDef<Vehicle>[] = [
   {
     accessorKey: "plate",
     header: "Plate",
-    filterVariant: "multi-select",
   },
 ];
 
