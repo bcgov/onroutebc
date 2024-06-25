@@ -34,13 +34,16 @@ frontend:
       ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
       DEPLOY_ENVIRONMENT: "{{.Values.global.vault.zone}}"
       FRONTEND_PR_NUM: "{{.Values.global.pr_num}}"
-      .env-template: |-
-        VITE_DEPLOY_ENVIRONMENT=$DEPLOY_ENVIRONMENT
-        VITE_API_VEHICLE_URL=$ACCESS_API_URL
-        VITE_KEYCLOAK_ISSUER_URL=$KEYCLOAK_ISSUER_URL
-        VITE_KEYCLOAK_AUDIENCE=$KEYCLOAK_AUDIENCE
-        VITE_SITEMINDER_LOG_OFF_URL=$SITEMINDER_LOG_OFF_URL
-        VITE_FRONTEND_PR_NUM=$FRONTEND_PR_NUM
+      config.js: |-
+        const envConfig = (() => { return {
+            "VITE_DEPLOY_ENVIRONMENT":"$DEPLOY_ENVIRONMENT",
+            "VITE_API_VEHICLE_URL":"$ACCESS_API_URL",
+            "VITE_KEYCLOAK_ISSUER_URL":"$KEYCLOAK_ISSUER_URL",
+            "VITE_KEYCLOAK_AUDIENCE":"$KEYCLOAK_AUDIENCE",
+            "VITE_SITEMINDER_LOG_OFF_URL": "$SITEMINDER_LOGOFF_URL",
+            "VITE_FRONTEND_PR_NUM":"$FRONTEND_PR_NUM",
+          };
+        })();
   containers:
     - name: frontend
       command:
@@ -52,7 +55,6 @@ frontend:
       image: frontend
       tag: "{{tpl .Values.global.tag .}}"
       env: 
-        fromValues:
         fromLocalConfigmap: 
           - name: ACCESS_API_URL
             key: ACCESS_API_URL
@@ -72,11 +74,11 @@ frontend:
           cpu: 25m
           memory: 50Mi
       volumeMounts:
-        - name: env-template
-          mountPath: "/tmp/.env-template"
-          subPath: .env-template
-        - name: env
-          mountPath: "./env"
+        - name: config
+          mountPath: "/usr/share/nginx/html/config/config.js.template"
+          subPath: config.js.template
+        - name: writespace
+          mountPath: "/usr/share/nginx/html/config"
   autoscaling:
     #-- enable or disable autoscaling.
     enabled: true
@@ -146,10 +148,10 @@ frontend:
       - "keycloak-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
   volumes:
-    - name: env-template
+    - name: config
       configMap:
         name: "{{ .Release.Name}}-frontend"
-    - name: env
+    - name: writespace
       emptyDir:
         sizeLimit: 50Mi
 
