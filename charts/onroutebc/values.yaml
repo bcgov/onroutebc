@@ -148,7 +148,6 @@ frontend:
     - name: env.template
       configMap:
         name: "{{ .Release.Name}}-frontend"
-  volumes:
     - name: env
       emptyDir:
         sizeLimit: 50Mi
