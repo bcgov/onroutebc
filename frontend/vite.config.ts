@@ -10,7 +10,7 @@ import autoprefixer from "autoprefixer";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  envDir: path.resolve(process.cwd() + "/../"),
+  envDir: "./env/",
   server: {
     port: 3000,
     open: true,

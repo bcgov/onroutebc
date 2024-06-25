@@ -46,7 +46,7 @@ frontend:
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && envsubst < /tmp/.env-template > /.env nginx -g 'daemon off;'"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && envsubst < /tmp/.env-template > ./env/.env && nginx -g 'daemon off;'"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: frontend
@@ -74,8 +74,7 @@ frontend:
           mountPath: "/tmp/.env-template"
           subPath: .env-template
         - name: env
-          mountPath: "/.env"
-          subPath: .env
+          mountPath: "./env"
   autoscaling:
     #-- enable or disable autoscaling.
     enabled: true
