@@ -1,6 +1,5 @@
 import { RowSelectionState } from "@tanstack/table-core";
-import { Box, IconButton, InputAdornment, Tooltip } from "@mui/material";
-import { Delete, Edit } from "@mui/icons-material";
+import { Box, IconButton, InputAdornment } from "@mui/material";
 import { UseQueryResult } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -36,6 +35,7 @@ import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { useDeletePowerUnitsMutation, usePowerUnitSubTypesQuery } from "../../hooks/powerUnits";
 import { useDeleteTrailersMutation, useTrailerSubTypesQuery } from "../../hooks/trailers";
 import { Nullable } from "../../../../common/types/common";
+import { OnRouteBCTableRowActions } from "../../../../common/components/table/OnRouteBCTableRowActions";
 import {
   Vehicle,
   VehicleType,
@@ -51,9 +51,9 @@ import {
 } from "../../../../common/helpers/tableHelper";
 
 /**
- * Dynamically set the column based on vehicle type
+ * Dynamically set the column definitions based on the vehicle type.
  * @param vehicleType Type of the vehicle
- * @returns An array of column headers/accessor keys for Material React Table
+ * @returns Column definition (headers/accessor keys) for vehicles for given vehicle type
  */
 const getColumns = (vehicleType: VehicleType): MRT_ColumnDef<Vehicle>[] => {
   if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
@@ -80,7 +80,18 @@ export const List = memo(
       isFetching: isFetchingVehicles,
       isPending: vehiclesPending,
     } = query;
-    
+
+    const canEditDeleteVehicles = Boolean(DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE));
+    const vehicleActionOptions = [
+      canEditDeleteVehicles ? {
+        label: "Edit",
+        value: "edit",
+      } : null,
+    ].filter(action => Boolean(action)) as {
+      label: string;
+      value: string;
+    }[];
+
     const columns = useMemo<MRT_ColumnDef<Vehicle>[]>(
       () => getColumns(vehicleType),
       [],
@@ -230,60 +241,34 @@ export const List = memo(
       },
       onRowSelectionChange: setRowSelection,
       enableMultiSort: true,
+      enablePagination: true,
+      enableBottomToolbar: true,
       renderEmptyRowsFallback: () => <NoRecordsFound />,
       renderRowActions: useCallback(
-        ({ row }: { row: MRT_Row<Vehicle> }) => (
-          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-            {DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) && (
-              <>
-                <Tooltip arrow placement="left" title="Edit">
-                  <IconButton
-                    onClick={() => {
-                      if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
-                        navigate(
-                          `${VEHICLES_ROUTES.POWER_UNIT_DETAILS}/${row.getValue(
-                            "powerUnitId",
-                          )}`,
-                        );
-                      } else if (vehicleType === VEHICLE_TYPES.TRAILER) {
-                        navigate(
-                          `${VEHICLES_ROUTES.TRAILER_DETAILS}/${row.getValue(
-                            "trailerId",
-                          )}`,
-                        );
-                      }
-                    }}
-                    disabled={false}
-                  >
-                    <Edit />
-                  </IconButton>
-                </Tooltip>
+        ({ row }: { row: MRT_Row<Vehicle> }) => canEditDeleteVehicles ? (
+          <OnRouteBCTableRowActions
+            onSelectOption={() => {
+              if (!canEditDeleteVehicles) return;
 
-                <Tooltip arrow placement="top" title="Delete">
-                  {/*tslint:disable-next-line*/}
-                  <IconButton
-                    color="error"
-                    onClick={() => {
-                      setIsDeleteDialogOpen(() => true);
-                      setRowSelection(() => {
-                        const newObject: { [key: string]: boolean } = {};
-                        // Setting the selected row to false so that
-                        // the row appears unchecked.
-                        newObject[row.getValue<string>(`${vehicleType}Id`)] =
-                          false;
-                        return newObject;
-                      });
-                    }}
-                    disabled={false}
-                  >
-                    <Delete />
-                  </IconButton>
-                </Tooltip>
-              </>
-            )}
-          </Box>
-        ),
-        [],
+              if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
+                navigate(
+                  `${VEHICLES_ROUTES.POWER_UNIT_DETAILS}/${row.getValue(
+                    "powerUnitId",
+                  )}`,
+                );
+              } else if (vehicleType === VEHICLE_TYPES.TRAILER) {
+                navigate(
+                  `${VEHICLES_ROUTES.TRAILER_DETAILS}/${row.getValue(
+                    "trailerId",
+                  )}`,
+                );
+              }
+            }}
+            options={vehicleActionOptions}
+            disabled={!canEditDeleteVehicles}
+          />
+        ) : null,
+        [canEditDeleteVehicles, vehicleActionOptions, vehicleType],
       ),
       filterFns: {
         "defaultSearchFilter": (row, columnId, filterValue) => {
@@ -325,7 +310,7 @@ export const List = memo(
               />
             </div>
             
-            {DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) ? (
+            {canEditDeleteVehicles ? (
               <DeleteButton
                 onClick={onClickTrashIcon}
                 disabled={hasNoRowsSelected}
@@ -333,7 +318,7 @@ export const List = memo(
             ) : null}
           </Box>
         ),
-        [hasNoRowsSelected, searchFilterValue],
+        [canEditDeleteVehicles, hasNoRowsSelected, searchFilterValue],
       ),
     });
 
