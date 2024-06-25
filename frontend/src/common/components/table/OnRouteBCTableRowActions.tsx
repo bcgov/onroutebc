@@ -24,8 +24,6 @@ export const OnRouteBCTableRowActions = ({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const isMenuOpen = Boolean(anchorEl);
 
-  //const [showActionsTooltip, setShowActionsTooltip] = useState<boolean>(false);
-
   const actionsButtonPressedClassName =
     isMenuOpen ? " onroutebc-table-row-actions__button--pressed" : "";
 
@@ -80,6 +78,14 @@ export const OnRouteBCTableRowActions = ({
           "aria-labelledby": "actions-button",
         }}
         anchorEl={anchorEl}
+        anchorOrigin={{
+          horizontal: "right",
+          vertical: "bottom",
+        }}
+        transformOrigin={{
+          horizontal: "right",
+          vertical: "top",
+        }}
         open={isMenuOpen}
         onClose={handleCloseActionsMenu}
         slotProps={{

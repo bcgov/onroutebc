@@ -3,7 +3,7 @@
 .onroutebc-table-row-actions {
   display: flex;
   justify-content: flex-end;
-  
+
   & &__button {
     background-color: $white;
     border: none;
@@ -36,10 +36,6 @@
     font-weight: normal;
     border-radius: 0.25rem;
     margin-top: 0.25rem;
-  }
-
-  &__paper {
-    width: 15ch;
   }
 
   &__icon {
