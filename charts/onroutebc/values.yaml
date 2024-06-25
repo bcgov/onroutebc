@@ -31,27 +31,33 @@ frontend:
   configmap:
     enabled: true
     data:
+      ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
+      DEPLOY_ENVIRONMENT: "{{.Values.global.vault.zone}}"
+      FRONTEND_PR_NUM: "{{.Values.global.pr_num}}"
       .env: |-
         VITE_DEPLOY_ENVIRONMENT=$DEPLOY_ENVIRONMENT
         VITE_API_VEHICLE_URL=$ACCESS_API_URL
         VITE_KEYCLOAK_ISSUER_URL=$KEYCLOAK_ISSUER_URL
         VITE_KEYCLOAK_AUDIENCE=$KEYCLOAK_AUDIENCE
         VITE_SITEMINDER_LOG_OFF_URL=$SITEMINDER_LOG_OFF_URL
-        VITE_FRONTEND_PR_NUM={{.Values.global.pr_num}}
+        VITE_FRONTEND_PR_NUM=$FRONTEND_PR_NUM
   containers:
     - name: frontend
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && nginx -g 'daemon off;'"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && envsubst < .env > .env nginx -g 'daemon off;'"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: frontend
       tag: "{{tpl .Values.global.tag .}}"
       env: 
         fromValues:
-          - name: VITE_FRONTEND_PR_NUM
-            value: '{{.Values.global.pr_num}}'
+        fromLocalConfigmap: 
+          - name: ACCESS_API_URL
+            key: ACCESS_API_URL
+          - name: FRONTEND_PR_NUM
+            key: FRONTENDPR_NUM
       ports:
         - name: http
           containerPort: 3000
