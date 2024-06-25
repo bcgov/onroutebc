@@ -46,7 +46,7 @@ frontend:
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && envsubst < .env > .env nginx -g 'daemon off;'"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && envsubst < /tmp/.env.template > /.env nginx -g 'daemon off;'"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: frontend
@@ -70,6 +70,9 @@ frontend:
           cpu: 25m
           memory: 50Mi
       volumeMounts:
+        - name: env.template
+          mountPath: "/tmp/.env.template"
+          subPath: .env.template
         - name: env
           mountPath: "/.env"
           subPath: .env
@@ -142,9 +145,13 @@ frontend:
       - "keycloak-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
   volumes:
-    - name: env
+    - name: env.template
       configMap:
         name: "{{ .Release.Name}}-frontend"
+  volumes:
+    - name: env
+      emptyDir:
+        sizeLimit: 50Mi
 
 vehicles:
   enabled: true
