@@ -42,6 +42,7 @@ import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-flag-ena
   description: 'The Credit Account Users Api Internal Server Error Response',
   type: ExceptionDto,
 })
+@IsFeatureFlagEnabled('CREDIT-ACCOUNT')
 @Controller(
   'companies/:companyId/credit-account/:creditAccountId/credit-account-user',
 )
@@ -63,9 +64,8 @@ export class CreditAccountUserController {
   })
   @ApiCreatedResponse({
     description: 'The result of the changes to the credit account user.',
-    type: String,
+    type: ReadCreditAccountUserDto,
   })
-  @IsFeatureFlagEnabled('CREDIT-ACCOUNT')
   @Put()
   @Roles(Role.WRITE_CREDIT_ACCOUNT)
   async addOrActivateCreditAccountUser(
@@ -95,11 +95,10 @@ export class CreditAccountUserController {
     description:
       'Deactivates one or more credit account user, enforcing authentication.',
   })
-  @ApiCreatedResponse({
-    description: 'The result of the changes to the credit account user.',
-    type: String,
+  @ApiOkResponse({
+    description: 'The result of the delete operation of credit account user.',
+    type: DeleteDto,
   })
-  @IsFeatureFlagEnabled('CREDIT-ACCOUNT')
   @Delete()
   @Roles(Role.WRITE_CREDIT_ACCOUNT)
   async deactivateCreditAccountUser(
@@ -132,7 +131,6 @@ export class CreditAccountUserController {
     description: 'The list of credit account users.',
     type: [ReadCreditAccountUserDto],
   })
-  @IsFeatureFlagEnabled('CREDIT-ACCOUNT')
   @Get()
   @Roles(Role.READ_CREDIT_ACCOUNT)
   async getCreditAccountUsers(
