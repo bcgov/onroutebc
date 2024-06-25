@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
-  ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiMethodNotAllowedResponse,
   ApiOkResponse,
@@ -62,7 +61,7 @@ export class CreditAccountUserController {
     description:
       'Adds or activates a credit account user, enforcing authentication.',
   })
-  @ApiCreatedResponse({
+  @ApiOkResponse({
     description: 'The result of the changes to the credit account user.',
     type: ReadCreditAccountUserDto,
   })
