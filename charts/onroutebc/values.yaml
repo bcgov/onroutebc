@@ -57,7 +57,7 @@ frontend:
           - name: ACCESS_API_URL
             key: ACCESS_API_URL
           - name: FRONTEND_PR_NUM
-            key: FRONTENDPR_NUM
+            key: FRONTEND_PR_NUM
       ports:
         - name: http
           containerPort: 3000
