@@ -181,7 +181,7 @@ export const SearchFilter = ({
                     value="companies"
                     control={<Radio key="find-by-company" />}
                   />
-                  {featureFlags?.["APPLICATION_SEARCH"] === "ENABLED" && (
+                  {featureFlags?.["APPLICATION-SEARCH"] === "ENABLED" && (
                     <FormControlLabel
                       label="Application"
                       value="applications"
