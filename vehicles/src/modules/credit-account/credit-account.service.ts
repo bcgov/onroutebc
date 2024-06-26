@@ -362,6 +362,7 @@ export class CreditAccountService {
       );
     }
 
+    //TODO Change from exists to find
     const companyAlreadyHasCreditAccount =
       await this.creditAccountRepository.exists({
         where: {
@@ -803,27 +804,6 @@ export class CreditAccountService {
    *
    * @param creditAccountHolder - The ID of the account holder.
    * @param creditAccountId - The ID of the credit account.
-   * @returns {Promise<CreditAccountUser[]>} - The found credit account users.
-   */
-  @LogAsyncMethodExecution()
-  private async getCreditAccountUsersEntity(
-    creditAccountHolder: number,
-    creditAccountId: number,
-  ) {
-    return await this.findManyCreditAccountUsers(
-      null,
-      creditAccountHolder,
-      creditAccountId,
-      null,
-      true,
-    );
-  }
-
-  /**
-   * Retrieves credit account users based on account holder and credit account ID.
-   *
-   * @param creditAccountHolder - The ID of the account holder.
-   * @param creditAccountId - The ID of the credit account.
    * @param includeAccountHolder - Whether to include the account holder's information.
    * @returns {Promise<ReadCreditAccountUserDto[]>} - The list of credit account users.
    */
@@ -833,9 +813,12 @@ export class CreditAccountService {
     creditAccountId: number,
     includeAccountHolder?: Nullable<boolean>,
   ): Promise<ReadCreditAccountUserDto[]> {
-    const creditAccountUsers = await this.getCreditAccountUsersEntity(
+    const creditAccountUsers = await this.findManyCreditAccountUsers(
+      null,
       creditAccountHolder,
       creditAccountId,
+      null,
+      true,
     );
 
     const readCreditAccountUserDtoList = await this.classMapper.mapArrayAsync(
@@ -854,7 +837,7 @@ export class CreditAccountService {
         ReadCreditAccountUserDto,
       );
 
-      readCreditAccountUserDtoList.push(mappedCreditAccountHolderInfo);
+      readCreditAccountUserDtoList.unshift(mappedCreditAccountHolderInfo);
     }
     return readCreditAccountUserDtoList;
   }
