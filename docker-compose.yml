@@ -163,6 +163,7 @@ services:
         VITE_KEYCLOAK_ISSUER_URL: ${VITE_KEYCLOAK_ISSUER_URL}
         VITE_KEYCLOAK_AUDIENCE: ${VITE_KEYCLOAK_AUDIENCE}
         VITE_SITEMINDER_LOG_OFF_URL: ${VITE_SITEMINDER_LOG_OFF_URL}
+        CADDY_LOG_LEVEL: ${CADDY_LOG_LEVEL}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]
       interval: 1m30s
@@ -237,3 +238,20 @@ services:
       - sql-server-db
     ports:
       - "5050:5050"
+
+  # Run Caddy alone (and fail!) with: docker compose up caddy --build
+  caddy:
+    container_name: caddy
+    command: sh -c "cat /etc/caddy/Caddyfile && caddy fmt /etc/caddy/Caddyfile && caddy run"
+    profiles: ["caddy"]
+    build: ./frontend
+    environment:
+      ACCESS_API_URL: "http://vehicles-api:5000"
+      VITE_KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL}
+      VITE_KEYCLOAK_AUDIENCE: ${KEYCLOAK_AUDIENCE}
+      VITE_SITEMINDER_LOG_OFF_URL: ${SITEMINDER_LOG_OFF_URL}
+      CADDY_LOG_LEVEL: ${CADDY_LOG_LEVEL:-"INFO"}
+    ports: ["3005:3000"]
+    volumes: ["./frontend/Caddyfile:/etc/caddy/Caddyfile"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
