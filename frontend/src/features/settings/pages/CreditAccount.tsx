@@ -53,6 +53,7 @@ export const CreditAccount = ({
   };
 
   const { data: creditAccount } = useGetCreditAccountQuery();
+
   const { data: creditAccountHistory } = useCreditAccountHistoryQuery();
 
   const createCreditAccountMutation = useCreateCreditAccountMutation();

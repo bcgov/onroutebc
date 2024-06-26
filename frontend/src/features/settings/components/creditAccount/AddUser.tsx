@@ -2,11 +2,13 @@ import { CustomFormComponent } from "../../../../common/components/form/CustomFo
 import { FormProvider, useForm, FieldValues } from "react-hook-form";
 import { requiredMessage } from "../../../../common/helpers/validationMessages";
 import { Box, Button, Typography } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { AddUserModal } from "./AddUserModal";
+import {
+  useGetCompanyQuery,
+  useGetCreditAccountWithUsersQuery,
+} from "../../hooks/creditAccount";
 import "./AddUser.scss";
-import { SnackBarContext } from "../../../../App";
-import { useGetCompanyQuery } from "../../hooks/creditAccount";
 
 interface SearchClientFormData {
   clientNumber: string;
@@ -15,12 +17,13 @@ interface SearchClientFormData {
 const FEATURE = "client-search";
 
 export const AddUser = () => {
-  const { setSnackBar } = useContext(SnackBarContext);
-
   const [showAddUserModal, setShowAddUserModal] = useState<boolean>(false);
   const [clientNumber, setClientNumber] = useState<string>("");
 
   const { data, isLoading } = useGetCompanyQuery(clientNumber);
+  const {
+    creditAccountUsers: { refetch: refetchCreditAccountUsers },
+  } = useGetCreditAccountWithUsersQuery();
 
   const formMethods = useForm<SearchClientFormData>({
     defaultValues: {
@@ -28,7 +31,7 @@ export const AddUser = () => {
     },
   });
 
-  const { handleSubmit, setError } = formMethods;
+  const { handleSubmit, setError, reset: resetForm } = formMethods;
 
   const onSubmit = async (data: FieldValues) => {
     setClientNumber(data.clientNumber);
@@ -48,13 +51,9 @@ export const AddUser = () => {
   }, [data]);
 
   const handleAddUser = () => {
+    resetForm();
     setShowAddUserModal(false);
-    setSnackBar({
-      showSnackbar: true,
-      setShowSnackbar: () => true,
-      alertType: "success",
-      message: "Account User Added",
-    });
+    refetchCreditAccountUsers();
   };
 
   return (

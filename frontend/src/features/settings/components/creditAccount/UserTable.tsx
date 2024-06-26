@@ -15,7 +15,7 @@ import {
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
-import { useGetCreditAccountQuery } from "../../hooks/creditAccount";
+import { useGetCreditAccountWithUsersQuery } from "../../hooks/creditAccount";
 import { CreditAccountUserColumnsDefinition } from "../../types/CreditAccountUserColumns";
 import { canUpdateCreditAccount } from "../../helpers/permissions";
 import { CreditAccountUser } from "../../types/creditAccount";
@@ -26,10 +26,15 @@ import "./UserTable.scss";
  */
 export const UserTable = () => {
   const {
-    data: creditAccount,
-    isError,
-    isLoading,
-  } = useGetCreditAccountQuery();
+    creditAccountUsers: {
+      data: creditAccountUsers,
+      isError,
+      isLoading,
+      refetch,
+    },
+  } = useGetCreditAccountWithUsersQuery();
+
+  console.log(creditAccountUsers);
 
   const { userRoles } = useContext(OnRouteBCContext);
 
@@ -60,6 +65,7 @@ export const UserTable = () => {
     setRowSelection(() => {
       return {};
     });
+    refetch();
   };
 
   /**
@@ -79,7 +85,7 @@ export const UserTable = () => {
   const table = useMaterialReactTable({
     ...defaultTableOptions,
     columns: CreditAccountUserColumnsDefinition,
-    data: creditAccount?.creditAccountUsers ?? [],
+    data: creditAccountUsers ?? [],
     initialState: {
       ...defaultTableInitialStateOptions,
     },
@@ -93,7 +99,7 @@ export const UserTable = () => {
     enableGlobalFilter: false,
     renderEmptyRowsFallback: () => <NoRecordsFound />,
     enableRowSelection: (row: MRT_Row<CreditAccountUser>): boolean => {
-      if (row?.original?.companyId === creditAccount?.companyId) {
+      if (row?.original?.userType === "HOLDER") {
         return false;
       }
       if (!canUpdateCreditAccount(userRoles)) {

@@ -26,7 +26,7 @@
   &__title {
     font-weight: 600;
     font-size: 1.5rem;
-    margin-left: 0.5em;
+    margin: 0 0 0 0.5em;
     color: $bc-black;
   }
 
@@ -36,6 +36,10 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+
+    dl {
+      margin: 0;
+    }
   }
 
   &__item {
@@ -49,6 +53,34 @@
 
   &__value {
     margin-left: 0;
+  }
+
+  &__info, .info {
+    width: 100%;
+    background-color: $bc-messages-blue-background;
+    border-radius: 0.25rem;
+    box-sizing: border-box;
+    padding: 2rem 1.5rem;
+    margin-bottom: 1.5rem;
+
+    &__header {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    &__icon {
+      font-size: 1.5rem;
+    }
+
+    &__title {
+      font-size: 18px;
+      margin: 0;
+    }
+
+    &__body {
+      padding-left: 2.5rem;
+    }
   }
 
   .add-user-form {
@@ -70,10 +102,10 @@
     flex-direction: row;
     justify-content: flex-end;
     padding: 0 1.5rem 1.5rem 1.5rem;
+    gap: 1.5rem;
 
     .add-user-button {
       &--cancel {
-        margin-right: 1.5rem;
         cursor: pointer;
         background-color: $bc-background-light-grey;
         color: $bc-black;

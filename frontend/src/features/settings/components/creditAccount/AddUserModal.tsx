@@ -1,10 +1,11 @@
 import { Button, Dialog } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlusCircle } from "@fortawesome/free-solid-svg-icons";
+import { faPlusCircle, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FormProvider, useForm } from "react-hook-form";
 import {
   useAddCreditAccountUserMutation,
   useGetCreditAccountQuery,
+  useGetCreditAccountWithUsersQuery,
 } from "../../hooks/creditAccount";
 import { CreditAccountUser } from "../../types/creditAccount";
 import "./AddUserModal.scss";
@@ -33,6 +34,12 @@ export const AddUserModal = ({
   };
 
   const { data: creditAccount } = useGetCreditAccountQuery();
+  const {
+    creditAccountUsers: {
+      data: creditAccountUsers,
+      refetch: refetchCreditAccountUsers,
+    },
+  } = useGetCreditAccountWithUsersQuery();
 
   const addCreditAccountUserMutation = useAddCreditAccountUserMutation();
 
@@ -44,10 +51,17 @@ export const AddUserModal = ({
       });
 
       if (isActionSuccessful(status)) {
+        refetchCreditAccountUsers();
         onConfirm();
       }
     }
   };
+
+  console.log(
+    creditAccountUsers?.some(
+      (user: CreditAccountUser) => user.companyId === userData.companyId,
+    ),
+  );
 
   return (
     <Dialog
@@ -63,7 +77,7 @@ export const AddUserModal = ({
           <FontAwesomeIcon className="icon" icon={faPlusCircle} />
         </div>
 
-        <span className="add-user-modal__title">Add Credit Account User</span>
+        <h2 className="add-user-modal__title">Add Credit Account User</h2>
       </div>
 
       <FormProvider {...formMethods}>
@@ -86,6 +100,42 @@ export const AddUserModal = ({
               <dd className="add-user-modal__value">{userData.clientNumber}</dd>
             </div>
           </dl>
+          {(userData.companyId === creditAccount?.companyId ||
+            creditAccountUsers?.some(
+              (user: CreditAccountUser) =>
+                user.companyId === userData.companyId,
+            )) && (
+            <div className="add-user-modal__info info">
+              <div className="info__header">
+                <div className="info__icon">
+                  <FontAwesomeIcon className="icon" icon={faInfoCircle} />
+                </div>
+                <h3 className="info__title">
+                  This company already is a holder or user of
+                </h3>
+              </div>
+              <div className="info__body">
+                <div className="add-user-modal__item">
+                  <dt className="add-user-modal__key">Company Name</dt>
+                  <dt className="add-user-modal__value">
+                    {creditAccountUsers[0]?.legalName}
+                  </dt>
+                </div>
+                <div className="add-user-modal__item">
+                  <dt className="add-user-modal__key">onRouteBC</dt>
+                  <dt className="add-user-modal__value">
+                    {creditAccountUsers[0]?.clientNumber}
+                  </dt>
+                </div>
+                <div className="add-user-modal__item">
+                  <dt className="add-user-modal__key">Credit Account No.</dt>
+                  <dt className="add-user-modal__value">
+                    {creditAccount?.creditAccountNumber}
+                  </dt>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="add-user-modal__footer">
@@ -100,15 +150,16 @@ export const AddUserModal = ({
           >
             Cancel
           </Button>
-
-          <Button
-            key="add-user-button"
-            onClick={handleSubmit(handleAddUser)}
-            className="add-user-button add-user-button--add-user"
-            data-testid="add-user-button"
-          >
-            Add Account User
-          </Button>
+          {userData.companyId !== creditAccount?.companyId && (
+            <Button
+              key="add-user-button"
+              onClick={handleSubmit(handleAddUser)}
+              className="add-user-button add-user-button--add-user"
+              data-testid="add-user-button"
+            >
+              Add Account User
+            </Button>
+          )}
         </div>
       </FormProvider>
     </Dialog>
