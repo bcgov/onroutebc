@@ -22,10 +22,10 @@ CREATE TABLE [dbo].[ORBC_HOLIDAY](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[HOLIDAY_YEAR] [int] NULL,
 	[HOLIDAYS] [nvarchar](4000) NULL,
-	[DB_CREATE_USERID] [varchar](63) NULL,
-	[DB_CREATE_TIMESTAMP] [datetime2](7) NULL,
-	[DB_LAST_UPDATE_USERID] [varchar](63) NULL,
-	[DB_LAST_UPDATE_TIMESTAMP] [datetime2](7) NULL,
+	[DB_CREATE_USERID] [varchar](63) NOT NULL,
+	[DB_CREATE_TIMESTAMP] [datetime2](7) NOT NULL,
+	[DB_LAST_UPDATE_USERID] [varchar](63) NOT NULL,
+	[DB_LAST_UPDATE_TIMESTAMP] [datetime2](7) NOT NULL,
  CONSTRAINT [PK_ORBC_HOLIDAY] PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -55,210 +55,140 @@ IF @@ERROR <> 0 SET NOEXEC ON
 GO
 
 -- Add new holidays 
-INSERT INTO [dbo].[ORBC_HOLIDAY] ([HOLIDAY_YEAR], [HOLIDAYS]) 
+INSERT INTO [dbo].[ORBC_HOLIDAY] ([HOLIDAY_YEAR], [HOLIDAYS], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) 
 VALUES (2024, N'{
     "province": {
         "id": "BC",
-        "nameEn": "British Columbia",
-        "nameFr": "Colombie-Britannique",
+        "name": "British Columbia",
         "sourceLink": "https://www2.gov.bc.ca/gov/content/employment-business/employment-standards-advice/employment-standards/statutory-holidays#body",
-        "sourceEn": "Statutory Holidays in British Columbia",
+        "source": "Statutory Holidays in British Columbia",
         "holidays": [
             {
                 "id": 1,
                 "date": "2024-01-01",
-                "nameEn": "New Year''s Day",
-                "nameFr": "Jour de l''An",
-                "federal": 1,
-                "observedDate": "2024-01-01"
+                "name": "New Year''s Day"
             },
             {
                 "id": 2,
                 "date": "2024-02-19",
-                "nameEn": "Family Day",
-                "nameFr": "Fête de la famille",
-                "federal": 0,
-                "observedDate": "2024-02-19"
+                "name": "Family Day"
             },
             {
                 "id": 3,
                 "date": "2024-03-29",
-                "nameEn": "Good Friday",
-                "nameFr": "Vendredi saint",
-                "federal": 1,
-                "observedDate": "2024-03-29"
+                "name": "Good Friday"
             },
             {
                 "id": 4,
                 "date": "2024-05-20",
-                "nameEn": "Victoria Day",
-                "nameFr": "Fête de la Reine",
-                "federal": 1,
-                "observedDate": "2024-05-20"
+                "name": "Victoria Day"
             },
             {
                 "id": 5,
                 "date": "2024-07-01",
-                "nameEn": "Canada Day",
-                "nameFr": "Fête du Canada",
-                "federal": 1,
-                "observedDate": "2024-07-01"
+                "name": "Canada Day"
             },
             {
                 "id": 6,
                 "date": "2024-08-05",
-                "nameEn": "British Columbia Day",
-                "nameFr": "Jour de Colombie-Britannique",
-                "federal": 0,
-                "observedDate": "2024-08-05"
+                "name": "British Columbia Day"
             },
             {
                 "id": 7,
                 "date": "2024-09-02",
-                "nameEn": "Labour Day",
-                "nameFr": "Fête du travail",
-                "federal": 1,
-                "observedDate": "2024-09-02"
+                "name": "Labour Day"
             },
             {
                 "id": 8,
                 "date": "2024-09-30",
-                "nameEn": "National Day for Truth and Reconciliation",
-                "nameFr": "Journée nationale de la vérité et de la réconciliation",
-                "federal": 1,
-                "observedDate": "2024-09-30"
+                "name": "National Day for Truth and Reconciliation"
             },
             {
                 "id": 9,
                 "date": "2024-10-14",
-                "nameEn": "Thanksgiving",
-                "nameFr": "Action de grâce",
-                "federal": 1,
-                "observedDate": "2024-10-14"
+                "name": "Thanksgiving"
             },
             {
                 "id": 10,
                 "date": "2024-11-11",
-                "nameEn": "Remembrance Day",
-                "nameFr": "Jour du Souvenir",
-                "federal": 1,
-                "observedDate": "2024-11-11"
+                "name": "Remembrance Day"
             },
             {
                 "id": 11,
                 "date": "2024-12-25",
-                "nameEn": "Christmas Day",
-                "nameFr": "Noël",
-                "federal": 1,
-                "observedDate": "2024-12-25"
+                "name": "Christmas Day"
             }
         ]
     }
-}');
+}',N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE());
 
-INSERT INTO [dbo].[ORBC_HOLIDAY] ([HOLIDAY_YEAR], [HOLIDAYS]) 
+INSERT INTO [dbo].[ORBC_HOLIDAY] ([HOLIDAY_YEAR], [HOLIDAYS], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) 
 VALUES (2025, N'{
     "province": {
         "id": "BC",
-        "nameEn": "British Columbia",
-        "nameFr": "Colombie-Britannique",
+        "name": "British Columbia",
         "sourceLink": "https://www2.gov.bc.ca/gov/content/employment-business/employment-standards-advice/employment-standards/statutory-holidays#body",
-        "sourceEn": "Statutory Holidays in British Columbia",
+        "source": "Statutory Holidays in British Columbia",
         "holidays": [
             {
                 "id": 1,
                 "date": "2025-01-01",
-                "nameEn": "New Year''s Day",
-                "nameFr": "Jour de l''An",
-                "federal": 1,
-                "observedDate": "2025-01-01"
+                "name": "New Year''s Day"
             },
             {
                 "id": 2,
                 "date": "2025-02-17",
-                "nameEn": "Family Day",
-                "nameFr": "Fête de la famille",
-                "federal": 0,
-                "observedDate": "2025-02-17"
+                "name": "Family Day"
             },
             {
                 "id": 3,
                 "date": "2025-04-18",
-                "nameEn": "Good Friday",
-                "nameFr": "Vendredi saint",
-                "federal": 1,
-                "observedDate": "2025-04-18"
+                "name": "Good Friday"
             },
             {
                 "id": 4,
                 "date": "2025-05-19",
-                "nameEn": "Victoria Day",
-                "nameFr": "Fête de la Reine",
-                "federal": 1,
-                "observedDate": "2025-05-19"
+                "name": "Victoria Day"
             },
             {
                 "id": 5,
                 "date": "2025-07-01",
-                "nameEn": "Canada Day",
-                "nameFr": "Fête du Canada",
-                "federal": 1,
-                "observedDate": "2025-07-01"
+                "name": "Canada Day"
             },
             {
                 "id": 6,
                 "date": "2025-08-04",
-                "nameEn": "British Columbia Day",
-                "nameFr": "Jour de Colombie-Britannique",
-                "federal": 0,
-                "observedDate": "2025-08-04"
+                "name": "British Columbia Day"
             },
             {
                 "id": 7,
                 "date": "2025-09-01",
-                "nameEn": "Labour Day",
-                "nameFr": "Fête du travail",
-                "federal": 1,
-                "observedDate": "2025-09-01"
+                "name": "Labour Day"
             },
             {
                 "id": 8,
                 "date": "2025-09-30",
-                "nameEn": "National Day for Truth and Reconciliation",
-                "nameFr": "Journée nationale de la vérité et de la réconciliation",
-                "federal": 1,
-                "observedDate": "2025-09-30"
+                "name": "National Day for Truth and Reconciliation"
             },
             {
                 "id": 9,
                 "date": "2025-10-13",
-                "nameEn": "Thanksgiving",
-                "nameFr": "Action de grâce",
-                "federal": 1,
-                "observedDate": "2025-10-13"
+                "name": "Thanksgiving"
             },
             {
                 "id": 10,
                 "date": "2025-11-11",
-                "nameEn": "Remembrance Day",
-                "nameFr": "Jour du Souvenir",
-                "federal": 1,
-                "observedDate": "2025-11-11"
+                "name": "Remembrance Day"
             },
             {
                 "id": 11,
                 "date": "2025-12-25",
-                "nameEn": "Christmas Day",
-                "nameFr": "Noël",
-                "federal": 1,
-                "observedDate": "2025-12-25"
+                "name": "Christmas Day"
             }
         ]
     }
-}');
-
+}',N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE());
 GO
-
 
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Holiday table creation plus history tables for v31'
