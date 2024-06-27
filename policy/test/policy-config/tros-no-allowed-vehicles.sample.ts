@@ -17,7 +17,7 @@ export const trosNoAllowedVehicles: PolicyDefinition = {
         {
           conditions: {
             not: {
-              fact: 'vehicleType',
+              fact: 'permitData.vehicleDetails.vehicleSubType',
               operator: 'in',
               value: {
                 fact: 'allowedVehicles',
