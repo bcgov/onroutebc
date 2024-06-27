@@ -3,7 +3,7 @@ import { Box, Button, MenuItem } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 
-import "./VehicleForm.scss";
+import "./PowerUnitForm.scss";
 import { PowerUnit, VehicleSubType } from "../../types/Vehicle";
 import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
@@ -67,13 +67,6 @@ export const PowerUnitForm = ({
   const updatePowerUnitMutation = useUpdatePowerUnitMutation();
   const snackBar = useContext(SnackBarContext);
   const navigate = useNavigate();
-
-  // Custom css overrides for the form fields
-  const formFieldStyle = {
-    fontWeight: "bold",
-    width: "490px",
-    marginLeft: "8px",
-  };
 
   // Saving a vehicle
   const onAddOrUpdateVehicle = async (data: FieldValues) => {
@@ -149,9 +142,9 @@ export const PowerUnitForm = ({
   const saveButtonText = isEditMode ? "Save" : "Add To Inventory";
 
   return (
-    <div>
-      <FormProvider {...formMethods}>
-        <div id="power-unit-form">
+    <FormProvider {...formMethods}>
+      <div className="power-unit-form">
+        <div className="power-unit-form__section">
           <CustomFormComponent
             type="input"
             feature={FEATURE}
@@ -159,8 +152,8 @@ export const PowerUnitForm = ({
               name: "unitNumber",
               rules: { required: false, maxLength: 10 },
               label: "Unit #",
-              width: formFieldStyle.width,
             }}
+            className="power-unit-form__field"
           />
 
           <CustomFormComponent
@@ -173,8 +166,8 @@ export const PowerUnitForm = ({
                 maxLength: 20,
               },
               label: "Make",
-              width: formFieldStyle.width,
             }}
+            className="power-unit-form__field"
           />
 
           <CustomFormComponent
@@ -193,8 +186,8 @@ export const PowerUnitForm = ({
               },
               inputType: "number",
               label: "Year",
-              width: formFieldStyle.width,
             }}
+            className="power-unit-form__field"
           />
 
           <CustomFormComponent
@@ -208,9 +201,9 @@ export const PowerUnitForm = ({
                 maxLength: 6,
               },
               label: "VIN",
-              width: formFieldStyle.width,
               customHelperText: "last 6 digits",
             }}
+            className="power-unit-form__field"
           />
 
           <CustomFormComponent
@@ -223,8 +216,8 @@ export const PowerUnitForm = ({
                 maxLength: { value: 10, message: invalidPlateLength(10) },
               },
               label: "Plate",
-              width: formFieldStyle.width,
             }}
+            className="power-unit-form__field"
           />
 
           <CustomFormComponent
@@ -239,7 +232,6 @@ export const PowerUnitForm = ({
                 },
               },
               label: "Vehicle Sub-type",
-              width: formFieldStyle.width,
             }}
             menuOptions={powerUnitSubTypesQuery?.data?.map(
               (data: VehicleSubType) => (
@@ -248,14 +240,18 @@ export const PowerUnitForm = ({
                 </MenuItem>
               ),
             )}
+            className="power-unit-form__field"
           />
+          
           <CountryAndProvince
             feature={FEATURE}
             countryField="countryCode"
             provinceField="provinceCode"
             isProvinceRequired={true}
-            width={formFieldStyle.width}
+            provinceClassName="power-unit-form__field"
+            countryClassName="power-unit-form__field"
           />
+
           <CustomFormComponent
             type="input"
             feature={FEATURE}
@@ -269,9 +265,10 @@ export const PowerUnitForm = ({
               },
               inputType: "number",
               label: "Licensed GVW",
-              width: formFieldStyle.width,
             }}
+            className="power-unit-form__field"
           />
+
           <CustomFormComponent
             type="input"
             feature={FEATURE}
@@ -285,34 +282,35 @@ export const PowerUnitForm = ({
                 },
               },
               label: "Steer Axle Tire Size (mm)",
-              width: formFieldStyle.width,
             }}
+            className="power-unit-form__field"
           />
         </div>
-      </FormProvider>
 
-      <Box sx={{ margin: "32px 0px" }}>
-        <Button
-          key="cancel-add-vehicle-button"
-          aria-label="Cancel Add Vehicle"
-          variant="contained"
-          color="secondary"
-          onClick={handleClose}
-          sx={{ marginRight: "32px" }}
-        >
-          Cancel
-        </Button>
+        <Box className="power-unit-form__actions">
+          <Button
+            key="cancel-save-vehicle-button"
+            aria-label="Cancel"
+            variant="contained"
+            color="secondary"
+            onClick={handleClose}
+            className="power-unit-form__action-btn power-unit-form__action-btn--cancel"
+          >
+            Cancel
+          </Button>
 
-        <Button
-          key="add-vehicle-button"
-          aria-label="Add To Inventory"
-          variant="contained"
-          color="primary"
-          onClick={handleSubmit(onAddOrUpdateVehicle)}
-        >
-          {saveButtonText}
-        </Button>
-      </Box>
-    </div>
+          <Button
+            key="save-vehicle-button"
+            aria-label={saveButtonText}
+            variant="contained"
+            color="primary"
+            onClick={handleSubmit(onAddOrUpdateVehicle)}
+            className="power-unit-form__action-btn power-unit-form__action-btn--submit"
+          >
+            {saveButtonText}
+          </Button>
+        </Box>
+      </div>
+    </FormProvider>
   );
 };

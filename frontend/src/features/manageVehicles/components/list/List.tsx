@@ -239,6 +239,18 @@ export const List = memo(
         }
         return (originalRow as PowerUnit).powerUnitId as string;
       },
+      displayColumnDefOptions: {
+        "mrt-row-select": {
+          size: 32,
+        },
+        "mrt-row-actions": {
+          header: "",
+          muiTableBodyCellProps: {
+            className: "vehicles-list__row-actions"
+          }
+        },
+      },
+      layoutMode: "grid",
       onRowSelectionChange: setRowSelection,
       enableMultiSort: true,
       enablePagination: true,
