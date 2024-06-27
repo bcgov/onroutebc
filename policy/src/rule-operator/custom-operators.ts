@@ -1,4 +1,5 @@
 import { Operator } from 'json-rules-engine';
+import { PermitAppInfo } from '../enum/permit-app-info.enum';
 import dayjs from 'dayjs';
 
 function stringValidator(a: any): boolean {
@@ -6,7 +7,7 @@ function stringValidator(a: any): boolean {
 }
 
 function dateStringValidator(a: any): boolean {
-  const d = dayjs(a, 'YYYY-MM-DD');
+  const d = dayjs(a, PermitAppInfo.PermitDateFormat.toString());
   return d.isValid();
 }
 
@@ -24,8 +25,8 @@ CustomOperators.push(
   new Operator(
     'dateLessThan',
     (a: string, b: string) => {
-      const firstDate = dayjs(a, 'YYYY-MM-DD');
-      const secondDate = dayjs(b, 'YYYY-MM-DD');
+      const firstDate = dayjs(a, PermitAppInfo.PermitDateFormat.toString());
+      const secondDate = dayjs(b, PermitAppInfo.PermitDateFormat.toString());
       return firstDate.diff(secondDate) < 0;
     },
     dateStringValidator,
