@@ -6,6 +6,7 @@ import { Cron } from '@nestjs/schedule';
 import { LogAsyncMethodExecution } from 'src/common/decorator/log-async-method-execution.decorator';
 import { generate } from 'src/helper/generator.helper';
 import { Repository } from 'typeorm';
+import { BcHoliday } from './holiday.entity';
 
 interface Holiday {
   id: number;
@@ -26,7 +27,7 @@ interface Province {
   nextHoliday: Holiday;
 }
 
-interface HolidayApiResponse {
+interface Holidays {
   province: Province;
 }
 
@@ -37,7 +38,9 @@ export class TransactionService {
     @InjectRepository(Transaction)
     private readonly transactionRepository: Repository<Transaction>,
     @InjectRepository(TransactionDetail)
-    private readonly cfsTransactionDetailRepo: Repository<TransactionDetail>
+    private readonly cfsTransactionDetailRepo: Repository<TransactionDetail>,
+    @InjectRepository(BcHoliday)
+    private readonly holidayRepository: Repository<BcHoliday>,
   ) {
     void this.initializeHolidays();
   }
@@ -48,6 +51,14 @@ export class TransactionService {
 
   async getAllTransactions(): Promise<Transaction[]> {
     return this.transactionRepository.find();
+  }
+
+  async getHolidays(): Promise<BcHoliday[]> {
+    const now: Date = new Date();
+    const year = now.getFullYear();
+    return this.holidayRepository.find({
+      where: { HOLIDAY_YEAR : year }
+    });
   }
 
   async getTransactionDetails(): Promise<Transaction[]> {
@@ -86,15 +97,10 @@ export class TransactionService {
   }
 
   private async getBcHolidays(): Promise<string[]> {
-    const apiUrl = `${process.env.ORBC_HOLIDAYS_API_URL}`
     try {
-        const response: Response = await fetch(apiUrl);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data: HolidayApiResponse = await response.json() as HolidayApiResponse;
-        
+        const holidays: BcHoliday[] = await this.getHolidays();
+        const currentYearHolidays = JSON.parse(holidays[0].HOLIDAYS);
+        const data: Holidays = await currentYearHolidays as Holidays;
         const holidayDates: string[] = data.province.holidays.map((holiday: Holiday) => holiday.date);
         return holidayDates;
     } catch (error) {
