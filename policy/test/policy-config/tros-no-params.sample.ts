@@ -1,6 +1,6 @@
 import PolicyDefinition from '../../src/interface/policy-definition.interface';
 
-export const trosNoAllowedVehicles: PolicyDefinition = {
+export const trosNoParamsSample: PolicyDefinition = {
   version: '2024.03.18.001',
   geographicRegions: [],
   commonRules: [],
@@ -25,12 +25,7 @@ export const trosNoAllowedVehicles: PolicyDefinition = {
             },
           },
           event: {
-            type: 'violation',
-            params: {
-              message: 'Vehicle type not permittable for this permit type',
-              code: 'field-validation-error',
-              fieldReference: 'permitData.vehicleDetails.vehicleSubType',
-            },
+            type: 'violation'
           },
         },
       ],
