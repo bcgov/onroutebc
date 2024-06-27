@@ -6,14 +6,12 @@ import {
   Menu,
   MenuItem,
 } from "@mui/material";
-import "./AccountDetails.scss";
 import {
   useGetCreditAccountQuery,
   useHoldCreditAccountMutation,
   useCloseCreditAccountMutation,
 } from "../../hooks/creditAccount";
 import {
-  CreditAccountData,
   HOLD_ACTIVITY_TYPES,
   CLOSE_ACTIVITY_TYPES,
 } from "../../types/creditAccount";
@@ -25,13 +23,12 @@ import { canUpdateCreditAccount } from "../../helpers/permissions";
 import { SnackBarContext } from "../../../../App";
 import { HoldCreditAccountModal } from "./HoldCreditAccountModal";
 import { CloseCreditAccountModal } from "./CloseCreditAccountModal";
+import "./AccountDetails.scss";
 
 export const AccountDetails = () => {
   const { userRoles } = useContext(OnRouteBCContext);
   const { setSnackBar } = useContext(SnackBarContext);
-  // const { data }: { data?: CreditAccountData } = useGetCreditAccountQuery();
-  const { data: creditAccountData }: { data?: CreditAccountData } =
-    useGetCreditAccountQuery();
+  const { data: creditAccount } = useGetCreditAccountQuery();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isHoldDialogOpen, setIsHoldDialogOpen] = useState<boolean>(false);
   const [isCloseDialogOpen, setIsCloseDialogOpen] = useState<boolean>(false);
@@ -41,12 +38,29 @@ export const AccountDetails = () => {
   const holdCreditAccountMutation = useHoldCreditAccountMutation();
   const closeCreditAccountMutation = useCloseCreditAccountMutation();
 
-  const formatNumber = (number: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "decimal",
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(number);
+  const toSentenceCase = (str: string): string => {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  };
+
+  const formatValue = (value: number | string): string => {
+    if (typeof value === "number" || !isNaN(Number(value))) {
+      return new Intl.NumberFormat("en-US", {
+        style: "decimal",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(Number(value));
+    } else {
+      return toSentenceCase(value);
+    }
+  };
+
+  const renderValue = (value: number | string): string => {
+    if (typeof value === "number" || !isNaN(Number(value))) {
+      return `$${formatValue(value)}`;
+    } else {
+      return formatValue(value);
+    }
   };
 
   const handleMenuOpen = (e: MouseEvent<HTMLButtonElement>) => {
@@ -76,7 +90,6 @@ export const AccountDetails = () => {
       });
       handleMenuClose();
     }
-    // refetchCreditAccountHistory();
     setIsHoldDialogOpen(false);
   };
 
@@ -166,7 +179,7 @@ export const AccountDetails = () => {
                   "aria-labelledby": "actions-button",
                 }}
               >
-                {creditAccountData?.creditAccountStatusType === "ACTIVE" && (
+                {creditAccount?.creditAccountStatusType === "ACTIVE" && (
                   <MenuItem
                     onClick={() => setIsHoldDialogOpen(true)}
                     disabled={holdCreditAccountMutation.isPending}
@@ -174,7 +187,7 @@ export const AccountDetails = () => {
                     Put On Hold
                   </MenuItem>
                 )}
-                {creditAccountData?.creditAccountStatusType === "ON HOLD" && (
+                {creditAccount?.creditAccountStatusType === "ON HOLD" && (
                   <MenuItem
                     onClick={handleUnholdCreditAccount}
                     disabled={holdCreditAccountMutation.isPending}
@@ -182,13 +195,13 @@ export const AccountDetails = () => {
                     Remove Hold
                   </MenuItem>
                 )}
-                {(creditAccountData?.creditAccountStatusType === "ACTIVE" ||
-                  creditAccountData?.creditAccountStatusType === "ON HOLD") && (
+                {(creditAccount?.creditAccountStatusType === "ACTIVE" ||
+                  creditAccount?.creditAccountStatusType === "ON HOLD") && (
                   <MenuItem onClick={() => setIsCloseDialogOpen(true)}>
                     Close Credit Account
                   </MenuItem>
                 )}
-                {creditAccountData?.creditAccountStatusType === "CLOSED" && (
+                {creditAccount?.creditAccountStatusType === "CLOSED" && (
                   <MenuItem
                     onClick={handleReopenCreditAccount}
                     disabled={closeCreditAccountMutation.isPending}
@@ -204,22 +217,22 @@ export const AccountDetails = () => {
           <Box className="account-details__row">
             <dt className="account-details__text">Credit Limit</dt>
             <dd className="account-details__text">
-              {creditAccountData?.creditLimit &&
-                `$${formatNumber(Number(creditAccountData.creditLimit))}`}
+              {creditAccount?.creditLimit &&
+                renderValue(creditAccount.creditLimit)}
             </dd>
           </Box>
           <Box className="account-details__row">
             <dt className="account-details__text">Credit Balance</dt>
             <dd className="account-details__text">
-              {creditAccountData?.creditBalance !== undefined &&
-                `$${formatNumber(creditAccountData.creditBalance)}`}
+              {creditAccount?.creditBalance !== undefined &&
+                renderValue(creditAccount.creditBalance)}
             </dd>
           </Box>
           <Box className="account-details__row">
             <dt className="account-details__text">Available Credit</dt>
             <dd className="account-details__text">
-              {creditAccountData?.availableCredit &&
-                `$${formatNumber(Number(creditAccountData.availableCredit))}`}
+              {creditAccount?.availableCredit &&
+                renderValue(creditAccount.availableCredit)}
             </dd>
           </Box>
         </Box>

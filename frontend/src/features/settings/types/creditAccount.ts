@@ -42,7 +42,7 @@ export const CREDIT_ACCOUNT_LIMIT_CHOOSE_FROM_OPTIONS = [
   { value: CREDIT_ACCOUNT_LIMITS[100000], label: "$100,000" },
 ];
 
-export type CreditAccountType = "SECURED" | "UNSECURED";
+export type CreditAccountType = "SECURED" | "UNSECURED" | "PREPAID";
 export type CreditAccountStatusType = "ACTIVE" | "ON HOLD" | "CLOSED";
 export type CreditAccountUserType = "HOLDER" | "USER";
 

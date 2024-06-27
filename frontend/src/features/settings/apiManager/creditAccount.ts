@@ -52,15 +52,26 @@ const creditAccountUserC: CreditAccountUser = {
   isSuspended: false,
   userType: "USER",
 };
-
 const creditAccount: CreditAccountData = {
-  creditAccountId: 1,
+  creditAccountId: 3,
   creditAccountType: "UNSECURED",
   creditAccountNumber: "WS5005",
   creditAccountStatusType: "ACTIVE",
   companyId: 74,
   availableCredit: "1000",
   creditLimit: "1000",
+  creditBalance: 0,
+  creditAccountUsers: [creditAccountHolder],
+};
+
+const prepaidCreditAccount: CreditAccountData = {
+  creditAccountId: 16,
+  creditAccountType: "PREPAID",
+  creditAccountNumber: "WS5064",
+  creditAccountStatusType: "ACTIVE",
+  companyId: 74,
+  availableCredit: "PREPAID",
+  creditLimit: "PREPAID",
   creditBalance: 0,
   creditAccountUsers: [creditAccountHolder],
 };
@@ -88,17 +99,7 @@ const mockCreateCreditAccountSuccess = async (
       resolve({
         ok: true,
         status: 201,
-        data: {
-          creditAccountId: 1,
-          creditAccountType: "SECURED",
-          creditAccountNumber: "WS7456",
-          creditAccountStatusType: "ACTIVE",
-          companyId: 1,
-          creditLimit: "100000",
-          creditBalance: 0,
-          availableCredit: "100000",
-          creditAccountUsers: [],
-        },
+        data: creditAccount,
       });
     }, 1000);
   });
@@ -130,7 +131,7 @@ const mockGetCreditAccountSuccess = async (
       resolve({
         ok: true,
         status: 200,
-        data: creditAccount,
+        data: prepaidCreditAccount,
       });
     }, 1000);
   });

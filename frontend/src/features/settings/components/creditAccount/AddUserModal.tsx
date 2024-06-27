@@ -4,7 +4,6 @@ import { faPlusCircle, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FormProvider, useForm } from "react-hook-form";
 import {
   useAddCreditAccountUserMutation,
-  useGetCreditAccountQuery,
   useGetCreditAccountWithUsersQuery,
 } from "../../hooks/creditAccount";
 import { CreditAccountUser } from "../../types/creditAccount";
@@ -33,8 +32,8 @@ export const AddUserModal = ({
     return status === 200;
   };
 
-  const { data: creditAccount } = useGetCreditAccountQuery();
   const {
+    creditAccount: { data: creditAccount },
     creditAccountUsers: {
       data: creditAccountUsers,
       refetch: refetchCreditAccountUsers,
@@ -57,10 +56,9 @@ export const AddUserModal = ({
     }
   };
 
-  console.log(
-    creditAccountUsers?.some(
-      (user: CreditAccountUser) => user.companyId === userData.companyId,
-    ),
+  const isAccountHolder = userData.companyId === creditAccount?.companyId;
+  const isExistingUser = creditAccountUsers?.some(
+    (user: CreditAccountUser) => user.companyId === userData.companyId,
   );
 
   return (
@@ -100,11 +98,7 @@ export const AddUserModal = ({
               <dd className="add-user-modal__value">{userData.clientNumber}</dd>
             </div>
           </dl>
-          {(userData.companyId === creditAccount?.companyId ||
-            creditAccountUsers?.some(
-              (user: CreditAccountUser) =>
-                user.companyId === userData.companyId,
-            )) && (
+          {(isAccountHolder || isExistingUser) && (
             <div className="add-user-modal__info info">
               <div className="info__header">
                 <div className="info__icon">
@@ -118,18 +112,21 @@ export const AddUserModal = ({
                 <div className="add-user-modal__item">
                   <dt className="add-user-modal__key">Company Name</dt>
                   <dt className="add-user-modal__value">
+                    {/* TODO change this to represent the actual credit account that the user belongs to */}
                     {creditAccountUsers[0]?.legalName}
                   </dt>
                 </div>
                 <div className="add-user-modal__item">
                   <dt className="add-user-modal__key">onRouteBC</dt>
                   <dt className="add-user-modal__value">
+                    {/* TODO change this to represent the actual credit account that the user belongs to */}
                     {creditAccountUsers[0]?.clientNumber}
                   </dt>
                 </div>
                 <div className="add-user-modal__item">
                   <dt className="add-user-modal__key">Credit Account No.</dt>
                   <dt className="add-user-modal__value">
+                    {/* TODO change this to represent the actual credit account that the user belongs to */}
                     {creditAccount?.creditAccountNumber}
                   </dt>
                 </div>
@@ -150,7 +147,7 @@ export const AddUserModal = ({
           >
             Cancel
           </Button>
-          {userData.companyId !== creditAccount?.companyId && (
+          {!(isAccountHolder || isExistingUser) && (
             <Button
               key="add-user-button"
               onClick={handleSubmit(handleAddUser)}

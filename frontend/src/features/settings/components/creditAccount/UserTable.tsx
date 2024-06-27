@@ -34,8 +34,6 @@ export const UserTable = () => {
     },
   } = useGetCreditAccountWithUsersQuery();
 
-  console.log(creditAccountUsers);
-
   const { userRoles } = useContext(OnRouteBCContext);
 
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);

@@ -106,9 +106,9 @@ export const useCreateCreditAccountMutation = () => {
       });
     },
     onError: () => navigate(ERROR_ROUTES.UNEXPECTED),
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["credit-account"] });
-    },
+    // onSettled: () => {
+    //   queryClient.invalidateQueries({ queryKey: ["credit-account"] });
+    // },
   });
 };
 

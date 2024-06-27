@@ -113,9 +113,8 @@ export const ROLES = {
   WRITE_LOA: "ORBC-WRITE-LOA",
   READ_SUSPEND: "ORBC-READ-SUSPEND",
   WRITE_SUSPEND: "ORBC-WRITE-SUSPEND",
-  // temporary, check if these roles will be reflected in the roles enum on the backend
   READ_CREDIT_ACCOUNT: "ORBC-READ-CREDIT-ACCOUNT",
-  WRITE_CREDIT_ACCOUNT: "ORBC-WRITE-CREDIT-ACCOUNT"
+  WRITE_CREDIT_ACCOUNT: "ORBC-WRITE-CREDIT-ACCOUNT",
 } as const;
 
 /**

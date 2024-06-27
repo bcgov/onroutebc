@@ -1,6 +1,6 @@
 import "./CreditAccount.scss";
 import { SelectCreditLimit } from "../components/creditAccount/SelectCreditLimit";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import {
   DEFAULT_CREDIT_ACCOUNT_LIMIT,
   EMPTY_CREDIT_ACCOUNT_LIMIT_SELECT,
@@ -58,8 +58,10 @@ export const CreditAccount = ({
 
   const createCreditAccountMutation = useCreateCreditAccountMutation();
 
-  const { isPending: creditAccountCreationPending } =
-    createCreditAccountMutation;
+  const {
+    isPending: creditAccountCreationPending,
+    isSuccess: creditAccountCreationSuccess,
+  } = createCreditAccountMutation;
 
   const handleCreateCreditAccount = async () => {
     if (selectedCreditLimit !== EMPTY_CREDIT_ACCOUNT_LIMIT_SELECT) {
@@ -69,6 +71,9 @@ export const CreditAccount = ({
       setInvalid(true);
     }
   };
+
+  // re-render when credit account has been created
+  useEffect(() => {}, [creditAccountCreationSuccess]);
 
   return (
     <div className="credit-account-page">
