@@ -82,4 +82,7 @@ export class AuthService {
       ),
     );
   }
+  validateServiceAccountUser(clientId: string): boolean {
+    return clientId === process.env.ORBC_SERVICE_ACCOUNT_CLIENT_ID;
+  }
 }

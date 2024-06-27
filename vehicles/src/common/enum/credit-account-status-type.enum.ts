@@ -1,6 +1,6 @@
 export enum CreditAccountStatusType {
   ACCOUNT_ON_HOLD = 'ONHOLD',
   ACCOUNT_ACTIVE = 'ACTIVE',
-  ACCOUNT_SETUP = 'SETUP',
+  ACCOUNT_SETUP_FAIL = 'SETUP_FAIL',
   ACCOUNT_CLOSED = 'CLOSED',
 }

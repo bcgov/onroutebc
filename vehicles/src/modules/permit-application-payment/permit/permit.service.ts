@@ -56,6 +56,7 @@ import { CreateNotificationDto } from '../../common/dto/request/create-notificat
 import { ReadNotificationDto } from '../../common/dto/response/read-notification.dto';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { NotificationType } from '../../../common/enum/notification-type.enum';
+import { validateEmailandFaxList } from '../../../common/helper/notification.helper';
 
 @Injectable()
 export class PermitService {
@@ -703,7 +704,8 @@ export class PermitService {
     ) {
       notificationDocument = {
         templateName: NotificationTemplate.ISSUE_PERMIT,
-        to: createNotificationDto.to,
+        to: validateEmailandFaxList(createNotificationDto.to),
+        fax: validateEmailandFaxList(createNotificationDto.fax),
         subject: `onRouteBC Permits - ${companyInfo.legalName}`,
         documentIds: [permitDocumentId],
       };
@@ -725,7 +727,8 @@ export class PermitService {
     ) {
       notificationDocument = {
         templateName: NotificationTemplate.PAYMENT_RECEIPT,
-        to: createNotificationDto.to,
+        to: validateEmailandFaxList(createNotificationDto.to),
+        fax: validateEmailandFaxList(createNotificationDto.fax),
         subject: `onRouteBC Permit Receipt - ${receipt?.receiptNumber}`,
         documentIds: [receipt?.receiptDocumentId],
       };

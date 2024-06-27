@@ -2,9 +2,9 @@ import { IconButton } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 
-import "./Trash.scss";
+import "./TrashButton.scss";
 
-export const Trash = ({
+export const TrashButton = ({
   onClickTrash,
   disabled,
 }: {

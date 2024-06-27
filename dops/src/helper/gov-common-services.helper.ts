@@ -81,7 +81,8 @@ export async function getAccessToken(
       );
     });
 
-  token.expires_at = Date.now() + (token.expires_in - TOKEN_EXPIRY_BUFFER) * 1000;
+  token.expires_at =
+    Date.now() + (token.expires_in - TOKEN_EXPIRY_BUFFER) * 1000;
 
   await cacheManager.set(tokenCacheKey, token);
 

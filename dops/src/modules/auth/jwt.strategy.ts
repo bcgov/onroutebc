@@ -50,10 +50,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       orbcUserAuthGroup: UserAuthGroup;
 
     let companyId: number;
-    if (req.params['companyId']) {
-      companyId = +req.params['companyId'];
-    } else if (req.query['companyId']) {
-      companyId = +req.query['companyId'];
+    if (req.params.companyId) {
+      companyId = +req.params.companyId;
+    } else if (req.query.companyId) {
+      companyId = +req.query.companyId;
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     } else if (req.body.companyId) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -76,7 +76,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException();
     }
 
-    if (req.headers['AuthOnly'] === 'false') {
+    if (req.headers.AuthOnly === 'false') {
       ({
         roles,
         companyId,

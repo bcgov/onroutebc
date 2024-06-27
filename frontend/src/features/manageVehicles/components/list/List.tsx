@@ -22,7 +22,7 @@ import {
 } from "material-react-table";
 
 import "./List.scss";
-import { Trash } from "../../../../common/components/table/options/Trash";
+import { TrashButton } from "../../../../common/components/buttons/TrashButton";
 import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
 import { PowerUnitColumnDefinition, TrailerColumnDefinition } from "./Columns";
 import { deleteVehicles } from "../../apiManager/vehiclesAPI";
@@ -220,13 +220,13 @@ export const List = memo(
       columns: newColumns,
       initialState: {
         ...defaultTableInitialStateOptions,
+        sorting: [{ id: "createdDateTime", desc: true }],
       },
       state: {
         ...defaultTableStateOptions,
         isLoading: isPending,
         showAlertBanner: isError,
         showProgressBars: isFetching,
-        sorting: [{ id: "createdDateTime", desc: true }],
         columnVisibility: { powerUnitId: false, trailerId: false },
         rowSelection: rowSelection,
       },
@@ -240,6 +240,7 @@ export const List = memo(
         }
       },
       onRowSelectionChange: setRowSelection,
+      enableMultiSort: true,
       renderEmptyRowsFallback: () => <NoRecordsFound />,
       renderRowActions: useCallback(
         ({ row }: { row: MRT_Row<Vehicle> }) => (
@@ -300,7 +301,7 @@ export const List = memo(
           <Box className="table-container__top-toolbar">
             <MRT_GlobalFilterTextField table={table} />
             {DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) && (
-              <Trash
+              <TrashButton
                 onClickTrash={onClickTrashIcon}
                 disabled={hasNoRowsSelected}
               />

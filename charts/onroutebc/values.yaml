@@ -15,7 +15,7 @@ global:
   openshiftImageRegistry: "image-registry.openshift-image-registry.svc:5000"
   #enable pulling from image streams
   imagestreams:
-    enabled: true
+    enabled: false
   domain: "apps.silver.devops.gov.bc.ca" # it is required, apps.silver.devops.gov.bc.ca for silver cluster
   vault:
     role: "nonprod"
@@ -145,7 +145,7 @@ vehicles:
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/payment-{{.Values.global.vault.zone}} && source /vault/secrets/vehicles-{{.Values.global.vault.zone}} && npm run start:prod"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/payment-{{.Values.global.vault.zone}} && source /vault/secrets/vehicles-{{.Values.global.vault.zone}} && source /vault/secrets/cfs-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: vehicles
@@ -226,6 +226,7 @@ vehicles:
   ingress:
     className: openshift-default
     annotations: 
+      haproxy.router.openshift.io/timeout: 2m
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
@@ -261,6 +262,7 @@ vehicles:
       - "mssql-{{tpl $.Values.vault.zone $}}"
       - "payment-{{tpl $.Values.vault.zone $}}"
       - "vehicles-{{tpl $.Values.vault.zone $}}"
+      - "cfs-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
 
 dops:
@@ -361,6 +363,7 @@ dops:
   ingress:
     className: openshift-default
     annotations: 
+      haproxy.router.openshift.io/timeout: 2m
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
@@ -462,35 +465,7 @@ scheduler:
           memory: 50Mi
   autoscaling:
     #-- enable or disable autoscaling.
-    enabled: true
-    #-- the minimum number of replicas.
-    minReplicas: 2
-    #-- the maximum number of replicas.
-    maxReplicas: 3
-    #-- the target cpu utilization percentage, is from request cpu and NOT LIMIT CPU.
-    targetCPUUtilizationPercentage: 80
-    #-- the behavior for the autoscaling. it is optional and is an object.
-    behavior:
-      scaleDown:
-        stabilizationWindowSeconds: 300
-        policies:
-          - type: Percent
-            value: 10
-            periodSeconds: 60
-          - type: Pods
-            value: 2
-            periodSeconds: 60
-        selectPolicy: Min
-      scaleUp:
-        stabilizationWindowSeconds: 0
-        policies:
-          - type: Percent
-            value: 100
-            periodSeconds: 30
-          - type: Pods
-            value: 2
-            periodSeconds: 30
-        selectPolicy: Max
+    enabled: false 
   ingress:
     className: openshift-default
     annotations: 

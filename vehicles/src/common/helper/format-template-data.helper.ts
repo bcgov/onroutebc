@@ -36,6 +36,7 @@ export const formatTemplateData = (
     issuedBy: '',
     revisions: [],
     permitData: null,
+    loas: '',
   };
 
   template.permitData = JSON.parse(permit.permitData.permitData) as PermitData;
@@ -86,8 +87,9 @@ export const formatTemplateData = (
   template.companyAlternateName = companyInfo.alternateName;
 
   // Format Fee Summary
-  template.permitData.feeSummary =
-    template.permitData.permitDuration.toString(); // TODO: get from frontend
+  template.permitData.feeSummary = permit.permitTransactions
+    ?.at(0)
+    ?.transactionAmount.toString();
 
   revisionHistory?.forEach((revision) => {
     if (
@@ -107,6 +109,11 @@ export const formatTemplateData = (
       });
     }
   });
+
+  template.loas = template?.permitData?.loas
+    ?.filter((item) => item.checked)
+    ?.map((item) => item?.loaId)
+    .join(', ');
 
   return template;
 };

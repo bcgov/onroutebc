@@ -13,7 +13,7 @@ import { User } from '../../company-user-management/users/entities/user.entity';
 import { CreditAccountActivityType } from '../../../common/enum/credit-account-activity-type.enum';
 import { CreditAccount } from './credit-account.entity';
 
-@Entity({ name: 'ORBC_CREDIT_ACCOUNT_ACTIVITY' })
+@Entity({ name: 'permit.ORBC_CREDIT_ACCOUNT_ACTIVITY' })
 export class CreditAccountActivity extends Base {
   /**
    * An auto-generated unique identifier for the credit account activity.
