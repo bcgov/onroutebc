@@ -13,14 +13,14 @@ export class ValidationResult {
    * @param code code for identifying common categories of results
    * @param message text message describing the result
    */
-  constructor(type: ValidationResultType, code: number, message: string) {
+  constructor(type: string, code: string, message: string) {
     this.type = type;
     this.code = code;
     this.message = message;
   }
 
-  type: ValidationResultType;
-  code: number;
+  type: string;
+  code: string;
   message: string;
   fieldReference?: string;
 }

@@ -5,7 +5,10 @@ import { Engine, EngineResult } from 'json-rules-engine';
 import { getRulesEngines } from './helper/rules-engine.helper';
 import PermitApplication from './type/permit-application.type';
 import ValidationResults from './validation-results';
+import ValidationResult from './validation-result';
 import { addRuntimeFacts, transformPermitFacts } from './helper/facts.helper';
+import { ValidationResultType } from './enum/validation-result-type.enum';
+import { ValidationResultCode } from './enum/validation-result-code.enum';
 
 /** Class representing commercial vehicle policy. */
 class Policy {
@@ -42,7 +45,11 @@ class Policy {
       // a single violation result.
       const validationResult: ValidationResults = new ValidationResults();
       validationResult.violations.push(
-        `Permit type ${permit.permitType} not permittable`,
+        new ValidationResult(
+          ValidationResultType.Violation,
+          ValidationResultCode.PermitTypeUnknown,
+          `Permit type ${permit.permitType} unknown`,
+        )
       );
       return validationResult;
     } else {

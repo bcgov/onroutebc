@@ -1,5 +1,6 @@
 export enum ValidationResultCode {
-  PermitTypeUnknown = '0001',
-  FieldValidationError = '0002',
-  VehicleTypeInvalid = '0003',
+  PermitTypeUnknown = 'permit-type-unknown',
+  FieldValidationError = 'field-validation-error',
+  ConfigurationInvalid = 'configuration-invalid',
+  GeneralResult = 'general-result',
 }
