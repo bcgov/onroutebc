@@ -23,7 +23,7 @@ export const allEventTypes: PolicyDefinition = {
         {
           conditions: {
             not: {
-              fact: 'duration',
+              fact: 'permitData.permitDuration',
               operator: 'equal',
               value: 31,
             },
@@ -38,7 +38,7 @@ export const allEventTypes: PolicyDefinition = {
         {
           conditions: {
             not: {
-              fact: 'duration',
+              fact: 'permitData.permitDuration',
               operator: 'equal',
               value: 32,
             },
@@ -53,7 +53,7 @@ export const allEventTypes: PolicyDefinition = {
         {
           conditions: {
             not: {
-              fact: 'duration',
+              fact: 'permitData.permitDuration',
               operator: 'equal',
               value: 33,
             },
@@ -68,7 +68,7 @@ export const allEventTypes: PolicyDefinition = {
         {
           conditions: {
             not: {
-              fact: 'duration',
+              fact: 'permitData.permitDuration',
               operator: 'equal',
               value: 34,
             },
@@ -83,7 +83,7 @@ export const allEventTypes: PolicyDefinition = {
         {
           conditions: {
             not: {
-              fact: 'duration',
+              fact: 'permitData.permitDuration',
               operator: 'equal',
               value: 35,
             },
@@ -98,7 +98,7 @@ export const allEventTypes: PolicyDefinition = {
         {
           conditions: {
             not: {
-              fact: 'duration',
+              fact: 'permitData.permitDuration',
               operator: 'equal',
               value: 35,
             },
@@ -110,7 +110,7 @@ export const allEventTypes: PolicyDefinition = {
         {
           conditions: {
             not: {
-              fact: 'duration',
+              fact: 'permitData.permitDuration',
               operator: 'equal',
               value: 36,
             },
