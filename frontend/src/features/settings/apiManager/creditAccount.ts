@@ -53,7 +53,7 @@ const creditAccountUserC: CreditAccountUser = {
   userType: "USER",
 };
 const creditAccount: CreditAccountData = {
-  creditAccountId: 3,
+  creditAccountId: 19,
   creditAccountType: "UNSECURED",
   creditAccountNumber: "WS5005",
   creditAccountStatusType: "ACTIVE",
@@ -61,7 +61,11 @@ const creditAccount: CreditAccountData = {
   availableCredit: "1000",
   creditLimit: "1000",
   creditBalance: 0,
-  creditAccountUsers: [creditAccountHolder],
+  creditAccountUsers: [
+    creditAccountHolder,
+    creditAccountUserA,
+    creditAccountUserB,
+  ],
 };
 
 const prepaidCreditAccount: CreditAccountData = {
@@ -131,7 +135,7 @@ const mockGetCreditAccountSuccess = async (
       resolve({
         ok: true,
         status: 200,
-        data: prepaidCreditAccount,
+        data: creditAccount,
       });
     }, 1000);
   });

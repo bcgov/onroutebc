@@ -2,10 +2,9 @@ import { Button, Dialog } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import { FormProvider, useForm } from "react-hook-form";
-
-import "./CloseCreditAccountModal.scss";
 import { requiredMessage } from "../../../../common/helpers/validationMessages";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
+import "./CloseCreditAccountModal.scss";
 
 export const CloseCreditAccountModal = ({
   showModal,
@@ -70,7 +69,7 @@ export const CloseCreditAccountModal = ({
               type="textarea"
               feature="close-account-comment"
               options={{
-                label: "Comment for Account Closure",
+                label: "Reason for Account Closure",
                 name: "comment",
                 rules: closeAccountCommentRules,
               }}
@@ -81,10 +80,10 @@ export const CloseCreditAccountModal = ({
 
         <div className="close-account-modal__footer">
           <Button
+            className="close-account-modal__button close-account-modal__button--cancel"
             key="cancel-close-account-button"
             aria-label="Cancel"
             variant="contained"
-            className="close-account-button close-account-button--cancel"
             onClick={handleCancel}
             data-testid="cancel-close-account-button"
           >
@@ -92,10 +91,10 @@ export const CloseCreditAccountModal = ({
           </Button>
 
           <Button
+            className="close-account-modal__button close-account-modal__button--confirm"
             key="close-account-button"
             aria-label="Close-account Company"
             onClick={handleSubmit(handleCloseAccount)}
-            className="close-account-button close-account-button--close-account"
             data-testid="close-account-button"
           >
             Close Credit Account

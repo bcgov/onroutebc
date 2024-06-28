@@ -2,10 +2,9 @@ import { Button, Dialog } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FormProvider, useForm } from "react-hook-form";
-
-import "./HoldCreditAccountModal.scss";
 import { requiredMessage } from "../../../../common/helpers/validationMessages";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
+import "./HoldCreditAccountModal.scss";
 
 export const HoldCreditAccountModal = ({
   showModal,
@@ -60,24 +59,24 @@ export const HoldCreditAccountModal = ({
         <div className="hold-account-modal__body">
           <div className="hold-account-form">
             <CustomFormComponent
+              className="hold-account-form__input"
               type="textarea"
               feature="hold-account-comment"
               options={{
-                label: "Comment for Account Hold",
+                label: "Reason for Account Hold",
                 name: "comment",
                 rules: holdAccountCommentRules,
               }}
-              className="hold-account-form__input"
             />
           </div>
         </div>
 
         <div className="hold-account-modal__footer">
           <Button
+            className="hold-account-modal__button hold-account-modal__button--cancel"
             key="cancel-hold-account-button"
             aria-label="Cancel"
             variant="contained"
-            className="hold-account-button hold-account-button--cancel"
             onClick={handleCancel}
             data-testid="cancel-hold-account-button"
           >
@@ -88,7 +87,7 @@ export const HoldCreditAccountModal = ({
             key="hold-account-button"
             aria-label="Hold-account Company"
             onClick={handleSubmit(handleHoldAccount)}
-            className="hold-account-button hold-account-button--hold-account"
+            className="hold-account-modal__button hold-account-modal__button--confirm"
             data-testid="hold-account-button"
           >
             Put on Hold

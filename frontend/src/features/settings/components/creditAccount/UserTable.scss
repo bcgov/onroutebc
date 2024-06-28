@@ -75,6 +75,7 @@
     padding: 1rem;
   }
 
+  
   .cell {
     &__text {
       &:first-child {
@@ -85,6 +86,9 @@
       }
     }
   }
+  // &__checkbox[aria-disabled="true"] { 
+  //   display: none;
+  // }
 }
 
 

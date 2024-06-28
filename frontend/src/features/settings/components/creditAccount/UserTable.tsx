@@ -5,7 +5,6 @@ import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext
 import {
   MRT_Row,
   MaterialReactTable,
-  // MRT_Row,
   useMaterialReactTable,
 } from "material-react-table";
 import { RemoveUsersModal } from "./RemoveUsersModal";
@@ -96,16 +95,14 @@ export const UserTable = () => {
     },
     enableGlobalFilter: false,
     renderEmptyRowsFallback: () => <NoRecordsFound />,
-    enableRowSelection: (row: MRT_Row<CreditAccountUser>): boolean => {
-      if (row?.original?.userType === "HOLDER") {
-        return false;
-      }
-      if (!canUpdateCreditAccount(userRoles)) {
-        return false;
-      }
-      return true;
-    },
-    // enableRowSelection: canUpdateCreditAccount(userRoles),
+    enableRowSelection: canUpdateCreditAccount(userRoles)
+      ? (row: MRT_Row<CreditAccountUser>): boolean => {
+          if (row?.original?.userType === "HOLDER") {
+            return false;
+          }
+          return true;
+        }
+      : false,
     onRowSelectionChange: setRowSelection,
     getRowId: (originalRow: CreditAccountUser) => {
       return originalRow.companyId;
@@ -118,7 +115,6 @@ export const UserTable = () => {
         size: 1,
       },
     },
-
     renderToolbarInternalActions: useCallback(
       () => (
         <Box className="toolbar__inner">
@@ -164,6 +160,9 @@ export const UserTable = () => {
     }),
     muiTableBodyCellProps: {
       className: "user-table__cell",
+    },
+    muiSelectCheckboxProps: {
+      className: "user-table__checkbox",
     },
     muiToolbarAlertBannerProps: isError
       ? {

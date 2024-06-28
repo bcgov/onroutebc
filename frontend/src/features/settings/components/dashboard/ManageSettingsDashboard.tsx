@@ -1,6 +1,5 @@
 import React, { useContext, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-
 import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
 import { Suspend } from "../../pages/Suspend";
 import { CreditAccount } from "../../pages/CreditAccount";
@@ -10,7 +9,7 @@ import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext
 import { ERROR_ROUTES } from "../../../../routes/constants";
 import {
   canViewSuspend,
-  canViewCreditAccount,
+  canViewCreditAccountTab,
 } from "../../helpers/permissions";
 
 export const ManageSettingsDashboard = React.memo(() => {
@@ -19,10 +18,7 @@ export const ManageSettingsDashboard = React.memo(() => {
   const [hideSuspendTab, setHideSuspendTab] = useState<boolean>(false);
   const showSuspendTab = canViewSuspend(userRoles) && !hideSuspendTab;
 
-  const [hideCreditAccountTab, setHideCreditAccountTab] =
-    useState<boolean>(false);
-  const showCreditAccountTab =
-    canViewCreditAccount(userRoles) && !hideCreditAccountTab;
+  const showCreditAccountTab = canViewCreditAccountTab(userRoles);
 
   const { state: stateFromNavigation } = useLocation();
   const selectedTab = getDefaultRequiredVal(
@@ -34,10 +30,6 @@ export const ManageSettingsDashboard = React.memo(() => {
     setHideSuspendTab(hide);
   };
 
-  const handleHideCreditAccountTab = (hide: boolean) => {
-    setHideCreditAccountTab(hide);
-  };
-
   if (!companyId) {
     return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
   }
@@ -47,12 +39,7 @@ export const ManageSettingsDashboard = React.memo(() => {
     showCreditAccountTab
       ? {
           label: "Credit Account",
-          component: (
-            <CreditAccount
-              companyId={companyId}
-              hideTab={handleHideCreditAccountTab}
-            />
-          ),
+          component: <CreditAccount companyId={companyId} />,
         }
       : null,
     showSuspendTab

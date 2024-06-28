@@ -1,4 +1,3 @@
-import "./CreditAccount.scss";
 import { SelectCreditLimit } from "../components/creditAccount/SelectCreditLimit";
 import { useState, useContext, useEffect } from "react";
 import {
@@ -23,19 +22,22 @@ import { AddUser } from "../components/creditAccount/AddUser";
 import { AccountDetails } from "../components/creditAccount/AccountDetails";
 import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
 import { UserTable } from "../components/creditAccount/UserTable";
-import { canUpdateCreditAccount } from "../helpers/permissions";
+import {
+  canUpdateCreditAccount,
+  canViewCreditAccountDetails,
+} from "../helpers/permissions";
 import { HistoryTable } from "../components/creditAccount/HistoryTable";
 import { StatusChip } from "../components/creditAccount/StatusChip";
+import "./CreditAccount.scss";
 
-export const CreditAccount = ({
-  companyId,
-  // eslint-disable-next-line
-  hideTab,
-}: {
-  companyId: number;
-  hideTab?: (hide: boolean) => void;
-}) => {
-  const { userRoles } = useContext(OnRouteBCContext);
+export const CreditAccount = ({ companyId }: { companyId: number }) => {
+  const { userRoles, userDetails, idirUserDetails } =
+    useContext(OnRouteBCContext);
+
+  // TODO add additional check for CreditAccountUserType = "HOLDER" once GET credit account route is complete
+  const showCreditAccountDetails = canViewCreditAccountDetails(
+    userDetails?.userAuthGroup || idirUserDetails?.userAuthGroup,
+  );
 
   const [invalid, setInvalid] = useState<boolean>(false);
 
@@ -97,7 +99,7 @@ export const CreditAccount = ({
             </Box>
             {creditAccountHistory && <HistoryTable />}
             {canUpdateCreditAccount(userRoles) && <AddUser />}
-            <UserTable />
+            {showCreditAccountDetails && <UserTable />}
           </Box>
           <AccountDetails />
         </Box>
