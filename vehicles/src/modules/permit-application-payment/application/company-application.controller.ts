@@ -49,7 +49,7 @@ import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response
 import { PermitReceiptDocumentService } from '../permit-receipt-document/permit-receipt-document.service';
 
 @ApiBearerAuth()
-@ApiTags('Application')
+@ApiTags('Company Application')
 @Controller('companies/:companyId/applications')
 @ApiNotFoundResponse({
   description: 'The Application Api Not Found Response',

@@ -164,26 +164,26 @@ export const AppRoutes = () => {
             path={`${routes.VEHICLES_ROUTES.POWER_UNIT_DETAILS}/:vehicleId`}
             element={
               <EditVehicleDashboard
-                editVehicleMode={VEHICLE_TYPES.POWER_UNIT}
+                vehicleType={VEHICLE_TYPES.POWER_UNIT}
               />
             }
           />
           <Route
             path={`${routes.VEHICLES_ROUTES.TRAILER_DETAILS}/:vehicleId`}
             element={
-              <EditVehicleDashboard editVehicleMode={VEHICLE_TYPES.TRAILER} />
+              <EditVehicleDashboard vehicleType={VEHICLE_TYPES.TRAILER} />
             }
           />
           <Route
             path={routes.VEHICLES_ROUTES.ADD_POWER_UNIT}
             element={
-              <AddVehicleDashboard addVehicleMode={VEHICLE_TYPES.POWER_UNIT} />
+              <AddVehicleDashboard vehicleType={VEHICLE_TYPES.POWER_UNIT} />
             }
           />
           <Route
             path={routes.VEHICLES_ROUTES.ADD_TRAILER}
             element={
-              <AddVehicleDashboard addVehicleMode={VEHICLE_TYPES.TRAILER} />
+              <AddVehicleDashboard vehicleType={VEHICLE_TYPES.TRAILER} />
             }
           />
         </Route>

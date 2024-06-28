@@ -331,7 +331,7 @@ export class CompanyService {
   /**
    * The findOne() method returns a ReadCompanyDto object corresponding to the
    * company with that Id. It retrieves the entity from the database using the
-   * Repository, maps it to a DTO object using the Mapper, and returns it.
+   * findOneEntity(), maps it to a DTO object using the Mapper, and returns it.
    *
    * @param companyId The company Id.
    *
@@ -340,16 +340,50 @@ export class CompanyService {
   @LogAsyncMethodExecution()
   async findOne(companyId: number): Promise<ReadCompanyDto> {
     return this.classMapper.mapAsync(
-      await this.companyRepository.findOne({
-        where: { companyId: companyId },
-        relations: {
-          mailingAddress: true,
-          primaryContact: true,
-        },
-      }),
+      await this.findOneEntity(companyId),
       Company,
       ReadCompanyDto,
     );
+  }
+
+  /**
+   * The findOne() method returns the Company Entity object corresponding to the
+   * company with that Id.
+   *
+   * @param companyId The company Id.
+   *
+   * @returns The company details as a promise of type {@link ReadCompanyDto}
+   */
+  @LogAsyncMethodExecution()
+  async findOneEntity(companyId: number): Promise<Company> {
+    return await this.companyRepository.findOne({
+      where: { companyId: companyId },
+      relations: {
+        mailingAddress: true,
+        primaryContact: true,
+      },
+    });
+  }
+
+  /**
+   * The findOneCompanyWithAllDetails() method returns the Company entity
+   * corresponding to the specified companyId. It retrieves the entity from the
+   * database using the Repository, including relations to mailingAddress and
+   * primaryContact, and returns it.
+   *
+   * @param companyId The ID of the company to fetch.
+   *
+   * @returns The company details as a promise of type {@link Company}
+   */
+  @LogAsyncMethodExecution()
+  async findOneCompanyWithAllDetails(companyId: number): Promise<Company> {
+    return await this.companyRepository.findOne({
+      where: { companyId: companyId },
+      relations: {
+        mailingAddress: { province: { country: true } },
+        primaryContact: { province: { country: true } },
+      },
+    });
   }
 
   /**

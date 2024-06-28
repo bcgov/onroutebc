@@ -26,9 +26,11 @@ export class CommonService {
         );
       },
       onRetry(retryCount, error, requestConfig) {
+        /* eslint-disable */
         this.logger.error(
           `URL: ${requestConfig?.baseURL}, error status: ${error?.status}, Retry Count: ${retryCount}`,
         );
+        /* eslint-enable */
       },
     });
   }

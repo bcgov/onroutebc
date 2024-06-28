@@ -31,26 +31,37 @@ frontend:
   configmap:
     enabled: true
     data:
-      config.js: |-
+      ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
+      DEPLOY_ENVIRONMENT: "{{.Values.global.vault.zone}}"
+      FRONTEND_PR_NUM: "{{.Values.global.pr_num}}"
+      config.js.template: |-
         const envConfig = (() => { return {
-            "VITE_DEPLOY_ENVIRONMENT":"{{.Values.global.zone}}",
-            "VITE_API_VEHICLE_URL":"https://{{.Release.Name}}-vehicles.{{.Values.global.domain}}",
-            "VITE_KEYCLOAK_ISSUER_URL":"https://{{ternary ("") (printf "%s." .Values.global.zone) (contains "prod" .Values.global.zone)}}loginproxy.gov.bc.ca/auth/realms/standard",
-            "VITE_KEYCLOAK_AUDIENCE":"on-route-bc-direct-4598",
-            "VITE_SITEMINDER_LOG_OFF_URL": "https://logon{{ternary ("") ("test") (contains "prod" .Values.global.zone)}}7.gov.bc.ca/clp-cgi/logoff.cgi",
-            "VITE_FRONTEND_PR_NUM":"{{.Values.global.pr_num}}",
+            "VITE_DEPLOY_ENVIRONMENT":"$DEPLOY_ENVIRONMENT",
+            "VITE_API_VEHICLE_URL":"$ACCESS_API_URL",
+            "VITE_KEYCLOAK_ISSUER_URL":"$KEYCLOAK_ISSUER_URL",
+            "VITE_KEYCLOAK_AUDIENCE":"$KEYCLOAK_AUDIENCE",
+            "VITE_SITEMINDER_LOG_OFF_URL":"$SITEMINDER_LOG_OFF_URL",
+            "VITE_FRONTEND_PR_NUM":"$FRONTEND_PR_NUM",
           };
         })();
   containers:
     - name: frontend
+      command:
+        - "sh"
+        - "-c"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && envsubst < /usr/share/nginx/html/config/config.js.template > /usr/share/nginx/html/config/config.js && nginx -g 'daemon off;'"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: frontend
       tag: "{{tpl .Values.global.tag .}}"
       env: 
-        fromValues:
-          - name: VITE_FRONTEND_PR_NUM
-            value: '{{.Values.global.pr_num}}'
+        fromLocalConfigmap: 
+          - name: ACCESS_API_URL
+            key: ACCESS_API_URL
+          - name: DEPLOY_ENVIRONMENT
+            key: DEPLOY_ENVIRONMENT
+          - name: FRONTEND_PR_NUM
+            key: FRONTEND_PR_NUM
       ports:
         - name: http
           containerPort: 3000
@@ -64,8 +75,10 @@ frontend:
           memory: 50Mi
       volumeMounts:
         - name: config
-          mountPath: "/usr/share/nginx/html/config.js"
-          subPath: config.js
+          mountPath: "/usr/share/nginx/html/config/config.js.template"
+          subPath: config.js.template
+        - name: writespace
+          mountPath: "/usr/share/nginx/html/config"
   autoscaling:
     #-- enable or disable autoscaling.
     enabled: true
@@ -120,10 +133,27 @@ frontend:
         targetPort: 3000
   serviceAccount:
     name: "{{ .Values.global.license }}-vault"
+  vault:
+    enabled: true
+    resources: # this is optional
+      limits:
+        cpu: 100m
+        memory: 200Mi
+      requests:
+        cpu: 75m
+        memory: 100Mi
+    role: "{{.Values.global.vault.role}}"
+    license: "{{.Values.global.license}}"
+    secretPaths:
+      - "keycloak-{{tpl $.Values.vault.zone $}}"
+    zone: "{{.Values.global.vault.zone}}"
   volumes:
     - name: config
       configMap:
         name: "{{ .Release.Name}}-frontend"
+    - name: writespace
+      emptyDir:
+        sizeLimit: 50Mi
 
 vehicles:
   enabled: true
@@ -145,7 +175,7 @@ vehicles:
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/payment-{{.Values.global.vault.zone}} && source /vault/secrets/vehicles-{{.Values.global.vault.zone}} && npm run start:prod"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/payment-{{.Values.global.vault.zone}} && source /vault/secrets/vehicles-{{.Values.global.vault.zone}} && source /vault/secrets/cfs-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: vehicles
@@ -262,6 +292,7 @@ vehicles:
       - "mssql-{{tpl $.Values.vault.zone $}}"
       - "payment-{{tpl $.Values.vault.zone $}}"
       - "vehicles-{{tpl $.Values.vault.zone $}}"
+      - "cfs-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
 
 dops:

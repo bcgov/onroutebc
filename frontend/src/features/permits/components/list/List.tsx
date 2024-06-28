@@ -21,7 +21,7 @@ import {
 } from "material-react-table";
 
 import "./List.scss";
-import { Trash } from "../../../../common/components/table/options/Trash";
+import { TrashButton } from "../../../../common/components/buttons/TrashButton";
 import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
 import { SnackBarContext } from "../../../../App";
 import { ApplicationListItem } from "../../types/application";
@@ -182,7 +182,7 @@ export const List = memo(
         ({ table }: { table: MRT_TableInstance<ApplicationListItem> }) => (
           <Box className="table-container__top-toolbar">
             <MRT_GlobalFilterTextField table={table} />
-            <Trash
+            <TrashButton
               onClickTrash={onClickTrashIcon}
               disabled={hasNoRowsSelected}
             />

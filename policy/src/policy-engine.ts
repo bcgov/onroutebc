@@ -4,8 +4,11 @@ import PermitType from './interface/permit-type.interface';
 import { Engine, EngineResult } from 'json-rules-engine';
 import { getRulesEngines } from './helper/rules-engine.helper';
 import PermitApplication from './type/permit-application.type';
+import ValidationResults from './validation-results';
 import ValidationResult from './validation-result';
 import { addRuntimeFacts, transformPermitFacts } from './helper/facts.helper';
+import { ValidationResultType } from './enum/validation-result-type.enum';
+import { ValidationResultCode } from './enum/validation-result-code.enum';
 
 /** Class representing commercial vehicle policy. */
 class Policy {
@@ -34,15 +37,19 @@ class Policy {
    * @param permit The permit application to validate against policy
    * @returns Results of the validation of the permit application
    */
-  async validate(permit: PermitApplication): Promise<ValidationResult> {
+  async validate(permit: PermitApplication): Promise<ValidationResults> {
     const engine = this.rulesEngines.get(permit.permitType);
     if (!engine) {
       // If the permit type being validated has no configuration in the
       // policy definition, there will be no engine for it. Return with
       // a single violation result.
-      const validationResult: ValidationResult = new ValidationResult();
+      const validationResult: ValidationResults = new ValidationResults();
       validationResult.violations.push(
-        `Permit type ${permit.permitType} not permittable`,
+        new ValidationResult(
+          ValidationResultType.Violation,
+          ValidationResultCode.PermitTypeUnknown,
+          `Permit type ${permit.permitType} unknown`,
+        )
       );
       return validationResult;
     } else {
@@ -56,7 +63,7 @@ class Policy {
       const engineResult: EngineResult = await engine.run(permitFacts);
 
       // Wrap the json-rules-engine result in a ValidationResult object
-      return new ValidationResult(engineResult);
+      return new ValidationResults(engineResult);
     }
   }
 
