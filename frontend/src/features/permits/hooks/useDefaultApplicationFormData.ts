@@ -30,7 +30,7 @@ export const useDefaultApplicationFormData = (
   permitType: PermitType,
   companyInfo: Nullable<CompanyProfile>,
   applicationData?: Nullable<Application>,
-  companyId?: number,
+  companyId?: Nullable<number | string>,
   userDetails?: BCeIDUserDetailContext,
 ) => {
   // initialize the entire form data with default values

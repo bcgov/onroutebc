@@ -17,7 +17,7 @@ export const trosNoAllowedVehicles: PolicyDefinition = {
         {
           conditions: {
             not: {
-              fact: 'vehicleType',
+              fact: 'permitData.vehicleDetails.vehicleSubType',
               operator: 'in',
               value: {
                 fact: 'allowedVehicles',
@@ -28,6 +28,8 @@ export const trosNoAllowedVehicles: PolicyDefinition = {
             type: 'violation',
             params: {
               message: 'Vehicle type not permittable for this permit type',
+              code: 'field-validation-error',
+              fieldReference: 'permitData.vehicleDetails.vehicleSubType',
             },
           },
         },

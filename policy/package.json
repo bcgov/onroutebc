@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "dayjs": "^1.11.10",
+    "flattie": "^1.1.1",
     "json-rules-engine": "^6.5.0"
   },
   "jest": {

@@ -14,17 +14,14 @@ import { SnackBarContext } from "../../../../App";
 import { useAddToCart } from "../../hooks/cart";
 import { hasPermitsActionFailed } from "../../helpers/permitState";
 import { CartContext } from "../../context/CartContext";
+import { usePowerUnitSubTypesQuery } from "../../../manageVehicles/hooks/powerUnits";
+import { useTrailerSubTypesQuery } from "../../../manageVehicles/hooks/trailers";
 import {
   APPLICATIONS_ROUTES,
   APPLICATION_STEPS,
   ERROR_ROUTES,
   SHOPPING_CART_ROUTES,
 } from "../../../../routes/constants";
-
-import {
-  usePowerUnitSubTypesQuery,
-  useTrailerSubTypesQuery,
-} from "../../../manageVehicles/apiManager/hooks";
 
 export const ApplicationReview = () => {
   const { applicationData, setApplicationData } =

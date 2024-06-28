@@ -3,16 +3,18 @@ import { Box, Button, MenuItem } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 
-import "./VehicleForm.scss";
-import { Trailer, VEHICLE_TYPES, VehicleSubType } from "../../types/Vehicle";
+import "./TrailerForm.scss";
+import { Trailer, VehicleSubType } from "../../types/Vehicle";
 import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
 import { SnackBarContext } from "../../../../App";
+import { VEHICLES_ROUTES } from "../../../../routes/constants";
+import { Nullable } from "../../../../common/types/common";
 import {
-  useAddTrailerMutation,
   useTrailerSubTypesQuery,
+  useAddTrailerMutation,
   useUpdateTrailerMutation,
-} from "../../apiManager/hooks";
+} from "../../hooks/trailers";
 
 import {
   getDefaultRequiredVal,
@@ -27,28 +29,19 @@ import {
   invalidYearMin,
   requiredMessage,
 } from "../../../../common/helpers/validationMessages";
-import { VEHICLES_ROUTES } from "../../../../routes/constants";
-import { Nullable } from "../../../../common/types/common";
 
-/**
- * Props used by the power unit form.
- */
-interface TrailerFormProps {
+const FEATURE = "trailer";
+
+export const TrailerForm = ({
+  companyId,
+  trailer,
+}: {
+  companyId: string;
   trailer?: Trailer;
+}) => {
+  const isEditMode = Boolean(trailer?.trailerId);
 
-  /**
-   * The trailer id to be retrieved.
-   * If valid and available, the form will be in an editable state.
-   */
-  trailerId?: string;
-}
-
-/**
- * @returns React component containing the form for adding or editing a power unit.
- */
-export const TrailerForm = ({ trailer }: TrailerFormProps) => {
-  // Default values to register with React Hook Forms
-  // If data was passed to this component, then use that data, otherwise use empty or undefined values
+  // If data was passed to this component, then use that data, otherwise set fields to empty
   const trailerDefaultValues = {
     provinceCode: getDefaultRequiredVal("", trailer?.provinceCode),
     countryCode: getDefaultRequiredVal("", trailer?.countryCode),
@@ -74,23 +67,12 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
   const snackBar = useContext(SnackBarContext);
   const navigate = useNavigate();
 
-  /**
-   * Custom css overrides for the form fields
-   */
-  const formFieldStyle = {
-    fontWeight: "bold",
-    width: "490px",
-    marginLeft: "8px",
-  };
-
-  /**
-   * Adds or updates a vehicle.
-   */
   const onAddOrUpdateVehicle = async (data: FieldValues) => {
-    if (trailer?.trailerId) {
+    if (isEditMode) {
       const trailerToBeUpdated = data as Trailer;
       const result = await updateTrailerMutation.mutateAsync({
-        trailerId: trailer?.trailerId,
+        companyId,
+        trailerId: (trailer as Trailer).trailerId as string,
         trailer: {
           ...trailerToBeUpdated,
           // need to explicitly convert form values to number here (since we can't use valueAsNumber prop)
@@ -113,6 +95,7 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
     } else {
       const trailerToBeAdded = data as Trailer;
       const result = await addTrailerMutation.mutateAsync({
+        companyId,
         trailer: {
           ...trailerToBeAdded,
           // need to explicitly convert form values to number here (since we can't use valueAsNumber prop)
@@ -136,22 +119,17 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
     }
   };
 
-  /**
-   * Changed view to the main Vehicle Inventory page
-   */
+  // Go back to the main Vehicle Inventory page on close
   const handleClose = () => {
     navigate(VEHICLES_ROUTES.TRAILER_TAB);
   };
-
-  /**
-   * The name of this feature that is used for id's, keys, and associating form components
-   */
-  const FEATURE = VEHICLE_TYPES.TRAILER;
+  
+  const saveButtonText = isEditMode ? "Save" : "Add To Inventory";
 
   return (
-    <div>
-      <FormProvider {...formMethods}>
-        <div id="trailer-form">
+    <FormProvider {...formMethods}>
+      <div className="trailer-form">
+        <div className="trailer-form__section">
           <CustomFormComponent
             type="input"
             feature={FEATURE}
@@ -159,8 +137,8 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
               name: "unitNumber",
               rules: { required: false, maxLength: 10 },
               label: "Unit #",
-              width: formFieldStyle.width,
             }}
+            className="trailer-form__field"
           />
 
           <CustomFormComponent
@@ -176,8 +154,8 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
                 maxLength: 20,
               },
               label: "Make",
-              width: formFieldStyle.width,
             }}
+            className="trailer-form__field"
           />
 
           <CustomFormComponent
@@ -199,8 +177,8 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
               },
               inputType: "number",
               label: "Year",
-              width: formFieldStyle.width,
             }}
+            className="trailer-form__field"
           />
 
           <CustomFormComponent
@@ -220,9 +198,9 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
                 maxLength: 6,
               },
               label: "VIN",
-              width: formFieldStyle.width,
               customHelperText: "last 6 digits",
             }}
+            className="trailer-form__field"
           />
 
           <CustomFormComponent
@@ -241,8 +219,8 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
                 },
               },
               label: "Plate",
-              width: formFieldStyle.width,
             }}
+            className="trailer-form__field"
           />
 
           <CustomFormComponent
@@ -257,7 +235,6 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
                 },
               },
               label: "Vehicle Sub-type",
-              width: formFieldStyle.width,
             }}
             menuOptions={trailerSubTypesQuery?.data?.map(
               (data: VehicleSubType) => (
@@ -266,6 +243,7 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
                 </MenuItem>
               ),
             )}
+            className="trailer-form__field"
           />
 
           <CustomFormComponent
@@ -281,8 +259,8 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
                 },
               },
               label: "Empty Trailer Width (m)",
-              width: formFieldStyle.width,
             }}
+            className="trailer-form__field"
           />
 
           <CountryAndProvince
@@ -290,33 +268,35 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
             countryField="countryCode"
             provinceField="provinceCode"
             isProvinceRequired={true}
-            width={formFieldStyle.width}
+            countryClassName="trailer-form__field"
+            provinceClassName="trailer-form__field"
           />
         </div>
-      </FormProvider>
+        
+        <Box className="trailer-form__actions">
+          <Button
+            key="cancel-save-vehicle-button"
+            aria-label="Cancel"
+            variant="contained"
+            color="secondary"
+            onClick={handleClose}
+            className="trailer-form__action-btn trailer-form__action-btn--cancel"
+          >
+            Cancel
+          </Button>
 
-      <Box sx={{ margin: "32px 0px" }}>
-        <Button
-          key="cancel-add-vehicle-button"
-          aria-label="Cancel Add Vehicle"
-          variant="contained"
-          color="secondary"
-          onClick={handleClose}
-          sx={{ marginRight: "32px" }}
-        >
-          Cancel
-        </Button>
-        <Button
-          key="add-vehicle-button"
-          aria-label="Add To Inventory"
-          variant="contained"
-          color="primary"
-          onClick={handleSubmit(onAddOrUpdateVehicle)}
-        >
-          {trailer?.trailerId && "Save"}
-          {!trailer?.trailerId && "Add To Inventory"}
-        </Button>
-      </Box>
-    </div>
+          <Button
+            key="save-vehicle-button"
+            aria-label={saveButtonText}
+            variant="contained"
+            color="primary"
+            onClick={handleSubmit(onAddOrUpdateVehicle)}
+            className="trailer-form__action-btn trailer-form__action-btn--submit"
+          >
+            {saveButtonText}
+          </Button>
+        </Box>
+      </div>
+    </FormProvider>
   );
 };
