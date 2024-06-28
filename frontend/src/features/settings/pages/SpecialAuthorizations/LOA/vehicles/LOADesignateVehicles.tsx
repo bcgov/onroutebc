@@ -110,9 +110,8 @@ export const LOADesignateVehicles = () => {
 
   const { data: powerUnitsData } = powerUnitsQuery;
   const { data: trailersData } = trailersQuery;
-  
+
   const powerUnits = useMemo(() => getDefaultRequiredVal([], powerUnitsData)
-    .filter(vehicle => vehicle.vehicleType === VEHICLE_TYPES.POWER_UNIT)
     .map((vehicle) => ({
       vehicleId: (vehicle as PowerUnit).powerUnitId,
       unitNumber: vehicle.unitNumber,
@@ -129,7 +128,6 @@ export const LOADesignateVehicles = () => {
   , [powerUnitsData]);
   
   const trailers = useMemo(() => getDefaultRequiredVal([], trailersData)
-    .filter(vehicle => vehicle.vehicleType === VEHICLE_TYPES.TRAILER)
     .map((vehicle) => ({
       vehicleId: (vehicle as Trailer).trailerId,
       unitNumber: vehicle.unitNumber,
