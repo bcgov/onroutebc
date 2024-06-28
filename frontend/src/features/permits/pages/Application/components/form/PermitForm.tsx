@@ -38,7 +38,7 @@ interface PermitFormProps {
   permitStartDate: Dayjs;
   permitDuration: number;
   permitCommodities: PermitCommodity[];
-  vehicleDetails?: Nullable<PermitVehicleDetails>;
+  vehicleDetails: PermitVehicleDetails;
   vehicleOptions: (PowerUnit | Trailer)[];
   powerUnitSubTypes: VehicleSubType[];
   trailerSubTypes: VehicleSubType[];

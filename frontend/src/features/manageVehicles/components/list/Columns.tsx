@@ -7,18 +7,22 @@ const CommonVehicleColumnDefinition: MRT_ColumnDef<Vehicle>[] = [
   {
     accessorKey: "unitNumber",
     header: "Unit #",
+    size: 50,
   },
   {
     accessorKey: "make",
     header: "Make",
+    size: 100,
   },
   {
     accessorKey: "vin",
     header: "VIN",
+    size: 50,
   },
   {
     accessorKey: "plate",
     header: "Plate",
+    size: 50,
   },
 ];
 
@@ -29,6 +33,7 @@ const CreatedAtColumnDefinition: MRT_ColumnDef<Vehicle> = {
     const formattedDate = formatCellValuetoDatetime(props.cell.getValue());
     return <span>{formattedDate}</span>;
   },
+  size: 100,
 };
 
 /**
@@ -45,6 +50,7 @@ export const PowerUnitColumnDefinition: MRT_ColumnDef<Vehicle>[] = [
   {
     accessorKey: "powerUnitTypeCode",
     header: "Vehicle Sub-Type",
+    size: 200,
   },
   CreatedAtColumnDefinition,
 ];
@@ -58,6 +64,7 @@ export const TrailerColumnDefinition: MRT_ColumnDef<Vehicle>[] = [
   {
     accessorKey: "trailerTypeCode",
     header: "Vehicle Sub-Type",
+    size: 200,
   },
   CreatedAtColumnDefinition,
 ];

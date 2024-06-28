@@ -1,44 +1,42 @@
 import { useFormContext } from "react-hook-form";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
-import OutlinedInput from "@mui/material/OutlinedInput";
+import {
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormControl,
+  FormLabel,
+  OutlinedInput,
+} from "@mui/material";
 
-import "./VehicleForm.scss";
 import { AxleFrontGroup, AxleType, AxleGroup } from "../../../types/Vehicle";
 
-/**
- * The props that can be passed to the axle group form.
- */
-interface AxleGroupFormProps {
-  /**
-   * The object containing the fields of the axle group (optional).
-   * If given, it will be used to set the values of the fields.
-   */
+interface AxleGroupFormSectionProps {
   axleGroup?: AxleGroup;
+  formName: "power-unit-form" | "trailer-form";
 }
 
 /**
- * The AxleGroupForm component provides a form containing the fields pertaining
- * to axle groups. It is only intended to be a subsection in a bigger component.
- * @returns A react component with axle group form fields.
+ * The AxleGroupFormSection subcomponent provides a form containing the fields pertaining
+ * to axle groups. It is only intended to be used as a section in a bigger form component.
+ * @returns A subcomponent with axle group form section fields.
  */
-export const AxleGroupForm = ({ axleGroup }: AxleGroupFormProps) => {
+export const AxleGroupFormSection = ({
+  axleGroup,
+  formName,
+}: AxleGroupFormSectionProps) => {
   const { register } = useFormContext();
 
-  const boldTextStyle = {
-    fontWeight: "bold",
-  };
-
   return (
-    <div id="axle-group-form">
-      <div>
+    <div className={`${formName}__section`}>
+      <div className={`${formName}__radio-field`}>
         <FormControl margin="normal">
-          <FormLabel id="axle-front-group-radiogroup" sx={boldTextStyle}>
+          <FormLabel
+            id="axle-front-group-radiogroup"
+            className={`${formName}__field-label`}
+          >
             Axle Front Group
           </FormLabel>
+
           <RadioGroup
             row
             aria-labelledby="axle-front-group-radiogroup"
@@ -65,11 +63,16 @@ export const AxleGroupForm = ({ axleGroup }: AxleGroupFormProps) => {
           </RadioGroup>
         </FormControl>
       </div>
-      <div>
+
+      <div className={`${formName}__radio-field`}>
         <FormControl margin="normal">
-          <FormLabel id="axle-type-front-radiogroup" sx={boldTextStyle}>
+          <FormLabel
+            id="axle-type-front-radiogroup"
+            className={`${formName}__field-label`}
+          >
             Axle Type Front
           </FormLabel>
+
           <RadioGroup
             row
             aria-labelledby="axle-type-front-radiogroup"
@@ -91,11 +94,16 @@ export const AxleGroupForm = ({ axleGroup }: AxleGroupFormProps) => {
           </RadioGroup>
         </FormControl>
       </div>
-      <div>
+
+      <div className={`${formName}__radio-field`}>
         <FormControl margin="normal">
-          <FormLabel id="axle-type-rear-radiogroup" sx={boldTextStyle}>
+          <FormLabel
+            id="axle-type-rear-radiogroup"
+            className={`${formName}__field-label`}
+          >
             Axle Type Rear
           </FormLabel>
+
           <RadioGroup
             row
             aria-labelledby="axle-type-rear-radiogroup"
@@ -117,23 +125,32 @@ export const AxleGroupForm = ({ axleGroup }: AxleGroupFormProps) => {
           </RadioGroup>
         </FormControl>
       </div>
-      <div>
-        {/* <FormLabel>{t('vehicle.axle-group.axle-group-number')}</FormLabel> */}
+
+      <div className={`${formName}__field`}>
         <FormControl margin="normal">
-          <FormLabel id="axle-group-number-label" sx={boldTextStyle}>
+          <FormLabel
+            id="axle-group-number-label"
+            className={`${formName}__field-label`}
+          >
             Axle Group Number
           </FormLabel>
+
           <OutlinedInput
             aria-labelledby="axle-group-number-label"
             defaultValue={axleGroup?.axleGroupNumber}
           />
         </FormControl>
       </div>
-      <div>
+
+      <div className={`${formName}__field`}>
         <FormControl margin="normal">
-          <FormLabel id="axle-group-spacing-label" sx={boldTextStyle}>
+          <FormLabel
+            id="axle-group-spacing-label"
+            className={`${formName}__field-label`}
+          >
             Axle Group Spacing
           </FormLabel>
+
           <OutlinedInput
             aria-labelledby="axle-group-spacing-label"
             margin="dense"
@@ -141,11 +158,16 @@ export const AxleGroupForm = ({ axleGroup }: AxleGroupFormProps) => {
           />
         </FormControl>
       </div>
-      <div>
+
+      <div className={`${formName}__field`}>
         <FormControl margin="normal">
-          <FormLabel id="interaxle-spread-front-label" sx={boldTextStyle}>
+          <FormLabel
+            id="interaxle-spread-front-label"
+            className={`${formName}__field-label`}
+          >
             Interaxle Spread Front (m)
           </FormLabel>
+
           <OutlinedInput
             aria-labelledby="interaxle-spread-front-label"
             margin="dense"
@@ -153,11 +175,16 @@ export const AxleGroupForm = ({ axleGroup }: AxleGroupFormProps) => {
           />
         </FormControl>
       </div>
-      <div>
+
+      <div className={`${formName}__field`}>
         <FormControl margin="normal">
-          <FormLabel id="interaxle-spread-rear-label" sx={boldTextStyle}>
+          <FormLabel
+            id="interaxle-spread-rear-label"
+            className={`${formName}__field-label`}
+          >
             Interaxle Spread Rear (m)
           </FormLabel>
+
           <OutlinedInput
             aria-labelledby="interaxle-spread-rear-label"
             margin="dense"
@@ -165,11 +192,16 @@ export const AxleGroupForm = ({ axleGroup }: AxleGroupFormProps) => {
           />
         </FormControl>
       </div>
-      <div>
+
+      <div className={`${formName}__field`}>
         <FormControl margin="normal">
-          <FormLabel id="interaxle-spread-front-label" sx={boldTextStyle}>
+          <FormLabel
+            id="interaxle-spread-front-label"
+            className={`${formName}__field-label`}
+          >
             Number of Tires Front
           </FormLabel>
+
           <OutlinedInput
             aria-labelledby="interaxle-spread-front-label"
             margin="dense"
@@ -177,11 +209,16 @@ export const AxleGroupForm = ({ axleGroup }: AxleGroupFormProps) => {
           />
         </FormControl>
       </div>
-      <div>
+
+      <div className={`${formName}__field`}>
         <FormControl margin="normal">
-          <FormLabel id="number-of-tires-rear-label" sx={boldTextStyle}>
+          <FormLabel
+            id="number-of-tires-rear-label"
+            className={`${formName}__field-label`}
+          >
             Number of Tires Rear
           </FormLabel>
+
           <OutlinedInput
             aria-labelledby="number-of-tires-rear-label"
             margin="dense"

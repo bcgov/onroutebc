@@ -1,8 +1,9 @@
 import { RowSelectionState } from "@tanstack/table-core";
-import { Box, IconButton, Tooltip } from "@mui/material";
-import { Delete, Edit } from "@mui/icons-material";
+import { Box, IconButton, InputAdornment } from "@mui/material";
 import { UseQueryResult } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleXmark, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import {
   memo,
   useCallback,
@@ -22,16 +23,19 @@ import {
 } from "material-react-table";
 
 import "./List.scss";
-import { TrashButton } from "../../../../common/components/buttons/TrashButton";
+import { DeleteButton } from "../../../../common/components/buttons/DeleteButton";
 import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
 import { PowerUnitColumnDefinition, TrailerColumnDefinition } from "./Columns";
-import { deleteVehicles } from "../../apiManager/vehiclesAPI";
 import { SnackBarContext } from "../../../../App";
 import { ERROR_ROUTES, VEHICLES_ROUTES } from "../../../../routes/constants";
 import { DoesUserHaveRoleWithContext } from "../../../../common/authentication/util";
 import { ROLES } from "../../../../common/authentication/types";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { useDeletePowerUnitsMutation, usePowerUnitSubTypesQuery } from "../../hooks/powerUnits";
+import { useDeleteTrailersMutation, useTrailerSubTypesQuery } from "../../hooks/trailers";
+import { Nullable } from "../../../../common/types/common";
+import { OnRouteBCTableRowActions } from "../../../../common/components/table/OnRouteBCTableRowActions";
 import {
   Vehicle,
   VehicleType,
@@ -41,20 +45,15 @@ import {
 } from "../../types/Vehicle";
 
 import {
-  usePowerUnitSubTypesQuery,
-  useTrailerSubTypesQuery,
-} from "../../apiManager/hooks";
-
-import {
   defaultTableOptions,
   defaultTableInitialStateOptions,
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
 
 /**
- * Dynamically set the column based on vehicle type
+ * Dynamically set the column definitions based on the vehicle type.
  * @param vehicleType Type of the vehicle
- * @returns An array of column headers/accessor keys for Material React Table
+ * @returns Column definition (headers/accessor keys) for vehicles for given vehicle type
  */
 const getColumns = (vehicleType: VehicleType): MRT_ColumnDef<Vehicle>[] => {
   if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
@@ -63,14 +62,6 @@ const getColumns = (vehicleType: VehicleType): MRT_ColumnDef<Vehicle>[] => {
   return TrailerColumnDefinition;
 };
 
-/*
- *
- * The List component uses Material React Table (MRT)
- * For detailed documentation, see here:
- * https://www.material-react-table.com/docs/getting-started/usage
- *
- *
- */
 /* eslint-disable react/prop-types */
 export const List = memo(
   ({
@@ -82,11 +73,25 @@ export const List = memo(
     query: UseQueryResult<Vehicle[]>;
     companyId: string;
   }) => {
-    // Data, fetched from backend API
-    const { data, isError, isFetching, isPending } = query;
     const navigate = useNavigate();
+    const {
+      data: vehiclesData,
+      isError: fetchVehiclesFailed,
+      isFetching: isFetchingVehicles,
+      isPending: vehiclesPending,
+    } = query;
 
-    // Column definitions for the table
+    const canEditDeleteVehicles = Boolean(DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE));
+    const vehicleActionOptions = [
+      canEditDeleteVehicles ? {
+        label: "Edit",
+        value: "edit",
+      } : null,
+    ].filter(action => Boolean(action)) as {
+      label: string;
+      value: string;
+    }[];
+
     const columns = useMemo<MRT_ColumnDef<Vehicle>[]>(
       () => getColumns(vehicleType),
       [],
@@ -97,16 +102,20 @@ export const List = memo(
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
     const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
 
-    const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
-    const trailerSubTypesQuery = useTrailerSubTypesQuery();
-    const fetchedPowerUnitSubTypes = getDefaultRequiredVal(
-      [],
-      powerUnitSubTypesQuery.data,
-    );
-    const fetchedTrailerSubTypes = getDefaultRequiredVal(
-      [],
-      trailerSubTypesQuery.data,
-    );
+    const { data: powerUnitSubtypesData } = usePowerUnitSubTypesQuery();
+    const { data: trailerSubtypesData } = useTrailerSubTypesQuery();
+    const powerUnitSubTypes = getDefaultRequiredVal([], powerUnitSubtypesData);
+    const trailerSubTypes = getDefaultRequiredVal([], trailerSubtypesData);
+
+    const {
+      mutateAsync: deletePowerUnits,
+      isError: deletePowerUnitsFailed,
+    } = useDeletePowerUnitsMutation();
+
+    const {
+      mutateAsync: deleteTrailers,
+      isError: deleteTrailersFailed,
+    } = useDeleteTrailersMutation();
 
     const colTypeCodes = columns.filter(
       (item) => item.accessorKey === `${vehicleType}TypeCode`,
@@ -116,17 +125,13 @@ export const List = memo(
     );
 
     const transformVehicleCode = (code: string) => {
-      let val;
-      if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
-        val = fetchedPowerUnitSubTypes?.filter(
+      const vehicleSubtypesForCode = vehicleType === VEHICLE_TYPES.POWER_UNIT
+        ? powerUnitSubTypes.filter(
+          (value) => value.typeCode === code,
+        ) : trailerSubTypes.filter(
           (value) => value.typeCode === code,
         );
-      } else {
-        val = fetchedTrailerSubTypes?.filter(
-          (value) => value.typeCode === code,
-        );
-      }
-      return val?.at(0)?.type ?? "";
+      return getDefaultRequiredVal("", vehicleSubtypesForCode?.at(0)?.type);
     };
 
     if (colTypeCodes?.length === 1) {
@@ -143,58 +148,50 @@ export const List = memo(
       }
     }
 
-    /**
-     * Callback function for clicking on the Trash icon above the Table.
-     */
     const onClickTrashIcon = useCallback(() => {
       setIsDeleteDialogOpen(() => true);
     }, []);
 
-    /**
-     * Function that deletes a vehicle once the user confirms the delete action
-     * in the confirmation dialog.
-     */
-    const onConfirmDelete = async () => {
-      const vehicleIds: string[] = Object.keys(rowSelection);
+    const handleError = () => {
+      setIsDeleteDialogOpen(() => false);
+      navigate(ERROR_ROUTES.UNEXPECTED);
+    };
 
-      deleteVehicles(vehicleIds, vehicleType, companyId)
-        .then((response) => {
-          if (response.status === 200) {
-            const responseBody = response.data;
-            if (responseBody.failure.length > 0) {
-              snackBar.setSnackBar({
-                message: "An unexpected error occurred.",
-                showSnackbar: true,
-                setShowSnackbar: () => true,
-                alertType: "error",
-              });
-            } else {
-              snackBar.setSnackBar({
-                message: "Vehicle Deleted",
-                showSnackbar: true,
-                setShowSnackbar: () => true,
-                alertType: "info",
-              });
-            }
+    const onConfirmDelete = async () => {
+      const vehicleIds = Object.keys(rowSelection);
+
+      try {
+        const response = vehicleType === VEHICLE_TYPES.POWER_UNIT
+          ? await deletePowerUnits({ companyId, vehicleIds })
+          : await deleteTrailers({ companyId, vehicleIds });
+
+        if (response.status === 200) {
+          const responseBody = response.data;
+          if (responseBody.failure.length > 0) {
+            // Delete action for some vehicles failed
+            handleError();
+          } else {
+            setIsDeleteDialogOpen(() => false);
+            snackBar.setSnackBar({
+              message: "Vehicle Deleted",
+              showSnackbar: true,
+              setShowSnackbar: () => true,
+              alertType: "info",
+            });
+
             setRowSelection(() => {
               return {};
             });
             query.refetch();
-          } else {
-            navigate(ERROR_ROUTES.UNEXPECTED);
           }
-        })
-        .catch(() => {
-          navigate(ERROR_ROUTES.UNEXPECTED);
-        })
-        .finally(() => {
-          setIsDeleteDialogOpen(() => false);
-        });
+        } else {
+          handleError();
+        }
+      } catch {
+        handleError();
+      }
     };
 
-    /**
-     * Function that clears the delete related states when the user clicks on cancel.
-     */
     const onCancelDelete = useCallback(() => {
       setIsDeleteDialogOpen(() => false);
       setRowSelection(() => {
@@ -202,21 +199,26 @@ export const List = memo(
       });
     }, []);
 
+    const [searchFilterValue, setSearchFilterValue] = useState<string>("");
+
     useEffect(() => {
-      if (isError) {
-        snackBar.setSnackBar({
-          message: "An unexpected error occurred.",
-          showSnackbar: true,
-          setShowSnackbar: () => true,
-          alertType: "error",
-        });
+      if (
+        fetchVehiclesFailed
+        || deletePowerUnitsFailed
+        || deleteTrailersFailed
+      ) {
+        handleError();
       }
-    }, [isError]);
-    // End snackbar code for error handling
+    }, [
+      fetchVehiclesFailed,
+      deletePowerUnitsFailed,
+      deleteTrailersFailed,
+      handleError,
+    ]);
 
     const table = useMaterialReactTable({
       ...defaultTableOptions,
-      data: data ?? [],
+      data: getDefaultRequiredVal([], vehiclesData),
       columns: newColumns,
       initialState: {
         ...defaultTableInitialStateOptions,
@@ -224,102 +226,116 @@ export const List = memo(
       },
       state: {
         ...defaultTableStateOptions,
-        isLoading: isPending,
-        showAlertBanner: isError,
-        showProgressBars: isFetching,
+        isLoading: vehiclesPending,
+        showAlertBanner: fetchVehiclesFailed,
+        showProgressBars: isFetchingVehicles,
         columnVisibility: { powerUnitId: false, trailerId: false },
-        rowSelection: rowSelection,
+        rowSelection,
+        globalFilter: searchFilterValue,
       },
       getRowId: (originalRow) => {
-        if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
-          const powerUnitRow = originalRow as PowerUnit;
-          return powerUnitRow.powerUnitId as string;
-        } else {
-          const trailerRow = originalRow as Trailer;
-          return trailerRow.trailerId as string;
+        if (vehicleType === VEHICLE_TYPES.TRAILER) {
+          return (originalRow as Trailer).trailerId as string;
         }
+        return (originalRow as PowerUnit).powerUnitId as string;
       },
+      displayColumnDefOptions: {
+        "mrt-row-select": {
+          size: 32,
+        },
+        "mrt-row-actions": {
+          header: "",
+          muiTableBodyCellProps: {
+            className: "vehicles-list__row-actions"
+          }
+        },
+      },
+      layoutMode: "grid",
       onRowSelectionChange: setRowSelection,
       enableMultiSort: true,
+      enablePagination: true,
+      enableBottomToolbar: true,
       renderEmptyRowsFallback: () => <NoRecordsFound />,
       renderRowActions: useCallback(
-        ({ row }: { row: MRT_Row<Vehicle> }) => (
-          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-            {DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) && (
-              <>
-                <Tooltip arrow placement="left" title="Edit">
-                  <IconButton
-                    onClick={() => {
-                      if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
-                        navigate(
-                          `${VEHICLES_ROUTES.POWER_UNIT_DETAILS}/${row.getValue(
-                            "powerUnitId",
-                          )}`,
-                        );
-                      } else if (vehicleType === VEHICLE_TYPES.TRAILER) {
-                        navigate(
-                          `${VEHICLES_ROUTES.TRAILER_DETAILS}/${row.getValue(
-                            "trailerId",
-                          )}`,
-                        );
-                      }
-                    }}
-                    disabled={false}
-                  >
-                    <Edit />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip arrow placement="top" title="Delete">
-                  {/*tslint:disable-next-line*/}
-                  <IconButton
-                    color="error"
-                    onClick={() => {
-                      setIsDeleteDialogOpen(() => true);
-                      setRowSelection(() => {
-                        const newObject: { [key: string]: boolean } = {};
-                        // Setting the selected row to false so that
-                        // the row appears unchecked.
-                        newObject[row.getValue<string>(`${vehicleType}Id`)] =
-                          false;
-                        return newObject;
-                      });
-                    }}
-                    disabled={false}
-                  >
-                    <Delete />
-                  </IconButton>
-                </Tooltip>
-              </>
-            )}
-          </Box>
-        ),
-        [],
+        ({ row }: { row: MRT_Row<Vehicle> }) => canEditDeleteVehicles ? (
+          <OnRouteBCTableRowActions
+            onSelectOption={() => {
+              if (!canEditDeleteVehicles) return;
+
+              if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
+                navigate(
+                  `${VEHICLES_ROUTES.POWER_UNIT_DETAILS}/${row.getValue(
+                    "powerUnitId",
+                  )}`,
+                );
+              } else if (vehicleType === VEHICLE_TYPES.TRAILER) {
+                navigate(
+                  `${VEHICLES_ROUTES.TRAILER_DETAILS}/${row.getValue(
+                    "trailerId",
+                  )}`,
+                );
+              }
+            }}
+            options={vehicleActionOptions}
+            disabled={!canEditDeleteVehicles}
+          />
+        ) : null,
+        [canEditDeleteVehicles, vehicleActionOptions, vehicleType],
       ),
-      // Render a custom options Bar (inclues search and trash)
+      filterFns: {
+        "defaultSearchFilter": (row, columnId, filterValue) => {
+          return (columnId === "plate" && row.getValue<string>(columnId).includes(filterValue))
+            || (columnId === "vin" && row.getValue<string>(columnId).includes(filterValue))
+            || (columnId === "unitNumber" && row.getValue<Nullable<string>>(columnId)?.includes(filterValue));
+        },
+      },
+      globalFilterFn: "defaultSearchFilter",
+      onGlobalFilterChange: setSearchFilterValue,
+      // Include search filter and delete button in top toolbar
       renderTopToolbar: useCallback(
         ({ table }: { table: MRT_TableInstance<Vehicle> }) => (
-          <Box className="table-container__top-toolbar">
-            <MRT_GlobalFilterTextField table={table} />
-            {DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) && (
-              <TrashButton
-                onClickTrash={onClickTrashIcon}
+          <Box className="vehicles-list__top-toolbar">
+            <div className="vehicles-list__search">
+              <MRT_GlobalFilterTextField
+                table={table}
+                className="search-input"
+                InputProps={{
+                  className: "search-input__input-container",
+                  startAdornment: (
+                    <FontAwesomeIcon icon={faMagnifyingGlass} className="search-icon" />
+                  ),
+                  endAdornment: searchFilterValue !== "" ? (
+                    <InputAdornment position="end">
+                      <IconButton
+                        className="search-input__clear-button"
+                        onClick={() => table.setGlobalFilter("")}
+                      >
+                        <FontAwesomeIcon icon={faCircleXmark} className="clear-icon" />
+                      </IconButton>
+                    </InputAdornment>
+                  ) : null,
+                }}
+                inputProps={{
+                  className: "search-input__input-textfield",
+                }}
+                onChange={(e) => table.setGlobalFilter(e.target.value)}
+              />
+            </div>
+            
+            {canEditDeleteVehicles ? (
+              <DeleteButton
+                onClick={onClickTrashIcon}
                 disabled={hasNoRowsSelected}
               />
-            )}
+            ) : null}
           </Box>
         ),
-        [hasNoRowsSelected],
+        [canEditDeleteVehicles, hasNoRowsSelected, searchFilterValue],
       ),
-      muiToolbarAlertBannerProps: isError
-        ? {
-            color: "error",
-            children: "Error loading data",
-          }
-        : undefined,
     });
 
     return (
-      <div className="table-container">
+      <div className="vehicles-list table-container">
         <MaterialReactTable table={table} />
         <DeleteConfirmationDialog
           onClickDelete={onConfirmDelete}
