@@ -43,6 +43,7 @@ type PermitCommodity = {
 
 type PermitData = {
   companyName: string;
+  doingBusinessAs?: string;
   clientNumber: string;
   permitDuration: number;
   commodities: Array<PermitCommodity>;
