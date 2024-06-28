@@ -5,24 +5,18 @@ import { CreditAccountActivityType } from '../../../../common/enum/credit-accoun
 export class ReadCreditAccountActivityDto {
   @AutoMap()
   @ApiProperty({
-    description: 'The unique credit account acitivty id.',
-    example: 1,
-  })
-  activityId: number;
-
-  @AutoMap()
-  @ApiProperty({
-    description: 'The user name of id linked to credit account activity.',
+    description:
+      'The user name of id linked to credit account status update activity.',
     example: 'JSMITH',
   })
   userName: string;
 
   @AutoMap()
   @ApiProperty({
-    description: 'The credit account acitivty date time.',
+    description: 'The credit account activity date time.',
     example: '2023-10-11T23:26:51.170Z',
   })
-  creditAccountActivityDateTime?: string;
+  creditAccountActivityDateTime: string;
 
   @AutoMap()
   @ApiProperty({

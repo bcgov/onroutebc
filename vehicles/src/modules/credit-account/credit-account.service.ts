@@ -22,9 +22,9 @@ import {
 import { CreditAccountType } from '../../common/enum/credit-account-type.enum';
 import { CreditAccountUserType } from '../../common/enum/credit-accounts.enum';
 import {
+  getCreditAccountActivityType,
   isActiveCreditAccount,
   isClosedCreditAccount,
-  isOnHoldCreditAccount,
 } from '../../common/helper/credit-account.helper';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { Nullable } from '../../common/types/common';
@@ -339,11 +339,10 @@ export class CreditAccountService {
     },
   ): Promise<ReadCreditAccountDto> {
     // Retrieve the credit account using credit account ID and holder ID
-    const creditAccount =
-      await this.findOneCreditAccountByCreditAccountIdAndAccountHolder(
-        creditAccountId,
-        creditAccountHolderId,
-      );
+    const creditAccount = await this.findOneByCreditAccountIdAndAccountHolder(
+      creditAccountId,
+      creditAccountHolderId,
+    );
 
     if (!creditAccount) {
       // If no credit account is found, throw BadRequestException
@@ -399,27 +398,11 @@ export class CreditAccountService {
           );
         }
 
-        let creditAccountActivityType: CreditAccountActivityType;
-        switch (statusToUpdateTo) {
-          case CreditAccountStatusValid.ACCOUNT_ACTIVE:
-            if (isClosedCreditAccount(creditAccount)) {
-              creditAccountActivityType =
-                CreditAccountActivityType.ACCOUNT_REOPENED;
-            } else if (isOnHoldCreditAccount(creditAccount)) {
-              creditAccountActivityType =
-                CreditAccountActivityType.ACCOUNT_HOLD_REMOVED;
-            }
-            break;
-          case CreditAccountStatusValid.ACCOUNT_ON_HOLD:
-            creditAccountActivityType =
-              CreditAccountActivityType.ACCOUNT_ON_HOLD;
-            break;
-          case CreditAccountStatusValid.ACCOUNT_CLOSED:
-            creditAccountActivityType =
-              CreditAccountActivityType.ACCOUNT_CLOSED;
-            break;
-        }
-        let creditAccountActivity: CreditAccountActivity =
+        const creditAccountActivityType = getCreditAccountActivityType(
+          creditAccount,
+          statusToUpdateTo,
+        );
+        const creditAccountActivity: CreditAccountActivity =
           new CreditAccountActivity();
 
         creditAccountActivity.creditAccount = creditAccount;
@@ -440,9 +423,7 @@ export class CreditAccountService {
           currentUser.orbcUserDirectory;
         creditAccountActivity.updatedDateTime = currentDateTime;
 
-        creditAccountActivity = await queryRunner.manager.save(
-          creditAccountActivity,
-        );
+        await queryRunner.manager.save(creditAccountActivity);
       }
       await queryRunner.commitTransaction();
     } catch (error) {
@@ -513,11 +494,10 @@ export class CreditAccountService {
     createCreditAccountUserDto: CreateCreditAccountUserDto,
   ): Promise<ReadCreditAccountUserDto> {
     // Find the credit account by creditAccountId and creditAccountHolderId
-    const creditAccount =
-      await this.findOneCreditAccountByCreditAccountIdAndAccountHolder(
-        creditAccountId,
-        creditAccountHolderId,
-      );
+    const creditAccount = await this.findOneByCreditAccountIdAndAccountHolder(
+      creditAccountId,
+      creditAccountHolderId,
+    );
 
     if (!creditAccount) {
       // If no credit account is found, throw an exception
@@ -532,7 +512,7 @@ export class CreditAccountService {
 
     // Find if there is an existing credit account by companyId as holder
     const existingCreditAccountAsHolder =
-      await this.findOneCreditAccountByCreditAccountHolder(
+      await this.findOneByIdAndAccountHolder(
         createCreditAccountUserDto.companyId,
       );
 
@@ -666,11 +646,10 @@ export class CreditAccountService {
     deleteDto.success = [];
 
     // Retrieve the credit account using credit account ID and holder ID
-    const creditAccount =
-      await this.findOneCreditAccountByCreditAccountIdAndAccountHolder(
-        creditAccountId,
-        creditAccountHolderId,
-      );
+    const creditAccount = await this.findOneByCreditAccountIdAndAccountHolder(
+      creditAccountId,
+      creditAccountHolderId,
+    );
 
     if (!creditAccount) {
       // If no credit account is found, throw BadRequestException
@@ -681,7 +660,7 @@ export class CreditAccountService {
 
     // Retrieve all credit accounts associated with the given company IDs
     const creditAccountsByHolder =
-      await this.findManyCreditAccountByCreditAccountHolders(companyIds);
+      await this.findManyByCreditAccountHolders(companyIds);
 
     // Filter companies that are within the list of company IDs
     const companiesWithinIds = creditAccountsByHolder
@@ -784,7 +763,7 @@ export class CreditAccountService {
    * @returns {Promise<CreditAccount | null>} - The found credit account or null.
    */
   @LogAsyncMethodExecution()
-  public async findOneCreditAccountByCreditAccountIdAndAccountHolder(
+  public async findOneByCreditAccountIdAndAccountHolder(
     creditAccountId: number,
     creditAccountHolder: number,
   ) {
@@ -806,9 +785,7 @@ export class CreditAccountService {
    * @returns {Promise<CreditAccount | null>} - The found credit account or null.
    */
   @LogAsyncMethodExecution()
-  public async findOneCreditAccountByCreditAccountHolder(
-    creditAccountHolder: number,
-  ) {
+  public async findOneByIdAndAccountHolder(creditAccountHolder: number) {
     return await this.creditAccountRepository.findOne({
       where: {
         company: { companyId: creditAccountHolder },
@@ -826,9 +803,7 @@ export class CreditAccountService {
    * @returns {Promise<CreditAccount[]>} - The found credit accounts.
    */
   @LogAsyncMethodExecution()
-  public async findManyCreditAccountByCreditAccountHolders(
-    creditAccountHolder: number[],
-  ) {
+  public async findManyByCreditAccountHolders(creditAccountHolder: number[]) {
     return await this.creditAccountRepository
       .createQueryBuilder('creditAccount')
       .leftJoinAndSelect('creditAccount.company', 'company')

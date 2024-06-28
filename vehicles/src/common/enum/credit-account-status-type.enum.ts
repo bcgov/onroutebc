@@ -8,9 +8,6 @@ export const CreditAccountStatus = {
 export type CreditAccountStatusType =
   (typeof CreditAccountStatus)[keyof typeof CreditAccountStatus];
 
-//   // New type that extends CreditAccountStatusType but omits ACCOUNT_SETUP_FAIL
-// export type CreditAccountStatusValidType = Omit<CreditAccountStatusType, 'ACCOUNT_SETUP_FAIL'>;
-
 // Manually constructing the CreditAccountStatusValidType as a const
 export const CreditAccountStatusValid = {
   ACCOUNT_ON_HOLD: CreditAccountStatus.ACCOUNT_ON_HOLD,
