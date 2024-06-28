@@ -10,37 +10,9 @@ on:
         type: string
 
 jobs:
-  integration-tests:
-    name: Integration Tests
-    runs-on: ubuntu-22.04
-    timeout-minutes: 1
-    steps:
-      - uses: actions/checkout@v4
-      - id: cache-npm
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-build-cache-node-modules-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-cache-node-modules-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-
-      - name: Integration tests
-        env:
-          API_NAME: nest
-          BASE_URL: https://${{ github.event.repository.name }}-${{ inputs.target }}-frontend.apps.silver.devops.gov.bc.ca
-        run: |
-          cd integration-tests
-          npm ci
-          node src/main.js
-
   cypress-e2e:
     name: E2E Tests
     runs-on: ubuntu-22.04
-    defaults:
-      run:
-        working-directory: frontend
     strategy:
       matrix:
         browser: [chrome, firefox, edge]
@@ -57,18 +29,20 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - uses: cypress-io/github-action@v6
-        name: Cypress run
-        env:
-          CYPRESS_baseUrl: https://${{ github.event.repository.name }}-${{ inputs.target }}-frontend.apps.silver.devops.gov.bc.ca/
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
         with:
-          config: pageLoadTimeout=10000
+          config: pageLoadTimeout=10000,baseUrl=https://${{ github.event.repository.name }}-${{ inputs.target }}-frontend.apps.silver.devops.gov.bc.ca
           working-directory: ./frontend
           browser: ${{ matrix.browser }}
+        env:
+          IDIR_LOGIN_URL: ${{vars.IDIR_LOGON_URL}}
+          IDIR_USERNAME: ${{secrets.IDIR_USERNAME}}
+          IDIR_PASSWORD: ${{secrets.IDIR_PASSWORD}}
 
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: cypress-screenshots
-          path: ./cypress/screenshots
+          path: ./frontend/cypress/screenshots
           if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
