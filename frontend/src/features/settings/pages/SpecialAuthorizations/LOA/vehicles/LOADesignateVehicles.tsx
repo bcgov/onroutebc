@@ -20,10 +20,14 @@ import { LOAVehicleTab, LOA_VEHICLE_TABS } from "../../../../types/LOAVehicleTab
 import { selectionRequired } from "../../../../../../common/helpers/validationMessages";
 import { Nullable, Optional } from "../../../../../../common/types/common";
 import {
-  usePowerUnitSubTypesQuery,
+  usePowerUnitSubTypesQuery,  
+  usePowerUnitsQuery,
+} from "../../../../../manageVehicles/hooks/powerUnits";
+
+import {
   useTrailerSubTypesQuery,
-  useVehiclesQuery,
-} from "../../../../../manageVehicles/apiManager/hooks";
+  useTrailersQuery,
+} from "../../../../../manageVehicles/hooks/trailers";
 
 const vehicleSelectionRules =  {
   validate: {
@@ -90,7 +94,8 @@ export const LOADesignateVehicles = () => {
   const selectedPowerUnits = watch("selectedVehicles.powerUnits");
   const selectedTrailers = watch("selectedVehicles.trailers");
 
-  const vehiclesQuery = useVehiclesQuery(companyIdStr);
+  const powerUnitsQuery = usePowerUnitsQuery(companyIdStr);
+  const trailersQuery = useTrailersQuery(companyIdStr);
   const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
   const trailerSubTypesQuery = useTrailerSubTypesQuery();
   const powerUnitSubTypes = useMemo(() => getDefaultRequiredVal(
@@ -103,8 +108,10 @@ export const LOADesignateVehicles = () => {
     trailerSubTypesQuery.data,
   ), [trailerSubTypesQuery.data]);
 
-  const { data: vehicles } = vehiclesQuery;
-  const powerUnits = useMemo(() => getDefaultRequiredVal([], vehicles)
+  const { data: powerUnitsData } = powerUnitsQuery;
+  const { data: trailersData } = trailersQuery;
+  
+  const powerUnits = useMemo(() => getDefaultRequiredVal([], powerUnitsData)
     .filter(vehicle => vehicle.vehicleType === VEHICLE_TYPES.POWER_UNIT)
     .map((vehicle) => ({
       vehicleId: (vehicle as PowerUnit).powerUnitId,
@@ -119,9 +126,9 @@ export const LOADesignateVehicles = () => {
           .find(subType => subType.typeCode === (vehicle as PowerUnit).powerUnitTypeCode)?.type,
       },
     })) as LOAVehicle[]
-  , [vehicles]);
+  , [powerUnitsData]);
   
-  const trailers = useMemo(() => getDefaultRequiredVal([], vehicles)
+  const trailers = useMemo(() => getDefaultRequiredVal([], trailersData)
     .filter(vehicle => vehicle.vehicleType === VEHICLE_TYPES.TRAILER)
     .map((vehicle) => ({
       vehicleId: (vehicle as Trailer).trailerId,
@@ -136,7 +143,7 @@ export const LOADesignateVehicles = () => {
           .find(subType => subType.typeCode === (vehicle as Trailer).trailerTypeCode)?.type,
       },
     })) as LOAVehicle[]
-  , [vehicles]);
+  , [trailersData]);
 
   useEffect(() => {
     // If the fetched power units have ones that have been selected, fill the form data with vehicle information
