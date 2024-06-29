@@ -309,14 +309,15 @@ export const AppRoutes = () => {
 
       <Route
         element={
-          <BCeIDAuthWall
-            requiredRole={ROLES.READ_SPECIAL_AUTH}
-            allowedIDIRAuthGroups={[
+          <IDIRAuthWall
+            allowedAuthGroups={[
               IDIR_USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
               IDIR_USER_AUTH_GROUP.FINANCE,
               IDIR_USER_AUTH_GROUP.PPC_CLERK,
               IDIR_USER_AUTH_GROUP.CTPO,
               IDIR_USER_AUTH_GROUP.HQ_ADMINISTRATOR,
+              IDIR_USER_AUTH_GROUP.ENFORCEMENT_OFFICER,
+              // IDIR_USER_AUTH_GROUP.TRAINEE,
             ]}
           />
         }

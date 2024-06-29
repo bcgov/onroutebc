@@ -11,10 +11,21 @@ import { canViewSpecialAuthorizations, canViewSuspend } from "../../helpers/perm
 import { SpecialAuthorizations } from "../../pages/SpecialAuthorizations/SpecialAuthorizations";
 
 export const ManageSettingsDashboard = React.memo(() => {
-  const { userRoles, companyId } = useContext(OnRouteBCContext);
+  const {
+    userRoles,
+    companyId,
+    idirUserDetails,
+    userDetails,
+  } = useContext(OnRouteBCContext);
+
+  const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
+
   const [hideSuspendTab, setHideSuspendTab] = useState<boolean>(false);
   const showSuspendTab = canViewSuspend(userRoles) && !hideSuspendTab;
-  const showSpecialAuth = canViewSpecialAuthorizations(userRoles);
+  const showSpecialAuth = canViewSpecialAuthorizations(
+    userRoles,
+    isStaffActingAsCompany ? idirUserDetails?.userAuthGroup : userDetails?.userAuthGroup,
+  );
 
   const { state: stateFromNavigation } = useLocation();
   const selectedTab = getDefaultRequiredVal(

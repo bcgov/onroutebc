@@ -1,6 +1,8 @@
 @use "../../../../../themes/orbcStyles";
 
 .loa-steps {
+  padding-bottom: 3rem;
+  
   & &__step-component {
     margin-bottom: 2.5rem;
   }

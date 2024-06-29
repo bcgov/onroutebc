@@ -1,4 +1,4 @@
-import { ROLES, UserRolesType } from "../../../common/authentication/types";
+import { ROLES, USER_AUTH_GROUP, UserAuthGroupType, UserRolesType } from "../../../common/authentication/types";
 import { DoesUserHaveRole } from "../../../common/authentication/util";
 import { Nullable } from "../../../common/types/common";
 
@@ -36,8 +36,17 @@ export const canUpdateSuspend = (
 
 export const canUpdateNoFeePermitsFlag = (
   userRoles?: Nullable<UserRolesType[]>,
+  userAuthGroup?: Nullable<UserAuthGroupType>,
 ): boolean => {
-  return Boolean(
+  const allowedAuthGroups = [
+    USER_AUTH_GROUP.HQ_ADMINISTRATOR,
+    USER_AUTH_GROUP.FINANCE,
+    USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
+  ] as UserAuthGroupType[];
+
+  return (
+    userAuthGroup && allowedAuthGroups.includes(userAuthGroup)
+  ) || Boolean(
     DoesUserHaveRole(
       userRoles,
       ROLES.WRITE_NOFEE,
@@ -47,19 +56,31 @@ export const canUpdateNoFeePermitsFlag = (
 
 export const canViewNoFeePermitsFlag = (
   userRoles?: Nullable<UserRolesType[]>,
+  userAuthGroup?: Nullable<UserAuthGroupType>,
 ): boolean => {
-  return Boolean(
+  const allowedAuthGroups = [
+    USER_AUTH_GROUP.HQ_ADMINISTRATOR,
+    USER_AUTH_GROUP.FINANCE,
+    USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
+  ] as UserAuthGroupType[];
+
+  return (
+    userAuthGroup && allowedAuthGroups.includes(userAuthGroup)
+  ) || Boolean(
     DoesUserHaveRole(
       userRoles,
       ROLES.READ_NOFEE,
     ),
-  ) || canUpdateNoFeePermitsFlag(userRoles);
+  ) || canUpdateNoFeePermitsFlag(userRoles, userAuthGroup);
 };
 
 export const canUpdateLCAFlag = (
   userRoles?: Nullable<UserRolesType[]>,
+  userAuthGroup?: Nullable<UserAuthGroupType>,
 ): boolean => {
-  return Boolean(
+  return (
+    userAuthGroup === USER_AUTH_GROUP.HQ_ADMINISTRATOR
+  ) || Boolean(
     DoesUserHaveRole(
       userRoles,
       ROLES.WRITE_LCV_FLAG,
@@ -69,19 +90,30 @@ export const canUpdateLCAFlag = (
 
 export const canViewLCAFlag = (
   userRoles?: Nullable<UserRolesType[]>,
+  userAuthGroup?: Nullable<UserAuthGroupType>,
 ): boolean => {
-  return Boolean(
+  return (
+    userAuthGroup === USER_AUTH_GROUP.HQ_ADMINISTRATOR
+  ) || Boolean(
     DoesUserHaveRole(
       userRoles,
       ROLES.READ_LCV_FLAG,
     ),
-  ) || canUpdateLCAFlag(userRoles);
+  ) || canUpdateLCAFlag(userRoles, userAuthGroup);
 };
 
 export const canUpdateLOA = (
   userRoles?: Nullable<UserRolesType[]>,
+  userAuthGroup?: Nullable<UserAuthGroupType>,
 ): boolean => {
-  return Boolean(
+  const allowedAuthGroups = [
+    USER_AUTH_GROUP.HQ_ADMINISTRATOR,
+    USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
+  ] as UserAuthGroupType[];
+
+  return (
+    userAuthGroup && allowedAuthGroups.includes(userAuthGroup)
+  ) || Boolean(
     DoesUserHaveRole(
       userRoles,
       ROLES.WRITE_LOA,
@@ -91,27 +123,56 @@ export const canUpdateLOA = (
 
 export const canViewLOA = (
   userRoles?: Nullable<UserRolesType[]>,
+  userAuthGroup?: Nullable<UserAuthGroupType>,
 ): boolean => {
-  return Boolean(
+  const allowedAuthGroups = [
+    USER_AUTH_GROUP.PPC_CLERK,
+    USER_AUTH_GROUP.CTPO,
+    USER_AUTH_GROUP.ENFORCEMENT_OFFICER,
+    // USER_AUTH_GROUP.TRAINEE,
+    USER_AUTH_GROUP.HQ_ADMINISTRATOR,
+    USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
+    USER_AUTH_GROUP.COMPANY_ADMINISTRATOR,
+    USER_AUTH_GROUP.PERMIT_APPLICANT,
+  ] as UserAuthGroupType[];
+
+  return (
+    userAuthGroup && allowedAuthGroups.includes(userAuthGroup)
+  ) || Boolean(
     DoesUserHaveRole(
       userRoles,
       ROLES.READ_LOA,
     ),
-  ) || canUpdateLOA(userRoles);
+  ) || canUpdateLOA(userRoles, userAuthGroup);
 };
 
 export const canViewSpecialAuthorizations = (
   userRoles?: Nullable<UserRolesType[]>,
+  userAuthGroup?: Nullable<UserAuthGroupType>,
 ): boolean => {
-  return canViewNoFeePermitsFlag(userRoles)
-    || canViewLCAFlag(userRoles)
-    || canViewLOA(userRoles)
+  const allowedAuthGroups = [
+    USER_AUTH_GROUP.PPC_CLERK,
+    USER_AUTH_GROUP.CTPO,
+    USER_AUTH_GROUP.ENFORCEMENT_OFFICER,
+    USER_AUTH_GROUP.FINANCE,
+    // USER_AUTH_GROUP.TRAINEE,
+    USER_AUTH_GROUP.HQ_ADMINISTRATOR,
+    USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
+    USER_AUTH_GROUP.COMPANY_ADMINISTRATOR,
+    USER_AUTH_GROUP.PERMIT_APPLICANT,
+  ] as UserAuthGroupType[];
+
+  return (
+    userAuthGroup && allowedAuthGroups.includes(userAuthGroup)
+  ) || canViewNoFeePermitsFlag(userRoles, userAuthGroup)
+    || canViewLCAFlag(userRoles, userAuthGroup)
+    || canViewLOA(userRoles, userAuthGroup)
     || Boolean(
       DoesUserHaveRole(
         userRoles,
         ROLES.READ_SPECIAL_AUTH,
       )
-    ) || true;//
+    );
 };
 
 /**
