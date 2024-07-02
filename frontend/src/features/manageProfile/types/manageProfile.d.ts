@@ -174,4 +174,5 @@ export const BCEID_PROFILE_TABS = {
   MY_INFORMATION: "MyInformationTab",
   USER_MANAGEMENT: "UserManagementTab",
   PAYMENT_INFORMATION: "PaymentInformationTab",
+  SPECIAL_AUTH: "SpecialAuthorizationsTab",
 } as const;

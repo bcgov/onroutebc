@@ -15,16 +15,15 @@ export const ManageSettingsDashboard = React.memo(() => {
     userRoles,
     companyId,
     idirUserDetails,
-    userDetails,
   } = useContext(OnRouteBCContext);
 
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
 
   const [hideSuspendTab, setHideSuspendTab] = useState<boolean>(false);
   const showSuspendTab = canViewSuspend(userRoles) && !hideSuspendTab;
-  const showSpecialAuth = canViewSpecialAuthorizations(
+  const showSpecialAuth = isStaffActingAsCompany && canViewSpecialAuthorizations(
     userRoles,
-    isStaffActingAsCompany ? idirUserDetails?.userAuthGroup : userDetails?.userAuthGroup,
+    idirUserDetails?.userAuthGroup,
   );
 
   const { state: stateFromNavigation } = useLocation();

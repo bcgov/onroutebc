@@ -4,7 +4,6 @@ import { AxiosError } from "axios";
 import React, { useContext, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { Navigate } from "react-router-dom";
-import { useAuth } from "react-oidc-context";
 
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { ROLES } from "../../../../common/authentication/types";
@@ -20,7 +19,8 @@ import { UserManagement } from "../../pages/UserManagement";
 import { BCEID_PROFILE_TABS } from "../../types/manageProfile.d";
 import { ERROR_ROUTES, PROFILE_ROUTES } from "../../../../routes/constants";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { isIDIR } from "../../../../common/authentication/auth-walls/BCeIDAuthWall";
+import { SpecialAuthorizations } from "../../../settings/pages/SpecialAuthorizations/SpecialAuthorizations";
+import { canViewSpecialAuthorizations } from "../../../settings/helpers/permissions";
 
 interface ProfileDashboardTab {
   label: string;
@@ -52,12 +52,21 @@ export const ManageProfilesDashboard = React.memo(() => {
   });
 
   const navigate = useNavigate();
-  const { userRoles } = useContext(OnRouteBCContext);
-  const { user } = useAuth();
+  const {
+    userRoles,
+    companyId,
+    idirUserDetails,
+    userDetails,
+  } = useContext(OnRouteBCContext);
+
   const populatedUserRoles = getDefaultRequiredVal([], userRoles);
-  const isIDIRUser = isIDIR(user?.profile?.identity_provider as string);
+  const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
   const isBCeIDAdmin = isBCeIDOrgAdmin(populatedUserRoles);
-  const shouldAllowUserManagement = isBCeIDAdmin || isIDIRUser;
+  const shouldAllowUserManagement = isBCeIDAdmin || isStaffActingAsCompany;
+  const showSpecialAuth = !isStaffActingAsCompany && canViewSpecialAuthorizations(
+    userRoles,
+    userDetails?.userAuthGroup,
+  );
 
   const { state: stateFromNavigation } = useLocation();
 
@@ -67,7 +76,7 @@ export const ManageProfilesDashboard = React.memo(() => {
       component: <CompanyInfo companyInfoData={companyInfoData} />,
       componentKey: BCEID_PROFILE_TABS.COMPANY_INFORMATION,
     },
-    !isIDIRUser ? {
+    !isStaffActingAsCompany ? {
       label: "My Information",
       component: <MyInfo />,
       componentKey: BCEID_PROFILE_TABS.MY_INFORMATION,
@@ -76,7 +85,16 @@ export const ManageProfilesDashboard = React.memo(() => {
       label: "User Management",
       component: <UserManagement />,
       componentKey: BCEID_PROFILE_TABS.USER_MANAGEMENT,
-    } : null
+    } : null,
+    showSpecialAuth && companyId ? {
+      label: "Special Authorizations",
+      component: (
+        <SpecialAuthorizations
+          companyId={companyId}
+        />
+      ),
+      componentKey: BCEID_PROFILE_TABS.SPECIAL_AUTH,
+    } : null,
   ].filter(tab => Boolean(tab)) as ProfileDashboardTab[];
 
   const getSelectedTabFromNavigation = (): number => {
