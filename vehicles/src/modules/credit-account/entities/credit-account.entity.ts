@@ -8,7 +8,10 @@ import {
 } from 'typeorm';
 
 import { AutoMap } from '@automapper/classes';
-import { CreditAccountStatusType } from '../../../common/enum/credit-account-status-type.enum';
+import {
+  CreditAccountStatus,
+  CreditAccountStatusType,
+} from '../../../common/enum/credit-account-status-type.enum';
 import { CreditAccountType } from '../../../common/enum/credit-account-type.enum';
 import { Base } from '../../common/entities/base.entity';
 import { Company } from '../../company-user-management/company/entities/company.entity';
@@ -39,7 +42,7 @@ export class CreditAccount extends Base {
   @AutoMap()
   @Column({
     type: 'simple-enum',
-    enum: CreditAccountStatusType,
+    enum: CreditAccountStatus,
     length: 10,
     name: 'CREDIT_ACCOUNT_STATUS_TYPE',
     nullable: false,
@@ -87,6 +90,7 @@ export class CreditAccount extends Base {
   @OneToMany(
     () => CreditAccountActivity,
     (creditAccountActivity) => creditAccountActivity.creditAccount,
+    { cascade: false },
   )
   public creditAccountActivities: CreditAccountActivity[];
 

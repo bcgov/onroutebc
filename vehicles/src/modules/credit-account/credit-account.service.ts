@@ -13,11 +13,16 @@ import {
   CreditAccountLimit,
   CreditAccountLimitType,
 } from '../../common/enum/credit-account-limit.enum';
-import { CreditAccountStatusType } from '../../common/enum/credit-account-status-type.enum';
+import {
+  CreditAccountStatus,
+  CreditAccountStatusType,
+  CreditAccountStatusValid,
+  CreditAccountStatusValidType,
+} from '../../common/enum/credit-account-status-type.enum';
 import { CreditAccountType } from '../../common/enum/credit-account-type.enum';
 import { CreditAccountUserType } from '../../common/enum/credit-accounts.enum';
-import { BadRequestExceptionDto } from '../../common/exception/badRequestException.dto';
 import {
+  getCreditAccountActivityType,
   isActiveCreditAccount,
   isClosedCreditAccount,
 } from '../../common/helper/credit-account.helper';
@@ -36,6 +41,8 @@ import { CreditAccount } from './entities/credit-account.entity';
 import { callDatabaseSequence } from '../../common/helper/database.helper';
 import { CreditAccountActivity } from './entities/credit-account-activity.entity';
 import { CreditAccountActivityType } from '../../common/enum/credit-account-activity-type.enum';
+import { User } from '../company-user-management/users/entities/user.entity';
+import { DataNotFoundException } from '../../common/exception/data-not-found.exception';
 
 /**
  * Service functions for credit account operations.
@@ -153,9 +160,9 @@ export class CreditAccountService {
     }
     let creditAccountStatusType: CreditAccountStatusType;
     if (siteCreated && siteContactCreated) {
-      creditAccountStatusType = CreditAccountStatusType.ACCOUNT_ACTIVE;
+      creditAccountStatusType = CreditAccountStatus.ACCOUNT_ACTIVE;
     } else {
-      creditAccountStatusType = CreditAccountStatusType.ACCOUNT_SETUP_FAIL;
+      creditAccountStatusType = CreditAccountStatus.ACCOUNT_SETUP_FAIL;
     }
 
     const savedCreditAccount = await this.creditAccountRepository.save({
@@ -179,7 +186,7 @@ export class CreditAccountService {
       updatedUserGuid: currentUser.userGUID,
     });
 
-    if (creditAccountStatusType === CreditAccountStatusType.ACCOUNT_ACTIVE) {
+    if (creditAccountStatusType === CreditAccountStatus.ACCOUNT_ACTIVE) {
       try {
         const savedActivity = await this.creditAccountActivityRepository.save({
           idirUser: { userGUID: currentUser.userGUID },
@@ -235,40 +242,48 @@ export class CreditAccountService {
 
   @LogAsyncMethodExecution()
   async getCreditAccount(currentUser: IUserJWT, companyId: number) {
+    //TODO handle where company is Credit Account User.
     const creditAccount = await this.creditAccountRepository.findOne({
       where: {
         company: { companyId },
       },
+      relations: {
+        company: true,
+        creditAccountUsers: { company: true },
+        creditAccountActivities: { idirUser: true },
+      },
     });
-    return this.classMapper.mapAsync(
+    if (!creditAccount) {
+      throw new DataNotFoundException();
+    }
+    creditAccount.creditAccountUsers =
+      creditAccount?.creditAccountUsers?.filter(
+        (creditAccountUser) => creditAccountUser.isActive,
+      );
+
+    const readCreditAccountDto = await this.classMapper.mapAsync(
       creditAccount,
       CreditAccount,
       ReadCreditAccountDto,
       {
         extraArgs: () => ({
-          userType: CreditAccountUserType.ACCOUNT_HOLDER,
-          companyId,
           creditBalance: 0,
           availableCredit: 0,
           creditLimit: 0,
         }),
       },
     );
-  }
 
-  @LogAsyncMethodExecution()
-  async close(currentUser: IUserJWT, companyId: number) {
-    return this.updateCreditAccountStatus(
-      { companyId, statusToUpdateTo: CreditAccountStatusType.ACCOUNT_CLOSED },
-      currentUser,
+    const mappedCreditAccountHolderInfo = await this.classMapper.mapAsync(
+      creditAccount?.company,
+      Company,
+      ReadCreditAccountUserDto,
     );
-  }
 
-  async putOnHold(currentUser: IUserJWT, companyId: number) {
-    return this.updateCreditAccountStatus(
-      { companyId, statusToUpdateTo: CreditAccountStatusType.ACCOUNT_ON_HOLD },
-      currentUser,
+    readCreditAccountDto?.creditAccountUsers?.unshift(
+      mappedCreditAccountHolderInfo,
     );
+    return readCreditAccountDto;
   }
 
   /**
@@ -293,48 +308,132 @@ export class CreditAccountService {
    * Updates the status of a credit account.
    *
    * This method changes the status of a specified credit account to a new status.
-   * The status is updated only if the current status is active. The method also updates
-   * the audit fields of the credit account with the information of the user who performed
-   * the update. If the update is successful, the method retrieves the updated credit
-   * account and returns it.
+   * It validates the new status and ensures the status transition is permissible.
+   * The method also updates the audit fields of the credit account with the information
+   * of the user who performed the update. If the update is successful, the method records
+   * the activity corresponding to the status change.
    *
    * @param {Object} params - The parameters for updating the credit account status.
-   * @param {number} params.companyId - The ID of the company associated with the credit account.
+   * @param {number} params.creditAccountHolderId - The ID of the holder of the credit account.
+   * @param {number} params.creditAccountId - The ID of the credit account.
    * @param {CreditAccountStatusType} params.statusToUpdateTo - The new status to update the credit account to.
+   * @param {string} params.comment - A comment detailing the reason for the status change.
    * @param {IUserJWT} currentUser - The current user performing the update.
    * @returns {Promise<ReadCreditAccountDto>} - The updated credit account data transfer object.
-   * @throws {BadRequestExceptionDto} - If the update fails (e.g., if the account is not in active status).
+   * @throws {BadRequestException} - If validation fails (e.g., invalid transitions or account not found).
    * @memberof CreditAccountService
    */
-  private async updateCreditAccountStatus(
-    {
-      companyId,
-      statusToUpdateTo,
-    }: { companyId: number; statusToUpdateTo: CreditAccountStatusType },
+  @LogAsyncMethodExecution()
+  public async updateCreditAccountStatus(
     currentUser: IUserJWT,
+    {
+      creditAccountHolderId,
+      creditAccountId,
+      statusToUpdateTo,
+      comment,
+    }: {
+      creditAccountHolderId: number;
+      creditAccountId: number;
+      statusToUpdateTo: CreditAccountStatusValidType;
+      comment: string;
+    },
   ): Promise<ReadCreditAccountDto> {
-    const { affected } = await this.creditAccountRepository
-      .createQueryBuilder('creditAccount')
-      .update()
-      .set({
-        creditAccountStatusType: statusToUpdateTo,
-        updatedUser: currentUser.userName,
-        updatedDateTime: new Date(),
-        updatedUserDirectory: currentUser.orbcUserDirectory,
-        updatedUserGuid: currentUser.userGUID,
-      })
-      .where('company.companyId = :companyId', {
-        companyId,
-      })
-      .andWhere('creditAccountStatusType = :creditAccountStatusType', {
-        creditAccountStatusType: CreditAccountStatusType.ACCOUNT_ACTIVE,
-      })
-      .execute();
-    if (affected === 1) {
-      return await this.getCreditAccount(currentUser, companyId);
-    } else {
-      throw new BadRequestExceptionDto();
+    // Retrieve the credit account using credit account ID and holder ID
+    const creditAccount = await this.findOneByCreditAccountIdAndAccountHolder(
+      creditAccountId,
+      creditAccountHolderId,
+    );
+
+    if (!creditAccount) {
+      // If no credit account is found, throw BadRequestException
+      throw new BadRequestException(
+        'Invalid CreditAccount/Company combination',
+      );
     }
+
+    if (statusToUpdateTo === creditAccount.creditAccountStatusType) {
+      throw new BadRequestException(
+        `Credit Account already in status: ${statusToUpdateTo}`,
+      );
+    }
+
+    if (
+      statusToUpdateTo === CreditAccountStatusValid.ACCOUNT_ON_HOLD &&
+      isClosedCreditAccount(creditAccount)
+    ) {
+      throw new BadRequestException(
+        'Cannot move a closed Credit Account to on hold',
+      );
+    }
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const currentDateTime: Date = new Date();
+      const { affected } = await queryRunner.manager.update(
+        CreditAccount,
+        { creditAccountId: creditAccountId },
+        {
+          creditAccountStatusType: statusToUpdateTo,
+          updatedUser: currentUser.userName,
+          updatedDateTime: currentDateTime,
+          updatedUserDirectory: currentUser.orbcUserDirectory,
+          updatedUserGuid: currentUser.userGUID,
+        },
+      );
+
+      if (affected === 1) {
+        if (statusToUpdateTo === CreditAccountStatusValid.ACCOUNT_CLOSED) {
+          await queryRunner.manager.update(
+            CreditAccountUser,
+            { creditAccount: { creditAccountId } },
+            {
+              isActive: false,
+              updatedUser: currentUser.userName,
+              updatedDateTime: currentDateTime,
+              updatedUserDirectory: currentUser.orbcUserDirectory,
+              updatedUserGuid: currentUser.userGUID,
+            },
+          );
+        }
+
+        const creditAccountActivityType = getCreditAccountActivityType(
+          creditAccount,
+          statusToUpdateTo,
+        );
+        const creditAccountActivity: CreditAccountActivity =
+          new CreditAccountActivity();
+
+        creditAccountActivity.creditAccount = creditAccount;
+        creditAccountActivity.idirUser = new User();
+        creditAccountActivity.idirUser.userGUID = currentUser.userGUID;
+        creditAccountActivity.creditAccountActivityType =
+          creditAccountActivityType;
+        creditAccountActivity.comment = comment;
+        creditAccountActivity.creditAccountActivityDateTime = currentDateTime;
+        creditAccountActivity.createdUser = currentUser.userName;
+        creditAccountActivity.createdUserGuid = currentUser.userGUID;
+        creditAccountActivity.createdUserDirectory =
+          currentUser.orbcUserDirectory;
+        creditAccountActivity.createdDateTime = currentDateTime;
+        creditAccountActivity.updatedUser = currentUser.userName;
+        creditAccountActivity.updatedUserGuid = currentUser.userGUID;
+        creditAccountActivity.updatedUserDirectory =
+          currentUser.orbcUserDirectory;
+        creditAccountActivity.updatedDateTime = currentDateTime;
+
+        await queryRunner.manager.save(creditAccountActivity);
+      }
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      this.logger.error(error);
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+    return await this.getCreditAccount(currentUser, creditAccountHolderId);
   }
 
   /**
@@ -395,11 +494,10 @@ export class CreditAccountService {
     createCreditAccountUserDto: CreateCreditAccountUserDto,
   ): Promise<ReadCreditAccountUserDto> {
     // Find the credit account by creditAccountId and creditAccountHolderId
-    const creditAccount =
-      await this.findOneCreditAccountByCreditAccountIdAndAccountHolder(
-        creditAccountId,
-        creditAccountHolderId,
-      );
+    const creditAccount = await this.findOneByCreditAccountIdAndAccountHolder(
+      creditAccountId,
+      creditAccountHolderId,
+    );
 
     if (!creditAccount) {
       // If no credit account is found, throw an exception
@@ -414,7 +512,7 @@ export class CreditAccountService {
 
     // Find if there is an existing credit account by companyId as holder
     const existingCreditAccountAsHolder =
-      await this.findOneCreditAccountByCreditAccountHolder(
+      await this.findOneByIdAndAccountHolder(
         createCreditAccountUserDto.companyId,
       );
 
@@ -548,11 +646,10 @@ export class CreditAccountService {
     deleteDto.success = [];
 
     // Retrieve the credit account using credit account ID and holder ID
-    const creditAccount =
-      await this.findOneCreditAccountByCreditAccountIdAndAccountHolder(
-        creditAccountId,
-        creditAccountHolderId,
-      );
+    const creditAccount = await this.findOneByCreditAccountIdAndAccountHolder(
+      creditAccountId,
+      creditAccountHolderId,
+    );
 
     if (!creditAccount) {
       // If no credit account is found, throw BadRequestException
@@ -563,7 +660,7 @@ export class CreditAccountService {
 
     // Retrieve all credit accounts associated with the given company IDs
     const creditAccountsByHolder =
-      await this.findManyCreditAccountByCreditAccountHolders(companyIds);
+      await this.findManyByCreditAccountHolders(companyIds);
 
     // Filter companies that are within the list of company IDs
     const companiesWithinIds = creditAccountsByHolder
@@ -666,7 +763,7 @@ export class CreditAccountService {
    * @returns {Promise<CreditAccount | null>} - The found credit account or null.
    */
   @LogAsyncMethodExecution()
-  public async findOneCreditAccountByCreditAccountIdAndAccountHolder(
+  public async findOneByCreditAccountIdAndAccountHolder(
     creditAccountId: number,
     creditAccountHolder: number,
   ) {
@@ -688,9 +785,7 @@ export class CreditAccountService {
    * @returns {Promise<CreditAccount | null>} - The found credit account or null.
    */
   @LogAsyncMethodExecution()
-  public async findOneCreditAccountByCreditAccountHolder(
-    creditAccountHolder: number,
-  ) {
+  public async findOneByIdAndAccountHolder(creditAccountHolder: number) {
     return await this.creditAccountRepository.findOne({
       where: {
         company: { companyId: creditAccountHolder },
@@ -708,9 +803,7 @@ export class CreditAccountService {
    * @returns {Promise<CreditAccount[]>} - The found credit accounts.
    */
   @LogAsyncMethodExecution()
-  public async findManyCreditAccountByCreditAccountHolders(
-    creditAccountHolder: number[],
-  ) {
+  public async findManyByCreditAccountHolders(creditAccountHolder: number[]) {
     return await this.creditAccountRepository
       .createQueryBuilder('creditAccount')
       .leftJoinAndSelect('creditAccount.company', 'company')
