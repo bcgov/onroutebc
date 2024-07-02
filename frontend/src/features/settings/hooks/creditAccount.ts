@@ -117,11 +117,42 @@ export const useCreateCreditAccountMutation = () => {
  * @returns Result of the add user to credit account action
  */
 export const useAddCreditAccountUserMutation = () => {
+  // const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { setSnackBar } = useContext(SnackBarContext);
 
   return useMutation({
-    mutationFn: addCreditAccountUser,
+    mutationFn: (data: {
+      creditAccountId: number;
+      userData: CreditAccountUser;
+    }) => addCreditAccountUser(data),
+    // TODO investigate this optimistic update (currently causes AddUserModal to display isExistingUser state)
+    // onMutate: async (data) => {
+    //   const { creditAccountId, userData } = data;
+
+    //   await queryClient.cancelQueries({
+    //     queryKey: ["credit-account", { creditAccountId }, "users"],
+    //   });
+
+    //   const snapshot = queryClient.getQueryData([
+    //     "credit-account",
+    //     { creditAccountId },
+    //     "users",
+    //   ]);
+
+    //   queryClient.setQueryData(
+    //     ["credit-account", { creditAccountId }, "users"],
+    //     (prevCreditAccountUsers: CreditAccountUser[]) =>
+    //       prevCreditAccountUsers ? [...prevCreditAccountUsers, userData] : [],
+    //   );
+
+    //   return () => {
+    //     queryClient.setQueryData(
+    //       ["credit-account", { creditAccountId }, "users"],
+    //       snapshot,
+    //     );
+    //   };
+    // },
     onSuccess: () => {
       setSnackBar({
         showSnackbar: true,

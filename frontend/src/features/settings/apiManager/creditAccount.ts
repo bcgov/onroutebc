@@ -164,18 +164,18 @@ export const getCreditAccountUsers = async (creditAccountId: number) => {
 /**
  * Add a user to credit account
  * @param {number} creditAccountId Id of the credit account we wish to add a user to
- * @param {number} companyId Id of the company who is being added to the credit account
+ * @param {CreditAccountUser} userData Id of the company who is being added to the credit account
  * @returns {CreditAccountUser}
  */
 export const addCreditAccountUser = async (data: {
   creditAccountId: number;
-  companyId: number;
+  userData: CreditAccountUser;
 }) => {
-  const { creditAccountId, companyId } = data;
+  const { creditAccountId, userData } = data;
   const response = await httpPUTRequest(
     CREDIT_ACCOUNT_API_ROUTES.ADD_CREDIT_ACCOUNT_USER(creditAccountId),
     {
-      companyId,
+      companyId: userData.companyId,
     },
   );
   return response;

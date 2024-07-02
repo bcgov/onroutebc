@@ -34,23 +34,19 @@ export const AddUserModal = ({
 
   const {
     creditAccount: { data: creditAccount },
-    creditAccountUsers: {
-      data: creditAccountUsers,
-      refetch: refetchCreditAccountUsers,
-    },
+    creditAccountUsers: { data: creditAccountUsers },
   } = useGetCreditAccountWithUsersQuery();
 
-  const addCreditAccountUserMutation = useAddCreditAccountUserMutation();
+  const { mutateAsync } = useAddCreditAccountUserMutation();
 
   const handleAddUser = async () => {
     if (creditAccount?.creditAccountId) {
-      const { status } = await addCreditAccountUserMutation.mutateAsync({
+      const { status } = await mutateAsync({
         creditAccountId: creditAccount.creditAccountId,
-        companyId: userData.companyId,
+        userData,
       });
 
       if (isActionSuccessful(status)) {
-        refetchCreditAccountUsers();
         onConfirm();
       }
     }
