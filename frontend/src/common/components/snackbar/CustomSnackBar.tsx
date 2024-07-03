@@ -7,6 +7,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
 
+export type SnackbarAlertType = "info" | "error" | "success";
+
 /**
  * Type for displaying snackbar (aka toast message) after an operation.
  */
@@ -14,7 +16,7 @@ export interface SnackBarOptions {
   showSnackbar: boolean;
   setShowSnackbar: React.Dispatch<React.SetStateAction<boolean>>;
   message: string;
-  alertType: "info" | "error" | "success";
+  alertType: SnackbarAlertType;
 }
 
 /**

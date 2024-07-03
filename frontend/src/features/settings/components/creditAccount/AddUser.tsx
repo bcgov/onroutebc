@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { AddUserModal } from "./AddUserModal";
 import {
   useGetCompanyQuery,
-  useGetCreditAccountWithUsersQuery,
+  useGetCreditAccountQuery,
 } from "../../hooks/creditAccount";
 import "./AddUser.scss";
 
@@ -21,9 +21,7 @@ export const AddUser = () => {
   const [clientNumber, setClientNumber] = useState<string>("");
 
   const { data, isLoading } = useGetCompanyQuery(clientNumber);
-  const {
-    creditAccountUsers: { refetch: refetchCreditAccountUsers },
-  } = useGetCreditAccountWithUsersQuery();
+  const { refetch: refetchCreditAccount } = useGetCreditAccountQuery();
 
   const formMethods = useForm<SearchClientFormData>({
     defaultValues: {
@@ -50,10 +48,10 @@ export const AddUser = () => {
     }
   }, [data]);
 
-  const handleAddUser = () => {
+  const confirmAddUser = () => {
     resetForm();
     setShowAddUserModal(false);
-    refetchCreditAccountUsers();
+    refetchCreditAccount();
   };
 
   return (
@@ -99,7 +97,7 @@ export const AddUser = () => {
         <AddUserModal
           showModal={showAddUserModal}
           onCancel={() => setShowAddUserModal(false)}
-          onConfirm={handleAddUser}
+          onConfirm={confirmAddUser}
           userData={{ ...data.items[0], isSuspended: false, userType: "USER" }}
         />
       ) : null}

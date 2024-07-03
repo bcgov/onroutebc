@@ -1,23 +1,16 @@
 import { MRT_ColumnDef } from "material-react-table";
 import { CompanyProfile } from "../../../features/manageProfile/types/manageProfile";
-import {
-  CloseActivityType,
-  HoldActivityType,
-  HOLD_ACTIVITY_TYPES,
-  CLOSE_ACTIVITY_TYPES,
-} from "./creditAccount";
+import { UPDATE_STATUS_ACTIONS, UpdateStatusActionType } from "./creditAccount";
 
-const getStatusCellValue = (
-  activityType: HoldActivityType | CloseActivityType,
-) => {
+const getStatusCellValue = (activityType: UpdateStatusActionType) => {
   switch (activityType) {
-    case HOLD_ACTIVITY_TYPES.HOLD_CREDIT_ACCOUNT:
+    case UPDATE_STATUS_ACTIONS.HOLD_CREDIT_ACCOUNT:
       return "Account Held";
-    case HOLD_ACTIVITY_TYPES.UNHOLD_CREDIT_ACCOUNT:
+    case UPDATE_STATUS_ACTIONS.UNHOLD_CREDIT_ACCOUNT:
       return "Account Unheld";
-    case CLOSE_ACTIVITY_TYPES.CLOSE_CREDIT_ACCOUNT:
+    case UPDATE_STATUS_ACTIONS.CLOSE_CREDIT_ACCOUNT:
       return "Account Closed";
-    case CLOSE_ACTIVITY_TYPES.REOPEN_CREDIT_ACCOUNT:
+    case UPDATE_STATUS_ACTIONS.REOPEN_CREDIT_ACCOUNT:
       return "Account Reopened";
   }
 };

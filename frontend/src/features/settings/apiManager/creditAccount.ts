@@ -2,10 +2,9 @@
 import {
   CreditAccountData,
   CreditAccountLimitType,
-  HoldData,
-  CloseData,
-  CLOSE_ACTIVITY_TYPES,
   CreditAccountHistoryData,
+  UpdateStatusData,
+  CreditAccountStatusType,
 } from "../types/creditAccount";
 import { CREDIT_ACCOUNT_API_ROUTES } from "../apiManager/endpoints/endpoints";
 import { CreditAccountUser } from "../types/creditAccount";
@@ -114,16 +113,10 @@ const mockCreateCreditAccountSuccess = async (
  * @returns Credit account information for the active company
  */
 export const getCreditAccount = async () => {
-  const response = await mockGetCreditAccountSuccess(
+  const response = await httpGETRequest(
     CREDIT_ACCOUNT_API_ROUTES.GET_CREDIT_ACCOUNT(),
   );
-
-  if (response.ok) {
-    const data = response.data;
-    return data;
-  } else {
-    throw new Error(`Request failed with status: ${response.status}`);
-  }
+  return response.data;
 };
 
 // create a method the gets (using httpGET...), then create a query hook that calls this method, and use that hook inside the page component
@@ -241,55 +234,25 @@ const mockRemoveCreditAccountUsersSuccess = async (
 };
 
 /**
- * Backend request to hold/unhold a credit account.
- * @param holdData Information about the hold action for the credit account
- * @returns Result of the hold action, or error on fail
+ * Backend request to hold/unhold/close/reopen a credit account.
+ * @param updateStatusData Information about the update action for the credit account
+ * @returns Result of the update action, or error on fail
  */
-export const holdCreditAccount = async (holdData: HoldData) => {
-  return await mockHoldCreditAccountSuccess(
-    CREDIT_ACCOUNT_API_ROUTES.HOLD_CREDIT_ACCOUNT(),
-    holdData,
+export const updateCreditAccountStatus = async (data: {
+  creditAccountId: number;
+  status: CreditAccountStatusType;
+  reason?: string;
+}) => {
+  const { creditAccountId, status, reason } = data;
+
+  const response = await httpPUTRequest(
+    CREDIT_ACCOUNT_API_ROUTES.UPDATE_ACCOUNT_STATUS(creditAccountId),
+    {
+      creditAccountStatusType: status,
+      comment: reason,
+    },
   );
-};
-
-const mockHoldCreditAccountSuccess = async (
-  url: string,
-  holdData: HoldData,
-): Promise<CreditAccountResponse> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        ok: true,
-        status: 200,
-      });
-    }, 1000);
-  });
-};
-
-/**
- * Backend request to close/reopen a credit account.
- * @param closeData Information about the close action for the credit account
- * @returns Result of the close action, or error on fail
- */
-export const closeCreditAccount = async (closeData: CloseData) => {
-  return await mockCloseCreditAccountSuccess(
-    CREDIT_ACCOUNT_API_ROUTES.CLOSE_CREDIT_ACCOUNT(),
-    closeData,
-  );
-};
-
-const mockCloseCreditAccountSuccess = async (
-  url: string,
-  closeData: CloseData,
-): Promise<CreditAccountResponse> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        ok: true,
-        status: 200,
-      });
-    }, 1000);
-  });
+  return response;
 };
 
 /**
@@ -316,7 +279,7 @@ const mockGetCreditAccountHistorySuccess = async (
         data: [
           {
             activityId: "A1",
-            activityType: CLOSE_ACTIVITY_TYPES.CLOSE_CREDIT_ACCOUNT,
+            activityType: "ONHOLD",
             activityDateTime: "Jan. 16, 2024, 10:14 am PDT",
             IDIR: "RFARREL",
             reason:
@@ -324,7 +287,7 @@ const mockGetCreditAccountHistorySuccess = async (
           },
           {
             activityId: "A2",
-            activityType: CLOSE_ACTIVITY_TYPES.REOPEN_CREDIT_ACCOUNT,
+            activityType: "ACTIVE",
             activityDateTime: "Jan. 18, 2023, 9:07 am PDT",
             IDIR: "RFARREL",
             reason: "",

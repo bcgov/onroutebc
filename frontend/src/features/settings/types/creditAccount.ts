@@ -43,8 +43,16 @@ export const CREDIT_ACCOUNT_LIMIT_CHOOSE_FROM_OPTIONS = [
 ];
 
 export type CreditAccountType = "SECURED" | "UNSECURED" | "PREPAID";
-export type CreditAccountStatusType = "ACTIVE" | "ON HOLD" | "CLOSED";
+export type CreditAccountStatusType = "ACTIVE" | "ONHOLD" | "CLOSED";
 export type CreditAccountUserType = "HOLDER" | "USER";
+
+export const CreditAccountStatusDisplayValues: {
+  [key in CreditAccountStatusType]: string;
+} = {
+  ACTIVE: "Active",
+  ONHOLD: "On Hold",
+  CLOSED: "Closed",
+};
 
 export interface CreditAccountData {
   availableCredit: string;
@@ -72,35 +80,24 @@ export interface CreditAccountUser
   userType: CreditAccountUserType;
 }
 
-export const HOLD_ACTIVITY_TYPES = {
+export const UPDATE_STATUS_ACTIONS = {
   HOLD_CREDIT_ACCOUNT: "HOLD",
   UNHOLD_CREDIT_ACCOUNT: "UNHOLD",
-};
-
-export type HoldActivityType =
-  (typeof HOLD_ACTIVITY_TYPES)[keyof typeof HOLD_ACTIVITY_TYPES];
-
-export interface HoldData {
-  reason?: string;
-  holdActivityType: HoldActivityType;
-}
-
-export const CLOSE_ACTIVITY_TYPES = {
   CLOSE_CREDIT_ACCOUNT: "CLOSE",
   REOPEN_CREDIT_ACCOUNT: "REOPEN",
 };
 
-export type CloseActivityType =
-  (typeof CLOSE_ACTIVITY_TYPES)[keyof typeof CLOSE_ACTIVITY_TYPES];
+export type UpdateStatusActionType =
+  (typeof UPDATE_STATUS_ACTIONS)[keyof typeof UPDATE_STATUS_ACTIONS];
 
-export interface CloseData {
+export interface UpdateStatusData {
+  updateStatusAction: UpdateStatusActionType;
   reason?: string;
-  closeActivityType: CloseActivityType;
 }
 
 export interface CreditAccountHistoryData {
   activityId: string;
-  activityType: HoldActivityType | CloseActivityType;
+  activityType: UpdateStatusActionType;
   activityDateTime?: Nullable<string>;
   IDIR: string;
   reason?: string;

@@ -15,7 +15,7 @@ export const CREDIT_ACCOUNT_API_ROUTES = {
   CREATE_CREDIT_ACCOUNT: () =>
     `${CREDIT_ACCOUNT_API_BASE}/${getCompanyIdFromSession()}/credit-account`,
   GET_CREDIT_ACCOUNT: () =>
-    `${CREDIT_ACCOUNT_API_BASE}/${getCompanyIdFromSession()}/credit-account/get-credit-account`,
+    `${CREDIT_ACCOUNT_API_BASE}/${getCompanyIdFromSession()}/credit-account`,
   GET_COMPANY: (clientNumber: string) =>
     `${CREDIT_ACCOUNT_API_BASE}/companies?page=1&take=1&clientNumber=${clientNumber}`,
   GET_CREDIT_ACCOUNT_USERS: (creditAccountId: number) =>
@@ -24,8 +24,8 @@ export const CREDIT_ACCOUNT_API_ROUTES = {
     `${CREDIT_ACCOUNT_API_BASE}/${getCompanyIdFromSession()}/credit-account/${creditAccountId}/credit-account-user`,
   REMOVE_CREDIT_ACCOUNT_USER: (creditAccountId: number) =>
     `${CREDIT_ACCOUNT_API_BASE}/${getCompanyIdFromSession()}/credit-account/${creditAccountId}/credit-account-user`,
-  HOLD_CREDIT_ACCOUNT: () =>
-    `${CREDIT_ACCOUNT_API_BASE}/${getCompanyIdFromSession()}/credit-account/hold-credit-account`,
+  UPDATE_ACCOUNT_STATUS: (creditAccountId: number) =>
+    `${CREDIT_ACCOUNT_API_BASE}/${getCompanyIdFromSession()}/credit-account/${creditAccountId}/status`,
   CLOSE_CREDIT_ACCOUNT: () =>
     `${CREDIT_ACCOUNT_API_BASE}/${getCompanyIdFromSession()}/credit-account/close-credit-account`,
   GET_HISTORY: () =>

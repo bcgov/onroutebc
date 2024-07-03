@@ -1,10 +1,11 @@
 import { Button, Dialog } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// eslint-disable-next-line
 import { faPlusCircle, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FormProvider, useForm } from "react-hook-form";
 import {
   useAddCreditAccountUserMutation,
-  useGetCreditAccountWithUsersQuery,
+  useGetCreditAccountQuery,
 } from "../../hooks/creditAccount";
 import { CreditAccountUser } from "../../types/creditAccount";
 import "./AddUserModal.scss";
@@ -32,10 +33,9 @@ export const AddUserModal = ({
     return status === 200;
   };
 
-  const {
-    creditAccount: { data: creditAccount },
-    creditAccountUsers: { data: creditAccountUsers },
-  } = useGetCreditAccountWithUsersQuery();
+  const { data: creditAccount } = useGetCreditAccountQuery();
+
+  const { creditAccountUsers } = creditAccount;
 
   const { mutateAsync } = useAddCreditAccountUserMutation();
 
@@ -94,7 +94,8 @@ export const AddUserModal = ({
               <dd className="add-user-modal__value">{userData.clientNumber}</dd>
             </div>
           </dl>
-          {(isAccountHolder || isExistingUser) && (
+          {/* {(isAccountHolder || isExistingUser) && (
+            TODO enable this feature
             <div className="add-user-modal__info info">
               <div className="info__header">
                 <div className="info__icon">
@@ -108,27 +109,24 @@ export const AddUserModal = ({
                 <div className="add-user-modal__item">
                   <dt className="add-user-modal__key">Company Name</dt>
                   <dt className="add-user-modal__value">
-                    {/* TODO change this to represent the actual credit account that the user belongs to */}
                     {creditAccountUsers[0]?.legalName}
                   </dt>
                 </div>
                 <div className="add-user-modal__item">
                   <dt className="add-user-modal__key">onRouteBC</dt>
                   <dt className="add-user-modal__value">
-                    {/* TODO change this to represent the actual credit account that the user belongs to */}
                     {creditAccountUsers[0]?.clientNumber}
                   </dt>
                 </div>
                 <div className="add-user-modal__item">
                   <dt className="add-user-modal__key">Credit Account No.</dt>
                   <dt className="add-user-modal__value">
-                    {/* TODO change this to represent the actual credit account that the user belongs to */}
                     {creditAccount?.creditAccountNumber}
                   </dt>
                 </div>
               </div>
             </div>
-          )}
+          )} */}
         </div>
 
         <div className="add-user-modal__footer">

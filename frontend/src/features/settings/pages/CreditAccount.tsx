@@ -87,9 +87,8 @@ export const CreditAccount = ({ companyId }: { companyId: number }) => {
                 <Typography variant="h3" className="overview__title">
                   Credit Account No: {creditAccount.creditAccountNumber}
                 </Typography>
-                {creditAccount.creditAccountStatusType !== "ACTIVE" && (
-                  <StatusChip status={creditAccount.creditAccountStatusType} />
-                )}
+
+                <StatusChip status={creditAccount.creditAccountStatusType} />
               </Box>
               <Typography className="overview__user-designation">
                 {creditAccount.companyId === companyId

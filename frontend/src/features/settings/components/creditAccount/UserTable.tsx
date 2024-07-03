@@ -14,24 +14,24 @@ import {
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
-import { useGetCreditAccountWithUsersQuery } from "../../hooks/creditAccount";
 import { CreditAccountUserColumnsDefinition } from "../../types/CreditAccountUserColumns";
 import { canUpdateCreditAccount } from "../../helpers/permissions";
 import { CreditAccountUser } from "../../types/creditAccount";
 import "./UserTable.scss";
+import { useGetCreditAccountQuery } from "../../hooks/creditAccount";
 
 /**
  * User Management Component for Credit Accounts.
  */
 export const UserTable = () => {
   const {
-    creditAccountUsers: {
-      data: creditAccountUsers,
-      isError,
-      isLoading,
-      refetch,
-    },
-  } = useGetCreditAccountWithUsersQuery();
+    data: creditAccount,
+    isError,
+    isLoading,
+    refetch,
+  } = useGetCreditAccountQuery();
+
+  const { creditAccountUsers } = creditAccount;
 
   const { userRoles } = useContext(OnRouteBCContext);
 

@@ -8,35 +8,34 @@ import {
 } from "@mui/material";
 import {
   useGetCreditAccountQuery,
-  useHoldCreditAccountMutation,
-  useCloseCreditAccountMutation,
+  useUpdateCreditAccountStatusMutation,
 } from "../../hooks/creditAccount";
 import {
-  HOLD_ACTIVITY_TYPES,
-  CLOSE_ACTIVITY_TYPES,
+  UPDATE_STATUS_ACTIONS,
+  UpdateStatusData,
 } from "../../types/creditAccount";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { useContext, useState, MouseEvent } from "react";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { canUpdateCreditAccount } from "../../helpers/permissions";
-import { SnackBarContext } from "../../../../App";
 import { HoldCreditAccountModal } from "./HoldCreditAccountModal";
 import { CloseCreditAccountModal } from "./CloseCreditAccountModal";
 import "./AccountDetails.scss";
 
 export const AccountDetails = () => {
   const { userRoles } = useContext(OnRouteBCContext);
-  const { setSnackBar } = useContext(SnackBarContext);
-  const { data: creditAccount } = useGetCreditAccountQuery();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [isHoldDialogOpen, setIsHoldDialogOpen] = useState<boolean>(false);
-  const [isCloseDialogOpen, setIsCloseDialogOpen] = useState<boolean>(false);
-
+  const [showHoldCreditAccountModal, setShowHoldCreditAccountModal] =
+    useState<boolean>(false);
+  const [showCloseCreditAccountModal, setShowCloseCreditAccountModal] =
+    useState<boolean>(false);
   const isMenuOpen = Boolean(anchorEl);
 
-  const holdCreditAccountMutation = useHoldCreditAccountMutation();
-  const closeCreditAccountMutation = useCloseCreditAccountMutation();
+  const { data: creditAccount, refetch: refetchCreditAccount } =
+    useGetCreditAccountQuery();
+  const updateCreditAccountStatusMutation =
+    useUpdateCreditAccountStatusMutation();
 
   const toSentenceCase = (str: string): string => {
     if (!str) return str;
@@ -75,72 +74,19 @@ export const AccountDetails = () => {
     return status === 200;
   };
 
-  const handleHoldCreditAccount = async (reason: string) => {
-    const holdResult = await holdCreditAccountMutation.mutateAsync({
-      holdActivityType: HOLD_ACTIVITY_TYPES.HOLD_CREDIT_ACCOUNT,
-      reason,
+  const handleUpdateCreditAccountStatus = async (
+    updateStatusData: UpdateStatusData,
+  ) => {
+    const { status } = await updateCreditAccountStatusMutation.mutateAsync({
+      creditAccountId: creditAccount.creditAccountId,
+      updateStatusData,
     });
 
-    if (isActionSuccessful(holdResult.status)) {
-      setSnackBar({
-        showSnackbar: true,
-        setShowSnackbar: () => true,
-        alertType: "info",
-        message: "Credit Account On Hold",
-      });
+    if (isActionSuccessful(status)) {
+      setShowHoldCreditAccountModal(false);
+      setShowCloseCreditAccountModal(false);
       handleMenuClose();
-    }
-    setIsHoldDialogOpen(false);
-  };
-
-  const handleUnholdCreditAccount = async () => {
-    const unholdResult = await holdCreditAccountMutation.mutateAsync({
-      holdActivityType: HOLD_ACTIVITY_TYPES.UNHOLD_CREDIT_ACCOUNT,
-    });
-
-    if (isActionSuccessful(unholdResult.status)) {
-      setSnackBar({
-        showSnackbar: true,
-        setShowSnackbar: () => true,
-        alertType: "success",
-        message: "Hold Removed",
-      });
-      handleMenuClose();
-    }
-  };
-
-  const handleCloseCreditAccount = async (reason: string) => {
-    const closeResult = await closeCreditAccountMutation.mutateAsync({
-      closeActivityType: CLOSE_ACTIVITY_TYPES.CLOSE_CREDIT_ACCOUNT,
-      reason,
-    });
-
-    if (isActionSuccessful(closeResult.status)) {
-      setSnackBar({
-        showSnackbar: true,
-        setShowSnackbar: () => true,
-        alertType: "info",
-        message: "Credit Account Closed",
-      });
-      handleMenuClose();
-    }
-    // refetchCreditAccountHistory();
-    setIsCloseDialogOpen(false);
-  };
-
-  const handleReopenCreditAccount = async () => {
-    const reopenResult = await closeCreditAccountMutation.mutateAsync({
-      closeActivityType: CLOSE_ACTIVITY_TYPES.REOPEN_CREDIT_ACCOUNT,
-    });
-
-    if (isActionSuccessful(reopenResult.status)) {
-      setSnackBar({
-        showSnackbar: true,
-        setShowSnackbar: () => true,
-        alertType: "success",
-        message: "Credit Account Reopened",
-      });
-      handleMenuClose();
+      refetchCreditAccount();
     }
   };
 
@@ -181,30 +127,42 @@ export const AccountDetails = () => {
               >
                 {creditAccount?.creditAccountStatusType === "ACTIVE" && (
                   <MenuItem
-                    onClick={() => setIsHoldDialogOpen(true)}
-                    disabled={holdCreditAccountMutation.isPending}
+                    onClick={() => setShowHoldCreditAccountModal(true)}
+                    disabled={updateCreditAccountStatusMutation.isPending}
                   >
                     Put On Hold
                   </MenuItem>
                 )}
-                {creditAccount?.creditAccountStatusType === "ON HOLD" && (
+                {creditAccount?.creditAccountStatusType === "ONHOLD" && (
                   <MenuItem
-                    onClick={handleUnholdCreditAccount}
-                    disabled={holdCreditAccountMutation.isPending}
+                    onClick={() =>
+                      handleUpdateCreditAccountStatus({
+                        updateStatusAction:
+                          UPDATE_STATUS_ACTIONS.UNHOLD_CREDIT_ACCOUNT,
+                      })
+                    }
+                    disabled={updateCreditAccountStatusMutation.isPending}
                   >
                     Remove Hold
                   </MenuItem>
                 )}
                 {(creditAccount?.creditAccountStatusType === "ACTIVE" ||
-                  creditAccount?.creditAccountStatusType === "ON HOLD") && (
-                  <MenuItem onClick={() => setIsCloseDialogOpen(true)}>
+                  creditAccount?.creditAccountStatusType === "ONHOLD") && (
+                  <MenuItem
+                    onClick={() => setShowCloseCreditAccountModal(true)}
+                  >
                     Close Credit Account
                   </MenuItem>
                 )}
                 {creditAccount?.creditAccountStatusType === "CLOSED" && (
                   <MenuItem
-                    onClick={handleReopenCreditAccount}
-                    disabled={closeCreditAccountMutation.isPending}
+                    onClick={() =>
+                      handleUpdateCreditAccountStatus({
+                        updateStatusAction:
+                          UPDATE_STATUS_ACTIONS.REOPEN_CREDIT_ACCOUNT,
+                      })
+                    }
+                    disabled={updateCreditAccountStatusMutation.isPending}
                   >
                     Reopen Credit Account
                   </MenuItem>
@@ -237,18 +195,18 @@ export const AccountDetails = () => {
           </Box>
         </Box>
       </Box>
-      {isHoldDialogOpen && (
+      {showHoldCreditAccountModal && (
         <HoldCreditAccountModal
-          showModal={isHoldDialogOpen}
-          onCancel={() => setIsHoldDialogOpen(false)}
-          onConfirm={handleHoldCreditAccount}
+          showModal={showHoldCreditAccountModal}
+          onCancel={() => setShowHoldCreditAccountModal(false)}
+          onConfirm={handleUpdateCreditAccountStatus}
         />
       )}
-      {isCloseDialogOpen && (
+      {showCloseCreditAccountModal && (
         <CloseCreditAccountModal
-          showModal={isCloseDialogOpen}
-          onCancel={() => setIsCloseDialogOpen(false)}
-          onConfirm={handleCloseCreditAccount}
+          showModal={showCloseCreditAccountModal}
+          onCancel={() => setShowCloseCreditAccountModal(false)}
+          onConfirm={handleUpdateCreditAccountStatus}
         />
       )}
     </div>

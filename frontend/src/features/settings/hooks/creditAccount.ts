@@ -1,20 +1,29 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   addCreditAccountUser,
   createCreditAccount,
   getCreditAccount,
   removeCreditAccountUsers,
-  holdCreditAccount,
-  closeCreditAccount,
   getCreditAccountHistory,
   getCreditAccountUsers,
+  updateCreditAccountStatus,
 } from "../apiManager/creditAccount";
 import { getCompanyDataBySearch } from "../../idir/search/api/idirSearch";
 import { useNavigate } from "react-router-dom";
 import { ERROR_ROUTES } from "../../../routes/constants";
 import { SnackBarContext } from "../../../App";
 import { useContext } from "react";
-import { CreditAccountUser } from "../types/creditAccount";
+import {
+  CreditAccountData,
+  CreditAccountStatusType,
+  CreditAccountUser,
+  UPDATE_STATUS_ACTIONS,
+  UpdateStatusActionType,
+  UpdateStatusData,
+} from "../types/creditAccount";
+import { getCompanyIdFromSession } from "../../../common/apiManager/httpRequestHandler";
+import { SnackbarAlertType } from "../../../common/components/snackbar/CustomSnackBar";
 
 /**
  * Hook to fetch the company credit account details.
@@ -22,8 +31,9 @@ import { CreditAccountUser } from "../types/creditAccount";
  */
 export const useGetCreditAccountQuery = () => {
   return useQuery({
-    queryKey: ["credit-account"],
-    queryFn: () => getCreditAccount(),
+    queryKey: ["credit-account", { companyId: getCompanyIdFromSession() }],
+    queryFn: getCreditAccount,
+    // retry: false,
   });
 };
 
@@ -33,18 +43,13 @@ export const useGetCreditAccountQuery = () => {
  */
 export const useGetCreditAccountUsersQuery = (creditAccountId: number) => {
   return useQuery({
-    queryKey: ["credit-account", { creditAccountId }, "users"],
+    queryKey: [
+      "credit-account",
+      { companyId: getCompanyIdFromSession() },
+      "users",
+    ],
     queryFn: () => getCreditAccountUsers(creditAccountId),
   });
-};
-
-export const useGetCreditAccountWithUsersQuery = () => {
-  const creditAccount = useGetCreditAccountQuery();
-  const creditAccountUsers = useGetCreditAccountUsersQuery(
-    // @ts-expect-error temporary solution to getting credit account users whilst the getCreditAccount endpoint is being built
-    creditAccount?.data?.creditAccountId,
-  );
-  return { creditAccount, creditAccountUsers };
 };
 
 /**
@@ -53,7 +58,11 @@ export const useGetCreditAccountWithUsersQuery = () => {
  */
 export const useCreditAccountHistoryQuery = () => {
   return useQuery({
-    queryKey: ["credit-account", "history"],
+    queryKey: [
+      "credit-account",
+      { companyId: getCompanyIdFromSession() },
+      "history",
+    ],
     queryFn: () => getCreditAccountHistory(),
     retry: false,
     refetchOnMount: "always",
@@ -97,18 +106,21 @@ export const useCreateCreditAccountMutation = () => {
   return useMutation({
     mutationFn: createCreditAccount,
     onSuccess: (response) => {
-      queryClient.setQueryData(["credit-account"], response.data);
+      queryClient.setQueryData(
+        ["credit-account", { companyId: getCompanyIdFromSession() }],
+        response.data,
+      );
       setSnackBar({
         showSnackbar: true,
         setShowSnackbar: () => true,
         message: "Credit Account Added",
         alertType: "success",
       });
+      queryClient.invalidateQueries({
+        queryKey: ["credit-account", { companyId: getCompanyIdFromSession() }],
+      });
     },
     onError: () => navigate(ERROR_ROUTES.UNEXPECTED),
-    // onSettled: () => {
-    //   queryClient.invalidateQueries({ queryKey: ["credit-account"] });
-    // },
   });
 };
 
@@ -127,8 +139,8 @@ export const useAddCreditAccountUserMutation = () => {
       userData: CreditAccountUser;
     }) => addCreditAccountUser(data),
     // TODO investigate this optimistic update (currently causes AddUserModal to display isExistingUser state)
-    // onMutate: async (data) => {
-    //   const { creditAccountId, userData } = data;
+    // onMutate: async (variables) => {
+    //   const { creditAccountId, userData } = variables;
 
     //   await queryClient.cancelQueries({
     //     queryKey: ["credit-account", { creditAccountId }, "users"],
@@ -178,23 +190,27 @@ export const useRemoveCreditAccountUsersMutation = (data: {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { setSnackBar } = useContext(SnackBarContext);
-  const { creditAccountId, companyIds } = data;
+  const { companyIds } = data;
 
   return useMutation({
     mutationFn: () => removeCreditAccountUsers(data),
     onMutate: async () => {
       await queryClient.cancelQueries({
-        queryKey: ["credit-account", { creditAccountId }, "users"],
+        queryKey: [
+          "credit-account",
+          { companyId: getCompanyIdFromSession() },
+          "users",
+        ],
       });
 
       const snapshot = queryClient.getQueryData([
         "credit-account",
-        { creditAccountId },
+        { companyId: getCompanyIdFromSession() },
         "users",
       ]);
 
       queryClient.setQueryData(
-        ["credit-account", { creditAccountId }, "users"],
+        ["credit-account", { companyId: getCompanyIdFromSession() }, "users"],
         (prevCreditAccountUsers: CreditAccountUser[]) =>
           prevCreditAccountUsers
             ? prevCreditAccountUsers.filter(
@@ -219,7 +235,7 @@ export const useRemoveCreditAccountUsersMutation = (data: {
 
       return () => {
         queryClient.setQueryData(
-          ["credit-account", { creditAccountId }, "users"],
+          ["credit-account", { companyId: getCompanyIdFromSession() }, "users"],
           snapshot,
         );
       };
@@ -238,7 +254,11 @@ export const useRemoveCreditAccountUsersMutation = (data: {
     },
     onSettled: () => {
       return queryClient.invalidateQueries({
-        queryKey: ["credit-account", { creditAccountId }, "users"],
+        queryKey: [
+          "credit-account",
+          { companyId: getCompanyIdFromSession() },
+          "users",
+        ],
       });
     },
   });
@@ -248,22 +268,84 @@ export const useRemoveCreditAccountUsersMutation = (data: {
  * Hook to hold/unhold a credit account.
  * @returns Result of the hold credit account action
  */
-export const useHoldCreditAccountMutation = () => {
+export const useUpdateCreditAccountStatusMutation = () => {
   const navigate = useNavigate();
-  return useMutation({
-    mutationFn: holdCreditAccount,
-    onError: () => navigate(ERROR_ROUTES.UNEXPECTED),
-  });
-};
+  const { setSnackBar } = useContext(SnackBarContext);
 
-/**
- * Hook to close/reopen a credit account.
- * @returns Result of the close credit account action
- */
-export const useCloseCreditAccountMutation = () => {
-  const navigate = useNavigate();
   return useMutation({
-    mutationFn: closeCreditAccount,
-    onError: () => navigate(ERROR_ROUTES.UNEXPECTED),
+    mutationFn: (data: {
+      creditAccountId: number;
+      updateStatusData: UpdateStatusData;
+    }) => {
+      const {
+        creditAccountId,
+        updateStatusData: { updateStatusAction, reason },
+      } = data;
+
+      let status: CreditAccountStatusType;
+
+      switch (updateStatusAction) {
+        case UPDATE_STATUS_ACTIONS.HOLD_CREDIT_ACCOUNT:
+          status = "ONHOLD";
+          break;
+        case UPDATE_STATUS_ACTIONS.CLOSE_CREDIT_ACCOUNT:
+          status = "CLOSED";
+          break;
+        case UPDATE_STATUS_ACTIONS.UNHOLD_CREDIT_ACCOUNT:
+          status = "ACTIVE";
+          break;
+        case UPDATE_STATUS_ACTIONS.REOPEN_CREDIT_ACCOUNT:
+          status = "ACTIVE";
+          break;
+        default:
+          status = "ACTIVE";
+          break;
+      }
+      return updateCreditAccountStatus({ creditAccountId, status, reason });
+    },
+    onSuccess: (
+      _data,
+      variables: {
+        creditAccountId: number;
+        updateStatusData: UpdateStatusData;
+      },
+    ) => {
+      const updateStatusAction = variables.updateStatusData.updateStatusAction;
+
+      let alertType: SnackbarAlertType;
+      let message: string;
+
+      switch (updateStatusAction) {
+        case UPDATE_STATUS_ACTIONS.HOLD_CREDIT_ACCOUNT:
+          alertType = "info";
+          message = "Credit Account On Hold";
+          break;
+        case UPDATE_STATUS_ACTIONS.CLOSE_CREDIT_ACCOUNT:
+          alertType = "info";
+          message = "Credit Account Closed";
+          break;
+        case UPDATE_STATUS_ACTIONS.UNHOLD_CREDIT_ACCOUNT:
+          alertType = "success";
+          message = "Hold Removed";
+          break;
+        case UPDATE_STATUS_ACTIONS.REOPEN_CREDIT_ACCOUNT:
+          alertType = "success";
+          message = "Credit Account Reopened";
+          break;
+        default:
+          alertType = "success";
+          message = "Credit Account Active";
+      }
+
+      setSnackBar({
+        showSnackbar: true,
+        setShowSnackbar: () => true,
+        alertType: alertType,
+        message: message,
+      });
+    },
+    onError: () => {
+      navigate(ERROR_ROUTES.UNEXPECTED);
+    },
   });
 };

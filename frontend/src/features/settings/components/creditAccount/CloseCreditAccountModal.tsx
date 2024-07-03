@@ -5,6 +5,10 @@ import { FormProvider, useForm } from "react-hook-form";
 import { requiredMessage } from "../../../../common/helpers/validationMessages";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
 import "./CloseCreditAccountModal.scss";
+import {
+  UPDATE_STATUS_ACTIONS,
+  UpdateStatusData,
+} from "../../types/creditAccount";
 
 export const CloseCreditAccountModal = ({
   showModal,
@@ -13,7 +17,7 @@ export const CloseCreditAccountModal = ({
 }: {
   showModal: boolean;
   onCancel: () => void;
-  onConfirm: (comment: string) => void;
+  onConfirm: (updateStatusData: UpdateStatusData) => void;
 }) => {
   const formMethods = useForm<{ comment: string }>({
     defaultValues: {
@@ -28,7 +32,10 @@ export const CloseCreditAccountModal = ({
 
   const handleCloseAccount = () => {
     const { comment } = getValues();
-    onConfirm(comment);
+    onConfirm({
+      updateStatusAction: UPDATE_STATUS_ACTIONS.CLOSE_CREDIT_ACCOUNT,
+      reason: comment,
+    });
   };
 
   const closeAccountCommentRules = {

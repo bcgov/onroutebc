@@ -5,6 +5,10 @@ import { FormProvider, useForm } from "react-hook-form";
 import { requiredMessage } from "../../../../common/helpers/validationMessages";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
 import "./HoldCreditAccountModal.scss";
+import {
+  UPDATE_STATUS_ACTIONS,
+  UpdateStatusData,
+} from "../../types/creditAccount";
 
 export const HoldCreditAccountModal = ({
   showModal,
@@ -13,7 +17,7 @@ export const HoldCreditAccountModal = ({
 }: {
   showModal: boolean;
   onCancel: () => void;
-  onConfirm: (comment: string) => void;
+  onConfirm: (updateStatusData: UpdateStatusData) => void;
 }) => {
   const formMethods = useForm<{ comment: string }>({
     defaultValues: {
@@ -26,9 +30,12 @@ export const HoldCreditAccountModal = ({
 
   const handleCancel = () => onCancel();
 
-  const handleHoldAccount = () => {
+  const handleHoldAccount = async () => {
     const { comment } = getValues();
-    onConfirm(comment);
+    onConfirm({
+      updateStatusAction: UPDATE_STATUS_ACTIONS.HOLD_CREDIT_ACCOUNT,
+      reason: comment,
+    });
   };
 
   const holdAccountCommentRules = {
