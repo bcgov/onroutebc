@@ -24,15 +24,18 @@ import {
 export const LOAList = ({
   loas,
   isActive,
+  allowEditLOA,
   onEdit,
   onDelete,
 }: {
   loas: LOA[];
   isActive: boolean;
+  allowEditLOA: boolean;
   onEdit: (loaNumber: string) => void;
   onDelete?: (loaNumber: string) => void;
 }) => {
   const handleEditLOA = (loaNumber: string) => {
+    if (!allowEditLOA) return;
     onEdit(loaNumber);
   };
 
@@ -47,13 +50,15 @@ export const LOAList = ({
           props: { cell: any; row: any }
         ) => {
           const loaNumber = `${props.row.original.loaNumber}`;
-          return (
+          return allowEditLOA ? (
             <CustomActionLink
               className="loa-list__link loa-list__link--edit-loa"
               onClick={() => handleEditLOA(loaNumber)}
             >
               {loaNumber}
             </CustomActionLink>
+          ) : (
+            <>{loaNumber}</>
           );
         },
         accessorKey: "loaNumber",
@@ -135,7 +140,7 @@ export const LOAList = ({
         enableColumnActions: false,
       },
     ],
-    [],
+    [allowEditLOA],
   );
 
   const table = useMaterialReactTable({
@@ -149,7 +154,7 @@ export const LOAList = ({
       }: {
         table: MRT_TableInstance<LOA>;
         row: MRT_Row<LOA>;
-      }) => isActive ? (
+      }) => isActive && allowEditLOA ? (
         <div className="loa-list__row-actions">
           <Tooltip arrow placement="top" title="Delete">
             <IconButton
@@ -167,7 +172,7 @@ export const LOAList = ({
           </Tooltip>
         </div>
       ) : null,
-      [isActive],
+      [isActive, allowEditLOA],
     ),
     enableGlobalFilter: false,
     enableTopToolbar: false,

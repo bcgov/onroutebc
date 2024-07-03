@@ -1,20 +1,10 @@
 @import "../../../../themes/orbcStyles";
 
 .special-authorizations {
-  max-width: 59rem;
   color: $bc-black;
 
-  &__no-fee {
-    padding: 1.5rem 0 2.5rem 0;
-    border-bottom: 1px solid $bc-border-grey;
-  }
-
-  &__lcv {
-    padding: 2.5rem 0;
-    border-bottom: 1px solid $bc-border-grey;
-  }
-
   &__loa {
+    max-width: 59rem;
     padding: 2.5rem 0;
 
     .add-loa-btn {
@@ -37,27 +27,6 @@
   &__header-title {
     font-weight: bold;
     font-size: 1.25rem;
-  }
-}
-
-.no-fee-options {
-  & &__title {
-    font-weight: bold;
-    margin-bottom: 1rem;
-  }
-
-  &__type {
-    .no-fee-options &#{&}--disabled {
-      .no-fee-options {
-        &__radio {
-          color: $disabled-colour;
-        }
-
-        &__label {
-          color: $disabled-colour;
-        }
-      }
-    }
   }
 }
 

@@ -34,6 +34,18 @@ export const canUpdateSuspend = (
   );
 };
 
+const READ_SPECIAL_AUTH_ALLOWED_GROUPS = [
+  USER_AUTH_GROUP.PPC_CLERK,
+  USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
+  // USER_AUTH_GROUP.TRAINEE,
+  USER_AUTH_GROUP.FINANCE,
+  USER_AUTH_GROUP.CTPO,
+  USER_AUTH_GROUP.ENFORCEMENT_OFFICER,
+  USER_AUTH_GROUP.HQ_ADMINISTRATOR,
+  USER_AUTH_GROUP.PERMIT_APPLICANT,
+  USER_AUTH_GROUP.COMPANY_ADMINISTRATOR,
+] as UserAuthGroupType[];
+
 export const canUpdateNoFeePermitsFlag = (
   userRoles?: Nullable<UserRolesType[]>,
   userAuthGroup?: Nullable<UserAuthGroupType>,
@@ -58,14 +70,8 @@ export const canViewNoFeePermitsFlag = (
   userRoles?: Nullable<UserRolesType[]>,
   userAuthGroup?: Nullable<UserAuthGroupType>,
 ): boolean => {
-  const allowedAuthGroups = [
-    USER_AUTH_GROUP.HQ_ADMINISTRATOR,
-    USER_AUTH_GROUP.FINANCE,
-    USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
-  ] as UserAuthGroupType[];
-
   return (
-    userAuthGroup && allowedAuthGroups.includes(userAuthGroup)
+    userAuthGroup && READ_SPECIAL_AUTH_ALLOWED_GROUPS.includes(userAuthGroup)
   ) || Boolean(
     DoesUserHaveRole(
       userRoles,
@@ -74,7 +80,7 @@ export const canViewNoFeePermitsFlag = (
   ) || canUpdateNoFeePermitsFlag(userRoles, userAuthGroup);
 };
 
-export const canUpdateLCAFlag = (
+export const canUpdateLCVFlag = (
   userRoles?: Nullable<UserRolesType[]>,
   userAuthGroup?: Nullable<UserAuthGroupType>,
 ): boolean => {
@@ -88,18 +94,18 @@ export const canUpdateLCAFlag = (
   );
 };
 
-export const canViewLCAFlag = (
+export const canViewLCVFlag = (
   userRoles?: Nullable<UserRolesType[]>,
   userAuthGroup?: Nullable<UserAuthGroupType>,
 ): boolean => {
   return (
-    userAuthGroup === USER_AUTH_GROUP.HQ_ADMINISTRATOR
+    userAuthGroup && READ_SPECIAL_AUTH_ALLOWED_GROUPS.includes(userAuthGroup)
   ) || Boolean(
     DoesUserHaveRole(
       userRoles,
       ROLES.READ_LCV_FLAG,
     ),
-  ) || canUpdateLCAFlag(userRoles, userAuthGroup);
+  ) || canUpdateLCVFlag(userRoles, userAuthGroup);
 };
 
 export const canUpdateLOA = (
@@ -125,6 +131,7 @@ export const canViewLOA = (
   userRoles?: Nullable<UserRolesType[]>,
   userAuthGroup?: Nullable<UserAuthGroupType>,
 ): boolean => {
+  // Note that FIN is not allowed by view LOA
   const allowedAuthGroups = [
     USER_AUTH_GROUP.PPC_CLERK,
     USER_AUTH_GROUP.CTPO,
@@ -150,22 +157,10 @@ export const canViewSpecialAuthorizations = (
   userRoles?: Nullable<UserRolesType[]>,
   userAuthGroup?: Nullable<UserAuthGroupType>,
 ): boolean => {
-  const allowedAuthGroups = [
-    USER_AUTH_GROUP.PPC_CLERK,
-    USER_AUTH_GROUP.CTPO,
-    USER_AUTH_GROUP.ENFORCEMENT_OFFICER,
-    USER_AUTH_GROUP.FINANCE,
-    // USER_AUTH_GROUP.TRAINEE,
-    USER_AUTH_GROUP.HQ_ADMINISTRATOR,
-    USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
-    USER_AUTH_GROUP.COMPANY_ADMINISTRATOR,
-    USER_AUTH_GROUP.PERMIT_APPLICANT,
-  ] as UserAuthGroupType[];
-
   return (
-    userAuthGroup && allowedAuthGroups.includes(userAuthGroup)
+    userAuthGroup && READ_SPECIAL_AUTH_ALLOWED_GROUPS.includes(userAuthGroup)
   ) || canViewNoFeePermitsFlag(userRoles, userAuthGroup)
-    || canViewLCAFlag(userRoles, userAuthGroup)
+    || canViewLCVFlag(userRoles, userAuthGroup)
     || canViewLOA(userRoles, userAuthGroup)
     || Boolean(
       DoesUserHaveRole(
