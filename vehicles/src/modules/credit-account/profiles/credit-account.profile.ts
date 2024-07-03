@@ -20,6 +20,7 @@ import { ReadCreditAccountDto } from '../dto/response/read-credit-account.dto';
 import { CreditAccountLimitType } from '../../../common/enum/credit-account-limit.enum';
 import { CreditAccountActivity } from '../entities/credit-account-activity.entity';
 import { ReadCreditAccountActivityDto } from '../dto/response/read-credit-account-activity.dto';
+import { ReadCreditAccountMetadataDto } from '../dto/response/read-credit-account-metadata.dto';
 
 @Injectable()
 export class CreditAccountProfile extends AutomapperProfile {
@@ -130,6 +131,13 @@ export class CreditAccountProfile extends AutomapperProfile {
           (d) => d.creditBalance,
           mapWithArguments((_s, { creditBalance }) => creditBalance as number),
         ),
+      );
+
+      createMap(
+        mapper,
+        CreditAccount,
+        ReadCreditAccountMetadataDto,
+        forSelf(Company, (source) => source?.company),
       );
 
       createMap(

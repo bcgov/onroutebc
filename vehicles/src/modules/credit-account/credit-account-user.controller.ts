@@ -15,6 +15,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Request } from 'express';
 import { Roles } from '../../common/decorator/roles.decorator';
@@ -64,6 +65,10 @@ export class CreditAccountUserController {
   @ApiOkResponse({
     description: 'The result of the changes to the credit account user.',
     type: ReadCreditAccountUserDto,
+  })
+  @ApiUnprocessableEntityResponse({
+    description: 'Cannot process the Add/Update credit account user request.',
+    type: ExceptionDto,
   })
   @Put()
   @Roles(Role.WRITE_CREDIT_ACCOUNT)
