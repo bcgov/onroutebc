@@ -9,6 +9,7 @@ import {
   Req,
 } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiInternalServerErrorResponse,
   ApiMethodNotAllowedResponse,
@@ -42,6 +43,14 @@ import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-flag-ena
   description: 'The Credit Account Users Api Internal Server Error Response',
   type: ExceptionDto,
 })
+@ApiUnprocessableEntityResponse({
+  description: 'The Credit Account User Entity could not be processed.',
+  type: ExceptionDto,
+})
+@ApiBadRequestResponse({
+  description: 'Bad Request Response',
+  type: ExceptionDto,
+})
 @IsFeatureFlagEnabled('CREDIT-ACCOUNT')
 @Controller(
   'companies/:companyId/credit-account/:creditAccountId/credit-account-user',
@@ -65,10 +74,6 @@ export class CreditAccountUserController {
   @ApiOkResponse({
     description: 'The result of the changes to the credit account user.',
     type: ReadCreditAccountUserDto,
-  })
-  @ApiUnprocessableEntityResponse({
-    description: 'Cannot process the Add/Update credit account user request.',
-    type: ExceptionDto,
   })
   @Put()
   @Roles(Role.WRITE_CREDIT_ACCOUNT)
