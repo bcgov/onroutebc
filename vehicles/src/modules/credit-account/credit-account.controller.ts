@@ -8,6 +8,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Request } from 'express';
 import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-flag-enabled.decorator';
@@ -32,6 +33,14 @@ import { UpdateCreditAccountStatusDto } from './dto/request/update-credit-accoun
 })
 @ApiInternalServerErrorResponse({
   description: 'The Credit Account Api Internal Server Error Response',
+  type: ExceptionDto,
+})
+@ApiUnprocessableEntityResponse({
+  description: 'The Credit Account Entity could not be processed.',
+  type: ExceptionDto,
+})
+@ApiBadRequestResponse({
+  description: 'Bad Request Response',
   type: ExceptionDto,
 })
 @IsFeatureFlagEnabled('CREDIT-ACCOUNT')

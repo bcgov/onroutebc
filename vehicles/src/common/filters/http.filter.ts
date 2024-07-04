@@ -35,7 +35,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
       JSON.stringify(exception),
     );
 
-    if (statusCode === HttpStatus.BAD_REQUEST) {
+    if (
+      statusCode === HttpStatus.BAD_REQUEST ||
+      statusCode === HttpStatus.UNPROCESSABLE_ENTITY
+    ) {
       exceptionDto = exception.getResponse() as ExceptionDto;
     } else {
       exceptionDto = new ExceptionDto(statusCode, exception.message);

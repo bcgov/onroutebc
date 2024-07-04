@@ -9,12 +9,14 @@ import {
   Req,
 } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiInternalServerErrorResponse,
   ApiMethodNotAllowedResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Request } from 'express';
 import { Roles } from '../../common/decorator/roles.decorator';
@@ -39,6 +41,14 @@ import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-flag-ena
 })
 @ApiInternalServerErrorResponse({
   description: 'The Credit Account Users Api Internal Server Error Response',
+  type: ExceptionDto,
+})
+@ApiUnprocessableEntityResponse({
+  description: 'The Credit Account User Entity could not be processed.',
+  type: ExceptionDto,
+})
+@ApiBadRequestResponse({
+  description: 'Bad Request Response',
   type: ExceptionDto,
 })
 @IsFeatureFlagEnabled('CREDIT-ACCOUNT')

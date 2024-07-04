@@ -1,7 +1,6 @@
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import {
-  BadRequestException,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -43,6 +42,8 @@ import { CreditAccountActivity } from './entities/credit-account-activity.entity
 import { CreditAccountActivityType } from '../../common/enum/credit-account-activity-type.enum';
 import { User } from '../company-user-management/users/entities/user.entity';
 import { DataNotFoundException } from '../../common/exception/data-not-found.exception';
+import { ReadCreditAccountMetadataDto } from './dto/response/read-credit-account-metadata.dto';
+import { throwUnprocessableEntityException } from '../../common/helper/exception.helper';
 
 /**
  * Service functions for credit account operations.
@@ -76,7 +77,7 @@ export class CreditAccountService {
    * @param {number} createParams.companyId - The ID of the company for which the credit account is being created.
    * @param {CreditAccountLimitType} createParams.creditLimit - The credit limit type for the new account.
    * @returns {Promise<ReadCreditAccountDto>} - The created credit account data transfer object.
-   * @throws {BadRequestException} - If validation of the credit account creation fails.
+   * @throws {UnprocessableEntityException} - If validation of the credit account creation fails.
    * @throws {InternalServerErrorException} - If the creation of any required entity in the CFS system fails.
    * @memberof CreditAccountService
    */
@@ -320,7 +321,7 @@ export class CreditAccountService {
    * @param {string} params.comment - A comment detailing the reason for the status change.
    * @param {IUserJWT} currentUser - The current user performing the update.
    * @returns {Promise<ReadCreditAccountDto>} - The updated credit account data transfer object.
-   * @throws {BadRequestException} - If validation fails (e.g., invalid transitions or account not found).
+   * @throws {UnprocessableEntityException} - If validation fails (e.g., invalid transitions or account not found).
    * @memberof CreditAccountService
    */
   @LogAsyncMethodExecution()
@@ -345,14 +346,14 @@ export class CreditAccountService {
     );
 
     if (!creditAccount) {
-      // If no credit account is found, throw BadRequestException
-      throw new BadRequestException(
+      // If no credit account is found, throw UnprocessableEntityException
+      throwUnprocessableEntityException(
         'Invalid CreditAccount/Company combination',
       );
     }
 
     if (statusToUpdateTo === creditAccount.creditAccountStatusType) {
-      throw new BadRequestException(
+      throwUnprocessableEntityException(
         `Credit Account already in status: ${statusToUpdateTo}`,
       );
     }
@@ -361,7 +362,7 @@ export class CreditAccountService {
       statusToUpdateTo === CreditAccountStatusValid.ACCOUNT_ON_HOLD &&
       isClosedCreditAccount(creditAccount)
     ) {
-      throw new BadRequestException(
+      throwUnprocessableEntityException(
         'Cannot move a closed Credit Account to on hold',
       );
     }
@@ -441,10 +442,10 @@ export class CreditAccountService {
    *
    * This method checks whether the company associated with the provided company ID is already a user
    * of another credit account or if the company already has a credit account. If either condition
-   * is met, it throws a BadRequestException to prevent the creation of a duplicate credit account.
+   * is met, it throws a UnprocessableEntityException to prevent the creation of a duplicate credit account.
    *
    * @param {number} companyId - The ID of the company for which the credit account is being created.
-   * @throws {BadRequestException} - If the company is already a user of another credit account
+   * @throws {UnprocessableEntityException} - If the company is already a user of another credit account
    *                                 or if the company already has a credit account.
    * @private
    * @memberof CreditAccountService
@@ -456,7 +457,7 @@ export class CreditAccountService {
       },
     );
     if (companyIsAlreadyAUser) {
-      throw new BadRequestException(
+      throwUnprocessableEntityException(
         'Company is already a user of another credit account.',
       );
     }
@@ -471,7 +472,9 @@ export class CreditAccountService {
         },
       });
     if (companyAlreadyHasCreditAccount) {
-      throw new BadRequestException('Company already has a credit account.');
+      throwUnprocessableEntityException(
+        'Company already has a credit account.',
+      );
     }
   }
 
@@ -479,86 +482,83 @@ export class CreditAccountService {
    * Adds or activates a credit account user.
    *
    * @param currentUser - The current user performing the action.
-   * @param creditAccountHolderId - The ID of the credit account holder.
+   * @param accountHolderId - The ID of the credit account holder.
    * @param creditAccountId - The ID of the credit account.
-   * @param companyId - The ID of the company in CreateCreditAccountUserDto.
-   * @returns {Promise<string>} - The result of the add or activate process.
-   * @throws BadRequestException - If the credit account or company combination is invalid.
+   * @param createUserDto - The data transfer object for creating a user.
+   * @returns {Promise<ReadCreditAccountUserDto>} - The result of the add or activate process.
+   * @throws UnprocessableEntityException - If the credit account or company combination is invalid.
    * @throws InternalServerErrorException - If user update or creation fails.
    */
   @LogAsyncMethodExecution()
   public async addOrActivateCreditAccountUser(
     currentUser: IUserJWT,
-    creditAccountHolderId: number,
+    accountHolderId: number,
     creditAccountId: number,
-    createCreditAccountUserDto: CreateCreditAccountUserDto,
+    createUserDto: CreateCreditAccountUserDto,
   ): Promise<ReadCreditAccountUserDto> {
-    // Find the credit account by creditAccountId and creditAccountHolderId
+    // Find the credit account by creditAccountId and accountHolderId
     const creditAccount = await this.findOneByCreditAccountIdAndAccountHolder(
       creditAccountId,
-      creditAccountHolderId,
+      accountHolderId,
     );
 
     if (!creditAccount) {
       // If no credit account is found, throw an exception
-      throw new BadRequestException(
+      throwUnprocessableEntityException(
         'Invalid CreditAccount/Company combination',
       );
     }
 
     if (isClosedCreditAccount(creditAccount)) {
-      throw new BadRequestException('Credit Account closed - Cannot add user');
+      throwUnprocessableEntityException(
+        'Credit Account closed - Cannot add user',
+      );
     }
 
     // Find if there is an existing credit account by companyId as holder
-    const existingCreditAccountAsHolder =
-      await this.findOneByIdAndAccountHolder(
-        createCreditAccountUserDto.companyId,
-      );
+    const existingAccountAsHolder = await this.findOneByIdAndAccountHolder(
+      createUserDto.companyId,
+    );
 
-    let existingCreditAccountUserList: CreditAccountUser[] = null;
+    let existingActiveAccount =
+      isActiveCreditAccount(existingAccountAsHolder) && existingAccountAsHolder;
+    let existingAccountUsers: CreditAccountUser[] = null;
+
     // If the credit account is not active, find many credit account users by companyId
-    if (!isActiveCreditAccount(existingCreditAccountAsHolder)) {
-      existingCreditAccountUserList = await this.findManyCreditAccountUsers(
-        createCreditAccountUserDto.companyId,
+    if (!existingActiveAccount) {
+      existingAccountUsers = await this.findManyCreditAccountUsers(
+        createUserDto.companyId,
       );
+      existingActiveAccount = existingAccountUsers?.find(
+        (accountUser) => accountUser.isActive,
+      )?.creditAccount;
     }
 
     // Check if there is an active credit account or if there are any active credit account users
-    if (
-      isActiveCreditAccount(existingCreditAccountAsHolder) ||
-      existingCreditAccountUserList?.filter(
-        (creditAccountUser) => creditAccountUser.isActive,
-      )?.length
-    ) {
-      // If so, throw an exception
-      throw new BadRequestException(
+    if (existingActiveAccount) {
+      const existingAccountMetadata = await this.classMapper.mapAsync(
+        existingActiveAccount,
+        CreditAccount,
+        ReadCreditAccountMetadataDto,
+      );
+      throwUnprocessableEntityException(
         'Client already associated with an active Credit Account',
+        existingAccountMetadata,
       );
     }
 
     // Find if there is a credit account user mapped to the credit account with the same companyId
-    const creditAccountUserMappedToCreditAccount =
-      existingCreditAccountUserList?.find(
-        (creditAccountUser) =>
-          creditAccountUser.company.companyId ===
-            createCreditAccountUserDto.companyId &&
-          creditAccountUser.creditAccount.creditAccountId === creditAccountId,
-      );
-    if (creditAccountUserMappedToCreditAccount?.isActive) {
-      // If the user is active, throw an exception
-      throw new BadRequestException(
-        'Client already associated with the Credit Account',
-      );
-    } else if (
-      creditAccountUserMappedToCreditAccount &&
-      !creditAccountUserMappedToCreditAccount.isActive
-    ) {
+    const accountUserMappedToAccount = existingAccountUsers?.find(
+      (accountUser) =>
+        accountUser.company.companyId === createUserDto.companyId &&
+        accountUser.creditAccount.creditAccountId === creditAccountId,
+    );
+
+    if (accountUserMappedToAccount && !accountUserMappedToAccount.isActive) {
       // If the user is not active, update the user to be active and save changes
       const { affected } = await this.creditAccountUserRepository.update(
         {
-          creditAccountUserId:
-            creditAccountUserMappedToCreditAccount.creditAccountUserId,
+          creditAccountUserId: accountUserMappedToAccount.creditAccountUserId,
         },
         {
           isActive: true,
@@ -575,23 +575,22 @@ export class CreditAccountService {
         );
       }
 
-      const updatedCreditAccountUserInfo =
-        await this.findManyCreditAccountUsers(
-          null,
-          null,
-          null,
-          creditAccountUserMappedToCreditAccount.creditAccountUserId,
-          true,
-        );
-      return this.classMapper.mapAsync(
-        updatedCreditAccountUserInfo?.at(0),
+      const updatedAccountUserInfo = await this.findManyCreditAccountUsers(
+        null,
+        null,
+        null,
+        accountUserMappedToAccount.creditAccountUserId,
+        true,
+      );
+      return await this.classMapper.mapAsync(
+        updatedAccountUserInfo?.at(0),
         CreditAccountUser,
         ReadCreditAccountUserDto,
       );
     } else {
       // If no user is found, create a new credit account user
-      let newCreditAccountUser = await this.classMapper.mapAsync(
-        createCreditAccountUserDto,
+      let newAccountUser = await this.classMapper.mapAsync(
+        createUserDto,
         CreateCreditAccountUserDto,
         CreditAccountUser,
         {
@@ -605,18 +604,18 @@ export class CreditAccountService {
         },
       );
 
-      newCreditAccountUser =
-        await this.creditAccountUserRepository.save(newCreditAccountUser);
+      newAccountUser =
+        await this.creditAccountUserRepository.save(newAccountUser);
 
-      const newCreditAccountUserInfo = await this.findManyCreditAccountUsers(
+      const newAccountUserInfo = await this.findManyCreditAccountUsers(
         null,
         null,
         null,
-        newCreditAccountUser.creditAccountUserId,
+        newAccountUser.creditAccountUserId,
         true,
       );
       return this.classMapper.mapAsync(
-        newCreditAccountUserInfo?.at(0),
+        newAccountUserInfo?.at(0),
         CreditAccountUser,
         ReadCreditAccountUserDto,
       );
@@ -631,7 +630,7 @@ export class CreditAccountService {
    * @param creditAccountId - The ID of the credit account.
    * @param companyData - Object containing company IDs for deactivation.
    * @returns {Promise<DeleteDto>} - The result of the deactivation process.
-   * @throws BadRequestException - If the credit account or company combination is invalid.
+   * @throws UnprocessableEntityException - If the credit account or company combination is invalid.
    * @throws InternalServerErrorException - If deactivation fails.
    */
   @LogAsyncMethodExecution()
@@ -652,8 +651,8 @@ export class CreditAccountService {
     );
 
     if (!creditAccount) {
-      // If no credit account is found, throw BadRequestException
-      throw new BadRequestException(
+      // If no credit account is found, throw UnprocessableEntityException
+      throwUnprocessableEntityException(
         'Invalid CreditAccount/Company combination',
       );
     }
