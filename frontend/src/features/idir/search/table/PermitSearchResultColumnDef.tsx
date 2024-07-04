@@ -1,3 +1,4 @@
+import { Box, Tooltip } from "@mui/material";
 import { MRT_ColumnDef } from "material-react-table";
 
 import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
@@ -6,20 +7,12 @@ import { PERMIT_EXPIRED } from "../../../permits/types/PermitStatus";
 import { PermitChip } from "../../../permits/components/permit-list/PermitChip";
 import { viewPermitPdf } from "../../../permits/helpers/permitPDFHelper";
 import { hasPermitExpired } from "../../../permits/helpers/permitState";
+import { getPermitTypeName } from "../../../permits/types/PermitType";
 import {
   dateTimeStringSortingFn,
   formatCellValuetoDatetime,
 } from "../../../../common/helpers/tableHelper";
-import { getPermitTypeName } from "../../../permits/types/PermitType";
-import { Box, Tooltip } from "@mui/material";
 
-/*
- *
- * The Columns Options are from Material React Table.
- * For a list of options, see here:
- * https://www.material-react-table.com/docs/api/column-options
- *
- */
 export const PermitSearchResultColumnDef: MRT_ColumnDef<PermitListItem>[] = [
   {
     accessorKey: "permitNumber",
@@ -47,7 +40,7 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<PermitListItem>[] = [
         </>
       );
     },
-    size: 180,
+    size: 170,
   },
   {
     accessorKey: "permitType",
@@ -61,7 +54,8 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<PermitListItem>[] = [
           {props.cell.getValue()}
         </Box>
       </Tooltip>
-    }
+    },
+    size: 20,
   },
   {
     header: "Commodity",
@@ -70,18 +64,21 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<PermitListItem>[] = [
     // For TROS permits, commodities is not a concern.
     // Other permits will require implementation here.
     Cell: () => <>NA</>,
+    size: 20,
   },
   {
     accessorKey: "plate",
     header: "Plate",
     enableSorting: true,
     sortingFn: "alphanumeric",
+    size: 20,
   },
   {
     accessorKey: "legalName",
     header: "Company Name",
     enableSorting: true,
     sortingFn: "alphanumeric",
+    size: 180,
   },
   {
     accessorKey: "startDate",

@@ -1,18 +1,18 @@
 import { useLocation } from "react-router-dom";
 import { memo } from "react";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
 
+import "./ManageVehiclesDashboard.scss";
 import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
 import { AddVehicleButton } from "./AddVehicleButton";
 import { List } from "../list/List";
-import "./ManageVehiclesDashboard.scss";
-import { getAllPowerUnits, getAllTrailers } from "../../apiManager/vehiclesAPI";
 import { DoesUserHaveRoleWithContext } from "../../../../common/authentication/util";
 import { ROLES } from "../../../../common/authentication/types";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { VEHICLES_DASHBOARD_TABS } from "../../../../routes/constants";
 import { VEHICLE_TYPES } from "../../types/Vehicle";
+import { usePowerUnitsQuery } from "../../hooks/powerUnits";
+import { useTrailersQuery } from "../../hooks/trailers";
 
 /**
  * Returns the selected tab index (if there is one)
@@ -35,22 +35,10 @@ const useTabIndexFromURL = (): number => {
  * React component to render the vehicle inventory
  */
 export const ManageVehiclesDashboard = memo(() => {
+  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   const staleTime = 5000;
-  const companyId = getDefaultRequiredVal("0", getCompanyIdFromSession());
-
-  const powerUnitQuery = useQuery({
-    queryKey: ["powerUnits"],
-    queryFn: () => getAllPowerUnits(companyId),
-    placeholderData: (prev) => keepPreviousData(prev),
-    staleTime: staleTime,
-  });
-
-  const trailerQuery = useQuery({
-    queryKey: ["trailers"],
-    queryFn: () => getAllTrailers(companyId),
-    placeholderData: (prev) => keepPreviousData(prev),
-    staleTime: staleTime,
-  });
+  const powerUnitsQuery = usePowerUnitsQuery(companyId, staleTime);
+  const trailersQuery = useTrailersQuery(companyId, staleTime);
 
   const tabs = [
     {
@@ -58,7 +46,7 @@ export const ManageVehiclesDashboard = memo(() => {
       component: (
         <List
           vehicleType={VEHICLE_TYPES.POWER_UNIT}
-          query={powerUnitQuery}
+          query={powerUnitsQuery}
           companyId={companyId}
         />
       ),
@@ -68,7 +56,7 @@ export const ManageVehiclesDashboard = memo(() => {
       component: (
         <List
           vehicleType={VEHICLE_TYPES.TRAILER}
-          query={trailerQuery}
+          query={trailersQuery}
           companyId={companyId}
         />
       ),

@@ -20,6 +20,7 @@ import { Nullable } from "../../../../common/types/common";
 import { PermitType } from "../../types/PermitType";
 import { PermitVehicleDetails } from "../../types/PermitVehicleDetails";
 import { durationOptionsForPermitType } from "../../helpers/dateSelection";
+import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -43,7 +44,7 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
   const applicationContext = useContext(ApplicationContext);
 
   const {
-    companyId,
+    companyId: companyIdFromContext,
     companyLegalName,
     userDetails,
     onRouteBCClientNumber,
@@ -51,6 +52,20 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
 
   const companyInfoQuery = useCompanyInfoQuery();
   const companyInfo = companyInfoQuery.data;
+
+  // Company id should be set by context, otherwise default to companyId in session and then the fetched companyId
+  const companyId = getDefaultRequiredVal(
+    "",
+    applyWhenNotNullable(
+      id => `${id}`,
+      companyIdFromContext,
+    ),
+    getCompanyIdFromSession(),
+    applyWhenNotNullable(
+      id => `${id}`,
+      companyInfo?.companyId,
+    ),
+  );
   
   // Use a custom hook that performs the following whenever page is rendered (or when application context is updated/changed):
   // 1. Get all data needed to generate default values for the application form (from application context, company, user details)
@@ -88,13 +103,14 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     vehicleOptions,
     powerUnitSubTypes,
     trailerSubTypes,
-  } = usePermitVehicleManagement();
+  } = usePermitVehicleManagement(companyId);
 
   // Show leave application dialog
   const [showLeaveApplicationDialog, setShowLeaveApplicationDialog] =
     useState<boolean>(false);
 
-  const { handleSubmit, getValues } = formMethods;
+  const { handleSubmit, getValues, watch } = formMethods;
+  const vehicleFormData = watch("permitData.vehicleDetails");
 
   const navigate = useNavigate();
 
@@ -244,7 +260,7 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
           permitStartDate={applicationDefaultValues.permitData.startDate}
           permitDuration={applicationDefaultValues.permitData.permitDuration}
           permitCommodities={applicationDefaultValues.permitData.commodities}
-          vehicleDetails={applicationDefaultValues.permitData.vehicleDetails}
+          vehicleDetails={vehicleFormData}
           vehicleOptions={vehicleOptions}
           powerUnitSubTypes={powerUnitSubTypes}
           trailerSubTypes={trailerSubTypes}

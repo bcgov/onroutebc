@@ -1,5 +1,5 @@
 import { Operator } from 'json-rules-engine';
-import { PermitAppInfo } from '../enum/permit-app-info.enum';
+import { PermitAppInfo } from 'onroute-policy-engine/enum';
 import dayjs from 'dayjs';
 
 function stringValidator(a: any): boolean {
@@ -36,9 +36,9 @@ CustomOperators.push(
 CustomOperators.push(
   new Operator(
     'regex',
-    (a: string, b: string) => a.match(b) !== null,
+    (a: string, b: string) => RegExp(b).exec(a) !== null,
     stringValidator,
   ),
 );
 
-export default CustomOperators;
+export { CustomOperators };
