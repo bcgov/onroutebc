@@ -6,7 +6,7 @@ import { ReadLoaDto } from './dto/response/read-loa.dto';
 import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoaDetail } from './entities/loa-detail.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Mapper } from '@automapper/core';
 import { UpdateLoaDto } from './dto/request/update-loa.dto';
 import { LoaVehicle } from './entities/loa-vehicles.entity';
@@ -19,10 +19,7 @@ export class LoaService {
     @InjectMapper() private readonly classMapper: Mapper,
     @InjectRepository(LoaDetail)
     private loaDetailRepository: Repository<LoaDetail>,
-    @InjectRepository(LoaVehicle)
-    private loaVehicleRepository: Repository<LoaVehicle>,
-    @InjectRepository(LoaPermitType)
-    private loaPermitTypeRepository: Repository<LoaPermitType>,
+    private dataSource: DataSource,
   ) {}
 
   @LogAsyncMethodExecution()
@@ -54,9 +51,6 @@ export class LoaService {
       });
     }
     const loaDetail: LoaDetail[] = await loaDetailQB.getMany();
-
-    console.log('Loa details is: ', loaDetail.toString());
-
     const readLoaDto = this.classMapper.mapArray(
       loaDetail,
       LoaDetail,
@@ -65,26 +59,39 @@ export class LoaService {
         extraArgs: () => ({ companyId: companyId }),
       },
     );
-    console.log('Loa dto is: ', readLoaDto);
 
     return readLoaDto;
   }
 
   @LogAsyncMethodExecution()
-  async getById(companyId: number, loaId: number): Promise<ReadLoaDto> {
-    const loaDetail: LoaDetail = await this.loaDetailRepository
-      .createQueryBuilder('loaDetail')
-      .leftJoinAndSelect('loaDetail.company', 'company')
-      .leftJoinAndSelect('loaDetail.loaVehicles', 'loaVehicles')
-      .leftJoinAndSelect('loaDetail.loaPermitTypes', 'loaPermitTypes')
-      .where('loaDetail.loaId = :loaId', { loaId: loaId })
-      .andWhere('company.companyId = :companyId', { companyId: companyId })
-      .getOne();
+  async getById(companyId: number, loaId: string): Promise<ReadLoaDto> {
+    try {
+      const loaDetail = await this.loaDetailRepository.findOne({
+        where: {
+          company: { companyId: companyId },
+        },
+        relations: ['company', 'loaVehicles', 'loaPermitTypes'],
+      });
 
-    const readLoaDto = this.classMapper.map(loaDetail, LoaDetail, ReadLoaDto, {
-      extraArgs: () => ({ companyId: companyId }),
-    });
-    return readLoaDto;
+      if (!loaDetail) {
+        throw new Error(
+          `LOA detail not found for companyId ${companyId} and loaId ${loaId}`,
+        );
+      }
+
+      const readLoaDto = this.classMapper.map(
+        loaDetail,
+        LoaDetail,
+        ReadLoaDto,
+        {
+          extraArgs: () => ({ companyId: companyId }),
+        },
+      );
+
+      return readLoaDto;
+    } catch (error) {
+      throw new Error(`Failed to fetch LOA detail: ${error}`);
+    }
   }
 
   @LogAsyncMethodExecution()
@@ -93,62 +100,89 @@ export class LoaService {
     companyId: number,
     updateLoaDto: UpdateLoaDto,
   ): Promise<ReadLoaDto> {
-    const result = await this.getById(companyId, Number(updateLoaDto.loaId));
+    const { loaId, powerUnits, trailers, loaPermitType } = updateLoaDto;
 
-    const deletePowerUnit = result.powerUnits.filter(
-      (item) => updateLoaDto.powerUnits.indexOf(item) < 0,
+    // Fetch existing LOA detail
+    const existingLoaDetail = await this.getById(companyId, loaId);
+
+    // Arrays to store entities to delete
+    const deletePowerUnits = existingLoaDetail.powerUnits.filter(
+      (item) => !powerUnits.includes(item),
     );
-    const deleteTrailer = result.trailers.filter(
-      (item) => updateLoaDto.trailers.indexOf(item) < 0,
+    const deleteTrailers = existingLoaDetail.trailers.filter(
+      (item) => !trailers.includes(item),
     );
-    const deletePermitTypes = result.loaPermitType.filter(
-      (item) => updateLoaDto.loaPermitType.indexOf(item) < 0,
+    const deletePermitTypes = existingLoaDetail.loaPermitType.filter(
+      (item) => !loaPermitType.includes(item),
     );
 
-    if (deletePowerUnit.length > 0) {
-      console.log('deleting vehicles');
-      const result = await this.loaVehicleRepository
-        .createQueryBuilder()
-        .delete()
-        .where('powerUnit IN (:...deletePowerUnit)', {
-          deletePowerUnit: deletePowerUnit,
-        })
-        .andWhere('loa = :loaId', { loaId: updateLoaDto.loaId })
-        .execute();
-      console.log('deleted powerunit result: ', result.affected);
-    }
-    if (deleteTrailer.length > 0) {
-      console.log('deleting vehicles');
-      const result = await this.loaVehicleRepository
-        .createQueryBuilder()
-        .delete()
-        .where('trailer IN (:...deleteTrailer)', {
-          deleteTrailer: deleteTrailer,
-        })
-        .andWhere('loa = :loaId', { loaId: updateLoaDto.loaId })
-        .execute();
-      console.log('deleted vehicle result: ', result.raw);
-    }
-    if (deletePermitTypes.length > 0) {
-      console.log('deleting permit types');
-      const result = await this.loaPermitTypeRepository
-        .createQueryBuilder()
-        .delete()
-        .where('permitType IN (:...deletePermitTypes)', {
-          deletePermitTypes: deletePermitTypes,
-        })
-        .andWhere('loa = :loaId', { loaId: updateLoaDto.loaId })
-        .execute();
-      console.log('deleted permit types result: ', result.raw);
-    }
+    // Begin transaction
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    const loa = this.classMapper.map(updateLoaDto, UpdateLoaDto, LoaDetail, {
-      extraArgs: () => ({ companyId: companyId, loadId: updateLoaDto.loaId }),
-    });
-    console.log('loa being updated: ', loa);
-    const loaDetail = await this.loaDetailRepository.save(loa);
-    console.log('updated loa: ', loaDetail);
-    const readLoaDto = this.classMapper.map(loaDetail, LoaDetail, ReadLoaDto);
-    return readLoaDto;
+    try {
+      // Delete power units
+      if (deletePowerUnits.length > 0) {
+        await queryRunner.manager
+          .createQueryBuilder()
+          .delete()
+          .from(LoaVehicle)
+          .where('powerUnit IN (:...deletePowerUnits)', { deletePowerUnits })
+          .andWhere('loa = :loaId', { loaId })
+          .execute();
+      }
+
+      // Delete trailers
+      if (deleteTrailers.length > 0) {
+        await queryRunner.manager
+          .createQueryBuilder()
+          .delete()
+          .from(LoaVehicle)
+          .where('trailer IN (:...deleteTrailers)', { deleteTrailers })
+          .andWhere('loa = :loaId', { loaId })
+          .execute();
+      }
+
+      // Delete permit types
+      if (deletePermitTypes.length > 0) {
+        await queryRunner.manager
+          .createQueryBuilder()
+          .delete()
+          .from(LoaPermitType)
+          .where('permitType IN (:...deletePermitTypes)', { deletePermitTypes })
+          .andWhere('loa = :loaId', { loaId })
+          .execute();
+      }
+
+      // Save updated LOA detail
+      const updatedLoaDetail = this.classMapper.map(
+        updateLoaDto,
+        UpdateLoaDto,
+        LoaDetail,
+        {
+          extraArgs: () => ({ companyId, loaId }),
+        },
+      );
+      const savedLoaDetail = await queryRunner.manager.save(updatedLoaDetail);
+
+      // Commit transaction
+      await queryRunner.commitTransaction();
+
+      // Map to ReadLoaDto and return
+      const readLoaDto = this.classMapper.map(
+        savedLoaDetail,
+        LoaDetail,
+        ReadLoaDto,
+      );
+      return readLoaDto;
+    } catch (error) {
+      // Rollback transaction on error
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      // Release query runner
+      await queryRunner.release();
+    }
   }
 }

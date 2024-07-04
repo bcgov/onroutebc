@@ -82,7 +82,7 @@ export class LoaController {
   @Get('/:loaId')
   async getById(
     @Param('companyId') companyId: number,
-    @Param('loaId') loaId: number,
+    @Param('loaId') loaId: string,
   ): Promise<ReadLoaDto> {
     const loa = await this.loaService.getById(companyId, loaId);
     return loa;
