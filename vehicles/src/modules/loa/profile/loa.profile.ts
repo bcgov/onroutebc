@@ -136,11 +136,8 @@ export class LoaProfile extends AutomapperProfile {
           (d) => d.powerUnits,
           mapFrom((s) => {
             const loaPowerUnits: string[] = new Array<string>();
-            console.log('source loa powerunit  mapping ', s.loaVehicles);
             for (const loaPowerUnit of s.loaVehicles) {
-              console.log('power unit', loaPowerUnit);
               if (loaPowerUnit.powerUnit) {
-                console.log('if power unit', loaPowerUnit);
                 const powerUnit: string = loaPowerUnit.powerUnit;
                 loaPowerUnits.push(powerUnit);
               }
@@ -152,11 +149,8 @@ export class LoaProfile extends AutomapperProfile {
           (d) => d.trailers,
           mapFrom((s) => {
             const loaTrailers: string[] = new Array<string>();
-            console.log('source loa trailer  mapping ', s.loaVehicles);
             for (const loaTrailer of s.loaVehicles) {
-              console.log('trailer', loaTrailer);
               if (loaTrailer.trailer) {
-                console.log('if trailer', loaTrailer);
                 const trailer: string = loaTrailer.trailer;
                 loaTrailers.push(trailer);
               }
