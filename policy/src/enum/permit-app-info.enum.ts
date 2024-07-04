@@ -1,6 +1,6 @@
 /**
  * This enum represents a subset of commonly-used paths and
- * other information in permit applications which may be 
+ * other information in permit applications which may be
  * referenced from within source code.
  */
 export enum PermitAppInfo {

@@ -1,29 +1,34 @@
-import * as React from "react";
-import Button from "@mui/material/Button";
-import ClickAwayListener from "@mui/material/ClickAwayListener";
-import Grow from "@mui/material/Grow";
-import Paper from "@mui/material/Paper";
-import Popper from "@mui/material/Popper";
-import MenuItem from "@mui/material/MenuItem";
-import MenuList from "@mui/material/MenuList";
-import Stack from "@mui/material/Stack";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import {
+  useState,
+  useRef,
+  useEffect,
+  SyntheticEvent,
+  MouseEvent as ReactMouseEvent,
+  KeyboardEvent,
+} from "react";
 
+import {
+  Button,
+  ClickAwayListener,
+  Grow,
+  Paper,
+  Popper,
+  MenuItem,
+  MenuList,
+  Stack,
+} from "@mui/material";
+
+import "./AddVehicleButton.scss";
 import { VEHICLES_ROUTES } from "../../../../routes/constants";
 import { VEHICLE_TYPES, VehicleType } from "../../types/Vehicle";
 
-/**
- *
- * Code taken largely from MUI MenuList Composition
- * https://mui.com/material-ui/react-menu/#menulist-composition
- *
- *
- */
 export const AddVehicleButton = () => {
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const anchorRef = React.useRef<HTMLButtonElement>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const anchorRef = useRef<HTMLButtonElement>(null);
+  const navigate = useNavigate();
 
   const options = [
     {
@@ -40,17 +45,16 @@ export const AddVehicleButton = () => {
     setIsMenuOpen((prevOpen) => !prevOpen);
   };
 
-  const handleClose = (event: Event | React.SyntheticEvent) => {
+  const handleClose = (event: Event | SyntheticEvent) => {
     if (anchorRef.current?.contains(event.target as HTMLElement)) {
       return;
     }
 
     setIsMenuOpen(false);
   };
-  const navigate = useNavigate();
-
+  
   const handleMenuItemClick = (
-    _event: React.MouseEvent<HTMLLIElement, MouseEvent>,
+    _event: ReactMouseEvent<HTMLLIElement, MouseEvent>,
     _index: number,
     vehicleMode: VehicleType,
   ) => {
@@ -63,7 +67,7 @@ export const AddVehicleButton = () => {
     setIsMenuOpen(false);
   };
 
-  const handleListKeyDown = (event: React.KeyboardEvent) => {
+  const handleListKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Tab") {
       event.preventDefault();
       setIsMenuOpen(false);
@@ -73,8 +77,8 @@ export const AddVehicleButton = () => {
   };
 
   // return focus to the button when we transitioned from !open -> open
-  const prevOpen = React.useRef(isMenuOpen);
-  React.useEffect(() => {
+  const prevOpen = useRef(isMenuOpen);
+  useEffect(() => {
     if (prevOpen.current === true && isMenuOpen === false) {
       // eslint-disable-next-line  @typescript-eslint/no-non-null-assertion
       anchorRef.current!.focus();
@@ -84,8 +88,12 @@ export const AddVehicleButton = () => {
   }, [isMenuOpen]);
 
   return (
-    <Stack direction="row" spacing={2}>
-      <div>
+    <Stack
+      direction="row"
+      spacing={2}
+      className="add-vehicle"
+    >
+      <div className="add-vehicle__container">
         <Button
           ref={anchorRef}
           id="composition-button"
@@ -94,10 +102,12 @@ export const AddVehicleButton = () => {
           aria-expanded={isMenuOpen ? "true" : undefined}
           aria-haspopup="true"
           onClick={handleToggle}
+          className="add-vehicle__button"
         >
-          Add Vehicle{" "}
-          <FontAwesomeIcon className="dash-downarrow" icon={faChevronDown} />
+          <span className="add-vehicle__label">Add Vehicle</span>
+          <FontAwesomeIcon className="add-vehicle__icon" icon={faChevronDown} />
         </Button>
+
         <Popper
           open={isMenuOpen}
           anchorEl={anchorRef.current}
@@ -105,7 +115,7 @@ export const AddVehicleButton = () => {
           placement="bottom-end"
           transition
           disablePortal
-          sx={{ zIndex: 5 }} // Show above all other elements
+          className="add-vehicle__popper"
         >
           {({ TransitionProps, placement }) => (
             <Grow

@@ -1,17 +1,16 @@
-import PolicyDefinition from './interface/policy-definition.interface';
+import { PolicyDefinition } from './types/policy-definition.type';
 import { extractIdentifiedObjects } from './helper/lists.helper';
-import PermitType from './interface/permit-type.interface';
+import { PermitType } from './types/permit-type.type';
 import { Engine, EngineResult } from 'json-rules-engine';
 import { getRulesEngines } from './helper/rules-engine.helper';
-import PermitApplication from './type/permit-application.type';
-import ValidationResults from './validation-results';
-import ValidationResult from './validation-result';
+import { ValidationResults } from './validation-results';
+import { ValidationResult } from './validation-result';
 import { addRuntimeFacts, transformPermitFacts } from './helper/facts.helper';
 import { ValidationResultType } from './enum/validation-result-type.enum';
 import { ValidationResultCode } from './enum/validation-result-code.enum';
 
 /** Class representing commercial vehicle policy. */
-class Policy {
+export class Policy {
   /** Object representation of policy definition and rules. */
   policyDefinition: PolicyDefinition;
 
@@ -37,7 +36,7 @@ class Policy {
    * @param permit The permit application to validate against policy
    * @returns Results of the validation of the permit application
    */
-  async validate(permit: PermitApplication): Promise<ValidationResults> {
+  async validate(permit: any): Promise<ValidationResults> {
     const engine = this.rulesEngines.get(permit.permitType);
     if (!engine) {
       // If the permit type being validated has no configuration in the
@@ -49,7 +48,7 @@ class Policy {
           ValidationResultType.Violation,
           ValidationResultCode.PermitTypeUnknown,
           `Permit type ${permit.permitType} unknown`,
-        )
+        ),
       );
       return validationResult;
     } else {
@@ -91,11 +90,16 @@ class Policy {
 
   /**
    * Gets a list of all configured commodities in the policy definition.
+   * @param permitTypeId Return only commodities valid for this permit type.
+   *   If not supplied, return all commodities configured in policy. If permit
+   *   type does not require commodity (e.g. 'TROS'), return all commodities.
    * @returns Map of commodity IDs to commodity names.
    */
-  getCommodities(): Map<string, string> {
+  getCommodities(permitTypeId?: string): Map<string, string> {
+    const permitType = this.getPermitTypeDefinition(permitTypeId);
     const commodities = extractIdentifiedObjects(
       this.policyDefinition.commodities,
+      permitType?.allowedCommodities,
     );
     return commodities;
   }
@@ -127,7 +131,7 @@ class Policy {
    * @param type Type ID of the permit definition to return.
    * @returns PermitType definition for the supplied ID.
    */
-  getPermitTypeDefinition(type: string): PermitType | null {
+  getPermitTypeDefinition(type?: string): PermitType | null {
     let permitType: PermitType | undefined;
     if (this.policyDefinition.permitTypes) {
       permitType = this.policyDefinition.permitTypes.find((p) => p.id === type);
@@ -140,5 +144,3 @@ class Policy {
     }
   }
 }
-
-export default Policy;
