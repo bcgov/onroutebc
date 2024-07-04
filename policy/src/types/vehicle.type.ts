@@ -1,21 +1,19 @@
-import { SizeDimension } from './size-dimension.interface';
 import {
+  SizeDimension,
   PowerUnitWeightDimension,
   TrailerWeightDimension,
-} from './weight-dimension.interface';
+} from 'onroute-policy-engine/types';
 
-interface Vehicle {
+export type Vehicle = {
   type: string;
   canFollow: Array<string>;
   sizeDimensions?: Array<SizeDimension>;
-}
+};
 
-interface PowerUnit extends Vehicle {
+export type PowerUnit = Vehicle & {
   weightDimensions?: Array<PowerUnitWeightDimension>;
-}
+};
 
-interface Trailer extends Vehicle {
+export type Trailer = Vehicle & {
   weightDimensions?: Array<TrailerWeightDimension>;
-}
-
-export { Vehicle, PowerUnit, Trailer };
+};

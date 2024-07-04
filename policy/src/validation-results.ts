@@ -4,7 +4,7 @@ import { ValidationResultCode } from './enum/validation-result-code.enum';
 import { ValidationResult } from './validation-result';
 
 /** Represents the results of a permit application validation against policy */
-class ValidationResults {
+export class ValidationResults {
   /** Array of policy violations found during validation. */
   violations: Array<ValidationResult> = [];
   /**
@@ -31,11 +31,19 @@ class ValidationResults {
   constructor(engineResult?: EngineResult) {
     if (engineResult) {
       engineResult.events.forEach((e) => {
-        let message: string = e.params?.message ?? `Unknown message: params=${JSON.stringify(e.params)}`;
-        let code: string = e.params?.code ?? ValidationResultCode.GeneralResult;
-        let type: string = e.type ?? ValidationResultType.Violation.toString();
+        const message: string =
+          e.params?.message ??
+          `Unknown message: params=${JSON.stringify(e.params)}`;
+        const code: string =
+          e.params?.code ?? ValidationResultCode.GeneralResult;
+        const type: string =
+          e.type ?? ValidationResultType.Violation.toString();
 
-        let result: ValidationResult = new ValidationResult(type, code, message);
+        const result: ValidationResult = new ValidationResult(
+          type,
+          code,
+          message,
+        );
         result.fieldReference = e.params?.fieldReference;
 
         switch (type) {
@@ -55,15 +63,15 @@ class ValidationResults {
             // Treat any unknown validation event as a violation since
             // it is an unexpected scenario.
             console.log('Unknown validation event encountered');
-            this.violations.push(new ValidationResult(
-              ValidationResultType.Violation,
-              ValidationResultCode.GeneralResult,
-              'Unknown validation event encountered'
-            ));
+            this.violations.push(
+              new ValidationResult(
+                ValidationResultType.Violation,
+                ValidationResultCode.GeneralResult,
+                'Unknown validation event encountered',
+              ),
+            );
         }
       });
     }
   }
 }
-
-export default ValidationResults;
