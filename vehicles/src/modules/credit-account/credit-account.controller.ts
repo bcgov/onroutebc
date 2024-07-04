@@ -47,7 +47,7 @@ import { UpdateCreditAccountStatusDto } from './dto/request/update-credit-accoun
 @Controller('companies/:companyId/credit-account')
 export class CreditAccountController {
   constructor(private readonly creditAccountService: CreditAccountService) {}
-
+// dev pr comment
   /**
    * Creates a credit account.
    *
