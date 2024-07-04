@@ -1,7 +1,6 @@
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import {
-  BadRequestException,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -78,7 +77,7 @@ export class CreditAccountService {
    * @param {number} createParams.companyId - The ID of the company for which the credit account is being created.
    * @param {CreditAccountLimitType} createParams.creditLimit - The credit limit type for the new account.
    * @returns {Promise<ReadCreditAccountDto>} - The created credit account data transfer object.
-   * @throws {BadRequestException} - If validation of the credit account creation fails.
+   * @throws {UnprocessableEntityException} - If validation of the credit account creation fails.
    * @throws {InternalServerErrorException} - If the creation of any required entity in the CFS system fails.
    * @memberof CreditAccountService
    */
@@ -322,7 +321,7 @@ export class CreditAccountService {
    * @param {string} params.comment - A comment detailing the reason for the status change.
    * @param {IUserJWT} currentUser - The current user performing the update.
    * @returns {Promise<ReadCreditAccountDto>} - The updated credit account data transfer object.
-   * @throws {BadRequestException} - If validation fails (e.g., invalid transitions or account not found).
+   * @throws {UnprocessableEntityException} - If validation fails (e.g., invalid transitions or account not found).
    * @memberof CreditAccountService
    */
   @LogAsyncMethodExecution()
@@ -347,14 +346,14 @@ export class CreditAccountService {
     );
 
     if (!creditAccount) {
-      // If no credit account is found, throw BadRequestException
-      throw new BadRequestException(
+      // If no credit account is found, throw UnprocessableEntityException
+      throwUnprocessableEntityException(
         'Invalid CreditAccount/Company combination',
       );
     }
 
     if (statusToUpdateTo === creditAccount.creditAccountStatusType) {
-      throw new BadRequestException(
+      throwUnprocessableEntityException(
         `Credit Account already in status: ${statusToUpdateTo}`,
       );
     }
@@ -363,7 +362,7 @@ export class CreditAccountService {
       statusToUpdateTo === CreditAccountStatusValid.ACCOUNT_ON_HOLD &&
       isClosedCreditAccount(creditAccount)
     ) {
-      throw new BadRequestException(
+      throwUnprocessableEntityException(
         'Cannot move a closed Credit Account to on hold',
       );
     }
@@ -443,10 +442,10 @@ export class CreditAccountService {
    *
    * This method checks whether the company associated with the provided company ID is already a user
    * of another credit account or if the company already has a credit account. If either condition
-   * is met, it throws a BadRequestException to prevent the creation of a duplicate credit account.
+   * is met, it throws a UnprocessableEntityException to prevent the creation of a duplicate credit account.
    *
    * @param {number} companyId - The ID of the company for which the credit account is being created.
-   * @throws {BadRequestException} - If the company is already a user of another credit account
+   * @throws {UnprocessableEntityException} - If the company is already a user of another credit account
    *                                 or if the company already has a credit account.
    * @private
    * @memberof CreditAccountService
@@ -458,7 +457,7 @@ export class CreditAccountService {
       },
     );
     if (companyIsAlreadyAUser) {
-      throw new BadRequestException(
+      throwUnprocessableEntityException(
         'Company is already a user of another credit account.',
       );
     }
@@ -473,7 +472,9 @@ export class CreditAccountService {
         },
       });
     if (companyAlreadyHasCreditAccount) {
-      throw new BadRequestException('Company already has a credit account.');
+      throwUnprocessableEntityException(
+        'Company already has a credit account.',
+      );
     }
   }
 
@@ -485,7 +486,7 @@ export class CreditAccountService {
    * @param creditAccountId - The ID of the credit account.
    * @param createUserDto - The data transfer object for creating a user.
    * @returns {Promise<ReadCreditAccountUserDto>} - The result of the add or activate process.
-   * @throws BadRequestException - If the credit account or company combination is invalid.
+   * @throws UnprocessableEntityException - If the credit account or company combination is invalid.
    * @throws InternalServerErrorException - If user update or creation fails.
    */
   @LogAsyncMethodExecution()
@@ -629,7 +630,7 @@ export class CreditAccountService {
    * @param creditAccountId - The ID of the credit account.
    * @param companyData - Object containing company IDs for deactivation.
    * @returns {Promise<DeleteDto>} - The result of the deactivation process.
-   * @throws BadRequestException - If the credit account or company combination is invalid.
+   * @throws UnprocessableEntityException - If the credit account or company combination is invalid.
    * @throws InternalServerErrorException - If deactivation fails.
    */
   @LogAsyncMethodExecution()
@@ -650,8 +651,8 @@ export class CreditAccountService {
     );
 
     if (!creditAccount) {
-      // If no credit account is found, throw BadRequestException
-      throw new BadRequestException(
+      // If no credit account is found, throw UnprocessableEntityException
+      throwUnprocessableEntityException(
         'Invalid CreditAccount/Company combination',
       );
     }
