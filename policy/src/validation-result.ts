@@ -1,5 +1,3 @@
-import { ValidationResultType } from './enum/validation-result-type.enum';
-
 /**
  * Represents a single validation result when a permit application is
  * validated against policy. A single validation run can result in multiple
@@ -24,5 +22,3 @@ export class ValidationResult {
   message: string;
   fieldReference?: string;
 }
-
-export default ValidationResult;
