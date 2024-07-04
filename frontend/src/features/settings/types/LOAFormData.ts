@@ -21,8 +21,6 @@ export interface LOAFormData {
   neverExpires: boolean;
   uploadFile: Nullable<{
     fileName: string;
-    fileSize: number;
-    fileMimeType: string;
   }> | File;
   additionalNotes?: Nullable<string>;
   selectedVehicles: {
@@ -34,7 +32,7 @@ export interface LOAFormData {
 export const loaDetailToFormData = (
   loaDetail?: Nullable<LOADetail>,
 ): LOAFormData => {
-  const loaDetailPermitTypes = getDefaultRequiredVal([], loaDetail?.permitTypes);
+  const loaDetailPermitTypes = getDefaultRequiredVal([], loaDetail?.loaPermitType);
   const permitTypes = {
     [PERMIT_TYPES.STOS]: loaDetailPermitTypes.includes(PERMIT_TYPES.STOS),
     [PERMIT_TYPES.TROS]: loaDetailPermitTypes.includes(PERMIT_TYPES.TROS),
@@ -49,28 +47,27 @@ export const loaDetailToFormData = (
     loaDetail?.startDate,
     now(),
   );
-  const neverExpires = getDefaultRequiredVal(false, loaDetail?.neverExpires);
-  const expiryDate = neverExpires ? null : applyWhenNotNullable(
+  const expiryDate = applyWhenNotNullable(
     expiryDateStr => getEndOfDate(toLocalDayjs(expiryDateStr)),
     loaDetail?.expiryDate,
     null,
   );
-  const additionalNotes = getDefaultRequiredVal("", loaDetail?.additionalNotes);
+  const neverExpires = !expiryDate;
+  const additionalNotes = getDefaultRequiredVal("", loaDetail?.comment);
   const powerUnits = applyWhenNotNullable(
     powerUnitsArr => Object.fromEntries(powerUnitsArr.map(powerUnitId => [powerUnitId, null])),
-    loaDetail?.selectedVehicles?.powerUnits,
+    loaDetail?.powerUnits,
     {},
   );
   const trailers = applyWhenNotNullable(
     trailersArr => Object.fromEntries(trailersArr.map(trailerId => [trailerId, null])),
-    loaDetail?.selectedVehicles?.trailers,
+    loaDetail?.trailers,
     {},
   );
-  const defaultFile = loaDetail?.documentName && loaDetail.documentSize ? {
-    fileName: loaDetail.documentName,
-    fileSize: loaDetail.documentSize,
-    fileMimeType: "application/pdf",
-  } : null;
+  const defaultFile = {
+    fileName: "",
+    // fileName: getDefaultRequiredVal("", loaDetail?.documentName),
+  };
 
   return {
     permitTypes,

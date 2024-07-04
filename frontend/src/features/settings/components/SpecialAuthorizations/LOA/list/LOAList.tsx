@@ -11,7 +11,7 @@ import {
 } from "material-react-table";
 
 import "./LOAList.scss";
-import { LOA } from "../../../../types/SpecialAuthorization";
+import { LOADetail } from "../../../../types/SpecialAuthorization";
 import { DATE_FORMATS, toLocal } from "../../../../../../common/helpers/formatDate";
 import { applyWhenNotNullable } from "../../../../../../common/helpers/util";
 import { CustomActionLink } from "../../../../../../common/components/links/CustomActionLink";
@@ -28,32 +28,33 @@ export const LOAList = ({
   onEdit,
   onDelete,
 }: {
-  loas: LOA[];
+  loas: LOADetail[];
   isActive: boolean;
   allowEditLOA: boolean;
-  onEdit: (loaNumber: string) => void;
-  onDelete?: (loaNumber: string) => void;
+  onEdit: (loaId: string) => void;
+  onDelete?: (loaId: string) => void;
 }) => {
-  const handleEditLOA = (loaNumber: string) => {
+  const handleEditLOA = (loaId: string) => {
     if (!allowEditLOA) return;
-    onEdit(loaNumber);
+    onEdit(loaId);
   };
 
   const handleDownloadLOA = (documentId: number | string) => {
     console.log(`Download document ${documentId}`); //
   };
 
-  const columns = useMemo<MRT_ColumnDef<LOA>[]>(
+  const columns = useMemo<MRT_ColumnDef<LOADetail>[]>(
     () => [
       {
         Cell: (
           props: { cell: any; row: any }
         ) => {
+          const loaId = `${props.row.original.loaId}`;
           const loaNumber = `${props.row.original.loaNumber}`;
           return allowEditLOA ? (
             <CustomActionLink
               className="loa-list__link loa-list__link--edit-loa"
-              onClick={() => handleEditLOA(loaNumber)}
+              onClick={() => handleEditLOA(loaId)}
             >
               {loaNumber}
             </CustomActionLink>
@@ -152,8 +153,8 @@ export const LOAList = ({
       ({
         row,
       }: {
-        table: MRT_TableInstance<LOA>;
-        row: MRT_Row<LOA>;
+        table: MRT_TableInstance<LOADetail>;
+        row: MRT_Row<LOADetail>;
       }) => isActive && allowEditLOA ? (
         <div className="loa-list__row-actions">
           <Tooltip arrow placement="top" title="Delete">
@@ -163,7 +164,7 @@ export const LOAList = ({
               }}
               onClick={() => {
                 if (!isActive) return;
-                onDelete?.(row.getValue("loaNumber"));
+                onDelete?.(row.getValue("loaId"));
               }}
               disabled={false}
             >

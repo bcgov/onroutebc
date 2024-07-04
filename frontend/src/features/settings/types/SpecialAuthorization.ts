@@ -26,30 +26,35 @@ export const noFeePermitTypeDescription = (noFeePermitType: NoFeePermitType) => 
   }
 };
 
-export interface LOA {
+export interface LOADetail {
+  loaId: string;
   loaNumber: string;
+  companyId: number;
   startDate: string;
   expiryDate?: Nullable<string>;
-  documentId: number;
-};
-
-export interface LOADetail extends LOA {
-  permitTypes: PermitType[];
-  neverExpires: boolean;
-  documentName: string;
-  documentSize: number;
-  additionalNotes?: Nullable<string>;
-  selectedVehicles: {
-    powerUnits: string[];
-    trailers: string[];
-  };
+  documentId: string;
+  loaPermitType: PermitType[];
+  comment?: Nullable<string>;
+  powerUnits: string[];
+  trailers: string[];
 }
 
-export interface LOARequestData extends Omit<
-  LOADetail,
-  "documentId"
-  | "loaNumber"
-> {
-  loaNumber?: Nullable<string>;
-  documentId?: Nullable<number>;
+export interface CreateLOARequestData {
+  startDate: string;
+  expiryDate?: Nullable<string>;
+  loaPermitType: PermitType[];
+  // document: Buffer;
+  comment?: Nullable<string>;
+  powerUnits: string[];
+  trailers: string[];
+}
+
+export interface UpdateLOARequestData {
+  startDate: string;
+  expiryDate?: Nullable<string>;
+  loaPermitType: PermitType[];
+  // document?: Buffer;
+  comment?: Nullable<string>;
+  powerUnits: string[];
+  trailers: string[];
 }

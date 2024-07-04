@@ -97,10 +97,10 @@ export const SpecialAuthorizations = ({
     setLOAToEdit(null);
   };
 
-  const handleEditLOA = (loaNumber: string) => {
+  const handleEditLOA = (loaId: string) => {
     if (!canWriteLOA) return;
     setShowLOASteps(true);
-    setLOAToEdit(loaNumber);
+    setLOAToEdit(loaId);
   };
 
   const handleExitLOASteps = () => {
@@ -108,18 +108,18 @@ export const SpecialAuthorizations = ({
     setLOAToEdit(null);
   };
 
-  const handleOpenDeleteModal = (loaNumber: string) => {
+  const handleOpenDeleteModal = (loaId: string) => {
     if (!canWriteLOA) return;
-    setLOAToDelete(loaNumber);
+    setLOAToDelete(loaId);
   };
 
   const handleCloseDeleteModal = () => {
     setLOAToDelete(null);
   };
 
-  const handleDeleteLOA = (loaNumber: string) => {
+  const handleDeleteLOA = (loaId: string) => {
     if (canWriteLOA) {
-      console.log(`Deleting LOA ${loaNumber}...`); //
+      console.log(`Deleting LOA ${loaId}...`); //
     }
     
     setLOAToDelete(null);
@@ -207,9 +207,9 @@ export const SpecialAuthorizations = ({
           showModal={showExpiredLOAs}
           handleCancel={() => setShowExpiredLOAs(false)}
           expiredLOAs={expiredLOAs}
-          handleEdit={(loaNumber) => {
+          handleEdit={(loaId) => {
             setShowExpiredLOAs(false);
-            handleEditLOA(loaNumber);
+            handleEditLOA(loaId);
           }}
         />
       ) : null}
@@ -226,7 +226,7 @@ export const SpecialAuthorizations = ({
     </div>
   ) : canWriteLOA ? (
     <LOASteps
-      loaNumber={LOAToEdit}
+      loaId={LOAToEdit}
       companyId={companyId}
       onExit={handleExitLOASteps}
     />

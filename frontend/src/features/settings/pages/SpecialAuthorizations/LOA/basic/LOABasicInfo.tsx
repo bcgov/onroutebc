@@ -71,8 +71,6 @@ const uploadRules = {
     requiredLOAUpload: (
       value: Nullable<{
         fileName: string;
-        fileSize: number;
-        fileMimeType: string;
       }> | File,
     ) => {
       return Boolean(value) || requiredUpload("LOA");
@@ -80,27 +78,23 @@ const uploadRules = {
     lessThanSizeLimit: (
       value: Nullable<{
         fileName: string;
-        fileSize: number;
-        fileMimeType: string;
       }> | File,
     ) => {
       const fileSizeLimit = 10 * 1024 * 1024;
       return !value
-        || (value instanceof File && value.size < fileSizeLimit)
-        || ("fileSize" in value && value.fileSize < fileSizeLimit)
+        || !(value instanceof File)
+        || value.size < fileSizeLimit
         || uploadSizeExceeded();
     },
     mustBePdf: (
       value: Nullable<{
         fileName: string;
-        fileSize: number;
-        fileMimeType: string;
       }> | File,
     ) => {
       const fileFormat = "application/pdf";
       return !value
-        || (value instanceof File && value.type === fileFormat)
-        || ("fileMimeType" in value && value.fileMimeType === fileFormat)
+        || !(value instanceof File)
+        || value.type === fileFormat
         || invalidUploadFormat();
     },
   }
@@ -125,12 +119,6 @@ export const LOABasicInfo = () => {
     file => (file instanceof File) ? file.name : file?.fileName,
     uploadFile,
     "",
-  );
-
-  const fileSize = applyWhenNotNullable(
-    file => (file instanceof File) ? file.size : file?.fileSize,
-    uploadFile,
-    0,
   );
 
   const selectPermitType = (
@@ -321,7 +309,6 @@ export const LOABasicInfo = () => {
             {fileExists ? (
               <UploadedFile
                 fileName={fileName}
-                fileSize={fileSize}
                 onDelete={deleteFile}
               />
             ) : (

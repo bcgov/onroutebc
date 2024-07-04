@@ -14,11 +14,11 @@ import { LOAFormData, loaDetailToFormData } from "../../../types/LOAFormData";
 import { useFetchLOADetail } from "../../../hooks/LOA";
 
 export const LOASteps = ({
-  loaNumber,
+  loaId,
   companyId,
   onExit,
 }: {
-  loaNumber?: Nullable<string>;
+  loaId?: Nullable<string>;
   companyId: number;
   onExit: () => void;
 }) => {
@@ -28,7 +28,7 @@ export const LOASteps = ({
     labelForLOAStep(LOA_STEPS.REVIEW),
   ];
 
-  const { data: loaDetail } = useFetchLOADetail(companyId, loaNumber);
+  const { data: loaDetail } = useFetchLOADetail(companyId, loaId);
   const loaFormData = loaDetailToFormData(loaDetail);
 
   const formMethods = useForm<LOAFormData>({

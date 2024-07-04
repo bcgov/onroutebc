@@ -31,20 +31,20 @@ export const useFetchLOAs = (companyId: number | string, expired: boolean) => {
 /**
  * Hook to fetch the LOA details for a company's LOA.
  * @param companyId Company id of the company to fetch LOA for
- * @param loaNumber LOA number of the LOA to fetch
+ * @param loaId id of the LOA to fetch
  * @returns Query result of the LOA details
  */
-export const useFetchLOADetail = (companyId: number, loaNumber?: Nullable<string>) => {
+export const useFetchLOADetail = (companyId: number, loaId?: Nullable<string>) => {
   return useQuery({
-    queryKey: [LOA_QUERY_KEY, loaNumber],
+    queryKey: [LOA_QUERY_KEY, loaId],
     queryFn: () => {
-      if (!loaNumber) return undefined;
-      return getLOADetail(companyId, loaNumber);
+      if (!loaId) return undefined;
+      return getLOADetail(companyId, loaId);
     },
     retry: false,
     refetchOnMount: "always",
     refetchOnWindowFocus: false,
-    enabled: Boolean(loaNumber),
+    enabled: Boolean(loaId),
   });
 };
 

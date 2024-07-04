@@ -1,4 +1,4 @@
-import { LOA, LOADetail } from "../types/SpecialAuthorization";
+import { LOADetail } from "../types/SpecialAuthorization";
 import { LOAFormData } from "../types/LOAFormData";
 import { SPECIAL_AUTH_API_ROUTES } from "./endpoints/endpoints";
 import { PERMIT_TYPES } from "../../permits/types/PermitType";
@@ -11,147 +11,223 @@ import {
 
 const activeLOAs = [
   {
+    loaId: "1",
     loaNumber: "100638",
+    companyId: 74,
     startDate: "2023-02-10 00:00:00",
     expiryDate: "2023-02-10 00:00:00",
-    documentId: 1,
+    documentId: "1",
+    loaPermitType: [PERMIT_TYPES.TROS, PERMIT_TYPES.TROW],
+    comment: "This is LOA 100638",
+    powerUnits: ["74"],
+    trailers: ["74"],
   },
   {
+    loaId: "2",
     loaNumber: "100425",
+    companyId: 74,
     startDate: "2023-02-10 00:00:00",
-    documentId: 2,
+    documentId: "2",
+    loaPermitType: [PERMIT_TYPES.TROS],
+    comment: "This is LOA 100425",
+    powerUnits: ["74"],
+    trailers: [],
   },
 ];
 
 const expiredLOAs = [
   {
+    loaId: "3",
     loaNumber: "100638",
     startDate: "2023-02-10 00:00:00",
     expiryDate: "2023-02-10 00:00:00",
-    documentId: 1,
+    documentId: "3",
+    companyId: 74,
+    loaPermitType: [PERMIT_TYPES.TROS, PERMIT_TYPES.TROW],
+    comment: "This is LOA 100638",
+    powerUnits: ["74"],
+    trailers: ["74"],
   },
   {
+    loaId: "4",
     loaNumber: "100638",
     startDate: "2023-02-10 00:00:00",
     expiryDate: "2023-02-10 00:00:00",
-    documentId: 1,
+    documentId: "4",
+    companyId: 74,
+    loaPermitType: [PERMIT_TYPES.TROS, PERMIT_TYPES.TROW],
+    comment: "This is LOA 100638",
+    powerUnits: ["74"],
+    trailers: ["74"],
   },
   {
+    loaId: "5",
     loaNumber: "100638",
     startDate: "2023-02-10 00:00:00",
     expiryDate: "2023-02-10 00:00:00",
-    documentId: 1,
+    documentId: "5",
+    companyId: 74,
+    loaPermitType: [PERMIT_TYPES.TROS, PERMIT_TYPES.TROW],
+    comment: "This is LOA 100638",
+    powerUnits: ["74"],
+    trailers: ["74"],
   },
   {
+    loaId: "6",
     loaNumber: "100638",
     startDate: "2023-02-10 00:00:00",
     expiryDate: "2023-02-10 00:00:00",
-    documentId: 1,
+    documentId: "6",
+    companyId: 74,
+    loaPermitType: [PERMIT_TYPES.TROS, PERMIT_TYPES.TROW],
+    comment: "This is LOA 100638",
+    powerUnits: ["74"],
+    trailers: ["74"],
   },
   {
+    loaId: "7",
     loaNumber: "100638",
     startDate: "2023-02-10 00:00:00",
     expiryDate: "2023-02-10 00:00:00",
-    documentId: 1,
+    documentId: "7",
+    companyId: 74,
+    loaPermitType: [PERMIT_TYPES.TROS, PERMIT_TYPES.TROW],
+    comment: "This is LOA 100638",
+    powerUnits: ["74"],
+    trailers: ["74"],
   },
   {
+    loaId: "8",
     loaNumber: "100638",
     startDate: "2023-02-10 00:00:00",
     expiryDate: "2023-02-10 00:00:00",
-    documentId: 1,
+    documentId: "8",
+    companyId: 74,
+    loaPermitType: [PERMIT_TYPES.TROS, PERMIT_TYPES.TROW],
+    comment: "This is LOA 100638",
+    powerUnits: ["74"],
+    trailers: ["74"],
   },
   {
+    loaId: "9",
     loaNumber: "100638",
     startDate: "2023-02-10 00:00:00",
     expiryDate: "2023-02-10 00:00:00",
-    documentId: 1,
+    documentId: "9",
+    companyId: 74,
+    loaPermitType: [PERMIT_TYPES.TROS, PERMIT_TYPES.TROW],
+    comment: "This is LOA 100638",
+    powerUnits: ["74"],
+    trailers: ["74"],
   },
   {
+    loaId: "10",
     loaNumber: "100638",
     startDate: "2023-02-10 00:00:00",
     expiryDate: "2023-02-10 00:00:00",
-    documentId: 1,
+    documentId: "10",
+    companyId: 74,
+    loaPermitType: [PERMIT_TYPES.TROS, PERMIT_TYPES.TROW],
+    comment: "This is LOA 100638",
+    powerUnits: ["74"],
+    trailers: ["74"],
   },
   //
   {
+    loaId: "11",
     loaNumber: "100638",
     startDate: "2023-02-10 00:00:00",
     expiryDate: "2023-02-10 00:00:00",
-    documentId: 1,
+    documentId: "11",
+    companyId: 74,
+    loaPermitType: [PERMIT_TYPES.TROS, PERMIT_TYPES.TROW],
+    comment: "This is LOA 100638",
+    powerUnits: ["74"],
+    trailers: ["74"],
   },
   {
+    loaId: "12",
     loaNumber: "100638",
     startDate: "2023-02-10 00:00:00",
     expiryDate: "2023-02-10 00:00:00",
-    documentId: 1,
+    documentId: "12",
+    companyId: 74,
+    loaPermitType: [PERMIT_TYPES.TROS, PERMIT_TYPES.TROW],
+    comment: "This is LOA 100638",
+    powerUnits: ["74"],
+    trailers: ["74"],
   },
   {
+    loaId: "13",
     loaNumber: "100638",
     startDate: "2023-02-10 00:00:00",
     expiryDate: "2023-02-10 00:00:00",
-    documentId: 1,
+    documentId: "13",
+    companyId: 74,
+    loaPermitType: [PERMIT_TYPES.TROS, PERMIT_TYPES.TROW],
+    comment: "This is LOA 100638",
+    powerUnits: ["74"],
+    trailers: ["74"],
   },
   {
+    loaId: "14",
     loaNumber: "100638",
     startDate: "2023-02-10 00:00:00",
     expiryDate: "2023-02-10 00:00:00",
-    documentId: 1,
+    documentId: "14",
+    companyId: 74,
+    loaPermitType: [PERMIT_TYPES.TROS, PERMIT_TYPES.TROW],
+    comment: "This is LOA 100638",
+    powerUnits: ["74"],
+    trailers: ["74"],
   },
   {
+    loaId: "15",
     loaNumber: "100638",
     startDate: "2023-02-10 00:00:00",
     expiryDate: "2023-02-10 00:00:00",
-    documentId: 1,
+    documentId: "15",
+    companyId: 74,
+    loaPermitType: [PERMIT_TYPES.TROS, PERMIT_TYPES.TROW],
+    comment: "This is LOA 100638",
+    powerUnits: ["74"],
+    trailers: ["74"],
   },
   {
+    loaId: "16",
     loaNumber: "100638",
     startDate: "2023-02-10 00:00:00",
     expiryDate: "2023-02-10 00:00:00",
-    documentId: 1,
+    documentId: "16",
+    companyId: 74,
+    loaPermitType: [PERMIT_TYPES.TROS, PERMIT_TYPES.TROW],
+    comment: "This is LOA 100638",
+    powerUnits: ["74"],
+    trailers: ["74"],
   },
   {
+    loaId: "17",
     loaNumber: "100638",
     startDate: "2023-02-10 00:00:00",
     expiryDate: "2023-02-10 00:00:00",
-    documentId: 1,
+    documentId: "17",
+    companyId: 74,
+    loaPermitType: [PERMIT_TYPES.TROS, PERMIT_TYPES.TROW],
+    comment: "This is LOA 100638",
+    powerUnits: ["74"],
+    trailers: ["74"],
   },
   {
+    loaId: "18",
     loaNumber: "100638",
     startDate: "2023-02-10 00:00:00",
     expiryDate: "2023-02-10 00:00:00",
-    documentId: 1,
-  },
-];
-
-const loaDetails = [
-  {
-    loaNumber: "100638",
-    startDate: "2023-02-10 00:00:00",
-    expiryDate: "2023-02-10 00:00:00",
-    documentId: 1,
-    permitTypes: [PERMIT_TYPES.TROS, PERMIT_TYPES.TROW],
-    neverExpires: false,
-    documentName: "document1.pdf",
-    documentSize: 5000000,
-    additionalNotes: "This is LOA 100638",
-    selectedVehicles: {
-      powerUnits: ["74"],
-      trailers: ["74"],
-    },
-  },
-  {
-    loaNumber: "100425",
-    startDate: "2023-02-10 00:00:00",
-    documentId: 2,
-    permitTypes: [PERMIT_TYPES.TROS],
-    neverExpires: true,
-    documentName: "document2.pdf",
-    documentSize: 4000000,
-    additionalNotes: "This is LOA 100425",
-    selectedVehicles: {
-      powerUnits: ["74"],
-      trailers: [],
-    },
+    documentId: "18",
+    companyId: 74,
+    loaPermitType: [PERMIT_TYPES.TROS, PERMIT_TYPES.TROW],
+    comment: "This is LOA 100638",
+    powerUnits: ["74"],
+    trailers: ["74"],
   },
 ];
 
@@ -164,7 +240,7 @@ const loaDetails = [
 export const getLOAs = async (
   companyId: number | string,
   expired: boolean,
-): Promise<LOA[]> => {
+): Promise<LOADetail[]> => {
   /*
   const response = await httpGETRequest(
     SPECIAL_AUTH_API_ROUTES.LOA.ALL(companyId, expired),
@@ -181,22 +257,23 @@ export const getLOAs = async (
 /**
  * Get the LOA detail for a specific LOA.
  * @param companyId Company id of the company to get LOA for
- * @param loaNumber LOA number of the LOA to fetch
+ * @param loaId id of the LOA to fetch
  * @returns LOA detail for a given LOA
  */
 export const getLOADetail = async (
   companyId: number | string,
-  loaNumber: string,
+  loaId: string,
 ): Promise<LOADetail> => {
   /*
   const response = await httpGETRequest(
-    SPECIAL_AUTH_API_ROUTES.LOA.DETAIL(companyId, loaNumber),
+    SPECIAL_AUTH_API_ROUTES.LOA.DETAIL(companyId, loaId),
   );
   return response.data;
   */
-  const loa = loaDetails.find(l => l.loaNumber === loaNumber);
-  if (!loa) throw new Error(`LOA ${loaNumber} not found`);
-  return loa;
+  const activeLoa = activeLOAs.find(l => l.loaId === loaId);
+  const expiredLoa = expiredLOAs.find(l => l.loaId === loaId);
+  if (!activeLoa && !expiredLoa) throw new Error(`LOA ${loaId} not found`);
+  return (activeLoa ?? expiredLoa) as LOADetail;
 };
 
 /**
@@ -225,13 +302,13 @@ export const createLOA = async (
 export const updateLOA = async (
   LOAData: {
     companyId: number | string;
-    loaNumber: string;
+    loaId: string;
     data: LOAFormData;
   },
 ) => {
-  const { companyId, loaNumber, data } = LOAData;
+  const { companyId, loaId, data } = LOAData;
   return await httpPUTRequest(
-    SPECIAL_AUTH_API_ROUTES.LOA.UPDATE(companyId, loaNumber),
+    SPECIAL_AUTH_API_ROUTES.LOA.UPDATE(companyId, loaId),
     data,
   );
 };
@@ -244,11 +321,11 @@ export const updateLOA = async (
 export const removeLOA = async (
   LOAData: {
     companyId: number | string;
-    loaNumber: string;
+    loaId: string;
   },
 ) => {
-  const { companyId, loaNumber } = LOAData;
+  const { companyId, loaId } = LOAData;
   return await httpDELETERequest(
-    SPECIAL_AUTH_API_ROUTES.LOA.REMOVE(companyId, loaNumber),
+    SPECIAL_AUTH_API_ROUTES.LOA.REMOVE(companyId, loaId),
   );
 };
