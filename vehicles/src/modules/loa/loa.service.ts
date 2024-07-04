@@ -28,7 +28,6 @@ export class LoaService {
     createLoaDto: CreateLoaDto,
     companyId: number,
   ): Promise<ReadLoaDto> {
-    console.log(companyId);
     const loa = this.classMapper.map(createLoaDto, CreateLoaDto, LoaDetail, {
       extraArgs: () => ({ companyId: companyId }),
     });
@@ -49,6 +48,13 @@ export class LoaService {
       loaDetailQB = loaDetailQB.andWhere('loaDetail.expiryDate < :expiryDate', {
         expiryDate: new Date(),
       });
+    } else {
+      loaDetailQB = loaDetailQB.andWhere(
+        'loaDetail.expiryDate >= :expiryDate',
+        {
+          expiryDate: new Date(),
+        },
+      );
     }
     const loaDetail: LoaDetail[] = await loaDetailQB.getMany();
     const readLoaDto = this.classMapper.mapArray(
@@ -98,9 +104,10 @@ export class LoaService {
   async update(
     currentUser: IUserJWT,
     companyId: number,
+    loaId: string,
     updateLoaDto: UpdateLoaDto,
   ): Promise<ReadLoaDto> {
-    const { loaId, powerUnits, trailers, loaPermitType } = updateLoaDto;
+    const { powerUnits, trailers, loaPermitType } = updateLoaDto;
 
     // Fetch existing LOA detail
     const existingLoaDetail = await this.getById(companyId, loaId);

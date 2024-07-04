@@ -24,6 +24,7 @@ import { Request } from 'express';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
 import { UpdateLoaDto } from './dto/request/update-loa.dto';
+import { GetLoaQueryParamsDto } from './dto/request/getLoa.query-params.dto';
 
 @ApiBearerAuth()
 @ApiTags('Company Letter of Authorization')
@@ -68,9 +69,9 @@ export class LoaController {
   @Get()
   async get(
     @Param('companyId') companyId: number,
-    @Query('expired') expired: boolean,
+    @Query() getloaQueryParamsDto: GetLoaQueryParamsDto,
   ): Promise<ReadLoaDto[]> {
-    const loa = await this.loaService.get(companyId, expired);
+    const loa = await this.loaService.get(companyId, getloaQueryParamsDto.expired);
     return loa;
   }
 
@@ -93,16 +94,18 @@ export class LoaController {
     description: 'Updates and returns the Loa Object from database.',
   })
   @Roles(Role.READ_PERMIT)
-  @Put()
+  @Put('/:loaId')
   async update(
     @Req() request: Request,
     @Param('companyId') companyId: number,
+    @Param('loaId') loaId: string,
     @Body() updateLoaDto: UpdateLoaDto,
   ): Promise<ReadLoaDto> {
     const currentUser = request.user as IUserJWT;
     const loa = await this.loaService.update(
       currentUser,
       companyId,
+      loaId,
       updateLoaDto,
     );
     return loa;

@@ -11,16 +11,6 @@ import { PermitType } from 'src/common/enum/permit-type.enum';
 
 export class UpdateLoaDto {
   @AutoMap()
-  @ApiProperty({
-    example: '1',
-    description: 'Unique identifier for the LoA.',
-  })
-  @IsOptional()
-  @IsNumberString()
-  @MaxLength(20)
-  loaId: string;
-
-  @AutoMap()
   @IsString()
   @MaxLength(24)
   @ApiProperty({
