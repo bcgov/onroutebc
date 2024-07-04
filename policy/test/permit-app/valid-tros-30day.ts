@@ -1,4 +1,4 @@
-import PermitApplication from '../../src/type/permit-application.type';
+import PermitApplication from './permit-application.type';
 
 export const validTros30Day: PermitApplication = {
   permitType: 'TROS',

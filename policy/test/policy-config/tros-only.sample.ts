@@ -1,4 +1,4 @@
-import PolicyDefinition from '../../src/interface/policy-definition.interface';
+import { PolicyDefinition } from '../../src/types/policy-definition.type';
 
 export const trosOnly: PolicyDefinition = {
   version: '2024.03.18.001',
