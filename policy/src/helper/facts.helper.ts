@@ -38,9 +38,7 @@ export function addRuntimeFacts(engine: Engine): void {
  * @param permitApplication Permit application object to flatten.
  * @returns Flattened permit application object for validation.
  */
-export function transformPermitFacts(
-  permitApplication: any,
-): PermitFacts {
+export function transformPermitFacts(permitApplication: any): PermitFacts {
   // Flatten the permit application so all properties can be accessed
   // by key
   const permitFacts: PermitFacts = flattie(permitApplication);

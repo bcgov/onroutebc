@@ -49,11 +49,11 @@
     },
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
+      "^.+\\.ts$": "ts-jest"
     },
     "collectCoverage": true,
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "**/*.js"
     ],
     "coverageDirectory": "./coverage",
     "coveragePathIgnorePatterns": [
