@@ -1,56 +1,44 @@
 import { Box, Typography } from "@mui/material";
-import { useCallback, useContext, useEffect } from "react";
+import { useCallback } from "react";
 import {
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
-
-import { SnackBarContext } from "../../../../App";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
-import { useCreditAccountHistoryQuery } from "../../hooks/creditAccount";
 import { CreditAccountHistoryColumnsDefinition } from "../../types/CreditAccountHistoryColumns";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile.d";
 import "./HistoryTable.scss";
+import { useGetCreditAccountQuery } from "../../hooks/creditAccount";
 
 /**
  * Hold/Close history component for credit account.
  */
 export const HistoryTable = () => {
   const {
-    data: creditAccountHistory,
+    data: creditAccount,
     isLoading,
-    isError: fetchCreditAccountHistoryError,
-    // refetch: refetchCreditAccountHistory,
-  } = useCreditAccountHistoryQuery();
+    isError: fetchCreditAccountError,
+  } = useGetCreditAccountQuery();
 
-  const { setSnackBar } = useContext(SnackBarContext);
-
-  useEffect(() => {
-    if (fetchCreditAccountHistoryError) {
-      setSnackBar({
-        message: "An unexpected error occurred.",
-        showSnackbar: true,
-        setShowSnackbar: () => true,
-        alertType: "error",
-      });
-    }
-  }, [fetchCreditAccountHistoryError]);
+  const creditAccountActivities = [
+    ...(creditAccount?.creditAccountActivities ?? []),
+  ].reverse();
 
   const table = useMaterialReactTable({
     ...defaultTableOptions,
     columns: CreditAccountHistoryColumnsDefinition,
-    data: creditAccountHistory ?? [],
+    data: creditAccountActivities ?? [],
     initialState: {
       ...defaultTableInitialStateOptions,
     },
     state: {
       ...defaultTableStateOptions,
-      showAlertBanner: fetchCreditAccountHistoryError,
+      showAlertBanner: fetchCreditAccountError,
       showProgressBars: isLoading,
       isLoading: isLoading,
     },
@@ -103,7 +91,7 @@ export const HistoryTable = () => {
     muiTableBodyCellProps: {
       className: "history-table__cell",
     },
-    muiToolbarAlertBannerProps: fetchCreditAccountHistoryError
+    muiToolbarAlertBannerProps: fetchCreditAccountError
       ? {
           color: "error",
           children: "Error loading data",

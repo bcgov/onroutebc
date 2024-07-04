@@ -1,44 +1,61 @@
-import { MRT_ColumnDef } from "material-react-table";
-import { CompanyProfile } from "../../../features/manageProfile/types/manageProfile";
-import { UPDATE_STATUS_ACTIONS, UpdateStatusActionType } from "./creditAccount";
+import { MRT_ColumnDef, MRT_Row } from "material-react-table";
+import {
+  CreditAccountActivity,
+  CreditAccountActivityDisplayValues,
+} from "./creditAccount";
 
-const getStatusCellValue = (activityType: UpdateStatusActionType) => {
-  switch (activityType) {
-    case UPDATE_STATUS_ACTIONS.HOLD_CREDIT_ACCOUNT:
-      return "Account Held";
-    case UPDATE_STATUS_ACTIONS.UNHOLD_CREDIT_ACCOUNT:
-      return "Account Unheld";
-    case UPDATE_STATUS_ACTIONS.CLOSE_CREDIT_ACCOUNT:
-      return "Account Closed";
-    case UPDATE_STATUS_ACTIONS.REOPEN_CREDIT_ACCOUNT:
-      return "Account Reopened";
-  }
+const formatDate = (dateString: string): string => {
+  const date = new Date(dateString);
+
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: "America/Los_Angeles", // PDT time zone
+    timeZoneName: "short",
+  };
+
+  return date.toLocaleString("en-US", options);
 };
 
 /**
  * The column definition for credit account history table.
  */
-export const CreditAccountHistoryColumnsDefinition: MRT_ColumnDef<CompanyProfile>[] =
+export const CreditAccountHistoryColumnsDefinition: MRT_ColumnDef<CreditAccountActivity>[] =
   [
     {
-      accessorKey: "IDIR",
+      accessorKey: "userName",
       header: "IDIR",
     },
     {
-      accessorKey: "activityDateTime",
+      accessorKey: "creditAccountActivityDateTime",
       header: "Date",
+      Cell: (props: { row: any }) => {
+        return (
+          <span>
+            {formatDate(props.row.original.creditAccountActivityDateTime)}
+          </span>
+        );
+      },
     },
     {
-      accessorKey: "reason",
+      accessorKey: "comment",
       header: "Reason",
     },
     {
-      accessorKey: "activityType",
+      accessorKey: "creditAccountActivityType",
       header: "Status",
-      Cell: (props: { row: any }) => {
+      Cell: (props: { row: MRT_Row<CreditAccountActivity> }) => {
         return (
           <span className="cell__text">
-            {getStatusCellValue(props.row.original.activityType)}
+            {
+              CreditAccountActivityDisplayValues[
+                props.row.original.creditAccountActivityType
+              ]
+            }
           </span>
         );
       },

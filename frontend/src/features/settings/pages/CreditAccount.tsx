@@ -16,7 +16,6 @@ import {
 import {
   useCreateCreditAccountMutation,
   useGetCreditAccountQuery,
-  useCreditAccountHistoryQuery,
 } from "../hooks/creditAccount";
 import { AddUser } from "../components/creditAccount/AddUser";
 import { AccountDetails } from "../components/creditAccount/AccountDetails";
@@ -56,8 +55,6 @@ export const CreditAccount = ({ companyId }: { companyId: number }) => {
 
   const { data: creditAccount } = useGetCreditAccountQuery();
 
-  const { data: creditAccountHistory } = useCreditAccountHistoryQuery();
-
   const createCreditAccountMutation = useCreateCreditAccountMutation();
 
   const {
@@ -96,8 +93,9 @@ export const CreditAccount = ({ companyId }: { companyId: number }) => {
                   : "Account User"}
               </Typography>
             </Box>
-            {creditAccountHistory && <HistoryTable />}
-            {canUpdateCreditAccount(userRoles) && <AddUser />}
+            {creditAccount.creditAccountActivities && <HistoryTable />}
+            {canUpdateCreditAccount(userRoles) &&
+              creditAccount.creditAccountStatusType !== "CLOSED" && <AddUser />}
             {showCreditAccountDetails && <UserTable />}
           </Box>
           <AccountDetails />

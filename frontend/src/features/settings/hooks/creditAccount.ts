@@ -5,7 +5,6 @@ import {
   createCreditAccount,
   getCreditAccount,
   removeCreditAccountUsers,
-  getCreditAccountHistory,
   getCreditAccountUsers,
   updateCreditAccountStatus,
 } from "../apiManager/creditAccount";
@@ -49,24 +48,6 @@ export const useGetCreditAccountUsersQuery = (creditAccountId: number) => {
       "users",
     ],
     queryFn: () => getCreditAccountUsers(creditAccountId),
-  });
-};
-
-/**
- * Hook to fetch the company hold/close history list.
- * @returns Query result of the company hold/close history list
- */
-export const useCreditAccountHistoryQuery = () => {
-  return useQuery({
-    queryKey: [
-      "credit-account",
-      { companyId: getCompanyIdFromSession() },
-      "history",
-    ],
-    queryFn: () => getCreditAccountHistory(),
-    retry: false,
-    refetchOnMount: "always",
-    refetchOnWindowFocus: false,
   });
 };
 
@@ -218,20 +199,6 @@ export const useRemoveCreditAccountUsersMutation = (data: {
               )
             : [],
       );
-      // queryClient.setQueryData(
-      //   ["credit-account"],
-      //   (prevCreditAccount: CreditAccountData) =>
-      //     prevCreditAccount
-      //       ? {
-      //           ...prevCreditAccount,
-      //           creditAccountUsers: [
-      //             prevCreditAccount.creditAccountUsers.filter(
-      //               (user) => !companyIds.includes(user.companyId),
-      //             ),
-      //           ],
-      //         }
-      //       : undefined,
-      // );
 
       return () => {
         queryClient.setQueryData(

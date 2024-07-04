@@ -56,6 +56,21 @@ const creditAccount: CreditAccountData = {
   creditAccountType: "UNSECURED",
   creditAccountNumber: "WS5005",
   creditAccountStatusType: "ACTIVE",
+  creditAccountActivities: [
+    {
+      creditAccountActivityType: "CLOSED",
+      creditAccountActivityDateTime: "2024-01-16T18:14:00.000Z",
+      userName: "RFARREL",
+      comment:
+        "I'm baby yes plz chambray seitan master cleanse, actually banh mi same plaid art party cloud bread blog. Wayfarers praxis bodega boys ramps brunch. Cardigan kinfolk viral brunch flannel keytar. Franzen stumptown lomo mixtape vape, fingerstache organic.",
+    },
+    {
+      creditAccountActivityType: "REOPENED",
+      creditAccountActivityDateTime: "2024-07-02T18:04:54.000Z",
+      userName: "RFARREL",
+      comment: "",
+    },
+  ],
   companyId: 74,
   availableCredit: "1000",
   creditLimit: "1000",
@@ -65,18 +80,6 @@ const creditAccount: CreditAccountData = {
     creditAccountUserA,
     creditAccountUserB,
   ],
-};
-
-const prepaidCreditAccount: CreditAccountData = {
-  creditAccountId: 16,
-  creditAccountType: "PREPAID",
-  creditAccountNumber: "WS5064",
-  creditAccountStatusType: "ACTIVE",
-  companyId: 74,
-  availableCredit: "PREPAID",
-  creditLimit: "PREPAID",
-  creditBalance: 0,
-  creditAccountUsers: [creditAccountHolder],
 };
 
 /**
@@ -93,21 +96,6 @@ export const createCreditAccount = async (
   );
 };
 
-// create a method the posts (using httpPOST...), then create a query hook that calls this method, and use that hook inside the page component
-const mockCreateCreditAccountSuccess = async (
-  url: string,
-): Promise<CreditAccountResponse> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        ok: true,
-        status: 201,
-        data: creditAccount,
-      });
-    }, 1000);
-  });
-};
-
 /**
  * Get credit account information for the active company.
  * @returns Credit account information for the active company
@@ -117,34 +105,6 @@ export const getCreditAccount = async () => {
     CREDIT_ACCOUNT_API_ROUTES.GET_CREDIT_ACCOUNT(),
   );
   return response.data;
-};
-
-// create a method the gets (using httpGET...), then create a query hook that calls this method, and use that hook inside the page component
-const mockGetCreditAccountSuccess = async (
-  url: string,
-): Promise<CreditAccountResponse> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        ok: true,
-        status: 200,
-        data: creditAccount,
-      });
-    }, 1000);
-  });
-};
-
-const mockGetCreditAccountFail = async (
-  url: string,
-): Promise<CreditAccountResponse> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        ok: false,
-        status: 404,
-      });
-    }, 1000);
-  });
 };
 
 export const getCreditAccountUsers = async (creditAccountId: number) => {
@@ -174,32 +134,6 @@ export const addCreditAccountUser = async (data: {
   return response;
 };
 
-// create a method the gets (using httpGET...), then create a query hook that calls this method, and use that hook inside the page component
-const mockAddCreditAccountUserSuccess = async (
-  url: string,
-  newUser: CreditAccountUser,
-): Promise<CreditAccountResponse> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        ok: true,
-        status: 200,
-        data: {
-          creditAccountId: 1,
-          creditAccountType: "SECURED",
-          creditAccountNumber: "WS7456",
-          creditAccountStatusType: "ACTIVE",
-          companyId: 1,
-          creditLimit: "100000",
-          creditBalance: 25000,
-          availableCredit: "75000",
-          creditAccountUsers: [newUser],
-        },
-      });
-    }, 1000);
-  });
-};
-
 /**
  * Removes active users of a credit account identified by their client numbers.
  * @param userClientNumbers The array of user client numbers of the users to be removed.
@@ -217,20 +151,6 @@ export const removeCreditAccountUsers = async (data: {
     },
   );
   return response;
-};
-
-const mockRemoveCreditAccountUsersSuccess = async (
-  url: string,
-  userClientNumbers: string[],
-): Promise<CreditAccountResponse> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        ok: true,
-        status: 200,
-      });
-    }, 1000);
-  });
 };
 
 /**
@@ -254,72 +174,3 @@ export const updateCreditAccountStatus = async (data: {
   );
   return response;
 };
-
-/**
- * Get the hold/close history list for a given company.
- * @param companyId Company id of the company to get hold/close history for
- * @returns List of hold/close history for the given company
- */
-export const getCreditAccountHistory = async () => {
-  const response = await mockGetCreditAccountHistorySuccess(
-    CREDIT_ACCOUNT_API_ROUTES.GET_HISTORY(),
-  );
-  return response.data;
-};
-
-// create a method the gets (using httpGET...), then create a query hook that calls this method, and use that hook inside the page component
-const mockGetCreditAccountHistorySuccess = async (
-  url: string,
-): Promise<CreditAccountHistoryResponse> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        ok: true,
-        status: 200,
-        data: [
-          {
-            activityId: "A1",
-            activityType: "ONHOLD",
-            activityDateTime: "Jan. 16, 2024, 10:14 am PDT",
-            IDIR: "RFARREL",
-            reason:
-              "I'm baby yes plz chambray seitan master cleanse, actually banh mi same plaid art party cloud bread blog. Wayfarers praxis bodega boys ramps brunch. Cardigan kinfolk viral brunch flannel keytar. Franzen stumptown lomo mixtape vape, fingerstache organic.",
-          },
-          {
-            activityId: "A2",
-            activityType: "ACTIVE",
-            activityDateTime: "Jan. 18, 2023, 9:07 am PDT",
-            IDIR: "RFARREL",
-            reason: "",
-          },
-        ],
-      });
-    }, 1000);
-  });
-};
-
-// create a method the gets (using httpGET...), then create a query hook that calls this method, and use that hook inside the page component
-const mockGetCreditAccountHistoryFail = async (
-  url: string,
-): Promise<CreditAccountHistoryResponse> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        ok: false,
-        status: 404,
-      });
-    }, 1000);
-  });
-};
-
-interface CreditAccountResponse {
-  ok: boolean;
-  status: number;
-  data?: CreditAccountData;
-}
-
-interface CreditAccountHistoryResponse {
-  ok: boolean;
-  status: number;
-  data?: CreditAccountHistoryData[];
-}

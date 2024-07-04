@@ -43,8 +43,25 @@ export const CREDIT_ACCOUNT_LIMIT_CHOOSE_FROM_OPTIONS = [
 ];
 
 export type CreditAccountType = "SECURED" | "UNSECURED" | "PREPAID";
-export type CreditAccountStatusType = "ACTIVE" | "ONHOLD" | "CLOSED";
 export type CreditAccountUserType = "HOLDER" | "USER";
+export type CreditAccountStatusType = "ACTIVE" | "ONHOLD" | "CLOSED";
+
+export type CreditAccountActivityType =
+  | "OPENED"
+  | "REOPENED"
+  | "CLOSED"
+  | "HOLDRMVD"
+  | "ONHOLD";
+
+export const CreditAccountActivityDisplayValues: {
+  [key in CreditAccountActivityType]: string;
+} = {
+  OPENED: "Account Opened",
+  CLOSED: "Account Closed",
+  REOPENED: "Account Reopened",
+  ONHOLD: "On Hold",
+  HOLDRMVD: "Hold Removed",
+};
 
 export const CreditAccountStatusDisplayValues: {
   [key in CreditAccountStatusType]: string;
@@ -54,16 +71,31 @@ export const CreditAccountStatusDisplayValues: {
   CLOSED: "Closed",
 };
 
+export const UPDATE_STATUS_ACTIONS = {
+  HOLD_CREDIT_ACCOUNT: "HOLD",
+  UNHOLD_CREDIT_ACCOUNT: "UNHOLD",
+  CLOSE_CREDIT_ACCOUNT: "CLOSE",
+  REOPEN_CREDIT_ACCOUNT: "REOPEN",
+};
+
+export interface CreditAccountActivity {
+  creditAccountActivityDateTime: string;
+  creditAccountActivityType: CreditAccountActivityType;
+  comment: string;
+  userName: string;
+}
+
 export interface CreditAccountData {
-  availableCredit: string;
-  companyId: number;
   creditAccountId: number;
+  companyId: number;
+  creditAccountType: CreditAccountType;
   creditAccountNumber: string;
   creditAccountStatusType: CreditAccountStatusType;
-  creditAccountType: CreditAccountType;
+  creditAccountActivities: CreditAccountActivity[];
   creditAccountUsers: CreditAccountUser[];
-  creditBalance: number;
+  availableCredit: string;
   creditLimit: CreditAccountLimitType;
+  creditBalance: number;
 }
 
 export interface CreditAccountUser
@@ -79,13 +111,6 @@ export interface CreditAccountUser
   > {
   userType: CreditAccountUserType;
 }
-
-export const UPDATE_STATUS_ACTIONS = {
-  HOLD_CREDIT_ACCOUNT: "HOLD",
-  UNHOLD_CREDIT_ACCOUNT: "UNHOLD",
-  CLOSE_CREDIT_ACCOUNT: "CLOSE",
-  REOPEN_CREDIT_ACCOUNT: "REOPEN",
-};
 
 export type UpdateStatusActionType =
   (typeof UPDATE_STATUS_ACTIONS)[keyof typeof UPDATE_STATUS_ACTIONS];
