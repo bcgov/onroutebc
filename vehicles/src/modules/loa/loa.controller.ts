@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -71,7 +72,10 @@ export class LoaController {
     @Param('companyId') companyId: number,
     @Query() getloaQueryParamsDto: GetLoaQueryParamsDto,
   ): Promise<ReadLoaDto[]> {
-    const loa = await this.loaService.get(companyId, getloaQueryParamsDto.expired);
+    const loa = await this.loaService.get(
+      companyId,
+      getloaQueryParamsDto.expired,
+    );
     return loa;
   }
 
@@ -108,6 +112,20 @@ export class LoaController {
       loaId,
       updateLoaDto,
     );
+    return loa;
+  }
+
+  @ApiOperation({
+    summary: 'Delete LOA by Id.',
+    description: 'Returns the Loa Object in database.',
+  })
+  @Roles(Role.READ_PERMIT)
+  @Delete('/:loaId')
+  async delete(
+    @Param('companyId') companyId: number,
+    @Param('loaId') loaId: string,
+  ): Promise<ReadLoaDto> {
+    const loa = await this.loaService.delete(companyId, loaId);
     return loa;
   }
 }

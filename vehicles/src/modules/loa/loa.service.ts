@@ -192,4 +192,27 @@ export class LoaService {
       await queryRunner.release();
     }
   }
+
+  @LogAsyncMethodExecution()
+  async delete(companyId: number, loaId: string): Promise<ReadLoaDto> {
+    try {
+      const loaDetail = await this.loaDetailRepository.findOne({
+        where: {
+          company: { companyId: companyId },
+        },
+        relations: ['company', 'loaVehicles', 'loaPermitTypes'],
+      });
+
+      if (!loaDetail) {
+        throw new Error(
+          `LOA detail not found for companyId ${companyId} and loaId ${loaId}`,
+        );
+      }
+      const loa = await this.loaDetailRepository.remove(loaDetail);
+      const readLoaDto = this.classMapper.map(loa, LoaDetail, ReadLoaDto);
+      return readLoaDto;
+    } catch (error) {
+      throw new Error(`Failed to fetch LOA detail: ${error}`);
+    }
+  }
 }
