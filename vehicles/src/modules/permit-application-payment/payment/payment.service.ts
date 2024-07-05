@@ -119,10 +119,10 @@ export class PaymentService {
       return acc;
     }, new Map<string, number>());
 
-    // Format the output string
+    // Format the output string as <<index>>:<<gl code>>:<<transaction amount>> where index starts from 1
     const revenue = Array.from(groupedGlCodes.entries())
       .map(([glCode, amount], index) => `${index + 1}:${glCode}:${amount}`)
-      .join(', ');
+      .join('|');
 
     // There should be a better way of doing this which is not as rigid - something like
     // dynamically removing the hashValue param from the actual query string instead of building
