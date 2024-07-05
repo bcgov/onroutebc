@@ -106,35 +106,35 @@ export const loaDetailToFormData = (
  */
 export const serializeLOAFormData = (loaFormData: LOAFormData) => {
   const requestData = new FormData();
-  requestData.set(
+  requestData.append(
     "startDate",
     dayjsToLocalStr(loaFormData.startDate, DATE_FORMATS.DATEONLY),
   );
 
   if (loaFormData.expiryDate) {
-    requestData.set(
+    requestData.append(
       "expiryDate",
       dayjsToLocalStr(loaFormData.expiryDate, DATE_FORMATS.DATEONLY),
     );
   }
 
-  requestData.set(
+  requestData.append(
     "comment",
     getDefaultRequiredVal("", loaFormData.additionalNotes),
   );
 
   Object.entries(loaFormData.permitTypes).forEach(([permitType, selected]) => {
     if (selected) {
-      requestData.append("loaPermitType", permitType);
+      requestData.append("loaPermitType[]", permitType);
     }
   });
 
   Object.keys(loaFormData.selectedVehicles.powerUnits).forEach(vehicleId => {
-    requestData.append("powerUnits", vehicleId);
+    requestData.append("powerUnits[]", vehicleId);
   });
 
   Object.keys(loaFormData.selectedVehicles.trailers).forEach(vehicleId => {
-    requestData.append("trailers", vehicleId);
+    requestData.append("trailers[]", vehicleId);
   });
 
   if (loaFormData.uploadFile instanceof File) {

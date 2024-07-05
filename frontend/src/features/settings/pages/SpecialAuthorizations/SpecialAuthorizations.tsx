@@ -10,7 +10,7 @@ import { LOAList } from "../../components/SpecialAuthorizations/LOA/list/LOAList
 import { ExpiredLOAModal } from "../../components/SpecialAuthorizations/LOA/expired/ExpiredLOAModal";
 import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
 import { LOASteps } from "./LOA/LOASteps";
-import { useFetchLOAs } from "../../hooks/LOA";
+import { useFetchLOAs, useRemoveLOAMutation } from "../../hooks/LOA";
 import { getDefaultNullableVal, getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { NoFeePermitType } from "../../types/SpecialAuthorization";
 import { NoFeePermitsSection } from "../../components/SpecialAuthorizations/NoFeePermits/NoFeePermitsSection";
@@ -77,6 +77,7 @@ export const SpecialAuthorizations = ({
 
   const activeLOAsQuery = useFetchLOAs(companyId, false);
   const expiredLOAsQuery = useFetchLOAs(companyId, true);
+  const removeLOAMutation = useRemoveLOAMutation();
 
   const activeLOAs = getDefaultRequiredVal([], activeLOAsQuery.data);
   const expiredLOAs = getDefaultRequiredVal([], expiredLOAsQuery.data);
@@ -117,9 +118,12 @@ export const SpecialAuthorizations = ({
     setLOAToDelete(null);
   };
 
-  const handleDeleteLOA = (loaId: string) => {
+  const handleDeleteLOA = async (loaId: string) => {
     if (canWriteLOA) {
-      console.log(`Deleting LOA ${loaId}...`); //
+      await removeLOAMutation.mutateAsync({
+        companyId,
+        loaId,
+      });
     }
     
     setLOAToDelete(null);

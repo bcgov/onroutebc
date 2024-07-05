@@ -327,7 +327,7 @@ export const removeLOA = async (
     companyId: number | string;
     loaId: string;
   },
-) => {
+): Promise<AxiosResponse<LOADetail>> => {
   const { companyId, loaId } = LOAData;
   return await httpDELETERequest(
     SPECIAL_AUTH_API_ROUTES.LOA.REMOVE(companyId, loaId),

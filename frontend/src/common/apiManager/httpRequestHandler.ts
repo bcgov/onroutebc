@@ -192,10 +192,10 @@ export const httpPOSTRequest = (url: string, data: any) => {
  * @param data The request payload containing file to upload.
  * @returns A Promise<Response> with the response from the API.
  */
-export const httpPOSTRequestWithFile = (url: string, data: any) => {
+export const httpPOSTRequestWithFile = (url: string, data: FormData) => {
   return axios.post(url, data, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": `multipart/form-data`,
       Authorization: getAccessToken(),
       "X-Correlation-ID": getCorrelationId(),
     },
@@ -224,10 +224,10 @@ export const httpPUTRequest = (url: string, data: any) => {
  * @param data The request payload containing file to upload.
  * @returns A Promise<Response> with the response from the API.
  */
-export const httpPUTRequestWithFile = (url: string, data: any) => {
+export const httpPUTRequestWithFile = (url: string, data: FormData) => {
   return axios.put(url, data, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": `multipart/form-data`,
       Authorization: getAccessToken(),
       "X-Correlation-ID": getCorrelationId(),
     },
