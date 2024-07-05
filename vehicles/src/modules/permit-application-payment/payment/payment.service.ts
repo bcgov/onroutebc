@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -39,7 +40,6 @@ import { convertToHash } from 'src/common/helper/crypto.helper';
 import { UpdatePaymentGatewayTransactionDto } from './dto/request/update-payment-gateway-transaction.dto';
 import { PaymentCardType } from './entities/payment-card-type.entity';
 import { PaymentMethodType } from './entities/payment-method-type.entity';
-import { LogMethodExecution } from '../../../common/decorator/log-method-execution.decorator';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
 import { PermitHistoryDto } from '../permit/dto/response/permit-history.dto';
 import {
@@ -51,6 +51,10 @@ import { CfsFileStatus } from 'src/common/enum/cfs-file-status.enum';
 import { isAmendmentApplication } from '../../../common/helper/permit-application.helper';
 import { isCfsPaymentMethodType } from 'src/common/helper/payment.helper';
 import { PgApprovesStatus } from 'src/common/enum/pg-approved-status-type.enum';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import { CacheKey } from 'src/common/enum/cache-key.enum';
+import { getFromCache } from '../../../common/helper/cache.helper';
 
 @Injectable()
 export class PaymentService {
@@ -68,6 +72,8 @@ export class PaymentService {
     @InjectRepository(Permit)
     private permitRepository: Repository<Permit>,
     @InjectMapper() private readonly classMapper: Mapper,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
 
   private generateHashExpiry = (currDate?: Date) => {
@@ -91,9 +97,32 @@ export class PaymentService {
     return `${year}${monthPadded}${dayPadded}${hoursPadded}${minutesPadded}`;
   };
 
-  private queryHash = (transaction: Transaction) => {
+  private queryHash = async (transaction: Transaction) => {
     const redirectUrl = process.env.PAYBC_REDIRECT;
     const date = new Date().toISOString().split('T')[0];
+
+    const glCodeDetails = await Promise.all(
+      transaction.permitTransactions.map(
+        async ({ permit: { permitType }, transactionAmount }) => ({
+          glCode: await getFromCache(
+            this.cacheManager,
+            CacheKey.PERMIT_TYPE_GL_CODE,
+            permitType,
+          ),
+          amount: transactionAmount,
+        }),
+      ),
+    );
+
+    const groupedGlCodes = glCodeDetails.reduce((acc, { glCode, amount }) => {
+      acc.set(glCode, (acc.get(glCode) || 0) + amount);
+      return acc;
+    }, new Map<string, number>());
+
+    // Format the output string as <<index>>:<<gl code>>:<<transaction amount>> where index starts from 1
+    const revenue = Array.from(groupedGlCodes.entries())
+      .map(([glCode, amount], index) => `${index + 1}:${glCode}:${amount}`)
+      .join('|');
 
     // There should be a better way of doing this which is not as rigid - something like
     // dynamically removing the hashValue param from the actual query string instead of building
@@ -108,7 +137,7 @@ export class PaymentService {
       `&glDate=${date}` +
       `&paymentMethod=${PAYBC_PAYMENT_METHOD}` +
       `&currency=${PAYMENT_CURRENCY}` +
-      `&revenue=1:${process.env.GL_CODE}:${transaction.totalTransactionAmount}` +
+      `&revenue=${revenue}` +
       `&ref2=${transaction.transactionId}`;
 
     // Generate the hash using the query string and the MD5 algorithm
@@ -122,10 +151,10 @@ export class PaymentService {
     return { queryString, payBCHash, hashExpiry };
   };
 
-  @LogMethodExecution()
-  generateUrl(transaction: Transaction): string {
+  @LogAsyncMethodExecution()
+  async generateUrl(transaction: Transaction): Promise<string> {
     // Construct the URL with the transaction details for the payment gateway
-    const { queryString, payBCHash } = this.queryHash(transaction);
+    const { queryString, payBCHash } = await this.queryHash(transaction);
     const url =
       `${process.env.PAYBC_BASE_URL}?` +
       `${queryString}` +
@@ -352,7 +381,7 @@ export class PaymentService {
         )
       ) {
         // Only payment using PayBC should generate the url
-        url = this.generateUrl(createdTransaction);
+        url = await this.generateUrl(createdTransaction);
       }
 
       if (
