@@ -7,6 +7,7 @@ import {
   removeCreditAccountUsers,
   getCreditAccountUsers,
   updateCreditAccountStatus,
+  getCompanyCreditAccount,
 } from "../apiManager/creditAccount";
 import { getCompanyDataBySearch } from "../../idir/search/api/idirSearch";
 import { useNavigate } from "react-router-dom";
@@ -25,7 +26,7 @@ import { getCompanyIdFromSession } from "../../../common/apiManager/httpRequestH
 import { SnackbarAlertType } from "../../../common/components/snackbar/CustomSnackBar";
 
 /**
- * Hook to fetch the company credit account details.
+ * Hook to fetch the company credit account details for the active user.
  * @returns Query result of the company credit account details
  */
 export const useGetCreditAccountQuery = () => {
@@ -33,6 +34,17 @@ export const useGetCreditAccountQuery = () => {
     queryKey: ["credit-account", { companyId: getCompanyIdFromSession() }],
     queryFn: getCreditAccount,
     // retry: false,
+  });
+};
+
+/**
+ * Hook to fetch the associated credit account details for the given company.
+ * @returns Query result of the company associated credit account details
+ */
+export const useGetCompanyCreditAccountQuery = (companyId: number) => {
+  return useQuery({
+    queryKey: ["credit-account", { companyId }],
+    queryFn: () => getCompanyCreditAccount(companyId),
   });
 };
 
@@ -110,42 +122,14 @@ export const useCreateCreditAccountMutation = () => {
  * @returns Result of the add user to credit account action
  */
 export const useAddCreditAccountUserMutation = () => {
-  // const queryClient = useQueryClient();
-  const navigate = useNavigate();
   const { setSnackBar } = useContext(SnackBarContext);
+  const navigate = useNavigate();
 
   return useMutation({
     mutationFn: (data: {
       creditAccountId: number;
       userData: CreditAccountUser;
     }) => addCreditAccountUser(data),
-    // TODO investigate this optimistic update (currently causes AddUserModal to display isExistingUser state)
-    // onMutate: async (variables) => {
-    //   const { creditAccountId, userData } = variables;
-
-    //   await queryClient.cancelQueries({
-    //     queryKey: ["credit-account", { creditAccountId }, "users"],
-    //   });
-
-    //   const snapshot = queryClient.getQueryData([
-    //     "credit-account",
-    //     { creditAccountId },
-    //     "users",
-    //   ]);
-
-    //   queryClient.setQueryData(
-    //     ["credit-account", { creditAccountId }, "users"],
-    //     (prevCreditAccountUsers: CreditAccountUser[]) =>
-    //       prevCreditAccountUsers ? [...prevCreditAccountUsers, userData] : [],
-    //   );
-
-    //   return () => {
-    //     queryClient.setQueryData(
-    //       ["credit-account", { creditAccountId }, "users"],
-    //       snapshot,
-    //     );
-    //   };
-    // },
     onSuccess: () => {
       setSnackBar({
         showSnackbar: true,
@@ -154,9 +138,7 @@ export const useAddCreditAccountUserMutation = () => {
         message: "Account User Added",
       });
     },
-    onError: () => {
-      navigate(ERROR_ROUTES.UNEXPECTED);
-    },
+    onError: () => navigate(ERROR_ROUTES.UNEXPECTED),
   });
 };
 

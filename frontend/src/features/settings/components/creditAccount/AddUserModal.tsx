@@ -1,10 +1,10 @@
 import { Button, Dialog } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// eslint-disable-next-line
 import { faPlusCircle, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FormProvider, useForm } from "react-hook-form";
 import {
   useAddCreditAccountUserMutation,
+  useGetCompanyCreditAccountQuery,
   useGetCreditAccountQuery,
 } from "../../hooks/creditAccount";
 import { CreditAccountUser } from "../../types/creditAccount";
@@ -34,28 +34,33 @@ export const AddUserModal = ({
   };
 
   const { data: creditAccount } = useGetCreditAccountQuery();
+  const { data: userCreditAccount } = useGetCompanyCreditAccountQuery(
+    userData.companyId,
+  );
 
-  const { creditAccountUsers } = creditAccount;
+  const existingCreditAccountHolder =
+    userCreditAccount?.creditAccountUsers?.find(
+      (user: CreditAccountUser) => user.userType === "HOLDER",
+    );
 
   const { mutateAsync } = useAddCreditAccountUserMutation();
 
   const handleAddUser = async () => {
     if (creditAccount?.creditAccountId) {
-      const { status } = await mutateAsync({
-        creditAccountId: creditAccount.creditAccountId,
-        userData,
-      });
+      try {
+        const { status } = await mutateAsync({
+          creditAccountId: creditAccount.creditAccountId,
+          userData,
+        });
 
-      if (isActionSuccessful(status)) {
-        onConfirm();
+        if (isActionSuccessful(status)) {
+          onConfirm();
+        }
+      } catch (error) {
+        return;
       }
     }
   };
-
-  const isAccountHolder = userData.companyId === creditAccount?.companyId;
-  const isExistingUser = creditAccountUsers?.some(
-    (user: CreditAccountUser) => user.companyId === userData.companyId,
-  );
 
   return (
     <Dialog
@@ -94,8 +99,7 @@ export const AddUserModal = ({
               <dd className="add-user-modal__value">{userData.clientNumber}</dd>
             </div>
           </dl>
-          {/* {(isAccountHolder || isExistingUser) && (
-            TODO enable this feature
+          {existingCreditAccountHolder && (
             <div className="add-user-modal__info info">
               <div className="info__header">
                 <div className="info__icon">
@@ -109,24 +113,24 @@ export const AddUserModal = ({
                 <div className="add-user-modal__item">
                   <dt className="add-user-modal__key">Company Name</dt>
                   <dt className="add-user-modal__value">
-                    {creditAccountUsers[0]?.legalName}
+                    {existingCreditAccountHolder.legalName}
                   </dt>
                 </div>
                 <div className="add-user-modal__item">
                   <dt className="add-user-modal__key">onRouteBC</dt>
                   <dt className="add-user-modal__value">
-                    {creditAccountUsers[0]?.clientNumber}
+                    {existingCreditAccountHolder.clientNumber}
                   </dt>
                 </div>
                 <div className="add-user-modal__item">
                   <dt className="add-user-modal__key">Credit Account No.</dt>
                   <dt className="add-user-modal__value">
-                    {creditAccount?.creditAccountNumber}
+                    {userCreditAccount.creditAccountNumber}
                   </dt>
                 </div>
               </div>
             </div>
-          )} */}
+          )}
         </div>
 
         <div className="add-user-modal__footer">
@@ -141,7 +145,8 @@ export const AddUserModal = ({
           >
             Cancel
           </Button>
-          {!(isAccountHolder || isExistingUser) && (
+
+          {!userCreditAccount && (
             <Button
               key="add-user-button"
               onClick={handleSubmit(handleAddUser)}

@@ -1,5 +1,5 @@
 import { SelectCreditLimit } from "../components/creditAccount/SelectCreditLimit";
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext } from "react";
 import {
   DEFAULT_CREDIT_ACCOUNT_LIMIT,
   EMPTY_CREDIT_ACCOUNT_LIMIT_SELECT,
@@ -25,7 +25,7 @@ import {
   canUpdateCreditAccount,
   canViewCreditAccountDetails,
 } from "../helpers/permissions";
-import { HistoryTable } from "../components/creditAccount/HistoryTable";
+import { ActivityTable } from "../components/creditAccount/ActivityTable";
 import { StatusChip } from "../components/creditAccount/StatusChip";
 import "./CreditAccount.scss";
 
@@ -53,26 +53,30 @@ export const CreditAccount = ({ companyId }: { companyId: number }) => {
     );
   };
 
-  const { data: creditAccount } = useGetCreditAccountQuery();
+  const { data: creditAccount, refetch: refetchCreditAccount } =
+    useGetCreditAccountQuery();
 
   const createCreditAccountMutation = useCreateCreditAccountMutation();
 
-  const {
-    isPending: creditAccountCreationPending,
-    isSuccess: creditAccountCreationSuccess,
-  } = createCreditAccountMutation;
+  const { isPending: creditAccountCreationPending } =
+    createCreditAccountMutation;
+
+  const isActionSuccessful = (status: number) => {
+    return status === 201;
+  };
 
   const handleCreateCreditAccount = async () => {
     if (selectedCreditLimit !== EMPTY_CREDIT_ACCOUNT_LIMIT_SELECT) {
       setInvalid(false);
-      await createCreditAccountMutation.mutateAsync(selectedCreditLimit);
+      const { status } =
+        await createCreditAccountMutation.mutateAsync(selectedCreditLimit);
+      if (isActionSuccessful(status)) {
+        refetchCreditAccount();
+      }
     } else {
       setInvalid(true);
     }
   };
-
-  // re-render when credit account has been created
-  useEffect(() => {}, [creditAccountCreationSuccess]);
 
   return (
     <div className="credit-account-page">
@@ -93,7 +97,7 @@ export const CreditAccount = ({ companyId }: { companyId: number }) => {
                   : "Account User"}
               </Typography>
             </Box>
-            {creditAccount.creditAccountActivities && <HistoryTable />}
+            <ActivityTable />
             {canUpdateCreditAccount(userRoles) &&
               creditAccount.creditAccountStatusType !== "CLOSED" && <AddUser />}
             {showCreditAccountDetails && <UserTable />}

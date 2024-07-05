@@ -22,9 +22,9 @@ const formatDate = (dateString: string): string => {
 };
 
 /**
- * The column definition for credit account history table.
+ * The column definition for credit account activity history table.
  */
-export const CreditAccountHistoryColumnsDefinition: MRT_ColumnDef<CreditAccountActivity>[] =
+export const CreditAccountActivityColumnsDefinition: MRT_ColumnDef<CreditAccountActivity>[] =
   [
     {
       accessorKey: "userName",

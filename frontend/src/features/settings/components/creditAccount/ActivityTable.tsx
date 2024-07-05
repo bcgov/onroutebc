@@ -10,28 +10,35 @@ import {
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
-import { CreditAccountHistoryColumnsDefinition } from "../../types/CreditAccountHistoryColumns";
+import { CreditAccountActivityColumnsDefinition } from "../../types/CreditAccountActivityColumns";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile.d";
-import "./HistoryTable.scss";
+import "./ActivityTable.scss";
 import { useGetCreditAccountQuery } from "../../hooks/creditAccount";
+import { CreditAccountActivity } from "../../types/creditAccount";
 
 /**
- * Hold/Close history component for credit account.
+ * Hold/Close activity history component for credit account.
  */
-export const HistoryTable = () => {
+export const ActivityTable = () => {
   const {
     data: creditAccount,
     isLoading,
     isError: fetchCreditAccountError,
   } = useGetCreditAccountQuery();
 
+  // remove "Credit Account Opened" activity and reverse list
   const creditAccountActivities = [
     ...(creditAccount?.creditAccountActivities ?? []),
-  ].reverse();
+  ]
+    .filter(
+      (activity: CreditAccountActivity) =>
+        activity.creditAccountActivityType !== "OPENED",
+    )
+    .reverse();
 
   const table = useMaterialReactTable({
     ...defaultTableOptions,
-    columns: CreditAccountHistoryColumnsDefinition,
+    columns: CreditAccountActivityColumnsDefinition,
     data: creditAccountActivities ?? [],
     initialState: {
       ...defaultTableInitialStateOptions,
@@ -60,7 +67,7 @@ export const HistoryTable = () => {
     renderToolbarInternalActions: useCallback(
       () => (
         <Box className="toolbar__inner">
-          <Typography variant="h3" className="history-table__heading">
+          <Typography variant="h3" className="activity-table__heading">
             Hold / Close History
           </Typography>
         </Box>
@@ -68,28 +75,28 @@ export const HistoryTable = () => {
       [],
     ),
     muiTablePaperProps: {
-      className: "history-table__paper",
+      className: "activity-table__paper",
     },
     muiTableProps: {
       cellSpacing: 0,
     },
     muiTableContainerProps: {
-      className: "history-table__container",
+      className: "activity-table__container",
     },
     muiTopToolbarProps: {
-      className: "history-table__toolbar",
+      className: "activity-table__toolbar",
     },
     muiTableHeadProps: {
-      className: "history-table__head",
+      className: "activity-table__head",
     },
     muiTableHeadCellProps: {
-      className: "history-table__cell",
+      className: "activity-table__cell",
     },
     muiTableBodyRowProps: {
-      className: "history-table__row",
+      className: "activity-table__row",
     },
     muiTableBodyCellProps: {
-      className: "history-table__cell",
+      className: "activity-table__cell",
     },
     muiToolbarAlertBannerProps: fetchCreditAccountError
       ? {
@@ -102,8 +109,14 @@ export const HistoryTable = () => {
   });
 
   return (
-    <div className="history-table">
-      <MaterialReactTable table={table} />
+    <div>
+      {creditAccountActivities.length ? (
+        <div className="activity-table">
+          <MaterialReactTable table={table} />
+        </div>
+      ) : (
+        <></>
+      )}
     </div>
   );
 };

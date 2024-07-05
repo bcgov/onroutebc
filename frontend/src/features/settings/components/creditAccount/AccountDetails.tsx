@@ -34,6 +34,7 @@ export const AccountDetails = () => {
 
   const { data: creditAccount, refetch: refetchCreditAccount } =
     useGetCreditAccountQuery();
+
   const updateCreditAccountStatusMutation =
     useUpdateCreditAccountStatusMutation();
 
@@ -171,26 +172,30 @@ export const AccountDetails = () => {
             </Box>
           )}
         </Box>
+        {/* TODO remove mock values once API is finished */}
         <Box className="account-details__body">
           <Box className="account-details__row">
             <dt className="account-details__text">Credit Limit</dt>
             <dd className="account-details__text">
-              {creditAccount?.creditLimit &&
-                renderValue(creditAccount.creditLimit)}
+              {renderValue(100000)}
+              {/* {creditAccount?.creditLimit &&
+                renderValue(creditAccount.creditLimit)} */}
             </dd>
           </Box>
           <Box className="account-details__row">
             <dt className="account-details__text">Credit Balance</dt>
             <dd className="account-details__text">
-              {creditAccount?.creditBalance !== undefined &&
-                renderValue(creditAccount.creditBalance)}
+              {renderValue(0)}
+              {/* {creditAccount?.creditBalance &&
+                renderValue(creditAccount.creditBalance)} */}
             </dd>
           </Box>
           <Box className="account-details__row">
             <dt className="account-details__text">Available Credit</dt>
             <dd className="account-details__text">
-              {creditAccount?.availableCredit &&
-                renderValue(creditAccount.availableCredit)}
+              {renderValue(100000)}
+              {/* {creditAccount?.availableCredit &&
+                renderValue(creditAccount.availableCredit)} */}
             </dd>
           </Box>
         </Box>

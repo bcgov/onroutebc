@@ -97,7 +97,7 @@ export const createCreditAccount = async (
 };
 
 /**
- * Get credit account information for the active company.
+ * Get credit account information for the active company
  * @returns Credit account information for the active company
  */
 export const getCreditAccount = async () => {
@@ -107,6 +107,23 @@ export const getCreditAccount = async () => {
   return response.data;
 };
 
+/**
+ * Get associated credit account information for any given company
+ * @param companyId Identifier of the company whose associated credit account data you wish to retrieve
+ * @returns Credit account information for the given company
+ */
+export const getCompanyCreditAccount = async (companyId: number) => {
+  const response = await httpGETRequest(
+    CREDIT_ACCOUNT_API_ROUTES.GET_COMPANY_CREDIT_ACCOUNT(companyId),
+  );
+  return response.data;
+};
+
+/**
+ * Get credit account users for the given credit account ID
+ * @param creditAccountId Identifier of the credit account to retrieve
+ * @returns List of credit account users for the credit account
+ */
 export const getCreditAccountUsers = async (creditAccountId: number) => {
   const response = await httpGETRequest(
     CREDIT_ACCOUNT_API_ROUTES.GET_CREDIT_ACCOUNT_USERS(creditAccountId),
