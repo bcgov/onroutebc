@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { Button, Step, StepConnector, StepLabel, Stepper } from "@mui/material";
 import { FormProvider, useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 import "./LOASteps.scss";
 import { LOAStep, LOA_STEPS, labelForLOAStep } from "../../../types/LOAStep";
@@ -11,7 +12,12 @@ import { LOAReview } from "./review/LOAReview";
 import { LOABasicInfo } from "./basic/LOABasicInfo";
 import { Nullable } from "../../../../../common/types/common";
 import { LOAFormData, loaDetailToFormData } from "../../../types/LOAFormData";
-import { useFetchLOADetail } from "../../../hooks/LOA";
+import {
+  useCreateLOAMutation,
+  useFetchLOADetail,
+  useUpdateLOAMutation,
+} from "../../../hooks/LOA";
+import { ERROR_ROUTES } from "../../../../../routes/constants";
 
 export const LOASteps = ({
   loaId,
@@ -28,7 +34,10 @@ export const LOASteps = ({
     labelForLOAStep(LOA_STEPS.REVIEW),
   ];
 
+  const navigate = useNavigate();
   const { data: loaDetail } = useFetchLOADetail(companyId, loaId);
+  const createLOAMutation = useCreateLOAMutation();
+  const updateLOAMutation = useUpdateLOAMutation();
   const loaFormData = loaDetailToFormData(loaDetail);
 
   const formMethods = useForm<LOAFormData>({
@@ -36,7 +45,7 @@ export const LOASteps = ({
     reValidateMode: "onChange",
   });
 
-  const { handleSubmit, reset } = formMethods;
+  const { handleSubmit, reset, getValues } = formMethods;
 
   useEffect(() => {
     reset(loaDetailToFormData(loaDetail));
@@ -64,9 +73,22 @@ export const LOASteps = ({
     }
   };
 
-  const handleFinish = () => {
+  const handleFinish = async () => {
     // Handle submitting LOA
-    onExit();
+    const res = !loaId ? await createLOAMutation.mutateAsync({
+      companyId,
+      data: getValues(),
+    }) : await updateLOAMutation.mutateAsync({
+      companyId,
+      loaId,
+      data: getValues(),
+    });
+
+    if (res.status === 200 || res.status === 201) {
+      onExit();
+    } else {
+      navigate(ERROR_ROUTES.UNEXPECTED);
+    }
   };
 
   const stepComponent = useMemo(() => {

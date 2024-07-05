@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { Nullable } from "../../../common/types/common";
 import {
@@ -53,8 +53,15 @@ export const useFetchLOADetail = (companyId: number, loaId?: Nullable<string>) =
  * @returns Result of creating the LOA
  */
 export const useCreateLOAMutation = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: createLOA,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [LOAS_QUERY_KEY, true],
+      });
+    },
   });
 };
 
@@ -63,8 +70,18 @@ export const useCreateLOAMutation = () => {
  * @returns Result of updating the LOA
  */
 export const useUpdateLOAMutation = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: updateLOA,
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({
+        queryKey: [LOAS_QUERY_KEY, true],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [LOA_QUERY_KEY, response.data.loaId],
+      });
+    },
   });
 };
 
@@ -73,7 +90,14 @@ export const useUpdateLOAMutation = () => {
  * @returns Result of removing the LOA
  */
 export const useRemoveLOAMutation = () => {
+  const queryClient = useQueryClient();
+  
   return useMutation({
     mutationFn: removeLOA,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [LOAS_QUERY_KEY, true],
+      });
+    },
   });
 };

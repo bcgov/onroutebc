@@ -1,14 +1,17 @@
+import { AxiosResponse } from "axios";
+
 import { LOADetail } from "../types/SpecialAuthorization";
-import { LOAFormData } from "../types/LOAFormData";
+import { LOAFormData, serializeLOAFormData } from "../types/LOAFormData";
 import { SPECIAL_AUTH_API_ROUTES } from "./endpoints/endpoints";
-import { PERMIT_TYPES } from "../../permits/types/PermitType";
+// import { PERMIT_TYPES } from "../../permits/types/PermitType";
 import {
   httpDELETERequest,
-  // httpGETRequest,
-  httpPOSTRequest,
-  httpPUTRequest,
+  httpGETRequest,
+  httpPOSTRequestWithFile,
+  httpPUTRequestWithFile,
 } from "../../../common/apiManager/httpRequestHandler";
 
+/*
 const activeLOAs = [
   {
     loaId: "1",
@@ -230,6 +233,7 @@ const expiredLOAs = [
     trailers: ["74"],
   },
 ];
+*/
 
 /**
  * Get the LOAs for a given company.
@@ -241,17 +245,17 @@ export const getLOAs = async (
   companyId: number | string,
   expired: boolean,
 ): Promise<LOADetail[]> => {
-  /*
   const response = await httpGETRequest(
     SPECIAL_AUTH_API_ROUTES.LOA.ALL(companyId, expired),
   );
   return response.data;
-  */
+  /*
   if (expired) {
     return Promise.resolve(expiredLOAs);
   }
 
   return Promise.resolve(activeLOAs);
+  */
 };
 
 /**
@@ -264,16 +268,16 @@ export const getLOADetail = async (
   companyId: number | string,
   loaId: string,
 ): Promise<LOADetail> => {
-  /*
   const response = await httpGETRequest(
     SPECIAL_AUTH_API_ROUTES.LOA.DETAIL(companyId, loaId),
   );
   return response.data;
-  */
+  /*
   const activeLoa = activeLOAs.find(l => l.loaId === loaId);
   const expiredLoa = expiredLOAs.find(l => l.loaId === loaId);
   if (!activeLoa && !expiredLoa) throw new Error(`LOA ${loaId} not found`);
   return (activeLoa ?? expiredLoa) as LOADetail;
+  */
 };
 
 /**
@@ -286,11 +290,11 @@ export const createLOA = async (
     companyId: number | string;
     data: LOAFormData;
   },
-) => {
+): Promise<AxiosResponse<LOADetail>> => {
   const { companyId, data } = LOAData;
-  return await httpPOSTRequest(
+  return await httpPOSTRequestWithFile(
     SPECIAL_AUTH_API_ROUTES.LOA.CREATE(companyId),
-    data,
+    serializeLOAFormData(data),
   );
 };
 
@@ -305,11 +309,11 @@ export const updateLOA = async (
     loaId: string;
     data: LOAFormData;
   },
-) => {
+): Promise<AxiosResponse<LOADetail>> => {
   const { companyId, loaId, data } = LOAData;
-  return await httpPUTRequest(
+  return await httpPUTRequestWithFile(
     SPECIAL_AUTH_API_ROUTES.LOA.UPDATE(companyId, loaId),
-    data,
+    serializeLOAFormData(data),
   );
 };
 

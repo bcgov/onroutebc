@@ -2,10 +2,21 @@ import { Dayjs } from "dayjs";
 
 import { Nullable } from "../../../common/types/common";
 import { PERMIT_TYPES } from "../../permits/types/PermitType";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../common/helpers/util";
-import { getEndOfDate, getStartOfDate, now, toLocalDayjs } from "../../../common/helpers/formatDate";
 import { LOAVehicle } from "./LOAVehicle";
 import { LOADetail } from "./SpecialAuthorization";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../common/helpers/util";
+
+import {
+  DATE_FORMATS,
+  dayjsToLocalStr,
+  getEndOfDate,
+  getStartOfDate,
+  now,
+  toLocalDayjs,
+} from "../../../common/helpers/formatDate";
 
 export interface LOAFormData {
   permitTypes: {
@@ -29,6 +40,11 @@ export interface LOAFormData {
   };
 }
 
+/**
+ * Transform LOA detail response object to form data.
+ * @param loaDetail LOA detail object received as response
+ * @returns Form data values for the LOA
+ */
 export const loaDetailToFormData = (
   loaDetail?: Nullable<LOADetail>,
 ): LOAFormData => {
@@ -64,10 +80,10 @@ export const loaDetailToFormData = (
     loaDetail?.trailers,
     {},
   );
-  const defaultFile = {
+  const defaultFile = loaDetail?.documentId ? {
     fileName: "",
     // fileName: getDefaultRequiredVal("", loaDetail?.documentName),
-  };
+  } : null;
 
   return {
     permitTypes,
@@ -81,4 +97,50 @@ export const loaDetailToFormData = (
       trailers,
     },
   };
+};
+
+/**
+ * Serialize LOA form data for create or update request payloads.
+ * @param loaFormData Populated form data for the LOA
+ * @returns Serialized request payload for creating or updating an LOA
+ */
+export const serializeLOAFormData = (loaFormData: LOAFormData) => {
+  const requestData = new FormData();
+  requestData.set(
+    "startDate",
+    dayjsToLocalStr(loaFormData.startDate, DATE_FORMATS.DATEONLY),
+  );
+
+  if (loaFormData.expiryDate) {
+    requestData.set(
+      "expiryDate",
+      dayjsToLocalStr(loaFormData.expiryDate, DATE_FORMATS.DATEONLY),
+    );
+  }
+
+  requestData.set(
+    "comment",
+    getDefaultRequiredVal("", loaFormData.additionalNotes),
+  );
+
+  Object.entries(loaFormData.permitTypes).forEach(([permitType, selected]) => {
+    if (selected) {
+      requestData.append("loaPermitType", permitType);
+    }
+  });
+
+  Object.keys(loaFormData.selectedVehicles.powerUnits).forEach(vehicleId => {
+    requestData.append("powerUnits", vehicleId);
+  });
+
+  Object.keys(loaFormData.selectedVehicles.trailers).forEach(vehicleId => {
+    requestData.append("trailers", vehicleId);
+  });
+
+  if (loaFormData.uploadFile instanceof File) {
+    // is newly uploaded file
+    requestData.append("document", loaFormData.uploadFile);
+  }
+  
+  return requestData;
 };
