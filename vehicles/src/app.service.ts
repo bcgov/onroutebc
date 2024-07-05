@@ -57,6 +57,12 @@ export class AppService {
       createCacheMap(permitTypes, 'permitTypeId', 'name'),
     );
 
+    await addToCache(
+      this.cacheManager,
+      CacheKey.PERMIT_TYPE_GL_CODE,
+      createCacheMap(permitTypes, 'permitTypeId', 'glCode'),
+    );
+
     const powerUnitTypes = await this.powerUnitTypeService.findAll();
     await addToCache(
       this.cacheManager,
