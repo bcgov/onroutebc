@@ -9,5 +9,8 @@ export class BcHoliday {
   HOLIDAY_YEAR: number;
 
   @Column()
-  HOLIDAYS: string;  
+  HOLIDAY_MONTH: number;
+
+  @Column()
+  HOLIDAY_DAY: number;
 }

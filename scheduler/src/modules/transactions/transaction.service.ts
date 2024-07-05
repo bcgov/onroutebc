@@ -99,10 +99,17 @@ export class TransactionService {
   private async getBcHolidays(): Promise<string[]> {
     try {
         const holidays: BcHoliday[] = await this.getHolidays();
-        const currentYearHolidays = JSON.parse(holidays[0].HOLIDAYS);
-        const data: Holidays = await currentYearHolidays as Holidays;
-        const holidayDates: string[] = data.province.holidays.map((holiday: Holiday) => holiday.date);
-        return holidayDates;
+
+        const formatHoliday = (holiday: BcHoliday): string => {
+          const year = holiday.HOLIDAY_YEAR;
+          const month = holiday.HOLIDAY_MONTH.toString().padStart(2, '0'); // Ensure month is two digits
+          const day = holiday.HOLIDAY_DAY.toString().padStart(2, '0'); // Ensure day is two digits
+          return `${year}-${month}-${day}`;
+        };
+        
+        const holidayStrings: string[] = holidays.map(formatHoliday);
+        return holidayStrings;
+
     } catch (error) {
         console.error('Error fetching BC holidays:', error);
         return [];
