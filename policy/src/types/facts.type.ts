@@ -1,4 +1,4 @@
-export interface PermitFacts {
+export type PermitFacts = {
   companyName?: string;
   duration?: number;
   permitType?: string;
@@ -7,4 +7,4 @@ export interface PermitFacts {
   vehiclePlate?: string;
   vehicleType?: string;
   app?: object;
-}
+};

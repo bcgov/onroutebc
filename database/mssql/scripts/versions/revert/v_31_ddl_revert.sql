@@ -9,7 +9,9 @@ SET XACT_ABORT ON
 
 BEGIN TRY
   BEGIN TRANSACTION
-    DROP TABLE [dbo].[ORBC_HOLIDAY]
+
+   ALTER TABLE [permit].[ORBC_PERMIT_TYPE] DROP COLUMN [GL_CODE];
+  
   COMMIT
 END TRY
 
@@ -20,6 +22,6 @@ BEGIN CATCH
 END CATCH
 
 DECLARE @VersionDescription VARCHAR(255)
-SET @VersionDescription = 'Reverting holiday table creation plus history tables for v31'
+SET @VersionDescription = 'Reverting addition of GL_CODE to ORBC_PERMIT_TYPE.'
 
 INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (30, @VersionDescription, getutcdate())

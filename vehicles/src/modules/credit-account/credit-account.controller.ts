@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Req } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -8,6 +8,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Request } from 'express';
 import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-flag-enabled.decorator';
@@ -21,6 +22,8 @@ import { CreditAccountService } from './credit-account.service';
 import { CreateCreditAccountDto } from './dto/request/create-credit-account.dto';
 import { ReadCreditAccountUserDto } from './dto/response/read-credit-account-user.dto';
 import { ReadCreditAccountDto } from './dto/response/read-credit-account.dto';
+import { CreditAccountIdPathParamDto } from './dto/request/pathParam/creditAccountUsers.path-params.dto';
+import { UpdateCreditAccountStatusDto } from './dto/request/update-credit-account-status.dto';
 
 @ApiBearerAuth()
 @ApiTags('Credit Accounts')
@@ -30,6 +33,14 @@ import { ReadCreditAccountDto } from './dto/response/read-credit-account.dto';
 })
 @ApiInternalServerErrorResponse({
   description: 'The Credit Account Api Internal Server Error Response',
+  type: ExceptionDto,
+})
+@ApiUnprocessableEntityResponse({
+  description: 'The Credit Account Entity could not be processed.',
+  type: ExceptionDto,
+})
+@ApiBadRequestResponse({
+  description: 'Bad Request Response',
   type: ExceptionDto,
 })
 @IsFeatureFlagEnabled('CREDIT-ACCOUNT')
@@ -84,7 +95,7 @@ export class CreditAccountController {
     description: 'The retrieved credit account.',
     type: ReadCreditAccountDto,
   })
-  // @Get() - Uncomment when feature is ready
+  @Get()
   @Roles(Role.READ_CREDIT_ACCOUNT)
   async getCreditAccount(
     @Req() request: Request,
@@ -99,5 +110,41 @@ export class CreditAccountController {
       throw new DataNotFoundException();
     }
     return readCreditAccountDto;
+  }
+
+  /**
+   * Updates the status of a credit account user.
+   *
+   * @param { companyId } - The companyId path parameter.
+   * @param { creditAccountId } - The creditAccountId path parameter.
+   * @param { creditAccountStatusType, comment } - The DTO containing status type and comment to update a credit account user.
+   * @returns The result of the update operation.
+   */
+  @ApiOperation({
+    summary: 'Updates the status of a credit account user.',
+    description:
+      'Updates the status of a credit account user, enforcing authentication.',
+  })
+  @ApiOkResponse({
+    description: 'The updated credit account status details.',
+    type: ReadCreditAccountUserDto,
+  })
+  @Put(':creditAccountId/status')
+  @Roles(Role.WRITE_CREDIT_ACCOUNT)
+  async updateCreditAccountStatus(
+    @Req() request: Request,
+    @Param() { companyId, creditAccountId }: CreditAccountIdPathParamDto,
+    @Body() { creditAccountStatusType, comment }: UpdateCreditAccountStatusDto,
+  ): Promise<ReadCreditAccountDto> {
+    const currentUser = request.user as IUserJWT;
+    return await this.creditAccountService.updateCreditAccountStatus(
+      currentUser,
+      {
+        creditAccountHolderId: companyId,
+        creditAccountId,
+        statusToUpdateTo: creditAccountStatusType,
+        comment: comment,
+      },
+    );
   }
 }

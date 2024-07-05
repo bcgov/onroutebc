@@ -1,4 +1,4 @@
-import PolicyDefinition from '../../src/interface/policy-definition.interface';
+import { PolicyDefinition } from '../../src/types/policy-definition.type';
 
 export const masterPolicyConfig: PolicyDefinition = {
   version: '2024.03.18.001',
@@ -16,6 +16,8 @@ export const masterPolicyConfig: PolicyDefinition = {
         type: 'violation',
         params: {
           message: 'Company is required',
+          code: 'field-validation-error',
+          fieldReference: 'permitData.companyName',
         },
       },
     },
@@ -31,6 +33,8 @@ export const masterPolicyConfig: PolicyDefinition = {
         type: 'violation',
         params: {
           message: 'Contact first name is required',
+          code: 'field-validation-error',
+          fieldReference: 'permitData.contactDetails.firstName',
         },
       },
     },
@@ -46,6 +50,8 @@ export const masterPolicyConfig: PolicyDefinition = {
         type: 'violation',
         params: {
           message: 'Contact last name is required',
+          code: 'field-validation-error',
+          fieldReference: 'permitData.contactDetails.lastName',
         },
       },
     },
@@ -61,6 +67,8 @@ export const masterPolicyConfig: PolicyDefinition = {
         type: 'violation',
         params: {
           message: 'Contact phone number is required',
+          code: 'field-validation-error',
+          fieldReference: 'permitData.contactDetails.phone1',
         },
       },
     },
@@ -76,6 +84,8 @@ export const masterPolicyConfig: PolicyDefinition = {
         type: 'violation',
         params: {
           message: 'Company contact email is required',
+          code: 'field-validation-error',
+          fieldReference: 'permitData.contactDetails.email',
         },
       },
     },
@@ -95,6 +105,8 @@ export const masterPolicyConfig: PolicyDefinition = {
         type: 'violation',
         params: {
           message: 'Permit start date cannot be in the past',
+          code: 'field-validation-error',
+          fieldReference: 'permitData.startDate',
         },
       },
     },
@@ -111,6 +123,8 @@ export const masterPolicyConfig: PolicyDefinition = {
         params: {
           message:
             'Vehicle Identification Number (vin) must be 6 alphanumeric characters',
+          code: 'field-validation-error',
+          fieldReference: 'permitData.vehicleDetails.vin',
         },
       },
     },
@@ -126,6 +140,8 @@ export const masterPolicyConfig: PolicyDefinition = {
         type: 'violation',
         params: {
           message: 'Vehicle plate is required',
+          code: 'field-validation-error',
+          fieldReference: 'permitData.vehicleDetails.plate',
         },
       },
     },
@@ -141,6 +157,8 @@ export const masterPolicyConfig: PolicyDefinition = {
         type: 'violation',
         params: {
           message: 'Vehicle make is required',
+          code: 'field-validation-error',
+          fieldReference: 'permitData.vehicleDetails.make',
         },
       },
     },
@@ -156,6 +174,8 @@ export const masterPolicyConfig: PolicyDefinition = {
         type: 'violation',
         params: {
           message: 'Vehicle year is required',
+          code: 'field-validation-error',
+          fieldReference: 'permitData.vehicleDetails.year',
         },
       },
     },
@@ -171,6 +191,8 @@ export const masterPolicyConfig: PolicyDefinition = {
         type: 'violation',
         params: {
           message: 'Vehicle country of registration is required',
+          code: 'field-validation-error',
+          fieldReference: 'permitData.vehicleDetails.countryCode',
         },
       },
     },
@@ -183,7 +205,62 @@ export const masterPolicyConfig: PolicyDefinition = {
       weightDimensionRequired: false,
       sizeDimensionRequired: false,
       commodityRequired: false,
-      allowedVehicles: ['BOOSTER', 'DOLLIES', 'EXPANDO', 'FEBGHSE', 'FECVYER', 'FEDRMMX', 'FEPNYTR', 'FESEMTR', 'FEWHELR', 'FLOATTR', 'FULLLTL', 'HIBOEXP', 'HIBOFLT', 'JEEPSRG', 'LOGDGLG', 'LOGFULL', 'LOGNTAC', 'LOGOWBK', 'LOGSMEM', 'LOGTNDM', 'LOGTRIX', 'ODTRLEX', 'OGOSFDT', 'PLATFRM', 'POLETRL', 'PONYTRL', 'REDIMIX', 'SEMITRL', 'STBTRAN', 'STCHIPS', 'STCRANE', 'STINGAT', 'STLOGNG', 'STNTSHC', 'STREEFR', 'STSDBDK', 'STSTNGR', 'STWHELR', 'STWIDWH', 'BUSTRLR', 'CONCRET', 'DDCKBUS', 'GRADERS', 'LOGGING', 'LOGOFFH', 'LWBTRCT', 'OGBEDTK', 'OGOILSW', 'PICKRTT', 'PLOWBLD', 'REGTRCK', 'STINGER', 'TOWVEHC', 'TRKTRAC'],
+      allowedVehicles: [
+        'BOOSTER',
+        'DOLLIES',
+        'EXPANDO',
+        'FEBGHSE',
+        'FECVYER',
+        'FEDRMMX',
+        'FEPNYTR',
+        'FESEMTR',
+        'FEWHELR',
+        'FLOATTR',
+        'FULLLTL',
+        'HIBOEXP',
+        'HIBOFLT',
+        'JEEPSRG',
+        'LOGDGLG',
+        'LOGFULL',
+        'LOGNTAC',
+        'LOGOWBK',
+        'LOGSMEM',
+        'LOGTNDM',
+        'LOGTRIX',
+        'ODTRLEX',
+        'OGOSFDT',
+        'PLATFRM',
+        'POLETRL',
+        'PONYTRL',
+        'REDIMIX',
+        'SEMITRL',
+        'STBTRAN',
+        'STCHIPS',
+        'STCRANE',
+        'STINGAT',
+        'STLOGNG',
+        'STNTSHC',
+        'STREEFR',
+        'STSDBDK',
+        'STSTNGR',
+        'STWHELR',
+        'STWIDWH',
+        'BUSTRLR',
+        'CONCRET',
+        'DDCKBUS',
+        'GRADERS',
+        'LOGGING',
+        'LOGOFFH',
+        'LWBTRCT',
+        'OGBEDTK',
+        'OGOILSW',
+        'PICKRTT',
+        'PLOWBLD',
+        'REGTRCK',
+        'STINGER',
+        'TOWVEHC',
+        'TRKTRAC',
+      ],
       rules: [
         {
           conditions: {
@@ -210,6 +287,8 @@ export const masterPolicyConfig: PolicyDefinition = {
             type: 'violation',
             params: {
               message: 'Duration must be in 30 day increments or a full year',
+              code: 'field-validation-error',
+              fieldReference: 'permitData.permitDuration',
             },
           },
         },
@@ -227,6 +306,8 @@ export const masterPolicyConfig: PolicyDefinition = {
             type: 'violation',
             params: {
               message: 'Vehicle type not permittable for this permit type',
+              code: 'field-validation-error',
+              fieldReference: 'permitData.vehicleDetails.vehicleSubType',
             },
           },
         },
@@ -239,7 +320,26 @@ export const masterPolicyConfig: PolicyDefinition = {
       weightDimensionRequired: false,
       sizeDimensionRequired: false,
       commodityRequired: false,
-      allowedVehicles: ['DOLLIES', 'FEBGHSE', 'FECVYER', 'FEDRMMX', 'FEPNYTR', 'FESEMTR', 'FEWHELR', 'REDIMIX', 'CONCRET', 'CRAFTAT', 'CRAFTMB', 'GRADERS', 'MUNFITR', 'OGOILSW', 'OGSERVC', 'OGSRRAH', 'PICKRTT', 'TOWVEHC'],
+      allowedVehicles: [
+        'DOLLIES',
+        'FEBGHSE',
+        'FECVYER',
+        'FEDRMMX',
+        'FEPNYTR',
+        'FESEMTR',
+        'FEWHELR',
+        'REDIMIX',
+        'CONCRET',
+        'CRAFTAT',
+        'CRAFTMB',
+        'GRADERS',
+        'MUNFITR',
+        'OGOILSW',
+        'OGSERVC',
+        'OGSRRAH',
+        'PICKRTT',
+        'TOWVEHC',
+      ],
       rules: [
         {
           conditions: {
@@ -266,6 +366,8 @@ export const masterPolicyConfig: PolicyDefinition = {
             type: 'violation',
             params: {
               message: 'Duration must be in 30 day increments or a full year',
+              code: 'field-validation-error',
+              fieldReference: 'permitData.permitDuration',
             },
           },
         },
@@ -283,6 +385,8 @@ export const masterPolicyConfig: PolicyDefinition = {
             type: 'violation',
             params: {
               message: 'Vehicle type not permittable for this permit type',
+              code: 'field-validation-error',
+              fieldReference: 'permitData.vehicleDetails.vehicleSubType',
             },
           },
         },

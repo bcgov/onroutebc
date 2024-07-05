@@ -1,4 +1,4 @@
-import PolicyDefinition from '../../src/interface/policy-definition.interface';
+import { PolicyDefinition } from '../../src/types/policy-definition.type';
 
 export const trosNoAllowedVehicles: PolicyDefinition = {
   version: '2024.03.18.001',
@@ -28,6 +28,8 @@ export const trosNoAllowedVehicles: PolicyDefinition = {
             type: 'violation',
             params: {
               message: 'Vehicle type not permittable for this permit type',
+              code: 'field-validation-error',
+              fieldReference: 'permitData.vehicleDetails.vehicleSubType',
             },
           },
         },

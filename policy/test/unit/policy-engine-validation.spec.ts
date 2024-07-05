@@ -1,14 +1,16 @@
-import Policy from '../../src/policy-engine';
+import { Policy } from 'onroute-policy-engine';
 import { trosOnly } from '../policy-config/tros-only.sample';
 import { trosNoAllowedVehicles } from '../policy-config/tros-no-allowed-vehicles.sample';
 import { masterPolicyConfig } from '../policy-config/master.sample';
+import { trosNoParamsSample } from '../policy-config/tros-no-params.sample';
 import { validTros30Day } from '../permit-app/valid-tros-30day';
 import { validTrow120Day } from '../permit-app/valid-trow-120day';
 import { allEventTypes } from '../policy-config/all-event-types.sample';
 import { transformPermitFacts } from '../../src/helper/facts.helper';
 import dayjs from 'dayjs';
-import PermitApplication from '../../src/type/permit-application.type';
+import PermitApplication from '../permit-app/permit-application.type';
 import { PermitAppInfo } from '../../src/enum/permit-app-info.enum';
+import { ValidationResultCode } from '../../src/enum/validation-result-code.enum';
 
 describe('Permit Engine Constructor', () => {
   it('should construct without error', () => {
@@ -27,7 +29,9 @@ describe('Policy Engine Validator', () => {
   it('should validate TROS successfully', async () => {
     const permit = JSON.parse(JSON.stringify(validTros30Day));
     // Set startDate to today
-    permit.permitData.startDate = dayjs().format(PermitAppInfo.PermitDateFormat.toString());
+    permit.permitData.startDate = dayjs().format(
+      PermitAppInfo.PermitDateFormat.toString(),
+    );
 
     const validationResult = await policy.validate(permit);
     expect(validationResult.violations).toHaveLength(0);
@@ -47,7 +51,9 @@ describe('Policy Engine Validator', () => {
   it('should raise violation for invalid permit type', async () => {
     const permit = JSON.parse(JSON.stringify(validTros30Day));
     // Set startDate to today
-    permit.permitData.startDate = dayjs().format(PermitAppInfo.PermitDateFormat.toString());
+    permit.permitData.startDate = dayjs().format(
+      PermitAppInfo.PermitDateFormat.toString(),
+    );
     permit.permitType = '__INVALID';
 
     const validationResult = await policy.validate(permit);
@@ -57,7 +63,9 @@ describe('Policy Engine Validator', () => {
   it('should raise violation for invalid vehicle type', async () => {
     const permit = JSON.parse(JSON.stringify(validTros30Day));
     // Set startDate to today
-    permit.permitData.startDate = dayjs().format(PermitAppInfo.PermitDateFormat.toString());
+    permit.permitData.startDate = dayjs().format(
+      PermitAppInfo.PermitDateFormat.toString(),
+    );
     // Set an invalid vehicle type
     permit.permitData.vehicleDetails.vehicleSubType = '__INVALID';
 
@@ -72,6 +80,38 @@ describe('Policy Engine Validator', () => {
     const validationResult = await policyNoVehicles.validate(permit);
     expect(validationResult.violations).toHaveLength(1);
   });
+
+  it('should return the correct validation code', async () => {
+    const permit = JSON.parse(JSON.stringify(validTros30Day));
+    // Set startDate to today
+    permit.permitData.startDate = dayjs().format(
+      PermitAppInfo.PermitDateFormat.toString(),
+    );
+    // Set an invalid companyName
+    permit.permitData.companyName = '';
+
+    const validationResult = await policy.validate(permit);
+    expect(validationResult.violations).toHaveLength(1);
+    expect(validationResult.violations[0].code).toBe(
+      ValidationResultCode.FieldValidationError.toString(),
+    );
+  });
+
+  it('should return the correct field reference', async () => {
+    const permit = JSON.parse(JSON.stringify(validTros30Day));
+    // Set startDate to today
+    permit.permitData.startDate = dayjs().format(
+      PermitAppInfo.PermitDateFormat.toString(),
+    );
+    // Set an invalid companyName
+    permit.permitData.companyName = '';
+
+    const validationResult = await policy.validate(permit);
+    expect(validationResult.violations).toHaveLength(1);
+    expect(validationResult.violations[0].fieldReference).toBe(
+      PermitAppInfo.CompanyName.toString(),
+    );
+  });
 });
 
 describe('Master Policy Configuration Validator', () => {
@@ -80,7 +120,9 @@ describe('Master Policy Configuration Validator', () => {
   it('should validate TROS successfully', async () => {
     const permit = JSON.parse(JSON.stringify(validTros30Day));
     // Set startDate to today
-    permit.permitData.startDate = dayjs().format(PermitAppInfo.PermitDateFormat.toString());
+    permit.permitData.startDate = dayjs().format(
+      PermitAppInfo.PermitDateFormat.toString(),
+    );
 
     const validationResult = await policy.validate(permit);
     expect(validationResult.violations).toHaveLength(0);
@@ -89,16 +131,35 @@ describe('Master Policy Configuration Validator', () => {
   it('should validate TROW successfully', async () => {
     const permit = JSON.parse(JSON.stringify(validTrow120Day));
     // Set startDate to today
-    permit.permitData.startDate = dayjs().format(PermitAppInfo.PermitDateFormat.toString());
+    permit.permitData.startDate = dayjs().format(
+      PermitAppInfo.PermitDateFormat.toString(),
+    );
 
     const validationResult = await policy.validate(permit);
     expect(validationResult.violations).toHaveLength(0);
   });
 });
 
+describe('Policy Configuration Missing Elements', () => {
+  const policy: Policy = new Policy(trosNoParamsSample);
+
+  it('should not fail when a validation has no params', async () => {
+    const permit = JSON.parse(JSON.stringify(validTros30Day));
+    // Set startDate to today
+    permit.permitData.startDate = dayjs().format(
+      PermitAppInfo.PermitDateFormat.toString(),
+    );
+
+    const validationResult = await policy.validate(permit);
+    expect(validationResult.violations).toHaveLength(1);
+    expect(validationResult.violations[0].message).not.toBeUndefined;
+    expect(validationResult.violations[0].message).not.toBeNull;
+  });
+});
+
 describe('Permit Application Transformer', () => {
   it('should return empty facts for null application', () => {
-    let nullApp: PermitApplication = JSON.parse('null');
+    const nullApp: PermitApplication = JSON.parse('null');
     const permitFacts = transformPermitFacts(nullApp);
     expect(permitFacts.companyName).toBeFalsy();
   });

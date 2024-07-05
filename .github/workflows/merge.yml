@@ -39,7 +39,7 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
-      autoscaling: false
+      autoscaling: true
       environment: test
       release: test
       tag: ${{ needs.vars.outputs.pr }}

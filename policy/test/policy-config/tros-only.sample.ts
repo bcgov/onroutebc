@@ -1,4 +1,4 @@
-import PolicyDefinition from '../../src/interface/policy-definition.interface';
+import { PolicyDefinition } from '../../src/types/policy-definition.type';
 
 export const trosOnly: PolicyDefinition = {
   version: '2024.03.18.001',
@@ -16,6 +16,8 @@ export const trosOnly: PolicyDefinition = {
         type: 'violation',
         params: {
           message: 'Company is required',
+          code: 'field-validation-error',
+          fieldReference: 'permitData.companyName',
         },
       },
     },
@@ -31,6 +33,8 @@ export const trosOnly: PolicyDefinition = {
         type: 'violation',
         params: {
           message: 'Contact first name is required',
+          code: 'field-validation-error',
+          fieldReference: 'permitData.contactDetails.firstName',
         },
       },
     },
@@ -50,6 +54,8 @@ export const trosOnly: PolicyDefinition = {
         type: 'violation',
         params: {
           message: 'Permit start date cannot be in the past',
+          code: 'field-validation-error',
+          fieldReference: 'permitData.startDate',
         },
       },
     },
@@ -66,6 +72,8 @@ export const trosOnly: PolicyDefinition = {
         params: {
           message:
             'Vehicle Identification Number (vin) must be 6 alphanumeric characters',
+          code: 'field-validation-error',
+          fieldReference: 'permitData.vehicleDetails.vin',
         },
       },
     },
@@ -105,6 +113,8 @@ export const trosOnly: PolicyDefinition = {
             type: 'violation',
             params: {
               message: 'Duration must be in 30 day increments or a full year',
+              code: 'field-validation-error',
+              fieldReference: 'permitData.permitDuration',
             },
           },
         },
@@ -122,6 +132,8 @@ export const trosOnly: PolicyDefinition = {
             type: 'violation',
             params: {
               message: 'Vehicle type not permittable for this permit type',
+              code: 'field-validation-error',
+              fieldReference: 'permitData.vehicleDetails.vehicleSubType',
             },
           },
         },
