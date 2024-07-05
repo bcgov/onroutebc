@@ -2,21 +2,30 @@
   "name": "onroute-policy-engine",
   "version": "0.1.0",
   "description": "Policy Engine library for commercial vehicle permitting",
-  "main": "dist/src/index.js",
+  "main": "dist/index.js",
   "exports": {
-    ".": "./dist/src/index.js",
-    "./types": "./dist/src/types/index.js",
-    "./enum": "./dist/src/enum/index.js"
+    ".": "./dist/index.js",
+    "./types": "./dist/types/index.js",
+    "./enum": "./dist/enum/index.js"
   },
-  "types": "dist/src/index.d.ts",
+  "types": "dist/index.d.ts",
   "private": true,
   "scripts": {
+    "clean": "rimraf dist && rimraf -g *.tgz",
     "test": "jest",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\"",
     "build": "tsc",
-    "prepack": "tsc"
+    "clean-build": "rimraf dist && rimraf -g *.tgz && tsc",
+    "prepack": "rimraf dist && rimraf -g *.tgz && tsc"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bcgov/onroutebc.git"
+  },
+  "author": "John Fletcher",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/bcgov/onroutebc#readme",    
   "devDependencies": {
     "@types/jest": "^29.5.12",
     "@typescript-eslint/eslint-plugin": "^7.5.0",
@@ -24,6 +33,7 @@
     "eslint-config-prettier": "^9.1.0",
     "jest": "^29.7.0",
     "prettier": "^3.2.5",
+    "rimraf": "^5.0.7",
     "ts-jest": "^29.1.2",
     "typescript": "^5.4.3"
   },
@@ -40,8 +50,7 @@
     ],
     "rootDir": ".",
     "roots": [
-      "<rootDir>/src",
-      "<rootDir>/test"
+      "<rootDir>/src"
     ],
     "moduleNameMapper": {
       "^src/(.*)$": "<rootDir>/src/$1",
@@ -58,7 +67,7 @@
     "coverageDirectory": "./coverage",
     "coveragePathIgnorePatterns": [
       "/node_modules/",
-      "/test/",
+      "/src/_test/",
       ".enum.ts",
       ".interface.ts",
       "index.ts"
