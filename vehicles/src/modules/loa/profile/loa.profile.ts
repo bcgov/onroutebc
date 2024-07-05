@@ -78,6 +78,12 @@ export class LoaProfile extends AutomapperProfile {
           }),
         ),
         forMember(
+          (d) => d.loaId,
+          mapWithArguments((_, { loaId }) => {
+            return loaId;
+          }),
+        ),
+        forMember(
           (d) => d.loaPermitTypes,
           mapFrom((s) => {
             const loaPermitTypes: LoaPermitType[] = new Array<LoaPermitType>();
