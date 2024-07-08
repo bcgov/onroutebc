@@ -38,8 +38,7 @@ import { IDP } from '../../enum/idp.enum';
 import { Roles } from '../../decorator/roles.decorator';
 import { Role } from '../../enum/roles.enum';
 import { GetDocumentQueryParamsDto } from './dto/request/queryParam/getDocument.query-params.dto';
-import { JwtAuthGuard } from 'src/guard/auth.guard';
-import { JwtServiceAccountAuthGuard } from 'src/guard/jwt-sa-auth.guard';
+import { JwtOneOfAuthGuard } from 'src/guard/jwt-one-of-auth.guard';
 
 @ApiTags('DMS')
 @ApiBadRequestResponse({
@@ -77,7 +76,7 @@ export class DmsController {
   @Roles(Role.WRITE_DOCUMENT)
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
-  @UseGuards(JwtAuthGuard, JwtServiceAccountAuthGuard)
+  @UseGuards(JwtOneOfAuthGuard)
   async uploadFile(
     @Req() request: Request,
     @Body() createFileDto: CreateFileDto,
