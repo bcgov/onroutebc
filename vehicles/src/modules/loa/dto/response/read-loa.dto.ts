@@ -11,14 +11,14 @@ export class ReadLoaDto {
     example: '1',
     description: 'Unique identifier for the LoA.',
   })
-  loaId: string;
+  loaId: number;
 
   @AutoMap()
   @ApiProperty({
     example: '1',
     description: 'Unique LoA Number',
   })
-  loaNumber: string;
+  loaNumber: number;
 
   @AutoMap()
   @ApiProperty({
@@ -47,6 +47,13 @@ export class ReadLoaDto {
     description: 'DMS Document ID used to retrieve the PDF of the LoA',
   })
   documentId: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: 'sample.pdf',
+    description: 'DMS Document Name of the LoA',
+  })
+  fileName: string;
 
   @AutoMap()
   @ApiProperty({

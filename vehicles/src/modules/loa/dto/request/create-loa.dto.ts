@@ -1,13 +1,12 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   IsEnum,
   IsNumberString,
   IsOptional,
   IsString,
   MaxLength,
-  Length,
-  Allow,
 } from 'class-validator';
 import { PermitType } from 'src/common/enum/permit-type.enum';
 
@@ -24,30 +23,6 @@ export class CreateLoaDto {
   @AutoMap()
   @IsOptional()
   @IsString()
-  @MaxLength(24)
-  @ApiProperty({
-    example: '2023-08-13T00:00:00.000Z',
-    description: 'Effective end date of an LoA',
-  })
-  expiryDate: string;
-  @ApiProperty({ type: 'string', format: 'binary' })
-  @Allow()
-  file: string;
-
-  @ApiProperty({
-    type: 'string',
-    example: 'sample_template.pdf',
-    description: 'Name of this file within destination',
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  @Length(1, 50)
-  fileName?: string;
-
-  @AutoMap()
-  @IsOptional()
-  @IsString()
   @MaxLength(4000)
   @ApiProperty({
     example: 'These are some additional notes for LoA.',
@@ -56,13 +31,20 @@ export class CreateLoaDto {
   comment: string;
 
   @AutoMap()
-  @IsEnum(PermitType, { each: true })
   @ApiProperty({
-    isArray: true,
     enum: PermitType,
     description: 'Friendly name for the permit type.',
+    isArray: true,
     example: [PermitType.TERM_OVERSIZE, PermitType.TERM_OVERWEIGHT],
   })
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      return value.split(',').map(item => item.trim());
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return value;
+  })
+  @IsEnum(PermitType,{ each: true })
   loaPermitType: PermitType[];
 
   @AutoMap()
@@ -73,7 +55,14 @@ export class CreateLoaDto {
     example: ['1', '2'],
   })
   @IsOptional()
-  //@IsNumberString({}, { each: true })
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      return value.split(',').map(item => item.trim());
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return value;
+  })
+  @IsNumberString({}, { each: true })
   trailers: string[];
 
   @AutoMap()
@@ -84,6 +73,13 @@ export class CreateLoaDto {
     example: ['1', '2'],
   })
   @IsOptional()
-  //@IsNumberString({}, { each: true })
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      return value.split(',').map(item => item.trim());
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return value;
+  })
+  @IsNumberString({}, { each: true })
   powerUnits: string[];
 }

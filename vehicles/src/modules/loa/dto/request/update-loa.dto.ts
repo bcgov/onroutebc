@@ -1,5 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   IsEnum,
   IsNumberString,
@@ -31,11 +32,11 @@ export class UpdateLoaDto {
 
   @AutoMap()
   @IsOptional()
-  @IsString()
+  @IsNumberString()
   @ApiProperty({
-    description: 'Loa Document',
+    description: 'Loa Document Id',
   })
-  document: Buffer;
+  documentId: string;
 
   @AutoMap()
   @IsOptional()
@@ -47,14 +48,22 @@ export class UpdateLoaDto {
   })
   comment: string;
 
+ 
   @AutoMap()
-  @IsEnum(PermitType, { each: true })
   @ApiProperty({
-    isArray: true,
     enum: PermitType,
     description: 'Friendly name for the permit type.',
+    isArray: true,
     example: [PermitType.TERM_OVERSIZE, PermitType.TERM_OVERWEIGHT],
   })
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      return value.split(',').map(item => item.trim());
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return value;
+  })
+  @IsEnum(PermitType,{ each: true })
   loaPermitType: PermitType[];
 
   @AutoMap()
@@ -65,6 +74,13 @@ export class UpdateLoaDto {
     example: ['1', '2'],
   })
   @IsOptional()
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      return value.split(',').map(item => item.trim());
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return value;
+  })
   @IsNumberString({}, { each: true })
   trailers: string[];
 
@@ -76,6 +92,13 @@ export class UpdateLoaDto {
     example: ['1', '2'],
   })
   @IsOptional()
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      return value.split(',').map(item => item.trim());
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return value;
+  })
   @IsNumberString({}, { each: true })
   powerUnits: string[];
 }

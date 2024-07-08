@@ -28,13 +28,10 @@ import { ReadLoaDto } from './dto/response/read-loa.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { LoaService } from './loa.service';
 import { Request } from 'express';
-import { Roles } from 'src/common/decorator/roles.decorator';
-import { Role } from 'src/common/enum/roles.enum';
 import { UpdateLoaDto } from './dto/request/update-loa.dto';
 import { GetLoaQueryParamsDto } from './dto/request/getLoa.query-params.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { DopsService } from '../common/dops.service';
-import { CreateFileDto } from '../common/dto/request/create-file.dto';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
 
 @ApiBearerAuth()
@@ -64,7 +61,6 @@ export class LoaController {
     type: ReadLoaDto,
   })
   @ApiConsumes('multipart/form-data')
-  @Roles(Role.READ_PERMIT)
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   async create(
@@ -85,24 +81,24 @@ export class LoaController {
     file: Express.Multer.File,
   ): Promise<ReadLoaDto> {
     const currentUser = request.user as IUserJWT;
+    let readFileDto: ReadFileDto = new ReadFileDto();
     if (file) {
-      console.log('file exists')
-      console.log('createLoaDto: ',createLoaDto);
-      const createFileDto: CreateFileDto = new CreateFileDto();
-      createFileDto.file = createLoaDto.file;
-      createFileDto.fileName = createLoaDto.fileName;
-      const readFileDto: ReadFileDto = await this.dopsService.upload(
+      console.log('file exists');
+       readFileDto = await this.dopsService.upload(
         currentUser,
-        createFileDto,
         companyId,
         file,
       );
       console.log('response from upload file: ', readFileDto);
     }
+    console.log('body  is: ',createLoaDto);
+    const demo = JSON.stringify(createLoaDto);
+    console.log('body now is: ',demo);
     const result = await this.loaService.create(
       currentUser,
       createLoaDto,
       companyId,
+      readFileDto.documentId,
     );
     return result;
   }
@@ -111,7 +107,6 @@ export class LoaController {
     summary: 'Add LOA for a company.',
     description: 'Returns all LoAs for a company in database.',
   })
-  @Roles(Role.READ_PERMIT)
   @Get()
   async get(
     @Param('companyId') companyId: number,
@@ -128,11 +123,10 @@ export class LoaController {
     summary: 'Add LOA by Id.',
     description: 'Returns the Loa Object in database.',
   })
-  @Roles(Role.READ_PERMIT)
   @Get('/:loaId')
   async getById(
-    @Param('companyId') companyId: number,
-    @Param('loaId') loaId: string,
+    @Param('companyId') companyId: string,
+    @Param('loaId') loaId: number,
   ): Promise<ReadLoaDto> {
     const loa = await this.loaService.getById(companyId, loaId);
     return loa;
@@ -142,20 +136,45 @@ export class LoaController {
     summary: 'Update LOA.',
     description: 'Updates and returns the Loa Object from database.',
   })
-  @Roles(Role.READ_PERMIT)
+  @ApiConsumes('multipart/form-data')
   @Put('/:loaId')
+  @UseInterceptors(FileInterceptor('file'))
   async update(
     @Req() request: Request,
-    @Param('companyId') companyId: number,
-    @Param('loaId') loaId: string,
+    @Param('companyId') companyId: string,
+    @Param('loaId') loaId: number,
     @Body() updateLoaDto: UpdateLoaDto,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 100000000 }),
+          /**
+           * TODO explore custom validator to verify files magic number rather
+           * than extention in the filename. Also, accept multiple file types */
+          //new FileTypeValidator({ fileType: 'pdf' }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
   ): Promise<ReadLoaDto> {
     const currentUser = request.user as IUserJWT;
+    const readFileDto: ReadFileDto = new ReadFileDto();
+    if (file) {
+      console.log('file exists');
+      const readFileDto: ReadFileDto = await this.dopsService.upload(
+        currentUser,
+        companyId,
+        file,
+        updateLoaDto.documentId,
+      );
+      console.log('response from upload file: ', readFileDto);
+    }
     const loa = await this.loaService.update(
       currentUser,
       companyId,
       loaId,
       updateLoaDto,
+      readFileDto.documentId,
     );
     return loa;
   }
@@ -164,11 +183,10 @@ export class LoaController {
     summary: 'Delete LOA by Id.',
     description: 'Returns the Loa Object in database.',
   })
-  @Roles(Role.READ_PERMIT)
   @Delete('/:loaId')
   async delete(
     @Param('companyId') companyId: number,
-    @Param('loaId') loaId: string,
+    @Param('loaId') loaId: number,
   ): Promise<ReadLoaDto> {
     const loa = await this.loaService.delete(companyId, loaId);
     return loa;

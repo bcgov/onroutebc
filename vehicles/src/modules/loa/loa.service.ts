@@ -27,10 +27,13 @@ export class LoaService {
     currentUser: IUserJWT,
     createLoaDto: CreateLoaDto,
     companyId: string,
+    documentId?: string,
   ): Promise<ReadLoaDto> {
+    console.log('document id is: ',documentId);
     const loa = this.classMapper.map(createLoaDto, CreateLoaDto, LoaDetail, {
-      extraArgs: () => ({ companyId: companyId }),
+      extraArgs: () => ({ companyId: companyId, documentId: documentId }),
     });
+    console.log('loa detail before saving: ', loa);
     const loaDetail = await this.loaDetailRepository.save(loa);
     const readLoaDto = this.classMapper.map(loaDetail, LoaDetail, ReadLoaDto);
     return readLoaDto;
@@ -43,6 +46,7 @@ export class LoaService {
       .leftJoinAndSelect('loaDetail.company', 'company')
       .leftJoinAndSelect('loaDetail.loaVehicles', 'loaVehicles')
       .leftJoinAndSelect('loaDetail.loaPermitTypes', 'loaPermitTypes')
+      .leftJoinAndSelect('loaDetail.document', 'document')
       .where('company.companyId = :companyId', { companyId: companyId });
     if (expired === true) {
       loaDetailQB = loaDetailQB.andWhere('loaDetail.expiryDate < :expiryDate', {
@@ -70,11 +74,12 @@ export class LoaService {
   }
 
   @LogAsyncMethodExecution()
-  async getById(companyId: number, loaId: string): Promise<ReadLoaDto> {
+  async getById(companyId: string, loaId: number): Promise<ReadLoaDto> {
     try {
       const loaDetail = await this.loaDetailRepository.findOne({
         where: {
-          company: { companyId: companyId },
+          loaId:loaId,
+          company: { companyId: Number(companyId) },
         },
         relations: ['company', 'loaVehicles', 'loaPermitTypes'],
       });
@@ -103,9 +108,10 @@ export class LoaService {
   @LogAsyncMethodExecution()
   async update(
     currentUser: IUserJWT,
-    companyId: number,
-    loaId: string,
+    companyId: string,
+    loaId: number,
     updateLoaDto: UpdateLoaDto,
+    documentId?: string,
   ): Promise<ReadLoaDto> {
     const { powerUnits, trailers, loaPermitType } = updateLoaDto;
 
@@ -168,9 +174,11 @@ export class LoaService {
         UpdateLoaDto,
         LoaDetail,
         {
-          extraArgs: () => ({ companyId, loaId }),
+          extraArgs: () => ({ companyId, loaId, documentId }),
         },
       );
+      if(documentId)
+        updatedLoaDetail.documentId = documentId;
       const savedLoaDetail = await queryRunner.manager.save(updatedLoaDetail);
 
       // Commit transaction
@@ -194,10 +202,11 @@ export class LoaService {
   }
 
   @LogAsyncMethodExecution()
-  async delete(companyId: number, loaId: string): Promise<ReadLoaDto> {
+  async delete(companyId: number, loaId: number): Promise<ReadLoaDto> {
     try {
       const loaDetail = await this.loaDetailRepository.findOne({
         where: {
+          loaId:loaId,
           company: { companyId: companyId },
         },
         relations: ['company', 'loaVehicles', 'loaPermitTypes'],

@@ -12,7 +12,6 @@ import {
   Res,
   Req,
   BadRequestException,
-  UseGuards,
 } from '@nestjs/common';
 import { DmsService } from './dms.service';
 import {
@@ -38,7 +37,6 @@ import { IDP } from '../../enum/idp.enum';
 import { Roles } from '../../decorator/roles.decorator';
 import { Role } from '../../enum/roles.enum';
 import { GetDocumentQueryParamsDto } from './dto/request/queryParam/getDocument.query-params.dto';
-import { JwtOneOfAuthGuard } from 'src/guard/jwt-one-of-auth.guard';
 
 @ApiTags('DMS')
 @ApiBadRequestResponse({
@@ -76,7 +74,6 @@ export class DmsController {
   @Roles(Role.WRITE_DOCUMENT)
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
-  @UseGuards(JwtOneOfAuthGuard)
   async uploadFile(
     @Req() request: Request,
     @Body() createFileDto: CreateFileDto,
@@ -94,8 +91,6 @@ export class DmsController {
     )
     file: Express.Multer.File,
   ): Promise<ReadFileDto> {
-    console.log('createFileDto from dops: ', createFileDto);
-    console.log('file from dops: ', file);
     const currentUser = request.user as IUserJWT;
     if (currentUser.identity_provider !== IDP.IDIR && !companyId) {
       throw new BadRequestException(
