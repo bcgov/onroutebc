@@ -70,6 +70,7 @@
     "nest-winston": "^1.10.0",
     "nestjs-cls": "^4.3.0",
     "nestjs-typeorm-paginate": "^4.0.4",
+    "onroute-policy-engine": "file:node_modules/onroute-policy-engine-0.1.0.tgz",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "response-time": "^2.3.2",

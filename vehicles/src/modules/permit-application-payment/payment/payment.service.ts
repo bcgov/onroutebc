@@ -55,6 +55,8 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { CacheKey } from 'src/common/enum/cache-key.enum';
 import { getFromCache } from '../../../common/helper/cache.helper';
+import { Policy, ValidationResults } from 'onroute-policy-engine';
+import { PolicyDefinition } from 'onroute-policy-engine/dist/types/policy-definition';
 
 @Injectable()
 export class PaymentService {
@@ -276,7 +278,13 @@ export class PaymentService {
           throw new BadRequestException(
             'Application in its current status cannot be processed for payment.',
           );
+
+          const policy: Policy = new Policy({} as PolicyDefinition);
+          const results: ValidationResults = await policy.validate(application?.permitData);
+
+          this.logger.log(`Policy engine validation results: ${JSON.stringify(results)}`)
       }
+
       const totalTransactionAmount =
         await this.validatePaymentAndCalculateAmount(
           createTransactionDto,
