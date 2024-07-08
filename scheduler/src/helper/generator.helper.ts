@@ -24,7 +24,7 @@ class BatchHeader {
   messageVersion: string;
 
   constructor() {
-    this.feederNumber = CgiConstants.FEEDER_NUMBER;
+    this.feederNumber = process.env.FEEDER_NUMBER;
     this.batchType = CgiConstants.BATCH_TYPE;
     this.transactionType = CgiConstants.TRANSACTION_TYPE_BH;
     this.fiscalYear = getFiscalYear();
@@ -194,11 +194,6 @@ class BatchHeader {
     return `0`.repeat(16);
   }
   
-  function getSupplierNumber(): string {
-    // 9 chars
-    return CgiConstants.SUPPLIER_NUMBER;
-  }
-  
   function getLineCode(): string {
     // 1 char, C or D
     return CgiConstants.LINE_CODE;
@@ -225,7 +220,7 @@ class BatchHeader {
   
   function populateBatchHeader(filename: string, ackFilename: string): string {
     let batchHeader: string = ``;
-    const feederNumber: string = CgiConstants.FEEDER_NUMBER;
+    const feederNumber: string = process.env.FEEDER_NUMBER;
     const batchType: string = CgiConstants.BATCH_TYPE;
     const transactionType: string = CgiConstants.TRANSACTION_TYPE_BH;
     const delimiterHex = 0x1D;
@@ -248,7 +243,7 @@ class BatchHeader {
 
 function populateJournalHeader(transactions: Transaction[]): string {
   let journalHeader: string = ``;
-  const feederNumber: string = CgiConstants.FEEDER_NUMBER;
+  const feederNumber: string = process.env.FEEDER_NUMBER;
   const batchType: string = CgiConstants.BATCH_TYPE;
   const transactionType: string = CgiConstants.TRANSACTION_TYPE_JH;
   const delimiterHex = 0x1D;
@@ -266,7 +261,7 @@ function populateJournalHeader(transactions: Transaction[]): string {
 }
 
 function populateJournalVoucherDetail(cgiFileName: string, transactions: Transaction[]): void {
-  const feederNumber: string = CgiConstants.FEEDER_NUMBER;
+  const feederNumber: string = process.env.FEEDER_NUMBER;
   const batchType: string = CgiConstants.BATCH_TYPE;
   const delimiterHex = 0x1D;
   const delimiter = String.fromCharCode(delimiterHex);
@@ -284,7 +279,7 @@ function populateJournalVoucherDetail(cgiFileName: string, transactions: Transac
   const location: string = getLocation();
   const future: string = getFuture();
   const unusedFiller: string = getUnusedFiller();
-  const supplierNumber: string = getSupplierNumber();
+  const supplierNumber: string = process.env.SUPPLIER_NUMBER;
   const lineCode: string = getLineCode();
   const lineDescription: string = getLineDescription();
 
@@ -335,7 +330,7 @@ function getLineTotle(total: number) {
 
 function populateBatchTrailer(transactions: Transaction[]): string {
   let batchTrailer: string = ``;
-  const feederNumber: string = CgiConstants.FEEDER_NUMBER;
+  const feederNumber: string = process.env.FEEDER_NUMBER;
   const batchType: string = CgiConstants.BATCH_TYPE;
   const transactionType: string = CgiConstants.TRANSACTION_TYPE_BT;
   const delimiterHex = 0x1D;
