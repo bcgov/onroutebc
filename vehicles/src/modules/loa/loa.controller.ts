@@ -84,16 +84,12 @@ export class LoaController {
     let readFileDto: ReadFileDto = new ReadFileDto();
     if (file) {
       console.log('file exists');
-       readFileDto = await this.dopsService.upload(
-        currentUser,
-        companyId,
-        file,
-      );
+      readFileDto = await this.dopsService.upload(currentUser, companyId, file);
       console.log('response from upload file: ', readFileDto);
     }
-    console.log('body  is: ',createLoaDto);
+    console.log('body  is: ', createLoaDto);
     const demo = JSON.stringify(createLoaDto);
-    console.log('body now is: ',demo);
+    console.log('body now is: ', demo);
     const result = await this.loaService.create(
       currentUser,
       createLoaDto,

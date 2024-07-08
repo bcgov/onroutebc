@@ -29,7 +29,7 @@ export class LoaService {
     companyId: string,
     documentId?: string,
   ): Promise<ReadLoaDto> {
-    console.log('document id is: ',documentId);
+    console.log('document id is: ', documentId);
     const loa = this.classMapper.map(createLoaDto, CreateLoaDto, LoaDetail, {
       extraArgs: () => ({ companyId: companyId, documentId: documentId }),
     });
@@ -78,7 +78,7 @@ export class LoaService {
     try {
       const loaDetail = await this.loaDetailRepository.findOne({
         where: {
-          loaId:loaId,
+          loaId: loaId,
           company: { companyId: Number(companyId) },
         },
         relations: ['company', 'loaVehicles', 'loaPermitTypes'],
@@ -177,8 +177,7 @@ export class LoaService {
           extraArgs: () => ({ companyId, loaId, documentId }),
         },
       );
-      if(documentId)
-        updatedLoaDetail.documentId = documentId;
+      if (documentId) updatedLoaDetail.documentId = documentId;
       const savedLoaDetail = await queryRunner.manager.save(updatedLoaDetail);
 
       // Commit transaction
@@ -206,7 +205,7 @@ export class LoaService {
     try {
       const loaDetail = await this.loaDetailRepository.findOne({
         where: {
-          loaId:loaId,
+          loaId: loaId,
           company: { companyId: companyId },
         },
         relations: ['company', 'loaVehicles', 'loaPermitTypes'],

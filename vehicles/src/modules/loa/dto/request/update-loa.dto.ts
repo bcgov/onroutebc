@@ -48,7 +48,6 @@ export class UpdateLoaDto {
   })
   comment: string;
 
- 
   @AutoMap()
   @ApiProperty({
     enum: PermitType,
@@ -58,12 +57,12 @@ export class UpdateLoaDto {
   })
   @Transform(({ value }) => {
     if (typeof value === 'string') {
-      return value.split(',').map(item => item.trim());
+      return value.split(',').map((item) => item.trim());
     }
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return value;
   })
-  @IsEnum(PermitType,{ each: true })
+  @IsEnum(PermitType, { each: true })
   loaPermitType: PermitType[];
 
   @AutoMap()
@@ -76,7 +75,7 @@ export class UpdateLoaDto {
   @IsOptional()
   @Transform(({ value }) => {
     if (typeof value === 'string') {
-      return value.split(',').map(item => item.trim());
+      return value.split(',').map((item) => item.trim());
     }
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return value;
@@ -94,7 +93,7 @@ export class UpdateLoaDto {
   @IsOptional()
   @Transform(({ value }) => {
     if (typeof value === 'string') {
-      return value.split(',').map(item => item.trim());
+      return value.split(',').map((item) => item.trim());
     }
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return value;
