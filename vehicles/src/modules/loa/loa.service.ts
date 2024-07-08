@@ -26,7 +26,7 @@ export class LoaService {
   async create(
     currentUser: IUserJWT,
     createLoaDto: CreateLoaDto,
-    companyId: number,
+    companyId: string,
   ): Promise<ReadLoaDto> {
     const loa = this.classMapper.map(createLoaDto, CreateLoaDto, LoaDetail, {
       extraArgs: () => ({ companyId: companyId }),

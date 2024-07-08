@@ -6,6 +6,8 @@ import {
   IsOptional,
   IsString,
   MaxLength,
+  Length,
+  Allow,
 } from 'class-validator';
 import { PermitType } from 'src/common/enum/permit-type.enum';
 
@@ -28,14 +30,20 @@ export class CreateLoaDto {
     description: 'Effective end date of an LoA',
   })
   expiryDate: string;
+  @ApiProperty({ type: 'string', format: 'binary' })
+  @Allow()
+  file: string;
 
-  @AutoMap()
+  @ApiProperty({
+    type: 'string',
+    example: 'sample_template.pdf',
+    description: 'Name of this file within destination',
+    required: false,
+  })
   @IsOptional()
   @IsString()
-  @ApiProperty({
-    description: 'Loa Document',
-  })
-  document: Buffer;
+  @Length(1, 50)
+  fileName?: string;
 
   @AutoMap()
   @IsOptional()
@@ -65,7 +73,7 @@ export class CreateLoaDto {
     example: ['1', '2'],
   })
   @IsOptional()
-  @IsNumberString({}, { each: true })
+  //@IsNumberString({}, { each: true })
   trailers: string[];
 
   @AutoMap()
@@ -76,6 +84,6 @@ export class CreateLoaDto {
     example: ['1', '2'],
   })
   @IsOptional()
-  @IsNumberString({}, { each: true })
+  //@IsNumberString({}, { each: true })
   powerUnits: string[];
 }

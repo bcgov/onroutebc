@@ -3,14 +3,20 @@ import {
   Controller,
   Delete,
   Get,
+  MaxFileSizeValidator,
   Param,
+  ParseFilePipe,
   Post,
   Put,
   Query,
   Req,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiConsumes,
+  ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiMethodNotAllowedResponse,
   ApiOperation,
@@ -26,6 +32,10 @@ import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
 import { UpdateLoaDto } from './dto/request/update-loa.dto';
 import { GetLoaQueryParamsDto } from './dto/request/getLoa.query-params.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { DopsService } from '../common/dops.service';
+import { CreateFileDto } from '../common/dto/request/create-file.dto';
+import { ReadFileDto } from '../common/dto/response/read-file.dto';
 
 @ApiBearerAuth()
 @ApiTags('Company Letter of Authorization')
@@ -39,21 +49,56 @@ import { GetLoaQueryParamsDto } from './dto/request/getLoa.query-params.dto';
   type: ExceptionDto,
 })
 export class LoaController {
-  constructor(private readonly loaService: LoaService) {}
+  constructor(
+    private readonly loaService: LoaService,
+    private readonly dopsService: DopsService,
+  ) {}
   @ApiOperation({
     summary: 'Add LOA for a company.',
     description:
       'An LOA is added to a company that allows special authorizations.' +
       'Returns the create Loa Object in database.',
   })
+  @ApiCreatedResponse({
+    description: 'The DMS file Resource',
+    type: ReadLoaDto,
+  })
+  @ApiConsumes('multipart/form-data')
   @Roles(Role.READ_PERMIT)
   @Post()
+  @UseInterceptors(FileInterceptor('file'))
   async create(
     @Req() request: Request,
-    @Param('companyId') companyId: number,
+    @Param('companyId') companyId: string,
     @Body() createLoaDto: CreateLoaDto,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 100000000 }),
+          /**
+           * TODO explore custom validator to verify files magic number rather
+           * than extention in the filename. Also, accept multiple file types */
+          //new FileTypeValidator({ fileType: 'pdf' }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
   ): Promise<ReadLoaDto> {
     const currentUser = request.user as IUserJWT;
+    if (file) {
+      console.log('file exists')
+      console.log('createLoaDto: ',createLoaDto);
+      const createFileDto: CreateFileDto = new CreateFileDto();
+      createFileDto.file = createLoaDto.file;
+      createFileDto.fileName = createLoaDto.fileName;
+      const readFileDto: ReadFileDto = await this.dopsService.upload(
+        currentUser,
+        createFileDto,
+        companyId,
+        file,
+      );
+      console.log('response from upload file: ', readFileDto);
+    }
     const result = await this.loaService.create(
       currentUser,
       createLoaDto,

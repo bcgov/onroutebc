@@ -22,6 +22,8 @@ import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method
 import { LogMethodExecution } from '../../common/decorator/log-method-execution.decorator';
 import { INotificationDocument } from '../../common/interface/notification-document.interface';
 import { ReadNotificationDto } from './dto/response/read-notification.dto';
+import { CreateFileDto } from './dto/request/create-file.dto';
+import * as FormData from 'form-data';
 
 @Injectable()
 export class DopsService {
@@ -307,5 +309,53 @@ export class DopsService {
         );
       }
     }
+  }
+
+  @LogAsyncMethodExecution()
+  async upload(
+    currentUser: IUserJWT,
+    createFileDto: CreateFileDto,
+    companyId: string,
+    file: Express.Multer.File,
+  ): Promise<ReadFileDto> {
+    // Construct the URL for the request
+    const url = `${process.env.DOPS_URL}/dms/upload?`;
+    const params = new URLSearchParams({
+      companyId: companyId,
+    }).toString();
+    console.log('file: ',file);
+    const formData = new FormData();
+    formData.append('file', file.buffer);
+    formData.append('fileName', createFileDto.fileName);
+
+    const reqConfig: AxiosRequestConfig = {
+      data: createFileDto,
+      headers: {
+        Authorization: currentUser.access_token,
+        'Content-Type': 'multipart/form-data',
+        'x-correlation-id': this.cls.getId(),
+      },
+      responseType: 'json',
+    };
+    console.log('calling dops');
+    // Calls the DOPS service, which converts the the template document into a pdf
+    const dopsResponse = await lastValueFrom(
+      this.httpService.post(url + params, reqConfig),
+    )
+      .then((response) => {
+        return response;
+      })
+      .catch((error: AxiosError) => {
+        if (error.response) {
+          const errorData = error.response.data;
+          this.logger.error(
+            `Error response from DOPS: ${JSON.stringify(errorData, null, 2)}`,
+          );
+        } else {
+          this.logger.error(error?.message, error?.stack);
+        }
+        throw new InternalServerErrorException('Error downloading file');
+      });
+    return dopsResponse.data as ReadFileDto;
   }
 }
