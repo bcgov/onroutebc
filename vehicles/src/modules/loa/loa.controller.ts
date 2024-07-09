@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  FileTypeValidator,
   Get,
   MaxFileSizeValidator,
   Param,
@@ -71,11 +72,8 @@ export class LoaController {
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({ maxSize: 100000000 }),
-          /**
-           * TODO explore custom validator to verify files magic number rather
-           * than extention in the filename. Also, accept multiple file types */
-          //new FileTypeValidator({ fileType: 'pdf' }),
+          new MaxFileSizeValidator({ maxSize: 10485760 }),
+          new FileTypeValidator({ fileType: 'application/pdf' }),
         ],
       }),
     )
@@ -146,11 +144,8 @@ export class LoaController {
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({ maxSize: 100000000 }),
-          /**
-           * TODO explore custom validator to verify files magic number rather
-           * than extention in the filename. Also, accept multiple file types */
-          //new FileTypeValidator({ fileType: 'pdf' }),
+          new MaxFileSizeValidator({ maxSize: 10485760 }),
+          new FileTypeValidator({ fileType: 'application/pdf' }),
         ],
       }),
     )
@@ -192,11 +187,11 @@ export class LoaController {
   }
 
   @ApiOperation({
-    summary: 'Add LOA by Id.',
-    description: 'Returns the Loa Object in database.',
+    summary: 'Get LOA Document',
+    description: 'Get LOA Document from database.',
   })
   @Get('/:loaId/documents')
-  async getloaDocument(
+  async getLoaDocument(
     @Req() request: Request,
     @Param('companyId') companyId: number,
     @Param('loaId') loaId: number,
@@ -209,6 +204,19 @@ export class LoaController {
       loaId,
       downloadMode,
     );
+    return loa;
+  }
+
+  @ApiOperation({
+    summary: 'Delete LOA Document',
+    description: 'Delete LOA Document in database.',
+  })
+  @Put('/:loaId/documents')
+  async deleteLoaDocument(
+    @Param('companyId') companyId: number,
+    @Param('loaId') loaId: number,
+  ): Promise<number> {
+    const loa = await this.loaService.deleteLoaDocument(companyId, loaId);
     return loa;
   }
 }
