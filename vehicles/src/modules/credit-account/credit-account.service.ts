@@ -242,9 +242,8 @@ export class CreditAccountService {
   }
 
   @LogAsyncMethodExecution()
-  async getCreditAccount(currentUser: IUserJWT, companyId: number) {
-    //TODO handle where company is Credit Account User.
-    const creditAccount = await this.creditAccountRepository.findOne({
+  async getCreditAccount(currentUser: IUserJWT, companyId: number) {   
+    let creditAccount = await this.creditAccountRepository.findOne({
       where: {
         company: { companyId },
       },
@@ -254,6 +253,23 @@ export class CreditAccountService {
         creditAccountActivities: { idirUser: true },
       },
     });
+
+    if (
+      !creditAccount ||
+      creditAccount?.creditAccountStatusType ===
+        CreditAccountStatus.ACCOUNT_CLOSED
+    ) {
+      creditAccount = await this.creditAccountRepository.findOne({
+        where: {
+          creditAccountUsers: { company: { companyId }, isActive: true },
+        },
+        relations: {
+          company: true,
+          creditAccountUsers: { company: true },
+          creditAccountActivities: { idirUser: true },
+        },
+      });
+    }
     if (!creditAccount) {
       throw new DataNotFoundException();
     }
