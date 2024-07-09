@@ -31,7 +31,7 @@ export class CreateLoaDto {
     description: 'Effective end date of an LoA',
   })
   expiryDate: string;
-  
+
   @ApiProperty({ type: 'string', format: 'binary' })
   @Allow()
   file: string;

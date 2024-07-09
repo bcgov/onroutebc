@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { LogAsyncMethodExecution } from 'src/common/decorator/log-async-method-execution.decorator';
 import { CreateLoaDto } from './dto/request/create-loa.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
@@ -6,7 +6,7 @@ import { ReadLoaDto } from './dto/response/read-loa.dto';
 import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoaDetail } from './entities/loa-detail.entity';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
 import { Mapper } from '@automapper/core';
 import { UpdateLoaDto } from './dto/request/update-loa.dto';
 import { LoaVehicle } from './entities/loa-vehicles.entity';
@@ -33,24 +33,21 @@ export class LoaService {
     companyId: number,
     documentId?: string,
   ): Promise<ReadLoaDto> {
-    console.log('document id is: ', documentId);
     const loa = this.classMapper.map(createLoaDto, CreateLoaDto, LoaDetail, {
       extraArgs: () => ({ companyId: companyId, documentId: documentId }),
     });
-    console.log('loa detail before saving: ', loa);
     const loaDetail = await this.loaDetailRepository.save(loa);
     const readLoaDto = this.classMapper.map(loaDetail, LoaDetail, ReadLoaDto);
     try {
-      const file = (await this.dopsService.download(
+      const file = await this.downloadLoaDocument(
         currentUser,
         readLoaDto.documentId,
-        FileDownloadModes.URL,
-        undefined,
         companyId,
-      )) as ReadFileDto;
+      );
       readLoaDto.fileName = file.fileName;
     } catch (error) {
       this.logger.error('Failed to get loa document', error);
+      // Log the error and continue without setting fileName
     }
     return readLoaDto;
   }
@@ -90,50 +87,47 @@ export class LoaService {
   }
 
   @LogAsyncMethodExecution()
+  async findOne(companyId: number, loaId: number): Promise<LoaDetail> {
+    return await this.loaDetailRepository.findOne({
+      where: {
+        loaId: loaId,
+        company: { companyId: Number(companyId) },
+      },
+      relations: ['company', 'loaVehicles', 'loaPermitTypes'],
+    });
+  }
+
+  @LogAsyncMethodExecution()
   async getById(
     currentUser: IUserJWT,
     companyId: number,
     loaId: number,
   ): Promise<ReadLoaDto> {
-    try {
-      const loaDetail = await this.loaDetailRepository.findOne({
-        where: {
-          loaId: loaId,
-          company: { companyId: Number(companyId) },
-        },
-        relations: ['company', 'loaVehicles', 'loaPermitTypes'],
-      });
+    const loaDetail = await this.findOne(companyId, loaId);
 
-      if (!loaDetail) {
-        throw new Error(
-          `LOA detail not found for companyId ${companyId} and loaId ${loaId}`,
-        );
-      }
-
-      const readLoaDto = this.classMapper.map(
-        loaDetail,
-        LoaDetail,
-        ReadLoaDto,
-        {
-          extraArgs: () => ({ companyId: companyId }),
-        },
+    if (!loaDetail) {
+      throw new NotFoundException(
+        `LOA detail not found for companyId ${companyId} and loaId ${loaId}`,
       );
-      try {
-        const file = (await this.dopsService.download(
-          currentUser,
-          readLoaDto.documentId,
-          FileDownloadModes.URL,
-          undefined,
-          companyId,
-        )) as ReadFileDto;
-        readLoaDto.fileName = file.fileName;
-      } catch (error) {
-        this.logger.error('Failed to get loa document', error);
-      }
-      return readLoaDto;
-    } catch (error) {
-      throw new Error(`Failed to fetch LOA detail: ${error}`);
     }
+
+    const readLoaDto = this.classMapper.map(loaDetail, LoaDetail, ReadLoaDto, {
+      extraArgs: () => ({ companyId }),
+    });
+
+    try {
+      const file = await this.downloadLoaDocument(
+        currentUser,
+        readLoaDto.documentId,
+        companyId,
+      );
+      readLoaDto.fileName = file.fileName;
+    } catch (error) {
+      this.logger.error('Failed to get loa document', error);
+      // Log the error and continue without setting fileName
+    }
+
+    return readLoaDto;
   }
 
   @LogAsyncMethodExecution()
@@ -145,81 +139,61 @@ export class LoaService {
     documentId?: string,
   ): Promise<ReadLoaDto> {
     const { powerUnits, trailers, loaPermitType } = updateLoaDto;
+    const queryRunner =
+      this.loaDetailRepository.manager.connection.createQueryRunner();
 
-    // Fetch existing LOA detail
-    const existingLoaDetail = await this.getById(currentUser,companyId, loaId);
-
-    // Arrays to store entities to delete
-    const deletePowerUnits = existingLoaDetail.powerUnits.filter(
-      (item) => !powerUnits.includes(item),
-    );
-    const deleteTrailers = existingLoaDetail.trailers.filter(
-      (item) => !trailers.includes(item),
-    );
-    const deletePermitTypes = existingLoaDetail.loaPermitType.filter(
-      (item) => !loaPermitType.includes(item),
-    );
-
-    // Begin transaction
-    const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      // Delete power units
-      if (deletePowerUnits.length > 0) {
-        await queryRunner.manager
-          .createQueryBuilder()
-          .delete()
-          .from(LoaVehicle)
-          .where('powerUnit IN (:...deletePowerUnits)', { deletePowerUnits })
-          .andWhere('loa = :loaId', { loaId })
-          .execute();
+      const existingLoaDetail = await this.findOne(companyId, loaId);
+
+      if (!existingLoaDetail) {
+        throw new NotFoundException('LOA detail not found');
       }
 
-      // Delete trailers
-      if (deleteTrailers.length > 0) {
-        await queryRunner.manager
-          .createQueryBuilder()
-          .delete()
-          .from(LoaVehicle)
-          .where('trailer IN (:...deleteTrailers)', { deleteTrailers })
-          .andWhere('loa = :loaId', { loaId })
-          .execute();
-      }
+      await this.deleteEntities(
+        queryRunner.manager,
+        LoaVehicle,
+        'powerUnit',
+        powerUnits,
+        loaId,
+      );
+      await this.deleteEntities(
+        queryRunner.manager,
+        LoaVehicle,
+        'trailer',
+        trailers,
+        loaId,
+      );
+      await this.deleteEntities(
+        queryRunner.manager,
+        LoaPermitType,
+        'permitType',
+        loaPermitType,
+        loaId,
+      );
 
-      // Delete permit types
-      if (deletePermitTypes.length > 0) {
-        await queryRunner.manager
-          .createQueryBuilder()
-          .delete()
-          .from(LoaPermitType)
-          .where('permitType IN (:...deletePermitTypes)', { deletePermitTypes })
-          .andWhere('loa = :loaId', { loaId })
-          .execute();
-      }
-
-      // Save updated LOA detail
       const updatedLoaDetail = this.classMapper.map(
         updateLoaDto,
         UpdateLoaDto,
         LoaDetail,
-        {
-          extraArgs: () => ({ companyId, loaId, documentId }),
-        },
+        { extraArgs: () => ({ companyId, loaId, documentId }) },
       );
-      if (documentId) updatedLoaDetail.documentId = documentId;
-      const savedLoaDetail = await queryRunner.manager.save(updatedLoaDetail);
 
-      // Commit transaction
+      if (documentId) {
+        updatedLoaDetail.documentId = documentId;
+      }
+
+      const savedLoaDetail = await queryRunner.manager.save(updatedLoaDetail);
       await queryRunner.commitTransaction();
 
-      // Map to ReadLoaDto and return
-      const readLoaDto = this.classMapper.map(
+      let readLoaDto = this.classMapper.map(
         savedLoaDetail,
         LoaDetail,
         ReadLoaDto,
       );
+
       try {
         const file = (await this.dopsService.download(
           currentUser,
@@ -228,17 +202,18 @@ export class LoaService {
           undefined,
           companyId,
         )) as ReadFileDto;
-        readLoaDto.fileName = file.fileName;
+
+        readLoaDto = { ...readLoaDto, fileName: file.fileName };
       } catch (error) {
         this.logger.error('Failed to get loa document', error);
+        // Log the error and continue without setting fileName
       }
+
       return readLoaDto;
     } catch (error) {
-      // Rollback transaction on error
       await queryRunner.rollbackTransaction();
       throw error;
     } finally {
-      // Release query runner
       await queryRunner.release();
     }
   }
@@ -265,5 +240,54 @@ export class LoaService {
     } catch (error) {
       throw new Error(`Failed to fetch LOA detail: ${error}`);
     }
+  }
+
+  async getloaDocument(
+    currentUser: IUserJWT,
+    companyId: number,
+    loaId: number,
+    downloadMode: FileDownloadModes,
+  ): Promise<ReadFileDto | Buffer> {
+    const loaDetail = await this.findOne(companyId, loaId);
+    const loa: ReadFileDto | Buffer = await this.dopsService.download(
+      currentUser,
+      loaDetail.documentId,
+      downloadMode,
+      undefined,
+      companyId,
+    );
+    return loa;
+  }
+
+  private async deleteEntities(
+    entityManager: EntityManager,
+    entity: typeof LoaVehicle | typeof LoaPermitType,
+    field: 'powerUnit' | 'trailer' | 'permitType',
+    items: string[],
+    loaId: number,
+  ): Promise<void> {
+    if (items.length > 0) {
+      await entityManager
+        .createQueryBuilder()
+        .delete()
+        .from(entity)
+        .where(`${field} IN (:...items)`, { items })
+        .andWhere('loa = :loaId', { loaId })
+        .execute();
+    }
+  }
+
+  private async downloadLoaDocument(
+    currentUser: IUserJWT,
+    documentId: string,
+    companyId: number,
+  ): Promise<ReadFileDto> {
+    return this.dopsService.download(
+      currentUser,
+      documentId,
+      FileDownloadModes.URL,
+      undefined,
+      companyId,
+    ) as Promise<ReadFileDto>;
   }
 }
