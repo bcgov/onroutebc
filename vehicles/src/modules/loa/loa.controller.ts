@@ -33,6 +33,7 @@ import { GetLoaQueryParamsDto } from './dto/request/getLoa.query-params.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { DopsService } from '../common/dops.service';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
+import { FileDownloadModes } from 'src/common/enum/file-download-modes.enum';
 
 @ApiBearerAuth()
 @ApiTags('Company Letter of Authorization')
@@ -65,7 +66,7 @@ export class LoaController {
   @UseInterceptors(FileInterceptor('file'))
   async create(
     @Req() request: Request,
-    @Param('companyId') companyId: string,
+    @Param('companyId') companyId: number,
     @Body() createLoaDto: CreateLoaDto,
     @UploadedFile(
       new ParseFilePipe({
@@ -121,10 +122,12 @@ export class LoaController {
   })
   @Get('/:loaId')
   async getById(
-    @Param('companyId') companyId: string,
+    @Req() request: Request,
+    @Param('companyId') companyId: number,
     @Param('loaId') loaId: number,
   ): Promise<ReadLoaDto> {
-    const loa = await this.loaService.getById(companyId, loaId);
+    const currentUser = request.user as IUserJWT;
+    const loa = await this.loaService.getById(currentUser, companyId, loaId);
     return loa;
   }
 
@@ -137,7 +140,7 @@ export class LoaController {
   @UseInterceptors(FileInterceptor('file'))
   async update(
     @Req() request: Request,
-    @Param('companyId') companyId: string,
+    @Param('companyId') companyId: number,
     @Param('loaId') loaId: number,
     @Body() updateLoaDto: UpdateLoaDto,
     @UploadedFile(
@@ -185,6 +188,28 @@ export class LoaController {
     @Param('loaId') loaId: number,
   ): Promise<ReadLoaDto> {
     const loa = await this.loaService.delete(companyId, loaId);
+    return loa;
+  }
+
+  @ApiOperation({
+    summary: 'Add LOA by Id.',
+    description: 'Returns the Loa Object in database.',
+  })
+  @Get('/documents/:documentId')
+  async getloaDocument(
+    @Req() request: Request,
+    @Param('companyId') companyId: number,
+    @Param('documentId') documentId: string,
+    @Query('downloadMode') downloadMode: FileDownloadModes,
+  ): Promise<ReadFileDto | Buffer> {
+    const currentUser = request.user as IUserJWT;
+    const loa: ReadFileDto | Buffer = await this.dopsService.download(
+      currentUser,
+      documentId,
+      downloadMode,
+      undefined,
+      companyId,
+    );
     return loa;
   }
 }

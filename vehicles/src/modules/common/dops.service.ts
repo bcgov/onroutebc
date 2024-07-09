@@ -314,7 +314,7 @@ export class DopsService {
   @LogAsyncMethodExecution()
   async upload(
     currentUser: IUserJWT,
-    companyId: string,
+    companyId: number,
     file: Express.Multer.File,
     documentId?: string,
   ): Promise<ReadFileDto> {
@@ -323,7 +323,7 @@ export class DopsService {
     if (!documentId) url = `${process.env.DOPS_URL}/dms/upload?`;
     else url = `${process.env.DOPS_URL}/dms/upload/${documentId}?`;
     const params = new URLSearchParams({
-      companyId: companyId,
+      companyId: companyId.toString(),
     }).toString();
     const formData = new FormData();
     const stream = Readable.from(file.buffer);

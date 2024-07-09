@@ -11,6 +11,9 @@ import { Mapper } from '@automapper/core';
 import { UpdateLoaDto } from './dto/request/update-loa.dto';
 import { LoaVehicle } from './entities/loa-vehicles.entity';
 import { LoaPermitType } from './entities/loa-permit-type-details.entity';
+import { ReadFileDto } from '../common/dto/response/read-file.dto';
+import { DopsService } from '../common/dops.service';
+import { FileDownloadModes } from 'src/common/enum/file-download-modes.enum';
 
 @Injectable()
 export class LoaService {
@@ -20,13 +23,14 @@ export class LoaService {
     @InjectRepository(LoaDetail)
     private loaDetailRepository: Repository<LoaDetail>,
     private dataSource: DataSource,
+    private readonly dopsService: DopsService,
   ) {}
 
   @LogAsyncMethodExecution()
   async create(
     currentUser: IUserJWT,
     createLoaDto: CreateLoaDto,
-    companyId: string,
+    companyId: number,
     documentId?: string,
   ): Promise<ReadLoaDto> {
     console.log('document id is: ', documentId);
@@ -46,12 +50,12 @@ export class LoaService {
       .leftJoinAndSelect('loaDetail.company', 'company')
       .leftJoinAndSelect('loaDetail.loaVehicles', 'loaVehicles')
       .leftJoinAndSelect('loaDetail.loaPermitTypes', 'loaPermitTypes')
-      .leftJoinAndSelect('loaDetail.document', 'document')
       .where('company.companyId = :companyId', { companyId: companyId });
     if (expired === true) {
       loaDetailQB = loaDetailQB.andWhere('loaDetail.expiryDate < :expiryDate', {
         expiryDate: new Date(),
       });
+      loaDetailQB = loaDetailQB.orWhere('loaDetail.expiryDate IS NULL');
     } else {
       loaDetailQB = loaDetailQB.andWhere(
         'loaDetail.expiryDate >= :expiryDate',
@@ -74,7 +78,11 @@ export class LoaService {
   }
 
   @LogAsyncMethodExecution()
-  async getById(companyId: string, loaId: number): Promise<ReadLoaDto> {
+  async getById(
+    currentUser: IUserJWT,
+    companyId: number,
+    loaId: number,
+  ): Promise<ReadLoaDto> {
     try {
       const loaDetail = await this.loaDetailRepository.findOne({
         where: {
@@ -98,7 +106,18 @@ export class LoaService {
           extraArgs: () => ({ companyId: companyId }),
         },
       );
-
+      try {
+        const file = (await this.dopsService.download(
+          currentUser,
+          readLoaDto.documentId,
+          FileDownloadModes.URL,
+          undefined,
+          companyId,
+        )) as ReadFileDto;
+        readLoaDto.fileName = file.fileName;
+      } catch (error) {
+        this.logger.error('Failed to get loa document', error);
+      }
       return readLoaDto;
     } catch (error) {
       throw new Error(`Failed to fetch LOA detail: ${error}`);
@@ -108,7 +127,7 @@ export class LoaService {
   @LogAsyncMethodExecution()
   async update(
     currentUser: IUserJWT,
-    companyId: string,
+    companyId: number,
     loaId: number,
     updateLoaDto: UpdateLoaDto,
     documentId?: string,
@@ -116,7 +135,7 @@ export class LoaService {
     const { powerUnits, trailers, loaPermitType } = updateLoaDto;
 
     // Fetch existing LOA detail
-    const existingLoaDetail = await this.getById(companyId, loaId);
+    const existingLoaDetail = await this.getById(currentUser,companyId, loaId);
 
     // Arrays to store entities to delete
     const deletePowerUnits = existingLoaDetail.powerUnits.filter(
