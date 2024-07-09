@@ -290,4 +290,15 @@ export class LoaService {
       companyId,
     ) as Promise<ReadFileDto>;
   }
+
+  @LogAsyncMethodExecution()
+  async deleteLoaDocument(companyId: number, loaId: number): Promise<number> {
+    const { affected } = await this.loaDetailRepository.update(
+      { loaId: loaId },
+      {
+        documentId: null,
+      },
+    );
+    return affected;
+  }
 }

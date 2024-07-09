@@ -21,7 +21,7 @@ export class CreateLoaDto {
     example: '2023-07-13',
     description: 'Effective start date of an LoA',
   })
- @IsDateString()
+  @IsDateString()
   startDate: string;
 
   @AutoMap()
