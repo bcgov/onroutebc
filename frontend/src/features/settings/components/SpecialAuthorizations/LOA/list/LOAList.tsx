@@ -164,7 +164,7 @@ export const LOAList = ({
               }}
               onClick={() => {
                 if (!isActive) return;
-                onDelete?.(row.getValue("loaId"));
+                onDelete?.(row.original.loaId);
               }}
               disabled={false}
             >

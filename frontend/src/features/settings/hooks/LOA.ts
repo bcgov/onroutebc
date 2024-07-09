@@ -9,8 +9,10 @@ import {
   updateLOA,
 } from "../apiManager/specialAuthorization";
 
-const LOAS_QUERY_KEY = "loas";
-const LOA_QUERY_KEY = "loa";
+const QUERY_KEYS = {
+  LOAS: (expired: boolean) => ["loas", expired],
+  LOA: (loaId?: Nullable<string>) => ["loa", loaId],
+};
 
 /**
  * Hook to fetch the LOAs for a company.
@@ -20,7 +22,7 @@ const LOA_QUERY_KEY = "loa";
  */
 export const useFetchLOAs = (companyId: number | string, expired: boolean) => {
   return useQuery({
-    queryKey: [LOAS_QUERY_KEY, expired],
+    queryKey: QUERY_KEYS.LOAS(expired),
     queryFn: () => getLOAs(companyId, expired),
     retry: false,
     refetchOnMount: "always",
@@ -36,7 +38,7 @@ export const useFetchLOAs = (companyId: number | string, expired: boolean) => {
  */
 export const useFetchLOADetail = (companyId: number, loaId?: Nullable<string>) => {
   return useQuery({
-    queryKey: [LOA_QUERY_KEY, loaId],
+    queryKey: QUERY_KEYS.LOA(loaId),
     queryFn: () => {
       if (!loaId) return undefined;
       return getLOADetail(companyId, loaId);
@@ -59,7 +61,7 @@ export const useCreateLOAMutation = () => {
     mutationFn: createLOA,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [LOAS_QUERY_KEY, true],
+        queryKey: QUERY_KEYS.LOAS(false),
       });
     },
   });
@@ -76,10 +78,13 @@ export const useUpdateLOAMutation = () => {
     mutationFn: updateLOA,
     onSuccess: (response) => {
       queryClient.invalidateQueries({
-        queryKey: [LOAS_QUERY_KEY, true],
+        queryKey: QUERY_KEYS.LOAS(false),
       });
       queryClient.invalidateQueries({
-        queryKey: [LOA_QUERY_KEY, response.data.loaId],
+        queryKey: QUERY_KEYS.LOAS(true),
+      });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.LOA(response.data.loaId),
       });
     },
   });
@@ -91,12 +96,12 @@ export const useUpdateLOAMutation = () => {
  */
 export const useRemoveLOAMutation = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: removeLOA,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [LOAS_QUERY_KEY, true],
+        queryKey: QUERY_KEYS.LOAS(false),
       });
     },
   });
