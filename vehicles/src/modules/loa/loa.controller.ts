@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  FileTypeValidator,
   Get,
   MaxFileSizeValidator,
   Param,
@@ -71,11 +72,8 @@ export class LoaController {
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({ maxSize: 100000000 }),
-          /**
-           * TODO explore custom validator to verify files magic number rather
-           * than extention in the filename. Also, accept multiple file types */
-          //new FileTypeValidator({ fileType: 'pdf' }),
+          new MaxFileSizeValidator({ maxSize: 10485760 }),
+          new FileTypeValidator({fileType: 'application/pdf'})
         ],
       }),
     )
@@ -146,11 +144,8 @@ export class LoaController {
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({ maxSize: 100000000 }),
-          /**
-           * TODO explore custom validator to verify files magic number rather
-           * than extention in the filename. Also, accept multiple file types */
-          //new FileTypeValidator({ fileType: 'pdf' }),
+          new MaxFileSizeValidator({ maxSize: 10485760 }),
+          new FileTypeValidator({fileType: 'application/pdf'}),
         ],
       }),
     )

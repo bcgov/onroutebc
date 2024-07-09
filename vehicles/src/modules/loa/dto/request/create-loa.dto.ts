@@ -8,28 +8,33 @@ import {
   IsString,
   MaxLength,
   Allow,
+  IsDateString,
 } from 'class-validator';
 import { PermitType } from 'src/common/enum/permit-type.enum';
 
 export class CreateLoaDto {
   @AutoMap()
   @IsString()
-  @MaxLength(24)
+  @MaxLength(10)
   @ApiProperty({
-    example: '2023-07-13T00:00:00.000Z',
+    type: 'date',
+    example: '2023-07-13',
     description: 'Effective start date of an LoA',
   })
+ @IsDateString()
   startDate: string;
 
   @AutoMap()
   @IsOptional()
   @IsString()
-  @MaxLength(24)
+  @MaxLength(10)
   @ApiProperty({
+    type: 'date',
     required: false,
-    example: '2023-08-13T00:00:00.000Z',
+    example: '2023-08-13',
     description: 'Effective end date of an LoA',
   })
+  @IsDateString()
   expiryDate: string;
 
   @ApiProperty({ type: 'string', format: 'binary' })
