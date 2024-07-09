@@ -8,7 +8,7 @@ import axiosRetry from 'axios-retry';
 
 @Injectable()
 export class CommonService {
-  private readonly logger = new Logger(CommonService.name);
+  public readonly logger = new Logger(CommonService.name);
   constructor(private readonly httpService: HttpService) {
     // Configure axios-retry here
     axiosRetry(this.httpService.axiosRef, {
@@ -25,7 +25,7 @@ export class CommonService {
           error.response?.status >= 500
         );
       },
-      onRetry(retryCount, error, requestConfig) {
+      onRetry: (retryCount, error, requestConfig) => {
         /* eslint-disable */
         this.logger.error(
           `URL: ${requestConfig?.baseURL}, error status: ${error?.status}, Retry Count: ${retryCount}`,
