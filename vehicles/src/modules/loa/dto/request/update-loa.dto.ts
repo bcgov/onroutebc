@@ -26,6 +26,7 @@ export class UpdateLoaDto {
   @IsString()
   @MaxLength(24)
   @ApiProperty({
+    required: false,
     example: '2023-08-13T00:00:00.000Z',
     description: 'Effective end date of an LoA',
   })

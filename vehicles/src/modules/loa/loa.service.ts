@@ -55,7 +55,6 @@ export class LoaService {
       loaDetailQB = loaDetailQB.andWhere('loaDetail.expiryDate < :expiryDate', {
         expiryDate: new Date(),
       });
-      loaDetailQB = loaDetailQB.orWhere('loaDetail.expiryDate IS NULL');
     } else {
       loaDetailQB = loaDetailQB.andWhere(
         'loaDetail.expiryDate >= :expiryDate',
@@ -63,6 +62,7 @@ export class LoaService {
           expiryDate: new Date(),
         },
       );
+      loaDetailQB = loaDetailQB.orWhere('loaDetail.expiryDate IS NULL');
     }
     const loaDetail: LoaDetail[] = await loaDetailQB.getMany();
     const readLoaDto = this.classMapper.mapArray(
