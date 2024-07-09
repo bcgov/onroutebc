@@ -336,6 +336,7 @@ export class DopsService {
       headers: {
         Authorization: `${currentUser.access_token}`,
         'Content-Type': 'multipart/form-data',
+        'x-correlation-id': this.cls.getId(),
       },
     };
     // Calls the DOPS service, which converts the the template document into a pdf
