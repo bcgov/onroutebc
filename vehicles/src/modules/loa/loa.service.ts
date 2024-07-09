@@ -40,6 +40,18 @@ export class LoaService {
     console.log('loa detail before saving: ', loa);
     const loaDetail = await this.loaDetailRepository.save(loa);
     const readLoaDto = this.classMapper.map(loaDetail, LoaDetail, ReadLoaDto);
+    try {
+      const file = (await this.dopsService.download(
+        currentUser,
+        readLoaDto.documentId,
+        FileDownloadModes.URL,
+        undefined,
+        companyId,
+      )) as ReadFileDto;
+      readLoaDto.fileName = file.fileName;
+    } catch (error) {
+      this.logger.error('Failed to get loa document', error);
+    }
     return readLoaDto;
   }
 
@@ -208,6 +220,18 @@ export class LoaService {
         LoaDetail,
         ReadLoaDto,
       );
+      try {
+        const file = (await this.dopsService.download(
+          currentUser,
+          readLoaDto.documentId,
+          FileDownloadModes.URL,
+          undefined,
+          companyId,
+        )) as ReadFileDto;
+        readLoaDto.fileName = file.fileName;
+      } catch (error) {
+        this.logger.error('Failed to get loa document', error);
+      }
       return readLoaDto;
     } catch (error) {
       // Rollback transaction on error
