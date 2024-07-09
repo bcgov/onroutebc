@@ -122,19 +122,25 @@ export const serializeLOAFormData = (loaFormData: LOAFormData) => {
     getDefaultRequiredVal("", loaFormData.additionalNotes),
   );
 
-  Object.entries(loaFormData.permitTypes).forEach(([permitType, selected]) => {
-    if (selected) {
-      requestData.append("loaPermitType[]", permitType);
-    }
-  });
+  requestData.append(
+    "loaPermitType",
+    Object.entries(loaFormData.permitTypes)
+      .filter(([, selected]) => {
+        return selected;
+      })
+      .map(([permitType]) => permitType)
+      .join(","),
+  );
 
-  Object.keys(loaFormData.selectedVehicles.powerUnits).forEach(vehicleId => {
-    requestData.append("powerUnits[]", vehicleId);
-  });
+  requestData.append(
+    "powerUnits",
+    Object.keys(loaFormData.selectedVehicles.powerUnits).join(","),
+  );
 
-  Object.keys(loaFormData.selectedVehicles.trailers).forEach(vehicleId => {
-    requestData.append("trailers[]", vehicleId);
-  });
+  requestData.append(
+    "trailers",
+    Object.keys(loaFormData.selectedVehicles.trailers).join(","),
+  );
 
   if (loaFormData.uploadFile instanceof File) {
     // is newly uploaded file
