@@ -46,7 +46,8 @@ export const AmendPermitForm = () => {
     getLinks,
   } = useContext(AmendPermitContext);
 
-  const { companyId } = useParams();
+  const { companyId: companyIdParam } = useParams();
+  const companyId = getDefaultRequiredVal("", companyIdParam);
   const navigate = useNavigate();
 
   const { data: companyInfo } = useCompanyInfoDetailsQuery(companyId);
@@ -78,7 +79,8 @@ export const AmendPermitForm = () => {
     trailerSubTypes,
   } = usePermitVehicleManagement(companyId);
 
-  const { handleSubmit, getValues } = formMethods;
+  const { handleSubmit, getValues, watch } = formMethods;
+  const vehicleFormData = watch("permitData.vehicleDetails");
 
   // Helper method to return form field values as an Permit object
   const transformPermitFormData = (data: FieldValues) => {
@@ -160,7 +162,7 @@ export const AmendPermitForm = () => {
             permitToBeAmended.permitId,
           ),
           application: permitToBeAmended,
-          companyId: companyId as string,
+          companyId,
         })
       : await amendPermitMutation.mutateAsync(permitToBeAmended);
 
@@ -211,7 +213,7 @@ export const AmendPermitForm = () => {
           permitStartDate={formData.permitData.startDate}
           permitDuration={formData.permitData.permitDuration}
           permitCommodities={formData.permitData.commodities}
-          vehicleDetails={formData.permitData.vehicleDetails}
+          vehicleDetails={vehicleFormData}
           vehicleOptions={vehicleOptions}
           powerUnitSubTypes={powerUnitSubTypes}
           trailerSubTypes={trailerSubTypes}

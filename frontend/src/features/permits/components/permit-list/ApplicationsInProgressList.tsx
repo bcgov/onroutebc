@@ -30,19 +30,12 @@ import {
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
 
-/**
- * Dynamically set the column
- * @returns An array of column headers/accessor keys for Material React Table
- */
 const getColumns = (
   userAuthGroup?: Nullable<UserAuthGroupType>,
 ): MRT_ColumnDef<ApplicationListItem>[] => {
   return ApplicationInProgressColumnDefinition(userAuthGroup);
 };
 
-/**
- * A wrapper with the query to load the table with expired permits.
- */
 export const ApplicationsInProgressList = ({
   onCountChange,
 }: {
@@ -97,17 +90,10 @@ export const ApplicationsInProgressList = ({
     [userAuthGroup],
   );
 
-  /**
-   * Callback function for clicking on the Trash icon above the Table.
-   */
   const onClickDelete = useCallback(() => {
     setIsDeleteDialogOpen(() => true);
   }, []);
 
-  /**
-   * Function that deletes a application once the user confirms the delete action
-   * in the confirmation dialog.
-   */
   const onConfirmApplicationDelete = async () => {
     const applicationIds: string[] = Object.keys(rowSelection);
     const response = await deleteApplications(applicationIds);
@@ -136,9 +122,6 @@ export const ApplicationsInProgressList = ({
     }
   };
 
-  /**
-   * Determines if a row can be selected
-   */
   const canRowBeSelected = useCallback(
     (permitApplicationOrigin?: Nullable<PermitApplicationOrigin>) =>
       canUserAccessApplication(
@@ -159,9 +142,6 @@ export const ApplicationsInProgressList = ({
     }
   }, [isError]);
 
-  /**
-   * Function that clears the delete related states when the user clicks on cancel.
-   */
   const onCancelApplicationDelete = useCallback(() => {
     setRowSelection(() => {
       return {};
