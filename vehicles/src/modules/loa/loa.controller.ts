@@ -195,20 +195,19 @@ export class LoaController {
     summary: 'Add LOA by Id.',
     description: 'Returns the Loa Object in database.',
   })
-  @Get('/documents/:documentId')
+  @Get('/:loaId/documents')
   async getloaDocument(
     @Req() request: Request,
     @Param('companyId') companyId: number,
-    @Param('documentId') documentId: string,
+    @Param('loaId') loaId: number,
     @Query('downloadMode') downloadMode: FileDownloadModes,
   ): Promise<ReadFileDto | Buffer> {
     const currentUser = request.user as IUserJWT;
-    const loa: ReadFileDto | Buffer = await this.dopsService.download(
+    const loa: ReadFileDto | Buffer = await this.loaService.getloaDocument(
       currentUser,
-      documentId,
-      downloadMode,
-      undefined,
       companyId,
+      loaId,
+      downloadMode,
     );
     return loa;
   }
