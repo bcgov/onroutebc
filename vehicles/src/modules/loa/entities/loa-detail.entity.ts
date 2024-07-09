@@ -22,14 +22,13 @@ export class LoaDetail extends Base {
     description: 'Unique identifier for the LoA.',
   })
   @PrimaryGeneratedColumn({ type: 'bigint', name: 'LOA_ID' })
-  loaId: string;
+  loaId: number;
 
   @AutoMap()
   @ApiProperty({
     example: '1',
     description: 'Unique LoA Number',
   })
-  @PrimaryGeneratedColumn({ type: 'bigint', name: 'LOA_NUMBER' })
   @Column({ type: 'bigint', name: 'LOA_NUMBER', nullable: false })
   loaNumber: string;
 

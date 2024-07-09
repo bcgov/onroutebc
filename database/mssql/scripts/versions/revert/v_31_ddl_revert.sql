@@ -9,10 +9,9 @@ SET XACT_ABORT ON
 
 BEGIN TRY
   BEGIN TRANSACTION
-    DROP TABLE [permit].[ORBC_LOA_PERMIT_TYPE_DETAILS]
-    DROP TABLE [permit].[ORBC_LOA_VEHICLES]
-    DROP TABLE [permit].[ORBC_LOA_DETAILS]
-    DROP SEQUENCE [permit].[ORBC_LOA_NUMBER_SEQ]
+
+   ALTER TABLE [permit].[ORBC_PERMIT_TYPE] DROP COLUMN [GL_CODE];
+  
   COMMIT
 END TRY
 
@@ -23,6 +22,6 @@ BEGIN CATCH
 END CATCH
 
 DECLARE @VersionDescription VARCHAR(255)
-SET @VersionDescription = 'Reverting initial creation of LOA tables.'
+SET @VersionDescription = 'Reverting addition of GL_CODE to ORBC_PERMIT_TYPE.'
 
 INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (30, @VersionDescription, getutcdate())

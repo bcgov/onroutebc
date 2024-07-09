@@ -28,8 +28,7 @@ import { Role } from '../../enum/roles.enum';
 import { CreateGeneratedReportDto } from './dto/request/create-generated-report.dto';
 import { DgenService } from './dgen.service';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
-import { JwtAuthGuard } from 'src/guard/auth.guard';
-import { JwtServiceAccountAuthGuard } from 'src/guard/jwt-sa-auth.guard';
+import { JwtOneOfAuthGuard } from '../../guard/jwt-one-of-auth.guard';
 
 @ApiTags('Document Generator (DGEN)')
 @ApiBadRequestResponse({
@@ -64,7 +63,7 @@ export class DgenController {
     description: 'Required when IDP is not IDIR .',
   })
   @Roles(Role.GENERATE_DOCUMENT)
-  @UseGuards(JwtAuthGuard, JwtServiceAccountAuthGuard)
+  @UseGuards(JwtOneOfAuthGuard)
   @Post('/template/render')
   async generate(
     @Req() request: Request,

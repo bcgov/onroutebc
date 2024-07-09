@@ -1,11 +1,13 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   IsEnum,
   IsNumberString,
   IsOptional,
   IsString,
   MaxLength,
+  Allow,
 } from 'class-validator';
 import { PermitType } from 'src/common/enum/permit-type.enum';
 
@@ -24,18 +26,15 @@ export class CreateLoaDto {
   @IsString()
   @MaxLength(24)
   @ApiProperty({
+    required: false,
     example: '2023-08-13T00:00:00.000Z',
     description: 'Effective end date of an LoA',
   })
   expiryDate: string;
-
-  @AutoMap()
-  @IsOptional()
-  @IsString()
-  @ApiProperty({
-    description: 'Loa Document',
-  })
-  document: Buffer;
+  
+  @ApiProperty({ type: 'string', format: 'binary' })
+  @Allow()
+  file: string;
 
   @AutoMap()
   @IsOptional()
@@ -48,13 +47,20 @@ export class CreateLoaDto {
   comment: string;
 
   @AutoMap()
-  @IsEnum(PermitType, { each: true })
   @ApiProperty({
-    isArray: true,
     enum: PermitType,
     description: 'Friendly name for the permit type.',
+    isArray: true,
     example: [PermitType.TERM_OVERSIZE, PermitType.TERM_OVERWEIGHT],
   })
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      return value.split(',').map((item) => item.trim());
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return value;
+  })
+  @IsEnum(PermitType, { each: true })
   loaPermitType: PermitType[];
 
   @AutoMap()
@@ -65,6 +71,13 @@ export class CreateLoaDto {
     example: ['1', '2'],
   })
   @IsOptional()
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      return value.split(',').map((item) => item.trim());
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return value;
+  })
   @IsNumberString({}, { each: true })
   trailers: string[];
 
@@ -76,6 +89,13 @@ export class CreateLoaDto {
     example: ['1', '2'],
   })
   @IsOptional()
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      return value.split(',').map((item) => item.trim());
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return value;
+  })
   @IsNumberString({}, { each: true })
   powerUnits: string[];
 }

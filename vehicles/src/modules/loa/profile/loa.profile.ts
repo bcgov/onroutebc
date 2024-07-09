@@ -34,6 +34,12 @@ export class LoaProfile extends AutomapperProfile {
           }),
         ),
         forMember(
+          (d) => d.documentId,
+          mapWithArguments((_, { documentId }) => {
+            return documentId;
+          }),
+        ),
+        forMember(
           (d) => d.loaPermitTypes,
           mapFrom((s) => {
             const loaPermitTypes: LoaPermitType[] = new Array<LoaPermitType>();
@@ -50,19 +56,23 @@ export class LoaProfile extends AutomapperProfile {
           (d) => d.loaVehicles,
           mapFrom((s) => {
             const loaVehicles: LoaVehicle[] = new Array<LoaVehicle>();
-            for (const powerUnit of s.powerUnits) {
-              const loaVehicle: LoaVehicle = new LoaVehicle();
-              loaVehicle.powerUnit = powerUnit;
-              loaVehicle.trailer = null;
-              loaVehicles.push(loaVehicle);
+            if (s.powerUnits) {
+              for (const powerUnit of s.powerUnits) {
+                const loaVehicle: LoaVehicle = new LoaVehicle();
+                loaVehicle.powerUnit = powerUnit;
+                loaVehicle.trailer = null;
+                loaVehicles.push(loaVehicle);
+              }
             }
-            for (const trailer of s.trailers) {
-              const loaVehicle: LoaVehicle = new LoaVehicle();
-              loaVehicle.trailer = trailer;
-              loaVehicle.powerUnit = null;
-              loaVehicles.push(loaVehicle);
+            if (s.trailers) {
+              for (const trailer of s.trailers) {
+                const loaVehicle: LoaVehicle = new LoaVehicle();
+                loaVehicle.trailer = trailer;
+                loaVehicle.powerUnit = null;
+                loaVehicles.push(loaVehicle);
+              }
+              return loaVehicles;
             }
-            return loaVehicles;
           }),
         ),
       );

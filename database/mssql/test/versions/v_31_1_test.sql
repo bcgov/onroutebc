@@ -1,7 +1,4 @@
+-- Test that the GL_CODE column has been added correctly
 SET NOCOUNT ON
-IF OBJECT_ID('[$(DB_NAME)].[permit].[ORBC_LOA_PERMIT_TYPE_DETAILS]', 'U') IS NOT NULL 
-AND OBJECT_ID('[$(DB_NAME)].[permit].[ORBC_LOA_VEHICLES]', 'U') IS NOT NULL 
-AND OBJECT_ID('[$(DB_NAME)].[permit].[ORBC_LOA_DETAILS]', 'U') IS NOT NULL 
-    SELECT 1 
-ELSE
-    SELECT 0
+
+select COL_LENGTH('$(DB_NAME).[permit].[ORBC_PERMIT_TYPE]', 'GL_CODE')
