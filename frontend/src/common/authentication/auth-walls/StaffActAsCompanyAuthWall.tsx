@@ -13,6 +13,7 @@ import { IDIRAuthWall } from "./IDIRAuthWall";
 export const StaffActAsCompanyAuthWall = ({
   requiredRole,
   allowedAuthGroups,
+  disallowedAuthGroups,
 }: {
   requiredRole?: UserRolesType;
   /**
@@ -21,6 +22,7 @@ export const StaffActAsCompanyAuthWall = ({
    * If not provided, only a System Admin will be allowed to access.
    */
   allowedAuthGroups?: IDIRUserAuthGroupType[];
+  disallowedAuthGroups?: IDIRUserAuthGroupType[];
 }) => {
   const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
 
@@ -59,7 +61,12 @@ export const StaffActAsCompanyAuthWall = ({
 
   if (isAuthenticated) {
     if (companyIdInContext || companyDetails?.companyId) {
-      return <IDIRAuthWall allowedAuthGroups={allowedAuthGroups} />;
+      return (
+        <IDIRAuthWall
+          allowedAuthGroups={allowedAuthGroups}
+          disallowedAuthGroups={disallowedAuthGroups}
+        />
+      );
     }
 
     if (isCompanyDetailLoading) {

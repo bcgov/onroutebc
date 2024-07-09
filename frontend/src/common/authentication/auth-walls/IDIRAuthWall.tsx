@@ -20,6 +20,7 @@ const isIDIR = (identityProvider: string) => identityProvider === IDPS.IDIR;
  */
 export const IDIRAuthWall = ({
   allowedAuthGroups,
+  disallowedAuthGroups,
 }: {
   /**
    * The collection of auth groups allowed to have access to a page or action.
@@ -27,6 +28,7 @@ export const IDIRAuthWall = ({
    * If not provided, only a System Admin will be allowed to access.
    */
   allowedAuthGroups?: IDIRUserAuthGroupType[];
+  disallowedAuthGroups?: IDIRUserAuthGroupType[];
 }) => {
   const {
     isAuthenticated,
@@ -88,7 +90,10 @@ export const IDIRAuthWall = ({
       allowedAuthGroups,
     });
 
-    if (doesUserHaveAccess) {
+    if (
+      doesUserHaveAccess &&
+      !disallowedAuthGroups?.includes(idirUserDetails?.userAuthGroup)
+    ) {
       return <Outlet />;
     }
     // The user does not have access. They should be disallowed.

@@ -156,7 +156,7 @@ export const AppRoutes = () => {
             requiredRole={ROLES.READ_VEHICLE}
             allowedIDIRAuthGroups={[
               IDIR_USER_AUTH_GROUP.PPC_CLERK,
-              IDIR_USER_AUTH_GROUP.FINANCE,
+              IDIR_USER_AUTH_GROUP.CTPO,
             ]}
           />
         }
@@ -232,6 +232,7 @@ export const AppRoutes = () => {
           <BCeIDAuthWall
             requiredRole={ROLES.WRITE_PERMIT}
             allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+            disallowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.FINANCE]}
           />
         }
       >
@@ -250,6 +251,7 @@ export const AppRoutes = () => {
           <BCeIDAuthWall
             requiredRole={ROLES.WRITE_PERMIT}
             allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+            disallowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.FINANCE]}
           />
         }
       >
@@ -263,29 +265,42 @@ export const AppRoutes = () => {
         element={
           <BCeIDAuthWall
             requiredRole={ROLES.WRITE_PERMIT}
-            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+            allowedIDIRAuthGroups={[
+              IDIR_USER_AUTH_GROUP.PPC_CLERK,
+              IDIR_USER_AUTH_GROUP.CTPO,
+              IDIR_USER_AUTH_GROUP.FINANCE,
+            ]}
           />
         }
       >
         <Route path={routes.APPLICATIONS_ROUTES.BASE}>
           <Route index={true} element={<PermitDashboard />} />
-          <Route path={`${routes.APPLICATIONS_ROUTES.DETAILS()}`}>
-            <Route
-              index={true}
-              element={
-                <ApplicationSteps
-                  applicationStep={routes.APPLICATION_STEPS.DETAILS}
-                />
-              }
-            />
-            <Route
-              path={routes.APPLICATIONS_ROUTES.REVIEW()}
-              element={
-                <ApplicationSteps
-                  applicationStep={routes.APPLICATION_STEPS.REVIEW}
-                />
-              }
-            />
+          <Route
+            element={
+              <BCeIDAuthWall
+                requiredRole={ROLES.WRITE_PERMIT}
+                disallowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.FINANCE]}
+              />
+            }
+          >
+            <Route path={`${routes.APPLICATIONS_ROUTES.DETAILS()}`}>
+              <Route
+                index={true}
+                element={
+                  <ApplicationSteps
+                    applicationStep={routes.APPLICATION_STEPS.DETAILS}
+                  />
+                }
+              />
+              <Route
+                path={routes.APPLICATIONS_ROUTES.REVIEW()}
+                element={
+                  <ApplicationSteps
+                    applicationStep={routes.APPLICATION_STEPS.REVIEW}
+                  />
+                }
+              />
+            </Route>
           </Route>
         </Route>
       </Route>

@@ -26,6 +26,7 @@ export const isIDIR = (identityProvider: string) =>
 export const BCeIDAuthWall = ({
   requiredRole,
   allowedIDIRAuthGroups,
+  disallowedIDIRAuthGroups,
 }: {
   requiredRole?: UserRolesType;
   /**
@@ -34,6 +35,17 @@ export const BCeIDAuthWall = ({
    * If not provided, only a System Admin will be allowed to access.
    */
   allowedIDIRAuthGroups?: IDIRUserAuthGroupType[];
+  /**
+   * The collection of auth groups **NOT** allowed to have access to a page.
+   * If given, first priority is given to disallowed groups and user is
+   * denied access.
+   *
+   * Unlike `allowedIDIRAuthGroups`, no assumptions are made about some auth groups
+   * automatically gaining access. So, if SYSADMIN is specified, they will be disallowed.
+   * 
+   * It is generally not necessary to specify a disallowed auth group.
+   */
+  disallowedIDIRAuthGroups?: IDIRUserAuthGroupType[];
 }) => {
   const {
     isAuthenticated,
@@ -115,7 +127,10 @@ export const BCeIDAuthWall = ({
   if (isAuthenticated && isEstablishedUser) {
     if (isIDIR(userIDP)) {
       return (
-        <StaffActAsCompanyAuthWall allowedAuthGroups={allowedIDIRAuthGroups} />
+        <StaffActAsCompanyAuthWall
+          allowedAuthGroups={allowedIDIRAuthGroups}
+          disallowedAuthGroups={disallowedIDIRAuthGroups}
+        />
       );
     }
     if (!isIDIR(userIDP)) {
