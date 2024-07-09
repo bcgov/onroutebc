@@ -33,6 +33,7 @@ export interface LOADetail {
   startDate: string;
   expiryDate?: Nullable<string>;
   documentId: string;
+  fileName: string;
   loaPermitType: PermitType[];
   comment?: Nullable<string>;
   powerUnits: string[];

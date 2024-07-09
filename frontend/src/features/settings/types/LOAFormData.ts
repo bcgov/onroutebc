@@ -81,8 +81,7 @@ export const loaDetailToFormData = (
     {},
   );
   const defaultFile = loaDetail?.documentId ? {
-    fileName: "",
-    // fileName: getDefaultRequiredVal("", loaDetail?.documentName),
+    fileName: getDefaultRequiredVal("", loaDetail?.fileName),
   } : null;
 
   return {
@@ -139,7 +138,7 @@ export const serializeLOAFormData = (loaFormData: LOAFormData) => {
 
   if (loaFormData.uploadFile instanceof File) {
     // is newly uploaded file
-    requestData.append("document", loaFormData.uploadFile);
+    requestData.append("file", loaFormData.uploadFile);
   }
   
   return requestData;
