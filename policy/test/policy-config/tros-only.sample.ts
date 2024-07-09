@@ -1,4 +1,4 @@
-import PolicyDefinition from '../../src/interface/policy-definition.interface';
+import { PolicyDefinition } from '../../src/types/policy-definition.type';
 
 export const trosOnly: PolicyDefinition = {
   version: '2024.03.18.001',
@@ -7,7 +7,7 @@ export const trosOnly: PolicyDefinition = {
     {
       conditions: {
         not: {
-          fact: 'companyName',
+          fact: 'permitData.companyName',
           operator: 'stringMinimumLength',
           value: 1,
         },
@@ -16,6 +16,25 @@ export const trosOnly: PolicyDefinition = {
         type: 'violation',
         params: {
           message: 'Company is required',
+          code: 'field-validation-error',
+          fieldReference: 'permitData.companyName',
+        },
+      },
+    },
+    {
+      conditions: {
+        not: {
+          fact: 'permitData.contactDetails.firstName',
+          operator: 'stringMinimumLength',
+          value: 1,
+        },
+      },
+      event: {
+        type: 'violation',
+        params: {
+          message: 'Contact first name is required',
+          code: 'field-validation-error',
+          fieldReference: 'permitData.contactDetails.firstName',
         },
       },
     },
@@ -23,7 +42,7 @@ export const trosOnly: PolicyDefinition = {
       conditions: {
         any: [
           {
-            fact: 'startDate',
+            fact: 'permitData.startDate',
             operator: 'dateLessThan',
             value: {
               fact: 'validationDate',
@@ -35,13 +54,15 @@ export const trosOnly: PolicyDefinition = {
         type: 'violation',
         params: {
           message: 'Permit start date cannot be in the past',
+          code: 'field-validation-error',
+          fieldReference: 'permitData.startDate',
         },
       },
     },
     {
       conditions: {
         not: {
-          fact: 'vehicleIdentificationNumber',
+          fact: 'permitData.vehicleDetails.vin',
           operator: 'regex',
           value: '^[a-zA-Z0-9]{6}$',
         },
@@ -51,6 +72,8 @@ export const trosOnly: PolicyDefinition = {
         params: {
           message:
             'Vehicle Identification Number (vin) must be 6 alphanumeric characters',
+          code: 'field-validation-error',
+          fieldReference: 'permitData.vehicleDetails.vin',
         },
       },
     },
@@ -70,14 +93,14 @@ export const trosOnly: PolicyDefinition = {
             all: [
               {
                 not: {
-                  fact: 'duration',
+                  fact: 'permitData.permitDuration',
                   operator: 'in',
                   value: [30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330],
                 },
               },
               {
                 not: {
-                  fact: 'duration',
+                  fact: 'permitData.permitDuration',
                   operator: 'equal',
                   value: {
                     fact: 'daysInPermitYear',
@@ -90,13 +113,15 @@ export const trosOnly: PolicyDefinition = {
             type: 'violation',
             params: {
               message: 'Duration must be in 30 day increments or a full year',
+              code: 'field-validation-error',
+              fieldReference: 'permitData.permitDuration',
             },
           },
         },
         {
           conditions: {
             not: {
-              fact: 'vehicleType',
+              fact: 'permitData.vehicleDetails.vehicleSubType',
               operator: 'in',
               value: {
                 fact: 'allowedVehicles',
@@ -107,6 +132,8 @@ export const trosOnly: PolicyDefinition = {
             type: 'violation',
             params: {
               message: 'Vehicle type not permittable for this permit type',
+              code: 'field-validation-error',
+              fieldReference: 'permitData.vehicleDetails.vehicleSubType',
             },
           },
         },

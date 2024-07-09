@@ -1,7 +1,7 @@
 import { RuleProperties } from 'json-rules-engine';
-import IdentifiedObject from './identified-object.interface';
+import { IdentifiedObject } from 'onroute-policy-engine/types';
 
-interface PermitType extends IdentifiedObject {
+export type PermitType = IdentifiedObject & {
   routingRequired: boolean;
   weightDimensionRequired: boolean;
   sizeDimensionRequired: boolean;
@@ -9,6 +9,4 @@ interface PermitType extends IdentifiedObject {
   allowedVehicles: Array<string>;
   allowedCommodities?: Array<string>;
   rules?: Array<RuleProperties>;
-}
-
-export default PermitType;
+};

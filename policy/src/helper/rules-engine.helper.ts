@@ -1,8 +1,8 @@
 import { Engine } from 'json-rules-engine';
-import CustomOperators from '../rule-operator/custom-operators';
-import Policy from '../policy-engine';
-import PolicyDefinition from '../interface/policy-definition.interface';
-import { PolicyFacts } from '../enum/facts.enum';
+import { CustomOperators } from '../rule-operator/custom-operators';
+import { Policy } from 'onroute-policy-engine';
+import { PolicyDefinition } from 'onroute-policy-engine/types';
+import { PolicyFacts } from 'onroute-policy-engine/enum';
 
 /**
  * Gets a json-rules-engine with all onRouteBC custom operators added,
@@ -27,7 +27,7 @@ function getEngine(policyDefinition: PolicyDefinition): Engine {
 export function getRulesEngines(policy: Policy): Map<string, Engine> {
   const engineMap: Map<string, Engine> = new Map<string, Engine>();
 
-  policy.policyDefinition.permitTypes.forEach((permitType) => {
+  policy.policyDefinition?.permitTypes?.forEach((permitType) => {
     const engine = getEngine(policy.policyDefinition);
 
     permitType.rules?.forEach((r) => engine.addRule(r));

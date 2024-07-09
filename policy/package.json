@@ -1,13 +1,21 @@
 {
-  "name": "orbc-policy-engine",
+  "name": "onroute-policy-engine",
   "version": "0.1.0",
-  "description": "Policy Engine library for onRouteBC",
-  "main": "index.js",
+  "description": "Policy Engine library for commercial vehicle permitting",
+  "main": "dist/src/index.js",
+  "exports": {
+    ".": "./dist/src/index.js",
+    "./types": "./dist/src/types/index.js",
+    "./enum": "./dist/src/enum/index.js"
+  },
+  "types": "dist/src/index.d.ts",
   "private": true,
   "scripts": {
     "test": "jest",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\""
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "build": "tsc",
+    "prepack": "tsc"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
@@ -21,6 +29,7 @@
   },
   "dependencies": {
     "dayjs": "^1.11.10",
+    "flattie": "^1.1.1",
     "json-rules-engine": "^6.5.0"
   },
   "jest": {
@@ -40,11 +49,11 @@
     },
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
+      "^.+\\.ts$": "ts-jest"
     },
     "collectCoverage": true,
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "**/*.js"
     ],
     "coverageDirectory": "./coverage",
     "coveragePathIgnorePatterns": [

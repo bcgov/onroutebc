@@ -4,18 +4,15 @@ import {
   CreditAccountLimit,
   CreditAccountLimitType,
 } from '../../../../common/enum/credit-account-limit.enum';
-import { CreditAccountStatusType } from '../../../../common/enum/credit-account-status-type.enum';
+import {
+  CreditAccountStatus,
+  CreditAccountStatusType,
+} from '../../../../common/enum/credit-account-status-type.enum';
 import { ReadCreditAccountUserDto } from './read-credit-account-user.dto';
 import { CreditAccountType } from '../../../../common/enum/credit-account-type.enum';
+import { ReadCreditAccountActivityDto } from './read-credit-account-activity.dto';
 
 export class ReadCreditAccountDto {
-  @AutoMap()
-  @ApiProperty({
-    description: 'Id of the company.',
-    example: 74,
-  })
-  companyId: number;
-
   @AutoMap()
   @ApiProperty({
     description: 'The credit account id.',
@@ -30,6 +27,32 @@ export class ReadCreditAccountDto {
     enum: CreditAccountType,
   })
   creditAccountType: CreditAccountType;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'The credit account number.',
+    example: 'WS5667',
+  })
+  creditAccountNumber: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'The collection of companies using this credit account.',
+  })
+  creditAccountUsers: ReadCreditAccountUserDto[];
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'The status of the credit account.',
+    example: CreditAccountStatus.ACCOUNT_ACTIVE,
+  })
+  creditAccountStatusType: CreditAccountStatusType;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'The credit account status update activity details .',
+  })
+  creditAccountActivities?: ReadCreditAccountActivityDto[];
 
   @AutoMap()
   @ApiProperty({
@@ -51,24 +74,4 @@ export class ReadCreditAccountDto {
     example: 800,
   })
   availableCredit: number;
-
-  @AutoMap()
-  @ApiProperty({
-    description: 'The credit account number.',
-    example: 'WS5667',
-  })
-  creditAccountNumber: string;
-
-  @AutoMap()
-  @ApiProperty({
-    description: 'The collection of companies using this credit account.',
-  })
-  creditAccountUsers: ReadCreditAccountUserDto[];
-
-  @AutoMap()
-  @ApiProperty({
-    description: 'The status of the credit account.',
-    example: CreditAccountStatusType.ACCOUNT_ACTIVE,
-  })
-  creditAccountStatusType: CreditAccountStatusType;
 }

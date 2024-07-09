@@ -1,8 +1,8 @@
 import dayjs from 'dayjs';
 import { Engine } from 'json-rules-engine';
-import PermitApplication from '../type/permit-application.type';
-import { PermitFacts } from '../interface/facts.interface';
-import { PolicyFacts } from '../enum/facts.enum';
+import { flattie } from 'flattie';
+import { PermitFacts } from 'onroute-policy-engine/types';
+import { PermitAppInfo, PolicyFacts } from 'onroute-policy-engine/enum';
 
 /**
  * Adds runtime facts for the validation. For example, adds the
@@ -10,7 +10,9 @@ import { PolicyFacts } from '../enum/facts.enum';
  * @param engine json-rules-engine Engine instance to add facts to.
  */
 export function addRuntimeFacts(engine: Engine): void {
-  const today: string = dayjs().format('YYYY-MM-DD');
+  const today: string = dayjs().format(
+    PermitAppInfo.PermitDateFormat.toString(),
+  );
   engine.addFact(PolicyFacts.ValidationDate.toString(), today);
 
   // Will be either 365 or 366, for use when comparing against
@@ -18,8 +20,13 @@ export function addRuntimeFacts(engine: Engine): void {
   engine.addFact(
     PolicyFacts.DaysInPermitYear.toString(),
     async function (params, almanac) {
-      const startDate: string = await almanac.factValue('startDate');
-      const dateFrom = dayjs(startDate, 'YYYY-MM-DD');
+      const startDate: string = await almanac.factValue(
+        PermitAppInfo.PermitStartDate.toString(),
+      );
+      const dateFrom = dayjs(
+        startDate,
+        PermitAppInfo.PermitDateFormat.toString(),
+      );
       return dateFrom.diff(dateFrom.add(1, 'year'), 'day');
     },
   );
@@ -31,20 +38,13 @@ export function addRuntimeFacts(engine: Engine): void {
  * @param permitApplication Permit application object to flatten.
  * @returns Flattened permit application object for validation.
  */
-export function transformPermitFacts(
-  permitApplication: PermitApplication,
-): PermitFacts {
-  const permitFacts: PermitFacts = {};
-  permitFacts.companyName = permitApplication?.permitData?.companyName;
-  permitFacts.duration = permitApplication?.permitData?.permitDuration;
-  permitFacts.permitType = permitApplication?.permitType;
-  permitFacts.startDate = permitApplication?.permitData?.startDate;
-  permitFacts.vehicleIdentificationNumber =
-    permitApplication?.permitData?.vehicleDetails?.vin;
-  permitFacts.vehiclePlate =
-    permitApplication?.permitData?.vehicleDetails?.plate;
-  permitFacts.vehicleType =
-    permitApplication?.permitData?.vehicleDetails?.vehicleSubType;
+export function transformPermitFacts(permitApplication: any): PermitFacts {
+  // Flatten the permit application so all properties can be accessed
+  // by key
+  const permitFacts: PermitFacts = flattie(permitApplication);
+
+  // Add the app itself as a fact to be used by more complex rules
+  permitFacts.app = permitApplication;
 
   return permitFacts;
 }

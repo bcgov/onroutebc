@@ -1,4 +1,4 @@
-import PermitApplication from '../../src/type/permit-application.type';
+import PermitApplication from './permit-application.type';
 
 export const validTros30Day: PermitApplication = {
   permitType: 'TROS',
@@ -31,8 +31,8 @@ export const validTros30Day: PermitApplication = {
       phone1Extension: null,
       phone2: '(250) 555-4321',
       phone2Extension: null,
-      email: 'bryan.lane@gov.bc.ca',
-      additionalEmail: 'michael.melo@gov.bc.ca',
+      email: 'chief.baker@gov.bc.ca',
+      additionalEmail: 'baker.chief@gov.bc.ca',
       fax: null,
     },
     mailingAddress: {
