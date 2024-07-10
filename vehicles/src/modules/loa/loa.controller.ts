@@ -181,8 +181,8 @@ export class LoaController {
   async delete(
     @Param('companyId') companyId: number,
     @Param('loaId') loaId: number,
-  ): Promise<ReadLoaDto> {
-    const loa = await this.loaService.delete(companyId, loaId);
+  ): Promise<number> {
+    const loa = await this.loaService.delete(loaId);
     return loa;
   }
 
@@ -211,7 +211,7 @@ export class LoaController {
     summary: 'Delete LOA Document',
     description: 'Delete LOA Document in database.',
   })
-  @Put('/:loaId/documents')
+  @Delete('/:loaId/documents')
   async deleteLoaDocument(
     @Param('companyId') companyId: number,
     @Param('loaId') loaId: number,

@@ -59,7 +59,8 @@ export class LoaService {
       .leftJoinAndSelect('loaDetail.company', 'company')
       .leftJoinAndSelect('loaDetail.loaVehicles', 'loaVehicles')
       .leftJoinAndSelect('loaDetail.loaPermitTypes', 'loaPermitTypes')
-      .where('company.companyId = :companyId', { companyId: companyId });
+      .where('company.companyId = :companyId', { companyId: companyId })
+      .andWhere('loaDetail.isActive = :isActive', { isActive: 1 });
     if (expired === true) {
       loaDetailQB = loaDetailQB.andWhere('loaDetail.expiryDate < :expiryDate', {
         expiryDate: new Date(),
@@ -92,6 +93,7 @@ export class LoaService {
       where: {
         loaId: loaId,
         company: { companyId: Number(companyId) },
+        isActive: '1',
       },
       relations: ['company', 'loaVehicles', 'loaPermitTypes'],
     });
@@ -219,27 +221,14 @@ export class LoaService {
   }
 
   @LogAsyncMethodExecution()
-  async delete(companyId: number, loaId: number): Promise<ReadLoaDto> {
-    try {
-      const loaDetail = await this.loaDetailRepository.findOne({
-        where: {
-          loaId: loaId,
-          company: { companyId: companyId },
-        },
-        relations: ['company', 'loaVehicles', 'loaPermitTypes'],
-      });
-
-      if (!loaDetail) {
-        throw new Error(
-          `LOA detail not found for companyId ${companyId} and loaId ${loaId}`,
-        );
-      }
-      const loa = await this.loaDetailRepository.remove(loaDetail);
-      const readLoaDto = this.classMapper.map(loa, LoaDetail, ReadLoaDto);
-      return readLoaDto;
-    } catch (error) {
-      throw new Error(`Failed to fetch LOA detail: ${error}`);
-    }
+  async delete(loaId: number): Promise<number> {
+    const { affected } = await this.loaDetailRepository.update(
+      { loaId: loaId },
+      {
+        isActive: '0',
+      },
+    );
+    return affected;
   }
 
   async getloaDocument(
