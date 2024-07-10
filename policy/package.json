@@ -24,7 +24,7 @@
   },
   "author": "John Fletcher",
   "license": "Apache-2.0",
-  "homepage": "https://github.com/bcgov/onroutebc#readme",    
+  "homepage": "https://github.com/bcgov/onroutebc#readme",
   "devDependencies": {
     "@types/jest": "^29.5.12",
     "@typescript-eslint/eslint-plugin": "^7.5.0",
