@@ -9,7 +9,7 @@
     "./enum": "./dist/enum/index.js"
   },
   "types": "dist/index.d.ts",
-  "private": true,
+  "private": false,
   "scripts": {
     "clean": "rimraf dist && rimraf -g *.tgz",
     "test": "jest",
