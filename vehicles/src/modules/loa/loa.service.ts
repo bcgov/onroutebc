@@ -238,6 +238,11 @@ export class LoaService {
     downloadMode: FileDownloadModes,
   ): Promise<ReadFileDto | Buffer> {
     const loaDetail = await this.findOne(companyId, loaId);
+    if (!loaDetail) {
+      throw new NotFoundException(
+        `LOA detail not found for companyId ${companyId} and loaId ${loaId}`,
+      );
+    }
     const loa: ReadFileDto | Buffer = await this.dopsService.download(
       currentUser,
       loaDetail.documentId,
