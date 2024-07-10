@@ -32,7 +32,7 @@ CREATE TABLE [permit].[ORBC_LOA_DETAILS] (
    EXPIRY_DATE [varchar](10),
    DOCUMENT_ID [bigint],
    COMMENTS [nvarchar](4000),
-   [IS_ACTIVE] [bit] NOT NULL,
+   [IS_ACTIVE] [bit] NOT NULL DEFAULT(1),
    [APP_CREATE_TIMESTAMP] [datetime2](7) DEFAULT(getutcdate()),
    [APP_CREATE_USERID] [nvarchar](30) DEFAULT(user_name()),
    [APP_CREATE_USER_GUID] [char](32) NULL,
