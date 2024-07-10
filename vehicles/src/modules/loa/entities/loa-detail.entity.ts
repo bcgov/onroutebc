@@ -91,6 +91,14 @@ export class LoaDetail extends Base {
   })
   comment: string;
 
+  @AutoMap()
+  @ApiProperty({
+    example: '1',
+    description: 'Is Active Flag - 1 (Active)/ 0 (Inactive)',
+  })
+  @Column({ type: 'bit', name: 'IS_ACTIVE', nullable: false, default: 1 })
+  isActive: string;
+
   @AutoMap(() => LoaPermitType)
   @OneToMany(() => LoaPermitType, (LoaPermitType) => LoaPermitType.loa, {
     cascade: true,
