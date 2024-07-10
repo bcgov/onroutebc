@@ -6,6 +6,7 @@ import { Transaction } from "src/modules/transactions/transaction.entity";
 import { Readable } from "typeorm/platform/PlatformTools";
 import { CgiConstants } from "src/common/constants/cgi.constant";
 
+
 const envFilePath = resolve(__dirname, "../../../.env");
 const result = dotenvConfig({ path: envFilePath });
 
