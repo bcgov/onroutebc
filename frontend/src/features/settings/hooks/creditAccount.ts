@@ -15,7 +15,6 @@ import { SnackBarContext } from "../../../App";
 import { useContext } from "react";
 import {
   CreditAccountStatusType,
-  CreditAccountUser,
   UPDATE_STATUS_ACTIONS,
   UpdateStatusData,
 } from "../types/creditAccount";
@@ -31,7 +30,6 @@ export const useGetCreditAccountQuery = () => {
   return useQuery({
     queryKey: ["credit-account", { companyId: getCompanyIdFromSession() }],
     queryFn: getCreditAccount,
-    // retry: false,
   });
 };
 
@@ -147,45 +145,11 @@ export const useRemoveCreditAccountUsersMutation = (data: {
   creditAccountId: number;
   companyIds: number[];
 }) => {
-  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { setSnackBar } = useContext(SnackBarContext);
-  const { companyIds } = data;
 
   return useMutation({
     mutationFn: () => removeCreditAccountUsers(data),
-    onMutate: async () => {
-      await queryClient.cancelQueries({
-        queryKey: [
-          "credit-account",
-          { companyId: getCompanyIdFromSession() },
-          "users",
-        ],
-      });
-
-      const snapshot = queryClient.getQueryData([
-        "credit-account",
-        { companyId: getCompanyIdFromSession() },
-        "users",
-      ]);
-
-      queryClient.setQueryData(
-        ["credit-account", { companyId: getCompanyIdFromSession() }, "users"],
-        (prevCreditAccountUsers: CreditAccountUser[]) =>
-          prevCreditAccountUsers
-            ? prevCreditAccountUsers.filter(
-                (user) => !companyIds.includes(user.companyId),
-              )
-            : [],
-      );
-
-      return () => {
-        queryClient.setQueryData(
-          ["credit-account", { companyId: getCompanyIdFromSession() }, "users"],
-          snapshot,
-        );
-      };
-    },
     onSuccess: () => {
       setSnackBar({
         showSnackbar: true,
@@ -194,18 +158,8 @@ export const useRemoveCreditAccountUsersMutation = (data: {
         alertType: "info",
       });
     },
-    onError: (_error, _variables, rollback) => {
-      rollback?.();
+    onError: () => {
       navigate(ERROR_ROUTES.UNEXPECTED);
-    },
-    onSettled: () => {
-      return queryClient.invalidateQueries({
-        queryKey: [
-          "credit-account",
-          { companyId: getCompanyIdFromSession() },
-          "users",
-        ],
-      });
     },
   });
 };
