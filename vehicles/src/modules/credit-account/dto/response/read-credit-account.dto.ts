@@ -11,6 +11,8 @@ import {
 import { ReadCreditAccountUserDto } from './read-credit-account-user.dto';
 import { CreditAccountType } from '../../../../common/enum/credit-account-type.enum';
 import { ReadCreditAccountActivityDto } from './read-credit-account-activity.dto';
+import { Expose } from 'class-transformer';
+import { IDIR_USER_AUTH_GROUP_LIST } from '../../../../common/enum/user-auth-group.enum';
 
 export class ReadCreditAccountDto {
   @AutoMap()
@@ -66,6 +68,7 @@ export class ReadCreditAccountDto {
     description: 'The credit balance of the account.',
     example: 1200,
   })
+  @Expose({ groups: UserAuthGroup })
   creditBalance: number;
 
   @AutoMap()
