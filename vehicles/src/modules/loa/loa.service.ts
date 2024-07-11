@@ -14,6 +14,8 @@ import { LoaPermitType } from './entities/loa-permit-type-details.entity';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { DopsService } from '../common/dops.service';
 import { FileDownloadModes } from 'src/common/enum/file-download-modes.enum';
+import { Response } from 'express';
+
 
 @Injectable()
 export class LoaService {
@@ -93,7 +95,7 @@ export class LoaService {
       where: {
         loaId: loaId,
         company: { companyId: Number(companyId) },
-        isActive: '1',
+        isActive: true,
       },
       relations: ['company', 'loaVehicles', 'loaPermitTypes'],
     });
@@ -225,7 +227,7 @@ export class LoaService {
     const { affected } = await this.loaDetailRepository.update(
       { loaId: loaId },
       {
-        isActive: '0',
+        isActive: false,
       },
     );
     return affected;
@@ -236,6 +238,7 @@ export class LoaService {
     companyId: number,
     loaId: number,
     downloadMode: FileDownloadModes,
+    res?: Response,
   ): Promise<ReadFileDto | Buffer> {
     const loaDetail = await this.findOne(companyId, loaId);
     if (!loaDetail) {
@@ -247,9 +250,10 @@ export class LoaService {
       currentUser,
       loaDetail.documentId,
       downloadMode,
-      undefined,
+      res,
       companyId,
     );
+    console.log('received reposnse from dops document', loa)
     return loa;
   }
 

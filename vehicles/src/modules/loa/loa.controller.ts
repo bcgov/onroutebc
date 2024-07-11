@@ -11,6 +11,7 @@ import {
   Put,
   Query,
   Req,
+  Res,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -28,13 +29,14 @@ import { CreateLoaDto } from './dto/request/create-loa.dto';
 import { ReadLoaDto } from './dto/response/read-loa.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { LoaService } from './loa.service';
-import { Request } from 'express';
+import { Request, Response} from 'express';
 import { UpdateLoaDto } from './dto/request/update-loa.dto';
 import { GetLoaQueryParamsDto } from './dto/request/getLoa.query-params.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { DopsService } from '../common/dops.service';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { FileDownloadModes } from 'src/common/enum/file-download-modes.enum';
+import { setResHeaderCorrelationId } from 'src/common/helper/response-header.helper';
 
 @ApiBearerAuth()
 @ApiTags('Company Letter of Authorization')
@@ -196,15 +198,20 @@ export class LoaController {
     @Param('companyId') companyId: number,
     @Param('loaId') loaId: number,
     @Query('downloadMode') downloadMode: FileDownloadModes,
-  ): Promise<ReadFileDto | Buffer> {
+    @Res() res: Response,
+  ) {
     const currentUser = request.user as IUserJWT;
-    const loa: ReadFileDto | Buffer = await this.loaService.getloaDocument(
+    const loa  = await this.loaService.getloaDocument(
       currentUser,
       companyId,
       loaId,
       downloadMode,
+      res,
     );
-    return loa;
+      if (downloadMode === FileDownloadModes.URL) {
+        setResHeaderCorrelationId(res);
+        res.status(201).send(loa);
+      } 
   }
 
   @ApiOperation({
