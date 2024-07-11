@@ -1,4 +1,4 @@
-import { PolicyDefinition } from '../../src/types/policy-definition.type';
+import { PolicyDefinition } from '../../types/policy-definition';
 
 export const masterPolicyConfig: PolicyDefinition = {
   version: '2024.03.18.001',
