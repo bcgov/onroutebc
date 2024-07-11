@@ -100,7 +100,11 @@ const uploadRules = {
   }
 };
 
-export const LOABasicInfo = () => {
+export const LOABasicInfo = ({
+  onRemoveDocument,
+}: {
+  onRemoveDocument: () => Promise<boolean>;
+}) => {
   const {
     control,
     formState: { errors },
@@ -145,9 +149,11 @@ export const LOABasicInfo = () => {
     trigger("uploadFile");
   };
 
-  const deleteFile = () => {
-    setValue("uploadFile", null);
-    clearErrors("uploadFile");
+  const deleteFile = async () => {
+    if (await onRemoveDocument()) {
+      setValue("uploadFile", null);
+      clearErrors("uploadFile");
+    }
   };
 
   return (

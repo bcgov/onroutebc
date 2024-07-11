@@ -27,20 +27,18 @@ export const LOAList = ({
   allowEditLOA,
   onEdit,
   onDelete,
+  onDownload,
 }: {
   loas: LOADetail[];
   isActive: boolean;
   allowEditLOA: boolean;
   onEdit: (loaId: string) => void;
   onDelete?: (loaId: string) => void;
+  onDownload: (loaId: string) => void;
 }) => {
   const handleEditLOA = (loaId: string) => {
     if (!allowEditLOA) return;
     onEdit(loaId);
-  };
-
-  const handleDownloadLOA = (documentId: number | string) => {
-    console.log(`Download document ${documentId}`); //
   };
 
   const columns = useMemo<MRT_ColumnDef<LOADetail>[]>(
@@ -116,12 +114,12 @@ export const LOAList = ({
         Cell: (
           props: { cell: any; row: any }
         ) => {
-          const documentId = `${props.row.original.documentId}`;
+          const loaId = `${props.row.original.loaId}`;
 
           return (
             <CustomActionLink
               className="loa-list__link loa-list__link--download-loa"
-              onClick={() => handleDownloadLOA(documentId)}
+              onClick={() => onDownload(loaId)}
             >
               Download Letter
             </CustomActionLink>

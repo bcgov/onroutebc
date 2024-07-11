@@ -12,12 +12,13 @@ import { LOAReview } from "./review/LOAReview";
 import { LOABasicInfo } from "./basic/LOABasicInfo";
 import { Nullable } from "../../../../../common/types/common";
 import { LOAFormData, loaDetailToFormData } from "../../../types/LOAFormData";
+import { ERROR_ROUTES } from "../../../../../routes/constants";
 import {
   useCreateLOAMutation,
   useFetchLOADetail,
+  useRemoveLOADocumentMutation,
   useUpdateLOAMutation,
 } from "../../../hooks/LOA";
-import { ERROR_ROUTES } from "../../../../../routes/constants";
 
 export const LOASteps = ({
   loaId,
@@ -38,6 +39,7 @@ export const LOASteps = ({
   const { data: loaDetail } = useFetchLOADetail(companyId, loaId);
   const createLOAMutation = useCreateLOAMutation();
   const updateLOAMutation = useUpdateLOAMutation();
+  const removeLOADocumentMutation = useRemoveLOADocumentMutation();
   const loaFormData = loaDetailToFormData(loaDetail);
 
   const formMethods = useForm<LOAFormData>({
@@ -91,6 +93,22 @@ export const LOASteps = ({
     }
   };
 
+  const handleRemoveDocument = async () => {
+    if (!loaId) return true; // Free to remove newly loaded documents for not-yet created LOAs
+
+    try {
+      const res = await removeLOADocumentMutation.mutateAsync({
+        companyId,
+        loaId,
+      });
+
+      return res.status === 200;
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
+  };
+
   const stepComponent = useMemo(() => {
     switch (activeStep) {
       case LOA_STEPS.VEHICLES:
@@ -98,7 +116,11 @@ export const LOASteps = ({
       case LOA_STEPS.REVIEW:
         return <LOAReview />;
       default:
-        return <LOABasicInfo />;
+        return (
+          <LOABasicInfo
+            onRemoveDocument={handleRemoveDocument}
+          />
+        );
     }
   }, [activeStep]);
   

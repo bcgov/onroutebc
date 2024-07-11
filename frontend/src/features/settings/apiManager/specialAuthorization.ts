@@ -7,9 +7,11 @@ import { SPECIAL_AUTH_API_ROUTES } from "./endpoints/endpoints";
 import {
   httpDELETERequest,
   httpGETRequest,
+  httpGETRequestStream,
   httpPOSTRequestWithFile,
   httpPUTRequestWithFile,
 } from "../../../common/apiManager/httpRequestHandler";
+import { streamDownloadFile } from "../../../common/helpers/util";
 
 /*
 const activeLOAs = [
@@ -319,7 +321,7 @@ export const updateLOA = async (
 
 /**
  * Remove an LOA for a company.
- * @param LOAData LOA number and id of the company to remove it from
+ * @param LOAData LOA id and id of the company to remove it from
  * @returns Result of removing the LOA, or error on fail
  */
 export const removeLOA = async (
@@ -331,5 +333,37 @@ export const removeLOA = async (
   const { companyId, loaId } = LOAData;
   return await httpDELETERequest(
     SPECIAL_AUTH_API_ROUTES.LOA.REMOVE(companyId, loaId),
+  );
+};
+
+/**
+ * Download LOA.
+ * @param loaId id of the LOA to download
+ * @param companyId id of the company that the LOA belongs to
+ * @returns A Promise containing the dms reference string for the LOA download stream
+ */
+export const downloadLOA = async (
+  loaId: string,
+  companyId: string | number,
+) => {
+  const url = SPECIAL_AUTH_API_ROUTES.LOA.DOWNLOAD(companyId, loaId);
+  const response = await httpGETRequestStream(url);
+  return await streamDownloadFile(response);
+};
+
+/**
+ * Remove an LOA document.
+ * @param LOAData LOA id and id of the company to remove it from
+ * @returns Result of removing the LOA document, or error on fail
+ */
+export const removeLOADocument = async (
+  LOAData: {
+    companyId: number | string;
+    loaId: string;
+  },
+): Promise<AxiosResponse<LOADetail>> => {
+  const { companyId, loaId } = LOAData;
+  return await httpDELETERequest(
+    SPECIAL_AUTH_API_ROUTES.LOA.REMOVE_DOCUMENT(companyId, loaId),
   );
 };

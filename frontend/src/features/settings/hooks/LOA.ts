@@ -6,6 +6,7 @@ import {
   getLOADetail,
   getLOAs,
   removeLOA,
+  removeLOADocument,
   updateLOA,
 } from "../apiManager/specialAuthorization";
 
@@ -104,5 +105,15 @@ export const useRemoveLOAMutation = () => {
         queryKey: QUERY_KEYS.LOAS(false),
       });
     },
+  });
+};
+
+/**
+ * Hook to remove the document for an LOA.
+ * @returns Result of removing the LOA document
+ */
+export const useRemoveLOADocumentMutation = () => {
+  return useMutation({
+    mutationFn: removeLOADocument,
   });
 };

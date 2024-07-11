@@ -11,12 +11,14 @@ export const ExpiredLOAModal = ({
   allowEditLOA,
   handleCancel,
   handleEdit,
+  handleDownload,
   expiredLOAs,
 }: {
   showModal: boolean;
   allowEditLOA: boolean;
   handleCancel: () => void;
   handleEdit: (loaId: string) => void;
+  handleDownload: (loaId: string) => void;
   expiredLOAs: LOADetail[];
 }) => {
   return (
@@ -44,6 +46,7 @@ export const ExpiredLOAModal = ({
           allowEditLOA={allowEditLOA}
           loas={expiredLOAs}
           onEdit={handleEdit}
+          onDownload={handleDownload}
         />
       </div>
 

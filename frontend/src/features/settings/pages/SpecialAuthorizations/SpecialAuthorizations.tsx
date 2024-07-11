@@ -16,6 +16,7 @@ import { NoFeePermitType } from "../../types/SpecialAuthorization";
 import { NoFeePermitsSection } from "../../components/SpecialAuthorizations/NoFeePermits/NoFeePermitsSection";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { LCVSection } from "../../components/SpecialAuthorizations/LCV/LCVSection";
+import { downloadLOA } from "../../apiManager/specialAuthorization";
 import {
   canUpdateLCVFlag,
   canUpdateLOA,
@@ -107,6 +108,8 @@ export const SpecialAuthorizations = ({
   const handleExitLOASteps = () => {
     setShowLOASteps(false);
     setLOAToEdit(null);
+    activeLOAsQuery.refetch();
+    expiredLOAsQuery.refetch();
   };
 
   const handleOpenDeleteModal = (loaId: string) => {
@@ -127,6 +130,24 @@ export const SpecialAuthorizations = ({
     }
     
     setLOAToDelete(null);
+  };
+
+  const handleDownloadLOA = async (loaId: string) => {
+    if (loaId) {
+      try {
+        const { blobObj: blobObjWithoutType } = await downloadLOA(
+          loaId,
+          companyId,
+        );
+
+        const objUrl = URL.createObjectURL(
+          new Blob([blobObjWithoutType], { type: "application/pdf" }),
+        );
+        window.open(objUrl, "_blank");
+      } catch (err) {
+        console.error(err);
+      }
+    }
   };
   
   return !showLOASteps ? (
@@ -199,6 +220,7 @@ export const SpecialAuthorizations = ({
                 allowEditLOA={canWriteLOA}
                 onDelete={handleOpenDeleteModal}
                 onEdit={handleEditLOA}
+                onDownload={handleDownloadLOA}
               />
             </div>
           ) : null}
@@ -215,6 +237,7 @@ export const SpecialAuthorizations = ({
             setShowExpiredLOAs(false);
             handleEditLOA(loaId);
           }}
+          handleDownload={handleDownloadLOA}
         />
       ) : null}
 
