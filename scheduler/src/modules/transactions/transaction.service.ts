@@ -8,29 +8,6 @@ import { generate } from 'src/helper/generator.helper';
 import { Repository } from 'typeorm';
 import { BcHoliday } from './holiday.entity';
 
-interface Holiday {
-  id: number;
-  date: string;
-  nameEn: string;
-  nameFr: string;
-  federal: number;
-  observedDate: string;
-}
-
-interface Province {
-  id: string;
-  nameEn: string;
-  nameFr: string;
-  sourceLink: string;
-  sourceEn: string;
-  holidays: Holiday[];
-  nextHoliday: Holiday;
-}
-
-interface Holidays {
-  province: Province;
-}
-
 @Injectable()
 export class TransactionService {
   private holidays: string[] = [];
@@ -122,6 +99,7 @@ export class TransactionService {
   }
 
   @Cron('30 16 * * 1-5')
+  // @Cron(`${process.env.TPS_PENDING_POLLING_INTERVAL || '0 */1 * * * *'}`)
   @LogAsyncMethodExecution()
   async genterateCgifilesAndUpload() {
     const now = new Date();
@@ -131,6 +109,6 @@ export class TransactionService {
      }
     const transactions: Promise<Transaction[]> = this.getTransactionDetails();
     const fileName = await generate(await transactions);
-    await this.updateCfsFileStatusType(fileName);
+    await this.updateCfsFileStatusType(fileName[0]);
   }
 }

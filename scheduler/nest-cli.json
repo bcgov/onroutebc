@@ -1,4 +1,6 @@
 {
+  "target": "es2020",
+    "lib": ["es2020"],  
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",

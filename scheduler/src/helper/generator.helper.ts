@@ -6,6 +6,7 @@ import { Transaction } from "src/modules/transactions/transaction.entity";
 import { Readable } from "typeorm/platform/PlatformTools";
 import { CgiConstants } from "src/common/constants/cgi.constant";
 
+
 const envFilePath = resolve(__dirname, "../../../.env");
 const result = dotenvConfig({ path: envFilePath });
 
@@ -13,7 +14,7 @@ if (result.error) {
   throw result.error;
 }
 
-const maxBatchId: string = '';
+const maxBatchId = '';
 
 class BatchHeader {
   feederNumber: string;
@@ -33,7 +34,7 @@ class BatchHeader {
   } 
 }
 
-  function formatDateToCustomString(date: Date): string {
+  export function formatDateToCustomString(date: Date): string {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1
     const day = String(date.getDate()).padStart(2, '0');
@@ -44,29 +45,29 @@ class BatchHeader {
     return `${year}${month}${day}${hours}${minutes}${seconds}`;
   }
   
-  function getFiscalYear(): number {
+  export function getFiscalYear(): number {
     const currentYear = new Date().getFullYear();
     return currentYear + 1;
   }
   
   let batchCounter = 0;
 
-  function getBatchNumber(): string {
+  export function getBatchNumber(): string {
     batchCounter++;
     return batchCounter.toString().padStart(9, '0');
   }
   
   // Journal name: 10 characters
-  let globalJournalName: string = '';
+  let globalJournalName = '';
   
-  function getJournalName(): string {
+  export function getJournalName(): string {
     const prefix = CgiConstants.PREFIX;
     const randomChars = generateRandomChars(8); // Generate 8 random characters
     const journalName: string = prefix + randomChars;
     return journalName;
   }
   
-  function generateRandomChars(length: number): string {
+  export function generateRandomChars(length: number): string {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let result = '';
     for (let i = 0; i < length; i++) {
@@ -75,16 +76,16 @@ class BatchHeader {
     return result;
   }
   
-  function getJournalBatchName(): string {
+  export function getJournalBatchName(): string {
     // 25 characters
     const prefix = CgiConstants.PREFIX; // Ministry Alpha identifier prefix
     const randomChars = generateRandomChars(23); // Generate 23 random characters
     return prefix + randomChars;
   }
   
-  function getControlTotal(transactions: Transaction[]): string {
+  export function getControlTotal(transactions: Transaction[]): string {
     // 15 characters
-    let total: number = 0.0;
+    let total = 0.0;
     for (const transaction of transactions) {
       if(transaction.TRANSACTION_TYPE === `R`)
         if(transaction.TOTAL_TRANSACTION_AMOUNT > 0.0)
@@ -104,25 +105,25 @@ class BatchHeader {
     return totalString;
   }
   
-  function getExternalReferenceSource(): string {
+  export function getExternalReferenceSource(): string {
     // 100 chars, optional
     // return `QP`;
     return ``;
   }
 
-  function getFlowThru(length: number): string {
+  export function getFlowThru(length: number): string {
     return ' '.repeat(length);
   }
   
-  let jvLineNumberCounter: number = 0;
+  let jvLineNumberCounter = 0;
   
-  function getJvLiineNumber(): string {
+  export function getJvLiineNumber(): string {
     // 5 chars
     jvLineNumberCounter++;
     return String(jvLineNumberCounter).padStart(5, '0');
   }
   
-  function getGlEffectiveDate(): string {
+  export function getGlEffectiveDate(): string {
     const currentDate: Date = new Date();
     const year: number = currentDate.getFullYear();
     const month: string = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // Month is zero-based
@@ -131,7 +132,7 @@ class BatchHeader {
     return `${year}${month}${day}`;
   }
   
-  function getAck(): string {
+  export function getAck(): string {
     // 50 chars
     // Client - (3 Characters)
     // Responsibility - (5 Characters)
@@ -141,75 +142,75 @@ class BatchHeader {
     // Location - (6 Characters)
     // Future - (4 Characters)
     // Unused Filler - (16 Characters)
-    const client = getClient();
-    const responsibility = getResponsibility();
-    const serviceLine = getServiceLine();
-    const stob = getStob();
-    const project = getProject();
+    const client = CgiConstants.CLIENT;
+    const responsibility = CgiConstants.RESPONSIBILITY;
+    const serviceLine = CgiConstants.SERVICE_LINE;
+    const stob = CgiConstants.STOB;
+    const project = CgiConstants.PROJECT;
     const location = getLocation();
     const future = CgiConstants.FUTURE;
-    const unusedFiller = ' '.repeat(16);//16 spaces
+    const unusedFiller = ' '.repeat(16);
     let result = '';
     result = result + client + responsibility + serviceLine + stob + project + location + future + unusedFiller;
     return result;
   }
   
-  function getClient(): string {
-    // 3 chars
-    return CgiConstants.CLIENT;
-  }
+  // function getClient(): string {
+  //   // 3 chars
+  //   return CgiConstants.CLIENT;
+  // }
   
-  function getResponsibility(): string {
-    // 5 chars
-    return CgiConstants.RESPONSIBILITY;
-  }
+  // function getResponsibility(): string {
+  //   // 5 chars
+  //   return CgiConstants.RESPONSIBILITY;
+  // }
   
-  function getServiceLine(): string {
-    // 5 chars
-    return CgiConstants.SERVICE_LINE;
-  }
+  // function getServiceLine(): string {
+  //   // 5 chars
+  //   return CgiConstants.SERVICE_LINE;
+  // }
   
-  function getStob(): string {
-    // 4 chars
-    return CgiConstants.STOB;
-  }
+  // function getStob(): string {
+  //   // 4 chars
+  //   return CgiConstants.STOB;
+  // }
   
-  function getProject(): string {
-    // 7 chars
-    return CgiConstants.PROJECT;
-  }
+  // function getProject(): string {
+  //   // 7 chars
+  //   return CgiConstants.PROJECT;
+  // }
   
-  function getLocation(): string {
+  export function getLocation(): string {
     // 6 chars
     return `0`.repeat(6);
   }
   
-  function getFuture(): string {
+  export function getFuture(): string {
     // 4 chars
     return `0`.repeat(4);
   }
   
-  function getUnusedFiller(): string {
+  export function getUnusedFiller(): string {
     // 16 chars
     return `0`.repeat(16);
   }
   
-  function getLineCode(): string {
-    // 1 char, C or D
-    return CgiConstants.LINE_CODE;
-  }
+  // function getLineCode(): string {
+  //   // 1 char, C or D
+  //   return CgiConstants.LINE_CODE;
+  // }
   
-  function getLineDescription(): string {
+  export function getLineDescription(): string {
     // 100 chars
     return ` `.repeat(100);
   }
   
-  function getFeederNumberClientSystem(): string {
+  export function getFeederNumberClientSystem(): string {
     // 4 chars
     return `0`.repeat(4);
   }
   
-  function getControlCount(transactions: Transaction[]): string {
+  export function getControlCount(transactions: Transaction[]): string {
     // 15 chars
     const numberStr = transactions.length.toString();
     const desiredLength = 15;
@@ -218,8 +219,8 @@ class BatchHeader {
     
   }
   
-  function populateBatchHeader(filename: string, ackFilename: string): string {
-    let batchHeader: string = ``;
+  export function populateBatchHeader(filename: string, ackFilename: string): string {
+    let batchHeader = ``;
     const feederNumber: string = process.env.FEEDER_NUMBER;
     const batchType: string = CgiConstants.BATCH_TYPE;
     const transactionType: string = CgiConstants.TRANSACTION_TYPE_BH;
@@ -241,8 +242,8 @@ class BatchHeader {
     return batchHeader;
   }
 
-function populateJournalHeader(transactions: Transaction[]): string {
-  let journalHeader: string = ``;
+  export function populateJournalHeader(transactions: Transaction[]): string {
+  let journalHeader = ``;
   const feederNumber: string = process.env.FEEDER_NUMBER;
   const batchType: string = CgiConstants.BATCH_TYPE;
   const transactionType: string = CgiConstants.TRANSACTION_TYPE_JH;
@@ -260,7 +261,7 @@ function populateJournalHeader(transactions: Transaction[]): string {
   return journalHeader;
 }
 
-function populateJournalVoucherDetail(cgiFileName: string, transactions: Transaction[]): void {
+export function populateJournalVoucherDetail(cgiFileName: string, transactions: Transaction[]): void {
   const feederNumber: string = process.env.FEEDER_NUMBER;
   const batchType: string = CgiConstants.BATCH_TYPE;
   const delimiterHex = 0x1D;
@@ -271,23 +272,23 @@ function populateJournalVoucherDetail(cgiFileName: string, transactions: Transac
   const glEffectiveDate: string = getGlEffectiveDate();
   const ack: string = getAck();
   console.log(ack);
-  const client: string = getClient();
-  const responsibility: string = getResponsibility();
-  const serviceLine: string = getServiceLine();
-  const stob: string = getStob();
-  const project: string = getProject();
+  const client: string = CgiConstants.CLIENT;
+  const responsibility: string = CgiConstants.RESPONSIBILITY;//getResponsibility();
+  const serviceLine: string = CgiConstants.SERVICE_LINE;//getServiceLine();
+  const stob: string = CgiConstants.STOB;//getStob();
+  const project: string = CgiConstants.PROJECT;
   const location: string = getLocation();
   const future: string = getFuture();
   const unusedFiller: string = getUnusedFiller();
   const supplierNumber: string = process.env.SUPPLIER_NUMBER;
-  const lineCode: string = getLineCode();
+  const lineCode: string = CgiConstants.LINE_CODE;//getLineCode();
   const lineDescription: string = getLineDescription();
 
   for (const transaction of transactions) {
     const transactionType = transaction.TRANSACTION_TYPE;
     let lineTotal = '';    
     lineTotal = getLineTotle(transaction.TOTAL_TRANSACTION_AMOUNT);
-    let journalVoucher: string = `${feederNumber}`;
+    let journalVoucher = `${feederNumber}`;
     journalVoucher += `${batchType}`;
     journalVoucher += `${transactionType}`;
     journalVoucher += `${delimiter}`;
@@ -314,7 +315,7 @@ function populateJournalVoucherDetail(cgiFileName: string, transactions: Transac
   }
 }
 
-function getLineTotle(total: number) {
+export function getLineTotle(total: number) {
   let totalString: string = total.toFixed(2); // Ensure two decimal places
     const isNegative: boolean = totalString.startsWith('-');
     const integerPartLength: number = isNegative ? totalString.length - 1 : totalString.length;
@@ -328,8 +329,8 @@ function getLineTotle(total: number) {
 
 }
 
-function populateBatchTrailer(transactions: Transaction[]): string {
-  let batchTrailer: string = ``;
+export function populateBatchTrailer(transactions: Transaction[]): string {
+  let batchTrailer = ``;
   const feederNumber: string = process.env.FEEDER_NUMBER;
   const batchType: string = CgiConstants.BATCH_TYPE;
   const transactionType: string = CgiConstants.TRANSACTION_TYPE_BT;
@@ -346,10 +347,10 @@ function populateBatchTrailer(transactions: Transaction[]): string {
   return batchTrailer;
 }
 
-function generateCgiFile(transactions: Transaction[]): void {
+export function generateCgiFile(transactions: Transaction[]): void {
   const now: Date = new Date();
   const cgiCustomString: string = formatDateToCustomString(now);
-  const cgiFileName: string = `F3535.${cgiCustomString}`;
+  const cgiFileName = `F3535.${cgiCustomString}`;
   const batchHeader: string = populateBatchHeader('test_cgi_file', 'test_cgi_ack_file');
   fs.writeFileSync(cgiFileName, batchHeader);
   console.log(maxBatchId);
@@ -359,27 +360,80 @@ function generateCgiFile(transactions: Transaction[]): void {
   const batchTrailer: string = populateBatchTrailer(transactions);
   fs.appendFileSync(cgiFileName, batchTrailer);
   console.log(`${cgiFileName} generated.`);
-  const cgiTrigerFileName: string = `F3535.${cgiCustomString}.TRG`;
+  const cgiTrigerFileName = `F3535.${cgiCustomString}.TRG`;
   fs.writeFileSync(cgiTrigerFileName, ``);
   console.log(`${cgiTrigerFileName} generated.`);
 }
 
-async function uploadFile(): Promise<string> {
+// async function uploadFile(): Promise<string> {
+//   const currentDir = process.cwd();
+//   const sourceDir = currentDir;
+//   const destinationDir = currentDir;
+
+//   try {
+//     const files = await fs.promises.readdir(sourceDir);
+//     const inboxFiles = files.filter(file => file.startsWith('F3535.'));
+//     if (inboxFiles.length === 0) {
+//       console.log('No files can be uploaded');
+//       return null;
+//     }
+
+//     // eslint-disable-next-line @typescript-eslint/prefer-for-of
+//     for (let index = 0; index < inboxFiles.length; index++) {
+//       const file = inboxFiles[index];
+      
+//       const sourceFile = join(sourceDir, file);
+//       const destinationFile = join(destinationDir, file);
+
+//       // Read the file's data
+//       const fileData = await fs.promises.readFile(sourceFile);
+
+//       // Create a readable stream from the buffer
+//       const fileStream = new Readable();
+//       fileStream.push(fileData);
+//       fileStream.push(null); // Indicate the end of the stream
+
+//       // Construct the file object
+//       const multerFile: Express.Multer.File = {
+//         fieldname: 'file',
+//         originalname: file,
+//         encoding: '7bit',
+//         mimetype: 'application/octet-stream',
+//         size: fileData.length,
+//         destination: destinationDir,
+//         filename: file,
+//         path: destinationFile,
+//         buffer: fileData,
+//         stream: fileStream,
+//       };
+
+//       const cgiSftpService: CgiSftpService = new CgiSftpService();
+//       const fileContent: Express.Multer.File = multerFile; 
+//       const fileName: string = file;
+//       cgiSftpService.upload(fileContent, fileName);  
+//       return file; 
+//     }
+//   } catch (err) {
+//     console.error('Error uploading files:', err);
+//   }
+// }
+
+// bruce test
+async function uploadFile(): Promise<string[]> {
   const currentDir = process.cwd();
   const sourceDir = currentDir;
   const destinationDir = currentDir;
+  const uploadedFiles: string[] = [];
 
   try {
     const files = await fs.promises.readdir(sourceDir);
     const inboxFiles = files.filter(file => file.startsWith('F3535.'));
     if (inboxFiles.length === 0) {
       console.log('No files can be uploaded');
-      return null;
+      return uploadedFiles; // Return an empty array
     }
 
-    for (let index = 0; index < inboxFiles.length; index++) {
-      const file = inboxFiles[index];
-      
+    for (const file of inboxFiles) {
       const sourceFile = join(sourceDir, file);
       const destinationFile = join(destinationDir, file);
 
@@ -406,17 +460,18 @@ async function uploadFile(): Promise<string> {
       };
 
       const cgiSftpService: CgiSftpService = new CgiSftpService();
-      const fileContent: Express.Multer.File = multerFile; 
-      const fileName: string = file;
-      cgiSftpService.upload(fileContent, fileName);  
-      return file; 
+      cgiSftpService.upload(multerFile, file);
+      uploadedFiles.push(file); // Collect the uploaded file names
     }
   } catch (err) {
     console.error('Error uploading files:', err);
   }
+
+  return uploadedFiles; // Return the list of uploaded files
 }
 
-export const generate = async (transactions: Transaction[]): Promise<string> => {
+
+export const generate = async (transactions: Transaction[]): Promise<string[]> => {
   globalJournalName = getJournalName();
   generateCgiFile(transactions);
   return await uploadFile();

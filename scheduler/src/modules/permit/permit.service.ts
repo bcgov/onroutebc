@@ -156,6 +156,7 @@ export class PermitService {
       await lastValueFrom(
         this.httpService
           .post(url, body, reqConfig)
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
           .pipe(map((response) => response.data)),
       );
     } catch (error) {
