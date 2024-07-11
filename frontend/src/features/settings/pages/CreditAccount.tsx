@@ -56,8 +56,11 @@ export const CreditAccount = ({ companyId }: { companyId: number }) => {
   const { isPending: creditAccountCreationPending } =
     createCreditAccountMutation;
 
-  const isAccountHolder =
-    creditAccount?.creditAccountUsers[0].companyId === companyId;
+  const accountHolder = creditAccount?.creditAccountUsers.find(
+    (user) => user.userType === "HOLDER",
+  );
+
+  const isAccountHolder = companyId === accountHolder?.companyId;
 
   const isActionSuccessful = (status: number) => {
     return status === 201;

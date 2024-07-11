@@ -63,8 +63,11 @@ export const AccountDetails = () => {
     }
   };
 
-  const isAccountHolder =
-    creditAccount?.creditAccountUsers[0].companyId === companyId;
+  const accountHolder = creditAccount?.creditAccountUsers.find(
+    (user) => user.userType === "HOLDER",
+  );
+
+  const isAccountHolder = companyId === accountHolder?.companyId;
 
   const handleMenuOpen = (e: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(e.currentTarget);

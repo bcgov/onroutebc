@@ -4,7 +4,6 @@ import {
   CreditAccountStatusType,
 } from "../types/creditAccount";
 import { CREDIT_ACCOUNT_API_ROUTES } from "../apiManager/endpoints/endpoints";
-import { CreditAccountUser } from "../types/creditAccount";
 import {
   httpDELETERequest,
   httpGETRequest,
@@ -12,76 +11,6 @@ import {
   httpPUTRequest,
 } from "../../../common/apiManager/httpRequestHandler";
 import { CompanyProfile } from "../../manageProfile/types/manageProfile";
-
-const creditAccountHolder: CreditAccountUser = {
-  companyId: 74,
-  clientNumber: "B3-000005-722",
-  legalName: "Parisian LLC Trucking",
-  alternateName: null,
-  email: "gspoure4@mtv.com",
-  isSuspended: false,
-  userType: "HOLDER",
-};
-const creditAccountUserA: CreditAccountUser = {
-  companyId: 3,
-  clientNumber: "B1-000096-763",
-  legalName: "Abshire, Rempel and O'Keefe Trucking",
-  alternateName: null,
-  email: "dmccarter2n@webeden.co.uk",
-  isSuspended: false,
-  userType: "USER",
-};
-const creditAccountUserB: CreditAccountUser = {
-  companyId: 19,
-  clientNumber: "B1-000083-390",
-  legalName: "Jacobson, Bechtelar and Walker Trucking",
-  alternateName: null,
-  email: "clumly2a@nba.com",
-  isSuspended: false,
-  userType: "USER",
-};
-const creditAccountUserC: CreditAccountUser = {
-  companyId: 20,
-  clientNumber: "R1-000079-847",
-  legalName: "Roberts, Kautzer and Pouros Trucking",
-  alternateName: null,
-  email: "ltrobe26@sakura.ne.jp",
-  isSuspended: false,
-  userType: "USER",
-};
-
-/* eslint-disable-next-line */
-const creditAccount: CreditAccountData = {
-  creditAccountId: 19,
-  creditAccountType: "UNSECURED",
-  creditAccountNumber: "WS5005",
-  creditAccountStatusType: "ACTIVE",
-  creditAccountActivities: [
-    {
-      creditAccountActivityType: "CLOSED",
-      creditAccountActivityDateTime: "2024-01-16T18:14:00.000Z",
-      userName: "RFARREL",
-      comment:
-        "I'm baby yes plz chambray seitan master cleanse, actually banh mi same plaid art party cloud bread blog. Wayfarers praxis bodega boys ramps brunch. Cardigan kinfolk viral brunch flannel keytar. Franzen stumptown lomo mixtape vape, fingerstache organic.",
-    },
-    {
-      creditAccountActivityType: "REOPENED",
-      creditAccountActivityDateTime: "2024-07-02T18:04:54.000Z",
-      userName: "RFARREL",
-      comment: "",
-    },
-  ],
-  companyId: 74,
-  availableCredit: "1000",
-  creditLimit: "1000",
-  creditBalance: 0,
-  creditAccountUsers: [
-    creditAccountHolder,
-    creditAccountUserA,
-    creditAccountUserB,
-    creditAccountUserC,
-  ],
-};
 
 /**
  * Backend request to create a credit account.

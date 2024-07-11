@@ -11,14 +11,18 @@ import {
   canViewSuspend,
   canViewCreditAccountTab,
 } from "../../helpers/permissions";
+import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
 
 export const ManageSettingsDashboard = React.memo(() => {
   const { userRoles, companyId } = useContext(OnRouteBCContext);
+  const { data: featureFlags } = useFeatureFlagsQuery();
 
   const [hideSuspendTab, setHideSuspendTab] = useState<boolean>(false);
   const showSuspendTab = canViewSuspend(userRoles) && !hideSuspendTab;
 
-  const showCreditAccountTab = canViewCreditAccountTab(userRoles);
+  const showCreditAccountTab =
+    canViewCreditAccountTab(userRoles) &&
+    featureFlags?.["CREDIT-ACCOUNT"] === "ENABLED";
 
   const { state: stateFromNavigation } = useLocation();
   const selectedTab = getDefaultRequiredVal(

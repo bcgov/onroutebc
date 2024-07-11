@@ -24,6 +24,7 @@ import { isIDIR } from "../../../../common/authentication/auth-walls/BCeIDAuthWa
 import { canViewCreditAccountTab } from "../../../settings/helpers/permissions";
 import { CreditAccount } from "../../../settings/pages/CreditAccount";
 import { useGetCreditAccountQuery } from "../../../settings/hooks/creditAccount";
+import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
 
 interface ProfileDashboardTab {
   label: string;
@@ -58,18 +59,22 @@ export const ManageProfilesDashboard = React.memo(() => {
   const { userRoles, companyId } = useContext(OnRouteBCContext);
   const { user } = useAuth();
   const { data: creditAccount } = useGetCreditAccountQuery();
+  const { data: featureFlags } = useFeatureFlagsQuery();
   const populatedUserRoles = getDefaultRequiredVal([], userRoles);
   const isIDIRUser = isIDIR(user?.profile?.identity_provider as string);
   const isBCeIDAdmin = isBCeIDOrgAdmin(populatedUserRoles);
   const shouldAllowUserManagement = isBCeIDAdmin || isIDIRUser;
-  const isCreditAccountHolder =
-    creditAccount?.creditAccountUsers[0].companyId === companyId;
+  const creditAccountHolder = creditAccount?.creditAccountUsers.find(
+    (user) => user.userType === "HOLDER",
+  );
+  const isCreditAccountHolder = companyId === creditAccountHolder?.companyId;
 
   const showCreditAccountTab = Boolean(
     canViewCreditAccountTab(userRoles) &&
       creditAccount &&
       companyId &&
-      isCreditAccountHolder,
+      isCreditAccountHolder &&
+      featureFlags?.["CREDIT-ACCOUNT"] === "ENABLED",
   );
 
   const { state: stateFromNavigation } = useLocation();

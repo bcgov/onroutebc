@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   addCreditAccountUser,
@@ -15,11 +14,9 @@ import { ERROR_ROUTES } from "../../../routes/constants";
 import { SnackBarContext } from "../../../App";
 import { useContext } from "react";
 import {
-  CreditAccountData,
   CreditAccountStatusType,
   CreditAccountUser,
   UPDATE_STATUS_ACTIONS,
-  UpdateStatusActionType,
   UpdateStatusData,
 } from "../types/creditAccount";
 import { getCompanyIdFromSession } from "../../../common/apiManager/httpRequestHandler";
