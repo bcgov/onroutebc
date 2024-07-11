@@ -11,7 +11,6 @@ import { CreateLoaDto } from '../dto/request/create-loa.dto';
 import { LoaDetail } from '../entities/loa-detail.entity';
 import { ReadLoaDto } from '../dto/response/read-loa.dto';
 import { LoaPermitType } from '../entities/loa-permit-type-details.entity';
-import { PermitType } from 'src/common/enum/permit-type.enum';
 import { LoaVehicle } from '../entities/loa-vehicles.entity';
 import { UpdateLoaDto } from '../dto/request/update-loa.dto';
 
@@ -71,8 +70,8 @@ export class LoaProfile extends AutomapperProfile {
                 loaVehicle.powerUnit = null;
                 loaVehicles.push(loaVehicle);
               }
-              return loaVehicles;
             }
+            return loaVehicles;
           }),
         ),
       );
@@ -140,38 +139,21 @@ export class LoaProfile extends AutomapperProfile {
         forMember(
           (d) => d.loaPermitType,
           mapFrom((s) => {
-            const loaPermitTypes: PermitType[] = new Array<PermitType>();
-            for (const lpt of s.loaPermitTypes) {
-              const loaPermitType: PermitType = lpt.permitType;
-              loaPermitTypes.push(loaPermitType);
-            }
-            return loaPermitTypes;
+            return s.loaPermitTypes.map(lpt => lpt.permitType)
           }),
         ),
         forMember(
           (d) => d.powerUnits,
           mapFrom((s) => {
-            const loaPowerUnits: string[] = new Array<string>();
-            for (const loaPowerUnit of s.loaVehicles) {
-              if (loaPowerUnit.powerUnit) {
-                const powerUnit: string = loaPowerUnit.powerUnit;
-                loaPowerUnits.push(powerUnit);
-              }
-            }
-            return loaPowerUnits;
+            if(s.loaVehicles)
+            return s.loaVehicles.filter(lv => lv.powerUnit).map(lv => lv.powerUnit)
           }),
         ),
         forMember(
           (d) => d.trailers,
           mapFrom((s) => {
-            const loaTrailers: string[] = new Array<string>();
-            for (const loaTrailer of s.loaVehicles) {
-              if (loaTrailer.trailer) {
-                const trailer: string = loaTrailer.trailer;
-                loaTrailers.push(trailer);
-              }
-            }
-            return loaTrailers;
+            if(s.loaVehicles)
+            return s.loaVehicles.filter(lv => lv.trailer).map(lv => lv.trailer);
           }),
         ),
       );
