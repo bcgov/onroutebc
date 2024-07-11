@@ -122,18 +122,24 @@ export const SpecialAuthorizations = ({
   };
 
   const handleDeleteLOA = async (loaId: string) => {
-    if (canWriteLOA) {
-      await removeLOAMutation.mutateAsync({
-        companyId,
-        loaId,
-      });
+    try {
+      if (canWriteLOA) {
+        await removeLOAMutation.mutateAsync({
+          companyId,
+          loaId,
+        });
+
+        activeLOAsQuery.refetch();
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLOAToDelete(null);
     }
-    
-    setLOAToDelete(null);
   };
 
   const handleDownloadLOA = async (loaId: string) => {
-    if (loaId) {
+    if (loaId && canReadLOA) {
       try {
         const { blobObj: blobObjWithoutType } = await downloadLOA(
           loaId,

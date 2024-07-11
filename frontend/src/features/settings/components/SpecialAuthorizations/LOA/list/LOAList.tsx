@@ -115,15 +115,16 @@ export const LOAList = ({
           props: { cell: any; row: any }
         ) => {
           const loaId = `${props.row.original.loaId}`;
+          const loaHasDocument = Boolean(props.row.original.documentId);
 
-          return (
+          return loaHasDocument ? (
             <CustomActionLink
               className="loa-list__link loa-list__link--download-loa"
               onClick={() => onDownload(loaId)}
             >
               Download Letter
             </CustomActionLink>
-          );
+          ) : null;
         },
         header: "",
         muiTableHeadCellProps: {
