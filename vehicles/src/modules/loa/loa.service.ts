@@ -16,7 +16,6 @@ import { DopsService } from '../common/dops.service';
 import { FileDownloadModes } from 'src/common/enum/file-download-modes.enum';
 import { Response } from 'express';
 
-
 @Injectable()
 export class LoaService {
   private readonly logger = new Logger(LoaService.name);
@@ -132,6 +131,44 @@ export class LoaService {
     }
 
     return readLoaDto;
+  }
+
+  @LogAsyncMethodExecution()
+  async updateLoa(
+    currentUser: IUserJWT,
+    companyId: number,
+    loaId: number,
+    updateLoaDto: UpdateLoaDto,
+    file?: Express.Multer.File,
+  ): Promise<ReadLoaDto> {
+    const existingLoaDetail = await this.findOne(companyId, loaId);
+
+    if (!existingLoaDetail) {
+      throw new NotFoundException('LOA detail not found');
+    }
+    if (
+      updateLoaDto.documentId &&
+      existingLoaDetail.documentId != updateLoaDto.documentId
+    ) {
+      throw new NotFoundException('LOA documet id mismatch');
+    }
+    let readFileDto: ReadFileDto = new ReadFileDto();
+    if (file && updateLoaDto.documentId)
+      readFileDto = await this.dopsService.upload(
+        currentUser,
+        companyId,
+        file,
+        updateLoaDto.documentId,
+      );
+    if (file && !updateLoaDto.documentId)
+      readFileDto = await this.dopsService.upload(currentUser, companyId, file);
+    return await this.update(
+      currentUser,
+      companyId,
+      loaId,
+      updateLoaDto,
+      readFileDto.documentId,
+    );
   }
 
   @LogAsyncMethodExecution()
@@ -253,7 +290,6 @@ export class LoaService {
       res,
       companyId,
     );
-    console.log('received reposnse from dops document', loa)
     return loa;
   }
 

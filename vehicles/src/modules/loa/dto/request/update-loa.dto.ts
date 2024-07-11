@@ -32,7 +32,8 @@ export class UpdateLoaDto {
   })
   expiryDate: string;
 
-  @ApiProperty({ type: 'string', format: 'binary' })
+  @ApiProperty({ required: false, type: 'string', format: 'binary' })
+  @IsOptional()
   @Allow()
   file: string;
 
@@ -41,6 +42,7 @@ export class UpdateLoaDto {
   @IsNumberString()
   @ApiProperty({
     description: 'Loa Document Id',
+    required: false,
   })
   documentId: string;
 
@@ -49,6 +51,7 @@ export class UpdateLoaDto {
   @IsString()
   @MaxLength(4000)
   @ApiProperty({
+    required: false,
     example: 'These are some additional notes for LoA.',
     description: 'Comments/Notes related to LoA.',
   })
