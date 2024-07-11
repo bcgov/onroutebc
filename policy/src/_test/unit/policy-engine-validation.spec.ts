@@ -6,11 +6,11 @@ import { trosNoParamsSample } from '../policy-config/tros-no-params.sample';
 import { validTros30Day } from '../permit-app/valid-tros-30day';
 import { validTrow120Day } from '../permit-app/valid-trow-120day';
 import { allEventTypes } from '../policy-config/all-event-types.sample';
-import { transformPermitFacts } from '../../src/helper/facts.helper';
+import { transformPermitFacts } from '../../helper/facts.helper';
 import dayjs from 'dayjs';
 import PermitApplication from '../permit-app/permit-application.type';
-import { PermitAppInfo } from '../../src/enum/permit-app-info.enum';
-import { ValidationResultCode } from '../../src/enum/validation-result-code.enum';
+import { PermitAppInfo } from '../../enum/permit-app-info';
+import { ValidationResultCode } from '../../enum/validation-result-code';
 
 describe('Permit Engine Constructor', () => {
   it('should construct without error', () => {
