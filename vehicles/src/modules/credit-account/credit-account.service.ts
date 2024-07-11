@@ -259,7 +259,7 @@ export class CreditAccountService {
       creditAccount?.creditAccountStatusType ===
         CreditAccountStatus.ACCOUNT_CLOSED
     ) {
-      const creditAccountAsUser = await this.creditAccountRepository.findOne({
+      const accountDetailsForUser = await this.creditAccountRepository.findOne({
         where: {
           creditAccountUsers: { company: { companyId }, isActive: true },
         },
@@ -269,8 +269,8 @@ export class CreditAccountService {
           creditAccountActivities: { idirUser: true },
         },
       });
-      if (creditAccountAsUser) {
-        creditAccount = creditAccountAsUser;
+      if (accountDetailsForUser) {
+        creditAccount = accountDetailsForUser;
       }
     }
 
