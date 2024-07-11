@@ -13,7 +13,6 @@ import { LoaPermitType } from './loa-permit-type-details.entity';
 import { LoaVehicle } from './loa-vehicles.entity';
 import { IsOptional } from 'class-validator';
 import { Company } from 'src/modules/company-user-management/company/entities/company.entity';
-import { ColumnBooleanTransformer } from 'src/common/class/customs.transform';
 
 @Entity({ name: 'permit.ORBC_LOA_DETAILS' })
 export class LoaDetail extends Base {
@@ -102,9 +101,8 @@ export class LoaDetail extends Base {
     name: 'IS_ACTIVE',
     nullable: false,
     default: 1,
-    transformer: new ColumnBooleanTransformer(),
   })
-  isActive: boolean;
+  isActive: number;
 
   @AutoMap(() => LoaPermitType)
   @OneToMany(() => LoaPermitType, (LoaPermitType) => LoaPermitType.loa, {

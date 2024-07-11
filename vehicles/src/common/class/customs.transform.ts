@@ -1,5 +1,4 @@
 import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
-import { ValueTransformer } from 'typeorm';
 
 @Injectable()
 export class LessThenPipe implements PipeTransform<number, number> {
@@ -21,13 +20,3 @@ export class ParamToArray<T> implements PipeTransform<string, T[]> {
   }
 }
 
-@Injectable()
-export class ColumnBooleanTransformer implements ValueTransformer {
-  public from(value?: string | null): boolean | undefined {
-    return Boolean(Number(value));
-  }
-
-  public to(value?: boolean | null): string | undefined {
-    return value ? '1' : '0';
-  }
-}

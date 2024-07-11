@@ -94,7 +94,7 @@ export class LoaService {
       where: {
         loaId: loaId,
         company: { companyId: Number(companyId) },
-        isActive: true,
+        isActive: 1,
       },
       relations: ['company', 'loaVehicles', 'loaPermitTypes'],
     });
@@ -262,9 +262,10 @@ export class LoaService {
   @LogAsyncMethodExecution()
   async delete(loaId: number): Promise<number> {
     const { affected } = await this.loaDetailRepository.update(
-      { loaId: loaId },
+      { loaId: loaId,
+      },
       {
-        isActive: false,
+        isActive: 0,
       },
     );
     return affected;
