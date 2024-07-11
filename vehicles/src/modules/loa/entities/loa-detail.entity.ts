@@ -13,6 +13,7 @@ import { LoaPermitType } from './loa-permit-type-details.entity';
 import { LoaVehicle } from './loa-vehicles.entity';
 import { IsOptional } from 'class-validator';
 import { Company } from 'src/modules/company-user-management/company/entities/company.entity';
+import { ColumnBooleanTransformer } from 'src/common/class/customs.transform';
 
 @Entity({ name: 'permit.ORBC_LOA_DETAILS' })
 export class LoaDetail extends Base {
@@ -93,11 +94,11 @@ export class LoaDetail extends Base {
 
   @AutoMap()
   @ApiProperty({
-    example: '1',
-    description: 'Is Active Flag - 1 (Active)/ 0 (Inactive)',
+    example: true,
+    description: 'Is Active Flag - true (Active)/ false (Inactive)',
   })
-  @Column({ type: 'bit', name: 'IS_ACTIVE', nullable: false, default: 1 })
-  isActive: string;
+  @Column({ type: 'bit', name: 'IS_ACTIVE', nullable: false, default: 1, transformer: new ColumnBooleanTransformer()})
+  isActive: boolean;
 
   @AutoMap(() => LoaPermitType)
   @OneToMany(() => LoaPermitType, (LoaPermitType) => LoaPermitType.loa, {
