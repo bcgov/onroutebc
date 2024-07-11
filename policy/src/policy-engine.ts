@@ -1,13 +1,14 @@
-import { PolicyDefinition } from './types/policy-definition.type';
+import { PolicyDefinition, PermitType } from 'onroute-policy-engine/types';
 import { extractIdentifiedObjects } from './helper/lists.helper';
-import { PermitType } from './types/permit-type.type';
 import { Engine, EngineResult } from 'json-rules-engine';
 import { getRulesEngines } from './helper/rules-engine.helper';
 import { ValidationResults } from './validation-results';
 import { ValidationResult } from './validation-result';
 import { addRuntimeFacts, transformPermitFacts } from './helper/facts.helper';
-import { ValidationResultType } from './enum/validation-result-type.enum';
-import { ValidationResultCode } from './enum/validation-result-code.enum';
+import {
+  ValidationResultType,
+  ValidationResultCode,
+} from 'onroute-policy-engine/enum';
 
 /** Class representing commercial vehicle policy. */
 export class Policy {
