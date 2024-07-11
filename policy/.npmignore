@@ -1,12 +1,12 @@
-test/
 docs/
 src/
 coverage/
 **/*.tgz
 .eslintignore
 .eslintrc.cjs
-dist/test/
+dist/_test/
 dist/tsconfig.tsbuildinfo
+tsconfig.tsbuildinfo
 .prettierrc.json
 package-lock.json
 tsconfig.json
