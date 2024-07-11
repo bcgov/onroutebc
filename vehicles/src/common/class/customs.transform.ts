@@ -19,4 +19,3 @@ export class ParamToArray<T> implements PipeTransform<string, T[]> {
     return arr as T[];
   }
 }
-
