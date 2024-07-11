@@ -6,7 +6,7 @@ import { ReadLoaDto } from './dto/response/read-loa.dto';
 import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoaDetail } from './entities/loa-detail.entity';
-import { DataSource, EntityManager, Repository } from 'typeorm';
+import { Brackets, DataSource, EntityManager, Repository } from 'typeorm';
 import { Mapper } from '@automapper/core';
 import { UpdateLoaDto } from './dto/request/update-loa.dto';
 import { LoaVehicle } from './entities/loa-vehicles.entity';
@@ -55,7 +55,7 @@ export class LoaService {
 
   @LogAsyncMethodExecution()
   async get(companyId: number, expired?: boolean): Promise<ReadLoaDto[]> {
-    let loaDetailQB = this.loaDetailRepository
+    const loaDetailQB = this.loaDetailRepository
       .createQueryBuilder('loaDetail')
       .leftJoinAndSelect('loaDetail.company', 'company')
       .leftJoinAndSelect('loaDetail.loaVehicles', 'loaVehicles')
@@ -63,17 +63,17 @@ export class LoaService {
       .where('company.companyId = :companyId', { companyId: companyId })
       .andWhere('loaDetail.isActive = :isActive', { isActive: 1 });
     if (expired === true) {
-      loaDetailQB = loaDetailQB.andWhere('loaDetail.expiryDate < :expiryDate', {
+      loaDetailQB.andWhere('loaDetail.expiryDate < :expiryDate', {
         expiryDate: new Date(),
       });
     } else {
-      loaDetailQB = loaDetailQB.andWhere(
-        'loaDetail.expiryDate >= :expiryDate',
-        {
-          expiryDate: new Date(),
-        },
+      loaDetailQB.andWhere(
+        new Brackets((qb) => {
+          qb.where('loaDetail.expiryDate >= :expiryDate', {
+            expiryDate: new Date(),
+          }).orWhere('loaDetail.expiryDate IS NULL');
+        }),
       );
-      loaDetailQB = loaDetailQB.orWhere('loaDetail.expiryDate IS NULL');
     }
     const loaDetail: LoaDetail[] = await loaDetailQB.getMany();
     const readLoaDto = this.classMapper.mapArray(
@@ -262,8 +262,7 @@ export class LoaService {
   @LogAsyncMethodExecution()
   async delete(loaId: number): Promise<number> {
     const { affected } = await this.loaDetailRepository.update(
-      { loaId: loaId,
-      },
+      { loaId: loaId },
       {
         isActive: 0,
       },
