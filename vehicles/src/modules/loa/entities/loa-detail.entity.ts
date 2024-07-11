@@ -97,7 +97,13 @@ export class LoaDetail extends Base {
     example: true,
     description: 'Is Active Flag - true (Active)/ false (Inactive)',
   })
-  @Column({ type: 'bit', name: 'IS_ACTIVE', nullable: false, default: 1, transformer: new ColumnBooleanTransformer()})
+  @Column({
+    type: 'bit',
+    name: 'IS_ACTIVE',
+    nullable: false,
+    default: 1,
+    transformer: new ColumnBooleanTransformer(),
+  })
   isActive: boolean;
 
   @AutoMap(() => LoaPermitType)

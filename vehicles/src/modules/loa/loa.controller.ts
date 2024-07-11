@@ -29,7 +29,7 @@ import { CreateLoaDto } from './dto/request/create-loa.dto';
 import { ReadLoaDto } from './dto/response/read-loa.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { LoaService } from './loa.service';
-import { Request, Response} from 'express';
+import { Request, Response } from 'express';
 import { UpdateLoaDto } from './dto/request/update-loa.dto';
 import { GetLoaQueryParamsDto } from './dto/request/getLoa.query-params.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -84,13 +84,8 @@ export class LoaController {
     const currentUser = request.user as IUserJWT;
     let readFileDto: ReadFileDto = new ReadFileDto();
     if (file) {
-      console.log('file exists');
       readFileDto = await this.dopsService.upload(currentUser, companyId, file);
-      console.log('response from upload file: ', readFileDto);
     }
-    console.log('body  is: ', createLoaDto);
-    const demo = JSON.stringify(createLoaDto);
-    console.log('body now is: ', demo);
     const result = await this.loaService.create(
       currentUser,
       createLoaDto,
@@ -149,28 +144,18 @@ export class LoaController {
           new MaxFileSizeValidator({ maxSize: 10485760 }),
           new FileTypeValidator({ fileType: 'application/pdf' }),
         ],
+        fileIsRequired: false,
       }),
     )
     file: Express.Multer.File,
   ): Promise<ReadLoaDto> {
     const currentUser = request.user as IUserJWT;
-    const readFileDto: ReadFileDto = new ReadFileDto();
-    if (file) {
-      console.log('file exists');
-      const readFileDto: ReadFileDto = await this.dopsService.upload(
-        currentUser,
-        companyId,
-        file,
-        updateLoaDto.documentId,
-      );
-      console.log('response from upload file: ', readFileDto);
-    }
-    const loa = await this.loaService.update(
+    const loa = await this.loaService.updateLoa(
       currentUser,
       companyId,
       loaId,
       updateLoaDto,
-      readFileDto.documentId,
+      file,
     );
     return loa;
   }
@@ -201,17 +186,17 @@ export class LoaController {
     @Res() res: Response,
   ) {
     const currentUser = request.user as IUserJWT;
-    const loa  = await this.loaService.getloaDocument(
+    const loa = await this.loaService.getloaDocument(
       currentUser,
       companyId,
       loaId,
       downloadMode,
       res,
     );
-      if (downloadMode === FileDownloadModes.URL) {
-        setResHeaderCorrelationId(res);
-        res.status(201).send(loa);
-      } 
+    if (downloadMode === FileDownloadModes.URL) {
+      setResHeaderCorrelationId(res);
+      res.status(201).send(loa);
+    }
   }
 
   @ApiOperation({

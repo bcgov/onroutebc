@@ -19,7 +19,6 @@ export class ParamToArray<T> implements PipeTransform<string, T[]> {
     if (arr[0] === '') return [];
     return arr as T[];
   }
-
 }
 
 @Injectable()
