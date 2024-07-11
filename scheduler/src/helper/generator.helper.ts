@@ -5,6 +5,8 @@ import { CgiSftpService } from "src/modules/cgi-sftp/cgi-sftp.service";
 import { Transaction } from "src/modules/transactions/transaction.entity";
 import { Readable } from "typeorm/platform/PlatformTools";
 import { CgiConstants } from "src/common/constants/cgi.constant";
+import { randomBytes } from 'crypto';
+
 
 
 const envFilePath = resolve(__dirname, "../../../.env");
@@ -67,14 +69,18 @@ class BatchHeader {
     return journalName;
   }
   
-  export function generateRandomChars(length: number): string {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    for (let i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-    return result;
+export function generateRandomChars(length: number): string {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  let result = '';
+
+  const randomValues = randomBytes(length);
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(randomValues[i] % charactersLength);
   }
+
+  return result;
+}
   
   export function getJournalBatchName(): string {
     // 25 characters
