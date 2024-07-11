@@ -1,6 +1,6 @@
 import { EngineResult } from 'json-rules-engine';
-import { ValidationResultType } from './enum/validation-result-type.enum';
-import { ValidationResultCode } from './enum/validation-result-code.enum';
+import { ValidationResultType } from './enum/validation-result-type';
+import { ValidationResultCode } from './enum/validation-result-code';
 import { ValidationResult } from './validation-result';
 
 /** Represents the results of a permit application validation against policy */
