@@ -16,7 +16,7 @@ IF @@ERROR <> 0 SET NOEXEC ON
 GO
 
 --------------------------------------
--- Holiday table creation
+-- BC Holiday table creation
 --------------------------------------
 CREATE TABLE [dbo].[ORBC_HOLIDAY](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
