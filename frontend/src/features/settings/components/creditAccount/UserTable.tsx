@@ -17,8 +17,8 @@ import {
 import { CreditAccountUserColumnsDefinition } from "../../types/CreditAccountUserColumns";
 import { canUpdateCreditAccount } from "../../helpers/permissions";
 import { CreditAccountUser } from "../../types/creditAccount";
-import "./UserTable.scss";
 import { useGetCreditAccountQuery } from "../../hooks/creditAccount";
+import "./UserTable.scss";
 
 /**
  * User Management Component for Credit Accounts.
@@ -31,7 +31,7 @@ export const UserTable = () => {
     refetch,
   } = useGetCreditAccountQuery();
 
-  const { creditAccountUsers } = creditAccount;
+  const creditAccountUsers = creditAccount?.creditAccountUsers;
 
   const { userRoles } = useContext(OnRouteBCContext);
 

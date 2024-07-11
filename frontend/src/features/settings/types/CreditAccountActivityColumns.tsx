@@ -29,11 +29,12 @@ export const CreditAccountActivityColumnsDefinition: MRT_ColumnDef<CreditAccount
     {
       accessorKey: "userName",
       header: "IDIR",
+      size: 0,
     },
     {
       accessorKey: "creditAccountActivityDateTime",
       header: "Date",
-      Cell: (props: { row: any }) => {
+      Cell: (props: { row: MRT_Row<CreditAccountActivity> }) => {
         return (
           <span>
             {formatDate(props.row.original.creditAccountActivityDateTime)}

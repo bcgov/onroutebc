@@ -10,7 +10,7 @@ export const CreditAccountUserColumnsDefinition: MRT_ColumnDef<CreditAccountUser
     {
       accessorKey: "legalName",
       header: "Company Name",
-      Cell: (props: { row: any }) => {
+      Cell: (props: { row: MRT_Row<CreditAccountUser> }) => {
         return (
           <Stack direction="column" className="cell__stack">
             <span className="cell__text">{props.row.original.legalName}</span>

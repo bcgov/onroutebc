@@ -24,6 +24,7 @@ import {
 } from "../types/creditAccount";
 import { getCompanyIdFromSession } from "../../../common/apiManager/httpRequestHandler";
 import { SnackbarAlertType } from "../../../common/components/snackbar/CustomSnackBar";
+import { CompanyProfile } from "../../manageProfile/types/manageProfile";
 
 /**
  * Hook to fetch the company credit account details for the active user.
@@ -84,6 +85,7 @@ export const useGetCompanyQuery = (clientNumber: string) => {
         },
       ),
     enabled: clientNumber !== "",
+    staleTime: 0,
   });
 };
 
@@ -126,10 +128,8 @@ export const useAddCreditAccountUserMutation = () => {
   const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: (data: {
-      creditAccountId: number;
-      userData: CreditAccountUser;
-    }) => addCreditAccountUser(data),
+    mutationFn: (data: { creditAccountId: number; userData: CompanyProfile }) =>
+      addCreditAccountUser(data),
     onSuccess: () => {
       setSnackBar({
         showSnackbar: true,

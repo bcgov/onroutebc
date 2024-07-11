@@ -1,9 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   CreditAccountData,
   CreditAccountLimitType,
-  CreditAccountHistoryData,
-  UpdateStatusData,
   CreditAccountStatusType,
 } from "../types/creditAccount";
 import { CREDIT_ACCOUNT_API_ROUTES } from "../apiManager/endpoints/endpoints";
@@ -14,6 +11,7 @@ import {
   httpPOSTRequest,
   httpPUTRequest,
 } from "../../../common/apiManager/httpRequestHandler";
+import { CompanyProfile } from "../../manageProfile/types/manageProfile";
 
 const creditAccountHolder: CreditAccountUser = {
   companyId: 74,
@@ -51,6 +49,8 @@ const creditAccountUserC: CreditAccountUser = {
   isSuspended: false,
   userType: "USER",
 };
+
+/* eslint-disable-next-line */
 const creditAccount: CreditAccountData = {
   creditAccountId: 19,
   creditAccountType: "UNSECURED",
@@ -79,6 +79,7 @@ const creditAccount: CreditAccountData = {
     creditAccountHolder,
     creditAccountUserA,
     creditAccountUserB,
+    creditAccountUserC,
   ],
 };
 
@@ -100,7 +101,7 @@ export const createCreditAccount = async (
  * Get credit account information for the active company
  * @returns Credit account information for the active company
  */
-export const getCreditAccount = async () => {
+export const getCreditAccount = async (): Promise<CreditAccountData> => {
   const response = await httpGETRequest(
     CREDIT_ACCOUNT_API_ROUTES.GET_CREDIT_ACCOUNT(),
   );
@@ -133,13 +134,13 @@ export const getCreditAccountUsers = async (creditAccountId: number) => {
 
 /**
  * Add a user to credit account
- * @param {number} creditAccountId Id of the credit account we wish to add a user to
- * @param {CreditAccountUser} userData Id of the company who is being added to the credit account
- * @returns {CreditAccountUser}
+ * @param creditAccountId Id of the credit account we wish to add a user to
+ * @param userData Id of the company who is being added to the credit account
+ * @returns companyProfile
  */
 export const addCreditAccountUser = async (data: {
   creditAccountId: number;
-  userData: CreditAccountUser;
+  userData: CompanyProfile;
 }) => {
   const { creditAccountId, userData } = data;
   const response = await httpPUTRequest(

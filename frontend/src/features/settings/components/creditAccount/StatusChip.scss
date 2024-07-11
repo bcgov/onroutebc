@@ -15,4 +15,9 @@
     background-color: $bc-messages-red-background;
     color: $bc-messages-red-text;
   }
+
+  &--suspended {
+    background-color: $bc-messages-red-text;
+    color: $white;
+  }
 }

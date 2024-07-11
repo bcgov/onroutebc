@@ -62,10 +62,14 @@ export const ManageProfilesDashboard = React.memo(() => {
   const isIDIRUser = isIDIR(user?.profile?.identity_provider as string);
   const isBCeIDAdmin = isBCeIDOrgAdmin(populatedUserRoles);
   const shouldAllowUserManagement = isBCeIDAdmin || isIDIRUser;
+  const isCreditAccountHolder =
+    creditAccount?.creditAccountUsers[0].companyId === companyId;
 
-  // TODO check to see if user/company is a holder or user of a credit account here
   const showCreditAccountTab = Boolean(
-    canViewCreditAccountTab(userRoles) && creditAccount && companyId,
+    canViewCreditAccountTab(userRoles) &&
+      creditAccount &&
+      companyId &&
+      isCreditAccountHolder,
   );
 
   const { state: stateFromNavigation } = useLocation();

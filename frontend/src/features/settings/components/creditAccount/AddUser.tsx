@@ -2,7 +2,7 @@ import { CustomFormComponent } from "../../../../common/components/form/CustomFo
 import { FormProvider, useForm, FieldValues } from "react-hook-form";
 import { requiredMessage } from "../../../../common/helpers/validationMessages";
 import { Box, Button, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AddUserModal } from "./AddUserModal";
 import {
   useGetCompanyQuery,
@@ -50,8 +50,14 @@ export const AddUser = () => {
 
   const confirmAddUser = () => {
     resetForm();
+    setClientNumber("");
     setShowAddUserModal(false);
     refetchCreditAccount();
+  };
+
+  const handleCloseAddUserModal = () => {
+    setClientNumber("");
+    setShowAddUserModal(false);
   };
 
   return (
@@ -96,9 +102,9 @@ export const AddUser = () => {
       {showAddUserModal && data ? (
         <AddUserModal
           showModal={showAddUserModal}
-          onCancel={() => setShowAddUserModal(false)}
+          onCancel={handleCloseAddUserModal}
           onConfirm={confirmAddUser}
-          userData={{ ...data.items[0], isSuspended: false, userType: "USER" }}
+          userData={data?.items[0]}
         />
       ) : null}
     </div>

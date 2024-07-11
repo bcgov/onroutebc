@@ -24,7 +24,7 @@ import { CloseCreditAccountModal } from "./CloseCreditAccountModal";
 import "./AccountDetails.scss";
 
 export const AccountDetails = () => {
-  const { userRoles } = useContext(OnRouteBCContext);
+  const { userRoles, companyId } = useContext(OnRouteBCContext);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [showHoldCreditAccountModal, setShowHoldCreditAccountModal] =
     useState<boolean>(false);
@@ -63,6 +63,9 @@ export const AccountDetails = () => {
     }
   };
 
+  const isAccountHolder =
+    creditAccount?.creditAccountUsers[0].companyId === companyId;
+
   const handleMenuOpen = (e: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(e.currentTarget);
   };
@@ -78,16 +81,18 @@ export const AccountDetails = () => {
   const handleUpdateCreditAccountStatus = async (
     updateStatusData: UpdateStatusData,
   ) => {
-    const { status } = await updateCreditAccountStatusMutation.mutateAsync({
-      creditAccountId: creditAccount.creditAccountId,
-      updateStatusData,
-    });
+    if (creditAccount?.creditAccountId) {
+      const { status } = await updateCreditAccountStatusMutation.mutateAsync({
+        creditAccountId: creditAccount?.creditAccountId,
+        updateStatusData,
+      });
 
-    if (isActionSuccessful(status)) {
-      setShowHoldCreditAccountModal(false);
-      setShowCloseCreditAccountModal(false);
-      handleMenuClose();
-      refetchCreditAccount();
+      if (isActionSuccessful(status)) {
+        setShowHoldCreditAccountModal(false);
+        setShowCloseCreditAccountModal(false);
+        handleMenuClose();
+        refetchCreditAccount();
+      }
     }
   };
 
@@ -98,7 +103,7 @@ export const AccountDetails = () => {
           <Typography className="account-details__text account-details__text--white">
             Credit Account Details
           </Typography>
-          {canUpdateCreditAccount(userRoles) && (
+          {canUpdateCreditAccount(userRoles) && isAccountHolder && (
             <Box>
               <Tooltip title="Actions">
                 <Button
@@ -172,7 +177,7 @@ export const AccountDetails = () => {
             </Box>
           )}
         </Box>
-        {/* TODO remove mock values once API is finished */}
+        {/* TODO remove mock values once API is complete */}
         <Box className="account-details__body">
           <Box className="account-details__row">
             <dt className="account-details__text">Credit Limit</dt>

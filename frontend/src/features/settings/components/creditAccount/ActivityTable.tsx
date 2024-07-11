@@ -26,7 +26,6 @@ export const ActivityTable = () => {
     isError: fetchCreditAccountError,
   } = useGetCreditAccountQuery();
 
-  // remove "Credit Account Opened" activity and reverse list
   const creditAccountActivities = [
     ...(creditAccount?.creditAccountActivities ?? []),
   ]

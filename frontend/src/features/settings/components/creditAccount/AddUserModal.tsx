@@ -9,6 +9,8 @@ import {
 } from "../../hooks/creditAccount";
 import { CreditAccountUser } from "../../types/creditAccount";
 import "./AddUserModal.scss";
+import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
+import { StatusChip } from "./StatusChip";
 
 export const AddUserModal = ({
   showModal,
@@ -19,7 +21,7 @@ export const AddUserModal = ({
   showModal: boolean;
   onCancel: () => void;
   onConfirm: () => void;
-  userData: CreditAccountUser;
+  userData: CompanyProfile;
 }) => {
   const formMethods = useForm<{ comment: string }>({
     reValidateMode: "onChange",
@@ -84,7 +86,12 @@ export const AddUserModal = ({
           <dl>
             <div className="add-user-modal__item">
               <dt className="add-user-modal__key">Company Name</dt>
-              <dd className="add-user-modal__value">{userData.legalName}</dd>
+              <dd className="add-user-modal__value">
+                {userData.legalName}{" "}
+                <span className="add-user-modal__suspend-chip">
+                  {userData.isSuspended && <StatusChip status="SUSPENDED" />}
+                </span>
+              </dd>
             </div>
             {userData.alternateName ? (
               <div className="add-user-modal__item">
@@ -146,7 +153,7 @@ export const AddUserModal = ({
             Cancel
           </Button>
 
-          {!userCreditAccount && (
+          {!userCreditAccount && !userData.isSuspended && (
             <Button
               key="add-user-button"
               onClick={handleSubmit(handleAddUser)}

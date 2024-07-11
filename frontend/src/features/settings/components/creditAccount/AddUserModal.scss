@@ -55,6 +55,10 @@
     margin-left: 0;
   }
 
+  &__suspend-chip {
+    padding-left: 1rem;
+  }
+
   &__info, .info {
     width: 100%;
     background-color: $bc-messages-blue-background;

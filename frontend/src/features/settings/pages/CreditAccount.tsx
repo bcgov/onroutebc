@@ -33,11 +33,6 @@ export const CreditAccount = ({ companyId }: { companyId: number }) => {
   const { userRoles, userDetails, idirUserDetails } =
     useContext(OnRouteBCContext);
 
-  // TODO add additional check for CreditAccountUserType = "HOLDER" once GET credit account route is complete
-  const showCreditAccountDetails = canViewCreditAccountDetails(
-    userDetails?.userAuthGroup || idirUserDetails?.userAuthGroup,
-  );
-
   const [invalid, setInvalid] = useState<boolean>(false);
 
   const [selectedCreditLimit, setSelectedCreditLimit] = useState<
@@ -61,6 +56,9 @@ export const CreditAccount = ({ companyId }: { companyId: number }) => {
   const { isPending: creditAccountCreationPending } =
     createCreditAccountMutation;
 
+  const isAccountHolder =
+    creditAccount?.creditAccountUsers[0].companyId === companyId;
+
   const isActionSuccessful = (status: number) => {
     return status === 201;
   };
@@ -78,6 +76,11 @@ export const CreditAccount = ({ companyId }: { companyId: number }) => {
     }
   };
 
+  const showCreditAccountDetails =
+    canViewCreditAccountDetails(
+      userDetails?.userAuthGroup || idirUserDetails?.userAuthGroup,
+    ) && isAccountHolder;
+
   return (
     <div className="credit-account-page">
       {creditAccount ? (
@@ -92,9 +95,7 @@ export const CreditAccount = ({ companyId }: { companyId: number }) => {
                 <StatusChip status={creditAccount.creditAccountStatusType} />
               </Box>
               <Typography className="overview__user-designation">
-                {creditAccount.companyId === companyId
-                  ? "Account Holder"
-                  : "Account User"}
+                {isAccountHolder ? "Account Holder" : "Account User"}
               </Typography>
             </Box>
             <ActivityTable />
