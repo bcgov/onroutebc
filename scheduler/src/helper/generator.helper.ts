@@ -1,6 +1,7 @@
-import { config as dotenvConfig } from "dotenv";
+// import { config as dotenvConfig } from "dotenv";
 import * as fs from 'fs';
-import { join, resolve } from 'path';
+// import { join, resolve } from 'path';
+import { join} from 'path';
 import { CgiSftpService } from "src/modules/cgi-sftp/cgi-sftp.service";
 import { Transaction } from "src/modules/transactions/transaction.entity";
 import { Readable } from "typeorm/platform/PlatformTools";
@@ -9,12 +10,12 @@ import { randomBytes } from 'crypto';
 
 
 
-const envFilePath = resolve(__dirname, "../../../.env");
-const result = dotenvConfig({ path: envFilePath });
+// const envFilePath = resolve(__dirname, "../../../.env");
+// const result = dotenvConfig({ path: envFilePath });
 
-if (result.error) {
-  throw result.error;
-}
+// if (result.error) {
+//   throw result.error;
+// }
 
 const maxBatchId = '';
 
