@@ -16,6 +16,7 @@ export class AppService {
   ) {}
 
   getHealthCheck(): string {
+    this.logger.log(`TPS Migration Healthcheck stale-image-1-deploy-1` ); //! TODO Do not merge to Main
     return 'TPS Migration Healthcheck!';
   }
 
