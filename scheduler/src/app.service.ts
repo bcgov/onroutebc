@@ -16,6 +16,7 @@ export class AppService {
   ) {}
 
   getHealthCheck(): string {
+    this.logger.log('Stale image test 3')
     return 'TPS Migration Healthcheck!';
   }
 
