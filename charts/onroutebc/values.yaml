@@ -571,12 +571,12 @@ policy:
             value: '{{.Values.global.pr_num}}'
       ports:
         - name: policy-api
-          containerPort: 5000
+          containerPort: 5002
           protocol: TCP
       readinessProbe:
         httpGet:
           path: /
-          port: 5000
+          port: 5002
           scheme: HTTP
         initialDelaySeconds: 60
         periodSeconds: 15
@@ -586,18 +586,18 @@ policy:
         failureThreshold: 3
         httpGet:
           path: /
-          port: 5000
+          port: 5002
           scheme: HTTP
         initialDelaySeconds: 60
         periodSeconds: 30
         timeoutSeconds: 5
       resources: # this is optional
         limits:
-          cpu: 300m
-          memory: 500Mi
+          cpu: 75m
+          memory: 150Mi
         requests:
-          cpu: 200m
-          memory: 300Mi
+          cpu: 25m
+          memory: 50Mi
   autoscaling:
     #-- enable or disable autoscaling.
     enabled: true
@@ -631,8 +631,7 @@ policy:
         selectPolicy: Max
   ingress:
     className: openshift-default
-    annotations: 
-      haproxy.router.openshift.io/timeout: 2m
+    annotations:
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
@@ -646,10 +645,10 @@ policy:
     enabled: true
     type: ClusterIP
     ports:
-      - name: 5000-tcp
+      - name: 5002-tcp
         protocol: TCP
         port: 80
-        targetPort: 5000
+        targetPort: 5002
   serviceAccount:
     name: "{{ .Values.global.license }}-vault"
   vault:
