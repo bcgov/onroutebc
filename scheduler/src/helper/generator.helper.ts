@@ -62,11 +62,21 @@ class BatchHeader {
 export function generateRandomChars(length: number): string {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   const charactersLength = characters.length;
+  const maxByteValue = 256; // 8 bits, since randomBytes returns bytes with values 0-255
+  const threshold = Math.floor(maxByteValue / charactersLength) * charactersLength;
+
   let result = '';
 
+  // Generate random values
   const randomValues = randomBytes(length);
+
   for (let i = 0; i < length; i++) {
-    result += characters.charAt(randomValues[i] % charactersLength);
+    let randomValue;
+    do {
+      randomValue = randomValues[i];
+    } while (randomValue >= threshold);
+    
+    result += characters[randomValue % charactersLength];
   }
 
   return result;
