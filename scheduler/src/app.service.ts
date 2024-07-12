@@ -15,8 +15,7 @@ export class AppService {
     private featureFlagsService: FeatureFlagsService,
   ) {}
 
-  getHealthCheck(): string {
-    this.logger.log('Stale image test 3')
+  getHealthCheck(): string {    
     return 'TPS Migration Healthcheck!';
   }
 
