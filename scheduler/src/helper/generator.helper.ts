@@ -28,7 +28,7 @@ class BatchHeader {
 
   export function formatDateToCustomString(date: Date): string {
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1
+    const month = String(date.getMonth() + 1).padStart(2, '0'); 
     const day = String(date.getDate()).padStart(2, '0');
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
@@ -54,7 +54,7 @@ class BatchHeader {
   
   export function getJournalName(): string {
     const prefix = CgiConstants.PREFIX;
-    const randomChars = generateRandomChars(8); // Generate 8 random characters
+    const randomChars = generateRandomChars(8); 
     const journalName: string = prefix + randomChars;
     return journalName;
   }
@@ -99,7 +99,7 @@ export function generateRandomChars(length: number): string {
       total += Number(transaction.TOTAL_TRANSACTION_AMOUNT);
     }
   
-    let totalString: string = total.toFixed(2); // Ensure two decimal places
+    let totalString: string = total.toFixed(2); 
     const isNegative: boolean = totalString.startsWith('-');
     const integerPartLength: number = isNegative ? totalString.length - 1 : totalString.length;
     const paddingLength: number = 15 - integerPartLength;
@@ -161,31 +161,6 @@ export function generateRandomChars(length: number): string {
     return result;
   }
   
-  // function getClient(): string {
-  //   // 3 chars
-  //   return CgiConstants.CLIENT;
-  // }
-  
-  // function getResponsibility(): string {
-  //   // 5 chars
-  //   return CgiConstants.RESPONSIBILITY;
-  // }
-  
-  // function getServiceLine(): string {
-  //   // 5 chars
-  //   return CgiConstants.SERVICE_LINE;
-  // }
-  
-  // function getStob(): string {
-  //   // 4 chars
-  //   return CgiConstants.STOB;
-  // }
-  
-  // function getProject(): string {
-  //   // 7 chars
-  //   return CgiConstants.PROJECT;
-  // }
-  
   export function getLocation(): string {
     // 6 chars
     return `0`.repeat(6);
@@ -200,11 +175,6 @@ export function generateRandomChars(length: number): string {
     // 16 chars
     return `0`.repeat(16);
   }
-  
-  // function getLineCode(): string {
-  //   // 1 char, C or D
-  //   return CgiConstants.LINE_CODE;
-  // }
   
   export function getLineDescription(): string {
     // 100 chars
@@ -371,60 +341,6 @@ export function generateCgiFile(transactions: Transaction[]): void {
   console.log(`${cgiTrigerFileName} generated.`);
 }
 
-// async function uploadFile(): Promise<string> {
-//   const currentDir = process.cwd();
-//   const sourceDir = currentDir;
-//   const destinationDir = currentDir;
-
-//   try {
-//     const files = await fs.promises.readdir(sourceDir);
-//     const inboxFiles = files.filter(file => file.startsWith('F3535.'));
-//     if (inboxFiles.length === 0) {
-//       console.log('No files can be uploaded');
-//       return null;
-//     }
-
-//     // eslint-disable-next-line @typescript-eslint/prefer-for-of
-//     for (let index = 0; index < inboxFiles.length; index++) {
-//       const file = inboxFiles[index];
-      
-//       const sourceFile = join(sourceDir, file);
-//       const destinationFile = join(destinationDir, file);
-
-//       // Read the file's data
-//       const fileData = await fs.promises.readFile(sourceFile);
-
-//       // Create a readable stream from the buffer
-//       const fileStream = new Readable();
-//       fileStream.push(fileData);
-//       fileStream.push(null); // Indicate the end of the stream
-
-//       // Construct the file object
-//       const multerFile: Express.Multer.File = {
-//         fieldname: 'file',
-//         originalname: file,
-//         encoding: '7bit',
-//         mimetype: 'application/octet-stream',
-//         size: fileData.length,
-//         destination: destinationDir,
-//         filename: file,
-//         path: destinationFile,
-//         buffer: fileData,
-//         stream: fileStream,
-//       };
-
-//       const cgiSftpService: CgiSftpService = new CgiSftpService();
-//       const fileContent: Express.Multer.File = multerFile; 
-//       const fileName: string = file;
-//       cgiSftpService.upload(fileContent, fileName);  
-//       return file; 
-//     }
-//   } catch (err) {
-//     console.error('Error uploading files:', err);
-//   }
-// }
-
-// bruce test
 async function uploadFile(): Promise<string[]> {
   const currentDir = process.cwd();
   const sourceDir = currentDir;
