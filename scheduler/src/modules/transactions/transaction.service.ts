@@ -5,7 +5,7 @@ import { TransactionDetail } from './transaction-detail.entity';
 import { Cron } from '@nestjs/schedule';
 import { LogAsyncMethodExecution } from 'src/common/decorator/log-async-method-execution.decorator';
 import { generate } from 'src/helper/generator.helper';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { BcHoliday } from './holiday.entity';
 
 @Injectable()
@@ -32,9 +32,10 @@ export class TransactionService {
 
   async getHolidays(): Promise<BcHoliday[]> {
     const now: Date = new Date();
-    const year = now.getFullYear();
+    const year = now.getFullYear().toString(); // Convert year to string
+    
     return this.holidayRepository.find({
-      where: { HOLIDAY_YEAR : year }
+      where: { holidayDate: Like(`%${year}%`) }
     });
   }
 
@@ -78,10 +79,7 @@ export class TransactionService {
         const holidays: BcHoliday[] = await this.getHolidays();
 
         const formatHoliday = (holiday: BcHoliday): string => {
-          const year = holiday.HOLIDAY_YEAR;
-          const month = holiday.HOLIDAY_MONTH.toString().padStart(2, '0'); // Ensure month is two digits
-          const day = holiday.HOLIDAY_DAY.toString().padStart(2, '0'); // Ensure day is two digits
-          return `${year}-${month}-${day}`;
+          return holiday.holidayDate;
         };
         
         const holidayStrings: string[] = holidays.map(formatHoliday);

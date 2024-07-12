@@ -1,3 +1,48 @@
+/**
+ * This CGI file generator executes the process of generating and uploading CGI files using a cron job that configured in the transaxtion service.
+ * The workflow involves generating CGI files based on transaction details and uploading them to an SFTP server.
+ * 
+ * Workflow Steps
+ * 
+ * 1. Cron Job Scheduling
+ *    - A cron job is configured to run at 5:30 PM on workdays (Monday to Friday).
+ *    - The cron job initiates the CGI file generation and uploading process.
+ * 
+ * 2. Transaction Data Retrieval
+ *    - The CGI file generator script is executed by the cron job.
+ *    - The script queries the [ORBC_CFS_TRANSACTION_DETAIL] table in the database to retrieve transactions with a status marked as "READY".
+ * 
+ * 3. CGI File Generation
+ *    - For each "READY" transaction, the CGI file generator:
+ *      - Populates the CGI file with the necessary transaction data (batch header, journal header and journal details) according to the predefined CGI file layout.
+ *      - Creates a corresponding CGI trigger file to indicate that the transfer of INBOX file(s) is complete.
+ * 
+ * 4. Temporary Storage
+ *    - The generated CGI files and their associated trigger files are temporarily stored in a designated local directory.
+ * 
+ * 5. Uploading to SFTP Server
+ *    - The CGI file generator script establishes a connection to the SFTP server.
+ *    - The script uploads the CGI files and trigger files to the appropriate directory on the SFTP server.
+ * 
+ * 6. Completion
+ *    - Once all files are uploaded, the script terminates.
+ *    - The cron job completes its execution for the day.
+ * 
+ * Future Enhancements
+ * 
+ * The current workflow does not include file verification, error handling, or notifications. These features can be added in future iterations to improve reliability and transparency:
+ * 
+ * - File Verification
+ *   - Implement checks to ensure that generated CGI files match expected formats and data integrity is maintained before uploading.
+ * 
+ * - Error Handling
+ *   - Incorporate mechanisms to handle errors during file generation and upload processes.
+ *   - Implement retry logic for transient errors.
+ * 
+ * - Notifications
+ *   - Set up notifications to alert relevant personnel in case of errors or successful completions.
+ */
+
 import * as fs from 'fs';
 import { join} from 'path';
 import { CgiSftpService } from "src/modules/cgi-sftp/cgi-sftp.service";
@@ -195,7 +240,7 @@ export function generateRandomChars(length: number): string {
     
   }
   
-  export function populateBatchHeader(filename: string, ackFilename: string): string {
+  export function populateBatchHeader(): string {
     let batchHeader = ``;
     const feederNumber: string = process.env.FEEDER_NUMBER;
     const batchType: string = CgiConstants.BATCH_TYPE;
@@ -213,8 +258,6 @@ export function generateRandomChars(length: number): string {
     bt.fiscalYear = fiscalYear;
     bt.batchNumber = batchNumber;
     bt.messageVersion = messageVersion;
-    console.log(filename);
-    console.log(ackFilename);
     return batchHeader;
   }
 
@@ -326,8 +369,8 @@ export function populateBatchTrailer(transactions: Transaction[]): string {
 export function generateCgiFile(transactions: Transaction[]): void {
   const now: Date = new Date();
   const cgiCustomString: string = formatDateToCustomString(now);
-  const cgiFileName = `F3535.${cgiCustomString}`;
-  const batchHeader: string = populateBatchHeader('test_cgi_file', 'test_cgi_ack_file');
+  const cgiFileName = `F` + process.env.FEEDER_NUMBER + `.${cgiCustomString}`;
+  const batchHeader: string = populateBatchHeader();
   fs.writeFileSync(cgiFileName, batchHeader);
   console.log(maxBatchId);
   const journalHeader: string = populateJournalHeader(transactions);

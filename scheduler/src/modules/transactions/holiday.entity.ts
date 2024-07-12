@@ -1,16 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('ORBC_HOLIDAY', { schema: 'dbo' })
 export class BcHoliday {
   @PrimaryGeneratedColumn()
-  ID: number;
+  id: number;
 
-  @Column()
-  HOLIDAY_YEAR: number;
-
-  @Column()
-  HOLIDAY_MONTH: number;
-
-  @Column()
-  HOLIDAY_DAY: number;
+  @Column({ length: '10', name: 'HOLIDAY_DATE', nullable: false })
+  holidayDate: string;
 }
