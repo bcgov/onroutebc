@@ -62,9 +62,6 @@
     }
   }
   
-  & &__body {
-    
-  }
   & &__row {
     &--selected {
       background-color: rgba($bc-messages-blue-background, 0.5);
@@ -74,6 +71,10 @@
   & &__cell {
     vertical-align: top;
     padding: 1rem;
+
+    &:last-child {
+      display: none;
+    }
   }
 
   .cell {

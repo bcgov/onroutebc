@@ -79,10 +79,16 @@ export const CreditAccount = ({ companyId }: { companyId: number }) => {
     }
   };
 
-  const showCreditAccountDetails =
-    canViewCreditAccountDetails(
-      userDetails?.userAuthGroup || idirUserDetails?.userAuthGroup,
-    ) && isAccountHolder;
+  const showActivityTable = isAccountHolder;
+
+  const showAddUser =
+    canUpdateCreditAccount(userRoles) &&
+    creditAccount?.creditAccountStatusType !== "CLOSED" &&
+    isAccountHolder;
+
+  const showUserTable = canViewCreditAccountDetails(
+    userDetails?.userAuthGroup || idirUserDetails?.userAuthGroup,
+  );
 
   return (
     <div className="credit-account-page">
@@ -101,10 +107,9 @@ export const CreditAccount = ({ companyId }: { companyId: number }) => {
                 {isAccountHolder ? "Account Holder" : "Account User"}
               </Typography>
             </Box>
-            <ActivityTable />
-            {canUpdateCreditAccount(userRoles) &&
-              creditAccount.creditAccountStatusType !== "CLOSED" && <AddUser />}
-            {showCreditAccountDetails && <UserTable />}
+            {showActivityTable && <ActivityTable />}
+            {showAddUser && <AddUser />}
+            {showUserTable && <UserTable />}
           </Box>
           <AccountDetails />
         </Box>

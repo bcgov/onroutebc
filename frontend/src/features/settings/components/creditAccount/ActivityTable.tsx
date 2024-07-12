@@ -12,9 +12,9 @@ import {
 } from "../../../../common/helpers/tableHelper";
 import { CreditAccountActivityColumnsDefinition } from "../../types/CreditAccountActivityColumns";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile.d";
-import "./ActivityTable.scss";
 import { useGetCreditAccountQuery } from "../../hooks/creditAccount";
 import { CreditAccountActivity } from "../../types/creditAccount";
+import "./ActivityTable.scss";
 
 /**
  * Hold/Close activity history component for credit account.
@@ -48,6 +48,7 @@ export const ActivityTable = () => {
       showProgressBars: isLoading,
       isLoading: isLoading,
     },
+    layoutMode: "grid",
     enableGlobalFilter: false,
     renderEmptyRowsFallback: () => <NoRecordsFound />,
     enableRowSelection: false,

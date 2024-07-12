@@ -24,6 +24,8 @@ import "./UserTable.scss";
  * User Management Component for Credit Accounts.
  */
 export const UserTable = () => {
+  const { userRoles, companyId } = useContext(OnRouteBCContext);
+
   const {
     data: creditAccount,
     isError,
@@ -33,7 +35,13 @@ export const UserTable = () => {
 
   const creditAccountUsers = creditAccount?.creditAccountUsers;
 
-  const { userRoles } = useContext(OnRouteBCContext);
+  const accountHolder = creditAccountUsers?.find(
+    (user) => user.userType === "HOLDER",
+  );
+
+  const isAccountHolder = companyId === accountHolder?.companyId;
+
+  const showCheckboxes = canUpdateCreditAccount(userRoles) && isAccountHolder;
 
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const [userIds, setUserIds] = useState<number[]>([]);
@@ -82,7 +90,7 @@ export const UserTable = () => {
   const table = useMaterialReactTable({
     ...defaultTableOptions,
     columns: CreditAccountUserColumnsDefinition,
-    data: creditAccountUsers ?? [],
+    data: isAccountHolder ? creditAccountUsers : [accountHolder],
     initialState: {
       ...defaultTableInitialStateOptions,
     },
@@ -93,9 +101,10 @@ export const UserTable = () => {
       isLoading: isLoading,
       rowSelection: rowSelection,
     },
+    layoutMode: "grid",
     enableGlobalFilter: false,
     renderEmptyRowsFallback: () => <NoRecordsFound />,
-    enableRowSelection: canUpdateCreditAccount(userRoles)
+    enableRowSelection: showCheckboxes
       ? (row: MRT_Row<CreditAccountUser>): boolean => {
           if (row?.original?.userType === "HOLDER") {
             return false;
