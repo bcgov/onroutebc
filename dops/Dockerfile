@@ -80,7 +80,8 @@ RUN apk add --no-cache \
       freetype \
       harfbuzz \
       ca-certificates \
-      ttf-freefont 
+      ttf-freefont \
+      curl
      
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
@@ -101,4 +102,4 @@ EXPOSE 5001
 CMD ["npm", "run", "start:prod"]
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost/:5001
+HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:5001/

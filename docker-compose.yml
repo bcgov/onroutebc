@@ -82,13 +82,15 @@ services:
       CFS_CREDIT_ACCOUNT_CLIENT_ID: ${CFS_CREDIT_ACCOUNT_CLIENT_ID}
       CFS_CREDIT_ACCOUNT_CLIENT_SECRET: ${CFS_CREDIT_ACCOUNT_CLIENT_SECRET}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      test: "curl --silent --fail http://localhost:5000/ > /dev/null || exit 1"
       interval: 1m30s
       timeout: 10s
       retries: 3
       start_period: 40s
     depends_on:
       sql-server-db:
+        condition: service_healthy
+      policy-api:
         condition: service_healthy
     hostname: vehicles-api
     links:
@@ -140,7 +142,7 @@ services:
       ORBC_SERVICE_ACCOUNT_CLIENT_SECRET: ${ORBC_SERVICE_ACCOUNT_CLIENT_SECRET}
       ORBC_SERVICE_ACCOUNT_AUDIENCE: ${ORBC_SERVICE_ACCOUNT_AUDIENCE}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5001/"]
+      test: "curl --silent --fail http://localhost:5001/ > /dev/null || exit 1"
       interval: 1m30s
       timeout: 10s
       retries: 3
@@ -177,7 +179,7 @@ services:
       ORBC_SERVICE_ACCOUNT_CLIENT_ID: ${ORBC_SERVICE_ACCOUNT_CLIENT_ID}
       ORBC_SERVICE_ACCOUNT_AUDIENCE: ${ORBC_SERVICE_ACCOUNT_AUDIENCE}      
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5002/"]
+      test: "curl --silent --fail http://localhost:5002/ > /dev/null || exit 1"
       interval: 1m30s
       timeout: 10s
       retries: 3
@@ -203,7 +205,7 @@ services:
         VITE_KEYCLOAK_AUDIENCE: ${VITE_KEYCLOAK_AUDIENCE}
         VITE_SITEMINDER_LOG_OFF_URL: ${VITE_SITEMINDER_LOG_OFF_URL}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      test: "curl --silent --fail http://localhost:3000/ > /dev/null || exit 1"
       interval: 1m30s
       timeout: 10s
       retries: 3
@@ -264,7 +266,7 @@ services:
       DOC_GEN_LIMIT: ${DOC_GEN_LIMIT}
       PERMIT_SCHEDULE_POLLING_INTERVAL: ${PERMIT_SCHEDULE_POLLING_INTERVAL}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5050/"]
+      test: "curl --silent --fail http://localhost:5050/ > /dev/null || exit 1"
       interval: 1m30s
       timeout: 10s
       retries: 3
