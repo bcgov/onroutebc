@@ -14,10 +14,12 @@ export const CloseCreditAccountModal = ({
   showModal,
   onCancel,
   onConfirm,
+  isPending,
 }: {
   showModal: boolean;
   onCancel: () => void;
   onConfirm: (updateStatusData: UpdateStatusData) => void;
+  isPending: boolean;
 }) => {
   const formMethods = useForm<{ comment: string }>({
     defaultValues: {
@@ -103,6 +105,7 @@ export const CloseCreditAccountModal = ({
             aria-label="Close-account Company"
             onClick={handleSubmit(handleCloseAccount)}
             data-testid="close-account-button"
+            disabled={isPending}
           >
             Close Credit Account
           </Button>

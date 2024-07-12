@@ -1,17 +1,13 @@
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
 import Typography from "@mui/material/Typography";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMinus } from "@fortawesome/free-solid-svg-icons";
-
-import "./RemoveUsersModal.scss";
 import {
   useGetCreditAccountQuery,
   useRemoveCreditAccountUsersMutation,
 } from "../../hooks/creditAccount";
+import "./RemoveUsersModal.scss";
 
 /**
  *  A stateless confirmation dialog box for remove Operations.
@@ -36,20 +32,18 @@ export const RemoveUsersModal = ({
 }) => {
   const { data: creditAccount } = useGetCreditAccountQuery();
 
-  const removeCreditAccountUsersMutation = creditAccount?.creditAccountId
-    ? useRemoveCreditAccountUsersMutation({
-        creditAccountId: creditAccount?.creditAccountId,
-        companyIds: userIds,
-      })
-    : undefined;
+  const { mutateAsync, isPending } = useRemoveCreditAccountUsersMutation();
 
   const isActionSuccessful = (status: number) => {
     return status === 200;
   };
 
   const handleRemoveUsers = async () => {
-    if (removeCreditAccountUsersMutation) {
-      const { status } = await removeCreditAccountUsersMutation.mutateAsync();
+    if (creditAccount?.creditAccountId) {
+      const { status } = await mutateAsync({
+        creditAccountId: creditAccount.creditAccountId,
+        companyIds: userIds,
+      });
 
       if (isActionSuccessful(status)) {
         onConfirm();
@@ -58,47 +52,47 @@ export const RemoveUsersModal = ({
   };
 
   return (
-    <div>
-      <Dialog
-        className="remove-user-dialog"
-        onClose={onCancel}
-        aria-labelledby="confirmation-dialog-title"
-        open={isOpen}
-      >
-        <DialogTitle className="remove-user-dialog__title">
-          <span className="remove-user-dialog__icon">
-            <FontAwesomeIcon icon={faMinus} />
-          </span>{" "}
-          &nbsp;
-          <strong>Remove User(s)? </strong>
-        </DialogTitle>
+    <Dialog
+      className="remove-users-modal"
+      open={isOpen}
+      onClose={onCancel}
+      PaperProps={{
+        className: "remove-users-modal__container",
+      }}
+    >
+      <div className="remove-users-modal__header">
+        <div className="remove-users-modal__icon">
+          <FontAwesomeIcon className="icon" icon={faMinus} />
+        </div>
+        <h2 className="remove-users-modal__title">Remove User(s)? </h2>
+      </div>
 
-        <DialogContent className="remove-user-dialog__content" dividers>
-          <Typography className="remove-user-dialog__msg" gutterBottom>
-            Are you sure you want to remove credit account user(s)?
-          </Typography>
-        </DialogContent>
+      <div className="remove-users-modal__body">
+        <Typography className="remove-users-modal__text">
+          Are you sure you want to remove credit account user(s)?
+        </Typography>
+      </div>
 
-        <DialogActions className="remove-user-dialog__actions">
-          <Button
-            className="remove-user-btn remove-user-btn--cancel"
-            variant="contained"
-            color="secondary"
-            onClick={onCancel}
-          >
-            Cancel
-          </Button>
+      <div className="remove-users-modal__footer">
+        <Button
+          className="remove-users-btn remove-users-btn--cancel"
+          variant="contained"
+          color="secondary"
+          onClick={onCancel}
+        >
+          Cancel
+        </Button>
 
-          <Button
-            className="remove-user-btn remove-user-btn--delete"
-            variant="contained"
-            color="error"
-            onClick={handleRemoveUsers}
-          >
-            Remove
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
+        <Button
+          className="remove-users-btn remove-users-btn--confirm"
+          variant="contained"
+          color="error"
+          onClick={handleRemoveUsers}
+          disabled={isPending}
+        >
+          Remove User
+        </Button>
+      </div>
+    </Dialog>
   );
 };

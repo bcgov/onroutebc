@@ -35,8 +35,7 @@ export const AccountDetails = () => {
   const { data: creditAccount, refetch: refetchCreditAccount } =
     useGetCreditAccountQuery();
 
-  const updateCreditAccountStatusMutation =
-    useUpdateCreditAccountStatusMutation();
+  const { mutateAsync, isPending } = useUpdateCreditAccountStatusMutation();
 
   const toSentenceCase = (str: string): string => {
     if (!str) return str;
@@ -85,7 +84,7 @@ export const AccountDetails = () => {
     updateStatusData: UpdateStatusData,
   ) => {
     if (creditAccount?.creditAccountId) {
-      const { status } = await updateCreditAccountStatusMutation.mutateAsync({
+      const { status } = await mutateAsync({
         creditAccountId: creditAccount?.creditAccountId,
         updateStatusData,
       });
@@ -137,7 +136,7 @@ export const AccountDetails = () => {
                 {creditAccount?.creditAccountStatusType === "ACTIVE" && (
                   <MenuItem
                     onClick={() => setShowHoldCreditAccountModal(true)}
-                    disabled={updateCreditAccountStatusMutation.isPending}
+                    disabled={isPending}
                   >
                     Put On Hold
                   </MenuItem>
@@ -150,7 +149,7 @@ export const AccountDetails = () => {
                           UPDATE_STATUS_ACTIONS.UNHOLD_CREDIT_ACCOUNT,
                       })
                     }
-                    disabled={updateCreditAccountStatusMutation.isPending}
+                    disabled={isPending}
                   >
                     Remove Hold
                   </MenuItem>
@@ -171,7 +170,7 @@ export const AccountDetails = () => {
                           UPDATE_STATUS_ACTIONS.REOPEN_CREDIT_ACCOUNT,
                       })
                     }
-                    disabled={updateCreditAccountStatusMutation.isPending}
+                    disabled={isPending}
                   >
                     Reopen Credit Account
                   </MenuItem>
@@ -213,6 +212,7 @@ export const AccountDetails = () => {
           showModal={showHoldCreditAccountModal}
           onCancel={() => setShowHoldCreditAccountModal(false)}
           onConfirm={handleUpdateCreditAccountStatus}
+          isPending={isPending}
         />
       )}
       {showCloseCreditAccountModal && (
@@ -220,6 +220,7 @@ export const AccountDetails = () => {
           showModal={showCloseCreditAccountModal}
           onCancel={() => setShowCloseCreditAccountModal(false)}
           onConfirm={handleUpdateCreditAccountStatus}
+          isPending={isPending}
         />
       )}
     </div>

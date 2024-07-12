@@ -43,7 +43,7 @@ export const UserTable = () => {
 
   const showCheckboxes = canUpdateCreditAccount(userRoles) && isAccountHolder;
 
-  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
+  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(true);
   const [userIds, setUserIds] = useState<number[]>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const hasNoRowsSelected = Object.keys(rowSelection).length === 0;

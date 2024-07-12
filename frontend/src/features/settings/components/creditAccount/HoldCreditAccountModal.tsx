@@ -4,20 +4,22 @@ import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FormProvider, useForm } from "react-hook-form";
 import { requiredMessage } from "../../../../common/helpers/validationMessages";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
-import "./HoldCreditAccountModal.scss";
 import {
   UPDATE_STATUS_ACTIONS,
   UpdateStatusData,
 } from "../../types/creditAccount";
+import "./HoldCreditAccountModal.scss";
 
 export const HoldCreditAccountModal = ({
   showModal,
   onCancel,
   onConfirm,
+  isPending,
 }: {
   showModal: boolean;
   onCancel: () => void;
   onConfirm: (updateStatusData: UpdateStatusData) => void;
+  isPending: boolean;
 }) => {
   const formMethods = useForm<{ comment: string }>({
     defaultValues: {
@@ -96,6 +98,7 @@ export const HoldCreditAccountModal = ({
             onClick={handleSubmit(handleHoldAccount)}
             className="hold-account-modal__button hold-account-modal__button--confirm"
             data-testid="hold-account-button"
+            disabled={isPending}
           >
             Put on Hold
           </Button>

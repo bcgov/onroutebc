@@ -8,9 +8,9 @@ import {
   useGetCreditAccountQuery,
 } from "../../hooks/creditAccount";
 import { CreditAccountUser } from "../../types/creditAccount";
-import "./AddUserModal.scss";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import { StatusChip } from "./StatusChip";
+import "./AddUserModal.scss";
 
 export const AddUserModal = ({
   showModal,
@@ -29,8 +29,6 @@ export const AddUserModal = ({
 
   const { handleSubmit } = formMethods;
 
-  const handleCancel = () => onCancel();
-
   const isActionSuccessful = (status: number) => {
     return status === 200;
   };
@@ -45,7 +43,7 @@ export const AddUserModal = ({
       (user: CreditAccountUser) => user.userType === "HOLDER",
     );
 
-  const { mutateAsync } = useAddCreditAccountUserMutation();
+  const { mutateAsync, isPending } = useAddCreditAccountUserMutation();
 
   const handleAddUser = async () => {
     if (creditAccount?.creditAccountId) {
@@ -68,7 +66,7 @@ export const AddUserModal = ({
     <Dialog
       className="add-user-modal"
       open={showModal}
-      onClose={handleCancel}
+      onClose={onCancel}
       PaperProps={{
         className: "add-user-modal__container",
       }}
@@ -147,7 +145,7 @@ export const AddUserModal = ({
             variant="contained"
             color="tertiary"
             className="add-user-button add-user-button--cancel"
-            onClick={handleCancel}
+            onClick={onCancel}
             data-testid="cancel-add-user-button"
           >
             Cancel
@@ -157,8 +155,9 @@ export const AddUserModal = ({
             <Button
               key="add-user-button"
               onClick={handleSubmit(handleAddUser)}
-              className="add-user-button add-user-button--add-user"
+              className="add-user-button add-user-button--confirm"
               data-testid="add-user-button"
+              disabled={isPending}
             >
               Add Account User
             </Button>

@@ -120,6 +120,7 @@ export const useCreateCreditAccountMutation = () => {
  */
 export const useAddCreditAccountUserMutation = () => {
   const { setSnackBar } = useContext(SnackBarContext);
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   return useMutation({
@@ -132,6 +133,10 @@ export const useAddCreditAccountUserMutation = () => {
         alertType: "success",
         message: "Account User Added",
       });
+
+      queryClient.invalidateQueries({
+        queryKey: ["credit-account", { companyId: getCompanyIdFromSession() }],
+      });
     },
     onError: () => navigate(ERROR_ROUTES.UNEXPECTED),
   });
@@ -141,15 +146,13 @@ export const useAddCreditAccountUserMutation = () => {
  * Hook to remove a user from a credit account
  * @returns Result of the remove user from credit account action
  */
-export const useRemoveCreditAccountUsersMutation = (data: {
-  creditAccountId: number;
-  companyIds: number[];
-}) => {
+export const useRemoveCreditAccountUsersMutation = () => {
   const navigate = useNavigate();
   const { setSnackBar } = useContext(SnackBarContext);
 
   return useMutation({
-    mutationFn: () => removeCreditAccountUsers(data),
+    mutationFn: (data: { creditAccountId: number; companyIds: number[] }) =>
+      removeCreditAccountUsers(data),
     onSuccess: () => {
       setSnackBar({
         showSnackbar: true,

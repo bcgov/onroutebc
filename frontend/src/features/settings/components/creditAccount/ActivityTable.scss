@@ -79,9 +79,6 @@
 
   .cell {
     &__text {
-      &:first-child {
-        padding-bottom: 1rem;
-      }
       &--bold {
         font-weight: bold;
       }

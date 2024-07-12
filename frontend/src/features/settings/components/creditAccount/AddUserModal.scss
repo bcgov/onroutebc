@@ -110,17 +110,30 @@
 
     .add-user-button {
       &--cancel {
-        cursor: pointer;
         background-color: $bc-background-light-grey;
+        border: 2px solid transparent;
+        box-shadow: none;
         color: $bc-black;
-        border: none;
+        cursor: pointer;
+
+        &:hover {
+          background-color: $bc-background-light-grey;
+          border-color: $bc-text-box-border-grey;
+          box-shadow: none;
+        }
       }
 
-      &--add-user {
-        color: $white;
+      &--confirm {
         background-color: $bc-primary-blue;
-        font-weight: bold;
+        box-shadow: none;
+        color: $white;
         cursor: pointer;
+        font-weight: bold;
+
+        &:disabled {
+          background-color: $disabled-colour;
+          color: $white;
+        }
       }
     }
   }

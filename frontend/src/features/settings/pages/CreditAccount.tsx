@@ -27,6 +27,7 @@ import {
 } from "../helpers/permissions";
 import { ActivityTable } from "../components/creditAccount/ActivityTable";
 import { StatusChip } from "../components/creditAccount/StatusChip";
+import { Loading } from "../../../common/pages/Loading";
 import "./CreditAccount.scss";
 
 export const CreditAccount = ({ companyId }: { companyId: number }) => {
@@ -48,8 +49,11 @@ export const CreditAccount = ({ companyId }: { companyId: number }) => {
     );
   };
 
-  const { data: creditAccount, refetch: refetchCreditAccount } =
-    useGetCreditAccountQuery();
+  const {
+    data: creditAccount,
+    isPending: creditAccountPending,
+    refetch: refetchCreditAccount,
+  } = useGetCreditAccountQuery();
 
   const createCreditAccountMutation = useCreateCreditAccountMutation();
 
@@ -89,6 +93,8 @@ export const CreditAccount = ({ companyId }: { companyId: number }) => {
   const showUserTable = canViewCreditAccountDetails(
     userDetails?.userAuthGroup || idirUserDetails?.userAuthGroup,
   );
+
+  if (creditAccountPending) return <Loading />;
 
   return (
     <div className="credit-account-page">

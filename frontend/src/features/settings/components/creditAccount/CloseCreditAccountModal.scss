@@ -90,6 +90,11 @@
       &:hover, &:focus {
         background-color: $bc-messages-red-text
       }
+
+      &:disabled {
+        background-color: #EBC0C1;
+        color: $white;
+      }
     }
   }
 }
