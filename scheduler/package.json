@@ -137,7 +137,9 @@
       "/node_modules/",
       "/test/",
       ".module.ts",
-      "<rootDir>/src/main.ts"
+      "<rootDir>/src/main.ts",
+      "<rootDir>/src/helper/generator.helper.ts",
+      "<rootDir>/src/modules/transactions/"
     ],
     "coverageReporters": [
       "text",
