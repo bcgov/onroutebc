@@ -8,6 +8,7 @@ import {
   IsOptional,
   IsString,
   MaxLength,
+  ValidateIf,
 } from 'class-validator';
 import { PermitType } from 'src/common/enum/permit-type.enum';
 
@@ -89,6 +90,8 @@ export class UpdateLoaDto {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return value;
   })
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+  @ValidateIf(dto => !dto.powerUnits || (dto.powerUnits && dto.trailers))
   @IsNumberString({}, { each: true })
   trailers: string[];
 
@@ -107,6 +110,8 @@ export class UpdateLoaDto {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return value;
   })
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+  @ValidateIf(dto => !dto.trailers || (dto.powerUnits && dto.trailers))
   @IsNumberString({}, { each: true })
   powerUnits: string[];
 }
