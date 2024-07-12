@@ -33,6 +33,7 @@ jobs:
             - [Frontend](https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }})
             - [Vehicles](https://${{ env.PREFIX }}-vehicles.${{ env.DOMAIN }}/api)
             - [Dops](https://${{ env.PREFIX }}-dops.${{ env.DOMAIN }}/api)
+            - [Policy](https://${{ env.PREFIX }}-policy.${{ env.DOMAIN }}/api)
             - [Scheduler](https://${{ env.PREFIX }}-scheduler.${{ env.DOMAIN }}/api)
 
             Please create PRs in draft mode.  Mark as ready to enable:
@@ -61,7 +62,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        package: [dops, vehicles, frontend, scheduler]
+        package: [dops, vehicles, frontend, scheduler, policy]
     timeout-minutes: 10
     steps:
       - uses: bcgov-nr/action-builder-ghcr@v2.0.2
@@ -94,4 +95,5 @@ jobs:
         --set-json dops.containers[0].resources='{"limits": {"cpu": "1000m", "memory": "2000Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
         --set-json frontend.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
         --set-json scheduler.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
+        --set-json policy.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
         --set-json vehicles.containers[0].resources='{"limits": {"cpu": "300m", "memory": "500Mi"}, "requests": {"cpu": "200m", "memory": "400Mi"}}' \
