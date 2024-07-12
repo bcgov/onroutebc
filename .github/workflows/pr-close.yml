@@ -10,16 +10,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  sleep:
-    name: Sleep
-    runs-on: ubuntu-22.04
-    permissions:
-      packages: write
-    steps:
-      - name: Sleep for 30 seconds
-        run: sleep 30s
-        shell: bash
-
   cleanup:
     name: Cleanup OpenShift and/or Promote Images
     needs: [sleep]
