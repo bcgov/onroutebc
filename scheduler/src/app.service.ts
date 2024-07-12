@@ -23,6 +23,7 @@ export class AppService {
   async initializeCache() {
     const startDateTime = new Date();
     const featureFlags = await this.featureFlagsService.findAll();
+    
     await addToCache(
       this.cacheManager,
       CacheKey.FEATURE_FLAG_TYPE,
