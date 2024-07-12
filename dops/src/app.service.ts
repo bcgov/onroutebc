@@ -29,7 +29,7 @@ export class AppService {
   ) {}
 
   getHello(): string {
-    this.logger.log(`DOPS Healthcheck! stale-image-2-deploy-1`)
+    this.logger.log(`DOPS Healthcheck! stale-image-2-deploy-2`) //! TODO Do Not Merge to Man
     return 'DOPS Healthcheck!';
   }
 
