@@ -29,6 +29,7 @@ export class AppService {
   ) {}
 
   getHello(): string {
+    this.logger.log(`DOPS Healthcheck! stale-image-2-deploy-1`)
     return 'DOPS Healthcheck!';
   }
 
