@@ -35,5 +35,5 @@ describe('AppController (e2e)', () => {
     request(app.getHttpServer() as unknown as App)
       .get('/')
       .expect(200)
-      .expect('DOPS Healthcheck!'));
+      .expect('Policy Healthcheck!'));
 });

@@ -28,8 +28,8 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "DOPS Healthcheck!"', () => {
-      expect(appController.getHello()).toBe('DOPS Healthcheck!');
+    it('should return "Policy Healthcheck!"', () => {
+      expect(appController.getHello()).toBe('Policy Healthcheck!');
     });
   });
 });
