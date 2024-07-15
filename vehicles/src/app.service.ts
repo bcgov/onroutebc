@@ -35,6 +35,7 @@ export class AppService {
 
   @LogAsyncMethodExecution({ printMemoryStats: true })
   async initializeCache() {
+    
     const startDateTime = new Date();
     const countries = await this.commonService.findAllCountries();
     await addToCache(
