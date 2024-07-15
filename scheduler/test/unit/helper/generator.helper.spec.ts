@@ -1,16 +1,30 @@
 import { 
   formatDateToCustomString, 
   generateRandomChars, 
-  // getJournalBatchName, 
+    getExternalReferenceSource, 
+
+
+
+    // getJournalBatchName, 
   // getControlTotal, 
-  getExternalReferenceSource, 
+
   // getFlowThru, 
 
 
-  // getJvLiineNumber, getGlEffectiveDate, getAck,
+  // getJvLiineNumber, 
+
+
+
+
+  getGlEffectiveDate, 
+  
+  getLocation,
+
+  // getAck,
+
   // getFuture, getUnusedFiller, getLineDescription, getFeederNumberClientSystem, getControlCount,
   // getLineTotle,
-  // getLocation,
+  
   // populateBatchHeader,
   // populateJournalHeader,
   // populateJournalVoucherDetail,
@@ -62,6 +76,12 @@ describe('generateRandomChars', () => {
     expect(randomChars).toMatch(validCharacters);
   });
 });
+
+
+
+
+
+
 
 // describe('getJournalBatchName', () => {
 //   it('should generate a string of length 25', () => {
@@ -115,6 +135,10 @@ describe('generateRandomChars', () => {
 //   });
 // });
 
+
+
+
+
 describe('getExternalReferenceSource', () => {
   it('should return an empty string', () => {
     const result = getExternalReferenceSource();
@@ -157,17 +181,17 @@ describe('getExternalReferenceSource', () => {
 //   });
 // });
 
-// describe('getGlEffectiveDate', () => {
-//   it('should return a string in YYYYMMDD format', () => {
-//     const effectiveDate = getGlEffectiveDate();
-//     const currentDate = new Date();
-//     const year = currentDate.getFullYear();
-//     const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
-//     const day = currentDate.getDate().toString().padStart(2, '0');
-//     const expectedDate = `${year}${month}${day}`;
-//     expect(effectiveDate).toBe(expectedDate);
-//   });
-// });
+describe('getGlEffectiveDate', () => {
+  it('should return a string in YYYYMMDD format', () => {
+    const effectiveDate = getGlEffectiveDate();
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+    const day = currentDate.getDate().toString().padStart(2, '0');
+    const expectedDate = `${year}${month}${day}`;
+    expect(effectiveDate).toBe(expectedDate);
+  });
+});
 
 // describe('getAck', () => {
 //   it('should return a string of length 50', () => {
@@ -190,17 +214,17 @@ describe('getExternalReferenceSource', () => {
 //   });
 // });
 
-// describe('getLocation', () => {
-//   it('should return a string of 6 characters', () => {
-//     const location = getLocation();
-//     expect(location).toHaveLength(6);
-//   });
+describe('getLocation', () => {
+  it('should return a string of 6 characters', () => {
+    const location = getLocation();
+    expect(location).toHaveLength(6);
+  });
 
-//   it('should return a string of 6 zeroes', () => {
-//     const location = getLocation();
-//     expect(location).toBe('000000');
-//   });
-// });
+  it('should return a string of 6 zeroes', () => {
+    const location = getLocation();
+    expect(location).toBe('000000');
+  });
+});
 
 // describe('getFuture', () => {
 //   it('should return a string of 4 characters', () => {
