@@ -109,17 +109,21 @@ export class LoaProfile extends AutomapperProfile {
           (d) => d.loaVehicles,
           mapFrom((s) => {
             const loaVehicles: LoaVehicle[] = new Array<LoaVehicle>();
-            for (const powerUnit of s.powerUnits) {
-              const loaVehicle: LoaVehicle = new LoaVehicle();
-              loaVehicle.powerUnit = powerUnit;
-              loaVehicle.trailer = null;
-              loaVehicles.push(loaVehicle);
+            if (s.powerUnits) {
+              for (const powerUnit of s.powerUnits) {
+                const loaVehicle: LoaVehicle = new LoaVehicle();
+                loaVehicle.powerUnit = powerUnit;
+                loaVehicle.trailer = null;
+                loaVehicles.push(loaVehicle);
+              }
             }
-            for (const trailer of s.trailers) {
-              const loaVehicle: LoaVehicle = new LoaVehicle();
-              loaVehicle.trailer = trailer;
-              loaVehicle.powerUnit = null;
-              loaVehicles.push(loaVehicle);
+            if (s.trailers) {
+              for (const trailer of s.trailers) {
+                const loaVehicle: LoaVehicle = new LoaVehicle();
+                loaVehicle.trailer = trailer;
+                loaVehicle.powerUnit = null;
+                loaVehicles.push(loaVehicle);
+              }
             }
             return loaVehicles;
           }),
@@ -139,21 +143,25 @@ export class LoaProfile extends AutomapperProfile {
         forMember(
           (d) => d.loaPermitType,
           mapFrom((s) => {
-            return s.loaPermitTypes.map(lpt => lpt.permitType)
+            return s.loaPermitTypes.map((lpt) => lpt.permitType);
           }),
         ),
         forMember(
           (d) => d.powerUnits,
           mapFrom((s) => {
-            if(s.loaVehicles)
-            return s.loaVehicles.filter(lv => lv.powerUnit).map(lv => lv.powerUnit)
+            if (s.loaVehicles)
+              return s.loaVehicles
+                .filter((lv) => lv.powerUnit)
+                .map((lv) => lv.powerUnit);
           }),
         ),
         forMember(
           (d) => d.trailers,
           mapFrom((s) => {
-            if(s.loaVehicles)
-            return s.loaVehicles.filter(lv => lv.trailer).map(lv => lv.trailer);
+            if (s.loaVehicles)
+              return s.loaVehicles
+                .filter((lv) => lv.trailer)
+                .map((lv) => lv.trailer);
           }),
         ),
       );

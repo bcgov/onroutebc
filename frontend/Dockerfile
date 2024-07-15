@@ -46,5 +46,7 @@ COPY nginx.conf /etc/nginx/nginx.conf
 COPY static_home_page /usr/share/nginx/html
 CMD ["nginx", "-g", "daemon off;"]
 
+RUN apk add --no-cache curl
+
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost/:3000
+HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:3000/

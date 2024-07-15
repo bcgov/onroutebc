@@ -91,7 +91,7 @@ export class UpdateLoaDto {
     return value;
   })
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-  @ValidateIf(dto => !dto.powerUnits || (dto.powerUnits && dto.trailers))
+  @ValidateIf((dto) => !dto.powerUnits || (dto.powerUnits && dto.trailers))
   @IsNumberString({}, { each: true })
   trailers: string[];
 
@@ -111,7 +111,7 @@ export class UpdateLoaDto {
     return value;
   })
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-  @ValidateIf(dto => !dto.trailers || (dto.powerUnits && dto.trailers))
+  @ValidateIf((dto) => !dto.trailers || (dto.powerUnits && dto.trailers))
   @IsNumberString({}, { each: true })
   powerUnits: string[];
 }
