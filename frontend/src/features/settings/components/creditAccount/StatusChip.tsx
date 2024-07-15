@@ -10,6 +10,10 @@ interface StatusChipProps {
 }
 
 export const StatusChip = ({ status }: StatusChipProps) => {
+  const classModifier = CreditAccountStatusDisplayValues[status]
+    .toLowerCase()
+    .replace(" ", "-");
+
   if (status === CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE) {
     return;
   }
@@ -21,10 +25,7 @@ export const StatusChip = ({ status }: StatusChipProps) => {
     );
   }
   return (
-    <span
-      role="status"
-      className={`status-chip status-chip--${CreditAccountStatusDisplayValues[status].toLowerCase().replace(" ", "-")}`}
-    >
+    <span role="status" className={`status-chip status-chip--${classModifier}`}>
       {CreditAccountStatusDisplayValues[status]}
     </span>
   );

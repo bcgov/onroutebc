@@ -67,8 +67,8 @@ export const CloseCreditAccountModal = ({
       <FormProvider {...formMethods}>
         <div className="close-account-modal__body">
           <span className="close-account-modal__text">
-            By closing this credit account the Account Holder and Account Users
-            can’t use this credit account.
+            Closing this credit account will prevent the Account Holder from
+            using it and remove Account Users from the account.
           </span>
           <span className="close-account-modal__text">
             Are you sure you want to continue?

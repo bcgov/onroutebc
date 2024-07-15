@@ -1,3 +1,4 @@
+import { SnackbarAlertType } from "../../../common/components/snackbar/CustomSnackBar";
 import { Nullable } from "../../../common/types/common";
 import { CompanyProfile } from "../../manageProfile/types/manageProfile";
 
@@ -132,6 +133,63 @@ export interface UpdateStatusData {
   updateStatusAction: UpdateStatusActionType;
   reason?: string;
 }
+
+export const getResultingStatusFromAction = (
+  updateStatusAction: UpdateStatusActionType,
+): CreditAccountStatusType => {
+  let status: CreditAccountStatusType;
+
+  switch (updateStatusAction) {
+    case UPDATE_STATUS_ACTIONS.HOLD_CREDIT_ACCOUNT:
+      status = "ONHOLD";
+      break;
+    case UPDATE_STATUS_ACTIONS.CLOSE_CREDIT_ACCOUNT:
+      status = "CLOSED";
+      break;
+    case UPDATE_STATUS_ACTIONS.UNHOLD_CREDIT_ACCOUNT:
+      status = "ACTIVE";
+      break;
+    case UPDATE_STATUS_ACTIONS.REOPEN_CREDIT_ACCOUNT:
+      status = "ACTIVE";
+      break;
+    default:
+      status = "ACTIVE";
+      break;
+  }
+
+  return status;
+};
+
+export const getResultingSnackbarOptionsFromAction = (
+  updateStatusAction: UpdateStatusActionType,
+): { alertType: SnackbarAlertType; message: string } => {
+  let alertType: SnackbarAlertType;
+  let message: string;
+
+  switch (updateStatusAction) {
+    case UPDATE_STATUS_ACTIONS.HOLD_CREDIT_ACCOUNT:
+      alertType = "info";
+      message = "Credit Account On Hold";
+      break;
+    case UPDATE_STATUS_ACTIONS.CLOSE_CREDIT_ACCOUNT:
+      alertType = "info";
+      message = "Credit Account Closed";
+      break;
+    case UPDATE_STATUS_ACTIONS.UNHOLD_CREDIT_ACCOUNT:
+      alertType = "success";
+      message = "Hold Removed";
+      break;
+    case UPDATE_STATUS_ACTIONS.REOPEN_CREDIT_ACCOUNT:
+      alertType = "success";
+      message = "Credit Account Reopened";
+      break;
+    default:
+      alertType = "success";
+      message = "Credit Account Active";
+  }
+
+  return { alertType, message };
+};
 
 /**
  * ACTIVITY AND HISTORY TYPES

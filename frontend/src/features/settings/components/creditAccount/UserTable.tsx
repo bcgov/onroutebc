@@ -46,6 +46,7 @@ export const UserTable = () => {
   const isAccountHolder = companyId === accountHolder?.companyId;
 
   const showCheckboxes = canUpdateCreditAccount(userRoles) && isAccountHolder;
+  const showRemoveUserButton = canUpdateCreditAccount(userRoles);
 
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const [userIds, setUserIds] = useState<number[]>([]);
@@ -111,10 +112,7 @@ export const UserTable = () => {
     renderEmptyRowsFallback: () => <NoRecordsFound />,
     enableRowSelection: showCheckboxes
       ? (row: MRT_Row<CreditAccountUser>): boolean => {
-          if (row?.original?.userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER) {
-            return false;
-          }
-          return true;
+          return row?.original?.userType !== CREDIT_ACCOUNT_USER_TYPE.HOLDER;
         }
       : false,
     onRowSelectionChange: setRowSelection,
@@ -135,7 +133,7 @@ export const UserTable = () => {
           <Typography variant="h3" className="user-table__heading">
             Credit Account Users
           </Typography>
-          {canUpdateCreditAccount(userRoles) && (
+          {showRemoveUserButton && (
             <Button
               className="user-table__button user-table__button--remove"
               onClick={handleRemoveButton}
@@ -146,7 +144,7 @@ export const UserTable = () => {
           )}
         </Box>
       ),
-      [hasNoRowsSelected],
+      [showRemoveUserButton, handleRemoveButton, hasNoRowsSelected],
     ),
     muiTablePaperProps: {
       className: "user-table__paper",
@@ -167,7 +165,6 @@ export const UserTable = () => {
       className: "user-table__cell",
     },
     muiTableBodyRowProps: ({ row }) => ({
-      // backgroundColor: row.getIsSelected() ? "#d9eaf7" : "transparent",
       className: row.getIsSelected()
         ? "user-table__row user-table__row--selected"
         : "user-table__row",
