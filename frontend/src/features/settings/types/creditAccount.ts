@@ -1,6 +1,36 @@
 import { Nullable } from "../../../common/types/common";
 import { CompanyProfile } from "../../manageProfile/types/manageProfile";
 
+export interface CreditAccountData {
+  creditAccountId: number;
+  companyId: number;
+  creditAccountType: CreditAccountType;
+  creditAccountNumber: string;
+  creditAccountStatusType: CreditAccountStatusType;
+  creditAccountActivities: CreditAccountActivity[];
+  creditAccountUsers: CreditAccountUser[];
+  availableCredit: string;
+  creditLimit: CreditAccountLimitType;
+  creditBalance: number;
+}
+
+export interface CreditAccountUser
+  extends Omit<
+    CompanyProfile,
+    | "companyGUID"
+    | "mailingAddress"
+    | "phone"
+    | "extension"
+    | "fax"
+    | "primaryContact"
+    | "migratedClientHash"
+  > {
+  userType: CreditAccountUserType;
+}
+
+/**
+ * LIMIT TYPES
+ */
 export const CREDIT_ACCOUNT_LIMITS = {
   PREPAID: "PREPAID",
   500: "500",
@@ -42,11 +72,20 @@ export const CREDIT_ACCOUNT_LIMIT_CHOOSE_FROM_OPTIONS = [
   { value: CREDIT_ACCOUNT_LIMITS[100000], label: "$100,000" },
 ];
 
-export const CREDIT_ACCOUNT_USER_TYPE = { HOLDER: "HOLDER", USER: "USER" };
+/**
+ * USER TYPES
+ */
+export const CREDIT_ACCOUNT_USER_TYPE = {
+  HOLDER: "HOLDER",
+  USER: "USER",
+};
 
 export type CreditAccountUserType =
   (typeof CREDIT_ACCOUNT_USER_TYPE)[keyof typeof CREDIT_ACCOUNT_USER_TYPE];
 
+/**
+ * ACCOUNT TYPES
+ */
 export type CREDIT_ACCOUNT_TYPE = {
   SECURED: "SECURED";
   UNSECURED: "UNSECURED";
@@ -56,6 +95,9 @@ export type CREDIT_ACCOUNT_TYPE = {
 export type CreditAccountType =
   (typeof CREDIT_ACCOUNT_USER_TYPE)[keyof typeof CREDIT_ACCOUNT_USER_TYPE];
 
+/**
+ * STATUS TYPES
+ */
 export const CREDIT_ACCOUNT_STATUS_TYPE = {
   ACTIVE: "ACTIVE",
   ONHOLD: "ONHOLD",
@@ -65,6 +107,35 @@ export const CREDIT_ACCOUNT_STATUS_TYPE = {
 export type CreditAccountStatusType =
   (typeof CREDIT_ACCOUNT_STATUS_TYPE)[keyof typeof CREDIT_ACCOUNT_STATUS_TYPE];
 
+export const CreditAccountStatusDisplayValues: {
+  [key in CreditAccountStatusType]: string;
+} = {
+  ACTIVE: "Active",
+  ONHOLD: "On Hold",
+  CLOSED: "Closed",
+};
+
+/**
+ * STATUS ACTION TYPES
+ */
+export const UPDATE_STATUS_ACTIONS = {
+  HOLD_CREDIT_ACCOUNT: "HOLD",
+  UNHOLD_CREDIT_ACCOUNT: "UNHOLD",
+  CLOSE_CREDIT_ACCOUNT: "CLOSE",
+  REOPEN_CREDIT_ACCOUNT: "REOPEN",
+};
+
+export type UpdateStatusActionType =
+  (typeof UPDATE_STATUS_ACTIONS)[keyof typeof UPDATE_STATUS_ACTIONS];
+
+export interface UpdateStatusData {
+  updateStatusAction: UpdateStatusActionType;
+  reason?: string;
+}
+
+/**
+ * ACTIVITY AND HISTORY TYPES
+ */
 export const CREDIT_ACCOUNT_ACTIVITY_TYPE = {
   OPENED: "OPENED",
   REOPENED: "REOPENED",
@@ -86,61 +157,11 @@ export const CreditAccountActivityDisplayValues: {
   HOLDRMVD: "Hold Removed",
 };
 
-export const CreditAccountStatusDisplayValues: {
-  [key in CreditAccountStatusType]: string;
-} = {
-  ACTIVE: "Active",
-  ONHOLD: "On Hold",
-  CLOSED: "Closed",
-};
-
-export const UPDATE_STATUS_ACTIONS = {
-  HOLD_CREDIT_ACCOUNT: "HOLD",
-  UNHOLD_CREDIT_ACCOUNT: "UNHOLD",
-  CLOSE_CREDIT_ACCOUNT: "CLOSE",
-  REOPEN_CREDIT_ACCOUNT: "REOPEN",
-};
-
 export interface CreditAccountActivity {
   creditAccountActivityDateTime: string;
   creditAccountActivityType: CreditAccountActivityType;
   comment: string;
   userName: string;
-}
-
-export interface CreditAccountData {
-  creditAccountId: number;
-  companyId: number;
-  creditAccountType: CreditAccountType;
-  creditAccountNumber: string;
-  creditAccountStatusType: CreditAccountStatusType;
-  creditAccountActivities: CreditAccountActivity[];
-  creditAccountUsers: CreditAccountUser[];
-  availableCredit: string;
-  creditLimit: CreditAccountLimitType;
-  creditBalance: number;
-}
-
-export interface CreditAccountUser
-  extends Omit<
-    CompanyProfile,
-    | "companyGUID"
-    | "mailingAddress"
-    | "phone"
-    | "extension"
-    | "fax"
-    | "primaryContact"
-    | "migratedClientHash"
-  > {
-  userType: CreditAccountUserType;
-}
-
-export type UpdateStatusActionType =
-  (typeof UPDATE_STATUS_ACTIONS)[keyof typeof UPDATE_STATUS_ACTIONS];
-
-export interface UpdateStatusData {
-  updateStatusAction: UpdateStatusActionType;
-  reason?: string;
 }
 
 export interface CreditAccountHistoryData {
