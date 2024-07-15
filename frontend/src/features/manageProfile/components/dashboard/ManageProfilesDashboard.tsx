@@ -25,6 +25,7 @@ import { canViewCreditAccountTab } from "../../../settings/helpers/permissions";
 import { CreditAccount } from "../../../settings/pages/CreditAccount";
 import { useGetCreditAccountQuery } from "../../../settings/hooks/creditAccount";
 import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
+import { CREDIT_ACCOUNT_USER_TYPE } from "../../../settings/types/creditAccount";
 
 interface ProfileDashboardTab {
   label: string;
@@ -58,14 +59,16 @@ export const ManageProfilesDashboard = React.memo(() => {
   const navigate = useNavigate();
   const { userRoles, companyId } = useContext(OnRouteBCContext);
   const { user } = useAuth();
-  const { data: creditAccount } = useGetCreditAccountQuery();
+  const { data: creditAccount } = useGetCreditAccountQuery(
+    getDefaultRequiredVal(0, companyId),
+  );
   const { data: featureFlags } = useFeatureFlagsQuery();
   const populatedUserRoles = getDefaultRequiredVal([], userRoles);
   const isIDIRUser = isIDIR(user?.profile?.identity_provider as string);
   const isBCeIDAdmin = isBCeIDOrgAdmin(populatedUserRoles);
   const shouldAllowUserManagement = isBCeIDAdmin || isIDIRUser;
   const creditAccountHolder = creditAccount?.creditAccountUsers.find(
-    (user) => user.userType === "HOLDER",
+    (user) => user.userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER,
   );
   const isCreditAccountHolder = companyId === creditAccountHolder?.companyId;
 
@@ -102,7 +105,9 @@ export const ManageProfilesDashboard = React.memo(() => {
     showCreditAccountTab
       ? {
           label: "Credit Account",
-          component: <CreditAccount companyId={companyId!} />,
+          component: (
+            <CreditAccount companyId={getDefaultRequiredVal(0, companyId)} />
+          ),
           componentKey: BCEID_PROFILE_TABS.CREDIT_ACCOUNT,
         }
       : null,

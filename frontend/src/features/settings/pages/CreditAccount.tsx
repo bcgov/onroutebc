@@ -5,6 +5,7 @@ import {
   EMPTY_CREDIT_ACCOUNT_LIMIT_SELECT,
   CREDIT_ACCOUNT_LIMIT_CHOOSE_FROM_OPTIONS,
   CreditAccountLimitType,
+  CREDIT_ACCOUNT_USER_TYPE,
 } from "../types/creditAccount";
 import {
   SelectChangeEvent,
@@ -53,15 +54,13 @@ export const CreditAccount = ({ companyId }: { companyId: number }) => {
     data: creditAccount,
     isPending: creditAccountPending,
     refetch: refetchCreditAccount,
-  } = useGetCreditAccountQuery();
+  } = useGetCreditAccountQuery(companyId);
 
-  const createCreditAccountMutation = useCreateCreditAccountMutation();
-
-  const { isPending: creditAccountCreationPending } =
-    createCreditAccountMutation;
+  const { mutateAsync, isPending: creditAccountCreationPending } =
+    useCreateCreditAccountMutation();
 
   const accountHolder = creditAccount?.creditAccountUsers.find(
-    (user) => user.userType === "HOLDER",
+    (user) => user.userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER,
   );
 
   const isAccountHolder = companyId === accountHolder?.companyId;
@@ -73,8 +72,10 @@ export const CreditAccount = ({ companyId }: { companyId: number }) => {
   const handleCreateCreditAccount = async () => {
     if (selectedCreditLimit !== EMPTY_CREDIT_ACCOUNT_LIMIT_SELECT) {
       setInvalid(false);
-      const { status } =
-        await createCreditAccountMutation.mutateAsync(selectedCreditLimit);
+      const { status } = await mutateAsync({
+        companyId,
+        creditLimit: selectedCreditLimit,
+      });
       if (isActionSuccessful(status)) {
         refetchCreditAccount();
       }

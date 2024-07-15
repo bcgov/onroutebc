@@ -11,6 +11,8 @@ import {
   useUpdateCreditAccountStatusMutation,
 } from "../../hooks/creditAccount";
 import {
+  CREDIT_ACCOUNT_STATUS_TYPE,
+  CREDIT_ACCOUNT_USER_TYPE,
   UPDATE_STATUS_ACTIONS,
   UpdateStatusData,
 } from "../../types/creditAccount";
@@ -22,6 +24,7 @@ import { canUpdateCreditAccount } from "../../helpers/permissions";
 import { HoldCreditAccountModal } from "./HoldCreditAccountModal";
 import { CloseCreditAccountModal } from "./CloseCreditAccountModal";
 import "./AccountDetails.scss";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 export const AccountDetails = () => {
   const { userRoles, companyId } = useContext(OnRouteBCContext);
@@ -33,7 +36,7 @@ export const AccountDetails = () => {
   const isMenuOpen = Boolean(anchorEl);
 
   const { data: creditAccount, refetch: refetchCreditAccount } =
-    useGetCreditAccountQuery();
+    useGetCreditAccountQuery(getDefaultRequiredVal(0, companyId));
 
   const { mutateAsync, isPending } = useUpdateCreditAccountStatusMutation();
 
@@ -63,7 +66,7 @@ export const AccountDetails = () => {
   };
 
   const accountHolder = creditAccount?.creditAccountUsers.find(
-    (user) => user.userType === "HOLDER",
+    (user) => user.userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER,
   );
 
   const isAccountHolder = companyId === accountHolder?.companyId;
@@ -85,6 +88,7 @@ export const AccountDetails = () => {
   ) => {
     if (creditAccount?.creditAccountId) {
       const { status } = await mutateAsync({
+        companyId: getDefaultRequiredVal(0, companyId),
         creditAccountId: creditAccount?.creditAccountId,
         updateStatusData,
       });
@@ -133,7 +137,8 @@ export const AccountDetails = () => {
                   "aria-labelledby": "actions-button",
                 }}
               >
-                {creditAccount?.creditAccountStatusType === "ACTIVE" && (
+                {creditAccount?.creditAccountStatusType ===
+                  CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE && (
                   <MenuItem
                     onClick={() => setShowHoldCreditAccountModal(true)}
                     disabled={isPending}
@@ -141,7 +146,8 @@ export const AccountDetails = () => {
                     Put On Hold
                   </MenuItem>
                 )}
-                {creditAccount?.creditAccountStatusType === "ONHOLD" && (
+                {creditAccount?.creditAccountStatusType ===
+                  CREDIT_ACCOUNT_STATUS_TYPE.ONHOLD && (
                   <MenuItem
                     onClick={() =>
                       handleUpdateCreditAccountStatus({
@@ -154,15 +160,18 @@ export const AccountDetails = () => {
                     Remove Hold
                   </MenuItem>
                 )}
-                {(creditAccount?.creditAccountStatusType === "ACTIVE" ||
-                  creditAccount?.creditAccountStatusType === "ONHOLD") && (
+                {(creditAccount?.creditAccountStatusType ===
+                  CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE ||
+                  creditAccount?.creditAccountStatusType ===
+                    CREDIT_ACCOUNT_STATUS_TYPE.ONHOLD) && (
                   <MenuItem
                     onClick={() => setShowCloseCreditAccountModal(true)}
                   >
                     Close Credit Account
                   </MenuItem>
                 )}
-                {creditAccount?.creditAccountStatusType === "CLOSED" && (
+                {creditAccount?.creditAccountStatusType ===
+                  CREDIT_ACCOUNT_STATUS_TYPE.CLOSED && (
                   <MenuItem
                     onClick={() =>
                       handleUpdateCreditAccountStatus({

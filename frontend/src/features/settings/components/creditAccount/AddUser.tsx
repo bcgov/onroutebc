@@ -2,13 +2,15 @@ import { CustomFormComponent } from "../../../../common/components/form/CustomFo
 import { FormProvider, useForm, FieldValues } from "react-hook-form";
 import { requiredMessage } from "../../../../common/helpers/validationMessages";
 import { Box, Button, Typography } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AddUserModal } from "./AddUserModal";
 import {
   useGetCompanyQuery,
   useGetCreditAccountQuery,
 } from "../../hooks/creditAccount";
 import "./AddUser.scss";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 interface SearchClientFormData {
   clientNumber: string;
@@ -17,11 +19,15 @@ interface SearchClientFormData {
 const FEATURE = "client-search";
 
 export const AddUser = () => {
+  const { companyId } = useContext(OnRouteBCContext);
   const [showAddUserModal, setShowAddUserModal] = useState<boolean>(false);
   const [clientNumber, setClientNumber] = useState<string>("");
 
-  const { data, isLoading } = useGetCompanyQuery(clientNumber);
-  const { refetch: refetchCreditAccount } = useGetCreditAccountQuery();
+  const { data: companyData, isLoading } = useGetCompanyQuery(clientNumber);
+
+  const { refetch: refetchCreditAccount } = useGetCreditAccountQuery(
+    getDefaultRequiredVal(0, companyId),
+  );
 
   const formMethods = useForm<SearchClientFormData>({
     defaultValues: {
@@ -36,8 +42,8 @@ export const AddUser = () => {
   };
 
   useEffect(() => {
-    if (data) {
-      if (data.items.length === 0) {
+    if (companyData) {
+      if (companyData.items.length === 0) {
         setError("clientNumber", {
           type: "manual",
           message: "Client No. not found",
@@ -46,7 +52,7 @@ export const AddUser = () => {
         setShowAddUserModal(true);
       }
     }
-  }, [data]);
+  }, [companyData]);
 
   const confirmAddUser = () => {
     resetForm();
@@ -99,12 +105,12 @@ export const AddUser = () => {
           </Button>
         </Box>
       </FormProvider>
-      {showAddUserModal && data ? (
+      {showAddUserModal && companyData ? (
         <AddUserModal
           showModal={showAddUserModal}
           onCancel={handleCloseAddUserModal}
           onConfirm={confirmAddUser}
-          userData={data?.items[0]}
+          userData={companyData?.items[0]}
         />
       ) : null}
     </div>

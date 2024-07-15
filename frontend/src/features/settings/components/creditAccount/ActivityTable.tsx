@@ -1,5 +1,5 @@
 import { Box, Typography } from "@mui/material";
-import { useCallback } from "react";
+import { useCallback, useContext } from "react";
 import {
   MaterialReactTable,
   useMaterialReactTable,
@@ -15,20 +15,24 @@ import { CompanyProfile } from "../../../manageProfile/types/manageProfile.d";
 import { useGetCreditAccountQuery } from "../../hooks/creditAccount";
 import { CreditAccountActivity } from "../../types/creditAccount";
 import "./ActivityTable.scss";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 /**
  * Hold/Close activity history component for credit account.
  */
 export const ActivityTable = () => {
+  const { companyId } = useContext(OnRouteBCContext);
   const {
     data: creditAccount,
     isLoading,
     isError: fetchCreditAccountError,
-  } = useGetCreditAccountQuery();
+  } = useGetCreditAccountQuery(getDefaultRequiredVal(0, companyId));
 
-  const creditAccountActivities = [
-    ...(creditAccount?.creditAccountActivities ?? []),
-  ]
+  const creditAccountActivities = getDefaultRequiredVal(
+    [],
+    creditAccount?.creditAccountActivities,
+  )
     .filter(
       (activity: CreditAccountActivity) =>
         activity.creditAccountActivityType !== "OPENED",
@@ -49,6 +53,7 @@ export const ActivityTable = () => {
       isLoading: isLoading,
     },
     layoutMode: "grid",
+    defaultColumn: {},
     enableGlobalFilter: false,
     renderEmptyRowsFallback: () => <NoRecordsFound />,
     enableRowSelection: false,

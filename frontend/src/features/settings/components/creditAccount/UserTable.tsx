@@ -16,9 +16,13 @@ import {
 } from "../../../../common/helpers/tableHelper";
 import { CreditAccountUserColumnsDefinition } from "../../types/CreditAccountUserColumns";
 import { canUpdateCreditAccount } from "../../helpers/permissions";
-import { CreditAccountUser } from "../../types/creditAccount";
+import {
+  CREDIT_ACCOUNT_USER_TYPE,
+  CreditAccountUser,
+} from "../../types/creditAccount";
 import { useGetCreditAccountQuery } from "../../hooks/creditAccount";
 import "./UserTable.scss";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 /**
  * User Management Component for Credit Accounts.
@@ -31,12 +35,12 @@ export const UserTable = () => {
     isError,
     isLoading,
     refetch,
-  } = useGetCreditAccountQuery();
+  } = useGetCreditAccountQuery(getDefaultRequiredVal(0, companyId));
 
   const creditAccountUsers = creditAccount?.creditAccountUsers;
 
   const accountHolder = creditAccountUsers?.find(
-    (user) => user.userType === "HOLDER",
+    (user) => user.userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER,
   );
 
   const isAccountHolder = companyId === accountHolder?.companyId;
@@ -102,11 +106,12 @@ export const UserTable = () => {
       rowSelection: rowSelection,
     },
     layoutMode: "grid",
+    defaultColumn: {},
     enableGlobalFilter: false,
     renderEmptyRowsFallback: () => <NoRecordsFound />,
     enableRowSelection: showCheckboxes
       ? (row: MRT_Row<CreditAccountUser>): boolean => {
-          if (row?.original?.userType === "HOLDER") {
+          if (row?.original?.userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER) {
             return false;
           }
           return true;

@@ -8,6 +8,9 @@ import {
   useRemoveCreditAccountUsersMutation,
 } from "../../hooks/creditAccount";
 import "./RemoveUsersModal.scss";
+import { useContext } from "react";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 /**
  *  A stateless confirmation dialog box for remove Operations.
@@ -30,7 +33,11 @@ export const RemoveUsersModal = ({
   onConfirm: () => void;
   userIds: number[];
 }) => {
-  const { data: creditAccount } = useGetCreditAccountQuery();
+  const { companyId } = useContext(OnRouteBCContext);
+
+  const { data: creditAccount } = useGetCreditAccountQuery(
+    getDefaultRequiredVal(0, companyId),
+  );
 
   const { mutateAsync, isPending } = useRemoveCreditAccountUsersMutation();
 
@@ -41,6 +48,7 @@ export const RemoveUsersModal = ({
   const handleRemoveUsers = async () => {
     if (creditAccount?.creditAccountId) {
       const { status } = await mutateAsync({
+        companyId: getDefaultRequiredVal(0, companyId),
         creditAccountId: creditAccount.creditAccountId,
         companyIds: userIds,
       });

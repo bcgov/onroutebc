@@ -6,7 +6,6 @@ import {
   removeCreditAccountUsers,
   getCreditAccountUsers,
   updateCreditAccountStatus,
-  getCompanyCreditAccount,
 } from "../apiManager/creditAccount";
 import { getCompanyDataBySearch } from "../../idir/search/api/idirSearch";
 import { useNavigate } from "react-router-dom";
@@ -14,11 +13,11 @@ import { ERROR_ROUTES } from "../../../routes/constants";
 import { SnackBarContext } from "../../../App";
 import { useContext } from "react";
 import {
+  CreditAccountLimitType,
   CreditAccountStatusType,
   UPDATE_STATUS_ACTIONS,
   UpdateStatusData,
 } from "../types/creditAccount";
-import { getCompanyIdFromSession } from "../../../common/apiManager/httpRequestHandler";
 import { SnackbarAlertType } from "../../../common/components/snackbar/CustomSnackBar";
 import { CompanyProfile } from "../../manageProfile/types/manageProfile";
 
@@ -26,21 +25,11 @@ import { CompanyProfile } from "../../manageProfile/types/manageProfile";
  * Hook to fetch the company credit account details for the active user.
  * @returns Query result of the company credit account details
  */
-export const useGetCreditAccountQuery = () => {
-  return useQuery({
-    queryKey: ["credit-account", { companyId: getCompanyIdFromSession() }],
-    queryFn: getCreditAccount,
-  });
-};
-
-/**
- * Hook to fetch the associated credit account details for the given company.
- * @returns Query result of the company associated credit account details
- */
-export const useGetCompanyCreditAccountQuery = (companyId: number) => {
+export const useGetCreditAccountQuery = (companyId: number) => {
   return useQuery({
     queryKey: ["credit-account", { companyId }],
-    queryFn: () => getCompanyCreditAccount(companyId),
+    queryFn: () => getCreditAccount(companyId),
+    retry: false,
   });
 };
 
@@ -48,14 +37,14 @@ export const useGetCompanyCreditAccountQuery = (companyId: number) => {
  * Hook to fetch the company credit account details.
  * @returns Query result of the company credit account details
  */
-export const useGetCreditAccountUsersQuery = (creditAccountId: number) => {
+export const useGetCreditAccountUsersQuery = (data: {
+  companyId: number;
+  creditAccountId: number;
+}) => {
+  const { companyId, creditAccountId } = data;
   return useQuery({
-    queryKey: [
-      "credit-account",
-      { companyId: getCompanyIdFromSession() },
-      "users",
-    ],
-    queryFn: () => getCreditAccountUsers(creditAccountId),
+    queryKey: ["credit-account", { companyId }, "users"],
+    queryFn: () => getCreditAccountUsers({ companyId, creditAccountId }),
   });
 };
 
@@ -94,10 +83,17 @@ export const useCreateCreditAccountMutation = () => {
   const { setSnackBar } = useContext(SnackBarContext);
 
   return useMutation({
-    mutationFn: createCreditAccount,
-    onSuccess: (response) => {
+    mutationFn: (data: {
+      companyId: number;
+      creditLimit: CreditAccountLimitType;
+    }) => createCreditAccount(data),
+    onSuccess: (
+      response,
+      variables: { companyId: number; creditLimit: CreditAccountLimitType },
+    ) => {
+      const { companyId } = variables;
       queryClient.setQueryData(
-        ["credit-account", { companyId: getCompanyIdFromSession() }],
+        ["credit-account", { companyId }],
         response.data,
       );
       setSnackBar({
@@ -107,7 +103,7 @@ export const useCreateCreditAccountMutation = () => {
         alertType: "success",
       });
       queryClient.invalidateQueries({
-        queryKey: ["credit-account", { companyId: getCompanyIdFromSession() }],
+        queryKey: ["credit-account", { companyId }],
       });
     },
     onError: () => navigate(ERROR_ROUTES.UNEXPECTED),
@@ -124,9 +120,21 @@ export const useAddCreditAccountUserMutation = () => {
   const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: (data: { creditAccountId: number; userData: CompanyProfile }) =>
-      addCreditAccountUser(data),
-    onSuccess: () => {
+    mutationFn: (data: {
+      companyId: number;
+      creditAccountId: number;
+      userData: CompanyProfile;
+    }) => addCreditAccountUser(data),
+    onSuccess: (
+      _response,
+      variables: {
+        companyId: number;
+        creditAccountId: number;
+        userData: CompanyProfile;
+      },
+    ) => {
+      const { companyId } = variables;
+
       setSnackBar({
         showSnackbar: true,
         setShowSnackbar: () => true,
@@ -135,7 +143,7 @@ export const useAddCreditAccountUserMutation = () => {
       });
 
       queryClient.invalidateQueries({
-        queryKey: ["credit-account", { companyId: getCompanyIdFromSession() }],
+        queryKey: ["credit-account", { companyId }],
       });
     },
     onError: () => navigate(ERROR_ROUTES.UNEXPECTED),
@@ -151,8 +159,11 @@ export const useRemoveCreditAccountUsersMutation = () => {
   const { setSnackBar } = useContext(SnackBarContext);
 
   return useMutation({
-    mutationFn: (data: { creditAccountId: number; companyIds: number[] }) =>
-      removeCreditAccountUsers(data),
+    mutationFn: (data: {
+      companyId: number;
+      creditAccountId: number;
+      companyIds: number[];
+    }) => removeCreditAccountUsers(data),
     onSuccess: () => {
       setSnackBar({
         showSnackbar: true,
@@ -177,13 +188,13 @@ export const useUpdateCreditAccountStatusMutation = () => {
 
   return useMutation({
     mutationFn: (data: {
+      companyId: number;
       creditAccountId: number;
       updateStatusData: UpdateStatusData;
     }) => {
-      const {
-        creditAccountId,
-        updateStatusData: { updateStatusAction, reason },
-      } = data;
+      const { companyId, creditAccountId, updateStatusData } = data;
+
+      const { updateStatusAction, reason } = updateStatusData;
 
       let status: CreditAccountStatusType;
 
@@ -204,11 +215,17 @@ export const useUpdateCreditAccountStatusMutation = () => {
           status = "ACTIVE";
           break;
       }
-      return updateCreditAccountStatus({ creditAccountId, status, reason });
+      return updateCreditAccountStatus({
+        companyId,
+        creditAccountId,
+        status,
+        reason,
+      });
     },
     onSuccess: (
       _data,
       variables: {
+        companyId: number;
         creditAccountId: number;
         updateStatusData: UpdateStatusData;
       },

@@ -1,6 +1,7 @@
 import {
   CreditAccountStatusType,
   CreditAccountStatusDisplayValues,
+  CREDIT_ACCOUNT_STATUS_TYPE,
 } from "../../types/creditAccount";
 import "./StatusChip.scss";
 
@@ -9,7 +10,7 @@ interface StatusChipProps {
 }
 
 export const StatusChip = ({ status }: StatusChipProps) => {
-  if (status === "ACTIVE") {
+  if (status === CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE) {
     return;
   }
   if (status === "SUSPENDED") {

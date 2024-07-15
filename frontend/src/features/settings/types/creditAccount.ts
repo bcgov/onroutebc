@@ -42,16 +42,39 @@ export const CREDIT_ACCOUNT_LIMIT_CHOOSE_FROM_OPTIONS = [
   { value: CREDIT_ACCOUNT_LIMITS[100000], label: "$100,000" },
 ];
 
-export type CreditAccountType = "SECURED" | "UNSECURED" | "PREPAID";
-export type CreditAccountUserType = "HOLDER" | "USER";
-export type CreditAccountStatusType = "ACTIVE" | "ONHOLD" | "CLOSED";
+export const CREDIT_ACCOUNT_USER_TYPE = { HOLDER: "HOLDER", USER: "USER" };
+
+export type CreditAccountUserType =
+  (typeof CREDIT_ACCOUNT_USER_TYPE)[keyof typeof CREDIT_ACCOUNT_USER_TYPE];
+
+export type CREDIT_ACCOUNT_TYPE = {
+  SECURED: "SECURED";
+  UNSECURED: "UNSECURED";
+  PREPAID: "PREPAID";
+};
+
+export type CreditAccountType =
+  (typeof CREDIT_ACCOUNT_USER_TYPE)[keyof typeof CREDIT_ACCOUNT_USER_TYPE];
+
+export const CREDIT_ACCOUNT_STATUS_TYPE = {
+  ACTIVE: "ACTIVE",
+  ONHOLD: "ONHOLD",
+  CLOSED: "CLOSED",
+};
+
+export type CreditAccountStatusType =
+  (typeof CREDIT_ACCOUNT_STATUS_TYPE)[keyof typeof CREDIT_ACCOUNT_STATUS_TYPE];
+
+export const CREDIT_ACCOUNT_ACTIVITY_TYPE = {
+  OPENED: "OPENED",
+  REOPENED: "REOPENED",
+  CLOSED: "CLOSED",
+  HOLDRMVD: "HOLDRMVD",
+  ONHOLD: "ONHOLD",
+};
 
 export type CreditAccountActivityType =
-  | "OPENED"
-  | "REOPENED"
-  | "CLOSED"
-  | "HOLDRMVD"
-  | "ONHOLD";
+  (typeof CREDIT_ACCOUNT_ACTIVITY_TYPE)[keyof typeof CREDIT_ACCOUNT_ACTIVITY_TYPE];
 
 export const CreditAccountActivityDisplayValues: {
   [key in CreditAccountActivityType]: string;

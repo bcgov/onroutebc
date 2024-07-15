@@ -4,13 +4,18 @@ import { faPlusCircle, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FormProvider, useForm } from "react-hook-form";
 import {
   useAddCreditAccountUserMutation,
-  useGetCompanyCreditAccountQuery,
   useGetCreditAccountQuery,
 } from "../../hooks/creditAccount";
-import { CreditAccountUser } from "../../types/creditAccount";
+import {
+  CREDIT_ACCOUNT_USER_TYPE,
+  CreditAccountUser,
+} from "../../types/creditAccount";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import { StatusChip } from "./StatusChip";
 import "./AddUserModal.scss";
+import { useContext } from "react";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 export const AddUserModal = ({
   showModal,
@@ -23,6 +28,8 @@ export const AddUserModal = ({
   onConfirm: () => void;
   userData: CompanyProfile;
 }) => {
+  const { companyId } = useContext(OnRouteBCContext);
+
   const formMethods = useForm<{ comment: string }>({
     reValidateMode: "onChange",
   });
@@ -33,14 +40,17 @@ export const AddUserModal = ({
     return status === 200;
   };
 
-  const { data: creditAccount } = useGetCreditAccountQuery();
-  const { data: userCreditAccount } = useGetCompanyCreditAccountQuery(
+  const { data: creditAccount } = useGetCreditAccountQuery(
+    getDefaultRequiredVal(0, companyId),
+  );
+  const { data: userCreditAccount } = useGetCreditAccountQuery(
     userData.companyId,
   );
 
   const existingCreditAccountHolder =
     userCreditAccount?.creditAccountUsers?.find(
-      (user: CreditAccountUser) => user.userType === "HOLDER",
+      (user: CreditAccountUser) =>
+        user.userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER,
     );
 
   const { mutateAsync, isPending } = useAddCreditAccountUserMutation();
@@ -49,6 +59,7 @@ export const AddUserModal = ({
     if (creditAccount?.creditAccountId) {
       try {
         const { status } = await mutateAsync({
+          companyId: getDefaultRequiredVal(0, companyId),
           creditAccountId: creditAccount.creditAccountId,
           userData,
         });
@@ -61,6 +72,8 @@ export const AddUserModal = ({
       }
     }
   };
+
+  const showConfirmButton = !userCreditAccount && !userData.isSuspended;
 
   return (
     <Dialog
@@ -130,7 +143,7 @@ export const AddUserModal = ({
                 <div className="add-user-modal__item">
                   <dt className="add-user-modal__key">Credit Account No.</dt>
                   <dt className="add-user-modal__value">
-                    {userCreditAccount.creditAccountNumber}
+                    {userCreditAccount?.creditAccountNumber}
                   </dt>
                 </div>
               </div>
@@ -151,7 +164,7 @@ export const AddUserModal = ({
             Cancel
           </Button>
 
-          {!userCreditAccount && !userData.isSuspended && (
+          {showConfirmButton && (
             <Button
               key="add-user-button"
               onClick={handleSubmit(handleAddUser)}

@@ -1,6 +1,6 @@
 import { Stack } from "@mui/material";
 import { MRT_ColumnDef, MRT_Row } from "material-react-table";
-import { CreditAccountUser } from "./creditAccount";
+import { CREDIT_ACCOUNT_USER_TYPE, CreditAccountUser } from "./creditAccount";
 
 /**
  * The column definition for User Management Table.
@@ -41,7 +41,8 @@ export const CreditAccountUserColumnsDefinition: MRT_ColumnDef<CreditAccountUser
       Cell: (props: { row: MRT_Row<CreditAccountUser> }) => {
         return (
           <>
-            {props.row.original.userType === "HOLDER" && (
+            {props.row.original.userType ===
+              CREDIT_ACCOUNT_USER_TYPE.HOLDER && (
               <span className="cell__text">Account Holder</span>
             )}
           </>
