@@ -47,6 +47,11 @@ export const AddUserModal = ({
     userData.companyId,
   );
 
+  /** TODO Currently this boolean will prevent companies who are previous credit account holders
+   * from being added as users. Once the API allows the creation of credit accounts for companies other than
+   * Parisian Trucking we can implement a check to determine if the previously associated credit account of the
+   * ex holding company is "CLOSED" and allow the adding of this company as a user to the credit account
+   */
   const existingCreditAccountHolder =
     userCreditAccount?.creditAccountUsers?.find(
       (user: CreditAccountUser) =>
@@ -57,18 +62,14 @@ export const AddUserModal = ({
 
   const handleAddUser = async () => {
     if (creditAccount?.creditAccountId) {
-      try {
-        const { status } = await mutateAsync({
-          companyId: getDefaultRequiredVal(0, companyId),
-          creditAccountId: creditAccount.creditAccountId,
-          userData,
-        });
+      const { status } = await mutateAsync({
+        companyId: getDefaultRequiredVal(0, companyId),
+        creditAccountId: creditAccount.creditAccountId,
+        userData,
+      });
 
-        if (isActionSuccessful(status)) {
-          onConfirm();
-        }
-      } catch (error) {
-        return;
+      if (isActionSuccessful(status)) {
+        onConfirm();
       }
     }
   };

@@ -13,7 +13,10 @@ import {
 import { CreditAccountActivityColumnsDefinition } from "../../types/CreditAccountActivityColumns";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile.d";
 import { useGetCreditAccountQuery } from "../../hooks/creditAccount";
-import { CreditAccountActivity } from "../../types/creditAccount";
+import {
+  CREDIT_ACCOUNT_ACTIVITY_TYPE,
+  CreditAccountActivity,
+} from "../../types/creditAccount";
 import "./ActivityTable.scss";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
@@ -35,14 +38,15 @@ export const ActivityTable = () => {
   )
     .filter(
       (activity: CreditAccountActivity) =>
-        activity.creditAccountActivityType !== "OPENED",
+        activity.creditAccountActivityType !==
+        CREDIT_ACCOUNT_ACTIVITY_TYPE.OPENED,
     )
     .reverse();
 
   const table = useMaterialReactTable({
     ...defaultTableOptions,
     columns: CreditAccountActivityColumnsDefinition,
-    data: creditAccountActivities ?? [],
+    data: creditAccountActivities,
     initialState: {
       ...defaultTableInitialStateOptions,
     },

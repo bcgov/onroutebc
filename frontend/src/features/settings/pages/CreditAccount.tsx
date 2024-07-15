@@ -6,6 +6,7 @@ import {
   CREDIT_ACCOUNT_LIMIT_CHOOSE_FROM_OPTIONS,
   CreditAccountLimitType,
   CREDIT_ACCOUNT_USER_TYPE,
+  CREDIT_ACCOUNT_STATUS_TYPE,
 } from "../types/creditAccount";
 import {
   SelectChangeEvent,
@@ -88,7 +89,8 @@ export const CreditAccount = ({ companyId }: { companyId: number }) => {
 
   const showAddUser =
     canUpdateCreditAccount(userRoles) &&
-    creditAccount?.creditAccountStatusType !== "CLOSED" &&
+    creditAccount?.creditAccountStatusType !==
+      CREDIT_ACCOUNT_STATUS_TYPE.CLOSED &&
     isAccountHolder;
 
   const showUserTable = canViewCreditAccountDetails(
