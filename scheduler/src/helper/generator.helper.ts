@@ -1,5 +1,5 @@
 /**
- * This CGI file generator executes the process of generating and uploading CGI files using a cron job that configured in the transaxtion service.
+ * This CGI file generator executes the process of generating and uploading CGI files using a cron job that configured in the transaction service.
  * The workflow involves generating CGI files based on transaction details and uploading them to an SFTP server.
  * 
  * Workflow Steps
@@ -379,7 +379,7 @@ export function generateCgiFile(transactions: Transaction[]): void {
   const batchTrailer: string = populateBatchTrailer(transactions);
   fs.appendFileSync(cgiFileName, batchTrailer);
   console.log(`${cgiFileName} generated.`);
-  const cgiTrigerFileName = `F3535.${cgiCustomString}.TRG`;
+  const cgiTrigerFileName = `F` + process.env.FEEDER_NUMBER + `.${cgiCustomString}.TRG`;
   fs.writeFileSync(cgiTrigerFileName, ``);
   console.log(`${cgiTrigerFileName} generated.`);
 }
@@ -392,7 +392,7 @@ async function uploadFile(): Promise<string[]> {
 
   try {
     const files = await fs.promises.readdir(sourceDir);
-    const inboxFiles = files.filter(file => file.startsWith('F3535.'));
+    const inboxFiles = files.filter(file => file.startsWith(`F` + process.env.FEEDER_NUMBER +'.'));
     if (inboxFiles.length === 0) {
       console.log('No files can be uploaded');
       return uploadedFiles; // Return an empty array
