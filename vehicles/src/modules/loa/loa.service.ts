@@ -300,7 +300,7 @@ export class LoaService {
     items: string[],
     loaId: number,
   ): Promise<void> {
-    if (items.length > 0) {
+    if (items && items.length > 0) {
       await entityManager
         .createQueryBuilder()
         .delete()
