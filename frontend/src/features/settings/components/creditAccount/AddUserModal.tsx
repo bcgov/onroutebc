@@ -70,6 +70,8 @@ export const AddUserModal = ({
 
       if (isActionSuccessful(status)) {
         onConfirm();
+      } else {
+        console.error(status);
       }
     }
   };

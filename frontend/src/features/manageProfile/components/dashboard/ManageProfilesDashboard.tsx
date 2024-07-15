@@ -57,11 +57,11 @@ export const ManageProfilesDashboard = React.memo(() => {
   });
 
   const navigate = useNavigate();
-  const { userRoles, companyId } = useContext(OnRouteBCContext);
+  const { userRoles, companyId: companyIdFromContext } =
+    useContext(OnRouteBCContext);
+  const companyId = getDefaultRequiredVal(0, companyIdFromContext);
   const { user } = useAuth();
-  const { data: creditAccount } = useGetCreditAccountQuery(
-    getDefaultRequiredVal(0, companyId),
-  );
+  const { data: creditAccount } = useGetCreditAccountQuery(companyId);
   const { data: featureFlags } = useFeatureFlagsQuery();
   const populatedUserRoles = getDefaultRequiredVal([], userRoles);
   const isIDIRUser = isIDIR(user?.profile?.identity_provider as string);
@@ -105,9 +105,7 @@ export const ManageProfilesDashboard = React.memo(() => {
     showCreditAccountTab
       ? {
           label: "Credit Account",
-          component: (
-            <CreditAccount companyId={getDefaultRequiredVal(0, companyId)} />
-          ),
+          component: <CreditAccount companyId={companyId} />,
           componentKey: BCEID_PROFILE_TABS.CREDIT_ACCOUNT,
         }
       : null,

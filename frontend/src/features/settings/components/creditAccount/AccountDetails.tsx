@@ -98,6 +98,8 @@ export const AccountDetails = () => {
         setShowCloseCreditAccountModal(false);
         handleMenuClose();
         refetchCreditAccount();
+      } else {
+        console.error(status);
       }
     }
   };

@@ -55,6 +55,8 @@ export const RemoveUsersModal = ({
 
       if (isActionSuccessful(status)) {
         onConfirm();
+      } else {
+        console.error(status);
       }
     }
   };
