@@ -56,7 +56,7 @@ export const RemoveUsersModal = ({
       if (isActionSuccessful(status)) {
         onConfirm();
       } else {
-        console.error(status);
+        console.error(`${status}: Failed to remove credit account user.`);
       }
     }
   };

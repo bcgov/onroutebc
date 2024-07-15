@@ -80,7 +80,7 @@ export const CreditAccount = ({ companyId }: { companyId: number }) => {
       if (isActionSuccessful(status)) {
         refetchCreditAccount();
       } else {
-        console.error(status);
+        console.error(`${status}: Failed to create credit account.`);
       }
     } else {
       setInvalid(true);

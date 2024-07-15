@@ -71,7 +71,7 @@ export const AddUserModal = ({
       if (isActionSuccessful(status)) {
         onConfirm();
       } else {
-        console.error(status);
+        console.error(`${status}: Failed to add credit account user.`);
       }
     }
   };
