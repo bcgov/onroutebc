@@ -15,7 +15,7 @@ export class AppService {
     private featureFlagsService: FeatureFlagsService,
   ) {}
 
-  getHealthCheck(): string {
+  getHealthCheck(): string {    
     return 'TPS Migration Healthcheck!';
   }
 
