@@ -99,7 +99,7 @@ export const AccountDetails = () => {
         handleMenuClose();
         refetchCreditAccount();
       } else {
-        console.error(status);
+        console.error(`${status}: Failed to update credit account status.`);
       }
     }
   };
