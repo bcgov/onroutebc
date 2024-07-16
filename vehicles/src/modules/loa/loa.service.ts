@@ -89,12 +89,12 @@ export class LoaService {
   }
 
   @LogAsyncMethodExecution()
-  async findOne(companyId: number, loaId: number): Promise<LoaDetail> {
+  async findOne(companyId: number, loaId: string): Promise<LoaDetail> {
     return await this.loaDetailRepository.findOne({
       where: {
         loaId: loaId,
         company: { companyId: Number(companyId) },
-        isActive: 1,
+        isActive: true,
       },
       relations: ['company', 'loaVehicles', 'loaPermitTypes'],
     });
@@ -104,7 +104,7 @@ export class LoaService {
   async getById(
     currentUser: IUserJWT,
     companyId: number,
-    loaId: number,
+    loaId: string,
   ): Promise<ReadLoaDto> {
     const loaDetail = await this.findOne(companyId, loaId);
 
@@ -137,7 +137,7 @@ export class LoaService {
   async updateLoa(
     currentUser: IUserJWT,
     companyId: number,
-    loaId: number,
+    loaId: string,
     updateLoaDto: UpdateLoaDto,
     file?: Express.Multer.File,
   ): Promise<ReadLoaDto> {
@@ -175,7 +175,7 @@ export class LoaService {
   async update(
     currentUser: IUserJWT,
     companyId: number,
-    loaId: number,
+    loaId: string,
     updateLoaDto: UpdateLoaDto,
     documentId?: string,
   ): Promise<ReadLoaDto> {
@@ -260,11 +260,11 @@ export class LoaService {
   }
 
   @LogAsyncMethodExecution()
-  async delete(loaId: number): Promise<number> {
+  async delete(loaId: string): Promise<number> {
     const { affected } = await this.loaDetailRepository.update(
       { loaId: loaId },
       {
-        isActive: 0,
+        isActive: true,
       },
     );
     return affected;
@@ -273,7 +273,7 @@ export class LoaService {
   async getloaDocument(
     currentUser: IUserJWT,
     companyId: number,
-    loaId: number,
+    loaId: string,
     downloadMode: FileDownloadModes,
     res?: Response,
   ): Promise<ReadFileDto | Buffer> {
@@ -298,7 +298,7 @@ export class LoaService {
     entity: typeof LoaVehicle | typeof LoaPermitType,
     field: 'powerUnit' | 'trailer' | 'permitType',
     items: string[],
-    loaId: number,
+    loaId: string,
   ): Promise<void> {
     if (items && items.length > 0) {
       await entityManager
@@ -326,7 +326,7 @@ export class LoaService {
   }
 
   @LogAsyncMethodExecution()
-  async deleteLoaDocument(companyId: number, loaId: number): Promise<number> {
+  async deleteLoaDocument(companyId: number, loaId: string): Promise<number> {
     const { affected } = await this.loaDetailRepository.update(
       { loaId: loaId },
       {
