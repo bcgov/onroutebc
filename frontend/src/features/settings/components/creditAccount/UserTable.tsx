@@ -46,7 +46,8 @@ export const UserTable = () => {
   const isAccountHolder = companyId === accountHolder?.companyId;
 
   const showCheckboxes = canUpdateCreditAccount(userRoles) && isAccountHolder;
-  const showRemoveUserButton = canUpdateCreditAccount(userRoles);
+  const showRemoveUserButton =
+    canUpdateCreditAccount(userRoles) && isAccountHolder;
 
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const [userIds, setUserIds] = useState<number[]>([]);
