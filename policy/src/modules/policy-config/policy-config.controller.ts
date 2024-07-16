@@ -55,6 +55,7 @@ export class PolicyConfigController {
   @ApiOkResponse({
     description: 'The retrieved active policy configurations.',
     type: ReadPolicyConfigDto,
+    isArray: true,
   })
   @AuthOnly()
   @Get()
@@ -78,6 +79,7 @@ export class PolicyConfigController {
   @ApiOkResponse({
     description: 'The retrieved draft policy configurations.',
     type: ReadPolicyConfigDto,
+    isArray: true,
   })
   @Roles(Role.READ_POLICY_CONFIG)
   @Get('/draft')
@@ -85,6 +87,22 @@ export class PolicyConfigController {
     return await this.policyConfigService.findAllDraft();
   }
 
+  /**
+   * Retrieves a specific policy configuration inlcuding draft policy.
+   *
+   * @param {PolicyConfigIdPathParamDto} params - The path parameters containing the policyConfigId.
+   * @returns A promise that resolves to a policy configuration.
+   */
+  @ApiOperation({
+    summary:
+      'Retrieves a specific policy configuration inlcuding draft policy.',
+    description:
+      'Retrieves a specific policy configuration by its ID, enforcing authentication.',
+  })
+  @ApiOkResponse({
+    description: 'The retrieved draft policy configuration.',
+    type: ReadPolicyConfigDto,
+  })
   @Roles(Role.READ_POLICY_CONFIG)
   @Get(':policyConfigId')
   async findOne(
