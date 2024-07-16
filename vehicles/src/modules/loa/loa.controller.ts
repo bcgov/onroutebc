@@ -119,7 +119,7 @@ export class LoaController {
   async getById(
     @Req() request: Request,
     @Param('companyId') companyId: number,
-    @Param('loaId') loaId: number,
+    @Param('loaId') loaId: string,
   ): Promise<ReadLoaDto> {
     const currentUser = request.user as IUserJWT;
     const loa = await this.loaService.getById(currentUser, companyId, loaId);
@@ -136,7 +136,7 @@ export class LoaController {
   async update(
     @Req() request: Request,
     @Param('companyId') companyId: number,
-    @Param('loaId') loaId: number,
+    @Param('loaId') loaId: string,
     @Body() updateLoaDto: UpdateLoaDto,
     @UploadedFile(
       new ParseFilePipe({
@@ -167,7 +167,7 @@ export class LoaController {
   @Delete('/:loaId')
   async delete(
     @Param('companyId') companyId: number,
-    @Param('loaId') loaId: number,
+    @Param('loaId') loaId: string,
   ): Promise<number> {
     const loa = await this.loaService.delete(loaId);
     return loa;
@@ -181,7 +181,7 @@ export class LoaController {
   async getLoaDocument(
     @Req() request: Request,
     @Param('companyId') companyId: number,
-    @Param('loaId') loaId: number,
+    @Param('loaId') loaId: string,
     @Query('downloadMode') downloadMode: FileDownloadModes,
     @Res() res: Response,
   ) {
@@ -206,7 +206,7 @@ export class LoaController {
   @Delete('/:loaId/documents')
   async deleteLoaDocument(
     @Param('companyId') companyId: number,
-    @Param('loaId') loaId: number,
+    @Param('loaId') loaId: string,
   ): Promise<number> {
     const loa = await this.loaService.deleteLoaDocument(companyId, loaId);
     return loa;
