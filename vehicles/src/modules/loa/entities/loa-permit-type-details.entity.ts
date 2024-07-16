@@ -18,7 +18,7 @@ export class LoaPermitType extends Base {
     example: '1',
     description: 'Unique identifier for the loa permit type.',
   })
-  @PrimaryGeneratedColumn({ type: 'bigint', name: 'LOA_PERMIT_TYPE_ID' })
+  @PrimaryGeneratedColumn({ type: 'int', name: 'LOA_PERMIT_TYPE_ID' })
   id: string;
 
   @AutoMap(() => LoaDetail)

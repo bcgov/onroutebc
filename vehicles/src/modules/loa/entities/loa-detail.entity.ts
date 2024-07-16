@@ -22,14 +22,14 @@ export class LoaDetail extends Base {
     description: 'Unique identifier for the LoA.',
   })
   @PrimaryGeneratedColumn({ type: 'bigint', name: 'LOA_ID' })
-  loaId: number;
+  loaId: string;
 
   @AutoMap()
   @ApiProperty({
     example: '1',
     description: 'Unique LoA Number',
   })
-  @Column({ type: 'bigint', name: 'LOA_NUMBER', nullable: false })
+  @Column({ type: 'int', name: 'LOA_NUMBER', nullable: false })
   loaNumber: string;
 
   @AutoMap()
@@ -97,12 +97,16 @@ export class LoaDetail extends Base {
     description: 'Is Active Flag - true (Active)/ false (Inactive)',
   })
   @Column({
-    type: 'bit',
+    type: 'char',
     name: 'IS_ACTIVE',
     nullable: false,
-    default: 1,
+    default: true,
+    transformer: {
+      to: (value: boolean): string => (value ? 'Y' : 'N'), // Converts the boolean value to 'Y' or 'N' for storage.
+      from: (value: string): boolean => value === 'Y', // Converts the stored string back to a boolean.
+    },
   })
-  isActive: number;
+  isActive: boolean;
 
   @AutoMap(() => LoaPermitType)
   @OneToMany(() => LoaPermitType, (LoaPermitType) => LoaPermitType.loa, {
