@@ -38,7 +38,7 @@ import { AuthOnly } from '../../decorator/auth-only.decorator';
   type: ExceptionDto,
 })
 @IsFeatureFlagEnabled('POLICY-CONFIG')
-@Controller('policy-config')
+@Controller('policy-configurations')
 export class PolicyConfigController {
   constructor(private readonly policyConfigService: PolicyConfigService) {}
 
