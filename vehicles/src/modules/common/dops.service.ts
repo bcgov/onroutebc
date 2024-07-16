@@ -24,6 +24,7 @@ import { INotificationDocument } from '../../common/interface/notification-docum
 import { ReadNotificationDto } from './dto/response/read-notification.dto';
 import * as FormData from 'form-data';
 import { Readable } from 'stream';
+import { Nullable } from 'src/common/types/common';
 
 @Injectable()
 export class DopsService {
@@ -316,7 +317,7 @@ export class DopsService {
     currentUser: IUserJWT,
     companyId: number,
     file: Express.Multer.File,
-    documentId?: string,
+    documentId?: Nullable<string>,
   ): Promise<ReadFileDto> {
     // Construct the URL for the request
     let url = null;

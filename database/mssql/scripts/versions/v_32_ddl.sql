@@ -25,14 +25,14 @@ CREATE SEQUENCE permit.ORBC_LOA_NUMBER_SEQ
 GO
 
 CREATE TABLE [permit].[ORBC_LOA_DETAILS] (
-   LOA_ID [bigint] IDENTITY(1,1) NOT NULL,
-   LOA_NUMBER [bigint] NOT NULL  DEFAULT (NEXT VALUE FOR permit.ORBC_LOA_NUMBER_SEQ),
-   [COMPANY_ID] [int] NULL,
-   START_DATE [varchar](10) NOT NULL,
-   EXPIRY_DATE [varchar](10),
+   LOA_ID [int] IDENTITY(1,1) NOT NULL,
+   LOA_NUMBER [int] NOT NULL  DEFAULT (NEXT VALUE FOR permit.ORBC_LOA_NUMBER_SEQ),
+   [COMPANY_ID] [int] NOT NULL,
+   START_DATE [date] NOT NULL,
+   EXPIRY_DATE [date],
    DOCUMENT_ID [bigint],
    COMMENTS [nvarchar](4000),
-   [IS_ACTIVE] [bit] NOT NULL DEFAULT(1),
+   [IS_ACTIVE]  [char](1) NOT NULL DEFAULT('Y'),
    [APP_CREATE_TIMESTAMP] [datetime2](7) DEFAULT(getutcdate()),
    [APP_CREATE_USERID] [nvarchar](30) DEFAULT(user_name()),
    [APP_CREATE_USER_GUID] [char](32) NULL,
@@ -56,8 +56,8 @@ CREATE TABLE [permit].[ORBC_LOA_DETAILS] (
    ) ON [PRIMARY];
 
 CREATE TABLE [permit].[ORBC_LOA_PERMIT_TYPE_DETAILS] (
-   LOA_PERMIT_TYPE_ID [bigint] IDENTITY(1,1) NOT NULL,
-   LOA_ID [bigint] NOT NULL,
+   LOA_PERMIT_TYPE_ID [int] IDENTITY(1,1) NOT NULL,
+   LOA_ID [int] NOT NULL,
    PERMIT_TYPE_ID [varchar](10) NOT NULL,
    [APP_CREATE_TIMESTAMP] [datetime2](7) DEFAULT(getutcdate()),
    [APP_CREATE_USERID] [nvarchar](30) DEFAULT(user_name()),
@@ -82,8 +82,8 @@ CREATE TABLE [permit].[ORBC_LOA_PERMIT_TYPE_DETAILS] (
    ) ON [PRIMARY];
 
 CREATE TABLE [permit].[ORBC_LOA_VEHICLES] (
-   LOA_VEHICLE_ID [bigint] IDENTITY(1,1) NOT NULL,
-   LOA_ID [bigint] NOT NULL,
+   LOA_VEHICLE_ID [int] IDENTITY(1,1) NOT NULL,
+   LOA_ID [int] NOT NULL,
    POWER_UNIT_ID [bigint],
    TRAILER_ID [bigint],
    [APP_CREATE_TIMESTAMP] [datetime2](7) DEFAULT(getutcdate()),
@@ -119,6 +119,14 @@ FOR [DB_LAST_UPDATE_USERID]
 
 ALTER TABLE [permit].[ORBC_LOA_DETAILS] ADD CONSTRAINT [DF_ORBC_LOA_DETAILS_DB_LAST_UPDATE_TIMESTAMP] DEFAULT(getutcdate())
 FOR [DB_LAST_UPDATE_TIMESTAMP]
+
+-- Check Contraints
+ALTER TABLE [permit].[ORBC_LOA_DETAILS] WITH CHECK ADD  CONSTRAINT DK_ORBC_LOA_DETAILS_IS_ACTIVE_VAL CHECK ([IS_ACTIVE] IN ('Y','N'));
+GO
+
+ALTER TABLE [permit].[ORBC_LOA_DETAILS]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_LOA_DETAILS_COMPANY] FOREIGN KEY([COMPANY_ID])
+REFERENCES [dbo].[ORBC_COMPANY] ([COMPANY_ID])
+ALTER TABLE [permit].[ORBC_LOA_DETAILS] CHECK CONSTRAINT [FK_ORBC_LOA_DETAILS_COMPANY]
 
 ALTER TABLE [permit].[ORBC_LOA_PERMIT_TYPE_DETAILS] ADD CONSTRAINT [DF_ORBC_LOA_PERMIT_TYPE_DETAILS_DB_CREATE_USERID] DEFAULT(user_name())
 FOR [DB_CREATE_USERID]
@@ -165,10 +173,25 @@ ALTER TABLE [permit].[ORBC_LOA_DETAILS]
 IF @@ERROR <> 0
    SET NOEXEC ON
 GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Surrogate primary key for the LoA table' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_DETAILS', @level2type=N'COLUMN',@level2name=N'LOA_ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique LoA Number' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_DETAILS', @level2type=N'COLUMN',@level2name=N'LOA_NUMBER'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to the orbc_company table, identifying which company does this LoA belong to' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_DETAILS', @level2type=N'COLUMN',@level2name=N'COMPANY_ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Start date of an LoA, cannot be null' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_DETAILS', @level2type=N'COLUMN',@level2name=N'START_DATE'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'End date of an LoA, null value indicates LoA never expires' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_DETAILS', @level2type=N'COLUMN',@level2name=N'EXPIRY_DATE'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to the orbc_document table,identifying the document/PDF that references the Document Management System (DMS)' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_DETAILS', @level2type=N'COLUMN',@level2name=N'DOCUMENT_ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Additional notes or comments for LoA' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_DETAILS', @level2type=N'COLUMN',@level2name=N'COMMENTS'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Deletion status of LOA' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_DETAILS', @level2type=N'COLUMN',@level2name=N'IS_ACTIVE'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Surrogate primary key for the LoA Permit Type table' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_PERMIT_TYPE_DETAILS', @level2type=N'COLUMN',@level2name=N'LOA_PERMIT_TYPE_ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to LoA details table' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_PERMIT_TYPE_DETAILS', @level2type=N'COLUMN',@level2name=N'LOA_ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to permit type table, identifying the types of permit an LoA is applicable for' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_PERMIT_TYPE_DETAILS', @level2type=N'COLUMN',@level2name=N'PERMIT_TYPE_ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Surrogate primary key for the LoA Vehicle table' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_VEHICLES', @level2type=N'COLUMN',@level2name=N'LOA_VEHICLE_ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to LoA details table' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_VEHICLES', @level2type=N'COLUMN',@level2name=N'LOA_ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to power unit table, identifying the power units allowed in an LoA' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_VEHICLES', @level2type=N'COLUMN',@level2name=N'POWER_UNIT_ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to trailer table, identifying the trailers allowed in an LoA' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_VEHICLES', @level2type=N'COLUMN',@level2name=N'TRAILER_ID'
 
 DECLARE @VersionDescription VARCHAR(255)
 
-SET @VersionDescription = '-- Add  Serive Account diretory type to ORBC_DIRECTORY_TYPE'
+SET @VersionDescription = '-- Add LOA related tables to database'
 
 INSERT [dbo].[ORBC_SYS_VERSION] (
    [VERSION_ID],
@@ -178,7 +201,7 @@ INSERT [dbo].[ORBC_SYS_VERSION] (
    [RELEASE_DATE]
    )
 VALUES (
-   31,
+   32,
    @VersionDescription,
    '$(UPDATE_SCRIPT)',
    '$(REVERT_SCRIPT)',

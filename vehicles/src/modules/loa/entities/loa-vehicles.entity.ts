@@ -17,7 +17,7 @@ export class LoaVehicle extends Base {
     example: '1',
     description: 'Id for the loa allowed vehicles',
   })
-  @PrimaryGeneratedColumn({ type: 'bigint', name: 'LOA_VEHICLE_ID' })
+  @PrimaryGeneratedColumn({ type: 'int', name: 'LOA_VEHICLE_ID' })
   loavehicleId: string;
 
   @AutoMap(() => LoaDetail)
