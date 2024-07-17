@@ -15,8 +15,11 @@ export function addRuntimeFacts(engine: Engine): void {
   );
   engine.addFact(PolicyFacts.ValidationDate.toString(), today);
 
-  // Will be either 365 or 366, for use when comparing against
-  // duration for 1 year permits.
+  /**
+   * Add runtime fact for number of days in the permit year.
+   * Will be either 365 or 366, for use when comparing against
+   * duration for 1 year permits.
+   */
   engine.addFact(
     PolicyFacts.DaysInPermitYear.toString(),
     async function (params, almanac) {
@@ -27,7 +30,49 @@ export function addRuntimeFacts(engine: Engine): void {
         startDate,
         PermitAppInfo.PermitDateFormat.toString(),
       );
-      return dateFrom.diff(dateFrom.add(1, 'year'), 'day');
+      const daysInPermitYear = dateFrom.add(1, 'year').diff(dateFrom, 'day');
+      return daysInPermitYear;
+    },
+  );
+
+  /**
+   * Add runtime fact for a fixed permit cost, the cost supplied
+   * as a parameter.
+   */
+  engine.addFact(
+    PolicyFacts.FixedCost.toString(),
+    async function (params, almanac) {
+      return params.cost;
+    },
+  );
+
+  /**
+   * Add runtime fact for cost per month, where month is defined by
+   * policy as a 30 day period or portion thereof, except in the
+   * case of a full year in which case it is 12 months.
+   */
+  engine.addFact(
+    PolicyFacts.CostPerMonth.toString(),
+    async function (params, almanac) {
+      const duration: number = await almanac.factValue(
+        PermitAppInfo.PermitDuration.toString(),
+      );
+      const daysInPermitYear: number = await almanac.factValue(
+        PolicyFacts.DaysInPermitYear.toString(),
+      );
+
+      let months: number = Math.floor(duration / 30);
+      const extraDays: number = duration % 30;
+
+      if (extraDays > 0 && duration !== daysInPermitYear) {
+        // Add an extra month for a partial month unless it is
+        // a full year. Note this does not handle the case where 2
+        // or more years duration is specified, since that is not
+        // a valid permit and does not warrant considetation.
+        months++;
+      }
+
+      return months * params.cost;
     },
   );
 }

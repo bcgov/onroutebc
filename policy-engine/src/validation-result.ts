@@ -21,4 +21,5 @@ export class ValidationResult {
   code: string;
   message: string;
   fieldReference?: string;
+  cost?: number;
 }
