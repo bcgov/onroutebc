@@ -592,7 +592,7 @@ EXEC sys.sp_addextendedproperty
    @level2type=N'COLUMN',
    @level2name=N'DATE'
 EXEC sys.sp_addextendedproperty 
-   @name=N'MS_Description', 
+   @name=N'MS_Description',
    @value=N'Type of activity (e.g. ONHOLD, HOLDRMVD, CLOSED, REOPENED, OPENED).' , 
    @level0type=N'SCHEMA',
    @level0name=N'permit', 

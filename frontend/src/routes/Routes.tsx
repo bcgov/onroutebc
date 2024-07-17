@@ -249,9 +249,7 @@ export const AppRoutes = () => {
       >
         <Route
           path={`${routes.SHOPPING_CART_ROUTES.DETAILS()}`}
-          element={
-            <ShoppingCartDashboard />
-          }
+          element={<ShoppingCartDashboard />}
         />
       </Route>
 

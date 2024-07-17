@@ -169,7 +169,7 @@ export class LoaController {
     @Param('companyId') companyId: number,
     @Param('loaId') loaId: string,
   ): Promise<number> {
-    const loa = await this.loaService.delete(loaId);
+    const loa = await this.loaService.delete(loaId,companyId);
     return loa;
   }
 

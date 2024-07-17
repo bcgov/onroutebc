@@ -1,14 +1,19 @@
 import React, { useContext, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-
 import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
 import { Suspend } from "../../pages/Suspend";
+import { CreditAccount } from "../../pages/CreditAccount";
 import { SETTINGS_TABS } from "../../types/tabs";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { ERROR_ROUTES } from "../../../../routes/constants";
-import { canViewSpecialAuthorizations, canViewSuspend } from "../../helpers/permissions";
 import { SpecialAuthorizations } from "../../pages/SpecialAuthorizations/SpecialAuthorizations";
+import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
+import {
+  canViewSpecialAuthorizations,
+  canViewSuspend,
+  canViewCreditAccountTab,
+} from "../../helpers/permissions";
 
 export const ManageSettingsDashboard = React.memo(() => {
   const {
@@ -16,6 +21,8 @@ export const ManageSettingsDashboard = React.memo(() => {
     companyId,
     idirUserDetails,
   } = useContext(OnRouteBCContext);
+
+  const { data: featureFlags } = useFeatureFlagsQuery();
 
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
 
@@ -25,6 +32,10 @@ export const ManageSettingsDashboard = React.memo(() => {
     userRoles,
     idirUserDetails?.userAuthGroup,
   );
+
+  const showCreditAccountTab =
+    canViewCreditAccountTab(userRoles) &&
+    featureFlags?.["CREDIT-ACCOUNT"] === "ENABLED";
 
   const { state: stateFromNavigation } = useLocation();
   const selectedTab = getDefaultRequiredVal(
@@ -49,6 +60,10 @@ export const ManageSettingsDashboard = React.memo(() => {
           companyId={companyId}
         />
       ),
+    } : null,
+    showCreditAccountTab ? {
+      label: "Credit Account",
+      component: <CreditAccount companyId={companyId} />,
     } : null,
     showSuspendTab ? {
       label: "Suspend",

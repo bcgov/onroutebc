@@ -20,7 +20,14 @@ import { BCEID_PROFILE_TABS } from "../../types/manageProfile.d";
 import { ERROR_ROUTES, PROFILE_ROUTES } from "../../../../routes/constants";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { SpecialAuthorizations } from "../../../settings/pages/SpecialAuthorizations/SpecialAuthorizations";
-import { canViewSpecialAuthorizations } from "../../../settings/helpers/permissions";
+import { CreditAccount } from "../../../settings/pages/CreditAccount";
+import { useGetCreditAccountQuery } from "../../../settings/hooks/creditAccount";
+import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
+import { CREDIT_ACCOUNT_USER_TYPE } from "../../../settings/types/creditAccount";
+import {
+  canViewSpecialAuthorizations,
+  canViewCreditAccountTab,
+} from "../../../settings/helpers/permissions";
 
 interface ProfileDashboardTab {
   label: string;
@@ -52,13 +59,17 @@ export const ManageProfilesDashboard = React.memo(() => {
   });
 
   const navigate = useNavigate();
+
   const {
     userRoles,
-    companyId,
+    companyId: companyIdFromContext,
     idirUserDetails,
     userDetails,
   } = useContext(OnRouteBCContext);
-
+  
+  const companyId = getDefaultRequiredVal(0, companyIdFromContext);
+  const { data: creditAccount } = useGetCreditAccountQuery(companyId);
+  const { data: featureFlags } = useFeatureFlagsQuery();
   const populatedUserRoles = getDefaultRequiredVal([], userRoles);
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
   const isBCeIDAdmin = isBCeIDOrgAdmin(populatedUserRoles);
@@ -66,6 +77,19 @@ export const ManageProfilesDashboard = React.memo(() => {
   const showSpecialAuth = !isStaffActingAsCompany && canViewSpecialAuthorizations(
     userRoles,
     userDetails?.userAuthGroup,
+  );
+  
+  const creditAccountHolder = creditAccount?.creditAccountUsers.find(
+    (user) => user.userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER,
+  );
+  const isCreditAccountHolder = companyId === creditAccountHolder?.companyId;
+
+  const showCreditAccountTab = Boolean(
+    canViewCreditAccountTab(userRoles) &&
+      creditAccount &&
+      companyId &&
+      isCreditAccountHolder &&
+      featureFlags?.["CREDIT-ACCOUNT"] === "ENABLED",
   );
 
   const { state: stateFromNavigation } = useLocation();
@@ -95,6 +119,11 @@ export const ManageProfilesDashboard = React.memo(() => {
       ),
       componentKey: BCEID_PROFILE_TABS.SPECIAL_AUTH,
     } : null,
+    showCreditAccountTab ? {
+      label: "Credit Account",
+      component: <CreditAccount companyId={companyId} />,
+      componentKey: BCEID_PROFILE_TABS.CREDIT_ACCOUNT,
+    } : null,
   ].filter(tab => Boolean(tab)) as ProfileDashboardTab[];
 
   const getSelectedTabFromNavigation = (): number => {
@@ -109,22 +138,21 @@ export const ManageProfilesDashboard = React.memo(() => {
   const showAddUserButton = (selectedTabIndex: number) => {
     // Get index of User Management tab, if it exists
     const userManagementTabIndex = tabs.findIndex(
-      tab => tab.componentKey === BCEID_PROFILE_TABS.USER_MANAGEMENT,
+      (tab) => tab.componentKey === BCEID_PROFILE_TABS.USER_MANAGEMENT,
     );
 
-    return shouldAllowUserManagement && selectedTabIndex === userManagementTabIndex;
+    return (
+      shouldAllowUserManagement && selectedTabIndex === userManagementTabIndex
+    );
   };
 
   const initialSelectedTabIndex = getSelectedTabFromNavigation();
-  const [shouldShowAddUserButton, setShouldShowAddUserButton] = useState<boolean>(
-    showAddUserButton(initialSelectedTabIndex),
-  );
+  const [shouldShowAddUserButton, setShouldShowAddUserButton] =
+    useState<boolean>(showAddUserButton(initialSelectedTabIndex));
 
   // Set whether or not to show "Add User" button when tab changes
   const handleTabChange = (selectedTabIndex: number) => {
-    setShouldShowAddUserButton(
-      showAddUserButton(selectedTabIndex),
-    );
+    setShouldShowAddUserButton(showAddUserButton(selectedTabIndex));
   };
 
   if (isPending) {

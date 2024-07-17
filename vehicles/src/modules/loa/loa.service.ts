@@ -37,6 +37,7 @@ export class LoaService {
     const loa = this.classMapper.map(createLoaDto, CreateLoaDto, LoaDetail, {
       extraArgs: () => ({ companyId: companyId, documentId: documentId }),
     });
+    loa.isActive = true;
     const loaDetail = await this.loaDetailRepository.save(loa);
     const readLoaDto = this.classMapper.map(loaDetail, LoaDetail, ReadLoaDto);
     try {
@@ -61,7 +62,7 @@ export class LoaService {
       .leftJoinAndSelect('loaDetail.loaVehicles', 'loaVehicles')
       .leftJoinAndSelect('loaDetail.loaPermitTypes', 'loaPermitTypes')
       .where('company.companyId = :companyId', { companyId: companyId })
-      .andWhere('loaDetail.isActive = :isActive', { isActive: 1 });
+      .andWhere('loaDetail.isActive = :isActive', { isActive: 'Y' });
     if (expired === true) {
       loaDetailQB.andWhere('loaDetail.expiryDate < :expiryDate', {
         expiryDate: new Date(),
@@ -84,7 +85,7 @@ export class LoaService {
         extraArgs: () => ({ companyId: companyId }),
       },
     );
-
+console.log('readLoaDto',readLoaDto);
     return readLoaDto;
   }
 
@@ -219,7 +220,7 @@ export class LoaService {
         updateLoaDto,
         UpdateLoaDto,
         LoaDetail,
-        { extraArgs: () => ({ companyId, loaId, documentId }) },
+        { extraArgs: () => ({ companyId, loaId }) },
       );
 
       if (documentId) {
@@ -260,13 +261,16 @@ export class LoaService {
   }
 
   @LogAsyncMethodExecution()
-  async delete(loaId: string): Promise<number> {
-    const { affected } = await this.loaDetailRepository.update(
-      { loaId: loaId },
-      {
-        isActive: true,
-      },
-    );
+  async delete(loaId: string,companyId: number): Promise<number> {
+    const { affected } = await this.loaDetailRepository
+    .createQueryBuilder()
+    .update(LoaDetail)
+    .set({
+        isActive: false,
+    })
+    .where("loaId = :loaId", { loaId: loaId })
+    .andWhere("company.companyId = :companyId",{companyId: companyId})
+    .execute()
     return affected;
   }
 
