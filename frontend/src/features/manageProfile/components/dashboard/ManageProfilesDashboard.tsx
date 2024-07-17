@@ -21,6 +21,11 @@ import { BCEID_PROFILE_TABS } from "../../types/manageProfile.d";
 import { ERROR_ROUTES, PROFILE_ROUTES } from "../../../../routes/constants";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { isIDIR } from "../../../../common/authentication/auth-walls/BCeIDAuthWall";
+import { canViewCreditAccountTab } from "../../../settings/helpers/permissions";
+import { CreditAccount } from "../../../settings/pages/CreditAccount";
+import { useGetCreditAccountQuery } from "../../../settings/hooks/creditAccount";
+import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
+import { CREDIT_ACCOUNT_USER_TYPE } from "../../../settings/types/creditAccount";
 
 interface ProfileDashboardTab {
   label: string;
@@ -52,12 +57,28 @@ export const ManageProfilesDashboard = React.memo(() => {
   });
 
   const navigate = useNavigate();
-  const { userRoles } = useContext(OnRouteBCContext);
+  const { userRoles, companyId: companyIdFromContext } =
+    useContext(OnRouteBCContext);
+  const companyId = getDefaultRequiredVal(0, companyIdFromContext);
   const { user } = useAuth();
+  const { data: creditAccount } = useGetCreditAccountQuery(companyId);
+  const { data: featureFlags } = useFeatureFlagsQuery();
   const populatedUserRoles = getDefaultRequiredVal([], userRoles);
   const isIDIRUser = isIDIR(user?.profile?.identity_provider as string);
   const isBCeIDAdmin = isBCeIDOrgAdmin(populatedUserRoles);
   const shouldAllowUserManagement = isBCeIDAdmin || isIDIRUser;
+  const creditAccountHolder = creditAccount?.creditAccountUsers.find(
+    (user) => user.userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER,
+  );
+  const isCreditAccountHolder = companyId === creditAccountHolder?.companyId;
+
+  const showCreditAccountTab = Boolean(
+    canViewCreditAccountTab(userRoles) &&
+      creditAccount &&
+      companyId &&
+      isCreditAccountHolder &&
+      featureFlags?.["CREDIT-ACCOUNT"] === "ENABLED",
+  );
 
   const { state: stateFromNavigation } = useLocation();
 
@@ -67,17 +88,28 @@ export const ManageProfilesDashboard = React.memo(() => {
       component: <CompanyInfo companyInfoData={companyInfoData} />,
       componentKey: BCEID_PROFILE_TABS.COMPANY_INFORMATION,
     },
-    !isIDIRUser ? {
-      label: "My Information",
-      component: <MyInfo />,
-      componentKey: BCEID_PROFILE_TABS.MY_INFORMATION,
-    } : null,
-    shouldAllowUserManagement ? {
-      label: "User Management",
-      component: <UserManagement />,
-      componentKey: BCEID_PROFILE_TABS.USER_MANAGEMENT,
-    } : null
-  ].filter(tab => Boolean(tab)) as ProfileDashboardTab[];
+    !isIDIRUser
+      ? {
+          label: "My Information",
+          component: <MyInfo />,
+          componentKey: BCEID_PROFILE_TABS.MY_INFORMATION,
+        }
+      : null,
+    shouldAllowUserManagement
+      ? {
+          label: "User Management",
+          component: <UserManagement />,
+          componentKey: BCEID_PROFILE_TABS.USER_MANAGEMENT,
+        }
+      : null,
+    showCreditAccountTab
+      ? {
+          label: "Credit Account",
+          component: <CreditAccount companyId={companyId} />,
+          componentKey: BCEID_PROFILE_TABS.CREDIT_ACCOUNT,
+        }
+      : null,
+  ].filter((tab) => Boolean(tab)) as ProfileDashboardTab[];
 
   const getSelectedTabFromNavigation = (): number => {
     const tabIndex = tabs.findIndex(
@@ -91,22 +123,21 @@ export const ManageProfilesDashboard = React.memo(() => {
   const showAddUserButton = (selectedTabIndex: number) => {
     // Get index of User Management tab, if it exists
     const userManagementTabIndex = tabs.findIndex(
-      tab => tab.componentKey === BCEID_PROFILE_TABS.USER_MANAGEMENT,
+      (tab) => tab.componentKey === BCEID_PROFILE_TABS.USER_MANAGEMENT,
     );
 
-    return shouldAllowUserManagement && selectedTabIndex === userManagementTabIndex;
+    return (
+      shouldAllowUserManagement && selectedTabIndex === userManagementTabIndex
+    );
   };
 
   const initialSelectedTabIndex = getSelectedTabFromNavigation();
-  const [shouldShowAddUserButton, setShouldShowAddUserButton] = useState<boolean>(
-    showAddUserButton(initialSelectedTabIndex),
-  );
+  const [shouldShowAddUserButton, setShouldShowAddUserButton] =
+    useState<boolean>(showAddUserButton(initialSelectedTabIndex));
 
   // Set whether or not to show "Add User" button when tab changes
   const handleTabChange = (selectedTabIndex: number) => {
-    setShouldShowAddUserButton(
-      showAddUserButton(selectedTabIndex),
-    );
+    setShouldShowAddUserButton(showAddUserButton(selectedTabIndex));
   };
 
   if (isPending) {

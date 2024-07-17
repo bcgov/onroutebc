@@ -23,6 +23,7 @@ import { getTypeormLogLevel } from './helper/logger.helper';
 import { ClsModule } from 'nestjs-cls';
 import { Request } from 'express';
 import { v4 as uuidv4 } from 'uuid';
+import { PolicyConfigModule } from './modules/policy-config/policy-config.module';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
@@ -72,6 +73,7 @@ const envPath = path.resolve(process.cwd() + '/../');
     CommonModule,
     AuthModule,
     FeatureFlagsModule,
+    PolicyConfigModule,
   ],
   controllers: [AppController],
   providers: [AppService],
