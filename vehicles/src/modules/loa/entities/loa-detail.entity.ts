@@ -21,7 +21,7 @@ export class LoaDetail extends Base {
     example: '1',
     description: 'Unique identifier for the LoA.',
   })
-  @PrimaryGeneratedColumn({ type: 'bigint', name: 'LOA_ID' })
+  @PrimaryGeneratedColumn({ type: 'int', name: 'LOA_ID' })
   loaId: string;
 
   @AutoMap()
