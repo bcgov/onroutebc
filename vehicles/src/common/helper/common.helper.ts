@@ -14,7 +14,7 @@ export const undefinedSubstitution = <T>(
   if (predicate) {
     result = predicate() ? value : undefined;
   } else {
-    result = value !== null ? value : undefined;
+    result = value ?? undefined;
   }
 
   return result;
