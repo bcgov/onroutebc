@@ -38,6 +38,7 @@ export class ReadCreditAccountDto {
   @AutoMap()
   @ApiProperty({
     description: 'The collection of companies using this credit account.',
+    required: false,
   })
   creditAccountUsers: ReadCreditAccountUserDto[];
 
@@ -51,6 +52,7 @@ export class ReadCreditAccountDto {
   @AutoMap()
   @ApiProperty({
     description: 'The credit account status update activity details .',
+    required: false,
   })
   creditAccountActivities?: ReadCreditAccountActivityDto[];
 
@@ -58,6 +60,7 @@ export class ReadCreditAccountDto {
   @ApiProperty({
     description: 'The credit limit of the account.',
     example: CreditAccountLimit[10000],
+    required: false,
   })
   creditLimit?: CreditAccountLimitType;
 
@@ -65,6 +68,7 @@ export class ReadCreditAccountDto {
   @ApiProperty({
     description: 'The credit balance of the account.',
     example: 1200,
+    required: false,
   })
   creditBalance?: number;
 
@@ -72,6 +76,7 @@ export class ReadCreditAccountDto {
   @ApiProperty({
     description: 'The available credit of the account.',
     example: 800,
+    required: false,
   })
   availableCredit?: number;
 }
