@@ -2,18 +2,34 @@ import { useEffect, useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { faEnvelope } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button, Checkbox, Dialog, FormControl, FormHelperText } from "@mui/material";
+import {
+  Button,
+  Checkbox,
+  Dialog,
+  FormControl,
+  FormHelperText,
+} from "@mui/material";
 
 import "./PermitResendDialog.scss";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { requiredMessage, selectionRequired } from "../../../../common/helpers/validationMessages";
-import { CustomFormComponent, getErrorMessage } from "../../../../common/components/form/CustomFormComponents";
-import { EMAIL_NOTIFICATION_TYPES, EmailNotificationType } from "../../../permits/types/EmailNotificationType";
+import {
+  requiredMessage,
+  selectionRequired,
+} from "../../../../common/helpers/validationMessages";
+import {
+  CustomFormComponent,
+  getErrorMessage,
+} from "../../../../common/components/form/CustomFormComponents";
+import {
+  EMAIL_NOTIFICATION_TYPES,
+  EmailNotificationType,
+} from "../../../permits/types/EmailNotificationType";
 import { Optional } from "../../../../common/types/common";
 
 interface PermitResendFormData {
   permitId: string;
   email: string;
+  fax: string;
   notificationTypes: {
     EMAIL_PERMIT: boolean;
     EMAIL_RECEIPT: boolean;
@@ -30,11 +46,7 @@ const notificationTypesRules = {
         EMAIL_RECEIPT: boolean;
       }>,
     ) => {
-      return (
-        value?.EMAIL_PERMIT
-        || value?.EMAIL_RECEIPT
-        || selectionRequired()
-      );
+      return value?.EMAIL_PERMIT || value?.EMAIL_RECEIPT || selectionRequired();
     },
   },
 };
@@ -49,17 +61,20 @@ export default function PermitResendDialog({
   permitId,
   permitNumber,
   email,
+  fax,
 }: Readonly<{
   shouldOpen: boolean;
   onResend: (
     permitId: string,
     email: string,
+    fax: string,
     notificationTypes: EmailNotificationType[],
   ) => Promise<void>;
   onCancel: () => void;
   permitId: string;
   permitNumber: string;
   email?: string;
+  fax?: string;
 }>) {
   const [notificationTypes, setNotificationTypes] = useState({
     EMAIL_PERMIT: false,
@@ -70,6 +85,7 @@ export default function PermitResendDialog({
     defaultValues: {
       permitId,
       email: getDefaultRequiredVal("", email),
+      fax: getDefaultRequiredVal("", fax),
       notificationTypes,
     },
     reValidateMode: "onChange",
@@ -95,19 +111,24 @@ export default function PermitResendDialog({
   };
 
   const handleResend = (formData: PermitResendFormData) => {
-    const { permitId, email, notificationTypes } = formData;
-    const selectedNotificationTypes = Object.keys(notificationTypes)
-      .filter(type => notificationTypes[type as EmailNotificationType]) as EmailNotificationType[];
+    const { permitId, email, fax, notificationTypes } = formData;
+    const selectedNotificationTypes = Object.keys(notificationTypes).filter(
+      (type) => notificationTypes[type as EmailNotificationType],
+    ) as EmailNotificationType[];
 
-    onResend(permitId, email, selectedNotificationTypes);
+    onResend(permitId, email, fax, selectedNotificationTypes);
   };
 
   const toggleNotificationType = (type: EmailNotificationType) => {
     setNotificationTypes({
-      EMAIL_PERMIT: type === EMAIL_NOTIFICATION_TYPES.PERMIT ?
-        !notificationTypes.EMAIL_PERMIT : notificationTypes.EMAIL_PERMIT,
-      EMAIL_RECEIPT: type === EMAIL_NOTIFICATION_TYPES.RECEIPT ?
-        !notificationTypes.EMAIL_RECEIPT : notificationTypes.EMAIL_RECEIPT,
+      EMAIL_PERMIT:
+        type === EMAIL_NOTIFICATION_TYPES.PERMIT
+          ? !notificationTypes.EMAIL_PERMIT
+          : notificationTypes.EMAIL_PERMIT,
+      EMAIL_RECEIPT:
+        type === EMAIL_NOTIFICATION_TYPES.RECEIPT
+          ? !notificationTypes.EMAIL_RECEIPT
+          : notificationTypes.EMAIL_RECEIPT,
     });
   };
 
@@ -121,10 +142,7 @@ export default function PermitResendDialog({
       >
         <div className="permit-resend-dialog__header">
           <div className="permit-resend-dialog__icon">
-            <FontAwesomeIcon
-              className="icon"
-              icon={faEnvelope}
-            />
+            <FontAwesomeIcon className="icon" icon={faEnvelope} />
           </div>
 
           <span className="permit-resend-dialog__title">
@@ -141,9 +159,7 @@ export default function PermitResendDialog({
             name="notificationTypes"
             control={control}
             rules={notificationTypesRules}
-            render={({
-              fieldState: { invalid },
-            }) => (
+            render={({ fieldState: { invalid } }) => (
               <FormControl
                 className="permit-resend-info__notification-types"
                 error={invalid}
@@ -152,7 +168,9 @@ export default function PermitResendDialog({
                   <Checkbox
                     className={`notification-type__checkbox ${invalid ? "notification-type__checkbox--invalid" : ""}`}
                     checked={notificationTypes.EMAIL_PERMIT}
-                    onChange={() => toggleNotificationType(EMAIL_NOTIFICATION_TYPES.PERMIT)}
+                    onChange={() =>
+                      toggleNotificationType(EMAIL_NOTIFICATION_TYPES.PERMIT)
+                    }
                   />
                   <div className="notification-type__label">Permit</div>
                 </div>
@@ -161,7 +179,9 @@ export default function PermitResendDialog({
                   <Checkbox
                     className={`notification-type__checkbox ${invalid ? "notification-type__checkbox--invalid" : ""}`}
                     checked={notificationTypes.EMAIL_RECEIPT}
-                    onChange={() => toggleNotificationType(EMAIL_NOTIFICATION_TYPES.RECEIPT)}
+                    onChange={() =>
+                      toggleNotificationType(EMAIL_NOTIFICATION_TYPES.RECEIPT)
+                    }
                   />
                   <div className="notification-type__label">Receipt</div>
                 </div>
@@ -188,6 +208,19 @@ export default function PermitResendDialog({
                 required: { value: true, message: requiredMessage() },
               },
               label: "Email",
+            }}
+          />
+
+          <CustomFormComponent
+            className="permit-resend-info__input permit-resend-info__input--fax"
+            type="input"
+            feature={FEATURE}
+            options={{
+              name: "fax",
+              rules: {
+                required: { value: false, message: "" },
+              },
+              label: "Fax",
             }}
           />
         </div>
