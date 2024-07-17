@@ -9,11 +9,13 @@ export const undefinedSubstitution = <T>(
   value: T,
   predicate?: () => boolean,
 ): T | undefined => {
-  return predicate
-    ? predicate()
-      ? value
-      : undefined
-    : value !== null
-      ? value
-      : undefined;
+  let result: T | undefined;
+
+  if (predicate) {
+    result = predicate() ? value : undefined;
+  } else {
+    result = value !== null ? value : undefined;
+  }
+
+  return result;
 };
