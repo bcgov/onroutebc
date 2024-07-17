@@ -1,0 +1,104 @@
+@import "../../../themes/orbcStyles";
+
+.credit-account-page {
+  color: $bc-black;
+  padding-top: 1.5rem;
+  padding-bottom:  3rem;
+
+  &__split-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 80px;
+    
+    
+  }
+
+
+  .account-info {
+    width: 60%;
+    .overview {
+      padding-bottom: 2rem;
+      border-bottom: 1px solid $bc-border-grey;
+
+      &__flex {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding-top: .5rem;
+        padding-bottom: 1rem;
+      }
+
+      &__title {
+        font-size: 1.25rem;
+        font-weight: bold;
+        padding: 0;
+      }
+    
+      &__user-designation {
+        text-transform: capitalize;
+      }
+    }
+  }
+}
+
+.account-details {
+  width: 40%;
+  max-width: 529px; 
+}
+
+.add-credit-account-action {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+
+  & &__btn {
+    box-shadow: none;
+    margin-left: 1.5rem;
+    margin-bottom: 0;
+    padding: 0 2rem;
+    font-size: 1rem;
+    font-weight: bold;
+    align-self: flex-end;
+
+    &:disabled {
+      background-color: $disabled-colour;
+      color: $white;
+    }
+
+    &--error {
+      align-self: center;
+    }
+  }
+  
+}
+
+@media screen and (max-width: 768px) {
+  .add-credit-account-action {
+    flex-direction: column;
+    
+    & &__btn {
+      align-self: flex-start;
+      margin-top: 1rem;
+      margin-left: 0;
+    }
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .credit-account-page {
+    &__split-container {
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+
+    .account-info {
+      width: 100%;
+    }
+
+    .account-details {
+      width: 100%;
+      max-width: none;
+    }
+  }
+ 
+}
