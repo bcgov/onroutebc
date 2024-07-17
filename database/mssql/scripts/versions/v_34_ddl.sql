@@ -201,7 +201,7 @@ INSERT [dbo].[ORBC_SYS_VERSION] (
    [RELEASE_DATE]
    )
 VALUES (
-   33,
+   34,
    @VersionDescription,
    '$(UPDATE_SCRIPT)',
    '$(REVERT_SCRIPT)',
