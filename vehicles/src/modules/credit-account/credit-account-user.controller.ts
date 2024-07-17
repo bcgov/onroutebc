@@ -143,13 +143,16 @@ export class CreditAccountUserController {
   @Get()
   @Roles(Role.READ_CREDIT_ACCOUNT)
   async getCreditAccountUsers(
+    @Req() request: Request,
     @Param() { companyId, creditAccountId }: CreditAccountIdPathParamDto,
     @Query() { includeAccountHolder }: GetCreditAccountUserQueryParamsDto,
   ): Promise<ReadCreditAccountUserDto[]> {
-    return await this.creditAccountService.getCreditAccountUsers(
+    const currentUser = request.user as IUserJWT;
+    return await this.creditAccountService.getCreditAccountUsers({
       companyId,
       creditAccountId,
+      currentUser,
       includeAccountHolder,
-    );
+    });
   }
 }

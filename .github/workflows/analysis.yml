@@ -79,12 +79,16 @@ jobs:
           - 5432:5432
     strategy:
       matrix:
-        dir: [vehicles, dops, frontend, scheduler]
+        dir: [vehicles, dops, frontend, scheduler, policy]
         include:
           - dir: dops
             sonar_projectKey: onroutebc_dops
             token: SONAR_TOKEN_DOPS
             triggers: ('dops')
+          - dir: policy
+            sonar_projectKey: onroutebc_policy
+            token: SONAR_TOKEN_POLICY
+            triggers: ('policy')            
           - dir: vehicles
             sonar_projectKey: onroutebc_vehicles
             token: SONAR_TOKEN_VEHICLES

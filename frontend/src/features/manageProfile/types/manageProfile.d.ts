@@ -81,8 +81,7 @@ export type CompanyProfile = {
  */
 export type UpdateCompanyProfileRequest = Omit<
   CompanyProfile,
-  "clientNumber"
-  | "isSuspended"
+  "clientNumber" | "isSuspended"
 >;
 
 /**
@@ -174,4 +173,5 @@ export const BCEID_PROFILE_TABS = {
   MY_INFORMATION: "MyInformationTab",
   USER_MANAGEMENT: "UserManagementTab",
   PAYMENT_INFORMATION: "PaymentInformationTab",
+  CREDIT_ACCOUNT: "CreditAccountTab",
 } as const;
