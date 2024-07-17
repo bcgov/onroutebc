@@ -62,7 +62,7 @@ export class LoaService {
       .leftJoinAndSelect('loaDetail.loaVehicles', 'loaVehicles')
       .leftJoinAndSelect('loaDetail.loaPermitTypes', 'loaPermitTypes')
       .where('company.companyId = :companyId', { companyId: companyId })
-      .andWhere('loaDetail.isActive = :isActive', { isActive: true });
+      .andWhere('loaDetail.isActive = :isActive', { isActive: 'Y' });
     if (expired === true) {
       loaDetailQB.andWhere('loaDetail.expiryDate < :expiryDate', {
         expiryDate: new Date(),
@@ -220,7 +220,7 @@ console.log('readLoaDto',readLoaDto);
         updateLoaDto,
         UpdateLoaDto,
         LoaDetail,
-        { extraArgs: () => ({ companyId, loaId, documentId }) },
+        { extraArgs: () => ({ companyId, loaId }) },
       );
 
       if (documentId) {
