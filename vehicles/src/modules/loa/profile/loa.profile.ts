@@ -82,26 +82,25 @@ export class LoaProfile extends AutomapperProfile {
         LoaDetail,
         forMember(
           (d) => d.company.companyId,
-          mapWithArguments((_, { companyId }) => {
-            return companyId;
+          mapWithArguments((_, { companyId }: { companyId: number }) => {
+            return +companyId;
           }),
         ),
         forMember(
           (d) => d.loaId,
-          mapWithArguments((_, { loaId }) => {
-            return loaId;
+          mapWithArguments((_, { loaId }: { loaId: number }) => {
+            return +loaId;
           }),
         ),
         forMember(
           (d) => d.documentId,
-          mapWithArguments((_, { documentId }) => {
-            if(documentId)
-            return documentId;
+          mapWithArguments((_, { documentId }: { documentId: string }) => {
+            if (documentId) return documentId;
           }),
         ),
         forMember(
           (d) => d.isActive,
-          mapWithArguments((_, { isActive }) => {
+          mapWithArguments((_, { isActive }: { isActive: boolean }) => {
             return isActive;
           }),
         ),
