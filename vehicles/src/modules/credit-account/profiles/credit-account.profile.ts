@@ -21,6 +21,8 @@ import { CreditAccountLimitType } from '../../../common/enum/credit-account-limi
 import { CreditAccountActivity } from '../entities/credit-account-activity.entity';
 import { ReadCreditAccountActivityDto } from '../dto/response/read-credit-account-activity.dto';
 import { ReadCreditAccountMetadataDto } from '../dto/response/read-credit-account-metadata.dto';
+import { IDIRUserAuthGroup } from '../../../common/enum/user-auth-group.enum';
+import { undefinedSubstitution } from '../../../common/helper/common.helper';
 
 @Injectable()
 export class CreditAccountProfile extends AutomapperProfile {
@@ -124,18 +126,59 @@ export class CreditAccountProfile extends AutomapperProfile {
         forMember(
           (d) => d.availableCredit,
           mapWithArguments(
-            (_s, { availableCredit }) => availableCredit as number,
+            (
+              _s,
+              {
+                userAuthGroup,
+                availableCredit,
+              }: { userAuthGroup: IDIRUserAuthGroup; availableCredit: number },
+            ) =>
+              undefinedSubstitution(
+                availableCredit,
+                () =>
+                  userAuthGroup !== IDIRUserAuthGroup.PPC_CLERK &&
+                  userAuthGroup !== IDIRUserAuthGroup.PPC_SUPERVISOR,
+              ),
           ),
         ),
         forMember(
           (d) => d.creditLimit,
           mapWithArguments(
-            (_s, { creditLimit }) => creditLimit as CreditAccountLimitType,
+            (
+              _s,
+              {
+                userAuthGroup,
+                creditLimit,
+              }: {
+                userAuthGroup: IDIRUserAuthGroup;
+                creditLimit: CreditAccountLimitType;
+              },
+            ) =>
+              undefinedSubstitution(
+                creditLimit,
+                () =>
+                  userAuthGroup !== IDIRUserAuthGroup.PPC_CLERK &&
+                  userAuthGroup !== IDIRUserAuthGroup.PPC_SUPERVISOR,
+              ),
           ),
         ),
         forMember(
           (d) => d.creditBalance,
-          mapWithArguments((_s, { creditBalance }) => creditBalance as number),
+          mapWithArguments(
+            (
+              _s,
+              {
+                userAuthGroup,
+                creditBalance,
+              }: { userAuthGroup: IDIRUserAuthGroup; creditBalance: number },
+            ) =>
+              undefinedSubstitution(
+                creditBalance,
+                () =>
+                  userAuthGroup !== IDIRUserAuthGroup.PPC_CLERK &&
+                  userAuthGroup !== IDIRUserAuthGroup.PPC_SUPERVISOR,
+              ),
+          ),
         ),
       );
 

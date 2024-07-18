@@ -82,7 +82,7 @@ services:
       CFS_CREDIT_ACCOUNT_CLIENT_ID: ${CFS_CREDIT_ACCOUNT_CLIENT_ID}
       CFS_CREDIT_ACCOUNT_CLIENT_SECRET: ${CFS_CREDIT_ACCOUNT_CLIENT_SECRET}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      test: "curl --silent --fail http://localhost:5000/ > /dev/null || exit 1"
       interval: 1m30s
       timeout: 10s
       retries: 3
@@ -90,10 +90,13 @@ services:
     depends_on:
       sql-server-db:
         condition: service_healthy
+      policy-api:
+        condition: service_healthy
     hostname: vehicles-api
     links:
       - sql-server-db
       - dops-api
+      - policy-api
     ports:
       - "5000:5000"
 
@@ -139,7 +142,7 @@ services:
       ORBC_SERVICE_ACCOUNT_CLIENT_SECRET: ${ORBC_SERVICE_ACCOUNT_CLIENT_SECRET}
       ORBC_SERVICE_ACCOUNT_AUDIENCE: ${ORBC_SERVICE_ACCOUNT_AUDIENCE}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5001/"]
+      test: "curl --silent --fail http://localhost:5001/ > /dev/null || exit 1"
       interval: 1m30s
       timeout: 10s
       retries: 3
@@ -153,6 +156,43 @@ services:
     ports:
       - "5001:5001"
 
+  policy-api:
+    container_name: policy-api
+    build:
+      context: ./policy/
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: development
+      POLICY_API_LOG_LEVEL: ${POLICY_API_LOG_LEVEL}
+      POLICY_API_TYPEORM_LOG_LEVEL: ${POLICY_API_TYPEORM_LOG_LEVEL}
+      POLICY_API_MAX_QUERY_EXECUTION_TIME_MS: ${POLICY_API_MAX_QUERY_EXECUTION_TIME_MS}
+      DB_TYPE: ${DB_TYPE}
+      MSSQL_HOST: sql-server-db
+      MSSQL_PORT: ${MSSQL_PORT}
+      MSSQL_DB: ${MSSQL_DB}
+      MSSQL_SA_USER: ${MSSQL_SA_USER}
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+      MSSQL_ENCRYPT: ${MSSQL_ENCRYPT}
+      KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL}
+      KEYCLOAK_AUDIENCE: ${KEYCLOAK_AUDIENCE}
+      KEYCLOAK_IGNORE_EXP: ${KEYCLOAK_IGNORE_EXP}      
+      ORBC_SERVICE_ACCOUNT_CLIENT_ID: ${ORBC_SERVICE_ACCOUNT_CLIENT_ID}
+      ORBC_SERVICE_ACCOUNT_AUDIENCE: ${ORBC_SERVICE_ACCOUNT_AUDIENCE}      
+    healthcheck:
+      test: "curl --silent --fail http://localhost:5002/ > /dev/null || exit 1"
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      sql-server-db:
+        condition: service_healthy
+    hostname: policy-api
+    links:
+      - sql-server-db      
+    ports:
+      - "5002:5002"
+
   frontend:
     container_name: frontend
     build:
@@ -165,7 +205,7 @@ services:
         VITE_KEYCLOAK_AUDIENCE: ${VITE_KEYCLOAK_AUDIENCE}
         VITE_SITEMINDER_LOG_OFF_URL: ${VITE_SITEMINDER_LOG_OFF_URL}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      test: "curl --silent --fail http://localhost:3000/ > /dev/null || exit 1"
       interval: 1m30s
       timeout: 10s
       retries: 3
@@ -174,6 +214,7 @@ services:
     links:
       - vehicles-api
       - dops-api
+      - policy-api
     ports:
       - "3000:3000"
     volumes:
@@ -225,7 +266,7 @@ services:
       DOC_GEN_LIMIT: ${DOC_GEN_LIMIT}
       PERMIT_SCHEDULE_POLLING_INTERVAL: ${PERMIT_SCHEDULE_POLLING_INTERVAL}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5050/"]
+      test: "curl --silent --fail http://localhost:5050/ > /dev/null || exit 1"
       interval: 1m30s
       timeout: 10s
       retries: 3
