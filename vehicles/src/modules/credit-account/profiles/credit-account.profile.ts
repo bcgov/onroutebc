@@ -98,6 +98,12 @@ export class CreditAccountProfile extends AutomapperProfile {
       createMap(
         mapper,
         CreditAccount,
+        ReadCreditAccountDto, );
+
+
+      createMap(
+        mapper,
+        CreditAccount,
         ReadCreditAccountDto,
         forMember(
           (d) => d.creditAccountActivities,
