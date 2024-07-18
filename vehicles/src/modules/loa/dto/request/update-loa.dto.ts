@@ -16,7 +16,7 @@ import { PermitType } from 'src/common/enum/permit-type.enum';
 export class UpdateLoaDto {
   @AutoMap()
   @IsDateString()
-  @MaxLength(24)
+  @MaxLength(10)
   @ApiProperty({
     type: 'string',
     example: '2023-07-13',
@@ -27,7 +27,7 @@ export class UpdateLoaDto {
   @AutoMap()
   @IsOptional()
   @IsDateString()
-  @MaxLength(24)
+  @MaxLength(10)
   @ApiProperty({
     type: 'string',
     required: false,
