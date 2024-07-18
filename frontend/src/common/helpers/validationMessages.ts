@@ -36,11 +36,6 @@ export const invalidPhoneLength = (min: number, max: number) => {
   return replacePlaceholders(messageTemplate, placeholders, min, max);
 };
 
-export const invalidFaxLength = (min: number, max: number) => {
-  const { messageTemplate, placeholders } = validationMessages.fax.length;
-  return replacePlaceholders(messageTemplate, placeholders, min, max);
-};
-
 export const invalidExtensionLength = (max: number) => {
   const { messageTemplate, placeholders } = validationMessages.extension.length;
   return replacePlaceholders(messageTemplate, placeholders, max);

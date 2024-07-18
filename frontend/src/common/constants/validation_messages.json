@@ -38,13 +38,6 @@
       "placeholders": [":min", ":max"]
     }
   },
-  "fax": {
-    "defaultMessage": "Invalid fax number",
-    "length": {
-      "messageTemplate": "Please enter a valid fax number",
-      "placeholders": [":min", ":max"]
-    }
-  },
   "extension": {
     "defaultMessage": "Invalid extension number",
     "length": {

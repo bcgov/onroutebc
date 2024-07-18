@@ -13,7 +13,7 @@ import {
 import "./PermitResendDialog.scss";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import {
-  invalidFaxLength,
+  invalidPhoneLength,
   requiredMessage,
   selectionRequired,
 } from "../../../../common/helpers/validationMessages";
@@ -234,7 +234,7 @@ export default function PermitResendDialog({
                       fax !== "" &&
                       unformatFax(fax).length >= 10 &&
                       unformatFax(fax).length <= 11) ||
-                    invalidFaxLength(10, 11),
+                    invalidPhoneLength(10, 11),
                 },
               },
             }}
