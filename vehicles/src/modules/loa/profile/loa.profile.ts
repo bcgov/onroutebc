@@ -81,12 +81,6 @@ export class LoaProfile extends AutomapperProfile {
         UpdateLoaDto,
         LoaDetail,
         forMember(
-          (d) => d.company.companyId,
-          mapWithArguments((_, { companyId }: { companyId: number }) => {
-            return +companyId;
-          }),
-        ),
-        forMember(
           (d) => d.loaId,
           mapWithArguments((_, { loaId }: { loaId: number }) => {
             return +loaId;
