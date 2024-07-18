@@ -1,4 +1,9 @@
-import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { LogAsyncMethodExecution } from 'src/common/decorator/log-async-method-execution.decorator';
 import { CreateLoaDto } from './dto/request/create-loa.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
@@ -34,12 +39,21 @@ export class LoaService {
     companyId: number,
     documentId?: string,
   ): Promise<ReadLoaDto> {
-    const loa = await this.classMapper.mapAsync(createLoaDto, CreateLoaDto, LoaDetail, {
-      extraArgs: () => ({ companyId: companyId, documentId: documentId }),
-    });
+    const loa = await this.classMapper.mapAsync(
+      createLoaDto,
+      CreateLoaDto,
+      LoaDetail,
+      {
+        extraArgs: () => ({ companyId: companyId, documentId: documentId }),
+      },
+    );
     loa.isActive = true;
     const loaDetail = await this.loaDetailRepository.save(loa);
-    const readLoaDto = await this.classMapper.mapAsync(loaDetail, LoaDetail, ReadLoaDto);
+    const readLoaDto = await this.classMapper.mapAsync(
+      loaDetail,
+      LoaDetail,
+      ReadLoaDto,
+    );
     try {
       const file = await this.downloadLoaDocument(
         currentUser,
@@ -85,7 +99,7 @@ export class LoaService {
         extraArgs: () => ({ companyId: companyId }),
       },
     );
-console.log('readLoaDto',readLoaDto);
+    console.log('readLoaDto', readLoaDto);
     return readLoaDto;
   }
 
@@ -115,9 +129,14 @@ console.log('readLoaDto',readLoaDto);
       );
     }
 
-    const readLoaDto = await this.classMapper.mapAsync(loaDetail, LoaDetail, ReadLoaDto, {
-      extraArgs: () => ({ companyId }),
-    });
+    const readLoaDto = await this.classMapper.mapAsync(
+      loaDetail,
+      LoaDetail,
+      ReadLoaDto,
+      {
+        extraArgs: () => ({ companyId }),
+      },
+    );
 
     try {
       const file = await this.downloadLoaDocument(
@@ -180,9 +199,37 @@ console.log('readLoaDto',readLoaDto);
     updateLoaDto: UpdateLoaDto,
     documentId?: string,
   ): Promise<ReadLoaDto> {
-
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     try {
-      const isActive = 'Y';
+      const { powerUnits, trailers, loaPermitType } = updateLoaDto;
+      const existingLoaDetail = await this.findOne(companyId, loaId);
+      if (!existingLoaDetail) {
+        throw new NotFoundException('LOA detail not found');
+      }
+      await this.deleteEntities(
+        queryRunner.manager,
+        LoaVehicle,
+        'powerUnit',
+        powerUnits,
+        loaId,
+      );
+      await this.deleteEntities(
+        queryRunner.manager,
+        LoaVehicle,
+        'trailer',
+        trailers,
+        loaId,
+      );
+      await this.deleteEntities(
+        queryRunner.manager,
+        LoaPermitType,
+        'permitType',
+        loaPermitType,
+        loaId,
+      );
+      const isActive = existingLoaDetail.isActive;
 
       const updatedLoaDetail: LoaDetail = await this.classMapper.mapAsync(
         updateLoaDto,
@@ -190,14 +237,12 @@ console.log('readLoaDto',readLoaDto);
         LoaDetail,
         { extraArgs: () => ({ companyId, loaId, isActive, documentId }) },
       );
-      console.log('updatedLoaDetail: ',updatedLoaDetail);
-      const savedLoaDetail = await this.loaDetailRepository.save(updatedLoaDetail);
+      const savedLoaDetail = await queryRunner.manager.save(updatedLoaDetail);
       let readLoaDto = await this.classMapper.mapAsync(
         savedLoaDetail,
         LoaDetail,
         ReadLoaDto,
       );
-
       try {
         const file = (await this.dopsService.download(
           currentUser,
@@ -215,21 +260,24 @@ console.log('readLoaDto',readLoaDto);
 
       return readLoaDto;
     } catch (error) {
+      await queryRunner.rollbackTransaction();
       throw new InternalServerErrorException(error);
-    } 
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   @LogAsyncMethodExecution()
-  async delete(loaId: string,companyId: number): Promise<number> {
+  async delete(loaId: string, companyId: number): Promise<number> {
     const { affected } = await this.loaDetailRepository
-    .createQueryBuilder()
-    .update(LoaDetail)
-    .set({
+      .createQueryBuilder()
+      .update(LoaDetail)
+      .set({
         isActive: false,
-    })
-    .where("loaId = :loaId", { loaId: loaId })
-    .andWhere("company.companyId = :companyId",{companyId: companyId})
-    .execute()
+      })
+      .where('loaId = :loaId', { loaId: loaId })
+      .andWhere('company.companyId = :companyId', { companyId: companyId })
+      .execute();
     return affected;
   }
 
@@ -261,7 +309,7 @@ console.log('readLoaDto',readLoaDto);
     entity: typeof LoaVehicle | typeof LoaPermitType,
     field: 'powerUnit' | 'trailer' | 'permitType',
     items: string[],
-    loaId: string,
+    loaId: number,
   ): Promise<void> {
     if (items && items.length > 0) {
       await entityManager
