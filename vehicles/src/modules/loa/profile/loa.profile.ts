@@ -93,6 +93,19 @@ export class LoaProfile extends AutomapperProfile {
           }),
         ),
         forMember(
+          (d) => d.documentId,
+          mapWithArguments((_, { documentId }) => {
+            if(documentId)
+            return documentId;
+          }),
+        ),
+        forMember(
+          (d) => d.isActive,
+          mapWithArguments((_, { isActive }) => {
+            return isActive;
+          }),
+        ),
+        forMember(
           (d) => d.loaPermitTypes,
           mapFrom((s) => {
             const loaPermitTypes: LoaPermitType[] = new Array<LoaPermitType>();

@@ -15,10 +15,9 @@ import { PermitType } from 'src/common/enum/permit-type.enum';
 
 export class CreateLoaDto {
   @AutoMap()
-  @IsString()
   @MaxLength(10)
   @ApiProperty({
-    type: 'date',
+    type: 'string',
     example: '2023-07-13',
     description: 'Effective start date of an LoA',
   })
@@ -27,10 +26,9 @@ export class CreateLoaDto {
 
   @AutoMap()
   @IsOptional()
-  @IsString()
   @MaxLength(10)
   @ApiProperty({
-    type: 'date',
+    type: 'string',
     required: false,
     example: '2023-08-13',
     description: 'Effective end date of an LoA',
