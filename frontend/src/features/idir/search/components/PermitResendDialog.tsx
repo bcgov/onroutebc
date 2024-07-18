@@ -13,6 +13,7 @@ import {
 import "./PermitResendDialog.scss";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import {
+  invalidFaxLength,
   requiredMessage,
   selectionRequired,
 } from "../../../../common/helpers/validationMessages";
@@ -88,6 +89,7 @@ export default function PermitResendDialog({
       fax: getDefaultRequiredVal("", fax),
       notificationTypes,
     },
+    mode: "onSubmit",
     reValidateMode: "onChange",
   });
 
@@ -110,8 +112,13 @@ export default function PermitResendDialog({
     onCancel();
   };
 
+  const unformatFax = (fax: string) => {
+    return fax.replace(/[+()-\s]/g, "");
+  };
+
   const handleResend = (formData: PermitResendFormData) => {
-    const { permitId, email, fax, notificationTypes } = formData;
+    const { permitId, email, fax: formattedFax, notificationTypes } = formData;
+    const fax = unformatFax(formattedFax);
     const selectedNotificationTypes = Object.keys(notificationTypes).filter(
       (type) => notificationTypes[type as EmailNotificationType],
     ) as EmailNotificationType[];
@@ -212,16 +219,26 @@ export default function PermitResendDialog({
           />
 
           <CustomFormComponent
-            className="permit-resend-info__input permit-resend-info__input--fax"
-            type="input"
+            type="phone"
             feature={FEATURE}
             options={{
               name: "fax",
-              rules: {
-                required: { value: false, message: "" },
-              },
               label: "Fax",
+              rules: {
+                required: false,
+                validate: {
+                  validateFax: (fax?: string) =>
+                    fax == null ||
+                    fax === "" ||
+                    (fax != null &&
+                      fax !== "" &&
+                      unformatFax(fax).length >= 10 &&
+                      unformatFax(fax).length <= 11) ||
+                    invalidFaxLength(10, 11),
+                },
+              },
             }}
+            className="permit-resend-info__input permit-resend-info__input--fax"
           />
         </div>
 

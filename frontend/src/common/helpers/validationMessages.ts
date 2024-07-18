@@ -13,7 +13,8 @@ const replacePlaceholders = (
 };
 
 export const requiredMessage = () => validationMessages.required.defaultMessage;
-export const selectionRequired = () => validationMessages.selectionRequired.defaultMessage;
+export const selectionRequired = () =>
+  validationMessages.selectionRequired.defaultMessage;
 export const invalidNumber = () => validationMessages.NaN.defaultMessage;
 export const invalidCountryCode = () =>
   validationMessages.country.defaultMessage;
@@ -32,6 +33,11 @@ export const invalidEmail = () => validationMessages.email.defaultMessage;
 
 export const invalidPhoneLength = (min: number, max: number) => {
   const { messageTemplate, placeholders } = validationMessages.phone.length;
+  return replacePlaceholders(messageTemplate, placeholders, min, max);
+};
+
+export const invalidFaxLength = (min: number, max: number) => {
+  const { messageTemplate, placeholders } = validationMessages.fax.length;
   return replacePlaceholders(messageTemplate, placeholders, min, max);
 };
 
