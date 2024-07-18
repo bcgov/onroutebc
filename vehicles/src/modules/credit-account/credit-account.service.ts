@@ -44,6 +44,11 @@ import { User } from '../company-user-management/users/entities/user.entity';
 import { DataNotFoundException } from '../../common/exception/data-not-found.exception';
 import { ReadCreditAccountMetadataDto } from './dto/response/read-credit-account-metadata.dto';
 import { throwUnprocessableEntityException } from '../../common/helper/exception.helper';
+import {
+  ClientUserAuthGroup,
+  IDIRUserAuthGroup,
+  UserAuthGroup,
+} from '../../common/enum/user-auth-group.enum';
 
 /**
  * Service functions for credit account operations.
@@ -230,7 +235,7 @@ export class CreditAccountService {
       ReadCreditAccountDto,
       {
         extraArgs: () => ({
-          userType: CreditAccountUserType.ACCOUNT_HOLDER,
+          userAuthGroup: currentUser.orbcUserAuthGroup,
           creditBalance: 0,
           availableCredit: creditLimit,
           creditLimit,
@@ -243,36 +248,10 @@ export class CreditAccountService {
 
   @LogAsyncMethodExecution()
   async getCreditAccount(currentUser: IUserJWT, companyId: number) {
-    let creditAccount = await this.creditAccountRepository.findOne({
-      where: {
-        company: { companyId },
-      },
-      relations: {
-        company: true,
-        creditAccountUsers: { company: true },
-        creditAccountActivities: { idirUser: true },
-      },
-    });
-
-    if (
-      !creditAccount ||
-      creditAccount?.creditAccountStatusType ===
-        CreditAccountStatus.ACCOUNT_CLOSED
-    ) {
-      const accountDetailsForUser = await this.creditAccountRepository.findOne({
-        where: {
-          creditAccountUsers: { company: { companyId }, isActive: true },
-        },
-        relations: {
-          company: true,
-          creditAccountUsers: { company: true },
-          creditAccountActivities: { idirUser: true },
-        },
-      });
-      if (accountDetailsForUser) {
-        creditAccount = accountDetailsForUser;
-      }
-    }
+    const creditAccount = await this.findCreditAccountDetails(
+      companyId,
+      currentUser,
+    );
 
     if (!creditAccount) {
       throw new DataNotFoundException();
@@ -288,6 +267,7 @@ export class CreditAccountService {
       ReadCreditAccountDto,
       {
         extraArgs: () => ({
+          userAuthGroup: currentUser.orbcUserAuthGroup,
           creditBalance: 0,
           availableCredit: 0,
           creditLimit: 0,
@@ -301,9 +281,13 @@ export class CreditAccountService {
       ReadCreditAccountUserDto,
     );
 
-    readCreditAccountDto?.creditAccountUsers?.unshift(
-      mappedCreditAccountHolderInfo,
-    );
+    if (readCreditAccountDto?.creditAccountUsers?.length) {
+      readCreditAccountDto?.creditAccountUsers?.unshift(
+        mappedCreditAccountHolderInfo,
+      );
+    } else {
+      readCreditAccountDto.creditAccountUsers = [mappedCreditAccountHolderInfo];
+    }
     return readCreditAccountDto;
   }
 
@@ -839,6 +823,7 @@ export class CreditAccountService {
    * @param creditAccountHolderCompanyId - The ID of the holder's company to filter by.
    * @param creditAccountId - The ID of the credit account to filter by.
    * @param creditAccountUserId - The ID of the credit account user to filter by.
+   * @param isActive - The active status to filter by.
    * @returns {Promise<CreditAccountUser[]>} - The found credit account users.
    */
   private async findManyCreditAccountUsers(
@@ -920,37 +905,160 @@ export class CreditAccountService {
    * @returns {Promise<ReadCreditAccountUserDto[]>} - The list of credit account users.
    */
   @LogAsyncMethodExecution()
-  public async getCreditAccountUsers(
-    creditAccountHolder: number,
-    creditAccountId: number,
-    includeAccountHolder?: Nullable<boolean>,
-  ): Promise<ReadCreditAccountUserDto[]> {
-    const creditAccountUsers = await this.findManyCreditAccountUsers(
-      null,
-      creditAccountHolder,
+  public async getCreditAccountUsers({
+    companyId,
+    creditAccountId,
+    currentUser,
+    includeAccountHolder,
+  }: {
+    companyId: number;
+    creditAccountId: number;
+    currentUser: IUserJWT;
+    includeAccountHolder?: Nullable<boolean>;
+  }): Promise<ReadCreditAccountUserDto[]> {
+    const creditAccount = await this.findCreditAccountDetails(
+      companyId,
+      currentUser,
       creditAccountId,
-      null,
-      true,
     );
 
-    const readCreditAccountUserDtoList = await this.classMapper.mapArrayAsync(
-      creditAccountUsers,
-      CreditAccountUser,
-      ReadCreditAccountUserDto,
-    );
+    if (!creditAccount) {
+      throw new DataNotFoundException();
+    }
 
+    let readCreditAccountUserDtoList: ReadCreditAccountUserDto[] = [];
+    if (creditAccount?.creditAccountUsers?.length) {
+      readCreditAccountUserDtoList = await this.classMapper.mapArrayAsync(
+        creditAccount?.creditAccountUsers,
+        CreditAccountUser,
+        ReadCreditAccountUserDto,
+      );
+    }
     if (includeAccountHolder) {
-      const creditAccountHolderInfo =
-        await this.companyService.findOneEntity(creditAccountHolder);
-
       const mappedCreditAccountHolderInfo = await this.classMapper.mapAsync(
-        creditAccountHolderInfo,
+        creditAccount?.company,
         Company,
         ReadCreditAccountUserDto,
       );
 
-      readCreditAccountUserDtoList.unshift(mappedCreditAccountHolderInfo);
+      if (readCreditAccountUserDtoList?.length) {
+        readCreditAccountUserDtoList?.unshift(mappedCreditAccountHolderInfo);
+      } else {
+        readCreditAccountUserDtoList = [mappedCreditAccountHolderInfo];
+      }
     }
+
     return readCreditAccountUserDtoList;
+  }
+
+  private async findCreditAccountDetails(
+    companyId: number,
+    currentUser: IUserJWT,
+    creditAccountId?: Nullable<number>,
+  ) {
+    /**
+     * Finds detailed information about a credit account for a given Holder/User.
+     *
+     * This method retrieves credit account details based on the company ID, user information,
+     * and an optional credit account ID. It considers user roles and account statuses to return relevant account information.
+     *
+     * @param {number} companyId - The ID of the company.
+     * @param {IUserJWT} currentUser - The current user authenticated with JWT.
+     * @param {Nullable<number>} [creditAccountId] - The optional ID of the credit account.
+     * @returns {Promise<CreditAccount | null>} - The detailed information about the credit account, or null if not found.
+     */
+    let creditAccount = await this.creditAccountRepository.findOne({
+      where: {
+        ...(creditAccountId && { creditAccountId }),
+        company: { companyId },
+      },
+      relations: this.granularAccessControl(
+        CreditAccountUserType.ACCOUNT_HOLDER,
+        currentUser.orbcUserAuthGroup,
+      ),
+    });
+
+    if (
+      !creditAccount ||
+      creditAccount?.creditAccountStatusType ===
+        CreditAccountStatus.ACCOUNT_CLOSED
+    ) {
+      const accountDetailsForUser = await this.creditAccountRepository.findOne({
+        where: {
+          creditAccountUsers: {
+            ...(creditAccountId && { creditAccount: { creditAccountId } }),
+            company: { companyId },
+            isActive: true,
+          },
+        },
+        relations: this.granularAccessControl(
+          CreditAccountUserType.ACCOUNT_USER,
+          currentUser.orbcUserAuthGroup,
+        ),
+      });
+      if (accountDetailsForUser) {
+        creditAccount = accountDetailsForUser;
+      }
+    }
+    return creditAccount;
+  }
+
+  /**
+   * Controls access to various functionalities based on user type and authorization group.
+   *
+   * This method provides granular access control to credit account data and functionalities.
+   * It evaluates the type of user and their authorization group, then returns an object
+   * specifying their access permissions.
+   *
+   * @param {CreditAccountUserType} creditAccountUserType - The type of the credit account user.
+   * @param {UserAuthGroup} userAuthGroup - The authorization group of the user.
+   * @returns {Object} - An object representing the access permissions for the user.
+   */
+  private granularAccessControl(
+    creditAccountUserType: CreditAccountUserType,
+    userAuthGroup: UserAuthGroup,
+  ) {
+    switch (creditAccountUserType) {
+      // Check if the user is an ACCOUNT_HOLDER
+      case CreditAccountUserType.ACCOUNT_HOLDER:
+        switch (userAuthGroup) {
+          // Grant full finance access
+          case IDIRUserAuthGroup.FINANCE:
+            return {
+              company: true,
+              creditAccountUsers: { company: true },
+              creditAccountActivities: { idirUser: true },
+            };
+          // Grant access to SYSTEM_ADMINISTRATOR, HQ_ADMINISTRATOR, PPC_CLERK, PPC_SUPERVISOR, and COMPANY_ADMINISTRATOR groups
+          case IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR:
+          case IDIRUserAuthGroup.HQ_ADMINISTRATOR:
+          case IDIRUserAuthGroup.PPC_CLERK:
+          case IDIRUserAuthGroup.PPC_SUPERVISOR:
+          case ClientUserAuthGroup.COMPANY_ADMINISTRATOR:
+            return {
+              company: true,
+              creditAccountUsers: { company: true },
+            };
+        }
+        break;
+      // Check if the user is an ACCOUNT_USER
+      case CreditAccountUserType.ACCOUNT_USER:
+        switch (userAuthGroup) {
+          // Grant full finance access
+          case IDIRUserAuthGroup.FINANCE:
+            return {
+              company: true,
+              creditAccountUsers: { company: true },
+              creditAccountActivities: { idirUser: true },
+            };
+          // Grant partial access to SYSTEM_ADMINISTRATOR, HQ_ADMINISTRATOR, PPC_CLERK, and PPC_SUPERVISOR groups
+          case IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR:
+          case IDIRUserAuthGroup.HQ_ADMINISTRATOR:
+          case IDIRUserAuthGroup.PPC_CLERK:
+          case IDIRUserAuthGroup.PPC_SUPERVISOR:
+            return { company: true };
+        }
+        break;
+    }
   }
 }
