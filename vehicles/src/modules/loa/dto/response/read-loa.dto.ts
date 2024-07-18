@@ -30,14 +30,14 @@ export class ReadLoaDto {
 
   @AutoMap()
   @ApiProperty({
-    example: '2023-07-13T00:00:00.000Z',
+    example: '2023-07-13',
     description: 'Effective start date of an LoA',
   })
   startDate: string;
 
   @AutoMap()
   @ApiProperty({
-    example: '2023-08-13T00:00:00.000Z',
+    example: '2023-08-13',
     description: 'Effective end date of an LoA',
   })
   expiryDate: string;

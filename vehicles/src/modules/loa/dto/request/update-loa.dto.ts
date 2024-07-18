@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
   Allow,
+  IsDateString,
   IsEnum,
   IsNumberString,
   IsOptional,
@@ -14,21 +15,23 @@ import { PermitType } from 'src/common/enum/permit-type.enum';
 
 export class UpdateLoaDto {
   @AutoMap()
-  @IsString()
+  @IsDateString()
   @MaxLength(24)
   @ApiProperty({
-    example: '2023-07-13T00:00:00.000Z',
+    type: 'string',
+    example: '2023-07-13',
     description: 'Effective start date of an LoA',
   })
   startDate: string;
 
   @AutoMap()
   @IsOptional()
-  @IsString()
+  @IsDateString()
   @MaxLength(24)
   @ApiProperty({
+    type: 'string',
     required: false,
-    example: '2023-08-13T00:00:00.000Z',
+    example: '2023-08-13',
     description: 'Effective end date of an LoA',
   })
   expiryDate: string;

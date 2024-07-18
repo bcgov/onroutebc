@@ -44,26 +44,24 @@ export class LoaDetail extends Base {
 
   @AutoMap()
   @ApiProperty({
-    example: '2023-07-13T00:00:00.000Z',
+    example: '2023-07-13',
     description: 'Effective start date of an LoA',
   })
   @Column({
     name: 'START_DATE',
     nullable: false,
-    type: 'date',
   })
   startDate: string;
 
   @AutoMap()
   @ApiProperty({
-    example: '2023-08-13T00:00:00.000Z',
+    example: '2023-08-13',
     description: 'Effective end date of an LoA',
   })
   @IsOptional()
   @Column({
     name: 'EXPIRY_DATE',
     nullable: true,
-    type: 'date',
   })
   expiryDate: string;
 

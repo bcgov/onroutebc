@@ -81,6 +81,7 @@ export class LoaController {
     )
     file: Express.Multer.File,
   ): Promise<ReadLoaDto> {
+    console.log('createLoaDto: ', createLoaDto);
     const currentUser = request.user as IUserJWT;
     let readFileDto: ReadFileDto = new ReadFileDto();
     if (file) {
@@ -169,7 +170,7 @@ export class LoaController {
     @Param('companyId') companyId: number,
     @Param('loaId') loaId: string,
   ): Promise<number> {
-    const loa = await this.loaService.delete(loaId,companyId);
+    const loa = await this.loaService.delete(loaId, companyId);
     return loa;
   }
 
