@@ -1,13 +1,12 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
+
 import {
   IsEnum,
   IsNumberString,
   IsOptional,
   IsString,
   MaxLength,
-  Allow,
   IsDateString,
   ValidateIf,
 } from 'class-validator';
@@ -36,10 +35,6 @@ export class CreateLoaDto {
   @IsDateString()
   expiryDate: string;
 
-  @ApiProperty({ type: 'string', format: 'binary' })
-  @Allow()
-  file: string;
-
   @AutoMap()
   @IsOptional()
   @IsString()
@@ -57,13 +52,6 @@ export class CreateLoaDto {
     isArray: true,
     example: [PermitType.TERM_OVERSIZE, PermitType.TERM_OVERWEIGHT],
   })
-  @Transform(({ value }) => {
-    if (typeof value === 'string') {
-      return value.split(',').map((item) => item.trim());
-    }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return value;
-  })
   @IsEnum(PermitType, { each: true })
   loaPermitType: PermitType[];
 
@@ -73,13 +61,6 @@ export class CreateLoaDto {
     isArray: true,
     type: String,
     example: ['1', '2'],
-  })
-  @Transform(({ value }) => {
-    if (typeof value === 'string') {
-      return value.split(',').map((item) => item.trim());
-    }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return value;
   })
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
   @ValidateIf((dto) => !dto.powerUnits || (dto.powerUnits && dto.trailers))
@@ -92,13 +73,6 @@ export class CreateLoaDto {
     isArray: true,
     type: String,
     example: ['1', '2'],
-  })
-  @Transform(({ value }) => {
-    if (typeof value === 'string') {
-      return value.split(',').map((item) => item.trim());
-    }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return value;
   })
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
   @ValidateIf((dto) => !dto.trailers || (dto.powerUnits && dto.trailers))

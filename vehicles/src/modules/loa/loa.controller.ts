@@ -25,7 +25,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { ExceptionDto } from 'src/common/exception/exception.dto';
-import { CreateLoaDto } from './dto/request/create-loa.dto';
 import { ReadLoaDto } from './dto/response/read-loa.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { LoaService } from './loa.service';
@@ -37,6 +36,9 @@ import { DopsService } from '../common/dops.service';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { FileDownloadModes } from 'src/common/enum/file-download-modes.enum';
 import { setResHeaderCorrelationId } from 'src/common/helper/response-header.helper';
+import { JsonReqBodyInterceptor } from '../../common/interceptor/json-req-body.interceptor';
+import { CreateLoaFileDto } from './dto/request/create-loa-file.dto';
+import { CompanyIdPathParamDto } from '../common/dto/request/pathParam/companyId.path-param.dto';
 
 @ApiBearerAuth()
 @ApiTags('Company Letter of Authorization')
@@ -66,11 +68,10 @@ export class LoaController {
   })
   @ApiConsumes('multipart/form-data')
   @Post()
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file'), JsonReqBodyInterceptor)
   async create(
     @Req() request: Request,
-    @Param('companyId') companyId: number,
-    @Body() createLoaDto: CreateLoaDto,
+    @Param() { companyId }: CompanyIdPathParamDto,
     @UploadedFile(
       new ParseFilePipe({
         validators: [
@@ -80,16 +81,16 @@ export class LoaController {
       }),
     )
     file: Express.Multer.File,
+    @Body() createLoaFileDto: CreateLoaFileDto,
   ): Promise<ReadLoaDto> {
-    console.log('createLoaDto: ', createLoaDto);
     const currentUser = request.user as IUserJWT;
-    let readFileDto: ReadFileDto = new ReadFileDto();
+    let readFileDto: ReadFileDto;
     if (file) {
       readFileDto = await this.dopsService.upload(currentUser, companyId, file);
     }
     const result = await this.loaService.create(
       currentUser,
-      createLoaDto,
+      createLoaFileDto?.body,
       companyId,
       readFileDto.documentId,
     );
