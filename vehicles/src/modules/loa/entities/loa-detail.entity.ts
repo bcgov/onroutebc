@@ -22,7 +22,7 @@ export class LoaDetail extends Base {
     description: 'Unique identifier for the LoA.',
   })
   @PrimaryGeneratedColumn({ type: 'int', name: 'LOA_ID' })
-  loaId: string;
+  loaId: number;
 
   @AutoMap()
   @ApiProperty({
@@ -30,7 +30,7 @@ export class LoaDetail extends Base {
     description: 'Unique LoA Number',
   })
   @Column({ type: 'int', name: 'LOA_NUMBER', nullable: false })
-  loaNumber: string;
+  loaNumber: number;
 
   @AutoMap()
   @ApiProperty({

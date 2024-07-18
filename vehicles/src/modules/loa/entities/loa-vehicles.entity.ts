@@ -18,7 +18,7 @@ export class LoaVehicle extends Base {
     description: 'Id for the loa allowed vehicles',
   })
   @PrimaryGeneratedColumn({ type: 'int', name: 'LOA_VEHICLE_ID' })
-  loavehicleId: string;
+  loavehicleId: number;
 
   @AutoMap(() => LoaDetail)
   @ManyToOne(() => LoaDetail, (LoaDetail) => LoaDetail.loaVehicles, {
