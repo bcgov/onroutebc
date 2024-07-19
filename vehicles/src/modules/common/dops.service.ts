@@ -323,9 +323,9 @@ export class DopsService {
     const baseUrl = new URL(process.env.DOPS_URL);
     // Append the path and query parameter(s)
     if (!documentId) {
-      baseUrl.pathname += '/dms/upload';
+      baseUrl.pathname += 'dms/upload';
     } else {
-      baseUrl.pathname += `/dms/upload/${documentId}`;
+      baseUrl.pathname += `dms/upload/${documentId}`;
     }
     // Add companyId as a query parameter
     baseUrl.searchParams.set('companyId', companyId.toString());
