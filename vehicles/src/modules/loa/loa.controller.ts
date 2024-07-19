@@ -31,8 +31,6 @@ import { LoaService } from './loa.service';
 import { Request, Response } from 'express';
 import { GetLoaQueryParamsDto } from './dto/request/queryParam/get-loa.query-params.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { DopsService } from '../common/dops.service';
-import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { FileDownloadModes } from 'src/common/enum/file-download-modes.enum';
 import { setResHeaderCorrelationId } from 'src/common/helper/response-header.helper';
 import { JsonReqBodyInterceptor } from '../../common/interceptor/json-req-body.interceptor';
@@ -40,6 +38,7 @@ import { CreateLoaFileDto } from './dto/request/create-loa-file.dto';
 import { CompanyIdPathParamDto } from '../common/dto/request/pathParam/companyId.path-param.dto';
 import { UpdateLoaFileDto } from './dto/request/update-loa-file.dto';
 import { LoaIdPathParamDto } from './dto/request/pathParam/loa-Id.path-params.dto';
+import { GetDocumentQueryParamsDto } from '../common/dto/request/queryParam/getDocument.query-params.dto';
 
 @ApiBearerAuth()
 @ApiTags('Company Letter of Authorization')
@@ -174,7 +173,8 @@ export class LoaController {
   async getLoaDocument(
     @Req() request: Request,
     @Param() { companyId, loaId }: LoaIdPathParamDto,
-    @Query('downloadMode') downloadMode: FileDownloadModes,
+    @Query() { download }: GetDocumentQueryParamsDto,
+
     @Res() res: Response,
   ) {
     const currentUser = request.user as IUserJWT;
@@ -182,10 +182,10 @@ export class LoaController {
       currentUser,
       companyId,
       loaId,
-      downloadMode,
+      download,
       res,
     );
-    if (downloadMode === FileDownloadModes.URL) {
+    if (download === FileDownloadModes.URL) {
       setResHeaderCorrelationId(res);
       res.status(201).send(loa);
     }

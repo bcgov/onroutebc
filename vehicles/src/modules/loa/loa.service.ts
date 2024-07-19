@@ -249,6 +249,12 @@ export class LoaService {
       res,
       companyId,
     );
+    if (downloadMode === FileDownloadModes.URL) {
+      const loaAsReadFileDto = loa as ReadFileDto;
+      loaAsReadFileDto.s3ObjectId = undefined;
+      loaAsReadFileDto.s3Location = undefined;
+      loaAsReadFileDto.preSignedS3Url = undefined;
+    }
     return loa;
   }
 
