@@ -1,7 +1,7 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsString, ValidateNested } from 'class-validator';
+import { Allow, ValidateNested } from 'class-validator';
 
 import { CreateLoaDto } from './create-loa.dto';
 
@@ -14,7 +14,7 @@ export class CreateLoaFileDto {
     format: 'binary',
     description: 'File associated with the Letter of Authorization (Loa).',
   })
-  @IsString()
+  @Allow()
   file: string;
 
   /**
