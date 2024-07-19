@@ -319,13 +319,16 @@ export class DopsService {
     file: Express.Multer.File,
     documentId?: Nullable<string>,
   ): Promise<ReadFileDto> {
-    // Construct the URL for the request
-    let url = null;
-    if (!documentId) url = `${process.env.DOPS_URL}/dms/upload?`;
-    else url = `${process.env.DOPS_URL}/dms/upload/${documentId}?`;
-    const params = new URLSearchParams({
-      companyId: companyId.toString(),
-    }).toString();
+    // Construct the base URL
+    const baseUrl = new URL(process.env.DOPS_URL);
+    // Append the path and query parameter(s)
+    if (!documentId) {
+      baseUrl.pathname += '/dms/upload';
+    } else {
+      baseUrl.pathname += `/dms/upload/${documentId}`;
+    }
+    // Add companyId as a query parameter
+    baseUrl.searchParams.set('companyId', companyId.toString());
     const formData = new FormData();
     const stream = Readable.from(file.buffer);
     formData.append('file', stream, {
@@ -342,7 +345,7 @@ export class DopsService {
     };
     // Calls the DOPS service, which converts the the template document into a pdf
     const dopsResponse = await lastValueFrom(
-      this.httpService.post(url + params, formData, reqConfig),
+      this.httpService.post(baseUrl?.toString(), formData, reqConfig),
     )
       .then((response) => {
         return response;
