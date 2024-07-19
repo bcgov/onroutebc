@@ -28,6 +28,23 @@ export class LoaService {
     private readonly dopsService: DopsService,
   ) {}
 
+  /**
+   * This method handles the creation of a LOA (Letter of Authorization).
+   *
+   * Steps:
+   * 1. Upload the file using the dopsService.
+   * 2. Map the createLoaDto to LoaDetail while injecting extra arguments such as companyId and documentId.
+   * 3. Set the isActive property of the LOA to true.
+   * 4. Save the LOA details in the repository.
+   * 5. Map the saved LOA details to ReadLoaDto.
+   * 6. Assign the fileName from readFileDto to ReadLoaDto and return it.
+   *
+   * @param {IUserJWT} currentUser - The current user making the request.
+   * @param {CreateLoaDto} createLoaDto - Data Transfer Object containing the data for creating the LOA.
+   * @param {number} companyId - ID of the company for which the LOA is being created.
+   * @param {Express.Multer.File} file - The file to be uploaded and associated with the LOA.
+   * @returns {Promise<ReadLoaDto>} - Returns a ReadLoaDto containing the details of the created LOA.
+   */
   @LogAsyncMethodExecution()
   async create(
     currentUser: IUserJWT,
@@ -63,6 +80,21 @@ export class LoaService {
     return readLoaDto;
   }
 
+  /**
+   * This method retrieves LOA (Letter of Authorization) details for a specified company.
+   *
+   * Steps:
+   * 1. Creates a query builder to fetch LOA details, joining necessary relations (company, loaVehicles, loaPermitTypes).
+   * 2. Adds a filter to the query to fetch LOAs for a specific company and active LOAs.
+   * 3. Adds additional filters based on the 'expired' parameter to check if LOAs are expired, not expired, or both.
+   * 4. Executes the query to get the LOA details.
+   * 5. Maps the LOA details to ReadLoaDto objects.
+   * 6. Returns an array of ReadLoaDto.
+   *
+   * @param {number} companyId - ID of the company to fetch LOA details for.
+   * @param {Nullable<boolean>} expired - Optional flag to filter LOAs by their expiry status.
+   * @returns {Promise<ReadLoaDto[]>} - Returns an array of ReadLoaDto containing the details of the fetched LOAs.
+   */
   @LogAsyncMethodExecution()
   async get(
     companyId: number,
@@ -100,6 +132,18 @@ export class LoaService {
     return readLoaDto;
   }
 
+  /**
+   * Retrieves a single LOA (Letter of Authorization) detail for a specified company.
+   *
+   * Steps:
+   * 1. Fetches the LOA detail from the repository based on company ID and LOA ID.
+   * 2. Ensures the fetched LOA detail is active.
+   * 3. Includes relations (company, loaVehicles, loaPermitTypes) in the query.
+   *
+   * @param {number} companyId - ID of the company for which to fetch the LOA detail.
+   * @param {number} loaId - ID of the LOA to be fetched.
+   * @returns {Promise<LoaDetail>} - Returns a Promise that resolves to the LOA detail.
+   */
   @LogAsyncMethodExecution()
   async findOne(companyId: number, loaId: number): Promise<LoaDetail> {
     return await this.loaDetailRepository.findOne({
@@ -112,6 +156,21 @@ export class LoaService {
     });
   }
 
+  /**
+   * Retrieves a specific LOA (Letter of Authorization) detail along with its associated file information.
+   *
+   * Steps:
+   * 1. Fetch the LOA detail from the repository based on companyId and loaId.
+   * 2. If the LOA detail is not found, throw a NotFoundException.
+   * 3. Download the associated file using the dopsService.
+   * 4. Map the LOA detail to ReadLoaDto.
+   * 5. Combine the mapped LOA detail and file information.
+   *
+   * @param {IUserJWT} currentUser - The current user making the request.
+   * @param {number} companyId - ID of the company for which the LOA is being fetched.
+   * @param {number} loaId - ID of the LOA to be fetched.
+   * @returns {Promise<ReadLoaDto>} - Returns a Promise that resolves to a ReadLoaDto containing the LOA detail and file information.
+   */
   @LogAsyncMethodExecution()
   async getById(
     currentUser: IUserJWT,
@@ -158,6 +217,23 @@ export class LoaService {
     return readLoaDto;
   }
 
+  /**
+   * Updates an existing LOA (Letter of Authorization) with provided details and optional file.
+   *
+   * Steps:
+   * 1. Retrieve the existing LOA details.
+   * 2. Handle file upload or download, and get the document ID.
+   * 3. Begin a transaction to delete existing LOA vehicles and permit types and save the updated LOA details.
+   * 4. Commit the transaction if successful, roll back otherwise.
+   * 5. Map the saved LOA details to ReadLoaDto and combine with file information.
+   *
+   * @param {IUserJWT} currentUser - The current user making the request.
+   * @param {number} companyId - ID of the company for which the LOA is being updated.
+   * @param {number} loaId - ID of the LOA to be updated.
+   * @param {UpdateLoaDto} updateLoaDto - Data Transfer Object containing the updated data for the LOA.
+   * @param {Express.Multer.File} [file] - The optional file to be uploaded and associated with the LOA.
+   * @returns {Promise<ReadLoaDto>} - Returns a ReadLoaDto containing the updated details of the LOA.
+   */
   @LogAsyncMethodExecution()
   async updateLoa(
     currentUser: IUserJWT,
@@ -235,6 +311,23 @@ export class LoaService {
     return affected;
   }
 
+  /**
+   * Retrieves a specific LOA (Letter of Authorization) document along with its associated file information.
+   *
+   * Steps:
+   * 1. Fetch the LOA detail from the repository based on companyId and loaId.
+   * 2. If the LOA detail is not found, throw a NotFoundException.
+   * 3. If downloadMode is URL, obfuscate s3ObjectId, s3Location, and preSignedS3Url fields.
+   * 4. Return the LOA document in the specified FileDownloadMode.
+   *
+   * @param {IUserJWT} currentUser - The current user making the request.
+   * @param {number} companyId - ID of the company for which the LOA document is being retrieved.
+   * @param {number} loaId - ID of the LOA document to be retrieved.
+   * @param {FileDownloadModes} downloadMode - The mode in which the file should be downloaded (e.g., as URL or Buffer).
+   * @param {Response} [res] - Optional Express response object for handling the download.
+   * @returns {Promise<ReadFileDto | Buffer>} - Returns a ReadFileDto or Buffer containing the LOA document.
+   */
+  @LogAsyncMethodExecution()
   async getLoaDocument(
     currentUser: IUserJWT,
     companyId: number,

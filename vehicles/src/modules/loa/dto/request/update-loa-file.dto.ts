@@ -1,7 +1,7 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsOptional, ValidateNested } from 'class-validator';
 import { UpdateLoaDto } from './update-loa.dto';
 
 export class UpdateLoaFileDto {
@@ -16,7 +16,6 @@ export class UpdateLoaFileDto {
     description: 'File associated with the Letter of Authorization (Loa).',
   })
   @IsOptional()
-  @IsString()
   file?: string;
 
   /**
