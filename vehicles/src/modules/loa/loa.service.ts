@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { LogAsyncMethodExecution } from 'src/common/decorator/log-async-method-execution.decorator';
 import { CreateLoaDto } from './dto/request/create-loa.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
@@ -145,9 +140,19 @@ export class LoaService {
       },
     );
 
-    const settledPromises = await Promise.all([readLoaDtoPromise, filePromise]);
-    const readLoaDto = settledPromises?.at(0) as ReadLoaDto;
-    readLoaDto.fileName = settledPromises?.at(1)?.fileName;
+    const settledPromises = await Promise.allSettled([
+      readLoaDtoPromise,
+      filePromise,
+    ]);
+
+    let readLoaDto: ReadLoaDto;
+    if (settledPromises[0].status === 'fulfilled') {
+      readLoaDto = settledPromises[0].value;
+      if (settledPromises[1].status === 'fulfilled') {
+        readLoaDto.fileName = settledPromises[1].value.fileName;
+      }
+    }
+
     return readLoaDto;
   }
 

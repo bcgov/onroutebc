@@ -91,7 +91,7 @@ export class LoaController {
   }
 
   @ApiOperation({
-    summary: 'Add LOA for a company.',
+    summary: 'Get all LOA for a company.',
     description: 'Returns all LoAs for a company in database.',
   })
   @Get()
