@@ -77,7 +77,7 @@ export class LoaService {
       loaDetailQB.andWhere('loaDetail.expiryDate < :expiryDate', {
         expiryDate: new Date(),
       });
-    } else {
+    } else if (expired === false) {
       loaDetailQB.andWhere(
         new Brackets((qb) => {
           qb.where('loaDetail.expiryDate >= :expiryDate', {
