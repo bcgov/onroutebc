@@ -113,7 +113,7 @@ export const IDIRCompanySearchResults = memo(
             isSuspended,
           };
         });
-        
+
         setIsCompanySuspended?.(() => isSuspended);
 
         navigate(routes.IDIR_ROUTES.CREATE_COMPANY);
