@@ -51,7 +51,7 @@ export const Footer = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              Contact Us
+              Contact
             </a>
           </li>
         </ul>
