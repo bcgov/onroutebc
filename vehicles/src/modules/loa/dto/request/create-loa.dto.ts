@@ -10,6 +10,7 @@ import {
   IsDateString,
   ArrayMinSize,
   ValidateIf,
+  Length,
 } from 'class-validator';
 import { PermitType } from 'src/common/enum/permit-type.enum';
 import { IsDateTimeAfter } from '../../../../common/decorator/is-date-time-after';
@@ -21,7 +22,7 @@ export class CreateLoaDto {
     example: '2023-07-13',
     description: 'Effective start date of an LoA',
   })
-  @MaxLength(10)
+  @Length(10, 10)
   @IsDateString()
   startDate: string;
 
@@ -33,7 +34,7 @@ export class CreateLoaDto {
     description: 'Effective end date of an LoA',
   })
   @IsOptional()
-  @MaxLength(10)
+  @Length(10, 10)
   @IsDateString()
   @IsDateTimeAfter<CreateLoaDto>('startDate')
   expiryDate?: string;

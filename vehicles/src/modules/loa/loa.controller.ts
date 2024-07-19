@@ -16,6 +16,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiConsumes,
   ApiCreatedResponse,
@@ -23,6 +24,7 @@ import {
   ApiMethodNotAllowedResponse,
   ApiOperation,
   ApiTags,
+  ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { ExceptionDto } from 'src/common/exception/exception.dto';
 import { ReadLoaDto } from './dto/response/read-loa.dto';
@@ -46,11 +48,19 @@ import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-flag-ena
 @IsFeatureFlagEnabled('LOA')
 @Controller('companies/:companyId/loas')
 @ApiMethodNotAllowedResponse({
-  description: 'The Application Api Method Not Allowed Response',
+  description: 'The LOA Api Method Not Allowed Response',
   type: ExceptionDto,
 })
 @ApiInternalServerErrorResponse({
-  description: 'The Application Api Internal Server Error Response',
+  description: 'The LOA Api Internal Server Error Response',
+  type: ExceptionDto,
+})
+@ApiUnprocessableEntityResponse({
+  description: 'The LOA Entity could not be processed.',
+  type: ExceptionDto,
+})
+@ApiBadRequestResponse({
+  description: 'Bad Request Response',
   type: ExceptionDto,
 })
 export class LoaController {
