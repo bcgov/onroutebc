@@ -60,7 +60,7 @@ export class CreateLoaDto {
 
   @AutoMap()
   @ApiProperty({
-    description: 'Trailer IDs. Either trailers or power unit IDs are required.',
+    description: 'Trailer IDs. At leaset one of trailers or power unit IDs are required.',
     isArray: true,
     type: String,
     example: ['1', '2'],
@@ -75,7 +75,7 @@ export class CreateLoaDto {
   @AutoMap()
   @ApiProperty({
     description:
-      'Power unit Ids. Either Trailers or Power Unit ids are required',
+      'Power unit Ids. At least one of Trailers or Power Unit ids are required',
     isArray: true,
     type: String,
     example: ['1', '2'],

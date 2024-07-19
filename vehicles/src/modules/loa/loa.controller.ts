@@ -39,9 +39,11 @@ import { CompanyIdPathParamDto } from '../common/dto/request/pathParam/companyId
 import { UpdateLoaFileDto } from './dto/request/update-loa-file.dto';
 import { LoaIdPathParamDto } from './dto/request/pathParam/loa-Id.path-params.dto';
 import { GetDocumentQueryParamsDto } from '../common/dto/request/queryParam/getDocument.query-params.dto';
+import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-flag-enabled.decorator';
 
 @ApiBearerAuth()
 @ApiTags('Company Letter of Authorization')
+@IsFeatureFlagEnabled('LOA')
 @Controller('companies/:companyId/loas')
 @ApiMethodNotAllowedResponse({
   description: 'The Application Api Method Not Allowed Response',
