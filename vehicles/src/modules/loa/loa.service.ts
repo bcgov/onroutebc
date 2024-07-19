@@ -128,8 +128,15 @@ export class LoaService {
         `LOA detail not found for companyId ${companyId} and loaId ${loaId}`,
       );
     }
+    const filePromise = this.dopsService.download(
+      currentUser,
+      loaDetail.documentId,
+      FileDownloadModes.URL,
+      undefined,
+      companyId,
+    ) as Promise<ReadFileDto>;
 
-    const readLoaDto = await this.classMapper.mapAsync(
+    const readLoaDtoPromise = this.classMapper.mapAsync(
       loaDetail,
       LoaDetail,
       ReadLoaDto,
@@ -138,18 +145,9 @@ export class LoaService {
       },
     );
 
-    try {
-      const file = await this.downloadLoaDocument(
-        currentUser,
-        readLoaDto.documentId,
-        companyId,
-      );
-      readLoaDto.fileName = file.fileName;
-    } catch (error) {
-      this.logger.error('Failed to get loa document', error);
-      // Log the error and continue without setting fileName
-    }
-
+    const settledPromises = await Promise.all([readLoaDtoPromise, filePromise]);
+    const readLoaDto = settledPromises?.at(0) as ReadLoaDto;
+    readLoaDto.fileName = settledPromises?.at(1)?.fileName;
     return readLoaDto;
   }
 

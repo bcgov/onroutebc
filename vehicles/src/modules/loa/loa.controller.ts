@@ -174,7 +174,6 @@ export class LoaController {
     @Req() request: Request,
     @Param() { companyId, loaId }: LoaIdPathParamDto,
     @Query() { download }: GetDocumentQueryParamsDto,
-
     @Res() res: Response,
   ) {
     const currentUser = request.user as IUserJWT;
