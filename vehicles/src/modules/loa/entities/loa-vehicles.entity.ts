@@ -21,9 +21,7 @@ export class LoaVehicle extends Base {
   loavehicleId: number;
 
   @AutoMap(() => LoaDetail)
-  @ManyToOne(() => LoaDetail, (LoaDetail) => LoaDetail.loaVehicles, {
-    orphanedRowAction: 'delete',
-  })
+  @ManyToOne(() => LoaDetail, (LoaDetail) => LoaDetail.loaVehicles)
   @JoinColumn({ name: 'LOA_ID' })
   loa: LoaDetail;
 

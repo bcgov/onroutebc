@@ -11,7 +11,7 @@ import { ReadLoaDto } from './dto/response/read-loa.dto';
 import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoaDetail } from './entities/loa-detail.entity';
-import { Brackets, DataSource, EntityManager, Repository } from 'typeorm';
+import { Brackets, DataSource, Repository } from 'typeorm';
 import { Mapper } from '@automapper/core';
 import { UpdateLoaDto } from './dto/request/update-loa.dto';
 import { LoaVehicle } from './entities/loa-vehicles.entity';
@@ -203,32 +203,15 @@ export class LoaService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      const { powerUnits, trailers, loaPermitType } = updateLoaDto;
-      const existingLoaDetail = await this.findOne(companyId, loaId);
+      const existingLoaDetail = await queryRunner.manager.findOne(LoaDetail, {
+        where: { loaId: loaId, company: { companyId: companyId } },
+        relations: { loaVehicles: true, loaPermitTypes: true },
+      });
       if (!existingLoaDetail) {
         throw new NotFoundException('LOA detail not found');
       }
-      await this.deleteEntities(
-        queryRunner.manager,
-        LoaVehicle,
-        'powerUnit',
-        powerUnits,
-        loaId,
-      );
-      await this.deleteEntities(
-        queryRunner.manager,
-        LoaVehicle,
-        'trailer',
-        trailers,
-        loaId,
-      );
-      await this.deleteEntities(
-        queryRunner.manager,
-        LoaPermitType,
-        'permitType',
-        loaPermitType,
-        loaId,
-      );
+     await queryRunner.manager.delete(LoaVehicle,{loa: {loaId: loaId}});
+     await queryRunner.manager.delete(LoaPermitType,{loa: {loaId: loaId}})
       const isActive = existingLoaDetail.isActive;
 
       const updatedLoaDetail: LoaDetail = await this.classMapper.mapAsync(
@@ -243,6 +226,8 @@ export class LoaService {
         LoaDetail,
         ReadLoaDto,
       );
+      await queryRunner.commitTransaction();
+      if(updateLoaDto.documentId){
       try {
         const file = (await this.dopsService.download(
           currentUser,
@@ -257,6 +242,7 @@ export class LoaService {
         this.logger.error('Failed to get loa document', error);
         // Log the error and continue without setting fileName
       }
+    }
 
       return readLoaDto;
     } catch (error) {
@@ -302,24 +288,6 @@ export class LoaService {
       companyId,
     );
     return loa;
-  }
-
-  private async deleteEntities(
-    entityManager: EntityManager,
-    entity: typeof LoaVehicle | typeof LoaPermitType,
-    field: 'powerUnit' | 'trailer' | 'permitType',
-    items: string[],
-    loaId: number,
-  ): Promise<void> {
-    if (items && items.length > 0) {
-      await entityManager
-        .createQueryBuilder()
-        .delete()
-        .from(entity)
-        .where(`${field} IN (:...items)`, { items })
-        .andWhere('loa = :loaId', { loaId })
-        .execute();
-    }
   }
 
   private async downloadLoaDocument(
