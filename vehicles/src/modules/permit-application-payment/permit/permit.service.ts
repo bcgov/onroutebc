@@ -732,10 +732,13 @@ export class PermitService {
         NotificationType.EMAIL_RECEIPT,
       )
     ) {
+      const faxEmailList = createNotificationDto.fax?.map((fax) =>
+        generateFaxEmail(fax),
+      );
       notificationDocument = {
         templateName: NotificationTemplate.PAYMENT_RECEIPT,
         to: validateEmailandFaxList(createNotificationDto.to),
-        fax: validateEmailandFaxList(createNotificationDto.fax),
+        fax: validateEmailandFaxList(faxEmailList),
         subject: `onRouteBC Permit Receipt - ${receipt?.receiptNumber}`,
         documentIds: [receipt?.receiptDocumentId],
       };
