@@ -210,8 +210,10 @@ export class LoaService {
       if (!existingLoaDetail) {
         throw new NotFoundException('LOA detail not found');
       }
-     await queryRunner.manager.delete(LoaVehicle,{loa: {loaId: loaId}});
-     await queryRunner.manager.delete(LoaPermitType,{loa: {loaId: loaId}})
+      await queryRunner.manager.delete(LoaVehicle, { loa: { loaId: loaId } });
+      await queryRunner.manager.delete(LoaPermitType, {
+        loa: { loaId: loaId },
+      });
       const isActive = existingLoaDetail.isActive;
 
       const updatedLoaDetail: LoaDetail = await this.classMapper.mapAsync(
@@ -227,22 +229,22 @@ export class LoaService {
         ReadLoaDto,
       );
       await queryRunner.commitTransaction();
-      if(updateLoaDto.documentId){
-      try {
-        const file = (await this.dopsService.download(
-          currentUser,
-          readLoaDto.documentId,
-          FileDownloadModes.URL,
-          undefined,
-          companyId,
-        )) as ReadFileDto;
+      if (updateLoaDto.documentId) {
+        try {
+          const file = (await this.dopsService.download(
+            currentUser,
+            readLoaDto.documentId,
+            FileDownloadModes.URL,
+            undefined,
+            companyId,
+          )) as ReadFileDto;
 
-        readLoaDto = { ...readLoaDto, fileName: file.fileName };
-      } catch (error) {
-        this.logger.error('Failed to get loa document', error);
-        // Log the error and continue without setting fileName
+          readLoaDto = { ...readLoaDto, fileName: file.fileName };
+        } catch (error) {
+          this.logger.error('Failed to get loa document', error);
+          // Log the error and continue without setting fileName
+        }
       }
-    }
 
       return readLoaDto;
     } catch (error) {
