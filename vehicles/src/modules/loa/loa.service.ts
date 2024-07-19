@@ -257,20 +257,6 @@ export class LoaService {
     return loa;
   }
 
-  private async downloadLoaDocument(
-    currentUser: IUserJWT,
-    documentId: string,
-    companyId: number,
-  ): Promise<ReadFileDto> {
-    return this.dopsService.download(
-      currentUser,
-      documentId,
-      FileDownloadModes.URL,
-      undefined,
-      companyId,
-    ) as Promise<ReadFileDto>;
-  }
-
   @LogAsyncMethodExecution()
   async deleteLoaDocument(companyId: number, loaId: number): Promise<number> {
     const { affected } = await this.loaDetailRepository.update(
