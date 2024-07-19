@@ -107,7 +107,7 @@ export class LoaController {
   }
 
   @ApiOperation({
-    summary: 'Add LOA by Id.',
+    summary: 'Get LOA by Id.',
     description: 'Returns the Loa Object in database.',
   })
   @Get('/:loaId')
