@@ -11,6 +11,7 @@ import {
   ArrayMinSize,
 } from 'class-validator';
 import { PermitType } from 'src/common/enum/permit-type.enum';
+import { IsDateTimeAfter } from '../../../../common/decorator/is-date-time-after';
 
 export class CreateLoaDto {
   @AutoMap()
@@ -33,6 +34,7 @@ export class CreateLoaDto {
   @IsOptional()
   @MaxLength(10)
   @IsDateString()
+  @IsDateTimeAfter<CreateLoaDto>('startDate')
   expiryDate?: string;
 
   @AutoMap()
