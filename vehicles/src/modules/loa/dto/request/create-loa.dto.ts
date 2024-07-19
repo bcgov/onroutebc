@@ -10,6 +10,7 @@ import {
   IsDateString,
   ArrayMinSize,
   ValidateIf,
+  Length,
 } from 'class-validator';
 import { PermitType } from 'src/common/enum/permit-type.enum';
 import { IsDateTimeAfter } from '../../../../common/decorator/is-date-time-after';
@@ -21,7 +22,7 @@ export class CreateLoaDto {
     example: '2023-07-13',
     description: 'Effective start date of an LoA',
   })
-  @MaxLength(10)
+  @Length(10, 10)
   @IsDateString()
   startDate: string;
 
@@ -33,7 +34,7 @@ export class CreateLoaDto {
     description: 'Effective end date of an LoA',
   })
   @IsOptional()
-  @MaxLength(10)
+  @Length(10, 10)
   @IsDateString()
   @IsDateTimeAfter<CreateLoaDto>('startDate')
   expiryDate?: string;
@@ -60,7 +61,8 @@ export class CreateLoaDto {
 
   @AutoMap()
   @ApiProperty({
-    description: 'Trailer IDs. Either trailers or power unit IDs are required.',
+    description:
+      'Trailer IDs. At least one of trailers or power unit IDs is required.',
     isArray: true,
     type: String,
     example: ['1', '2'],
@@ -75,7 +77,7 @@ export class CreateLoaDto {
   @AutoMap()
   @ApiProperty({
     description:
-      'Power unit Ids. Either Trailers or Power Unit ids are required',
+      'Power unit IDs. At least one of trailers or power unit IDs is required.',
     isArray: true,
     type: String,
     example: ['1', '2'],

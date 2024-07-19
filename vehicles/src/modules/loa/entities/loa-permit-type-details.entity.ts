@@ -14,10 +14,6 @@ import { LoaDetail } from './loa-detail.entity';
 @Entity({ name: 'permit.ORBC_LOA_PERMIT_TYPE_DETAILS' })
 export class LoaPermitType extends Base {
   @AutoMap()
-  @ApiProperty({
-    example: '1',
-    description: 'Unique identifier for the loa permit type.',
-  })
   @PrimaryGeneratedColumn({ type: 'int', name: 'LOA_PERMIT_TYPE_ID' })
   id: number;
 

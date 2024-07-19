@@ -35,10 +35,12 @@ export class LoaService {
     companyId: number,
     file: Express.Multer.File,
   ): Promise<ReadLoaDto> {
-    let readFileDto: ReadFileDto;
-    if (file) {
-      readFileDto = await this.dopsService.upload(currentUser, companyId, file);
-    }
+    const readFileDto = await this.dopsService.upload(
+      currentUser,
+      companyId,
+      file,
+    );
+
     const loa = await this.classMapper.mapAsync(
       createLoaDto,
       CreateLoaDto,
@@ -46,7 +48,7 @@ export class LoaService {
       {
         extraArgs: () => ({
           companyId: companyId,
-          documentId: readFileDto?.documentId,
+          documentId: readFileDto.documentId,
         }),
       },
     );
@@ -77,7 +79,7 @@ export class LoaService {
       loaDetailQB.andWhere('loaDetail.expiryDate < :expiryDate', {
         expiryDate: new Date(),
       });
-    } else {
+    } else if (expired === false) {
       loaDetailQB.andWhere(
         new Brackets((qb) => {
           qb.where('loaDetail.expiryDate >= :expiryDate', {
