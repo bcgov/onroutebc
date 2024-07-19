@@ -105,56 +105,33 @@ export const loaDetailToFormData = (
  */
 export const serializeLOAFormData = (loaFormData: LOAFormData) => {
   const requestData = new FormData();
-  requestData.append(
-    "startDate",
-    dayjsToLocalStr(loaFormData.startDate, DATE_FORMATS.DATEONLY),
-  );
-
-  if (loaFormData.expiryDate) {
-    requestData.append(
-      "expiryDate",
-      dayjsToLocalStr(loaFormData.expiryDate, DATE_FORMATS.DATEONLY),
-    );
-  }
-
-  requestData.append(
-    "comment",
-    getDefaultRequiredVal("", loaFormData.additionalNotes),
-  );
 
   const permitTypes = Object.entries(loaFormData.permitTypes)
     .filter(([, selected]) => {
       return selected;
     })
     .map(([permitType]) => permitType);
-  
-  if (permitTypes.length > 0) {
-    requestData.append(
-      "loaPermitType",
-      permitTypes.join(","),
-    );
-  }
-  
+
   const powerUnits = Object.keys(loaFormData.selectedVehicles.powerUnits);
-  if (powerUnits.length > 0) {
-    requestData.append(
-      "powerUnits",
-      powerUnits.join(","),
-    );
-  }
-  
   const trailers = Object.keys(loaFormData.selectedVehicles.trailers);
-  if (trailers.length > 0) {
-    requestData.append(
-      "trailers",
-      trailers.join(","),
-    );
-  }
+  
+  const body = {
+    startDate: dayjsToLocalStr(loaFormData.startDate, DATE_FORMATS.DATEONLY),
+    expiryDate: loaFormData.expiryDate
+      ? dayjsToLocalStr(loaFormData.expiryDate, DATE_FORMATS.DATEONLY)
+      : null,
+    comment: getDefaultRequiredVal("", loaFormData.additionalNotes),
+    loaPermitType: permitTypes,
+    powerUnits: powerUnits.length > 0 ? powerUnits : undefined,
+    trailers: trailers.length > 0 ? trailers : undefined,
+  };
 
   if (loaFormData.uploadFile instanceof File) {
     // is newly uploaded file
     requestData.append("file", loaFormData.uploadFile);
   }
+
+  requestData.append("body", JSON.stringify(body));
   
   return requestData;
 };

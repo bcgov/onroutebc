@@ -22,7 +22,7 @@ export const SPECIAL_AUTH_API_ROUTES = {
     REMOVE: (companyId: number | string, loaId: string) =>
       `${SPECIAL_AUTH_API_BASE}/${companyId}/loas/${loaId}`,
     DOWNLOAD: (companyId: number | string, loaId: string) =>
-      `${SPECIAL_AUTH_API_BASE}/${companyId}/loas/${loaId}/documents?downloadMode=proxy`,
+      `${SPECIAL_AUTH_API_BASE}/${companyId}/loas/${loaId}/documents?download=proxy`,
     REMOVE_DOCUMENT: (companyId: number | string, loaId: string) =>
       `${SPECIAL_AUTH_API_BASE}/${companyId}/loas/${loaId}/documents`,
   },
