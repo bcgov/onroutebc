@@ -36,7 +36,7 @@ export class LoaDetail extends Base {
   @ApiProperty({
     example: '74',
     description:
-      'Foreign key to the ORBC_COMPANY table, represents the company requesting the permit.',
+      'Foreign key to the ORBC_COMPANY table, represents the company requesting the loa.',
   })
   @ManyToOne(() => Company, { eager: true, cascade: false })
   @JoinColumn({ name: 'COMPANY_ID' })
@@ -78,8 +78,8 @@ export class LoaDetail extends Base {
 
   @AutoMap()
   @ApiProperty({
-    example: 'This permit was amended because of so-and-so reason',
-    description: 'Comment/Reason for modifying a permit.',
+    example: 'This loa was modified because of so-and-so reason',
+    description: 'Comment/Reason for modifying a loa.',
   })
   @IsOptional()
   @Column({

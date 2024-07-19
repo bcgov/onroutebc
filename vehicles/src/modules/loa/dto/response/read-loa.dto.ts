@@ -6,21 +6,21 @@ import { PermitType } from 'src/common/enum/permit-type.enum';
 export class ReadLoaDto {
   @AutoMap()
   @ApiProperty({
-    example: '1',
+    example: 1,
     description: 'Unique identifier for the LoA.',
   })
   loaId: number;
 
   @AutoMap()
   @ApiProperty({
-    example: '1',
+    example: 1,
     description: 'Unique LoA Number',
   })
   loaNumber: number;
 
   @AutoMap()
   @ApiProperty({
-    description: 'Id of the company requesting the permit.',
+    description: 'Id of the company requesting the loa.',
     example: 74,
     required: false,
   })
@@ -56,7 +56,7 @@ export class ReadLoaDto {
 
   @AutoMap()
   @ApiProperty({
-    example: 'This permit was amended because of so-and-so reason',
+    example: 'This loa was modified of so-and-so reason',
     description: 'Comment/Reason for modifying a loa.',
     required: false,
   })
