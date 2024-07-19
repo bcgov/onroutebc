@@ -29,7 +29,7 @@ import { ReadLoaDto } from './dto/response/read-loa.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { LoaService } from './loa.service';
 import { Request, Response } from 'express';
-import { GetLoaQueryParamsDto } from './dto/request/getLoa.query-params.dto';
+import { GetLoaQueryParamsDto } from './dto/request/queryParam/get-loa.query-params.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { DopsService } from '../common/dops.service';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
@@ -39,6 +39,7 @@ import { JsonReqBodyInterceptor } from '../../common/interceptor/json-req-body.i
 import { CreateLoaFileDto } from './dto/request/create-loa-file.dto';
 import { CompanyIdPathParamDto } from '../common/dto/request/pathParam/companyId.path-param.dto';
 import { UpdateLoaFileDto } from './dto/request/update-loa-file.dto';
+import { LoaIdPathParamDto } from './dto/request/pathParam/loa-Id.path-params.dto';
 
 @ApiBearerAuth()
 @ApiTags('Company Letter of Authorization')
@@ -103,7 +104,7 @@ export class LoaController {
   })
   @Get()
   async get(
-    @Param('companyId') companyId: number,
+    @Param() { companyId }: CompanyIdPathParamDto,
     @Query() getloaQueryParamsDto: GetLoaQueryParamsDto,
   ): Promise<ReadLoaDto[]> {
     const loa = await this.loaService.get(
@@ -120,8 +121,7 @@ export class LoaController {
   @Get('/:loaId')
   async getById(
     @Req() request: Request,
-    @Param('companyId') companyId: number,
-    @Param('loaId') loaId: number,
+    @Param() { companyId, loaId }: LoaIdPathParamDto,
   ): Promise<ReadLoaDto> {
     const currentUser = request.user as IUserJWT;
     const loa = await this.loaService.getById(currentUser, companyId, loaId);
@@ -137,8 +137,7 @@ export class LoaController {
   @UseInterceptors(FileInterceptor('file'), JsonReqBodyInterceptor)
   async update(
     @Req() request: Request,
-    @Param() { companyId }: CompanyIdPathParamDto,
-    @Param('loaId') loaId: number,
+    @Param() { companyId, loaId }: LoaIdPathParamDto,
     @UploadedFile(
       new ParseFilePipe({
         validators: [
@@ -168,8 +167,7 @@ export class LoaController {
   })
   @Delete('/:loaId')
   async delete(
-    @Param('companyId') companyId: number,
-    @Param('loaId') loaId: string,
+    @Param() { companyId, loaId }: LoaIdPathParamDto,
   ): Promise<number> {
     const loa = await this.loaService.delete(loaId, companyId);
     return loa;
@@ -182,8 +180,7 @@ export class LoaController {
   @Get('/:loaId/documents')
   async getLoaDocument(
     @Req() request: Request,
-    @Param('companyId') companyId: number,
-    @Param('loaId') loaId: number,
+    @Param() { companyId, loaId }: LoaIdPathParamDto,
     @Query('downloadMode') downloadMode: FileDownloadModes,
     @Res() res: Response,
   ) {
@@ -207,8 +204,7 @@ export class LoaController {
   })
   @Delete('/:loaId/documents')
   async deleteLoaDocument(
-    @Param('companyId') companyId: number,
-    @Param('loaId') loaId: number,
+    @Param() { companyId, loaId }: LoaIdPathParamDto,
   ): Promise<number> {
     const loa = await this.loaService.deleteLoaDocument(companyId, loaId);
     return loa;

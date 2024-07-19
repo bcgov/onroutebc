@@ -221,6 +221,7 @@ export class LoaService {
         LoaDetail,
         { extraArgs: () => ({ companyId, loaId, isActive, documentId }) },
       );
+
       const savedLoaDetail = await queryRunner.manager.save(updatedLoaDetail);
       let readLoaDto = await this.classMapper.mapAsync(
         savedLoaDetail,
@@ -255,7 +256,7 @@ export class LoaService {
   }
 
   @LogAsyncMethodExecution()
-  async delete(loaId: string, companyId: number): Promise<number> {
+  async delete(loaId: number, companyId: number): Promise<number> {
     const { affected } = await this.loaDetailRepository
       .createQueryBuilder()
       .update(LoaDetail)

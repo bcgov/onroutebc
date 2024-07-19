@@ -83,7 +83,7 @@ export class LoaProfile extends AutomapperProfile {
         forMember(
           (d) => d.loaId,
           mapWithArguments((_, { loaId }: { loaId: number }) => {
-            return +loaId;
+            return loaId;
           }),
         ),
         forMember(
