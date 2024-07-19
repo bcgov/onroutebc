@@ -9,6 +9,7 @@ import {
   MaxLength,
   IsDateString,
   ArrayMinSize,
+  ValidateIf,
 } from 'class-validator';
 import { PermitType } from 'src/common/enum/permit-type.enum';
 import { IsDateTimeAfter } from '../../../../common/decorator/is-date-time-after';
@@ -50,7 +51,7 @@ export class CreateLoaDto {
   @AutoMap()
   @ApiProperty({
     enum: PermitType,
-    description: 'Friendly name for the permit type.',
+    description: 'Types of permits included in the LoA.',
     isArray: true,
     example: [PermitType.TERM_OVERSIZE, PermitType.TERM_OVERWEIGHT],
   })
@@ -59,24 +60,29 @@ export class CreateLoaDto {
 
   @AutoMap()
   @ApiProperty({
-    description: 'Trailer Ids.',
+    description: 'Trailer IDs. Either trailers or power unit IDs are required.',
     isArray: true,
     type: String,
     example: ['1', '2'],
   })
-  @IsOptional()
+  @ValidateIf((obj: CreateLoaDto) =>
+    Boolean(obj.trailers?.length || !obj.powerUnits?.length),
+  )
   @IsNumberString({}, { each: true })
   @ArrayMinSize(1)
   trailers?: string[];
 
   @AutoMap()
   @ApiProperty({
-    description: 'Power unit Ids.',
+    description:
+      'Power unit Ids. Either Trailers or Power Unit ids are required',
     isArray: true,
     type: String,
     example: ['1', '2'],
   })
-  @IsOptional()
+  @ValidateIf((obj: CreateLoaDto) =>
+    Boolean(obj.powerUnits?.length || !obj.trailers?.length),
+  )
   @IsNumberString({}, { each: true })
   @ArrayMinSize(1)
   powerUnits?: string[];
