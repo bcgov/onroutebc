@@ -199,7 +199,8 @@ export class LoaService {
       await queryRunner.commitTransaction();
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      throw new InternalServerErrorException(error);
+      this.logger.error(error);
+      throw error;
     } finally {
       await queryRunner.release();
     }
@@ -227,7 +228,7 @@ export class LoaService {
     return affected;
   }
 
-  async getloaDocument(
+  async getLoaDocument(
     currentUser: IUserJWT,
     companyId: number,
     loaId: number,

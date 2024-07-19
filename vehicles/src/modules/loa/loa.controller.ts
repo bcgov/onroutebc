@@ -177,7 +177,7 @@ export class LoaController {
     @Res() res: Response,
   ) {
     const currentUser = request.user as IUserJWT;
-    const loa = await this.loaService.getloaDocument(
+    const loa = await this.loaService.getLoaDocument(
       currentUser,
       companyId,
       loaId,
