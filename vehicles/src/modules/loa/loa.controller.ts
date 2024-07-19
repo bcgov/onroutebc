@@ -53,10 +53,7 @@ import { LoaIdPathParamDto } from './dto/request/pathParam/loa-Id.path-params.dt
   type: ExceptionDto,
 })
 export class LoaController {
-  constructor(
-    private readonly loaService: LoaService,
-    private readonly dopsService: DopsService,
-  ) {}
+  constructor(private readonly loaService: LoaService) {}
   @ApiOperation({
     summary: 'Add LOA for a company.',
     description:
@@ -85,15 +82,11 @@ export class LoaController {
     @Body() createLoaFileDto: CreateLoaFileDto,
   ): Promise<ReadLoaDto> {
     const currentUser = request.user as IUserJWT;
-    let readFileDto: ReadFileDto;
-    if (file) {
-      readFileDto = await this.dopsService.upload(currentUser, companyId, file);
-    }
     const result = await this.loaService.create(
       currentUser,
       createLoaFileDto?.body,
       companyId,
-      readFileDto.documentId,
+      file,
     );
     return result;
   }

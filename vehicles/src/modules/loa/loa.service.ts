@@ -20,6 +20,7 @@ import { DopsService } from '../common/dops.service';
 import { FileDownloadModes } from 'src/common/enum/file-download-modes.enum';
 import { Response } from 'express';
 import { UpdateLoaDto } from './dto/request/update-loa.dto';
+import { Nullable } from '../../common/types/common';
 
 @Injectable()
 export class LoaService {
@@ -37,14 +38,21 @@ export class LoaService {
     currentUser: IUserJWT,
     createLoaDto: CreateLoaDto,
     companyId: number,
-    documentId?: string,
+    file: Express.Multer.File,
   ): Promise<ReadLoaDto> {
+    let readFileDto: ReadFileDto;
+    if (file) {
+      readFileDto = await this.dopsService.upload(currentUser, companyId, file);
+    }
     const loa = await this.classMapper.mapAsync(
       createLoaDto,
       CreateLoaDto,
       LoaDetail,
       {
-        extraArgs: () => ({ companyId: companyId, documentId: documentId }),
+        extraArgs: () => ({
+          companyId: companyId,
+          documentId: readFileDto?.documentId,
+        }),
       },
     );
     loa.isActive = true;
@@ -54,22 +62,15 @@ export class LoaService {
       LoaDetail,
       ReadLoaDto,
     );
-    try {
-      const file = await this.downloadLoaDocument(
-        currentUser,
-        readLoaDto.documentId,
-        companyId,
-      );
-      readLoaDto.fileName = file.fileName;
-    } catch (error) {
-      this.logger.error('Failed to get loa document', error);
-      // Log the error and continue without setting fileName
-    }
+    readLoaDto.fileName = readFileDto?.fileName;
     return readLoaDto;
   }
 
   @LogAsyncMethodExecution()
-  async get(companyId: number, expired?: boolean): Promise<ReadLoaDto[]> {
+  async get(
+    companyId: number,
+    expired?: Nullable<boolean>,
+  ): Promise<ReadLoaDto[]> {
     const loaDetailQB = this.loaDetailRepository
       .createQueryBuilder('loaDetail')
       .leftJoinAndSelect('loaDetail.company', 'company')
@@ -99,7 +100,6 @@ export class LoaService {
         extraArgs: () => ({ companyId: companyId }),
       },
     );
-    console.log('readLoaDto', readLoaDto);
     return readLoaDto;
   }
 
@@ -108,7 +108,7 @@ export class LoaService {
     return await this.loaDetailRepository.findOne({
       where: {
         loaId: loaId,
-        company: { companyId: Number(companyId) },
+        company: { companyId: companyId },
         isActive: true,
       },
       relations: ['company', 'loaVehicles', 'loaPermitTypes'],
@@ -161,60 +161,34 @@ export class LoaService {
     updateLoaDto: UpdateLoaDto,
     file?: Express.Multer.File,
   ): Promise<ReadLoaDto> {
+    let savedLoaDetail: LoaDetail;
     const existingLoaDetail = await this.findOne(companyId, loaId);
     if (!existingLoaDetail) {
       throw new NotFoundException('LOA detail not found');
     }
-    if (
-      updateLoaDto.documentId &&
-      existingLoaDetail.documentId != updateLoaDto.documentId
-    ) {
-      throw new NotFoundException('LOA documet id mismatch');
-    }
-    let readFileDto: ReadFileDto = new ReadFileDto();
-    if (file && updateLoaDto.documentId)
-      readFileDto = await this.dopsService.upload(
-        currentUser,
-        companyId,
-        file,
-        updateLoaDto.documentId,
-      );
-    if (file && !updateLoaDto.documentId)
+    let readFileDto: ReadFileDto;
+    if (file) {
       readFileDto = await this.dopsService.upload(currentUser, companyId, file);
-    return await this.update(
-      currentUser,
-      companyId,
-      loaId,
-      updateLoaDto,
-      readFileDto.documentId,
-    );
-  }
+    } else {
+      readFileDto = (await this.dopsService.download(
+        currentUser,
+        existingLoaDetail.documentId,
+        FileDownloadModes.URL,
+        undefined,
+        companyId,
+      )) as ReadFileDto;
+    }
 
-  @LogAsyncMethodExecution()
-  async update(
-    currentUser: IUserJWT,
-    companyId: number,
-    loaId: number,
-    updateLoaDto: UpdateLoaDto,
-    documentId?: string,
-  ): Promise<ReadLoaDto> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      const existingLoaDetail = await queryRunner.manager.findOne(LoaDetail, {
-        where: { loaId: loaId, company: { companyId: companyId } },
-        relations: { loaVehicles: true, loaPermitTypes: true },
-      });
-      if (!existingLoaDetail) {
-        throw new NotFoundException('LOA detail not found');
-      }
       await queryRunner.manager.delete(LoaVehicle, { loa: { loaId: loaId } });
       await queryRunner.manager.delete(LoaPermitType, {
         loa: { loaId: loaId },
       });
       const isActive = existingLoaDetail.isActive;
-
+      const documentId = readFileDto?.documentId;
       const updatedLoaDetail: LoaDetail = await this.classMapper.mapAsync(
         updateLoaDto,
         UpdateLoaDto,
@@ -222,37 +196,23 @@ export class LoaService {
         { extraArgs: () => ({ companyId, loaId, isActive, documentId }) },
       );
 
-      const savedLoaDetail = await queryRunner.manager.save(updatedLoaDetail);
-      let readLoaDto = await this.classMapper.mapAsync(
-        savedLoaDetail,
-        LoaDetail,
-        ReadLoaDto,
-      );
+      savedLoaDetail = await queryRunner.manager.save(updatedLoaDetail);
+
       await queryRunner.commitTransaction();
-      if (updateLoaDto.documentId) {
-        try {
-          const file = (await this.dopsService.download(
-            currentUser,
-            readLoaDto.documentId,
-            FileDownloadModes.URL,
-            undefined,
-            companyId,
-          )) as ReadFileDto;
-
-          readLoaDto = { ...readLoaDto, fileName: file.fileName };
-        } catch (error) {
-          this.logger.error('Failed to get loa document', error);
-          // Log the error and continue without setting fileName
-        }
-      }
-
-      return readLoaDto;
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw new InternalServerErrorException(error);
     } finally {
       await queryRunner.release();
     }
+    const readLoaDto = await this.classMapper.mapAsync(
+      savedLoaDetail,
+      LoaDetail,
+      ReadLoaDto,
+    );
+    readLoaDto.fileName = readFileDto?.fileName;
+
+    return readLoaDto;
   }
 
   @LogAsyncMethodExecution()
