@@ -8,42 +8,44 @@ import {
   IsString,
   MaxLength,
   IsDateString,
-  ValidateIf,
+  ArrayMinSize,
 } from 'class-validator';
 import { PermitType } from 'src/common/enum/permit-type.enum';
+import { IsDateTimeAfter } from '../../../../common/decorator/is-date-time-after';
 
 export class CreateLoaDto {
   @AutoMap()
-  @MaxLength(10)
   @ApiProperty({
     type: 'string',
     example: '2023-07-13',
     description: 'Effective start date of an LoA',
   })
+  @MaxLength(10)
   @IsDateString()
   startDate: string;
 
   @AutoMap()
-  @IsOptional()
-  @MaxLength(10)
   @ApiProperty({
     type: 'string',
     required: false,
     example: '2023-08-13',
     description: 'Effective end date of an LoA',
   })
+  @IsOptional()
+  @MaxLength(10)
   @IsDateString()
-  expiryDate: string;
+  @IsDateTimeAfter<CreateLoaDto>('startDate')
+  expiryDate?: string;
 
   @AutoMap()
-  @IsOptional()
-  @IsString()
-  @MaxLength(4000)
   @ApiProperty({
     example: 'These are some additional notes for LoA.',
     description: 'Comments/Notes related to LoA.',
   })
-  comment: string;
+  @IsOptional()
+  @IsString()
+  @MaxLength(4000)
+  comment?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -62,10 +64,10 @@ export class CreateLoaDto {
     type: String,
     example: ['1', '2'],
   })
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-  @ValidateIf((dto) => !dto.powerUnits || (dto.powerUnits && dto.trailers))
+  @IsOptional()
   @IsNumberString({}, { each: true })
-  trailers: string[];
+  @ArrayMinSize(1)
+  trailers?: string[];
 
   @AutoMap()
   @ApiProperty({
@@ -74,8 +76,8 @@ export class CreateLoaDto {
     type: String,
     example: ['1', '2'],
   })
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-  @ValidateIf((dto) => !dto.trailers || (dto.powerUnits && dto.trailers))
+  @IsOptional()
   @IsNumberString({}, { each: true })
-  powerUnits: string[];
+  @ArrayMinSize(1)
+  powerUnits?: string[];
 }

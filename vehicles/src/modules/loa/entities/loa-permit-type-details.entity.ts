@@ -22,9 +22,7 @@ export class LoaPermitType extends Base {
   id: number;
 
   @AutoMap(() => LoaDetail)
-  @ManyToOne(() => LoaDetail, (LoaDetail) => LoaDetail.loaPermitTypes, {
-    orphanedRowAction: 'delete',
-  })
+  @ManyToOne(() => LoaDetail, (LoaDetail) => LoaDetail.loaPermitTypes)
   @JoinColumn({ name: 'LOA_ID' })
   loa: LoaDetail;
 
