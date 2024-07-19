@@ -97,7 +97,7 @@ export const ManageProfilesDashboard = React.memo(() => {
       : null,
     shouldAllowUserManagement
       ? {
-          label: "User Management",
+          label: "Add / Manage Users",
           component: <UserManagement />,
           componentKey: BCEID_PROFILE_TABS.USER_MANAGEMENT,
         }
