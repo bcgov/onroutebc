@@ -2,7 +2,6 @@ import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
-  Allow,
   IsDateString,
   IsEnum,
   IsNumberString,
@@ -35,11 +34,6 @@ export class UpdateLoaDto {
     description: 'Effective end date of an LoA',
   })
   expiryDate: string;
-
-  @ApiProperty({ required: false, type: 'string', format: 'binary' })
-  @IsOptional()
-  @Allow()
-  file: string;
 
   @AutoMap()
   @IsOptional()

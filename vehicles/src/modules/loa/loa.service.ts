@@ -13,13 +13,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { LoaDetail } from './entities/loa-detail.entity';
 import { Brackets, DataSource, Repository } from 'typeorm';
 import { Mapper } from '@automapper/core';
-import { UpdateLoaDto } from './dto/request/update-loa.dto';
 import { LoaVehicle } from './entities/loa-vehicles.entity';
 import { LoaPermitType } from './entities/loa-permit-type-details.entity';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { DopsService } from '../common/dops.service';
 import { FileDownloadModes } from 'src/common/enum/file-download-modes.enum';
 import { Response } from 'express';
+import { UpdateLoaDto } from './dto/request/update-loa.dto';
 
 @Injectable()
 export class LoaService {
@@ -162,7 +162,6 @@ export class LoaService {
     file?: Express.Multer.File,
   ): Promise<ReadLoaDto> {
     const existingLoaDetail = await this.findOne(companyId, loaId);
-
     if (!existingLoaDetail) {
       throw new NotFoundException('LOA detail not found');
     }
