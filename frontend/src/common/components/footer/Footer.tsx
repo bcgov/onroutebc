@@ -42,7 +42,7 @@ export const Footer = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              Copyrigh
+              Copyright
             </a>
           </li>
           <li>
