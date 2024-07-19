@@ -171,9 +171,11 @@ export class LoaController {
   })
   @Delete('/:loaId')
   async delete(
+    @Req() request: Request,
     @Param() { companyId, loaId }: LoaIdPathParamDto,
-  ): Promise<number> {
-    const loa = await this.loaService.delete(loaId, companyId);
+  ): Promise<string> {
+    const currentUser = request.user as IUserJWT;
+    const loa = await this.loaService.delete(currentUser, loaId, companyId);
     return loa;
   }
 
@@ -208,9 +210,15 @@ export class LoaController {
   })
   @Delete('/:loaId/documents')
   async deleteLoaDocument(
+    @Req() request: Request,
     @Param() { companyId, loaId }: LoaIdPathParamDto,
-  ): Promise<number> {
-    const loa = await this.loaService.deleteLoaDocument(companyId, loaId);
+  ): Promise<string> {
+    const currentUser = request.user as IUserJWT;
+    const loa = await this.loaService.deleteLoaDocument(
+      currentUser,
+      companyId,
+      loaId,
+    );
     return loa;
   }
 }

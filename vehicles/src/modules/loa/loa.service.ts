@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { LogAsyncMethodExecution } from 'src/common/decorator/log-async-method-execution.decorator';
 import { CreateLoaDto } from './dto/request/create-loa.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
@@ -274,7 +279,14 @@ export class LoaService {
         updateLoaDto,
         UpdateLoaDto,
         LoaDetail,
-        { extraArgs: () => ({ companyId, loaId, isActive, documentId }) },
+        {
+          extraArgs: () => ({
+            companyId,
+            loaId,
+            isActive,
+            documentId,
+          }),
+        },
       );
 
       savedLoaDetail = await queryRunner.manager.save(updatedLoaDetail);
@@ -297,18 +309,45 @@ export class LoaService {
     return readLoaDto;
   }
 
+  /**
+   * Deactivate the LoA (Letter of Authorization) for a specific company.
+   *
+   * Steps:
+   * 1. Updates the LOA detail to set isActive to false (N).
+   * 2. Checks the number of records affected.
+   * 3. Throws an InternalServerErrorException if no records were affected, or returns a success message if the document was deleted.
+   *
+   * @param {IUserJWT} currentUser - Current User details.
+   * @param {number} loaId - ID of the LOA whose document is to be deleted.
+   * @param {number} companyId - ID of the company associated with the LOA document.
+   * @returns {Promise<string>} - Returns a message indicating the result of the delete operation.
+   */
   @LogAsyncMethodExecution()
-  async delete(loaId: number, companyId: number): Promise<number> {
+  async delete(
+    currentUser: IUserJWT,
+    loaId: number,
+    companyId: number,
+  ): Promise<string> {
     const { affected } = await this.loaDetailRepository
       .createQueryBuilder()
       .update(LoaDetail)
       .set({
         isActive: false,
+        updatedUserGuid: currentUser.userGUID,
+        updatedDateTime: new Date(),
+        updatedUser: currentUser.userName,
+        updatedUserDirectory: currentUser.orbcUserDirectory,
       })
       .where('loaId = :loaId', { loaId: loaId })
       .andWhere('company.companyId = :companyId', { companyId: companyId })
       .execute();
-    return affected;
+
+    if (!affected) {
+      throw new InternalServerErrorException('Error updating transaction');
+    }
+    if (affected === 1) {
+      return 'LoA deleted successfully';
+    }
   }
 
   /**
@@ -357,14 +396,40 @@ export class LoaService {
     return loa;
   }
 
+  /**
+   * Deletes the document associated with a specific LOA (Letter of Authorization) for a specific company.
+   *
+   * Steps:
+   * 1. Updates the LOA detail to set documentId to null.
+   * 2. Checks the number of records affected.
+   * 3. Throws an InternalServerErrorException if no records were affected, or returns a success message if the document was deleted.
+   *
+   * @param {IUserJWT} currentUser - Current User details.
+   * @param {number} companyId - ID of the company associated with the LOA document.
+   * @param {number} loaId - ID of the LOA whose document is to be deleted.
+   * @returns {Promise<string>} - Returns a message indicating the result of the delete operation.
+   */
   @LogAsyncMethodExecution()
-  async deleteLoaDocument(companyId: number, loaId: number): Promise<number> {
+  async deleteLoaDocument(
+    currentUser: IUserJWT,
+    companyId: number,
+    loaId: number,
+  ): Promise<string> {
     const { affected } = await this.loaDetailRepository.update(
-      { loaId: loaId },
+      { loaId: loaId, company: { companyId } },
       {
         documentId: null,
+        updatedUserGuid: currentUser.userGUID,
+        updatedDateTime: new Date(),
+        updatedUser: currentUser.userName,
+        updatedUserDirectory: currentUser.orbcUserDirectory,
       },
     );
-    return affected;
+    if (!affected) {
+      throw new InternalServerErrorException('Error updating transaction');
+    }
+    if (affected === 1) {
+      return 'File deleted successfully';
+    }
   }
 }
