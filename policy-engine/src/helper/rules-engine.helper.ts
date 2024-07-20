@@ -33,7 +33,9 @@ export function getRulesEngines(policy: Policy): Map<string, Engine> {
     permitType.rules?.forEach((r) => engine.addRule(r));
 
     // Convert the cost definitions into proper rules so the
-    // results can be added to the validation run.
+    // results can be added to the validation run. This takes advantage
+    // of the replaceFactsInEventParams option for the json-rules-engine
+    // Engine object.
     permitType.costRules?.forEach((c) => {
       const costRule: RuleProperties = {
         conditions: {
@@ -49,9 +51,9 @@ export function getRulesEngines(policy: Policy): Map<string, Engine> {
         event: {
           type: 'cost',
           params: {
-            'message': 'Calculated permit cost',
-            'code': 'cost-value',
-            'cost': c,
+            message: 'Calculated permit cost',
+            code: 'cost-value',
+            cost: c,
           },
         },
       };

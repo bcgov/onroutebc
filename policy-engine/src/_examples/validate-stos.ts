@@ -1,7 +1,7 @@
 import { Policy } from 'onroute-policy-engine';
 import { PermitAppInfo } from 'onroute-policy-engine/enum';
 import { completePolicyConfig } from '../_test/policy-config/complete-in-progress.sample';
-import { testStos } from '../_test/permit-app/test-stos'; 
+import { testStos } from '../_test/permit-app/test-stos';
 import dayjs from 'dayjs';
 
 async function start() {
