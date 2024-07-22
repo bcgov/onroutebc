@@ -41,7 +41,7 @@ export class LoaDetail extends Base {
     name: 'EXPIRY_DATE',
     nullable: true,
   })
-  expiryDate: string;
+  expiryDate?: string;
 
   @AutoMap()
   @IsOptional()
@@ -49,16 +49,16 @@ export class LoaDetail extends Base {
     name: 'DOCUMENT_ID',
     nullable: true,
   })
-  documentId: string;
+  documentId?: string;
 
   @AutoMap()
   @IsOptional()
   @Column({
     length: '4000',
-    name: 'COMMENTS',
+    name: 'COMMENT',
     nullable: true,
   })
-  comment: string;
+  comment?: string;
 
   @AutoMap()
   @Column({

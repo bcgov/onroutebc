@@ -31,7 +31,7 @@ CREATE TABLE [permit].[ORBC_LOA_DETAILS] (
    START_DATE [varchar](10) NOT NULL,
    EXPIRY_DATE [varchar](10),
    DOCUMENT_ID [bigint],
-   COMMENTS [nvarchar](4000),
+   COMMENT [nvarchar](4000),
    [IS_ACTIVE]  [char](1) NOT NULL DEFAULT('Y'),
    [APP_CREATE_TIMESTAMP] [datetime2](7) DEFAULT(getutcdate()),
    [APP_CREATE_USERID] [nvarchar](30) DEFAULT(user_name()),
@@ -179,7 +179,7 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Start date of an LoA, cannot be null' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_DETAILS', @level2type=N'COLUMN',@level2name=N'START_DATE'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'End date of an LoA, null value indicates LoA never expires' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_DETAILS', @level2type=N'COLUMN',@level2name=N'EXPIRY_DATE'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to the orbc_document table,identifying the document/PDF that references the Document Management System (DMS)' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_DETAILS', @level2type=N'COLUMN',@level2name=N'DOCUMENT_ID'
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Additional notes or comments for LoA' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_DETAILS', @level2type=N'COLUMN',@level2name=N'COMMENTS'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Additional notes or comment for LoA' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_DETAILS', @level2type=N'COLUMN',@level2name=N'COMMENT'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Deletion status of LOA' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_DETAILS', @level2type=N'COLUMN',@level2name=N'IS_ACTIVE'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Surrogate primary key for the LoA Permit Type table' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_PERMIT_TYPE_DETAILS', @level2type=N'COLUMN',@level2name=N'LOA_PERMIT_TYPE_ID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to LoA details table' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_PERMIT_TYPE_DETAILS', @level2type=N'COLUMN',@level2name=N'LOA_ID'

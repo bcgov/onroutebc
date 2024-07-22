@@ -44,19 +44,19 @@ import { GetDocumentQueryParamsDto } from '../common/dto/request/queryParam/getD
 import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-flag-enabled.decorator';
 
 @ApiBearerAuth()
-@ApiTags('Company Letter of Authorization')
+@ApiTags('Letter of Authorization (LoA)')
 @IsFeatureFlagEnabled('LOA')
 @Controller('companies/:companyId/loas')
 @ApiMethodNotAllowedResponse({
-  description: 'The LOA Api Method Not Allowed Response',
+  description: 'The LoA Api Method Not Allowed Response',
   type: ExceptionDto,
 })
 @ApiInternalServerErrorResponse({
-  description: 'The LOA Api Internal Server Error Response',
+  description: 'The LoA Api Internal Server Error Response',
   type: ExceptionDto,
 })
 @ApiUnprocessableEntityResponse({
-  description: 'The LOA Entity could not be processed.',
+  description: 'The LoA Entity could not be processed.',
   type: ExceptionDto,
 })
 @ApiBadRequestResponse({
@@ -67,9 +67,9 @@ export class LoaController {
   constructor(private readonly loaService: LoaService) {}
 
   @ApiOperation({
-    summary: 'Add LOA for a company.',
+    summary: 'Add LoA for a company.',
     description:
-      'Add an LOA to a company, allowing special authorizations. Returns the created LOA object from the database.',
+      'Add an LOA to a company, allowing special authorizations. Returns the created LoA object from the database.',
   })
   @ApiCreatedResponse({
     description: 'The DMS file Resource',
@@ -103,7 +103,7 @@ export class LoaController {
   }
 
   @ApiOperation({
-    summary: 'Get all LOA for a company.',
+    summary: 'Get all LoA for a company.',
     description: 'Returns all LOAs for a company in the database.',
   })
   @Get()
@@ -119,8 +119,8 @@ export class LoaController {
   }
 
   @ApiOperation({
-    summary: 'Get LOA by Id.',
-    description: 'Returns the LOA object from the database.',
+    summary: 'Get LoA by Id.',
+    description: 'Returns the LoA object from the database.',
   })
   @Get('/:loaId')
   async getById(
@@ -133,8 +133,8 @@ export class LoaController {
   }
 
   @ApiOperation({
-    summary: 'Update LOA.',
-    description: 'Updates and returns the LOA object from the database.',
+    summary: 'Update LoA.',
+    description: 'Updates and returns the LoA object from the database.',
   })
   @ApiConsumes('multipart/form-data')
   @Put('/:loaId')
@@ -166,8 +166,8 @@ export class LoaController {
   }
 
   @ApiOperation({
-    summary: 'Delete LOA by Id.',
-    description: 'Deletes the LOA object from the database.',
+    summary: 'Delete LoA by Id.',
+    description: 'Deletes the LoA object from the database.',
   })
   @Delete('/:loaId')
   async delete(
@@ -180,8 +180,8 @@ export class LoaController {
   }
 
   @ApiOperation({
-    summary: 'Get LOA Document',
-    description: 'Retrieve the LOA document from the database.',
+    summary: 'Get LoA Document',
+    description: 'Retrieve the LoA document from the database.',
   })
   @Get('/:loaId/documents')
   async getLoaDocument(
@@ -205,8 +205,8 @@ export class LoaController {
   }
 
   @ApiOperation({
-    summary: 'Delete LOA Document',
-    description: 'Deletes the LOA document from the database.',
+    summary: 'Delete LoA Document',
+    description: 'Deletes the LoA document from the database.',
   })
   @Delete('/:loaId/documents')
   async deleteLoaDocument(

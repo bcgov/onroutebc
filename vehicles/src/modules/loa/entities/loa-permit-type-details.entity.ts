@@ -33,7 +33,7 @@ export class LoaPermitType extends Base {
     enum: PermitType,
     length: 10,
     name: 'PERMIT_TYPE_ID',
-    nullable: true,
+    nullable: false,
   })
   permitType: PermitType;
 }
