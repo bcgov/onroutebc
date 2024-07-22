@@ -93,21 +93,33 @@ export class LoaProfile extends AutomapperProfile {
         forMember(
           (d) => d.loaPermitTypes,
           mapWithArguments(
-            (s, { timestamp, directory, userName, userGUID }) => {
+            (
+              s,
+              {
+                timestamp,
+                directory,
+                userName,
+                userGUID,
+              }: {
+                timestamp: Date;
+                directory: string;
+                userName: string;
+                userGUID: string;
+              },
+            ) => {
               const loaPermitTypes: LoaPermitType[] =
                 new Array<LoaPermitType>();
               for (const permitType of s.loaPermitType) {
                 const loaPermitType: LoaPermitType = new LoaPermitType();
                 loaPermitType.permitType = permitType;
-                loaPermitType.createdDateTime = new Date(String(timestamp));
-                loaPermitType.createdUser = String(userName);
-                loaPermitType.createdUserGuid = String(userGUID);
-                loaPermitType.createdUserDirectory = String(directory);
-                loaPermitType.updatedDateTime = new Date(String(timestamp));
-                loaPermitType.updatedUser = String(userName);
-                loaPermitType.updatedUserDirectory = String(directory);
-                loaPermitType.updatedUserGuid = String(userGUID);
-                loaPermitTypes.push(loaPermitType);
+                loaPermitType.createdDateTime = timestamp;
+                loaPermitType.createdUser = userName;
+                loaPermitType.createdUserGuid = userGUID;
+                loaPermitType.createdUserDirectory = directory;
+                loaPermitType.updatedDateTime = timestamp;
+                loaPermitType.updatedUser = userName;
+                loaPermitType.updatedUserDirectory = directory;
+                loaPermitType.updatedUserGuid = userGUID;
               }
               return loaPermitTypes;
             },
@@ -117,21 +129,34 @@ export class LoaProfile extends AutomapperProfile {
         forMember(
           (d) => d.loaVehicles,
           mapWithArguments(
-            (s, { timestamp, directory, userName, userGUID }) => {
+            (
+              s,
+              {
+                timestamp,
+                directory,
+                userName,
+                userGUID,
+              }: {
+                timestamp: Date;
+                directory: string;
+                userName: string;
+                userGUID: string;
+              },
+            ) => {
               const loaVehicles: LoaVehicle[] = new Array<LoaVehicle>();
               if (s.powerUnits) {
                 for (const powerUnit of s.powerUnits) {
                   const loaVehicle: LoaVehicle = new LoaVehicle();
                   loaVehicle.powerUnit = powerUnit;
-                  loaVehicle.createdDateTime = new Date(String(timestamp));
-                  loaVehicle.createdUser = String(userName);
-                  loaVehicle.createdUserGuid = String(userGUID);
-                  loaVehicle.createdUserDirectory = String(directory);
-                  loaVehicle.updatedDateTime = new Date(String(timestamp));
-                  loaVehicle.updatedUser = String(userName);
-                  loaVehicle.updatedUserDirectory = String(directory);
-                  loaVehicle.updatedUserGuid = String(userGUID);
                   loaVehicle.trailer = null;
+                  loaVehicle.createdDateTime = timestamp;
+                  loaVehicle.createdUser = userName;
+                  loaVehicle.createdUserGuid = userGUID;
+                  loaVehicle.createdUserDirectory = directory;
+                  loaVehicle.updatedDateTime = timestamp;
+                  loaVehicle.updatedUser = userName;
+                  loaVehicle.updatedUserDirectory = directory;
+                  loaVehicle.updatedUserGuid = userGUID;
                   loaVehicles.push(loaVehicle);
                 }
               }
@@ -140,14 +165,14 @@ export class LoaProfile extends AutomapperProfile {
                   const loaVehicle: LoaVehicle = new LoaVehicle();
                   loaVehicle.trailer = trailer;
                   loaVehicle.powerUnit = null;
-                  loaVehicle.createdDateTime = new Date(String(timestamp));
-                  loaVehicle.createdUser = String(userName);
-                  loaVehicle.createdUserGuid = String(userGUID);
-                  loaVehicle.createdUserDirectory = String(directory);
-                  loaVehicle.updatedDateTime = new Date(String(timestamp));
-                  loaVehicle.updatedUser = String(userName);
-                  loaVehicle.updatedUserDirectory = String(directory);
-                  loaVehicle.updatedUserGuid = String(userGUID);
+                  loaVehicle.createdDateTime = timestamp;
+                  loaVehicle.createdUser = userName;
+                  loaVehicle.createdUserGuid = userGUID;
+                  loaVehicle.createdUserDirectory = directory;
+                  loaVehicle.updatedDateTime = timestamp;
+                  loaVehicle.updatedUser = userName;
+                  loaVehicle.updatedUserDirectory = directory;
+                  loaVehicle.updatedUserGuid = userGUID;
                   loaVehicles.push(loaVehicle);
                 }
               }
@@ -212,21 +237,33 @@ export class LoaProfile extends AutomapperProfile {
         forMember(
           (d) => d.loaPermitTypes,
           mapWithArguments(
-            (s, { timestamp, directory, userName, userGUID }) => {
+            (
+              s,
+              {
+                timestamp,
+                directory,
+                userName,
+                userGUID,
+              }: {
+                timestamp: Date;
+                directory: string;
+                userName: string;
+                userGUID: string;
+              },
+            ) => {
               const loaPermitTypes: LoaPermitType[] =
                 new Array<LoaPermitType>();
               for (const permitType of s.loaPermitType) {
                 const loaPermitType: LoaPermitType = new LoaPermitType();
                 loaPermitType.permitType = permitType;
-                loaPermitType.permitType = permitType;
-                loaPermitType.createdDateTime = new Date(String(timestamp));
-                loaPermitType.createdUser = String(userName);
-                loaPermitType.createdUserGuid = String(userGUID);
-                loaPermitType.createdUserDirectory = String(directory);
-                loaPermitType.updatedDateTime = new Date(String(timestamp));
-                loaPermitType.updatedUser = String(userName);
-                loaPermitType.updatedUserDirectory = String(directory);
-                loaPermitType.updatedUserGuid = String(userGUID);
+                loaPermitType.createdDateTime = timestamp;
+                loaPermitType.createdUser = userName;
+                loaPermitType.createdUserGuid = userGUID;
+                loaPermitType.createdUserDirectory = directory;
+                loaPermitType.updatedDateTime = timestamp;
+                loaPermitType.updatedUser = userName;
+                loaPermitType.updatedUserDirectory = directory;
+                loaPermitType.updatedUserGuid = userGUID;
                 loaPermitTypes.push(loaPermitType);
               }
               return loaPermitTypes;
@@ -237,21 +274,34 @@ export class LoaProfile extends AutomapperProfile {
         forMember(
           (d) => d.loaVehicles,
           mapWithArguments(
-            (s, { timestamp, directory, userName, userGUID }) => {
+            (
+              s,
+              {
+                timestamp,
+                directory,
+                userName,
+                userGUID,
+              }: {
+                timestamp: Date;
+                directory: string;
+                userName: string;
+                userGUID: string;
+              },
+            ) => {
               const loaVehicles: LoaVehicle[] = new Array<LoaVehicle>();
               if (s.powerUnits) {
                 for (const powerUnit of s.powerUnits) {
                   const loaVehicle: LoaVehicle = new LoaVehicle();
                   loaVehicle.powerUnit = powerUnit;
-                  loaVehicle.createdDateTime = new Date(String(timestamp));
-                  loaVehicle.createdUser = String(userName);
-                  loaVehicle.createdUserGuid = String(userGUID);
-                  loaVehicle.createdUserDirectory = String(directory);
-                  loaVehicle.updatedDateTime = new Date(String(timestamp));
-                  loaVehicle.updatedUser = String(userName);
-                  loaVehicle.updatedUserDirectory = String(directory);
-                  loaVehicle.updatedUserGuid = String(userGUID);
                   loaVehicle.trailer = null;
+                  loaVehicle.createdDateTime = timestamp;
+                  loaVehicle.createdUser = userName;
+                  loaVehicle.createdUserGuid = userGUID;
+                  loaVehicle.createdUserDirectory = directory;
+                  loaVehicle.updatedDateTime = timestamp;
+                  loaVehicle.updatedUser = userName;
+                  loaVehicle.updatedUserDirectory = directory;
+                  loaVehicle.updatedUserGuid = userGUID;
                   loaVehicles.push(loaVehicle);
                 }
               }
@@ -259,15 +309,15 @@ export class LoaProfile extends AutomapperProfile {
                 for (const trailer of s.trailers) {
                   const loaVehicle: LoaVehicle = new LoaVehicle();
                   loaVehicle.trailer = trailer;
-                  loaVehicle.createdDateTime = new Date(String(timestamp));
-                  loaVehicle.createdUser = String(userName);
-                  loaVehicle.createdUserGuid = String(userGUID);
-                  loaVehicle.createdUserDirectory = String(directory);
-                  loaVehicle.updatedDateTime = new Date(String(timestamp));
-                  loaVehicle.updatedUser = String(userName);
-                  loaVehicle.updatedUserDirectory = String(directory);
-                  loaVehicle.updatedUserGuid = String(userGUID);
                   loaVehicle.powerUnit = null;
+                  loaVehicle.createdDateTime = timestamp;
+                  loaVehicle.createdUser = userName;
+                  loaVehicle.createdUserGuid = userGUID;
+                  loaVehicle.createdUserDirectory = directory;
+                  loaVehicle.updatedDateTime = timestamp;
+                  loaVehicle.updatedUser = userName;
+                  loaVehicle.updatedUserDirectory = directory;
+                  loaVehicle.updatedUserGuid = userGUID;
                   loaVehicles.push(loaVehicle);
                 }
               }
