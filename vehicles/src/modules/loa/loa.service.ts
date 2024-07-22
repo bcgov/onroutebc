@@ -161,11 +161,7 @@ export class LoaService {
         company: { companyId: companyId },
         isActive: true,
       },
-      relations: [
-        'company',
-        'loaVehicles',
-        'loaPermitTypes',
-      ],
+      relations: ['company', 'loaVehicles', 'loaPermitTypes'],
     });
   }
 

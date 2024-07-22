@@ -92,39 +92,68 @@ export class LoaProfile extends AutomapperProfile {
 
         forMember(
           (d) => d.loaPermitTypes,
-          mapFrom((s) => {
-            const loaPermitTypes: LoaPermitType[] = new Array<LoaPermitType>();
-            for (const permitType of s.loaPermitType) {
-              const loaPermitType: LoaPermitType = new LoaPermitType();
-              loaPermitType.permitType = permitType;
-              loaPermitTypes.push(loaPermitType);
-            }
-            return loaPermitTypes;
-          }),
+          mapWithArguments(
+            (s, { timestamp, directory, userName, userGUID }) => {
+              const loaPermitTypes: LoaPermitType[] =
+                new Array<LoaPermitType>();
+              for (const permitType of s.loaPermitType) {
+                const loaPermitType: LoaPermitType = new LoaPermitType();
+                loaPermitType.permitType = permitType;
+                loaPermitType.createdDateTime = new Date(String(timestamp));
+                loaPermitType.createdUser = String(userName);
+                loaPermitType.createdUserGuid = String(userGUID);
+                loaPermitType.createdUserDirectory = String(directory);
+                loaPermitType.updatedDateTime = new Date(String(timestamp));
+                loaPermitType.updatedUser = String(userName);
+                loaPermitType.updatedUserDirectory = String(directory);
+                loaPermitType.updatedUserGuid = String(userGUID);
+                loaPermitTypes.push(loaPermitType);
+              }
+              return loaPermitTypes;
+            },
+          ),
         ),
         //Mapping string aray of power unit ids and trailer ids to LoaVehicle type.
         forMember(
           (d) => d.loaVehicles,
-          mapFrom((s) => {
-            const loaVehicles: LoaVehicle[] = new Array<LoaVehicle>();
-            if (s.powerUnits) {
-              for (const powerUnit of s.powerUnits) {
-                const loaVehicle: LoaVehicle = new LoaVehicle();
-                loaVehicle.powerUnit = powerUnit;
-                loaVehicle.trailer = null;
-                loaVehicles.push(loaVehicle);
+          mapWithArguments(
+            (s, { timestamp, directory, userName, userGUID }) => {
+              const loaVehicles: LoaVehicle[] = new Array<LoaVehicle>();
+              if (s.powerUnits) {
+                for (const powerUnit of s.powerUnits) {
+                  const loaVehicle: LoaVehicle = new LoaVehicle();
+                  loaVehicle.powerUnit = powerUnit;
+                  loaVehicle.createdDateTime = new Date(String(timestamp));
+                  loaVehicle.createdUser = String(userName);
+                  loaVehicle.createdUserGuid = String(userGUID);
+                  loaVehicle.createdUserDirectory = String(directory);
+                  loaVehicle.updatedDateTime = new Date(String(timestamp));
+                  loaVehicle.updatedUser = String(userName);
+                  loaVehicle.updatedUserDirectory = String(directory);
+                  loaVehicle.updatedUserGuid = String(userGUID);
+                  loaVehicle.trailer = null;
+                  loaVehicles.push(loaVehicle);
+                }
               }
-            }
-            if (s.trailers) {
-              for (const trailer of s.trailers) {
-                const loaVehicle: LoaVehicle = new LoaVehicle();
-                loaVehicle.trailer = trailer;
-                loaVehicle.powerUnit = null;
-                loaVehicles.push(loaVehicle);
+              if (s.trailers) {
+                for (const trailer of s.trailers) {
+                  const loaVehicle: LoaVehicle = new LoaVehicle();
+                  loaVehicle.trailer = trailer;
+                  loaVehicle.powerUnit = null;
+                  loaVehicle.createdDateTime = new Date(String(timestamp));
+                  loaVehicle.createdUser = String(userName);
+                  loaVehicle.createdUserGuid = String(userGUID);
+                  loaVehicle.createdUserDirectory = String(directory);
+                  loaVehicle.updatedDateTime = new Date(String(timestamp));
+                  loaVehicle.updatedUser = String(userName);
+                  loaVehicle.updatedUserDirectory = String(directory);
+                  loaVehicle.updatedUserGuid = String(userGUID);
+                  loaVehicles.push(loaVehicle);
+                }
               }
-            }
-            return loaVehicles;
-          }),
+              return loaVehicles;
+            },
+          ),
         ),
       );
 
@@ -148,6 +177,12 @@ export class LoaProfile extends AutomapperProfile {
           (d) => d.isActive,
           mapWithArguments((_, { isActive }: { isActive: boolean }) => {
             return isActive;
+          }),
+        ),
+        forMember(
+          (d) => d.expiryDate,
+          mapFrom((s) => {
+            return s.expiryDate;
           }),
         ),
         forMember(
@@ -176,39 +211,69 @@ export class LoaProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.loaPermitTypes,
-          mapFrom((s) => {
-            const loaPermitTypes: LoaPermitType[] = new Array<LoaPermitType>();
-            for (const permitType of s.loaPermitType) {
-              const loaPermitType: LoaPermitType = new LoaPermitType();
-              loaPermitType.permitType = permitType;
-              loaPermitTypes.push(loaPermitType);
-            }
-            return loaPermitTypes;
-          }),
+          mapWithArguments(
+            (s, { timestamp, directory, userName, userGUID }) => {
+              const loaPermitTypes: LoaPermitType[] =
+                new Array<LoaPermitType>();
+              for (const permitType of s.loaPermitType) {
+                const loaPermitType: LoaPermitType = new LoaPermitType();
+                loaPermitType.permitType = permitType;
+                loaPermitType.permitType = permitType;
+                loaPermitType.createdDateTime = new Date(String(timestamp));
+                loaPermitType.createdUser = String(userName);
+                loaPermitType.createdUserGuid = String(userGUID);
+                loaPermitType.createdUserDirectory = String(directory);
+                loaPermitType.updatedDateTime = new Date(String(timestamp));
+                loaPermitType.updatedUser = String(userName);
+                loaPermitType.updatedUserDirectory = String(directory);
+                loaPermitType.updatedUserGuid = String(userGUID);
+                loaPermitTypes.push(loaPermitType);
+              }
+              return loaPermitTypes;
+            },
+          ),
         ),
         //Mapping string aray of power unit ids and trailer ids to LoaVehicle type.
         forMember(
           (d) => d.loaVehicles,
-          mapFrom((s) => {
-            const loaVehicles: LoaVehicle[] = new Array<LoaVehicle>();
-            if (s.powerUnits) {
-              for (const powerUnit of s.powerUnits) {
-                const loaVehicle: LoaVehicle = new LoaVehicle();
-                loaVehicle.powerUnit = powerUnit;
-                loaVehicle.trailer = null;
-                loaVehicles.push(loaVehicle);
+          mapWithArguments(
+            (s, { timestamp, directory, userName, userGUID }) => {
+              const loaVehicles: LoaVehicle[] = new Array<LoaVehicle>();
+              if (s.powerUnits) {
+                for (const powerUnit of s.powerUnits) {
+                  const loaVehicle: LoaVehicle = new LoaVehicle();
+                  loaVehicle.powerUnit = powerUnit;
+                  loaVehicle.createdDateTime = new Date(String(timestamp));
+                  loaVehicle.createdUser = String(userName);
+                  loaVehicle.createdUserGuid = String(userGUID);
+                  loaVehicle.createdUserDirectory = String(directory);
+                  loaVehicle.updatedDateTime = new Date(String(timestamp));
+                  loaVehicle.updatedUser = String(userName);
+                  loaVehicle.updatedUserDirectory = String(directory);
+                  loaVehicle.updatedUserGuid = String(userGUID);
+                  loaVehicle.trailer = null;
+                  loaVehicles.push(loaVehicle);
+                }
               }
-            }
-            if (s.trailers) {
-              for (const trailer of s.trailers) {
-                const loaVehicle: LoaVehicle = new LoaVehicle();
-                loaVehicle.trailer = trailer;
-                loaVehicle.powerUnit = null;
-                loaVehicles.push(loaVehicle);
+              if (s.trailers) {
+                for (const trailer of s.trailers) {
+                  const loaVehicle: LoaVehicle = new LoaVehicle();
+                  loaVehicle.trailer = trailer;
+                  loaVehicle.createdDateTime = new Date(String(timestamp));
+                  loaVehicle.createdUser = String(userName);
+                  loaVehicle.createdUserGuid = String(userGUID);
+                  loaVehicle.createdUserDirectory = String(directory);
+                  loaVehicle.updatedDateTime = new Date(String(timestamp));
+                  loaVehicle.updatedUser = String(userName);
+                  loaVehicle.updatedUserDirectory = String(directory);
+                  loaVehicle.updatedUserGuid = String(userGUID);
+                  loaVehicle.powerUnit = null;
+                  loaVehicles.push(loaVehicle);
+                }
               }
-            }
-            return loaVehicles;
-          }),
+              return loaVehicles;
+            },
+          ),
         ),
       );
 
