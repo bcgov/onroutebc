@@ -71,6 +71,10 @@ export class LoaService {
         extraArgs: () => ({
           companyId: companyId,
           documentId: readFileDto.documentId,
+          userName: currentUser.userName,
+          userGUID: currentUser.userGUID,
+          timestamp: new Date(),
+          directory: currentUser.orbcUserDirectory,
         }),
       },
     );
@@ -159,7 +163,13 @@ export class LoaService {
         company: { companyId: companyId },
         isActive: true,
       },
-      relations: ['company', 'loaVehicles', 'loaPermitTypes','loaVehicles.powerUnit','loaVehicles.trailer'],
+      relations: [
+        'company',
+        'loaVehicles',
+        'loaPermitTypes',
+        'loaVehicles.powerUnit',
+        'loaVehicles.trailer',
+      ],
     });
   }
 
@@ -287,6 +297,10 @@ export class LoaService {
             loaId,
             isActive,
             documentId,
+            userName: currentUser.userName,
+            userGUID: currentUser.userGUID,
+            timestamp: new Date(),
+            directory: currentUser.orbcUserDirectory,
           }),
         },
       );

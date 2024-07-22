@@ -23,12 +23,14 @@ export class LoaVehicle extends Base {
   loa: LoaDetail;
 
   @AutoMap(() => PowerUnit)
-  @OneToOne(() => PowerUnit, (PowerUnit) => PowerUnit.powerUnitId,{nullable: true})
+  @OneToOne(() => PowerUnit, (PowerUnit) => PowerUnit.powerUnitId, {
+    nullable: true,
+  })
   @JoinColumn({ name: 'POWER_UNIT_ID' })
   powerUnit: PowerUnit;
 
   @AutoMap(() => Trailer)
-  @OneToOne(() => Trailer, (Trailer) => Trailer.trailerId,{nullable: true})
+  @OneToOne(() => Trailer, (Trailer) => Trailer.trailerId, { nullable: true })
   @JoinColumn({ name: 'TRAILER_ID' })
   trailer: Trailer;
 }

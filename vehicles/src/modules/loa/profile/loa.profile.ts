@@ -39,6 +39,58 @@ export class LoaProfile extends AutomapperProfile {
           }),
         ),
         forMember(
+          (d) => d.createdUserGuid,
+          mapWithArguments((_, { userGUID }) => {
+            return userGUID;
+          }),
+        ),
+        forMember(
+          (d) => d.createdUser,
+          mapWithArguments((_, { userName }) => {
+            return userName;
+          }),
+        ),
+        forMember(
+          (d) => d.createdUserDirectory,
+          mapWithArguments((_, { directory }) => {
+            return directory;
+          }),
+        ),
+
+        forMember(
+          (d) => d.createdDateTime,
+          mapWithArguments((_, { timestamp }) => {
+            return timestamp;
+          }),
+        ),
+
+        forMember(
+          (d) => d.updatedUserGuid,
+          mapWithArguments((_, { userGUID }) => {
+            return userGUID;
+          }),
+        ),
+        forMember(
+          (d) => d.updatedUser,
+          mapWithArguments((_, { userName }) => {
+            return userName;
+          }),
+        ),
+        forMember(
+          (d) => d.updatedUserDirectory,
+          mapWithArguments((_, { directory }) => {
+            return directory;
+          }),
+        ),
+
+        forMember(
+          (d) => d.updatedDateTime,
+          mapWithArguments((_, { timestamp }) => {
+            return timestamp;
+          }),
+        ),
+
+        forMember(
           (d) => d.loaPermitTypes,
           mapFrom((s) => {
             const loaPermitTypes: LoaPermitType[] = new Array<LoaPermitType>();
@@ -96,6 +148,30 @@ export class LoaProfile extends AutomapperProfile {
           (d) => d.isActive,
           mapWithArguments((_, { isActive }: { isActive: boolean }) => {
             return isActive;
+          }),
+        ),
+        forMember(
+          (d) => d.updatedUserGuid,
+          mapWithArguments((_, { userGUID }) => {
+            return userGUID;
+          }),
+        ),
+        forMember(
+          (d) => d.updatedUser,
+          mapWithArguments((_, { userName }) => {
+            return userName;
+          }),
+        ),
+        forMember(
+          (d) => d.updatedUserDirectory,
+          mapWithArguments((_, { directory }) => {
+            return directory;
+          }),
+        ),
+        forMember(
+          (d) => d.updatedDateTime,
+          mapWithArguments((_, { timestamp }) => {
+            return timestamp;
           }),
         ),
         forMember(
