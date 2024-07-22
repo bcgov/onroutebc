@@ -278,8 +278,10 @@ export class Policy {
             this.policyDefinition.vehicleTypes.trailerTypes?.find(
               (v) => v.id == currentConfiguration[i],
             );
-          if (!vehicleType?.ignoreForSizeDimensions) {
-            isValid = true;
+          if (vehicleType) {
+            if (!vehicleType.ignoreForSizeDimensions) {
+              isValid = true;
+            }
           }
         } else {
           // Size dimensions are not required for this permit type, so there are

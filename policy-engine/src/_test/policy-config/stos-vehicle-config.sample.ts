@@ -108,7 +108,17 @@ export const stosPolicyConfig: PolicyDefinition = {
         },
       ],
     },
-  ],
+    {
+      id: 'TROS',
+      name: 'Term Oversize',
+      routingRequired: false,
+      weightDimensionRequired: false,
+      sizeDimensionRequired: false,
+      commodityRequired: false,
+      allowedVehicles: ['TRKTRAC'],
+      rules: [],
+    },
+],
   globalWeightDefaults: {
     powerUnits: [],
     trailers: [],
@@ -603,12 +613,6 @@ export const stosPolicyConfig: PolicyDefinition = {
         {
           type: 'LOGOWBK',
           canFollow: ['TRKTRAC'],
-          sizeDimensions: [
-            {
-              width: 3.2,
-              length: 23,
-            },
-          ],
         },
         {
           type: 'OGOSFDT',
@@ -646,12 +650,24 @@ export const stosPolicyConfig: PolicyDefinition = {
             {
               height: 4.4,
               length: 25,
+              width: 2.5,
               regions: [
                 {
                   region: 'PCE',
                   height: 5.33,
                   length: 27.5,
+                  width: 2.8
                 },
+                {
+                  region: 'KTN',
+                  height: 4.0,
+                  length: 30,
+                },
+                {
+                  region: 'LMN',
+                  height: 4.5,
+                  length: 24,
+                }
               ],
               modifiers: [
                 {
