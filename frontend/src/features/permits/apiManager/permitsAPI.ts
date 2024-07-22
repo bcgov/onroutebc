@@ -3,7 +3,6 @@ import { AxiosResponse } from "axios";
 import { PermitHistory } from "../types/PermitHistory";
 import { removeEmptyIdsFromPermitsActionResponse } from "../helpers/mappers";
 import { AmendPermitFormData } from "../pages/Amend/types/AmendPermitFormData";
-import { EmailNotificationType } from "../types/EmailNotificationType";
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
 import {
   IssuePermitsResponse,
@@ -63,6 +62,7 @@ import {
   VoidPermitRequestData,
   VoidPermitResponseData,
 } from "../pages/Void/types/VoidPermit";
+import { EmailNotificationType } from "../types/EmailNotificationType";
 
 /**
  * Create a new application.
@@ -123,7 +123,10 @@ const getApplications = async (
   // API pagination index starts at 1. Hence page + 1.
   applicationsURL.searchParams.set("page", `${page + 1}`);
   applicationsURL.searchParams.set("take", `${take}`);
-  applicationsURL.searchParams.set("pendingPermits", `${Boolean(pendingPermitsOnly)}`);
+  applicationsURL.searchParams.set(
+    "pendingPermits",
+    `${Boolean(pendingPermitsOnly)}`,
+  );
 
   if (searchString) {
     applicationsURL.searchParams.set("searchString", searchString);
@@ -582,25 +585,33 @@ export const modifyAmendmentApplication = async ({
  * Resend permit and/or receipt to email.
  * @param permitId Permit id of the permit to resend
  * @param email Email to resend to
+ * @param [fax] Fax number to resend to
  * @param notificationTypes Types of email notifications to send (EMAIL_PERMIT and/or EMAIL_RECEIPT)
  * @returns Response if the resend action was successful
  */
 export const resendPermit = async ({
   permitId,
   email,
+  fax,
   notificationTypes,
 }: {
   permitId: string;
   email: string;
+  fax?: string;
   notificationTypes: EmailNotificationType[];
 }) => {
+  const data: any = {
+    to: [email],
+    notificationType: [...notificationTypes],
+  };
+
+  // Conditionally include the fax property if it is not an empty string
+  if (fax && fax.trim() !== "") {
+    data.fax = [fax];
+  }
+
   return await httpPOSTRequest(
     `${PERMITS_API_ROUTES.RESEND(permitId)}`,
-    replaceEmptyValuesWithNull({
-      to: [email],
-      notificationType: [
-        ...notificationTypes,
-      ],
-    }),
+    replaceEmptyValuesWithNull(data),
   );
 };

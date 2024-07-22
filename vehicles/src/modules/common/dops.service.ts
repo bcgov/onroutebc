@@ -22,6 +22,9 @@ import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method
 import { LogMethodExecution } from '../../common/decorator/log-method-execution.decorator';
 import { INotificationDocument } from '../../common/interface/notification-document.interface';
 import { ReadNotificationDto } from './dto/response/read-notification.dto';
+import * as FormData from 'form-data';
+import { Readable } from 'stream';
+import { Nullable } from 'src/common/types/common';
 
 @Injectable()
 export class DopsService {
@@ -307,5 +310,56 @@ export class DopsService {
         );
       }
     }
+  }
+
+  @LogAsyncMethodExecution()
+  async upload(
+    currentUser: IUserJWT,
+    companyId: number,
+    file: Express.Multer.File,
+    documentId?: Nullable<string>,
+  ): Promise<ReadFileDto> {
+    // Construct the base URL
+    const baseUrl = new URL(process.env.DOPS_URL);
+    // Append the path and query parameter(s)
+    baseUrl.pathname += 'dms/upload';
+    if (documentId) {
+      baseUrl.pathname += '/${documentId}';
+    }
+    // Add companyId as a query parameter
+    baseUrl.searchParams.set('companyId', companyId.toString());
+    const formData = new FormData();
+    const stream = Readable.from(file.buffer);
+    formData.append('file', stream, {
+      filename: file.originalname,
+      contentType: file.mimetype,
+    });
+    formData.append('fileName', file.originalname);
+    const reqConfig: AxiosRequestConfig = {
+      headers: {
+        Authorization: `${currentUser.access_token}`,
+        'Content-Type': 'multipart/form-data',
+        'x-correlation-id': this.cls.getId(),
+      },
+    };
+    // Calls the DOPS service, which converts the the template document into a pdf
+    const dopsResponse = await lastValueFrom(
+      this.httpService.post(baseUrl?.toString(), formData, reqConfig),
+    )
+      .then((response) => {
+        return response;
+      })
+      .catch((error: AxiosError) => {
+        if (error.response) {
+          const errorData = error.response.data;
+          this.logger.error(
+            `Error response from DOPS: ${JSON.stringify(errorData, null, 2)}`,
+          );
+        } else {
+          this.logger.error(error?.message, error?.stack);
+        }
+        throw new InternalServerErrorException('Error uploading file');
+      });
+    return dopsResponse.data as ReadFileDto;
   }
 }
