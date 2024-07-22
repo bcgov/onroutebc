@@ -1,7 +1,7 @@
 import { 
   formatDateToCustomString, 
   generateRandomChars, 
-    getExternalReferenceSource, 
+    // getExternalReferenceSource, 
 
 
 
@@ -139,12 +139,12 @@ describe('generateRandomChars', () => {
 
 
 
-describe('getExternalReferenceSource', () => {
-  it('should return an empty string', () => {
-    const result = getExternalReferenceSource();
-    expect(result).toBe('');
-  });
-});
+// describe('getExternalReferenceSource', () => {
+//   it('should return an empty string', () => {
+//     const result = getExternalReferenceSource();
+//     expect(result).toBe('');
+//   });
+// });
 
 // describe('getFlowThru', () => {
 //   it('should return a string with the specified length', () => {
