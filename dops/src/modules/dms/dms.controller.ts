@@ -37,6 +37,7 @@ import { IDP } from '../../enum/idp.enum';
 import { Roles } from '../../decorator/roles.decorator';
 import { Role } from '../../enum/roles.enum';
 import { GetDocumentQueryParamsDto } from './dto/request/queryParam/getDocument.query-params.dto';
+import { setResHeaderCorrelationId } from '../../helper/response-header.helper';
 
 @ApiTags('DMS')
 @ApiBadRequestResponse({
@@ -193,8 +194,12 @@ export class DmsController {
       s3Object.pipe(res);
     } else {
       if (getDocumentQueryParamsDto.download === FileDownloadModes.URL) {
+        //Set the correlationId before sending the Response
+        setResHeaderCorrelationId(res);
         res.status(201).send(file);
       } else {
+        //Set the correlationId before sending the Response
+        setResHeaderCorrelationId(res);
         res.status(302).set('Location', file.preSignedS3Url).end();
       }
     }
