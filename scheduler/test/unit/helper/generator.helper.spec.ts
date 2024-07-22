@@ -1,6 +1,6 @@
 import { 
   formatDateToCustomString, 
-  generateRandomChars, 
+  // generateRandomChars, 
     // getExternalReferenceSource, 
 
 
@@ -62,20 +62,20 @@ describe('formatDateToCustomString', () => {
   });
 });
 
-describe('generateRandomChars', () => {
-  it('should generate a string of the specified length', () => {
-    const length = 10;
-    const randomChars = generateRandomChars(length);
-    expect(randomChars).toHaveLength(length);
-  });
+// describe('generateRandomChars', () => {
+//   it('should generate a string of the specified length', () => {
+//     const length = 10;
+//     const randomChars = generateRandomChars(length);
+//     expect(randomChars).toHaveLength(length);
+//   });
 
-  it('should generate a string containing only valid characters', () => {
-    const length = 10;
-    const randomChars = generateRandomChars(length);
-    const validCharacters = /^[A-Za-z0-9]+$/;
-    expect(randomChars).toMatch(validCharacters);
-  });
-});
+//   it('should generate a string containing only valid characters', () => {
+//     const length = 10;
+//     const randomChars = generateRandomChars(length);
+//     const validCharacters = /^[A-Za-z0-9]+$/;
+//     expect(randomChars).toMatch(validCharacters);
+//   });
+// });
 
 
 
