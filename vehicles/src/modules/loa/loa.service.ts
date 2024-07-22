@@ -110,6 +110,8 @@ export class LoaService {
       .leftJoinAndSelect('loaDetail.company', 'company')
       .leftJoinAndSelect('loaDetail.loaVehicles', 'loaVehicles')
       .leftJoinAndSelect('loaDetail.loaPermitTypes', 'loaPermitTypes')
+      .leftJoinAndSelect('loaVehicles.powerUnit', 'powerUnit')
+      .leftJoinAndSelect('loaVehicles.trailer', 'Trailer')
       .where('company.companyId = :companyId', { companyId: companyId })
       .andWhere('loaDetail.isActive = :isActive', { isActive: 'Y' });
     if (expired === true) {
@@ -157,7 +159,7 @@ export class LoaService {
         company: { companyId: companyId },
         isActive: true,
       },
-      relations: ['company', 'loaVehicles', 'loaPermitTypes'],
+      relations: ['company', 'loaVehicles', 'loaPermitTypes','loaVehicles.powerUnit','loaVehicles.trailer'],
     });
   }
 

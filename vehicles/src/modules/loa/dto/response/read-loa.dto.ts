@@ -2,6 +2,8 @@ import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum } from 'class-validator';
 import { PermitType } from 'src/common/enum/permit-type.enum';
+import { PowerUnit } from 'src/modules/vehicles/power-units/entities/power-unit.entity';
+import { Trailer } from 'src/modules/vehicles/trailers/entities/trailer.entity';
 
 export class ReadLoaDto {
   @AutoMap()
@@ -79,7 +81,7 @@ export class ReadLoaDto {
     required: false,
     example: ['1'],
   })
-  trailers?: string[];
+  trailers?: Trailer[];
 
   @AutoMap()
   @ApiProperty({
@@ -88,5 +90,5 @@ export class ReadLoaDto {
     required: false,
     example: ['1'],
   })
-  powerUnits?: string[];
+  powerUnits?: PowerUnit[];
 }

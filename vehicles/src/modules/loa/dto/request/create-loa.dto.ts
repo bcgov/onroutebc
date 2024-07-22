@@ -14,6 +14,8 @@ import {
 } from 'class-validator';
 import { PermitType } from 'src/common/enum/permit-type.enum';
 import { IsDateTimeAfter } from '../../../../common/decorator/is-date-time-after';
+import { PowerUnit } from 'src/modules/vehicles/power-units/entities/power-unit.entity';
+import { Trailer } from 'src/modules/vehicles/trailers/entities/trailer.entity';
 
 export class CreateLoaDto {
   @AutoMap()
@@ -72,7 +74,7 @@ export class CreateLoaDto {
   )
   @IsNumberString({}, { each: true })
   @ArrayMinSize(1)
-  trailers?: string[];
+  trailers?: Trailer[];
 
   @AutoMap()
   @ApiProperty({
@@ -87,5 +89,5 @@ export class CreateLoaDto {
   )
   @IsNumberString({}, { each: true })
   @ArrayMinSize(1)
-  powerUnits?: string[];
+  powerUnits?: PowerUnit[];
 }
