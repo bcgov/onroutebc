@@ -53,7 +53,7 @@ import { randomBytes } from 'crypto';
 
 const maxBatchId = '';
 
-class BatchHeader {
+export class BatchHeader {
   feederNumber: string;
   batchType: string;
   transactionType: string;

@@ -1,4 +1,5 @@
 import { 
+  BatchHeader,
   formatDateToCustomString, 
   // generateRandomChars, 
     getExternalReferenceSource, 
@@ -47,6 +48,29 @@ import {
 // const mockUnusedFiller = '                ';
 // const mockLineCode = 'C';
 // const mockLineDescription = 'Description of the line';
+
+// Mocking CgiConstants
+// const CgiConstants = {
+//   BATCH_TYPE: 'batchTypeMock',
+//   TRANSACTION_TYPE_BH: 'transactionTypeMock',
+//   MESSAGE_VERSION: 'messageVersionMock'
+// };
+
+describe('BatchHeader', () => {
+  it('should initialize with the correct values', () => {
+    process.env.FEEDER_NUMBER = '3535';
+    const batchHeader = new BatchHeader();
+    
+    expect(batchHeader.feederNumber).toBe('3535');
+    // expect(batchHeader.batchType).toBe(CgiConstants.BATCH_TYPE);
+    // expect(batchHeader.transactionType).toBe('transactionTypeMock');
+    expect(batchHeader.fiscalYear).toBe(2025);
+    // expect(batchHeader.batchNumber).toBe('batchNumberMock');
+    // expect(batchHeader.messageVersion).toBe('messageVersionMock');
+  });
+});
+
+
 
 describe('formatDateToCustomString', () => {
   it('should format the date correctly', () => {
