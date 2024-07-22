@@ -1,5 +1,5 @@
 #  Build container
-FROM node:20.12.1-alpine AS builder
+FROM node:20.15.1-alpine AS builder
 
 # Set the working directory to /app inside the container
 WORKDIR /app
@@ -18,7 +18,7 @@ RUN npm prune --production
 
 
 # Deployment container
-FROM node:20.12.1-alpine
+FROM node:20.15.1-alpine
 RUN npm cache clean --force
 
 # Create and Assign permissions to npm folder
@@ -73,6 +73,8 @@ COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 
+RUN apk add --no-cache curl
+
 # Expose Port
 EXPOSE 5050
 
@@ -83,4 +85,4 @@ USER node
 CMD ["npm", "run", "start:prod"]
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost/:5050
+HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:5050/

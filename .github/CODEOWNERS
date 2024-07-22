@@ -13,6 +13,9 @@
 # Dops:
 /dops/**  @gchauhan-aot @praju-aot
 
+# Policy:
+/policy/**  @gchauhan-aot @praju-aot
+
 # Database:
 /database/** @gchauhan-aot @john-fletcher-aot @praju-aot
 

@@ -44,7 +44,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@0.17.0
+        uses: aquasecurity/trivy-action@0.24.0
         with:
           format: "sarif"
           output: "trivy-results.sarif"
@@ -79,12 +79,16 @@ jobs:
           - 5432:5432
     strategy:
       matrix:
-        dir: [vehicles, dops, frontend, scheduler]
+        dir: [vehicles, dops, frontend, scheduler, policy]
         include:
           - dir: dops
             sonar_projectKey: onroutebc_dops
             token: SONAR_TOKEN_DOPS
             triggers: ('dops')
+          - dir: policy
+            sonar_projectKey: onroutebc_policy
+            token: SONAR_TOKEN_POLICY
+            triggers: ('policy')            
           - dir: vehicles
             sonar_projectKey: onroutebc_vehicles
             token: SONAR_TOKEN_VEHICLES
@@ -98,7 +102,7 @@ jobs:
             token: SONAR_TOKEN_FRONTEND
             triggers: ('frontend/')
     steps:
-      - uses: bcgov-nr/action-test-and-analyse@v1.1.1
+      - uses: bcgov-nr/action-test-and-analyse@v1.2.1
         with:
           commands: |
             npm ci

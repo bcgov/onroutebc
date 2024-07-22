@@ -1,5 +1,5 @@
 #  Build container.
-FROM node:20.12.1-alpine AS builder
+FROM node:20.15.1-alpine AS builder
 
 # Set the working directory to /app inside the container
 WORKDIR /app
@@ -21,7 +21,7 @@ RUN npm prune --production
 
 
 # Deployment container
-FROM node:20.12.1-alpine
+FROM node:20.15.1-alpine
 RUN npm cache clean --force
 
 # Create and Assign permissions to npm folder
@@ -80,7 +80,8 @@ RUN apk add --no-cache \
       freetype \
       harfbuzz \
       ca-certificates \
-      ttf-freefont 
+      ttf-freefont \
+      curl
      
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
@@ -101,4 +102,4 @@ EXPOSE 5001
 CMD ["npm", "run", "start:prod"]
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost/:5001
+HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:5001/
