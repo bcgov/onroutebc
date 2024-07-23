@@ -1,5 +1,6 @@
 import { Contact } from "../../features/manageProfile/types/manageProfile";
 import { Nullable } from "../types/common";
+import { ALL_PERMISSION_KEYS } from "./PermissionMatrix";
 
 /**
  * Company Metadata type
@@ -237,4 +238,5 @@ export type PermissionConfigType = {
    * @returns A boolean.
    */
   onlyConditionToCheck?: (...args: any) => boolean;
+  permissionKey?: ALL_PERMISSION_KEYS;
 };

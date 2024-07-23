@@ -334,6 +334,49 @@ export const MISCELLANEOUS = {
    */
 } as const;
 
+export const PERMISSIONS_MATRIX = {
+  MISCELLANEOUS: MISCELLANEOUS,
+  MANAGE_PERMITS: MANAGE_PERMITS,
+} as const;
+
+
+type Concat<S1 extends string, S2 extends S1> = `${S1}${S2}`;
+type t2 = Concat<'Hello', 'Hello'>
+
+type Paths<T> = T extends object ? { [K in keyof T]:
+  `${Exclude<K, symbol>}${"" | `.${Paths<T[K]>}`}`
+}[keyof T] : never
+type saq = Paths<typeof PERMISSIONS_MATRIX>; 
+export type Leaves<T> = T extends object ? { [K in keyof T]:
+  `${Exclude<K, symbol>}${Leaves<T[K]> extends never ? "" : `.${Leaves<T[K]>}`}`
+}[keyof T] : never
+
+export type ALL_FEATURES = keyof typeof PERMISSIONS_MATRIX;
+
+
+type MyPaths<T extends object> = keyof T extends infer K ? K extends string & keyof T ?
+  T[K] extends object ? `${K}${PrependDot<MyPaths<T[K]>>}` : never
+  : never : never;
+
+type PrependDot<T extends string> = [T] extends [never] ? "" : `.${T}`; 
+
+type DesiredType = MyPaths<typeof PERMISSIONS_MATRIX>;
+
+export type ALL_FUNCTIONS<T extends ALL_FEATURES> = keyof typeof T;
+type aaa = keyof ALL_FUNCTIONS<'MANAGE_PERMITS'>
+export type aqqq = typeof PERMISSIONS_MATRIX;
+export type ALL_PERMISSION_KEYS = (keyof typeof PERMISSIONS_MATRIX)[keyof typeof MISCELLANEOUS & keyof typeof MANAGE_PERMITS]
+// Working example
+type Keys = keyof typeof PERMISSIONS_MATRIX;
+type Values<T extends Keys> = keyof typeof PERMISSIONS_MATRIX[T];
+
+const key1: Keys = "MANAGE_PERMITS";
+const value1: Values<typeof key1> = "VIEW_PERMITS_SCREEN";
+
+//----------------------
+
+export type saaa = keyof typeof PERMISSIONS_MATRIX;
+type ttrt = typeof Object.keys(PERMISSIONS_MATRIX);
 /**
  * A hook to manage the permissions matrix for various features and user authentication groups.
  *
@@ -357,6 +400,12 @@ export const usePermissionMatrix = ({
   const { userDetails, idirUserDetails } = useContext(OnRouteBCContext);
   const { data: featureFlags } = useFeatureFlagsQuery();
   const isIdir = Boolean(idirUserDetails?.userAuthGroup);
+
+  if (featureFlag) {
+    if (featureFlags?.[featureFlag] !== "ENABLED") {
+      return false;
+    }
+  }
 
   // If the onlyConditionToCheck function is given, call that alone and exit.
   if (onlyConditionToCheck) {
@@ -385,9 +434,6 @@ export const usePermissionMatrix = ({
   }
   if (isAllowed && additionalConditionToCall) {
     isAllowed = isAllowed && additionalConditionToCall();
-  }
-  if (featureFlag) {
-    isAllowed = featureFlags?.[featureFlag] === "ENABLED";
   }
   return isAllowed;
 };
