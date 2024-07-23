@@ -157,7 +157,7 @@ export const CompanyInfoForm = memo(
                     invalidDBALength(1, 150),
                 },
               },
-              label: "DBA",
+              label: "Doing Business As",
             }}
           />
 
