@@ -97,7 +97,7 @@ export const ManageProfilesDashboard = React.memo(() => {
       : null,
     shouldAllowUserManagement
       ? {
-          label: "User Management",
+          label: "Add / Manage Users",
           component: <UserManagement />,
           componentKey: BCEID_PROFILE_TABS.USER_MANAGEMENT,
         }
@@ -119,9 +119,9 @@ export const ManageProfilesDashboard = React.memo(() => {
     return tabIndex;
   };
 
-  // Only show "Add User" button for User Management tab
+  // Only show "Add User" button for Add / Manage Users tab
   const showAddUserButton = (selectedTabIndex: number) => {
-    // Get index of User Management tab, if it exists
+    // Get index of Add / Manage Users tab, if it exists
     const userManagementTabIndex = tabs.findIndex(
       (tab) => tab.componentKey === BCEID_PROFILE_TABS.USER_MANAGEMENT,
     );
