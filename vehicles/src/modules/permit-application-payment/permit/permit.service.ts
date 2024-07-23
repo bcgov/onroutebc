@@ -700,15 +700,16 @@ export class PermitService {
 
     const readNotificationDtoList: ReadNotificationDto[] = [];
     let notificationDocument: INotificationDocument;
+
+    const faxEmailList = createNotificationDto.fax?.map((fax) =>
+      generateFaxEmail(fax),
+    );
+
     if (
       createNotificationDto?.notificationType?.includes(
         NotificationType.EMAIL_PERMIT,
       )
     ) {
-      const faxEmailList = createNotificationDto.fax?.map((fax) =>
-        generateFaxEmail(fax),
-      );
-
       notificationDocument = {
         templateName: NotificationTemplate.ISSUE_PERMIT,
         to: validateEmailandFaxList(createNotificationDto.to),
@@ -732,9 +733,6 @@ export class PermitService {
         NotificationType.EMAIL_RECEIPT,
       )
     ) {
-      const faxEmailList = createNotificationDto.fax?.map((fax) =>
-        generateFaxEmail(fax),
-      );
       notificationDocument = {
         templateName: NotificationTemplate.PAYMENT_RECEIPT,
         to: validateEmailandFaxList(createNotificationDto.to),
