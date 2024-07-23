@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { SelectCreditLimit } from "../components/creditAccount/SelectCreditLimit";
-import { useState, useContext } from "react";
+import { useState } from "react";
 import {
   DEFAULT_CREDIT_ACCOUNT_LIMIT,
   EMPTY_CREDIT_ACCOUNT_LIMIT_SELECT,
@@ -22,12 +21,7 @@ import {
 } from "../hooks/creditAccount";
 import { AddUser } from "../components/creditAccount/AddUser";
 import { AccountDetails } from "../components/creditAccount/AccountDetails";
-import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
 import { UserTable } from "../components/creditAccount/UserTable";
-import {
-  canUpdateCreditAccount,
-  canViewCreditAccountDetails,
-} from "../helpers/permissions";
 import { ActivityTable } from "../components/creditAccount/ActivityTable";
 import { StatusChip } from "../components/creditAccount/StatusChip";
 import { Loading } from "../../../common/pages/Loading";
@@ -36,9 +30,6 @@ import { RenderIf } from "../../../common/components/reusable/RenderIf";
 import { MANAGE_SETTINGS } from "../../../common/authentication/PermissionMatrix";
 
 export const CreditAccount = ({ companyId }: { companyId: number }) => {
-  const { userRoles, userDetails, idirUserDetails } =
-    useContext(OnRouteBCContext);
-
   const [invalid, setInvalid] = useState<boolean>(false);
 
   const [selectedCreditLimit, setSelectedCreditLimit] = useState<
@@ -112,12 +103,12 @@ export const CreditAccount = ({ companyId }: { companyId: number }) => {
             <RenderIf
               component={<ActivityTable />}
               {...MANAGE_SETTINGS.VIEW_CREDIT_ACCOUNT_DETAILS}
-              customFunction={() => isAccountHolder}
+              additionalConditionToCall={() => isAccountHolder}
             />
             <RenderIf
               component={<AddUser />}
               {...MANAGE_SETTINGS.UPDATE_CREDIT_ACCOUNT_DETAILS}
-              customFunction={() =>
+              additionalConditionToCall={() =>
                 isAccountHolder &&
                 creditAccount?.creditAccountStatusType !==
                   CREDIT_ACCOUNT_STATUS_TYPE.CLOSED

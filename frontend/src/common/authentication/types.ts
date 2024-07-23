@@ -217,7 +217,24 @@ export type PermissionConfigType = {
    */
   featureFlag?: string;
   /**
-   * Custom function that returns boolean.
+   * An additional function call whose boolean value will be accounted
+   * for determining whether to render a component.
+   * i.e., this function will play along with other specifications 
+   * given in the other input props.
+   * 
+   * @param args Any arguments to be passed.
+   * @returns A boolean.
    */
-  customFunction?: (...args: any) => boolean;
+  additionalConditionToCall?: (...args: any) => boolean;
+  /**
+   * With only condition to check, all other configurations are skipped.
+   * i.e., this function will be the only check to decide whether to render
+   * a component.
+   * 
+   * Simply put, when provided, this will be the only check.
+   * 
+   * @param args Any arguments to be passed.
+   * @returns A boolean.
+   */
+  onlyConditionToCheck?: (...args: any) => boolean;
 };

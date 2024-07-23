@@ -22,7 +22,7 @@ export const UserSection = ({ username }: { username: string }) => {
       <RenderIf
         component={<ShoppingCartButton cartItemCount={cartItemCount} />}
         {...MISCELLANEOUS.VIEW_SHOPPING_CART}
-        customFunction={() => showShoppingCart}
+        additionalConditionToCall={() => showShoppingCart}
       />
       <LogoutButton />
     </div>

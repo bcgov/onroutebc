@@ -194,7 +194,7 @@ export const AccountDetails = () => {
               </Box>
             }
             {...MANAGE_SETTINGS.UPDATE_CREDIT_ACCOUNT_DETAILS}
-            customFunction={() => isAccountHolder}
+            additionalConditionToCall={() => isAccountHolder}
           />
         </Box>
         {/* TODO remove mock values once API is complete */}
