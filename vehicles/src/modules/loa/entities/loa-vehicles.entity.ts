@@ -25,12 +25,12 @@ export class LoaVehicle extends Base {
     name: 'POWER_UNIT_ID',
     nullable: true,
   })
-  powerUnit: string;
+  powerUnit?: string;
 
   @AutoMap()
   @Column({
     name: 'TRAILER_ID',
     nullable: true,
   })
-  trailer: string;
+  trailer?: string;
 }

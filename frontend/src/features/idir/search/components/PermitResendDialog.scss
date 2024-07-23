@@ -96,9 +96,12 @@
       }
     }
   }
-
+  
   & &__error-msg {
     color: $bc-red;
     margin-top: 0.5rem;
+  }
+  .custom-form-control__helper-text {
+    max-width: 372px;
   }
 }

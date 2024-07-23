@@ -194,9 +194,11 @@ export class DmsController {
       s3Object.pipe(res);
     } else {
       if (getDocumentQueryParamsDto.download === FileDownloadModes.URL) {
+        //Set the correlationId before sending the Response
         setResHeaderCorrelationId(res);
         res.status(201).send(file);
       } else {
+        //Set the correlationId before sending the Response
         setResHeaderCorrelationId(res);
         res.status(302).set('Location', file.preSignedS3Url).end();
       }

@@ -13,7 +13,8 @@ const replacePlaceholders = (
 };
 
 export const requiredMessage = () => validationMessages.required.defaultMessage;
-export const selectionRequired = () => validationMessages.selectionRequired.defaultMessage;
+export const selectionRequired = () =>
+  validationMessages.selectionRequired.defaultMessage;
 export const invalidNumber = () => validationMessages.NaN.defaultMessage;
 export const invalidCountryCode = () =>
   validationMessages.country.defaultMessage;
