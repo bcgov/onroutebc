@@ -97,3 +97,23 @@ jobs:
         --set-json scheduler.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
         --set-json policy.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
         --set-json vehicles.containers[0].resources='{"limits": {"cpu": "300m", "memory": "500Mi"}, "requests": {"cpu": "200m", "memory": "400Mi"}}' \
+
+  create-release:
+    name: Create release
+    runs-on: ubuntu-22.04
+    needs: [deploys, vars]
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Generate release tag
+        id: generate_release_tag
+        shell: bash
+        run: |  
+          echo next_release_tag=$(expr $(echo $(curl https://api.github.com/repos/bcgov/onroutebc/releases/latest | grep tag_name | cut -d '-' -f3 - | cut -d '"' -f1 -) + 1)) >> $GITHUB_OUTPUT
+            
+      - name: Create Release
+        run: |
+          gh release create "${{ github.event.repository.name }}-release-${{ steps.generate_release_tag.outputs.next_release_tag }}" \
+          --repo=${{ github.repository }} \
+          --title="${{ github.event.repository.name }}-release-${{ steps.generate_release_tag.outputs.next_release_tag }}" \
+          --generate-notes
