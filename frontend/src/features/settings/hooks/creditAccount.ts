@@ -19,6 +19,7 @@ import {
   UpdateStatusData,
 } from "../types/creditAccount";
 import { CompanyProfile } from "../../manageProfile/types/manageProfile";
+import { FIVE_MINUTES } from "../../../common/constants/constants";
 
 /**
  * Hook to fetch the company credit account details for the active user.
@@ -43,6 +44,7 @@ export const useGetCreditAccountUsersQuery = (data: {
   const { companyId, creditAccountId } = data;
   return useQuery({
     queryKey: ["credit-account", { companyId }, "users"],
+    refetchInterval: FIVE_MINUTES,
     queryFn: () => getCreditAccountUsers({ companyId, creditAccountId }),
   });
 };

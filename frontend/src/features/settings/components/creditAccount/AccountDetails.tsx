@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Box,
   Typography,
@@ -25,6 +26,8 @@ import { HoldCreditAccountModal } from "./HoldCreditAccountModal";
 import { CloseCreditAccountModal } from "./CloseCreditAccountModal";
 import "./AccountDetails.scss";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { RenderIf } from "../../../../common/components/reusable/RenderIf";
+import { MANAGE_SETTINGS } from "../../../../common/authentication/PermissionMatrix";
 
 export const AccountDetails = () => {
   const { userRoles, companyId } = useContext(OnRouteBCContext);
@@ -111,84 +114,88 @@ export const AccountDetails = () => {
           <Typography className="account-details__text account-details__text--white">
             Credit Account Details
           </Typography>
-          {canUpdateCreditAccount(userRoles) && isAccountHolder && (
-            <Box>
-              <Tooltip title="Actions">
-                <Button
-                  className="account-details__button"
-                  id="actions-button"
-                  aria-label="Expand credit account details actions menu"
-                  aria-controls={isMenuOpen ? "actions menu" : undefined}
-                  aria-haspopup="true"
-                  aria-expanded={isMenuOpen ? "true" : undefined}
-                  onClick={handleMenuOpen}
+          <RenderIf
+            component={
+              <Box>
+                <Tooltip title="Actions">
+                  <Button
+                    className="account-details__button"
+                    id="actions-button"
+                    aria-label="Expand credit account details actions menu"
+                    aria-controls={isMenuOpen ? "actions menu" : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={isMenuOpen ? "true" : undefined}
+                    onClick={handleMenuOpen}
+                  >
+                    <FontAwesomeIcon
+                      icon={faEllipsisV}
+                      className="button__icon"
+                    />
+                  </Button>
+                </Tooltip>
+                <Menu
+                  className="account-details__menu"
+                  id="actions-menu"
+                  anchorEl={anchorEl}
+                  open={isMenuOpen}
+                  onClose={handleMenuClose}
+                  MenuListProps={{
+                    "aria-labelledby": "actions-button",
+                  }}
                 >
-                  <FontAwesomeIcon
-                    icon={faEllipsisV}
-                    className="button__icon"
-                  />
-                </Button>
-              </Tooltip>
-              <Menu
-                className="account-details__menu"
-                id="actions-menu"
-                anchorEl={anchorEl}
-                open={isMenuOpen}
-                onClose={handleMenuClose}
-                MenuListProps={{
-                  "aria-labelledby": "actions-button",
-                }}
-              >
-                {creditAccount?.creditAccountStatusType ===
-                  CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE && (
-                  <MenuItem
-                    onClick={() => setShowHoldCreditAccountModal(true)}
-                    disabled={isPending}
-                  >
-                    Put On Hold
-                  </MenuItem>
-                )}
-                {creditAccount?.creditAccountStatusType ===
-                  CREDIT_ACCOUNT_STATUS_TYPE.ONHOLD && (
-                  <MenuItem
-                    onClick={() =>
-                      handleUpdateCreditAccountStatus({
-                        updateStatusAction:
-                          UPDATE_STATUS_ACTIONS.UNHOLD_CREDIT_ACCOUNT,
-                      })
-                    }
-                    disabled={isPending}
-                  >
-                    Remove Hold
-                  </MenuItem>
-                )}
-                {(creditAccount?.creditAccountStatusType ===
-                  CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE ||
-                  creditAccount?.creditAccountStatusType ===
-                    CREDIT_ACCOUNT_STATUS_TYPE.ONHOLD) && (
-                  <MenuItem
-                    onClick={() => setShowCloseCreditAccountModal(true)}
-                  >
-                    Close Credit Account
-                  </MenuItem>
-                )}
-                {creditAccount?.creditAccountStatusType ===
-                  CREDIT_ACCOUNT_STATUS_TYPE.CLOSED && (
-                  <MenuItem
-                    onClick={() =>
-                      handleUpdateCreditAccountStatus({
-                        updateStatusAction:
-                          UPDATE_STATUS_ACTIONS.REOPEN_CREDIT_ACCOUNT,
-                      })
-                    }
-                    disabled={isPending}
-                  >
-                    Reopen Credit Account
-                  </MenuItem>
-                )}
-              </Menu>
-            </Box>
-          )}
+                  {creditAccount?.creditAccountStatusType ===
+                    CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE && (
+                    <MenuItem
+                      onClick={() => setShowHoldCreditAccountModal(true)}
+                      disabled={isPending}
+                    >
+                      Put On Hold
+                    </MenuItem>
+                  )}
+                  {creditAccount?.creditAccountStatusType ===
+                    CREDIT_ACCOUNT_STATUS_TYPE.ONHOLD && (
+                    <MenuItem
+                      onClick={() =>
+                        handleUpdateCreditAccountStatus({
+                          updateStatusAction:
+                            UPDATE_STATUS_ACTIONS.UNHOLD_CREDIT_ACCOUNT,
+                        })
+                      }
+                      disabled={isPending}
+                    >
+                      Remove Hold
+                    </MenuItem>
+                  )}
+                  {(creditAccount?.creditAccountStatusType ===
+                    CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE ||
+                    creditAccount?.creditAccountStatusType ===
+                      CREDIT_ACCOUNT_STATUS_TYPE.ONHOLD) && (
+                    <MenuItem
+                      onClick={() => setShowCloseCreditAccountModal(true)}
+                    >
+                      Close Credit Account
+                    </MenuItem>
+                  )}
+                  {creditAccount?.creditAccountStatusType ===
+                    CREDIT_ACCOUNT_STATUS_TYPE.CLOSED && (
+                    <MenuItem
+                      onClick={() =>
+                        handleUpdateCreditAccountStatus({
+                          updateStatusAction:
+                            UPDATE_STATUS_ACTIONS.REOPEN_CREDIT_ACCOUNT,
+                        })
+                      }
+                      disabled={isPending}
+                    >
+                      Reopen Credit Account
+                    </MenuItem>
+                  )}
+                </Menu>
+              </Box>
+            }
+            {...MANAGE_SETTINGS.UPDATE_CREDIT_ACCOUNT_DETAILS}
+            customFunction={() => isAccountHolder}
+          />
         </Box>
         {/* TODO remove mock values once API is complete */}
         <Box className="account-details__body">

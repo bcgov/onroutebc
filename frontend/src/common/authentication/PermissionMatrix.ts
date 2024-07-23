@@ -1,9 +1,6 @@
 import {
   BCeID_USER_AUTH_GROUP,
-  BCeIDUserAuthGroupType,
   IDIR_USER_AUTH_GROUP,
-  IDIRUserAuthGroupType,
-  UserAuthGroupType,
 } from "./types";
 
 const {
@@ -21,48 +18,18 @@ const ALL_BCeID_GROUPS = Object.values(BCeID_USER_AUTH_GROUP);
 const { COMPANY_ADMINISTRATOR: CA, PERMIT_APPLICANT: PA } =
   BCeID_USER_AUTH_GROUP;
 
-export type PermissionConfigType = {
-  /**
-   * The auth groups that are disallowed from seeing the component.
-   *
-   * Given first preference if specified. If the user has one of
-   * the specified auth groups, the component WILL NOT render.
-   *
-   * Example use-case: `ORBC_READ_PERMIT` is a role that's available to
-   * the `FINANCE` users but they aren't allowed privileges to see
-   * Applications in Progress.
-   * In this instance, `disallowedAuthGroups = ['FINANCE']`.
-   */
-  disallowedAuthGroups?: UserAuthGroupType[];
-  /**
-   * The idir auth groups that are allowed to see the component.
-   *
-   * If the user has one of the specified auth groups,
-   * the component will render.
-   */
-  allowedIDIRAuthGroups?: IDIRUserAuthGroupType[];
-
-  /**
-   * The bceid auth groups that are allowed to see the component.
-   *
-   * If the user has one of the specified auth groups,
-   * the component will render.
-   */
-  allowedBCeIDAuthGroups?: BCeIDUserAuthGroupType[];
-  /**
-   * The feature flag to check if the feature is enabled.
-   */
-  featureFlag?: string;
-};
-
 /**
  * All the permissions in the file are directly based off of the confluence page.
  * @link https://confluence.th.gov.bc.ca/x/kwY3C
  *
  * @description All the keys and comments are identical to the feature keys used
  * in the permissions matrix document so that cross-verifying is easy.
+ * 
+ * Note that this is a general structure for as specified in the document.
+ * Individual features may need custom checks based on data or API calls
+ * and they are not in scope for this implementation.
  */
-export const MANAGE_VEHICLE_INVENTORY: Record<string, PermissionConfigType> = {
+export const MANAGE_VEHICLE_INVENTORY = {
   VIEW_VEHICLE_INVENTORY_SCREEN: {
     allowedBCeIDAuthGroups: ALL_BCeID_GROUPS,
     allowedIDIRAuthGroups: [PC, SA, CTPO],
@@ -107,7 +74,7 @@ export const MANAGE_VEHICLE_INVENTORY: Record<string, PermissionConfigType> = {
   VEHICLE_CONFIGURATION_TAB: {},
 } as const;
 
-export const MANAGE_PERMITS: Record<string, PermissionConfigType> = {
+export const MANAGE_PERMITS = {
   VIEW_PERMITS_SCREEN: {
     allowedBCeIDAuthGroups: ALL_BCeID_GROUPS,
     allowedIDIRAuthGroups: [PC, SA, FIN, CTPO, HQA],
@@ -185,8 +152,8 @@ export const MANAGE_PERMITS: Record<string, PermissionConfigType> = {
     allowedIDIRAuthGroups: ALL_IDIR_GROUPS,
   },
 } as const;
-
-export const MANAGE_PROFILE: Record<string, PermissionConfigType> = {
+// export type MANAGE_PERMITS_KEYS = keyof typeof MANAGE_PERMITS;
+export const MANAGE_PROFILE = {
   /**
    * Company Information tab
    */
@@ -241,7 +208,7 @@ export const MANAGE_PROFILE: Record<string, PermissionConfigType> = {
   },
 } as const;
 
-export const MANAGE_SETTINGS: Record<string, PermissionConfigType> = {
+export const MANAGE_SETTINGS = {
   /**
    * Special Authorizations Tab
    */
@@ -261,6 +228,7 @@ export const MANAGE_SETTINGS: Record<string, PermissionConfigType> = {
   VIEW_CREDIT_ACCOUNT_TAB: {
     allowedBCeIDAuthGroups: [CA],
     allowedIDIRAuthGroups: [PC, SA, FIN, CTPO],
+    featureFlag: 'CREDIT-ACCOUNT'
   },
   VIEW_CREDIT_ACCOUNT_DETAILS: {
     allowedBCeIDAuthGroups: [CA],
@@ -279,14 +247,14 @@ export const MANAGE_SETTINGS: Record<string, PermissionConfigType> = {
   },
 } as const;
 
-export const MANAGE_PPC_USERS: Record<string, PermissionConfigType> = {
+export const MANAGE_PPC_USERS = {
   VIEW_MANAGE_PPC_USERS_SCREEN: { allowedIDIRAuthGroups: [SA] },
   UPDATE_PPC_USER_ROLE: { allowedIDIRAuthGroups: [SA] },
   REMOVE_PPC_USER: { allowedIDIRAuthGroups: [SA] },
   MANAGE_PPC_USERS_BUTTON: { allowedIDIRAuthGroups: [SA] },
 } as const;
 
-export const REPORTS: Record<string, PermissionConfigType> = {
+export const REPORTS = {
   PAYMENT_AND_REFUND_SUMMARY_REPORT: {
     allowedIDIRAuthGroups: [PC, SA, FIN, CTPO, HQA],
   },
@@ -303,7 +271,7 @@ export const REPORTS: Record<string, PermissionConfigType> = {
    */
 } as const;
 
-export const GLOBAL_SEARCH: Record<string, PermissionConfigType> = {
+export const GLOBAL_SEARCH = {
   VIEW_GLOBAL_SEARCH_SCREEN: {
     allowedIDIRAuthGroups: ALL_IDIR_GROUPS,
   },
@@ -339,14 +307,14 @@ export const GLOBAL_SEARCH: Record<string, PermissionConfigType> = {
 /**
  * Application review queue on staff home screen
  */
-export const STAFF_HOME_SCREEN: Record<string, PermissionConfigType> = {
+export const STAFF_HOME_SCREEN = {
   VIEW_QUEUE: { allowedIDIRAuthGroups: [PC, SA] },
   MANAGE_QUEUE: { allowedIDIRAuthGroups: [PC, SA] },
 } as const;
 
 export type MISCELLANEOUS_KEYS = "VIEW_SHOPPING_CART";
 
-export const MISCELLANEOUS: Record<string, PermissionConfigType> = {
+export const MISCELLANEOUS = {
   VIEW_SHOPPING_CART: {
     allowedBCeIDAuthGroups: [CA, PA],
     allowedIDIRAuthGroups: [PC, SA, CTPO],

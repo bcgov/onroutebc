@@ -12,7 +12,6 @@ import { SearchButton } from "./components/SearchButton";
 import { SearchFilter } from "./components/SearchFilter";
 import { IDPS } from "../../types/idp";
 import OnRouteBCContext from "../../authentication/OnRouteBCContext";
-import { ROLES } from "../../authentication/types";
 import {
   APPLICATIONS_ROUTES,
   PROFILE_ROUTES,
@@ -20,6 +19,7 @@ import {
   VEHICLES_ROUTES,
 } from "../../../routes/constants";
 import { RenderIf } from "../reusable/RenderIf";
+import { MANAGE_PERMITS, MANAGE_PROFILE, MANAGE_SETTINGS, MANAGE_VEHICLE_INVENTORY } from "../../authentication/PermissionMatrix";
 
 const getEnv = () => {
   const env =
@@ -61,7 +61,7 @@ const Navbar = ({
                     <NavLink to={APPLICATIONS_ROUTES.BASE}>Permits</NavLink>
                   </li>
                 }
-                allowedRole={ROLES.READ_PERMIT}
+                {...MANAGE_PERMITS.VIEW_PERMITS_SCREEN}
               />
               <RenderIf
                 component={
@@ -71,7 +71,7 @@ const Navbar = ({
                     </NavLink>
                   </li>
                 }
-                allowedRole={ROLES.READ_VEHICLE}
+                {...MANAGE_VEHICLE_INVENTORY.VIEW_VEHICLE_INVENTORY_SCREEN}
               />
               <RenderIf
                 component={
@@ -79,7 +79,7 @@ const Navbar = ({
                     <NavLink to={PROFILE_ROUTES.MANAGE}>Profile</NavLink>
                   </li>
                 }
-                allowedRole={ROLES.READ_ORG}
+                {...MANAGE_PROFILE.VIEW_COMPANY_INFORMATION}
               />
               <RenderIf
                 component={
@@ -87,7 +87,7 @@ const Navbar = ({
                     <NavLink to={SETTINGS_ROUTES.MANAGE}>Settings</NavLink>
                   </li>
                 }
-                allowedRole={ROLES.READ_SUSPEND}
+                {...MANAGE_SETTINGS.VIEW_SPECIAL_AUTHORIZATIONS}
               />
             </>
           )}

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { SelectCreditLimit } from "../components/creditAccount/SelectCreditLimit";
 import { useState, useContext } from "react";
 import {
@@ -31,6 +32,8 @@ import { ActivityTable } from "../components/creditAccount/ActivityTable";
 import { StatusChip } from "../components/creditAccount/StatusChip";
 import { Loading } from "../../../common/pages/Loading";
 import "./CreditAccount.scss";
+import { RenderIf } from "../../../common/components/reusable/RenderIf";
+import { MANAGE_SETTINGS } from "../../../common/authentication/PermissionMatrix";
 
 export const CreditAccount = ({ companyId }: { companyId: number }) => {
   const { userRoles, userDetails, idirUserDetails } =
@@ -87,18 +90,6 @@ export const CreditAccount = ({ companyId }: { companyId: number }) => {
     }
   };
 
-  const showActivityTable = isAccountHolder;
-
-  const showAddUser =
-    canUpdateCreditAccount(userRoles) &&
-    creditAccount?.creditAccountStatusType !==
-      CREDIT_ACCOUNT_STATUS_TYPE.CLOSED &&
-    isAccountHolder;
-
-  const showUserTable = canViewCreditAccountDetails(
-    userDetails?.userAuthGroup || idirUserDetails?.userAuthGroup,
-  );
-
   if (creditAccountPending) return <Loading />;
 
   return (
@@ -118,11 +109,29 @@ export const CreditAccount = ({ companyId }: { companyId: number }) => {
                 {isAccountHolder ? "Account Holder" : "Account User"}
               </Typography>
             </Box>
-            {showActivityTable && <ActivityTable />}
-            {showAddUser && <AddUser />}
-            {showUserTable && <UserTable />}
+            <RenderIf
+              component={<ActivityTable />}
+              {...MANAGE_SETTINGS.VIEW_CREDIT_ACCOUNT_DETAILS}
+              customFunction={() => isAccountHolder}
+            />
+            <RenderIf
+              component={<AddUser />}
+              {...MANAGE_SETTINGS.UPDATE_CREDIT_ACCOUNT_DETAILS}
+              customFunction={() =>
+                isAccountHolder &&
+                creditAccount?.creditAccountStatusType !==
+                  CREDIT_ACCOUNT_STATUS_TYPE.CLOSED
+              }
+            />
+            <RenderIf
+              component={<UserTable />}
+              {...MANAGE_SETTINGS.VIEW_CREDIT_ACCOUNT_DETAILS}
+            />
           </Box>
-          <AccountDetails />
+          <RenderIf
+            component={<AccountDetails />}
+            {...MANAGE_SETTINGS.VIEW_CREDIT_ACCOUNT_DETAILS}
+          />
         </Box>
       ) : (
         <Box>

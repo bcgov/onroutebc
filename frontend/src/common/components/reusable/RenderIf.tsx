@@ -1,70 +1,54 @@
 import { useContext } from "react";
 import OnRouteBCContext, {
-  BCeIDUserDetailContext,
-  IDIRUserDetailContext,
+  // BCeIDUserDetailContext,
+  // IDIRUserDetailContext,
 } from "../../authentication/OnRouteBCContext";
-import { UserAuthGroupType, UserRolesType } from "../../authentication/types";
+import { PermissionConfigType } from "../../authentication/types";
+import { useFeatureFlagsQuery } from "../../hooks/hooks";
 
 /**
  * Renders a component if it meets the criteria specified.
  */
 export const RenderIf = ({
   component,
-  allowedRole,
   disallowedAuthGroups,
-  allowedAuthGroups,
+  allowedIDIRAuthGroups,
+  allowedBCeIDAuthGroups,
+  featureFlag,
+  customFunction,
 }: {
   /**
    * The component to be rendered.
    */
   component: JSX.Element;
-  /**
-   * The auth groups that are disallowed from seeing the component.
-   *
-   * Given first preference if specified. If the user has one of
-   * the specified auth groups, the component WILL NOT render.
-   *
-   * Example use-case: `ORBC_READ_PERMIT` is a role that's available to
-   * the `FINANCE` users but they aren't allowed privileges to see
-   * Applications in Progress.
-   * In this instance, `disallowedAuthGroups = ['FINANCE']`.
-   */
-  disallowedAuthGroups?: UserAuthGroupType[];
-  /**
-   * The only role to check against.
-   *
-   * If the user has the specified role, the component will render.
-   * Given second preference.
-   *
-   * Only one of `allowedRole` or `allowedAuthGroups` is expected.
-   * If both `allowedRole` and `allowedAuthGroups` are specified,
-   * `allowedAuthGroups` will be ignored.
-   */
-  allowedRole?: UserRolesType;
-  /**
-   * The only role to check against.
-   *
-   * If the user has the specified auth group, the component will render.
-   *
-   * Given last preference.
-   *
-   * Only used if `allowedRole` is not given.
-   */
-  allowedAuthGroups?: UserAuthGroupType[];
-}): JSX.Element => {
-  const { userRoles, userDetails, idirUserDetails } =
-    useContext(OnRouteBCContext);
+} & PermissionConfigType): JSX.Element => {
+  const { userDetails, idirUserDetails } = useContext(OnRouteBCContext);
+  const { data: featureFlags } = useFeatureFlagsQuery();
   const isIdir = Boolean(idirUserDetails?.userAuthGroup);
-  const currentUserAuthGroup = isIdir
-    ? (idirUserDetails as IDIRUserDetailContext).userAuthGroup
-    : (userDetails as BCeIDUserDetailContext).userAuthGroup;
   let shouldRender = false;
-  if (disallowedAuthGroups) {
-    shouldRender = !disallowedAuthGroups.includes(currentUserAuthGroup);
-  } else if (allowedRole) {
-    shouldRender = (userRoles as UserRolesType[]).includes(allowedRole);
-  } else if (allowedAuthGroups) {
-    shouldRender = allowedAuthGroups.includes(currentUserAuthGroup);
+  let currentUserAuthGroup;
+  if (isIdir) {
+    currentUserAuthGroup = idirUserDetails?.userAuthGroup;
+    shouldRender = Boolean(
+      currentUserAuthGroup && allowedIDIRAuthGroups?.includes(currentUserAuthGroup),
+    );
+  } else {
+    currentUserAuthGroup = userDetails?.userAuthGroup;
+    shouldRender = Boolean(
+      currentUserAuthGroup && allowedBCeIDAuthGroups?.includes(currentUserAuthGroup),
+    );
+  }
+  if (disallowedAuthGroups?.length) {
+    shouldRender = Boolean(
+      currentUserAuthGroup &&
+        !disallowedAuthGroups.includes(currentUserAuthGroup),
+    );
+  }
+  if (customFunction) {
+    shouldRender = shouldRender && customFunction();
+  }
+  if (featureFlag) {
+    shouldRender = featureFlags?.[featureFlag] === 'ENABLED'
   }
   if (shouldRender) {
     return <>{component}</>;

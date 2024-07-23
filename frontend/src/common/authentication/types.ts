@@ -183,3 +183,41 @@ export type IDIRUserContextType = {
     email?: string;
   };
 };
+
+export type PermissionConfigType = {
+  /**
+   * The auth groups that are disallowed from seeing the component.
+   *
+   * Given first preference if specified. If the user has one of
+   * the specified auth groups, the component WILL NOT render.
+   *
+   * Example use-case: `ORBC_READ_PERMIT` is a role that's available to
+   * the `FINANCE` users but they aren't allowed privileges to see
+   * Applications in Progress.
+   * In this instance, `disallowedAuthGroups = ['FINANCE']`.
+   */
+  disallowedAuthGroups?: readonly UserAuthGroupType[];
+  /**
+   * The idir auth groups that are allowed to see the component.
+   *
+   * If the user has one of the specified auth groups,
+   * the component will render.
+   */
+  allowedIDIRAuthGroups?: readonly IDIRUserAuthGroupType[];
+
+  /**
+   * The bceid auth groups that are allowed to see the component.
+   *
+   * If the user has one of the specified auth groups,
+   * the component will render.
+   */
+  allowedBCeIDAuthGroups?: readonly BCeIDUserAuthGroupType[];
+  /**
+   * The feature flag to check if the feature is enabled.
+   */
+  featureFlag?: string;
+  /**
+   * Custom function that returns boolean.
+   */
+  customFunction?: (...args: any) => boolean;
+};

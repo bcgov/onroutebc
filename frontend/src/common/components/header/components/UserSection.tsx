@@ -8,7 +8,7 @@ import { getDefaultRequiredVal } from "../../../helpers/util";
 import { CartContext } from "../../../../features/permits/context/CartContext";
 import OnRouteBCContext from "../../../authentication/OnRouteBCContext";
 import { RenderIf } from "../../reusable/RenderIf";
-import { IDIR_USER_AUTH_GROUP } from "../../../authentication/types";
+import { MISCELLANEOUS } from "../../../authentication/PermissionMatrix";
 
 export const UserSection = ({ username }: { username: string }) => {
   const { companyId } = useContext(OnRouteBCContext);
@@ -19,14 +19,11 @@ export const UserSection = ({ username }: { username: string }) => {
   return (
     <div className="user-section">
       <UserSectionInfo username={username} />
-
-      {showShoppingCart ? (
-        <RenderIf
-          component={<ShoppingCartButton cartItemCount={cartItemCount} />}
-          disallowedAuthGroups={[IDIR_USER_AUTH_GROUP.FINANCE]}
-        />
-      ) : null}
-
+      <RenderIf
+        component={<ShoppingCartButton cartItemCount={cartItemCount} />}
+        {...MISCELLANEOUS.VIEW_SHOPPING_CART}
+        customFunction={() => showShoppingCart}
+      />
       <LogoutButton />
     </div>
   );
