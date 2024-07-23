@@ -22,4 +22,4 @@ END CATCH
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Reverting holiday table creation plus history tables for v35'
 
-INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (35, @VersionDescription, getutcdate())
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (34, @VersionDescription, getutcdate())
