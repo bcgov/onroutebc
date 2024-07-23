@@ -10,10 +10,16 @@ import { PermitPayFeeSummary } from "../Application/components/pay/PermitPayFeeS
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { useIssuePermits, useStartTransaction } from "../../hooks/hooks";
 import { TRANSACTION_TYPES } from "../../types/payment";
-import { PAYMENT_METHOD_TYPE_CODE, PaymentCardTypeCode } from "../../../../common/types/paymentMethods";
+import {
+  PAYMENT_METHOD_TYPE_CODE,
+  PaymentCardTypeCode,
+} from "../../../../common/types/paymentMethods";
 import { PaymentFailedBanner } from "../Application/components/pay/PaymentFailedBanner";
 import { ChoosePaymentMethod } from "../Application/components/pay/ChoosePaymentMethod";
-import { DEFAULT_EMPTY_CARD_TYPE, PaymentMethodData } from "../Application/components/pay/types/PaymentMethodData";
+import {
+  DEFAULT_EMPTY_CARD_TYPE,
+  PaymentMethodData,
+} from "../Application/components/pay/types/PaymentMethodData";
 import { hasPermitsActionFailed } from "../../helpers/permitState";
 import { ShoppingCart } from "./components/ShoppingCart";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
@@ -36,11 +42,13 @@ import {
 
 const AVAILABLE_STAFF_PAYMENT_METHODS = [
   PAYMENT_METHOD_TYPE_CODE.ICEPAY,
+  PAYMENT_METHOD_TYPE_CODE.CASH,
+  PAYMENT_METHOD_TYPE_CODE.CHEQUE,
+  PAYMENT_METHOD_TYPE_CODE.POS,
+  PAYMENT_METHOD_TYPE_CODE.GA,
 ];
 
-const AVAILABLE_CV_PAYMENT_METHODS = [
-  PAYMENT_METHOD_TYPE_CODE.WEB,
-];
+const AVAILABLE_CV_PAYMENT_METHODS = [PAYMENT_METHOD_TYPE_CODE.WEB];
 
 export const ShoppingCartPage = () => {
   const navigate = useNavigate();
@@ -48,7 +56,9 @@ export const ShoppingCartPage = () => {
   const { idirUserDetails, userDetails } = useContext(OnRouteBCContext);
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
-  const isCompanyAdmin = Boolean(userDetails?.userAuthGroup === BCeID_USER_AUTH_GROUP.COMPANY_ADMINISTRATOR);
+  const isCompanyAdmin = Boolean(
+    userDetails?.userAuthGroup === BCeID_USER_AUTH_GROUP.COMPANY_ADMINISTRATOR,
+  );
   const enableCartFilter = isStaffActingAsCompany || isCompanyAdmin;
   const [searchParams] = useSearchParams();
   const paymentFailed = applyWhenNotNullable(
@@ -56,7 +66,7 @@ export const ShoppingCartPage = () => {
     searchParams.get("paymentFailed"),
     false,
   );
-  
+
   const {
     removeFromCartMutation,
     cartQuery,
@@ -72,8 +82,12 @@ export const ShoppingCartPage = () => {
   } = useShoppingCart(companyId, enableCartFilter);
 
   const isFeeZero = isZeroAmount(selectedTotalFee);
-  const selectedApplications = cartItemSelection.filter(cartItem => cartItem.selected);
-  const selectedIds = selectedApplications.map(cartItem => cartItem.applicationId);
+  const selectedApplications = cartItemSelection.filter(
+    (cartItem) => cartItem.selected,
+  );
+  const selectedIds = selectedApplications.map(
+    (cartItem) => cartItem.applicationId,
+  );
 
   const {
     showEditCartItemDialog,
@@ -91,8 +105,9 @@ export const ShoppingCartPage = () => {
 
   const { mutation: issuePermitMutation, issueResults } = useIssuePermits();
 
-  const availablePaymentMethods = 
-    isStaffActingAsCompany ? AVAILABLE_STAFF_PAYMENT_METHODS : AVAILABLE_CV_PAYMENT_METHODS;
+  const availablePaymentMethods = isStaffActingAsCompany
+    ? AVAILABLE_STAFF_PAYMENT_METHODS
+    : AVAILABLE_CV_PAYMENT_METHODS;
 
   const formMethods = useForm<PaymentMethodData>({
     defaultValues: {
@@ -124,9 +139,7 @@ export const ShoppingCartPage = () => {
         navigate(SHOPPING_CART_ROUTES.DETAILS(true));
       } else {
         // Staff payment transaction created successfully, proceed to issue permit
-        issuePermitMutation.mutate([
-          ...selectedIds,
-        ]);
+        issuePermitMutation.mutate([...selectedIds]);
 
         // also update the cart and cart count
         cartQuery.refetch();
@@ -152,7 +165,7 @@ export const ShoppingCartPage = () => {
         ? PAYMENT_METHOD_TYPE_CODE.NP
         : PAYMENT_METHOD_TYPE_CODE.WEB,
       applicationDetails: [
-        ...selectedApplications.map(application => ({
+        ...selectedApplications.map((application) => ({
           applicationId: application.applicationId,
           transactionAmount: application.fee,
         })),
@@ -171,7 +184,7 @@ export const ShoppingCartPage = () => {
         : PAYMENT_METHOD_TYPE_CODE.ICEPAY,
       paymentCardTypeCode: cardType,
       applicationDetails: [
-        ...selectedApplications.map(application => ({
+        ...selectedApplications.map((application) => ({
           applicationId: application.applicationId,
           transactionAmount: application.fee,
         })),
@@ -190,9 +203,9 @@ export const ShoppingCartPage = () => {
     const { paymentMethod } = paymentMethodData;
     if (paymentMethod === PAYMENT_METHOD_TYPE_CODE.ICEPAY) {
       if (
-        paymentMethodData.cardType
-        && paymentMethodData.cardType !== DEFAULT_EMPTY_CARD_TYPE
-        && paymentMethodData.transactionId
+        paymentMethodData.cardType &&
+        paymentMethodData.cardType !== DEFAULT_EMPTY_CARD_TYPE &&
+        paymentMethodData.transactionId
       ) {
         handlePayWithIcepay(
           paymentMethodData.cardType,
@@ -205,13 +218,15 @@ export const ShoppingCartPage = () => {
   };
 
   const handleRemoveSelected = async () => {
-    const selectedApplications = cartItemSelection
-      .filter(cartItem => cartItem.selected);
-    
+    const selectedApplications = cartItemSelection.filter(
+      (cartItem) => cartItem.selected,
+    );
+
     if (selectedApplications.length === 0) return;
 
-    const selectedApplicationIds = selectedApplications
-      .map(cartItem => cartItem.applicationId);
+    const selectedApplicationIds = selectedApplications.map(
+      (cartItem) => cartItem.applicationId,
+    );
 
     const removeResult = await removeFromCartMutation.mutateAsync({
       companyId,
@@ -285,7 +300,9 @@ export const ShoppingCartPage = () => {
 
       <Box className="shopping-cart-page__right-container">
         <FormProvider {...formMethods}>
-          <ChoosePaymentMethod availablePaymentMethods={availablePaymentMethods} />
+          <ChoosePaymentMethod
+            availablePaymentMethods={availablePaymentMethods}
+          />
 
           {paymentFailed ? <PaymentFailedBanner /> : null}
 
