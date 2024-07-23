@@ -3,8 +3,7 @@ import { Navigate, useLocation } from "react-router-dom";
 import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
 import { Suspend } from "../../pages/Suspend";
 import { CreditAccount } from "../../pages/CreditAccount";
-import { SETTINGS_TABS } from "../../types/tabs";
-import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { SETTINGS_TABS, SettingsTab } from "../../types/tabs";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { ERROR_ROUTES } from "../../../../routes/constants";
 import { SpecialAuthorizations } from "../../pages/SpecialAuthorizations/SpecialAuthorizations";
@@ -31,17 +30,13 @@ export const ManageSettingsDashboard = React.memo(() => {
   const showSpecialAuth = isStaffActingAsCompany && canViewSpecialAuthorizations(
     userRoles,
     idirUserDetails?.userAuthGroup,
-  );
+  ) && featureFlags?.["LOA"] === "ENABLED";
 
   const showCreditAccountTab =
     canViewCreditAccountTab(userRoles) &&
     featureFlags?.["CREDIT-ACCOUNT"] === "ENABLED";
 
   const { state: stateFromNavigation } = useLocation();
-  const selectedTab = getDefaultRequiredVal(
-    SETTINGS_TABS.SPECIAL_AUTH,
-    stateFromNavigation?.selectedTab,
-  );
 
   const handleHideSuspendTab = (hide: boolean) => {
     setHideSuspendTab(hide);
@@ -60,10 +55,12 @@ export const ManageSettingsDashboard = React.memo(() => {
           companyId={companyId}
         />
       ),
+      componentKey: SETTINGS_TABS.SPECIAL_AUTH,
     } : null,
     showCreditAccountTab ? {
       label: "Credit Account",
       component: <CreditAccount companyId={companyId} />,
+      componentKey: SETTINGS_TABS.CREDIT_ACCOUNT,
     } : null,
     showSuspendTab ? {
       label: "Suspend",
@@ -73,11 +70,23 @@ export const ManageSettingsDashboard = React.memo(() => {
           hideTab={handleHideSuspendTab}
         />
       ),
+      componentKey: SETTINGS_TABS.SUSPEND,
     } : null,
   ].filter(tab => Boolean(tab)) as {
     label: string;
     component: JSX.Element;
+    componentKey: SettingsTab;
   }[];
+
+  const getSelectedTabFromNavigation = (): number => {
+    const tabIndex = tabs.findIndex(
+      ({ componentKey }) => componentKey === stateFromNavigation?.selectedTab,
+    );
+    if (tabIndex < 0) return 0;
+    return tabIndex;
+  };
+
+  const selectedTab = getSelectedTabFromNavigation();
 
   return (
     <TabLayout

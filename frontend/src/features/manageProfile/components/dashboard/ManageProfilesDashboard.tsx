@@ -77,7 +77,7 @@ export const ManageProfilesDashboard = React.memo(() => {
   const showSpecialAuth = !isStaffActingAsCompany && canViewSpecialAuthorizations(
     userRoles,
     userDetails?.userAuthGroup,
-  );
+  ) && featureFlags?.["LOA"] === "ENABLED";
   
   const creditAccountHolder = creditAccount?.creditAccountUsers.find(
     (user) => user.userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER,
