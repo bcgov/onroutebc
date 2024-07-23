@@ -20,8 +20,7 @@ export const PhoneNumberInput = <T extends ORBC_FormTypes>(
     setValue<string>(props.name, formattedValue, { shouldValidate: true });
   };
 
-  const className =
-    `custom-phone-input ${props.disabled ? "custom-phone-input--disabled" : ""} ${props.invalid ? "custom-phone-input--invalid" : ""}`;
+  const className = `custom-phone-input ${props.disabled ? "custom-phone-input--disabled" : ""} ${props.invalid ? "custom-phone-input--invalid" : ""}`;
 
   return (
     <OutlinedInput
@@ -36,7 +35,7 @@ export const PhoneNumberInput = <T extends ORBC_FormTypes>(
 };
 
 /**
- * Function to format the users input to be in the correct phone number format
+ * Function to format the users input to be in te correct phone number format
  * as the user types
  */
 export const formatPhoneNumber = (input?: string): string => {
