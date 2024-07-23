@@ -135,7 +135,7 @@ export const AddUserDashboard = React.memo(() => {
             textDecoration: "underline",
           }}
         >
-          User Management
+          Add / Manage Users
         </Typography>
 
         <FontAwesomeIcon className="breadcrumb-icon" icon={faChevronRight} />
