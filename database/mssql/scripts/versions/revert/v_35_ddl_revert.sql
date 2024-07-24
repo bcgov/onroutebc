@@ -9,7 +9,29 @@ SET XACT_ABORT ON
 
 BEGIN TRY
   BEGIN TRANSACTION
-    DROP TABLE [dbo].[ORBC_HOLIDAY]
+DELETE
+FROM [access].[ORBC_GROUP_ROLE]
+WHERE USER_AUTH_GROUP_TYPE IN (
+      'PAPPLICANT',
+      'ORGADMIN',
+      'SYSADMIN',
+      'PPCCLERK',
+      'EOFFICER',
+      'CTPO'
+      )
+   AND ROLE_TYPE IN (
+      'ORBC-READ-NOFEE',
+      'ORBC-READ-LCV-FLAG',
+      'ORBC-READ-LOA',
+      'ORBC-READ-SPECIAL-AUTH',
+      'ORBC-WRITE-LOA',
+      'ORBC-WRITE-NOFEE'
+      )
+
+DELETE
+FROM [access].[ORBC_GROUP_ROLE]
+WHERE USER_AUTH_GROUP_TYPE = 'FINANCE'
+   AND ROLE_TYPE = 'ORBC-READ-LCV-FLAG'    
   COMMIT
 END TRY
 
@@ -20,6 +42,6 @@ BEGIN CATCH
 END CATCH
 
 DECLARE @VersionDescription VARCHAR(255)
-SET @VersionDescription = 'Reverting holiday table creation plus history tables for v35'
+SET @VersionDescription = 'Reverting assignment of special authorization of roles to auth groups.'
 
 INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (34, @VersionDescription, getutcdate())
