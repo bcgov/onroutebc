@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Box,
   Typography,
@@ -21,16 +20,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { useContext, useState, MouseEvent } from "react";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { canUpdateCreditAccount } from "../../helpers/permissions";
 import { HoldCreditAccountModal } from "./HoldCreditAccountModal";
 import { CloseCreditAccountModal } from "./CloseCreditAccountModal";
 import "./AccountDetails.scss";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { RenderIf } from "../../../../common/components/reusable/RenderIf";
-import { MANAGE_SETTINGS } from "../../../../common/authentication/PermissionMatrix";
 
 export const AccountDetails = () => {
-  const { userRoles, companyId } = useContext(OnRouteBCContext);
+  const { companyId } = useContext(OnRouteBCContext);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [showHoldCreditAccountModal, setShowHoldCreditAccountModal] =
     useState<boolean>(false);
