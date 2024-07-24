@@ -90,7 +90,7 @@ export const EditUserDashboard = React.memo(() => {
           className="breadcrumb-link breadcrumb-link--parent"
           onClick={onClickBreadcrumb}
         >
-          User Management
+          Add / Manage Users
         </Typography>
 
         <FontAwesomeIcon className="breadcrumb-icon" icon={faChevronRight} />

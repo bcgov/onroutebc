@@ -94,8 +94,8 @@ jobs:
             token: SONAR_TOKEN_VEHICLES
             triggers: ('vehicles')
           - dir: scheduler
-            sonar_projectKey: onroutebc_tps_migration
-            token: SONAR_TOKEN_TPS_MIGRATION
+            sonar_projectKey: onroutebc_scheduler
+            token: SONAR_TOKEN_SCHEDULER
             triggers: ('scheduler')
           - dir: frontend
             sonar_projectKey: onroutebc_frontend
@@ -117,7 +117,7 @@ jobs:
             -Dsonar.tests.inclusions=**/*spec.ts
             -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
           sonar_token: ${{ secrets[matrix.token] }}
-          triggers: ${{ matrix.triggers }}
+          triggers: ${{ github.event_name == 'pull_requst' && matrix.triggers || '' }}
 
   results:
     name: Results
