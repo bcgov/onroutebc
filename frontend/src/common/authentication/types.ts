@@ -1,6 +1,5 @@
 import { Contact } from "../../features/manageProfile/types/manageProfile";
 import { Nullable } from "../types/common";
-import { ALL_PERMISSION_KEYS } from "./PermissionMatrix";
 
 /**
  * Company Metadata type
@@ -183,60 +182,4 @@ export type IDIRUserContextType = {
     lastName?: string;
     email?: string;
   };
-};
-
-export type PermissionConfigType = {
-  /**
-   * The auth groups that are disallowed from seeing the component.
-   *
-   * Given first preference if specified. If the user has one of
-   * the specified auth groups, the component WILL NOT render.
-   *
-   * Example use-case: `ORBC_READ_PERMIT` is a role that's available to
-   * the `FINANCE` users but they aren't allowed privileges to see
-   * Applications in Progress.
-   * In this instance, `disallowedAuthGroups = ['FINANCE']`.
-   */
-  disallowedAuthGroups?: readonly UserAuthGroupType[];
-  /**
-   * The idir auth groups that are allowed to see the component.
-   *
-   * If the user has one of the specified auth groups,
-   * the component will render.
-   */
-  allowedIDIRAuthGroups?: readonly IDIRUserAuthGroupType[];
-
-  /**
-   * The bceid auth groups that are allowed to see the component.
-   *
-   * If the user has one of the specified auth groups,
-   * the component will render.
-   */
-  allowedBCeIDAuthGroups?: readonly BCeIDUserAuthGroupType[];
-  /**
-   * The feature flag to check if the feature is enabled.
-   */
-  featureFlag?: string;
-  /**
-   * An additional function call whose boolean value will be accounted
-   * for determining whether to render a component.
-   * i.e., this function will play along with other specifications 
-   * given in the other input props.
-   * 
-   * @param args Any arguments to be passed.
-   * @returns A boolean.
-   */
-  additionalConditionToCall?: (...args: any) => boolean;
-  /**
-   * With only condition to check, all other configurations are skipped.
-   * i.e., this function will be the only check to decide whether to render
-   * a component.
-   * 
-   * Simply put, when provided, this will be the only check.
-   * 
-   * @param args Any arguments to be passed.
-   * @returns A boolean.
-   */
-  onlyConditionToCheck?: (...args: any) => boolean;
-  permissionKey?: ALL_PERMISSION_KEYS;
 };

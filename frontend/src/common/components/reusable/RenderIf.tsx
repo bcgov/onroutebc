@@ -1,5 +1,4 @@
-import { usePermissionMatrix } from "../../authentication/PermissionMatrix";
-import { PermissionConfigType } from "../../authentication/types";
+import { usePermissionMatrix, PermissionConfigType } from "../../authentication/PermissionMatrix";
 
 /**
  * Renders a component if it meets the criteria specified.

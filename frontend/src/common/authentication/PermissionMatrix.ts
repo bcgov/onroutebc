@@ -1,8 +1,10 @@
 import { useContext } from "react";
 import {
   BCeID_USER_AUTH_GROUP,
+  BCeIDUserAuthGroupType,
   IDIR_USER_AUTH_GROUP,
-  PermissionConfigType,
+  IDIRUserAuthGroupType,
+  UserAuthGroupType,
 } from "./types";
 import OnRouteBCContext from "./OnRouteBCContext";
 import { useFeatureFlagsQuery } from "../hooks/hooks";
@@ -21,6 +23,79 @@ const ALL_BCeID_GROUPS = Object.values(BCeID_USER_AUTH_GROUP);
 
 const { COMPANY_ADMINISTRATOR: CA, PERMIT_APPLICANT: PA } =
   BCeID_USER_AUTH_GROUP;
+
+export type ConfigPartial = {
+  /**
+   * The idir auth groups that are allowed to see the component.
+   *
+   * If the user has one of the specified auth groups,
+   * the component will render.
+   */
+  allowedIDIRAuthGroups?: readonly IDIRUserAuthGroupType[];
+
+  /**
+   * The bceid auth groups that are allowed to see the component.
+   *
+   * If the user has one of the specified auth groups,
+   * the component will render.
+   */
+  allowedBCeIDAuthGroups?: readonly BCeIDUserAuthGroupType[];
+};
+
+export type PermissionConfigType = {
+  /**
+   * The auth groups that are disallowed from seeing the component.
+   *
+   * Given first preference if specified. If the user has one of
+   * the specified auth groups, the component WILL NOT render.
+   *
+   * Example use-case: `ORBC_READ_PERMIT` is a role that's available to
+   * the `FINANCE` users but they aren't allowed privileges to see
+   * Applications in Progress.
+   * In this instance, `disallowedAuthGroups = ['FINANCE']`.
+   */
+  disallowedAuthGroups?: readonly UserAuthGroupType[];
+  /**
+   * The idir auth groups that are allowed to see the component.
+   *
+   * If the user has one of the specified auth groups,
+   * the component will render.
+   */
+  allowedIDIRAuthGroups?: readonly IDIRUserAuthGroupType[];
+
+  /**
+   * The bceid auth groups that are allowed to see the component.
+   *
+   * If the user has one of the specified auth groups,
+   * the component will render.
+   */
+  allowedBCeIDAuthGroups?: readonly BCeIDUserAuthGroupType[];
+  /**
+   * The feature flag to check if the feature is enabled.
+   */
+  featureFlag?: string;
+  /**
+   * An additional function call whose boolean value will be accounted
+   * for determining whether to render a component.
+   * i.e., this function will get called only if other conditions
+   * given in the other input props qualify.
+   *
+   * @param args Any arguments to be passed.
+   * @returns A boolean.
+   */
+  additionalConditionToCall?: (...args: any) => boolean;
+  /**
+   * With only condition to check, all other configurations are skipped.
+   * i.e., this function will be the only check to decide whether to render
+   * a component.
+   *
+   * Simply put, when provided, this will be the only check.
+   *
+   * @param args Any arguments to be passed.
+   * @returns A boolean.
+   */
+  onlyConditionToCheck?: (...args: any) => boolean;
+};
 
 /**
  * All the permissions in the file are directly based off of the confluence page.
@@ -342,11 +417,12 @@ export const PERMISSIONS_MATRIX = {
 export type ALL_FEATURES = keyof typeof PERMISSIONS_MATRIX;
 
 // Working example
-type Keys = keyof typeof PERMISSIONS_MATRIX;
-type Values<T extends Keys> = keyof typeof PERMISSIONS_MATRIX[T];
+type FEATURE_KEYS = keyof typeof PERMISSIONS_MATRIX;
+type FUNCTION_KEYS<T extends FEATURE_KEYS> =
+  keyof (typeof PERMISSIONS_MATRIX)[T];
 
-const key1: Keys = "MANAGE_PERMITS";
-export const value1: Values<typeof key1> = "VIEW_PERMITS_SCREEN";
+const key1: FEATURE_KEYS = "MANAGE_PERMITS";
+export const value1: FUNCTION_KEYS<typeof key1> = "VIEW_PERMITS_SCREEN";
 
 //----------------------
 
@@ -403,6 +479,130 @@ export const usePermissionMatrix = ({
     isAllowed = Boolean(
       currentUserAuthGroup &&
         !disallowedAuthGroups.includes(currentUserAuthGroup),
+    );
+  }
+  if (isAllowed && additionalConditionToCall) {
+    isAllowed = isAllowed && additionalConditionToCall();
+  }
+  return isAllowed;
+};
+
+export type PermissionConfigType22 = {
+  /**
+   * The feature flag to check if the feature is enabled.
+   * If provided, it takes the highest priority.
+   *
+   * If a feature is not enabled,
+   * the component WILL NOT render regardless of other conditions.
+   */
+  featureFlag?: string;
+  /**
+   * With only condition to check, all input props but `featureFlag`
+   * are skipped.
+   *
+   * This is the second highest priority after `featureFlag`.
+   *
+   * i.e., this function will be the only check to decide whether to render
+   * a component.
+   *
+   * @param args Any arguments to be passed.
+   * @returns A boolean.
+   */
+  onlyConditionToCheck?: (...args: any) => boolean;
+  /**
+   * An additional function call whose boolean value will be accounted
+   * for determining whether to render a component.
+   * i.e., this function will play along with other specifications
+   * given in the other input props.
+   *
+   * @param args Any arguments to be passed.
+   * @returns A boolean.
+   */
+  additionalConditionToCall?: (...args: any) => boolean;
+};
+
+// type PermissionMatrixKeysType = {
+//   [K in keyof typeof PERMISSIONS_MATRIX]: {
+//     featureKey: K;
+//     functionKey: keyof (typeof PERMISSIONS_MATRIX)[K];
+//   };
+// }[keyof typeof PERMISSIONS_MATRIX];
+
+type Filter<T> = {
+  [K in keyof T]: {
+    /**
+     * The name of the feature as defined in the Feature column in the matrix
+     * document.
+     */
+    majorFeatureKey: K;
+    /**
+     * The name of the function as defined in the Function column in the matrix
+     * document.
+     */
+    functionKey: keyof T[K];
+  };
+}[keyof T];
+
+type PermissionMatrixKeysType = Filter<typeof PERMISSIONS_MATRIX>;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const sample = () => {
+  usePermissionMatrixNew({
+    majorFeatureKey: "MANAGE_PERMITS",
+    functionKey: "VIEW_ACTIVE_PERMITS",
+  });
+};
+
+/**
+ * A hook to manage the permissions matrix for various features and user authentication groups.
+ *
+ * @param {Object} config - Configuration object for the permission matrix.
+ * @param {string} [config.featureFlag] - Priority 1: Feature flag key to check if the feature is enabled. 
+ * @param {Function} [config.onlyConditionToCheck] - Priority 2: A custom condition function, if provided this is the only condition checked.
+ * @param {string} [config.majorFeatureKey] - Priority 3: The major feature that's the primary key in {@link PERMISSIONS_MATRIX}.
+ * @param {string} [config.functionKey] - Priority 3: The function that's the nested key in {@link PERMISSIONS_MATRIX}.
+ * @param {Function} [config.additionalConditionToCall] - Priority 4: Additional custom condition to call if the basic conditions are met.
+ * 
+ * @returns {boolean} - Returns whether the current user has the permission.
+ */
+export const usePermissionMatrixNew = ({
+  featureFlag,
+  onlyConditionToCheck,
+  majorFeatureKey,
+  functionKey,
+  additionalConditionToCall,
+}: PermissionConfigType22 & PermissionMatrixKeysType): boolean => {
+  const { allowedBCeIDAuthGroups, allowedIDIRAuthGroups } = (
+    PERMISSIONS_MATRIX[majorFeatureKey] as { [key: string]: ConfigPartial }
+  )[functionKey];
+
+  const { userDetails, idirUserDetails } = useContext(OnRouteBCContext);
+  const { data: featureFlags } = useFeatureFlagsQuery();
+  const isIdir = Boolean(idirUserDetails?.userAuthGroup);
+
+  // If featureFlag is given, exit if it is not enabled.
+  if (featureFlag) {
+    if (featureFlags?.[featureFlag] !== "ENABLED") {
+      return false;
+    }
+  }
+
+  // If the onlyConditionToCheck function is given, call that alone and exit.
+  if (onlyConditionToCheck) {
+    return onlyConditionToCheck();
+  }
+  let isAllowed = false;
+  let currentUserAuthGroup;
+  if (isIdir) {
+    currentUserAuthGroup = idirUserDetails?.userAuthGroup;
+    isAllowed = Boolean(
+      currentUserAuthGroup &&
+        allowedIDIRAuthGroups?.includes(currentUserAuthGroup),
+    );
+  } else {
+    currentUserAuthGroup = userDetails?.userAuthGroup;
+    isAllowed = Boolean(
+      currentUserAuthGroup &&
+        allowedBCeIDAuthGroups?.includes(currentUserAuthGroup),
     );
   }
   if (isAllowed && additionalConditionToCall) {
