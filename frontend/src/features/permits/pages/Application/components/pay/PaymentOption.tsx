@@ -18,7 +18,7 @@ export const PaymentOption = ({
       return <IcepayPaymentOption isSelected={isSelected} />;
     case PAYMENT_METHOD_TYPE_CODE.WEB:
       return <PayBCPaymentOption isSelected={isSelected} />;
-    case PAYMENT_METHOD_TYPE_CODE.CASH:
+    case PAYMENT_METHOD_TYPE_CODE.PPC:
       return <PPCPaymentOption isSelected={isSelected} />;
     default:
       return null;

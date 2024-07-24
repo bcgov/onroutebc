@@ -18,6 +18,8 @@ import { PaymentFailedBanner } from "../Application/components/pay/PaymentFailed
 import { ChoosePaymentMethod } from "../Application/components/pay/ChoosePaymentMethod";
 import {
   DEFAULT_EMPTY_CARD_TYPE,
+  DEFAULT_EMPTY_PAYMENT_TYPE,
+  IcepayPaymentData,
   PaymentMethodData,
 } from "../Application/components/pay/types/PaymentMethodData";
 import { hasPermitsActionFailed } from "../../helpers/permitState";
@@ -46,6 +48,7 @@ const AVAILABLE_STAFF_PAYMENT_METHODS = [
   PAYMENT_METHOD_TYPE_CODE.CHEQUE,
   PAYMENT_METHOD_TYPE_CODE.POS,
   PAYMENT_METHOD_TYPE_CODE.GA,
+  PAYMENT_METHOD_TYPE_CODE.PPC,
 ];
 
 const AVAILABLE_CV_PAYMENT_METHODS = [PAYMENT_METHOD_TYPE_CODE.WEB];
@@ -105,6 +108,7 @@ export const ShoppingCartPage = () => {
 
   const { mutation: issuePermitMutation, issueResults } = useIssuePermits();
 
+  // TODO additional logic needed so that FIN user cannot pay using PPCPayment or GAPayment
   const availablePaymentMethods = isStaffActingAsCompany
     ? AVAILABLE_STAFF_PAYMENT_METHODS
     : AVAILABLE_CV_PAYMENT_METHODS;
@@ -112,8 +116,13 @@ export const ShoppingCartPage = () => {
   const formMethods = useForm<PaymentMethodData>({
     defaultValues: {
       paymentMethod: availablePaymentMethods[0],
-      cardType: DEFAULT_EMPTY_CARD_TYPE,
-      transactionId: "",
+      additionalPaymentData: {
+        cardType: DEFAULT_EMPTY_CARD_TYPE,
+        paymentType: DEFAULT_EMPTY_PAYMENT_TYPE,
+        icepayTransactionId: "",
+        ppcTransactionId: "",
+        serviceBCOfficeId: "",
+      },
     },
     reValidateMode: "onChange",
   });
@@ -200,16 +209,17 @@ export const ShoppingCartPage = () => {
       return;
     }
 
-    const { paymentMethod } = paymentMethodData;
+    const { paymentMethod, additionalPaymentData } = paymentMethodData;
     if (paymentMethod === PAYMENT_METHOD_TYPE_CODE.ICEPAY) {
+      const icepayData = additionalPaymentData as IcepayPaymentData;
       if (
-        paymentMethodData.cardType &&
-        paymentMethodData.cardType !== DEFAULT_EMPTY_CARD_TYPE &&
-        paymentMethodData.transactionId
+        icepayData.cardType !== DEFAULT_EMPTY_CARD_TYPE &&
+        icepayData.cardType &&
+        icepayData.icepayTransactionId
       ) {
         handlePayWithIcepay(
-          paymentMethodData.cardType,
-          paymentMethodData.transactionId,
+          icepayData.cardType,
+          icepayData.icepayTransactionId,
         );
       }
     } else if (paymentMethod === PAYMENT_METHOD_TYPE_CODE.WEB) {

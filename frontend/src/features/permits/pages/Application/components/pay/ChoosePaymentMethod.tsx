@@ -4,6 +4,10 @@ import { Box, RadioGroup, Typography } from "@mui/material";
 import "./ChoosePaymentMethod.scss";
 import { PaymentOption } from "./PaymentOption";
 import { PaymentMethodTypeCode } from "../../../../../../common/types/paymentMethods";
+import {
+  DEFAULT_EMPTY_CARD_TYPE,
+  DEFAULT_EMPTY_PAYMENT_TYPE,
+} from "./types/PaymentMethodData";
 
 export const ChoosePaymentMethod = ({
   availablePaymentMethods,
@@ -14,9 +18,16 @@ export const ChoosePaymentMethod = ({
 
   const handlePaymentMethodChange = (selectedPaymentMethod: string) => {
     setValue("paymentMethod", selectedPaymentMethod as PaymentMethodTypeCode);
-    setValue("cardType", "");
-    setValue("transactionId", "");
-    clearErrors(["cardType", "transactionId"]);
+    setValue("additionalPaymentData.cardType", DEFAULT_EMPTY_CARD_TYPE);
+    setValue("additionalPaymentData.icepayTransactionId", "");
+    setValue("additionalPaymentData.paymentType", DEFAULT_EMPTY_PAYMENT_TYPE);
+    setValue("additionalPaymentData.ppcTransactionId", "");
+    clearErrors([
+      "additionalPaymentData.cardType",
+      "additionalPaymentData.icepayTransactionId",
+      "additionalPaymentData.paymentType",
+      "additionalPaymentData.ppcTransactionId",
+    ]);
   };
 
   const currPaymentMethod = watch("paymentMethod");
