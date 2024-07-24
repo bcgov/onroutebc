@@ -36,9 +36,9 @@ export const SpecialAuthorizations = ({
     = useState<RequiredOrNull<NoFeePermitType>>(null);
   const [enableLCV, setEnableLCV] = useState<boolean>(false);
   const [showExpiredLOAs, setShowExpiredLOAs] = useState<boolean>(false);
-  const [LOAToDelete, setLOAToDelete] = useState<RequiredOrNull<string>>(null);
+  const [loaToDelete, setLoaToDelete] = useState<RequiredOrNull<string>>(null);
   const [showLOASteps, setShowLOASteps] = useState<boolean>(false);
-  const [LOAToEdit, setLOAToEdit] = useState<RequiredOrNull<string>>(null);
+  const [loaToEdit, setLoaToEdit] = useState<RequiredOrNull<string>>(null);
 
   const {
     userRoles,
@@ -96,29 +96,29 @@ export const SpecialAuthorizations = ({
   const handleAddLOA = () => {
     if (!canWriteLOA) return;
     setShowLOASteps(true);
-    setLOAToEdit(null);
+    setLoaToEdit(null);
   };
 
   const handleEditLOA = (loaId: string) => {
     if (!canWriteLOA) return;
     setShowLOASteps(true);
-    setLOAToEdit(loaId);
+    setLoaToEdit(loaId);
   };
 
   const handleExitLOASteps = () => {
     setShowLOASteps(false);
-    setLOAToEdit(null);
+    setLoaToEdit(null);
     activeLOAsQuery.refetch();
     expiredLOAsQuery.refetch();
   };
 
   const handleOpenDeleteModal = (loaId: string) => {
     if (!canWriteLOA) return;
-    setLOAToDelete(loaId);
+    setLoaToDelete(loaId);
   };
 
   const handleCloseDeleteModal = () => {
-    setLOAToDelete(null);
+    setLoaToDelete(null);
   };
 
   const handleDeleteLOA = async (loaId: string) => {
@@ -134,7 +134,7 @@ export const SpecialAuthorizations = ({
     } catch (e) {
       console.error(e);
     } finally {
-      setLOAToDelete(null);
+      setLoaToDelete(null);
     }
   };
 
@@ -155,8 +155,23 @@ export const SpecialAuthorizations = ({
       }
     }
   };
+
+  const showExpiredLOAsLink = canReadLOA && (expiredLOAs.length > 0);
+  const showActiveLOAsList = canReadLOA && (activeLOAs.length > 0);
+  const showExpiredLOAsModal = canReadLOA && showExpiredLOAs;
+  const showDeleteDialog = canWriteLOA && loaToDelete;
+
+  if (showLOASteps) {
+    return canWriteLOA ? (
+      <LOASteps
+        loaId={loaToEdit}
+        companyId={companyId}
+        onExit={handleExitLOASteps}
+      />
+    ) : null;
+  }
   
-  return !showLOASteps ? (
+  return (
     <div className="special-authorizations">
       {canViewNoFeePermits ? (
         <NoFeePermitsSection
@@ -183,7 +198,7 @@ export const SpecialAuthorizations = ({
               Letter of Authorization (LOA)
             </div>
 
-            {canReadLOA && (expiredLOAs.length > 0) ? (
+            {showExpiredLOAsLink ? (
               <CustomActionLink
                 className="special-authorizations__link"
                 onClick={handleShowExpiredLOA}
@@ -214,7 +229,7 @@ export const SpecialAuthorizations = ({
             </div>
           )}
 
-          {canReadLOA && (activeLOAs.length > 0) ? (
+          {showActiveLOAsList ? (
             <div className="active-loas">
               <div className="active-loas__header">
                 Active LOA(s)
@@ -233,7 +248,7 @@ export const SpecialAuthorizations = ({
         </div>
       ) : null}
 
-      {canReadLOA && showExpiredLOAs ? (
+      {showExpiredLOAsModal ? (
         <ExpiredLOAModal
           allowEditLOA={canWriteLOA}
           showModal={showExpiredLOAs}
@@ -247,21 +262,15 @@ export const SpecialAuthorizations = ({
         />
       ) : null}
 
-      {canWriteLOA && LOAToDelete ? (
+      {showDeleteDialog ? (
         <DeleteConfirmationDialog
-          showDialog={Boolean(LOAToDelete)}
+          showDialog={Boolean(loaToDelete)}
           onCancel={handleCloseDeleteModal}
-          onDelete={() => handleDeleteLOA(LOAToDelete)}
+          onDelete={() => handleDeleteLOA(loaToDelete)}
           itemToDelete="item"
           confirmationMsg={"Are you sure you want to delete this?"}
         />
       ) : null}
     </div>
-  ) : canWriteLOA ? (
-    <LOASteps
-      loaId={LOAToEdit}
-      companyId={companyId}
-      onExit={handleExitLOASteps}
-    />
-  ) : null;
+  );
 };

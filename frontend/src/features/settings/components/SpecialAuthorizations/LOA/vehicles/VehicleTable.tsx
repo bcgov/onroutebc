@@ -38,22 +38,49 @@ export const VehicleTable = ({
   const enableRowSelection = Boolean(onUpdateSelection);
   const enableFilter = Boolean(enableTopToolbar);
 
+  const onRowSelectionChange = useCallback(
+    (updaterFn?: ((old: MRT_RowSelectionState) => MRT_RowSelectionState)) => {
+      if (updaterFn && onUpdateSelection && selectedVehicles) {
+        onUpdateSelection(updaterFn(selectedVehicles));
+      }
+    },
+    [selectedVehicles, onUpdateSelection]
+  );
+
   const selectionConfig = enableRowSelection ? {
     enableRowSelection: true,
     muiSelectCheckboxProps: {
       className: `loa-vehicle-table__checkbox ${hasError ? "loa-vehicle-table__checkbox--error" : ""}`,
     },
-    onRowSelectionChange: useCallback(
-      (updaterFn?: ((old: MRT_RowSelectionState) => MRT_RowSelectionState)) => {
-        if (updaterFn && onUpdateSelection && selectedVehicles) {
-          onUpdateSelection(updaterFn(selectedVehicles));
-        }
-      },
-      [selectedVehicles, onUpdateSelection]
-    ),
+    onRowSelectionChange,
   } : {
     enableRowSelection: false,
   };
+
+  const renderTopToolbar = useCallback(
+    ({ table }: { table: MRT_TableInstance<LOAVehicle> }) => enableFilter ? (
+      <div className="table-container__top-toolbar">
+        <div className="loa-vehicle-table__search">
+          <div className="search-label">
+            Search VIN <span className="search-label--light">(last 6 digits)</span> or Plate
+          </div>
+
+          <MRT_GlobalFilterTextField
+            className="search-input"
+            InputProps={{
+              className: "search-input__input-container",
+              endAdornment: null,
+            }}
+            inputProps={{
+              className: "search-input__input-textfield",
+            }}
+            table={table}
+          />
+        </div>
+      </div>
+    ) : null,
+    [enableFilter],
+  );
 
   const filterConfig = enableFilter ? {
     enableTopToolbar: true,
@@ -64,30 +91,7 @@ export const VehicleTable = ({
       },
     },
     globalFilterFn: enableTopToolbar ? "filterByVINAndPlate" : undefined,
-    renderTopToolbar: useCallback(
-      ({ table }: { table: MRT_TableInstance<LOAVehicle> }) => enableFilter ? (
-        <div className="table-container__top-toolbar">
-          <div className="loa-vehicle-table__search">
-            <div className="search-label">
-              Search VIN <span className="search-label--light">(last 6 digits)</span> or Plate
-            </div>
-
-            <MRT_GlobalFilterTextField
-              className="search-input"
-              InputProps={{
-                className: "search-input__input-container",
-                endAdornment: null,
-              }}
-              inputProps={{
-                className: "search-input__input-textfield",
-              }}
-              table={table}
-            />
-          </div>
-        </div>
-      ) : null,
-      [enableFilter],
-    ),
+    renderTopToolbar,
   } : {
     enableTopToolbar: false,
   };

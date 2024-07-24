@@ -11,7 +11,7 @@ import { InfoBcGovBanner } from "../../../../../../common/components/banners/Inf
 import { BANNER_MESSAGES } from "../../../../../../common/constants/bannerMessages";
 import OnRouteBCContext from "../../../../../../common/authentication/OnRouteBCContext";
 import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../../common/helpers/util";
-import { PowerUnit, Trailer, VEHICLE_TYPES } from "../../../../../manageVehicles/types/Vehicle";
+import { VEHICLE_TYPES } from "../../../../../manageVehicles/types/Vehicle";
 import { LOAFormData } from "../../../../types/LOAFormData";
 import { LOAVehicle } from "../../../../types/LOAVehicle";
 import { VehicleTable } from "../../../../components/SpecialAuthorizations/LOA/vehicles/VehicleTable";
@@ -113,32 +113,32 @@ export const LOADesignateVehicles = () => {
 
   const powerUnits = useMemo(() => getDefaultRequiredVal([], powerUnitsData)
     .map((vehicle) => ({
-      vehicleId: (vehicle as PowerUnit).powerUnitId,
+      vehicleId: vehicle.powerUnitId,
       unitNumber: vehicle.unitNumber,
       make: vehicle.make,
       vin: vehicle.vin,
       plate: vehicle.plate,
       vehicleType: VEHICLE_TYPES.POWER_UNIT,
       vehicleSubType: {
-        typeCode: (vehicle as PowerUnit).powerUnitTypeCode,
+        typeCode: vehicle.powerUnitTypeCode,
         type: powerUnitSubTypes
-          .find(subType => subType.typeCode === (vehicle as PowerUnit).powerUnitTypeCode)?.type,
+          .find(subType => subType.typeCode === vehicle.powerUnitTypeCode)?.type,
       },
     })) as LOAVehicle[]
   , [powerUnitsData]);
   
   const trailers = useMemo(() => getDefaultRequiredVal([], trailersData)
     .map((vehicle) => ({
-      vehicleId: (vehicle as Trailer).trailerId,
+      vehicleId: vehicle.trailerId,
       unitNumber: vehicle.unitNumber,
       make: vehicle.make,
       vin: vehicle.vin,
       plate: vehicle.plate,
       vehicleType: VEHICLE_TYPES.TRAILER,
       vehicleSubType: {
-        typeCode: (vehicle as Trailer).trailerTypeCode,
+        typeCode: vehicle.trailerTypeCode,
         type: trailerSubTypes
-          .find(subType => subType.typeCode === (vehicle as Trailer).trailerTypeCode)?.type,
+          .find(subType => subType.typeCode === vehicle.trailerTypeCode)?.type,
       },
     })) as LOAVehicle[]
   , [trailersData]);

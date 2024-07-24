@@ -160,12 +160,12 @@ export const ManageProfilesDashboard = React.memo(() => {
   }
 
   if (isError) {
-    if (error instanceof AxiosError) {
-      if (error.response?.status === 401) {
-        return <Navigate to={ERROR_ROUTES.UNAUTHORIZED} />;
-      }
-      return <ErrorFallback error={error.message} />;
-    }
+    const isUnauthorized = error instanceof AxiosError && error.response?.status == 401;
+    return isUnauthorized ? (
+      <Navigate to={ERROR_ROUTES.UNAUTHORIZED} />
+    ) : (
+      <ErrorFallback error={error.message} />
+    );
   }
 
   return (

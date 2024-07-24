@@ -30,7 +30,7 @@ export const LOAVehicleColumnDefinition: MRT_ColumnDef<LOAVehicle>[] = [
       getDefaultRequiredVal(
         "",
         originalRow.vehicleSubType.type,
-      ) as string,
+      ),
     id: "vehicleSubType",
     size: 200,
   },
