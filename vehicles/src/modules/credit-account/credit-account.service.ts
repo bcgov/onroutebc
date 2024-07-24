@@ -49,6 +49,7 @@ import {
   IDIRUserAuthGroup,
   UserAuthGroup,
 } from '../../common/enum/user-auth-group.enum';
+import { ReadCreditAccountActivityDto } from './dto/response/read-credit-account-activity.dto';
 
 /**
  * Service functions for credit account operations.
@@ -951,6 +952,42 @@ export class CreditAccountService {
     return readCreditAccountUserDtoList;
   }
 
+  /**
+   * Retrieves credit account activity based on account holder and credit account ID.
+   *
+   * @param companyId - The ID of the company.
+   * @param creditAccountId - The ID of the credit account.
+   * @param currentUser - The current user.
+   * @returns {Promise<ReadCreditAccountActivityDto[]>} - The list of credit account activities.
+   */
+  @LogAsyncMethodExecution()
+  public async getCreditAccountActivity({
+    companyId,
+    creditAccountId,
+    currentUser,
+  }: {
+    companyId: number;
+    creditAccountId: number;
+    currentUser: IUserJWT;
+  }): Promise<ReadCreditAccountActivityDto[]> {
+    const creditAccount = await this.findCreditAccountDetails(
+      companyId,
+      currentUser,
+      creditAccountId,
+    );
+
+    if (!creditAccount) {
+      throw new DataNotFoundException();
+    }
+    if (creditAccount?.creditAccountActivities?.length) {
+      return await this.classMapper.mapArrayAsync(
+        creditAccount?.creditAccountActivities,
+        CreditAccountActivity,
+        ReadCreditAccountActivityDto,
+      );
+    }
+  }
+
   private async findCreditAccountDetails(
     companyId: number,
     currentUser: IUserJWT,
@@ -1049,7 +1086,6 @@ export class CreditAccountService {
             return {
               company: true,
               creditAccountUsers: { company: true },
-              creditAccountActivities: { idirUser: true },
             };
           // Grant partial access to SYSTEM_ADMINISTRATOR, HQ_ADMINISTRATOR, PPC_CLERK, and PPC_SUPERVISOR groups
           case IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR:

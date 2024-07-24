@@ -53,7 +53,7 @@ import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-flag-ena
 })
 @IsFeatureFlagEnabled('CREDIT-ACCOUNT')
 @Controller(
-  'companies/:companyId/credit-account/:creditAccountId/credit-account-user',
+  'companies/:companyId/credit-accounts/:creditAccountId/credit-account-users',
 )
 export class CreditAccountUserController {
   constructor(private readonly creditAccountService: CreditAccountService) {}

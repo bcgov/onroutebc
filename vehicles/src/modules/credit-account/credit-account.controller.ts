@@ -24,6 +24,7 @@ import { ReadCreditAccountUserDto } from './dto/response/read-credit-account-use
 import { ReadCreditAccountDto } from './dto/response/read-credit-account.dto';
 import { CreditAccountIdPathParamDto } from './dto/request/pathParam/creditAccountUsers.path-params.dto';
 import { UpdateCreditAccountStatusDto } from './dto/request/update-credit-account-status.dto';
+import { ReadCreditAccountActivityDto } from './dto/response/read-credit-account-activity.dto';
 
 @ApiBearerAuth()
 @ApiTags('Credit Accounts')
@@ -44,7 +45,7 @@ import { UpdateCreditAccountStatusDto } from './dto/request/update-credit-accoun
   type: ExceptionDto,
 })
 @IsFeatureFlagEnabled('CREDIT-ACCOUNT')
-@Controller('companies/:companyId/credit-account')
+@Controller('companies/:companyId/credit-accounts')
 export class CreditAccountController {
   constructor(private readonly creditAccountService: CreditAccountService) {}
 
@@ -110,6 +111,42 @@ export class CreditAccountController {
       throw new DataNotFoundException();
     }
     return readCreditAccountDto;
+  }
+
+  /**
+   * Retrieves a credit account History.
+   *
+   * @param {Object} params - The path parameters.
+   * @param {string} params.companyId - The companyId path parameter.
+   * @param {string} params.creditAccountId - The creditAccountId path parameter.
+   * @returns {Promise<ReadCreditAccountActivityDto[]>} The retrieved credit account history.
+   */
+  @ApiOperation({
+    summary: 'Retrieves a credit account (if available) history.',
+    description:
+      'Retrieves a credit account (if available) history, enforcing authentication.',
+  })
+  @ApiOkResponse({
+    description: 'The retrieved credit account history.',
+    isArray: true,
+    type: ReadCreditAccountActivityDto,
+  })
+  @Get(':creditAccountId/history')
+  @Roles(Role.READ_CREDIT_ACCOUNT)
+  async getCreditAccountHistory(
+    @Req() request: Request,
+    @Param() { companyId, creditAccountId }: CreditAccountIdPathParamDto,
+  ): Promise<ReadCreditAccountActivityDto[]> {
+    const readCreditAccountActivityDto =
+      await this.creditAccountService.getCreditAccountActivity({
+        companyId,
+        creditAccountId,
+        currentUser: request.user as IUserJWT,
+      });
+    if (!readCreditAccountActivityDto) {
+      throw new DataNotFoundException();
+    }
+    return readCreditAccountActivityDto;
   }
 
   /**
