@@ -37,6 +37,7 @@ import { PaymentModule } from './modules/permit-application-payment/payment/paym
 import { PermitReceiptDocumentModule } from './modules/permit-application-payment/permit-receipt-document/permit-receipt-document.module';
 import { ShoppingCartModule } from './modules/shopping-cart/shopping-cart.module';
 import { CreditAccountModule } from './modules/credit-account/credit-account.module';
+import { LoaModule } from './modules/loa/loa.module';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
@@ -100,6 +101,7 @@ const envPath = path.resolve(process.cwd() + '/../');
     PermitModule,
     CreditAccountModule,
     FeatureFlagsModule,
+    LoaModule,
   ],
   controllers: [AppController],
   providers: [AppService],
