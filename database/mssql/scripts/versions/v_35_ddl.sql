@@ -20,7 +20,7 @@ GO
 --------------------------------------
 CREATE TABLE [dbo].[ORBC_HOLIDAY](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
-   [HOLIDAY_DATE] [varchar](10) NOT NULL,
+   [HOLIDAY_DATE] [datetime2](7) NOT NULL,
 	[DB_CREATE_USERID] [varchar](63) NULL,
 	[DB_CREATE_TIMESTAMP] [datetime2](7) NULL,
 	[DB_LAST_UPDATE_USERID] [varchar](63) NULL,
@@ -167,7 +167,7 @@ INSERT INTO [dbo].[ORBC_HOLIDAY] ([HOLIDAY_DATE],
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Holiday table creation plus history tables for v32'
 
-INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [UPDATE_SCRIPT], [REVERT_SCRIPT], [RELEASE_DATE]) VALUES (32, @VersionDescription, '$(UPDATE_SCRIPT)', '$(REVERT_SCRIPT)', getutcdate())
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [UPDATE_SCRIPT], [REVERT_SCRIPT], [RELEASE_DATE]) VALUES (35, @VersionDescription, '$(UPDATE_SCRIPT)', '$(REVERT_SCRIPT)', getutcdate())
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
 

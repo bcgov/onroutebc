@@ -1,64 +1,96 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Transaction } from './transaction.entity';
-import { TransactionDetail } from './transaction-detail.entity';
+import { CfsTransactionDetail } from './transaction-detail.entity';
 import { Cron } from '@nestjs/schedule';
 import { LogAsyncMethodExecution } from 'src/common/decorator/log-async-method-execution.decorator';
 import { generate } from 'src/helper/generator.helper';
-import { Like, Repository } from 'typeorm';
-import { BcHoliday } from './holiday.entity';
+import { In, Repository } from 'typeorm';
+import { Holiday } from './holiday.entity';
+import dayjs from 'dayjs'; 
+import utc from 'dayjs/plugin/utc';
+import { addToCache } from 'src/common/helper/cache.helper';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { CacheKey } from 'src/common/enum/cache-key.enum';
+import { Cache } from 'cache-manager';
+import { getFromCache } from 'src/common/helper/cache.helper';
+
+dayjs.extend(utc);
+
+let transactionIds = [];
 
 @Injectable()
 export class TransactionService {
+  private readonly logger = new Logger(TransactionService.name);
   private holidays: string[] = [];
   constructor(
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
     @InjectRepository(Transaction)
     private readonly transactionRepository: Repository<Transaction>,
-    @InjectRepository(TransactionDetail)
-    private readonly cfsTransactionDetailRepo: Repository<TransactionDetail>,
-    @InjectRepository(BcHoliday)
-    private readonly holidayRepository: Repository<BcHoliday>,
+    @InjectRepository(CfsTransactionDetail)
+    private readonly cfsTransactionDetailRepo: Repository<CfsTransactionDetail>,
+    @InjectRepository(Holiday)
+    private readonly holidayRepository: Repository<Holiday>,
   ) {
     void this.initializeHolidays();
   }
 
   private async initializeHolidays(): Promise<void> {
-    this.holidays = await this.getBcHolidays();
-  }
-
-  async getAllTransactions(): Promise<Transaction[]> {
-    return this.transactionRepository.find();
-  }
-
-  async getHolidays(): Promise<BcHoliday[]> {
-    const now: Date = new Date();
-    const year = now.getFullYear().toString(); // Convert year to string
+    const cachedHolidays = await getFromCache(
+      this.cacheManager,
+      CacheKey.HOLIDAYS,
+    );
     
-    return this.holidayRepository.find({
-      where: { holidayDate: Like(`%${year}%`) }
-    });
+    if(!cachedHolidays){
+      this.holidays = await this.getBcHolidays();
+    }
+    else{
+      cachedHolidays;
+    }
+
   }
+
+async getHolidays(): Promise<Holiday[]> {
+    const now: Date = new Date();
+    const year = now.getFullYear().toString();
+    const holidays = await this.holidayRepository
+        .createQueryBuilder('holiday')
+        .where('YEAR(holiday.holidayDate) = :year', { year })
+        .getMany();
+
+    // Convert holidayDate to UTC format
+    return holidays.map(holiday => ({
+        ...holiday,
+        holidayDate: dayjs.utc(holiday.holidayDate).format('YYYY-MM-DD')
+    }));
+}
 
   async getTransactionDetails(): Promise<Transaction[]> {
     const transactions = await this.transactionRepository.createQueryBuilder('transaction')
-    .innerJoinAndSelect('TransactionDetail', 'detail', 'transaction.TRANSACTION_ID = detail.TRANSACTION_ID')
+    .innerJoinAndSelect('CfsTransactionDetail', 'detail', 'transaction.TRANSACTION_ID = detail.TRANSACTION_ID')
     .where('detail.CFS_FILE_STATUS_TYPE = :status', { status: 'READY' })
     .getMany();
 
+    // Extract transaction IDs from the results
+    transactionIds = transactions.map(transaction => transaction.TRANSACTION_ID);
+
     if (transactions.length > 0) {
-      console.log(transactions);
+      this.logger.log(transactions);
       return transactions;
     } else {
-      console.log('No transactions found with status READY');
+      this.logger.log('No transactions found with status READY');
       return [];
     }
   }
 
   async updateCfsFileStatusType(fileName: string): Promise<void> {
     const currentDate = new Date();
-    const currentUTCTimestamp = currentDate.toISOString();
-    const transactionDetails: TransactionDetail[] = await this.cfsTransactionDetailRepo.find({ where: { CFS_FILE_STATUS_TYPE: 'READY' } });
-    const updatedTransactionDetails: TransactionDetail[] = transactionDetails.map(detail => {
+    const currentUTCTimestamp = currentDate;
+    const transactionDetails: CfsTransactionDetail[] = await this.cfsTransactionDetailRepo.find({
+      where: { TRANSACTION_ID: In(transactionIds) }
+      });
+    const updatedTransactionDetails: CfsTransactionDetail[] = transactionDetails.map(detail => {
       detail.CFS_FILE_STATUS_TYPE = 'SENT';
       detail.PROCESSSING_DATE_TIME = currentUTCTimestamp;
       detail.FILE_NAME = fileName;
@@ -67,42 +99,44 @@ export class TransactionService {
 
     try {
       await this.cfsTransactionDetailRepo.save(updatedTransactionDetails);
-      console.log(`Updated transaction details`);
+      this.logger.log(`Updated transaction details`);
     } catch (error) {
-      console.error('Error updating transaction details:', error);
+      this.logger.error('Error updating transaction details:', error);
       throw error;
     }
   }
 
-  private async getBcHolidays(): Promise<string[]> {
-    try {
-        const holidays: BcHoliday[] = await this.getHolidays();
+private async getBcHolidays(): Promise<string[]> {
+  try {
+    const holidays: Holiday[] = await this.getHolidays();
 
-        const formatHoliday = (holiday: BcHoliday): string => {
-          return holiday.holidayDate;
-        };
-        
-        const holidayStrings: string[] = holidays.map(formatHoliday);
-        return holidayStrings;
+    const formatHoliday = (holiday: Holiday): string => {
+      return dayjs(holiday.holidayDate).format('YYYY-MM-DD');
+    };
 
-    } catch (error) {
-        console.error('Error fetching BC holidays:', error);
-        return [];
-    }
+    const holidayStrings: string[] = holidays.map(formatHoliday);
+    const holidayString = holidayStrings.join(',');
+    await addToCache(this.cacheManager, CacheKey.HOLIDAYS, holidayString);
+    return holidayStrings;
+
+  } catch (error) {
+    this.logger.error('Error fetching BC holidays:', error);
+    return [];
   }
+}
 
   private isHoliday(date: Date): boolean {
     const formattedDate = date.toISOString().split('T')[0];
     return this.holidays.includes(formattedDate);
   }
 
-  @Cron('30 16 * * 1-5')
+  @Cron('0 30 16 * * 1-5')
   // @Cron(`${process.env.TPS_PENDING_POLLING_INTERVAL || '0 */1 * * * *'}`)
   @LogAsyncMethodExecution()
   async genterateCgifilesAndUpload() {
     const now = new Date();
     if (this.isHoliday(now)) {
-      console.log('Today is a holiday. Skipping job execution.');
+      this.logger.log('Today is a holiday. Skipping job execution.');
        return;
      }
     const transactions: Promise<Transaction[]> = this.getTransactionDetails();

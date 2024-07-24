@@ -2,23 +2,23 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'ty
 import { Transaction } from './transaction.entity';
 
 @Entity('ORBC_CFS_TRANSACTION_DETAIL', { schema: 'permit' })
-export class TransactionDetail {
-  @PrimaryGeneratedColumn()
+export class CfsTransactionDetail {
+  @PrimaryGeneratedColumn({ name: 'ID' })
     id: number;
 
-    @Column()
+    @Column({ name: 'TRANSACTION_ID', type: 'int', nullable: false })
     TRANSACTION_ID: number;
 
-    @Column()
+    @Column({ name: 'CFS_FILE_STATUS_TYPE', type: 'varchar', length: 10, nullable: false })
     CFS_FILE_STATUS_TYPE: string;
 
-    @Column()
-    PROCESSSING_DATE_TIME: string;
+    @Column({ name: 'PROCESSSING_DATE_TIME', type: 'timestamp', nullable: false })
+    PROCESSSING_DATE_TIME: Date;
 
-    @Column()
+    @Column({ name: 'FILE_NAME', type: 'varchar', length: 255, nullable: false })
     FILE_NAME: string;
 
-    @OneToOne(() => Transaction, transaction => transaction.detail)
+    @OneToOne(() => Transaction, transaction => transaction.detail, { cascade: false })
     @JoinColumn({ name: 'TRANSACTION_ID' })
     transaction: Transaction;
   

@@ -18,7 +18,8 @@ import { Permit } from './entities/permit.entity';
 import { Repository } from 'typeorm';
 import { ApplicationStatus } from '../common/enum/application-status.enum';
 import { PermitIdDto } from './dto/permit-id.dto';
-import * as dayjs from 'dayjs';
+// import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import {
   DOC_GEN_WAIT_DURATION,
   ISSUE_PERMIT_WAIT_DURATION,
@@ -156,7 +157,6 @@ export class PermitService {
       await lastValueFrom(
         this.httpService
           .post(url, body, reqConfig)
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
           .pipe(map((response) => response.data)),
       );
     } catch (error) {
