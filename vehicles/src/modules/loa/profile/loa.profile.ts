@@ -204,10 +204,12 @@ export class LoaProfile extends AutomapperProfile {
             return isActive;
           }),
         ),
+        //If expiry date is not provided then set it to null. Null expiry date means LOA never expires.
         forMember(
           (d) => d.expiryDate,
           mapFrom((s) => {
-            return s.expiryDate;
+            if (s.expiryDate) return s.expiryDate;
+            else return null;
           }),
         ),
         forMember(
