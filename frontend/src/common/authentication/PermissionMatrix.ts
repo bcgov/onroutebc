@@ -25,6 +25,12 @@ const { COMPANY_ADMINISTRATOR: CA, PERMIT_APPLICANT: PA } =
 const ALL_IDIR_GROUPS = Object.values(IDIR_USER_AUTH_GROUP);
 const ALL_BCeID_GROUPS = Object.values(BCeID_USER_AUTH_GROUP);
 
+/**
+ * -----------------------------------------------------------------
+ * ---------------- PERMISSION MATRIX MAPPINGS ---------------------
+ * -----------------------------------------------------------------
+ */
+
 const MANAGE_VEHICLE_INVENTORY = {
   VIEW_VEHICLE_INVENTORY_SCREEN: {
     allowedBCeIDAuthGroups: ALL_BCeID_GROUPS,
@@ -366,6 +372,13 @@ export const PERMISSIONS_MATRIX = {
   STAFF_HOME_SCREEN: STAFF_HOME_SCREEN,
   MISCELLANEOUS: MISCELLANEOUS,
 } as const;
+
+/**
+ * -----------------------------------------------------------------
+ * -------------------------- END OF -------------------------------
+ * ---------------- PERMISSION MATRIX MAPPINGS ---------------------
+ * -----------------------------------------------------------------
+ */
 
 export type PermissionConfigType = {
   /**
