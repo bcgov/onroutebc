@@ -25,11 +25,17 @@ export type PaymentMethodTypeReport =
 
 export type CfsPaymentMethodType = Extract<
   PaymentMethodType,
-  PaymentMethodType.ICEPAY | PaymentMethodType.CASH | PaymentMethodType.CHEQUE
+  | PaymentMethodType.ICEPAY
+  | PaymentMethodType.CASH
+  | PaymentMethodType.CHEQUE
+  | PaymentMethodType.GA
+  | PaymentMethodType.POS
 >;
 
 export const CfsPaymentMethodType = {
   [PaymentMethodType.ICEPAY]: PaymentMethodType.ICEPAY,
   [PaymentMethodType.CASH]: PaymentMethodType.CASH,
   [PaymentMethodType.CHEQUE]: PaymentMethodType.CHEQUE,
+  [PaymentMethodType.GA]: PaymentMethodType.GA,
+  [PaymentMethodType.POS]: PaymentMethodType.POS,
 } as const;
