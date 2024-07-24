@@ -1,14 +1,13 @@
 import { useContext } from "react";
 
-import "./UserSection.scss";
-import { LogoutButton } from "./LogoutButton";
-import { UserSectionInfo } from "./UserSectionInfo";
-import { ShoppingCartButton } from "./ShoppingCartButton";
-import { getDefaultRequiredVal } from "../../../helpers/util";
 import { CartContext } from "../../../../features/permits/context/CartContext";
 import OnRouteBCContext from "../../../authentication/OnRouteBCContext";
+import { getDefaultRequiredVal } from "../../../helpers/util";
 import { RenderIf } from "../../reusable/RenderIf";
-import { MISCELLANEOUS } from "../../../authentication/PermissionMatrix";
+import { LogoutButton } from "./LogoutButton";
+import { ShoppingCartButton } from "./ShoppingCartButton";
+import "./UserSection.scss";
+import { UserSectionInfo } from "./UserSectionInfo";
 
 export const UserSection = ({ username }: { username: string }) => {
   const { companyId } = useContext(OnRouteBCContext);
@@ -21,8 +20,9 @@ export const UserSection = ({ username }: { username: string }) => {
       <UserSectionInfo username={username} />
       <RenderIf
         component={<ShoppingCartButton cartItemCount={cartItemCount} />}
-        {...MISCELLANEOUS.VIEW_SHOPPING_CART}
-        additionalConditionToCall={() => showShoppingCart}
+        permissionMatrixFeatureKey="MISCELLANEOUS"
+        permissionMatrixFunctionKey="VIEW_SHOPPING_CART"
+        additionalConditionToCheck={() => showShoppingCart}
       />
       <LogoutButton />
     </div>

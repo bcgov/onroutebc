@@ -1,4 +1,8 @@
-import { usePermissionMatrix, PermissionConfigType } from "../../authentication/PermissionMatrix";
+import {
+  usePermissionMatrix,
+  PermissionConfigType,
+  PermissionMatrixKeysType,
+} from "../../authentication/PermissionMatrix";
 
 /**
  * Renders a component if it meets the criteria specified.
@@ -11,7 +15,8 @@ export const RenderIf = ({
    * The component to be rendered.
    */
   component: JSX.Element;
-} & PermissionConfigType): JSX.Element => {
+} & PermissionConfigType &
+  PermissionMatrixKeysType): JSX.Element => {
   const shouldRender = usePermissionMatrix(permissionConfig);
   if (shouldRender) {
     return <>{component}</>;

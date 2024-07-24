@@ -19,7 +19,6 @@ import {
   VEHICLES_ROUTES,
 } from "../../../routes/constants";
 import { RenderIf } from "../reusable/RenderIf";
-import { MANAGE_PERMITS, MANAGE_PROFILE, MANAGE_SETTINGS, MANAGE_VEHICLE_INVENTORY } from "../../authentication/PermissionMatrix";
 
 const getEnv = () => {
   const env =
@@ -61,7 +60,8 @@ const Navbar = ({
                     <NavLink to={APPLICATIONS_ROUTES.BASE}>Permits</NavLink>
                   </li>
                 }
-                {...MANAGE_PERMITS.VIEW_PERMITS_SCREEN}
+                permissionMatrixFeatureKey="MANAGE_PERMITS"
+                permissionMatrixFunctionKey="VIEW_PERMITS_SCREEN"
               />
               <RenderIf
                 component={
@@ -71,7 +71,8 @@ const Navbar = ({
                     </NavLink>
                   </li>
                 }
-                {...MANAGE_VEHICLE_INVENTORY.VIEW_VEHICLE_INVENTORY_SCREEN}
+                permissionMatrixFeatureKey="MANAGE_VEHICLE_INVENTORY"
+                permissionMatrixFunctionKey="VIEW_VEHICLE_INVENTORY_SCREEN"
               />
               <RenderIf
                 component={
@@ -79,7 +80,8 @@ const Navbar = ({
                     <NavLink to={PROFILE_ROUTES.MANAGE}>Profile</NavLink>
                   </li>
                 }
-                {...MANAGE_PROFILE.VIEW_COMPANY_INFORMATION}
+                permissionMatrixFeatureKey="MANAGE_PROFILE"
+                permissionMatrixFunctionKey="VIEW_COMPANY_INFORMATION"
               />
               <RenderIf
                 component={
@@ -87,7 +89,8 @@ const Navbar = ({
                     <NavLink to={SETTINGS_ROUTES.MANAGE}>Settings</NavLink>
                   </li>
                 }
-                {...MANAGE_SETTINGS.VIEW_SPECIAL_AUTHORIZATIONS}
+                permissionMatrixFeatureKey="MANAGE_SETTINGS"
+                permissionMatrixFunctionKey="VIEW_SPECIAL_AUTHORIZATIONS"
               />
             </>
           )}

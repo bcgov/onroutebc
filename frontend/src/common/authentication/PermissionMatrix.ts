@@ -4,7 +4,6 @@ import {
   BCeIDUserAuthGroupType,
   IDIR_USER_AUTH_GROUP,
   IDIRUserAuthGroupType,
-  UserAuthGroupType,
 } from "./types";
 import OnRouteBCContext from "./OnRouteBCContext";
 import { useFeatureFlagsQuery } from "../hooks/hooks";
@@ -42,60 +41,60 @@ export type ConfigPartial = {
   allowedBCeIDAuthGroups?: readonly BCeIDUserAuthGroupType[];
 };
 
-export type PermissionConfigType = {
-  /**
-   * The auth groups that are disallowed from seeing the component.
-   *
-   * Given first preference if specified. If the user has one of
-   * the specified auth groups, the component WILL NOT render.
-   *
-   * Example use-case: `ORBC_READ_PERMIT` is a role that's available to
-   * the `FINANCE` users but they aren't allowed privileges to see
-   * Applications in Progress.
-   * In this instance, `disallowedAuthGroups = ['FINANCE']`.
-   */
-  disallowedAuthGroups?: readonly UserAuthGroupType[];
-  /**
-   * The idir auth groups that are allowed to see the component.
-   *
-   * If the user has one of the specified auth groups,
-   * the component will render.
-   */
-  allowedIDIRAuthGroups?: readonly IDIRUserAuthGroupType[];
+// export type PermissionConfigType = {
+//   /**
+//    * The auth groups that are disallowed from seeing the component.
+//    *
+//    * Given first preference if specified. If the user has one of
+//    * the specified auth groups, the component WILL NOT render.
+//    *
+//    * Example use-case: `ORBC_READ_PERMIT` is a role that's available to
+//    * the `FINANCE` users but they aren't allowed privileges to see
+//    * Applications in Progress.
+//    * In this instance, `disallowedAuthGroups = ['FINANCE']`.
+//    */
+//   disallowedAuthGroups?: readonly UserAuthGroupType[];
+//   /**
+//    * The idir auth groups that are allowed to see the component.
+//    *
+//    * If the user has one of the specified auth groups,
+//    * the component will render.
+//    */
+//   allowedIDIRAuthGroups?: readonly IDIRUserAuthGroupType[];
 
-  /**
-   * The bceid auth groups that are allowed to see the component.
-   *
-   * If the user has one of the specified auth groups,
-   * the component will render.
-   */
-  allowedBCeIDAuthGroups?: readonly BCeIDUserAuthGroupType[];
-  /**
-   * The feature flag to check if the feature is enabled.
-   */
-  featureFlag?: string;
-  /**
-   * An additional function call whose boolean value will be accounted
-   * for determining whether to render a component.
-   * i.e., this function will get called only if other conditions
-   * given in the other input props qualify.
-   *
-   * @param args Any arguments to be passed.
-   * @returns A boolean.
-   */
-  additionalConditionToCall?: (...args: any) => boolean;
-  /**
-   * With only condition to check, all other configurations are skipped.
-   * i.e., this function will be the only check to decide whether to render
-   * a component.
-   *
-   * Simply put, when provided, this will be the only check.
-   *
-   * @param args Any arguments to be passed.
-   * @returns A boolean.
-   */
-  onlyConditionToCheck?: (...args: any) => boolean;
-};
+//   /**
+//    * The bceid auth groups that are allowed to see the component.
+//    *
+//    * If the user has one of the specified auth groups,
+//    * the component will render.
+//    */
+//   allowedBCeIDAuthGroups?: readonly BCeIDUserAuthGroupType[];
+//   /**
+//    * The feature flag to check if the feature is enabled.
+//    */
+//   featureFlag?: string;
+//   /**
+//    * An additional function call whose boolean value will be accounted
+//    * for determining whether to render a component.
+//    * i.e., this function will get called only if other conditions
+//    * given in the other input props qualify.
+//    *
+//    * @param args Any arguments to be passed.
+//    * @returns A boolean.
+//    */
+//   additionalConditionToCall?: (...args: any) => boolean;
+//   /**
+//    * With only condition to check, all other configurations are skipped.
+//    * i.e., this function will be the only check to decide whether to render
+//    * a component.
+//    *
+//    * Simply put, when provided, this will be the only check.
+//    *
+//    * @param args Any arguments to be passed.
+//    * @returns A boolean.
+//    */
+//   onlyConditionToCheck?: (...args: any) => boolean;
+// };
 
 /**
  * All the permissions in the file are directly based off of the confluence page.
@@ -326,6 +325,21 @@ export const MANAGE_SETTINGS = {
   },
 } as const;
 
+export const STICKY_SIDE_BAR = {
+  VIEW_STICKY_SIDE_BAR: {
+    allowedIDIRAuthGroups: [PC, SA, FIN, CTPO, HQA],
+  },
+  HOME_BUTTON: {
+    allowedIDIRAuthGroups: [PC, SA, FIN, CTPO, HQA],
+  },
+  REPORTS_BUTTON: {
+    allowedIDIRAuthGroups: [PC, SA, FIN, CTPO, HQA],
+  },
+  MANAGE_PPC_USERS_BUTTON: {
+    allowedIDIRAuthGroups: [SA],
+  },
+} as const;
+
 export const MANAGE_PPC_USERS = {
   VIEW_MANAGE_PPC_USERS_SCREEN: { allowedIDIRAuthGroups: [SA] },
   UPDATE_PPC_USER_ROLE: { allowedIDIRAuthGroups: [SA] },
@@ -391,8 +405,6 @@ export const STAFF_HOME_SCREEN = {
   MANAGE_QUEUE: { allowedIDIRAuthGroups: [PC, SA] },
 } as const;
 
-export type MISCELLANEOUS_KEYS = "VIEW_SHOPPING_CART";
-
 export const MISCELLANEOUS = {
   VIEW_SHOPPING_CART: {
     allowedBCeIDAuthGroups: [CA, PA],
@@ -410,8 +422,15 @@ export const MISCELLANEOUS = {
 } as const;
 
 export const PERMISSIONS_MATRIX = {
-  MISCELLANEOUS: MISCELLANEOUS,
+  MANAGE_VEHICLE_INVENTORY: MANAGE_VEHICLE_INVENTORY,
   MANAGE_PERMITS: MANAGE_PERMITS,
+  MANAGE_PROFILE: MANAGE_PROFILE,
+  MANAGE_SETTINGS: MANAGE_SETTINGS,
+  MANAGE_PPC_USERS: MANAGE_PPC_USERS,
+  REPORTS: REPORTS,
+  GLOBAL_SEARCH: GLOBAL_SEARCH,
+  STAFF_HOME_SCREEN: STAFF_HOME_SCREEN,
+  MISCELLANEOUS: MISCELLANEOUS,
 } as const;
 
 export type ALL_FEATURES = keyof typeof PERMISSIONS_MATRIX;
@@ -426,68 +445,68 @@ export const value1: FUNCTION_KEYS<typeof key1> = "VIEW_PERMITS_SCREEN";
 
 //----------------------
 
-/**
- * A hook to manage the permissions matrix for various features and user authentication groups.
- *
- * @param {Object} config - Configuration object for the permission matrix.
- * @param {Function} [config.onlyConditionToCheck] - A custom condition function, if provided this is the only condition checked.
- * @param {string} [config.featureFlag] - Feature flag key to check if the feature is enabled.
- * @param {Function} [config.additionalConditionToCall] - Additional custom condition to call if the basic conditions are met.
- * @param {string[]} [config.allowedIDIRAuthGroups] - List of allowed IDIR authentication groups.
- * @param {string[]} [config.disallowedAuthGroups] - List of disallowed authentication groups.
- * @param {string[]} [config.allowedBCeIDAuthGroups] - List of allowed BCeID authentication groups.
- * @returns {boolean} - Returns whether the current user has the permission.
- */
-export const usePermissionMatrix = ({
-  onlyConditionToCheck,
-  featureFlag,
-  additionalConditionToCall,
-  allowedIDIRAuthGroups,
-  disallowedAuthGroups,
-  allowedBCeIDAuthGroups,
-}: PermissionConfigType): boolean => {
-  const { userDetails, idirUserDetails } = useContext(OnRouteBCContext);
-  const { data: featureFlags } = useFeatureFlagsQuery();
-  const isIdir = Boolean(idirUserDetails?.userAuthGroup);
+// /**
+//  * A hook to manage the permissions matrix for various features and user authentication groups.
+//  *
+//  * @param {Object} config - Configuration object for the permission matrix.
+//  * @param {Function} [config.onlyConditionToCheck] - A custom condition function, if provided this is the only condition checked.
+//  * @param {string} [config.featureFlag] - Feature flag key to check if the feature is enabled.
+//  * @param {Function} [config.additionalConditionToCall] - Additional custom condition to call if the basic conditions are met.
+//  * @param {string[]} [config.allowedIDIRAuthGroups] - List of allowed IDIR authentication groups.
+//  * @param {string[]} [config.disallowedAuthGroups] - List of disallowed authentication groups.
+//  * @param {string[]} [config.allowedBCeIDAuthGroups] - List of allowed BCeID authentication groups.
+//  * @returns {boolean} - Returns whether the current user has the permission.
+//  */
+// export const usePermissionMatrix = ({
+//   onlyConditionToCheck,
+//   featureFlag,
+//   additionalConditionToCall,
+//   allowedIDIRAuthGroups,
+//   disallowedAuthGroups,
+//   allowedBCeIDAuthGroups,
+// }: PermissionConfigType): boolean => {
+//   const { userDetails, idirUserDetails } = useContext(OnRouteBCContext);
+//   const { data: featureFlags } = useFeatureFlagsQuery();
+//   const isIdir = Boolean(idirUserDetails?.userAuthGroup);
 
-  if (featureFlag) {
-    if (featureFlags?.[featureFlag] !== "ENABLED") {
-      return false;
-    }
-  }
+//   if (featureFlag) {
+//     if (featureFlags?.[featureFlag] !== "ENABLED") {
+//       return false;
+//     }
+//   }
 
-  // If the onlyConditionToCheck function is given, call that alone and exit.
-  if (onlyConditionToCheck) {
-    return onlyConditionToCheck();
-  }
-  let isAllowed = false;
-  let currentUserAuthGroup;
-  if (isIdir) {
-    currentUserAuthGroup = idirUserDetails?.userAuthGroup;
-    isAllowed = Boolean(
-      currentUserAuthGroup &&
-        allowedIDIRAuthGroups?.includes(currentUserAuthGroup),
-    );
-  } else {
-    currentUserAuthGroup = userDetails?.userAuthGroup;
-    isAllowed = Boolean(
-      currentUserAuthGroup &&
-        allowedBCeIDAuthGroups?.includes(currentUserAuthGroup),
-    );
-  }
-  if (disallowedAuthGroups?.length) {
-    isAllowed = Boolean(
-      currentUserAuthGroup &&
-        !disallowedAuthGroups.includes(currentUserAuthGroup),
-    );
-  }
-  if (isAllowed && additionalConditionToCall) {
-    isAllowed = isAllowed && additionalConditionToCall();
-  }
-  return isAllowed;
-};
+//   // If the onlyConditionToCheck function is given, call that alone and exit.
+//   if (onlyConditionToCheck) {
+//     return onlyConditionToCheck();
+//   }
+//   let isAllowed = false;
+//   let currentUserAuthGroup;
+//   if (isIdir) {
+//     currentUserAuthGroup = idirUserDetails?.userAuthGroup;
+//     isAllowed = Boolean(
+//       currentUserAuthGroup &&
+//         allowedIDIRAuthGroups?.includes(currentUserAuthGroup),
+//     );
+//   } else {
+//     currentUserAuthGroup = userDetails?.userAuthGroup;
+//     isAllowed = Boolean(
+//       currentUserAuthGroup &&
+//         allowedBCeIDAuthGroups?.includes(currentUserAuthGroup),
+//     );
+//   }
+//   if (disallowedAuthGroups?.length) {
+//     isAllowed = Boolean(
+//       currentUserAuthGroup &&
+//         !disallowedAuthGroups.includes(currentUserAuthGroup),
+//     );
+//   }
+//   if (isAllowed && additionalConditionToCall) {
+//     isAllowed = isAllowed && additionalConditionToCall();
+//   }
+//   return isAllowed;
+// };
 
-export type PermissionConfigType22 = {
+export type PermissionConfigType = {
   /**
    * The feature flag to check if the feature is enabled.
    * If provided, it takes the highest priority.
@@ -518,7 +537,7 @@ export type PermissionConfigType22 = {
    * @param args Any arguments to be passed.
    * @returns A boolean.
    */
-  additionalConditionToCall?: (...args: any) => boolean;
+  additionalConditionToCheck?: (...args: any) => boolean;
 };
 
 // type PermissionMatrixKeysType = {
@@ -534,21 +553,21 @@ type Filter<T> = {
      * The name of the feature as defined in the Feature column in the matrix
      * document.
      */
-    majorFeatureKey: K;
+    permissionMatrixFeatureKey?: K;
     /**
      * The name of the function as defined in the Function column in the matrix
      * document.
      */
-    functionKey: keyof T[K];
+    permissionMatrixFunctionKey?: keyof T[K];
   };
 }[keyof T];
 
-type PermissionMatrixKeysType = Filter<typeof PERMISSIONS_MATRIX>;
+export type PermissionMatrixKeysType = Filter<typeof PERMISSIONS_MATRIX>;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const sample = () => {
-  usePermissionMatrixNew({
-    majorFeatureKey: "MANAGE_PERMITS",
-    functionKey: "VIEW_ACTIVE_PERMITS",
+  usePermissionMatrix({
+    permissionMatrixFeatureKey: "MANAGE_PERMITS",
+    permissionMatrixFunctionKey: "VIEW_ACTIVE_PERMITS",
   });
 };
 
@@ -556,25 +575,21 @@ const sample = () => {
  * A hook to manage the permissions matrix for various features and user authentication groups.
  *
  * @param {Object} config - Configuration object for the permission matrix.
- * @param {string} [config.featureFlag] - Priority 1: Feature flag key to check if the feature is enabled. 
+ * @param {string} [config.featureFlag] - Priority 1: Feature flag key to check if the feature is enabled.
  * @param {Function} [config.onlyConditionToCheck] - Priority 2: A custom condition function, if provided this is the only condition checked.
  * @param {string} [config.majorFeatureKey] - Priority 3: The major feature that's the primary key in {@link PERMISSIONS_MATRIX}.
  * @param {string} [config.functionKey] - Priority 3: The function that's the nested key in {@link PERMISSIONS_MATRIX}.
  * @param {Function} [config.additionalConditionToCall] - Priority 4: Additional custom condition to call if the basic conditions are met.
- * 
+ *
  * @returns {boolean} - Returns whether the current user has the permission.
  */
-export const usePermissionMatrixNew = ({
+export const usePermissionMatrix = ({
   featureFlag,
   onlyConditionToCheck,
-  majorFeatureKey,
-  functionKey,
-  additionalConditionToCall,
-}: PermissionConfigType22 & PermissionMatrixKeysType): boolean => {
-  const { allowedBCeIDAuthGroups, allowedIDIRAuthGroups } = (
-    PERMISSIONS_MATRIX[majorFeatureKey] as { [key: string]: ConfigPartial }
-  )[functionKey];
-
+  permissionMatrixFeatureKey,
+  permissionMatrixFunctionKey,
+  additionalConditionToCheck,
+}: PermissionConfigType & PermissionMatrixKeysType): boolean => {
   const { userDetails, idirUserDetails } = useContext(OnRouteBCContext);
   const { data: featureFlags } = useFeatureFlagsQuery();
   const isIdir = Boolean(idirUserDetails?.userAuthGroup);
@@ -592,21 +607,28 @@ export const usePermissionMatrixNew = ({
   }
   let isAllowed = false;
   let currentUserAuthGroup;
-  if (isIdir) {
-    currentUserAuthGroup = idirUserDetails?.userAuthGroup;
-    isAllowed = Boolean(
-      currentUserAuthGroup &&
-        allowedIDIRAuthGroups?.includes(currentUserAuthGroup),
-    );
-  } else {
-    currentUserAuthGroup = userDetails?.userAuthGroup;
-    isAllowed = Boolean(
-      currentUserAuthGroup &&
-        allowedBCeIDAuthGroups?.includes(currentUserAuthGroup),
-    );
+  if (permissionMatrixFeatureKey && permissionMatrixFunctionKey) {
+    const { allowedBCeIDAuthGroups, allowedIDIRAuthGroups } = (
+      PERMISSIONS_MATRIX[permissionMatrixFeatureKey] as {
+        [key: string]: ConfigPartial;
+      }
+    )[permissionMatrixFunctionKey];
+    if (isIdir) {
+      currentUserAuthGroup = idirUserDetails?.userAuthGroup;
+      isAllowed = Boolean(
+        currentUserAuthGroup &&
+          allowedIDIRAuthGroups?.includes(currentUserAuthGroup),
+      );
+    } else {
+      currentUserAuthGroup = userDetails?.userAuthGroup;
+      isAllowed = Boolean(
+        currentUserAuthGroup &&
+          allowedBCeIDAuthGroups?.includes(currentUserAuthGroup),
+      );
+    }
   }
-  if (isAllowed && additionalConditionToCall) {
-    isAllowed = isAllowed && additionalConditionToCall();
+  if (isAllowed && additionalConditionToCheck) {
+    isAllowed = isAllowed && additionalConditionToCheck();
   }
   return isAllowed;
 };

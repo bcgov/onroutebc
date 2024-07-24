@@ -27,7 +27,6 @@ import { StatusChip } from "../components/creditAccount/StatusChip";
 import { Loading } from "../../../common/pages/Loading";
 import "./CreditAccount.scss";
 import { RenderIf } from "../../../common/components/reusable/RenderIf";
-import { MANAGE_SETTINGS } from "../../../common/authentication/PermissionMatrix";
 
 export const CreditAccount = ({ companyId }: { companyId: number }) => {
   const [invalid, setInvalid] = useState<boolean>(false);
@@ -102,13 +101,15 @@ export const CreditAccount = ({ companyId }: { companyId: number }) => {
             </Box>
             <RenderIf
               component={<ActivityTable />}
-              {...MANAGE_SETTINGS.VIEW_CREDIT_ACCOUNT_DETAILS}
-              additionalConditionToCall={() => isAccountHolder}
+              permissionMatrixFeatureKey="MANAGE_SETTINGS"
+              permissionMatrixFunctionKey="VIEW_CREDIT_ACCOUNT_DETAILS"
+              additionalConditionToCheck={() => isAccountHolder}
             />
             <RenderIf
               component={<AddUser />}
-              {...MANAGE_SETTINGS.UPDATE_CREDIT_ACCOUNT_DETAILS}
-              additionalConditionToCall={() =>
+              permissionMatrixFeatureKey="MANAGE_SETTINGS"
+              permissionMatrixFunctionKey="UPDATE_CREDIT_ACCOUNT_DETAILS"
+              additionalConditionToCheck={() =>
                 isAccountHolder &&
                 creditAccount?.creditAccountStatusType !==
                   CREDIT_ACCOUNT_STATUS_TYPE.CLOSED
@@ -116,12 +117,14 @@ export const CreditAccount = ({ companyId }: { companyId: number }) => {
             />
             <RenderIf
               component={<UserTable />}
-              {...MANAGE_SETTINGS.VIEW_CREDIT_ACCOUNT_DETAILS}
+              permissionMatrixFeatureKey="MANAGE_SETTINGS"
+              permissionMatrixFunctionKey="VIEW_CREDIT_ACCOUNT_DETAILS"
             />
           </Box>
           <RenderIf
             component={<AccountDetails />}
-            {...MANAGE_SETTINGS.VIEW_CREDIT_ACCOUNT_DETAILS}
+            permissionMatrixFeatureKey="MANAGE_SETTINGS"
+            permissionMatrixFunctionKey="VIEW_CREDIT_ACCOUNT_DETAILS"
           />
         </Box>
       ) : (

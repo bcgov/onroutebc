@@ -193,8 +193,9 @@ export const AccountDetails = () => {
                 </Menu>
               </Box>
             }
-            {...MANAGE_SETTINGS.UPDATE_CREDIT_ACCOUNT_DETAILS}
-            additionalConditionToCall={() => isAccountHolder}
+            permissionMatrixFeatureKey="MANAGE_SETTINGS"
+            permissionMatrixFunctionKey="UPDATE_CREDIT_ACCOUNT_DETAILS"
+            additionalConditionToCheck={() => isAccountHolder}
           />
         </Box>
         {/* TODO remove mock values once API is complete */}
