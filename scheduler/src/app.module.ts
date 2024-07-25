@@ -12,6 +12,7 @@ import { getTypeormLogLevel } from './common/helper/logger.helper';
 import { CacheModule } from '@nestjs/cache-manager';
 import { CgiSftpModule } from './modules/cgi-sftp/cgi-sftp.module';
 import { PermitModule } from './modules/permit/permit.module';
+import { TransactionModule } from './modules/transactions/transaction.module';
 
 const envPath = path.resolve(process.cwd() + '/../');
 @Module({
@@ -43,6 +44,7 @@ const envPath = path.resolve(process.cwd() + '/../');
     FeatureFlagsModule,
     CgiSftpModule,
     PermitModule,
+    TransactionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
