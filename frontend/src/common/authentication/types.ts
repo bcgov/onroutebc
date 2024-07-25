@@ -125,27 +125,6 @@ export type UserRolesType = (typeof ROLES)[keyof typeof ROLES];
 /**
  * The user auth group enum key-value pairs.
  */
-export const USER_AUTH_GROUP = {
-  ANONYMOUS: "ANONYMOUS",
-  PERMIT_APPLICANT: "PAPPLICANT",
-  COMPANY_ADMINISTRATOR: "ORGADMIN",
-  PPC_CLERK: "PPCCLERK",
-  SYSTEM_ADMINISTRATOR: "SYSADMIN",
-  ENFORCEMENT_OFFICER: "EOFFICER",
-  HQ_ADMINISTRATOR: "HQADMIN",
-  FINANCE: "FINANCE",
-  CTPO: "CTPO",
-} as const;
-
-/**
- * The enum type for user auth group.
- */
-export type UserAuthGroupType =
-  (typeof USER_AUTH_GROUP)[keyof typeof USER_AUTH_GROUP];
-
-/**
- * The user auth group enum key-value pairs.
- */
 export const BCeID_USER_AUTH_GROUP = {
   PERMIT_APPLICANT: "PAPPLICANT",
   COMPANY_ADMINISTRATOR: "ORGADMIN",
@@ -174,6 +153,21 @@ export const IDIR_USER_AUTH_GROUP = {
  */
 export type IDIRUserAuthGroupType =
   (typeof IDIR_USER_AUTH_GROUP)[keyof typeof IDIR_USER_AUTH_GROUP];
+
+/**
+ * The user auth group enum key-value pairs.
+ */
+export const USER_AUTH_GROUP = {
+  ...IDIR_USER_AUTH_GROUP,
+  ...BCeID_USER_AUTH_GROUP,
+  ANONYMOUS: "ANONYMOUS",
+} as const;
+
+/**
+ * The enum type for user auth group.
+ */
+export type UserAuthGroupType =
+  (typeof USER_AUTH_GROUP)[keyof typeof USER_AUTH_GROUP];
 
 /**
  * IDIR User Context object type

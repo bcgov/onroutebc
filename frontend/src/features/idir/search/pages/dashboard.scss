@@ -1,11 +1,14 @@
+@use "../../../../common/components/dashboard/Dashboard";
 @use "../../../../themes/orbcStyles";
+
+@include Dashboard.page-tabpanel-container-style(".idir-reports-dashboard");
 
 [class*="MuiList-root-MuiMultiSectionDigitalClockSection-root"] {
   width: 76px;
 }
 
 .report-paper {
-  border: 1px solid orbcStyles.$bc_black;
+  border: 1px solid orbcStyles.$bc-black;
   cursor: pointer;
   padding-left: 24px;
   padding-top: 24px;

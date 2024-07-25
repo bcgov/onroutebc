@@ -6,7 +6,6 @@ import {
   forSelf,
   fromValue,
   mapFrom,
-  mapWith,
   mapWithArguments,
 } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
@@ -17,12 +16,10 @@ import { Company } from '../../company-user-management/company/entities/company.
 import { CreditAccountUserType } from '../../../common/enum/credit-accounts.enum';
 import { CreditAccount } from '../entities/credit-account.entity';
 import { ReadCreditAccountDto } from '../dto/response/read-credit-account.dto';
-import { CreditAccountLimitType } from '../../../common/enum/credit-account-limit.enum';
 import { CreditAccountActivity } from '../entities/credit-account-activity.entity';
 import { ReadCreditAccountActivityDto } from '../dto/response/read-credit-account-activity.dto';
-import { ReadCreditAccountMetadataDto } from '../dto/response/read-credit-account-metadata.dto';
-import { IDIRUserAuthGroup } from '../../../common/enum/user-auth-group.enum';
-import { undefinedSubstitution } from '../../../common/helper/common.helper';
+import { ReadCreditAccountUserDetailsDto } from '../dto/response/read-credit-account-user-details.dto';
+import { ReadCreditAccountLimitDto } from '../dto/response/read-credit-account-limit.dto';
 
 @Injectable()
 export class CreditAccountProfile extends AutomapperProfile {
@@ -97,89 +94,14 @@ export class CreditAccountProfile extends AutomapperProfile {
         ),
       );
 
-      createMap(
-        mapper,
-        CreditAccount,
-        ReadCreditAccountDto,
-        forMember(
-          (d) => d.creditAccountActivities,
-          mapWith(
-            ReadCreditAccountActivityDto,
-            CreditAccountActivity,
-            (s) => s.creditAccountActivities,
-          ),
-        ),
-        forMember(
-          (d) => d.creditAccountUsers,
-          mapWith(
-            ReadCreditAccountUserDto,
-            CreditAccountUser,
-            (s) => s.creditAccountUsers,
-          ),
-        ),
-        forMember(
-          (d) => d.availableCredit,
-          mapWithArguments(
-            (
-              _s,
-              {
-                userAuthGroup,
-                availableCredit,
-              }: { userAuthGroup: IDIRUserAuthGroup; availableCredit: number },
-            ) =>
-              undefinedSubstitution(
-                availableCredit,
-                () =>
-                  userAuthGroup !== IDIRUserAuthGroup.PPC_CLERK &&
-                  userAuthGroup !== IDIRUserAuthGroup.PPC_SUPERVISOR,
-              ),
-          ),
-        ),
-        forMember(
-          (d) => d.creditLimit,
-          mapWithArguments(
-            (
-              _s,
-              {
-                userAuthGroup,
-                creditLimit,
-              }: {
-                userAuthGroup: IDIRUserAuthGroup;
-                creditLimit: CreditAccountLimitType;
-              },
-            ) =>
-              undefinedSubstitution(
-                creditLimit,
-                () =>
-                  userAuthGroup !== IDIRUserAuthGroup.PPC_CLERK &&
-                  userAuthGroup !== IDIRUserAuthGroup.PPC_SUPERVISOR,
-              ),
-          ),
-        ),
-        forMember(
-          (d) => d.creditBalance,
-          mapWithArguments(
-            (
-              _s,
-              {
-                userAuthGroup,
-                creditBalance,
-              }: { userAuthGroup: IDIRUserAuthGroup; creditBalance: number },
-            ) =>
-              undefinedSubstitution(
-                creditBalance,
-                () =>
-                  userAuthGroup !== IDIRUserAuthGroup.PPC_CLERK &&
-                  userAuthGroup !== IDIRUserAuthGroup.PPC_SUPERVISOR,
-              ),
-          ),
-        ),
-      );
+      createMap(mapper, CreditAccount, ReadCreditAccountDto);
+
+      createMap(mapper, CreditAccount, ReadCreditAccountLimitDto);
 
       createMap(
         mapper,
         CreditAccount,
-        ReadCreditAccountMetadataDto,
+        ReadCreditAccountUserDetailsDto,
         forSelf(Company, (source) => source?.company),
       );
 

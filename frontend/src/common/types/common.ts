@@ -13,6 +13,7 @@ import {
   PowerUnit,
   Trailer,
 } from "../../features/manageVehicles/types/Vehicle";
+import { LOAFormData } from "../../features/settings/types/LOAFormData";
 
 export interface ApiErrorResponse {
   status: number;
@@ -32,7 +33,8 @@ export type ORBC_FormTypes =
   | BCeIDAddUserRequest
   | SearchFields
   | VerifyClientRequest
-  | PermitContactDetails;
+  | PermitContactDetails
+  | LOAFormData;
 
 /**
  * The options for pagination.
