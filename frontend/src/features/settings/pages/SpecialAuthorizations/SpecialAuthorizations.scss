@@ -1,0 +1,41 @@
+@import "../../../../themes/orbcStyles";
+
+.special-authorizations {
+  color: $bc-black;
+
+  &__loa {
+    max-width: 59rem;
+    padding: 2.5rem 0;
+
+    .add-loa-btn {
+      display: flex;
+      align-items: center;
+
+      &__icon {
+        margin-right: 0.5rem;
+      }
+    }
+  }
+
+  &__section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+
+  &__header-title {
+    font-weight: bold;
+    font-size: 1.25rem;
+  }
+}
+
+.active-loas {
+  margin-top: 1.5rem;
+
+  & &__header {
+    font-size: 1.25rem;
+    font-weight: bold;
+    padding: 1rem 0;
+  }
+}

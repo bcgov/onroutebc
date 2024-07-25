@@ -9,7 +9,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router";
 import { LoadBCeIDUserRolesByCompany } from "../../../../common/authentication/LoadBCeIDUserRolesByCompany";
 import { Banner } from "../../../../common/components/dashboard/components/banner/Banner";
-import "../../../../common/components/dashboard/Dashboard.scss";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { Nullable } from "../../../../common/types/common";
 import { ERROR_ROUTES } from "../../../../routes/constants";
@@ -223,7 +222,7 @@ export const ChallengeProfileSteps = React.memo(() => {
       </Box>
 
       <div
-        className="tabpanel-container create-profile-steps"
+        className="challenge-profile-steps create-profile-steps"
         id={`profile-steps`}
         aria-labelledby={`profile-steps`}
         style={{ paddingBottom: "10em" }}

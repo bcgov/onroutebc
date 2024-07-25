@@ -203,10 +203,10 @@ export const List = memo(
       <div className="table-container">
         <MaterialReactTable table={table} />
         <DeleteConfirmationDialog
-          onClickDelete={onConfirmApplicationDelete}
-          isOpen={isDeleteDialogOpen}
-          onClickCancel={onCancelApplicationDelete}
-          caption="application"
+          onDelete={onConfirmApplicationDelete}
+          showDialog={isDeleteDialogOpen}
+          onCancel={onCancelApplicationDelete}
+          itemToDelete="application"
         />
       </div>
     );
