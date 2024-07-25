@@ -97,13 +97,9 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
     formState: { errors },
   } = useFormContext();
 
-  /**
-   * Function to check the rules object for either required or required: { value: true}
-   * @returns true/false depending on field rule object
-   */
-  const isRequired = () => {
-    if (rules.required === true) return true;
-    if ((rules.required as any).value === true) return true;
+  const showOptionalLabel = () => {
+    if (rules.required === false) return true;
+    if ((rules.required as any)?.value === false) return true;
     return false;
   };
 
@@ -188,7 +184,7 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
               sx={{ fontWeight: "bold", marginBottom: "8px" }}
             >
               {label}
-              {!isRequired() && (
+              {showOptionalLabel() && (
                 <span style={{ fontWeight: "normal" }}> (optional)</span>
               )}
               {customHelperText && (
