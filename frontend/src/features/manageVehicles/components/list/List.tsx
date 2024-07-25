@@ -338,10 +338,10 @@ export const List = memo(
       <div className="vehicles-list table-container">
         <MaterialReactTable table={table} />
         <DeleteConfirmationDialog
-          onClickDelete={onConfirmDelete}
-          isOpen={isDeleteDialogOpen}
-          onClickCancel={onCancelDelete}
-          caption="item"
+          onDelete={onConfirmDelete}
+          showDialog={isDeleteDialogOpen}
+          onCancel={onCancelDelete}
+          itemToDelete="item"
         />
       </div>
     );

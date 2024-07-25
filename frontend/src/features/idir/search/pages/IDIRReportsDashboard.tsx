@@ -1,3 +1,4 @@
+import { memo, useState } from "react";
 import {
   Box,
   Divider,
@@ -6,12 +7,12 @@ import {
   Radio,
   Stack,
 } from "@mui/material";
-import { memo, useState } from "react";
+
+import "./dashboard.scss";
 import { Banner } from "../../../../common/components/dashboard/components/banner/Banner";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { PaymentAndRefundDetail } from "../../reporting/forms/PaymentAndRefundDetail";
 import { PaymentAndRefundSummary } from "../../reporting/forms/PaymentAndRefundSummary";
-import "./dashboard.scss";
 
 /**
  * The types of reports.
@@ -75,7 +76,7 @@ export const IDIRReportsDashboard = memo(() => {
         <Banner bannerText="Reports" />
       </Box>
       <div
-        className="tabpanel-container"
+        className="idir-reports-dashboard"
         role="tabpanel"
         id={`idir-reports-dashboard`}
         aria-labelledby={`idir-reports-dashboard`}

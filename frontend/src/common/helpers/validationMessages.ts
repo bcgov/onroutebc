@@ -29,6 +29,10 @@ export const invalidMaxStartDate = (max: number) => {
   return replacePlaceholders(messageTemplate, placeholders, max);
 };
 
+export const expiryMustBeAfterStart = () => {
+  return validationMessages.date.expiry.beforeStart.defaultMessage;
+};
+
 export const invalidEmail = () => validationMessages.email.defaultMessage;
 
 export const invalidPhoneLength = (min: number, max: number) => {
@@ -82,6 +86,19 @@ export const invalidPlateLength = (max: number) => {
 export const invalidDBALength = (min: number, max: number) => {
   const { messageTemplate, placeholders } = validationMessages.dba.length;
   return replacePlaceholders(messageTemplate, placeholders, min, max);
+};
+
+export const uploadSizeExceeded = () => {
+  return validationMessages.upload.fileSize.exceeded;
+};
+
+export const invalidUploadFormat = () => {
+  return validationMessages.upload.fileFormat.defaultMessage;
+};
+
+export const requiredUpload = (uploadItem: string) => {
+  const { messageTemplate, placeholders } = validationMessages.upload.required;
+  return replacePlaceholders(messageTemplate, placeholders, uploadItem);
 };
 
 /**

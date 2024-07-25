@@ -1,4 +1,4 @@
-import { Nullable } from "../../../../../types/common";
+import { Nullable } from "../../../types/common";
 
 export interface TabComponentProps {
   label: string;

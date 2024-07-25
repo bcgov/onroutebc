@@ -1,88 +1,78 @@
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import Typography from "@mui/material/Typography";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import {
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Typography,
+} from "@mui/material";
 
 import "./DeleteConfirmationDialog.scss";
+import { Nullable } from "../../types/common";
 
 /**
- *  A stateless confirmation dialog box for Delete Operations.
+ * Confirmation dialog box for delete operations.
  */
 export const DeleteConfirmationDialog = ({
-  isOpen,
-  onClickDelete,
-  onClickCancel,
-  caption,
+  showDialog,
+  onDelete,
+  onCancel,
+  itemToDelete,
+  confirmationMsg = "Are you sure you want to delete this? This action cannot be undone.",
 }: {
-  /**
-   * Boolean to control the open and close state of Dialog box.
-   */
-  isOpen: boolean;
-  /**
-   * A callback function on clicking delete button.
-   * @returns void
-   */
-  onClickDelete: () => void;
-
-  /**
-   * A callback function on clicking cancel button.
-   * @returns void
-   */
-  onClickCancel: () => void;
-  /**
-   * A caption string showing on title of the Dialog box.
-   * @returns string
-   */
-  caption: string;
+  showDialog: boolean;
+  onDelete: () => void;
+  onCancel: () => void;
+  itemToDelete: string;
+  confirmationMsg?: Nullable<string>;
 }) => {
-  const title = caption;
-
   return (
-    <div>
-      <Dialog
-        className="delete-confirmation-dialog"
-        onClose={onClickCancel}
-        aria-labelledby="confirmation-dialog-title"
-        open={isOpen}
-      >
-        <DialogTitle className="delete-confirmation-dialog__title">
-          <span className="delete-confirmation-dialog__icon">
-            <FontAwesomeIcon icon={faTrashCan} />
-          </span>{" "}
-          &nbsp;
-          <strong>Delete {title}(s)? </strong>
-        </DialogTitle>
+    <Dialog
+      className="delete-confirmation-dialog"
+      onClose={onCancel}
+      aria-labelledby="confirmation-dialog-title"
+      open={showDialog}
+      classes={{
+        paper: "delete-confirmation-dialog__container",
+      }}
+    >
+      <DialogTitle className="delete-confirmation-dialog__header">
+        <span className="delete-confirmation-dialog__icon">
+          <FontAwesomeIcon icon={faTrashCan} />
+        </span>
 
-        <DialogContent className="delete-confirmation-dialog__content" dividers>
-          <Typography className="delete-confirmation-dialog__msg" gutterBottom>
-            Are you sure you want to delete this? This action cannot be undone.
-          </Typography>
-        </DialogContent>
+        <span className="delete-confirmation-dialog__title">
+          Delete {itemToDelete}(s)?
+        </span>
+      </DialogTitle>
 
-        <DialogActions className="delete-confirmation-dialog__actions">
-          <Button
-            className="delete-confirmation-btn delete-confirmation-btn--cancel"
-            variant="contained"
-            color="secondary"
-            onClick={onClickCancel}
-          >
-            Cancel
-          </Button>
+      <DialogContent className="delete-confirmation-dialog__content" dividers>
+        <Typography className="delete-confirmation-dialog__msg" gutterBottom>
+          {confirmationMsg}
+        </Typography>
+      </DialogContent>
 
-          <Button
-            className="delete-confirmation-btn delete-confirmation-btn--delete"
-            variant="contained"
-            color="error"
-            onClick={onClickDelete}
-          >
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
+      <DialogActions className="delete-confirmation-dialog__actions">
+        <Button
+          className="delete-confirmation-dialog__btn delete-confirmation-dialog__btn--cancel"
+          variant="contained"
+          color="secondary"
+          onClick={onCancel}
+        >
+          Cancel
+        </Button>
+
+        <Button
+          className="delete-confirmation-dialog__btn delete-confirmation-dialog__btn--delete"
+          variant="contained"
+          color="error"
+          onClick={onDelete}
+        >
+          Delete
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
