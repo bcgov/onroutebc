@@ -68,7 +68,7 @@ export class CreditAccountController {
   })
   @ApiCreatedResponse({
     description: 'The created credit account.',
-    type: ReadCreditAccountUserDto,
+    type: ReadCreditAccountDto,
   })
   @ApiBadRequestResponse({
     description: 'The response containing a message of why a request failed.',
