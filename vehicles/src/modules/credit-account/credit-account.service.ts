@@ -53,6 +53,8 @@ import {
 import { ReadCreditAccountActivityDto } from './dto/response/read-credit-account-activity.dto';
 import { ReadCreditAccountMetadataDto } from './dto/response/read-credit-account-metadata.dto';
 import { ReadCreditAccountUserDetailsDto } from './dto/response/read-credit-account-user-details.dto';
+import { ReadCreditAccountLimitDto } from './dto/response/read-credit-account-limit.dto';
+import { doesUserHaveAuthGroup } from '../../common/helper/auth.helper';
 
 /**
  * Service functions for credit account operations.
@@ -227,26 +229,12 @@ export class CreditAccountService {
       }
     }
 
-    const creditAccountHolder = await this.classMapper.mapAsync(
-      companyInfo,
-      Company,
-      ReadCreditAccountUserDto,
-    );
-
     const createdCreditAccountDto = await this.classMapper.mapAsync(
       savedCreditAccount,
       CreditAccount,
       ReadCreditAccountDto,
-      {
-        extraArgs: () => ({
-          userAuthGroup: currentUser.orbcUserAuthGroup,
-          creditBalance: 0,
-          availableCredit: creditLimit,
-          creditLimit,
-        }),
-      },
     );
-    createdCreditAccountDto.creditAccountUsers = [creditAccountHolder];
+
     return createdCreditAccountDto;
   }
 
@@ -281,20 +269,20 @@ export class CreditAccountService {
 
     if (!creditAccount) {
       throw new DataNotFoundException();
+    } else if (
+      doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, [
+        ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+      ]) &&
+      creditAccount?.company.companyId !== companyId
+    ) {
+      // Throw exception if companyId is a Credit Account User and user is Company Admin.
+      throw new ForbiddenException();
     }
 
     const readCreditAccountDto = await this.classMapper.mapAsync(
       creditAccount,
       CreditAccount,
       ReadCreditAccountDto,
-      {
-        extraArgs: () => ({
-          userAuthGroup: currentUser.orbcUserAuthGroup,
-          creditBalance: 0,
-          availableCredit: 0,
-          creditLimit: 0,
-        }),
-      },
     );
 
     return readCreditAccountDto;
@@ -988,6 +976,14 @@ export class CreditAccountService {
 
     if (!creditAccount) {
       throw new DataNotFoundException();
+    } else if (
+      doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, [
+        ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+      ]) &&
+      creditAccount?.company.companyId !== companyId
+    ) {
+      // Throw exception if companyId is a Credit Account User and user is Company Admin.
+      throw new ForbiddenException();
     }
 
     creditAccount.creditAccountUsers =
@@ -1018,6 +1014,52 @@ export class CreditAccountService {
     }
 
     return readCreditAccountUserDtoList;
+  }
+
+  /**
+   * Retrieves credit account limit information based on account holder and credit account ID.
+   *
+   * @param companyId - The ID of the company.
+   * @param creditAccountId - The ID of the credit account.
+   * @param currentUser - The current authenticated user.
+   * @returns {Promise<ReadCreditAccountLimitDto>} - The details of the credit account limit.
+   * @throws {DataNotFoundException} - If the credit account is not found.
+   * @throws {ForbiddenException} - If the user is a Company Admin but the company is a Credit Account User.
+   */
+  @LogAsyncMethodExecution()
+  public async getCreditAccountLimit({
+    companyId,
+    creditAccountId,
+    currentUser,
+  }: {
+    companyId: number;
+    creditAccountId: number;
+    currentUser: IUserJWT;
+  }): Promise<ReadCreditAccountLimitDto> {
+    const creditAccount = await this.findCreditAccountDetails(
+      companyId,
+      currentUser,
+      creditAccountId,
+    );
+
+    if (!creditAccount) {
+      throw new DataNotFoundException();
+    } else if (
+      doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, [
+        ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+      ]) &&
+      creditAccount?.company.companyId !== companyId
+    ) {
+      // Throw exception if companyId is a Credit Account User and user is Company Admin.
+      throw new ForbiddenException();
+    }
+
+    // TODO Limit calculation is currently blocked and needs to be implemented
+    return await this.classMapper.mapAsync(
+      creditAccount,
+      CreditAccount,
+      ReadCreditAccountLimitDto,
+    );
   }
 
   /**

@@ -31,6 +31,7 @@ import {
   IDIRUserAuthGroup,
 } from '../../common/enum/user-auth-group.enum';
 import { ReadCreditAccountMetadataDto } from './dto/response/read-credit-account-metadata.dto';
+import { ReadCreditAccountLimitDto } from './dto/response/read-credit-account-limit.dto';
 
 @ApiBearerAuth()
 @ApiTags('Credit Accounts')
@@ -161,6 +162,46 @@ export class CreditAccountController {
   }
 
   /**
+   * Retrieves a credit account (if available) limits.
+   *
+   * @param {Object} params - The path parameters.
+   * @param {string} params.companyId - The companyId path parameter.
+   * @param {string} params.creditAccountId - The creditAccountId path parameter.
+   * @returns {Promise<ReadCreditAccountLimitDto>} The retrieved credit account limits.
+   */
+  @ApiOperation({
+    summary: 'Retrieves a credit account (if available) limits.',
+    description:
+      'Retrieves a credit account (if available) limits, enforcing authentication.',
+  })
+  @ApiOkResponse({
+    description: 'The retrieved credit account limits.',
+    type: ReadCreditAccountLimitDto,
+  })
+  @Get(':creditAccountId/limits')
+  @Roles({
+    userAuthGroup: [
+      IDIRUserAuthGroup.FINANCE,
+      IDIRUserAuthGroup.HQ_ADMINISTRATOR,
+      IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
+      ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+    ],
+    oneOf: [Role.READ_CREDIT_ACCOUNT],
+  })
+  async getCreditAccountLimit(
+    @Req() request: Request,
+    @Param() { companyId, creditAccountId }: CreditAccountIdPathParamDto,
+  ): Promise<ReadCreditAccountLimitDto> {
+    const readCreditAccountLimitDto =
+      await this.creditAccountService.getCreditAccountLimit({
+        companyId,
+        creditAccountId,
+        currentUser: request.user as IUserJWT,
+      });
+    return readCreditAccountLimitDto;
+  }
+
+  /**
    * Retrieves a credit account History.
    *
    * @param {Object} params - The path parameters.
@@ -211,7 +252,7 @@ export class CreditAccountController {
   })
   @ApiOkResponse({
     description: 'The updated credit account status details.',
-    type: ReadCreditAccountUserDto,
+    type: ReadCreditAccountDto,
   })
   @Put(':creditAccountId/status')
   @Roles(Role.WRITE_CREDIT_ACCOUNT)
