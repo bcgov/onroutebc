@@ -32,6 +32,10 @@ import { CreditAccountIdPathParamDto } from './dto/request/pathParam/creditAccou
 import { GetCreditAccountUserQueryParamsDto } from './dto/request/queryParam/getCreditAccountUser.query-params.dto';
 import { ReadCreditAccountUserDto } from './dto/response/read-credit-account-user.dto';
 import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-flag-enabled.decorator';
+import {
+  ClientUserAuthGroup,
+  IDIR_USER_AUTH_GROUP_LIST,
+} from '../../common/enum/user-auth-group.enum';
 
 @ApiBearerAuth()
 @ApiTags('Credit Account Users')
@@ -141,7 +145,13 @@ export class CreditAccountUserController {
     type: [ReadCreditAccountUserDto],
   })
   @Get()
-  @Roles(Role.READ_CREDIT_ACCOUNT)
+  @Roles({
+    userAuthGroup: [
+      ...IDIR_USER_AUTH_GROUP_LIST,
+      ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+    ],
+    oneOf: [Role.READ_CREDIT_ACCOUNT],
+  })
   async getCreditAccountUsers(
     @Req() request: Request,
     @Param() { companyId, creditAccountId }: CreditAccountIdPathParamDto,

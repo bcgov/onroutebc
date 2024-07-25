@@ -6,7 +6,6 @@ import {
   forSelf,
   fromValue,
   mapFrom,
-  mapWith,
   mapWithArguments,
 } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
@@ -20,7 +19,7 @@ import { ReadCreditAccountDto } from '../dto/response/read-credit-account.dto';
 import { CreditAccountLimitType } from '../../../common/enum/credit-account-limit.enum';
 import { CreditAccountActivity } from '../entities/credit-account-activity.entity';
 import { ReadCreditAccountActivityDto } from '../dto/response/read-credit-account-activity.dto';
-import { ReadCreditAccountMetadataDto } from '../dto/response/read-credit-account-metadata.dto';
+import { ReadCreditAccountUserDetailsDto } from '../dto/response/read-credit-account-user-details.dto';
 import { IDIRUserAuthGroup } from '../../../common/enum/user-auth-group.enum';
 import { undefinedSubstitution } from '../../../common/helper/common.helper';
 
@@ -102,22 +101,6 @@ export class CreditAccountProfile extends AutomapperProfile {
         CreditAccount,
         ReadCreditAccountDto,
         forMember(
-          (d) => d.creditAccountActivities,
-          mapWith(
-            ReadCreditAccountActivityDto,
-            CreditAccountActivity,
-            (s) => s.creditAccountActivities,
-          ),
-        ),
-        forMember(
-          (d) => d.creditAccountUsers,
-          mapWith(
-            ReadCreditAccountUserDto,
-            CreditAccountUser,
-            (s) => s.creditAccountUsers,
-          ),
-        ),
-        forMember(
           (d) => d.availableCredit,
           mapWithArguments(
             (
@@ -179,7 +162,7 @@ export class CreditAccountProfile extends AutomapperProfile {
       createMap(
         mapper,
         CreditAccount,
-        ReadCreditAccountMetadataDto,
+        ReadCreditAccountUserDetailsDto,
         forSelf(Company, (source) => source?.company),
       );
 

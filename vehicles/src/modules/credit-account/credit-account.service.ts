@@ -1,6 +1,7 @@
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import {
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -42,7 +43,7 @@ import { CreditAccountActivity } from './entities/credit-account-activity.entity
 import { CreditAccountActivityType } from '../../common/enum/credit-account-activity-type.enum';
 import { User } from '../company-user-management/users/entities/user.entity';
 import { DataNotFoundException } from '../../common/exception/data-not-found.exception';
-import { ReadCreditAccountMetadataDto } from './dto/response/read-credit-account-metadata.dto';
+
 import { throwUnprocessableEntityException } from '../../common/helper/exception.helper';
 import {
   ClientUserAuthGroup,
@@ -50,6 +51,8 @@ import {
   UserAuthGroup,
 } from '../../common/enum/user-auth-group.enum';
 import { ReadCreditAccountActivityDto } from './dto/response/read-credit-account-activity.dto';
+import { ReadCreditAccountMetadataDto } from './dto/response/read-credit-account-metadata.dto';
+import { ReadCreditAccountUserDetailsDto } from './dto/response/read-credit-account-user-details.dto';
 
 /**
  * Service functions for credit account operations.
@@ -247,20 +250,38 @@ export class CreditAccountService {
     return createdCreditAccountDto;
   }
 
+  /**
+   * Retrieves detailed information about a credit account for a given company and user.
+   *
+   * This method fetches the credit account details based on company ID and optionally credit account ID.
+   * If the credit account does not exist, it throws a DataNotFoundException. It then maps the credit account
+   * details to a ReadCreditAccountDto with additional parameters derived from the user context.
+   *
+   * @param {number} companyId - The ID of the company.
+   * @param {Nullable<number>} creditAccountId - The optional ID of the credit account.
+   * @param {IUserJWT} currentUser - The current authenticated user.
+   * @returns {Promise<ReadCreditAccountDto>} - The data transfer object containing credit account details.
+   * @throws {DataNotFoundException} - If the specified credit account is not found.
+   */
   @LogAsyncMethodExecution()
-  async getCreditAccount(currentUser: IUserJWT, companyId: number) {
+  async getCreditAccount({
+    companyId,
+    creditAccountId,
+    currentUser,
+  }: {
+    companyId: number;
+    creditAccountId?: Nullable<number>;
+    currentUser: IUserJWT;
+  }): Promise<ReadCreditAccountDto> {
     const creditAccount = await this.findCreditAccountDetails(
       companyId,
       currentUser,
+      creditAccountId,
     );
 
     if (!creditAccount) {
       throw new DataNotFoundException();
     }
-    creditAccount.creditAccountUsers =
-      creditAccount?.creditAccountUsers?.filter(
-        (creditAccountUser) => creditAccountUser.isActive,
-      );
 
     const readCreditAccountDto = await this.classMapper.mapAsync(
       creditAccount,
@@ -276,20 +297,59 @@ export class CreditAccountService {
       },
     );
 
-    const mappedCreditAccountHolderInfo = await this.classMapper.mapAsync(
-      creditAccount?.company,
-      Company,
-      ReadCreditAccountUserDto,
+    return readCreditAccountDto;
+  }
+
+  /**
+   * Retrieves detailed information about a credit account for a given company and user.
+   *
+   * This method fetches the credit account details based on company ID and optionally credit account ID.
+   * If the credit account does not exist, it throws a DataNotFoundException. It then maps the credit account
+   * details to a ReadCreditAccountDto with additional parameters derived from the user context.
+   *
+   * @param {number} companyId - The ID of the company.
+   * @param {Nullable<number>} creditAccountId - The optional ID of the credit account.
+   * @param {IUserJWT} currentUser - The current authenticated user.
+   * @returns {Promise<ReadCreditAccountDto>} - The data transfer object containing credit account details.
+   * @throws {DataNotFoundException} - If the specified credit account is not found.
+   */
+  @LogAsyncMethodExecution()
+  async getCreditAccountMetadata({
+    companyId,
+    creditAccountId,
+    currentUser,
+  }: {
+    companyId: number;
+    creditAccountId?: Nullable<number>;
+    currentUser: IUserJWT;
+  }): Promise<ReadCreditAccountMetadataDto> {
+    const creditAccount = await this.findCreditAccountDetails(
+      companyId,
+      currentUser,
+      creditAccountId,
     );
 
-    if (readCreditAccountDto?.creditAccountUsers?.length) {
-      readCreditAccountDto?.creditAccountUsers?.unshift(
-        mappedCreditAccountHolderInfo,
-      );
-    } else {
-      readCreditAccountDto.creditAccountUsers = [mappedCreditAccountHolderInfo];
+    if (!creditAccount) {
+      throw new DataNotFoundException();
     }
-    return readCreditAccountDto;
+
+    creditAccount.creditAccountUsers =
+      creditAccount?.creditAccountUsers?.filter(
+        (creditAccountUser) => creditAccountUser.isActive,
+      );
+
+    const readCreditAccountMetadataDto = new ReadCreditAccountMetadataDto();
+    readCreditAccountMetadataDto.creditAccountId =
+      creditAccount.creditAccountId;
+
+    if (creditAccount?.company?.companyId === companyId)
+      readCreditAccountMetadataDto.userType =
+        CreditAccountUserType.ACCOUNT_HOLDER;
+    else {
+      readCreditAccountMetadataDto.userType =
+        CreditAccountUserType.ACCOUNT_USER;
+    }
+    return readCreditAccountMetadataDto;
   }
 
   /**
@@ -439,7 +499,10 @@ export class CreditAccountService {
     } finally {
       await queryRunner.release();
     }
-    return await this.getCreditAccount(currentUser, creditAccountHolderId);
+    return await this.getCreditAccount({
+      currentUser,
+      companyId: creditAccountHolderId,
+    });
   }
 
   /**
@@ -541,14 +604,14 @@ export class CreditAccountService {
 
     // Check if there is an active credit account or if there are any active credit account users
     if (existingActiveAccount) {
-      const existingAccountMetadata = await this.classMapper.mapAsync(
+      const existingAccountUserDetails = await this.classMapper.mapAsync(
         existingActiveAccount,
         CreditAccount,
-        ReadCreditAccountMetadataDto,
+        ReadCreditAccountUserDetailsDto,
       );
       throwUnprocessableEntityException(
         'Client already associated with an active Credit Account',
-        existingAccountMetadata,
+        existingAccountUserDetails,
       );
     }
 
@@ -927,6 +990,11 @@ export class CreditAccountService {
       throw new DataNotFoundException();
     }
 
+    creditAccount.creditAccountUsers =
+      creditAccount?.creditAccountUsers?.filter(
+        (creditAccountUser) => creditAccountUser.isActive,
+      );
+
     let readCreditAccountUserDtoList: ReadCreditAccountUserDto[] = [];
     if (creditAccount?.creditAccountUsers?.length) {
       readCreditAccountUserDtoList = await this.classMapper.mapArrayAsync(
@@ -978,7 +1046,12 @@ export class CreditAccountService {
 
     if (!creditAccount) {
       throw new DataNotFoundException();
+    } else if (creditAccount?.company.companyId !== companyId) {
+      // Throw exception if companyId is a Credit Account User.
+      // History is only available to Credit Account Holders
+      throw new ForbiddenException();
     }
+
     if (creditAccount?.creditAccountActivities?.length) {
       return await this.classMapper.mapArrayAsync(
         creditAccount?.creditAccountActivities,
@@ -1076,6 +1149,8 @@ export class CreditAccountService {
               company: true,
               creditAccountUsers: { company: true },
             };
+          case ClientUserAuthGroup.PERMIT_APPLICANT:
+            return { company: true };
         }
         break;
       // Check if the user is an ACCOUNT_USER
@@ -1087,11 +1162,13 @@ export class CreditAccountService {
               company: true,
               creditAccountUsers: { company: true },
             };
-          // Grant partial access to SYSTEM_ADMINISTRATOR, HQ_ADMINISTRATOR, PPC_CLERK, and PPC_SUPERVISOR groups
+          // Grant partial access to SYSTEM_ADMINISTRATOR, HQ_ADMINISTRATOR, PPC_CLERK, PPC_SUPERVISOR, COMPANY_ADMINISTRATOR, and PERMIT_APPLICANT groups
           case IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR:
           case IDIRUserAuthGroup.HQ_ADMINISTRATOR:
           case IDIRUserAuthGroup.PPC_CLERK:
           case IDIRUserAuthGroup.PPC_SUPERVISOR:
+          case ClientUserAuthGroup.COMPANY_ADMINISTRATOR:
+          case ClientUserAuthGroup.PERMIT_APPLICANT:
             return { company: true };
         }
         break;

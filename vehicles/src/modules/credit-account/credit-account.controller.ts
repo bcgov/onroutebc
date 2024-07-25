@@ -25,6 +25,12 @@ import { ReadCreditAccountDto } from './dto/response/read-credit-account.dto';
 import { CreditAccountIdPathParamDto } from './dto/request/pathParam/creditAccountUsers.path-params.dto';
 import { UpdateCreditAccountStatusDto } from './dto/request/update-credit-account-status.dto';
 import { ReadCreditAccountActivityDto } from './dto/response/read-credit-account-activity.dto';
+import {
+  ClientUserAuthGroup,
+  IDIR_USER_AUTH_GROUP_LIST,
+  IDIRUserAuthGroup,
+} from '../../common/enum/user-auth-group.enum';
+import { ReadCreditAccountMetadataDto } from './dto/response/read-credit-account-metadata.dto';
 
 @ApiBearerAuth()
 @ApiTags('Credit Accounts')
@@ -81,10 +87,44 @@ export class CreditAccountController {
   }
 
   /**
-   * Retrieves a credit account.
+   * Retrieves a credit account metadata.
    *
    * @param { companyId } - The companyId path parameter.
    * @returns The result of the creation operation.
+   */
+  @ApiOperation({
+    summary:
+      'Retrieves a credit account (if available) metadata associated with a company.',
+    description:
+      'Retrieves a credit account (if available) metadata associated with a company, enforcing authentication.',
+  })
+  @ApiOkResponse({
+    description: 'The retrieved credit account.',
+    type: ReadCreditAccountMetadataDto,
+  })
+  @Get('meta-data')
+  @Roles(Role.READ_CREDIT_ACCOUNT)
+  async getCreditAccountMetadata(
+    @Req() request: Request,
+    @Param() { companyId }: CompanyIdPathParamDto,
+  ): Promise<ReadCreditAccountMetadataDto> {
+    const readCreditAccounMetadataDto =
+      await this.creditAccountService.getCreditAccountMetadata({
+        companyId,
+        currentUser: request.user as IUserJWT,
+      });
+    if (!readCreditAccounMetadataDto) {
+      throw new DataNotFoundException();
+    }
+    return readCreditAccounMetadataDto;
+  }
+
+  /**
+   * Retrieves a credit account.
+   *
+   * @param { companyId } - The companyId path parameter.
+   * @param { creditAccountId } - The creditAccountId path parameter.
+   * @returns The result of the retrieval operation OR a relevant exception.
    */
   @ApiOperation({
     summary:
@@ -96,17 +136,24 @@ export class CreditAccountController {
     description: 'The retrieved credit account.',
     type: ReadCreditAccountDto,
   })
-  @Get()
-  @Roles(Role.READ_CREDIT_ACCOUNT)
+  @Get(':creditAccountId')
+  @Roles({
+    userAuthGroup: [
+      ...IDIR_USER_AUTH_GROUP_LIST,
+      ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+    ],
+    oneOf: [Role.READ_CREDIT_ACCOUNT],
+  })
   async getCreditAccount(
     @Req() request: Request,
-    @Param() { companyId }: CompanyIdPathParamDto,
+    @Param() { companyId, creditAccountId }: CreditAccountIdPathParamDto,
   ): Promise<ReadCreditAccountDto> {
     const readCreditAccountDto =
-      await this.creditAccountService.getCreditAccount(
-        request.user as IUserJWT,
+      await this.creditAccountService.getCreditAccount({
         companyId,
-      );
+        creditAccountId,
+        currentUser: request.user as IUserJWT,
+      });
     if (!readCreditAccountDto) {
       throw new DataNotFoundException();
     }
@@ -132,7 +179,10 @@ export class CreditAccountController {
     type: ReadCreditAccountActivityDto,
   })
   @Get(':creditAccountId/history')
-  @Roles(Role.READ_CREDIT_ACCOUNT)
+  @Roles({
+    userAuthGroup: [IDIRUserAuthGroup.FINANCE],
+    oneOf: [Role.READ_CREDIT_ACCOUNT],
+  })
   async getCreditAccountHistory(
     @Req() request: Request,
     @Param() { companyId, creditAccountId }: CreditAccountIdPathParamDto,
@@ -143,9 +193,6 @@ export class CreditAccountController {
         creditAccountId,
         currentUser: request.user as IUserJWT,
       });
-    if (!readCreditAccountActivityDto) {
-      throw new DataNotFoundException();
-    }
     return readCreditAccountActivityDto;
   }
 
