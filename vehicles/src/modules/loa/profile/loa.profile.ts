@@ -120,6 +120,7 @@ export class LoaProfile extends AutomapperProfile {
                 loaPermitType.updatedUser = userName;
                 loaPermitType.updatedUserDirectory = directory;
                 loaPermitType.updatedUserGuid = userGUID;
+                loaPermitTypes.push(loaPermitType);
               }
               return loaPermitTypes;
             },

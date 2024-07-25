@@ -1,7 +1,11 @@
 import { Box } from "@mui/material";
 import { memo } from "react";
 import { useSearchParams } from "react-router-dom";
+
+import "./IDIRSearchResultsDashboard.scss";
 import { Banner } from "../../../../common/components/dashboard/components/banner/Banner";
+import { IDIRCompanySearchResults } from "../components/IDIRCompanySearchResults";
+import { IDIRPermitSearchResults } from "../components/IDIRPermitSearchResults";
 import {
   SEARCH_BY_FILTERS,
   SEARCH_ENTITIES,
@@ -9,8 +13,6 @@ import {
   SearchEntity,
   SearchFields,
 } from "../types/types";
-import { IDIRCompanySearchResults } from "../components/IDIRCompanySearchResults";
-import { IDIRPermitSearchResults } from "../components/IDIRPermitSearchResults";
 
 /**
  * Returns a banner text based on the search criteria.
@@ -49,7 +51,7 @@ export const IDIRSearchResultsDashboard = memo(() => {
         <Banner bannerText={getBannerText(searchFields)} />
       </Box>
       <div
-        className="tabpanel-container"
+        className="idir-search-results-dashboard"
         role="tabpanel"
         id={`layout-tabpanel-search-results`}
         aria-labelledby={`layout-tab-search-results`}

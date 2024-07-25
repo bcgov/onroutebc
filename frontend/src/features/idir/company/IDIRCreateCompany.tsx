@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
+import "./IDIRCreateCompany.scss";
 import { Nullable } from "../../../common/types/common";
 import { InfoBcGovBanner } from "../../../common/components/banners/InfoBcGovBanner";
 import { Banner } from "../../../common/components/dashboard/components/banner/Banner";
@@ -136,7 +137,7 @@ export const IDIRCreateCompany = React.memo(() => {
         <Banner bannerText="Create Company" />
       </Box>
       <div
-        className="tabpanel-container create-profile-steps"
+        className="idir-create-company create-profile-steps"
         id={`profile-steps`}
         aria-labelledby={`profile-steps`}
       >
