@@ -6,20 +6,32 @@ import { ActivePermitList } from "../permit-list/ActivePermitList";
 import { ExpiredPermitList } from "../permit-list/ExpiredPermitList";
 import { ApplicationsInProgressList } from "../permit-list/ApplicationsInProgressList";
 import { Nullable } from "../../../../common/types/common";
+import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
+import { RenderIf } from "../../../../common/components/reusable/RenderIf";
 
 export const PermitLists = React.memo(() => {
-
-  const [applicationsInProgressCount, setApplicationsInProgressCount] = useState<Nullable<number>>();
+  const [applicationsInProgressCount, setApplicationsInProgressCount] =
+    useState<Nullable<number>>();
   const handleApplicationsCountChange = (count: number) => {
-      setApplicationsInProgressCount(count);
+    setApplicationsInProgressCount(count);
   };
-  
-  const tabs = [
-    {
+  const tabs = [];
+  const showApplicationsInProgressTab = usePermissionMatrix({
+    permissionMatrixFeatureKey: "MANAGE_PERMITS",
+    permissionMatrixFunctionKey: "VIEW_LIST_OF_APPLICATIONS_IN_PROGRESS",
+  });
+  if (showApplicationsInProgressTab) {
+    tabs.push({
       label: "Applications in Progress",
       count: applicationsInProgressCount,
-      component: <ApplicationsInProgressList onCountChange={handleApplicationsCountChange} />,
-    },
+      component: (
+        <ApplicationsInProgressList
+          onCountChange={handleApplicationsCountChange}
+        />
+      ),
+    });
+  }
+  tabs.push(
     {
       label: "Active Permits",
       component: <ActivePermitList />,
@@ -28,12 +40,18 @@ export const PermitLists = React.memo(() => {
       label: "Expired Permits",
       component: <ExpiredPermitList />,
     },
-  ];
+  );
 
   return (
     <TabLayout
       bannerText="Permits"
-      bannerButton={<StartApplicationAction />}
+      bannerButton={
+        <RenderIf
+          component={<StartApplicationAction />}
+          permissionMatrixFeatureKey="MANAGE_PERMITS"
+          permissionMatrixFunctionKey="START_APPLICATION"
+        />
+      }
       componentList={tabs}
     />
   );
