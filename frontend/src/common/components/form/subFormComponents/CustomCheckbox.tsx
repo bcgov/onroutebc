@@ -5,7 +5,10 @@ import {
   FieldPath,
   Controller,
   useFormContext,
+  RegisterOptions,
 } from "react-hook-form";
+
+import "./CustomCheckbox.scss";
 import { ORBC_FormTypes } from "../../../types/common";
 
 /**
@@ -16,8 +19,9 @@ export interface CustomCheckboxProps<T extends FieldValues> {
   feature: string;
   label: string;
   inputProps?: InputHTMLAttributes<HTMLInputElement>;
-  checked: boolean;
-  handleOnChange: (
+  checked?: boolean;
+  rules?: RegisterOptions;
+  handleChange?: (
     event: ChangeEvent<HTMLInputElement>,
     checked: boolean,
   ) => void;
@@ -30,24 +34,33 @@ export interface CustomCheckboxProps<T extends FieldValues> {
 export const CustomCheckbox = <T extends ORBC_FormTypes>(
   props: CustomCheckboxProps<T>,
 ): JSX.Element => {
-  const { control, register } = useFormContext();
+  const {
+    control,
+    register,
+  } = useFormContext<T>();
+
+  const className =
+    `custom-checkbox__checkbox ${props.inputProps?.className ? props.inputProps.className : ""}`;
+  
   return (
     <Controller
       key={`controller-${props.feature}-${props.name}`}
       name={props.name}
       control={control}
-      render={() => (
-        <FormControl>
-          <div>
-            <Checkbox
-              {...register(props.name)}
-              checked={props.checked}
-              onChange={props.handleOnChange}
-              inputProps={props.inputProps}
-              sx={{ marginLeft: "0px", paddingLeft: "0px" }}
-            />
-            <FormLabel>{props.label}</FormLabel>
-          </div>
+      rules={props.rules}
+      render={({ fieldState: { invalid }}) => (
+        <FormControl className="custom-checkbox">
+          <Checkbox
+            {...register(props.name, props.rules)}
+            checked={props.checked}
+            onChange={props.handleChange}
+            inputProps={props.inputProps}
+            className={`${className} ${invalid ? "custom-checkbox__checkbox--invalid" : ""}`}
+          />
+
+          <FormLabel className="custom-checkbox__label">
+            {props.label}
+          </FormLabel>
         </FormControl>
       )}
     />

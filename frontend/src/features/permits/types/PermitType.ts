@@ -18,6 +18,7 @@ export const PERMIT_TYPES = {
   NRSFV: "NRSFV",
   NRSXP: "NRSXP",
   RIG: "RIG",
+  STOL: "STOL",
   STOS: "STOS",
   STOW: "STOW",
   STWS: "STWS",
@@ -72,6 +73,8 @@ export const getPermitTypeName = (permitType?: Nullable<string>) => {
       return "Non Resident Single Trip X Plated Vehicle";
     case PERMIT_TYPES.RIG:
       return "Rig Move";
+    case PERMIT_TYPES.STOL:
+      return "Single Trip Over Length";
     case PERMIT_TYPES.STOS:
       return "Single Trip Oversize";
     case PERMIT_TYPES.STOW:

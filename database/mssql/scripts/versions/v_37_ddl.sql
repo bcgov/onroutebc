@@ -1,0 +1,147 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET NOCOUNT ON
+GO
+
+SET XACT_ABORT ON
+GO
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
+GO
+BEGIN TRANSACTION
+GO
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+
+CREATE TABLE [permit].[ORBC_SPECIAL_AUTH](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[COMPANY_ID] [int] NOT NULL,
+	[LCV] [char](1) NOT NULL,
+	[NO_FEE_TYPE] [varchar](12) NULL,
+	[APP_CREATE_TIMESTAMP] [datetime2](7) DEFAULT (getutcdate()),
+	[APP_CREATE_USERID] [nvarchar](30) DEFAULT (user_name()),
+	[APP_CREATE_USER_GUID] [char](32) NULL,
+	[APP_CREATE_USER_DIRECTORY] [nvarchar](30) DEFAULT (user_name()),
+	[APP_LAST_UPDATE_TIMESTAMP] [datetime2](7) DEFAULT (getutcdate()),
+	[APP_LAST_UPDATE_USERID] [nvarchar](30) DEFAULT (user_name()),
+	[APP_LAST_UPDATE_USER_GUID] [char](32) NULL,
+	[APP_LAST_UPDATE_USER_DIRECTORY] [nvarchar](30) DEFAULT (user_name()),
+	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
+	[DB_CREATE_USERID] [varchar](63) NOT NULL,
+	[DB_CREATE_TIMESTAMP] [datetime2](7) NOT NULL,
+	[DB_LAST_UPDATE_USERID] [varchar](63) NOT NULL,
+	[DB_LAST_UPDATE_TIMESTAMP] [datetime2](7) NOT NULL,
+ CONSTRAINT [PK_ORBC_SPECIAL_AUTH] PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+CREATE SEQUENCE [permit].[ORBC_SPECIAL_AUTH_H_ID_SEQ] AS [bigint] START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 50;
+ 
+CREATE TABLE [permit].[ORBC_SPECIAL_AUTH_HIST](
+  _SPECIAL_AUTH_HIST_ID [bigint] DEFAULT (NEXT VALUE FOR [permit].[ORBC_SPECIAL_AUTH_H_ID_SEQ]) NOT NULL
+  ,EFFECTIVE_DATE_HIST [datetime] NOT NULL default getutcdate()
+  ,END_DATE_HIST [datetime]
+  , [ID] int NOT NULL, [COMPANY_ID] int NOT NULL, [LCV] char(1) NOT NULL, [NO_FEE_TYPE] varchar(12) NOT NULL, [APP_CREATE_TIMESTAMP] datetime2 NULL, [APP_CREATE_USERID] nvarchar(30) NULL, [APP_CREATE_USER_GUID] char(32) NULL, [APP_CREATE_USER_DIRECTORY] nvarchar(30) NULL, [APP_LAST_UPDATE_TIMESTAMP] datetime2 NULL, [APP_LAST_UPDATE_USERID] nvarchar(30) NULL, [APP_LAST_UPDATE_USER_GUID] char(32) NULL, [APP_LAST_UPDATE_USER_DIRECTORY] nvarchar(30) NULL, [CONCURRENCY_CONTROL_NUMBER] int NULL, [DB_CREATE_USERID] varchar(63) NOT NULL, [DB_CREATE_TIMESTAMP] datetime2 NOT NULL, [DB_LAST_UPDATE_USERID] varchar(63) NOT NULL, [DB_LAST_UPDATE_TIMESTAMP] datetime2 NOT NULL
+  )
+ALTER TABLE [permit].[ORBC_SPECIAL_AUTH_HIST] ADD CONSTRAINT ORBC_28_H_PK PRIMARY KEY CLUSTERED (_SPECIAL_AUTH_HIST_ID);  
+ALTER TABLE [permit].[ORBC_SPECIAL_AUTH_HIST] ADD CONSTRAINT ORBC_28_H_UK UNIQUE (_SPECIAL_AUTH_HIST_ID,END_DATE_HIST)
+go
+ 
+CREATE TRIGGER ORBC_SPECIAL_AUTH_A_S_IUD_TR ON [permit].[ORBC_SPECIAL_AUTH] FOR INSERT, UPDATE, DELETE AS
+SET NOCOUNT ON
+BEGIN TRY
+DECLARE @curr_date datetime;
+SET @curr_date = getutcdate();
+  IF NOT EXISTS(SELECT * FROM inserted) AND NOT EXISTS(SELECT * FROM deleted) 
+    RETURN;
+ 
+  -- historical
+  IF EXISTS(SELECT * FROM deleted)
+    update [permit].[ORBC_SPECIAL_AUTH_HIST] set END_DATE_HIST = @curr_date where ID in (select ID from deleted) and END_DATE_HIST is null;
+  IF EXISTS(SELECT * FROM inserted)
+    insert into [permit].[ORBC_SPECIAL_AUTH_HIST] ([ID], [COMPANY_ID], [LCV], [NO_FEE_TYPE], [APP_CREATE_TIMESTAMP], [APP_CREATE_USERID], [APP_CREATE_USER_GUID], [APP_CREATE_USER_DIRECTORY], [APP_LAST_UPDATE_TIMESTAMP], [APP_LAST_UPDATE_USERID], [APP_LAST_UPDATE_USER_GUID], [APP_LAST_UPDATE_USER_DIRECTORY], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP], _SPECIAL_AUTH_HIST_ID, END_DATE_HIST, EFFECTIVE_DATE_HIST)
+      select [ID], [COMPANY_ID], [LCV], [NO_FEE_TYPE], [APP_CREATE_TIMESTAMP], [APP_CREATE_USERID], [APP_CREATE_USER_GUID], [APP_CREATE_USER_DIRECTORY], [APP_LAST_UPDATE_TIMESTAMP], [APP_LAST_UPDATE_USERID], [APP_LAST_UPDATE_USER_GUID], [APP_LAST_UPDATE_USER_DIRECTORY], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP], (next value for [permit].[ORBC_SPECIAL_AUTH_H_ID_SEQ]) as [_SPECIAL_AUTH_HIST_ID], null as [END_DATE_HIST], @curr_date as [EFFECTIVE_DATE_HIST] from inserted;
+ 
+END TRY
+BEGIN CATCH
+   IF @@trancount > 0 ROLLBACK TRANSACTION
+   EXEC orbc_error_handling
+END CATCH;
+go
+
+CREATE TABLE [permit].[ORBC_NO_FEE_TYPE](
+	[NO_FEE_TYPE] [varchar](12) NOT NULL,
+	[DESCRIPTION] [nvarchar](100) NOT NULL,
+	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
+	[DB_CREATE_USERID] [varchar](63) NOT NULL,
+	[DB_CREATE_TIMESTAMP] [datetime2](7) NOT NULL,
+	[DB_LAST_UPDATE_USERID] [varchar](63) NOT NULL,
+	[DB_LAST_UPDATE_TIMESTAMP] [datetime2](7) NOT NULL,
+ CONSTRAINT [PK_ORBC_NO_FEE_TYPE] PRIMARY KEY CLUSTERED 
+(
+	[NO_FEE_TYPE] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [permit].[ORBC_SPECIAL_AUTH] WITH CHECK ADD  CONSTRAINT [FK_ORBC_SPECIAL_AUTH_COMPANY_ID] FOREIGN KEY([COMPANY_ID])
+REFERENCES [dbo].[ORBC_COMPANY] ([COMPANY_ID])
+ALTER TABLE [permit].[ORBC_SPECIAL_AUTH] CHECK CONSTRAINT [FK_ORBC_SPECIAL_AUTH_COMPANY_ID]
+-- Check Contraints
+ALTER TABLE [permit].[ORBC_SPECIAL_AUTH] WITH CHECK ADD  CONSTRAINT DK_ORBC_SPECIAL_AUTH_LCV_VAL CHECK ([LCV] IN ('Y','N'));
+GO
+ALTER TABLE [permit].[ORBC_SPECIAL_AUTH]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_SPECIAL_AUTH_NO_FEE_TYPE] FOREIGN KEY([NO_FEE_TYPE])
+REFERENCES [permit].[ORBC_NO_FEE_TYPE] ([NO_FEE_TYPE])
+ALTER TABLE [permit].[ORBC_SPECIAL_AUTH] CHECK CONSTRAINT [FK_ORBC_SPECIAL_AUTH_NO_FEE_TYPE]
+GO
+
+-- Default values
+ALTER TABLE [permit].[ORBC_SPECIAL_AUTH] 
+   ADD CONSTRAINT [DF_ORBC_SPECIAL_AUTH_LCV] 
+   DEFAULT('N')
+   FOR [LCV]
+GO
+
+INSERT [permit].[ORBC_NO_FEE_TYPE] ([NO_FEE_TYPE], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'CA_GOVT', N'The government of Canada or any province or any territory', NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
+INSERT [permit].[ORBC_NO_FEE_TYPE] ([NO_FEE_TYPE], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'MUNICPALITY', N'A  municipality', NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
+INSERT [permit].[ORBC_NO_FEE_TYPE] ([NO_FEE_TYPE], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'SCHOOL', N'A school distrct outside of BC (S.9 Commercial Transaport Act)', NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
+INSERT [permit].[ORBC_NO_FEE_TYPE] ([NO_FEE_TYPE], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'USA_GOVT', N'The government of the United States of America', NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
+INSERT [permit].[ORBC_NO_FEE_TYPE] ([NO_FEE_TYPE], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'ANY_USA_GOVT', N'The government of any state or country  in the Unites States of America', NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Surrogate primary key for the special authorization table' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_SPECIAL_AUTH', @level2type=N'COLUMN',@level2name=N'ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to the ORBC_COMPANY table, this field represents the company that holds the special authorizations' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_SPECIAL_AUTH', @level2type=N'COLUMN',@level2name=N'COMPANY_ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The LCV flag indicates whether a company is permitted to operate long combination vehicles' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_SPECIAL_AUTH', @level2type=N'COLUMN',@level2name=N'LCV'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to ORBC_NO_FEE_TYPE table. If the fee type is null, it indicates that the company cannot apply for free permits. Otherwise, it provides the description why the company is eligible for free permits.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_SPECIAL_AUTH', @level2type=N'COLUMN',@level2name=N'NO_FEE_TYPE'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'It provides the abbreviations of the conditions under which the company is eligible for free permits.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_NO_FEE_TYPE', @level2type=N'COLUMN',@level2name=N'NO_FEE_TYPE'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'It provides the description of the conditions under which the company is eligible for free permits.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_NO_FEE_TYPE', @level2type=N'COLUMN',@level2name=N'DESCRIPTION'
+GO
+
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+
+DECLARE @VersionDescription VARCHAR(255)
+SET @VersionDescription = 'Creation of orbc special authorization tables'
+
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [UPDATE_SCRIPT], [REVERT_SCRIPT], [RELEASE_DATE]) VALUES (37, @VersionDescription, '$(UPDATE_SCRIPT)', '$(REVERT_SCRIPT)', getutcdate())
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+
+COMMIT TRANSACTION
+GO
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+DECLARE @Success AS BIT
+SET @Success = 1
+SET NOEXEC OFF
+IF (@Success = 1) PRINT 'The database update succeeded'
+ELSE BEGIN
+   IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION
+   PRINT 'The database update failed'
+END
+GO
+
