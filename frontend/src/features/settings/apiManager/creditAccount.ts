@@ -1,5 +1,6 @@
 import {
   CreditAccountData,
+  CreditAccountLimitData,
   CreditAccountLimitType,
   CreditAccountMetadata,
   CreditAccountStatusType,
@@ -74,6 +75,50 @@ export const getCreditAccountUsers = async (data: {
     ),
   );
   return response.data;
+};
+
+/**
+ * Get credit account users for the given credit account ID
+ * @param companyId Identifier of the company with which the credit Account is associated
+ * @param creditAccountId Identifier of the credit account to retrieve
+ * @returns List of credit account users for the credit account
+ */
+export const getCreditAccountHistory = async ({
+  companyId,
+  creditAccountId,
+}: {
+  companyId: number;
+  creditAccountId: number;
+}) => {
+  const response = await httpGETRequest(
+    CREDIT_ACCOUNT_API_ROUTES.GET_CREDIT_ACCOUNT_HISTORY(
+      companyId,
+      creditAccountId,
+    ),
+  );
+  return response.data;
+};
+
+/**
+ * Get credit account users for the given credit account ID
+ * @param companyId Identifier of the company with which the credit Account is associated
+ * @param creditAccountId Identifier of the credit account to retrieve
+ * @returns List of credit account users for the credit account
+ */
+export const getCreditAccountLimits = async ({
+  companyId,
+  creditAccountId,
+}: {
+  companyId: number;
+  creditAccountId: number;
+}) => {
+  const response = await httpGETRequest(
+    CREDIT_ACCOUNT_API_ROUTES.GET_CREDIT_ACCOUNT_LIMITS(
+      companyId,
+      creditAccountId,
+    ),
+  );
+  return response.data as CreditAccountLimitData;
 };
 
 /**

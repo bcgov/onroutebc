@@ -1,36 +1,33 @@
-import { SelectCreditLimit } from "../components/creditAccount/SelectCreditLimit";
-import { useState, useContext } from "react";
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
-  DEFAULT_CREDIT_ACCOUNT_LIMIT,
-  EMPTY_CREDIT_ACCOUNT_LIMIT_SELECT,
-  CREDIT_ACCOUNT_LIMIT_CHOOSE_FROM_OPTIONS,
-  CreditAccountLimitType,
-  CREDIT_ACCOUNT_USER_TYPE,
-  CREDIT_ACCOUNT_STATUS_TYPE,
-  CreditAccountMetadata,
-} from "../types/creditAccount";
-import {
-  SelectChangeEvent,
-  MenuItem,
-  Button,
   Box,
+  Button,
+  MenuItem,
+  SelectChangeEvent,
   Typography,
 } from "@mui/material";
+import { useState } from "react";
+import { RenderIf } from "../../../common/components/reusable/RenderIf";
+import { Loading } from "../../../common/pages/Loading";
+import { AccountDetails } from "../components/creditAccount/AccountDetails";
+import { ActivityTable } from "../components/creditAccount/ActivityTable";
+import { AddUser } from "../components/creditAccount/AddUser";
+import { SelectCreditLimit } from "../components/creditAccount/SelectCreditLimit";
+import { StatusChip } from "../components/creditAccount/StatusChip";
+import { UserTable } from "../components/creditAccount/UserTable";
 import {
   useCreateCreditAccountMutation,
   useGetCreditAccountQuery,
 } from "../hooks/creditAccount";
-import { AddUser } from "../components/creditAccount/AddUser";
-import { AccountDetails } from "../components/creditAccount/AccountDetails";
-import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
-import { UserTable } from "../components/creditAccount/UserTable";
 import {
-  canUpdateCreditAccount,
-  canViewCreditAccountDetails,
-} from "../helpers/permissions";
-import { ActivityTable } from "../components/creditAccount/ActivityTable";
-import { StatusChip } from "../components/creditAccount/StatusChip";
-import { Loading } from "../../../common/pages/Loading";
+  CREDIT_ACCOUNT_LIMIT_CHOOSE_FROM_OPTIONS,
+  CREDIT_ACCOUNT_STATUS_TYPE,
+  CREDIT_ACCOUNT_USER_TYPE,
+  CreditAccountLimitType,
+  CreditAccountMetadata,
+  DEFAULT_CREDIT_ACCOUNT_LIMIT,
+  EMPTY_CREDIT_ACCOUNT_LIMIT_SELECT,
+} from "../types/creditAccount";
 import "./CreditAccount.scss";
 
 export const CreditAccount = ({
@@ -40,9 +37,6 @@ export const CreditAccount = ({
   companyId: number;
   creditAccountMetadata: CreditAccountMetadata;
 }) => {
-  const { userRoles, userDetails, idirUserDetails } =
-    useContext(OnRouteBCContext);
-
   const [invalid, setInvalid] = useState<boolean>(false);
 
   const [selectedCreditLimit, setSelectedCreditLimit] = useState<
@@ -90,18 +84,6 @@ export const CreditAccount = ({
     }
   };
 
-  const showActivityTable = isAccountHolder;
-
-  const showAddUser =
-    canUpdateCreditAccount(userRoles) &&
-    creditAccount?.creditAccountStatusType !==
-      CREDIT_ACCOUNT_STATUS_TYPE.CLOSED &&
-    isAccountHolder;
-
-  const showUserTable = canViewCreditAccountDetails(
-    userDetails?.userAuthGroup || idirUserDetails?.userAuthGroup,
-  );
-
   if (creditAccountPending) return <Loading />;
 
   return (
@@ -115,19 +97,39 @@ export const CreditAccount = ({
                   Credit Account No: {creditAccount.creditAccountNumber}
                 </Typography>
 
-                <StatusChip
-                  status={creditAccount.creditAccountStatusType}
-                />
+                <StatusChip status={creditAccount.creditAccountStatusType} />
               </Box>
               <Typography className="overview__user-designation">
                 {isAccountHolder ? "Account Holder" : "Account User"}
               </Typography>
             </Box>
-            {showActivityTable && <ActivityTable />}
-            {showAddUser && <AddUser />}
-            {showUserTable && <UserTable />}
+            {isAccountHolder && <ActivityTable />}
+            <RenderIf
+              component={<AddUser />}
+              permissionMatrixFeatureKey="MANAGE_SETTINGS"
+              permissionMatrixFunctionKey="UPDATE_CREDIT_ACCOUNT_DETAILS"
+              additionalConditionToCheck={() =>
+                creditAccount?.creditAccountStatusType !==
+                  CREDIT_ACCOUNT_STATUS_TYPE.CLOSED && isAccountHolder
+              }
+            />
+            <RenderIf
+              component={<UserTable />}
+              permissionMatrixFeatureKey="MANAGE_SETTINGS"
+              permissionMatrixFunctionKey="VIEW_CREDIT_ACCOUNT_DETAILS"
+            />
           </Box>
-          <AccountDetails />
+          <RenderIf
+            component={
+              <AccountDetails
+                companyId={companyId}
+                creditAccountMetadata={{ creditAccountId, userType }}
+                creditAccountStatus={creditAccount?.creditAccountStatusType}
+              />
+            }
+            permissionMatrixFeatureKey="MANAGE_SETTINGS"
+            permissionMatrixFunctionKey="VIEW_CREDIT_ACCOUNT_DETAILS"
+          />
         </Box>
       ) : (
         <Box>

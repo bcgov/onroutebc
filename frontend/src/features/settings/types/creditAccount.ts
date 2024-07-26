@@ -84,7 +84,7 @@ export const CREDIT_ACCOUNT_LIMIT_CHOOSE_FROM_OPTIONS = [
 export const CREDIT_ACCOUNT_USER_TYPE = {
   HOLDER: "HOLDER",
   USER: "USER",
-};
+} as const;
 
 export type CreditAccountUserType =
   (typeof CREDIT_ACCOUNT_USER_TYPE)[keyof typeof CREDIT_ACCOUNT_USER_TYPE];
@@ -108,7 +108,7 @@ export const CREDIT_ACCOUNT_STATUS_TYPE = {
   ACTIVE: "ACTIVE",
   ONHOLD: "ONHOLD",
   CLOSED: "CLOSED",
-};
+} as const;
 
 export type CreditAccountStatusType =
   (typeof CREDIT_ACCOUNT_STATUS_TYPE)[keyof typeof CREDIT_ACCOUNT_STATUS_TYPE];
@@ -129,7 +129,7 @@ export const UPDATE_STATUS_ACTIONS = {
   UNHOLD_CREDIT_ACCOUNT: "UNHOLD",
   CLOSE_CREDIT_ACCOUNT: "CLOSE",
   REOPEN_CREDIT_ACCOUNT: "REOPEN",
-};
+} as const;
 
 export type UpdateStatusActionType =
   (typeof UPDATE_STATUS_ACTIONS)[keyof typeof UPDATE_STATUS_ACTIONS];
@@ -205,7 +205,7 @@ export const CREDIT_ACCOUNT_ACTIVITY_TYPE = {
   CLOSED: "CLOSED",
   HOLDRMVD: "HOLDRMVD",
   ONHOLD: "ONHOLD",
-};
+} as const;
 
 export type CreditAccountActivityType =
   (typeof CREDIT_ACCOUNT_ACTIVITY_TYPE)[keyof typeof CREDIT_ACCOUNT_ACTIVITY_TYPE];
@@ -227,10 +227,23 @@ export interface CreditAccountActivity {
   userName: string;
 }
 
-export interface CreditAccountHistoryData {
+export interface CreditAccountHistoryData1 {
   activityId: string;
   activityType: UpdateStatusActionType;
   activityDateTime?: Nullable<string>;
   IDIR: string;
   reason?: string;
+}
+
+export interface CreditAccountHistoryData {
+  userName: string;
+  creditAccountActivityDateTime: string;
+  creditAccountActivityType: CreditAccountActivityType;
+  comment: string;
+}
+
+export interface CreditAccountLimitData {
+  creditLimit: string;
+  creditBalance: number;
+  availableCredit: number;
 }

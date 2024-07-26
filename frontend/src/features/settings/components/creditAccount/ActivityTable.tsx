@@ -12,7 +12,7 @@ import {
 } from "../../../../common/helpers/tableHelper";
 import { CreditAccountActivityColumnsDefinition } from "../../types/CreditAccountActivityColumns";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile.d";
-import { useGetCreditAccountMetadataQuery } from "../../hooks/creditAccount";
+import { useGetCreditAccountHistoryQuery, useGetCreditAccountMetadataQuery } from "../../hooks/creditAccount";
 import {
   CREDIT_ACCOUNT_ACTIVITY_TYPE,
   CreditAccountActivity,
@@ -30,7 +30,7 @@ export const ActivityTable = () => {
     data: creditAccount,
     isLoading,
     isError: fetchCreditAccountError,
-  } = useGetCreditAccountMetadataQuery(getDefaultRequiredVal(0, companyId));
+  } = useGetCreditAccountHistoryQuery(getDefaultRequiredVal(0, companyId));
 
   const creditAccountActivities = getDefaultRequiredVal(
     [],

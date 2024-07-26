@@ -7,6 +7,8 @@ import {
   getCreditAccountUsers,
   updateCreditAccountStatus,
   getCreditAccount,
+  getCreditAccountHistory,
+  getCreditAccountLimits,
 } from "../apiManager/creditAccount";
 import { getCompanyDataBySearch } from "../../idir/search/api/idirSearch";
 import { useNavigate } from "react-router-dom";
@@ -45,6 +47,36 @@ export const useGetCreditAccountQuery = (
     queryKey: ["credit-account", { companyId }],
     queryFn: () => getCreditAccount(companyId, creditAccountId),
     retry: false,
+  });
+};
+
+/**
+ * Hook to fetch the company credit account details.
+ * @returns Query result of the company credit account details
+ */
+export const useGetCreditAccountLimitsQuery = (data: {
+  companyId: number;
+  creditAccountId: number;
+}) => {
+  const { companyId, creditAccountId } = data;
+  return useQuery({
+    queryKey: ["credit-account-limits", { companyId, creditAccountId }],
+    queryFn: () => getCreditAccountLimits({ companyId, creditAccountId }),
+  });
+};
+
+/**
+ * Hook to fetch the company credit account details.
+ * @returns Query result of the company credit account details
+ */
+export const useGetCreditAccountHistoryQuery = (data: {
+  companyId: number;
+  creditAccountId: number;
+}) => {
+  const { companyId, creditAccountId } = data;
+  return useQuery({
+    queryKey: ["credit-account-history", { companyId, creditAccountId }],
+    queryFn: () => getCreditAccountHistory({ companyId, creditAccountId }),
   });
 };
 

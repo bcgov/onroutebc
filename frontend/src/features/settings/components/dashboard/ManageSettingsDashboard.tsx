@@ -10,9 +10,9 @@ import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
 import {
   canViewSpecialAuthorizations,
   canViewSuspend,
-  canViewCreditAccountTab,
 } from "../../helpers/permissions";
 import { CreditAccountMetadataComponent } from "../../pages/CreditAccountMetadataComponent";
+import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
 export const ManageSettingsDashboard = React.memo(() => {
   const { userRoles, companyId, idirUserDetails } =
@@ -29,9 +29,11 @@ export const ManageSettingsDashboard = React.memo(() => {
     canViewSpecialAuthorizations(userRoles, idirUserDetails?.userAuthGroup) &&
     featureFlags?.["LOA"] === "ENABLED";
 
-  const showCreditAccountTab =
-    canViewCreditAccountTab(userRoles) &&
-    featureFlags?.["CREDIT-ACCOUNT"] === "ENABLED";
+  const showCreditAccountTab = usePermissionMatrix({
+    featureFlag: "CREDIT-ACCOUNT",
+    permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+    permissionMatrixFunctionKey: "VIEW_CREDIT_ACCOUNT_TAB",
+  });
 
   const { state: stateFromNavigation } = useLocation();
 

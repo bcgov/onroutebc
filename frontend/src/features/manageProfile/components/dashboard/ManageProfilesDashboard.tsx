@@ -23,11 +23,14 @@ import { SpecialAuthorizations } from "../../../settings/pages/SpecialAuthorizat
 import { CreditAccount } from "../../../settings/pages/CreditAccount";
 import { useGetCreditAccountMetadataQuery } from "../../../settings/hooks/creditAccount";
 import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
-import { CREDIT_ACCOUNT_USER_TYPE } from "../../../settings/types/creditAccount";
+import {
+  CREDIT_ACCOUNT_USER_TYPE,
+  CreditAccountMetadata,
+} from "../../../settings/types/creditAccount";
 import {
   canViewSpecialAuthorizations,
-  canViewCreditAccountTab,
 } from "../../../settings/helpers/permissions";
+import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
 interface ProfileDashboardTab {
   label: string;
@@ -83,13 +86,12 @@ export const ManageProfilesDashboard = React.memo(() => {
   const isCreditAccountHolder =
     creditAccountMetadata?.userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER;
 
-  const showCreditAccountTab = Boolean(
-    canViewCreditAccountTab(userRoles) &&
-      creditAccountMetadata &&
-      companyId &&
-      isCreditAccountHolder &&
-      featureFlags?.["CREDIT-ACCOUNT"] === "ENABLED",
-  );
+  const showCreditAccountTab = usePermissionMatrix({
+    featureFlag: "CREDIT-ACCOUNT",
+    permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+    permissionMatrixFunctionKey: "VIEW_CREDIT_ACCOUNT_TAB",
+    additionalConditionToCheck: () => isCreditAccountHolder,
+  });
 
   const { state: stateFromNavigation } = useLocation();
 
@@ -120,10 +122,17 @@ export const ManageProfilesDashboard = React.memo(() => {
           componentKey: BCEID_PROFILE_TABS.SPECIAL_AUTH,
         }
       : null,
-    showCreditAccountTab && creditAccountMetadata
+    showCreditAccountTab
       ? {
           label: "Credit Account",
-          component: <CreditAccount companyId={companyId} creditAccountMetadata={creditAccountMetadata} />,
+          component: (
+            <CreditAccount
+              companyId={companyId}
+              creditAccountMetadata={
+                creditAccountMetadata as CreditAccountMetadata
+              }
+            />
+          ),
           componentKey: BCEID_PROFILE_TABS.CREDIT_ACCOUNT,
         }
       : null,
