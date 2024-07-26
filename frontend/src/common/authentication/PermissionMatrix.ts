@@ -508,6 +508,7 @@ export const usePermissionMatrix = ({
       isAllowed = Boolean(
         currentUserAuthGroup &&
           allowedIDIRAuthGroups?.includes(currentUserAuthGroup),
+          
       );
     } else {
       currentUserAuthGroup = userDetails?.userAuthGroup;

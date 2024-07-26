@@ -6,7 +6,7 @@ import {
   SelectChangeEvent,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { RenderIf } from "../../../common/components/reusable/RenderIf";
 import { Loading } from "../../../common/pages/Loading";
 import { AccountDetails } from "../components/creditAccount/AccountDetails";
@@ -29,6 +29,8 @@ import {
   EMPTY_CREDIT_ACCOUNT_LIMIT_SELECT,
 } from "../types/creditAccount";
 import "./CreditAccount.scss";
+import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
+import { BCeID_USER_AUTH_GROUP } from "../../../common/authentication/types";
 
 export const CreditAccount = ({
   companyId,
@@ -38,6 +40,7 @@ export const CreditAccount = ({
   creditAccountMetadata: CreditAccountMetadata;
 }) => {
   const [invalid, setInvalid] = useState<boolean>(false);
+  const { userDetails } = useContext(OnRouteBCContext);
 
   const [selectedCreditLimit, setSelectedCreditLimit] = useState<
     CreditAccountLimitType | typeof EMPTY_CREDIT_ACCOUNT_LIMIT_SELECT
@@ -103,9 +106,24 @@ export const CreditAccount = ({
                 {isAccountHolder ? "Account Holder" : "Account User"}
               </Typography>
             </Box>
-            {isAccountHolder && <ActivityTable />}
             <RenderIf
-              component={<AddUser />}
+              component={
+                <ActivityTable
+                  companyId={companyId}
+                  creditAccountId={creditAccountId}
+                />
+              }
+              permissionMatrixFeatureKey="MANAGE_SETTINGS"
+              permissionMatrixFunctionKey="UPDATE_CREDIT_ACCOUNT_DETAILS"
+              additionalConditionToCheck={() => isAccountHolder}
+            />
+            <RenderIf
+              component={
+                <AddUser
+                  companyId={companyId}
+                  creditAccountId={creditAccountId}
+                />
+              }
               permissionMatrixFeatureKey="MANAGE_SETTINGS"
               permissionMatrixFunctionKey="UPDATE_CREDIT_ACCOUNT_DETAILS"
               additionalConditionToCheck={() =>
@@ -114,7 +132,12 @@ export const CreditAccount = ({
               }
             />
             <RenderIf
-              component={<UserTable />}
+              component={
+                <UserTable
+                  companyId={companyId}
+                  creditAccountMetadata={{ creditAccountId, userType }}
+                />
+              }
               permissionMatrixFeatureKey="MANAGE_SETTINGS"
               permissionMatrixFunctionKey="VIEW_CREDIT_ACCOUNT_DETAILS"
             />
@@ -129,6 +152,18 @@ export const CreditAccount = ({
             }
             permissionMatrixFeatureKey="MANAGE_SETTINGS"
             permissionMatrixFunctionKey="VIEW_CREDIT_ACCOUNT_DETAILS"
+            additionalConditionToCheck={() => {
+              // In case of BCeID user, CV - CA is only allowed
+              // to see the account details if the status is active.
+              if (userDetails && userDetails.userAuthGroup) {
+                return (
+                  creditAccount.creditAccountStatusType ===
+                  CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE
+                );
+              } else {
+                return true;
+              }
+            }}
           />
         </Box>
       ) : (

@@ -4,6 +4,7 @@ import {
   CreditAccountLimitType,
   CreditAccountMetadata,
   CreditAccountStatusType,
+  CreditAccountUser,
 } from "../types/creditAccount";
 import { CREDIT_ACCOUNT_API_ROUTES } from "../apiManager/endpoints/endpoints";
 import {
@@ -74,7 +75,7 @@ export const getCreditAccountUsers = async (data: {
       creditAccountId,
     ),
   );
-  return response.data;
+  return response.data as CreditAccountUser[];
 };
 
 /**

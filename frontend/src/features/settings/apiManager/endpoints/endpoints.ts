@@ -34,7 +34,7 @@ export const CREDIT_ACCOUNT_API_ROUTES = {
   CREATE_CREDIT_ACCOUNT: (companyId: number) =>
     `${CREDIT_ACCOUNT_API_BASE}/${companyId}/credit-accounts`,
   GET_CREDIT_ACCOUNT_META_DATA: (companyId: number) =>
-    `${CREDIT_ACCOUNT_API_BASE}/${companyId}/credit-accounts/meta-data`,
+    `${CREDIT_ACCOUNT_API_BASE}/${companyId}/credit-accounts`,
   GET_CREDIT_ACCOUNT: (companyId: number, creditAccountId: number) =>
     `${CREDIT_ACCOUNT_API_BASE}/${companyId}/credit-accounts/${creditAccountId}`,
   GET_CREDIT_ACCOUNT_HISTORY: (companyId: number, creditAccountId: number) =>

@@ -62,6 +62,7 @@ export const useGetCreditAccountLimitsQuery = (data: {
   return useQuery({
     queryKey: ["credit-account-limits", { companyId, creditAccountId }],
     queryFn: () => getCreditAccountLimits({ companyId, creditAccountId }),
+    retry: false,
   });
 };
 
@@ -77,6 +78,7 @@ export const useGetCreditAccountHistoryQuery = (data: {
   return useQuery({
     queryKey: ["credit-account-history", { companyId, creditAccountId }],
     queryFn: () => getCreditAccountHistory({ companyId, creditAccountId }),
+    retry: false,
   });
 };
 
@@ -92,6 +94,7 @@ export const useGetCreditAccountUsersQuery = (data: {
   return useQuery({
     queryKey: ["credit-account-users", { companyId }, "users"],
     queryFn: () => getCreditAccountUsers({ companyId, creditAccountId }),
+    retry: false,
   });
 };
 
@@ -103,6 +106,7 @@ export const useGetCreditAccountUsersQuery = (data: {
 export const useGetCompanyQuery = (clientNumber: string) => {
   return useQuery({
     queryKey: ["company-information", { clientNumber }],
+    retry: false,
     queryFn: () =>
       getCompanyDataBySearch(
         {

@@ -1,5 +1,4 @@
 import { SnackbarAlertType } from "../../../common/components/snackbar/CustomSnackBar";
-import { Nullable } from "../../../common/types/common";
 import { CompanyProfile } from "../../manageProfile/types/manageProfile";
 
 export interface CreditAccountMetadata {
@@ -20,7 +19,7 @@ export interface CreditAccountData {
   creditBalance: number;
 }
 
-export interface CreditAccountUser
+export interface CreditAccountUser2
   extends Omit<
     CompanyProfile,
     | "companyGUID"
@@ -30,6 +29,14 @@ export interface CreditAccountUser
     | "fax"
     | "primaryContact"
     | "migratedClientHash"
+  > {
+  userType: CreditAccountUserType;
+}
+
+export interface CreditAccountUser
+  extends Pick<
+    CompanyProfile,
+    "companyId" | "clientNumber" | "legalName" | "alternateName"
   > {
   userType: CreditAccountUserType;
 }
@@ -225,14 +232,6 @@ export interface CreditAccountActivity {
   creditAccountActivityType: CreditAccountActivityType;
   comment: string;
   userName: string;
-}
-
-export interface CreditAccountHistoryData1 {
-  activityId: string;
-  activityType: UpdateStatusActionType;
-  activityDateTime?: Nullable<string>;
-  IDIR: string;
-  reason?: string;
 }
 
 export interface CreditAccountHistoryData {

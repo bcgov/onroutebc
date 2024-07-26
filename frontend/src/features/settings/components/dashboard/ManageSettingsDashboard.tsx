@@ -34,6 +34,7 @@ export const ManageSettingsDashboard = React.memo(() => {
     permissionMatrixFeatureKey: "MANAGE_SETTINGS",
     permissionMatrixFunctionKey: "VIEW_CREDIT_ACCOUNT_TAB",
   });
+  console.log('showCreditAccountTab::', showCreditAccountTab);
 
   const { state: stateFromNavigation } = useLocation();
 
