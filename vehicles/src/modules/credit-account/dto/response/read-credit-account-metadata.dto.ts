@@ -16,4 +16,12 @@ export class ReadCreditAccountMetadataDto {
     example: CreditAccountUserType.ACCOUNT_HOLDER,
   })
   userType: CreditAccountUserType;
+
+  @AutoMap()
+  @ApiProperty({
+    description:
+      'Indicates whether the credit account can be used as a valid payment method.',
+    example: false,
+  })
+  isValidPaymentMethod: boolean;
 }
