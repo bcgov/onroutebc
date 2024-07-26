@@ -20,7 +20,6 @@ import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { CompanyIdPathParamDto } from '../common/dto/request/pathParam/companyId.path-param.dto';
 import { CreditAccountService } from './credit-account.service';
 import { CreateCreditAccountDto } from './dto/request/create-credit-account.dto';
-import { ReadCreditAccountUserDto } from './dto/response/read-credit-account-user.dto';
 import { ReadCreditAccountDto } from './dto/response/read-credit-account.dto';
 import { CreditAccountIdPathParamDto } from './dto/request/pathParam/creditAccountUsers.path-params.dto';
 import { UpdateCreditAccountStatusDto } from './dto/request/update-credit-account-status.dto';
@@ -103,7 +102,7 @@ export class CreditAccountController {
     description: 'The retrieved credit account.',
     type: ReadCreditAccountMetadataDto,
   })
-  @Get('meta-data')
+  @Get()
   @Roles(Role.READ_CREDIT_ACCOUNT)
   async getCreditAccountMetadata(
     @Req() request: Request,
