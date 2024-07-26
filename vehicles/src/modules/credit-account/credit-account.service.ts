@@ -277,6 +277,19 @@ export class CreditAccountService {
     ) {
       // Throw exception if companyId is a Credit Account User and user is Company Admin.
       throw new ForbiddenException();
+    } else if (
+      creditAccount?.company?.companyId === companyId &&
+      creditAccount?.creditAccountStatusType ===
+        CreditAccountStatus.ACCOUNT_CLOSED &&
+      !doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, [
+        IDIRUserAuthGroup.HQ_ADMINISTRATOR,
+        IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
+        IDIRUserAuthGroup.FINANCE,
+        IDIRUserAuthGroup.PPC_CLERK,
+        IDIRUserAuthGroup.PPC_SUPERVISOR,
+      ])
+    ) {
+      throw new DataNotFoundException();
     }
 
     const readCreditAccountDto = await this.classMapper.mapAsync(
@@ -319,6 +332,19 @@ export class CreditAccountService {
 
     if (!creditAccount) {
       throw new DataNotFoundException();
+    } else if (
+      creditAccount?.company?.companyId === companyId &&
+      creditAccount?.creditAccountStatusType ===
+        CreditAccountStatus.ACCOUNT_CLOSED &&
+      !doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, [
+        IDIRUserAuthGroup.HQ_ADMINISTRATOR,
+        IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
+        IDIRUserAuthGroup.FINANCE,
+        IDIRUserAuthGroup.PPC_CLERK,
+        IDIRUserAuthGroup.PPC_SUPERVISOR,
+      ])
+    ) {
+      throw new DataNotFoundException();
     }
 
     creditAccount.creditAccountUsers =
@@ -336,6 +362,15 @@ export class CreditAccountService {
     else {
       readCreditAccountMetadataDto.userType =
         CreditAccountUserType.ACCOUNT_USER;
+    }
+    if (
+      creditAccount?.creditAccountStatusType ===
+        CreditAccountStatus.ACCOUNT_ACTIVE &&
+      !creditAccount?.company.isSuspended
+    ) {
+      readCreditAccountMetadataDto.isValidPaymentMethod = true;
+    } else {
+      readCreditAccountMetadataDto.isValidPaymentMethod = false;
     }
     return readCreditAccountMetadataDto;
   }
@@ -984,6 +1019,19 @@ export class CreditAccountService {
     ) {
       // Throw exception if companyId is a Credit Account User and user is Company Admin.
       throw new ForbiddenException();
+    } else if (
+      creditAccount?.company?.companyId === companyId &&
+      creditAccount?.creditAccountStatusType ===
+        CreditAccountStatus.ACCOUNT_CLOSED &&
+      !doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, [
+        IDIRUserAuthGroup.HQ_ADMINISTRATOR,
+        IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
+        IDIRUserAuthGroup.FINANCE,
+        IDIRUserAuthGroup.PPC_CLERK,
+        IDIRUserAuthGroup.PPC_SUPERVISOR,
+      ])
+    ) {
+      throw new DataNotFoundException();
     }
 
     creditAccount.creditAccountUsers =
@@ -1043,6 +1091,29 @@ export class CreditAccountService {
     );
 
     if (!creditAccount) {
+      throw new DataNotFoundException();
+    } else if (
+      creditAccount?.creditAccountStatusType ===
+        CreditAccountStatus.ACCOUNT_ON_HOLD &&
+      doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, [
+        ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+      ]) &&
+      creditAccount?.company.companyId === companyId
+    ) {
+      // Throw exception if companyId is a Credit Account User and user is Company Admin.
+      throw new ForbiddenException();
+    } else if (
+      creditAccount?.company?.companyId === companyId &&
+      creditAccount?.creditAccountStatusType ===
+        CreditAccountStatus.ACCOUNT_CLOSED &&
+      !doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, [
+        IDIRUserAuthGroup.HQ_ADMINISTRATOR,
+        IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
+        IDIRUserAuthGroup.FINANCE,
+        IDIRUserAuthGroup.PPC_CLERK,
+        IDIRUserAuthGroup.PPC_SUPERVISOR,
+      ])
+    ) {
       throw new DataNotFoundException();
     } else if (
       doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, [
@@ -1209,6 +1280,10 @@ export class CreditAccountService {
           case IDIRUserAuthGroup.HQ_ADMINISTRATOR:
           case IDIRUserAuthGroup.PPC_CLERK:
           case IDIRUserAuthGroup.PPC_SUPERVISOR:
+            return {
+              company: true,
+              creditAccountUsers: { company: true },
+            };
           case ClientUserAuthGroup.COMPANY_ADMINISTRATOR:
           case ClientUserAuthGroup.PERMIT_APPLICANT:
             return { company: true };
