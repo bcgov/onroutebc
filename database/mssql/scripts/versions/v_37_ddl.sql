@@ -18,7 +18,7 @@ CREATE TABLE [permit].[ORBC_SPECIAL_AUTH](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[COMPANY_ID] [int] NOT NULL,
 	[LCV] [char](1) NOT NULL,
-	[NO_FEE_TYPE] [varchar](12) NOT NULL,
+	[NO_FEE_TYPE] [varchar](12) NULL,
 	[APP_CREATE_TIMESTAMP] [datetime2](7) DEFAULT (getutcdate()),
 	[APP_CREATE_USERID] [nvarchar](30) DEFAULT (user_name()),
 	[APP_CREATE_USER_GUID] [char](32) NULL,
@@ -75,7 +75,7 @@ go
 
 CREATE TABLE [permit].[ORBC_NO_FEE_TYPE](
 	[NO_FEE_TYPE] [varchar](12) NOT NULL,
-	[DESCRIPTION] [nvarchar](100) NULL,
+	[DESCRIPTION] [nvarchar](100) NOT NULL,
 	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
 	[DB_CREATE_USERID] [varchar](63) NOT NULL,
 	[DB_CREATE_TIMESTAMP] [datetime2](7) NOT NULL,
@@ -97,6 +97,28 @@ GO
 ALTER TABLE [permit].[ORBC_SPECIAL_AUTH]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_SPECIAL_AUTH_NO_FEE_TYPE] FOREIGN KEY([NO_FEE_TYPE])
 REFERENCES [permit].[ORBC_NO_FEE_TYPE] ([NO_FEE_TYPE])
 ALTER TABLE [permit].[ORBC_SPECIAL_AUTH] CHECK CONSTRAINT [FK_ORBC_SPECIAL_AUTH_NO_FEE_TYPE]
+GO
+
+-- Default values
+ALTER TABLE [permit].[ORBC_SPECIAL_AUTH] 
+   ADD CONSTRAINT [DF_ORBC_SPECIAL_AUTH_LCV] 
+   DEFAULT('N')
+   FOR [LCV]
+GO
+
+INSERT [permit].[ORBC_NO_FEE_TYPE] ([NO_FEE_TYPE], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'CA_GOVT', N'The government of Canada or any province or any territory', NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
+INSERT [permit].[ORBC_NO_FEE_TYPE] ([NO_FEE_TYPE], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'MUN', N'A  municipality', NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
+INSERT [permit].[ORBC_NO_FEE_TYPE] ([NO_FEE_TYPE], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'SCHOOL', N'A school distrct outside of BC (S.9 Commercial Transaport Act)', NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
+INSERT [permit].[ORBC_NO_FEE_TYPE] ([NO_FEE_TYPE], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'USA_GOVT', N'The government of the United States of America', NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
+INSERT [permit].[ORBC_NO_FEE_TYPE] ([NO_FEE_TYPE], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'ANY_USA_GOVT', N'The government of any state or country  in the Unites States of America', NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Surrogate primary key for the special authorization table' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_SPECIAL_AUTH', @level2type=N'COLUMN',@level2name=N'ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to the ORBC_COMPANY table, this field represents the company that holds the special authorizations' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_SPECIAL_AUTH', @level2type=N'COLUMN',@level2name=N'COMPANY_ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The LCV flag indicates whether a company is permitted to operate long combination vehicles' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_SPECIAL_AUTH', @level2type=N'COLUMN',@level2name=N'LCV'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to ORBC_NO_FEE_TYPE table. If the fee type is null, it indicates that the company cannot apply for free permits. Otherwise, it provides the description why the company is eligible for free permits.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_SPECIAL_AUTH', @level2type=N'COLUMN',@level2name=N'NO_FEE_TYPE'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'It provides the abbreviations of the conditions under which the company is eligible for free permits.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_NO_FEE_TYPE', @level2type=N'COLUMN',@level2name=N'NO_FEE_TYPE'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'It provides the description of the conditions under which the company is eligible for free permits.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_NO_FEE_TYPE', @level2type=N'COLUMN',@level2name=N'DESCRIPTION'
 GO
 
 IF @@ERROR <> 0 SET NOEXEC ON
