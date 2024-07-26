@@ -1,6 +1,7 @@
 import {
   CreditAccountData,
   CreditAccountLimitType,
+  CreditAccountMetadata,
   CreditAccountStatusType,
 } from "../types/creditAccount";
 import { CREDIT_ACCOUNT_API_ROUTES } from "../apiManager/endpoints/endpoints";
@@ -32,11 +33,25 @@ export const createCreditAccount = async (data: {
  * Get credit account information for related to the given company ID
  * @returns Credit account information for the company
  */
+export const getCreditAccountMetadata = async (
+  companyId: number,
+): Promise<CreditAccountMetadata> => {
+  const response = await httpGETRequest(
+    CREDIT_ACCOUNT_API_ROUTES.GET_CREDIT_ACCOUNT_META_DATA(companyId),
+  );
+  return response.data;
+};
+
+/**
+ * Get credit account information for related to the given company ID
+ * @returns Credit account information for the company
+ */
 export const getCreditAccount = async (
   companyId: number,
+  creditAccountId: number,
 ): Promise<CreditAccountData> => {
   const response = await httpGETRequest(
-    CREDIT_ACCOUNT_API_ROUTES.GET_CREDIT_ACCOUNT(companyId),
+    CREDIT_ACCOUNT_API_ROUTES.GET_CREDIT_ACCOUNT(companyId, creditAccountId),
   );
   return response.data;
 };

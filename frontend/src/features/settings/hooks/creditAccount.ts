@@ -2,10 +2,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   addCreditAccountUser,
   createCreditAccount,
-  getCreditAccount,
+  getCreditAccountMetadata,
   removeCreditAccountUsers,
   getCreditAccountUsers,
   updateCreditAccountStatus,
+  getCreditAccount,
 } from "../apiManager/creditAccount";
 import { getCompanyDataBySearch } from "../../idir/search/api/idirSearch";
 import { useNavigate } from "react-router-dom";
@@ -24,10 +25,25 @@ import { CompanyProfile } from "../../manageProfile/types/manageProfile";
  * Hook to fetch the company credit account details for the active user.
  * @returns Query result of the company credit account details
  */
-export const useGetCreditAccountQuery = (companyId: number) => {
+export const useGetCreditAccountMetadataQuery = (companyId: number) => {
+  return useQuery({
+    queryKey: ["credit-account-metadata", { companyId }],
+    queryFn: () => getCreditAccountMetadata(companyId),
+    retry: false,
+  });
+};
+
+/**
+ * Hook to fetch the company credit account details for the active user.
+ * @returns Query result of the company credit account details
+ */
+export const useGetCreditAccountQuery = (
+  companyId: number,
+  creditAccountId: number,
+) => {
   return useQuery({
     queryKey: ["credit-account", { companyId }],
-    queryFn: () => getCreditAccount(companyId),
+    queryFn: () => getCreditAccount(companyId, creditAccountId),
     retry: false,
   });
 };
@@ -42,7 +58,7 @@ export const useGetCreditAccountUsersQuery = (data: {
 }) => {
   const { companyId, creditAccountId } = data;
   return useQuery({
-    queryKey: ["credit-account", { companyId }, "users"],
+    queryKey: ["credit-account-users", { companyId }, "users"],
     queryFn: () => getCreditAccountUsers({ companyId, creditAccountId }),
   });
 };

@@ -20,7 +20,7 @@ import {
   CREDIT_ACCOUNT_USER_TYPE,
   CreditAccountUser,
 } from "../../types/creditAccount";
-import { useGetCreditAccountQuery } from "../../hooks/creditAccount";
+import { useGetCreditAccountMetadataQuery } from "../../hooks/creditAccount";
 import "./UserTable.scss";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
@@ -35,7 +35,7 @@ export const UserTable = () => {
     isError,
     isLoading,
     refetch,
-  } = useGetCreditAccountQuery(getDefaultRequiredVal(0, companyId));
+  } = useGetCreditAccountMetadataQuery(getDefaultRequiredVal(0, companyId));
 
   const creditAccountUsers = creditAccount?.creditAccountUsers;
 

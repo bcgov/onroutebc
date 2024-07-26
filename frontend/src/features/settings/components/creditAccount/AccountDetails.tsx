@@ -7,7 +7,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import {
-  useGetCreditAccountQuery,
+  useGetCreditAccountMetadataQuery,
   useUpdateCreditAccountStatusMutation,
 } from "../../hooks/creditAccount";
 import {
@@ -36,7 +36,7 @@ export const AccountDetails = () => {
   const isMenuOpen = Boolean(anchorEl);
 
   const { data: creditAccount, refetch: refetchCreditAccount } =
-    useGetCreditAccountQuery(getDefaultRequiredVal(0, companyId));
+    useGetCreditAccountMetadataQuery(getDefaultRequiredVal(0, companyId));
 
   const { mutateAsync, isPending } = useUpdateCreditAccountStatusMutation();
 

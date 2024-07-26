@@ -7,6 +7,7 @@ import {
   CreditAccountLimitType,
   CREDIT_ACCOUNT_USER_TYPE,
   CREDIT_ACCOUNT_STATUS_TYPE,
+  CreditAccountMetadata,
 } from "../types/creditAccount";
 import {
   SelectChangeEvent,
@@ -32,7 +33,13 @@ import { StatusChip } from "../components/creditAccount/StatusChip";
 import { Loading } from "../../../common/pages/Loading";
 import "./CreditAccount.scss";
 
-export const CreditAccount = ({ companyId }: { companyId: number }) => {
+export const CreditAccount = ({
+  companyId,
+  creditAccountMetadata: { creditAccountId, userType },
+}: {
+  companyId: number;
+  creditAccountMetadata: CreditAccountMetadata;
+}) => {
   const { userRoles, userDetails, idirUserDetails } =
     useContext(OnRouteBCContext);
 
@@ -55,16 +62,12 @@ export const CreditAccount = ({ companyId }: { companyId: number }) => {
     data: creditAccount,
     isPending: creditAccountPending,
     refetch: refetchCreditAccount,
-  } = useGetCreditAccountQuery(companyId);
+  } = useGetCreditAccountQuery(companyId, creditAccountId);
 
   const { mutateAsync, isPending: creditAccountCreationPending } =
     useCreateCreditAccountMutation();
 
-  const accountHolder = creditAccount?.creditAccountUsers.find(
-    (user) => user.userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER,
-  );
-
-  const isAccountHolder = companyId === accountHolder?.companyId;
+  const isAccountHolder = userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER;
 
   const isActionSuccessful = (status: number) => {
     return status === 201;
@@ -112,7 +115,9 @@ export const CreditAccount = ({ companyId }: { companyId: number }) => {
                   Credit Account No: {creditAccount.creditAccountNumber}
                 </Typography>
 
-                <StatusChip status={creditAccount.creditAccountStatusType} />
+                <StatusChip
+                  status={creditAccount.creditAccountStatusType}
+                />
               </Box>
               <Typography className="overview__user-designation">
                 {isAccountHolder ? "Account Holder" : "Account User"}

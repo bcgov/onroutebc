@@ -6,7 +6,7 @@ import { useContext, useEffect, useState } from "react";
 import { AddUserModal } from "./AddUserModal";
 import {
   useGetCompanyQuery,
-  useGetCreditAccountQuery,
+  useGetCreditAccountMetadataQuery,
 } from "../../hooks/creditAccount";
 import "./AddUser.scss";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
@@ -25,7 +25,7 @@ export const AddUser = () => {
 
   const { data: companyData, isLoading } = useGetCompanyQuery(clientNumber);
 
-  const { refetch: refetchCreditAccount } = useGetCreditAccountQuery(
+  const { refetch: refetchCreditAccount } = useGetCreditAccountMetadataQuery(
     getDefaultRequiredVal(0, companyId),
   );
 

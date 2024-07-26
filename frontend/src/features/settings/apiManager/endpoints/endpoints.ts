@@ -32,17 +32,23 @@ const CREDIT_ACCOUNT_API_BASE = `${VEHICLES_URL}/companies`;
 
 export const CREDIT_ACCOUNT_API_ROUTES = {
   CREATE_CREDIT_ACCOUNT: (companyId: number) =>
-    `${CREDIT_ACCOUNT_API_BASE}/${companyId}/credit-account`,
-  GET_CREDIT_ACCOUNT: (companyId: number) =>
-    `${CREDIT_ACCOUNT_API_BASE}/${companyId}/credit-account`,
+    `${CREDIT_ACCOUNT_API_BASE}/${companyId}/credit-accounts`,
+  GET_CREDIT_ACCOUNT_META_DATA: (companyId: number) =>
+    `${CREDIT_ACCOUNT_API_BASE}/${companyId}/credit-accounts/meta-data`,
+  GET_CREDIT_ACCOUNT: (companyId: number, creditAccountId: number) =>
+    `${CREDIT_ACCOUNT_API_BASE}/${companyId}/credit-accounts/${creditAccountId}`,
+  GET_CREDIT_ACCOUNT_HISTORY: (companyId: number, creditAccountId: number) =>
+    `${CREDIT_ACCOUNT_API_BASE}/${companyId}/credit-accounts/${creditAccountId}/history`,
+  GET_CREDIT_ACCOUNT_LIMITS: (companyId: number, creditAccountId: number) =>
+    `${CREDIT_ACCOUNT_API_BASE}/${companyId}/credit-accounts/${creditAccountId}/limits`,
   GET_COMPANY: (clientNumber: string) =>
     `${CREDIT_ACCOUNT_API_BASE}/companies?page=1&take=1&clientNumber=${clientNumber}`,
   GET_CREDIT_ACCOUNT_USERS: (companyId: number, creditAccountId: number) =>
-    `${CREDIT_ACCOUNT_API_BASE}/${companyId}/credit-account/${creditAccountId}/credit-account-user?includeAccountHolder=true`,
+    `${CREDIT_ACCOUNT_API_BASE}/${companyId}/credit-accounts/${creditAccountId}/credit-account-users?includeAccountHolder=true`,
   ADD_CREDIT_ACCOUNT_USER: (companyId: number, creditAccountId: number) =>
-    `${CREDIT_ACCOUNT_API_BASE}/${companyId}/credit-account/${creditAccountId}/credit-account-user`,
+    `${CREDIT_ACCOUNT_API_BASE}/${companyId}/credit-accounts/${creditAccountId}/credit-account-users`,
   REMOVE_CREDIT_ACCOUNT_USER: (companyId: number, creditAccountId: number) =>
-    `${CREDIT_ACCOUNT_API_BASE}/${companyId}/credit-account/${creditAccountId}/credit-account-user`,
+    `${CREDIT_ACCOUNT_API_BASE}/${companyId}/credit-accounts/${creditAccountId}/credit-account-users`,
   UPDATE_ACCOUNT_STATUS: (companyId: number, creditAccountId: number) =>
-    `${CREDIT_ACCOUNT_API_BASE}/${companyId}/credit-account/${creditAccountId}/status`,
+    `${CREDIT_ACCOUNT_API_BASE}/${companyId}/credit-accounts/${creditAccountId}/status`,
 };

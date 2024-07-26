@@ -2,6 +2,11 @@ import { SnackbarAlertType } from "../../../common/components/snackbar/CustomSna
 import { Nullable } from "../../../common/types/common";
 import { CompanyProfile } from "../../manageProfile/types/manageProfile";
 
+export interface CreditAccountMetadata {
+  creditAccountId: number;
+  userType: CreditAccountUserType;
+}
+
 export interface CreditAccountData {
   creditAccountId: number;
   companyId: number;

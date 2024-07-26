@@ -4,7 +4,7 @@ import { faPlusCircle, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FormProvider, useForm } from "react-hook-form";
 import {
   useAddCreditAccountUserMutation,
-  useGetCreditAccountQuery,
+  useGetCreditAccountMetadataQuery,
 } from "../../hooks/creditAccount";
 import {
   CREDIT_ACCOUNT_USER_TYPE,
@@ -40,10 +40,10 @@ export const AddUserModal = ({
     return status === 200;
   };
 
-  const { data: creditAccount } = useGetCreditAccountQuery(
+  const { data: creditAccount } = useGetCreditAccountMetadataQuery(
     getDefaultRequiredVal(0, companyId),
   );
-  const { data: userCreditAccount } = useGetCreditAccountQuery(
+  const { data: userCreditAccount } = useGetCreditAccountMetadataQuery(
     userData.companyId,
   );
 
