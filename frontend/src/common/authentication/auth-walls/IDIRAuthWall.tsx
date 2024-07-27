@@ -10,6 +10,11 @@ import { DoesUserHaveAuthGroup } from "../util";
 import { Loading } from "../../pages/Loading";
 import { IDPS } from "../../types/idp";
 import { ERROR_ROUTES, HOME } from "../../../routes/constants";
+import {
+  PermissionMatrixConfigObject,
+  PermissionMatrixKeysType,
+  PERMISSIONS_MATRIX,
+} from "../PermissionMatrix";
 
 const isIDIR = (identityProvider: string) => identityProvider === IDPS.IDIR;
 
@@ -20,6 +25,7 @@ const isIDIR = (identityProvider: string) => identityProvider === IDPS.IDIR;
  */
 export const IDIRAuthWall = ({
   allowedAuthGroups,
+  permissionMatrixKeys,
 }: {
   /**
    * The collection of auth groups allowed to have access to a page or action.
@@ -27,6 +33,7 @@ export const IDIRAuthWall = ({
    * If not provided, only a System Admin will be allowed to access.
    */
   allowedAuthGroups?: IDIRUserAuthGroupType[];
+  permissionMatrixKeys?: PermissionMatrixKeysType;
 }) => {
   const {
     isAuthenticated,
@@ -81,6 +88,22 @@ export const IDIRAuthWall = ({
           replace
         />
       );
+    }
+
+    if (permissionMatrixKeys) {
+      const { permissionMatrixFeatureKey, permissionMatrixFunctionKey } =
+        permissionMatrixKeys;
+      const { allowedIDIRAuthGroups } = (
+        PERMISSIONS_MATRIX[permissionMatrixFeatureKey] as {
+          [key: string]: PermissionMatrixConfigObject;
+        }
+      )[permissionMatrixFunctionKey];
+      const isAllowed = allowedIDIRAuthGroups?.includes(
+        idirUserDetails.userAuthGroup,
+      );
+      if (isAllowed) {
+        return <Outlet />;
+      }
     }
 
     const doesUserHaveAccess = DoesUserHaveAuthGroup<IDIRUserAuthGroupType>({

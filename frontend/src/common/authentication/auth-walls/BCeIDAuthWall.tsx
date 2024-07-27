@@ -14,11 +14,20 @@ import { IDPS } from "../../types/idp";
 import { LoadBCeIDUserContext } from "../LoadBCeIDUserContext";
 import { LoadBCeIDUserRolesByCompany } from "../LoadBCeIDUserRolesByCompany";
 import OnRouteBCContext from "../OnRouteBCContext";
-import { IDIRUserAuthGroupType, UserRolesType } from "../types";
+import {
+  BCeIDUserAuthGroupType,
+  IDIRUserAuthGroupType,
+  UserRolesType,
+} from "../types";
 import { DoesUserHaveRole } from "../util";
 import { IDIRAuthWall } from "./IDIRAuthWall";
 import { setRedirectInSession } from "../../helpers/util";
 import { getUserStorage } from "../../apiManager/httpRequestHandler";
+import {
+  PermissionMatrixConfigObject,
+  PermissionMatrixKeysType,
+  PERMISSIONS_MATRIX,
+} from "../PermissionMatrix";
 
 export const isIDIR = (identityProvider: string) =>
   identityProvider === IDPS.IDIR;
@@ -26,6 +35,7 @@ export const isIDIR = (identityProvider: string) =>
 export const BCeIDAuthWall = ({
   requiredRole,
   allowedIDIRAuthGroups,
+  permissionMatrixKeys,
 }: {
   requiredRole?: UserRolesType;
   /**
@@ -34,6 +44,7 @@ export const BCeIDAuthWall = ({
    * If not provided, only a System Admin will be allowed to access.
    */
   allowedIDIRAuthGroups?: IDIRUserAuthGroupType[];
+  permissionMatrixKeys?: PermissionMatrixKeysType;
 }) => {
   const {
     isAuthenticated,
@@ -42,7 +53,8 @@ export const BCeIDAuthWall = ({
     signinSilent,
   } = useAuth();
 
-  const { userRoles, companyId, isNewBCeIDUser } = useContext(OnRouteBCContext);
+  const { userRoles, companyId, isNewBCeIDUser, userDetails } =
+    useContext(OnRouteBCContext);
   const userIDP = userFromToken?.profile?.identity_provider as string;
 
   const location = useLocation();
@@ -111,7 +123,12 @@ export const BCeIDAuthWall = ({
   if (isAuthenticated && isEstablishedUser) {
     if (isIDIR(userIDP)) {
       if (companyId) {
-        return <IDIRAuthWall allowedAuthGroups={allowedIDIRAuthGroups} />;
+        return (
+          <IDIRAuthWall
+            allowedAuthGroups={allowedIDIRAuthGroups}
+            permissionMatrixKeys={permissionMatrixKeys}
+          />
+        );
       } else {
         return (
           <Navigate
@@ -138,6 +155,22 @@ export const BCeIDAuthWall = ({
             <Loading />
           </>
         );
+      }
+    }
+
+    if (permissionMatrixKeys) {
+      const { permissionMatrixFeatureKey, permissionMatrixFunctionKey } =
+        permissionMatrixKeys;
+      const { allowedBCeIDAuthGroups } = (
+        PERMISSIONS_MATRIX[permissionMatrixFeatureKey] as {
+          [key: string]: PermissionMatrixConfigObject;
+        }
+      )[permissionMatrixFunctionKey];
+      const isAllowed = allowedBCeIDAuthGroups?.includes(
+        userDetails?.userAuthGroup as BCeIDUserAuthGroupType,
+      );
+      if (isAllowed) {
+        return <Outlet />;
       }
     }
 

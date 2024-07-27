@@ -444,12 +444,12 @@ export type PermissionMatrixKeysType = {
      * The name of the feature as defined in the Feature column in the matrix
      * document.
      */
-    permissionMatrixFeatureKey?: K;
+    permissionMatrixFeatureKey: K;
     /**
      * The name of the function as defined in the Function column in the matrix
      * document.
      */
-    permissionMatrixFunctionKey?: keyof (typeof PERMISSIONS_MATRIX)[K];
+    permissionMatrixFunctionKey: keyof (typeof PERMISSIONS_MATRIX)[K];
   };
 }[keyof typeof PERMISSIONS_MATRIX];
 
@@ -476,10 +476,11 @@ export type PermissionMatrixKeysType = {
 export const usePermissionMatrix = ({
   featureFlag,
   onlyConditionToCheck,
-  permissionMatrixFeatureKey,
-  permissionMatrixFunctionKey,
+  permissionMatrixKeys,
   additionalConditionToCheck,
-}: PermissionConfigType & PermissionMatrixKeysType): boolean => {
+}: PermissionConfigType & {
+  permissionMatrixKeys?: PermissionMatrixKeysType;
+}): boolean => {
   const { userDetails, idirUserDetails } = useContext(OnRouteBCContext);
   const { data: featureFlags } = useFeatureFlagsQuery();
   const isIdir = Boolean(idirUserDetails?.userAuthGroup);
@@ -497,7 +498,9 @@ export const usePermissionMatrix = ({
   }
   let isAllowed = false;
   let currentUserAuthGroup;
-  if (permissionMatrixFeatureKey && permissionMatrixFunctionKey) {
+  if (permissionMatrixKeys) {
+    const { permissionMatrixFeatureKey,
+      permissionMatrixFunctionKey } = permissionMatrixKeys;
     const { allowedBCeIDAuthGroups, allowedIDIRAuthGroups } = (
       PERMISSIONS_MATRIX[permissionMatrixFeatureKey] as {
         [key: string]: PermissionMatrixConfigObject;
