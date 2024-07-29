@@ -26,6 +26,11 @@
         "messageTemplate": "Start Date must be within :max days.",
         "placeholders": [":max"]
       }
+    },
+    "expiry": {
+      "beforeStart": {
+        "defaultMessage": "Expiry cannot be before Start Date"
+      }
     }
   },
   "email": {
@@ -106,6 +111,18 @@
         "messageTemplate": "Plate length must not be longer than :max",
         "placeholders": [":max"]
       }
+    }
+  },
+  "upload": {
+    "fileSize": {
+      "exceeded": "File exceeds maximum size"
+    },
+    "fileFormat": {
+      "defaultMessage": "File format not supported"
+    },
+    "required": {
+      "messageTemplate": "The :item must be uploaded",
+      "placeholders": [":item"]
     }
   }
 }

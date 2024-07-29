@@ -8,6 +8,7 @@ import {
 export type VehicleType = IdentifiedObject & {
   category: string;
   defaultSizeDimensions?: SizeDimension;
+  ignoreForSizeDimensions?: boolean;
 };
 
 export type PowerUnitType = VehicleType & {

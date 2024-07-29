@@ -1,12 +1,27 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { ReadCompanyMetadataDto } from '../../../company-user-management/company/dto/response/read-company-metadata.dto';
+import { CreditAccountUserType } from '../../../../common/enum/credit-accounts.enum';
 
-export class ReadCreditAccountMetadataDto extends ReadCompanyMetadataDto {
+export class ReadCreditAccountMetadataDto {
   @AutoMap()
   @ApiProperty({
-    description: 'The credit account number.',
-    example: 'WS5667',
+    description: 'The credit account id.',
+    example: 62,
   })
-  creditAccountNumber: string;
+  creditAccountId: number;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'The credit account user type.',
+    example: CreditAccountUserType.ACCOUNT_HOLDER,
+  })
+  userType: CreditAccountUserType;
+
+  @AutoMap()
+  @ApiProperty({
+    description:
+      'Indicates whether the credit account can be used as a valid payment method.',
+    example: false,
+  })
+  isValidPaymentMethod: boolean;
 }

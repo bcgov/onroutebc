@@ -1,0 +1,22 @@
+@import "../../../../themes/orbcStyles";
+
+.custom-checkbox {
+  &#{&} {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  & &__checkbox {
+    margin: 0;
+    padding: 0;
+
+    &--invalid {
+      color: $bc-red;
+    }
+  }
+
+  & &__label {
+    margin: 0 0 0 0.5rem;
+  }
+}

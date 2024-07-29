@@ -312,6 +312,14 @@ export const masterPolicyConfig: PolicyDefinition = {
           },
         },
       ],
+      costRules: [
+        {
+          fact: 'costPerMonth',
+          params: {
+            cost: 30,
+          },
+        },
+      ],
     },
     {
       id: 'TROW',
@@ -388,6 +396,14 @@ export const masterPolicyConfig: PolicyDefinition = {
               code: 'field-validation-error',
               fieldReference: 'permitData.vehicleDetails.vehicleSubType',
             },
+          },
+        },
+      ],
+      costRules: [
+        {
+          fact: 'costPerMonth',
+          params: {
+            cost: 100,
           },
         },
       ],

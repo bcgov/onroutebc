@@ -1,4 +1,4 @@
-import { Engine } from 'json-rules-engine';
+import { Engine, RuleProperties } from 'json-rules-engine';
 import { CustomOperators } from '../rule-operator/custom-operators';
 import { Policy } from 'onroute-policy-engine';
 import { PolicyDefinition } from 'onroute-policy-engine/types';
@@ -11,7 +11,7 @@ import { PolicyFacts } from 'onroute-policy-engine/enum';
  * @returns json-rules-engine Engine instance.
  */
 function getEngine(policyDefinition: PolicyDefinition): Engine {
-  const engine = new Engine();
+  const engine = new Engine([], { replaceFactsInEventParams: true });
   CustomOperators.forEach((o) => engine.addOperator(o));
   policyDefinition.commonRules.forEach((r) => engine.addRule(r));
   return engine;
@@ -31,6 +31,35 @@ export function getRulesEngines(policy: Policy): Map<string, Engine> {
     const engine = getEngine(policy.policyDefinition);
 
     permitType.rules?.forEach((r) => engine.addRule(r));
+
+    // Convert the cost definitions into proper rules so the
+    // results can be added to the validation run. This takes advantage
+    // of the replaceFactsInEventParams option for the json-rules-engine
+    // Engine object.
+    permitType.costRules?.forEach((c) => {
+      const costRule: RuleProperties = {
+        conditions: {
+          all: [
+            {
+              fact: c.fact,
+              params: c.params,
+              operator: 'greaterThanInclusive',
+              value: 0,
+            },
+          ],
+        },
+        event: {
+          type: 'cost',
+          params: {
+            message: 'Calculated permit cost',
+            code: 'cost-value',
+            cost: c,
+          },
+        },
+      };
+
+      engine.addRule(costRule);
+    });
 
     let allowedVehicles: Array<string>;
     if (permitType.allowedVehicles && permitType.allowedVehicles.length > 0) {
