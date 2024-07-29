@@ -32,6 +32,7 @@ export const useGetCreditAccountMetadataQuery = (companyId: number) => {
     queryKey: ["credit-account-metadata", { companyId }],
     queryFn: () => getCreditAccountMetadata(companyId),
     retry: false,
+    refetchOnWindowFocus: false,
   });
 };
 
@@ -47,6 +48,7 @@ export const useGetCreditAccountQuery = (
     queryKey: ["credit-account", { companyId }],
     queryFn: () => getCreditAccount(companyId, creditAccountId),
     retry: false,
+    refetchOnWindowFocus: false,
   });
 };
 
@@ -63,6 +65,7 @@ export const useGetCreditAccountLimitsQuery = (data: {
     queryKey: ["credit-account-limits", { companyId, creditAccountId }],
     queryFn: () => getCreditAccountLimits({ companyId, creditAccountId }),
     retry: false,
+    refetchOnWindowFocus: false,
   });
 };
 
@@ -92,7 +95,7 @@ export const useGetCreditAccountUsersQuery = (data: {
 }) => {
   const { companyId, creditAccountId } = data;
   return useQuery({
-    queryKey: ["credit-account-users", { companyId }, "users"],
+    queryKey: ["credit-account-users", { companyId }],
     queryFn: () => getCreditAccountUsers({ companyId, creditAccountId }),
     retry: false,
   });

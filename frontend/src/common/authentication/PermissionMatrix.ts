@@ -160,7 +160,7 @@ const MANAGE_PROFILE = {
    * Company Information tab
    */
   VIEW_COMPANY_INFORMATION: {
-    allowedBCeIDAuthGroups: [CA],
+    allowedBCeIDAuthGroups: ALL_BCeID_GROUPS,
     allowedIDIRAuthGroups: [PC, SA, FIN, CTPO, HQA],
   },
   EDIT_COMPANY_INFORMATION: {
