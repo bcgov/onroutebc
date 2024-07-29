@@ -2,7 +2,6 @@ import { Box } from "@mui/material";
 import { useContext, useEffect } from "react";
 import { useSearchParams, useNavigate, Navigate } from "react-router-dom";
 import { FormProvider, useForm } from "react-hook-form";
-
 import "./ShoppingCartPage.scss";
 import { ApplicationContext } from "../../context/ApplicationContext";
 import { isZeroAmount } from "../../helpers/feeSummary";
@@ -19,7 +18,12 @@ import { ChoosePaymentMethod } from "../Application/components/pay/ChoosePayment
 import {
   DEFAULT_EMPTY_CARD_TYPE,
   DEFAULT_EMPTY_PAYMENT_TYPE,
+  getPaymentMethodTypeCode,
   IcepayPaymentData,
+  PPCPaymentData,
+  PPCPaymentType,
+  ServiceBCPaymentData,
+  isCashOrCheque,
   PaymentMethodData,
 } from "../Application/components/pay/types/PaymentMethodData";
 import { hasPermitsActionFailed } from "../../helpers/permitState";
@@ -41,6 +45,7 @@ import {
   PERMITS_ROUTES,
   SHOPPING_CART_ROUTES,
 } from "../../../../routes/constants";
+import { Loading } from "../../../../common/pages/Loading";
 
 const AVAILABLE_STAFF_PAYMENT_METHODS = [
   PAYMENT_METHOD_TYPE_CODE.ICEPAY,
@@ -48,7 +53,6 @@ const AVAILABLE_STAFF_PAYMENT_METHODS = [
   PAYMENT_METHOD_TYPE_CODE.CHEQUE,
   PAYMENT_METHOD_TYPE_CODE.POS,
   PAYMENT_METHOD_TYPE_CODE.GA,
-  PAYMENT_METHOD_TYPE_CODE.PPC,
 ];
 
 const AVAILABLE_CV_PAYMENT_METHODS = [PAYMENT_METHOD_TYPE_CODE.WEB];
@@ -108,7 +112,7 @@ export const ShoppingCartPage = () => {
 
   const { mutation: issuePermitMutation, issueResults } = useIssuePermits();
 
-  // TODO additional logic needed so that FIN user cannot pay using PPCPayment or GAPayment
+  // TODO additional logic needed so that FIN user see PPCPaymentOption or ServiceBCPaymentOption
   const availablePaymentMethods = isStaffActingAsCompany
     ? AVAILABLE_STAFF_PAYMENT_METHODS
     : AVAILABLE_CV_PAYMENT_METHODS;
@@ -203,25 +207,67 @@ export const ShoppingCartPage = () => {
     });
   };
 
-  const handlePay = (paymentMethodData: PaymentMethodData) => {
-    if (startTransactionMutation.isPending) {
-      // Disable pay action while transaction is being created/processed (ie. "Pay Now" button has been clicked)
-      return;
-    }
+  const handlePayWithPPC = (
+    paymentType: PPCPaymentType,
+    transactionId: string,
+  ) => {
+    startTransactionMutation.mutate({
+      transactionTypeId: TRANSACTION_TYPES.P,
+      paymentMethodTypeCode: getPaymentMethodTypeCode(paymentType),
+      paymentCardTypeCode: !isCashOrCheque(paymentType)
+        ? (paymentType as PaymentCardTypeCode)
+        : undefined,
+      applicationDetails: [
+        ...selectedApplications.map((application) => ({
+          applicationId: application.applicationId,
+          transactionAmount: application.fee,
+        })),
+      ],
+      pgTransactionId: transactionId,
+      pgCardType: isCashOrCheque(paymentType)
+        ? undefined
+        : (paymentType as PaymentCardTypeCode),
+    });
+  };
 
+  const handlePayWithServiceBC = (serviceBCOfficeId: string) => {
+    startTransactionMutation.mutate({
+      transactionTypeId: TRANSACTION_TYPES.P,
+      paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.GA,
+      paymentCardTypeCode: undefined,
+      applicationDetails: [
+        ...selectedApplications.map((application) => ({
+          applicationId: application.applicationId,
+          transactionAmount: application.fee,
+        })),
+      ],
+      pgTransactionId: serviceBCOfficeId,
+      pgCardType: undefined,
+    });
+  };
+
+  const handlePay = (paymentMethodData: PaymentMethodData) => {
     const { paymentMethod, additionalPaymentData } = paymentMethodData;
     if (paymentMethod === PAYMENT_METHOD_TYPE_CODE.ICEPAY) {
-      const icepayData = additionalPaymentData as IcepayPaymentData;
+      const { cardType, icepayTransactionId } =
+        additionalPaymentData as IcepayPaymentData;
       if (
-        icepayData.cardType !== DEFAULT_EMPTY_CARD_TYPE &&
-        icepayData.cardType &&
-        icepayData.icepayTransactionId
+        cardType &&
+        cardType !== DEFAULT_EMPTY_CARD_TYPE &&
+        icepayTransactionId
       ) {
-        handlePayWithIcepay(
-          icepayData.cardType,
-          icepayData.icepayTransactionId,
-        );
+        handlePayWithIcepay(cardType, icepayTransactionId);
       }
+    } else if (paymentMethod === PAYMENT_METHOD_TYPE_CODE.POS) {
+      const { paymentType, ppcTransactionId } =
+        additionalPaymentData as PPCPaymentData;
+      if (paymentType && paymentType !== DEFAULT_EMPTY_PAYMENT_TYPE) {
+        handlePayWithPPC(paymentType, ppcTransactionId);
+      }
+    } else if (paymentMethod === PAYMENT_METHOD_TYPE_CODE.GA) {
+      const { serviceBCOfficeId } =
+        additionalPaymentData as ServiceBCPaymentData;
+      handlePayWithServiceBC(serviceBCOfficeId);
     } else if (paymentMethod === PAYMENT_METHOD_TYPE_CODE.WEB) {
       handlePayWithPayBC();
     }
@@ -291,6 +337,10 @@ export const ShoppingCartPage = () => {
     return <Navigate to={ERROR_ROUTES.UNAUTHORIZED} />;
   }
 
+  if (issuePermitMutation.isPending) {
+    return <Loading />;
+  }
+
   return (
     <div className="shopping-cart-page">
       <Box className="shopping-cart-page__left-container">
@@ -321,6 +371,7 @@ export const ShoppingCartPage = () => {
             permitType={applicationData?.permitType}
             selectedItemsCount={selectedApplications.length}
             onPay={handleSubmit(handlePay)}
+            transactionPending={startTransactionMutation.isPending}
           />
         </FormProvider>
       </Box>

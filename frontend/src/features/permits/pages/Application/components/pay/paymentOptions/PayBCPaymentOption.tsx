@@ -1,34 +1,35 @@
 import { FormControlLabel, Radio } from "@mui/material";
-
-import "./PayBCPaymentOption.scss";
 import { PAYMENT_METHOD_TYPE_CODE } from "../../../../../../../common/types/paymentMethods";
+import "./PayBCPaymentOption.scss";
+
+const paymentMethod = PAYMENT_METHOD_TYPE_CODE.WEB;
 
 export const PayBCPaymentOption = ({
   isSelected,
+  handlePaymentMethodChange,
 }: {
   isSelected: boolean;
+  handlePaymentMethodChange: (selectedPaymentMethod: string) => void;
 }) => {
   return (
     <div
+      role="radio"
+      onClick={() => handlePaymentMethodChange(paymentMethod)}
       className={`payment-option payment-option--paybc ${
-        isSelected
-          ? "payment-option--active"
-          : ""
+        isSelected ? "payment-option--active" : ""
       }`}
     >
       <FormControlLabel
         className="payment-option__label"
         componentsProps={{
           typography: {
-            className: "label-container"
-          }
+            className: "label-container",
+          },
         }}
         label={
           <div className="label-icon-display">
             <div className="label-icon-display__left">
-              <span className="label-icon-display__title">
-                Use
-              </span>
+              <span className="label-icon-display__title">Use</span>
               <img
                 src="/PayBC-Main-Logo.png"
                 alt="PayBC"
@@ -55,13 +56,12 @@ export const PayBCPaymentOption = ({
           </div>
         }
         value={PAYMENT_METHOD_TYPE_CODE.WEB}
-        control={
-          <Radio key="pay-by-paybc" />
-        }
+        control={<Radio key="pay-by-paybc" />}
       />
 
       <div className="payment-option__msg">
-        A convenient, secure and easy way to pay for BC Government Services online.
+        A convenient, secure and easy way to pay for BC Government Services
+        online.
       </div>
     </div>
   );

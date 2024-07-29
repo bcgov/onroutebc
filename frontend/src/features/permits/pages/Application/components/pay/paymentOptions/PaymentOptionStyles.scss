@@ -5,11 +5,20 @@
     padding: 1.5rem;
     border: 1px solid $bc-text-box-border-grey;
     border-radius: 0.5rem;
-    color: $bc-black;
-
+    cursor: pointer;
+    color: $disabled-colour;
+    
     &--active {
       border: 1px solid $bc-black;
       background-color: $bc-messages-blue-background;
+      box-shadow: 0 0 0.5rem #00000029;
+      color: $bc-black;
+    }
+
+    &:hover:not(.payment-option--active)  {
+      border: 1px solid $bc-black;
+      background-color: $bc-background-light-grey;
+      box-shadow: 0 0 0.5rem #00000029;
     }
 
     & &__label {
@@ -20,13 +29,19 @@
       margin-right: 0;
       width: 100%;
     }
-
+    
     .label-container {
       display: flex;
       flex-direction: row;
       align-items: center;
       margin-bottom: 0;
       width: 100%;
+    }
+
+    .label-text {
+      font-size: 1.25rem;
+      font-weight: bold;
+      letter-spacing: -0.4px;
     }
 
     .label-icon-display {
@@ -58,6 +73,30 @@
       &__icon {
         &--mc {
           margin: 0 1rem;
+        }
+      }
+    }
+
+    .payment-details {
+      &__input {
+        &--disabled {
+          fieldset {
+            background-color: $bc-background-light-grey !important;
+            border: 2px solid $bc-text-box-border-grey !important;
+          }
+        }
+      }
+      &__label {
+        &--disabled {
+          color: $disabled-colour ;
+        }
+      }
+    }
+
+    &:not(.payment-option--active) {
+      .payment-details {
+         &__label, &__input, input {
+          color: $disabled-colour ;
         }
       }
     }

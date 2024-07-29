@@ -12,7 +12,6 @@ export const PAYMENT_METHOD_TYPE_CODE = {
   POS: "POS",
   WEB: "WEB",
   NP: "NP",
-  PPC: "PPC",
 } as const;
 
 /**
@@ -33,7 +32,6 @@ export const PAYMENT_METHOD_TYPE_DISPLAY = {
   POS: "PoS",
   WEB: "Web",
   NP: "No Payment",
-  PPC: "In-person at a Provincial Permit Centre",
 } as const;
 
 /**

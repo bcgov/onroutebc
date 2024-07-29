@@ -3,10 +3,11 @@
 
 @include PaymentOptionStyles.payment-option-style(".payment-option");
 
-.payment-option {
-  .label-text {
-    font-size: 1.25rem;
-    font-weight: bold;
-    letter-spacing: -0.4px;
-  }
-}
+// .payment-details {
+//   &__info {
+//     fieldset {
+//       background-color: $bc-background-light-grey !important;
+//       border: 2px solid $bc-text-box-border-grey !important;
+//     }
+//   }
+// }

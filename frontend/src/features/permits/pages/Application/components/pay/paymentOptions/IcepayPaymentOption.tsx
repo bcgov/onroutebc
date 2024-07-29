@@ -24,6 +24,8 @@ import {
   PAYMENT_CARD_TYPE_DISPLAY,
 } from "../../../../../../../common/types/paymentMethods";
 
+const paymentMethod = PAYMENT_METHOD_TYPE_CODE.ICEPAY;
+
 const cardTypeOptions = [
   {
     label: "Select",
@@ -58,7 +60,7 @@ const cardTypeRules = {
       formValues: PaymentMethodData,
     ) => {
       return (
-        formValues.paymentMethod !== PAYMENT_METHOD_TYPE_CODE.ICEPAY ||
+        formValues.paymentMethod !== paymentMethod ||
         (value != null &&
           value.trim() !== "" &&
           value.trim() !== DEFAULT_EMPTY_CARD_TYPE) ||
@@ -75,7 +77,7 @@ const transactionIdRules = {
       formValues: PaymentMethodData,
     ) => {
       return (
-        formValues.paymentMethod !== PAYMENT_METHOD_TYPE_CODE.ICEPAY ||
+        formValues.paymentMethod !== paymentMethod ||
         (value != null && value.trim() !== "") ||
         requiredMessage()
       );
@@ -85,8 +87,10 @@ const transactionIdRules = {
 
 export const IcepayPaymentOption = ({
   isSelected,
+  handlePaymentMethodChange,
 }: {
   isSelected: boolean;
+  handlePaymentMethodChange: (selectedPaymentMethod: string) => void;
 }) => {
   const {
     control,
@@ -96,6 +100,8 @@ export const IcepayPaymentOption = ({
 
   return (
     <div
+      role="radio"
+      onClick={() => handlePaymentMethodChange(paymentMethod)}
       className={`payment-option payment-option--icepay ${
         isSelected ? "payment-option--active" : ""
       }`}
@@ -135,7 +141,7 @@ export const IcepayPaymentOption = ({
             </div>
           </div>
         }
-        value={PAYMENT_METHOD_TYPE_CODE.ICEPAY}
+        value={paymentMethod}
         control={<Radio key="pay-by-icepay" />}
       />
 
@@ -158,6 +164,7 @@ export const IcepayPaymentOption = ({
                 }`}
                 value={value}
                 {...register("additionalPaymentData.cardType", cardTypeRules)}
+                onOpen={() => handlePaymentMethodChange(paymentMethod)}
               >
                 {cardTypeOptions.map((cardTypeOption) => (
                   <MenuItem
@@ -198,6 +205,7 @@ export const IcepayPaymentOption = ({
                   "additionalPaymentData.icepayTransactionId",
                   transactionIdRules,
                 )}
+                onChange={() => handlePaymentMethodChange(paymentMethod)}
               />
               {invalid ? (
                 <FormHelperText className="payment-details__err" error>

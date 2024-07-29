@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   FormControl,
   FormControlLabel,
@@ -17,13 +16,16 @@ import {
 } from "../../../../../../../common/types/paymentMethods";
 import {
   DEFAULT_EMPTY_PAYMENT_TYPE,
+  isCashOrCheque,
   PaymentMethodData,
 } from "../types/PaymentMethodData";
-import "./PPCPaymentOption.scss";
 import { Controller, useFormContext } from "react-hook-form";
 import { Nullable } from "../../../../../../../common/types/common";
 import { requiredMessage } from "../../../../../../../common/helpers/validationMessages";
 import { getErrorMessage } from "../../../../../../../common/components/form/CustomFormComponents";
+import "./PPCPaymentOption.scss";
+
+const paymentMethod = PAYMENT_METHOD_TYPE_CODE.POS;
 
 const paymentTypeOptions = [
   {
@@ -64,47 +66,68 @@ const paymentTypeOptions = [
   },
 ];
 
-const paymentTypeRules = {
-  validate: {
-    requiredWhenSelected: (
-      value: Nullable<string>,
-      formValues: PaymentMethodData,
-    ) => {
-      return (
-        formValues.paymentMethod !== PAYMENT_METHOD_TYPE_CODE.PPC ||
-        (value != null &&
-          value.trim() !== "" &&
-          value.trim() !== DEFAULT_EMPTY_PAYMENT_TYPE) ||
-        requiredMessage()
-      );
-    },
-  },
-};
-
-const transactionIdRules = {
-  validate: {
-    requiredWhenSelected: (
-      value: Nullable<string>,
-      formValues: PaymentMethodData,
-    ) => {
-      return (
-        formValues.paymentMethod !== PAYMENT_METHOD_TYPE_CODE.PPC ||
-        (value != null && value.trim() !== "") ||
-        requiredMessage()
-      );
-    },
-  },
-};
-
-export const PPCPaymentOption = ({ isSelected }: { isSelected: boolean }) => {
+export const PPCPaymentOption = ({
+  isSelected,
+  handlePaymentMethodChange,
+}: {
+  isSelected: boolean;
+  handlePaymentMethodChange: (selectedPaymentMethod: string) => void;
+}) => {
   const {
     control,
     register,
+    watch,
     formState: { errors },
+    clearErrors,
   } = useFormContext<PaymentMethodData>();
+
+  const paymentType = watch("additionalPaymentData.paymentType");
+
+  const disableTransactionIdInput = isCashOrCheque(paymentType);
+
+  const paymentTypeRules = {
+    validate: {
+      requiredWhenSelected: (
+        value: Nullable<string>,
+        formValues: PaymentMethodData,
+      ) => {
+        return (
+          formValues.paymentMethod !== paymentMethod ||
+          (value != null &&
+            value.trim() !== "" &&
+            value.trim() !== DEFAULT_EMPTY_PAYMENT_TYPE) ||
+          requiredMessage()
+        );
+      },
+    },
+  };
+
+  const transactionIdRules = {
+    validate: {
+      requiredWhenSelected: (
+        value: Nullable<string>,
+        formValues: PaymentMethodData,
+      ) => {
+        if (isCashOrCheque(paymentType)) {
+          return true;
+        }
+        return (
+          formValues.paymentMethod !== paymentMethod ||
+          (value != null && value.trim() !== "") ||
+          requiredMessage()
+        );
+      },
+    },
+  };
+
+  const paymentTypeRegister = register("additionalPaymentData.paymentType", {
+    ...transactionIdRules,
+  });
 
   return (
     <div
+      role="radio"
+      onClick={() => handlePaymentMethodChange(paymentMethod)}
       className={`payment-option payment-option--ppc ${
         isSelected ? "payment-option--active" : ""
       }`}
@@ -118,10 +141,10 @@ export const PPCPaymentOption = ({ isSelected }: { isSelected: boolean }) => {
         }}
         label={
           <div className="label-text">
-            {PAYMENT_METHOD_TYPE_DISPLAY[PAYMENT_METHOD_TYPE_CODE.PPC]}
+            In-person at a Provinicial Permit Centre
           </div>
         }
-        value={PAYMENT_METHOD_TYPE_CODE.PPC}
+        value={paymentMethod}
         control={<Radio key="pay-by-ppc" />}
       />
       <div className="payment-details">
@@ -129,7 +152,7 @@ export const PPCPaymentOption = ({ isSelected }: { isSelected: boolean }) => {
           name="additionalPaymentData.paymentType"
           control={control}
           rules={paymentTypeRules}
-          render={({ field: { value }, fieldState: { invalid } }) => (
+          render={({ field: { value, onChange }, fieldState: { invalid } }) => (
             <FormControl
               className="payment-details__info payment-details__info--card"
               error={invalid}
@@ -141,11 +164,13 @@ export const PPCPaymentOption = ({ isSelected }: { isSelected: boolean }) => {
                 className={`payment-details__input payment-details__input--card ${
                   invalid ? "payment-details__input--err" : ""
                 }`}
+                {...paymentTypeRegister}
                 value={value}
-                {...register(
-                  "additionalPaymentData.paymentType",
-                  paymentTypeRules,
-                )}
+                onChange={(e) => {
+                  clearErrors("additionalPaymentData.ppcTransactionId");
+                  onChange(e);
+                }}
+                onOpen={() => handlePaymentMethodChange(paymentMethod)}
               >
                 {paymentTypeOptions.map((paymentTypeOption) => (
                   <MenuItem
@@ -164,6 +189,7 @@ export const PPCPaymentOption = ({ isSelected }: { isSelected: boolean }) => {
             </FormControl>
           )}
         />
+
         <Controller
           name="additionalPaymentData.ppcTransactionId"
           control={control}
@@ -173,18 +199,26 @@ export const PPCPaymentOption = ({ isSelected }: { isSelected: boolean }) => {
               className="payment-details__info payment-details__info--transaction"
               error={invalid}
             >
-              <FormLabel className="payment-details__label">
+              <FormLabel
+                className={`payment-details__label ${disableTransactionIdInput ? "payment-details__label--disabled" : ""}`}
+              >
                 Transaction ID
               </FormLabel>
               <OutlinedInput
                 className={`payment-details__input payment-details__input--transaction ${
-                  invalid ? "payment-details__input--err" : ""
+                  invalid
+                    ? "payment-details__input--err"
+                    : disableTransactionIdInput
+                      ? "payment-details__input--disabled"
+                      : ""
                 }`}
                 defaultValue={value}
                 {...register(
                   "additionalPaymentData.ppcTransactionId",
                   transactionIdRules,
                 )}
+                onChange={() => handlePaymentMethodChange(paymentMethod)}
+                disabled={disableTransactionIdInput}
               />
               {invalid ? (
                 <FormHelperText className="payment-details__err" error>

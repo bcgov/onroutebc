@@ -8,20 +8,21 @@
   flex-direction: row;
   background-color: $white;
   padding-bottom: 9rem;
+  gap: 80px;
 
   & &__left-container {
     display: flex;
     flex-direction: column;
     margin-right: 0;
-    width: 100%;
+    width: 66.6%;
     padding-top: 1.5rem;
   }
 
   & &__right-container {
+    width: 33.3%;
     background-color: $bc-white;
     display: flex;
     flex-direction: column;
-    margin-left: 5rem;
 
     .choose-payment-method {
       margin-bottom: 2.5rem;
