@@ -21,6 +21,11 @@ export class ValidationResults {
    * permit.
    */
   information: Array<ValidationResult> = [];
+  /**
+   * Array of cost messages, based on cost rules. If there are more than
+   * one cost message, all should be summed to get the total permit cost.
+   */
+  cost: Array<ValidationResult> = [];
 
   /**
    * Creates a new ValidationResults from the json-rules-engine result.
@@ -45,6 +50,7 @@ export class ValidationResults {
           message,
         );
         result.fieldReference = e.params?.fieldReference;
+        result.cost = e.params?.cost;
 
         switch (type) {
           case ValidationResultType.Violation:
@@ -58,6 +64,9 @@ export class ValidationResults {
             break;
           case ValidationResultType.Information:
             this.information.push(result);
+            break;
+          case ValidationResultType.Cost:
+            this.cost.push(result);
             break;
           default:
             // Treat any unknown validation event as a violation since
