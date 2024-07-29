@@ -18,7 +18,7 @@ import { ChoosePaymentMethod } from "../Application/components/pay/ChoosePayment
 import {
   DEFAULT_EMPTY_CARD_TYPE,
   DEFAULT_EMPTY_PAYMENT_TYPE,
-  getPaymentMethodTypeCode,
+  getPPCPaymentMethodTypeCode,
   IcepayPaymentData,
   PPCPaymentData,
   PPCPaymentType,
@@ -213,7 +213,9 @@ export const ShoppingCartPage = () => {
   ) => {
     startTransactionMutation.mutate({
       transactionTypeId: TRANSACTION_TYPES.P,
-      paymentMethodTypeCode: getPaymentMethodTypeCode(paymentType),
+      paymentMethodTypeCode: isFeeZero
+        ? PAYMENT_METHOD_TYPE_CODE.NP
+        : getPPCPaymentMethodTypeCode(paymentType),
       paymentCardTypeCode: !isCashOrCheque(paymentType)
         ? (paymentType as PaymentCardTypeCode)
         : undefined,
@@ -233,7 +235,9 @@ export const ShoppingCartPage = () => {
   const handlePayWithServiceBC = (serviceBCOfficeId: string) => {
     startTransactionMutation.mutate({
       transactionTypeId: TRANSACTION_TYPES.P,
-      paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.GA,
+      paymentMethodTypeCode: isFeeZero
+        ? PAYMENT_METHOD_TYPE_CODE.NP
+        : PAYMENT_METHOD_TYPE_CODE.GA,
       paymentCardTypeCode: undefined,
       applicationDetails: [
         ...selectedApplications.map((application) => ({
