@@ -7,4 +7,5 @@ export enum PermitAppInfo {
   PermitStartDate = 'permitData.startDate',
   PermitDateFormat = 'YYYY-MM-DD',
   CompanyName = 'permitData.companyName',
+  PermitDuration = 'permitData.permitDuration',
 }
