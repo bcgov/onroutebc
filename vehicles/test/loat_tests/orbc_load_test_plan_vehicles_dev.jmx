@@ -1,0 +1,1464 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.4.1">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan" enabled="true">
+      <stringProp name="TestPlan.comments"></stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="Duration" elementType="Argument">
+            <stringProp name="Argument.name">Duration</stringProp>
+            <stringProp name="Argument.value">3180</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </elementProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+      <CacheManager guiclass="CacheManagerGui" testclass="CacheManager" testname="HTTP Cache Manager" enabled="true">
+        <boolProp name="clearEachIteration">true</boolProp>
+        <boolProp name="useExpires">false</boolProp>
+        <boolProp name="CacheManager.controlledByThread">false</boolProp>
+      </CacheManager>
+      <hashTree/>
+      <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager" enabled="true">
+        <collectionProp name="CookieManager.cookies"/>
+        <boolProp name="CookieManager.clearEachIteration">true</boolProp>
+        <boolProp name="CookieManager.controlledByThreadGroup">false</boolProp>
+      </CookieManager>
+      <hashTree/>
+      <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+        <collectionProp name="HeaderManager.headers">
+          <elementProp name="Accept-Language" elementType="Header">
+            <stringProp name="Header.name">Accept-Language</stringProp>
+            <stringProp name="Header.value">en-us,en;q=0.5</stringProp>
+          </elementProp>
+          <elementProp name="Accept" elementType="Header">
+            <stringProp name="Header.name">Accept</stringProp>
+            <stringProp name="Header.value">text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8</stringProp>
+          </elementProp>
+          <elementProp name="Keep-Alive" elementType="Header">
+            <stringProp name="Header.name">Keep-Alive</stringProp>
+            <stringProp name="Header.value">115</stringProp>
+          </elementProp>
+          <elementProp name="User-Agent" elementType="Header">
+            <stringProp name="Header.name">User-Agent</stringProp>
+            <stringProp name="Header.value">Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.2.13) Gecko/20101203 Firefox/3.6.13</stringProp>
+          </elementProp>
+          <elementProp name="Accept-Encoding" elementType="Header">
+            <stringProp name="Header.name">Accept-Encoding</stringProp>
+            <stringProp name="Header.value">gzip,deflate</stringProp>
+          </elementProp>
+          <elementProp name="Accept-Charset" elementType="Header">
+            <stringProp name="Header.name">Accept-Charset</stringProp>
+            <stringProp name="Header.value">ISO-8859-1,utf-8;q=0.7,*;q=0.7</stringProp>
+          </elementProp>
+          <elementProp name="" elementType="Header">
+            <stringProp name="Header.name">X-BlazeMeter-Session</stringProp>
+            <stringProp name="Header.value">${__P(blazemeter.session_id)}</stringProp>
+          </elementProp>
+        </collectionProp>
+      </HeaderManager>
+      <hashTree/>
+      <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults" enabled="true">
+        <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+          <collectionProp name="Arguments.arguments"/>
+        </elementProp>
+        <stringProp name="HTTPSampler.domain"></stringProp>
+        <stringProp name="HTTPSampler.port"></stringProp>
+        <stringProp name="HTTPSampler.protocol"></stringProp>
+        <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+        <stringProp name="HTTPSampler.path"></stringProp>
+        <boolProp name="HTTPSampler.concurrentDwn">true</boolProp>
+        <stringProp name="HTTPSampler.concurrentPool">2</stringProp>
+        <stringProp name="HTTPSampler.embedded_url_re">^((?!google|facebook|youtube|pinterest|twimg|doubleclick).)*$</stringProp>
+        <stringProp name="HTTPSampler.connect_timeout">60000</stringProp>
+        <stringProp name="HTTPSampler.response_timeout">120000</stringProp>
+      </ConfigTestElement>
+      <hashTree/>
+      <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
+        <stringProp name="filename">C:/Users/BRWANG/Software/JMeter/mytest/results/user_number.csv</stringProp>
+        <stringProp name="fileEncoding">UTF-8</stringProp>
+        <stringProp name="variableNames">users</stringProp>
+        <boolProp name="ignoreFirstLine">false</boolProp>
+        <stringProp name="delimiter">,</stringProp>
+        <boolProp name="quotedData">false</boolProp>
+        <boolProp name="recycle">true</boolProp>
+        <boolProp name="stopThread">false</boolProp>
+        <stringProp name="shareMode">shareMode.all</stringProp>
+      </CSVDataSet>
+      <hashTree/>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="numUsers" elementType="Argument">
+            <stringProp name="Argument.name">numUsers</stringProp>
+            <stringProp name="Argument.value">${users}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </Arguments>
+      <hashTree/>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="IDIR ppc search test" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${__P(rampup,300)}</stringProp>
+        <longProp name="ThreadGroup.start_time">1365261073000</longProp>
+        <longProp name="ThreadGroup.end_time">1365261073000</longProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">${__P(duration,3000)}</stringProp>
+        <stringProp name="ThreadGroup.delay">0</stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">false</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Delay" enabled="false">
+          <stringProp name="ConstantTimer.delay">${__P(Delay,10000)}</stringProp>
+        </ConstantTimer>
+        <hashTree/>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Authorization</stringProp>
+              <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJxUWlFWDB2T2Z1SlBuWUw4MWo0Q2tDOHVPdEJ1aFZvM0xBd2ppczZWbHRzIn0.eyJleHAiOjE3MDg5NzMyNDUsImlhdCI6MTcwODk3Mjk0NSwiYXV0aF90aW1lIjoxNzA4OTcyOTQ1LCJqdGkiOiJjMGEyYzI5MC0zZGYzLTQxNDktYjY5Ny1kMzVlYzlmOWEyODIiLCJpc3MiOiJodHRwczovL2Rldi5sb2dpbnByb3h5Lmdvdi5iYy5jYS9hdXRoL3JlYWxtcy9zdGFuZGFyZCIsImF1ZCI6Im9uLXJvdXRlLWJjLWRpcmVjdC00NTk4Iiwic3ViIjoiZGQwZmFlZjRjNzg4NDUwMGFhNGM2ZGM1Njg2OWY5YTVAaWRpciIsInR5cCI6IkJlYXJlciIsImF6cCI6Im9uLXJvdXRlLWJjLWRpcmVjdC00NTk4Iiwic2Vzc2lvbl9zdGF0ZSI6ImFhZGQ2ZjIyLWIyZjgtNDZkNy1hZmM0LWNjNGM2NzQ5YzYyZSIsInNjb3BlIjoib3BlbmlkIGlkaXIgYmNlaWRib3RoIGVtYWlsIHByb2ZpbGUiLCJzaWQiOiJhYWRkNmYyMi1iMmY4LTQ2ZDctYWZjNC1jYzRjNjc0OWM2MmUiLCJpZGlyX3VzZXJfZ3VpZCI6IkREMEZBRUY0Qzc4ODQ1MDBBQTRDNkRDNTY4NjlGOUE1IiwiaWRlbnRpdHlfcHJvdmlkZXIiOiJpZGlyIiwiaWRpcl91c2VybmFtZSI6IkJSV0FORyIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibmFtZSI6IldhbmcsIEJydWNlIE1PVEk6RVgiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJkZDBmYWVmNGM3ODg0NTAwYWE0YzZkYzU2ODY5ZjlhNUBpZGlyIiwiZGlzcGxheV9uYW1lIjoiV2FuZywgQnJ1Y2UgTU9USTpFWCIsImdpdmVuX25hbWUiOiJCcnVjZSIsImZhbWlseV9uYW1lIjoiV2FuZyIsImVtYWlsIjoiYnJ1Y2Uud2FuZ0Bnb3YuYmMuY2EifQ.KJarwXbHeJV6ezeSfqyTKgJopyTfxnrwELQdFEuacxYyyMP7zc2Z5H72X0JHTMAztE5u3daCypufqhG-MFFqY5p2m9uNS7IaDiCF2wHLYUhnbdOSJMibQvkpti-vwDsJ4ObQ4hgTu105erYK35ha13zW8-joFsyO7bn2DUNq8U-nBW-lCfXcPKRWVnTt-kfannL6n9xLD6FnpyPCcivtjNyDBaEiQyB86V3rXimBGcuScj-IvHXqogL0U5m6yfkWh2wPIrL0-pIkU6ZAePdLEr5RqBj2VGOZLLEQmaw7-WkpfrMEQvf7Xp-Ev1K6i8y7_-vivr_I2vttrmZQJDYM6Q</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Accept</stringProp>
+              <stringProp name="Header.value">*/*</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+        <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">true</boolProp>
+          <stringProp name="LoopController.loops">${numUsers}</stringProp>
+        </LoopController>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ppcSearch" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">https://onroutebc-1222-vehicles.apps.silver.devops.gov.bc.ca/permits?searchColumn=permitNumber&amp;searchString=1&amp;page=1&amp;take=10 </stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="BlazeMeter Header Manager" enabled="false">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Host</stringProp>
+                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Connection</stringProp>
+                <stringProp name="Header.value">keep-alive</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">sec-ch-ua</stringProp>
+                <stringProp name="Header.value">&quot;Chromium&quot;;v=&quot;118&quot;, &quot;Google Chrome&quot;;v=&quot;118&quot;, &quot;Not=A?Brand&quot;;v=&quot;99&quot;</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Accept</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">sec-ch-ua-mobile</stringProp>
+                <stringProp name="Header.value">?0</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJXNk5hakRyZ2VUR2tYR0dtb28tRWJFSkJXQTM4OGEyYjdRN0p4eThSRjdzIn0.eyJleHAiOjE2OTg3NzQ5NDEsImlhdCI6MTY5ODc3NDY0MSwiYXV0aF90aW1lIjoxNjk4NzczOTE0LCJqdGkiOiIwYmJhZDkwYS02NTc2LTRmZDYtYmM2ZS1mOTgzMjQ1NTkwMTAiLCJpc3MiOiJodHRwczovL3Rlc3QubG9naW5wcm94eS5nb3YuYmMuY2EvYXV0aC9yZWFsbXMvc3RhbmRhcmQiLCJhdWQiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInN1YiI6ImRkMGZhZWY0Yzc4ODQ1MDBhYTRjNmRjNTY4NjlmOWE1QGlkaXIiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInNlc3Npb25fc3RhdGUiOiJhZjhlZTdmMC0yMmI0LTQ0MDMtOTY2Zi1kMmRkYjQ1MzQzMjkiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIGJjZWlkYm90aCBpZGlyIiwic2lkIjoiYWY4ZWU3ZjAtMjJiNC00NDAzLTk2NmYtZDJkZGI0NTM0MzI5IiwiaWRpcl91c2VyX2d1aWQiOiJERDBGQUVGNEM3ODg0NTAwQUE0QzZEQzU2ODY5RjlBNSIsImlkZW50aXR5X3Byb3ZpZGVyIjoiaWRpciIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaWRpcl91c2VybmFtZSI6IkJSV0FORyIsIm5hbWUiOiJXYW5nLCBCcnVjZSBNT1RJOkVYIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiZGQwZmFlZjRjNzg4NDUwMGFhNGM2ZGM1Njg2OWY5YTVAaWRpciIsImRpc3BsYXlfbmFtZSI6IldhbmcsIEJydWNlIE1PVEk6RVgiLCJnaXZlbl9uYW1lIjoiQnJ1Y2UiLCJmYW1pbHlfbmFtZSI6IldhbmciLCJlbWFpbCI6ImJydWNlLndhbmdAZ292LmJjLmNhIn0.C5M2q-h4jgenVeuZsmPa-TTHkDTYA-Ik0khuX_-JPnMGbqbzXh9ZdPkYowjBm7YoBVbxpfwodi0NbFdS3krU6bq5dF5zFWK_O2BE2AdIvnLRK-Q7h-xaIbtx9M9V4Vs6QTD4U7IVesCF34A46OGqmqvMpMno0lX2LUM5RNKk5NMafQLax-Wo6x-03itHKzwN0BHobhr-Vux0u22J2gENofdvdqpq64P-t1-wWMYIqqLMGN0qLQlhv7YLKGMcwrzrqhLwJnEa23jzKP4oPFqjMn7Do0ZvBjupNpmDSD0FfMmXv_y9LqqWFSDmL5RwiEc6L7i70nYPYRRHaOZP7_sCPA</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">User-Agent</stringProp>
+                <stringProp name="Header.value">Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">sec-ch-ua-platform</stringProp>
+                <stringProp name="Header.value">&quot;Windows&quot;</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Origin</stringProp>
+                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
+                <stringProp name="Header.value">same-site</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Sec-Fetch-Mode</stringProp>
+                <stringProp name="Header.value">cors</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Sec-Fetch-Dest</stringProp>
+                <stringProp name="Header.value">empty</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Referer</stringProp>
+                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Accept-Encoding</stringProp>
+                <stringProp name="Header.value">gzip, deflate, br</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Accept-Language</stringProp>
+                <stringProp name="Header.value">en-US,en;q=0.9</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">If-None-Match</stringProp>
+                <stringProp name="Header.value">W/&quot;17b2-OQs45yY+9rxT8oaE549bg+d9IqA&quot;</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="false">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJXNk5hakRyZ2VUR2tYR0dtb28tRWJFSkJXQTM4OGEyYjdRN0p4eThSRjdzIn0.eyJleHAiOjE2OTg3NzQ5NDEsImlhdCI6MTY5ODc3NDY0MSwiYXV0aF90aW1lIjoxNjk4NzczOTE0LCJqdGkiOiIwYmJhZDkwYS02NTc2LTRmZDYtYmM2ZS1mOTgzMjQ1NTkwMTAiLCJpc3MiOiJodHRwczovL3Rlc3QubG9naW5wcm94eS5nb3YuYmMuY2EvYXV0aC9yZWFsbXMvc3RhbmRhcmQiLCJhdWQiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInN1YiI6ImRkMGZhZWY0Yzc4ODQ1MDBhYTRjNmRjNTY4NjlmOWE1QGlkaXIiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInNlc3Npb25fc3RhdGUiOiJhZjhlZTdmMC0yMmI0LTQ0MDMtOTY2Zi1kMmRkYjQ1MzQzMjkiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIGJjZWlkYm90aCBpZGlyIiwic2lkIjoiYWY4ZWU3ZjAtMjJiNC00NDAzLTk2NmYtZDJkZGI0NTM0MzI5IiwiaWRpcl91c2VyX2d1aWQiOiJERDBGQUVGNEM3ODg0NTAwQUE0QzZEQzU2ODY5RjlBNSIsImlkZW50aXR5X3Byb3ZpZGVyIjoiaWRpciIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaWRpcl91c2VybmFtZSI6IkJSV0FORyIsIm5hbWUiOiJXYW5nLCBCcnVjZSBNT1RJOkVYIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiZGQwZmFlZjRjNzg4NDUwMGFhNGM2ZGM1Njg2OWY5YTVAaWRpciIsImRpc3BsYXlfbmFtZSI6IldhbmcsIEJydWNlIE1PVEk6RVgiLCJnaXZlbl9uYW1lIjoiQnJ1Y2UiLCJmYW1pbHlfbmFtZSI6IldhbmciLCJlbWFpbCI6ImJydWNlLndhbmdAZ292LmJjLmNhIn0.C5M2q-h4jgenVeuZsmPa-TTHkDTYA-Ik0khuX_-JPnMGbqbzXh9ZdPkYowjBm7YoBVbxpfwodi0NbFdS3krU6bq5dF5zFWK_O2BE2AdIvnLRK-Q7h-xaIbtx9M9V4Vs6QTD4U7IVesCF34A46OGqmqvMpMno0lX2LUM5RNKk5NMafQLax-Wo6x-03itHKzwN0BHobhr-Vux0u22J2gENofdvdqpq64P-t1-wWMYIqqLMGN0qLQlhv7YLKGMcwrzrqhLwJnEa23jzKP4oPFqjMn7Do0ZvBjupNpmDSD0FfMmXv_y9LqqWFSDmL5RwiEc6L7i70nYPYRRHaOZP7_sCPA</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Accept</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ppcGetRole" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">https://onroutebc-1222-vehicles.apps.silver.devops.gov.bc.ca/users/roles?companyId=74</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="BlazeMeter Header Manager" enabled="false">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Host</stringProp>
+                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Connection</stringProp>
+                <stringProp name="Header.value">keep-alive</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">sec-ch-ua</stringProp>
+                <stringProp name="Header.value">&quot;Chromium&quot;;v=&quot;118&quot;, &quot;Google Chrome&quot;;v=&quot;118&quot;, &quot;Not=A?Brand&quot;;v=&quot;99&quot;</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Accept</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">sec-ch-ua-mobile</stringProp>
+                <stringProp name="Header.value">?0</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJXNk5hakRyZ2VUR2tYR0dtb28tRWJFSkJXQTM4OGEyYjdRN0p4eThSRjdzIn0.eyJleHAiOjE2OTg3NzQ5NDEsImlhdCI6MTY5ODc3NDY0MSwiYXV0aF90aW1lIjoxNjk4NzczOTE0LCJqdGkiOiIwYmJhZDkwYS02NTc2LTRmZDYtYmM2ZS1mOTgzMjQ1NTkwMTAiLCJpc3MiOiJodHRwczovL3Rlc3QubG9naW5wcm94eS5nb3YuYmMuY2EvYXV0aC9yZWFsbXMvc3RhbmRhcmQiLCJhdWQiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInN1YiI6ImRkMGZhZWY0Yzc4ODQ1MDBhYTRjNmRjNTY4NjlmOWE1QGlkaXIiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInNlc3Npb25fc3RhdGUiOiJhZjhlZTdmMC0yMmI0LTQ0MDMtOTY2Zi1kMmRkYjQ1MzQzMjkiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIGJjZWlkYm90aCBpZGlyIiwic2lkIjoiYWY4ZWU3ZjAtMjJiNC00NDAzLTk2NmYtZDJkZGI0NTM0MzI5IiwiaWRpcl91c2VyX2d1aWQiOiJERDBGQUVGNEM3ODg0NTAwQUE0QzZEQzU2ODY5RjlBNSIsImlkZW50aXR5X3Byb3ZpZGVyIjoiaWRpciIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaWRpcl91c2VybmFtZSI6IkJSV0FORyIsIm5hbWUiOiJXYW5nLCBCcnVjZSBNT1RJOkVYIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiZGQwZmFlZjRjNzg4NDUwMGFhNGM2ZGM1Njg2OWY5YTVAaWRpciIsImRpc3BsYXlfbmFtZSI6IldhbmcsIEJydWNlIE1PVEk6RVgiLCJnaXZlbl9uYW1lIjoiQnJ1Y2UiLCJmYW1pbHlfbmFtZSI6IldhbmciLCJlbWFpbCI6ImJydWNlLndhbmdAZ292LmJjLmNhIn0.C5M2q-h4jgenVeuZsmPa-TTHkDTYA-Ik0khuX_-JPnMGbqbzXh9ZdPkYowjBm7YoBVbxpfwodi0NbFdS3krU6bq5dF5zFWK_O2BE2AdIvnLRK-Q7h-xaIbtx9M9V4Vs6QTD4U7IVesCF34A46OGqmqvMpMno0lX2LUM5RNKk5NMafQLax-Wo6x-03itHKzwN0BHobhr-Vux0u22J2gENofdvdqpq64P-t1-wWMYIqqLMGN0qLQlhv7YLKGMcwrzrqhLwJnEa23jzKP4oPFqjMn7Do0ZvBjupNpmDSD0FfMmXv_y9LqqWFSDmL5RwiEc6L7i70nYPYRRHaOZP7_sCPA</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">User-Agent</stringProp>
+                <stringProp name="Header.value">Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">sec-ch-ua-platform</stringProp>
+                <stringProp name="Header.value">&quot;Windows&quot;</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Origin</stringProp>
+                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
+                <stringProp name="Header.value">same-site</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Sec-Fetch-Mode</stringProp>
+                <stringProp name="Header.value">cors</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Sec-Fetch-Dest</stringProp>
+                <stringProp name="Header.value">empty</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Referer</stringProp>
+                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Accept-Encoding</stringProp>
+                <stringProp name="Header.value">gzip, deflate, br</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Accept-Language</stringProp>
+                <stringProp name="Header.value">en-US,en;q=0.9</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">If-None-Match</stringProp>
+                <stringProp name="Header.value">W/&quot;17b2-OQs45yY+9rxT8oaE549bg+d9IqA&quot;</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="false">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJXNk5hakRyZ2VUR2tYR0dtb28tRWJFSkJXQTM4OGEyYjdRN0p4eThSRjdzIn0.eyJleHAiOjE2OTg3NzQ5NDEsImlhdCI6MTY5ODc3NDY0MSwiYXV0aF90aW1lIjoxNjk4NzczOTE0LCJqdGkiOiIwYmJhZDkwYS02NTc2LTRmZDYtYmM2ZS1mOTgzMjQ1NTkwMTAiLCJpc3MiOiJodHRwczovL3Rlc3QubG9naW5wcm94eS5nb3YuYmMuY2EvYXV0aC9yZWFsbXMvc3RhbmRhcmQiLCJhdWQiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInN1YiI6ImRkMGZhZWY0Yzc4ODQ1MDBhYTRjNmRjNTY4NjlmOWE1QGlkaXIiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInNlc3Npb25fc3RhdGUiOiJhZjhlZTdmMC0yMmI0LTQ0MDMtOTY2Zi1kMmRkYjQ1MzQzMjkiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIGJjZWlkYm90aCBpZGlyIiwic2lkIjoiYWY4ZWU3ZjAtMjJiNC00NDAzLTk2NmYtZDJkZGI0NTM0MzI5IiwiaWRpcl91c2VyX2d1aWQiOiJERDBGQUVGNEM3ODg0NTAwQUE0QzZEQzU2ODY5RjlBNSIsImlkZW50aXR5X3Byb3ZpZGVyIjoiaWRpciIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaWRpcl91c2VybmFtZSI6IkJSV0FORyIsIm5hbWUiOiJXYW5nLCBCcnVjZSBNT1RJOkVYIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiZGQwZmFlZjRjNzg4NDUwMGFhNGM2ZGM1Njg2OWY5YTVAaWRpciIsImRpc3BsYXlfbmFtZSI6IldhbmcsIEJydWNlIE1PVEk6RVgiLCJnaXZlbl9uYW1lIjoiQnJ1Y2UiLCJmYW1pbHlfbmFtZSI6IldhbmciLCJlbWFpbCI6ImJydWNlLndhbmdAZ292LmJjLmNhIn0.C5M2q-h4jgenVeuZsmPa-TTHkDTYA-Ik0khuX_-JPnMGbqbzXh9ZdPkYowjBm7YoBVbxpfwodi0NbFdS3krU6bq5dF5zFWK_O2BE2AdIvnLRK-Q7h-xaIbtx9M9V4Vs6QTD4U7IVesCF34A46OGqmqvMpMno0lX2LUM5RNKk5NMafQLax-Wo6x-03itHKzwN0BHobhr-Vux0u22J2gENofdvdqpq64P-t1-wWMYIqqLMGN0qLQlhv7YLKGMcwrzrqhLwJnEa23jzKP4oPFqjMn7Do0ZvBjupNpmDSD0FfMmXv_y9LqqWFSDmL5RwiEc6L7i70nYPYRRHaOZP7_sCPA</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Accept</stringProp>
+                <stringProp name="Header.value">*/*</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="IDIR ppc search" enabled="false">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${__P(rampup,300)}</stringProp>
+        <longProp name="ThreadGroup.start_time">1365261073000</longProp>
+        <longProp name="ThreadGroup.end_time">1365261073000</longProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">${__P(duration,3000)}</stringProp>
+        <stringProp name="ThreadGroup.delay">0</stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">false</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Delay" enabled="false">
+          <stringProp name="ConstantTimer.delay">${__P(Delay,10000)}</stringProp>
+        </ConstantTimer>
+        <hashTree/>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Authorization</stringProp>
+              <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJxUWlFWDB2T2Z1SlBuWUw4MWo0Q2tDOHVPdEJ1aFZvM0xBd2ppczZWbHRzIn0.eyJleHAiOjE3MDg5NzMyNDUsImlhdCI6MTcwODk3Mjk0NSwiYXV0aF90aW1lIjoxNzA4OTcyOTQ1LCJqdGkiOiJjMGEyYzI5MC0zZGYzLTQxNDktYjY5Ny1kMzVlYzlmOWEyODIiLCJpc3MiOiJodHRwczovL2Rldi5sb2dpbnByb3h5Lmdvdi5iYy5jYS9hdXRoL3JlYWxtcy9zdGFuZGFyZCIsImF1ZCI6Im9uLXJvdXRlLWJjLWRpcmVjdC00NTk4Iiwic3ViIjoiZGQwZmFlZjRjNzg4NDUwMGFhNGM2ZGM1Njg2OWY5YTVAaWRpciIsInR5cCI6IkJlYXJlciIsImF6cCI6Im9uLXJvdXRlLWJjLWRpcmVjdC00NTk4Iiwic2Vzc2lvbl9zdGF0ZSI6ImFhZGQ2ZjIyLWIyZjgtNDZkNy1hZmM0LWNjNGM2NzQ5YzYyZSIsInNjb3BlIjoib3BlbmlkIGlkaXIgYmNlaWRib3RoIGVtYWlsIHByb2ZpbGUiLCJzaWQiOiJhYWRkNmYyMi1iMmY4LTQ2ZDctYWZjNC1jYzRjNjc0OWM2MmUiLCJpZGlyX3VzZXJfZ3VpZCI6IkREMEZBRUY0Qzc4ODQ1MDBBQTRDNkRDNTY4NjlGOUE1IiwiaWRlbnRpdHlfcHJvdmlkZXIiOiJpZGlyIiwiaWRpcl91c2VybmFtZSI6IkJSV0FORyIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibmFtZSI6IldhbmcsIEJydWNlIE1PVEk6RVgiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJkZDBmYWVmNGM3ODg0NTAwYWE0YzZkYzU2ODY5ZjlhNUBpZGlyIiwiZGlzcGxheV9uYW1lIjoiV2FuZywgQnJ1Y2UgTU9USTpFWCIsImdpdmVuX25hbWUiOiJCcnVjZSIsImZhbWlseV9uYW1lIjoiV2FuZyIsImVtYWlsIjoiYnJ1Y2Uud2FuZ0Bnb3YuYmMuY2EifQ.KJarwXbHeJV6ezeSfqyTKgJopyTfxnrwELQdFEuacxYyyMP7zc2Z5H72X0JHTMAztE5u3daCypufqhG-MFFqY5p2m9uNS7IaDiCF2wHLYUhnbdOSJMibQvkpti-vwDsJ4ObQ4hgTu105erYK35ha13zW8-joFsyO7bn2DUNq8U-nBW-lCfXcPKRWVnTt-kfannL6n9xLD6FnpyPCcivtjNyDBaEiQyB86V3rXimBGcuScj-IvHXqogL0U5m6yfkWh2wPIrL0-pIkU6ZAePdLEr5RqBj2VGOZLLEQmaw7-WkpfrMEQvf7Xp-Ev1K6i8y7_-vivr_I2vttrmZQJDYM6Q</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Accept</stringProp>
+              <stringProp name="Header.value">*/*</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ppcGetRole" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">https://onroutebc-1222-vehicles.apps.silver.devops.gov.bc.ca/users/roles?companyId=74</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="BlazeMeter Header Manager" enabled="false">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Host</stringProp>
+                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Connection</stringProp>
+                <stringProp name="Header.value">keep-alive</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">sec-ch-ua</stringProp>
+                <stringProp name="Header.value">&quot;Chromium&quot;;v=&quot;118&quot;, &quot;Google Chrome&quot;;v=&quot;118&quot;, &quot;Not=A?Brand&quot;;v=&quot;99&quot;</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Accept</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">sec-ch-ua-mobile</stringProp>
+                <stringProp name="Header.value">?0</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJXNk5hakRyZ2VUR2tYR0dtb28tRWJFSkJXQTM4OGEyYjdRN0p4eThSRjdzIn0.eyJleHAiOjE2OTg3NzQ5NDEsImlhdCI6MTY5ODc3NDY0MSwiYXV0aF90aW1lIjoxNjk4NzczOTE0LCJqdGkiOiIwYmJhZDkwYS02NTc2LTRmZDYtYmM2ZS1mOTgzMjQ1NTkwMTAiLCJpc3MiOiJodHRwczovL3Rlc3QubG9naW5wcm94eS5nb3YuYmMuY2EvYXV0aC9yZWFsbXMvc3RhbmRhcmQiLCJhdWQiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInN1YiI6ImRkMGZhZWY0Yzc4ODQ1MDBhYTRjNmRjNTY4NjlmOWE1QGlkaXIiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInNlc3Npb25fc3RhdGUiOiJhZjhlZTdmMC0yMmI0LTQ0MDMtOTY2Zi1kMmRkYjQ1MzQzMjkiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIGJjZWlkYm90aCBpZGlyIiwic2lkIjoiYWY4ZWU3ZjAtMjJiNC00NDAzLTk2NmYtZDJkZGI0NTM0MzI5IiwiaWRpcl91c2VyX2d1aWQiOiJERDBGQUVGNEM3ODg0NTAwQUE0QzZEQzU2ODY5RjlBNSIsImlkZW50aXR5X3Byb3ZpZGVyIjoiaWRpciIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaWRpcl91c2VybmFtZSI6IkJSV0FORyIsIm5hbWUiOiJXYW5nLCBCcnVjZSBNT1RJOkVYIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiZGQwZmFlZjRjNzg4NDUwMGFhNGM2ZGM1Njg2OWY5YTVAaWRpciIsImRpc3BsYXlfbmFtZSI6IldhbmcsIEJydWNlIE1PVEk6RVgiLCJnaXZlbl9uYW1lIjoiQnJ1Y2UiLCJmYW1pbHlfbmFtZSI6IldhbmciLCJlbWFpbCI6ImJydWNlLndhbmdAZ292LmJjLmNhIn0.C5M2q-h4jgenVeuZsmPa-TTHkDTYA-Ik0khuX_-JPnMGbqbzXh9ZdPkYowjBm7YoBVbxpfwodi0NbFdS3krU6bq5dF5zFWK_O2BE2AdIvnLRK-Q7h-xaIbtx9M9V4Vs6QTD4U7IVesCF34A46OGqmqvMpMno0lX2LUM5RNKk5NMafQLax-Wo6x-03itHKzwN0BHobhr-Vux0u22J2gENofdvdqpq64P-t1-wWMYIqqLMGN0qLQlhv7YLKGMcwrzrqhLwJnEa23jzKP4oPFqjMn7Do0ZvBjupNpmDSD0FfMmXv_y9LqqWFSDmL5RwiEc6L7i70nYPYRRHaOZP7_sCPA</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">User-Agent</stringProp>
+                <stringProp name="Header.value">Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">sec-ch-ua-platform</stringProp>
+                <stringProp name="Header.value">&quot;Windows&quot;</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Origin</stringProp>
+                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
+                <stringProp name="Header.value">same-site</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Sec-Fetch-Mode</stringProp>
+                <stringProp name="Header.value">cors</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Sec-Fetch-Dest</stringProp>
+                <stringProp name="Header.value">empty</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Referer</stringProp>
+                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Accept-Encoding</stringProp>
+                <stringProp name="Header.value">gzip, deflate, br</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Accept-Language</stringProp>
+                <stringProp name="Header.value">en-US,en;q=0.9</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">If-None-Match</stringProp>
+                <stringProp name="Header.value">W/&quot;17b2-OQs45yY+9rxT8oaE549bg+d9IqA&quot;</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="false">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJXNk5hakRyZ2VUR2tYR0dtb28tRWJFSkJXQTM4OGEyYjdRN0p4eThSRjdzIn0.eyJleHAiOjE2OTg3NzQ5NDEsImlhdCI6MTY5ODc3NDY0MSwiYXV0aF90aW1lIjoxNjk4NzczOTE0LCJqdGkiOiIwYmJhZDkwYS02NTc2LTRmZDYtYmM2ZS1mOTgzMjQ1NTkwMTAiLCJpc3MiOiJodHRwczovL3Rlc3QubG9naW5wcm94eS5nb3YuYmMuY2EvYXV0aC9yZWFsbXMvc3RhbmRhcmQiLCJhdWQiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInN1YiI6ImRkMGZhZWY0Yzc4ODQ1MDBhYTRjNmRjNTY4NjlmOWE1QGlkaXIiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInNlc3Npb25fc3RhdGUiOiJhZjhlZTdmMC0yMmI0LTQ0MDMtOTY2Zi1kMmRkYjQ1MzQzMjkiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIGJjZWlkYm90aCBpZGlyIiwic2lkIjoiYWY4ZWU3ZjAtMjJiNC00NDAzLTk2NmYtZDJkZGI0NTM0MzI5IiwiaWRpcl91c2VyX2d1aWQiOiJERDBGQUVGNEM3ODg0NTAwQUE0QzZEQzU2ODY5RjlBNSIsImlkZW50aXR5X3Byb3ZpZGVyIjoiaWRpciIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaWRpcl91c2VybmFtZSI6IkJSV0FORyIsIm5hbWUiOiJXYW5nLCBCcnVjZSBNT1RJOkVYIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiZGQwZmFlZjRjNzg4NDUwMGFhNGM2ZGM1Njg2OWY5YTVAaWRpciIsImRpc3BsYXlfbmFtZSI6IldhbmcsIEJydWNlIE1PVEk6RVgiLCJnaXZlbl9uYW1lIjoiQnJ1Y2UiLCJmYW1pbHlfbmFtZSI6IldhbmciLCJlbWFpbCI6ImJydWNlLndhbmdAZ292LmJjLmNhIn0.C5M2q-h4jgenVeuZsmPa-TTHkDTYA-Ik0khuX_-JPnMGbqbzXh9ZdPkYowjBm7YoBVbxpfwodi0NbFdS3krU6bq5dF5zFWK_O2BE2AdIvnLRK-Q7h-xaIbtx9M9V4Vs6QTD4U7IVesCF34A46OGqmqvMpMno0lX2LUM5RNKk5NMafQLax-Wo6x-03itHKzwN0BHobhr-Vux0u22J2gENofdvdqpq64P-t1-wWMYIqqLMGN0qLQlhv7YLKGMcwrzrqhLwJnEa23jzKP4oPFqjMn7Do0ZvBjupNpmDSD0FfMmXv_y9LqqWFSDmL5RwiEc6L7i70nYPYRRHaOZP7_sCPA</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Accept</stringProp>
+                <stringProp name="Header.value">*/*</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ppcSearch" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">https://onroutebc-1222-vehicles.apps.silver.devops.gov.bc.ca/permits?searchColumn=permitNumber&amp;searchString=1&amp;page=1&amp;take=10 </stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="BlazeMeter Header Manager" enabled="false">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Host</stringProp>
+                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Connection</stringProp>
+                <stringProp name="Header.value">keep-alive</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">sec-ch-ua</stringProp>
+                <stringProp name="Header.value">&quot;Chromium&quot;;v=&quot;118&quot;, &quot;Google Chrome&quot;;v=&quot;118&quot;, &quot;Not=A?Brand&quot;;v=&quot;99&quot;</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Accept</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">sec-ch-ua-mobile</stringProp>
+                <stringProp name="Header.value">?0</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJXNk5hakRyZ2VUR2tYR0dtb28tRWJFSkJXQTM4OGEyYjdRN0p4eThSRjdzIn0.eyJleHAiOjE2OTg3NzQ5NDEsImlhdCI6MTY5ODc3NDY0MSwiYXV0aF90aW1lIjoxNjk4NzczOTE0LCJqdGkiOiIwYmJhZDkwYS02NTc2LTRmZDYtYmM2ZS1mOTgzMjQ1NTkwMTAiLCJpc3MiOiJodHRwczovL3Rlc3QubG9naW5wcm94eS5nb3YuYmMuY2EvYXV0aC9yZWFsbXMvc3RhbmRhcmQiLCJhdWQiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInN1YiI6ImRkMGZhZWY0Yzc4ODQ1MDBhYTRjNmRjNTY4NjlmOWE1QGlkaXIiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInNlc3Npb25fc3RhdGUiOiJhZjhlZTdmMC0yMmI0LTQ0MDMtOTY2Zi1kMmRkYjQ1MzQzMjkiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIGJjZWlkYm90aCBpZGlyIiwic2lkIjoiYWY4ZWU3ZjAtMjJiNC00NDAzLTk2NmYtZDJkZGI0NTM0MzI5IiwiaWRpcl91c2VyX2d1aWQiOiJERDBGQUVGNEM3ODg0NTAwQUE0QzZEQzU2ODY5RjlBNSIsImlkZW50aXR5X3Byb3ZpZGVyIjoiaWRpciIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaWRpcl91c2VybmFtZSI6IkJSV0FORyIsIm5hbWUiOiJXYW5nLCBCcnVjZSBNT1RJOkVYIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiZGQwZmFlZjRjNzg4NDUwMGFhNGM2ZGM1Njg2OWY5YTVAaWRpciIsImRpc3BsYXlfbmFtZSI6IldhbmcsIEJydWNlIE1PVEk6RVgiLCJnaXZlbl9uYW1lIjoiQnJ1Y2UiLCJmYW1pbHlfbmFtZSI6IldhbmciLCJlbWFpbCI6ImJydWNlLndhbmdAZ292LmJjLmNhIn0.C5M2q-h4jgenVeuZsmPa-TTHkDTYA-Ik0khuX_-JPnMGbqbzXh9ZdPkYowjBm7YoBVbxpfwodi0NbFdS3krU6bq5dF5zFWK_O2BE2AdIvnLRK-Q7h-xaIbtx9M9V4Vs6QTD4U7IVesCF34A46OGqmqvMpMno0lX2LUM5RNKk5NMafQLax-Wo6x-03itHKzwN0BHobhr-Vux0u22J2gENofdvdqpq64P-t1-wWMYIqqLMGN0qLQlhv7YLKGMcwrzrqhLwJnEa23jzKP4oPFqjMn7Do0ZvBjupNpmDSD0FfMmXv_y9LqqWFSDmL5RwiEc6L7i70nYPYRRHaOZP7_sCPA</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">User-Agent</stringProp>
+                <stringProp name="Header.value">Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">sec-ch-ua-platform</stringProp>
+                <stringProp name="Header.value">&quot;Windows&quot;</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Origin</stringProp>
+                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
+                <stringProp name="Header.value">same-site</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Sec-Fetch-Mode</stringProp>
+                <stringProp name="Header.value">cors</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Sec-Fetch-Dest</stringProp>
+                <stringProp name="Header.value">empty</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Referer</stringProp>
+                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Accept-Encoding</stringProp>
+                <stringProp name="Header.value">gzip, deflate, br</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Accept-Language</stringProp>
+                <stringProp name="Header.value">en-US,en;q=0.9</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">If-None-Match</stringProp>
+                <stringProp name="Header.value">W/&quot;17b2-OQs45yY+9rxT8oaE549bg+d9IqA&quot;</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="false">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJXNk5hakRyZ2VUR2tYR0dtb28tRWJFSkJXQTM4OGEyYjdRN0p4eThSRjdzIn0.eyJleHAiOjE2OTg3NzQ5NDEsImlhdCI6MTY5ODc3NDY0MSwiYXV0aF90aW1lIjoxNjk4NzczOTE0LCJqdGkiOiIwYmJhZDkwYS02NTc2LTRmZDYtYmM2ZS1mOTgzMjQ1NTkwMTAiLCJpc3MiOiJodHRwczovL3Rlc3QubG9naW5wcm94eS5nb3YuYmMuY2EvYXV0aC9yZWFsbXMvc3RhbmRhcmQiLCJhdWQiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInN1YiI6ImRkMGZhZWY0Yzc4ODQ1MDBhYTRjNmRjNTY4NjlmOWE1QGlkaXIiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInNlc3Npb25fc3RhdGUiOiJhZjhlZTdmMC0yMmI0LTQ0MDMtOTY2Zi1kMmRkYjQ1MzQzMjkiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIGJjZWlkYm90aCBpZGlyIiwic2lkIjoiYWY4ZWU3ZjAtMjJiNC00NDAzLTk2NmYtZDJkZGI0NTM0MzI5IiwiaWRpcl91c2VyX2d1aWQiOiJERDBGQUVGNEM3ODg0NTAwQUE0QzZEQzU2ODY5RjlBNSIsImlkZW50aXR5X3Byb3ZpZGVyIjoiaWRpciIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaWRpcl91c2VybmFtZSI6IkJSV0FORyIsIm5hbWUiOiJXYW5nLCBCcnVjZSBNT1RJOkVYIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiZGQwZmFlZjRjNzg4NDUwMGFhNGM2ZGM1Njg2OWY5YTVAaWRpciIsImRpc3BsYXlfbmFtZSI6IldhbmcsIEJydWNlIE1PVEk6RVgiLCJnaXZlbl9uYW1lIjoiQnJ1Y2UiLCJmYW1pbHlfbmFtZSI6IldhbmciLCJlbWFpbCI6ImJydWNlLndhbmdAZ292LmJjLmNhIn0.C5M2q-h4jgenVeuZsmPa-TTHkDTYA-Ik0khuX_-JPnMGbqbzXh9ZdPkYowjBm7YoBVbxpfwodi0NbFdS3krU6bq5dF5zFWK_O2BE2AdIvnLRK-Q7h-xaIbtx9M9V4Vs6QTD4U7IVesCF34A46OGqmqvMpMno0lX2LUM5RNKk5NMafQLax-Wo6x-03itHKzwN0BHobhr-Vux0u22J2gENofdvdqpq64P-t1-wWMYIqqLMGN0qLQlhv7YLKGMcwrzrqhLwJnEa23jzKP4oPFqjMn7Do0ZvBjupNpmDSD0FfMmXv_y9LqqWFSDmL5RwiEc6L7i70nYPYRRHaOZP7_sCPA</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Accept</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="IDIR ppc retrived permit pdf" enabled="false">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">200</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${__P(rampup,300)}</stringProp>
+        <longProp name="ThreadGroup.start_time">1365261073000</longProp>
+        <longProp name="ThreadGroup.end_time">1365261073000</longProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">${__P(duration,3000)}</stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Authorization</stringProp>
+              <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJxUWlFWDB2T2Z1SlBuWUw4MWo0Q2tDOHVPdEJ1aFZvM0xBd2ppczZWbHRzIn0.eyJleHAiOjE3MDg5NzMyNDUsImlhdCI6MTcwODk3Mjk0NSwiYXV0aF90aW1lIjoxNzA4OTcyOTQ1LCJqdGkiOiJjMGEyYzI5MC0zZGYzLTQxNDktYjY5Ny1kMzVlYzlmOWEyODIiLCJpc3MiOiJodHRwczovL2Rldi5sb2dpbnByb3h5Lmdvdi5iYy5jYS9hdXRoL3JlYWxtcy9zdGFuZGFyZCIsImF1ZCI6Im9uLXJvdXRlLWJjLWRpcmVjdC00NTk4Iiwic3ViIjoiZGQwZmFlZjRjNzg4NDUwMGFhNGM2ZGM1Njg2OWY5YTVAaWRpciIsInR5cCI6IkJlYXJlciIsImF6cCI6Im9uLXJvdXRlLWJjLWRpcmVjdC00NTk4Iiwic2Vzc2lvbl9zdGF0ZSI6ImFhZGQ2ZjIyLWIyZjgtNDZkNy1hZmM0LWNjNGM2NzQ5YzYyZSIsInNjb3BlIjoib3BlbmlkIGlkaXIgYmNlaWRib3RoIGVtYWlsIHByb2ZpbGUiLCJzaWQiOiJhYWRkNmYyMi1iMmY4LTQ2ZDctYWZjNC1jYzRjNjc0OWM2MmUiLCJpZGlyX3VzZXJfZ3VpZCI6IkREMEZBRUY0Qzc4ODQ1MDBBQTRDNkRDNTY4NjlGOUE1IiwiaWRlbnRpdHlfcHJvdmlkZXIiOiJpZGlyIiwiaWRpcl91c2VybmFtZSI6IkJSV0FORyIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibmFtZSI6IldhbmcsIEJydWNlIE1PVEk6RVgiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJkZDBmYWVmNGM3ODg0NTAwYWE0YzZkYzU2ODY5ZjlhNUBpZGlyIiwiZGlzcGxheV9uYW1lIjoiV2FuZywgQnJ1Y2UgTU9USTpFWCIsImdpdmVuX25hbWUiOiJCcnVjZSIsImZhbWlseV9uYW1lIjoiV2FuZyIsImVtYWlsIjoiYnJ1Y2Uud2FuZ0Bnb3YuYmMuY2EifQ.KJarwXbHeJV6ezeSfqyTKgJopyTfxnrwELQdFEuacxYyyMP7zc2Z5H72X0JHTMAztE5u3daCypufqhG-MFFqY5p2m9uNS7IaDiCF2wHLYUhnbdOSJMibQvkpti-vwDsJ4ObQ4hgTu105erYK35ha13zW8-joFsyO7bn2DUNq8U-nBW-lCfXcPKRWVnTt-kfannL6n9xLD6FnpyPCcivtjNyDBaEiQyB86V3rXimBGcuScj-IvHXqogL0U5m6yfkWh2wPIrL0-pIkU6ZAePdLEr5RqBj2VGOZLLEQmaw7-WkpfrMEQvf7Xp-Ev1K6i8y7_-vivr_I2vttrmZQJDYM6Q</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Accept</stringProp>
+              <stringProp name="Header.value">*/*</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ppcGetRole" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">https://onroutebc-1222-vehicles.apps.silver.devops.gov.bc.ca/users/roles?companyId=74</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ppcSearchForPermit" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">https://onroutebc-1222-vehicles.apps.silver.devops.gov.bc.ca/permits?searchColumn=permitNumber&amp;searchString=1&amp;page=1&amp;take=10</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ppcRetrievePermit" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">https://onroutebc-1222-vehicles.apps.silver.devops.gov.bc.ca/permits/applications/9?amendment=true&amp;companyId=74</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ppcDownloadPermitPdf" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">https://onroutebc-1222-vehicles.apps.silver.devops.gov.bc.ca/permits/1/pdf</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="BCeID view power units and trailers" enabled="false">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">200</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${__P(rampup,300)}</stringProp>
+        <longProp name="ThreadGroup.start_time">1365261073000</longProp>
+        <longProp name="ThreadGroup.end_time">1365261073000</longProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">${__P(duration,3000)}</stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Authorization</stringProp>
+              <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJxUWlFWDB2T2Z1SlBuWUw4MWo0Q2tDOHVPdEJ1aFZvM0xBd2ppczZWbHRzIn0.eyJleHAiOjE3MDg5NzMwNzQsImlhdCI6MTcwODk3Mjc3NCwiYXV0aF90aW1lIjoxNzA4OTcyNzc0LCJqdGkiOiI5YTg3NTdmZi0yZGRmLTRhNjYtYmU4OC1iYmI0ZDVjOWY0MTkiLCJpc3MiOiJodHRwczovL2Rldi5sb2dpbnByb3h5Lmdvdi5iYy5jYS9hdXRoL3JlYWxtcy9zdGFuZGFyZCIsImF1ZCI6Im9uLXJvdXRlLWJjLWRpcmVjdC00NTk4Iiwic3ViIjoiNmY1NjgzZGUyODQ0NGE2Njk3ZTU2MTkzNmYyYzc1ZmFAYmNlaWRib3RoIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoib24tcm91dGUtYmMtZGlyZWN0LTQ1OTgiLCJzZXNzaW9uX3N0YXRlIjoiMmVjOTc5MGItZjdiMy00MTIxLThjMTctYWE3ZGFjZDdjMTc3Iiwic2NvcGUiOiJvcGVuaWQgaWRpciBiY2VpZGJvdGggZW1haWwgcHJvZmlsZSIsInNpZCI6IjJlYzk3OTBiLWY3YjMtNDEyMS04YzE3LWFhN2RhY2Q3YzE3NyIsImJjZWlkX2J1c2luZXNzX2d1aWQiOiJDMDIyNEJCODQ5M0Y0RDgyODlDRDkzMEZFMDA2NzI4OSIsImJjZWlkX2J1c2luZXNzX25hbWUiOiJZb3JrZSwgVGhvbSIsImJjZWlkX3VzZXJfZ3VpZCI6IjZGNTY4M0RFMjg0NDRBNjY5N0U1NjE5MzZGMkM3NUZBIiwiaWRlbnRpdHlfcHJvdmlkZXIiOiJiY2VpZGJvdGgiLCJiY2VpZF91c2VybmFtZSI6InRvbXN0cnVja2luZyIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibmFtZSI6IlRob20gWW9ya2UiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiI2ZjU2ODNkZTI4NDQ0YTY2OTdlNTYxOTM2ZjJjNzVmYUBiY2VpZGJvdGgiLCJkaXNwbGF5X25hbWUiOiJUaG9tIFlvcmtlIiwiZ2l2ZW5fbmFtZSI6IlRob20gWW9ya2UiLCJmYW1pbHlfbmFtZSI6IiIsImVtYWlsIjoiY2hyaXMuMS5yb2JpbnNvbkBnb3YuYmMuY2EifQ.NdkLebZexmZaMR6iEaduODUm8FxaSPEK8ijFkXEl5eIzZI59WVK3-6m41YYKqSOGLdId1h6TxhInd3lVb4tqAozubGKOtQbmhf-LRAXXj6c-ZQ1MW35BJW-KeSbSKR7lP_j7S_FX-bBelzPT9xkUgqOI7u9foFZ3wFndpEAPPMqLGcI4wvm_gwejEXFwsqjyI7kgpPTj3MAWZvgh64LlbXlTGSTZDJy2eNn2LU8iAVY6rJjlYn2Un6feektHV4xHbqPQrdw4IDNn5vXNKvR_4CjPYaKz0J8uEegWdWRk4wxHLClRMUQao2UmGRcsMB3Vp1Wt7VmbgoZRf1U9bB_bXQ</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Accept</stringProp>
+              <stringProp name="Header.value">*/*</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="bceidGetRole" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">https://onroutebc-1222-vehicles.apps.silver.devops.gov.bc.ca/users/roles?companyId=74</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="BlazeMeter Header Manager" enabled="false">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Host</stringProp>
+                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Connection</stringProp>
+                <stringProp name="Header.value">keep-alive</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">sec-ch-ua</stringProp>
+                <stringProp name="Header.value">&quot;Chromium&quot;;v=&quot;118&quot;, &quot;Google Chrome&quot;;v=&quot;118&quot;, &quot;Not=A?Brand&quot;;v=&quot;99&quot;</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Accept</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">sec-ch-ua-mobile</stringProp>
+                <stringProp name="Header.value">?0</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJXNk5hakRyZ2VUR2tYR0dtb28tRWJFSkJXQTM4OGEyYjdRN0p4eThSRjdzIn0.eyJleHAiOjE2OTg3NzQ5NDEsImlhdCI6MTY5ODc3NDY0MSwiYXV0aF90aW1lIjoxNjk4NzczOTE0LCJqdGkiOiIwYmJhZDkwYS02NTc2LTRmZDYtYmM2ZS1mOTgzMjQ1NTkwMTAiLCJpc3MiOiJodHRwczovL3Rlc3QubG9naW5wcm94eS5nb3YuYmMuY2EvYXV0aC9yZWFsbXMvc3RhbmRhcmQiLCJhdWQiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInN1YiI6ImRkMGZhZWY0Yzc4ODQ1MDBhYTRjNmRjNTY4NjlmOWE1QGlkaXIiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInNlc3Npb25fc3RhdGUiOiJhZjhlZTdmMC0yMmI0LTQ0MDMtOTY2Zi1kMmRkYjQ1MzQzMjkiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIGJjZWlkYm90aCBpZGlyIiwic2lkIjoiYWY4ZWU3ZjAtMjJiNC00NDAzLTk2NmYtZDJkZGI0NTM0MzI5IiwiaWRpcl91c2VyX2d1aWQiOiJERDBGQUVGNEM3ODg0NTAwQUE0QzZEQzU2ODY5RjlBNSIsImlkZW50aXR5X3Byb3ZpZGVyIjoiaWRpciIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaWRpcl91c2VybmFtZSI6IkJSV0FORyIsIm5hbWUiOiJXYW5nLCBCcnVjZSBNT1RJOkVYIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiZGQwZmFlZjRjNzg4NDUwMGFhNGM2ZGM1Njg2OWY5YTVAaWRpciIsImRpc3BsYXlfbmFtZSI6IldhbmcsIEJydWNlIE1PVEk6RVgiLCJnaXZlbl9uYW1lIjoiQnJ1Y2UiLCJmYW1pbHlfbmFtZSI6IldhbmciLCJlbWFpbCI6ImJydWNlLndhbmdAZ292LmJjLmNhIn0.C5M2q-h4jgenVeuZsmPa-TTHkDTYA-Ik0khuX_-JPnMGbqbzXh9ZdPkYowjBm7YoBVbxpfwodi0NbFdS3krU6bq5dF5zFWK_O2BE2AdIvnLRK-Q7h-xaIbtx9M9V4Vs6QTD4U7IVesCF34A46OGqmqvMpMno0lX2LUM5RNKk5NMafQLax-Wo6x-03itHKzwN0BHobhr-Vux0u22J2gENofdvdqpq64P-t1-wWMYIqqLMGN0qLQlhv7YLKGMcwrzrqhLwJnEa23jzKP4oPFqjMn7Do0ZvBjupNpmDSD0FfMmXv_y9LqqWFSDmL5RwiEc6L7i70nYPYRRHaOZP7_sCPA</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">User-Agent</stringProp>
+                <stringProp name="Header.value">Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">sec-ch-ua-platform</stringProp>
+                <stringProp name="Header.value">&quot;Windows&quot;</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Origin</stringProp>
+                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
+                <stringProp name="Header.value">same-site</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Sec-Fetch-Mode</stringProp>
+                <stringProp name="Header.value">cors</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Sec-Fetch-Dest</stringProp>
+                <stringProp name="Header.value">empty</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Referer</stringProp>
+                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Accept-Encoding</stringProp>
+                <stringProp name="Header.value">gzip, deflate, br</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Accept-Language</stringProp>
+                <stringProp name="Header.value">en-US,en;q=0.9</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">If-None-Match</stringProp>
+                <stringProp name="Header.value">W/&quot;17b2-OQs45yY+9rxT8oaE549bg+d9IqA&quot;</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="false">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJXNk5hakRyZ2VUR2tYR0dtb28tRWJFSkJXQTM4OGEyYjdRN0p4eThSRjdzIn0.eyJleHAiOjE3MDA4NDc5MDIsImlhdCI6MTcwMDg0NzYwMiwiYXV0aF90aW1lIjoxNzAwODQ3NjAyLCJqdGkiOiI2MjM5YTA5OC00NTg0LTRlZDUtOGM5Ny1lYWI4MWZmYzM4ZDQiLCJpc3MiOiJodHRwczovL3Rlc3QubG9naW5wcm94eS5nb3YuYmMuY2EvYXV0aC9yZWFsbXMvc3RhbmRhcmQiLCJhdWQiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInN1YiI6ImE5ZWQyYzU3NDJkYzQ1NTk5ODY3MmNjMmExMTgxNzRiQGJjZWlkYm90aCIsInR5cCI6IkJlYXJlciIsImF6cCI6Im9uLXJvdXRlLWJjLWRpcmVjdC00NTk4Iiwic2Vzc2lvbl9zdGF0ZSI6IjI4MDhmMmU0LWU0NTctNDE0Yi1hZTE2LTUxZjk1N2Y3MWM3ZiIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwgYmNlaWRib3RoIGlkaXIiLCJzaWQiOiIyODA4ZjJlNC1lNDU3LTQxNGItYWUxNi01MWY5NTdmNzFjN2YiLCJiY2VpZF9idXNpbmVzc19ndWlkIjoiRjQwMjNEQjNDMzBGNDg3QjlBRjVCMTRDOTU4OTg5RjgiLCJiY2VpZF9idXNpbmVzc19uYW1lIjoiU29uaWMgRGVsaXZlcnkgU2VydmljZXMiLCJpZGVudGl0eV9wcm92aWRlciI6ImJjZWlkYm90aCIsImJjZWlkX3VzZXJfZ3VpZCI6IkE5RUQyQzU3NDJEQzQ1NTk5ODY3MkNDMkExMTgxNzRCIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJiY2VpZF91c2VybmFtZSI6Ik9SQkNUU1QzIiwibmFtZSI6IkJyeWFuIExhbmUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJhOWVkMmM1NzQyZGM0NTU5OTg2NzJjYzJhMTE4MTc0YkBiY2VpZGJvdGgiLCJkaXNwbGF5X25hbWUiOiJCcnlhbiBMYW5lIiwiZ2l2ZW5fbmFtZSI6IkJyeWFuIExhbmUiLCJmYW1pbHlfbmFtZSI6IiIsImVtYWlsIjoiYnJ5YW4ubGFuZUBnb3YuYmMuY2EifQ.P1VrUcvX6r_1FIerPiG_cqIhKeZYGsdje0uANyj-4Vviv0YdTet8WmqtdaJCaahUpCfjNWetj_dobCwhimA-Rco0egrw1lP-aUN3KOdm8IO3FtX3vrjx_YjD9E8-WPPso0eOqxiwG4_FJb9GZqWOBjF6xuSAFTPixK3yQ3emdh9fNFGPQdOljVh5gOQWn0_likx7KTOt9WDEpFwBJF2yFlA_7z8Cxz9gzmPacSzYv2tGV5tuvjyDQKC2eHZWWqw4jd3-aps_CPeqRhuGLgPbT_Oo58-PnFxsl1JzH5PLQvnxPmkwVU53FWxiphtzuyFyA7lGoBwJyTwlJzuq3HEeqg</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Accept</stringProp>
+                <stringProp name="Header.value">*/*</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="getPowerUnits" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">https://onroutebc-1222-vehicles.apps.silver.devops.gov.bc.ca/companies/74/vehicles/powerUnits</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="false">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJXNk5hakRyZ2VUR2tYR0dtb28tRWJFSkJXQTM4OGEyYjdRN0p4eThSRjdzIn0.eyJleHAiOjE3MDA4NDc5MDIsImlhdCI6MTcwMDg0NzYwMiwiYXV0aF90aW1lIjoxNzAwODQ3NjAyLCJqdGkiOiI2MjM5YTA5OC00NTg0LTRlZDUtOGM5Ny1lYWI4MWZmYzM4ZDQiLCJpc3MiOiJodHRwczovL3Rlc3QubG9naW5wcm94eS5nb3YuYmMuY2EvYXV0aC9yZWFsbXMvc3RhbmRhcmQiLCJhdWQiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInN1YiI6ImE5ZWQyYzU3NDJkYzQ1NTk5ODY3MmNjMmExMTgxNzRiQGJjZWlkYm90aCIsInR5cCI6IkJlYXJlciIsImF6cCI6Im9uLXJvdXRlLWJjLWRpcmVjdC00NTk4Iiwic2Vzc2lvbl9zdGF0ZSI6IjI4MDhmMmU0LWU0NTctNDE0Yi1hZTE2LTUxZjk1N2Y3MWM3ZiIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwgYmNlaWRib3RoIGlkaXIiLCJzaWQiOiIyODA4ZjJlNC1lNDU3LTQxNGItYWUxNi01MWY5NTdmNzFjN2YiLCJiY2VpZF9idXNpbmVzc19ndWlkIjoiRjQwMjNEQjNDMzBGNDg3QjlBRjVCMTRDOTU4OTg5RjgiLCJiY2VpZF9idXNpbmVzc19uYW1lIjoiU29uaWMgRGVsaXZlcnkgU2VydmljZXMiLCJpZGVudGl0eV9wcm92aWRlciI6ImJjZWlkYm90aCIsImJjZWlkX3VzZXJfZ3VpZCI6IkE5RUQyQzU3NDJEQzQ1NTk5ODY3MkNDMkExMTgxNzRCIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJiY2VpZF91c2VybmFtZSI6Ik9SQkNUU1QzIiwibmFtZSI6IkJyeWFuIExhbmUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJhOWVkMmM1NzQyZGM0NTU5OTg2NzJjYzJhMTE4MTc0YkBiY2VpZGJvdGgiLCJkaXNwbGF5X25hbWUiOiJCcnlhbiBMYW5lIiwiZ2l2ZW5fbmFtZSI6IkJyeWFuIExhbmUiLCJmYW1pbHlfbmFtZSI6IiIsImVtYWlsIjoiYnJ5YW4ubGFuZUBnb3YuYmMuY2EifQ.P1VrUcvX6r_1FIerPiG_cqIhKeZYGsdje0uANyj-4Vviv0YdTet8WmqtdaJCaahUpCfjNWetj_dobCwhimA-Rco0egrw1lP-aUN3KOdm8IO3FtX3vrjx_YjD9E8-WPPso0eOqxiwG4_FJb9GZqWOBjF6xuSAFTPixK3yQ3emdh9fNFGPQdOljVh5gOQWn0_likx7KTOt9WDEpFwBJF2yFlA_7z8Cxz9gzmPacSzYv2tGV5tuvjyDQKC2eHZWWqw4jd3-aps_CPeqRhuGLgPbT_Oo58-PnFxsl1JzH5PLQvnxPmkwVU53FWxiphtzuyFyA7lGoBwJyTwlJzuq3HEeqg</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Accept</stringProp>
+                <stringProp name="Header.value">*/*</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="getTrailers" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">https://onroutebc-1222-vehicles.apps.silver.devops.gov.bc.ca/companies/74/vehicles/trailers</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="false">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJXNk5hakRyZ2VUR2tYR0dtb28tRWJFSkJXQTM4OGEyYjdRN0p4eThSRjdzIn0.eyJleHAiOjE3MDA4NDc5MDIsImlhdCI6MTcwMDg0NzYwMiwiYXV0aF90aW1lIjoxNzAwODQ3NjAyLCJqdGkiOiI2MjM5YTA5OC00NTg0LTRlZDUtOGM5Ny1lYWI4MWZmYzM4ZDQiLCJpc3MiOiJodHRwczovL3Rlc3QubG9naW5wcm94eS5nb3YuYmMuY2EvYXV0aC9yZWFsbXMvc3RhbmRhcmQiLCJhdWQiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInN1YiI6ImE5ZWQyYzU3NDJkYzQ1NTk5ODY3MmNjMmExMTgxNzRiQGJjZWlkYm90aCIsInR5cCI6IkJlYXJlciIsImF6cCI6Im9uLXJvdXRlLWJjLWRpcmVjdC00NTk4Iiwic2Vzc2lvbl9zdGF0ZSI6IjI4MDhmMmU0LWU0NTctNDE0Yi1hZTE2LTUxZjk1N2Y3MWM3ZiIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwgYmNlaWRib3RoIGlkaXIiLCJzaWQiOiIyODA4ZjJlNC1lNDU3LTQxNGItYWUxNi01MWY5NTdmNzFjN2YiLCJiY2VpZF9idXNpbmVzc19ndWlkIjoiRjQwMjNEQjNDMzBGNDg3QjlBRjVCMTRDOTU4OTg5RjgiLCJiY2VpZF9idXNpbmVzc19uYW1lIjoiU29uaWMgRGVsaXZlcnkgU2VydmljZXMiLCJpZGVudGl0eV9wcm92aWRlciI6ImJjZWlkYm90aCIsImJjZWlkX3VzZXJfZ3VpZCI6IkE5RUQyQzU3NDJEQzQ1NTk5ODY3MkNDMkExMTgxNzRCIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJiY2VpZF91c2VybmFtZSI6Ik9SQkNUU1QzIiwibmFtZSI6IkJyeWFuIExhbmUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJhOWVkMmM1NzQyZGM0NTU5OTg2NzJjYzJhMTE4MTc0YkBiY2VpZGJvdGgiLCJkaXNwbGF5X25hbWUiOiJCcnlhbiBMYW5lIiwiZ2l2ZW5fbmFtZSI6IkJyeWFuIExhbmUiLCJmYW1pbHlfbmFtZSI6IiIsImVtYWlsIjoiYnJ5YW4ubGFuZUBnb3YuYmMuY2EifQ.P1VrUcvX6r_1FIerPiG_cqIhKeZYGsdje0uANyj-4Vviv0YdTet8WmqtdaJCaahUpCfjNWetj_dobCwhimA-Rco0egrw1lP-aUN3KOdm8IO3FtX3vrjx_YjD9E8-WPPso0eOqxiwG4_FJb9GZqWOBjF6xuSAFTPixK3yQ3emdh9fNFGPQdOljVh5gOQWn0_likx7KTOt9WDEpFwBJF2yFlA_7z8Cxz9gzmPacSzYv2tGV5tuvjyDQKC2eHZWWqw4jd3-aps_CPeqRhuGLgPbT_Oo58-PnFxsl1JzH5PLQvnxPmkwVU53FWxiphtzuyFyA7lGoBwJyTwlJzuq3HEeqg</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Accept</stringProp>
+                <stringProp name="Header.value">*/*</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="BCeID update permit" enabled="false">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">200</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${__P(rampup,300)}</stringProp>
+        <longProp name="ThreadGroup.start_time">1365261073000</longProp>
+        <longProp name="ThreadGroup.end_time">1365261073000</longProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">${__P(duration,3000)}</stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Authorization</stringProp>
+              <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJxUWlFWDB2T2Z1SlBuWUw4MWo0Q2tDOHVPdEJ1aFZvM0xBd2ppczZWbHRzIn0.eyJleHAiOjE3MDg5NzMwNzQsImlhdCI6MTcwODk3Mjc3NCwiYXV0aF90aW1lIjoxNzA4OTcyNzc0LCJqdGkiOiI5YTg3NTdmZi0yZGRmLTRhNjYtYmU4OC1iYmI0ZDVjOWY0MTkiLCJpc3MiOiJodHRwczovL2Rldi5sb2dpbnByb3h5Lmdvdi5iYy5jYS9hdXRoL3JlYWxtcy9zdGFuZGFyZCIsImF1ZCI6Im9uLXJvdXRlLWJjLWRpcmVjdC00NTk4Iiwic3ViIjoiNmY1NjgzZGUyODQ0NGE2Njk3ZTU2MTkzNmYyYzc1ZmFAYmNlaWRib3RoIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoib24tcm91dGUtYmMtZGlyZWN0LTQ1OTgiLCJzZXNzaW9uX3N0YXRlIjoiMmVjOTc5MGItZjdiMy00MTIxLThjMTctYWE3ZGFjZDdjMTc3Iiwic2NvcGUiOiJvcGVuaWQgaWRpciBiY2VpZGJvdGggZW1haWwgcHJvZmlsZSIsInNpZCI6IjJlYzk3OTBiLWY3YjMtNDEyMS04YzE3LWFhN2RhY2Q3YzE3NyIsImJjZWlkX2J1c2luZXNzX2d1aWQiOiJDMDIyNEJCODQ5M0Y0RDgyODlDRDkzMEZFMDA2NzI4OSIsImJjZWlkX2J1c2luZXNzX25hbWUiOiJZb3JrZSwgVGhvbSIsImJjZWlkX3VzZXJfZ3VpZCI6IjZGNTY4M0RFMjg0NDRBNjY5N0U1NjE5MzZGMkM3NUZBIiwiaWRlbnRpdHlfcHJvdmlkZXIiOiJiY2VpZGJvdGgiLCJiY2VpZF91c2VybmFtZSI6InRvbXN0cnVja2luZyIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibmFtZSI6IlRob20gWW9ya2UiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiI2ZjU2ODNkZTI4NDQ0YTY2OTdlNTYxOTM2ZjJjNzVmYUBiY2VpZGJvdGgiLCJkaXNwbGF5X25hbWUiOiJUaG9tIFlvcmtlIiwiZ2l2ZW5fbmFtZSI6IlRob20gWW9ya2UiLCJmYW1pbHlfbmFtZSI6IiIsImVtYWlsIjoiY2hyaXMuMS5yb2JpbnNvbkBnb3YuYmMuY2EifQ.NdkLebZexmZaMR6iEaduODUm8FxaSPEK8ijFkXEl5eIzZI59WVK3-6m41YYKqSOGLdId1h6TxhInd3lVb4tqAozubGKOtQbmhf-LRAXXj6c-ZQ1MW35BJW-KeSbSKR7lP_j7S_FX-bBelzPT9xkUgqOI7u9foFZ3wFndpEAPPMqLGcI4wvm_gwejEXFwsqjyI7kgpPTj3MAWZvgh64LlbXlTGSTZDJy2eNn2LU8iAVY6rJjlYn2Un6feektHV4xHbqPQrdw4IDNn5vXNKvR_4CjPYaKz0J8uEegWdWRk4wxHLClRMUQao2UmGRcsMB3Vp1Wt7VmbgoZRf1U9bB_bXQ</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Accept</stringProp>
+              <stringProp name="Header.value">application/json</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Content-Type</stringProp>
+              <stringProp name="Header.value">application/json</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="bceidGetRole" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">https://onroutebc-1222-vehicles.apps.silver.devops.gov.bc.ca/users/roles?companyId=74</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="getPermitsInProgress" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">https://onroutebc-1222-vehicles.apps.silver.devops.gov.bc.ca/permits/applications?page=1&amp;take=10&amp;orderBy=applicationNumber%3ADESC%2CpermitType%3AASC&amp;companyId=74</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="getPermit" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">https://onroutebc-1222-vehicles.apps.silver.devops.gov.bc.ca/permits/applications/20?companyId=74</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="updatePermit" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+  &quot;companyId&quot;: 74,&#xd;
+  &quot;userGuid&quot;: &quot;06267945F2EB4E31B585932F78B76269&quot;,&#xd;
+  &quot;permitType&quot;: &quot;TROS&quot;,&#xd;
+  &quot;permitStatus&quot;: &quot;ISSUED&quot;,&#xd;
+  &quot;permitApplicationOrigin&quot;: &quot;ONLINE&quot;,&#xd;
+  &quot;permitData&quot;: {}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">https://onroutebc-1222-vehicles.apps.silver.devops.gov.bc.ca/permits/applications/A2-00010000-123-A00</stringProp>
+          <stringProp name="HTTPSampler.method">PUT</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="getPermitAgain" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">https://onroutebc-1222-vehicles.apps.silver.devops.gov.bc.ca/permits/applications?page=1&amp;take=10&amp;orderBy=applicationNumber%3ADESC%2CpermitType%3AASC&amp;companyId=74</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="updatePermitAgain" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+  &quot;companyId&quot;: 74,&#xd;
+  &quot;userGuid&quot;: &quot;06267945F2EB4E31B585932F78B76269&quot;,&#xd;
+  &quot;permitType&quot;: &quot;TROS&quot;,&#xd;
+  &quot;permitStatus&quot;: &quot;ISSUED&quot;,&#xd;
+  &quot;permitApplicationOrigin&quot;: &quot;ONLINE&quot;,&#xd;
+  &quot;permitData&quot;: {}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">https://onroutebc-1222-vehicles.apps.silver.devops.gov.bc.ca/permits/applications/A2-00010000-123-A00</stringProp>
+          <stringProp name="HTTPSampler.method">PUT</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="BCeID submit permit" enabled="false">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">200</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${__P(rampup,300)}</stringProp>
+        <longProp name="ThreadGroup.start_time">1365261073000</longProp>
+        <longProp name="ThreadGroup.end_time">1365261073000</longProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">${__P(duration,3000)}</stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Authorization</stringProp>
+              <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJxUWlFWDB2T2Z1SlBuWUw4MWo0Q2tDOHVPdEJ1aFZvM0xBd2ppczZWbHRzIn0.eyJleHAiOjE3MDg5NzMwNzQsImlhdCI6MTcwODk3Mjc3NCwiYXV0aF90aW1lIjoxNzA4OTcyNzc0LCJqdGkiOiI5YTg3NTdmZi0yZGRmLTRhNjYtYmU4OC1iYmI0ZDVjOWY0MTkiLCJpc3MiOiJodHRwczovL2Rldi5sb2dpbnByb3h5Lmdvdi5iYy5jYS9hdXRoL3JlYWxtcy9zdGFuZGFyZCIsImF1ZCI6Im9uLXJvdXRlLWJjLWRpcmVjdC00NTk4Iiwic3ViIjoiNmY1NjgzZGUyODQ0NGE2Njk3ZTU2MTkzNmYyYzc1ZmFAYmNlaWRib3RoIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoib24tcm91dGUtYmMtZGlyZWN0LTQ1OTgiLCJzZXNzaW9uX3N0YXRlIjoiMmVjOTc5MGItZjdiMy00MTIxLThjMTctYWE3ZGFjZDdjMTc3Iiwic2NvcGUiOiJvcGVuaWQgaWRpciBiY2VpZGJvdGggZW1haWwgcHJvZmlsZSIsInNpZCI6IjJlYzk3OTBiLWY3YjMtNDEyMS04YzE3LWFhN2RhY2Q3YzE3NyIsImJjZWlkX2J1c2luZXNzX2d1aWQiOiJDMDIyNEJCODQ5M0Y0RDgyODlDRDkzMEZFMDA2NzI4OSIsImJjZWlkX2J1c2luZXNzX25hbWUiOiJZb3JrZSwgVGhvbSIsImJjZWlkX3VzZXJfZ3VpZCI6IjZGNTY4M0RFMjg0NDRBNjY5N0U1NjE5MzZGMkM3NUZBIiwiaWRlbnRpdHlfcHJvdmlkZXIiOiJiY2VpZGJvdGgiLCJiY2VpZF91c2VybmFtZSI6InRvbXN0cnVja2luZyIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibmFtZSI6IlRob20gWW9ya2UiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiI2ZjU2ODNkZTI4NDQ0YTY2OTdlNTYxOTM2ZjJjNzVmYUBiY2VpZGJvdGgiLCJkaXNwbGF5X25hbWUiOiJUaG9tIFlvcmtlIiwiZ2l2ZW5fbmFtZSI6IlRob20gWW9ya2UiLCJmYW1pbHlfbmFtZSI6IiIsImVtYWlsIjoiY2hyaXMuMS5yb2JpbnNvbkBnb3YuYmMuY2EifQ.NdkLebZexmZaMR6iEaduODUm8FxaSPEK8ijFkXEl5eIzZI59WVK3-6m41YYKqSOGLdId1h6TxhInd3lVb4tqAozubGKOtQbmhf-LRAXXj6c-ZQ1MW35BJW-KeSbSKR7lP_j7S_FX-bBelzPT9xkUgqOI7u9foFZ3wFndpEAPPMqLGcI4wvm_gwejEXFwsqjyI7kgpPTj3MAWZvgh64LlbXlTGSTZDJy2eNn2LU8iAVY6rJjlYn2Un6feektHV4xHbqPQrdw4IDNn5vXNKvR_4CjPYaKz0J8uEegWdWRk4wxHLClRMUQao2UmGRcsMB3Vp1Wt7VmbgoZRf1U9bB_bXQ</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Accept</stringProp>
+              <stringProp name="Header.value">*/*</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Content-Type</stringProp>
+              <stringProp name="Header.value">application/json</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="bceidGetRole" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">https://onroutebc-1222-vehicles.apps.silver.devops.gov.bc.ca/users/roles?companyId=74</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="BlazeMeter Header Manager" enabled="false">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Host</stringProp>
+                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Connection</stringProp>
+                <stringProp name="Header.value">keep-alive</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">sec-ch-ua</stringProp>
+                <stringProp name="Header.value">&quot;Chromium&quot;;v=&quot;118&quot;, &quot;Google Chrome&quot;;v=&quot;118&quot;, &quot;Not=A?Brand&quot;;v=&quot;99&quot;</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Accept</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">sec-ch-ua-mobile</stringProp>
+                <stringProp name="Header.value">?0</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJXNk5hakRyZ2VUR2tYR0dtb28tRWJFSkJXQTM4OGEyYjdRN0p4eThSRjdzIn0.eyJleHAiOjE2OTg3NzQ5NDEsImlhdCI6MTY5ODc3NDY0MSwiYXV0aF90aW1lIjoxNjk4NzczOTE0LCJqdGkiOiIwYmJhZDkwYS02NTc2LTRmZDYtYmM2ZS1mOTgzMjQ1NTkwMTAiLCJpc3MiOiJodHRwczovL3Rlc3QubG9naW5wcm94eS5nb3YuYmMuY2EvYXV0aC9yZWFsbXMvc3RhbmRhcmQiLCJhdWQiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInN1YiI6ImRkMGZhZWY0Yzc4ODQ1MDBhYTRjNmRjNTY4NjlmOWE1QGlkaXIiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInNlc3Npb25fc3RhdGUiOiJhZjhlZTdmMC0yMmI0LTQ0MDMtOTY2Zi1kMmRkYjQ1MzQzMjkiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIGJjZWlkYm90aCBpZGlyIiwic2lkIjoiYWY4ZWU3ZjAtMjJiNC00NDAzLTk2NmYtZDJkZGI0NTM0MzI5IiwiaWRpcl91c2VyX2d1aWQiOiJERDBGQUVGNEM3ODg0NTAwQUE0QzZEQzU2ODY5RjlBNSIsImlkZW50aXR5X3Byb3ZpZGVyIjoiaWRpciIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaWRpcl91c2VybmFtZSI6IkJSV0FORyIsIm5hbWUiOiJXYW5nLCBCcnVjZSBNT1RJOkVYIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiZGQwZmFlZjRjNzg4NDUwMGFhNGM2ZGM1Njg2OWY5YTVAaWRpciIsImRpc3BsYXlfbmFtZSI6IldhbmcsIEJydWNlIE1PVEk6RVgiLCJnaXZlbl9uYW1lIjoiQnJ1Y2UiLCJmYW1pbHlfbmFtZSI6IldhbmciLCJlbWFpbCI6ImJydWNlLndhbmdAZ292LmJjLmNhIn0.C5M2q-h4jgenVeuZsmPa-TTHkDTYA-Ik0khuX_-JPnMGbqbzXh9ZdPkYowjBm7YoBVbxpfwodi0NbFdS3krU6bq5dF5zFWK_O2BE2AdIvnLRK-Q7h-xaIbtx9M9V4Vs6QTD4U7IVesCF34A46OGqmqvMpMno0lX2LUM5RNKk5NMafQLax-Wo6x-03itHKzwN0BHobhr-Vux0u22J2gENofdvdqpq64P-t1-wWMYIqqLMGN0qLQlhv7YLKGMcwrzrqhLwJnEa23jzKP4oPFqjMn7Do0ZvBjupNpmDSD0FfMmXv_y9LqqWFSDmL5RwiEc6L7i70nYPYRRHaOZP7_sCPA</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">User-Agent</stringProp>
+                <stringProp name="Header.value">Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">sec-ch-ua-platform</stringProp>
+                <stringProp name="Header.value">&quot;Windows&quot;</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Origin</stringProp>
+                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
+                <stringProp name="Header.value">same-site</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Sec-Fetch-Mode</stringProp>
+                <stringProp name="Header.value">cors</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Sec-Fetch-Dest</stringProp>
+                <stringProp name="Header.value">empty</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Referer</stringProp>
+                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Accept-Encoding</stringProp>
+                <stringProp name="Header.value">gzip, deflate, br</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Accept-Language</stringProp>
+                <stringProp name="Header.value">en-US,en;q=0.9</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">If-None-Match</stringProp>
+                <stringProp name="Header.value">W/&quot;17b2-OQs45yY+9rxT8oaE549bg+d9IqA&quot;</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="submitPermitWithoutPay" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+  &quot;companyId&quot;: 74,&#xd;
+  &quot;permitId&quot;: null,&#xd;
+  &quot;originalPermitId&quot;: null,&#xd;
+  &quot;applicationNumber&quot;: null,&#xd;
+  &quot;previousRevision&quot;: null,&#xd;
+  &quot;revision&quot;: null,&#xd;
+  &quot;userGuid&quot;: &quot;06267945F2EB4E31B585932F78B76269&quot;,&#xd;
+  &quot;permitType&quot;: &quot;TROS&quot;,&#xd;
+  &quot;permitStatus&quot;: &quot;ISSUED&quot;,&#xd;
+  &quot;permitApprovalSource&quot;: &quot;PPC&quot;,&#xd;
+  &quot;permitApplicationOrigin&quot;: &quot;ONLINE&quot;,&#xd;
+  &quot;permitData&quot;: {&#xd;
+    &quot;startDate&quot;: &quot;2023-06-05T19:12:22Z&quot;,&#xd;
+    &quot;expiryDate&quot;: &quot;2023-07-04T19:12:22Z&quot;,&#xd;
+    &quot;permitDuration&quot;: 30,&#xd;
+    &quot;feeSummary&quot;: &quot;30&quot;,&#xd;
+    &quot;commodities&quot;: [&#xd;
+      {&#xd;
+        &quot;description&quot;: &quot;General Permit Conditions&quot;,&#xd;
+        &quot;condition&quot;: &quot;CVSE-1000&quot;,&#xd;
+        &quot;conditionLink&quot;: &quot;https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1251&quot;,&#xd;
+        &quot;checked&quot;: true&#xd;
+      },&#xd;
+      {&#xd;
+        &quot;description&quot;: &quot;Permit Scope and Limitation&quot;,&#xd;
+        &quot;condition&quot;: &quot;CVSE-1070&quot;,&#xd;
+        &quot;conditionLink&quot;: &quot;https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1261&quot;,&#xd;
+        &quot;checked&quot;: true&#xd;
+      },&#xd;
+      {&#xd;
+        &quot;description&quot;: &quot;Log Permit Conditions&quot;,&#xd;
+        &quot;condition&quot;: &quot;CVSE-1000L&quot;,&#xd;
+        &quot;conditionLink&quot;: &quot;https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1250&quot;,&#xd;
+        &quot;checked&quot;: true&#xd;
+      }&#xd;
+    ],&#xd;
+    &quot;contactDetails&quot;: {&#xd;
+      &quot;firstName&quot;: &quot;Lewis&quot;,&#xd;
+      &quot;lastName&quot;: &quot;Hamilton&quot;,&#xd;
+      &quot;phone1&quot;: &quot;(778) 952-1234&quot;,&#xd;
+      &quot;email&quot;: &quot;lewis@f1.com&quot;,&#xd;
+      &quot;phone1Extension&quot;: &quot;1&quot;,&#xd;
+      &quot;phone2&quot;: null,&#xd;
+      &quot;phone2Extension&quot;: null,&#xd;
+      &quot;fax&quot;: null&#xd;
+    },&#xd;
+    &quot;mailingAddress&quot;: {&#xd;
+      &quot;addressLine1&quot;: &quot;123 Short Street&quot;,&#xd;
+      &quot;addressLine2&quot;: null,&#xd;
+      &quot;city&quot;: &quot;Victoria&quot;,&#xd;
+      &quot;provinceCode&quot;: &quot;BC&quot;,&#xd;
+      &quot;countryCode&quot;: &quot;CA&quot;,&#xd;
+      &quot;postalCode&quot;: &quot;V8X2V5&quot;&#xd;
+    },&#xd;
+    &quot;vehicleDetails&quot;: {&#xd;
+      &quot;vin&quot;: &quot;781452&quot;,&#xd;
+      &quot;plate&quot;: &quot;PRJZZP&quot;,&#xd;
+      &quot;make&quot;: &quot;GMC&quot;,&#xd;
+      &quot;year&quot;: 2001,&#xd;
+      &quot;countryCode&quot;: &quot;CA&quot;,&#xd;
+      &quot;provinceCode&quot;: &quot;BC&quot;,&#xd;
+      &quot;vehicleType&quot;: &quot;powerUnit&quot;,&#xd;
+      &quot;vehicleSubType&quot;: &quot;LOGGING&quot;,&#xd;
+      &quot;saveVehicle&quot;: true&#xd;
+    }&#xd;
+  },&#xd;
+  &quot;comment&quot;: &quot;This application was amended because of so-and-so reason.&quot;&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">https://onroutebc-1222-vehicles.apps.silver.devops.gov.bc.ca/permits/applications</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+      </hashTree>
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+      <ResultCollector guiclass="StatVisualizer" testclass="ResultCollector" testname="Aggregate Report" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+      <ResultCollector guiclass="SimpleDataWriter" testclass="ResultCollector" testname="Simple Data Writer" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename">C:\Users\BRWANG\Software\JMeter\mytest\results\test-1.csv</stringProp>
+      </ResultCollector>
+      <hashTree/>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>
