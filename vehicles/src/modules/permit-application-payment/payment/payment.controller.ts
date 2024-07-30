@@ -18,6 +18,7 @@ import {
   ApiOkResponse,
   ApiQuery,
   ApiTags,
+  ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { PaymentService } from './payment.service';
@@ -47,6 +48,10 @@ import { Role } from '../../../common/enum/roles.enum';
 })
 @ApiInternalServerErrorResponse({
   description: 'The Payment Api Internal Server Error Response',
+  type: ExceptionDto,
+})
+@ApiUnprocessableEntityResponse({
+  description: 'The Payment Entity could not be processed.',
   type: ExceptionDto,
 })
 export class PaymentController {
