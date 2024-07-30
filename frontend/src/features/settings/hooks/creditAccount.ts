@@ -27,11 +27,12 @@ import { CompanyProfile } from "../../manageProfile/types/manageProfile";
  * Hook to fetch the company credit account details for the active user.
  * @returns Query result of the company credit account details
  */
-export const useGetCreditAccountMetadataQuery = (companyId: number) => {
+export const useGetCreditAccountMetadataQuery = (companyId: number, enabled?: boolean ) => {
   return useQuery({
     queryKey: ["credit-account-metadata", { companyId }],
     queryFn: () => getCreditAccountMetadata(companyId),
     retry: false,
+    enabled,
     refetchOnWindowFocus: false,
   });
 };
