@@ -271,10 +271,8 @@ export class PaymentService {
     }
 
     if (
-      (createTransactionDto?.paymentMethodTypeCode ===
-        PaymentMethodTypeEnum.WEB ||
-        createTransactionDto?.paymentMethodTypeCode ===
-          PaymentMethodTypeEnum.POS) &&
+      createTransactionDto?.paymentMethodTypeCode ===
+        PaymentMethodTypeEnum.POS &&
       !createTransactionDto?.paymentCardTypeCode
     ) {
       throwBadRequestException('paymentCardTypeCode', [
