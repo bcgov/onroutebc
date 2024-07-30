@@ -1,97 +1,40 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import {
-  Box,
-  Button,
-  MenuItem,
-  SelectChangeEvent,
-  Typography,
-} from "@mui/material";
-import { useContext, useState } from "react";
+import { Box, Typography } from "@mui/material";
+import { useContext } from "react";
+import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
 import { RenderIf } from "../../../common/components/reusable/RenderIf";
 import { Loading } from "../../../common/pages/Loading";
 import { AccountDetails } from "../components/creditAccount/AccountDetails";
 import { ActivityTable } from "../components/creditAccount/ActivityTable";
 import { AddUser } from "../components/creditAccount/AddUser";
-import { SelectCreditLimit } from "../components/creditAccount/SelectCreditLimit";
 import { StatusChip } from "../components/creditAccount/StatusChip";
 import { UserTable } from "../components/creditAccount/UserTable";
+import { useGetCreditAccountQuery } from "../hooks/creditAccount";
 import {
-  useCreateCreditAccountMutation,
-  useGetCreditAccountQuery,
-} from "../hooks/creditAccount";
-import {
-  CREDIT_ACCOUNT_LIMIT_CHOOSE_FROM_OPTIONS,
   CREDIT_ACCOUNT_STATUS_TYPE,
   CREDIT_ACCOUNT_USER_TYPE,
-  CreditAccountLimitType,
   CreditAccountMetadata,
-  DEFAULT_CREDIT_ACCOUNT_LIMIT,
-  EMPTY_CREDIT_ACCOUNT_LIMIT_SELECT,
 } from "../types/creditAccount";
 import "./CreditAccount.scss";
-import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
-import { BCeID_USER_AUTH_GROUP } from "../../../common/authentication/types";
 
-export const CreditAccount = ({
+export const ViewCreditAccount = ({
   companyId,
   creditAccountMetadata: { creditAccountId, userType },
 }: {
   companyId: number;
   creditAccountMetadata: CreditAccountMetadata;
 }) => {
-  const [invalid, setInvalid] = useState<boolean>(false);
   const { userDetails } = useContext(OnRouteBCContext);
 
-  const [selectedCreditLimit, setSelectedCreditLimit] = useState<
-    CreditAccountLimitType | typeof EMPTY_CREDIT_ACCOUNT_LIMIT_SELECT
-  >(DEFAULT_CREDIT_ACCOUNT_LIMIT);
-
-  const handleSelectedCreditLimit = (event: SelectChangeEvent) => {
-    setInvalid(false);
-    setSelectedCreditLimit(
-      event.target.value as
-        | CreditAccountLimitType
-        | typeof EMPTY_CREDIT_ACCOUNT_LIMIT_SELECT,
-    );
-  };
-
-  const {
-    data: creditAccount,
-    isPending: creditAccountPending,
-    refetch: refetchCreditAccount,
-  } = useGetCreditAccountQuery(companyId, creditAccountId);
-
-  const { mutateAsync, isPending: creditAccountCreationPending } =
-    useCreateCreditAccountMutation();
+  const { data: creditAccount, isPending: creditAccountPending } =
+    useGetCreditAccountQuery(companyId, creditAccountId);
 
   const isAccountHolder = userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER;
-
-  const isActionSuccessful = (status: number) => {
-    return status === 201;
-  };
-
-  const handleCreateCreditAccount = async () => {
-    if (selectedCreditLimit !== EMPTY_CREDIT_ACCOUNT_LIMIT_SELECT) {
-      setInvalid(false);
-      const { status } = await mutateAsync({
-        companyId,
-        creditLimit: selectedCreditLimit,
-      });
-      if (isActionSuccessful(status)) {
-        refetchCreditAccount();
-      } else {
-        console.error(`${status}: Failed to create credit account.`);
-      }
-    } else {
-      setInvalid(true);
-    }
-  };
 
   if (creditAccountPending) return <Loading />;
 
   return (
     <div className="credit-account-page">
-      {creditAccount ? (
+      {creditAccount && (
         <Box className="credit-account-page__split-container">
           <Box className="account-info">
             <Box className="overview">
@@ -165,37 +108,6 @@ export const CreditAccount = ({
               }
             }}
           />
-        </Box>
-      ) : (
-        <Box>
-          <Typography variant="h3" className="credit-account-page__title">
-            Add Credit Account
-          </Typography>
-          <Box className="add-credit-account-action">
-            <Box>
-              <SelectCreditLimit
-                value={selectedCreditLimit}
-                label={"Credit Limit"}
-                onChange={handleSelectedCreditLimit}
-                menuItems={CREDIT_ACCOUNT_LIMIT_CHOOSE_FROM_OPTIONS.map(
-                  (data) => (
-                    <MenuItem key={data.value} value={data.value}>
-                      {data.label}
-                    </MenuItem>
-                  ),
-                )}
-                invalid={invalid}
-              />
-            </Box>
-            <Button
-              className={`add-credit-account-action__btn ${invalid && "add-credit-account-action__btn--error"}`}
-              variant="contained"
-              onClick={handleCreateCreditAccount}
-              disabled={creditAccountCreationPending}
-            >
-              Add Credit Account
-            </Button>
-          </Box>
         </Box>
       )}
     </div>

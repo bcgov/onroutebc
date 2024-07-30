@@ -20,16 +20,14 @@ import { BCEID_PROFILE_TABS } from "../../types/manageProfile.d";
 import { ERROR_ROUTES, PROFILE_ROUTES } from "../../../../routes/constants";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { SpecialAuthorizations } from "../../../settings/pages/SpecialAuthorizations/SpecialAuthorizations";
-import { CreditAccount } from "../../../settings/pages/CreditAccount";
+import { ViewCreditAccount } from "../../../settings/pages/ViewCreditAccount";
 import { useGetCreditAccountMetadataQuery } from "../../../settings/hooks/creditAccount";
 import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
 import {
   CREDIT_ACCOUNT_USER_TYPE,
   CreditAccountMetadata,
 } from "../../../settings/types/creditAccount";
-import {
-  canViewSpecialAuthorizations,
-} from "../../../settings/helpers/permissions";
+import { canViewSpecialAuthorizations } from "../../../settings/helpers/permissions";
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
 interface ProfileDashboardTab {
@@ -126,7 +124,7 @@ export const ManageProfilesDashboard = React.memo(() => {
       ? {
           label: "Credit Account",
           component: (
-            <CreditAccount
+            <ViewCreditAccount
               companyId={companyId}
               creditAccountMetadata={
                 creditAccountMetadata as CreditAccountMetadata

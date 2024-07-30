@@ -12,7 +12,6 @@ import { MouseEvent, useState } from "react";
 import { RenderIf } from "../../../../common/components/reusable/RenderIf";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import {
-  useGetCreditAccountMetadataQuery,
   useUpdateCreditAccountStatusMutation,
 } from "../../hooks/creditAccount";
 import {
@@ -26,6 +25,7 @@ import {
 import "./AccountDetails.scss";
 import { CloseCreditAccountModal } from "./CloseCreditAccountModal";
 import { HoldCreditAccountModal } from "./HoldCreditAccountModal";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const AccountDetails = ({
   companyId,
@@ -42,10 +42,8 @@ export const AccountDetails = ({
   const [showCloseCreditAccountModal, setShowCloseCreditAccountModal] =
     useState<boolean>(false);
   const isMenuOpen = Boolean(anchorEl);
+  const queryClient = useQueryClient();
 
-  const { refetch: refetchCreditAccount } = useGetCreditAccountMetadataQuery(
-    getDefaultRequiredVal(0, companyId),
-  );
   // const {
   //   data: creditAccountLimitData,
   //   refetch: refetchCreditAccountLimitData,
@@ -106,7 +104,10 @@ export const AccountDetails = ({
         setShowHoldCreditAccountModal(false);
         setShowCloseCreditAccountModal(false);
         handleMenuClose();
-        refetchCreditAccount();
+        // Reload all credit account data.
+        queryClient.refetchQueries({
+          predicate: (query) => query.queryKey[0] === "credit-account",
+        });
       } else {
         console.error(`${status}: Failed to update credit account status.`);
       }

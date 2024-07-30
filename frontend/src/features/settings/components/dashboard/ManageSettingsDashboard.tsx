@@ -13,14 +13,21 @@ import {
 } from "../../helpers/permissions";
 import { CreditAccountMetadataComponent } from "../../pages/CreditAccountMetadataComponent";
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
+import { useGetCreditAccountMetadataQuery } from "../../hooks/creditAccount";
+import { IDIR_USER_AUTH_GROUP } from "../../../../common/authentication/types";
 
 export const ManageSettingsDashboard = React.memo(() => {
   const { userRoles, companyId, idirUserDetails } =
     useContext(OnRouteBCContext);
 
   const { data: featureFlags } = useFeatureFlagsQuery();
+  const { data: creditAccountMetadata } = useGetCreditAccountMetadataQuery(
+    companyId as number,
+  );
 
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
+  const isFinanceUser =
+    idirUserDetails?.userAuthGroup === IDIR_USER_AUTH_GROUP.FINANCE;
 
   const [hideSuspendTab, setHideSuspendTab] = useState<boolean>(false);
   const showSuspendTab = canViewSuspend(userRoles) && !hideSuspendTab;
@@ -33,8 +40,10 @@ export const ManageSettingsDashboard = React.memo(() => {
     featureFlag: "CREDIT-ACCOUNT",
     permissionMatrixFeatureKey: "MANAGE_SETTINGS",
     permissionMatrixFunctionKey: "VIEW_CREDIT_ACCOUNT_TAB",
+    additionalConditionToCheck: () =>
+      // Show the tab for all users if the user is
+      Boolean(creditAccountMetadata) || isFinanceUser,
   });
-  console.log('showCreditAccountTab::', showCreditAccountTab);
 
   const { state: stateFromNavigation } = useLocation();
 
@@ -46,7 +55,6 @@ export const ManageSettingsDashboard = React.memo(() => {
     return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
   }
 
-  // Add more tabs here later when needed (eg. "Credit Account")
   const tabs = [
     showSpecialAuth
       ? {

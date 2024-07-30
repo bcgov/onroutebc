@@ -29,7 +29,7 @@ import { CompanyProfile } from "../../manageProfile/types/manageProfile";
  */
 export const useGetCreditAccountMetadataQuery = (companyId: number, enabled?: boolean ) => {
   return useQuery({
-    queryKey: ["credit-account-metadata", { companyId }],
+    queryKey: ["credit-account", { companyId }, "metadata"],
     queryFn: () => getCreditAccountMetadata(companyId),
     retry: false,
     enabled,
@@ -63,7 +63,7 @@ export const useGetCreditAccountLimitsQuery = (data: {
 }) => {
   const { companyId, creditAccountId } = data;
   return useQuery({
-    queryKey: ["credit-account-limits", { companyId, creditAccountId }],
+    queryKey: ["credit-account", { companyId }, "limits"],
     queryFn: () => getCreditAccountLimits({ companyId, creditAccountId }),
     retry: false,
     refetchOnWindowFocus: false,
@@ -80,9 +80,10 @@ export const useGetCreditAccountHistoryQuery = (data: {
 }) => {
   const { companyId, creditAccountId } = data;
   return useQuery({
-    queryKey: ["credit-account-history", { companyId, creditAccountId }],
+    queryKey: ["credit-account", { companyId }, "history"],
     queryFn: () => getCreditAccountHistory({ companyId, creditAccountId }),
     retry: false,
+    refetchOnWindowFocus: false,
   });
 };
 
@@ -96,9 +97,10 @@ export const useGetCreditAccountUsersQuery = (data: {
 }) => {
   const { companyId, creditAccountId } = data;
   return useQuery({
-    queryKey: ["credit-account-users", { companyId }],
+    queryKey: ["credit-account", { companyId }, "users"],
     queryFn: () => getCreditAccountUsers({ companyId, creditAccountId }),
     retry: false,
+    refetchOnWindowFocus: false,
   });
 };
 
