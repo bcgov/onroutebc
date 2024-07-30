@@ -5,6 +5,7 @@ coverage/
 .eslintignore
 .eslintrc.cjs
 dist/_test/
+dist/_examples/
 dist/tsconfig.tsbuildinfo
 tsconfig.tsbuildinfo
 .prettierrc.json
