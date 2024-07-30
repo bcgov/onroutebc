@@ -55,6 +55,13 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { CacheKey } from 'src/common/enum/cache-key.enum';
 import { getFromCache } from '../../../common/helper/cache.helper';
+import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
+import { IDIR_USER_AUTH_GROUP_LIST } from '../../../common/enum/user-auth-group.enum';
+import {
+  throwBadRequestException,
+  throwUnprocessableEntityException,
+} from '../../../common/helper/exception.helper';
+import { isFeatureEnabled } from '../../../common/helper/common.helper';
 
 @Injectable()
 export class PaymentService {
@@ -69,8 +76,6 @@ export class PaymentService {
     private paymentMethodTypeRepository: Repository<PaymentMethodType>,
     @InjectRepository(PaymentCardType)
     private paymentCardTypeRepository: Repository<PaymentCardType>,
-    @InjectRepository(Permit)
-    private permitRepository: Repository<Permit>,
     @InjectMapper() private readonly classMapper: Mapper,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
@@ -244,6 +249,37 @@ export class PaymentService {
     createTransactionDto: CreateTransactionDto,
     nestedQueryRunner?: QueryRunner,
   ): Promise<ReadTransactionDto> {
+    if (
+      !doesUserHaveAuthGroup(
+        currentUser.orbcUserAuthGroup,
+        IDIR_USER_AUTH_GROUP_LIST,
+      ) &&
+      createTransactionDto?.paymentMethodTypeCode !==
+        PaymentMethodTypeEnum.WEB &&
+      createTransactionDto?.paymentMethodTypeCode !==
+        PaymentMethodTypeEnum.ACCOUNT
+    ) {
+      throwUnprocessableEntityException(
+        'Invalid payment method type for the user',
+      );
+    } else if (
+      createTransactionDto?.paymentMethodTypeCode ===
+        PaymentMethodTypeEnum.ACCOUNT &&
+      !(await isFeatureEnabled(this.cacheManager, 'CREDIT-ACCOUNT'))
+    ) {
+      throwUnprocessableEntityException('Disabled feature');
+    }
+
+    if (
+      createTransactionDto?.paymentMethodTypeCode ===
+        PaymentMethodTypeEnum.POS &&
+      !createTransactionDto?.paymentCardTypeCode
+    ) {
+      throwBadRequestException('paymentCardTypeCode', [
+        `paymentCardTypeCode is required when paymentMethodTypeCode is ${createTransactionDto?.paymentMethodTypeCode}`,
+      ]);
+    }
+
     let readTransactionDto: ReadTransactionDto;
     const queryRunner =
       nestedQueryRunner || this.dataSource.createQueryRunner();
