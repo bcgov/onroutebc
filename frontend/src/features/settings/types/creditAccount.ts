@@ -19,20 +19,6 @@ export interface CreditAccountData {
   creditBalance: number;
 }
 
-export interface CreditAccountUser2
-  extends Omit<
-    CompanyProfile,
-    | "companyGUID"
-    | "mailingAddress"
-    | "phone"
-    | "extension"
-    | "fax"
-    | "primaryContact"
-    | "migratedClientHash"
-  > {
-  userType: CreditAccountUserType;
-}
-
 export interface CreditAccountUser
   extends Pick<
     CompanyProfile,
