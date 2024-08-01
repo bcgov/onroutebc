@@ -12,7 +12,7 @@ export const DEFAULT_EMPTY_PAYMENT_TYPE = "select";
 export interface PaymentMethodData {
   paymentMethod: PaymentMethodTypeCode;
   additionalPaymentData?: Nullable<
-    PPCPaymentData | IcepayPaymentData | ServiceBCPaymentData
+    InPersonPPCPaymentData | IcepayPaymentData | GAPaymentData
   >;
 }
 
@@ -30,40 +30,28 @@ export interface IcepayPaymentData {
   icepayTransactionId?: string;
 }
 
-export interface PPCPaymentData {
+export interface InPersonPPCPaymentData {
   paymentType: Nullable<PPCPaymentType> | typeof DEFAULT_EMPTY_PAYMENT_TYPE;
   ppcTransactionId: string;
 }
 
-export interface ServiceBCPaymentData {
+export interface GAPaymentData {
   serviceBCOfficeId: string;
 }
 
 export const isCashOrCheque = (
   paymentType: Nullable<PPCPaymentType> | typeof DEFAULT_EMPTY_PAYMENT_TYPE,
-) => {
-  if (
-    paymentType === PAYMENT_METHOD_TYPE_CODE.CASH ||
-    paymentType === PAYMENT_METHOD_TYPE_CODE.CHEQUE
-  ) {
-    return true;
-  } else {
-    return false;
-  }
-};
+) =>
+  paymentType === PAYMENT_METHOD_TYPE_CODE.CASH ||
+  paymentType === PAYMENT_METHOD_TYPE_CODE.CHEQUE;
 
 export const getPPCPaymentMethodTypeCode = (paymentType: PPCPaymentType) => {
-  let paymentMethod;
   switch (paymentType) {
     case PAYMENT_METHOD_TYPE_CODE.CASH:
-      paymentMethod = PAYMENT_METHOD_TYPE_CODE.CASH;
-      break;
+      return PAYMENT_METHOD_TYPE_CODE.CASH;
     case PAYMENT_METHOD_TYPE_CODE.CHEQUE:
-      paymentMethod = PAYMENT_METHOD_TYPE_CODE.CHEQUE;
-      break;
+      return PAYMENT_METHOD_TYPE_CODE.CHEQUE;
     default:
-      paymentMethod = PAYMENT_METHOD_TYPE_CODE.POS;
-      break;
+      return PAYMENT_METHOD_TYPE_CODE.POS;
   }
-  return paymentMethod;
 };

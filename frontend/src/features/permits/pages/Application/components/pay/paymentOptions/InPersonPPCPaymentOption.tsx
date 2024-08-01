@@ -13,6 +13,7 @@ import {
   PAYMENT_CARD_TYPE_DISPLAY,
   PAYMENT_METHOD_TYPE_CODE,
   PAYMENT_METHOD_TYPE_DISPLAY,
+  PaymentMethodTypeCode,
 } from "../../../../../../../common/types/paymentMethods";
 import {
   DEFAULT_EMPTY_PAYMENT_TYPE,
@@ -23,7 +24,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import { Nullable } from "../../../../../../../common/types/common";
 import { requiredMessage } from "../../../../../../../common/helpers/validationMessages";
 import { getErrorMessage } from "../../../../../../../common/components/form/CustomFormComponents";
-import "./PPCPaymentOption.scss";
+import "./InPersonPPCPaymentOption.scss";
 
 const paymentMethod = PAYMENT_METHOD_TYPE_CODE.POS;
 
@@ -66,12 +67,14 @@ const paymentTypeOptions = [
   },
 ];
 
-export const PPCPaymentOption = ({
+export const InPersonPPCPaymentOption = ({
   isSelected,
   handlePaymentMethodChange,
 }: {
   isSelected: boolean;
-  handlePaymentMethodChange: (selectedPaymentMethod: string) => void;
+  handlePaymentMethodChange: (
+    selectedPaymentMethod: PaymentMethodTypeCode,
+  ) => void;
 }) => {
   const {
     control,
@@ -121,26 +124,26 @@ export const PPCPaymentOption = ({
   };
 
   const paymentTypeRegister = register("additionalPaymentData.paymentType", {
-    ...transactionIdRules,
+    ...paymentTypeRules,
   });
 
   return (
     <div
       role="radio"
       onClick={() => handlePaymentMethodChange(paymentMethod)}
-      className={`payment-option payment-option--ppc ${
-        isSelected ? "payment-option--active" : ""
-      }`}
+      className={
+        isSelected ? "payment-option payment-option--active" : "payment-option"
+      }
     >
       <FormControlLabel
-        className="payment-option__label"
+        className="label"
         componentsProps={{
           typography: {
-            className: "label-container",
+            className: "label__container",
           },
         }}
         label={
-          <div className="label-text">
+          <div className="label__text">
             In-person at a Provinicial Permit Centre
           </div>
         }
@@ -196,7 +199,7 @@ export const PPCPaymentOption = ({
           rules={transactionIdRules}
           render={({ field: { value }, fieldState: { invalid } }) => (
             <FormControl
-              className="payment-details__info payment-details__info--transaction"
+              className="payment-details__info payment-details__info"
               error={invalid}
             >
               <FormLabel
@@ -205,7 +208,7 @@ export const PPCPaymentOption = ({
                 Transaction ID
               </FormLabel>
               <OutlinedInput
-                className={`payment-details__input payment-details__input--transaction ${
+                className={`payment-details__input payment-details__input ${
                   invalid
                     ? "payment-details__input--err"
                     : disableTransactionIdInput

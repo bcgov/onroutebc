@@ -6,13 +6,16 @@ import {
   OutlinedInput,
   Radio,
 } from "@mui/material";
-import { PAYMENT_METHOD_TYPE_CODE } from "../../../../../../../common/types/paymentMethods";
+import {
+  PAYMENT_METHOD_TYPE_CODE,
+  PaymentMethodTypeCode,
+} from "../../../../../../../common/types/paymentMethods";
 import { PaymentMethodData } from "../types/PaymentMethodData";
-import "./ServiceBCPaymentOption.scss";
 import { Controller, useFormContext } from "react-hook-form";
 import { Nullable } from "../../../../../../../common/types/common";
 import { requiredMessage } from "../../../../../../../common/helpers/validationMessages";
 import { getErrorMessage } from "../../../../../../../common/components/form/CustomFormComponents";
+import "./GAPaymentOption.scss";
 
 const paymentMethod = PAYMENT_METHOD_TYPE_CODE.GA;
 
@@ -31,12 +34,14 @@ const serviceBCOfficeIDRules = {
   },
 };
 
-export const ServiceBCPaymentOption = ({
+export const GAPaymentOption = ({
   isSelected,
   handlePaymentMethodChange,
 }: {
   isSelected: boolean;
-  handlePaymentMethodChange: (selectedPaymentMethod: string) => void;
+  handlePaymentMethodChange: (
+    selectedPaymentMethod: PaymentMethodTypeCode,
+  ) => void;
 }) => {
   const {
     control,
@@ -48,24 +53,24 @@ export const ServiceBCPaymentOption = ({
     <div
       role="radio"
       onClick={() => handlePaymentMethodChange(paymentMethod)}
-      className={`payment-option payment-option--service-bc ${
-        isSelected ? "payment-option--active" : ""
-      }`}
+      className={
+        isSelected ? "payment-option payment-option--active" : "payment-option"
+      }
     >
       <FormControlLabel
-        className="payment-option__label"
+        className="label"
         componentsProps={{
           typography: {
-            className: "label-container",
+            className: "label__container",
           },
         }}
         label={
-          <div className="label-text">
+          <div className="label__text">
             In-person at a Service BC Office (GA)
           </div>
         }
         value={paymentMethod}
-        control={<Radio key="pay-by-service-bc" />}
+        control={<Radio key="pay-by-ga" />}
       />
       <div className="payment-details">
         <Controller

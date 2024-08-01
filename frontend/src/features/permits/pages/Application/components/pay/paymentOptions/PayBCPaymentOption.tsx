@@ -1,5 +1,8 @@
 import { FormControlLabel, Radio } from "@mui/material";
-import { PAYMENT_METHOD_TYPE_CODE } from "../../../../../../../common/types/paymentMethods";
+import {
+  PAYMENT_METHOD_TYPE_CODE,
+  PaymentMethodTypeCode,
+} from "../../../../../../../common/types/paymentMethods";
 import "./PayBCPaymentOption.scss";
 
 const paymentMethod = PAYMENT_METHOD_TYPE_CODE.WEB;
@@ -9,48 +12,50 @@ export const PayBCPaymentOption = ({
   handlePaymentMethodChange,
 }: {
   isSelected: boolean;
-  handlePaymentMethodChange: (selectedPaymentMethod: string) => void;
+  handlePaymentMethodChange: (
+    selectedPaymentMethod: PaymentMethodTypeCode,
+  ) => void;
 }) => {
   return (
     <div
       role="radio"
       onClick={() => handlePaymentMethodChange(paymentMethod)}
-      className={`payment-option payment-option--paybc ${
-        isSelected ? "payment-option--active" : ""
-      }`}
+      className={
+        isSelected ? "payment-option payment-option--active" : "payment-option"
+      }
     >
       <FormControlLabel
-        className="payment-option__label"
+        className="label"
         componentsProps={{
           typography: {
-            className: "label-container",
+            className: "label__container",
           },
         }}
         label={
-          <div className="label-icon-display">
-            <div className="label-icon-display__left">
-              <span className="label-icon-display__title">Use</span>
+          <div className="icon-display">
+            <div className="icon-display__left">
+              <span className="icon-display__title">Use</span>
               <img
                 src="/PayBC-Main-Logo.png"
                 alt="PayBC"
-                className="label-icon-display__icon"
+                className="icon-display__icon"
               />
             </div>
-            <div className="label-icon-display__right">
+            <div className="icon-display__right">
               <img
                 src="/Visa_Logo.svg"
                 alt="Visa"
-                className="label-icon-display__icon label-icon-display__icon--visa"
+                className="icon-display__icon icon-display__icon--visa"
               />
               <img
                 src="/Mastercard_Logo.svg"
                 alt="Mastercard"
-                className="label-icon-display__icon label-icon-display__icon--mc"
+                className="icon-display__icon icon-display__icon--mc"
               />
               <img
                 src="/Amex_Logo.svg"
                 alt="Amex"
-                className="label-icon-display__icon label-icon-display__icon--amex"
+                className="icon-display__icon icon-display__icon--amex"
               />
             </div>
           </div>

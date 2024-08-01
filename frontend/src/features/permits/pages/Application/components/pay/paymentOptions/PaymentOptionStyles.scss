@@ -1,6 +1,6 @@
 @import "../../../../../../../themes/orbcStyles";
 
-@mixin payment-option-style($payment-option) {
+@mixin payment-option-style($payment-option) { 
   #{$payment-option} {
     padding: 1.5rem;
     border: 1px solid $bc-text-box-border-grey;
@@ -8,43 +8,38 @@
     cursor: pointer;
     color: $disabled-colour;
     
-    &--active {
-      border: 1px solid $bc-black;
-      background-color: $bc-messages-blue-background;
-      box-shadow: 0 0 0.5rem #00000029;
-      color: $bc-black;
+    &:not(.payment-option--active) {
+      &:hover {
+        border: 1px solid $bc-black;
+        background-color: $bc-background-light-grey;
+        box-shadow: $bc-shadow
+      }
     }
-
-    &:hover:not(.payment-option--active)  {
-      border: 1px solid $bc-black;
-      background-color: $bc-background-light-grey;
-      box-shadow: 0 0 0.5rem #00000029;
-    }
-
-    & &__label {
+    
+    .label {
       display: flex;
       flex-direction: row;
       align-items: center;
       margin-bottom: 1rem;
       margin-right: 0;
       width: 100%;
-    }
-    
-    .label-container {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      margin-bottom: 0;
-      width: 100%;
+      
+      &__container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-bottom: 0;
+        width: 100%;
+      }
+
+      &__text {
+        font-size: 1.25rem;
+        font-weight: bold;
+        letter-spacing: -0.4px;
+      }
     }
 
-    .label-text {
-      font-size: 1.25rem;
-      font-weight: bold;
-      letter-spacing: -0.4px;
-    }
-
-    .label-icon-display {
+    .icon-display {
       display: flex;
       flex-direction: row;
       align-items: center;
@@ -78,25 +73,59 @@
     }
 
     .payment-details {
+      display: flex;
+
+      &__info {
+        width: 100%;
+
+        &:not(:last-child) {
+          margin-right: 1.5rem;
+        }
+      }
+
       &__input {
+        background-color: $white;
+        color: $disabled-colour;
+        font-size: 0.9rem;
+        
+        &--err {
+          fieldset {
+            border-width: 2px;
+          }
+        }
+          
         &--disabled {
           fieldset {
-            background-color: $bc-background-light-grey !important;
-            border: 2px solid $bc-text-box-border-grey !important;
+            background-color: $bc-background-light-grey;
+            border: 2px solid $bc-text-box-border-grey;
           }
         }
       }
+
       &__label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: $disabled-colour;
+
         &--disabled {
           color: $disabled-colour ;
         }
       }
     }
 
-    &:not(.payment-option--active) {
+    &--active {
+      border: 1px solid $bc-black;
+      background-color: $bc-messages-blue-background;
+      box-shadow: $bc-shadow;
+      color: $bc-black;
+
       .payment-details {
-         &__label, &__input, input {
-          color: $disabled-colour ;
+        &__label {
+          color: $bc-black;
+        }
+
+        &__input {
+          color: $bc-black
         }
       }
     }

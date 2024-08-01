@@ -1,22 +1,30 @@
 import { Controller, useFormContext } from "react-hook-form";
 import { Box, RadioGroup, Typography } from "@mui/material";
-import "./ChoosePaymentMethod.scss";
 import { PaymentOption } from "./PaymentOption";
 import { PaymentMethodTypeCode } from "../../../../../../common/types/paymentMethods";
 import {
   DEFAULT_EMPTY_CARD_TYPE,
   DEFAULT_EMPTY_PAYMENT_TYPE,
 } from "./types/PaymentMethodData";
+import "./ChoosePaymentMethod.scss";
 
 export const ChoosePaymentMethod = ({
   availablePaymentMethods,
 }: {
   availablePaymentMethods: PaymentMethodTypeCode[];
 }) => {
-  const { control, watch, setValue, getValues, clearErrors } = useFormContext();
+  const { control, watch, setValue, clearErrors } = useFormContext();
+  const currPaymentMethod = watch("paymentMethod");
 
-  const handlePaymentMethodChange = (selectedPaymentMethod: string) => {
-    if (getValues("paymentMethod") !== selectedPaymentMethod) {
+  const handlePaymentMethodChange = (
+    selectedPaymentMethod: PaymentMethodTypeCode,
+  ) => {
+    /**
+     * Ensure that the user does not select the same payment method consecutively,
+     * which would cause the inner form fields (payment type, transaction id etc)
+     * to reset when attempting to interact with them
+     */
+    if (currPaymentMethod !== selectedPaymentMethod) {
       setValue("paymentMethod", selectedPaymentMethod as PaymentMethodTypeCode);
       setValue("additionalPaymentData.cardType", DEFAULT_EMPTY_CARD_TYPE);
       setValue("additionalPaymentData.icepayTransactionId", "");
@@ -33,8 +41,6 @@ export const ChoosePaymentMethod = ({
     }
   };
 
-  const currPaymentMethod = watch("paymentMethod");
-
   return (
     <Box className="choose-payment-method">
       <Typography className="choose-payment-method__title" variant="h3">
@@ -49,7 +55,9 @@ export const ChoosePaymentMethod = ({
             className="choose-payment-method__options"
             defaultValue={value}
             value={value}
-            onChange={(e) => handlePaymentMethodChange(e.target.value)}
+            onChange={(e) =>
+              handlePaymentMethodChange(e.target.value as PaymentMethodTypeCode)
+            }
           >
             {availablePaymentMethods.map((paymentMethod) => (
               <PaymentOption

@@ -4,8 +4,8 @@ import {
   PAYMENT_METHOD_TYPE_CODE,
   PaymentMethodTypeCode,
 } from "../../../../../../common/types/paymentMethods";
-import { PPCPaymentOption } from "./paymentOptions/PPCPaymentOption";
-import { ServiceBCPaymentOption } from "./paymentOptions/ServiceBCPaymentOption";
+import { InPersonPPCPaymentOption } from "./paymentOptions/InPersonPPCPaymentOption";
+import { GAPaymentOption } from "./paymentOptions/GAPaymentOption";
 
 export const PaymentOption = ({
   paymentMethod,
@@ -14,7 +14,9 @@ export const PaymentOption = ({
 }: {
   paymentMethod: PaymentMethodTypeCode;
   isSelected: boolean;
-  handlePaymentMethodChange: (selectedPaymentMethod: string) => void;
+  handlePaymentMethodChange: (
+    selectedPaymentMethod: PaymentMethodTypeCode,
+  ) => void;
 }) => {
   switch (paymentMethod) {
     case PAYMENT_METHOD_TYPE_CODE.ICEPAY:
@@ -33,14 +35,14 @@ export const PaymentOption = ({
       );
     case PAYMENT_METHOD_TYPE_CODE.POS:
       return (
-        <PPCPaymentOption
+        <InPersonPPCPaymentOption
           isSelected={isSelected}
           handlePaymentMethodChange={handlePaymentMethodChange}
         />
       );
     case PAYMENT_METHOD_TYPE_CODE.GA:
       return (
-        <ServiceBCPaymentOption
+        <GAPaymentOption
           isSelected={isSelected}
           handlePaymentMethodChange={handlePaymentMethodChange}
         />

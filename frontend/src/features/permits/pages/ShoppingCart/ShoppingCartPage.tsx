@@ -20,9 +20,9 @@ import {
   DEFAULT_EMPTY_PAYMENT_TYPE,
   getPPCPaymentMethodTypeCode,
   IcepayPaymentData,
-  PPCPaymentData,
+  InPersonPPCPaymentData,
   PPCPaymentType,
-  ServiceBCPaymentData,
+  GAPaymentData,
   isCashOrCheque,
   PaymentMethodData,
 } from "../Application/components/pay/types/PaymentMethodData";
@@ -49,8 +49,7 @@ import { Loading } from "../../../../common/pages/Loading";
 
 const AVAILABLE_STAFF_PAYMENT_METHODS = [
   PAYMENT_METHOD_TYPE_CODE.ICEPAY,
-  PAYMENT_METHOD_TYPE_CODE.CASH,
-  PAYMENT_METHOD_TYPE_CODE.CHEQUE,
+  // POS represents all card types + CASH + CHEQUE
   PAYMENT_METHOD_TYPE_CODE.POS,
   PAYMENT_METHOD_TYPE_CODE.GA,
 ];
@@ -62,6 +61,7 @@ export const ShoppingCartPage = () => {
   const { applicationData } = useContext(ApplicationContext);
   const { idirUserDetails, userDetails } = useContext(OnRouteBCContext);
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
+  // TODO can we calculate this using the permissions matrix instead?
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
   const isCompanyAdmin = Boolean(
     userDetails?.userAuthGroup === BCeID_USER_AUTH_GROUP.COMPANY_ADMINISTRATOR,
@@ -112,7 +112,6 @@ export const ShoppingCartPage = () => {
 
   const { mutation: issuePermitMutation, issueResults } = useIssuePermits();
 
-  // TODO additional logic needed so that FIN user see PPCPaymentOption or ServiceBCPaymentOption
   const availablePaymentMethods = isStaffActingAsCompany
     ? AVAILABLE_STAFF_PAYMENT_METHODS
     : AVAILABLE_CV_PAYMENT_METHODS;
@@ -171,21 +170,6 @@ export const ShoppingCartPage = () => {
     }
   }, [issueResults]);
 
-  const handlePayWithPayBC = () => {
-    startTransactionMutation.mutate({
-      transactionTypeId: TRANSACTION_TYPES.P,
-      paymentMethodTypeCode: isFeeZero
-        ? PAYMENT_METHOD_TYPE_CODE.NP
-        : PAYMENT_METHOD_TYPE_CODE.WEB,
-      applicationDetails: [
-        ...selectedApplications.map((application) => ({
-          applicationId: application.applicationId,
-          transactionAmount: application.fee,
-        })),
-      ],
-    });
-  };
-
   const handlePayWithIcepay = (
     cardType: PaymentCardTypeCode,
     transactionId: string,
@@ -207,7 +191,7 @@ export const ShoppingCartPage = () => {
     });
   };
 
-  const handlePayWithPPC = (
+  const handlePayWithInPersonPPCPaymentOption = (
     paymentType: PPCPaymentType,
     transactionId: string,
   ) => {
@@ -232,7 +216,7 @@ export const ShoppingCartPage = () => {
     });
   };
 
-  const handlePayWithServiceBC = (serviceBCOfficeId: string) => {
+  const handlePayWithGA = (serviceBCOfficeId: string) => {
     startTransactionMutation.mutate({
       transactionTypeId: TRANSACTION_TYPES.P,
       paymentMethodTypeCode: isFeeZero
@@ -250,11 +234,30 @@ export const ShoppingCartPage = () => {
     });
   };
 
+  const handlePayWithPayBC = () => {
+    startTransactionMutation.mutate({
+      transactionTypeId: TRANSACTION_TYPES.P,
+      paymentMethodTypeCode: isFeeZero
+        ? PAYMENT_METHOD_TYPE_CODE.NP
+        : PAYMENT_METHOD_TYPE_CODE.WEB,
+      applicationDetails: [
+        ...selectedApplications.map((application) => ({
+          applicationId: application.applicationId,
+          transactionAmount: application.fee,
+        })),
+      ],
+    });
+  };
+
   const handlePay = (paymentMethodData: PaymentMethodData) => {
+    if (startTransactionMutation.isPending) return;
+
     const { paymentMethod, additionalPaymentData } = paymentMethodData;
+
     if (paymentMethod === PAYMENT_METHOD_TYPE_CODE.ICEPAY) {
       const { cardType, icepayTransactionId } =
         additionalPaymentData as IcepayPaymentData;
+
       if (
         cardType &&
         cardType !== DEFAULT_EMPTY_CARD_TYPE &&
@@ -264,14 +267,13 @@ export const ShoppingCartPage = () => {
       }
     } else if (paymentMethod === PAYMENT_METHOD_TYPE_CODE.POS) {
       const { paymentType, ppcTransactionId } =
-        additionalPaymentData as PPCPaymentData;
+        additionalPaymentData as InPersonPPCPaymentData;
       if (paymentType && paymentType !== DEFAULT_EMPTY_PAYMENT_TYPE) {
-        handlePayWithPPC(paymentType, ppcTransactionId);
+        handlePayWithInPersonPPCPaymentOption(paymentType, ppcTransactionId);
       }
     } else if (paymentMethod === PAYMENT_METHOD_TYPE_CODE.GA) {
-      const { serviceBCOfficeId } =
-        additionalPaymentData as ServiceBCPaymentData;
-      handlePayWithServiceBC(serviceBCOfficeId);
+      const { serviceBCOfficeId } = additionalPaymentData as GAPaymentData;
+      handlePayWithGA(serviceBCOfficeId);
     } else if (paymentMethod === PAYMENT_METHOD_TYPE_CODE.WEB) {
       handlePayWithPayBC();
     }
