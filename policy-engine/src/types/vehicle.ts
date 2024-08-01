@@ -1,10 +1,11 @@
 import {
+  SelfIssuable,
   SizeDimension,
   PowerUnitWeightDimension,
   TrailerWeightDimension,
 } from 'onroute-policy-engine/types';
 
-export type Vehicle = {
+export type Vehicle = SelfIssuable & {
   type: string;
   canFollow: Array<string>;
   sizeDimensions?: Array<SizeDimension>;
