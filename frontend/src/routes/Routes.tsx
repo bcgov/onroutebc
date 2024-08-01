@@ -163,9 +163,7 @@ export const AppRoutes = () => {
           <Route
             path={`${routes.VEHICLES_ROUTES.POWER_UNIT_DETAILS}/:vehicleId`}
             element={
-              <EditVehicleDashboard
-                vehicleType={VEHICLE_TYPES.POWER_UNIT}
-              />
+              <EditVehicleDashboard vehicleType={VEHICLE_TYPES.POWER_UNIT} />
             }
           />
           <Route
@@ -193,7 +191,10 @@ export const AppRoutes = () => {
         element={
           <BCeIDAuthWall
             requiredRole={ROLES.READ_ORG}
-            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+            allowedIDIRAuthGroups={[
+              IDIR_USER_AUTH_GROUP.PPC_CLERK,
+              IDIR_USER_AUTH_GROUP.FINANCE,
+            ]}
           />
         }
       >
@@ -207,7 +208,10 @@ export const AppRoutes = () => {
         element={
           <BCeIDAuthWall
             requiredRole={ROLES.WRITE_USER}
-            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+            allowedIDIRAuthGroups={[
+              IDIR_USER_AUTH_GROUP.PPC_CLERK,
+              IDIR_USER_AUTH_GROUP.FINANCE,
+            ]}
           />
         }
       >
@@ -257,7 +261,12 @@ export const AppRoutes = () => {
         element={
           <BCeIDAuthWall
             requiredRole={ROLES.WRITE_PERMIT}
-            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+            allowedIDIRAuthGroups={[
+              IDIR_USER_AUTH_GROUP.PPC_CLERK,
+              IDIR_USER_AUTH_GROUP.FINANCE,
+              IDIR_USER_AUTH_GROUP.HQ_ADMINISTRATOR,
+              IDIR_USER_AUTH_GROUP.CTPO,
+            ]}
           />
         }
       >

@@ -1,40 +1,46 @@
 import { Box, Typography } from "@mui/material";
-import { useCallback, useContext } from "react";
 import {
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
+import { useCallback } from "react";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
-import { CreditAccountActivityColumnsDefinition } from "../../types/CreditAccountActivityColumns";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile.d";
-import { useGetCreditAccountQuery } from "../../hooks/creditAccount";
+import {
+  useGetCreditAccountHistoryQuery
+} from "../../hooks/creditAccount";
 import {
   CREDIT_ACCOUNT_ACTIVITY_TYPE,
-  CreditAccountActivity,
+  CreditAccountActivity
 } from "../../types/creditAccount";
+import { CreditAccountActivityColumnsDefinition } from "../../types/CreditAccountActivityColumns";
 import "./ActivityTable.scss";
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 /**
  * Hold/Close activity history component for credit account.
  */
-export const ActivityTable = () => {
-  const { companyId } = useContext(OnRouteBCContext);
+export const ActivityTable = ({
+  companyId,
+  creditAccountId,
+}: {
+  companyId: number;
+  creditAccountId: number;
+}) => {
   const {
-    data: creditAccount,
+    data: creditAccountActivities,
     isLoading,
     isError: fetchCreditAccountError,
-  } = useGetCreditAccountQuery(getDefaultRequiredVal(0, companyId));
+  } = useGetCreditAccountHistoryQuery({ companyId, creditAccountId });
 
-  const creditAccountActivities = getDefaultRequiredVal(
+  const dataToBeShown = getDefaultRequiredVal(
     [],
-    creditAccount?.creditAccountActivities,
+    creditAccountActivities,
   )
     .filter(
       (activity: CreditAccountActivity) =>
@@ -46,7 +52,7 @@ export const ActivityTable = () => {
   const table = useMaterialReactTable({
     ...defaultTableOptions,
     columns: CreditAccountActivityColumnsDefinition,
-    data: creditAccountActivities,
+    data: dataToBeShown,
     initialState: {
       ...defaultTableInitialStateOptions,
     },
@@ -119,7 +125,7 @@ export const ActivityTable = () => {
 
   return (
     <div>
-      {creditAccountActivities.length ? (
+      {dataToBeShown.length ? (
         <div className="activity-table">
           <MaterialReactTable table={table} />
         </div>
