@@ -100,7 +100,7 @@ export class CreditAccountService {
       creditLimit,
     }: { companyId: number; creditLimit: CreditAccountLimitType },
   ) {
-    await this.validateCreateCreditAccount(companyId);
+    // await this.validateCreateCreditAccount(companyId);
     const companyInfo =
       await this.companyService.findOneCompanyWithAllDetails(companyId);
 
@@ -128,6 +128,8 @@ export class CreditAccountService {
 
     // 2) Create Account for the Party created in step 1.
     const creditAccountNumber = await this.getCreditAccountNumber();
+    const creditAccountNumberWithPrefix = `WS${creditAccountNumber}`;
+    
     const accountResponse = await this.cfsCreditAccountService.createAccount({
       url: accountsURL,
       clientNumber: companyInfo.clientNumber,
@@ -186,7 +188,7 @@ export class CreditAccountService {
         creditLimit === CreditAccountLimit.PREPAID
           ? CreditAccountType.PREPAID
           : CreditAccountType.UNSECURED,
-      creditAccountNumber,
+      creditAccountNumber: creditAccountNumberWithPrefix,
       creditAccountUsers: [],
       createdUser: currentUser.userName,
       createdDateTime: new Date(),
@@ -390,7 +392,7 @@ export class CreditAccountService {
       'permit.ORBC_CREDIT_ACCOUNT_NUMBER_SEQ',
       this.dataSource,
     );
-    return `WS${rawCreditAccountSequenceNumber.padStart(4, '0')}`;
+    return `${rawCreditAccountSequenceNumber.padStart(4, '0')}`;
   }
 
   /**

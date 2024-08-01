@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { HttpService } from '@nestjs/axios';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
@@ -247,6 +248,29 @@ export class CFSCreditAccountService {
       GovCommonServices.CREDIT_ACCOUNT_SERVICE,
       this.httpService,
       this.cacheManager,
+    );
+    this.httpService.axiosRef.interceptors.request.use(
+      function (config) {
+        const { headers, data, url } = config;
+        console.log('url::', url);
+        console.log('request headers:::', headers);
+        console.log('request data::', data);
+        return config;
+      },
+      function (error) {
+        console.log('Unable to make a request:', error);
+      },
+    );
+
+    this.httpService.axiosRef.interceptors.response.use(
+      function (config) {
+        const { headers } = config;
+        console.log('response headers:::', headers);
+        return config;
+      },
+      function (error) {
+        console.log('Unable to parse a response:', error);
+      },
     );
     const response = await this.httpService.axiosRef.post<
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
