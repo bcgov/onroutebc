@@ -117,6 +117,7 @@ export class CreditAccountService {
       url: `${process.env.CFS_CREDIT_ACCOUNT_URL}/cfs/parties/`,
       clientNumber: companyInfo.clientNumber,
     });
+    console.log('partyResponse', partyResponse);
     if (!partyResponse) {
       this.logger.error('Unable to create a party for the company.');
       throw new InternalServerErrorException();

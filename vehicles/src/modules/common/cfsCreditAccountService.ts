@@ -1,7 +1,13 @@
 import { HttpService } from '@nestjs/axios';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
-import { AxiosResponse } from 'axios';
+import {
+  HttpStatus,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
+import { AxiosResponse, AxiosError } from 'axios';
 import { Cache } from 'cache-manager';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import { GovCommonServices } from '../../common/enum/gov-common-services.enum';
@@ -16,6 +22,8 @@ import { CreatePartyResponseDto } from '../credit-account/cfs-integration/respon
 import { CreateSiteContactResponseDto } from '../credit-account/cfs-integration/response/create-site-contact.response.dto';
 import { CreateSiteResponseDto } from '../credit-account/cfs-integration/response/create-site.response.dto';
 import { Address } from './entities/address.entity';
+import { lastValueFrom } from 'rxjs';
+import { Nullable } from '../../common/types/common';
 
 @Injectable()
 export class CFSCreditAccountService {
@@ -72,12 +80,15 @@ export class CFSCreditAccountService {
       data: {
         customer_name: clientNumber,
       } as CreatePartyRequestDto,
+      responseType: 'stream'
     });
+
+    const data = partyResponse?.data as CreatePartyResponseDto;
     if (
       CFSCreditAccountService.isSuccess(partyResponse.status) &&
-      partyResponse?.data.party_number
+      data.party_number
     ) {
-      return partyResponse?.data;
+      return data;
     } else {
       this.logger.error('Step 1 - Unable to create a party for the company');
       return null;
@@ -109,7 +120,7 @@ export class CFSCreditAccountService {
     clientNumber: string;
     creditAccountNumber: string;
   }) {
-    const { status, data } = await this.cfsPostRequest<
+    const partyResponse = await this.cfsPostRequest<
       CreateAccountRequestDto,
       CreateAccountResponseDto
     >({
@@ -118,8 +129,13 @@ export class CFSCreditAccountService {
         account_number: creditAccountNumber,
         account_description: `OnRouteBC Credit Account for ${clientNumber}`,
       } as CreateAccountRequestDto,
+      responseType: 'stream'
     });
-    if (CFSCreditAccountService.isSuccess(status) && data.account_number) {
+    const data = partyResponse?.data as CreateAccountResponseDto;
+    if (
+      CFSCreditAccountService.isSuccess(partyResponse?.status) &&
+      data.account_number
+    ) {
       return data;
     } else {
       this.logger.error('Step 2 - Unable to create an account for the company');
@@ -149,7 +165,7 @@ export class CFSCreditAccountService {
     url: string;
     mailingAddress: Address;
   }) {
-    const { status, data } = await this.cfsPostRequest<
+    const partyResponse = await this.cfsPostRequest<
       CreateSiteRequestDto,
       CreateSiteResponseDto
     >({
@@ -167,7 +183,11 @@ export class CFSCreditAccountService {
         customer_profile_class: 'CAS_IND_DEFAULT',
       } as CreateSiteRequestDto,
     });
-    if (CFSCreditAccountService.isSuccess(status) && data.site_number) {
+    const data = partyResponse?.data as CreateSiteResponseDto;
+    if (
+      CFSCreditAccountService.isSuccess(partyResponse?.status) &&
+      data.site_number
+    ) {
       return data;
     } else {
       this.logger.error('Step 3 - Unable to create a site for the company');
@@ -198,7 +218,7 @@ export class CFSCreditAccountService {
     url: string;
     companyInfo: Company;
   }) {
-    const { status, data } = await this.cfsPostRequest<
+    const partyResponse = await this.cfsPostRequest<
       CreateSiteContactRequestDto,
       CreateSiteContactResponseDto
     >({
@@ -210,7 +230,12 @@ export class CFSCreditAccountService {
         email_address: companyInfo.email,
       } as CreateSiteContactRequestDto,
     });
-    if (CFSCreditAccountService.isSuccess(status) && data.contact_number) {
+
+    const data = partyResponse?.data as CreateSiteContactResponseDto;
+    if (
+      CFSCreditAccountService.isSuccess(partyResponse?.status) &&
+      data.contact_number
+    ) {
       return true;
     } else {
       this.logger.error(
@@ -239,28 +264,60 @@ export class CFSCreditAccountService {
   private async cfsPostRequest<Request, Response>({
     url,
     data,
+    responseType,
   }: {
     url: string;
     data: Request;
+    responseType?: Nullable<string>;
   }) {
     const token = await getAccessToken(
       GovCommonServices.CREDIT_ACCOUNT_SERVICE,
       this.httpService,
       this.cacheManager,
     );
-    const response = await this.httpService.axiosRef.post<
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      any,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      AxiosResponse<Response, any>,
-      Request
-    >(url, data, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await lastValueFrom(
+      this.httpService.post(url, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        responseType: responseType === 'stream' ? responseType : undefined,
+      }),
+    )
+      .then((response) => {
+        return response;
+      })
+      .catch((error: AxiosError) => {
+        if (error.response) {
+          this.logger.error(
+            `Error response from CFS: ${error.response.status} ${error.response.statusText} `,
+          );
+        } else {
+          this.logger.error(error?.message, error?.stack);
+        }
+        throw new InternalServerErrorException('Error posting to CFS');
+      });
+    if (responseType === 'stream') {
+      const jsonData = await this.extractJSONfromSteam(
+        response.data as NodeJS.ReadableStream,
+      );
+      response.data = JSON.parse(jsonData) as JSON;
+    }
     return response;
+  }
+
+  private async extractJSONfromSteam(data: NodeJS.ReadableStream) {
+    return new Promise<string>((resolve, reject) => {
+      const dataChunks: string[] = [];
+
+      data.on('data', (chunk) => {
+        // Convert buffer to string and append to dataChunks
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+        dataChunks.push(chunk.toString());
+      });
+      data.on('end', () => resolve(dataChunks.join('')));
+      data.on('error', (err) => reject(err));
+    });
   }
 
   /**
