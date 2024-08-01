@@ -32,10 +32,12 @@ import { GetPermitQueryParamsDto } from './dto/request/queryParam/getPermit.quer
 import {
   ClientUserAuthGroup,
   IDIR_USER_AUTH_GROUP_LIST,
+  IDIRUserAuthGroup,
 } from 'src/common/enum/user-auth-group.enum';
 import { ReadPermitMetadataDto } from './dto/response/read-permit-metadata.dto';
 import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 import { PermitHistoryDto } from './dto/response/permit-history.dto';
+import { PERMISSIONS_MATRIX } from '../../../common/playground/permission-matrix';
 
 @ApiBearerAuth()
 @ApiTags('Permit')
@@ -62,7 +64,10 @@ export class CompanyPermitController {
    *
    */
   @ApiPaginatedResponse(ReadPermitMetadataDto)
-  @Roles(Role.READ_PERMIT)
+  @Roles({
+    allowedBCeIDAuthGroups: [],
+    allowedIDIRAuthGroups: [IDIRUserAuthGroup.ENFORCEMENT_OFFICER]
+  })
   @Get()
   async getPermit(
     @Req() request: Request,
@@ -123,7 +128,7 @@ export class CompanyPermitController {
     description:
       'Fetches a single permit detail by its permit ID for the current user.',
   })
-  @Roles(Role.READ_PERMIT)
+  @Roles([Role.READ_PERMIT])
   @Get('/:permitId')
   async getByPermitId(
     @Req() request: Request,

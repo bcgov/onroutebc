@@ -12,6 +12,7 @@ import {
   IDIRUserAuthGroup,
 } from '../enum/user-auth-group.enum';
 import { IRole } from '../interface/role.interface';
+import { PermissionMatrixConfigObject } from '../playground/permission-matrix';
 
 /**
  * Determines the directory type based on the identity provider of the user.
@@ -61,16 +62,33 @@ function isRoleArray(obj: Role[] | IRole[]): obj is Role[] {
  * @returns {boolean} Returns true if the user meets any of the defined role criteria or belongs to the specified user authorization group; false otherwise.
  */
 export const matchRoles = (
-  roles: Role[] | IRole[],
+  roles: Role[] | IRole[] | PermissionMatrixConfigObject,
   userRoles: Role[],
   userAuthGroup?: UserAuthGroup,
 ) => {
-  if (isRoleArray(roles)) {
+  if (!userAuthGroup) return false;
+
+  const isIdir = userAuthGroup in IDIRUserAuthGroup;
+  const shouldUsePermissionMatrix =
+    ('allowedIDIRAuthGroups' || 'allowedBCeIDAuthGroups') in roles;
+  if (shouldUsePermissionMatrix) {
+    const { allowedIDIRAuthGroups, allowedBCeIDAuthGroups } =
+      roles as PermissionMatrixConfigObject;
+    if (isIdir) {
+      return allowedIDIRAuthGroups?.includes(
+        userAuthGroup as IDIRUserAuthGroup,
+      );
+    } else {
+      return allowedBCeIDAuthGroups?.includes(
+        userAuthGroup as ClientUserAuthGroup,
+      );
+    }
+  } else if (isRoleArray(roles as Role[])) {
     // Scenario: roles is a simple list of Role objects.
     // This block checks if any of the roles assigned to the user (userRoles)
     // matches at least one of the roles specified in the input list (roles).
     // It returns true if there is a match, indicating the user has at least one of the required roles.
-    return roles?.some((role) => userRoles.includes(role));
+    return (roles as Role[])?.some((role) => userRoles.includes(role));
   } else {
     // Scenario: roles is not a simple list, but an object or objects implementing IRole,
     // meaning complex role requirements can be specified.
@@ -81,7 +99,7 @@ export const matchRoles = (
     // 2. oneOf - at least one of the roles listed must be included in userRoles.
     // It returns true if either condition is met for any role object, indicating the user meets the role requirements.
     // An error is thrown if 'allOf' and 'oneOf' are both defined, as it's considered an invalid configuration.
-    return roles.some((roleObject) => {
+    return (roles as IRole[]).some((roleObject) => {
       if (roleObject.allOf?.length && roleObject.oneOf?.length) {
         throw new InternalServerErrorException(
           'Cannot define both allOf and oneOf at the same time!',
