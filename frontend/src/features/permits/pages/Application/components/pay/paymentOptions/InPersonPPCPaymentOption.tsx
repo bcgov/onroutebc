@@ -131,6 +131,7 @@ export const InPersonPPCPaymentOption = ({
     <div
       role="radio"
       onClick={() => handlePaymentMethodChange(paymentMethod)}
+      onKeyDown={() => true}
       className={
         isSelected ? "payment-option payment-option--active" : "payment-option"
       }
