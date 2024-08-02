@@ -9,22 +9,36 @@ SET NOCOUNT ON
 GO
 
 SET XACT_ABORT ON
+GO
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
+GO
+BEGIN TRANSACTION
+GO
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
 
--- Sample of rolling back a Table creation wrapped in a TRANSACTION
---BEGIN TRY
---  BEGIN TRANSACTION
---    DROP TABLE [dbo].[ORBC_NEW_TABLE]
---  COMMIT
---END TRY
+-- Revert code goes here
 
---BEGIN CATCH
---  IF @@TRANCOUNT > 0 
---    ROLLBACK;
---  THROW
---END CATCH
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
 
--- Also remember to rollback the version number from your migration!
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = '*** Enter description of DB change here ***'
 
 INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (/*<<REPLACE VERSION NUMBER HERE>>*/, @VersionDescription, getutcdate())
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+
+COMMIT TRANSACTION
+GO
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+DECLARE @Success AS BIT
+SET @Success = 1
+SET NOEXEC OFF
+IF (@Success = 1) PRINT 'The database update succeeded'
+ELSE BEGIN
+   IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION
+   PRINT 'The database update failed'
+END
+GO
