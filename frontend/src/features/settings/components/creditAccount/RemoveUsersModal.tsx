@@ -4,7 +4,7 @@ import Typography from "@mui/material/Typography";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMinus } from "@fortawesome/free-solid-svg-icons";
 import {
-  useGetCreditAccountQuery,
+  useGetCreditAccountMetadataQuery,
   useRemoveCreditAccountUsersMutation,
 } from "../../hooks/creditAccount";
 import "./RemoveUsersModal.scss";
@@ -35,7 +35,7 @@ export const RemoveUsersModal = ({
 }) => {
   const { companyId } = useContext(OnRouteBCContext);
 
-  const { data: creditAccount } = useGetCreditAccountQuery(
+  const { data: creditAccount } = useGetCreditAccountMetadataQuery(
     getDefaultRequiredVal(0, companyId),
   );
 
