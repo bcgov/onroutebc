@@ -24,8 +24,8 @@ import { ReadTrailerTypeDto } from './dto/response/read-trailer-type.dto';
 import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { Roles } from 'src/common/decorator/roles.decorator';
-import { Role } from 'src/common/enum/roles.enum';
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
+import { IDIRUserAuthGroup } from '../../../common/enum/user-auth-group.enum';
 
 @ApiTags('Vehicles - Trailer Types')
 @ApiBadRequestResponse({
@@ -53,7 +53,9 @@ export class TrailerTypesController {
     description: 'The Trailer Type Resource',
     type: ReadTrailerTypeDto,
   })
-  @Roles(Role.WRITE_VEHICLE_TYPES)
+  @Roles({
+    allowedIdirRoles: [IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR],
+  })
   @Post()
   create(@Body() createTrailerTypeDto: CreateTrailerTypeDto) {
     return this.trailerTypesService.create(createTrailerTypeDto);
@@ -90,7 +92,9 @@ export class TrailerTypesController {
     description: 'The Trailer Type Resource',
     type: ReadTrailerTypeDto,
   })
-  @Roles(Role.WRITE_VEHICLE_TYPES)
+  @Roles({
+    allowedIdirRoles: [IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR],
+  })
   @Put(':typeCode')
   async update(
     @Param('typeCode') typeCode: string,
@@ -106,7 +110,9 @@ export class TrailerTypesController {
     return trailerType;
   }
 
-  @Roles(Role.WRITE_VEHICLE_TYPES)
+  @Roles({
+    allowedIdirRoles: [IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR],
+  })
   @Delete(':typeCode')
   async remove(@Param('typeCode') typeCode: string) {
     const deleteResult = await this.trailerTypesService.remove(typeCode);

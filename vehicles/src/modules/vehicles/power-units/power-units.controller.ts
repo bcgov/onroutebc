@@ -29,10 +29,10 @@ import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { Request } from 'express';
 import { Roles } from '../../../common/decorator/roles.decorator';
-import { Role } from '../../../common/enum/roles.enum';
 import { DeleteDto } from 'src/modules/common/dto/response/delete.dto';
 import { DeletePowerUnitDto } from './dto/request/delete-power-units.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { CLIENT_USER_AUTH_GROUP_LIST, ClientUserAuthGroup, IDIR_USER_AUTH_GROUP_LIST, IDIRUserAuthGroup } from '../../../common/enum/user-auth-group.enum';
 
 @ApiTags('Vehicles - Power Units')
 @ApiBadRequestResponse({
@@ -60,7 +60,17 @@ export class PowerUnitsController {
     description: 'The Power Unit Resource',
     type: ReadPowerUnitDto,
   })
-  @Roles(Role.WRITE_VEHICLE)
+  @Roles({
+    allowedBCeIDRoles: [
+      ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+      ClientUserAuthGroup.PERMIT_APPLICANT,
+    ],
+    allowedIdirRoles: [
+      IDIRUserAuthGroup.PPC_CLERK,
+      IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
+      IDIRUserAuthGroup.CTPO,
+    ],
+  })
   @Post()
   async create(
     @Req() request: Request,
@@ -80,7 +90,10 @@ export class PowerUnitsController {
     type: ReadPowerUnitDto,
     isArray: true,
   })
-  @Roles(Role.READ_VEHICLE)
+  @Roles({
+    allowedBCeIDRoles: CLIENT_USER_AUTH_GROUP_LIST,
+    allowedIdirRoles: IDIR_USER_AUTH_GROUP_LIST,
+  })
   @Get()
   async findAll(
     @Param('companyId') companyId: number,
@@ -92,7 +105,10 @@ export class PowerUnitsController {
     description: 'The Power Unit Resource',
     type: ReadPowerUnitDto,
   })
-  @Roles(Role.READ_VEHICLE)
+  @Roles({
+    allowedBCeIDRoles: CLIENT_USER_AUTH_GROUP_LIST,
+    allowedIdirRoles: IDIR_USER_AUTH_GROUP_LIST,
+  })
   @Get(':powerUnitId')
   async findOne(
     @Req() request: Request,
@@ -112,7 +128,17 @@ export class PowerUnitsController {
     description: 'The Power Unit Resource',
     type: ReadPowerUnitDto,
   })
-  @Roles(Role.WRITE_VEHICLE)
+  @Roles({
+    allowedBCeIDRoles: [
+      ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+      ClientUserAuthGroup.PERMIT_APPLICANT,
+    ],
+    allowedIdirRoles: [
+      IDIRUserAuthGroup.PPC_CLERK,
+      IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
+      IDIRUserAuthGroup.CTPO,
+    ],
+  })
   @Put(':powerUnitId')
   async update(
     @Req() request: Request,
@@ -134,7 +160,17 @@ export class PowerUnitsController {
     return powerUnit;
   }
 
-  @Roles(Role.WRITE_VEHICLE)
+  @Roles({
+    allowedBCeIDRoles: [
+      ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+      ClientUserAuthGroup.PERMIT_APPLICANT,
+    ],
+    allowedIdirRoles: [
+      IDIRUserAuthGroup.PPC_CLERK,
+      IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
+      IDIRUserAuthGroup.CTPO,
+    ],
+  })
   @Delete(':powerUnitId')
   async remove(
     @Req() request: Request,
@@ -158,7 +194,17 @@ export class PowerUnitsController {
       'The delete dto resource which includes the success and failure list.',
     type: DeleteDto,
   })
-  @Roles(Role.WRITE_VEHICLE)
+  @Roles({
+    allowedBCeIDRoles: [
+      ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+      ClientUserAuthGroup.PERMIT_APPLICANT,
+    ],
+    allowedIdirRoles: [
+      IDIRUserAuthGroup.PPC_CLERK,
+      IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
+      IDIRUserAuthGroup.CTPO,
+    ],
+  })
   @Post('delete-requests')
   @HttpCode(200)
   async deletePowerUnits(

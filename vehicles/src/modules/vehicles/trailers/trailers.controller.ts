@@ -29,10 +29,15 @@ import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { Request } from 'express';
 import { Roles } from '../../../common/decorator/roles.decorator';
-import { Role } from '../../../common/enum/roles.enum';
 import { DeleteDto } from 'src/modules/common/dto/response/delete.dto';
 import { DeleteTrailerDto } from './dto/request/delete-trailer.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import {
+  CLIENT_USER_AUTH_GROUP_LIST,
+  ClientUserAuthGroup,
+  IDIR_USER_AUTH_GROUP_LIST,
+  IDIRUserAuthGroup,
+} from '../../../common/enum/user-auth-group.enum';
 
 @ApiTags('Vehicles - Trailers')
 @ApiBadRequestResponse({
@@ -60,7 +65,17 @@ export class TrailersController {
     description: 'The Trailer Resource',
     type: ReadTrailerDto,
   })
-  @Roles(Role.WRITE_VEHICLE)
+  @Roles({
+    allowedBCeIDRoles: [
+      ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+      ClientUserAuthGroup.PERMIT_APPLICANT,
+    ],
+    allowedIdirRoles: [
+      IDIRUserAuthGroup.PPC_CLERK,
+      IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
+      IDIRUserAuthGroup.CTPO,
+    ],
+  })
   @Post()
   create(
     @Req() request: Request,
@@ -80,7 +95,10 @@ export class TrailersController {
     type: ReadTrailerDto,
     isArray: true,
   })
-  @Roles(Role.READ_VEHICLE)
+  @Roles({
+    allowedBCeIDRoles: CLIENT_USER_AUTH_GROUP_LIST,
+    allowedIdirRoles: IDIR_USER_AUTH_GROUP_LIST,
+  })
   @Get()
   async findAll(
     @Param('companyId') companyId: number,
@@ -92,7 +110,10 @@ export class TrailersController {
     description: 'The Trailer Resource',
     type: ReadTrailerDto,
   })
-  @Roles(Role.READ_VEHICLE)
+  @Roles({
+    allowedBCeIDRoles: CLIENT_USER_AUTH_GROUP_LIST,
+    allowedIdirRoles: IDIR_USER_AUTH_GROUP_LIST,
+  })
   @Get(':trailerId')
   async findOne(
     @Req() request: Request,
@@ -110,7 +131,17 @@ export class TrailersController {
     description: 'The Trailer Resource',
     type: ReadTrailerDto,
   })
-  @Roles(Role.WRITE_VEHICLE)
+  @Roles({
+    allowedBCeIDRoles: [
+      ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+      ClientUserAuthGroup.PERMIT_APPLICANT,
+    ],
+    allowedIdirRoles: [
+      IDIRUserAuthGroup.PPC_CLERK,
+      IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
+      IDIRUserAuthGroup.CTPO,
+    ],
+  })
   @Put(':trailerId')
   async update(
     @Req() request: Request,
@@ -132,7 +163,17 @@ export class TrailersController {
     return trailer;
   }
 
-  @Roles(Role.WRITE_VEHICLE)
+  @Roles({
+    allowedBCeIDRoles: [
+      ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+      ClientUserAuthGroup.PERMIT_APPLICANT,
+    ],
+    allowedIdirRoles: [
+      IDIRUserAuthGroup.PPC_CLERK,
+      IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
+      IDIRUserAuthGroup.CTPO,
+    ],
+  })
   @Delete(':trailerId')
   async remove(
     @Req() request: Request,
@@ -155,7 +196,17 @@ export class TrailersController {
       'The delete dto resource which includes the success and failure list.',
     type: DeleteDto,
   })
-  @Roles(Role.WRITE_VEHICLE)
+  @Roles({
+    allowedBCeIDRoles: [
+      ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+      ClientUserAuthGroup.PERMIT_APPLICANT,
+    ],
+    allowedIdirRoles: [
+      IDIRUserAuthGroup.PPC_CLERK,
+      IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
+      IDIRUserAuthGroup.CTPO,
+    ],
+  })
   @HttpCode(200)
   @Post('delete-requests')
   async deleteTrailers(

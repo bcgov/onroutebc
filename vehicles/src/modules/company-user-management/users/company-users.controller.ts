@@ -29,7 +29,6 @@ import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { Request } from 'express';
 import { Roles } from '../../../common/decorator/roles.decorator';
-import { Role } from '../../../common/enum/roles.enum';
 import { UpdateUserDto } from './dto/request/update-user.dto';
 import { GetCompanyUserQueryParamsDto } from './dto/request/queryParam/getCompanyUser.query-params.dto';
 import { GetCompanyUserByUserGUIDPathParamsDto } from './dto/request/pathParam/getCompanyUserByUserGUID.path-params.dto';
@@ -38,6 +37,7 @@ import { DeleteDto } from '../../common/dto/response/delete.dto';
 import {
   ClientUserAuthGroup,
   IDIR_USER_AUTH_GROUP_LIST,
+  IDIRUserAuthGroup,
 } from '../../../common/enum/user-auth-group.enum';
 import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 
@@ -78,7 +78,14 @@ export class CompanyUsersController {
     isArray: true,
   })
   @ApiParam({ name: 'companyId', required: true })
-  @Roles(Role.READ_SELF)
+  @Roles({
+    allowedBCeIDRoles: [ClientUserAuthGroup.COMPANY_ADMINISTRATOR],
+    allowedIdirRoles: [
+      IDIRUserAuthGroup.PPC_CLERK,
+      IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
+      IDIRUserAuthGroup.CTPO,
+    ],
+  })
   @Get()
   async findAllCompanyUsers(
     @Req() request: Request,
@@ -130,7 +137,14 @@ export class CompanyUsersController {
     description: 'The User Resource',
     type: ReadUserDto,
   })
-  @Roles(Role.READ_USER)
+  @Roles({
+    allowedBCeIDRoles: [ClientUserAuthGroup.COMPANY_ADMINISTRATOR],
+    allowedIdirRoles: [
+      IDIRUserAuthGroup.PPC_CLERK,
+      IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
+      IDIRUserAuthGroup.CTPO,
+    ],
+  })
   @Get(':userGUID')
   async get(
     @Param() params: GetCompanyUserByUserGUIDPathParamsDto,
@@ -156,7 +170,14 @@ export class CompanyUsersController {
     description: 'The User Resource',
     type: ReadUserDto,
   })
-  @Roles(Role.WRITE_SELF)
+  @Roles({
+    allowedBCeIDRoles: [ClientUserAuthGroup.COMPANY_ADMINISTRATOR],
+    allowedIdirRoles: [
+      IDIRUserAuthGroup.PPC_CLERK,
+      IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
+      IDIRUserAuthGroup.CTPO,
+    ],
+  })
   @Put(':userGUID')
   async update(
     @Req() request: Request,
@@ -187,7 +208,6 @@ export class CompanyUsersController {
    * @returns A {@link DeleteDto} object including counts of successfully deleted users. Throws DataNotFoundException
    * if no delete result is obtained.
    */
-  @Roles(Role.WRITE_USER)
   @ApiOperation({
     summary: 'Delete users associated with a company',
     description:
@@ -201,6 +221,14 @@ export class CompanyUsersController {
     type: DeleteDto,
   })
   @Delete()
+  @Roles({
+    allowedBCeIDRoles: [ClientUserAuthGroup.COMPANY_ADMINISTRATOR],
+    allowedIdirRoles: [
+      IDIRUserAuthGroup.PPC_CLERK,
+      IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
+      IDIRUserAuthGroup.CTPO,
+    ],
+  })
   async remove(
     @Req() request: Request,
     @Param('companyId') companyId: number,

@@ -30,7 +30,6 @@ import { ReadCompanyUserDto } from './dto/response/read-company-user.dto';
 import { ReadCompanyMetadataDto } from './dto/response/read-company-metadata.dto';
 import { Request } from 'express';
 import { Roles } from '../../../common/decorator/roles.decorator';
-import { Role } from '../../../common/enum/roles.enum';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
@@ -39,7 +38,12 @@ import { GetCompanyQueryParamsDto } from './dto/request/queryParam/getCompany.qu
 
 import { ReadVerifyClientDto } from './dto/response/read-verify-client.dto';
 import { VerifyClientDto } from './dto/request/verify-client.dto';
-import { IDIR_USER_AUTH_GROUP_LIST } from '../../../common/enum/user-auth-group.enum';
+import {
+  CLIENT_USER_AUTH_GROUP_LIST,
+  ClientUserAuthGroup,
+  IDIR_USER_AUTH_GROUP_LIST,
+  IDIRUserAuthGroup,
+} from '../../../common/enum/user-auth-group.enum';
 import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 
 @ApiTags('Company and User Management - Company')
@@ -97,7 +101,9 @@ export class CompanyController {
    * @returns The paginated companies with response object {@link ReadCompanyDto}.
    */
   @ApiPaginatedResponse(ReadCompanyDto)
-  @Roles(Role.READ_ORG)
+  @Roles({
+    allowedIdirRoles: IDIR_USER_AUTH_GROUP_LIST,
+  })
   @Get()
   async getCompanyPaginated(
     @Req() request: Request,
@@ -140,7 +146,10 @@ export class CompanyController {
     type: ReadCompanyMetadataDto,
     isArray: true,
   })
-  @Roles(Role.READ_ORG)
+  @Roles({
+    allowedBCeIDRoles: CLIENT_USER_AUTH_GROUP_LIST,
+    allowedIdirRoles: IDIR_USER_AUTH_GROUP_LIST,
+  })
   @Get('meta-data')
   async getCompanyMetadata(
     @Req() request: Request,
@@ -168,7 +177,10 @@ export class CompanyController {
     description: 'The Company Resource',
     type: ReadCompanyDto,
   })
-  @Roles(Role.READ_ORG)
+  @Roles({
+    allowedBCeIDRoles: CLIENT_USER_AUTH_GROUP_LIST,
+    allowedIdirRoles: IDIR_USER_AUTH_GROUP_LIST,
+  })
   @Get(':companyId')
   async get(
     @Req() request: Request,
@@ -194,7 +206,14 @@ export class CompanyController {
     description: 'The Company Resource',
     type: ReadCompanyDto,
   })
-  @Roles(Role.WRITE_ORG)
+  @Roles({
+    allowedBCeIDRoles: [ClientUserAuthGroup.COMPANY_ADMINISTRATOR],
+    allowedIdirRoles: [
+      IDIRUserAuthGroup.PPC_CLERK,
+      IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
+      IDIRUserAuthGroup.CTPO,
+    ],
+  })
   @Put(':companyId')
   async update(
     @Req() request: Request,
