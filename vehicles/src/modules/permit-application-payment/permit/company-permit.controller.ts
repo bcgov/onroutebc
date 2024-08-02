@@ -65,8 +65,8 @@ export class CompanyPermitController {
    */
   @ApiPaginatedResponse(ReadPermitMetadataDto)
   @Roles({
-    allowedBCeIDAuthGroups: [],
-    allowedIDIRAuthGroups: [IDIRUserAuthGroup.ENFORCEMENT_OFFICER]
+    allowedBCeIDRoles: [],
+    allowedIdirRoles: [IDIRUserAuthGroup.ENFORCEMENT_OFFICER],
   })
   @Get()
   async getPermit(

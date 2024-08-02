@@ -6,7 +6,7 @@ import { IUserJWT } from '../interface/user-jwt.interface';
 
 const {
   SYSTEM_ADMINISTRATOR: SA,
-  PPC_SUPERVISOR: CTPO,
+  CTPO: CTPO,
   PPC_CLERK: PC,
   FINANCE: FIN,
   ENFORCEMENT_OFFICER: EO,
@@ -412,20 +412,20 @@ export interface PermissionConfigType {
  */
 export interface PermissionMatrixConfigObject {
   /**
-   * The idir auth groups that are allowed to see the component.
+   * The idir auth roles that are allowed to see the component.
    *
    * If the user has one of the specified auth groups,
    * the component will render.
    */
-  allowedIDIRAuthGroups?: readonly IDIRUserAuthGroup[];
+  allowedIdirRoles?: readonly IDIRUserAuthGroup[];
 
   /**
-   * The bceid auth groups that are allowed to see the component.
+   * The bceid auth roles that are allowed to see the component.
    *
    * If the user has one of the specified auth groups,
    * the component will render.
    */
-  allowedBCeIDAuthGroups?: readonly ClientUserAuthGroup[];
+  allowedBCeIDRoles?: readonly ClientUserAuthGroup[];
 }
 
 /**
@@ -478,7 +478,10 @@ export const usePermissionMatrix = ({
   let isAllowed = false;
 
   if (permissionMatrixFeatureKey && permissionMatrixFunctionKey) {
-    const { allowedBCeIDAuthGroups, allowedIDIRAuthGroups } = (
+    const {
+      allowedBCeIDRoles: allowedBCeIDAuthGroups,
+      allowedIdirRoles: allowedIDIRAuthGroups,
+    } = (
       PERMISSIONS_MATRIX[permissionMatrixFeatureKey] as Record<
         string,
         PermissionMatrixConfigObject

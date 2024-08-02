@@ -72,8 +72,10 @@ export const matchRoles = (
   const shouldUsePermissionMatrix =
     ('allowedIDIRAuthGroups' || 'allowedBCeIDAuthGroups') in roles;
   if (shouldUsePermissionMatrix) {
-    const { allowedIDIRAuthGroups, allowedBCeIDAuthGroups } =
-      roles as PermissionMatrixConfigObject;
+    const {
+      allowedIdirRoles: allowedIDIRAuthGroups,
+      allowedBCeIDRoles: allowedBCeIDAuthGroups,
+    } = roles as PermissionMatrixConfigObject;
     if (isIdir) {
       return allowedIDIRAuthGroups?.includes(
         userAuthGroup as IDIRUserAuthGroup,

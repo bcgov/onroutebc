@@ -286,7 +286,7 @@ export class CreditAccountService {
         IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
         IDIRUserAuthGroup.FINANCE,
         IDIRUserAuthGroup.PPC_CLERK,
-        IDIRUserAuthGroup.PPC_SUPERVISOR,
+        IDIRUserAuthGroup.CTPO,
       ])
     ) {
       throw new DataNotFoundException();
@@ -341,7 +341,7 @@ export class CreditAccountService {
         IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
         IDIRUserAuthGroup.FINANCE,
         IDIRUserAuthGroup.PPC_CLERK,
-        IDIRUserAuthGroup.PPC_SUPERVISOR,
+        IDIRUserAuthGroup.CTPO,
       ])
     ) {
       throw new DataNotFoundException();
@@ -1028,7 +1028,7 @@ export class CreditAccountService {
         IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
         IDIRUserAuthGroup.FINANCE,
         IDIRUserAuthGroup.PPC_CLERK,
-        IDIRUserAuthGroup.PPC_SUPERVISOR,
+        IDIRUserAuthGroup.CTPO,
       ])
     ) {
       throw new DataNotFoundException();
@@ -1111,7 +1111,7 @@ export class CreditAccountService {
         IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
         IDIRUserAuthGroup.FINANCE,
         IDIRUserAuthGroup.PPC_CLERK,
-        IDIRUserAuthGroup.PPC_SUPERVISOR,
+        IDIRUserAuthGroup.CTPO,
       ])
     ) {
       throw new DataNotFoundException();
@@ -1256,7 +1256,7 @@ export class CreditAccountService {
           case IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR:
           case IDIRUserAuthGroup.HQ_ADMINISTRATOR:
           case IDIRUserAuthGroup.PPC_CLERK:
-          case IDIRUserAuthGroup.PPC_SUPERVISOR:
+          case IDIRUserAuthGroup.CTPO:
           case ClientUserAuthGroup.COMPANY_ADMINISTRATOR:
             return {
               company: true,
@@ -1279,7 +1279,7 @@ export class CreditAccountService {
           case IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR:
           case IDIRUserAuthGroup.HQ_ADMINISTRATOR:
           case IDIRUserAuthGroup.PPC_CLERK:
-          case IDIRUserAuthGroup.PPC_SUPERVISOR:
+          case IDIRUserAuthGroup.CTPO:
             return {
               company: true,
               creditAccountUsers: { company: true },
