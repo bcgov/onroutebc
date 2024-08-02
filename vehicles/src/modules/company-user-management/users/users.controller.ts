@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   Controller,
-  ForbiddenException,
   Get,
   Param,
   Post,
@@ -32,8 +31,10 @@ import { ReadUserDto } from './dto/response/read-user.dto';
 import { IDP } from '../../../common/enum/idp.enum';
 import { GetStaffUserQueryParamsDto } from './dto/request/queryParam/getStaffUser.query-params.dto';
 import { GetUserRolesQueryParamsDto } from './dto/request/queryParam/getUserRoles.query-params.dto';
-import { IDIR_USER_AUTH_GROUP_LIST } from '../../../common/enum/user-auth-group.enum';
-import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
+import {
+  CLIENT_USER_AUTH_GROUP_LIST,
+  IDIR_USER_AUTH_GROUP_LIST,
+} from '../../../common/enum/user-auth-group.enum';
 
 @ApiTags('Company and User Management - User')
 @ApiBadRequestResponse({
@@ -103,12 +104,16 @@ export class UsersController {
     isArray: true,
   })
   @ApiOperation({
+    deprecated: true,
     summary: "Retrieves a list of users' roles for a specified company ID.",
     description:
       'This endpoint queries all roles associated with the provided company ID for the calling user. ' +
       "It fetches roles by integrating with the User service, ensuring roles are accurately returned based on the company's context and the user's privileges.",
   })
-  @Roles(Role.READ_SELF)
+  @Roles({
+    allowedBCeIDRoles: CLIENT_USER_AUTH_GROUP_LIST,
+    allowedIdirRoles: IDIR_USER_AUTH_GROUP_LIST,
+  })
   @Get('/roles')
   async getRolesForUsers(
     @Req() request: Request,
@@ -136,24 +141,14 @@ export class UsersController {
     type: ReadUserDto,
     isArray: true,
   })
-  @Roles(Role.READ_USER)
+  @Roles({
+    allowedIdirRoles: IDIR_USER_AUTH_GROUP_LIST,
+  })
   @Get()
   async findAll(
-    @Req() request: Request,
+    @Req() _request: Request,
     @Query() getStaffUserQueryParamsDto?: GetStaffUserQueryParamsDto,
   ): Promise<ReadUserDto[]> {
-    const currentUser = request.user as IUserJWT;
-    if (
-      !doesUserHaveAuthGroup(
-        currentUser.orbcUserAuthGroup,
-        IDIR_USER_AUTH_GROUP_LIST,
-      )
-    ) {
-      throw new ForbiddenException(
-        `Forbidden for ${currentUser.orbcUserAuthGroup} role.`,
-      );
-    }
-
     if (getStaffUserQueryParamsDto.permitIssuerPPCUser) {
       return await this.userService.findPermitIssuerPPCUser();
     }
@@ -198,7 +193,10 @@ export class UsersController {
       'the first result if any are found. Throws a BadRequestException if the GUIDs ' +
       'do not match for non-IDIR users, and DataNotFoundException if no users are found.',
   })
-  @Roles(Role.READ_SELF)
+  @Roles({
+    allowedBCeIDRoles: CLIENT_USER_AUTH_GROUP_LIST,
+    allowedIdirRoles: IDIR_USER_AUTH_GROUP_LIST,
+  })
   @Get(':userGUID')
   async findUserDetails(
     @Req() request: Request,

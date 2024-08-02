@@ -25,11 +25,11 @@ import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { FileDownloadModes } from '../../../common/enum/file-download-modes.enum';
 import { ReadFileDto } from '../../common/dto/response/read-file.dto';
 import { Roles } from 'src/common/decorator/roles.decorator';
-import { Role } from 'src/common/enum/roles.enum';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
 import { GetPermitQueryParamsDto } from './dto/request/queryParam/getPermit.query-params.dto';
 import {
+  CLIENT_USER_AUTH_GROUP_LIST,
   ClientUserAuthGroup,
   IDIR_USER_AUTH_GROUP_LIST,
 } from 'src/common/enum/user-auth-group.enum';
@@ -62,7 +62,10 @@ export class CompanyPermitController {
    *
    */
   @ApiPaginatedResponse(ReadPermitMetadataDto)
-  @Roles(Role.READ_PERMIT)
+  @Roles({
+    allowedBCeIDRoles: CLIENT_USER_AUTH_GROUP_LIST,
+    allowedIdirRoles: IDIR_USER_AUTH_GROUP_LIST,
+  })
   @Get()
   async getPermit(
     @Req() request: Request,
@@ -105,7 +108,10 @@ export class CompanyPermitController {
     type: PermitHistoryDto,
     isArray: true,
   })
-  @Roles(Role.READ_PERMIT)
+  @Roles({
+    allowedBCeIDRoles: CLIENT_USER_AUTH_GROUP_LIST,
+    allowedIdirRoles: IDIR_USER_AUTH_GROUP_LIST,
+  })
   @Get('/:permitId/history')
   async getPermitHisory(
     @Param('permitId') permitId: string,
@@ -123,7 +129,10 @@ export class CompanyPermitController {
     description:
       'Fetches a single permit detail by its permit ID for the current user.',
   })
-  @Roles(Role.READ_PERMIT)
+  @Roles({
+    allowedBCeIDRoles: CLIENT_USER_AUTH_GROUP_LIST,
+    allowedIdirRoles: IDIR_USER_AUTH_GROUP_LIST,
+  })
   @Get('/:permitId')
   async getByPermitId(
     @Req() request: Request,
@@ -147,7 +156,10 @@ export class CompanyPermitController {
     description:
       'Retrieves the DOPS file for a given permit ID. Requires READ_PERMIT role.',
   })
-  @Roles(Role.READ_PERMIT)
+  @Roles({
+    allowedBCeIDRoles: CLIENT_USER_AUTH_GROUP_LIST,
+    allowedIdirRoles: IDIR_USER_AUTH_GROUP_LIST,
+  })
   @Get('/:permitId/document')
   async getPermitDocument(
     @Req() request: Request,
@@ -176,7 +188,10 @@ export class CompanyPermitController {
     description:
       'Retrieves a PDF receipt for a given permit ID, ensuring the user has read permission.',
   })
-  @Roles(Role.READ_PERMIT)
+  @Roles({
+    allowedBCeIDRoles: CLIENT_USER_AUTH_GROUP_LIST,
+    allowedIdirRoles: IDIR_USER_AUTH_GROUP_LIST,
+  })
   @Get('/:permitId/receipt')
   async getReceiptPDF(
     @Req() request: Request,

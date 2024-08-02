@@ -24,13 +24,16 @@ import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
 import { Request } from 'express';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { Roles } from 'src/common/decorator/roles.decorator';
-import { Role } from 'src/common/enum/roles.enum';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import { ResultDto } from './dto/response/result.dto';
 import { VoidPermitDto } from './dto/request/void-permit.dto';
 import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
 import { GetPermitQueryParamsDto } from './dto/request/queryParam/getPermit.query-params.dto';
-import { IDIR_USER_AUTH_GROUP_LIST } from 'src/common/enum/user-auth-group.enum';
+import {
+  CLIENT_USER_AUTH_GROUP_LIST,
+  IDIR_USER_AUTH_GROUP_LIST,
+  IDIRUserAuthGroup,
+} from 'src/common/enum/user-auth-group.enum';
 import { ReadPermitMetadataDto } from './dto/response/read-permit-metadata.dto';
 import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 import { CreateNotificationDto } from '../../common/dto/request/create-notification.dto';
@@ -68,8 +71,8 @@ export class PermitController {
    */
   @ApiPaginatedResponse(ReadPermitMetadataDto)
   @Roles({
-    userAuthGroup: IDIR_USER_AUTH_GROUP_LIST,
-    oneOf: [Role.READ_PERMIT],
+    allowedBCeIDRoles: CLIENT_USER_AUTH_GROUP_LIST,
+    allowedIdirRoles: IDIR_USER_AUTH_GROUP_LIST,
   })
   @Get()
   async getPermit(
@@ -119,8 +122,7 @@ export class PermitController {
    *
    */
   @Roles({
-    userAuthGroup: IDIR_USER_AUTH_GROUP_LIST,
-    oneOf: [Role.VOID_PERMIT],
+    allowedIdirRoles: [IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR],
   })
   @Post('/:permitId/void')
   async voidpermit(
@@ -171,8 +173,13 @@ export class PermitController {
       'Sends a notification related to a specific permit after checking user authorization.',
   })
   @Roles({
-    userAuthGroup: IDIR_USER_AUTH_GROUP_LIST,
-    oneOf: [Role.SEND_NOTIFICATION],
+    allowedIdirRoles: [
+      IDIRUserAuthGroup.PPC_CLERK,
+      IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
+      IDIRUserAuthGroup.CTPO,
+      IDIRUserAuthGroup.FINANCE,
+      IDIRUserAuthGroup.HQ_ADMINISTRATOR,
+    ],
   })
   @Post('/:permitId/notification')
   async notification(

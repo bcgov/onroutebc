@@ -20,7 +20,6 @@ import {
 } from '@nestjs/swagger';
 import { Request } from 'express';
 import { Roles } from '../../common/decorator/roles.decorator';
-import { Role } from '../../common/enum/roles.enum';
 import { ExceptionDto } from '../../common/exception/exception.dto';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { AddToShoppingCartDto } from './dto/request/add-to-shopping-cart.dto';
@@ -30,6 +29,10 @@ import { ReadShoppingCartDto } from './dto/response/read-shopping-cart.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { ShoppingCartService } from './shopping-cart.service';
 import { GetApplicationInCartQueryParams } from './dto/request/queryParam/getApplicationsInCart.query-param.dto';
+import {
+  ClientUserAuthGroup,
+  IDIRUserAuthGroup,
+} from '../../common/enum/user-auth-group.enum';
 
 @ApiBearerAuth()
 @ApiTags('Shopping Cart')
@@ -62,7 +65,17 @@ export class ShoppingCartController {
     type: ResultDto,
   })
   @Post()
-  @Roles(Role.WRITE_PERMIT)
+  @Roles({
+    allowedBCeIDRoles: [
+      ClientUserAuthGroup.PERMIT_APPLICANT,
+      ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+    ],
+    allowedIdirRoles: [
+      IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
+      IDIRUserAuthGroup.PPC_CLERK,
+      IDIRUserAuthGroup.CTPO,
+    ],
+  })
   async addToCart(
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
@@ -95,7 +108,17 @@ export class ShoppingCartController {
     type: Array<ReadShoppingCartDto>,
   })
   @Get()
-  @Roles(Role.WRITE_PERMIT)
+  @Roles({
+    allowedBCeIDRoles: [
+      ClientUserAuthGroup.PERMIT_APPLICANT,
+      ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+    ],
+    allowedIdirRoles: [
+      IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
+      IDIRUserAuthGroup.PPC_CLERK,
+      IDIRUserAuthGroup.CTPO,
+    ],
+  })
   async getApplicationsInCart(
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
@@ -129,7 +152,17 @@ export class ShoppingCartController {
     type: Number,
   })
   @Get('count')
-  @Roles(Role.WRITE_PERMIT)
+  @Roles({
+    allowedBCeIDRoles: [
+      ClientUserAuthGroup.PERMIT_APPLICANT,
+      ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+    ],
+    allowedIdirRoles: [
+      IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
+      IDIRUserAuthGroup.PPC_CLERK,
+      IDIRUserAuthGroup.CTPO,
+    ],
+  })
   async getCartCount(
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
@@ -148,7 +181,17 @@ export class ShoppingCartController {
    * @returns The result of the removal operation.
    */
   @Delete()
-  @Roles(Role.WRITE_PERMIT)
+  @Roles({
+    allowedBCeIDRoles: [
+      ClientUserAuthGroup.PERMIT_APPLICANT,
+      ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+    ],
+    allowedIdirRoles: [
+      IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
+      IDIRUserAuthGroup.PPC_CLERK,
+      IDIRUserAuthGroup.CTPO,
+    ],
+  })
   @ApiOperation({
     summary: 'Removes one or more applications from the shopping cart.',
     description:

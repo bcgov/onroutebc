@@ -13,7 +13,6 @@ import {
 import { Request } from 'express';
 import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-flag-enabled.decorator';
 import { Roles } from '../../common/decorator/roles.decorator';
-import { Role } from '../../common/enum/roles.enum';
 import { DataNotFoundException } from '../../common/exception/data-not-found.exception';
 import { ExceptionDto } from '../../common/exception/exception.dto';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
@@ -25,6 +24,7 @@ import { CreditAccountIdPathParamDto } from './dto/request/pathParam/creditAccou
 import { UpdateCreditAccountStatusDto } from './dto/request/update-credit-account-status.dto';
 import { ReadCreditAccountActivityDto } from './dto/response/read-credit-account-activity.dto';
 import {
+  CLIENT_USER_AUTH_GROUP_LIST,
   ClientUserAuthGroup,
   IDIR_USER_AUTH_GROUP_LIST,
   IDIRUserAuthGroup,
@@ -74,7 +74,7 @@ export class CreditAccountController {
     type: String,
   })
   @Post()
-  @Roles(Role.WRITE_CREDIT_ACCOUNT)
+  @Roles({ allowedIdirRoles: [IDIRUserAuthGroup.FINANCE] })
   async createCreditAccount(
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
@@ -103,7 +103,10 @@ export class CreditAccountController {
     type: ReadCreditAccountMetadataDto,
   })
   @Get()
-  @Roles(Role.READ_CREDIT_ACCOUNT)
+  @Roles({
+    allowedBCeIDRoles: [ClientUserAuthGroup.COMPANY_ADMINISTRATOR],
+    allowedIdirRoles: IDIR_USER_AUTH_GROUP_LIST,
+  })
   async getCreditAccountMetadata(
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
@@ -138,11 +141,8 @@ export class CreditAccountController {
   })
   @Get(':creditAccountId')
   @Roles({
-    userAuthGroup: [
-      ...IDIR_USER_AUTH_GROUP_LIST,
-      ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
-    ],
-    oneOf: [Role.READ_CREDIT_ACCOUNT],
+    allowedBCeIDRoles: [ClientUserAuthGroup.COMPANY_ADMINISTRATOR],
+    allowedIdirRoles: IDIR_USER_AUTH_GROUP_LIST,
   })
   async getCreditAccount(
     @Req() request: Request,
@@ -179,13 +179,8 @@ export class CreditAccountController {
   })
   @Get(':creditAccountId/limits')
   @Roles({
-    userAuthGroup: [
-      IDIRUserAuthGroup.FINANCE,
-      IDIRUserAuthGroup.HQ_ADMINISTRATOR,
-      IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
-      ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
-    ],
-    oneOf: [Role.READ_CREDIT_ACCOUNT],
+    allowedBCeIDRoles: CLIENT_USER_AUTH_GROUP_LIST,
+    allowedIdirRoles: IDIR_USER_AUTH_GROUP_LIST,
   })
   async getCreditAccountLimit(
     @Req() request: Request,
@@ -220,8 +215,8 @@ export class CreditAccountController {
   })
   @Get(':creditAccountId/history')
   @Roles({
-    userAuthGroup: [IDIRUserAuthGroup.FINANCE],
-    oneOf: [Role.READ_CREDIT_ACCOUNT],
+    allowedBCeIDRoles: CLIENT_USER_AUTH_GROUP_LIST,
+    allowedIdirRoles: IDIR_USER_AUTH_GROUP_LIST,
   })
   async getCreditAccountHistory(
     @Req() request: Request,
@@ -254,7 +249,7 @@ export class CreditAccountController {
     type: ReadCreditAccountDto,
   })
   @Put(':creditAccountId/status')
-  @Roles(Role.WRITE_CREDIT_ACCOUNT)
+  @Roles({ allowedIdirRoles: [IDIRUserAuthGroup.FINANCE] })
   async updateCreditAccountStatus(
     @Req() request: Request,
     @Param() { companyId, creditAccountId }: CreditAccountIdPathParamDto,
