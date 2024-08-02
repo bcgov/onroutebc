@@ -10,9 +10,9 @@ interface StatusChipProps {
 }
 
 export const StatusChip = ({ status }: StatusChipProps) => {
-  const classModifier = CreditAccountStatusDisplayValues[status]
-    .toLowerCase()
-    .replace(" ", "-");
+  const classModifier =
+    status !== "SUSPENDED" &&
+    CreditAccountStatusDisplayValues[status].toLowerCase().replace(" ", "-");
 
   if (status === CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE) {
     return;
