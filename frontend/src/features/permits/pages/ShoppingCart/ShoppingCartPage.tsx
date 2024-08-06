@@ -61,7 +61,6 @@ export const ShoppingCartPage = () => {
   const { applicationData } = useContext(ApplicationContext);
   const { idirUserDetails, userDetails } = useContext(OnRouteBCContext);
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
-  // TODO can we calculate this using the permissions matrix instead?
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
   const isCompanyAdmin = Boolean(
     userDetails?.userAuthGroup === BCeID_USER_AUTH_GROUP.COMPANY_ADMINISTRATOR,
