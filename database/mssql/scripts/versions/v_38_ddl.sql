@@ -18,12 +18,12 @@ GO
 -- a 10-digit suffix instead of 4 when we are in dev/test to avoid duplicates
 -- in CFS when we refresh the dev/test databases
 ALTER TABLE [permit].[ORBC_CREDIT_ACCOUNT]
-  ALTER COLUMN CREDIT_ACCOUNT_NUMBER nvarchar(15) NOT NULL
+  ALTER COLUMN CREDIT_ACCOUNT_NUMBER nvarchar(12) NOT NULL
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
 
 ALTER TABLE [permit].[ORBC_CREDIT_ACCOUNT_HIST]
-  ALTER COLUMN CREDIT_ACCOUNT_NUMBER nvarchar(15)
+  ALTER COLUMN CREDIT_ACCOUNT_NUMBER nvarchar(12)
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
 
