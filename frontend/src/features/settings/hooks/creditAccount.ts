@@ -2,10 +2,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   addCreditAccountUser,
   createCreditAccount,
-  getCreditAccount,
+  getCreditAccountMetadata,
   removeCreditAccountUsers,
   getCreditAccountUsers,
   updateCreditAccountStatus,
+  getCreditAccount,
+  getCreditAccountHistory,
+  getCreditAccountLimits,
 } from "../apiManager/creditAccount";
 import { getCompanyDataBySearch } from "../../idir/search/api/idirSearch";
 import { useNavigate } from "react-router-dom";
@@ -24,11 +27,63 @@ import { CompanyProfile } from "../../manageProfile/types/manageProfile";
  * Hook to fetch the company credit account details for the active user.
  * @returns Query result of the company credit account details
  */
-export const useGetCreditAccountQuery = (companyId: number) => {
+export const useGetCreditAccountMetadataQuery = (companyId: number, enabled?: boolean ) => {
+  return useQuery({
+    queryKey: ["credit-account", { companyId }, "metadata"],
+    queryFn: () => getCreditAccountMetadata(companyId),
+    retry: false,
+    enabled,
+    refetchOnWindowFocus: false,
+  });
+};
+
+/**
+ * Hook to fetch the company credit account details for the active user.
+ * @returns Query result of the company credit account details
+ */
+export const useGetCreditAccountQuery = (
+  companyId: number,
+  creditAccountId: number,
+) => {
   return useQuery({
     queryKey: ["credit-account", { companyId }],
-    queryFn: () => getCreditAccount(companyId),
+    queryFn: () => getCreditAccount(companyId, creditAccountId),
     retry: false,
+    refetchOnWindowFocus: false,
+  });
+};
+
+/**
+ * Hook to fetch the company credit account details.
+ * @returns Query result of the company credit account details
+ */
+export const useGetCreditAccountLimitsQuery = (data: {
+  companyId: number;
+  creditAccountId: number;
+}) => {
+  const { companyId, creditAccountId } = data;
+  return useQuery({
+    queryKey: ["credit-account", { companyId }, "limits"],
+    queryFn: () => getCreditAccountLimits({ companyId, creditAccountId }),
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+};
+
+/**
+ * Hook to fetch the company credit account details.
+ * @returns Query result of the company credit account details
+ */
+export const useGetCreditAccountHistoryQuery = (data: {
+  companyId: number;
+  creditAccountId: number;
+}) => {
+  const { companyId, creditAccountId } = data;
+  return useQuery({
+    queryKey: ["credit-account", { companyId }, "history"],
+    queryFn: () => getCreditAccountHistory({ companyId, creditAccountId }),
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 };
 
@@ -44,6 +99,8 @@ export const useGetCreditAccountUsersQuery = (data: {
   return useQuery({
     queryKey: ["credit-account", { companyId }, "users"],
     queryFn: () => getCreditAccountUsers({ companyId, creditAccountId }),
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 };
 
@@ -55,6 +112,7 @@ export const useGetCreditAccountUsersQuery = (data: {
 export const useGetCompanyQuery = (clientNumber: string) => {
   return useQuery({
     queryKey: ["company-information", { clientNumber }],
+    retry: false,
     queryFn: () =>
       getCompanyDataBySearch(
         {

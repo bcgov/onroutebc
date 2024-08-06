@@ -3,4 +3,8 @@
     padding-bottom: 1.5rem;
     font-size: 1.5rem;
   }
+
+  & &__options {
+    gap: 1.5rem;
+  }
 }
