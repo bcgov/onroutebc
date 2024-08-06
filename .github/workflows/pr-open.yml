@@ -101,7 +101,7 @@ jobs:
     name: Tests
     needs: [deploys]
     secrets: inherit
-    uses: ./.github/workflows/.tests.yml
+    uses: ./.github/workflows/tests/loadtest.yaml
     with:
       environment: dev
       target: ${{ github.event.number }}
