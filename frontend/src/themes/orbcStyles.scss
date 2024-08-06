@@ -38,6 +38,9 @@ $focus-blue: #3b99fc;
 $shadow-colour: #00000029;
 $white: #ffffff;
 
+// Shadows
+$bc-shadow: 0 0 0.5rem #00000029;
+
 // Mixins
 @mixin form-layout($form-container-class) {
   #{$form-container-class} {
