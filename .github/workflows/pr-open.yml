@@ -97,3 +97,20 @@ jobs:
         --set-json scheduler.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
         --set-json policy.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
         --set-json vehicles.containers[0].resources='{"limits": {"cpu": "300m", "memory": "500Mi"}, "requests": {"cpu": "200m", "memory": "400Mi"}}' \
+  tests:
+    name: Tests
+    needs: [deploys]
+    secrets: inherit
+    uses: ./.github/workflows/.tests.yml
+    with:
+      environment: dev
+      target: ${{ github.event.number }}
+
+  results:
+    name: PR Results
+    if: always() && !failure()
+    needs: [tests]
+    runs-on: ubuntu-22.04
+    steps:
+      - run: echo "Workflow completed successfully!"
+                                                                                                                                                 
