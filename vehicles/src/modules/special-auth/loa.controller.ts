@@ -27,23 +27,23 @@ import {
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { ExceptionDto } from 'src/common/exception/exception.dto';
-import { ReadLoaDto } from './dto/response/read-loa.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { LoaService } from './loa.service';
 import { Request, Response } from 'express';
-import { GetLoaQueryParamsDto } from './dto/request/queryParam/get-loa.query-params.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileDownloadModes } from 'src/common/enum/file-download-modes.enum';
 import { setResHeaderCorrelationId } from 'src/common/helper/response-header.helper';
-import { JsonReqBodyInterceptor } from '../../common/interceptor/json-req-body.interceptor';
-import { CreateLoaFileDto } from './dto/request/create-loa-file.dto';
-import { CompanyIdPathParamDto } from '../common/dto/request/pathParam/companyId.path-param.dto';
-import { UpdateLoaFileDto } from './dto/request/update-loa-file.dto';
-import { LoaIdPathParamDto } from './dto/request/pathParam/loa-Id.path-params.dto';
-import { GetDocumentQueryParamsDto } from '../common/dto/request/queryParam/getDocument.query-params.dto';
-import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-flag-enabled.decorator';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
+import { IsFeatureFlagEnabled } from 'src/common/decorator/is-feature-flag-enabled.decorator';
+import { ReadLoaDto } from './dto/response/read-loa.dto';
+import { JsonReqBodyInterceptor } from 'src/common/interceptor/json-req-body.interceptor';
+import { CompanyIdPathParamDto } from '../common/dto/request/pathParam/companyId.path-param.dto';
+import { CreateLoaFileDto } from './dto/request/create-loa-file.dto';
+import { GetLoaQueryParamsDto } from './dto/request/queryParam/get-loa.query-params.dto';
+import { LoaIdPathParamDto } from './dto/request/pathParam/loa-Id.path-params.dto';
+import { UpdateLoaFileDto } from './dto/request/update-loa-file.dto';
+import { GetDocumentQueryParamsDto } from '../common/dto/request/queryParam/getDocument.query-params.dto';
 
 @ApiBearerAuth()
 @ApiTags('Letter of Authorization (LoA)')

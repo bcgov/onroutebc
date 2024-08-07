@@ -285,7 +285,6 @@ export class LoaService {
         LoaDetail,
         {
           extraArgs: () => ({
-            companyId,
             loaId,
             isActive,
             documentId,
