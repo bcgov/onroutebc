@@ -105,7 +105,7 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 10
     steps:
-      - run: ls -al ./.github/workflows/
+      - run: ls -al 
       - uses: actions/checkout@v4
         with:
           repository: ${{ inputs.repository }}
