@@ -18,6 +18,7 @@ import { calculateFeeByDuration } from "../../../../helpers/feeSummary";
 import { PermitType } from "../../../../types/PermitType";
 import { Nullable } from "../../../../../../common/types/common";
 import { PermitCommodity } from "../../../../types/PermitCommodity";
+import { CustomDatePicker, PastStartDateStatus } from "../../../../../../common/components/form/subFormComponents/CustomDatePicker";
 import {
   PPC_EMAIL,
   TOLL_FREE_NUMBER,
@@ -37,6 +38,7 @@ export const PermitDetails = ({
   durationOptions,
   disableStartDate,
   permitType,
+  pastStartDateStatus,
 }: {
   feature: string;
   defaultStartDate: Dayjs;
@@ -49,6 +51,7 @@ export const PermitDetails = ({
   }[];
   disableStartDate: boolean;
   permitType: PermitType;
+  pastStartDateStatus: PastStartDateStatus;
 }) => {
   const { watch, register, setValue } = useFormContext();
 
@@ -90,19 +93,17 @@ export const PermitDetails = ({
 
       <Box className="permit-details__body">
         <Box className="permit-details__input-section">
-          <CustomFormComponent
-            type="datePicker"
+          <CustomDatePicker
             feature={feature}
-            options={{
-              name: "permitData.startDate",
-              rules: {
-                required: { value: true, message: requiredMessage() },
-              },
-              label: "Start Date",
-              width: PHONE_WIDTH,
-            }}
+            name="permitData.startDate"
             disabled={disableStartDate}
             readOnly={disableStartDate}
+            rules={{
+              required: { value: true, message: requiredMessage() },
+            }}
+            label="Start Date"
+            pastStartDateStatus={pastStartDateStatus}
+            maxDaysInFuture={14}
           />
 
           <CustomFormComponent

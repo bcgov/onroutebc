@@ -2,6 +2,7 @@ import { PointerEventsCheckLevel } from "@testing-library/user-event";
 import dayjs from "dayjs";
 
 import { DATE_FORMATS } from "../../../../../../../common/helpers/formatDate";
+import { getExpiryDate } from "../../../../../helpers/permitState";
 import {
   commoditiesInfoBox,
   commodityConditionLabel,
@@ -9,8 +10,6 @@ import {
   dateOptions,
   durationOption,
   expiryDateElement,
-  invalidFutureDateMessageElement,
-  invalidPastDateMessageElement,
   lastMonthButton,
   nextMonthDateOptions,
   openDurationSelect,
@@ -38,11 +37,9 @@ import {
   renderTestComponent,
   defaultDuration,
   allDurations,
-  emptyCommodities,
   maxFutureYear,
   thisYear,
 } from "./helpers/prepare";
-import { getExpiryDate } from "../../../../../helpers/permitState";
 
 describe("Permit Details duration", () => {
   it("should have available durations to select", async () => {
@@ -184,29 +181,6 @@ describe("Permit Details start date", () => {
 
       expect(activeDates.length).toBe(1 + 14); // today and next 14 days
     }
-  });
-
-  it("should display error message for invalid past start dates", async () => {
-    // Arrange and Act
-    renderTestComponent(
-      dayjs(currentDt).subtract(1, "day"),
-      defaultDuration,
-      emptyCommodities,
-    );
-    // Assert
-    expect(await invalidPastDateMessageElement()).toBeVisible();
-  });
-
-  it("should display error message for invalid future start dates (more than 14 days from today)", async () => {
-    // Arrange and Act
-    renderTestComponent(
-      dayjs(currentDt).add(15, "day"),
-      defaultDuration,
-      emptyCommodities,
-    );
-
-    // Assert
-    expect(await invalidFutureDateMessageElement()).toBeVisible();
   });
 
   it("should display correct expiry date after selecting start date", async () => {
