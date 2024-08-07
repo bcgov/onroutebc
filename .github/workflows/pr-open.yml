@@ -97,14 +97,18 @@ jobs:
         --set-json scheduler.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
         --set-json policy.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
         --set-json vehicles.containers[0].resources='{"limits": {"cpu": "300m", "memory": "500Mi"}, "requests": {"cpu": "200m", "memory": "400Mi"}}' \
-  tests:
-    name: Tests
-    needs: [deploys]
-    secrets: inherit
-    uses: ./.github/workflows/.loadtest.yaml
-    with:
-      environment: dev
-      target: ${{ github.event.number }}
+
+  
+  loadtests:
+    - uses: actions/checkout@v4
+      with:
+        repository: ${{ inputs.repository }}
+      needs: [deploys]
+      secrets: inherit
+      uses: ./.github/workflows/.loadtest.yaml
+      with:
+        environment: dev
+        target: ${{ github.event.number }}
 
   results:
     name: PR Results
