@@ -116,7 +116,7 @@ jobs:
   results:
     name: PR Results
     if: always() && !failure()
-    needs: [tests]
+    needs: [loadtests]
     runs-on: ubuntu-22.04
     steps:
       - run: echo "Workflow completed successfully!"
