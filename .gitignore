@@ -114,4 +114,9 @@ test-report.xml
 # VS Code settings and directories
 .vscode
 
+#Helm lockfile
 Chart.lock
+
+#Screenshots
+screenshots
+
