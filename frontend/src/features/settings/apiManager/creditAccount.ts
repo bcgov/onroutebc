@@ -1,7 +1,10 @@
 import {
   CreditAccountData,
+  CreditAccountLimitData,
   CreditAccountLimitType,
+  CreditAccountMetadata,
   CreditAccountStatusType,
+  CreditAccountUser,
 } from "../types/creditAccount";
 import { CREDIT_ACCOUNT_API_ROUTES } from "../apiManager/endpoints/endpoints";
 import {
@@ -32,11 +35,25 @@ export const createCreditAccount = async (data: {
  * Get credit account information for related to the given company ID
  * @returns Credit account information for the company
  */
+export const getCreditAccountMetadata = async (
+  companyId: number,
+): Promise<CreditAccountMetadata> => {
+  const response = await httpGETRequest(
+    CREDIT_ACCOUNT_API_ROUTES.GET_CREDIT_ACCOUNT_META_DATA(companyId),
+  );
+  return response.data;
+};
+
+/**
+ * Get credit account information for related to the given company ID
+ * @returns Credit account information for the company
+ */
 export const getCreditAccount = async (
   companyId: number,
+  creditAccountId: number,
 ): Promise<CreditAccountData> => {
   const response = await httpGETRequest(
-    CREDIT_ACCOUNT_API_ROUTES.GET_CREDIT_ACCOUNT(companyId),
+    CREDIT_ACCOUNT_API_ROUTES.GET_CREDIT_ACCOUNT(companyId, creditAccountId),
   );
   return response.data;
 };
@@ -58,7 +75,51 @@ export const getCreditAccountUsers = async (data: {
       creditAccountId,
     ),
   );
+  return response.data as CreditAccountUser[];
+};
+
+/**
+ * Get credit account users for the given credit account ID
+ * @param companyId Identifier of the company with which the credit Account is associated
+ * @param creditAccountId Identifier of the credit account to retrieve
+ * @returns List of credit account users for the credit account
+ */
+export const getCreditAccountHistory = async ({
+  companyId,
+  creditAccountId,
+}: {
+  companyId: number;
+  creditAccountId: number;
+}) => {
+  const response = await httpGETRequest(
+    CREDIT_ACCOUNT_API_ROUTES.GET_CREDIT_ACCOUNT_HISTORY(
+      companyId,
+      creditAccountId,
+    ),
+  );
   return response.data;
+};
+
+/**
+ * Get credit account users for the given credit account ID
+ * @param companyId Identifier of the company with which the credit Account is associated
+ * @param creditAccountId Identifier of the credit account to retrieve
+ * @returns List of credit account users for the credit account
+ */
+export const getCreditAccountLimits = async ({
+  companyId,
+  creditAccountId,
+}: {
+  companyId: number;
+  creditAccountId: number;
+}) => {
+  const response = await httpGETRequest(
+    CREDIT_ACCOUNT_API_ROUTES.GET_CREDIT_ACCOUNT_LIMITS(
+      companyId,
+      creditAccountId,
+    ),
+  );
+  return response.data as CreditAccountLimitData;
 };
 
 /**

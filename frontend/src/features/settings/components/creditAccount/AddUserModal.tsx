@@ -1,35 +1,30 @@
-import { Button, Dialog } from "@mui/material";
+import { faInfoCircle, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlusCircle, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { Button, Dialog } from "@mui/material";
 import { FormProvider, useForm } from "react-hook-form";
+import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import {
   useAddCreditAccountUserMutation,
-  useGetCreditAccountQuery,
+  useGetCreditAccountMetadataQuery,
 } from "../../hooks/creditAccount";
-import {
-  CREDIT_ACCOUNT_USER_TYPE,
-  CreditAccountUser,
-} from "../../types/creditAccount";
-import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
-import { StatusChip } from "./StatusChip";
 import "./AddUserModal.scss";
-import { useContext } from "react";
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { StatusChip } from "./StatusChip";
 
 export const AddUserModal = ({
   showModal,
   onCancel,
   onConfirm,
   userData,
+  creditAccountId,
+  companyId,
 }: {
   showModal: boolean;
   onCancel: () => void;
   onConfirm: () => void;
   userData: CompanyProfile;
+  creditAccountId: number;
+  companyId: number;
 }) => {
-  const { companyId } = useContext(OnRouteBCContext);
-
   const formMethods = useForm<{ comment: string }>({
     reValidateMode: "onChange",
   });
@@ -39,32 +34,19 @@ export const AddUserModal = ({
   const isActionSuccessful = (status: number) => {
     return status === 200;
   };
+  const { data: userCreditAccount, isLoading: isUserCreditAccountLoading } =
+    useGetCreditAccountMetadataQuery(userData.companyId);
 
-  const { data: creditAccount } = useGetCreditAccountQuery(
-    getDefaultRequiredVal(0, companyId),
-  );
-  const { data: userCreditAccount } = useGetCreditAccountQuery(
-    userData.companyId,
-  );
-
-  /** TODO Currently this boolean will prevent companies who are previous credit account holders
-   * from being added as users. Once the API allows the creation of credit accounts for companies other than
-   * Parisian Trucking we can implement a check to determine if the previously associated credit account of the
-   * ex holding company is "CLOSED" and allow the adding of this company as a user to the credit account
-   */
   const existingCreditAccountHolder =
-    userCreditAccount?.creditAccountUsers?.find(
-      (user: CreditAccountUser) =>
-        user.userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER,
-    );
+    !isUserCreditAccountLoading && Boolean(userCreditAccount?.creditAccountId);
 
   const { mutateAsync, isPending } = useAddCreditAccountUserMutation();
 
   const handleAddUser = async () => {
-    if (creditAccount?.creditAccountId) {
+    if (creditAccountId) {
       const { status } = await mutateAsync({
-        companyId: getDefaultRequiredVal(0, companyId),
-        creditAccountId: creditAccount.creditAccountId,
+        companyId,
+        creditAccountId,
         userData,
       });
 
@@ -134,19 +116,19 @@ export const AddUserModal = ({
                 <div className="add-user-modal__item">
                   <dt className="add-user-modal__key">Company Name</dt>
                   <dt className="add-user-modal__value">
-                    {existingCreditAccountHolder.legalName}
+                    {userData.legalName}
                   </dt>
                 </div>
                 <div className="add-user-modal__item">
                   <dt className="add-user-modal__key">onRouteBC</dt>
                   <dt className="add-user-modal__value">
-                    {existingCreditAccountHolder.clientNumber}
+                    {userData.clientNumber}
                   </dt>
                 </div>
                 <div className="add-user-modal__item">
                   <dt className="add-user-modal__key">Credit Account No.</dt>
                   <dt className="add-user-modal__value">
-                    {userCreditAccount?.creditAccountNumber}
+                    {userCreditAccount?.creditAccountId}
                   </dt>
                 </div>
               </div>

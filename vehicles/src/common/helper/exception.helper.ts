@@ -1,6 +1,11 @@
-import { HttpStatus, UnprocessableEntityException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpStatus,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { ExceptionDto } from '../exception/exception.dto';
 import { ValidationExceptionDto } from '../exception/validation.exception.dto';
+import { BadRequestExceptionDto } from '../exception/badRequestException.dto';
 
 export const throwUnprocessableEntityException = (
   message: string,
@@ -15,5 +20,18 @@ export const throwUnprocessableEntityException = (
         additionalInfo: additionalInfo,
       },
     ] as ValidationExceptionDto[],
+  } as ExceptionDto);
+};
+
+export const throwBadRequestException = (field: string, message: string[]) => {
+  throw new BadRequestException({
+    message: 'Bad Request',
+    status: HttpStatus.BAD_REQUEST,
+    error: [
+      {
+        field: field,
+        message: message,
+      },
+    ] as BadRequestExceptionDto[],
   } as ExceptionDto);
 };
