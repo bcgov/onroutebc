@@ -23,6 +23,7 @@ import {
   selectionRequired,
   uploadSizeExceeded,
 } from "../../../../../../common/helpers/validationMessages";
+import { CustomDatePicker, PAST_START_DATE_STATUSES } from "../../../../../../common/components/form/subFormComponents/CustomDatePicker";
 
 const FEATURE = "loa";
 
@@ -144,6 +145,20 @@ export const LOABasicInfo = ({
     trigger("expiryDate");
   };
 
+  const handleStartDateChange = (startDate: Dayjs | null) => {
+    if (startDate) {
+      setValue("startDate", startDate);
+      trigger("startDate");
+      trigger("expiryDate");
+    }
+  };
+
+  const handleExpiryDateChange = (expiryDate: Dayjs | null) => {
+    setValue("expiryDate", expiryDate);
+    trigger("startDate");
+    trigger("expiryDate");
+  };
+
   const selectFile = (file: File) => {
     setValue("uploadFile", file);
     trigger("uploadFile");
@@ -260,30 +275,28 @@ export const LOABasicInfo = ({
 
         <div className="loa-basic-info__date-selection">
           <div className="loa-date-inputs">
-            <CustomFormComponent
+            <CustomDatePicker
               className="loa-date-inputs__start"
-              type="datePicker"
               feature={FEATURE}
-              options={{
-                name: "startDate",
-                rules: {
-                  required: { value: true, message: requiredMessage() },
-                },
-                label: "Start Date",
+              name="startDate"
+              rules={{
+                required: { value: true, message: requiredMessage() },
               }}
+              label="Start Date"
+              pastStartDateStatus={PAST_START_DATE_STATUSES.FAIL}
+              onChangeOverride={handleStartDateChange}
             />
 
-            <CustomFormComponent
+            <CustomDatePicker
               className="loa-date-inputs__expiry"
-              type="datePicker"
               feature={FEATURE}
-              options={{
-                name: "expiryDate",
-                rules: expiryRules,
-                label: "Expiry Date",
-              }}
+              name="expiryDate"
+              rules={expiryRules}
+              label="Expiry Date"
               disabled={neverExpires}
               readOnly={neverExpires}
+              pastStartDateStatus={PAST_START_DATE_STATUSES.FAIL}
+              onChangeOverride={handleExpiryDateChange}
             />
           </div>
           
