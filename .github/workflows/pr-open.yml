@@ -105,9 +105,11 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 10
     steps:
+      - run: ls -al ./.github/workflows/
       - uses: actions/checkout@v4
         with:
           repository: ${{ inputs.repository }}
+      - run: ls -al ./.github/workflows/
       - uses: ./.github/workflows/.loadtest.yaml
         with:
           environment: dev
