@@ -64,27 +64,6 @@ export class SpecialAuthController {
     return await this.specialAuthService.findOne(companyId);
   }
 
-  @ApiOperation({ summary: 'Create or update special authorization.' })
-  @ApiResponse({
-    status: 201,
-    description: 'Special authorization created or updated successfully.',
-    type: ReadSpecialAuthDto,
-  })
-  @Post()
-  async upsertSpecialauth(
-    @Req() request: Request,
-    @Param() { companyId }: CompanyIdPathParamDto,
-    @Body() upsertSpecialAuthDto: UpsertSpecialAuthDto,
-  ): Promise<ReadSpecialAuthDto> {
-    console.log(companyId);
-    const currentUser = request.user as IUserJWT;
-    return await this.specialAuthService.upsertSpecialAuth(
-      companyId,
-      currentUser,
-      upsertSpecialAuthDto,
-    );
-  }
-
   @ApiQuery({
     name: 'isLcvAllowed',
     type: 'boolean',
@@ -92,7 +71,7 @@ export class SpecialAuthController {
     example: false,
     description: 'Indicates if long combination vehicles are supported or not.',
   })
-  @ApiOperation({ summary: 'Update LCV (Long Combination Vehicle) allowance.' })
+  @ApiOperation({ summary: 'Create or update LCV (Long Combination Vehicle) allowance.' })
   @ApiResponse({
     status: 200,
     description: 'LCV allowance updated successfully.',
@@ -115,7 +94,7 @@ export class SpecialAuthController {
     );
   }
 
-  @ApiOperation({ summary: 'Update no fee type.' })
+  @ApiOperation({ summary: 'Create or update no fee type.' })
   @ApiQuery({
     name: 'noFeeType',
     enum: NoFeeType,
