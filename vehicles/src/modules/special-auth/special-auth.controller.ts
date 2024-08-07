@@ -1,17 +1,35 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  Req,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiInternalServerErrorResponse,
   ApiMethodNotAllowedResponse,
   ApiOperation,
+  ApiQuery,
+  ApiResponse,
   ApiTags,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { ExceptionDto } from 'src/common/exception/exception.dto';
 import { CompanyIdPathParamDto } from '../common/dto/request/pathParam/companyId.path-param.dto';
 import { SpecialAuthService } from './special-auth.service';
-import { SpecialAuth } from './entities/special-auth.entity';
+import { ReadSpecialAuthDto } from './dto/response/read-special-auth.dto';
+import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { Request } from 'express';
+import { UpsertSpecialAuthDto } from './dto/request/upsert-special-auth.dto';
+import { LcvQueryParamDto } from './dto/request/queryParam/lcv.query-params.dto';
+import { NoFeeQueryParamDto } from './dto/request/queryParam/no-fee.query-params.dto';
+import { NoFeeType } from 'src/common/enum/no-fee-type.enum';
+
 @ApiBearerAuth()
 @ApiTags('Special Authorization')
 @Controller('companies/:companyId/special-auth')
@@ -41,8 +59,89 @@ export class SpecialAuthController {
   @Get()
   async get(
     @Param() { companyId }: CompanyIdPathParamDto,
-  ): Promise<SpecialAuth> {
+  ): Promise<ReadSpecialAuthDto> {
     console.log(companyId);
     return await this.specialAuthService.findOne(companyId);
+  }
+
+  @ApiOperation({ summary: 'Create or update special authorization.' })
+  @ApiResponse({
+    status: 201,
+    description: 'Special authorization created or updated successfully.',
+    type: ReadSpecialAuthDto,
+  })
+  @Post()
+  async upsertSpecialauth(
+    @Req() request: Request,
+    @Param() { companyId }: CompanyIdPathParamDto,
+    @Body() upsertSpecialAuthDto: UpsertSpecialAuthDto,
+  ): Promise<ReadSpecialAuthDto> {
+    console.log(companyId);
+    const currentUser = request.user as IUserJWT;
+    return await this.specialAuthService.upsertSpecialAuth(
+      companyId,
+      currentUser,
+      upsertSpecialAuthDto,
+    );
+  }
+
+  @ApiQuery({
+    name: 'isLcvAllowed',
+    type: 'boolean',
+    required: true,
+    example: false,
+    description: 'Indicates if long combination vehicles are supported or not.',
+  })
+  @ApiOperation({ summary: 'Update LCV (Long Combination Vehicle) allowance.' })
+  @ApiResponse({
+    status: 200,
+    description: 'LCV allowance updated successfully.',
+    type: ReadSpecialAuthDto,
+  })
+  @Put('/lcv')
+  async updateLcv(
+    @Req() request: Request,
+    @Param() { companyId }: CompanyIdPathParamDto,
+    @Query() lcvQueryParamDto: LcvQueryParamDto,
+  ): Promise<ReadSpecialAuthDto> {
+    const currentUser = request.user as IUserJWT;
+    const upsertSpecialAuthDto = Object.assign(new UpsertSpecialAuthDto(), {
+      isLcvAllowed: lcvQueryParamDto.isLcvAllowed,
+    });
+    return await this.specialAuthService.upsertSpecialAuth(
+      companyId,
+      currentUser,
+      upsertSpecialAuthDto,
+    );
+  }
+
+  @ApiOperation({ summary: 'Update no fee type.' })
+  @ApiQuery({
+    name: 'noFeeType',
+    enum: NoFeeType,
+    required: false,
+    example: NoFeeType.CA_GOVT,
+    description: 'No fee type.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'No fee type updated successfully.',
+    type: ReadSpecialAuthDto,
+  })
+  @Put('/no-fee')
+  async updateNoFee(
+    @Req() request: Request,
+    @Param() { companyId }: CompanyIdPathParamDto,
+    @Query() noFeeQueryParamdto: NoFeeQueryParamDto,
+  ): Promise<ReadSpecialAuthDto> {
+    const currentUser = request.user as IUserJWT;
+    const upsertSpecialAuthDto = Object.assign(new UpsertSpecialAuthDto(), {
+      noFeeType: noFeeQueryParamdto.noFeeType,
+    });
+    return await this.specialAuthService.upsertSpecialAuth(
+      companyId,
+      currentUser,
+      upsertSpecialAuthDto,
+    );
   }
 }

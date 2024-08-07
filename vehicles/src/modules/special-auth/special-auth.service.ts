@@ -1,10 +1,13 @@
 import { LogAsyncMethodExecution } from 'src/common/decorator/log-async-method-execution.decorator';
-import { SpecialAuth } from './entities/special-auth.entity';
 import { Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { Repository } from 'typeorm';
+import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { SpecialAuth } from './entities/special-auth.entity';
+import { ReadSpecialAuthDto } from './dto/response/read-special-auth.dto';
+import { UpsertSpecialAuthDto } from './dto/request/upsert-special-auth.dto';
 
 export class SpecialAuthService {
   private readonly logger = new Logger(SpecialAuthService.name);
@@ -14,13 +17,79 @@ export class SpecialAuthService {
     private specialAuthRepository: Repository<SpecialAuth>,
   ) {}
 
+  /**
+   * Finds a special authorization by company ID.
+   *
+   * This method retrieves a special authorization entity from the database based on the provided company ID.
+   * It then maps the retrieved entity to a Data Transfer Object (DTO) for further processing or response.
+   *
+   * @param companyId - The ID of the company for which to find the special authorization.
+   *
+   * @returns  {Promise<ReadSpecialAuthDto>} A Promise that resolves to a `ReadSpecialAuthDto` object representing the special authorization details.
+   *
+   * @throws Will throw an error if the special authorization cannot be found or if mapping fails.
+   */
   @LogAsyncMethodExecution()
-  async findOne(companyId: number): Promise<SpecialAuth> {
-    return await this.specialAuthRepository.findOne({
+  async findOne(companyId: number): Promise<ReadSpecialAuthDto> {
+    const specialAuthEntity = await this.specialAuthRepository.findOne({
       where: {
         company: { companyId: companyId },
       },
       relations: ['company'],
     });
+    const readSpecialAuthDto = await this.classMapper.mapAsync(
+      specialAuthEntity,
+      SpecialAuth,
+      ReadSpecialAuthDto,
+    );
+    return readSpecialAuthDto;
+  }
+
+  /**
+   * Creates or updates a special authorization based on the provided data.
+   *
+   * This method performs an upsert operation for special authorization. It first attempts to find an existing special authorization
+   * using the provided `companyId`. If found, it updates the existing record; if not, it creates a new special authorization.
+   * The provided `UpsertSpecialAuthDto` is used to either update or create the special authorization. Additional metadata such as
+   * the current user information and timestamps are included in the operation.
+   *
+   * @param companyId - The ID of the company for which to create or update the special authorization.
+   * @param currentUser - The current user performing the operation, which includes metadata such as username, GUID, and directory.
+   * @param upsertSpecialAuthDto - The data transfer object containing the details to create or update the special authorization.
+   *
+   * @returns {Promise<ReadSpecialAuthDto>}A Promise that resolves to a `ReadSpecialAuthDto` object representing the newly created or updated special authorization.
+   *
+   * @throws Will throw an error if the special authorization cannot be found or saved, or if mapping fails.
+   */
+  @LogAsyncMethodExecution()
+  async upsertSpecialAuth(
+    companyId: number,
+    currentUser: IUserJWT,
+    upsertSpecialAuthDto: UpsertSpecialAuthDto,
+  ): Promise<ReadSpecialAuthDto> {
+    const specialAuthdto: ReadSpecialAuthDto = await this.findOne(companyId);
+    let specialAuth = await this.classMapper.mapAsync(
+      upsertSpecialAuthDto,
+      UpsertSpecialAuthDto,
+      SpecialAuth,
+      {
+        extraArgs: () => ({
+          specialAuthId: specialAuthdto
+            ? specialAuthdto.specialAuthId
+            : undefined,
+          companyId: specialAuthdto ? undefined : companyId,
+          userName: currentUser.userName,
+          userGUID: currentUser.userGUID,
+          timestamp: new Date(),
+          directory: currentUser.orbcUserDirectory,
+        }),
+      },
+    );
+    specialAuth = await this.specialAuthRepository.save(specialAuth);
+    return await this.classMapper.mapAsync(
+      specialAuth,
+      SpecialAuth,
+      ReadSpecialAuthDto,
+    );
   }
 }

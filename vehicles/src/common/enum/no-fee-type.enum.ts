@@ -1,0 +1,7 @@
+export enum NoFeeType {
+  CA_GOVT = 'CA_GOVT',
+  MUNICPALITY = 'MUNICPALITY',
+  SCHOOL = 'SCHOOL',
+  USA_GOVT = 'USA_GOVT',
+  ANY_USA_GOVT = 'ANY_USA_GOVT',
+}

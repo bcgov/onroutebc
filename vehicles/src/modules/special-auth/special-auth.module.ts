@@ -9,10 +9,20 @@ import { LoaVehicle } from './entities/loa-vehicles.entity';
 import { LoaPermitType } from './entities/loa-permit-type-details.entity';
 import { LoaController } from './loa.controller';
 import { LoaService } from './loa.service';
+import { LoaProfile } from './profile/loa.profile';
+import { SpecialAuthProfile } from './profile/special-auth.profile';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([SpecialAuth, NoFeeType, LoaDetail,LoaVehicle,LoaPermitType])],
-  controllers: [SpecialAuthController,LoaController],
-  providers: [SpecialAuthService, LoaService],
+  imports: [
+    TypeOrmModule.forFeature([
+      SpecialAuth,
+      NoFeeType,
+      LoaDetail,
+      LoaVehicle,
+      LoaPermitType,
+    ]),
+  ],
+  controllers: [SpecialAuthController, LoaController],
+  providers: [SpecialAuthService, LoaService, LoaProfile, SpecialAuthProfile],
 })
 export class SpecialAuthModule {}

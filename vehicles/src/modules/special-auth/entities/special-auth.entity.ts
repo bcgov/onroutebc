@@ -8,8 +8,9 @@ import {
 import { AutoMap } from '@automapper/classes';
 import { Base } from 'src/modules/common/entities/base.entity';
 import { Company } from 'src/modules/company-user-management/company/entities/company.entity';
-import { NoFeeType } from './no-fee-type.entity';
 import { IsOptional } from 'class-validator';
+import { NoFeeType } from 'src/common/enum/no-fee-type.enum';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'permit.ORBC_SPECIAL_AUTH' })
 export class SpecialAuth extends Base {
@@ -33,9 +34,21 @@ export class SpecialAuth extends Base {
       from: (value: string): boolean => value === 'Y', // Converts the stored string back to a boolean.
     },
   })
-  lcv: boolean;
+  isLcvAllowed: boolean;
 
-  @AutoMap(() => NoFeeType)
+  @AutoMap()
+  @ApiProperty({
+    enum: NoFeeType,
+    example: NoFeeType.CA_GOVT,
+    description: 'No Fee Type Id',
+  })
   @IsOptional()
+  @Column({
+    type: 'simple-enum',
+    enum: NoFeeType,
+    length: 12,
+    name: 'NO_FEE_TYPE',
+    nullable: true,
+  })
   noFeeType: NoFeeType;
 }
