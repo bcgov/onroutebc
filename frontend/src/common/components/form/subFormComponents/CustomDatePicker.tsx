@@ -200,7 +200,7 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>({
             {rulesViolationMessage ? (
               <FormHelperText
                 className="custom-date-picker__helper-text custom-date-picker__helper-text--error"
-                data-testid={`alert-${name}`}
+                data-testid={`custom-date-picker-${name}-error`}
                 error
               >
                 {rulesViolationMessage}
