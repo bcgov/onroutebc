@@ -283,7 +283,7 @@ export const LOABasicInfo = ({
                 required: { value: true, message: requiredMessage() },
               }}
               label="Start Date"
-              pastStartDateStatus={PAST_START_DATE_STATUSES.FAIL}
+              pastStartDateStatus={PAST_START_DATE_STATUSES.ALLOWED}
               onChangeOverride={handleStartDateChange}
             />
 
@@ -295,7 +295,7 @@ export const LOABasicInfo = ({
               label="Expiry Date"
               disabled={neverExpires}
               readOnly={neverExpires}
-              pastStartDateStatus={PAST_START_DATE_STATUSES.FAIL}
+              pastStartDateStatus={PAST_START_DATE_STATUSES.ALLOWED}
               onChangeOverride={handleExpiryDateChange}
             />
           </div>
