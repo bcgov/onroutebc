@@ -9,6 +9,11 @@ on:
         description: 'PR number, test or prod.'
         required: true
         type: string
+      environment:
+        description: "Deployment environment - dev/test/prod"
+        required: true
+        type: string
+        default: "dev"
 
 jobs:
   loadtests:
