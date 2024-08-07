@@ -104,7 +104,6 @@ jobs:
     needs: [deploys]
     runs-on: ubuntu-22.04
     timeout-minutes: 10
-    secrets: inherit
     steps:
       - uses: actions/checkout@v4
         with:
