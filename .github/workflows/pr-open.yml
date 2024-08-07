@@ -100,15 +100,19 @@ jobs:
 
   
   loadtests:
-    - uses: actions/checkout@v4
-      with:
-        repository: ${{ inputs.repository }}
-      needs: [deploys]
-      secrets: inherit
-      uses: ./.github/workflows/.loadtest.yaml
-      with:
-        environment: dev
-        target: ${{ github.event.number }}
+    name: Loadtests
+    needs: [deploys]
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    secrets: inherit
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.repository }}
+      - uses: ./.github/workflows/.loadtest.yaml
+        with:
+          environment: dev
+          target: ${{ github.event.number }}
 
   results:
     name: PR Results
