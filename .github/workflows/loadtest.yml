@@ -26,4 +26,4 @@ jobs:
         with:
           testFilePath: vehicles/test/load_tests/orbc_load_test_plan_vehicles_dev.jmx
           outputReportsFolder: ~/results
-          args: "--loglevel INFO -JBEARER_TOKEN=${{secrets.ORBC_ACCESS_TOKEN}} --jmeterlogconf=log.conf"
+          args: "--loglevel INFO -JBEARER_TOKEN=${{secrets.ORBC_ACCESS_TOKEN}} -JRESULTS_DIR=~/results --jmeterlogconf=log.conf"
