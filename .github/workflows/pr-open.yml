@@ -110,7 +110,7 @@ jobs:
         with:
           repository: ${{ inputs.repository }}
       - run: ls -al ./.github/workflows/
-      - uses: ./.github/workflows/.loadtest.yaml
+      - uses: ./.github/workflows/loadtest.yml
         with:
           environment: dev
           target: ${{ github.event.number }}
