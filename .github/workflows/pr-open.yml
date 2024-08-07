@@ -102,18 +102,11 @@ jobs:
   loadtests:
     name: Loadtests
     needs: [deploys]
-    runs-on: ubuntu-22.04
-    timeout-minutes: 10
-    steps:
-      - run: ls -al 
-      - uses: actions/checkout@v4
-        with:
-          repository: ${{ inputs.repository }}
-      - run: ls -al ./.github/workflows/
-      - uses: ./.github/workflows/loadtest.yml
-        with:
-          environment: dev
-          target: ${{ github.event.number }}
+    uses: ./.github/workflows/loadtest.yml
+    secrets: inherit
+    with:
+      environment: dev
+      target: ${{ github.event.number }}
 
   results:
     name: PR Results
