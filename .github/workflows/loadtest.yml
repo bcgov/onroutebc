@@ -22,9 +22,7 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 1
     steps:
-      - run: |
-          ls
-          ls vehicles/test/load_tests
+      - run: ls
 
       - name: Run All JMeter Tests In tests Folder
         uses: rbhadti94/apache-jmeter-action@v0.5.0
