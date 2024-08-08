@@ -103,11 +103,14 @@ jobs:
     needs: [deploys]
     uses: ./.github/workflows/loadtest.yml
     secrets: inherit
+    strategy:
+      matrix:
+        package: [dops, vehicles, frontend, scheduler, policy]
     with:
+      package: ${{matrix.package}}
       args: |
-        --loglevel INFO \
         -JFRONTEND_API_URL=${{ github.event.repository.name }}-${{ github.event.number }}-frontend.apps.silver.devops.gov.bc.ca \
-        -JBACKEND_API_URL=${{ github.event.repository.name }}-${{ github.event.number }}-vehicles.apps.silver.devops.gov.bc.ca \ 
+        -JBACKEND_API_URL=${{ github.event.repository.name }}-${{ github.event.number }}-${{matrix.package}}.apps.silver.devops.gov.bc.ca \ 
         -JRESULTS_DIR=results \
         --jmeterlogconf=log.conf
       environment: dev
@@ -119,4 +122,3 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - run: echo "Workflow completed successfully!"
-                                                                                                                                                 
