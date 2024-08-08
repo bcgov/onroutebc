@@ -26,4 +26,7 @@ sqlcmd -C -U ${ORBC_USER} -P "${ORBC_PASS}" -S ${ORBC_SERVER} -d ${ORBC_DATABASE
 sqlcmd -C -U ${ORBC_USER} -P "${ORBC_PASS}" -S ${ORBC_SERVER} -d ${ORBC_DATABASE} -i ${SCRIPT_DIR}/sampledata/dbo.ORBC_TRAILER.Table.sql
 sqlcmd -C -U ${ORBC_USER} -P "${ORBC_PASS}" -S ${ORBC_SERVER} -d ${ORBC_DATABASE} -i ${SCRIPT_DIR}/sampledata/dbo.ORBC_FEATURE_FLAG.Table.sql
 
+echo "Setting credit account sequence restart to current timestamp (used only for lower environments)"
+sqlcmd -C -U ${ORBC_USER} -P "${ORBC_PASS}" -S ${ORBC_SERVER} -d ${ORBC_DATABASE} -i ${SCRIPT_DIR}/sampledata/permit.ORBC_CREDIT_ACCOUNT_NUMBER_SEQ.sql
+
 echo "Finished loading sample data"
