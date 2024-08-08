@@ -111,6 +111,7 @@ jobs:
         -JBACKEND_API_URL=${{ github.event.repository.name }}-${{ github.event.number }}-vehicles.apps.silver.devops.gov.bc.ca \ 
         -JRESULTS_DIR=results \
         --jmeterlogconf=log.conf
+      environment: dev
 
   results:
     name: PR Results

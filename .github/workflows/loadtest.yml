@@ -9,10 +9,16 @@ on:
         description: 'List of args to feed jmeter'
         required: true
         type: string
+      environment:
+        description: "Deployment environment - dev/test/prod"
+        required: true
+        type: string
+        default: "dev"
 
 jobs:
   loadtests:
     name: Loadtests
+    environment: ${{ inputs.environment }}
     runs-on: ubuntu-22.04
     timeout-minutes: 1
     steps:
