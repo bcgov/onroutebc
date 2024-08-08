@@ -5,20 +5,14 @@ on:
   workflow_call:
     inputs:
       ### Required
-      target:
-        description: 'PR number, test or prod.'
+      args:
+        description: 'List of args to feed jmeter'
         required: true
         type: string
-      environment:
-        description: "Deployment environment - dev/test/prod"
-        required: true
-        type: string
-        default: "dev"
 
 jobs:
   loadtests:
     name: Loadtests
-    environment: ${{ inputs.environment }}
     runs-on: ubuntu-22.04
     timeout-minutes: 1
     steps:
@@ -29,12 +23,7 @@ jobs:
         with:
           testFilePath: vehicles/test/load_tests/orbc_load_test_plan_vehicles_dev.jmx
           outputReportsFolder: results
-          args: "--loglevel INFO \
-                 -JBEARER_TOKEN=${{secrets.ORBC_ACCESS_TOKEN}} \
-                 -JFRONTEND_API_URL=${{ github.event.repository.name }}-${{ github.event.number }}-frontend.apps.silver.devops.gov.bc.ca \
-                 -JBACKEND_API_URL=${{ github.event.repository.name }}-${{ github.event.number }}-vehicles.apps.silver.devops.gov.bc.ca \ 
-                 -JRESULTS_DIR=results \
-                 --jmeterlogconf=log.conf"
+          args: ${{inputs.args}}
 
       - uses: actions/upload-artifact@v4.3.6
         with:
