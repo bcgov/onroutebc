@@ -104,13 +104,14 @@ jobs:
     uses: ./.github/workflows/loadtest.yml
     secrets: inherit
     with:
-      args: |
+      args: '\
         --loglevel INFO \
-        -JBEARER_TOKEN='${{secrets.ORBC_ACCESS_TOKEN}}' \
+        -JBEARER_TOKEN=${{secrets.ORBC_ACCESS_TOKEN}} \
         -JFRONTEND_API_URL=${{ github.event.repository.name }}-${{ github.event.number }}-frontend.apps.silver.devops.gov.bc.ca \
         -JBACKEND_API_URL=${{ github.event.repository.name }}-${{ github.event.number }}-vehicles.apps.silver.devops.gov.bc.ca \ 
         -JRESULTS_DIR=results \
-        --jmeterlogconf=log.conf
+        --jmeterlogconf=log.conf \
+        '
       environment: dev
 
   results:
