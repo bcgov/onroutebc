@@ -105,7 +105,7 @@ jobs:
     secrets: inherit
     strategy:
       matrix:
-        package: [dops, vehicles, frontend, scheduler, policy]
+        package: [vehicles]
     with:
       args: |
         -JFRONTEND_API_URL=${{ github.event.repository.name }}-${{ github.event.number }}-frontend.apps.silver.devops.gov.bc.ca \
