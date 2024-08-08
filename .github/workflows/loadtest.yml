@@ -27,12 +27,11 @@ jobs:
     timeout-minutes: 1
     steps:
       - uses: actions/checkout@v4
-      - run: ls 
-      - run: ls ${{inputs.package}}/test/load_tests
+
       - name: Run All JMeter Tests In tests Folder
         uses: rbhadti94/apache-jmeter-action@v0.5.0
         with:
-          testFilePath: ${{inputs.package}}/test/load_tests
+          testFilePath: ${{inputs.package}}/test/load_tests/orbc_load_test_plan_vehicles_dev.jmx
           outputReportsFolder: results
           args: |
             --loglevel INFO 
