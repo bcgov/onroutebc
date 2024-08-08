@@ -29,7 +29,9 @@ jobs:
         with:
           testFilePath: vehicles/test/load_tests/orbc_load_test_plan_vehicles_dev.jmx
           outputReportsFolder: results
-          args: ${{inputs.args}}
+          args: |
+            -JBEARER_TOKEN=${{secrets.ORBC_ACCESS_TOKEN}} \
+            ${{inputs.args}}
 
       - uses: actions/upload-artifact@v4.3.6
         with:
