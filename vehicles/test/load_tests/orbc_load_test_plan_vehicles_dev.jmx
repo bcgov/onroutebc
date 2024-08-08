@@ -94,7 +94,7 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="USERS" elementType="Argument">
             <stringProp name="Argument.name">USERS</stringProp>
-            <stringProp name="Argument.value">3,2,1</stringProp>
+            <stringProp name="Argument.value">200</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="BACKEND_API_URL" elementType="Argument">
@@ -621,7 +621,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">200</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${USERS}</stringProp>
         <stringProp name="ThreadGroup.ramp_time">${__P(rampup,300)}</stringProp>
         <longProp name="ThreadGroup.start_time">1365261073000</longProp>
         <longProp name="ThreadGroup.end_time">1365261073000</longProp>
@@ -748,7 +748,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">200</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${USERS}</stringProp>
         <stringProp name="ThreadGroup.ramp_time">${__P(rampup,300)}</stringProp>
         <longProp name="ThreadGroup.start_time">1365261073000</longProp>
         <longProp name="ThreadGroup.end_time">1365261073000</longProp>
@@ -960,7 +960,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">200</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${USERS}</stringProp>
         <stringProp name="ThreadGroup.ramp_time">${__P(rampup,300)}</stringProp>
         <longProp name="ThreadGroup.start_time">1365261073000</longProp>
         <longProp name="ThreadGroup.end_time">1365261073000</longProp>
@@ -1157,7 +1157,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">200</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${USERS}</stringProp>
         <stringProp name="ThreadGroup.ramp_time">${__P(rampup,300)}</stringProp>
         <longProp name="ThreadGroup.start_time">1365261073000</longProp>
         <longProp name="ThreadGroup.end_time">1365261073000</longProp>

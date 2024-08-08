@@ -22,14 +22,22 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 1
     steps:
-      - run: ls
-      - run: pwd
       - uses: actions/checkout@v4
-      - run: ls
 
       - name: Run All JMeter Tests In tests Folder
         uses: rbhadti94/apache-jmeter-action@v0.5.0
         with:
           testFilePath: vehicles/test/load_tests/orbc_load_test_plan_vehicles_dev.jmx
           outputReportsFolder: results
-          args: "--loglevel INFO -JBEARER_TOKEN=${{secrets.ORBC_ACCESS_TOKEN}} -JRESULTS_DIR=results --jmeterlogconf=log.conf"
+          args: "--loglevel INFO \
+                 -JBEARER_TOKEN=${{secrets.ORBC_ACCESS_TOKEN}} \
+                 -JFRONTEND_API_URL=${{ github.event.repository.name }}-${{ github.event.number }}-frontend.apps.silver.devops.gov.bc.ca \
+                 -JBACKEND_API_URL=${{ github.event.repository.name }}-${{ github.event.number }}-vehicles.apps.silver.devops.gov.bc.ca \ 
+                 -JRESULTS_DIR=results \
+                 --jmeterlogconf=log.conf"
+
+      - uses: actions/upload-artifact@v4.3.6
+        with:
+          name: jmeter-test-results
+          path: results/
+
