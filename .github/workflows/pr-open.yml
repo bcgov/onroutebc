@@ -108,9 +108,9 @@ jobs:
         package: [vehicles]
     with:
       args: |
-        -JFRONTEND_API_URL=${{ github.event.repository.name }}-${{ github.event.number }}-frontend.apps.silver.devops.gov.bc.ca \
-        -JBACKEND_API_URL=${{ github.event.repository.name }}-${{ github.event.number }}-${{matrix.package}}.apps.silver.devops.gov.bc.ca \ 
-        -JRESULTS_DIR=results \
+        -JFRONTEND_API_URL=${{ github.event.repository.name }}-${{ github.event.number }}-frontend.apps.silver.devops.gov.bc.ca
+        -JBACKEND_API_URL=${{ github.event.repository.name }}-${{ github.event.number }}-${{matrix.package}}.apps.silver.devops.gov.bc.ca 
+        -JRESULTS_DIR=results
         --jmeterlogconf=log.conf
       environment: dev
       package: ${{matrix.package}}

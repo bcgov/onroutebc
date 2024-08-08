@@ -34,8 +34,8 @@ jobs:
           testFilePath: ${{inputs.package}}/test/load_tests
           outputReportsFolder: results
           args: |
-            --loglevel INFO \
-            -JBEARER_TOKEN=${{secrets.ORBC_ACCESS_TOKEN}} \
+            --loglevel INFO 
+            -JBEARER_TOKEN=${{secrets.ORBC_ACCESS_TOKEN}}
             ${{inputs.args}}
 
       - uses: actions/upload-artifact@v4.3.6
