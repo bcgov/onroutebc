@@ -9,6 +9,7 @@ import { getDefaultCommodities, getMandatoryCommodities } from "../../../../../.
 import { PermitDetails } from "../../PermitDetails";
 import { getExpiryDate } from "../../../../../../helpers/permitState";
 import { PermitCommodity } from "../../../../../../types/PermitCommodity";
+import { PAST_START_DATE_STATUSES } from "../../../../../../../../common/components/form/subFormComponents/CustomDatePicker";
 import {
   getStartOfDate,
   now,
@@ -88,6 +89,7 @@ export const renderTestComponent = (
         }))}
         disableStartDate={false}
         permitType={permitType}
+        pastStartDateStatus={PAST_START_DATE_STATUSES.FAIL}
       />
     </TestFormWrapper>,
   );
