@@ -18,12 +18,13 @@ on:
 jobs:
   loadtests:
     name: Loadtests
+    environment: ${{ inputs.environment }}
     runs-on: ubuntu-22.04
     timeout-minutes: 1
     steps:
       - name: Run All JMeter Tests In tests Folder
         uses: rbhadti94/apache-jmeter-action@v0.5.0
         with:
-          testFilePath: vehicles/test/load_tests/orbc_load_test_plan_vehicles_dev.jmx
+          testFilePath: ./vehicles/test/load_tests/orbc_load_test_plan_vehicles_dev.jmx
           outputReportsFolder: results
           args: "--loglevel INFO -JBEARER_TOKEN=${{secrets.ORBC_ACCESS_TOKEN}} -JRESULTS_DIR=results --jmeterlogconf=log.conf"
