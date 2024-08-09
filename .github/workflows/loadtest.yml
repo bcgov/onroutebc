@@ -1,0 +1,48 @@
+---
+name: Loadtests
+
+on:
+  workflow_call:
+    inputs:
+      ### Required
+      args:
+        description: 'List of args to feed jmeter'
+        required: true
+        type: string
+      environment:
+        description: "Deployment environment - dev/test/prod"
+        required: true
+        type: string
+        default: "dev"
+      package:
+        description: 'Package (service) to test - dops/vehicles/frontend/scheduler/policy'
+        required: true
+        type: string
+
+jobs:
+  loadtests:
+    name: Loadtests
+    environment: ${{ inputs.environment }}
+    runs-on: ubuntu-22.04
+    timeout-minutes: 1
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: access_token
+        run: curl -d "client_id=on-route-bc-direct-1-5452&client_secret=${{secrets.ORBC_BEARER_TOKEN_SECRET}}&grant_type=client_credentials" -H "Content-Type: application/x-www-form-urlencoded" -X POST https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token | jq .access_token 
+
+      - name: Run All JMeter Tests In tests Folder
+        uses: rbhadti94/apache-jmeter-action@v0.5.0
+        with:
+          testFilePath: ${{inputs.package}}/test/load_tests/orbc_load_test_plan_vehicles_dev.jmx
+          outputReportsFolder: results
+          args: |
+            --loglevel INFO 
+            -JBEARER_TOKEN=${{access_token.outputs.stdout}}
+            ${{inputs.args}}
+
+      - uses: actions/upload-artifact@v4.3.6
+        with:
+          name: jmeter-test-results
+          path: results/
+

@@ -115,3 +115,7 @@ test-report.xml
 .vscode
 
 Chart.lock
+
+
+#Load Test Results
+*/test/load_tests/results/
