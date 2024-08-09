@@ -1,9 +1,7 @@
 import {
-  Body,
   Controller,
   Get,
   Param,
-  Post,
   Put,
   Query,
   Req,
@@ -29,6 +27,8 @@ import { UpsertSpecialAuthDto } from './dto/request/upsert-special-auth.dto';
 import { LcvQueryParamDto } from './dto/request/queryParam/lcv.query-params.dto';
 import { NoFeeQueryParamDto } from './dto/request/queryParam/no-fee.query-params.dto';
 import { NoFeeType } from 'src/common/enum/no-fee-type.enum';
+import { Roles } from 'src/common/decorator/roles.decorator';
+import { Role } from 'src/common/enum/roles.enum';
 
 @ApiBearerAuth()
 @ApiTags('Special Authorization')
@@ -56,6 +56,7 @@ export class SpecialAuthController {
     description:
       'Returns all special authorizations for a company in the database.',
   })
+  @Roles(Role.READ_SPECIAL_AUTH)
   @Get()
   async get(
     @Param() { companyId }: CompanyIdPathParamDto,
@@ -77,6 +78,7 @@ export class SpecialAuthController {
     description: 'LCV allowance updated successfully.',
     type: ReadSpecialAuthDto,
   })
+  @Roles(Role.WRITE_LCV_FLAG)
   @Put('/lcv')
   async updateLcv(
     @Req() request: Request,
@@ -107,6 +109,7 @@ export class SpecialAuthController {
     description: 'No fee type updated successfully.',
     type: ReadSpecialAuthDto,
   })
+  @Roles(Role.WRITE_NOFEE)
   @Put('/no-fee')
   async updateNoFee(
     @Req() request: Request,
