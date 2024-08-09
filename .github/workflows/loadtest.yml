@@ -39,7 +39,7 @@ jobs:
           outputReportsFolder: results
           args: |
             --loglevel INFO 
-            -JBEARER_TOKEN=${{access_token.outputs.stdout}}
+            -JBEARER_TOKEN=${{steps.access_token.outputs.stdout}}
             ${{inputs.args}}
 
       - uses: actions/upload-artifact@v4.3.6
