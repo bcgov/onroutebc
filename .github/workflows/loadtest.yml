@@ -29,7 +29,8 @@ jobs:
       - uses: actions/checkout@v4
 
       - id: access_token
-        run: curl -d "client_id=on-route-bc-direct-1-5452&client_secret=${{secrets.ORBC_BEARER_TOKEN_SECRET}}&grant_type=client_credentials" -H "Content-Type: application/x-www-form-urlencoded" -X POST https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token | jq .access_token 
+        run: |
+          curl -d "client_id=on-route-bc-direct-1-5452&client_secret=${{secrets.ORBC_BEARER_TOKEN_SECRET}}&grant_type=client_credentials" -H "Content-Type: application/x-www-form-urlencoded" -X POST https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token | jq .access_token 
 
       - name: Run All JMeter Tests In tests Folder
         uses: rbhadti94/apache-jmeter-action@v0.5.0
