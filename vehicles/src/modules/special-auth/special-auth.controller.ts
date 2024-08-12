@@ -85,8 +85,6 @@ export class SpecialAuthController {
     @Param() { companyId }: CompanyIdPathParamDto,
     @Query() lcvQueryParamDto: LcvQueryParamDto,
   ): Promise<ReadSpecialAuthDto> {
-
-    //assign user
     const currentUser = request.user as IUserJWT;
     const upsertSpecialAuthDto = Object.assign(new UpsertSpecialAuthDto(), {
       isLcvAllowed: lcvQueryParamDto.isLcvAllowed,
