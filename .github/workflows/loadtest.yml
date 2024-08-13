@@ -5,17 +5,23 @@ on:
   workflow_call:
     inputs:
       ### Required
-      args:
-        description: 'List of args to feed jmeter'
+      dops_api_url:
+        description: 'The url endpoint for the dops'
+        default: onroutebc-test-dops.apps.silver.devops.gov.bc.ca
         required: true
         type: string
-      environment:
-        description: "Deployment environment - dev/test/prod"
+      frontend_api_url:
+        description: 'The url endpoint for the frontend'
+        default: onroutebc-test-frontend.apps.silver.devops.gov.bc.ca
         required: true
         type: string
-        default: "dev"
-      package:
-        description: 'Package (service) to test - dops/vehicles/frontend/scheduler/policy'
+      vehciles_api_url:
+        description: 'The url endpoint for vehicles'
+        default: onroutebc-test-vehicles.apps.silver.devops.gov.bc.ca
+        required: true
+        type: string
+      bearer_token:
+        description: "The bearer token pertaining to the user running the tests"
         required: true
         type: string
 
@@ -28,19 +34,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - id: access_token
-        run: |
-          curl -d "client_id=on-route-bc-direct-1-5452&client_secret=${{secrets.ORBC_BEARER_TOKEN_SECRET}}&grant_type=client_credentials" -H "Content-Type: application/x-www-form-urlencoded" -X POST ${{vars.ORBC_BEARER_TOKEN_URL}} | jq -r .access_token
-
       - name: Run All JMeter Tests In tests Folder
         uses: rbhadti94/apache-jmeter-action@v0.5.0
         with:
-          testFilePath: ${{inputs.package}}/test/load_tests/orbc_load_test_plan_vehicles_dev.jmx
+          testFilePath: vehicles/test/load_tests/*
           outputReportsFolder: results
           args: |
             --loglevel INFO 
-            -JBEARER_TOKEN=${{steps.access_token.outputs.stdout}}
-            ${{inputs.args}}
+            --jmeterlogconf=log.conf
+            -JBEARER_TOKEN=${{inputs.bearer_token}}
+            -JDOPS_API_URL=${{inputs.dops_api_url}}
+            -JFRONTEND_API_URL=${{inputs.frontend_api_url}}
+            -JVEHICLES_API_URL=${{inputs.vehicles_api_url}}
+            -JRESULTS_DIR=results
 
       - uses: actions/upload-artifact@v4.3.6
         with:

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.4.1">
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.5">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
@@ -78,6 +78,31 @@
         <stringProp name="HTTPSampler.response_timeout">120000</stringProp>
       </ConfigTestElement>
       <hashTree/>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="FRONTEND_API_URL" elementType="Argument">
+            <stringProp name="Argument.name">FRONTEND_API_URL</stringProp>
+            <stringProp name="Argument.value">onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="VEHICLES_API_URL" elementType="Argument">
+            <stringProp name="Argument.name">VEHICLES_API_URL</stringProp>
+            <stringProp name="Argument.value">onroutebc-test-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="DOPS_API_URL" elementType="Argument">
+            <stringProp name="Argument.name">DOPS_API_URL</stringProp>
+            <stringProp name="Argument.value">onroutebc-test-dops.apps.silver.devops.gov.bc.ca</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="BEARER_TOKEN" elementType="Argument">
+            <stringProp name="Argument.name">BEARER_TOKEN</stringProp>
+            <stringProp name="Argument.value"></stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </Arguments>
+      <hashTree/>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="IDIR ppc create and download pdf - dops" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
@@ -98,7 +123,7 @@
           <collectionProp name="HeaderManager.headers">
             <elementProp name="" elementType="Header">
               <stringProp name="Header.name">Authorization</stringProp>
-              <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJxUWlFWDB2T2Z1SlBuWUw4MWo0Q2tDOHVPdEJ1aFZvM0xBd2ppczZWbHRzIn0.eyJleHAiOjE3MDg5NzMyNDUsImlhdCI6MTcwODk3Mjk0NSwiYXV0aF90aW1lIjoxNzA4OTcyOTQ1LCJqdGkiOiJjMGEyYzI5MC0zZGYzLTQxNDktYjY5Ny1kMzVlYzlmOWEyODIiLCJpc3MiOiJodHRwczovL2Rldi5sb2dpbnByb3h5Lmdvdi5iYy5jYS9hdXRoL3JlYWxtcy9zdGFuZGFyZCIsImF1ZCI6Im9uLXJvdXRlLWJjLWRpcmVjdC00NTk4Iiwic3ViIjoiZGQwZmFlZjRjNzg4NDUwMGFhNGM2ZGM1Njg2OWY5YTVAaWRpciIsInR5cCI6IkJlYXJlciIsImF6cCI6Im9uLXJvdXRlLWJjLWRpcmVjdC00NTk4Iiwic2Vzc2lvbl9zdGF0ZSI6ImFhZGQ2ZjIyLWIyZjgtNDZkNy1hZmM0LWNjNGM2NzQ5YzYyZSIsInNjb3BlIjoib3BlbmlkIGlkaXIgYmNlaWRib3RoIGVtYWlsIHByb2ZpbGUiLCJzaWQiOiJhYWRkNmYyMi1iMmY4LTQ2ZDctYWZjNC1jYzRjNjc0OWM2MmUiLCJpZGlyX3VzZXJfZ3VpZCI6IkREMEZBRUY0Qzc4ODQ1MDBBQTRDNkRDNTY4NjlGOUE1IiwiaWRlbnRpdHlfcHJvdmlkZXIiOiJpZGlyIiwiaWRpcl91c2VybmFtZSI6IkJSV0FORyIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibmFtZSI6IldhbmcsIEJydWNlIE1PVEk6RVgiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJkZDBmYWVmNGM3ODg0NTAwYWE0YzZkYzU2ODY5ZjlhNUBpZGlyIiwiZGlzcGxheV9uYW1lIjoiV2FuZywgQnJ1Y2UgTU9USTpFWCIsImdpdmVuX25hbWUiOiJCcnVjZSIsImZhbWlseV9uYW1lIjoiV2FuZyIsImVtYWlsIjoiYnJ1Y2Uud2FuZ0Bnb3YuYmMuY2EifQ.KJarwXbHeJV6ezeSfqyTKgJopyTfxnrwELQdFEuacxYyyMP7zc2Z5H72X0JHTMAztE5u3daCypufqhG-MFFqY5p2m9uNS7IaDiCF2wHLYUhnbdOSJMibQvkpti-vwDsJ4ObQ4hgTu105erYK35ha13zW8-joFsyO7bn2DUNq8U-nBW-lCfXcPKRWVnTt-kfannL6n9xLD6FnpyPCcivtjNyDBaEiQyB86V3rXimBGcuScj-IvHXqogL0U5m6yfkWh2wPIrL0-pIkU6ZAePdLEr5RqBj2VGOZLLEQmaw7-WkpfrMEQvf7Xp-Ev1K6i8y7_-vivr_I2vttrmZQJDYM6Q</stringProp>
+              <stringProp name="Header.value">Bearer ${BEARER_TOKEN}</stringProp>
             </elementProp>
             <elementProp name="" elementType="Header">
               <stringProp name="Header.name">Accept</stringProp>
@@ -119,7 +144,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-1222-vehicles.apps.silver.devops.gov.bc.ca/users/roles?companyId=74</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/users/roles?companyId=74</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -134,7 +159,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -154,7 +179,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Authorization</stringProp>
-                <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJXNk5hakRyZ2VUR2tYR0dtb28tRWJFSkJXQTM4OGEyYjdRN0p4eThSRjdzIn0.eyJleHAiOjE2OTg3NzQ5NDEsImlhdCI6MTY5ODc3NDY0MSwiYXV0aF90aW1lIjoxNjk4NzczOTE0LCJqdGkiOiIwYmJhZDkwYS02NTc2LTRmZDYtYmM2ZS1mOTgzMjQ1NTkwMTAiLCJpc3MiOiJodHRwczovL3Rlc3QubG9naW5wcm94eS5nb3YuYmMuY2EvYXV0aC9yZWFsbXMvc3RhbmRhcmQiLCJhdWQiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInN1YiI6ImRkMGZhZWY0Yzc4ODQ1MDBhYTRjNmRjNTY4NjlmOWE1QGlkaXIiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInNlc3Npb25fc3RhdGUiOiJhZjhlZTdmMC0yMmI0LTQ0MDMtOTY2Zi1kMmRkYjQ1MzQzMjkiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIGJjZWlkYm90aCBpZGlyIiwic2lkIjoiYWY4ZWU3ZjAtMjJiNC00NDAzLTk2NmYtZDJkZGI0NTM0MzI5IiwiaWRpcl91c2VyX2d1aWQiOiJERDBGQUVGNEM3ODg0NTAwQUE0QzZEQzU2ODY5RjlBNSIsImlkZW50aXR5X3Byb3ZpZGVyIjoiaWRpciIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaWRpcl91c2VybmFtZSI6IkJSV0FORyIsIm5hbWUiOiJXYW5nLCBCcnVjZSBNT1RJOkVYIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiZGQwZmFlZjRjNzg4NDUwMGFhNGM2ZGM1Njg2OWY5YTVAaWRpciIsImRpc3BsYXlfbmFtZSI6IldhbmcsIEJydWNlIE1PVEk6RVgiLCJnaXZlbl9uYW1lIjoiQnJ1Y2UiLCJmYW1pbHlfbmFtZSI6IldhbmciLCJlbWFpbCI6ImJydWNlLndhbmdAZ292LmJjLmNhIn0.C5M2q-h4jgenVeuZsmPa-TTHkDTYA-Ik0khuX_-JPnMGbqbzXh9ZdPkYowjBm7YoBVbxpfwodi0NbFdS3krU6bq5dF5zFWK_O2BE2AdIvnLRK-Q7h-xaIbtx9M9V4Vs6QTD4U7IVesCF34A46OGqmqvMpMno0lX2LUM5RNKk5NMafQLax-Wo6x-03itHKzwN0BHobhr-Vux0u22J2gENofdvdqpq64P-t1-wWMYIqqLMGN0qLQlhv7YLKGMcwrzrqhLwJnEa23jzKP4oPFqjMn7Do0ZvBjupNpmDSD0FfMmXv_y9LqqWFSDmL5RwiEc6L7i70nYPYRRHaOZP7_sCPA</stringProp>
+                <stringProp name="Header.value">Bearer ${BEARER_TOKEN}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">User-Agent</stringProp>
@@ -166,7 +191,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -182,7 +207,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -203,7 +228,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Authorization</stringProp>
-                <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJXNk5hakRyZ2VUR2tYR0dtb28tRWJFSkJXQTM4OGEyYjdRN0p4eThSRjdzIn0.eyJleHAiOjE2OTg3NzQ5NDEsImlhdCI6MTY5ODc3NDY0MSwiYXV0aF90aW1lIjoxNjk4NzczOTE0LCJqdGkiOiIwYmJhZDkwYS02NTc2LTRmZDYtYmM2ZS1mOTgzMjQ1NTkwMTAiLCJpc3MiOiJodHRwczovL3Rlc3QubG9naW5wcm94eS5nb3YuYmMuY2EvYXV0aC9yZWFsbXMvc3RhbmRhcmQiLCJhdWQiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInN1YiI6ImRkMGZhZWY0Yzc4ODQ1MDBhYTRjNmRjNTY4NjlmOWE1QGlkaXIiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInNlc3Npb25fc3RhdGUiOiJhZjhlZTdmMC0yMmI0LTQ0MDMtOTY2Zi1kMmRkYjQ1MzQzMjkiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIGJjZWlkYm90aCBpZGlyIiwic2lkIjoiYWY4ZWU3ZjAtMjJiNC00NDAzLTk2NmYtZDJkZGI0NTM0MzI5IiwiaWRpcl91c2VyX2d1aWQiOiJERDBGQUVGNEM3ODg0NTAwQUE0QzZEQzU2ODY5RjlBNSIsImlkZW50aXR5X3Byb3ZpZGVyIjoiaWRpciIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaWRpcl91c2VybmFtZSI6IkJSV0FORyIsIm5hbWUiOiJXYW5nLCBCcnVjZSBNT1RJOkVYIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiZGQwZmFlZjRjNzg4NDUwMGFhNGM2ZGM1Njg2OWY5YTVAaWRpciIsImRpc3BsYXlfbmFtZSI6IldhbmcsIEJydWNlIE1PVEk6RVgiLCJnaXZlbl9uYW1lIjoiQnJ1Y2UiLCJmYW1pbHlfbmFtZSI6IldhbmciLCJlbWFpbCI6ImJydWNlLndhbmdAZ292LmJjLmNhIn0.C5M2q-h4jgenVeuZsmPa-TTHkDTYA-Ik0khuX_-JPnMGbqbzXh9ZdPkYowjBm7YoBVbxpfwodi0NbFdS3krU6bq5dF5zFWK_O2BE2AdIvnLRK-Q7h-xaIbtx9M9V4Vs6QTD4U7IVesCF34A46OGqmqvMpMno0lX2LUM5RNKk5NMafQLax-Wo6x-03itHKzwN0BHobhr-Vux0u22J2gENofdvdqpq64P-t1-wWMYIqqLMGN0qLQlhv7YLKGMcwrzrqhLwJnEa23jzKP4oPFqjMn7Do0ZvBjupNpmDSD0FfMmXv_y9LqqWFSDmL5RwiEc6L7i70nYPYRRHaOZP7_sCPA</stringProp>
+                <stringProp name="Header.value">Bearer ${BEARER_TOKEN}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept</stringProp>
@@ -228,7 +253,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-1222-vehicles.apps.silver.devops.gov.bc.ca/permits?searchColumn=permitNumber&amp;searchString=1&amp;page=1&amp;take=10</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/permits?searchColumn=permitNumber&amp;searchString=1&amp;page=1&amp;take=10</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -243,7 +268,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -263,7 +288,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Authorization</stringProp>
-                <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJXNk5hakRyZ2VUR2tYR0dtb28tRWJFSkJXQTM4OGEyYjdRN0p4eThSRjdzIn0.eyJleHAiOjE2OTg3NzQ5NDEsImlhdCI6MTY5ODc3NDY0MSwiYXV0aF90aW1lIjoxNjk4NzczOTE0LCJqdGkiOiIwYmJhZDkwYS02NTc2LTRmZDYtYmM2ZS1mOTgzMjQ1NTkwMTAiLCJpc3MiOiJodHRwczovL3Rlc3QubG9naW5wcm94eS5nb3YuYmMuY2EvYXV0aC9yZWFsbXMvc3RhbmRhcmQiLCJhdWQiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInN1YiI6ImRkMGZhZWY0Yzc4ODQ1MDBhYTRjNmRjNTY4NjlmOWE1QGlkaXIiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInNlc3Npb25fc3RhdGUiOiJhZjhlZTdmMC0yMmI0LTQ0MDMtOTY2Zi1kMmRkYjQ1MzQzMjkiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIGJjZWlkYm90aCBpZGlyIiwic2lkIjoiYWY4ZWU3ZjAtMjJiNC00NDAzLTk2NmYtZDJkZGI0NTM0MzI5IiwiaWRpcl91c2VyX2d1aWQiOiJERDBGQUVGNEM3ODg0NTAwQUE0QzZEQzU2ODY5RjlBNSIsImlkZW50aXR5X3Byb3ZpZGVyIjoiaWRpciIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaWRpcl91c2VybmFtZSI6IkJSV0FORyIsIm5hbWUiOiJXYW5nLCBCcnVjZSBNT1RJOkVYIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiZGQwZmFlZjRjNzg4NDUwMGFhNGM2ZGM1Njg2OWY5YTVAaWRpciIsImRpc3BsYXlfbmFtZSI6IldhbmcsIEJydWNlIE1PVEk6RVgiLCJnaXZlbl9uYW1lIjoiQnJ1Y2UiLCJmYW1pbHlfbmFtZSI6IldhbmciLCJlbWFpbCI6ImJydWNlLndhbmdAZ292LmJjLmNhIn0.C5M2q-h4jgenVeuZsmPa-TTHkDTYA-Ik0khuX_-JPnMGbqbzXh9ZdPkYowjBm7YoBVbxpfwodi0NbFdS3krU6bq5dF5zFWK_O2BE2AdIvnLRK-Q7h-xaIbtx9M9V4Vs6QTD4U7IVesCF34A46OGqmqvMpMno0lX2LUM5RNKk5NMafQLax-Wo6x-03itHKzwN0BHobhr-Vux0u22J2gENofdvdqpq64P-t1-wWMYIqqLMGN0qLQlhv7YLKGMcwrzrqhLwJnEa23jzKP4oPFqjMn7Do0ZvBjupNpmDSD0FfMmXv_y9LqqWFSDmL5RwiEc6L7i70nYPYRRHaOZP7_sCPA</stringProp>
+                <stringProp name="Header.value">Bearer ${BEARER_TOKEN}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">User-Agent</stringProp>
@@ -275,7 +300,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -291,7 +316,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -312,7 +337,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Authorization</stringProp>
-                <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJXNk5hakRyZ2VUR2tYR0dtb28tRWJFSkJXQTM4OGEyYjdRN0p4eThSRjdzIn0.eyJleHAiOjE2OTg3NzQ5NDEsImlhdCI6MTY5ODc3NDY0MSwiYXV0aF90aW1lIjoxNjk4NzczOTE0LCJqdGkiOiIwYmJhZDkwYS02NTc2LTRmZDYtYmM2ZS1mOTgzMjQ1NTkwMTAiLCJpc3MiOiJodHRwczovL3Rlc3QubG9naW5wcm94eS5nb3YuYmMuY2EvYXV0aC9yZWFsbXMvc3RhbmRhcmQiLCJhdWQiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInN1YiI6ImRkMGZhZWY0Yzc4ODQ1MDBhYTRjNmRjNTY4NjlmOWE1QGlkaXIiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInNlc3Npb25fc3RhdGUiOiJhZjhlZTdmMC0yMmI0LTQ0MDMtOTY2Zi1kMmRkYjQ1MzQzMjkiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIGJjZWlkYm90aCBpZGlyIiwic2lkIjoiYWY4ZWU3ZjAtMjJiNC00NDAzLTk2NmYtZDJkZGI0NTM0MzI5IiwiaWRpcl91c2VyX2d1aWQiOiJERDBGQUVGNEM3ODg0NTAwQUE0QzZEQzU2ODY5RjlBNSIsImlkZW50aXR5X3Byb3ZpZGVyIjoiaWRpciIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaWRpcl91c2VybmFtZSI6IkJSV0FORyIsIm5hbWUiOiJXYW5nLCBCcnVjZSBNT1RJOkVYIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiZGQwZmFlZjRjNzg4NDUwMGFhNGM2ZGM1Njg2OWY5YTVAaWRpciIsImRpc3BsYXlfbmFtZSI6IldhbmcsIEJydWNlIE1PVEk6RVgiLCJnaXZlbl9uYW1lIjoiQnJ1Y2UiLCJmYW1pbHlfbmFtZSI6IldhbmciLCJlbWFpbCI6ImJydWNlLndhbmdAZ292LmJjLmNhIn0.C5M2q-h4jgenVeuZsmPa-TTHkDTYA-Ik0khuX_-JPnMGbqbzXh9ZdPkYowjBm7YoBVbxpfwodi0NbFdS3krU6bq5dF5zFWK_O2BE2AdIvnLRK-Q7h-xaIbtx9M9V4Vs6QTD4U7IVesCF34A46OGqmqvMpMno0lX2LUM5RNKk5NMafQLax-Wo6x-03itHKzwN0BHobhr-Vux0u22J2gENofdvdqpq64P-t1-wWMYIqqLMGN0qLQlhv7YLKGMcwrzrqhLwJnEa23jzKP4oPFqjMn7Do0ZvBjupNpmDSD0FfMmXv_y9LqqWFSDmL5RwiEc6L7i70nYPYRRHaOZP7_sCPA</stringProp>
+                <stringProp name="Header.value">Bearer ${BEARER_TOKEN}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept</stringProp>
@@ -414,7 +439,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-1222-dops.apps.silver.devops.gov.bc.ca/dms/1?download=proxy&amp;companyId=74</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{DOPS_API_URL}}/dms/1?download=proxy&amp;companyId=74</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -429,7 +454,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -449,7 +474,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Authorization</stringProp>
-                <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJXNk5hakRyZ2VUR2tYR0dtb28tRWJFSkJXQTM4OGEyYjdRN0p4eThSRjdzIn0.eyJleHAiOjE2OTg3NzQ5NDEsImlhdCI6MTY5ODc3NDY0MSwiYXV0aF90aW1lIjoxNjk4NzczOTE0LCJqdGkiOiIwYmJhZDkwYS02NTc2LTRmZDYtYmM2ZS1mOTgzMjQ1NTkwMTAiLCJpc3MiOiJodHRwczovL3Rlc3QubG9naW5wcm94eS5nb3YuYmMuY2EvYXV0aC9yZWFsbXMvc3RhbmRhcmQiLCJhdWQiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInN1YiI6ImRkMGZhZWY0Yzc4ODQ1MDBhYTRjNmRjNTY4NjlmOWE1QGlkaXIiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInNlc3Npb25fc3RhdGUiOiJhZjhlZTdmMC0yMmI0LTQ0MDMtOTY2Zi1kMmRkYjQ1MzQzMjkiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIGJjZWlkYm90aCBpZGlyIiwic2lkIjoiYWY4ZWU3ZjAtMjJiNC00NDAzLTk2NmYtZDJkZGI0NTM0MzI5IiwiaWRpcl91c2VyX2d1aWQiOiJERDBGQUVGNEM3ODg0NTAwQUE0QzZEQzU2ODY5RjlBNSIsImlkZW50aXR5X3Byb3ZpZGVyIjoiaWRpciIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaWRpcl91c2VybmFtZSI6IkJSV0FORyIsIm5hbWUiOiJXYW5nLCBCcnVjZSBNT1RJOkVYIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiZGQwZmFlZjRjNzg4NDUwMGFhNGM2ZGM1Njg2OWY5YTVAaWRpciIsImRpc3BsYXlfbmFtZSI6IldhbmcsIEJydWNlIE1PVEk6RVgiLCJnaXZlbl9uYW1lIjoiQnJ1Y2UiLCJmYW1pbHlfbmFtZSI6IldhbmciLCJlbWFpbCI6ImJydWNlLndhbmdAZ292LmJjLmNhIn0.C5M2q-h4jgenVeuZsmPa-TTHkDTYA-Ik0khuX_-JPnMGbqbzXh9ZdPkYowjBm7YoBVbxpfwodi0NbFdS3krU6bq5dF5zFWK_O2BE2AdIvnLRK-Q7h-xaIbtx9M9V4Vs6QTD4U7IVesCF34A46OGqmqvMpMno0lX2LUM5RNKk5NMafQLax-Wo6x-03itHKzwN0BHobhr-Vux0u22J2gENofdvdqpq64P-t1-wWMYIqqLMGN0qLQlhv7YLKGMcwrzrqhLwJnEa23jzKP4oPFqjMn7Do0ZvBjupNpmDSD0FfMmXv_y9LqqWFSDmL5RwiEc6L7i70nYPYRRHaOZP7_sCPA</stringProp>
+                <stringProp name="Header.value">Bearer ${BEARER_TOKEN}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">User-Agent</stringProp>
@@ -461,7 +486,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -477,7 +502,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -498,7 +523,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Authorization</stringProp>
-                <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJxUWlFWDB2T2Z1SlBuWUw4MWo0Q2tDOHVPdEJ1aFZvM0xBd2ppczZWbHRzIn0.eyJleHAiOjE3MDExOTM4MzksImlhdCI6MTcwMTE5MzUzOSwiYXV0aF90aW1lIjoxNzAxMTkzNTM5LCJqdGkiOiI4NDY2MzQxNi04MTJmLTQ0NWEtYjdhNi1kNmUwMWIzZGUwZjIiLCJpc3MiOiJodHRwczovL2Rldi5sb2dpbnByb3h5Lmdvdi5iYy5jYS9hdXRoL3JlYWxtcy9zdGFuZGFyZCIsImF1ZCI6Im9uLXJvdXRlLWJjLWRpcmVjdC00NTk4Iiwic3ViIjoiZGQwZmFlZjRjNzg4NDUwMGFhNGM2ZGM1Njg2OWY5YTVAaWRpciIsInR5cCI6IkJlYXJlciIsImF6cCI6Im9uLXJvdXRlLWJjLWRpcmVjdC00NTk4Iiwic2Vzc2lvbl9zdGF0ZSI6ImU4MDE3ZTYzLTE2N2UtNGVkYy04NTIyLWQ4NGYwOGQxZjAwMyIsInNjb3BlIjoib3BlbmlkIGlkaXIgYmNlaWRib3RoIGVtYWlsIHByb2ZpbGUiLCJzaWQiOiJlODAxN2U2My0xNjdlLTRlZGMtODUyMi1kODRmMDhkMWYwMDMiLCJpZGlyX3VzZXJfZ3VpZCI6IkREMEZBRUY0Qzc4ODQ1MDBBQTRDNkRDNTY4NjlGOUE1IiwiaWRlbnRpdHlfcHJvdmlkZXIiOiJpZGlyIiwiaWRpcl91c2VybmFtZSI6IkJSV0FORyIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibmFtZSI6IldhbmcsIEJydWNlIE1PVEk6RVgiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJkZDBmYWVmNGM3ODg0NTAwYWE0YzZkYzU2ODY5ZjlhNUBpZGlyIiwiZ2l2ZW5fbmFtZSI6IkJydWNlIiwiZGlzcGxheV9uYW1lIjoiV2FuZywgQnJ1Y2UgTU9USTpFWCIsImZhbWlseV9uYW1lIjoiV2FuZyIsImVtYWlsIjoiYnJ1Y2Uud2FuZ0Bnb3YuYmMuY2EifQ.DENcm1Xt3T4ksMCL9T2K786p4jKGXU1g6PWx0qp36rfqeseOesIWHYJ_huXj5vc-mZ_i1MVJuyAklSxhMnnccyaqcbf0gwmqUmilqMfz7wbh6I8wtP2kHgtEFGz12W7G2h1ajmKbFyVgELs5tkH4eSt7hdHzv-gi0YTLm1FQdm0gQknCzFE8gix6dcHEH_JOx2QRzTR2rnYD9HdSC1V37MXI-iEWvtR1wpffeC6pzXyLZWAf1S2B1cwxQOc_peHOTcBc-qNlkc4ia5l__SrEPv17sbaesC9VVS5PVjbAB7BGzOW12ETddZ1jfUDNzpP9-UrEWzl_BCDbV1JVYkBtRQ</stringProp>
+                <stringProp name="Header.value">Bearer ${BEARER_TOKEN}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept</stringProp>
@@ -597,7 +622,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-1222-dops.apps.silver.devops.gov.bc.ca/dgen/report/render</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{DOPS_API_URL}}/dgen/report/render</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -700,7 +725,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-1222-dops.apps.silver.devops.gov.bc.ca/dgen/template/render</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{DOPS_API_URL}}/dgen/template/render</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>

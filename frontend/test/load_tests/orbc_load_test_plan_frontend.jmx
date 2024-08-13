@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.4.1">
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.5">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
@@ -78,6 +78,26 @@
         <stringProp name="HTTPSampler.response_timeout">120000</stringProp>
       </ConfigTestElement>
       <hashTree/>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="FRONTEND_API_URL" elementType="Argument">
+            <stringProp name="Argument.name">FRONTEND_API_URL</stringProp>
+            <stringProp name="Argument.value">onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="VEHICLES_API_URL" elementType="Argument">
+            <stringProp name="Argument.name">VEHICLES_API_URL</stringProp>
+            <stringProp name="Argument.value">onroutebc-test-vehicles.apps.silver.devops.gov.bc.ca/</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="DOPS_API_URL" elementType="Argument">
+            <stringProp name="Argument.name">DOPS_API_URL</stringProp>
+            <stringProp name="Argument.value">onroutebc-test-dops.apps.silver.devops.gov.bc.ca/</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </Arguments>
+      <hashTree/>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="IDIR ppc login" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
@@ -98,7 +118,7 @@
           <stringProp name="ConstantTimer.delay">${__P(Delay,10000)}</stringProp>
         </ConstantTimer>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${FRONTEND_API_URL}" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -113,7 +133,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+          <stringProp name="HTTPSampler.path">https://${FRONTEND_API_URL}</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -128,7 +148,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -202,7 +222,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://test.loginproxy.gov.bc.ca/auth/realms/standard/.well-known/openid-configuration" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{KEYCLOAK_ISSUER_URL}}/.well-known/openid-configuration" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -260,7 +280,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -276,7 +296,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -290,7 +310,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/auth?client_id=on-route-bc-direct-4598&amp;redirect_uri=https%3A%2F%2Fonroutebc-test-frontend.apps.silver.devops.gov.bc.ca%2F&amp;response_type=code&amp;scope=openid&amp;state=7be0f498ddfa45e28ee8f2416475ba42&amp;code_challenge=B4JszPcS0HOW7ECTTUURC1mp6z8at2b6K0lD1uK_11A&amp;code_challenge_method=S256&amp;response_mode=query&amp;kc_idp_hint=bceidboth" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/auth?client_id=on-route-bc-direct-4598&amp;redirect_uri=https%3A%2F%2F${{FRONTEND_API_URL}}%2F&amp;response_type=code&amp;scope=openid&amp;state=7be0f498ddfa45e28ee8f2416475ba42&amp;code_challenge=B4JszPcS0HOW7ECTTUURC1mp6z8at2b6K0lD1uK_11A&amp;code_challenge_method=S256&amp;response_mode=query&amp;kc_idp_hint=bceidboth" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -305,7 +325,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/auth?client_id=on-route-bc-direct-4598&amp;redirect_uri=https%3A%2F%2Fonroutebc-test-frontend.apps.silver.devops.gov.bc.ca%2F&amp;response_type=code&amp;scope=openid&amp;state=7be0f498ddfa45e28ee8f2416475ba42&amp;code_challenge=B4JszPcS0HOW7ECTTUURC1mp6z8at2b6K0lD1uK_11A&amp;code_challenge_method=S256&amp;response_mode=query&amp;kc_idp_hint=bceidboth</stringProp>
+          <stringProp name="HTTPSampler.path">https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/auth?client_id=on-route-bc-direct-4598&amp;redirect_uri=https%3A%2F%2F${{FRONTEND_API_URL}}%2F&amp;response_type=code&amp;scope=openid&amp;state=7be0f498ddfa45e28ee8f2416475ba42&amp;code_challenge=B4JszPcS0HOW7ECTTUURC1mp6z8at2b6K0lD1uK_11A&amp;code_challenge_method=S256&amp;response_mode=query&amp;kc_idp_hint=bceidboth</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -368,7 +388,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -1362,7 +1382,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/?state=7be0f498ddfa45e28ee8f2416475ba42&amp;session_state=0e56ff7b-e277-400f-84f5-25801c43c829&amp;code=e1db6532-ce36-4aa5-845c-26c6d9f6e19f.0e56ff7b-e277-400f-84f5-25801c43c829.f462b30d-0893-4a2d-8169-3461d82c36eb" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{FRONTEND_API_URL}}/?state=7be0f498ddfa45e28ee8f2416475ba42&amp;session_state=0e56ff7b-e277-400f-84f5-25801c43c829&amp;code=e1db6532-ce36-4aa5-845c-26c6d9f6e19f.0e56ff7b-e277-400f-84f5-25801c43c829.f462b30d-0893-4a2d-8169-3461d82c36eb" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -1377,7 +1397,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/?state=7be0f498ddfa45e28ee8f2416475ba42&amp;session_state=0e56ff7b-e277-400f-84f5-25801c43c829&amp;code=e1db6532-ce36-4aa5-845c-26c6d9f6e19f.0e56ff7b-e277-400f-84f5-25801c43c829.f462b30d-0893-4a2d-8169-3461d82c36eb</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{FRONTEND_API_URL}}/?state=7be0f498ddfa45e28ee8f2416475ba42&amp;session_state=0e56ff7b-e277-400f-84f5-25801c43c829&amp;code=e1db6532-ce36-4aa5-845c-26c6d9f6e19f.0e56ff7b-e277-400f-84f5-25801c43c829.f462b30d-0893-4a2d-8169-3461d82c36eb</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1392,7 +1412,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -1475,7 +1495,7 @@
           <stringProp name="ConstantTimer.delay">${__P(Delay,10000)}</stringProp>
         </ConstantTimer>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{FRONTEND_API_URL}}/" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -1490,7 +1510,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{FRONTEND_API_URL}}/</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1505,7 +1525,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -1637,7 +1657,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -1653,7 +1673,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -1667,7 +1687,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/auth?client_id=on-route-bc-direct-4598&amp;redirect_uri=https%3A%2F%2Fonroutebc-test-frontend.apps.silver.devops.gov.bc.ca%2F&amp;response_type=code&amp;scope=openid&amp;state=7be0f498ddfa45e28ee8f2416475ba42&amp;code_challenge=B4JszPcS0HOW7ECTTUURC1mp6z8at2b6K0lD1uK_11A&amp;code_challenge_method=S256&amp;response_mode=query&amp;kc_idp_hint=bceidboth" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/auth?client_id=on-route-bc-direct-4598&amp;redirect_uri=https%3A%2F%2F${{FRONTEND_API_URL}}%2F&amp;response_type=code&amp;scope=openid&amp;state=7be0f498ddfa45e28ee8f2416475ba42&amp;code_challenge=B4JszPcS0HOW7ECTTUURC1mp6z8at2b6K0lD1uK_11A&amp;code_challenge_method=S256&amp;response_mode=query&amp;kc_idp_hint=bceidboth" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -1682,7 +1702,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/auth?client_id=on-route-bc-direct-4598&amp;redirect_uri=https%3A%2F%2Fonroutebc-test-frontend.apps.silver.devops.gov.bc.ca%2F&amp;response_type=code&amp;scope=openid&amp;state=7be0f498ddfa45e28ee8f2416475ba42&amp;code_challenge=B4JszPcS0HOW7ECTTUURC1mp6z8at2b6K0lD1uK_11A&amp;code_challenge_method=S256&amp;response_mode=query&amp;kc_idp_hint=bceidboth</stringProp>
+          <stringProp name="HTTPSampler.path">https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/auth?client_id=on-route-bc-direct-4598&amp;redirect_uri=https%3A%2F%2F${{FRONTEND_API_URL}}%2F&amp;response_type=code&amp;scope=openid&amp;state=7be0f498ddfa45e28ee8f2416475ba42&amp;code_challenge=B4JszPcS0HOW7ECTTUURC1mp6z8at2b6K0lD1uK_11A&amp;code_challenge_method=S256&amp;response_mode=query&amp;kc_idp_hint=bceidboth</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1745,7 +1765,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -2687,7 +2707,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -2703,7 +2723,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -2738,7 +2758,7 @@
           <stringProp name="ConstantTimer.delay">${__P(Delay,10000)}</stringProp>
         </ConstantTimer>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{FRONTEND_API_URL}}/" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -2753,7 +2773,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{FRONTEND_API_URL}}/</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -2768,7 +2788,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -2900,7 +2920,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -2916,7 +2936,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -2930,7 +2950,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/auth?client_id=on-route-bc-direct-4598&amp;redirect_uri=https%3A%2F%2Fonroutebc-test-frontend.apps.silver.devops.gov.bc.ca%2F&amp;response_type=code&amp;scope=openid&amp;state=7be0f498ddfa45e28ee8f2416475ba42&amp;code_challenge=B4JszPcS0HOW7ECTTUURC1mp6z8at2b6K0lD1uK_11A&amp;code_challenge_method=S256&amp;response_mode=query&amp;kc_idp_hint=bceidboth" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/auth?client_id=on-route-bc-direct-4598&amp;redirect_uri=https%3A%2F%2F${{FRONTEND_API_URL}}%2F&amp;response_type=code&amp;scope=openid&amp;state=7be0f498ddfa45e28ee8f2416475ba42&amp;code_challenge=B4JszPcS0HOW7ECTTUURC1mp6z8at2b6K0lD1uK_11A&amp;code_challenge_method=S256&amp;response_mode=query&amp;kc_idp_hint=bceidboth" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -2945,7 +2965,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/auth?client_id=on-route-bc-direct-4598&amp;redirect_uri=https%3A%2F%2Fonroutebc-test-frontend.apps.silver.devops.gov.bc.ca%2F&amp;response_type=code&amp;scope=openid&amp;state=7be0f498ddfa45e28ee8f2416475ba42&amp;code_challenge=B4JszPcS0HOW7ECTTUURC1mp6z8at2b6K0lD1uK_11A&amp;code_challenge_method=S256&amp;response_mode=query&amp;kc_idp_hint=bceidboth</stringProp>
+          <stringProp name="HTTPSampler.path">https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/auth?client_id=on-route-bc-direct-4598&amp;redirect_uri=https%3A%2F%2F${{FRONTEND_API_URL}}%2F&amp;response_type=code&amp;scope=openid&amp;state=7be0f498ddfa45e28ee8f2416475ba42&amp;code_challenge=B4JszPcS0HOW7ECTTUURC1mp6z8at2b6K0lD1uK_11A&amp;code_challenge_method=S256&amp;response_mode=query&amp;kc_idp_hint=bceidboth</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -3008,7 +3028,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -3999,7 +4019,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/?state=7be0f498ddfa45e28ee8f2416475ba42&amp;session_state=0e56ff7b-e277-400f-84f5-25801c43c829&amp;code=e1db6532-ce36-4aa5-845c-26c6d9f6e19f.0e56ff7b-e277-400f-84f5-25801c43c829.f462b30d-0893-4a2d-8169-3461d82c36eb" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{FRONTEND_API_URL}}/?state=7be0f498ddfa45e28ee8f2416475ba42&amp;session_state=0e56ff7b-e277-400f-84f5-25801c43c829&amp;code=e1db6532-ce36-4aa5-845c-26c6d9f6e19f.0e56ff7b-e277-400f-84f5-25801c43c829.f462b30d-0893-4a2d-8169-3461d82c36eb" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -4013,7 +4033,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/?state=7be0f498ddfa45e28ee8f2416475ba42&amp;session_state=0e56ff7b-e277-400f-84f5-25801c43c829&amp;code=e1db6532-ce36-4aa5-845c-26c6d9f6e19f.0e56ff7b-e277-400f-84f5-25801c43c829.f462b30d-0893-4a2d-8169-3461d82c36eb</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{FRONTEND_API_URL}}/?state=7be0f498ddfa45e28ee8f2416475ba42&amp;session_state=0e56ff7b-e277-400f-84f5-25801c43c829&amp;code=e1db6532-ce36-4aa5-845c-26c6d9f6e19f.0e56ff7b-e277-400f-84f5-25801c43c829.f462b30d-0893-4a2d-8169-3461d82c36eb</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -4028,7 +4048,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -4147,7 +4167,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -4163,7 +4183,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -4177,7 +4197,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/user-context" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{VEHICLES_API_URL}}/users/user-context" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -4191,7 +4211,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/user-context</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/users/user-context</stringProp>
           <stringProp name="HTTPSampler.method">OPTIONS</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -4206,7 +4226,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -4226,7 +4246,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">User-Agent</stringProp>
@@ -4246,7 +4266,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -4260,7 +4280,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/user-context" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{VEHICLES_API_URL}}/users/user-context" enabled="false">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
@@ -4275,7 +4295,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/user-context</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/users/user-context</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -4290,7 +4310,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -4330,7 +4350,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -4346,7 +4366,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -4360,7 +4380,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/roles?companyId=102" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{VEHICLES_API_URL}}/users/roles?companyId=102" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -4374,7 +4394,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/roles?companyId=102</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/users/roles?companyId=102</stringProp>
           <stringProp name="HTTPSampler.method">OPTIONS</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -4389,7 +4409,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -4409,7 +4429,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">User-Agent</stringProp>
@@ -4429,7 +4449,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -4443,7 +4463,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/roles?companyId=102" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{VEHICLES_API_URL}}/users/roles?companyId=102" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -4457,7 +4477,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/roles?companyId=102</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/users/roles?companyId=102</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -4472,7 +4492,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -4504,7 +4524,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -4520,7 +4540,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -4538,7 +4558,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{VEHICLES_API_URL}}/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -4552,7 +4572,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B</stringProp>
           <stringProp name="HTTPSampler.method">OPTIONS</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -4567,7 +4587,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -4587,7 +4607,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">User-Agent</stringProp>
@@ -4607,7 +4627,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -4621,7 +4641,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{VEHICLES_API_URL}}/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -4636,7 +4656,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -4651,7 +4671,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -4683,7 +4703,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -4699,7 +4719,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -4725,7 +4745,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-vehicles.apps.silver.devops.gov.bc.ca/users/roles?companyId=102</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/users/roles?companyId=102</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -4740,7 +4760,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -4772,7 +4792,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -4788,7 +4808,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -4834,7 +4854,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-vehicles.apps.silver.devops.gov.bc.ca/permits/applications?companyId=102&amp;status=IN_PROGRESS</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/permits/applications?companyId=102&amp;status=IN_PROGRESS</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -4849,7 +4869,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -4881,7 +4901,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -4897,7 +4917,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -4943,7 +4963,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-vehicles.apps.silver.devops.gov.bc.ca/permits/applications/20?companyId=102</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/permits/applications/20?companyId=102</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -4958,7 +4978,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -4990,7 +5010,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -5006,7 +5026,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -5059,7 +5079,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-vehicles.apps.silver.devops.gov.bc.ca/permits/applications/A2-00010002-520-R00</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/permits/applications/A2-00010002-520-R00</stringProp>
           <stringProp name="HTTPSampler.method">PUT</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -5091,7 +5111,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -5123,7 +5143,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -5139,7 +5159,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -5172,7 +5192,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-vehicles.apps.silver.devops.gov.bc.ca/permits/applications/20?companyId=102</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/permits/applications/20?companyId=102</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -5187,7 +5207,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -5219,7 +5239,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -5235,7 +5255,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -5288,7 +5308,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-vehicles.apps.silver.devops.gov.bc.ca/permits/applications/A2-00010002-520-R00</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/permits/applications/A2-00010002-520-R00</stringProp>
           <stringProp name="HTTPSampler.method">PUT</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -5320,7 +5340,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -5352,7 +5372,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -5368,7 +5388,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -5407,7 +5427,7 @@
           <stringProp name="ConstantTimer.delay">${__P(Delay,10000)}</stringProp>
         </ConstantTimer>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{FRONTEND_API_URL}}/" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -5422,7 +5442,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{FRONTEND_API_URL}}/</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -5437,7 +5457,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -5569,7 +5589,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -5585,7 +5605,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -5599,7 +5619,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/auth?client_id=on-route-bc-direct-4598&amp;redirect_uri=https%3A%2F%2Fonroutebc-test-frontend.apps.silver.devops.gov.bc.ca%2F&amp;response_type=code&amp;scope=openid&amp;state=7be0f498ddfa45e28ee8f2416475ba42&amp;code_challenge=B4JszPcS0HOW7ECTTUURC1mp6z8at2b6K0lD1uK_11A&amp;code_challenge_method=S256&amp;response_mode=query&amp;kc_idp_hint=bceidboth" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/auth?client_id=on-route-bc-direct-4598&amp;redirect_uri=https%3A%2F%2F${{FRONTEND_API_URL}}%2F&amp;response_type=code&amp;scope=openid&amp;state=7be0f498ddfa45e28ee8f2416475ba42&amp;code_challenge=B4JszPcS0HOW7ECTTUURC1mp6z8at2b6K0lD1uK_11A&amp;code_challenge_method=S256&amp;response_mode=query&amp;kc_idp_hint=bceidboth" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -5614,7 +5634,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/auth?client_id=on-route-bc-direct-4598&amp;redirect_uri=https%3A%2F%2Fonroutebc-test-frontend.apps.silver.devops.gov.bc.ca%2F&amp;response_type=code&amp;scope=openid&amp;state=7be0f498ddfa45e28ee8f2416475ba42&amp;code_challenge=B4JszPcS0HOW7ECTTUURC1mp6z8at2b6K0lD1uK_11A&amp;code_challenge_method=S256&amp;response_mode=query&amp;kc_idp_hint=bceidboth</stringProp>
+          <stringProp name="HTTPSampler.path">https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/auth?client_id=on-route-bc-direct-4598&amp;redirect_uri=https%3A%2F%2F${{FRONTEND_API_URL}}%2F&amp;response_type=code&amp;scope=openid&amp;state=7be0f498ddfa45e28ee8f2416475ba42&amp;code_challenge=B4JszPcS0HOW7ECTTUURC1mp6z8at2b6K0lD1uK_11A&amp;code_challenge_method=S256&amp;response_mode=query&amp;kc_idp_hint=bceidboth</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -5677,7 +5697,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -6668,7 +6688,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/?state=7be0f498ddfa45e28ee8f2416475ba42&amp;session_state=0e56ff7b-e277-400f-84f5-25801c43c829&amp;code=e1db6532-ce36-4aa5-845c-26c6d9f6e19f.0e56ff7b-e277-400f-84f5-25801c43c829.f462b30d-0893-4a2d-8169-3461d82c36eb" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{FRONTEND_API_URL}}/?state=7be0f498ddfa45e28ee8f2416475ba42&amp;session_state=0e56ff7b-e277-400f-84f5-25801c43c829&amp;code=e1db6532-ce36-4aa5-845c-26c6d9f6e19f.0e56ff7b-e277-400f-84f5-25801c43c829.f462b30d-0893-4a2d-8169-3461d82c36eb" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -6682,7 +6702,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/?state=7be0f498ddfa45e28ee8f2416475ba42&amp;session_state=0e56ff7b-e277-400f-84f5-25801c43c829&amp;code=e1db6532-ce36-4aa5-845c-26c6d9f6e19f.0e56ff7b-e277-400f-84f5-25801c43c829.f462b30d-0893-4a2d-8169-3461d82c36eb</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{FRONTEND_API_URL}}/?state=7be0f498ddfa45e28ee8f2416475ba42&amp;session_state=0e56ff7b-e277-400f-84f5-25801c43c829&amp;code=e1db6532-ce36-4aa5-845c-26c6d9f6e19f.0e56ff7b-e277-400f-84f5-25801c43c829.f462b30d-0893-4a2d-8169-3461d82c36eb</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -6697,7 +6717,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -6817,7 +6837,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -6833,7 +6853,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -6847,7 +6867,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/user-context" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{VEHICLES_API_URL}}/users/user-context" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -6861,7 +6881,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/user-context</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/users/user-context</stringProp>
           <stringProp name="HTTPSampler.method">OPTIONS</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -6876,7 +6896,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -6896,7 +6916,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">User-Agent</stringProp>
@@ -6916,7 +6936,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -6930,7 +6950,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/user-context" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{VEHICLES_API_URL}}/users/user-context" enabled="false">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
@@ -6945,7 +6965,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/user-context</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/users/user-context</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -6960,7 +6980,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -7000,7 +7020,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -7016,7 +7036,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -7030,7 +7050,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/roles?companyId=102" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{VEHICLES_API_URL}}/users/roles?companyId=102" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -7044,7 +7064,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/roles?companyId=102</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/users/roles?companyId=102</stringProp>
           <stringProp name="HTTPSampler.method">OPTIONS</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -7059,7 +7079,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -7079,7 +7099,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">User-Agent</stringProp>
@@ -7099,7 +7119,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -7113,7 +7133,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/roles?companyId=102" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{VEHICLES_API_URL}}/users/roles?companyId=102" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -7127,7 +7147,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/roles?companyId=102</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/users/roles?companyId=102</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -7142,7 +7162,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -7174,7 +7194,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -7190,7 +7210,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -7208,7 +7228,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{VEHICLES_API_URL}}/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -7222,7 +7242,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B</stringProp>
           <stringProp name="HTTPSampler.method">OPTIONS</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -7237,7 +7257,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -7257,7 +7277,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">User-Agent</stringProp>
@@ -7277,7 +7297,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -7291,7 +7311,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{VEHICLES_API_URL}}/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -7306,7 +7326,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -7321,7 +7341,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -7353,7 +7373,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -7369,7 +7389,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -7395,7 +7415,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-vehicles.apps.silver.devops.gov.bc.ca/users/roles?companyId=102</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/users/roles?companyId=102</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -7410,7 +7430,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -7442,7 +7462,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -7458,7 +7478,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -7572,7 +7592,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-vehicles.apps.silver.devops.gov.bc.ca/permits/applications</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/permits/applications</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -7587,7 +7607,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -7619,7 +7639,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -7635,7 +7655,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -7691,7 +7711,7 @@
           <stringProp name="ConstantTimer.delay">${__P(Delay,10000)}</stringProp>
         </ConstantTimer>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{FRONTEND_API_URL}}/" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -7706,7 +7726,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{FRONTEND_API_URL}}/</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -7721,7 +7741,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -7853,7 +7873,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -7869,7 +7889,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -7883,7 +7903,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/auth?client_id=on-route-bc-direct-4598&amp;redirect_uri=https%3A%2F%2Fonroutebc-test-frontend.apps.silver.devops.gov.bc.ca%2F&amp;response_type=code&amp;scope=openid&amp;state=7be0f498ddfa45e28ee8f2416475ba42&amp;code_challenge=B4JszPcS0HOW7ECTTUURC1mp6z8at2b6K0lD1uK_11A&amp;code_challenge_method=S256&amp;response_mode=query&amp;kc_idp_hint=bceidboth" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/auth?client_id=on-route-bc-direct-4598&amp;redirect_uri=https%3A%2F%2F${{FRONTEND_API_URL}}%2F&amp;response_type=code&amp;scope=openid&amp;state=7be0f498ddfa45e28ee8f2416475ba42&amp;code_challenge=B4JszPcS0HOW7ECTTUURC1mp6z8at2b6K0lD1uK_11A&amp;code_challenge_method=S256&amp;response_mode=query&amp;kc_idp_hint=bceidboth" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -7898,7 +7918,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/auth?client_id=on-route-bc-direct-4598&amp;redirect_uri=https%3A%2F%2Fonroutebc-test-frontend.apps.silver.devops.gov.bc.ca%2F&amp;response_type=code&amp;scope=openid&amp;state=7be0f498ddfa45e28ee8f2416475ba42&amp;code_challenge=B4JszPcS0HOW7ECTTUURC1mp6z8at2b6K0lD1uK_11A&amp;code_challenge_method=S256&amp;response_mode=query&amp;kc_idp_hint=bceidboth</stringProp>
+          <stringProp name="HTTPSampler.path">https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/auth?client_id=on-route-bc-direct-4598&amp;redirect_uri=https%3A%2F%2F${{FRONTEND_API_URL}}%2F&amp;response_type=code&amp;scope=openid&amp;state=7be0f498ddfa45e28ee8f2416475ba42&amp;code_challenge=B4JszPcS0HOW7ECTTUURC1mp6z8at2b6K0lD1uK_11A&amp;code_challenge_method=S256&amp;response_mode=query&amp;kc_idp_hint=bceidboth</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -7961,7 +7981,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -8955,7 +8975,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/?state=7be0f498ddfa45e28ee8f2416475ba42&amp;session_state=0e56ff7b-e277-400f-84f5-25801c43c829&amp;code=e1db6532-ce36-4aa5-845c-26c6d9f6e19f.0e56ff7b-e277-400f-84f5-25801c43c829.f462b30d-0893-4a2d-8169-3461d82c36eb" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{FRONTEND_API_URL}}/?state=7be0f498ddfa45e28ee8f2416475ba42&amp;session_state=0e56ff7b-e277-400f-84f5-25801c43c829&amp;code=e1db6532-ce36-4aa5-845c-26c6d9f6e19f.0e56ff7b-e277-400f-84f5-25801c43c829.f462b30d-0893-4a2d-8169-3461d82c36eb" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -8970,7 +8990,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/?state=7be0f498ddfa45e28ee8f2416475ba42&amp;session_state=0e56ff7b-e277-400f-84f5-25801c43c829&amp;code=e1db6532-ce36-4aa5-845c-26c6d9f6e19f.0e56ff7b-e277-400f-84f5-25801c43c829.f462b30d-0893-4a2d-8169-3461d82c36eb</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{FRONTEND_API_URL}}/?state=7be0f498ddfa45e28ee8f2416475ba42&amp;session_state=0e56ff7b-e277-400f-84f5-25801c43c829&amp;code=e1db6532-ce36-4aa5-845c-26c6d9f6e19f.0e56ff7b-e277-400f-84f5-25801c43c829.f462b30d-0893-4a2d-8169-3461d82c36eb</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -8985,7 +9005,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -9047,7 +9067,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/user-context" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{VEHICLES_API_URL}}/users/user-context" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -9062,7 +9082,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/user-context</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/users/user-context</stringProp>
           <stringProp name="HTTPSampler.method">OPTIONS</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -9077,7 +9097,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -9097,7 +9117,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">User-Agent</stringProp>
@@ -9117,7 +9137,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -9131,7 +9151,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/user-context" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{VEHICLES_API_URL}}/users/user-context" enabled="false">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
@@ -9146,7 +9166,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/user-context</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/users/user-context</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -9161,7 +9181,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -9201,7 +9221,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -9217,7 +9237,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -9231,7 +9251,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/roles?companyId=102" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{VEHICLES_API_URL}}/users/roles?companyId=102" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -9246,7 +9266,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/roles?companyId=102</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/users/roles?companyId=102</stringProp>
           <stringProp name="HTTPSampler.method">OPTIONS</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -9261,7 +9281,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -9281,7 +9301,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">User-Agent</stringProp>
@@ -9301,7 +9321,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -9315,7 +9335,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/roles?companyId=102" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{VEHICLES_API_URL}}/users/roles?companyId=102" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -9330,7 +9350,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/roles?companyId=102</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/users/roles?companyId=102</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -9345,7 +9365,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -9377,7 +9397,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -9393,7 +9413,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -9411,7 +9431,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{VEHICLES_API_URL}}/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -9425,7 +9445,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B</stringProp>
           <stringProp name="HTTPSampler.method">OPTIONS</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -9440,7 +9460,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -9460,7 +9480,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">User-Agent</stringProp>
@@ -9480,7 +9500,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -9494,7 +9514,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{VEHICLES_API_URL}}/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -9509,7 +9529,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -9524,7 +9544,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -9556,7 +9576,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -9572,7 +9592,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -9598,7 +9618,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-vehicles.apps.silver.devops.gov.bc.ca/users/roles?companyId=103</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/users/roles?companyId=103</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -9613,7 +9633,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -9645,7 +9665,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -9661,7 +9681,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -9707,7 +9727,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-vehicles.apps.silver.devops.gov.bc.ca/permits/ppc/search?searchColumn=permitNumber&amp;searchString=</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/permits/ppc/search?searchColumn=permitNumber&amp;searchString=</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -9722,7 +9742,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -9754,7 +9774,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -9770,7 +9790,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -9816,7 +9836,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-vehicles.apps.silver.devops.gov.bc.ca/permits/applications/9?amendment=true&amp;companyId=103</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/permits/applications/9?amendment=true&amp;companyId=103</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -9831,7 +9851,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -9863,7 +9883,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -9879,7 +9899,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -9925,7 +9945,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-vehicles.apps.silver.devops.gov.bc.ca/permits/11/pdf?download=url</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/permits/11/pdf?download=url</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -9940,7 +9960,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -9972,7 +9992,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -9988,7 +10008,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -10040,7 +10060,7 @@
           <stringProp name="ConstantTimer.delay">${__P(Delay,10000)}</stringProp>
         </ConstantTimer>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{FRONTEND_API_URL}}/" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -10055,7 +10075,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{FRONTEND_API_URL}}/</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -10070,7 +10090,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -10202,7 +10222,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -10218,7 +10238,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -10232,7 +10252,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/auth?client_id=on-route-bc-direct-4598&amp;redirect_uri=https%3A%2F%2Fonroutebc-test-frontend.apps.silver.devops.gov.bc.ca%2F&amp;response_type=code&amp;scope=openid&amp;state=7be0f498ddfa45e28ee8f2416475ba42&amp;code_challenge=B4JszPcS0HOW7ECTTUURC1mp6z8at2b6K0lD1uK_11A&amp;code_challenge_method=S256&amp;response_mode=query&amp;kc_idp_hint=bceidboth" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/auth?client_id=on-route-bc-direct-4598&amp;redirect_uri=https%3A%2F%2F${{FRONTEND_API_URL}}%2F&amp;response_type=code&amp;scope=openid&amp;state=7be0f498ddfa45e28ee8f2416475ba42&amp;code_challenge=B4JszPcS0HOW7ECTTUURC1mp6z8at2b6K0lD1uK_11A&amp;code_challenge_method=S256&amp;response_mode=query&amp;kc_idp_hint=bceidboth" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -10247,7 +10267,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/auth?client_id=on-route-bc-direct-4598&amp;redirect_uri=https%3A%2F%2Fonroutebc-test-frontend.apps.silver.devops.gov.bc.ca%2F&amp;response_type=code&amp;scope=openid&amp;state=7be0f498ddfa45e28ee8f2416475ba42&amp;code_challenge=B4JszPcS0HOW7ECTTUURC1mp6z8at2b6K0lD1uK_11A&amp;code_challenge_method=S256&amp;response_mode=query&amp;kc_idp_hint=bceidboth</stringProp>
+          <stringProp name="HTTPSampler.path">https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/auth?client_id=on-route-bc-direct-4598&amp;redirect_uri=https%3A%2F%2F${{FRONTEND_API_URL}}%2F&amp;response_type=code&amp;scope=openid&amp;state=7be0f498ddfa45e28ee8f2416475ba42&amp;code_challenge=B4JszPcS0HOW7ECTTUURC1mp6z8at2b6K0lD1uK_11A&amp;code_challenge_method=S256&amp;response_mode=query&amp;kc_idp_hint=bceidboth</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -10310,7 +10330,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -11304,7 +11324,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/?state=7be0f498ddfa45e28ee8f2416475ba42&amp;session_state=0e56ff7b-e277-400f-84f5-25801c43c829&amp;code=e1db6532-ce36-4aa5-845c-26c6d9f6e19f.0e56ff7b-e277-400f-84f5-25801c43c829.f462b30d-0893-4a2d-8169-3461d82c36eb" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{FRONTEND_API_URL}}/?state=7be0f498ddfa45e28ee8f2416475ba42&amp;session_state=0e56ff7b-e277-400f-84f5-25801c43c829&amp;code=e1db6532-ce36-4aa5-845c-26c6d9f6e19f.0e56ff7b-e277-400f-84f5-25801c43c829.f462b30d-0893-4a2d-8169-3461d82c36eb" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -11319,7 +11339,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/?state=7be0f498ddfa45e28ee8f2416475ba42&amp;session_state=0e56ff7b-e277-400f-84f5-25801c43c829&amp;code=e1db6532-ce36-4aa5-845c-26c6d9f6e19f.0e56ff7b-e277-400f-84f5-25801c43c829.f462b30d-0893-4a2d-8169-3461d82c36eb</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{FRONTEND_API_URL}}/?state=7be0f498ddfa45e28ee8f2416475ba42&amp;session_state=0e56ff7b-e277-400f-84f5-25801c43c829&amp;code=e1db6532-ce36-4aa5-845c-26c6d9f6e19f.0e56ff7b-e277-400f-84f5-25801c43c829.f462b30d-0893-4a2d-8169-3461d82c36eb</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -11334,7 +11354,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -11396,7 +11416,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/user-context" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{VEHICLES_API_URL}}/users/user-context" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -11411,7 +11431,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/user-context</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/users/user-context</stringProp>
           <stringProp name="HTTPSampler.method">OPTIONS</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -11426,7 +11446,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -11446,7 +11466,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">User-Agent</stringProp>
@@ -11466,7 +11486,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -11480,7 +11500,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/user-context" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{VEHICLES_API_URL}}/users/user-context" enabled="false">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
@@ -11495,7 +11515,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/user-context</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/users/user-context</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -11510,7 +11530,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -11550,7 +11570,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -11566,7 +11586,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -11580,7 +11600,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/roles?companyId=102" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{VEHICLES_API_URL}}/users/roles?companyId=102" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -11595,7 +11615,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/roles?companyId=102</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/users/roles?companyId=102</stringProp>
           <stringProp name="HTTPSampler.method">OPTIONS</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -11610,7 +11630,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -11630,7 +11650,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">User-Agent</stringProp>
@@ -11650,7 +11670,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -11664,7 +11684,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/roles?companyId=102" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{VEHICLES_API_URL}}/users/roles?companyId=102" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -11679,7 +11699,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/users/roles?companyId=102</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/users/roles?companyId=102</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -11694,7 +11714,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -11726,7 +11746,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -11742,7 +11762,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -11760,7 +11780,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{VEHICLES_API_URL}}/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -11774,7 +11794,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B</stringProp>
           <stringProp name="HTTPSampler.method">OPTIONS</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -11789,7 +11809,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -11809,7 +11829,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">User-Agent</stringProp>
@@ -11829,7 +11849,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -11843,7 +11863,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://${{VEHICLES_API_URL}}/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
@@ -11858,7 +11878,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/permits/applications?status=IN_PROGRESS&amp;companyId=102&amp;userGUID=A9ED2C5742DC455998672CC2A118174B</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -11873,7 +11893,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -11905,7 +11925,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -11921,7 +11941,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -11947,7 +11967,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-vehicles.apps.silver.devops.gov.bc.ca/users/roles?companyId=104</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/users/roles?companyId=104</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -11962,7 +11982,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -11994,7 +12014,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -12010,7 +12030,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -12056,7 +12076,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-vehicles.apps.silver.devops.gov.bc.ca/permits/ppc/search?searchColumn=permitNumber&amp;searchString=</stringProp>
+          <stringProp name="HTTPSampler.path">https://${{VEHICLES_API_URL}}/permits/ppc/search?searchColumn=permitNumber&amp;searchString=</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -12071,7 +12091,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -12103,7 +12123,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -12119,7 +12139,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
@@ -12242,7 +12262,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://onroutebc-test-dops.apps.silver.devops.gov.bc.ca/dgen/report/render</stringProp>
+          <stringProp name="HTTPSampler.path">https://${DOPS_API_URL}/dgen/report/render</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -12257,7 +12277,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">onroutebc-test-backend-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">${{VEHICLES_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Connection</stringProp>
@@ -12289,7 +12309,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
@@ -12305,7 +12325,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://onroutebc-799-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
+                <stringProp name="Header.value">https://${{FRONTEND_API_URL}}/</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Accept-Encoding</stringProp>
