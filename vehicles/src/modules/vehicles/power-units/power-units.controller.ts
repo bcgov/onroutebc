@@ -32,7 +32,12 @@ import { Roles } from '../../../common/decorator/roles.decorator';
 import { DeleteDto } from 'src/modules/common/dto/response/delete.dto';
 import { DeletePowerUnitDto } from './dto/request/delete-power-units.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
-import { CLIENT_USER_AUTH_GROUP_LIST, ClientUserAuthGroup, IDIR_USER_AUTH_GROUP_LIST, IDIRUserAuthGroup } from '../../../common/enum/user-auth-group.enum';
+import {
+  CLIENT_USER_AUTH_GROUP_LIST,
+  ClientUserAuthGroup,
+  IDIR_USER_AUTH_GROUP_LIST,
+  IDIRUserAuthGroup,
+} from '../../../common/enum/user-auth-group.enum';
 
 @ApiTags('Vehicles - Power Units')
 @ApiBadRequestResponse({

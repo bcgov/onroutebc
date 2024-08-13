@@ -1,7 +1,4 @@
-import {
-  ForbiddenException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { ForbiddenException } from '@nestjs/common';
 import { Directory } from '../enum/directory.enum';
 import { IDP } from '../enum/idp.enum';
 import { Role } from '../enum/roles.enum';
@@ -12,7 +9,6 @@ import {
   IDIRUserAuthGroup,
 } from '../enum/user-auth-group.enum';
 import { IRole } from '../interface/role.interface';
-import { PermissionMatrixConfigObject } from '../playground/permission-matrix';
 
 /**
  * Determines the directory type based on the identity provider of the user.
@@ -37,10 +33,10 @@ export const getDirectory = (user: IUserJWT) => {
 /**
  * Type guard to check if an input is an array of type Role.
  *
- * @param {Role[] | IRole[]} obj - The object to be checked.
+ * @param {Role[]} obj - The object to be checked.
  * @returns {obj is Role[]} True if obj is an array of Role, false otherwise.
  */
-function isRoleArray(obj: Role[] | IRole[]): obj is Role[] {
+function isRoleArray(obj: Role[]): obj is Role[] {
   return Array.isArray(obj) && obj.every((item) => typeof item === 'string');
 }
 
@@ -49,86 +45,53 @@ function isRoleArray(obj: Role[] | IRole[]): obj is Role[] {
  *
  * This method supports two kinds of inputs for role requirements:
  * 1. Simple list of roles (Role[]): It checks if the user holds any role from the specified list. True indicates possession of a required role.
- * 2. Complex role requirements (IRole[]): For each object defining roles with 'allOf', 'oneOf', and/or 'userAuthGroup', it evaluates:
+ * 2. Complex role requirements (IRoleNew): For each object defining roles with 'allOf', 'oneOf', and/or 'userAuthGroup', it evaluates:
  *    - If 'userAuthGroup' is defined, the user must belong to it.
  *    - For 'allOf', the user must have all specified roles.
  *    - For 'oneOf', the user must have at least one of the specified roles.
  * If any role object's criteria are met (considering 'userAuthGroup' if defined), it returns true.
  * Throws an error if both 'allOf' and 'oneOf' are defined in a role object.
  *
- * @param {Role[] | IRole[]} roles - An array of roles or role requirement objects to be matched against the user's roles.
+ * @param {Role[] | IRole} permissions - An array of roles or role requirement objects to be matched against the user's roles.
  * @param {Role[]} userRoles - An array of roles assigned to the user.
  * @param {UserAuthGroup} userAuthGroup - Optional. The user authorization group to which the user belongs.
  * @returns {boolean} Returns true if the user meets any of the defined role criteria or belongs to the specified user authorization group; false otherwise.
  */
 export const matchRoles = (
-  roles: Role[] | IRole[] | PermissionMatrixConfigObject,
+  permissions: Role[] | IRole,
   userRoles: Role[],
   userAuthGroup?: UserAuthGroup,
 ) => {
   if (!userAuthGroup) return false;
 
   const isIdir = userAuthGroup in IDIRUserAuthGroup;
-  const shouldUsePermissionMatrix =
-    ('allowedIDIRAuthGroups' || 'allowedBCeIDAuthGroups') in roles;
-  if (shouldUsePermissionMatrix) {
-    const {
-      allowedIdirRoles: allowedIDIRAuthGroups,
-      allowedBCeIDRoles: allowedBCeIDAuthGroups,
-    } = roles as PermissionMatrixConfigObject;
+  const isIRoleType =
+    ('allowedIdirRoles' || 'allowedBCeIDRoles' || 'claims') in permissions;
+  if (isIRoleType) {
+    const { allowedIdirRoles, allowedBCeIDRoles, claims } =
+      permissions as IRole;
+    let isAllowed: boolean;
     if (isIdir) {
-      return allowedIDIRAuthGroups?.includes(
+      isAllowed = allowedIdirRoles?.includes(
         userAuthGroup as IDIRUserAuthGroup,
       );
     } else {
-      return allowedBCeIDAuthGroups?.includes(
+      isAllowed = allowedBCeIDRoles?.includes(
         userAuthGroup as ClientUserAuthGroup,
       );
     }
-  } else if (isRoleArray(roles as Role[])) {
+    if (claims) {
+      isAllowed = isAllowed && claims.some((role) => userRoles.includes(role));
+    }
+    return isAllowed;
+  } else if (isRoleArray(permissions as Role[])) {
     // Scenario: roles is a simple list of Role objects.
     // This block checks if any of the roles assigned to the user (userRoles)
     // matches at least one of the roles specified in the input list (roles).
     // It returns true if there is a match, indicating the user has at least one of the required roles.
-    return (roles as Role[])?.some((role) => userRoles.includes(role));
-  } else {
-    // Scenario: roles is not a simple list, but an object or objects implementing IRole,
-    // meaning complex role requirements can be specified.
-    // This block first checks for an invalid case where both 'allOf' and 'oneOf' are defined in a roleObject,
-    // then verifies if the user belongs to the specified 'userAuthGroup' if defined.
-    // Following, it checks two conditions for each role object:
-    // 1. allOf - every role listed must be included in userRoles.
-    // 2. oneOf - at least one of the roles listed must be included in userRoles.
-    // It returns true if either condition is met for any role object, indicating the user meets the role requirements.
-    // An error is thrown if 'allOf' and 'oneOf' are both defined, as it's considered an invalid configuration.
-    return (roles as IRole[]).some((roleObject) => {
-      if (roleObject.allOf?.length && roleObject.oneOf?.length) {
-        throw new InternalServerErrorException(
-          'Cannot define both allOf and oneOf at the same time!',
-        );
-      }
-
-      if (roleObject.userAuthGroup?.length) {
-        const userAuthGroupMatch = roleObject.userAuthGroup?.some(
-          (authGroup) => authGroup === userAuthGroup,
-        );
-        if (!userAuthGroupMatch) {
-          return false;
-        } else if (!roleObject.allOf?.length && !roleObject.oneOf?.length) {
-          return true;
-        }
-      }
-
-      const allOfMatch = roleObject.allOf?.every((role) =>
-        userRoles.includes(role),
-      );
-      const oneOfMatch = roleObject.oneOf?.some((role) =>
-        userRoles.includes(role),
-      );
-
-      return oneOfMatch || allOfMatch;
-    });
+    return (permissions as Role[])?.some((role) => userRoles.includes(role));
   }
+  return false;
 };
 
 /**

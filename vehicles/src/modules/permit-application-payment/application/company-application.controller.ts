@@ -89,7 +89,7 @@ export class CompanyApplicationController {
     allowedIdirRoles: [
       IDIRUserAuthGroup.PPC_CLERK,
       IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
-      IDIRUserAuthGroup.CTPO
+      IDIRUserAuthGroup.CTPO,
     ],
   })
   @Get()
@@ -133,7 +133,7 @@ export class CompanyApplicationController {
     allowedIdirRoles: [
       IDIRUserAuthGroup.PPC_CLERK,
       IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
-      IDIRUserAuthGroup.CTPO
+      IDIRUserAuthGroup.CTPO,
     ],
   })
   @Post()
@@ -173,7 +173,7 @@ export class CompanyApplicationController {
     allowedIdirRoles: [
       IDIRUserAuthGroup.PPC_CLERK,
       IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
-      IDIRUserAuthGroup.CTPO
+      IDIRUserAuthGroup.CTPO,
     ],
   })
   @Get(':applicationId')
@@ -235,7 +235,7 @@ export class CompanyApplicationController {
     allowedIdirRoles: [
       IDIRUserAuthGroup.PPC_CLERK,
       IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
-      IDIRUserAuthGroup.CTPO
+      IDIRUserAuthGroup.CTPO,
     ],
   })
   @Put(':applicationId')
@@ -278,7 +278,7 @@ export class CompanyApplicationController {
     allowedIdirRoles: [
       IDIRUserAuthGroup.PPC_CLERK,
       IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
-      IDIRUserAuthGroup.CTPO
+      IDIRUserAuthGroup.CTPO,
     ],
   })
   @Post('/issue')
@@ -329,7 +329,7 @@ export class CompanyApplicationController {
     allowedIdirRoles: [
       IDIRUserAuthGroup.PPC_CLERK,
       IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
-      IDIRUserAuthGroup.CTPO
+      IDIRUserAuthGroup.CTPO,
     ],
   })
   @Delete()
