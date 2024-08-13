@@ -46,7 +46,7 @@ GO
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Default values for  ORBC_SPECIAL_AUTH for Db related columns.'
 
-INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [UPDATE_SCRIPT], [REVERT_SCRIPT], [RELEASE_DATE]) VALUES (38, @VersionDescription, '$(UPDATE_SCRIPT)', '$(REVERT_SCRIPT)', getutcdate())
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [UPDATE_SCRIPT], [REVERT_SCRIPT], [RELEASE_DATE]) VALUES (39, @VersionDescription, '$(UPDATE_SCRIPT)', '$(REVERT_SCRIPT)', getutcdate())
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
 

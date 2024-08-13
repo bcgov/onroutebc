@@ -28,4 +28,4 @@ END CATCH
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Deleting constraint from DB related coulmns form special authorization and no fee tables'
 
-INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (37, @VersionDescription, getutcdate())
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (38, @VersionDescription, getutcdate())
