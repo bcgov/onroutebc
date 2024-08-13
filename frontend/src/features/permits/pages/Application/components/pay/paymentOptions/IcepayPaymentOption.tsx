@@ -9,9 +9,10 @@ import {
   Radio,
   Select,
 } from "@mui/material";
-
-import "./IcepayPaymentOption.scss";
-import { DEFAULT_EMPTY_CARD_TYPE, PaymentMethodData } from "../types/PaymentMethodData";
+import {
+  DEFAULT_EMPTY_CARD_TYPE,
+  PaymentMethodData,
+} from "../types/PaymentMethodData";
 import { requiredMessage } from "../../../../../../../common/helpers/validationMessages";
 import { Nullable } from "../../../../../../../common/types/common";
 import { getErrorMessage } from "../../../../../../../common/components/form/CustomFormComponents";
@@ -19,7 +20,11 @@ import {
   PAYMENT_CARD_TYPE_CODE,
   PAYMENT_METHOD_TYPE_CODE,
   PAYMENT_CARD_TYPE_DISPLAY,
+  PaymentMethodTypeCode,
 } from "../../../../../../../common/types/paymentMethods";
+import "./IcepayPaymentOption.scss";
+
+const paymentMethod = PAYMENT_METHOD_TYPE_CODE.ICEPAY;
 
 const cardTypeOptions = [
   {
@@ -55,8 +60,10 @@ const cardTypeRules = {
       formValues: PaymentMethodData,
     ) => {
       return (
-        (formValues.paymentMethod !== PAYMENT_METHOD_TYPE_CODE.ICEPAY) ||
-        (value != null && value.trim() !== "" && value.trim() !== DEFAULT_EMPTY_CARD_TYPE) ||
+        formValues.paymentMethod !== paymentMethod ||
+        (value != null &&
+          value.trim() !== "" &&
+          value.trim() !== DEFAULT_EMPTY_CARD_TYPE) ||
         requiredMessage()
       );
     },
@@ -70,7 +77,7 @@ const transactionIdRules = {
       formValues: PaymentMethodData,
     ) => {
       return (
-        (formValues.paymentMethod !== PAYMENT_METHOD_TYPE_CODE.ICEPAY) ||
+        formValues.paymentMethod !== paymentMethod ||
         (value != null && value.trim() !== "") ||
         requiredMessage()
       );
@@ -80,8 +87,12 @@ const transactionIdRules = {
 
 export const IcepayPaymentOption = ({
   isSelected,
+  handlePaymentMethodChange,
 }: {
   isSelected: boolean;
+  handlePaymentMethodChange: (
+    selectedPaymentMethod: PaymentMethodTypeCode,
+  ) => void;
 }) => {
   const {
     control,
@@ -91,62 +102,58 @@ export const IcepayPaymentOption = ({
 
   return (
     <div
-      className={`payment-option payment-option--icepay ${
-        isSelected
-          ? "payment-option--active"
-          : ""
-      }`}
+      role="radio"
+      onClick={() => handlePaymentMethodChange(paymentMethod)}
+      onKeyDown={() => true}
+      className={
+        isSelected ? "payment-option payment-option--active" : "payment-option"
+      }
     >
       <FormControlLabel
-        className="payment-option__label"
+        className="label"
         componentsProps={{
           typography: {
-            className: "label-container"
-          }
+            className: "label__container",
+          },
         }}
         label={
-          <div className="label-icon-display">
-            <div className="label-icon-display__left">
+          <div className="icon-display">
+            <div className="icon-display__left">
               <img
                 src="/ICEPAY_Logo.svg"
                 alt="IcePay"
-                className="label-icon-display__icon"
+                className="icon-display__icon"
               />
             </div>
-            <div className="label-icon-display__right">
+            <div className="icon-display__right">
               <img
                 src="/Visa_Logo.svg"
                 alt="Visa"
-                className="label-icon-display__icon label-icon-display__icon--visa"
+                className="icon-display__icon icon-display__icon--visa"
               />
               <img
                 src="/Mastercard_Logo.svg"
                 alt="Mastercard"
-                className="label-icon-display__icon label-icon-display__icon--mc"
+                className="icon-display__icon icon-display__icon--mc"
               />
               <img
                 src="/Amex_Logo.svg"
                 alt="Amex"
-                className="label-icon-display__icon label-icon-display__icon--amex"
+                className="icon-display__icon icon-display__icon--amex"
               />
             </div>
           </div>
         }
-        value={PAYMENT_METHOD_TYPE_CODE.ICEPAY}
-        control={
-          <Radio key="pay-by-icepay" />
-        }
+        value={paymentMethod}
+        control={<Radio key="pay-by-icepay" />}
       />
 
       <div className="payment-details">
         <Controller
-          name="cardType"
+          name="additionalPaymentData.cardType"
           control={control}
           rules={cardTypeRules}
-          render={({
-            field: { value },
-            fieldState: { invalid },
-          }) => (
+          render={({ field: { value }, fieldState: { invalid } }) => (
             <FormControl
               className="payment-details__info payment-details__info--card"
               error={invalid}
@@ -159,10 +166,8 @@ export const IcepayPaymentOption = ({
                   invalid ? "payment-details__input--err" : ""
                 }`}
                 value={value}
-                {...register(
-                  "cardType",
-                  cardTypeRules,
-                )}
+                {...register("additionalPaymentData.cardType", cardTypeRules)}
+                onOpen={() => handlePaymentMethodChange(paymentMethod)}
               >
                 {cardTypeOptions.map((cardTypeOption) => (
                   <MenuItem
@@ -174,11 +179,8 @@ export const IcepayPaymentOption = ({
                 ))}
               </Select>
               {invalid ? (
-                <FormHelperText
-                  className="payment-details__err"
-                  error
-                >
-                  {getErrorMessage(errors, "cardType")}
+                <FormHelperText className="payment-details__err" error>
+                  {getErrorMessage(errors, "additionalPaymentData.cardType")}
                 </FormHelperText>
               ) : null}
             </FormControl>
@@ -186,13 +188,10 @@ export const IcepayPaymentOption = ({
         />
 
         <Controller
-          name="transactionId"
+          name="additionalPaymentData.icepayTransactionId"
           control={control}
           rules={transactionIdRules}
-          render={({
-            field: { value },
-            fieldState: { invalid },
-          }) => (
+          render={({ field: { value }, fieldState: { invalid } }) => (
             <FormControl
               className="payment-details__info payment-details__info--transaction"
               error={invalid}
@@ -206,16 +205,17 @@ export const IcepayPaymentOption = ({
                 }`}
                 defaultValue={value}
                 {...register(
-                  "transactionId",
+                  "additionalPaymentData.icepayTransactionId",
                   transactionIdRules,
                 )}
+                onChange={() => handlePaymentMethodChange(paymentMethod)}
               />
               {invalid ? (
-                <FormHelperText
-                  className="payment-details__err"
-                  error
-                >
-                  {getErrorMessage(errors, "transactionId")}
+                <FormHelperText className="payment-details__err" error>
+                  {getErrorMessage(
+                    errors,
+                    "additionalPaymentData.icepayTransactionId",
+                  )}
                 </FormHelperText>
               ) : null}
             </FormControl>

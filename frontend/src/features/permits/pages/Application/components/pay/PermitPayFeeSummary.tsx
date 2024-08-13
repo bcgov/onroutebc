@@ -10,10 +10,12 @@ export const PermitPayFeeSummary = ({
   permitType,
   selectedItemsCount,
   onPay,
+  transactionPending,
 }: {
   calculatedFee: number;
   permitType?: PermitType;
   selectedItemsCount: number;
+  transactionPending: boolean;
   onPay: () => void;
 }) => {
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
@@ -55,6 +57,7 @@ export const PermitPayFeeSummary = ({
             className="permit-pay-fee-summary__btn"
             variant="contained"
             onClick={handlePayNow}
+            disabled={transactionPending}
           >
             Pay Now
           </Button>
