@@ -9,7 +9,8 @@ parse_options "${USAGE}" ${@}
 # TESTS_DIR variable set by the calling test-runner script.
 
 TEST_32_1_RESULT=$(/opt/mssql-tools/bin/sqlcmd -U ${USER} -P "${PASS}" -S ${SERVER} -v DB_NAME=${DATABASE} -h -1 -i ${TESTS_DIR}/v_32_1_test.sql | xargs)
-if [[ $TEST_32_1_RESULT -eq 30 ]]; then
+# Returns 60 for an nvarchar(30) data type due to larger nvarchar storage
+if [[ $TEST_32_1_RESULT -eq 60 ]]; then
     echo "Test 32.1 passed: APP_LAST_UPDATE_USERID column created in ORBC_POLICY_CONFIGURATION"
 else
     echo "******** Test 32.1 failed: APP_LAST_UPDATE_USERID column missing in ORBC_POLICY_CONFIGURATION"
