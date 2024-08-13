@@ -12,16 +12,16 @@
   & &__left-container {
     display: flex;
     flex-direction: column;
-    margin-right: 0;
-    width: 100%;
+    width: 66.6%;
     padding-top: 1.5rem;
+    margin-right: 80px;
   }
 
   & &__right-container {
+    width: 33.3%;
     background-color: $bc-white;
     display: flex;
     flex-direction: column;
-    margin-left: 5rem;
 
     .choose-payment-method {
       margin-bottom: 2.5rem;
@@ -41,5 +41,9 @@
     .pay-contact {
       font-weight: 700;
     }
+  }
+
+  @media screen and (max-width: 1024px) {
+    flex-direction: column;
   }
 }

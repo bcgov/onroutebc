@@ -8,6 +8,10 @@
   & &__input-section {
     display: flex;
     gap: 2.5rem;
+
+    .custom-date-picker {
+      width: 344px;
+    }
   }
 
   & &__commodities {
