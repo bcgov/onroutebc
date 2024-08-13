@@ -33,6 +33,7 @@ import {
   durationOptionsForPermitType,
   minDurationForPermitType,
 } from "../../../helpers/dateSelection";
+import { PAST_START_DATE_STATUSES } from "../../../../../common/components/form/subFormComponents/CustomDatePicker";
 
 export const AmendPermitForm = () => {
   const {
@@ -220,6 +221,7 @@ export const AmendPermitForm = () => {
           companyInfo={companyInfo}
           durationOptions={durationOptions}
           doingBusinessAs={doingBusinessAs}
+          pastStartDateStatus={PAST_START_DATE_STATUSES.WARNING}
         >
           <AmendRevisionHistory revisionHistory={revisionHistory} />
           <AmendReason feature={FEATURE} />

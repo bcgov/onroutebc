@@ -12,6 +12,7 @@ import { PermitType } from "../../../../types/PermitType";
 import { Nullable } from "../../../../../../common/types/common";
 import { PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
 import { PermitCommodity } from "../../../../types/PermitCommodity";
+import { PastStartDateStatus } from "../../../../../../common/components/form/subFormComponents/CustomDatePicker";
 import {
   PowerUnit,
   Trailer,
@@ -49,6 +50,7 @@ interface PermitFormProps {
     label: string;
   }[];
   doingBusinessAs?: Nullable<string>;
+  pastStartDateStatus: PastStartDateStatus;
 }
 
 export const PermitForm = (props: PermitFormProps) => {
@@ -79,6 +81,7 @@ export const PermitForm = (props: PermitFormProps) => {
           durationOptions={props.durationOptions}
           disableStartDate={props.isAmendAction}
           permitType={props.permitType}
+          pastStartDateStatus={props.pastStartDateStatus}
         />
         
         <VehicleDetails
