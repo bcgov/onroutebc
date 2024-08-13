@@ -2,7 +2,7 @@
 name: Loadtests
 
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
       ### Required
       dops_api_url:
