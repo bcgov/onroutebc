@@ -40,6 +40,13 @@ function isRoleArray(obj: Role[]): obj is Role[] {
   return Array.isArray(obj) && obj.every((item) => typeof item === 'string');
 }
 
+const isIRole = (permissions: IRole | Role[]): permissions is IRole => {
+  const { allowedBCeIDRoles, allowedIdirRoles, claims } = permissions as IRole;
+  return (
+    Boolean(allowedBCeIDRoles) || Boolean(allowedIdirRoles) || Boolean(claims)
+  );
+};
+
 /**
  * Evaluates if a user has at least one of the specified roles, belongs to the specified user authorization group, or meets complex role criteria.
  *
@@ -63,14 +70,10 @@ export const matchRoles = (
   userAuthGroup?: UserAuthGroup,
 ) => {
   if (!userAuthGroup) return false;
-
-  const isIdir = userAuthGroup in IDIRUserAuthGroup;
-  const isIRoleType =
-    ('allowedIdirRoles' || 'allowedBCeIDRoles' || 'claims') in permissions;
-  if (isIRoleType) {
-    const { allowedIdirRoles, allowedBCeIDRoles, claims } =
-      permissions as IRole;
+  if (isIRole(permissions)) {
+    const { allowedIdirRoles, allowedBCeIDRoles, claims } = permissions;
     let isAllowed: boolean;
+    const isIdir = userAuthGroup in IDIRUserAuthGroup;
     if (isIdir) {
       isAllowed = allowedIdirRoles?.includes(
         userAuthGroup as IDIRUserAuthGroup,
@@ -84,12 +87,12 @@ export const matchRoles = (
       isAllowed = isAllowed && claims.some((role) => userRoles.includes(role));
     }
     return isAllowed;
-  } else if (isRoleArray(permissions as Role[])) {
+  } else if (isRoleArray(permissions)) {
     // Scenario: roles is a simple list of Role objects.
     // This block checks if any of the roles assigned to the user (userRoles)
     // matches at least one of the roles specified in the input list (roles).
     // It returns true if there is a match, indicating the user has at least one of the required roles.
-    return (permissions as Role[])?.some((role) => userRoles.includes(role));
+    return permissions?.some((role) => userRoles.includes(role));
   }
   return false;
 };
