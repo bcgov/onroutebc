@@ -31,6 +31,7 @@ import {
   APPLICATION_STEPS,
   ERROR_ROUTES,
 } from "../../../../routes/constants";
+import { PAST_START_DATE_STATUSES } from "../../../../common/components/form/subFormComponents/CustomDatePicker";
 
 /**
  * The first step in creating and submitting an Application.
@@ -48,8 +49,10 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     companyLegalName,
     userDetails,
     onRouteBCClientNumber,
+    idirUserDetails,
   } = useContext(OnRouteBCContext);
 
+  const isStaffUser = Boolean(idirUserDetails?.userAuthGroup);
   const companyInfoQuery = useCompanyInfoQuery();
   const companyInfo = companyInfoQuery.data;
 
@@ -267,6 +270,7 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
           companyInfo={companyInfo}
           durationOptions={durationOptionsForPermitType(permitType)}
           doingBusinessAs={doingBusinessAs}
+          pastStartDateStatus={isStaffUser ? PAST_START_DATE_STATUSES.WARNING : PAST_START_DATE_STATUSES.FAIL}
         />
       </FormProvider>
 
