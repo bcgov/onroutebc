@@ -17,6 +17,7 @@ import { NoFeePermitsSection } from "../../components/SpecialAuthorizations/NoFe
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { LCVSection } from "../../components/SpecialAuthorizations/LCV/LCVSection";
 import { downloadLOA } from "../../apiManager/specialAuthorization";
+import { useFetchSpecialAuthorizations, useUpdateLCV, useUpdateNoFee } from "../../hooks/specialAuthorizations";
 import {
   canUpdateLCVFlag,
   canUpdateLOA,
@@ -31,10 +32,17 @@ export const SpecialAuthorizations = ({
 }: {
   companyId: number;
 }) => {
-  const [enableNoFeePermits, setEnableNoFeePermits] = useState<boolean>(false);
-  const [noFeePermitType, setNoFeePermitType]
-    = useState<RequiredOrNull<NoFeePermitType>>(null);
-  const [enableLCV, setEnableLCV] = useState<boolean>(false);
+  const {
+    data: specialAuthorizations,
+    refetch: refetchSpecialAuth,
+  } = useFetchSpecialAuthorizations(companyId);
+
+  const noFeeType = getDefaultRequiredVal(null, specialAuthorizations?.noFeeType);
+  const isLcvAllowed = getDefaultRequiredVal(false, specialAuthorizations?.isLcvAllowed);
+
+  // No-Fee switch state
+  const [enableNoFeePermits, setEnableNoFeePermits] = useState<boolean>(Boolean(noFeeType));
+
   const [showExpiredLOAs, setShowExpiredLOAs] = useState<boolean>(false);
   const [loaToDelete, setLoaToDelete] = useState<RequiredOrNull<string>>(null);
   const [showLOASteps, setShowLOASteps] = useState<boolean>(false);
@@ -76,6 +84,9 @@ export const SpecialAuthorizations = ({
     getDefaultNullableVal(idirUserDetails?.userAuthGroup, userDetails?.userAuthGroup),
   );
 
+  const updateNoFeeMutation = useUpdateNoFee();
+  const updateLCVMutation = useUpdateLCV();
+
   const activeLOAsQuery = useFetchLOAs(companyId, false);
   const expiredLOAsQuery = useFetchLOAs(companyId, true);
   const removeLOAMutation = useRemoveLOAMutation();
@@ -84,10 +95,48 @@ export const SpecialAuthorizations = ({
   const expiredLOAs = getDefaultRequiredVal([], expiredLOAsQuery.data);
 
   useEffect(() => {
-    if (!enableNoFeePermits) {
-      setNoFeePermitType(null);
+    setEnableNoFeePermits(Boolean(noFeeType));
+  }, [noFeeType]);
+
+  const handleToggleEnableNoFee = async (enable: boolean) => {
+    if (!canEditNoFeePermits) return;
+    if (enable) {
+      setEnableNoFeePermits(enable);
+    } else {
+      const { status } = await updateNoFeeMutation.mutateAsync({
+        companyId,
+        noFee: null,
+      });
+  
+      if (status === 200 || status === 201) {
+        refetchSpecialAuth();
+      }
     }
-  }, [enableNoFeePermits]);
+  };
+
+  const handleUpdateNoFee = async (noFee: RequiredOrNull<NoFeePermitType>) => {
+    if (!canEditNoFeePermits) return;
+    const { status } = await updateNoFeeMutation.mutateAsync({
+      companyId,
+      noFee,
+    });
+
+    if (status === 200 || status === 201) {
+      refetchSpecialAuth();
+    }
+  };
+
+  const handleUpdateLCV = async (enableLCV: boolean) => {
+    if (!canUpdateLCV) return;
+    const { status } = await updateLCVMutation.mutateAsync({
+      companyId,
+      isLcvAllowed: enableLCV,
+    });
+
+    if (status === 200 || status === 201) {
+      refetchSpecialAuth();
+    }
+  };
 
   const handleShowExpiredLOA = () => {
     setShowExpiredLOAs(true);
@@ -176,17 +225,17 @@ export const SpecialAuthorizations = ({
       {canViewNoFeePermits ? (
         <NoFeePermitsSection
           enableNoFeePermits={enableNoFeePermits}
-          setEnableNoFeePermits={setEnableNoFeePermits}
-          noFeePermitType={noFeePermitType}
-          setNoFeePermitType={setNoFeePermitType}
+          onUpdateEnableNoFee={handleToggleEnableNoFee}
+          noFeePermitType={noFeeType}
+          onUpdateNoFee={handleUpdateNoFee}
           isEditable={canEditNoFeePermits}
         />
       ) : null}
 
       {canViewLCV ? (
         <LCVSection
-          enableLCV={enableLCV}
-          setEnableLCV={setEnableLCV}
+          enableLCV={isLcvAllowed}
+          onUpdateLCV={handleUpdateLCV}
           isEditable={canUpdateLCV}
         />
       ) : null}

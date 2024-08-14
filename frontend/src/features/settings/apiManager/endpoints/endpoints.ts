@@ -10,6 +10,14 @@ export const SUSPEND_API_ROUTES = {
 };
 
 export const SPECIAL_AUTH_API_ROUTES = {
+  SPECIAL_AUTH: {
+    GET: (companyId: number | string) =>
+      `${SPECIAL_AUTH_API_BASE}/${companyId}/special-auth`,
+    UPDATE_NO_FEE: (companyId: number | string) =>
+      `${SPECIAL_AUTH_API_BASE}/${companyId}/special-auth/no-fee`,
+    UPDATE_LCV: (companyId: number | string) =>
+      `${SPECIAL_AUTH_API_BASE}/${companyId}/special-auth/lcv`,
+  },
   LOA: {
     ALL: (companyId: number | string, expired: boolean) =>
       `${SPECIAL_AUTH_API_BASE}/${companyId}/loas${expired ? "?expired=true" : ""}`,
