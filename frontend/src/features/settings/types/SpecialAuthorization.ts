@@ -1,3 +1,4 @@
+import { areArraysEqual } from "../../../common/helpers/util";
 import { Nullable } from "../../../common/types/common";
 import { PermitType } from "../../permits/types/PermitType";
 
@@ -59,3 +60,29 @@ export interface UpdateLOARequestData {
   powerUnits: string[];
   trailers: string[];
 }
+
+/**
+ * Determine whether or not two LOAs have the same details.
+ * @param loa1 First LOA
+ * @param loa2 Second LOA
+ * @returns Whether or not the two LOAs have the same details
+ */
+export const areLOADetailsEqual = (
+  loa1?: Nullable<LOADetail>,
+  loa2?: Nullable<LOADetail>,
+) => {
+  if (!loa1 && !loa2) return true;
+  if (!loa1 || !loa2) return false;
+  
+  return loa1.loaId === loa2.loaId
+    && loa1.loaNumber === loa2.loaNumber
+    && loa1.companyId === loa2.companyId
+    && loa1.startDate === loa2.startDate
+    && loa1.expiryDate === loa2.expiryDate
+    && loa1.documentId === loa2.documentId
+    && loa1.fileName === loa2.fileName
+    && areArraysEqual<string>(loa1.loaPermitType, loa2.loaPermitType)
+    && loa1.comment === loa2.comment
+    && areArraysEqual<string>(loa1.powerUnits, loa2.powerUnits)
+    && areArraysEqual<string>(loa1.trailers, loa2.trailers);
+};

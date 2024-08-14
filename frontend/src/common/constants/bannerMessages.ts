@@ -15,4 +15,8 @@ export const BANNER_MESSAGES = {
   SELECT_VEHICLES_LOA: "Only vehicles in the Vehicle Inventory can be designated to LOA(s).",
   SELECT_VEHICLES_LOA_INFO:
     "If you do not see the vehicle(s) you wish to designate here, please make sure you add them to the client's Vehicle Inventory first and come back to this page.",
+  FIND_LOA_DETAILS:
+    "To find details about the LOA go to the Special Authorizations page.",
+  LOA_VEHICLE_CANNOT_BE_EDITED_IN_PERMIT:
+    "Vehicle details cannot be edited in the permit application if you are using an LOA.",
 };

@@ -19,6 +19,8 @@ import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { PermitVehicleDetails } from "../../../types/PermitVehicleDetails";
 import { AmendPermitFormData } from "../types/AmendPermitFormData";
 import { getDatetimes } from "./helpers/getDatetimes";
+import { PAST_START_DATE_STATUSES } from "../../../../../common/components/form/subFormComponents/CustomDatePicker";
+import { useFetchLOAs } from "../../../../settings/hooks/LOA";
 import {
   dayjsToUtcStr,
   nowUtc,
@@ -33,7 +35,6 @@ import {
   durationOptionsForPermitType,
   minDurationForPermitType,
 } from "../../../helpers/dateSelection";
-import { PAST_START_DATE_STATUSES } from "../../../../../common/components/form/subFormComponents/CustomDatePicker";
 
 export const AmendPermitForm = () => {
   const {
@@ -66,9 +67,13 @@ export const AmendPermitForm = () => {
     permit,
   );
 
-  //The name of this feature that is used for id's, keys, and associating form components
+  // The name of this feature that is used for ids, keys, and associating form components
   const FEATURE = "amend-permit";
 
+  const { data: activeLOAs } = useFetchLOAs(companyId, false);
+  const applicableLOAs = getDefaultRequiredVal([], activeLOAs)
+    .filter(loa => loa.loaPermitType.includes(formData.permitType));
+  
   const amendPermitMutation = useAmendPermit(companyId);
   const modifyAmendmentMutation = useModifyAmendmentApplication();
   const snackBar = useContext(SnackBarContext);
@@ -222,6 +227,7 @@ export const AmendPermitForm = () => {
           durationOptions={durationOptions}
           doingBusinessAs={doingBusinessAs}
           pastStartDateStatus={PAST_START_DATE_STATUSES.WARNING}
+          selectableLOAs={applicableLOAs}
         >
           <AmendRevisionHistory revisionHistory={revisionHistory} />
           <AmendReason feature={FEATURE} />

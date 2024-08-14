@@ -116,3 +116,13 @@ export const permitTypeDisplayText = (permitType?: Nullable<string>) => {
 export const isPermitTypeValid = (permitType?: Nullable<string>) => {
   return permitType && (Object.values(PERMIT_TYPES) as string[]).includes(permitType.toUpperCase());
 };
+
+/**
+ * Determine whether or not a permit type is considered a term permit.
+ * @param permitType Type of permit
+ * @returns Whether or not the permit of that type is considered a term permit
+ */
+export const isTermPermitType = (permitType: PermitType) => {
+  return permitType === PERMIT_TYPES.TROS
+    || permitType === PERMIT_TYPES.TROW;
+};

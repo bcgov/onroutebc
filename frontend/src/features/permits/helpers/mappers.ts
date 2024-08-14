@@ -89,10 +89,11 @@ export const clonePermit = (permit: Permit): Permit => {
       contactDetails: {
         ...permit.permitData.contactDetails,
       },
-      vehicleDetails:{
+      vehicleDetails: {
         ...permit.permitData.vehicleDetails,
       },
       commodities: [...permit.permitData.commodities],
+      selectedLoas: [...getDefaultRequiredVal([], permit.permitData.selectedLoas)],
       mailingAddress: {
         ...permit.permitData.mailingAddress,
       },

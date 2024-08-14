@@ -3,12 +3,13 @@ import { useForm } from "react-hook-form";
 
 import { Application, ApplicationFormData } from "../types/application";
 import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBCContext";
-import { areCommoditiesEqual } from "../helpers/equality";
+import { areCommoditiesEqual, arePermitLOAsEqual } from "../helpers/equality";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { CompanyProfile } from "../../manageProfile/types/manageProfile";
 import { Nullable, Optional } from "../../../common/types/common";
 import { PermitType } from "../types/PermitType";
 import { PermitCommodity } from "../types/PermitCommodity";
+import { LOADetail } from "../../settings/types/SpecialAuthorization";
 import {
   getDefaultContactDetails,
   getDefaultMailingAddress,
@@ -117,6 +118,22 @@ export const useDefaultApplicationFormData = (
     commoditiesRef.current = incomingCommodities;
   }
 
+  const loasRef = useRef<Nullable<LOADetail[]>>(
+    applicationData?.permitData?.selectedLoas,
+  );
+  const incomingLOAs = getDefaultRequiredVal(
+    [],
+    applicationData?.permitData?.selectedLoas,
+  );
+  if (
+    !arePermitLOAsEqual(
+      incomingLOAs,
+      getDefaultRequiredVal([], loasRef.current),
+    )
+  ) {
+    loasRef.current = incomingLOAs;
+  }
+
   // update the entire form whenever these values are updated
   const applicationFormDataDepArray = [
     companyId,
@@ -133,6 +150,7 @@ export const useDefaultApplicationFormData = (
     applicationData?.revision,
     applicationData?.previousRevision,
     commoditiesRef.current, // array deep comparison used here
+    loasRef.current,
     companyInfo?.legalName,
     companyInfo?.alternateName,
     companyInfo?.clientNumber,

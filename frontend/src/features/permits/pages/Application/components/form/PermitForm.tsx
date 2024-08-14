@@ -13,6 +13,8 @@ import { Nullable } from "../../../../../../common/types/common";
 import { PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
 import { PermitCommodity } from "../../../../types/PermitCommodity";
 import { PastStartDateStatus } from "../../../../../../common/components/form/subFormComponents/CustomDatePicker";
+import { PermitLOA } from "./PermitLOA";
+import { LOADetail } from "../../../../../settings/types/SpecialAuthorization";
 import {
   PowerUnit,
   Trailer,
@@ -51,6 +53,7 @@ interface PermitFormProps {
   }[];
   doingBusinessAs?: Nullable<string>;
   pastStartDateStatus: PastStartDateStatus;
+  selectableLOAs: LOADetail[];
 }
 
 export const PermitForm = (props: PermitFormProps) => {
@@ -71,6 +74,10 @@ export const PermitForm = (props: PermitFormProps) => {
         />
 
         <ContactDetails feature={props.feature} />
+
+        <PermitLOA
+          selectableLOAs={props.selectableLOAs}
+        />
 
         <PermitDetails
           feature={props.feature}

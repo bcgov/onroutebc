@@ -21,6 +21,9 @@ import { PermitType } from "../../types/PermitType";
 import { PermitVehicleDetails } from "../../types/PermitVehicleDetails";
 import { durationOptionsForPermitType } from "../../helpers/dateSelection";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
+import { PAST_START_DATE_STATUSES } from "../../../../common/components/form/subFormComponents/CustomDatePicker";
+import { useFetchLOAs } from "../../../settings/hooks/LOA";
+import { getStartOfDate, now, toLocalDayjs } from "../../../../common/helpers/formatDate";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -31,7 +34,6 @@ import {
   APPLICATION_STEPS,
   ERROR_ROUTES,
 } from "../../../../routes/constants";
-import { PAST_START_DATE_STATUSES } from "../../../../common/components/form/subFormComponents/CustomDatePicker";
 
 /**
  * The first step in creating and submitting an Application.
@@ -40,6 +42,8 @@ import { PAST_START_DATE_STATUSES } from "../../../../common/components/form/sub
 export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
   // The name of this feature that is used for id's, keys, and associating form components
   const FEATURE = "application";
+
+  const startOfToday = getStartOfDate(now());
 
   // Context to hold all of the application data related to the application
   const applicationContext = useContext(ApplicationContext);
@@ -68,6 +72,12 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
       id => `${id}`,
       companyInfo?.companyId,
     ),
+  );
+
+  const { data: activeLOAs } = useFetchLOAs(companyId, false);
+  const applicableLOAs = getDefaultRequiredVal([], activeLOAs).filter(
+    loa => loa.loaPermitType.includes(permitType)
+      && (!loa.expiryDate || !startOfToday.isAfter(toLocalDayjs(loa.expiryDate)))
   );
   
   // Use a custom hook that performs the following whenever page is rendered (or when application context is updated/changed):
@@ -271,6 +281,7 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
           durationOptions={durationOptionsForPermitType(permitType)}
           doingBusinessAs={doingBusinessAs}
           pastStartDateStatus={isStaffUser ? PAST_START_DATE_STATUSES.WARNING : PAST_START_DATE_STATUSES.FAIL}
+          selectableLOAs={applicableLOAs}
         />
       </FormProvider>
 

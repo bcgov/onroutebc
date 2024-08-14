@@ -48,6 +48,7 @@ export const defaultApplicationData = {
     startDate: getStartOfDate(toLocalDayjs(permitData.startDate)),
     expiryDate: getEndOfDate(toLocalDayjs(permitData.expiryDate)),
   },
+  permitStatus: PERMIT_STATUSES.IN_PROGRESS,
 } as Application;
 
 export const companyInfo = getDefaultCompanyInfo();

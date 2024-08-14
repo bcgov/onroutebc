@@ -1,0 +1,30 @@
+@use "../../../../../../themes/orbcStyles";
+
+@include orbcStyles.permit-main-box-style(".permit-loa");
+@include orbcStyles.permit-left-box-style(".permit-loa__header");
+@include orbcStyles.permit-right-box-style(".permit-loa__body");
+
+.permit-loa {
+  .loa-title {
+    color: orbcStyles.$bc-black;
+
+    &__title {
+      font-weight: bold;
+      font-size: 1.25rem;
+
+      &--optional {
+        font-weight: normal;
+      }
+    }
+  }
+
+  .loa-info {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+
+    &__message {
+      font-size: 1rem;
+      font-weight: normal;
+    }
+  }
+}

@@ -277,3 +277,27 @@ export const setRedirectInSession = (redirectUri: string) => {
     }
   }
 };
+
+/**
+ * Determine whether or not two arrays have the same items.
+ * @param arr1 First array
+ * @param arr2 Second array
+ * @returns Whether or not the two arrays contain the same items
+ */
+export const areArraysEqual = <T extends (number | string)>(
+  arr1: T[],
+  arr2: T[],
+) => {
+  const set1 = new Set(arr1);
+  const set2 = new Set(arr2);
+
+  for (const val of set1) {
+    if (!set2.has(val)) return false;
+  }
+
+  for (const val of set2) {
+    if (!set1.has(val)) return false;
+  }
+  
+  return true;
+};
