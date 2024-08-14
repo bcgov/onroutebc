@@ -177,7 +177,7 @@ export const updateLCV = async (
 ): Promise<AxiosResponse<SpecialAuthorizationData>> => {
   const { companyId, isLcvAllowed } = NoFeeData;
   return await httpPUTRequest(
-    SPECIAL_AUTH_API_ROUTES.SPECIAL_AUTH.UPDATE_NO_FEE(companyId),
+    SPECIAL_AUTH_API_ROUTES.SPECIAL_AUTH.UPDATE_LCV(companyId),
     { isLcvAllowed },
   );
 };
