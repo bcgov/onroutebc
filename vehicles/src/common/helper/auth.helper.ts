@@ -72,6 +72,10 @@ export const matchRoles = (
   if (!userAuthGroup) return false;
   if (isIRole(permissions)) {
     const { allowedIdirRoles, allowedBCeIDRoles, claims } = permissions;
+    // If only claims is specified, return the value of that.
+    if (claims && !allowedBCeIDRoles && !allowedIdirRoles) {
+      return claims.some((role) => userRoles.includes(role));
+    }
     let isAllowed: boolean;
     const isIdir = userAuthGroup in IDIRUserAuthGroup;
     if (isIdir) {
@@ -83,6 +87,8 @@ export const matchRoles = (
         userAuthGroup as ClientUserAuthGroup,
       );
     }
+    // If claims is specified alongside the allowed roles, include
+    // its value in the output.
     if (claims) {
       isAllowed = isAllowed && claims.some((role) => userRoles.includes(role));
     }
