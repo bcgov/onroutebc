@@ -1,9 +1,9 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
   Put,
-  Query,
   Req,
 } from '@nestjs/common';
 import {
@@ -12,7 +12,6 @@ import {
   ApiInternalServerErrorResponse,
   ApiMethodNotAllowedResponse,
   ApiOperation,
-  ApiQuery,
   ApiResponse,
   ApiTags,
   ApiUnprocessableEntityResponse,
@@ -24,9 +23,8 @@ import { ReadSpecialAuthDto } from './dto/response/read-special-auth.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { Request } from 'express';
 import { UpsertSpecialAuthDto } from './dto/request/upsert-special-auth.dto';
-import { LcvQueryParamDto } from './dto/request/queryParam/lcv.query-params.dto';
-import { NoFeeQueryParamDto } from './dto/request/queryParam/no-fee.query-params.dto';
-import { NoFeeType } from 'src/common/enum/no-fee-type.enum';
+import { CreateLcvDto } from './dto/request/create-lcv.dto';
+import { CreateNoFeeDto } from './dto/request/create-no-fee.dto';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
 
@@ -65,13 +63,7 @@ export class SpecialAuthController {
     return await this.specialAuthService.findOne(companyId);
   }
 
-  @ApiQuery({
-    name: 'isLcvAllowed',
-    type: 'boolean',
-    required: true,
-    example: false,
-    description: 'Indicates if long combination vehicles are supported or not.',
-  })
+
   @ApiOperation({ summary: 'Create or update LCV (Long Combination Vehicle) allowance.' })
   @ApiResponse({
     status: 200,
@@ -83,11 +75,11 @@ export class SpecialAuthController {
   async updateLcv(
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
-    @Query() lcvQueryParamDto: LcvQueryParamDto,
+    @Body() createLcvDto: CreateLcvDto,
   ): Promise<ReadSpecialAuthDto> {
     const currentUser = request.user as IUserJWT;
     const upsertSpecialAuthDto = Object.assign(new UpsertSpecialAuthDto(), {
-      isLcvAllowed: lcvQueryParamDto.isLcvAllowed,
+      isLcvAllowed: createLcvDto.isLcvAllowed,
     });
     return await this.specialAuthService.upsertSpecialAuth(
       companyId,
@@ -97,13 +89,6 @@ export class SpecialAuthController {
   }
 
   @ApiOperation({ summary: 'Create or update no fee type.' })
-  @ApiQuery({
-    name: 'noFeeType',
-    enum: NoFeeType,
-    required: false,
-    example: NoFeeType.CA_GOVT,
-    description: 'No fee type.',
-  })
   @ApiResponse({
     status: 200,
     description: 'No fee type updated successfully.',
@@ -114,11 +99,11 @@ export class SpecialAuthController {
   async updateNoFee(
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
-    @Query() noFeeQueryParamdto: NoFeeQueryParamDto,
+    @Body() createNoFeeDto: CreateNoFeeDto,
   ): Promise<ReadSpecialAuthDto> {
     const currentUser = request.user as IUserJWT;
     const upsertSpecialAuthDto = Object.assign(new UpsertSpecialAuthDto(), {
-      noFeeType: noFeeQueryParamdto.noFeeType,
+      noFeeType: createNoFeeDto.noFeeType,
     });
     return await this.specialAuthService.upsertSpecialAuth(
       companyId,
