@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsOptional } from 'class-validator';
 import { NoFeeType } from 'src/common/enum/no-fee-type.enum';
 
-export class NoFeeQueryParamDto {
+export class CreateNoFeeDto {
   @ApiProperty({
     enum: NoFeeType,
     example: NoFeeType.CA_GOVT,
