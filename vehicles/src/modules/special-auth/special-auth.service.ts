@@ -9,6 +9,7 @@ import { SpecialAuth } from './entities/special-auth.entity';
 import { ReadSpecialAuthDto } from './dto/response/read-special-auth.dto';
 import { CreateLcvDto } from './dto/request/create-lcv.dto';
 import { CreateNoFeeDto } from './dto/request/create-no-fee.dto';
+import { Company } from '../company-user-management/company/entities/company.entity';
 
 export class SpecialAuthService {
   private readonly logger = new Logger(SpecialAuthService.name);
@@ -67,17 +68,15 @@ export class SpecialAuthService {
     createLcvDto?: CreateLcvDto,
     createNoFeeDto?: CreateNoFeeDto,
   ): Promise<ReadSpecialAuthDto> {
-    const specialAuthdto: ReadSpecialAuthDto = await this.findOne(companyId);
+    const specialAuthDto: ReadSpecialAuthDto = await this.findOne(companyId);
     let specialAuth = new SpecialAuth();
-
-    const { isLcvAllowed } = createLcvDto;
-
-    const { noFeeType } = createNoFeeDto;
-
-    specialAuth.isLcvAllowed = isLcvAllowed;
-    specialAuth.noFeeType = noFeeType;
-    specialAuth.specialAuthId = specialAuthdto?.specialAuthId;
-    specialAuth.company.companyId = specialAuthdto ? undefined : companyId;
+    specialAuth.company = !specialAuthDto ? new Company() : undefined;
+    specialAuth.isLcvAllowed = createLcvDto?createLcvDto.isLcvAllowed:undefined;
+    specialAuth.noFeeType = createNoFeeDto?createNoFeeDto.noFeeType:undefined;
+    specialAuth.specialAuthId = specialAuthDto?.specialAuthId;
+    if (!specialAuthDto) {
+      specialAuth.company.companyId = companyId ;
+    }
     specialAuth.updatedUser = currentUser.userName;
     specialAuth.updatedUserGuid = currentUser.userGUID;
     specialAuth.updatedDateTime = new Date();
