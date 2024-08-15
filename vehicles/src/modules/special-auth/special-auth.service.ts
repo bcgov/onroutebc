@@ -71,11 +71,15 @@ export class SpecialAuthService {
     const specialAuthDto: ReadSpecialAuthDto = await this.findOne(companyId);
     let specialAuth = new SpecialAuth();
     specialAuth.company = !specialAuthDto ? new Company() : undefined;
-    specialAuth.isLcvAllowed = createLcvDto?createLcvDto.isLcvAllowed:undefined;
-    specialAuth.noFeeType = createNoFeeDto?createNoFeeDto.noFeeType:undefined;
+    specialAuth.isLcvAllowed = createLcvDto
+      ? createLcvDto.isLcvAllowed
+      : undefined;
+    specialAuth.noFeeType = createNoFeeDto
+      ? createNoFeeDto.noFeeType
+      : undefined;
     specialAuth.specialAuthId = specialAuthDto?.specialAuthId;
     if (!specialAuthDto) {
-      specialAuth.company.companyId = companyId ;
+      specialAuth.company.companyId = companyId;
     }
     specialAuth.updatedUser = currentUser.userName;
     specialAuth.updatedUserGuid = currentUser.userGUID;

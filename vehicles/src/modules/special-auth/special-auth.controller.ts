@@ -56,6 +56,7 @@ export class SpecialAuthController {
 
   @ApiOperation({
     summary: 'Create or update LCV (Long Combination Vehicle) allowance.',
+    description: 'Create or update LCV (Long Combination Vehicle) allowance.',
   })
   @ApiResponse({
     status: 200,
@@ -78,7 +79,10 @@ export class SpecialAuthController {
     );
   }
 
-  @ApiOperation({ summary: 'Create or update no fee type.' })
+  @ApiOperation({
+    summary: 'Create or update no fee type.',
+    description: 'Create or update no fee type.',
+  })
   @ApiResponse({
     status: 200,
     description: 'No fee type updated successfully.',
