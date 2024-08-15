@@ -29,15 +29,15 @@ import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { Request } from 'express';
 import { Roles } from '../../../common/decorator/roles.decorator';
-import { Role } from '../../../common/enum/roles.enum';
+import { Claim } from '../../../common/enum/claims.enum';
 import { UpdateUserDto } from './dto/request/update-user.dto';
 import { GetCompanyUserQueryParamsDto } from './dto/request/queryParam/getCompanyUser.query-params.dto';
 import { GetCompanyUserByUserGUIDPathParamsDto } from './dto/request/pathParam/getCompanyUserByUserGUID.path-params.dto';
 import { DeleteUsersDto } from './dto/request/delete-users.dto';
 import { DeleteDto } from '../../common/dto/response/delete.dto';
 import {
-  ClientUserAuthGroup,
-  IDIR_USER_AUTH_GROUP_LIST,
+  ClientUserRole,
+  IDIR_USER_ROLE_LIST,
 } from '../../../common/enum/user-auth-group.enum';
 import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 
@@ -78,7 +78,7 @@ export class CompanyUsersController {
     isArray: true,
   })
   @ApiParam({ name: 'companyId', required: true })
-  @Roles(Role.READ_SELF)
+  @Roles(Claim.READ_SELF)
   @Get()
   async findAllCompanyUsers(
     @Req() request: Request,
@@ -130,7 +130,7 @@ export class CompanyUsersController {
     description: 'The User Resource',
     type: ReadUserDto,
   })
-  @Roles(Role.READ_USER)
+  @Roles(Claim.READ_USER)
   @Get(':userGUID')
   async get(
     @Param() params: GetCompanyUserByUserGUIDPathParamsDto,
@@ -156,7 +156,7 @@ export class CompanyUsersController {
     description: 'The User Resource',
     type: ReadUserDto,
   })
-  @Roles(Role.WRITE_SELF)
+  @Roles(Claim.WRITE_SELF)
   @Put(':userGUID')
   async update(
     @Req() request: Request,
@@ -187,7 +187,7 @@ export class CompanyUsersController {
    * @returns A {@link DeleteDto} object including counts of successfully deleted users. Throws DataNotFoundException
    * if no delete result is obtained.
    */
-  @Roles(Role.WRITE_USER)
+  @Roles(Claim.WRITE_USER)
   @ApiOperation({
     summary: 'Delete users associated with a company',
     description:
@@ -208,12 +208,8 @@ export class CompanyUsersController {
   ): Promise<DeleteDto> {
     const currentUser = request.user as IUserJWT;
     if (
-      currentUser.orbcUserAuthGroup !==
-        ClientUserAuthGroup.COMPANY_ADMINISTRATOR &&
-      !doesUserHaveAuthGroup(
-        currentUser.orbcUserAuthGroup,
-        IDIR_USER_AUTH_GROUP_LIST,
-      )
+      currentUser.orbcUserAuthGroup !== ClientUserRole.COMPANY_ADMINISTRATOR &&
+      !doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, IDIR_USER_ROLE_LIST)
     ) {
       throw new ForbiddenException();
     }

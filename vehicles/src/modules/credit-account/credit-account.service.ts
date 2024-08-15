@@ -46,9 +46,9 @@ import { DataNotFoundException } from '../../common/exception/data-not-found.exc
 
 import { throwUnprocessableEntityException } from '../../common/helper/exception.helper';
 import {
-  ClientUserAuthGroup,
-  IDIRUserAuthGroup,
-  UserAuthGroup,
+  ClientUserRole,
+  IDIRUserRole,
+  UserRole,
 } from '../../common/enum/user-auth-group.enum';
 import { ReadCreditAccountActivityDto } from './dto/response/read-credit-account-activity.dto';
 import { ReadCreditAccountMetadataDto } from './dto/response/read-credit-account-metadata.dto';
@@ -271,7 +271,7 @@ export class CreditAccountService {
       throw new DataNotFoundException();
     } else if (
       doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, [
-        ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+        ClientUserRole.COMPANY_ADMINISTRATOR,
       ]) &&
       creditAccount?.company.companyId !== companyId
     ) {
@@ -282,11 +282,11 @@ export class CreditAccountService {
       creditAccount?.creditAccountStatusType ===
         CreditAccountStatus.ACCOUNT_CLOSED &&
       !doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, [
-        IDIRUserAuthGroup.HQ_ADMINISTRATOR,
-        IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
-        IDIRUserAuthGroup.FINANCE,
-        IDIRUserAuthGroup.PPC_CLERK,
-        IDIRUserAuthGroup.PPC_SUPERVISOR,
+        IDIRUserRole.HQ_ADMINISTRATOR,
+        IDIRUserRole.SYSTEM_ADMINISTRATOR,
+        IDIRUserRole.FINANCE,
+        IDIRUserRole.PPC_CLERK,
+        IDIRUserRole.PPC_SUPERVISOR,
       ])
     ) {
       throw new DataNotFoundException();
@@ -337,11 +337,11 @@ export class CreditAccountService {
       creditAccount?.creditAccountStatusType ===
         CreditAccountStatus.ACCOUNT_CLOSED &&
       !doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, [
-        IDIRUserAuthGroup.HQ_ADMINISTRATOR,
-        IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
-        IDIRUserAuthGroup.FINANCE,
-        IDIRUserAuthGroup.PPC_CLERK,
-        IDIRUserAuthGroup.PPC_SUPERVISOR,
+        IDIRUserRole.HQ_ADMINISTRATOR,
+        IDIRUserRole.SYSTEM_ADMINISTRATOR,
+        IDIRUserRole.FINANCE,
+        IDIRUserRole.PPC_CLERK,
+        IDIRUserRole.PPC_SUPERVISOR,
       ])
     ) {
       throw new DataNotFoundException();
@@ -1013,7 +1013,7 @@ export class CreditAccountService {
       throw new DataNotFoundException();
     } else if (
       doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, [
-        ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+        ClientUserRole.COMPANY_ADMINISTRATOR,
       ]) &&
       creditAccount?.company.companyId !== companyId
     ) {
@@ -1024,11 +1024,11 @@ export class CreditAccountService {
       creditAccount?.creditAccountStatusType ===
         CreditAccountStatus.ACCOUNT_CLOSED &&
       !doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, [
-        IDIRUserAuthGroup.HQ_ADMINISTRATOR,
-        IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
-        IDIRUserAuthGroup.FINANCE,
-        IDIRUserAuthGroup.PPC_CLERK,
-        IDIRUserAuthGroup.PPC_SUPERVISOR,
+        IDIRUserRole.HQ_ADMINISTRATOR,
+        IDIRUserRole.SYSTEM_ADMINISTRATOR,
+        IDIRUserRole.FINANCE,
+        IDIRUserRole.PPC_CLERK,
+        IDIRUserRole.PPC_SUPERVISOR,
       ])
     ) {
       throw new DataNotFoundException();
@@ -1096,7 +1096,7 @@ export class CreditAccountService {
       creditAccount?.creditAccountStatusType ===
         CreditAccountStatus.ACCOUNT_ON_HOLD &&
       doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, [
-        ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+        ClientUserRole.COMPANY_ADMINISTRATOR,
       ]) &&
       creditAccount?.company.companyId === companyId
     ) {
@@ -1107,17 +1107,17 @@ export class CreditAccountService {
       creditAccount?.creditAccountStatusType ===
         CreditAccountStatus.ACCOUNT_CLOSED &&
       !doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, [
-        IDIRUserAuthGroup.HQ_ADMINISTRATOR,
-        IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
-        IDIRUserAuthGroup.FINANCE,
-        IDIRUserAuthGroup.PPC_CLERK,
-        IDIRUserAuthGroup.PPC_SUPERVISOR,
+        IDIRUserRole.HQ_ADMINISTRATOR,
+        IDIRUserRole.SYSTEM_ADMINISTRATOR,
+        IDIRUserRole.FINANCE,
+        IDIRUserRole.PPC_CLERK,
+        IDIRUserRole.PPC_SUPERVISOR,
       ])
     ) {
       throw new DataNotFoundException();
     } else if (
       doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, [
-        ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+        ClientUserRole.COMPANY_ADMINISTRATOR,
       ]) &&
       creditAccount?.company.companyId !== companyId
     ) {
@@ -1234,35 +1234,35 @@ export class CreditAccountService {
    * specifying their access permissions.
    *
    * @param {CreditAccountUserType} creditAccountUserType - The type of the credit account user.
-   * @param {UserAuthGroup} userAuthGroup - The authorization group of the user.
+   * @param {UserRole} userAuthGroup - The authorization group of the user.
    * @returns {Object} - An object representing the access permissions for the user.
    */
   private granularAccessControl(
     creditAccountUserType: CreditAccountUserType,
-    userAuthGroup: UserAuthGroup,
+    userAuthGroup: UserRole,
   ) {
     switch (creditAccountUserType) {
       // Check if the user is an ACCOUNT_HOLDER
       case CreditAccountUserType.ACCOUNT_HOLDER:
         switch (userAuthGroup) {
           // Grant full finance access
-          case IDIRUserAuthGroup.FINANCE:
+          case IDIRUserRole.FINANCE:
             return {
               company: true,
               creditAccountUsers: { company: true },
               creditAccountActivities: { idirUser: true },
             };
           // Grant access to SYSTEM_ADMINISTRATOR, HQ_ADMINISTRATOR, PPC_CLERK, PPC_SUPERVISOR, and COMPANY_ADMINISTRATOR groups
-          case IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR:
-          case IDIRUserAuthGroup.HQ_ADMINISTRATOR:
-          case IDIRUserAuthGroup.PPC_CLERK:
-          case IDIRUserAuthGroup.PPC_SUPERVISOR:
-          case ClientUserAuthGroup.COMPANY_ADMINISTRATOR:
+          case IDIRUserRole.SYSTEM_ADMINISTRATOR:
+          case IDIRUserRole.HQ_ADMINISTRATOR:
+          case IDIRUserRole.PPC_CLERK:
+          case IDIRUserRole.PPC_SUPERVISOR:
+          case ClientUserRole.COMPANY_ADMINISTRATOR:
             return {
               company: true,
               creditAccountUsers: { company: true },
             };
-          case ClientUserAuthGroup.PERMIT_APPLICANT:
+          case ClientUserRole.PERMIT_APPLICANT:
             return { company: true };
         }
         break;
@@ -1270,22 +1270,22 @@ export class CreditAccountService {
       case CreditAccountUserType.ACCOUNT_USER:
         switch (userAuthGroup) {
           // Grant full finance access
-          case IDIRUserAuthGroup.FINANCE:
+          case IDIRUserRole.FINANCE:
             return {
               company: true,
               creditAccountUsers: { company: true },
             };
           // Grant partial access to SYSTEM_ADMINISTRATOR, HQ_ADMINISTRATOR, PPC_CLERK, PPC_SUPERVISOR, COMPANY_ADMINISTRATOR, and PERMIT_APPLICANT groups
-          case IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR:
-          case IDIRUserAuthGroup.HQ_ADMINISTRATOR:
-          case IDIRUserAuthGroup.PPC_CLERK:
-          case IDIRUserAuthGroup.PPC_SUPERVISOR:
+          case IDIRUserRole.SYSTEM_ADMINISTRATOR:
+          case IDIRUserRole.HQ_ADMINISTRATOR:
+          case IDIRUserRole.PPC_CLERK:
+          case IDIRUserRole.PPC_SUPERVISOR:
             return {
               company: true,
               creditAccountUsers: { company: true },
             };
-          case ClientUserAuthGroup.COMPANY_ADMINISTRATOR:
-          case ClientUserAuthGroup.PERMIT_APPLICANT:
+          case ClientUserRole.COMPANY_ADMINISTRATOR:
+          case ClientUserRole.PERMIT_APPLICANT:
             return { company: true };
         }
         break;

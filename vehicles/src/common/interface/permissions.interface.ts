@@ -1,8 +1,5 @@
-import { Role } from '../enum/roles.enum';
-import {
-  ClientUserAuthGroup,
-  IDIRUserAuthGroup,
-} from '../enum/user-auth-group.enum';
+import { Claim } from '../enum/claims.enum';
+import { ClientUserRole, IDIRUserRole } from '../enum/user-auth-group.enum';
 
 /**
  * The permission configuration for endpoints.
@@ -14,7 +11,7 @@ export interface IPermissions {
    * If the user has one of the specified auth groups,
    * the component will render.
    */
-  allowedIdirRoles?: readonly IDIRUserAuthGroup[];
+  allowedIdirRoles?: readonly IDIRUserRole[];
 
   /**
    * The bceid auth roles that are allowed to see the component.
@@ -22,7 +19,7 @@ export interface IPermissions {
    * If the user has one of the specified auth groups,
    * the component will render.
    */
-  allowedBCeIDRoles?: readonly ClientUserAuthGroup[];
+  allowedBCeIDRoles?: readonly ClientUserRole[];
 
   /**
    * The collection of individual security claims that may be used
@@ -30,5 +27,5 @@ export interface IPermissions {
    *
    * If provided, the claim will be additionally checked on.
    */
-  claims?: readonly Role[];
+  claims?: readonly Claim[];
 }

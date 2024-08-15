@@ -1,9 +1,9 @@
-export enum ClientUserAuthGroup {
+export enum ClientUserRole {
   PERMIT_APPLICANT = 'PAPPLICANT',
   COMPANY_ADMINISTRATOR = 'ORGADMIN',
 }
 
-export enum IDIRUserAuthGroup {
+export enum IDIRUserRole {
   PPC_CLERK = 'PPCCLERK',
   PPC_SUPERVISOR = 'CTPO',
   SYSTEM_ADMINISTRATOR = 'SYSADMIN',
@@ -12,21 +12,18 @@ export enum IDIRUserAuthGroup {
   FINANCE = 'FINANCE',
 }
 
-export enum GenericUserAuthGroup {
+export enum GenericUserRole {
   ANONYMOUS = 'ANONYMOUS',
   PUBLIC_VERIFIED = 'PUBLIC',
 }
 
-export type UserAuthGroup =
-  | ClientUserAuthGroup
-  | IDIRUserAuthGroup
-  | GenericUserAuthGroup;
+export type UserRole = ClientUserRole | IDIRUserRole | GenericUserRole;
 
-export const GENERIC_USER_AUTH_GROUP_LIST: readonly GenericUserAuthGroup[] =
-  Object.values(GenericUserAuthGroup);
+export const GENERIC_USER_ROLE_LIST: readonly GenericUserRole[] =
+  Object.values(GenericUserRole);
 
-export const CLIENT_USER_AUTH_GROUP_LIST: readonly ClientUserAuthGroup[] =
-  Object.values(ClientUserAuthGroup);
+export const CLIENT_USER_ROLE_LIST: readonly ClientUserRole[] =
+  Object.values(ClientUserRole);
 
-export const IDIR_USER_AUTH_GROUP_LIST: readonly IDIRUserAuthGroup[] =
-  Object.values(IDIRUserAuthGroup);
+export const IDIR_USER_ROLE_LIST: readonly IDIRUserRole[] =
+  Object.values(IDIRUserRole);

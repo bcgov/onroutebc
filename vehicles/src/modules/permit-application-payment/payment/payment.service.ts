@@ -56,7 +56,7 @@ import { Cache } from 'cache-manager';
 import { CacheKey } from 'src/common/enum/cache-key.enum';
 import { getFromCache } from '../../../common/helper/cache.helper';
 import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
-import { IDIR_USER_AUTH_GROUP_LIST } from '../../../common/enum/user-auth-group.enum';
+import { IDIR_USER_ROLE_LIST } from '../../../common/enum/user-auth-group.enum';
 import {
   throwBadRequestException,
   throwUnprocessableEntityException,
@@ -252,7 +252,7 @@ export class PaymentService {
     if (
       !doesUserHaveAuthGroup(
         currentUser.orbcUserAuthGroup,
-        IDIR_USER_AUTH_GROUP_LIST,
+        IDIR_USER_ROLE_LIST,
       ) &&
       createTransactionDto?.paymentMethodTypeCode !==
         PaymentMethodTypeEnum.WEB &&

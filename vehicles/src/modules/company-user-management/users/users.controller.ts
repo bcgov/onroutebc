@@ -22,7 +22,7 @@ import {
 import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { ReadUserOrbcStatusDto } from './dto/response/read-user-orbc-status.dto';
 import { UsersService } from './users.service';
-import { Role } from '../../../common/enum/roles.enum';
+import { Claim } from '../../../common/enum/claims.enum';
 import { Request } from 'express';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
@@ -32,7 +32,7 @@ import { ReadUserDto } from './dto/response/read-user.dto';
 import { IDP } from '../../../common/enum/idp.enum';
 import { GetStaffUserQueryParamsDto } from './dto/request/queryParam/getStaffUser.query-params.dto';
 import { GetUserRolesQueryParamsDto } from './dto/request/queryParam/getUserRoles.query-params.dto';
-import { IDIR_USER_AUTH_GROUP_LIST } from '../../../common/enum/user-auth-group.enum';
+import { IDIR_USER_ROLE_LIST } from '../../../common/enum/user-auth-group.enum';
 import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 
 @ApiTags('Company and User Management - User')
@@ -108,12 +108,12 @@ export class UsersController {
       'This endpoint queries all roles associated with the provided company ID for the calling user. ' +
       "It fetches roles by integrating with the User service, ensuring roles are accurately returned based on the company's context and the user's privileges.",
   })
-  @Roles(Role.READ_SELF)
+  @Roles(Claim.READ_SELF)
   @Get('/roles')
   async getRolesForUsers(
     @Req() request: Request,
     @Query() getUserRolesQueryParamsDto: GetUserRolesQueryParamsDto,
-  ): Promise<Role[]> {
+  ): Promise<Claim[]> {
     const currentUser = request.user as IUserJWT;
     const roles = await this.userService.getRolesForUser(
       currentUser.userGUID,
@@ -136,7 +136,7 @@ export class UsersController {
     type: ReadUserDto,
     isArray: true,
   })
-  @Roles(Role.READ_USER)
+  @Roles(Claim.READ_USER)
   @Get()
   async findAll(
     @Req() request: Request,
@@ -144,10 +144,7 @@ export class UsersController {
   ): Promise<ReadUserDto[]> {
     const currentUser = request.user as IUserJWT;
     if (
-      !doesUserHaveAuthGroup(
-        currentUser.orbcUserAuthGroup,
-        IDIR_USER_AUTH_GROUP_LIST,
-      )
+      !doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, IDIR_USER_ROLE_LIST)
     ) {
       throw new ForbiddenException(
         `Forbidden for ${currentUser.orbcUserAuthGroup} role.`,
@@ -198,7 +195,7 @@ export class UsersController {
       'the first result if any are found. Throws a BadRequestException if the GUIDs ' +
       'do not match for non-IDIR users, and DataNotFoundException if no users are found.',
   })
-  @Roles(Role.READ_SELF)
+  @Roles(Claim.READ_SELF)
   @Get(':userGUID')
   async findUserDetails(
     @Req() request: Request,

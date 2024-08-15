@@ -30,7 +30,7 @@ import { ReadCompanyUserDto } from './dto/response/read-company-user.dto';
 import { ReadCompanyMetadataDto } from './dto/response/read-company-metadata.dto';
 import { Request } from 'express';
 import { Roles } from '../../../common/decorator/roles.decorator';
-import { Role } from '../../../common/enum/roles.enum';
+import { Claim } from '../../../common/enum/claims.enum';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
@@ -39,7 +39,7 @@ import { GetCompanyQueryParamsDto } from './dto/request/queryParam/getCompany.qu
 
 import { ReadVerifyClientDto } from './dto/response/read-verify-client.dto';
 import { VerifyClientDto } from './dto/request/verify-client.dto';
-import { IDIR_USER_AUTH_GROUP_LIST } from '../../../common/enum/user-auth-group.enum';
+import { IDIR_USER_ROLE_LIST } from '../../../common/enum/user-auth-group.enum';
 import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 
 @ApiTags('Company and User Management - Company')
@@ -97,7 +97,7 @@ export class CompanyController {
    * @returns The paginated companies with response object {@link ReadCompanyDto}.
    */
   @ApiPaginatedResponse(ReadCompanyDto)
-  @Roles(Role.READ_ORG)
+  @Roles(Claim.READ_ORG)
   @Get()
   async getCompanyPaginated(
     @Req() request: Request,
@@ -105,10 +105,7 @@ export class CompanyController {
   ): Promise<PaginationDto<ReadCompanyDto>> {
     const currentUser = request.user as IUserJWT;
     if (
-      !doesUserHaveAuthGroup(
-        currentUser.orbcUserAuthGroup,
-        IDIR_USER_AUTH_GROUP_LIST,
-      )
+      !doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, IDIR_USER_ROLE_LIST)
     ) {
       throw new UnauthorizedException(
         `Unauthorized for ${currentUser.orbcUserAuthGroup} role.`,
@@ -140,7 +137,7 @@ export class CompanyController {
     type: ReadCompanyMetadataDto,
     isArray: true,
   })
-  @Roles(Role.READ_ORG)
+  @Roles(Claim.READ_ORG)
   @Get('meta-data')
   async getCompanyMetadata(
     @Req() request: Request,
@@ -168,7 +165,7 @@ export class CompanyController {
     description: 'The Company Resource',
     type: ReadCompanyDto,
   })
-  @Roles(Role.READ_ORG)
+  @Roles(Claim.READ_ORG)
   @Get(':companyId')
   async get(
     @Req() request: Request,
@@ -194,7 +191,7 @@ export class CompanyController {
     description: 'The Company Resource',
     type: ReadCompanyDto,
   })
-  @Roles(Role.WRITE_ORG)
+  @Roles(Claim.WRITE_ORG)
   @Put(':companyId')
   async update(
     @Req() request: Request,

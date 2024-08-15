@@ -29,7 +29,7 @@ import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { Request } from 'express';
 import { Roles } from '../../../common/decorator/roles.decorator';
-import { Role } from '../../../common/enum/roles.enum';
+import { Claim } from '../../../common/enum/claims.enum';
 import { DeleteDto } from 'src/modules/common/dto/response/delete.dto';
 import { DeletePowerUnitDto } from './dto/request/delete-power-units.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
@@ -60,7 +60,7 @@ export class PowerUnitsController {
     description: 'The Power Unit Resource',
     type: ReadPowerUnitDto,
   })
-  @Roles(Role.WRITE_VEHICLE)
+  @Roles(Claim.WRITE_VEHICLE)
   @Post()
   async create(
     @Req() request: Request,
@@ -80,7 +80,7 @@ export class PowerUnitsController {
     type: ReadPowerUnitDto,
     isArray: true,
   })
-  @Roles(Role.READ_VEHICLE)
+  @Roles(Claim.READ_VEHICLE)
   @Get()
   async findAll(
     @Param('companyId') companyId: number,
@@ -92,7 +92,7 @@ export class PowerUnitsController {
     description: 'The Power Unit Resource',
     type: ReadPowerUnitDto,
   })
-  @Roles(Role.READ_VEHICLE)
+  @Roles(Claim.READ_VEHICLE)
   @Get(':powerUnitId')
   async findOne(
     @Req() request: Request,
@@ -112,7 +112,7 @@ export class PowerUnitsController {
     description: 'The Power Unit Resource',
     type: ReadPowerUnitDto,
   })
-  @Roles(Role.WRITE_VEHICLE)
+  @Roles(Claim.WRITE_VEHICLE)
   @Put(':powerUnitId')
   async update(
     @Req() request: Request,
@@ -134,7 +134,7 @@ export class PowerUnitsController {
     return powerUnit;
   }
 
-  @Roles(Role.WRITE_VEHICLE)
+  @Roles(Claim.WRITE_VEHICLE)
   @Delete(':powerUnitId')
   async remove(
     @Req() request: Request,
@@ -158,7 +158,7 @@ export class PowerUnitsController {
       'The delete dto resource which includes the success and failure list.',
     type: DeleteDto,
   })
-  @Roles(Role.WRITE_VEHICLE)
+  @Roles(Claim.WRITE_VEHICLE)
   @Post('delete-requests')
   @HttpCode(200)
   async deletePowerUnits(

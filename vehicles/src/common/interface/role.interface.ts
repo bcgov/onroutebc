@@ -1,5 +1,5 @@
-import { Role } from '../enum/roles.enum';
-import { UserAuthGroup } from '../enum/user-auth-group.enum';
+import { Claim } from '../enum/claims.enum';
+import { UserRole } from '../enum/user-auth-group.enum';
 
 /**
  * Evaluates role criteria against a user's roles and authorization group.
@@ -15,7 +15,7 @@ import { UserAuthGroup } from '../enum/user-auth-group.enum';
  * `oneOf` or `allOf` should be specified at any given time.
  */
 export interface IRole {
-  userAuthGroup?: UserAuthGroup[] | readonly UserAuthGroup[];
-  oneOf?: Role[];
-  allOf?: Role[];
+  userAuthGroup?: UserRole[] | readonly UserRole[];
+  oneOf?: Claim[];
+  allOf?: Claim[];
 }

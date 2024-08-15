@@ -4,12 +4,12 @@ import {
 } from '@nestjs/common';
 import { Directory } from '../enum/directory.enum';
 import { IDP } from '../enum/idp.enum';
-import { Role } from '../enum/roles.enum';
+import { Claim } from '../enum/claims.enum';
 import { IUserJWT } from '../interface/user-jwt.interface';
 import {
-  UserAuthGroup,
-  ClientUserAuthGroup,
-  IDIRUserAuthGroup,
+  UserRole,
+  ClientUserRole,
+  IDIRUserRole,
 } from '../enum/user-auth-group.enum';
 import { IRole } from '../interface/role.interface';
 import { IPermissions } from '../interface/permissions.interface';
@@ -37,21 +37,21 @@ export const getDirectory = (user: IUserJWT) => {
 /**
  * Type guard to check if an input is an array of type Role.
  *
- * @param {Role[] | IRole[]} obj - The object to be checked.
- * @returns {obj is Role[]} True if obj is an array of Role, false otherwise.
+ * @param {Claim[] | IRole[]} obj - The object to be checked.
+ * @returns {obj is Claim[]} True if obj is an array of Role, false otherwise.
  */
-function isRoleArray(obj: Role[] | IRole[] | IPermissions[]): obj is Role[] {
+function isRoleArray(obj: Claim[] | IRole[] | IPermissions[]): obj is Claim[] {
   return Array.isArray(obj) && obj.every((item) => typeof item === 'string');
 }
 
 /**
  * Type guard to check if an input object has the structure of an IPermissions.
  *
- * @param {IRole | Role[]} permissions - The object to be checked.
+ * @param {IRole | Claim[]} permissions - The object to be checked.
  * @returns {permissions is IPermissions} True if the object matches the IPermissions structure, false otherwise.
  */
 const isIPermissions = (
-  permissions: IRole | Role[] | IPermissions,
+  permissions: IRole | Claim[] | IPermissions,
 ): permissions is IPermissions => {
   const { allowedBCeIDRoles, allowedIdirRoles, claims } =
     permissions as IPermissions;
@@ -72,15 +72,15 @@ const isIPermissions = (
  * If any role object's criteria are met (considering 'userAuthGroup' if defined), it returns true.
  * Throws an error if both 'allOf' and 'oneOf' are defined in a role object.
  *
- * @param {Role[] | IRole[] | IPermissions} roles - An array of roles or role requirement objects to be matched against the user's roles.
- * @param {Role[]} userRoles - An array of roles assigned to the user.
- * @param {UserAuthGroup} userAuthGroup - The user authorization group to which the user belongs.
+ * @param {Claim[] | IRole[] | IPermissions} roles - An array of roles or role requirement objects to be matched against the user's roles.
+ * @param {Claim[]} userRoles - An array of roles assigned to the user.
+ * @param {UserRole} userAuthGroup - The user authorization group to which the user belongs.
  * @returns {boolean} Returns true if the user meets any of the defined role criteria or belongs to the specified user authorization group; false otherwise.
  */
 export const matchRoles = (
-  roles: Role[] | IRole[] | IPermissions[],
-  userRoles: Role[],
-  userAuthGroup: UserAuthGroup,
+  roles: Claim[] | IRole[] | IPermissions[],
+  userRoles: Claim[],
+  userAuthGroup: UserRole,
 ) => {
   if (isIPermissions(roles[0] as IPermissions)) {
     const { allowedIdirRoles, allowedBCeIDRoles, claims } =
@@ -90,15 +90,11 @@ export const matchRoles = (
       return claims.some((role) => userRoles.includes(role));
     }
     let isAllowed: boolean;
-    const isIdir = userAuthGroup in IDIRUserAuthGroup;
+    const isIdir = userAuthGroup in IDIRUserRole;
     if (isIdir) {
-      isAllowed = allowedIdirRoles?.includes(
-        userAuthGroup as IDIRUserAuthGroup,
-      );
+      isAllowed = allowedIdirRoles?.includes(userAuthGroup as IDIRUserRole);
     } else {
-      isAllowed = allowedBCeIDRoles?.includes(
-        userAuthGroup as ClientUserAuthGroup,
-      );
+      isAllowed = allowedBCeIDRoles?.includes(userAuthGroup as ClientUserRole);
     }
     // If claims is specified alongside the allowed roles, include
     // its value in the output.
@@ -215,14 +211,14 @@ export const checkUserCompaniesContext = (
  * 1. The user must have at least one of the specified roles.
  * 2. If the user has at least one of the specified roles, they must also be associated with one of the specified companies.
  *
- * @param {Role[]} roles - An array of roles that the user is supposed to have.
+ * @param {Claim[]} roles - An array of roles that the user is supposed to have.
  * @param {string} userGUID - The unique identifier for the user.
  * @param {number[]} userCompanies - An array of company IDs that the user is supposed to be associated with.
  * @param {IUserJWT} currentUser - The current user's information, including roles and identity provider.
  * @throws {ForbiddenException} Throws ForbiddenException if the user does not meet the role or company association criteria.
  */
 export const validateUserCompanyAndRoleContext = (
-  roles: Role[],
+  roles: Claim[],
   userGUID: string,
   userCompanies: number[],
   currentUser: IUserJWT,
@@ -247,13 +243,13 @@ export const validateUserCompanyAndRoleContext = (
 /**
  * Determines if a specified UserAuthGroup value is present within a given enumeration object.
  *
- * @param {UserAuthGroup} value - The UserAuthGroup value to be checked.
- * @param {ReadonlyArray<ClientUserAuthGroup> | ReadonlyArray<IDIRUserAuthGroup>} enumObject - An array of UserAuthGroup values.
+ * @param {UserRole} value - The UserAuthGroup value to be checked.
+ * @param {ReadonlyArray<ClientUserRole> | ReadonlyArray<IDIRUserRole>} enumObject - An array of UserAuthGroup values.
  * @returns {boolean} Returns true if the value is present in the enumObject, otherwise false.
  */
 export const doesUserHaveAuthGroup = (
-  value: UserAuthGroup,
-  enumObject: readonly ClientUserAuthGroup[] | readonly IDIRUserAuthGroup[],
+  value: UserRole,
+  enumObject: readonly ClientUserRole[] | readonly IDIRUserRole[],
 ): boolean => {
   // This function checks if the given value is present in the enumObject array
   return Object.values(enumObject).includes(value);

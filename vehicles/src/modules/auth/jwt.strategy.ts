@@ -9,7 +9,7 @@ import { passportJwtSecret } from 'jwks-rsa';
 import { AuthService } from './auth.service';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { Request } from 'express';
-import { Role } from '../../common/enum/roles.enum';
+import { Claim } from '../../common/enum/claims.enum';
 import { IDP } from '../../common/enum/idp.enum';
 import {
   getDirectory,
@@ -18,9 +18,9 @@ import {
 } from '../../common/helper/auth.helper';
 import { DataNotFoundException } from '../../common/exception/data-not-found.exception';
 import {
-  ClientUserAuthGroup,
-  IDIRUserAuthGroup,
-  UserAuthGroup,
+  ClientUserRole,
+  IDIRUserRole,
+  UserRole,
 } from '../../common/enum/user-auth-group.enum';
 
 @Injectable()
@@ -47,14 +47,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(req: Request, payload: IUserJWT): Promise<IUserJWT> {
     let userGUID: string,
       userName: string,
-      roles: Role[],
+      roles: Claim[],
       associatedCompanies: number[],
       orbcUserFirstName: string,
       orbcUserLastName: string,
-      orbcUserAuthGroup:
-        | UserAuthGroup
-        | ClientUserAuthGroup
-        | IDIRUserAuthGroup;
+      orbcUserAuthGroup: UserRole | ClientUserRole | IDIRUserRole;
 
     let companyId: number;
     if (req.params.companyId) {
@@ -178,11 +175,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       ) {
         throw new ForbiddenException();
       } else if (companyId && userGUIDParam !== payload.userGUID) {
-        let roles: Role[];
+        let roles: Claim[];
         if (req.method === 'GET') {
-          roles = [Role.READ_USER];
+          roles = [Claim.READ_USER];
         } else {
-          roles = [Role.WRITE_USER];
+          roles = [Claim.WRITE_USER];
         }
         validateUserCompanyAndRoleContext(
           roles,

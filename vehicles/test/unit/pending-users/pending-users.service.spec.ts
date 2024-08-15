@@ -18,7 +18,7 @@ import {
   MockQueryRunnerManager,
   createQueryBuilderMock,
 } from '../../util/mocks/factory/dataSource.factory.mock';
-import { ClientUserAuthGroup } from '../../../src/common/enum/user-auth-group.enum';
+import { ClientUserRole } from '../../../src/common/enum/user-auth-group.enum';
 import * as constants from '../../util/mocks/data/test-data.constants';
 import { redCompanyCvClientUserJWTMock } from 'test/util/mocks/data/jwt.mock';
 
@@ -108,8 +108,7 @@ describe('PendingUsersService', () => {
         userName: constants.RED_COMPANY_PENDING_USER_NAME,
         companyId: constants.RED_COMPANY_ID,
       };
-      PENDING_USER_LIST[0].userAuthGroup =
-        ClientUserAuthGroup.COMPANY_ADMINISTRATOR;
+      PENDING_USER_LIST[0].userAuthGroup = ClientUserRole.COMPANY_ADMINISTRATOR;
       findPendingUsersEntityMock(PARAMS, PENDING_USER_LIST);
 
       const retPendingUser = await service.update(

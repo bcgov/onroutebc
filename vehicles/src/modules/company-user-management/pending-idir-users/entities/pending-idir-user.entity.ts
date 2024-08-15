@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryColumn } from 'typeorm';
 import { Base } from '../../../common/entities/base.entity';
 import { AutoMap } from '@automapper/classes';
-import { IDIRUserAuthGroup } from '../../../../common/enum/user-auth-group.enum';
+import { IDIRUserRole } from '../../../../common/enum/user-auth-group.enum';
 
 @Entity({ name: 'ORBC_PENDING_IDIR_USER' })
 export class PendingIdirUser extends Base {
@@ -19,10 +19,10 @@ export class PendingIdirUser extends Base {
   @AutoMap()
   @Column({
     type: 'simple-enum',
-    enum: IDIRUserAuthGroup,
+    enum: IDIRUserRole,
     length: 10,
     name: 'USER_AUTH_GROUP_TYPE',
     nullable: false,
   })
-  userAuthGroup: IDIRUserAuthGroup;
+  userAuthGroup: IDIRUserRole;
 }

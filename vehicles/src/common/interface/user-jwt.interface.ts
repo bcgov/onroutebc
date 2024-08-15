@@ -1,7 +1,7 @@
 import { Directory } from '../enum/directory.enum';
 import { IDP } from '../enum/idp.enum';
-import { Role } from '../enum/roles.enum';
-import { UserAuthGroup } from '../enum/user-auth-group.enum';
+import { Claim } from '../enum/claims.enum';
+import { UserRole } from '../enum/user-auth-group.enum';
 
 export interface IUserJWT {
   jti: string;
@@ -27,11 +27,11 @@ export interface IUserJWT {
   userName: string;
   userGUID: string;
   companyId: number;
-  roles: Role[];
+  roles: Claim[];
   associatedCompanies: number[];
   access_token: string;
   orbcUserFirstName: string;
   orbcUserLastName: string;
-  orbcUserAuthGroup: UserAuthGroup;
+  orbcUserAuthGroup: UserRole;
   orbcUserDirectory: Directory;
 }

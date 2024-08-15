@@ -29,7 +29,7 @@ import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { Request } from 'express';
 import { Roles } from '../../../common/decorator/roles.decorator';
-import { Role } from '../../../common/enum/roles.enum';
+import { Claim } from '../../../common/enum/claims.enum';
 import { DeleteDto } from 'src/modules/common/dto/response/delete.dto';
 import { DeleteTrailerDto } from './dto/request/delete-trailer.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
@@ -60,7 +60,7 @@ export class TrailersController {
     description: 'The Trailer Resource',
     type: ReadTrailerDto,
   })
-  @Roles(Role.WRITE_VEHICLE)
+  @Roles(Claim.WRITE_VEHICLE)
   @Post()
   create(
     @Req() request: Request,
@@ -80,7 +80,7 @@ export class TrailersController {
     type: ReadTrailerDto,
     isArray: true,
   })
-  @Roles(Role.READ_VEHICLE)
+  @Roles(Claim.READ_VEHICLE)
   @Get()
   async findAll(
     @Param('companyId') companyId: number,
@@ -92,7 +92,7 @@ export class TrailersController {
     description: 'The Trailer Resource',
     type: ReadTrailerDto,
   })
-  @Roles(Role.READ_VEHICLE)
+  @Roles(Claim.READ_VEHICLE)
   @Get(':trailerId')
   async findOne(
     @Req() request: Request,
@@ -110,7 +110,7 @@ export class TrailersController {
     description: 'The Trailer Resource',
     type: ReadTrailerDto,
   })
-  @Roles(Role.WRITE_VEHICLE)
+  @Roles(Claim.WRITE_VEHICLE)
   @Put(':trailerId')
   async update(
     @Req() request: Request,
@@ -132,7 +132,7 @@ export class TrailersController {
     return trailer;
   }
 
-  @Roles(Role.WRITE_VEHICLE)
+  @Roles(Claim.WRITE_VEHICLE)
   @Delete(':trailerId')
   async remove(
     @Req() request: Request,
@@ -155,7 +155,7 @@ export class TrailersController {
       'The delete dto resource which includes the success and failure list.',
     type: DeleteDto,
   })
-  @Roles(Role.WRITE_VEHICLE)
+  @Roles(Claim.WRITE_VEHICLE)
   @HttpCode(200)
   @Post('delete-requests')
   async deleteTrailers(

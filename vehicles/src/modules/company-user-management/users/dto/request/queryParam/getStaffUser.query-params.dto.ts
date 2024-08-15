@@ -1,19 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
-import { IDIRUserAuthGroup } from '../../../../../../common/enum/user-auth-group.enum';
+import { IDIRUserRole } from '../../../../../../common/enum/user-auth-group.enum';
 import { Transform } from 'class-transformer';
 
 export class GetStaffUserQueryParamsDto {
   @ApiProperty({
     description:
       'Filters the results to include only users belonging to the specified authentication group. This parameter is optional.',
-    enum: IDIRUserAuthGroup,
-    example: IDIRUserAuthGroup.PPC_CLERK,
+    enum: IDIRUserRole,
+    example: IDIRUserRole.PPC_CLERK,
     required: false,
   })
   @IsOptional()
-  @IsEnum(IDIRUserAuthGroup)
-  userAuthGroup?: IDIRUserAuthGroup;
+  @IsEnum(IDIRUserRole)
+  userAuthGroup?: IDIRUserRole;
 
   @ApiProperty({
     description:

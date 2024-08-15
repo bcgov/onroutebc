@@ -21,7 +21,7 @@ import {
 import { PendingUsersService } from '../../../src/modules/company-user-management/pending-users/pending-users.service';
 
 import { BadRequestException } from '@nestjs/common';
-import { Role } from '../../../src/common/enum/roles.enum';
+import { Claim } from '../../../src/common/enum/claims.enum';
 import { DataNotFoundException } from '../../../src/common/exception/data-not-found.exception';
 import * as constants from '../../util/mocks/data/test-data.constants';
 import {
@@ -238,10 +238,10 @@ describe('UsersService', () => {
   describe('User service getRolesForUser function', () => {
     it('should get the user Roles', async () => {
       repo.query.mockResolvedValue([
-        { ROLE_TYPE: Role.READ_SELF },
-        { ROLE_TYPE: Role.READ_USER },
-        { ROLE_TYPE: Role.WRITE_SELF },
-        { ROLE_TYPE: Role.WRITE_USER },
+        { ROLE_TYPE: Claim.READ_SELF },
+        { ROLE_TYPE: Claim.READ_USER },
+        { ROLE_TYPE: Claim.WRITE_SELF },
+        { ROLE_TYPE: Claim.WRITE_USER },
       ]);
 
       const retUserRoles = await service.getRolesForUser(
@@ -250,7 +250,7 @@ describe('UsersService', () => {
       );
 
       expect(typeof retUserRoles).toBe('object');
-      expect(retUserRoles[0]).toBe(Role.READ_SELF);
+      expect(retUserRoles[0]).toBe(Claim.READ_SELF);
     });
   });
 

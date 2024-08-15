@@ -12,10 +12,7 @@ import { PermitApprovalSource as PermitApprovalSourceEnum } from '../enum/permit
 import { randomInt } from 'crypto';
 import { Directory } from '../enum/directory.enum';
 import { doesUserHaveAuthGroup } from './auth.helper';
-import {
-  IDIR_USER_AUTH_GROUP_LIST,
-  UserAuthGroup,
-} from '../enum/user-auth-group.enum';
+import { IDIR_USER_ROLE_LIST, UserRole } from '../enum/user-auth-group.enum';
 import { PPC_FULL_TEXT } from '../constants/api.constant';
 import { User } from '../../modules/company-user-management/users/entities/user.entity';
 import { ApplicationStatus } from '../enum/application-status.enum';
@@ -211,12 +208,10 @@ export const generatePermitNumber = async (
  */
 export const getApplicantDisplay = (
   applicationOwner: User,
-  currentUserAuthGroup: UserAuthGroup,
+  currentUserAuthGroup: UserRole,
 ): string => {
   if (applicationOwner?.directory === Directory.IDIR) {
-    if (
-      doesUserHaveAuthGroup(currentUserAuthGroup, IDIR_USER_AUTH_GROUP_LIST)
-    ) {
+    if (doesUserHaveAuthGroup(currentUserAuthGroup, IDIR_USER_ROLE_LIST)) {
       return applicationOwner?.userName;
     } else {
       return PPC_FULL_TEXT;

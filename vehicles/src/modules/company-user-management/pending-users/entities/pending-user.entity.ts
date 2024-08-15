@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { Base } from '../../../common/entities/base.entity';
 import { AutoMap } from '@automapper/classes';
-import { ClientUserAuthGroup } from '../../../../common/enum/user-auth-group.enum';
+import { ClientUserRole } from '../../../../common/enum/user-auth-group.enum';
 
 @Entity({ name: 'ORBC_PENDING_USER' })
 export class PendingUser extends Base {
@@ -35,15 +35,15 @@ export class PendingUser extends Base {
 
   /**
    * A property that represents the user's auth group, which is an enum of
-   * type {@link ClientUserAuthGroup}.
+   * type {@link ClientUserRole}.
    */
   @AutoMap()
   @Column({
     type: 'simple-enum',
-    enum: ClientUserAuthGroup,
+    enum: ClientUserRole,
     length: 10,
     name: 'USER_AUTH_GROUP_TYPE',
     nullable: false,
   })
-  userAuthGroup: ClientUserAuthGroup;
+  userAuthGroup: ClientUserRole;
 }

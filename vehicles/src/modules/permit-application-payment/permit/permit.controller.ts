@@ -24,13 +24,13 @@ import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
 import { Request } from 'express';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { Roles } from 'src/common/decorator/roles.decorator';
-import { Role } from 'src/common/enum/roles.enum';
+import { Claim } from 'src/common/enum/claims.enum';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import { ResultDto } from './dto/response/result.dto';
 import { VoidPermitDto } from './dto/request/void-permit.dto';
 import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
 import { GetPermitQueryParamsDto } from './dto/request/queryParam/getPermit.query-params.dto';
-import { IDIR_USER_AUTH_GROUP_LIST } from 'src/common/enum/user-auth-group.enum';
+import { IDIR_USER_ROLE_LIST } from 'src/common/enum/user-auth-group.enum';
 import { ReadPermitMetadataDto } from './dto/response/read-permit-metadata.dto';
 import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 import { CreateNotificationDto } from '../../common/dto/request/create-notification.dto';
@@ -68,8 +68,8 @@ export class PermitController {
    */
   @ApiPaginatedResponse(ReadPermitMetadataDto)
   @Roles({
-    userAuthGroup: IDIR_USER_AUTH_GROUP_LIST,
-    oneOf: [Role.READ_PERMIT],
+    userAuthGroup: IDIR_USER_ROLE_LIST,
+    oneOf: [Claim.READ_PERMIT],
   })
   @Get()
   async getPermit(
@@ -119,8 +119,8 @@ export class PermitController {
    *
    */
   @Roles({
-    userAuthGroup: IDIR_USER_AUTH_GROUP_LIST,
-    oneOf: [Role.VOID_PERMIT],
+    userAuthGroup: IDIR_USER_ROLE_LIST,
+    oneOf: [Claim.VOID_PERMIT],
   })
   @Post('/:permitId/void')
   async voidpermit(
@@ -171,8 +171,8 @@ export class PermitController {
       'Sends a notification related to a specific permit after checking user authorization.',
   })
   @Roles({
-    userAuthGroup: IDIR_USER_AUTH_GROUP_LIST,
-    oneOf: [Role.SEND_NOTIFICATION],
+    userAuthGroup: IDIR_USER_ROLE_LIST,
+    oneOf: [Claim.SEND_NOTIFICATION],
   })
   @Post('/:permitId/notification')
   async notification(
@@ -184,10 +184,7 @@ export class PermitController {
     const currentUser = request.user as IUserJWT;
     // Throws ForbiddenException if user does not belong to the specified user auth group.
     if (
-      !doesUserHaveAuthGroup(
-        currentUser.orbcUserAuthGroup,
-        IDIR_USER_AUTH_GROUP_LIST,
-      )
+      !doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, IDIR_USER_ROLE_LIST)
     ) {
       throw new ForbiddenException();
     }

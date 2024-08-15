@@ -12,8 +12,8 @@ import { ReadPermitDto } from '../dto/response/read-permit.dto';
 import { PPC_FULL_TEXT } from '../../../../common/constants/api.constant';
 import { Directory } from '../../../../common/enum/directory.enum';
 import {
-  UserAuthGroup,
-  IDIR_USER_AUTH_GROUP_LIST,
+  UserRole,
+  IDIR_USER_ROLE_LIST,
 } from '../../../../common/enum/user-auth-group.enum';
 import { doesUserHaveAuthGroup } from '../../../../common/helper/auth.helper';
 import { ReadPermitMetadataDto } from '../dto/response/read-permit-metadata.dto';
@@ -48,8 +48,8 @@ export class PermitProfile extends AutomapperProfile {
             if (s.issuer?.directory === Directory.IDIR) {
               if (
                 doesUserHaveAuthGroup(
-                  currentUserAuthGroup as UserAuthGroup,
-                  IDIR_USER_AUTH_GROUP_LIST,
+                  currentUserAuthGroup as UserRole,
+                  IDIR_USER_ROLE_LIST,
                 )
               ) {
                 return s.issuer?.userName;
@@ -111,8 +111,8 @@ export class PermitProfile extends AutomapperProfile {
             if (s.applicationOwner?.directory === Directory.IDIR) {
               if (
                 doesUserHaveAuthGroup(
-                  currentUserAuthGroup as UserAuthGroup,
-                  IDIR_USER_AUTH_GROUP_LIST,
+                  currentUserAuthGroup as UserRole,
+                  IDIR_USER_ROLE_LIST,
                 )
               ) {
                 return s.applicationOwner?.userName;
@@ -133,8 +133,8 @@ export class PermitProfile extends AutomapperProfile {
             if (s.issuer?.directory === Directory.IDIR) {
               if (
                 doesUserHaveAuthGroup(
-                  currentUserAuthGroup as UserAuthGroup,
-                  IDIR_USER_AUTH_GROUP_LIST,
+                  currentUserAuthGroup as UserRole,
+                  IDIR_USER_ROLE_LIST,
                 )
               ) {
                 return s.issuer?.userName;

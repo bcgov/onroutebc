@@ -31,14 +31,14 @@ import { PendingUsersService } from './pending-users.service';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { Request } from 'express';
 import { Roles } from '../../../common/decorator/roles.decorator';
-import { Role } from '../../../common/enum/roles.enum';
+import { Claim } from '../../../common/enum/claims.enum';
 import { TPS_MIGRATED_USER } from '../../../common/constants/api.constant';
 
 import { DeleteDto } from '../../common/dto/response/delete.dto';
 import { DeletePendingUsersDto } from './dto/request/delete-pending-users.dto';
 import {
-  ClientUserAuthGroup,
-  IDIR_USER_AUTH_GROUP_LIST,
+  ClientUserRole,
+  IDIR_USER_ROLE_LIST,
 } from '../../../common/enum/user-auth-group.enum';
 import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 
@@ -80,7 +80,7 @@ export class PendingUsersController {
     description: 'The Pending User Resource',
     type: ReadPendingUserDto,
   })
-  @Roles(Role.WRITE_USER)
+  @Roles(Claim.WRITE_USER)
   @Post()
   async create(
     @Req() request: Request,
@@ -110,7 +110,7 @@ export class PendingUsersController {
     type: ReadPendingUserDto,
     isArray: true,
   })
-  @Roles(Role.READ_USER)
+  @Roles(Claim.READ_USER)
   @Get()
   async findAll(
     @Param('companyId') companyId: number,
@@ -132,7 +132,7 @@ export class PendingUsersController {
     description: 'The Pending User Resource',
     type: ReadPendingUserDto,
   })
-  @Roles(Role.READ_USER)
+  @Roles(Claim.READ_USER)
   @Get(':userName')
   async find(
     @Param('companyId') companyId: number,
@@ -170,7 +170,7 @@ export class PendingUsersController {
     description: 'The Pending User Resource',
     type: ReadPendingUserDto,
   })
-  @Roles(Role.WRITE_USER)
+  @Roles(Claim.WRITE_USER)
   @Put(':userName')
   async update(
     @Req() request: Request,
@@ -206,7 +206,7 @@ export class PendingUsersController {
    * @returns A response encapsulated in {@link DeleteDto}, detailing the list of users successfully removed.
    * If no users are removed, a DataNotFoundException is thrown.
    */
-  @Roles(Role.WRITE_USER)
+  @Roles(Claim.WRITE_USER)
   @ApiOperation({
     summary: 'Deletes pending users by username with authorization',
     description:
@@ -227,12 +227,8 @@ export class PendingUsersController {
   ): Promise<DeleteDto> {
     const currentUser = request.user as IUserJWT;
     if (
-      currentUser.orbcUserAuthGroup !==
-        ClientUserAuthGroup.COMPANY_ADMINISTRATOR &&
-      !doesUserHaveAuthGroup(
-        currentUser.orbcUserAuthGroup,
-        IDIR_USER_AUTH_GROUP_LIST,
-      )
+      currentUser.orbcUserAuthGroup !== ClientUserRole.COMPANY_ADMINISTRATOR &&
+      !doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, IDIR_USER_ROLE_LIST)
     ) {
       throw new ForbiddenException();
     }

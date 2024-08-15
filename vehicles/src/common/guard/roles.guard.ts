@@ -1,6 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Role } from '../enum/roles.enum';
+import { Claim } from '../enum/claims.enum';
 import { Request } from 'express';
 import { IUserJWT } from '../interface/user-jwt.interface';
 import { matchRoles } from '../helper/auth.helper';
@@ -14,7 +14,7 @@ export class RolesGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     const roles = this.reflector.getAllAndOverride<
-      Role[] | IRole[] | IPermissions[]
+      Claim[] | IRole[] | IPermissions[]
     >('roles', [context.getHandler(), context.getClass()]);
     // Guard is invoked regardless of the decorator being actively called
     if (!roles) {

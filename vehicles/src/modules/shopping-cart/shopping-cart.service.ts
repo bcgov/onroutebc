@@ -5,9 +5,9 @@ import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method
 import { ApplicationStatus } from '../../common/enum/application-status.enum';
 import { Directory } from '../../common/enum/directory.enum';
 import {
-  ClientUserAuthGroup,
-  IDIR_USER_AUTH_GROUP_LIST,
-  UserAuthGroup,
+  ClientUserRole,
+  IDIR_USER_ROLE_LIST,
+  UserRole,
 } from '../../common/enum/user-auth-group.enum';
 import { Permit as Application } from '../permit-application-payment/permit/entities/permit.entity';
 import { AddToShoppingCartDto } from './dto/request/add-to-shopping-cart.dto';
@@ -44,15 +44,15 @@ export class ShoppingCartService {
   ): Promise<ResultDto> {
     const { orbcUserAuthGroup } = currentUser;
     if (
-      orbcUserAuthGroup === ClientUserAuthGroup.COMPANY_ADMINISTRATOR ||
-      doesUserHaveAuthGroup(orbcUserAuthGroup, IDIR_USER_AUTH_GROUP_LIST)
+      orbcUserAuthGroup === ClientUserRole.COMPANY_ADMINISTRATOR ||
+      doesUserHaveAuthGroup(orbcUserAuthGroup, IDIR_USER_ROLE_LIST)
     ) {
       return await this.updateApplicationStatus(
         { applicationIds, companyId },
         ApplicationStatus.IN_CART,
         currentUser,
       );
-    } else if (orbcUserAuthGroup === ClientUserAuthGroup.PERMIT_APPLICANT) {
+    } else if (orbcUserAuthGroup === ClientUserRole.PERMIT_APPLICANT) {
       const { userGUID } = currentUser;
       return await this.updateApplicationStatus(
         {
@@ -144,7 +144,7 @@ export class ShoppingCartService {
       allApplications,
     }: {
       userGUID?: string;
-      orbcUserAuthGroup?: UserAuthGroup;
+      orbcUserAuthGroup?: UserRole;
       allApplications?: boolean;
     },
   ): SelectQueryBuilder<Application> {
@@ -164,7 +164,7 @@ export class ShoppingCartService {
     //  - If the user is a Permit Applicant
     //  - If the user has passed the allApplications query parameter
     if (
-      orbcUserAuthGroup === ClientUserAuthGroup.PERMIT_APPLICANT ||
+      orbcUserAuthGroup === ClientUserRole.PERMIT_APPLICANT ||
       !allApplications
     ) {
       queryBuilder.andWhere('applicationOwner.userGUID = :userGUID', {
@@ -173,7 +173,7 @@ export class ShoppingCartService {
     }
     // If the user is a BCeID user, select only those applications
     // where the applicationOwner isn't a staff user.
-    if (!doesUserHaveAuthGroup(orbcUserAuthGroup, IDIR_USER_AUTH_GROUP_LIST)) {
+    if (!doesUserHaveAuthGroup(orbcUserAuthGroup, IDIR_USER_ROLE_LIST)) {
       queryBuilder.andWhere(
         new NotBrackets((qb) => {
           qb.where('applicationOwner.directory = :directory', {
@@ -201,13 +201,13 @@ export class ShoppingCartService {
     }: UpdateShoppingCartDto & { companyId: number },
   ): Promise<ResultDto> {
     const { orbcUserAuthGroup } = currentUser;
-    if (orbcUserAuthGroup === ClientUserAuthGroup.COMPANY_ADMINISTRATOR) {
+    if (orbcUserAuthGroup === ClientUserRole.COMPANY_ADMINISTRATOR) {
       return await this.updateApplicationStatus(
         { applicationIds, companyId },
         ApplicationStatus.IN_PROGRESS,
         currentUser,
       );
-    } else if (orbcUserAuthGroup === ClientUserAuthGroup.PERMIT_APPLICANT) {
+    } else if (orbcUserAuthGroup === ClientUserRole.PERMIT_APPLICANT) {
       const { userGUID } = currentUser;
       return await this.updateApplicationStatus(
         {
@@ -219,7 +219,7 @@ export class ShoppingCartService {
         currentUser,
       );
     }
-    if (doesUserHaveAuthGroup(orbcUserAuthGroup, IDIR_USER_AUTH_GROUP_LIST)) {
+    if (doesUserHaveAuthGroup(orbcUserAuthGroup, IDIR_USER_ROLE_LIST)) {
       return await this.updateApplicationStatus(
         {
           applicationIds,
