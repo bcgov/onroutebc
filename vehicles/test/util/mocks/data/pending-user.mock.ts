@@ -10,7 +10,7 @@ export const redCompanyPendingUserEntityMock: PendingUser = {
   pendingUserId: 1,
   companyId: constants.RED_COMPANY_ID,
   userName: constants.RED_COMPANY_PENDING_USER_NAME,
-  userAuthGroup: ClientUserRole.PERMIT_APPLICANT,
+  userRole: ClientUserRole.PERMIT_APPLICANT,
   ...baseEntityMock,
 };
 
@@ -34,7 +34,7 @@ export const blueCompanyPendingUserEntityMock: PendingUser = {
   pendingUserId: 2,
   companyId: constants.BLUE_COMPANY_ID,
   userName: constants.BLUE_COMPANY_PENDING_USER_NAME,
-  userAuthGroup: ClientUserRole.PERMIT_APPLICANT,
+  userRole: ClientUserRole.PERMIT_APPLICANT,
   ...baseEntityMock,
 };
 

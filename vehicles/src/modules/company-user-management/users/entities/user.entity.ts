@@ -59,7 +59,7 @@ export class User extends Base {
     name: 'USER_AUTH_GROUP_TYPE',
     nullable: true,
   })
-  userAuthGroup: GenericUserRole | IDIRUserRole;
+  userRole: GenericUserRole | IDIRUserRole;
 
   /**
    * The status of the user in the system. It is an enum of UserStatus type and
