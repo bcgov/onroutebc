@@ -15,7 +15,7 @@ on:
         default: onroutebc-test-frontend.apps.silver.devops.gov.bc.ca
         required: true
         type: string
-      vehciles_api_url:
+      vehicles_api_url:
         description: 'The url endpoint for vehicles'
         default: onroutebc-test-vehicles.apps.silver.devops.gov.bc.ca
         required: true
@@ -31,13 +31,16 @@ jobs:
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-22.04
     timeout-minutes: 1
+    strategy:
+      matrix:
+        package: [dops, vehicles, frontend, scheduler, policy]
     steps:
       - uses: actions/checkout@v4
 
       - name: Run All JMeter Tests In tests Folder
         uses: rbhadti94/apache-jmeter-action@v0.5.0
         with:
-          testFilePath: vehicles/test/load_tests/*
+          testFilePath: ${{matrix.package}}/test/load_tests
           outputReportsFolder: results
           args: |
             --loglevel INFO 

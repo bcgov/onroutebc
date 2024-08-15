@@ -9,7 +9,7 @@ import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
 import { SpecialAuth } from '../entities/special-auth.entity';
 import { ReadSpecialAuthDto } from '../dto/response/read-special-auth.dto';
-import { UpsertSpecialAuthDto } from '../dto/request/upsert-special-auth.dto';
+import { CreateSpecialAuthDto } from '../dto/request/create-special-auth.dto';
 
 @Injectable()
 export class SpecialAuthProfile extends AutomapperProfile {
@@ -21,7 +21,7 @@ export class SpecialAuthProfile extends AutomapperProfile {
     return (mapper: Mapper) => {
       createMap(
         mapper,
-        UpsertSpecialAuthDto,
+        CreateSpecialAuthDto,
         SpecialAuth,
         forMember(
           (d) => d.specialAuthId,

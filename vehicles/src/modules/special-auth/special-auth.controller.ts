@@ -1,11 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Put,
-  Req,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Put, Req } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -22,7 +15,6 @@ import { SpecialAuthService } from './special-auth.service';
 import { ReadSpecialAuthDto } from './dto/response/read-special-auth.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { Request } from 'express';
-import { UpsertSpecialAuthDto } from './dto/request/upsert-special-auth.dto';
 import { CreateLcvDto } from './dto/request/create-lcv.dto';
 import { CreateNoFeeDto } from './dto/request/create-no-fee.dto';
 import { Roles } from 'src/common/decorator/roles.decorator';
@@ -30,7 +22,7 @@ import { Role } from 'src/common/enum/roles.enum';
 
 @ApiBearerAuth()
 @ApiTags('Special Authorization')
-@Controller('companies/:companyId/special-auth')
+@Controller('companies/:companyId/special-auths')
 @ApiMethodNotAllowedResponse({
   description: 'The Special Authorizaion Api Method Not Allowed Response',
   type: ExceptionDto,
@@ -59,12 +51,12 @@ export class SpecialAuthController {
   async get(
     @Param() { companyId }: CompanyIdPathParamDto,
   ): Promise<ReadSpecialAuthDto> {
-    console.log(companyId);
     return await this.specialAuthService.findOne(companyId);
   }
 
-
-  @ApiOperation({ summary: 'Create or update LCV (Long Combination Vehicle) allowance.' })
+  @ApiOperation({
+    summary: 'Create or update LCV (Long Combination Vehicle) allowance.',
+  })
   @ApiResponse({
     status: 200,
     description: 'LCV allowance updated successfully.',
@@ -78,13 +70,10 @@ export class SpecialAuthController {
     @Body() createLcvDto: CreateLcvDto,
   ): Promise<ReadSpecialAuthDto> {
     const currentUser = request.user as IUserJWT;
-    const upsertSpecialAuthDto = Object.assign(new UpsertSpecialAuthDto(), {
-      isLcvAllowed: createLcvDto.isLcvAllowed,
-    });
-    return await this.specialAuthService.upsertSpecialAuth(
+    return await this.specialAuthService.upsertLcv(
       companyId,
       currentUser,
-      upsertSpecialAuthDto,
+      createLcvDto,
     );
   }
 
@@ -102,13 +91,10 @@ export class SpecialAuthController {
     @Body() createNoFeeDto: CreateNoFeeDto,
   ): Promise<ReadSpecialAuthDto> {
     const currentUser = request.user as IUserJWT;
-    const upsertSpecialAuthDto = Object.assign(new UpsertSpecialAuthDto(), {
-      noFeeType: createNoFeeDto.noFeeType,
-    });
-    return await this.specialAuthService.upsertSpecialAuth(
+    return await this.specialAuthService.upsertNoFee(
       companyId,
       currentUser,
-      upsertSpecialAuthDto,
+      createNoFeeDto,
     );
   }
 }
