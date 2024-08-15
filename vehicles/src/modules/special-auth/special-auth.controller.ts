@@ -70,10 +70,11 @@ export class SpecialAuthController {
     @Body() createLcvDto: CreateLcvDto,
   ): Promise<ReadSpecialAuthDto> {
     const currentUser = request.user as IUserJWT;
-    return await this.specialAuthService.upsertLcv(
+    return await this.specialAuthService.upsertSpecialAuth(
       companyId,
       currentUser,
       createLcvDto,
+      undefined,
     );
   }
 
@@ -91,9 +92,10 @@ export class SpecialAuthController {
     @Body() createNoFeeDto: CreateNoFeeDto,
   ): Promise<ReadSpecialAuthDto> {
     const currentUser = request.user as IUserJWT;
-    return await this.specialAuthService.upsertNoFee(
+    return await this.specialAuthService.upsertSpecialAuth(
       companyId,
       currentUser,
+      null,
       createNoFeeDto,
     );
   }

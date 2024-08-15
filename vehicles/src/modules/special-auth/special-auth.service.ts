@@ -7,7 +7,6 @@ import { Repository } from 'typeorm';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { SpecialAuth } from './entities/special-auth.entity';
 import { ReadSpecialAuthDto } from './dto/response/read-special-auth.dto';
-import { CreateSpecialAuthDto } from './dto/request/create-special-auth.dto';
 import { CreateLcvDto } from './dto/request/create-lcv.dto';
 import { CreateNoFeeDto } from './dto/request/create-no-fee.dto';
 
@@ -65,65 +64,29 @@ export class SpecialAuthService {
   async upsertSpecialAuth(
     companyId: number,
     currentUser: IUserJWT,
-    createSpecialAuthDto: CreateSpecialAuthDto,
+    createLcvDto?: CreateLcvDto,
+    createNoFeeDto?: CreateNoFeeDto,
   ): Promise<ReadSpecialAuthDto> {
     const specialAuthdto: ReadSpecialAuthDto = await this.findOne(companyId);
-    let specialAuth = await this.classMapper.mapAsync(
-      createSpecialAuthDto,
-      CreateSpecialAuthDto,
-      SpecialAuth,
-      {
-        extraArgs: () => ({
-          specialAuthId: specialAuthdto
-            ? specialAuthdto.specialAuthId
-            : undefined,
-          companyId: specialAuthdto ? undefined : companyId,
-          userName: currentUser.userName,
-          userGUID: currentUser.userGUID,
-          timestamp: new Date(),
-          directory: currentUser.orbcUserDirectory,
-        }),
-      },
-    );
+    let specialAuth = new SpecialAuth();
+
+    const { isLcvAllowed } = createLcvDto;
+
+    const { noFeeType } = createNoFeeDto;
+
+    specialAuth.isLcvAllowed = isLcvAllowed;
+    specialAuth.noFeeType = noFeeType;
+    specialAuth.specialAuthId = specialAuthdto?.specialAuthId;
+    specialAuth.company.companyId = specialAuthdto ? undefined : companyId;
+    specialAuth.updatedUser = currentUser.userName;
+    specialAuth.updatedUserGuid = currentUser.userGUID;
+    specialAuth.updatedDateTime = new Date();
+    specialAuth.updatedUserDirectory = currentUser.orbcUserDirectory;
     specialAuth = await this.specialAuthRepository.save(specialAuth);
     return await this.classMapper.mapAsync(
       specialAuth,
       SpecialAuth,
       ReadSpecialAuthDto,
-    );
-  }
-
-  @LogAsyncMethodExecution()
-  async upsertLcv(
-    companyId: number,
-    currentUser: IUserJWT,
-    createLcvDto: CreateLcvDto,
-  ): Promise<ReadSpecialAuthDto> {
-    const createSpecialAuthDto = Object.assign(new CreateSpecialAuthDto(), {
-      isLcvAllowed: createLcvDto.isLcvAllowed,
-    });
-
-    return await this.upsertSpecialAuth(
-      companyId,
-      currentUser,
-      createSpecialAuthDto,
-    );
-  }
-
-  @LogAsyncMethodExecution()
-  async upsertNoFee(
-    companyId: number,
-    currentUser: IUserJWT,
-    createNoFeeDto: CreateNoFeeDto,
-  ): Promise<ReadSpecialAuthDto> {
-    const createSpecialAuthDto = Object.assign(new CreateSpecialAuthDto(), {
-      noFeeType: createNoFeeDto.noFeeType,
-    });
-
-    return await this.upsertSpecialAuth(
-      companyId,
-      currentUser,
-      createSpecialAuthDto,
     );
   }
 }
