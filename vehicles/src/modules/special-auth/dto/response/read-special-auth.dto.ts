@@ -1,8 +1,8 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { UpsertSpecialAuthDto } from '../request/upsert-special-auth.dto';
+import { CreateSpecialAuthDto } from '../request/create-special-auth.dto';
 
-export class ReadSpecialAuthDto extends UpsertSpecialAuthDto {
+export class ReadSpecialAuthDto extends CreateSpecialAuthDto {
   @AutoMap()
   @ApiProperty({
     example: 1,
