@@ -15,7 +15,7 @@ on:
         default: onroutebc-test-frontend.apps.silver.devops.gov.bc.ca
         required: true
         type: string
-      vehciles_api_url:
+      vehicles_api_url:
         description: 'The url endpoint for vehicles'
         default: onroutebc-test-vehicles.apps.silver.devops.gov.bc.ca
         required: true
