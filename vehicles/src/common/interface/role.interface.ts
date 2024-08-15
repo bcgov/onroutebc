@@ -15,7 +15,7 @@ import { UserRole } from '../enum/user-auth-group.enum';
  * `oneOf` or `allOf` should be specified at any given time.
  */
 export interface IRole {
-  userAuthGroup?: UserRole[] | readonly UserRole[];
+  userRole?: UserRole[];
   oneOf?: Claim[];
   allOf?: Claim[];
 }

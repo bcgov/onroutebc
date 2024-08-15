@@ -40,7 +40,7 @@ export const getDirectory = (user: IUserJWT) => {
  * @param {Claim[] | IRole[]} obj - The object to be checked.
  * @returns {obj is Claim[]} True if obj is an array of Role, false otherwise.
  */
-function isRoleArray(obj: Claim[] | IRole[] | IPermissions[]): obj is Claim[] {
+function isClaimArray(obj: Claim[] | IRole[] | IPermissions[]): obj is Claim[] {
   return Array.isArray(obj) && obj.every((item) => typeof item === 'string');
 }
 
@@ -61,74 +61,75 @@ const isIPermissions = (
 };
 
 /**
- * Evaluates if a user has at least one of the specified roles, belongs to the specified user authorization group, or meets complex role criteria.
+ * Evaluates if a user has at least one of the specified claims, belongs to the specified user role, or meets complex role criteria.
  *
  * This method supports two kinds of inputs for role requirements:
- * 1. Simple list of roles (Role[]): It checks if the user holds any role from the specified list. True indicates possession of a required role.
+ * 1. Simple list of claims (Claim[]): It checks if the user holds any claim from the specified list. True indicates possession of a required role.
  * 2. Complex role requirements (IRole[]): For each object defining roles with 'allOf', 'oneOf', and/or 'userAuthGroup', it evaluates:
- *    - If 'userAuthGroup' is defined, the user must belong to it.
+ *    - If 'userRole' is defined, the user must belong to it.
  *    - For 'allOf', the user must have all specified roles.
  *    - For 'oneOf', the user must have at least one of the specified roles.
- * If any role object's criteria are met (considering 'userAuthGroup' if defined), it returns true.
+ * If any role object's criteria are met (considering 'userRole' if defined), it returns true.
  * Throws an error if both 'allOf' and 'oneOf' are defined in a role object.
  *
- * @param {Claim[] | IRole[] | IPermissions} roles - An array of roles or role requirement objects to be matched against the user's roles.
- * @param {Claim[]} userRoles - An array of roles assigned to the user.
- * @param {UserRole} userAuthGroup - The user authorization group to which the user belongs.
+ * @param {Claim[] | IRole[] | IPermissions} permissions - An array of claims or role requirement objects to be matched against the user's roles.
+ * @param {Claim[]} userClaims - An array of roles assigned to the user.
+ * @param {UserRole} userRole - The user authorization group to which the user belongs.
  * @returns {boolean} Returns true if the user meets any of the defined role criteria or belongs to the specified user authorization group; false otherwise.
  */
 export const matchRoles = (
-  roles: Claim[] | IRole[] | IPermissions[],
-  userRoles: Claim[],
-  userAuthGroup: UserRole,
+  permissions: Claim[] | IRole[] | IPermissions[],
+  userClaims: Claim[],
+  userRole: UserRole,
 ) => {
-  if (isIPermissions(roles[0] as IPermissions)) {
+  if (isIPermissions(permissions[0] as IPermissions)) {
     const { allowedIdirRoles, allowedBCeIDRoles, claims } =
-      roles[0] as IPermissions;
+      permissions[0] as IPermissions;
     // If only claims is specified, return the value of that.
     if (claims && !allowedBCeIDRoles && !allowedIdirRoles) {
-      return claims.some((role) => userRoles.includes(role));
+      return claims.some((claim) => userClaims.includes(claim));
     }
     let isAllowed: boolean;
-    const isIdir = userAuthGroup in IDIRUserRole;
+    const isIdir = userRole in IDIRUserRole;
     if (isIdir) {
-      isAllowed = allowedIdirRoles?.includes(userAuthGroup as IDIRUserRole);
+      isAllowed = allowedIdirRoles?.includes(userRole as IDIRUserRole);
     } else {
-      isAllowed = allowedBCeIDRoles?.includes(userAuthGroup as ClientUserRole);
+      isAllowed = allowedBCeIDRoles?.includes(userRole as ClientUserRole);
     }
     // If claims is specified alongside the allowed roles, include
     // its value in the output.
     if (claims) {
-      isAllowed = isAllowed && claims.some((role) => userRoles.includes(role));
+      isAllowed =
+        isAllowed && claims.some((claim) => userClaims.includes(claim));
     }
     return isAllowed;
   }
-  if (isRoleArray(roles)) {
-    // Scenario: roles is a simple list of Role objects.
-    // This block checks if any of the roles assigned to the user (userRoles)
+  if (isClaimArray(permissions)) {
+    // Scenario: claims is a simple list of Claim objects.
+    // This block checks if any of the claims assigned to the user (userRoles)
     // matches at least one of the roles specified in the input list (roles).
     // It returns true if there is a match, indicating the user has at least one of the required roles.
-    return roles?.some((role) => userRoles.includes(role));
+    return permissions?.some((claim) => userClaims.includes(claim));
   } else {
-    // Scenario: roles is not a simple list, but an object or objects implementing IRole,
+    // Scenario: claims is not a simple list, but an object or objects implementing IRole,
     // meaning complex role requirements can be specified.
     // This block first checks for an invalid case where both 'allOf' and 'oneOf' are defined in a roleObject,
     // then verifies if the user belongs to the specified 'userAuthGroup' if defined.
     // Following, it checks two conditions for each role object:
-    // 1. allOf - every role listed must be included in userRoles.
-    // 2. oneOf - at least one of the roles listed must be included in userRoles.
+    // 1. allOf - every claim listed must be included in userClaims.
+    // 2. oneOf - at least one of the roles listed must be included in userClaims.
     // It returns true if either condition is met for any role object, indicating the user meets the role requirements.
     // An error is thrown if 'allOf' and 'oneOf' are both defined, as it's considered an invalid configuration.
-    return (roles as IRole[]).some((roleObject) => {
+    return (permissions as IRole[]).some((roleObject) => {
       if (roleObject.allOf?.length && roleObject.oneOf?.length) {
         throw new InternalServerErrorException(
           'Cannot define both allOf and oneOf at the same time!',
         );
       }
 
-      if (roleObject.userAuthGroup?.length) {
-        const userAuthGroupMatch = roleObject.userAuthGroup?.some(
-          (authGroup) => authGroup === userAuthGroup,
+      if (roleObject.userRole?.length) {
+        const userAuthGroupMatch = roleObject.userRole?.some(
+          (authGroup) => authGroup === userRole,
         );
         if (!userAuthGroupMatch) {
           return false;
@@ -137,11 +138,11 @@ export const matchRoles = (
         }
       }
 
-      const allOfMatch = roleObject.allOf?.every((role) =>
-        userRoles.includes(role),
+      const allOfMatch = roleObject.allOf?.every((claim) =>
+        userClaims.includes(claim),
       );
-      const oneOfMatch = roleObject.oneOf?.some((role) =>
-        userRoles.includes(role),
+      const oneOfMatch = roleObject.oneOf?.some((claim) =>
+        userClaims.includes(claim),
       );
 
       return oneOfMatch || allOfMatch;
@@ -211,21 +212,21 @@ export const checkUserCompaniesContext = (
  * 1. The user must have at least one of the specified roles.
  * 2. If the user has at least one of the specified roles, they must also be associated with one of the specified companies.
  *
- * @param {Claim[]} roles - An array of roles that the user is supposed to have.
+ * @param {Claim[]} claims - An array of roles that the user is supposed to have.
  * @param {string} userGUID - The unique identifier for the user.
  * @param {number[]} userCompanies - An array of company IDs that the user is supposed to be associated with.
  * @param {IUserJWT} currentUser - The current user's information, including roles and identity provider.
  * @throws {ForbiddenException} Throws ForbiddenException if the user does not meet the role or company association criteria.
  */
 export const validateUserCompanyAndRoleContext = (
-  roles: Claim[],
+  claims: Claim[],
   userGUID: string,
   userCompanies: number[],
   currentUser: IUserJWT,
 ) => {
   const rolesExists = matchRoles(
-    roles,
-    currentUser.roles,
+    claims,
+    currentUser.claims,
     currentUser.orbcUserAuthGroup,
   );
   if (!rolesExists && userGUID) {

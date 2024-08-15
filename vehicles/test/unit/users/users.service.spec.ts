@@ -244,7 +244,7 @@ describe('UsersService', () => {
         { ROLE_TYPE: Claim.WRITE_USER },
       ]);
 
-      const retUserRoles = await service.getRolesForUser(
+      const retUserRoles = await service.getClaimsForUser(
         constants.RED_COMPANY_CVCLIENT_USER_GUID,
         constants.RED_COMPANY_ID,
       );

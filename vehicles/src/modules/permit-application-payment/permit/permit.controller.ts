@@ -23,7 +23,7 @@ import {
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
 import { Request } from 'express';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
-import { Roles } from 'src/common/decorator/roles.decorator';
+import { Permissions } from 'src/common/decorator/permissions.decorator';
 import { Claim } from 'src/common/enum/claims.enum';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import { ResultDto } from './dto/response/result.dto';
@@ -38,6 +38,7 @@ import { ReadNotificationDto } from '../../common/dto/response/read-notification
 import { PermitReceiptDocumentService } from '../permit-receipt-document/permit-receipt-document.service';
 import { JwtServiceAccountAuthGuard } from 'src/common/guard/jwt-sa-auth.guard';
 import { PermitIdDto } from 'src/modules/permit-application-payment/permit/dto/request/permit-id.dto';
+import { IRole } from '../../../common/interface/role.interface';
 
 @ApiBearerAuth()
 @ApiTags('Permit: API accessible exclusively to staff users.')
@@ -67,10 +68,10 @@ export class PermitController {
    *
    */
   @ApiPaginatedResponse(ReadPermitMetadataDto)
-  @Roles({
-    userAuthGroup: IDIR_USER_ROLE_LIST,
+  @Permissions({
+    userRole: IDIR_USER_ROLE_LIST,
     oneOf: [Claim.READ_PERMIT],
-  })
+  } as IRole)
   @Get()
   async getPermit(
     @Req() request: Request,
@@ -118,10 +119,10 @@ export class PermitController {
    * @returns The id of new voided/revoked permit a in response object {@link ResultDto}
    *
    */
-  @Roles({
-    userAuthGroup: IDIR_USER_ROLE_LIST,
+  @Permissions({
+    userRole: IDIR_USER_ROLE_LIST,
     oneOf: [Claim.VOID_PERMIT],
-  })
+  } as IRole)
   @Post('/:permitId/void')
   async voidpermit(
     @Req() request: Request,
@@ -170,10 +171,10 @@ export class PermitController {
     description:
       'Sends a notification related to a specific permit after checking user authorization.',
   })
-  @Roles({
-    userAuthGroup: IDIR_USER_ROLE_LIST,
+  @Permissions({
+    userRole: IDIR_USER_ROLE_LIST,
     oneOf: [Claim.SEND_NOTIFICATION],
-  })
+  } as IRole)
   @Post('/:permitId/notification')
   async notification(
     @Req() request: Request,

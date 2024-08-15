@@ -7,17 +7,18 @@ import { matchRoles } from '../helper/auth.helper';
 import { IRole } from '../interface/role.interface';
 import { IDP } from '../enum/idp.enum';
 import { IPermissions } from '../interface/permissions.interface';
+import { PERMISSIONS_KEY } from '../decorator/permissions.decorator';
 
 @Injectable()
-export class RolesGuard implements CanActivate {
+export class PermissionsGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const roles = this.reflector.getAllAndOverride<
+    const permissions = this.reflector.getAllAndOverride<
       Claim[] | IRole[] | IPermissions[]
-    >('roles', [context.getHandler(), context.getClass()]);
+    >(PERMISSIONS_KEY, [context.getHandler(), context.getClass()]);
     // Guard is invoked regardless of the decorator being actively called
-    if (!roles) {
+    if (!permissions) {
       return true;
     }
     const request: Request = context.switchToHttp().getRequest();
@@ -25,6 +26,10 @@ export class RolesGuard implements CanActivate {
     if (currentUser.identity_provider === IDP.SERVICE_ACCOUNT) {
       return true;
     }
-    return matchRoles(roles, currentUser.roles, currentUser.orbcUserAuthGroup);
+    return matchRoles(
+      permissions,
+      currentUser.claims,
+      currentUser.orbcUserAuthGroup,
+    );
   }
 }

@@ -29,7 +29,7 @@ import { ReadCompanyDto } from './dto/response/read-company.dto';
 import { ReadCompanyUserDto } from './dto/response/read-company-user.dto';
 import { ReadCompanyMetadataDto } from './dto/response/read-company-metadata.dto';
 import { Request } from 'express';
-import { Roles } from '../../../common/decorator/roles.decorator';
+import { Permissions } from '../../../common/decorator/permissions.decorator';
 import { Claim } from '../../../common/enum/claims.enum';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
@@ -97,7 +97,7 @@ export class CompanyController {
    * @returns The paginated companies with response object {@link ReadCompanyDto}.
    */
   @ApiPaginatedResponse(ReadCompanyDto)
-  @Roles(Claim.READ_ORG)
+  @Permissions(Claim.READ_ORG)
   @Get()
   async getCompanyPaginated(
     @Req() request: Request,
@@ -137,7 +137,7 @@ export class CompanyController {
     type: ReadCompanyMetadataDto,
     isArray: true,
   })
-  @Roles(Claim.READ_ORG)
+  @Permissions(Claim.READ_ORG)
   @Get('meta-data')
   async getCompanyMetadata(
     @Req() request: Request,
@@ -165,7 +165,7 @@ export class CompanyController {
     description: 'The Company Resource',
     type: ReadCompanyDto,
   })
-  @Roles(Claim.READ_ORG)
+  @Permissions(Claim.READ_ORG)
   @Get(':companyId')
   async get(
     @Req() request: Request,
@@ -191,7 +191,7 @@ export class CompanyController {
     description: 'The Company Resource',
     type: ReadCompanyDto,
   })
-  @Roles(Claim.WRITE_ORG)
+  @Permissions(Claim.WRITE_ORG)
   @Put(':companyId')
   async update(
     @Req() request: Request,

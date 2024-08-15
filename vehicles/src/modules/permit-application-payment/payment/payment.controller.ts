@@ -32,7 +32,7 @@ import { CreatePaymentDetailedReportDto } from './dto/request/create-payment-det
 import { ReadFileDto } from '../../common/dto/response/read-file.dto';
 import { CreatePaymentSummaryReportDto } from './dto/request/create-payment-summary-report.dto';
 import { PaymentReportService } from './payment-report.service';
-import { Roles } from '../../../common/decorator/roles.decorator';
+import { Permissions } from '../../../common/decorator/permissions.decorator';
 import { Claim } from '../../../common/enum/claims.enum';
 
 @ApiBearerAuth()
@@ -64,7 +64,7 @@ export class PaymentController {
     description: 'The Transaction Resource',
     type: ReadTransactionDto,
   })
-  @Roles(Claim.WRITE_PAYMENT)
+  @Permissions(Claim.WRITE_PAYMENT)
   @Post()
   async createTransactionDetails(
     @Req() request: Request,
@@ -85,7 +85,7 @@ export class PaymentController {
     type: UpdatePaymentGatewayTransactionDto,
   })
   @ApiQuery({ name: 'queryString', required: true })
-  @Roles(Claim.WRITE_PAYMENT)
+  @Permissions(Claim.WRITE_PAYMENT)
   @Put(':transactionId/payment-gateway')
   async updateTransactionDetails(
     @Req() request: Request,
@@ -110,7 +110,7 @@ export class PaymentController {
     description: 'The Read Transaction Resource',
     type: ReadTransactionDto,
   })
-  @Roles(Claim.READ_PAYMENT)
+  @Permissions(Claim.READ_PAYMENT)
   @Get(':transactionId')
   async findTransaction(
     @Req() request: Request,
@@ -123,7 +123,7 @@ export class PaymentController {
     description: 'The DOPS file Resource with the presigned resource',
     type: ReadFileDto,
   })
-  @Roles(Claim.GENERATE_TRANSACTION_REPORT)
+  @Permissions(Claim.GENERATE_TRANSACTION_REPORT)
   @Post('/report/detailed')
   async createPaymentDetailedReport(
     @Req() request: Request,
@@ -144,7 +144,7 @@ export class PaymentController {
     description: 'The DOPS file Resource with the presigned resource',
     type: ReadFileDto,
   })
-  @Roles(Claim.GENERATE_TRANSACTION_REPORT)
+  @Permissions(Claim.GENERATE_TRANSACTION_REPORT)
   @Post('/report/summary')
   async createPaymentSummaryReport(
     @Req() request: Request,

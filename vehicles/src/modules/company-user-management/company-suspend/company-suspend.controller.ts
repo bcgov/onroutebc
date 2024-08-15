@@ -15,7 +15,7 @@ import { CreateCompanySuspendDto } from './dto/request/create-company-suspend.dt
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { ReadCompanySuspendActivityDto } from './dto/response/read-company-suspend-activity.dto';
 import { Request } from 'express';
-import { Roles } from '../../../common/decorator/roles.decorator';
+import { Permissions } from '../../../common/decorator/permissions.decorator';
 import { Claim } from '../../../common/enum/claims.enum';
 
 @ApiTags('Company and User Management - Company Suspend')
@@ -54,7 +54,7 @@ export class CompanySuspendController {
     description: 'The Company Suspension Activity Resource',
     type: ReadCompanySuspendActivityDto,
   })
-  @Roles(Claim.WRITE_SUSPEND)
+  @Permissions(Claim.WRITE_SUSPEND)
   @Post('suspend')
   async suspendCompany(
     @Req() request: Request,
@@ -82,7 +82,7 @@ export class CompanySuspendController {
     type: ReadCompanySuspendActivityDto,
     isArray: true,
   })
-  @Roles(Claim.READ_SUSPEND)
+  @Permissions(Claim.READ_SUSPEND)
   @Get('suspend')
   async findAllSuspendActivityByCompanyId(
     @Param('companyId') companyId: number,

@@ -31,7 +31,7 @@ import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { UpdateApplicationDto } from './dto/request/update-application.dto';
 import { DataNotFoundException } from 'src/common/exception/data-not-found.exception';
 import { ResultDto } from './dto/response/result.dto';
-import { Roles } from 'src/common/decorator/roles.decorator';
+import { Permissions } from 'src/common/decorator/permissions.decorator';
 import { Claim } from 'src/common/enum/claims.enum';
 import { IssuePermitDto } from './dto/request/issue-permit.dto';
 import {
@@ -83,7 +83,7 @@ export class CompanyApplicationController {
       "If login user is PA then only fetch thier application else fetch all applications associated with logged in user's company. ",
   })
   @ApiPaginatedResponse(ReadApplicationMetadataDto)
-  @Roles(Claim.READ_PERMIT)
+  @Permissions(Claim.READ_PERMIT)
   @Get()
   async findAllApplication(
     @Req() request: Request,
@@ -120,7 +120,7 @@ export class CompanyApplicationController {
     description: 'The Permit Application Resource',
     type: ReadApplicationDto,
   })
-  @Roles(Claim.WRITE_PERMIT)
+  @Permissions(Claim.WRITE_PERMIT)
   @Post()
   async createPermitApplication(
     @Req() request: Request,
@@ -153,7 +153,7 @@ export class CompanyApplicationController {
     isArray: true,
   })
   @ApiQuery({ name: 'amendment', required: false })
-  @Roles(Claim.READ_PERMIT)
+  @Permissions(Claim.READ_PERMIT)
   @Get(':applicationId')
   async findOneApplication(
     @Req() request: Request,
@@ -208,7 +208,7 @@ export class CompanyApplicationController {
     description: 'The Permit Application Resource',
     type: ReadApplicationDto,
   })
-  @Roles(Claim.WRITE_PERMIT)
+  @Permissions(Claim.WRITE_PERMIT)
   @Put(':applicationId')
   async update(
     @Req() request: Request,
@@ -244,7 +244,7 @@ export class CompanyApplicationController {
       'Update Permit Application status for given id and set it to ISSUED.' +
       'Returns a list of updated application ids or throws exceptions for unauthorized access or operational failures.',
   })
-  @Roles(Claim.WRITE_PERMIT)
+  @Permissions(Claim.WRITE_PERMIT)
   @Post('/issue')
   async issuePermit(
     @Req() request: Request,
@@ -288,7 +288,7 @@ export class CompanyApplicationController {
     return result;
   }
 
-  @Roles(Claim.WRITE_PERMIT)
+  @Permissions(Claim.WRITE_PERMIT)
   @Delete()
   @ApiOperation({
     summary:

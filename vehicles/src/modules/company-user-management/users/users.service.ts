@@ -551,18 +551,18 @@ export class UsersService {
    * @param userGUID The user GUID.
    * @param companyId The company Id. Optional - Defaults to 0
    *
-   * @returns The Roles as a promise of type {@link Claim}
+   * @returns The claims as a promise of type {@link Claim}
    */
   @LogAsyncMethodExecution()
-  async getRolesForUser(userGUID: string, companyId = 0): Promise<Claim[]> {
+  async getClaimsForUser(userGUID: string, companyId = 0): Promise<Claim[]> {
     const queryResult = (await this.userRepository.query(
       'SELECT ROLE_TYPE FROM access.ORBC_GET_ROLES_FOR_USER_FN(@0,@1)',
       [userGUID, companyId],
     )) as [{ ROLE_TYPE: Claim }];
 
-    const roles = queryResult.map((r) => r.ROLE_TYPE);
+    const claims = queryResult.map((r) => r.ROLE_TYPE);
 
-    return roles;
+    return claims;
   }
 
   /**

@@ -31,19 +31,22 @@ export class AuthService {
   }
 
   /**
-   * The getRolesForUser() method finds and returns a {@link Claim[]} object
+   * The getClaimsForUser() method finds and returns a {@link Claim[]} object
    * for a user with a specific userGUID and companyId parameters. CompanyId is
    * optional and defaults to 0
    *
    * @param userGUID The user GUID.
    * @param companyId The company Id. Optional - Defaults to 0
    *
-   * @returns The Roles as a promise of type {@link Claim[]}
+   * @returns The claims as a promise of type {@link Claim[]}
    */
   @LogAsyncMethodExecution()
-  async getRolesForUser(userGuid: string, companyId = 0): Promise<Claim[]> {
-    const roles = await this.usersService.getRolesForUser(userGuid, companyId);
-    return roles;
+  async getClaimsForUser(userGuid: string, companyId = 0): Promise<Claim[]> {
+    const claims = await this.usersService.getClaimsForUser(
+      userGuid,
+      companyId,
+    );
+    return claims;
   }
 
   /**

@@ -72,13 +72,13 @@ describe('UsersController', () => {
       request.user = redCompanyAdminUserJWTMock;
       const currentUser = request.user as IUserJWT;
 
-      userService.getRolesForUser.mockResolvedValue(currentUser.roles);
-      const retUserRoles = await controller.getRolesForUsers(request, {
+      userService.getClaimsForUser.mockResolvedValue(currentUser.claims);
+      const retUserRoles = await controller.getClaimsForUsers(request, {
         companyId: constants.RED_COMPANY_ID,
       });
       expect(typeof retUserRoles).toBe('object');
 
-      expect(userService.getRolesForUser).toHaveBeenCalledWith(
+      expect(userService.getClaimsForUser).toHaveBeenCalledWith(
         currentUser.userGUID,
         constants.RED_COMPANY_ID,
       );

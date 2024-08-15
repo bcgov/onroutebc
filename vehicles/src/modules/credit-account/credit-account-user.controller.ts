@@ -19,7 +19,7 @@ import {
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Request } from 'express';
-import { Roles } from '../../common/decorator/roles.decorator';
+import { Permissions } from '../../common/decorator/permissions.decorator';
 import { ExceptionDto } from '../../common/exception/exception.dto';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
 
@@ -80,7 +80,7 @@ export class CreditAccountUserController {
     type: ReadCreditAccountUserDto,
   })
   @Put()
-  @Roles(Claim.WRITE_CREDIT_ACCOUNT)
+  @Permissions(Claim.WRITE_CREDIT_ACCOUNT)
   async addOrActivateCreditAccountUser(
     @Req() request: Request,
     @Param() { companyId, creditAccountId }: CreditAccountIdPathParamDto,
@@ -113,7 +113,7 @@ export class CreditAccountUserController {
     type: DeleteDto,
   })
   @Delete()
-  @Roles(Claim.WRITE_CREDIT_ACCOUNT)
+  @Permissions(Claim.WRITE_CREDIT_ACCOUNT)
   async deactivateCreditAccountUser(
     @Req() request: Request,
     @Param() { companyId, creditAccountId }: CreditAccountIdPathParamDto,
@@ -145,11 +145,8 @@ export class CreditAccountUserController {
     type: [ReadCreditAccountUserDto],
   })
   @Get()
-  @Roles({
-    userAuthGroup: [
-      ...IDIR_USER_ROLE_LIST,
-      ClientUserRole.COMPANY_ADMINISTRATOR,
-    ],
+  @Permissions({
+    userRole: [...IDIR_USER_ROLE_LIST, ClientUserRole.COMPANY_ADMINISTRATOR],
     oneOf: [Claim.READ_CREDIT_ACCOUNT],
   })
   async getCreditAccountUsers(

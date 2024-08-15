@@ -28,7 +28,7 @@ import { UsersService } from './users.service';
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { Request } from 'express';
-import { Roles } from '../../../common/decorator/roles.decorator';
+import { Permissions } from '../../../common/decorator/permissions.decorator';
 import { Claim } from '../../../common/enum/claims.enum';
 import { UpdateUserDto } from './dto/request/update-user.dto';
 import { GetCompanyUserQueryParamsDto } from './dto/request/queryParam/getCompanyUser.query-params.dto';
@@ -78,7 +78,7 @@ export class CompanyUsersController {
     isArray: true,
   })
   @ApiParam({ name: 'companyId', required: true })
-  @Roles(Claim.READ_SELF)
+  @Permissions(Claim.READ_SELF)
   @Get()
   async findAllCompanyUsers(
     @Req() request: Request,
@@ -130,7 +130,7 @@ export class CompanyUsersController {
     description: 'The User Resource',
     type: ReadUserDto,
   })
-  @Roles(Claim.READ_USER)
+  @Permissions(Claim.READ_USER)
   @Get(':userGUID')
   async get(
     @Param() params: GetCompanyUserByUserGUIDPathParamsDto,
@@ -156,7 +156,7 @@ export class CompanyUsersController {
     description: 'The User Resource',
     type: ReadUserDto,
   })
-  @Roles(Claim.WRITE_SELF)
+  @Permissions(Claim.WRITE_SELF)
   @Put(':userGUID')
   async update(
     @Req() request: Request,
@@ -187,7 +187,7 @@ export class CompanyUsersController {
    * @returns A {@link DeleteDto} object including counts of successfully deleted users. Throws DataNotFoundException
    * if no delete result is obtained.
    */
-  @Roles(Claim.WRITE_USER)
+  @Permissions(Claim.WRITE_USER)
   @ApiOperation({
     summary: 'Delete users associated with a company',
     description:

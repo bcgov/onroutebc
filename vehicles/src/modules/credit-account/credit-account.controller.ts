@@ -12,7 +12,7 @@ import {
 } from '@nestjs/swagger';
 import { Request } from 'express';
 import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-flag-enabled.decorator';
-import { Roles } from '../../common/decorator/roles.decorator';
+import { Permissions } from '../../common/decorator/permissions.decorator';
 import { Claim } from '../../common/enum/claims.enum';
 import { DataNotFoundException } from '../../common/exception/data-not-found.exception';
 import { ExceptionDto } from '../../common/exception/exception.dto';
@@ -74,7 +74,7 @@ export class CreditAccountController {
     type: String,
   })
   @Post()
-  @Roles(Claim.WRITE_CREDIT_ACCOUNT)
+  @Permissions(Claim.WRITE_CREDIT_ACCOUNT)
   async createCreditAccount(
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
@@ -103,7 +103,7 @@ export class CreditAccountController {
     type: ReadCreditAccountMetadataDto,
   })
   @Get()
-  @Roles(Claim.READ_CREDIT_ACCOUNT)
+  @Permissions(Claim.READ_CREDIT_ACCOUNT)
   async getCreditAccountMetadata(
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
@@ -137,11 +137,8 @@ export class CreditAccountController {
     type: ReadCreditAccountDto,
   })
   @Get(':creditAccountId')
-  @Roles({
-    userAuthGroup: [
-      ...IDIR_USER_ROLE_LIST,
-      ClientUserRole.COMPANY_ADMINISTRATOR,
-    ],
+  @Permissions({
+    userRole: [...IDIR_USER_ROLE_LIST, ClientUserRole.COMPANY_ADMINISTRATOR],
     oneOf: [Claim.READ_CREDIT_ACCOUNT],
   })
   async getCreditAccount(
@@ -178,8 +175,8 @@ export class CreditAccountController {
     type: ReadCreditAccountLimitDto,
   })
   @Get(':creditAccountId/limits')
-  @Roles({
-    userAuthGroup: [
+  @Permissions({
+    userRole: [
       IDIRUserRole.FINANCE,
       IDIRUserRole.HQ_ADMINISTRATOR,
       IDIRUserRole.SYSTEM_ADMINISTRATOR,
@@ -219,8 +216,8 @@ export class CreditAccountController {
     type: ReadCreditAccountActivityDto,
   })
   @Get(':creditAccountId/history')
-  @Roles({
-    userAuthGroup: [IDIRUserRole.FINANCE],
+  @Permissions({
+    userRole: [IDIRUserRole.FINANCE],
     oneOf: [Claim.READ_CREDIT_ACCOUNT],
   })
   async getCreditAccountHistory(
@@ -254,7 +251,7 @@ export class CreditAccountController {
     type: ReadCreditAccountDto,
   })
   @Put(':creditAccountId/status')
-  @Roles(Claim.WRITE_CREDIT_ACCOUNT)
+  @Permissions(Claim.WRITE_CREDIT_ACCOUNT)
   async updateCreditAccountStatus(
     @Req() request: Request,
     @Param() { companyId, creditAccountId }: CreditAccountIdPathParamDto,

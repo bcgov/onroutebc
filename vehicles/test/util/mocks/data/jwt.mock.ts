@@ -26,7 +26,7 @@ export const redCompanyAdminUserJWTMock: IUserJWT = {
   userName: constants.RED_COMPANY_ADMIN_USER_NAME,
   userGUID: constants.RED_COMPANY_ADMIN_USER_GUID,
   companyId: constants.RED_COMPANY_ID,
-  roles: [
+  claims: [
     //TOCHANGE
     Claim.PUBLIC_AGENT,
     Claim.PUBLIC_ORG_ADMIN,
@@ -81,7 +81,7 @@ export const redCompanyCvClientUserJWTMock: IUserJWT = {
   userName: constants.RED_COMPANY_CVCLIENT_USER_NAME,
   userGUID: constants.RED_COMPANY_CVCLIENT_USER_GUID,
   companyId: constants.RED_COMPANY_ID,
-  roles: [
+  claims: [
     //TOCHANGE
     Claim.PUBLIC_AGENT,
     Claim.PUBLIC_ORG_ADMIN,
@@ -136,7 +136,7 @@ export const redCompanyPendingUserJWTMock: IUserJWT = {
   userName: constants.RED_COMPANY_PENDING_USER_NAME,
   userGUID: constants.RED_COMPANY_PENDING_USER_GUID,
   companyId: constants.RED_COMPANY_ID,
-  roles: [],
+  claims: [],
   associatedCompanies: [constants.RED_COMPANY_ID],
   access_token: undefined,
   orbcUserFirstName: undefined,
@@ -169,7 +169,7 @@ export const blueCompanyAdminUserJWTMock: IUserJWT = {
   userName: constants.BLUE_COMPANY_ADMIN_USER_NAME,
   userGUID: constants.BLUE_COMPANY_ADMIN_USER_GUID,
   companyId: constants.BLUE_COMPANY_ID,
-  roles: [
+  claims: [
     //TOCHANGE
     Claim.PUBLIC_AGENT,
     Claim.PUBLIC_ORG_ADMIN,
@@ -224,7 +224,7 @@ export const blueCompanyCvClientUserJWTMock: IUserJWT = {
   userName: constants.BLUE_COMPANY_CVCLIENT_USER_NAME,
   userGUID: constants.BLUE_COMPANY_CVCLIENT_USER_GUID,
   companyId: constants.BLUE_COMPANY_ID,
-  roles: [
+  claims: [
     //TOCHANGE
     Claim.PUBLIC_AGENT,
     Claim.PUBLIC_ORG_ADMIN,
@@ -279,7 +279,7 @@ export const sysAdminStaffUserJWTMock: IUserJWT = {
   userName: constants.SYS_ADMIN_STAFF_USER_NAME,
   userGUID: constants.SYS_ADMIN_STAFF_USER_GUID,
   companyId: undefined,
-  roles: [
+  claims: [
     //TOCHANGE
     Claim.PUBLIC_AGENT,
     Claim.PUBLIC_ORG_ADMIN,

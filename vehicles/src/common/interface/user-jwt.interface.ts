@@ -27,7 +27,7 @@ export interface IUserJWT {
   userName: string;
   userGUID: string;
   companyId: number;
-  roles: Claim[];
+  claims: Claim[];
   associatedCompanies: number[];
   access_token: string;
   orbcUserFirstName: string;

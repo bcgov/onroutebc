@@ -26,12 +26,12 @@ import { Claim } from '../../../common/enum/claims.enum';
 import { Request } from 'express';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
-import { Roles } from '../../../common/decorator/roles.decorator';
+import { Permissions } from '../../../common/decorator/permissions.decorator';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { ReadUserDto } from './dto/response/read-user.dto';
 import { IDP } from '../../../common/enum/idp.enum';
 import { GetStaffUserQueryParamsDto } from './dto/request/queryParam/getStaffUser.query-params.dto';
-import { GetUserRolesQueryParamsDto } from './dto/request/queryParam/getUserRoles.query-params.dto';
+import { GetUserClaimsQueryParamsDto } from './dto/request/queryParam/getUserClaims.query-params.dto';
 import { IDIR_USER_ROLE_LIST } from '../../../common/enum/user-auth-group.enum';
 import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 
@@ -91,35 +91,36 @@ export class UsersController {
 
   /**
    * A GET method defined with the @Get() decorator and a route of
-   * /user/roles that retrieves a list of users' roles associated with
+   * /user/roles that retrieves a list of users' claims associated with
    * the given company ID.
    *
-   * @param companyId The company Id for which roles are retrieved.
+   * @param companyId The company Id for which claims are retrieved.
    *
-   * @returns The list of roles associated with the given company ID.
+   * @returns The list of claims associated with the given company ID.
    */
   @ApiOkResponse({
-    description: "The list of User's Roles",
+    description: "The list of User's Claims",
     isArray: true,
   })
   @ApiOperation({
-    summary: "Retrieves a list of users' roles for a specified company ID.",
+    summary: "Retrieves a list of users' claims for a specified company ID.",
     description:
-      'This endpoint queries all roles associated with the provided company ID for the calling user. ' +
-      "It fetches roles by integrating with the User service, ensuring roles are accurately returned based on the company's context and the user's privileges.",
+      'This endpoint queries all claims associated with the provided company ID for the calling user. ' +
+      "It fetches claims by integrating with the User service, ensuring claims are accurately returned based on the company's context and the user's privileges.",
   })
-  @Roles(Claim.READ_SELF)
+  @Permissions(Claim.READ_SELF)
+  // Todo: change endpoint to /claims
   @Get('/roles')
-  async getRolesForUsers(
+  async getClaimsForUsers(
     @Req() request: Request,
-    @Query() getUserRolesQueryParamsDto: GetUserRolesQueryParamsDto,
+    @Query() getUserRolesQueryParamsDto: GetUserClaimsQueryParamsDto,
   ): Promise<Claim[]> {
     const currentUser = request.user as IUserJWT;
-    const roles = await this.userService.getRolesForUser(
+    const claims = await this.userService.getClaimsForUser(
       currentUser.userGUID,
       getUserRolesQueryParamsDto.companyId,
     );
-    return roles;
+    return claims;
   }
 
   /**
@@ -136,7 +137,7 @@ export class UsersController {
     type: ReadUserDto,
     isArray: true,
   })
-  @Roles(Claim.READ_USER)
+  @Permissions(Claim.READ_USER)
   @Get()
   async findAll(
     @Req() request: Request,
@@ -195,7 +196,7 @@ export class UsersController {
       'the first result if any are found. Throws a BadRequestException if the GUIDs ' +
       'do not match for non-IDIR users, and DataNotFoundException if no users are found.',
   })
-  @Roles(Claim.READ_SELF)
+  @Permissions(Claim.READ_SELF)
   @Get(':userGUID')
   async findUserDetails(
     @Req() request: Request,

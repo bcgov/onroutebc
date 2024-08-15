@@ -30,7 +30,7 @@ import { ReadPendingUserDto } from './dto/response/read-pending-user.dto';
 import { PendingUsersService } from './pending-users.service';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { Request } from 'express';
-import { Roles } from '../../../common/decorator/roles.decorator';
+import { Permissions } from '../../../common/decorator/permissions.decorator';
 import { Claim } from '../../../common/enum/claims.enum';
 import { TPS_MIGRATED_USER } from '../../../common/constants/api.constant';
 
@@ -80,7 +80,7 @@ export class PendingUsersController {
     description: 'The Pending User Resource',
     type: ReadPendingUserDto,
   })
-  @Roles(Claim.WRITE_USER)
+  @Permissions(Claim.WRITE_USER)
   @Post()
   async create(
     @Req() request: Request,
@@ -110,7 +110,7 @@ export class PendingUsersController {
     type: ReadPendingUserDto,
     isArray: true,
   })
-  @Roles(Claim.READ_USER)
+  @Permissions(Claim.READ_USER)
   @Get()
   async findAll(
     @Param('companyId') companyId: number,
@@ -132,7 +132,7 @@ export class PendingUsersController {
     description: 'The Pending User Resource',
     type: ReadPendingUserDto,
   })
-  @Roles(Claim.READ_USER)
+  @Permissions(Claim.READ_USER)
   @Get(':userName')
   async find(
     @Param('companyId') companyId: number,
@@ -170,7 +170,7 @@ export class PendingUsersController {
     description: 'The Pending User Resource',
     type: ReadPendingUserDto,
   })
-  @Roles(Claim.WRITE_USER)
+  @Permissions(Claim.WRITE_USER)
   @Put(':userName')
   async update(
     @Req() request: Request,
@@ -206,7 +206,7 @@ export class PendingUsersController {
    * @returns A response encapsulated in {@link DeleteDto}, detailing the list of users successfully removed.
    * If no users are removed, a DataNotFoundException is thrown.
    */
-  @Roles(Claim.WRITE_USER)
+  @Permissions(Claim.WRITE_USER)
   @ApiOperation({
     summary: 'Deletes pending users by username with authorization',
     description:

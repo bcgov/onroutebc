@@ -24,7 +24,7 @@ import { Request, Response } from 'express';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { FileDownloadModes } from '../../../common/enum/file-download-modes.enum';
 import { ReadFileDto } from '../../common/dto/response/read-file.dto';
-import { Roles } from 'src/common/decorator/roles.decorator';
+import { Permissions } from 'src/common/decorator/permissions.decorator';
 import { Claim } from 'src/common/enum/claims.enum';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
@@ -62,7 +62,7 @@ export class CompanyPermitController {
    *
    */
   @ApiPaginatedResponse(ReadPermitMetadataDto)
-  @Roles(Claim.READ_PERMIT)
+  @Permissions(Claim.READ_PERMIT)
   @Get()
   async getPermit(
     @Req() request: Request,
@@ -105,7 +105,7 @@ export class CompanyPermitController {
     type: PermitHistoryDto,
     isArray: true,
   })
-  @Roles(Claim.READ_PERMIT)
+  @Permissions(Claim.READ_PERMIT)
   @Get('/:permitId/history')
   async getPermitHisory(
     @Param('permitId') permitId: string,
@@ -123,7 +123,7 @@ export class CompanyPermitController {
     description:
       'Fetches a single permit detail by its permit ID for the current user.',
   })
-  @Roles(Claim.READ_PERMIT)
+  @Permissions(Claim.READ_PERMIT)
   @Get('/:permitId')
   async getByPermitId(
     @Req() request: Request,
@@ -147,7 +147,7 @@ export class CompanyPermitController {
     description:
       'Retrieves the DOPS file for a given permit ID. Requires READ_PERMIT role.',
   })
-  @Roles(Claim.READ_PERMIT)
+  @Permissions(Claim.READ_PERMIT)
   @Get('/:permitId/document')
   async getPermitDocument(
     @Req() request: Request,
@@ -176,7 +176,7 @@ export class CompanyPermitController {
     description:
       'Retrieves a PDF receipt for a given permit ID, ensuring the user has read permission.',
   })
-  @Roles(Claim.READ_PERMIT)
+  @Permissions(Claim.READ_PERMIT)
   @Get('/:permitId/receipt')
   async getReceiptPDF(
     @Req() request: Request,

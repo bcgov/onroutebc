@@ -47,7 +47,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(req: Request, payload: IUserJWT): Promise<IUserJWT> {
     let userGUID: string,
       userName: string,
-      roles: Claim[],
+      claims: Claim[],
       associatedCompanies: number[],
       orbcUserFirstName: string,
       orbcUserLastName: string,
@@ -115,7 +115,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         }
       }
 
-      roles = await this.authService.getRolesForUser(userGUID, companyId);
+      claims = await this.authService.getClaimsForUser(userGUID, companyId);
     }
 
     const access_token = req.headers.authorization;
@@ -123,7 +123,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const currentUser = {
       userName,
       userGUID,
-      roles,
+      claims,
       companyId,
       associatedCompanies,
       access_token,
@@ -175,14 +175,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       ) {
         throw new ForbiddenException();
       } else if (companyId && userGUIDParam !== payload.userGUID) {
-        let roles: Claim[];
+        let claims: Claim[];
         if (req.method === 'GET') {
-          roles = [Claim.READ_USER];
+          claims = [Claim.READ_USER];
         } else {
-          roles = [Claim.WRITE_USER];
+          claims = [Claim.WRITE_USER];
         }
         validateUserCompanyAndRoleContext(
-          roles,
+          claims,
           userGUIDParam,
           associatedCompanies,
           payload,
