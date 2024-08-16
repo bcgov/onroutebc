@@ -242,10 +242,10 @@ export const validateUserCompanyAndRoleContext = (
 };
 
 /**
- * Determines if a specified UserAuthGroup value is present within a given enumeration object.
+ * Determines if a specified UserRole value is present within a given enumeration object.
  *
- * @param {UserRole} value - The UserAuthGroup value to be checked.
- * @param {ReadonlyArray<ClientUserRole> | ReadonlyArray<IDIRUserRole>} enumObject - An array of UserAuthGroup values.
+ * @param {UserRole} value - The UserRole value to be checked.
+ * @param {ReadonlyArray<ClientUserRole> | ReadonlyArray<IDIRUserRole>} enumObject - An array of UserRole values.
  * @returns {boolean} Returns true if the value is present in the enumObject, otherwise false.
  */
 export const doesUserHaveAuthGroup = (
