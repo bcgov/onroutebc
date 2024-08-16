@@ -204,7 +204,7 @@ export class UsersService {
     //if they are the last remaining CVADMIN of the Company
     if (
       companyUser.userRole === ClientUserRole.COMPANY_ADMINISTRATOR &&
-      companyUser.userRole !== updateUserDto.userAuthGroup
+      companyUser.userRole !== updateUserDto.userRole
     ) {
       //Find all employees of the company
       const employees = await this.findUsersEntity(undefined, [companyId]);
@@ -220,7 +220,7 @@ export class UsersService {
       //Throw BadRequestException if only one CVAdmin exists for the company.
       if (!secondCVAdmin?.length) {
         const badRequestExceptionDto = new BadRequestExceptionDto();
-        badRequestExceptionDto.field = 'userAuthGroup';
+        badRequestExceptionDto.field = 'userRole';
         badRequestExceptionDto.message = [
           'This operation is not allowed as a company should have atlease one CVAdmin at any given moment.',
         ];
@@ -278,12 +278,12 @@ export class UsersService {
         (currentUser.orbcUserAuthGroup ===
           ClientUserRole.COMPANY_ADMINISTRATOR ||
           currentUser.identity_provider === IDP.IDIR) &&
-        companyUser.userRole !== updateUserDto.userAuthGroup
+        companyUser.userRole !== updateUserDto.userRole
       ) {
         await queryRunner.manager.update(
           CompanyUser,
           { companyUserId: companyUser.companyUserId },
-          { userRole: updateUserDto.userAuthGroup, ...auditMetadata },
+          { userRole: updateUserDto.userRole, ...auditMetadata },
         );
       }
 

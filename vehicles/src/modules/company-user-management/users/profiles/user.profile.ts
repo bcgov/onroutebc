@@ -60,8 +60,8 @@ export class UsersProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.userRole,
-          mapWithArguments((source, { userAuthGroup }) => {
-            return userAuthGroup;
+          mapWithArguments((source, { userRole }) => {
+            return userRole;
           }),
         ),
         forMember(

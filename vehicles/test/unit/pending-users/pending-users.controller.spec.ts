@@ -130,7 +130,7 @@ describe('PendingUsersController', () => {
       expect(typeof retPendingUsers).toBe('object');
       expect(retPendingUsers).toEqual({
         ...readRedCompanyPendingUserDtoMock,
-        userAuthGroup: ClientUserRole.COMPANY_ADMINISTRATOR,
+        userRole: ClientUserRole.COMPANY_ADMINISTRATOR,
       });
     });
     it('should throw a Data Not Found Exception when the pending user is not found', async () => {
