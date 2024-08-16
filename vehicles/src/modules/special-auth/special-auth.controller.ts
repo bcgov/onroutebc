@@ -51,7 +51,7 @@ export class SpecialAuthController {
   async get(
     @Param() { companyId }: CompanyIdPathParamDto,
   ): Promise<ReadSpecialAuthDto> {
-    return await this.specialAuthService.findOne(companyId);
+    return await this.specialAuthService.findOneDto(companyId);
   }
 
   @ApiOperation({
@@ -68,15 +68,14 @@ export class SpecialAuthController {
   async updateLcv(
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
-    @Body() createLcvDto: CreateLcvDto,
+    @Body() { isLcvAllowed }: CreateLcvDto,
   ): Promise<ReadSpecialAuthDto> {
     const currentUser = request.user as IUserJWT;
-    return await this.specialAuthService.upsertSpecialAuth(
-      companyId,
+    return await this.specialAuthService.upsertSpecialAuth({
       currentUser,
-      createLcvDto,
-      undefined,
-    );
+      companyId,
+      isLcvAllowed,
+    });
   }
 
   @ApiOperation({
@@ -93,14 +92,13 @@ export class SpecialAuthController {
   async updateNoFee(
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
-    @Body() createNoFeeDto: CreateNoFeeDto,
+    @Body() { noFeeType }: CreateNoFeeDto,
   ): Promise<ReadSpecialAuthDto> {
     const currentUser = request.user as IUserJWT;
-    return await this.specialAuthService.upsertSpecialAuth(
-      companyId,
+    return await this.specialAuthService.upsertSpecialAuth({
       currentUser,
-      null,
-      createNoFeeDto,
-    );
+      companyId,
+      noFeeType,
+    });
   }
 }
