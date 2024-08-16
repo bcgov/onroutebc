@@ -94,7 +94,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       }
       orbcUserFirstName = user?.at(0).firstName;
       orbcUserLastName = user?.at(0).lastName;
-      orbcUserAuthGroup = user?.at(0).userAuthGroup;
+      orbcUserAuthGroup = user?.at(0).userRole;
 
       if (payload.identity_provider !== IDP.IDIR) {
         const associatedCompanyMetadataList =

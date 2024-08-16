@@ -160,7 +160,7 @@ export class UsersController {
       null,
       null,
       false,
-      getStaffUserQueryParamsDto.userAuthGroup,
+      getStaffUserQueryParamsDto.userRole,
     );
   }
 

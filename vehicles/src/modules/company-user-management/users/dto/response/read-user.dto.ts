@@ -32,7 +32,7 @@ export class ReadUserDto extends ReadContactDto {
     description: 'The user auth group.',
     example: ClientUserRole.COMPANY_ADMINISTRATOR,
   })
-  userAuthGroup: UserRole | ClientUserRole | IDIRUserRole;
+  userRole: UserRole | ClientUserRole | IDIRUserRole;
 
   @AutoMap()
   @ApiProperty({

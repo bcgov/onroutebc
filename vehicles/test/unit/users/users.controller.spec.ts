@@ -97,7 +97,7 @@ describe('UsersController', () => {
 
       const getStaffUserQueryParamsDto: GetStaffUserQueryParamsDto = {
         permitIssuerPPCUser: false,
-        userAuthGroup: IDIRUserRole.SYSTEM_ADMINISTRATOR,
+        userRole: IDIRUserRole.SYSTEM_ADMINISTRATOR,
       };
       const retUsers = await controller.findAll(
         request,
