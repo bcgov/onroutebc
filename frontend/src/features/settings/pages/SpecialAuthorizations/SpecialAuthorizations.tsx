@@ -11,7 +11,10 @@ import { ExpiredLOAModal } from "../../components/SpecialAuthorizations/LOA/expi
 import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
 import { LOASteps } from "./LOA/LOASteps";
 import { useFetchLOAs, useRemoveLOAMutation } from "../../hooks/LOA";
-import { getDefaultNullableVal, getDefaultRequiredVal } from "../../../../common/helpers/util";
+import {
+  getDefaultNullableVal,
+  getDefaultRequiredVal,
+} from "../../../../common/helpers/util";
 import { NoFeePermitType } from "../../types/SpecialAuthorization";
 import { NoFeePermitsSection } from "../../components/SpecialAuthorizations/NoFeePermits/NoFeePermitsSection";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
@@ -26,54 +29,47 @@ import {
   canViewNoFeePermitsFlag,
 } from "../../helpers/permissions";
 
-export const SpecialAuthorizations = ({
-  companyId,
-}: {
-  companyId: number;
-}) => {
+export const SpecialAuthorizations = ({ companyId }: { companyId: number }) => {
   const [enableNoFeePermits, setEnableNoFeePermits] = useState<boolean>(false);
-  const [noFeePermitType, setNoFeePermitType]
-    = useState<RequiredOrNull<NoFeePermitType>>(null);
+  const [noFeePermitType, setNoFeePermitType] =
+    useState<RequiredOrNull<NoFeePermitType>>(null);
   const [enableLCV, setEnableLCV] = useState<boolean>(false);
   const [showExpiredLOAs, setShowExpiredLOAs] = useState<boolean>(false);
   const [loaToDelete, setLoaToDelete] = useState<RequiredOrNull<string>>(null);
   const [showLOASteps, setShowLOASteps] = useState<boolean>(false);
   const [loaToEdit, setLoaToEdit] = useState<RequiredOrNull<string>>(null);
 
-  const {
-    userRoles,
-    idirUserDetails,
-    userDetails,
-  } = useContext(OnRouteBCContext);
+  const { userRoles, idirUserDetails, userDetails } =
+    useContext(OnRouteBCContext);
 
   const canEditNoFeePermits = canUpdateNoFeePermitsFlag(
     userRoles,
-    getDefaultNullableVal(idirUserDetails?.userAuthGroup, userDetails?.userAuthGroup),
+    getDefaultNullableVal(idirUserDetails?.userRole, userDetails?.userRole),
   );
 
   const canViewNoFeePermits = canViewNoFeePermitsFlag(
     userRoles,
-    getDefaultNullableVal(idirUserDetails?.userAuthGroup, userDetails?.userAuthGroup),
+    getDefaultNullableVal(idirUserDetails?.userRole, userDetails?.userRole),
   );
 
   const canUpdateLCV = canUpdateLCVFlag(
     userRoles,
-    getDefaultNullableVal(idirUserDetails?.userAuthGroup, userDetails?.userAuthGroup),
+    getDefaultNullableVal(idirUserDetails?.userRole, userDetails?.userRole),
   );
 
   const canViewLCV = canViewLCVFlag(
     userRoles,
-    getDefaultNullableVal(idirUserDetails?.userAuthGroup, userDetails?.userAuthGroup),
+    getDefaultNullableVal(idirUserDetails?.userRole, userDetails?.userRole),
   );
 
   const canWriteLOA = canUpdateLOA(
     userRoles,
-    getDefaultNullableVal(idirUserDetails?.userAuthGroup, userDetails?.userAuthGroup),
+    getDefaultNullableVal(idirUserDetails?.userRole, userDetails?.userRole),
   );
 
   const canReadLOA = canViewLOA(
     userRoles,
-    getDefaultNullableVal(idirUserDetails?.userAuthGroup, userDetails?.userAuthGroup),
+    getDefaultNullableVal(idirUserDetails?.userRole, userDetails?.userRole),
   );
 
   const activeLOAsQuery = useFetchLOAs(companyId, false);
@@ -156,8 +152,8 @@ export const SpecialAuthorizations = ({
     }
   };
 
-  const showExpiredLOAsLink = canReadLOA && (expiredLOAs.length > 0);
-  const showActiveLOAsList = canReadLOA && (activeLOAs.length > 0);
+  const showExpiredLOAsLink = canReadLOA && expiredLOAs.length > 0;
+  const showActiveLOAsList = canReadLOA && activeLOAs.length > 0;
   const showExpiredLOAsModal = canReadLOA && showExpiredLOAs;
   const showDeleteDialog = canWriteLOA && loaToDelete;
 
@@ -170,7 +166,7 @@ export const SpecialAuthorizations = ({
       />
     ) : null;
   }
-  
+
   return (
     <div className="special-authorizations">
       {canViewNoFeePermits ? (
@@ -217,10 +213,7 @@ export const SpecialAuthorizations = ({
               color="tertiary"
               onClick={handleAddLOA}
             >
-              <FontAwesomeIcon
-                className="add-loa-btn__icon"
-                icon={faPlus}
-              />
+              <FontAwesomeIcon className="add-loa-btn__icon" icon={faPlus} />
               Add an LOA
             </Button>
           ) : (
@@ -231,9 +224,7 @@ export const SpecialAuthorizations = ({
 
           {showActiveLOAsList ? (
             <div className="active-loas">
-              <div className="active-loas__header">
-                Active LOA(s)
-              </div>
+              <div className="active-loas__header">Active LOA(s)</div>
 
               <LOAList
                 loas={activeLOAs}

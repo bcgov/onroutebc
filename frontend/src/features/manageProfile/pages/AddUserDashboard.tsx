@@ -39,7 +39,7 @@ export const AddUserDashboard = React.memo(() => {
 
   const formMethods = useForm<BCeIDAddUserRequest>({
     defaultValues: {
-      userAuthGroup: BCeID_USER_AUTH_GROUP.PERMIT_APPLICANT,
+      userRole: BCeID_USER_AUTH_GROUP.PERMIT_APPLICANT,
     },
     reValidateMode: "onBlur",
   });
@@ -185,7 +185,7 @@ export const AddUserDashboard = React.memo(() => {
             </Stack>
             <Stack spacing={2}>
               <Controller
-                name="userAuthGroup"
+                name="userRole"
                 rules={{
                   required: { value: true, message: requiredMessage() },
                 }}

@@ -127,7 +127,7 @@ export const useUserContext = (
           lastName: user.lastName,
           userName: user.userName,
           email: user.email,
-          userAuthGroup: user.userAuthGroup,
+          userRole: user.userRole,
         } as IDIRUserDetailContext;
 
         setIDIRUserDetails?.(() => userDetails);
@@ -160,7 +160,7 @@ export const useUserContext = (
           phone2Extension: user.phone2Extension,
           email: user.email,
           fax: user.fax,
-          userAuthGroup: user.userAuthGroup as BCeIDUserAuthGroupType,
+          userRole: user.userRole as BCeIDUserAuthGroupType,
         } as BCeIDUserDetailContext;
 
         setUserDetails?.(() => userDetails);

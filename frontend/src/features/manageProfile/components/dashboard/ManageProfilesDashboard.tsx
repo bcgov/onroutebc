@@ -73,12 +73,12 @@ export const ManageProfilesDashboard = React.memo(() => {
     useGetCreditAccountMetadataQuery(companyId);
   const { data: featureFlags } = useFeatureFlagsQuery();
   const populatedUserRoles = getDefaultRequiredVal([], userRoles);
-  const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
+  const isStaffActingAsCompany = Boolean(idirUserDetails?.userRole);
   const isBCeIDAdmin = isBCeIDOrgAdmin(populatedUserRoles);
   const shouldAllowUserManagement = isBCeIDAdmin || isStaffActingAsCompany;
   const showSpecialAuth =
     !isStaffActingAsCompany &&
-    canViewSpecialAuthorizations(userRoles, userDetails?.userAuthGroup) &&
+    canViewSpecialAuthorizations(userRoles, userDetails?.userRole) &&
     featureFlags?.["LOA"] === "ENABLED";
 
   const isCreditAccountHolder =

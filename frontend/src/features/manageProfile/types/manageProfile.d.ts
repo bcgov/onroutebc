@@ -25,7 +25,7 @@ export type BCeIDUserStatusType =
  */
 export type BCeIDAddUserRequest = {
   userName: string;
-  userAuthGroup: BCeIDAuthGroup;
+  userRole: BCeIDAuthGroup;
 };
 
 /**
@@ -88,7 +88,7 @@ export type UpdateCompanyProfileRequest = Omit<
  * The response structure of get user info API.
  */
 export type ReadUserInformationResponse = Contact & {
-  userAuthGroup: BCeIDUserAuthGroupType;
+  userRole: BCeIDUserAuthGroupType;
   userGUID: string;
   userName: string;
   statusCode: BCeID_USER_STATUS;
@@ -100,7 +100,7 @@ export type ReadUserInformationResponse = Contact & {
  * The edit user info request body.
  */
 export type UserInfoRequest = Contact & {
-  userAuthGroup: BCeIDUserAuthGroupType;
+  userRole: BCeIDUserAuthGroupType;
 };
 
 /**

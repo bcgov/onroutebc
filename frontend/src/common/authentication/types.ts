@@ -47,7 +47,7 @@ export type BCeIDUserContextType = {
   pendingCompanies: CompanyMetadata[];
   migratedClient: VerifiedClient;
   user?: {
-    userAuthGroup?: string;
+    userRole?: string;
     statusCode?: string;
     userGUID?: string;
     userName?: string;
@@ -174,7 +174,7 @@ export type UserAuthGroupType =
  */
 export type IDIRUserContextType = {
   user?: {
-    userAuthGroup?: IDIRUserAuthGroupType;
+    userRole?: IDIRUserAuthGroupType;
     statusCode?: string;
     userGUID?: string;
     userName?: string;

@@ -42,9 +42,9 @@ export const MyInfoForm = memo(
         countryCode: getDefaultRequiredVal("", myInfo?.countryCode),
         provinceCode: getDefaultRequiredVal("", myInfo?.provinceCode),
         city: getDefaultRequiredVal("", myInfo?.city),
-        userAuthGroup: getDefaultRequiredVal(
+        userRole: getDefaultRequiredVal(
           BCeID_USER_AUTH_GROUP.PERMIT_APPLICANT,
-          myInfo?.userAuthGroup as BCeIDUserAuthGroupType,
+          myInfo?.userRole as BCeIDUserAuthGroupType,
         ),
       },
     });

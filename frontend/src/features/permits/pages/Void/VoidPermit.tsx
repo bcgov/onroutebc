@@ -114,7 +114,7 @@ export const VoidPermit = () => {
   );
 
   // If user is not SYSADMIN, show unauthorized page
-  if (idirUserDetails?.userAuthGroup !== USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR) {
+  if (idirUserDetails?.userRole !== USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR) {
     return <Navigate to={ERROR_ROUTES.UNAUTHORIZED} />;
   }
 

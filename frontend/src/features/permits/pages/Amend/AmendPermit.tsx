@@ -190,7 +190,7 @@ export const AmendPermit = () => {
     return <Loading />;
   }
 
-  if (!isAmendableByUser(idirUserDetails?.userAuthGroup)) {
+  if (!isAmendableByUser(idirUserDetails?.userRole)) {
     return <Navigate to={ERROR_ROUTES.UNAUTHORIZED} />;
   }
 

@@ -61,9 +61,9 @@ export const ShoppingCartPage = () => {
   const { applicationData } = useContext(ApplicationContext);
   const { idirUserDetails, userDetails } = useContext(OnRouteBCContext);
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
-  const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
+  const isStaffActingAsCompany = Boolean(idirUserDetails?.userRole);
   const isCompanyAdmin = Boolean(
-    userDetails?.userAuthGroup === BCeID_USER_AUTH_GROUP.COMPANY_ADMINISTRATOR,
+    userDetails?.userRole === BCeID_USER_AUTH_GROUP.COMPANY_ADMINISTRATOR,
   );
   const enableCartFilter = isStaffActingAsCompany || isCompanyAdmin;
   const [searchParams] = useSearchParams();

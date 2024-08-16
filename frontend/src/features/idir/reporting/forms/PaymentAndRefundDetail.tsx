@@ -39,10 +39,9 @@ export const PaymentAndRefundDetail = () => {
   const { idirUserDetails } = useContext(OnRouteBCContext);
   const { user: idirUserFromAuthContext } = useAuth();
   const canSelectPermitIssuers =
-    idirUserDetails?.userAuthGroup ===
-      IDIR_USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR ||
-    idirUserDetails?.userAuthGroup === IDIR_USER_AUTH_GROUP.HQ_ADMINISTRATOR ||
-    idirUserDetails?.userAuthGroup === IDIR_USER_AUTH_GROUP.FINANCE;
+    idirUserDetails?.userRole === IDIR_USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR ||
+    idirUserDetails?.userRole === IDIR_USER_AUTH_GROUP.HQ_ADMINISTRATOR ||
+    idirUserDetails?.userRole === IDIR_USER_AUTH_GROUP.FINANCE;
   // GET the permit types.
   const permitTypesQuery = usePermitTypesQuery();
   const { setSnackBar } = useContext(SnackBarContext);

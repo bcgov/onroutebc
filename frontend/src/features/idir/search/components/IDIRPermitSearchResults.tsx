@@ -104,7 +104,9 @@ export const IDIRPermitSearchResults = memo(
      * @param initialData The initial data to filter by the active data toggle.
      * @returns List of permit items containing the data to be displayed in table.
      */
-    const getFilteredData = (initialData: PermitListItem[]): PermitListItem[] => {
+    const getFilteredData = (
+      initialData: PermitListItem[],
+    ): PermitListItem[] => {
       if (!initialData.length) return [];
       if (isActiveRecordsOnly) {
         // Returns unexpired permits
@@ -164,27 +166,30 @@ export const IDIRPermitSearchResults = memo(
           </Box>
         );
       },
-      renderRowActions: useCallback(({ row }: { row: MRT_Row<PermitListItem> }) => {
-        const isInactive =
-          hasPermitExpired(row.original.expiryDate) ||
-          isPermitInactive(row.original.permitStatus);
+      renderRowActions: useCallback(
+        ({ row }: { row: MRT_Row<PermitListItem> }) => {
+          const isInactive =
+            hasPermitExpired(row.original.expiryDate) ||
+            isPermitInactive(row.original.permitStatus);
 
-        if (shouldShowRowActions(idirUserDetails?.userAuthGroup)) {
-          return (
-            <Box className="idir-search-results__row-actions">
-              <IDIRPermitSearchRowActions
-                isPermitInactive={isInactive}
-                permitNumber={row.original.permitNumber}
-                permitId={row.original.permitId}
-                userAuthGroup={idirUserDetails?.userAuthGroup}
-                companyId={row.original.companyId?.toString()}
-              />
-            </Box>
-          );
-        } else {
-          return <></>;
-        }
-      }, []),
+          if (shouldShowRowActions(idirUserDetails?.userRole)) {
+            return (
+              <Box className="idir-search-results__row-actions">
+                <IDIRPermitSearchRowActions
+                  isPermitInactive={isInactive}
+                  permitNumber={row.original.permitNumber}
+                  permitId={row.original.permitId}
+                  userAuthGroup={idirUserDetails?.userRole}
+                  companyId={row.original.companyId?.toString()}
+                />
+              </Box>
+            );
+          } else {
+            return <></>;
+          }
+        },
+        [],
+      ),
       muiToolbarAlertBannerProps: isError
         ? {
             color: "error",

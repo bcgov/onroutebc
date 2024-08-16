@@ -57,7 +57,7 @@ export const IDIRAuthWall = ({
 
   if (isAuthenticated) {
     if (isIDIR(userIDP)) {
-      if (!idirUserDetails?.userAuthGroup) {
+      if (!idirUserDetails?.userRole) {
         return (
           <>
             <LoadIDIRUserContext />
@@ -84,7 +84,7 @@ export const IDIRAuthWall = ({
     }
 
     const doesUserHaveAccess = DoesUserHaveAuthGroup<IDIRUserAuthGroupType>({
-      userAuthGroup: idirUserDetails?.userAuthGroup,
+      userAuthGroup: idirUserDetails?.userRole,
       allowedAuthGroups,
     });
 
