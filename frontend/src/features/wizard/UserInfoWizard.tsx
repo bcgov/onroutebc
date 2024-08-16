@@ -40,7 +40,7 @@ export const UserInfoWizard = React.memo(() => {
     onSuccess: async (response) => {
       if (response.status === 201) {
         const responseBody = response.data as ReadUserInformationResponse;
-        const userDetails = {
+        const userDetails: BCeIDUserDetailContext = {
           firstName: responseBody.firstName,
           lastName: responseBody.lastName,
           userName: responseBody.userName,
@@ -51,7 +51,7 @@ export const UserInfoWizard = React.memo(() => {
           email: responseBody.email,
           fax: responseBody.fax,
           userRole: responseBody.userRole,
-        } as BCeIDUserDetailContext;
+        };
         setIsProfileCreated(() => true);
         setUserDetails?.(() => userDetails);
       } else if (response.status === 400) {
