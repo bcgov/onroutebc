@@ -22,6 +22,7 @@ import { PermitVehicleDetails } from "../../types/PermitVehicleDetails";
 import { durationOptionsForPermitType } from "../../helpers/dateSelection";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import { PAST_START_DATE_STATUSES } from "../../../../common/components/form/subFormComponents/CustomDatePicker";
+import { useFetchSpecialAuthorizations } from "../../../settings/hooks/specialAuthorizations";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -32,7 +33,6 @@ import {
   APPLICATION_STEPS,
   ERROR_ROUTES,
 } from "../../../../routes/constants";
-import { useFetchSpecialAuthorizations } from "../../../settings/hooks/specialAuthorizations";
 
 /**
  * The first step in creating and submitting an Application.

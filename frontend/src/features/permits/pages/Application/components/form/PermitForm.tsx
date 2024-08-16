@@ -14,6 +14,7 @@ import { PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
 import { PermitCondition } from "../../../../types/PermitCondition";
 import { PastStartDateStatus } from "../../../../../../common/components/form/subFormComponents/CustomDatePicker";
 import { PermitStatus } from "../../../../types/PermitStatus";
+import { isVehicleSubtypeLCV } from "../../../../../manageVehicles/helpers/vehicleSubtypes";
 import {
   PowerUnit,
   Trailer,
@@ -58,7 +59,7 @@ interface PermitFormProps {
 
 export const PermitForm = (props: PermitFormProps) => {
   const ineligiblePowerUnitSubtypes = getIneligiblePowerUnitSubtypes(props.permitType)
-    .filter(subtype => !props.isLcvDesignated || !["LCVRMDB", "LCVTPDB"].includes(subtype.typeCode));
+    .filter(subtype => !props.isLcvDesignated || !isVehicleSubtypeLCV(subtype.typeCode));
   
   return (
     <Box className="permit-form layout-box">
@@ -88,7 +89,7 @@ export const PermitForm = (props: PermitFormProps) => {
           disableStartDate={props.isAmendAction}
           permitType={props.permitType}
           pastStartDateStatus={props.pastStartDateStatus}
-          includeLcvCondition={props.isLcvDesignated && ["LCVRMDB", "LCVTPDB"].includes(props.vehicleDetails.vehicleSubType)}
+          includeLcvCondition={props.isLcvDesignated && isVehicleSubtypeLCV(props.vehicleDetails.vehicleSubType)}
         />
         
         <VehicleDetails
