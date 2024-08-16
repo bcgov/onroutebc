@@ -272,11 +272,10 @@ export class UsersService {
         },
       );
 
-      // Should be allowed to update userAuthGroupID if current user is an
+      // Should be allowed to update userRole of current user is an
       // IDIR(PPC Clerk) or CVAdmin
       if (
-        (currentUser.orbcUserAuthGroup ===
-          ClientUserRole.COMPANY_ADMINISTRATOR ||
+        (currentUser.orbcUserRole === ClientUserRole.COMPANY_ADMINISTRATOR ||
           currentUser.identity_provider === IDP.IDIR) &&
         companyUser.userRole !== updateUserDto.userRole
       ) {

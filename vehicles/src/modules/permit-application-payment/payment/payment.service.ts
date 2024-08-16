@@ -250,10 +250,7 @@ export class PaymentService {
     nestedQueryRunner?: QueryRunner,
   ): Promise<ReadTransactionDto> {
     if (
-      !doesUserHaveAuthGroup(
-        currentUser.orbcUserAuthGroup,
-        IDIR_USER_ROLE_LIST,
-      ) &&
+      !doesUserHaveAuthGroup(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST) &&
       createTransactionDto?.paymentMethodTypeCode !==
         PaymentMethodTypeEnum.WEB &&
       createTransactionDto?.paymentMethodTypeCode !==

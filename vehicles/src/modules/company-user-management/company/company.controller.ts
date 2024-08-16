@@ -104,11 +104,9 @@ export class CompanyController {
     @Query() getCompanyQueryParamsDto: GetCompanyQueryParamsDto,
   ): Promise<PaginationDto<ReadCompanyDto>> {
     const currentUser = request.user as IUserJWT;
-    if (
-      !doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, IDIR_USER_ROLE_LIST)
-    ) {
+    if (!doesUserHaveAuthGroup(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST)) {
       throw new UnauthorizedException(
-        `Unauthorized for ${currentUser.orbcUserAuthGroup} role.`,
+        `Unauthorized for ${currentUser.orbcUserRole} role.`,
       );
     }
 

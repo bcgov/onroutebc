@@ -29,7 +29,7 @@ export class PermissionsGuard implements CanActivate {
     return matchRoles(
       permissions,
       currentUser.claims,
-      currentUser.orbcUserAuthGroup,
+      currentUser.orbcUserRole,
     );
   }
 }

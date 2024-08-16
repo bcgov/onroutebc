@@ -92,7 +92,7 @@ export class CompanyApplicationController {
   ): Promise<PaginationDto<ReadApplicationMetadataDto>> {
     const currentUser = request.user as IUserJWT;
     const userGuid =
-      ClientUserRole.PERMIT_APPLICANT === currentUser.orbcUserAuthGroup
+      ClientUserRole.PERMIT_APPLICANT === currentUser.orbcUserRole
         ? currentUser.userGUID
         : null;
 
@@ -181,10 +181,7 @@ export class CompanyApplicationController {
     // Validates the current user's permission to access the application or amendment
     // by comparing user's authentication group, company ID, and the application's origin
     if (
-      !doesUserHaveAuthGroup(
-        currentUser.orbcUserAuthGroup,
-        IDIR_USER_ROLE_LIST,
-      ) &&
+      !doesUserHaveAuthGroup(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST) &&
       retApplicationDto.permitApplicationOrigin !==
         PermitApplicationOrigin.ONLINE
     ) {
@@ -254,10 +251,7 @@ export class CompanyApplicationController {
     const currentUser = request.user as IUserJWT;
 
     if (
-      !doesUserHaveAuthGroup(
-        currentUser.orbcUserAuthGroup,
-        IDIR_USER_ROLE_LIST,
-      ) &&
+      !doesUserHaveAuthGroup(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST) &&
       !companyId
     ) {
       throw new BadRequestException(

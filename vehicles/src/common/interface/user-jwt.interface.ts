@@ -32,6 +32,6 @@ export interface IUserJWT {
   access_token: string;
   orbcUserFirstName: string;
   orbcUserLastName: string;
-  orbcUserAuthGroup: UserRole;
+  orbcUserRole: UserRole;
   orbcUserDirectory: Directory;
 }

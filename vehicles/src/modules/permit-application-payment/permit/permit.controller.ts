@@ -184,9 +184,7 @@ export class PermitController {
   ): Promise<ReadNotificationDto[]> {
     const currentUser = request.user as IUserJWT;
     // Throws ForbiddenException if user does not belong to the specified user auth group.
-    if (
-      !doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, IDIR_USER_ROLE_LIST)
-    ) {
+    if (!doesUserHaveAuthGroup(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST)) {
       throw new ForbiddenException();
     }
 

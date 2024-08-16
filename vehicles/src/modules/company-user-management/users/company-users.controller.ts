@@ -179,7 +179,7 @@ export class CompanyUsersController {
 
   /**
    * Deletes one or more users associated with a specified company ID based on their GUIDs. This method requires
-   * the current user to have either COMPANY_ADMINISTRATOR role or be part of the idirUserAuthGroupList to proceed.
+   * the current user to have either COMPANY_ADMINISTRATOR role or be part of the idir users to proceed.
    * Throws ForbiddenException if the current user lacks the required role or group.
    *
    * @param companyId The unique identifier of the company.
@@ -208,8 +208,8 @@ export class CompanyUsersController {
   ): Promise<DeleteDto> {
     const currentUser = request.user as IUserJWT;
     if (
-      currentUser.orbcUserAuthGroup !== ClientUserRole.COMPANY_ADMINISTRATOR &&
-      !doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, IDIR_USER_ROLE_LIST)
+      currentUser.orbcUserRole !== ClientUserRole.COMPANY_ADMINISTRATOR &&
+      !doesUserHaveAuthGroup(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST)
     ) {
       throw new ForbiddenException();
     }

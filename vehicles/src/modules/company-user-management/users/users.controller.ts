@@ -144,11 +144,9 @@ export class UsersController {
     @Query() getStaffUserQueryParamsDto?: GetStaffUserQueryParamsDto,
   ): Promise<ReadUserDto[]> {
     const currentUser = request.user as IUserJWT;
-    if (
-      !doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, IDIR_USER_ROLE_LIST)
-    ) {
+    if (!doesUserHaveAuthGroup(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST)) {
       throw new ForbiddenException(
-        `Forbidden for ${currentUser.orbcUserAuthGroup} role.`,
+        `Forbidden for ${currentUser.orbcUserRole} role.`,
       );
     }
 

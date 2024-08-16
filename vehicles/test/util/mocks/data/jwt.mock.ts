@@ -53,7 +53,7 @@ export const redCompanyAdminUserJWTMock: IUserJWT = {
   access_token: undefined,
   orbcUserFirstName: constants.RED_COMPANY_ADMIN_FIRST_NAME,
   orbcUserLastName: constants.RED_COMPANY_ADMIN_LAST_NAME,
-  orbcUserAuthGroup: constants.RED_COMPANY_ADMIN_USER_AUTH_GROUP,
+  orbcUserRole: constants.RED_COMPANY_ADMIN_USER_AUTH_GROUP,
   orbcUserDirectory: constants.RED_COMPANY_ADMIN_USER_STATUS_DIRECOTRY,
   clientId: null,
 };
@@ -108,7 +108,7 @@ export const redCompanyCvClientUserJWTMock: IUserJWT = {
   access_token: undefined,
   orbcUserFirstName: constants.RED_COMPANY_CVCLIENT_FIRST_NAME,
   orbcUserLastName: constants.RED_COMPANY_CVCLIENT_LAST_NAME,
-  orbcUserAuthGroup: constants.RED_COMPANY_CVCLIENT_USER_AUTH_GROUP,
+  orbcUserRole: constants.RED_COMPANY_CVCLIENT_USER_AUTH_GROUP,
   orbcUserDirectory: constants.RED_COMPANY_CVCLIENT_USER_STATUS_DIRECOTRY,
   clientId: null,
 };
@@ -141,7 +141,7 @@ export const redCompanyPendingUserJWTMock: IUserJWT = {
   access_token: undefined,
   orbcUserFirstName: undefined,
   orbcUserLastName: undefined,
-  orbcUserAuthGroup: undefined,
+  orbcUserRole: undefined,
   orbcUserDirectory: undefined,
   clientId: null,
 };
@@ -196,7 +196,7 @@ export const blueCompanyAdminUserJWTMock: IUserJWT = {
   access_token: undefined,
   orbcUserFirstName: constants.BLUE_COMPANY_ADMIN_FIRST_NAME,
   orbcUserLastName: constants.BLUE_COMPANY_ADMIN_LAST_NAME,
-  orbcUserAuthGroup: constants.BLUE_COMPANY_ADMIN_USER_AUTH_GROUP,
+  orbcUserRole: constants.BLUE_COMPANY_ADMIN_USER_AUTH_GROUP,
   orbcUserDirectory: constants.BLUE_COMPANY_ADMIN_USER_STATUS_DIRECOTRY,
   clientId: null,
 };
@@ -251,7 +251,7 @@ export const blueCompanyCvClientUserJWTMock: IUserJWT = {
   access_token: undefined,
   orbcUserFirstName: constants.BLUE_COMPANY_CVCLIENT_FIRST_NAME,
   orbcUserLastName: constants.BLUE_COMPANY_CVCLIENT_LAST_NAME,
-  orbcUserAuthGroup: constants.BLUE_COMPANY_CVCLIENT_USER_AUTH_GROUP,
+  orbcUserRole: constants.BLUE_COMPANY_CVCLIENT_USER_AUTH_GROUP,
   orbcUserDirectory: constants.BLUE_COMPANY_CVCLIENT_USER_STATUS_DIRECOTRY,
   clientId: null,
 };
@@ -306,7 +306,7 @@ export const sysAdminStaffUserJWTMock: IUserJWT = {
   access_token: undefined,
   orbcUserFirstName: constants.SYS_ADMIN_STAFF_FIRST_NAME,
   orbcUserLastName: constants.SYS_ADMIN_STAFF_LAST_NAME,
-  orbcUserAuthGroup: constants.SYS_ADMIN_STAFF_USER_AUTH_GROUP,
+  orbcUserRole: constants.SYS_ADMIN_STAFF_USER_AUTH_GROUP,
   orbcUserDirectory: constants.SYS_ADMIN_STAFF_USER_STATUS_DIRECOTRY,
   clientId: null,
 };

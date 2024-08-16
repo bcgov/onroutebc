@@ -270,7 +270,7 @@ export class CreditAccountService {
     if (!creditAccount) {
       throw new DataNotFoundException();
     } else if (
-      doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, [
+      doesUserHaveAuthGroup(currentUser.orbcUserRole, [
         ClientUserRole.COMPANY_ADMINISTRATOR,
       ]) &&
       creditAccount?.company.companyId !== companyId
@@ -281,7 +281,7 @@ export class CreditAccountService {
       creditAccount?.company?.companyId === companyId &&
       creditAccount?.creditAccountStatusType ===
         CreditAccountStatus.ACCOUNT_CLOSED &&
-      !doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, [
+      !doesUserHaveAuthGroup(currentUser.orbcUserRole, [
         IDIRUserRole.HQ_ADMINISTRATOR,
         IDIRUserRole.SYSTEM_ADMINISTRATOR,
         IDIRUserRole.FINANCE,
@@ -336,7 +336,7 @@ export class CreditAccountService {
       creditAccount?.company?.companyId === companyId &&
       creditAccount?.creditAccountStatusType ===
         CreditAccountStatus.ACCOUNT_CLOSED &&
-      !doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, [
+      !doesUserHaveAuthGroup(currentUser.orbcUserRole, [
         IDIRUserRole.HQ_ADMINISTRATOR,
         IDIRUserRole.SYSTEM_ADMINISTRATOR,
         IDIRUserRole.FINANCE,
@@ -1012,7 +1012,7 @@ export class CreditAccountService {
     if (!creditAccount) {
       throw new DataNotFoundException();
     } else if (
-      doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, [
+      doesUserHaveAuthGroup(currentUser.orbcUserRole, [
         ClientUserRole.COMPANY_ADMINISTRATOR,
       ]) &&
       creditAccount?.company.companyId !== companyId
@@ -1023,7 +1023,7 @@ export class CreditAccountService {
       creditAccount?.company?.companyId === companyId &&
       creditAccount?.creditAccountStatusType ===
         CreditAccountStatus.ACCOUNT_CLOSED &&
-      !doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, [
+      !doesUserHaveAuthGroup(currentUser.orbcUserRole, [
         IDIRUserRole.HQ_ADMINISTRATOR,
         IDIRUserRole.SYSTEM_ADMINISTRATOR,
         IDIRUserRole.FINANCE,
@@ -1095,7 +1095,7 @@ export class CreditAccountService {
     } else if (
       creditAccount?.creditAccountStatusType ===
         CreditAccountStatus.ACCOUNT_ON_HOLD &&
-      doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, [
+      doesUserHaveAuthGroup(currentUser.orbcUserRole, [
         ClientUserRole.COMPANY_ADMINISTRATOR,
       ]) &&
       creditAccount?.company.companyId === companyId
@@ -1106,7 +1106,7 @@ export class CreditAccountService {
       creditAccount?.company?.companyId === companyId &&
       creditAccount?.creditAccountStatusType ===
         CreditAccountStatus.ACCOUNT_CLOSED &&
-      !doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, [
+      !doesUserHaveAuthGroup(currentUser.orbcUserRole, [
         IDIRUserRole.HQ_ADMINISTRATOR,
         IDIRUserRole.SYSTEM_ADMINISTRATOR,
         IDIRUserRole.FINANCE,
@@ -1116,7 +1116,7 @@ export class CreditAccountService {
     ) {
       throw new DataNotFoundException();
     } else if (
-      doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, [
+      doesUserHaveAuthGroup(currentUser.orbcUserRole, [
         ClientUserRole.COMPANY_ADMINISTRATOR,
       ]) &&
       creditAccount?.company.companyId !== companyId
@@ -1197,7 +1197,7 @@ export class CreditAccountService {
       },
       relations: this.granularAccessControl(
         CreditAccountUserType.ACCOUNT_HOLDER,
-        currentUser.orbcUserAuthGroup,
+        currentUser.orbcUserRole,
       ),
     });
 
@@ -1216,7 +1216,7 @@ export class CreditAccountService {
         },
         relations: this.granularAccessControl(
           CreditAccountUserType.ACCOUNT_USER,
-          currentUser.orbcUserAuthGroup,
+          currentUser.orbcUserRole,
         ),
       });
       if (accountDetailsForUser) {
