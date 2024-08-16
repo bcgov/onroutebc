@@ -8,7 +8,9 @@ import "./UserInfoWizard.scss";
 import { SnackBarContext } from "../../App";
 import { LoadBCeIDUserContext } from "../../common/authentication/LoadBCeIDUserContext";
 import { LoadBCeIDUserRolesByCompany } from "../../common/authentication/LoadBCeIDUserRolesByCompany";
-import OnRouteBCContext from "../../common/authentication/OnRouteBCContext";
+import OnRouteBCContext, {
+  BCeIDUserDetailContext,
+} from "../../common/authentication/OnRouteBCContext";
 import { Banner } from "../../common/components/dashboard/components/banner/Banner";
 import { getDefaultRequiredVal } from "../../common/helpers/util";
 import { ErrorFallback } from "../../common/pages/ErrorFallback";
@@ -48,8 +50,8 @@ export const UserInfoWizard = React.memo(() => {
           phone2Extension: responseBody.phone2Extension,
           email: responseBody.email,
           fax: responseBody.fax,
-          userAuthGroup: responseBody.userRole,
-        };
+          userRole: responseBody.userRole,
+        } as BCeIDUserDetailContext;
         setIsProfileCreated(() => true);
         setUserDetails?.(() => userDetails);
       } else if (response.status === 400) {
