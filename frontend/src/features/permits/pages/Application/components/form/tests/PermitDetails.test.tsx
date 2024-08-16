@@ -4,9 +4,9 @@ import dayjs from "dayjs";
 import { DATE_FORMATS } from "../../../../../../../common/helpers/formatDate";
 import { getExpiryDate } from "../../../../../helpers/permitState";
 import {
-  commoditiesInfoBox,
-  commodityConditionLabel,
-  commodityDescriptionLabel,
+  conditionsInfoBox,
+  conditionLabel,
+  conditionDescriptionLabel,
   dateOptions,
   durationOption,
   expiryDateElement,
@@ -14,8 +14,8 @@ import {
   nextMonthDateOptions,
   openDurationSelect,
   openStartDateSelect,
-  optionalCommodityCheckboxes,
-  requiredCommodityCheckboxes,
+  optionalConditionCheckboxes,
+  requiredConditionCheckboxes,
   selectDayFromDateOptions,
   selectDurationOption,
   selectNextMonth,
@@ -32,7 +32,7 @@ import {
   maxFutureMonth,
   maxFutureDay,
   daysInFutureMonth,
-  commodities,
+  conditions,
   renderDefaultTestComponent,
   renderTestComponent,
   defaultDuration,
@@ -208,35 +208,35 @@ describe("Permit Details start date", () => {
   });
 });
 
-describe("Permit Details commodities", () => {
-  it("should display commodities info box", async () => {
+describe("Permit Details conditions", () => {
+  it("should display conditions info box", async () => {
     // Arrange and Act
-    renderTestComponent(currentDt, defaultDuration, commodities);
+    renderTestComponent(currentDt, defaultDuration, conditions);
 
     // Assert
-    expect(await commoditiesInfoBox()).toBeVisible();
+    expect(await conditionsInfoBox()).toBeVisible();
   });
 
-  it("should properly display commodities", async () => {
+  it("should properly display conditions", async () => {
     // Arrange and Act
-    renderTestComponent(currentDt, defaultDuration, commodities);
+    renderTestComponent(currentDt, defaultDuration, conditions);
 
-    // Assert - All commodities are present
+    // Assert - All conditions are present
     await Promise.all(
-      commodities.map(
-        async (commodity) =>
-          await commodityDescriptionLabel(commodity.description),
+      conditions.map(
+        async (condition) =>
+          await conditionDescriptionLabel(condition.description),
       ),
     );
     await Promise.all(
-      commodities.map(
-        async (commodity) => await commodityConditionLabel(commodity.condition),
+      conditions.map(
+        async (condition) => await conditionLabel(condition.condition),
       ),
     );
 
-    // Assert - Required commodities are checked and disabled
-    const requiredCheckboxes = await requiredCommodityCheckboxes();
-    const nonRequiredCheckboxes = await optionalCommodityCheckboxes();
+    // Assert - Required conditions are checked and disabled
+    const requiredCheckboxes = await requiredConditionCheckboxes();
+    const nonRequiredCheckboxes = await optionalConditionCheckboxes();
     requiredCheckboxes.forEach((checkbox) => {
       expect(checkbox).toBeChecked();
       expect(checkbox).toBeDisabled();
@@ -247,15 +247,15 @@ describe("Permit Details commodities", () => {
     });
   });
 
-  it("should be able to select non-required commodities", async () => {
+  it("should be able to select non-required conditions", async () => {
     // Arrange
     const { user } = renderTestComponent(
       currentDt,
       defaultDuration,
-      commodities,
+      conditions,
     );
 
-    const nonRequiredCheckboxes = await optionalCommodityCheckboxes();
+    const nonRequiredCheckboxes = await optionalConditionCheckboxes();
 
     // Act
     await Promise.all(
@@ -270,18 +270,18 @@ describe("Permit Details commodities", () => {
     });
   });
 
-  it("should not be able to deselect required commodities", async () => {
+  it("should not be able to deselect required conditions", async () => {
     // Arrange
     const { user } = renderTestComponent(
       currentDt,
       defaultDuration,
-      commodities,
+      conditions,
       {
         pointerEventsCheck: PointerEventsCheckLevel.Never,
       },
     );
 
-    const requiredCheckboxes = await requiredCommodityCheckboxes();
+    const requiredCheckboxes = await requiredConditionCheckboxes();
 
     // Act
     await Promise.all(

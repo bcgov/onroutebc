@@ -5,10 +5,10 @@ import userEvent from "@testing-library/user-event";
 import { Options } from "@testing-library/user-event/dist/types/options";
 
 import { DEFAULT_PERMIT_TYPE } from "../../../../../../types/PermitType";
-import { getDefaultCommodities, getMandatoryCommodities } from "../../../../../../helpers/commodities";
+import { getDefaultConditions, getMandatoryConditions } from "../../../../../../helpers/conditions";
 import { PermitDetails } from "../../PermitDetails";
 import { getExpiryDate } from "../../../../../../helpers/permitState";
-import { PermitCommodity } from "../../../../../../types/PermitCommodity";
+import { PermitCondition } from "../../../../../../types/PermitCondition";
 import { PAST_START_DATE_STATUSES } from "../../../../../../../../common/components/form/subFormComponents/CustomDatePicker";
 import {
   getStartOfDate,
@@ -35,19 +35,19 @@ export const maxFutureDay = maxFutureDate.date();
 export const daysInFutureMonth = maxFutureDate.daysInMonth();
 
 const permitType = DEFAULT_PERMIT_TYPE;
-export const commodities = getDefaultCommodities(permitType);
+export const conditions = getDefaultConditions(permitType);
 export const defaultDuration = minDurationForPermitType(permitType);
-export const emptyCommodities: PermitCommodity[] = [];
+export const emptyConditions: PermitCondition[] = [];
 export const allDurations = durationOptionsForPermitType(permitType)
   .map(durationOption => ({
     text: durationOption.label,
     days: durationOption.value,
   }));
 
-const mandatoryConditions = getMandatoryCommodities(permitType).map(commodity => commodity.condition);
-export const requiredCommodityIndices = commodities
-  .map((commodity, i) =>
-    mandatoryConditions.includes(commodity.condition)
+const mandatoryConditions = getMandatoryConditions(permitType).map(condition => condition.condition);
+export const requiredConditionIndices = conditions
+  .map((condition, i) =>
+    mandatoryConditions.includes(condition.condition)
       ? i
       : -1,
   )
@@ -72,7 +72,7 @@ const TestFormWrapper = (props: React.PropsWithChildren) => {
 export const renderTestComponent = (
   startDate: Dayjs,
   duration: number,
-  commodities: PermitCommodity[],
+  conditions: PermitCondition[],
   userEventOptions?: Options,
 ) => {
   const user = userEvent.setup(userEventOptions);
@@ -82,7 +82,7 @@ export const renderTestComponent = (
         feature={feature}
         defaultStartDate={startDate}
         defaultDuration={duration}
-        commoditiesInPermit={commodities}
+        conditionsInPermit={conditions}
         durationOptions={allDurations.map((duration) => ({
           label: duration.text,
           value: duration.days,
@@ -90,6 +90,7 @@ export const renderTestComponent = (
         disableStartDate={false}
         permitType={permitType}
         pastStartDateStatus={PAST_START_DATE_STATUSES.FAIL}
+        includeLcvCondition={false}
       />
     </TestFormWrapper>,
   );
@@ -101,7 +102,7 @@ export const renderDefaultTestComponent = (userEventOptions?: Options) => {
   return renderTestComponent(
     currentDt,
     defaultDuration,
-    emptyCommodities,
+    emptyConditions,
     userEventOptions,
   );
 };

@@ -15,58 +15,64 @@ import {
 import "./ConditionsTable.scss";
 import { CustomExternalLink } from "../../../../../../common/components/links/CustomExternalLink";
 import { PermitType } from "../../../../types/PermitType";
-import { getDefaultCommodities } from "../../../../helpers/commodities";
-import { PermitCommodity } from "../../../../types/PermitCommodity";
+import { getDefaultConditions } from "../../../../helpers/conditions";
+import { PermitCondition } from "../../../../types/PermitCondition";
 
 export const ConditionsTable = ({
-  commoditiesInPermit,
+  conditionsInPermit,
   applicationWasCreated,
   permitType,
+  includeLcvCondition = false,
 }: {
-  commoditiesInPermit: PermitCommodity[];
+  conditionsInPermit: PermitCondition[];
   applicationWasCreated: boolean;
   permitType: PermitType;
+  includeLcvCondition?: boolean;
 }) => {
   const { control, setValue, resetField } = useFormContext();
-  const defaultCommodities = getDefaultCommodities(permitType);
-  const initialCommodities = !applicationWasCreated
-    ? defaultCommodities // return default options for new application (not created one)
-    : defaultCommodities.map((defaultCommodity) => {
-      // Application exists at this point, thus select all commodities that were selected in the application
-      const existingCommodity = commoditiesInPermit.find(
-        (c) => c.condition === defaultCommodity.condition,
+  const defaultConditions = getDefaultConditions(permitType, includeLcvCondition);
+  const initialConditions = !applicationWasCreated
+    ? defaultConditions // return default options for new application (not created one)
+    : defaultConditions.map((defaultCondition) => {
+      // Application exists at this point, thus select all conditions that were selected in the application
+      const existingCondition = conditionsInPermit.find(
+        (c) => c.condition === defaultCondition.condition,
       );
 
       return {
-        ...defaultCommodity,
-        checked: existingCommodity
-          ? existingCommodity.checked
-          : defaultCommodity.checked,
+        ...defaultCondition,
+        checked: existingCondition
+          ? existingCondition.checked
+          : defaultCondition.checked,
       };
     });
 
-  const [allCommodities, setAllCommodities] =
-    useState<PermitCommodity[]>(initialCommodities);
+  const [allConditions, setAllConditions] =
+    useState<PermitCondition[]>(initialConditions);
 
   useEffect(() => {
-    resetField("permitData.commodities", { defaultValue: [] }); // reset all commodities
+    resetField("permitData.commodities", { defaultValue: [] }); // reset all conditions
     setValue(
       "permitData.commodities",
-      allCommodities.filter((c) => c.checked),
-    ); // select the commodities in the existing application
-  }, [allCommodities]);
+      allConditions.filter((c) => c.checked),
+    ); // select the conditions in the existing application
+  }, [allConditions]);
+
+  useEffect(() => {
+    setAllConditions(initialConditions);
+  }, [initialConditions]);
 
   const handleSelect = (checkedCondition: string) => {
-    const newCommodities = allCommodities.map((commodity) => {
-      if (commodity.condition === checkedCondition) {
-        commodity.checked = !commodity.checked;
+    const newConditions = allConditions.map((condition) => {
+      if (condition.condition === checkedCondition) {
+        condition.checked = !condition.checked;
       }
-      return commodity;
+      return condition;
     });
 
-    setAllCommodities(newCommodities);
+    setAllConditions(newConditions);
 
-    return newCommodities;
+    return newConditions;
   }
 
   return (
@@ -83,8 +89,9 @@ export const ConditionsTable = ({
             </TableCell>
           </TableRow>
         </TableHead>
+
         <TableBody>
-          {allCommodities.map((row) => (
+          {allConditions.map((row) => (
             <TableRow key={row.condition} className="conditions-table__row">
               <TableCell
                 className="conditions-table__cell conditions-table__cell--checkbox"

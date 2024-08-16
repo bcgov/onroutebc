@@ -19,7 +19,7 @@ import { Nullable } from "../../../../../../common/types/common";
 import { PermitContactDetails } from "../../../../types/PermitContactDetails";
 import { PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
 import { Application } from "../../../../types/application";
-import { PermitCommodity } from "../../../../types/PermitCommodity";
+import { PermitCondition } from "../../../../types/PermitCondition";
 
 interface PermitReviewProps {
   permitType?: Nullable<PermitType>;
@@ -32,7 +32,7 @@ interface PermitReviewProps {
   permitStartDate?: Nullable<Dayjs>;
   permitDuration?: Nullable<number>;
   permitExpiryDate?: Nullable<Dayjs>;
-  permitConditions?: Nullable<PermitCommodity[]>;
+  permitConditions?: Nullable<PermitCondition[]>;
   continueBtnText: string;
   isAmendAction: boolean;
   children?: React.ReactNode;

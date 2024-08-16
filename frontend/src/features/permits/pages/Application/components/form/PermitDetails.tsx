@@ -17,7 +17,7 @@ import { getExpiryDate } from "../../../../helpers/permitState";
 import { calculateFeeByDuration } from "../../../../helpers/feeSummary";
 import { PermitType } from "../../../../types/PermitType";
 import { Nullable } from "../../../../../../common/types/common";
-import { PermitCommodity } from "../../../../types/PermitCommodity";
+import { PermitCondition } from "../../../../types/PermitCondition";
 import { CustomDatePicker, PastStartDateStatus } from "../../../../../../common/components/form/subFormComponents/CustomDatePicker";
 import {
   PPC_EMAIL,
@@ -33,17 +33,18 @@ export const PermitDetails = ({
   feature,
   defaultStartDate,
   defaultDuration,
-  commoditiesInPermit,
+  conditionsInPermit,
   applicationNumber,
   durationOptions,
   disableStartDate,
   permitType,
   pastStartDateStatus,
+  includeLcvCondition,
 }: {
   feature: string;
   defaultStartDate: Dayjs;
   defaultDuration: number;
-  commoditiesInPermit: PermitCommodity[];
+  conditionsInPermit: PermitCondition[];
   applicationNumber?: Nullable<string>;
   durationOptions: {
     value: number;
@@ -52,6 +53,7 @@ export const PermitDetails = ({
   disableStartDate: boolean;
   permitType: PermitType;
   pastStartDateStatus: PastStartDateStatus;
+  includeLcvCondition?: boolean;
 }) => {
   const { watch, register, setValue } = useFormContext();
 
@@ -127,16 +129,16 @@ export const PermitDetails = ({
 
         <PermitExpiryDateBanner expiryDate={formattedExpiryDate} />
 
-        <Box className="permit-details__commodities">
-          <Typography variant="h3" className="commodities-title">
+        <Box className="permit-details__conditions">
+          <Typography variant="h3" className="conditions-title">
             Select the commodities below and their respective CVSE forms.
           </Typography>
 
           <InfoBcGovBanner
             msg={BANNER_MESSAGES.POLICY_REMINDER}
             additionalInfo={
-              <div className="commodities-info">
-                <div className="commodities-info__link">
+              <div className="conditions-info">
+                <div className="conditions-info__link">
                   <CustomExternalLink
                     className="procedures-link"
                     href={ONROUTE_WEBPAGE_LINKS.COMMERCIAL_TRANSPORT_PROCEDURES}
@@ -150,7 +152,7 @@ export const PermitDetails = ({
                   </CustomExternalLink>
                 </div>
 
-                <div className="commodities-info__contact-methods">
+                <div className="conditions-info__contact-methods">
                   For further assistance please contact the Provincial Permit
                   Centre at{" "}
                   <span className="contact-info contact-info--toll-free">
@@ -166,11 +168,12 @@ export const PermitDetails = ({
           />
 
           <ConditionsTable
-            commoditiesInPermit={commoditiesInPermit}
+            conditionsInPermit={conditionsInPermit}
             applicationWasCreated={
               applicationNumber != null && applicationNumber !== ""
             }
             permitType={permitType}
+            includeLcvCondition={includeLcvCondition}
           />
         </Box>
       </Box>

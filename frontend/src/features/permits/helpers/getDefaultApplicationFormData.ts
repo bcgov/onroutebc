@@ -1,7 +1,7 @@
 import dayjs, { Dayjs } from "dayjs";
 
 import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBCContext";
-import { getMandatoryCommodities } from "./commodities";
+import { getMandatoryConditions } from "./conditions";
 import { Nullable } from "../../../common/types/common";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
 import { calculateFeeByDuration } from "./feeSummary";
@@ -223,9 +223,9 @@ export const getDefaultValues = (
       permitDuration: durationOrDefault,
       expiryDate: expiryDateOrDefault,
       commodities: getDefaultRequiredVal(
-        getMandatoryCommodities(permitType),
+        getMandatoryConditions(permitType),
         applyWhenNotNullable(
-          (commodities) => commodities.map((commodity) => ({ ...commodity })),
+          (conditions) => conditions.map((condition) => ({ ...condition })),
           applicationData?.permitData?.commodities,
         ),
       ),

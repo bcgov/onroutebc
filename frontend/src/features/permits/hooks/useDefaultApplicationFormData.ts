@@ -3,12 +3,12 @@ import { useForm } from "react-hook-form";
 
 import { Application, ApplicationFormData } from "../types/application";
 import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBCContext";
-import { areCommoditiesEqual } from "../helpers/equality";
+import { areConditionsEqual } from "../helpers/equality";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { CompanyProfile } from "../../manageProfile/types/manageProfile";
 import { Nullable, Optional } from "../../../common/types/common";
 import { PermitType } from "../types/PermitType";
-import { PermitCommodity } from "../types/PermitCommodity";
+import { PermitCondition } from "../types/PermitCondition";
 import {
   getDefaultContactDetails,
   getDefaultMailingAddress,
@@ -100,21 +100,21 @@ export const useDefaultApplicationFormData = (
 
   // Recommended way of making deep comparisons (for arrays/objects) in dependency arrays
   // https://stackoverflow.com/questions/59467758/passing-array-to-useeffect-dependency-list
-  const commoditiesRef = useRef<Optional<PermitCommodity[]>>(
+  const conditionsRef = useRef<Optional<PermitCondition[]>>(
     applicationData?.permitData?.commodities,
   );
-  const incomingCommodities = getDefaultRequiredVal(
+  const incomingConditions = getDefaultRequiredVal(
     [],
     applicationData?.permitData?.commodities,
   );
   if (
-    !areCommoditiesEqual(
-      // areCommoditiesEqual is a custom equality helper function to deep compare arrays of objects
-      incomingCommodities,
-      getDefaultRequiredVal([], commoditiesRef.current),
+    !areConditionsEqual(
+      // areConditionsEqual is a custom equality helper function to deep compare arrays of objects
+      incomingConditions,
+      getDefaultRequiredVal([], conditionsRef.current),
     )
   ) {
-    commoditiesRef.current = incomingCommodities;
+    conditionsRef.current = incomingConditions;
   }
 
   // update the entire form whenever these values are updated
@@ -132,7 +132,7 @@ export const useDefaultApplicationFormData = (
     applicationData?.permitData?.feeSummary,
     applicationData?.revision,
     applicationData?.previousRevision,
-    commoditiesRef.current, // array deep comparison used here
+    conditionsRef.current, // array deep comparison used here
     companyInfo?.legalName,
     companyInfo?.alternateName,
     companyInfo?.clientNumber,

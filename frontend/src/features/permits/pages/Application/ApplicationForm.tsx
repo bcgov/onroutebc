@@ -21,6 +21,7 @@ import { PermitType } from "../../types/PermitType";
 import { PermitVehicleDetails } from "../../types/PermitVehicleDetails";
 import { durationOptionsForPermitType } from "../../helpers/dateSelection";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
+import { PAST_START_DATE_STATUSES } from "../../../../common/components/form/subFormComponents/CustomDatePicker";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -31,7 +32,7 @@ import {
   APPLICATION_STEPS,
   ERROR_ROUTES,
 } from "../../../../routes/constants";
-import { PAST_START_DATE_STATUSES } from "../../../../common/components/form/subFormComponents/CustomDatePicker";
+import { useFetchSpecialAuthorizations } from "../../../settings/hooks/specialAuthorizations";
 
 /**
  * The first step in creating and submitting an Application.
@@ -69,6 +70,9 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
       companyInfo?.companyId,
     ),
   );
+
+  const { data: specialAuthorizations } = useFetchSpecialAuthorizations(companyId);
+  const isLcvDesignated = Boolean(specialAuthorizations?.isLcvAllowed);
   
   // Use a custom hook that performs the following whenever page is rendered (or when application context is updated/changed):
   // 1. Get all data needed to generate default values for the application form (from application context, company, user details)
@@ -262,7 +266,7 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
           updatedDateTime={updatedDateTime}
           permitStartDate={applicationDefaultValues.permitData.startDate}
           permitDuration={applicationDefaultValues.permitData.permitDuration}
-          permitCommodities={applicationDefaultValues.permitData.commodities}
+          permitConditions={applicationDefaultValues.permitData.commodities}
           vehicleDetails={vehicleFormData}
           vehicleOptions={vehicleOptions}
           powerUnitSubTypes={powerUnitSubTypes}
@@ -271,6 +275,8 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
           durationOptions={durationOptionsForPermitType(permitType)}
           doingBusinessAs={doingBusinessAs}
           pastStartDateStatus={isStaffUser ? PAST_START_DATE_STATUSES.WARNING : PAST_START_DATE_STATUSES.FAIL}
+          isLcvDesignated={isLcvDesignated}
+          permitStatus={applicationDefaultValues.permitStatus}
         />
       </FormProvider>
 

@@ -34,6 +34,7 @@ import {
   minDurationForPermitType,
 } from "../../../helpers/dateSelection";
 import { PAST_START_DATE_STATUSES } from "../../../../../common/components/form/subFormComponents/CustomDatePicker";
+import { useFetchSpecialAuthorizations } from "../../../../settings/hooks/specialAuthorizations";
 
 export const AmendPermitForm = () => {
   const {
@@ -53,6 +54,9 @@ export const AmendPermitForm = () => {
 
   const { data: companyInfo } = useCompanyInfoDetailsQuery(companyId);
   const doingBusinessAs = companyInfo?.alternateName;
+
+  const { data: specialAuthorizations } = useFetchSpecialAuthorizations(companyId);
+  const isLcvDesignated = Boolean(specialAuthorizations?.isLcvAllowed);
 
   const { formData, formMethods } = useAmendPermitForm(
     currentStepIndex === 0,
@@ -213,7 +217,7 @@ export const AmendPermitForm = () => {
           updatedDateTime={updatedDateTime}
           permitStartDate={formData.permitData.startDate}
           permitDuration={formData.permitData.permitDuration}
-          permitCommodities={formData.permitData.commodities}
+          permitConditions={formData.permitData.commodities}
           vehicleDetails={vehicleFormData}
           vehicleOptions={vehicleOptions}
           powerUnitSubTypes={powerUnitSubTypes}
@@ -222,6 +226,8 @@ export const AmendPermitForm = () => {
           durationOptions={durationOptions}
           doingBusinessAs={doingBusinessAs}
           pastStartDateStatus={PAST_START_DATE_STATUSES.WARNING}
+          isLcvDesignated={isLcvDesignated}
+          permitStatus={formData.permitStatus}
         >
           <AmendRevisionHistory revisionHistory={revisionHistory} />
           <AmendReason feature={FEATURE} />

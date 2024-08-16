@@ -4,7 +4,7 @@ import { Nullable } from "../../../common/types/common";
 import { PermitContactDetails } from "./PermitContactDetails";
 import { PermitVehicleDetails } from "./PermitVehicleDetails";
 import { PermitMailingAddress } from "./PermitMailingAddress";
-import { PermitCommodity } from "./PermitCommodity";
+import { PermitCondition } from "./PermitCondition";
 
 export interface PermitData {
   startDate: Dayjs;
@@ -12,7 +12,7 @@ export interface PermitData {
   expiryDate: Dayjs;
   contactDetails: PermitContactDetails;
   vehicleDetails: PermitVehicleDetails;
-  commodities: PermitCommodity[];
+  commodities: PermitCondition[];
   mailingAddress: PermitMailingAddress;
   feeSummary?: Nullable<string>;
   companyName?: Nullable<string>;
