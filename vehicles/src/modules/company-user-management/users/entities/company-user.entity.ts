@@ -33,7 +33,7 @@ export class CompanyUser extends Base {
     name: 'USER_AUTH_GROUP_TYPE',
     nullable: false,
   })
-  userAuthGroup: ClientUserRole;
+  userRole: ClientUserRole;
 
   /**
    * The status of the user in the system. It is an enum of UserStatus type and

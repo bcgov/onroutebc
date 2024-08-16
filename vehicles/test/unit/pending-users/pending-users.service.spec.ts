@@ -108,7 +108,7 @@ describe('PendingUsersService', () => {
         userName: constants.RED_COMPANY_PENDING_USER_NAME,
         companyId: constants.RED_COMPANY_ID,
       };
-      PENDING_USER_LIST[0].userAuthGroup = ClientUserRole.COMPANY_ADMINISTRATOR;
+      PENDING_USER_LIST[0].userRole = ClientUserRole.COMPANY_ADMINISTRATOR;
       findPendingUsersEntityMock(PARAMS, PENDING_USER_LIST);
 
       const retPendingUser = await service.update(

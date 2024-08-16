@@ -199,7 +199,7 @@ export class CompanyService {
           User,
           {
             extraArgs: () => ({
-              userAuthGroup: GenericUserRole.PUBLIC_VERIFIED,
+              userRole: GenericUserRole.PUBLIC_VERIFIED,
               userName: currentUser.userName,
               directory: currentUser.orbcUserDirectory,
               userGUID: currentUser.userGUID,
@@ -213,7 +213,7 @@ export class CompanyService {
         newCompanyUser.statusCode = UserStatus.ACTIVE;
         newCompanyUser.company.companyId = newCompany.companyId;
         newCompanyUser.user = user;
-        newCompanyUser.userAuthGroup = ClientUserRole.COMPANY_ADMINISTRATOR;
+        newCompanyUser.userRole = ClientUserRole.COMPANY_ADMINISTRATOR;
 
         user.companyUsers = [newCompanyUser];
         user = await queryRunner.manager.save(user);

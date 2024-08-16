@@ -24,5 +24,5 @@ export class PendingIdirUser extends Base {
     name: 'USER_AUTH_GROUP_TYPE',
     nullable: false,
   })
-  userAuthGroup: IDIRUserRole;
+  userRole: IDIRUserRole;
 }

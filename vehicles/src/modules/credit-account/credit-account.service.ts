@@ -1234,17 +1234,17 @@ export class CreditAccountService {
    * specifying their access permissions.
    *
    * @param {CreditAccountUserType} creditAccountUserType - The type of the credit account user.
-   * @param {UserRole} userAuthGroup - The authorization group of the user.
+   * @param {UserRole} userRole - The authorization group of the user.
    * @returns {Object} - An object representing the access permissions for the user.
    */
   private granularAccessControl(
     creditAccountUserType: CreditAccountUserType,
-    userAuthGroup: UserRole,
+    userRole: UserRole,
   ) {
     switch (creditAccountUserType) {
       // Check if the user is an ACCOUNT_HOLDER
       case CreditAccountUserType.ACCOUNT_HOLDER:
-        switch (userAuthGroup) {
+        switch (userRole) {
           // Grant full finance access
           case IDIRUserRole.FINANCE:
             return {
@@ -1268,7 +1268,7 @@ export class CreditAccountService {
         break;
       // Check if the user is an ACCOUNT_USER
       case CreditAccountUserType.ACCOUNT_USER:
-        switch (userAuthGroup) {
+        switch (userRole) {
           // Grant full finance access
           case IDIRUserRole.FINANCE:
             return {

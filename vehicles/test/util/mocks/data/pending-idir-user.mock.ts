@@ -6,7 +6,7 @@ import { ReadPendingIdirUserDto } from 'src/modules/company-user-management/pend
 
 export const pendingIdirUserEntityMock: PendingIdirUser = {
   userName: constants.SYS_ADMIN_STAFF_USER_NAME,
-  userAuthGroup: constants.SYS_ADMIN_STAFF_USER_AUTH_GROUP,
+  userRole: constants.SYS_ADMIN_STAFF_USER_AUTH_GROUP,
   ...baseEntityMock,
 };
 

@@ -59,7 +59,7 @@ export class UsersProfile extends AutomapperProfile {
           }),
         ),
         forMember(
-          (d) => d.userAuthGroup,
+          (d) => d.userRole,
           mapWithArguments((source, { userAuthGroup }) => {
             return userAuthGroup;
           }),
@@ -214,7 +214,7 @@ export class UsersProfile extends AutomapperProfile {
             return userGUID;
           }),
         ),
-        forMember((d) => d.userAuthGroup, ignore()),
+        forMember((d) => d.userRole, ignore()),
       );
 
       /**
@@ -239,13 +239,13 @@ export class UsersProfile extends AutomapperProfile {
             if (
               s.directory !== Directory.IDIR &&
               s.companyUsers?.length &&
-              s.companyUsers[0]?.userAuthGroup
+              s.companyUsers[0]?.userRole
             ) {
               //the logic to be revisited if the application decide to support
               //one user id multiple companies
-              return s.companyUsers[0]?.userAuthGroup;
+              return s.companyUsers[0]?.userRole;
             } else if (s.directory === Directory.IDIR) {
-              return s.userAuthGroup;
+              return s.userRole;
             }
           }),
         ),
