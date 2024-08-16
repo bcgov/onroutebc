@@ -7,9 +7,9 @@ import { Repository } from 'typeorm';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { SpecialAuth } from './entities/special-auth.entity';
 import { ReadSpecialAuthDto } from './dto/response/read-special-auth.dto';
-import { CreateSpecialAuthDto } from './dto/request/create-special-auth.dto';
-import { CreateLcvDto } from './dto/request/create-lcv.dto';
-import { CreateNoFeeDto } from './dto/request/create-no-fee.dto';
+import { Company } from '../company-user-management/company/entities/company.entity';
+import { Nullable } from '../../common/types/common';
+import { NoFeeType } from '../../common/enum/no-fee-type.enum';
 
 export class SpecialAuthService {
   private readonly logger = new Logger(SpecialAuthService.name);
@@ -23,22 +23,40 @@ export class SpecialAuthService {
    * Finds a special authorization by company ID.
    *
    * This method retrieves a special authorization entity from the database based on the provided company ID.
-   * It then maps the retrieved entity to a Data Transfer Object (DTO) for further processing or response.
    *
    * @param companyId - The ID of the company for which to find the special authorization.
    *
-   * @returns  {Promise<ReadSpecialAuthDto>} A Promise that resolves to a `ReadSpecialAuthDto` object representing the special authorization details.
+   * @returns  {Promise<SpecialAuth>} A Promise that resolves to a `SpecialAuth` object representing the special authorization details.
    *
-   * @throws Will throw an error if the special authorization cannot be found or if mapping fails.
+   * @throws Will throw an error if the special authorization cannot be found.
    */
   @LogAsyncMethodExecution()
-  async findOne(companyId: number): Promise<ReadSpecialAuthDto> {
+  async findOne(companyId: number): Promise<SpecialAuth> {
     const specialAuthEntity = await this.specialAuthRepository.findOne({
       where: {
         company: { companyId: companyId },
       },
       relations: ['company'],
     });
+
+    return specialAuthEntity;
+  }
+
+  /**
+   * Finds a special authorization by company ID.
+   *
+   * This method retrieves a special authorization entity from the database based on the provided company ID.
+   * It then maps the retrieved entity to a Data Transfer Object (DTO) for further processing or response.
+   *
+   * @param companyId - The ID of the company for which to find the special authorization.
+   *
+   * @returns {Promise<ReadSpecialAuthDto>} A Promise that resolves to a `ReadSpecialAuthDto` object representing the special authorization details.
+   *
+   * @throws Will throw an error if the special authorization cannot be found or if mapping fails.
+   */
+  @LogAsyncMethodExecution()
+  async findOneDto(companyId: number): Promise<ReadSpecialAuthDto> {
+    const specialAuthEntity = await this.findOne(companyId);
     const readSpecialAuthDto = await this.classMapper.mapAsync(
       specialAuthEntity,
       SpecialAuth,
@@ -55,75 +73,56 @@ export class SpecialAuthService {
    *
    * @param companyId - The ID of the company for which to create or update the special authorization.
    * @param currentUser - The current user performing the operation.
-   * @param upsertSpecialAuthDto - The data transfer object containing the details to create or update the special authorization.
+   * @param isLcvAllowed - Boolean flag indicating if LCV is allowed.
+   * @param noFeeType - The type of no-fee authorization.
    *
-   * @returns {Promise<ReadSpecialAuthDto>}A Promise that resolves to a `ReadSpecialAuthDto` object representing the newly created or updated special authorization.
+   * @returns {Promise<ReadSpecialAuthDto>} A Promise that resolves to a `ReadSpecialAuthDto` object representing the newly created or updated special authorization.
    *
    * @throws Will throw an error if the special authorization cannot be found or saved, or if mapping fails.
    */
   @LogAsyncMethodExecution()
-  async upsertSpecialAuth(
-    companyId: number,
-    currentUser: IUserJWT,
-    createSpecialAuthDto: CreateSpecialAuthDto,
-  ): Promise<ReadSpecialAuthDto> {
-    const specialAuthdto: ReadSpecialAuthDto = await this.findOne(companyId);
-    let specialAuth = await this.classMapper.mapAsync(
-      createSpecialAuthDto,
-      CreateSpecialAuthDto,
-      SpecialAuth,
-      {
-        extraArgs: () => ({
-          specialAuthId: specialAuthdto
-            ? specialAuthdto.specialAuthId
-            : undefined,
-          companyId: specialAuthdto ? undefined : companyId,
-          userName: currentUser.userName,
-          userGUID: currentUser.userGUID,
-          timestamp: new Date(),
-          directory: currentUser.orbcUserDirectory,
-        }),
-      },
-    );
+  async upsertSpecialAuth({
+    currentUser,
+    companyId,
+    isLcvAllowed,
+    noFeeType,
+  }: {
+    currentUser: IUserJWT;
+    companyId: number;
+    isLcvAllowed?: Nullable<boolean>;
+    noFeeType?: Nullable<NoFeeType>;
+  }): Promise<ReadSpecialAuthDto> {
+    let specialAuth = await this.findOne(companyId);
+    const commonFields = {
+      isLcvAllowed: isLcvAllowed,
+      noFeeType: noFeeType,
+      updatedUser: currentUser.userName,
+      updatedUserGuid: currentUser.userGUID,
+      updatedDateTime: new Date(),
+      updatedUserDirectory: currentUser.orbcUserDirectory,
+    };
+
+    if (specialAuth) {
+      Object.assign(specialAuth, commonFields);
+    } else {
+      specialAuth = new SpecialAuth();
+      specialAuth.company = new Company();
+      Object.assign(specialAuth, {
+        ...commonFields,
+        company: { companyId: companyId },
+        createdUser: currentUser.userName,
+        createdUserGuid: currentUser.userGUID,
+        createdDateTime: new Date(),
+        createdUserDirectory: currentUser.orbcUserDirectory,
+      });
+    }
+
     specialAuth = await this.specialAuthRepository.save(specialAuth);
+
     return await this.classMapper.mapAsync(
       specialAuth,
       SpecialAuth,
       ReadSpecialAuthDto,
-    );
-  }
-
-  @LogAsyncMethodExecution()
-  async upsertLcv(
-    companyId: number,
-    currentUser: IUserJWT,
-    createLcvDto: CreateLcvDto,
-  ): Promise<ReadSpecialAuthDto> {
-    const createSpecialAuthDto = Object.assign(new CreateSpecialAuthDto(), {
-      isLcvAllowed: createLcvDto.isLcvAllowed,
-    });
-
-    return await this.upsertSpecialAuth(
-      companyId,
-      currentUser,
-      createSpecialAuthDto,
-    );
-  }
-
-  @LogAsyncMethodExecution()
-  async upsertNoFee(
-    companyId: number,
-    currentUser: IUserJWT,
-    createNoFeeDto: CreateNoFeeDto,
-  ): Promise<ReadSpecialAuthDto> {
-    const createSpecialAuthDto = Object.assign(new CreateSpecialAuthDto(), {
-      noFeeType: createNoFeeDto.noFeeType,
-    });
-
-    return await this.upsertSpecialAuth(
-      companyId,
-      currentUser,
-      createSpecialAuthDto,
     );
   }
 }

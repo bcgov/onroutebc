@@ -51,11 +51,12 @@ export class SpecialAuthController {
   async get(
     @Param() { companyId }: CompanyIdPathParamDto,
   ): Promise<ReadSpecialAuthDto> {
-    return await this.specialAuthService.findOne(companyId);
+    return await this.specialAuthService.findOneDto(companyId);
   }
 
   @ApiOperation({
     summary: 'Create or update LCV (Long Combination Vehicle) allowance.',
+    description: 'Create or update LCV (Long Combination Vehicle) allowance.',
   })
   @ApiResponse({
     status: 200,
@@ -67,17 +68,20 @@ export class SpecialAuthController {
   async updateLcv(
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
-    @Body() createLcvDto: CreateLcvDto,
+    @Body() { isLcvAllowed }: CreateLcvDto,
   ): Promise<ReadSpecialAuthDto> {
     const currentUser = request.user as IUserJWT;
-    return await this.specialAuthService.upsertLcv(
-      companyId,
+    return await this.specialAuthService.upsertSpecialAuth({
       currentUser,
-      createLcvDto,
-    );
+      companyId,
+      isLcvAllowed,
+    });
   }
 
-  @ApiOperation({ summary: 'Create or update no fee type.' })
+  @ApiOperation({
+    summary: 'Create or update no fee type.',
+    description: 'Create or update no fee type.',
+  })
   @ApiResponse({
     status: 200,
     description: 'No fee type updated successfully.',
@@ -88,13 +92,13 @@ export class SpecialAuthController {
   async updateNoFee(
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
-    @Body() createNoFeeDto: CreateNoFeeDto,
+    @Body() { noFeeType }: CreateNoFeeDto,
   ): Promise<ReadSpecialAuthDto> {
     const currentUser = request.user as IUserJWT;
-    return await this.specialAuthService.upsertNoFee(
-      companyId,
+    return await this.specialAuthService.upsertSpecialAuth({
       currentUser,
-      createNoFeeDto,
-    );
+      companyId,
+      noFeeType,
+    });
   }
 }
