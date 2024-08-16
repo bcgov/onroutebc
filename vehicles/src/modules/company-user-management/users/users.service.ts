@@ -620,7 +620,7 @@ export class UsersService {
         try {
           let newUser: User = this.mapIdirToUserEntity(
             currentUser,
-            pendingUser.userAuthGroup,
+            pendingUser.userRole,
           );
           newUser = await queryRunner.manager.save(newUser);
           await queryRunner.manager.delete(PendingIdirUser, {

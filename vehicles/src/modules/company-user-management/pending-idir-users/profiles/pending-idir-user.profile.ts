@@ -48,7 +48,7 @@ export class PendingIdirUsersProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.userRole,
-          mapWithArguments(({ userAuthGroup }) => {
+          mapWithArguments(({ userRole: userAuthGroup }) => {
             return userAuthGroup;
           }),
         ),

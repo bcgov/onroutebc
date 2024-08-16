@@ -65,7 +65,7 @@ const isIPermissions = (
  *
  * This method supports two kinds of inputs for role requirements:
  * 1. Simple list of claims (Claim[]): It checks if the user holds any claim from the specified list. True indicates possession of a required role.
- * 2. Complex role requirements (IRole[]): For each object defining roles with 'allOf', 'oneOf', and/or 'userAuthGroup', it evaluates:
+ * 2. Complex role requirements (IRole[]): For each object defining roles with 'allOf', 'oneOf', and/or 'userRole', it evaluates:
  *    - If 'userRole' is defined, the user must belong to it.
  *    - For 'allOf', the user must have all specified roles.
  *    - For 'oneOf', the user must have at least one of the specified roles.
@@ -114,7 +114,7 @@ export const matchRoles = (
     // Scenario: claims is not a simple list, but an object or objects implementing IRole,
     // meaning complex role requirements can be specified.
     // This block first checks for an invalid case where both 'allOf' and 'oneOf' are defined in a roleObject,
-    // then verifies if the user belongs to the specified 'userAuthGroup' if defined.
+    // then verifies if the user belongs to the specified 'userRole' if defined.
     // Following, it checks two conditions for each role object:
     // 1. allOf - every claim listed must be included in userClaims.
     // 2. oneOf - at least one of the roles listed must be included in userClaims.
