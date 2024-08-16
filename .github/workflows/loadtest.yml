@@ -30,7 +30,7 @@ jobs:
     name: Loadtests
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-22.04
-    timeout-minutes: 1
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
 
