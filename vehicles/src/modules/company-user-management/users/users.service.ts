@@ -144,7 +144,7 @@ export class UsersService {
       newCompanyUser.company.companyId = companyId;
       newCompanyUser.statusCode = UserStatus.ACTIVE;
       newCompanyUser.user = user;
-      newCompanyUser.userRole = pendingUsers?.at(0).userAuthGroup;
+      newCompanyUser.userRole = pendingUsers?.at(0).userRole;
 
       user.companyUsers = [newCompanyUser];
       user = await queryRunner.manager.save(user);

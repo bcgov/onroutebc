@@ -15,12 +15,12 @@ export const redCompanyPendingUserEntityMock: PendingUser = {
 };
 
 export const updateRedCompanyPendingUserDtoMock: UpdatePendingUserDto = {
-  userAuthGroup: ClientUserRole.COMPANY_ADMINISTRATOR,
+  userRole: ClientUserRole.COMPANY_ADMINISTRATOR,
 };
 
 export const createRedCompanyPendingUserDtoMock: CreatePendingUserDto = {
   userName: constants.RED_COMPANY_PENDING_USER_NAME,
-  userAuthGroup: ClientUserRole.PERMIT_APPLICANT,
+  userRole: ClientUserRole.PERMIT_APPLICANT,
 };
 
 export const readRedCompanyPendingUserDtoMock: ReadPendingUserDto = {
@@ -39,12 +39,12 @@ export const blueCompanyPendingUserEntityMock: PendingUser = {
 };
 
 export const updateBlueCompanyPendingUserDtoMock: UpdatePendingUserDto = {
-  userAuthGroup: ClientUserRole.COMPANY_ADMINISTRATOR,
+  userRole: ClientUserRole.COMPANY_ADMINISTRATOR,
 };
 
 export const createBlueCompanyPendingUserDtoMock: CreatePendingUserDto = {
   userName: constants.BLUE_COMPANY_PENDING_USER_NAME,
-  userAuthGroup: ClientUserRole.PERMIT_APPLICANT,
+  userRole: ClientUserRole.PERMIT_APPLICANT,
 };
 export const readBlueCompanyPendingUserDtoMock: ReadPendingUserDto = {
   companyId: constants.BLUE_COMPANY_ID,

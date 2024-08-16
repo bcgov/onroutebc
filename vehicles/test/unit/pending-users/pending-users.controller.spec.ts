@@ -119,7 +119,7 @@ describe('PendingUsersController', () => {
 
       pendingUserService.update.mockResolvedValue({
         ...readRedCompanyPendingUserDtoMock,
-        userAuthGroup: ClientUserRole.COMPANY_ADMINISTRATOR,
+        userRole: ClientUserRole.COMPANY_ADMINISTRATOR,
       });
       const retPendingUsers = await controller.update(
         request,

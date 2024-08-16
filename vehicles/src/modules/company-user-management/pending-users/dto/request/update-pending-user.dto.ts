@@ -15,5 +15,5 @@ export class UpdatePendingUserDto {
     example: ClientUserRole.COMPANY_ADMINISTRATOR,
   })
   @IsEnum(ClientUserRole)
-  userAuthGroup: ClientUserRole;
+  userRole: ClientUserRole;
 }
