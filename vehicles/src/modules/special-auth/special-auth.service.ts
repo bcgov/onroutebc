@@ -94,8 +94,8 @@ export class SpecialAuthService {
   }): Promise<ReadSpecialAuthDto> {
     let specialAuth = await this.findOne(companyId);
     const commonFields = {
-      isLcvAllowed: isLcvAllowed ?? undefined,
-      noFeeType: noFeeType ?? undefined,
+      isLcvAllowed: isLcvAllowed,
+      noFeeType: noFeeType,
       updatedUser: currentUser.userName,
       updatedUserGuid: currentUser.userGUID,
       updatedDateTime: new Date(),
