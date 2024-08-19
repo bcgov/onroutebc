@@ -15,12 +15,18 @@ import { DeleteButton } from "../../../../common/components/buttons/DeleteButton
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import { canUserAccessApplication } from "../../helpers/mappers";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { getDefaultNullableVal, getDefaultRequiredVal } from "../../../../common/helpers/util";
+import {
+  getDefaultNullableVal,
+  getDefaultRequiredVal,
+} from "../../../../common/helpers/util";
 import { UserAuthGroupType } from "../../../../common/authentication/types";
 import { Nullable } from "../../../../common/types/common";
 import { deleteApplications } from "../../apiManager/permitsAPI";
 import { PermitApplicationOrigin } from "../../types/PermitApplicationOrigin";
-import { useApplicationsInProgressQuery, usePendingPermitsQuery } from "../../hooks/hooks";
+import {
+  useApplicationsInProgressQuery,
+  usePendingPermitsQuery,
+} from "../../hooks/hooks";
 import { WarningBcGovBanner } from "../../../../common/components/banners/WarningBcGovBanner";
 import { PendingPermitsDialog } from "../dialog/PendingPermitsDialog/PendingPermitsDialog";
 import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
@@ -62,28 +68,35 @@ export const ApplicationsInProgressList = ({
     isFetching,
   } = applicationsInProgressQuery;
 
-  const pendingCount = getDefaultRequiredVal(0, pendingPermits?.meta?.totalItems);
+  const pendingCount = getDefaultRequiredVal(
+    0,
+    pendingPermits?.meta?.totalItems,
+  );
   const canShowPendingBanner = pendingCount > 0;
 
   const [showAIPTable, setShowAIPTable] = useState<boolean>(false);
 
   useEffect(() => {
-    const totalCount = getDefaultRequiredVal(0, applicationsInProgress?.meta?.totalItems);
+    const totalCount = getDefaultRequiredVal(
+      0,
+      applicationsInProgress?.meta?.totalItems,
+    );
     setShowAIPTable(totalCount > 0);
     onCountChange(totalCount);
-  }, [applicationsInProgress?.meta?.totalItems])
+  }, [applicationsInProgress?.meta?.totalItems]);
 
   const { idirUserDetails, userDetails } = useContext(OnRouteBCContext);
   const userAuthGroup = getDefaultNullableVal(
-    idirUserDetails?.userAuthGroup,
-    userDetails?.userAuthGroup,
+    idirUserDetails?.userRole,
+    userDetails?.userRole,
   );
 
   const snackBar = useContext(SnackBarContext);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
-  const [showPendingPermitsModal, setShowPendingPermitsModal] = useState<boolean>(false);
+  const [showPendingPermitsModal, setShowPendingPermitsModal] =
+    useState<boolean>(false);
 
   const columns = useMemo<MRT_ColumnDef<ApplicationListItem>[]>(
     () => getColumns(userAuthGroup),
@@ -124,10 +137,7 @@ export const ApplicationsInProgressList = ({
 
   const canRowBeSelected = useCallback(
     (permitApplicationOrigin?: Nullable<PermitApplicationOrigin>) =>
-      canUserAccessApplication(
-        permitApplicationOrigin,
-        userAuthGroup,
-      ),
+      canUserAccessApplication(permitApplicationOrigin, userAuthGroup),
     [userAuthGroup],
   );
 
@@ -172,14 +182,9 @@ export const ApplicationsInProgressList = ({
       },
     },
     enableRowActions: false,
-    enableRowSelection:
-      (row) => canRowBeSelected(
-        row?.original?.permitApplicationOrigin,
-      ),
-    onRowSelectionChange: useCallback(
-      setRowSelection,
-      [userAuthGroup],
-    ),
+    enableRowSelection: (row) =>
+      canRowBeSelected(row?.original?.permitApplicationOrigin),
+    onRowSelectionChange: useCallback(setRowSelection, [userAuthGroup]),
     getRowId: (originalRow) => {
       const applicationRow = originalRow as ApplicationListItem;
       return applicationRow.permitId;
@@ -187,10 +192,7 @@ export const ApplicationsInProgressList = ({
     renderTopToolbar: useCallback(
       () => (
         <div className="applications-in-progress-list__top-toolbar">
-          <DeleteButton
-            onClick={onClickDelete}
-            disabled={hasNoRowsSelected}
-          />
+          <DeleteButton onClick={onClickDelete} disabled={hasNoRowsSelected} />
         </div>
       ),
       [hasNoRowsSelected],
@@ -200,8 +202,14 @@ export const ApplicationsInProgressList = ({
     manualFiltering: true,
     manualPagination: true,
     manualSorting: true,
-    rowCount: getDefaultRequiredVal(0, applicationsInProgress?.meta?.totalItems),
-    pageCount: getDefaultRequiredVal(0, applicationsInProgress?.meta?.pageCount),
+    rowCount: getDefaultRequiredVal(
+      0,
+      applicationsInProgress?.meta?.totalItems,
+    ),
+    pageCount: getDefaultRequiredVal(
+      0,
+      applicationsInProgress?.meta?.pageCount,
+    ),
     onSortingChange: setSorting,
     onPaginationChange: setPagination,
     enablePagination: true,
@@ -221,7 +229,9 @@ export const ApplicationsInProgressList = ({
           className="pending-permits-warning"
           msg={
             <div className="pending-permits-warning__msg">
-              <span>Some of your applications weren&apos;t processed. See your</span>
+              <span>
+                Some of your applications weren&apos;t processed. See your
+              </span>
               <CustomActionLink
                 className="pending-permits-warning__link"
                 onClick={() => setShowPendingPermitsModal(true)}
@@ -241,11 +251,7 @@ export const ApplicationsInProgressList = ({
         setPagination={setPendingPermitPagination}
       />
 
-      {showAIPTable ? (
-        <MaterialReactTable table={table} />
-      ) : (
-        <NoRecordsFound />
-      )}
+      {showAIPTable ? <MaterialReactTable table={table} /> : <NoRecordsFound />}
 
       <DeleteConfirmationDialog
         onDelete={onConfirmApplicationDelete}

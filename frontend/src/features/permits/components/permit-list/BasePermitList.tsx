@@ -144,14 +144,14 @@ export const BasePermitList = ({
         return (
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
             {DoesUserHaveAuthGroup({
-              userAuthGroup: idirUserDetails?.userAuthGroup,
+              userAuthGroup: idirUserDetails?.userRole,
               allowedAuthGroups: [IDIR_USER_AUTH_GROUP.PPC_CLERK],
             }) ? (
               <IDIRPermitSearchRowActions
                 isPermitInactive={isInactive}
                 permitNumber={row.original.permitNumber}
                 permitId={row.original.permitId}
-                userAuthGroup={idirUserDetails?.userAuthGroup}
+                userAuthGroup={idirUserDetails?.userRole}
                 companyId={row.original.companyId?.toString()}
               />
             ) : (

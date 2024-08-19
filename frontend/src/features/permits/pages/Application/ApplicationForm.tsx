@@ -52,24 +52,18 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     idirUserDetails,
   } = useContext(OnRouteBCContext);
 
-  const isStaffUser = Boolean(idirUserDetails?.userAuthGroup);
+  const isStaffUser = Boolean(idirUserDetails?.userRole);
   const companyInfoQuery = useCompanyInfoQuery();
   const companyInfo = companyInfoQuery.data;
 
   // Company id should be set by context, otherwise default to companyId in session and then the fetched companyId
   const companyId = getDefaultRequiredVal(
     "",
-    applyWhenNotNullable(
-      id => `${id}`,
-      companyIdFromContext,
-    ),
+    applyWhenNotNullable((id) => `${id}`, companyIdFromContext),
     getCompanyIdFromSession(),
-    applyWhenNotNullable(
-      id => `${id}`,
-      companyInfo?.companyId,
-    ),
+    applyWhenNotNullable((id) => `${id}`, companyInfo?.companyId),
   );
-  
+
   // Use a custom hook that performs the following whenever page is rendered (or when application context is updated/changed):
   // 1. Get all data needed to generate default values for the application form (from application context, company, user details)
   // 2. Generate those default values and register them to the form
@@ -270,7 +264,11 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
           companyInfo={companyInfo}
           durationOptions={durationOptionsForPermitType(permitType)}
           doingBusinessAs={doingBusinessAs}
-          pastStartDateStatus={isStaffUser ? PAST_START_DATE_STATUSES.WARNING : PAST_START_DATE_STATUSES.FAIL}
+          pastStartDateStatus={
+            isStaffUser
+              ? PAST_START_DATE_STATUSES.WARNING
+              : PAST_START_DATE_STATUSES.FAIL
+          }
         />
       </FormProvider>
 

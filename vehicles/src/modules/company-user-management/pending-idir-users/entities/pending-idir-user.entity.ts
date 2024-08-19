@@ -14,7 +14,7 @@ export class PendingIdirUser extends Base {
 
   /**
    * A property that represents the user's auth group, which is an enum of
-   * type {@link UserAuthGroup}.
+   * type {@link IDIRUserRole}.
    */
   @AutoMap()
   @Column({

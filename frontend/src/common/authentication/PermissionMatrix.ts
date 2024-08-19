@@ -482,7 +482,7 @@ export const usePermissionMatrix = ({
 }: PermissionConfigType & PermissionMatrixKeysType): boolean => {
   const { userDetails, idirUserDetails } = useContext(OnRouteBCContext);
   const { data: featureFlags } = useFeatureFlagsQuery();
-  const isIdir = Boolean(idirUserDetails?.userAuthGroup);
+  const isIdir = Boolean(idirUserDetails?.userRole);
 
   // If featureFlag is given, exit if it is not enabled.
   if (featureFlag) {
@@ -504,14 +504,13 @@ export const usePermissionMatrix = ({
       }
     )[permissionMatrixFunctionKey];
     if (isIdir) {
-      currentUserAuthGroup = idirUserDetails?.userAuthGroup;
+      currentUserAuthGroup = idirUserDetails?.userRole;
       isAllowed = Boolean(
         currentUserAuthGroup &&
           allowedIDIRAuthGroups?.includes(currentUserAuthGroup),
-          
       );
     } else {
-      currentUserAuthGroup = userDetails?.userAuthGroup;
+      currentUserAuthGroup = userDetails?.userRole;
       isAllowed = Boolean(
         currentUserAuthGroup &&
           allowedBCeIDAuthGroups?.includes(currentUserAuthGroup),

@@ -48,9 +48,9 @@ export const EditUserForm = memo(
         countryCode: getDefaultRequiredVal("", userInfo?.countryCode),
         provinceCode: getDefaultRequiredVal("", userInfo?.provinceCode),
         city: getDefaultRequiredVal("", userInfo?.city),
-        userAuthGroup: getDefaultRequiredVal(
+        userRole: getDefaultRequiredVal(
           BCeID_USER_AUTH_GROUP.COMPANY_ADMINISTRATOR,
-          userInfo?.userAuthGroup,
+          userInfo?.userRole,
         ),
       },
     });
@@ -163,7 +163,7 @@ export const EditUserForm = memo(
               </Stack>
               <Stack spacing={2}>
                 <Controller
-                  name="userAuthGroup"
+                  name="userRole"
                   rules={{
                     required: { value: true, message: requiredMessage() },
                   }}

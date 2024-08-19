@@ -13,7 +13,7 @@ export class GetStaffUserQueryParamsDto {
   })
   @IsOptional()
   @IsEnum(IDIRUserRole)
-  userAuthGroup?: IDIRUserRole;
+  userRole?: IDIRUserRole;
 
   @ApiProperty({
     description:

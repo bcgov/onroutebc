@@ -15,5 +15,5 @@ export class UpdateUserDto extends UpdateContactDto {
     example: ClientUserRole.COMPANY_ADMINISTRATOR,
   })
   @IsEnum(ClientUserRole)
-  userAuthGroup: ClientUserRole;
+  userRole: ClientUserRole;
 }

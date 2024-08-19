@@ -60,8 +60,8 @@ export class UsersProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.userRole,
-          mapWithArguments((source, { userAuthGroup }) => {
-            return userAuthGroup;
+          mapWithArguments((source, { userRole }) => {
+            return userRole;
           }),
         ),
         forMember(
@@ -234,7 +234,7 @@ export class UsersProfile extends AutomapperProfile {
         ),
         forSelf(Contact, (source) => source.userContact),
         forMember(
-          (d) => d.userAuthGroup,
+          (d) => d.userRole,
           mapFrom((s) => {
             if (
               s.directory !== Directory.IDIR &&

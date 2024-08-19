@@ -12,10 +12,10 @@ export const pendingIdirUserEntityMock: PendingIdirUser = {
 
 export const createPendingIdirUserMock: CreatePendingIdirUserDto = {
   userName: constants.SYS_ADMIN_STAFF_USER_NAME,
-  userAuthGroup: constants.SYS_ADMIN_STAFF_USER_AUTH_GROUP,
+  userRole: constants.SYS_ADMIN_STAFF_USER_AUTH_GROUP,
 };
 
 export const readPendingIdirUserMock: ReadPendingIdirUserDto = {
   userName: constants.SYS_ADMIN_STAFF_USER_NAME,
-  userAuthGroup: constants.SYS_ADMIN_STAFF_USER_AUTH_GROUP,
+  userRole: constants.SYS_ADMIN_STAFF_USER_AUTH_GROUP,
 };

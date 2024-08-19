@@ -16,7 +16,7 @@ export type IDIRUserDetailContext = {
   lastName: string;
   userName: string;
   email: string;
-  userAuthGroup: IDIRUserAuthGroupType;
+  userRole: IDIRUserAuthGroupType;
 };
 
 /**
@@ -32,7 +32,7 @@ export interface BCeIDUserDetailContext {
   phone2Extension?: string;
   email: string;
   fax?: string;
-  userAuthGroup: BCeIDUserAuthGroupType;
+  userRole: BCeIDUserAuthGroupType;
 }
 
 /**

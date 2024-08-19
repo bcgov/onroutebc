@@ -21,7 +21,7 @@ export const UserAuthRadioGroup = ({
   field,
   fieldState,
 }: {
-  field: ControllerRenderProps<FieldValues, "userAuthGroup">;
+  field: ControllerRenderProps<FieldValues, "userRole">;
   fieldState: ControllerFieldState;
 }) => {
   const { invalid } = fieldState;

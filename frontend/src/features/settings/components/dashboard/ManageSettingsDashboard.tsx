@@ -25,15 +25,15 @@ export const ManageSettingsDashboard = React.memo(() => {
     companyId as number,
   );
 
-  const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
+  const isStaffActingAsCompany = Boolean(idirUserDetails?.userRole);
   const isFinanceUser =
-    idirUserDetails?.userAuthGroup === IDIR_USER_AUTH_GROUP.FINANCE;
+    idirUserDetails?.userRole === IDIR_USER_AUTH_GROUP.FINANCE;
 
   const [hideSuspendTab, setHideSuspendTab] = useState<boolean>(false);
   const showSuspendTab = canViewSuspend(userRoles) && !hideSuspendTab;
   const showSpecialAuth =
     isStaffActingAsCompany &&
-    canViewSpecialAuthorizations(userRoles, idirUserDetails?.userAuthGroup) &&
+    canViewSpecialAuthorizations(userRoles, idirUserDetails?.userRole) &&
     featureFlags?.["LOA"] === "ENABLED";
 
   const showCreditAccountTab = usePermissionMatrix({

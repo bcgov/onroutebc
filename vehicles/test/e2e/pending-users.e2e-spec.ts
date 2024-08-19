@@ -155,7 +155,7 @@ describe('PendingUsers (e2e)', () => {
 
       expect(response.body).toMatchObject({
         ...readRedCompanyPendingUserDtoMock,
-        userAuthGroup: ClientUserRole.PERMIT_APPLICANT,
+        userRole: ClientUserRole.PERMIT_APPLICANT,
       });
     });
   });

@@ -15,5 +15,5 @@ export class UpdatePendingIdirUserDto {
     example: IDIRUserRole.SYSTEM_ADMINISTRATOR,
   })
   @IsEnum(IDIRUserRole)
-  userAuthGroup: IDIRUserRole;
+  userRole: IDIRUserRole;
 }
