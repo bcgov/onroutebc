@@ -27,11 +27,9 @@ import {
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { ExceptionDto } from 'src/common/exception/exception.dto';
-import { ReadLoaDto } from './dto/response/read-loa.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { LoaService } from './loa.service';
 import { Request, Response } from 'express';
-import { GetLoaQueryParamsDto } from './dto/request/queryParam/get-loa.query-params.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileDownloadModes } from 'src/common/enum/file-download-modes.enum';
 import { setResHeaderCorrelationId } from 'src/common/helper/response-header.helper';
@@ -44,6 +42,8 @@ import { GetDocumentQueryParamsDto } from '../common/dto/request/queryParam/getD
 import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-flag-enabled.decorator';
 import { Permissions } from 'src/common/decorator/permissions.decorator';
 import { Claim } from 'src/common/enum/claims.enum';
+import { ReadLoaDto } from './dto/response/read-loa.dto';
+import { GetLoaQueryParamsDto } from './dto/request/queryParam/get-loa.query-params.dto';
 
 @ApiBearerAuth()
 @ApiTags('Letter of Authorization (LoA)')
