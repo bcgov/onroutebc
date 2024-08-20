@@ -76,13 +76,14 @@ export const renderTestComponent = (
   userEventOptions?: Options,
 ) => {
   const user = userEvent.setup(userEventOptions);
+  let selectedConditions = [...conditions];
   const renderedComponent = render(
     <TestFormWrapper>
       <PermitDetails
         feature={feature}
         defaultStartDate={startDate}
         defaultDuration={duration}
-        conditionsInPermit={conditions}
+        conditionsInPermit={selectedConditions}
         durationOptions={allDurations.map((duration) => ({
           label: duration.text,
           value: duration.days,
@@ -91,6 +92,9 @@ export const renderTestComponent = (
         permitType={permitType}
         pastStartDateStatus={PAST_START_DATE_STATUSES.FAIL}
         includeLcvCondition={false}
+        onSetConditions={(updatedConditions) => {
+          selectedConditions = [...updatedConditions];
+        }}
       />
     </TestFormWrapper>,
   );

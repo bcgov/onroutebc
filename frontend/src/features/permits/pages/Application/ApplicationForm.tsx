@@ -116,8 +116,7 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
   const [showLeaveApplicationDialog, setShowLeaveApplicationDialog] =
     useState<boolean>(false);
 
-  const { handleSubmit, getValues, watch } = formMethods;
-  const vehicleFormData = watch("permitData.vehicleDetails");
+  const { handleSubmit, getValues } = formMethods;
 
   const navigate = useNavigate();
 
@@ -259,15 +258,9 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
           onSave={onSave}
           onContinue={handleSubmit(onContinue)}
           isAmendAction={false}
-          permitType={applicationDefaultValues.permitType}
-          applicationNumber={applicationDefaultValues.applicationNumber}
           permitNumber={applicationDefaultValues.permitNumber}
           createdDateTime={createdDateTime}
           updatedDateTime={updatedDateTime}
-          permitStartDate={applicationDefaultValues.permitData.startDate}
-          permitDuration={applicationDefaultValues.permitData.permitDuration}
-          permitConditions={applicationDefaultValues.permitData.commodities}
-          vehicleDetails={vehicleFormData}
           vehicleOptions={vehicleOptions}
           powerUnitSubTypes={powerUnitSubTypes}
           trailerSubTypes={trailerSubTypes}
@@ -276,7 +269,6 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
           doingBusinessAs={doingBusinessAs}
           pastStartDateStatus={isStaffUser ? PAST_START_DATE_STATUSES.WARNING : PAST_START_DATE_STATUSES.FAIL}
           isLcvDesignated={isLcvDesignated}
-          permitStatus={applicationDefaultValues.permitStatus}
         />
       </FormProvider>
 

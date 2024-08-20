@@ -16,9 +16,12 @@ import { BANNER_MESSAGES } from "../../../../../../common/constants/bannerMessag
 import { getExpiryDate } from "../../../../helpers/permitState";
 import { calculateFeeByDuration } from "../../../../helpers/feeSummary";
 import { PermitType } from "../../../../types/PermitType";
-import { Nullable } from "../../../../../../common/types/common";
 import { PermitCondition } from "../../../../types/PermitCondition";
-import { CustomDatePicker, PastStartDateStatus } from "../../../../../../common/components/form/subFormComponents/CustomDatePicker";
+import {
+  CustomDatePicker,
+  PastStartDateStatus,
+} from "../../../../../../common/components/form/subFormComponents/CustomDatePicker";
+
 import {
   PPC_EMAIL,
   TOLL_FREE_NUMBER,
@@ -34,18 +37,17 @@ export const PermitDetails = ({
   defaultStartDate,
   defaultDuration,
   conditionsInPermit,
-  applicationNumber,
   durationOptions,
   disableStartDate,
   permitType,
   pastStartDateStatus,
   includeLcvCondition,
+  onSetConditions,
 }: {
   feature: string;
   defaultStartDate: Dayjs;
   defaultDuration: number;
   conditionsInPermit: PermitCondition[];
-  applicationNumber?: Nullable<string>;
   durationOptions: {
     value: number;
     label: string;
@@ -54,8 +56,9 @@ export const PermitDetails = ({
   permitType: PermitType;
   pastStartDateStatus: PastStartDateStatus;
   includeLcvCondition?: boolean;
+  onSetConditions: (conditions: PermitCondition[]) => void;
 }) => {
-  const { watch, register, setValue } = useFormContext();
+  const { watch, setValue } = useFormContext();
 
   // watch() is subscribed to fields, and will always have the latest values from the fields
   // thus, no need to use this in useState and useEffect
@@ -78,7 +81,6 @@ export const PermitDetails = ({
     setValue("permitData.permitDuration", defaultDuration);
   }, [defaultStartDate, defaultDuration]);
 
-  register("permitData.expiryDate");
   useEffect(() => {
     // use setValue to explicitly set the invisible form field for expiry date
     // this needs useEffect as this form field update process is manual, and needs to happen whenever startDate and duration changes
@@ -169,11 +171,9 @@ export const PermitDetails = ({
 
           <ConditionsTable
             conditionsInPermit={conditionsInPermit}
-            applicationWasCreated={
-              applicationNumber != null && applicationNumber !== ""
-            }
             permitType={permitType}
             includeLcvCondition={includeLcvCondition}
+            onSetConditions={onSetConditions}
           />
         </Box>
       </Box>

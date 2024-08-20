@@ -6,3 +6,9 @@
 export const isVehicleSubtypeLCV = (subtype: string) => {
   return ["LCVRMDB", "LCVTPDB"].includes(subtype);
 };
+
+export const EMPTY_VEHICLE_SUBTYPE = {
+  typeCode: "",
+  type: "",
+  description: "",
+};

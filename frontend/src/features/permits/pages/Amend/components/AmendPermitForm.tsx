@@ -84,8 +84,7 @@ export const AmendPermitForm = () => {
     trailerSubTypes,
   } = usePermitVehicleManagement(companyId);
 
-  const { handleSubmit, getValues, watch } = formMethods;
-  const vehicleFormData = watch("permitData.vehicleDetails");
+  const { handleSubmit, getValues } = formMethods;
 
   // Helper method to return form field values as an Permit object
   const transformPermitFormData = (data: FieldValues) => {
@@ -210,15 +209,9 @@ export const AmendPermitForm = () => {
           onCancel={goHome}
           onContinue={handleSubmit(onContinue)}
           isAmendAction={true}
-          permitType={formData.permitType}
-          applicationNumber={formData.applicationNumber}
           permitNumber={permit?.permitNumber}
           createdDateTime={createdDateTime}
           updatedDateTime={updatedDateTime}
-          permitStartDate={formData.permitData.startDate}
-          permitDuration={formData.permitData.permitDuration}
-          permitConditions={formData.permitData.commodities}
-          vehicleDetails={vehicleFormData}
           vehicleOptions={vehicleOptions}
           powerUnitSubTypes={powerUnitSubTypes}
           trailerSubTypes={trailerSubTypes}
@@ -227,7 +220,6 @@ export const AmendPermitForm = () => {
           doingBusinessAs={doingBusinessAs}
           pastStartDateStatus={PAST_START_DATE_STATUSES.WARNING}
           isLcvDesignated={isLcvDesignated}
-          permitStatus={formData.permitStatus}
         >
           <AmendRevisionHistory revisionHistory={revisionHistory} />
           <AmendReason feature={FEATURE} />

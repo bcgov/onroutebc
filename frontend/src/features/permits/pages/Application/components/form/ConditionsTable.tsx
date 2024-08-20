@@ -1,5 +1,3 @@
-import { useState, useEffect } from "react";
-import { Controller, useFormContext } from "react-hook-form";
 import {
   Checkbox,
   FormControlLabel,
@@ -20,59 +18,39 @@ import { PermitCondition } from "../../../../types/PermitCondition";
 
 export const ConditionsTable = ({
   conditionsInPermit,
-  applicationWasCreated,
   permitType,
   includeLcvCondition = false,
+  onSetConditions,
 }: {
   conditionsInPermit: PermitCondition[];
-  applicationWasCreated: boolean;
   permitType: PermitType;
   includeLcvCondition?: boolean;
+  onSetConditions: (conditions: PermitCondition[]) => void;
 }) => {
-  const { control, setValue, resetField } = useFormContext();
   const defaultConditions = getDefaultConditions(permitType, includeLcvCondition);
-  const initialConditions = !applicationWasCreated
-    ? defaultConditions // return default options for new application (not created one)
-    : defaultConditions.map((defaultCondition) => {
-      // Application exists at this point, thus select all conditions that were selected in the application
-      const existingCondition = conditionsInPermit.find(
-        (c) => c.condition === defaultCondition.condition,
-      );
+  const allConditions = defaultConditions.map((defaultCondition) => {
+    // Application exists at this point, thus select all conditions that were selected in the application
+    const existingCondition = conditionsInPermit.find(
+      (c) => c.condition === defaultCondition.condition,
+    );
 
-      return {
-        ...defaultCondition,
-        checked: existingCondition
-          ? existingCondition.checked
-          : defaultCondition.checked,
-      };
-    });
-
-  const [allConditions, setAllConditions] =
-    useState<PermitCondition[]>(initialConditions);
-
-  useEffect(() => {
-    resetField("permitData.commodities", { defaultValue: [] }); // reset all conditions
-    setValue(
-      "permitData.commodities",
-      allConditions.filter((c) => c.checked),
-    ); // select the conditions in the existing application
-  }, [allConditions]);
-
-  useEffect(() => {
-    setAllConditions(initialConditions);
-  }, [initialConditions]);
+    return {
+      ...defaultCondition,
+      checked: existingCondition
+        ? existingCondition.checked
+        : defaultCondition.checked,
+    };
+  });
 
   const handleSelect = (checkedCondition: string) => {
-    const newConditions = allConditions.map((condition) => {
+    const updatedConditions = allConditions.map((condition) => {
       if (condition.condition === checkedCondition) {
         condition.checked = !condition.checked;
       }
       return condition;
-    });
+    }).filter(condition => condition.checked);
 
-    setAllConditions(newConditions);
-
-    return newConditions;
+    onSetConditions(updatedConditions);
   }
 
   return (
@@ -100,24 +78,16 @@ export const ConditionsTable = ({
               >
                 <FormControlLabel
                   control={
-                    <Controller
-                      name="permitData.commodities"
-                      render={() => {
-                        return (
-                          <Checkbox
-                            className={`conditions-table__checkbox ${
-                              row.disabled
-                                ? "conditions-table__checkbox--disabled"
-                                : ""
-                            }`}
-                            key={row.condition}
-                            checked={row.checked}
-                            disabled={row.disabled}
-                            onChange={() => handleSelect(row.condition)}
-                          />
-                        );
-                      }}
-                      control={control}
+                    <Checkbox
+                      className={`conditions-table__checkbox ${
+                        row.disabled
+                          ? "conditions-table__checkbox--disabled"
+                          : ""
+                      }`}
+                      key={row.condition}
+                      checked={row.checked}
+                      disabled={row.disabled}
+                      onChange={() => handleSelect(row.condition)}
                     />
                   }
                   key={row.description}
