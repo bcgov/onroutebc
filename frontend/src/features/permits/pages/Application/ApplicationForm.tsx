@@ -34,14 +34,13 @@ import {
   ERROR_ROUTES,
 } from "../../../../routes/constants";
 
+const FEATURE = "application";
+
 /**
- * The first step in creating and submitting an Application.
- * @returns A form for users to create an Application
+ * The first step in creating or saving an Application.
+ * @returns A form component for users to save an Application
  */
 export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
-  // The name of this feature that is used for id's, keys, and associating form components
-  const FEATURE = "application";
-
   // Context to hold all of the application data related to the application
   const applicationContext = useContext(ApplicationContext);
 
@@ -78,15 +77,16 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
   // 1. Get all data needed to generate default values for the application form (from application context, company, user details)
   // 2. Generate those default values and register them to the form
   // 3. Listens for changes to application context (which happens when application is fetched/submitted/updated)
-  // 4. Updates form default values when application context data values change
+  // 4. Updates form values (override existing ones) whenever the application context data changes
   const {
-    defaultApplicationDataValues: applicationDefaultValues,
+    initialFormData,
+    currentFormData,
     formMethods,
   } = useDefaultApplicationFormData(
     permitType,
+    isLcvDesignated,
     companyInfo,
     applicationContext?.applicationData,
-    companyId,
     userDetails,
   );
 
@@ -116,12 +116,12 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
   const [showLeaveApplicationDialog, setShowLeaveApplicationDialog] =
     useState<boolean>(false);
 
-  const { handleSubmit, getValues } = formMethods;
+  const { handleSubmit } = formMethods;
 
   const navigate = useNavigate();
 
-  // Helper method to return form field values as an Application object
-  const applicationFormData = (data: FieldValues) => {
+  // Helper method to format form values to Application objects before saving them
+  const formattedFormData = (data: FieldValues) => {
     return {
       ...data,
       applicationNumber: applicationContext.applicationData?.applicationNumber,
@@ -142,20 +142,19 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
 
   // Check to see if all application values were already saved
   const isApplicationSaved = () => {
-    const currentFormData = applicationFormData(getValues());
-    const savedData = applicationContext.applicationData;
-    if (!savedData) return false;
+    const currentFormattedFormData = formattedFormData(currentFormData);
+    const savedData = formattedFormData(initialFormData);
 
     // Check if all current form field values match field values already saved in application context
     return areApplicationDataEqual(
-      currentFormData.permitData,
+      currentFormattedFormData.permitData,
       savedData.permitData,
     );
   };
 
   // When "Continue" button is clicked
   const onContinue = async (data: FieldValues) => {
-    const applicationToBeSaved = applicationFormData(data);
+    const applicationToBeSaved = formattedFormData(data);
     const vehicleData = applicationToBeSaved.permitData.vehicleDetails;
     const savedVehicleDetails = await handleSaveVehicle(vehicleData);
 
@@ -197,14 +196,13 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
       return onSaveFailure();
     }
 
-    const formValues = getValues();
-    const applicationToBeSaved = applicationFormData(
+    const applicationToBeSaved = formattedFormData(
       !savedVehicleInventoryDetails
-        ? formValues
+        ? currentFormData
         : {
-            ...formValues,
+            ...currentFormData,
             permitData: {
-              ...formValues.permitData,
+              ...currentFormData.permitData,
               vehicleDetails: {
                 ...savedVehicleInventoryDetails,
                 saveVehicle: true,
@@ -258,7 +256,7 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
           onSave={onSave}
           onContinue={handleSubmit(onContinue)}
           isAmendAction={false}
-          permitNumber={applicationDefaultValues.permitNumber}
+          permitNumber={currentFormData.permitNumber}
           createdDateTime={createdDateTime}
           updatedDateTime={updatedDateTime}
           vehicleOptions={vehicleOptions}

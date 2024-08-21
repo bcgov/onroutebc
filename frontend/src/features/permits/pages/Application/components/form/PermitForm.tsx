@@ -80,8 +80,9 @@ export const PermitForm = (props: PermitFormProps) => {
     });
   };
 
+  const isLcvDesignated = props.isLcvDesignated;
   const ineligiblePowerUnitSubtypes = getIneligiblePowerUnitSubtypes(permitType)
-    .filter(subtype => !props.isLcvDesignated || !isVehicleSubtypeLCV(subtype.typeCode));
+    .filter(subtype => !isLcvDesignated || !isVehicleSubtypeLCV(subtype.typeCode));
   
   return (
     <Box className="permit-form layout-box">
@@ -110,7 +111,7 @@ export const PermitForm = (props: PermitFormProps) => {
           disableStartDate={props.isAmendAction}
           permitType={permitType}
           pastStartDateStatus={props.pastStartDateStatus}
-          includeLcvCondition={props.isLcvDesignated && isVehicleSubtypeLCV(vehicleFormData.vehicleSubType)}
+          includeLcvCondition={isLcvDesignated && isVehicleSubtypeLCV(vehicleFormData.vehicleSubType)}
           onSetConditions={handleSetConditions}
         />
         

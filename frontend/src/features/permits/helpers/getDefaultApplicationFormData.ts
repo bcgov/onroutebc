@@ -12,6 +12,9 @@ import { PermitContactDetails } from "../types/PermitContactDetails";
 import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
 import { Application, ApplicationFormData } from "../types/application";
 import { minDurationForPermitType } from "./dateSelection";
+import { PermitCondition } from "../types/PermitCondition";
+import { LCV_CONDITION } from "../constants/constants";
+import { isVehicleSubtypeLCV } from "../../manageVehicles/helpers/vehicleSubtypes";
 import {
   getEndOfDate,
   getStartOfDate,
@@ -153,16 +156,79 @@ export const getExpiryDateOrDefault = (
 };
 
 /**
- * Gets default values for the application data, or populate with values from existing application data and company id/user details.
+ * Applying LCV designation to application form data.
+ * @param formData Existing application form data
+ * @param isLcvDesignated Whether or not the LCV designation is to be used
+ * @returns Application form data after applying the LCV check
+ */
+export const applyLCVToApplicationFormData = (
+  formData: ApplicationFormData,
+  isLcvDesignated: boolean,
+): ApplicationFormData => {
+  if (!isLcvDesignated) {
+    // If LCV not designated, remove LCV condition from form data
+    const filteredConditions = formData.permitData.commodities.filter(
+      ({ condition }: PermitCondition) => condition !== LCV_CONDITION.condition,
+    );
+
+    if (isVehicleSubtypeLCV(formData.permitData.vehicleDetails.vehicleSubType)) {
+      // Furthermore, if selected vehicle has LCV subtype, clear the vehicle
+      return {
+        ...formData,
+        permitData: {
+          ...formData.permitData,
+          commodities: [...filteredConditions],
+          vehicleDetails: getDefaultVehicleDetails(),
+        },
+      };
+    }
+
+    // Otherwise, keep the existing vehicle
+    return {
+      ...formData,
+      permitData: {
+        ...formData.permitData,
+        commodities: [...filteredConditions],
+      },
+    };
+  }
+  
+  // If LCV is designated, and vehicle subtype in the form isn't LCV but conditions have LCV,
+  // then remove that LCV condition from the form
+  if (
+    !isVehicleSubtypeLCV(formData.permitData.vehicleDetails.vehicleSubType)
+    && Boolean(
+      formData.permitData.commodities.find(({ condition }) => condition === LCV_CONDITION.condition,
+    ))
+  ) {
+    const filteredConditions = formData.permitData.commodities.filter(
+      ({ condition }: PermitCondition) => condition !== LCV_CONDITION.condition,
+    );
+
+    return {
+      ...formData,
+      permitData: {
+        ...formData.permitData,
+        commodities: [...filteredConditions],
+      },
+    };
+  }
+
+  // In other cases, the form data is valid
+  return formData;
+};
+
+/**
+ * Gets default values for the application data, or populate with values from existing application and relevant data.
  * @param permitType permit type for the application
- * @param companyInfo data from company profile information
+ * @param companyInfo data from company profile information (can be undefined, but must be passed as param)
  * @param applicationData existing application data, if any
  * @param userDetails user details of current user, if any
  * @returns default values for the application data
  */
 export const getDefaultValues = (
   permitType: PermitType,
-  companyInfo: Nullable<CompanyProfile>, // can be undefined, but must be passed as param
+  companyInfo: Nullable<CompanyProfile>,
   applicationData?: Nullable<Application | ApplicationFormData>,
   userDetails?: Nullable<BCeIDUserDetailContext>,
 ): ApplicationFormData => {
