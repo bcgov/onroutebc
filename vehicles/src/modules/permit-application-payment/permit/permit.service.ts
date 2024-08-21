@@ -120,7 +120,7 @@ export class PermitService {
     }
     return await this.classMapper.mapAsync(permit, Permit, ReadPermitDto, {
       extraArgs: () => ({
-        currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
+        currentUserRole: currentUser?.orbcUserRole,
       }),
     });
   }
@@ -366,7 +366,7 @@ export class PermitService {
         ReadPermitMetadataDto,
         {
           extraArgs: () => ({
-            currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
+            currentUserRole: currentUser?.orbcUserRole,
           }),
         },
       );

@@ -51,7 +51,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       associatedCompanies: number[],
       orbcUserFirstName: string,
       orbcUserLastName: string,
-      orbcUserAuthGroup: UserRole | ClientUserRole | IDIRUserRole;
+      orbcUserRole: UserRole | ClientUserRole | IDIRUserRole;
 
     let companyId: number;
     if (req.params.companyId) {
@@ -94,7 +94,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       }
       orbcUserFirstName = user?.at(0).firstName;
       orbcUserLastName = user?.at(0).lastName;
-      orbcUserAuthGroup = user?.at(0).userRole;
+      orbcUserRole = user?.at(0).userRole;
 
       if (payload.identity_provider !== IDP.IDIR) {
         const associatedCompanyMetadataList =
@@ -129,7 +129,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       access_token,
       orbcUserFirstName,
       orbcUserLastName,
-      orbcUserAuthGroup,
+      orbcUserRole,
       orbcUserDirectory,
     };
 

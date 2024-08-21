@@ -37,10 +37,10 @@ export class ShoppingCartProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.applicant,
-          mapWithArguments((s, { currentUserAuthGroup }) => {
+          mapWithArguments((s, { currentUserRole }) => {
             return getApplicantDisplay(
               s.applicationOwner,
-              currentUserAuthGroup as UserRole,
+              currentUserRole as UserRole,
             );
           }),
         ),

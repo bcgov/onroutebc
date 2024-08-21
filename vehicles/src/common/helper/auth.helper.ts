@@ -128,10 +128,10 @@ export const matchRoles = (
       }
 
       if (roleObject.userRole?.length) {
-        const userAuthGroupMatch = roleObject.userRole?.some(
+        const userRoleMatch = roleObject.userRole?.some(
           (authGroup) => authGroup === userRole,
         );
-        if (!userAuthGroupMatch) {
+        if (!userRoleMatch) {
           return false;
         } else if (!roleObject.allOf?.length && !roleObject.oneOf?.length) {
           return true;
@@ -227,7 +227,7 @@ export const validateUserCompanyAndRoleContext = (
   const rolesExists = matchRoles(
     claims,
     currentUser.claims,
-    currentUser.orbcUserAuthGroup,
+    currentUser.orbcUserRole,
   );
   if (!rolesExists && userGUID) {
     throw new ForbiddenException();

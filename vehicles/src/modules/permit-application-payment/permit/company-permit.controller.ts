@@ -71,10 +71,7 @@ export class CompanyPermitController {
   ): Promise<PaginationDto<ReadPermitMetadataDto>> {
     const currentUser = request.user as IUserJWT;
     if (
-      !doesUserHaveAuthGroup(
-        currentUser.orbcUserAuthGroup,
-        IDIR_USER_ROLE_LIST,
-      ) &&
+      !doesUserHaveAuthGroup(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST) &&
       !companyId
     ) {
       throw new BadRequestException(
@@ -83,7 +80,7 @@ export class CompanyPermitController {
     }
 
     const userGuid =
-      ClientUserRole.PERMIT_APPLICANT === currentUser.orbcUserAuthGroup
+      ClientUserRole.PERMIT_APPLICANT === currentUser.orbcUserRole
         ? currentUser.userGUID
         : null;
 

@@ -44,11 +44,11 @@ export class PermitProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.issuer,
-          mapWithArguments((s, { currentUserAuthGroup }) => {
+          mapWithArguments((s, { currentUserRole }) => {
             if (s.issuer?.directory === Directory.IDIR) {
               if (
                 doesUserHaveAuthGroup(
-                  currentUserAuthGroup as UserRole,
+                  currentUserRole as UserRole,
                   IDIR_USER_ROLE_LIST,
                 )
               ) {
@@ -107,11 +107,11 @@ export class PermitProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.applicant,
-          mapWithArguments((s, { currentUserAuthGroup }) => {
+          mapWithArguments((s, { currentUserRole }) => {
             if (s.applicationOwner?.directory === Directory.IDIR) {
               if (
                 doesUserHaveAuthGroup(
-                  currentUserAuthGroup as UserRole,
+                  currentUserRole as UserRole,
                   IDIR_USER_ROLE_LIST,
                 )
               ) {
@@ -129,11 +129,11 @@ export class PermitProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.issuer,
-          mapWithArguments((s, { currentUserAuthGroup }) => {
+          mapWithArguments((s, { currentUserRole }) => {
             if (s.issuer?.directory === Directory.IDIR) {
               if (
                 doesUserHaveAuthGroup(
-                  currentUserAuthGroup as UserRole,
+                  currentUserRole as UserRole,
                   IDIR_USER_ROLE_LIST,
                 )
               ) {

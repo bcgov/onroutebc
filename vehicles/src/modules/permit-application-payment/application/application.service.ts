@@ -160,7 +160,7 @@ export class ApplicationService {
       ReadApplicationDto,
       {
         extraArgs: () => ({
-          currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
+          currentUserRole: currentUser?.orbcUserRole,
         }),
       },
     );
@@ -254,7 +254,7 @@ export class ApplicationService {
       ReadApplicationDto,
       {
         extraArgs: () => ({
-          currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
+          currentUserRole: currentUser?.orbcUserRole,
         }),
       },
     );
@@ -335,8 +335,8 @@ export class ApplicationService {
         ReadApplicationMetadataDto,
         {
           extraArgs: () => ({
-            currentUserAuthGroup:
-              findAllApplicationsOptions?.currentUser?.orbcUserAuthGroup,
+            currentUserRole:
+              findAllApplicationsOptions?.currentUser?.orbcUserRole,
           }),
         },
       );
@@ -455,7 +455,7 @@ export class ApplicationService {
       ReadApplicationDto,
       {
         extraArgs: () => ({
-          currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
+          currentUserRole: currentUser?.orbcUserRole,
         }),
       },
     );
@@ -651,7 +651,7 @@ export class ApplicationService {
       ReadApplicationDto,
       {
         extraArgs: () => ({
-          currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
+          currentUserRole: currentUser?.orbcUserRole,
         }),
       },
     );
@@ -704,12 +704,12 @@ export class ApplicationService {
       .andWhere('permit.permitNumber IS NULL');
 
     // Filter applications by user GUID if the current user is a PERMIT_APPLICANT or by ONLINE origin if the user is a COMPANY_ADMINISTRATOR
-    if (ClientUserRole.PERMIT_APPLICANT === currentUser.orbcUserAuthGroup) {
+    if (ClientUserRole.PERMIT_APPLICANT === currentUser.orbcUserRole) {
       applicationsQB.andWhere('applicationOwner.userGUID = :userGuid', {
         userGuid: currentUser.userGUID,
       });
     } else if (
-      ClientUserRole.COMPANY_ADMINISTRATOR === currentUser.orbcUserAuthGroup
+      ClientUserRole.COMPANY_ADMINISTRATOR === currentUser.orbcUserRole
     ) {
       applicationsQB.andWhere(
         'permit.permitApplicationOrigin = :permitApplicationOrigin',
@@ -730,7 +730,7 @@ export class ApplicationService {
           ({
             ...application,
             permitStatus: doesUserHaveAuthGroup(
-              currentUser.orbcUserAuthGroup,
+              currentUser.orbcUserRole,
               IDIR_USER_ROLE_LIST,
             )
               ? ApplicationStatus.DELETED

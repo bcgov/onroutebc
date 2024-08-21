@@ -227,8 +227,8 @@ export class PendingUsersController {
   ): Promise<DeleteDto> {
     const currentUser = request.user as IUserJWT;
     if (
-      currentUser.orbcUserAuthGroup !== ClientUserRole.COMPANY_ADMINISTRATOR &&
-      !doesUserHaveAuthGroup(currentUser.orbcUserAuthGroup, IDIR_USER_ROLE_LIST)
+      currentUser.orbcUserRole !== ClientUserRole.COMPANY_ADMINISTRATOR &&
+      !doesUserHaveAuthGroup(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST)
     ) {
       throw new ForbiddenException();
     }

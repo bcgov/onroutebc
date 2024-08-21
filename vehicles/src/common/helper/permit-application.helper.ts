@@ -203,15 +203,15 @@ export const generatePermitNumber = async (
  *   correct authorization group. Otherwise, it returns a predefined full text constant.
  * - For users from other directories, it returns the user's first and last name, concatenated.
  * @param applicationOwner The user object representing the owner of the application.
- * @param currentUserAuthGroup The authorization group of the current user.
+ * @param currentUserRole The authorization group of the current user.
  * @returns The display name of the application owner as a string.
  */
 export const getApplicantDisplay = (
   applicationOwner: User,
-  currentUserAuthGroup: UserRole,
+  currentUserRole: UserRole,
 ): string => {
   if (applicationOwner?.directory === Directory.IDIR) {
-    if (doesUserHaveAuthGroup(currentUserAuthGroup, IDIR_USER_ROLE_LIST)) {
+    if (doesUserHaveAuthGroup(currentUserRole, IDIR_USER_ROLE_LIST)) {
       return applicationOwner?.userName;
     } else {
       return PPC_FULL_TEXT;
