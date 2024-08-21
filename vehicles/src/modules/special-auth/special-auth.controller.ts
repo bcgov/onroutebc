@@ -19,9 +19,11 @@ import { CreateLcvDto } from './dto/request/create-lcv.dto';
 import { CreateNoFeeDto } from './dto/request/create-no-fee.dto';
 import { Permissions } from '../../common/decorator/permissions.decorator';
 import { Claim } from '../../common/enum/claims.enum';
+import { IsFeatureFlagEnabled } from 'src/common/decorator/is-feature-flag-enabled.decorator';
 
 @ApiBearerAuth()
 @ApiTags('Special Authorization')
+@IsFeatureFlagEnabled('LOA')
 @Controller('companies/:companyId/special-auths')
 @ApiMethodNotAllowedResponse({
   description: 'The Special Authorizaion Api Method Not Allowed Response',
