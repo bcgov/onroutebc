@@ -12,6 +12,7 @@ import {
   IDIRUserAuthGroup,
 } from '../enum/user-auth-group.enum';
 import { IRole } from '../interface/role.interface';
+import { IPermissions } from '../interface/permissions.interface';
 
 /**
  * Determines the directory type based on the identity provider of the user.
@@ -39,9 +40,25 @@ export const getDirectory = (user: IUserJWT) => {
  * @param {Role[] | IRole[]} obj - The object to be checked.
  * @returns {obj is Role[]} True if obj is an array of Role, false otherwise.
  */
-function isRoleArray(obj: Role[] | IRole[]): obj is Role[] {
+function isRoleArray(obj: Role[] | IRole[] | IPermissions[]): obj is Role[] {
   return Array.isArray(obj) && obj.every((item) => typeof item === 'string');
 }
+
+/**
+ * Type guard to check if an input object has the structure of an IPermissions.
+ *
+ * @param {IRole | Role[]} permissions - The object to be checked.
+ * @returns {permissions is IPermissions} True if the object matches the IPermissions structure, false otherwise.
+ */
+const isIPermissions = (
+  permissions: IRole | Role[] | IPermissions,
+): permissions is IPermissions => {
+  const { allowedBCeIDRoles, allowedIdirRoles, claims } =
+    permissions as IPermissions;
+  return (
+    Boolean(allowedBCeIDRoles) || Boolean(allowedIdirRoles) || Boolean(claims)
+  );
+};
 
 /**
  * Evaluates if a user has at least one of the specified roles, belongs to the specified user authorization group, or meets complex role criteria.
@@ -55,16 +72,41 @@ function isRoleArray(obj: Role[] | IRole[]): obj is Role[] {
  * If any role object's criteria are met (considering 'userAuthGroup' if defined), it returns true.
  * Throws an error if both 'allOf' and 'oneOf' are defined in a role object.
  *
- * @param {Role[] | IRole[]} roles - An array of roles or role requirement objects to be matched against the user's roles.
+ * @param {Role[] | IRole[] | IPermissions} roles - An array of roles or role requirement objects to be matched against the user's roles.
  * @param {Role[]} userRoles - An array of roles assigned to the user.
- * @param {UserAuthGroup} userAuthGroup - Optional. The user authorization group to which the user belongs.
+ * @param {UserAuthGroup} userAuthGroup - The user authorization group to which the user belongs.
  * @returns {boolean} Returns true if the user meets any of the defined role criteria or belongs to the specified user authorization group; false otherwise.
  */
 export const matchRoles = (
-  roles: Role[] | IRole[],
+  roles: Role[] | IRole[] | IPermissions[],
   userRoles: Role[],
-  userAuthGroup?: UserAuthGroup,
+  userAuthGroup: UserAuthGroup,
 ) => {
+  if (isIPermissions(roles[0] as IPermissions)) {
+    const { allowedIdirRoles, allowedBCeIDRoles, claims } =
+      roles[0] as IPermissions;
+    // If only claims is specified, return the value of that.
+    if (claims && !allowedBCeIDRoles && !allowedIdirRoles) {
+      return claims.some((role) => userRoles.includes(role));
+    }
+    let isAllowed: boolean;
+    const isIdir = userAuthGroup in IDIRUserAuthGroup;
+    if (isIdir) {
+      isAllowed = allowedIdirRoles?.includes(
+        userAuthGroup as IDIRUserAuthGroup,
+      );
+    } else {
+      isAllowed = allowedBCeIDRoles?.includes(
+        userAuthGroup as ClientUserAuthGroup,
+      );
+    }
+    // If claims is specified alongside the allowed roles, include
+    // its value in the output.
+    if (claims) {
+      isAllowed = isAllowed && claims.some((role) => userRoles.includes(role));
+    }
+    return isAllowed;
+  }
   if (isRoleArray(roles)) {
     // Scenario: roles is a simple list of Role objects.
     // This block checks if any of the roles assigned to the user (userRoles)
@@ -81,7 +123,7 @@ export const matchRoles = (
     // 2. oneOf - at least one of the roles listed must be included in userRoles.
     // It returns true if either condition is met for any role object, indicating the user meets the role requirements.
     // An error is thrown if 'allOf' and 'oneOf' are both defined, as it's considered an invalid configuration.
-    return roles.some((roleObject) => {
+    return (roles as IRole[]).some((roleObject) => {
       if (roleObject.allOf?.length && roleObject.oneOf?.length) {
         throw new InternalServerErrorException(
           'Cannot define both allOf and oneOf at the same time!',
@@ -185,7 +227,11 @@ export const validateUserCompanyAndRoleContext = (
   userCompanies: number[],
   currentUser: IUserJWT,
 ) => {
-  const rolesExists = matchRoles(roles, currentUser.roles);
+  const rolesExists = matchRoles(
+    roles,
+    currentUser.roles,
+    currentUser.orbcUserAuthGroup,
+  );
   if (!rolesExists && userGUID) {
     throw new ForbiddenException();
   }

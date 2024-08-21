@@ -81,11 +81,11 @@ export const selectDayFromDateOptions = async (
 };
 
 export const invalidPastDateMessageElement = async () => {
-  return await screen.findByText(/^Start date cannot be in the past/i);
+  return await screen.findByTestId("custom-date-picker-permitData.startDate-error");
 };
 
 export const invalidFutureDateMessageElement = async () => {
-  return await screen.findByText(/^Start date must be within 14 days/i);
+  return await screen.findByTestId("custom-date-picker-permitData.startDate-error");
 };
 
 export const commoditiesInfoBox = async () => {
