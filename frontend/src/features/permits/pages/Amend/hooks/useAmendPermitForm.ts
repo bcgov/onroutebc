@@ -6,7 +6,7 @@ import { Permit } from "../../../types/permit";
 import { Application } from "../../../types/application";
 import { applyWhenNotNullable } from "../../../../../common/helpers/util";
 import { CompanyProfile } from "../../../../manageProfile/types/manageProfile";
-import { applyLCVToApplicationFormData } from "../../../helpers/getDefaultApplicationFormData";
+import { applyLCVToApplicationData } from "../../../helpers/getDefaultApplicationFormData";
 import {
   AmendPermitFormData,
   getDefaultFormDataFromApplication,
@@ -23,7 +23,7 @@ export const useAmendPermitForm = (
   // Default form data values to populate the amend form with
   const defaultFormData = useMemo(() => {
     if (amendmentApplication) {
-      return applyLCVToApplicationFormData(
+      return applyLCVToApplicationData(
         getDefaultFormDataFromApplication(
           companyInfo,
           amendmentApplication,
@@ -34,7 +34,7 @@ export const useAmendPermitForm = (
 
     // Permit doesn't have existing amendment application
     // Populate form data with permit, with initial empty comment
-    return applyLCVToApplicationFormData(
+    return applyLCVToApplicationData(
       getDefaultFormDataFromPermit(
         companyInfo,
         applyWhenNotNullable(

@@ -156,27 +156,30 @@ export const getExpiryDateOrDefault = (
 };
 
 /**
- * Applying LCV designation to application form data.
- * @param formData Existing application form data
+ * Applying LCV designation to application data.
+ * @param applicationData Existing application data
  * @param isLcvDesignated Whether or not the LCV designation is to be used
- * @returns Application form data after applying the LCV check
+ * @returns Application data after applying the LCV check
  */
-export const applyLCVToApplicationFormData = (
-  formData: ApplicationFormData,
+export const applyLCVToApplicationData = <T extends Nullable<ApplicationFormData | Application>>(
+  applicationData: T,
   isLcvDesignated: boolean,
-): ApplicationFormData => {
+): T => {
+  // If application doesn't exist, no need to apply LCV at all
+  if (!applicationData) return applicationData;
+
   if (!isLcvDesignated) {
-    // If LCV not designated, remove LCV condition from form data
-    const filteredConditions = formData.permitData.commodities.filter(
+    // If LCV not designated, remove LCV condition from application data
+    const filteredConditions = applicationData.permitData.commodities.filter(
       ({ condition }: PermitCondition) => condition !== LCV_CONDITION.condition,
     );
 
-    if (isVehicleSubtypeLCV(formData.permitData.vehicleDetails.vehicleSubType)) {
+    if (isVehicleSubtypeLCV(applicationData.permitData.vehicleDetails.vehicleSubType)) {
       // Furthermore, if selected vehicle has LCV subtype, clear the vehicle
       return {
-        ...formData,
+        ...applicationData,
         permitData: {
-          ...formData.permitData,
+          ...applicationData.permitData,
           commodities: [...filteredConditions],
           vehicleDetails: getDefaultVehicleDetails(),
         },
@@ -185,52 +188,52 @@ export const applyLCVToApplicationFormData = (
 
     // Otherwise, keep the existing vehicle
     return {
-      ...formData,
+      ...applicationData,
       permitData: {
-        ...formData.permitData,
+        ...applicationData.permitData,
         commodities: [...filteredConditions],
       },
     };
   }
   
-  // If LCV is designated, and vehicle subtype in the form isn't LCV but conditions have LCV,
-  // then remove that LCV condition from the form
+  // If LCV is designated, and vehicle subtype in the application isn't LCV but conditions have LCV,
+  // then remove that LCV condition from the application
   if (
-    !isVehicleSubtypeLCV(formData.permitData.vehicleDetails.vehicleSubType)
-    && formData.permitData.commodities.some(({ condition }) => condition === LCV_CONDITION.condition)
+    !isVehicleSubtypeLCV(applicationData.permitData.vehicleDetails.vehicleSubType)
+    && applicationData.permitData.commodities.some(({ condition }) => condition === LCV_CONDITION.condition)
   ) {
-    const filteredConditions = formData.permitData.commodities.filter(
+    const filteredConditions = applicationData.permitData.commodities.filter(
       ({ condition }: PermitCondition) => condition !== LCV_CONDITION.condition,
     );
 
     return {
-      ...formData,
+      ...applicationData,
       permitData: {
-        ...formData.permitData,
+        ...applicationData.permitData,
         commodities: [...filteredConditions],
       },
     };
   }
 
-  // If LCV is designated, and vehicle subtype in the form is LCV but conditions don't have LCV,
-  // then add that LCV condition into the form
+  // If LCV is designated, and vehicle subtype in the application is LCV but conditions don't have LCV,
+  // then add that LCV condition into the application
   if (
-    isVehicleSubtypeLCV(formData.permitData.vehicleDetails.vehicleSubType)
-    && !formData.permitData.commodities.some(({ condition }) => condition === LCV_CONDITION.condition)
+    isVehicleSubtypeLCV(applicationData.permitData.vehicleDetails.vehicleSubType)
+    && !applicationData.permitData.commodities.some(({ condition }) => condition === LCV_CONDITION.condition)
   ) {
-    const conditionsWithLCV = sortConditions([...formData.permitData.commodities, LCV_CONDITION]);
+    const conditionsWithLCV = sortConditions([...applicationData.permitData.commodities, LCV_CONDITION]);
 
     return {
-      ...formData,
+      ...applicationData,
       permitData: {
-        ...formData.permitData,
+        ...applicationData.permitData,
         commodities: [...conditionsWithLCV],
       },
     };
   }
 
-  // In other cases, the form data is valid
-  return formData;
+  // In other cases, the application data is valid
+  return applicationData;
 };
 
 /**

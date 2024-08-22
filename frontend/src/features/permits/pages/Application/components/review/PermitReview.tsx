@@ -33,7 +33,7 @@ interface PermitReviewProps {
   permitDuration?: Nullable<number>;
   permitExpiryDate?: Nullable<Dayjs>;
   permitConditions?: Nullable<PermitCondition[]>;
-  continueBtnText: string;
+  continueBtnText?: string;
   isAmendAction: boolean;
   children?: React.ReactNode;
   hasAttemptedCheckboxes: boolean;
@@ -44,7 +44,7 @@ interface PermitReviewProps {
   vehicleDetails?: Nullable<PermitVehicleDetails>;
   vehicleWasSaved?: Nullable<boolean>;
   onEdit: () => void;
-  onContinue: () => Promise<void>;
+  onContinue?: () => Promise<void>;
   onAddToCart?: () => Promise<void>;
   showChangedFields?: boolean;
   oldFields?: Nullable<Partial<Application>>;
@@ -115,10 +115,10 @@ export const PermitReview = (props: PermitReviewProps) => {
 
         <ReviewActions
           onEdit={props.onEdit}
+          continueBtnText={props.continueBtnText}
           onContinue={props.onContinue}
           hasToCartButton={!props.isAmendAction}
           onAddToCart={props.onAddToCart}
-          continueBtnText={props.continueBtnText}
         />
       </Box>
     </Box>

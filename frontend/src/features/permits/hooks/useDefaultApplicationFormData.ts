@@ -7,7 +7,7 @@ import { CompanyProfile } from "../../manageProfile/types/manageProfile";
 import { Nullable } from "../../../common/types/common";
 import { PermitType } from "../types/PermitType";
 import {
-  applyLCVToApplicationFormData,
+  applyLCVToApplicationData,
   getDefaultValues,
 } from "../helpers/getDefaultApplicationFormData";
 
@@ -30,7 +30,7 @@ export const useDefaultApplicationFormData = (
 ) => {
   // Used to populate/initialize the form with
   // This will be updated whenever new application, company, and user data is fetched
-  const initialFormData = useMemo(() => applyLCVToApplicationFormData(
+  const initialFormData = useMemo(() => applyLCVToApplicationData(
     getDefaultValues(
       permitType,
       companyInfo,
