@@ -5,8 +5,7 @@ import { Request } from 'express';
 import { IUserJWT } from '../interface/user-jwt.interface';
 import { matchRoles } from '../helper/auth.helper';
 import { IRole } from '../interface/role.interface';
-import { IDP } from '../enum/idp.enum';
-import { IPermissions } from '../interface/permissions.interface';
+import { IDP } from 'src/enum/idp.enum';
 import { PERMISSIONS_KEY } from '../decorator/permissions.decorator';
 
 @Injectable()
@@ -14,9 +13,10 @@ export class PermissionsGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const permissions = this.reflector.getAllAndOverride<
-      Claim[] | IRole[] | IPermissions[]
-    >(PERMISSIONS_KEY, [context.getHandler(), context.getClass()]);
+    const permissions = this.reflector.getAllAndOverride<Claim[] | IRole[]>(
+      PERMISSIONS_KEY,
+      [context.getHandler(), context.getClass()],
+    );
     // Guard is invoked regardless of the decorator being actively called
     if (!permissions) {
       return true;
