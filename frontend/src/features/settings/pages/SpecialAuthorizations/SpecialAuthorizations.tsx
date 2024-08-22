@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@mui/material";
@@ -12,12 +12,17 @@ import { DeleteConfirmationDialog } from "../../../../common/components/dialog/D
 import { LOASteps } from "./LOA/LOASteps";
 import { useFetchLOAs, useRemoveLOAMutation } from "../../hooks/LOA";
 import { getDefaultNullableVal, getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { NoFeePermitType } from "../../types/SpecialAuthorization";
+import { DEFAULT_NO_FEE_PERMIT_TYPE, NoFeePermitType } from "../../types/SpecialAuthorization";
 import { NoFeePermitsSection } from "../../components/SpecialAuthorizations/NoFeePermits/NoFeePermitsSection";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { LCVSection } from "../../components/SpecialAuthorizations/LCV/LCVSection";
 import { downloadLOA } from "../../apiManager/specialAuthorization";
-import { useFetchSpecialAuthorizations, useUpdateLCV, useUpdateNoFee } from "../../hooks/specialAuthorizations";
+import {
+  useFetchSpecialAuthorizations,
+  useUpdateLCV,
+  useUpdateNoFee,
+} from "../../hooks/specialAuthorizations";
+
 import {
   canUpdateLCVFlag,
   canUpdateLOA,
@@ -39,9 +44,6 @@ export const SpecialAuthorizations = ({
 
   const noFeeType = getDefaultRequiredVal(null, specialAuthorizations?.noFeeType);
   const isLcvAllowed = getDefaultRequiredVal(false, specialAuthorizations?.isLcvAllowed);
-
-  // No-Fee switch state
-  const [enableNoFeePermits, setEnableNoFeePermits] = useState<boolean>(Boolean(noFeeType));
 
   const [showExpiredLOAs, setShowExpiredLOAs] = useState<boolean>(false);
   const [loaToDelete, setLoaToDelete] = useState<RequiredOrNull<string>>(null);
@@ -94,23 +96,16 @@ export const SpecialAuthorizations = ({
   const activeLOAs = getDefaultRequiredVal([], activeLOAsQuery.data);
   const expiredLOAs = getDefaultRequiredVal([], expiredLOAsQuery.data);
 
-  useEffect(() => {
-    setEnableNoFeePermits(Boolean(noFeeType));
-  }, [noFeeType]);
-
   const handleToggleEnableNoFee = async (enable: boolean) => {
     if (!canEditNoFeePermits) return;
-    if (enable) {
-      setEnableNoFeePermits(enable);
-    } else {
-      const { status } = await updateNoFeeMutation.mutateAsync({
-        companyId,
-        noFee: null,
-      });
-  
-      if (status === 200 || status === 201) {
-        refetchSpecialAuth();
-      }
+
+    const { status } = await updateNoFeeMutation.mutateAsync({
+      companyId,
+      noFee: enable ? DEFAULT_NO_FEE_PERMIT_TYPE : null,
+    });
+
+    if (status === 200 || status === 201) {
+      refetchSpecialAuth();
     }
   };
 
@@ -224,7 +219,6 @@ export const SpecialAuthorizations = ({
     <div className="special-authorizations">
       {canViewNoFeePermits ? (
         <NoFeePermitsSection
-          enableNoFeePermits={enableNoFeePermits}
           onUpdateEnableNoFee={handleToggleEnableNoFee}
           noFeePermitType={noFeeType}
           onUpdateNoFee={handleUpdateNoFee}

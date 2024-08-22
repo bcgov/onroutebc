@@ -15,18 +15,18 @@ import {
 } from "../../../types/SpecialAuthorization";
 
 export const NoFeePermitsSection = ({
-  enableNoFeePermits,
   onUpdateEnableNoFee,
   noFeePermitType,
   onUpdateNoFee,
   isEditable = false,
 }: {
-  enableNoFeePermits: boolean;
   onUpdateEnableNoFee: (enable: boolean) => void;
   noFeePermitType: RequiredOrNull<NoFeePermitType>;
   onUpdateNoFee: (noFeeType: RequiredOrNull<NoFeePermitType>) => void;
   isEditable?: boolean;
 }) => {
+  const enableNoFeePermits = Boolean(noFeePermitType);
+
   if (isEditable) {
     return (
       <div className="no-fee-permits-section">
@@ -77,7 +77,7 @@ export const NoFeePermitsSection = ({
     );
   }
 
-  return (enableNoFeePermits && noFeePermitType) ? (
+  return noFeePermitType ? (
     <div className="no-fee-permits-section no-fee-permits-section--readonly">
       <div className="no-fee-permits-section__header">
         <div className="no-fee-permits-section__title">
