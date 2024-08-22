@@ -19,6 +19,8 @@ import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { PermitVehicleDetails } from "../../../types/PermitVehicleDetails";
 import { AmendPermitFormData } from "../types/AmendPermitFormData";
 import { getDatetimes } from "./helpers/getDatetimes";
+import { PAST_START_DATE_STATUSES } from "../../../../../common/components/form/subFormComponents/CustomDatePicker";
+import { useFetchSpecialAuthorizations } from "../../../../settings/hooks/specialAuthorizations";
 import {
   dayjsToUtcStr,
   nowUtc,
@@ -33,8 +35,8 @@ import {
   durationOptionsForPermitType,
   minDurationForPermitType,
 } from "../../../helpers/dateSelection";
-import { PAST_START_DATE_STATUSES } from "../../../../../common/components/form/subFormComponents/CustomDatePicker";
-import { useFetchSpecialAuthorizations } from "../../../../settings/hooks/specialAuthorizations";
+
+const FEATURE = "amend-permit";
 
 export const AmendPermitForm = () => {
   const {
@@ -60,6 +62,7 @@ export const AmendPermitForm = () => {
 
   const { formData, formMethods } = useAmendPermitForm(
     currentStepIndex === 0,
+    isLcvDesignated,
     companyInfo,
     permit,
     amendmentApplication,
@@ -69,9 +72,6 @@ export const AmendPermitForm = () => {
     amendmentApplication,
     permit,
   );
-
-  //The name of this feature that is used for id's, keys, and associating form components
-  const FEATURE = "amend-permit";
 
   const amendPermitMutation = useAmendPermit(companyId);
   const modifyAmendmentMutation = useModifyAmendmentApplication();
@@ -84,7 +84,7 @@ export const AmendPermitForm = () => {
     trailerSubTypes,
   } = usePermitVehicleManagement(companyId);
 
-  const { handleSubmit, getValues } = formMethods;
+  const { handleSubmit } = formMethods;
 
   // Helper method to return form field values as an Permit object
   const transformPermitFormData = (data: FieldValues) => {
@@ -140,14 +140,13 @@ export const AmendPermitForm = () => {
       return onSaveFailure();
     }
 
-    const formValues = getValues();
     const permitToBeAmended = transformPermitFormData(
       !savedVehicleInventoryDetails
-        ? formValues
+        ? formData
         : {
-            ...formValues,
+            ...formData,
             permitData: {
-              ...formValues.permitData,
+              ...formData.permitData,
               vehicleDetails: {
                 ...savedVehicleInventoryDetails,
                 saveVehicle: true,

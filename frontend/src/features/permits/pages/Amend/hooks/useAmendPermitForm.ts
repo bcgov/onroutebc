@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 
 import { Nullable } from "../../../../../common/types/common";
@@ -6,6 +6,7 @@ import { Permit } from "../../../types/permit";
 import { Application } from "../../../types/application";
 import { applyWhenNotNullable } from "../../../../../common/helpers/util";
 import { CompanyProfile } from "../../../../manageProfile/types/manageProfile";
+import { applyLCVToApplicationFormData } from "../../../helpers/getDefaultApplicationFormData";
 import {
   AmendPermitFormData,
   getDefaultFormDataFromApplication,
@@ -14,53 +15,58 @@ import {
 
 export const useAmendPermitForm = (
   repopulateFormData: boolean,
+  isLcvDesignated: boolean,
   companyInfo: Nullable<CompanyProfile>,
   permit?: Nullable<Permit>,
   amendmentApplication?: Nullable<Application>,
 ) => {
   // Default form data values to populate the amend form with
-  const permitFormDefaultValues = () => {
+  const defaultFormData = useMemo(() => {
     if (amendmentApplication) {
-      return getDefaultFormDataFromApplication(
-        companyInfo,
-        amendmentApplication,
+      return applyLCVToApplicationFormData(
+        getDefaultFormDataFromApplication(
+          companyInfo,
+          amendmentApplication,
+        ),
+        isLcvDesignated,
       );
     }
 
     // Permit doesn't have existing amendment application
     // Populate form data with permit, with initial empty comment
-    return getDefaultFormDataFromPermit(
-      companyInfo,
-      applyWhenNotNullable(
-        (p) => ({
-          ...p,
-          comment: "",
-        }),
-        permit,
+    return applyLCVToApplicationFormData(
+      getDefaultFormDataFromPermit(
+        companyInfo,
+        applyWhenNotNullable(
+          (p) => ({
+            ...p,
+            comment: "",
+          }),
+          permit,
+        ),
       ),
+      isLcvDesignated,
     );
-  };
-
-  // Permit form data, populated whenever permit is fetched
-  const [formData, setFormData] = useState<AmendPermitFormData>(
-    permitFormDefaultValues(),
-  );
-
-  useEffect(() => {
-    setFormData(permitFormDefaultValues());
-  }, [amendmentApplication, permit, repopulateFormData, companyInfo]);
+  }, [
+    amendmentApplication,
+    permit,
+    repopulateFormData,
+    companyInfo,
+    isLcvDesignated,
+  ]);
 
   // Register default values with react-hook-form
   const formMethods = useForm<AmendPermitFormData>({
-    defaultValues: formData,
+    defaultValues: defaultFormData,
     reValidateMode: "onBlur",
   });
 
-  const { reset } = formMethods;
+  const { reset, watch } = formMethods;
+  const formData = watch();
 
   useEffect(() => {
-    reset(formData);
-  }, [formData]);
+    reset(defaultFormData);
+  }, [defaultFormData]);
 
   return {
     formData,

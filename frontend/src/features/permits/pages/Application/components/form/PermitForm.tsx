@@ -1,6 +1,7 @@
 import { Box } from "@mui/material";
 import { Dayjs } from "dayjs";
 import { useFormContext } from "react-hook-form";
+import { useEffect } from "react";
 
 import "./PermitForm.scss";
 import { FormActions } from "./FormActions";
@@ -14,6 +15,8 @@ import { EMPTY_VEHICLE_DETAILS, PermitVehicleDetails } from "../../../../types/P
 import { PastStartDateStatus } from "../../../../../../common/components/form/subFormComponents/CustomDatePicker";
 import { isVehicleSubtypeLCV } from "../../../../../manageVehicles/helpers/vehicleSubtypes";
 import { PermitCondition } from "../../../../types/PermitCondition";
+import { LCV_CONDITION } from "../../../../constants/constants";
+import { sortConditions } from "../../../../helpers/conditions";
 import {
   PowerUnit,
   Trailer,
@@ -83,6 +86,27 @@ export const PermitForm = (props: PermitFormProps) => {
   const isLcvDesignated = props.isLcvDesignated;
   const ineligiblePowerUnitSubtypes = getIneligiblePowerUnitSubtypes(permitType)
     .filter(subtype => !isLcvDesignated || !isVehicleSubtypeLCV(subtype.typeCode));
+
+  const vehicleSubtype = vehicleFormData.vehicleSubType;
+  useEffect(() => {
+    if (
+      !isVehicleSubtypeLCV(vehicleSubtype)
+      && permitConditions.some(({ condition }: PermitCondition) => condition === LCV_CONDITION.condition)
+    ) {
+      // If vehicle subtype in the form isn't LCV but conditions have LCV,
+    // then remove that LCV condition from the form
+    handleSetConditions(permitConditions.filter(
+        ({ condition }: PermitCondition) => condition !== LCV_CONDITION.condition,
+      ));
+    } else if (
+      isVehicleSubtypeLCV(vehicleSubtype)
+      && !permitConditions.some(({ condition }: PermitCondition) => condition === LCV_CONDITION.condition)
+    ) {
+      // If vehicle subtype in the form is LCV but conditions don't have LCV,
+      // then add that LCV condition into the form
+      handleSetConditions(sortConditions([...permitConditions, LCV_CONDITION]));
+    }
+  }, [vehicleSubtype, permitConditions]);
   
   return (
     <Box className="permit-form layout-box">

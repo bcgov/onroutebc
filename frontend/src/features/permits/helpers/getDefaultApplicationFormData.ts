@@ -1,7 +1,7 @@
 import dayjs, { Dayjs } from "dayjs";
 
 import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBCContext";
-import { getMandatoryConditions } from "./conditions";
+import { getMandatoryConditions, sortConditions } from "./conditions";
 import { Nullable } from "../../../common/types/common";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
 import { calculateFeeByDuration } from "./feeSummary";
@@ -197,9 +197,7 @@ export const applyLCVToApplicationFormData = (
   // then remove that LCV condition from the form
   if (
     !isVehicleSubtypeLCV(formData.permitData.vehicleDetails.vehicleSubType)
-    && Boolean(
-      formData.permitData.commodities.find(({ condition }) => condition === LCV_CONDITION.condition,
-    ))
+    && formData.permitData.commodities.some(({ condition }) => condition === LCV_CONDITION.condition)
   ) {
     const filteredConditions = formData.permitData.commodities.filter(
       ({ condition }: PermitCondition) => condition !== LCV_CONDITION.condition,
@@ -210,6 +208,23 @@ export const applyLCVToApplicationFormData = (
       permitData: {
         ...formData.permitData,
         commodities: [...filteredConditions],
+      },
+    };
+  }
+
+  // If LCV is designated, and vehicle subtype in the form is LCV but conditions don't have LCV,
+  // then add that LCV condition into the form
+  if (
+    isVehicleSubtypeLCV(formData.permitData.vehicleDetails.vehicleSubType)
+    && !formData.permitData.commodities.some(({ condition }) => condition === LCV_CONDITION.condition)
+  ) {
+    const conditionsWithLCV = sortConditions([...formData.permitData.commodities, LCV_CONDITION]);
+
+    return {
+      ...formData,
+      permitData: {
+        ...formData.permitData,
+        commodities: [...conditionsWithLCV],
       },
     };
   }

@@ -50,6 +50,19 @@ const isConditionMandatory = (
 };
 
 /**
+ * Get sorted list of permit conditions, ordered from mandatory (disabled) to selectable ones.
+ * @param conditions List of possibly unsorted permit conditions
+ * @returns Sorted list of permit conditions, from mandatory to selectable ones
+ */
+export const sortConditions = (conditions: PermitCondition[]) => {
+  return [...conditions].sort((condition1, condition2) => {
+    if (condition1.disabled && condition2.disabled) return 0;
+    if (!condition1.disabled && !condition2.disabled) return 0;
+    return condition1.disabled && !condition2.disabled ? -1 : 1;
+  });
+};
+
+/**
  * Get default conditions (in their initial states) for a permit/application form.
  * @param permitType Permit type to get the conditions for
  * @param includeLcvCondition Whether or not to include LCV condition
@@ -61,14 +74,12 @@ export const getDefaultConditions = (
 ) => {
   const mandatoryConditions = getMandatoryConditions(permitType, includeLcvCondition);
 
-  return getConditionsByPermitType(permitType, includeLcvCondition).map((condition) => ({
-    ...condition,
-    // must-select options are checked and disabled (for toggling) by default
-    checked: isConditionMandatory(condition, mandatoryConditions),
-    disabled: isConditionMandatory(condition, mandatoryConditions),
-  })).sort((condition1, condition2) => {
-    if (condition1.disabled && condition2.disabled) return 0;
-    if (!condition1.disabled && !condition2.disabled) return 0;
-    return condition1.disabled && !condition2.disabled ? -1 : 1;
-  });
+  return sortConditions(
+    getConditionsByPermitType(permitType, includeLcvCondition).map((condition) => ({
+      ...condition,
+      // must-select options are checked and disabled (for toggling) by default
+      checked: isConditionMandatory(condition, mandatoryConditions),
+      disabled: isConditionMandatory(condition, mandatoryConditions),
+    })),
+  );
 };
