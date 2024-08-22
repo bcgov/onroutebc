@@ -131,7 +131,7 @@ export const getUserContext = (): Promise<BCeIDUserContextType> => {
  */
 export const getUserClaimsByCompanyId = (): Promise<string[]> => {
   const companyId = getCompanyIdFromSession();
-  let url = `${VEHICLES_URL}/users/roles`;
+  let url = `${VEHICLES_URL}/users/claims`;
   if (companyId) {
     url += `?companyId=${companyId}`;
   }
@@ -144,7 +144,7 @@ export const getUserClaimsByCompanyId = (): Promise<string[]> => {
 export const getIDIRUserClaims = async (): Promise<
   RequiredOrNull<string[]>
 > => {
-  return httpGETRequest(`${VEHICLES_URL}/users/roles`).then(
+  return httpGETRequest(`${VEHICLES_URL}/users/claims`).then(
     (response) => response.data,
   );
 };

@@ -109,8 +109,7 @@ export class UsersController {
       "It fetches claims by integrating with the User service, ensuring claims are accurately returned based on the company's context and the user's privileges.",
   })
   @Permissions(Claim.READ_SELF)
-  // Todo: change endpoint to /claims
-  @Get('/roles')
+  @Get('/claims')
   async getClaimsForUsers(
     @Req() request: Request,
     @Query() getUserRolesQueryParamsDto: GetUserClaimsQueryParamsDto,
