@@ -91,7 +91,7 @@ export class UsersController {
 
   /**
    * A GET method defined with the @Get() decorator and a route of
-   * /user/roles that retrieves a list of users' claims associated with
+   * /user/claims that retrieves a list of users' claims associated with
    * the given company ID.
    *
    * @param companyId The company Id for which claims are retrieved.
