@@ -1,5 +1,5 @@
 import { baseDtoMock, baseEntityMock } from './base.mock';
-import { ClientUserRole } from '../../../../src/common/enum/user-auth-group.enum';
+import { ClientUserRole } from '../../../../src/common/enum/user-role.enum';
 import { PendingUser } from '../../../../src/modules/company-user-management/pending-users/entities/pending-user.entity';
 import { UpdatePendingUserDto } from '../../../../src/modules/company-user-management/pending-users/dto/request/update-pending-user.dto';
 import { CreatePendingUserDto } from '../../../../src/modules/company-user-management/pending-users/dto/request/create-pending-user.dto';

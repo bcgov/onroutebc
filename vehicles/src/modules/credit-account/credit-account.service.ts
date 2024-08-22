@@ -49,7 +49,7 @@ import {
   ClientUserRole,
   IDIRUserRole,
   UserRole,
-} from '../../common/enum/user-auth-group.enum';
+} from '../../common/enum/user-role.enum';
 import { ReadCreditAccountActivityDto } from './dto/response/read-credit-account-activity.dto';
 import { ReadCreditAccountMetadataDto } from './dto/response/read-credit-account-metadata.dto';
 import { ReadCreditAccountUserDetailsDto } from './dto/response/read-credit-account-user-details.dto';

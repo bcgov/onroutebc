@@ -32,7 +32,7 @@ import { GetPermitQueryParamsDto } from './dto/request/queryParam/getPermit.quer
 import {
   ClientUserRole,
   IDIR_USER_ROLE_LIST,
-} from 'src/common/enum/user-auth-group.enum';
+} from 'src/common/enum/user-role.enum';
 import { ReadPermitMetadataDto } from './dto/response/read-permit-metadata.dto';
 import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 import { PermitHistoryDto } from './dto/response/permit-history.dto';

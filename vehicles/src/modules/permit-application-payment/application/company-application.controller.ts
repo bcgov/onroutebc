@@ -37,7 +37,7 @@ import { IssuePermitDto } from './dto/request/issue-permit.dto';
 import {
   ClientUserRole,
   IDIR_USER_ROLE_LIST,
-} from 'src/common/enum/user-auth-group.enum';
+} from 'src/common/enum/user-role.enum';
 import { DeleteApplicationDto } from './dto/request/delete-application.dto';
 import { DeleteDto } from '../../common/dto/response/delete.dto';
 import { PermitApplicationOrigin } from '../../../common/enum/permit-application-origin.enum';

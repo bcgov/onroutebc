@@ -11,7 +11,7 @@ import { Brackets, DataSource, Repository } from 'typeorm';
 import {
   ClientUserRole,
   GenericUserRole,
-} from '../../../common/enum/user-auth-group.enum';
+} from '../../../common/enum/user-role.enum';
 import { ReadUserDto } from '../users/dto/response/read-user.dto';
 import { CreateCompanyDto } from './dto/request/create-company.dto';
 import { UpdateCompanyDto } from './dto/request/update-company.dto';

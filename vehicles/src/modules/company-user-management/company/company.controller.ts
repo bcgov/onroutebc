@@ -39,7 +39,7 @@ import { GetCompanyQueryParamsDto } from './dto/request/queryParam/getCompany.qu
 
 import { ReadVerifyClientDto } from './dto/response/read-verify-client.dto';
 import { VerifyClientDto } from './dto/request/verify-client.dto';
-import { IDIR_USER_ROLE_LIST } from '../../../common/enum/user-auth-group.enum';
+import { IDIR_USER_ROLE_LIST } from '../../../common/enum/user-role.enum';
 import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 
 @ApiTags('Company and User Management - Company')

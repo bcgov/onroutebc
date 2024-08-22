@@ -17,7 +17,7 @@ import {
 } from '../../util/mocks/data/user.mock';
 import { IUserJWT } from '../../../src/common/interface/user-jwt.interface';
 import { GetStaffUserQueryParamsDto } from '../../../src/modules/company-user-management/users/dto/request/queryParam/getStaffUser.query-params.dto';
-import { IDIRUserRole } from '../../../src/common/enum/user-auth-group.enum';
+import { IDIRUserRole } from '../../../src/common/enum/user-role.enum';
 import { BadRequestException } from '@nestjs/common';
 
 const COMPANY_ID_99 = 99;

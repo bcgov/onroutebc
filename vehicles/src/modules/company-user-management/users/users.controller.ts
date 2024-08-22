@@ -32,7 +32,7 @@ import { ReadUserDto } from './dto/response/read-user.dto';
 import { IDP } from '../../../common/enum/idp.enum';
 import { GetStaffUserQueryParamsDto } from './dto/request/queryParam/getStaffUser.query-params.dto';
 import { GetUserClaimsQueryParamsDto } from './dto/request/queryParam/getUserClaims.query-params.dto';
-import { IDIR_USER_ROLE_LIST } from '../../../common/enum/user-auth-group.enum';
+import { IDIR_USER_ROLE_LIST } from '../../../common/enum/user-role.enum';
 import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 
 @ApiTags('Company and User Management - User')

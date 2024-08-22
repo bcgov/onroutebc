@@ -14,7 +14,7 @@ import { Directory } from '../../../../common/enum/directory.enum';
 import {
   UserRole,
   IDIR_USER_ROLE_LIST,
-} from '../../../../common/enum/user-auth-group.enum';
+} from '../../../../common/enum/user-role.enum';
 import { doesUserHaveAuthGroup } from '../../../../common/helper/auth.helper';
 import { ReadPermitMetadataDto } from '../dto/response/read-permit-metadata.dto';
 

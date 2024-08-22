@@ -21,7 +21,7 @@ import {
   ClientUserRole,
   IDIRUserRole,
   UserRole,
-} from '../../common/enum/user-auth-group.enum';
+} from '../../common/enum/user-role.enum';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {

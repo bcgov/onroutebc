@@ -6,11 +6,7 @@ import { Directory } from '../enum/directory.enum';
 import { IDP } from '../enum/idp.enum';
 import { Claim } from '../enum/claims.enum';
 import { IUserJWT } from '../interface/user-jwt.interface';
-import {
-  UserRole,
-  ClientUserRole,
-  IDIRUserRole,
-} from '../enum/user-auth-group.enum';
+import { UserRole, ClientUserRole, IDIRUserRole } from '../enum/user-role.enum';
 import { IRole } from '../interface/role.interface';
 import { IPermissions } from '../interface/permissions.interface';
 

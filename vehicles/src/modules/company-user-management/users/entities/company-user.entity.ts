@@ -9,7 +9,7 @@ import { Base } from '../../../common/entities/base.entity';
 import { AutoMap } from '@automapper/classes';
 import { Company } from '../../company/entities/company.entity';
 import { User } from './user.entity';
-import { ClientUserRole } from '../../../../common/enum/user-auth-group.enum';
+import { ClientUserRole } from '../../../../common/enum/user-role.enum';
 import { UserStatus } from 'src/common/enum/user-status.enum';
 
 @Entity({ name: 'ORBC_COMPANY_USER' })

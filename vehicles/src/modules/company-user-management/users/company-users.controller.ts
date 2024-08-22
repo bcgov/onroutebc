@@ -38,7 +38,7 @@ import { DeleteDto } from '../../common/dto/response/delete.dto';
 import {
   ClientUserRole,
   IDIR_USER_ROLE_LIST,
-} from '../../../common/enum/user-auth-group.enum';
+} from '../../../common/enum/user-role.enum';
 import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 
 @ApiTags('Company and User Management - Company User')

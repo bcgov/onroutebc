@@ -27,7 +27,7 @@ import {
   GenericUserRole,
   IDIRUserRole,
   UserRole,
-} from 'src/common/enum/user-auth-group.enum';
+} from 'src/common/enum/user-role.enum';
 import { PendingIdirUser } from '../pending-idir-users/entities/pending-idir-user.entity';
 import { PendingIdirUsersService } from '../pending-idir-users/pending-idir-users.service';
 import { ReadPendingUserDto } from '../pending-users/dto/response/read-pending-user.dto';

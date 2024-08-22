@@ -20,7 +20,7 @@ import {
   readRedCompanyPendingUserDtoMock,
   updateRedCompanyPendingUserDtoMock,
 } from '../util/mocks/data/pending-user.mock';
-import { ClientUserRole } from '../../src/common/enum/user-auth-group.enum';
+import { ClientUserRole } from '../../src/common/enum/user-role.enum';
 import { App } from 'supertest/types';
 import { PendingUsersService } from '../../src/modules/company-user-management/pending-users/pending-users.service';
 import { createMapper } from '@automapper/core';

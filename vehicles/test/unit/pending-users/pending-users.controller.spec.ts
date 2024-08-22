@@ -13,7 +13,7 @@ import {
   readRedCompanyPendingUserDtoMock,
   updateRedCompanyPendingUserDtoMock,
 } from '../../util/mocks/data/pending-user.mock';
-import { ClientUserRole } from '../../../src/common/enum/user-auth-group.enum';
+import { ClientUserRole } from '../../../src/common/enum/user-role.enum';
 
 const COMPANY_ID_99 = 99;
 let pendingUserService: DeepMocked<PendingUsersService>;
