@@ -52,11 +52,11 @@ export const PendingPermitsDialog = ({
 }) => {
   const handleCancel = () => onCancel();
   const { userDetails } = useContext(OnRouteBCContext);
-  const userAuthGroup = userDetails?.userRole;
+  const userRole = userDetails?.userRole;
 
   const columns = useMemo<MRT_ColumnDef<ApplicationListItem>[]>(
     () => getColumns(),
-    [userAuthGroup],
+    [userRole],
   );
 
   const pendingCount = getDefaultRequiredVal(

@@ -20,9 +20,9 @@ import {
   deleteCompanyActiveUsers,
   getCompanyInfo,
   getCompanyInfoById,
-  getIDIRUserRoles,
+  getIDIRUserClaims,
   getUserContext,
-  getUserRolesByCompanyId,
+  getUserClaimsByCompanyId,
 } from "./manageProfileAPI";
 
 import OnRouteBCContext, {
@@ -31,10 +31,10 @@ import OnRouteBCContext, {
 } from "../../../common/authentication/OnRouteBCContext";
 
 import {
-  BCeIDUserAuthGroupType,
+  BCeIDUserRoleType,
   BCeIDUserContextType,
   IDIRUserContextType,
-  UserRolesType,
+  UserClaimsType,
 } from "../../../common/authentication/types";
 
 /**
@@ -160,7 +160,7 @@ export const useUserContext = (
           phone2Extension: user.phone2Extension,
           email: user.email,
           fax: user.fax,
-          userRole: user.userRole as BCeIDUserAuthGroupType,
+          userRole: user.userRole as BCeIDUserRoleType,
         } as BCeIDUserDetailContext;
 
         setUserDetails?.(() => userDetails);
@@ -209,61 +209,61 @@ export const useUserContext = (
 };
 
 /**
- * Hook to fetching the user roles data from the api.
+ * Hook to fetching the user claims data from the api.
  * @returns UseQueryResult containing the query results.
  */
-export const useUserRolesByCompanyIdQuery = () => {
+export const useUserClaimsByCompanyIdQuery = () => {
   return useQuery({
-    queryKey: ["userRoles"],
+    queryKey: ["userClaims"],
     refetchInterval: FIVE_MINUTES,
-    queryFn: getUserRolesByCompanyId,
+    queryFn: getUserClaimsByCompanyId,
     retry: 1, // Retry once on failure
   });
 };
 
 /**
- * Hook to set up the user roles after fetching the data from the api.
- * @param userRolesResponseBody Response data for the user roles fetched.
+ * Hook to set up the user claims after fetching the data from the api.
+ * @param userClaimsResponseBody Response data for the user claims fetched.
  * @returns UseQueryResult containing the query results.
  */
-export const useUserRolesByCompanyId = (
-  userRolesResponseBody: Nullable<UserRolesType[]>,
+export const useUserClaimsByCompanyId = (
+  userClaimsResponseBody: Nullable<UserClaimsType[]>,
 ) => {
-  const { setUserRoles } = useContext(OnRouteBCContext);
+  const { setUserClaims } = useContext(OnRouteBCContext);
 
   useEffect(() => {
-    if (userRolesResponseBody) {
-      setUserRoles?.(() => userRolesResponseBody);
+    if (userClaimsResponseBody) {
+      setUserClaims?.(() => userClaimsResponseBody);
     }
-  }, [userRolesResponseBody]);
+  }, [userClaimsResponseBody]);
 };
 
 /**
- * Hook to fetching the IDIR user roles data from the api.
+ * Hook to fetching the IDIR user claims data from the api.
  * @returns UseQueryResult containing the query results.
  */
-export const useIDIRUserRolesQuery = () => {
+export const useIDIRUserClaimsQuery = () => {
   return useQuery({
-    queryKey: ["userIDIRRoles"],
+    queryKey: ["userIDIRClaims"],
     refetchInterval: FIVE_MINUTES,
-    queryFn: getIDIRUserRoles,
+    queryFn: getIDIRUserClaims,
     retry: 1, // Retry once on failure
   });
 };
 
 /**
- * Hook to set up the IDIR user roles after fetching the data from the api.
- * @param userRoles User roles data response from the api.
+ * Hook to set up the IDIR user claims after fetching the data from the api.
+ * @param userClaims User claims data response from the api.
  * @returns UseQueryResult containing the query results.
  */
-export const useIDIRUserRoles = (userRoles: Nullable<UserRolesType[]>) => {
-  const { setUserRoles } = useContext(OnRouteBCContext);
+export const useIDIRUserClaims = (userClaims: Nullable<UserClaimsType[]>) => {
+  const { setUserClaims } = useContext(OnRouteBCContext);
 
   useEffect(() => {
-    if (userRoles) {
-      setUserRoles?.(() => userRoles);
+    if (userClaims) {
+      setUserClaims?.(() => userClaims);
     }
-  }, [userRoles]);
+  }, [userClaims]);
 };
 
 /**

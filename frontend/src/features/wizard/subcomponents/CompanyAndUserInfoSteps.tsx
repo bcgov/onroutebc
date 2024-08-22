@@ -68,7 +68,7 @@ export const CompanyAndUserInfoSteps = ({
           phone2Extension: responseBody.adminUser?.phone2Extension,
           email: responseBody.adminUser?.email,
           fax: responseBody.adminUser?.fax,
-          userRole: responseBody.adminUser?.userAuthGroup,
+          userRole: responseBody.adminUser?.userRole,
         };
         setUserDetails?.(() => userDetails);
         setCompanyId?.(() => companyId);

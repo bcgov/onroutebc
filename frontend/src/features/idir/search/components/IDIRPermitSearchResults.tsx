@@ -11,7 +11,7 @@ import {
 
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { Optional } from "../../../../common/types/common";
-import { USER_AUTH_GROUP } from "../../../../common/authentication/types";
+import { USER_ROLE } from "../../../../common/authentication/types";
 import { hasPermitExpired } from "../../../permits/helpers/permitState";
 import { isPermitInactive } from "../../../permits/types/PermitStatus";
 import { PermitListItem } from "../../../permits/types/permit";
@@ -28,18 +28,18 @@ import "./IDIRPermitSearchResults.scss";
 
 /**
  * Function to decide whether to show row actions icon or not.
- * @param userAuthGroup The auth group the user belongs to.
+ * @param userRole The role of the user.
  * @returns boolean
  */
-const shouldShowRowActions = (userAuthGroup: Optional<string>): boolean => {
-  if (!userAuthGroup) return false;
+const shouldShowRowActions = (userRole: Optional<string>): boolean => {
+  if (!userRole) return false;
   // Check if the user has PPC role to confirm
-  const allowableAuthGroups = [
-    USER_AUTH_GROUP.PPC_CLERK,
-    USER_AUTH_GROUP.ENFORCEMENT_OFFICER,
-    USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
+  const allowableRoles = [
+    USER_ROLE.PPC_CLERK,
+    USER_ROLE.ENFORCEMENT_OFFICER,
+    USER_ROLE.SYSTEM_ADMINISTRATOR,
   ] as string[];
-  return allowableAuthGroups.includes(userAuthGroup);
+  return allowableRoles.includes(userRole);
 };
 
 /*
@@ -179,7 +179,7 @@ export const IDIRPermitSearchResults = memo(
                   isPermitInactive={isInactive}
                   permitNumber={row.original.permitNumber}
                   permitId={row.original.permitId}
-                  userAuthGroup={idirUserDetails?.userRole}
+                  userRole={idirUserDetails?.userRole}
                   companyId={row.original.companyId?.toString()}
                 />
               </Box>

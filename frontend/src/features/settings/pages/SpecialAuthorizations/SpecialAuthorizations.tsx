@@ -39,36 +39,39 @@ export const SpecialAuthorizations = ({ companyId }: { companyId: number }) => {
   const [showLOASteps, setShowLOASteps] = useState<boolean>(false);
   const [loaToEdit, setLoaToEdit] = useState<RequiredOrNull<string>>(null);
 
-  const { userRoles, idirUserDetails, userDetails } =
-    useContext(OnRouteBCContext);
+  const {
+    userClaims,
+    idirUserDetails,
+    userDetails,
+  } = useContext(OnRouteBCContext);
 
   const canEditNoFeePermits = canUpdateNoFeePermitsFlag(
-    userRoles,
+    userClaims,
     getDefaultNullableVal(idirUserDetails?.userRole, userDetails?.userRole),
   );
 
   const canViewNoFeePermits = canViewNoFeePermitsFlag(
-    userRoles,
+    userClaims,
     getDefaultNullableVal(idirUserDetails?.userRole, userDetails?.userRole),
   );
 
   const canUpdateLCV = canUpdateLCVFlag(
-    userRoles,
+    userClaims,
     getDefaultNullableVal(idirUserDetails?.userRole, userDetails?.userRole),
   );
 
   const canViewLCV = canViewLCVFlag(
-    userRoles,
+    userClaims,
     getDefaultNullableVal(idirUserDetails?.userRole, userDetails?.userRole),
   );
 
   const canWriteLOA = canUpdateLOA(
-    userRoles,
+    userClaims,
     getDefaultNullableVal(idirUserDetails?.userRole, userDetails?.userRole),
   );
 
   const canReadLOA = canViewLOA(
-    userRoles,
+    userClaims,
     getDefaultNullableVal(idirUserDetails?.userRole, userDetails?.userRole),
   );
 

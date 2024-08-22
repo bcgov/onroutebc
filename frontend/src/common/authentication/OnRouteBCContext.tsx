@@ -1,9 +1,9 @@
 import React, { Dispatch, SetStateAction } from "react";
 import {
-  IDIRUserAuthGroupType,
+  IDIRUserRoleType,
   VerifiedClient,
-  UserRolesType,
-  BCeIDUserAuthGroupType,
+  UserClaimsType,
+  BCeIDUserRoleType,
 } from "./types";
 
 import { Nullable, Optional } from "../types/common";
@@ -16,7 +16,7 @@ export type IDIRUserDetailContext = {
   lastName: string;
   userName: string;
   email: string;
-  userRole: IDIRUserAuthGroupType;
+  userRole: IDIRUserRoleType;
 };
 
 /**
@@ -32,7 +32,7 @@ export interface BCeIDUserDetailContext {
   phone2Extension?: string;
   email: string;
   fax?: string;
-  userRole: BCeIDUserAuthGroupType;
+  userRole: BCeIDUserRoleType;
 }
 
 /**
@@ -40,13 +40,13 @@ export interface BCeIDUserDetailContext {
  */
 export type OnRouteBCContextType = {
   /**
-   * React state setter for the user roles of the logged in user.
+   * React state setter for the claims of the logged in user.
    */
-  setUserRoles?: Dispatch<SetStateAction<Nullable<UserRolesType[]>>>;
+  setUserClaims?: Dispatch<SetStateAction<Nullable<UserClaimsType[]>>>;
   /**
-   * The user roles of the logged in user.
+   * The claims of the logged in user.
    */
-  userRoles?: Nullable<UserRolesType[]>;
+  userClaims?: Nullable<UserClaimsType[]>;
   /**
    * React state setter for the clientNumber of the company in context.
    */

@@ -14,11 +14,14 @@ import {
 import { CreditAccountMetadataComponent } from "../../pages/CreditAccountMetadataComponent";
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 import { useGetCreditAccountMetadataQuery } from "../../hooks/creditAccount";
-import { IDIR_USER_AUTH_GROUP } from "../../../../common/authentication/types";
+import { IDIR_USER_ROLE } from "../../../../common/authentication/types";
 
 export const ManageSettingsDashboard = React.memo(() => {
-  const { userRoles, companyId, idirUserDetails } =
-    useContext(OnRouteBCContext);
+  const {
+    userClaims,
+    companyId,
+    idirUserDetails,
+  } = useContext(OnRouteBCContext);
 
   const { data: featureFlags } = useFeatureFlagsQuery();
   const { data: creditAccountMetadata } = useGetCreditAccountMetadataQuery(
@@ -26,14 +29,13 @@ export const ManageSettingsDashboard = React.memo(() => {
   );
 
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userRole);
-  const isFinanceUser =
-    idirUserDetails?.userRole === IDIR_USER_AUTH_GROUP.FINANCE;
+  const isFinanceUser = idirUserDetails?.userRole === IDIR_USER_ROLE.FINANCE;
 
   const [hideSuspendTab, setHideSuspendTab] = useState<boolean>(false);
-  const showSuspendTab = canViewSuspend(userRoles) && !hideSuspendTab;
+  const showSuspendTab = canViewSuspend(userClaims) && !hideSuspendTab;
   const showSpecialAuth =
     isStaffActingAsCompany &&
-    canViewSpecialAuthorizations(userRoles, idirUserDetails?.userRole) &&
+    canViewSpecialAuthorizations(userClaims, idirUserDetails?.userRole) &&
     featureFlags?.["LOA"] === "ENABLED";
 
   const showCreditAccountTab = usePermissionMatrix({
