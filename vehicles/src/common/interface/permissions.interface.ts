@@ -6,18 +6,18 @@ import { ClientUserRole, IDIRUserRole } from '../enum/user-role.enum';
  */
 export interface IPermissions {
   /**
-   * The idir auth roles that are allowed to see the component.
+   * The idir auth roles that are allowed to perform an action.
    *
-   * If the user has one of the specified auth groups,
-   * the component will render.
+   * If the user has one of the specified roles,
+   * the action will be allowed.
    */
   allowedIdirRoles?: IDIRUserRole[];
 
   /**
-   * The bceid auth roles that are allowed to see the component.
+   * The bceid auth roles that are allowed to perform an action.
    *
-   * If the user has one of the specified auth groups,
-   * the component will render.
+   * If the user has one of the specified roles,
+   * the action will be allowed.
    */
   allowedBCeIDRoles?: ClientUserRole[];
 
@@ -26,6 +26,9 @@ export interface IPermissions {
    * for additional consideration.
    *
    * If provided, the claim will be additionally checked on.
+   * If neither `allowedBCeIDRoles` nor `allowedIdirRoles` is provided,
+   * claims will be exclusively checked for deciding whether the user
+   * is allowed to perform this action.
    */
   claims?: Claim[];
 }

@@ -11,7 +11,7 @@ export class UpdatePendingIdirUserDto {
   @AutoMap()
   @ApiProperty({
     enum: IDIRUserRole,
-    description: 'The user auth group.',
+    description: 'The user role.',
     example: IDIRUserRole.SYSTEM_ADMINISTRATOR,
   })
   @IsEnum(IDIRUserRole)

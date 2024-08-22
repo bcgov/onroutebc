@@ -240,7 +240,7 @@ export const validateUserCompanyAndRoleContext = (
  * @param {ReadonlyArray<ClientUserRole> | ReadonlyArray<IDIRUserRole>} enumObject - An array of UserRole values.
  * @returns {boolean} Returns true if the value is present in the enumObject, otherwise false.
  */
-export const doesUserHaveAuthGroup = (
+export const doesUserHaveRole = (
   value: UserRole,
   enumObject: readonly ClientUserRole[] | readonly IDIRUserRole[],
 ): boolean => {

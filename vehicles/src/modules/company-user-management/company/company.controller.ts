@@ -40,7 +40,7 @@ import { GetCompanyQueryParamsDto } from './dto/request/queryParam/getCompany.qu
 import { ReadVerifyClientDto } from './dto/response/read-verify-client.dto';
 import { VerifyClientDto } from './dto/request/verify-client.dto';
 import { IDIR_USER_ROLE_LIST } from '../../../common/enum/user-role.enum';
-import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
+import { doesUserHaveRole } from '../../../common/helper/auth.helper';
 
 @ApiTags('Company and User Management - Company')
 @ApiBadRequestResponse({
@@ -104,7 +104,7 @@ export class CompanyController {
     @Query() getCompanyQueryParamsDto: GetCompanyQueryParamsDto,
   ): Promise<PaginationDto<ReadCompanyDto>> {
     const currentUser = request.user as IUserJWT;
-    if (!doesUserHaveAuthGroup(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST)) {
+    if (!doesUserHaveRole(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST)) {
       throw new UnauthorizedException(
         `Unauthorized for ${currentUser.orbcUserRole} role.`,
       );

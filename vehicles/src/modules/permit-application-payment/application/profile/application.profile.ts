@@ -17,7 +17,7 @@ import {
   UserRole,
   IDIR_USER_ROLE_LIST,
 } from '../../../../common/enum/user-role.enum';
-import { doesUserHaveAuthGroup } from '../../../../common/helper/auth.helper';
+import { doesUserHaveRole } from '../../../../common/helper/auth.helper';
 import { Permit } from '../../permit/entities/permit.entity';
 
 @Injectable()
@@ -183,7 +183,7 @@ export class ApplicationProfile extends AutomapperProfile {
           mapWithArguments((s, { currentUserRole }) => {
             if (s.applicationOwner?.directory === Directory.IDIR) {
               if (
-                doesUserHaveAuthGroup(
+                doesUserHaveRole(
                   currentUserRole as UserRole,
                   IDIR_USER_ROLE_LIST,
                 )
@@ -243,7 +243,7 @@ export class ApplicationProfile extends AutomapperProfile {
           mapWithArguments((s, { currentUserRole }) => {
             if (s.applicationOwner?.directory === Directory.IDIR) {
               if (
-                doesUserHaveAuthGroup(
+                doesUserHaveRole(
                   currentUserRole as UserRole,
                   IDIR_USER_ROLE_LIST,
                 )

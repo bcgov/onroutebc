@@ -125,7 +125,7 @@ export const matchRoles = (
 
       if (roleObject.userRole?.length) {
         const userRoleMatch = roleObject.userRole?.some(
-          (authGroup) => authGroup === userRole,
+          (role) => role === userRole,
         );
         if (!userRoleMatch) {
           return false;
@@ -244,7 +244,7 @@ export const validateUserCompanyAndRoleContext = (
  * @param {ReadonlyArray<ClientUserRole> | ReadonlyArray<IDIRUserRole>} enumObject - An array of UserRole values.
  * @returns {boolean} Returns true if the value is present in the enumObject, otherwise false.
  */
-export const doesUserHaveAuthGroup = (
+export const doesUserHaveRole = (
   value: UserRole,
   enumObject: readonly ClientUserRole[] | readonly IDIRUserRole[],
 ): boolean => {

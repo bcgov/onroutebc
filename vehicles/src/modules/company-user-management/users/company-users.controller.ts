@@ -39,7 +39,7 @@ import {
   ClientUserRole,
   IDIR_USER_ROLE_LIST,
 } from '../../../common/enum/user-role.enum';
-import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
+import { doesUserHaveRole } from '../../../common/helper/auth.helper';
 
 @ApiTags('Company and User Management - Company User')
 @ApiBadRequestResponse({
@@ -209,7 +209,7 @@ export class CompanyUsersController {
     const currentUser = request.user as IUserJWT;
     if (
       currentUser.orbcUserRole !== ClientUserRole.COMPANY_ADMINISTRATOR &&
-      !doesUserHaveAuthGroup(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST)
+      !doesUserHaveRole(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST)
     ) {
       throw new ForbiddenException();
     }

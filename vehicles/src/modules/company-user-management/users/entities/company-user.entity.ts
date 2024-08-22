@@ -22,7 +22,7 @@ export class CompanyUser extends Base {
   companyUserId: number;
 
   /**
-   * A property that represents the user's auth group, which is an enum of type
+   * A property that represents the user's role, which is an enum of type
    * {@link ClientUserRole}.
    */
   @AutoMap()

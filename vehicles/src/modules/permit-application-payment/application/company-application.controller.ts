@@ -41,7 +41,7 @@ import {
 import { DeleteApplicationDto } from './dto/request/delete-application.dto';
 import { DeleteDto } from '../../common/dto/response/delete.dto';
 import { PermitApplicationOrigin } from '../../../common/enum/permit-application-origin.enum';
-import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
+import { doesUserHaveRole } from '../../../common/helper/auth.helper';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import { ReadApplicationMetadataDto } from './dto/response/read-application-metadata.dto';
 import { GetApplicationQueryParamsDto } from './dto/request/queryParam/getApplication.query-params.dto';
@@ -181,7 +181,7 @@ export class CompanyApplicationController {
     // Validates the current user's permission to access the application or amendment
     // by comparing user's authentication group, company ID, and the application's origin
     if (
-      !doesUserHaveAuthGroup(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST) &&
+      !doesUserHaveRole(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST) &&
       retApplicationDto.permitApplicationOrigin !==
         PermitApplicationOrigin.ONLINE
     ) {
@@ -251,7 +251,7 @@ export class CompanyApplicationController {
     const currentUser = request.user as IUserJWT;
 
     if (
-      !doesUserHaveAuthGroup(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST) &&
+      !doesUserHaveRole(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST) &&
       !companyId
     ) {
       throw new BadRequestException(

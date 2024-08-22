@@ -11,7 +11,7 @@ export class UpdateUserDto extends UpdateContactDto {
   @AutoMap()
   @ApiProperty({
     enum: ClientUserRole,
-    description: 'The user auth group.',
+    description: 'The user role.',
     example: ClientUserRole.COMPANY_ADMINISTRATOR,
   })
   @IsEnum(ClientUserRole)

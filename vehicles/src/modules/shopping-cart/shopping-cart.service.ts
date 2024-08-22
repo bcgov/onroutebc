@@ -14,7 +14,7 @@ import { AddToShoppingCartDto } from './dto/request/add-to-shopping-cart.dto';
 import { UpdateShoppingCartDto } from './dto/request/update-shopping-cart.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
-import { doesUserHaveAuthGroup } from '../../common/helper/auth.helper';
+import { doesUserHaveRole } from '../../common/helper/auth.helper';
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { ReadShoppingCartDto } from './dto/response/read-shopping-cart.dto';
@@ -45,7 +45,7 @@ export class ShoppingCartService {
     const { orbcUserRole } = currentUser;
     if (
       orbcUserRole === ClientUserRole.COMPANY_ADMINISTRATOR ||
-      doesUserHaveAuthGroup(orbcUserRole, IDIR_USER_ROLE_LIST)
+      doesUserHaveRole(orbcUserRole, IDIR_USER_ROLE_LIST)
     ) {
       return await this.updateApplicationStatus(
         { applicationIds, companyId },
@@ -170,7 +170,7 @@ export class ShoppingCartService {
     }
     // If the user is a BCeID user, select only those applications
     // where the applicationOwner isn't a staff user.
-    if (!doesUserHaveAuthGroup(orbcUserRole, IDIR_USER_ROLE_LIST)) {
+    if (!doesUserHaveRole(orbcUserRole, IDIR_USER_ROLE_LIST)) {
       queryBuilder.andWhere(
         new NotBrackets((qb) => {
           qb.where('applicationOwner.directory = :directory', {
@@ -216,7 +216,7 @@ export class ShoppingCartService {
         currentUser,
       );
     }
-    if (doesUserHaveAuthGroup(orbcUserRole, IDIR_USER_ROLE_LIST)) {
+    if (doesUserHaveRole(orbcUserRole, IDIR_USER_ROLE_LIST)) {
       return await this.updateApplicationStatus(
         {
           applicationIds,

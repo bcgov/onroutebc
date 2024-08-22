@@ -48,7 +48,7 @@ export class User extends Base {
   directory: Directory;
 
   /**
-   * A property that represents the user's auth group in ORBC. It can be of types {@link GenericUserRole},
+   * A property that represents the user's role in ORBC. It can be of types {@link GenericUserRole},
    * or {@link IDIRUserRole}, which are all enum types.
    */
   @AutoMap()

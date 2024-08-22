@@ -33,7 +33,7 @@ import { IDP } from '../../../common/enum/idp.enum';
 import { GetStaffUserQueryParamsDto } from './dto/request/queryParam/getStaffUser.query-params.dto';
 import { GetUserClaimsQueryParamsDto } from './dto/request/queryParam/getUserClaims.query-params.dto';
 import { IDIR_USER_ROLE_LIST } from '../../../common/enum/user-role.enum';
-import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
+import { doesUserHaveRole } from '../../../common/helper/auth.helper';
 
 @ApiTags('Company and User Management - User')
 @ApiBadRequestResponse({
@@ -144,7 +144,7 @@ export class UsersController {
     @Query() getStaffUserQueryParamsDto?: GetStaffUserQueryParamsDto,
   ): Promise<ReadUserDto[]> {
     const currentUser = request.user as IUserJWT;
-    if (!doesUserHaveAuthGroup(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST)) {
+    if (!doesUserHaveRole(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST)) {
       throw new ForbiddenException(
         `Forbidden for ${currentUser.orbcUserRole} role.`,
       );

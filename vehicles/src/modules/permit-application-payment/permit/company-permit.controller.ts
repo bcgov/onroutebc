@@ -34,7 +34,7 @@ import {
   IDIR_USER_ROLE_LIST,
 } from 'src/common/enum/user-role.enum';
 import { ReadPermitMetadataDto } from './dto/response/read-permit-metadata.dto';
-import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
+import { doesUserHaveRole } from '../../../common/helper/auth.helper';
 import { PermitHistoryDto } from './dto/response/permit-history.dto';
 
 @ApiBearerAuth()
@@ -71,7 +71,7 @@ export class CompanyPermitController {
   ): Promise<PaginationDto<ReadPermitMetadataDto>> {
     const currentUser = request.user as IUserJWT;
     if (
-      !doesUserHaveAuthGroup(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST) &&
+      !doesUserHaveRole(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST) &&
       !companyId
     ) {
       throw new BadRequestException(

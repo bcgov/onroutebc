@@ -32,7 +32,7 @@ import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response
 import { GetPermitQueryParamsDto } from './dto/request/queryParam/getPermit.query-params.dto';
 import { IDIR_USER_ROLE_LIST } from 'src/common/enum/user-role.enum';
 import { ReadPermitMetadataDto } from './dto/response/read-permit-metadata.dto';
-import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
+import { doesUserHaveRole } from '../../../common/helper/auth.helper';
 import { CreateNotificationDto } from '../../common/dto/request/create-notification.dto';
 import { ReadNotificationDto } from '../../common/dto/response/read-notification.dto';
 import { PermitReceiptDocumentService } from '../permit-receipt-document/permit-receipt-document.service';
@@ -155,7 +155,7 @@ export class PermitController {
    * Sends a notification related to a specific permit.
    *
    * This method checks if the current user belongs to the specified user authentication group before proceeding.
-   * If the user does not belong to the required auth group, a ForbiddenException is thrown.
+   * If the user does not belong to the required role, a ForbiddenException is thrown.
    *
    * @param request The incoming request object containing the current user information.
    * @param permitId The ID of the permit to associate the notification with.
@@ -183,8 +183,8 @@ export class PermitController {
     createNotificationDto: CreateNotificationDto,
   ): Promise<ReadNotificationDto[]> {
     const currentUser = request.user as IUserJWT;
-    // Throws ForbiddenException if user does not belong to the specified user auth group.
-    if (!doesUserHaveAuthGroup(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST)) {
+    // Throws ForbiddenException if user does not belong to the specified user role.
+    if (!doesUserHaveRole(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST)) {
       throw new ForbiddenException();
     }
 

@@ -200,7 +200,7 @@ export class UsersService {
 
     //Searching with UserGuid will only return one result at max
     const companyUser = userDetails.at(0).companyUsers.at(0);
-    //A CV user's auth group should not be allowed to be downgraded from CVADMIN
+    //A CV user's role should not be allowed to be downgraded from CVADMIN
     //if they are the last remaining CVADMIN of the Company
     if (
       companyUser.userRole === ClientUserRole.COMPANY_ADMINISTRATOR &&

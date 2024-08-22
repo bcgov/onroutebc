@@ -34,7 +34,7 @@ export class PendingUser extends Base {
   userGUID?: string;
 
   /**
-   * A property that represents the user's auth group, which is an enum of
+   * A property that represents the user's role, which is an enum of
    * type {@link ClientUserRole}.
    */
   @AutoMap()

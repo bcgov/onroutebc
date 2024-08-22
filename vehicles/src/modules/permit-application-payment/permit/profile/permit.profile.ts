@@ -15,7 +15,7 @@ import {
   UserRole,
   IDIR_USER_ROLE_LIST,
 } from '../../../../common/enum/user-role.enum';
-import { doesUserHaveAuthGroup } from '../../../../common/helper/auth.helper';
+import { doesUserHaveRole } from '../../../../common/helper/auth.helper';
 import { ReadPermitMetadataDto } from '../dto/response/read-permit-metadata.dto';
 
 @Injectable()
@@ -47,7 +47,7 @@ export class PermitProfile extends AutomapperProfile {
           mapWithArguments((s, { currentUserRole }) => {
             if (s.issuer?.directory === Directory.IDIR) {
               if (
-                doesUserHaveAuthGroup(
+                doesUserHaveRole(
                   currentUserRole as UserRole,
                   IDIR_USER_ROLE_LIST,
                 )
@@ -110,7 +110,7 @@ export class PermitProfile extends AutomapperProfile {
           mapWithArguments((s, { currentUserRole }) => {
             if (s.applicationOwner?.directory === Directory.IDIR) {
               if (
-                doesUserHaveAuthGroup(
+                doesUserHaveRole(
                   currentUserRole as UserRole,
                   IDIR_USER_ROLE_LIST,
                 )
@@ -132,7 +132,7 @@ export class PermitProfile extends AutomapperProfile {
           mapWithArguments((s, { currentUserRole }) => {
             if (s.issuer?.directory === Directory.IDIR) {
               if (
-                doesUserHaveAuthGroup(
+                doesUserHaveRole(
                   currentUserRole as UserRole,
                   IDIR_USER_ROLE_LIST,
                 )

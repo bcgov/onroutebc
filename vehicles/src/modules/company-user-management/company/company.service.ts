@@ -217,7 +217,7 @@ export class CompanyService {
 
         user.companyUsers = [newCompanyUser];
         user = await queryRunner.manager.save(user);
-        user.companyUsers = [newCompanyUser]; //To populate Company User Auth Group
+        user.companyUsers = [newCompanyUser]; //To populate Company User Role
         newUser = await this.classMapper.mapAsync(user, User, ReadUserDto);
       }
       await queryRunner.commitTransaction();

@@ -54,7 +54,7 @@ import { ReadCreditAccountActivityDto } from './dto/response/read-credit-account
 import { ReadCreditAccountMetadataDto } from './dto/response/read-credit-account-metadata.dto';
 import { ReadCreditAccountUserDetailsDto } from './dto/response/read-credit-account-user-details.dto';
 import { ReadCreditAccountLimitDto } from './dto/response/read-credit-account-limit.dto';
-import { doesUserHaveAuthGroup } from '../../common/helper/auth.helper';
+import { doesUserHaveRole } from '../../common/helper/auth.helper';
 
 /**
  * Service functions for credit account operations.
@@ -270,7 +270,7 @@ export class CreditAccountService {
     if (!creditAccount) {
       throw new DataNotFoundException();
     } else if (
-      doesUserHaveAuthGroup(currentUser.orbcUserRole, [
+      doesUserHaveRole(currentUser.orbcUserRole, [
         ClientUserRole.COMPANY_ADMINISTRATOR,
       ]) &&
       creditAccount?.company.companyId !== companyId
@@ -281,7 +281,7 @@ export class CreditAccountService {
       creditAccount?.company?.companyId === companyId &&
       creditAccount?.creditAccountStatusType ===
         CreditAccountStatus.ACCOUNT_CLOSED &&
-      !doesUserHaveAuthGroup(currentUser.orbcUserRole, [
+      !doesUserHaveRole(currentUser.orbcUserRole, [
         IDIRUserRole.HQ_ADMINISTRATOR,
         IDIRUserRole.SYSTEM_ADMINISTRATOR,
         IDIRUserRole.FINANCE,
@@ -336,7 +336,7 @@ export class CreditAccountService {
       creditAccount?.company?.companyId === companyId &&
       creditAccount?.creditAccountStatusType ===
         CreditAccountStatus.ACCOUNT_CLOSED &&
-      !doesUserHaveAuthGroup(currentUser.orbcUserRole, [
+      !doesUserHaveRole(currentUser.orbcUserRole, [
         IDIRUserRole.HQ_ADMINISTRATOR,
         IDIRUserRole.SYSTEM_ADMINISTRATOR,
         IDIRUserRole.FINANCE,
@@ -1012,7 +1012,7 @@ export class CreditAccountService {
     if (!creditAccount) {
       throw new DataNotFoundException();
     } else if (
-      doesUserHaveAuthGroup(currentUser.orbcUserRole, [
+      doesUserHaveRole(currentUser.orbcUserRole, [
         ClientUserRole.COMPANY_ADMINISTRATOR,
       ]) &&
       creditAccount?.company.companyId !== companyId
@@ -1023,7 +1023,7 @@ export class CreditAccountService {
       creditAccount?.company?.companyId === companyId &&
       creditAccount?.creditAccountStatusType ===
         CreditAccountStatus.ACCOUNT_CLOSED &&
-      !doesUserHaveAuthGroup(currentUser.orbcUserRole, [
+      !doesUserHaveRole(currentUser.orbcUserRole, [
         IDIRUserRole.HQ_ADMINISTRATOR,
         IDIRUserRole.SYSTEM_ADMINISTRATOR,
         IDIRUserRole.FINANCE,
@@ -1095,7 +1095,7 @@ export class CreditAccountService {
     } else if (
       creditAccount?.creditAccountStatusType ===
         CreditAccountStatus.ACCOUNT_ON_HOLD &&
-      doesUserHaveAuthGroup(currentUser.orbcUserRole, [
+      doesUserHaveRole(currentUser.orbcUserRole, [
         ClientUserRole.COMPANY_ADMINISTRATOR,
       ]) &&
       creditAccount?.company.companyId === companyId
@@ -1106,7 +1106,7 @@ export class CreditAccountService {
       creditAccount?.company?.companyId === companyId &&
       creditAccount?.creditAccountStatusType ===
         CreditAccountStatus.ACCOUNT_CLOSED &&
-      !doesUserHaveAuthGroup(currentUser.orbcUserRole, [
+      !doesUserHaveRole(currentUser.orbcUserRole, [
         IDIRUserRole.HQ_ADMINISTRATOR,
         IDIRUserRole.SYSTEM_ADMINISTRATOR,
         IDIRUserRole.FINANCE,
@@ -1116,7 +1116,7 @@ export class CreditAccountService {
     ) {
       throw new DataNotFoundException();
     } else if (
-      doesUserHaveAuthGroup(currentUser.orbcUserRole, [
+      doesUserHaveRole(currentUser.orbcUserRole, [
         ClientUserRole.COMPANY_ADMINISTRATOR,
       ]) &&
       creditAccount?.company.companyId !== companyId

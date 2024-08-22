@@ -36,7 +36,7 @@ import {
 } from '../../../common/enum/user-role.enum';
 import { DeleteDto } from '../../common/dto/response/delete.dto';
 import { ReadApplicationMetadataDto } from './dto/response/read-application-metadata.dto';
-import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
+import { doesUserHaveRole } from '../../../common/helper/auth.helper';
 import {
   ACTIVE_APPLICATION_STATUS,
   ACTIVE_APPLICATION_STATUS_FOR_ISSUANCE,
@@ -729,7 +729,7 @@ export class ApplicationService {
           applicationIds.includes(application.permitId) &&
           ({
             ...application,
-            permitStatus: doesUserHaveAuthGroup(
+            permitStatus: doesUserHaveRole(
               currentUser.orbcUserRole,
               IDIR_USER_ROLE_LIST,
             )
