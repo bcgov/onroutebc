@@ -21,3 +21,28 @@ export function extractIdentifiedObjects(
   });
   return objectMap;
 }
+
+/**
+ * Intersects two maps containing string id and string description to
+ * return a new map containing those entries common to both.
+ * @param first The first map
+ * @param second The second map
+ * @returns New map containing entries common to both input maps
+ */
+export function intersectIdMaps(
+  first: Map<string, string>,
+  second: Map<string, string>
+): Map<string, string> {
+  return new Map<string, string>();
+}
+
+export function getIdFromName(list: Array<IdentifiedObject>, name: string): string | null {
+  let id: string | null = null;
+  
+  const identifiedObject = list.find((i) => i.name == name);
+  if (identifiedObject) {
+    id = identifiedObject.id;
+  }
+  
+  return id;
+}

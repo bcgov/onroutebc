@@ -816,7 +816,7 @@ export const completePolicyConfig: PolicyDefinition = {
       },
       {
         id: 'BUSTRLR',
-        name: 'Intercity Buses (Pulling Pony Trailers)',
+        name: 'Inter-City Bus (Pulling Pony Trailer)',
         category: 'powerunit',
       },
       {
@@ -973,7 +973,12 @@ export const completePolicyConfig: PolicyDefinition = {
       },
       {
         id: 'FECVYER',
-        name: 'Fixed Equipment - Conveyors',
+        name: 'Fixed Equipment - Conveyors (Semi-Trailers)',
+        category: 'trailer',
+      },
+      {
+        id: 'FECVYPT',
+        name: 'Fixed Equipment - Conveyors (Pony Trailers)',
         category: 'trailer',
       },
       {
@@ -1027,8 +1032,13 @@ export const completePolicyConfig: PolicyDefinition = {
         category: 'trailer',
       },
       {
+        id: 'LOGLGCY',
+        name: 'Legacy Logging Trailer Combinations',
+        category: 'trailer',
+      },
+      {
         id: 'LOGFULL',
-        name: 'Logging Trailers - Full Trailers, Tri Axle, Quad Axle',
+        name: 'Logging Trailer - Full Trailers, Tri Axle, Quad Axle',
         category: 'trailer',
       },
       {
@@ -1038,7 +1048,7 @@ export const completePolicyConfig: PolicyDefinition = {
       },
       {
         id: 'LOGOWBK',
-        name: 'Logging Trailers - Overwidth Bunks',
+        name: 'Logging Trailer - Overwidth Bunks',
         category: 'trailer',
       },
       {
@@ -1188,702 +1198,696 @@ export const completePolicyConfig: PolicyDefinition = {
       },
       {
         id: 'NONEXXX',
-        name: 'No trailer',
+        name: 'None',
         category: 'pseudo',
       },
     ],
   },
   commodities: [
     {
-      id: 'WODWIDB',
-      name: 'Wood on wide bunks',
+      id: 'NONEXXX',
+      name: 'None',
     },
     {
-      id: 'LEGALLO',
-      name: 'Legal loads',
+      id: 'DOGLOGG',
+      name: 'Doglogger/Sjostrum Trailers (decked)',
     },
     {
-      id: 'GRADERS',
-      name: 'Grader',
+      id: 'GRTBBUK',
+      name: 'Grader, Tractor Blades, Buckets',
     },
     {
-      id: 'HUSBAND',
-      name: 'Implements of husbandry',
+      id: 'HAYRACK',
+      name: 'Hayrack Semi-Trailer with a Folded Chassis/Empty Piggyback',
+    },
+    {
+      id: 'IMCONTN',
+      name: 'Intermodal Containers',
+    },
+    {
+      id: 'IMCONWS',
+      name: 'Intermodal Containers without Sides',
+    },
+    {
+      id: 'LPBOOMS',
+      name: 'Logs, Poles And Boomsticks (Up To 20.1)',
+    },
+    {
+      id: 'LPBOOML',
+      name: 'Logs, Poles And Boomsticks (Over 20.1)',
+    },
+    {
+      id: 'MFHOMES',
+      name: 'Manufactured Homes, Modular Buildings, Structures and Houseboats (<= 5.0 m OAW)',
+    },
+    {
+      id: 'MFHOMEL',
+      name: 'Manufactured Homes, Modular Buildings, Structures and Houseboats (> 5.0 m OAW)',
+    },
+    {
+      id: 'PARKMHS',
+      name: 'Park Model Homes',
+    },
+    {
+      id: 'PIPESTL',
+      name: 'Pipe And Steel Products (Rebar, Pilings, Reinforcing Steel, Etc.)',
+    },
+    {
+      id: 'REDUCBL',
+      name: 'Reducible Loads',
+    },
+    {
+      id: 'SCRAPER',
+      name: 'Scraper on Dollies',
     },
     {
       id: 'OILFILD',
-      name: 'Oil field equipment',
+      name: 'Oil Field Equipment',
     },
     {
-      id: 'ROKTRUK',
-      name: 'Rock truck',
+      id: 'JPTRLOG',
+      name: 'Tandem Jeep/Pole Trailer Loaded on Logging Truck',
     },
     {
-      id: 'TIRESXX',
-      name: 'Tires',
+      id: 'TOWDISB',
+      name: 'Tow Trucks And Disabled Vehicles',
     },
     {
-      id: 'SRVCRIG',
-      name: 'Service rig',
+      id: 'TRQDLOG',
+      name: 'Tri-Axle or Quad Axle Full Trailer Loaded on Logging Truck',
     },
     {
-      id: 'BUNCHER',
-      name: 'Buncher',
-    },
-    {
-      id: 'CONVEYR',
-      name: 'Conveyor',
-    },
-    {
-      id: 'SKIDUNT',
-      name: 'Oil field skid unit',
+      id: 'WOODCHP',
+      name: 'Wood Chips, Residuals',
     },
     {
       id: 'EMPTYXX',
       name: 'Empty',
-      powerUnits: [
-        {
-          type: 'TRKTRAC',
-          canFollow: [],
-        },
-        {
-          type: 'PICKRTT',
-          canFollow: [],
-        },
-      ],
-      trailers: [
-        {
-          type: 'JEEPSRG',
-          canFollow: ['TRKTRAC', 'PICKRTT', 'JEEPSRG'],
-        },
-        {
-          type: 'BOOSTER',
-          canFollow: [
-            'OGOSFDT',
-            'PLATFRM',
-            'HIBOEXP',
-            'STWHELR',
-            'STWIDWH',
-            'STCRANE',
-            'HIBOFLT',
-            'STSDBDK',
-            'BOOSTER',
-          ],
-        },
-        {
-          type: 'LOGOWBK',
-          canFollow: ['TRKTRAC'],
-          sizeDimensions: [
-            {
-              width: 3.2,
-              length: 23,
-            },
-          ],
-        },
-        {
-          type: 'OGOSFDT',
-          canFollow: ['PICKRTT', 'JEEPSRG'],
-          sizeDimensions: [
-            {
-              width: 3.2,
-              height: 4.3,
-              length: 23,
-            },
-          ],
-        },
-        {
-          type: 'PLATFRM',
-          canFollow: ['TRKTRAC', 'PICKRTT', 'JEEPSRG'],
-          canSelfIssue: false,
-          sizeDimensions: [
-            {
-              width: 3.2,
-              height: 4.88,
-              length: 27.5,
-              regions: [
-                {
-                  region: 'PCE',
-                  height: 5.33,
-                },
-              ],
-            },
-          ],
-        },
-        {
-          type: 'HIBOEXP',
-          canFollow: ['TRKTRAC', 'PICKRTT', 'JEEPSRG'],
-          sizeDimensions: [
-            {
-              height: 4.4,
-              length: 25,
-              regions: [
-                {
-                  region: 'PCE',
-                  height: 5.33,
-                  length: 27.5,
-                },
-              ],
-              modifiers: [
-                {
-                  position: 'first',
-                  type: 'PICKRTT',
-                },
-              ],
-            },
-            {
-              height: 4.4,
-              length: 31,
-              regions: [
-                {
-                  region: 'PCE',
-                  height: 5.33,
-                },
-              ],
-              modifiers: [
-                {
-                  position: 'first',
-                  type: 'TRKTRAC',
-                },
-              ],
-            },
-          ],
-        },
-        {
-          type: 'STWHELR',
-          canFollow: ['TRKTRAC', 'PICKRTT', 'JEEPSRG'],
-          canSelfIssue: false,
-          sizeDimensions: [
-            {
-              width: 3.2,
-              height: 4.88,
-              length: 27.5,
-              regions: [
-                {
-                  region: 'PCE',
-                  height: 5.33,
-                },
-              ],
-            },
-          ],
-        },
-        {
-          type: 'STWIDWH',
-          canFollow: ['TRKTRAC', 'PICKRTT', 'JEEPSRG'],
-          canSelfIssue: false,
-          sizeDimensions: [
-            {
-              width: 3.2,
-              height: 4.88,
-              length: 27.5,
-              regions: [
-                {
-                  region: 'PCE',
-                  height: 5.33,
-                },
-              ],
-            },
-          ],
-        },
-        {
-          type: 'STCRANE',
-          canFollow: ['TRKTRAC', 'PICKRTT', 'JEEPSRG'],
-          sizeDimensions: [
-            {
-              width: 3.2,
-              height: 4.88,
-              length: 27.5,
-              regions: [
-                {
-                  region: 'PCE',
-                  height: 5.33,
-                },
-              ],
-            },
-          ],
-        },
-        {
-          type: 'HIBOFLT',
-          canFollow: ['TRKTRAC', 'JEEPSRG'],
-          sizeDimensions: [
-            {
-              height: 4.4,
-              length: 27.5,
-              regions: [
-                {
-                  region: 'PCE',
-                  height: 5.33,
-                },
-              ],
-            },
-          ],
-        },
-        {
-          type: 'STSDBDK',
-          canFollow: ['TRKTRAC', 'JEEPSRG'],
-          sizeDimensions: [
-            {
-              width: 3.2,
-              height: 4.4,
-              length: 31,
-              regions: [
-                {
-                  region: 'PCE',
-                  height: 5.33,
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: 'GENERAL',
-      name: 'General commodities',
-    },
-    {
-      id: 'CULVERT',
-      name: 'Culverts',
-    },
-    {
-      id: 'RAMPSXX',
-      name: 'Ramps',
-    },
-    {
-      id: 'REBARXX',
-      name: 'Rebar',
-    },
-    {
-      id: 'RESTEEL',
-      name: 'Reinforcing steel',
-    },
-    {
-      id: 'STSTEEL',
-      name: 'Structural steel',
-    },
-    {
-      id: 'PIPEXXX',
-      name: 'Pipe',
+      size: {
+        powerUnits: [
+          {
+            type: 'TRKTRAC',
+            trailers: [
+              {
+                type: 'LOGOWBK',
+                allowJeep: true,
+                allowBooster: true,
+                sizeDimensions: [
+                  {
+                    width: 3.2,
+                    length: 23,
+                  },
+                ],
+              },
+              {
+                type: 'OGOSFDT',
+                allowJeep: true,
+                allowBooster: true,
+                sizeDimensions: [
+                  {
+                    width: 3.2,
+                    height: 4.3,
+                    length: 23,
+                  },
+                ],
+              },
+              {
+                type: 'PLATFRM',
+                allowJeep: true,
+                allowBooster: true,
+                canSelfIssue: false,
+                sizeDimensions: [
+                  {
+                    width: 3.2,
+                    height: 4.88,
+                    length: 27.5,
+                    regions: [
+                      {
+                        region: 'PCE',
+                        height: 5.33,
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                type: 'HIBOEXP',
+                allowJeep: true,
+                allowBooster: true,
+                sizeDimensions: [
+                  {
+                    height: 4.4,
+                    length: 31,
+                    regions: [
+                      {
+                        region: 'PCE',
+                        height: 5.33,
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                type: 'STWHELR',
+                allowJeep: true,
+                allowBooster: true,
+                canSelfIssue: false,
+                sizeDimensions: [
+                  {
+                    width: 3.2,
+                    height: 4.88,
+                    length: 27.5,
+                    regions: [
+                      {
+                        region: 'PCE',
+                        height: 5.33,
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                type: 'STWIDWH',
+                allowJeep: true,
+                allowBooster: true,
+                canSelfIssue: false,
+                sizeDimensions: [
+                  {
+                    width: 3.2,
+                    height: 4.88,
+                    length: 27.5,
+                    regions: [
+                      {
+                        region: 'PCE',
+                        height: 5.33,
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                type: 'STCRANE',
+                allowJeep: true,
+                allowBooster: true,
+                sizeDimensions: [
+                  {
+                    width: 3.2,
+                    height: 4.88,
+                    length: 27.5,
+                    regions: [
+                      {
+                        region: 'PCE',
+                        height: 5.33,
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                type: 'HIBOFLT',
+                allowJeep: true,
+                allowBooster: true,
+                sizeDimensions: [
+                  {
+                    height: 4.4,
+                    length: 27.5,
+                    regions: [
+                      {
+                        region: 'PCE',
+                        height: 5.33,
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                type: 'STSDBDK',
+                allowJeep: true,
+                allowBooster: true,
+                sizeDimensions: [
+                  {
+                    width: 3.2,
+                    height: 4.4,
+                    length: 31,
+                    regions: [
+                      {
+                        region: 'PCE',
+                        height: 5.33,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            type: 'PICKRTT',
+            trailers: [
+              {
+                type: 'LOGOWBK',
+                allowJeep: true,
+                allowBooster: true,
+                sizeDimensions: [
+                  {
+                    width: 3.2,
+                    length: 23,
+                  },
+                ],
+              },
+              {
+                type: 'OGOSFDT',
+                allowJeep: true,
+                allowBooster: true,
+                sizeDimensions: [
+                  {
+                    width: 3.2,
+                    height: 4.3,
+                    length: 23,
+                  },
+                ],
+              },
+              {
+                type: 'PLATFRM',
+                allowJeep: true,
+                allowBooster: true,
+                canSelfIssue: false,
+                sizeDimensions: [
+                  {
+                    width: 3.2,
+                    height: 4.88,
+                    length: 27.5,
+                    regions: [
+                      {
+                        region: 'PCE',
+                        height: 5.33,
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                type: 'HIBOEXP',
+                allowJeep: true,
+                allowBooster: true,
+                sizeDimensions: [
+                  {
+                    height: 4.4,
+                    length: 31,
+                    regions: [
+                      {
+                        region: 'PCE',
+                        height: 5.33,
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                type: 'STWHELR',
+                allowJeep: true,
+                allowBooster: true,
+                canSelfIssue: false,
+                sizeDimensions: [
+                  {
+                    width: 3.2,
+                    height: 4.88,
+                    length: 27.5,
+                    regions: [
+                      {
+                        region: 'PCE',
+                        height: 5.33,
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                type: 'STWIDWH',
+                allowJeep: true,
+                allowBooster: true,
+                canSelfIssue: false,
+                sizeDimensions: [
+                  {
+                    width: 3.2,
+                    height: 4.88,
+                    length: 27.5,
+                    regions: [
+                      {
+                        region: 'PCE',
+                        height: 5.33,
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                type: 'STCRANE',
+                allowJeep: true,
+                allowBooster: true,
+                sizeDimensions: [
+                  {
+                    width: 3.2,
+                    height: 4.88,
+                    length: 27.5,
+                    regions: [
+                      {
+                        region: 'PCE',
+                        height: 5.33,
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                type: 'HIBOFLT',
+                allowJeep: true,
+                allowBooster: true,
+                sizeDimensions: [
+                  {
+                    height: 4.4,
+                    length: 27.5,
+                    regions: [
+                      {
+                        region: 'PCE',
+                        height: 5.33,
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                type: 'STSDBDK',
+                allowJeep: true,
+                allowBooster: true,
+                sizeDimensions: [
+                  {
+                    width: 3.2,
+                    height: 4.4,
+                    length: 31,
+                    regions: [
+                      {
+                        region: 'PCE',
+                        height: 5.33,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      }
     },
     {
       id: 'GRBBINS',
-      name: 'Garbage bins',
+      name: 'Garbage Bins',
     },
     {
-      id: 'BOATSXX',
-      name: 'Boats',
-    },
-    {
-      id: 'BOOMSTK',
-      name: 'Boomsticks',
-    },
-    {
-      id: 'CONTANR',
-      name: 'Containers',
-    },
-    {
-      id: 'HAYROND',
-      name: 'Hay bales round',
+      id: 'LAMBEAM',
+      name: 'Laminated Beams',
     },
     {
       id: 'HAYLREC',
-      name: 'Hay bales large rectangular',
+      name: 'Hay Bales Large Rectangular',
     },
     {
-      id: 'HAYBALE',
-      name: 'Hay bales',
+      id: 'HAYROND',
+      name: 'Hay Bales Round',
     },
     {
       id: 'HAYSREC',
-      name: 'Hay bales small rectangular',
-    },
-    {
-      id: 'BUILDNG',
-      name: 'House or building',
-    },
-    {
-      id: 'LONGLOG',
-      name: 'Long logs',
-    },
-    {
-      id: 'PILINGS',
-      name: 'Piling',
-    },
-    {
-      id: 'POLESXX',
-      name: 'Poles',
-    },
-    {
-      id: 'RUGHLUM',
-      name: 'Rough cut lumber',
-    },
-    {
-      id: 'VENEERX',
-      name: 'Veneer',
-    },
-    {
-      id: 'MODULAR',
-      name: 'Modular building',
-    },
-    {
-      id: 'MOBHOME',
-      name: 'Mobile home manufactured',
-    },
-    {
-      id: 'PARKTRL',
-      name: 'Park model trailers',
-    },
-    {
-      id: 'AIRCRFT',
-      name: 'Aircraft',
-    },
-    {
-      id: 'BACKHOE',
-      name: 'Backhoes',
-    },
-    {
-      id: 'BRIDGES',
-      name: 'Bridges',
+      name: 'Hay Bales Small Rectangular',
     },
     {
       id: 'BRGBEAM',
-      name: 'Bridge beams',
-      powerUnits: [
-        {
-          type: 'TRKTRAC',
-          canFollow: [],
-        },
-      ],
-      trailers: [
-        {
-          type: 'JEEPSRG',
-          canFollow: ['TRKTRAC', 'JEEPSRG'],
-        },
-        {
-          type: 'BOOSTER',
-          canFollow: ['POLETRL', 'BOOSTER'],
-        },
-        {
-          type: 'POLETRL',
-          canFollow: ['TRKTRAC', 'JEEPSRG'],
-        },
-      ],
-    },
-    {
-      id: 'BARGESX',
-      name: 'Barges',
-    },
-    {
-      id: 'BLADESX',
-      name: 'Blades',
-    },
-    {
-      id: 'BUCKETS',
-      name: 'Buckets',
-    },
-    {
-      id: 'CATCRLR',
-      name: 'Cat or crawler',
-    },
-    {
-      id: 'COALTRK',
-      name: 'Coal truck',
-    },
-    {
-      id: 'CMPRSOR',
-      name: 'Compressor',
-    },
-    {
-      id: 'CRANESX',
-      name: 'Cranes',
-    },
-    {
-      id: 'CRAWLER',
-      name: 'Crawler',
-    },
-    {
-      id: 'CRUSHER',
-      name: 'Crusher parts',
-    },
-    {
-      id: 'EXCVATR',
-      name: 'Excavator',
-    },
-    {
-      id: 'FORKLFT',
-      name: 'Fork lifts',
-    },
-    {
-      id: 'GENRTOR',
-      name: 'Generator',
-    },
-    {
-      id: 'LOADERX',
-      name: 'Loader',
-    },
-    {
-      id: 'LOGGING',
-      name: 'Logging machinery',
-    },
-    {
-      id: 'LOGLODR',
-      name: 'Log loader',
-    },
-    {
-      id: 'MINEMAC',
-      name: 'Mine machinery',
-    },
-    {
-      id: 'MILLMAC',
-      name: 'Mill machinery',
+      name: 'Bridge Beams',
+      size: {
+        powerUnits: [
+          {
+            type: 'TRKTRAC',
+            trailers: [
+              {
+                type: 'POLETRL',
+                allowJeep: true,
+                allowBooster: true,
+              },
+            ],
+          },
+        ],
+      }
     },
     {
       id: 'NONREDU',
-      name: 'Non reducible loads',
-    },
-    {
-      id: 'OILDRRG',
-      name: 'Oil drill rig',
-    },
-    {
-      id: 'OREBOXS',
-      name: 'Ore boxes',
-    },
-    {
-      id: 'PLSTEEL',
-      name: 'Plate steel',
-    },
-    {
-      id: 'STBEAMS',
-      name: 'Steel beams',
-    },
-    {
-      id: 'SHOVELS',
-      name: 'Shovels',
-    },
-    {
-      id: 'SKIDDER',
-      name: 'Skidder',
-    },
-    {
-      id: 'TRUSSES',
-      name: 'Trusses',
-    },
-    {
-      id: 'TANKSXX',
-      name: 'Tanks',
-    },
-    {
-      id: 'TRNSFRM',
-      name: 'Transformer',
-    },
-    {
-      id: 'TWRTUBE',
-      name: 'Tower tube',
-    },
-    {
-      id: 'VESSELS',
-      name: 'Vessels',
-    },
-    {
-      id: 'LMBEAMS',
-      name: 'Laminated beams',
-    },
-    {
-      id: 'YARDERX',
-      name: 'Yarder',
-    },
-    {
-      id: 'SKDSTAK',
-      name: 'Skid stack',
-    },
-    {
-      id: 'OTHERVE',
-      name: 'Other vehicle',
-    },
-    {
-      id: 'SCRAPER',
-      name: 'Scrapers',
-    },
-    {
-      id: 'BMCRANE',
-      name: 'Booms (cranes)',
-    },
-    {
-      id: 'GENVEHC',
-      name: 'General - vehicle and loads',
-    },
-    {
-      id: 'GENMOHO',
-      name: 'General - mobile homes',
+      name: 'Non-Reducible Loads',
     },
     {
       id: 'AUTOCRR',
-      name: 'Auto carrier, campers and boats (stinger steered)',
-      powerUnits: [
-        {
-          type: 'STINGER',
-          canFollow: [],
-        },
-      ],
-      trailers: [
-        {
-          type: 'STSTNGR',
-          canFollow: ['STINGER'],
-          sizeDimensions: [
-            {
-              frontProjection: 1,
-              rearProjection: 1.2,
-              width: 2.6,
-              height: 4.4,
-              length: 25,
-              regions: [
-                {
-                  region: 'LMN',
-                  height: 4.3,
-                },
-                {
-                  region: 'KTN',
-                  height: 4.3,
-                },
-                {
-                  region: 'PCE',
-                  height: 4.88,
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: 'BMPOLES',
-      name: 'Boomsticks and poles',
+      name: 'Auto Carrier, Campers And Boats (Stinger Steered Transporters Only)',
+      size: {
+        powerUnits: [
+          {
+            type: 'STINGER',
+            trailers: [
+              {
+                type: 'STSTNGR',
+                allowBooster: false,
+                allowJeep: false,
+                sizeDimensions: [
+                  {
+                    frontProjection: 1,
+                    rearProjection: 1.2,
+                    width: 2.6,
+                    height: 4.4,
+                    length: 25,
+                    regions: [
+                      {
+                        region: 'LMN',
+                        height: 4.3,
+                      },
+                      {
+                        region: 'KTN',
+                        height: 4.3,
+                      },
+                      {
+                        region: 'PCE',
+                        height: 4.88,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      }
     },
     {
       id: 'HAYRNPR',
-      name: 'Haybales (round) Peace River only',
-    },
-    {
-      id: 'BUSPONY',
-      name: 'Inter-city bus with pony trailer',
-    },
-    {
-      id: 'TOWTRCK',
-      name: 'Tow trucks and disabled vehicles',
+      name: 'Hay Bales (Round) Peace River Only',
     },
     {
       id: 'BRSHCUT',
-      name: 'Brushcutters (Peace only)',
-      powerUnits: [
-        {
-          type: 'TRKTRAC',
-          canFollow: [],
-        },
-        {
-          type: 'REGTRCK',
-          canFollow: [],
-        },
-      ],
-      trailers: [
-        {
-          type: 'JEEPSRG',
-          canFollow: ['TRKTRAC', 'JEEPSRG'],
-        },
-        {
-          type: 'BOOSTER',
-          canFollow: ['STSDBDK', 'BOOSTER'],
-        },
-        {
-          type: 'SEMITRL',
-          canFollow: ['TRKTRAC'],
-          sizeDimensions: [
-            {
-              length: 23,
-              regions: [
-                {
-                  region: 'PCE',
-                  width: 4.57,
-                  height: 5.33,
-                },
-              ],
-            },
-          ],
-        },
-        {
-          type: 'STSDBDK',
-          canFollow: ['TRKTRAC', 'JEEPSRG'],
-          sizeDimensions: [
-            {
-              length: 23,
-              regions: [
-                {
-                  region: 'PCE',
-                  width: 4.57,
-                  height: 5.33,
-                },
-              ],
-            },
-          ],
-        },
-        {
-          type: 'FULLLTL',
-          canFollow: ['REGTRCK'],
-          sizeDimensions: [
-            {
-              frontProjection: 1,
-              rearProjection: 1,
-              length: 23,
-              regions: [
-                {
-                  region: 'PCE',
-                  width: 4.57,
-                  height: 5.33,
-                },
-              ],
-            },
-          ],
-        },
-        {
-          type: 'NONEXXX',
-          canFollow: ['REGTRCK'],
-          sizeDimensions: [
-            {
-              frontProjection: 1,
-              rearProjection: 1,
-              length: 12.5,
-              regions: [
-                {
-                  region: 'PCE',
-                  width: 4.57,
-                  height: 5.33,
-                },
-              ],
-            },
-          ],
-        },
-        {
-          type: 'PONYTRL',
-          canFollow: ['REGTRCK'],
-          sizeDimensions: [
-            {
-              frontProjection: 1,
-              rearProjection: 1,
-              length: 23,
-              regions: [
-                {
-                  region: 'PCE',
-                  width: 4.57,
-                  height: 5.33,
-                },
-              ],
-            },
-          ],
-        },
-      ],
+      name: 'Brushcutters (Peace Only)',
+      size: {
+        powerUnits: [
+          {
+            type: 'TRKTRAC',
+            trailers: [
+              {
+                type: 'SEMITRL',
+                allowBooster: true,
+                allowJeep: true,
+                sizeDimensions: [
+                  {
+                    length: 23,
+                    regions: [
+                      {
+                        region: 'PCE',
+                        width: 4.57,
+                        height: 5.33,
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                type: 'STSDBDK',
+                allowBooster: true,
+                allowJeep: true,
+                sizeDimensions: [
+                  {
+                    length: 23,
+                    regions: [
+                      {
+                        region: 'PCE',
+                        width: 4.57,
+                        height: 5.33,
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                type: 'FULLLTL',
+                allowBooster: true,
+                allowJeep: true,
+                sizeDimensions: [
+                  {
+                    frontProjection: 1,
+                    rearProjection: 1,
+                    length: 23,
+                    regions: [
+                      {
+                        region: 'PCE',
+                        width: 4.57,
+                        height: 5.33,
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                type: 'NONEXXX',
+                allowBooster: false,
+                allowJeep: false,
+                sizeDimensions: [
+                  {
+                    frontProjection: 1,
+                    rearProjection: 1,
+                    length: 12.5,
+                    regions: [
+                      {
+                        region: 'PCE',
+                        width: 4.57,
+                        height: 5.33,
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                type: 'PONYTRL',
+                allowBooster: false,
+                allowJeep: false,
+                sizeDimensions: [
+                  {
+                    frontProjection: 1,
+                    rearProjection: 1,
+                    length: 23,
+                    regions: [
+                      {
+                        region: 'PCE',
+                        width: 4.57,
+                        height: 5.33,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            type: 'REGTRCK',
+            trailers: [
+              {
+                type: 'SEMITRL',
+                allowBooster: true,
+                allowJeep: true,
+                sizeDimensions: [
+                  {
+                    length: 23,
+                    regions: [
+                      {
+                        region: 'PCE',
+                        width: 4.57,
+                        height: 5.33,
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                type: 'STSDBDK',
+                allowBooster: true,
+                allowJeep: true,
+                sizeDimensions: [
+                  {
+                    length: 23,
+                    regions: [
+                      {
+                        region: 'PCE',
+                        width: 4.57,
+                        height: 5.33,
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                type: 'FULLLTL',
+                allowBooster: true,
+                allowJeep: true,
+                sizeDimensions: [
+                  {
+                    frontProjection: 1,
+                    rearProjection: 1,
+                    length: 23,
+                    regions: [
+                      {
+                        region: 'PCE',
+                        width: 4.57,
+                        height: 5.33,
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                type: 'NONEXXX',
+                allowBooster: false,
+                allowJeep: false,
+                sizeDimensions: [
+                  {
+                    frontProjection: 1,
+                    rearProjection: 1,
+                    length: 12.5,
+                    regions: [
+                      {
+                        region: 'PCE',
+                        width: 4.57,
+                        height: 5.33,
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                type: 'PONYTRL',
+                allowBooster: false,
+                allowJeep: false,
+                sizeDimensions: [
+                  {
+                    frontProjection: 1,
+                    rearProjection: 1,
+                    length: 23,
+                    regions: [
+                      {
+                        region: 'PCE',
+                        width: 4.57,
+                        height: 5.33,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      }
     },
     {
       id: 'FIXEDEQ',
-      name: 'Fixed equipment',
+      name: 'Fixed Equipment',
     },
   ],
   globalSizeDefaults: {

@@ -5,10 +5,9 @@ import {
   Vehicle,
   VehicleType,
   SizeDimension,
-  Trailer,
   RegionSizeOverride,
 } from 'onroute-policy-engine/types';
-import { extractIdentifiedObjects } from './helper/lists.helper';
+import { extractIdentifiedObjects, intersectIdMaps } from './helper/lists.helper';
 import { Engine, EngineResult } from 'json-rules-engine';
 import { getRulesEngines } from './helper/rules-engine.helper';
 import { ValidationResults } from './validation-results';
@@ -103,18 +102,160 @@ export class Policy {
    * Gets a list of all configured commodities in the policy definition.
    * @param permitTypeId Return only commodities valid for this permit type.
    *   If not supplied, return all commodities configured in policy. If permit
-   *   type does not require commodity (e.g. 'TROS'), return all commodities.
+   *   type does not require commodity (e.g. 'TROS'), return empty map.
    * @returns Map of commodity IDs to commodity names.
    */
   getCommodities(permitTypeId?: string): Map<string, string> {
     const permitType = this.getPermitTypeDefinition(permitTypeId);
-    const commodities = extractIdentifiedObjects(
-      this.policyDefinition.commodities,
-      permitType?.allowedCommodities,
-    );
-    return commodities;
+    if (!permitTypeId) {
+      // Permit type not supplied, return all commodities
+      return extractIdentifiedObjects(this.policyDefinition.commodities);
+
+    } else if (!permitType) {
+      // Permit type invalid, throw error
+      throw new Error(`Invalid permit type supplied: '${permitTypeId}'`);
+
+    } else if (!permitType.commodityRequired) {
+      return new Map<string, string>();
+
+    } else {
+      // Commodities for oversize permits are those which have at least one
+      // power unit defined in the size dimension object of the commodity.
+      const commoditiesForOS = extractIdentifiedObjects(
+        this.policyDefinition.commodities.filter(c => {
+          c.size?.powerUnits?.length;
+        })
+      );
+      // TODO when implementing overweight. Stub for now.
+      const commoditiesForOW: Map<string, string> = new Map<string, string>;
+
+      if (permitType.sizeDimensionRequired && permitType.weightDimensionRequired) {
+        return intersectIdMaps(commoditiesForOS, commoditiesForOW);
+
+      } else if (permitType.sizeDimensionRequired) {
+        return commoditiesForOS;
+
+      } else if (permitType.weightDimensionRequired) {
+        return commoditiesForOW;
+
+      } else {
+        // This permit type requires commodity selection, but does not
+        // require size or weight dimensions. For these permit types, the
+        // allowedCommodities must be configured in policy. Return these.
+        const commodities = extractIdentifiedObjects(
+          this.policyDefinition.commodities,
+          permitType.allowedCommodities,
+        );
+        return commodities;
+      }
+    }
   }
 
+  /**
+   * Gets a list of all allowable vehicle types for the given permit type
+   * and commodity. Includes all power units and trailers.
+   * @param permitTypeId ID of the permit type to get vehicles for
+   * @param commodityId ID of the commodity to get vehicles for
+   * @returns Map of two separate maps, one keyed on 'powerUnits' and the
+   * other keyed on 'trailers'. Each map consists of a string id for the 
+   * vehicle, and a string common name for the vehicle.
+   */
+  /*
+  getPermittableVehicleTypes(
+    permitTypeId: string,
+    commodityId: string,
+  ): Map<string, Map<string, string>> {
+    if (!permitTypeId || !commodityId) {
+      throw new Error('Missing permitTypeId and/or commodityId');
+    }
+
+    const permitType = this.getPermitTypeDefinition(permitTypeId);
+    if (!permitType) {
+      throw new Error(`Invalid permit type: '${permitTypeId}'`)
+    }
+
+    if (!permitType.commodityRequired) {
+      // If commodity is not required, this method cannot calculate the
+      // permittable vehicle types since they will not be configured.
+      throw new Error(`Permit type '${permitTypeId}' does not require a commodity`);
+    }
+
+    let puTypes: Map<string, string>;
+    let trTypes: Map<string, string>;
+    const allowableCommodities = this.getCommodities(permitTypeId);
+    if (!allowableCommodities.has(commodityId)) {
+      // If the commodity is not allowed for the permit type, no power
+      // units or trailers are allowed.
+      puTypes = new Map<string, string>();
+      trTypes = new Map<string, string>();
+
+    } else {
+      const commodity = this.getCommodityDefinition(commodityId);
+      if (!commodity) {
+        throw new Error(`Commodity id '${commodityId}' is not correctly configured in the policy definition`);
+      }
+
+      const puTypeIdsOS: Array<string> | undefined =
+        commodity.size?.powerUnits?.map((p) => p.type);
+      const trTypeIdsOS: Array<string> | undefined =
+        commodity.size?.trailers?.map((t) => t.type);
+      // TODO: implement along with overweight permits. Stub for now.
+      const puTypeIdsOW: Array<string> = [];
+      const trTypeIdsOW: Array<string> = [];
+
+      const puTypesOS = extractIdentifiedObjects(
+        this.policyDefinition.vehicleTypes.powerUnitTypes,
+        puTypeIdsOS,
+      );
+      const trTypesOS = extractIdentifiedObjects(
+        this.policyDefinition.vehicleTypes.trailerTypes,
+        trTypeIdsOS,
+      )
+      const puTypesOW = extractIdentifiedObjects(
+        this.policyDefinition.vehicleTypes.powerUnitTypes,
+        puTypeIdsOW,
+      );
+      const trTypesOW = extractIdentifiedObjects(
+        this.policyDefinition.vehicleTypes.trailerTypes,
+        trTypeIdsOW,
+      );
+
+      if (permitType.sizeDimensionRequired && permitType.weightDimensionRequired) {
+        puTypes = intersectIdMaps(puTypesOS, puTypesOW);
+        trTypes = intersectIdMaps(trTypesOS, trTypesOW);
+
+      } else if (permitType.sizeDimensionRequired) {
+        puTypes = puTypesOS;
+        trTypes = trTypesOS;
+
+      } else if (permitType.weightDimensionRequired) {
+        puTypes = puTypesOW;
+        trTypes = trTypesOW;
+
+      } else {
+        // This permit type requires commodity selection, but does not
+        // require size or weight dimensions. For these permit types, the
+        // allowedVehicles must be configured in policy. Return all power
+        // units and trailers from this list.
+        puTypes = extractIdentifiedObjects(
+          this.policyDefinition.vehicleTypes.powerUnitTypes,
+          permitType.allowedVehicles,
+        );
+        trTypes = extractIdentifiedObjects(
+          this.policyDefinition.vehicleTypes.trailerTypes,
+          permitType.allowedVehicles,
+        );
+      }
+    }
+
+    const vehicleTypes = new Map<string, Map<string, string>>();
+    vehicleTypes.set('powerUnits', puTypes);
+    vehicleTypes.set('trailers', trTypes);
+
+    return vehicleTypes;
+  }
+*/
+  
   /**
    * Gets a list of all allowable power unit types for the given permit type
    * and commodity.
@@ -122,37 +263,20 @@ export class Policy {
    * @param commodityId ID of the commodity to get power units for
    * @returns Map of power unit IDs to power unit names.
    */
+  /*
   getPermittablePowerUnitTypes(
     permitTypeId: string,
     commodityId: string,
   ): Map<string, string> {
-    let puTypes = new Map<string, string>();
-    if (permitTypeId && commodityId) {
-      const permitType = this.getPermitTypeDefinition(permitTypeId);
-      if (permitType) {
-        if (permitType.commodityRequired) {
-          // If commodity is not required, this method cannot calculate the
-          // permittable power unit types since they will not be configured.
-          const allowableCommodities = this.getCommodities(permitTypeId);
-          if (allowableCommodities.has(commodityId)) {
-            // If the commodity is not allowed for the permit type, no power
-            // units are allowed.
-            const commodity = this.getCommodityDefinition(commodityId);
-            if (commodity) {
-              // If commodity is null, this indicates a configuration error.
-              const puTypeIds: Array<string> | undefined =
-                commodity.powerUnits?.map((p) => p.type);
-              puTypes = extractIdentifiedObjects(
-                this.policyDefinition.vehicleTypes.powerUnitTypes,
-                puTypeIds,
-              );
-            }
-          }
-        }
-      }
+    try {
+      const vehicleTypes = this.getPermittableVehicleTypes(permitTypeId, commodityId);
+      const puTypes = vehicleTypes.get('powerUnits');
+      return puTypes ?? new Map<string, string>();
+    } catch (error) {
+      throw error;
     }
-    return puTypes;
   }
+  */
 
   /**
    * Gets a list of all configured vehicles for the given permit type and commodity.
@@ -161,35 +285,62 @@ export class Policy {
    * @param commodityId ID of the commodity to get vehicles for
    * @returns Array of vehicle objects for the permit type and commodityId
    */
+  /*
   getAllVehiclesForCommodity(
     permitTypeId: string,
     commodityId: string,
   ): Array<Vehicle> {
-    let vehicles: Array<Vehicle> = new Array<Vehicle>();
-    if (permitTypeId && commodityId) {
-      const permitType = this.getPermitTypeDefinition(permitTypeId);
-      if (permitType) {
-        if (permitType.commodityRequired) {
-          const allowableCommodities = this.getCommodities(permitTypeId);
-          if (allowableCommodities.has(commodityId)) {
-            const commodity = this.getCommodityDefinition(commodityId);
-            if (commodity) {
-              let pu: Array<Vehicle> | undefined = commodity.powerUnits;
-              if (!pu) {
-                pu = new Array<Vehicle>();
-              }
-              let tr: Array<Vehicle> | undefined = commodity.trailers;
-              if (!tr) {
-                tr = new Array<Vehicle>();
-              }
-              vehicles = pu.concat(tr);
-            }
-          }
+    let vehicles: Array<Vehicle>;
+    if (!permitTypeId || !commodityId) {
+      throw new Error('Missing permitTypeId and/or commodityId');
+    }
+
+    const permitType = this.getPermitTypeDefinition(permitTypeId);
+    if (!permitType) {
+      throw new Error(`Invalid permit type: '${permitTypeId}'`)
+    }
+
+    if (!permitType.commodityRequired) {
+      // If commodity is not required, this method cannot calculate the
+      // permittable vehicle types since they will not be configured.
+      throw new Error(`Permit type '${permitTypeId}' does not require a commodity`);
+    }
+
+    const allowableCommodities = this.getCommodities(permitTypeId);
+    if (!allowableCommodities.has(commodityId)) {
+      vehicles = new Array<Vehicle>();
+    } else {
+      const commodity = this.getCommodityDefinition(commodityId);
+      if (!commodity) {
+        throw new Error(`Commodity id '${commodityId}' is not correctly configured in the policy definition`);
+      }
+
+      if (permitType.sizeDimensionRequired && permitType.weightDimensionRequired) {
+        // TODO: need to intersect size and weight lists
+        vehicles = [];
+      } else if (permitType.sizeDimensionRequired) {
+        let pu: Array<Vehicle> | undefined = commodity.size?.powerUnits;
+        if (!pu) {
+          pu = new Array<Vehicle>();
         }
+        let tr: Array<Vehicle> | undefined = commodity.size?.trailers;
+        if (!tr) {
+          tr = new Array<Vehicle>();
+        }
+        vehicles = pu.concat(tr);
+      } else if (permitType.weightDimensionRequired) {
+        // TODO
+        vehicles = [];
+      } else {
+        // This case is undefined for this method.
+        // TODO: possibly return an error to indicate it should not be used?
+        vehicles = [];
       }
     }
+
     return vehicles;
   }
+  */
 
   /**
    * Gets the next permittable vehicles based on the supplied permit type,
@@ -204,6 +355,7 @@ export class Policy {
    * @returns Map of vehicle ID to vehicle name. Includes both power units and
    * trailers in a single return value (if applicable).
    */
+  /*
   getNextPermittableVehicles(
     permitTypeId: string,
     commodityId: string,
@@ -237,6 +389,7 @@ export class Policy {
     }
     return vehicleTypes;
   }
+  */
 
   /**
    * Returns whether the supplied configuration is valid for the given permit type
@@ -250,13 +403,22 @@ export class Policy {
    * @param commodityId ID of the commodity used for the configuration
    * @param currentConfiguration Current vehicle configuration to validate
    */
+  /*
   isConfigurationValid(
     permitTypeId: string,
     commodityId: string,
     currentConfiguration: Array<string>,
   ): boolean {
-    let isValid: boolean = false;
+    if (!permitTypeId || !commodityId) {
+      throw new Error('Missing permitTypeId and/or commodityId');
+    }
 
+    const permitType = this.getPermitTypeDefinition(permitTypeId);
+    if (!permitType) {
+      throw new Error(`Invalid permit type: '${permitTypeId}'`)
+    }
+
+    let isValid: boolean = false;
     const runningConfig: Array<string> = new Array<string>();
     for (let i = 0; i < currentConfiguration.length; i++) {
       // Note getNextPermittableVehicles will always return an empty map if either the
@@ -269,8 +431,9 @@ export class Policy {
       if (nextVehicles.has(currentConfiguration[i])) {
         // The next vehicle in the configuration is permittable as per policy
         runningConfig.push(currentConfiguration[i]);
-        const permitType = this.getPermitTypeDefinition(permitTypeId);
-        if (permitType?.sizeDimensionRequired) {
+        if (permitType.sizeDimensionRequired && permitType.weightDimensionRequired) {
+          // TODO
+        } else if (permitType.sizeDimensionRequired) {
           // Size dimension is required for this permit type, so we need to
           // flip the isValid flag only if we find a trailer that counts
           // for size dimensions
@@ -283,8 +446,10 @@ export class Policy {
               isValid = true;
             }
           }
+        } else if (permitType.weightDimensionRequired) {
+          // TODO
         } else {
-          // Size dimensions are not required for this permit type, so there are
+          // Dimensions are not required for this permit type, so there are
           // no requirements with respect to what trailers are permitted.
           isValid = true;
         }
@@ -297,6 +462,7 @@ export class Policy {
     }
     return isValid;
   }
+  */
 
   /**
    * Gets the maximum size dimensions for a given permit type, commodity,
@@ -314,6 +480,7 @@ export class Policy {
    * are configured).
    * @returns SizeDimension for the given permit type, commodity, and configuration
    */
+  /*
   getSizeDimension(
     permitTypeId: string,
     commodityId: string,
@@ -341,7 +508,7 @@ export class Policy {
       if (sizeTrailer) {
         // Get the trailer size dimension array for the commodity
         const commodity = this.getCommodityDefinition(commodityId);
-        const trailer: Trailer | undefined = commodity?.trailers?.find(
+        const trailer: VehicleSize | undefined = commodity?.size?.trailers?.find(
           (t) => t.type == sizeTrailer,
         );
         let sizeDimensions: Array<SizeDimension>;
@@ -450,6 +617,7 @@ export class Policy {
 
     return sizeDimension;
   }
+  */
 
   /**
    * Selects the correct size dimension from a list of potential candidates, based
@@ -458,6 +626,7 @@ export class Policy {
    * @param sizeDimensions Size dimension options to choose from
    * @param currentConfiguration The full vehicle configuration
    */
+  /*
   selectCorrectSizeDimension(
     sizeDimensions: Array<SizeDimension>,
     configuration: Array<string>,
@@ -509,6 +678,7 @@ export class Policy {
     }
     return matchingDimension;
   }
+  */
 
   /**
    * Gets a list of all configured power unit types in the policy definition.

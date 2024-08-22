@@ -30,6 +30,7 @@ type PermitVehicleDetails = {
   provinceCode: string;
   vehicleType: string;
   vehicleSubType: string;
+  licensedGVW?: number | null;
   saveVehicle?: boolean | null;
 };
 
@@ -53,7 +54,35 @@ type PermitData = {
   feeSummary?: string | null;
   startDate: string;
   expiryDate?: string | null;
+  permittedCommodity?: string | null;
+  vehicleConfiguration?: VehicleConfiguration | null;
+  permittedRoute?: PermittedRoute | null;
+  applicationNotes?: string | null;
 };
+
+type VehicleInConfiguration = {
+  vehicleSubType: string;
+};
+
+type VehicleConfiguration = {
+  overallLength?: number;
+  overallWidth?: number;
+  overallHeight?: number;
+  frontProjection?: number;
+  rearProjection?: number;
+  trailers?: Array<VehicleInConfiguration> | null;
+};
+
+type PermittedRoute = {
+  manualRoute?: ManualRoute | null;
+  routeDetails?: string | null;
+};
+
+type ManualRoute = {
+  highwaySequence: Array<string>;
+  origin: string;
+  destination: string;
+}
 
 type PermitApplication = {
   permitData: PermitData;
