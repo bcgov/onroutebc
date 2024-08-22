@@ -1,10 +1,10 @@
 /**
- * The roles of a user.
+ * The claims of a user.
  *
  * NOTE: The frontend has an identical copy of this. Any changes made here
  * should be cascaded.
  */
-export enum Role {
+export enum Claim {
   PUBLIC_AGENT = 'ORBC-PUBLIC-AGENT',
   PUBLIC_ORG_ADMIN = 'ORBC-PUBLIC-ORG-ADMIN',
   PUBLIC_USER_ADMIN = 'ORBC-PUBLIC-USER-ADMIN',
@@ -45,7 +45,7 @@ export enum Role {
   WRITE_LCV_FLAG = 'ORBC-WRITE-LCV-FLAG',
   READ_LOA = 'ORBC-READ-LOA',
   WRITE_LOA = 'ORBC-WRITE-LOA',
-  SEND_NOTIFICATION = 'ORBC-SEND-NOTIFICATION',  
+  SEND_NOTIFICATION = 'ORBC-SEND-NOTIFICATION',
   READ_POLICY_CONFIG = 'ORBC-READ-POLICY-CONFIG',
   WRITE_POLICY_CONFIG = 'ORBC-WRITE-POLICY-CONFIG',
 }
