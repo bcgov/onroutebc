@@ -83,7 +83,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         associatedCompanies,
         orbcUserFirstName,
         orbcUserLastName,
-        orbcUserRole: orbcUserRole,
+        orbcUserRole,
       } = await this.getUserDetails(
         access_token,
         userGUID,
