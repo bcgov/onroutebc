@@ -117,5 +117,5 @@ test-report.xml
 Chart.lock
 
 
-#Load Test Results
-*/test/load_tests/results/
+#Loadtest Results
+loadtests/results
