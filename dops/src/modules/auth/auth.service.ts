@@ -43,7 +43,7 @@ export class AuthService {
    * @returns The Roles as a promise of type {@link Role[]}
    */
   @LogAsyncMethodExecution()
-  async getRolesForUser(
+  async getClaimsForUser(
     accessToken: string,
     companyId?: number,
   ): Promise<AxiosResponse> {

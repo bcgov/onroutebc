@@ -144,7 +144,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     const accessApiResponse: AxiosResponse[] = await Promise.all([
       this.authService.getUserDetails(access_token, userGUID),
-      this.authService.getRolesForUser(access_token, companyId),
+      this.authService.getClaimsForUser(access_token, companyId),
       payload.identity_provider !== IDP.IDIR
         ? this.authService.getCompaniesForUser(access_token)
         : undefined,
@@ -168,10 +168,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const orbcUserLastName = user.lastName;
     const orbcUserRole = user.userRole;
 
-    const roles = accessApiResponse.at(1).data as Claim[];
+    const claims = accessApiResponse.at(1).data as Claim[];
 
     return {
-      roles,
+      claims,
       companyId,
       associatedCompanies,
       orbcUserFirstName,
