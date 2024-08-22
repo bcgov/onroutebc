@@ -12484,7 +12484,7 @@
             <connectTime>true</connectTime>
           </value>
         </objProp>
-        <stringProp name="filename">C:\Users\BRWANG\Software\JMeter\mytest\results\test-1.csv</stringProp>
+        <stringProp name="filename">${RESULTS_DIR}/frontend.csv</stringProp>
       </ResultCollector>
       <hashTree/>
     </hashTree>
