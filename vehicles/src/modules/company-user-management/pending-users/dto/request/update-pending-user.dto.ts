@@ -1,6 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { ClientUserRole } from '../../../../../common/enum/user-auth-group.enum';
+import { ClientUserRole } from '../../../../../common/enum/user-role.enum';
 import { IsEnum } from 'class-validator';
 
 /**

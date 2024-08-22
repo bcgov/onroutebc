@@ -39,7 +39,7 @@ import { DeletePendingUsersDto } from './dto/request/delete-pending-users.dto';
 import {
   ClientUserRole,
   IDIR_USER_ROLE_LIST,
-} from '../../../common/enum/user-auth-group.enum';
+} from '../../../common/enum/user-role.enum';
 import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
 
 @ApiTags('Company and User Management - Pending User')

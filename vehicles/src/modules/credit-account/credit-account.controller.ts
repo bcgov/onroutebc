@@ -28,7 +28,7 @@ import {
   ClientUserRole,
   IDIR_USER_ROLE_LIST,
   IDIRUserRole,
-} from '../../common/enum/user-auth-group.enum';
+} from '../../common/enum/user-role.enum';
 import { ReadCreditAccountMetadataDto } from './dto/response/read-credit-account-metadata.dto';
 import { ReadCreditAccountLimitDto } from './dto/response/read-credit-account-limit.dto';
 

@@ -7,7 +7,7 @@ import {
   ClientUserRole,
   GenericUserRole,
   IDIRUserRole,
-} from '../../../../src/common/enum/user-auth-group.enum';
+} from '../../../../src/common/enum/user-role.enum';
 import { UserStatus } from '../../../../src/common/enum/user-status.enum';
 
 export const SORT_ORDER_1 = '1';

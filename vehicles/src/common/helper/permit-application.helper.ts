@@ -12,7 +12,7 @@ import { PermitApprovalSource as PermitApprovalSourceEnum } from '../enum/permit
 import { randomInt } from 'crypto';
 import { Directory } from '../enum/directory.enum';
 import { doesUserHaveAuthGroup } from './auth.helper';
-import { IDIR_USER_ROLE_LIST, UserRole } from '../enum/user-auth-group.enum';
+import { IDIR_USER_ROLE_LIST, UserRole } from '../enum/user-role.enum';
 import { PPC_FULL_TEXT } from '../constants/api.constant';
 import { User } from '../../modules/company-user-management/users/entities/user.entity';
 import { ApplicationStatus } from '../enum/application-status.enum';

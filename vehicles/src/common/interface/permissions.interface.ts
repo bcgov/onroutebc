@@ -1,5 +1,5 @@
 import { Claim } from '../enum/claims.enum';
-import { ClientUserRole, IDIRUserRole } from '../enum/user-auth-group.enum';
+import { ClientUserRole, IDIRUserRole } from '../enum/user-role.enum';
 
 /**
  * The permission configuration for endpoints.

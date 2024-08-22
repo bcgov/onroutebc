@@ -35,7 +35,7 @@ import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-flag-ena
 import {
   ClientUserRole,
   IDIR_USER_ROLE_LIST,
-} from '../../common/enum/user-auth-group.enum';
+} from '../../common/enum/user-role.enum';
 
 @ApiBearerAuth()
 @ApiTags('Credit Account Users')

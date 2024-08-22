@@ -33,7 +33,7 @@ import { PaginationDto } from '../../../common/dto/paginate/pagination';
 import {
   ClientUserRole,
   IDIR_USER_ROLE_LIST,
-} from '../../../common/enum/user-auth-group.enum';
+} from '../../../common/enum/user-role.enum';
 import { DeleteDto } from '../../common/dto/response/delete.dto';
 import { ReadApplicationMetadataDto } from './dto/response/read-application-metadata.dto';
 import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';

@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { Base } from '../../../common/entities/base.entity';
 import { AutoMap } from '@automapper/classes';
-import { ClientUserRole } from '../../../../common/enum/user-auth-group.enum';
+import { ClientUserRole } from '../../../../common/enum/user-role.enum';
 
 @Entity({ name: 'ORBC_PENDING_USER' })
 export class PendingUser extends Base {

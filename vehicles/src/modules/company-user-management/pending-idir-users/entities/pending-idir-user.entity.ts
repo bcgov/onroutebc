@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryColumn } from 'typeorm';
 import { Base } from '../../../common/entities/base.entity';
 import { AutoMap } from '@automapper/classes';
-import { IDIRUserRole } from '../../../../common/enum/user-auth-group.enum';
+import { IDIRUserRole } from '../../../../common/enum/user-role.enum';
 
 @Entity({ name: 'ORBC_PENDING_IDIR_USER' })
 export class PendingIdirUser extends Base {

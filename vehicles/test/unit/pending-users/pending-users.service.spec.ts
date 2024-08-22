@@ -18,7 +18,7 @@ import {
   MockQueryRunnerManager,
   createQueryBuilderMock,
 } from '../../util/mocks/factory/dataSource.factory.mock';
-import { ClientUserRole } from '../../../src/common/enum/user-auth-group.enum';
+import { ClientUserRole } from '../../../src/common/enum/user-role.enum';
 import * as constants from '../../util/mocks/data/test-data.constants';
 import { redCompanyCvClientUserJWTMock } from 'test/util/mocks/data/jwt.mock';
 

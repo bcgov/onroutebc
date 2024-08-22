@@ -8,7 +8,7 @@ import {
   ClientUserRole,
   IDIR_USER_ROLE_LIST,
   UserRole,
-} from '../../common/enum/user-auth-group.enum';
+} from '../../common/enum/user-role.enum';
 import { Permit as Application } from '../permit-application-payment/permit/entities/permit.entity';
 import { AddToShoppingCartDto } from './dto/request/add-to-shopping-cart.dto';
 import { UpdateShoppingCartDto } from './dto/request/update-shopping-cart.dto';

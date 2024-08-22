@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
-import { IDIRUserRole } from '../../../../../../common/enum/user-auth-group.enum';
+import { IDIRUserRole } from '../../../../../../common/enum/user-role.enum';
 import { Transform } from 'class-transformer';
 
 export class GetStaffUserQueryParamsDto {
