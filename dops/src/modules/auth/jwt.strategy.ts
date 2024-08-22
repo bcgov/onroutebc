@@ -43,7 +43,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const access_token = req.headers.authorization;
     let userGUID: string,
       userName: string,
-      roles: Claim[],
+      claims: Claim[],
       associatedCompanies: number[],
       orbcUserFirstName: string,
       orbcUserLastName: string,
@@ -78,7 +78,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     if (req.headers.AuthOnly === 'false') {
       ({
-        roles,
+        claims,
         companyId,
         associatedCompanies,
         orbcUserFirstName,
@@ -97,7 +97,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const currentUser = {
       userName,
       userGUID,
-      roles,
+      claims,
       companyId,
       associatedCompanies,
       access_token,
