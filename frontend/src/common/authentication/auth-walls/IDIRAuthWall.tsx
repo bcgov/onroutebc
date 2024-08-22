@@ -3,10 +3,10 @@ import { useAuth } from "react-oidc-context";
 import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import { LoadIDIRUserContext } from "../LoadIDIRUserContext";
-import { LoadIDIRUserRoles } from "../LoadIDIRUserRoles";
+import { LoadIDIRUserClaims } from "../LoadIDIRUserClaims";
 import OnRouteBCContext from "../OnRouteBCContext";
-import { IDIRUserAuthGroupType } from "../types";
-import { DoesUserHaveAuthGroup } from "../util";
+import { IDIRUserRoleType } from "../types";
+import { DoesUserHaveRole } from "../util";
 import { Loading } from "../../pages/Loading";
 import { IDPS } from "../../types/idp";
 import { ERROR_ROUTES, HOME } from "../../../routes/constants";
@@ -15,18 +15,18 @@ const isIDIR = (identityProvider: string) => identityProvider === IDPS.IDIR;
 
 /**
  * This component ensures that a page is only available to IDIR users
- * with necessary roles and auth groups (as applicable).
+ * with necessary claims and roles (as applicable).
  *
  */
 export const IDIRAuthWall = ({
-  allowedAuthGroups,
+  allowedRoles,
 }: {
   /**
-   * The collection of auth groups allowed to have access to a page or action.
+   * The collection of roles allowed to have access to a page or action.
    * IDIR System Admin is assumed to be allowed regardless of it being passed.
    * If not provided, only a System Admin will be allowed to access.
    */
-  allowedAuthGroups?: IDIRUserAuthGroupType[];
+  allowedRoles?: IDIRUserRoleType[];
 }) => {
   const {
     isAuthenticated,
@@ -34,7 +34,7 @@ export const IDIRAuthWall = ({
     user: userFromToken,
   } = useAuth();
 
-  const { userRoles, idirUserDetails } = useContext(OnRouteBCContext);
+  const { userClaims, idirUserDetails } = useContext(OnRouteBCContext);
 
   const userIDP = userFromToken?.profile?.identity_provider as string;
 
@@ -65,10 +65,10 @@ export const IDIRAuthWall = ({
           </>
         );
       }
-      if (!userRoles) {
+      if (!userClaims) {
         return (
           <>
-            <LoadIDIRUserRoles />
+            <LoadIDIRUserClaims />
             <Loading />
           </>
         );
@@ -83,9 +83,9 @@ export const IDIRAuthWall = ({
       );
     }
 
-    const doesUserHaveAccess = DoesUserHaveAuthGroup<IDIRUserAuthGroupType>({
-      userAuthGroup: idirUserDetails?.userRole,
-      allowedAuthGroups,
+    const doesUserHaveAccess = DoesUserHaveRole<IDIRUserRoleType>({
+      userRole: idirUserDetails?.userRole,
+      allowedRoles: allowedRoles,
     });
 
     if (doesUserHaveAccess) {

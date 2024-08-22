@@ -24,7 +24,7 @@ import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
-import { BCeID_USER_AUTH_GROUP } from "../../../../../common/authentication/types";
+import { BCeID_USER_ROLE } from "../../../../../common/authentication/types";
 
 /**
  * Edit User form for User Management.
@@ -49,7 +49,7 @@ export const EditUserForm = memo(
         provinceCode: getDefaultRequiredVal("", userInfo?.provinceCode),
         city: getDefaultRequiredVal("", userInfo?.city),
         userRole: getDefaultRequiredVal(
-          BCeID_USER_AUTH_GROUP.COMPANY_ADMINISTRATOR,
+          BCeID_USER_ROLE.COMPANY_ADMINISTRATOR,
           userInfo?.userRole,
         ),
       },

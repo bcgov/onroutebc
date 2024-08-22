@@ -6,8 +6,8 @@ import { useLocation, useNavigate } from "react-router";
 import { Navigate } from "react-router-dom";
 
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { ROLES } from "../../../../common/authentication/types";
-import { DoesUserHaveRole } from "../../../../common/authentication/util";
+import { CLAIMS } from "../../../../common/authentication/types";
+import { DoesUserHaveClaim } from "../../../../common/authentication/util";
 import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
 import { FIVE_MINUTES } from "../../../../common/constants/constants";
 import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
@@ -39,11 +39,11 @@ interface ProfileDashboardTab {
 /**
  * Returns a boolean indicating if the logged in user is a BCeID org admin.
  *
- * @param userRoles The array of roles from the context.
+ * @param userClaims The array of claims from the context.
  * @returns A boolean value.
  */
-export const isBCeIDOrgAdmin = (userRoles: string[]): boolean => {
-  return Boolean(DoesUserHaveRole(userRoles, ROLES.PUBLIC_ORG_ADMIN));
+export const isBCeIDOrgAdmin = (userClaims: string[]): boolean => {
+  return Boolean(DoesUserHaveClaim(userClaims, CLAIMS.PUBLIC_ORG_ADMIN));
 };
 
 export const ManageProfilesDashboard = React.memo(() => {
@@ -62,7 +62,7 @@ export const ManageProfilesDashboard = React.memo(() => {
   const navigate = useNavigate();
 
   const {
-    userRoles,
+    userClaims,
     companyId: companyIdFromContext,
     idirUserDetails,
     userDetails,
@@ -72,13 +72,13 @@ export const ManageProfilesDashboard = React.memo(() => {
   const { data: creditAccountMetadata } =
     useGetCreditAccountMetadataQuery(companyId);
   const { data: featureFlags } = useFeatureFlagsQuery();
-  const populatedUserRoles = getDefaultRequiredVal([], userRoles);
+  const populatedUserClaims = getDefaultRequiredVal([], userClaims);
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userRole);
-  const isBCeIDAdmin = isBCeIDOrgAdmin(populatedUserRoles);
+  const isBCeIDAdmin = isBCeIDOrgAdmin(populatedUserClaims);
   const shouldAllowUserManagement = isBCeIDAdmin || isStaffActingAsCompany;
   const showSpecialAuth =
     !isStaffActingAsCompany &&
-    canViewSpecialAuthorizations(userRoles, userDetails?.userRole) &&
+    canViewSpecialAuthorizations(userClaims, userDetails?.userRole) &&
     featureFlags?.["LOA"] === "ENABLED";
 
   const isCreditAccountHolder =

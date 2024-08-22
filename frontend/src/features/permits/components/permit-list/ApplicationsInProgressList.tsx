@@ -19,7 +19,7 @@ import {
   getDefaultNullableVal,
   getDefaultRequiredVal,
 } from "../../../../common/helpers/util";
-import { UserAuthGroupType } from "../../../../common/authentication/types";
+import { UserRoleType } from "../../../../common/authentication/types";
 import { Nullable } from "../../../../common/types/common";
 import { deleteApplications } from "../../apiManager/permitsAPI";
 import { PermitApplicationOrigin } from "../../types/PermitApplicationOrigin";
@@ -37,9 +37,9 @@ import {
 } from "../../../../common/helpers/tableHelper";
 
 const getColumns = (
-  userAuthGroup?: Nullable<UserAuthGroupType>,
+  userRole?: Nullable<UserRoleType>,
 ): MRT_ColumnDef<ApplicationListItem>[] => {
-  return ApplicationInProgressColumnDefinition(userAuthGroup);
+  return ApplicationInProgressColumnDefinition(userRole);
 };
 
 export const ApplicationsInProgressList = ({
@@ -86,7 +86,7 @@ export const ApplicationsInProgressList = ({
   }, [applicationsInProgress?.meta?.totalItems]);
 
   const { idirUserDetails, userDetails } = useContext(OnRouteBCContext);
-  const userAuthGroup = getDefaultNullableVal(
+  const userRole = getDefaultNullableVal(
     idirUserDetails?.userRole,
     userDetails?.userRole,
   );
@@ -99,8 +99,8 @@ export const ApplicationsInProgressList = ({
     useState<boolean>(false);
 
   const columns = useMemo<MRT_ColumnDef<ApplicationListItem>[]>(
-    () => getColumns(userAuthGroup),
-    [userAuthGroup],
+    () => getColumns(userRole),
+    [userRole],
   );
 
   const onClickDelete = useCallback(() => {
@@ -137,8 +137,8 @@ export const ApplicationsInProgressList = ({
 
   const canRowBeSelected = useCallback(
     (permitApplicationOrigin?: Nullable<PermitApplicationOrigin>) =>
-      canUserAccessApplication(permitApplicationOrigin, userAuthGroup),
-    [userAuthGroup],
+      canUserAccessApplication(permitApplicationOrigin, userRole),
+    [userRole],
   );
 
   useEffect(() => {
@@ -184,7 +184,7 @@ export const ApplicationsInProgressList = ({
     enableRowActions: false,
     enableRowSelection: (row) =>
       canRowBeSelected(row?.original?.permitApplicationOrigin),
-    onRowSelectionChange: useCallback(setRowSelection, [userAuthGroup]),
+    onRowSelectionChange: useCallback(setRowSelection, [userRole]),
     getRowId: (originalRow) => {
       const applicationRow = originalRow as ApplicationListItem;
       return applicationRow.permitId;

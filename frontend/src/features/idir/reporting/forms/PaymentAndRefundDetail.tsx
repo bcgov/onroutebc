@@ -7,7 +7,7 @@ import { useAuth } from "react-oidc-context";
 
 import { SnackBarContext } from "../../../../App";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { IDIR_USER_AUTH_GROUP } from "../../../../common/authentication/types";
+import { IDIR_USER_ROLE } from "../../../../common/authentication/types";
 import { ONE_HOUR } from "../../../../common/constants/constants";
 import { Loading } from "../../../../common/pages/Loading";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
@@ -39,9 +39,9 @@ export const PaymentAndRefundDetail = () => {
   const { idirUserDetails } = useContext(OnRouteBCContext);
   const { user: idirUserFromAuthContext } = useAuth();
   const canSelectPermitIssuers =
-    idirUserDetails?.userRole === IDIR_USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR ||
-    idirUserDetails?.userRole === IDIR_USER_AUTH_GROUP.HQ_ADMINISTRATOR ||
-    idirUserDetails?.userRole === IDIR_USER_AUTH_GROUP.FINANCE;
+    idirUserDetails?.userRole === IDIR_USER_ROLE.SYSTEM_ADMINISTRATOR ||
+    idirUserDetails?.userRole === IDIR_USER_ROLE.HQ_ADMINISTRATOR ||
+    idirUserDetails?.userRole === IDIR_USER_ROLE.FINANCE;
   // GET the permit types.
   const permitTypesQuery = usePermitTypesQuery();
   const { setSnackBar } = useContext(SnackBarContext);

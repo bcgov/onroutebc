@@ -7,7 +7,7 @@ import { FieldValues, FormProvider, useForm } from "react-hook-form";
 import "./UserInfoWizard.scss";
 import { SnackBarContext } from "../../App";
 import { LoadBCeIDUserContext } from "../../common/authentication/LoadBCeIDUserContext";
-import { LoadBCeIDUserRolesByCompany } from "../../common/authentication/LoadBCeIDUserRolesByCompany";
+import { LoadBCeIDUserClaimsByCompany } from "../../common/authentication/LoadBCeIDUserClaimsByCompany";
 import OnRouteBCContext, {
   BCeIDUserDetailContext,
 } from "../../common/authentication/OnRouteBCContext";
@@ -85,7 +85,7 @@ export const UserInfoWizard = React.memo(() => {
     return (
       <>
         <LoadBCeIDUserContext />
-        <LoadBCeIDUserRolesByCompany />
+        <LoadBCeIDUserClaimsByCompany />
         <OnRouteBCProfileCreated />
       </>
     );

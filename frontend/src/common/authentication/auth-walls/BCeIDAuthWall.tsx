@@ -12,10 +12,10 @@ import { ERROR_ROUTES, HOME, IDIR_ROUTES } from "../../../routes/constants";
 import { Loading } from "../../pages/Loading";
 import { IDPS } from "../../types/idp";
 import { LoadBCeIDUserContext } from "../LoadBCeIDUserContext";
-import { LoadBCeIDUserRolesByCompany } from "../LoadBCeIDUserRolesByCompany";
+import { LoadBCeIDUserClaimsByCompany } from "../LoadBCeIDUserClaimsByCompany";
 import OnRouteBCContext from "../OnRouteBCContext";
-import { IDIRUserAuthGroupType, UserRolesType } from "../types";
-import { DoesUserHaveRole } from "../util";
+import { IDIRUserRoleType, UserClaimsType } from "../types";
+import { DoesUserHaveClaim } from "../util";
 import { IDIRAuthWall } from "./IDIRAuthWall";
 import { setRedirectInSession } from "../../helpers/util";
 import { getUserStorage } from "../../apiManager/httpRequestHandler";
@@ -25,15 +25,15 @@ export const isIDIR = (identityProvider: string) =>
 
 export const BCeIDAuthWall = ({
   requiredRole,
-  allowedIDIRAuthGroups,
+  allowedIDIRRoles,
 }: {
-  requiredRole?: UserRolesType;
+  requiredRole?: UserClaimsType;
   /**
-   * The collection of auth groups allowed to have access to a page or action.
+   * The collection of roles allowed to have access to a page or action.
    * IDIR System Admin is assumed to be allowed regardless of it being passed.
    * If not provided, only a System Admin will be allowed to access.
    */
-  allowedIDIRAuthGroups?: IDIRUserAuthGroupType[];
+  allowedIDIRRoles?: IDIRUserRoleType[];
 }) => {
   const {
     isAuthenticated,
@@ -42,7 +42,8 @@ export const BCeIDAuthWall = ({
     signinSilent,
   } = useAuth();
 
-  const { userRoles, companyId, isNewBCeIDUser } = useContext(OnRouteBCContext);
+  const { userClaims, companyId, isNewBCeIDUser } =
+    useContext(OnRouteBCContext);
   const userIDP = userFromToken?.profile?.identity_provider as string;
 
   const location = useLocation();
@@ -111,7 +112,7 @@ export const BCeIDAuthWall = ({
   if (isAuthenticated && isEstablishedUser) {
     if (isIDIR(userIDP)) {
       if (companyId) {
-        return <IDIRAuthWall allowedAuthGroups={allowedIDIRAuthGroups} />;
+        return <IDIRAuthWall allowedRoles={allowedIDIRRoles} />;
       } else {
         return (
           <Navigate
@@ -131,17 +132,17 @@ export const BCeIDAuthWall = ({
           </>
         );
       }
-      if (!userRoles) {
+      if (!userClaims) {
         return (
           <>
-            <LoadBCeIDUserRolesByCompany />
+            <LoadBCeIDUserClaimsByCompany />
             <Loading />
           </>
         );
       }
     }
 
-    if (!DoesUserHaveRole(userRoles, requiredRole)) {
+    if (!DoesUserHaveClaim(userClaims, requiredRole)) {
       return (
         <Navigate
           to={ERROR_ROUTES.UNAUTHORIZED}

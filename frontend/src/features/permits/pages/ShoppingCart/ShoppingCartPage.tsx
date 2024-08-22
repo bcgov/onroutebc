@@ -33,7 +33,7 @@ import { useShoppingCart } from "./hooks/useShoppingCart";
 import { useCheckOutdatedCart } from "./hooks/useCheckOutdatedCart";
 import { EditCartItemDialog } from "../../components/cart/EditCartItemDialog";
 import { UpdateCartDialog } from "../../components/cart/UpdateCartDialog";
-import { BCeID_USER_AUTH_GROUP } from "../../../../common/authentication/types";
+import { BCeID_USER_ROLE } from "../../../../common/authentication/types";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -63,7 +63,7 @@ export const ShoppingCartPage = () => {
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userRole);
   const isCompanyAdmin = Boolean(
-    userDetails?.userRole === BCeID_USER_AUTH_GROUP.COMPANY_ADMINISTRATOR,
+    userDetails?.userRole === BCeID_USER_ROLE.COMPANY_ADMINISTRATOR,
   );
   const enableCartFilter = isStaffActingAsCompany || isCompanyAdmin;
   const [searchParams] = useSearchParams();
