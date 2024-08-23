@@ -57,5 +57,8 @@ export const useUpdateLCV = () => {
         queryKey: QUERY_KEYS.SPECIAL_AUTH(response.data.companyId),
       });
     },
+    onError: () => {
+      console.error("Error updating LCV");
+    },
   });
 };

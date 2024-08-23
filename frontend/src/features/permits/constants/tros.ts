@@ -12,8 +12,8 @@ export const TROS_INELIGIBLE_TRAILERS = [...tros.ineligibleTrailerSubtypes];
 export const TROS_CONDITIONS: PermitCondition[] = [...tros.conditions];
 export const MANDATORY_TROS_CONDITIONS: PermitCondition[] = 
   TROS_CONDITIONS.filter(
-    (condition: PermitCondition) =>
-      condition.condition === "CVSE-1000" || condition.condition === "CVSE-1070"
+    ({ condition }: PermitCondition) =>
+      condition === "CVSE-1000" || condition === "CVSE-1070"
   );
 
 export const MIN_TROS_DURATION = COMMON_MIN_DURATION;
