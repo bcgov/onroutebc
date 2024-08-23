@@ -54,6 +54,9 @@ jobs:
             -JVEHICLES_API_URL=${{inputs.vehicles_api_url}}
             -JRESULTS_DIR=loadtests/results
 
+      - run: |
+          ls -al */
+
       - uses: actions/upload-artifact@v4.3.6
         with:
           name: jmeter-test-results
