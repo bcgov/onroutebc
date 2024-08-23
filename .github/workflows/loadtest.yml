@@ -5,6 +5,11 @@ on:
   workflow_dispatch:
     inputs:
       ### Required
+      num_threads:
+        description: 'Number of concurrent threads (USERS) for each test in sequence'
+        default: 200
+        required: true
+        type: integer
       dops_api_url:
         description: 'The url endpoint for the dops'
         default: onroutebc-test-dops.apps.silver.devops.gov.bc.ca
@@ -43,10 +48,11 @@ jobs:
             --loglevel INFO 
             --jmeterlogconf=log.conf
             -JBEARER_TOKEN=${{inputs.bearer_token}}
-            -JDOPS_API_URL=${{inputs.dops_api_url}}
+            -JNUM_THREADS=${{inputs.num_threads}}
             -JFRONTEND_API_URL=${{inputs.frontend_api_url}}
+            -JDOPS_API_URL=${{inputs.dops_api_url}}
             -JVEHICLES_API_URL=${{inputs.vehicles_api_url}}
-            -JRESULTS_DIR=loadtest/results
+            -JRESULTS_DIR=loadtests/results
 
       - uses: actions/upload-artifact@v4.3.6
         with:

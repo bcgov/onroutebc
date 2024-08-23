@@ -80,6 +80,11 @@
       <hashTree/>
       <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
         <collectionProp name="Arguments.arguments">
+          <elementProp name="NUM_THREADS" elementType="Argument">
+            <stringProp name="Argument.name">NUM_THREADS</stringProp>
+            <stringProp name="Argument.value">200</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
           <elementProp name="FRONTEND_API_URL" elementType="Argument">
             <stringProp name="Argument.name">FRONTEND_API_URL</stringProp>
             <stringProp name="Argument.value">onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/</stringProp>
@@ -124,7 +129,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">100</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${NUM_THREADS}</stringProp>
         <stringProp name="ThreadGroup.ramp_time">${__P(rampup,300)}</stringProp>
         <longProp name="ThreadGroup.start_time">1365261073000</longProp>
         <longProp name="ThreadGroup.end_time">1365261073000</longProp>
@@ -1501,7 +1506,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">100</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${NUM_THREADS}</stringProp>
         <stringProp name="ThreadGroup.ramp_time">${__P(rampup,300)}</stringProp>
         <longProp name="ThreadGroup.start_time">1365261073000</longProp>
         <longProp name="ThreadGroup.end_time">1365261073000</longProp>

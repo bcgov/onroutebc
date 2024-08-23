@@ -80,8 +80,8 @@
       <hashTree/>
       <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
         <collectionProp name="Arguments.arguments">
-          <elementProp name="USERS" elementType="Argument">
-            <stringProp name="Argument.name">USERS</stringProp>
+          <elementProp name="NUM_THREADS" elementType="Argument">
+            <stringProp name="Argument.name">NUM_THREADS</stringProp>
             <stringProp name="Argument.value">200</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
@@ -609,7 +609,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">${USERS}</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${NUM_THREADS}</stringProp>
         <stringProp name="ThreadGroup.ramp_time">${__P(rampup,300)}</stringProp>
         <longProp name="ThreadGroup.start_time">1365261073000</longProp>
         <longProp name="ThreadGroup.end_time">1365261073000</longProp>
@@ -736,7 +736,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">${USERS}</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${NUM_THREADS}</stringProp>
         <stringProp name="ThreadGroup.ramp_time">${__P(rampup,300)}</stringProp>
         <longProp name="ThreadGroup.start_time">1365261073000</longProp>
         <longProp name="ThreadGroup.end_time">1365261073000</longProp>
@@ -948,7 +948,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">${USERS}</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${NUM_THREADS}</stringProp>
         <stringProp name="ThreadGroup.ramp_time">${__P(rampup,300)}</stringProp>
         <longProp name="ThreadGroup.start_time">1365261073000</longProp>
         <longProp name="ThreadGroup.end_time">1365261073000</longProp>
