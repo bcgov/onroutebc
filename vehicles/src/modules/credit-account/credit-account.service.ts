@@ -286,7 +286,7 @@ export class CreditAccountService {
         IDIRUserRole.SYSTEM_ADMINISTRATOR,
         IDIRUserRole.FINANCE,
         IDIRUserRole.PPC_CLERK,
-        IDIRUserRole.PPC_SUPERVISOR,
+        IDIRUserRole.CTPO,
       ])
     ) {
       throw new DataNotFoundException();
@@ -341,7 +341,7 @@ export class CreditAccountService {
         IDIRUserRole.SYSTEM_ADMINISTRATOR,
         IDIRUserRole.FINANCE,
         IDIRUserRole.PPC_CLERK,
-        IDIRUserRole.PPC_SUPERVISOR,
+        IDIRUserRole.CTPO,
       ])
     ) {
       throw new DataNotFoundException();
@@ -1028,7 +1028,7 @@ export class CreditAccountService {
         IDIRUserRole.SYSTEM_ADMINISTRATOR,
         IDIRUserRole.FINANCE,
         IDIRUserRole.PPC_CLERK,
-        IDIRUserRole.PPC_SUPERVISOR,
+        IDIRUserRole.CTPO,
       ])
     ) {
       throw new DataNotFoundException();
@@ -1111,7 +1111,7 @@ export class CreditAccountService {
         IDIRUserRole.SYSTEM_ADMINISTRATOR,
         IDIRUserRole.FINANCE,
         IDIRUserRole.PPC_CLERK,
-        IDIRUserRole.PPC_SUPERVISOR,
+        IDIRUserRole.CTPO,
       ])
     ) {
       throw new DataNotFoundException();
@@ -1256,7 +1256,7 @@ export class CreditAccountService {
           case IDIRUserRole.SYSTEM_ADMINISTRATOR:
           case IDIRUserRole.HQ_ADMINISTRATOR:
           case IDIRUserRole.PPC_CLERK:
-          case IDIRUserRole.PPC_SUPERVISOR:
+          case IDIRUserRole.CTPO:
           case ClientUserRole.COMPANY_ADMINISTRATOR:
             return {
               company: true,
@@ -1279,7 +1279,7 @@ export class CreditAccountService {
           case IDIRUserRole.SYSTEM_ADMINISTRATOR:
           case IDIRUserRole.HQ_ADMINISTRATOR:
           case IDIRUserRole.PPC_CLERK:
-          case IDIRUserRole.PPC_SUPERVISOR:
+          case IDIRUserRole.CTPO:
             return {
               company: true,
               creditAccountUsers: { company: true },

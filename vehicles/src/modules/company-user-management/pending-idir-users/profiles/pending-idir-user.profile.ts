@@ -46,12 +46,6 @@ export class PendingIdirUsersProfile extends AutomapperProfile {
             return directory;
           }),
         ),
-        forMember(
-          (d) => d.userRole,
-          mapWithArguments(({ userRole }) => {
-            return userRole;
-          }),
-        ),
 
         forMember(
           (d) => d.createdDateTime,
