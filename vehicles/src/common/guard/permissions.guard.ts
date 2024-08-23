@@ -7,7 +7,7 @@ import { matchRoles } from '../helper/auth.helper';
 import { IRole } from '../interface/role.interface';
 import { IDP } from '../enum/idp.enum';
 import { IPermissions } from '../interface/permissions.interface';
-import { PERMISSIONS_KEY } from '../decorator/permissions.decorator';
+import { PERMISSIONS_KEY } from '../constants/api.constant';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {

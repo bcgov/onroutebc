@@ -6,8 +6,8 @@ import { IUserJWT } from '../interface/user-jwt.interface';
 import { matchRoles } from '../helper/auth.helper';
 import { IRole } from '../interface/role.interface';
 import { IDP } from 'src/enum/idp.enum';
-import { PERMISSIONS_KEY } from '../decorator/permissions.decorator';
 import { IPermissions } from '../interface/permissions.interface';
+import { PERMISSIONS_KEY } from '../constants/policy.constants';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
