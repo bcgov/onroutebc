@@ -1,7 +1,4 @@
-import {
-  BCeIDUserAuthGroupType,
-  BCeID_USER_AUTH_GROUP,
-} from "../authentication/types";
+import { BCeIDUserRoleType, BCeID_USER_ROLE } from "../authentication/types";
 import {
   Nullable,
   Optional,
@@ -217,14 +214,14 @@ export const convertToNumberIfValid = (
 };
 
 /**
- * Returns a label for the userAuthGroup.
- * @param userAuthGroup The userAuthGroup the user belongs to.
+ * Returns a label for the userRole.
+ * @param userRole The userRole the user belongs to.
  * @returns A string representing the label of the user.
  */
-export const getLabelForBCeIDUserAuthGroup = (
-  userAuthGroup: BCeIDUserAuthGroupType,
+export const getLabelForBCeIDUserRole = (
+  userRole: BCeIDUserRoleType,
 ): string => {
-  if (userAuthGroup === BCeID_USER_AUTH_GROUP.COMPANY_ADMINISTRATOR) {
+  if (userRole === BCeID_USER_ROLE.COMPANY_ADMINISTRATOR) {
     return "Administrator";
   }
   return "Permit Applicant";

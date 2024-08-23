@@ -35,7 +35,7 @@ export const NewBCeIDAuthWall = () => {
       if (
         !companyId &&
         isNewBCeIDUser === undefined &&
-        !userDetails?.userAuthGroup
+        !userDetails?.userRole
       ) {
         return (
           <>

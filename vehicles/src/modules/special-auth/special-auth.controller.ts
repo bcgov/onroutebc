@@ -17,8 +17,8 @@ import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { Request } from 'express';
 import { CreateLcvDto } from './dto/request/create-lcv.dto';
 import { CreateNoFeeDto } from './dto/request/create-no-fee.dto';
-import { Roles } from 'src/common/decorator/roles.decorator';
-import { Role } from 'src/common/enum/roles.enum';
+import { Permissions } from '../../common/decorator/permissions.decorator';
+import { Claim } from '../../common/enum/claims.enum';
 import { IsFeatureFlagEnabled } from 'src/common/decorator/is-feature-flag-enabled.decorator';
 
 @ApiBearerAuth()
@@ -48,7 +48,7 @@ export class SpecialAuthController {
     description:
       'Returns all special authorizations for a company in the database.',
   })
-  @Roles(Role.READ_SPECIAL_AUTH)
+  @Permissions(Claim.READ_SPECIAL_AUTH)
   @Get()
   async get(
     @Param() { companyId }: CompanyIdPathParamDto,
@@ -65,7 +65,7 @@ export class SpecialAuthController {
     description: 'LCV allowance updated successfully.',
     type: ReadSpecialAuthDto,
   })
-  @Roles(Role.WRITE_LCV_FLAG)
+  @Permissions(Claim.WRITE_LCV_FLAG)
   @Put('/lcv')
   async updateLcv(
     @Req() request: Request,
@@ -89,7 +89,7 @@ export class SpecialAuthController {
     description: 'No fee type updated successfully.',
     type: ReadSpecialAuthDto,
   })
-  @Roles(Role.WRITE_NOFEE)
+  @Permissions(Claim.WRITE_NOFEE)
   @Put('/no-fee')
   async updateNoFee(
     @Req() request: Request,
