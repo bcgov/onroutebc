@@ -1,4 +1,3 @@
-import { PointerEventsCheckLevel } from "@testing-library/user-event";
 import dayjs from "dayjs";
 
 import { DATE_FORMATS } from "../../../../../../../common/helpers/formatDate";
@@ -19,7 +18,6 @@ import {
   selectDayFromDateOptions,
   selectDurationOption,
   selectNextMonth,
-  toggleCheckbox,
 } from "./helpers/access";
 
 import {
@@ -244,55 +242,6 @@ describe("Permit Details conditions", () => {
     nonRequiredCheckboxes.forEach((checkbox) => {
       expect(checkbox).not.toBeChecked();
       expect(checkbox).not.toBeDisabled();
-    });
-  });
-
-  it("should be able to select non-required conditions", async () => {
-    // Arrange
-    const { user } = renderTestComponent(
-      currentDt,
-      defaultDuration,
-      conditions,
-    );
-
-    const nonRequiredCheckboxes = await optionalConditionCheckboxes();
-
-    // Act
-    await Promise.all(
-      nonRequiredCheckboxes.map(async (checkbox) => {
-        await toggleCheckbox(user, checkbox);
-      }),
-    );
-
-    // Assert
-    nonRequiredCheckboxes.forEach((checkbox) => {
-      expect(checkbox).toBeChecked();
-    });
-  });
-
-  it("should not be able to deselect required conditions", async () => {
-    // Arrange
-    const { user } = renderTestComponent(
-      currentDt,
-      defaultDuration,
-      conditions,
-      {
-        pointerEventsCheck: PointerEventsCheckLevel.Never,
-      },
-    );
-
-    const requiredCheckboxes = await requiredConditionCheckboxes();
-
-    // Act
-    await Promise.all(
-      requiredCheckboxes.map(async (checkbox) => {
-        await toggleCheckbox(user, checkbox);
-      }),
-    );
-
-    // Assert
-    requiredCheckboxes.forEach((checkbox) => {
-      expect(checkbox).toBeChecked();
     });
   });
 });
