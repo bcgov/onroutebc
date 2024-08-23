@@ -100,6 +100,11 @@
             <stringProp name="Argument.value"></stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="RESULTS_DIR" elementType="Argument">
+            <stringProp name="Argument.name">RESULTS_DIR</stringProp>
+            <stringProp name="Argument.value">~/results</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
           <elementProp name="KEYCLOAK_LOGIN_URL" elementType="Argument">
             <stringProp name="Argument.name">KEYCLOAK_LOGIN_URL</stringProp>
             <stringProp name="Argument.value">test.loginproxy.gov.bc.ca</stringProp>

@@ -95,6 +95,11 @@
             <stringProp name="Argument.value">onroutebc-test-dops.apps.silver.devops.gov.bc.ca</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="RESULTS_DIR" elementType="Argument">
+            <stringProp name="Argument.name">RESULTS_DIR</stringProp>
+            <stringProp name="Argument.value">~/results</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
           <elementProp name="BEARER_TOKEN" elementType="Argument">
             <stringProp name="Argument.name">BEARER_TOKEN</stringProp>
             <stringProp name="Argument.value"></stringProp>
