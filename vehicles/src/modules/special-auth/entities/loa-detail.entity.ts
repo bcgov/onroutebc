@@ -73,6 +73,10 @@ export class LoaDetail extends Base {
   })
   isActive: boolean;
 
+  @AutoMap()
+  @Column({ type: 'integer', name: 'REVISION', nullable: true })
+  revision: number;
+
   @AutoMap(() => LoaPermitType)
   @OneToMany(() => LoaPermitType, (LoaPermitType) => LoaPermitType.loa, {
     cascade: true,

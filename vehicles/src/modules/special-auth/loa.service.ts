@@ -13,14 +13,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { LoaDetail } from './entities/loa-detail.entity';
 import { Brackets, DataSource, Repository } from 'typeorm';
 import { Mapper } from '@automapper/core';
-import { LoaVehicle } from './entities/loa-vehicles.entity';
-import { LoaPermitType } from './entities/loa-permit-type-details.entity';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { DopsService } from '../common/dops.service';
 import { FileDownloadModes } from 'src/common/enum/file-download-modes.enum';
 import { Response } from 'express';
 import { UpdateLoaDto } from './dto/request/update-loa.dto';
 import { Nullable } from '../../common/types/common';
+import { Company } from '../company-user-management/company/entities/company.entity';
 
 @Injectable()
 export class LoaService {
@@ -62,7 +61,6 @@ export class LoaService {
       companyId,
       file,
     );
-
     const loa = await this.classMapper.mapAsync(
       createLoaDto,
       CreateLoaDto,
@@ -71,6 +69,7 @@ export class LoaService {
         extraArgs: () => ({
           companyId: companyId,
           documentId: readFileDto.documentId,
+          isActive: true,
           userName: currentUser.userName,
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
@@ -259,7 +258,7 @@ export class LoaService {
     let readFileDto: ReadFileDto;
     if (file) {
       readFileDto = await this.dopsService.upload(currentUser, companyId, file);
-    } else {
+    } else if (existingLoaDetail.documentId) {
       readFileDto = (await this.dopsService.download(
         currentUser,
         existingLoaDetail.documentId,
@@ -273,21 +272,33 @@ export class LoaService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      await queryRunner.manager.delete(LoaVehicle, { loa: { loaId: loaId } });
-      await queryRunner.manager.delete(LoaPermitType, {
-        loa: { loaId: loaId },
-      });
-      const isActive = existingLoaDetail.isActive;
       const documentId = readFileDto?.documentId;
-      const updatedLoaDetail: LoaDetail = await this.classMapper.mapAsync(
+      const commonFields = {
+        updatedUser: currentUser.userName,
+        updatedUserGuid: currentUser.userGUID,
+        updatedDateTime: new Date(),
+        updatedUserDirectory: currentUser.orbcUserDirectory,
+      };
+      const updatedLoaDetail = new LoaDetail();
+      updatedLoaDetail.company = new Company();
+      Object.assign(updatedLoaDetail, {
+        ...commonFields,
+        company: { companyId: companyId },
+        loaId: existingLoaDetail.loaId,
+        isActive: false,
+        documentId,
+      });
+      await queryRunner.manager.save(updatedLoaDetail);
+      const createLoaDetail = await this.classMapper.mapAsync(
         updateLoaDto,
-        UpdateLoaDto,
+        CreateLoaDto,
         LoaDetail,
         {
           extraArgs: () => ({
-            loaId,
-            isActive,
-            documentId,
+            companyId: companyId,
+            documentId: documentId,
+            isActive: true,
+            revision: existingLoaDetail.revision + 1,
             userName: currentUser.userName,
             userGUID: currentUser.userGUID,
             timestamp: new Date(),
@@ -295,8 +306,7 @@ export class LoaService {
           }),
         },
       );
-
-      savedLoaDetail = await queryRunner.manager.save(updatedLoaDetail);
+      savedLoaDetail = await queryRunner.manager.save(createLoaDetail);
 
       await queryRunner.commitTransaction();
     } catch (error) {
