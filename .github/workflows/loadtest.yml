@@ -41,8 +41,8 @@ jobs:
 
       - uses: rbhadti94/apache-jmeter-action@v0.5.0
         with:
-          testFilePath: loadtests/dops
-          outputReportsFolder: loadtests/results
+          testFilePath: loadtests/dops/orbc_load_test_plan_dops.jmx
+          outputReportsFolder: results_dops
           args: |
             --loglevel INFO 
             --jmeterlogconf=log.conf
@@ -51,12 +51,12 @@ jobs:
             -JFRONTEND_API_URL=${{inputs.frontend_api_url}}
             -JDOPS_API_URL=${{inputs.dops_api_url}}
             -JVEHICLES_API_URL=${{inputs.vehicles_api_url}}
-            -JRESULTS_DIR=loadtests/results
+            -JRESULTS_DIR=results_dops
       
       - uses: rbhadti94/apache-jmeter-action@v0.5.0
         with:
-          testFilePath: loadtests/vehicles
-          outputReportsFolder: loadtests/results
+          testFilePath: loadtests/vehicles/orbc_load_test_plan_vehicles.jmx
+          outputReportsFolder: results_vehicles
           args: |
             --loglevel INFO 
             --jmeterlogconf=log.conf
@@ -65,12 +65,12 @@ jobs:
             -JFRONTEND_API_URL=${{inputs.frontend_api_url}}
             -JDOPS_API_URL=${{inputs.dops_api_url}}
             -JVEHICLES_API_URL=${{inputs.vehicles_api_url}}
-            -JRESULTS_DIR=loadtests/results
+            -JRESULTS_DIR=results_vehicles
       
       - uses: rbhadti94/apache-jmeter-action@v0.5.0
         with:
-          testFilePath: loadtests/frontend
-          outputReportsFolder: loadtests/results
+          testFilePath: loadtests/frontend/orbc_load_test_plan_frontend.jmx
+          outputReportsFolder: results_frontend
           args: |
             --loglevel INFO 
             --jmeterlogconf=log.conf
@@ -79,13 +79,19 @@ jobs:
             -JFRONTEND_API_URL=${{inputs.frontend_api_url}}
             -JDOPS_API_URL=${{inputs.dops_api_url}}
             -JVEHICLES_API_URL=${{inputs.vehicles_api_url}}
-            -JRESULTS_DIR=loadtests/results
-
-      - run: |
-          ls -al loadtests/results
+            -JRESULTS_DIR=results_frontend
 
       - uses: actions/upload-artifact@v4.3.6
         with:
-          name: jmeter-test-results
-          path: loadtests/results
+          name: jmeter-test-results-dops
+          path: results_dops
 
+      - uses: actions/upload-artifact@v4.3.6
+        with:
+          name: jmeter-test-results-vehicles
+          path: results_vehicles
+      
+      - uses: actions/upload-artifact@v4.3.6
+        with:
+          name: jmeter-test-results-frontend
+          path: results_frontend
