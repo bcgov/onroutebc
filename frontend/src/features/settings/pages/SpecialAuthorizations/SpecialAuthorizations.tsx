@@ -51,39 +51,39 @@ export const SpecialAuthorizations = ({
   const [loaToEdit, setLoaToEdit] = useState<RequiredOrNull<string>>(null);
 
   const {
-    userRoles,
+    userClaims,
     idirUserDetails,
     userDetails,
   } = useContext(OnRouteBCContext);
 
   const canEditNoFeePermits = canUpdateNoFeePermitsFlag(
-    userRoles,
-    getDefaultNullableVal(idirUserDetails?.userAuthGroup, userDetails?.userAuthGroup),
+    userClaims,
+    getDefaultNullableVal(idirUserDetails?.userRole, userDetails?.userRole),
   );
 
   const canViewNoFeePermits = canViewNoFeePermitsFlag(
-    userRoles,
-    getDefaultNullableVal(idirUserDetails?.userAuthGroup, userDetails?.userAuthGroup),
+    userClaims,
+    getDefaultNullableVal(idirUserDetails?.userRole, userDetails?.userRole),
   );
 
   const canUpdateLCV = canUpdateLCVFlag(
-    userRoles,
-    getDefaultNullableVal(idirUserDetails?.userAuthGroup, userDetails?.userAuthGroup),
+    userClaims,
+    getDefaultNullableVal(idirUserDetails?.userRole, userDetails?.userRole),
   );
 
   const canViewLCV = canViewLCVFlag(
-    userRoles,
-    getDefaultNullableVal(idirUserDetails?.userAuthGroup, userDetails?.userAuthGroup),
+    userClaims,
+    getDefaultNullableVal(idirUserDetails?.userRole, userDetails?.userRole),
   );
 
   const canWriteLOA = canUpdateLOA(
-    userRoles,
-    getDefaultNullableVal(idirUserDetails?.userAuthGroup, userDetails?.userAuthGroup),
+    userClaims,
+    getDefaultNullableVal(idirUserDetails?.userRole, userDetails?.userRole),
   );
 
   const canReadLOA = canViewLOA(
-    userRoles,
-    getDefaultNullableVal(idirUserDetails?.userAuthGroup, userDetails?.userAuthGroup),
+    userClaims,
+    getDefaultNullableVal(idirUserDetails?.userRole, userDetails?.userRole),
   );
 
   const updateNoFeeMutation = useUpdateNoFee();
@@ -200,8 +200,8 @@ export const SpecialAuthorizations = ({
     }
   };
 
-  const showExpiredLOAsLink = canReadLOA && (expiredLOAs.length > 0);
-  const showActiveLOAsList = canReadLOA && (activeLOAs.length > 0);
+  const showExpiredLOAsLink = canReadLOA && expiredLOAs.length > 0;
+  const showActiveLOAsList = canReadLOA && activeLOAs.length > 0;
   const showExpiredLOAsModal = canReadLOA && showExpiredLOAs;
   const showDeleteDialog = canWriteLOA && loaToDelete;
 
@@ -214,7 +214,7 @@ export const SpecialAuthorizations = ({
       />
     ) : null;
   }
-  
+
   return (
     <div className="special-authorizations">
       {canViewNoFeePermits ? (
@@ -260,10 +260,7 @@ export const SpecialAuthorizations = ({
               color="tertiary"
               onClick={handleAddLOA}
             >
-              <FontAwesomeIcon
-                className="add-loa-btn__icon"
-                icon={faPlus}
-              />
+              <FontAwesomeIcon className="add-loa-btn__icon" icon={faPlus} />
               Add an LOA
             </Button>
           ) : (
@@ -274,9 +271,7 @@ export const SpecialAuthorizations = ({
 
           {showActiveLOAsList ? (
             <div className="active-loas">
-              <div className="active-loas__header">
-                Active LOA(s)
-              </div>
+              <div className="active-loas__header">Active LOA(s)</div>
 
               <LOAList
                 loas={activeLOAs}

@@ -23,8 +23,8 @@ import { Request, Response } from 'express';
 import { IUserJWT } from '../../interface/user-jwt.interface';
 import { CreateGeneratedDocumentDto } from './dto/request/create-generated-document.dto';
 import { IDP } from '../../enum/idp.enum';
-import { Roles } from '../../decorator/roles.decorator';
-import { Role } from '../../enum/roles.enum';
+import { Permissions } from '../../decorator/permissions.decorator';
+import { Claim } from '../../enum/claims.enum';
 import { CreateGeneratedReportDto } from './dto/request/create-generated-report.dto';
 import { DgenService } from './dgen.service';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
@@ -62,7 +62,7 @@ export class DgenController {
     example: '74',
     description: 'Required when IDP is not IDIR .',
   })
-  @Roles(Role.GENERATE_DOCUMENT)
+  @Permissions(Claim.GENERATE_DOCUMENT)
   @UseGuards(JwtOneOfAuthGuard)
   @Post('/template/render')
   async generate(
@@ -85,7 +85,7 @@ export class DgenController {
     return readFileDto;
   }
 
-  @Roles(Role.GENERATE_REPORT)
+  @Permissions(Claim.GENERATE_REPORT)
   @Post('/report/render')
   async generateReport(
     @Req() request: Request,

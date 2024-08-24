@@ -98,7 +98,7 @@ export const ViewCreditAccount = ({
             additionalConditionToCheck={() => {
               // In case of BCeID user, CV - CA is only allowed
               // to see the account details if the status is active.
-              if (userDetails?.userAuthGroup) {
+              if (userDetails?.userRole) {
                 return (
                   creditAccount.creditAccountStatusType ===
                   CREDIT_ACCOUNT_STATUS_TYPE.ACTIVE

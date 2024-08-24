@@ -17,7 +17,7 @@ import {
 } from '../../util/mocks/data/user.mock';
 import { IUserJWT } from '../../../src/common/interface/user-jwt.interface';
 import { GetStaffUserQueryParamsDto } from '../../../src/modules/company-user-management/users/dto/request/queryParam/getStaffUser.query-params.dto';
-import { IDIRUserAuthGroup } from '../../../src/common/enum/user-auth-group.enum';
+import { IDIRUserRole } from '../../../src/common/enum/user-role.enum';
 import { BadRequestException } from '@nestjs/common';
 
 const COMPANY_ID_99 = 99;
@@ -72,13 +72,13 @@ describe('UsersController', () => {
       request.user = redCompanyAdminUserJWTMock;
       const currentUser = request.user as IUserJWT;
 
-      userService.getRolesForUser.mockResolvedValue(currentUser.roles);
-      const retUserRoles = await controller.getRolesForUsers(request, {
+      userService.getClaimsForUser.mockResolvedValue(currentUser.claims);
+      const retUserRoles = await controller.getClaimsForUsers(request, {
         companyId: constants.RED_COMPANY_ID,
       });
       expect(typeof retUserRoles).toBe('object');
 
-      expect(userService.getRolesForUser).toHaveBeenCalledWith(
+      expect(userService.getClaimsForUser).toHaveBeenCalledWith(
         currentUser.userGUID,
         constants.RED_COMPANY_ID,
       );
@@ -97,7 +97,7 @@ describe('UsersController', () => {
 
       const getStaffUserQueryParamsDto: GetStaffUserQueryParamsDto = {
         permitIssuerPPCUser: false,
-        userAuthGroup: IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR,
+        userRole: IDIRUserRole.SYSTEM_ADMINISTRATOR,
       };
       const retUsers = await controller.findAll(
         request,

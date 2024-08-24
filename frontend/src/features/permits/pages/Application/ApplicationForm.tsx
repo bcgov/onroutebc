@@ -52,22 +52,16 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     idirUserDetails,
   } = useContext(OnRouteBCContext);
 
-  const isStaffUser = Boolean(idirUserDetails?.userAuthGroup);
+  const isStaffUser = Boolean(idirUserDetails?.userRole);
   const companyInfoQuery = useCompanyInfoQuery();
   const companyInfo = companyInfoQuery.data;
 
   // Company id should be set by context, otherwise default to companyId in session and then the fetched companyId
   const companyId = getDefaultRequiredVal(
     "",
-    applyWhenNotNullable(
-      id => `${id}`,
-      companyIdFromContext,
-    ),
+    applyWhenNotNullable((id) => `${id}`, companyIdFromContext),
     getCompanyIdFromSession(),
-    applyWhenNotNullable(
-      id => `${id}`,
-      companyInfo?.companyId,
-    ),
+    applyWhenNotNullable((id) => `${id}`, companyInfo?.companyId),
   );
 
   const { data: specialAuthorizations } = useFetchSpecialAuthorizations(companyId);
@@ -265,7 +259,11 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
           companyInfo={companyInfo}
           durationOptions={durationOptionsForPermitType(permitType)}
           doingBusinessAs={doingBusinessAs}
-          pastStartDateStatus={isStaffUser ? PAST_START_DATE_STATUSES.WARNING : PAST_START_DATE_STATUSES.FAIL}
+          pastStartDateStatus={
+            isStaffUser
+              ? PAST_START_DATE_STATUSES.WARNING
+              : PAST_START_DATE_STATUSES.FAIL
+          }
           isLcvDesignated={isLcvDesignated}
         />
       </FormProvider>

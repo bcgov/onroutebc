@@ -21,7 +21,7 @@ import { NavIconSideBar } from "./common/components/naviconsidebar/NavIconSideBa
 import { NavIconHomeButton } from "./common/components/naviconsidebar/NavIconHomeButton";
 import { NavIconReportButton } from "./common/components/naviconsidebar/NavIconReportButton";
 import { Nullable, Optional } from "./common/types/common";
-import { VerifiedClient, UserRolesType } from "./common/authentication/types";
+import { VerifiedClient, UserClaimsType } from "./common/authentication/types";
 import { SuspendSnackBar } from "./common/components/snackbar/SuspendSnackBar";
 import { CartContextProvider } from "./features/permits/context/CartContextProvider";
 import {
@@ -72,7 +72,7 @@ const App = () => {
     alertType: "info",
   });
 
-  const [userRoles, setUserRoles] = useState<Nullable<UserRolesType[]>>();
+  const [userClaims, setUserClaims] = useState<Nullable<UserClaimsType[]>>();
   const [companyId, setCompanyId] = useState<Optional<number>>();
   const [onRouteBCClientNumber, setOnRouteBCClientNumber] =
     useState<Optional<string>>();
@@ -118,8 +118,8 @@ const App = () => {
           <OnRouteBCContext.Provider
             value={useMemo(() => {
               return {
-                userRoles,
-                setUserRoles,
+                userClaims,
+                setUserClaims,
                 companyId,
                 setCompanyId,
                 userDetails,
@@ -139,7 +139,7 @@ const App = () => {
                 clearCompanyContext,
               };
             }, [
-              userRoles,
+              userClaims,
               companyId,
               userDetails,
               companyLegalName,

@@ -1,10 +1,10 @@
 /**
- * The roles of a user.
+ * The claim of a user.
  *
  * NOTE: The frontend has an identical copy of this. Any changes made here
  * should be cascaded.
  */
-export enum Role {
+export enum Claim {
   PUBLIC_AGENT = 'ORBC-PUBLIC-AGENT',
   PUBLIC_ORG_ADMIN = 'ORBC-PUBLIC-ORG-ADMIN',
   PUBLIC_USER_ADMIN = 'ORBC-PUBLIC-USER-ADMIN',

@@ -5,7 +5,7 @@ import { useAuth } from "react-oidc-context";
 
 import "./CreateProfileSteps.scss";
 import { Nullable } from "../../../../common/types/common";
-import { LoadBCeIDUserRolesByCompany } from "../../../../common/authentication/LoadBCeIDUserRolesByCompany";
+import { LoadBCeIDUserClaimsByCompany } from "../../../../common/authentication/LoadBCeIDUserClaimsByCompany";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { Banner } from "../../../../common/components/dashboard/components/banner/Banner";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
@@ -91,7 +91,7 @@ export const CreateProfileSteps = React.memo(() => {
   if (clientNumber) {
     return (
       <>
-        <LoadBCeIDUserRolesByCompany />
+        <LoadBCeIDUserClaimsByCompany />
         <OnRouteBCProfileCreated onRouteBCClientNumber={clientNumber} />
       </>
     );
@@ -144,13 +144,14 @@ export const CreateProfileSteps = React.memo(() => {
                         text: "step__step-number",
                         active: "step__icon--active",
                         completed: "step__icon--completed",
-                      }
+                      },
                     }}
-                  >{label}</StepLabel>
+                  >
+                    {label}
+                  </StepLabel>
                 </Step>
               ))}
             </Stepper>
-
           </div>
           <FormProvider {...companyAndUserFormMethods}>
             <CompanyAndUserInfoSteps
