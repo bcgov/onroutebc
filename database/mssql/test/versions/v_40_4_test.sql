@@ -1,4 +1,4 @@
--- Test that the role types have been inserted correctly against user auth groups
+-- Test that constraints have been added successfully
 SET NOCOUNT ON
 
 IF (OBJECT_ID('[$(DB_NAME)].[permit].[FK_ORBC_SPECIAL_AUTH_NO_FEE_TYPE]','D') IS NOT NULL) 
