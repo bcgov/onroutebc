@@ -19,11 +19,11 @@ import {
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Request } from 'express';
-import { Roles } from '../../common/decorator/roles.decorator';
+import { Permissions } from '../../common/decorator/permissions.decorator';
 import { ExceptionDto } from '../../common/exception/exception.dto';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
 
-import { Role } from '../../common/enum/roles.enum';
+import { Claim } from '../../common/enum/claims.enum';
 import { DeleteDto } from '../common/dto/response/delete.dto';
 import { CreditAccountService } from './credit-account.service';
 import { CreateCreditAccountUserDto } from './dto/request/create-credit-account-user.dto';
@@ -33,9 +33,9 @@ import { GetCreditAccountUserQueryParamsDto } from './dto/request/queryParam/get
 import { ReadCreditAccountUserDto } from './dto/response/read-credit-account-user.dto';
 import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-flag-enabled.decorator';
 import {
-  ClientUserAuthGroup,
-  IDIR_USER_AUTH_GROUP_LIST,
-} from '../../common/enum/user-auth-group.enum';
+  ClientUserRole,
+  IDIR_USER_ROLE_LIST,
+} from '../../common/enum/user-role.enum';
 
 @ApiBearerAuth()
 @ApiTags('Credit Account Users')
@@ -80,7 +80,7 @@ export class CreditAccountUserController {
     type: ReadCreditAccountUserDto,
   })
   @Put()
-  @Roles(Role.WRITE_CREDIT_ACCOUNT)
+  @Permissions(Claim.WRITE_CREDIT_ACCOUNT)
   async addOrActivateCreditAccountUser(
     @Req() request: Request,
     @Param() { companyId, creditAccountId }: CreditAccountIdPathParamDto,
@@ -113,7 +113,7 @@ export class CreditAccountUserController {
     type: DeleteDto,
   })
   @Delete()
-  @Roles(Role.WRITE_CREDIT_ACCOUNT)
+  @Permissions(Claim.WRITE_CREDIT_ACCOUNT)
   async deactivateCreditAccountUser(
     @Req() request: Request,
     @Param() { companyId, creditAccountId }: CreditAccountIdPathParamDto,
@@ -145,12 +145,9 @@ export class CreditAccountUserController {
     type: [ReadCreditAccountUserDto],
   })
   @Get()
-  @Roles({
-    userAuthGroup: [
-      ...IDIR_USER_AUTH_GROUP_LIST,
-      ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
-    ],
-    oneOf: [Role.READ_CREDIT_ACCOUNT],
+  @Permissions({
+    userRole: [...IDIR_USER_ROLE_LIST, ClientUserRole.COMPANY_ADMINISTRATOR],
+    oneOf: [Claim.READ_CREDIT_ACCOUNT],
   })
   async getCreditAccountUsers(
     @Req() request: Request,

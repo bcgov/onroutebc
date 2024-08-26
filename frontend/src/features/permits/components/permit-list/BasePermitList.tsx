@@ -28,8 +28,8 @@ import { IDIRPermitSearchRowActions } from "../../../idir/search/components/IDIR
 import { hasPermitExpired } from "../../helpers/permitState";
 import { isPermitInactive } from "../../types/PermitStatus";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { DoesUserHaveAuthGroup } from "../../../../common/authentication/util";
-import { IDIR_USER_AUTH_GROUP } from "../../../../common/authentication/types";
+import { DoesUserHaveRole } from "../../../../common/authentication/util";
+import { IDIR_USER_ROLE } from "../../../../common/authentication/types";
 
 /**
  * A permit list component with common functionalities that can be shared by
@@ -143,15 +143,15 @@ export const BasePermitList = ({
           isPermitInactive(row.original.permitStatus);
         return (
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-            {DoesUserHaveAuthGroup({
-              userAuthGroup: idirUserDetails?.userAuthGroup,
-              allowedAuthGroups: [IDIR_USER_AUTH_GROUP.PPC_CLERK],
+            {DoesUserHaveRole({
+              userRole: idirUserDetails?.userRole,
+              allowedRoles: [IDIR_USER_ROLE.PPC_CLERK],
             }) ? (
               <IDIRPermitSearchRowActions
                 isPermitInactive={isInactive}
                 permitNumber={row.original.permitNumber}
                 permitId={row.original.permitId}
-                userAuthGroup={idirUserDetails?.userAuthGroup}
+                userRole={idirUserDetails?.userRole}
                 companyId={row.original.companyId?.toString()}
               />
             ) : (

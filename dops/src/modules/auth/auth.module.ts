@@ -4,7 +4,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from '../../guard/auth.guard';
-import { RolesGuard } from '../../guard/roles.guard';
+import { PermissionsGuard } from '../../guard/permissions.guard';
 import { JwtServiceAccountStrategy } from './jwt-service-account.strategy';
 
 @Module({
@@ -19,7 +19,7 @@ import { JwtServiceAccountStrategy } from './jwt-service-account.strategy';
     },
     {
       provide: APP_GUARD,
-      useClass: RolesGuard,
+      useClass: PermissionsGuard,
     },
   ],
   exports: [AuthService],
