@@ -3,7 +3,7 @@ import { parse } from 'csv-parse';
 import { completePolicyConfig } from '../_test/policy-config/complete-in-progress.sample';
 import { Policy } from '../policy-engine';
 import { getIdFromName } from '../helper/lists.helper';
-import { SizeDimension, TrailerSize } from '../types';
+import { RegionSizeOverride, SizeDimension, TrailerSize } from '../types';
 
 type DimensionEntry = {
   commodity: string;
@@ -22,33 +22,59 @@ function csvRowToObject(row: Array<string>, pol: Policy): DimensionEntry | null 
       powerUnit: puId,
       trailer: {
         type: trId,
-        allowJeep: row[5] == 'X',
-        allowBooster: row[6] == 'X',
-        canSelfIssue: row[0] != 'X',
+        jeep: row[5] == 'X',
+        booster: row[6] == 'X',
+        selfIssue: row[0] != 'X',
       }
     }
 
-    let sizeDimension: SizeDimension = {regions: []};
+    let sizeDimension: SizeDimension = {};
 
     const fp = parseFloat(row[19]);
     const rp = parseFloat(row[20]);
     if(!isNaN(fp)) {
-      sizeDimension.frontProjection = fp;
+      sizeDimension.fp = fp;
     }
     if (!isNaN(rp)) {
-      sizeDimension.rearProjection = rp;
+      sizeDimension.rp = rp;
     }
 
-    const regionIds: Array<string> = ['LMN', 'KTN', 'PCE', 'BCD'];
-    // Populate the 4 region dimensions
-    for (let i = 0; i < 4; i++) {
+    // Populate the BC Default dimensions
+    const bcWidth = parseFloat(row[16]);
+    const bcHeight = parseFloat(row[17]);
+    const bcLength = parseFloat(row[18]);
+    if (!isNaN(bcWidth)) sizeDimension.w = bcWidth;
+    if (!isNaN(bcHeight)) sizeDimension.h = bcHeight;
+    if (!isNaN(bcLength)) sizeDimension.l = bcLength;
+
+    const regionIds: Array<string> = ['LMN', 'KTN', 'PCE'];
+    // Populate the 3 region dimensions
+    for (let i = 0; i < regionIds.length; i++) {
       const w = parseFloat(row[7 + (i * 3)]);
       const h = parseFloat(row[8 + (i * 3)]);
       const l = parseFloat(row[9 + (i * 3)]);
-      if (!isNaN(w)) sizeDimensions?[0].regions[i].width = w;
-      if (!isNaN(h)) entryObject.regions[i].height = h;
-      if (!isNaN(l)) entryObject.regions[i].length = l;
+      if ((isNaN(w) || w == sizeDimension.w)
+        && (isNaN(h) || h == sizeDimension.h)
+        && (isNaN(l) || l == sizeDimension.l)) {
+        // All values for this region are empty or are the
+        // same as the BC default values. In this case do not
+        // include the region in the configuration at all
+        continue;
+      }
+
+      if (!sizeDimension.regions) {
+        sizeDimension.regions = [];
+      }
+
+      const regionOverride: RegionSizeOverride = { region: regionIds[i] };
+      if (!isNaN(w) && w != sizeDimension.w) regionOverride.w = w;
+      if (!isNaN(h) && h != sizeDimension.h) regionOverride.h = h;
+      if (!isNaN(l) && l != sizeDimension.l) regionOverride.l = l;
+      sizeDimension.regions.push(regionOverride);
     }
+
+    entryObject.trailer.sizeDimensions = [];
+    entryObject.trailer.sizeDimensions.push(sizeDimension);
 
     return entryObject;
   } else {
@@ -86,23 +112,10 @@ function processCsvRow(row: any) {
         commodity.size.powerUnits?.push(powerUnit);
       }
 
-      let trailer = powerUnit.trailers.find((tr) => tr.type == dimensionEntry.trailer);
+      let trailer = powerUnit.trailers.find((tr) => tr.type == dimensionEntry.trailer.type);
       if (!trailer) {
         // Create the trailer in configuration
-        trailer = {
-          type: dimensionEntry.trailer,
-          allowBooster: dimensionEntry.allowBooster,
-          allowJeep: dimensionEntry.allowJeep,
-          sizeDimensions: [
-            {
-              regions: [],
-            }
-          ]
-        };
-        if (typeof dimensionEntry.fp !== 'undefined') {
-          trailer.sizeDimensions[0].frontProjection
-        }
-        powerUnit.trailers.push(trailer);
+        powerUnit.trailers.push(dimensionEntry.trailer);
       } else {
         console.log(`*** Duplicate trailer '${trailer.type}' in input for power unit '${powerUnit.type}'`);
       }
@@ -111,10 +124,11 @@ function processCsvRow(row: any) {
 }
 
 
-fs.createReadStream('./os-dimensions-simplified.csv')
+fs.createReadStream('./os-dimensions-simplified-nodefault.csv')
   .pipe(parse({ delimiter: ',', from_line: 1 }))
   .on('data', function (row) {
     processCsvRow(row);
   }).on('end', function () {
     console.log(JSON.stringify(policy.policyDefinition, null, '   '));
+    //console.log(JSON.stringify(policy.policyDefinition));
   });

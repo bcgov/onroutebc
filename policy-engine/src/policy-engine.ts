@@ -6,6 +6,7 @@ import {
   VehicleType,
   SizeDimension,
   RegionSizeOverride,
+  TrailerSize,
 } from 'onroute-policy-engine/types';
 import { extractIdentifiedObjects, intersectIdMaps } from './helper/lists.helper';
 import { Engine, EngineResult } from 'json-rules-engine';
@@ -14,9 +15,11 @@ import { ValidationResults } from './validation-results';
 import { ValidationResult } from './validation-result';
 import { addRuntimeFacts, transformPermitFacts } from './helper/facts.helper';
 import {
+  AccessoryVehicleType,
   ValidationResultType,
   ValidationResultCode,
   RelativePosition,
+  VehicleTypes,
 } from 'onroute-policy-engine/enum';
 
 /** Class representing commercial vehicle policy. */
@@ -123,9 +126,18 @@ export class Policy {
       // power unit defined in the size dimension object of the commodity.
       const commoditiesForOS = extractIdentifiedObjects(
         this.policyDefinition.commodities.filter(c => {
-          c.size?.powerUnits?.length;
-        })
+          if (c.size) {
+            if (c.size.powerUnits) {
+              if (c.size.powerUnits.length > 0) {
+                return true;
+              }
+            }
+          }
+          return false;
+        }),
+        permitType.allowedCommodities,
       );
+
       // TODO when implementing overweight. Stub for now.
       const commoditiesForOW: Map<string, string> = new Map<string, string>;
 
@@ -160,7 +172,6 @@ export class Policy {
    * other keyed on 'trailers'. Each map consists of a string id for the 
    * vehicle, and a string common name for the vehicle.
    */
-  /*
   getPermittableVehicleTypes(
     permitTypeId: string,
     commodityId: string,
@@ -183,6 +194,7 @@ export class Policy {
     let puTypes: Map<string, string>;
     let trTypes: Map<string, string>;
     const allowableCommodities = this.getCommodities(permitTypeId);
+
     if (!allowableCommodities.has(commodityId)) {
       // If the commodity is not allowed for the permit type, no power
       // units or trailers are allowed.
@@ -197,8 +209,11 @@ export class Policy {
 
       const puTypeIdsOS: Array<string> | undefined =
         commodity.size?.powerUnits?.map((p) => p.type);
-      const trTypeIdsOS: Array<string> | undefined =
-        commodity.size?.trailers?.map((t) => t.type);
+      const trTypeIdsOS: Array<string> | undefined = [];
+      commodity.size?.powerUnits?.forEach(pu => {
+        const trForPu = pu.trailers.map(t => t.type);
+        if (trForPu) trTypeIdsOS.concat(trForPu);
+      });
       // TODO: implement along with overweight permits. Stub for now.
       const puTypeIdsOW: Array<string> = [];
       const trTypeIdsOW: Array<string> = [];
@@ -245,16 +260,16 @@ export class Policy {
           this.policyDefinition.vehicleTypes.trailerTypes,
           permitType.allowedVehicles,
         );
+
       }
     }
 
     const vehicleTypes = new Map<string, Map<string, string>>();
-    vehicleTypes.set('powerUnits', puTypes);
-    vehicleTypes.set('trailers', trTypes);
+    vehicleTypes.set(VehicleTypes.PowerUnits, puTypes);
+    vehicleTypes.set(VehicleTypes.Trailers, trTypes);
 
     return vehicleTypes;
   }
-*/
   
   /**
    * Gets a list of all allowable power unit types for the given permit type
@@ -263,84 +278,14 @@ export class Policy {
    * @param commodityId ID of the commodity to get power units for
    * @returns Map of power unit IDs to power unit names.
    */
-  /*
   getPermittablePowerUnitTypes(
     permitTypeId: string,
     commodityId: string,
   ): Map<string, string> {
-    try {
-      const vehicleTypes = this.getPermittableVehicleTypes(permitTypeId, commodityId);
-      const puTypes = vehicleTypes.get('powerUnits');
-      return puTypes ?? new Map<string, string>();
-    } catch (error) {
-      throw error;
-    }
+    const vehicleTypes = this.getPermittableVehicleTypes(permitTypeId, commodityId);
+    const puTypes = vehicleTypes.get(VehicleTypes.PowerUnits);
+    return puTypes ?? new Map<string, string>();
   }
-  */
-
-  /**
-   * Gets a list of all configured vehicles for the given permit type and commodity.
-   * Includes both power units and trailers in a single return value.
-   * @param permitTypeId ID of the permit type to get vehicles for
-   * @param commodityId ID of the commodity to get vehicles for
-   * @returns Array of vehicle objects for the permit type and commodityId
-   */
-  /*
-  getAllVehiclesForCommodity(
-    permitTypeId: string,
-    commodityId: string,
-  ): Array<Vehicle> {
-    let vehicles: Array<Vehicle>;
-    if (!permitTypeId || !commodityId) {
-      throw new Error('Missing permitTypeId and/or commodityId');
-    }
-
-    const permitType = this.getPermitTypeDefinition(permitTypeId);
-    if (!permitType) {
-      throw new Error(`Invalid permit type: '${permitTypeId}'`)
-    }
-
-    if (!permitType.commodityRequired) {
-      // If commodity is not required, this method cannot calculate the
-      // permittable vehicle types since they will not be configured.
-      throw new Error(`Permit type '${permitTypeId}' does not require a commodity`);
-    }
-
-    const allowableCommodities = this.getCommodities(permitTypeId);
-    if (!allowableCommodities.has(commodityId)) {
-      vehicles = new Array<Vehicle>();
-    } else {
-      const commodity = this.getCommodityDefinition(commodityId);
-      if (!commodity) {
-        throw new Error(`Commodity id '${commodityId}' is not correctly configured in the policy definition`);
-      }
-
-      if (permitType.sizeDimensionRequired && permitType.weightDimensionRequired) {
-        // TODO: need to intersect size and weight lists
-        vehicles = [];
-      } else if (permitType.sizeDimensionRequired) {
-        let pu: Array<Vehicle> | undefined = commodity.size?.powerUnits;
-        if (!pu) {
-          pu = new Array<Vehicle>();
-        }
-        let tr: Array<Vehicle> | undefined = commodity.size?.trailers;
-        if (!tr) {
-          tr = new Array<Vehicle>();
-        }
-        vehicles = pu.concat(tr);
-      } else if (permitType.weightDimensionRequired) {
-        // TODO
-        vehicles = [];
-      } else {
-        // This case is undefined for this method.
-        // TODO: possibly return an error to indicate it should not be used?
-        vehicles = [];
-      }
-    }
-
-    return vehicles;
-  }
-  */
 
   /**
    * Gets the next permittable vehicles based on the supplied permit type,
@@ -355,41 +300,88 @@ export class Policy {
    * @returns Map of vehicle ID to vehicle name. Includes both power units and
    * trailers in a single return value (if applicable).
    */
-  /*
   getNextPermittableVehicles(
     permitTypeId: string,
     commodityId: string,
     currentConfiguration: Array<string>,
   ): Map<string, string> {
+    if (!permitTypeId || !commodityId || !currentConfiguration) {
+      throw new Error('Missing permitTypeId and/or commodityId and/or currentConfiguration');
+    }
+
+    const permitType = this.getPermitTypeDefinition(permitTypeId);
+    if (!permitType) {
+      throw new Error(`Invalid permit type: '${permitTypeId}'`)
+    }
+
+    if (!permitType.commodityRequired) {
+      // If commodity is not required, this method cannot calculate the
+      // permittable vehicle types since they will not be configured.
+      throw new Error(`Permit type '${permitTypeId}' does not require a commodity`);
+    }
+
+    const commodity = this.getCommodityDefinition(commodityId);
+    if (!commodity) {
+      throw new Error(`Invalid commodity type: '${commodityId}'`);
+    }
+
+    if (!this.isConfigurationValid(permitTypeId, commodityId, currentConfiguration, true)) {
+      // Invalid configuration, no vehicles permitted
+      return new Map<string, string>();
+    }
+
     let vehicleTypes = new Map<string, string>();
-    if (permitTypeId && commodityId && currentConfiguration) {
-      const allVehiclesForCommodity: Array<Vehicle> =
-        this.getAllVehiclesForCommodity(permitTypeId, commodityId);
-      if (allVehiclesForCommodity.length > 0) {
-        let vehicleTypeIds: Array<string>;
-        if (currentConfiguration.length == 0) {
-          // If the current configuration has no vehicles, return only those vehicles
-          // that have an empty canFollow array (typically power units).
-          vehicleTypeIds = allVehiclesForCommodity
-            .filter((v) => v.canFollow.length == 0)
-            .map((v) => v.type);
-        } else {
-          const lastVehicleType =
-            currentConfiguration[currentConfiguration.length - 1];
-          vehicleTypeIds = allVehiclesForCommodity
-            .filter((v) => v.canFollow.includes(lastVehicleType))
-            .map((v) => v.type);
+    let vehicleTypeIds: Array<string> | undefined;
+    const allVehicles: Array<VehicleType> =
+      this.policyDefinition.vehicleTypes.powerUnitTypes.concat(
+        this.policyDefinition.vehicleTypes.trailerTypes,
+      );
+
+    if (currentConfiguration.length == 0) {
+      // The current configuration is empty, so return only the
+      // allowable power units.
+      vehicleTypeIds = commodity.size?.powerUnits?.map(p => p.type);
+    } else {
+      const powerUnit = commodity.size?.powerUnits?.find(p => p.type == currentConfiguration[0]);
+      const trailerIds = powerUnit?.trailers.map(t => t.type);
+      if (currentConfiguration.length == 1) {
+        // Just a power unit, return the list of trailerIds for the
+        // power unit, plus jeep if any of the trailer Ids allow
+        // a jeep.
+        if (powerUnit?.trailers && powerUnit?.trailers.filter(t => t.jeep).length > 0) {
+          trailerIds?.push(AccessoryVehicleType.Jeep);
         }
-        const allVehicles: Array<VehicleType> =
-          this.policyDefinition.vehicleTypes.powerUnitTypes.concat(
-            this.policyDefinition.vehicleTypes.trailerTypes,
-          );
-        vehicleTypes = extractIdentifiedObjects(allVehicles, vehicleTypeIds);
+        vehicleTypeIds = trailerIds;
+      } else {
+        const lastVehicleId = currentConfiguration[currentConfiguration.length - 1];
+        switch (lastVehicleId) {
+          case AccessoryVehicleType.Jeep:
+            // If there is one jeep, there can be more
+            trailerIds?.push(AccessoryVehicleType.Jeep);
+            vehicleTypeIds = trailerIds;
+            break;
+          case AccessoryVehicleType.Booster:
+            // If there is one booster, there can be more
+            vehicleTypeIds = [AccessoryVehicleType.Booster];
+            break;
+          default:
+            {
+              const trailer = powerUnit?.trailers.find(t => t.type == lastVehicleId);
+              if (trailer && trailer.booster) {
+                vehicleTypeIds = [AccessoryVehicleType.Booster];
+              } else {
+                vehicleTypeIds = new Array<string>();
+              }
+            }
+            break;
+        }
       }
     }
+
+    vehicleTypes = extractIdentifiedObjects(allVehicles, vehicleTypeIds);
+
     return vehicleTypes;
   }
-  */
 
   /**
    * Returns whether the supplied configuration is valid for the given permit type
@@ -402,15 +394,19 @@ export class Policy {
    * @param permitTypeId ID of the permit type to validate the configuration against
    * @param commodityId ID of the commodity used for the configuration
    * @param currentConfiguration Current vehicle configuration to validate
+   * @param validatePartial Whether to validate a partial configuration (e.g. one
+   * that does not include a trailer). This will just return whether or not there 
+   * are any invalid vehicles in the configuration. If true, an empty current
+   * configuration will return true from this method.
    */
-  /*
   isConfigurationValid(
     permitTypeId: string,
     commodityId: string,
     currentConfiguration: Array<string>,
+    validatePartial: boolean = false,
   ): boolean {
-    if (!permitTypeId || !commodityId) {
-      throw new Error('Missing permitTypeId and/or commodityId');
+    if (!permitTypeId || !commodityId || !currentConfiguration) {
+      throw new Error('Missing permitTypeId and/or commodityId and/or currentConfiguration');
     }
 
     const permitType = this.getPermitTypeDefinition(permitTypeId);
@@ -418,51 +414,71 @@ export class Policy {
       throw new Error(`Invalid permit type: '${permitTypeId}'`)
     }
 
-    let isValid: boolean = false;
-    const runningConfig: Array<string> = new Array<string>();
-    for (let i = 0; i < currentConfiguration.length; i++) {
-      // Note getNextPermittableVehicles will always return an empty map if either the
-      // permit type or commodity is invalid
-      const nextVehicles: Map<string, string> = this.getNextPermittableVehicles(
-        permitTypeId,
-        commodityId,
-        runningConfig,
-      );
-      if (nextVehicles.has(currentConfiguration[i])) {
-        // The next vehicle in the configuration is permittable as per policy
-        runningConfig.push(currentConfiguration[i]);
-        if (permitType.sizeDimensionRequired && permitType.weightDimensionRequired) {
-          // TODO
-        } else if (permitType.sizeDimensionRequired) {
-          // Size dimension is required for this permit type, so we need to
-          // flip the isValid flag only if we find a trailer that counts
-          // for size dimensions
-          const vehicleType =
-            this.policyDefinition.vehicleTypes.trailerTypes?.find(
-              (v) => v.id == currentConfiguration[i],
-            );
-          if (vehicleType) {
-            if (!vehicleType.ignoreForSizeDimensions) {
-              isValid = true;
-            }
+    if (!permitType.commodityRequired) {
+      // If commodity is not required, this method cannot calculate the
+      // permittable vehicle types since they will not be configured.
+      throw new Error(`Permit type '${permitTypeId}' does not require a commodity`);
+    }
+
+    const commodity = this.getCommodityDefinition(commodityId);
+    if (!commodity) {
+      throw new Error(`Invalid commodity type: '${commodityId}'`);
+    }
+    let isValid: boolean = true;
+
+    if (currentConfiguration.length == 0) {
+      // The current configuration is empty. Fine for partial, but
+      // invalid as a complete configuration.
+      return validatePartial;
+    }
+
+    const powerUnit = commodity.size?.powerUnits?.find(p => p.type == currentConfiguration[0]);
+    if (!powerUnit) {
+      // The power unit is not allowed for the commodity
+      return false;
+    }
+
+    let trailerIds = powerUnit.trailers.map(t => t.type);
+    let jeepAllowed: boolean = true;
+    let trailerAllowed: boolean = true;
+    let boosterAllowed: boolean = false;
+
+    for (let i = 1; i < currentConfiguration.length; i++) {
+      switch (currentConfiguration[i]) {
+        case AccessoryVehicleType.Jeep:
+          if (!jeepAllowed) {
+            return false;
           }
-        } else if (permitType.weightDimensionRequired) {
-          // TODO
-        } else {
-          // Dimensions are not required for this permit type, so there are
-          // no requirements with respect to what trailers are permitted.
-          isValid = true;
-        }
-      } else {
-        // The next vehicle in the list is not permittable, or there are no
-        // permittable vehicles at all in the list.
-        isValid = false;
-        break;
+          // Filter allowed trailers to only those that allow jeeps
+          trailerIds = powerUnit.trailers.filter(t => t.jeep).map(t => t.type);
+          break;
+        case AccessoryVehicleType.Booster:
+          if (!boosterAllowed) {
+            return false;
+          }
+          break;
+        default:
+          if (!trailerAllowed) {
+            return false;
+          }
+          {
+            const trailer = powerUnit.trailers.find(t => t.type == currentConfiguration[i]);
+            if (!trailer || !trailerIds.includes(currentConfiguration[i])) {
+              // This trailer is not permitted for this power unit
+              return false;
+            }
+            jeepAllowed = false;
+            trailerAllowed = false;
+            boosterAllowed = trailer.booster;
+          }
+          break;
       }
     }
-    return isValid;
+    // We are still here, so configuration is valid. If there is a trailer
+    // it is a valid final configuration, otherwise it is a valid partial
+    // configuration.
+    return ((!trailerAllowed) || validatePartial);
   }
-  */
 
   /**
    * Gets the maximum size dimensions for a given permit type, commodity,
@@ -480,7 +496,6 @@ export class Policy {
    * are configured).
    * @returns SizeDimension for the given permit type, commodity, and configuration
    */
-  /*
   getSizeDimension(
     permitTypeId: string,
     commodityId: string,
@@ -494,6 +509,13 @@ export class Policy {
     if (
       this.isConfigurationValid(permitTypeId, commodityId, configuration)
     ) {
+      // Get the power unit that has the size configuration
+      const commodity = this.getCommodityDefinition(commodityId);
+      const powerUnit = commodity?.size?.powerUnits?.find((pu) => pu.type == configuration[0]);
+      if (!powerUnit) {
+        throw new Error(`Configuration error: could not find power unit '${configuration[0]}'`);
+      }
+
       // Get the last trailer in the configuration that can be used for size calculations
       const sizeTrailer: string | undefined = Array.from(configuration)
         .reverse()
@@ -507,11 +529,12 @@ export class Policy {
 
       if (sizeTrailer) {
         // Get the trailer size dimension array for the commodity
-        const commodity = this.getCommodityDefinition(commodityId);
-        const trailer: VehicleSize | undefined = commodity?.size?.trailers?.find(
+        const trailer: TrailerSize | undefined = powerUnit.trailers?.find(
           (t) => t.type == sizeTrailer,
         );
+
         let sizeDimensions: Array<SizeDimension>;
+
         if (
           trailer &&
           trailer.sizeDimensions &&
@@ -522,21 +545,11 @@ export class Policy {
           sizeDimensions = new Array<SizeDimension>();
         }
 
-        let sizeDimensionConfigured: SizeDimension | null = null;
-        if (sizeDimensions.length == 0) {
-          // If there are no dimensions configured but the configuration is still
-          // valid, we inherit the size dimensions from the global defaults.
-          sizeDimensionConfigured = this.policyDefinition.globalSizeDefaults;
-        } else if (sizeDimensions.length == 1) {
-          sizeDimensionConfigured = sizeDimensions[0];
-        } else {
-          // If multiple size dimensions, select the first one matching all modifiers
-          sizeDimensionConfigured = this.selectCorrectSizeDimension(
-            sizeDimensions,
-            configuration,
-            sizeTrailer,
-          );
-        }
+        let sizeDimensionConfigured = this.selectCorrectSizeDimension(
+          sizeDimensions,
+          configuration,
+          sizeTrailer,
+        );
 
         if (sizeDimensionConfigured) {
           // Adjust the size dimensions for the regions travelled, if needed
@@ -547,7 +560,7 @@ export class Policy {
             console.log('Assuming all regions for size dimension lookup');
             regions = this.policyDefinition.geographicRegions.map((g) => g.id);
           } else {
-            console.log('Using ' + regions + ' as regions for size lookup');
+            console.log(`Using '${regions}' as regions for size lookup`);
           }
           const valueOverrides: Array<RegionSizeOverride> = [];
           regions?.forEach((r) => {
@@ -556,22 +569,21 @@ export class Policy {
             let regionOverride = sizeDimensionConfigured.regions?.find((cr) => cr.region == r);
             if (!regionOverride) {
               // The region travelled does not have an override, so it assumes
-              // the dimensions of the base size dimension configured.
+              // the dimensions of the bc default.
               valueOverride = {
                 region: r,
-                height: sizeDimensionConfigured.height ?? this.policyDefinition.globalSizeDefaults.height ?? 0,
-                width: sizeDimensionConfigured.width ?? this.policyDefinition.globalSizeDefaults.width ?? 0,
-                length: sizeDimensionConfigured.length ?? this.policyDefinition.globalSizeDefaults.length ?? 0,
+                h: sizeDimensionConfigured.h,
+                w: sizeDimensionConfigured.w,
+                l: sizeDimensionConfigured.l,
               }
             } else {
               // There is a region override with one or more dimensions. Use this
-              // value preferentially, using base dimension and global default in
-              // descending order of preference.
+              // value preferentially, using default dimension if not supplied
               valueOverride = {
                 region: r,
-                height: regionOverride.height ?? sizeDimensionConfigured.height ?? this.policyDefinition.globalSizeDefaults.height ?? 0,
-                width: regionOverride.width ?? sizeDimensionConfigured.width ?? this.policyDefinition.globalSizeDefaults.width ?? 0,
-                length: regionOverride.length ?? sizeDimensionConfigured.length ?? this.policyDefinition.globalSizeDefaults.length ?? 0,
+                h: regionOverride.h ?? sizeDimensionConfigured.h,
+                w: regionOverride.w ?? sizeDimensionConfigured.w,
+                l: regionOverride.l ?? sizeDimensionConfigured.l,
               }
             }
             valueOverrides.push(valueOverride);
@@ -582,28 +594,36 @@ export class Policy {
           // dimension for the final value.
           const minimumOverrides = valueOverrides.reduce((accumulator, currentValue) => {
 
-            if (typeof accumulator.height === 'undefined') {
-              accumulator.height = currentValue.height ?? 0;
+            if (typeof currentValue.h !== 'undefined') {
+              if (typeof accumulator.h === 'undefined') {
+                accumulator.h = currentValue.h;
+              } else {
+                accumulator.h = Math.min(accumulator.h, currentValue.h);
+              }
             }
-            if (typeof accumulator.width === 'undefined') {
-              accumulator.width = currentValue.width ?? 0;
+            if (typeof currentValue.w !== 'undefined') {
+              if (typeof accumulator.w === 'undefined') {
+                accumulator.w = currentValue.w;
+              } else {
+                accumulator.w = Math.min(accumulator.w, currentValue.w);
+              }
             }
-            if (typeof accumulator.length === 'undefined') {
-              accumulator.length = currentValue.length ?? 0;
+            if (typeof currentValue.l !== 'undefined') {
+              if (typeof accumulator.l === 'undefined') {
+                accumulator.l = currentValue.l;
+              } else {
+                accumulator.l = Math.min(accumulator.l, currentValue.l);
+              }
             }
-
-            accumulator.height = Math.min(accumulator.height, currentValue.height ?? 0);
-            accumulator.width = Math.min(accumulator.width, currentValue.width ?? 0);
-            accumulator.length = Math.min(accumulator.length, currentValue.length ?? 0);
             return accumulator;
           }, { 'region': '' });
 
           sizeDimension = {
-            rearProjection: sizeDimensionConfigured.rearProjection ?? this.policyDefinition.globalSizeDefaults.rearProjection,
-            frontProjection: sizeDimensionConfigured.frontProjection ?? this.policyDefinition.globalSizeDefaults.frontProjection,
-            height: minimumOverrides.height ?? sizeDimensionConfigured.height ?? this.policyDefinition.globalSizeDefaults.height,
-            width: minimumOverrides.width ?? sizeDimensionConfigured.width ?? this.policyDefinition.globalSizeDefaults.width,
-            length: minimumOverrides.length ?? sizeDimensionConfigured.length ?? this.policyDefinition.globalSizeDefaults.length,
+            rp: sizeDimensionConfigured.rp,
+            fp: sizeDimensionConfigured.fp,
+            h: minimumOverrides.h,
+            w: minimumOverrides.w,
+            l: minimumOverrides.l,
           }
         } else {
           console.log('Size dimension not configured for trailer');
@@ -617,7 +637,6 @@ export class Policy {
 
     return sizeDimension;
   }
-  */
 
   /**
    * Selects the correct size dimension from a list of potential candidates, based
@@ -626,7 +645,6 @@ export class Policy {
    * @param sizeDimensions Size dimension options to choose from
    * @param currentConfiguration The full vehicle configuration
    */
-  /*
   selectCorrectSizeDimension(
     sizeDimensions: Array<SizeDimension>,
     configuration: Array<string>,
@@ -638,15 +656,15 @@ export class Policy {
       sizeDimensions?.length > 0 &&
       configuration?.length > 0
     ) {
-      for (let i = 0; i < sizeDimensions.length; i++) {
-        if (!sizeDimensions[i].modifiers) {
+      for (const sizeDimension of sizeDimensions) {
+        if (!sizeDimension.modifiers) {
           // This dimension has no modifiers, so it is the default if none of
           // the other specific modifiers match.
-          matchingDimension = sizeDimensions[i];
+          matchingDimension = sizeDimension;
           console.log('Using default size dimension, no modifiers specified');
         } else {
           const sizeTrailerIndex = configuration.findIndex((c) => sizeTrailer == c);
-          const isMatch: boolean | undefined = sizeDimensions[i].modifiers?.every(
+          const isMatch: boolean | undefined = sizeDimension.modifiers?.every(
             (m) => {
               if (!m.type) {
                 return false;
@@ -668,7 +686,7 @@ export class Policy {
           // As soon as we find a dimension with matching modifiers,
           // set it and return it.
           if (isMatch) {
-            matchingDimension = sizeDimensions[i];
+            matchingDimension = sizeDimension;
             break;
           }
         }
@@ -678,7 +696,6 @@ export class Policy {
     }
     return matchingDimension;
   }
-  */
 
   /**
    * Gets a list of all configured power unit types in the policy definition.

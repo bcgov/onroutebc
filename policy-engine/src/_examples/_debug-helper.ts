@@ -4,6 +4,8 @@ import { completePolicyConfig } from '../_test/policy-config/complete-in-progres
 function start() {
   const policy: Policy = new Policy(completePolicyConfig);
 
+  /*
+
   console.log('***ALL COMMODITIES***');
   const allCommodities = policy.getCommodities();
   console.log(
@@ -15,11 +17,13 @@ function start() {
   console.log(
     JSON.stringify(Array.from(stosCommodities.entries()), null, '   '),
   );
+*/
 
   console.log('***POWER UNITS PERMITTABLE FOR STOS AND EMPTY COMMODITY***');
   const puTypesEmpty = policy.getPermittablePowerUnitTypes('STOS', 'EMPTYXX');
   console.log(JSON.stringify(Array.from(puTypesEmpty.entries()), null, '   '));
 
+/*
   console.log(
     '***POWER UNITS PERMITTABLE FOR STOS AND BRIDGE BEAMS COMMODITY***',
   );
@@ -50,7 +54,6 @@ function start() {
   ]);
   console.log(JSON.stringify(Array.from(vehicleTypes2.entries()), null, '   '));
 
-  /*
   console.log(
     '***MAX SIZE FOR TRUCK TRACTOR, JEEP, HIBOEXP, STOS AND EMPTYXX***',
   );

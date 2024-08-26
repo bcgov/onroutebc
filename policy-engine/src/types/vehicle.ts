@@ -15,8 +15,8 @@ export type VehicleSizeConfiguration = Vehicle & {
 
 export type TrailerSize = Vehicle & {
   sizeDimensions?: Array<SizeDimension>;
-  allowJeep: boolean;
-  allowBooster: boolean;
+  jeep: boolean;
+  booster: boolean;
 };
 
 export type PowerUnitWeight = Vehicle & {
