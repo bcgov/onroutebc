@@ -11,10 +11,10 @@ import { AuthService } from './auth.service';
 import { IUserJWT } from '../../interface/user-jwt.interface';
 import { Request } from 'express';
 import { IDP } from '../../enum/idp.enum';
-import { Role } from '../../enum/roles.enum';
+import { Claim } from '../../enum/claims.enum';
 import { UserStatus } from '../../enum/user-status.enum';
 import { AxiosResponse } from 'axios';
-import { UserAuthGroup } from '../../enum/user-auth-group.enum';
+import { UserRole } from '../../enum/user-role.enum';
 import { getDirectory } from '../../helper/auth.helper';
 import { ICompanyMetadata } from '../../interface/company-metadata.interface';
 
@@ -43,11 +43,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const access_token = req.headers.authorization;
     let userGUID: string,
       userName: string,
-      roles: Role[],
+      claims: Claim[],
       associatedCompanies: number[],
       orbcUserFirstName: string,
       orbcUserLastName: string,
-      orbcUserAuthGroup: UserAuthGroup;
+      orbcUserRole: UserRole;
 
     let companyId: number;
     if (req.params.companyId) {
@@ -78,12 +78,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     if (req.headers.AuthOnly === 'false') {
       ({
-        roles,
+        claims,
         companyId,
         associatedCompanies,
         orbcUserFirstName,
         orbcUserLastName,
-        orbcUserAuthGroup,
+        orbcUserRole,
       } = await this.getUserDetails(
         access_token,
         userGUID,
@@ -97,13 +97,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const currentUser = {
       userName,
       userGUID,
-      roles,
+      claims,
       companyId,
       associatedCompanies,
       access_token,
       orbcUserFirstName,
       orbcUserLastName,
-      orbcUserAuthGroup,
+      orbcUserRole,
       orbcUserDirectory,
     };
 
@@ -144,7 +144,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     const accessApiResponse: AxiosResponse[] = await Promise.all([
       this.authService.getUserDetails(access_token, userGUID),
-      this.authService.getRolesForUser(access_token, companyId),
+      this.authService.getClaimsForUser(access_token, companyId),
       payload.identity_provider !== IDP.IDIR
         ? this.authService.getCompaniesForUser(access_token)
         : undefined,
@@ -161,22 +161,22 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const user = accessApiResponse.at(0).data as {
       firstName: string;
       lastName: string;
-      userAuthGroup: UserAuthGroup;
+      userRole: UserRole;
     };
 
     const orbcUserFirstName = user.firstName;
     const orbcUserLastName = user.lastName;
-    const orbcUserAuthGroup = user.userAuthGroup;
+    const orbcUserRole = user.userRole;
 
-    const roles = accessApiResponse.at(1).data as Role[];
+    const claims = accessApiResponse.at(1).data as Claim[];
 
     return {
-      roles,
+      claims,
       companyId,
       associatedCompanies,
       orbcUserFirstName,
       orbcUserLastName,
-      orbcUserAuthGroup,
+      orbcUserRole,
     };
   }
 }

@@ -9,7 +9,7 @@ import { useMultiStepForm } from "../../hooks/useMultiStepForm";
 import { AmendPermitContext } from "./context/AmendPermitContext";
 import { Loading } from "../../../../common/pages/Loading";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { USER_AUTH_GROUP } from "../../../../common/authentication/types";
+import { USER_ROLE } from "../../../../common/authentication/types";
 import { AmendPermitReview } from "./components/AmendPermitReview";
 import { AmendPermitFinish } from "./components/AmendPermitFinish";
 import { AmendPermitForm } from "./components/AmendPermitForm";
@@ -62,10 +62,10 @@ const isAmendable = (permit: Permit) => {
   );
 };
 
-const isAmendableByUser = (authGroup?: string) => {
+const isAmendableByUser = (role?: string) => {
   return (
-    authGroup === USER_AUTH_GROUP.PPC_CLERK ||
-    authGroup === USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR
+    role === USER_ROLE.PPC_CLERK ||
+    role === USER_ROLE.SYSTEM_ADMINISTRATOR
   );
 };
 
@@ -190,7 +190,7 @@ export const AmendPermit = () => {
     return <Loading />;
   }
 
-  if (!isAmendableByUser(idirUserDetails?.userAuthGroup)) {
+  if (!isAmendableByUser(idirUserDetails?.userRole)) {
     return <Navigate to={ERROR_ROUTES.UNAUTHORIZED} />;
   }
 

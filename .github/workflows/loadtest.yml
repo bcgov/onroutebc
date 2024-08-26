@@ -38,7 +38,7 @@ jobs:
         uses: rbhadti94/apache-jmeter-action@v0.5.0
         with:
           testFilePath: loadtests
-          outputReportsFolder: results
+          outputReportsFolder: loadtests/results
           args: |
             --loglevel INFO 
             --jmeterlogconf=log.conf
@@ -46,10 +46,10 @@ jobs:
             -JDOPS_API_URL=${{inputs.dops_api_url}}
             -JFRONTEND_API_URL=${{inputs.frontend_api_url}}
             -JVEHICLES_API_URL=${{inputs.vehicles_api_url}}
-            -JRESULTS_DIR=results
+            -JRESULTS_DIR=loadtest/results
 
       - uses: actions/upload-artifact@v4.3.6
         with:
           name: jmeter-test-results
-          path: results/
+          path: loadtests/results
 

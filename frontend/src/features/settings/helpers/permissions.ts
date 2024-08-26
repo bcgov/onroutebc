@@ -1,198 +1,181 @@
 import { Nullable } from "../../../common/types/common";
-import { DoesUserHaveAuthGroup, DoesUserHaveRole } from "../../../common/authentication/util";
 import {
-  BCeIDUserAuthGroupType,
-  BCeID_USER_AUTH_GROUP,
-  IDIRUserAuthGroupType,
-  IDIR_USER_AUTH_GROUP,
-  ROLES,
-  USER_AUTH_GROUP,
-  UserAuthGroupType,
-  UserRolesType,
+  DoesUserHaveRole,
+  DoesUserHaveClaim,
+} from "../../../common/authentication/util";
+import {
+  BCeIDUserRoleType,
+  BCeID_USER_ROLE,
+  IDIRUserRoleType,
+  IDIR_USER_ROLE,
+  CLAIMS,
+  USER_ROLE,
+  UserRoleType,
+  UserClaimsType,
 } from "../../../common/authentication/types";
 
 /**
  * Determine whether or not a user can view/access suspend page/features given their roles.
- * @param userRoles Roles that a user have
+ * @param userClaims claims that a user have
  * @returns Whether or not the user can view the suspend page/features
  */
 export const canViewSuspend = (
-  userRoles?: Nullable<UserRolesType[]>,
+  userClaims?: Nullable<UserClaimsType[]>,
 ): boolean => {
-  return Boolean(DoesUserHaveRole(userRoles, ROLES.READ_SUSPEND));
+  return Boolean(DoesUserHaveClaim(userClaims, CLAIMS.READ_SUSPEND));
 };
 
 /**
  * Determine whether or not a user can update suspend flag given their roles.
- * @param userRoles Roles that a user have
+ * @param userClaims Claims that a user have
  * @returns Whether or not the user can update suspend flag
  */
 export const canUpdateSuspend = (
-  userRoles?: Nullable<UserRolesType[]>,
+  userClaims?: Nullable<UserClaimsType[]>,
 ): boolean => {
-  return Boolean(DoesUserHaveRole(userRoles, ROLES.WRITE_SUSPEND));
+  return Boolean(DoesUserHaveClaim(userClaims, CLAIMS.WRITE_SUSPEND));
 };
 
-const READ_SPECIAL_AUTH_ALLOWED_GROUPS = [
-  USER_AUTH_GROUP.PPC_CLERK,
-  USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
-  // USER_AUTH_GROUP.TRAINEE,
-  USER_AUTH_GROUP.FINANCE,
-  USER_AUTH_GROUP.CTPO,
-  USER_AUTH_GROUP.ENFORCEMENT_OFFICER,
-  USER_AUTH_GROUP.HQ_ADMINISTRATOR,
-  USER_AUTH_GROUP.PERMIT_APPLICANT,
-  USER_AUTH_GROUP.COMPANY_ADMINISTRATOR,
-] as UserAuthGroupType[];
+const READ_SPECIAL_AUTH_ALLOWED_ROLES = [
+  USER_ROLE.PPC_CLERK,
+  USER_ROLE.SYSTEM_ADMINISTRATOR,
+  // USER_ROLE.TRAINEE,
+  USER_ROLE.FINANCE,
+  USER_ROLE.CTPO,
+  USER_ROLE.ENFORCEMENT_OFFICER,
+  USER_ROLE.HQ_ADMINISTRATOR,
+  USER_ROLE.PERMIT_APPLICANT,
+  USER_ROLE.COMPANY_ADMINISTRATOR,
+] as UserRoleType[];
 
 export const canUpdateNoFeePermitsFlag = (
-  userRoles?: Nullable<UserRolesType[]>,
-  userAuthGroup?: Nullable<UserAuthGroupType>,
+  userClaims?: Nullable<UserClaimsType[]>,
+  userRole?: Nullable<UserRoleType>,
 ): boolean => {
-  const allowedAuthGroups = [
-    USER_AUTH_GROUP.HQ_ADMINISTRATOR,
-    USER_AUTH_GROUP.FINANCE,
-    USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
-  ] as UserAuthGroupType[];
+  const allowedRoles = [
+    USER_ROLE.HQ_ADMINISTRATOR,
+    USER_ROLE.FINANCE,
+    USER_ROLE.SYSTEM_ADMINISTRATOR,
+  ] as UserRoleType[];
 
   return (
-    userAuthGroup && allowedAuthGroups.includes(userAuthGroup)
-  ) || Boolean(
-    DoesUserHaveRole(
-      userRoles,
-      ROLES.WRITE_NOFEE,
-    ),
+    (userRole && allowedRoles.includes(userRole)) ||
+    Boolean(DoesUserHaveClaim(userClaims, CLAIMS.WRITE_NOFEE))
   );
 };
 
 export const canViewNoFeePermitsFlag = (
-  userRoles?: Nullable<UserRolesType[]>,
-  userAuthGroup?: Nullable<UserAuthGroupType>,
+  userClaims?: Nullable<UserClaimsType[]>,
+  userRole?: Nullable<UserRoleType>,
 ): boolean => {
   return (
-    userAuthGroup && READ_SPECIAL_AUTH_ALLOWED_GROUPS.includes(userAuthGroup)
-  ) || Boolean(
-    DoesUserHaveRole(
-      userRoles,
-      ROLES.READ_NOFEE,
-    ),
-  ) || canUpdateNoFeePermitsFlag(userRoles, userAuthGroup);
+    (userRole &&
+      READ_SPECIAL_AUTH_ALLOWED_ROLES.includes(userRole)) ||
+    Boolean(DoesUserHaveClaim(userClaims, CLAIMS.READ_NOFEE)) ||
+    canUpdateNoFeePermitsFlag(userClaims, userRole)
+  );
 };
 
 export const canUpdateLCVFlag = (
-  userRoles?: Nullable<UserRolesType[]>,
-  userAuthGroup?: Nullable<UserAuthGroupType>,
+  userClaims?: Nullable<UserClaimsType[]>,
+  userRole?: Nullable<UserRoleType>,
 ): boolean => {
   return (
-    userAuthGroup === USER_AUTH_GROUP.HQ_ADMINISTRATOR
-  ) || Boolean(
-    DoesUserHaveRole(
-      userRoles,
-      ROLES.WRITE_LCV_FLAG,
-    ),
+    userRole === USER_ROLE.HQ_ADMINISTRATOR ||
+    Boolean(DoesUserHaveClaim(userClaims, CLAIMS.WRITE_LCV_FLAG))
   );
 };
 
 export const canViewLCVFlag = (
-  userRoles?: Nullable<UserRolesType[]>,
-  userAuthGroup?: Nullable<UserAuthGroupType>,
+  userClaims?: Nullable<UserClaimsType[]>,
+  userRole?: Nullable<UserRoleType>,
 ): boolean => {
   return (
-    userAuthGroup && READ_SPECIAL_AUTH_ALLOWED_GROUPS.includes(userAuthGroup)
-  ) || Boolean(
-    DoesUserHaveRole(
-      userRoles,
-      ROLES.READ_LCV_FLAG,
-    ),
-  ) || canUpdateLCVFlag(userRoles, userAuthGroup);
+    (userRole &&
+      READ_SPECIAL_AUTH_ALLOWED_ROLES.includes(userRole)) ||
+    Boolean(DoesUserHaveClaim(userClaims, CLAIMS.READ_LCV_FLAG)) ||
+    canUpdateLCVFlag(userClaims, userRole)
+  );
 };
 
 export const canUpdateLOA = (
-  userRoles?: Nullable<UserRolesType[]>,
-  userAuthGroup?: Nullable<UserAuthGroupType>,
+  userClaims?: Nullable<UserClaimsType[]>,
+  userRole?: Nullable<UserRoleType>,
 ): boolean => {
-  const allowedAuthGroups = [
-    USER_AUTH_GROUP.HQ_ADMINISTRATOR,
-    USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
-  ] as UserAuthGroupType[];
+  const allowedRoles = [
+    USER_ROLE.HQ_ADMINISTRATOR,
+    USER_ROLE.SYSTEM_ADMINISTRATOR,
+  ] as UserRoleType[];
 
   return (
-    userAuthGroup && allowedAuthGroups.includes(userAuthGroup)
-  ) || Boolean(
-    DoesUserHaveRole(
-      userRoles,
-      ROLES.WRITE_LOA,
-    ),
+    (userRole && allowedRoles.includes(userRole)) ||
+    Boolean(DoesUserHaveClaim(userClaims, CLAIMS.WRITE_LOA))
   );
 };
 
 export const canViewLOA = (
-  userRoles?: Nullable<UserRolesType[]>,
-  userAuthGroup?: Nullable<UserAuthGroupType>,
+  userClaims?: Nullable<UserClaimsType[]>,
+  userRole?: Nullable<UserRoleType>,
 ): boolean => {
   // Note that FIN is not allowed by view LOA
-  const allowedAuthGroups = [
-    USER_AUTH_GROUP.PPC_CLERK,
-    USER_AUTH_GROUP.CTPO,
-    USER_AUTH_GROUP.ENFORCEMENT_OFFICER,
-    // USER_AUTH_GROUP.TRAINEE,
-    USER_AUTH_GROUP.HQ_ADMINISTRATOR,
-    USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
-    USER_AUTH_GROUP.COMPANY_ADMINISTRATOR,
-    USER_AUTH_GROUP.PERMIT_APPLICANT,
-  ] as UserAuthGroupType[];
+  const allowedRoles = [
+    USER_ROLE.PPC_CLERK,
+    USER_ROLE.CTPO,
+    USER_ROLE.ENFORCEMENT_OFFICER,
+    // USER_ROLE.TRAINEE,
+    USER_ROLE.HQ_ADMINISTRATOR,
+    USER_ROLE.SYSTEM_ADMINISTRATOR,
+    USER_ROLE.COMPANY_ADMINISTRATOR,
+    USER_ROLE.PERMIT_APPLICANT,
+  ] as UserRoleType[];
 
   return (
-    userAuthGroup && allowedAuthGroups.includes(userAuthGroup)
-  ) || Boolean(
-    DoesUserHaveRole(
-      userRoles,
-      ROLES.READ_LOA,
-    ),
-  ) || canUpdateLOA(userRoles, userAuthGroup);
+    (userRole && allowedRoles.includes(userRole)) ||
+    Boolean(DoesUserHaveClaim(userClaims, CLAIMS.READ_LOA)) ||
+    canUpdateLOA(userClaims, userRole)
+  );
 };
 
 export const canViewSpecialAuthorizations = (
-  userRoles?: Nullable<UserRolesType[]>,
-  userAuthGroup?: Nullable<UserAuthGroupType>,
+  userClaims?: Nullable<UserClaimsType[]>,
+  userRole?: Nullable<UserRoleType>,
 ): boolean => {
   return (
-    userAuthGroup && READ_SPECIAL_AUTH_ALLOWED_GROUPS.includes(userAuthGroup)
-  ) || canViewNoFeePermitsFlag(userRoles, userAuthGroup)
-    || canViewLCVFlag(userRoles, userAuthGroup)
-    || canViewLOA(userRoles, userAuthGroup)
-    || Boolean(
-      DoesUserHaveRole(
-        userRoles,
-        ROLES.READ_SPECIAL_AUTH,
-      )
-    );
+    (userRole &&
+      READ_SPECIAL_AUTH_ALLOWED_ROLES.includes(userRole)) ||
+    canViewNoFeePermitsFlag(userClaims, userRole) ||
+    canViewLCVFlag(userClaims, userRole) ||
+    canViewLOA(userClaims, userRole) ||
+    Boolean(DoesUserHaveClaim(userClaims, CLAIMS.READ_SPECIAL_AUTH))
+  );
 };
 
 /**
  * Determine whether or not a user can view/access the settings tab given their roles.
- * @param userRoles Roles that a user have
+ * @param userClaims claims that a user have
  * @returns Whether or not the user can view the settings tab
  */
 export const canViewSettingsTab = (
-  userRoles?: Nullable<UserRolesType[]>,
+  userClaims?: Nullable<UserClaimsType[]>,
 ): boolean => {
   // Need to update this check once Credit Accounts tabs/features are added
-  return canViewSuspend(userRoles)
-    || canUpdateSuspend(userRoles)
-    || canViewSpecialAuthorizations(userRoles)
-    || canViewCreditAccountTab(userRoles);
+  return (
+    canViewSuspend(userClaims) ||
+    canUpdateSuspend(userClaims) ||
+    canViewSpecialAuthorizations(userClaims) ||
+    canViewCreditAccountTab(userClaims)
+  );
 };
 
 /**
  * Determine whether or not a user can view/access credit account page/features given their roles.
- * @param userRoles Roles that a user have
+ * @param userClaims claims that a user have
  * @returns Whether or not the user can view the credit account page/features
  */
 export const canViewCreditAccountTab = (
-  userRoles?: Nullable<UserRolesType[]>,
+  userClaims?: Nullable<UserClaimsType[]>,
 ): boolean => {
-  return Boolean(DoesUserHaveRole(userRoles, ROLES.READ_CREDIT_ACCOUNT));
+  return Boolean(DoesUserHaveClaim(userClaims, CLAIMS.READ_CREDIT_ACCOUNT));
 };
 
 /**
@@ -201,15 +184,15 @@ export const canViewCreditAccountTab = (
  * @returns Whether or not the user can view the CreditAccountDetails component
  */
 export const canViewCreditAccountDetails = (
-  userAuthGroup?: BCeIDUserAuthGroupType | IDIRUserAuthGroupType,
+  userRole?: BCeIDUserRoleType | IDIRUserRoleType,
 ): boolean => {
   return Boolean(
-    DoesUserHaveAuthGroup({
-      userAuthGroup: userAuthGroup,
-      allowedAuthGroups: [
-        BCeID_USER_AUTH_GROUP.COMPANY_ADMINISTRATOR,
-        IDIR_USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
-        IDIR_USER_AUTH_GROUP.FINANCE,
+    DoesUserHaveRole({
+      userRole: userRole,
+      allowedRoles: [
+        BCeID_USER_ROLE.COMPANY_ADMINISTRATOR,
+        IDIR_USER_ROLE.SYSTEM_ADMINISTRATOR,
+        IDIR_USER_ROLE.FINANCE,
       ],
     }),
   );
@@ -217,11 +200,11 @@ export const canViewCreditAccountDetails = (
 
 /**
  * Determine whether or not a user can add/remove users from and hold/remove credit accounts.
- * @param userRoles Roles that a user have
+ * @param userClaims claims that a user have
  * @returns Whether or not the user can update the credit account
  */
 export const canUpdateCreditAccount = (
-  userRoles?: Nullable<UserRolesType[]>,
+  userClaims?: Nullable<UserClaimsType[]>,
 ): boolean => {
-  return Boolean(DoesUserHaveRole(userRoles, ROLES.WRITE_CREDIT_ACCOUNT));
+  return Boolean(DoesUserHaveClaim(userClaims, CLAIMS.WRITE_CREDIT_ACCOUNT));
 };
