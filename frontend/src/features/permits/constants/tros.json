@@ -1,6 +1,6 @@
 {
   "tros": {
-    "commodities": [
+    "conditions": [
       {
         "description": "General Permit Conditions",
         "condition": "CVSE-1000",

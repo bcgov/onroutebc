@@ -5,8 +5,8 @@ import "./ManageVehiclesDashboard.scss";
 import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
 import { AddVehicleButton } from "./AddVehicleButton";
 import { List } from "../list/List";
-import { DoesUserHaveRoleWithContext } from "../../../../common/authentication/util";
-import { ROLES } from "../../../../common/authentication/types";
+import { DoesUserHaveClaimWithContext } from "../../../../common/authentication/util";
+import { CLAIMS } from "../../../../common/authentication/types";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { VEHICLES_DASHBOARD_TABS } from "../../../../routes/constants";
@@ -68,7 +68,7 @@ export const ManageVehiclesDashboard = memo(() => {
       bannerText="Vehicle Inventory"
       selectedTabIndex={useTabIndexFromURL()}
       bannerButton={
-        DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) ? (
+        DoesUserHaveClaimWithContext(CLAIMS.WRITE_VEHICLE) ? (
           <AddVehicleButton />
         ) : undefined
       }

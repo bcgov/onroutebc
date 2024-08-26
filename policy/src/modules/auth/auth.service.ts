@@ -48,7 +48,7 @@ export class AuthService {
     companyId?: number,
   ): Promise<AxiosResponse> {
     return lastValueFrom(
-      this.httpService.get(process.env.ACCESS_API_URL + '/users/roles', {
+      this.httpService.get(process.env.ACCESS_API_URL + '/users/claims', {
         params: { companyId: companyId ? companyId : undefined },
         headers: {
           Authorization: accessToken,

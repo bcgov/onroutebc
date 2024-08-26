@@ -9,8 +9,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Request } from 'express';
-import { Role } from '../../enum/roles.enum';
-import { Roles } from '../../decorator/roles.decorator';
+import { Claim } from '../../enum/claims.enum';
+import { Permissions } from '../../decorator/permissions.decorator';
 import { DmsService } from '../dms/dms.service';
 import { IUserJWT } from '../../interface/user-jwt.interface';
 import { FileDownloadModes } from '../../enum/file-download-modes.enum';
@@ -62,7 +62,7 @@ export class NotificationController {
   })
   @UseGuards(JwtOneOfAuthGuard)
   @Post('/document')
-  @Roles({ allOf: [Role.SEND_NOTIFICATION, Role.READ_DOCUMENT] })
+  @Permissions({ allOf: [Claim.SEND_NOTIFICATION, Claim.READ_DOCUMENT] })
   async notificationWithDocumentsFromDops(
     @Req() req: Request,
     @Body() notificationDocumentDto: NotificationDocumentDto,
@@ -147,7 +147,7 @@ export class NotificationController {
       'Sends a simple notification using the specified template to the given recipient(s), and returns a transaction ID for the operation.',
   })
   @Post()
-  @Roles(Role.SEND_NOTIFICATION)
+  @Permissions(Claim.SEND_NOTIFICATION)
   async notificationWithoutDocument(
     @Req() req: Request,
     @Body() notificationDocumentDto: NotificationDto,

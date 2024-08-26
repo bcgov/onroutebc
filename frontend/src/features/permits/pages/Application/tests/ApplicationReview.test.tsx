@@ -286,45 +286,45 @@ describe("Review and Confirm Application Details", () => {
       expect(await permitExpiryDate()).toHaveTextContent(expiryDateStr);
     });
 
-    it("should display selected commodities with links", async () => {
+    it("should display selected conditions with links", async () => {
       // Arrange and Act
       renderTestComponent(defaultApplicationData);
 
       // Assert
-      const commodities = defaultApplicationData.permitData.commodities;
-      const descriptions = commodities.map((c) => c.description);
-      const links = commodities.map((c) => c.conditionLink);
-      const conditions = commodities.map((c) => c.condition);
-      const commodityRows = await permitConditions();
-      const commodityDescriptions = await permitConditionDescriptions();
-      const commodityLinks = await permitConditionLinks();
-      const commodityConditions = await permitConditionCodes();
-      expect(commodityRows).toHaveLength(commodities.length);
-      expect(commodityDescriptions).toHaveLength(descriptions.length);
-      expect(commodityLinks).toHaveLength(links.length);
-      expect(commodityConditions).toHaveLength(conditions.length);
-      commodityDescriptions.forEach((desc) => {
+      const conditions = defaultApplicationData.permitData.commodities;
+      const descriptions = conditions.map((c) => c.description);
+      const links = conditions.map((c) => c.conditionLink);
+      const conditionCodes = conditions.map((c) => c.condition);
+      const conditionRows = await permitConditions();
+      const conditionDescriptions = await permitConditionDescriptions();
+      const conditionLinks = await permitConditionLinks();
+      const permitCondCodes = await permitConditionCodes();
+      expect(conditionRows).toHaveLength(conditions.length);
+      expect(conditionDescriptions).toHaveLength(descriptions.length);
+      expect(conditionLinks).toHaveLength(links.length);
+      expect(permitCondCodes).toHaveLength(conditionCodes.length);
+      conditionDescriptions.forEach((desc) => {
         expect(descriptions).toContain(desc.textContent);
       });
-      const descriptionText = commodityDescriptions.map((d) => d.textContent);
+      const descriptionText = conditionDescriptions.map((d) => d.textContent);
       descriptions.forEach((d) => {
         expect(descriptionText).toContain(d);
       });
 
-      commodityLinks.forEach((link) => {
+      conditionLinks.forEach((link) => {
         expect(links).toContain(link.getAttribute("href"));
       });
-      const linkHrefs = commodityLinks.map((l) => l.getAttribute("href"));
+      const linkHrefs = conditionLinks.map((l) => l.getAttribute("href"));
       links.forEach((l) => {
         expect(linkHrefs).toContain(l);
       });
 
-      commodityConditions.forEach((cond) => {
-        expect(conditions).toContain(cond.textContent);
+      permitCondCodes.forEach((cond) => {
+        expect(conditionCodes).toContain(cond.textContent);
       });
-      const conditionCodes = commodityConditions.map((c) => c.textContent);
-      conditions.forEach((c) => {
-        expect(conditionCodes).toContain(c);
+      const conditionCodesText = permitCondCodes.map((c) => c.textContent);
+      conditionCodes.forEach((c) => {
+        expect(conditionCodesText).toContain(c);
       });
     });
 

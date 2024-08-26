@@ -13,9 +13,9 @@ import {
 import { ExceptionDto } from '../../exception/exception.dto';
 import { IsFeatureFlagEnabled } from '../../decorator/is-feature-flag-enabled.decorator';
 import { GetPolicyConfigQueryParamsDto } from './dto/request/queryParam/get-policy-config.query-params.dto';
-import { Roles } from '../../decorator/roles.decorator';
+import { Permissions } from '../../decorator/permissions.decorator';
 import { PolicyConfigIdPathParamDto } from './dto/request/pathParam/policy-config.path-params.dto';
-import { Role } from '../../enum/roles.enum';
+import { Claim } from '../../enum/claims.enum';
 import { ReadPolicyConfigDto } from './dto/response/read-policy-config.dto';
 import { AuthOnly } from '../../decorator/auth-only.decorator';
 
@@ -81,7 +81,7 @@ export class PolicyConfigController {
     type: ReadPolicyConfigDto,
     isArray: true,
   })
-  @Roles(Role.READ_POLICY_CONFIG)
+  @Permissions(Claim.READ_POLICY_CONFIG)
   @Get('/draft')
   async findAllDraft(): Promise<ReadPolicyConfigDto[]> {
     return await this.policyConfigService.findAllDraft();
@@ -103,7 +103,7 @@ export class PolicyConfigController {
     description: 'The retrieved draft policy configuration.',
     type: ReadPolicyConfigDto,
   })
-  @Roles(Role.READ_POLICY_CONFIG)
+  @Permissions(Claim.READ_POLICY_CONFIG)
   @Get(':policyConfigId')
   async findOne(
     @Param() { policyConfigId }: PolicyConfigIdPathParamDto,

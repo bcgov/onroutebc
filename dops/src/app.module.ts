@@ -44,7 +44,7 @@ const envPath = path.resolve(process.cwd() + '/../');
           const correlationId = req.headers['x-correlation-id'];
           return Array.isArray(correlationId)
             ? correlationId[0]
-            : correlationId ?? uuidv4();
+            : (correlationId ?? uuidv4());
         },
       },
     }),

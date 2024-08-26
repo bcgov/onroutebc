@@ -15,9 +15,18 @@ import { NoRecordsFound } from "../../../../../common/components/table/NoRecords
 import { ApplicationListItem } from "../../../types/application";
 import { PendingPermitsColumnDefinition } from "./PendingPermitsColumnDefinition";
 import OnRouteBCContext from "../../../../../common/authentication/OnRouteBCContext";
-import { defaultTableInitialStateOptions, defaultTableOptions } from "../../../../../common/helpers/tableHelper";
-import { PPC_EMAIL, TOLL_FREE_NUMBER } from "../../../../../common/constants/constants";
-import { Optional, PaginatedResponse } from "../../../../../common/types/common";
+import {
+  defaultTableInitialStateOptions,
+  defaultTableOptions,
+} from "../../../../../common/helpers/tableHelper";
+import {
+  PPC_EMAIL,
+  TOLL_FREE_NUMBER,
+} from "../../../../../common/constants/constants";
+import {
+  Optional,
+  PaginatedResponse,
+} from "../../../../../common/types/common";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 
 /**
@@ -43,14 +52,17 @@ export const PendingPermitsDialog = ({
 }) => {
   const handleCancel = () => onCancel();
   const { userDetails } = useContext(OnRouteBCContext);
-  const userAuthGroup = userDetails?.userAuthGroup;
+  const userRole = userDetails?.userRole;
 
   const columns = useMemo<MRT_ColumnDef<ApplicationListItem>[]>(
     () => getColumns(),
-    [userAuthGroup],
+    [userRole],
   );
 
-  const pendingCount = getDefaultRequiredVal(0, pendingPermits?.meta?.totalItems);
+  const pendingCount = getDefaultRequiredVal(
+    0,
+    pendingPermits?.meta?.totalItems,
+  );
   const pendingMsg = `You have ${pendingCount} Pending Permit${pendingCount === 1 ? "" : "s"}`;
 
   const table = useMaterialReactTable({
@@ -79,7 +91,7 @@ export const PendingPermitsDialog = ({
     enableBottomToolbar: true,
     renderEmptyRowsFallback: () => <NoRecordsFound />,
     muiTablePaperProps: {
-      className: "pending-permits-dialog__table-container"
+      className: "pending-permits-dialog__table-container",
     },
   });
 
@@ -89,7 +101,7 @@ export const PendingPermitsDialog = ({
       open={showModal}
       onClose={handleCancel}
       PaperProps={{
-        className: "pending-permits-dialog__container"
+        className: "pending-permits-dialog__container",
       }}
     >
       <div className="pending-permits-dialog__header">
@@ -97,27 +109,26 @@ export const PendingPermitsDialog = ({
           <FontAwesomeIcon className="icon" icon={faExclamationTriangle} />
         </div>
 
-        <span className="pending-permits-dialog__title">
-          Pending Permits
-        </span>
+        <span className="pending-permits-dialog__title">Pending Permits</span>
       </div>
 
       <div className="pending-permits-dialog__body">
-        <p className="pending-permits-dialog__msg">
-          {pendingMsg}
-        </p>
+        <p className="pending-permits-dialog__msg">{pendingMsg}</p>
 
         <InfoBcGovBanner
-          className="pending-permits-dialog__banner" 
-          msg={"There was an unexpected error in issuing the following permits. No action from you is required."}
+          className="pending-permits-dialog__banner"
+          msg={
+            "There was an unexpected error in issuing the following permits. No action from you is required."
+          }
           additionalInfo={
             <Typography sx={{ marginBottom: "8px" }}>
-              onRouteBC will keep trying to issue these permits once the error is resolved. If
-              you need immediate assistance, please contact the Provincial Permit Centre at
-              {" "}
+              onRouteBC will keep trying to issue these permits once the error
+              is resolved. If you need immediate assistance, please contact the
+              Provincial Permit Centre at{" "}
               <span>
                 <strong>Toll-free: {TOLL_FREE_NUMBER}</strong>
-              </span> or {" "}
+              </span>{" "}
+              or{" "}
               <span>
                 <strong>Email: {PPC_EMAIL}</strong>
               </span>
@@ -144,4 +155,3 @@ export const PendingPermitsDialog = ({
     </Dialog>
   );
 };
-  

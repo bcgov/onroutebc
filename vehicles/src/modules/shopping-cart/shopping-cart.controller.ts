@@ -19,8 +19,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Request } from 'express';
-import { Roles } from '../../common/decorator/roles.decorator';
-import { Role } from '../../common/enum/roles.enum';
+import { Permissions } from '../../common/decorator/permissions.decorator';
+import { Claim } from '../../common/enum/claims.enum';
 import { ExceptionDto } from '../../common/exception/exception.dto';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { AddToShoppingCartDto } from './dto/request/add-to-shopping-cart.dto';
@@ -62,7 +62,7 @@ export class ShoppingCartController {
     type: ResultDto,
   })
   @Post()
-  @Roles(Role.WRITE_PERMIT)
+  @Permissions(Claim.WRITE_PERMIT)
   async addToCart(
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
@@ -95,7 +95,7 @@ export class ShoppingCartController {
     type: Array<ReadShoppingCartDto>,
   })
   @Get()
-  @Roles(Role.WRITE_PERMIT)
+  @Permissions(Claim.WRITE_PERMIT)
   async getApplicationsInCart(
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
@@ -129,7 +129,7 @@ export class ShoppingCartController {
     type: Number,
   })
   @Get('count')
-  @Roles(Role.WRITE_PERMIT)
+  @Permissions(Claim.WRITE_PERMIT)
   async getCartCount(
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
@@ -148,7 +148,7 @@ export class ShoppingCartController {
    * @returns The result of the removal operation.
    */
   @Delete()
-  @Roles(Role.WRITE_PERMIT)
+  @Permissions(Claim.WRITE_PERMIT)
   @ApiOperation({
     summary: 'Removes one or more applications from the shopping cart.',
     description:

@@ -3,10 +3,10 @@ import { useNavigate } from "react-router";
 
 import { ERROR_ROUTES } from "../../routes/constants";
 import { Nullable } from "../types/common";
-import { UserRolesType } from "./types";
+import { UserClaimsType } from "./types";
 import {
-  useIDIRUserRoles,
-  useIDIRUserRolesQuery,
+  useUserClaimsByCompanyId,
+  useUserClaimsByCompanyIdQuery,
 } from "../../features/manageProfile/apiManager/hooks";
 
 /*
@@ -15,11 +15,15 @@ import {
  * React Hooks rules do not allow conditional execution of hooks since the react DOM
  * needs to know the order of execution of hooks per component.
  *
- * IDIRRoles is relevant only after the idir user has logged in
+ * UserClaimsByCompany is relevant only after the BCeID user has logged in and the companyId is set
  * and hence only has to be executed after the conditions are met.
  */
-export const LoadIDIRUserRoles = () => {
-  const { isPending, isError, data: userRoles } = useIDIRUserRolesQuery();
+export const LoadBCeIDUserClaimsByCompany = () => {
+  const {
+    isPending,
+    isError,
+    data: userClaimsData,
+  } = useUserClaimsByCompanyIdQuery();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,7 +34,7 @@ export const LoadIDIRUserRoles = () => {
     }
   }, [isPending, isError]);
 
-  useIDIRUserRoles(userRoles as Nullable<UserRolesType[]>);
+  useUserClaimsByCompanyId(userClaimsData as Nullable<UserClaimsType[]>);
 
   return null;
 };
