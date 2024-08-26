@@ -31,7 +31,7 @@ import {
 import { createMapper } from '@automapper/core';
 import { UsersService } from '../../src/modules/company-user-management/users/users.service';
 import { UsersController } from '../../src/modules/company-user-management/users/users.controller';
-import { Role } from '../../src/common/enum/roles.enum';
+import { Claim } from '../../src/common/enum/claims.enum';
 import { PendingIdirUser } from 'src/modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
 import { PendingIdirUsersService } from 'src/modules/company-user-management/pending-idir-users/pending-idir-users.service';
 import { PendingIdirUsersProfile } from 'src/modules/company-user-management/pending-idir-users/profiles/pending-idir-user.profile';
@@ -129,19 +129,19 @@ describe('Users (e2e)', () => {
     });
   });
 
-  describe('/users/roles?companyId=1 GET', () => {
+  describe('/users/claims?companyId=1 GET', () => {
     it('should return the ORBC userContext.', async () => {
       repo.query.mockResolvedValue([
-        { ROLE_TYPE: Role.READ_SELF },
-        { ROLE_TYPE: Role.READ_USER },
-        { ROLE_TYPE: Role.WRITE_SELF },
-        { ROLE_TYPE: Role.WRITE_USER },
+        { ROLE_TYPE: Claim.READ_SELF },
+        { ROLE_TYPE: Claim.READ_USER },
+        { ROLE_TYPE: Claim.WRITE_SELF },
+        { ROLE_TYPE: Claim.WRITE_USER },
       ]);
 
       const response = await request(app.getHttpServer() as unknown as App)
-        .get('/users/roles?companyId=1')
+        .get('/users/claims?companyId=1')
         .expect(200);
-      expect(response.body).toContainEqual(Role.READ_SELF);
+      expect(response.body).toContainEqual(Claim.READ_SELF);
     });
   });
 

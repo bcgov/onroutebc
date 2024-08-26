@@ -845,7 +845,7 @@
             <connectTime>true</connectTime>
           </value>
         </objProp>
-        <stringProp name="filename">${RESULTS_DIR}/test-1.csv</stringProp>
+        <stringProp name="filename">${RESULTS_DIR}/dops.csv</stringProp>
       </ResultCollector>
       <hashTree/>
     </hashTree>

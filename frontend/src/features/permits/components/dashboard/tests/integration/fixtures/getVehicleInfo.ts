@@ -10,7 +10,7 @@ import {
 import {
   getIneligiblePowerUnitSubtypes,
   getIneligibleTrailerSubtypes,
-} from "../../../../../helpers/removeIneligibleVehicles";
+} from "../../../../../helpers/permitVehicles";
 
 let powerUnitId = 1;
 let trailerId = 1;

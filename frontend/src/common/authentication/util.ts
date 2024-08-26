@@ -3,70 +3,70 @@ import { useContext } from "react";
 import OnRouteBCContext from "./OnRouteBCContext";
 import { Nullable, Optional } from "../types/common";
 import {
-  BCeIDUserAuthGroupType,
-  IDIRUserAuthGroupType,
-  IDIR_USER_AUTH_GROUP,
-  UserRolesType,
+  BCeIDUserRoleType,
+  IDIRUserRoleType,
+  IDIR_USER_ROLE,
+  UserClaimsType,
 } from "./types";
 
 /**
- * Returns a boolean indicating if the user has a given role.
+ * Returns a boolean indicating if the user has a given claim.
  *
  * RATIONALE for this function:
  * In AuthWall Components, there is a number of hooks called and when trying
  * to use the DoesUserHaveRoleWithContext function, it throws a hook order bug as
  * the order of execution of hooks must not change as per the rules of hooks.
  *
- * Hence a separate function that does accept userRoles as a parameter.
+ * Hence a separate function that does accept userClaims as a parameter.
  *
- * @param userRoles The set of roles of the user.
- * @param requiredRole The role to check for.
+ * @param userClaims The set of claims of the user.
+ * @param requiredClaim The claim to check for.
+ * @returns A boolean indicating if the user has the claim to access a page.
+ */
+export const DoesUserHaveClaim = (
+  userClaims: Nullable<string[]>,
+  requiredClaim: Optional<string>,
+) => {
+  return requiredClaim && userClaims?.includes(requiredClaim);
+};
+
+/**
+ * Returns a boolean indicating if the user has a given claim.
+ * Uses the context for the userclaims.
+ * @param requiredClaim The claim to check for.
+ * @returns A boolean indicating if the user has the claim to access a page or feature.
+ */
+export const DoesUserHaveClaimWithContext = (
+  requiredClaim: Optional<UserClaimsType>,
+) => {
+  const { userClaims } = useContext(OnRouteBCContext);
+  return requiredClaim && userClaims?.includes(requiredClaim);
+};
+
+/**
+ * Returns a boolean indicating if the user has the necessary role.
+ *
  * @returns A boolean indicating if the user has the role to access a page.
  */
-export const DoesUserHaveRole = (
-  userRoles: Nullable<string[]>,
-  requiredRole: Optional<string>,
-) => {
-  return requiredRole && userRoles?.includes(requiredRole);
-};
-
-/**
- * Returns a boolean indicating if the user has a given role.
- * Uses the context for the userRoles.
- * @param requiredRole The role to check for.
- * @returns A boolean indicating if the user has the role to access a page or feature.
- */
-export const DoesUserHaveRoleWithContext = (
-  requiredRole: Optional<UserRolesType>,
-) => {
-  const { userRoles } = useContext(OnRouteBCContext);
-  return requiredRole && userRoles?.includes(requiredRole);
-};
-
-/**
- * Returns a boolean indicating if the user has the necessary auth group.
- *
- * @returns A boolean indicating if the user has the auth group to access a page.
- */
-export function DoesUserHaveAuthGroup<
-  T extends IDIRUserAuthGroupType | BCeIDUserAuthGroupType,
+export function DoesUserHaveRole<
+  T extends IDIRUserRoleType | BCeIDUserRoleType,
 >({
-  userAuthGroup,
-  allowedAuthGroups = [],
+  userRole,
+  allowedRoles = [],
 }: {
   /**
-   * The auth group the logged in user belongs to.
+   * The role the logged in user belongs to.
    */
-  userAuthGroup: Optional<T>;
+  userRole: Optional<T>;
   /**
-   * The auth groups that is required to allow a certain action.
+   * The role that is required to allow a certain action.
    * If not provided, the default check is against the IDIR System Admin.
    */
-  allowedAuthGroups?: T[];
+  allowedRoles?: T[];
 }) {
   return (
-    userAuthGroup &&
-    (userAuthGroup === IDIR_USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR ||
-      allowedAuthGroups.includes(userAuthGroup))
+    userRole &&
+    (userRole === IDIR_USER_ROLE.SYSTEM_ADMINISTRATOR ||
+      allowedRoles.includes(userRole))
   );
 }
