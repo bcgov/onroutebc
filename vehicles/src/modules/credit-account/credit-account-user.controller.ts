@@ -22,8 +22,6 @@ import { Request } from 'express';
 import { Permissions } from '../../common/decorator/permissions.decorator';
 import { ExceptionDto } from '../../common/exception/exception.dto';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
-
-import { Claim } from '../../common/enum/claims.enum';
 import { DeleteDto } from '../common/dto/response/delete.dto';
 import { CreditAccountService } from './credit-account.service';
 import { CreateCreditAccountUserDto } from './dto/request/create-credit-account-user.dto';
@@ -32,10 +30,7 @@ import { CreditAccountIdPathParamDto } from './dto/request/pathParam/creditAccou
 import { GetCreditAccountUserQueryParamsDto } from './dto/request/queryParam/getCreditAccountUser.query-params.dto';
 import { ReadCreditAccountUserDto } from './dto/response/read-credit-account-user.dto';
 import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-flag-enabled.decorator';
-import {
-  ClientUserRole,
-  IDIR_USER_ROLE_LIST,
-} from '../../common/enum/user-role.enum';
+import { ClientUserRole, IDIRUserRole } from '../../common/enum/user-role.enum';
 
 @ApiBearerAuth()
 @ApiTags('Credit Account Users')
@@ -80,7 +75,7 @@ export class CreditAccountUserController {
     type: ReadCreditAccountUserDto,
   })
   @Put()
-  @Permissions(Claim.WRITE_CREDIT_ACCOUNT)
+  @Permissions({ allowedIdirRoles: [IDIRUserRole.FINANCE] })
   async addOrActivateCreditAccountUser(
     @Req() request: Request,
     @Param() { companyId, creditAccountId }: CreditAccountIdPathParamDto,
@@ -113,7 +108,7 @@ export class CreditAccountUserController {
     type: DeleteDto,
   })
   @Delete()
-  @Permissions(Claim.WRITE_CREDIT_ACCOUNT)
+  @Permissions({ allowedIdirRoles: [IDIRUserRole.FINANCE] })
   async deactivateCreditAccountUser(
     @Req() request: Request,
     @Param() { companyId, creditAccountId }: CreditAccountIdPathParamDto,
@@ -146,8 +141,8 @@ export class CreditAccountUserController {
   })
   @Get()
   @Permissions({
-    userRole: [...IDIR_USER_ROLE_LIST, ClientUserRole.COMPANY_ADMINISTRATOR],
-    oneOf: [Claim.READ_CREDIT_ACCOUNT],
+    allowedBCeIDRoles: [ClientUserRole.COMPANY_ADMINISTRATOR],
+    allowedIdirRoles: [IDIRUserRole.SYSTEM_ADMINISTRATOR, IDIRUserRole.FINANCE],
   })
   async getCreditAccountUsers(
     @Req() request: Request,
