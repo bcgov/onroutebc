@@ -9,9 +9,9 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, DataSource, Repository } from 'typeorm';
 import {
-  ClientUserAuthGroup,
-  GenericUserAuthGroup,
-} from '../../../common/enum/user-auth-group.enum';
+  ClientUserRole,
+  GenericUserRole,
+} from '../../../common/enum/user-role.enum';
 import { ReadUserDto } from '../users/dto/response/read-user.dto';
 import { CreateCompanyDto } from './dto/request/create-company.dto';
 import { UpdateCompanyDto } from './dto/request/update-company.dto';
@@ -199,7 +199,7 @@ export class CompanyService {
           User,
           {
             extraArgs: () => ({
-              userAuthGroup: GenericUserAuthGroup.PUBLIC_VERIFIED,
+              userRole: GenericUserRole.PUBLIC_VERIFIED,
               userName: currentUser.userName,
               directory: currentUser.orbcUserDirectory,
               userGUID: currentUser.userGUID,
@@ -213,12 +213,11 @@ export class CompanyService {
         newCompanyUser.statusCode = UserStatus.ACTIVE;
         newCompanyUser.company.companyId = newCompany.companyId;
         newCompanyUser.user = user;
-        newCompanyUser.userAuthGroup =
-          ClientUserAuthGroup.COMPANY_ADMINISTRATOR;
+        newCompanyUser.userRole = ClientUserRole.COMPANY_ADMINISTRATOR;
 
         user.companyUsers = [newCompanyUser];
         user = await queryRunner.manager.save(user);
-        user.companyUsers = [newCompanyUser]; //To populate Company User Auth Group
+        user.companyUsers = [newCompanyUser]; //To populate Company User Role
         newUser = await this.classMapper.mapAsync(user, User, ReadUserDto);
       }
       await queryRunner.commitTransaction();

@@ -31,12 +31,12 @@ import { PageMetaDto } from '../../../common/dto/paginate/page-meta';
 import { PaginationDto } from '../../../common/dto/paginate/pagination';
 
 import {
-  ClientUserAuthGroup,
-  IDIR_USER_AUTH_GROUP_LIST,
-} from '../../../common/enum/user-auth-group.enum';
+  ClientUserRole,
+  IDIR_USER_ROLE_LIST,
+} from '../../../common/enum/user-role.enum';
 import { DeleteDto } from '../../common/dto/response/delete.dto';
 import { ReadApplicationMetadataDto } from './dto/response/read-application-metadata.dto';
-import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
+import { doesUserHaveRole } from '../../../common/helper/auth.helper';
 import {
   ACTIVE_APPLICATION_STATUS,
   ACTIVE_APPLICATION_STATUS_FOR_ISSUANCE,
@@ -160,7 +160,7 @@ export class ApplicationService {
       ReadApplicationDto,
       {
         extraArgs: () => ({
-          currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
+          currentUserRole: currentUser?.orbcUserRole,
         }),
       },
     );
@@ -254,7 +254,7 @@ export class ApplicationService {
       ReadApplicationDto,
       {
         extraArgs: () => ({
-          currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
+          currentUserRole: currentUser?.orbcUserRole,
         }),
       },
     );
@@ -335,8 +335,8 @@ export class ApplicationService {
         ReadApplicationMetadataDto,
         {
           extraArgs: () => ({
-            currentUserAuthGroup:
-              findAllApplicationsOptions?.currentUser?.orbcUserAuthGroup,
+            currentUserRole:
+              findAllApplicationsOptions?.currentUser?.orbcUserRole,
           }),
         },
       );
@@ -455,7 +455,7 @@ export class ApplicationService {
       ReadApplicationDto,
       {
         extraArgs: () => ({
-          currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
+          currentUserRole: currentUser?.orbcUserRole,
         }),
       },
     );
@@ -651,7 +651,7 @@ export class ApplicationService {
       ReadApplicationDto,
       {
         extraArgs: () => ({
-          currentUserAuthGroup: currentUser?.orbcUserAuthGroup,
+          currentUserRole: currentUser?.orbcUserRole,
         }),
       },
     );
@@ -704,15 +704,12 @@ export class ApplicationService {
       .andWhere('permit.permitNumber IS NULL');
 
     // Filter applications by user GUID if the current user is a PERMIT_APPLICANT or by ONLINE origin if the user is a COMPANY_ADMINISTRATOR
-    if (
-      ClientUserAuthGroup.PERMIT_APPLICANT === currentUser.orbcUserAuthGroup
-    ) {
+    if (ClientUserRole.PERMIT_APPLICANT === currentUser.orbcUserRole) {
       applicationsQB.andWhere('applicationOwner.userGUID = :userGuid', {
         userGuid: currentUser.userGUID,
       });
     } else if (
-      ClientUserAuthGroup.COMPANY_ADMINISTRATOR ===
-      currentUser.orbcUserAuthGroup
+      ClientUserRole.COMPANY_ADMINISTRATOR === currentUser.orbcUserRole
     ) {
       applicationsQB.andWhere(
         'permit.permitApplicationOrigin = :permitApplicationOrigin',
@@ -732,9 +729,9 @@ export class ApplicationService {
           applicationIds.includes(application.permitId) &&
           ({
             ...application,
-            permitStatus: doesUserHaveAuthGroup(
-              currentUser.orbcUserAuthGroup,
-              IDIR_USER_AUTH_GROUP_LIST,
+            permitStatus: doesUserHaveRole(
+              currentUser.orbcUserRole,
+              IDIR_USER_ROLE_LIST,
             )
               ? ApplicationStatus.DELETED
               : ApplicationStatus.CANCELLED,

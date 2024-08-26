@@ -3,7 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import { BCeIDAuthWall } from "../common/authentication/auth-walls/BCeIDAuthWall";
 import { IDIRAuthWall } from "../common/authentication/auth-walls/IDIRAuthWall";
 import { NewBCeIDAuthWall } from "../common/authentication/auth-walls/NewBCeIDAuthWall";
-import { IDIR_USER_AUTH_GROUP, ROLES } from "../common/authentication/types";
+import { IDIR_USER_ROLE, CLAIMS } from "../common/authentication/types";
 import { UniversalUnauthorized } from "../common/pages/UniversalUnauthorized";
 import { UniversalUnexpected } from "../common/pages/UniversalUnexpected";
 import { WelcomePage } from "../features/homePage/welcome/WelcomePage";
@@ -90,12 +90,12 @@ export const AppRoutes = () => {
       <Route
         element={
           <IDIRAuthWall
-            allowedAuthGroups={[
-              IDIR_USER_AUTH_GROUP.ENFORCEMENT_OFFICER,
-              IDIR_USER_AUTH_GROUP.PPC_CLERK,
-              IDIR_USER_AUTH_GROUP.FINANCE,
-              IDIR_USER_AUTH_GROUP.HQ_ADMINISTRATOR,
-              IDIR_USER_AUTH_GROUP.CTPO,
+            allowedRoles={[
+              IDIR_USER_ROLE.ENFORCEMENT_OFFICER,
+              IDIR_USER_ROLE.PPC_CLERK,
+              IDIR_USER_ROLE.FINANCE,
+              IDIR_USER_ROLE.HQ_ADMINISTRATOR,
+              IDIR_USER_ROLE.CTPO,
             ]}
           />
         }
@@ -111,9 +111,7 @@ export const AppRoutes = () => {
       </Route>
 
       <Route
-        element={
-          <IDIRAuthWall allowedAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]} />
-        }
+        element={<IDIRAuthWall allowedRoles={[IDIR_USER_ROLE.PPC_CLERK]} />}
       >
         <Route
           path={`companies/:companyId/permits/:permitId/void`}
@@ -133,10 +131,10 @@ export const AppRoutes = () => {
       <Route
         element={
           <IDIRAuthWall
-            allowedAuthGroups={[
-              IDIR_USER_AUTH_GROUP.PPC_CLERK,
-              IDIR_USER_AUTH_GROUP.FINANCE,
-              IDIR_USER_AUTH_GROUP.HQ_ADMINISTRATOR,
+            allowedRoles={[
+              IDIR_USER_ROLE.PPC_CLERK,
+              IDIR_USER_ROLE.FINANCE,
+              IDIR_USER_ROLE.HQ_ADMINISTRATOR,
             ]}
           />
         }
@@ -153,8 +151,8 @@ export const AppRoutes = () => {
       <Route
         element={
           <BCeIDAuthWall
-            requiredRole={ROLES.READ_VEHICLE}
-            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+            requiredRole={CLAIMS.READ_VEHICLE}
+            allowedIDIRRoles={[IDIR_USER_ROLE.PPC_CLERK]}
           />
         }
       >
@@ -190,10 +188,10 @@ export const AppRoutes = () => {
       <Route
         element={
           <BCeIDAuthWall
-            requiredRole={ROLES.READ_ORG}
-            allowedIDIRAuthGroups={[
-              IDIR_USER_AUTH_GROUP.PPC_CLERK,
-              IDIR_USER_AUTH_GROUP.FINANCE,
+            requiredRole={CLAIMS.READ_ORG}
+            allowedIDIRRoles={[
+              IDIR_USER_ROLE.PPC_CLERK,
+              IDIR_USER_ROLE.FINANCE,
             ]}
           />
         }
@@ -207,10 +205,10 @@ export const AppRoutes = () => {
       <Route
         element={
           <BCeIDAuthWall
-            requiredRole={ROLES.WRITE_USER}
-            allowedIDIRAuthGroups={[
-              IDIR_USER_AUTH_GROUP.PPC_CLERK,
-              IDIR_USER_AUTH_GROUP.FINANCE,
+            requiredRole={CLAIMS.WRITE_USER}
+            allowedIDIRRoles={[
+              IDIR_USER_ROLE.PPC_CLERK,
+              IDIR_USER_ROLE.FINANCE,
             ]}
           />
         }
@@ -228,8 +226,8 @@ export const AppRoutes = () => {
       <Route
         element={
           <BCeIDAuthWall
-            requiredRole={ROLES.WRITE_PERMIT}
-            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+            requiredRole={CLAIMS.WRITE_PERMIT}
+            allowedIDIRRoles={[IDIR_USER_ROLE.PPC_CLERK]}
           />
         }
       >
@@ -246,11 +244,8 @@ export const AppRoutes = () => {
       <Route
         element={
           <BCeIDAuthWall
-            requiredRole={ROLES.WRITE_PERMIT}
-            allowedIDIRAuthGroups={[
-              IDIR_USER_AUTH_GROUP.PPC_CLERK,
-              IDIR_USER_AUTH_GROUP.CTPO,
-            ]}
+            requiredRole={CLAIMS.WRITE_PERMIT}
+            allowedIDIRRoles={[IDIR_USER_ROLE.PPC_CLERK, IDIR_USER_ROLE.CTPO]}
           />
         }
       >
@@ -263,12 +258,12 @@ export const AppRoutes = () => {
       <Route
         element={
           <BCeIDAuthWall
-            requiredRole={ROLES.WRITE_PERMIT}
-            allowedIDIRAuthGroups={[
-              IDIR_USER_AUTH_GROUP.PPC_CLERK,
-              IDIR_USER_AUTH_GROUP.FINANCE,
-              IDIR_USER_AUTH_GROUP.HQ_ADMINISTRATOR,
-              IDIR_USER_AUTH_GROUP.CTPO,
+            requiredRole={CLAIMS.WRITE_PERMIT}
+            allowedIDIRRoles={[
+              IDIR_USER_ROLE.PPC_CLERK,
+              IDIR_USER_ROLE.FINANCE,
+              IDIR_USER_ROLE.HQ_ADMINISTRATOR,
+              IDIR_USER_ROLE.CTPO,
             ]}
           />
         }
@@ -299,8 +294,8 @@ export const AppRoutes = () => {
       <Route
         element={
           <BCeIDAuthWall
-            requiredRole={ROLES.WRITE_PERMIT}
-            allowedIDIRAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+            requiredRole={CLAIMS.WRITE_PERMIT}
+            allowedIDIRRoles={[IDIR_USER_ROLE.PPC_CLERK]}
           />
         }
       >
@@ -310,7 +305,7 @@ export const AppRoutes = () => {
         />
       </Route>
 
-      <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
+      <Route element={<BCeIDAuthWall requiredRole={CLAIMS.WRITE_PERMIT} />}>
         <Route
           path={routes.PAYMENT_ROUTES.PAYMENT_REDIRECT}
           element={<PaymentRedirect />}
@@ -320,14 +315,14 @@ export const AppRoutes = () => {
       <Route
         element={
           <IDIRAuthWall
-            allowedAuthGroups={[
-              IDIR_USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
-              IDIR_USER_AUTH_GROUP.FINANCE,
-              IDIR_USER_AUTH_GROUP.PPC_CLERK,
-              IDIR_USER_AUTH_GROUP.CTPO,
-              IDIR_USER_AUTH_GROUP.HQ_ADMINISTRATOR,
-              IDIR_USER_AUTH_GROUP.ENFORCEMENT_OFFICER,
-              // IDIR_USER_AUTH_GROUP.TRAINEE,
+            allowedRoles={[
+              IDIR_USER_ROLE.SYSTEM_ADMINISTRATOR,
+              IDIR_USER_ROLE.FINANCE,
+              IDIR_USER_ROLE.PPC_CLERK,
+              IDIR_USER_ROLE.CTPO,
+              IDIR_USER_ROLE.HQ_ADMINISTRATOR,
+              IDIR_USER_ROLE.ENFORCEMENT_OFFICER,
+              // IDIR_USER_ROLE.TRAINEE,
             ]}
           />
         }
