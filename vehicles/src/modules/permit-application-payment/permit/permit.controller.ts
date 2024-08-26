@@ -23,21 +23,22 @@ import {
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
 import { Request } from 'express';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
-import { Roles } from 'src/common/decorator/roles.decorator';
-import { Role } from 'src/common/enum/roles.enum';
+import { Permissions } from 'src/common/decorator/permissions.decorator';
+import { Claim } from 'src/common/enum/claims.enum';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import { ResultDto } from './dto/response/result.dto';
 import { VoidPermitDto } from './dto/request/void-permit.dto';
 import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
 import { GetPermitQueryParamsDto } from './dto/request/queryParam/getPermit.query-params.dto';
-import { IDIR_USER_AUTH_GROUP_LIST } from 'src/common/enum/user-auth-group.enum';
+import { IDIR_USER_ROLE_LIST } from 'src/common/enum/user-role.enum';
 import { ReadPermitMetadataDto } from './dto/response/read-permit-metadata.dto';
-import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
+import { doesUserHaveRole } from '../../../common/helper/auth.helper';
 import { CreateNotificationDto } from '../../common/dto/request/create-notification.dto';
 import { ReadNotificationDto } from '../../common/dto/response/read-notification.dto';
 import { PermitReceiptDocumentService } from '../permit-receipt-document/permit-receipt-document.service';
 import { JwtServiceAccountAuthGuard } from 'src/common/guard/jwt-sa-auth.guard';
 import { PermitIdDto } from 'src/modules/permit-application-payment/permit/dto/request/permit-id.dto';
+import { IRole } from '../../../common/interface/role.interface';
 
 @ApiBearerAuth()
 @ApiTags('Permit: API accessible exclusively to staff users.')
@@ -67,10 +68,10 @@ export class PermitController {
    *
    */
   @ApiPaginatedResponse(ReadPermitMetadataDto)
-  @Roles({
-    userAuthGroup: IDIR_USER_AUTH_GROUP_LIST,
-    oneOf: [Role.READ_PERMIT],
-  })
+  @Permissions({
+    userRole: IDIR_USER_ROLE_LIST,
+    oneOf: [Claim.READ_PERMIT],
+  } as IRole)
   @Get()
   async getPermit(
     @Req() request: Request,
@@ -118,10 +119,10 @@ export class PermitController {
    * @returns The id of new voided/revoked permit a in response object {@link ResultDto}
    *
    */
-  @Roles({
-    userAuthGroup: IDIR_USER_AUTH_GROUP_LIST,
-    oneOf: [Role.VOID_PERMIT],
-  })
+  @Permissions({
+    userRole: IDIR_USER_ROLE_LIST,
+    oneOf: [Claim.VOID_PERMIT],
+  } as IRole)
   @Post('/:permitId/void')
   async voidpermit(
     @Req() request: Request,
@@ -154,7 +155,7 @@ export class PermitController {
    * Sends a notification related to a specific permit.
    *
    * This method checks if the current user belongs to the specified user authentication group before proceeding.
-   * If the user does not belong to the required auth group, a ForbiddenException is thrown.
+   * If the user does not belong to the required role, a ForbiddenException is thrown.
    *
    * @param request The incoming request object containing the current user information.
    * @param permitId The ID of the permit to associate the notification with.
@@ -170,10 +171,10 @@ export class PermitController {
     description:
       'Sends a notification related to a specific permit after checking user authorization.',
   })
-  @Roles({
-    userAuthGroup: IDIR_USER_AUTH_GROUP_LIST,
-    oneOf: [Role.SEND_NOTIFICATION],
-  })
+  @Permissions({
+    userRole: IDIR_USER_ROLE_LIST,
+    oneOf: [Claim.SEND_NOTIFICATION],
+  } as IRole)
   @Post('/:permitId/notification')
   async notification(
     @Req() request: Request,
@@ -182,13 +183,8 @@ export class PermitController {
     createNotificationDto: CreateNotificationDto,
   ): Promise<ReadNotificationDto[]> {
     const currentUser = request.user as IUserJWT;
-    // Throws ForbiddenException if user does not belong to the specified user auth group.
-    if (
-      !doesUserHaveAuthGroup(
-        currentUser.orbcUserAuthGroup,
-        IDIR_USER_AUTH_GROUP_LIST,
-      )
-    ) {
+    // Throws ForbiddenException if user does not belong to the specified user role.
+    if (!doesUserHaveRole(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST)) {
       throw new ForbiddenException();
     }
 

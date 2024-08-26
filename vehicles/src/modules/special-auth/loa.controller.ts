@@ -33,17 +33,17 @@ import { Request, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileDownloadModes } from 'src/common/enum/file-download-modes.enum';
 import { setResHeaderCorrelationId } from 'src/common/helper/response-header.helper';
-import { Roles } from 'src/common/decorator/roles.decorator';
-import { Role } from 'src/common/enum/roles.enum';
-import { IsFeatureFlagEnabled } from 'src/common/decorator/is-feature-flag-enabled.decorator';
-import { ReadLoaDto } from './dto/response/read-loa.dto';
-import { JsonReqBodyInterceptor } from 'src/common/interceptor/json-req-body.interceptor';
-import { CompanyIdPathParamDto } from '../common/dto/request/pathParam/companyId.path-param.dto';
+import { JsonReqBodyInterceptor } from '../../common/interceptor/json-req-body.interceptor';
 import { CreateLoaFileDto } from './dto/request/create-loa-file.dto';
-import { GetLoaQueryParamsDto } from './dto/request/queryParam/get-loa.query-params.dto';
-import { LoaIdPathParamDto } from './dto/request/pathParam/loa-Id.path-params.dto';
+import { CompanyIdPathParamDto } from '../common/dto/request/pathParam/companyId.path-param.dto';
 import { UpdateLoaFileDto } from './dto/request/update-loa-file.dto';
+import { LoaIdPathParamDto } from './dto/request/pathParam/loa-Id.path-params.dto';
 import { GetDocumentQueryParamsDto } from '../common/dto/request/queryParam/getDocument.query-params.dto';
+import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-flag-enabled.decorator';
+import { Permissions } from 'src/common/decorator/permissions.decorator';
+import { Claim } from 'src/common/enum/claims.enum';
+import { ReadLoaDto } from './dto/response/read-loa.dto';
+import { GetLoaQueryParamsDto } from './dto/request/queryParam/get-loa.query-params.dto';
 
 @ApiBearerAuth()
 @ApiTags('Letter of Authorization (LoA)')
@@ -78,7 +78,7 @@ export class LoaController {
     type: ReadLoaDto,
   })
   @ApiConsumes('multipart/form-data')
-  @Roles(Role.WRITE_LOA)
+  @Permissions(Claim.WRITE_LOA)
   @Post()
   @UseInterceptors(FileInterceptor('file'), JsonReqBodyInterceptor)
   async create(
@@ -125,7 +125,7 @@ export class LoaController {
     summary: 'Get LoA by Id.',
     description: 'Returns the LoA object from the database.',
   })
-  @Roles(Role.READ_LOA)
+  @Permissions(Claim.READ_LOA)
   @Get('/:loaId')
   async getById(
     @Req() request: Request,
@@ -141,7 +141,7 @@ export class LoaController {
     description: 'Updates and returns the LoA object from the database.',
   })
   @ApiConsumes('multipart/form-data')
-  @Roles(Role.WRITE_LOA)
+  @Permissions(Claim.WRITE_LOA)
   @Put('/:loaId')
   @UseInterceptors(FileInterceptor('file'), JsonReqBodyInterceptor)
   async update(
@@ -174,7 +174,7 @@ export class LoaController {
     summary: 'Delete LoA by Id.',
     description: 'Deletes the LoA object from the database.',
   })
-  @Roles(Role.WRITE_LOA)
+  @Permissions(Claim.WRITE_LOA)
   @Delete('/:loaId')
   async delete(
     @Req() request: Request,
@@ -189,7 +189,7 @@ export class LoaController {
     summary: 'Get LoA Document',
     description: 'Retrieve the LoA document from the database.',
   })
-  @Roles(Role.READ_LOA)
+  @Permissions(Claim.READ_LOA)
   @Get('/:loaId/documents')
   async getLoaDocument(
     @Req() request: Request,
@@ -215,7 +215,7 @@ export class LoaController {
     summary: 'Delete LoA Document',
     description: 'Deletes the LoA document from the database.',
   })
-  @Roles(Role.WRITE_LOA)
+  @Permissions(Claim.WRITE_LOA)
   @Delete('/:loaId/documents')
   async deleteLoaDocument(
     @Req() request: Request,

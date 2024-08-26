@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@mui/material";
@@ -12,11 +12,17 @@ import { DeleteConfirmationDialog } from "../../../../common/components/dialog/D
 import { LOASteps } from "./LOA/LOASteps";
 import { useFetchLOAs, useRemoveLOAMutation } from "../../hooks/LOA";
 import { getDefaultNullableVal, getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { NoFeePermitType } from "../../types/SpecialAuthorization";
+import { DEFAULT_NO_FEE_PERMIT_TYPE, NoFeePermitType } from "../../types/SpecialAuthorization";
 import { NoFeePermitsSection } from "../../components/SpecialAuthorizations/NoFeePermits/NoFeePermitsSection";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { LCVSection } from "../../components/SpecialAuthorizations/LCV/LCVSection";
 import { downloadLOA } from "../../apiManager/specialAuthorization";
+import {
+  useFetchSpecialAuthorizations,
+  useUpdateLCV,
+  useUpdateNoFee,
+} from "../../hooks/specialAuthorizations";
+
 import {
   canUpdateLCVFlag,
   canUpdateLOA,
@@ -31,50 +37,57 @@ export const SpecialAuthorizations = ({
 }: {
   companyId: number;
 }) => {
-  const [enableNoFeePermits, setEnableNoFeePermits] = useState<boolean>(false);
-  const [noFeePermitType, setNoFeePermitType]
-    = useState<RequiredOrNull<NoFeePermitType>>(null);
-  const [enableLCV, setEnableLCV] = useState<boolean>(false);
+  const {
+    data: specialAuthorizations,
+    refetch: refetchSpecialAuth,
+  } = useFetchSpecialAuthorizations(companyId);
+
+  const noFeeType = getDefaultRequiredVal(null, specialAuthorizations?.noFeeType);
+  const isLcvAllowed = getDefaultRequiredVal(false, specialAuthorizations?.isLcvAllowed);
+
   const [showExpiredLOAs, setShowExpiredLOAs] = useState<boolean>(false);
   const [loaToDelete, setLoaToDelete] = useState<RequiredOrNull<string>>(null);
   const [showLOASteps, setShowLOASteps] = useState<boolean>(false);
   const [loaToEdit, setLoaToEdit] = useState<RequiredOrNull<string>>(null);
 
   const {
-    userRoles,
+    userClaims,
     idirUserDetails,
     userDetails,
   } = useContext(OnRouteBCContext);
 
   const canEditNoFeePermits = canUpdateNoFeePermitsFlag(
-    userRoles,
-    getDefaultNullableVal(idirUserDetails?.userAuthGroup, userDetails?.userAuthGroup),
+    userClaims,
+    getDefaultNullableVal(idirUserDetails?.userRole, userDetails?.userRole),
   );
 
   const canViewNoFeePermits = canViewNoFeePermitsFlag(
-    userRoles,
-    getDefaultNullableVal(idirUserDetails?.userAuthGroup, userDetails?.userAuthGroup),
+    userClaims,
+    getDefaultNullableVal(idirUserDetails?.userRole, userDetails?.userRole),
   );
 
   const canUpdateLCV = canUpdateLCVFlag(
-    userRoles,
-    getDefaultNullableVal(idirUserDetails?.userAuthGroup, userDetails?.userAuthGroup),
+    userClaims,
+    getDefaultNullableVal(idirUserDetails?.userRole, userDetails?.userRole),
   );
 
   const canViewLCV = canViewLCVFlag(
-    userRoles,
-    getDefaultNullableVal(idirUserDetails?.userAuthGroup, userDetails?.userAuthGroup),
+    userClaims,
+    getDefaultNullableVal(idirUserDetails?.userRole, userDetails?.userRole),
   );
 
   const canWriteLOA = canUpdateLOA(
-    userRoles,
-    getDefaultNullableVal(idirUserDetails?.userAuthGroup, userDetails?.userAuthGroup),
+    userClaims,
+    getDefaultNullableVal(idirUserDetails?.userRole, userDetails?.userRole),
   );
 
   const canReadLOA = canViewLOA(
-    userRoles,
-    getDefaultNullableVal(idirUserDetails?.userAuthGroup, userDetails?.userAuthGroup),
+    userClaims,
+    getDefaultNullableVal(idirUserDetails?.userRole, userDetails?.userRole),
   );
+
+  const updateNoFeeMutation = useUpdateNoFee();
+  const updateLCVMutation = useUpdateLCV();
 
   const activeLOAsQuery = useFetchLOAs(companyId, false);
   const expiredLOAsQuery = useFetchLOAs(companyId, true);
@@ -83,11 +96,42 @@ export const SpecialAuthorizations = ({
   const activeLOAs = getDefaultRequiredVal([], activeLOAsQuery.data);
   const expiredLOAs = getDefaultRequiredVal([], expiredLOAsQuery.data);
 
-  useEffect(() => {
-    if (!enableNoFeePermits) {
-      setNoFeePermitType(null);
+  const handleToggleEnableNoFee = async (enable: boolean) => {
+    if (!canEditNoFeePermits) return;
+
+    const { status } = await updateNoFeeMutation.mutateAsync({
+      companyId,
+      noFee: enable ? DEFAULT_NO_FEE_PERMIT_TYPE : null,
+    });
+
+    if (status === 200 || status === 201) {
+      refetchSpecialAuth();
     }
-  }, [enableNoFeePermits]);
+  };
+
+  const handleUpdateNoFee = async (noFee: RequiredOrNull<NoFeePermitType>) => {
+    if (!canEditNoFeePermits) return;
+    const { status } = await updateNoFeeMutation.mutateAsync({
+      companyId,
+      noFee,
+    });
+
+    if (status === 200 || status === 201) {
+      refetchSpecialAuth();
+    }
+  };
+
+  const handleUpdateLCV = async (enableLCV: boolean) => {
+    if (!canUpdateLCV) return;
+    const { status } = await updateLCVMutation.mutateAsync({
+      companyId,
+      isLcvAllowed: enableLCV,
+    });
+
+    if (status === 200 || status === 201) {
+      refetchSpecialAuth();
+    }
+  };
 
   const handleShowExpiredLOA = () => {
     setShowExpiredLOAs(true);
@@ -156,8 +200,8 @@ export const SpecialAuthorizations = ({
     }
   };
 
-  const showExpiredLOAsLink = canReadLOA && (expiredLOAs.length > 0);
-  const showActiveLOAsList = canReadLOA && (activeLOAs.length > 0);
+  const showExpiredLOAsLink = canReadLOA && expiredLOAs.length > 0;
+  const showActiveLOAsList = canReadLOA && activeLOAs.length > 0;
   const showExpiredLOAsModal = canReadLOA && showExpiredLOAs;
   const showDeleteDialog = canWriteLOA && loaToDelete;
 
@@ -170,23 +214,22 @@ export const SpecialAuthorizations = ({
       />
     ) : null;
   }
-  
+
   return (
     <div className="special-authorizations">
       {canViewNoFeePermits ? (
         <NoFeePermitsSection
-          enableNoFeePermits={enableNoFeePermits}
-          setEnableNoFeePermits={setEnableNoFeePermits}
-          noFeePermitType={noFeePermitType}
-          setNoFeePermitType={setNoFeePermitType}
+          onUpdateEnableNoFee={handleToggleEnableNoFee}
+          noFeePermitType={noFeeType}
+          onUpdateNoFee={handleUpdateNoFee}
           isEditable={canEditNoFeePermits}
         />
       ) : null}
 
       {canViewLCV ? (
         <LCVSection
-          enableLCV={enableLCV}
-          setEnableLCV={setEnableLCV}
+          enableLCV={isLcvAllowed}
+          onUpdateLCV={handleUpdateLCV}
           isEditable={canUpdateLCV}
         />
       ) : null}
@@ -217,10 +260,7 @@ export const SpecialAuthorizations = ({
               color="tertiary"
               onClick={handleAddLOA}
             >
-              <FontAwesomeIcon
-                className="add-loa-btn__icon"
-                icon={faPlus}
-              />
+              <FontAwesomeIcon className="add-loa-btn__icon" icon={faPlus} />
               Add an LOA
             </Button>
           ) : (
@@ -231,9 +271,7 @@ export const SpecialAuthorizations = ({
 
           {showActiveLOAsList ? (
             <div className="active-loas">
-              <div className="active-loas__header">
-                Active LOA(s)
-              </div>
+              <div className="active-loas__header">Active LOA(s)</div>
 
               <LOAList
                 loas={activeLOAs}
