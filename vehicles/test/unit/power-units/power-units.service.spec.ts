@@ -100,8 +100,10 @@ describe('PowerUnitsService', () => {
 
   describe('Power unit service remove function.', () => {
     it('should delete the power Unit', async () => {
+      repo.delete.mockResolvedValue({ raw: powerUnitEntityMock, affected: 1 });
       const deleteResult = await service.remove(COMPANY_ID_1, '1');
       expect(typeof deleteResult).toBe('object');
+      expect(deleteResult.affected).toEqual(1);
     });
   });
 

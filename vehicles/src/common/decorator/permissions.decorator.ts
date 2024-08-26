@@ -6,5 +6,6 @@ import { PERMISSIONS_KEY } from '../constants/api.constant';
 
 // Todo: Change IPermissions array to a single object when removing
 // ...permissions.
-export const Permissions = (...permissions: Claim[] | IRole[] | IPermissions[]) =>
-  SetMetadata(PERMISSIONS_KEY, permissions);
+export const Permissions = (
+  ...permissions: Claim[] | IRole[] | IPermissions[]
+) => SetMetadata(PERMISSIONS_KEY, permissions);
