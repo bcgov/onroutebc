@@ -46,7 +46,7 @@ export class SpecialAuth extends Base {
   @Column({
     type: 'simple-enum',
     enum: NoFeeType,
-    length: 12,
+    length: 16,
     name: 'NO_FEE_TYPE',
     nullable: true,
   })
