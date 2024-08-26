@@ -2,6 +2,7 @@ import {
   downloadPermitApplicationPdf,
   downloadReceiptPdf,
 } from "../apiManager/permitsAPI";
+import { useNavigate } from 'react-router-dom';
 
 /**
  * Opens the PDF in a new browser tab.
@@ -19,7 +20,10 @@ export const openBlobInNewTab = (blob: Blob) => {
  * Opens the receipt pdf in a new tab.
  * @param permitId The permit id.
  */
-export const viewReceiptPdf = async (permitId: string, companyId?: string) => {
+export const viewReceiptPdf = async (
+  permitId: string, 
+  navigate: ReturnType<typeof useNavigate>, // Accept navigate as a parameter
+  companyId?: string) => {
   if (permitId) {
     try {
       const { blobObj: blobObjWithoutType } = await downloadReceiptPdf(
@@ -29,6 +33,7 @@ export const viewReceiptPdf = async (permitId: string, companyId?: string) => {
       openBlobInNewTab(blobObjWithoutType);
     } catch (err) {
       console.error(err);
+      navigate('/document-on-the-way');
     }
   }
 };
@@ -37,7 +42,11 @@ export const viewReceiptPdf = async (permitId: string, companyId?: string) => {
  * Opens the permit PDF in a new tab.
  * @param permitId The permitId of the permit.
  */
-export const viewPermitPdf = async (permitId: string, companyId?: string) => {
+export const viewPermitPdf = async (
+  permitId: string, 
+  navigate: ReturnType<typeof useNavigate>, // Accept navigate as a parameter
+  companyId?: string,
+) => {
   try {
     const { blobObj: blobObjWithoutType } = await downloadPermitApplicationPdf(
       permitId,
@@ -46,5 +55,6 @@ export const viewPermitPdf = async (permitId: string, companyId?: string) => {
     openBlobInNewTab(blobObjWithoutType);
   } catch (err) {
     console.error(err);
+    navigate('/document-on-the-way');
   }
 };
