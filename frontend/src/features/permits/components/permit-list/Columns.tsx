@@ -8,6 +8,7 @@ import { CustomActionLink } from "../../../../common/components/links/CustomActi
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { getPermitTypeName } from "../../types/PermitType";
 import { Box, Tooltip } from "@mui/material";
+import { useNavigate } from 'react-router-dom';
 
 /**
  * The column definition for Permits.
@@ -21,10 +22,15 @@ export const PermitsColumnDefinition: MRT_ColumnDef<PermitListItem>[] = [
     size: 500,
     accessorFn: (row) => row.permitNumber,
     Cell: (props: { row: any; cell: any }) => {
+      const navigate = useNavigate();
+      const handleViewPermitPdf = (permitId: string) => {
+        viewPermitPdf(permitId, navigate);
+      };
+
       return (
         <>
           <CustomActionLink
-            onClick={() => viewPermitPdf(props.row.original.permitId)}
+            onClick={() => handleViewPermitPdf(props.row.original.permitId)}
           >
             {props.cell.getValue()}
           </CustomActionLink>

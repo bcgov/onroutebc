@@ -33,6 +33,7 @@ import { ManageSettings } from "../features/settings/ManageSettings";
 import { IssuanceErrorPage } from "../common/pages/IssuanceErrorPage";
 import IDPRedirect from "../common/components/idpredirect/IDPRedirect";
 import { ShoppingCartDashboard } from "../features/permits/ShoppingCartDashboard";
+import { DocumentOnTheWay } from "../common/components/table/DocumentOnTheWay";
 
 export const AppRoutes = () => {
   return (
@@ -337,6 +338,7 @@ export const AppRoutes = () => {
           element={<ManageSettings />}
         />
       </Route>
+      <Route path="/document-on-the-way" element={<DocumentOnTheWay />} />
     </Routes>
   );
 };
