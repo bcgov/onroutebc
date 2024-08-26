@@ -1,4 +1,4 @@
-export interface PermitCommodity {
+export interface PermitCondition {
   description: string;
   condition: string;
   conditionLink: string;
