@@ -24,15 +24,12 @@ export const PermitsColumnDefinition: MRT_ColumnDef<PermitListItem>[] = [
     accessorFn: (row) => row.permitNumber,
     Cell: (props: { row: any; cell: any }) => {
       const navigate = useNavigate();
-      const handleViewPermitPdf = (permitId: string) => {
-        viewPermitPdf(
-          permitId, 
-          () => navigate(ERROR_ROUTES.DOCUMENT_UNAVAILABLE))
-      };
       return (
         <>
           <CustomActionLink
-            onClick={() => handleViewPermitPdf(props.row.original.permitId)}
+            onClick={() => viewPermitPdf(
+              props.row.original.permitId, 
+              () => navigate(ERROR_ROUTES.DOCUMENT_UNAVAILABLE))}
           >
             {props.cell.getValue()}
           </CustomActionLink>
