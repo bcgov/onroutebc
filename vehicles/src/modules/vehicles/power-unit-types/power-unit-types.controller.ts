@@ -24,8 +24,8 @@ import { ReadPowerUnitTypeDto } from './dto/response/read-power-unit-type.dto';
 import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { Permissions } from 'src/common/decorator/permissions.decorator';
-import { Claim } from 'src/common/enum/claims.enum';
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
+import { IDIRUserRole } from '../../../common/enum/user-role.enum';
 
 @ApiTags('Vehicles - Power Unit Types')
 @ApiBadRequestResponse({
@@ -53,7 +53,9 @@ export class PowerUnitTypesController {
     description: 'The Power Unit Type Resource',
     type: ReadPowerUnitTypeDto,
   })
-  @Permissions(Claim.WRITE_VEHICLE_TYPES)
+  @Permissions({
+    allowedIdirRoles: [IDIRUserRole.SYSTEM_ADMINISTRATOR],
+  })
   @Post()
   create(@Body() createPowerUnitTypeDto: CreatePowerUnitTypeDto) {
     return this.powerUnitTypesService.create(createPowerUnitTypeDto);
@@ -90,7 +92,9 @@ export class PowerUnitTypesController {
     description: 'The Power Unit Type Resource',
     type: ReadPowerUnitTypeDto,
   })
-  @Permissions(Claim.WRITE_VEHICLE_TYPES)
+  @Permissions({
+    allowedIdirRoles: [IDIRUserRole.SYSTEM_ADMINISTRATOR],
+  })
   @Put(':typeCode')
   async update(
     @Param('typeCode') typeCode: string,
@@ -106,7 +110,9 @@ export class PowerUnitTypesController {
     return powerUnitType;
   }
 
-  @Permissions(Claim.WRITE_VEHICLE_TYPES)
+  @Permissions({
+    allowedIdirRoles: [IDIRUserRole.SYSTEM_ADMINISTRATOR],
+  })
   @Delete(':typeCode')
   async remove(@Param('typeCode') typeCode: string) {
     const deleteResult = await this.powerUnitTypesService.remove(typeCode);
