@@ -3,6 +3,7 @@
   "description": "Presets from https://github.com/bcgov/renovate-config",
   "extends": [
     "github>bcgov/renovate-config"
+    "group:all"
   ],
-  "prConcurrentLimit": 3
+  "prConcurrentLimit": 1
 }
