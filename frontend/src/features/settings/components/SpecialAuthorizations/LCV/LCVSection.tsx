@@ -5,11 +5,11 @@ import { AllowedIndicator } from "../AllowedIndicator/AllowedIndicator";
 
 export const LCVSection = ({
   enableLCV,
-  setEnableLCV,
+  onUpdateLCV,
   isEditable = false,
 }: {
   enableLCV: boolean;
-  setEnableLCV: (enable: boolean) => void;
+  onUpdateLCV: (enable: boolean) => void;
   isEditable?: boolean;
 }) => {
   return (isEditable || enableLCV) ? (
@@ -23,7 +23,7 @@ export const LCVSection = ({
           <Switch
             className="lcv-section__enable-switch"
             checked={enableLCV}
-            onChange={async (_, checked) => setEnableLCV(checked)}
+            onChange={async (_, checked) => onUpdateLCV(checked)}
           />
         ) : (
           <AllowedIndicator />
