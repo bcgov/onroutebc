@@ -49,7 +49,7 @@ export const matchRoles = (
     return userClaims.includes(claim);
   }
   let isAllowed: boolean;
-  const isIdir = userRole in IDIRUserRole;
+  const isIdir = Object.values<string>(IDIRUserRole).includes(userRole);
   if (isIdir) {
     isAllowed = allowedIdirRoles?.includes(userRole as IDIRUserRole);
   } else {
