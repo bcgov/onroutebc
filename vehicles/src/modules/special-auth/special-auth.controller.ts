@@ -48,7 +48,7 @@ export class SpecialAuthController {
     description:
       'Returns all special authorizations for a company in the database.',
   })
-  @Permissions(Claim.READ_SPECIAL_AUTH)
+  @Permissions({ claim: Claim.READ_SPECIAL_AUTH })
   @Get()
   async get(
     @Param() { companyId }: CompanyIdPathParamDto,
@@ -65,7 +65,7 @@ export class SpecialAuthController {
     description: 'LCV allowance updated successfully.',
     type: ReadSpecialAuthDto,
   })
-  @Permissions(Claim.WRITE_LCV_FLAG)
+  @Permissions({ claim: Claim.WRITE_LCV_FLAG })
   @Put('/lcv')
   async updateLcv(
     @Req() request: Request,
@@ -89,7 +89,7 @@ export class SpecialAuthController {
     description: 'No fee type updated successfully.',
     type: ReadSpecialAuthDto,
   })
-  @Permissions(Claim.WRITE_NOFEE)
+  @Permissions({ claim: Claim.WRITE_NOFEE })
   @Put('/no-fee')
   async updateNoFee(
     @Req() request: Request,
