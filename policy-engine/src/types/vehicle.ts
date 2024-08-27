@@ -11,7 +11,7 @@ export type Vehicle = SelfIssuable & {
 
 export type VehicleSizeConfiguration = Vehicle & {
   trailers: Array<TrailerSize>;
-}
+};
 
 export type TrailerSize = Vehicle & {
   sizeDimensions?: Array<SizeDimension>;

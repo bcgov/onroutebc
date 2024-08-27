@@ -17,4 +17,4 @@ export type CommoditySize = {
 export type CommodityWeight = {
   powerUnits?: Array<PowerUnitWeight>;
   trailers?: Array<TrailerWeight>;
-}
+};

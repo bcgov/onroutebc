@@ -82,7 +82,7 @@ type ManualRoute = {
   highwaySequence: Array<string>;
   origin: string;
   destination: string;
-}
+};
 
 type PermitApplication = {
   permitData: PermitData;

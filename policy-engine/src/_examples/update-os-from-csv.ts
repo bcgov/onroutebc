@@ -11,10 +11,19 @@ type DimensionEntry = {
   trailer: TrailerSize;
 };
 
-function csvRowToObject(row: Array<string>, pol: Policy): DimensionEntry | null {
+function csvRowToObject(
+  row: Array<string>,
+  pol: Policy,
+): DimensionEntry | null {
   const commodityId = getIdFromName(pol.policyDefinition.commodities, row[1]);
-  const puId = getIdFromName(pol.policyDefinition.vehicleTypes.powerUnitTypes, row[2].trim());
-  const trId = getIdFromName(pol.policyDefinition.vehicleTypes.trailerTypes, row[4].trim());
+  const puId = getIdFromName(
+    pol.policyDefinition.vehicleTypes.powerUnitTypes,
+    row[2].trim(),
+  );
+  const trId = getIdFromName(
+    pol.policyDefinition.vehicleTypes.trailerTypes,
+    row[4].trim(),
+  );
   let entryObject: DimensionEntry | null = null;
   if (commodityId && puId && trId) {
     entryObject = {
@@ -25,14 +34,14 @@ function csvRowToObject(row: Array<string>, pol: Policy): DimensionEntry | null 
         jeep: row[5] == 'X',
         booster: row[6] == 'X',
         selfIssue: row[0] != 'X',
-      }
-    }
+      },
+    };
 
-    let sizeDimension: SizeDimension = {};
+    const sizeDimension: SizeDimension = {};
 
     const fp = parseFloat(row[19]);
     const rp = parseFloat(row[20]);
-    if(!isNaN(fp)) {
+    if (!isNaN(fp)) {
       sizeDimension.fp = fp;
     }
     if (!isNaN(rp)) {
@@ -50,12 +59,14 @@ function csvRowToObject(row: Array<string>, pol: Policy): DimensionEntry | null 
     const regionIds: Array<string> = ['LMN', 'KTN', 'PCE'];
     // Populate the 3 region dimensions
     for (let i = 0; i < regionIds.length; i++) {
-      const w = parseFloat(row[7 + (i * 3)]);
-      const h = parseFloat(row[8 + (i * 3)]);
-      const l = parseFloat(row[9 + (i * 3)]);
-      if ((isNaN(w) || w == sizeDimension.w)
-        && (isNaN(h) || h == sizeDimension.h)
-        && (isNaN(l) || l == sizeDimension.l)) {
+      const w = parseFloat(row[7 + i * 3]);
+      const h = parseFloat(row[8 + i * 3]);
+      const l = parseFloat(row[9 + i * 3]);
+      if (
+        (isNaN(w) || w == sizeDimension.w) &&
+        (isNaN(h) || h == sizeDimension.h) &&
+        (isNaN(l) || l == sizeDimension.l)
+      ) {
         // All values for this region are empty or are the
         // same as the BC default values. In this case do not
         // include the region in the configuration at all
@@ -78,7 +89,9 @@ function csvRowToObject(row: Array<string>, pol: Policy): DimensionEntry | null 
 
     return entryObject;
   } else {
-    console.log(`No entry in policy config for commodity '${row[1]}' and/or power unit '${row[2]}' and/or trailer '${row[4]}'`);
+    console.log(
+      `No entry in policy config for commodity '${row[1]}' and/or power unit '${row[2]}' and/or trailer '${row[4]}'`,
+    );
     return null;
   }
 }
@@ -102,7 +115,9 @@ function processCsvRow(row: any) {
       }
 
       // Get or create power unit entry
-      let powerUnit = commodity.size.powerUnits?.find((pu) => pu.type == dimensionEntry.powerUnit);
+      let powerUnit = commodity.size.powerUnits?.find(
+        (pu) => pu.type == dimensionEntry.powerUnit,
+      );
       if (!powerUnit) {
         // We don't have this power unit yet, create it
         powerUnit = {
@@ -112,23 +127,27 @@ function processCsvRow(row: any) {
         commodity.size.powerUnits?.push(powerUnit);
       }
 
-      let trailer = powerUnit.trailers.find((tr) => tr.type == dimensionEntry.trailer.type);
+      const trailer = powerUnit.trailers.find(
+        (tr) => tr.type == dimensionEntry.trailer.type,
+      );
       if (!trailer) {
         // Create the trailer in configuration
         powerUnit.trailers.push(dimensionEntry.trailer);
       } else {
-        console.log(`*** Duplicate trailer '${trailer.type}' in input for power unit '${powerUnit.type}'`);
+        console.log(
+          `*** Duplicate trailer '${trailer.type}' in input for power unit '${powerUnit.type}'`,
+        );
       }
     }
   }
 }
 
-
 fs.createReadStream('./os-dimensions-simplified-nodefault.csv')
   .pipe(parse({ delimiter: ',', from_line: 1 }))
   .on('data', function (row) {
     processCsvRow(row);
-  }).on('end', function () {
+  })
+  .on('end', function () {
     console.log(JSON.stringify(policy.policyDefinition, null, '   '));
     //console.log(JSON.stringify(policy.policyDefinition));
   });

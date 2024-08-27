@@ -48,7 +48,3 @@ describe('Permit Engine Utility Functions', () => {
     expect(permitType).toBeNull();
   });
 });
-
-describe('Permit Engine Utility Functions', () => {
-  const policy: Policy = new Policy(fiveTypes);
-});

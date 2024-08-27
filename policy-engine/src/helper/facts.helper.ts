@@ -39,12 +39,9 @@ export function addRuntimeFacts(engine: Engine): void {
    * Add runtime fact for a fixed permit cost, the cost supplied
    * as a parameter.
    */
-  engine.addFact(
-    PolicyFacts.FixedCost.toString(),
-    async function (params, almanac) {
-      return params.cost;
-    },
-  );
+  engine.addFact(PolicyFacts.FixedCost.toString(), async function (params) {
+    return params.cost;
+  });
 
   /**
    * Add runtime fact for cost per month, where month is defined by

@@ -171,11 +171,7 @@ export const fiveTypes: PolicyDefinition = {
         'poletrailer',
         'hiboyexpando',
       ],
-      allowedCommodities: [
-        'NONEXXX',
-        'DOGLOGG',
-        'GRTBBUK',
-      ],
+      allowedCommodities: ['NONEXXX', 'DOGLOGG', 'GRTBBUK'],
     },
     {
       id: 'STWS',
@@ -756,900 +752,896 @@ export const fiveTypes: PolicyDefinition = {
   },
   commodities: [
     {
-      "id": "NONEXXX",
-      "name": "None",
-      "size": {
-        "powerUnits": [
+      id: 'NONEXXX',
+      name: 'None',
+      size: {
+        powerUnits: [
           {
-            "type": "CONCRET",
-            "trailers": [
+            type: 'CONCRET',
+            trailers: [
               {
-                "type": "NONEXXX",
-                "jeep": false,
-                "booster": true,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'NONEXXX',
+                jeep: false,
+                booster: true,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "fp": 3,
-                    "rp": 6.5,
-                    "l": 15.5
-                  }
-                ]
-              }
-            ]
+                    fp: 3,
+                    rp: 6.5,
+                    l: 15.5,
+                  },
+                ],
+              },
+            ],
           },
           {
-            "type": "CRAFTAT",
-            "trailers": [
+            type: 'CRAFTAT',
+            trailers: [
               {
-                "type": "DOLLIES",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'DOLLIES',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "fp": 10,
-                    "rp": 6.5,
-                    "w": 3.8,
-                    "h": 4.3,
-                    "l": 25
-                  }
-                ]
+                    fp: 10,
+                    rp: 6.5,
+                    w: 3.8,
+                    h: 4.3,
+                    l: 25,
+                  },
+                ],
               },
               {
-                "type": "NONEXXX",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'NONEXXX',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "fp": 10,
-                    "rp": 6.5,
-                    "w": 3.8,
-                    "h": 4.3,
-                    "l": 14,
-                    "regions": [
+                    fp: 10,
+                    rp: 6.5,
+                    w: 3.8,
+                    h: 4.3,
+                    l: 14,
+                    regions: [
                       {
-                        "region": "PCE",
-                        "l": 15
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
+                        region: 'PCE',
+                        l: 15,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
           },
           {
-            "type": "CRAFTMB",
-            "trailers": [
+            type: 'CRAFTMB',
+            trailers: [
               {
-                "type": "DOLLIES",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'DOLLIES',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "fp": 10,
-                    "rp": 6.5,
-                    "w": 3.8,
-                    "h": 4.3,
-                    "l": 25
-                  }
-                ]
+                    fp: 10,
+                    rp: 6.5,
+                    w: 3.8,
+                    h: 4.3,
+                    l: 25,
+                  },
+                ],
               },
               {
-                "type": "NONEXXX",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'NONEXXX',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "fp": 10,
-                    "rp": 6.5,
-                    "w": 3.8,
-                    "h": 4.3,
-                    "l": 14,
-                    "regions": [
+                    fp: 10,
+                    rp: 6.5,
+                    w: 3.8,
+                    h: 4.3,
+                    l: 14,
+                    regions: [
                       {
-                        "region": "PCE",
-                        "l": 15
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
+                        region: 'PCE',
+                        l: 15,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
           },
           {
-            "type": "DDCKBUS",
-            "trailers": [
+            type: 'DDCKBUS',
+            trailers: [
               {
-                "type": "NONEXXX",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'NONEXXX',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "h": 4.42,
-                    "regions": [
+                    h: 4.42,
+                    regions: [
                       {
-                        "region": "LMN",
-                        "h": 4.3
+                        region: 'LMN',
+                        h: 4.3,
                       },
                       {
-                        "region": "KTN",
-                        "h": 4.3
+                        region: 'KTN',
+                        h: 4.3,
                       },
                       {
-                        "region": "PCE",
-                        "h": 4.3
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
+                        region: 'PCE',
+                        h: 4.3,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
           },
           {
-            "type": "GRADERS",
-            "trailers": [
+            type: 'GRADERS',
+            trailers: [
               {
-                "type": "FEPNYTR",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'FEPNYTR',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "rp": 4,
-                    "w": 3.2,
-                    "h": 4.3,
-                    "l": 31
-                  }
-                ]
+                    rp: 4,
+                    w: 3.2,
+                    h: 4.3,
+                    l: 31,
+                  },
+                ],
               },
               {
-                "type": "NONEXXX",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": false,
-                "sizeDimensions": [
+                type: 'NONEXXX',
+                jeep: false,
+                booster: false,
+                selfIssue: false,
+                sizeDimensions: [
                   {
-                    "w": 3.5,
-                    "h": 4.4,
-                    "l": 12.5,
-                    "regions": [
+                    w: 3.5,
+                    h: 4.4,
+                    l: 12.5,
+                    regions: [
                       {
-                        "region": "LMN",
-                        "h": 4.3
+                        region: 'LMN',
+                        h: 4.3,
                       },
                       {
-                        "region": "KTN",
-                        "h": 4.3
+                        region: 'KTN',
+                        h: 4.3,
                       },
                       {
-                        "region": "PCE",
-                        "h": 5.33
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
+                        region: 'PCE',
+                        h: 5.33,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
           },
           {
-            "type": "BUSTRLR",
-            "trailers": [
+            type: 'BUSTRLR',
+            trailers: [
               {
-                "type": "PONYTRL",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": false,
-                "sizeDimensions": [
-                  {}
-                ]
-              }
-            ]
+                type: 'PONYTRL',
+                jeep: false,
+                booster: false,
+                selfIssue: false,
+                sizeDimensions: [{}],
+              },
+            ],
           },
           {
-            "type": "LOGOFFH",
-            "trailers": [
+            type: 'LOGOFFH',
+            trailers: [
               {
-                "type": "STLOGNG",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'STLOGNG',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "fp": 3,
-                    "rp": 6.5,
-                    "w": 4.4
-                  }
-                ]
-              }
-            ]
+                    fp: 3,
+                    rp: 6.5,
+                    w: 4.4,
+                  },
+                ],
+              },
+            ],
           },
           {
-            "type": "LCVRMDB",
-            "trailers": [
+            type: 'LCVRMDB',
+            trailers: [
               {
-                "type": "SEMITRL",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": false,
-                "sizeDimensions": [
+                type: 'SEMITRL',
+                jeep: false,
+                booster: false,
+                selfIssue: false,
+                sizeDimensions: [
                   {
-                    "l": 32,
-                    "regions": [
+                    l: 32,
+                    regions: [
                       {
-                        "region": "PCE",
-                        "l": 31
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
+                        region: 'PCE',
+                        l: 31,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
           },
           {
-            "type": "LCVTPDB",
-            "trailers": [
+            type: 'LCVTPDB',
+            trailers: [
               {
-                "type": "SEMITRL",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'SEMITRL',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "l": 41
-                  }
-                ]
-              }
-            ]
+                    l: 41,
+                  },
+                ],
+              },
+            ],
           },
           {
-            "type": "LWBTRCT",
-            "trailers": [
+            type: 'LWBTRCT',
+            trailers: [
               {
-                "type": "SEMITRL",
-                "jeep": true,
-                "booster": true,
-                "selfIssue": false,
-                "sizeDimensions": [
+                type: 'SEMITRL',
+                jeep: true,
+                booster: true,
+                selfIssue: false,
+                sizeDimensions: [
                   {
-                    "w": 2.6,
-                    "h": 4.15,
-                    "l": 23
-                  }
-                ]
-              }
-            ]
+                    w: 2.6,
+                    h: 4.15,
+                    l: 23,
+                  },
+                ],
+              },
+            ],
           },
           {
-            "type": "PICKRTT",
-            "trailers": [
+            type: 'PICKRTT',
+            trailers: [
               {
-                "type": "NONEXXX",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'NONEXXX',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "fp": 3,
-                    "w": 2.6,
-                    "h": 4.15,
-                    "l": 16
-                  }
-                ]
+                    fp: 3,
+                    w: 2.6,
+                    h: 4.15,
+                    l: 16,
+                  },
+                ],
               },
               {
-                "type": "STCRANE",
-                "jeep": true,
-                "booster": true,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'STCRANE',
+                jeep: true,
+                booster: true,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "fp": 3,
-                    "rp": 6.5,
-                    "w": 2.6,
-                    "h": 4.15,
-                    "l": 25
-                  }
-                ]
+                    fp: 3,
+                    rp: 6.5,
+                    w: 2.6,
+                    h: 4.15,
+                    l: 25,
+                  },
+                ],
               },
               {
-                "type": "STROPRT",
-                "jeep": true,
-                "booster": true,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'STROPRT',
+                jeep: true,
+                booster: true,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "w": 5,
-                    "h": 4.88,
-                    "l": 40,
-                    "regions": [
+                    w: 5,
+                    h: 4.88,
+                    l: 40,
+                    regions: [
                       {
-                        "region": "PCE",
-                        "h": 5.33
-                      }
-                    ]
-                  }
-                ]
+                        region: 'PCE',
+                        h: 5.33,
+                      },
+                    ],
+                  },
+                ],
               },
               {
-                "type": "STRSELF",
-                "jeep": true,
-                "booster": true,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'STRSELF',
+                jeep: true,
+                booster: true,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "w": 5,
-                    "h": 4.88,
-                    "l": 36,
-                    "regions": [
+                    w: 5,
+                    h: 4.88,
+                    l: 36,
+                    regions: [
                       {
-                        "region": "PCE",
-                        "h": 5.33
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
+                        region: 'PCE',
+                        h: 5.33,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
           },
           {
-            "type": "SCRAPER",
-            "trailers": [
+            type: 'SCRAPER',
+            trailers: [
               {
-                "type": "NONEXXX",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'NONEXXX',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "l": 12.5
-                  }
-                ]
-              }
-            ]
+                    l: 12.5,
+                  },
+                ],
+              },
+            ],
           },
           {
-            "type": "TRKTRAC",
-            "trailers": [
+            type: 'TRKTRAC',
+            trailers: [
               {
-                "type": "FECVYER",
-                "jeep": true,
-                "booster": true,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'FECVYER',
+                jeep: true,
+                booster: true,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "fp": 4,
-                    "rp": 9.5,
-                    "w": 3.8,
-                    "h": 4.72,
-                    "l": 31,
-                    "regions": [
+                    fp: 4,
+                    rp: 9.5,
+                    w: 3.8,
+                    h: 4.72,
+                    l: 31,
+                    regions: [
                       {
-                        "region": "PCE",
-                        "h": 5.33
-                      }
-                    ]
-                  }
-                ]
+                        region: 'PCE',
+                        h: 5.33,
+                      },
+                    ],
+                  },
+                ],
               },
               {
-                "type": "FEDRMMX",
-                "jeep": true,
-                "booster": true,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'FEDRMMX',
+                jeep: true,
+                booster: true,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "fp": 3,
-                    "rp": 6.5,
-                    "w": 3.8,
-                    "h": 4.72,
-                    "l": 31,
-                    "regions": [
+                    fp: 3,
+                    rp: 6.5,
+                    w: 3.8,
+                    h: 4.72,
+                    l: 31,
+                    regions: [
                       {
-                        "region": "PCE",
-                        "h": 5.33
-                      }
-                    ]
-                  }
-                ]
+                        region: 'PCE',
+                        h: 5.33,
+                      },
+                    ],
+                  },
+                ],
               },
               {
-                "type": "FEBGHSE",
-                "jeep": true,
-                "booster": true,
-                "selfIssue": false,
-                "sizeDimensions": [
+                type: 'FEBGHSE',
+                jeep: true,
+                booster: true,
+                selfIssue: false,
+                sizeDimensions: [
                   {
-                    "fp": 3,
-                    "rp": 6.5,
-                    "w": 4.26,
-                    "h": 4.72,
-                    "l": 31,
-                    "regions": [
+                    fp: 3,
+                    rp: 6.5,
+                    w: 4.26,
+                    h: 4.72,
+                    l: 31,
+                    regions: [
                       {
-                        "region": "PCE",
-                        "h": 5.33
-                      }
-                    ]
-                  }
-                ]
+                        region: 'PCE',
+                        h: 5.33,
+                      },
+                    ],
+                  },
+                ],
               },
               {
-                "type": "FESEMTR",
-                "jeep": true,
-                "booster": true,
-                "selfIssue": false,
-                "sizeDimensions": [
+                type: 'FESEMTR',
+                jeep: true,
+                booster: true,
+                selfIssue: false,
+                sizeDimensions: [
                   {
-                    "fp": 3,
-                    "rp": 6.5,
-                    "w": 3.8,
-                    "h": 4.72,
-                    "l": 31,
-                    "regions": [
+                    fp: 3,
+                    rp: 6.5,
+                    w: 3.8,
+                    h: 4.72,
+                    l: 31,
+                    regions: [
                       {
-                        "region": "PCE",
-                        "h": 5.33
-                      }
-                    ]
-                  }
-                ]
+                        region: 'PCE',
+                        h: 5.33,
+                      },
+                    ],
+                  },
+                ],
               },
               {
-                "type": "FEWHELR",
-                "jeep": true,
-                "booster": true,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'FEWHELR',
+                jeep: true,
+                booster: true,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "w": 5,
-                    "h": 4.88,
-                    "l": 31,
-                    "regions": [
+                    w: 5,
+                    h: 4.88,
+                    l: 31,
+                    regions: [
                       {
-                        "region": "PCE",
-                        "h": 5.33
-                      }
-                    ]
-                  }
-                ]
+                        region: 'PCE',
+                        h: 5.33,
+                      },
+                    ],
+                  },
+                ],
               },
               {
-                "type": "ODTRLEX",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": false,
-                "sizeDimensions": [
+                type: 'ODTRLEX',
+                jeep: false,
+                booster: false,
+                selfIssue: false,
+                sizeDimensions: [
                   {
-                    "w": 3.65
-                  }
-                ]
+                    w: 3.65,
+                  },
+                ],
               },
               {
-                "type": "REDIMIX",
-                "jeep": true,
-                "booster": true,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'REDIMIX',
+                jeep: true,
+                booster: true,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "fp": 3,
-                    "rp": 6.5
-                  }
-                ]
+                    fp: 3,
+                    rp: 6.5,
+                  },
+                ],
               },
               {
-                "type": "HIBOFLT",
-                "jeep": true,
-                "booster": true,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'HIBOFLT',
+                jeep: true,
+                booster: true,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "fp": 3,
-                    "rp": 6.5,
-                    "h": 4.3,
-                    "l": 31,
-                    "regions": [
+                    fp: 3,
+                    rp: 6.5,
+                    h: 4.3,
+                    l: 31,
+                    regions: [
                       {
-                        "region": "PCE",
-                        "h": 5.33
-                      }
-                    ]
-                  }
-                ]
+                        region: 'PCE',
+                        h: 5.33,
+                      },
+                    ],
+                  },
+                ],
               },
               {
-                "type": "STREEFR",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'STREEFR',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "h": 4.3
-                  }
-                ]
+                    h: 4.3,
+                  },
+                ],
               },
               {
-                "type": "STNTSHC",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": true,
-                "sizeDimensions": [
-                  {}
-                ]
+                type: 'STNTSHC',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [{}],
               },
               {
-                "type": "STSDBDK",
-                "jeep": true,
-                "booster": true,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'STSDBDK',
+                jeep: true,
+                booster: true,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "fp": 3,
-                    "rp": 6.5,
-                    "w": 3.2,
-                    "h": 4.3,
-                    "l": 27.5,
-                    "regions": [
+                    fp: 3,
+                    rp: 6.5,
+                    w: 3.2,
+                    h: 4.3,
+                    l: 27.5,
+                    regions: [
                       {
-                        "region": "PCE",
-                        "l": 32
-                      }
-                    ]
-                  }
-                ]
+                        region: 'PCE',
+                        l: 32,
+                      },
+                    ],
+                  },
+                ],
               },
               {
-                "type": "STROPRT",
-                "jeep": true,
-                "booster": true,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'STROPRT',
+                jeep: true,
+                booster: true,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "h": 4.15,
-                    "l": 40
-                  }
-                ]
+                    h: 4.15,
+                    l: 40,
+                  },
+                ],
               },
               {
-                "type": "STRSELF",
-                "jeep": true,
-                "booster": true,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'STRSELF',
+                jeep: true,
+                booster: true,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "l": 36
-                  }
-                ]
-              }
-            ]
+                    l: 36,
+                  },
+                ],
+              },
+            ],
           },
           {
-            "type": "REGTRCK",
-            "trailers": [
+            type: 'REGTRCK',
+            trailers: [
               {
-                "type": "FECVYPT",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'FECVYPT',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "fp": 4,
-                    "rp": 9.5,
-                    "w": 3.2,
-                    "h": 4.3,
-                    "l": 31
-                  }
-                ]
+                    fp: 4,
+                    rp: 9.5,
+                    w: 3.2,
+                    h: 4.3,
+                    l: 31,
+                  },
+                ],
               },
               {
-                "type": "FEPNYTR",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'FEPNYTR',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "rp": 4,
-                    "w": 3.2,
-                    "h": 4.3,
-                    "l": 31
-                  }
-                ]
+                    rp: 4,
+                    w: 3.2,
+                    h: 4.3,
+                    l: 31,
+                  },
+                ],
               },
               {
-                "type": "FULLLTL",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'FULLLTL',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "rp": 6.5,
-                    "w": 3.8,
-                    "h": 4.3,
-                    "regions": [
+                    rp: 6.5,
+                    w: 3.8,
+                    h: 4.3,
+                    regions: [
                       {
-                        "region": "PCE",
-                        "h": 5.33
-                      }
-                    ]
-                  }
-                ]
+                        region: 'PCE',
+                        h: 5.33,
+                      },
+                    ],
+                  },
+                ],
               },
               {
-                "type": "MHMBSHL",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'MHMBSHL',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "fp": 1,
-                    "rp": 6.9,
-                    "h": 4.88,
-                    "l": 31.5,
-                    "regions": [
+                    fp: 1,
+                    rp: 6.9,
+                    h: 4.88,
+                    l: 31.5,
+                    regions: [
                       {
-                        "region": "PCE",
-                        "h": 5.33,
-                        "l": 36
-                      }
-                    ]
-                  }
-                ]
+                        region: 'PCE',
+                        h: 5.33,
+                        l: 36,
+                      },
+                    ],
+                  },
+                ],
               },
               {
-                "type": "MHMBSHG",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'MHMBSHG',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "fp": 1,
-                    "rp": 6.9,
-                    "h": 4.88,
-                    "l": 31.5,
-                    "regions": [
+                    fp: 1,
+                    rp: 6.9,
+                    h: 4.88,
+                    l: 31.5,
+                    regions: [
                       {
-                        "region": "PCE",
-                        "h": 5.33,
-                        "l": 36
-                      }
-                    ]
-                  }
-                ]
+                        region: 'PCE',
+                        h: 5.33,
+                        l: 36,
+                      },
+                    ],
+                  },
+                ],
               },
               {
-                "type": "NONEXXX",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'NONEXXX',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "fp": 1,
-                    "rp": 6.5,
-                    "w": 3.2,
-                    "h": 4.3,
-                    "l": 16,
-                    "regions": [
+                    fp: 1,
+                    rp: 6.5,
+                    w: 3.2,
+                    h: 4.3,
+                    l: 16,
+                    regions: [
                       {
-                        "region": "PCE",
-                        "h": 4.4
-                      }
-                    ]
-                  }
-                ]
+                        region: 'PCE',
+                        h: 4.4,
+                      },
+                    ],
+                  },
+                ],
               },
               {
-                "type": "ODTRLEX",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'ODTRLEX',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "w": 3.65
-                  }
-                ]
+                    w: 3.65,
+                  },
+                ],
               },
               {
-                "type": "PMHWAAX",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'PMHWAAX',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "fp": 3,
-                    "rp": 6.9,
-                    "w": 4.4,
-                    "h": 4.88,
-                    "l": 31.5,
-                    "regions": [
+                    fp: 3,
+                    rp: 6.9,
+                    w: 4.4,
+                    h: 4.88,
+                    l: 31.5,
+                    regions: [
                       {
-                        "region": "PCE",
-                        "h": 5.33
-                      }
-                    ]
-                  }
-                ]
+                        region: 'PCE',
+                        h: 5.33,
+                      },
+                    ],
+                  },
+                ],
               },
               {
-                "type": "PONYTRL",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'PONYTRL',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "rp": 6.5,
-                    "w": 3.2,
-                    "h": 4.3,
-                    "regions": [
+                    rp: 6.5,
+                    w: 3.2,
+                    h: 4.3,
+                    regions: [
                       {
-                        "region": "PCE",
-                        "h": 5.33
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
+                        region: 'PCE',
+                        h: 5.33,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
           },
           {
-            "type": "PLOWBLD",
-            "trailers": [
+            type: 'PLOWBLD',
+            trailers: [
               {
-                "type": "NONEXXX",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'NONEXXX',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "w": 3.2
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+                    w: 3.2,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
     },
     {
-      "id": "DOGLOGG",
-      "name": "Doglogger/Sjostrum Trailers (decked)",
-      "size": {
-        "powerUnits": [
+      id: 'DOGLOGG',
+      name: 'Doglogger/Sjostrum Trailers (decked)',
+      size: {
+        powerUnits: [
           {
-            "type": "TRKTRAC",
-            "trailers": [
+            type: 'TRKTRAC',
+            trailers: [
               {
-                "type": "NONEXXX",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'NONEXXX',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "rp": 5,
-                    "l": 13.5
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+                    rp: 5,
+                    l: 13.5,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
     },
     {
-      "id": "GRTBBUK",
-      "name": "Grader, Tractor Blades, Buckets",
-      "size": {
-        "powerUnits": [
+      id: 'GRTBBUK',
+      name: 'Grader, Tractor Blades, Buckets',
+      size: {
+        powerUnits: [
           {
-            "type": "GRADERS",
-            "trailers": [
+            type: 'GRADERS',
+            trailers: [
               {
-                "type": "NONEXXX",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'NONEXXX',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "w": 4.4
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+                    w: 4.4,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
     },
     {
-      "id": "HAYRACK",
-      "name": "Hayrack Semi-Trailer with a Folded Chassis/Empty Piggyback",
-      "size": {
-        "powerUnits": [
+      id: 'HAYRACK',
+      name: 'Hayrack Semi-Trailer with a Folded Chassis/Empty Piggyback',
+      size: {
+        powerUnits: [
           {
-            "type": "TRKTRAC",
-            "trailers": [
+            type: 'TRKTRAC',
+            trailers: [
               {
-                "type": "STLOGNG",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'STLOGNG',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "rp": 5,
-                    "h": 4.15
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+                    rp: 5,
+                    h: 4.15,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
     },
     {
-      "id": "IMCONTN",
-      "name": "Intermodal Containers",
-      "size": {
-        "powerUnits": [
+      id: 'IMCONTN',
+      name: 'Intermodal Containers',
+      size: {
+        powerUnits: [
           {
-            "type": "TRKTRAC",
-            "trailers": [
+            type: 'TRKTRAC',
+            trailers: [
               {
-                "type": "STACTRN",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'STACTRN',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "h": 4.4,
-                    "l": 26
-                  }
-                ]
+                    h: 4.4,
+                    l: 26,
+                  },
+                ],
               },
               {
-                "type": "STBTRAN",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'STBTRAN',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "h": 4.4,
-                    "l": 27.5
-                  }
-                ]
+                    h: 4.4,
+                    l: 27.5,
+                  },
+                ],
               },
               {
-                "type": "HIBOFLT",
-                "jeep": true,
-                "booster": true,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'HIBOFLT',
+                jeep: true,
+                booster: true,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "h": 4.4
-                  }
-                ]
-              }
-            ]
+                    h: 4.4,
+                  },
+                ],
+              },
+            ],
           },
           {
-            "type": "REGTRCK",
-            "trailers": [
+            type: 'REGTRCK',
+            trailers: [
               {
-                "type": "NONEXXX",
-                "jeep": false,
-                "booster": false,
-                "selfIssue": true,
-                "sizeDimensions": [
+                type: 'NONEXXX',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
                   {
-                    "h": 4.4
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+                    h: 4.4,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
     },
   ],
 };

@@ -23,7 +23,7 @@ function start() {
   const puTypesEmpty = policy.getPermittablePowerUnitTypes('STOS', 'EMPTYXX');
   console.log(JSON.stringify(Array.from(puTypesEmpty.entries()), null, '   '));
 
-/*
+  /*
   console.log(
     '***POWER UNITS PERMITTABLE FOR STOS AND BRIDGE BEAMS COMMODITY***',
   );

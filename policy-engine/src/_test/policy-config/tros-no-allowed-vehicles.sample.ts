@@ -40,12 +40,12 @@ export const trosNoAllowedVehicles: PolicyDefinition = {
     powerUnits: [],
     trailers: [],
   },
-  "globalSizeDefaults": {
-    "fp": 3,
-    "rp": 6.5,
-    "w": 2.6,
-    "h": 4.15,
-    "l": 31
+  globalSizeDefaults: {
+    fp: 3,
+    rp: 6.5,
+    w: 2.6,
+    h: 4.15,
+    l: 31,
   },
   vehicleCategories: {
     trailerCategories: [],

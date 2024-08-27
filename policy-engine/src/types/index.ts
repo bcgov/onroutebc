@@ -22,7 +22,13 @@ export {
   TrailerType,
   VehicleTypes,
 } from './vehicle-type';
-export { Vehicle, VehicleSizeConfiguration, TrailerSize, PowerUnitWeight, TrailerWeight } from './vehicle';
+export {
+  Vehicle,
+  VehicleSizeConfiguration,
+  TrailerSize,
+  PowerUnitWeight,
+  TrailerWeight,
+} from './vehicle';
 export {
   WeightDimension,
   PowerUnitWeightDimension,

@@ -1,5 +1,5 @@
-import { Policy } from "../../policy-engine";
-import { stosPolicyConfig } from "../policy-config/stos-vehicle-config.sample";
+import { Policy } from '../../policy-engine';
+import { stosPolicyConfig } from '../policy-config/stos-vehicle-config.sample';
 
 describe('Permit Engine Oversize Configuration Functions', () => {
   const policy: Policy = new Policy(stosPolicyConfig);
@@ -19,7 +19,7 @@ describe('Permit Engine Oversize Configuration Functions', () => {
 
   it('should return an empty map for invalid commodity', async () => {
     const puTypes = policy.getPermittablePowerUnitTypes('STOS', '_INVALID');
-    expect(puTypes.size).toBe(0)
+    expect(puTypes.size).toBe(0);
   });
 });
 
@@ -33,7 +33,9 @@ describe('Permit Engine Get Next Permittable Vehicles', () => {
   });
 
   it('should return jeep and a trailer when current config is just power unit', async () => {
-    const vehicles = policy.getNextPermittableVehicles('STOS', 'LAMBEAM', ['TRKTRAC']);
+    const vehicles = policy.getNextPermittableVehicles('STOS', 'LAMBEAM', [
+      'TRKTRAC',
+    ]);
     expect(vehicles.size).toBe(3);
     expect(vehicles.keys()).toContain('JEEPSRG');
     expect(vehicles.keys()).toContain('POLETRL');
@@ -41,7 +43,10 @@ describe('Permit Engine Get Next Permittable Vehicles', () => {
   });
 
   it('should return jeep and a trailer when current config is power unit and jeep', async () => {
-    const vehicles = policy.getNextPermittableVehicles('STOS', 'LAMBEAM', ['TRKTRAC', 'JEEPSRG']);
+    const vehicles = policy.getNextPermittableVehicles('STOS', 'LAMBEAM', [
+      'TRKTRAC',
+      'JEEPSRG',
+    ]);
     expect(vehicles.size).toBe(3);
     expect(vehicles.keys()).toContain('JEEPSRG');
     expect(vehicles.keys()).toContain('POLETRL');
@@ -49,13 +54,19 @@ describe('Permit Engine Get Next Permittable Vehicles', () => {
   });
 
   it('should return booster when current config is power unit and trailer', async () => {
-    const vehicles = policy.getNextPermittableVehicles('STOS', 'LAMBEAM', ['TRKTRAC', 'POLETRL']);
+    const vehicles = policy.getNextPermittableVehicles('STOS', 'LAMBEAM', [
+      'TRKTRAC',
+      'POLETRL',
+    ]);
     expect(vehicles.size).toBe(1);
     expect(vehicles.keys()).toContain('BOOSTER');
   });
 
   it('should return empty map when current configuration is invalid', async () => {
-    const vehicles = policy.getNextPermittableVehicles('STOS', 'LAMBEAM', ['TRKTRAC', '_INVALID']);
+    const vehicles = policy.getNextPermittableVehicles('STOS', 'LAMBEAM', [
+      'TRKTRAC',
+      '_INVALID',
+    ]);
     expect(vehicles.size).toBe(0);
   });
 });
@@ -64,23 +75,39 @@ describe('Permit Engine Configuration Validation', () => {
   const policy: Policy = new Policy(stosPolicyConfig);
 
   it('should return true for a valid configuration with power unit and trailer', async () => {
-    const isValid = policy.isConfigurationValid('STOS', 'LAMBEAM', ['TRKTRAC', 'POLETRL']);
+    const isValid = policy.isConfigurationValid('STOS', 'LAMBEAM', [
+      'TRKTRAC',
+      'POLETRL',
+    ]);
     expect(isValid).toBe(true);
   });
 
   it('should return true for a valid configuration with power unit and trailer and jeep and booster', async () => {
-    const isValid = policy.isConfigurationValid('STOS', 'LAMBEAM', ['TRKTRAC', 'JEEPSRG', 'POLETRL', 'BOOSTER']);
+    const isValid = policy.isConfigurationValid('STOS', 'LAMBEAM', [
+      'TRKTRAC',
+      'JEEPSRG',
+      'POLETRL',
+      'BOOSTER',
+    ]);
     expect(isValid).toBe(true);
   });
 
   it('should return false for a configuration out of order', async () => {
-    const isValid = policy.isConfigurationValid('STOS', 'LAMBEAM', ['TRKTRAC', 'POLETRL', 'JEEPSRG', 'BOOSTER']);
+    const isValid = policy.isConfigurationValid('STOS', 'LAMBEAM', [
+      'TRKTRAC',
+      'POLETRL',
+      'JEEPSRG',
+      'BOOSTER',
+    ]);
     expect(isValid).toBe(false);
   });
 
   it('should throw an error for an invalid permit type', async () => {
     expect(() => {
-      policy.isConfigurationValid('_INVALID', 'LAMBEAM', ['TRKTRAC', 'POLETRL']);
+      policy.isConfigurationValid('_INVALID', 'LAMBEAM', [
+        'TRKTRAC',
+        'POLETRL',
+      ]);
     }).toThrow();
   });
 
@@ -91,12 +118,20 @@ describe('Permit Engine Configuration Validation', () => {
   });
 
   it('should return false for a configuration missing a trailer', async () => {
-    const isValid = policy.isConfigurationValid('STOS', 'LAMBEAM', ['TRKTRAC', 'JEEPSRG']);
+    const isValid = policy.isConfigurationValid('STOS', 'LAMBEAM', [
+      'TRKTRAC',
+      'JEEPSRG',
+    ]);
     expect(isValid).toBe(false);
   });
 
   it('should return true for a partial configuration missing a trailer', async () => {
-    const isValid = policy.isConfigurationValid('STOS', 'LAMBEAM', ['TRKTRAC', 'JEEPSRG'], true);
+    const isValid = policy.isConfigurationValid(
+      'STOS',
+      'LAMBEAM',
+      ['TRKTRAC', 'JEEPSRG'],
+      true,
+    );
     expect(isValid).toBe(true);
   });
 
