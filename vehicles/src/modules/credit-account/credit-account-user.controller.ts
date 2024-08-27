@@ -142,7 +142,13 @@ export class CreditAccountUserController {
   @Get()
   @Permissions({
     allowedBCeIDRoles: [ClientUserRole.COMPANY_ADMINISTRATOR],
-    allowedIdirRoles: [IDIRUserRole.SYSTEM_ADMINISTRATOR, IDIRUserRole.FINANCE],
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.FINANCE,
+      IDIRUserRole.CTPO,
+      IDIRUserRole.HQ_ADMINISTRATOR,
+    ],
   })
   async getCreditAccountUsers(
     @Req() request: Request,

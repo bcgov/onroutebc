@@ -24,7 +24,6 @@ import { CreditAccountIdPathParamDto } from './dto/request/pathParam/creditAccou
 import { UpdateCreditAccountStatusDto } from './dto/request/update-credit-account-status.dto';
 import { ReadCreditAccountActivityDto } from './dto/response/read-credit-account-activity.dto';
 import {
-  CLIENT_USER_ROLE_LIST,
   ClientUserRole,
   IDIR_USER_ROLE_LIST,
   IDIRUserRole,
@@ -104,7 +103,10 @@ export class CreditAccountController {
   })
   @Get()
   @Permissions({
-    allowedBCeIDRoles: [ClientUserRole.COMPANY_ADMINISTRATOR],
+    allowedBCeIDRoles: [
+      ClientUserRole.COMPANY_ADMINISTRATOR,
+      ClientUserRole.PERMIT_APPLICANT,
+    ],
     allowedIdirRoles: IDIR_USER_ROLE_LIST,
   })
   async getCreditAccountMetadata(
@@ -142,8 +144,13 @@ export class CreditAccountController {
   @Get(':creditAccountId')
   @Permissions({
     allowedBCeIDRoles: [ClientUserRole.COMPANY_ADMINISTRATOR],
-    allowedIdirRoles: IDIR_USER_ROLE_LIST,
-    // claims: [Claim.READ_CREDIT_ACCOUNT],
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.FINANCE,
+      IDIRUserRole.CTPO,
+      IDIRUserRole.HQ_ADMINISTRATOR,
+    ],
   })
   async getCreditAccount(
     @Req() request: Request,
@@ -180,8 +187,12 @@ export class CreditAccountController {
   })
   @Get(':creditAccountId/limits')
   @Permissions({
-    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
-    allowedIdirRoles: IDIR_USER_ROLE_LIST,
+    allowedBCeIDRoles: [ClientUserRole.COMPANY_ADMINISTRATOR],
+    allowedIdirRoles: [
+      IDIRUserRole.FINANCE,
+      IDIRUserRole.HQ_ADMINISTRATOR,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+    ],
   })
   async getCreditAccountLimit(
     @Req() request: Request,
@@ -216,8 +227,7 @@ export class CreditAccountController {
   })
   @Get(':creditAccountId/history')
   @Permissions({
-    allowedBCeIDRoles: [ClientUserRole.COMPANY_ADMINISTRATOR],
-    allowedIdirRoles: IDIR_USER_ROLE_LIST,
+    allowedIdirRoles: [IDIRUserRole.FINANCE],
   })
   async getCreditAccountHistory(
     @Req() request: Request,
