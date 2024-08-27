@@ -32,7 +32,10 @@ import { ReadUserDto } from './dto/response/read-user.dto';
 import { IDP } from '../../../common/enum/idp.enum';
 import { GetStaffUserQueryParamsDto } from './dto/request/queryParam/getStaffUser.query-params.dto';
 import { GetUserClaimsQueryParamsDto } from './dto/request/queryParam/getUserClaims.query-params.dto';
-import { IDIR_USER_ROLE_LIST } from '../../../common/enum/user-role.enum';
+import {
+  CLIENT_USER_ROLE_LIST,
+  IDIR_USER_ROLE_LIST,
+} from '../../../common/enum/user-role.enum';
 import { doesUserHaveRole } from '../../../common/helper/auth.helper';
 
 @ApiTags('Company and User Management - User')
@@ -108,7 +111,10 @@ export class UsersController {
       'This endpoint queries all claims associated with the provided company ID for the calling user. ' +
       "It fetches claims by integrating with the User service, ensuring claims are accurately returned based on the company's context and the user's privileges.",
   })
-  @Permissions(Claim.READ_SELF)
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: IDIR_USER_ROLE_LIST,
+  })
   @Get('/claims')
   async getClaimsForUsers(
     @Req() request: Request,
@@ -136,7 +142,9 @@ export class UsersController {
     type: ReadUserDto,
     isArray: true,
   })
-  @Permissions(Claim.READ_USER)
+  @Permissions({
+    allowedIdirRoles: IDIR_USER_ROLE_LIST,
+  })
   @Get()
   async findAll(
     @Req() request: Request,
@@ -193,7 +201,10 @@ export class UsersController {
       'the first result if any are found. Throws a BadRequestException if the GUIDs ' +
       'do not match for non-IDIR users, and DataNotFoundException if no users are found.',
   })
-  @Permissions(Claim.READ_SELF)
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: IDIR_USER_ROLE_LIST,
+  })
   @Get(':userGUID')
   async findUserDetails(
     @Req() request: Request,

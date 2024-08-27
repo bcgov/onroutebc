@@ -33,7 +33,10 @@ import { ReadFileDto } from '../../common/dto/response/read-file.dto';
 import { CreatePaymentSummaryReportDto } from './dto/request/create-payment-summary-report.dto';
 import { PaymentReportService } from './payment-report.service';
 import { Permissions } from '../../../common/decorator/permissions.decorator';
-import { Claim } from '../../../common/enum/claims.enum';
+import {
+  CLIENT_USER_ROLE_LIST,
+  IDIRUserRole,
+} from '../../../common/enum/user-role.enum';
 
 @ApiBearerAuth()
 @ApiTags('Payment')
@@ -64,7 +67,14 @@ export class PaymentController {
     description: 'The Transaction Resource',
     type: ReadTransactionDto,
   })
-  @Permissions(Claim.WRITE_PAYMENT)
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.CTPO,
+    ],
+  })
   @Post()
   async createTransactionDetails(
     @Req() request: Request,
@@ -85,7 +95,14 @@ export class PaymentController {
     type: UpdatePaymentGatewayTransactionDto,
   })
   @ApiQuery({ name: 'queryString', required: true })
-  @Permissions(Claim.WRITE_PAYMENT)
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.CTPO,
+    ],
+  })
   @Put(':transactionId/payment-gateway')
   async updateTransactionDetails(
     @Req() request: Request,
@@ -110,7 +127,14 @@ export class PaymentController {
     description: 'The Read Transaction Resource',
     type: ReadTransactionDto,
   })
-  @Permissions(Claim.READ_PAYMENT)
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.CTPO,
+    ],
+  })
   @Get(':transactionId')
   async findTransaction(
     @Req() request: Request,
@@ -123,7 +147,15 @@ export class PaymentController {
     description: 'The DOPS file Resource with the presigned resource',
     type: ReadFileDto,
   })
-  @Permissions(Claim.GENERATE_TRANSACTION_REPORT)
+  @Permissions({
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.CTPO,
+      IDIRUserRole.FINANCE,
+      IDIRUserRole.HQ_ADMINISTRATOR,
+    ],
+  })
   @Post('/report/detailed')
   async createPaymentDetailedReport(
     @Req() request: Request,
@@ -144,7 +176,15 @@ export class PaymentController {
     description: 'The DOPS file Resource with the presigned resource',
     type: ReadFileDto,
   })
-  @Permissions(Claim.GENERATE_TRANSACTION_REPORT)
+  @Permissions({
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.CTPO,
+      IDIRUserRole.FINANCE,
+      IDIRUserRole.HQ_ADMINISTRATOR,
+    ],
+  })
   @Post('/report/summary')
   async createPaymentSummaryReport(
     @Req() request: Request,
