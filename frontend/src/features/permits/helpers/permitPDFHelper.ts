@@ -2,7 +2,6 @@ import {
   downloadPermitApplicationPdf,
   downloadReceiptPdf,
 } from "../apiManager/permitsAPI";
-import { useNavigate } from 'react-router-dom';
 
 /**
  * Opens the PDF in a new browser tab.
@@ -22,8 +21,9 @@ export const openBlobInNewTab = (blob: Blob) => {
  */
 export const viewReceiptPdf = async (
   permitId: string, 
-  navigate: ReturnType<typeof useNavigate>, // Accept navigate as a parameter
-  companyId?: string) => {
+  onDocumentUnavailable?: () => void,
+  companyId?: string,
+) => {
   if (permitId) {
     try {
       const { blobObj: blobObjWithoutType } = await downloadReceiptPdf(
@@ -33,7 +33,9 @@ export const viewReceiptPdf = async (
       openBlobInNewTab(blobObjWithoutType);
     } catch (err) {
       console.error(err);
-      navigate('/document-on-the-way');
+      if (onDocumentUnavailable) {
+        onDocumentUnavailable();
+      }
     }
   }
 };
@@ -44,8 +46,9 @@ export const viewReceiptPdf = async (
  */
 export const viewPermitPdf = async (
   permitId: string, 
-  navigate: ReturnType<typeof useNavigate>, // Accept navigate as a parameter
+  onDocumentUnavailable?: () => void,
   companyId?: string,
+  
 ) => {
   try {
     const { blobObj: blobObjWithoutType } = await downloadPermitApplicationPdf(
@@ -55,6 +58,8 @@ export const viewPermitPdf = async (
     openBlobInNewTab(blobObjWithoutType);
   } catch (err) {
     console.error(err);
-    navigate('/document-on-the-way');
+    if (onDocumentUnavailable) {
+      onDocumentUnavailable();
+    }
   }
 };

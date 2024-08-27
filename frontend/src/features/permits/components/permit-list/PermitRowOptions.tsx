@@ -1,4 +1,5 @@
 import { OnRouteBCTableRowActions } from "../../../../common/components/table/OnRouteBCTableRowActions";
+import { ERROR_ROUTES } from "../../../../routes/constants";
 import { viewReceiptPdf } from "../../helpers/permitPDFHelper";
 import { useNavigate } from 'react-router-dom';
 
@@ -45,7 +46,7 @@ export const PermitRowOptions = ({
    */
   const onSelectOptionCallback = (selectedOption: string) => {
     if (selectedOption === PERMIT_ACTION_OPTION_TYPES.VIEW_RECEIPT) {
-      viewReceiptPdf(permitId, navigate);
+      viewReceiptPdf(permitId, () => navigate(ERROR_ROUTES.DOCUMENT_UNAVAILABLE));
     }
   };
 

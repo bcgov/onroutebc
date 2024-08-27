@@ -9,6 +9,7 @@ import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { getPermitTypeName } from "../../types/PermitType";
 import { Box, Tooltip } from "@mui/material";
 import { useNavigate } from 'react-router-dom';
+import { ERROR_ROUTES } from "../../../../routes/constants";
 
 /**
  * The column definition for Permits.
@@ -24,7 +25,9 @@ export const PermitsColumnDefinition: MRT_ColumnDef<PermitListItem>[] = [
     Cell: (props: { row: any; cell: any }) => {
       const navigate = useNavigate();
       const handleViewPermitPdf = (permitId: string) => {
-        viewPermitPdf(permitId, navigate);
+        viewPermitPdf(
+          permitId, 
+          () => navigate(ERROR_ROUTES.DOCUMENT_UNAVAILABLE))
       };
       return (
         <>

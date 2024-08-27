@@ -12,6 +12,8 @@ import {
   dateTimeStringSortingFn,
   formatCellValuetoDatetime,
 } from "../../../../common/helpers/tableHelper";
+import { ERROR_ROUTES } from "../../../../routes/constants";
+import { useNavigate } from "react-router-dom";
 
 export const PermitSearchResultColumnDef: MRT_ColumnDef<PermitListItem>[] = [
   {
@@ -26,8 +28,11 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<PermitListItem>[] = [
       return (
         <>
           <CustomActionLink
-            onClick={() =>
-              viewPermitPdf(permitId.toString(), companyId.toString())
+            onClick={() =>{
+              const navigate = useNavigate();
+              viewPermitPdf(permitId.toString(), () => navigate(ERROR_ROUTES.DOCUMENT_UNAVAILABLE), companyId.toString());
+            }
+              
             }
           >
             {props.cell.getValue()}
