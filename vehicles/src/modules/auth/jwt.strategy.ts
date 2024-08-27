@@ -175,14 +175,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       ) {
         throw new ForbiddenException();
       } else if (companyId && userGUIDParam !== payload.userGUID) {
-        let claims: Claim[];
+        let claim: Claim;
         if (req.method === 'GET') {
-          claims = [Claim.READ_USER];
+          claim = Claim.READ_USER;
         } else {
-          claims = [Claim.WRITE_USER];
+          claim = Claim.WRITE_USER;
         }
         validateUserCompanyAndRoleContext(
-          claims,
+          claim,
           userGUIDParam,
           associatedCompanies,
           payload,
