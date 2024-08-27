@@ -42,7 +42,7 @@ export const getDirectory = (user: IUserJWT) => {
 export const matchRoles = (
   permissions: IPermissions,
   userClaims: Claim[],
-  userRole?: UserRole,
+  userRole: UserRole,
 ) => {
   const { allowedIdirRoles, allowedBCeIDRoles, claim } = permissions;
   // If only claims is specified, return the value of that.
@@ -62,6 +62,41 @@ export const matchRoles = (
     isAllowed = isAllowed && userClaims.includes(claim);
   }
   return isAllowed;
+};
+
+/**
+ * Validates whether the user has the specified roles and is associated with the specified companies.
+ * Throws a ForbiddenException if the validation fails according to the following rules:
+ * 1. The user must have at least one of the specified roles.
+ * 2. If the user has at least one of the specified roles, they must also be associated with one of the specified companies.
+ *
+ * @param {Claim} claim - The claim the user is supposed to have.
+ * @param {string} userGUID - The unique identifier for the user.
+ * @param {number[]} userCompanies - An array of company IDs that the user is supposed to be associated with.
+ * @param {IUserJWT} currentUser - The current user's information, including roles and identity provider.
+ * @throws {ForbiddenException} Throws ForbiddenException if the user does not meet the role or company association criteria.
+ */
+export const validateUserCompanyAndRoleContext = (
+  claim: Claim,
+  userGUID: string,
+  userCompanies: number[],
+  currentUser: IUserJWT,
+) => {
+  const rolesExists = matchRoles(
+    { claim },
+    currentUser.claims,
+    currentUser.orbcUserRole,
+  );
+  if (!rolesExists && userGUID) {
+    throw new ForbiddenException();
+  }
+  if (
+    rolesExists &&
+    userGUID &&
+    !checkUserCompaniesContext(userCompanies, currentUser)
+  ) {
+    throw new ForbiddenException();
+  }
 };
 
 /**

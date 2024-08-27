@@ -11,7 +11,7 @@ export interface IPermissions {
    * If the user has one of the specified roles,
    * the action will be allowed.
    */
-  allowedIdirRoles?: IDIRUserRole[];
+  allowedIdirRoles?: IDIRUserRole[] | readonly IDIRUserRole[];
 
   /**
    * The bceid auth roles that are allowed to perform an action.
@@ -19,7 +19,7 @@ export interface IPermissions {
    * If the user has one of the specified roles,
    * the action will be allowed.
    */
-  allowedBCeIDRoles?: ClientUserRole[];
+  allowedBCeIDRoles?: ClientUserRole[] | readonly ClientUserRole[];
 
   /**
    * The individual security claim that may be used
