@@ -24,7 +24,7 @@ import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
-import { BCeID_USER_AUTH_GROUP } from "../../../../../common/authentication/types";
+import { BCeID_USER_ROLE } from "../../../../../common/authentication/types";
 
 /**
  * Edit User form for User Management.
@@ -48,9 +48,9 @@ export const EditUserForm = memo(
         countryCode: getDefaultRequiredVal("", userInfo?.countryCode),
         provinceCode: getDefaultRequiredVal("", userInfo?.provinceCode),
         city: getDefaultRequiredVal("", userInfo?.city),
-        userAuthGroup: getDefaultRequiredVal(
-          BCeID_USER_AUTH_GROUP.COMPANY_ADMINISTRATOR,
-          userInfo?.userAuthGroup,
+        userRole: getDefaultRequiredVal(
+          BCeID_USER_ROLE.COMPANY_ADMINISTRATOR,
+          userInfo?.userRole,
         ),
       },
     });
@@ -163,7 +163,7 @@ export const EditUserForm = memo(
               </Stack>
               <Stack spacing={2}>
                 <Controller
-                  name="userAuthGroup"
+                  name="userRole"
                   rules={{
                     required: { value: true, message: requiredMessage() },
                   }}

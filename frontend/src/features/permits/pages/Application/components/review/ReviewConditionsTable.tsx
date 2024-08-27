@@ -12,14 +12,14 @@ import "./ReviewConditionsTable.scss";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import { CustomExternalLink } from "../../../../../../common/components/links/CustomExternalLink";
 import { Nullable } from "../../../../../../common/types/common";
-import { PermitCommodity } from "../../../../types/PermitCommodity";
+import { PermitCondition } from "../../../../types/PermitCondition";
 
 export const ReviewConditionsTable = ({
   conditions,
 }: {
-  conditions?: Nullable<PermitCommodity[]>;
+  conditions?: Nullable<PermitCondition[]>;
 }) => {
-  const commodities = getDefaultRequiredVal([], conditions);
+  const reviewConditions = getDefaultRequiredVal([], conditions);
 
   return (
     <TableContainer>
@@ -35,7 +35,7 @@ export const ReviewConditionsTable = ({
           </TableRow>
         </TableHead>
         <TableBody>
-          {commodities.map((row: PermitCommodity) => {
+          {reviewConditions.map((row: PermitCondition) => {
             return (
               <TableRow
                 className="review-conditions-table__row"

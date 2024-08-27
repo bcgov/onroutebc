@@ -20,14 +20,14 @@ import { DataNotFoundException } from '../../../common/exception/data-not-found.
 import { ReadUserOrbcStatusDto } from './dto/response/read-user-orbc-status.dto';
 import { PendingUsersService } from '../pending-users/pending-users.service';
 import { CompanyService } from '../company/company.service';
-import { Role } from '../../../common/enum/roles.enum';
+import { Claim } from '../../../common/enum/claims.enum';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import {
-  ClientUserAuthGroup,
-  GenericUserAuthGroup,
-  IDIRUserAuthGroup,
-  UserAuthGroup,
-} from 'src/common/enum/user-auth-group.enum';
+  ClientUserRole,
+  GenericUserRole,
+  IDIRUserRole,
+  UserRole,
+} from 'src/common/enum/user-role.enum';
 import { PendingIdirUser } from '../pending-idir-users/entities/pending-idir-user.entity';
 import { PendingIdirUsersService } from '../pending-idir-users/pending-idir-users.service';
 import { ReadPendingUserDto } from '../pending-users/dto/response/read-pending-user.dto';
@@ -126,7 +126,7 @@ export class UsersService {
 
       let user = this.classMapper.map(createUserDto, CreateUserDto, User, {
         extraArgs: () => ({
-          userAuthGroup: GenericUserAuthGroup.PUBLIC_VERIFIED,
+          userRole: GenericUserRole.PUBLIC_VERIFIED,
           userName: currentUser.userName,
           directory: currentUser.orbcUserDirectory,
           userGUID: currentUser.userGUID,
@@ -144,7 +144,7 @@ export class UsersService {
       newCompanyUser.company.companyId = companyId;
       newCompanyUser.statusCode = UserStatus.ACTIVE;
       newCompanyUser.user = user;
-      newCompanyUser.userAuthGroup = pendingUsers?.at(0).userAuthGroup;
+      newCompanyUser.userRole = pendingUsers?.at(0).userRole;
 
       user.companyUsers = [newCompanyUser];
       user = await queryRunner.manager.save(user);
@@ -200,11 +200,11 @@ export class UsersService {
 
     //Searching with UserGuid will only return one result at max
     const companyUser = userDetails.at(0).companyUsers.at(0);
-    //A CV user's auth group should not be allowed to be downgraded from CVADMIN
+    //A CV user's role should not be allowed to be downgraded from CVADMIN
     //if they are the last remaining CVADMIN of the Company
     if (
-      companyUser.userAuthGroup === ClientUserAuthGroup.COMPANY_ADMINISTRATOR &&
-      companyUser.userAuthGroup !== updateUserDto.userAuthGroup
+      companyUser.userRole === ClientUserRole.COMPANY_ADMINISTRATOR &&
+      companyUser.userRole !== updateUserDto.userRole
     ) {
       //Find all employees of the company
       const employees = await this.findUsersEntity(undefined, [companyId]);
@@ -213,14 +213,14 @@ export class UsersService {
       const secondCVAdmin = employees.filter(
         (employee) =>
           employee.userGUID != userDetails.at(0).userGUID &&
-          employee.companyUsers.at(0).userAuthGroup ===
-            ClientUserAuthGroup.COMPANY_ADMINISTRATOR,
+          employee.companyUsers.at(0).userRole ===
+            ClientUserRole.COMPANY_ADMINISTRATOR,
       );
 
       //Throw BadRequestException if only one CVAdmin exists for the company.
       if (!secondCVAdmin?.length) {
         const badRequestExceptionDto = new BadRequestExceptionDto();
-        badRequestExceptionDto.field = 'userAuthGroup';
+        badRequestExceptionDto.field = 'userRole';
         badRequestExceptionDto.message = [
           'This operation is not allowed as a company should have atlease one CVAdmin at any given moment.',
         ];
@@ -272,18 +272,17 @@ export class UsersService {
         },
       );
 
-      // Should be allowed to update userAuthGroupID if current user is an
+      // Should be allowed to update userRole of current user is an
       // IDIR(PPC Clerk) or CVAdmin
       if (
-        (currentUser.orbcUserAuthGroup ===
-          ClientUserAuthGroup.COMPANY_ADMINISTRATOR ||
+        (currentUser.orbcUserRole === ClientUserRole.COMPANY_ADMINISTRATOR ||
           currentUser.identity_provider === IDP.IDIR) &&
-        companyUser.userAuthGroup !== updateUserDto.userAuthGroup
+        companyUser.userRole !== updateUserDto.userRole
       ) {
         await queryRunner.manager.update(
           CompanyUser,
           { companyUserId: companyUser.companyUserId },
-          { userAuthGroup: updateUserDto.userAuthGroup, ...auditMetadata },
+          { userRole: updateUserDto.userRole, ...auditMetadata },
         );
       }
 
@@ -315,7 +314,7 @@ export class UsersService {
   async findUsersEntity(
     userGUID?: string,
     companyId?: number[],
-    userAuthGroup?: UserAuthGroup | IDIRUserAuthGroup | ClientUserAuthGroup,
+    userRole?: UserRole | IDIRUserRole | ClientUserRole,
     statusCode = [UserStatus.ACTIVE],
   ) {
     // Construct the query builder to retrieve user entities and associated data
@@ -365,9 +364,9 @@ export class UsersService {
       });
     }
 
-    if (userAuthGroup) {
-      userQB.andWhere('user.userAuthGroup = :userAuthGroup', {
-        userAuthGroup: userAuthGroup,
+    if (userRole) {
+      userQB.andWhere('user.userRole = :userRole', {
+        userRole: userRole,
       });
     }
 
@@ -387,13 +386,13 @@ export class UsersService {
     userGUID?: string,
     companyId?: number[],
     pendingUser?: boolean,
-    userAuthGroup?: UserAuthGroup | IDIRUserAuthGroup | ClientUserAuthGroup,
+    userRole?: UserRole | IDIRUserRole | ClientUserRole,
   ): Promise<ReadUserDto[]> {
     // Find user entities based on the provided filtering criteria
     const userDetails = await this.findUsersEntity(
       userGUID,
       companyId,
-      userAuthGroup,
+      userRole,
     );
     let pendingUsersList: ReadUserDto[] = [];
     if (pendingUser && companyId?.length) {
@@ -544,25 +543,25 @@ export class UsersService {
   }
 
   /**
-   * The getRolesForUser() method finds and returns a {@link Role} object
+   * The getRolesForUser() method finds and returns a {@link Claim} object
    * for a user with a specific userGUID and companyId parameters. CompanyId is
    * optional and defaults to 0
    *
    * @param userGUID The user GUID.
    * @param companyId The company Id. Optional - Defaults to 0
    *
-   * @returns The Roles as a promise of type {@link Role}
+   * @returns The claims as a promise of type {@link Claim}
    */
   @LogAsyncMethodExecution()
-  async getRolesForUser(userGUID: string, companyId = 0): Promise<Role[]> {
+  async getClaimsForUser(userGUID: string, companyId = 0): Promise<Claim[]> {
     const queryResult = (await this.userRepository.query(
       'SELECT ROLE_TYPE FROM access.ORBC_GET_ROLES_FOR_USER_FN(@0,@1)',
       [userGUID, companyId],
-    )) as [{ ROLE_TYPE: Role }];
+    )) as [{ ROLE_TYPE: Claim }];
 
-    const roles = queryResult.map((r) => r.ROLE_TYPE);
+    const claims = queryResult.map((r) => r.ROLE_TYPE);
 
-    return roles;
+    return claims;
   }
 
   /**
@@ -620,7 +619,7 @@ export class UsersService {
         try {
           let newUser: User = this.mapIdirToUserEntity(
             currentUser,
-            pendingUser.userAuthGroup,
+            pendingUser.userRole,
           );
           newUser = await queryRunner.manager.save(newUser);
           await queryRunner.manager.delete(PendingIdirUser, {
@@ -669,7 +668,7 @@ export class UsersService {
 
   private mapIdirToUserEntity(
     currentUser: IUserJWT,
-    userAuthGroup: IDIRUserAuthGroup,
+    userRole: IDIRUserRole,
   ): User {
     const user: User = new User();
     const currentDateTime = new Date();
@@ -678,7 +677,7 @@ export class UsersService {
     user.userName = currentUser.idir_username;
     user.statusCode = UserStatus.ACTIVE;
     user.directory = currentUser.orbcUserDirectory;
-    user.userAuthGroup = userAuthGroup;
+    user.userRole = userRole;
     user.userContact.firstName = currentUser.given_name;
     user.userContact.lastName = currentUser.family_name;
     user.userContact.email = currentUser.email;
@@ -751,8 +750,8 @@ export class UsersService {
     // Collect the company admin userGUIDs.
     const remainingCompanyAdmins = usersBeforeDelete
       .filter(
-        ({ userAuthGroup, user }) =>
-          userAuthGroup === ClientUserAuthGroup.COMPANY_ADMINISTRATOR &&
+        ({ userRole, user }) =>
+          userRole === ClientUserRole.COMPANY_ADMINISTRATOR &&
           Boolean(user?.userGUID),
       )
       .map(({ user: { userGUID } }) => userGUID)

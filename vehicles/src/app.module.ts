@@ -37,7 +37,7 @@ import { PaymentModule } from './modules/permit-application-payment/payment/paym
 import { PermitReceiptDocumentModule } from './modules/permit-application-payment/permit-receipt-document/permit-receipt-document.module';
 import { ShoppingCartModule } from './modules/shopping-cart/shopping-cart.module';
 import { CreditAccountModule } from './modules/credit-account/credit-account.module';
-import { LoaModule } from './modules/loa/loa.module';
+import { SpecialAuthModule } from './modules/special-auth/special-auth.module';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
@@ -56,7 +56,7 @@ const envPath = path.resolve(process.cwd() + '/../');
           const correlationId = req.headers['x-correlation-id'];
           return Array.isArray(correlationId)
             ? correlationId[0]
-            : correlationId ?? uuidv4();
+            : (correlationId ?? uuidv4());
         },
       },
     }),
@@ -101,7 +101,7 @@ const envPath = path.resolve(process.cwd() + '/../');
     PermitModule,
     CreditAccountModule,
     FeatureFlagsModule,
-    LoaModule,
+    SpecialAuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

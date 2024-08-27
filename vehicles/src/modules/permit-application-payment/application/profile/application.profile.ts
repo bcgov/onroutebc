@@ -14,10 +14,10 @@ import { ReadApplicationMetadataDto } from '../dto/response/read-application-met
 import { PPC_FULL_TEXT } from '../../../../common/constants/api.constant';
 import { Directory } from '../../../../common/enum/directory.enum';
 import {
-  UserAuthGroup,
-  IDIR_USER_AUTH_GROUP_LIST,
-} from '../../../../common/enum/user-auth-group.enum';
-import { doesUserHaveAuthGroup } from '../../../../common/helper/auth.helper';
+  UserRole,
+  IDIR_USER_ROLE_LIST,
+} from '../../../../common/enum/user-role.enum';
+import { doesUserHaveRole } from '../../../../common/helper/auth.helper';
 import { Permit } from '../../permit/entities/permit.entity';
 
 @Injectable()
@@ -180,12 +180,12 @@ export class ApplicationProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.applicant,
-          mapWithArguments((s, { currentUserAuthGroup }) => {
+          mapWithArguments((s, { currentUserRole }) => {
             if (s.applicationOwner?.directory === Directory.IDIR) {
               if (
-                doesUserHaveAuthGroup(
-                  currentUserAuthGroup as UserAuthGroup,
-                  IDIR_USER_AUTH_GROUP_LIST,
+                doesUserHaveRole(
+                  currentUserRole as UserRole,
+                  IDIR_USER_ROLE_LIST,
                 )
               ) {
                 return s.applicationOwner?.userName;
@@ -240,12 +240,12 @@ export class ApplicationProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.applicant,
-          mapWithArguments((s, { currentUserAuthGroup }) => {
+          mapWithArguments((s, { currentUserRole }) => {
             if (s.applicationOwner?.directory === Directory.IDIR) {
               if (
-                doesUserHaveAuthGroup(
-                  currentUserAuthGroup as UserAuthGroup,
-                  IDIR_USER_AUTH_GROUP_LIST,
+                doesUserHaveRole(
+                  currentUserRole as UserRole,
+                  IDIR_USER_ROLE_LIST,
                 )
               ) {
                 return s.applicationOwner?.userName;
