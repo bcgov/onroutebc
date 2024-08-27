@@ -1,13 +1,5 @@
 {
   "singleQuote": true,
   "trailingComma": "all",
-  "endOfLine": "auto",
-  "overrides": [
-    {
-      "files": ["**/*.hbs"],
-      "options": {
-        "parser": "angular"
-      }
-    }
-  ]
+  "endOfLine":"auto"
 }
