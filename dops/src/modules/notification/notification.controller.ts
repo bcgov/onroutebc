@@ -62,7 +62,7 @@ export class NotificationController {
   })
   @UseGuards(JwtOneOfAuthGuard)
   @Post('/document')
-  @Permissions({ allOf: [Claim.SEND_NOTIFICATION, Claim.READ_DOCUMENT] })
+  @Permissions({ claim: Claim.SEND_NOTIFICATION })
   async notificationWithDocumentsFromDops(
     @Req() req: Request,
     @Body() notificationDocumentDto: NotificationDocumentDto,
@@ -147,7 +147,7 @@ export class NotificationController {
       'Sends a simple notification using the specified template to the given recipient(s), and returns a transaction ID for the operation.',
   })
   @Post()
-  @Permissions(Claim.SEND_NOTIFICATION)
+  @Permissions({ claim: Claim.SEND_NOTIFICATION })
   async notificationWithoutDocument(
     @Req() req: Request,
     @Body() notificationDocumentDto: NotificationDto,

@@ -62,7 +62,7 @@ export class DgenController {
     example: '74',
     description: 'Required when IDP is not IDIR .',
   })
-  @Permissions(Claim.GENERATE_DOCUMENT)
+  @Permissions({ claim: Claim.GENERATE_DOCUMENT })
   @UseGuards(JwtOneOfAuthGuard)
   @Post('/template/render')
   async generate(
@@ -85,7 +85,7 @@ export class DgenController {
     return readFileDto;
   }
 
-  @Permissions(Claim.GENERATE_REPORT)
+  @Permissions({ claim: Claim.GENERATE_REPORT })
   @Post('/report/render')
   async generateReport(
     @Req() request: Request,

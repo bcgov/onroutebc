@@ -72,7 +72,7 @@ export class DmsController {
     description: 'Required when IDP is not IDIR .',
   })
   @ApiConsumes('multipart/form-data')
-  @Permissions(Claim.WRITE_DOCUMENT)
+  @Permissions({ claim: Claim.WRITE_DOCUMENT })
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
@@ -116,7 +116,7 @@ export class DmsController {
     description: 'Required when IDP is not IDIR .',
   })
   @ApiConsumes('multipart/form-data')
-  @Permissions(Claim.WRITE_DOCUMENT)
+  @Permissions({ claim: Claim.WRITE_DOCUMENT })
   @Post('upload/:documentId')
   @UseInterceptors(FileInterceptor('file'))
   async updateFile(
@@ -159,7 +159,7 @@ export class DmsController {
     description: 'The DMS file Resource with the presigned resource',
     type: ReadFileDto,
   })
-  @Permissions(Claim.READ_DOCUMENT)
+  @Permissions({ claim: Claim.READ_DOCUMENT })
   @Get(':documentId')
   async downloadFile(
     @Req() request: Request,

@@ -22,7 +22,7 @@ export interface IPermissions {
   allowedBCeIDRoles?: ClientUserRole[];
 
   /**
-   * The collection of individual security claims that may be used
+   * The individual security claim that may be used
    * for additional consideration.
    *
    * If provided, the claim will be additionally checked on.
@@ -30,5 +30,5 @@ export interface IPermissions {
    * claims will be exclusively checked for deciding whether the user
    * is allowed to perform this action.
    */
-  claims?: Claim[];
+  claim?: Claim;
 }
