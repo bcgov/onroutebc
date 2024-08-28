@@ -17,7 +17,6 @@ import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { DopsService } from '../common/dops.service';
 import { FileDownloadModes } from 'src/common/enum/file-download-modes.enum';
 import { Response } from 'express';
-import { UpdateLoaDto } from './dto/request/update-loa.dto';
 import { Nullable } from '../../common/types/common';
 import { Company } from '../company-user-management/company/entities/company.entity';
 
@@ -70,6 +69,9 @@ export class LoaService {
           companyId: companyId,
           documentId: readFileDto.documentId,
           isActive: true,
+          revision: 1,
+          previousRevision: 0,
+          originalLoaId: undefined,
           userName: currentUser.userName,
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
@@ -77,10 +79,22 @@ export class LoaService {
         }),
       },
     );
-    loa.isActive = true;
-    const loaDetail = await this.loaDetailRepository.save(loa);
+    const savedLoaDetail = await this.loaDetailRepository.save(loa);
+    await this.loaDetailRepository
+    .createQueryBuilder()
+    .update()
+    .set({
+      originalLoaId: savedLoaDetail.loaId,
+      updatedUser: currentUser.userName,
+      updatedDateTime: new Date(),
+      updatedUserDirectory: currentUser.orbcUserDirectory,
+      updatedUserGuid: currentUser.userGUID,
+    })
+    .where('loaId = :loaId', { loaId: savedLoaDetail.loaId })
+    .execute();
+    const refreshedLoaDetailsEntity = await this.findOne(companyId,savedLoaDetail.loaId)
     const readLoaDto = await this.classMapper.mapAsync(
-      loaDetail,
+      refreshedLoaDetailsEntity,
       LoaDetail,
       ReadLoaDto,
     );
@@ -247,7 +261,7 @@ export class LoaService {
     currentUser: IUserJWT,
     companyId: number,
     loaId: number,
-    updateLoaDto: UpdateLoaDto,
+    createLoaDto: CreateLoaDto,
     file?: Express.Multer.File,
   ): Promise<ReadLoaDto> {
     let savedLoaDetail: LoaDetail;
@@ -283,14 +297,12 @@ export class LoaService {
       updatedLoaDetail.company = new Company();
       Object.assign(updatedLoaDetail, {
         ...commonFields,
-        company: { companyId: companyId },
         loaId: existingLoaDetail.loaId,
         isActive: false,
-        documentId,
       });
       await queryRunner.manager.save(updatedLoaDetail);
       const createLoaDetail = await this.classMapper.mapAsync(
-        updateLoaDto,
+        createLoaDto,
         CreateLoaDto,
         LoaDetail,
         {
@@ -298,7 +310,9 @@ export class LoaService {
             companyId: companyId,
             documentId: documentId,
             isActive: true,
-            revision: existingLoaDetail.revision + 1,
+            revision: existingLoaDetail.revision+1,
+            previousRevision: existingLoaDetail.revision,
+            originalLoaId: existingLoaDetail.originalLoaId,
             userName: currentUser.userName,
             userGUID: currentUser.userGUID,
             timestamp: new Date(),
@@ -306,6 +320,7 @@ export class LoaService {
           }),
         },
       );
+
       savedLoaDetail = await queryRunner.manager.save(createLoaDetail);
 
       await queryRunner.commitTransaction();

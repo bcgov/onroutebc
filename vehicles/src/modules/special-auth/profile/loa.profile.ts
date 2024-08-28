@@ -50,6 +50,18 @@ export class LoaProfile extends AutomapperProfile {
           }),
         ),
         forMember(
+          (d) => d.previousRevision,
+          mapWithArguments((_, { previousRevision }) => {
+            return previousRevision;
+          }),
+        ),
+        forMember(
+          (d) => d.originalLoaId,
+          mapWithArguments((_, { originalLoaId }) => {
+            return originalLoaId;
+          }),
+        ),
+        forMember(
           (d) => d.createdUserGuid,
           mapWithArguments((_, { userGUID }) => {
             return userGUID;

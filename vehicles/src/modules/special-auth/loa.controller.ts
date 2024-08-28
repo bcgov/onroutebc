@@ -36,7 +36,6 @@ import { setResHeaderCorrelationId } from 'src/common/helper/response-header.hel
 import { JsonReqBodyInterceptor } from '../../common/interceptor/json-req-body.interceptor';
 import { CreateLoaFileDto } from './dto/request/create-loa-file.dto';
 import { CompanyIdPathParamDto } from '../common/dto/request/pathParam/companyId.path-param.dto';
-import { UpdateLoaFileDto } from './dto/request/update-loa-file.dto';
 import { LoaIdPathParamDto } from './dto/request/pathParam/loa-Id.path-params.dto';
 import { GetDocumentQueryParamsDto } from '../common/dto/request/queryParam/getDocument.query-params.dto';
 import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-flag-enabled.decorator';
@@ -157,14 +156,14 @@ export class LoaController {
       }),
     )
     file: Express.Multer.File,
-    @Body() updateLoaFileDto: UpdateLoaFileDto,
+    @Body() createLoaFileDto: CreateLoaFileDto,
   ): Promise<ReadLoaDto> {
     const currentUser = request.user as IUserJWT;
     const loa = await this.loaService.updateLoa(
       currentUser,
       companyId,
       loaId,
-      updateLoaFileDto?.body,
+      createLoaFileDto?.body,
       file,
     );
     return loa;
