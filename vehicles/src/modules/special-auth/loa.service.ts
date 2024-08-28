@@ -248,7 +248,7 @@ export class LoaService {
    * Steps:
    * 1. Retrieve the existing LOA details.
    * 2. Handle file upload or download, and get the document ID.
-   * 3. Begin a transaction to delete existing LOA vehicles and permit types and save the updated LOA details.
+   * 3. Begin a transaction to create a new revision for existing LoA and mark existing LoA inactive.
    * 4. Commit the transaction if successful, roll back otherwise.
    * 5. Map the saved LOA details to ReadLoaDto and combine with file information.
    *
