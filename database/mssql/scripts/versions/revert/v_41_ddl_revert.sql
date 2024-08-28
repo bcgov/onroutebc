@@ -9,12 +9,17 @@ SET XACT_ABORT ON
 
 BEGIN TRY
   BEGIN TRANSACTION
+	  BEGIN TRANSACTION
 
+
+    DROP TABLE [permit].[ORBC_LOA_PERMIT_TYPE_DETAILS]
+    DROP TABLE [permit].[ORBC_LOA_VEHICLES]
+    DROP TABLE [permit].[ORBC_LOA_DETAILS]
+    DROP SEQUENCE [permit].[ORBC_LOA_NUMBER_SEQ]
+	COMMIT
 CREATE SEQUENCE permit.ORBC_LOA_NUMBER_SEQ
     START WITH 100000
     INCREMENT BY 1 ;
-GO
-
 CREATE TABLE [permit].[ORBC_LOA_DETAILS] (
    LOA_ID [int] IDENTITY(1,1) NOT NULL,
    LOA_NUMBER [int] NOT NULL  DEFAULT (NEXT VALUE FOR permit.ORBC_LOA_NUMBER_SEQ),
@@ -113,8 +118,6 @@ FOR [DB_LAST_UPDATE_TIMESTAMP]
 
 -- Check Contraints
 ALTER TABLE [permit].[ORBC_LOA_DETAILS] WITH CHECK ADD  CONSTRAINT DK_ORBC_LOA_DETAILS_IS_ACTIVE_VAL CHECK ([IS_ACTIVE] IN ('Y','N'));
-GO
-
 ALTER TABLE [permit].[ORBC_LOA_DETAILS]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_LOA_DETAILS_COMPANY] FOREIGN KEY([COMPANY_ID])
 REFERENCES [dbo].[ORBC_COMPANY] ([COMPANY_ID])
 ALTER TABLE [permit].[ORBC_LOA_DETAILS] CHECK CONSTRAINT [FK_ORBC_LOA_DETAILS_COMPANY]
@@ -161,9 +164,6 @@ ALTER TABLE [permit].[ORBC_LOA_PERMIT_TYPE_DETAILS]
 ALTER TABLE [permit].[ORBC_LOA_DETAILS]
    WITH CHECK ADD CONSTRAINT [ORBC_LOA_DETAILS_DOCUMENT_ID_FK] FOREIGN KEY ([DOCUMENT_ID]) REFERENCES [dops].[ORBC_DOCUMENT]([ID])
 
-IF @@ERROR <> 0
-   SET NOEXEC ON
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Surrogate primary key for the LoA table' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_DETAILS', @level2type=N'COLUMN',@level2name=N'LOA_ID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique LoA Number' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_DETAILS', @level2type=N'COLUMN',@level2name=N'LOA_NUMBER'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to the orbc_company table, identifying which company does this LoA belong to' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_DETAILS', @level2type=N'COLUMN',@level2name=N'COMPANY_ID'
@@ -179,17 +179,17 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Surrogate prim
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to LoA details table' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_VEHICLES', @level2type=N'COLUMN',@level2name=N'LOA_ID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to power unit table, identifying the power units allowed in an LoA' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_VEHICLES', @level2type=N'COLUMN',@level2name=N'POWER_UNIT_ID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to trailer table, identifying the trailers allowed in an LoA' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_VEHICLES', @level2type=N'COLUMN',@level2name=N'TRAILER_ID'
-    COMMIT
+  COMMIT
 END TRY
 
 BEGIN CATCH
   IF @@TRANCOUNT > 0 
     ROLLBACK;
   THROW
-  END CATCH
+END CATCH
 
 DECLARE @VersionDescription VARCHAR(255)
-SET @VersionDescription = 'Updating no fee type column length'
+SET @VersionDescription = 'Reverting creation of entities for LoA.'
 
 INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (40, @VersionDescription, getutcdate())
 
