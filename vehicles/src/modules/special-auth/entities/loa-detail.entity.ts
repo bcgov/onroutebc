@@ -74,10 +74,6 @@ export class LoaDetail extends Base {
   isActive: boolean;
 
   @AutoMap()
-  @Column({ type: 'integer', name: 'REVISION', nullable: true })
-  revision: number;
-
-  @AutoMap()
   @Column({ type: 'integer', name: 'PREVIOUS_LOA_ID', nullable: true })
   previousLoaId: number;
 

@@ -65,13 +65,6 @@ export class ReadLoaDto {
   @AutoMap()
   @ApiProperty({
     example: 1,
-    description: 'Revision number for the LoA.',
-  })
-  revision: number;
-
-  @AutoMap()
-  @ApiProperty({
-    example: 1,
     description: 'Previous LoA id for the LoA.',
   })
   previousLoaId: number;
