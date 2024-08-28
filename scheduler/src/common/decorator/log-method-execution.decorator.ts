@@ -15,7 +15,7 @@ export function LogMethodExecution(logMethodOptions?: {
     descriptor.value = function (...args: any[]) {
       if (
         logMethodOptions?.printMemoryStats &&
-        process.env.TPS_API_LOG_LEVEL === 'debug'
+        process.env.SCHEDULER_API_LOG_LEVEL === 'debug'
       ) {
         const memoryStats = process.memoryUsage();
         memoryUsage = `, Memory usage: ${JSON.stringify(memoryStats)}`;
@@ -30,7 +30,7 @@ export function LogMethodExecution(logMethodOptions?: {
       const executionTime = end - start;
       if (
         logMethodOptions?.printMemoryStats &&
-        process.env.TPS_API_LOG_LEVEL === 'debug'
+        process.env.SCHEDULER_API_LOG_LEVEL === 'debug'
       ) {
         const memoryStats = process.memoryUsage();
         memoryUsage = `, Memory usage: ${JSON.stringify(memoryStats)}`;

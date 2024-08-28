@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { Button, Step, StepConnector, StepLabel, Stepper } from "@mui/material";
@@ -13,6 +13,7 @@ import { LOABasicInfo } from "./basic/LOABasicInfo";
 import { Nullable } from "../../../../../common/types/common";
 import { LOAFormData, loaDetailToFormData } from "../../../types/LOAFormData";
 import { ERROR_ROUTES } from "../../../../../routes/constants";
+import { SnackBarContext } from "../../../../../App";
 import {
   useCreateLOAMutation,
   useFetchLOADetail,
@@ -36,6 +37,7 @@ export const LOASteps = ({
   ];
 
   const navigate = useNavigate();
+  const { setSnackBar } = useContext(SnackBarContext);
   const { data: loaDetail } = useFetchLOADetail(companyId, loaId);
   const createLOAMutation = useCreateLOAMutation();
   const updateLOAMutation = useUpdateLOAMutation();
@@ -77,7 +79,8 @@ export const LOASteps = ({
 
   const handleFinish = async () => {
     // Handle submitting LOA
-    const res = !loaId ? await createLOAMutation.mutateAsync({
+    const isLOACreation = !loaId;
+    const res = isLOACreation ? await createLOAMutation.mutateAsync({
       companyId,
       data: getValues(),
     }) : await updateLOAMutation.mutateAsync({
@@ -87,6 +90,12 @@ export const LOASteps = ({
     });
 
     if (res.status === 200 || res.status === 201) {
+      setSnackBar({
+        showSnackbar: true,
+        setShowSnackbar: () => true,
+        message: isLOACreation ? `LOA Added` : `LOA Updated`,
+        alertType: isLOACreation ? "success" : "info",
+      });
       onExit();
     } else {
       navigate(ERROR_ROUTES.UNEXPECTED);
