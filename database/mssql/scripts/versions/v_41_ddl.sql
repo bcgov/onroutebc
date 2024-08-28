@@ -33,8 +33,8 @@ CREATE TABLE [permit].[ORBC_LOA_DETAILS] (
    [LOA_NUMBER] [int] NOT NULL  DEFAULT (NEXT VALUE FOR permit.ORBC_LOA_NUMBER_SEQ),
    [COMPANY_ID] [int] NOT NULL,
    [REVISION] [tinyint] NULL,
-   [PREVIOUS_REVISION] [tinyint] NULL,
-   [ORIGINAL_ID] [tinyint] NOT NULL,
+   [PREVIOUS_LOA_ID] [tinyint] NULL,
+   [ORIGINAL_LOA_ID] [tinyint] NOT NULL,
    [START_DATE] [varchar](10) NOT NULL,
    [EXPIRY_DATE] [varchar](10),
    [DOCUMENT_ID] [bigint],
@@ -132,8 +132,8 @@ ALTER TABLE [permit].[ORBC_LOA_DETAILS] WITH CHECK ADD  CONSTRAINT DK_ORBC_LOA_D
 GO
 
 ALTER TABLE [permit].[ORBC_LOA_DETAILS] ADD  CONSTRAINT [DF_ORBC_LOA_DETAILS_REVISION]  DEFAULT ((0)) FOR [REVISION]
-ALTER TABLE [permit].[ORBC_LOA_DETAILS] ADD  CONSTRAINT [DF_ORBC_LOA_DETAILS_PREVIOUS_REVISION]  DEFAULT ((0)) FOR [PREVIOUS_REVISION]
-ALTER TABLE [permit].[ORBC_LOA_DETAILS] ADD  CONSTRAINT [DF_ORBC_LOA_DETAILS_ORIGINAL_ID]  DEFAULT ((0)) FOR [ORIGINAL_ID]
+ALTER TABLE [permit].[ORBC_LOA_DETAILS] ADD  CONSTRAINT [DF_ORBC_LOA_DETAILS_PREVIOUS_REVISION]  DEFAULT ((0)) FOR [PREVIOUS_LOA_ID]
+ALTER TABLE [permit].[ORBC_LOA_DETAILS] ADD  CONSTRAINT [DF_ORBC_LOA_DETAILS_ORIGINAL_ID]  DEFAULT ((0)) FOR [ORIGINAL_LOA_ID]
 
 ALTER TABLE [permit].[ORBC_LOA_DETAILS]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_LOA_DETAILS_COMPANY] FOREIGN KEY([COMPANY_ID])
 REFERENCES [dbo].[ORBC_COMPANY] ([COMPANY_ID])
@@ -192,6 +192,9 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'End date of an
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to the orbc_document table,identifying the document/PDF that references the Document Management System (DMS)' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_DETAILS', @level2type=N'COLUMN',@level2name=N'DOCUMENT_ID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Additional notes or comment for LoA' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_DETAILS', @level2type=N'COLUMN',@level2name=N'COMMENT'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Deletion status of LOA' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_DETAILS', @level2type=N'COLUMN',@level2name=N'IS_ACTIVE'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'LoA revision' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_DETAILS', @level2type=N'COLUMN',@level2name=N'REVISION'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'previous LoA id' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_DETAILS', @level2type=N'COLUMN',@level2name=N'PREVIOUS_LOA_ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Original LoA id' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_DETAILS', @level2type=N'COLUMN',@level2name=N'ORIGINAL_LOA_ID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Surrogate primary key for the LoA Permit Type table' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_PERMIT_TYPE_DETAILS', @level2type=N'COLUMN',@level2name=N'LOA_PERMIT_TYPE_ID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to LoA details table' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_PERMIT_TYPE_DETAILS', @level2type=N'COLUMN',@level2name=N'LOA_ID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to permit type table, identifying the types of permit an LoA is applicable for' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_LOA_PERMIT_TYPE_DETAILS', @level2type=N'COLUMN',@level2name=N'PERMIT_TYPE_ID'

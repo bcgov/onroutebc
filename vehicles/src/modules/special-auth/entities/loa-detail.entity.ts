@@ -78,11 +78,11 @@ export class LoaDetail extends Base {
   revision: number;
 
   @AutoMap()
-  @Column({ type: 'integer', name: 'PREVIOUS_REVISION', nullable: true })
-  previousRevision: number;
+  @Column({ type: 'integer', name: 'PREVIOUS_LOA_ID', nullable: true })
+  previousLoaId: number;
 
   @AutoMap()
-  @Column({ type: 'int', name: 'ORIGINAL_ID' })
+  @Column({ type: 'int', name: 'ORIGINAL_LOA_ID' })
   originalLoaId: number;
 
   @AutoMap(() => LoaPermitType)
