@@ -77,7 +77,7 @@ export class LoaController {
     type: ReadLoaDto,
   })
   @ApiConsumes('multipart/form-data')
-  @Permissions(Claim.WRITE_LOA)
+  @Permissions({ claim: Claim.WRITE_LOA })
   @Post()
   @UseInterceptors(FileInterceptor('file'), JsonReqBodyInterceptor)
   async create(
@@ -124,7 +124,7 @@ export class LoaController {
     summary: 'Get LoA by Id.',
     description: 'Returns the LoA object from the database.',
   })
-  @Permissions(Claim.READ_LOA)
+  @Permissions({ claim: Claim.READ_LOA })
   @Get('/:loaId')
   async getById(
     @Req() request: Request,
@@ -140,7 +140,7 @@ export class LoaController {
     description: 'Updates and returns the LoA object from the database.',
   })
   @ApiConsumes('multipart/form-data')
-  @Permissions(Claim.WRITE_LOA)
+  @Permissions({ claim: Claim.WRITE_LOA })
   @Put('/:loaId')
   @UseInterceptors(FileInterceptor('file'), JsonReqBodyInterceptor)
   async update(
@@ -173,7 +173,7 @@ export class LoaController {
     summary: 'Delete LoA by Id.',
     description: 'Deletes the LoA object from the database.',
   })
-  @Permissions(Claim.WRITE_LOA)
+  @Permissions({ claim: Claim.WRITE_LOA })
   @Delete('/:loaId')
   async delete(
     @Req() request: Request,
@@ -188,7 +188,7 @@ export class LoaController {
     summary: 'Get LoA Document',
     description: 'Retrieve the LoA document from the database.',
   })
-  @Permissions(Claim.READ_LOA)
+  @Permissions({ claim: Claim.READ_LOA })
   @Get('/:loaId/documents')
   async getLoaDocument(
     @Req() request: Request,
@@ -214,7 +214,7 @@ export class LoaController {
     summary: 'Delete LoA Document',
     description: 'Deletes the LoA document from the database.',
   })
-  @Permissions(Claim.WRITE_LOA)
+  @Permissions({ claim: Claim.WRITE_LOA })
   @Delete('/:loaId/documents')
   async deleteLoaDocument(
     @Req() request: Request,
