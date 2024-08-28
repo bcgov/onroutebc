@@ -12,6 +12,7 @@ import { LoaDetail } from '../entities/loa-detail.entity';
 import { ReadLoaDto } from '../dto/response/read-loa.dto';
 import { LoaPermitType } from '../entities/loa-permit-type-details.entity';
 import { LoaVehicle } from '../entities/loa-vehicles.entity';
+import * as dayjs from 'dayjs';
 
 @Injectable()
 export class LoaProfile extends AutomapperProfile {
@@ -208,6 +209,19 @@ export class LoaProfile extends AutomapperProfile {
           (d) => d.companyId,
           mapFrom((s) => {
             return s.company?.companyId;
+          }),
+        ),
+        forMember(
+          (d) => d.startDate,
+          mapFrom((s) => {
+            return dayjs(s.startDate).format('YYYY-MM-DD');
+          }),
+        ),
+        forMember(
+          (d) => d.expiryDate,
+          mapFrom((s) => {
+            if(s.expiryDate)
+            return dayjs(s.expiryDate).format('YYYY-MM-DD');
           }),
         ),
         forMember(
