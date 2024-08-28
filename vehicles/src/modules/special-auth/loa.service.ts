@@ -81,18 +81,21 @@ export class LoaService {
     );
     const savedLoaDetail = await this.loaDetailRepository.save(loa);
     await this.loaDetailRepository
-    .createQueryBuilder()
-    .update()
-    .set({
-      originalLoaId: savedLoaDetail.loaId,
-      updatedUser: currentUser.userName,
-      updatedDateTime: new Date(),
-      updatedUserDirectory: currentUser.orbcUserDirectory,
-      updatedUserGuid: currentUser.userGUID,
-    })
-    .where('loaId = :loaId', { loaId: savedLoaDetail.loaId })
-    .execute();
-    const refreshedLoaDetailsEntity = await this.findOne(companyId,savedLoaDetail.loaId)
+      .createQueryBuilder()
+      .update()
+      .set({
+        originalLoaId: savedLoaDetail.loaId,
+        updatedUser: currentUser.userName,
+        updatedDateTime: new Date(),
+        updatedUserDirectory: currentUser.orbcUserDirectory,
+        updatedUserGuid: currentUser.userGUID,
+      })
+      .where('loaId = :loaId', { loaId: savedLoaDetail.loaId })
+      .execute();
+    const refreshedLoaDetailsEntity = await this.findOne(
+      companyId,
+      savedLoaDetail.loaId,
+    );
     const readLoaDto = await this.classMapper.mapAsync(
       refreshedLoaDetailsEntity,
       LoaDetail,
@@ -310,7 +313,7 @@ export class LoaService {
             companyId: companyId,
             documentId: documentId,
             isActive: true,
-            revision: existingLoaDetail.revision+1,
+            revision: existingLoaDetail.revision + 1,
             previousRevision: existingLoaDetail.revision,
             originalLoaId: existingLoaDetail.originalLoaId,
             userName: currentUser.userName,
