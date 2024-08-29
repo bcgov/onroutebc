@@ -57,12 +57,12 @@ export const AppRoutes = () => {
         path={routes.ERROR_ROUTES.ISSUANCE}
         element={<IssuanceErrorPage />}
       />
-      <Route path="*" element={<UniversalUnexpected />} />
       <Route
         path={routes.ERROR_ROUTES.DOCUMENT_UNAVAILABLE}
         element={<DocumentUnavailable />}
       />
-
+      <Route path="*" element={<UniversalUnexpected />} />
+      
       {/* Wizard Routes */}
 
       {/* Wizard Routes only require that a user
