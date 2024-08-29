@@ -66,7 +66,7 @@
     "dotenv": "^16.4.5",
     "helmet": "^7.1.0",
     "jwks-rsa": "^3.1.0",
-    "mssql": "^10.0.4",
+    "mssql": "^11.0.0",
     "nest-winston": "^1.10.0",
     "nestjs-cls": "^4.4.1",
     "passport": "^0.7.0",
@@ -76,7 +76,7 @@
     "swagger-ui-express": "^5.0.1",
     "typeorm": "^0.3.20",
     "typescript-eslint": "^7.18.0",
-    "uuid": "^9.0.1",
+    "uuid": "^10.0.0",
     "winston": "^3.14.2"
   },
   "devDependencies": {
@@ -102,7 +102,7 @@
     "jest-sonar-reporter": "^2.0.0",
     "lint-staged": "^15.2.9",
     "prettier": "^3.3.3",
-    "rimraf": "^5.0.10",
+    "rimraf": "^6.0.0",
     "source-map-support": "^0.5.21",
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.5",

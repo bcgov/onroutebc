@@ -12,7 +12,7 @@
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@mui/icons-material": "^5.16.7",
     "@mui/material": "^5.16.7",
-    "@mui/x-date-pickers": "^6.20.2",
+    "@mui/x-date-pickers": "^7.0.0",
     "@tanstack/react-query": "^5.52.2",
     "@uidotdev/usehooks": "^2.4.1",
     "axios": "^1.7.5",
@@ -29,7 +29,7 @@
     "react-oidc-context": "^3.1.0",
     "react-router-dom": "^6.26.1",
     "sass": "^1.77.8",
-    "uuid": "^9.0.1",
+    "uuid": "^10.0.0",
     "validator": "^13.12.0"
   },
   "scripts": {
@@ -58,7 +58,7 @@
     "@hookform/devtools": "^4.3.1",
     "@mswjs/data": "^0.16.1",
     "@testing-library/jest-dom": "^6.5.0",
-    "@testing-library/react": "^14.3.1",
+    "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.5.2",
     "@types/material-ui": "^0.21.17",
     "@types/node": "^20.16.2",
@@ -69,7 +69,7 @@
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "@vitejs/plugin-react-swc": "^3.7.0",
-    "@vitest/coverage-v8": "^1.6.0",
+    "@vitest/coverage-v8": "^2.0.0",
     "autoprefixer": "^10.4.20",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
@@ -85,8 +85,8 @@
     "vite": "^5.4.2",
     "vite-plugin-eslint": "^1.8.1",
     "vite-plugin-svgr": "^4.2.0",
-    "vite-tsconfig-paths": "^4.3.2",
-    "vitest": "^1.6.0",
+    "vite-tsconfig-paths": "^5.0.0",
+    "vitest": "^2.0.0",
     "vitest-canvas-mock": "^0.3.3"
   },
   "overrides": {
