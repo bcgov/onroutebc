@@ -1,0 +1,62 @@
+---
+name: loadtest_frontend
+
+on:
+  workflow_dispatch:
+    inputs:
+      ### Required
+      num_threads:
+        description: 'Number of concurrent threads (USERS) for each test in sequence'
+        default: 2
+        required: true
+        type: integer
+      release:
+        description: 'PR number, test or prod.'
+        default: test
+        required: true
+        type: string
+      bearer_token:
+        description: "The bearer token pertaining to the user running the tests"
+        required: true
+        type: string
+
+jobs:
+  vars:
+    name: Set Variables
+    outputs:
+      dops_api_url: ${{ steps.vars.outputs.dops_api_url }}
+      frontend_api_url: ${{ steps.vars.outputs.frontend_api_url }}
+      vehicles_api_url: ${{ steps.vars.outputs.vehicles_api_url }}
+    runs-on: ubuntu-22.04
+    steps:
+      - name: vars
+        id: vars
+        run: |
+          echo "dops_api_url=onroutebc-${{inputs.environment}}-dops.apps.silver.devops.gov.bc.ca" >> GITHUB_ENV
+          echo "frontend_api_url=onroutebc-${{inputs.environment}}-frontend.apps.silver.devops.gov.bc.ca" >> GITHUB_ENV
+          echo "vehicles_api_url=onroutebc-${{inputs.environment}}-vehicles.apps.silver.devops.gov.bc.ca" >> GITHUB_ENV
+  
+  orbc_load_test_plan_frontend:
+    name: orbc_load_test_plan_frontend
+    environment: ${{ inputs.environment }}
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: rbhadti94/apache-jmeter-action@v0.5.0
+        with:
+          testFilePath: loadtests/frontend/orbc_load_test_plan_frontend.jmx
+          outputReportsFolder: results_frontend
+          args: |
+            --loglevel INFO 
+            --jmeterlogconf=log.conf
+            -JBEARER_TOKEN=${{inputs.bearer_token}}
+            -JNUM_THREADS=${{inputs.num_threads}}
+            -JFRONTEND_API_URL=${{vars.frontend_api_url}}
+            -JDOPS_API_URL=${{vars.dops_api_url}}
+            -JVEHICLES_API_URL=${{vars.vehicles_api_url}}
+            -JRESULTS_DIR=results_frontend
+      - uses: actions/upload-artifact@v4.3.6
+        with:
+          name: jmeter-test-results-frontend
+          path: results_frontend 
