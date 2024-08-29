@@ -7,10 +7,10 @@ export const DocumentUnavailable = () => {
       errorTitle="Your document is on the way"
       msgNode={
         <div className="document-unavailable">
-        Your document is being created.
-        <br />
-        Please check again later.
-    </div>
+          Your document is being created.
+          <br />
+          Please check again later.
+        </div>
       }
     />
   );

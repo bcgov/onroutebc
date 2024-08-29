@@ -8,13 +8,11 @@ import { CustomActionLink } from "../../../../common/components/links/CustomActi
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { getPermitTypeName } from "../../types/PermitType";
 import { Box, Tooltip } from "@mui/material";
-import { useNavigate } from 'react-router-dom';
-import { ERROR_ROUTES } from "../../../../routes/constants";
 
 /**
  * The column definition for Permits.
  */
-export const PermitsColumnDefinition: MRT_ColumnDef<PermitListItem>[] = [
+export const PermitsColumnDefinition = (onDocumentUnavailable: () => void): MRT_ColumnDef<PermitListItem>[] => [
   {
     accessorKey: "permitNumber",
     id: "permitNumber",
@@ -23,13 +21,12 @@ export const PermitsColumnDefinition: MRT_ColumnDef<PermitListItem>[] = [
     size: 500,
     accessorFn: (row) => row.permitNumber,
     Cell: (props: { row: any; cell: any }) => {
-      const navigate = useNavigate();
       return (
         <>
           <CustomActionLink
             onClick={() => viewPermitPdf(
               props.row.original.permitId, 
-              () => navigate(ERROR_ROUTES.DOCUMENT_UNAVAILABLE))}
+              () => onDocumentUnavailable())}
           >
             {props.cell.getValue()}
           </CustomActionLink>
@@ -91,6 +88,3 @@ export const PermitsColumnDefinition: MRT_ColumnDef<PermitListItem>[] = [
     enableSorting: true,
   },
 ];
-
-export const PermitsNotFoundColumnDefinition: MRT_ColumnDef<PermitListItem>[] =
-  PermitsColumnDefinition;

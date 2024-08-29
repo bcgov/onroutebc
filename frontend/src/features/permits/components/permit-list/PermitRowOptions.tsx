@@ -1,7 +1,5 @@
 import { OnRouteBCTableRowActions } from "../../../../common/components/table/OnRouteBCTableRowActions";
-import { ERROR_ROUTES } from "../../../../routes/constants";
 import { viewReceiptPdf } from "../../helpers/permitPDFHelper";
-import { useNavigate } from 'react-router-dom';
 
 const PERMIT_ACTION_OPTION_TYPES = {
   VIEW_RECEIPT: "viewReceipt",
@@ -35,18 +33,19 @@ const getOptions = (isExpired: boolean) => {
 export const PermitRowOptions = ({
   isExpired,
   permitId,
+  onDocumentUnavailable,
 }: {
   isExpired: boolean;
   permitId: string;
+  onDocumentUnavailable: () => void;
 }) => {
-  const navigate = useNavigate();
   /**
    * Action handler upon a select event.
    * @param selectedOption The option that was selected.
    */
   const onSelectOptionCallback = (selectedOption: string) => {
     if (selectedOption === PERMIT_ACTION_OPTION_TYPES.VIEW_RECEIPT) {
-      viewReceiptPdf(permitId, () => navigate(ERROR_ROUTES.DOCUMENT_UNAVAILABLE));
+      viewReceiptPdf(permitId, () => onDocumentUnavailable());
     }
   };
 
