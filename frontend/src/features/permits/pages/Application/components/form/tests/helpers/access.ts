@@ -26,8 +26,8 @@ export const selectDurationOption = async (
   await user.click(option);
 };
 
-export const expiryDateElement = async (expiryDateText: Matcher) => {
-  return await screen.findByText(expiryDateText);
+export const expiryDateElement = async () => {
+  return await screen.findByTestId("permit-expiry-date");
 };
 
 export const openStartDateSelect = async (user: UserEvent) => {
