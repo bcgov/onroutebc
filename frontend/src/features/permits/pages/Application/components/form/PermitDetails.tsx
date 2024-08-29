@@ -16,9 +16,12 @@ import { BANNER_MESSAGES } from "../../../../../../common/constants/bannerMessag
 import { getExpiryDate } from "../../../../helpers/permitState";
 import { calculateFeeByDuration } from "../../../../helpers/feeSummary";
 import { PermitType } from "../../../../types/PermitType";
-import { Nullable } from "../../../../../../common/types/common";
-import { PermitCommodity } from "../../../../types/PermitCommodity";
-import { CustomDatePicker, PastStartDateStatus } from "../../../../../../common/components/form/subFormComponents/CustomDatePicker";
+import { PermitCondition } from "../../../../types/PermitCondition";
+import {
+  CustomDatePicker,
+  PastStartDateStatus,
+} from "../../../../../../common/components/form/subFormComponents/CustomDatePicker";
+
 import {
   PPC_EMAIL,
   TOLL_FREE_NUMBER,
@@ -33,18 +36,18 @@ export const PermitDetails = ({
   feature,
   defaultStartDate,
   defaultDuration,
-  commoditiesInPermit,
-  applicationNumber,
+  conditionsInPermit,
   durationOptions,
   disableStartDate,
   permitType,
   pastStartDateStatus,
+  includeLcvCondition,
+  onSetConditions,
 }: {
   feature: string;
   defaultStartDate: Dayjs;
   defaultDuration: number;
-  commoditiesInPermit: PermitCommodity[];
-  applicationNumber?: Nullable<string>;
+  conditionsInPermit: PermitCondition[];
   durationOptions: {
     value: number;
     label: string;
@@ -52,8 +55,10 @@ export const PermitDetails = ({
   disableStartDate: boolean;
   permitType: PermitType;
   pastStartDateStatus: PastStartDateStatus;
+  includeLcvCondition?: boolean;
+  onSetConditions: (conditions: PermitCondition[]) => void;
 }) => {
-  const { watch, register, setValue } = useFormContext();
+  const { watch, setValue } = useFormContext();
 
   // watch() is subscribed to fields, and will always have the latest values from the fields
   // thus, no need to use this in useState and useEffect
@@ -76,7 +81,6 @@ export const PermitDetails = ({
     setValue("permitData.permitDuration", defaultDuration);
   }, [defaultStartDate, defaultDuration]);
 
-  register("permitData.expiryDate");
   useEffect(() => {
     // use setValue to explicitly set the invisible form field for expiry date
     // this needs useEffect as this form field update process is manual, and needs to happen whenever startDate and duration changes
@@ -127,16 +131,16 @@ export const PermitDetails = ({
 
         <PermitExpiryDateBanner expiryDate={formattedExpiryDate} />
 
-        <Box className="permit-details__commodities">
-          <Typography variant="h3" className="commodities-title">
+        <Box className="permit-details__conditions">
+          <Typography variant="h3" className="conditions-title">
             Select the commodities below and their respective CVSE forms.
           </Typography>
 
           <InfoBcGovBanner
             msg={BANNER_MESSAGES.POLICY_REMINDER}
             additionalInfo={
-              <div className="commodities-info">
-                <div className="commodities-info__link">
+              <div className="conditions-info">
+                <div className="conditions-info__link">
                   <CustomExternalLink
                     className="procedures-link"
                     href={ONROUTE_WEBPAGE_LINKS.COMMERCIAL_TRANSPORT_PROCEDURES}
@@ -150,7 +154,7 @@ export const PermitDetails = ({
                   </CustomExternalLink>
                 </div>
 
-                <div className="commodities-info__contact-methods">
+                <div className="conditions-info__contact-methods">
                   For further assistance please contact the Provincial Permit
                   Centre at{" "}
                   <span className="contact-info contact-info--toll-free">
@@ -166,11 +170,10 @@ export const PermitDetails = ({
           />
 
           <ConditionsTable
-            commoditiesInPermit={commoditiesInPermit}
-            applicationWasCreated={
-              applicationNumber != null && applicationNumber !== ""
-            }
+            conditionsInPermit={conditionsInPermit}
             permitType={permitType}
+            includeLcvCondition={includeLcvCondition}
+            onSetConditions={onSetConditions}
           />
         </Box>
       </Box>

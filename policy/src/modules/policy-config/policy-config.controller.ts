@@ -81,7 +81,7 @@ export class PolicyConfigController {
     type: ReadPolicyConfigDto,
     isArray: true,
   })
-  @Permissions(Claim.READ_POLICY_CONFIG)
+  @Permissions({ claim: Claim.READ_POLICY_CONFIG })
   @Get('/draft')
   async findAllDraft(): Promise<ReadPolicyConfigDto[]> {
     return await this.policyConfigService.findAllDraft();
@@ -103,7 +103,7 @@ export class PolicyConfigController {
     description: 'The retrieved draft policy configuration.',
     type: ReadPolicyConfigDto,
   })
-  @Permissions(Claim.READ_POLICY_CONFIG)
+  @Permissions({ claim: Claim.READ_POLICY_CONFIG })
   @Get(':policyConfigId')
   async findOne(
     @Param() { policyConfigId }: PolicyConfigIdPathParamDto,

@@ -12,7 +12,7 @@ import {
 import "./SelectVehicleDropdown.scss";
 import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";
 import { sortVehicles } from "../../../../../../helpers/sorter";
-import { removeIneligibleVehicles } from "../../../../../../helpers/removeIneligibleVehicles";
+import { filterVehicles } from "../../../../../../helpers/permitVehicles";
 import { VEHICLE_CHOOSE_FROM } from "../../../../../../constants/constants";
 import { EMPTY_VEHICLE_UNIT_NUMBER } from "../../../../../../../../common/constants/constants";
 import { Nullable } from "../../../../../../../../common/types/common";
@@ -42,9 +42,7 @@ const GroupItems = styled("ul")({
 });
 
 /**
- * An MUI auto complete component used to search and select a vehicle in the application form.
- *
- * From https://mui.com/material-ui/react-autocomplete/#grouped
+ * Autocomplete component used to search and select a vehicle in the application form.
  */
 export const SelectVehicleDropdown = ({
   chooseFrom,
@@ -67,9 +65,7 @@ export const SelectVehicleDropdown = ({
 }) => {
   const sortedVehicles = sortVehicles(chooseFrom, vehicleOptions);
 
-  // Temporary method to remove ineligible vehicles given policies for the permit type.
-  // Will be replaced by backend endpoint with optional query parameter
-  const eligibleVehicles = removeIneligibleVehicles(
+  const eligibleVehicles = filterVehicles(
     sortedVehicles,
     ineligiblePowerUnitSubtypes,
     ineligibleTrailerSubtypes,
