@@ -66,6 +66,7 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
 
   const { data: specialAuthorizations } = useFetchSpecialAuthorizations(companyId);
   const isLcvDesignated = Boolean(specialAuthorizations?.isLcvAllowed);
+  // const isNoFeePermitType = Boolean(specialAuthorizations?.noFeeType);
   
   // Use a custom hook that performs the following whenever page is rendered (or when application context is updated/changed):
   // 1. Get all data needed to generate default values for the application form (from application context, company, user details)

@@ -155,6 +155,28 @@ export const getExpiryDateOrDefault = (
   );
 };
 
+export const applyNoFeeToApplicationData = <T extends Nullable<ApplicationFormData | Application>>(
+  applicationData: T,
+  isNoFeePermitType: boolean,
+): T => {
+  // If application doesn't exist, or if application is not no-fee permit type
+  // then there's no need to apply no-fee to the application at all
+  if (!applicationData) return applicationData;
+
+  return {
+    ...applicationData,
+    permitData: {
+      ...applicationData.permitData,
+      feeSummary: !isNoFeePermitType
+        ? `${calculateFeeByDuration(
+          applicationData.permitType,
+          applicationData.permitData.permitDuration,
+        )}`
+        : "0",
+    },
+  };
+};
+
 /**
  * Applying LCV designation to application data.
  * @param applicationData Existing application data
