@@ -19,6 +19,7 @@ import { FileDownloadModes } from 'src/common/enum/file-download-modes.enum';
 import { Response } from 'express';
 import { Nullable } from '../../common/types/common';
 import { Company } from '../company-user-management/company/entities/company.entity';
+import { UpdateLoaDto } from './dto/request/update-loa.dto';
 
 @Injectable()
 export class LoaService {
@@ -69,8 +70,6 @@ export class LoaService {
           companyId: companyId,
           documentId: readFileDto.documentId,
           isActive: true,
-          previousLoaId: undefined,
-          originalLoaId: undefined,
           userName: currentUser.userName,
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
@@ -263,7 +262,7 @@ export class LoaService {
     currentUser: IUserJWT,
     companyId: number,
     loaId: number,
-    createLoaDto: CreateLoaDto,
+    updateLoaDto: UpdateLoaDto,
     file?: Express.Multer.File,
   ): Promise<ReadLoaDto> {
     let savedLoaDetail: LoaDetail;
@@ -304,7 +303,7 @@ export class LoaService {
       });
       await queryRunner.manager.save(updatedLoaDetail);
       const createLoaDetail = await this.classMapper.mapAsync(
-        createLoaDto,
+        updateLoaDto,
         CreateLoaDto,
         LoaDetail,
         {

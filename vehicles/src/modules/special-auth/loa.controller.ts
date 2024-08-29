@@ -43,6 +43,7 @@ import { Permissions } from 'src/common/decorator/permissions.decorator';
 import { Claim } from 'src/common/enum/claims.enum';
 import { ReadLoaDto } from './dto/response/read-loa.dto';
 import { GetLoaQueryParamsDto } from './dto/request/queryParam/get-loa.query-params.dto';
+import { UpdateLoaFileDto } from './dto/request/update-loa-file.dto';
 
 @ApiBearerAuth()
 @ApiTags('Letter of Authorization (LoA)')
@@ -156,14 +157,14 @@ export class LoaController {
       }),
     )
     file: Express.Multer.File,
-    @Body() createLoaFileDto: CreateLoaFileDto,
+    @Body() updateLoaFileDto: UpdateLoaFileDto,
   ): Promise<ReadLoaDto> {
     const currentUser = request.user as IUserJWT;
     const loa = await this.loaService.updateLoa(
       currentUser,
       companyId,
       loaId,
-      createLoaFileDto?.body,
+      updateLoaFileDto?.body,
       file,
     );
     return loa;
