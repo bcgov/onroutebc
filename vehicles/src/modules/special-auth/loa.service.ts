@@ -304,7 +304,7 @@ export class LoaService {
       await queryRunner.manager.save(updatedLoaDetail);
       const createLoaDetail = await this.classMapper.mapAsync(
         updateLoaDto,
-        CreateLoaDto,
+        UpdateLoaDto,
         LoaDetail,
         {
           extraArgs: () => ({
