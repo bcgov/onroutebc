@@ -19,7 +19,7 @@ import { Nullable } from "../../../../../../common/types/common";
 import { PermitContactDetails } from "../../../../types/PermitContactDetails";
 import { PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
 import { Application } from "../../../../types/application";
-import { PermitCommodity } from "../../../../types/PermitCommodity";
+import { PermitCondition } from "../../../../types/PermitCondition";
 
 interface PermitReviewProps {
   permitType?: Nullable<PermitType>;
@@ -32,8 +32,8 @@ interface PermitReviewProps {
   permitStartDate?: Nullable<Dayjs>;
   permitDuration?: Nullable<number>;
   permitExpiryDate?: Nullable<Dayjs>;
-  permitConditions?: Nullable<PermitCommodity[]>;
-  continueBtnText: string;
+  permitConditions?: Nullable<PermitCondition[]>;
+  continueBtnText?: string;
   isAmendAction: boolean;
   children?: React.ReactNode;
   hasAttemptedCheckboxes: boolean;
@@ -44,7 +44,7 @@ interface PermitReviewProps {
   vehicleDetails?: Nullable<PermitVehicleDetails>;
   vehicleWasSaved?: Nullable<boolean>;
   onEdit: () => void;
-  onContinue: () => Promise<void>;
+  onContinue?: () => Promise<void>;
   onAddToCart?: () => Promise<void>;
   showChangedFields?: boolean;
   oldFields?: Nullable<Partial<Application>>;
@@ -115,10 +115,10 @@ export const PermitReview = (props: PermitReviewProps) => {
 
         <ReviewActions
           onEdit={props.onEdit}
+          continueBtnText={props.continueBtnText}
           onContinue={props.onContinue}
           hasToCartButton={!props.isAmendAction}
           onAddToCart={props.onAddToCart}
-          continueBtnText={props.continueBtnText}
         />
       </Box>
     </Box>

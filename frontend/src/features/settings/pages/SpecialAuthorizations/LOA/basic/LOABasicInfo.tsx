@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Dayjs } from "dayjs";
 import { Checkbox } from "@mui/material";
 import {
@@ -15,6 +16,12 @@ import { Nullable, Optional } from "../../../../../../common/types/common";
 import { UploadedFile } from "../../../../components/SpecialAuthorizations/LOA/upload/UploadedFile";
 import { UploadInput } from "../../../../components/SpecialAuthorizations/LOA/upload/UploadInput";
 import { applyWhenNotNullable } from "../../../../../../common/helpers/util";
+import { DeleteConfirmationDialog } from "../../../../../../common/components/dialog/DeleteConfirmationDialog";
+import {
+  CustomDatePicker,
+  PAST_START_DATE_STATUSES,
+} from "../../../../../../common/components/form/subFormComponents/CustomDatePicker";
+
 import {
   expiryMustBeAfterStart,
   invalidUploadFormat,
@@ -23,7 +30,6 @@ import {
   selectionRequired,
   uploadSizeExceeded,
 } from "../../../../../../common/helpers/validationMessages";
-import { CustomDatePicker, PAST_START_DATE_STATUSES } from "../../../../../../common/components/form/subFormComponents/CustomDatePicker";
 
 const FEATURE = "loa";
 
@@ -106,6 +112,8 @@ export const LOABasicInfo = ({
 }: {
   onRemoveDocument: () => Promise<boolean>;
 }) => {
+  const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
+
   const {
     control,
     formState: { errors },
@@ -125,6 +133,10 @@ export const LOABasicInfo = ({
     uploadFile,
     "",
   );
+
+  const handleCancelDelete = () => {
+    setShowDeleteDialog(false);
+  };
 
   const selectPermitType = (
     permitType: keyof FieldPathValue<LOAFormData, "permitTypes">,
@@ -169,6 +181,7 @@ export const LOABasicInfo = ({
       setValue("uploadFile", null);
       clearErrors("uploadFile");
     }
+    setShowDeleteDialog(false);
   };
 
   return (
@@ -328,7 +341,7 @@ export const LOABasicInfo = ({
             {fileExists ? (
               <UploadedFile
                 fileName={fileName}
-                onDelete={deleteFile}
+                onDelete={() => setShowDeleteDialog(true)}
               />
             ) : (
               <UploadInput
@@ -363,6 +376,16 @@ export const LOABasicInfo = ({
           className="loa-basic-info__notes"
         />
       </div>
+
+      {showDeleteDialog ? (
+        <DeleteConfirmationDialog
+          showDialog={showDeleteDialog}
+          onCancel={handleCancelDelete}
+          onDelete={deleteFile}
+          itemToDelete="item"
+          confirmationMsg={"Are you sure you want to delete this?"}
+        />
+      ) : null}
     </div>
   );
 };
