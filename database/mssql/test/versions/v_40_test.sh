@@ -30,8 +30,15 @@ else
 fi
 
 TEST_40_4_RESULT=$(/opt/mssql-tools/bin/sqlcmd -U ${USER} -P "${PASS}" -S ${SERVER} -v DB_NAME=${DATABASE} -h -1 -i ${TESTS_DIR}/v_40_4_test.sql | xargs)
-if [[ $TEST_40_4_RESULT -eq 1 ]]; then
-    echo "Test 40.4 passed: added constraints to No fee type table"
+if [[ "$TEST_40_4_RESULT" != "NULL" ]]; then
+    echo "Test 40.4 passed: added foreign key constraints to No fee type table $TEST_40_4_RESULT"
 else
-    echo "******** Test 40.4 failed: Could not add constraints to No fee type table"
+    echo "******** Test 40.4 failed: Could not add foreign constraints to No fee type table $TEST_40_4_RESULT"
+fi
+
+TEST_40_5_RESULT=$(/opt/mssql-tools/bin/sqlcmd -U ${USER} -P "${PASS}" -S ${SERVER} -v DB_NAME=${DATABASE} -h -1 -i ${TESTS_DIR}/v_40_5_test.sql | xargs)
+if [[ "$TEST_40_5_RESULT" != "NULL"  ]]; then
+    echo "Test 40.5 passed: added primary key constraints to No fee type table $TEST_40_5_RESULT"
+else
+    echo "******** Test 40.5 failed: Could not add primary key constraints to No fee type table $TEST_40_5_RESULT"
 fi

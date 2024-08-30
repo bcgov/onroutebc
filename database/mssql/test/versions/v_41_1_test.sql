@@ -1,8 +1,4 @@
+-- Test that the PREVIOUS_LOA_ID column has been added correctly
 SET NOCOUNT ON
-IF OBJECT_ID('[$(DB_NAME)].[permit].[ORBC_LOA_PERMIT_TYPE_DETAILS]', 'U') IS NOT NULL 
-AND OBJECT_ID('[$(DB_NAME)].[permit].[ORBC_LOA_VEHICLES]', 'U') IS NOT NULL 
-AND OBJECT_ID('[$(DB_NAME)].[permit].[ORBC_LOA_DETAILS]', 'U') IS NOT NULL 
-AND OBJECT_ID ('[$(DB_NAME)].[permit].[ORBC_LOA_NUMBER_SEQ]', 'SO') IS NOT NULL
-    SELECT 1 
-ELSE
-    SELECT 0
+
+select COL_LENGTH('$(DB_NAME).[permit].[ORBC_LOA_DETAILS]', 'PREVIOUS_LOA_ID')
