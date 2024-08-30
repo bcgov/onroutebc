@@ -66,8 +66,6 @@ frontend:
             key: DEPLOY_ENVIRONMENT
           - name: FRONTEND_PR_NUM
             key: FRONTEND_PR_NUM
-          - name: TIMESTAMP
-            value: "{{ now | toString }}"
       ports:
         - name: http
           containerPort: 3000
@@ -200,8 +198,10 @@ vehicles:
           - name: PAYBC_REDIRECT
             key: PAYBC_REDIRECT
         fromValues:
+          - name: TIMESTAMP
+            value: "{{ now | toString }}"
           - name: VEHICLES_PR_NUM
-            value: '{{.Values.global.pr_num}}'
+            value: '{{.Values.global.pr_num }}'
       ports:
         - name: vehicles-api
           containerPort: 5000
