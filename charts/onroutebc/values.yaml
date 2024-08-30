@@ -66,6 +66,8 @@ frontend:
             key: DEPLOY_ENVIRONMENT
           - name: FRONTEND_PR_NUM
             key: FRONTEND_PR_NUM
+          - name: TIMESTAMP
+            value: "{{ now | toString }}"
       ports:
         - name: http
           containerPort: 3000
