@@ -204,7 +204,7 @@ vehicles:
           - name: TIMESTAMP
             value: "{{ now | toString }}"
           - name: VEHICLES_PR_NUM
-            value: '{{.Values.global.pr_num }}'
+            value: '{{.Values.global.pr_num}}'
       ports:
         - name: vehicles-api
           containerPort: 5000
