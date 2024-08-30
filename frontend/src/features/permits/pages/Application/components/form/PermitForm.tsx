@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { useFormContext } from "react-hook-form";
 import { useEffect } from "react";
 
@@ -17,6 +17,9 @@ import { isVehicleSubtypeLCV } from "../../../../../manageVehicles/helpers/vehic
 import { PermitCondition } from "../../../../types/PermitCondition";
 import { LCV_CONDITION } from "../../../../constants/constants";
 import { sortConditions } from "../../../../helpers/conditions";
+import { getStartOfDate } from "../../../../../../common/helpers/formatDate";
+import { getExpiryDate } from "../../../../helpers/permitState";
+import { calculateFeeByDuration } from "../../../../helpers/feeSummary";
 import {
   PowerUnit,
   Trailer,
@@ -58,6 +61,7 @@ export const PermitForm = (props: PermitFormProps) => {
   const permitType = watch("permitType");
   const applicationNumber = watch("applicationNumber");
   const permitStartDate = watch("permitData.startDate");
+  const startDate = getStartOfDate(permitStartDate);
   const permitDuration = watch("permitData.permitDuration");
   const permitConditions = watch("permitData.commodities");
   const vehicleFormData = watch("permitData.vehicleDetails");
@@ -83,9 +87,28 @@ export const PermitForm = (props: PermitFormProps) => {
     });
   };
 
+  const handleSetExpiryDate = (expiry: Dayjs) => {
+    setValue("permitData.expiryDate", dayjs(expiry));
+  };
+
+  const handleSetFee = (fee: string) => {
+    setValue("permitData.feeSummary", fee);
+  };
+
   const isLcvDesignated = props.isLcvDesignated;
   const ineligiblePowerUnitSubtypes = getIneligiblePowerUnitSubtypes(permitType)
     .filter(subtype => !isLcvDesignated || !isVehicleSubtypeLCV(subtype.typeCode));
+
+  // Permit expiry date === Permit start date + Permit duration - 1
+  const expiryDate = getExpiryDate(startDate, permitDuration);
+  useEffect(() => {
+    handleSetExpiryDate(expiryDate);
+  }, [expiryDate]);
+  
+  // Update fee summary whenever duration or permit type changes
+  useEffect(() => {
+    handleSetFee(`${calculateFeeByDuration(permitType, permitDuration)}`);
+  }, [permitDuration, permitType]);
 
   const vehicleSubtype = vehicleFormData.vehicleSubType;
   useEffect(() => {
@@ -128,8 +151,7 @@ export const PermitForm = (props: PermitFormProps) => {
 
         <PermitDetails
           feature={props.feature}
-          defaultStartDate={permitStartDate}
-          defaultDuration={permitDuration}
+          expiryDate={expiryDate}
           conditionsInPermit={permitConditions}
           durationOptions={props.durationOptions}
           disableStartDate={props.isAmendAction}
