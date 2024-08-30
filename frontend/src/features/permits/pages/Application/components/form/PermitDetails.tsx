@@ -1,7 +1,5 @@
 import { Box, MenuItem, Typography } from "@mui/material";
-import { useFormContext } from "react-hook-form";
 import dayjs, { Dayjs } from "dayjs";
-import { useEffect } from "react";
 
 import "./PermitDetails.scss";
 import { InfoBcGovBanner } from "../../../../../../common/components/banners/InfoBcGovBanner";
@@ -13,10 +11,9 @@ import { requiredMessage } from "../../../../../../common/helpers/validationMess
 import { ONROUTE_WEBPAGE_LINKS } from "../../../../../../routes/constants";
 import { CustomExternalLink } from "../../../../../../common/components/links/CustomExternalLink";
 import { BANNER_MESSAGES } from "../../../../../../common/constants/bannerMessages";
-import { getExpiryDate } from "../../../../helpers/permitState";
-import { calculateFeeByDuration } from "../../../../helpers/feeSummary";
 import { PermitType } from "../../../../types/PermitType";
 import { PermitCondition } from "../../../../types/PermitCondition";
+import { DATE_FORMATS } from "../../../../../../common/helpers/formatDate";
 import {
   CustomDatePicker,
   PastStartDateStatus,
@@ -27,15 +24,9 @@ import {
   TOLL_FREE_NUMBER,
 } from "../../../../../../common/constants/constants";
 
-import {
-  DATE_FORMATS,
-  getStartOfDate,
-} from "../../../../../../common/helpers/formatDate";
-
 export const PermitDetails = ({
   feature,
-  defaultStartDate,
-  defaultDuration,
+  expiryDate,
   conditionsInPermit,
   durationOptions,
   disableStartDate,
@@ -45,8 +36,7 @@ export const PermitDetails = ({
   onSetConditions,
 }: {
   feature: string;
-  defaultStartDate: Dayjs;
-  defaultDuration: number;
+  expiryDate: Dayjs;
   conditionsInPermit: PermitCondition[];
   durationOptions: {
     value: number;
@@ -58,36 +48,7 @@ export const PermitDetails = ({
   includeLcvCondition?: boolean;
   onSetConditions: (conditions: PermitCondition[]) => void;
 }) => {
-  const { watch, setValue } = useFormContext();
-
-  // watch() is subscribed to fields, and will always have the latest values from the fields
-  // thus, no need to use this in useState and useEffect
-  const rawStartDate = watch("permitData.startDate");
-  const duration = watch("permitData.permitDuration");
-
-  // Permit expiry date === Permit start date + Permit duration - 1
-  const startDate = getStartOfDate(rawStartDate);
-  const expiryDate = getExpiryDate(startDate, duration);
-
-  // Formatted expiry date is just a derived value, and always reflects latest value of expiry date
-  // no need to use useState nor place inside useEffect
   const formattedExpiryDate = dayjs(expiryDate).format(DATE_FORMATS.SHORT);
-
-  useEffect(() => {
-    // We do need to check if the root form default values (which are from ApplicationContext) are changed,
-    // as watch() doesn't capture when defaultValues are changed
-    // This will explicitly update the startDate and permitDuration fields, and in turn trigger the next useEffect
-    setValue("permitData.startDate", dayjs(defaultStartDate));
-    setValue("permitData.permitDuration", defaultDuration);
-  }, [defaultStartDate, defaultDuration]);
-
-  useEffect(() => {
-    // use setValue to explicitly set the invisible form field for expiry date
-    // this needs useEffect as this form field update process is manual, and needs to happen whenever startDate and duration changes
-    // also, the form field component is accepting a dayJS object
-    setValue("permitData.expiryDate", dayjs(expiryDate));
-    setValue("permitData.feeSummary", `${calculateFeeByDuration(permitType, duration)}`);
-  }, [startDate, duration, permitType]);
 
   return (
     <Box className="permit-details">
