@@ -58,11 +58,16 @@ describe("Permit Details duration", () => {
 
   it("should display correct expiry date after selecting duration", async () => {
     // Arrange
-    const { user } = renderDefaultTestComponent();
-
-    // Act
     const { text: durationText, days: durationDays } =
       allDurations[allDurations.length - 1];
+      
+    const { user } = renderTestComponent(
+      dayjs(currentDt),
+      durationDays,
+      [],
+    );
+
+    // Act
     await openDurationSelect(user);
     await selectDurationOption(user, durationText);
 
@@ -71,7 +76,7 @@ describe("Permit Details duration", () => {
       DATE_FORMATS.SHORT,
     );
 
-    expect(await expiryDateElement(expectedExpiry)).toBeVisible();
+    expect(await expiryDateElement()).toHaveTextContent(expectedExpiry);
   });
 });
 
@@ -183,7 +188,11 @@ describe("Permit Details start date", () => {
 
   it("should display correct expiry date after selecting start date", async () => {
     // Arrange
-    const { user } = renderDefaultTestComponent();
+    const { user } = renderTestComponent(
+      dayjs(tomorrow),
+      defaultDuration,
+      [],
+    );
 
     // Act
     await openStartDateSelect(user);
@@ -202,7 +211,7 @@ describe("Permit Details start date", () => {
       defaultDuration,
     ).format(DATE_FORMATS.SHORT);
 
-    expect(await expiryDateElement(expectedExpiry)).toBeVisible();
+    expect(await expiryDateElement()).toHaveTextContent(expectedExpiry);
   });
 });
 
