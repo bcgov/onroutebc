@@ -77,12 +77,12 @@ export const renderTestComponent = (
 ) => {
   const user = userEvent.setup(userEventOptions);
   let selectedConditions = [...conditions];
+  const expiryDate = getExpiryDate(startDate, duration);
   const renderedComponent = render(
     <TestFormWrapper>
       <PermitDetails
         feature={feature}
-        defaultStartDate={startDate}
-        defaultDuration={duration}
+        expiryDate={expiryDate}
         conditionsInPermit={selectedConditions}
         durationOptions={allDurations.map((duration) => ({
           label: duration.text,
