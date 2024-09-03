@@ -40,8 +40,10 @@ export const ManageSettingsDashboard = React.memo(() => {
 
   const showCreditAccountTab = usePermissionMatrix({
     featureFlag: "CREDIT-ACCOUNT",
-    permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_SETTINGS",
     permissionMatrixFunctionKey: "VIEW_CREDIT_ACCOUNT_TAB",
+    },
     additionalConditionToCheck: () =>
       // Show the tab for all users if the user is
       Boolean(creditAccountMetadata) || isFinanceUser,
