@@ -66,6 +66,9 @@ frontend:
             key: DEPLOY_ENVIRONMENT
           - name: FRONTEND_PR_NUM
             key: FRONTEND_PR_NUM
+        fromValues:
+          - name: TIMESTAMP
+            value: "{{ now | toString }}"
       ports:
         - name: http
           containerPort: 3000
@@ -198,6 +201,8 @@ vehicles:
           - name: PAYBC_REDIRECT
             key: PAYBC_REDIRECT
         fromValues:
+          - name: TIMESTAMP
+            value: "{{ now | toString }}"
           - name: VEHICLES_PR_NUM
             value: '{{.Values.global.pr_num}}'
       ports:
@@ -337,6 +342,8 @@ dops:
         fromValues:
           - name: DOPS_PR_NUM
             value: '{{.Values.global.pr_num}}'
+          - name: TIMESTAMP
+            value: "{{ now | toString }}"
       ports:
         - name: dops-api
           containerPort: 5001
@@ -457,7 +464,7 @@ scheduler:
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/s3-{{.Values.global.vault.zone}} && source /vault/secrets/scheduler-{{.Values.global.vault.zone}} && npm run start:prod"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/s3-{{.Values.global.vault.zone}} && source /vault/secrets/scheduler-{{.Values.global.vault.zone}} && source /vault/secrets/cfs-{{.Values.global.vault.zone}} && source /vault/secrets/tps-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: scheduler
@@ -469,6 +476,8 @@ scheduler:
         fromValues:
           - name: SCHEDULER_PR_NUM
             value: '{{.Values.global.pr_num}}'
+          - name: TIMESTAMP
+            value: "{{ now | toString }}"
       ports:
         - name: scheduler
           containerPort: 5050
@@ -541,6 +550,8 @@ scheduler:
       - "mssql-{{tpl $.Values.vault.zone $}}"      
       - "scheduler-{{tpl $.Values.vault.zone $}}"
       - "s3-{{tpl $.Values.vault.zone $}}"
+      - "cfs-{{tpl $.Values.vault.zone $}}"
+      - "tps-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
 
 policy:
@@ -567,6 +578,8 @@ policy:
         fromValues:
           - name: POLICY_PR_NUM
             value: '{{.Values.global.pr_num}}'
+          - name: TIMESTAMP
+            value: "{{ now | toString }}"
       ports:
         - name: policy-api
           containerPort: 5002

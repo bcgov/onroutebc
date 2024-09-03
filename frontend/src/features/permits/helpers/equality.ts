@@ -4,7 +4,7 @@ import { PermitMailingAddress } from "../types/PermitMailingAddress";
 import { PermitContactDetails } from "../types/PermitContactDetails";
 import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
 import { PermitData } from "../types/PermitData";
-import { PermitCommodity } from "../types/PermitCommodity";
+import { PermitCondition } from "../types/PermitCondition";
 import {
   DATE_FORMATS,
   dayjsToLocalStr,
@@ -57,33 +57,33 @@ const areContactDetailsEqual = (
 };
 
 /**
- * Compare whether or not two commodities lists are equal.
- * @param list1 first commodities list
- * @param list2 second commodities list
- * @returns true when commodities lists are equivalent, false otherwise
+ * Compare whether or not two conditions lists are equal.
+ * @param list1 first conditions list
+ * @param list2 second conditions list
+ * @returns true when conditions lists are equivalent, false otherwise
  */
-export const areCommoditiesEqual = (
-  list1: PermitCommodity[],
-  list2: PermitCommodity[],
+export const areConditionsEqual = (
+  list1: PermitCondition[],
+  list2: PermitCondition[],
 ) => {
   // Instead of comparing arrays directly (as items can be in different orders), transform them into maps and compare key-value pairs
-  const commodityMap1 = new Map(
-    list1.map((commodity1) => [commodity1.condition, commodity1]),
+  const conditionMap1 = new Map(
+    list1.map((condition1) => [condition1.condition, condition1]),
   );
-  const commodityMap2 = new Map(
-    list2.map((commodity2) => [commodity2.condition, commodity2]),
+  const conditionMap2 = new Map(
+    list2.map((condition2) => [condition2.condition, condition2]),
   );
 
-  // Compare all key-value pairs of first commodities map with key-value pairs of second commodities map
-  for (const [condition, commodity] of commodityMap1) {
-    if (commodity.checked !== commodityMap2.get(condition)?.checked) {
+  // Compare all key-value pairs of first conditions map with key-value pairs of second conditions map
+  for (const [conditionKey, condition] of conditionMap1) {
+    if (condition.checked !== conditionMap2.get(conditionKey)?.checked) {
       return false;
     }
   }
 
   // Do the same the other way (ie. kv pairs of second map with kv pairs of first)
-  for (const [condition, commodity] of commodityMap2) {
-    if (commodity.checked !== commodityMap1.get(condition)?.checked) {
+  for (const [conditionKey, condition] of conditionMap2) {
+    if (condition.checked !== conditionMap1.get(conditionKey)?.checked) {
       return false;
     }
   }
@@ -131,7 +131,7 @@ export const areApplicationDataEqual = (
       dayjsToLocalStr(data2.expiryDate, DATE_FORMATS.DATEONLY) &&
     areContactDetailsEqual(data1.contactDetails, data2.contactDetails) &&
     areVehicleDetailsEqual(data1.vehicleDetails, data2.vehicleDetails) &&
-    areCommoditiesEqual(data1.commodities, data2.commodities) &&
+    areConditionsEqual(data1.commodities, data2.commodities) &&
     areMailingAddressesEqual(data1.mailingAddress, data2.mailingAddress) &&
     ((!data1.companyName && !data2.companyName) ||
       data1.companyName === data2.companyName) &&

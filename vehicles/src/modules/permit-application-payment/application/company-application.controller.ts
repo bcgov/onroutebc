@@ -32,11 +32,12 @@ import { UpdateApplicationDto } from './dto/request/update-application.dto';
 import { DataNotFoundException } from 'src/common/exception/data-not-found.exception';
 import { ResultDto } from './dto/response/result.dto';
 import { Permissions } from 'src/common/decorator/permissions.decorator';
-import { Claim } from 'src/common/enum/claims.enum';
 import { IssuePermitDto } from './dto/request/issue-permit.dto';
 import {
+  CLIENT_USER_ROLE_LIST,
   ClientUserRole,
   IDIR_USER_ROLE_LIST,
+  IDIRUserRole,
 } from 'src/common/enum/user-role.enum';
 import { DeleteApplicationDto } from './dto/request/delete-application.dto';
 import { DeleteDto } from '../../common/dto/response/delete.dto';
@@ -83,7 +84,14 @@ export class CompanyApplicationController {
       "If login user is PA then only fetch thier application else fetch all applications associated with logged in user's company. ",
   })
   @ApiPaginatedResponse(ReadApplicationMetadataDto)
-  @Permissions(Claim.READ_PERMIT)
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.CTPO,
+    ],
+  })
   @Get()
   async findAllApplication(
     @Req() request: Request,
@@ -120,7 +128,14 @@ export class CompanyApplicationController {
     description: 'The Permit Application Resource',
     type: ReadApplicationDto,
   })
-  @Permissions(Claim.WRITE_PERMIT)
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.CTPO,
+    ],
+  })
   @Post()
   async createPermitApplication(
     @Req() request: Request,
@@ -153,7 +168,14 @@ export class CompanyApplicationController {
     isArray: true,
   })
   @ApiQuery({ name: 'amendment', required: false })
-  @Permissions(Claim.READ_PERMIT)
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.CTPO,
+    ],
+  })
   @Get(':applicationId')
   async findOneApplication(
     @Req() request: Request,
@@ -205,7 +227,14 @@ export class CompanyApplicationController {
     description: 'The Permit Application Resource',
     type: ReadApplicationDto,
   })
-  @Permissions(Claim.WRITE_PERMIT)
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.CTPO,
+    ],
+  })
   @Put(':applicationId')
   async update(
     @Req() request: Request,
@@ -241,7 +270,14 @@ export class CompanyApplicationController {
       'Update Permit Application status for given id and set it to ISSUED.' +
       'Returns a list of updated application ids or throws exceptions for unauthorized access or operational failures.',
   })
-  @Permissions(Claim.WRITE_PERMIT)
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.CTPO,
+    ],
+  })
   @Post('/issue')
   async issuePermit(
     @Req() request: Request,
@@ -282,7 +318,14 @@ export class CompanyApplicationController {
     return result;
   }
 
-  @Permissions(Claim.WRITE_PERMIT)
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.CTPO,
+    ],
+  })
   @Delete()
   @ApiOperation({
     summary:
