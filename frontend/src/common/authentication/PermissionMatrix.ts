@@ -452,7 +452,7 @@ export type PermissionMatrixKeysType = {
  * @param {string} [config.permissionMatrixFunctionKey] - The function that's the nested key in {@link PERMISSIONS_MATRIX}.
  *
  * Priority 3
- * @param {Function} [config.additionalConditionToCall] - Additional custom condition to call if the basic conditions are met.
+ * @param {Function} [config.additionalConditionToCheck] - Additional custom condition to call if the basic conditions are met.
  *
  * @returns {boolean} - Returns whether the current user has the permission.
  */
