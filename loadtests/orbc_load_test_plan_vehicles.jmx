@@ -802,7 +802,7 @@
           <collectionProp name="HeaderManager.headers">
             <elementProp name="" elementType="Header">
               <stringProp name="Header.name">Authorization</stringProp>
-              <stringProp name="Header.value">Bearer ${BEARER_TOKEN_BCEID}</stringProp>
+              <stringProp name="Header.value">Bearer ${BEARER_TOKEN_IDIR}</stringProp>
             </elementProp>
             <elementProp name="" elementType="Header">
               <stringProp name="Header.name">Accept</stringProp>
