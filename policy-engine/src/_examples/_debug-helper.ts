@@ -3,7 +3,7 @@ import { completePolicyConfig } from '../_test/policy-config/complete-in-progres
 
 function start() {
   const policy: Policy = new Policy(completePolicyConfig);
-
+  console.log(JSON.stringify(policy.policyDefinition));
   /*
 
   console.log('***ALL COMMODITIES***');
@@ -17,13 +17,11 @@ function start() {
   console.log(
     JSON.stringify(Array.from(stosCommodities.entries()), null, '   '),
   );
-*/
 
   console.log('***POWER UNITS PERMITTABLE FOR STOS AND EMPTY COMMODITY***');
   const puTypesEmpty = policy.getPermittablePowerUnitTypes('STOS', 'EMPTYXX');
   console.log(JSON.stringify(Array.from(puTypesEmpty.entries()), null, '   '));
 
-  /*
   console.log(
     '***POWER UNITS PERMITTABLE FOR STOS AND BRIDGE BEAMS COMMODITY***',
   );

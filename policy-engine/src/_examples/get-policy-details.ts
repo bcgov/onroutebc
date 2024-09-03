@@ -50,7 +50,6 @@ function start() {
   ]);
   console.log(JSON.stringify(Array.from(vehicleTypes2.entries()), null, '   '));
 
-  /*
   console.log(
     '***MAX SIZE FOR TRUCK TRACTOR, JEEP, HIBOEXP, STOS AND EMPTYXX***',
   );
@@ -68,7 +67,18 @@ function start() {
   );
   const sizeDimensionPeaceBC = policy.getSizeDimension('STOS', 'EMPTYXX', ['TRKTRAC', 'JEEPSRG', 'HIBOEXP'], ['PCE','BCD']);
   console.log(JSON.stringify(sizeDimensionPeaceBC, null, '   '));
-  */
+
+  console.log(
+    '***MAX SIZE FOR TRUCK TRACTOR, JEEP, STWHELR, STOS AND EMPTYXX IN BC DEFAULT***',
+  );
+  const sizeDimensionBC = policy.getSizeDimension('STOS', 'EMPTYXX', ['TRKTRAC', 'JEEPSRG', 'STWHELR'], ['BCD']);
+  console.log(JSON.stringify(sizeDimensionBC, null, '   '));
+
+  console.log(
+    '***MAX SIZE FOR TRUCK TRACTOR, JEEP, STWHELR, STOS AND EMPTYXX IN PEACE***',
+  );
+  const sizeDimensionStwhelrPce = policy.getSizeDimension('STOS', 'EMPTYXX', ['TRKTRAC', 'JEEPSRG', 'STWHELR'], ['PCE']);
+  console.log(JSON.stringify(sizeDimensionStwhelrPce, null, '   '));
 }
 
 start();
