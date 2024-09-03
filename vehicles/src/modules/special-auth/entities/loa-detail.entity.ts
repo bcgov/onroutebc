@@ -33,7 +33,7 @@ export class LoaDetail extends Base {
     name: 'START_DATE',
     nullable: false,
   })
-  startDate: string;
+  startDate: Date;
 
   @AutoMap()
   @IsOptional()
@@ -41,7 +41,8 @@ export class LoaDetail extends Base {
     name: 'EXPIRY_DATE',
     nullable: true,
   })
-  expiryDate?: string;
+
+  expiryDate?: Date;
 
   @AutoMap()
   @IsOptional()
@@ -72,6 +73,14 @@ export class LoaDetail extends Base {
     },
   })
   isActive: boolean;
+
+  @AutoMap()
+  @Column({ type: 'int', name: 'PREVIOUS_LOA_ID', nullable: true })
+  previousLoaId: number;
+
+  @AutoMap()
+  @Column({ type: 'int', name: 'ORIGINAL_LOA_ID' })
+  originalLoaId: number;
 
   @AutoMap(() => LoaPermitType)
   @OneToMany(() => LoaPermitType, (LoaPermitType) => LoaPermitType.loa, {

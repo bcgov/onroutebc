@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { RowSelectionState } from "@tanstack/table-core";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useAuth } from "react-oidc-context";
@@ -14,7 +14,6 @@ import { SnackBarContext } from "../../../App";
 import { DeleteConfirmationDialog } from "../../../common/components/dialog/DeleteConfirmationDialog";
 import { NoRecordsFound } from "../../../common/components/table/NoRecordsFound";
 import { TrashButton } from "../../../common/components/buttons/TrashButton";
-import { ONE_HOUR } from "../../../common/constants/constants";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
@@ -41,7 +40,9 @@ export const UserManagement = () => {
   const query = useQuery({
     queryKey: ["companyUsers"],
     queryFn: getCompanyUsers,
-    staleTime: ONE_HOUR,
+    placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false,
+    retry: 1,
   });
   const { data, isError, isLoading } = query;
   const { setSnackBar } = useContext(SnackBarContext);

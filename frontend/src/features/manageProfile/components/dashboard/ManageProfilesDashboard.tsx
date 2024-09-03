@@ -56,7 +56,7 @@ export const ManageProfilesDashboard = React.memo(() => {
     queryKey: ["companyInfo"],
     queryFn: getCompanyInfo,
     placeholderData: keepPreviousData,
-    staleTime: FIVE_MINUTES,
+    refetchInterval: FIVE_MINUTES
   });
 
   const navigate = useNavigate();
