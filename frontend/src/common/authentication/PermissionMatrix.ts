@@ -385,14 +385,18 @@ export type PermissionConfigType = {
    * If provided, it takes the highest priority.
    *
    * If a feature is not enabled,
-   * the component WILL NOT render regardless of other conditions.
+   * the component **WILL NOT** render regardless of other conditions.
    */
   featureFlag?: string;
   /**
+   * The permission matrix keys for looking up the allowed roles.
+   */
+  permissionMatrixKeys?: PermissionMatrixKeysType;
+  /**
    * An additional function call whose boolean value will be accounted
    * for determining whether to render a component.
-   * i.e., this function will play along with other specifications
-   * given in the other input props.
+   * i.e., this function will be called the last after other conditions
+   * have succeeded.
    *
    * @param args Any arguments to be passed.
    * @returns A boolean.
@@ -460,9 +464,7 @@ export const usePermissionMatrix = ({
   featureFlag,
   permissionMatrixKeys,
   additionalConditionToCheck,
-}: PermissionConfigType & {
-  permissionMatrixKeys?: PermissionMatrixKeysType;
-}): boolean => {
+}: PermissionConfigType): boolean => {
   const { userDetails, idirUserDetails } = useContext(OnRouteBCContext);
   const { data: featureFlags } = useFeatureFlagsQuery();
   const isIdir = Boolean(idirUserDetails?.userRole);
@@ -476,8 +478,8 @@ export const usePermissionMatrix = ({
   let isAllowed = false;
   let currentUserRole;
   if (permissionMatrixKeys) {
-    const { permissionMatrixFeatureKey,
-      permissionMatrixFunctionKey } = permissionMatrixKeys;
+    const { permissionMatrixFeatureKey, permissionMatrixFunctionKey } =
+      permissionMatrixKeys;
     const { allowedBCeIDRoles, allowedIDIRRoles } = (
       PERMISSIONS_MATRIX[permissionMatrixFeatureKey] as {
         [key: string]: PermissionMatrixConfigObject;
@@ -486,14 +488,12 @@ export const usePermissionMatrix = ({
     if (isIdir) {
       currentUserRole = idirUserDetails?.userRole;
       isAllowed = Boolean(
-        currentUserRole &&
-          allowedIDIRRoles?.includes(currentUserRole),
+        currentUserRole && allowedIDIRRoles?.includes(currentUserRole),
       );
     } else {
       currentUserRole = userDetails?.userRole;
       isAllowed = Boolean(
-        currentUserRole &&
-          allowedBCeIDRoles?.includes(currentUserRole),
+        currentUserRole && allowedBCeIDRoles?.includes(currentUserRole),
       );
     }
   }
