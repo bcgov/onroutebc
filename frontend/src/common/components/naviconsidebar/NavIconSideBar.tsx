@@ -4,7 +4,7 @@ import React, { useContext } from "react";
 import { IDPS } from "../../types/idp";
 import "./NavIconSideBar.scss";
 import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
-import { USER_AUTH_GROUP } from "../../../common/authentication/types";
+import { USER_ROLE } from "../../../common/authentication/types";
 
 interface NavIconSideBarProps {
   children?: React.ReactNode;
@@ -19,7 +19,7 @@ export const NavIconSideBar = (props: NavIconSideBarProps) => {
   const { idirUserDetails } = useContext(OnRouteBCContext);
   const isIdir = user?.profile?.identity_provider === IDPS.IDIR;
   const isEofficer =
-    idirUserDetails?.userAuthGroup === USER_AUTH_GROUP.ENFORCEMENT_OFFICER;
+    idirUserDetails?.userRole === USER_ROLE.ENFORCEMENT_OFFICER;
 
   const shouldShowSideBar =
     isAuthenticated && isIdir && idirUserDetails?.userName && !isEofficer;

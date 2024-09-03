@@ -100,8 +100,10 @@ describe('TrailersService', () => {
 
   describe('Trailer service remove function', () => {
     it('should delete the trailer', async () => {
+      repo.delete.mockResolvedValue({ raw: trailerEntityMock, affected: 1 });
       const deleteResult = await service.remove(COMPANY_ID_1, TRAILER_ID_1);
       expect(typeof deleteResult).toBe('object');
+      expect(deleteResult.affected).toEqual(1);
     });
   });
 

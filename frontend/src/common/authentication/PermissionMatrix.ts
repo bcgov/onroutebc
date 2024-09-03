@@ -1,14 +1,14 @@
 import { useContext } from "react";
 import {
-  BCeID_USER_AUTH_GROUP,
-  BCeIDUserAuthGroupType,
-  IDIR_USER_AUTH_GROUP,
-  IDIRUserAuthGroupType,
+  BCeID_USER_ROLE,
+  BCeIDUserRoleType,
+  IDIR_USER_ROLE,
+  IDIRUserRoleType,
 } from "./types";
 import OnRouteBCContext from "./OnRouteBCContext";
 import { useFeatureFlagsQuery } from "../hooks/hooks";
 
-// Idir User Auth groups
+// Idir User roles
 const {
   SYSTEM_ADMINISTRATOR: SA,
   CTPO,
@@ -16,14 +16,13 @@ const {
   FINANCE: FIN,
   ENFORCEMENT_OFFICER: EO,
   HQ_ADMINISTRATOR: HQA,
-} = IDIR_USER_AUTH_GROUP;
+} = IDIR_USER_ROLE;
 
-// CV Client User Auth groups
-const { COMPANY_ADMINISTRATOR: CA, PERMIT_APPLICANT: PA } =
-  BCeID_USER_AUTH_GROUP;
+// CV Client User roles
+const { COMPANY_ADMINISTRATOR: CA, PERMIT_APPLICANT: PA } = BCeID_USER_ROLE;
 
-const ALL_IDIR_GROUPS = Object.values(IDIR_USER_AUTH_GROUP);
-const ALL_BCeID_GROUPS = Object.values(BCeID_USER_AUTH_GROUP);
+const ALL_IDIR_ROLES = Object.values(IDIR_USER_ROLE);
+const ALL_BCeID_ROLES = Object.values(BCeID_USER_ROLE);
 
 /**
  * -----------------------------------------------------------------
@@ -33,42 +32,42 @@ const ALL_BCeID_GROUPS = Object.values(BCeID_USER_AUTH_GROUP);
 
 const MANAGE_VEHICLE_INVENTORY = {
   VIEW_VEHICLE_INVENTORY_SCREEN: {
-    allowedBCeIDAuthGroups: ALL_BCeID_GROUPS,
-    allowedIDIRAuthGroups: [PC, SA, CTPO],
+    allowedBCeIDRoles: ALL_BCeID_ROLES,
+    allowedIDIRRoles: [PC, SA, CTPO],
   },
   ADD_VEHICLE: {
-    allowedBCeIDAuthGroups: [CA, PA],
-    allowedIDIRAuthGroups: [PC, SA, CTPO],
+    allowedBCeIDRoles: [CA, PA],
+    allowedIDIRRoles: [PC, SA, CTPO],
   },
   /**
    * Power Unit tab
    */
   VIEW_LIST_OF_POWER_UNITS: {
-    allowedBCeIDAuthGroups: ALL_BCeID_GROUPS,
-    allowedIDIRAuthGroups: [PC, SA, CTPO],
+    allowedBCeIDRoles: ALL_BCeID_ROLES,
+    allowedIDIRRoles: [PC, SA, CTPO],
   },
   UPDATE_POWER_UNIT: {
-    allowedBCeIDAuthGroups: [CA, PA],
-    allowedIDIRAuthGroups: [PC, SA, CTPO],
+    allowedBCeIDRoles: [CA, PA],
+    allowedIDIRRoles: [PC, SA, CTPO],
   },
   DELETE_POWER_UNIT: {
-    allowedBCeIDAuthGroups: [CA, PA],
-    allowedIDIRAuthGroups: [PC, SA, CTPO],
+    allowedBCeIDRoles: [CA, PA],
+    allowedIDIRRoles: [PC, SA, CTPO],
   },
   /**
    * Trailer tab
    */
   VIEW_LIST_OF_TRAILERS: {
-    allowedBCeIDAuthGroups: ALL_BCeID_GROUPS,
-    allowedIDIRAuthGroups: [PC, SA, CTPO],
+    allowedBCeIDRoles: ALL_BCeID_ROLES,
+    allowedIDIRRoles: [PC, SA, CTPO],
   },
   UPDATE_TRAILER: {
-    allowedBCeIDAuthGroups: [CA, PA],
-    allowedIDIRAuthGroups: [PC, SA, CTPO],
+    allowedBCeIDRoles: [CA, PA],
+    allowedIDIRRoles: [PC, SA, CTPO],
   },
   DELETE_TRAILER: {
-    allowedBCeIDAuthGroups: [CA, PA],
-    allowedIDIRAuthGroups: [PC, SA, CTPO],
+    allowedBCeIDRoles: [CA, PA],
+    allowedIDIRRoles: [PC, SA, CTPO],
   },
   /**
    * For future implementation
@@ -78,80 +77,80 @@ const MANAGE_VEHICLE_INVENTORY = {
 
 const MANAGE_PERMITS = {
   VIEW_PERMITS_SCREEN: {
-    allowedBCeIDAuthGroups: ALL_BCeID_GROUPS,
-    allowedIDIRAuthGroups: [PC, SA, FIN, CTPO, HQA],
+    allowedBCeIDRoles: ALL_BCeID_ROLES,
+    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
   },
   START_APPLICATION: {
-    allowedBCeIDAuthGroups: ALL_BCeID_GROUPS,
-    allowedIDIRAuthGroups: [PC, SA, CTPO],
+    allowedBCeIDRoles: ALL_BCeID_ROLES,
+    allowedIDIRRoles: [PC, SA, CTPO],
   },
   /**
    * Applications in Progress tab
    */
   VIEW_LIST_OF_APPLICATIONS_IN_PROGRESS: {
-    allowedBCeIDAuthGroups: ALL_BCeID_GROUPS,
-    allowedIDIRAuthGroups: [PC, SA, CTPO],
+    allowedBCeIDRoles: ALL_BCeID_ROLES,
+    allowedIDIRRoles: [PC, SA, CTPO],
   },
   VIEW_INDIVIDUAL_APPLICATION_IN_PROGRESS_DETAILS: {
-    allowedBCeIDAuthGroups: ALL_BCeID_GROUPS,
-    allowedIDIRAuthGroups: [PC, SA, CTPO],
+    allowedBCeIDRoles: ALL_BCeID_ROLES,
+    allowedIDIRRoles: [PC, SA, CTPO],
   },
   EDIT_INDIVIDUAL_APPLICATION_IN_PROGRESS_DETAILS: {
-    allowedBCeIDAuthGroups: ALL_BCeID_GROUPS,
-    allowedIDIRAuthGroups: [PC, SA, CTPO],
+    allowedBCeIDRoles: ALL_BCeID_ROLES,
+    allowedIDIRRoles: [PC, SA, CTPO],
   },
   CANCEL_APPLICATION_IN_PROGRESS: {
-    allowedBCeIDAuthGroups: ALL_BCeID_GROUPS,
-    allowedIDIRAuthGroups: [PC, SA, CTPO],
+    allowedBCeIDRoles: ALL_BCeID_ROLES,
+    allowedIDIRRoles: [PC, SA, CTPO],
   },
   /**
    * Applications in Review tab
    */
   VIEW_LIST_OF_APPLICATIONS_IN_REVIEW: {
-    allowedBCeIDAuthGroups: ALL_BCeID_GROUPS,
-    allowedIDIRAuthGroups: [PC, SA, CTPO],
+    allowedBCeIDRoles: ALL_BCeID_ROLES,
+    allowedIDIRRoles: [PC, SA, CTPO],
   },
   VIEW_INDIVIDUAL_APPLICATION_IN_REVIEW_DETAILS: {
-    allowedBCeIDAuthGroups: ALL_BCeID_GROUPS,
-    allowedIDIRAuthGroups: [PC, SA, CTPO],
+    allowedBCeIDRoles: ALL_BCeID_ROLES,
+    allowedIDIRRoles: [PC, SA, CTPO],
   },
   WITHDRAW_APPLICATION_IN_REVIEW: {
-    allowedBCeIDAuthGroups: ALL_BCeID_GROUPS,
-    allowedIDIRAuthGroups: [PC, SA, CTPO],
+    allowedBCeIDRoles: ALL_BCeID_ROLES,
+    allowedIDIRRoles: [PC, SA, CTPO],
   },
   /**
    * Active Permits tab
    */
   VIEW_ACTIVE_PERMITS: {
-    allowedBCeIDAuthGroups: ALL_BCeID_GROUPS,
-    allowedIDIRAuthGroups: [PC, SA, FIN, CTPO, HQA],
+    allowedBCeIDRoles: ALL_BCeID_ROLES,
+    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
   },
   VIEW_INDIVIDUAL_ACTIVE_PERMIT_PDF: {
-    allowedBCeIDAuthGroups: ALL_BCeID_GROUPS,
-    allowedIDIRAuthGroups: ALL_IDIR_GROUPS,
+    allowedBCeIDRoles: ALL_BCeID_ROLES,
+    allowedIDIRRoles: ALL_IDIR_ROLES,
   },
   VIEW_PERMIT_RECEIPT: {
-    allowedBCeIDAuthGroups: ALL_BCeID_GROUPS,
-    allowedIDIRAuthGroups: ALL_IDIR_GROUPS,
+    allowedBCeIDRoles: ALL_BCeID_ROLES,
+    allowedIDIRRoles: ALL_IDIR_ROLES,
   },
   REQUEST_PERMIT_AMENDMENT: {
-    allowedBCeIDAuthGroups: ALL_BCeID_GROUPS,
-    allowedIDIRAuthGroups: [PC, SA, CTPO],
+    allowedBCeIDRoles: ALL_BCeID_ROLES,
+    allowedIDIRRoles: [PC, SA, CTPO],
   },
   /**
    * Expired Permits tab
    */
   VIEW_LIST_OF_EXPIRED_PERMITS: {
-    allowedBCeIDAuthGroups: ALL_BCeID_GROUPS,
-    allowedIDIRAuthGroups: [PC, SA, FIN, CTPO, HQA],
+    allowedBCeIDRoles: ALL_BCeID_ROLES,
+    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
   },
   VIEW_INDIVIDUAL_EXPIRED_PERMIT_PDF: {
-    allowedBCeIDAuthGroups: ALL_BCeID_GROUPS,
-    allowedIDIRAuthGroups: ALL_IDIR_GROUPS,
+    allowedBCeIDRoles: ALL_BCeID_ROLES,
+    allowedIDIRRoles: ALL_IDIR_ROLES,
   },
   VIEW_EXPIRED_PERMIT_RECEIPT: {
-    allowedBCeIDAuthGroups: ALL_BCeID_GROUPS,
-    allowedIDIRAuthGroups: ALL_IDIR_GROUPS,
+    allowedBCeIDRoles: ALL_BCeID_ROLES,
+    allowedIDIRRoles: ALL_IDIR_ROLES,
   },
 } as const;
 
@@ -160,53 +159,53 @@ const MANAGE_PROFILE = {
    * Company Information tab
    */
   VIEW_COMPANY_INFORMATION: {
-    allowedBCeIDAuthGroups: ALL_BCeID_GROUPS,
-    allowedIDIRAuthGroups: [PC, SA, FIN, CTPO, HQA],
+    allowedBCeIDRoles: ALL_BCeID_ROLES,
+    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
   },
   EDIT_COMPANY_INFORMATION: {
-    allowedBCeIDAuthGroups: [CA],
-    allowedIDIRAuthGroups: [PC, SA, CTPO],
+    allowedBCeIDRoles: [CA],
+    allowedIDIRRoles: [PC, SA, CTPO],
   },
   /**
    * My Information tab
    */
   VIEW_MY_INFORMATION: {
-    allowedBCeIDAuthGroups: [CA, PA],
-    allowedIDIRAuthGroups: [],
+    allowedBCeIDRoles: [CA, PA],
+    allowedIDIRRoles: [],
   },
   EDIT_MY_INFORMATION: {
-    allowedBCeIDAuthGroups: [CA, PA],
-    allowedIDIRAuthGroups: [],
+    allowedBCeIDRoles: [CA, PA],
+    allowedIDIRRoles: [],
   },
   /**
    * User Management tab
    */
   VIEW_USER_MANAGEMENT_SCREEN: {
-    allowedBCeIDAuthGroups: [CA],
-    allowedIDIRAuthGroups: [PC, SA, CTPO],
+    allowedBCeIDRoles: [CA],
+    allowedIDIRRoles: [PC, SA, CTPO],
   },
   ADD_USER: {
-    allowedBCeIDAuthGroups: [CA],
-    allowedIDIRAuthGroups: [PC, SA, CTPO],
+    allowedBCeIDRoles: [CA],
+    allowedIDIRRoles: [PC, SA, CTPO],
   },
   REMOVE_USER: {
-    allowedBCeIDAuthGroups: [CA],
-    allowedIDIRAuthGroups: [PC, SA, CTPO],
+    allowedBCeIDRoles: [CA],
+    allowedIDIRRoles: [PC, SA, CTPO],
   },
   EDIT_USER: {
-    allowedBCeIDAuthGroups: [CA],
-    allowedIDIRAuthGroups: [PC, SA, CTPO],
+    allowedBCeIDRoles: [CA],
+    allowedIDIRRoles: [PC, SA, CTPO],
   },
   /**
    * Special Authorization tab
    */
   VIEW_SPECIAL_AUTHORIZATIONS: {
-    allowedBCeIDAuthGroups: [CA, PA],
-    allowedIDIRAuthGroups: [],
+    allowedBCeIDRoles: [CA, PA],
+    allowedIDIRRoles: [],
   },
   VIEW_LOA: {
-    allowedBCeIDAuthGroups: [CA, PA],
-    allowedIDIRAuthGroups: [],
+    allowedBCeIDRoles: [CA, PA],
+    allowedIDIRRoles: [],
   },
 } as const;
 
@@ -214,69 +213,69 @@ const MANAGE_SETTINGS = {
   /**
    * Special Authorizations Tab
    */
-  VIEW_SPECIAL_AUTHORIZATIONS: { allowedIDIRAuthGroups: ALL_IDIR_GROUPS },
-  ADD_NO_FEE_FLAG: { allowedIDIRAuthGroups: [SA, FIN, HQA] },
-  UPDATE_NO_FEE_FLAG: { allowedIDIRAuthGroups: [SA, FIN, HQA] },
-  ADD_LCV_FLAG: { allowedIDIRAuthGroups: [HQA] },
-  REMOVE_LCV_FLAG: { allowedIDIRAuthGroups: [HQA] },
-  ADD_AN_LOA: { allowedIDIRAuthGroups: [SA, HQA] },
-  EDIT_AN_LOA: { allowedIDIRAuthGroups: [SA, HQA] },
-  VIEW_LOA: { allowedIDIRAuthGroups: [PC, SA, CTPO, EO, HQA] },
-  REMOVE_LOA: { allowedIDIRAuthGroups: [SA, HQA] },
+  VIEW_SPECIAL_AUTHORIZATIONS: { allowedIDIRRoles: ALL_IDIR_ROLES },
+  ADD_NO_FEE_FLAG: { allowedIDIRRoles: [SA, FIN, HQA] },
+  UPDATE_NO_FEE_FLAG: { allowedIDIRRoles: [SA, FIN, HQA] },
+  ADD_LCV_FLAG: { allowedIDIRRoles: [HQA] },
+  REMOVE_LCV_FLAG: { allowedIDIRRoles: [HQA] },
+  ADD_AN_LOA: { allowedIDIRRoles: [SA, HQA] },
+  EDIT_AN_LOA: { allowedIDIRRoles: [SA, HQA] },
+  VIEW_LOA: { allowedIDIRRoles: [PC, SA, CTPO, EO, HQA] },
+  REMOVE_LOA: { allowedIDIRRoles: [SA, HQA] },
 
   /**
    * Credit Account Tab
    */
   VIEW_CREDIT_ACCOUNT_TAB: {
-    allowedBCeIDAuthGroups: [CA],
-    allowedIDIRAuthGroups: [PC, SA, FIN, CTPO],
+    allowedBCeIDRoles: [CA],
+    allowedIDIRRoles: [PC, SA, FIN, CTPO],
     featureFlag: "CREDIT-ACCOUNT",
   },
   VIEW_CREDIT_ACCOUNT_DETAILS: {
-    allowedBCeIDAuthGroups: [CA],
-    allowedIDIRAuthGroups: [SA, FIN],
+    allowedBCeIDRoles: [CA],
+    allowedIDIRRoles: [SA, FIN],
   },
-  UPDATE_CREDIT_ACCOUNT_DETAILS: { allowedIDIRAuthGroups: [FIN] },
+  UPDATE_CREDIT_ACCOUNT_DETAILS: { allowedIDIRRoles: [FIN] },
 
   /**
    * Suspend tab
    */
   VIEW_SUSPEND_COMPANY_INFO: {
-    allowedIDIRAuthGroups: [SA, FIN, CTPO, EO],
+    allowedIDIRRoles: [SA, FIN, CTPO, EO],
   },
   UPDATE_SUSPEND_COMPANY_FLAG: {
-    allowedIDIRAuthGroups: [SA, FIN, CTPO],
+    allowedIDIRRoles: [SA, FIN, CTPO],
   },
 } as const;
 
 const STICKY_SIDE_BAR = {
   VIEW_STICKY_SIDE_BAR: {
-    allowedIDIRAuthGroups: [PC, SA, FIN, CTPO, HQA],
+    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
   },
   HOME_BUTTON: {
-    allowedIDIRAuthGroups: [PC, SA, FIN, CTPO, HQA],
+    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
   },
   REPORTS_BUTTON: {
-    allowedIDIRAuthGroups: [PC, SA, FIN, CTPO, HQA],
+    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
   },
   MANAGE_PPC_USERS_BUTTON: {
-    allowedIDIRAuthGroups: [SA],
+    allowedIDIRRoles: [SA],
   },
 } as const;
 
 const MANAGE_PPC_USERS = {
-  VIEW_MANAGE_PPC_USERS_SCREEN: { allowedIDIRAuthGroups: [SA] },
-  UPDATE_PPC_USER_ROLE: { allowedIDIRAuthGroups: [SA] },
-  REMOVE_PPC_USER: { allowedIDIRAuthGroups: [SA] },
-  MANAGE_PPC_USERS_BUTTON: { allowedIDIRAuthGroups: [SA] },
+  VIEW_MANAGE_PPC_USERS_SCREEN: { allowedIDIRRoles: [SA] },
+  UPDATE_PPC_USER_ROLE: { allowedIDIRRoles: [SA] },
+  REMOVE_PPC_USER: { allowedIDIRRoles: [SA] },
+  MANAGE_PPC_USERS_BUTTON: { allowedIDIRRoles: [SA] },
 } as const;
 
 const REPORTS = {
   PAYMENT_AND_REFUND_SUMMARY_REPORT: {
-    allowedIDIRAuthGroups: [PC, SA, FIN, CTPO, HQA],
+    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
   },
   PAYMENT_AND_REFUND_DETAIL_REPORT: {
-    allowedIDIRAuthGroups: [PC, SA, FIN, CTPO, HQA],
+    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
   },
   /**
    * There are some nuances with the permissions:
@@ -290,53 +289,53 @@ const REPORTS = {
 
 const GLOBAL_SEARCH = {
   VIEW_GLOBAL_SEARCH_SCREEN: {
-    allowedIDIRAuthGroups: ALL_IDIR_GROUPS,
+    allowedIDIRRoles: ALL_IDIR_ROLES,
   },
   SEARCH_FOR_VEHICLE: {
-    allowedIDIRAuthGroups: [PC, SA, CTPO],
+    allowedIDIRRoles: [PC, SA, CTPO],
   },
   SEARCH_FOR_COMPANY: {
-    allowedIDIRAuthGroups: ALL_IDIR_GROUPS,
+    allowedIDIRRoles: ALL_IDIR_ROLES,
   },
   DELETE_COMPANY: {
-    allowedIDIRAuthGroups: [SA],
+    allowedIDIRRoles: [SA],
   },
   MERGE_COMPANY: {
-    allowedIDIRAuthGroups: [SA],
+    allowedIDIRRoles: [SA],
   },
   CREATE_COMPANY: {
-    allowedIDIRAuthGroups: [PC, SA, CTPO],
+    allowedIDIRRoles: [PC, SA, CTPO],
   },
   /** Search for Active Permit */
   SEARCH_FOR_ACTIVE_PERMIT: {
-    allowedIDIRAuthGroups: ALL_IDIR_GROUPS,
+    allowedIDIRRoles: ALL_IDIR_ROLES,
   },
-  AMEND_PERMIT: { allowedIDIRAuthGroups: [PC, SA, CTPO] },
-  VOID_PERMIT: { allowedIDIRAuthGroups: [SA] },
-  REVOKE_PERMIT: { allowedIDIRAuthGroups: [SA] },
-  RESEND: { allowedIDIRAuthGroups: [PC, SA, FIN, CTPO, HQA] },
+  AMEND_PERMIT: { allowedIDIRRoles: [PC, SA, CTPO] },
+  VOID_PERMIT: { allowedIDIRRoles: [SA] },
+  REVOKE_PERMIT: { allowedIDIRRoles: [SA] },
+  RESEND: { allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA] },
 
   /** Search for Inactive Permit */
-  SEARCH_FOR_INACTIVE_PERMIT: { allowedIDIRAuthGroups: [PC, SA, CTPO, EO] },
-  SEARCH_FOR_APPLICATION: { allowedIDIRAuthGroups: [PC, SA, CTPO] },
+  SEARCH_FOR_INACTIVE_PERMIT: { allowedIDIRRoles: [PC, SA, CTPO, EO] },
+  SEARCH_FOR_APPLICATION: { allowedIDIRRoles: [PC, SA, CTPO] },
 } as const;
 
 /**
  * Application review queue on staff home screen
  */
 const STAFF_HOME_SCREEN = {
-  VIEW_QUEUE: { allowedIDIRAuthGroups: [PC, SA] },
-  MANAGE_QUEUE: { allowedIDIRAuthGroups: [PC, SA] },
+  VIEW_QUEUE: { allowedIDIRRoles: [PC, SA] },
+  MANAGE_QUEUE: { allowedIDIRRoles: [PC, SA] },
 } as const;
 
 const MISCELLANEOUS = {
   VIEW_SHOPPING_CART: {
-    allowedBCeIDAuthGroups: [CA, PA],
-    allowedIDIRAuthGroups: [PC, SA, CTPO],
+    allowedBCeIDRoles: [CA, PA],
+    allowedIDIRRoles: [PC, SA, CTPO],
   },
   // Add this in permissions matrix document.
   STAFF_ACT_AS_COMPANY: {
-    allowedIDIRAuthGroups: [PC, SA, FIN, CTPO, HQA],
+    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
   },
   /**
    * The following are already controlled by API.
@@ -419,20 +418,20 @@ export type PermissionConfigType = {
  */
 export type PermissionMatrixConfigObject = {
   /**
-   * The idir auth groups that are allowed to see the component.
+   * The idir roles that are allowed to see the component.
    *
-   * If the user has one of the specified auth groups,
+   * If the user has one of the specified roles,
    * the component will render.
    */
-  allowedIDIRAuthGroups?: readonly IDIRUserAuthGroupType[];
+  allowedIDIRRoles?: readonly IDIRUserRoleType[];
 
   /**
-   * The bceid auth groups that are allowed to see the component.
+   * The bceid roles that are allowed to see the component.
    *
-   * If the user has one of the specified auth groups,
+   * If the user has one of the specified roles,
    * the component will render.
    */
-  allowedBCeIDAuthGroups?: readonly BCeIDUserAuthGroupType[];
+  allowedBCeIDRoles?: readonly BCeIDUserRoleType[];
 };
 
 /**
@@ -454,7 +453,7 @@ export type PermissionMatrixKeysType = {
 }[keyof typeof PERMISSIONS_MATRIX];
 
 /**
- * A hook to manage the permissions matrix for various features and user authentication groups.
+ * A hook to manage the permissions matrix for various features and user roles.
  *
  * @param {Object} config - Configuration object for the permission matrix.
  *
@@ -483,7 +482,7 @@ export const usePermissionMatrix = ({
 }): boolean => {
   const { userDetails, idirUserDetails } = useContext(OnRouteBCContext);
   const { data: featureFlags } = useFeatureFlagsQuery();
-  const isIdir = Boolean(idirUserDetails?.userAuthGroup);
+  const isIdir = Boolean(idirUserDetails?.userRole);
 
   // If featureFlag is given, exit if it is not enabled.
   if (featureFlag) {
@@ -497,27 +496,26 @@ export const usePermissionMatrix = ({
     return onlyConditionToCheck();
   }
   let isAllowed = false;
-  let currentUserAuthGroup;
+  let currentUserRole;
   if (permissionMatrixKeys) {
     const { permissionMatrixFeatureKey,
       permissionMatrixFunctionKey } = permissionMatrixKeys;
-    const { allowedBCeIDAuthGroups, allowedIDIRAuthGroups } = (
+    const { allowedBCeIDRoles, allowedIDIRRoles } = (
       PERMISSIONS_MATRIX[permissionMatrixFeatureKey] as {
         [key: string]: PermissionMatrixConfigObject;
       }
     )[permissionMatrixFunctionKey];
     if (isIdir) {
-      currentUserAuthGroup = idirUserDetails?.userAuthGroup;
+      currentUserRole = idirUserDetails?.userRole;
       isAllowed = Boolean(
-        currentUserAuthGroup &&
-          allowedIDIRAuthGroups?.includes(currentUserAuthGroup),
-          
+        currentUserRole &&
+          allowedIDIRRoles?.includes(currentUserRole),
       );
     } else {
-      currentUserAuthGroup = userDetails?.userAuthGroup;
+      currentUserRole = userDetails?.userRole;
       isAllowed = Boolean(
-        currentUserAuthGroup &&
-          allowedBCeIDAuthGroups?.includes(currentUserAuthGroup),
+        currentUserRole &&
+          allowedBCeIDRoles?.includes(currentUserRole),
       );
     }
   }

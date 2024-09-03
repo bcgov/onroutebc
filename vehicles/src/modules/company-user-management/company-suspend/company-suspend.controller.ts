@@ -15,8 +15,8 @@ import { CreateCompanySuspendDto } from './dto/request/create-company-suspend.dt
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { ReadCompanySuspendActivityDto } from './dto/response/read-company-suspend-activity.dto';
 import { Request } from 'express';
-import { Roles } from '../../../common/decorator/roles.decorator';
-import { Role } from '../../../common/enum/roles.enum';
+import { Permissions } from '../../../common/decorator/permissions.decorator';
+import { IDIRUserRole } from '../../../common/enum/user-role.enum';
 
 @ApiTags('Company and User Management - Company Suspend')
 @ApiBadRequestResponse({
@@ -54,7 +54,13 @@ export class CompanySuspendController {
     description: 'The Company Suspension Activity Resource',
     type: ReadCompanySuspendActivityDto,
   })
-  @Roles(Role.WRITE_SUSPEND)
+  @Permissions({
+    allowedIdirRoles: [
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.FINANCE,
+      IDIRUserRole.CTPO,
+    ],
+  })
   @Post('suspend')
   async suspendCompany(
     @Req() request: Request,
@@ -82,7 +88,13 @@ export class CompanySuspendController {
     type: ReadCompanySuspendActivityDto,
     isArray: true,
   })
-  @Roles(Role.READ_SUSPEND)
+  @Permissions({
+    allowedIdirRoles: [
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.FINANCE,
+      IDIRUserRole.CTPO,
+    ],
+  })
   @Get('suspend')
   async findAllSuspendActivityByCompanyId(
     @Param('companyId') companyId: number,

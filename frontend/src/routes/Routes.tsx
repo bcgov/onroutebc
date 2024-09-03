@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import { BCeIDAuthWall } from "../common/authentication/auth-walls/BCeIDAuthWall";
 import { IDIRAuthWall } from "../common/authentication/auth-walls/IDIRAuthWall";
 import { NewBCeIDAuthWall } from "../common/authentication/auth-walls/NewBCeIDAuthWall";
+import { IDIR_USER_ROLE, CLAIMS } from "../common/authentication/types";
 import { UniversalUnauthorized } from "../common/pages/UniversalUnauthorized";
 import { UniversalUnexpected } from "../common/pages/UniversalUnexpected";
 import { WelcomePage } from "../features/homePage/welcome/WelcomePage";
