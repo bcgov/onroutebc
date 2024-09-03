@@ -389,19 +389,6 @@ export type PermissionConfigType = {
    */
   featureFlag?: string;
   /**
-   * With only condition to check, all input props but `featureFlag`
-   * are skipped.
-   *
-   * This is the second highest priority after `featureFlag`.
-   *
-   * i.e., this function will be the only check to decide whether to render
-   * a component.
-   *
-   * @param args Any arguments to be passed.
-   * @returns A boolean.
-   */
-  onlyConditionToCheck?: (...args: any) => boolean;
-  /**
    * An additional function call whose boolean value will be accounted
    * for determining whether to render a component.
    * i.e., this function will play along with other specifications
@@ -461,20 +448,16 @@ export type PermissionMatrixKeysType = {
  * @param {string} [config.featureFlag] - Feature flag key to check if the feature is enabled.
  *
  * Priority 2
- * @param {Function} [config.onlyConditionToCheck] - A custom condition function, if provided this is the only condition checked.
- *
- * Priority 3
  * @param {string} [config.permissionMatrixFeatureKey] - The major feature that's the primary key in {@link PERMISSIONS_MATRIX}.
  * @param {string} [config.permissionMatrixFunctionKey] - The function that's the nested key in {@link PERMISSIONS_MATRIX}.
  *
- * Priority 4
+ * Priority 3
  * @param {Function} [config.additionalConditionToCall] - Additional custom condition to call if the basic conditions are met.
  *
  * @returns {boolean} - Returns whether the current user has the permission.
  */
 export const usePermissionMatrix = ({
   featureFlag,
-  onlyConditionToCheck,
   permissionMatrixKeys,
   additionalConditionToCheck,
 }: PermissionConfigType & {
@@ -489,11 +472,6 @@ export const usePermissionMatrix = ({
     if (featureFlags?.[featureFlag] !== "ENABLED") {
       return false;
     }
-  }
-
-  // If the onlyConditionToCheck function is given, call that alone and exit.
-  if (onlyConditionToCheck) {
-    return onlyConditionToCheck();
   }
   let isAllowed = false;
   let currentUserRole;

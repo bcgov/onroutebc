@@ -5,8 +5,6 @@ import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { LoadIDIRUserContext } from "../LoadIDIRUserContext";
 import { LoadIDIRUserClaims } from "../LoadIDIRUserClaims";
 import OnRouteBCContext from "../OnRouteBCContext";
-import { IDIRUserRoleType } from "../types";
-import { DoesUserHaveRole } from "../util";
 import { Loading } from "../../pages/Loading";
 import { IDPS } from "../../types/idp";
 import { ERROR_ROUTES, HOME } from "../../../routes/constants";
@@ -24,16 +22,12 @@ const isIDIR = (identityProvider: string) => identityProvider === IDPS.IDIR;
  *
  */
 export const IDIRAuthWall = ({
-  allowedRoles,
   permissionMatrixKeys,
 }: {
   /**
-   * The collection of roles allowed to have access to a page or action.
-   * IDIR System Admin is assumed to be allowed regardless of it being passed.
-   * If not provided, only a System Admin will be allowed to access.
+   * The permission matrix keys.
    */
-  allowedRoles?: IDIRUserRoleType[];
-  permissionMatrixKeys?: PermissionMatrixKeysType;
+  permissionMatrixKeys: PermissionMatrixKeysType;
 }) => {
   const {
     isAuthenticated,
@@ -90,38 +84,26 @@ export const IDIRAuthWall = ({
       );
     }
 
-    if (permissionMatrixKeys) {
-      const { permissionMatrixFeatureKey, permissionMatrixFunctionKey } =
-        permissionMatrixKeys;
-      const { allowedIDIRRoles } = (
-        PERMISSIONS_MATRIX[permissionMatrixFeatureKey] as {
-          [key: string]: PermissionMatrixConfigObject;
-        }
-      )[permissionMatrixFunctionKey];
-      const isAllowed = allowedIDIRRoles?.includes(
-        idirUserDetails.userRole,
-      );
-      if (isAllowed) {
-        return <Outlet />;
+    const { permissionMatrixFeatureKey, permissionMatrixFunctionKey } =
+      permissionMatrixKeys;
+    const { allowedIDIRRoles } = (
+      PERMISSIONS_MATRIX[permissionMatrixFeatureKey] as {
+        [key: string]: PermissionMatrixConfigObject;
       }
-    }
-
-    const doesUserHaveAccess = DoesUserHaveRole<IDIRUserRoleType>({
-      userRole: idirUserDetails?.userRole,
-      allowedRoles,
-    });
-
-    if (doesUserHaveAccess) {
+    )[permissionMatrixFunctionKey];
+    const isAllowed = allowedIDIRRoles?.includes(idirUserDetails.userRole);
+    if (isAllowed) {
       return <Outlet />;
+    } else {
+      // The user does not have access. They should be disallowed.
+      return (
+        <Navigate
+          to={ERROR_ROUTES.UNAUTHORIZED}
+          state={{ from: location }}
+          replace
+        />
+      );
     }
-    // The user does not have access. They should be disallowed.
-    return (
-      <Navigate
-        to={ERROR_ROUTES.UNAUTHORIZED}
-        state={{ from: location }}
-        replace
-      />
-    );
   } else {
     return <Navigate to={HOME} state={{ from: location }} replace />;
   }

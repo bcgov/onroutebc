@@ -14,8 +14,7 @@ import { IDPS } from "../../types/idp";
 import { LoadBCeIDUserContext } from "../LoadBCeIDUserContext";
 import { LoadBCeIDUserClaimsByCompany } from "../LoadBCeIDUserClaimsByCompany";
 import OnRouteBCContext from "../OnRouteBCContext";
-import { BCeIDUserRoleType, IDIRUserRoleType, UserClaimsType } from "../types";
-import { DoesUserHaveClaim } from "../util";
+import { BCeIDUserRoleType } from "../types";
 import { IDIRAuthWall } from "./IDIRAuthWall";
 import { setRedirectInSession } from "../../helpers/util";
 import { getUserStorage } from "../../apiManager/httpRequestHandler";
@@ -29,18 +28,12 @@ export const isIDIR = (identityProvider: string) =>
   identityProvider === IDPS.IDIR;
 
 export const BCeIDAuthWall = ({
-  requiredRole,
   permissionMatrixKeys,
-  allowedIDIRRoles,
 }: {
-  requiredRole?: UserClaimsType;
   /**
-   * The collection of roles allowed to have access to a page or action.
-   * IDIR System Admin is assumed to be allowed regardless of it being passed.
-   * If not provided, only a System Admin will be allowed to access.
+   * The permission matrix keys.
    */
-  permissionMatrixKeys?: PermissionMatrixKeysType;
-  allowedIDIRRoles?: IDIRUserRoleType[];
+  permissionMatrixKeys: PermissionMatrixKeysType;
 }) => {
   const {
     isAuthenticated,
@@ -119,7 +112,7 @@ export const BCeIDAuthWall = ({
   if (isAuthenticated && isEstablishedUser) {
     if (isIDIR(userIDP)) {
       if (companyId) {
-        return <IDIRAuthWall allowedRoles={allowedIDIRRoles} />;
+        return <IDIRAuthWall permissionMatrixKeys={permissionMatrixKeys} />;
       } else {
         return (
           <Navigate
@@ -149,23 +142,19 @@ export const BCeIDAuthWall = ({
       }
     }
 
-    if (permissionMatrixKeys) {
-      const { permissionMatrixFeatureKey, permissionMatrixFunctionKey } =
-        permissionMatrixKeys;
-      const { allowedBCeIDRoles } = (
-        PERMISSIONS_MATRIX[permissionMatrixFeatureKey] as {
-          [key: string]: PermissionMatrixConfigObject;
-        }
-      )[permissionMatrixFunctionKey];
-      const isAllowed = allowedBCeIDRoles?.includes(
-        userDetails?.userRole as BCeIDUserRoleType,
-      );
-      if (isAllowed) {
-        return <Outlet />;
+    const { permissionMatrixFeatureKey, permissionMatrixFunctionKey } =
+      permissionMatrixKeys;
+    const { allowedBCeIDRoles } = (
+      PERMISSIONS_MATRIX[permissionMatrixFeatureKey] as {
+        [key: string]: PermissionMatrixConfigObject;
       }
-    }
-
-    if (!DoesUserHaveClaim(userClaims, requiredRole)) {
+    )[permissionMatrixFunctionKey];
+    const isAllowed = allowedBCeIDRoles?.includes(
+      userDetails?.userRole as BCeIDUserRoleType,
+    );
+    if (isAllowed) {
+      return <Outlet />;
+    } else {
       return (
         <Navigate
           to={ERROR_ROUTES.UNAUTHORIZED}
@@ -174,7 +163,6 @@ export const BCeIDAuthWall = ({
         />
       );
     }
-    return <Outlet />;
   }
   return <></>;
 };
