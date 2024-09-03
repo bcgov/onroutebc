@@ -9,7 +9,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Request } from 'express';
-import { Claim } from '../../enum/claims.enum';
 import { Permissions } from '../../decorator/permissions.decorator';
 import { DmsService } from '../dms/dms.service';
 import { IUserJWT } from '../../interface/user-jwt.interface';
@@ -22,6 +21,10 @@ import { ExceptionDto } from '../../exception/exception.dto';
 import { NotificationDocumentDto } from './dto/request/notification-document.dto';
 import { NotificationDto } from './dto/request/notification.dto';
 import { JwtOneOfAuthGuard } from '../../guard/jwt-one-of-auth.guard';
+import {
+  CLIENT_USER_ROLE_LIST,
+  IDIR_USER_ROLE_LIST,
+} from '../../enum/user-role.enum';
 
 @ApiBearerAuth()
 @ApiBadRequestResponse({
@@ -62,7 +65,10 @@ export class NotificationController {
   })
   @UseGuards(JwtOneOfAuthGuard)
   @Post('/document')
-  @Permissions({ allOf: [Claim.SEND_NOTIFICATION, Claim.READ_DOCUMENT] })
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: IDIR_USER_ROLE_LIST,
+  })
   async notificationWithDocumentsFromDops(
     @Req() req: Request,
     @Body() notificationDocumentDto: NotificationDocumentDto,
@@ -147,7 +153,10 @@ export class NotificationController {
       'Sends a simple notification using the specified template to the given recipient(s), and returns a transaction ID for the operation.',
   })
   @Post()
-  @Permissions(Claim.SEND_NOTIFICATION)
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: IDIR_USER_ROLE_LIST,
+  })
   async notificationWithoutDocument(
     @Req() req: Request,
     @Body() notificationDocumentDto: NotificationDto,

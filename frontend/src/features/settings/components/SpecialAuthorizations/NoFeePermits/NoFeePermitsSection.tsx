@@ -15,18 +15,18 @@ import {
 } from "../../../types/SpecialAuthorization";
 
 export const NoFeePermitsSection = ({
-  enableNoFeePermits,
-  setEnableNoFeePermits,
+  onUpdateEnableNoFee,
   noFeePermitType,
-  setNoFeePermitType,
+  onUpdateNoFee,
   isEditable = false,
 }: {
-  enableNoFeePermits: boolean;
-  setEnableNoFeePermits: (enable: boolean) => void;
+  onUpdateEnableNoFee: (enable: boolean) => void;
   noFeePermitType: RequiredOrNull<NoFeePermitType>;
-  setNoFeePermitType: (noFeeType: RequiredOrNull<NoFeePermitType>) => void;
+  onUpdateNoFee: (noFeeType: RequiredOrNull<NoFeePermitType>) => void;
   isEditable?: boolean;
 }) => {
+  const enableNoFeePermits = Boolean(noFeePermitType);
+
   if (isEditable) {
     return (
       <div className="no-fee-permits-section">
@@ -38,7 +38,7 @@ export const NoFeePermitsSection = ({
           <Switch
             className="no-fee-permits-section__enable-switch"
             checked={enableNoFeePermits}
-            onChange={async (_, checked) => setEnableNoFeePermits(checked)}
+            onChange={async (_, checked) => onUpdateEnableNoFee(checked)}
           />
         </div>
   
@@ -51,7 +51,7 @@ export const NoFeePermitsSection = ({
             className="no-fee-options__types"
             defaultValue={noFeePermitType}
             value={noFeePermitType}
-            onChange={(e) => setNoFeePermitType(Number(e.target.value) as NoFeePermitType)}
+            onChange={(e) => onUpdateNoFee(e.target.value as NoFeePermitType)}
           >
             {Object.values(NO_FEE_PERMIT_TYPES).map((noFeePermitType) => (
               <FormControlLabel
@@ -77,7 +77,7 @@ export const NoFeePermitsSection = ({
     );
   }
 
-  return (enableNoFeePermits && noFeePermitType) ? (
+  return noFeePermitType ? (
     <div className="no-fee-permits-section no-fee-permits-section--readonly">
       <div className="no-fee-permits-section__header">
         <div className="no-fee-permits-section__title">

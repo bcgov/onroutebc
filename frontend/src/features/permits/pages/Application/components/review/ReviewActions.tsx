@@ -6,16 +6,16 @@ import "./ReviewActions.scss";
 
 export const ReviewActions = ({
   onEdit,
+  continueBtnText,
   onContinue,
   hasToCartButton,
   onAddToCart,
-  continueBtnText,
 }: {
   onEdit: () => void;
-  onContinue: () => Promise<void>;
+  continueBtnText?: string;
+  onContinue?: () => Promise<void>;
   hasToCartButton: boolean;
   onAddToCart?: () => Promise<void>;
-  continueBtnText: string;
 }) => {
   return (
     <Box className="review-actions">
@@ -48,17 +48,19 @@ export const ReviewActions = ({
         </Button>
       ) : null}
 
-      <Button
-        className="review-actions__btn review-actions__btn--continue"
-        key="submit-application-button"
-        aria-label="Submit"
-        variant="contained"
-        color="primary"
-        onClick={onContinue}
-        data-testid="continue-btn"
-      >
-        {continueBtnText}
-      </Button>
+      {continueBtnText ? (
+        <Button
+          className="review-actions__btn review-actions__btn--continue"
+          key="submit-application-button"
+          aria-label="Submit"
+          variant="contained"
+          color="primary"
+          onClick={onContinue}
+          data-testid="continue-btn"
+        >
+          {continueBtnText}
+        </Button>
+      ) : null}
     </Box>
   );
 };

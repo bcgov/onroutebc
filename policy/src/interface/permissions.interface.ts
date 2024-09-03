@@ -30,5 +30,5 @@ export interface IPermissions {
    * claims will be exclusively checked for deciding whether the user
    * is allowed to perform this action.
    */
-  claims?: Claim[];
+  claim?: Claim;
 }
