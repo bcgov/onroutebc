@@ -23,8 +23,10 @@ export const CreditAccountMetadataComponent = ({
       return (
         <RenderIf
           component={<AddCreditAccount companyId={companyId} />}
-          permissionMatrixFeatureKey="MANAGE_SETTINGS"
-          permissionMatrixFunctionKey="UPDATE_CREDIT_ACCOUNT_DETAILS"
+          permissionMatrixKeys={{
+            permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+            permissionMatrixFunctionKey: "UPDATE_CREDIT_ACCOUNT_DETAILS",
+          }}
         />
       );
     }

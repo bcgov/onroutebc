@@ -56,8 +56,10 @@ export const ViewCreditAccount = ({
                   creditAccountId={creditAccountId}
                 />
               }
-              permissionMatrixFeatureKey="MANAGE_SETTINGS"
-              permissionMatrixFunctionKey="UPDATE_CREDIT_ACCOUNT_DETAILS"
+              permissionMatrixKeys={{
+                permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+                permissionMatrixFunctionKey: "UPDATE_CREDIT_ACCOUNT_DETAILS",
+              }}
               additionalConditionToCheck={() => isAccountHolder}
             />
             <RenderIf
@@ -67,8 +69,10 @@ export const ViewCreditAccount = ({
                   creditAccountId={creditAccountId}
                 />
               }
-              permissionMatrixFeatureKey="MANAGE_SETTINGS"
-              permissionMatrixFunctionKey="UPDATE_CREDIT_ACCOUNT_DETAILS"
+              permissionMatrixKeys={{
+                permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+                permissionMatrixFunctionKey: "UPDATE_CREDIT_ACCOUNT_DETAILS",
+              }}
               additionalConditionToCheck={() =>
                 creditAccount?.creditAccountStatusType !==
                   CREDIT_ACCOUNT_STATUS_TYPE.CLOSED && isAccountHolder
@@ -81,8 +85,10 @@ export const ViewCreditAccount = ({
                   creditAccountMetadata={{ creditAccountId, userType }}
                 />
               }
-              permissionMatrixFeatureKey="MANAGE_SETTINGS"
-              permissionMatrixFunctionKey="VIEW_CREDIT_ACCOUNT_DETAILS"
+              permissionMatrixKeys={{
+                permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+                permissionMatrixFunctionKey: "VIEW_CREDIT_ACCOUNT_DETAILS",
+              }}
             />
           </Box>
           <RenderIf
@@ -93,8 +99,10 @@ export const ViewCreditAccount = ({
                 creditAccountStatus={creditAccount?.creditAccountStatusType}
               />
             }
-            permissionMatrixFeatureKey="MANAGE_SETTINGS"
-            permissionMatrixFunctionKey="VIEW_CREDIT_ACCOUNT_DETAILS"
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+              permissionMatrixFunctionKey: "VIEW_CREDIT_ACCOUNT_DETAILS",
+            }}
             additionalConditionToCheck={() => {
               // In case of BCeID user, CV - CA is only allowed
               // to see the account details if the status is active.
