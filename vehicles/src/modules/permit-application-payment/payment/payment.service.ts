@@ -62,6 +62,10 @@ import {
   throwUnprocessableEntityException,
 } from '../../../common/helper/exception.helper';
 import { isFeatureEnabled } from '../../../common/helper/common.helper';
+import { Policy } from 'onroute-policy-engine';
+import { PolicyDefinition } from 'onroute-policy-engine/dist/types/policy-definition';
+import { masterPolicyConfig } from 'src/common/helper/policyDefinition/master.sample';
+import { minimalPolicyDef } from 'src/common/helper/policyDefinition/mimimal.sample';
 
 @Injectable()
 export class PaymentService {
@@ -276,7 +280,8 @@ export class PaymentService {
         `paymentCardTypeCode is required when paymentMethodTypeCode is ${createTransactionDto?.paymentMethodTypeCode}`,
       ]);
     }
-
+    const policyDefinition: PolicyDefinition = masterPolicyConfig;
+    const policy: Policy = new Policy(policyDefinition);
     let readTransactionDto: ReadTransactionDto;
     const queryRunner =
       nestedQueryRunner || this.dataSource.createQueryRunner();
@@ -299,6 +304,16 @@ export class PaymentService {
         },
       );
       for (const application of existingApplications) {
+        console.log('Policy is: ', policy);
+        console.log('Application to be validated: ', application);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const jsonString = {permitType: application.permitType,permitData: JSON.parse(application.permitData.permitData)};
+        const permitApplication = Object.assign({},jsonString);
+        console.log('permit application: ',permitApplication);
+        const result =  await policy.validate(permitApplication);
+       //const result =  await policy.validate(application);
+        console.log('Validation result; ',result);
+
         if (
           !(
             this.isVoidorRevoked(application.permitStatus) ||
