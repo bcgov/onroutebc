@@ -399,8 +399,7 @@ export class LoaProfile extends AutomapperProfile {
         forMember(
           (d) => d.expiryDate,
           mapFrom((s) => {
-            if(s.expiryDate)
-            return dayjs(s.expiryDate).format('YYYY-MM-DD');
+            if (s.expiryDate) return dayjs(s.expiryDate).format('YYYY-MM-DD');
           }),
         ),
         forMember(

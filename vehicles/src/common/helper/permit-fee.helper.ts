@@ -25,7 +25,11 @@ import { ApplicationStatus } from '../enum/application-status.enum';
  * @throws {NotAcceptableException} If the duration is invalid for TROS permit type.
  * @throws {BadRequestException} If the permit type is not recognized.
  */
-export const permitFee = (application: Permit, oldAmount?: number): number => {
+export const permitFee = (
+  application: Permit,
+  isNoFee?: boolean,
+  oldAmount?: number,
+): number => {
   let duration = calculateDuration(application);
   switch (application.permitType) {
     case PermitType.TERM_OVERSIZE: {
@@ -55,6 +59,7 @@ export const permitFee = (application: Permit, oldAmount?: number): number => {
         TROS_TERM,
         oldAmount,
         application.permitStatus,
+        isNoFee,
       );
     }
     case PermitType.TERM_OVERWEIGHT: {
@@ -84,6 +89,7 @@ export const permitFee = (application: Permit, oldAmount?: number): number => {
         TROW_TERM,
         oldAmount,
         application.permitStatus,
+        isNoFee,
       );
     }
     default:
@@ -149,8 +155,11 @@ export const currentPermitFee = (
   allowedPermitTerm: number,
   oldAmount?: number,
   permitStatus?: ApplicationStatus,
+  isNoFee?: boolean,
 ): number => {
-  let permitTerms = Math.ceil(duration / allowedPermitTerm); // ex: if duraion is 40 days then charge for 60 days.
+  let permitTerms;
+  if (isNoFee) pricePerTerm = 0; // If the 'no fee' flag is set, the company is eligible to receive free permits.
+  permitTerms = Math.ceil(duration / allowedPermitTerm); // ex: if duraion is 40 days then charge for 60 days.
   if (permitStatus === ApplicationStatus.VOIDED) {
     permitTerms = Math.floor(duration / allowedPermitTerm); //ex: if duration is 40 days then refund only 30 days.
     return pricePerTerm * permitTerms * -1;
