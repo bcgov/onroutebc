@@ -45,7 +45,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: rbhadti94/apache-jmeter-action@v0.5.0
         with:
-          testFilePath: loadtests/vehicles/orbc_load_test_plan_vehicles.jmx
+          testFilePath: loadtests/vehicles/
           outputReportsFolder: results_vehicles
           args: |
             --loglevel INFO 
@@ -53,7 +53,7 @@ jobs:
             -JBEARER_TOKEN=${{inputs.bearer_token}}
             -JNUM_THREADS=${{inputs.num_threads}}
             -JFRONTEND_API_URL=${{vars.frontend_api_url}}
-            -JDOPS_API_URL=${{vars.dops_api_url}}
+            -JDOPS_API_URL=${{vars.vars_api_url}}
             -JVEHICLES_API_URL=${{vars.vehicles_api_url}}
             -JRESULTS_DIR=results_vehicles
 
