@@ -155,24 +155,33 @@ export const getExpiryDateOrDefault = (
   );
 };
 
+/**
+ * Applying no-fee permit type designation to application data.
+ * @param applicationData Existing application data
+ * @param isNoFeePermitType Whether or not the no-fee permit type is designated
+ * @returns Application data after applying no-fee permit type
+ */
 export const applyNoFeeToApplicationData = <T extends Nullable<ApplicationFormData | Application>>(
   applicationData: T,
   isNoFeePermitType: boolean,
 ): T => {
-  // If application doesn't exist, or if application is not no-fee permit type
-  // then there's no need to apply no-fee to the application at all
+  // If application doesn't exist, then there's no need to apply no-fee to the application
   if (!applicationData) return applicationData;
+
+  // If no-fee permit type is designated, always set $0 fee
+  // Otherwise recalculate the fee based on permit duration and type
+  const fee = isNoFeePermitType
+    ? "0"
+    : `${calculateFeeByDuration(
+      applicationData.permitType,
+      applicationData.permitData.permitDuration,
+    )}`;
 
   return {
     ...applicationData,
     permitData: {
       ...applicationData.permitData,
-      feeSummary: !isNoFeePermitType
-        ? `${calculateFeeByDuration(
-          applicationData.permitType,
-          applicationData.permitData.permitDuration,
-        )}`
-        : "0",
+      feeSummary: fee,
     },
   };
 };

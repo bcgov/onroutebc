@@ -107,6 +107,8 @@ export const calculateAmountToRefund = (
   currPermitType: PermitType,
 ) => {
   const netPaid = calculateNetAmount(permitHistory);
+  if (isZeroAmount(netPaid)) return 0; // If total paid is $0 (eg. no-fee permits), then refund nothing
+
   const feeForCurrDuration = calculateFeeByDuration(currPermitType, currDuration);
   return netPaid - feeForCurrDuration;
 };

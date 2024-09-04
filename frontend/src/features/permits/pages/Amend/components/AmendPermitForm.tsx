@@ -59,6 +59,7 @@ export const AmendPermitForm = () => {
 
   const { data: specialAuthorizations } = useFetchSpecialAuthorizations(companyId);
   const isLcvDesignated = Boolean(specialAuthorizations?.isLcvAllowed);
+  const isNoFeePermitType = Boolean(specialAuthorizations?.noFeeType);
 
   const { formData, formMethods } = useAmendPermitForm(
     currentStepIndex === 0,
@@ -219,6 +220,7 @@ export const AmendPermitForm = () => {
           doingBusinessAs={doingBusinessAs}
           pastStartDateStatus={PAST_START_DATE_STATUSES.WARNING}
           isLcvDesignated={isLcvDesignated}
+          isNoFeePermitType={isNoFeePermitType}
         >
           <AmendRevisionHistory revisionHistory={revisionHistory} />
           <AmendReason feature={FEATURE} />

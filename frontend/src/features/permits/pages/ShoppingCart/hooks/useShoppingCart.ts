@@ -4,22 +4,35 @@ import { CartContext } from "../../../context/CartContext";
 import { useFetchCart, useRemoveFromCart } from "../../../hooks/cart";
 import { SelectableCartItem } from "../../../types/CartItem";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
+import { useFetchSpecialAuthorizations } from "../../../../settings/hooks/specialAuthorizations";
 
 export const useShoppingCart = (
   companyId: string,
   enableCartFilter: boolean,
 ) => {
   const { refetchCartCount } = useContext(CartContext);
+
+  // Cart filter state
   const [showAllApplications, setShowAllApplications] = useState<boolean>(enableCartFilter);
+
+  // Interacting with backend for cart
   const removeFromCartMutation = useRemoveFromCart();
   const cartQuery = useFetchCart(companyId, showAllApplications);
   const { data: cartItems } = cartQuery;
+
+  // Check if no-fee permit type is designated
+  const { data: specialAuth } = useFetchSpecialAuthorizations(companyId);
+  const isNoFeePermitType = Boolean(specialAuth?.noFeeType);
+
+  // Cart item state
   const [cartItemSelection, setCartItemSelection] = useState<SelectableCartItem[]>([]);
   const cartItemsTotalCount = cartItemSelection.length;
-  const selectedTotalFee = cartItemSelection
-    .filter(cartItem => cartItem.selected)
-    .map(cartItem => cartItem.fee)
-    .reduce((prevTotal, currFee) => prevTotal + currFee, 0);
+  const selectedTotalFee = !isNoFeePermitType
+    ? cartItemSelection
+      .filter(cartItem => cartItem.selected)
+      .map(cartItem => cartItem.fee)
+      .reduce((prevTotal, currFee) => prevTotal + currFee, 0)
+    : 0;
 
   useEffect(() => {
     // Always refetch cart count upon initial rendering of shopping cart and when cart filter changes
@@ -88,6 +101,7 @@ export const useShoppingCart = (
     cartItemSelection,
     selectedTotalFee,
     showAllApplications,
+    isNoFeePermitType,
     toggleSelectAll,
     handleCartFilterChange,
     handleSelectItem,

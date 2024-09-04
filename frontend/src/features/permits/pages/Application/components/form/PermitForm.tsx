@@ -53,6 +53,7 @@ interface PermitFormProps {
   doingBusinessAs?: Nullable<string>;
   pastStartDateStatus: PastStartDateStatus;
   isLcvDesignated: boolean;
+  isNoFeePermitType: boolean;
 }
 
 export const PermitForm = (props: PermitFormProps) => {
@@ -105,10 +106,22 @@ export const PermitForm = (props: PermitFormProps) => {
     handleSetExpiryDate(expiryDate);
   }, [expiryDate]);
   
-  // Update fee summary whenever duration or permit type changes
+  const isNoFeePermitType = props.isNoFeePermitType;
+  const isAmendAction = props.isAmendAction;
+
+  // Update fee summary whenever duration, permit type, or no-fee permit type designation changes
   useEffect(() => {
-    handleSetFee(`${calculateFeeByDuration(permitType, permitDuration)}`);
-  }, [permitDuration, permitType]);
+    if (isNoFeePermitType) {
+      // If no-fee permit type is designated, always set fee to $0
+      handleSetFee("0");
+    } else if (!isAmendAction) {
+      // If no-fee is disabled, and creating/editing application, then set fee to normal calculation
+      handleSetFee(`${calculateFeeByDuration(permitType, permitDuration)}`);
+    }
+    // Otherwise, it will be an amendment, and when the no-fee is disabled, keep the fee the same as before
+    // If it was $0 before, it makes sense to keep it at $0,
+    // and similarly for calculated fee ($30 before would still be $30 now)
+  }, [permitDuration, permitType, isNoFeePermitType, isAmendAction]);
 
   const vehicleSubtype = vehicleFormData.vehicleSubType;
   useEffect(() => {
@@ -117,7 +130,7 @@ export const PermitForm = (props: PermitFormProps) => {
       && permitConditions.some(({ condition }: PermitCondition) => condition === LCV_CONDITION.condition)
     ) {
       // If vehicle subtype in the form isn't LCV but conditions have LCV,
-    // then remove that LCV condition from the form
+      // then remove that LCV condition from the form
     handleSetConditions(permitConditions.filter(
         ({ condition }: PermitCondition) => condition !== LCV_CONDITION.condition,
       ));
@@ -137,13 +150,13 @@ export const PermitForm = (props: PermitFormProps) => {
         <ApplicationDetails
           permitType={permitType}
           infoNumber={
-            props.isAmendAction ? props.permitNumber : applicationNumber
+            isAmendAction ? props.permitNumber : applicationNumber
           }
-          infoNumberType={props.isAmendAction ? "permit" : "application"}
+          infoNumberType={isAmendAction ? "permit" : "application"}
           createdDateTime={props.createdDateTime}
           updatedDateTime={props.updatedDateTime}
           companyInfo={props.companyInfo}
-          isAmendAction={props.isAmendAction}
+          isAmendAction={isAmendAction}
           doingBusinessAs={props.doingBusinessAs}
         />
 
@@ -154,7 +167,7 @@ export const PermitForm = (props: PermitFormProps) => {
           expiryDate={expiryDate}
           conditionsInPermit={permitConditions}
           durationOptions={props.durationOptions}
-          disableStartDate={props.isAmendAction}
+          disableStartDate={isAmendAction}
           permitType={permitType}
           pastStartDateStatus={props.pastStartDateStatus}
           includeLcvCondition={isLcvDesignated && isVehicleSubtypeLCV(vehicleFormData.vehicleSubType)}
