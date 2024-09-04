@@ -90,7 +90,7 @@ export const BasePermitList = ({
 
   const table = useMaterialReactTable({
     ...defaultTableOptions,
-    columns: PermitsColumnDefinition,
+    columns: PermitsColumnDefinition(() => navigate(ERROR_ROUTES.DOCUMENT_UNAVAILABLE)),
     data: data?.items ?? [],
     enableRowSelection: false,
     initialState: {
@@ -158,6 +158,7 @@ export const BasePermitList = ({
               <PermitRowOptions
                 isExpired={isExpired}
                 permitId={row.original.permitId}
+                onDocumentUnavailable={() => {navigate(ERROR_ROUTES.DOCUMENT_UNAVAILABLE)}}
               />
             )}
           </Box>

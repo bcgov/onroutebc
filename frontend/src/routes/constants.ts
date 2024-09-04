@@ -34,6 +34,7 @@ export const ERROR_ROUTES = {
   UNAUTHORIZED: "/unauthorized",
   UNEXPECTED: "/unexpected-error",
   ISSUANCE: "/issuance-error",
+  DOCUMENT_UNAVAILABLE: "/document-unavailable",
 };
 
 // Manage Vehicles
