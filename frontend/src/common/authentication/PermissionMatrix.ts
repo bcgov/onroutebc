@@ -207,6 +207,29 @@ const MANAGE_PROFILE = {
     allowedBCeIDRoles: [CA, PA],
     allowedIDIRRoles: [],
   },
+  /**
+   * Credit Account Tab
+   */
+  /**
+   * View Credit Account tab - Account holder
+   * Comment: Account number, status
+   */
+  VIEW_CREDIT_ACCOUNT_TAB_ACCOUNT_HOLDER: {
+    allowedBCeIDRoles: [CA],
+  },
+  /**
+   * View Credit Account users - Account holder
+   */
+  VIEW_CREDIT_ACCOUNT_USERS_ACCOUNT_HOLDER: {
+    allowedBCeIDRoles: [CA],
+  },
+  /**
+   * View Credit Account details - Account holder
+   * Comment: Credit Limit/Current Balance/Available Credit
+   */
+  VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_HOLDER: {
+    allowedBCeIDRoles: [CA],
+  },
 } as const;
 
 const MANAGE_SETTINGS = {
@@ -220,22 +243,85 @@ const MANAGE_SETTINGS = {
   REMOVE_LCV_FLAG: { allowedIDIRRoles: [HQA] },
   ADD_AN_LOA: { allowedIDIRRoles: [SA, HQA] },
   EDIT_AN_LOA: { allowedIDIRRoles: [SA, HQA] },
-  VIEW_LOA: { allowedIDIRRoles: [PC, SA, CTPO, EO, HQA] },
+  VIEW_LOA: { allowedIDIRRoles: ALL_IDIR_ROLES },
   REMOVE_LOA: { allowedIDIRRoles: [SA, HQA] },
 
   /**
    * Credit Account Tab
    */
-  VIEW_CREDIT_ACCOUNT_TAB: {
-    allowedBCeIDRoles: [CA],
-    allowedIDIRRoles: [PC, SA, FIN, CTPO],
-    featureFlag: "CREDIT-ACCOUNT",
+  /**
+   * View Credit Account tab - Account Holder
+   * Comment: Account number, status
+   */
+  VIEW_CREDIT_ACCOUNT_TAB_ACCOUNT_HOLDER: {
+    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
   },
-  VIEW_CREDIT_ACCOUNT_DETAILS: {
-    allowedBCeIDRoles: [CA],
-    allowedIDIRRoles: [SA, FIN],
+  /**
+   * View Credit Account Users - Account Holder
+   */
+  VIEW_CREDIT_ACCOUNT_USERS_ACCOUNT_HOLDER: {
+    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
   },
-  UPDATE_CREDIT_ACCOUNT_DETAILS: { allowedIDIRRoles: [FIN] },
+  /**
+   * Manage Credit Account Users - Account Holder
+   * Comment: Add/remove users
+   */
+  MANAGE_CREDIT_ACCOUNT_USERS_ACCOUNT_HOLDER: { allowedIDIRRoles: [FIN] },
+  /**
+   * View Credit Account Details - Account Holder
+   * Comment: Credit Limit/Current Balance/Available Credit
+   */
+  VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_HOLDER: {
+    allowedIDIRRoles: [SA, FIN, HQA],
+  },
+  /**
+   * Perform Credit Account Detail actions - Account Holder
+   *
+   * Comment: Hold, Close, Remove Hold, Reopen Credit Account,
+   * update credit account - available actions vary depending on
+   * account state (see spec/hifi for details)
+   */
+  PERFORM_CREDIT_ACCOUNT_DETAIL_ACTIONS_ACCOUNT_HOLDER: {
+    allowedIDIRRoles: [FIN],
+  },
+  /**
+   * View Hold/Close History - Account Holder
+   */
+  VIEW_HOLD_OR_CLOSE_HISTORY_ACCOUNT_HOLDER: { allowedIDIRRoles: [FIN] },
+
+  /**
+   * View Credit Account tab - Account User
+   * Comment: Account number, status
+   */
+  VIEW_CREDIT_ACCOUNT_TAB_ACCOUNT_USER: {
+    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
+  },
+  /**
+   * View Credit Account Users - Account User
+   */
+  VIEW_CREDIT_ACCOUNT_USERS_ACCOUNT_USER: {
+    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
+  },
+  /**
+   * View Credit Account Details - Account User
+   * Comment: Credit Limit/Current Balance/Available Credit
+   */
+  VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_USER: {
+    allowedIDIRRoles: [SA, FIN, HQA],
+  },
+  /**
+   * View Credit Account tab - Non-Holder/user
+   * Comment: Info box
+   * 
+   * Todo: Implement info box.
+   */
+  VIEW_CREDIT_ACCOUNT_TAB_NON_HOLDER_OR_USER: {
+    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
+  },
+  /**
+   * Add Credit Account - Non-Holder/user
+   */
+  ADD_CREDIT_ACCOUNT_NON_HOLDER_OR_USER: { allowedIDIRRoles: [FIN] },
 
   /**
    * Suspend tab
@@ -333,10 +419,6 @@ const MISCELLANEOUS = {
     allowedBCeIDRoles: [CA, PA],
     allowedIDIRRoles: [PC, SA, CTPO],
   },
-  // Add this in permissions matrix document.
-  STAFF_ACT_AS_COMPANY: {
-    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
-  },
   /**
    * The following are already controlled by API.
    * So, frontend needs no implementation for this.
@@ -346,6 +428,11 @@ const MISCELLANEOUS = {
    * - sees applications from whole company
    * - sees IDIR-created applications
    */
+
+  // Add this in permissions matrix document.
+  STAFF_ACT_AS_COMPANY: {
+    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
+  },
 } as const;
 
 /**
@@ -355,7 +442,7 @@ const MISCELLANEOUS = {
  * @description All the keys and comments are identical to the feature keys used
  * in the permissions matrix document so that cross-verifying is easy.
  *
- * Note that this is a general structure for as specified in the document.
+ * Note that this is a general structure for permissions as specified in the document.
  * Individual features may need custom checks based on data or API calls
  * and they are not in scope for this implementation.
  */
@@ -505,14 +592,12 @@ export const usePermissionMatrix = ({
     if (isIdir) {
       currentUserRole = idirUserDetails?.userRole;
       isAllowed = Boolean(
-        currentUserRole &&
-          allowedIDIRRoles?.includes(currentUserRole),
+        currentUserRole && allowedIDIRRoles?.includes(currentUserRole),
       );
     } else {
       currentUserRole = userDetails?.userRole;
       isAllowed = Boolean(
-        currentUserRole &&
-          allowedBCeIDRoles?.includes(currentUserRole),
+        currentUserRole && allowedBCeIDRoles?.includes(currentUserRole),
       );
     }
   }

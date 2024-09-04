@@ -86,8 +86,8 @@ export const ManageProfilesDashboard = React.memo(() => {
 
   const showCreditAccountTab = usePermissionMatrix({
     featureFlag: "CREDIT-ACCOUNT",
-    permissionMatrixFeatureKey: "MANAGE_SETTINGS",
-    permissionMatrixFunctionKey: "VIEW_CREDIT_ACCOUNT_TAB",
+    permissionMatrixFeatureKey: "MANAGE_PROFILE",
+    permissionMatrixFunctionKey: "VIEW_CREDIT_ACCOUNT_TAB_ACCOUNT_HOLDER",
     additionalConditionToCheck: () => isCreditAccountHolder,
   });
 

@@ -57,7 +57,7 @@ export const ViewCreditAccount = ({
                 />
               }
               permissionMatrixFeatureKey="MANAGE_SETTINGS"
-              permissionMatrixFunctionKey="UPDATE_CREDIT_ACCOUNT_DETAILS"
+              permissionMatrixFunctionKey="VIEW_HOLD_OR_CLOSE_HISTORY_ACCOUNT_HOLDER"
               additionalConditionToCheck={() => isAccountHolder}
             />
             <RenderIf
@@ -68,7 +68,7 @@ export const ViewCreditAccount = ({
                 />
               }
               permissionMatrixFeatureKey="MANAGE_SETTINGS"
-              permissionMatrixFunctionKey="UPDATE_CREDIT_ACCOUNT_DETAILS"
+              permissionMatrixFunctionKey="MANAGE_CREDIT_ACCOUNT_USERS_ACCOUNT_HOLDER"
               additionalConditionToCheck={() =>
                 creditAccount?.creditAccountStatusType !==
                   CREDIT_ACCOUNT_STATUS_TYPE.CLOSED && isAccountHolder
@@ -82,7 +82,11 @@ export const ViewCreditAccount = ({
                 />
               }
               permissionMatrixFeatureKey="MANAGE_SETTINGS"
-              permissionMatrixFunctionKey="VIEW_CREDIT_ACCOUNT_DETAILS"
+              permissionMatrixFunctionKey={
+                isAccountHolder
+                  ? "VIEW_CREDIT_ACCOUNT_USERS_ACCOUNT_HOLDER"
+                  : "VIEW_CREDIT_ACCOUNT_USERS_ACCOUNT_USER"
+              }
             />
           </Box>
           <RenderIf
@@ -94,7 +98,11 @@ export const ViewCreditAccount = ({
               />
             }
             permissionMatrixFeatureKey="MANAGE_SETTINGS"
-            permissionMatrixFunctionKey="VIEW_CREDIT_ACCOUNT_DETAILS"
+            permissionMatrixFunctionKey={
+              isAccountHolder
+                ? "VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_HOLDER"
+                : "VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_USER"
+            }
             additionalConditionToCheck={() => {
               // In case of BCeID user, CV - CA is only allowed
               // to see the account details if the status is active.

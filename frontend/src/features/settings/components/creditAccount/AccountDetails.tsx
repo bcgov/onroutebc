@@ -11,9 +11,7 @@ import {
 import { MouseEvent, useState } from "react";
 import { RenderIf } from "../../../../common/components/reusable/RenderIf";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import {
-  useUpdateCreditAccountStatusMutation,
-} from "../../hooks/creditAccount";
+import { useUpdateCreditAccountStatusMutation } from "../../hooks/creditAccount";
 import {
   CREDIT_ACCOUNT_STATUS_TYPE,
   CREDIT_ACCOUNT_USER_TYPE,
@@ -27,6 +25,9 @@ import { CloseCreditAccountModal } from "./CloseCreditAccountModal";
 import { HoldCreditAccountModal } from "./HoldCreditAccountModal";
 import { useQueryClient } from "@tanstack/react-query";
 
+/**
+ * Component that displays credit limit, available balance etc.
+ */
 export const AccountDetails = ({
   companyId,
   creditAccountMetadata: { creditAccountId, userType },
@@ -200,7 +201,7 @@ export const AccountDetails = ({
               </Box>
             }
             permissionMatrixFeatureKey="MANAGE_SETTINGS"
-            permissionMatrixFunctionKey="UPDATE_CREDIT_ACCOUNT_DETAILS"
+            permissionMatrixFunctionKey="PERFORM_CREDIT_ACCOUNT_DETAIL_ACTIONS_ACCOUNT_HOLDER"
             additionalConditionToCheck={() => isAccountHolder}
           />
         </Box>

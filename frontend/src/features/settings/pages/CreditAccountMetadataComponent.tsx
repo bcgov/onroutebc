@@ -20,11 +20,13 @@ export const CreditAccountMetadataComponent = ({
         />
       );
     } else {
+      // Todo: Display info box for non-finance staff users who 
+      // do not have permission to create a new credit account.
       return (
         <RenderIf
           component={<AddCreditAccount companyId={companyId} />}
           permissionMatrixFeatureKey="MANAGE_SETTINGS"
-          permissionMatrixFunctionKey="UPDATE_CREDIT_ACCOUNT_DETAILS"
+          permissionMatrixFunctionKey="ADD_CREDIT_ACCOUNT_NON_HOLDER_OR_USER"
         />
       );
     }

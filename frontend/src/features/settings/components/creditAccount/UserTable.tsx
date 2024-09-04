@@ -33,7 +33,6 @@ export const UserTable = ({
   companyId: number;
   creditAccountMetadata: CreditAccountMetadata;
 }) => {
-
   const {
     data: creditAccountUsers,
     isError,
@@ -49,7 +48,8 @@ export const UserTable = ({
 
   const canUserUpdateCreditAccount = usePermissionMatrix({
     permissionMatrixFeatureKey: "MANAGE_SETTINGS",
-    permissionMatrixFunctionKey: "UPDATE_CREDIT_ACCOUNT_DETAILS",
+    permissionMatrixFunctionKey:
+      "PERFORM_CREDIT_ACCOUNT_DETAIL_ACTIONS_ACCOUNT_HOLDER",
     additionalConditionToCheck: () => isAccountHolder,
   });
 

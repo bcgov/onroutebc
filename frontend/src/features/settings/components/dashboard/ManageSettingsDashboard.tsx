@@ -15,18 +15,31 @@ import { CreditAccountMetadataComponent } from "../../pages/CreditAccountMetadat
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 import { useGetCreditAccountMetadataQuery } from "../../hooks/creditAccount";
 import { IDIR_USER_ROLE } from "../../../../common/authentication/types";
+import { CREDIT_ACCOUNT_USER_TYPE } from "../../types/creditAccount";
 
 export const ManageSettingsDashboard = React.memo(() => {
-  const {
-    userClaims,
-    companyId,
-    idirUserDetails,
-  } = useContext(OnRouteBCContext);
+  const { userClaims, companyId, idirUserDetails } =
+    useContext(OnRouteBCContext);
 
   const { data: featureFlags } = useFeatureFlagsQuery();
-  const { data: creditAccountMetadata } = useGetCreditAccountMetadataQuery(
-    companyId as number,
-  );
+  const { data: creditAccountMetadata, isPending } =
+    useGetCreditAccountMetadataQuery(companyId as number);
+
+  const isCreditAccountHolder =
+    creditAccountMetadata?.userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER;
+
+  /**
+   * @returns The permission matrix function key.
+   */
+  const getPermissionMatrixFunctionKey = () => {
+    if (!isPending && !creditAccountMetadata)
+      return "ADD_CREDIT_ACCOUNT_NON_HOLDER_OR_USER";
+    if (isCreditAccountHolder) {
+      return "VIEW_CREDIT_ACCOUNT_TAB_ACCOUNT_HOLDER";
+    } else {
+      return "VIEW_CREDIT_ACCOUNT_TAB_ACCOUNT_USER";
+    }
+  };
 
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userRole);
   const isFinanceUser = idirUserDetails?.userRole === IDIR_USER_ROLE.FINANCE;
@@ -41,9 +54,10 @@ export const ManageSettingsDashboard = React.memo(() => {
   const showCreditAccountTab = usePermissionMatrix({
     featureFlag: "CREDIT-ACCOUNT",
     permissionMatrixFeatureKey: "MANAGE_SETTINGS",
-    permissionMatrixFunctionKey: "VIEW_CREDIT_ACCOUNT_TAB",
+    permissionMatrixFunctionKey: getPermissionMatrixFunctionKey(),
     additionalConditionToCheck: () =>
-      // Show the tab for all users if the user is
+      // Show the tab if there is a credit account or if the user is a finance user.
+      // Todo: Display info box if there is no credit account.
       Boolean(creditAccountMetadata) || isFinanceUser,
   });
 
