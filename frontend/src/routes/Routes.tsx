@@ -3,7 +3,6 @@ import { Route, Routes } from "react-router-dom";
 import { BCeIDAuthWall } from "../common/authentication/auth-walls/BCeIDAuthWall";
 import { IDIRAuthWall } from "../common/authentication/auth-walls/IDIRAuthWall";
 import { NewBCeIDAuthWall } from "../common/authentication/auth-walls/NewBCeIDAuthWall";
-import { IDIR_USER_ROLE, CLAIMS } from "../common/authentication/types";
 import { UniversalUnauthorized } from "../common/pages/UniversalUnauthorized";
 import { UniversalUnexpected } from "../common/pages/UniversalUnexpected";
 import { WelcomePage } from "../features/homePage/welcome/WelcomePage";
@@ -90,13 +89,10 @@ export const AppRoutes = () => {
       <Route
         element={
           <IDIRAuthWall
-            allowedRoles={[
-              IDIR_USER_ROLE.ENFORCEMENT_OFFICER,
-              IDIR_USER_ROLE.PPC_CLERK,
-              IDIR_USER_ROLE.FINANCE,
-              IDIR_USER_ROLE.HQ_ADMINISTRATOR,
-              IDIR_USER_ROLE.CTPO,
-            ]}
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+              permissionMatrixFunctionKey: "VIEW_GLOBAL_SEARCH_SCREEN",
+            }}
           />
         }
       >
@@ -111,16 +107,46 @@ export const AppRoutes = () => {
       </Route>
 
       <Route
-        element={<IDIRAuthWall allowedRoles={[IDIR_USER_ROLE.PPC_CLERK]} />}
+        element={
+          <IDIRAuthWall
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+              permissionMatrixFunctionKey: "VOID_PERMIT",
+            }}
+          />
+        }
       >
         <Route
           path={`companies/:companyId/permits/:permitId/void`}
           element={<VoidPermit />}
         />
+      </Route>
+
+      <Route
+        element={
+          <IDIRAuthWall
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+              permissionMatrixFunctionKey: "AMEND_PERMIT",
+            }}
+          />
+        }
+      >
         <Route
           path={`companies/:companyId/permits/:permitId/amend`}
           element={<AmendPermit />}
         />
+      </Route>
+      <Route
+        element={
+          <IDIRAuthWall
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "GLOBAL_SEARCH",
+              permissionMatrixFunctionKey: "CREATE_COMPANY",
+            }}
+          />
+        }
+      >
         <Route
           path={routes.IDIR_ROUTES.CREATE_COMPANY}
           element={<IDIRCreateCompany />}
@@ -131,11 +157,10 @@ export const AppRoutes = () => {
       <Route
         element={
           <IDIRAuthWall
-            allowedRoles={[
-              IDIR_USER_ROLE.PPC_CLERK,
-              IDIR_USER_ROLE.FINANCE,
-              IDIR_USER_ROLE.HQ_ADMINISTRATOR,
-            ]}
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "REPORTS",
+              permissionMatrixFunctionKey: "PAYMENT_AND_REFUND_SUMMARY_REPORT",
+            }}
           />
         }
       >
@@ -151,8 +176,10 @@ export const AppRoutes = () => {
       <Route
         element={
           <BCeIDAuthWall
-            requiredRole={CLAIMS.READ_VEHICLE}
-            allowedIDIRRoles={[IDIR_USER_ROLE.PPC_CLERK]}
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "MANAGE_VEHICLE_INVENTORY",
+              permissionMatrixFunctionKey: "VIEW_VEHICLE_INVENTORY_SCREEN",
+            }}
           />
         }
       >
@@ -188,11 +215,10 @@ export const AppRoutes = () => {
       <Route
         element={
           <BCeIDAuthWall
-            requiredRole={CLAIMS.READ_ORG}
-            allowedIDIRRoles={[
-              IDIR_USER_ROLE.PPC_CLERK,
-              IDIR_USER_ROLE.FINANCE,
-            ]}
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "MANAGE_PROFILE",
+              permissionMatrixFunctionKey: "VIEW_COMPANY_INFORMATION",
+            }}
           />
         }
       >
@@ -205,11 +231,10 @@ export const AppRoutes = () => {
       <Route
         element={
           <BCeIDAuthWall
-            requiredRole={CLAIMS.WRITE_USER}
-            allowedIDIRRoles={[
-              IDIR_USER_ROLE.PPC_CLERK,
-              IDIR_USER_ROLE.FINANCE,
-            ]}
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "MANAGE_PROFILE",
+              permissionMatrixFunctionKey: "ADD_USER",
+            }}
           />
         }
       >
@@ -217,6 +242,17 @@ export const AppRoutes = () => {
           path={routes.PROFILE_ROUTES.ADD_USER}
           element={<AddUserDashboard />}
         />
+      </Route>
+      <Route
+        element={
+          <BCeIDAuthWall
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "MANAGE_PROFILE",
+              permissionMatrixFunctionKey: "EDIT_USER",
+            }}
+          />
+        }
+      >
         <Route
           path={`${routes.PROFILE_ROUTES.EDIT_USER}/:userGUID`}
           element={<EditUserDashboard />}
@@ -226,8 +262,10 @@ export const AppRoutes = () => {
       <Route
         element={
           <BCeIDAuthWall
-            requiredRole={CLAIMS.WRITE_PERMIT}
-            allowedIDIRRoles={[IDIR_USER_ROLE.PPC_CLERK]}
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "MANAGE_PERMITS",
+              permissionMatrixFunctionKey: "START_APPLICATION",
+            }}
           />
         }
       >
@@ -244,8 +282,10 @@ export const AppRoutes = () => {
       <Route
         element={
           <BCeIDAuthWall
-            requiredRole={CLAIMS.WRITE_PERMIT}
-            allowedIDIRRoles={[IDIR_USER_ROLE.PPC_CLERK, IDIR_USER_ROLE.CTPO]}
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "MISCELLANEOUS",
+              permissionMatrixFunctionKey: "VIEW_SHOPPING_CART",
+            }}
           />
         }
       >
@@ -258,13 +298,10 @@ export const AppRoutes = () => {
       <Route
         element={
           <BCeIDAuthWall
-            requiredRole={CLAIMS.WRITE_PERMIT}
-            allowedIDIRRoles={[
-              IDIR_USER_ROLE.PPC_CLERK,
-              IDIR_USER_ROLE.FINANCE,
-              IDIR_USER_ROLE.HQ_ADMINISTRATOR,
-              IDIR_USER_ROLE.CTPO,
-            ]}
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "MANAGE_PERMITS",
+              permissionMatrixFunctionKey: "VIEW_ACTIVE_PERMITS",
+            }}
           />
         }
       >
@@ -294,8 +331,10 @@ export const AppRoutes = () => {
       <Route
         element={
           <BCeIDAuthWall
-            requiredRole={CLAIMS.WRITE_PERMIT}
-            allowedIDIRRoles={[IDIR_USER_ROLE.PPC_CLERK]}
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "MANAGE_PERMITS",
+              permissionMatrixFunctionKey: "START_APPLICATION",
+            }}
           />
         }
       >
@@ -305,7 +344,16 @@ export const AppRoutes = () => {
         />
       </Route>
 
-      <Route element={<BCeIDAuthWall requiredRole={CLAIMS.WRITE_PERMIT} />}>
+      <Route
+        element={
+          <BCeIDAuthWall
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "MANAGE_PERMITS",
+              permissionMatrixFunctionKey: "START_APPLICATION",
+            }}
+          />
+        }
+      >
         <Route
           path={routes.PAYMENT_ROUTES.PAYMENT_REDIRECT}
           element={<PaymentRedirect />}
@@ -315,15 +363,10 @@ export const AppRoutes = () => {
       <Route
         element={
           <IDIRAuthWall
-            allowedRoles={[
-              IDIR_USER_ROLE.SYSTEM_ADMINISTRATOR,
-              IDIR_USER_ROLE.FINANCE,
-              IDIR_USER_ROLE.PPC_CLERK,
-              IDIR_USER_ROLE.CTPO,
-              IDIR_USER_ROLE.HQ_ADMINISTRATOR,
-              IDIR_USER_ROLE.ENFORCEMENT_OFFICER,
-              // IDIR_USER_ROLE.TRAINEE,
-            ]}
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+              permissionMatrixFunctionKey: "VIEW_SPECIAL_AUTHORIZATIONS",
+            }}
           />
         }
       >

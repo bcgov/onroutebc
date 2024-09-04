@@ -53,8 +53,10 @@ export const ManageSettingsDashboard = React.memo(() => {
 
   const showCreditAccountTab = usePermissionMatrix({
     featureFlag: "CREDIT-ACCOUNT",
-    permissionMatrixFeatureKey: "MANAGE_SETTINGS",
-    permissionMatrixFunctionKey: getPermissionMatrixFunctionKey(),
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+      permissionMatrixFunctionKey: getPermissionMatrixFunctionKey(),
+    },
     additionalConditionToCheck: () =>
       // Show the tab if there is a credit account or if the user is a finance user.
       // Todo: ORV2-2771 Display info box if there is no credit account.

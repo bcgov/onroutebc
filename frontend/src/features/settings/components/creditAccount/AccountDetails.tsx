@@ -200,8 +200,11 @@ export const AccountDetails = ({
                 </Menu>
               </Box>
             }
-            permissionMatrixFeatureKey="MANAGE_SETTINGS"
-            permissionMatrixFunctionKey="PERFORM_CREDIT_ACCOUNT_DETAIL_ACTIONS_ACCOUNT_HOLDER"
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+              permissionMatrixFunctionKey:
+                "PERFORM_CREDIT_ACCOUNT_DETAIL_ACTIONS_ACCOUNT_HOLDER",
+            }}
             additionalConditionToCheck={() => isAccountHolder}
           />
         </Box>
