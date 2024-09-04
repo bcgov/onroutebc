@@ -60,8 +60,10 @@ const Navbar = ({
                     <NavLink to={APPLICATIONS_ROUTES.BASE}>Permits</NavLink>
                   </li>
                 }
-                permissionMatrixFeatureKey="MANAGE_PERMITS"
-                permissionMatrixFunctionKey="VIEW_PERMITS_SCREEN"
+                permissionMatrixKeys={{
+                  permissionMatrixFeatureKey: "MANAGE_PERMITS",
+                  permissionMatrixFunctionKey: "VIEW_PERMITS_SCREEN",
+                }}
               />
               <RenderIf
                 component={
@@ -71,8 +73,10 @@ const Navbar = ({
                     </NavLink>
                   </li>
                 }
-                permissionMatrixFeatureKey="MANAGE_VEHICLE_INVENTORY"
-                permissionMatrixFunctionKey="VIEW_VEHICLE_INVENTORY_SCREEN"
+                permissionMatrixKeys={{
+                  permissionMatrixFeatureKey: "MANAGE_VEHICLE_INVENTORY",
+                  permissionMatrixFunctionKey: "VIEW_VEHICLE_INVENTORY_SCREEN",
+                }}
               />
               <RenderIf
                 component={
@@ -80,8 +84,10 @@ const Navbar = ({
                     <NavLink to={PROFILE_ROUTES.MANAGE}>Profile</NavLink>
                   </li>
                 }
-                permissionMatrixFeatureKey="MANAGE_PROFILE"
-                permissionMatrixFunctionKey="VIEW_COMPANY_INFORMATION"
+                permissionMatrixKeys={{
+                  permissionMatrixFeatureKey: "MANAGE_PROFILE",
+                  permissionMatrixFunctionKey: "VIEW_COMPANY_INFORMATION",
+                }}
               />
               <RenderIf
                 component={
@@ -89,8 +95,10 @@ const Navbar = ({
                     <NavLink to={SETTINGS_ROUTES.MANAGE}>Settings</NavLink>
                   </li>
                 }
-                permissionMatrixFeatureKey="MANAGE_SETTINGS"
-                permissionMatrixFunctionKey="VIEW_SPECIAL_AUTHORIZATIONS"
+                permissionMatrixKeys={{
+                  permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+                  permissionMatrixFunctionKey: "VIEW_SPECIAL_AUTHORIZATIONS",
+                }}
               />
             </>
           )}
@@ -164,14 +172,9 @@ export const Header = () => {
           {isAuthenticated ? <NavButton toggleMenu={toggleMenu} /> : null}
         </div>
       </header>
-      {shouldDisplayNavBar && (
-        <Navbar isAuthenticated={isAuthenticated} />
-      )}
+      {shouldDisplayNavBar && <Navbar isAuthenticated={isAuthenticated} />}
       {shouldDisplayNavBar && menuOpen ? (
-        <Navbar
-          isAuthenticated={isAuthenticated}
-          isMobile={true}
-        />
+        <Navbar isAuthenticated={isAuthenticated} isMobile={true} />
       ) : null}
       {filterOpen ? <SearchFilter closeFilter={toggleFilter} /> : null}
     </div>

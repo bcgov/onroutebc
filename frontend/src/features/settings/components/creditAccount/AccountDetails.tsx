@@ -11,9 +11,7 @@ import {
 import { MouseEvent, useState } from "react";
 import { RenderIf } from "../../../../common/components/reusable/RenderIf";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import {
-  useUpdateCreditAccountStatusMutation,
-} from "../../hooks/creditAccount";
+import { useUpdateCreditAccountStatusMutation } from "../../hooks/creditAccount";
 import {
   CREDIT_ACCOUNT_STATUS_TYPE,
   CREDIT_ACCOUNT_USER_TYPE,
@@ -199,8 +197,10 @@ export const AccountDetails = ({
                 </Menu>
               </Box>
             }
-            permissionMatrixFeatureKey="MANAGE_SETTINGS"
-            permissionMatrixFunctionKey="UPDATE_CREDIT_ACCOUNT_DETAILS"
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+              permissionMatrixFunctionKey: "UPDATE_CREDIT_ACCOUNT_DETAILS",
+            }}
             additionalConditionToCheck={() => isAccountHolder}
           />
         </Box>
