@@ -9,9 +9,8 @@ import { Loading } from "../../pages/Loading";
 import { IDPS } from "../../types/idp";
 import { ERROR_ROUTES, HOME } from "../../../routes/constants";
 import {
-  PermissionMatrixConfigObject,
+  checkPermissionMatrix,
   PermissionMatrixKeysType,
-  PERMISSIONS_MATRIX,
 } from "../PermissionMatrix";
 
 const isIDIR = (identityProvider: string) => identityProvider === IDPS.IDIR;
@@ -84,14 +83,11 @@ export const IDIRAuthWall = ({
       );
     }
 
-    const { permissionMatrixFeatureKey, permissionMatrixFunctionKey } =
-      permissionMatrixKeys;
-    const { allowedIDIRRoles } = (
-      PERMISSIONS_MATRIX[permissionMatrixFeatureKey] as {
-        [key: string]: PermissionMatrixConfigObject;
-      }
-    )[permissionMatrixFunctionKey];
-    const isAllowed = allowedIDIRRoles?.includes(idirUserDetails.userRole);
+    const isAllowed = checkPermissionMatrix({
+      permissionMatrixKeys,
+      isIdir: true,
+      currentUserRole: idirUserDetails.userRole,
+    });
     if (isAllowed) {
       return <Outlet />;
     } else {

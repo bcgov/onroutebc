@@ -19,9 +19,8 @@ import { IDIRAuthWall } from "./IDIRAuthWall";
 import { setRedirectInSession } from "../../helpers/util";
 import { getUserStorage } from "../../apiManager/httpRequestHandler";
 import {
-  PermissionMatrixConfigObject,
+  checkPermissionMatrix,
   PermissionMatrixKeysType,
-  PERMISSIONS_MATRIX,
 } from "../PermissionMatrix";
 
 export const isIDIR = (identityProvider: string) =>
@@ -142,16 +141,11 @@ export const BCeIDAuthWall = ({
       }
     }
 
-    const { permissionMatrixFeatureKey, permissionMatrixFunctionKey } =
-      permissionMatrixKeys;
-    const { allowedBCeIDRoles } = (
-      PERMISSIONS_MATRIX[permissionMatrixFeatureKey] as {
-        [key: string]: PermissionMatrixConfigObject;
-      }
-    )[permissionMatrixFunctionKey];
-    const isAllowed = allowedBCeIDRoles?.includes(
-      userDetails?.userRole as BCeIDUserRoleType,
-    );
+    const isAllowed = checkPermissionMatrix({
+      permissionMatrixKeys,
+      isIdir: false,
+      currentUserRole: userDetails?.userRole as BCeIDUserRoleType,
+    });
     if (isAllowed) {
       return <Outlet />;
     } else {

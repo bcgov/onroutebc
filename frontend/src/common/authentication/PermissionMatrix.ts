@@ -476,29 +476,59 @@ export const usePermissionMatrix = ({
     }
   }
   let isAllowed = false;
-  let currentUserRole;
   if (permissionMatrixKeys) {
-    const { permissionMatrixFeatureKey, permissionMatrixFunctionKey } =
-      permissionMatrixKeys;
-    const { allowedBCeIDRoles, allowedIDIRRoles } = (
-      PERMISSIONS_MATRIX[permissionMatrixFeatureKey] as {
-        [key: string]: PermissionMatrixConfigObject;
-      }
-    )[permissionMatrixFunctionKey];
-    if (isIdir) {
-      currentUserRole = idirUserDetails?.userRole;
-      isAllowed = Boolean(
-        currentUserRole && allowedIDIRRoles?.includes(currentUserRole),
-      );
-    } else {
-      currentUserRole = userDetails?.userRole;
-      isAllowed = Boolean(
-        currentUserRole && allowedBCeIDRoles?.includes(currentUserRole),
-      );
-    }
+    isAllowed = checkPermissionMatrix({
+      permissionMatrixKeys,
+      isIdir,
+      currentUserRole: isIdir
+        ? (idirUserDetails?.userRole as IDIRUserRoleType)
+        : (userDetails?.userRole as BCeIDUserRoleType),
+    });
   }
   if (isAllowed && additionalConditionToCheck) {
     isAllowed = isAllowed && additionalConditionToCheck();
+  }
+  return isAllowed;
+};
+
+/**
+ * Checks if the current user has the necessary permissions based on the provided
+ * permission matrix keys, user role, and whether the user is an IDIR user or not.
+ *
+ * @param {Object} params - Parameters for the permission matrix check.
+ * @param {PermissionMatrixKeysType} params.permissionMatrixKeys - The keys to use for looking up in the permissions matrix.
+ * @param {boolean} params.isIdir - Boolean indicating whether the current user is an IDIR user.
+ * @param {BCeIDUserRoleType | IDIRUserRoleType} params.currentUserRole - The role of the current user.
+ *
+ * @returns {boolean} - Returns whether the user is allowed to access the resource.
+ */
+export const checkPermissionMatrix = ({
+  permissionMatrixKeys,
+  isIdir,
+  currentUserRole,
+}: {
+  permissionMatrixKeys: PermissionMatrixKeysType;
+  isIdir: boolean;
+  currentUserRole: BCeIDUserRoleType | IDIRUserRoleType;
+}) => {
+  let isAllowed: boolean;
+  const { permissionMatrixFeatureKey, permissionMatrixFunctionKey } =
+    permissionMatrixKeys;
+  const { allowedBCeIDRoles, allowedIDIRRoles } = (
+    PERMISSIONS_MATRIX[permissionMatrixFeatureKey] as {
+      [key: string]: PermissionMatrixConfigObject;
+    }
+  )[permissionMatrixFunctionKey];
+  if (isIdir) {
+    isAllowed = Boolean(
+      currentUserRole &&
+        allowedIDIRRoles?.includes(currentUserRole as IDIRUserRoleType),
+    );
+  } else {
+    isAllowed = Boolean(
+      currentUserRole &&
+        allowedBCeIDRoles?.includes(currentUserRole as BCeIDUserRoleType),
+    );
   }
   return isAllowed;
 };
