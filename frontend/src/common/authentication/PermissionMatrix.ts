@@ -313,7 +313,7 @@ const MANAGE_SETTINGS = {
    * View Credit Account tab - Non-Holder/user
    * Comment: Info box
    * 
-   * Todo: Implement info box.
+   * Todo: ORV2-2771 Implement info box.
    */
   VIEW_CREDIT_ACCOUNT_TAB_NON_HOLDER_OR_USER: {
     allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],

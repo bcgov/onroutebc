@@ -20,7 +20,7 @@ export const CreditAccountMetadataComponent = ({
         />
       );
     } else {
-      // Todo: Display info box for non-finance staff users who 
+      // Todo: ORV2-2771 Display info box for non-finance staff users who 
       // do not have permission to create a new credit account.
       return (
         <RenderIf
