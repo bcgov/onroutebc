@@ -25,6 +25,9 @@ import { CloseCreditAccountModal } from "./CloseCreditAccountModal";
 import { HoldCreditAccountModal } from "./HoldCreditAccountModal";
 import { useQueryClient } from "@tanstack/react-query";
 
+/**
+ * Component that displays credit limit, available balance etc.
+ */
 export const AccountDetails = ({
   companyId,
   creditAccountMetadata: { creditAccountId, userType },
@@ -199,7 +202,8 @@ export const AccountDetails = ({
             }
             permissionMatrixKeys={{
               permissionMatrixFeatureKey: "MANAGE_SETTINGS",
-              permissionMatrixFunctionKey: "UPDATE_CREDIT_ACCOUNT_DETAILS",
+              permissionMatrixFunctionKey:
+                "PERFORM_CREDIT_ACCOUNT_DETAIL_ACTIONS_ACCOUNT_HOLDER",
             }}
             additionalConditionToCheck={() => isAccountHolder}
           />
