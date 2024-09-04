@@ -32,6 +32,7 @@ import { ManageSettings } from "../features/settings/ManageSettings";
 import { IssuanceErrorPage } from "../common/pages/IssuanceErrorPage";
 import IDPRedirect from "../common/components/idpredirect/IDPRedirect";
 import { ShoppingCartDashboard } from "../features/permits/ShoppingCartDashboard";
+import { DocumentUnavailable } from "../common/pages/DocumentUnavailable";
 
 export const AppRoutes = () => {
   return (
@@ -55,8 +56,12 @@ export const AppRoutes = () => {
         path={routes.ERROR_ROUTES.ISSUANCE}
         element={<IssuanceErrorPage />}
       />
+      <Route
+        path={routes.ERROR_ROUTES.DOCUMENT_UNAVAILABLE}
+        element={<DocumentUnavailable />}
+      />
       <Route path="*" element={<UniversalUnexpected />} />
-
+      
       {/* Wizard Routes */}
 
       {/* Wizard Routes only require that a user
