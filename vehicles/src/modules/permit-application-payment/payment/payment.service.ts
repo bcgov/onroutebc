@@ -62,6 +62,7 @@ import {
   throwUnprocessableEntityException,
 } from '../../../common/helper/exception.helper';
 import { isFeatureEnabled } from '../../../common/helper/common.helper';
+import { SpecialAuth } from 'src/modules/special-auth/entities/special-auth.entity';
 
 @Injectable()
 export class PaymentService {
@@ -254,7 +255,9 @@ export class PaymentService {
       createTransactionDto?.paymentMethodTypeCode !==
         PaymentMethodTypeEnum.WEB &&
       createTransactionDto?.paymentMethodTypeCode !==
-        PaymentMethodTypeEnum.ACCOUNT
+        PaymentMethodTypeEnum.ACCOUNT &&
+        createTransactionDto?.paymentMethodTypeCode !==
+          PaymentMethodTypeEnum.NO_PAYMENT
     ) {
       throwUnprocessableEntityException(
         'Invalid payment method type for the user',
@@ -781,14 +784,34 @@ export class PaymentService {
       application.originalPermitId,
       queryRunner,
     );
+    const isNoFee = await this.findNoFee(
+      application.company.companyId,
+      queryRunner,
+    );
 
     if (application.permitStatus === ApplicationStatus.VOIDED) {
-      const newAmount = permitFee(application);
+      const newAmount = permitFee(application, isNoFee);
       return newAmount;
     }
     const oldAmount = calculatePermitAmount(permitPaymentHistory);
-    const fee = permitFee(application, oldAmount);
+    const fee = permitFee(application, isNoFee, oldAmount);
     return fee;
+  }
+
+  @LogAsyncMethodExecution()
+  async findNoFee(
+    companyId: number,
+    queryRunner: QueryRunner,
+  ): Promise<boolean> {
+    const specialAuth = await queryRunner.manager
+      .createQueryBuilder()
+      .select('specialAuth')
+      .from(SpecialAuth, 'specialAuth')
+      .innerJoinAndSelect('specialAuth.company', 'company')
+      .where('company.companyId = :companyId', { companyId: companyId })
+      .getOne();
+    console.log('SpecialAuth ', specialAuth);
+    return !!specialAuth.noFeeType;
   }
 
   @LogAsyncMethodExecution()
