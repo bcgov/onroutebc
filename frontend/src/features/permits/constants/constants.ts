@@ -43,3 +43,11 @@ export const COMMON_DURATION_OPTIONS = [
   { value: 330, label: "330 Days" },
   { value: BASE_DAYS_IN_YEAR, label: "1 Year" },
 ];
+
+export const LCV_CONDITION = {
+  description: "LCV Operating Conditions & Routes",
+  condition: "CVSE-1014",
+  conditionLink: "https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1260",
+  checked: true,
+  disabled: true,
+};

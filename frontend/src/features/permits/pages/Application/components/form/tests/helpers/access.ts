@@ -2,7 +2,7 @@ import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup";
 import { Matcher, screen, waitFor } from "@testing-library/react";
 
 import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";
-import { commodities, requiredCommodityIndices } from "./prepare";
+import { conditions, requiredConditionIndices } from "./prepare";
 
 export const openDurationSelect = async (
   user: UserEvent,
@@ -26,8 +26,8 @@ export const selectDurationOption = async (
   await user.click(option);
 };
 
-export const expiryDateElement = async (expiryDateText: Matcher) => {
-  return await screen.findByText(expiryDateText);
+export const expiryDateElement = async () => {
+  return await screen.findByTestId("permit-expiry-date");
 };
 
 export const openStartDateSelect = async (user: UserEvent) => {
@@ -88,35 +88,35 @@ export const invalidFutureDateMessageElement = async () => {
   return await screen.findByTestId("custom-date-picker-permitData.startDate-error");
 };
 
-export const commoditiesInfoBox = async () => {
+export const conditionsInfoBox = async () => {
   return screen.findByText(/^The applicant is responsible for/);
 };
 
-export const commodityDescriptionLabel = async (description: Matcher) => {
+export const conditionDescriptionLabel = async (description: Matcher) => {
   return await screen.findByText(description);
 };
 
-export const commodityConditionLabel = async (condition: Matcher) => {
+export const conditionLabel = async (condition: Matcher) => {
   return await screen.findByText(condition);
 };
 
-const commodityCheckbox = async (label: Matcher) => {
+const conditionCheckbox = async (label: Matcher) => {
   return await screen.findByLabelText(label);
 };
 
-export const requiredCommodityCheckboxes = async () => {
+export const requiredConditionCheckboxes = async () => {
   return await Promise.all(
-    commodities
-      .filter((_, i) => requiredCommodityIndices.includes(i))
-      .map(async (commodity) => await commodityCheckbox(commodity.description)),
+    conditions
+      .filter((_, i) => requiredConditionIndices.includes(i))
+      .map(async (condition) => await conditionCheckbox(condition.description)),
   );
 };
 
-export const optionalCommodityCheckboxes = async () => {
+export const optionalConditionCheckboxes = async () => {
   return await Promise.all(
-    commodities
-      .filter((_, i) => !requiredCommodityIndices.includes(i))
-      .map(async (commodity) => await commodityCheckbox(commodity.description)),
+    conditions
+      .filter((_, i) => !requiredConditionIndices.includes(i))
+      .map(async (condition) => await conditionCheckbox(condition.description)),
   );
 };
 

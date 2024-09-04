@@ -32,5 +32,6 @@ export const useVehicleByIdQuery = (
     refetchOnMount: "always", // always fetch when component is mounted
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
     enabled: Boolean(companyId) && Boolean(vehicleId), // does not perform the query at all if company or vehicle id is empty
+    gcTime: 0, // Do not store in cache - Refetch always
   });
 };

@@ -6,7 +6,7 @@ import { PermitExpiryDateBanner } from "../../../../../../common/components/bann
 import { ReviewConditionsTable } from "./ReviewConditionsTable";
 import { DiffChip } from "./DiffChip";
 import { Nullable } from "../../../../../../common/types/common";
-import { PermitCommodity } from "../../../../types/PermitCommodity";
+import { PermitCondition } from "../../../../types/PermitCondition";
 import { BASE_DAYS_IN_YEAR } from "../../../../constants/constants";
 import {
   applyWhenNotNullable,
@@ -30,7 +30,7 @@ export const ReviewPermitDetails = ({
   startDate?: Nullable<Dayjs>;
   permitDuration?: Nullable<number>;
   expiryDate?: Nullable<Dayjs>;
-  conditions?: Nullable<PermitCommodity[]>;
+  conditions?: Nullable<PermitCondition[]>;
   showChangedFields?: boolean;
   oldStartDate?: Nullable<Dayjs>;
   oldDuration?: Nullable<number>;
