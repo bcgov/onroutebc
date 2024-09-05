@@ -20,7 +20,8 @@ export const fiveTypes: PolicyDefinition = {
     {
       conditions: {
         not: {
-          fact: 'permitData.companyName',
+          fact: 'permitData',
+          path: '$.companyName',
           operator: 'stringMinimumLength',
           value: 1,
         },
@@ -36,7 +37,8 @@ export const fiveTypes: PolicyDefinition = {
       conditions: {
         any: [
           {
-            fact: 'permitData.startDate',
+            fact: 'permitData',
+            path: '$.startDate',
             operator: 'dateLessThan',
             value: {
               fact: 'validationDate',
@@ -54,7 +56,8 @@ export const fiveTypes: PolicyDefinition = {
     {
       conditions: {
         not: {
-          fact: 'permitData.vehicleDetails.vin',
+          fact: 'permitData',
+          path: '$.vehicleDetails.vin',
           operator: 'regex',
           value: '^[a-zA-Z0-9]{6}$',
         },
@@ -89,14 +92,16 @@ export const fiveTypes: PolicyDefinition = {
             all: [
               {
                 not: {
-                  fact: 'permitData.permitDuration',
+                  fact: 'permitData',
+                  path: '$.permitDuration',
                   operator: 'in',
                   value: [30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330],
                 },
               },
               {
                 not: {
-                  fact: 'permitData.permitDuration',
+                  fact: 'permitData',
+                  path: '$.permitDuration',
                   operator: 'equal',
                   value: {
                     fact: 'daysInPermitYear',

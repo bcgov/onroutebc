@@ -56,14 +56,16 @@ export const stosPolicyConfig: PolicyDefinition = {
             any: [
               {
                 not: {
-                  fact: 'permitData.permitDuration',
+                  fact: 'permitData',
+                  path: '$.permitDuration',
                   operator: 'lessThanInclusive',
                   value: 7,
                 },
               },
               {
                 not: {
-                  fact: 'permitData.permitDuration',
+                  fact: 'permitData',
+                  path: '$.permitDuration',
                   operator: 'greaterThan',
                   value: 0,
                 },
@@ -82,7 +84,8 @@ export const stosPolicyConfig: PolicyDefinition = {
         {
           conditions: {
             not: {
-              fact: 'permitData.vehicleDetails.vehicleSubType',
+              fact: 'permitData',
+              path: '$.vehicleDetails.vehicleSubType',
               operator: 'in',
               value: {
                 fact: 'allowedVehicles',

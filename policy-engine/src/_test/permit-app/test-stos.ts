@@ -55,7 +55,7 @@ export const testStos: PermitApplication = {
           vehicleSubType: 'JEEPSRG',
         },
         {
-          vehicleSubType: 'SEMITRL',
+          vehicleSubType: 'PLATFRM',
         },
       ],
     },

@@ -15,7 +15,7 @@ import { Engine, EngineResult } from 'json-rules-engine';
 import { getRulesEngines } from './helper/rules-engine.helper';
 import { ValidationResults } from './validation-results';
 import { ValidationResult } from './validation-result';
-import { addRuntimeFacts, transformPermitFacts } from './helper/facts.helper';
+import { addRuntimeFacts } from './helper/facts.helper';
 import {
   AccessoryVehicleType,
   ValidationResultType,
@@ -69,12 +69,10 @@ export class Policy {
     } else {
       // Add facts specific to this run of the validation (e.g. validation
       // date for comparison against start date of the permit).
-      addRuntimeFacts(engine);
-
-      const permitFacts = transformPermitFacts(permit);
+      addRuntimeFacts(engine, this);
 
       // Run the json-rules-engine against the permit facts
-      const engineResult: EngineResult = await engine.run(permitFacts);
+      const engineResult: EngineResult = await engine.run(permit);
 
       // Wrap the json-rules-engine result in a ValidationResult object
       return new ValidationResults(engineResult);
