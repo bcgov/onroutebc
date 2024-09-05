@@ -17,8 +17,10 @@ export const PermitLists = React.memo(() => {
   };
   const tabs = [];
   const showApplicationsInProgressTab = usePermissionMatrix({
-    permissionMatrixFeatureKey: "MANAGE_PERMITS",
-    permissionMatrixFunctionKey: "VIEW_LIST_OF_APPLICATIONS_IN_PROGRESS",
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_PERMITS",
+      permissionMatrixFunctionKey: "VIEW_LIST_OF_APPLICATIONS_IN_PROGRESS",
+    },
   });
   if (showApplicationsInProgressTab) {
     tabs.push({
@@ -48,8 +50,10 @@ export const PermitLists = React.memo(() => {
       bannerButton={
         <RenderIf
           component={<StartApplicationAction />}
-          permissionMatrixFeatureKey="MANAGE_PERMITS"
-          permissionMatrixFunctionKey="START_APPLICATION"
+          permissionMatrixKeys={{
+            permissionMatrixFeatureKey: "MANAGE_PERMITS",
+            permissionMatrixFunctionKey: "START_APPLICATION",
+          }}
         />
       }
       componentList={tabs}
