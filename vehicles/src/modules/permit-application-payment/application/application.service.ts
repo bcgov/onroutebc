@@ -53,6 +53,7 @@ import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import {
   generateApplicationNumber,
   generatePermitNumber,
+  isPermitTypeEligibleForQueue,
 } from '../../../common/helper/permit-application.helper';
 import { PaymentService } from '../payment/payment.service';
 import { CaseManagementService } from '../../case-management/case-management.service';
@@ -61,7 +62,6 @@ import { CaseActivityType } from '../../../common/enum/case-activity-type.enum';
 import { Nullable } from '../../../common/types/common';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { throwUnprocessableEntityException } from '../../../common/helper/exception.helper';
-import { PermitType } from '../../../common/enum/permit-type.enum';
 
 @Injectable()
 export class ApplicationService {
@@ -794,7 +794,7 @@ export class ApplicationService {
     const application = await this.findOne(applicationId, companyId);
     if (!application) {
       throw new DataNotFoundException();
-    } else if (application.permitType !== PermitType.SINGLE_TRIP_OVERSIZE) {
+    } else if (!isPermitTypeEligibleForQueue(application.permitType)) {
       throwUnprocessableEntityException(
         'Invalid permit type. Ineligible for queue.',
       );
@@ -868,7 +868,7 @@ export class ApplicationService {
     const application = await this.findOne(applicationId, companyId);
     if (!application) {
       throw new DataNotFoundException();
-    } else if (application.permitType !== PermitType.SINGLE_TRIP_OVERSIZE) {
+    } else if (!isPermitTypeEligibleForQueue(application.permitType)) {
       throwUnprocessableEntityException(
         'Invalid permit type. Ineligible for queue.',
       );
@@ -950,7 +950,7 @@ export class ApplicationService {
     const application = await this.findOne(applicationId, companyId);
     if (!application) {
       throw new DataNotFoundException();
-    } else if (application.permitType !== PermitType.SINGLE_TRIP_OVERSIZE) {
+    } else if (!isPermitTypeEligibleForQueue(application.permitType)) {
       throwUnprocessableEntityException(
         'Invalid permit type. Ineligible for queue.',
       );
