@@ -13,7 +13,7 @@ import {
   formatCellValuetoDatetime,
 } from "../../../../common/helpers/tableHelper";
 
-export const PermitSearchResultColumnDef: MRT_ColumnDef<PermitListItem>[] = [
+export const PermitSearchResultColumnDef = (onDocumentUnavailable: () => void): MRT_ColumnDef<PermitListItem>[] => [
   {
     accessorKey: "permitNumber",
     header: "Permit #",
@@ -26,9 +26,10 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<PermitListItem>[] = [
       return (
         <>
           <CustomActionLink
-            onClick={() =>
-              viewPermitPdf(permitId.toString(), companyId.toString())
-            }
+            onClick={() =>{
+              viewPermitPdf(permitId.toString(), () => onDocumentUnavailable(), companyId.toString());
+            }  
+          }
           >
             {props.cell.getValue()}
           </CustomActionLink>

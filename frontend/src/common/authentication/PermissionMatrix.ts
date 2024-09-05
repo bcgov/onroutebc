@@ -207,6 +207,29 @@ const MANAGE_PROFILE = {
     allowedBCeIDRoles: [CA, PA],
     allowedIDIRRoles: [],
   },
+  /**
+   * Credit Account Tab
+   */
+  /**
+   * View Credit Account tab - Account holder
+   * Comment: Account number, status
+   */
+  VIEW_CREDIT_ACCOUNT_TAB_ACCOUNT_HOLDER: {
+    allowedBCeIDRoles: [CA],
+  },
+  /**
+   * View Credit Account users - Account holder
+   */
+  VIEW_CREDIT_ACCOUNT_USERS_ACCOUNT_HOLDER: {
+    allowedBCeIDRoles: [CA],
+  },
+  /**
+   * View Credit Account details - Account holder
+   * Comment: Credit Limit/Current Balance/Available Credit
+   */
+  VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_HOLDER: {
+    allowedBCeIDRoles: [CA],
+  },
 } as const;
 
 const MANAGE_SETTINGS = {
@@ -220,22 +243,85 @@ const MANAGE_SETTINGS = {
   REMOVE_LCV_FLAG: { allowedIDIRRoles: [HQA] },
   ADD_AN_LOA: { allowedIDIRRoles: [SA, HQA] },
   EDIT_AN_LOA: { allowedIDIRRoles: [SA, HQA] },
-  VIEW_LOA: { allowedIDIRRoles: [PC, SA, CTPO, EO, HQA] },
+  VIEW_LOA: { allowedIDIRRoles: ALL_IDIR_ROLES },
   REMOVE_LOA: { allowedIDIRRoles: [SA, HQA] },
 
   /**
    * Credit Account Tab
    */
-  VIEW_CREDIT_ACCOUNT_TAB: {
-    allowedBCeIDRoles: [CA],
-    allowedIDIRRoles: [PC, SA, FIN, CTPO],
-    featureFlag: "CREDIT-ACCOUNT",
+  /**
+   * View Credit Account tab - Account Holder
+   * Comment: Account number, status
+   */
+  VIEW_CREDIT_ACCOUNT_TAB_ACCOUNT_HOLDER: {
+    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
   },
-  VIEW_CREDIT_ACCOUNT_DETAILS: {
-    allowedBCeIDRoles: [CA],
-    allowedIDIRRoles: [SA, FIN],
+  /**
+   * View Credit Account Users - Account Holder
+   */
+  VIEW_CREDIT_ACCOUNT_USERS_ACCOUNT_HOLDER: {
+    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
   },
-  UPDATE_CREDIT_ACCOUNT_DETAILS: { allowedIDIRRoles: [FIN] },
+  /**
+   * Manage Credit Account Users - Account Holder
+   * Comment: Add/remove users
+   */
+  MANAGE_CREDIT_ACCOUNT_USERS_ACCOUNT_HOLDER: { allowedIDIRRoles: [FIN] },
+  /**
+   * View Credit Account Details - Account Holder
+   * Comment: Credit Limit/Current Balance/Available Credit
+   */
+  VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_HOLDER: {
+    allowedIDIRRoles: [SA, FIN, HQA],
+  },
+  /**
+   * Perform Credit Account Detail actions - Account Holder
+   *
+   * Comment: Hold, Close, Remove Hold, Reopen Credit Account,
+   * update credit account - available actions vary depending on
+   * account state (see spec/hifi for details)
+   */
+  PERFORM_CREDIT_ACCOUNT_DETAIL_ACTIONS_ACCOUNT_HOLDER: {
+    allowedIDIRRoles: [FIN],
+  },
+  /**
+   * View Hold/Close History - Account Holder
+   */
+  VIEW_HOLD_OR_CLOSE_HISTORY_ACCOUNT_HOLDER: { allowedIDIRRoles: [FIN] },
+
+  /**
+   * View Credit Account tab - Account User
+   * Comment: Account number, status
+   */
+  VIEW_CREDIT_ACCOUNT_TAB_ACCOUNT_USER: {
+    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
+  },
+  /**
+   * View Credit Account Users - Account User
+   */
+  VIEW_CREDIT_ACCOUNT_USERS_ACCOUNT_USER: {
+    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
+  },
+  /**
+   * View Credit Account Details - Account User
+   * Comment: Credit Limit/Current Balance/Available Credit
+   */
+  VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_USER: {
+    allowedIDIRRoles: [SA, FIN, HQA],
+  },
+  /**
+   * View Credit Account tab - Non-Holder/user
+   * Comment: Info box
+   * 
+   * Todo: ORV2-2771 Implement info box.
+   */
+  VIEW_CREDIT_ACCOUNT_TAB_NON_HOLDER_OR_USER: {
+    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
+  },
+  /**
+   * Add Credit Account - Non-Holder/user
+   */
+  ADD_CREDIT_ACCOUNT_NON_HOLDER_OR_USER: { allowedIDIRRoles: [FIN] },
 
   /**
    * Suspend tab
@@ -333,10 +419,6 @@ const MISCELLANEOUS = {
     allowedBCeIDRoles: [CA, PA],
     allowedIDIRRoles: [PC, SA, CTPO],
   },
-  // Add this in permissions matrix document.
-  STAFF_ACT_AS_COMPANY: {
-    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
-  },
   /**
    * The following are already controlled by API.
    * So, frontend needs no implementation for this.
@@ -346,6 +428,11 @@ const MISCELLANEOUS = {
    * - sees applications from whole company
    * - sees IDIR-created applications
    */
+
+  // Add this in permissions matrix document.
+  STAFF_ACT_AS_COMPANY: {
+    allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
+  },
 } as const;
 
 /**
@@ -355,7 +442,7 @@ const MISCELLANEOUS = {
  * @description All the keys and comments are identical to the feature keys used
  * in the permissions matrix document so that cross-verifying is easy.
  *
- * Note that this is a general structure for as specified in the document.
+ * Note that this is a general structure for permissions as specified in the document.
  * Individual features may need custom checks based on data or API calls
  * and they are not in scope for this implementation.
  */
@@ -385,27 +472,18 @@ export type PermissionConfigType = {
    * If provided, it takes the highest priority.
    *
    * If a feature is not enabled,
-   * the component WILL NOT render regardless of other conditions.
+   * the component **WILL NOT** render regardless of other conditions.
    */
   featureFlag?: string;
   /**
-   * With only condition to check, all input props but `featureFlag`
-   * are skipped.
-   *
-   * This is the second highest priority after `featureFlag`.
-   *
-   * i.e., this function will be the only check to decide whether to render
-   * a component.
-   *
-   * @param args Any arguments to be passed.
-   * @returns A boolean.
+   * The permission matrix keys for looking up the allowed roles.
    */
-  onlyConditionToCheck?: (...args: any) => boolean;
+  permissionMatrixKeys?: PermissionMatrixKeysType;
   /**
    * An additional function call whose boolean value will be accounted
    * for determining whether to render a component.
-   * i.e., this function will play along with other specifications
-   * given in the other input props.
+   * i.e., this function will be called the last after other conditions
+   * have succeeded.
    *
    * @param args Any arguments to be passed.
    * @returns A boolean.
@@ -443,12 +521,12 @@ export type PermissionMatrixKeysType = {
      * The name of the feature as defined in the Feature column in the matrix
      * document.
      */
-    permissionMatrixFeatureKey?: K;
+    permissionMatrixFeatureKey: K;
     /**
      * The name of the function as defined in the Function column in the matrix
      * document.
      */
-    permissionMatrixFunctionKey?: keyof (typeof PERMISSIONS_MATRIX)[K];
+    permissionMatrixFunctionKey: keyof (typeof PERMISSIONS_MATRIX)[K];
   };
 }[keyof typeof PERMISSIONS_MATRIX];
 
@@ -461,24 +539,19 @@ export type PermissionMatrixKeysType = {
  * @param {string} [config.featureFlag] - Feature flag key to check if the feature is enabled.
  *
  * Priority 2
- * @param {Function} [config.onlyConditionToCheck] - A custom condition function, if provided this is the only condition checked.
- *
- * Priority 3
  * @param {string} [config.permissionMatrixFeatureKey] - The major feature that's the primary key in {@link PERMISSIONS_MATRIX}.
  * @param {string} [config.permissionMatrixFunctionKey] - The function that's the nested key in {@link PERMISSIONS_MATRIX}.
  *
- * Priority 4
- * @param {Function} [config.additionalConditionToCall] - Additional custom condition to call if the basic conditions are met.
+ * Priority 3
+ * @param {Function} [config.additionalConditionToCheck] - Additional custom condition to call if the basic conditions are met.
  *
  * @returns {boolean} - Returns whether the current user has the permission.
  */
 export const usePermissionMatrix = ({
   featureFlag,
-  onlyConditionToCheck,
-  permissionMatrixFeatureKey,
-  permissionMatrixFunctionKey,
+  permissionMatrixKeys,
   additionalConditionToCheck,
-}: PermissionConfigType & PermissionMatrixKeysType): boolean => {
+}: PermissionConfigType): boolean => {
   const { userDetails, idirUserDetails } = useContext(OnRouteBCContext);
   const { data: featureFlags } = useFeatureFlagsQuery();
   const isIdir = Boolean(idirUserDetails?.userRole);
@@ -489,35 +562,60 @@ export const usePermissionMatrix = ({
       return false;
     }
   }
-
-  // If the onlyConditionToCheck function is given, call that alone and exit.
-  if (onlyConditionToCheck) {
-    return onlyConditionToCheck();
-  }
   let isAllowed = false;
-  let currentUserRole;
-  if (permissionMatrixFeatureKey && permissionMatrixFunctionKey) {
-    const { allowedBCeIDRoles, allowedIDIRRoles } = (
-      PERMISSIONS_MATRIX[permissionMatrixFeatureKey] as {
-        [key: string]: PermissionMatrixConfigObject;
-      }
-    )[permissionMatrixFunctionKey];
-    if (isIdir) {
-      currentUserRole = idirUserDetails?.userRole;
-      isAllowed = Boolean(
-        currentUserRole &&
-          allowedIDIRRoles?.includes(currentUserRole),
-      );
-    } else {
-      currentUserRole = userDetails?.userRole;
-      isAllowed = Boolean(
-        currentUserRole &&
-          allowedBCeIDRoles?.includes(currentUserRole),
-      );
-    }
+  if (permissionMatrixKeys) {
+    isAllowed = checkPermissionMatrix({
+      permissionMatrixKeys,
+      isIdir,
+      currentUserRole: isIdir
+        ? (idirUserDetails?.userRole as IDIRUserRoleType)
+        : (userDetails?.userRole as BCeIDUserRoleType),
+    });
   }
   if (isAllowed && additionalConditionToCheck) {
     isAllowed = isAllowed && additionalConditionToCheck();
+  }
+  return isAllowed;
+};
+
+/**
+ * Checks if the current user has the necessary permissions based on the provided
+ * permission matrix keys, user role, and whether the user is an IDIR user or not.
+ *
+ * @param {Object} params - Parameters for the permission matrix check.
+ * @param {PermissionMatrixKeysType} params.permissionMatrixKeys - The keys to use for looking up in the permissions matrix.
+ * @param {boolean} params.isIdir - Boolean indicating whether the current user is an IDIR user.
+ * @param {BCeIDUserRoleType | IDIRUserRoleType} params.currentUserRole - The role of the current user.
+ *
+ * @returns {boolean} - Returns whether the user is allowed to access the resource.
+ */
+export const checkPermissionMatrix = ({
+  permissionMatrixKeys,
+  isIdir,
+  currentUserRole,
+}: {
+  permissionMatrixKeys: PermissionMatrixKeysType;
+  isIdir: boolean;
+  currentUserRole: BCeIDUserRoleType | IDIRUserRoleType;
+}) => {
+  let isAllowed: boolean;
+  const { permissionMatrixFeatureKey, permissionMatrixFunctionKey } =
+    permissionMatrixKeys;
+  const { allowedBCeIDRoles, allowedIDIRRoles } = (
+    PERMISSIONS_MATRIX[permissionMatrixFeatureKey] as {
+      [key: string]: PermissionMatrixConfigObject;
+    }
+  )[permissionMatrixFunctionKey];
+  if (isIdir) {
+    isAllowed = Boolean(
+      currentUserRole &&
+        allowedIDIRRoles?.includes(currentUserRole as IDIRUserRoleType),
+    );
+  } else {
+    isAllowed = Boolean(
+      currentUserRole &&
+        allowedBCeIDRoles?.includes(currentUserRole as BCeIDUserRoleType),
+    );
   }
   return isAllowed;
 };

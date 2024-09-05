@@ -36,7 +36,6 @@ import { setResHeaderCorrelationId } from 'src/common/helper/response-header.hel
 import { JsonReqBodyInterceptor } from '../../common/interceptor/json-req-body.interceptor';
 import { CreateLoaFileDto } from './dto/request/create-loa-file.dto';
 import { CompanyIdPathParamDto } from '../common/dto/request/pathParam/companyId.path-param.dto';
-import { UpdateLoaFileDto } from './dto/request/update-loa-file.dto';
 import { LoaIdPathParamDto } from './dto/request/pathParam/loa-Id.path-params.dto';
 import { GetDocumentQueryParamsDto } from '../common/dto/request/queryParam/getDocument.query-params.dto';
 import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-flag-enabled.decorator';
@@ -44,6 +43,7 @@ import { Permissions } from 'src/common/decorator/permissions.decorator';
 import { Claim } from 'src/common/enum/claims.enum';
 import { ReadLoaDto } from './dto/response/read-loa.dto';
 import { GetLoaQueryParamsDto } from './dto/request/queryParam/get-loa.query-params.dto';
+import { UpdateLoaFileDto } from './dto/request/update-loa-file.dto';
 
 @ApiBearerAuth()
 @ApiTags('Letter of Authorization (LoA)')

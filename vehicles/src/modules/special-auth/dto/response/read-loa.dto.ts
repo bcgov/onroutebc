@@ -63,6 +63,20 @@ export class ReadLoaDto {
   comment?: string;
 
   @AutoMap()
+  @ApiProperty({
+    example: 1,
+    description: 'Previous LoA id for the LoA.',
+  })
+  previousLoaId: number;
+
+  @AutoMap()
+  @ApiProperty({
+    example: 1,
+    description: 'Original id for the LoA.',
+  })
+  originalLoaId: number;
+
+  @AutoMap()
   @IsEnum(PermitType, { each: true })
   @ApiProperty({
     isArray: true,
