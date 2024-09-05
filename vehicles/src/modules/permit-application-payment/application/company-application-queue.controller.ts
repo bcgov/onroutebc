@@ -32,9 +32,11 @@ import { CaseActivityType } from '../../../common/enum/case-activity-type.enum';
 import { UpdateCaseActivity } from './dto/request/update-case-activity.dto';
 import { ReadCaseEvenDto } from '../../case-management/dto/response/read-case-event.dto';
 import { ApplicationIdIdPathParamDto } from './dto/request/pathParam/applicationId.path-params.dto';
+import { IsFeatureFlagEnabled } from '../../../common/decorator/is-feature-flag-enabled.decorator';
 
 @ApiBearerAuth()
 @ApiTags('Company Application Queue')
+@IsFeatureFlagEnabled('APPLICATION-QUEUE')
 @Controller('companies/:companyId/applications/:applicationId/queue')
 @ApiNotFoundResponse({
   description: 'The Application Queue Api Not Found Response',
