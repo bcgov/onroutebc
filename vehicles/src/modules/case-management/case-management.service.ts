@@ -63,7 +63,6 @@ export class CaseManagementService {
    * Finds the latest `Case` entity based on a combination of `caseId`, `originalCaseId`, and `applicationId`.
    * If a matching case is found, it returns the existing case; otherwise, it returns `undefined`.
    *
-   * @param existingCase - Optional, an already loaded `Case` that may be reassigned if found.
    * @param queryRunner - Optional, an existing QueryRunner, typically part of a larger transaction.
    * @param caseId - Optional, the ID of the case to find.
    * @param originalCaseId - Optional, the original ID of the case to find.
@@ -73,18 +72,16 @@ export class CaseManagementService {
   @LogAsyncMethodExecution()
   async findLatest({
     queryRunner,
-    existingCase,
     caseId,
     originalCaseId,
     applicationId,
   }: {
     queryRunner: QueryRunner;
-    existingCase?: Nullable<Case>;
     caseId?: Nullable<number>;
     originalCaseId?: Nullable<number>;
     applicationId?: Nullable<string>;
   }) {
-    existingCase = await queryRunner.manager.findOne(Case, {
+    return await queryRunner.manager.findOne(Case, {
       where: [
         { caseId: caseId },
         { originalCaseId: originalCaseId },
@@ -92,7 +89,6 @@ export class CaseManagementService {
       ],
       order: { caseId: { direction: 'DESC' } },
     });
-    return existingCase;
   }
 
   /**
@@ -214,7 +210,6 @@ export class CaseManagementService {
       if (!existingCase) {
         existingCase = await this.findLatest({
           queryRunner,
-          existingCase,
           caseId,
           originalCaseId,
           applicationId,
@@ -303,7 +298,6 @@ export class CaseManagementService {
       if (!existingCase) {
         existingCase = await this.findLatest({
           queryRunner,
-          existingCase,
           caseId,
           originalCaseId,
           applicationId,
@@ -401,7 +395,6 @@ export class CaseManagementService {
       if (!existingCase) {
         existingCase = await this.findLatest({
           queryRunner,
-          existingCase,
           caseId,
           originalCaseId,
           applicationId,
@@ -502,7 +495,6 @@ export class CaseManagementService {
       if (!existingCase) {
         existingCase = await this.findLatest({
           queryRunner,
-          existingCase,
           caseId,
           originalCaseId,
           applicationId,
@@ -537,7 +529,7 @@ export class CaseManagementService {
       );
       newEvent = await queryRunner.manager.save<CaseEvent>(newEvent);
 
-      let newActivity = new CaseActivity();
+      const newActivity = new CaseActivity();
       newActivity.case = existingCase;
       newActivity.caseEvent = newEvent;
       newActivity.caseActivityType = caseActivityType;
@@ -546,7 +538,7 @@ export class CaseManagementService {
       if (comment) {
         newActivity.caseNotes = caseNotes;
       }
-      newActivity = await queryRunner.manager.save<CaseActivity>(newActivity);
+      await queryRunner.manager.save<CaseActivity>(newActivity);
 
       if (existingCase.caseStatusType === CaseStatusType.IN_PROGRESS) {
         await this.closeCase({
@@ -617,7 +609,6 @@ export class CaseManagementService {
       if (!existingCase) {
         existingCase = await this.findLatest({
           queryRunner,
-          existingCase,
           caseId,
           originalCaseId,
           applicationId,
@@ -642,13 +633,13 @@ export class CaseManagementService {
       );
       newEvent = await queryRunner.manager.save<CaseEvent>(newEvent);
 
-      let newActivity = new CaseActivity();
+      const newActivity = new CaseActivity();
       newActivity.case = existingCase;
       newActivity.caseEvent = newEvent;
       newActivity.caseActivityType = CaseActivityType.WITHDRAWN;
       newActivity.dateTime = new Date();
       setBaseEntityProperties({ entity: newActivity, currentUser });
-      newActivity = await queryRunner.manager.save<CaseActivity>(newActivity);
+      await queryRunner.manager.save<CaseActivity>(newActivity);
 
       await this.closeCase({
         currentUser,
