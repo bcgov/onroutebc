@@ -20,7 +20,12 @@ import { PermitApplicationOrigin } from './entities/permit-application-origin.en
 import { PermitApprovalSource } from './entities/permit-approval-source.entity';
 import { PermitApplicationOrigin as PermitApplicationOriginEnum } from '../../../common/enum/permit-application-origin.enum';
 import { PermitApprovalSource as PermitApprovalSourceEnum } from '../../../common/enum/permit-approval-source.enum';
-import { paginate, sortQuery } from '../../../common/helper/database.helper';
+import {
+  getQueryRunner,
+  paginate,
+  setBaseEntityProperties,
+  sortQuery,
+} from '../../../common/helper/database.helper';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { DopsService } from '../../common/dops.service';
@@ -50,6 +55,13 @@ import {
   generatePermitNumber,
 } from '../../../common/helper/permit-application.helper';
 import { PaymentService } from '../payment/payment.service';
+import { CaseManagementService } from '../../case-management/case-management.service';
+import { ReadCaseEvenDto } from '../../case-management/dto/response/read-case-event.dto';
+import { CaseActivityType } from '../../../common/enum/case-activity-type.enum';
+import { Nullable } from '../../../common/types/common';
+import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
+import { throwUnprocessableEntityException } from '../../../common/helper/exception.helper';
+import { PermitType } from '../../../common/enum/permit-type.enum';
 
 @Injectable()
 export class ApplicationService {
@@ -67,6 +79,7 @@ export class ApplicationService {
     private permitApprovalSourceRepository: Repository<PermitApprovalSource>,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
+    private readonly caseManagementService: CaseManagementService,
   ) {}
 
   /**
@@ -766,5 +779,189 @@ export class ApplicationService {
 
     // Return the response DTO
     return deleteDto;
+  }
+
+  @LogAsyncMethodExecution()
+  async addApplicationToQueue({
+    currentUser,
+    companyId,
+    applicationId,
+  }: {
+    currentUser: IUserJWT;
+    companyId: number;
+    applicationId: string;
+  }): Promise<ReadCaseEvenDto> {
+    const application = await this.findOne(applicationId, companyId);
+    if (!application) {
+      throw new DataNotFoundException();
+    } else if (application.permitType !== PermitType.SINGLE_TRIP_OVERSIZE) {
+      throwUnprocessableEntityException(
+        'Invalid permit type. Ineligible for queue.',
+      );
+    } else if (application.permitStatus !== ApplicationStatus.IN_PROGRESS) {
+      throwUnprocessableEntityException('Invalid status.');
+    }
+    const { queryRunner } = await getQueryRunner({
+      dataSource: this.dataSource,
+    });
+    try {
+      application.permitStatus = ApplicationStatus.IN_QUEUE;
+      setBaseEntityProperties({
+        entity: application,
+        currentUser,
+        update: true,
+      });
+      await queryRunner.manager.save<Permit>(application);
+      const result = await this.caseManagementService.openCase({
+        currentUser: currentUser,
+        applicationId,
+        queryRunner,
+      });
+      await queryRunner.commitTransaction();
+      return result;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      this.logger.error(error);
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  /**
+   * Updates the status of an application in queue based on the specified activity type.
+   * The function first checks for the validity of the application before performing any updates or workflow operations.
+   *
+   * Procedure steps:
+   * - If `caseActivityType` is `WITHDRAWN`, it starts the case withdrawal process.
+   * - If `caseActivityType` is any other state, it completes the case workflow.
+   *
+   * Input:
+   *  @param currentUser: User information making the request including JWT details.
+   *  @param companyId: The ID of the company owning the application.
+   *  @param applicationId: Unique identifier for the application to update.
+   *  @param caseActivityType: Type of case activity which determines the flow (e.g., WITHDRAWN, APPROVED).
+   *  @param comment (optional): Additional comments or descriptions associated with the activity.
+   *
+   * Output:
+   *  @returns the final result after updating the case or performing the workflow.
+   *
+   * Possible exceptions:
+   *  @throws DataNotFoundException: In case the application is not found.
+   *  @throws UnprocessableEntityException: If the permit type/status does not allow queue operations.
+   */
+  @LogAsyncMethodExecution()
+  async updateApplicationQueueStatus({
+    currentUser,
+    companyId,
+    applicationId,
+    caseActivityType,
+    comment,
+  }: {
+    currentUser: IUserJWT;
+    companyId: number;
+    applicationId: string;
+    caseActivityType: CaseActivityType;
+    comment?: Nullable<string>;
+  }): Promise<ReadCaseEvenDto> {
+    let result: ReadCaseEvenDto;
+    const application = await this.findOne(applicationId, companyId);
+    if (!application) {
+      throw new DataNotFoundException();
+    } else if (application.permitType !== PermitType.SINGLE_TRIP_OVERSIZE) {
+      throwUnprocessableEntityException(
+        'Invalid permit type. Ineligible for queue.',
+      );
+    } else if (application.permitStatus !== ApplicationStatus.IN_QUEUE) {
+      throwUnprocessableEntityException('Invalid status.');
+    }
+
+    const { queryRunner } = await getQueryRunner({
+      dataSource: this.dataSource,
+    });
+    try {
+      if (caseActivityType === CaseActivityType.WITHDRAWN) {
+        result = await this.caseManagementService.caseWithdrawn({
+          currentUser,
+          applicationId,
+          queryRunner,
+        });
+      } else {
+        result = await this.caseManagementService.workflowEnd({
+          currentUser,
+          applicationId,
+          caseActivityType,
+          comment,
+          queryRunner,
+        });
+      }
+      await queryRunner.manager.update(
+        Permit,
+        { permitId: applicationId },
+        {
+          permitStatus:
+            caseActivityType === CaseActivityType.APPROVED
+              ? ApplicationStatus.IN_CART
+              : ApplicationStatus.IN_PROGRESS,
+          updatedDateTime: new Date(),
+          updatedUser: currentUser.userName,
+          updatedUserDirectory: currentUser.orbcUserDirectory,
+          updatedUserGuid: currentUser.userGUID,
+        },
+      );
+      await queryRunner.commitTransaction();
+      return result;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      this.logger.error(error);
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  /**
+   * Assigns an application that is currently in queue to a case manager.
+   * Performs validation on the application's status and type before assignment.
+   *
+   * Input:
+   * - @param currentUser: IUserJWT - The user performing the operation.
+   * - @param companyId: number - The ID of the company associated with the application.
+   * - @param applicationId: string - The ID of the application to be assigned.
+   *
+   * Output:
+   * - @returns Promise<ReadCaseEvenDto> - The result from the case assignment process.
+   *
+   * Throws exceptions:
+   * - DataNotFoundException: When the application is not found.
+   * - UnprocessableEntityException: If the application is ineligible for queue.
+   *
+   */
+  @LogAsyncMethodExecution()
+  async assingApplicationInQueue({
+    currentUser,
+    companyId,
+    applicationId,
+  }: {
+    currentUser: IUserJWT;
+    companyId: number;
+    applicationId: string;
+  }): Promise<ReadCaseEvenDto> {
+    const application = await this.findOne(applicationId, companyId);
+    if (!application) {
+      throw new DataNotFoundException();
+    } else if (application.permitType !== PermitType.SINGLE_TRIP_OVERSIZE) {
+      throwUnprocessableEntityException(
+        'Invalid permit type. Ineligible for queue.',
+      );
+    } else if (application.permitStatus !== ApplicationStatus.IN_QUEUE) {
+      throwUnprocessableEntityException('Invalid status.');
+    }
+    const result = await this.caseManagementService.assignCase({
+      currentUser: currentUser,
+      applicationId,
+    });
+
+    return result;
   }
 }

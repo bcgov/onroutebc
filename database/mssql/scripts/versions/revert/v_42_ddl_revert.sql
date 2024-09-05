@@ -29,6 +29,7 @@ BEGIN TRY
     DROP TABLE [case].[ORBC_CASE_TYPE]
     DROP TABLE [case].[ORBC_CASE_STATUS_TYPE]
     DROP SCHEMA [case]
+    DELETE FROM [permit].[ORBC_PERMIT_STATUS_TYPE] WHERE [PERMIT_STATUS_TYPE] ='IN_QUEUE'
     COMMIT
 END TRY
 
@@ -41,4 +42,4 @@ END CATCH
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Revert Case/Queue management and related Db objects'
 
-INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (39, @VersionDescription, getutcdate())
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (41, @VersionDescription, getutcdate())
