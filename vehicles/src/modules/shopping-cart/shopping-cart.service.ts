@@ -94,11 +94,7 @@ export class ShoppingCartService {
       result = { failure: applicationIds, success: [] };
     }
     if (shouldConcatResult) {
-      if (result?.failure?.length) {
-        result?.failure?.concat(applicationsForQueue);
-      } else {
-        result.failure = applicationsForQueue;
-      }
+      result.failure.push(...applicationsForQueue);
     }
     return result;
   }
@@ -323,7 +319,7 @@ export class ShoppingCartService {
       affected: number;
     };
     if (affected === applicationIds.length) {
-      success.concat(applicationIds);
+      success.push(...applicationIds);
     } else {
       const selectResult = await this.applicationRepository
         .createQueryBuilder('application')
@@ -335,13 +331,13 @@ export class ShoppingCartService {
         })
         .getMany();
 
-      failure.concat(
-        selectResult
+      failure.push(
+        ...selectResult
           .filter(({ permitStatus }) => permitStatus !== statusToUpdateTo)
           .map(({ permitId: applicationId }) => applicationId),
       );
-      success.concat(
-        applicationIds.filter(
+      success.push(
+        ...applicationIds.filter(
           (applicationId) => !failure.includes(applicationId),
         ),
       );
