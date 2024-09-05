@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.5">
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.4.1">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
@@ -107,7 +107,7 @@
           </elementProp>
           <elementProp name="BEARER_TOKEN" elementType="Argument">
             <stringProp name="Argument.name">BEARER_TOKEN</stringProp>
-            <stringProp name="Argument.value">eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJXNk5hakRyZ2VUR2tYR0dtb28tRWJFSkJXQTM4OGEyYjdRN0p4eThSRjdzIn0.eyJleHAiOjE3MjQ0MzM1NjksImlhdCI6MTcyNDQzMzI2OSwiYXV0aF90aW1lIjoxNzI0NDMyMTk5LCJqdGkiOiJiZWM0NDk3Yy05OTdmLTQ4NTktYjhjZS0wYmU3ZjQzMWRlY2UiLCJpc3MiOiJodHRwczovL3Rlc3QubG9naW5wcm94eS5nb3YuYmMuY2EvYXV0aC9yZWFsbXMvc3RhbmRhcmQiLCJhdWQiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInN1YiI6IjMzMjRiNDFjNGI5OTQzZTg5MjdmYzMzODE2OThiZjYwQGlkaXIiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJvbi1yb3V0ZS1iYy1kaXJlY3QtNDU5OCIsInNlc3Npb25fc3RhdGUiOiJjMDcyYWIwMi0wMzBiLTQ2ZTYtYjUyZC0zZjdmYzEwZjZmOTAiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIGJjZWlkYm90aCBpZGlyIiwic2lkIjoiYzA3MmFiMDItMDMwYi00NmU2LWI1MmQtM2Y3ZmMxMGY2ZjkwIiwiaWRpcl91c2VyX2d1aWQiOiIzMzI0QjQxQzRCOTk0M0U4OTI3RkMzMzgxNjk4QkY2MCIsImlkZW50aXR5X3Byb3ZpZGVyIjoiaWRpciIsImlkaXJfdXNlcm5hbWUiOiJDQkVSRyIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibmFtZSI6IkJlcmcsIENocmlzIE1PVEk6RVgiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiIzMzI0YjQxYzRiOTk0M2U4OTI3ZmMzMzgxNjk4YmY2MEBpZGlyIiwiZ2l2ZW5fbmFtZSI6IkNocmlzIiwiZGlzcGxheV9uYW1lIjoiQmVyZywgQ2hyaXMgTU9USTpFWCIsImZhbWlseV9uYW1lIjoiQmVyZyIsImVtYWlsIjoiY2hyaXMuYmVyZ0Bnb3YuYmMuY2EifQ.UiKoybZpovAtayyoG9cZYWt_evzg6akIQjzTqGj0zMZwTEFo8kYBTqBfIXN7XqQfvW9eleBw0bpUcc2kY3GWPbPxTyp5c0I4WS7iMUDlhD2zF8Z7HA9juV7WCCqpgojVzwRgfYlDXE0RGEX8wGkxwaNC5r1NJOmbADTm6QIrzuVLt9gLiSrr1XkEDizzZTiZolx6vJuXj5AMxg4AGibhQ9quiC_kKMyhV6H8_hryTqXD9R3tCYlUnAarffva_Pswkbn0rTN9BNCf15_KzyW1jP09jzLlg7gHPzKMFP27Ph1fauXM4p2HNfC8ILam_fbfmY1HJ5s1wjAELdA9NrAYBA </stringProp>
+            <stringProp name="Argument.value"></stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -146,108 +146,6 @@
           </collectionProp>
         </HeaderManager>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ppcGetRole" enabled="true">
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
-            <collectionProp name="Arguments.arguments"/>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain"></stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol"></stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://${VEHICLES_API_URL}/users/roles?companyId=74</stringProp>
-          <stringProp name="HTTPSampler.method">GET</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
-        </HTTPSamplerProxy>
-        <hashTree>
-          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="BlazeMeter Header Manager" enabled="false">
-            <collectionProp name="HeaderManager.headers">
-              <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">Host</stringProp>
-                <stringProp name="Header.value">${VEHICLES_API_URL}</stringProp>
-              </elementProp>
-              <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">Connection</stringProp>
-                <stringProp name="Header.value">keep-alive</stringProp>
-              </elementProp>
-              <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">sec-ch-ua</stringProp>
-                <stringProp name="Header.value">&quot;Chromium&quot;;v=&quot;118&quot;, &quot;Google Chrome&quot;;v=&quot;118&quot;, &quot;Not=A?Brand&quot;;v=&quot;99&quot;</stringProp>
-              </elementProp>
-              <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">Accept</stringProp>
-                <stringProp name="Header.value">application/json</stringProp>
-              </elementProp>
-              <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">sec-ch-ua-mobile</stringProp>
-                <stringProp name="Header.value">?0</stringProp>
-              </elementProp>
-              <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">Authorization</stringProp>
-                <stringProp name="Header.value">Bearer ${BEARER_TOKEN}</stringProp>
-              </elementProp>
-              <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">User-Agent</stringProp>
-                <stringProp name="Header.value">Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36</stringProp>
-              </elementProp>
-              <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">sec-ch-ua-platform</stringProp>
-                <stringProp name="Header.value">&quot;Windows&quot;</stringProp>
-              </elementProp>
-              <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">Origin</stringProp>
-                <stringProp name="Header.value">https://${FRONTEND_API_URL}</stringProp>
-              </elementProp>
-              <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">Sec-Fetch-Site</stringProp>
-                <stringProp name="Header.value">same-site</stringProp>
-              </elementProp>
-              <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">Sec-Fetch-Mode</stringProp>
-                <stringProp name="Header.value">cors</stringProp>
-              </elementProp>
-              <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">Sec-Fetch-Dest</stringProp>
-                <stringProp name="Header.value">empty</stringProp>
-              </elementProp>
-              <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://${FRONTEND_API_URL}/</stringProp>
-              </elementProp>
-              <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">Accept-Encoding</stringProp>
-                <stringProp name="Header.value">gzip, deflate, br</stringProp>
-              </elementProp>
-              <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">Accept-Language</stringProp>
-                <stringProp name="Header.value">en-US,en;q=0.9</stringProp>
-              </elementProp>
-              <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">If-None-Match</stringProp>
-                <stringProp name="Header.value">W/&quot;17b2-OQs45yY+9rxT8oaE549bg+d9IqA&quot;</stringProp>
-              </elementProp>
-            </collectionProp>
-          </HeaderManager>
-          <hashTree/>
-          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="false">
-            <collectionProp name="HeaderManager.headers">
-              <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">Authorization</stringProp>
-                <stringProp name="Header.value">Bearer ${BEARER_TOKEN}</stringProp>
-              </elementProp>
-              <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">Accept</stringProp>
-                <stringProp name="Header.value">*/*</stringProp>
-              </elementProp>
-            </collectionProp>
-          </HeaderManager>
-          <hashTree/>
-        </hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ppcSearch" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
@@ -358,98 +256,14 @@
           <hashTree/>
         </hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ppcDgenGetDocument" enabled="true">
-          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&#xd;
-  &quot;reportTemplate&quot;: &quot;PAYMENT_AND_REFUND_DETAILED_REPORT&quot;,&#xd;
-  &quot;reportData&quot;: {&#xd;
-    &quot;issuedBy&quot;: &quot;Self Issued and PPC&quot;,&#xd;
-    &quot;runDate&quot;: &quot;Jul. 17, 2023, 09:00 PM, PDT&quot;,&#xd;
-    &quot;permitType&quot;: &quot;All Permit Types&quot;,&#xd;
-    &quot;paymentMethod&quot;: &quot;Cash, Cheque, Icepay - Mastercard, Icepay - Mastercard (Debit), Icepay - Visa, Icepay - Visa (Debit), Web - Mastercard (Debit), Web - Visa (Debit), PoS - Mastercard (Debit), PoS - Visa (Debit), PoS - Mastercard&quot;,&#xd;
-    &quot;timePeriod&quot;: &quot;Jul. 17, 2023, 09:00 PM, PDT – Jul. 18, 2023, 09:00 PM, PDT&quot;,&#xd;
-    &quot;payments&quot;: [&#xd;
-      {&#xd;
-        &quot;issuedOn&quot;: &quot;Jul. 17, 2023, 09:00 PM, PDT&quot;,&#xd;
-        &quot;providerTransactionId&quot;: &quot;73582422238&quot;,&#xd;
-        &quot;orbcTransactionId&quot;: &quot;OR-678904512857&quot;,&#xd;
-        &quot;paymentMethod&quot;: &quot;Cash&quot;,&#xd;
-        &quot;receiptNo&quot;: &quot;45098721098&quot;,&#xd;
-        &quot;permitNo&quot;: &quot;P2-72106199-468&quot;,&#xd;
-        &quot;permitType&quot;: &quot;STOW&quot;,&#xd;
-        &quot;user&quot;: &quot;ANPETRIC&quot;,&#xd;
-        &quot;amount&quot;: &quot;$90.00&quot;&#xd;
-      },&#xd;
-      {&#xd;
-        &quot;paymentMethod&quot;: &quot;Cash&quot;,&#xd;
-        &quot;subTotalAmount&quot;: &quot;$90.00&quot;&#xd;
-      },&#xd;
-      {&#xd;
-        &quot;paymentMethod&quot;: &quot;Cash&quot;,&#xd;
-        &quot;totalAmount&quot;: &quot;$90.00&quot;&#xd;
-      }&#xd;
-    ],&#xd;
-    &quot;refunds&quot;: [&#xd;
-      {&#xd;
-        &quot;issuedOn&quot;: &quot;Jul. 17, 2023, 09:00 PM, PDT&quot;,&#xd;
-        &quot;providerTransactionId&quot;: &quot;73582422238&quot;,&#xd;
-        &quot;orbcTransactionId&quot;: &quot;OR-678904512857&quot;,&#xd;
-        &quot;paymentMethod&quot;: &quot;Cheque&quot;,&#xd;
-        &quot;receiptNo&quot;: &quot;51961102630&quot;,&#xd;
-        &quot;permitNo&quot;: &quot;P2-15348742-610&quot;,&#xd;
-        &quot;permitType&quot;: &quot;TROS&quot;,&#xd;
-        &quot;user&quot;: &quot;KOPARKIN&quot;,&#xd;
-        &quot;amount&quot;: &quot;$10.00&quot;&#xd;
-      },&#xd;
-      {&#xd;
-        &quot;paymentMethod&quot;: &quot;Cheque&quot;,&#xd;
-        &quot;subTotalAmount&quot;: &quot;$190.00&quot;&#xd;
-      },&#xd;
-      {&#xd;
-        &quot;paymentMethod&quot;: &quot;Credit Card&quot;,&#xd;
-        &quot;totalAmount&quot;: &quot;$190.00&quot;&#xd;
-      }&#xd;
-    ],&#xd;
-    &quot;summaryPayments&quot;: [&#xd;
-      {&#xd;
-        &quot;paymentMethod&quot;: &quot;Cheque&quot;,&#xd;
-        &quot;payment&quot;: &quot;$190&quot;,&#xd;
-        &quot;refund&quot;: &quot;$190&quot;,&#xd;
-        &quot;deposit&quot;: &quot;$190&quot;&#xd;
-      },&#xd;
-      {&#xd;
-        &quot;subTotalPaymentAmount&quot;: &quot;$190.00&quot;,&#xd;
-        &quot;subTotalRefundAmount&quot;: &quot;$190.00&quot;,&#xd;
-        &quot;subTotalDepositAmount&quot;: &quot;$190.00&quot;&#xd;
-      },&#xd;
-      {&#xd;
-        &quot;grandTotalAmount&quot;: &quot;$190.00&quot;&#xd;
-      }&#xd;
-    ],&#xd;
-    &quot;summaryPermits&quot;: [&#xd;
-      {&#xd;
-        &quot;permitType&quot;: &quot;TROS&quot;,&#xd;
-        &quot;permitCount&quot;: &quot;1&quot;&#xd;
-      },&#xd;
-      {&#xd;
-        &quot;totalPermits&quot;: &quot;1&quot;&#xd;
-      }&#xd;
-    ]&#xd;
-  },&#xd;
-  &quot;generatedDocumentFileName&quot;: &quot;FinancialA12345&quot;&#xd;
-}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
           </elementProp>
           <stringProp name="HTTPSampler.domain"></stringProp>
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://${DOPS_API_URL}/dms/1?download=proxy&amp;companyId=74</stringProp>
+          <stringProp name="HTTPSampler.path">https://${DOPS_API_URL}/dms/1?download=url&amp;companyId=74</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -650,7 +464,7 @@
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
-  &quot;templateName&quot;: &quot;PERMIT_TROS&quot;,&#xd;
+  &quot;templateName&quot;: &quot;PERMIT&quot;,&#xd;
   &quot;templateVersion&quot;: 1,&#xd;
   &quot;templateData&quot;: {&#xd;
     &quot;permitName&quot;: &quot;Oversize: Term&quot;,&#xd;
@@ -696,6 +510,7 @@
         &quot;lastName&quot;: &quot;Hamilton&quot;,&#xd;
         &quot;phone1&quot;: &quot;(778) 952-1234&quot;,&#xd;
         &quot;email&quot;: &quot;lewis@f1.com&quot;,&#xd;
+        &quot;additionalEmail&quot;: &quot;lewis2@f1.com&quot;,&#xd;
         &quot;phone1Extension&quot;: &quot;1&quot;,&#xd;
         &quot;phone2&quot;: null,&#xd;
         &quot;phone2Extension&quot;: null,&#xd;
@@ -735,7 +550,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">https://${DOPS_API_URL}/dgen/template/render</stringProp>
+          <stringProp name="HTTPSampler.path">https://${DOPS_API_URL}/dgen/template/render?companyId=74</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
