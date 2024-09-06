@@ -52,12 +52,13 @@ The structure of the geographicRegions is as follows:
     },
   ]
 ```
+Another 'pseudo' geographic region exists which is every area of the province __not__ covered by one of the other named regions. This 'pseudo' region is typically called 'BC Default' but is not explicitly configured as its own region, though it can have its own set of permittable sizes and weights. See the [commodities](#commodities) section below for details on configuring dimensions for BC Default.
 
 > [!NOTE]
 > The IDs assigned to the geographic regions are arbitrary, they need only be unique. When onRouteBC integrates with the route planner, the geographic region IDs may need to be modified to align with the IDs as returned by the route planner API. Alternately, a separate `key` property may be added for this purpose in future.
 
 ### permitTypes
-The permitTypes property defines the basic rules and properties of all the known permit types. The basic structure is:
+The permitTypes property defines the rules and properties of all the known permit types. The basic structure is:
 
 ```js
   permitTypes: [
@@ -81,11 +82,11 @@ The permitTypes property defines the basic rules and properties of all the known
       ],
     }
 ```
-Properties of the permit type define whether it requires a driving route, weights, size, and commodity. The example above does not require any of these. A complex permit such as single trip oversize overweight would require all four.
+Properties of the permit type define whether it requires a driving route, weights, size, and commodity. The term oversize example above does not require any of these. A complex permit such as single trip oversize overweight would require all four.
 
-The `allowedVehicles` property is required for permit types that are for a single vehicle as opposed to for a vehicle combination (truck and trailers). For permits requiring a vehicle combination such as single trip oversize, the `allowedVehicles` property is not used, instead using configuration inside the commodity property, described below.
+The `allowedVehicles` property is required for permit types that are for a single vehicle as opposed to for a vehicle combination (truck and trailers). For permits requiring a vehicle combination such as single trip oversize, the `allowedVehicles` property is not used, instead using configuration inside the commodity property, described in its own section below.
 
-The `rules` property defines policy rules for the permit type that will be checked during permit validation. There will be many rules for a single permit type, expressing business policy such as 'one may not apply for a permit with a start date in the past', 'the vehicle type being permitted must be one of the allowed vehicles for the permit type', 'a vehicle identification number must be 6 alphanumeric characters', and others. Rules are expressed using the syntax defined by [JSON Rules Engine](https://github.com/cachecontrol/json-rules-engine). See the separate section on [rules](#rules) in this document.
+The `rules` property defines policy rules for the permit type that will be checked during permit validation. There will be many rules for a single permit type, expressing business policy such as 'you may not apply for a permit with a start date in the past', 'the vehicle type being permitted must be one of the allowed vehicles for the permit type', 'a vehicle identification number must be 6 alphanumeric characters', and others. Rules are expressed using the syntax defined by [JSON Rules Engine](https://github.com/cachecontrol/json-rules-engine). See the separate section on [rules](#rules) in this document.
 
 `costRules` are a special type of rule that define how much a permit costs based on the permit itself. Costs can take into account any property of the permit application such as duration, travel distance, start date, vehicle type, and others. See the separate section on [costRules](#costRules) in this document to understand how they differ from standard [JSON Rules Engine](https://github.com/cachecontrol/json-rules-engine) rules.
 
@@ -138,4 +139,114 @@ The ID for a vehicle type must be unique in the configuration; that is, a power 
 > Power unit and trailer types both have a `category` property which is not currently used by the policy engine but will be used for overweight permits when they are developed (different weight allowances when a booster follows a specific category of trailer, for example).
 
 ### commodities
-The `commodities` property defines all of the known permittable commodities. In addition to the ID and common name of the commodity, this property defines the allowable vehicle combinations that are allowed to transport the commodity, along with the allowable size and weight of the vehicles.
+The `commodities` property defines all of the known permittable commodities. In addition to the ID and common name of the commodity, this property defines the allowable vehicle combinations that are allowed to transport the commodity, along with the allowable size and weight of the vehicles. Permittable sizes and weights are configured under `commodities` instead of under `vehicleTypes` because the permittable sizes and weights are dependent on the commodity being carried.
+
+Here is an example of a single commodity configured in a policy configuration JSON:
+```js
+  commodities: [
+    {
+      id: 'IMCONTN',
+      name: 'Intermodal Containers',
+      size: {
+        powerUnits: [
+          {
+            type: 'TRKTRAC',
+            trailers: [
+              {
+                type: 'STACTRN',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
+                  {
+                    fp: 3,
+                    rp: 6.5,
+                    w: 2.9,
+                    l: 27.5,
+                  },
+                ],
+              },
+              {
+                type: 'STBTRAN',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
+                  {
+                    h: 4.4,
+                    l: 27.5,
+                  },
+                ],
+              },
+              {
+                type: 'HIBOFLT',
+                jeep: true,
+                booster: true,
+                selfIssue: true,
+                sizeDimensions: [
+                  {
+                    h: 4.4,
+                    regions: [
+                      {
+                        region: 'PCE',
+                        h: 5.33,
+                        l: 36,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            type: 'REGTRCK',
+            trailers: [
+              {
+                type: 'NONEXXX',
+                jeep: false,
+                booster: false,
+                selfIssue: true,
+                sizeDimensions: [
+                  {
+                    h: 4.4,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ]
+```
+> [!NOTE]
+> The values above do not reflect actual policy, they are for demonstration purposes only.
+
+#### Size dimension set
+Size dimensions for a given commodity and vehicle combination are configured in the `size` property of the commodity.
+
+In the example above, the commodity 'Intermodal Containers' has permittable size dimensions configured. There are two size permittable power unit types for this commodity (TRKTRAC and REGTRCK), with TRKTRAC permitted to pull one of 3 different trailer types. REGTRCK is permitted only to pull the trailer 'NONEXXX', which is a special ID indicating no trailer is being pulled. TODO: link to documentation about 'pseudo' vehicle types and commodity types.
+
+> [!NOTE]
+> Vehicles in the size dimension set are referenced by type. The type must match an ID configured in the `vehicleTypes` property of the policy configuration as a relational data key.
+
+Size dimensions are configured exclusively on trailers, never on power units. For power units that may be permitted with or without trailers, the special pseudo trailer 'NONEXXX' is used as the configuration point for the power unit on its own.
+
+There are 5 dimensions that can be configured on a trailer:
+* height (defined by `h`)
+* length (defined by `l`)
+* width (defined by `w`)
+* front projection (defined by `fp`)
+* rear projection (defined by `rp`)
+
+When any of these is configured directly on the `sizeDimensions` property it indicates a permittable size for the 'BC Default' geographic area. STACTRN in the example above has permittable maximum sizes for 4 dimensions in BC Default. Configuring separate sizes for other geographic regions is handled with a `regions` property of `sizeDimensions`. HIBOFLT in the example above configures a height and length specific to the PCE geographic region. As with vehicles, the `region` property must match a configured `geographicRegion` ID in the policy configuration file (it is a relational data key).
+
+If any dimensions are __not__ configured for a trailer, this indicates that the maximum dimension is the __legal__ dimension and extra size is not permitted.
+
+> [!NOTE]
+> The reason `sizeDimensions` is an array instead of a single object is for future flexibility. Size dimensions generally do not need multiple size dimensions for a given trailer; this is for weight dimensions primarily. However, it is possible that in the future a trailer may be permitted extra length if it is following a tridem jeep or has a trailing tridem booster. In this case the configuration will be able to use multiple size dimensions for one trailer. For now however, it can be assumed there will only be a single size dimension in the array.
+
+#### Weight dimension set
+> [!NOTE]
+> Weight dimensions are not configured in the example above because overweight permits have not yet been implemented in the policy engine.
+
