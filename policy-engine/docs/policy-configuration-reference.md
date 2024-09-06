@@ -222,7 +222,7 @@ Here is an example of a single commodity configured in a policy configuration JS
 > [!NOTE]
 > The values above do not reflect actual policy, they are for demonstration purposes only.
 
-#### Size dimension set
+#### Size Dimension Set
 Size dimensions for a given commodity and vehicle combination are configured in the `size` property of the commodity.
 
 In the example above, the commodity 'Intermodal Containers' has permittable size dimensions configured. There are two size permittable power unit types for this commodity (TRKTRAC and REGTRCK), with TRKTRAC permitted to pull one of 3 different trailer types. REGTRCK is permitted only to pull the trailer 'NONEXXX', which is a special ID indicating no trailer is being pulled. TODO: link to documentation about 'pseudo' vehicle types and commodity types.
@@ -246,7 +246,13 @@ If any dimensions are __not__ configured for a trailer, this indicates that the 
 > [!NOTE]
 > The reason `sizeDimensions` is an array instead of a single object is for future flexibility. Size dimensions generally do not need multiple size dimensions for a given trailer; this is for weight dimensions primarily. However, it is possible that in the future a trailer may be permitted extra length if it is following a tridem jeep or has a trailing tridem booster. In this case the configuration will be able to use multiple size dimensions for one trailer. For now however, it can be assumed there will only be a single size dimension in the array.
 
-#### Weight dimension set
+##### Jeeps and Boosters
+Whether a jeep or a booster is permitted in a vehicle combination for a commodity is configured with the `allowJeep` and `allowBooster` properties. The presence of either a jeep or booster does not change the maximum permittable sizes that have been configured.
+
+##### Self Issue
+Certain vehicle combinations hauling certain commodities may not be 'auto-approved' by the system; they require review by staff. These combinations which are not permitted for self-issuance are indicated with a `selfIssue` value of `false`.
+
+#### Weight Dimension Set
 > [!NOTE]
 > Weight dimensions are not configured in the example above because overweight permits have not yet been implemented in the policy engine.
 
