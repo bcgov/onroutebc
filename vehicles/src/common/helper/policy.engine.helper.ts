@@ -6,7 +6,8 @@ export const convertToPolicyApplication = (
   ): PolicyApplication => {
     return {
       permitType: application.permitType,
-      permitData: JSON.parse(permitData.permitData),
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      permitData: JSON.parse(application.permitData.permitData),
     };
   };
   
