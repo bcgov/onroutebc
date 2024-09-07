@@ -42,4 +42,5 @@ export const ALL_APPLICATION_STATUS: readonly ApplicationStatus[] = [
   ApplicationStatus.IN_PROGRESS,
   ApplicationStatus.WAITING_PAYMENT,
   ApplicationStatus.PAYMENT_COMPLETE,
+  ApplicationStatus.IN_QUEUE,
 ];

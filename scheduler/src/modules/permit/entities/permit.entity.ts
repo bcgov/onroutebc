@@ -4,6 +4,7 @@ import { AutoMap } from '@automapper/classes';
 import { Base } from '../../common/entities/base.entity';
 import { ApplicationStatus } from '../../common/enum/application-status.enum';
 import { PermitTransaction } from './permit-transaction.entity';
+import { Case } from '../../permit-transaction.entity';
 
 @Entity({ name: 'permit.ORBC_PERMIT' })
 export class Permit extends Base {

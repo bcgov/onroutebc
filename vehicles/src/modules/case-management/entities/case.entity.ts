@@ -36,7 +36,10 @@ export class Case extends Base {
   previousCaseId?: Nullable<number>;
 
   @AutoMap()
-  @ManyToOne(() => Permit, { eager: true, cascade: false })
+  @ManyToOne(() => Permit, (permit) => permit.cases, {
+    eager: true,
+    cascade: false,
+  })
   @JoinColumn({ name: 'PERMIT_ID' })
   permit: Permit;
 

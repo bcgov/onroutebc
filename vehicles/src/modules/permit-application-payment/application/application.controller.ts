@@ -1,4 +1,13 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiInternalServerErrorResponse,
@@ -12,12 +21,17 @@ import { ApplicationService } from './application.service';
 import { Request } from 'express';
 import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { ResultDto } from './dto/response/result.dto';
-import { PermitReceiptDocumentService } from '../permit-receipt-document/permit-receipt-document.service';
 import { JwtServiceAccountAuthGuard } from 'src/common/guard/jwt-sa-auth.guard';
 import { PermitIdDto } from 'src/modules/permit-application-payment/permit/dto/request/permit-id.dto';
+import { ApiPaginatedResponse } from '../../../common/decorator/api-paginate-response';
+import { Permissions } from '../../../common/decorator/permissions.decorator';
+import { IDIR_USER_ROLE_LIST } from '../../../common/enum/user-role.enum';
+import { PaginationDto } from '../../../common/dto/paginate/pagination';
+import { ReadApplicationQueueMetadataDto } from './dto/response/read-application-queue-metadata.dto';
+import { ApplicationStaffSearchQueryParamsDto } from './dto/request/queryParam/application-staff-search.query-params.dto';
 
 @ApiBearerAuth()
-@ApiTags('Application')
+@ApiTags('Application : API accessible exclusively to staff users and SA.')
 @Controller('/applications')
 @ApiNotFoundResponse({
   description: 'The Application Api Not Found Response',
@@ -32,10 +46,37 @@ import { PermitIdDto } from 'src/modules/permit-application-payment/permit/dto/r
   type: ExceptionDto,
 })
 export class ApplicationController {
-  constructor(
-    private readonly applicationService: ApplicationService,
-    private readonly permitReceiptDocumentService: PermitReceiptDocumentService,
-  ) {}
+  constructor(private readonly applicationService: ApplicationService) {}
+
+  @ApiPaginatedResponse(ReadApplicationQueueMetadataDto)
+  @Permissions({
+    allowedIdirRoles: IDIR_USER_ROLE_LIST,
+  })
+  @Get()
+  async getApplications(
+    @Req() request: Request,    
+    @Query()
+    {
+      page,
+      take,
+      orderBy,
+      searchColumn,
+      searchString,
+      applicationsInQueue,
+    }: ApplicationStaffSearchQueryParamsDto,
+  ): Promise<PaginationDto<ReadApplicationQueueMetadataDto>> {
+    const currentUser = request.user as IUserJWT;
+
+    return await this.applicationService.findApplicationsInQueue({
+      page,
+      take,
+      orderBy,
+      currentUser,
+      searchColumn,
+      searchString,
+      applicationsInQueue,
+    });
+  }
 
   /**
    * A POST method defined with the @Post() decorator and a route of /scheduler/issue

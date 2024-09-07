@@ -28,8 +28,8 @@ import { CompanyApplicationQueueController } from './company-application-queue.c
     CaseManagementModule,
   ],
   controllers: [
-    CompanyApplicationController,
     CompanyApplicationQueueController,
+    CompanyApplicationController,
     ApplicationController,
   ],
   providers: [ApplicationService, ApplicationProfile],

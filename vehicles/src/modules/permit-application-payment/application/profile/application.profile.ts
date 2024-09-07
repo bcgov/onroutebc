@@ -1,6 +1,7 @@
 import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import {
   createMap,
+  extend,
   forMember,
   mapFrom,
   Mapper,
@@ -19,6 +20,9 @@ import {
 } from '../../../../common/enum/user-role.enum';
 import { doesUserHaveRole } from '../../../../common/helper/auth.helper';
 import { Permit } from '../../permit/entities/permit.entity';
+
+import { differenceBetween } from '../../../../common/helper/date-time.helper';
+import { ReadApplicationQueueMetadataDto } from '../dto/response/read-application-queue-metadata.dto';
 
 @Injectable()
 export class ApplicationProfile extends AutomapperProfile {
@@ -259,6 +263,39 @@ export class ApplicationProfile extends AutomapperProfile {
               return (firstName + ' ' + lastName).trim();
             }
           }),
+        ),
+      );
+
+      createMap(
+        mapper,
+        Permit,
+        ReadApplicationQueueMetadataDto,
+        extend(Permit, ReadApplicationMetadataDto),
+        forMember(
+          (d) => d.caseStatusType,
+          mapFrom((s) => {
+            if (s.cases?.length) {
+              return s.cases?.at(0)?.caseStatusType;
+            }
+          }),
+        ),
+        forMember(
+          (d) => d.timeInQueue,
+          mapWithArguments(
+            (s, { currentDateTime }: { currentDateTime: Date }) => {
+              const diff = differenceBetween(
+                s.updatedDateTime.toUTCString(),
+                currentDateTime.toUTCString(),
+                'minutes',
+              );
+              const hours = Math.floor(Math.abs(diff) / 60);
+              const minutes = Math.floor(Math.abs(diff) % 60);
+              // Format the output
+              const formattedHours = String(hours).padStart(2, '0');
+              const formattedMinutes = String(minutes).padStart(2, '0');
+              return `${formattedHours}:${formattedMinutes}`;
+            },
+          ),
         ),
       );
 
