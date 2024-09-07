@@ -8,6 +8,7 @@ export const CaseEventType = {
   NOTE_CREATED: 'NOTE_CREATED',
   DOCUMENT_ADDED: 'DOCUMENT_ADDED',
   DOCUMENT_DELETED: 'DOCUMENT_DELETED',
+  NOTIFICATION: 'NOTIFICATION',
 } as const;
 
 export type CaseEventType = (typeof CaseEventType)[keyof typeof CaseEventType];

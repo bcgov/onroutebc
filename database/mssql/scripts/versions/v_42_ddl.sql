@@ -335,7 +335,16 @@ INSERT [case].[ORBC_CASE_EVENT_TYPE] (
 VALUES (
    N'WORKFLOW_COMPLETED', 
    N'Workflow Completed'
-   )   
+   )
+
+INSERT [case].[ORBC_CASE_EVENT_TYPE] (
+   [CASE_EVENT_TYPE],
+   [DESCRIPTION]
+   )
+VALUES (
+   N'NOTIFICATION', 
+   N'Notification Sent'
+   )      
 
 /* A dummy CLOSED event is created when WORKFLOW_COMPLETED
  */
