@@ -3,31 +3,55 @@ import {
   ValidatorConstraintInterface,
   ValidationArguments,
 } from 'class-validator';
+import { Nullable } from '../types/common';
 import { ApplicationSearch } from '../enum/application-search.enum';
 
-@ValidatorConstraint({ name: 'ApplicationSearchBy', async: false })
-export class ApplicationSearchByConstraint
+@ValidatorConstraint({ name: 'ApplicationSearch', async: false })
+export class ApplicationSearchConstraint
   implements ValidatorConstraintInterface
 {
   validate(
-    searchColumn: ApplicationSearch | undefined,
+    value: ApplicationSearch | boolean | undefined,
     args: ValidationArguments,
   ) {
-    const searchString = (
-      args.object as {
-        searchString?: string;
-      }
-    ).searchString; // Access the searchString property from the same object
-
-    // If searchColumn is defined, searchString should exists
-    if (searchColumn && !searchString) {
+    const fields = args.object as {
+      pendingPermits?: Nullable<boolean>;
+      applicationsInQueue?: Nullable<boolean>;
+      searchColumn?: Nullable<ApplicationSearch>;
+      searchString?: Nullable<string>;
+    };
+    if (
+      fields.pendingPermits != undefined &&
+      fields.applicationsInQueue !== undefined
+    ) {
+      return false;
+    } else if (fields.searchColumn && !fields.searchString) {
       return false;
     }
-
     return true;
   }
 
-  defaultMessage() {
-    return 'searchString is required when searchColumn is defined';
+  defaultMessage(args: ValidationArguments) {
+    const message: string[] = [];
+    const fields = args.object as {
+      pendingPermits?: Nullable<boolean>;
+      applicationsInQueue?: Nullable<boolean>;
+      searchColumn?: Nullable<ApplicationSearch>;
+      searchString?: Nullable<string>;
+    };
+    if (
+      fields.pendingPermits != undefined &&
+      fields.applicationsInQueue !== undefined
+    ) {
+      message.push(
+        'Both pendingPermits and applicationsInQueue cannot be set at the same time.',
+      );
+    }
+    if (fields.searchColumn && !fields.searchString) {
+      message.push('searchString is required when searchColumn is defined.');
+    }
+    if (message?.length) {
+      return message.join(', ');
+    }
   }
 }

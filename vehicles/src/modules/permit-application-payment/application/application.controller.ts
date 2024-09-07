@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  Param,
   Post,
   Query,
   Req,
@@ -27,8 +26,8 @@ import { ApiPaginatedResponse } from '../../../common/decorator/api-paginate-res
 import { Permissions } from '../../../common/decorator/permissions.decorator';
 import { IDIR_USER_ROLE_LIST } from '../../../common/enum/user-role.enum';
 import { PaginationDto } from '../../../common/dto/paginate/pagination';
-import { ReadApplicationQueueMetadataDto } from './dto/response/read-application-queue-metadata.dto';
-import { ApplicationStaffSearchQueryParamsDto } from './dto/request/queryParam/application-staff-search.query-params.dto';
+import { ReadApplicationMetadataDto } from './dto/response/read-application-metadata.dto';
+import { GetApplicationQueryParamsDto } from './dto/request/queryParam/getApplication.query-params.dto';
 
 @ApiBearerAuth()
 @ApiTags('Application : API accessible exclusively to staff users and SA.')
@@ -48,13 +47,13 @@ import { ApplicationStaffSearchQueryParamsDto } from './dto/request/queryParam/a
 export class ApplicationController {
   constructor(private readonly applicationService: ApplicationService) {}
 
-  @ApiPaginatedResponse(ReadApplicationQueueMetadataDto)
+  @ApiPaginatedResponse(ReadApplicationMetadataDto)
   @Permissions({
     allowedIdirRoles: IDIR_USER_ROLE_LIST,
   })
   @Get()
   async getApplications(
-    @Req() request: Request,    
+    @Req() request: Request,
     @Query()
     {
       page,
@@ -63,11 +62,11 @@ export class ApplicationController {
       searchColumn,
       searchString,
       applicationsInQueue,
-    }: ApplicationStaffSearchQueryParamsDto,
-  ): Promise<PaginationDto<ReadApplicationQueueMetadataDto>> {
+    }: GetApplicationQueryParamsDto,
+  ): Promise<PaginationDto<ReadApplicationMetadataDto>> {
     const currentUser = request.user as IUserJWT;
 
-    return await this.applicationService.findApplicationsInQueue({
+    return await this.applicationService.findAllApplications({
       page,
       take,
       orderBy,

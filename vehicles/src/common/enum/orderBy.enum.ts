@@ -30,14 +30,3 @@ export enum ApplicationOrderBy {
   VIN = 'vin',
   UPDATED_DATE_TIME = 'updatedDateTime',
 }
-
-export enum ApplicationInQueueOrderBy {
-  APPLICATION_NUMBER = 'applicationNumber',
-  PERMIT_TYPE = 'permitType',
-  START_DATE = 'startDate',
-  EXPIRY_DATE = 'expiryDate',
-  UNIT_NUMBER = 'unitNumber',
-  PLATE = 'plate',
-  VIN = 'vin',
-  UPDATED_DATE_TIME = 'updatedDateTime',
-}

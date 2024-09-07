@@ -65,7 +65,6 @@ import { throwUnprocessableEntityException } from '../../../common/helper/except
 import { ApplicationSearch } from '../../../common/enum/application-search.enum';
 
 import { CaseStatusType } from '../../../common/enum/case-status-type.enum';
-import { ReadApplicationQueueMetadataDto } from './dto/response/read-application-queue-metadata.dto';
 
 @Injectable()
 export class ApplicationService {
@@ -291,6 +290,9 @@ export class ApplicationService {
     companyId?: number;
     userGUID?: string;
     currentUser?: IUserJWT;
+    applicationsInQueue?: Nullable<boolean>;
+    searchColumn?: Nullable<ApplicationSearch>;
+    searchString?: Nullable<string>;
   }): Promise<PaginationDto<ReadApplicationMetadataDto>> {
     // Construct the base query to find applications
     const applicationsQB = this.buildApplicationQuery(
@@ -298,6 +300,9 @@ export class ApplicationService {
       findAllApplicationsOptions.companyId,
       findAllApplicationsOptions.pendingPermits,
       findAllApplicationsOptions.userGUID,
+      findAllApplicationsOptions.searchColumn,
+      findAllApplicationsOptions.searchString,
+      findAllApplicationsOptions.applicationsInQueue,
     );
     // total number of items
     const totalItems = await applicationsQB.getCount();
@@ -353,6 +358,8 @@ export class ApplicationService {
           extraArgs: () => ({
             currentUserRole:
               findAllApplicationsOptions?.currentUser?.orbcUserRole,
+            currentDateTime: new Date(),
+            applicationsInQueue: findAllApplicationsOptions.applicationsInQueue,
           }),
         },
       );
@@ -365,7 +372,15 @@ export class ApplicationService {
     companyId?: number,
     pendingPermits?: boolean,
     userGUID?: string,
+    searchColumn?: Nullable<ApplicationSearch>,
+    searchString?: Nullable<string>,
+    applicationsInQueue?: Nullable<boolean>,
   ): SelectQueryBuilder<Permit> {
+    if (pendingPermits !== undefined && applicationsInQueue !== undefined) {
+      throw new InternalServerErrorException(
+        'Both pendingPermits and applicationsInQueue cannot be set at the same time.',
+      );
+    }
     let permitsQuery = this.permitRepository
       .createQueryBuilder('permit')
       .leftJoinAndSelect('permit.company', 'company')
@@ -375,6 +390,15 @@ export class ApplicationService {
         'applicationOwner.userContact',
         'applicationOwnerContact',
       );
+
+    if (applicationsInQueue) {
+      permitsQuery = permitsQuery.innerJoinAndSelect('permit.cases', 'cases');
+      permitsQuery = permitsQuery.leftJoinAndSelect(
+        'cases.assignedUser',
+        'assignedCaseUser',
+      );
+    }
+
     permitsQuery = permitsQuery.where('permit.permitNumber IS NULL');
 
     // Filter by companyId if provided
@@ -384,8 +408,16 @@ export class ApplicationService {
       });
     }
 
-    // Handle pending permits query condition
-    if (pendingPermits) {
+    if (applicationsInQueue) {
+      permitsQuery = permitsQuery.andWhere(
+        'permit.permitStatus = :permitStatus',
+        { permitStatus: ApplicationStatus.IN_QUEUE },
+      );
+      permitsQuery = permitsQuery.andWhere(
+        'cases.caseStatusType IN (:...caseStatuses)',
+        { caseStatuses: [CaseStatusType.OPEN, CaseStatusType.IN_PROGRESS] },
+      );
+    } else if (pendingPermits) {
       permitsQuery = permitsQuery.andWhere(
         new Brackets((qb) => {
           qb.where('permit.permitStatus IN (:...statuses)', {
@@ -393,7 +425,7 @@ export class ApplicationService {
           });
         }),
       );
-    } else if (pendingPermits === false) {
+    } else if (pendingPermits === false || applicationsInQueue === false) {
       permitsQuery = permitsQuery.andWhere(
         new Brackets((qb) => {
           qb.where('permit.permitStatus IN (:...statuses)', {
@@ -401,7 +433,10 @@ export class ApplicationService {
           });
         }),
       );
-    } else if (pendingPermits === undefined) {
+    } else if (
+      pendingPermits === undefined ||
+      applicationsInQueue === undefined
+    ) {
       permitsQuery = permitsQuery.andWhere(
         new Brackets((qb) => {
           qb.where('permit.permitStatus IN (:...statuses)', {
@@ -418,6 +453,41 @@ export class ApplicationService {
         {
           userGUID: userGUID,
         },
+      );
+    }
+
+    // Handle search conditions
+    if (searchColumn) {
+      switch (searchColumn) {
+        case ApplicationSearch.PLATE:
+          permitsQuery = permitsQuery.andWhere(
+            'permitData.plate like :searchString',
+            { searchString: `%${searchString}%` },
+          );
+          break;
+        case ApplicationSearch.APPLICATION_NUMBER:
+          permitsQuery = permitsQuery.andWhere(
+            `permit.applicationNumber like :searchString`,
+            {
+              searchString: `%${searchString}%`,
+            },
+          );
+          break;
+      }
+    }
+
+    // Handle cases where only searchString is provided
+    if (!searchColumn && searchString) {
+      permitsQuery = permitsQuery.andWhere(
+        new Brackets((query) => {
+          query
+            .where('permitData.plate like :searchString', {
+              searchString: `%${searchString}%`,
+            })
+            .orWhere('permitData.unitNumber like :searchString', {
+              searchString: `%${searchString}%`,
+            });
+        }),
       );
     }
 
@@ -966,211 +1036,5 @@ export class ApplicationService {
     });
 
     return result;
-  }
-
-  /**
-   * Constructs a query to find applications that are in the queue.
-   * Applies filters such as company ID, search criteria, and specific user if provided.
-   *
-   * @param companyId The ID of the company to filter the applications by.
-   * @param searchColumn The column to search within based on the provided search string.
-   * @param searchString The search string to look for within the specified column.
-   * @param userGUID The GUID of the user to filter by specific user applications.
-   * @param applicationsInQueue The boolean to look for applications in queue.
-   * @returns A SelectQueryBuilder of Permit that defines the query to retrieve the applications in queue.
-   */
-  private buildApplicationinQueueQuery(
-    companyId: number,
-    searchColumn?: Nullable<ApplicationSearch>,
-    searchString?: Nullable<string>,
-    userGUID?: Nullable<string>,
-    applicationsInQueue?: Nullable<boolean>,
-  ): SelectQueryBuilder<Permit> {
-    let permitsQuery = this.permitRepository
-      .createQueryBuilder('permit')
-      .leftJoinAndSelect('permit.cases', 'cases')
-      .leftJoinAndSelect('permit.company', 'company')
-      .innerJoinAndSelect('permit.permitData', 'permitData')
-      .leftJoinAndSelect('permit.applicationOwner', 'applicationOwner')
-      .leftJoinAndSelect(
-        'applicationOwner.userContact',
-        'applicationOwnerContact',
-      );
-
-    // Ensure permit number is null
-    permitsQuery = permitsQuery.where('permit.permitNumber IS NULL');
-
-    if (applicationsInQueue === true) {
-      permitsQuery = permitsQuery.andWhere(
-        'permit.permitStatus = :permitStatus',
-        { permitStatus: ApplicationStatus.IN_QUEUE },
-      );
-      permitsQuery = permitsQuery.andWhere(
-        'cases.caseStatusType IN (:...caseStatuses)',
-        { caseStatuses: [CaseStatusType.OPEN, CaseStatusType.IN_PROGRESS] },
-      );
-    } else {
-      permitsQuery = permitsQuery.andWhere(
-        'permit.permitStatus IN (:...statuses)',
-        {
-          statuses: ALL_APPLICATION_STATUS,
-        },
-      );
-    }
-
-    // Filter by companyId if provided
-    if (companyId) {
-      permitsQuery = permitsQuery.andWhere('company.companyId = :companyId', {
-        companyId: companyId,
-      });
-    }
-
-    // Filter by userGUID if provided
-    if (userGUID) {
-      permitsQuery = permitsQuery.andWhere(
-        'applicationOwner.userGUID = :userGUID',
-        {
-          userGUID,
-        },
-      );
-    }
-
-    // Handle search conditions
-    if (searchColumn) {
-      switch (searchColumn) {
-        case ApplicationSearch.PLATE:
-          permitsQuery = permitsQuery.andWhere(
-            'permitData.plate like :searchString',
-            { searchString: `%${searchString}%` },
-          );
-          break;
-        case ApplicationSearch.APPLICATION_NUMBER:
-          permitsQuery = permitsQuery.andWhere(
-            `permit.applicationNumber like :searchString`,
-            {
-              searchString: `%${searchString}%`,
-            },
-          );
-          break;
-      }
-    }
-
-    // Handle cases where only searchString is provided
-    if (!searchColumn && searchString) {
-      permitsQuery = permitsQuery.andWhere(
-        new Brackets((query) => {
-          query
-            .where('permitData.plate like :searchString', {
-              searchString: `%${searchString}%`,
-            })
-            .orWhere('permitData.unitNumber like :searchString', {
-              searchString: `%${searchString}%`,
-            });
-        }),
-      );
-    }
-
-    return permitsQuery;
-  }
-
-  /**
-   * Finds applications that are currently in the queue.
-   * The applications are filtered optionally by company ID, search criteria, or a specific user, and
-   * can be sorted and paginated based on the provided options.
-   *
-   * @param findApplicationsOptions An optional object that specifies various filtering,
-   * pagination, and sorting options.
-   * - `page`: The page number to retrieve.
-   * - `take`: The number of items to take (i.e., page size).
-   * - `orderBy`: The column by which to order the results.
-   * - `companyId`: The ID of the company to filter the applications by.
-   * - `searchColumn`: The column in which to search for the given search string.
-   * - `searchString`: The string to search within the specified column.
-   * - `applicationsInQueue`: The boolean to look for applications in queue.
-   * - `userGUID`: The GUID of the user to filter by specific user applications.
-   * - `currentUser`: The current user performing the operation.
-   *
-   * @returns A Promise that resolves to a `PaginationDto<ReadApplicationQueueMetadataDto>` object containing
-   * the paginated list of applications in the queue along with the pagination metadata.
-   */
-  @LogAsyncMethodExecution()
-  public async findApplicationsInQueue(findApplicationsOptions?: {
-    page: number;
-    take: number;
-    orderBy?: Nullable<string>;
-    companyId?: Nullable<number>;
-    searchColumn?: Nullable<ApplicationSearch>;
-    searchString?: Nullable<string>;
-    userGUID?: Nullable<string>;
-    currentUser?: Nullable<IUserJWT>;
-    applicationsInQueue?: Nullable<boolean>;
-  }): Promise<PaginationDto<ReadApplicationQueueMetadataDto>> {
-    const applicationInQueueQB = this.buildApplicationinQueueQuery(
-      findApplicationsOptions.companyId,
-      findApplicationsOptions.searchColumn,
-      findApplicationsOptions.searchString,
-      findApplicationsOptions.userGUID,
-      findApplicationsOptions.applicationsInQueue,
-    );
-
-    // total number of items
-    const totalItems = await applicationInQueueQB.getCount();
-
-    // Mapping of frontend orderBy parameter to database columns
-    const orderByMapping: Record<string, string> = {
-      applicationNumber: 'permit.applicationNumber',
-      permitType: 'permit.permitType',
-      updatedDateTime: 'permit.updatedDateTime',
-      startDate: 'permitData.startDate',
-      expiryDate: 'permitData.expiryDate',
-      unitNumber: 'permitData.unitNumber',
-      plate: 'permitData.plate',
-      vin: 'permitData.vin',
-    };
-
-    // Apply sorting if orderBy parameter is provided
-    if (findApplicationsOptions.orderBy) {
-      sortQuery<Permit>(
-        applicationInQueueQB,
-        orderByMapping,
-        findApplicationsOptions.orderBy,
-      );
-    }
-    // Apply pagination if page and take parameters are provided
-    if (findApplicationsOptions.page && findApplicationsOptions.take) {
-      paginate<Permit>(
-        applicationInQueueQB,
-        findApplicationsOptions.page,
-        findApplicationsOptions.take,
-      );
-    }
-
-    // Get the paginated list of applications
-    const applicationInQueue = await applicationInQueueQB.getMany();
-
-    // Prepare pagination metadata
-    const pageMetaDto = new PageMetaDto({
-      totalItems,
-      pageOptionsDto: {
-        page: findApplicationsOptions.page,
-        take: findApplicationsOptions.take,
-        orderBy: findApplicationsOptions.orderBy,
-      },
-    });
-
-    const readApplicationMetadataDto: ReadApplicationQueueMetadataDto[] =
-      await this.classMapper.mapArrayAsync(
-        applicationInQueue,
-        Permit,
-        ReadApplicationQueueMetadataDto,
-        {
-          extraArgs: () => ({
-            currentUserRole: findApplicationsOptions?.currentUser?.orbcUserRole,
-            currentDateTime: new Date(),
-          }),
-        },
-      );
-    // Return paginated result
-    return new PaginationDto(readApplicationMetadataDto, pageMetaDto);
   }
 }

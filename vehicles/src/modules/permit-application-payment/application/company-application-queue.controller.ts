@@ -2,10 +2,8 @@ import {
   Body,
   Controller,
   ForbiddenException,
-  Get,
   Param,
   Post,
-  Query,
   Req,
 } from '@nestjs/common';
 import {
@@ -26,8 +24,6 @@ import { Permissions } from 'src/common/decorator/permissions.decorator';
 
 import {
   CLIENT_USER_ROLE_LIST,
-  ClientUserRole,
-  IDIR_USER_ROLE_LIST,
   IDIRUserRole,
 } from 'src/common/enum/user-role.enum';
 
@@ -37,12 +33,6 @@ import { UpdateCaseActivity } from './dto/request/update-case-activity.dto';
 import { ReadCaseEvenDto } from '../../case-management/dto/response/read-case-event.dto';
 import { ApplicationIdIdPathParamDto } from './dto/request/pathParam/applicationId.path-params.dto';
 import { IsFeatureFlagEnabled } from '../../../common/decorator/is-feature-flag-enabled.decorator';
-import { CompanyIdPathParamDto } from '../../common/dto/request/pathParam/companyId.path-param.dto';
-import { ApiPaginatedResponse } from '../../../common/decorator/api-paginate-response';
-import { PaginationDto } from '../../../common/dto/paginate/pagination';
-import { GetApplicationInQueueQueryParamsDto } from './dto/request/queryParam/getApplicationInQueue.query-params.dto';
-import { ReadApplicationQueueMetadataDto } from './dto/response/read-application-queue-metadata.dto';
-
 @ApiBearerAuth()
 @ApiTags('Company Application Queue')
 @IsFeatureFlagEnabled('APPLICATION-QUEUE')
@@ -69,43 +59,6 @@ import { ReadApplicationQueueMetadataDto } from './dto/response/read-application
 })
 export class CompanyApplicationQueueController {
   constructor(private readonly applicationService: ApplicationService) {}
-
-  @ApiPaginatedResponse(ReadApplicationQueueMetadataDto)
-  @Permissions({
-    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
-    allowedIdirRoles: IDIR_USER_ROLE_LIST,
-  })
-  @Get('queue')
-  async getApplicationsInQueue(
-    @Req() request: Request,
-    @Param() { companyId }: CompanyIdPathParamDto,
-    @Query()
-    {
-      page,
-      take,
-      orderBy,
-      searchColumn,
-      searchString,
-    }: GetApplicationInQueueQueryParamsDto,
-  ): Promise<PaginationDto<ReadApplicationQueueMetadataDto>> {
-    const currentUser = request.user as IUserJWT;
-    const userGuid =
-      ClientUserRole.PERMIT_APPLICANT === currentUser.orbcUserRole
-        ? currentUser.userGUID
-        : null;
-
-    return await this.applicationService.findApplicationsInQueue({
-      page,
-      take,
-      orderBy,
-      companyId,
-      userGUID: userGuid,
-      currentUser: currentUser,
-      searchColumn: searchColumn,
-      searchString: searchString,
-      applicationsInQueue: true,
-    });
-  }
 
   /**
    * Submits a permit application identified by the application ID to a

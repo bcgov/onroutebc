@@ -1,7 +1,6 @@
 import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import {
   createMap,
-  extend,
   forMember,
   mapFrom,
   Mapper,
@@ -22,7 +21,7 @@ import { doesUserHaveRole } from '../../../../common/helper/auth.helper';
 import { Permit } from '../../permit/entities/permit.entity';
 
 import { differenceBetween } from '../../../../common/helper/date-time.helper';
-import { ReadApplicationQueueMetadataDto } from '../dto/response/read-application-queue-metadata.dto';
+import { Nullable } from '../../../../common/types/common';
 
 @Injectable()
 export class ApplicationProfile extends AutomapperProfile {
@@ -264,36 +263,80 @@ export class ApplicationProfile extends AutomapperProfile {
             }
           }),
         ),
-      );
-
-      createMap(
-        mapper,
-        Permit,
-        ReadApplicationQueueMetadataDto,
-        extend(Permit, ReadApplicationMetadataDto),
         forMember(
           (d) => d.caseStatusType,
-          mapFrom((s) => {
-            if (s.cases?.length) {
-              return s.cases?.at(0)?.caseStatusType;
-            }
-          }),
+          mapWithArguments(
+            (
+              s,
+              {
+                applicationsInQueue,
+              }: { applicationsInQueue?: Nullable<boolean> },
+            ) => {
+              if (applicationsInQueue && s.cases?.length) {
+                return s.cases?.at(0)?.caseStatusType;
+              }
+            },
+          ),
         ),
         forMember(
           (d) => d.timeInQueue,
           mapWithArguments(
-            (s, { currentDateTime }: { currentDateTime: Date }) => {
-              const diff = differenceBetween(
-                s.updatedDateTime.toUTCString(),
-                currentDateTime.toUTCString(),
-                'minutes',
-              );
-              const hours = Math.floor(Math.abs(diff) / 60);
-              const minutes = Math.floor(Math.abs(diff) % 60);
-              // Format the output
-              const formattedHours = String(hours).padStart(2, '0');
-              const formattedMinutes = String(minutes).padStart(2, '0');
-              return `${formattedHours}:${formattedMinutes}`;
+            (
+              s,
+              {
+                currentUserRole,
+                currentDateTime,
+                applicationsInQueue,
+              }: {
+                currentUserRole: UserRole;
+                currentDateTime: Date;
+                applicationsInQueue?: Nullable<boolean>;
+              },
+            ) => {
+              if (
+                applicationsInQueue &&
+                doesUserHaveRole(currentUserRole, IDIR_USER_ROLE_LIST)
+              ) {
+                const diff = differenceBetween(
+                  s.updatedDateTime.toUTCString(),
+                  currentDateTime.toUTCString(),
+                  'minutes',
+                );
+                const hours = Math.floor(Math.abs(diff) / 60);
+                const minutes = Math.floor(Math.abs(diff) % 60);
+                // Format the output
+                const formattedHours = String(hours).padStart(2, '0');
+                const formattedMinutes = String(minutes).padStart(2, '0');
+                return `${formattedHours}:${formattedMinutes}`;
+              }
+            },
+          ),
+        ),
+        forMember(
+          (d) => d.claimedBy,
+          mapWithArguments(
+            (
+              s,
+              {
+                currentUserRole,
+                applicationsInQueue,
+              }: {
+                currentUserRole: UserRole;
+                applicationsInQueue?: Nullable<boolean>;
+              },
+            ) => {
+              if (
+                applicationsInQueue &&
+                doesUserHaveRole(currentUserRole, IDIR_USER_ROLE_LIST) &&
+                s.cases?.length
+              ) {
+                console.log('HAPPYYYYYY', s.cases);
+                console.log(
+                  'HAPPYYYYYY',
+                  s.cases?.at(0)?.assignedUser?.userName,
+                );
+                return s.cases?.at(0)?.assignedUser?.userName;
+              }
             },
           ),
         ),
