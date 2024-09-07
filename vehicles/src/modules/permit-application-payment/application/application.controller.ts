@@ -48,6 +48,11 @@ export class ApplicationController {
   constructor(private readonly applicationService: ApplicationService) {}
 
   @ApiPaginatedResponse(ReadApplicationMetadataDto)
+  @ApiOperation({
+    summary: 'Retrieve all applications with criteria',
+    description:
+      'Fetch paginated list of applications based on user-defined filters such as page, sorting order, search column, search string, and whether to include applications in queue. Accessible only to specific IDIR roles.',
+  })
   @Permissions({
     allowedIdirRoles: IDIR_USER_ROLE_LIST,
   })

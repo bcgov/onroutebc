@@ -277,9 +277,20 @@ export class ApplicationService {
   }
 
   /**
-   * Retrieves applications based on user GUID, and company ID. It allows for sorting, pagination, and filtering of the applications results.
-   * @param getApplicationQueryParamsDto - DTO containing query parameters such as companyId, orderBy, page, and take for filtering and pagination.
-   * @param userGUID - Unique identifier for the user. If provided, the query
+   * Retrieves applications based on multiple optional filters including user GUID, company ID, pending permits status, applications in queue, and a search string.
+   * The function supports sorting by various columns and includes pagination for efficient retrieval.
+   * @param findAllApplicationsOptions - Contains multiple optional parameters: pagination, sorting, filtering by company ID, user GUID, and other search filters.
+   * - page: The current page number for pagination.
+   * - take: Number of records to display per page.
+   * - orderBy: Column to sort the results by (e.g., applicationNumber, startDate, etc.).
+   * - pendingPermits: Whether to filter by pending permits.
+   * - companyId: The ID of the company to filter applications by.
+   * - userGUID: The GUID of the user whose applications to filter.
+   * - currentUser: The current logged-in user's JWT payload.
+   * - applicationsInQueue: Boolean filter for applications that are in the queue.
+   * - searchColumn: The specific column to search within (e.g., plate, application number).
+   * - searchString: The input keyword to use for searching.
+   * @returns A paginated result containing filtered and sorted ReadApplicationMetadataDto objects.
    */
   @LogAsyncMethodExecution()
   async findAllApplications(findAllApplicationsOptions?: {
@@ -376,11 +387,14 @@ export class ApplicationService {
     searchString?: Nullable<string>,
     applicationsInQueue?: Nullable<boolean>,
   ): SelectQueryBuilder<Permit> {
+    // Ensure that pendingPermits and applicationsInQueue are not set at the same time
     if (pendingPermits !== undefined && applicationsInQueue !== undefined) {
       throw new InternalServerErrorException(
         'Both pendingPermits and applicationsInQueue cannot be set at the same time.',
       );
     }
+
+    // Build initial query to retrieve permit data, including relationships to company, permitData, owner contact details, etc.
     let permitsQuery = this.permitRepository
       .createQueryBuilder('permit')
       .leftJoinAndSelect('permit.company', 'company')
@@ -391,6 +405,7 @@ export class ApplicationService {
         'applicationOwnerContact',
       );
 
+    // Include cases and the assigned case user only if applications are in queue
     if (applicationsInQueue) {
       permitsQuery = permitsQuery.innerJoinAndSelect('permit.cases', 'cases');
       permitsQuery = permitsQuery.leftJoinAndSelect(
@@ -399,6 +414,7 @@ export class ApplicationService {
       );
     }
 
+    // Filter permits without permit numbers (i.e., applications)
     permitsQuery = permitsQuery.where('permit.permitNumber IS NULL');
 
     // Filter by companyId if provided
@@ -408,16 +424,23 @@ export class ApplicationService {
       });
     }
 
+    // Handle various status filters depending on the provided flags
     if (applicationsInQueue) {
+      // If retrieving applications in queue, we filter those with "IN_QUEUE" status and open/in-progress cases
       permitsQuery = permitsQuery.andWhere(
         'permit.permitStatus = :permitStatus',
-        { permitStatus: ApplicationStatus.IN_QUEUE },
+        {
+          permitStatus: ApplicationStatus.IN_QUEUE,
+        },
       );
       permitsQuery = permitsQuery.andWhere(
         'cases.caseStatusType IN (:...caseStatuses)',
-        { caseStatuses: [CaseStatusType.OPEN, CaseStatusType.IN_PROGRESS] },
+        {
+          caseStatuses: [CaseStatusType.OPEN, CaseStatusType.IN_PROGRESS],
+        },
       );
     } else if (pendingPermits) {
+      // Filter applications based on pending permit statuses (e.g., awaiting payment completion)
       permitsQuery = permitsQuery.andWhere(
         new Brackets((qb) => {
           qb.where('permit.permitStatus IN (:...statuses)', {
@@ -426,6 +449,7 @@ export class ApplicationService {
         }),
       );
     } else if (pendingPermits === false || applicationsInQueue === false) {
+      // Filter active applications based on ACTIVE_APPLICATION_STATUS
       permitsQuery = permitsQuery.andWhere(
         new Brackets((qb) => {
           qb.where('permit.permitStatus IN (:...statuses)', {
@@ -437,6 +461,7 @@ export class ApplicationService {
       pendingPermits === undefined ||
       applicationsInQueue === undefined
     ) {
+      // Filter all applications based on ALL_APPLICATION_STATUS
       permitsQuery = permitsQuery.andWhere(
         new Brackets((qb) => {
           qb.where('permit.permitStatus IN (:...statuses)', {
@@ -446,7 +471,7 @@ export class ApplicationService {
       );
     }
 
-    // Filter by userGUID if provided
+    // Filter by userGUID if provided, targeting the application owner
     if (userGUID) {
       permitsQuery = permitsQuery.andWhere(
         'applicationOwner.userGUID = :userGUID',
@@ -456,18 +481,21 @@ export class ApplicationService {
       );
     }
 
-    // Handle search conditions
+    // Handle search conditions based on specified search column and search string
     if (searchColumn) {
+      // Apply column-specific search filters
       switch (searchColumn) {
         case ApplicationSearch.PLATE:
           permitsQuery = permitsQuery.andWhere(
             'permitData.plate like :searchString',
-            { searchString: `%${searchString}%` },
+            {
+              searchString: `%${searchString}%`,
+            },
           );
           break;
         case ApplicationSearch.APPLICATION_NUMBER:
           permitsQuery = permitsQuery.andWhere(
-            `permit.applicationNumber like :searchString`,
+            'permit.applicationNumber like :searchString',
             {
               searchString: `%${searchString}%`,
             },
@@ -476,7 +504,7 @@ export class ApplicationService {
       }
     }
 
-    // Handle cases where only searchString is provided
+    // If only searchString is provided without a specific search column, search across plate and unit number
     if (!searchColumn && searchString) {
       permitsQuery = permitsQuery.andWhere(
         new Brackets((query) => {
@@ -491,6 +519,7 @@ export class ApplicationService {
       );
     }
 
+    // Return the constructed query
     return permitsQuery;
   }
 

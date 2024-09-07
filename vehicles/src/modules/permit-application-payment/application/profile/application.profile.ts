@@ -22,6 +22,10 @@ import { Permit } from '../../permit/entities/permit.entity';
 
 import { differenceBetween } from '../../../../common/helper/date-time.helper';
 import { Nullable } from '../../../../common/types/common';
+import {
+  ApplicationQueueStatus,
+  CaseStatusType,
+} from '../../../../common/enum/case-status-type.enum';
 
 @Injectable()
 export class ApplicationProfile extends AutomapperProfile {
@@ -264,7 +268,7 @@ export class ApplicationProfile extends AutomapperProfile {
           }),
         ),
         forMember(
-          (d) => d.caseStatusType,
+          (d) => d.applicationQueueStatus,
           mapWithArguments(
             (
               s,
@@ -273,7 +277,14 @@ export class ApplicationProfile extends AutomapperProfile {
               }: { applicationsInQueue?: Nullable<boolean> },
             ) => {
               if (applicationsInQueue && s.cases?.length) {
-                return s.cases?.at(0)?.caseStatusType;
+                switch (s.cases?.at(0)?.caseStatusType) {
+                  case CaseStatusType.OPEN:
+                    return ApplicationQueueStatus.PENDING_REVIEW;
+                  case CaseStatusType.IN_PROGRESS:
+                    return ApplicationQueueStatus.IN_REVIEW;
+                  case CaseStatusType.CLOSED:
+                    return ApplicationQueueStatus.CLOSED;
+                }
               }
             },
           ),
@@ -330,11 +341,6 @@ export class ApplicationProfile extends AutomapperProfile {
                 doesUserHaveRole(currentUserRole, IDIR_USER_ROLE_LIST) &&
                 s.cases?.length
               ) {
-                console.log('HAPPYYYYYY', s.cases);
-                console.log(
-                  'HAPPYYYYYY',
-                  s.cases?.at(0)?.assignedUser?.userName,
-                );
                 return s.cases?.at(0)?.assignedUser?.userName;
               }
             },

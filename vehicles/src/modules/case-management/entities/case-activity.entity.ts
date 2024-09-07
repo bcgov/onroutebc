@@ -50,9 +50,10 @@ export class CaseActivity extends Base {
   @AutoMap()
   @OneToOne(() => CaseNotes, (caseNotes) => caseNotes.caseActivity, {
     cascade: false,
+    eager: false,
   })
   @JoinColumn({ name: 'CASE_NOTES_ID' })
-  caseNotes: CaseNotes;
+  caseNotes?: Nullable<CaseNotes>;
 
   @AutoMap()
   @Column({

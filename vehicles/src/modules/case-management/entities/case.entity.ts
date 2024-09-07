@@ -74,13 +74,13 @@ export class Case extends Base {
 
   @AutoMap()
   @OneToMany(() => CaseNotes, (caseNotes) => caseNotes.case)
-  caseNotes: CaseNotes[];
+  caseNotes?: Nullable<CaseNotes[]>;
 
   @AutoMap()
   @OneToMany(() => CaseActivity, (caseActivity) => caseActivity.case)
-  caseActivity: CaseActivity[];
+  caseActivity?: Nullable<CaseActivity[]>;
 
   @AutoMap()
   @OneToMany(() => CaseDocument, (caseDocument) => caseDocument.case)
-  caseDocuments: CaseDocument[];
+  caseDocuments?: Nullable<CaseDocument[]>;
 }

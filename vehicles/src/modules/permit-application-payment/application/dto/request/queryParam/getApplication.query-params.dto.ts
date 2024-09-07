@@ -18,6 +18,7 @@ import {
   ALL_APPLICATION_STATUS,
 } from '../../../../../../common/enum/application-status.enum';
 import { ApplicationSearchConstraint } from '../../../../../../common/constraint/application-search.constraint';
+import { ACTIVE_APPLICATION_QUEUE_STATUS } from '../../../../../../common/enum/case-status-type.enum';
 
 export class GetApplicationQueryParamsDto extends PageOptionsDto {
   @ApiProperty({
@@ -72,7 +73,8 @@ export class GetApplicationQueryParamsDto extends PageOptionsDto {
 
   @ApiProperty({
     description:
-      `Setting this property to false confines the search results to only those applications that are awaiting payment (${Object.values(ACTIVE_APPLICATION_STATUS).join(', ')}). Conversely, setting it to true limits the search to applications that have already received payment but are still awaiting issuance. ` +
+      `Setting this property to true limits the search to applications that have already received payment but are still awaiting issuance. ` +
+      ` Conversely, setting it to false confines the search results to only those applications that are awaiting payment (${Object.values(ACTIVE_APPLICATION_STATUS).join(', ')}). ` +
       `If this property is left unspecified, the search will fetch all applications that are in any of the following statuses: ${Object.values(ALL_APPLICATION_STATUS).join(', ')}, which includes those that are awaiting issuance. ` +
       'Caution: It is not permissible to set both the pendingPermits and applicationsInQueue properties at the same time.',
     example: true,
@@ -92,8 +94,8 @@ export class GetApplicationQueryParamsDto extends PageOptionsDto {
 
   @ApiProperty({
     description:
-      `Setting this property to false confines the search results to only those applications that are awaiting payment (${Object.values(ACTIVE_APPLICATION_STATUS).join(', ')}). ` +
-      `Conversely, setting it to true restricts the search results to those applications which are in queue. ` +
+      `Setting this property true restricts the search results to those applications which are in queue (${Object.values(ACTIVE_APPLICATION_QUEUE_STATUS).join(', ')}). ` +
+      `Conversely, Setting it to false confines the search results to only those applications that are awaiting payment (${Object.values(ACTIVE_APPLICATION_STATUS).join(', ')}). ` +
       `If left unspecified, the system will fetch all applications that are in any of the following statuses: ${Object.values(ALL_APPLICATION_STATUS).join(', ')}, including those awaiting issuance. ` +
       'Caution: You cannot set both pendingPermits and applicationsInQueue properties at the same time.',
     example: true,

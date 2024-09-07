@@ -20,6 +20,7 @@ import { PermitIssuedBy } from '../../../../common/enum/permit-issued-by.enum';
 import { User } from '../../../company-user-management/users/entities/user.entity';
 import { Company } from '../../../company-user-management/company/entities/company.entity';
 import { Case } from '../../../case-management/entities/case.entity';
+import { Nullable } from '../../../../common/types/common';
 
 @Entity({ name: 'permit.ORBC_PERMIT' })
 export class Permit extends Base {
@@ -245,5 +246,5 @@ export class Permit extends Base {
     cascade: false,
     eager: false,
   })
-  public cases: Case[];
+  public cases?: Nullable<Case[]>;
 }

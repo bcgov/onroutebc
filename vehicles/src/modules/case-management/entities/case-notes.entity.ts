@@ -53,6 +53,8 @@ export class CaseNotes extends Base {
   comment: string;
 
   @AutoMap()
-  @OneToOne(() => CaseActivity, (caseActivity) => caseActivity.caseNotes)
-  caseActivity: CaseActivity;
+  @OneToOne(() => CaseActivity, (caseActivity) => caseActivity.caseNotes, {
+    eager: false,
+  })
+  caseActivity?: Nullable<CaseActivity>;
 }

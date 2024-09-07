@@ -53,14 +53,20 @@ export class CaseEvent extends Base {
   user?: Nullable<User>;
 
   @AutoMap()
-  @OneToOne(() => CaseNotes, (caseNotes) => caseNotes.caseEvent)
-  caseNotes: CaseNotes;
+  @OneToOne(() => CaseNotes, (caseNotes) => caseNotes.caseEvent, {
+    eager: false,
+  })
+  caseNotes?: Nullable<CaseNotes>;
 
   @AutoMap()
-  @OneToOne(() => CaseActivity, (caseActivity) => caseActivity.caseEvent)
-  caseActivity: CaseActivity;
+  @OneToOne(() => CaseActivity, (caseActivity) => caseActivity.caseEvent, {
+    eager: false,
+  })
+  caseActivity?: Nullable<CaseActivity>;
 
   @AutoMap()
-  @OneToOne(() => CaseDocument, (caseDocument) => caseDocument.caseEvent)
-  caseDocument: CaseDocument;
+  @OneToOne(() => CaseDocument, (caseDocument) => caseDocument.caseEvent, {
+    eager: false,
+  })
+  caseDocument?: Nullable<CaseDocument>;
 }
