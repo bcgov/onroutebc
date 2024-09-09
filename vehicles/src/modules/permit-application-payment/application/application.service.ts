@@ -1036,7 +1036,7 @@ export class ApplicationService {
 
           if (caseActivityType === CaseActivityType.APPROVED) {
             notificationTemplate = NotificationTemplate.APPLICATION_APPROVED;
-            subject = `onRouteBC Permit Application ${application?.applicationNumber} Approved`;
+            subject = `onRouteBC Permit Application ${application?.applicationNumber} for Plate ${permitData?.vehicleDetails?.plate} Approved`;
             notificationData = {
               applicationNumber: application?.applicationNumber,
               companyName: application?.company?.legalName,
