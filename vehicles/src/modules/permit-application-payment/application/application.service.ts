@@ -65,6 +65,13 @@ import { throwUnprocessableEntityException } from '../../../common/helper/except
 import { ApplicationSearch } from '../../../common/enum/application-search.enum';
 
 import { CaseStatusType } from '../../../common/enum/case-status-type.enum';
+import { INotificationDocument } from '../../../common/interface/notification-document.interface';
+import { validateEmailandFaxList } from '../../../common/helper/notification.helper';
+import { NotificationTemplate } from '../../../common/enum/notification-template.enum';
+import { PermitData } from '../../../common/interface/permit.template.interface';
+import { ApplicationApprovedNotification } from '../../../common/interface/application-approved.notification.interface';
+import { ApplicationRejectedNotification } from '../../../common/interface/application-rejected.notification.interface';
+import { convertUtcToPt } from '../../../common/helper/date-time.helper';
 
 @Injectable()
 export class ApplicationService {
@@ -1012,6 +1019,63 @@ export class ApplicationService {
         },
       );
       await queryRunner.commitTransaction();
+      try {
+        if (
+          caseActivityType === CaseActivityType.APPROVED ||
+          caseActivityType === CaseActivityType.REJECTED
+        ) {
+          let notificationTemplate: NotificationTemplate;
+          let subject: string;
+          let notificationData:
+            | ApplicationApprovedNotification
+            | ApplicationRejectedNotification;
+
+          const permitData = JSON.parse(
+            application.permitData.permitData,
+          ) as PermitData;
+
+          if (caseActivityType === CaseActivityType.APPROVED) {
+            notificationTemplate = NotificationTemplate.APPLICATION_APPROVED;
+            subject = `onRouteBC Permit Application ${application?.applicationNumber} Approved`;
+            notificationData = {
+              applicationNumber: application?.applicationNumber,
+              companyName: application?.company?.legalName,
+              plate: permitData?.vehicleDetails?.plate,
+            } as ApplicationApprovedNotification;
+          } else {
+            notificationTemplate = NotificationTemplate.APPLICATION_REJECTED;
+            subject = `onRouteBC Permit Application ${application?.applicationNumber} for Plate ${permitData?.vehicleDetails?.plate} Rejected`;
+            notificationData = {
+              rejectedDateTime: convertUtcToPt(
+                new Date(),
+                'MMM. D, YYYY, hh:mm a Z',
+              ),
+              rejectedReason: comment,
+            } as ApplicationRejectedNotification;
+          }
+
+          const emailList = [
+            permitData?.contactDetails?.email,
+            permitData?.contactDetails?.additionalEmail,
+            application?.company?.email,
+          ];
+          const notificationDocument: INotificationDocument = {
+            templateName: notificationTemplate,
+            to: validateEmailandFaxList(emailList),
+            subject: subject,
+            data: notificationData,
+          };
+
+          void this.dopsService.notificationWithDocumentsFromDops(
+            currentUser,
+            notificationDocument,
+            true,
+          );
+        }
+      } catch (error) {
+        this.logger.error(error); //Swallow Notification error
+      }
+
       return result;
     } catch (error) {
       await queryRunner.rollbackTransaction();
