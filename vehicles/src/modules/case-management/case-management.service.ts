@@ -764,4 +764,73 @@ export class CaseManagementService {
       }
     }
   }
+
+  /**
+   * The method creates a notification event.
+   *
+   * @param currentUser - The current user executing the withdrawal action.
+   * @param queryRunner - Optional, existing QueryRunner instance used in the transaction process.
+   * @param caseId - Optional, the ID of the case to be withdrawn. Can be used to retrieve the existing case.
+   * @param originalCaseId - Optional, the original ID of the case to be withdrawn. Useful in lookup scenarios.
+   * @param applicationId - Optional, the ID of the permit application associated with the case.
+   * @param existingCase - Optional, the pre-loaded `Case` entity, if
+   */
+  @LogAsyncMethodExecution()
+  async createNotificationEvent({
+    currentUser,
+    queryRunner,
+    caseId,
+    originalCaseId,
+    applicationId,
+    existingCase,
+  }: {
+    currentUser: IUserJWT;
+    queryRunner?: Nullable<QueryRunner>;
+    caseId?: Nullable<number>;
+    originalCaseId?: Nullable<number>;
+    applicationId?: Nullable<string>;
+    existingCase?: Nullable<Case>;
+  }): Promise<ReadCaseEvenDto> {
+    let localQueryRunner = true;
+    ({ localQueryRunner, queryRunner } = await getQueryRunner({
+      queryRunner,
+      dataSource: this.dataSource,
+    }));
+    try {
+      if (!existingCase) {
+        existingCase = await this.findLatest({
+          queryRunner,
+          caseId,
+          originalCaseId,
+          applicationId,
+        });
+      }
+
+      let newEvent = this.createEvent(
+        existingCase,
+        CaseEventType.NOTIFICATION,
+        currentUser,
+      );
+      newEvent = await queryRunner.manager.save<CaseEvent>(newEvent);
+
+      if (localQueryRunner) {
+        await queryRunner.commitTransaction();
+      }
+      return await this.classMapper.mapAsync(
+        newEvent,
+        CaseEvent,
+        ReadCaseEvenDto,
+      );
+    } catch (error) {
+      if (localQueryRunner) {
+        await queryRunner.rollbackTransaction();
+      }
+      this.logger.error(error);
+      throw error;
+    } finally {
+      if (localQueryRunner) {
+        await queryRunner.release();
+      }
+    }
+  }
 }
