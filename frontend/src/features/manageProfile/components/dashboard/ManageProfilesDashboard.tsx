@@ -56,7 +56,7 @@ export const ManageProfilesDashboard = React.memo(() => {
     queryKey: ["companyInfo"],
     queryFn: getCompanyInfo,
     placeholderData: keepPreviousData,
-    refetchInterval: FIVE_MINUTES
+    refetchInterval: FIVE_MINUTES,
   });
 
   const navigate = useNavigate();
@@ -86,8 +86,10 @@ export const ManageProfilesDashboard = React.memo(() => {
 
   const showCreditAccountTab = usePermissionMatrix({
     featureFlag: "CREDIT-ACCOUNT",
-    permissionMatrixFeatureKey: "MANAGE_SETTINGS",
-    permissionMatrixFunctionKey: "VIEW_CREDIT_ACCOUNT_TAB",
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+      permissionMatrixFunctionKey: "VIEW_CREDIT_ACCOUNT_TAB_ACCOUNT_HOLDER",
+    },
     additionalConditionToCheck: () => isCreditAccountHolder,
   });
 

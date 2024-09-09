@@ -12,7 +12,7 @@ import { Box, Tooltip } from "@mui/material";
 /**
  * The column definition for Permits.
  */
-export const PermitsColumnDefinition: MRT_ColumnDef<PermitListItem>[] = [
+export const PermitsColumnDefinition = (onDocumentUnavailable: () => void): MRT_ColumnDef<PermitListItem>[] => [
   {
     accessorKey: "permitNumber",
     id: "permitNumber",
@@ -24,7 +24,9 @@ export const PermitsColumnDefinition: MRT_ColumnDef<PermitListItem>[] = [
       return (
         <>
           <CustomActionLink
-            onClick={() => viewPermitPdf(props.row.original.permitId)}
+            onClick={() => viewPermitPdf(
+              props.row.original.permitId, 
+              () => onDocumentUnavailable())}
           >
             {props.cell.getValue()}
           </CustomActionLink>
@@ -86,6 +88,3 @@ export const PermitsColumnDefinition: MRT_ColumnDef<PermitListItem>[] = [
     enableSorting: true,
   },
 ];
-
-export const PermitsNotFoundColumnDefinition: MRT_ColumnDef<PermitListItem>[] =
-  PermitsColumnDefinition;

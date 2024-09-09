@@ -11,6 +11,8 @@ import { PermitType } from '../permit/entities/permit-type.entity';
 import { Permit } from '../permit/entities/permit.entity';
 import { PermitReceiptDocumentModule } from '../permit-receipt-document/permit-receipt-document.module';
 import { ApplicationController } from './application.controller';
+import { CaseManagementModule } from '../../case-management/case-management.module';
+import { CompanyApplicationQueueController } from './company-application-queue.controller';
 
 @Module({
   imports: [
@@ -23,8 +25,13 @@ import { ApplicationController } from './application.controller';
     ]),
     PaymentModule,
     PermitReceiptDocumentModule,
+    CaseManagementModule,
   ],
-  controllers: [CompanyApplicationController, ApplicationController],
+  controllers: [
+    CompanyApplicationQueueController,
+    CompanyApplicationController,
+    ApplicationController,
+  ],
   providers: [ApplicationService, ApplicationProfile],
   exports: [ApplicationService],
 })
