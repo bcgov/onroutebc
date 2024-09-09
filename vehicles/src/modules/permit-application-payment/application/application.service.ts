@@ -1066,13 +1066,22 @@ export class ApplicationService {
             data: notificationData,
           };
 
-          void this.dopsService.notificationWithDocumentsFromDops(
+          await this.dopsService.notificationWithDocumentsFromDops(
             currentUser,
             notificationDocument,
-            true,
+            false,
           );
+
+          await this.caseManagementService.createNotificationEvent({
+            currentUser,
+            applicationId,
+            queryRunner,
+          });
+
+          await queryRunner.commitTransaction();
         }
       } catch (error) {
+        await queryRunner.rollbackTransaction();
         this.logger.error(error); //Swallow Notification error
       }
 
