@@ -20,6 +20,13 @@ import {
 import { doesUserHaveRole } from '../../../../common/helper/auth.helper';
 import { Permit } from '../../permit/entities/permit.entity';
 
+import { differenceBetween } from '../../../../common/helper/date-time.helper';
+import { Nullable } from '../../../../common/types/common';
+import {
+  ApplicationQueueStatus,
+  CaseStatusType,
+} from '../../../../common/enum/case-status-type.enum';
+
 @Injectable()
 export class ApplicationProfile extends AutomapperProfile {
   constructor(@InjectMapper() mapper: Mapper) {
@@ -259,6 +266,85 @@ export class ApplicationProfile extends AutomapperProfile {
               return (firstName + ' ' + lastName).trim();
             }
           }),
+        ),
+        forMember(
+          (d) => d.applicationQueueStatus,
+          mapWithArguments(
+            (
+              s,
+              {
+                applicationsInQueue,
+              }: { applicationsInQueue?: Nullable<boolean> },
+            ) => {
+              if (applicationsInQueue && s.cases?.length) {
+                switch (s.cases?.at(0)?.caseStatusType) {
+                  case CaseStatusType.OPEN:
+                    return ApplicationQueueStatus.PENDING_REVIEW;
+                  case CaseStatusType.IN_PROGRESS:
+                    return ApplicationQueueStatus.IN_REVIEW;
+                  case CaseStatusType.CLOSED:
+                    return ApplicationQueueStatus.CLOSED;
+                }
+              }
+            },
+          ),
+        ),
+        forMember(
+          (d) => d.timeInQueue,
+          mapWithArguments(
+            (
+              s,
+              {
+                currentUserRole,
+                currentDateTime,
+                applicationsInQueue,
+              }: {
+                currentUserRole: UserRole;
+                currentDateTime: Date;
+                applicationsInQueue?: Nullable<boolean>;
+              },
+            ) => {
+              if (
+                applicationsInQueue &&
+                doesUserHaveRole(currentUserRole, IDIR_USER_ROLE_LIST)
+              ) {
+                const diff = differenceBetween(
+                  s.updatedDateTime.toUTCString(),
+                  currentDateTime.toUTCString(),
+                  'minutes',
+                );
+                const hours = Math.floor(Math.abs(diff) / 60);
+                const minutes = Math.floor(Math.abs(diff) % 60);
+                // Format the output
+                const formattedHours = String(hours).padStart(2, '0');
+                const formattedMinutes = String(minutes).padStart(2, '0');
+                return `${formattedHours}:${formattedMinutes}`;
+              }
+            },
+          ),
+        ),
+        forMember(
+          (d) => d.claimedBy,
+          mapWithArguments(
+            (
+              s,
+              {
+                currentUserRole,
+                applicationsInQueue,
+              }: {
+                currentUserRole: UserRole;
+                applicationsInQueue?: Nullable<boolean>;
+              },
+            ) => {
+              if (
+                applicationsInQueue &&
+                doesUserHaveRole(currentUserRole, IDIR_USER_ROLE_LIST) &&
+                s.cases?.length
+              ) {
+                return s.cases?.at(0)?.assignedUser?.userName;
+              }
+            },
+          ),
         ),
       );
 

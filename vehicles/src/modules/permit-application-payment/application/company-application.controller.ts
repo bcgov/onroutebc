@@ -112,6 +112,9 @@ export class CompanyApplicationController {
       pendingPermits: getApplicationQueryParamsDto.pendingPermits,
       userGUID: userGuid,
       currentUser: currentUser,
+      applicationsInQueue: getApplicationQueryParamsDto.applicationsInQueue,
+      searchColumn: getApplicationQueryParamsDto.searchColumn,
+      searchString: getApplicationQueryParamsDto.searchString,
     });
   }
   /**
