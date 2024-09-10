@@ -5,6 +5,7 @@ import { useFetchCart, useRemoveFromCart } from "../../../hooks/cart";
 import { SelectableCartItem } from "../../../types/CartItem";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { useFetchSpecialAuthorizations } from "../../../../settings/hooks/specialAuthorizations";
+import { calculateFeeByDuration } from "../../../helpers/feeSummary";
 
 export const useShoppingCart = (
   companyId: string,
@@ -27,12 +28,10 @@ export const useShoppingCart = (
   // Cart item state
   const [cartItemSelection, setCartItemSelection] = useState<SelectableCartItem[]>([]);
   const cartItemsTotalCount = cartItemSelection.length;
-  const selectedTotalFee = !isNoFeePermitType
-    ? cartItemSelection
-      .filter(cartItem => cartItem.selected)
-      .map(cartItem => cartItem.fee)
-      .reduce((prevTotal, currFee) => prevTotal + currFee, 0)
-    : 0;
+  const selectedTotalFee = cartItemSelection
+    .filter(cartItem => cartItem.selected)
+    .map(cartItem => cartItem.fee)
+    .reduce((prevTotal, currFee) => prevTotal + currFee, 0);
 
   useEffect(() => {
     // Always refetch cart count upon initial rendering of shopping cart and when cart filter changes
@@ -48,9 +47,10 @@ export const useShoppingCart = (
         ...cartItem,
         selected: true, // all selected by default
         isSelectable: true, // add user permission check (ie. CA can't select staff cart items)
+        fee: isNoFeePermitType ? 0 : calculateFeeByDuration(cartItem.permitType, cartItem.duration),
       })),
     );
-  }, [cartItems]);
+  }, [cartItems, isNoFeePermitType]);
 
   const selectedItemsCount = cartItemSelection.filter(cartItem => cartItem.selected).length;
 

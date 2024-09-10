@@ -8,7 +8,6 @@ import { Nullable } from "../../../common/types/common";
 import { PermitType } from "../types/PermitType";
 import {
   applyLCVToApplicationData,
-  applyNoFeeToApplicationData,
   getDefaultValues,
 } from "../helpers/getDefaultApplicationFormData";
 
@@ -17,7 +16,6 @@ import {
  * This also involves resetting certain form values whenever new/updated application data is fetched.
  * @param permitType Permit type for the application
  * @param isLcvDesignated Whether or not the company is designated to use LCV for permits
- * @param isNoFeePermitType Whether or not the company is designated to use no-fee permits
  * @param companyInfo Company information for filling out the form
  * @param applicationData Application data received to fill out the form, preferrably from ApplicationContext/backend
  * @param userDetails User details for filling out the form
@@ -26,31 +24,26 @@ import {
 export const useDefaultApplicationFormData = (
   permitType: PermitType,
   isLcvDesignated: boolean,
-  isNoFeePermitType: boolean,
   companyInfo: Nullable<CompanyProfile>,
   applicationData?: Nullable<Application>,
   userDetails?: BCeIDUserDetailContext,
 ) => {
   // Used to populate/initialize the form with
   // This will be updated whenever new application, company, and user data is fetched
-  const initialFormData = useMemo(() => applyNoFeeToApplicationData(
-    applyLCVToApplicationData(
-      getDefaultValues(
-        permitType,
-        companyInfo,
-        applicationData,
-        userDetails,
-      ),
-      isLcvDesignated,
+  const initialFormData = useMemo(() => applyLCVToApplicationData(
+    getDefaultValues(
+      permitType,
+      companyInfo,
+      applicationData,
+      userDetails,
     ),
-    isNoFeePermitType,
+    isLcvDesignated,
   ), [
     permitType,
     companyInfo,
     applicationData,
     userDetails,
     isLcvDesignated,
-    isNoFeePermitType,
   ]);
 
   // Register default values with react-hook-form

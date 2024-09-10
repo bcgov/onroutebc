@@ -17,14 +17,14 @@ import { CartContext } from "../../context/CartContext";
 import { usePowerUnitSubTypesQuery } from "../../../manageVehicles/hooks/powerUnits";
 import { useTrailerSubTypesQuery } from "../../../manageVehicles/hooks/trailers";
 import { useFetchSpecialAuthorizations } from "../../../settings/hooks/specialAuthorizations";
-import { applyLCVToApplicationData, applyNoFeeToApplicationData } from "../../helpers/getDefaultApplicationFormData";
+import { applyLCVToApplicationData } from "../../helpers/getDefaultApplicationFormData";
+import { calculateFeeByDuration } from "../../helpers/feeSummary";
+import { DEFAULT_PERMIT_TYPE } from "../../types/PermitType";
 import {
   APPLICATIONS_ROUTES,
   APPLICATION_STEPS,
   ERROR_ROUTES,
 } from "../../../../routes/constants";
-import { calculateFeeByDuration } from "../../helpers/feeSummary";
-import { DEFAULT_PERMIT_TYPE } from "../../types/PermitType";
 
 export const ApplicationReview = () => {
   const {
@@ -45,12 +45,9 @@ export const ApplicationReview = () => {
   const { data: companyInfo } = useCompanyInfoQuery();
   const doingBusinessAs = companyInfo?.alternateName;
   
-  const applicationData = applyNoFeeToApplicationData(
-    applyLCVToApplicationData(
-      applicationContextData,
-      isLcvDesignated,
-    ),
-    isNoFeePermitType,
+  const applicationData = applyLCVToApplicationData(
+    applicationContextData,
+    isLcvDesignated,
   );
 
   const fee = isNoFeePermitType
@@ -119,7 +116,6 @@ export const ApplicationReview = () => {
         permitData: {
           ...applicationData.permitData,
           doingBusinessAs, // always set most recent DBA from company info
-          feeSummary: fee,
         }
       });
 
