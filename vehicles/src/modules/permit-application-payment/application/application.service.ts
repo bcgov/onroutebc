@@ -1071,7 +1071,7 @@ export class ApplicationService {
             notificationDocument,
             false,
           );
-
+          await queryRunner.startTransaction();
           await this.caseManagementService.createNotificationEvent({
             currentUser,
             applicationId,
