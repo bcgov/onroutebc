@@ -87,4 +87,10 @@ export class ReadShoppingCartDto {
     example: 200,
   })
   fee: number;
+
+  @ApiProperty({
+    description: 'The permit duration',
+    example: 30,
+  })
+  duration: number;
 }
