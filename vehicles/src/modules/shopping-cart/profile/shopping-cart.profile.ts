@@ -58,6 +58,15 @@ export class ShoppingCartProfile extends AutomapperProfile {
           }),
         ),
         forMember(
+          (d) => d.duration,
+          mapFrom((s) => {
+            const parsedPermitData = JSON.parse(
+              s?.permitData?.permitData,
+            ) as PermitData;
+            return +parsedPermitData?.permitDuration;
+          }),
+        ),
+        forMember(
           (d) => d.plate,
           mapFrom((s) => s?.permitData?.plate),
         ),
@@ -68,15 +77,6 @@ export class ShoppingCartProfile extends AutomapperProfile {
         forMember(
           (d) => d.expiryDate,
           mapFrom((s) => s?.permitData?.expiryDate),
-        ),
-        forMember(
-          (d) => d.permitDuration,
-          mapFrom((s) => {
-            const parsedPermitData = JSON.parse(
-              s?.permitData?.permitData,
-            ) as PermitData;
-            return +parsedPermitData?.permitDuration;
-          }),
         ),
       );
     };

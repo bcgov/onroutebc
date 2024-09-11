@@ -92,5 +92,5 @@ export class ReadShoppingCartDto {
     description: 'The permit duration',
     example: 30,
   })
-  permitDuration: number;
+  duration: number;
 }
