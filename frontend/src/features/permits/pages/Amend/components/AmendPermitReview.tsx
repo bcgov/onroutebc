@@ -16,6 +16,7 @@ import { ERROR_ROUTES } from "../../../../../routes/constants";
 import { DEFAULT_PERMIT_TYPE } from "../../../types/PermitType";
 import { usePowerUnitSubTypesQuery } from "../../../../manageVehicles/hooks/powerUnits";
 import { useTrailerSubTypesQuery } from "../../../../manageVehicles/hooks/trailers";
+import { useFetchSpecialAuthorizations } from "../../../../settings/hooks/specialAuthorizations";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -24,6 +25,12 @@ import {
 export const AmendPermitReview = () => {
   const navigate = useNavigate();
   const { companyId } = useParams();
+
+  const {
+    data: specialAuth,
+  } = useFetchSpecialAuthorizations(companyId as string);
+  
+  const isNoFeePermitType = Boolean(specialAuth?.noFeeType);
 
   const {
     permit,
@@ -105,6 +112,7 @@ export const AmendPermitReview = () => {
         amendmentApplication?.permitType,
         permit?.permitType,
       ),
+      isNoFeePermitType,
     );
 
   return (

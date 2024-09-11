@@ -14,10 +14,18 @@ import { hasPermitsActionFailed } from "../../../helpers/permitState";
 import { ERROR_ROUTES } from "../../../../../routes/constants";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { DEFAULT_PERMIT_TYPE } from "../../../types/PermitType";
+import { useFetchSpecialAuthorizations } from "../../../../settings/hooks/specialAuthorizations";
 
 export const AmendPermitFinish = () => {
   const navigate = useNavigate();
   const { companyId } = useParams();
+
+  const {
+    data: specialAuth,
+  } = useFetchSpecialAuthorizations(companyId as string);
+  
+  const isNoFeePermitType = Boolean(specialAuth?.noFeeType);
+
   const {
     permit,
     amendmentApplication,
@@ -45,6 +53,7 @@ export const AmendPermitFinish = () => {
         amendmentApplication?.permitType,
         permit?.permitType,
       ),
+      isNoFeePermitType,
     );
 
   const { mutation: startTransactionMutation, transaction } =
