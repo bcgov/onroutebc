@@ -367,6 +367,18 @@ Besides facts that are from the permit application JSON, additional custom facts
 * `validationDate` - returns the current date at the time of permit validation
 
 ### event
+Example:
+```js
+  event: {
+    type: 'violation',
+    params: {
+      message: 'Duration must be in 30 day increments or a full year',
+      code: 'field-validation-error',
+      fieldReference: 'permitData.permitDuration',
+    },
+  },
+```
+
 Currently in onroute, events define policy violations. For a violation event, the `type` property is always `violation`. The event `params` provide more context about the violation itself:
 
 * `message` - description of the violation which can be presented to permit applicants
