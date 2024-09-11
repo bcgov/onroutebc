@@ -69,6 +69,15 @@ export class ShoppingCartProfile extends AutomapperProfile {
           (d) => d.expiryDate,
           mapFrom((s) => s?.permitData?.expiryDate),
         ),
+        forMember(
+          (d) => d.permitDuration,
+          mapFrom((s) => {
+            const parsedPermitData = JSON.parse(
+              s?.permitData?.permitData,
+            ) as PermitData;
+            return +parsedPermitData?.permitDuration;
+          }),
+        ),
       );
     };
   }

@@ -47,7 +47,9 @@ export const useShoppingCart = (
         ...cartItem,
         selected: true, // all selected by default
         isSelectable: true, // add user permission check (ie. CA can't select staff cart items)
-        fee: isNoFeePermitType ? 0 : calculateFeeByDuration(cartItem.permitType, cartItem.duration),
+        fee: isNoFeePermitType
+          ? 0
+          : calculateFeeByDuration(cartItem.permitType, cartItem.permitDuration),
       })),
     );
   }, [cartItems, isNoFeePermitType]);

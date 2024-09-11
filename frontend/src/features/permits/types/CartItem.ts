@@ -18,6 +18,7 @@ export interface CartItem {
   startDate: string;
   expiryDate: string;
   fee: number;
+  permitDuration: number;
 };
 
 export interface SelectableCartItem extends CartItem {
