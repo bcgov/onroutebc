@@ -256,3 +256,153 @@ Certain vehicle combinations hauling certain commodities may not be 'auto-approv
 > [!NOTE]
 > Weight dimensions are not configured in the example above because overweight permits have not yet been implemented in the policy engine.
 
+## rules
+Policy rules are defined in `json-rules-engine` format and are validated against permit applications according to the permit type. Rules may be configured as common to all permit types, or specific to permit types. Common policy rules are defined inside the top-level [commonRules](#commonRules) property, while type-specific policy rules are defined inside the `rules` property of the permit type itself, in the top-level [permitTypes](#permitTypes) property.
+
+The structure of a rule is identical whether configured as common, or permit type-specific.
+
+Example common and permit type-specific rules are as follows:
+```js
+  commonRules: [
+    {
+      conditions: {
+        not: {
+          fact: 'permitData',
+          operator: 'stringMinimumLength',
+          value: 1,
+          path: '$.companyName',
+        },
+      },
+      event: {
+        type: 'violation',
+        params: {
+          message: 'Company is required',
+          code: 'field-validation-error',
+          fieldReference: 'permitData.companyName',
+        },
+      },
+    },
+  ],
+  permitTypes: [
+    {
+      id: 'TROS',
+      name: 'Term Oversize',
+      routingRequired: false,
+      weightDimensionRequired: false,
+      sizeDimensionRequired: false,
+      commodityRequired: false,
+      allowedVehicles: [
+        'STINGER',
+        'TOWVEHC',
+        'TRKTRAC',
+      ],
+      rules: [
+        {
+          conditions: {
+            all: [
+              {
+                not: {
+                  fact: 'permitData',
+                  operator: 'in',
+                  value: [30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330],
+                  path: '$.permitDuration',
+                },
+              },
+              {
+                not: {
+                  fact: 'permitData',
+                  operator: 'equal',
+                  value: {
+                    fact: 'daysInPermitYear',
+                  },
+                  path: '$.permitDuration',
+                },
+              },
+            ],
+          },
+          event: {
+            type: 'violation',
+            params: {
+              message: 'Duration must be in 30 day increments or a full year',
+              code: 'field-validation-error',
+              fieldReference: 'permitData.permitDuration',
+            },
+          },
+        },
+      ],
+    }
+  ]
+```
+A rule consists of a condition (which may itself be multiple separate conditions with a logical operator) and an event that is triggered if the condition evaluates to `true`. Currently in onroute, a true condition always indicates a policy __violation__. In the future, true conditions may indicate other informational messages returned to the calling application, such as a requirement that a supplemental permit is required. See [event](#event) below for more details.
+
+Refer to the [JSON Rules Engine](https://github.com/cachecontrol/json-rules-engine) documentation about the general structure of rule conditions and events. onRoute-specific notes follow, below.
+
+### conditions
+Facts in conditions are based on the structure of the permit application that will be validated. A permit application will have the following general structure:
+```js
+{
+  permitType: 'TROS',
+  permitData: {
+    // ...as saved in the onroute database...
+  }
+}
+```
+Due to the structure above, the `fact` property will usually be `permitData` when validating user input from the permit application. The `path` defines what property of `permitData` is being validated. For example, the common rule in the example above is validating `permitData.companyName`.
+
+#### operators
+Besides the default operators from `json-rules-engine`, `onroute-policy-engine` defines additional custom operators:
+
+* `stringMinimumLength` - returns true if the fact is a string type and has a minimum trimmed length greater than or equal to the supplied value
+* `dateLessThan` - returns true if the fact is a date and is earlier than the supplied date value
+* `regex` - returns true if the fact matches the supplied regular expression
+
+#### custom facts
+Besides facts that are from the permit application JSON, additional custom facts are available within conditions:
+
+* `allowedVehicles` - returns an array of vehicle IDs (strings) that are valid for the permit type
+  * Note this is valid only for permit types that do not require a full vehicle configuration
+* `configurationIsValid` - returns true if the vehicle configuration in the permit application is valid as per policy
+  * Note this is valid only for permit types that require a full vehicle configuration
+* `daysInPermitYear` - returns the number of days in the year starting with the permit start date, either 365 or 366
+* `validationDate` - returns the current date at the time of permit validation
+
+### event
+Currently in onroute, events define policy violations. For a violation event, the `type` property is always `violation`. The event `params` provide more context about the violation itself:
+
+* `message` - description of the violation which can be presented to permit applicants
+* `code` - type of violation which may be used by the calling application, currently limited to just `field-validation-error`
+* `fieldReference` - the field in the permit application which caused the violation, usually but not always the same as the condition fact
+
+All of these params are technically optional, but omitting them may impact how the calling application (e.g. onroute frontend) can respond to the violation. For example, if the `message` is omitted the frontend can only present a generic error message with no additional context which may not be a good user experience.
+
+Additional event types which are planned, but not currently used in onroute include:
+
+* `requirement`
+* `warning`
+* `information`
+
+## costRules
+The cost of a permit is calculated using a modified type of rule based on the [JSON Rules Engine](https://github.com/cachecontrol/json-rules-engine) rule type. The structure looks like:
+
+```js
+  costRules: [
+    {
+      fact: 'costPerMonth',
+      params: {
+        cost: 30,
+      },
+    },
+  ],
+```
+
+`costRules` are defined as part of the `permitType` definition. Multiple `costRules` may apply to a specific permit type. For example, a permit may have a fixed cost plus a cost per kilometre driven. In such cases, multiple cost rules are defined in the array.
+
+> [!NOTE]
+> `costRules` are defined as facts alone, with no operator or event. Internally during validation, the `onroute-policy-engine` creates a `cost` event with the calculated cost supplied as a `cost` property of the event params.
+
+There are currently two cost fact types:
+
+* `fixedCost` - returns the value of the `cost` param without modification
+* `costPerMonth` - returns the product of the number of months duration of the permit and the value of the `cost` param
+
+As more complex cost rules are required, more cost fact types will be implemented in the `onroute-policy-engine` to accomodate these.
