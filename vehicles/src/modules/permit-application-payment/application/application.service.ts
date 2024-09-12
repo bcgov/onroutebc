@@ -270,6 +270,13 @@ export class ApplicationService {
     companyId?: number,
   ): Promise<ReadApplicationDto> {
     const application = await this.findOne(applicationId, companyId);
+    const readCaseActivityList =
+      await this.caseManagementService.fetchActivityHistory({
+        applicationId,
+        currentUser,
+        caseActivityType: CaseActivityType.REJECTED,
+      });
+
     const readPermitApplicationdto = await this.classMapper.mapAsync(
       application,
       Permit,
@@ -277,6 +284,7 @@ export class ApplicationService {
       {
         extraArgs: () => ({
           currentUserRole: currentUser?.orbcUserRole,
+          readCaseActivityList: readCaseActivityList,
         }),
       },
     );

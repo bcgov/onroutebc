@@ -23,6 +23,7 @@ import { CaseNotes } from './entities/case-notes.entity';
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { ReadCaseEvenDto } from './dto/response/read-case-event.dto';
+import { ReadCaseActivityDto } from './dto/response/read-case-activity.dto';
 
 @Injectable()
 export class CaseManagementService {
@@ -32,6 +33,8 @@ export class CaseManagementService {
     private dataSource: DataSource,
     @InjectRepository(Case)
     private readonly caseRepository: Repository<Case>,
+    @InjectRepository(CaseActivity)
+    private readonly caseActivityRepository: Repository<CaseActivity>,
   ) {}
 
   /**
@@ -534,6 +537,8 @@ export class CaseManagementService {
       newActivity.caseEvent = newEvent;
       newActivity.caseActivityType = caseActivityType;
       newActivity.dateTime = new Date();
+      newActivity.user = new User();
+      newActivity.user.userGUID = currentUser.userGUID;
       setBaseEntityProperties({ entity: newActivity, currentUser });
       if (comment) {
         newActivity.caseNotes = caseNotes;
@@ -638,6 +643,8 @@ export class CaseManagementService {
       newActivity.caseEvent = newEvent;
       newActivity.caseActivityType = CaseActivityType.WITHDRAWN;
       newActivity.dateTime = new Date();
+      newActivity.user = new User();
+      newActivity.user.userGUID = currentUser.userGUID;
       setBaseEntityProperties({ entity: newActivity, currentUser });
       await queryRunner.manager.save<CaseActivity>(newActivity);
 
@@ -832,5 +839,52 @@ export class CaseManagementService {
         await queryRunner.release();
       }
     }
+  }
+
+  /**
+   * Retrieves the activity history for a specific case by fetching and mapping `CaseActivity` records.
+   * Filters are applied based on the permit's `applicationId` and the specified `caseActivityType`.
+   * Joins additional details, including user information and associated case notes, for each activity.
+   *
+   * @param currentUser - The current user executing the action.
+   * @param applicationId - The ID of the permit associated with the case.
+   * @param caseActivityType - The type of case activity to filter.
+   * @returns A `Promise<ReadCaseActivityDto[]>` containing the list of activities for the specified case.
+   */
+  @LogAsyncMethodExecution()
+  async fetchActivityHistory({
+    currentUser,
+    applicationId,
+    caseActivityType,
+  }: {
+    currentUser: IUserJWT;
+    applicationId: Nullable<string>;
+    caseActivityType: CaseActivityType;
+  }): Promise<ReadCaseActivityDto[]> {
+    const caseActivity = await this.caseActivityRepository
+      .createQueryBuilder('caseActivity')
+      .innerJoinAndSelect('caseActivity.user', 'user')
+      .leftJoinAndSelect('caseActivity.caseNotes', 'caseNotes')
+      .innerJoinAndSelect('caseActivity.case', 'case')
+      .innerJoinAndSelect('case.permit', 'permit')
+      .where('permit.id = :applicationId', { applicationId })
+      .andWhere('caseActivity.caseActivityType = :caseActivityType', {
+        caseActivityType,
+      })
+      .orderBy('caseActivity.dateTime', 'DESC')
+      .getMany();
+
+    const caseActivityDto = await this.classMapper.mapArrayAsync(
+      caseActivity,
+      CaseActivity,
+      ReadCaseActivityDto,
+      {
+        extraArgs: () => ({
+          currentUser: currentUser,
+        }),
+      },
+    );
+
+    return caseActivityDto;
   }
 }
