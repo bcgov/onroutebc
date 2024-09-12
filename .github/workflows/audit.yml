@@ -19,13 +19,12 @@ on:
 jobs:
   # https://github.com/bcgov-nr/action-deployer-openshift
   docker_login:
-    - name: Log in to the Container registry
-      if: steps.build.outputs.triggered == 'true'
-      uses: docker/login-action@v3
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: {{ secrets.oc_token }}
+    name: Log in to the Container registry
+    uses: docker/login-action@v3
+    with:
+      registry: ghcr.io
+      username: ${{ github.actor }}
+      password: {{ secrets.oc_token }}
     
   audit_packages:
     name: Audit
