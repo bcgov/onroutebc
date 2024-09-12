@@ -158,24 +158,24 @@ export const currentPermitFee = (
   isNoFee?: boolean,
 ): number => {
   // Calculate the number of permit terms based on the duration
-  const permitTerms = permitStatus === ApplicationStatus.VOIDED
-    ? Math.floor(duration / allowedPermitTerm)
-    : Math.ceil(duration / allowedPermitTerm);
+  const permitTerms =
+    permitStatus === ApplicationStatus.VOIDED
+      ? Math.floor(duration / allowedPermitTerm)
+      : Math.ceil(duration / allowedPermitTerm);
 
   // Special fee calculation for void permit
   if (permitStatus === ApplicationStatus.VOIDED) {
     // If the permit status is voided, return a refund of 0 for permit with no fees, or return the applicable refund amount
     return oldAmount === 0 ? 0 : -pricePerTerm * permitTerms;
-  } 
-    // For non void new application (exclude amendment application), if no fee applies, set the price per term to 0 for new application 
-    if (isNoFee && oldAmount == 0) {
-      pricePerTerm = 0;
-    }
-    // Calculate fee for non void permit.
-    return oldAmount > 0
-      ? pricePerTerm * permitTerms - oldAmount
-      : pricePerTerm * permitTerms + oldAmount;
-  
+  }
+  // For non void new application (exclude amendment application), if no fee applies, set the price per term to 0 for new application
+  if (isNoFee && oldAmount === 0) {
+    pricePerTerm = 0;
+  }
+  // Calculate fee for non void permit.
+  return oldAmount > 0
+    ? pricePerTerm * permitTerms - oldAmount
+    : pricePerTerm * permitTerms + oldAmount;
 };
 
 export const calculatePermitAmount = (

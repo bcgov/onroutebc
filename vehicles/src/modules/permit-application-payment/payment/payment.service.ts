@@ -256,8 +256,8 @@ export class PaymentService {
         PaymentMethodTypeEnum.WEB &&
       createTransactionDto?.paymentMethodTypeCode !==
         PaymentMethodTypeEnum.ACCOUNT &&
-        createTransactionDto?.paymentMethodTypeCode !==
-          PaymentMethodTypeEnum.NO_PAYMENT
+      createTransactionDto?.paymentMethodTypeCode !==
+        PaymentMethodTypeEnum.NO_PAYMENT
     ) {
       throwUnprocessableEntityException(
         'Invalid payment method type for the user',
@@ -808,7 +808,7 @@ export class PaymentService {
       .where('company.companyId = :companyId', { companyId: companyId })
       .getOne();
     console.log('SpecialAuth ', specialAuth);
-    return specialAuth?specialAuth.noFeeType?true:false:false;
+    return specialAuth ? (specialAuth.noFeeType ? true : false) : false;
   }
 
   @LogAsyncMethodExecution()
