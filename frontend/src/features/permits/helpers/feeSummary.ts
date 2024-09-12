@@ -99,18 +99,15 @@ export const calculateNetAmount = (permitHistory: PermitHistory[]) => {
  * @param permitHistory List of history objects that make up the history of a permit and its transactions
  * @param currDuration Current (updated) duration of the permit
  * @param currPermitType Permit type of current permit to refund
- * @param isNoFeePermitType Whether or not the no-fee permit type is designated
  * @returns Amount that needs to be refunded, or if negative then the amount that still needs to be paid
  */
 export const calculateAmountToRefund = (
   permitHistory: PermitHistory[],
   currDuration: number,
   currPermitType: PermitType,
-  isNoFeePermitType: boolean,
 ) => {
   const netPaid = calculateNetAmount(permitHistory);
   if (isZeroAmount(netPaid)) return 0; // If total paid is $0 (eg. no-fee permits), then refund nothing
-  if (isNoFeePermitType) return netPaid; // If no-fee flag is designated, refund full amount
 
   const feeForCurrDuration = calculateFeeByDuration(currPermitType, currDuration);
   return netPaid - feeForCurrDuration;

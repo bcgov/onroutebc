@@ -72,6 +72,7 @@ import { PermitData } from '../../../common/interface/permit.template.interface'
 import { ApplicationApprovedNotification } from '../../../common/interface/application-approved.notification.interface';
 import { ApplicationRejectedNotification } from '../../../common/interface/application-rejected.notification.interface';
 import { convertUtcToPt } from '../../../common/helper/date-time.helper';
+import { ReadCaseActivityDto } from '../../case-management/dto/response/read-case-activity.dto';
 
 @Injectable()
 export class ApplicationService {
@@ -270,6 +271,16 @@ export class ApplicationService {
     companyId?: number,
   ): Promise<ReadApplicationDto> {
     const application = await this.findOne(applicationId, companyId);
+    let readCaseActivityList: ReadCaseActivityDto[];
+    if (isPermitTypeEligibleForQueue(application?.permitType)) {
+      readCaseActivityList =
+        await this.caseManagementService.fetchActivityHistory({
+          applicationId,
+          currentUser,
+          caseActivityType: CaseActivityType.REJECTED,
+        });
+    }
+
     const readPermitApplicationdto = await this.classMapper.mapAsync(
       application,
       Permit,
@@ -277,6 +288,7 @@ export class ApplicationService {
       {
         extraArgs: () => ({
           currentUserRole: currentUser?.orbcUserRole,
+          readCaseActivityList: readCaseActivityList,
         }),
       },
     );
