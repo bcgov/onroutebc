@@ -18,20 +18,6 @@ export const PermitLists = React.memo(() => {
   };
   const tabs = [];
 
-  // TODO move this code back below showApplicationsInProgressTab to restore proper tab order
-  const showApplicationsInReviewTab = usePermissionMatrix({
-    permissionMatrixKeys: {
-      permissionMatrixFeatureKey: "MANAGE_PERMITS",
-      permissionMatrixFunctionKey: "VIEW_LIST_OF_APPLICATIONS_IN_REVIEW",
-    },
-  });
-  if (showApplicationsInReviewTab) {
-    tabs.push({
-      label: "Applications in Review",
-      component: <ApplicationsInReviewList />,
-    });
-  }
-
   const showApplicationsInProgressTab = usePermissionMatrix({
     permissionMatrixKeys: {
       permissionMatrixFeatureKey: "MANAGE_PERMITS",
@@ -48,6 +34,20 @@ export const PermitLists = React.memo(() => {
           onCountChange={handleApplicationsCountChange}
         />
       ),
+    });
+  }
+
+  const showApplicationsInReviewTab = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_PERMITS",
+      permissionMatrixFunctionKey: "VIEW_LIST_OF_APPLICATIONS_IN_REVIEW",
+    },
+  });
+
+  if (showApplicationsInReviewTab) {
+    tabs.push({
+      label: "Applications in Review",
+      component: <ApplicationsInReviewList />,
     });
   }
 

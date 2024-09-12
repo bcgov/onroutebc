@@ -583,7 +583,6 @@ export const useUpdateApplicationQueueStatusMutation = () => {
       );
     },
     onSuccess: (_data, variables) => {
-      // TODO is it possible to update Applications In Progress counter here?
       const { caseActivityType } = variables;
       if (caseActivityType === CASE_ACTIVITY_TYPES.WITHDRAWN) {
         setSnackBar({

@@ -1,7 +1,6 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { RowSelectionState } from "@tanstack/table-core";
 import {
-  MRT_ColumnDef,
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
@@ -16,8 +15,6 @@ import {
   getDefaultNullableVal,
   getDefaultRequiredVal,
 } from "../../../../common/helpers/util";
-import { UserRoleType } from "../../../../common/authentication/types";
-import { Nullable } from "../../../../common/types/common";
 import { useApplicationsInQueueQuery } from "../../hooks/hooks";
 import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
 import {
@@ -29,12 +26,6 @@ import { BANNER_MESSAGES } from "../../../../common/constants/bannerMessages";
 import { MRT_Row } from "material-react-table";
 import { ApplicationsInReviewRowOptions } from "./ApplicationsInReviewRowOptions";
 import { APPLICATION_QUEUE_STATUSES } from "../../types/ApplicationQueueStatus";
-
-const getColumns = (
-  userRole?: Nullable<UserRoleType>,
-): MRT_ColumnDef<ApplicationListItem>[] => {
-  return ApplicationInReviewColumnDefinition(userRole);
-};
 
 export const ApplicationsInReviewList = () => {
   const {
@@ -52,7 +43,6 @@ export const ApplicationsInReviewList = () => {
     isFetching,
   } = applicationsInQueueQuery;
 
-  console.log(applicationsInQueue);
   const [showAIRTable, setShowAIRTable] = useState<boolean>(false);
 
   useEffect(() => {
@@ -73,11 +63,6 @@ export const ApplicationsInReviewList = () => {
 
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
-  const columns = useMemo<MRT_ColumnDef<ApplicationListItem>[]>(
-    () => getColumns(userRole),
-    [userRole],
-  );
-
   useEffect(() => {
     if (isError) {
       snackBar.setSnackBar({
@@ -91,7 +76,7 @@ export const ApplicationsInReviewList = () => {
 
   const table = useMaterialReactTable({
     ...defaultTableOptions,
-    columns: columns,
+    columns: ApplicationInReviewColumnDefinition,
     data: getDefaultRequiredVal([], applicationsInQueue?.items),
     initialState: {
       ...defaultTableInitialStateOptions,
@@ -146,9 +131,6 @@ export const ApplicationsInReviewList = () => {
     },
     renderRowActions: useCallback(
       ({ row }: { row: MRT_Row<ApplicationListItem> }) => {
-        /* TODO the swagger docs use the term "applicationId" when targetting specific applications
-           check with Praveen if this is correct as we only have "permitId" or "applicationNumber"
-        **/
         return (
           <div>
             <ApplicationsInReviewRowOptions

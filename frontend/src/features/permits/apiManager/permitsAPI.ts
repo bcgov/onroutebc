@@ -646,12 +646,18 @@ export const updateApplicationQueueStatus = async (
 ) => {
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
 
+  const data: any = {
+    caseActivityType,
+  };
+
+  // Conditionally include the comment property if it is given as an argument and not an empty string
+  if (comment && comment.trim() !== "") {
+    data.comment = [comment];
+  }
+
   const response = await httpPOSTRequest(
     APPLICATION_QUEUE_API_ROUTES.UPDATE_QUEUE_STATUS(companyId, applicationId),
-    {
-      caseActivityType,
-      ...(comment && { comment }),
-    },
+    data,
   );
   return response;
 };
