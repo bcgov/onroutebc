@@ -811,7 +811,7 @@ export class PaymentService {
       .where('company.companyId = :companyId', { companyId: companyId })
       .getOne();
     console.log('SpecialAuth ', specialAuth);
-    return !!specialAuth.noFeeType;
+    return specialAuth?true:false;
   }
 
   @LogAsyncMethodExecution()

@@ -158,12 +158,12 @@ export const currentPermitFee = (
   isNoFee?: boolean,
 ): number => {
   let permitTerms;
-  if (isNoFee) pricePerTerm = 0; // If the 'no fee' flag is set, the company is eligible to receive free permits.
-  permitTerms = Math.ceil(duration / allowedPermitTerm); // ex: if duraion is 40 days then charge for 60 days.
   if (permitStatus === ApplicationStatus.VOIDED) {
     permitTerms = Math.floor(duration / allowedPermitTerm); //ex: if duration is 40 days then refund only 30 days.
     return pricePerTerm * permitTerms * -1;
   }
+  if (isNoFee) pricePerTerm = 0; // If the 'no fee' flag is set, the company is eligible to receive free permits.
+  permitTerms = Math.ceil(duration / allowedPermitTerm); // ex: if duraion is 40 days then charge for 60 days.
   return oldAmount > 0
     ? pricePerTerm * permitTerms - oldAmount
     : pricePerTerm * permitTerms + oldAmount;
