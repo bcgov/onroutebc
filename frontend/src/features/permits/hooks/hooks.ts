@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { AxiosError } from "axios";
 import { MRT_PaginationState, MRT_SortingState } from "material-react-table";
 import {
@@ -33,7 +33,14 @@ import {
   getApplicationsInProgress,
   resendPermit,
   getPendingPermits,
+  getApplicationsInQueue,
+  updateApplicationQueueStatus,
 } from "../apiManager/permitsAPI";
+import {
+  CASE_ACTIVITY_TYPES,
+  CaseActivityType,
+} from "../types/CaseActivityType";
+import { SnackBarContext } from "../../../App";
 
 const QUERY_KEYS = {
   PERMIT_DETAIL: (
@@ -332,10 +339,16 @@ export const useAmendPermit = (companyIdParam?: Nullable<string>) => {
           queryKey: QUERY_KEYS.PERMIT_DETAIL(data.permitId, companyIdParam),
         });
         queryClient.invalidateQueries({
-          queryKey: QUERY_KEYS.AMEND_APPLICATION(data.originalPermitId, companyIdParam),
+          queryKey: QUERY_KEYS.AMEND_APPLICATION(
+            data.originalPermitId,
+            companyIdParam,
+          ),
         });
         queryClient.invalidateQueries({
-          queryKey: QUERY_KEYS.PERMIT_HISTORY(data.originalPermitId, companyIdParam),
+          queryKey: QUERY_KEYS.PERMIT_HISTORY(
+            data.originalPermitId,
+            companyIdParam,
+          ),
         });
 
         return {
@@ -430,20 +443,28 @@ export const useApplicationsInProgressQuery = () => {
     },
   ]);
 
-  const orderBy = sorting.length > 0 ? [
-    {
-      column: sorting.at(0)?.id as string,
-      descending: Boolean(sorting.at(0)?.desc),
-    },
-  ] : [];
+  const orderBy =
+    sorting.length > 0
+      ? [
+          {
+            column: sorting.at(0)?.id as string,
+            descending: Boolean(sorting.at(0)?.desc),
+          },
+        ]
+      : [];
 
   const applicationsInProgressQuery = useQuery({
-    queryKey: ["applicationsInProgress", pagination.pageIndex, pagination.pageSize, sorting],
+    queryKey: [
+      "applicationsInProgress",
+      pagination.pageIndex,
+      pagination.pageSize,
+      sorting,
+    ],
     queryFn: () =>
       getApplicationsInProgress({
         page: pagination.pageIndex,
         take: pagination.pageSize,
-        orderBy, 
+        orderBy,
       }),
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
     refetchOnMount: "always",
@@ -486,6 +507,97 @@ export const usePendingPermitsQuery = () => {
     pagination,
     setPagination,
   };
+};
+
+/**
+ * Hook that fetches applications in queue (PENDING_REVIEW, IN_REVIEW) and manages its pagination state.
+ * @returns Applications in queue along with pagination state and setter
+ */
+export const useApplicationsInQueueQuery = () => {
+  const [pagination, setPagination] = useState<MRT_PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const [sorting, setSorting] = useState<MRT_SortingState>([
+    {
+      id: "updatedDateTime",
+      desc: true,
+    },
+  ]);
+
+  const orderBy =
+    sorting.length > 0
+      ? [
+          {
+            column: sorting.at(0)?.id as string,
+            descending: Boolean(sorting.at(0)?.desc),
+          },
+        ]
+      : [];
+
+  const applicationsInQueueQuery = useQuery({
+    queryKey: [
+      "applicationsInQueue",
+      pagination.pageIndex,
+      pagination.pageSize,
+      sorting,
+    ],
+    queryFn: () =>
+      getApplicationsInQueue({
+        page: pagination.pageIndex,
+        take: pagination.pageSize,
+        orderBy,
+      }),
+    refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
+    refetchOnMount: "always",
+    placeholderData: keepPreviousData,
+  });
+
+  return {
+    applicationsInQueueQuery,
+    pagination,
+    setPagination,
+    sorting,
+    setSorting,
+  };
+};
+
+export const useUpdateApplicationQueueStatusMutation = () => {
+  const queryClient = useQueryClient();
+  const { setSnackBar } = useContext(SnackBarContext);
+
+  return useMutation({
+    mutationFn: (data: {
+      applicationId: string;
+      caseActivityType: CaseActivityType;
+      comment?: string;
+    }) => {
+      const { applicationId, caseActivityType, comment } = data;
+
+      return updateApplicationQueueStatus(
+        applicationId,
+        caseActivityType,
+        comment,
+      );
+    },
+    onSuccess: (_data, variables) => {
+      // TODO is it possible to update Applications In Progress counter here?
+      const { caseActivityType } = variables;
+      if (caseActivityType === CASE_ACTIVITY_TYPES.WITHDRAWN) {
+        setSnackBar({
+          showSnackbar: true,
+          setShowSnackbar: () => true,
+          message: "Withdrawn to Applications in Progress",
+          alertType: "info",
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["applicationsInQueue"],
+        });
+      }
+    },
+    onError: (err: AxiosError) => err,
+  });
 };
 
 /**
