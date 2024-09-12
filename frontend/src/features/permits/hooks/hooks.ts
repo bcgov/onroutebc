@@ -131,6 +131,7 @@ export const useApplicationDetailsQuery = (
     refetchOnMount: "always", // always fetch when component is mounted (ApplicationDashboard page)
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
     enabled: shouldEnableQuery, // does not perform the query at all if permit id is invalid
+    gcTime: 0, // DO NOT cache the application data as application form/review pages always need latest data
   });
 
   useEffect(() => {

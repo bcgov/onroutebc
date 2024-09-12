@@ -16,8 +16,8 @@ export class CaseActivityCommentConstraint
       }
     ).caseActivityType; // Access the searchString property from the same object
 
-    // If CaseActivityType.APPROVED or CaseActivityType.REJECTED , comment should exists
-    if (caseActivityType !== CaseActivityType.WITHDRAWN && !comment) {
+    // If CaseActivityType.REJECTED, comment should exists
+    if (caseActivityType === CaseActivityType.REJECTED && !comment) {
       return false;
     }
 
@@ -25,6 +25,6 @@ export class CaseActivityCommentConstraint
   }
 
   defaultMessage() {
-    return `Comment is required when activity type is ${CaseActivityType.APPROVED} or ${CaseActivityType.REJECTED} `;
+    return `Comment is required when activity type is ${CaseActivityType.REJECTED} `;
   }
 }

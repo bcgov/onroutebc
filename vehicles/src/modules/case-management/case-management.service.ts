@@ -23,6 +23,7 @@ import { CaseNotes } from './entities/case-notes.entity';
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { ReadCaseEvenDto } from './dto/response/read-case-event.dto';
+import { ReadCaseActivityDto } from './dto/response/read-case-activity.dto';
 
 @Injectable()
 export class CaseManagementService {
@@ -32,6 +33,8 @@ export class CaseManagementService {
     private dataSource: DataSource,
     @InjectRepository(Case)
     private readonly caseRepository: Repository<Case>,
+    @InjectRepository(CaseActivity)
+    private readonly caseActivityRepository: Repository<CaseActivity>,
   ) {}
 
   /**
@@ -126,9 +129,7 @@ export class CaseManagementService {
         existingCase &&
         existingCase?.caseStatusType !== CaseStatusType.CLOSED
       ) {
-        throwUnprocessableEntityException(
-          'An active case exists for the given application id',
-        );
+        throwUnprocessableEntityException('Application in queue already.');
       }
       let newCase = new Case();
       newCase.caseType = CaseType.DEFAULT;
@@ -218,9 +219,7 @@ export class CaseManagementService {
       if (!existingCase) {
         throw new DataNotFoundException();
       } else if (existingCase.caseStatusType === CaseStatusType.CLOSED) {
-        throwUnprocessableEntityException(
-          'Invalid status. Case is already closed',
-        );
+        throwUnprocessableEntityException('Application no longer available.');
       }
 
       existingCase.caseStatusType = CaseStatusType.CLOSED; //Rename to CaseStatusType
@@ -306,9 +305,7 @@ export class CaseManagementService {
       if (!existingCase) {
         throw new DataNotFoundException();
       } else if (existingCase.caseStatusType === CaseStatusType.CLOSED) {
-        throwUnprocessableEntityException(
-          'Invalid status. Case is already closed',
-        );
+        throwUnprocessableEntityException('Application no longer available.');
       }
 
       existingCase.assignedUser = new User();
@@ -402,14 +399,8 @@ export class CaseManagementService {
       }
       if (!existingCase) {
         throw new DataNotFoundException();
-      } else if (existingCase.caseStatusType === CaseStatusType.CLOSED) {
-        throwUnprocessableEntityException(
-          'Invalid status. Case is already closed',
-        );
       } else if (existingCase.caseStatusType !== CaseStatusType.OPEN) {
-        throwUnprocessableEntityException(
-          'Cannot start workflow. Invalid status.',
-        );
+        throwUnprocessableEntityException('Application no longer available.');
       }
 
       existingCase.caseStatusType = CaseStatusType.IN_PROGRESS;
@@ -502,14 +493,12 @@ export class CaseManagementService {
       }
       if (!existingCase) {
         throw new DataNotFoundException();
-      } else if (existingCase.caseStatusType === CaseStatusType.CLOSED) {
+      } else if (existingCase.assignedUser?.userGUID !== currentUser.userGUID) {
         throwUnprocessableEntityException(
-          'Invalid status. Case is already closed',
+          `Application no longer available. This application is claimed by ${existingCase.assignedUser?.userName}`,
         );
       } else if (existingCase.caseStatusType !== CaseStatusType.IN_PROGRESS) {
-        throwUnprocessableEntityException(
-          'Cannot complete workflow. Invalid status.',
-        );
+        throwUnprocessableEntityException('Application no longer available.');
       }
 
       let caseNotes: CaseNotes;
@@ -534,6 +523,8 @@ export class CaseManagementService {
       newActivity.caseEvent = newEvent;
       newActivity.caseActivityType = caseActivityType;
       newActivity.dateTime = new Date();
+      newActivity.user = new User();
+      newActivity.user.userGUID = currentUser.userGUID;
       setBaseEntityProperties({ entity: newActivity, currentUser });
       if (comment) {
         newActivity.caseNotes = caseNotes;
@@ -616,13 +607,9 @@ export class CaseManagementService {
       }
       if (!existingCase) {
         throw new DataNotFoundException();
-      } else if (existingCase.caseStatusType === CaseStatusType.CLOSED) {
+      } else if (existingCase.caseStatusType !== CaseStatusType.OPEN) {
         throwUnprocessableEntityException(
-          'Invalid status. Case is already closed',
-        );
-      } else if (existingCase.caseStatusType === CaseStatusType.IN_PROGRESS) {
-        throwUnprocessableEntityException(
-          'Unable to withdraw the application in review',
+          'Application Status Application(s) have either been withdrawn or are in review by the Provincial Permit Centre.',
         );
       }
 
@@ -638,6 +625,8 @@ export class CaseManagementService {
       newActivity.caseEvent = newEvent;
       newActivity.caseActivityType = CaseActivityType.WITHDRAWN;
       newActivity.dateTime = new Date();
+      newActivity.user = new User();
+      newActivity.user.userGUID = currentUser.userGUID;
       setBaseEntityProperties({ entity: newActivity, currentUser });
       await queryRunner.manager.save<CaseActivity>(newActivity);
 
@@ -720,13 +709,8 @@ export class CaseManagementService {
     }
     if (!existingCase) {
       throw new DataNotFoundException();
-    }
-    if (existingCase.caseStatusType === CaseStatusType.CLOSED) {
-      throwUnprocessableEntityException(
-        'Invalid status. Case is already closed',
-      );
     } else if (existingCase.caseStatusType !== CaseStatusType.IN_PROGRESS) {
-      throwUnprocessableEntityException('Cannot add notes. Invalid status.');
+      throwUnprocessableEntityException('Application no longer available.');
     }
     try {
       let newEvent = this.createEvent(
@@ -763,5 +747,121 @@ export class CaseManagementService {
         await queryRunner.release();
       }
     }
+  }
+
+  /**
+   * The method creates a notification event.
+   *
+   * @param currentUser - The current user executing the withdrawal action.
+   * @param queryRunner - Optional, existing QueryRunner instance used in the transaction process.
+   * @param caseId - Optional, the ID of the case to be withdrawn. Can be used to retrieve the existing case.
+   * @param originalCaseId - Optional, the original ID of the case to be withdrawn. Useful in lookup scenarios.
+   * @param applicationId - Optional, the ID of the permit application associated with the case.
+   * @param existingCase - Optional, the pre-loaded `Case` entity, if
+   */
+  @LogAsyncMethodExecution()
+  async createNotificationEvent({
+    currentUser,
+    queryRunner,
+    caseId,
+    originalCaseId,
+    applicationId,
+    existingCase,
+  }: {
+    currentUser: IUserJWT;
+    queryRunner?: Nullable<QueryRunner>;
+    caseId?: Nullable<number>;
+    originalCaseId?: Nullable<number>;
+    applicationId?: Nullable<string>;
+    existingCase?: Nullable<Case>;
+  }): Promise<ReadCaseEvenDto> {
+    let localQueryRunner = true;
+    ({ localQueryRunner, queryRunner } = await getQueryRunner({
+      queryRunner,
+      dataSource: this.dataSource,
+    }));
+    try {
+      if (!existingCase) {
+        existingCase = await this.findLatest({
+          queryRunner,
+          caseId,
+          originalCaseId,
+          applicationId,
+        });
+      }
+
+      let newEvent = this.createEvent(
+        existingCase,
+        CaseEventType.NOTIFICATION,
+        currentUser,
+      );
+      newEvent = await queryRunner.manager.save<CaseEvent>(newEvent);
+
+      if (localQueryRunner) {
+        await queryRunner.commitTransaction();
+      }
+      return await this.classMapper.mapAsync(
+        newEvent,
+        CaseEvent,
+        ReadCaseEvenDto,
+      );
+    } catch (error) {
+      if (localQueryRunner) {
+        await queryRunner.rollbackTransaction();
+      }
+      this.logger.error(error);
+      throw error;
+    } finally {
+      if (localQueryRunner) {
+        await queryRunner.release();
+      }
+    }
+  }
+
+  /**
+   * Retrieves the activity history for a specific case by fetching and mapping `CaseActivity` records.
+   * Filters are applied based on the permit's `applicationId` and the specified `caseActivityType`.
+   * Joins additional details, including user information and associated case notes, for each activity.
+   *
+   * @param currentUser - The current user executing the action.
+   * @param applicationId - The ID of the permit associated with the case.
+   * @param caseActivityType - The type of case activity to filter.
+   * @returns A `Promise<ReadCaseActivityDto[]>` containing the list of activities for the specified case.
+   */
+  @LogAsyncMethodExecution()
+  async fetchActivityHistory({
+    currentUser,
+    applicationId,
+    caseActivityType,
+  }: {
+    currentUser: IUserJWT;
+    applicationId: Nullable<string>;
+    caseActivityType: CaseActivityType;
+  }): Promise<ReadCaseActivityDto[]> {
+    const caseActivity = await this.caseActivityRepository
+      .createQueryBuilder('caseActivity')
+      .innerJoinAndSelect('caseActivity.user', 'user')
+      .leftJoinAndSelect('caseActivity.caseNotes', 'caseNotes')
+      .innerJoinAndSelect('caseActivity.case', 'case')
+      .innerJoinAndSelect('case.permit', 'permit')
+      .where('permit.id = :applicationId', { applicationId })
+      .andWhere('caseActivity.caseActivityType = :caseActivityType', {
+        caseActivityType,
+      })
+      .orderBy('caseActivity.dateTime', 'DESC')
+      .getMany();
+
+    const caseActivityDto = await this.classMapper.mapArrayAsync(
+      caseActivity,
+      CaseActivity,
+      ReadCaseActivityDto,
+      {
+        extraArgs: () => ({
+          currentUser: currentUser,
+        }),
+      },
+    );
+
+    return caseActivityDto;
   }
 }
