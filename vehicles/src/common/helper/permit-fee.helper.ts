@@ -157,16 +157,25 @@ export const currentPermitFee = (
   permitStatus?: ApplicationStatus,
   isNoFee?: boolean,
 ): number => {
-  let permitTerms;
+  // Calculate the number of permit terms based on the duration
+  const permitTerms = permitStatus === ApplicationStatus.VOIDED
+    ? Math.floor(duration / allowedPermitTerm)
+    : Math.ceil(duration / allowedPermitTerm);
+
+  // Special fee calculation for void permit
   if (permitStatus === ApplicationStatus.VOIDED) {
-    permitTerms = Math.floor(duration / allowedPermitTerm); //ex: if duration is 40 days then refund only 30 days.
-    return pricePerTerm * permitTerms * -1;
-  }
-  if (isNoFee) pricePerTerm = 0; // If the 'no fee' flag is set, the company is eligible to receive free permits.
-  permitTerms = Math.ceil(duration / allowedPermitTerm); // ex: if duraion is 40 days then charge for 60 days.
-  return oldAmount > 0
-    ? pricePerTerm * permitTerms - oldAmount
-    : pricePerTerm * permitTerms + oldAmount;
+    // If the permit status is voided, return a refund of 0 for permit with no fees, or return the applicable refund amount
+    return oldAmount === 0 ? 0 : -pricePerTerm * permitTerms;
+  } 
+    // For non void application, if no fee applies, set the price per term to 0
+    if (isNoFee) {
+      pricePerTerm = 0;
+    }
+    // Calculate fee for non void permit.
+    return oldAmount > 0
+      ? pricePerTerm * permitTerms - oldAmount
+      : pricePerTerm * permitTerms + oldAmount;
+  
 };
 
 export const calculatePermitAmount = (
