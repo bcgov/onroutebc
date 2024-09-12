@@ -26,6 +26,7 @@ import {
   ApplicationQueueStatus,
   CaseStatusType,
 } from '../../../../common/enum/case-status-type.enum';
+import { ReadCaseActivityDto } from '../../../case-management/dto/response/read-case-activity.dto';
 
 @Injectable()
 export class ApplicationProfile extends AutomapperProfile {
@@ -206,6 +207,21 @@ export class ApplicationProfile extends AutomapperProfile {
               return (firstName + ' ' + lastName).trim();
             }
           }),
+        ),
+        forMember(
+          (d) => d.rejectionHistory,
+          mapWithArguments(
+            (
+              s,
+              {
+                readCaseActivityList,
+              }: { readCaseActivityList: ReadCaseActivityDto[] },
+            ) => {
+              if (readCaseActivityList?.length) {
+                return readCaseActivityList;
+              }
+            },
+          ),
         ),
       );
 
