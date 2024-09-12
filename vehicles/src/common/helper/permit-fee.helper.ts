@@ -167,8 +167,8 @@ export const currentPermitFee = (
     // If the permit status is voided, return a refund of 0 for permit with no fees, or return the applicable refund amount
     return oldAmount === 0 ? 0 : -pricePerTerm * permitTerms;
   } 
-    // For non void application, if no fee applies, set the price per term to 0
-    if (isNoFee) {
+    // For non void new application (exclude amendment application), if no fee applies, set the price per term to 0 for new application 
+    if (isNoFee && oldAmount == 0) {
       pricePerTerm = 0;
     }
     // Calculate fee for non void permit.
