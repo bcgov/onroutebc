@@ -789,11 +789,8 @@ export class PaymentService {
       queryRunner,
     );
 
-    if (application.permitStatus === ApplicationStatus.VOIDED) {
-      const newAmount = permitFee(application, isNoFee);
-      return newAmount;
-    }
     const oldAmount = calculatePermitAmount(permitPaymentHistory);
+
     const fee = permitFee(application, isNoFee, oldAmount);
     return fee;
   }
@@ -811,7 +808,7 @@ export class PaymentService {
       .where('company.companyId = :companyId', { companyId: companyId })
       .getOne();
     console.log('SpecialAuth ', specialAuth);
-    return specialAuth?true:false;
+    return specialAuth?specialAuth.noFeeType?true:false:false;
   }
 
   @LogAsyncMethodExecution()
