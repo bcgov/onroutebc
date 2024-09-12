@@ -129,9 +129,7 @@ export class CaseManagementService {
         existingCase &&
         existingCase?.caseStatusType !== CaseStatusType.CLOSED
       ) {
-        throwUnprocessableEntityException(
-          'An active case exists for the given application id',
-        );
+        throwUnprocessableEntityException('Application in queue already.');
       }
       let newCase = new Case();
       newCase.caseType = CaseType.DEFAULT;
@@ -221,9 +219,7 @@ export class CaseManagementService {
       if (!existingCase) {
         throw new DataNotFoundException();
       } else if (existingCase.caseStatusType === CaseStatusType.CLOSED) {
-        throwUnprocessableEntityException(
-          'Invalid status. Case is already closed',
-        );
+        throwUnprocessableEntityException('Application no longer available.');
       }
 
       existingCase.caseStatusType = CaseStatusType.CLOSED; //Rename to CaseStatusType
@@ -309,9 +305,7 @@ export class CaseManagementService {
       if (!existingCase) {
         throw new DataNotFoundException();
       } else if (existingCase.caseStatusType === CaseStatusType.CLOSED) {
-        throwUnprocessableEntityException(
-          'Invalid status. Case is already closed',
-        );
+        throwUnprocessableEntityException('Application no longer available.');
       }
 
       existingCase.assignedUser = new User();
@@ -405,14 +399,8 @@ export class CaseManagementService {
       }
       if (!existingCase) {
         throw new DataNotFoundException();
-      } else if (existingCase.caseStatusType === CaseStatusType.CLOSED) {
-        throwUnprocessableEntityException(
-          'Invalid status. Case is already closed',
-        );
       } else if (existingCase.caseStatusType !== CaseStatusType.OPEN) {
-        throwUnprocessableEntityException(
-          'Cannot start workflow. Invalid status.',
-        );
+        throwUnprocessableEntityException('Application no longer available.');
       }
 
       existingCase.caseStatusType = CaseStatusType.IN_PROGRESS;
@@ -505,14 +493,12 @@ export class CaseManagementService {
       }
       if (!existingCase) {
         throw new DataNotFoundException();
-      } else if (existingCase.caseStatusType === CaseStatusType.CLOSED) {
+      } else if (existingCase.assignedUser?.userGUID !== currentUser.userGUID) {
         throwUnprocessableEntityException(
-          'Invalid status. Case is already closed',
+          `Application no longer available. This application is claimed by ${existingCase.assignedUser?.userName}`,
         );
       } else if (existingCase.caseStatusType !== CaseStatusType.IN_PROGRESS) {
-        throwUnprocessableEntityException(
-          'Cannot complete workflow. Invalid status.',
-        );
+        throwUnprocessableEntityException('Application no longer available.');
       }
 
       let caseNotes: CaseNotes;
@@ -621,13 +607,9 @@ export class CaseManagementService {
       }
       if (!existingCase) {
         throw new DataNotFoundException();
-      } else if (existingCase.caseStatusType === CaseStatusType.CLOSED) {
+      } else if (existingCase.caseStatusType !== CaseStatusType.OPEN) {
         throwUnprocessableEntityException(
-          'Invalid status. Case is already closed',
-        );
-      } else if (existingCase.caseStatusType === CaseStatusType.IN_PROGRESS) {
-        throwUnprocessableEntityException(
-          'Unable to withdraw the application in review',
+          'Application Status Application(s) have either been withdrawn or are in review by the Provincial Permit Centre.',
         );
       }
 
@@ -727,13 +709,8 @@ export class CaseManagementService {
     }
     if (!existingCase) {
       throw new DataNotFoundException();
-    }
-    if (existingCase.caseStatusType === CaseStatusType.CLOSED) {
-      throwUnprocessableEntityException(
-        'Invalid status. Case is already closed',
-      );
     } else if (existingCase.caseStatusType !== CaseStatusType.IN_PROGRESS) {
-      throwUnprocessableEntityException('Cannot add notes. Invalid status.');
+      throwUnprocessableEntityException('Application no longer available.');
     }
     try {
       let newEvent = this.createEvent(
