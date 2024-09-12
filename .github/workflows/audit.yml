@@ -1,0 +1,49 @@
+---
+name: Audit Shas
+
+on:
+  workflow_dispatch:
+    inputs:
+      ### Required
+      environment:
+        description: "Deployment environment - dev/test/prod"
+        required: true
+        type: choice
+        options: ["dev","test","prod"]
+        default: "prod"
+      release:
+        description: 'release name'
+        required: true
+        type: string
+        default: "prod"
+jobs:
+  # https://github.com/bcgov-nr/action-deployer-openshift
+  docker_login:
+    - name: Log in to the Container registry
+      if: steps.build.outputs.triggered == 'true'
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: {{ secrets.oc_token }}
+    
+  audit_packages:
+    name: Audit
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        package: [dops, vehicles, frontend, scheduler, policy]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit the installed application for package sha vs deployed sha
+        run: |
+          oc login --token=${{ secrets.oc_token }} --server=${{ vars.oc_server }}
+          oc project c28f0c-${{ inputs.environment }} # Safeguard!
+          export GHCR_SHA=$(docker manifest inspect onroutebc-${{inputs.release}}-${{matrix.package}} | jq '.manifests[0].digest')
+          export SHA_LIST=$(oc get pods -l app.kubernetes.io/instance=onroutebc-${{inputs.release}} -l app.kubernetes.io/name=${{matrix.package}} -o yaml | grep imageID | grep ghcr | cut -d : -f 3)
+          for sha in ${SHA_LIST}
+            do
+              echo "onroutebc-${{inputs.release}}-${{matrix.package}} - pod:${sha} ghcr: ${GHCR_SHA}"
+            done
+              
