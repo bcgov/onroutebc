@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { OnRouteBCTableRowActions } from "../../../../common/components/table/OnRouteBCTableRowActions";
-import { useUpdateApplicationQueueStatusMutation } from "../../hooks/hooks";
+import {
+  useUpdateApplicationQueueStatusMutation,
+  useInvalidateApplicationsInQueue,
+} from "../../hooks/hooks";
 import { CASE_ACTIVITY_TYPES } from "../../types/CaseActivityType";
 import { ApplicationInReviewModal } from "./ApplicationInReviewModal";
 import { useNavigate } from "react-router-dom";
 import { ERROR_ROUTES } from "../../../../routes/constants";
-import { useQueryClient } from "@tanstack/react-query";
 
 const PERMIT_ACTION_OPTION_TYPES = {
   WITHDRAW_APPLICATION: "withdrawApplication",
@@ -50,15 +52,13 @@ export const ApplicationsInReviewRowOptions = ({
   permitId: string;
 }) => {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const { invalidate } = useInvalidateApplicationsInQueue();
 
   const [isAIRModalOpen, setIsAIRModalOpen] = useState<boolean>(false);
 
   const handleCloseAIRModal = () => {
     setIsAIRModalOpen(false);
-    queryClient.invalidateQueries({
-      queryKey: ["applicationsInQueue"],
-    });
+    invalidate();
   };
 
   const { mutateAsync, isError, error } =

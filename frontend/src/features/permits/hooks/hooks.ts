@@ -565,7 +565,7 @@ export const useApplicationsInQueueQuery = () => {
 };
 
 export const useUpdateApplicationQueueStatusMutation = () => {
-  const queryClient = useQueryClient();
+  const { invalidate } = useInvalidateApplicationsInQueue();
   const { setSnackBar } = useContext(SnackBarContext);
 
   return useMutation({
@@ -591,13 +591,21 @@ export const useUpdateApplicationQueueStatusMutation = () => {
           message: "Withdrawn to Applications in Progress",
           alertType: "info",
         });
-        queryClient.invalidateQueries({
-          queryKey: ["applicationsInQueue"],
-        });
+        invalidate();
       }
     },
     onError: (err: AxiosError) => err,
   });
+};
+
+export const useInvalidateApplicationsInQueue = () => {
+  const queryClient = useQueryClient();
+
+  return {
+    invalidate: () => {
+      queryClient.invalidateQueries({ queryKey: ["applicationsInQueue"] });
+    },
+  };
 };
 
 /**
