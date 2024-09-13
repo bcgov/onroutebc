@@ -127,14 +127,14 @@ const getApplications = async (
   applicationsURL.searchParams.set("page", `${page + 1}`);
   applicationsURL.searchParams.set("take", `${take}`);
 
-  if (pendingPermitsOnly !== undefined) {
+  if (typeof pendingPermitsOnly !== "undefined") {
     applicationsURL.searchParams.set(
       "pendingPermits",
       `${Boolean(pendingPermitsOnly)}`,
     );
   }
 
-  if (applicationsInQueueOnly !== undefined) {
+  if (typeof applicationsInQueueOnly !== "undefined") {
     applicationsURL.searchParams.set(
       "applicationsInQueue",
       `${Boolean(applicationsInQueueOnly)}`,

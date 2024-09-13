@@ -3,6 +3,8 @@ import { OnRouteBCTableRowActions } from "../../../../common/components/table/On
 import { useUpdateApplicationQueueStatusMutation } from "../../hooks/hooks";
 import { CASE_ACTIVITY_TYPES } from "../../types/CaseActivityType";
 import { ApplicationInReviewModal } from "./ApplicationInReviewModal";
+import { useNavigate } from "react-router-dom";
+import { ERROR_ROUTES } from "../../../../routes/constants";
 import { useQueryClient } from "@tanstack/react-query";
 
 const PERMIT_ACTION_OPTION_TYPES = {
@@ -47,9 +49,10 @@ export const ApplicationsInReviewRowOptions = ({
   isInReview: boolean;
   permitId: string;
 }) => {
-  const [isAIRModalOpen, setIsAIRModalOpen] = useState<boolean>(false);
-
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
+
+  const [isAIRModalOpen, setIsAIRModalOpen] = useState<boolean>(false);
 
   const handleCloseAIRModal = () => {
     setIsAIRModalOpen(false);
@@ -62,8 +65,13 @@ export const ApplicationsInReviewRowOptions = ({
     useUpdateApplicationQueueStatusMutation();
 
   useEffect(() => {
-    if (isError && error.response?.status === 422) {
-      setIsAIRModalOpen(true);
+    if (isError) {
+      // if the application has already been withdrawn by another user
+      if (error.response?.status === 422) {
+        return setIsAIRModalOpen(true);
+      }
+      // handle all other errors
+      navigate(ERROR_ROUTES.UNEXPECTED);
     }
   }, [isError, error]);
 
