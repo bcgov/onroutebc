@@ -47,6 +47,10 @@ import {
 } from "../../../../routes/constants";
 import { Loading } from "../../../../common/pages/Loading";
 import { CVPayInPersonInfo } from "../Application/components/pay/CVPayInPersonInfo";
+import {
+  TOLL_FREE_NUMBER,
+  PPC_EMAIL,
+} from "../../../../common/constants/constants";
 
 const AVAILABLE_STAFF_PAYMENT_METHODS = [
   PAYMENT_METHOD_TYPE_CODE.ICEPAY,
@@ -353,8 +357,8 @@ export const ShoppingCartPage = () => {
         <div className="shopping-cart-page__info">
           <p className="info__body">
             Have questions? Please contact the Provincial Permit Centre.
-            Toll-free: <strong>1-800-559-9688</strong> or Email:{" "}
-            <strong>ppcpermit@gov.bc.ca</strong>
+            Toll-free: <strong>{TOLL_FREE_NUMBER}</strong> or Email:{" "}
+            <strong>{PPC_EMAIL}</strong>
           </p>
         </div>
         <ShoppingCart

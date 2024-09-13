@@ -1,6 +1,11 @@
 import "./CVPayInPersonInfo.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLink } from "@fortawesome/free-solid-svg-icons";
+import {
+  TOLL_FREE_NUMBER,
+  PPC_EMAIL,
+} from "../../../../../../common/constants/constants";
+import { ONROUTE_WEBPAGE_LINKS } from "../../../../../../routes/constants";
 
 export const CVPayInPersonInfo = () => {
   return (
@@ -10,14 +15,14 @@ export const CVPayInPersonInfo = () => {
       </h3>
       <p className="cv-pay-in-person-info__body">
         Pay in person at the <strong>Provincial Permit Centre</strong> <br></br>
-        Toll-free: <strong>1-800-559-9688</strong> or Email:{" "}
-        <strong>ppcpermit@gov.bc.ca</strong>
+        Toll-free: <strong>{TOLL_FREE_NUMBER}</strong> or Email:{" "}
+        <strong>{PPC_EMAIL}</strong>
         <br />
         <br />
         Pay in person at a <strong>Service BC Office (GA)</strong>
       </p>
       <a
-        href="https://www2.gov.bc.ca/gov/content/governments/organizational-structure/ministries-organizations/ministries/citizens-services/servicebc#locations"
+        href={ONROUTE_WEBPAGE_LINKS.SERVICE_BC_OFFICE_LOCATIONS}
         className="cv-pay-in-person-info__link"
         target="_blank"
         rel="noreferrer"
