@@ -28,7 +28,7 @@ import { ApplicationStatus } from '../enum/application-status.enum';
 export const permitFee = (
   application: Permit,
   isNoFee?: boolean,
-  oldAmount?: number,
+  oldAmount?: number|undefined,
 ): number => {
   let duration = calculateDuration(application);
   switch (application.permitType) {
@@ -153,7 +153,7 @@ export const currentPermitFee = (
   duration: number,
   pricePerTerm: number,
   allowedPermitTerm: number,
-  oldAmount?: number,
+  oldAmount?: number|undefined,
   permitStatus?: ApplicationStatus,
   isNoFee?: boolean,
 ): number => {
@@ -169,9 +169,10 @@ export const currentPermitFee = (
     return oldAmount === 0 ? 0 : -pricePerTerm * permitTerms;
   }
   // For non void new application (exclude amendment application), if no fee applies, set the price per term to 0 for new application
-  if (isNoFee && oldAmount === 0) {
-    pricePerTerm = 0;
-  }
+  if ((isNoFee && oldAmount === undefined) || oldAmount === 0) 
+    return 0;
+  if (oldAmount === undefined)
+    oldAmount = 0;
   // Calculate fee for non void permit.
   return oldAmount > 0
     ? pricePerTerm * permitTerms - oldAmount
