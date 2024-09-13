@@ -16,6 +16,7 @@ import {
 import { differenceBetween } from './date-time.helper';
 import * as dayjs from 'dayjs';
 import { ApplicationStatus } from '../enum/application-status.enum';
+import { Nullable } from '../types/common';
 
 /**
  * Calculates the permit fee based on the application and old amount.
@@ -27,8 +28,8 @@ import { ApplicationStatus } from '../enum/application-status.enum';
  */
 export const permitFee = (
   application: Permit,
-  isNoFee?: boolean,
-  oldAmount?: number|undefined,
+  isNoFee?: Nullable<boolean>,
+  oldAmount?: Nullable<number>,
 ): number => {
   let duration = calculateDuration(application);
   switch (application.permitType) {
@@ -153,9 +154,9 @@ export const currentPermitFee = (
   duration: number,
   pricePerTerm: number,
   allowedPermitTerm: number,
-  oldAmount?: number|undefined,
-  permitStatus?: ApplicationStatus,
-  isNoFee?: boolean,
+  oldAmount?: Nullable<number>,
+  permitStatus?: Nullable<ApplicationStatus>,
+  isNoFee?: Nullable<boolean>,
 ): number => {
   // Calculate the number of permit terms based on the duration
   const permitTerms =

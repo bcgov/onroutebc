@@ -83,12 +83,6 @@ export class ReadShoppingCartDto {
   expiryDate: string;
 
   @ApiProperty({
-    description: 'The permit fee',
-    example: 200,
-  })
-  fee: number;
-
-  @ApiProperty({
     description: 'The permit duration',
     example: 30,
   })
