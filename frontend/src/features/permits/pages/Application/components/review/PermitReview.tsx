@@ -12,9 +12,7 @@ import { ReviewFeeSummary } from "./ReviewFeeSummary";
 import { ReviewActions } from "./ReviewActions";
 import { CompanyProfile } from "../../../../../manageProfile/types/manageProfile";
 import { VehicleSubType } from "../../../../../manageVehicles/types/Vehicle";
-import { DEFAULT_PERMIT_TYPE, PermitType } from "../../../../types/PermitType";
-import { calculateFeeByDuration } from "../../../../helpers/feeSummary";
-import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
+import { PermitType } from "../../../../types/PermitType";
 import { Nullable } from "../../../../../../common/types/common";
 import { PermitContactDetails } from "../../../../types/PermitContactDetails";
 import { PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
@@ -48,18 +46,11 @@ interface PermitReviewProps {
   onAddToCart?: () => Promise<void>;
   showChangedFields?: boolean;
   oldFields?: Nullable<Partial<Application>>;
-  calculatedFee?: Nullable<string>;
+  calculatedFee: string;
   doingBusinessAs?: Nullable<string>;
 }
 
 export const PermitReview = (props: PermitReviewProps) => {
-  const feeSummary = props.calculatedFee
-    ? props.calculatedFee
-    : `${calculateFeeByDuration(
-        getDefaultRequiredVal(DEFAULT_PERMIT_TYPE, props.permitType),
-        getDefaultRequiredVal(0, props.permitDuration),
-      )}`;
-
   return (
     <Box className="permit-review layout-box">
       <Box className="permit-review__container">
@@ -108,7 +99,7 @@ export const PermitReview = (props: PermitReviewProps) => {
           isChecked={props.allChecked}
           setIsChecked={props.setAllChecked}
           permitType={props.permitType}
-          fee={feeSummary}
+          fee={props.calculatedFee}
         />
 
         {props.children}

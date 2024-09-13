@@ -19,7 +19,6 @@ import { LCV_CONDITION } from "../../../../constants/constants";
 import { sortConditions } from "../../../../helpers/conditions";
 import { getStartOfDate } from "../../../../../../common/helpers/formatDate";
 import { getExpiryDate } from "../../../../helpers/permitState";
-import { calculateFeeByDuration } from "../../../../helpers/feeSummary";
 import {
   PowerUnit,
   Trailer,
@@ -91,10 +90,6 @@ export const PermitForm = (props: PermitFormProps) => {
     setValue("permitData.expiryDate", dayjs(expiry));
   };
 
-  const handleSetFee = (fee: string) => {
-    setValue("permitData.feeSummary", fee);
-  };
-
   const isLcvDesignated = props.isLcvDesignated;
   const ineligiblePowerUnitSubtypes = getIneligiblePowerUnitSubtypes(permitType)
     .filter(subtype => !isLcvDesignated || !isVehicleSubtypeLCV(subtype.typeCode));
@@ -105,10 +100,7 @@ export const PermitForm = (props: PermitFormProps) => {
     handleSetExpiryDate(expiryDate);
   }, [expiryDate]);
   
-  // Update fee summary whenever duration or permit type changes
-  useEffect(() => {
-    handleSetFee(`${calculateFeeByDuration(permitType, permitDuration)}`);
-  }, [permitDuration, permitType]);
+  const isAmendAction = props.isAmendAction;
 
   const vehicleSubtype = vehicleFormData.vehicleSubType;
   useEffect(() => {
@@ -117,7 +109,7 @@ export const PermitForm = (props: PermitFormProps) => {
       && permitConditions.some(({ condition }: PermitCondition) => condition === LCV_CONDITION.condition)
     ) {
       // If vehicle subtype in the form isn't LCV but conditions have LCV,
-    // then remove that LCV condition from the form
+      // then remove that LCV condition from the form
     handleSetConditions(permitConditions.filter(
         ({ condition }: PermitCondition) => condition !== LCV_CONDITION.condition,
       ));
@@ -137,13 +129,13 @@ export const PermitForm = (props: PermitFormProps) => {
         <ApplicationDetails
           permitType={permitType}
           infoNumber={
-            props.isAmendAction ? props.permitNumber : applicationNumber
+            isAmendAction ? props.permitNumber : applicationNumber
           }
-          infoNumberType={props.isAmendAction ? "permit" : "application"}
+          infoNumberType={isAmendAction ? "permit" : "application"}
           createdDateTime={props.createdDateTime}
           updatedDateTime={props.updatedDateTime}
           companyInfo={props.companyInfo}
-          isAmendAction={props.isAmendAction}
+          isAmendAction={isAmendAction}
           doingBusinessAs={props.doingBusinessAs}
         />
 
@@ -154,7 +146,7 @@ export const PermitForm = (props: PermitFormProps) => {
           expiryDate={expiryDate}
           conditionsInPermit={permitConditions}
           durationOptions={props.durationOptions}
-          disableStartDate={props.isAmendAction}
+          disableStartDate={isAmendAction}
           permitType={permitType}
           pastStartDateStatus={props.pastStartDateStatus}
           includeLcvCondition={isLcvDesignated && isVehicleSubtypeLCV(vehicleFormData.vehicleSubType)}

@@ -15,7 +15,8 @@ import { useVoidPermit } from "../hooks/useVoidPermit";
 import { mapToRevokeRequestData } from "../helpers/mapper";
 import { Nullable } from "../../../../../common/types/common";
 import { hasPermitsActionFailed } from "../../../helpers/permitState";
-import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
+import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../common/helpers/util";
+import { usePermitHistoryQuery } from "../../../hooks/hooks";
 import {
   CustomFormComponent,
   getErrorMessage,
@@ -26,6 +27,7 @@ import {
   invalidPhoneLength,
   requiredMessage,
 } from "../../../../../common/helpers/validationMessages";
+import { isValidTransaction } from "../../../helpers/payment";
 
 const FEATURE = "void-permit";
 
@@ -46,6 +48,22 @@ export const VoidPermitForm = ({
 
   const { mutation: revokePermitMutation, voidResults } = useVoidPermit();
 
+  const { data: permitHistory } = usePermitHistoryQuery(
+    permit?.originalPermitId,
+    applyWhenNotNullable(
+      id => `${id}`,
+      permit?.companyId,
+    ),
+  );
+
+  const transactionHistory = getDefaultRequiredVal([], permitHistory)
+    .filter((history) =>
+      isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
+    );
+  
+  const amountToRefund = !permit || transactionHistory.length === 0
+    ? 0 : -1 * calculateAmountForVoid(permit, transactionHistory);
+
   useEffect(() => {
     const revokeFailed = hasPermitsActionFailed(voidResults);
     if (revokeFailed) {
@@ -56,8 +74,6 @@ export const VoidPermitForm = ({
       onRevokeSuccess();
     }
   }, [voidResults]);
-
-  const amountToRefund = !permit ? 0 : -1 * calculateAmountForVoid(permit);
 
   const {
     control,
