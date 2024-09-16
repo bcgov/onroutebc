@@ -37,6 +37,12 @@
     display: flex;
     flex-direction: column;
     
+    padding-top: 1.5rem;
+
+    .choose-payment-method {
+      margin-bottom: 2.5rem;
+    }
+
     .payment-failed-banner {
       margin: 0;
       margin-bottom: 1.5rem;

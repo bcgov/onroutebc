@@ -141,28 +141,32 @@ export const ShoppingCartPage = () => {
   }, []);
 
   useEffect(() => {
+    // transaction is undefined when payment endpoint has not been requested
+    // ie. "Pay Now" button has not been pressed
     if (typeof transaction !== "undefined") {
-      if (!isStaffActingAsCompany) {
-        // CV Client
-        if (!transaction?.url) {
-          // Failed to generate transaction url
-          navigate(SHOPPING_CART_ROUTES.DETAILS(true));
-        } else {
-          window.open(transaction.url, "_self");
-        }
-      } else if (!transaction) {
-        // Staff payment failed
+      if (!transaction) {
+        // Payment failed - ie. transaction object is null
         navigate(SHOPPING_CART_ROUTES.DETAILS(true));
-      } else {
-        // Staff payment transaction created successfully, proceed to issue permit
+      } else if (isFeeZero || isStaffActingAsCompany) {
+        // If purchase was for no-fee permits, or if staff payment transaction was created successfully,
+        // simply proceed to issue permits
         issuePermitMutation.mutate([...selectedIds]);
 
         // also update the cart and cart count
         cartQuery.refetch();
         refetchCartCount();
+      } else {
+        // CV Client payment, anticipate PayBC transaction url
+        if (!transaction?.url) {
+          // Failed to generate transaction url
+          navigate(SHOPPING_CART_ROUTES.DETAILS(true));
+        } else {
+          // Redirect to PayBC transaction url to continue payment
+          window.open(transaction.url, "_self");
+        }
       }
     }
-  }, [transaction, isStaffActingAsCompany]);
+  }, [transaction, isStaffActingAsCompany, isFeeZero]);
 
   useEffect(() => {
     const issueFailed = hasPermitsActionFailed(issueResults);
@@ -253,10 +257,29 @@ export const ShoppingCartPage = () => {
     });
   };
 
+  // Paying for no-fee permits
+  const handlePayForNoFee = () => {
+    startTransactionMutation.mutate({
+      transactionTypeId: TRANSACTION_TYPES.P,
+      paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.NP,
+      applicationDetails: [
+        ...selectedApplications.map((application) => ({
+          applicationId: application.applicationId,
+          transactionAmount: 0,
+        })),
+      ],
+    });
+  };
+
   const handlePay = (paymentMethodData: PaymentMethodData) => {
     if (startTransactionMutation.isPending) return;
 
     const { paymentMethod, additionalPaymentData } = paymentMethodData;
+
+    if (isFeeZero) {
+      handlePayForNoFee();
+      return;
+    }
 
     if (paymentMethod === PAYMENT_METHOD_TYPE_CODE.ICEPAY) {
       const { cardType, icepayTransactionId } =

@@ -18,6 +18,8 @@ import { usePowerUnitSubTypesQuery } from "../../../manageVehicles/hooks/powerUn
 import { useTrailerSubTypesQuery } from "../../../manageVehicles/hooks/trailers";
 import { useFetchSpecialAuthorizations } from "../../../settings/hooks/specialAuthorizations";
 import { applyLCVToApplicationData } from "../../helpers/getDefaultApplicationFormData";
+import { calculateFeeByDuration } from "../../helpers/feeSummary";
+import { DEFAULT_PERMIT_TYPE } from "../../types/PermitType";
 import {
   APPLICATIONS_ROUTES,
   APPLICATION_STEPS,
@@ -38,11 +40,22 @@ export const ApplicationReview = () => {
 
   const { data: specialAuth } = useFetchSpecialAuthorizations(companyId);
   const isLcvDesignated = Boolean(specialAuth?.isLcvAllowed);
+  const isNoFeePermitType = Boolean(specialAuth?.noFeeType);
 
   const { data: companyInfo } = useCompanyInfoQuery();
   const doingBusinessAs = companyInfo?.alternateName;
   
-  const applicationData = applyLCVToApplicationData(applicationContextData, isLcvDesignated);
+  const applicationData = applyLCVToApplicationData(
+    applicationContextData,
+    isLcvDesignated,
+  );
+
+  const fee = isNoFeePermitType
+    ? "0"
+    : `${calculateFeeByDuration(
+      getDefaultRequiredVal(DEFAULT_PERMIT_TYPE, applicationData?.permitType),
+      getDefaultRequiredVal(0, applicationData?.permitData?.permitDuration),
+    )}`;
 
   const { setSnackBar } = useContext(SnackBarContext);
   const { refetchCartCount } = useContext(CartContext);
@@ -166,6 +179,7 @@ export const ApplicationReview = () => {
             applicationData?.permitData?.vehicleDetails?.saveVehicle
           }
           doingBusinessAs={doingBusinessAs}
+          calculatedFee={fee}
         />
       </FormProvider>
     </div>

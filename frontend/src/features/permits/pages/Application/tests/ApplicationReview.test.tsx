@@ -408,24 +408,14 @@ describe("Review and Confirm Application Details", () => {
 
     it("should display proper fee summary", async () => {
       // Arrange and Act
-      const applicationData = {
-        ...defaultApplicationData,
-        permitData: {
-          ...defaultApplicationData.permitData,
-          feeSummary: `${calculateFeeByDuration(
-            defaultApplicationData.permitType,
-            defaultApplicationData.permitData.permitDuration,
-          )}`,
-        },
-      };
-      renderTestComponent(applicationData);
+      renderTestComponent(defaultApplicationData);
 
       // Assert
-      const {
-        permitType,
-        permitData: { feeSummary },
-      } = applicationData;
-      const permitTypeStr = permitTypeDisplayText(permitType);
+      const feeSummary = `${calculateFeeByDuration(
+        defaultApplicationData.permitType,
+        defaultApplicationData.permitData.permitDuration,
+      )}`;
+      const permitTypeStr = permitTypeDisplayText(defaultApplicationData.permitType);
       expect(await feeSummaryPermitType()).toHaveTextContent(permitTypeStr);
       expect(await feeSummaryPrice()).toHaveTextContent(`$${feeSummary}.00`);
       expect(await feeSummaryTotal()).toHaveTextContent(`$${feeSummary}.00`);
