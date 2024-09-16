@@ -46,6 +46,11 @@ import {
   SHOPPING_CART_ROUTES,
 } from "../../../../routes/constants";
 import { Loading } from "../../../../common/pages/Loading";
+import { CVPayInPersonInfo } from "../Application/components/pay/CVPayInPersonInfo";
+import {
+  TOLL_FREE_NUMBER,
+  PPC_EMAIL,
+} from "../../../../common/constants/constants";
 
 const AVAILABLE_STAFF_PAYMENT_METHODS = [
   PAYMENT_METHOD_TYPE_CODE.ICEPAY,
@@ -372,6 +377,13 @@ export const ShoppingCartPage = () => {
   return (
     <div className="shopping-cart-page">
       <Box className="shopping-cart-page__left-container">
+        <div className="shopping-cart-page__info">
+          <p className="info__body">
+            Have questions? Please contact the Provincial Permit Centre.
+            Toll-free: <strong>{TOLL_FREE_NUMBER}</strong> or Email:{" "}
+            <strong>{PPC_EMAIL}</strong>
+          </p>
+        </div>
         <ShoppingCart
           outdatedApplicationNumbers={outdatedApplicationNumbers}
           showCartFilter={enableCartFilter}
@@ -388,11 +400,10 @@ export const ShoppingCartPage = () => {
 
       <Box className="shopping-cart-page__right-container">
         <FormProvider {...formMethods}>
-          {!isFeeZero ? (
-            <ChoosePaymentMethod
-              availablePaymentMethods={availablePaymentMethods}
-            />
-          ) : null}
+          <ChoosePaymentMethod
+            availablePaymentMethods={availablePaymentMethods}
+          />
+          {!isStaffActingAsCompany && <CVPayInPersonInfo />}
 
           {paymentFailed ? <PaymentFailedBanner /> : null}
 

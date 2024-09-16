@@ -15,6 +15,11 @@ export const APPLICATIONS_API_ROUTES = {
   DELETE: (companyId: string) => APPLICATIONS_API_BASE(companyId),
 };
 
+export const APPLICATION_QUEUE_API_ROUTES = {
+  UPDATE_QUEUE_STATUS: (companyId: string, applicationId: string) =>
+    `${APPLICATIONS_API_BASE(companyId)}/${applicationId}/queue/status`,
+};
+
 export const PERMITS_API_ROUTES = {
   BASE: (companyId: string) => PERMITS_API_BASE(companyId),
   GET: (companyId: string) => PERMITS_API_BASE(companyId),
