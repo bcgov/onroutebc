@@ -17,15 +17,17 @@ on:
         type: string
         default: "prod"
 jobs:
-  # https://github.com/bcgov-nr/action-deployer-openshift
-  docker_login:
-    name: Log in to the Container registry
-    uses: docker/login-action@v3
-    with:
-      registry: ghcr.io
-      username: ${{ github.actor }}
-      password: {{ secrets.oc_token }}
-    
+  login_and_checkout:
+    name: Login and checkout repo
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.oc_token }}
+      - uses: actions/checkout@v4
   audit_packages:
     name: Audit
     runs-on: ubuntu-22.04
@@ -34,6 +36,11 @@ jobs:
         package: [dops, vehicles, frontend, scheduler, policy]
     timeout-minutes: 10
     steps:
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.oc_token }}
       - uses: actions/checkout@v4
       - name: Audit the installed application for package sha vs deployed sha
         run: |
