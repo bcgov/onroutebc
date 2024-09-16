@@ -24,7 +24,6 @@ export const useCheckOutdatedCart = (
     // Reset old cart items whenever radio button filter is changed
     setOldCartItems([]); 
   }, [
-    //showAllApplications
     cartFilterChanged
   ]);
 
@@ -40,7 +39,7 @@ export const useCheckOutdatedCart = (
 
   const outdatedApplicationNumbers = getOutdatedCartItems(
     oldCartItems,
-    getDefaultRequiredVal([], fetchedCartItems),//cartItems),
+    getDefaultRequiredVal([], fetchedCartItems),
   ).map(cartItem => cartItem.applicationNumber);
 
   return {
