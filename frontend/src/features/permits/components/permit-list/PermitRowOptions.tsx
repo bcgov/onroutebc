@@ -33,9 +33,11 @@ const getOptions = (isExpired: boolean) => {
 export const PermitRowOptions = ({
   isExpired,
   permitId,
+  onDocumentUnavailable,
 }: {
   isExpired: boolean;
   permitId: string;
+  onDocumentUnavailable: () => void;
 }) => {
   /**
    * Action handler upon a select event.
@@ -43,7 +45,7 @@ export const PermitRowOptions = ({
    */
   const onSelectOptionCallback = (selectedOption: string) => {
     if (selectedOption === PERMIT_ACTION_OPTION_TYPES.VIEW_RECEIPT) {
-      viewReceiptPdf(permitId);
+      viewReceiptPdf(permitId, () => onDocumentUnavailable());
     }
   };
 

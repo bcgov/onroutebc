@@ -23,7 +23,8 @@ import { durationOptionsForPermitType } from "../../helpers/dateSelection";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import { PAST_START_DATE_STATUSES } from "../../../../common/components/form/subFormComponents/CustomDatePicker";
 import { useFetchLOAs } from "../../../settings/hooks/LOA";
-import { getStartOfDate, now, toLocalDayjs } from "../../../../common/helpers/formatDate";
+import { toLocalDayjs } from "../../../../common/helpers/formatDate";
+import { useFetchSpecialAuthorizations } from "../../../settings/hooks/specialAuthorizations";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -35,16 +36,13 @@ import {
   ERROR_ROUTES,
 } from "../../../../routes/constants";
 
+const FEATURE = "application";
+
 /**
- * The first step in creating and submitting an Application.
- * @returns A form for users to create an Application
+ * The first step in creating or saving an Application.
+ * @returns A form component for users to save an Application
  */
 export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
-  // The name of this feature that is used for id's, keys, and associating form components
-  const FEATURE = "application";
-
-  const startOfToday = getStartOfDate(now());
-
   // Context to hold all of the application data related to the application
   const applicationContext = useContext(ApplicationContext);
 
@@ -56,44 +54,43 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     idirUserDetails,
   } = useContext(OnRouteBCContext);
 
-  const isStaffUser = Boolean(idirUserDetails?.userAuthGroup);
+  const isStaffUser = Boolean(idirUserDetails?.userRole);
   const companyInfoQuery = useCompanyInfoQuery();
   const companyInfo = companyInfoQuery.data;
 
   // Company id should be set by context, otherwise default to companyId in session and then the fetched companyId
   const companyId = getDefaultRequiredVal(
     "",
-    applyWhenNotNullable(
-      id => `${id}`,
-      companyIdFromContext,
-    ),
+    applyWhenNotNullable((id) => `${id}`, companyIdFromContext),
     getCompanyIdFromSession(),
-    applyWhenNotNullable(
-      id => `${id}`,
-      companyInfo?.companyId,
-    ),
+    applyWhenNotNullable((id) => `${id}`, companyInfo?.companyId),
   );
 
   const { data: activeLOAs } = useFetchLOAs(companyId, false);
-  const applicableLOAs = getDefaultRequiredVal([], activeLOAs).filter(
-    loa => loa.loaPermitType.includes(permitType)
-      && (!loa.expiryDate || !startOfToday.isAfter(toLocalDayjs(loa.expiryDate)))
-  );
+  
+  const { data: specialAuthorizations } = useFetchSpecialAuthorizations(companyId);
+  const isLcvDesignated = Boolean(specialAuthorizations?.isLcvAllowed);
   
   // Use a custom hook that performs the following whenever page is rendered (or when application context is updated/changed):
   // 1. Get all data needed to generate default values for the application form (from application context, company, user details)
   // 2. Generate those default values and register them to the form
   // 3. Listens for changes to application context (which happens when application is fetched/submitted/updated)
-  // 4. Updates form default values when application context data values change
+  // 4. Updates form values (override existing ones) whenever the application context data changes
   const {
-    defaultApplicationDataValues: applicationDefaultValues,
+    initialFormData,
+    currentFormData,
     formMethods,
   } = useDefaultApplicationFormData(
     permitType,
+    isLcvDesignated,
     companyInfo,
     applicationContext?.applicationData,
-    companyId,
     userDetails,
+  );
+
+  const applicableLOAs = getDefaultRequiredVal([], activeLOAs).filter(
+    loa => loa.loaPermitType.includes(permitType)
+      && (!loa.expiryDate || !currentFormData.permitData.startDate.isAfter(toLocalDayjs(loa.expiryDate)))
   );
 
   const createdDateTime = applyWhenNotNullable(
@@ -122,13 +119,12 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
   const [showLeaveApplicationDialog, setShowLeaveApplicationDialog] =
     useState<boolean>(false);
 
-  const { handleSubmit, getValues, watch } = formMethods;
-  const vehicleFormData = watch("permitData.vehicleDetails");
+  const { handleSubmit } = formMethods;
 
   const navigate = useNavigate();
 
-  // Helper method to return form field values as an Application object
-  const applicationFormData = (data: FieldValues) => {
+  // Helper method to format form values to Application objects before saving them
+  const formattedFormData = (data: FieldValues) => {
     return {
       ...data,
       applicationNumber: applicationContext.applicationData?.applicationNumber,
@@ -149,20 +145,19 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
 
   // Check to see if all application values were already saved
   const isApplicationSaved = () => {
-    const currentFormData = applicationFormData(getValues());
-    const savedData = applicationContext.applicationData;
-    if (!savedData) return false;
+    const currentFormattedFormData = formattedFormData(currentFormData);
+    const savedData = formattedFormData(initialFormData);
 
     // Check if all current form field values match field values already saved in application context
     return areApplicationDataEqual(
-      currentFormData.permitData,
+      currentFormattedFormData.permitData,
       savedData.permitData,
     );
   };
 
   // When "Continue" button is clicked
   const onContinue = async (data: FieldValues) => {
-    const applicationToBeSaved = applicationFormData(data);
+    const applicationToBeSaved = formattedFormData(data);
     const vehicleData = applicationToBeSaved.permitData.vehicleDetails;
     const savedVehicleDetails = await handleSaveVehicle(vehicleData);
 
@@ -204,14 +199,13 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
       return onSaveFailure();
     }
 
-    const formValues = getValues();
-    const applicationToBeSaved = applicationFormData(
+    const applicationToBeSaved = formattedFormData(
       !savedVehicleInventoryDetails
-        ? formValues
+        ? currentFormData
         : {
-            ...formValues,
+            ...currentFormData,
             permitData: {
-              ...formValues.permitData,
+              ...currentFormData.permitData,
               vehicleDetails: {
                 ...savedVehicleInventoryDetails,
                 saveVehicle: true,
@@ -265,23 +259,22 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
           onSave={onSave}
           onContinue={handleSubmit(onContinue)}
           isAmendAction={false}
-          permitType={applicationDefaultValues.permitType}
-          applicationNumber={applicationDefaultValues.applicationNumber}
-          permitNumber={applicationDefaultValues.permitNumber}
+          permitNumber={currentFormData.permitNumber}
           createdDateTime={createdDateTime}
           updatedDateTime={updatedDateTime}
-          permitStartDate={applicationDefaultValues.permitData.startDate}
-          permitDuration={applicationDefaultValues.permitData.permitDuration}
-          permitCommodities={applicationDefaultValues.permitData.commodities}
-          vehicleDetails={vehicleFormData}
           vehicleOptions={vehicleOptions}
           powerUnitSubTypes={powerUnitSubTypes}
           trailerSubTypes={trailerSubTypes}
           companyInfo={companyInfo}
           durationOptions={durationOptionsForPermitType(permitType)}
           doingBusinessAs={doingBusinessAs}
-          pastStartDateStatus={isStaffUser ? PAST_START_DATE_STATUSES.WARNING : PAST_START_DATE_STATUSES.FAIL}
+          pastStartDateStatus={
+            isStaffUser
+              ? PAST_START_DATE_STATUSES.WARNING
+              : PAST_START_DATE_STATUSES.FAIL
+          }
           selectableLOAs={applicableLOAs}
+          isLcvDesignated={isLcvDesignated}
         />
       </FormProvider>
 

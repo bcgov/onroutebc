@@ -14,7 +14,7 @@ export const redCompanyAdminCompanyUserEntityMock: CompanyUser = {
   statusCode: constants.RED_COMPANY_ADMIN_USER_STATUS,
   company: { ...redCompanyEntityMock },
   user: { ...redCompanyAdminUserEntityMock },
-  userAuthGroup: constants.RED_COMPANY_ADMIN_USER_AUTH_GROUP,
+  userRole: constants.RED_COMPANY_ADMIN_ROLE_GROUP,
   ...baseEntityMock,
 };
 
@@ -23,7 +23,7 @@ export const redCompanyCvClientCompanyUserEntityMock: CompanyUser = {
   statusCode: constants.RED_COMPANY_CVCLIENT_USER_STATUS,
   company: { ...redCompanyEntityMock },
   user: { ...redCompanyCvClientUserEntityMock },
-  userAuthGroup: constants.RED_COMPANY_CVCLIENT_USER_AUTH_GROUP,
+  userRole: constants.RED_COMPANY_CVCLIENT_ROLE_GROUP,
   ...baseEntityMock,
 };
 
@@ -32,7 +32,7 @@ export const blueCompanyAdminCompanyUserEntityMock: CompanyUser = {
   statusCode: constants.BLUE_COMPANY_ADMIN_USER_STATUS,
   company: { ...blueCompanyEntityMock },
   user: { ...blueCompanyAdminUserEntityMock },
-  userAuthGroup: constants.BLUE_COMPANY_ADMIN_USER_AUTH_GROUP,
+  userRole: constants.BLUE_COMPANY_ADMIN_USER_ROLE,
   ...baseEntityMock,
 };
 
@@ -41,6 +41,6 @@ export const blueCompanyCvClientCompanyUserEntityMock: CompanyUser = {
   statusCode: constants.BLUE_COMPANY_CVCLIENT_USER_STATUS,
   company: { ...blueCompanyEntityMock },
   user: { ...blueCompanyCvClientUserEntityMock },
-  userAuthGroup: constants.BLUE_COMPANY_ADMIN_USER_AUTH_GROUP,
+  userRole: constants.BLUE_COMPANY_ADMIN_USER_ROLE,
   ...baseEntityMock,
 };

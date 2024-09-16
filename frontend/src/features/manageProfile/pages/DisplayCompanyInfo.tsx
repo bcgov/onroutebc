@@ -5,8 +5,8 @@ import { memo } from "react";
 
 import "./DisplayCompanyInfo.scss";
 import { getUserEmailFromSession } from "../../../common/apiManager/httpRequestHandler";
-import { ROLES } from "../../../common/authentication/types";
-import { DoesUserHaveRoleWithContext } from "../../../common/authentication/util";
+import { CLAIMS } from "../../../common/authentication/types";
+import { DoesUserHaveClaimWithContext } from "../../../common/authentication/util";
 import { formatPhoneNumber } from "../../../common/components/form/subFormComponents/PhoneNumberInput";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { CompanyProfile } from "../types/manageProfile";
@@ -88,7 +88,7 @@ export const DisplayInfo = memo(
           </Typography>
           <Typography>{companyInfo?.primaryContact.city}</Typography>
         </Box>
-        {DoesUserHaveRoleWithContext(ROLES.WRITE_ORG) && (
+        {DoesUserHaveClaimWithContext(CLAIMS.WRITE_ORG) && (
           <div className="display-company-info__edit">
             <Button
               variant="contained"

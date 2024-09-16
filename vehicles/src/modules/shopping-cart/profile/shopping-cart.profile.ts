@@ -8,7 +8,7 @@ import {
 import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
 
-import { UserAuthGroup } from '../../../common/enum/user-auth-group.enum';
+import { UserRole } from '../../../common/enum/user-role.enum';
 import { getApplicantDisplay } from '../../../common/helper/permit-application.helper';
 import { Permit as Application } from '../../permit-application-payment/permit/entities/permit.entity';
 import { ReadShoppingCartDto } from '../dto/response/read-shopping-cart.dto';
@@ -37,10 +37,10 @@ export class ShoppingCartProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.applicant,
-          mapWithArguments((s, { currentUserAuthGroup }) => {
+          mapWithArguments((s, { currentUserRole }) => {
             return getApplicantDisplay(
               s.applicationOwner,
-              currentUserAuthGroup as UserAuthGroup,
+              currentUserRole as UserRole,
             );
           }),
         ),
@@ -49,12 +49,12 @@ export class ShoppingCartProfile extends AutomapperProfile {
           mapFrom((s) => s?.applicationOwner?.userGUID),
         ),
         forMember(
-          (d) => d.fee,
+          (d) => d.duration,
           mapFrom((s) => {
             const parsedPermitData = JSON.parse(
               s?.permitData?.permitData,
             ) as PermitData;
-            return +parsedPermitData?.feeSummary;
+            return +parsedPermitData?.permitDuration;
           }),
         ),
         forMember(

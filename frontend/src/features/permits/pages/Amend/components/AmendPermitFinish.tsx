@@ -18,6 +18,7 @@ import { DEFAULT_PERMIT_TYPE } from "../../../types/PermitType";
 export const AmendPermitFinish = () => {
   const navigate = useNavigate();
   const { companyId } = useParams();
+
   const {
     permit,
     amendmentApplication,

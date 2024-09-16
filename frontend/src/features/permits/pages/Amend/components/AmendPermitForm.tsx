@@ -21,6 +21,7 @@ import { AmendPermitFormData } from "../types/AmendPermitFormData";
 import { getDatetimes } from "./helpers/getDatetimes";
 import { PAST_START_DATE_STATUSES } from "../../../../../common/components/form/subFormComponents/CustomDatePicker";
 import { useFetchLOAs } from "../../../../settings/hooks/LOA";
+import { useFetchSpecialAuthorizations } from "../../../../settings/hooks/specialAuthorizations";
 import {
   dayjsToUtcStr,
   nowUtc,
@@ -35,6 +36,8 @@ import {
   durationOptionsForPermitType,
   minDurationForPermitType,
 } from "../../../helpers/dateSelection";
+
+const FEATURE = "amend-permit";
 
 export const AmendPermitForm = () => {
   const {
@@ -55,8 +58,12 @@ export const AmendPermitForm = () => {
   const { data: companyInfo } = useCompanyInfoDetailsQuery(companyId);
   const doingBusinessAs = companyInfo?.alternateName;
 
+  const { data: specialAuthorizations } = useFetchSpecialAuthorizations(companyId);
+  const isLcvDesignated = Boolean(specialAuthorizations?.isLcvAllowed);
+
   const { formData, formMethods } = useAmendPermitForm(
     currentStepIndex === 0,
+    isLcvDesignated,
     companyInfo,
     permit,
     amendmentApplication,
@@ -66,9 +73,6 @@ export const AmendPermitForm = () => {
     amendmentApplication,
     permit,
   );
-
-  // The name of this feature that is used for ids, keys, and associating form components
-  const FEATURE = "amend-permit";
 
   const { data: activeLOAs } = useFetchLOAs(companyId, false);
   const applicableLOAs = getDefaultRequiredVal([], activeLOAs)
@@ -85,8 +89,7 @@ export const AmendPermitForm = () => {
     trailerSubTypes,
   } = usePermitVehicleManagement(companyId);
 
-  const { handleSubmit, getValues, watch } = formMethods;
-  const vehicleFormData = watch("permitData.vehicleDetails");
+  const { handleSubmit } = formMethods;
 
   // Helper method to return form field values as an Permit object
   const transformPermitFormData = (data: FieldValues) => {
@@ -142,14 +145,13 @@ export const AmendPermitForm = () => {
       return onSaveFailure();
     }
 
-    const formValues = getValues();
     const permitToBeAmended = transformPermitFormData(
       !savedVehicleInventoryDetails
-        ? formValues
+        ? formData
         : {
-            ...formValues,
+            ...formData,
             permitData: {
-              ...formValues.permitData,
+              ...formData.permitData,
               vehicleDetails: {
                 ...savedVehicleInventoryDetails,
                 saveVehicle: true,
@@ -211,15 +213,9 @@ export const AmendPermitForm = () => {
           onCancel={goHome}
           onContinue={handleSubmit(onContinue)}
           isAmendAction={true}
-          permitType={formData.permitType}
-          applicationNumber={formData.applicationNumber}
           permitNumber={permit?.permitNumber}
           createdDateTime={createdDateTime}
           updatedDateTime={updatedDateTime}
-          permitStartDate={formData.permitData.startDate}
-          permitDuration={formData.permitData.permitDuration}
-          permitCommodities={formData.permitData.commodities}
-          vehicleDetails={vehicleFormData}
           vehicleOptions={vehicleOptions}
           powerUnitSubTypes={powerUnitSubTypes}
           trailerSubTypes={trailerSubTypes}
@@ -228,6 +224,7 @@ export const AmendPermitForm = () => {
           doingBusinessAs={doingBusinessAs}
           pastStartDateStatus={PAST_START_DATE_STATUSES.WARNING}
           selectableLOAs={applicableLOAs}
+          isLcvDesignated={isLcvDesignated}
         >
           <AmendRevisionHistory revisionHistory={revisionHistory} />
           <AmendReason feature={FEATURE} />

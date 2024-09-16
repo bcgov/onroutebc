@@ -19,5 +19,6 @@ TEST_22_2_RESULT=$(/opt/mssql-tools/bin/sqlcmd -U ${USER} -P "${PASS}" -S ${SERV
 if [[ $TEST_22_2_RESULT -eq 22 ]]; then
     echo "Test 22.2 passed: Correct number of role mappings inserted"
 else
-    echo "******** Test 22.2 failed: Incorrect number of role mappings inserted"
+    echo "******** Test 22.2 failed: Incorrect number of role mappings inserted: "
+    echo $TEST_22_2_RESULT
 fi

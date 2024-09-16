@@ -12,10 +12,10 @@ import { ReadPermitDto } from '../dto/response/read-permit.dto';
 import { PPC_FULL_TEXT } from '../../../../common/constants/api.constant';
 import { Directory } from '../../../../common/enum/directory.enum';
 import {
-  UserAuthGroup,
-  IDIR_USER_AUTH_GROUP_LIST,
-} from '../../../../common/enum/user-auth-group.enum';
-import { doesUserHaveAuthGroup } from '../../../../common/helper/auth.helper';
+  UserRole,
+  IDIR_USER_ROLE_LIST,
+} from '../../../../common/enum/user-role.enum';
+import { doesUserHaveRole } from '../../../../common/helper/auth.helper';
 import { ReadPermitMetadataDto } from '../dto/response/read-permit-metadata.dto';
 
 @Injectable()
@@ -44,12 +44,12 @@ export class PermitProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.issuer,
-          mapWithArguments((s, { currentUserAuthGroup }) => {
+          mapWithArguments((s, { currentUserRole }) => {
             if (s.issuer?.directory === Directory.IDIR) {
               if (
-                doesUserHaveAuthGroup(
-                  currentUserAuthGroup as UserAuthGroup,
-                  IDIR_USER_AUTH_GROUP_LIST,
+                doesUserHaveRole(
+                  currentUserRole as UserRole,
+                  IDIR_USER_ROLE_LIST,
                 )
               ) {
                 return s.issuer?.userName;
@@ -107,12 +107,12 @@ export class PermitProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.applicant,
-          mapWithArguments((s, { currentUserAuthGroup }) => {
+          mapWithArguments((s, { currentUserRole }) => {
             if (s.applicationOwner?.directory === Directory.IDIR) {
               if (
-                doesUserHaveAuthGroup(
-                  currentUserAuthGroup as UserAuthGroup,
-                  IDIR_USER_AUTH_GROUP_LIST,
+                doesUserHaveRole(
+                  currentUserRole as UserRole,
+                  IDIR_USER_ROLE_LIST,
                 )
               ) {
                 return s.applicationOwner?.userName;
@@ -129,12 +129,12 @@ export class PermitProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.issuer,
-          mapWithArguments((s, { currentUserAuthGroup }) => {
+          mapWithArguments((s, { currentUserRole }) => {
             if (s.issuer?.directory === Directory.IDIR) {
               if (
-                doesUserHaveAuthGroup(
-                  currentUserAuthGroup as UserAuthGroup,
-                  IDIR_USER_AUTH_GROUP_LIST,
+                doesUserHaveRole(
+                  currentUserRole as UserRole,
+                  IDIR_USER_ROLE_LIST,
                 )
               ) {
                 return s.issuer?.userName;

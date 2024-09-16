@@ -1,8 +1,14 @@
 import { Permit, PermitsActionResponse } from "../types/permit";
 import { Nullable, Optional } from "../../../common/types/common";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
-import { PERMIT_APPLICATION_ORIGINS, PermitApplicationOrigin } from "../types/PermitApplicationOrigin";
-import { IDIR_USER_AUTH_GROUP, UserAuthGroupType } from "../../../common/authentication/types";
+import {
+  PERMIT_APPLICATION_ORIGINS,
+  PermitApplicationOrigin,
+} from "../types/PermitApplicationOrigin";
+import {
+  IDIR_USER_ROLE,
+  UserRoleType,
+} from "../../../common/authentication/types";
 import {
   VehicleSubType,
   Vehicle,
@@ -124,17 +130,19 @@ export const removeEmptyIdsFromPermitsActionResponse = (
 /**
  * Determine whether or not a given user can access/delete an application.
  * @param permitApplicationOrigin Permit application origin
- * @param authGroup Auth group of the logged in user
+ * @param role Role of the logged in user
  * @returns Whether or not the user can access/delete the application.
  */
 export const canUserAccessApplication = (
   permitApplicationOrigin?: Nullable<PermitApplicationOrigin>,
-  authGroup?: Nullable<UserAuthGroupType>,
+  role?: Nullable<UserRoleType>,
 ) => {
-  if (!authGroup) return false;
+  if (!role) return false;
 
   // CV/PA can only access/delete applications whose origins are not "PPC"
   // Staff can access/delete any application they have access to (including each others')
-  return permitApplicationOrigin !== PERMIT_APPLICATION_ORIGINS.PPC
-    || (Object.values(IDIR_USER_AUTH_GROUP) as UserAuthGroupType[]).includes(authGroup);
+  return (
+    permitApplicationOrigin !== PERMIT_APPLICATION_ORIGINS.PPC ||
+    (Object.values(IDIR_USER_ROLE) as UserRoleType[]).includes(role)
+  );
 };

@@ -6,7 +6,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from '../../common/guard/auth.guard';
 import { UsersModule } from '../company-user-management/users/users.module';
 import { PendingUsersModule } from '../company-user-management/pending-users/pending-users.module';
-import { RolesGuard } from '../../common/guard/roles.guard';
+import { PermissionsGuard } from '../../common/guard/permissions.guard';
 import { JwtServiceAccountStrategy } from './jwt-service-account.strategy';
 
 @Module({
@@ -25,7 +25,7 @@ import { JwtServiceAccountStrategy } from './jwt-service-account.strategy';
     },
     {
       provide: APP_GUARD,
-      useClass: RolesGuard,
+      useClass: PermissionsGuard,
     },
   ],
   exports: [AuthService],

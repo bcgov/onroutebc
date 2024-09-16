@@ -8,7 +8,7 @@ import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router-dom";
 
 import { Nullable } from "../../../common/types/common";
-import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
+import OnRouteBCContext, { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBCContext";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { ERROR_ROUTES } from "../../../routes/constants";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
@@ -58,7 +58,7 @@ export const CompanyAndUserInfoSteps = ({
         const companyId = responseBody["companyId"];
         const companyName = responseBody["legalName"];
         const clientNumber = responseBody["clientNumber"];
-        const userDetails = {
+        const userDetails:BCeIDUserDetailContext = {
           firstName: responseBody.adminUser?.firstName,
           lastName: responseBody.adminUser?.lastName,
           userName: responseBody.adminUser?.userName,
@@ -68,7 +68,7 @@ export const CompanyAndUserInfoSteps = ({
           phone2Extension: responseBody.adminUser?.phone2Extension,
           email: responseBody.adminUser?.email,
           fax: responseBody.adminUser?.fax,
-          userAuthGroup: responseBody.adminUser?.userAuthGroup,
+          userRole: responseBody.adminUser?.userRole,
         };
         setUserDetails?.(() => userDetails);
         setCompanyId?.(() => companyId);
