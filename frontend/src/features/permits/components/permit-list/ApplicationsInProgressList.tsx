@@ -42,11 +42,7 @@ const getColumns = (
   return ApplicationInProgressColumnDefinition(userRole);
 };
 
-export const ApplicationsInProgressList = ({
-  onCountChange,
-}: {
-  onCountChange: (count: number) => void;
-}) => {
+export const ApplicationsInProgressList = () => {
   const {
     applicationsInProgressQuery,
     pagination,
@@ -82,7 +78,6 @@ export const ApplicationsInProgressList = ({
       applicationsInProgress?.meta?.totalItems,
     );
     setShowAIPTable(totalCount > 0);
-    onCountChange(totalCount);
   }, [applicationsInProgress?.meta?.totalItems]);
 
   const { idirUserDetails, userDetails } = useContext(OnRouteBCContext);
