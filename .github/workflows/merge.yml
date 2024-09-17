@@ -27,7 +27,7 @@ jobs:
         name: PR Number
         id: pr
         uses: bcgov-nr/action-get-pr@v0.0.1
-      - if: !${{ github.event_name == push }}
+      - if: ${{ github.event_name != push }}
         name: PR Number
         id: pr
         run: echo ${{inputs.pr}} >> $GITHUB_OUTPUT
