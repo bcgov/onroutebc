@@ -1,9 +1,4 @@
-import {
-  // TODO remove this if we no longer need tab counters
-  // Chip,
-  Tab,
-  Tabs,
-} from "@mui/material";
+import { Tab, Tabs } from "@mui/material";
 
 import "./TabsList.scss";
 import { TabComponentProps } from "./types/TabComponentProps";
