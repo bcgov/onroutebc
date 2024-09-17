@@ -8,7 +8,7 @@ on:
         required: false
         type: string
         default: "prod"
-  workflow_run:
+  workflow_call:
     inputs:
       tag:
         description: "Image tag to deploy"

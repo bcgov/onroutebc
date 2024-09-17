@@ -9,7 +9,7 @@ on:
         required: false
         type: string
         default: "test"
-  workflow_run:
+  workflow_call:
     inputs:
       tag:
         description: "Image tag to deploy"
