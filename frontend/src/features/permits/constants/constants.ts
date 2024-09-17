@@ -1,5 +1,8 @@
+import { Policy } from "onroute-policy-engine";
+
 import { VEHICLE_TYPES } from "../../manageVehicles/types/Vehicle";
 import { EMPTY_PERMIT_TYPE_SELECT, PERMIT_TYPES, getPermitTypeName } from "../types/PermitType";
+import { completeConfig } from "./policyConfig/completeConfig";
 
 export const VEHICLE_CHOOSE_FROM = {
   UNIT_NUMBER: "unitNumber",
@@ -51,3 +54,5 @@ export const LCV_CONDITION = {
   checked: true,
   disabled: true,
 };
+
+export const POLICY = new Policy(completeConfig);

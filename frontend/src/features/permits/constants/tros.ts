@@ -1,11 +1,16 @@
+import { PolicyDefinition } from "onroute-policy-engine/dist/types/policy-definition";
+
 import { tros } from "./tros.json";
 import { PermitCondition } from "../types/PermitCondition";
 import {
   BASE_DAYS_IN_YEAR,
   COMMON_DURATION_OPTIONS,
   COMMON_MIN_DURATION,
+  POLICY,
   TERM_DURATION_INTERVAL_DAYS,
 } from "./constants";
+
+export const trosDefinition: PolicyDefinition = POLICY.getPermitTypeDefinition("TROS");
 
 export const TROS_INELIGIBLE_POWERUNITS = [...tros.ineligiblePowerUnitSubtypes];
 export const TROS_INELIGIBLE_TRAILERS = [...tros.ineligibleTrailerSubtypes];
