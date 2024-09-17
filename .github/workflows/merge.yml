@@ -9,7 +9,7 @@ on:
       - 'common/graphics/**'
       - '!.github/workflows/deploy.yml'
       - '!.github/workflows/merge.yml'
-  workflow_dispatch:
+  workflow_call:
 
 concurrency:
   group: ${{ github.workflow }}
