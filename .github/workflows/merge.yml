@@ -23,9 +23,14 @@ jobs:
     timeout-minutes: 1
     steps:
       # Get PR number for squash merges to main
-      - name: PR Number
+      - if: ${{ github.event_name == push }}
+        name: PR Number
         id: pr
         uses: bcgov-nr/action-get-pr@v0.0.1
+      - if: !${{ github.event_name == push }}
+        name: PR Number
+        id: pr
+        run: echo ${{inputs.pr}} >> $GITHUB_OUTPUT
 
   deploys-test:
     name: Deploys (Test)
@@ -33,7 +38,7 @@ jobs:
     uses: ./.github/workflows/uat.yml
     secrets: inherit
     with:
-      tag: ${{ needs.vars.outputs.release-name }}
+      tag: ${{ needs.vars.outputs.pr }}
 
   promote-images-test:
     name: Promote Images - Test
