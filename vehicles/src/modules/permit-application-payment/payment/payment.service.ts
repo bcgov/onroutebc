@@ -805,7 +805,7 @@ export class PaymentService {
       .innerJoinAndSelect('specialAuth.company', 'company')
       .where('company.companyId = :companyId', { companyId: companyId })
       .getOne();
-    return specialAuth ? (specialAuth.noFeeType ? true : false) : false;
+    return !!specialAuth && !!specialAuth.noFeeType;
   }
 
   @LogAsyncMethodExecution()

@@ -52,6 +52,7 @@ import {
 } from "../types/application";
 
 import {
+  APPLICATION_QUEUE_API_ROUTES,
   APPLICATIONS_API_ROUTES,
   PAYMENT_API_ROUTES,
   PERMITS_API_ROUTES,
@@ -63,6 +64,7 @@ import {
   VoidPermitResponseData,
 } from "../pages/Void/types/VoidPermit";
 import { EmailNotificationType } from "../types/EmailNotificationType";
+import { CaseActivityType } from "../types/CaseActivityType";
 
 /**
  * Create a new application.
@@ -116,6 +118,7 @@ const getApplications = async (
     orderBy = [],
   }: PaginationAndFilters,
   pendingPermitsOnly?: boolean,
+  applicationsInQueueOnly?: boolean,
 ): Promise<PaginatedResponse<ApplicationListItem>> => {
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   const applicationsURL = new URL(APPLICATIONS_API_ROUTES.GET(companyId));
@@ -123,10 +126,20 @@ const getApplications = async (
   // API pagination index starts at 1. Hence page + 1.
   applicationsURL.searchParams.set("page", `${page + 1}`);
   applicationsURL.searchParams.set("take", `${take}`);
-  applicationsURL.searchParams.set(
-    "pendingPermits",
-    `${Boolean(pendingPermitsOnly)}`,
-  );
+
+  if (typeof pendingPermitsOnly !== "undefined") {
+    applicationsURL.searchParams.set(
+      "pendingPermits",
+      `${Boolean(pendingPermitsOnly)}`,
+    );
+  }
+
+  if (typeof applicationsInQueueOnly !== "undefined") {
+    applicationsURL.searchParams.set(
+      "applicationsInQueue",
+      `${Boolean(applicationsInQueueOnly)}`,
+    );
+  }
 
   if (searchString) {
     applicationsURL.searchParams.set("searchString", searchString);
@@ -190,6 +203,16 @@ export const getPendingPermits = async (
   paginationFilters: PaginationAndFilters,
 ): Promise<PaginatedResponse<ApplicationListItem>> => {
   return await getApplications(paginationFilters, true);
+};
+
+/**
+ * Fetch all applications in queue.
+ * @return A list of applications in queue (PENDING_REVIEW, IN_REVIEW)
+ */
+export const getApplicationsInQueue = async (
+  paginationFilters: PaginationAndFilters,
+): Promise<PaginatedResponse<ApplicationListItem>> => {
+  return await getApplications(paginationFilters, undefined, true);
 };
 
 /**
@@ -614,4 +637,27 @@ export const resendPermit = async ({
     `${PERMITS_API_ROUTES.RESEND(permitId)}`,
     replaceEmptyValuesWithNull(data),
   );
+};
+
+export const updateApplicationQueueStatus = async (
+  applicationId: string,
+  caseActivityType: CaseActivityType,
+  comment?: string,
+) => {
+  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
+
+  const data: any = {
+    caseActivityType,
+  };
+
+  // Conditionally include the comment property if it is given as an argument and not an empty string
+  if (comment && comment.trim() !== "") {
+    data.comment = [comment];
+  }
+
+  const response = await httpPOSTRequest(
+    APPLICATION_QUEUE_API_ROUTES.UPDATE_QUEUE_STATUS(companyId, applicationId),
+    data,
+  );
+  return response;
 };
