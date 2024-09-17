@@ -30,12 +30,12 @@ jobs:
     timeout-minutes: 1
     steps:
       # Get PR number for squash merges to main
-      - if: ${{ github.event_name == push }}
-        name: PR Number
+      - name: PR Number
+        if: ${{ github.event_name == 'push' }}
         id: pr
         uses: bcgov-nr/action-get-pr@v0.0.1
-      - if: ${{ github.event_name != push }}
-        name: PR Number
+      - name: PR Number
+        if: ${{ github.event_name != 'push' }} 
         id: pr
         run: echo ${{inputs.pr}} >> $GITHUB_OUTPUT
 
