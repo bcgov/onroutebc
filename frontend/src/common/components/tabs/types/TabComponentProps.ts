@@ -2,6 +2,7 @@ import { Nullable } from "../../../types/common";
 
 export interface TabComponentProps {
   label: string;
-  count?: Nullable<number>;
+  // TODO remove this if we no longer need tab counters
+  // count?: Nullable<number>;
   component: JSX.Element;
 }

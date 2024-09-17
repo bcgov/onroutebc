@@ -26,13 +26,13 @@
         opacity: 1;
         padding: 0.875rem 0;
       }
-  
-      &__count {
-        font-size: 0.875rem;
-        color: $bc-black;
-        background-color: $bc-border-grey;
-        margin-left: 1rem;
-      }
+      // TODO remove this if we no longer need tab counters
+      // &__count {
+      //   font-size: 0.875rem;
+      //   color: $bc-black;
+      //   background-color: $bc-border-grey;
+      //   margin-left: 1rem;
+      // }
     }
 
     &.Mui-selected {
