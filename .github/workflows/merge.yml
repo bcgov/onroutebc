@@ -9,6 +9,13 @@ on:
       - 'common/graphics/**'
       - '!.github/workflows/deploy.yml'
       - '!.github/workflows/merge.yml'
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: "PR num of image to deploy"
+        required: false
+        type: string
+
 
 concurrency:
   group: ${{ github.workflow }}
