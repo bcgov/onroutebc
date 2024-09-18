@@ -20,7 +20,7 @@ export const SPECIAL_AUTH_API_ROUTES = {
   },
   LOA: {
     ALL: (companyId: number | string, expired: boolean) =>
-      `${SPECIAL_AUTH_API_BASE}/${companyId}/loas${expired ? "?expired=true" : ""}`,
+      `${SPECIAL_AUTH_API_BASE}/${companyId}/loas?expired=${expired}`,
     DETAIL: (companyId: number | string, loaId: string) =>
       `${SPECIAL_AUTH_API_BASE}/${companyId}/loas/${loaId}`,
     CREATE: (companyId: number | string) =>
