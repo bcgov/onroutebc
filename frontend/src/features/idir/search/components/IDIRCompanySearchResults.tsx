@@ -25,6 +25,7 @@ import { Box, CardMedia, Stack, Typography } from "@mui/material";
 import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
 import { useNavigate } from "react-router-dom";
 import { VerifiedClient } from "../../../../common/authentication/types";
+import { StatusChip } from "../../../settings/components/creditAccount/StatusChip";
 
 /*
  *
@@ -124,9 +125,6 @@ export const IDIRCompanySearchResults = memo(
       pageIndex: 0,
       pageSize: 10,
     });
-
-    // TODO: if data is [] AND current_user is PPC_ADMIN then (eventually)
-    //  display the UX to allow the creation of a new Company Profile
     const searchResultsQuery = useQuery({
       queryKey: [
         "search-entity",
@@ -161,13 +159,18 @@ export const IDIRCompanySearchResults = memo(
           header: "Company Name",
           enableSorting: true,
           sortingFn: "alphanumeric",
+          minSize: 220,
           Cell: (props: { row: any; cell: any }) => {
+            const isCompanySuspended = props.row.original.isSuspended;
             return (
-              <CustomActionLink
-                onClick={() => onClickCompany(props.row.original)}
-              >
-                {props.row.original.legalName}
-              </CustomActionLink>
+              <>
+                <CustomActionLink
+                  onClick={() => onClickCompany(props.row.original)}
+                >
+                  {props.row.original.legalName}
+                </CustomActionLink>
+                {isCompanySuspended && <StatusChip status="SUSPENDED" />}
+              </>
             );
           },
         },
@@ -210,6 +213,9 @@ export const IDIRCompanySearchResults = memo(
             children: "Error loading data",
           }
         : undefined,
+      muiTableBodyCellProps: {
+        className: "idir-company-search-results__cell",
+      },
     });
 
     return (

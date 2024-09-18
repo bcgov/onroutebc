@@ -3,7 +3,7 @@ import { factory, nullable, primaryKey } from "@mswjs/data";
 import { getDefaultUserDetails } from "./getUserDetails";
 import { getDefaultPowerUnits } from "./getVehicleInfo";
 import { getDefaultCompanyInfo } from "./getCompanyInfo";
-import { TROS_COMMODITIES } from "../../../../../constants/tros";
+import { TROS_CONDITIONS } from "../../../../../constants/tros";
 import { DEFAULT_PERMIT_TYPE, PERMIT_TYPES } from "../../../../../types/PermitType";
 import { getExpiryDate } from "../../../../../helpers/permitState";
 import { VEHICLE_TYPES } from "../../../../../../manageVehicles/types/Vehicle";
@@ -172,10 +172,10 @@ export const getDefaultApplication = () => {
     vehicleId: "1",
   };
 
-  const commodities = [
-    TROS_COMMODITIES[0],
-    TROS_COMMODITIES[1],
-    { ...TROS_COMMODITIES[2], checked: true },
+  const conditions = [
+    TROS_CONDITIONS[0],
+    TROS_CONDITIONS[1],
+    { ...TROS_CONDITIONS[2], checked: true },
   ];
 
   const { mailingAddress } = getDefaultCompanyInfo();
@@ -190,7 +190,7 @@ export const getDefaultApplication = () => {
       expiryDate,
       contactDetails,
       vehicleDetails,
-      commodities,
+      commodities: conditions,
       mailingAddress,
     },
   };

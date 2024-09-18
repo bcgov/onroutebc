@@ -44,7 +44,7 @@ export const redCompanyAdminUserEntityMock: User = {
   userGUID: constants.RED_COMPANY_ADMIN_USER_GUID,
   userName: constants.RED_COMPANY_ADMIN_USER_NAME,
   directory: constants.RED_COMPANY_ADMIN_USER_STATUS_DIRECOTRY,
-  userAuthGroup: constants.USER_AUTH_GROUP_PUBLIC,
+  userRole: constants.USER_ROLE_PUBLIC,
   userContact: { ...redCompanyAdminContactEntityMock },
   companyUsers: [{ ...redCompanyAdminCompanyUserEntityMock }],
   statusCode: constants.RED_COMPANY_ADMIN_USER_STATUS,
@@ -56,14 +56,14 @@ export const createRedCompanyAdminUserDtoMock: CreateUserDto = {
 };
 
 export const updateRedCompanyAdminUserDtoMock: UpdateUserDto = {
-  userAuthGroup: constants.RED_COMPANY_ADMIN_USER_AUTH_GROUP,
+  userRole: constants.RED_COMPANY_ADMIN_ROLE_GROUP,
   ...updateRedCompanyAdminContactDtoMock,
 };
 
 export const readRedCompanyAdminUserDtoMock: ReadUserDto = {
   userGUID: constants.RED_COMPANY_ADMIN_USER_GUID,
   userName: constants.RED_COMPANY_ADMIN_USER_NAME,
-  userAuthGroup: constants.RED_COMPANY_ADMIN_USER_AUTH_GROUP,
+  userRole: constants.RED_COMPANY_ADMIN_ROLE_GROUP,
   statusCode: constants.RED_COMPANY_ADMIN_USER_STATUS,
   createdDateTime: baseDtoMock.createdDateTime,
   updatedDateTime: baseDtoMock.updatedDateTime,
@@ -82,7 +82,7 @@ export const redCompanyCvClientUserEntityMock: User = {
   userGUID: constants.RED_COMPANY_CVCLIENT_USER_GUID,
   userName: constants.RED_COMPANY_CVCLIENT_USER_NAME,
   directory: constants.RED_COMPANY_CVCLIENT_USER_STATUS_DIRECOTRY,
-  userAuthGroup: constants.USER_AUTH_GROUP_PUBLIC,
+  userRole: constants.USER_ROLE_PUBLIC,
   userContact: { ...redCompanyCvClientContactEntityMock },
   companyUsers: [{ ...redCompanyCvClientCompanyUserEntityMock }],
   statusCode: constants.RED_COMPANY_CVCLIENT_USER_STATUS,
@@ -94,14 +94,14 @@ export const createRedCompanyCvClientUserDtoMock: CreateUserDto = {
 };
 
 export const updateRedCompanyCvClientUserDtoMock: UpdateUserDto = {
-  userAuthGroup: constants.RED_COMPANY_CVCLIENT_USER_AUTH_GROUP,
+  userRole: constants.RED_COMPANY_CVCLIENT_ROLE_GROUP,
   ...updateRedCompanyCvClientContactDtoMock,
 };
 
 export const readRedCompanyCvClientUserDtoMock: ReadUserDto = {
   userGUID: constants.RED_COMPANY_CVCLIENT_USER_GUID,
   userName: constants.RED_COMPANY_CVCLIENT_USER_NAME,
-  userAuthGroup: constants.RED_COMPANY_CVCLIENT_USER_AUTH_GROUP,
+  userRole: constants.RED_COMPANY_CVCLIENT_ROLE_GROUP,
   statusCode: constants.RED_COMPANY_CVCLIENT_USER_STATUS,
   createdDateTime: baseDtoMock.createdDateTime,
   updatedDateTime: baseDtoMock.updatedDateTime,
@@ -121,7 +121,7 @@ export const blueCompanyAdminUserEntityMock: User = {
   userGUID: constants.BLUE_COMPANY_ADMIN_USER_GUID,
   userName: constants.BLUE_COMPANY_ADMIN_USER_NAME,
   directory: constants.BLUE_COMPANY_ADMIN_USER_STATUS_DIRECOTRY,
-  userAuthGroup: constants.USER_AUTH_GROUP_PUBLIC,
+  userRole: constants.USER_ROLE_PUBLIC,
   userContact: { ...blueCompanyAdminContactEntityMock },
   companyUsers: [{ ...blueCompanyAdminCompanyUserEntityMock }],
   statusCode: constants.BLUE_COMPANY_ADMIN_USER_STATUS,
@@ -133,14 +133,14 @@ export const createBlueCompanyAdminUserDtoMock: CreateUserDto = {
 };
 
 export const updateBlueCompanyAdminUserDtoMock: UpdateUserDto = {
-  userAuthGroup: constants.BLUE_COMPANY_ADMIN_USER_AUTH_GROUP,
+  userRole: constants.BLUE_COMPANY_ADMIN_USER_ROLE,
   ...updateBlueCompanyAdminContactDtoMock,
 };
 
 export const readBlueCompanyAdminUserDtoMock: ReadUserDto = {
   userGUID: constants.BLUE_COMPANY_ADMIN_USER_GUID,
   userName: constants.BLUE_COMPANY_ADMIN_USER_NAME,
-  userAuthGroup: constants.BLUE_COMPANY_ADMIN_USER_AUTH_GROUP,
+  userRole: constants.BLUE_COMPANY_ADMIN_USER_ROLE,
   statusCode: constants.BLUE_COMPANY_ADMIN_USER_STATUS,
   createdDateTime: baseDtoMock.createdDateTime,
   updatedDateTime: baseDtoMock.updatedDateTime,
@@ -159,7 +159,7 @@ export const blueCompanyCvClientUserEntityMock: User = {
   userGUID: constants.BLUE_COMPANY_CVCLIENT_USER_GUID,
   userName: constants.BLUE_COMPANY_CVCLIENT_USER_NAME,
   directory: constants.BLUE_COMPANY_CVCLIENT_USER_STATUS_DIRECOTRY,
-  userAuthGroup: constants.USER_AUTH_GROUP_PUBLIC,
+  userRole: constants.USER_ROLE_PUBLIC,
   userContact: { ...blueCompanyCvClientContactEntityMock },
   companyUsers: [{ ...blueCompanyCvClientCompanyUserEntityMock }],
   statusCode: constants.BLUE_COMPANY_CVCLIENT_USER_STATUS,
@@ -171,14 +171,14 @@ export const createBlueCompanyCvClientUserDtoMock: CreateUserDto = {
 };
 
 export const updateBlueCompanyCvClientUserDtoMock: UpdateUserDto = {
-  userAuthGroup: constants.BLUE_COMPANY_CVCLIENT_USER_AUTH_GROUP,
+  userRole: constants.BLUE_COMPANY_CVCLIENT_USER_ROLE,
   ...updateBlueCompanyCvClientContactDtoMock,
 };
 
 export const readBlueCompanyCvClientUserDtoMock: ReadUserDto = {
   userGUID: constants.BLUE_COMPANY_CVCLIENT_USER_GUID,
   userName: constants.BLUE_COMPANY_CVCLIENT_USER_NAME,
-  userAuthGroup: constants.BLUE_COMPANY_CVCLIENT_USER_AUTH_GROUP,
+  userRole: constants.BLUE_COMPANY_CVCLIENT_USER_ROLE,
   statusCode: constants.BLUE_COMPANY_CVCLIENT_USER_STATUS,
   createdDateTime: baseDtoMock.createdDateTime,
   updatedDateTime: baseDtoMock.updatedDateTime,
@@ -197,7 +197,7 @@ export const sysAdminStaffUserEntityMock: User = {
   userGUID: constants.SYS_ADMIN_STAFF_USER_GUID,
   userName: constants.SYS_ADMIN_STAFF_USER_NAME,
   directory: constants.SYS_ADMIN_STAFF_USER_STATUS_DIRECOTRY,
-  userAuthGroup: constants.SYS_ADMIN_STAFF_USER_AUTH_GROUP,
+  userRole: constants.SYS_ADMIN_STAFF_USER_ROLE,
   userContact: { ...sysAdminStaffContactEntityMock },
   statusCode: UserStatus.ACTIVE,
   ...baseEntityMock,
@@ -210,7 +210,7 @@ export const createSysAdminStaffUserDtoMock: CreateUserDto = {
 export const readSysAdminStaffUserDtoMock: ReadUserDto = {
   userGUID: constants.SYS_ADMIN_STAFF_USER_GUID,
   userName: constants.SYS_ADMIN_STAFF_USER_NAME,
-  userAuthGroup: constants.SYS_ADMIN_STAFF_USER_AUTH_GROUP,
+  userRole: constants.SYS_ADMIN_STAFF_USER_ROLE,
   statusCode: constants.SYS_ADMIN_STAFF_USER_STATUS,
   createdDateTime: baseDtoMock.createdDateTime,
   updatedDateTime: baseDtoMock.updatedDateTime,

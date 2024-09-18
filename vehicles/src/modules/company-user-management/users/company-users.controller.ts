@@ -28,18 +28,18 @@ import { UsersService } from './users.service';
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { Request } from 'express';
-import { Roles } from '../../../common/decorator/roles.decorator';
-import { Role } from '../../../common/enum/roles.enum';
+import { Permissions } from '../../../common/decorator/permissions.decorator';
 import { UpdateUserDto } from './dto/request/update-user.dto';
 import { GetCompanyUserQueryParamsDto } from './dto/request/queryParam/getCompanyUser.query-params.dto';
 import { GetCompanyUserByUserGUIDPathParamsDto } from './dto/request/pathParam/getCompanyUserByUserGUID.path-params.dto';
 import { DeleteUsersDto } from './dto/request/delete-users.dto';
 import { DeleteDto } from '../../common/dto/response/delete.dto';
 import {
-  ClientUserAuthGroup,
-  IDIR_USER_AUTH_GROUP_LIST,
-} from '../../../common/enum/user-auth-group.enum';
-import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
+  ClientUserRole,
+  IDIR_USER_ROLE_LIST,
+  IDIRUserRole,
+} from '../../../common/enum/user-role.enum';
+import { doesUserHaveRole } from '../../../common/helper/auth.helper';
 
 @ApiTags('Company and User Management - Company User')
 @ApiBadRequestResponse({
@@ -78,7 +78,14 @@ export class CompanyUsersController {
     isArray: true,
   })
   @ApiParam({ name: 'companyId', required: true })
-  @Roles(Role.READ_SELF)
+  @Permissions({
+    allowedBCeIDRoles: [ClientUserRole.COMPANY_ADMINISTRATOR],
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.CTPO,
+    ],
+  })
   @Get()
   async findAllCompanyUsers(
     @Req() request: Request,
@@ -130,7 +137,14 @@ export class CompanyUsersController {
     description: 'The User Resource',
     type: ReadUserDto,
   })
-  @Roles(Role.READ_USER)
+  @Permissions({
+    allowedBCeIDRoles: [ClientUserRole.COMPANY_ADMINISTRATOR],
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.CTPO,
+    ],
+  })
   @Get(':userGUID')
   async get(
     @Param() params: GetCompanyUserByUserGUIDPathParamsDto,
@@ -156,7 +170,14 @@ export class CompanyUsersController {
     description: 'The User Resource',
     type: ReadUserDto,
   })
-  @Roles(Role.WRITE_SELF)
+  @Permissions({
+    allowedBCeIDRoles: [ClientUserRole.COMPANY_ADMINISTRATOR],
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.CTPO,
+    ],
+  })
   @Put(':userGUID')
   async update(
     @Req() request: Request,
@@ -179,7 +200,7 @@ export class CompanyUsersController {
 
   /**
    * Deletes one or more users associated with a specified company ID based on their GUIDs. This method requires
-   * the current user to have either COMPANY_ADMINISTRATOR role or be part of the idirUserAuthGroupList to proceed.
+   * the current user to have either COMPANY_ADMINISTRATOR role or be part of the idir users to proceed.
    * Throws ForbiddenException if the current user lacks the required role or group.
    *
    * @param companyId The unique identifier of the company.
@@ -187,7 +208,14 @@ export class CompanyUsersController {
    * @returns A {@link DeleteDto} object including counts of successfully deleted users. Throws DataNotFoundException
    * if no delete result is obtained.
    */
-  @Roles(Role.WRITE_USER)
+  @Permissions({
+    allowedBCeIDRoles: [ClientUserRole.COMPANY_ADMINISTRATOR],
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.CTPO,
+    ],
+  })
   @ApiOperation({
     summary: 'Delete users associated with a company',
     description:
@@ -208,12 +236,8 @@ export class CompanyUsersController {
   ): Promise<DeleteDto> {
     const currentUser = request.user as IUserJWT;
     if (
-      currentUser.orbcUserAuthGroup !==
-        ClientUserAuthGroup.COMPANY_ADMINISTRATOR &&
-      !doesUserHaveAuthGroup(
-        currentUser.orbcUserAuthGroup,
-        IDIR_USER_AUTH_GROUP_LIST,
-      )
+      currentUser.orbcUserRole !== ClientUserRole.COMPANY_ADMINISTRATOR &&
+      !doesUserHaveRole(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST)
     ) {
       throw new ForbiddenException();
     }

@@ -3,4 +3,5 @@ export enum ValidationResultCode {
   FieldValidationError = 'field-validation-error',
   ConfigurationInvalid = 'configuration-invalid',
   GeneralResult = 'general-result',
+  CostValue = 'cost-value',
 }

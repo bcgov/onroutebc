@@ -55,6 +55,14 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { CacheKey } from 'src/common/enum/cache-key.enum';
 import { getFromCache } from '../../../common/helper/cache.helper';
+import { doesUserHaveRole } from '../../../common/helper/auth.helper';
+import { IDIR_USER_ROLE_LIST } from '../../../common/enum/user-role.enum';
+import {
+  throwBadRequestException,
+  throwUnprocessableEntityException,
+} from '../../../common/helper/exception.helper';
+import { isFeatureEnabled } from '../../../common/helper/common.helper';
+import { SpecialAuth } from 'src/modules/special-auth/entities/special-auth.entity';
 
 @Injectable()
 export class PaymentService {
@@ -69,8 +77,6 @@ export class PaymentService {
     private paymentMethodTypeRepository: Repository<PaymentMethodType>,
     @InjectRepository(PaymentCardType)
     private paymentCardTypeRepository: Repository<PaymentCardType>,
-    @InjectRepository(Permit)
-    private permitRepository: Repository<Permit>,
     @InjectMapper() private readonly classMapper: Mapper,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
@@ -244,6 +250,36 @@ export class PaymentService {
     createTransactionDto: CreateTransactionDto,
     nestedQueryRunner?: QueryRunner,
   ): Promise<ReadTransactionDto> {
+    if (
+      !doesUserHaveRole(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST) &&
+      createTransactionDto?.paymentMethodTypeCode !==
+        PaymentMethodTypeEnum.WEB &&
+      createTransactionDto?.paymentMethodTypeCode !==
+        PaymentMethodTypeEnum.ACCOUNT &&
+      createTransactionDto?.paymentMethodTypeCode !==
+        PaymentMethodTypeEnum.NO_PAYMENT
+    ) {
+      throwUnprocessableEntityException(
+        'Invalid payment method type for the user',
+      );
+    } else if (
+      createTransactionDto?.paymentMethodTypeCode ===
+        PaymentMethodTypeEnum.ACCOUNT &&
+      !(await isFeatureEnabled(this.cacheManager, 'CREDIT-ACCOUNT'))
+    ) {
+      throwUnprocessableEntityException('Disabled feature');
+    }
+
+    if (
+      createTransactionDto?.paymentMethodTypeCode ===
+        PaymentMethodTypeEnum.POS &&
+      !createTransactionDto?.paymentCardTypeCode
+    ) {
+      throwBadRequestException('paymentCardTypeCode', [
+        `paymentCardTypeCode is required when paymentMethodTypeCode is ${createTransactionDto?.paymentMethodTypeCode}`,
+      ]);
+    }
+
     let readTransactionDto: ReadTransactionDto;
     const queryRunner =
       nestedQueryRunner || this.dataSource.createQueryRunner();
@@ -748,14 +784,31 @@ export class PaymentService {
       application.originalPermitId,
       queryRunner,
     );
-
-    if (application.permitStatus === ApplicationStatus.VOIDED) {
-      const newAmount = permitFee(application);
-      return newAmount;
-    }
-    const oldAmount = calculatePermitAmount(permitPaymentHistory);
-    const fee = permitFee(application, oldAmount);
+    const isNoFee = await this.findNoFee(
+      application.company.companyId,
+      queryRunner,
+    );
+    const oldAmount =
+      permitPaymentHistory.length > 0
+        ? calculatePermitAmount(permitPaymentHistory)
+        : undefined;
+    const fee = permitFee(application, isNoFee, oldAmount);
     return fee;
+  }
+
+  @LogAsyncMethodExecution()
+  async findNoFee(
+    companyId: number,
+    queryRunner: QueryRunner,
+  ): Promise<boolean> {
+    const specialAuth = await queryRunner.manager
+      .createQueryBuilder()
+      .select('specialAuth')
+      .from(SpecialAuth, 'specialAuth')
+      .innerJoinAndSelect('specialAuth.company', 'company')
+      .where('company.companyId = :companyId', { companyId: companyId })
+      .getOne();
+    return !!specialAuth && !!specialAuth.noFeeType;
   }
 
   @LogAsyncMethodExecution()

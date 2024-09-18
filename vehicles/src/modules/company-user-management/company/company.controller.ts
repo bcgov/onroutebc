@@ -29,8 +29,7 @@ import { ReadCompanyDto } from './dto/response/read-company.dto';
 import { ReadCompanyUserDto } from './dto/response/read-company-user.dto';
 import { ReadCompanyMetadataDto } from './dto/response/read-company-metadata.dto';
 import { Request } from 'express';
-import { Roles } from '../../../common/decorator/roles.decorator';
-import { Role } from '../../../common/enum/roles.enum';
+import { Permissions } from '../../../common/decorator/permissions.decorator';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
@@ -39,8 +38,13 @@ import { GetCompanyQueryParamsDto } from './dto/request/queryParam/getCompany.qu
 
 import { ReadVerifyClientDto } from './dto/response/read-verify-client.dto';
 import { VerifyClientDto } from './dto/request/verify-client.dto';
-import { IDIR_USER_AUTH_GROUP_LIST } from '../../../common/enum/user-auth-group.enum';
-import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
+import {
+  CLIENT_USER_ROLE_LIST,
+  ClientUserRole,
+  IDIR_USER_ROLE_LIST,
+  IDIRUserRole,
+} from '../../../common/enum/user-role.enum';
+import { doesUserHaveRole } from '../../../common/helper/auth.helper';
 
 @ApiTags('Company and User Management - Company')
 @ApiBadRequestResponse({
@@ -97,21 +101,18 @@ export class CompanyController {
    * @returns The paginated companies with response object {@link ReadCompanyDto}.
    */
   @ApiPaginatedResponse(ReadCompanyDto)
-  @Roles(Role.READ_ORG)
+  @Permissions({
+    allowedIdirRoles: IDIR_USER_ROLE_LIST,
+  })
   @Get()
   async getCompanyPaginated(
     @Req() request: Request,
     @Query() getCompanyQueryParamsDto: GetCompanyQueryParamsDto,
   ): Promise<PaginationDto<ReadCompanyDto>> {
     const currentUser = request.user as IUserJWT;
-    if (
-      !doesUserHaveAuthGroup(
-        currentUser.orbcUserAuthGroup,
-        IDIR_USER_AUTH_GROUP_LIST,
-      )
-    ) {
+    if (!doesUserHaveRole(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST)) {
       throw new UnauthorizedException(
-        `Unauthorized for ${currentUser.orbcUserAuthGroup} role.`,
+        `Unauthorized for ${currentUser.orbcUserRole} role.`,
       );
     }
 
@@ -140,7 +141,10 @@ export class CompanyController {
     type: ReadCompanyMetadataDto,
     isArray: true,
   })
-  @Roles(Role.READ_ORG)
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: IDIR_USER_ROLE_LIST,
+  })
   @Get('meta-data')
   async getCompanyMetadata(
     @Req() request: Request,
@@ -168,7 +172,10 @@ export class CompanyController {
     description: 'The Company Resource',
     type: ReadCompanyDto,
   })
-  @Roles(Role.READ_ORG)
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: IDIR_USER_ROLE_LIST,
+  })
   @Get(':companyId')
   async get(
     @Req() request: Request,
@@ -194,7 +201,14 @@ export class CompanyController {
     description: 'The Company Resource',
     type: ReadCompanyDto,
   })
-  @Roles(Role.WRITE_ORG)
+  @Permissions({
+    allowedBCeIDRoles: [ClientUserRole.COMPANY_ADMINISTRATOR],
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.CTPO,
+    ],
+  })
   @Put(':companyId')
   async update(
     @Req() request: Request,

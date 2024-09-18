@@ -16,8 +16,8 @@ import {
 import { ReusableUserInfoForm } from "../common/ReusableUserInfoForm";
 import "./MyInfoForm.scss";
 import {
-  BCeIDUserAuthGroupType,
-  BCeID_USER_AUTH_GROUP,
+  BCeIDUserRoleType,
+  BCeID_USER_ROLE,
 } from "../../../../../common/authentication/types";
 
 export const MyInfoForm = memo(
@@ -42,9 +42,9 @@ export const MyInfoForm = memo(
         countryCode: getDefaultRequiredVal("", myInfo?.countryCode),
         provinceCode: getDefaultRequiredVal("", myInfo?.provinceCode),
         city: getDefaultRequiredVal("", myInfo?.city),
-        userAuthGroup: getDefaultRequiredVal(
-          BCeID_USER_AUTH_GROUP.PERMIT_APPLICANT,
-          myInfo?.userAuthGroup as BCeIDUserAuthGroupType,
+        userRole: getDefaultRequiredVal(
+          BCeID_USER_ROLE.PERMIT_APPLICANT,
+          myInfo?.userRole as BCeIDUserRoleType,
         ),
       },
     });

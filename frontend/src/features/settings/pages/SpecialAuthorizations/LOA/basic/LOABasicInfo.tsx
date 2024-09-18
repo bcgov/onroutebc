@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Dayjs } from "dayjs";
 import { Checkbox } from "@mui/material";
 import {
@@ -15,6 +16,12 @@ import { Nullable, Optional } from "../../../../../../common/types/common";
 import { UploadedFile } from "../../../../components/SpecialAuthorizations/LOA/upload/UploadedFile";
 import { UploadInput } from "../../../../components/SpecialAuthorizations/LOA/upload/UploadInput";
 import { applyWhenNotNullable } from "../../../../../../common/helpers/util";
+import { DeleteConfirmationDialog } from "../../../../../../common/components/dialog/DeleteConfirmationDialog";
+import {
+  CustomDatePicker,
+  PAST_START_DATE_STATUSES,
+} from "../../../../../../common/components/form/subFormComponents/CustomDatePicker";
+
 import {
   expiryMustBeAfterStart,
   invalidUploadFormat,
@@ -105,6 +112,8 @@ export const LOABasicInfo = ({
 }: {
   onRemoveDocument: () => Promise<boolean>;
 }) => {
+  const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
+
   const {
     control,
     formState: { errors },
@@ -125,6 +134,10 @@ export const LOABasicInfo = ({
     "",
   );
 
+  const handleCancelDelete = () => {
+    setShowDeleteDialog(false);
+  };
+
   const selectPermitType = (
     permitType: keyof FieldPathValue<LOAFormData, "permitTypes">,
     selected: boolean,
@@ -144,6 +157,20 @@ export const LOABasicInfo = ({
     trigger("expiryDate");
   };
 
+  const handleStartDateChange = (startDate: Dayjs | null) => {
+    if (startDate) {
+      setValue("startDate", startDate);
+      trigger("startDate");
+      trigger("expiryDate");
+    }
+  };
+
+  const handleExpiryDateChange = (expiryDate: Dayjs | null) => {
+    setValue("expiryDate", expiryDate);
+    trigger("startDate");
+    trigger("expiryDate");
+  };
+
   const selectFile = (file: File) => {
     setValue("uploadFile", file);
     trigger("uploadFile");
@@ -154,6 +181,7 @@ export const LOABasicInfo = ({
       setValue("uploadFile", null);
       clearErrors("uploadFile");
     }
+    setShowDeleteDialog(false);
   };
 
   return (
@@ -260,30 +288,28 @@ export const LOABasicInfo = ({
 
         <div className="loa-basic-info__date-selection">
           <div className="loa-date-inputs">
-            <CustomFormComponent
+            <CustomDatePicker
               className="loa-date-inputs__start"
-              type="datePicker"
               feature={FEATURE}
-              options={{
-                name: "startDate",
-                rules: {
-                  required: { value: true, message: requiredMessage() },
-                },
-                label: "Start Date",
+              name="startDate"
+              rules={{
+                required: { value: true, message: requiredMessage() },
               }}
+              label="Start Date"
+              pastStartDateStatus={PAST_START_DATE_STATUSES.ALLOWED}
+              onChangeOverride={handleStartDateChange}
             />
 
-            <CustomFormComponent
+            <CustomDatePicker
               className="loa-date-inputs__expiry"
-              type="datePicker"
               feature={FEATURE}
-              options={{
-                name: "expiryDate",
-                rules: expiryRules,
-                label: "Expiry Date",
-              }}
+              name="expiryDate"
+              rules={expiryRules}
+              label="Expiry Date"
               disabled={neverExpires}
               readOnly={neverExpires}
+              pastStartDateStatus={PAST_START_DATE_STATUSES.ALLOWED}
+              onChangeOverride={handleExpiryDateChange}
             />
           </div>
           
@@ -315,7 +341,7 @@ export const LOABasicInfo = ({
             {fileExists ? (
               <UploadedFile
                 fileName={fileName}
-                onDelete={deleteFile}
+                onDelete={() => setShowDeleteDialog(true)}
               />
             ) : (
               <UploadInput
@@ -350,6 +376,16 @@ export const LOABasicInfo = ({
           className="loa-basic-info__notes"
         />
       </div>
+
+      {showDeleteDialog ? (
+        <DeleteConfirmationDialog
+          showDialog={showDeleteDialog}
+          onCancel={handleCancelDelete}
+          onDelete={deleteFile}
+          itemToDelete="item"
+          confirmationMsg={"Are you sure you want to delete this?"}
+        />
+      ) : null}
     </div>
   );
 };

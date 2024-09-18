@@ -1,26 +1,23 @@
-import { PointerEventsCheckLevel } from "@testing-library/user-event";
 import dayjs from "dayjs";
 
 import { DATE_FORMATS } from "../../../../../../../common/helpers/formatDate";
+import { getExpiryDate } from "../../../../../helpers/permitState";
 import {
-  commoditiesInfoBox,
-  commodityConditionLabel,
-  commodityDescriptionLabel,
+  conditionsInfoBox,
+  conditionLabel,
+  conditionDescriptionLabel,
   dateOptions,
   durationOption,
   expiryDateElement,
-  invalidFutureDateMessageElement,
-  invalidPastDateMessageElement,
   lastMonthButton,
   nextMonthDateOptions,
   openDurationSelect,
   openStartDateSelect,
-  optionalCommodityCheckboxes,
-  requiredCommodityCheckboxes,
+  optionalConditionCheckboxes,
+  requiredConditionCheckboxes,
   selectDayFromDateOptions,
   selectDurationOption,
   selectNextMonth,
-  toggleCheckbox,
 } from "./helpers/access";
 
 import {
@@ -33,16 +30,14 @@ import {
   maxFutureMonth,
   maxFutureDay,
   daysInFutureMonth,
-  commodities,
+  conditions,
   renderDefaultTestComponent,
   renderTestComponent,
   defaultDuration,
   allDurations,
-  emptyCommodities,
   maxFutureYear,
   thisYear,
 } from "./helpers/prepare";
-import { getExpiryDate } from "../../../../../helpers/permitState";
 
 describe("Permit Details duration", () => {
   it("should have available durations to select", async () => {
@@ -63,11 +58,16 @@ describe("Permit Details duration", () => {
 
   it("should display correct expiry date after selecting duration", async () => {
     // Arrange
-    const { user } = renderDefaultTestComponent();
-
-    // Act
     const { text: durationText, days: durationDays } =
       allDurations[allDurations.length - 1];
+      
+    const { user } = renderTestComponent(
+      dayjs(currentDt),
+      durationDays,
+      [],
+    );
+
+    // Act
     await openDurationSelect(user);
     await selectDurationOption(user, durationText);
 
@@ -76,7 +76,7 @@ describe("Permit Details duration", () => {
       DATE_FORMATS.SHORT,
     );
 
-    expect(await expiryDateElement(expectedExpiry)).toBeVisible();
+    expect(await expiryDateElement()).toHaveTextContent(expectedExpiry);
   });
 });
 
@@ -186,32 +186,13 @@ describe("Permit Details start date", () => {
     }
   });
 
-  it("should display error message for invalid past start dates", async () => {
-    // Arrange and Act
-    renderTestComponent(
-      dayjs(currentDt).subtract(1, "day"),
-      defaultDuration,
-      emptyCommodities,
-    );
-    // Assert
-    expect(await invalidPastDateMessageElement()).toBeVisible();
-  });
-
-  it("should display error message for invalid future start dates (more than 14 days from today)", async () => {
-    // Arrange and Act
-    renderTestComponent(
-      dayjs(currentDt).add(15, "day"),
-      defaultDuration,
-      emptyCommodities,
-    );
-
-    // Assert
-    expect(await invalidFutureDateMessageElement()).toBeVisible();
-  });
-
   it("should display correct expiry date after selecting start date", async () => {
     // Arrange
-    const { user } = renderDefaultTestComponent();
+    const { user } = renderTestComponent(
+      dayjs(tomorrow),
+      defaultDuration,
+      [],
+    );
 
     // Act
     await openStartDateSelect(user);
@@ -230,39 +211,39 @@ describe("Permit Details start date", () => {
       defaultDuration,
     ).format(DATE_FORMATS.SHORT);
 
-    expect(await expiryDateElement(expectedExpiry)).toBeVisible();
+    expect(await expiryDateElement()).toHaveTextContent(expectedExpiry);
   });
 });
 
-describe("Permit Details commodities", () => {
-  it("should display commodities info box", async () => {
+describe("Permit Details conditions", () => {
+  it("should display conditions info box", async () => {
     // Arrange and Act
-    renderTestComponent(currentDt, defaultDuration, commodities);
+    renderTestComponent(currentDt, defaultDuration, conditions);
 
     // Assert
-    expect(await commoditiesInfoBox()).toBeVisible();
+    expect(await conditionsInfoBox()).toBeVisible();
   });
 
-  it("should properly display commodities", async () => {
+  it("should properly display conditions", async () => {
     // Arrange and Act
-    renderTestComponent(currentDt, defaultDuration, commodities);
+    renderTestComponent(currentDt, defaultDuration, conditions);
 
-    // Assert - All commodities are present
+    // Assert - All conditions are present
     await Promise.all(
-      commodities.map(
-        async (commodity) =>
-          await commodityDescriptionLabel(commodity.description),
+      conditions.map(
+        async (condition) =>
+          await conditionDescriptionLabel(condition.description),
       ),
     );
     await Promise.all(
-      commodities.map(
-        async (commodity) => await commodityConditionLabel(commodity.condition),
+      conditions.map(
+        async (condition) => await conditionLabel(condition.condition),
       ),
     );
 
-    // Assert - Required commodities are checked and disabled
-    const requiredCheckboxes = await requiredCommodityCheckboxes();
-    const nonRequiredCheckboxes = await optionalCommodityCheckboxes();
+    // Assert - Required conditions are checked and disabled
+    const requiredCheckboxes = await requiredConditionCheckboxes();
+    const nonRequiredCheckboxes = await optionalConditionCheckboxes();
     requiredCheckboxes.forEach((checkbox) => {
       expect(checkbox).toBeChecked();
       expect(checkbox).toBeDisabled();
@@ -270,55 +251,6 @@ describe("Permit Details commodities", () => {
     nonRequiredCheckboxes.forEach((checkbox) => {
       expect(checkbox).not.toBeChecked();
       expect(checkbox).not.toBeDisabled();
-    });
-  });
-
-  it("should be able to select non-required commodities", async () => {
-    // Arrange
-    const { user } = renderTestComponent(
-      currentDt,
-      defaultDuration,
-      commodities,
-    );
-
-    const nonRequiredCheckboxes = await optionalCommodityCheckboxes();
-
-    // Act
-    await Promise.all(
-      nonRequiredCheckboxes.map(async (checkbox) => {
-        await toggleCheckbox(user, checkbox);
-      }),
-    );
-
-    // Assert
-    nonRequiredCheckboxes.forEach((checkbox) => {
-      expect(checkbox).toBeChecked();
-    });
-  });
-
-  it("should not be able to deselect required commodities", async () => {
-    // Arrange
-    const { user } = renderTestComponent(
-      currentDt,
-      defaultDuration,
-      commodities,
-      {
-        pointerEventsCheck: PointerEventsCheckLevel.Never,
-      },
-    );
-
-    const requiredCheckboxes = await requiredCommodityCheckboxes();
-
-    // Act
-    await Promise.all(
-      requiredCheckboxes.map(async (checkbox) => {
-        await toggleCheckbox(user, checkbox);
-      }),
-    );
-
-    // Assert
-    requiredCheckboxes.forEach((checkbox) => {
-      expect(checkbox).toBeChecked();
     });
   });
 });

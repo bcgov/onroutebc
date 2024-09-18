@@ -1,14 +1,15 @@
 import {
   DimensionModifier,
   RegionSizeOverride,
+  SelfIssuable,
 } from 'onroute-policy-engine/types';
 
-export type SizeDimension = {
-  frontProjection: number;
-  rearProjection: number;
-  width: number;
-  height: number;
-  length: number;
+export type SizeDimension = SelfIssuable & {
+  fp?: number;
+  rp?: number;
+  w?: number;
+  h?: number;
+  l?: number;
   modifiers?: Array<DimensionModifier>;
   regions?: Array<RegionSizeOverride>;
 };

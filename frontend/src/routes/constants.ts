@@ -34,6 +34,7 @@ export const ERROR_ROUTES = {
   UNAUTHORIZED: "/unauthorized",
   UNEXPECTED: "/unexpected-error",
   ISSUANCE: "/issuance-error",
+  DOCUMENT_UNAVAILABLE: "/document-unavailable",
 };
 
 // Manage Vehicles
@@ -125,7 +126,7 @@ export const SHOPPING_CART_ROUTES = {
   BASE: SHOPPING_CART_ROUTE_BASE,
   DETAILS: (failed?: boolean) =>
     `${SHOPPING_CART_ROUTE_BASE}${failed ? "?paymentFailed=true" : ""}`,
-}; 
+};
 
 // Create Profile Wizard
 export const CREATE_PROFILE_WIZARD_ROUTES = {
@@ -168,4 +169,6 @@ export const ONROUTE_WEBPAGE_LINKS = {
     "https://www2.gov.bc.ca/gov/content/home/accessible-government",
   COPYRIGHT: "https://www2.gov.bc.ca/gov/content/home/copyright",
   CONTACT_US: "https://onroutebc.gov.bc.ca",
+  SERVICE_BC_OFFICE_LOCATIONS:
+    "https://www2.gov.bc.ca/gov/content/governments/organizational-structure/ministries-organizations/ministries/citizens-services/servicebc#locations",
 };

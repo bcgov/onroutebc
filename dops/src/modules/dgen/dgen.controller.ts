@@ -23,12 +23,15 @@ import { Request, Response } from 'express';
 import { IUserJWT } from '../../interface/user-jwt.interface';
 import { CreateGeneratedDocumentDto } from './dto/request/create-generated-document.dto';
 import { IDP } from '../../enum/idp.enum';
-import { Roles } from '../../decorator/roles.decorator';
-import { Role } from '../../enum/roles.enum';
+import { Permissions } from '../../decorator/permissions.decorator';
 import { CreateGeneratedReportDto } from './dto/request/create-generated-report.dto';
 import { DgenService } from './dgen.service';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { JwtOneOfAuthGuard } from '../../guard/jwt-one-of-auth.guard';
+import {
+  CLIENT_USER_ROLE_LIST,
+  IDIR_USER_ROLE_LIST,
+} from '../../enum/user-role.enum';
 
 @ApiTags('Document Generator (DGEN)')
 @ApiBadRequestResponse({
@@ -62,7 +65,10 @@ export class DgenController {
     example: '74',
     description: 'Required when IDP is not IDIR .',
   })
-  @Roles(Role.GENERATE_DOCUMENT)
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: IDIR_USER_ROLE_LIST,
+  })
   @UseGuards(JwtOneOfAuthGuard)
   @Post('/template/render')
   async generate(
@@ -85,7 +91,10 @@ export class DgenController {
     return readFileDto;
   }
 
-  @Roles(Role.GENERATE_REPORT)
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: IDIR_USER_ROLE_LIST,
+  })
   @Post('/report/render')
   async generateReport(
     @Req() request: Request,

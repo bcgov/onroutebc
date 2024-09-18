@@ -6,8 +6,8 @@ import { useLocation, useNavigate } from "react-router";
 import { Navigate } from "react-router-dom";
 
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { ROLES } from "../../../../common/authentication/types";
-import { DoesUserHaveRole } from "../../../../common/authentication/util";
+import { CLAIMS } from "../../../../common/authentication/types";
+import { DoesUserHaveClaim } from "../../../../common/authentication/util";
 import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
 import { FIVE_MINUTES } from "../../../../common/constants/constants";
 import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
@@ -20,14 +20,15 @@ import { BCEID_PROFILE_TABS } from "../../types/manageProfile.d";
 import { ERROR_ROUTES, PROFILE_ROUTES } from "../../../../routes/constants";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { SpecialAuthorizations } from "../../../settings/pages/SpecialAuthorizations/SpecialAuthorizations";
-import { CreditAccount } from "../../../settings/pages/CreditAccount";
-import { useGetCreditAccountQuery } from "../../../settings/hooks/creditAccount";
+import { ViewCreditAccount } from "../../../settings/pages/ViewCreditAccount";
+import { useGetCreditAccountMetadataQuery } from "../../../settings/hooks/creditAccount";
 import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
-import { CREDIT_ACCOUNT_USER_TYPE } from "../../../settings/types/creditAccount";
 import {
-  canViewSpecialAuthorizations,
-  canViewCreditAccountTab,
-} from "../../../settings/helpers/permissions";
+  CREDIT_ACCOUNT_USER_TYPE,
+  CreditAccountMetadata,
+} from "../../../settings/types/creditAccount";
+import { canViewSpecialAuthorizations } from "../../../settings/helpers/permissions";
+import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
 interface ProfileDashboardTab {
   label: string;
@@ -38,11 +39,11 @@ interface ProfileDashboardTab {
 /**
  * Returns a boolean indicating if the logged in user is a BCeID org admin.
  *
- * @param userRoles The array of roles from the context.
+ * @param userClaims The array of claims from the context.
  * @returns A boolean value.
  */
-export const isBCeIDOrgAdmin = (userRoles: string[]): boolean => {
-  return Boolean(DoesUserHaveRole(userRoles, ROLES.PUBLIC_ORG_ADMIN));
+export const isBCeIDOrgAdmin = (userClaims: string[]): boolean => {
+  return Boolean(DoesUserHaveClaim(userClaims, CLAIMS.PUBLIC_ORG_ADMIN));
 };
 
 export const ManageProfilesDashboard = React.memo(() => {
@@ -55,42 +56,42 @@ export const ManageProfilesDashboard = React.memo(() => {
     queryKey: ["companyInfo"],
     queryFn: getCompanyInfo,
     placeholderData: keepPreviousData,
-    staleTime: FIVE_MINUTES,
+    refetchInterval: FIVE_MINUTES,
   });
 
   const navigate = useNavigate();
 
   const {
-    userRoles,
+    userClaims,
     companyId: companyIdFromContext,
     idirUserDetails,
     userDetails,
   } = useContext(OnRouteBCContext);
-  
-  const companyId = getDefaultRequiredVal(0, companyIdFromContext);
-  const { data: creditAccount } = useGetCreditAccountQuery(companyId);
-  const { data: featureFlags } = useFeatureFlagsQuery();
-  const populatedUserRoles = getDefaultRequiredVal([], userRoles);
-  const isStaffActingAsCompany = Boolean(idirUserDetails?.userAuthGroup);
-  const isBCeIDAdmin = isBCeIDOrgAdmin(populatedUserRoles);
-  const shouldAllowUserManagement = isBCeIDAdmin || isStaffActingAsCompany;
-  const showSpecialAuth = !isStaffActingAsCompany && canViewSpecialAuthorizations(
-    userRoles,
-    userDetails?.userAuthGroup,
-  ) && featureFlags?.["LOA"] === "ENABLED";
-  
-  const creditAccountHolder = creditAccount?.creditAccountUsers.find(
-    (user) => user.userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER,
-  );
-  const isCreditAccountHolder = companyId === creditAccountHolder?.companyId;
 
-  const showCreditAccountTab = Boolean(
-    canViewCreditAccountTab(userRoles) &&
-      creditAccount &&
-      companyId &&
-      isCreditAccountHolder &&
-      featureFlags?.["CREDIT-ACCOUNT"] === "ENABLED",
-  );
+  const companyId = getDefaultRequiredVal(0, companyIdFromContext);
+  const { data: creditAccountMetadata } =
+    useGetCreditAccountMetadataQuery(companyId);
+  const { data: featureFlags } = useFeatureFlagsQuery();
+  const populatedUserClaims = getDefaultRequiredVal([], userClaims);
+  const isStaffActingAsCompany = Boolean(idirUserDetails?.userRole);
+  const isBCeIDAdmin = isBCeIDOrgAdmin(populatedUserClaims);
+  const shouldAllowUserManagement = isBCeIDAdmin || isStaffActingAsCompany;
+  const showSpecialAuth =
+    !isStaffActingAsCompany &&
+    canViewSpecialAuthorizations(userClaims, userDetails?.userRole) &&
+    featureFlags?.["LOA"] === "ENABLED";
+
+  const isCreditAccountHolder =
+    creditAccountMetadata?.userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER;
+
+  const showCreditAccountTab = usePermissionMatrix({
+    featureFlag: "CREDIT-ACCOUNT",
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+      permissionMatrixFunctionKey: "VIEW_CREDIT_ACCOUNT_TAB_ACCOUNT_HOLDER",
+    },
+    additionalConditionToCheck: () => isCreditAccountHolder,
+  });
 
   const { state: stateFromNavigation } = useLocation();
 
@@ -100,31 +101,42 @@ export const ManageProfilesDashboard = React.memo(() => {
       component: <CompanyInfo companyInfoData={companyInfoData} />,
       componentKey: BCEID_PROFILE_TABS.COMPANY_INFORMATION,
     },
-    !isStaffActingAsCompany ? {
-      label: "My Information",
-      component: <MyInfo />,
-      componentKey: BCEID_PROFILE_TABS.MY_INFORMATION,
-    } : null,
-    shouldAllowUserManagement ? {
-      label: "Add / Manage Users",
-      component: <UserManagement />,
-      componentKey: BCEID_PROFILE_TABS.USER_MANAGEMENT,
-    } : null,
-    showSpecialAuth && companyId ? {
-      label: "Special Authorizations",
-      component: (
-        <SpecialAuthorizations
-          companyId={companyId}
-        />
-      ),
-      componentKey: BCEID_PROFILE_TABS.SPECIAL_AUTH,
-    } : null,
-    showCreditAccountTab ? {
-      label: "Credit Account",
-      component: <CreditAccount companyId={companyId} />,
-      componentKey: BCEID_PROFILE_TABS.CREDIT_ACCOUNT,
-    } : null,
-  ].filter(tab => Boolean(tab)) as ProfileDashboardTab[];
+    !isStaffActingAsCompany
+      ? {
+          label: "My Information",
+          component: <MyInfo />,
+          componentKey: BCEID_PROFILE_TABS.MY_INFORMATION,
+        }
+      : null,
+    shouldAllowUserManagement
+      ? {
+          label: "Add / Manage Users",
+          component: <UserManagement />,
+          componentKey: BCEID_PROFILE_TABS.USER_MANAGEMENT,
+        }
+      : null,
+    showSpecialAuth && companyId
+      ? {
+          label: "Special Authorizations",
+          component: <SpecialAuthorizations companyId={companyId} />,
+          componentKey: BCEID_PROFILE_TABS.SPECIAL_AUTH,
+        }
+      : null,
+    showCreditAccountTab
+      ? {
+          label: "Credit Account",
+          component: (
+            <ViewCreditAccount
+              companyId={companyId}
+              creditAccountMetadata={
+                creditAccountMetadata as CreditAccountMetadata
+              }
+            />
+          ),
+          componentKey: BCEID_PROFILE_TABS.CREDIT_ACCOUNT,
+        }
+      : null,
+  ].filter((tab) => Boolean(tab)) as ProfileDashboardTab[];
 
   const getSelectedTabFromNavigation = (): number => {
     const tabIndex = tabs.findIndex(
@@ -160,7 +172,8 @@ export const ManageProfilesDashboard = React.memo(() => {
   }
 
   if (isError) {
-    const isUnauthorized = error instanceof AxiosError && error.response?.status == 401;
+    const isUnauthorized =
+      error instanceof AxiosError && error.response?.status == 401;
     return isUnauthorized ? (
       <Navigate to={ERROR_ROUTES.UNAUTHORIZED} />
     ) : (
