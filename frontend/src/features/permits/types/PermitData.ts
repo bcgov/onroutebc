@@ -19,5 +19,5 @@ export interface PermitData {
   companyName?: Nullable<string>;
   doingBusinessAs?: Nullable<string>;
   clientNumber?: Nullable<string>;
-  selectedLoas?: Nullable<LOADetail[]>;
+  loas?: Nullable<LOADetail[]>;
 }

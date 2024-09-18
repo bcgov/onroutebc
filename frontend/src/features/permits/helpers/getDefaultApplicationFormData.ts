@@ -329,7 +329,7 @@ export const getDefaultValues = (
         applicationData?.permitData?.vehicleDetails,
       ),
       feeSummary: `${calculateFeeByDuration(defaultPermitType, durationOrDefault)}`,
-      selectedLoas: getDefaultRequiredVal([], applicationData?.permitData?.selectedLoas),
+      loas: getDefaultRequiredVal([], applicationData?.permitData?.loas),
     },
   };
 };

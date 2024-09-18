@@ -69,7 +69,6 @@ const activeApplicationSource = factory({
         postalCode: nullable(String),
       },
       feeSummary: nullable(String),
-      selectedLoas: nullable(Array),
     },
   },
 });
@@ -193,7 +192,7 @@ export const getDefaultApplication = () => {
       vehicleDetails,
       commodities: conditions,
       mailingAddress,
-      selectedLoas: [],
+      loas: [],
     },
   };
 };

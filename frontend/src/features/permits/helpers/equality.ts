@@ -173,7 +173,7 @@ export const areApplicationDataEqual = (
     areVehicleDetailsEqual(data1.vehicleDetails, data2.vehicleDetails) &&
     areConditionsEqual(data1.commodities, data2.commodities) &&
     areMailingAddressesEqual(data1.mailingAddress, data2.mailingAddress) &&
-    arePermitLOAsEqual(data1.selectedLoas, data2.selectedLoas) &&
+    arePermitLOAsEqual(data1.loas, data2.loas) &&
     ((!data1.companyName && !data2.companyName) ||
       data1.companyName === data2.companyName) &&
     ((!data1.doingBusinessAs && !data2.doingBusinessAs) ||

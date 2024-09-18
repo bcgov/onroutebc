@@ -1,5 +1,3 @@
-import dayjs from "dayjs";
-import { Controller, useFormContext } from "react-hook-form";
 import {
   Checkbox,
   FormControlLabel,
@@ -16,44 +14,19 @@ import "./LOATable.scss";
 import { LOADetail } from "../../../../../settings/types/SpecialAuthorization";
 import { applyWhenNotNullable } from "../../../../../../common/helpers/util";
 import { DATE_FORMATS, toLocal } from "../../../../../../common/helpers/formatDate";
-import { minDurationForPermitType } from "../../../../helpers/dateSelection";
+
+interface SelectableLOA extends LOADetail {
+  checked: boolean;
+  disabled: boolean;
+}
 
 export const LOATable = ({
-  selectableLOAs,
+  loas,
+  onSelectLOA,
 }: {
-  selectableLOAs: LOADetail[];
+  loas: SelectableLOA[];
+  onSelectLOA: (loaId: string) => void;
 }) => {
-  const { control, setValue, watch } = useFormContext();
-  const currentSelectedLOAs: LOADetail[] = watch("permitData.selectedLoas");
-  const permitType = watch("permitType");
-  const minDuration = minDurationForPermitType(permitType);
-  const startDate = watch("permitData.startDate");
-  const minPermitExpiryDate = dayjs(startDate).add(minDuration, "day");
-  const loasForTable = selectableLOAs.map(loa => ({
-    ...loa,
-    checked: currentSelectedLOAs.map(selectedLOA => selectedLOA.loaId).includes(loa.loaId),
-    disabled: Boolean(loa.expiryDate) && minPermitExpiryDate.isAfter(loa.expiryDate),
-  }));
-
-  const handleSelectLOA = (loaId: string) => {
-    const loa = loasForTable.find(loaRow => loaRow.loaId === loaId);
-    if (!loa || loa?.disabled) return;
-
-    const isLOASelected = Boolean(loa?.checked);
-    if (isLOASelected) {
-      // Deselect the LOA
-      setValue(
-        "permitData.selectedLoas",
-        currentSelectedLOAs.filter(selectedLOA => selectedLOA.loaId !== loaId),
-      );
-    } else {
-      // Select the LOA
-      /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-      const { checked, disabled, ...loaToSelect } = loa;
-      setValue("permitData.selectedLoas", [...currentSelectedLOAs, loaToSelect]);
-    }
-  };
-
   return (
     <TableContainer className="loa-table" component={Paper}>
       <Table className="loa-table__table" aria-label="simple table">
@@ -70,7 +43,7 @@ export const LOATable = ({
         </TableHead>
 
         <TableBody>
-          {loasForTable.map((loa) => (
+          {loas.map((loa) => (
             <TableRow key={loa.loaId} className="loa-table__row">
               <TableCell
                 className="loa-table__cell loa-table__cell--loa-number"
@@ -79,24 +52,16 @@ export const LOATable = ({
               >
                 <FormControlLabel
                   control={
-                    <Controller
-                      name="permitData.selectedLoas"
-                      render={() => {
-                        return (
-                          <Checkbox
-                            className={`loa-table__checkbox ${
-                              loa.disabled
-                                ? "loa-table__checkbox--disabled"
-                                : ""
-                            }`}
-                            key={loa.loaId}
-                            checked={loa.checked}
-                            disabled={loa.disabled}
-                            onChange={() => handleSelectLOA(loa.loaId)}
-                          />
-                        );
-                      }}
-                      control={control}
+                    <Checkbox
+                      className={`loa-table__checkbox ${
+                        loa.disabled
+                          ? "loa-table__checkbox--disabled"
+                          : ""
+                      }`}
+                      key={loa.loaId}
+                      checked={loa.checked}
+                      disabled={loa.disabled}
+                      onChange={() => onSelectLOA(loa.loaId)}
                     />
                   }
                   key={loa.loaNumber}

@@ -67,6 +67,7 @@ export const PermitForm = (props: PermitFormProps) => {
   const permitDuration = watch("permitData.permitDuration");
   const permitConditions = watch("permitData.commodities");
   const vehicleFormData = watch("permitData.vehicleDetails");
+  const loaSnapshots: LOADetail[] = watch("permitData.loas");
 
   const handleSetConditions = (conditions: PermitCondition[]) => {
     setValue("permitData.commodities", [...conditions]);
@@ -91,6 +92,10 @@ export const PermitForm = (props: PermitFormProps) => {
 
   const handleSetExpiryDate = (expiry: Dayjs) => {
     setValue("permitData.expiryDate", dayjs(expiry));
+  };
+
+  const handleUpdateLOAs = (updatedLOAs: LOADetail[]) => {
+    setValue("permitData.loas", updatedLOAs);
   };
 
   const isLcvDesignated = props.isLcvDesignated;
@@ -145,7 +150,12 @@ export const PermitForm = (props: PermitFormProps) => {
         <ContactDetails feature={props.feature} />
 
         <PermitLOA
-          selectableLOAs={props.selectableLOAs}
+          permitType={permitType}
+          startDate={startDate}
+          isPermitIssued={isAmendAction}
+          loaSnapshots={loaSnapshots}
+          companyLOAs={props.selectableLOAs}
+          onUpdateLOAs={handleUpdateLOAs}
         />
 
         <PermitDetails
