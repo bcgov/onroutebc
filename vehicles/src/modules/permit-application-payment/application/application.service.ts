@@ -296,7 +296,7 @@ export class ApplicationService {
   }
 
   /**
-   * Retrieves applications based on multiple optional filters including user GUID, company ID, pending permits status, applications in queue, and a search string.
+   * Retrieves applications based on multiple optional filters including user GUID, company ID, pending permits status, applications queue status, and a search string.
    * The function supports sorting by various columns and includes pagination for efficient retrieval.
    * @param findAllApplicationsOptions - Contains multiple optional parameters: pagination, sorting, filtering by company ID, user GUID, and other search filters.
    * - page: The current page number for pagination.
@@ -306,7 +306,7 @@ export class ApplicationService {
    * - companyId: The ID of the company to filter applications by.
    * - userGUID: The GUID of the user whose applications to filter.
    * - currentUser: The current logged-in user's JWT payload.
-   * - applicationsInQueue: Boolean filter for applications that are in the queue.
+   * - applicationQueueStatus: Status filter for applications that are in the queue.
    * - searchColumn: The specific column to search within (e.g., plate, application number).
    * - searchString: The input keyword to use for searching.
    * @returns A paginated result containing filtered and sorted ReadApplicationMetadataDto objects.
@@ -320,7 +320,7 @@ export class ApplicationService {
     companyId?: number;
     userGUID?: string;
     currentUser?: IUserJWT;
-    applicationsInQueue?: Nullable<boolean>;
+    applicationQueueStatus?: Nullable<CaseStatusType[]>;
     searchColumn?: Nullable<ApplicationSearch>;
     searchString?: Nullable<string>;
   }): Promise<PaginationDto<ReadApplicationMetadataDto>> {
@@ -332,7 +332,7 @@ export class ApplicationService {
       findAllApplicationsOptions.userGUID,
       findAllApplicationsOptions.searchColumn,
       findAllApplicationsOptions.searchString,
-      findAllApplicationsOptions.applicationsInQueue,
+      findAllApplicationsOptions.applicationQueueStatus,
     );
     // total number of items
     const totalItems = await applicationsQB.getCount();
@@ -389,7 +389,8 @@ export class ApplicationService {
             currentUserRole:
               findAllApplicationsOptions?.currentUser?.orbcUserRole,
             currentDateTime: new Date(),
-            applicationsInQueue: findAllApplicationsOptions.applicationsInQueue,
+            applicationQueueStatus:
+              findAllApplicationsOptions.applicationQueueStatus,
           }),
         },
       );
@@ -404,12 +405,12 @@ export class ApplicationService {
     userGUID?: string,
     searchColumn?: Nullable<ApplicationSearch>,
     searchString?: Nullable<string>,
-    applicationsInQueue?: Nullable<boolean>,
+    applicationQueueStatus?: Nullable<CaseStatusType[]>,
   ): SelectQueryBuilder<Permit> {
-    // Ensure that pendingPermits and applicationsInQueue are not set at the same time
-    if (pendingPermits !== undefined && applicationsInQueue !== undefined) {
+    // Ensure that pendingPermits and applicationQueueStatus are not set at the same time
+    if (pendingPermits !== undefined && applicationQueueStatus?.length) {
       throw new InternalServerErrorException(
-        'Both pendingPermits and applicationsInQueue cannot be set at the same time.',
+        'Both pendingPermits and applicationQueueStatus cannot be set at the same time.',
       );
     }
 
@@ -425,7 +426,7 @@ export class ApplicationService {
       );
 
     // Include cases and the assigned case user only if applications are in queue
-    if (applicationsInQueue) {
+    if (applicationQueueStatus?.length) {
       permitsQuery = permitsQuery.innerJoinAndSelect('permit.cases', 'cases');
       permitsQuery = permitsQuery.leftJoinAndSelect(
         'cases.assignedUser',
@@ -444,7 +445,7 @@ export class ApplicationService {
     }
 
     // Handle various status filters depending on the provided flags
-    if (applicationsInQueue) {
+    if (applicationQueueStatus?.length) {
       // If retrieving applications in queue, we filter those with "IN_QUEUE" status and open/in-progress cases
       permitsQuery = permitsQuery.andWhere(
         'permit.permitStatus = :permitStatus',
@@ -455,7 +456,7 @@ export class ApplicationService {
       permitsQuery = permitsQuery.andWhere(
         'cases.caseStatusType IN (:...caseStatuses)',
         {
-          caseStatuses: [CaseStatusType.OPEN, CaseStatusType.IN_PROGRESS],
+          caseStatuses: applicationQueueStatus,
         },
       );
     } else if (pendingPermits) {
@@ -467,7 +468,7 @@ export class ApplicationService {
           });
         }),
       );
-    } else if (pendingPermits === false || applicationsInQueue === false) {
+    } else if (pendingPermits === false) {
       // Filter active applications based on ACTIVE_APPLICATION_STATUS
       permitsQuery = permitsQuery.andWhere(
         new Brackets((qb) => {
@@ -478,7 +479,7 @@ export class ApplicationService {
       );
     } else if (
       pendingPermits === undefined ||
-      applicationsInQueue === undefined
+      !applicationQueueStatus?.length
     ) {
       // Filter all applications based on ALL_APPLICATION_STATUS
       permitsQuery = permitsQuery.andWhere(
