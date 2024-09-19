@@ -11,6 +11,7 @@ import { PermitType } from "../../../../types/PermitType";
 import { minDurationForPermitType } from "../../../../helpers/dateSelection";
 import { getExpiryDate } from "../../../../helpers/permitState";
 import { getEndOfDate } from "../../../../../../common/helpers/formatDate";
+import { areArraysEqual } from "../../../../../../common/helpers/util";
 
 export const PermitLOA = ({
   permitType,
@@ -73,7 +74,28 @@ export const PermitLOA = ({
         disabled: !isEnabled,
       };
     });
-  }, [originalSelectedLOAs, companyLOAs, selectedLOAs, isPermitIssued, minPermitExpiryDate]);
+  }, [
+    originalSelectedLOAs,
+    companyLOAs,
+    selectedLOAs,
+    isPermitIssued,
+    minPermitExpiryDate,
+  ]);
+
+  // Since certain LOAs might have been removed from the table, we need to make sure
+  // that the selected LOAs in the permit form matches the selection state of the table
+  const selectedLOAsInTable = loasForTable
+    .filter(selectableLOA => selectableLOA.checked)
+    .map(selectableLOA => selectableLOA.loa);
+
+  const selectedLOAIds = selectedLOAs.map(loa => loa.loaId);
+  
+  useEffect(() => {
+    const selectedIdsInTable = selectedLOAsInTable.map(loa => loa.loaId);
+    if (!areArraysEqual(selectedLOAIds, selectedIdsInTable)) {
+      onUpdateLOAs([...selectedLOAsInTable]);
+    }
+  }, [selectedLOAIds, selectedLOAsInTable]);
 
   const handleSelectLOA = (loaId: string) => {
     const loa = loasForTable.find(loaRow => loaRow.loa.loaId === loaId);
