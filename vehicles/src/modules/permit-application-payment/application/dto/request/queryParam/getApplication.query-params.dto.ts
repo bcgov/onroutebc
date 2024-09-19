@@ -96,10 +96,9 @@ export class GetApplicationQueryParamsDto extends PageOptionsDto {
   @ApiProperty({
     example: `${Object.values(ApplicationQueueStatus).join(',')}`,
     description:
-      'A string representing the application queue status order for query results. ' +
-      'If unspecified, the results will not follow any specific order. ' +
-      'The format involves a status code, with possible values being case-sensitive and must align with those defined in the schema. ' +
-      'Start ordering using a status code, and optionally add more by joining them with commas. ' +
+      'The query parameter allows for filtering results based on applicationQueueStatus. ' +
+      'Multiple application queue statuses can be specified and should be comma-separated. ' +
+      'The values are case-sensitive and must match those defined in the schema. ' +
       `Possible values are: ${Object.values(ApplicationQueueStatus).join(', ')}. ` +
       'Syntax: <status1,status2>',
     required: false,
