@@ -49,6 +49,7 @@ import {
   ApplicationResponseData,
   ApplicationListItem,
   ApplicationFormData,
+  ApplicationFilters,
 } from "../types/application";
 
 import {
@@ -111,12 +112,6 @@ export const updateApplication = async (
     }),
   );
 };
-
-interface ApplicationFilters {
-  pendingPermitsOnly?: boolean;
-  applicationsInQueueOnly?: boolean;
-  getStaffQueue?: boolean;
-}
 
 const getApplications = async (
   {

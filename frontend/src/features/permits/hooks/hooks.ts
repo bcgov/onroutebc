@@ -531,7 +531,7 @@ export const useApplicationsInQueueQuery = () => {
   ];
 
   const isStaffUser = staffUserRoles.includes(userRole);
-  // if typeof company === "undefined" we know that the staff user is NOT acting as a company
+  // if typeof company === "undefined" here we know that the staff user is NOT acting as a company
   const getStaffQueue = isStaffUser && typeof companyId === "undefined";
 
   const [pagination, setPagination] = useState<MRT_PaginationState>({
@@ -626,7 +626,7 @@ export const useInvalidateApplicationsInQueue = () => {
   return {
     invalidate: () => {
       queryClient.invalidateQueries({
-        queryKey: ["companyApplicationsInQueue"],
+        queryKey: ["applicationsInQueue"],
       });
     },
   };

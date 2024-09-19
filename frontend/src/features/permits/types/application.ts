@@ -123,3 +123,12 @@ export interface ApplicationFormData {
   permitNumber?: Nullable<string>;
   permitData: PermitData;
 }
+
+/**
+ * Type used for determining query parameters when fetching applications
+ */
+export interface ApplicationFilters {
+  pendingPermitsOnly?: boolean;
+  applicationsInQueueOnly?: boolean;
+  getStaffQueue?: boolean;
+}
