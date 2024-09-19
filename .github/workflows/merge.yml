@@ -41,7 +41,7 @@ jobs:
   deploys-test:
     name: Deploys (Test)
     needs: [vars]
-    uses: ./.github/workflows/uat.yml
+    uses: ./.github/workflows/test.yml
     secrets: inherit
     with:
       tag: ${{ needs.vars.outputs.pr }}
