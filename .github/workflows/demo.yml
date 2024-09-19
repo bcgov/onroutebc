@@ -10,11 +10,6 @@ on:
         options: ["test","tools"]
         default: "test"
   
-
-concurrency:
-  group: ${{ github.workflow }}
-  cancel-in-progress: true
-
 jobs:
   uninstall-demo:
     name: Uninstall (demo)
