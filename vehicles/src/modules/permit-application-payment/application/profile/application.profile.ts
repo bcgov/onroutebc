@@ -23,8 +23,8 @@ import { Permit } from '../../permit/entities/permit.entity';
 import { differenceBetween } from '../../../../common/helper/date-time.helper';
 import { Nullable } from '../../../../common/types/common';
 import {
-  ApplicationQueueStatus,
   CaseStatusType,
+  convertCaseStatus,
 } from '../../../../common/enum/case-status-type.enum';
 import { ReadCaseActivityDto } from '../../../case-management/dto/response/read-case-activity.dto';
 
@@ -289,18 +289,13 @@ export class ApplicationProfile extends AutomapperProfile {
             (
               s,
               {
-                applicationsInQueue,
-              }: { applicationsInQueue?: Nullable<boolean> },
+                applicationQueueStatus,
+              }: { applicationQueueStatus?: Nullable<CaseStatusType[]> },
             ) => {
-              if (applicationsInQueue && s.cases?.length) {
-                switch (s.cases?.at(0)?.caseStatusType) {
-                  case CaseStatusType.OPEN:
-                    return ApplicationQueueStatus.PENDING_REVIEW;
-                  case CaseStatusType.IN_PROGRESS:
-                    return ApplicationQueueStatus.IN_REVIEW;
-                  case CaseStatusType.CLOSED:
-                    return ApplicationQueueStatus.CLOSED;
-                }
+              if (applicationQueueStatus?.length && s.cases?.length) {
+                return convertCaseStatus([s.cases?.at(0)?.caseStatusType])?.at(
+                  0,
+                );
               }
             },
           ),
@@ -313,15 +308,15 @@ export class ApplicationProfile extends AutomapperProfile {
               {
                 currentUserRole,
                 currentDateTime,
-                applicationsInQueue,
+                applicationQueueStatus,
               }: {
                 currentUserRole: UserRole;
                 currentDateTime: Date;
-                applicationsInQueue?: Nullable<boolean>;
+                applicationQueueStatus?: Nullable<CaseStatusType[]>;
               },
             ) => {
               if (
-                applicationsInQueue &&
+                applicationQueueStatus?.length &&
                 doesUserHaveRole(currentUserRole, IDIR_USER_ROLE_LIST)
               ) {
                 const diff = differenceBetween(
@@ -346,14 +341,14 @@ export class ApplicationProfile extends AutomapperProfile {
               s,
               {
                 currentUserRole,
-                applicationsInQueue,
+                applicationQueueStatus,
               }: {
                 currentUserRole: UserRole;
-                applicationsInQueue?: Nullable<boolean>;
+                applicationQueueStatus?: Nullable<CaseStatusType[]>;
               },
             ) => {
               if (
-                applicationsInQueue &&
+                applicationQueueStatus?.length &&
                 doesUserHaveRole(currentUserRole, IDIR_USER_ROLE_LIST) &&
                 s.cases?.length
               ) {
