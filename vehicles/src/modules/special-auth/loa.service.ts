@@ -20,6 +20,9 @@ import { Response } from 'express';
 import { Nullable } from '../../common/types/common';
 import { Company } from '../company-user-management/company/entities/company.entity';
 import { UpdateLoaDto } from './dto/request/update-loa.dto';
+import { CreatePermitLoaDto } from './dto/request/create-permit-loa.dto';
+import { ReadPermitLoaDto } from './dto/response/read-permit-loa.dto';
+import { PermitLoa } from './entities/permit-loa.entity';
 
 @Injectable()
 export class LoaService {
@@ -28,6 +31,8 @@ export class LoaService {
     @InjectMapper() private readonly classMapper: Mapper,
     @InjectRepository(LoaDetail)
     private loaDetailRepository: Repository<LoaDetail>,
+    @InjectRepository(PermitLoa)
+    private permitLoaRepository: Repository<PermitLoa>,
     private dataSource: DataSource,
     private readonly dopsService: DopsService,
   ) {}
@@ -173,7 +178,6 @@ export class LoaService {
       where: {
         loaId: loaId,
         company: { companyId: companyId },
-        isActive: true,
       },
       relations: ['company', 'loaVehicles', 'loaPermitTypes'],
     });
@@ -463,5 +467,51 @@ export class LoaService {
     if (affected === 1) {
       return 'File deleted successfully';
     }
+  }
+
+  @LogAsyncMethodExecution()
+  async createPermitLoa(
+    currentUser: IUserJWT,
+    createPermitLoaDto: CreatePermitLoaDto,
+    companyId: number,
+  ): Promise<ReadPermitLoaDto[]> {
+    console.log('company id: ', companyId);
+    const existingPermitLoa = await this.permitLoaRepository.findOne({where: {permitId: createPermitLoaDto.permitId,
+      loa: {loaId: createPermitLoaDto.loaId}
+    }})
+    const permitLoa = await this.classMapper.mapAsync(
+      createPermitLoaDto,
+      CreatePermitLoaDto,
+      PermitLoa,
+      {
+        extraArgs: () => ({
+          userName: currentUser.userName,
+          userGUID: currentUser.userGUID,
+          timestamp: new Date(),
+          directory: currentUser.orbcUserDirectory,
+          permitLoaId: existingPermitLoa?.permitLoaId,
+        }),
+      },
+    );
+    await this.permitLoaRepository.save(permitLoa);
+    permitLoa.permitId;
+    const savedPermitLoa = await this.permitLoaRepository
+      .createQueryBuilder('permitLoa')
+      .innerJoinAndSelect('permitLoa.loa', 'loa')
+      .innerJoinAndSelect('loa.loaVehicles', 'loaVehicles')
+      .innerJoinAndSelect('loa.loaPermitTypes', 'loaPermitTypes')
+      .where('permitLoa.permitId = :permitId', {
+        permitId: permitLoa.permitId,
+      })
+      .getMany();
+    console.log('savedPermitLoa: ', savedPermitLoa);
+    const readPermitLoaDto: ReadPermitLoaDto[] =
+      await this.classMapper.mapArrayAsync(
+        savedPermitLoa,
+        PermitLoa,
+        ReadPermitLoaDto,
+      );
+    console.log('readPermitLoaDto: ', readPermitLoaDto);
+    return readPermitLoaDto;
   }
 }

@@ -14,6 +14,9 @@ import { LoaPermitType } from '../entities/loa-permit-type-details.entity';
 import { LoaVehicle } from '../entities/loa-vehicles.entity';
 import * as dayjs from 'dayjs';
 import { UpdateLoaDto } from '../dto/request/update-loa.dto';
+import { CreatePermitLoaDto } from '../dto/request/create-permit-loa.dto';
+import { PermitLoa } from '../entities/permit-loa.entity';
+import { ReadPermitLoaDto } from '../dto/response/read-permit-loa.dto';
 
 @Injectable()
 export class LoaProfile extends AutomapperProfile {
@@ -424,6 +427,105 @@ export class LoaProfile extends AutomapperProfile {
               return s.loaVehicles
                 .filter((lv) => lv.trailer)
                 .map((lv) => lv.trailer);
+          }),
+        ),
+      );
+
+      createMap(
+        mapper,
+        CreatePermitLoaDto,
+        PermitLoa,
+        forMember(
+          (d) => d.permitLoaId,
+          mapWithArguments((_, { permitLoaId }) => {
+            return permitLoaId;
+          }),
+        ),
+        forMember(
+          (d) => d.permitId,
+          mapFrom((s) => {
+            return s.permitId;
+          }),
+        ),
+        forMember(
+          (d) => d.loa.loaId,
+          mapFrom((s) => {
+            return s.loaId;
+          }),
+        ),
+        forMember(
+          (d) => d.createdUserGuid,
+          mapWithArguments((_, { userGUID }) => {
+            return userGUID;
+          }),
+        ),
+        forMember(
+          (d) => d.createdUser,
+          mapWithArguments((_, { userName }) => {
+            return userName;
+          }),
+        ),
+        forMember(
+          (d) => d.createdUserDirectory,
+          mapWithArguments((_, { directory }) => {
+            return directory;
+          }),
+        ),
+
+        forMember(
+          (d) => d.createdDateTime,
+          mapWithArguments((_, { timestamp }) => {
+            return timestamp;
+          }),
+        ),
+
+        forMember(
+          (d) => d.updatedUserGuid,
+          mapWithArguments((_, { userGUID }) => {
+            return userGUID;
+          }),
+        ),
+        forMember(
+          (d) => d.updatedUser,
+          mapWithArguments((_, { userName }) => {
+            return userName;
+          }),
+        ),
+        forMember(
+          (d) => d.updatedUserDirectory,
+          mapWithArguments((_, { directory }) => {
+            return directory;
+          }),
+        ),
+
+        forMember(
+          (d) => d.updatedDateTime,
+          mapWithArguments((_, { timestamp }) => {
+            return timestamp;
+          }),
+        ),
+      );
+
+      createMap(
+        mapper,
+        PermitLoa,
+        ReadPermitLoaDto,
+        forMember(
+          (d) => d.permitId,
+          mapFrom((s) => {
+            return s.permitId;
+          }),
+        ),
+        forMember(
+          (d) => d.permitLoaId,
+          mapFrom((s) => {
+            return s.permitLoaId;
+          }),
+        ),
+        forMember(
+          (d) => d.loa,
+          mapFrom((s) => {
+            return s.loa;
           }),
         ),
       );

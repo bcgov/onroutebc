@@ -44,6 +44,8 @@ import { Claim } from 'src/common/enum/claims.enum';
 import { ReadLoaDto } from './dto/response/read-loa.dto';
 import { GetLoaQueryParamsDto } from './dto/request/queryParam/get-loa.query-params.dto';
 import { UpdateLoaFileDto } from './dto/request/update-loa-file.dto';
+import { ReadPermitLoaDto } from './dto/response/read-permit-loa.dto';
+import { CreatePermitLoaDto } from './dto/request/create-permit-loa.dto';
 
 @ApiBearerAuth()
 @ApiTags('Letter of Authorization (LoA)')
@@ -228,5 +230,30 @@ export class LoaController {
       loaId,
     );
     return loa;
+  }
+
+  @ApiOperation({
+    summary: 'Designate LoA to permit.',
+    description:
+      'Designate LoA to permit. Returns the created permit LoA object from the database.',
+  })
+  @ApiCreatedResponse({
+    description: 'Permit Loa Details',
+    type: ReadPermitLoaDto,
+  })
+  @Permissions({ claim: Claim.WRITE_LOA })
+  @Post('/permit')
+  async createPermitLoa(
+    @Req() request: Request,
+    @Param() { companyId }: CompanyIdPathParamDto,
+    @Body() createPermitLoaDto: CreatePermitLoaDto,
+  ): Promise<ReadPermitLoaDto[]> {
+    const currentUser = request.user as IUserJWT;
+    const result = await this.loaService.createPermitLoa(
+      currentUser,
+      createPermitLoaDto,
+      companyId,
+    );
+    return result;
   }
 }
