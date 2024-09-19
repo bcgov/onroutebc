@@ -788,7 +788,10 @@ export class PaymentService {
       application.company.companyId,
       queryRunner,
     );
-    const oldAmount = permitPaymentHistory.length > 0?calculatePermitAmount(permitPaymentHistory):undefined;
+    const oldAmount =
+      permitPaymentHistory.length > 0
+        ? calculatePermitAmount(permitPaymentHistory)
+        : undefined;
     const fee = permitFee(application, isNoFee, oldAmount);
     return fee;
   }

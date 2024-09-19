@@ -28,6 +28,10 @@ import { IDIR_USER_ROLE_LIST } from '../../../common/enum/user-role.enum';
 import { PaginationDto } from '../../../common/dto/paginate/pagination';
 import { ReadApplicationMetadataDto } from './dto/response/read-application-metadata.dto';
 import { GetApplicationQueryParamsDto } from './dto/request/queryParam/getApplication.query-params.dto';
+import {
+  ApplicationQueueStatus,
+  convertApplicationQueueStatus,
+} from '../../../common/enum/case-status-type.enum';
 
 @ApiBearerAuth()
 @ApiTags('Application : API accessible exclusively to staff users and SA.')
@@ -66,11 +70,10 @@ export class ApplicationController {
       orderBy,
       searchColumn,
       searchString,
-      applicationsInQueue,
+      applicationQueueStatus,
     }: GetApplicationQueryParamsDto,
   ): Promise<PaginationDto<ReadApplicationMetadataDto>> {
     const currentUser = request.user as IUserJWT;
-
     return await this.applicationService.findAllApplications({
       page,
       take,
@@ -78,7 +81,9 @@ export class ApplicationController {
       currentUser,
       searchColumn,
       searchString,
-      applicationsInQueue,
+      applicationQueueStatus: convertApplicationQueueStatus(
+        (applicationQueueStatus?.split(',') as ApplicationQueueStatus[]) || [],
+      ),
     });
   }
 
