@@ -33,6 +33,7 @@ import { IssuanceErrorPage } from "../common/pages/IssuanceErrorPage";
 import IDPRedirect from "../common/components/idpredirect/IDPRedirect";
 import { ShoppingCartDashboard } from "../features/permits/ShoppingCartDashboard";
 import { DocumentUnavailable } from "../common/pages/DocumentUnavailable";
+import { StaffDashboard } from "../features/idir/staff/pages/StaffDashboard";
 
 export const AppRoutes = () => {
   return (
@@ -61,7 +62,7 @@ export const AppRoutes = () => {
         element={<DocumentUnavailable />}
       />
       <Route path="*" element={<UniversalUnexpected />} />
-      
+
       {/* Wizard Routes */}
 
       {/* Wizard Routes only require that a user
@@ -108,6 +109,22 @@ export const AppRoutes = () => {
         <Route
           path={routes.IDIR_ROUTES.SEARCH_RESULTS}
           element={<IDIRSearchResultsDashboard />}
+        />
+      </Route>
+
+      <Route
+        element={
+          <IDIRAuthWall
+            permissionMatrixKeys={{
+              permissionMatrixFeatureKey: "STAFF_HOME_SCREEN",
+              permissionMatrixFunctionKey: "VIEW_QUEUE",
+            }}
+          />
+        }
+      >
+        <Route
+          path={routes.IDIR_ROUTES.STAFF_HOME}
+          element={<StaffDashboard />}
         />
       </Route>
 

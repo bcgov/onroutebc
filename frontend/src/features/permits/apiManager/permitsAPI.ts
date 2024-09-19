@@ -56,6 +56,7 @@ import {
   APPLICATIONS_API_ROUTES,
   PAYMENT_API_ROUTES,
   PERMITS_API_ROUTES,
+  STAFF_APPLICATIONS_API_ROUTES,
 } from "./endpoints/endpoints";
 
 import {
@@ -65,6 +66,7 @@ import {
 } from "../pages/Void/types/VoidPermit";
 import { EmailNotificationType } from "../types/EmailNotificationType";
 import { CaseActivityType } from "../types/CaseActivityType";
+import { APPLICATION_QUEUE_STATUSES } from "../types/ApplicationQueueStatus";
 
 /**
  * Create a new application.
@@ -110,6 +112,12 @@ export const updateApplication = async (
   );
 };
 
+interface ApplicationFilters {
+  pendingPermitsOnly?: boolean;
+  applicationsInQueueOnly?: boolean;
+  getStaffQueue?: boolean;
+}
+
 const getApplications = async (
   {
     page = 0,
@@ -117,11 +125,19 @@ const getApplications = async (
     searchString = "",
     orderBy = [],
   }: PaginationAndFilters,
-  pendingPermitsOnly?: boolean,
-  applicationsInQueueOnly?: boolean,
+  {
+    pendingPermitsOnly,
+    applicationsInQueueOnly,
+    getStaffQueue,
+  }: ApplicationFilters,
 ): Promise<PaginatedResponse<ApplicationListItem>> => {
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
-  const applicationsURL = new URL(APPLICATIONS_API_ROUTES.GET(companyId));
+
+  /* if the user is staff and not acting as a company, get timeInQueue and claimedBy properties 
+  in addition to the ApplicationListItem response */
+  const applicationsURL = getStaffQueue
+    ? new URL(STAFF_APPLICATIONS_API_ROUTES.GET())
+    : new URL(APPLICATIONS_API_ROUTES.GET(companyId));
 
   // API pagination index starts at 1. Hence page + 1.
   applicationsURL.searchParams.set("page", `${page + 1}`);
@@ -136,8 +152,8 @@ const getApplications = async (
 
   if (typeof applicationsInQueueOnly !== "undefined") {
     applicationsURL.searchParams.set(
-      "applicationsInQueue",
-      `${Boolean(applicationsInQueueOnly)}`,
+      "applicationQueueStatus",
+      `${APPLICATION_QUEUE_STATUSES.PENDING_REVIEW},${APPLICATION_QUEUE_STATUSES.IN_REVIEW}`,
     );
   }
 
@@ -192,7 +208,9 @@ const getApplications = async (
 export const getApplicationsInProgress = async (
   paginationFilters: PaginationAndFilters,
 ): Promise<PaginatedResponse<ApplicationListItem>> => {
-  return await getApplications(paginationFilters, false);
+  return await getApplications(paginationFilters, {
+    pendingPermitsOnly: false,
+  });
 };
 
 /**
@@ -202,7 +220,7 @@ export const getApplicationsInProgress = async (
 export const getPendingPermits = async (
   paginationFilters: PaginationAndFilters,
 ): Promise<PaginatedResponse<ApplicationListItem>> => {
-  return await getApplications(paginationFilters, true);
+  return await getApplications(paginationFilters, { pendingPermitsOnly: true });
 };
 
 /**
@@ -211,8 +229,12 @@ export const getPendingPermits = async (
  */
 export const getApplicationsInQueue = async (
   paginationFilters: PaginationAndFilters,
+  getStaffQueue: boolean,
 ): Promise<PaginatedResponse<ApplicationListItem>> => {
-  return await getApplications(paginationFilters, undefined, true);
+  return await getApplications(paginationFilters, {
+    applicationsInQueueOnly: true,
+    getStaffQueue,
+  });
 };
 
 /**

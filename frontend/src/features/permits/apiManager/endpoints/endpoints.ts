@@ -8,11 +8,19 @@ const PERMITS_API_BASE = (companyId: string) =>
 
 const STAFF_PERMIT_API_BASE = `${VEHICLES_URL}/permits`;
 
+const STAFF_APPLICATIONS_API_BASE = `${VEHICLES_URL}/applications`;
+
 export const APPLICATIONS_API_ROUTES = {
   CREATE: (companyId: string) => APPLICATIONS_API_BASE(companyId),
   UPDATE: (companyId: string) => APPLICATIONS_API_BASE(companyId),
+  // the endpoint for fetching applications for use in the ApplicationsInReviewList component
   GET: (companyId: string) => APPLICATIONS_API_BASE(companyId),
   DELETE: (companyId: string) => APPLICATIONS_API_BASE(companyId),
+};
+
+export const STAFF_APPLICATIONS_API_ROUTES = {
+  // the endpoint for fetching applications for use in the ApplicationsInQueueList component
+  GET: () => STAFF_APPLICATIONS_API_BASE,
 };
 
 export const APPLICATION_QUEUE_API_ROUTES = {

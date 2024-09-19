@@ -41,6 +41,11 @@ import {
   CaseActivityType,
 } from "../types/CaseActivityType";
 import { SnackBarContext } from "../../../App";
+import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
+import {
+  IDIR_USER_ROLE,
+  IDIRUserRoleType,
+} from "../../../common/authentication/types";
 
 const QUERY_KEYS = {
   PERMIT_DETAIL: (
@@ -511,10 +516,24 @@ export const usePendingPermitsQuery = () => {
 };
 
 /**
- * Hook that fetches applications in queue (PENDING_REVIEW, IN_REVIEW) and manages its pagination state.
- * @returns Applications in queue along with pagination state and setter
+ * Hook that fetches all applications in queue (PENDING_REVIEW, IN_REVIEW) for staff and manages its pagination state.
+ * This is the data that is consumed by the ApplicationsInQueueList and ClaimedApplicationsList components
+ * @returns All applications in queue along with pagination state and setter
  */
 export const useApplicationsInQueueQuery = () => {
+  const { idirUserDetails, companyId } = useContext(OnRouteBCContext);
+  const userRole = idirUserDetails?.userRole as IDIRUserRoleType;
+
+  const staffUserRoles: IDIRUserRoleType[] = [
+    IDIR_USER_ROLE.SYSTEM_ADMINISTRATOR,
+    IDIR_USER_ROLE.PPC_CLERK,
+    IDIR_USER_ROLE.CTPO,
+  ];
+
+  const isStaffUser = staffUserRoles.includes(userRole);
+  // if typeof company === "undefined" we know that the staff user is NOT acting as a company
+  const getStaffQueue = isStaffUser && typeof companyId === "undefined";
+
   const [pagination, setPagination] = useState<MRT_PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -545,11 +564,14 @@ export const useApplicationsInQueueQuery = () => {
       sorting,
     ],
     queryFn: () =>
-      getApplicationsInQueue({
-        page: pagination.pageIndex,
-        take: pagination.pageSize,
-        orderBy,
-      }),
+      getApplicationsInQueue(
+        {
+          page: pagination.pageIndex,
+          take: pagination.pageSize,
+          orderBy,
+        },
+        getStaffQueue,
+      ),
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
     refetchOnMount: "always",
     placeholderData: keepPreviousData,
@@ -603,7 +625,9 @@ export const useInvalidateApplicationsInQueue = () => {
 
   return {
     invalidate: () => {
-      queryClient.invalidateQueries({ queryKey: ["applicationsInQueue"] });
+      queryClient.invalidateQueries({
+        queryKey: ["companyApplicationsInQueue"],
+      });
     },
   };
 };

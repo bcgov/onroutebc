@@ -143,6 +143,7 @@ export const IDIR_ROUTES = {
   SEARCH_RESULTS: `${IDIR_ROUTE_BASE}/search-results`,
   REPORTS: `${IDIR_ROUTE_BASE}/reports`,
   CREATE_COMPANY: `${IDIR_ROUTE_BASE}/create-company`,
+  STAFF_HOME: `${IDIR_ROUTE_BASE}/home`,
 };
 
 // Payment

@@ -3,7 +3,12 @@ import { useEffect } from "react";
 import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router-dom";
 
-import { BCeIDUserContextType, IDIRUserContextType } from "./types";
+import {
+  BCeIDUserContextType,
+  IDIR_USER_ROLE,
+  IDIRUserContextType,
+  IDIRUserRoleType,
+} from "./types";
 import { Loading } from "../pages/Loading";
 import { IDPS } from "../types/idp";
 import { Optional } from "../types/common";
@@ -25,8 +30,12 @@ const navigateBCeID = (
   const { associatedCompanies, pendingCompanies, migratedClient, user } =
     userContextData;
 
-  const isAssociatedSuspended = associatedCompanies?.find((company) => company?.isSuspended);
-  const isPendingSuspended = pendingCompanies?.find((company) => company?.isSuspended);
+  const isAssociatedSuspended = associatedCompanies?.find(
+    (company) => company?.isSuspended,
+  );
+  const isPendingSuspended = pendingCompanies?.find(
+    (company) => company?.isSuspended,
+  );
 
   // If the user does not exist
   if (!user?.userGUID) {
@@ -90,6 +99,12 @@ export const LoginRedirect = () => {
 
   useUserContext(userContextResponse);
 
+  const staffRoles: IDIRUserRoleType[] = [
+    IDIR_USER_ROLE.CTPO,
+    IDIR_USER_ROLE.PPC_CLERK,
+    IDIR_USER_ROLE.SYSTEM_ADMINISTRATOR,
+  ];
+
   /**
    * Hook to determine where to navigate to.
    */
@@ -109,7 +124,14 @@ export const LoginRedirect = () => {
       } else if (userFromToken?.profile?.identity_provider === IDPS.IDIR) {
         const userContextData: Optional<IDIRUserContextType> =
           queryClient.getQueryData<IDIRUserContextType>(["userContext"]);
-        if (userContextData?.user?.userGUID) {
+        // only IDIR users with PC, SA, CTPO or TRAIN should redirect to STAFF_HOME
+        if (
+          staffRoles.includes(
+            userContextData?.user?.userRole as IDIRUserRoleType,
+          )
+        ) {
+          navigate(IDIR_ROUTES.STAFF_HOME);
+        } else if (userContextData?.user?.userGUID) {
           navigate(IDIR_ROUTES.WELCOME);
         } else {
           navigate(ERROR_ROUTES.UNAUTHORIZED);
