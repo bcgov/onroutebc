@@ -43,16 +43,37 @@ export const PermitLOA = ({
   // For applications, only show the current active LOAs as selectable LOAs
   // For issued permits (amendments), combine the current active LOAs and snapshotted LOAs as selectable LOAs
   const loasForTable = useMemo(() => {
-    return companyLOAs.map(loa => ({
-      loa,
-      checked: selectedLOAs.map(selectedLOA => selectedLOA.loaId).includes(loa.loaId),
-      disabled: Boolean(loa.expiryDate) && minPermitExpiryDate.isAfter(getEndOfDate(dayjs(loa.expiryDate))),
-    })).concat(!isPermitIssued ? [] : originalSelectedLOAs.map(originalSelectedLOA => ({
-      loa: originalSelectedLOA,
-      checked: selectedLOAs.map(selectedLOA => selectedLOA.loaId).includes(originalSelectedLOA.loaId),
-      disabled: false,
-    })));
-  }, [originalSelectedLOAs, companyLOAs, selectedLOAs, isPermitIssued]);
+    // The LOA table should only show each LOA once, but there's a chance that an existing company LOA
+    // is also a selected LOA, which means that LOA should only be shown once.
+    // Thus, any overlapping LOA between company LOAs and selected LOAs should be filtered out,
+    // and all non-overlapping unique LOAs should be included in the table (with only selected LOA checkboxes being checked)
+    const companyLOAIds = new Set([...companyLOAs.map(loa => loa.loaId)]);
+    const currentlySelectedIds = new Set([...selectedLOAs.map(loa => loa.loaId)]);
+
+    return companyLOAs.concat(
+      // no need to include existing company LOAs again in table
+      !isPermitIssued ? [] : originalSelectedLOAs.filter(loa => !companyLOAIds.has(loa.loaId))
+    ).map(loa => {
+      const wasSelected = currentlySelectedIds.has(loa.loaId);
+      const isExpiringBeforeMinPermitExpiry = Boolean(loa.expiryDate)
+        && minPermitExpiryDate.isAfter(getEndOfDate(dayjs(loa.expiryDate)));
+      
+      // For applications, deselect and disable any LOAs expiring before min permit expiry date
+      // For issued permits (amendments), keep the original selection and enable only when the
+      // LOA was selected before, or if it wasn't previously selected but is valid
+      const isSelected = (!isPermitIssued && wasSelected && !isExpiringBeforeMinPermitExpiry)
+        || (isPermitIssued && wasSelected);
+
+      const isEnabled = (!isPermitIssued && !isExpiringBeforeMinPermitExpiry)
+        || (isPermitIssued && (isSelected || !isExpiringBeforeMinPermitExpiry));
+      
+      return {
+        loa,
+        checked: isSelected,
+        disabled: !isEnabled,
+      };
+    });
+  }, [originalSelectedLOAs, companyLOAs, selectedLOAs, isPermitIssued, minPermitExpiryDate]);
 
   const handleSelectLOA = (loaId: string) => {
     const loa = loasForTable.find(loaRow => loaRow.loa.loaId === loaId);
