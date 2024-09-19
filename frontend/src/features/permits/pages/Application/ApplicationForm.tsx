@@ -23,7 +23,7 @@ import { durationOptionsForPermitType } from "../../helpers/dateSelection";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import { PAST_START_DATE_STATUSES } from "../../../../common/components/form/subFormComponents/CustomDatePicker";
 import { useFetchLOAs } from "../../../settings/hooks/LOA";
-import { toLocalDayjs } from "../../../../common/helpers/formatDate";
+import { getEndOfDate, toLocalDayjs } from "../../../../common/helpers/formatDate";
 import { useFetchSpecialAuthorizations } from "../../../settings/hooks/specialAuthorizations";
 import {
   applyWhenNotNullable,
@@ -88,9 +88,17 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     userDetails,
   );
 
+  // Applicable LOAs must be:
+  // 1. Applicable for the current permit type
+  // 2. Have expiry date that is on or after the start date for an application
   const applicableLOAs = getDefaultRequiredVal([], activeLOAs).filter(
     loa => loa.loaPermitType.includes(permitType)
-      && (!loa.expiryDate || !currentFormData.permitData.startDate.isAfter(toLocalDayjs(loa.expiryDate)))
+      && (
+        !loa.expiryDate
+          || !currentFormData.permitData.startDate.isAfter(
+            getEndOfDate(toLocalDayjs(loa.expiryDate)),
+          )
+      )
   );
 
   const createdDateTime = applyWhenNotNullable(
@@ -273,7 +281,7 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
               ? PAST_START_DATE_STATUSES.WARNING
               : PAST_START_DATE_STATUSES.FAIL
           }
-          selectableLOAs={applicableLOAs}
+          companyLOAs={applicableLOAs}
           isLcvDesignated={isLcvDesignated}
         />
       </FormProvider>

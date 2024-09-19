@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { useFormContext } from "react-hook-form";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 import "./PermitForm.scss";
 import { FormActions } from "./FormActions";
@@ -19,7 +19,7 @@ import { isVehicleSubtypeLCV } from "../../../../../manageVehicles/helpers/vehic
 import { PermitCondition } from "../../../../types/PermitCondition";
 import { LCV_CONDITION } from "../../../../constants/constants";
 import { sortConditions } from "../../../../helpers/conditions";
-import { getStartOfDate } from "../../../../../../common/helpers/formatDate";
+import { getEndOfDate, getStartOfDate } from "../../../../../../common/helpers/formatDate";
 import { getExpiryDate } from "../../../../helpers/permitState";
 import {
   PowerUnit,
@@ -31,6 +31,7 @@ import {
   getIneligiblePowerUnitSubtypes,
   getIneligibleTrailerSubtypes,
 } from "../../../../helpers/permitVehicles";
+import { minDurationForPermitType } from "../../../../helpers/dateSelection";
 
 interface PermitFormProps {
   feature: string;
@@ -53,7 +54,7 @@ interface PermitFormProps {
   }[];
   doingBusinessAs?: Nullable<string>;
   pastStartDateStatus: PastStartDateStatus;
-  selectableLOAs: LOADetail[];
+  companyLOAs: LOADetail[];
   isLcvDesignated: boolean;
 }
 
@@ -67,7 +68,7 @@ export const PermitForm = (props: PermitFormProps) => {
   const permitDuration = watch("permitData.permitDuration");
   const permitConditions = watch("permitData.commodities");
   const vehicleFormData = watch("permitData.vehicleDetails");
-  const loaSnapshots: LOADetail[] = watch("permitData.loas");
+  const currentSelectedLOAs: LOADetail[] = watch("permitData.loas");
 
   const handleSetConditions = (conditions: PermitCondition[]) => {
     setValue("permitData.commodities", [...conditions]);
@@ -90,13 +91,54 @@ export const PermitForm = (props: PermitFormProps) => {
     });
   };
 
+  const handleSetDuration = (duration: number) => {
+    setValue("permitData.permitDuration", duration);
+  };
+
   const handleSetExpiryDate = (expiry: Dayjs) => {
     setValue("permitData.expiryDate", dayjs(expiry));
+  };
+
+  const getMostRecentExpiryFromLOAs = (loas: LOADetail[]) => {
+    const expiringLOAs = loas.filter(loa => Boolean(loa.expiryDate));
+    if (expiringLOAs.length === 0) return null;
+
+    const firstLOAExpiryDate = getEndOfDate(dayjs(expiringLOAs[0].expiryDate));
+    return expiringLOAs.map(loa => loa.expiryDate)
+      .reduce((prevExpiry, currExpiry) => {
+        const prevExpiryDate = getEndOfDate(dayjs(prevExpiry));
+        const currExpiryDate = getEndOfDate(dayjs(currExpiry));
+        return prevExpiryDate.isAfter(currExpiryDate) ? currExpiryDate : prevExpiryDate;
+      }, firstLOAExpiryDate);
   };
 
   const handleUpdateLOAs = (updatedLOAs: LOADetail[]) => {
     setValue("permitData.loas", updatedLOAs);
   };
+
+  // Limit permit duration options based on selected LOAs
+  const providedDurationOptions = props.durationOptions;
+  const durationOptions = useMemo(() => {
+    const mostRecentLOAExpiry = getMostRecentExpiryFromLOAs(currentSelectedLOAs);
+    if (!mostRecentLOAExpiry) return providedDurationOptions;
+
+    return providedDurationOptions
+      .filter(({ value: durationDays }) => mostRecentLOAExpiry.isAfter(getExpiryDate(startDate, durationDays)));
+  }, [providedDurationOptions, currentSelectedLOAs, startDate]);
+
+  useEffect(() => {
+    // If duration options change, check if the current permit duration is still selectable
+    const minAllowableDuration = minDurationForPermitType(permitType);
+    const maxDurationInOptions = Math.max(...durationOptions.map(durationOption => durationOption.value));
+
+    if (permitDuration > maxDurationInOptions) {
+      if (maxDurationInOptions < minAllowableDuration) {
+        handleSetDuration(minAllowableDuration);
+      } else {
+        handleSetDuration(maxDurationInOptions);
+      }
+    }
+  }, [permitDuration, durationOptions, permitType]);
 
   const isLcvDesignated = props.isLcvDesignated;
   const ineligiblePowerUnitSubtypes = getIneligiblePowerUnitSubtypes(permitType)
@@ -153,8 +195,8 @@ export const PermitForm = (props: PermitFormProps) => {
           permitType={permitType}
           startDate={startDate}
           isPermitIssued={isAmendAction}
-          loaSnapshots={loaSnapshots}
-          companyLOAs={props.selectableLOAs}
+          selectedLOAs={currentSelectedLOAs}
+          companyLOAs={props.companyLOAs}
           onUpdateLOAs={handleUpdateLOAs}
         />
 
@@ -162,7 +204,7 @@ export const PermitForm = (props: PermitFormProps) => {
           feature={props.feature}
           expiryDate={expiryDate}
           conditionsInPermit={permitConditions}
-          durationOptions={props.durationOptions}
+          durationOptions={durationOptions}
           disableStartDate={isAmendAction}
           permitType={permitType}
           pastStartDateStatus={props.pastStartDateStatus}

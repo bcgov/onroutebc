@@ -15,7 +15,8 @@ import { LOADetail } from "../../../../../settings/types/SpecialAuthorization";
 import { applyWhenNotNullable } from "../../../../../../common/helpers/util";
 import { DATE_FORMATS, toLocal } from "../../../../../../common/helpers/formatDate";
 
-interface SelectableLOA extends LOADetail {
+interface SelectableLOA {
+  loa: LOADetail;
   checked: boolean;
   disabled: boolean;
 }
@@ -43,8 +44,8 @@ export const LOATable = ({
         </TableHead>
 
         <TableBody>
-          {loas.map((loa) => (
-            <TableRow key={loa.loaId} className="loa-table__row">
+          {loas.map((selectableLOA) => (
+            <TableRow key={selectableLOA.loa.loaId} className="loa-table__row">
               <TableCell
                 className="loa-table__cell loa-table__cell--loa-number"
                 component="th"
@@ -54,18 +55,18 @@ export const LOATable = ({
                   control={
                     <Checkbox
                       className={`loa-table__checkbox ${
-                        loa.disabled
+                        selectableLOA.disabled
                           ? "loa-table__checkbox--disabled"
                           : ""
                       }`}
-                      key={loa.loaId}
-                      checked={loa.checked}
-                      disabled={loa.disabled}
-                      onChange={() => onSelectLOA(loa.loaId)}
+                      key={selectableLOA.loa.loaId}
+                      checked={selectableLOA.checked}
+                      disabled={selectableLOA.disabled}
+                      onChange={() => onSelectLOA(selectableLOA.loa.loaId)}
                     />
                   }
-                  key={loa.loaNumber}
-                  label={loa.loaNumber}
+                  key={selectableLOA.loa.loaNumber}
+                  label={selectableLOA.loa.loaNumber}
                 />
               </TableCell>
 
@@ -76,7 +77,7 @@ export const LOATable = ({
               >
                 {applyWhenNotNullable(
                   expiryDate => toLocal(expiryDate, DATE_FORMATS.DATEONLY_SLASH),
-                  loa.expiryDate,
+                  selectableLOA.loa.expiryDate,
                   "Never expires",
                 )}
               </TableCell>

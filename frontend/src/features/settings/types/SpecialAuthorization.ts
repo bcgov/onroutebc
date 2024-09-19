@@ -41,6 +41,8 @@ export interface LOADetail {
   comment?: Nullable<string>;
   powerUnits: string[];
   trailers: string[];
+  originalLoaId: string;
+  previousLoaId?: Nullable<string>;
 }
 
 export interface CreateLOARequestData {
@@ -86,7 +88,9 @@ export const areLOADetailsEqual = (
     && areArraysEqual<string>(loa1.loaPermitType, loa2.loaPermitType)
     && loa1.comment === loa2.comment
     && areArraysEqual<string>(loa1.powerUnits, loa2.powerUnits)
-    && areArraysEqual<string>(loa1.trailers, loa2.trailers);
+    && areArraysEqual<string>(loa1.trailers, loa2.trailers)
+    && loa1.originalLoaId === loa2.originalLoaId
+    && loa1.previousLoaId === loa2.previousLoaId;
 };
 export interface SpecialAuthorizationData {
   companyId: number;

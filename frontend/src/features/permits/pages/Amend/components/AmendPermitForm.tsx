@@ -223,7 +223,7 @@ export const AmendPermitForm = () => {
           durationOptions={durationOptions}
           doingBusinessAs={doingBusinessAs}
           pastStartDateStatus={PAST_START_DATE_STATUSES.WARNING}
-          selectableLOAs={applicableLOAs}
+          companyLOAs={applicableLOAs}
           isLcvDesignated={isLcvDesignated}
         >
           <AmendRevisionHistory revisionHistory={revisionHistory} />
