@@ -40,12 +40,13 @@ import { LoaIdPathParamDto } from './dto/request/pathParam/loa-Id.path-params.dt
 import { GetDocumentQueryParamsDto } from '../common/dto/request/queryParam/getDocument.query-params.dto';
 import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-flag-enabled.decorator';
 import { Permissions } from 'src/common/decorator/permissions.decorator';
-import { Claim } from 'src/common/enum/claims.enum';
 import { ReadLoaDto } from './dto/response/read-loa.dto';
 import { GetLoaQueryParamsDto } from './dto/request/queryParam/get-loa.query-params.dto';
 import { UpdateLoaFileDto } from './dto/request/update-loa-file.dto';
 import { ReadPermitLoaDto } from './dto/response/read-permit-loa.dto';
 import { CreatePermitLoaDto } from './dto/request/create-permit-loa.dto';
+import { CLIENT_USER_ROLE_LIST, IDIR_USER_ROLE_LIST, IDIR_USER_ROLE_LIST_FOR_LOA } from 'src/common/enum/user-role.enum';
+import { PermitIdPathParamDto } from '../common/dto/request/pathParam/permitId.path-param.dto';
 
 @ApiBearerAuth()
 @ApiTags('Letter of Authorization (LoA)')
@@ -80,7 +81,7 @@ export class LoaController {
     type: ReadLoaDto,
   })
   @ApiConsumes('multipart/form-data')
-  @Permissions({ claim: Claim.WRITE_LOA })
+  @Permissions({ allowedIdirRoles: IDIR_USER_ROLE_LIST_FOR_LOA })
   @Post()
   @UseInterceptors(FileInterceptor('file'), JsonReqBodyInterceptor)
   async create(
@@ -111,6 +112,9 @@ export class LoaController {
     summary: 'Get all LoA for a company.',
     description: 'Returns all LOAs for a company in the database.',
   })
+  @Permissions({ allowedIdirRoles: IDIR_USER_ROLE_LIST,
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+   })
   @Get()
   async get(
     @Param() { companyId }: CompanyIdPathParamDto,
@@ -127,7 +131,9 @@ export class LoaController {
     summary: 'Get LoA by Id.',
     description: 'Returns the LoA object from the database.',
   })
-  @Permissions({ claim: Claim.READ_LOA })
+  @Permissions({ allowedIdirRoles: IDIR_USER_ROLE_LIST,
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+   })
   @Get('/:loaId')
   async getById(
     @Req() request: Request,
@@ -143,7 +149,7 @@ export class LoaController {
     description: 'Updates and returns the LoA object from the database.',
   })
   @ApiConsumes('multipart/form-data')
-  @Permissions({ claim: Claim.WRITE_LOA })
+  @Permissions({ allowedIdirRoles: IDIR_USER_ROLE_LIST_FOR_LOA })
   @Put('/:loaId')
   @UseInterceptors(FileInterceptor('file'), JsonReqBodyInterceptor)
   async update(
@@ -176,7 +182,7 @@ export class LoaController {
     summary: 'Delete LoA by Id.',
     description: 'Deletes the LoA object from the database.',
   })
-  @Permissions({ claim: Claim.WRITE_LOA })
+  @Permissions({ allowedIdirRoles: IDIR_USER_ROLE_LIST_FOR_LOA })
   @Delete('/:loaId')
   async delete(
     @Req() request: Request,
@@ -191,7 +197,9 @@ export class LoaController {
     summary: 'Get LoA Document',
     description: 'Retrieve the LoA document from the database.',
   })
-  @Permissions({ claim: Claim.READ_LOA })
+  @Permissions({ allowedIdirRoles: IDIR_USER_ROLE_LIST,
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+   })
   @Get('/:loaId/documents')
   async getLoaDocument(
     @Req() request: Request,
@@ -217,7 +225,7 @@ export class LoaController {
     summary: 'Delete LoA Document',
     description: 'Deletes the LoA document from the database.',
   })
-  @Permissions({ claim: Claim.WRITE_LOA })
+  @Permissions({ allowedIdirRoles: IDIR_USER_ROLE_LIST_FOR_LOA })
   @Delete('/:loaId/documents')
   async deleteLoaDocument(
     @Req() request: Request,
@@ -240,9 +248,10 @@ export class LoaController {
   @ApiCreatedResponse({
     description: 'Permit Loa Details',
     type: ReadPermitLoaDto,
+    isArray: true,
   })
-  @Permissions({ claim: Claim.WRITE_LOA })
-  @Post('/permit')
+  @Permissions({ allowedIdirRoles: IDIR_USER_ROLE_LIST_FOR_LOA })
+  @Post('/permits')
   async createPermitLoa(
     @Req() request: Request,
     @Param() { companyId }: CompanyIdPathParamDto,
@@ -253,6 +262,27 @@ export class LoaController {
       currentUser,
       createPermitLoaDto,
       companyId,
+    );
+    return result;
+  }
+
+  @ApiOperation({
+    summary: 'Get all LoA designated to a permit.',
+    description:
+      'Retrieves all LoA objects from the database that are associated with the specified permit..',
+  })
+  @ApiCreatedResponse({
+    description: 'Permit Loa Details',
+    isArray: true,
+    type: ReadPermitLoaDto,
+  })
+  @Permissions({ allowedIdirRoles: IDIR_USER_ROLE_LIST_FOR_LOA })
+  @Get('/permits')
+  async getPermitLoa(
+    @Param() { permitId }: PermitIdPathParamDto,
+  ): Promise<ReadPermitLoaDto[]> {
+    const result = await this.loaService.findAllPermitLoa(
+      permitId,
     );
     return result;
   }

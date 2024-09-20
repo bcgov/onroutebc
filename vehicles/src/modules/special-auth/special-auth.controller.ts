@@ -18,8 +18,8 @@ import { Request } from 'express';
 import { CreateLcvDto } from './dto/request/create-lcv.dto';
 import { CreateNoFeeDto } from './dto/request/create-no-fee.dto';
 import { Permissions } from '../../common/decorator/permissions.decorator';
-import { Claim } from '../../common/enum/claims.enum';
 import { IsFeatureFlagEnabled } from 'src/common/decorator/is-feature-flag-enabled.decorator';
+import { CLIENT_USER_ROLE_LIST, IDIR_USER_ROLE_LIST, IDIR_USER_ROLE_LIST_FOR_SPECIAL_AUTH } from 'src/common/enum/user-role.enum';
 
 @ApiBearerAuth()
 @ApiTags('Special Authorization')
@@ -48,7 +48,9 @@ export class SpecialAuthController {
     description:
       'Returns all special authorizations for a company in the database.',
   })
-  @Permissions({ claim: Claim.READ_SPECIAL_AUTH })
+  @Permissions({ allowedIdirRoles: IDIR_USER_ROLE_LIST,
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST
+   })
   @Get()
   async get(
     @Param() { companyId }: CompanyIdPathParamDto,
@@ -65,7 +67,7 @@ export class SpecialAuthController {
     description: 'LCV allowance updated successfully.',
     type: ReadSpecialAuthDto,
   })
-  @Permissions({ claim: Claim.WRITE_LCV_FLAG })
+  @Permissions({ allowedIdirRoles: IDIR_USER_ROLE_LIST_FOR_SPECIAL_AUTH })
   @Put('/lcv')
   async updateLcv(
     @Req() request: Request,
@@ -89,7 +91,7 @@ export class SpecialAuthController {
     description: 'No fee type updated successfully.',
     type: ReadSpecialAuthDto,
   })
-  @Permissions({ claim: Claim.WRITE_NOFEE })
+  @Permissions({ allowedIdirRoles: IDIR_USER_ROLE_LIST_FOR_SPECIAL_AUTH })
   @Put('/no-fee')
   async updateNoFee(
     @Req() request: Request,
