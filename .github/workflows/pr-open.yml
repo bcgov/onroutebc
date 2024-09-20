@@ -74,8 +74,8 @@ jobs:
           triggers: '${{ matrix.package }}/' #omit to build everything
 
   # https://github.com/bcgov-nr/action-deployer-openshift
-  deploys:
-    name: Deploys
+  deploys-dev:
+    name: Deploys (DEV)
     needs: [builds, vars]
     uses: ./.github/workflows/dev.yml
     secrets: inherit

@@ -29,14 +29,12 @@ jobs:
     uses: ./.github/workflows/uat.yml
     secrets: inherit
     with:
-      environment: test
       tag: ${{ needs.vars.outputs.release-name }}
   
   deploys-prod:
-    name: Deploys (prod)
+    name: Deploys (PROD)
     needs: [deploys-uat, vars]
     uses: ./.github/workflows/prod.yml
     secrets: inherit
     with:
-      environment: prod
       tag: ${{ needs.vars.outputs.release-name }}
