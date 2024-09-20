@@ -24,7 +24,7 @@ jobs:
     secrets: inherit
     with:
       autoscaling: true
-      environment: test
+      environment: uat
       tag: ${{inputs.tag}}
       release: uat
       params: |

@@ -21,7 +21,7 @@ jobs:
       - name: Release Name
         id: release-name
         run: |
-          echo release-name=$(curl https://api.github.com/repos/bcgov/onroutebc/releases/latest | jq -r .tag_name)
+          echo release-name=$(curl https://api.github.com/repos/bcgov/onroutebc/releases/latest | jq -r .tag_name) >> $GITHUB_OUTPUT
 
   deploys-uat:
     name: Deploys (uat)
