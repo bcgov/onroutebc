@@ -1,5 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsNumberString, Min } from 'class-validator';
+import {
+  ArrayMinSize,
+  IsInt,
+  IsNumberString,
+  IsPositive,
+} from 'class-validator';
 
 export class CreatePermitLoaDto {
   @ApiProperty({
@@ -10,10 +15,12 @@ export class CreatePermitLoaDto {
   permitId: string;
 
   @ApiProperty({
-    description: 'Loa id',
-    example: 1,
+    description: 'Loa Ids to be assigned to the permit.',
+    isArray: true,
+    example: [74],
   })
-  @IsNumber()
-  @Min(0)
-  loaId: number;
+  @IsInt({ each: true })
+  @IsPositive({ each: true })
+  @ArrayMinSize(1)
+  loaId: number[];
 }

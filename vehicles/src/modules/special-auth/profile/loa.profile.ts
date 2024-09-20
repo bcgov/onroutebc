@@ -436,12 +436,6 @@ export class LoaProfile extends AutomapperProfile {
         CreatePermitLoaDto,
         PermitLoa,
         forMember(
-          (d) => d.permitLoaId,
-          mapWithArguments((_, { permitLoaId }) => {
-            return permitLoaId;
-          }),
-        ),
-        forMember(
           (d) => d.permitId,
           mapFrom((s) => {
             return s.permitId;
@@ -450,7 +444,7 @@ export class LoaProfile extends AutomapperProfile {
         forMember(
           (d) => d.loa.loaId,
           mapFrom((s) => {
-            return s.loaId;
+            return s.loaId[0];
           }),
         ),
         forMember(

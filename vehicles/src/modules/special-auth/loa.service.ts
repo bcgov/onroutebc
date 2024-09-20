@@ -475,12 +475,20 @@ export class LoaService {
     createPermitLoaDto: CreatePermitLoaDto,
     companyId: number,
   ): Promise<ReadPermitLoaDto[]> {
-    console.log('company id: ', companyId);
-    const existingPermitLoa = await this.permitLoaRepository.findOne({where: {permitId: createPermitLoaDto.permitId,
-      loa: {loaId: createPermitLoaDto.loaId}
-    }})
-    const permitLoa = await this.classMapper.mapAsync(
-      createPermitLoaDto,
+    console.log(companyId);
+    const { permitId, loaId: inputLoaIds } = createPermitLoaDto;
+    const existingPermitLoa = await this.findAllPermitLoa(permitId);
+    const existingLoaIds = existingPermitLoa.map(x => x.loa.loaId);
+    
+    const loaIdsToDelete = existingLoaIds.filter(value => !inputLoaIds.includes(value));
+    const loaIdsToInsert = inputLoaIds.filter(value => !existingLoaIds.includes(value));
+    // Transform the permit LOA IDs from an array of numbers into individual records.
+    const singlePermitLoa = loaIdsToInsert.map(loaId => ({
+      permitId,
+      loaId: [loaId],
+    }));
+    const permitLoas = await this.classMapper.mapArrayAsync(
+      singlePermitLoa,
       CreatePermitLoaDto,
       PermitLoa,
       {
@@ -489,29 +497,40 @@ export class LoaService {
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
           directory: currentUser.orbcUserDirectory,
-          permitLoaId: existingPermitLoa?.permitLoaId,
         }),
       },
     );
-    await this.permitLoaRepository.save(permitLoa);
-    permitLoa.permitId;
+
+    // Save new PermitLoas in bulk
+    await this.permitLoaRepository.save(permitLoas);
+
+    // Delete old PermitLoas in a single query
+    await this.permitLoaRepository
+      .createQueryBuilder()
+      .delete()
+      .from(PermitLoa)
+      .where('permitId = :permitId', { permitId: +permitId })
+      .andWhere('loa.loaId in (:...loaId)', { loaId: loaIdsToDelete || [] })
+      .execute();
+    return await this.findAllPermitLoa(permitId);
+  }
+  @LogAsyncMethodExecution()
+  async findAllPermitLoa(permitId: string): Promise<ReadPermitLoaDto[]> {
     const savedPermitLoa = await this.permitLoaRepository
       .createQueryBuilder('permitLoa')
       .innerJoinAndSelect('permitLoa.loa', 'loa')
       .innerJoinAndSelect('loa.loaVehicles', 'loaVehicles')
       .innerJoinAndSelect('loa.loaPermitTypes', 'loaPermitTypes')
       .where('permitLoa.permitId = :permitId', {
-        permitId: permitLoa.permitId,
+        permitId: permitId,
       })
       .getMany();
-    console.log('savedPermitLoa: ', savedPermitLoa);
     const readPermitLoaDto: ReadPermitLoaDto[] =
       await this.classMapper.mapArrayAsync(
         savedPermitLoa,
         PermitLoa,
         ReadPermitLoaDto,
       );
-    console.log('readPermitLoaDto: ', readPermitLoaDto);
     return readPermitLoaDto;
   }
 }
