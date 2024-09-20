@@ -473,20 +473,21 @@ export class LoaService {
   async createPermitLoa(
     currentUser: IUserJWT,
     createPermitLoaDto: CreatePermitLoaDto,
-    companyId: number,
   ): Promise<ReadPermitLoaDto[]> {
-    console.log(companyId);
     const { permitId, loaId: inputLoaIds } = createPermitLoaDto;
     const existingPermitLoa = await this.findAllPermitLoa(permitId);
     const existingLoaIds = existingPermitLoa.map(x => x.loa.loaId);
     
     const loaIdsToDelete = existingLoaIds.filter(value => !inputLoaIds.includes(value));
     const loaIdsToInsert = inputLoaIds.filter(value => !existingLoaIds.includes(value));
+
+    if(loaIdsToInsert.length){
     // Transform the permit LOA IDs from an array of numbers into individual records.
     const singlePermitLoa = loaIdsToInsert.map(loaId => ({
       permitId,
       loaId: [loaId],
     }));
+    
     const permitLoas = await this.classMapper.mapArrayAsync(
       singlePermitLoa,
       CreatePermitLoaDto,
@@ -503,8 +504,10 @@ export class LoaService {
 
     // Save new PermitLoas in bulk
     await this.permitLoaRepository.save(permitLoas);
+  }
 
     // Delete old PermitLoas in a single query
+    if(loaIdsToDelete.length)
     await this.permitLoaRepository
       .createQueryBuilder()
       .delete()
