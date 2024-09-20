@@ -21,17 +21,19 @@ import { LCV_CONDITION } from "../../../../constants/constants";
 import { sortConditions } from "../../../../helpers/conditions";
 import { getEndOfDate, getStartOfDate } from "../../../../../../common/helpers/formatDate";
 import { getExpiryDate } from "../../../../helpers/permitState";
+import { minDurationForPermitType } from "../../../../helpers/dateSelection";
 import {
   PowerUnit,
   Trailer,
+  VEHICLE_TYPES,
   VehicleSubType,
 } from "../../../../../manageVehicles/types/Vehicle";
 
 import {
+  filterVehicles,
   getIneligiblePowerUnitSubtypes,
   getIneligibleTrailerSubtypes,
 } from "../../../../helpers/permitVehicles";
-import { minDurationForPermitType } from "../../../../helpers/dateSelection";
 
 interface PermitFormProps {
   feature: string;
@@ -67,7 +69,7 @@ export const PermitForm = (props: PermitFormProps) => {
   const startDate = getStartOfDate(permitStartDate);
   const permitDuration = watch("permitData.permitDuration");
   const permitConditions = watch("permitData.commodities");
-  const vehicleFormData = watch("permitData.vehicleDetails");
+  const vehicleFormData: PermitVehicleDetails = watch("permitData.vehicleDetails");
   const currentSelectedLOAs: LOADetail[] = watch("permitData.loas");
 
   const handleSetConditions = (conditions: PermitCondition[]) => {
@@ -144,6 +146,8 @@ export const PermitForm = (props: PermitFormProps) => {
   const ineligiblePowerUnitSubtypes = getIneligiblePowerUnitSubtypes(permitType)
     .filter(subtype => !isLcvDesignated || !isVehicleSubtypeLCV(subtype.typeCode));
 
+  const ineligibleTrailerSubtypes = getIneligibleTrailerSubtypes(permitType);
+
   // Permit expiry date === Permit start date + Permit duration - 1
   const expiryDate = getExpiryDate(startDate, permitDuration);
   useEffect(() => {
@@ -172,6 +176,42 @@ export const PermitForm = (props: PermitFormProps) => {
       handleSetConditions(sortConditions([...permitConditions, LCV_CONDITION]));
     }
   }, [vehicleSubtype, permitConditions]);
+
+  // Check to see if vehicle details is still valid after LOA has been deselected
+  const vehicleOptions = props.vehicleOptions;
+  const vehicleIdInForm = vehicleFormData.vehicleId;
+  const vehicleType = vehicleFormData.vehicleType;
+  const saveVehicle = Boolean(vehicleFormData.saveVehicle);
+  useEffect(() => {
+    const filteredVehicles = filterVehicles(
+      vehicleOptions,
+      ineligiblePowerUnitSubtypes,
+      ineligibleTrailerSubtypes,
+      currentSelectedLOAs,
+    ).map(filteredVehicle => ({
+      filteredVehicleType: filteredVehicle.vehicleType,
+      filteredVehicleId: filteredVehicle.vehicleType === VEHICLE_TYPES.TRAILER
+        ? (filteredVehicle as Trailer).trailerId
+        : (filteredVehicle as PowerUnit).powerUnitId,
+    }));
+
+    // If vehicle selected is an existing vehicle but is not in list of vehicle options
+    // Clear the vehicle details in the form
+    if (vehicleIdInForm && !filteredVehicles.some(({
+      filteredVehicleType,
+      filteredVehicleId,
+    }) => filteredVehicleType === vehicleType && filteredVehicleId === vehicleIdInForm)) {
+      handleClearVehicle(saveVehicle);
+    }
+  }, [
+    currentSelectedLOAs,
+    vehicleOptions,
+    ineligiblePowerUnitSubtypes,
+    ineligibleTrailerSubtypes,
+    vehicleIdInForm,
+    vehicleType,
+    saveVehicle,
+  ]);
   
   return (
     <Box className="permit-form layout-box">
@@ -219,7 +259,8 @@ export const PermitForm = (props: PermitFormProps) => {
           powerUnitSubtypes={props.powerUnitSubTypes}
           trailerSubtypes={props.trailerSubTypes}
           ineligiblePowerUnitSubtypes={ineligiblePowerUnitSubtypes}
-          ineligibleTrailerSubtypes={getIneligibleTrailerSubtypes(permitType)}
+          ineligibleTrailerSubtypes={ineligibleTrailerSubtypes}
+          selectedLOAs={currentSelectedLOAs}
           onSetSaveVehicle={handleToggleSaveVehicle}
           onSetVehicle={handleSetVehicle}
           onClearVehicle={handleClearVehicle}

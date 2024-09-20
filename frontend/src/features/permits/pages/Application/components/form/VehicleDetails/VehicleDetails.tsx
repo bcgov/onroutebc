@@ -25,6 +25,7 @@ import { SelectVehicleDropdown } from "./customFields/SelectVehicleDropdown";
 import { BANNER_MESSAGES } from "../../../../../../../common/constants/bannerMessages";
 import { PermitVehicleDetails } from "../../../../../types/PermitVehicleDetails";
 import { EMPTY_VEHICLE_SUBTYPE } from "../../../../../../manageVehicles/helpers/vehicleSubtypes";
+import { LOADetail } from "../../../../../../settings/types/SpecialAuthorization";
 import {
   PowerUnit,
   Trailer,
@@ -82,6 +83,8 @@ const getEligibleSubtypeOptions = (
   trailerSubtypes: VehicleSubType[],
   ineligiblePowerUnitSubtypes: VehicleSubType[],
   ineligibleTrailerSubtypes: VehicleSubType[],
+  allowedLOAPowerUnitSubtypes: string[],
+  allowedLOATrailerSubtypes: string[],
   vehicleType?: string,
 ) => {
   if (
@@ -102,6 +105,8 @@ const getEligibleSubtypeOptions = (
     vehicleType,
     ineligiblePowerUnitSubtypes,
     ineligibleTrailerSubtypes,
+    allowedLOAPowerUnitSubtypes,
+    allowedLOATrailerSubtypes,
   );
 };
 
@@ -113,6 +118,7 @@ export const VehicleDetails = ({
   trailerSubtypes,
   ineligiblePowerUnitSubtypes,
   ineligibleTrailerSubtypes,
+  selectedLOAs,
   onSetSaveVehicle,
   onSetVehicle,
   onClearVehicle,
@@ -124,6 +130,7 @@ export const VehicleDetails = ({
   trailerSubtypes: VehicleSubType[];
   ineligiblePowerUnitSubtypes: VehicleSubType[];
   ineligibleTrailerSubtypes: VehicleSubType[];
+  selectedLOAs: LOADetail[];
   onSetSaveVehicle: (saveVehicle: boolean) => void;
   onSetVehicle: (vehicleDetails: PermitVehicleDetails) => void;
   onClearVehicle: (saveVehicle: boolean) => void;
@@ -166,6 +173,33 @@ export const VehicleDetails = ({
     EMPTY_VEHICLE_SUBTYPE,
   ]);
 
+  // Find vehicle subtypes that are allowed by LOAs
+  const permittedLOAPowerUnitIds = new Set([
+    ...selectedLOAs.map(loa => loa.powerUnits)
+      .reduce((prevPowerUnits, currPowerUnits) => [
+        ...prevPowerUnits,
+        ...currPowerUnits,
+      ], []),
+  ]);
+
+  const permittedLOATrailerIds = new Set([
+    ...selectedLOAs.map(loa => loa.trailers)
+      .reduce((prevTrailers, currTrailers) => [
+        ...prevTrailers,
+        ...currTrailers,
+      ], []),
+  ]);
+
+  const permittedLOAPowerUnitSubtypes = vehicleOptions
+    .filter(vehicle => vehicle.vehicleType === VEHICLE_TYPES.POWER_UNIT)
+    .filter(vehicle => permittedLOAPowerUnitIds.has((vehicle as PowerUnit).powerUnitId as string))
+    .map(vehicle => (vehicle as PowerUnit).powerUnitTypeCode);
+
+  const permittedLOATrailerSubtypes = vehicleOptions
+    .filter(vehicle => vehicle.vehicleType === VEHICLE_TYPES.TRAILER)
+    .filter(vehicle => permittedLOATrailerIds.has((vehicle as Trailer).trailerId as string))
+    .map(vehicle => (vehicle as Trailer).trailerTypeCode);
+
   useEffect(() => {
     // Update subtype options when vehicle type changes
     const subtypes = getEligibleSubtypeOptions(
@@ -173,6 +207,8 @@ export const VehicleDetails = ({
       trailerSubtypes,
       ineligiblePowerUnitSubtypes,
       ineligibleTrailerSubtypes,
+      permittedLOAPowerUnitSubtypes,
+      permittedLOATrailerSubtypes,
       vehicleType,
     );
     setSubtypeOptions(subtypes);
@@ -182,6 +218,8 @@ export const VehicleDetails = ({
     ineligiblePowerUnitSubtypes,
     ineligibleTrailerSubtypes,
     vehicleType,
+    permittedLOAPowerUnitSubtypes,
+    permittedLOATrailerSubtypes,
   ]);
 
   // Set the "Save to Inventory" radio button to false on render
@@ -307,6 +345,7 @@ export const VehicleDetails = ({
                 handleSelectVehicle={onSelectVehicle}
                 ineligiblePowerUnitSubtypes={ineligiblePowerUnitSubtypes}
                 ineligibleTrailerSubtypes={ineligibleTrailerSubtypes}
+                loas={selectedLOAs}
               />
             </Box>
 

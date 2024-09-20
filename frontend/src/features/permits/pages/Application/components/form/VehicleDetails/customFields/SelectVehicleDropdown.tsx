@@ -25,6 +25,7 @@ import {
   Vehicle,
   VehicleSubType,
 } from "../../../../../../../manageVehicles/types/Vehicle";
+import { LOADetail } from "../../../../../../../settings/types/SpecialAuthorization";
 
 const GroupHeader = styled("div")(({ theme }) => ({
   position: "sticky",
@@ -53,6 +54,7 @@ export const SelectVehicleDropdown = ({
   handleClearVehicle,
   ineligiblePowerUnitSubtypes,
   ineligibleTrailerSubtypes,
+  loas,
 }: {
   chooseFrom: string;
   selectedVehicle: Nullable<PermitVehicleDetails>;
@@ -62,6 +64,7 @@ export const SelectVehicleDropdown = ({
   handleClearVehicle: () => void;
   ineligiblePowerUnitSubtypes: VehicleSubType[];
   ineligibleTrailerSubtypes: VehicleSubType[];
+  loas: LOADetail[];
 }) => {
   const sortedVehicles = sortVehicles(chooseFrom, vehicleOptions);
 
@@ -69,6 +72,7 @@ export const SelectVehicleDropdown = ({
     sortedVehicles,
     ineligiblePowerUnitSubtypes,
     ineligibleTrailerSubtypes,
+    loas,
   );
 
   const selectedOption = selectedVehicle

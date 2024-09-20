@@ -9,6 +9,7 @@ import {
   VEHICLE_TYPES,
   Vehicle,
 } from "../../manageVehicles/types/Vehicle";
+import { LOADetail } from "../../settings/types/SpecialAuthorization";
 
 export const getIneligiblePowerUnitSubtypes = (permitType: PermitType) => {
   switch (permitType) {
@@ -38,6 +39,8 @@ export const getIneligibleTrailerSubtypes = (permitType: PermitType) => {
  * @param vehicleType Type of vehicle
  * @param ineligiblePowerUnitSubtypes List of provided ineligible power unit subtypes
  * @param ineligibleTrailerSubtypes List of provided ineligible trailer subtypes
+ * @param allowedPowerUnitSubtypes List of provided allowed power unit subtypes
+ * @param allowedTrailerSubtypes List of provided allowed trailer subtypes
  * @returns List of only eligible power unit or trailer subtypes
  */
 export const filterVehicleSubtypes = (
@@ -45,12 +48,19 @@ export const filterVehicleSubtypes = (
   vehicleType: VehicleType,
   ineligiblePowerUnitSubtypes: VehicleSubType[],
   ineligibleTrailerSubtypes: VehicleSubType[],
+  allowedPowerUnitSubtypes: string[],
+  allowedTrailerSubtypes: string[],
 ) => {
   const ineligibleSubtypes = vehicleType === VEHICLE_TYPES.TRAILER
     ? ineligibleTrailerSubtypes : ineligiblePowerUnitSubtypes;
 
+  const allowedSubtypes = vehicleType === VEHICLE_TYPES.TRAILER
+    ? allowedTrailerSubtypes : allowedPowerUnitSubtypes;
+
   return allVehicleSubtypes.filter((vehicleSubtype) => {
-    return !ineligibleSubtypes.some(
+    return allowedSubtypes.some(
+      allowedSubtype => vehicleSubtype.typeCode === allowedSubtype
+    ) || !ineligibleSubtypes.some(
       (ineligibleSubtype) => vehicleSubtype.typeCode === ineligibleSubtype.typeCode,
     );
   });
@@ -61,24 +71,44 @@ export const filterVehicleSubtypes = (
  * @param vehicles List of both eligible and ineligible vehicles
  * @param ineligiblePowerUnitSubtypes List of ineligible power unit subtypes
  * @param ineligibleTrailerSubtypes List of ineligible trailer subtypes
+ * @param loas LOAs that potentially bypass ineligible vehicle restrictions
  * @returns List of only eligible vehicles
  */
 export const filterVehicles = (
   vehicles: Vehicle[],
   ineligiblePowerUnitSubtypes: VehicleSubType[],
   ineligibleTrailerSubtypes: VehicleSubType[],
+  loas: LOADetail[],
 ) => {
+  const permittedPowerUnitIds = new Set([
+    ...loas.map(loa => loa.powerUnits)
+      .reduce((prevPowerUnits, currPowerUnits) => [
+        ...prevPowerUnits,
+        ...currPowerUnits,
+      ], []),
+  ]);
+
+  const permittedTrailerIds = new Set([
+    ...loas.map(loa => loa.trailers)
+      .reduce((prevTrailers, currTrailers) => [
+        ...prevTrailers,
+        ...currTrailers,
+      ], []),
+  ]);
+
   return vehicles.filter((vehicle) => {
     if (vehicle.vehicleType === VEHICLE_TYPES.TRAILER) {
       const trailer = vehicle as Trailer;
-      return !ineligibleTrailerSubtypes.some((ineligibleSubtype) => {
-        return trailer.trailerTypeCode === ineligibleSubtype.typeCode;
-      });
+      return permittedTrailerIds.has(trailer.trailerId as string)
+        || !ineligibleTrailerSubtypes.some((ineligibleSubtype) => {
+          return trailer.trailerTypeCode === ineligibleSubtype.typeCode;
+        });
     }
 
     const powerUnit = vehicle as PowerUnit;
-    return !ineligiblePowerUnitSubtypes.some((ineligibleSubtype) => {
-      return powerUnit.powerUnitTypeCode === ineligibleSubtype.typeCode;
-    });
+    return permittedPowerUnitIds.has(powerUnit.powerUnitId as string)
+      || !ineligiblePowerUnitSubtypes.some((ineligibleSubtype) => {
+        return powerUnit.powerUnitTypeCode === ineligibleSubtype.typeCode;
+      });
   });
 };
