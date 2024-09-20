@@ -254,14 +254,12 @@ export class LoaController {
   @Post('/permits')
   async createPermitLoa(
     @Req() request: Request,
-    @Param() { companyId }: CompanyIdPathParamDto,
     @Body() createPermitLoaDto: CreatePermitLoaDto,
   ): Promise<ReadPermitLoaDto[]> {
     const currentUser = request.user as IUserJWT;
     const result = await this.loaService.createPermitLoa(
       currentUser,
       createPermitLoaDto,
-      companyId,
     );
     return result;
   }
