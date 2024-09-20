@@ -43,8 +43,6 @@ export const ApplicationsInReviewList = () => {
     isFetching,
   } = applicationsInQueueQuery;
 
-  console.log(applicationsInQueue);
-
   const [showAIRTable, setShowAIRTable] = useState<boolean>(false);
 
   useEffect(() => {

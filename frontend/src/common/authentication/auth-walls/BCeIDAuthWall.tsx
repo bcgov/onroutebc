@@ -111,6 +111,7 @@ export const BCeIDAuthWall = ({
   if (isAuthenticated && isEstablishedUser) {
     if (isIDIR(userIDP)) {
       if (companyId) {
+        // TODO when attempting to access an application in queue as staff, we do not have a companyId and are redirected
         return <IDIRAuthWall permissionMatrixKeys={permissionMatrixKeys} />;
       } else {
         return (

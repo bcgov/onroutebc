@@ -129,7 +129,7 @@ const getApplications = async (
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
 
   /* if the user is staff and not acting as a company, get timeInQueue and claimedBy properties 
-  in addition to the ApplicationListItem response */
+  in addition to the ApplicationListItem response to be used in the ApplicationsInQueueList component */
   const applicationsURL = getStaffQueue
     ? new URL(STAFF_APPLICATIONS_API_ROUTES.GET())
     : new URL(APPLICATIONS_API_ROUTES.GET(companyId));
