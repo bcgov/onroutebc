@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 1
     steps:
+    foobar
       - name: Release Name
         id: release-name
         run: |
