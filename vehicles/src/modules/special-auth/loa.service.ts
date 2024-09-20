@@ -476,45 +476,49 @@ export class LoaService {
   ): Promise<ReadPermitLoaDto[]> {
     const { permitId, loaId: inputLoaIds } = createPermitLoaDto;
     const existingPermitLoa = await this.findAllPermitLoa(permitId);
-    const existingLoaIds = existingPermitLoa.map(x => x.loa.loaId);
-    
-    const loaIdsToDelete = existingLoaIds.filter(value => !inputLoaIds.includes(value));
-    const loaIdsToInsert = inputLoaIds.filter(value => !existingLoaIds.includes(value));
+    const existingLoaIds = existingPermitLoa.map((x) => x.loa.loaId);
 
-    if(loaIdsToInsert.length){
-    // Transform the permit LOA IDs from an array of numbers into individual records.
-    const singlePermitLoa = loaIdsToInsert.map(loaId => ({
-      permitId,
-      loaId: [loaId],
-    }));
-    
-    const permitLoas = await this.classMapper.mapArrayAsync(
-      singlePermitLoa,
-      CreatePermitLoaDto,
-      PermitLoa,
-      {
-        extraArgs: () => ({
-          userName: currentUser.userName,
-          userGUID: currentUser.userGUID,
-          timestamp: new Date(),
-          directory: currentUser.orbcUserDirectory,
-        }),
-      },
+    const loaIdsToDelete = existingLoaIds.filter(
+      (value) => !inputLoaIds.includes(value),
+    );
+    const loaIdsToInsert = inputLoaIds.filter(
+      (value) => !existingLoaIds.includes(value),
     );
 
-    // Save new PermitLoas in bulk
-    await this.permitLoaRepository.save(permitLoas);
-  }
+    if (loaIdsToInsert.length) {
+      // Transform the permit LOA IDs from an array of numbers into individual records.
+      const singlePermitLoa = loaIdsToInsert.map((loaId) => ({
+        permitId,
+        loaId: [loaId],
+      }));
+
+      const permitLoas = await this.classMapper.mapArrayAsync(
+        singlePermitLoa,
+        CreatePermitLoaDto,
+        PermitLoa,
+        {
+          extraArgs: () => ({
+            userName: currentUser.userName,
+            userGUID: currentUser.userGUID,
+            timestamp: new Date(),
+            directory: currentUser.orbcUserDirectory,
+          }),
+        },
+      );
+
+      // Save new PermitLoas in bulk
+      await this.permitLoaRepository.save(permitLoas);
+    }
 
     // Delete old PermitLoas in a single query
-    if(loaIdsToDelete.length)
-    await this.permitLoaRepository
-      .createQueryBuilder()
-      .delete()
-      .from(PermitLoa)
-      .where('permitId = :permitId', { permitId: +permitId })
-      .andWhere('loa.loaId in (:...loaId)', { loaId: loaIdsToDelete || [] })
-      .execute();
+    if (loaIdsToDelete.length)
+      await this.permitLoaRepository
+        .createQueryBuilder()
+        .delete()
+        .from(PermitLoa)
+        .where('permitId = :permitId', { permitId: +permitId })
+        .andWhere('loa.loaId in (:...loaId)', { loaId: loaIdsToDelete || [] })
+        .execute();
     return await this.findAllPermitLoa(permitId);
   }
   @LogAsyncMethodExecution()
