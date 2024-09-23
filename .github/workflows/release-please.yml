@@ -16,7 +16,6 @@ permissions:
 name: release-please
 
 jobs:
-  vars:
   release-please:
     name: Release-Please
     runs-on: ubuntu-22.04
