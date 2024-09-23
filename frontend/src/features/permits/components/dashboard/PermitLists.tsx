@@ -1,6 +1,6 @@
 import React from "react";
 import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
-import { StartApplicationAction } from "../../pages/Application/components/dashboard/StartApplicationAction";
+import { StartApplicationActionNew } from "../../pages/Application/components/dashboard/StartApplicationActionNew";
 import { ActivePermitList } from "../permit-list/ActivePermitList";
 import { ExpiredPermitList } from "../permit-list/ExpiredPermitList";
 import { ApplicationsInProgressList } from "../permit-list/ApplicationsInProgressList";
@@ -55,7 +55,7 @@ export const PermitLists = React.memo(() => {
       bannerText="Permits"
       bannerButton={
         <RenderIf
-          component={<StartApplicationAction />}
+          component={<StartApplicationActionNew />}
           permissionMatrixKeys={{
             permissionMatrixFeatureKey: "MANAGE_PERMITS",
             permissionMatrixFunctionKey: "START_APPLICATION",

@@ -5,18 +5,19 @@ export const PERMIT_TYPES = {
   HC: "HC",
   LCV: "LCV",
   MFP: "MFP",
-  NRQBS: "NRQBS",
-  NRQCL: "NRQCL",
-  NRQCV: "NRQCV",
-  NRQFT: "NRQFT",
-  NRQFV: "NRQFV",
-  NRQXP: "NRQXP",
-  NRSBS: "NRSBS",
-  NRSCL: "NRSCL",
-  NRSCV: "NRSCV",
-  NRSFT: "NRSFT",
-  NRSFV: "NRSFV",
-  NRSXP: "NRSXP",
+  // NO LONGER USED
+  // NRQBS: "NRQBS",
+  // NRQCL: "NRQCL",
+  // NRQCV: "NRQCV",
+  // NRQFT: "NRQFT",
+  // NRQFV: "NRQFV",
+  // NRQXP: "NRQXP",
+  // NRSBS: "NRSBS",
+  // NRSCL: "NRSCL",
+  // NRSCV: "NRSCV",
+  // NRSFT: "NRSFT",
+  // NRSFV: "NRSFV",
+  // NRSXP: "NRSXP",
   RIG: "RIG",
   STOL: "STOL",
   STOS: "STOS",
@@ -47,30 +48,33 @@ export const getPermitTypeName = (permitType?: Nullable<string>) => {
       return "Long Combination Vehicle";
     case PERMIT_TYPES.MFP:
       return "Motive Fuel User";
-    case PERMIT_TYPES.NRQBS:
-      return "Quarterly Non Resident Reg. / Ins. - Bus";
-    case PERMIT_TYPES.NRQCL:
-      return "Non Resident Quarterly Conditional License";
-    case PERMIT_TYPES.NRQCV:
-      return "Quarterly Non Resident Reg. / Ins. - Comm Vehicle";
-    case PERMIT_TYPES.NRQFT:
-      return "Non Resident Quarterly Farm Tractor";
-    case PERMIT_TYPES.NRQFV:
-      return "Quarterly Non Resident Reg. / Ins. - Farm Vehicle";
-    case PERMIT_TYPES.NRQXP:
-      return "Non Resident Quarterly X Plated";
-    case PERMIT_TYPES.NRSBS:
-      return "Single Trip Non-Resident Registration / Insurance - Buses";
-    case PERMIT_TYPES.NRSCL:
-      return "Non Resident Single Trip Conditional License";
-    case PERMIT_TYPES.NRSCV:
-      return "Single Trip Non-Resident Reg. / Ins. - Commercial Vehicle";
-    case PERMIT_TYPES.NRSFT:
-      return "Non Resident Farm Tractor Single Trip";
-    case PERMIT_TYPES.NRSFV:
-      return "Single Trip Non-Resident Reg. / Ins. - Farm Vehicle";
-    case PERMIT_TYPES.NRSXP:
-      return "Non Resident Single Trip X Plated Vehicle";
+
+    // NO LONGER USED
+    // case PERMIT_TYPES.NRQBS:
+    //   return "Quarterly Non Resident Reg. / Ins. - Bus";
+    // case PERMIT_TYPES.NRQCL:
+    //   return "Non Resident Quarterly Conditional License";
+    // case PERMIT_TYPES.NRQCV:
+    //   return "Quarterly Non Resident Reg. / Ins. - Comm Vehicle";
+    // case PERMIT_TYPES.NRQFT:
+    //   return "Non Resident Quarterly Farm Tractor";
+    // case PERMIT_TYPES.NRQFV:
+    //   return "Quarterly Non Resident Reg. / Ins. - Farm Vehicle";
+    // case PERMIT_TYPES.NRQXP:
+    //   return "Non Resident Quarterly X Plated";
+    // case PERMIT_TYPES.NRSBS:
+    //   return "Single Trip Non-Resident Registration / Insurance - Buses";
+    // case PERMIT_TYPES.NRSCL:
+    //   return "Non Resident Single Trip Conditional License";
+    // case PERMIT_TYPES.NRSCV:
+    //   return "Single Trip Non-Resident Reg. / Ins. - Commercial Vehicle";
+    // case PERMIT_TYPES.NRSFT:
+    //   return "Non Resident Farm Tractor Single Trip";
+    // case PERMIT_TYPES.NRSFV:
+    //   return "Single Trip Non-Resident Reg. / Ins. - Farm Vehicle";
+    // case PERMIT_TYPES.NRSXP:
+    //   return "Non Resident Single Trip X Plated Vehicle";
+
     case PERMIT_TYPES.RIG:
       return "Rig Move";
     case PERMIT_TYPES.STOL:
@@ -89,6 +93,27 @@ export const getPermitTypeName = (permitType?: Nullable<string>) => {
       return "Term Overweight";
     default:
       return "";
+
+    // NON RESIDENT LIST
+    // Quarterly Non-Resident
+    // Single Trip Non-Resident
+    // Quarterly ICBC Basic Insurance (FR)
+    // Single Trip ICBC Basic Insurance (FR)
+
+    // SINGLE TRIP LIST
+    // Single Trip Oversize
+    // Single Trip Oversize Overweight
+    // Single Trip Overweight
+    // Extra Provincial Temp Operating Permit
+    // Empty - Single Trip Over Length 27.5
+    // Increased GVW
+    // Rig Move
+    // Motive Fuel User Permit
+
+    // TERM LIST
+    // Term Oversize
+    // Term Overweight
+    // Highway Crossing
   }
 };
 
@@ -114,5 +139,8 @@ export const permitTypeDisplayText = (permitType?: Nullable<string>) => {
  * @returns true if string is a valid permit type, or false otherwise
  */
 export const isPermitTypeValid = (permitType?: Nullable<string>) => {
-  return permitType && (Object.values(PERMIT_TYPES) as string[]).includes(permitType.toUpperCase());
+  return (
+    permitType &&
+    (Object.values(PERMIT_TYPES) as string[]).includes(permitType.toUpperCase())
+  );
 };
