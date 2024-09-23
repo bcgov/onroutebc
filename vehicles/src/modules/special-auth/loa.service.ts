@@ -11,7 +11,7 @@ import { ReadLoaDto } from './dto/response/read-loa.dto';
 import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoaDetail } from './entities/loa-detail.entity';
-import { Brackets, DataSource, Repository } from 'typeorm';
+import { Brackets, DataSource, In, Repository } from 'typeorm';
 import { Mapper } from '@automapper/core';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { DopsService } from '../common/dops.service';
@@ -20,6 +20,9 @@ import { Response } from 'express';
 import { Nullable } from '../../common/types/common';
 import { Company } from '../company-user-management/company/entities/company.entity';
 import { UpdateLoaDto } from './dto/request/update-loa.dto';
+import { CreatePermitLoaDto } from './dto/request/create-permit-loa.dto';
+import { ReadPermitLoaDto } from './dto/response/read-permit-loa.dto';
+import { PermitLoa } from './entities/permit-loa.entity';
 
 @Injectable()
 export class LoaService {
@@ -28,6 +31,8 @@ export class LoaService {
     @InjectMapper() private readonly classMapper: Mapper,
     @InjectRepository(LoaDetail)
     private loaDetailRepository: Repository<LoaDetail>,
+    @InjectRepository(PermitLoa)
+    private permitLoaRepository: Repository<PermitLoa>,
     private dataSource: DataSource,
     private readonly dopsService: DopsService,
   ) {}
@@ -94,6 +99,7 @@ export class LoaService {
       companyId,
       savedLoaDetail.loaId,
     );
+
     const readLoaDto = await this.classMapper.mapAsync(
       refreshedLoaDetailsEntity,
       LoaDetail,
@@ -173,7 +179,6 @@ export class LoaService {
       where: {
         loaId: loaId,
         company: { companyId: companyId },
-        isActive: true,
       },
       relations: ['company', 'loaVehicles', 'loaPermitTypes'],
     });
@@ -463,5 +468,74 @@ export class LoaService {
     if (affected === 1) {
       return 'File deleted successfully';
     }
+  }
+
+  @LogAsyncMethodExecution()
+  async createPermitLoa(
+    currentUser: IUserJWT,
+    createPermitLoaDto: CreatePermitLoaDto,
+  ): Promise<ReadPermitLoaDto[]> {
+    const { permitId, loaId: inputLoaIds } = createPermitLoaDto;
+    const existingPermitLoa = await this.findAllPermitLoa(permitId);
+    const existingLoaIds = existingPermitLoa.map((x) => x.loa.loaId);
+
+    const loaIdsToDelete = existingLoaIds.filter(
+      (value) => !inputLoaIds.includes(value),
+    );
+    const loaIdsToInsert = inputLoaIds.filter(
+      (value) => !existingLoaIds.includes(value),
+    );
+
+    if (loaIdsToInsert.length) {
+      // Transform the permit LOA IDs from an array of numbers into individual records.
+      const singlePermitLoa = loaIdsToInsert.map((loaId) => ({
+        permitId,
+        loaId: [loaId],
+      }));
+
+      const permitLoas = await this.classMapper.mapArrayAsync(
+        singlePermitLoa,
+        CreatePermitLoaDto,
+        PermitLoa,
+        {
+          extraArgs: () => ({
+            userName: currentUser.userName,
+            userGUID: currentUser.userGUID,
+            timestamp: new Date(),
+            directory: currentUser.orbcUserDirectory,
+          }),
+        },
+      );
+
+      // Save new PermitLoas in bulk
+      await this.permitLoaRepository.save(permitLoas);
+    }
+
+    // Delete old PermitLoas in a single query
+    if (loaIdsToDelete?.length)
+      await this.permitLoaRepository.delete({
+        permitId: permitId,
+        loa: { loaId: In(loaIdsToDelete) },
+      });
+    return await this.findAllPermitLoa(permitId);
+  }
+  @LogAsyncMethodExecution()
+  async findAllPermitLoa(permitId: string): Promise<ReadPermitLoaDto[]> {
+    const savedPermitLoa = await this.permitLoaRepository
+      .createQueryBuilder('permitLoa')
+      .innerJoinAndSelect('permitLoa.loa', 'loa')
+      .innerJoinAndSelect('loa.loaVehicles', 'loaVehicles')
+      .innerJoinAndSelect('loa.loaPermitTypes', 'loaPermitTypes')
+      .where('permitLoa.permitId = :permitId', {
+        permitId: permitId,
+      })
+      .getMany();
+    const readPermitLoaDto: ReadPermitLoaDto[] =
+      await this.classMapper.mapArrayAsync(
+        savedPermitLoa,
+        PermitLoa,
+        ReadPermitLoaDto,
+      );
+    return readPermitLoaDto;
   }
 }

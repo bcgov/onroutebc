@@ -28,3 +28,4 @@ export const CLIENT_USER_ROLE_LIST: readonly ClientUserRole[] =
 
 export const IDIR_USER_ROLE_LIST: readonly IDIRUserRole[] =
   Object.values(IDIRUserRole);
+
