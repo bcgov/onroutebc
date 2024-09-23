@@ -24,7 +24,7 @@ jobs:
           echo release-name=$(curl https://api.github.com/repos/bcgov/onroutebc/releases/latest | jq -r .tag_name) >> $GITHUB_OUTPUT
 
   deploys-uat:
-    name: Deploys (uat)
+    name: Deploys (Uat)
     needs: [vars]
     uses: ./.github/workflows/uat.yml
     secrets: inherit
@@ -32,7 +32,7 @@ jobs:
       tag: ${{ needs.vars.outputs.release-name }}
   
   deploys-prod:
-    name: Deploys (PROD)
+    name: Deploys (Prod)
     needs: [deploys-uat, vars]
     uses: ./.github/workflows/prod.yml
     secrets: inherit

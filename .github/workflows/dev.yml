@@ -18,7 +18,7 @@ on:
         default: "latest"
 jobs:
   deploy-dev:
-    name: Deploys (dev)
+    name: Deploys (DEV)
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:

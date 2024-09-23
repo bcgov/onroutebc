@@ -19,7 +19,7 @@ on:
   
 jobs:
   deploy-test:
-    name: Deploys (test)
+    name: Deploys (TEST)
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
