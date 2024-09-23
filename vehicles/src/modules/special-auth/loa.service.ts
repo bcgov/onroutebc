@@ -11,7 +11,7 @@ import { ReadLoaDto } from './dto/response/read-loa.dto';
 import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoaDetail } from './entities/loa-detail.entity';
-import { Brackets, DataSource, Repository } from 'typeorm';
+import { Brackets, DataSource, In, Repository } from 'typeorm';
 import { Mapper } from '@automapper/core';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { DopsService } from '../common/dops.service';
@@ -99,6 +99,7 @@ export class LoaService {
       companyId,
       savedLoaDetail.loaId,
     );
+
     const readLoaDto = await this.classMapper.mapAsync(
       refreshedLoaDetailsEntity,
       LoaDetail,
@@ -511,14 +512,11 @@ export class LoaService {
     }
 
     // Delete old PermitLoas in a single query
-    if (loaIdsToDelete.length)
-      await this.permitLoaRepository
-        .createQueryBuilder()
-        .delete()
-        .from(PermitLoa)
-        .where('permitId = :permitId', { permitId: +permitId })
-        .andWhere('loa.loaId in (:...loaId)', { loaId: loaIdsToDelete || [] })
-        .execute();
+    if (loaIdsToDelete?.length)
+      await this.permitLoaRepository.delete({
+        permitId: permitId,
+        loa: { loaId: In(loaIdsToDelete) },
+      });
     return await this.findAllPermitLoa(permitId);
   }
   @LogAsyncMethodExecution()

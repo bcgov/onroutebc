@@ -19,7 +19,12 @@ import { CreateLcvDto } from './dto/request/create-lcv.dto';
 import { CreateNoFeeDto } from './dto/request/create-no-fee.dto';
 import { Permissions } from '../../common/decorator/permissions.decorator';
 import { IsFeatureFlagEnabled } from 'src/common/decorator/is-feature-flag-enabled.decorator';
-import { CLIENT_USER_ROLE_LIST, IDIR_USER_ROLE_LIST, IDIR_USER_ROLE_LIST_FOR_SPECIAL_AUTH } from 'src/common/enum/user-role.enum';
+import {
+  CLIENT_USER_ROLE_LIST,
+  IDIR_USER_ROLE_LIST,
+  IDIR_USER_ROLE_LIST_FOR_SPECIAL_AUTH,
+  IDIRUserRole,
+} from 'src/common/enum/user-role.enum';
 
 @ApiBearerAuth()
 @ApiTags('Special Authorization')
@@ -48,9 +53,10 @@ export class SpecialAuthController {
     description:
       'Returns all special authorizations for a company in the database.',
   })
-  @Permissions({ allowedIdirRoles: IDIR_USER_ROLE_LIST,
-    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST
-   })
+  @Permissions({
+    allowedIdirRoles: IDIR_USER_ROLE_LIST,
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+  })
   @Get()
   async get(
     @Param() { companyId }: CompanyIdPathParamDto,
@@ -67,7 +73,12 @@ export class SpecialAuthController {
     description: 'LCV allowance updated successfully.',
     type: ReadSpecialAuthDto,
   })
-  @Permissions({ allowedIdirRoles: IDIR_USER_ROLE_LIST_FOR_SPECIAL_AUTH })
+  @Permissions({
+    allowedIdirRoles: [
+      IDIRUserRole.HQ_ADMINISTRATOR,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+    ],
+  })
   @Put('/lcv')
   async updateLcv(
     @Req() request: Request,
@@ -91,7 +102,12 @@ export class SpecialAuthController {
     description: 'No fee type updated successfully.',
     type: ReadSpecialAuthDto,
   })
-  @Permissions({ allowedIdirRoles: IDIR_USER_ROLE_LIST_FOR_SPECIAL_AUTH })
+  @Permissions({
+    allowedIdirRoles: [
+      IDIRUserRole.HQ_ADMINISTRATOR,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+    ],
+  })
   @Put('/no-fee')
   async updateNoFee(
     @Req() request: Request,
