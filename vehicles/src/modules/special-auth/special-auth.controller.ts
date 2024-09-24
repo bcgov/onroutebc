@@ -22,7 +22,6 @@ import { IsFeatureFlagEnabled } from 'src/common/decorator/is-feature-flag-enabl
 import {
   CLIENT_USER_ROLE_LIST,
   IDIR_USER_ROLE_LIST,
-  IDIR_USER_ROLE_LIST_FOR_SPECIAL_AUTH,
   IDIRUserRole,
 } from 'src/common/enum/user-role.enum';
 
