@@ -125,7 +125,7 @@ export const PermitForm = (props: PermitFormProps) => {
     if (!mostRecentLOAExpiry) return providedDurationOptions;
 
     return providedDurationOptions
-      .filter(({ value: durationDays }) => mostRecentLOAExpiry.isAfter(getExpiryDate(startDate, durationDays)));
+      .filter(({ value: durationDays }) => !mostRecentLOAExpiry.isBefore(getExpiryDate(startDate, durationDays)));
   }, [providedDurationOptions, currentSelectedLOAs, startDate]);
 
   useEffect(() => {
