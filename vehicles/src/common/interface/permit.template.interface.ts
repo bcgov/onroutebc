@@ -33,7 +33,7 @@ export interface PermitData {
   clientNumber: string;
   vehicleConfiguration?: VehicleConfiguration;
   applicationNotes?: string;
-  permittedCommodity?: string;
+  permittedCommodity?: PermittedCommodity;
   permittedRoute?: PermittedRoute;
 }
 
@@ -49,6 +49,11 @@ interface VehicleConfiguration {
 interface PermittedRoute {
   routeDetails: string;
   manualRoute: ManualRoute;
+}
+
+interface PermittedCommodity {
+  commodityType: string;
+  loadDescription: string;
 }
 
 interface ManualRoute {
