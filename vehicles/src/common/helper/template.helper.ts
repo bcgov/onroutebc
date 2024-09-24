@@ -22,17 +22,14 @@ export const getPermitTemplateName = (
   const templateMapping: PermitTemplateMapping = {
     [ApplicationStatus.ISSUED]: {
       [PermitType.SINGLE_TRIP_OVERSIZE]: TemplateName.PERMIT_STOS,
-      [PermitType.TERM_OVERSIZE]: TemplateName.PERMIT_TROS,
       default: TemplateName.PERMIT,
     },
     [ApplicationStatus.VOIDED]: {
       [PermitType.SINGLE_TRIP_OVERSIZE]: TemplateName.PERMIT_STOS_VOID,
-      [PermitType.TERM_OVERSIZE]: TemplateName.PERMIT_TROS_VOID,
       default: TemplateName.PERMIT_VOID,
     },
     [ApplicationStatus.REVOKED]: {
       [PermitType.SINGLE_TRIP_OVERSIZE]: TemplateName.PERMIT_STOS_REVOKED,
-      [PermitType.TERM_OVERSIZE]: TemplateName.PERMIT_TROS_REVOKED,
       default: TemplateName.PERMIT_REVOKED,
     },
   };
