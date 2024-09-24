@@ -1,0 +1,23 @@
+---
+name: release-please
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+
+jobs:
+  release-please:
+    name: Release-Please
+    runs-on: ubuntu-22.04
+    timeout-minutes: 2
+    steps:
+      - uses: google-github-actions/release-please-action@v3
+        with:
+          release-type: simple
+          package-name: release-please-action
+          changelog-types: '[{"type":"ORV2","section":"Features","hidden":false},{"type":"feat","section":"Features","hidden":false},{"type":"fix","section":"Bug Fixes","hidden":false},{"type":"build","section":"Miscellaneous","hidden":false},{"type":"chore","section":"Miscellaneous","hidden":false},{"type":"ci","section":"Miscellaneous","hidden":false},{"type":"docs","section":"Miscellaneous","hidden":false},{"type":"perf","section":"Miscellaneous","hidden":false},{"type":"refactor","section":"Miscellaneous","hidden":false},{"type":"revert","section":"Miscellaneous","hidden":false},{"type":"style","section":"Miscellaneous","hidden":false},{"type":"test","section":"Miscellaneous","hidden":false}]'
