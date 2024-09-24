@@ -1,19 +1,14 @@
 ---
+name: release-please
+
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - '*.md'
-      - '.github/**'
-      - 'common/graphics/**'
-      - '!.github/workflows/deploy.yml'
-      - '!.github/workflows/merge.yml'
 
 permissions:
   contents: write
   pull-requests: write
 
-name: release-please
 
 jobs:
   release-please:
