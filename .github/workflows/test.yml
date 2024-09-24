@@ -17,6 +17,10 @@ on:
         type: string
         default: "test"
   
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
 jobs:
   deploy-test:
     name: Deploys (TEST)

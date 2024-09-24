@@ -16,6 +16,10 @@ on:
         type: string
         default: "uat"
   
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
 jobs:
   deploy-demo:
     name: Deploys (DEMO)

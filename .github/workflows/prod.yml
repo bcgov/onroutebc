@@ -16,6 +16,10 @@ on:
         type: string
         default: "prod"
 
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
 jobs:
   deploys-prod:
     name: Deploys (PROD)
