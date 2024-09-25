@@ -5,11 +5,6 @@ on:
   release:
     types: [published]
   workflow_dispatch:
-    inputs:
-      pr:
-        description: "PR num of image to deploy"
-        required: false
-        type: string
 
 concurrency:
   group: ${{ github.workflow }}
@@ -19,18 +14,10 @@ jobs:
   vars:
     name: Set Variables
     outputs:
-      pr: ${{ steps.pr.outputs.pr }}
+      release-name: ${{ steps.release-name.outputs.release-name }}
     runs-on: ubuntu-22.04
     timeout-minutes: 1
     steps:
-      # Get PR number for squash merges to main
-      - name: Get PR Number From Event
-        if: ${{ github.event_name == 'release' }}
-        id: pr_no
-        uses: bcgov-nr/action-get-pr@main
-      - name: PR Number
-        id: pr
-        run: echo pr=${{ steps.pr_no.outputs.pr || inputs.pr}} >> $GITHUB_OUTPUT
       - name: Release Name
         id: release-name
         run: |
@@ -51,7 +38,7 @@ jobs:
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.package }}
-          target: ${{ needs.vars.outputs.pr }}
+          target: test
           tags: ${{ needs.vars.outputs.release-name }}
 
   deploys-uat:
@@ -60,7 +47,7 @@ jobs:
     uses: ./.github/workflows/uat.yml
     secrets: inherit
     with:
-      tag: ${{ needs.vars.outputs.pr }}
+      tag: ${{ needs.vars.outputs.release-name }}
   
   promote-images-uat:
     name: Promote Images - Uat
@@ -77,7 +64,7 @@ jobs:
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.package }}
-          target: ${{ needs.vars.outputs.pr }}
+          target: ${{ needs.vars.outputs.release-name }}
           tags: uat
   
   deploys-prod:
@@ -86,7 +73,7 @@ jobs:
     uses: ./.github/workflows/prod.yml
     secrets: inherit
     with:
-      tag: ${{ needs.vars.outputs.pr }}
+      tag: ${{ needs.vars.outputs.release-name }}
   
   promote-images-prod:
     name: Promote Images - Prod
@@ -103,5 +90,5 @@ jobs:
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.package }}
-          target: ${{ needs.vars.outputs.pr }}
+          target: ${{ needs.vars.outputs.release-name }}
           tags: prod
