@@ -554,7 +554,8 @@ export class ApplicationProfile extends AutomapperProfile {
         forMember(
           (d) => d.loa.expiryDate,
           mapFrom((s) => {
-            if (s.loa.expiryDate) return dayjs(s.loa.expiryDate).format('YYYY-MM-DD');
+            if (s.loa.expiryDate)
+              return dayjs(s.loa.expiryDate).format('YYYY-MM-DD');
           }),
         ),
         forMember(

@@ -26,7 +26,10 @@ import { JwtServiceAccountAuthGuard } from 'src/common/guard/jwt-sa-auth.guard';
 import { PermitIdDto } from 'src/modules/permit-application-payment/permit/dto/request/permit-id.dto';
 import { ApiPaginatedResponse } from '../../../common/decorator/api-paginate-response';
 import { Permissions } from '../../../common/decorator/permissions.decorator';
-import { IDIR_USER_ROLE_LIST, IDIRUserRole } from '../../../common/enum/user-role.enum';
+import {
+  IDIR_USER_ROLE_LIST,
+  IDIRUserRole,
+} from '../../../common/enum/user-role.enum';
 import { PaginationDto } from '../../../common/dto/paginate/pagination';
 import { ReadApplicationMetadataDto } from './dto/response/read-application-metadata.dto';
 import { GetApplicationQueryParamsDto } from './dto/request/queryParam/getApplication.query-params.dto';

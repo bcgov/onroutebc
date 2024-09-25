@@ -426,7 +426,6 @@ export class LoaProfile extends AutomapperProfile {
           }),
         ),
       );
-
     };
   }
 }

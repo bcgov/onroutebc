@@ -1,9 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  ArrayMinSize,
-  IsInt,
-  IsPositive,
-} from 'class-validator';
+import { ArrayMinSize, IsInt, IsPositive } from 'class-validator';
 
 export class CreatePermitLoaDto {
   @ApiProperty({
