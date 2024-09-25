@@ -59,7 +59,9 @@ interface PermittedCommodity {
 interface ManualRoute {
   origin: string;
   destination: string;
-  highwaySequence: string[];
+  exitPoint?: string;
+  totalDistance?: number;
+  highwaySequence?: string[];
 }
 
 interface MailingAddress {
