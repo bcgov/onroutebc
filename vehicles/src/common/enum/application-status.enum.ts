@@ -36,7 +36,7 @@ export const ACTIVE_APPLICATION_STATUS: readonly ApplicationStatus[] = [
 ];
 
 /**
- * Application statuses including Application In Progress (AIP) and Pending Permits/Applications
+ * Application statuses including Application In Progress (AIP), Pending Permits/Applications & IN_QUEUE
  */
 export const ALL_APPLICATION_STATUS: readonly ApplicationStatus[] = [
   ApplicationStatus.IN_PROGRESS,

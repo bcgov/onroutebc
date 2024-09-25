@@ -48,6 +48,10 @@ import { ReadApplicationMetadataDto } from './dto/response/read-application-meta
 import { GetApplicationQueryParamsDto } from './dto/request/queryParam/getApplication.query-params.dto';
 import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
 import { PermitReceiptDocumentService } from '../permit-receipt-document/permit-receipt-document.service';
+import {
+  ApplicationQueueStatus,
+  convertApplicationQueueStatus,
+} from '../../../common/enum/case-status-type.enum';
 
 @ApiBearerAuth()
 @ApiTags('Company Application')
@@ -112,7 +116,11 @@ export class CompanyApplicationController {
       pendingPermits: getApplicationQueryParamsDto.pendingPermits,
       userGUID: userGuid,
       currentUser: currentUser,
-      applicationsInQueue: getApplicationQueryParamsDto.applicationsInQueue,
+      applicationQueueStatus: convertApplicationQueueStatus(
+        (getApplicationQueryParamsDto?.applicationQueueStatus?.split(
+          ',',
+        ) as ApplicationQueueStatus[]) || [],
+      ),
       searchColumn: getApplicationQueryParamsDto.searchColumn,
       searchString: getApplicationQueryParamsDto.searchString,
     });

@@ -170,10 +170,8 @@ export const currentPermitFee = (
     return oldAmount === 0 ? 0 : -pricePerTerm * permitTerms;
   }
   // For non void new application (exclude amendment application), if no fee applies, set the price per term to 0 for new application
-  if ((isNoFee && oldAmount === undefined) || oldAmount === 0) 
-    return 0;
-  if (oldAmount === undefined)
-    oldAmount = 0;
+  if ((isNoFee && oldAmount === undefined) || oldAmount === 0) return 0;
+  if (oldAmount === undefined) oldAmount = 0;
   // Calculate fee for non void permit.
   return oldAmount > 0
     ? pricePerTerm * permitTerms - oldAmount

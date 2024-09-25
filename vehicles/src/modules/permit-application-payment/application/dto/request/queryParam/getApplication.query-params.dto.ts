@@ -18,7 +18,8 @@ import {
   ALL_APPLICATION_STATUS,
 } from '../../../../../../common/enum/application-status.enum';
 import { ApplicationSearchConstraint } from '../../../../../../common/constraint/application-search.constraint';
-import { ACTIVE_APPLICATION_QUEUE_STATUS } from '../../../../../../common/enum/case-status-type.enum';
+import { ApplicationQueueStatus } from '../../../../../../common/enum/case-status-type.enum';
+import { QueryParamListConstraint } from '../../../../../../common/constraint/query-param-list.constraint';
 
 export class GetApplicationQueryParamsDto extends PageOptionsDto {
   @ApiProperty({
@@ -93,23 +94,19 @@ export class GetApplicationQueryParamsDto extends PageOptionsDto {
   pendingPermits?: Nullable<boolean>;
 
   @ApiProperty({
+    example: `${Object.values(ApplicationQueueStatus).join(',')}`,
     description:
-      `Setting this property true restricts the search results to those applications which are in queue (${Object.values(ACTIVE_APPLICATION_QUEUE_STATUS).join(', ')}). ` +
-      `Conversely, Setting it to false confines the search results to only those applications that are awaiting payment (${Object.values(ACTIVE_APPLICATION_STATUS).join(', ')}). ` +
-      `If left unspecified, the system will fetch all applications that are in any of the following statuses: ${Object.values(ALL_APPLICATION_STATUS).join(', ')}, including those awaiting issuance. ` +
-      'Caution: You cannot set both pendingPermits and applicationsInQueue properties at the same time.',
-    example: true,
+      'The query parameter allows for filtering results based on applicationQueueStatus. ' +
+      'Multiple application queue statuses can be specified and should be comma-separated. ' +
+      'The values are case-sensitive and must match those defined in the schema. ' +
+      `Possible values are: ${Object.values(ApplicationQueueStatus).join(', ')}. ` +
+      'Syntax: <status1,status2>',
     required: false,
-    type: 'boolean',
+    type: 'string',
   })
   @IsOptional()
-  @Transform(({ obj, key }: { obj: Record<string, unknown>; key: string }) => {
-    return obj[key] === 'true' ? true : obj[key] === 'false' ? false : obj[key];
-  })
-  @Validate(ApplicationSearchConstraint, {
-    message:
-      'Both pendingPermits and applicationsInQueue cannot be set at the same time.',
-  })
-  @IsBoolean()
-  applicationsInQueue?: Nullable<boolean>;
+  @Validate(QueryParamListConstraint, [ApplicationQueueStatus])
+  @IsString()
+  @Length(1, 150)
+  applicationQueueStatus?: Nullable<string>;
 }
