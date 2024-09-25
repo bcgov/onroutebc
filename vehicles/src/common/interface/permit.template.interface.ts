@@ -94,6 +94,7 @@ interface VehicleDetails {
   provinceCode: string;
   vehicleType: string;
   vehicleSubType: string;
+  licensedGVW?: number;
   saveVehicle?: boolean;
 }
 
