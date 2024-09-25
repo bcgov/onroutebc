@@ -500,6 +500,7 @@ export class LoaService {
         PermitLoa,
         {
           extraArgs: () => ({
+            permitId,
             userName: currentUser.userName,
             userGUID: currentUser.userGUID,
             timestamp: new Date(),

@@ -309,7 +309,7 @@ export class LoaController {
     type: ReadPermitLoaDto,
   })
   @Permissions({ allowedIdirRoles: IDIR_USER_ROLE_LIST })
-  @Get('/permits:permitId')
+  @Get('/permits/:permitId')
   async getPermitLoa(
     @Param() { permitId }: PermitIdPathParamDto,
   ): Promise<ReadPermitLoaDto[]> {

@@ -437,8 +437,8 @@ export class LoaProfile extends AutomapperProfile {
         PermitLoa,
         forMember(
           (d) => d.permitId,
-          mapFrom((s) => {
-            return s.permitId;
+          mapWithArguments((_, { permitId }) => {
+            return permitId;
           }),
         ),
         forMember(
@@ -517,9 +517,45 @@ export class LoaProfile extends AutomapperProfile {
           }),
         ),
         forMember(
-          (d) => d.loa,
+          (d) => d.loa.companyId,
           mapFrom((s) => {
-            return s.loa;
+            return s.loa.company.companyId;
+          }),
+        ),
+        forMember(
+          (d) => d.loa.startDate,
+          mapFrom((s) => {
+            return dayjs(s.loa.startDate).format('YYYY-MM-DD');
+          }),
+        ),
+        forMember(
+          (d) => d.loa.expiryDate,
+          mapFrom((s) => {
+            if (s.loa.expiryDate) return dayjs(s.loa.expiryDate).format('YYYY-MM-DD');
+          }),
+        ),
+        forMember(
+          (d) => d.loa.loaPermitType,
+          mapFrom((s) => {
+            return s.loa.loaPermitTypes.map((lpt) => lpt.permitType);
+          }),
+        ),
+        forMember(
+          (d) => d.loa.powerUnits,
+          mapFrom((s) => {
+            if (s.loa.loaVehicles)
+              return s.loa.loaVehicles
+                .filter((lv) => lv.powerUnit)
+                .map((lv) => lv.powerUnit);
+          }),
+        ),
+        forMember(
+          (d) => d.loa.trailers,
+          mapFrom((s) => {
+            if (s.loa.loaVehicles)
+              return s.loa.loaVehicles
+                .filter((lv) => lv.trailer)
+                .map((lv) => lv.trailer);
           }),
         ),
       );
