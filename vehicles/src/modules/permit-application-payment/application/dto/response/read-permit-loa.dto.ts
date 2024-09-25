@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ReadLoaDto } from './read-loa.dto';
+import { ReadLoaDto } from 'src/modules/special-auth/dto/response/read-loa.dto';
 
 export class ReadPermitLoaDto {
   @ApiProperty({

@@ -43,14 +43,11 @@ import { Permissions } from 'src/common/decorator/permissions.decorator';
 import { ReadLoaDto } from './dto/response/read-loa.dto';
 import { GetLoaQueryParamsDto } from './dto/request/queryParam/get-loa.query-params.dto';
 import { UpdateLoaFileDto } from './dto/request/update-loa-file.dto';
-import { ReadPermitLoaDto } from './dto/response/read-permit-loa.dto';
-import { CreatePermitLoaDto } from './dto/request/create-permit-loa.dto';
 import {
   CLIENT_USER_ROLE_LIST,
   IDIR_USER_ROLE_LIST,
   IDIRUserRole,
 } from 'src/common/enum/user-role.enum';
-import { PermitIdPathParamDto } from '../common/dto/request/pathParam/permitId.path-param.dto';
 
 @ApiBearerAuth()
 @ApiTags('Letter of Authorization (LoA)')
@@ -265,55 +262,5 @@ export class LoaController {
       loaId,
     );
     return loa;
-  }
-
-  @ApiOperation({
-    summary: 'Designate LoA to permit.',
-    description:
-      'Designate LoA to permit. Returns the created permit LoA object from the database.',
-  })
-  @ApiCreatedResponse({
-    description: 'Permit Loa Details',
-    type: ReadPermitLoaDto,
-    isArray: true,
-  })
-  @Permissions({
-    allowedIdirRoles: [
-      IDIRUserRole.HQ_ADMINISTRATOR,
-      IDIRUserRole.SYSTEM_ADMINISTRATOR,
-    ],
-  })
-  @Post('/permits/:permitId')
-  async createPermitLoa(
-    @Req() request: Request,
-    @Param() {companyId, permitId }: PermitIdPathParamDto,
-    @Body() createPermitLoaDto: CreatePermitLoaDto,
-  ): Promise<ReadPermitLoaDto[]> {
-    const currentUser = request.user as IUserJWT;
-    const result = await this.loaService.createPermitLoa(
-      currentUser,
-      permitId,
-      createPermitLoaDto,
-    );
-    return result;
-  }
-
-  @ApiOperation({
-    summary: 'Get all LoA designated to a permit.',
-    description:
-      'Retrieves all LoA objects from the database that are associated with the specified permit..',
-  })
-  @ApiCreatedResponse({
-    description: 'Permit Loa Details',
-    isArray: true,
-    type: ReadPermitLoaDto,
-  })
-  @Permissions({ allowedIdirRoles: IDIR_USER_ROLE_LIST })
-  @Get('/permits/:permitId')
-  async getPermitLoa(
-    @Param() {companyId, permitId }: PermitIdPathParamDto,
-  ): Promise<ReadPermitLoaDto[]> {
-    const result = await this.loaService.findAllPermitLoa(permitId);
-    return result;
   }
 }

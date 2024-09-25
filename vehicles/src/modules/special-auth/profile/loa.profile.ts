@@ -9,14 +9,11 @@ import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
 import { CreateLoaDto } from '../dto/request/create-loa.dto';
 import { LoaDetail } from '../entities/loa-detail.entity';
-import { ReadLoaDto } from '../dto/response/read-loa.dto';
 import { LoaPermitType } from '../entities/loa-permit-type-details.entity';
 import { LoaVehicle } from '../entities/loa-vehicles.entity';
 import * as dayjs from 'dayjs';
 import { UpdateLoaDto } from '../dto/request/update-loa.dto';
-import { CreatePermitLoaDto } from '../dto/request/create-permit-loa.dto';
-import { PermitLoa } from '../entities/permit-loa.entity';
-import { ReadPermitLoaDto } from '../dto/response/read-permit-loa.dto';
+import { ReadLoaDto } from '../dto/response/read-loa.dto';
 
 @Injectable()
 export class LoaProfile extends AutomapperProfile {
@@ -382,7 +379,6 @@ export class LoaProfile extends AutomapperProfile {
           ),
         ),
       );
-
       createMap(
         mapper,
         LoaDetail,
@@ -431,134 +427,6 @@ export class LoaProfile extends AutomapperProfile {
         ),
       );
 
-      createMap(
-        mapper,
-        CreatePermitLoaDto,
-        PermitLoa,
-        forMember(
-          (d) => d.permitId,
-          mapWithArguments((_, { permitId }) => {
-            return permitId;
-          }),
-        ),
-        forMember(
-          (d) => d.loa.loaId,
-          mapFrom((s) => {
-            return s.loaId[0];
-          }),
-        ),
-        forMember(
-          (d) => d.createdUserGuid,
-          mapWithArguments((_, { userGUID }) => {
-            return userGUID;
-          }),
-        ),
-        forMember(
-          (d) => d.createdUser,
-          mapWithArguments((_, { userName }) => {
-            return userName;
-          }),
-        ),
-        forMember(
-          (d) => d.createdUserDirectory,
-          mapWithArguments((_, { directory }) => {
-            return directory;
-          }),
-        ),
-
-        forMember(
-          (d) => d.createdDateTime,
-          mapWithArguments((_, { timestamp }) => {
-            return timestamp;
-          }),
-        ),
-
-        forMember(
-          (d) => d.updatedUserGuid,
-          mapWithArguments((_, { userGUID }) => {
-            return userGUID;
-          }),
-        ),
-        forMember(
-          (d) => d.updatedUser,
-          mapWithArguments((_, { userName }) => {
-            return userName;
-          }),
-        ),
-        forMember(
-          (d) => d.updatedUserDirectory,
-          mapWithArguments((_, { directory }) => {
-            return directory;
-          }),
-        ),
-
-        forMember(
-          (d) => d.updatedDateTime,
-          mapWithArguments((_, { timestamp }) => {
-            return timestamp;
-          }),
-        ),
-      );
-
-      createMap(
-        mapper,
-        PermitLoa,
-        ReadPermitLoaDto,
-        forMember(
-          (d) => d.permitId,
-          mapFrom((s) => {
-            return s.permitId;
-          }),
-        ),
-        forMember(
-          (d) => d.permitLoaId,
-          mapFrom((s) => {
-            return s.permitLoaId;
-          }),
-        ),
-        forMember(
-          (d) => d.loa.companyId,
-          mapFrom((s) => {
-            return s.loa.company.companyId;
-          }),
-        ),
-        forMember(
-          (d) => d.loa.startDate,
-          mapFrom((s) => {
-            return dayjs(s.loa.startDate).format('YYYY-MM-DD');
-          }),
-        ),
-        forMember(
-          (d) => d.loa.expiryDate,
-          mapFrom((s) => {
-            if (s.loa.expiryDate) return dayjs(s.loa.expiryDate).format('YYYY-MM-DD');
-          }),
-        ),
-        forMember(
-          (d) => d.loa.loaPermitType,
-          mapFrom((s) => {
-            return s.loa.loaPermitTypes.map((lpt) => lpt.permitType);
-          }),
-        ),
-        forMember(
-          (d) => d.loa.powerUnits,
-          mapFrom((s) => {
-            if (s.loa.loaVehicles)
-              return s.loa.loaVehicles
-                .filter((lv) => lv.powerUnit)
-                .map((lv) => lv.powerUnit);
-          }),
-        ),
-        forMember(
-          (d) => d.loa.trailers,
-          mapFrom((s) => {
-            if (s.loa.loaVehicles)
-              return s.loa.loaVehicles
-                .filter((lv) => lv.trailer)
-                .map((lv) => lv.trailer);
-          }),
-        ),
-      );
     };
   }
 }
