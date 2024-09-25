@@ -473,9 +473,10 @@ export class LoaService {
   @LogAsyncMethodExecution()
   async createPermitLoa(
     currentUser: IUserJWT,
+    permitId: string,
     createPermitLoaDto: CreatePermitLoaDto,
   ): Promise<ReadPermitLoaDto[]> {
-    const { permitId, loaId: inputLoaIds } = createPermitLoaDto;
+    const { loaId: inputLoaIds } = createPermitLoaDto;
     const existingPermitLoa = await this.findAllPermitLoa(permitId);
     const existingLoaIds = existingPermitLoa.map((x) => x.loa.loaId);
 
@@ -499,6 +500,7 @@ export class LoaService {
         PermitLoa,
         {
           extraArgs: () => ({
+            permitId,
             userName: currentUser.userName,
             userGUID: currentUser.userGUID,
             timestamp: new Date(),

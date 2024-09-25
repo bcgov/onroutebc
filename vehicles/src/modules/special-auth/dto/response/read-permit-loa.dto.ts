@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { LoaDetail } from '../../entities/loa-detail.entity';
+import { ReadLoaDto } from './read-loa.dto';
 
 export class ReadPermitLoaDto {
   @ApiProperty({
@@ -15,8 +15,8 @@ export class ReadPermitLoaDto {
   permitId: string;
 
   @ApiProperty({
-    type: LoaDetail,
+    type: ReadLoaDto,
     description: 'Loa details',
   })
-  loa: LoaDetail;
+  loa: ReadLoaDto;
 }
