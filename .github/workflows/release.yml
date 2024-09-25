@@ -22,6 +22,7 @@ jobs:
         id: release-name
         run: |
           echo release-name=$(curl https://api.github.com/repos/bcgov/onroutebc/releases/latest | jq -r .tag_name) >> $GITHUB_OUTPUT
+  
   promote-images-release:
     name: Promote Images - Release
     needs: [vars]
@@ -89,5 +90,5 @@ jobs:
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.package }}
-          target: uat
+          target: ${{ needs.vars.outputs.release-name }}
           tags: prod
