@@ -190,15 +190,32 @@ export const VehicleDetails = ({
       ], []),
   ]);
 
-  const permittedLOAPowerUnitSubtypes = vehicleOptions
-    .filter(vehicle => vehicle.vehicleType === VEHICLE_TYPES.POWER_UNIT)
-    .filter(vehicle => permittedLOAPowerUnitIds.has((vehicle as PowerUnit).powerUnitId as string))
-    .map(vehicle => (vehicle as PowerUnit).powerUnitTypeCode);
+  const powerUnitsInInventory = vehicleOptions
+    .filter(vehicle => vehicle.vehicleType === VEHICLE_TYPES.POWER_UNIT) as PowerUnit[];
 
-  const permittedLOATrailerSubtypes = vehicleOptions
-    .filter(vehicle => vehicle.vehicleType === VEHICLE_TYPES.TRAILER)
-    .filter(vehicle => permittedLOATrailerIds.has((vehicle as Trailer).trailerId as string))
-    .map(vehicle => (vehicle as Trailer).trailerTypeCode);
+  const trailersInInventory = vehicleOptions
+    .filter(vehicle => vehicle.vehicleType === VEHICLE_TYPES.TRAILER) as Trailer[];
+
+  const permittedLOAPowerUnitSubtypes = powerUnitsInInventory
+    .filter(powerUnit => permittedLOAPowerUnitIds.has(powerUnit.powerUnitId as string))
+    .map(powerUnit => powerUnit.powerUnitTypeCode);
+
+  const permittedLOATrailerSubtypes = trailersInInventory
+    .filter(trailer => permittedLOATrailerIds.has(trailer.trailerId as string))
+    .map(trailer => trailer.trailerTypeCode);
+
+  // Check if selected vehicle is an LOA vehicle
+  const isSelectedVehicleAllowedByLOA = Boolean(vehicleFormData.vehicleId)
+    && (
+      permittedLOAPowerUnitIds.has(vehicleFormData.vehicleId as string)
+      || permittedLOATrailerIds.has(vehicleFormData.vehicleId as string)
+    )
+    && (
+      powerUnitsInInventory.map(powerUnit => powerUnit.powerUnitId)
+        .includes(vehicleFormData.vehicleId as string)
+      || trailersInInventory.map(trailer => trailer.trailerId)
+        .includes(vehicleFormData.vehicleId as string)
+    );
 
   useEffect(() => {
     // Update subtype options when vehicle type changes
@@ -295,6 +312,13 @@ export const VehicleDetails = ({
     }
   };
 
+  // If the selected vehicle is an LOA vehicle, it should not be edited/saved to inventory
+  useEffect(() => {
+    if (isSelectedVehicleAllowedByLOA) {
+      setSaveVehicle(false);
+    }
+  }, [isSelectedVehicleAllowedByLOA]);
+
   return (
     <Box className="vehicle-details">
       <Box className="vehicle-details__header">
@@ -363,6 +387,8 @@ export const VehicleDetails = ({
                 width: formFieldStyle.width,
                 customHelperText: "last 6 digits",
               }}
+              readOnly={isSelectedVehicleAllowedByLOA}
+              disabled={isSelectedVehicleAllowedByLOA}
             />
 
             <CustomFormComponent
@@ -377,6 +403,8 @@ export const VehicleDetails = ({
                 label: "Plate",
                 width: formFieldStyle.width,
               }}
+              readOnly={isSelectedVehicleAllowedByLOA}
+              disabled={isSelectedVehicleAllowedByLOA}
             />
 
             <CustomFormComponent
@@ -391,6 +419,8 @@ export const VehicleDetails = ({
                 label: "Make",
                 width: formFieldStyle.width,
               }}
+              readOnly={isSelectedVehicleAllowedByLOA}
+              disabled={isSelectedVehicleAllowedByLOA}
             />
 
             <CustomFormComponent
@@ -411,6 +441,8 @@ export const VehicleDetails = ({
                 label: "Year",
                 width: formFieldStyle.width,
               }}
+              readOnly={isSelectedVehicleAllowedByLOA}
+              disabled={isSelectedVehicleAllowedByLOA}
             />
 
             <CountryAndProvince
@@ -419,13 +451,15 @@ export const VehicleDetails = ({
               provinceField="permitData.vehicleDetails.provinceCode"
               isProvinceRequired={true}
               width={formFieldStyle.width}
+              readOnly={isSelectedVehicleAllowedByLOA}
+              disabled={isSelectedVehicleAllowedByLOA}
             />
 
             <CustomFormComponent
               type="select"
               feature={feature}
-              readOnly={disableVehicleTypeSelect}
-              disabled={disableVehicleTypeSelect}
+              readOnly={disableVehicleTypeSelect || isSelectedVehicleAllowedByLOA}
+              disabled={disableVehicleTypeSelect || isSelectedVehicleAllowedByLOA}
               options={{
                 name: "permitData.vehicleDetails.vehicleType",
                 rules: {
@@ -469,6 +503,8 @@ export const VehicleDetails = ({
                   {subtype.type}
                 </MenuItem>
               ))}
+              readOnly={isSelectedVehicleAllowedByLOA}
+              disabled={isSelectedVehicleAllowedByLOA}
             />
 
             <FormControl>
@@ -498,6 +534,8 @@ export const VehicleDetails = ({
                             "data-testid": "save-vehicle-yes",
                           } as CustomInputHTMLAttributes
                         }
+                        readOnly={isSelectedVehicleAllowedByLOA}
+                        disabled={isSelectedVehicleAllowedByLOA}
                       />
                     }
                     label="Yes"
@@ -512,6 +550,8 @@ export const VehicleDetails = ({
                             "data-testid": "save-vehicle-no",
                           } as CustomInputHTMLAttributes
                         }
+                        readOnly={isSelectedVehicleAllowedByLOA}
+                        disabled={isSelectedVehicleAllowedByLOA}
                       />
                     }
                     label="No"
