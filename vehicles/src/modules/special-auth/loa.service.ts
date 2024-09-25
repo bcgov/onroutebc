@@ -526,6 +526,7 @@ export class LoaService {
     const savedPermitLoa = await this.permitLoaRepository
       .createQueryBuilder('permitLoa')
       .innerJoinAndSelect('permitLoa.loa', 'loa')
+      .innerJoinAndSelect('loa.company', 'company')
       .innerJoinAndSelect('loa.loaVehicles', 'loaVehicles')
       .innerJoinAndSelect('loa.loaPermitTypes', 'loaPermitTypes')
       .where('permitLoa.permitId = :permitId', {

@@ -286,7 +286,7 @@ export class LoaController {
   @Post('/permits/:permitId')
   async createPermitLoa(
     @Req() request: Request,
-    @Param() { permitId }: PermitIdPathParamDto,
+    @Param() {companyId, permitId }: PermitIdPathParamDto,
     @Body() createPermitLoaDto: CreatePermitLoaDto,
   ): Promise<ReadPermitLoaDto[]> {
     const currentUser = request.user as IUserJWT;
@@ -311,7 +311,7 @@ export class LoaController {
   @Permissions({ allowedIdirRoles: IDIR_USER_ROLE_LIST })
   @Get('/permits/:permitId')
   async getPermitLoa(
-    @Param() { permitId }: PermitIdPathParamDto,
+    @Param() {companyId, permitId }: PermitIdPathParamDto,
   ): Promise<ReadPermitLoaDto[]> {
     const result = await this.loaService.findAllPermitLoa(permitId);
     return result;
