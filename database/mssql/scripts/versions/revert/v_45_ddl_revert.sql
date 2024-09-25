@@ -23,4 +23,4 @@ END CATCH
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Revert permit LoA association related Db objects'
 
-INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (42, @VersionDescription, getutcdate())
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (44, @VersionDescription, getutcdate())

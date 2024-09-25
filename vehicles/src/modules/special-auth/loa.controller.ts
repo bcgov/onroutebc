@@ -283,14 +283,16 @@ export class LoaController {
       IDIRUserRole.SYSTEM_ADMINISTRATOR,
     ],
   })
-  @Post('/permits')
+  @Post('/permits/:permitId')
   async createPermitLoa(
     @Req() request: Request,
+    @Param() { permitId }: PermitIdPathParamDto,
     @Body() createPermitLoaDto: CreatePermitLoaDto,
   ): Promise<ReadPermitLoaDto[]> {
     const currentUser = request.user as IUserJWT;
     const result = await this.loaService.createPermitLoa(
       currentUser,
+      permitId,
       createPermitLoaDto,
     );
     return result;
@@ -307,7 +309,7 @@ export class LoaController {
     type: ReadPermitLoaDto,
   })
   @Permissions({ allowedIdirRoles: IDIR_USER_ROLE_LIST })
-  @Get('/permits')
+  @Get('/permits:permitId')
   async getPermitLoa(
     @Param() { permitId }: PermitIdPathParamDto,
   ): Promise<ReadPermitLoaDto[]> {
