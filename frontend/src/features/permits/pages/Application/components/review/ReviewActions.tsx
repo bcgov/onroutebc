@@ -11,6 +11,7 @@ export const ReviewActions = ({
   hasToCartButton,
   onAddToCart,
   onApprove,
+  approveApplicationMutationPending,
   onReject,
   rejectApplicationMutationPending,
 }: {
@@ -20,6 +21,7 @@ export const ReviewActions = ({
   hasToCartButton: boolean;
   onAddToCart?: () => Promise<void>;
   onApprove?: () => Promise<void>;
+  approveApplicationMutationPending?: boolean;
   onReject?: () => Promise<void>;
   rejectApplicationMutationPending?: boolean;
 }) => {
@@ -92,6 +94,7 @@ export const ReviewActions = ({
           color="primary"
           data-testid="approve-btn"
           onClick={onApprove}
+          disabled={approveApplicationMutationPending}
         >
           Approve
         </Button>

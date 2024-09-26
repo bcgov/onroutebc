@@ -788,6 +788,30 @@ export const useWithdrawApplicationInQueueMutation = () => {
   });
 };
 
+export const useApproveApplicationInQueueMutation = () => {
+  const { invalidate } = useInvalidateApplicationsInQueue();
+
+  return useMutation({
+    mutationFn: ({
+      applicationId,
+      companyId,
+    }: {
+      applicationId: Nullable<string>;
+      companyId: string;
+    }) => {
+      return updateApplicationQueueStatus({
+        applicationId,
+        caseActivityType: CASE_ACTIVITY_TYPES.APPROVED,
+        companyId,
+      });
+    },
+    onSuccess: () => {
+      invalidate();
+    },
+    onError: (err: AxiosError) => err,
+  });
+};
+
 export const useRejectApplicationInQueueMutation = () => {
   const { invalidate } = useInvalidateApplicationsInQueue();
 

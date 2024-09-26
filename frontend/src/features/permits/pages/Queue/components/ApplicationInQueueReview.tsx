@@ -24,7 +24,10 @@ import {
   IDIR_ROUTES,
 } from "../../../../../routes/constants";
 import { ReviewApplicationInQueueContext } from "../context/ReviewApplicationInQueueContext";
-import { useRejectApplicationInQueueMutation } from "../../../hooks/hooks";
+import {
+  useApproveApplicationInQueueMutation,
+  useRejectApplicationInQueueMutation,
+} from "../../../hooks/hooks";
 
 export const ApplicationInQueueReview = () => {
   const { applicationData: applicationContextData } = useContext(
@@ -73,12 +76,24 @@ export const ApplicationInQueueReview = () => {
     navigate(APPLICATIONS_ROUTES.DETAILS(permitId), { replace: true });
   };
 
+  const {
+    mutateAsync: approveApplication,
+    data: approveApplicationResponse,
+    isPending: approveApplicationMutationPending,
+  } = useApproveApplicationInQueueMutation();
+
   const handleApprove = async (): Promise<void> => {
-    return new Promise((resolve) => {
-      console.log("application approved");
-      resolve();
+    await approveApplication({
+      applicationId: applicationData?.permitId,
+      companyId,
     });
   };
+
+  useEffect(() => {
+    if (approveApplicationResponse?.status === 201) {
+      navigate(IDIR_ROUTES.STAFF_HOME);
+    }
+  }, [approveApplicationResponse, navigate]);
 
   const {
     mutateAsync: rejectApplication,
@@ -126,6 +141,7 @@ export const ApplicationInQueueReview = () => {
           contactDetails={applicationData?.permitData?.contactDetails}
           onEdit={back}
           onApprove={handleApprove}
+          approveApplicationMutationPending={approveApplicationMutationPending}
           onReject={handleReject}
           rejectApplicationMutationPending={rejectApplicationMutationPending}
           allChecked={isChecked}

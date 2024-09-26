@@ -45,6 +45,7 @@ interface PermitReviewProps {
   onContinue?: () => Promise<void>;
   onAddToCart?: () => Promise<void>;
   onApprove?: () => Promise<void>;
+  approveApplicationMutationPending?: boolean;
   onReject?: () => Promise<void>;
   rejectApplicationMutationPending?: boolean;
   showChangedFields?: boolean;
@@ -116,6 +117,9 @@ export const PermitReview = (props: PermitReviewProps) => {
           hasToCartButton={!props.isAmendAction}
           onAddToCart={props.onAddToCart}
           onApprove={props.onApprove}
+          approveApplicationMutationPending={
+            props.approveApplicationMutationPending
+          }
           onReject={props.onReject}
           rejectApplicationMutationPending={
             props.rejectApplicationMutationPending
