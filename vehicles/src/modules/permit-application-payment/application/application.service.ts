@@ -1218,9 +1218,9 @@ export class ApplicationService {
     const { loaId: inputLoaIds } = createPermitLoaDto;
     const existingPermitLoa = await this.findAllPermitLoa(permitId);
     const permit = await this.findOne(permitId);
-    const existingLoaIds = existingPermitLoa.map((x) => x.loa.loaId);
+    const existingLoaIds = existingPermitLoa.map((x) => x.loaId);
     // Get companies for all the loas
-    const loaCompanies = existingPermitLoa.map((x) => x.loa.companyId);
+    const loaCompanies = existingPermitLoa.map((x) => x.companyId);
     // Match loa companies with permit company
     const isSameCompany = loaCompanies.every(
       (val) => val === permit.company.companyId,
