@@ -461,7 +461,7 @@ export class ApplicationProfile extends AutomapperProfile {
         forMember(
           (d) => d.loa.loaId,
           mapFrom((s) => {
-            return s.loaId[0];
+            return s.loaIds[0];
           }),
         ),
         forMember(
