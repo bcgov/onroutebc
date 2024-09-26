@@ -583,7 +583,7 @@ export class ApplicationService {
         existingApplication?.permitData?.permitData,
       ) as PermitData;
       const currentDate = dayjs(new Date().toISOString())?.format('YYYY-MM-DD');
-      if (differenceBetween(permitData?.startDate, currentDate, 'days') < 0) {
+      if (differenceBetween(permitData?.startDate, currentDate, 'days') > 0) {
         throwUnprocessableEntityException('Start Date is in the past.');
       }
     }
@@ -1042,7 +1042,7 @@ export class ApplicationService {
 
           if (
             application.permitStatus === ApplicationStatus.IN_QUEUE &&
-            (differenceBetween(permitData?.startDate, currentDate, 'days') <
+            (differenceBetween(permitData?.startDate, currentDate, 'days') >
               0 ||
               differenceBetween(permitData?.expiryDate, currentDate, 'days') >
                 0)
