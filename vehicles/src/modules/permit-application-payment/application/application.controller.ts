@@ -165,7 +165,7 @@ export class ApplicationController {
     type: ReadPermitLoaDto,
   })
   @Permissions({ allowedIdirRoles: IDIR_USER_ROLE_LIST })
-  @Get(':permitId/Loas')
+  @Get(':permitId/loas')
   async getPermitLoa(
     @Param() { permitId }: PermitIdPathParamDto,
   ): Promise<ReadPermitLoaDto[]> {
