@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   Query,
   Req,
@@ -9,6 +10,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiMethodNotAllowedResponse,
   ApiNotFoundResponse,
@@ -24,7 +26,10 @@ import { JwtServiceAccountAuthGuard } from 'src/common/guard/jwt-sa-auth.guard';
 import { PermitIdDto } from 'src/modules/permit-application-payment/permit/dto/request/permit-id.dto';
 import { ApiPaginatedResponse } from '../../../common/decorator/api-paginate-response';
 import { Permissions } from '../../../common/decorator/permissions.decorator';
-import { IDIR_USER_ROLE_LIST } from '../../../common/enum/user-role.enum';
+import {
+  IDIR_USER_ROLE_LIST,
+  IDIRUserRole,
+} from '../../../common/enum/user-role.enum';
 import { PaginationDto } from '../../../common/dto/paginate/pagination';
 import { ReadApplicationMetadataDto } from './dto/response/read-application-metadata.dto';
 import { GetApplicationQueryParamsDto } from './dto/request/queryParam/getApplication.query-params.dto';
@@ -32,6 +37,9 @@ import {
   ApplicationQueueStatus,
   convertApplicationQueueStatus,
 } from '../../../common/enum/case-status-type.enum';
+import { ReadPermitLoaDto } from './dto/response/read-permit-loa.dto';
+import { CreatePermitLoaDto } from './dto/request/create-permit-loa.dto';
+import { PermitIdPathParamDto } from 'src/modules/common/dto/request/pathParam/permitId.path-param.dto';
 
 @ApiBearerAuth()
 @ApiTags('Application : API accessible exclusively to staff users and SA.')
@@ -113,6 +121,55 @@ export class ApplicationController {
       currentUser,
       permit.ids,
     );
+    return result;
+  }
+  @ApiOperation({
+    summary: 'Designate LoA to permit.',
+    description:
+      'Designate LoA to permit. Returns the created permit LoA object from the database.',
+  })
+  @ApiCreatedResponse({
+    description: 'Permit Loa Details',
+    type: ReadPermitLoaDto,
+    isArray: true,
+  })
+  @Permissions({
+    allowedIdirRoles: [
+      IDIRUserRole.HQ_ADMINISTRATOR,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+    ],
+  })
+  @Post(':permitId/loas')
+  async createPermitLoa(
+    @Req() request: Request,
+    @Param() { permitId }: PermitIdPathParamDto,
+    @Body() createPermitLoaDto: CreatePermitLoaDto,
+  ): Promise<ReadPermitLoaDto[]> {
+    const currentUser = request.user as IUserJWT;
+    const result = await this.applicationService.createPermitLoa(
+      currentUser,
+      permitId,
+      createPermitLoaDto,
+    );
+    return result;
+  }
+
+  @ApiOperation({
+    summary: 'Get all LoA designated to a permit.',
+    description:
+      'Retrieves all LoA objects from the database that are associated with the specified permit..',
+  })
+  @ApiCreatedResponse({
+    description: 'Permit Loa Details',
+    isArray: true,
+    type: ReadPermitLoaDto,
+  })
+  @Permissions({ allowedIdirRoles: IDIR_USER_ROLE_LIST })
+  @Get(':permitId/Loas')
+  async getPermitLoa(
+    @Param() { permitId }: PermitIdPathParamDto,
+  ): Promise<ReadPermitLoaDto[]> {
+    const result = await this.applicationService.findAllPermitLoa(permitId);
     return result;
   }
 }

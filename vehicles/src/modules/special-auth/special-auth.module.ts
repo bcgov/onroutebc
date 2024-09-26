@@ -10,7 +10,6 @@ import { LoaController } from './loa.controller';
 import { LoaService } from './loa.service';
 import { LoaProfile } from './profile/loa.profile';
 import { SpecialAuthProfile } from './profile/special-auth.profile';
-import { PermitLoa } from './entities/permit-loa.entity';
 
 @Module({
   imports: [
@@ -19,7 +18,6 @@ import { PermitLoa } from './entities/permit-loa.entity';
       LoaDetail,
       LoaVehicle,
       LoaPermitType,
-      PermitLoa,
     ]),
   ],
   controllers: [SpecialAuthController, LoaController],

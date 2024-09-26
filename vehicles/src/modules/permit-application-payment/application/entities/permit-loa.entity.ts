@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 import { Base } from 'src/modules/common/entities/base.entity';
-import { LoaDetail } from './loa-detail.entity';
+import { LoaDetail } from 'src/modules/special-auth/entities/loa-detail.entity';
 
 @Entity({ name: 'permit.ORBC_PERMIT_LOA' })
 export class PermitLoa extends Base {

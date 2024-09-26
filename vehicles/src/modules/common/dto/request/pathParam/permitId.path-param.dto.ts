@@ -5,7 +5,7 @@ import { IsInt, IsPositive } from 'class-validator';
 export class PermitIdPathParamDto {
   @ApiProperty({
     description: `Id of the permit.`,
-    example: 74,
+    example: 1,
   })
   @IsInt()
   @IsPositive()

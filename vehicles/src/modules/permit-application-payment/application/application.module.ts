@@ -13,6 +13,7 @@ import { PermitReceiptDocumentModule } from '../permit-receipt-document/permit-r
 import { ApplicationController } from './application.controller';
 import { CaseManagementModule } from '../../case-management/case-management.module';
 import { CompanyApplicationQueueController } from './company-application-queue.controller';
+import { PermitLoa } from './entities/permit-loa.entity';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { CompanyApplicationQueueController } from './company-application-queue.c
       PermitType,
       PermitApplicationOrigin,
       PermitApprovalSource,
+      PermitLoa,
     ]),
     PaymentModule,
     PermitReceiptDocumentModule,
