@@ -86,6 +86,7 @@ import * as dayjs from 'dayjs';
 import { ReadPermitLoaDto } from './dto/response/read-permit-loa.dto';
 import { CreatePermitLoaDto } from './dto/request/create-permit-loa.dto';
 import { PermitLoa } from './entities/permit-loa.entity';
+import { LoaDetail } from 'src/modules/special-auth/entities/loa-detail.entity';
 
 @Injectable()
 export class ApplicationService {
@@ -96,6 +97,8 @@ export class ApplicationService {
     private permitRepository: Repository<Permit>,
     @InjectRepository(PermitLoa)
     private permitLoaRepository: Repository<PermitLoa>,
+    @InjectRepository(LoaDetail)
+    private loaDetail: Repository<LoaDetail>,
     private dataSource: DataSource,
     private readonly dopsService: DopsService,
     private readonly paymentService: PaymentService,
@@ -1219,16 +1222,6 @@ export class ApplicationService {
     const existingPermitLoa = await this.findAllPermitLoa(permitId);
     const permit = await this.findOne(permitId);
     const existingLoaIds = existingPermitLoa.map((x) => x.loaId);
-    // Get companies for all the loas
-    const loaCompanies = existingPermitLoa.map((x) => x.companyId);
-    // Match loa companies with permit company
-    const isSameCompany = loaCompanies.every(
-      (val) => val === permit.company.companyId,
-    );
-    if (!isSameCompany)
-      throw new BadRequestException(
-        'Company id for LoA and permit should match.',
-      );
     const loaIdsToDelete = existingLoaIds.filter(
       (value) => !inputLoaIds.includes(value),
     );
@@ -1237,6 +1230,14 @@ export class ApplicationService {
     );
 
     if (loaIdsToInsert.length) {
+      const loaDetails = await this.loaDetail.find({
+        where: {
+          loaId: In(loaIdsToInsert),
+          company: { companyId: permit.company.companyId },
+        },
+      });
+      if(loaDetails.length != loaIdsToInsert.length)
+        throw new BadRequestException('One or more loa(s) does not exist')
       // Transform the permit LOA IDs from an array of numbers into individual records.
       const singlePermitLoa = loaIdsToInsert.map((loaId) => ({
         permitId,
