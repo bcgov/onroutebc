@@ -1217,8 +1217,18 @@ export class ApplicationService {
   ): Promise<ReadPermitLoaDto[]> {
     const { loaId: inputLoaIds } = createPermitLoaDto;
     const existingPermitLoa = await this.findAllPermitLoa(permitId);
+    const permit = await this.findOne(permitId);
     const existingLoaIds = existingPermitLoa.map((x) => x.loa.loaId);
-
+    // Get companies for all the loas
+    const loaCompanies = existingPermitLoa.map((x) => x.loa.companyId);
+    // Match loa companies with permit company
+    const isSameCompany = loaCompanies.every(
+      (val) => val === permit.company.companyId,
+    );
+    if (!isSameCompany)
+      throw new BadRequestException(
+        'Company id for LoA and permit should match.',
+      );
     const loaIdsToDelete = existingLoaIds.filter(
       (value) => !inputLoaIds.includes(value),
     );
