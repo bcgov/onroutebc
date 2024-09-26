@@ -44,10 +44,14 @@ interface PermitReviewProps {
   onEdit: () => void;
   onContinue?: () => Promise<void>;
   onAddToCart?: () => Promise<void>;
+  onApprove?: () => Promise<void>;
+  onReject?: () => Promise<void>;
+  rejectApplicationMutationPending?: boolean;
   showChangedFields?: boolean;
   oldFields?: Nullable<Partial<Application>>;
   calculatedFee: string;
   doingBusinessAs?: Nullable<string>;
+  isApplicationInReview?: boolean;
 }
 
 export const PermitReview = (props: PermitReviewProps) => {
@@ -100,6 +104,7 @@ export const PermitReview = (props: PermitReviewProps) => {
           setIsChecked={props.setAllChecked}
           permitType={props.permitType}
           fee={props.calculatedFee}
+          isApplicationInReview={props.isApplicationInReview}
         />
 
         {props.children}
@@ -110,6 +115,11 @@ export const PermitReview = (props: PermitReviewProps) => {
           onContinue={props.onContinue}
           hasToCartButton={!props.isAmendAction}
           onAddToCart={props.onAddToCart}
+          onApprove={props.onApprove}
+          onReject={props.onReject}
+          rejectApplicationMutationPending={
+            props.rejectApplicationMutationPending
+          }
         />
       </Box>
     </Box>

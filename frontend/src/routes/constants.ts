@@ -120,6 +120,13 @@ export const APPLICATIONS_ROUTES = {
     )}/review`,
 };
 
+const APPLICATION_QUEUE_ROUTE_BASE = "/queue";
+
+export const APPLICATION_QUEUE_ROUTES = {
+  BASE: APPLICATION_QUEUE_ROUTE_BASE,
+  REVIEW: `${APPLICATION_QUEUE_ROUTE_BASE}/review`,
+};
+
 // Shopping Cart
 export const SHOPPING_CART_ROUTE_BASE = "/cart";
 export const SHOPPING_CART_ROUTES = {

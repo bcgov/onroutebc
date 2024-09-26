@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { MRT_ColumnDef } from "material-react-table";
 import { ApplicationListItem } from "../../types/application";
 import { getPermitTypeName } from "../../types/PermitType";
@@ -6,7 +5,7 @@ import { Box, Tooltip } from "@mui/material";
 import { CustomNavLink } from "../../../../common/components/links/CustomNavLink";
 import { APPLICATION_QUEUE_ROUTES } from "../../../../routes/constants";
 
-export const getApplicationInQueueColumnDefinition = (
+export const getClaimedApplicationColumnDefinition = (
   handleFollowApplicationLink: (application: ApplicationListItem) => void,
 ): MRT_ColumnDef<ApplicationListItem>[] => [
   {
@@ -31,7 +30,7 @@ export const getApplicationInQueueColumnDefinition = (
         </CustomNavLink>
       );
     },
-    minSize: 320,
+    size: 200,
   },
   {
     accessorKey: "permitType",
@@ -56,6 +55,13 @@ export const getApplicationInQueueColumnDefinition = (
     size: 50,
   },
   {
+    accessorKey: "legalName",
+    id: "legalName",
+    enableSorting: false,
+    header: "Company Name",
+    size: 200,
+  },
+  {
     accessorKey: "startDate",
     id: "startDate",
     enableSorting: true,
@@ -68,5 +74,12 @@ export const getApplicationInQueueColumnDefinition = (
     id: "timeInQueue",
     header: "Time in Queue (hh:mm)",
     size: 200,
+  },
+  {
+    accessorKey: "claimedBy",
+    enableSorting: false,
+    id: "claimedBy",
+    header: "Claimed By",
+    size: 140,
   },
 ];

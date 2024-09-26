@@ -5,9 +5,8 @@ import {
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
-
 import "./ApplicationsInReviewList.scss";
-import { ApplicationInQueueColumnDefinition } from "./ApplicationInQueueColumnDefinition";
+import { getApplicationInQueueColumnDefinition } from "./ApplicationInQueueColumnDefinition";
 import { SnackBarContext } from "../../../../App";
 import { ApplicationListItem } from "../../types/application";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
@@ -16,7 +15,10 @@ import {
   getDefaultNullableVal,
   getDefaultRequiredVal,
 } from "../../../../common/helpers/util";
-import { useApplicationsInQueueQuery } from "../../hooks/hooks";
+import {
+  useClaimApplicationInQueueMutation,
+  useUnclaimedApplicationsInQueueQuery,
+} from "../../hooks/hooks";
 import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
 import {
   defaultTableInitialStateOptions,
@@ -27,32 +29,35 @@ import { BANNER_MESSAGES } from "../../../../common/constants/bannerMessages";
 import { MRT_Row } from "material-react-table";
 import { ApplicationsInReviewRowOptions } from "./ApplicationsInReviewRowOptions";
 import { APPLICATION_QUEUE_STATUSES } from "../../types/ApplicationQueueStatus";
+import { useNavigate } from "react-router-dom";
+import { APPLICATION_QUEUE_ROUTES } from "../../../../routes/constants";
+import { Loading } from "../../../../common/pages/Loading";
 
 export const ApplicationsInQueueList = () => {
   const {
-    applicationsInQueueQuery,
+    unclaimedApplicationsInQueueQuery,
     pagination,
     setPagination,
     sorting,
     setSorting,
-  } = useApplicationsInQueueQuery();
+  } = useUnclaimedApplicationsInQueueQuery();
 
   const {
-    data: applicationsInQueue,
-    isError,
-    isPending,
-    isFetching,
-  } = applicationsInQueueQuery;
+    data: unclaimedApplications,
+    isError: errorFetchingUnclaimedApplications,
+    isPending: isPendingUnclaimedApplications,
+    isFetching: isFetchingUnclaimedApplications,
+  } = unclaimedApplicationsInQueueQuery;
 
   const [showAIRTable, setShowAIRTable] = useState<boolean>(false);
 
   useEffect(() => {
     const totalCount = getDefaultRequiredVal(
       0,
-      applicationsInQueue?.meta?.totalItems,
+      unclaimedApplications?.meta?.totalItems,
     );
     setShowAIRTable(totalCount > 0);
-  }, [applicationsInQueue?.meta?.totalItems]);
+  }, [unclaimedApplications?.meta?.totalItems]);
 
   const { idirUserDetails, userDetails } = useContext(OnRouteBCContext);
   const userRole = getDefaultNullableVal(
@@ -65,7 +70,7 @@ export const ApplicationsInQueueList = () => {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   useEffect(() => {
-    if (isError) {
+    if (errorFetchingUnclaimedApplications) {
       snackBar.setSnackBar({
         message: "An unexpected error occurred.",
         showSnackbar: true,
@@ -73,21 +78,56 @@ export const ApplicationsInQueueList = () => {
         alertType: "error",
       });
     }
-  }, [isError]);
+  }, [errorFetchingUnclaimedApplications]);
+
+  const [selectedApplication, setSelectedApplication] =
+    useState<ApplicationListItem>();
+
+  const handleFollowApplicationLink = (application: ApplicationListItem) => {
+    setSelectedApplication(application);
+    handleClaimApplication(application);
+  };
+
+  const {
+    mutateAsync: claimApplication,
+    data: claimApplicationResponse,
+    isPending: claimApplicationPending,
+  } = useClaimApplicationInQueueMutation();
+
+  const handleClaimApplication = async (application: ApplicationListItem) => {
+    await claimApplication({
+      companyId: application.companyId,
+      applicationId: application.permitId,
+    });
+  };
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (claimApplicationResponse?.status === 201) {
+      navigate(
+        `${APPLICATION_QUEUE_ROUTES.REVIEW}/${selectedApplication?.applicationNumber}`,
+      );
+    }
+  }, [claimApplicationResponse]);
+
+  const columns = getApplicationInQueueColumnDefinition(
+    handleFollowApplicationLink,
+  );
 
   const table = useMaterialReactTable({
     ...defaultTableOptions,
-    columns: ApplicationInQueueColumnDefinition,
-    data: getDefaultRequiredVal([], applicationsInQueue?.items),
+    columns,
+    data: getDefaultRequiredVal([], unclaimedApplications?.items),
     initialState: {
       ...defaultTableInitialStateOptions,
     },
     state: {
       ...defaultTableStateOptions,
-      showAlertBanner: isError,
-      showProgressBars: isFetching,
+      showAlertBanner: errorFetchingUnclaimedApplications,
+      showProgressBars: isFetchingUnclaimedApplications,
       columnVisibility: { applicationId: true },
-      isLoading: isPending,
+      isLoading: isPendingUnclaimedApplications,
       rowSelection,
       pagination,
       sorting,
@@ -115,13 +155,13 @@ export const ApplicationsInQueueList = () => {
     manualFiltering: true,
     manualPagination: true,
     manualSorting: true,
-    rowCount: getDefaultRequiredVal(0, applicationsInQueue?.meta?.totalItems),
-    pageCount: getDefaultRequiredVal(0, applicationsInQueue?.meta?.pageCount),
+    rowCount: getDefaultRequiredVal(0, unclaimedApplications?.meta?.totalItems),
+    pageCount: getDefaultRequiredVal(0, unclaimedApplications?.meta?.pageCount),
     onSortingChange: setSorting,
     onPaginationChange: setPagination,
     enablePagination: true,
     enableBottomToolbar: true,
-    muiToolbarAlertBannerProps: isError
+    muiToolbarAlertBannerProps: errorFetchingUnclaimedApplications
       ? {
           color: "error",
           children: "Error loading data",
@@ -147,6 +187,8 @@ export const ApplicationsInQueueList = () => {
       [],
     ),
   });
+
+  if (claimApplicationPending) return <Loading />;
 
   return (
     <>

@@ -119,10 +119,13 @@ const getApplications = async (
     take = 10,
     searchString = "",
     orderBy = [],
+    searchColumn = "",
   }: PaginationAndFilters,
   {
     pendingPermitsOnly,
     applicationsInQueueOnly,
+    claimedApplicationsOnly,
+    unclaimedApplicationsOnly,
     getStaffQueue,
   }: ApplicationFilters,
 ): Promise<PaginatedResponse<ApplicationListItem>> => {
@@ -152,12 +155,30 @@ const getApplications = async (
     );
   }
 
+  if (typeof claimedApplicationsOnly !== "undefined") {
+    applicationsURL.searchParams.set(
+      "applicationQueueStatus",
+      `${APPLICATION_QUEUE_STATUSES.IN_REVIEW}`,
+    );
+  }
+
+  if (typeof unclaimedApplicationsOnly !== "undefined") {
+    applicationsURL.searchParams.set(
+      "applicationQueueStatus",
+      `${APPLICATION_QUEUE_STATUSES.PENDING_REVIEW}`,
+    );
+  }
+
   if (searchString) {
     applicationsURL.searchParams.set("searchString", searchString);
   }
 
   if (orderBy.length > 0) {
     applicationsURL.searchParams.set("orderBy", stringifyOrderBy(orderBy));
+  }
+
+  if (searchColumn.length > 0) {
+    applicationsURL.searchParams.set("searchColumn", searchColumn);
   }
 
   const applications = await httpGETRequest(applicationsURL.toString())
@@ -220,7 +241,7 @@ export const getPendingPermits = async (
 
 /**
  * Fetch all applications in queue.
- * @return A list of applications in queue (PENDING_REVIEW, IN_REVIEW)
+ * @return A list of applications in queue (PENDING_REVIEW)
  */
 export const getApplicationsInQueue = async (
   paginationFilters: PaginationAndFilters,
@@ -233,6 +254,51 @@ export const getApplicationsInQueue = async (
 };
 
 /**
+ * Fetch all claimed applications in queue.
+ * @return A list of claimed applications in queue (IN_REVIEW)
+ */
+export const getClaimedApplicationsInQueue = async (
+  paginationFilters: PaginationAndFilters,
+): Promise<PaginatedResponse<ApplicationListItem>> => {
+  return await getApplications(paginationFilters, {
+    getStaffQueue: true,
+    claimedApplicationsOnly: true,
+  });
+};
+
+/**
+ * Fetch all unclaimed applications in queue.
+ * @return A list of claimed applications in queue (PENDING_REVIEW)
+ */
+export const getUnclaimedApplicationsInQueue = async (
+  paginationFilters: PaginationAndFilters,
+): Promise<PaginatedResponse<ApplicationListItem>> => {
+  return await getApplications(paginationFilters, {
+    getStaffQueue: true,
+    unclaimedApplicationsOnly: true,
+  });
+};
+
+/**
+ * Get queued application by application number
+ * @param applicationNumber Application number of the queued application to be retrieved.
+ * @returns Application information if found, or undefined
+ */
+export const getApplicationInQueueDetails = async (
+  applicationNumber: string,
+): Promise<PaginatedResponse<ApplicationListItem>> => {
+  return await getApplications(
+    {
+      page: 0,
+      take: 1,
+      searchString: applicationNumber,
+      searchColumn: "applicationNumber",
+    },
+    { claimedApplicationsOnly: true, getStaffQueue: true },
+  );
+};
+
+/**
  * Fetch application by its permit id.
  * @param permitId permit id of the application to fetch
  * @returns ApplicationResponseData data as response, or null if fetch failed
@@ -242,6 +308,27 @@ export const getApplicationByPermitId = async (
 ): Promise<RequiredOrNull<ApplicationResponseData>> => {
   try {
     const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
+    const url = `${APPLICATIONS_API_ROUTES.GET(companyId)}/${permitId}`;
+
+    const response = await httpGETRequest(url);
+    return response.data;
+  } catch (err) {
+    return null;
+  }
+};
+
+/**
+ * Fetch application by its company id and permit id.
+ * @param companyId company id of the company who owns the application
+ * @param permitId permit id of the application to fetch
+ * @returns ApplicationResponseData data as response, or null if fetch failed
+ */
+export const getApplicationByCompanyIdAndPermitId = async (
+  companyId?: Nullable<string>,
+  permitId?: Nullable<string>,
+): Promise<RequiredOrNull<ApplicationResponseData>> => {
+  try {
+    companyId = getDefaultRequiredVal("", companyId);
     const url = `${APPLICATIONS_API_ROUTES.GET(companyId)}/${permitId}`;
 
     const response = await httpGETRequest(url);
@@ -656,12 +743,19 @@ export const resendPermit = async ({
   );
 };
 
-export const updateApplicationQueueStatus = async (
-  applicationId: string,
-  caseActivityType: CaseActivityType,
-  comment?: string,
-) => {
-  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
+export const updateApplicationQueueStatus = async ({
+  applicationId,
+  caseActivityType,
+  companyId,
+  comment,
+}: {
+  applicationId: Nullable<string>;
+  caseActivityType: CaseActivityType;
+  companyId?: string;
+  comment?: string;
+}) => {
+  companyId = getDefaultRequiredVal("", companyId, getCompanyIdFromSession());
+  applicationId = getDefaultRequiredVal("", applicationId);
 
   const data: any = {
     caseActivityType,
@@ -675,6 +769,19 @@ export const updateApplicationQueueStatus = async (
   const response = await httpPOSTRequest(
     APPLICATION_QUEUE_API_ROUTES.UPDATE_QUEUE_STATUS(companyId, applicationId),
     data,
+  );
+  return response;
+};
+
+export const claimApplicationInQueue = async (
+  companyId: Nullable<string>,
+  applicationId: Nullable<string>,
+) => {
+  companyId = getDefaultRequiredVal("", companyId);
+  applicationId = getDefaultRequiredVal("", applicationId);
+  const response = await httpPOSTRequest(
+    APPLICATION_QUEUE_API_ROUTES.CLAIM(companyId, applicationId),
+    {},
   );
   return response;
 };

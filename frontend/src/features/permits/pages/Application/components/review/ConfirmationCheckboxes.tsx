@@ -8,10 +8,12 @@ export const ConfirmationCheckboxes = ({
   isSubmitted,
   isChecked,
   setIsChecked,
+  isApplicationInReview,
 }: {
   isSubmitted: boolean;
   isChecked: boolean;
   setIsChecked: Dispatch<SetStateAction<boolean>>;
+  isApplicationInReview?: boolean;
 }) => {
   const checkboxes = [
     {
@@ -64,7 +66,8 @@ export const ConfirmationCheckboxes = ({
               }`
             }
             key={x.description}
-            checked={x.checked}
+            checked={isApplicationInReview ? true : x.checked}
+            disabled={isApplicationInReview}
             onChange={() => handleCheck(x.description)}
             inputProps={
               {

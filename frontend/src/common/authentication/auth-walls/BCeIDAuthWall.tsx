@@ -111,7 +111,13 @@ export const BCeIDAuthWall = ({
   if (isAuthenticated && isEstablishedUser) {
     if (isIDIR(userIDP)) {
       if (companyId) {
-        // TODO when attempting to access an application in queue as staff, we do not have a companyId and are redirected
+        /* TODO when attempting to access an application in queue as staff, we do not have a companyId and are redirected
+        would it be better to have staff automatically act as the company who started the application when accessing an application 
+        from the staff queue?
+        
+        If we were to act as company here, we should not see the tabs bar (permits, vehicle inventory etc), 
+        and the breadcrumb should read: Home > Application #
+        */
         return <IDIRAuthWall permissionMatrixKeys={permissionMatrixKeys} />;
       } else {
         return (

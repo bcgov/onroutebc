@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { OnRouteBCTableRowActions } from "../../../../common/components/table/OnRouteBCTableRowActions";
 import {
-  useUpdateApplicationQueueStatusMutation,
+  useWithdrawApplicationInQueueMutation,
   useInvalidateApplicationsInQueue,
 } from "../../hooks/hooks";
-import { CASE_ACTIVITY_TYPES } from "../../types/CaseActivityType";
 import { ApplicationInReviewModal } from "./ApplicationInReviewModal";
 import { useNavigate } from "react-router-dom";
 import { ERROR_ROUTES } from "../../../../routes/constants";
@@ -62,7 +61,7 @@ export const ApplicationsInReviewRowOptions = ({
   };
 
   const { mutateAsync, isError, error } =
-    useUpdateApplicationQueueStatusMutation();
+    useWithdrawApplicationInQueueMutation();
 
   useEffect(() => {
     if (isError) {
@@ -81,10 +80,7 @@ export const ApplicationsInReviewRowOptions = ({
    */
   const onSelectOptionCallback = (selectedOption: string) => {
     if (selectedOption === PERMIT_ACTION_OPTION_TYPES.WITHDRAW_APPLICATION) {
-      mutateAsync({
-        applicationId: permitId,
-        caseActivityType: CASE_ACTIVITY_TYPES.WITHDRAWN,
-      });
+      mutateAsync(permitId);
     }
   };
 

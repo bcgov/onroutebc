@@ -13,12 +13,14 @@ export const ReviewFeeSummary = ({
   setIsChecked,
   permitType,
   fee,
+  isApplicationInReview,
 }: {
   isSubmitted: boolean;
   isChecked: boolean;
   setIsChecked: Dispatch<SetStateAction<boolean>>;
   permitType?: Nullable<PermitType>;
   fee: string;
+  isApplicationInReview?: boolean;
 }) => {
   return (
     <Box className="review-fee-summary">
@@ -33,6 +35,7 @@ export const ReviewFeeSummary = ({
             isSubmitted={isSubmitted}
             isChecked={isChecked}
             setIsChecked={setIsChecked}
+            isApplicationInReview={isApplicationInReview}
           />
         </Box>
       </Box>

@@ -35,17 +35,17 @@ import {
   getPendingPermits,
   getApplicationsInQueue,
   updateApplicationQueueStatus,
+  getApplicationInQueueDetails,
+  getApplicationByCompanyIdAndPermitId,
+  claimApplicationInQueue,
+  getClaimedApplicationsInQueue,
+  getUnclaimedApplicationsInQueue,
 } from "../apiManager/permitsAPI";
-import {
-  CASE_ACTIVITY_TYPES,
-  CaseActivityType,
-} from "../types/CaseActivityType";
+import { CASE_ACTIVITY_TYPES } from "../types/CaseActivityType";
 import { SnackBarContext } from "../../../App";
 import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
-import {
-  IDIR_USER_ROLE,
-  IDIRUserRoleType,
-} from "../../../common/authentication/types";
+import { IDIRUserRoleType } from "../../../common/authentication/types";
+import { isStaffUser } from "../../idir/staff/helpers/isStaffUser";
 
 const QUERY_KEYS = {
   PERMIT_DETAIL: (
@@ -524,15 +524,9 @@ export const useApplicationsInQueueQuery = () => {
   const { idirUserDetails, companyId } = useContext(OnRouteBCContext);
   const userRole = idirUserDetails?.userRole as IDIRUserRoleType;
 
-  const staffUserRoles: IDIRUserRoleType[] = [
-    IDIR_USER_ROLE.SYSTEM_ADMINISTRATOR,
-    IDIR_USER_ROLE.PPC_CLERK,
-    IDIR_USER_ROLE.CTPO,
-  ];
-
-  const isStaffUser = staffUserRoles.includes(userRole);
   // if typeof company === "undefined" here we know that the staff user is NOT acting as a company
-  const getStaffQueue = isStaffUser && typeof companyId === "undefined";
+  const getStaffQueue =
+    isStaffUser(userRole) && typeof companyId === "undefined";
 
   const [pagination, setPagination] = useState<MRT_PaginationState>({
     pageIndex: 0,
@@ -586,37 +580,248 @@ export const useApplicationsInQueueQuery = () => {
   };
 };
 
-export const useUpdateApplicationQueueStatusMutation = () => {
+export const useClaimedApplicationsInQueueQuery = () => {
+  const [pagination, setPagination] = useState<MRT_PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const [sorting, setSorting] = useState<MRT_SortingState>([
+    {
+      id: "updatedDateTime",
+      desc: true,
+    },
+  ]);
+
+  const orderBy =
+    sorting.length > 0
+      ? [
+          {
+            column: sorting.at(0)?.id as string,
+            descending: Boolean(sorting.at(0)?.desc),
+          },
+        ]
+      : [];
+
+  const claimedApplicationsInQueueQuery = useQuery({
+    queryKey: [
+      "claimedApplications",
+      pagination.pageIndex,
+      pagination.pageSize,
+      sorting,
+    ],
+    queryFn: () =>
+      getClaimedApplicationsInQueue({
+        page: pagination.pageIndex,
+        take: pagination.pageSize,
+        orderBy,
+      }),
+    refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
+    refetchOnMount: "always",
+    placeholderData: keepPreviousData,
+  });
+
+  return {
+    claimedApplicationsInQueueQuery,
+    pagination,
+    setPagination,
+    sorting,
+    setSorting,
+  };
+};
+
+export const useUnclaimedApplicationsInQueueQuery = () => {
+  const [pagination, setPagination] = useState<MRT_PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const [sorting, setSorting] = useState<MRT_SortingState>([
+    {
+      id: "updatedDateTime",
+      desc: true,
+    },
+  ]);
+
+  const orderBy =
+    sorting.length > 0
+      ? [
+          {
+            column: sorting.at(0)?.id as string,
+            descending: Boolean(sorting.at(0)?.desc),
+          },
+        ]
+      : [];
+
+  const unclaimedApplicationsInQueueQuery = useQuery({
+    queryKey: [
+      "unclaimedApplications",
+      pagination.pageIndex,
+      pagination.pageSize,
+      sorting,
+    ],
+    queryFn: () =>
+      getUnclaimedApplicationsInQueue({
+        page: pagination.pageIndex,
+        take: pagination.pageSize,
+        orderBy,
+      }),
+    refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
+    refetchOnMount: "always",
+    placeholderData: keepPreviousData,
+  });
+
+  return {
+    unclaimedApplicationsInQueueQuery,
+    pagination,
+    setPagination,
+    sorting,
+    setSorting,
+  };
+};
+
+/**
+ * A custom react query hook that gets details for an application with IN_QUEUE status from the backend API
+ * The hook gets queued application details by its application id
+ * @param applicationNumber application number for the application
+ * @returns UseQueryResult for application query.
+ */
+export const useApplicationInQueueDetailsQuery = (
+  applicationNumber: string,
+) => {
+  return useQuery({
+    queryKey: ["applicationsInQueue", { applicationNumber }],
+    queryFn: async () => {
+      return getApplicationInQueueDetails(applicationNumber);
+    },
+    enabled: Boolean(applicationNumber),
+    retry: false,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
+  });
+};
+
+export const useReviewApplicationInQueueDetailsQuery = (
+  applicationStep: ApplicationStep,
+  companyId?: string,
+  permitId?: string,
+  permitType?: string,
+) => {
+  const [applicationData, setApplicationData] =
+    useState<Nullable<Application>>();
+
+  // Check if the permit type param is valid, if there is one
+  const permitTypeValid = isPermitTypeValid(permitType);
+
+  const isCreateNewApplication =
+    permitTypeValid && applicationStep === APPLICATION_STEPS.DETAILS;
+
+  // Currently, creating new application route doesn't contain valid permitId
+  // ie. route === "/applications/new/tros" instead of "/applications/:permitId"
+  // Thus we need to do a check for valid/invalid routes
+  // eg. "/applications/1" and "/applications/1/review" are VALID - they refer to existing application with id 1
+  // eg. "/applications/new" is NOT VALID - doesn't provide permitType param
+  // eg. "/applications/new/tros" is VALID - provides valid permitType param value
+  // eg. "/applications/new/abcde" is NOT VALID - provided permitType is not valid
+  // eg. "/applications/new/review" is NOT VALID - "new" is not a valid (numeric) permit id
+  // We also need applicationStep to determine which page (route) we're on, and check the permit type route param
+  const isInvalidRoute =
+    !isPermitIdNumeric(permitId) && !isCreateNewApplication;
+  const shouldEnableQuery = isPermitIdNumeric(permitId);
+
+  // This won't fetch anything (ie. query.data will be undefined) if shouldEnableQuery is false
+  const query = useQuery({
+    queryKey: ["application"],
+    queryFn: () => getApplicationByCompanyIdAndPermitId(companyId, permitId),
+    retry: false,
+    refetchOnMount: "always", // always fetch when component is mounted (ApplicationDashboard page)
+    refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
+    enabled: shouldEnableQuery, // does not perform the query at all if permit id is invalid
+    gcTime: 0, // DO NOT cache the application data as application form/review pages always need latest data
+  });
+
+  useEffect(() => {
+    if (!shouldEnableQuery) {
+      if (isInvalidRoute) {
+        setApplicationData(null);
+      } else {
+        setApplicationData(undefined);
+      }
+    } else if (!query.data) {
+      // query is enabled, set application data to whatever's being fetched
+      setApplicationData(query.data);
+    } else {
+      const application = deserializeApplicationResponse(query.data);
+      setApplicationData(application);
+    }
+  }, [query.data, shouldEnableQuery, isInvalidRoute]);
+
+  return {
+    applicationData,
+    setApplicationData,
+    isInvalidRoute,
+    shouldEnableQuery,
+  };
+};
+
+export const useWithdrawApplicationInQueueMutation = () => {
   const { invalidate } = useInvalidateApplicationsInQueue();
   const { setSnackBar } = useContext(SnackBarContext);
 
   return useMutation({
-    mutationFn: (data: {
-      applicationId: string;
-      caseActivityType: CaseActivityType;
-      comment?: string;
-    }) => {
-      const { applicationId, caseActivityType, comment } = data;
-
-      return updateApplicationQueueStatus(
+    mutationFn: (applicationId: string) => {
+      return updateApplicationQueueStatus({
         applicationId,
-        caseActivityType,
-        comment,
-      );
+        caseActivityType: CASE_ACTIVITY_TYPES.WITHDRAWN,
+      });
     },
-    onSuccess: (_data, variables) => {
-      const { caseActivityType } = variables;
-      if (caseActivityType === CASE_ACTIVITY_TYPES.WITHDRAWN) {
-        setSnackBar({
-          showSnackbar: true,
-          setShowSnackbar: () => true,
-          message: "Withdrawn to Applications in Progress",
-          alertType: "info",
-        });
-        invalidate();
-      }
+    onSuccess: () => {
+      setSnackBar({
+        showSnackbar: true,
+        setShowSnackbar: () => true,
+        message: "Withdrawn to Applications in Progress",
+        alertType: "info",
+      });
+      invalidate();
     },
     onError: (err: AxiosError) => err,
+  });
+};
+
+export const useRejectApplicationInQueueMutation = () => {
+  const { invalidate } = useInvalidateApplicationsInQueue();
+
+  return useMutation({
+    mutationFn: ({
+      applicationId,
+      companyId,
+    }: {
+      applicationId: Nullable<string>;
+      companyId: string;
+    }) => {
+      return updateApplicationQueueStatus({
+        applicationId,
+        caseActivityType: CASE_ACTIVITY_TYPES.REJECTED,
+        companyId,
+      });
+    },
+    onSuccess: () => {
+      invalidate();
+    },
+    onError: (err: AxiosError) => err,
+  });
+};
+
+export const useClaimApplicationInQueueMutation = () => {
+  return useMutation({
+    mutationFn: (data: {
+      companyId: Nullable<string>;
+      applicationId: Nullable<string>;
+    }) => {
+      const { companyId, applicationId } = data;
+
+      return claimApplicationInQueue(companyId, applicationId);
+    },
   });
 };
 

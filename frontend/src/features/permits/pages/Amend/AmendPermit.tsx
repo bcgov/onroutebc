@@ -64,8 +64,7 @@ const isAmendable = (permit: Permit) => {
 
 const isAmendableByUser = (role?: string) => {
   return (
-    role === USER_ROLE.PPC_CLERK ||
-    role === USER_ROLE.SYSTEM_ADMINISTRATOR
+    role === USER_ROLE.PPC_CLERK || role === USER_ROLE.SYSTEM_ADMINISTRATOR
   );
 };
 

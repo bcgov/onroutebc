@@ -3,12 +3,7 @@ import { useEffect } from "react";
 import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router-dom";
 
-import {
-  BCeIDUserContextType,
-  IDIR_USER_ROLE,
-  IDIRUserContextType,
-  IDIRUserRoleType,
-} from "./types";
+import { BCeIDUserContextType, IDIRUserContextType } from "./types";
 import { Loading } from "../pages/Loading";
 import { IDPS } from "../types/idp";
 import { Optional } from "../types/common";
@@ -23,6 +18,7 @@ import {
   useUserContext,
   useUserContextQuery,
 } from "../../features/manageProfile/apiManager/hooks";
+import { isStaffUser } from "../../features/idir/staff/helpers/isStaffUser";
 
 const navigateBCeID = (
   userContextData: BCeIDUserContextType,
@@ -99,12 +95,6 @@ export const LoginRedirect = () => {
 
   useUserContext(userContextResponse);
 
-  const staffRoles: IDIRUserRoleType[] = [
-    IDIR_USER_ROLE.CTPO,
-    IDIR_USER_ROLE.PPC_CLERK,
-    IDIR_USER_ROLE.SYSTEM_ADMINISTRATOR,
-  ];
-
   /**
    * Hook to determine where to navigate to.
    */
@@ -125,11 +115,7 @@ export const LoginRedirect = () => {
         const userContextData: Optional<IDIRUserContextType> =
           queryClient.getQueryData<IDIRUserContextType>(["userContext"]);
         // only IDIR users with PC, SA, CTPO or TRAIN should redirect to STAFF_HOME
-        if (
-          staffRoles.includes(
-            userContextData?.user?.userRole as IDIRUserRoleType,
-          )
-        ) {
+        if (isStaffUser(userContextData?.user?.userRole)) {
           navigate(IDIR_ROUTES.STAFF_HOME);
         } else if (userContextData?.user?.userGUID) {
           navigate(IDIR_ROUTES.WELCOME);

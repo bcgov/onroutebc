@@ -34,6 +34,7 @@ import IDPRedirect from "../common/components/idpredirect/IDPRedirect";
 import { ShoppingCartDashboard } from "../features/permits/ShoppingCartDashboard";
 import { DocumentUnavailable } from "../common/pages/DocumentUnavailable";
 import { StaffDashboard } from "../features/idir/staff/pages/StaffDashboard";
+import { ReviewApplicationInQueue } from "../features/permits/pages/Queue/ReviewApplicationInQueue";
 
 export const AppRoutes = () => {
   return (
@@ -126,6 +127,11 @@ export const AppRoutes = () => {
           path={routes.IDIR_ROUTES.STAFF_HOME}
           element={<StaffDashboard />}
         />
+
+        <Route
+          path={`${routes.APPLICATION_QUEUE_ROUTES.REVIEW}/:applicationNumber`}
+          element={<ReviewApplicationInQueue />}
+        ></Route>
       </Route>
 
       <Route

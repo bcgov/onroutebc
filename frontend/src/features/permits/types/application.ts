@@ -91,7 +91,7 @@ export interface UpdateApplicationRequestData {
  * Type used for application items that are fetched in a list (eg. Applications in Progress).
  */
 export interface ApplicationListItem {
-  companyId: number;
+  companyId: string;
   legalName: string;
   alternateName?: Nullable<string>;
   permitId: string;
@@ -108,6 +108,8 @@ export interface ApplicationListItem {
   vin?: Nullable<string>;
   plate?: Nullable<string>;
   applicationQueueStatus?: ApplicationQueueStatus;
+  timeInQueue?: string;
+  claimedBy?: string;
 }
 
 /**
@@ -130,5 +132,7 @@ export interface ApplicationFormData {
 export interface ApplicationFilters {
   pendingPermitsOnly?: boolean;
   applicationsInQueueOnly?: boolean;
+  claimedApplicationsOnly?: boolean;
+  unclaimedApplicationsOnly?: boolean;
   getStaffQueue?: boolean;
 }

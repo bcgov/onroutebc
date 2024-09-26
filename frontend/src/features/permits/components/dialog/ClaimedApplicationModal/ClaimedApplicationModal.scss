@@ -1,6 +1,6 @@
-@import "../../../../themes/orbcStyles";
+@import "../../../../../themes/orbcStyles.scss";
 
-.close-account-modal {
+.claimed-application-modal {
   & &__container {
     width: 100%;
     display: flex;
@@ -15,18 +15,10 @@
     background-color: $bc-background-light-grey;
   }
 
-  &__icon {
-    .icon {
-      color: $bc-red;
-      height: 2rem;
-    }
-  }
-
   &__title {
     font-weight: 600;
     font-size: 1.5rem;
-    margin-left: 0.5em;
-    color: $bc-red;
+    color: $bc-black;
   }
 
   &__body {
@@ -34,24 +26,6 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .close-account-form {
-    width: 100%;
-
-    &__label {
-      font-weight: bold;
-      font-size: 1rem;
-      color: $bc-black;
-    }
-
-    .custom-form-control {
-      margin: 0;
-    }
-
-    .custom-text-area {
-      font-family: $default-font;
-    }
   }
 
   &__text {
@@ -83,12 +57,12 @@
 
     &--confirm {
       color: $white;
-      background-color: $bc-red;
+      background-color: $bc-primary-blue;
       font-weight: bold;
       cursor: pointer;
 
       &:hover, &:focus {
-        background-color: $bc-messages-red-text
+        background-color: $button-hover
       }
 
       &:disabled {

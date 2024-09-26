@@ -6,9 +6,14 @@
   & &__checkbox {
     padding-left: 0;
     color: $bc-primary-blue;
-
+    
+    
     &--invalid {
       color: $bc-red;
+    }
+    
+    &.Mui-disabled {
+      color: $disabled-colour;
     }
   }
 
