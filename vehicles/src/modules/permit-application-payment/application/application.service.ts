@@ -1044,7 +1044,7 @@ export class ApplicationService {
             application.permitStatus === ApplicationStatus.IN_QUEUE &&
             (differenceBetween(permitData?.startDate, currentDate, 'days') <
               0 ||
-              differenceBetween(permitData?.expiryDate, currentDate, 'days') <
+              differenceBetween(permitData?.expiryDate, currentDate, 'days') >
                 0)
           ) {
             throwUnprocessableEntityException(
