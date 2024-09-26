@@ -32,6 +32,13 @@
       }
     }
 
+    &--approve {
+      &:disabled {
+        background-color: $disabled-colour;
+        color: $white;
+      }
+    }
+
     &--cart {
       padding-left: 2rem;
       padding-right: 2rem;

@@ -72,8 +72,8 @@ export const ApplicationInQueueReview = () => {
   const [isChecked, setIsChecked] = useState(false);
   const [isSubmitted] = useState(false);
 
-  const back = () => {
-    navigate(APPLICATIONS_ROUTES.DETAILS(permitId), { replace: true });
+  const handleEdit = () => {
+    navigate(APPLICATION_QUEUE_ROUTES.EDIT);
   };
 
   const {
@@ -139,7 +139,7 @@ export const ApplicationInQueueReview = () => {
           updatedDateTime={applicationData?.updatedDateTime}
           companyInfo={companyInfo}
           contactDetails={applicationData?.permitData?.contactDetails}
-          onEdit={back}
+          onEdit={handleEdit}
           onApprove={handleApprove}
           approveApplicationMutationPending={approveApplicationMutationPending}
           onReject={handleReject}

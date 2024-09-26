@@ -19,13 +19,11 @@ import {
   useClaimApplicationInQueueMutation,
   useUnclaimedApplicationsInQueueQuery,
 } from "../../hooks/hooks";
-import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
-import { BANNER_MESSAGES } from "../../../../common/constants/bannerMessages";
 import { MRT_Row } from "material-react-table";
 import { ApplicationsInReviewRowOptions } from "./ApplicationsInReviewRowOptions";
 import { APPLICATION_QUEUE_STATUSES } from "../../types/ApplicationQueueStatus";
@@ -194,11 +192,6 @@ export const ApplicationsInQueueList = () => {
     <>
       {showAIRTable ? (
         <div className="applications-in-review-list table-container">
-          <InfoBcGovBanner
-            className="applications-in-review-banner"
-            msg={BANNER_MESSAGES.REJECTED_APPLICATIONS}
-          />
-
           <MaterialReactTable table={table} />
         </div>
       ) : (

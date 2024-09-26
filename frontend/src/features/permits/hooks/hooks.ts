@@ -580,6 +580,11 @@ export const useApplicationsInQueueQuery = () => {
   };
 };
 
+/**
+ * Hook that fetches all claimed applications in queue (IN_REVIEW) for staff and manages its pagination state.
+ * This is the data that is consumed by the ApplicationsInQueueList and ClaimedApplicationsList components
+ * @returns All claimed applications in queue (IN_REVIEW) along with pagination state and setter
+ */
 export const useClaimedApplicationsInQueueQuery = () => {
   const [pagination, setPagination] = useState<MRT_PaginationState>({
     pageIndex: 0,
@@ -605,7 +610,7 @@ export const useClaimedApplicationsInQueueQuery = () => {
 
   const claimedApplicationsInQueueQuery = useQuery({
     queryKey: [
-      "claimedApplications",
+      "applicationsInQueue",
       pagination.pageIndex,
       pagination.pageSize,
       sorting,
@@ -616,6 +621,7 @@ export const useClaimedApplicationsInQueueQuery = () => {
         take: pagination.pageSize,
         orderBy,
       }),
+    refetchInterval: 30000,
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
     refetchOnMount: "always",
     placeholderData: keepPreviousData,
@@ -630,6 +636,11 @@ export const useClaimedApplicationsInQueueQuery = () => {
   };
 };
 
+/**
+ * Hook that fetches all unclaimed applications in queue (PENDING_REVIEW) for staff and manages its pagination state.
+ * This is the data that is consumed by the ApplicationsInQueueList and ClaimedApplicationsList components
+ * @returns All unclaimed applications in queue (PENDING_REVIEW) along with pagination state and setter
+ */
 export const useUnclaimedApplicationsInQueueQuery = () => {
   const [pagination, setPagination] = useState<MRT_PaginationState>({
     pageIndex: 0,
@@ -655,7 +666,7 @@ export const useUnclaimedApplicationsInQueueQuery = () => {
 
   const unclaimedApplicationsInQueueQuery = useQuery({
     queryKey: [
-      "unclaimedApplications",
+      "applicationsInQueue",
       pagination.pageIndex,
       pagination.pageSize,
       sorting,
@@ -666,6 +677,7 @@ export const useUnclaimedApplicationsInQueueQuery = () => {
         take: pagination.pageSize,
         orderBy,
       }),
+    refetchInterval: 30000,
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
     refetchOnMount: "always",
     placeholderData: keepPreviousData,
@@ -681,7 +693,7 @@ export const useUnclaimedApplicationsInQueueQuery = () => {
 };
 
 /**
- * A custom react query hook that gets details for an application with IN_QUEUE status from the backend API
+ * A custom react query hook that gets details for a specific application with IN_QUEUE status from the backend API
  * The hook gets queued application details by its application id
  * @param applicationNumber application number for the application
  * @returns UseQueryResult for application query.
@@ -764,6 +776,19 @@ export const useReviewApplicationInQueueDetailsQuery = (
   };
 };
 
+export const useClaimApplicationInQueueMutation = () => {
+  return useMutation({
+    mutationFn: (data: {
+      companyId: Nullable<string>;
+      applicationId: Nullable<string>;
+    }) => {
+      const { companyId, applicationId } = data;
+
+      return claimApplicationInQueue(companyId, applicationId);
+    },
+  });
+};
+
 export const useWithdrawApplicationInQueueMutation = () => {
   const { invalidate } = useInvalidateApplicationsInQueue();
   const { setSnackBar } = useContext(SnackBarContext);
@@ -833,19 +858,6 @@ export const useRejectApplicationInQueueMutation = () => {
       invalidate();
     },
     onError: (err: AxiosError) => err,
-  });
-};
-
-export const useClaimApplicationInQueueMutation = () => {
-  return useMutation({
-    mutationFn: (data: {
-      companyId: Nullable<string>;
-      applicationId: Nullable<string>;
-    }) => {
-      const { companyId, applicationId } = data;
-
-      return claimApplicationInQueue(companyId, applicationId);
-    },
   });
 };
 

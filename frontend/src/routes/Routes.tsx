@@ -131,7 +131,12 @@ export const AppRoutes = () => {
         <Route
           path={`${routes.APPLICATION_QUEUE_ROUTES.REVIEW}/:applicationNumber`}
           element={<ReviewApplicationInQueue />}
-        ></Route>
+        />
+        {/*         
+        <Route
+          path={`${routes.APPLICATION_QUEUE_ROUTES.EDIT}/:applicationNumber`}
+          element={<EditApplicationInQueue />}
+        /> */}
       </Route>
 
       <Route

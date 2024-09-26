@@ -286,8 +286,8 @@ export const getUnclaimedApplicationsInQueue = async (
  */
 export const getApplicationInQueueDetails = async (
   applicationNumber: string,
-): Promise<PaginatedResponse<ApplicationListItem>> => {
-  return await getApplications(
+): Promise<ApplicationListItem> => {
+  const applicationsList = await getApplications(
     {
       page: 0,
       take: 1,
@@ -296,6 +296,7 @@ export const getApplicationInQueueDetails = async (
     },
     { claimedApplicationsOnly: true, getStaffQueue: true },
   );
+  return applicationsList.items[0];
 };
 
 /**
