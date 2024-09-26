@@ -381,10 +381,8 @@ export class CompanyApplicationController {
     isArray: true,
   })
   @Permissions({
-    allowedIdirRoles: [
-      IDIRUserRole.HQ_ADMINISTRATOR,
-      IDIRUserRole.SYSTEM_ADMINISTRATOR,
-    ],
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: IDIR_USER_ROLE_LIST,
   })
   @Post(':applicationId/loas')
   async createPermitLoa(
