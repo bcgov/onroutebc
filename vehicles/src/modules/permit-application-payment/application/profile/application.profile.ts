@@ -522,50 +522,44 @@ export class ApplicationProfile extends AutomapperProfile {
         PermitLoa,
         ReadPermitLoaDto,
         forMember(
-          (d) => d.permitId,
-          mapFrom((s) => {
-            return s.permitId;
-          }),
-        ),
-        forMember(
           (d) => d.permitLoaId,
           mapFrom((s) => {
             return s.permitLoaId;
           }),
         ),
         forMember(
-          (d) => d.loa.loaId,
+          (d) => d.loaId,
           mapFrom((s) => {
             return s.loa.loaId;
           }),
         ),
         forMember(
-          (d) => d.loa.companyId,
+          (d) => d.companyId,
           mapFrom((s) => {
             return s.loa.company.companyId;
           }),
         ),
         forMember(
-          (d) => d.loa.startDate,
+          (d) => d.startDate,
           mapFrom((s) => {
             return dayjs(s.loa.startDate).format('YYYY-MM-DD');
           }),
         ),
         forMember(
-          (d) => d.loa.expiryDate,
+          (d) => d.expiryDate,
           mapFrom((s) => {
             if (s.loa.expiryDate)
               return dayjs(s.loa.expiryDate).format('YYYY-MM-DD');
           }),
         ),
         forMember(
-          (d) => d.loa.loaPermitType,
+          (d) => d.loaPermitType,
           mapFrom((s) => {
             return s.loa.loaPermitTypes.map((lpt) => lpt.permitType);
           }),
         ),
         forMember(
-          (d) => d.loa.powerUnits,
+          (d) => d.powerUnits,
           mapFrom((s) => {
             if (s.loa.loaVehicles)
               return s.loa.loaVehicles
@@ -574,7 +568,7 @@ export class ApplicationProfile extends AutomapperProfile {
           }),
         ),
         forMember(
-          (d) => d.loa.trailers,
+          (d) => d.trailers,
           mapFrom((s) => {
             if (s.loa.loaVehicles)
               return s.loa.loaVehicles

@@ -1,22 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ReadLoaDto } from 'src/modules/special-auth/dto/response/read-loa.dto';
 
-export class ReadPermitLoaDto {
+export class ReadPermitLoaDto extends ReadLoaDto {
   @ApiProperty({
     description: 'Permit Loa id',
     example: 1,
   })
   permitLoaId: number;
-
-  @ApiProperty({
-    description: 'Permit id',
-    example: 1,
-  })
-  permitId: string;
-
-  @ApiProperty({
-    type: ReadLoaDto,
-    description: 'Loa details',
-  })
-  loa: ReadLoaDto;
 }
