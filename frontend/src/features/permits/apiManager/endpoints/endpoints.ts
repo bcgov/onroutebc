@@ -13,6 +13,8 @@ export const APPLICATIONS_API_ROUTES = {
   UPDATE: (companyId: string) => APPLICATIONS_API_BASE(companyId),
   GET: (companyId: string) => APPLICATIONS_API_BASE(companyId),
   DELETE: (companyId: string) => APPLICATIONS_API_BASE(companyId),
+  UPDATE_LOAS: (companyId: string, applicationId: string | number) =>
+    `${APPLICATIONS_API_BASE(companyId)}/${applicationId}/loas`,
 };
 
 export const APPLICATION_QUEUE_API_ROUTES = {

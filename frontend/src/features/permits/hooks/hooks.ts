@@ -35,6 +35,7 @@ import {
   getPendingPermits,
   getApplicationsInQueue,
   updateApplicationQueueStatus,
+  updateApplicationLOAs,
 } from "../apiManager/permitsAPI";
 import {
   CASE_ACTIVITY_TYPES,
@@ -615,5 +616,15 @@ export const useInvalidateApplicationsInQueue = () => {
 export const useResendPermit = () => {
   return useMutation({
     mutationFn: resendPermit,
+  });
+};
+
+/**
+ * Hook used to update the selected LOAs for a permit application.
+ * @returns Mutation object to be used for updating the selected LOAs for an application
+ */
+export const useUpdateApplicationLOAs = () => {
+  return useMutation({
+    mutationFn: updateApplicationLOAs,
   });
 };

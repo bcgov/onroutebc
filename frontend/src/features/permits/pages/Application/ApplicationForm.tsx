@@ -7,7 +7,7 @@ import "./ApplicationForm.scss";
 import { Application, ApplicationFormData } from "../../types/application";
 import { ApplicationContext } from "../../context/ApplicationContext";
 import { ApplicationBreadcrumb } from "../../components/application-breadcrumb/ApplicationBreadcrumb";
-import { useSaveApplicationMutation } from "../../hooks/hooks";
+import { useSaveApplicationMutation, useUpdateApplicationLOAs } from "../../hooks/hooks";
 import { SnackBarContext } from "../../../../App";
 import { LeaveApplicationDialog } from "../../components/dialog/LeaveApplicationDialog";
 import { areApplicationDataEqual } from "../../helpers/equality";
@@ -123,6 +123,11 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     trailerSubTypes,
   } = usePermitVehicleManagement(companyId);
 
+  const {
+    mutateAsync: updateApplicationLOAs,
+    isError: updateApplicationLOAsFailed,
+  } = useUpdateApplicationLOAs();
+
   // Show leave application dialog
   const [showLeaveApplicationDialog, setShowLeaveApplicationDialog] =
     useState<boolean>(false);
@@ -227,7 +232,22 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
 
     if (savedApplication) {
       const savedPermitId = onSaveSuccess(savedApplication, status);
-      additionalSuccessAction?.(savedPermitId);
+      const applicationLOAIds = getDefaultRequiredVal([], savedApplication.permitData.loas)
+        .map(loa => Number(loa.loaId));
+      
+      await updateApplicationLOAs({
+        applicationId: savedPermitId,
+        companyId,
+        permitLOAs: {
+          loaIds: applicationLOAIds,
+        }
+      });
+
+      if (!updateApplicationLOAsFailed) {
+        additionalSuccessAction?.(savedPermitId);
+      } else {
+        onSaveFailure();
+      }
     } else {
       onSaveFailure();
     }
