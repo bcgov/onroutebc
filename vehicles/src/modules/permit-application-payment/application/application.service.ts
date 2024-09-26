@@ -1215,7 +1215,7 @@ export class ApplicationService {
     permitId: string,
     createPermitLoaDto: CreatePermitLoaDto,
   ): Promise<ReadPermitLoaDto[]> {
-    const { loaId: inputLoaIds } = createPermitLoaDto;
+    const { loaIds: inputLoaIds } = createPermitLoaDto;
     const existingPermitLoa = await this.findAllPermitLoa(permitId);
     const permit = await this.findOne(permitId);
     const existingLoaIds = existingPermitLoa.map((x) => x.loaId);
@@ -1240,7 +1240,7 @@ export class ApplicationService {
       // Transform the permit LOA IDs from an array of numbers into individual records.
       const singlePermitLoa = loaIdsToInsert.map((loaId) => ({
         permitId,
-        loaId: [loaId],
+        loaIds: [loaId],
       }));
 
       const permitLoas = await this.classMapper.mapArrayAsync(

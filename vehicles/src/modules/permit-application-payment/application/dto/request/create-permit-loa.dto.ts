@@ -10,5 +10,5 @@ export class CreatePermitLoaDto {
   @IsInt({ each: true })
   @IsPositive({ each: true })
   @ArrayMinSize(1)
-  loaId: number[];
+  loaIds: number[];
 }
