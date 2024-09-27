@@ -311,6 +311,7 @@ export class LoaService {
             companyId: companyId,
             documentId: documentId,
             isActive: true,
+            loaNumber: existingLoaDetail.loaNumber,
             previousLoaId: existingLoaDetail.loaId,
             originalLoaId: existingLoaDetail.originalLoaId,
             userName: currentUser.userName,
