@@ -234,7 +234,6 @@ export const PermitForm = (props: PermitFormProps) => {
         <PermitLOA
           permitType={permitType}
           startDate={startDate}
-          isPermitIssued={isAmendAction}
           selectedLOAs={currentSelectedLOAs}
           companyLOAs={props.companyLOAs}
           onUpdateLOAs={handleUpdateLOAs}

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import dayjs, { Dayjs } from "dayjs";
 import { Box, Typography } from "@mui/material";
 
@@ -18,55 +18,33 @@ export const PermitLOA = ({
   startDate,
   selectedLOAs,
   companyLOAs,
-  isPermitIssued,
   onUpdateLOAs,
 }: {
   permitType: PermitType;
   startDate: Dayjs;
   selectedLOAs: LOADetail[];
   companyLOAs: LOADetail[];
-  isPermitIssued: boolean;
   onUpdateLOAs: (updatedLOAs: LOADetail[]) => void,
 }) => {
   const minDuration = minDurationForPermitType(permitType);
   const minPermitExpiryDate = getExpiryDate(startDate, minDuration);
 
-  const [originalSelectedLOAs, setOriginalSelectedLOAs] = useState<LOADetail[]>([]);
-
-  useEffect(() => {
-    // Only set the original selected LOAs once when component first renders
-    // This is because the "selectedLOAs" are constantly changing when user selects/deselects LOAs,
-    // but we want all the LOAs to be available for selection in the table based on the original selection
-    // Otherwise, once previously-selected LOAs are deselected, they'll disappear from the table
-    setOriginalSelectedLOAs(selectedLOAs);
-  }, []);
-
-  // For applications, only show the current active LOAs as selectable LOAs
-  // For issued permits (amendments), combine the current active LOAs and snapshotted LOAs as selectable LOAs
+  // Only show the current active company LOAs as selectable LOAs
   const loasForTable = useMemo(() => {
     // The LOA table should only show each LOA once, but there's a chance that an existing company LOA
     // is also a selected LOA, which means that LOA should only be shown once.
-    // Thus, any overlapping LOA between company LOAs and selected LOAs should be filtered out,
-    // and all non-overlapping unique LOAs should be included in the table (with only selected LOA checkboxes being checked)
-    const companyLOAIds = new Set([...companyLOAs.map(loa => loa.loaId)]);
+    // Thus, any overlapping LOA between company LOAs and selected LOAs should only be included once in the table,
+    // and all non-overlapping LOAs that are not the current active company LOAs shouldn't be included
     const currentlySelectedIds = new Set([...selectedLOAs.map(loa => loa.loaId)]);
 
-    return companyLOAs.concat(
-      // no need to include existing company LOAs again in table
-      !isPermitIssued ? [] : originalSelectedLOAs.filter(loa => !companyLOAIds.has(loa.loaId))
-    ).map(loa => {
+    return companyLOAs.map(loa => {
       const wasSelected = currentlySelectedIds.has(loa.loaId);
       const isExpiringBeforeMinPermitExpiry = Boolean(loa.expiryDate)
         && minPermitExpiryDate.isAfter(getEndOfDate(dayjs(loa.expiryDate)));
       
-      // For applications, deselect and disable any LOAs expiring before min permit expiry date
-      // For issued permits (amendments), keep the original selection and enable only when the
-      // LOA was selected before, or if it wasn't previously selected but is valid
-      const isSelected = (!isPermitIssued && wasSelected && !isExpiringBeforeMinPermitExpiry)
-        || (isPermitIssued && wasSelected);
-
-      const isEnabled = (!isPermitIssued && !isExpiringBeforeMinPermitExpiry)
-        || (isPermitIssued && (isSelected || !isExpiringBeforeMinPermitExpiry));
+      // Deselect and disable any LOAs expiring before min permit expiry date
+      const isSelected = wasSelected && !isExpiringBeforeMinPermitExpiry;
+      const isEnabled = !isExpiringBeforeMinPermitExpiry;
       
       return {
         loa,
@@ -75,10 +53,8 @@ export const PermitLOA = ({
       };
     });
   }, [
-    originalSelectedLOAs,
     companyLOAs,
     selectedLOAs,
-    isPermitIssued,
     minPermitExpiryDate,
   ]);
 
