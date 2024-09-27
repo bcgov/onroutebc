@@ -65,7 +65,6 @@ import {
 } from "../pages/Void/types/VoidPermit";
 import { EmailNotificationType } from "../types/EmailNotificationType";
 import { CaseActivityType } from "../types/CaseActivityType";
-import { PermitLOAResponseData, UpdatePermitLOARequestData } from "../types/PermitLOA";
 
 /**
  * Create a new application.
@@ -661,26 +660,4 @@ export const updateApplicationQueueStatus = async (
     data,
   );
   return response;
-};
-
-/**
- * Update selected LOAs for a permit application.
- * @param applicationId Id of the application that the LOAs are selected for
- * @param companyid Id of the company to update the LOAs for the permit application
- * @param permitLOAs New LOAs selected for the permit application
- * @returns Response with details of the LOAs updated for the permit application 
- */
-export const updateApplicationLOAs = async ({
-  applicationId,
-  companyId,
-  permitLOAs,
-}: {
-  applicationId: string;
-  companyId: string;
-  permitLOAs: UpdatePermitLOARequestData;
-}): Promise<AxiosResponse<PermitLOAResponseData>> => {
-  return await httpPOSTRequest(
-    APPLICATIONS_API_ROUTES.UPDATE_LOAS(companyId, applicationId),
-    permitLOAs,
-  );
 };

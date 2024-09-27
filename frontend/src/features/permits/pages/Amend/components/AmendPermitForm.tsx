@@ -30,7 +30,6 @@ import {
 import {
   useAmendPermit,
   useModifyAmendmentApplication,
-  useUpdateApplicationLOAs,
 } from "../../../hooks/hooks";
 
 import {
@@ -89,11 +88,6 @@ export const AmendPermitForm = () => {
     powerUnitSubTypes,
     trailerSubTypes,
   } = usePermitVehicleManagement(companyId);
-
-  const {
-    mutateAsync: updateApplicationLOAs,
-    isError: updateApplicationLOAsFailed,
-  } = useUpdateApplicationLOAs();
 
   const { handleSubmit } = formMethods;
 
@@ -182,22 +176,7 @@ export const AmendPermitForm = () => {
 
     if (response.application) {
       onSaveSuccess(response.application);
-      const applicationLOAIds = getDefaultRequiredVal([], response.application.permitData.loas)
-        .map(loa => Number(loa.loaId));
-      
-      await updateApplicationLOAs({
-        applicationId: response.application.permitId as string,
-        companyId,
-        permitLOAs: {
-          loaIds: applicationLOAIds,
-        }
-      });
-
-      if (!updateApplicationLOAsFailed) {
-        additionalSuccessAction?.();
-      } else {
-        onSaveFailure();
-      }
+      additionalSuccessAction?.();
     } else {
       onSaveFailure();
     }
