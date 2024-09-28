@@ -26,7 +26,7 @@ export const LOATable = ({
   onSelectLOA,
 }: {
   loas: SelectableLOA[];
-  onSelectLOA: (loaId: string) => void;
+  onSelectLOA?: (loaId: string) => void;
 }) => {
   return (
     <TableContainer className="loa-table" component={Paper}>
@@ -48,31 +48,40 @@ export const LOATable = ({
             <TableRow key={selectableLOA.loa.loaId} className="loa-table__row">
               <TableCell
                 className="loa-table__cell loa-table__cell--loa-number"
-                component="th"
+                component="td"
                 scope="row"
               >
                 <FormControlLabel
                   control={
                     <Checkbox
-                      className={`loa-table__checkbox ${
+                      className={`loa-checkbox ${
                         selectableLOA.disabled
-                          ? "loa-table__checkbox--disabled"
+                          ? "loa-checkbox--disabled"
                           : ""
                       }`}
                       key={selectableLOA.loa.loaId}
                       checked={selectableLOA.checked}
                       disabled={selectableLOA.disabled}
-                      onChange={() => onSelectLOA(selectableLOA.loa.loaId)}
+                      onChange={() => onSelectLOA?.(selectableLOA.loa.loaId)}
                     />
                   }
                   key={selectableLOA.loa.loaNumber}
                   label={selectableLOA.loa.loaNumber}
+                  classes={{
+                    root: "loa-table__form-control",
+                    disabled: "loa-table__form-control loa-table__form-control--disabled",
+                  }}
+                  slotProps={{
+                    typography: {
+                      className: "loa-number",
+                    },
+                  }}
                 />
               </TableCell>
 
               <TableCell
                 className="loa-table__cell loa-table__cell--expiry"
-                component="th"
+                component="td"
                 scope="row"
               >
                 {applyWhenNotNullable(

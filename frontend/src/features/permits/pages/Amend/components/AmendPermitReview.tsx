@@ -154,6 +154,7 @@ export const AmendPermitReview = () => {
         }}
         calculatedFee={`${amountToRefund}`}
         doingBusinessAs={doingBusinessAs}
+        loas={amendmentApplication?.permitData?.loas}
       >
         {amendmentApplication?.comment ? (
           <ReviewReason reason={amendmentApplication.comment} />

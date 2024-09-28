@@ -180,6 +180,7 @@ export const ApplicationReview = () => {
           }
           doingBusinessAs={doingBusinessAs}
           calculatedFee={fee}
+          loas={applicationData?.permitData?.loas}
         />
       </FormProvider>
     </div>

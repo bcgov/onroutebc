@@ -19,6 +19,9 @@
   }
 
   & &__cell {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+
     &--loa-number {
       padding-left: 0;
     }
@@ -30,7 +33,13 @@
     }
   }
 
-  & &__checkbox#{&}__checkbox--disabled {
-    color: $disabled-colour;
+  & &__form-control#{&}__form-control--disabled {
+    .loa-checkbox {
+      color: $disabled-colour;
+    }
+
+    .loa-number {
+      color: $bc-black;
+    }
   }
 }
