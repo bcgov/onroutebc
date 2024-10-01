@@ -69,7 +69,7 @@ export const ApplicationInQueueReview = () => {
   const [isSubmitted] = useState(false);
 
   const handleEdit = () => {
-    navigate(APPLICATION_QUEUE_ROUTES.EDIT);
+    navigate(APPLICATION_QUEUE_ROUTES.EDIT(applicationData?.applicationNumber));
   };
 
   const isSuccess = (status?: number) => status === 201;

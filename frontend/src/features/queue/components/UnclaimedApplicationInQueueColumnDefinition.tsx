@@ -5,7 +5,7 @@ import { APPLICATION_QUEUE_ROUTES } from "../../../routes/constants";
 import { ApplicationListItem } from "../../permits/types/application";
 import { getPermitTypeName } from "../../permits/types/PermitType";
 
-export const getApplicationInQueueColumnDefinition = (
+export const getUnclaimedApplicationInQueueColumnDefinition = (
   handleFollowApplicationLink: (application: ApplicationListItem) => void,
 ): MRT_ColumnDef<ApplicationListItem>[] => [
   {
@@ -74,5 +74,12 @@ export const getApplicationInQueueColumnDefinition = (
     id: "timeInQueue",
     header: "Time in Queue (hh:mm)",
     size: 200,
+  },
+  {
+    accessorKey: "claimedBy",
+    enableSorting: false,
+    id: "claimedBy",
+    header: "Claimed By",
+    size: 140,
   },
 ];

@@ -125,10 +125,10 @@ export const APPLICATIONS_ROUTES = {
 const APPLICATION_QUEUE_ROUTE_BASE = "/queue";
 export const APPLICATION_QUEUE_ROUTES = {
   BASE: APPLICATION_QUEUE_ROUTE_BASE,
-  // REVIEW: `${APPLICATION_QUEUE_ROUTE_BASE}/review`,
-  EDIT: `${APPLICATION_QUEUE_ROUTE_BASE}/edit`,
-  REVIEW: (applicationNumber?: string) =>
+  REVIEW: (applicationNumber?: Nullable<string>) =>
     `${DYNAMIC_ROUTE_URI(APPLICATION_QUEUE_ROUTE_BASE, ROUTE_PLACEHOLDERS.APPLICATION_NUMBER, applicationNumber)}/review`,
+  EDIT: (applicationNumber?: Nullable<string>) =>
+    `${DYNAMIC_ROUTE_URI(APPLICATION_QUEUE_ROUTE_BASE, ROUTE_PLACEHOLDERS.APPLICATION_NUMBER, applicationNumber)}/edit`,
 };
 
 // Shopping Cart

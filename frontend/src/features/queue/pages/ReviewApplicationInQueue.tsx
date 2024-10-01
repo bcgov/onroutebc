@@ -35,7 +35,8 @@ export const ReviewApplicationInQueue = () => {
 
   if (
     typeof applicationData === "undefined" ||
-    typeof idirUserDetails === "undefined"
+    typeof idirUserDetails === "undefined" ||
+    typeof application === "undefined"
   ) {
     return <Loading />;
   } else if (idirUserDetails.userName !== application?.claimedBy) {

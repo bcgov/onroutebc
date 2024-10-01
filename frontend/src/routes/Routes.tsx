@@ -132,11 +132,13 @@ export const AppRoutes = () => {
           path={`${routes.APPLICATION_QUEUE_ROUTES.BASE}/:applicationNumber/review`}
           element={<ReviewApplicationInQueue />}
         />
-        {/*         
-        <Route
-          path={`${routes.APPLICATION_QUEUE_ROUTES.EDIT}/:applicationNumber`}
+        {
+          // TODO: placeholder route for edit step
+          /* <Route
+          path={`${routes.APPLICATION_QUEUE_ROUTES.EDIT}/:applicationNumber/edit`}
           element={<EditApplicationInQueue />}
-        /> */}
+        /> */
+        }
       </Route>
 
       <Route

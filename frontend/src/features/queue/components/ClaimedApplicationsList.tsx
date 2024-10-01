@@ -25,9 +25,9 @@ import {
   useClaimApplicationInQueueMutation,
   useClaimedApplicationsInQueueQuery,
 } from "../hooks/hooks";
-import { getApplicationInQueueColumnDefinition } from "./ApplicationInQueueColumnDefinition";
 import { ClaimedApplicationModal } from "./ClaimedApplicationModal";
 import "./ClaimedApplicationsList.scss";
+import { getUnclaimedApplicationInQueueColumnDefinition } from "./UnclaimedApplicationInQueueColumnDefinition";
 
 export const ClaimedApplicationsList = () => {
   const {
@@ -117,7 +117,7 @@ export const ClaimedApplicationsList = () => {
     }
   }, [claimApplicationResponse]);
 
-  const columns = getApplicationInQueueColumnDefinition(
+  const columns = getUnclaimedApplicationInQueueColumnDefinition(
     handleFollowApplicationLink,
   );
 
