@@ -1,60 +1,57 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { useCallback, useContext, useEffect, useState } from "react";
 import { RowSelectionState } from "@tanstack/table-core";
 import {
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
-
-import "./ClaimedApplicationsList.scss";
-import { getClaimedApplicationColumnDefinition } from "./ClaimedApplicationColumnDefinition";
-import { SnackBarContext } from "../../../../App";
-import { ApplicationListItem } from "../../types/application";
-import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import {
-  getDefaultNullableVal,
-  getDefaultRequiredVal,
-} from "../../../../common/helpers/util";
-import {
-  useClaimApplicationInQueueMutation,
-  useClaimedApplicationsInQueueQuery,
-} from "../../hooks/hooks";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { SnackBarContext } from "../../../App";
+import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
+import { NoRecordsFound } from "../../../common/components/table/NoRecordsFound";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
   defaultTableStateOptions,
-} from "../../../../common/helpers/tableHelper";
-import { ClaimedApplicationModal } from "../dialog/ClaimedApplicationModal/ClaimedApplicationModal";
-import { useNavigate } from "react-router-dom";
-import { APPLICATION_QUEUE_ROUTES } from "../../../../routes/constants";
-import { Loading } from "../../../../common/pages/Loading";
+} from "../../../common/helpers/tableHelper";
+import {
+  getDefaultNullableVal,
+  getDefaultRequiredVal,
+} from "../../../common/helpers/util";
+import { Loading } from "../../../common/pages/Loading";
+import { APPLICATION_QUEUE_ROUTES } from "../../../routes/constants";
+import { ApplicationListItem } from "../../permits/types/application";
+import {
+  useClaimApplicationInQueueMutation,
+  useUnclaimedApplicationsInQueueQuery,
+} from "../hooks/hooks";
+import { getApplicationInQueueColumnDefinition } from "./ApplicationInQueueColumnDefinition";
+import "./ApplicationsInQueueList.scss";
 
-export const ClaimedApplicationsList = () => {
+export const ApplicationsInQueueList = () => {
   const {
-    claimedApplicationsInQueueQuery,
+    unclaimedApplicationsInQueueQuery,
     pagination,
     setPagination,
     sorting,
     setSorting,
-  } = useClaimedApplicationsInQueueQuery();
+  } = useUnclaimedApplicationsInQueueQuery();
 
   const {
-    data: claimedApplications,
-    isError,
-    isPending,
-    isFetching,
-  } = claimedApplicationsInQueueQuery;
+    data: unclaimedApplications,
+    isError: unclaimedApplicationsError,
+    isPending: unclaimedApplicationsPending,
+    isFetching: unclaimedapplicationsFetching,
+  } = unclaimedApplicationsInQueueQuery;
 
   const [showTable, setShowTable] = useState<boolean>(false);
 
   useEffect(() => {
     const totalCount = getDefaultRequiredVal(
       0,
-      claimedApplications?.meta?.totalItems,
+      unclaimedApplications?.meta?.totalItems,
     );
     setShowTable(totalCount > 0);
-  }, [claimedApplications?.meta?.totalItems]);
+  }, [unclaimedApplications?.meta?.totalItems]);
 
   const { idirUserDetails, userDetails } = useContext(OnRouteBCContext);
   const userRole = getDefaultNullableVal(
@@ -67,7 +64,7 @@ export const ClaimedApplicationsList = () => {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   useEffect(() => {
-    if (isError) {
+    if (unclaimedApplicationsError) {
       snackBar.setSnackBar({
         message: "An unexpected error occurred.",
         showSnackbar: true,
@@ -75,22 +72,14 @@ export const ClaimedApplicationsList = () => {
         alertType: "error",
       });
     }
-  }, [isError]);
-
-  const [showClaimedApplicationModal, setShowClaimedApplicationModal] =
-    useState<boolean>(false);
+  }, [unclaimedApplicationsError]);
 
   const [selectedApplication, setSelectedApplication] =
     useState<ApplicationListItem>();
 
   const handleFollowApplicationLink = (application: ApplicationListItem) => {
     setSelectedApplication(application);
-
-    if (idirUserDetails?.userName === application.claimedBy) {
-      handleClaimApplication(application);
-    } else {
-      setShowClaimedApplicationModal(true);
-    }
+    handleClaimApplication(application);
   };
 
   const {
@@ -108,31 +97,33 @@ export const ClaimedApplicationsList = () => {
 
   const navigate = useNavigate();
 
+  const isSuccess = (status?: number) => status === 201;
+
   useEffect(() => {
-    if (claimApplicationResponse?.status === 201) {
+    if (isSuccess(claimApplicationResponse?.status)) {
       navigate(
-        `${APPLICATION_QUEUE_ROUTES.REVIEW}/${selectedApplication?.applicationNumber}`,
+        APPLICATION_QUEUE_ROUTES.REVIEW(selectedApplication?.applicationNumber),
       );
     }
   }, [claimApplicationResponse]);
 
-  const columns = getClaimedApplicationColumnDefinition(
+  const columns = getApplicationInQueueColumnDefinition(
     handleFollowApplicationLink,
   );
 
   const table = useMaterialReactTable({
     ...defaultTableOptions,
     columns,
-    data: getDefaultRequiredVal([], claimedApplications?.items),
+    data: getDefaultRequiredVal([], unclaimedApplications?.items),
     initialState: {
       ...defaultTableInitialStateOptions,
     },
     state: {
       ...defaultTableStateOptions,
-      showAlertBanner: isError,
-      showProgressBars: isFetching,
+      showAlertBanner: unclaimedApplicationsError,
+      showProgressBars: unclaimedapplicationsFetching,
       columnVisibility: { applicationId: true },
-      isLoading: isPending,
+      isLoading: unclaimedApplicationsPending,
       rowSelection,
       pagination,
       sorting,
@@ -160,20 +151,20 @@ export const ClaimedApplicationsList = () => {
     manualFiltering: true,
     manualPagination: true,
     manualSorting: true,
-    rowCount: getDefaultRequiredVal(0, claimedApplications?.meta?.totalItems),
-    pageCount: getDefaultRequiredVal(0, claimedApplications?.meta?.pageCount),
+    rowCount: getDefaultRequiredVal(0, unclaimedApplications?.meta?.totalItems),
+    pageCount: getDefaultRequiredVal(0, unclaimedApplications?.meta?.pageCount),
     onSortingChange: setSorting,
     onPaginationChange: setPagination,
     enablePagination: true,
     enableBottomToolbar: true,
-    muiToolbarAlertBannerProps: isError
+    muiToolbarAlertBannerProps: unclaimedApplicationsError
       ? {
           color: "error",
           children: "Error loading data",
         }
       : undefined,
     muiTableBodyRowProps: {
-      className: "claimed-applications-list__row",
+      className: "applications-in-queue-list__row",
     },
   });
 
@@ -182,21 +173,8 @@ export const ClaimedApplicationsList = () => {
   return (
     <>
       {showTable ? (
-        <div>
-          <div className="claimed-applications-list table-container">
-            <MaterialReactTable table={table} />
-          </div>
-          <ClaimedApplicationModal
-            showModal={showClaimedApplicationModal}
-            onCancel={() => setShowClaimedApplicationModal(false)}
-            onConfirm={() =>
-              handleClaimApplication(selectedApplication as ApplicationListItem)
-            }
-            currentClaimant={getDefaultRequiredVal(
-              "",
-              selectedApplication?.claimedBy,
-            )}
-          />
+        <div className="applications-in-queue-list table-container">
+          <MaterialReactTable table={table} />
         </div>
       ) : (
         <NoRecordsFound />

@@ -1,8 +1,8 @@
 import {
   IDIR_USER_ROLE,
   IDIRUserRoleType,
-} from "../../../../common/authentication/types";
-import { Optional } from "../../../../common/types/common";
+} from "../../../common/authentication/types";
+import { Optional } from "../../../common/types/common";
 
 const staffRoles: IDIRUserRoleType[] = [
   IDIR_USER_ROLE.CTPO,

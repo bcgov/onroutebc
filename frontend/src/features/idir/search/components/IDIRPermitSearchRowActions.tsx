@@ -129,7 +129,11 @@ export const IDIRPermitSearchRowActions = ({
     if (selectedOption === PERMIT_ACTION_TYPES.RESEND) {
       setOpenResendDialog(() => true);
     } else if (selectedOption === PERMIT_ACTION_TYPES.VIEW_RECEIPT) {
-      viewReceiptPdf(permitId, () => navigate(routes.ERROR_ROUTES.DOCUMENT_UNAVAILABLE), companyId );
+      viewReceiptPdf(
+        permitId,
+        () => navigate(routes.ERROR_ROUTES.DOCUMENT_UNAVAILABLE),
+        companyId,
+      );
     } else if (selectedOption === PERMIT_ACTION_TYPES.VOID_REVOKE) {
       navigate(`${routes.PERMITS_ROUTES.VOID(companyId, permitId)}`);
     } else if (selectedOption === PERMIT_ACTION_TYPES.AMEND) {

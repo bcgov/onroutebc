@@ -1,11 +1,11 @@
-import { MRT_ColumnDef } from "material-react-table";
-import { ApplicationListItem } from "../../types/application";
-import { getPermitTypeName } from "../../types/PermitType";
 import { Box, Tooltip } from "@mui/material";
-import { CustomNavLink } from "../../../../common/components/links/CustomNavLink";
-import { APPLICATION_QUEUE_ROUTES } from "../../../../routes/constants";
+import { MRT_ColumnDef } from "material-react-table";
+import { CustomNavLink } from "../../../common/components/links/CustomNavLink";
+import { APPLICATION_QUEUE_ROUTES } from "../../../routes/constants";
+import { ApplicationListItem } from "../../permits/types/application";
+import { getPermitTypeName } from "../../permits/types/PermitType";
 
-export const getClaimedApplicationColumnDefinition = (
+export const getApplicationInQueueColumnDefinition = (
   handleFollowApplicationLink: (application: ApplicationListItem) => void,
 ): MRT_ColumnDef<ApplicationListItem>[] => [
   {
@@ -23,7 +23,7 @@ export const getClaimedApplicationColumnDefinition = (
             e.preventDefault();
             handleFollowApplicationLink(application);
           }}
-          to={`${APPLICATION_QUEUE_ROUTES.REVIEW}/${applicationNumber}`}
+          to={APPLICATION_QUEUE_ROUTES.REVIEW(applicationNumber)}
           className="column-link column-link--application-details"
         >
           {props.cell.getValue()}

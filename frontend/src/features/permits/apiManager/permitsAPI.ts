@@ -53,7 +53,6 @@ import {
 } from "../types/application";
 
 import {
-  APPLICATION_QUEUE_API_ROUTES,
   APPLICATIONS_API_ROUTES,
   PAYMENT_API_ROUTES,
   PERMITS_API_ROUTES,
@@ -66,8 +65,7 @@ import {
   VoidPermitResponseData,
 } from "../pages/Void/types/VoidPermit";
 import { EmailNotificationType } from "../types/EmailNotificationType";
-import { CaseActivityType } from "../types/CaseActivityType";
-import { APPLICATION_QUEUE_STATUSES } from "../types/ApplicationQueueStatus";
+import { APPLICATION_QUEUE_STATUSES } from "../../queue/types/ApplicationQueueStatus";
 
 /**
  * Create a new application.
@@ -113,7 +111,7 @@ export const updateApplication = async (
   );
 };
 
-const getApplications = async (
+export const getApplications = async (
   {
     page = 0,
     take = 10,
@@ -240,75 +238,17 @@ export const getPendingPermits = async (
 };
 
 /**
- * Fetch all applications in queue.
- * @return A list of applications in queue (PENDING_REVIEW)
- */
-export const getApplicationsInQueue = async (
-  paginationFilters: PaginationAndFilters,
-  getStaffQueue: boolean,
-): Promise<PaginatedResponse<ApplicationListItem>> => {
-  return await getApplications(paginationFilters, {
-    applicationsInQueueOnly: true,
-    getStaffQueue,
-  });
-};
-
-/**
- * Fetch all claimed applications in queue.
- * @return A list of claimed applications in queue (IN_REVIEW)
- */
-export const getClaimedApplicationsInQueue = async (
-  paginationFilters: PaginationAndFilters,
-): Promise<PaginatedResponse<ApplicationListItem>> => {
-  return await getApplications(paginationFilters, {
-    getStaffQueue: true,
-    claimedApplicationsOnly: true,
-  });
-};
-
-/**
- * Fetch all unclaimed applications in queue.
- * @return A list of claimed applications in queue (PENDING_REVIEW)
- */
-export const getUnclaimedApplicationsInQueue = async (
-  paginationFilters: PaginationAndFilters,
-): Promise<PaginatedResponse<ApplicationListItem>> => {
-  return await getApplications(paginationFilters, {
-    getStaffQueue: true,
-    unclaimedApplicationsOnly: true,
-  });
-};
-
-/**
- * Get queued application by application number
- * @param applicationNumber Application number of the queued application to be retrieved.
- * @returns Application information if found, or undefined
- */
-export const getApplicationInQueueDetails = async (
-  applicationNumber: string,
-): Promise<ApplicationListItem> => {
-  const applicationsList = await getApplications(
-    {
-      page: 0,
-      take: 1,
-      searchString: applicationNumber,
-      searchColumn: "applicationNumber",
-    },
-    { claimedApplicationsOnly: true, getStaffQueue: true },
-  );
-  return applicationsList.items[0];
-};
-
-/**
  * Fetch application by its permit id.
  * @param permitId permit id of the application to fetch
+ * @param companyId company id of the company who owns the application
  * @returns ApplicationResponseData data as response, or null if fetch failed
  */
-export const getApplicationByPermitId = async (
+export const getApplication = async (
   permitId?: Nullable<string>,
+  companyId?: Nullable<string>,
 ): Promise<RequiredOrNull<ApplicationResponseData>> => {
   try {
-    const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
+    companyId = getDefaultRequiredVal("", companyId, getCompanyIdFromSession());
     const url = `${APPLICATIONS_API_ROUTES.GET(companyId)}/${permitId}`;
 
     const response = await httpGETRequest(url);
@@ -324,20 +264,20 @@ export const getApplicationByPermitId = async (
  * @param permitId permit id of the application to fetch
  * @returns ApplicationResponseData data as response, or null if fetch failed
  */
-export const getApplicationByCompanyIdAndPermitId = async (
-  companyId?: Nullable<string>,
-  permitId?: Nullable<string>,
-): Promise<RequiredOrNull<ApplicationResponseData>> => {
-  try {
-    companyId = getDefaultRequiredVal("", companyId);
-    const url = `${APPLICATIONS_API_ROUTES.GET(companyId)}/${permitId}`;
+// export const getApplicationByCompanyIdAndPermitId = async (
+//   companyId?: Nullable<string>,
+//   permitId?: Nullable<string>,
+// ): Promise<RequiredOrNull<ApplicationResponseData>> => {
+//   try {
+//     companyId = getDefaultRequiredVal("", companyId);
+//     const url = `${APPLICATIONS_API_ROUTES.GET(companyId)}/${permitId}`;
 
-    const response = await httpGETRequest(url);
-    return response.data;
-  } catch (err) {
-    return null;
-  }
-};
+//     const response = await httpGETRequest(url);
+//     return response.data;
+//   } catch (err) {
+//     return null;
+//   }
+// };
 
 /**
  * Delete one or more applications.
@@ -742,47 +682,4 @@ export const resendPermit = async ({
     `${PERMITS_API_ROUTES.RESEND(permitId)}`,
     replaceEmptyValuesWithNull(data),
   );
-};
-
-export const updateApplicationQueueStatus = async ({
-  applicationId,
-  caseActivityType,
-  companyId,
-  comment,
-}: {
-  applicationId: Nullable<string>;
-  caseActivityType: CaseActivityType;
-  companyId?: string;
-  comment?: string;
-}) => {
-  companyId = getDefaultRequiredVal("", companyId, getCompanyIdFromSession());
-  applicationId = getDefaultRequiredVal("", applicationId);
-
-  const data: any = {
-    caseActivityType,
-  };
-
-  // Conditionally include the comment property if it is given as an argument and not an empty string
-  if (comment && comment.trim() !== "") {
-    data.comment = [comment];
-  }
-
-  const response = await httpPOSTRequest(
-    APPLICATION_QUEUE_API_ROUTES.UPDATE_QUEUE_STATUS(companyId, applicationId),
-    data,
-  );
-  return response;
-};
-
-export const claimApplicationInQueue = async (
-  companyId: Nullable<string>,
-  applicationId: Nullable<string>,
-) => {
-  companyId = getDefaultRequiredVal("", companyId);
-  applicationId = getDefaultRequiredVal("", applicationId);
-  const response = await httpPOSTRequest(
-    APPLICATION_QUEUE_API_ROUTES.CLAIM(companyId, applicationId),
-    {},
-  );
-  return response;
 };

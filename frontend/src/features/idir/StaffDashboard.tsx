@@ -1,7 +1,7 @@
 import React from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { ApplicationQueueLists } from "../components/ApplicationQueueLists";
-import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
+import { ApplicationQueueLists } from "../queue/components/ApplicationQueueLists";
+import { ErrorFallback } from "../../common/pages/ErrorFallback";
 
 export const StaffDashboard = React.memo(() => {
   return (

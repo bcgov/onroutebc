@@ -14,7 +14,11 @@ import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
 import { useApplicationDetailsQuery } from "../../hooks/hooks";
 import { PERMIT_STATUSES } from "../../types/PermitStatus";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { DEFAULT_PERMIT_TYPE, PermitType, isPermitTypeValid } from "../../types/PermitType";
+import {
+  DEFAULT_PERMIT_TYPE,
+  PermitType,
+  isPermitTypeValid,
+} from "../../types/PermitType";
 import {
   APPLICATION_STEPS,
   ApplicationStep,
@@ -50,7 +54,7 @@ export const ApplicationStepPage = ({
     setApplicationData,
     shouldEnableQuery,
     isInvalidRoute,
-  } = useApplicationDetailsQuery(applicationStep, permitId, permitType);
+  } = useApplicationDetailsQuery({ applicationStep, permitId, permitType });
 
   const contextData = useMemo(
     () => ({
@@ -68,7 +72,9 @@ export const ApplicationStepPage = ({
 
   const applicationPermitType = getDefaultRequiredVal(
     DEFAULT_PERMIT_TYPE,
-    isPermitTypeValid(permitType) ? permitType?.toUpperCase() as PermitType : null,
+    isPermitTypeValid(permitType)
+      ? (permitType?.toUpperCase() as PermitType)
+      : null,
     applicationData?.permitType,
   );
 
@@ -86,7 +92,7 @@ export const ApplicationStepPage = ({
     if (applicationStep === APPLICATION_STEPS.REVIEW) {
       return <ApplicationReview />;
     }
-    
+
     return <ApplicationForm permitType={applicationPermitType} />;
   };
 

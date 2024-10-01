@@ -18,8 +18,13 @@ import { PermitContactDetails } from "../../../../types/PermitContactDetails";
 import { PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
 import { Application } from "../../../../types/application";
 import { PermitCondition } from "../../../../types/PermitCondition";
+import {
+  PERMIT_REVIEW_CONTEXTS,
+  PermitReviewContext,
+} from "../../../../types/PermitReviewContext";
 
 interface PermitReviewProps {
+  reviewContext?: Nullable<PermitReviewContext>;
   permitType?: Nullable<PermitType>;
   permitNumber?: Nullable<string>;
   applicationNumber?: Nullable<string>;
@@ -114,7 +119,7 @@ export const PermitReview = (props: PermitReviewProps) => {
           onEdit={props.onEdit}
           continueBtnText={props.continueBtnText}
           onContinue={props.onContinue}
-          hasToCartButton={!props.isAmendAction}
+          hasToCartButton={props.reviewContext === PERMIT_REVIEW_CONTEXTS.APPLY}
           onAddToCart={props.onAddToCart}
           onApprove={props.onApprove}
           approveApplicationMutationPending={

@@ -1,33 +1,32 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useContext, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { useNavigate, useParams } from "react-router-dom";
-import "./ApplicationInQueueReview.scss";
-import { Application } from "../../../types/application";
-import { ApplicationBreadcrumb } from "../../../components/application-breadcrumb/ApplicationBreadcrumb";
-import { useCompanyInfoDetailsQuery } from "../../../../manageProfile/apiManager/hooks";
-import { PermitReview } from "../../Application/components/review/PermitReview";
+import { useNavigate } from "react-router-dom";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
-} from "../../../../../common/helpers/util";
-import { usePowerUnitSubTypesQuery } from "../../../../manageVehicles/hooks/powerUnits";
-import { useTrailerSubTypesQuery } from "../../../../manageVehicles/hooks/trailers";
-import { useFetchSpecialAuthorizations } from "../../../../settings/hooks/specialAuthorizations";
-import { applyLCVToApplicationData } from "../../../helpers/getDefaultApplicationFormData";
-import { calculateFeeByDuration } from "../../../helpers/feeSummary";
-import { DEFAULT_PERMIT_TYPE } from "../../../types/PermitType";
+} from "../../../common/helpers/util";
 import {
-  APPLICATIONS_ROUTES,
   APPLICATION_QUEUE_ROUTES,
   APPLICATION_STEPS,
   IDIR_ROUTES,
-} from "../../../../../routes/constants";
+} from "../../../routes/constants";
+import { useCompanyInfoDetailsQuery } from "../../manageProfile/apiManager/hooks";
+import { usePowerUnitSubTypesQuery } from "../../manageVehicles/hooks/powerUnits";
+import { useTrailerSubTypesQuery } from "../../manageVehicles/hooks/trailers";
+import { calculateFeeByDuration } from "../../permits/helpers/feeSummary";
+import { applyLCVToApplicationData } from "../../permits/helpers/getDefaultApplicationFormData";
+import { PermitReview } from "../../permits/pages/Application/components/review/PermitReview";
+import { Application } from "../../permits/types/application";
+import { DEFAULT_PERMIT_TYPE } from "../../permits/types/PermitType";
+import { useFetchSpecialAuthorizations } from "../../settings/hooks/specialAuthorizations";
 import { ReviewApplicationInQueueContext } from "../context/ReviewApplicationInQueueContext";
 import {
   useApproveApplicationInQueueMutation,
   useRejectApplicationInQueueMutation,
-} from "../../../hooks/hooks";
+} from "../hooks/hooks";
+import "./ApplicationInQueueReview.scss";
+import { QueueBreadcrumb } from "./QueueBreadcrumb";
+import { PERMIT_REVIEW_CONTEXTS } from "../../permits/types/PermitReviewContext";
 
 export const ApplicationInQueueReview = () => {
   const { applicationData: applicationContextData } = useContext(
@@ -59,9 +58,6 @@ export const ApplicationInQueueReview = () => {
         getDefaultRequiredVal(0, applicationData?.permitData?.permitDuration),
       )}`;
 
-  const routeParams = useParams();
-  const permitId = getDefaultRequiredVal("", routeParams.permitId);
-
   const navigate = useNavigate();
 
   const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
@@ -75,6 +71,8 @@ export const ApplicationInQueueReview = () => {
   const handleEdit = () => {
     navigate(APPLICATION_QUEUE_ROUTES.EDIT);
   };
+
+  const isSuccess = (status?: number) => status === 201;
 
   const {
     mutateAsync: approveApplication,
@@ -90,7 +88,7 @@ export const ApplicationInQueueReview = () => {
   };
 
   useEffect(() => {
-    if (approveApplicationResponse?.status === 201) {
+    if (isSuccess(approveApplicationResponse?.status)) {
       navigate(IDIR_ROUTES.STAFF_HOME);
     }
   }, [approveApplicationResponse, navigate]);
@@ -109,7 +107,7 @@ export const ApplicationInQueueReview = () => {
   };
 
   useEffect(() => {
-    if (rejectApplicationResponse?.status === 201) {
+    if (isSuccess(rejectApplicationResponse?.status)) {
       navigate(IDIR_ROUTES.STAFF_HOME);
     }
   }, [rejectApplicationResponse, navigate]);
@@ -119,18 +117,19 @@ export const ApplicationInQueueReview = () => {
   }, []);
 
   return (
-    <div className="application-review">
-      <ApplicationBreadcrumb
-        permitId={permitId}
+    <div className="application-in-queue-review">
+      <QueueBreadcrumb
+        applicationNumber={applicationData?.applicationNumber}
         applicationStep={APPLICATION_STEPS.REVIEW}
       />
 
       <FormProvider {...methods}>
         <PermitReview
+          reviewContext={PERMIT_REVIEW_CONTEXTS.QUEUE}
           permitType={applicationData?.permitType}
           permitNumber={applicationData?.permitNumber}
           applicationNumber={applicationData?.applicationNumber}
-          isAmendAction={true}
+          isAmendAction={false}
           permitStartDate={applicationData?.permitData?.startDate}
           permitDuration={applicationData?.permitData?.permitDuration}
           permitExpiryDate={applicationData?.permitData?.expiryDate}

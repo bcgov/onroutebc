@@ -9,7 +9,10 @@ import { useSaveApplicationMutation } from "../../hooks/hooks";
 import { ApplicationBreadcrumb } from "../../components/application-breadcrumb/ApplicationBreadcrumb";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { PermitReview } from "./components/review/PermitReview";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../../common/helpers/util";
 import { SnackBarContext } from "../../../../App";
 import { useAddToCart } from "../../hooks/cart";
 import { hasPermitsActionFailed } from "../../helpers/permitState";
@@ -25,6 +28,7 @@ import {
   APPLICATION_STEPS,
   ERROR_ROUTES,
 } from "../../../../routes/constants";
+import { PERMIT_REVIEW_CONTEXTS } from "../../types/PermitReviewContext";
 
 export const ApplicationReview = () => {
   const {
@@ -33,7 +37,7 @@ export const ApplicationReview = () => {
   } = useContext(ApplicationContext);
 
   const companyId = applyWhenNotNullable(
-    id => `${id}`,
+    (id) => `${id}`,
     applicationContextData?.companyId,
     "",
   ) as string;
@@ -44,7 +48,7 @@ export const ApplicationReview = () => {
 
   const { data: companyInfo } = useCompanyInfoQuery();
   const doingBusinessAs = companyInfo?.alternateName;
-  
+
   const applicationData = applyLCVToApplicationData(
     applicationContextData,
     isLcvDesignated,
@@ -53,9 +57,9 @@ export const ApplicationReview = () => {
   const fee = isNoFeePermitType
     ? "0"
     : `${calculateFeeByDuration(
-      getDefaultRequiredVal(DEFAULT_PERMIT_TYPE, applicationData?.permitType),
-      getDefaultRequiredVal(0, applicationData?.permitData?.permitDuration),
-    )}`;
+        getDefaultRequiredVal(DEFAULT_PERMIT_TYPE, applicationData?.permitType),
+        getDefaultRequiredVal(0, applicationData?.permitData?.permitDuration),
+      )}`;
 
   const { setSnackBar } = useContext(SnackBarContext);
   const { refetchCartCount } = useContext(CartContext);
@@ -116,27 +120,23 @@ export const ApplicationReview = () => {
         permitData: {
           ...applicationData.permitData,
           doingBusinessAs, // always set most recent DBA from company info
-        }
+        },
       });
 
     if (savedApplication) {
       setApplicationContextData(savedApplication);
 
-      await proceedWithAddToCart(
-        `${companyId}`,
-        [permitId],
-        () => {
-          setSnackBar({
-            showSnackbar: true,
-            setShowSnackbar: () => true,
-            message: `Application ${applicationNumber} added to cart`,
-            alertType: "success",
-          });
-    
-          refetchCartCount();
-          navigate(APPLICATIONS_ROUTES.BASE);
-        },
-      );
+      await proceedWithAddToCart(`${companyId}`, [permitId], () => {
+        setSnackBar({
+          showSnackbar: true,
+          setShowSnackbar: () => true,
+          message: `Application ${applicationNumber} added to cart`,
+          alertType: "success",
+        });
+
+        refetchCartCount();
+        navigate(APPLICATIONS_ROUTES.BASE);
+      });
     } else {
       navigate(ERROR_ROUTES.UNEXPECTED);
     }
@@ -155,6 +155,7 @@ export const ApplicationReview = () => {
 
       <FormProvider {...methods}>
         <PermitReview
+          reviewContext={PERMIT_REVIEW_CONTEXTS.APPLY}
           permitType={applicationData?.permitType}
           permitNumber={applicationData?.permitNumber}
           applicationNumber={applicationData?.applicationNumber}

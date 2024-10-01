@@ -1,7 +1,6 @@
 import { Dispatch, createContext } from "react";
-
-import { Application } from "../../../types/application";
-import { Nullable } from "../../../../../common/types/common";
+import { Nullable } from "../../../common/types/common";
+import { Application } from "../../permits/types/application";
 
 interface ReviewApplicationInQueueContextType {
   applicationData: Nullable<Application>;

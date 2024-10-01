@@ -20,6 +20,7 @@ import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
+import { PERMIT_REVIEW_CONTEXTS } from "../../../types/PermitReviewContext";
 
 export const AmendPermitReview = () => {
   const navigate = useNavigate();
@@ -33,13 +34,15 @@ export const AmendPermitReview = () => {
     back,
     next,
     getLinks,
-  } =
-    useContext(AmendPermitContext);
+  } = useContext(AmendPermitContext);
 
   // Send data to the backend API
   const modifyAmendmentMutation = useModifyAmendmentApplication();
 
-  const { createdDateTime, updatedDateTime } = getDatetimes(amendmentApplication, permit);
+  const { createdDateTime, updatedDateTime } = getDatetimes(
+    amendmentApplication,
+    permit,
+  );
 
   const validTransactionHistory = permitHistory.filter((history) =>
     isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
@@ -63,20 +66,21 @@ export const AmendPermitReview = () => {
       return navigate(ERROR_ROUTES.UNEXPECTED);
     }
 
-    const { application: savedApplication } = await modifyAmendmentMutation.mutateAsync({
-      applicationId: getDefaultRequiredVal(
-        "",
-        amendmentApplication?.permitId,
-      ),
-      application: {
-        ...amendmentApplication,
-        permitData: {
-          ...amendmentApplication.permitData,
-          doingBusinessAs, // always set most recent company info DBA
+    const { application: savedApplication } =
+      await modifyAmendmentMutation.mutateAsync({
+        applicationId: getDefaultRequiredVal(
+          "",
+          amendmentApplication?.permitId,
+        ),
+        application: {
+          ...amendmentApplication,
+          permitData: {
+            ...amendmentApplication.permitData,
+            doingBusinessAs, // always set most recent company info DBA
+          },
         },
-      },
-      companyId: companyId as string,
-    });
+        companyId: companyId as string,
+      });
 
     if (savedApplication) {
       setAmendmentApplication(savedApplication);
@@ -112,6 +116,7 @@ export const AmendPermitReview = () => {
       <Breadcrumb links={getLinks()} />
 
       <PermitReview
+        reviewContext={PERMIT_REVIEW_CONTEXTS.AMEND}
         permitType={amendmentApplication?.permitType}
         permitNumber={permit?.permitNumber}
         applicationNumber={amendmentApplication?.applicationNumber}

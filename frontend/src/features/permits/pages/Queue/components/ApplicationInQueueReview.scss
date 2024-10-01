@@ -1,8 +1,0 @@
-@use "../../../../../common/components/dashboard/Dashboard";
-
-@include Dashboard.layout-box-style(".application-review .breadcrumb");
-
-.application-review {
-  display: flex;
-  flex-direction: column;
-}

@@ -1,10 +1,15 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { addToCart, fetchCart, getCartCount, removeFromCart } from "../apiManager/cart";
+import {
+  addToCart,
+  fetchCart,
+  getCartCount,
+  removeFromCart,
+} from "../apiManager/cart";
 import { Nullable } from "../../../common/types/common";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
-import { getApplicationByPermitId } from "../apiManager/permitsAPI";
+import { getApplication } from "../apiManager/permitsAPI";
 
 const CART_KEY = "cart";
 const CART_COUNT_KEY = "cart-count";
@@ -90,7 +95,7 @@ export const useFetchCartItemStatus = () => {
 
   const cartItemDetailQuery = useQuery({
     queryKey: [CART_ITEM, cartItemId],
-    queryFn: () => getApplicationByPermitId(cartItemId),
+    queryFn: () => getApplication(cartItemId),
     enabled: Boolean(cartItemId),
     retry: false,
     refetchOnMount: "always",

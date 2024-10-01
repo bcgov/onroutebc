@@ -5,7 +5,7 @@ import { IDIR_ROUTES } from "../../../routes/constants";
 import OnRouteBCContext from "../../authentication/OnRouteBCContext";
 import { NavButton } from "./NavButton";
 import { NAV_BUTTON_TYPES } from "./types/NavButtonType";
-import { isStaffUser } from "../../../features/idir/staff/helpers/isStaffUser";
+import { isStaffUser } from "../../../features/queue/helpers/isStaffUser";
 
 /**
  * Displays the navigation icon for Home on the NavIconSideBar

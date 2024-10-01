@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { OnRouteBCTableRowActions } from "../../../../common/components/table/OnRouteBCTableRowActions";
-import {
-  useWithdrawApplicationInQueueMutation,
-  useInvalidateApplicationsInQueue,
-} from "../../hooks/hooks";
 import { ApplicationInReviewModal } from "./ApplicationInReviewModal";
 import { useNavigate } from "react-router-dom";
 import { ERROR_ROUTES } from "../../../../routes/constants";
+import {
+  useInvalidateApplicationsInQueue,
+  useWithdrawApplicationInQueueMutation,
+} from "../../../queue/hooks/hooks";
 
 const PERMIT_ACTION_OPTION_TYPES = {
   WITHDRAW_APPLICATION: "withdrawApplication",

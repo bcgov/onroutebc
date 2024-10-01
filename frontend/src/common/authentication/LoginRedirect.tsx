@@ -18,7 +18,7 @@ import {
   useUserContext,
   useUserContextQuery,
 } from "../../features/manageProfile/apiManager/hooks";
-import { isStaffUser } from "../../features/idir/staff/helpers/isStaffUser";
+import { isStaffUser } from "../../features/queue/helpers/isStaffUser";
 
 const navigateBCeID = (
   userContextData: BCeIDUserContextType,

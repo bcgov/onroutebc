@@ -5,6 +5,7 @@ import { PermitType } from "../features/permits/types/PermitType";
 export const ROUTE_PLACEHOLDERS = {
   PERMIT_ID: "permitId",
   PERMIT_TYPE: "permitType",
+  APPLICATION_NUMBER: "applicationNumber",
 };
 
 /**
@@ -120,12 +121,14 @@ export const APPLICATIONS_ROUTES = {
     )}/review`,
 };
 
+// Queue
 const APPLICATION_QUEUE_ROUTE_BASE = "/queue";
-
 export const APPLICATION_QUEUE_ROUTES = {
   BASE: APPLICATION_QUEUE_ROUTE_BASE,
-  REVIEW: `${APPLICATION_QUEUE_ROUTE_BASE}/review`,
+  // REVIEW: `${APPLICATION_QUEUE_ROUTE_BASE}/review`,
   EDIT: `${APPLICATION_QUEUE_ROUTE_BASE}/edit`,
+  REVIEW: (applicationNumber?: string) =>
+    `${DYNAMIC_ROUTE_URI(APPLICATION_QUEUE_ROUTE_BASE, ROUTE_PLACEHOLDERS.APPLICATION_NUMBER, applicationNumber)}/review`,
 };
 
 // Shopping Cart

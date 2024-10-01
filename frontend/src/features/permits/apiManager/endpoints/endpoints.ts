@@ -1,6 +1,6 @@
 import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints";
 
-const APPLICATIONS_API_BASE = (companyId: string) =>
+export const APPLICATIONS_API_BASE = (companyId: string) =>
   `${VEHICLES_URL}/companies/${companyId}/applications`;
 
 const PERMITS_API_BASE = (companyId: string) =>
@@ -21,13 +21,6 @@ export const APPLICATIONS_API_ROUTES = {
 export const STAFF_APPLICATIONS_API_ROUTES = {
   // the endpoint for fetching applications for use in the ApplicationsInQueueList component
   GET: () => STAFF_APPLICATIONS_API_BASE,
-};
-
-export const APPLICATION_QUEUE_API_ROUTES = {
-  UPDATE_QUEUE_STATUS: (companyId: string, applicationId: string) =>
-    `${APPLICATIONS_API_BASE(companyId)}/${applicationId}/queue/status`,
-  CLAIM: (companyId: string, applicationId: string) =>
-    `${APPLICATIONS_API_BASE(companyId)}/${applicationId}/queue/assign`,
 };
 
 export const PERMITS_API_ROUTES = {

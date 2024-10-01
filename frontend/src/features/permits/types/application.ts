@@ -7,7 +7,7 @@ import { Nullable } from "../../../common/types/common";
 import { PermitApplicationOrigin } from "./PermitApplicationOrigin";
 import { PermitApprovalSource } from "./PermitApprovalSource";
 import { PermitData } from "./PermitData";
-import { ApplicationQueueStatus } from "./ApplicationQueueStatus";
+import { ApplicationQueueStatus } from "../../queue/types/ApplicationQueueStatus";
 
 /**
  * A partial permit type that consists of all common fields used for a permit.

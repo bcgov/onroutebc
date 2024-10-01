@@ -33,8 +33,8 @@ import { IssuanceErrorPage } from "../common/pages/IssuanceErrorPage";
 import IDPRedirect from "../common/components/idpredirect/IDPRedirect";
 import { ShoppingCartDashboard } from "../features/permits/ShoppingCartDashboard";
 import { DocumentUnavailable } from "../common/pages/DocumentUnavailable";
-import { StaffDashboard } from "../features/idir/staff/pages/StaffDashboard";
-import { ReviewApplicationInQueue } from "../features/permits/pages/Queue/ReviewApplicationInQueue";
+import { StaffDashboard } from "../features/idir/StaffDashboard";
+import { ReviewApplicationInQueue } from "../features/queue/pages/ReviewApplicationInQueue";
 
 export const AppRoutes = () => {
   return (
@@ -129,7 +129,7 @@ export const AppRoutes = () => {
         />
 
         <Route
-          path={`${routes.APPLICATION_QUEUE_ROUTES.REVIEW}/:applicationNumber`}
+          path={`${routes.APPLICATION_QUEUE_ROUTES.BASE}/:applicationNumber/review`}
           element={<ReviewApplicationInQueue />}
         />
         {/*         

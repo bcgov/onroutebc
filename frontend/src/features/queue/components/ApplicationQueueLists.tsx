@@ -1,8 +1,8 @@
 import React from "react";
-import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
-import { ApplicationsInQueueList } from "../../../permits/components/permit-list/ApplicationsInQueueList";
-import { ClaimedApplicationsList } from "../../../permits/components/permit-list/ClaimedApplicationsList";
-import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
+import { usePermissionMatrix } from "../../../common/authentication/PermissionMatrix";
+import { TabLayout } from "../../../common/components/dashboard/TabLayout";
+import { ApplicationsInQueueList } from "./ApplicationsInQueueList";
+import { ClaimedApplicationsList } from "./ClaimedApplicationsList";
 
 export const ApplicationQueueLists = React.memo(() => {
   const tabs = [];
