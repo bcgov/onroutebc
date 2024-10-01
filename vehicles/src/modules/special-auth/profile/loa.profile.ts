@@ -212,6 +212,12 @@ export class LoaProfile extends AutomapperProfile {
           }),
         ),
         forMember(
+          (d) => d.loaNumber,
+          mapWithArguments((_, { loaNumber }) => {
+            return loaNumber;
+          }),
+        ),
+        forMember(
           (d) => d.documentId,
           mapWithArguments((_, { documentId }) => {
             return documentId;
