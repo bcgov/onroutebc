@@ -25,7 +25,6 @@ import {
   useUnclaimedApplicationsInQueueQuery,
 } from "../hooks/hooks";
 import { getApplicationInQueueColumnDefinition } from "./ApplicationInQueueColumnDefinition";
-import "./ApplicationsInQueueList.scss";
 
 export const ApplicationsInQueueList = () => {
   const {

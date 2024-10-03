@@ -90,6 +90,11 @@ export const useSaveApplicationMutation = () => {
  * @param permitType permit type for the application, if it exists
  * @returns appropriate Application data, or error if failed
  */
+
+/* TODO separate the logic specific to the usage of applicationStep (currently we are 
+using this in the ReviewApplicationInQueue.tsx component uneccesarily). 
+We can also remove the companyId parameter since the the ApplicationStepPage does not use it */
+
 export const useApplicationDetailsQuery = ({
   applicationStep,
   permitId,
@@ -99,7 +104,7 @@ export const useApplicationDetailsQuery = ({
   applicationStep: ApplicationStep;
   permitId?: string;
   permitType?: string;
-  companyId?: string;
+  companyId?: number;
 }) => {
   const [applicationData, setApplicationData] =
     useState<Nullable<Application>>();

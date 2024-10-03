@@ -36,8 +36,8 @@ export const ApplicationInQueueReview = () => {
   const companyId = applyWhenNotNullable(
     (id) => `${id}`,
     applicationContextData?.companyId,
-    "",
-  ) as string;
+    0,
+  );
 
   const { data: specialAuth } = useFetchSpecialAuthorizations(companyId);
   const isLcvDesignated = Boolean(specialAuth?.isLcvAllowed);
@@ -154,7 +154,6 @@ export const ApplicationInQueueReview = () => {
           }
           doingBusinessAs={doingBusinessAs}
           calculatedFee={fee}
-          isApplicationInReview={true}
         />
       </FormProvider>
     </div>

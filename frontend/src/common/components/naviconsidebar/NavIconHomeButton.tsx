@@ -5,7 +5,7 @@ import { IDIR_ROUTES } from "../../../routes/constants";
 import OnRouteBCContext from "../../authentication/OnRouteBCContext";
 import { NavButton } from "./NavButton";
 import { NAV_BUTTON_TYPES } from "./types/NavButtonType";
-import { isStaffUser } from "../../../features/queue/helpers/isStaffUser";
+import { canViewApplicationQueue } from "../../../features/queue/helpers/canViewApplicationQueue";
 
 /**
  * Displays the navigation icon for Home on the NavIconSideBar
@@ -22,7 +22,7 @@ export const NavIconHomeButton = () => {
       onClick={() => {
         clearCompanyContext?.();
         navigate(
-          isStaffUser(idirUserDetails?.userRole)
+          canViewApplicationQueue(idirUserDetails?.userRole)
             ? IDIR_ROUTES.STAFF_HOME
             : IDIR_ROUTES.WELCOME,
         );

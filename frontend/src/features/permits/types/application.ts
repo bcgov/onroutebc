@@ -91,7 +91,7 @@ export interface UpdateApplicationRequestData {
  * Type used for application items that are fetched in a list (eg. Applications in Progress).
  */
 export interface ApplicationListItem {
-  companyId: string;
+  companyId: number;
   legalName: string;
   alternateName?: Nullable<string>;
   permitId: string;

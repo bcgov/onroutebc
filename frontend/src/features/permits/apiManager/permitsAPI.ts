@@ -244,12 +244,18 @@ export const getPendingPermits = async (
  * @returns ApplicationResponseData data as response, or null if fetch failed
  */
 export const getApplication = async (
+  // TODO make nullable params required and check for empty string/null values in the enabled property in the useQuery hooks
   permitId?: Nullable<string>,
-  companyId?: Nullable<string>,
+  companyId?: Nullable<number>,
 ): Promise<RequiredOrNull<ApplicationResponseData>> => {
   try {
-    companyId = getDefaultRequiredVal("", companyId, getCompanyIdFromSession());
-    const url = `${APPLICATIONS_API_ROUTES.GET(companyId)}/${permitId}`;
+    companyId = getDefaultRequiredVal(
+      0,
+      companyId,
+      Number(getCompanyIdFromSession()),
+    );
+
+    const url = `${APPLICATIONS_API_ROUTES.GET(`${companyId}`)}/${permitId}`;
 
     const response = await httpGETRequest(url);
     return response.data;
@@ -257,27 +263,6 @@ export const getApplication = async (
     return null;
   }
 };
-
-/**
- * Fetch application by its company id and permit id.
- * @param companyId company id of the company who owns the application
- * @param permitId permit id of the application to fetch
- * @returns ApplicationResponseData data as response, or null if fetch failed
- */
-// export const getApplicationByCompanyIdAndPermitId = async (
-//   companyId?: Nullable<string>,
-//   permitId?: Nullable<string>,
-// ): Promise<RequiredOrNull<ApplicationResponseData>> => {
-//   try {
-//     companyId = getDefaultRequiredVal("", companyId);
-//     const url = `${APPLICATIONS_API_ROUTES.GET(companyId)}/${permitId}`;
-
-//     const response = await httpGETRequest(url);
-//     return response.data;
-//   } catch (err) {
-//     return null;
-//   }
-// };
 
 /**
  * Delete one or more applications.

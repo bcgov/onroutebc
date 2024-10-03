@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
 import { IDIRUserRoleType } from "../../../common/authentication/types";
-import { isStaffUser } from "../helpers/isStaffUser";
+import { canViewApplicationQueue } from "../helpers/canViewApplicationQueue";
 import { MRT_PaginationState, MRT_SortingState } from "material-react-table";
 import {
   keepPreviousData,
@@ -23,19 +23,20 @@ import { CASE_ACTIVITY_TYPES } from "../types/CaseActivityType";
 import { AxiosError } from "axios";
 import { useTableControls } from "../../permits/hooks/useTableControls";
 
+const QUEUE_QUERY_KEYS_BASE = "queue";
+
 const QUEUE_QUERY_KEYS = {
-  BASE: () => ["queue"],
   ALL: (pagination: MRT_PaginationState, sorting: MRT_SortingState) => [
-    [...QUEUE_QUERY_KEYS.BASE(), pagination, sorting],
+    [QUEUE_QUERY_KEYS_BASE, pagination, sorting],
   ],
   CLAIMED: (pagination: MRT_PaginationState, sorting: MRT_SortingState) => [
-    [...QUEUE_QUERY_KEYS.BASE(), pagination, sorting],
+    [QUEUE_QUERY_KEYS_BASE, pagination, sorting],
   ],
   UNCLAIMED: (pagination: MRT_PaginationState, sorting: MRT_SortingState) => [
-    [...QUEUE_QUERY_KEYS.BASE(), pagination, sorting],
+    [QUEUE_QUERY_KEYS_BASE, pagination, sorting],
   ],
   DETAIL: (applicationNumber: string) => [
-    ...QUEUE_QUERY_KEYS.BASE(),
+    QUEUE_QUERY_KEYS_BASE,
     { applicationNumber },
   ],
 };
@@ -51,7 +52,7 @@ export const useApplicationsInQueueQuery = () => {
 
   // if typeof company === "undefined" here we know that the staff user is NOT acting as a company
   const getStaffQueue =
-    isStaffUser(userRole) && typeof companyId === "undefined";
+    canViewApplicationQueue(userRole) && typeof companyId === "undefined";
 
   const { pagination, setPagination, sorting, setSorting, orderBy } =
     useTableControls();
@@ -169,7 +170,7 @@ export const useApplicationInQueueDetailsQuery = (
 export const useClaimApplicationInQueueMutation = () => {
   return useMutation({
     mutationFn: (data: {
-      companyId: Nullable<string>;
+      companyId: Nullable<number>;
       applicationId: Nullable<string>;
     }) => {
       const { companyId, applicationId } = data;
@@ -212,7 +213,7 @@ export const useApproveApplicationInQueueMutation = () => {
       companyId,
     }: {
       applicationId: Nullable<string>;
-      companyId: string;
+      companyId: number;
     }) => {
       return updateApplicationQueueStatus({
         applicationId,
@@ -236,7 +237,7 @@ export const useRejectApplicationInQueueMutation = () => {
       companyId,
     }: {
       applicationId: Nullable<string>;
-      companyId: string;
+      companyId: number;
     }) => {
       return updateApplicationQueueStatus({
         applicationId,
@@ -257,7 +258,7 @@ export const useInvalidateApplicationsInQueue = () => {
   return {
     invalidate: () => {
       queryClient.invalidateQueries({
-        queryKey: QUEUE_QUERY_KEYS.BASE(),
+        queryKey: [QUEUE_QUERY_KEYS_BASE],
       });
     },
   };

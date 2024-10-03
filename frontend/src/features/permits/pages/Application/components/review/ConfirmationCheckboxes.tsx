@@ -1,19 +1,19 @@
 import { Box, Checkbox, Typography } from "@mui/material";
 import { Dispatch, SetStateAction, useState } from "react";
-
-import "./ConfirmationCheckboxes.scss";
+import { Nullable } from "../../../../../../common/types/common";
 import { CustomInputHTMLAttributes } from "../../../../../../common/types/formElements";
+import "./ConfirmationCheckboxes.scss";
 
 export const ConfirmationCheckboxes = ({
   isSubmitted,
   isChecked,
   setIsChecked,
-  isApplicationInReview,
+  isDisabled,
 }: {
   isSubmitted: boolean;
   isChecked: boolean;
   setIsChecked: Dispatch<SetStateAction<boolean>>;
-  isApplicationInReview?: boolean;
+  isDisabled?: Nullable<boolean>;
 }) => {
   const checkboxes = [
     {
@@ -66,8 +66,8 @@ export const ConfirmationCheckboxes = ({
               }`
             }
             key={x.description}
-            checked={isApplicationInReview ? true : x.checked}
-            disabled={isApplicationInReview}
+            checked={isDisabled ? true : x.checked}
+            disabled={Boolean(isDisabled)}
             onChange={() => handleCheck(x.description)}
             inputProps={
               {

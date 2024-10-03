@@ -89,6 +89,7 @@ export interface DataFilterOptions {
   /**
    * The column to which the searchString will be applied.
    */
+  // TODO create a type for the searchColumn which provides "applicationNumber" & "plate" and ensure that a default value is passed where necessary
   searchColumn?: string;
   /**
    * The sorting configuration selected by the user.

@@ -57,7 +57,6 @@ interface PermitReviewProps {
   oldFields?: Nullable<Partial<Application>>;
   calculatedFee: string;
   doingBusinessAs?: Nullable<string>;
-  isApplicationInReview?: boolean;
 }
 
 export const PermitReview = (props: PermitReviewProps) => {
@@ -110,7 +109,7 @@ export const PermitReview = (props: PermitReviewProps) => {
           setIsChecked={props.setAllChecked}
           permitType={props.permitType}
           fee={props.calculatedFee}
-          isApplicationInReview={props.isApplicationInReview}
+          reviewContext={props.reviewContext}
         />
 
         {props.children}

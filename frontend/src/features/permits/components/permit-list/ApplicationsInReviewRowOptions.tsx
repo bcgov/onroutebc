@@ -60,27 +60,30 @@ export const ApplicationsInReviewRowOptions = ({
     invalidate();
   };
 
-  const { mutateAsync, isError, error } =
-    useWithdrawApplicationInQueueMutation();
+  const {
+    mutateAsync: withdrawApplication,
+    isError: isWithdrawApplicationError,
+    error: withdrawApplicationError,
+  } = useWithdrawApplicationInQueueMutation();
 
   useEffect(() => {
-    if (isError) {
+    if (isWithdrawApplicationError) {
       // if the application has already been withdrawn by another user
-      if (error.response?.status === 422) {
+      if (withdrawApplicationError.response?.status === 422) {
         return setIsAIRModalOpen(true);
       }
       // handle all other errors
       navigate(ERROR_ROUTES.UNEXPECTED);
     }
-  }, [isError, error]);
+  }, [isWithdrawApplicationError, withdrawApplicationError]);
 
   /**
    * Action handler upon a select event.
    * @param selectedOption The option that was selected.
    */
-  const onSelectOptionCallback = (selectedOption: string) => {
+  const onSelectOptionCallback = async (selectedOption: string) => {
     if (selectedOption === PERMIT_ACTION_OPTION_TYPES.WITHDRAW_APPLICATION) {
-      mutateAsync(permitId);
+      await withdrawApplication(permitId);
     }
   };
 

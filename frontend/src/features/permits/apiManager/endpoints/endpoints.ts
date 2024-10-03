@@ -1,8 +1,10 @@
 import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints";
 
-export const APPLICATIONS_API_BASE = (companyId: string) =>
+// TODO define the companyId argument as a number here
+const APPLICATIONS_API_BASE = (companyId: string) =>
   `${VEHICLES_URL}/companies/${companyId}/applications`;
 
+// TODO define the companyId argument as a number here
 const PERMITS_API_BASE = (companyId: string) =>
   `${VEHICLES_URL}/companies/${companyId}/permits`;
 
@@ -11,19 +13,19 @@ const STAFF_PERMIT_API_BASE = `${VEHICLES_URL}/permits`;
 const STAFF_APPLICATIONS_API_BASE = `${VEHICLES_URL}/applications`;
 
 export const APPLICATIONS_API_ROUTES = {
+  // TODO define the companyId argument as a number for all here
   CREATE: (companyId: string) => APPLICATIONS_API_BASE(companyId),
   UPDATE: (companyId: string) => APPLICATIONS_API_BASE(companyId),
-  // the endpoint for fetching applications for use in the ApplicationsInReviewList component
   GET: (companyId: string) => APPLICATIONS_API_BASE(companyId),
   DELETE: (companyId: string) => APPLICATIONS_API_BASE(companyId),
 };
 
 export const STAFF_APPLICATIONS_API_ROUTES = {
-  // the endpoint for fetching applications for use in the ApplicationsInQueueList component
   GET: () => STAFF_APPLICATIONS_API_BASE,
 };
 
 export const PERMITS_API_ROUTES = {
+  // TODO define the companyId argument as a number for all here
   BASE: (companyId: string) => PERMITS_API_BASE(companyId),
   GET: (companyId: string) => PERMITS_API_BASE(companyId),
   ISSUE: (companyId: string) => `${APPLICATIONS_API_BASE(companyId)}/issue`,
@@ -46,10 +48,12 @@ export const PAYMENT_API_ROUTES = {
   PAYMENT_GATEWAY: `payment-gateway`,
 };
 
+// TODO define the companyId argument as a number here
 const CART_API_BASE = (companyId: string) =>
   `${VEHICLES_URL}/companies/${companyId}/shopping-cart`;
 
 export const CART_API_ROUTES = {
+  // TODO define the companyId argument as a number here
   GET: (companyId: string, fetchAllApplications?: boolean) => {
     if (typeof fetchAllApplications === "undefined") {
       return CART_API_BASE(companyId);
@@ -57,6 +61,7 @@ export const CART_API_ROUTES = {
 
     return `${CART_API_BASE(companyId)}?allApplications=${Boolean(fetchAllApplications)}`;
   },
+  // TODO define the companyId argument as a number for all here
   ADD: (companyId: string) => CART_API_BASE(companyId),
   REMOVE: (companyId: string) => CART_API_BASE(companyId),
   COUNT: (companyId: string) => `${CART_API_BASE(companyId)}/count`,

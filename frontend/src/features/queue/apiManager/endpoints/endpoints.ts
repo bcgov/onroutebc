@@ -1,8 +1,11 @@
-import { APPLICATIONS_API_BASE } from "../../../permits/apiManager/endpoints/endpoints";
+import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints";
+
+const APPLICATIONS_API_BASE = (companyId: number) =>
+  `${VEHICLES_URL}/companies/${companyId}/applications`;
 
 export const APPLICATION_QUEUE_API_ROUTES = {
-  UPDATE_QUEUE_STATUS: (companyId: string, applicationId: string) =>
+  UPDATE_QUEUE_STATUS: (companyId: number, applicationId: string) =>
     `${APPLICATIONS_API_BASE(companyId)}/${applicationId}/queue/status`,
-  CLAIM: (companyId: string, applicationId: string) =>
+  CLAIM: (companyId: number, applicationId: string) =>
     `${APPLICATIONS_API_BASE(companyId)}/${applicationId}/queue/assign`,
 };

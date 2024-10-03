@@ -6,6 +6,7 @@ import { ConfirmationCheckboxes } from "./ConfirmationCheckboxes";
 import { FeeSummary } from "../../../../components/feeSummary/FeeSummary";
 import { PermitType } from "../../../../types/PermitType";
 import { Nullable } from "../../../../../../common/types/common";
+import { PermitReviewContext } from "../../../../types/PermitReviewContext";
 
 export const ReviewFeeSummary = ({
   isSubmitted,
@@ -13,14 +14,14 @@ export const ReviewFeeSummary = ({
   setIsChecked,
   permitType,
   fee,
-  isApplicationInReview,
+  reviewContext,
 }: {
   isSubmitted: boolean;
   isChecked: boolean;
   setIsChecked: Dispatch<SetStateAction<boolean>>;
   permitType?: Nullable<PermitType>;
   fee: string;
-  isApplicationInReview?: boolean;
+  reviewContext?: Nullable<PermitReviewContext>;
 }) => {
   return (
     <Box className="review-fee-summary">
@@ -35,7 +36,7 @@ export const ReviewFeeSummary = ({
             isSubmitted={isSubmitted}
             isChecked={isChecked}
             setIsChecked={setIsChecked}
-            isApplicationInReview={isApplicationInReview}
+            isDisabled={reviewContext === "QUEUE"}
           />
         </Box>
       </Box>

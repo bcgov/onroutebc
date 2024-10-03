@@ -26,7 +26,6 @@ import {
   useClaimedApplicationsInQueueQuery,
 } from "../hooks/hooks";
 import { ClaimedApplicationModal } from "./ClaimedApplicationModal";
-import "./ClaimedApplicationsList.scss";
 import { getUnclaimedApplicationInQueueColumnDefinition } from "./UnclaimedApplicationInQueueColumnDefinition";
 
 export const ClaimedApplicationsList = () => {

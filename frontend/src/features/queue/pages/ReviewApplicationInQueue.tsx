@@ -13,11 +13,14 @@ import { useApplicationInQueueDetailsQuery } from "../hooks/hooks";
 
 export const ReviewApplicationInQueue = () => {
   const { idirUserDetails } = useContext(OnRouteBCContext);
+  // TODO add companyId to params
   const { applicationNumber = "" } = useParams();
+  // TODO remove this hook call, all relevant data will come from the call to useApplicationDetailsQuery
   const { data: application } =
     useApplicationInQueueDetailsQuery(applicationNumber);
 
   // Query for the application data whenever this page is rendered
+  // TODO remove the applicationStep argument after refactoring the useApplicationDetailsQuery hook
   const { applicationData, setApplicationData } = useApplicationDetailsQuery({
     applicationStep: APPLICATION_STEPS.REVIEW,
     companyId: application?.companyId,

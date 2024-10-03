@@ -61,6 +61,7 @@ export const getUnclaimedApplicationsInQueue = async (
 export const getApplicationInQueueDetails = async (
   applicationNumber: string,
 ): Promise<ApplicationListItem> => {
+  // TODO remove this function and replace its usage with useApplicationDetailsQuery once that has been refactored
   const applicationsList = await getApplications(
     {
       page: 0,
@@ -81,10 +82,14 @@ export const updateApplicationQueueStatus = async ({
 }: {
   applicationId: Nullable<string>;
   caseActivityType: CaseActivityType;
-  companyId?: string;
+  companyId?: number;
   comment?: string;
 }) => {
-  companyId = getDefaultRequiredVal("", companyId, getCompanyIdFromSession());
+  companyId = getDefaultRequiredVal(
+    0,
+    companyId,
+    Number(getCompanyIdFromSession()),
+  );
   applicationId = getDefaultRequiredVal("", applicationId);
 
   const data: any = {
@@ -104,10 +109,10 @@ export const updateApplicationQueueStatus = async ({
 };
 
 export const claimApplicationInQueue = async (
-  companyId: Nullable<string>,
+  companyId: Nullable<number>,
   applicationId: Nullable<string>,
 ) => {
-  companyId = getDefaultRequiredVal("", companyId);
+  companyId = getDefaultRequiredVal(0, companyId);
   applicationId = getDefaultRequiredVal("", applicationId);
   const response = await httpPOSTRequest(
     APPLICATION_QUEUE_API_ROUTES.CLAIM(companyId, applicationId),
