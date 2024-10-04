@@ -19,9 +19,10 @@ import { isVehicleSubtypeLCV } from "../../../../../manageVehicles/helpers/vehic
 import { PermitCondition } from "../../../../types/PermitCondition";
 import { LCV_CONDITION } from "../../../../constants/constants";
 import { sortConditions } from "../../../../helpers/conditions";
-import { getEndOfDate, getStartOfDate } from "../../../../../../common/helpers/formatDate";
+import { getStartOfDate } from "../../../../../../common/helpers/formatDate";
 import { getExpiryDate } from "../../../../helpers/permitState";
 import { minDurationForPermitType } from "../../../../helpers/dateSelection";
+import { getMostRecentExpiryFromLOAs } from "../../../../helpers/permitLOA";
 import {
   PowerUnit,
   Trailer,
@@ -101,19 +102,6 @@ export const PermitForm = (props: PermitFormProps) => {
     setValue("permitData.expiryDate", dayjs(expiry));
   };
 
-  const getMostRecentExpiryFromLOAs = (loas: LOADetail[]) => {
-    const expiringLOAs = loas.filter(loa => Boolean(loa.expiryDate));
-    if (expiringLOAs.length === 0) return null;
-
-    const firstLOAExpiryDate = getEndOfDate(dayjs(expiringLOAs[0].expiryDate));
-    return expiringLOAs.map(loa => loa.expiryDate)
-      .reduce((prevExpiry, currExpiry) => {
-        const prevExpiryDate = getEndOfDate(dayjs(prevExpiry));
-        const currExpiryDate = getEndOfDate(dayjs(currExpiry));
-        return prevExpiryDate.isAfter(currExpiryDate) ? currExpiryDate : prevExpiryDate;
-      }, firstLOAExpiryDate);
-  };
-
   const handleUpdateLOAs = (updatedLOAs: LOADetail[]) => {
     setValue("permitData.loas", updatedLOAs);
   };
@@ -160,16 +148,16 @@ export const PermitForm = (props: PermitFormProps) => {
   useEffect(() => {
     if (
       !isVehicleSubtypeLCV(vehicleSubtype)
-      && permitConditions.some(({ condition }: PermitCondition) => condition === LCV_CONDITION.condition)
+        && permitConditions.some(({ condition }: PermitCondition) => condition === LCV_CONDITION.condition)
     ) {
       // If vehicle subtype in the form isn't LCV but conditions have LCV,
       // then remove that LCV condition from the form
-    handleSetConditions(permitConditions.filter(
+      handleSetConditions(permitConditions.filter(
         ({ condition }: PermitCondition) => condition !== LCV_CONDITION.condition,
       ));
     } else if (
       isVehicleSubtypeLCV(vehicleSubtype)
-      && !permitConditions.some(({ condition }: PermitCondition) => condition === LCV_CONDITION.condition)
+        && !permitConditions.some(({ condition }: PermitCondition) => condition === LCV_CONDITION.condition)
     ) {
       // If vehicle subtype in the form is LCV but conditions don't have LCV,
       // then add that LCV condition into the form
