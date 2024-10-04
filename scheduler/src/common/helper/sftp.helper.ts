@@ -1,4 +1,4 @@
-import * as Client from 'ssh2-sftp-client';
+import Client from 'ssh2-sftp-client';
 
 export const getSFTPConnectionInfo = (): Client.ConnectOptions => {
   const host = process.env.CFS_SFTP_HOST;
@@ -6,7 +6,7 @@ export const getSFTPConnectionInfo = (): Client.ConnectOptions => {
   const username = process.env.CFS_SFTP_USERNAME;
   const privateKey = process.env.CFS_PRIVATE_KEY;
   const passphrase = process.env.CFS_PRIVATE_KEY_PASSPHRASE;
-  const connectionOptions = {
+  const connectionOptions: Client.ConnectOptions = {
     host: host,
     port: port,
     username: username,
