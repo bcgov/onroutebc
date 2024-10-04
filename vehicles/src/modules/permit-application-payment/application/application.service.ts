@@ -71,8 +71,12 @@ import { NotificationTemplate } from '../../../common/enum/notification-template
 import { PermitData } from '../../../common/interface/permit.template.interface';
 import { ApplicationApprovedNotification } from '../../../common/interface/application-approved.notification.interface';
 import { ApplicationRejectedNotification } from '../../../common/interface/application-rejected.notification.interface';
-import { convertUtcToPt } from '../../../common/helper/date-time.helper';
+import {
+  convertUtcToPt,
+  differenceBetween,
+} from '../../../common/helper/date-time.helper';
 import { ReadCaseActivityDto } from '../../case-management/dto/response/read-case-activity.dto';
+import * as dayjs from 'dayjs';
 
 @Injectable()
 export class ApplicationService {
@@ -558,11 +562,30 @@ export class ApplicationService {
   ): Promise<ReadApplicationDto> {
     const existingApplication = await this.findOne(applicationId, companyId);
 
-    // Enforce that application is editable only if it is currently IN_PROGRESS
-    if (existingApplication.permitStatus !== ApplicationStatus.IN_PROGRESS) {
+    // Enforce that the application is editable only if it is currently IN_PROGRESS or if the user has an appropriate IDIR role and the application is IN_QUEUE
+    if (
+      existingApplication.permitStatus !== ApplicationStatus.IN_PROGRESS &&
+      !(
+        doesUserHaveRole(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST) &&
+        existingApplication.permitStatus === ApplicationStatus.IN_QUEUE
+      )
+    ) {
       throw new BadRequestException(
-        'Only an Application currently in progress can be modified.',
+        'Only an Application currently in progress can be modified or must have correct authorization.',
       );
+    }
+
+    if (
+      isPermitTypeEligibleForQueue(existingApplication.permitType) &&
+      existingApplication.permitStatus === ApplicationStatus.IN_QUEUE
+    ) {
+      const permitData = JSON.parse(
+        existingApplication?.permitData?.permitData,
+      ) as PermitData;
+      const currentDate = dayjs(new Date().toISOString())?.format('YYYY-MM-DD');
+      if (differenceBetween(permitData?.startDate, currentDate, 'days') > 0) {
+        throwUnprocessableEntityException('Start Date is in the past.');
+      }
     }
 
     const newApplication = this.classMapper.map(
@@ -1009,6 +1032,27 @@ export class ApplicationService {
           queryRunner,
         });
       } else {
+        if (CaseActivityType.APPROVED === caseActivityType) {
+          const permitData = JSON.parse(
+            application?.permitData?.permitData,
+          ) as PermitData;
+          const currentDate = dayjs(new Date().toISOString())?.format(
+            'YYYY-MM-DD',
+          );
+
+          if (
+            application.permitStatus === ApplicationStatus.IN_QUEUE &&
+            (differenceBetween(permitData?.startDate, currentDate, 'days') >
+              0 ||
+              differenceBetween(permitData?.expiryDate, currentDate, 'days') >
+                0)
+          ) {
+            throwUnprocessableEntityException(
+              'Start Date and/or Permit Expiry Date is in the past.',
+            );
+          }
+        }
+
         result = await this.caseManagementService.workflowEnd({
           currentUser,
           applicationId,
@@ -1094,7 +1138,9 @@ export class ApplicationService {
           await queryRunner.commitTransaction();
         }
       } catch (error) {
-        await queryRunner.rollbackTransaction();
+        if (queryRunner.isTransactionActive) {
+          await queryRunner.rollbackTransaction();
+        }
         this.logger.error(error); //Swallow Notification error
       }
 
