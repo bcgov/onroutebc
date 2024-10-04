@@ -1,5 +1,15 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { VEHICLE_TYPES } from "../../manageVehicles/types/Vehicle";
-import { EMPTY_PERMIT_TYPE_SELECT, PERMIT_TYPES, getPermitTypeName } from "../types/PermitType";
+import {
+  getPermitCategoryName,
+  PERMIT_CATEGORIES,
+} from "../types/PermitCategory";
+import {
+  EMPTY_PERMIT_TYPE_SELECT,
+  PERMIT_TYPES,
+  getPermitTypeName,
+  getPermitTypeShortName,
+} from "../types/PermitType";
 
 export const VEHICLE_CHOOSE_FROM = {
   UNIT_NUMBER: "unitNumber",
@@ -19,11 +29,77 @@ export const VEHICLE_TYPE_OPTIONS = [
   { value: VEHICLE_TYPES.TRAILER, label: "Trailer" },
 ];
 
+const TERM_PERMIT_CHOOSE_FROM_OPTIONS: PermitTypeChooseFromItem[] = [
+  {
+    value: PERMIT_TYPES.TROS,
+    label: getPermitTypeShortName(PERMIT_TYPES.TROS),
+  },
+  {
+    value: PERMIT_TYPES.TROW,
+    label: getPermitTypeShortName(PERMIT_TYPES.TROW),
+  },
+  {
+    value: PERMIT_TYPES.HC,
+    label: getPermitTypeShortName(PERMIT_TYPES.HC),
+  },
+];
+
+const SINGLE_TRIP_PERMIT_CHOOSE_FROM_OPTIONS: PermitTypeChooseFromItem[] = [
+  {
+    value: PERMIT_TYPES.STOS,
+    label: getPermitTypeShortName(PERMIT_TYPES.STOS),
+  },
+  {
+    value: PERMIT_TYPES.STOW,
+    label: getPermitTypeShortName(PERMIT_TYPES.STOW),
+  },
+  {
+    value: PERMIT_TYPES.STWS,
+    label: getPermitTypeShortName(PERMIT_TYPES.STWS),
+  },
+  {
+    value: PERMIT_TYPES.EPTOP,
+    label: getPermitTypeShortName(PERMIT_TYPES.EPTOP),
+  },
+  {
+    value: PERMIT_TYPES.STOL,
+    label: getPermitTypeShortName(PERMIT_TYPES.STOL),
+  },
+];
+
+export const PERMIT_CATERGORY_CHOOSE_FROM_OPTIONS: PermitTypeChooseFromItem[] =
+  [
+    {
+      value: PERMIT_CATEGORIES.TERM,
+      label: getPermitCategoryName(PERMIT_CATEGORIES.TERM),
+      items: TERM_PERMIT_CHOOSE_FROM_OPTIONS,
+    },
+    {
+      value: PERMIT_CATEGORIES.TRIP,
+      label: getPermitCategoryName(PERMIT_CATEGORIES.TRIP),
+      items: SINGLE_TRIP_PERMIT_CHOOSE_FROM_OPTIONS,
+    },
+    {
+      value: PERMIT_CATEGORIES.NRES,
+      label: getPermitCategoryName(PERMIT_CATEGORIES.NRES),
+    },
+    {
+      value: PERMIT_CATEGORIES.MFUP,
+      label: getPermitCategoryName(PERMIT_CATEGORIES.MFUP),
+    },
+  ];
+
 export const PERMIT_TYPE_CHOOSE_FROM_OPTIONS = [
   { value: EMPTY_PERMIT_TYPE_SELECT, label: "Select" },
   { value: PERMIT_TYPES.TROS, label: getPermitTypeName(PERMIT_TYPES.TROS) },
   { value: PERMIT_TYPES.TROW, label: getPermitTypeName(PERMIT_TYPES.TROW) },
 ];
+
+export interface PermitTypeChooseFromItem {
+  value: string;
+  label: string;
+  items?: PermitTypeChooseFromItem[];
+}
 
 export const BASE_DAYS_IN_YEAR = 365;
 export const COMMON_MIN_DURATION = 30;

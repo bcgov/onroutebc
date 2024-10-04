@@ -1,8 +1,64 @@
+@import "../../../../../../themes/orbcStyles.scss";
+
+$select-width: 240px;
+
 .start-application-action {
   display: flex;
   flex-direction: row;
   align-items: flex-end;
   width: 100%;
+
+
+
+  & &__input {
+    background-color: $white;
+    padding: .75rem;
+    justify-content: space-between;
+    border: 2px solid;
+    border-color: $bc-text-box-border-grey;
+    color: $bc-black;
+    margin-bottom: 0;
+    width: $select-width;
+    &:hover {
+      background-color: $white;
+    }
+    &:active, &:focus {
+      border-color: $border-blue;
+      outline: none;
+    }
+
+    &--open {
+      border-radius: 4px 4px 0px 0px;
+      border-bottom: none;
+      border-color: $border-blue;
+    }
+  }
+
+  &__menu-backdrop {
+  }
+
+  &__menu-container {
+    &.MuiPaper-root {
+      border-radius: 0;
+      box-shadow: none;
+      width: calc($select-width - 3.667px);
+      transition-duration: 0ms !important;
+    }
+
+    &--open {
+      &.MuiPaper-root {
+        border: 2px solid;
+        border-top: none;
+        border-radius: 0px 0px 2px 2px;
+        border-color: $border-blue;
+      }
+    }
+  }
+
+  
+
+  &__menu-list {
+  }
 
   & &__btn {
     margin-left: 1.5rem;
@@ -10,6 +66,8 @@
     padding: 0 2rem;
     font-size: 1rem;
     font-weight: bold;
+
+    
   }
 }
 

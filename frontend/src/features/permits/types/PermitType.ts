@@ -118,6 +118,42 @@ export const getPermitTypeName = (permitType?: Nullable<string>) => {
 };
 
 /**
+ * Returns the shortened name/description of the permit type.
+ * @param permitType String (if any) that represents the permit type
+ * @returns Short name/description of the permit type, or empty string if no mapping exists for permit type
+ */
+export const getPermitTypeShortName = (permitType?: Nullable<string>) => {
+  switch (permitType) {
+    case PERMIT_TYPES.EPTOP:
+      return "Extra-Provincial Temporary Operating";
+    case PERMIT_TYPES.HC:
+      return "Highway Crossing";
+    case PERMIT_TYPES.LCV:
+      return "Long Combination Vehicle";
+    case PERMIT_TYPES.MFP:
+      return "Motive Fuel User";
+    case PERMIT_TYPES.RIG:
+      return "Rig Move";
+    case PERMIT_TYPES.STOL:
+      return "Over Length";
+    case PERMIT_TYPES.STOS:
+      return "Oversize";
+    case PERMIT_TYPES.STOW:
+      return "Overweight";
+    case PERMIT_TYPES.STWS:
+      return "Overweight Oversize";
+    case PERMIT_TYPES.TRAX:
+      return "Axle Overweight";
+    case PERMIT_TYPES.TROS:
+      return "Oversize";
+    case PERMIT_TYPES.TROW:
+      return "Overweight";
+    default:
+      return "";
+  }
+};
+
+/**
  * Gets display text for permit type.
  * @param permitType Permit type (eg. TROS, STOS, etc)
  * @returns display text for the permit type

@@ -1,34 +1,33 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { Box, Button } from "@mui/material";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { Box, MenuItem, SelectChangeEvent, Button } from "@mui/material";
-
-import "./StartApplicationAction.scss";
-import { PERMIT_TYPE_CHOOSE_FROM_OPTIONS } from "../../../../constants/constants";
-import { SelectPermitTypeNew } from "./SelectPermitTypeNew";
+import { NestedDropdown } from "mui-nested-menu";
 import { APPLICATIONS_ROUTES } from "../../../../../../routes/constants";
+import {
+  PERMIT_CATERGORY_CHOOSE_FROM_OPTIONS,
+  PermitTypeChooseFromItem,
+} from "../../../../constants/constants";
+import { EMPTY_PERMIT_CATEGORY_SELECT } from "../../../../types/PermitCategory";
 import {
   DEFAULT_PERMIT_TYPE,
   EMPTY_PERMIT_TYPE_SELECT,
   PermitType,
 } from "../../../../types/PermitType";
+import "./StartApplicationAction.scss";
 
-/**
- *
- * Code taken largely from MUI MenuList Composition
- * https://mui.com/material-ui/react-menu/#menulist-composition
- *
- *
- */
 export const StartApplicationActionNew = () => {
   const navigate = useNavigate();
   const [chooseFrom, setChooseFrom] = useState<
     PermitType | typeof EMPTY_PERMIT_TYPE_SELECT
   >(DEFAULT_PERMIT_TYPE);
 
-  const handleChooseFrom = (event: SelectChangeEvent) => {
-    setChooseFrom(
-      event.target.value as PermitType | typeof EMPTY_PERMIT_TYPE_SELECT,
-    );
+  const handleChooseFrom = (
+    event: React.MouseEvent<HTMLElement>,
+    item: PermitTypeChooseFromItem,
+  ) => {
+    console.log(item.value);
+    setChooseFrom(item.value as PermitType | typeof EMPTY_PERMIT_TYPE_SELECT); // Use item.value instead of event.target.value
   };
 
   const handleStartButtonClicked = () => {
@@ -37,17 +36,56 @@ export const StartApplicationActionNew = () => {
     }
   };
 
+  // Update the structure of menuItems to ensure the callback is applied correctly
+  const menuItems = PERMIT_CATERGORY_CHOOSE_FROM_OPTIONS.map(
+    (item: PermitTypeChooseFromItem) => ({
+      ...item,
+      callback: (event: React.MouseEvent<HTMLElement>) =>
+        handleChooseFrom(event, item),
+      items: item?.items?.map((nestedItem) => ({
+        ...nestedItem,
+        callback: (event: React.MouseEvent<HTMLElement>) =>
+          handleChooseFrom(event, nestedItem), // Correctly set the nested item's callback
+      })),
+    }),
+  );
+
+  const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>();
+  const open = Boolean(anchorEl);
+
+  const handleClick = (e: any) =>
+    setAnchorEl(e.currentTarget as HTMLDivElement);
+  const handleClose = () => setAnchorEl(null);
+
   return (
     <Box className="start-application-action">
-      <SelectPermitTypeNew
-        value={chooseFrom}
-        label={"Select Permit Type"}
-        onChange={handleChooseFrom}
-        menuItems={PERMIT_TYPE_CHOOSE_FROM_OPTIONS.map((data) => (
-          <MenuItem key={data.value} value={data.value}>
-            {data.label}
-          </MenuItem>
-        ))}
+      <NestedDropdown
+        onClick={handleClick}
+        menuItemsData={{
+          label: EMPTY_PERMIT_CATEGORY_SELECT,
+          items: menuItems,
+        }}
+        MenuProps={{
+          className: "start-application-action___menu-backdrop",
+          anchorEl: anchorEl,
+          open: open,
+          onClose: handleClose,
+          slotProps: {
+            paper: {
+              className: `start-application-action__menu-container ${open && "start-application-action__menu-container--open"}`,
+            },
+            root: {
+              className: "ROOT",
+            },
+          },
+          MenuListProps: {
+            className: `start-application-action__menu-list  ${open && "start-application-action__menu-list--open"}`,
+            onClick: handleClose,
+          },
+        }}
+        ButtonProps={{
+          className: `start-application-action__input ${open && "start-application-action__input--open"}`,
+        }}
       />
 
       <Button
