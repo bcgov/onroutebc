@@ -31,7 +31,7 @@ export const PERMIT_TYPES = {
 export type PermitType = (typeof PERMIT_TYPES)[keyof typeof PERMIT_TYPES];
 
 export const DEFAULT_PERMIT_TYPE = PERMIT_TYPES.TROS;
-export const EMPTY_PERMIT_TYPE_SELECT = "select";
+export const EMPTY_PERMIT_TYPE_SELECT = "Select";
 
 /**
  * Returns the name/description of the permit type.
@@ -162,8 +162,18 @@ export const permitTypeDisplayText = (permitType?: Nullable<string>) => {
   switch (permitType) {
     case PERMIT_TYPES.TROS:
       return "Oversize: Term";
+    case PERMIT_TYPES.TROW:
+      return "Overweight: Term";
+    case PERMIT_TYPES.HC:
+      return "Highway Crossing: Term";
     case PERMIT_TYPES.STOS:
       return "Oversize: Single Trip";
+    case PERMIT_TYPES.STOW:
+      return "Overweight: Single Trip";
+    case PERMIT_TYPES.STWS:
+      return "Overweight Oversize: Single Trip";
+    case PERMIT_TYPES.EPTOP:
+      return "Extra-Provincial Temporary Operating: Single Trip";
     default:
       return getPermitTypeName(permitType);
   }

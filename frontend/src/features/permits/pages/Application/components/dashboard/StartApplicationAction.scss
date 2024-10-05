@@ -8,12 +8,19 @@ $select-width: 240px;
   align-items: flex-end;
   width: 100%;
 
-
+  & &__label {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
 
   & &__input {
+    display: inline-block;
     background-color: $white;
     padding: .75rem;
-    justify-content: space-between;
+    text-align: left;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
     border: 2px solid;
     border-color: $bc-text-box-border-grey;
     color: $bc-black;
@@ -34,13 +41,14 @@ $select-width: 240px;
     }
   }
 
-  &__menu-backdrop {
+  &__menu-list {
+    padding: 0;
   }
 
   &__menu-container {
     &.MuiPaper-root {
       border-radius: 0;
-      box-shadow: none;
+      box-shadow: 0 0.5rem 0.5rem -0.2rem #00000029;;
       width: calc($select-width - 3.667px);
       transition-duration: 0ms !important;
     }
@@ -55,9 +63,22 @@ $select-width: 240px;
     }
   }
 
-  
+  // NESTED MENUS
 
-  &__menu-list {
+  &__nested-menu-list {
+    padding: 0;
+  }
+
+  &__nested-menu-container {
+    &.MuiPaper-root {
+      border-radius: 4px;
+      box-shadow: $bc-shadow;
+      width: calc($select-width - 3.667px);
+      transition-duration: 0ms !important;
+      border: 2px solid;
+      border-color: $border-blue;
+      margin-left: 8px;
+    }
   }
 
   & &__btn {

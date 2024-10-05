@@ -10,9 +10,6 @@ export const PERMIT_CATEGORIES = {
 export type PermitCategory =
   (typeof PERMIT_CATEGORIES)[keyof typeof PERMIT_CATEGORIES];
 
-export const DEFAULT_PERMIT_CATEGORY = PERMIT_CATEGORIES.TERM;
-export const EMPTY_PERMIT_CATEGORY_SELECT = "Select";
-
 /**
  * Returns the name/description of the permit category.
  * @param permitCategory String (if any) that represents the permit category
