@@ -5,6 +5,7 @@ import {
   InternalServerErrorException,
   Logger,
   NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { CreateTransactionDto } from './dto/request/create-transaction.dto';
 import { ReadTransactionDto } from './dto/response/read-transaction.dto';
@@ -502,7 +503,7 @@ export class PaymentService {
     for (const application of applications) {
       //Check if each application has a valid start date and valid expiry date.
       if (isCVClientUser && !this.validDates(application))
-        throw new BadRequestException(
+        throw new UnprocessableEntityException(
           `Atleast one of the application has invalid startDate or expiryDate.`,
         );
       totalTransactionAmountCalculated += await this.permitFeeCalculator(
