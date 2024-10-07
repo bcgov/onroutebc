@@ -61,8 +61,12 @@ import {
   throwBadRequestException,
   throwUnprocessableEntityException,
 } from '../../../common/helper/exception.helper';
-import { isFeatureEnabled } from '../../../common/helper/common.helper';
+import {
+  isCVClient,
+  isFeatureEnabled,
+} from '../../../common/helper/common.helper';
 import { SpecialAuth } from 'src/modules/special-auth/entities/special-auth.entity';
+import dayjs from 'dayjs';
 
 @Injectable()
 export class PaymentService {
@@ -313,12 +317,12 @@ export class PaymentService {
             'Application in its current status cannot be processed for payment.',
           );
       }
-      const totalTransactionAmount =
-        await this.validatePaymentAndCalculateAmount(
-          createTransactionDto,
-          existingApplications,
-          queryRunner,
-        );
+      const totalTransactionAmount = await this.validateApplicationAndPayment(
+        createTransactionDto,
+        existingApplications,
+        currentUser,
+        queryRunner,
+      );
       const transactionOrderNumber =
         await this.generateTransactionOrderNumber();
 
@@ -486,17 +490,25 @@ export class PaymentService {
    * @throws {BadRequestException} When the transaction amount in the request doesn't match with the calculated amount,
    * or if there's a transaction type and amount mismatch in case of refunds.
    */
-  private async validatePaymentAndCalculateAmount(
+  private async validateApplicationAndPayment(
     createTransactionDto: CreateTransactionDto,
     applications: Permit[],
+    currentUser: IUserJWT,
     queryRunner: QueryRunner,
   ) {
     let totalTransactionAmountCalculated = 0;
+    const isCVClientUser: boolean = isCVClient(currentUser.identity_provider);
     // Calculate and add amount for each requested application, as per the available backend data.
     for (const application of applications) {
-      totalTransactionAmountCalculated =
-        totalTransactionAmountCalculated +
-        (await this.permitFeeCalculator(application, queryRunner));
+      //Check if each application has a valid start date and valid expiry date.
+      if (isCVClientUser && !this.validDates(application))
+        throw new BadRequestException(
+          `Atleast one of the application has invalid startDate or expiryDate.`,
+        );
+      totalTransactionAmountCalculated += await this.permitFeeCalculator(
+        application,
+        queryRunner,
+      );
     }
     const totalTransactionAmount =
       createTransactionDto.applicationDetails?.reduce(
@@ -504,25 +516,41 @@ export class PaymentService {
         0,
       );
     if (
-      totalTransactionAmount.toFixed(2) !=
-      Math.abs(totalTransactionAmountCalculated).toFixed(2)
-    ) {
-      throw new BadRequestException(
-        `Transaction Amount Mismatch. Amount received is $${totalTransactionAmount.toFixed(2)} but amount calculated is $${Math.abs(totalTransactionAmountCalculated).toFixed(2)}`,
-      );
-    }
-
-    //For transaction type refund, total transaction amount in backend should be less than zero and vice a versa.
-    //This extra check to compare transaction type and amount is only needed in case of refund, for other trasaction types, comparing amount is sufficient.
-    if (
-      totalTransactionAmountCalculated < 0 &&
-      createTransactionDto.transactionTypeId != TransactionType.REFUND
-    ) {
-      throw new BadRequestException('Transaction Type Mismatch');
-    }
+      !this.validAmount(
+        totalTransactionAmountCalculated,
+        totalTransactionAmount,
+        createTransactionDto.transactionTypeId,
+      )
+    )
+      throw new BadRequestException('Transaction amount mismatch.');
     return totalTransactionAmount;
   }
 
+  private validDates(application: Permit): boolean {
+    const today = dayjs().startOf('day').format('YYYY-MM-DD');
+    const { startDate, expiryDate } = application.permitData;
+
+    return startDate < today || expiryDate < today || startDate > expiryDate;
+  }
+
+  private validAmount(
+    calculatedAmount: number,
+    receivedAmount: number,
+    transactionType: TransactionType,
+  ): boolean {
+    const isAmountValid =
+      receivedAmount.toFixed(2) === Math.abs(calculatedAmount).toFixed(2);
+
+    // For refund transactions, ensure the calculated amount is negative.
+    const isRefundValid =
+      calculatedAmount < 0 && transactionType === TransactionType.REFUND;
+
+    // Return true if the amounts are valid or if it's a valid refund transaction
+    return (
+      isAmountValid &&
+      (isRefundValid || transactionType !== TransactionType.REFUND)
+    );
+  }
   @LogAsyncMethodExecution()
   async updateReceiptDocument(
     currentUser: IUserJWT,
