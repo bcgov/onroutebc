@@ -1,9 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { VEHICLE_TYPES } from "../../manageVehicles/types/Vehicle";
-import {
-  getPermitCategoryName,
-  PERMIT_CATEGORIES,
-} from "../types/PermitCategory";
 import {
   EMPTY_PERMIT_TYPE_SELECT,
   PERMIT_TYPES,
@@ -29,6 +24,29 @@ export const VEHICLE_TYPE_OPTIONS = [
   { value: VEHICLE_TYPES.TRAILER, label: "Trailer" },
 ];
 
+const SINGLE_TRIP_PERMIT_CHOOSE_FROM_OPTIONS: PermitTypeChooseFromItem[] = [
+  {
+    value: PERMIT_TYPES.STOS,
+    label: getPermitTypeShortName(PERMIT_TYPES.STOS),
+  },
+  {
+    value: PERMIT_TYPES.STWS,
+    label: getPermitTypeShortName(PERMIT_TYPES.STWS),
+  },
+  {
+    value: PERMIT_TYPES.STOW,
+    label: getPermitTypeShortName(PERMIT_TYPES.STOW),
+  },
+  {
+    value: PERMIT_TYPES.EPTOP,
+    label: getPermitTypeShortName(PERMIT_TYPES.EPTOP),
+  },
+  {
+    value: PERMIT_TYPES.STOL,
+    label: getPermitTypeShortName(PERMIT_TYPES.STOL),
+  },
+];
+
 const TERM_PERMIT_CHOOSE_FROM_OPTIONS: PermitTypeChooseFromItem[] = [
   {
     value: PERMIT_TYPES.TROS,
@@ -44,50 +62,46 @@ const TERM_PERMIT_CHOOSE_FROM_OPTIONS: PermitTypeChooseFromItem[] = [
   },
 ];
 
-const SINGLE_TRIP_PERMIT_CHOOSE_FROM_OPTIONS: PermitTypeChooseFromItem[] = [
+const NON_RESIDENT_PERMIT_CHOOSE_FROM_OPTIONS: PermitTypeChooseFromItem[] = [
   {
-    value: PERMIT_TYPES.STOS,
-    label: getPermitTypeShortName(PERMIT_TYPES.STOS),
+    value: PERMIT_TYPES.NRSCV,
+    label: getPermitTypeShortName(PERMIT_TYPES.NRSCV),
   },
   {
-    value: PERMIT_TYPES.STOW,
-    label: getPermitTypeShortName(PERMIT_TYPES.STOW),
+    value: PERMIT_TYPES.QNRBS,
+    label: getPermitTypeShortName(PERMIT_TYPES.QNRBS),
   },
   {
-    value: PERMIT_TYPES.STWS,
-    label: getPermitTypeShortName(PERMIT_TYPES.STWS),
+    value: PERMIT_TYPES.QRFR,
+    label: getPermitTypeShortName(PERMIT_TYPES.QRFR),
   },
   {
-    value: PERMIT_TYPES.EPTOP,
-    label: getPermitTypeShortName(PERMIT_TYPES.EPTOP),
-  },
-  {
-    value: PERMIT_TYPES.STOL,
-    label: getPermitTypeShortName(PERMIT_TYPES.STOL),
+    value: PERMIT_TYPES.STFR,
+    label: getPermitTypeShortName(PERMIT_TYPES.STFR),
   },
 ];
 
-export const PERMIT_CATERGORY_CHOOSE_FROM_OPTIONS: PermitTypeChooseFromItem[] =
-  [
-    {
-      value: PERMIT_CATEGORIES.TERM,
-      label: getPermitCategoryName(PERMIT_CATEGORIES.TERM),
-      items: TERM_PERMIT_CHOOSE_FROM_OPTIONS,
-    },
-    {
-      value: PERMIT_CATEGORIES.TRIP,
-      label: getPermitCategoryName(PERMIT_CATEGORIES.TRIP),
-      items: SINGLE_TRIP_PERMIT_CHOOSE_FROM_OPTIONS,
-    },
-    {
-      value: PERMIT_CATEGORIES.NRES,
-      label: getPermitCategoryName(PERMIT_CATEGORIES.NRES),
-    },
-    {
-      value: PERMIT_CATEGORIES.MFUP,
-      label: getPermitCategoryName(PERMIT_CATEGORIES.MFUP),
-    },
-  ];
+export const ALL_PERMIT_TYPE_CHOOSE_FROM_OPTIONS: PermitTypeChooseFromItem[] = [
+  {
+    value: "",
+    label: "Single Trip",
+    items: SINGLE_TRIP_PERMIT_CHOOSE_FROM_OPTIONS,
+  },
+  {
+    value: "",
+    label: "Term",
+    items: TERM_PERMIT_CHOOSE_FROM_OPTIONS,
+  },
+  {
+    value: "",
+    label: "Non-Resident",
+    items: NON_RESIDENT_PERMIT_CHOOSE_FROM_OPTIONS,
+  },
+  {
+    value: PERMIT_TYPES.MFP,
+    label: getPermitTypeShortName(PERMIT_TYPES.MFP),
+  },
+];
 
 export const PERMIT_TYPE_CHOOSE_FROM_OPTIONS = [
   { value: EMPTY_PERMIT_TYPE_SELECT, label: "Select" },

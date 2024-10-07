@@ -1,18 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import {
-  Box,
-  Button,
-  FormControl,
-  FormLabel,
-  Menu,
-  MenuItem,
-} from "@mui/material";
+import { Box, Button, FormLabel, Menu, MenuItem } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { NestedMenuItem } from "mui-nested-menu";
 import { APPLICATIONS_ROUTES } from "../../../../../../routes/constants";
 import {
-  PERMIT_CATERGORY_CHOOSE_FROM_OPTIONS,
+  ALL_PERMIT_TYPE_CHOOSE_FROM_OPTIONS,
   PermitTypeChooseFromItem,
 } from "../../../../constants/constants";
 import {
@@ -21,6 +14,8 @@ import {
   permitTypeDisplayText,
 } from "../../../../types/PermitType";
 import "./StartApplicationAction.scss";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 
 export const StartApplicationAction = () => {
   const navigate = useNavigate();
@@ -29,7 +24,7 @@ export const StartApplicationAction = () => {
   >(EMPTY_PERMIT_TYPE_SELECT);
 
   const handleChooseFrom = (
-    event: React.MouseEvent<HTMLElement>,
+    _event: React.MouseEvent<HTMLElement>,
     item: PermitTypeChooseFromItem,
   ) => {
     console.log(item.value);
@@ -44,7 +39,7 @@ export const StartApplicationAction = () => {
   };
 
   // Update the structure of menuItems to ensure the callback is applied correctly
-  const menuItems = PERMIT_CATERGORY_CHOOSE_FROM_OPTIONS.map(
+  const menuItems = ALL_PERMIT_TYPE_CHOOSE_FROM_OPTIONS.map(
     (item: PermitTypeChooseFromItem) => ({
       ...item,
       callback: (event: React.MouseEvent<HTMLElement>) =>
@@ -66,72 +61,79 @@ export const StartApplicationAction = () => {
 
   return (
     <Box className="start-application-action">
-      <FormControl className="start-application-action__control">
-        <FormLabel className="start-application-action__label">
-          Select Permit Type
-        </FormLabel>
+      <FormLabel className="start-application-action__label">
+        Select Permit Type
+      </FormLabel>
+      <div className="start-application-action__control">
         <Button
           className={`start-application-action__input ${open && "start-application-action__input--open"}`}
           onClick={handleClick}
         >
-          {chooseFrom !== EMPTY_PERMIT_TYPE_SELECT
-            ? permitTypeDisplayText(chooseFrom)
-            : EMPTY_PERMIT_TYPE_SELECT}
+          <div className="start-application-action__input-inner">
+            {chooseFrom !== EMPTY_PERMIT_TYPE_SELECT
+              ? permitTypeDisplayText(chooseFrom)
+              : EMPTY_PERMIT_TYPE_SELECT}
+            <FontAwesomeIcon icon={faChevronDown} />
+          </div>
         </Button>
-      </FormControl>
-      <Menu
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        open={open}
-        className="MENU"
-        slotProps={{
-          paper: {
-            className: `start-application-action__menu-container ${open && "start-application-action__menu-container--open"}`,
-          },
-        }}
-        MenuListProps={{
-          className: "start-application-action__menu-list",
-        }}
-      >
-        {menuItems.map((item) =>
-          item.items ? (
-            <NestedMenuItem
-              label={item.label}
-              parentMenuOpen={open}
-              key={item.value}
-              MenuProps={{
-                MenuListProps: {
-                  className: "start-application-action__nested-menu-list",
-                },
-                slotProps: {
-                  paper: {
-                    className:
-                      "start-application-action__nested-menu-container",
-                  },
-                },
-              }}
-            >
-              {item.items.map((nestedItem) => (
-                <MenuItem key={nestedItem.value} onClick={nestedItem.callback}>
-                  {nestedItem.label}
-                </MenuItem>
-              ))}
-            </NestedMenuItem>
-          ) : (
-            <MenuItem key={item.value} onClick={item.callback}>
-              {item.label}
-            </MenuItem>
-          ),
-        )}
-      </Menu>
 
-      <Button
-        className="start-application-action__btn"
-        variant="contained"
-        onClick={handleStartButtonClicked}
-      >
-        Start Application
-      </Button>
+        <Menu
+          anchorEl={anchorEl}
+          onClose={handleClose}
+          open={open}
+          className="MENU"
+          slotProps={{
+            paper: {
+              className: `start-application-action__menu-container ${open && "start-application-action__menu-container--open"}`,
+            },
+          }}
+          MenuListProps={{
+            className: "start-application-action__menu-list",
+          }}
+        >
+          {menuItems.map((item) =>
+            item.items ? (
+              <NestedMenuItem
+                label={item.label}
+                parentMenuOpen={open}
+                key={item.label}
+                MenuProps={{
+                  MenuListProps: {
+                    className: "start-application-action__nested-menu-list",
+                  },
+                  slotProps: {
+                    paper: {
+                      className:
+                        "start-application-action__nested-menu-container",
+                    },
+                  },
+                }}
+              >
+                {item.items.map((nestedItem) => (
+                  <MenuItem
+                    key={nestedItem.label}
+                    onClick={nestedItem.callback}
+                  >
+                    {nestedItem.label}
+                  </MenuItem>
+                ))}
+              </NestedMenuItem>
+            ) : (
+              <MenuItem key={item.label} onClick={item.callback}>
+                {item.label}
+              </MenuItem>
+            ),
+          )}
+        </Menu>
+
+        <Button
+          className="start-application-action__btn"
+          variant="contained"
+          onClick={handleStartButtonClicked}
+        >
+          Start Application
+        </Button>
+      </div>
     </Box>
   );
 };

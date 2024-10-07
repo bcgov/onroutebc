@@ -3,20 +3,22 @@
 $select-width: 240px;
 
 .start-application-action {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  width: 100%;
-
+  
   & &__label {
     font-weight: bold;
-    margin-bottom: 0.5rem;
+  }
+  
+  &__control {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    padding-top: .5rem;
   }
 
   & &__input {
     display: inline-block;
     background-color: $white;
-    padding: .75rem;
+    padding: .5rem .75rem;
     text-align: left;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -38,7 +40,15 @@ $select-width: 240px;
       border-radius: 4px 4px 0px 0px;
       border-bottom: none;
       border-color: $border-blue;
+      // prevent input text shifting when menu is open
+      padding-top: 6px;
     }
+  }
+
+  & &__input-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
   &__menu-list {
@@ -48,8 +58,9 @@ $select-width: 240px;
   &__menu-container {
     &.MuiPaper-root {
       border-radius: 0;
-      box-shadow: 0 0.5rem 0.5rem -0.2rem #00000029;;
-      width: calc($select-width - 3.667px);
+      box-shadow: 0 0.5rem 0.5rem -0.2rem #00000029;
+      // prevent menu from being wider than the input element itself
+      width: calc($select-width - 4px);
       transition-duration: 0ms !important;
     }
 
