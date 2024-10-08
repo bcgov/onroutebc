@@ -74,7 +74,7 @@ $select-width: 347px;
     }
   }
 
-  &__menu-item {
+  &__menu-item:not(:last-child) {
     &.MuiButtonBase-root {
       border-bottom: 1px solid $bc-border-grey;
     }
@@ -108,8 +108,8 @@ $select-width: 347px;
   }
   
   
-  &__nested-menu-item {
-    &.MuiButtonBase-root:not(:last-child) {
+  &__nested-menu-item:not(:last-child) {
+    &.MuiButtonBase-root {
       border-bottom: 1px solid $bc-border-grey;
     }
   }
