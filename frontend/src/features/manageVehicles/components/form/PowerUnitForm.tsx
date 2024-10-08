@@ -36,7 +36,7 @@ export const PowerUnitForm = ({
   companyId,
   powerUnit,
 }: {
-  companyId: string;
+  companyId: number;
   powerUnit?: PowerUnit;
 }) => {
   const isEditMode = Boolean(powerUnit?.powerUnitId);

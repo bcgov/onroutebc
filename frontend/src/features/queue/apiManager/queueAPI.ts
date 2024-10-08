@@ -20,11 +20,16 @@ import { APPLICATION_QUEUE_API_ROUTES } from "./endpoints/endpoints";
 export const getApplicationsInQueue = async (
   paginationFilters: PaginationAndFilters,
   getStaffQueue: boolean,
+  companyId?: Nullable<number>,
 ): Promise<PaginatedResponse<ApplicationListItem>> => {
-  return await getApplications(paginationFilters, {
-    applicationsInQueueOnly: true,
-    getStaffQueue,
-  });
+  return await getApplications(
+    paginationFilters,
+    {
+      applicationsInQueueOnly: true,
+      getStaffQueue,
+    }, 
+    companyId,
+  );
 };
 
 /**
@@ -51,27 +56,6 @@ export const getUnclaimedApplicationsInQueue = async (
     getStaffQueue: true,
     unclaimedApplicationsOnly: true,
   });
-};
-
-/**
- * Get queued application by application number
- * @param applicationNumber Application number of the queued application to be retrieved.
- * @returns Application information if found, or undefined
- */
-export const getApplicationInQueueDetails = async (
-  applicationNumber: string,
-): Promise<ApplicationListItem> => {
-  // TODO remove this function and replace its usage with useApplicationDetailsQuery once that has been refactored
-  const applicationsList = await getApplications(
-    {
-      page: 0,
-      take: 1,
-      searchString: applicationNumber,
-      searchColumn: "applicationNumber",
-    },
-    { claimedApplicationsOnly: true, getStaffQueue: true },
-  );
-  return applicationsList.items[0];
 };
 
 export const updateApplicationQueueStatus = async ({

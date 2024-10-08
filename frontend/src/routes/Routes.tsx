@@ -129,13 +129,13 @@ export const AppRoutes = () => {
         />
 
         <Route
-          path={`${routes.APPLICATION_QUEUE_ROUTES.BASE}/:applicationNumber/review`}
+          path={routes.APPLICATION_QUEUE_ROUTES.REVIEW()}
           element={<ReviewApplicationInQueue />}
         />
         {
           // TODO: placeholder route for edit step
           /* <Route
-          path={`${routes.APPLICATION_QUEUE_ROUTES.EDIT}/:applicationNumber/edit`}
+          path={`${routes.APPLICATION_QUEUE_ROUTES.EDIT()}`}
           element={<EditApplicationInQueue />}
         /> */
         }
@@ -152,7 +152,7 @@ export const AppRoutes = () => {
         }
       >
         <Route
-          path={`companies/:companyId/permits/:permitId/void`}
+          path={routes.PERMITS_ROUTES.VOID()}
           element={<VoidPermit />}
         />
       </Route>
@@ -168,7 +168,7 @@ export const AppRoutes = () => {
         }
       >
         <Route
-          path={`companies/:companyId/permits/:permitId/amend`}
+          path={routes.PERMITS_ROUTES.AMEND()}
           element={<AmendPermit />}
         />
       </Route>

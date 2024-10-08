@@ -5,7 +5,7 @@ import { PermitType } from "../features/permits/types/PermitType";
 export const ROUTE_PLACEHOLDERS = {
   PERMIT_ID: "permitId",
   PERMIT_TYPE: "permitType",
-  APPLICATION_NUMBER: "applicationNumber",
+  COMPANY_ID: "companyId",
 };
 
 /**
@@ -19,7 +19,7 @@ export const ROUTE_PLACEHOLDERS = {
 const DYNAMIC_ROUTE_URI = (
   prefixUri: string,
   placeholderName: string,
-  value?: Nullable<string>,
+  value?: Nullable<string | number>,
 ) => {
   if (!value) {
     return `${prefixUri}/:${placeholderName}`;
@@ -71,14 +71,28 @@ const PERMITS_ROUTE_BASE = "/permits";
 export const PERMITS_ROUTES = {
   BASE: PERMITS_ROUTE_BASE,
   SUCCESS: `${PERMITS_ROUTE_BASE}/success`,
-  VOID: (companyId?: string, permitId?: string) =>
-    `/companies/${companyId}${DYNAMIC_ROUTE_URI(
+  VOID: (
+    companyId?: Nullable<number | string>,
+    permitId?: Nullable<string>,
+  ) =>
+    `${DYNAMIC_ROUTE_URI(
+      "/companies",
+      ROUTE_PLACEHOLDERS.COMPANY_ID,
+      companyId,
+    )}${DYNAMIC_ROUTE_URI(
       PERMITS_ROUTE_BASE,
       ROUTE_PLACEHOLDERS.PERMIT_ID,
       permitId,
     )}/void`,
-  AMEND: (companyId?: string, permitId?: string) =>
-    `/companies/${companyId}${DYNAMIC_ROUTE_URI(
+  AMEND: (
+    companyId?: Nullable<number | string>,
+    permitId?: Nullable<string>,
+  ) =>
+    `${DYNAMIC_ROUTE_URI(
+      "/companies",
+      ROUTE_PLACEHOLDERS.COMPANY_ID,
+      companyId,
+    )}${DYNAMIC_ROUTE_URI(
       PERMITS_ROUTE_BASE,
       ROUTE_PLACEHOLDERS.PERMIT_ID,
       permitId,
@@ -125,10 +139,32 @@ export const APPLICATIONS_ROUTES = {
 const APPLICATION_QUEUE_ROUTE_BASE = "/queue";
 export const APPLICATION_QUEUE_ROUTES = {
   BASE: APPLICATION_QUEUE_ROUTE_BASE,
-  REVIEW: (applicationNumber?: Nullable<string>) =>
-    `${DYNAMIC_ROUTE_URI(APPLICATION_QUEUE_ROUTE_BASE, ROUTE_PLACEHOLDERS.APPLICATION_NUMBER, applicationNumber)}/review`,
-  EDIT: (applicationNumber?: Nullable<string>) =>
-    `${DYNAMIC_ROUTE_URI(APPLICATION_QUEUE_ROUTE_BASE, ROUTE_PLACEHOLDERS.APPLICATION_NUMBER, applicationNumber)}/edit`,
+  REVIEW: (
+    companyId?: Nullable<number | string>,
+    permitId?: Nullable<string>,
+  ) =>
+    `${DYNAMIC_ROUTE_URI(
+      "/companies",
+      ROUTE_PLACEHOLDERS.COMPANY_ID,
+      companyId,
+    )}${DYNAMIC_ROUTE_URI(
+      APPLICATION_QUEUE_ROUTE_BASE,
+      ROUTE_PLACEHOLDERS.PERMIT_ID,
+      permitId,
+    )}/review`,
+  EDIT: (
+    companyId?: Nullable<number | string>,
+    permitId?: Nullable<string>,
+  ) =>
+    `${DYNAMIC_ROUTE_URI(
+      "/companies",
+      ROUTE_PLACEHOLDERS.COMPANY_ID,
+      companyId,
+    )}${DYNAMIC_ROUTE_URI(
+      APPLICATION_QUEUE_ROUTE_BASE,
+      ROUTE_PLACEHOLDERS.PERMIT_ID,
+      permitId,
+    )}/edit`,
 };
 
 // Shopping Cart

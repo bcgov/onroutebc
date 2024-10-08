@@ -11,7 +11,6 @@ import {
 } from "@tanstack/react-query";
 import {
   claimApplicationInQueue,
-  getApplicationInQueueDetails,
   getApplicationsInQueue,
   getClaimedApplicationsInQueue,
   getUnclaimedApplicationsInQueue,
@@ -67,6 +66,7 @@ export const useApplicationsInQueueQuery = () => {
           orderBy,
         },
         getStaffQueue,
+        companyId,
       ),
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
     refetchOnMount: "always",
@@ -144,27 +144,6 @@ export const useUnclaimedApplicationsInQueueQuery = () => {
     sorting,
     setSorting,
   };
-};
-
-/**
- * Hook that fetches details for a single application in queue (PENDING_REVIEW, IN_REVIEW)
- * This is the data that is consumed by the ReviewApplicationInQueue component
- * @param applicationNumber application number for the application
- * @returns The specified application from the queue.
- */
-export const useApplicationInQueueDetailsQuery = (
-  applicationNumber: string,
-) => {
-  return useQuery({
-    queryKey: QUEUE_QUERY_KEYS.DETAIL(applicationNumber),
-    queryFn: async () => {
-      return getApplicationInQueueDetails(applicationNumber);
-    },
-    enabled: Boolean(applicationNumber),
-    retry: false,
-    refetchOnMount: "always",
-    refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
-  });
 };
 
 export const useClaimApplicationInQueueMutation = () => {

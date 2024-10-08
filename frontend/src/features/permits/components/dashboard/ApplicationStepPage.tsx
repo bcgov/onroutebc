@@ -11,9 +11,9 @@ import { ApplicationReview } from "../../pages/Application/ApplicationReview";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { Loading } from "../../../../common/pages/Loading";
 import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
-import { useApplicationDetailsQuery } from "../../hooks/hooks";
+import { useApplicationForStepsQuery } from "../../hooks/hooks";
 import { PERMIT_STATUSES } from "../../types/PermitStatus";
-import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
 import {
   DEFAULT_PERMIT_TYPE,
   PermitType,
@@ -24,6 +24,7 @@ import {
   ApplicationStep,
   ERROR_ROUTES,
 } from "../../../../routes/constants";
+import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 
 const displayHeaderText = (stepKey: ApplicationStep) => {
   switch (stepKey) {
@@ -43,6 +44,11 @@ export const ApplicationStepPage = ({
   applicationStep: ApplicationStep;
 }) => {
   const companyInfoQuery = useCompanyInfoQuery();
+  const companyId: number = getDefaultRequiredVal(
+    0,
+    applyWhenNotNullable(id => Number(id), getCompanyIdFromSession()),
+    companyInfoQuery.data?.companyId,
+  );
 
   // Get application number from route, if there is one (for edit applications)
   // or get the permit type for creating a new application
@@ -54,7 +60,12 @@ export const ApplicationStepPage = ({
     setApplicationData,
     shouldEnableQuery,
     isInvalidRoute,
-  } = useApplicationDetailsQuery({ applicationStep, permitId, permitType });
+  } = useApplicationForStepsQuery({
+    applicationStep,
+    permitId,
+    permitType,
+    companyId,
+  });
 
   const contextData = useMemo(
     () => ({

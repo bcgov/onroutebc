@@ -16,50 +16,49 @@ export const openBlobInNewTab = (blob: Blob) => {
 };
 
 /**
- * Opens the receipt pdf in a new tab.
- * @param permitId The permit id.
+ * Opens the receipt pdf for a permit in a new tab.
+ * @param companyId id of the company that the permit belongs to
+ * @param permitId The permit id of the receipt
+ * @param onDocumentUnavailable Callback function invoked when the PDF document is unavailable
  */
 export const viewReceiptPdf = async (
+  companyId: number,
   permitId: string, 
   onDocumentUnavailable?: () => void,
-  companyId?: string,
 ) => {
   if (permitId) {
     try {
       const { blobObj: blobObjWithoutType } = await downloadReceiptPdf(
-        permitId,
         companyId,
+        permitId,
       );
       openBlobInNewTab(blobObjWithoutType);
     } catch (err) {
       console.error(err);
-      if (onDocumentUnavailable) {
-        onDocumentUnavailable();
-      }
+      onDocumentUnavailable?.();
     }
   }
 };
 
 /**
  * Opens the permit PDF in a new tab.
- * @param permitId The permitId of the permit.
+ * @param companyId id of the company that the permit belongs to
+ * @param permitId The id of the permit
+ * @param onDocumentUnavailable Callback function invoked when the PDF document is unavailable
  */
 export const viewPermitPdf = async (
+  companyId: number,
   permitId: string, 
   onDocumentUnavailable?: () => void,
-  companyId?: string,
-  
 ) => {
   try {
     const { blobObj: blobObjWithoutType } = await downloadPermitApplicationPdf(
-      permitId,
       companyId,
+      permitId,
     );
     openBlobInNewTab(blobObjWithoutType);
   } catch (err) {
     console.error(err);
-    if (onDocumentUnavailable) {
-      onDocumentUnavailable();
-    }
+    onDocumentUnavailable?.();
   }
 };

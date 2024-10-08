@@ -9,10 +9,7 @@ import { useSaveApplicationMutation } from "../../hooks/hooks";
 import { ApplicationBreadcrumb } from "../../components/application-breadcrumb/ApplicationBreadcrumb";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { PermitReview } from "./components/review/PermitReview";
-import {
-  applyWhenNotNullable,
-  getDefaultRequiredVal,
-} from "../../../../common/helpers/util";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { SnackBarContext } from "../../../../App";
 import { useAddToCart } from "../../hooks/cart";
 import { hasPermitsActionFailed } from "../../helpers/permitState";
@@ -23,12 +20,12 @@ import { useFetchSpecialAuthorizations } from "../../../settings/hooks/specialAu
 import { applyLCVToApplicationData } from "../../helpers/getDefaultApplicationFormData";
 import { calculateFeeByDuration } from "../../helpers/feeSummary";
 import { DEFAULT_PERMIT_TYPE } from "../../types/PermitType";
+import { PERMIT_REVIEW_CONTEXTS } from "../../types/PermitReviewContext";
 import {
   APPLICATIONS_ROUTES,
   APPLICATION_STEPS,
   ERROR_ROUTES,
 } from "../../../../routes/constants";
-import { PERMIT_REVIEW_CONTEXTS } from "../../types/PermitReviewContext";
 
 export const ApplicationReview = () => {
   const {
@@ -36,11 +33,7 @@ export const ApplicationReview = () => {
     setApplicationData: setApplicationContextData,
   } = useContext(ApplicationContext);
 
-  const companyId = applyWhenNotNullable(
-    (id) => `${id}`,
-    applicationContextData?.companyId,
-    "",
-  ) as string;
+  const companyId = getDefaultRequiredVal(0, applicationContextData?.companyId);
 
   const { data: specialAuth } = useFetchSpecialAuthorizations(companyId);
   const isLcvDesignated = Boolean(specialAuth?.isLcvAllowed);
@@ -86,7 +79,7 @@ export const ApplicationReview = () => {
   };
 
   const proceedWithAddToCart = async (
-    companyId: string,
+    companyId: number,
     applicationIds: string[],
     onSuccess: () => void,
   ) => {
@@ -116,17 +109,20 @@ export const ApplicationReview = () => {
 
     const { application: savedApplication } =
       await saveApplicationMutation.mutateAsync({
-        ...applicationData,
-        permitData: {
-          ...applicationData.permitData,
-          doingBusinessAs, // always set most recent DBA from company info
+        data: {
+          ...applicationData,
+          permitData: {
+            ...applicationData.permitData,
+            doingBusinessAs, // always set most recent DBA from company info
+          },
         },
+        companyId,
       });
 
     if (savedApplication) {
       setApplicationContextData(savedApplication);
 
-      await proceedWithAddToCart(`${companyId}`, [permitId], () => {
+      await proceedWithAddToCart(companyId, [permitId], () => {
         setSnackBar({
           showSnackbar: true,
           setShowSnackbar: () => true,

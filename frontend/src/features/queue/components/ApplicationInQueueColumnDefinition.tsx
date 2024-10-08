@@ -16,14 +16,15 @@ export const getApplicationInQueueColumnDefinition = (
     accessorFn: (row) => row.applicationNumber,
     Cell: (props: { cell: any; row: any }) => {
       const application = props.row.original;
-      const applicationNumber = application.applicationNumber;
+      const permitId = application.permitId;
+      const companyId = application.companyId;
       return (
         <CustomNavLink
           onClick={(e) => {
             e.preventDefault();
             handleFollowApplicationLink(application);
           }}
-          to={APPLICATION_QUEUE_ROUTES.REVIEW(applicationNumber)}
+          to={APPLICATION_QUEUE_ROUTES.REVIEW(companyId, permitId)}
           className="column-link column-link--application-details"
         >
           {props.cell.getValue()}

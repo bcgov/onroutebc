@@ -16,14 +16,15 @@ export const getUnclaimedApplicationInQueueColumnDefinition = (
     accessorFn: (row) => row.applicationNumber,
     Cell: (props: { cell: any; row: any }) => {
       const application = props.row.original;
-      const applicationNumber = application.applicationNumber;
+      const companyId = application.companyId;
+      const permitId = application.permitId;
       return (
         <CustomNavLink
           onClick={(e) => {
             e.preventDefault();
             handleFollowApplicationLink(application);
           }}
-          to={APPLICATION_QUEUE_ROUTES.REVIEW(applicationNumber)}
+          to={APPLICATION_QUEUE_ROUTES.REVIEW(companyId, permitId)}
           className="column-link column-link--application-details"
         >
           {props.cell.getValue()}

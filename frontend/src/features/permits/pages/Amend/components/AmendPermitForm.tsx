@@ -15,7 +15,7 @@ import { AmendRevisionHistory } from "./form/AmendRevisionHistory";
 import { AmendReason } from "./form/AmendReason";
 import { Nullable } from "../../../../../common/types/common";
 import { ERROR_ROUTES } from "../../../../../routes/constants";
-import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
+import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { PermitVehicleDetails } from "../../../types/PermitVehicleDetails";
 import { AmendPermitFormData } from "../types/AmendPermitFormData";
 import { getDatetimes } from "./helpers/getDatetimes";
@@ -51,7 +51,7 @@ export const AmendPermitForm = () => {
   } = useContext(AmendPermitContext);
 
   const { companyId: companyIdParam } = useParams();
-  const companyId = getDefaultRequiredVal("", companyIdParam);
+  const companyId: number = applyWhenNotNullable(id => Number(id), companyIdParam, 0);
   const navigate = useNavigate();
 
   const { data: companyInfo } = useCompanyInfoDetailsQuery(companyId);

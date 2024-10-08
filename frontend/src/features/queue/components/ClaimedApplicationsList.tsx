@@ -111,7 +111,10 @@ export const ClaimedApplicationsList = () => {
   useEffect(() => {
     if (isSuccess(claimApplicationResponse?.status)) {
       navigate(
-        APPLICATION_QUEUE_ROUTES.REVIEW(selectedApplication?.applicationNumber),
+        APPLICATION_QUEUE_ROUTES.REVIEW(
+          selectedApplication?.companyId,
+          selectedApplication?.permitId,
+        ),
       );
     }
   }, [claimApplicationResponse]);

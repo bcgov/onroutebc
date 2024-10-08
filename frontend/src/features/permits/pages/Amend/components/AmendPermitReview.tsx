@@ -16,15 +16,16 @@ import { ERROR_ROUTES } from "../../../../../routes/constants";
 import { DEFAULT_PERMIT_TYPE } from "../../../types/PermitType";
 import { usePowerUnitSubTypesQuery } from "../../../../manageVehicles/hooks/powerUnits";
 import { useTrailerSubTypesQuery } from "../../../../manageVehicles/hooks/trailers";
+import { PERMIT_REVIEW_CONTEXTS } from "../../../types/PermitReviewContext";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
-import { PERMIT_REVIEW_CONTEXTS } from "../../../types/PermitReviewContext";
 
 export const AmendPermitReview = () => {
   const navigate = useNavigate();
-  const { companyId } = useParams();
+  const { companyId: companyIdParam } = useParams();
+  const companyId: number = applyWhenNotNullable(id => Number(id), companyIdParam, 0);
 
   const {
     permit,
@@ -79,7 +80,7 @@ export const AmendPermitReview = () => {
             doingBusinessAs, // always set most recent company info DBA
           },
         },
-        companyId: companyId as string,
+        companyId,
       });
 
     if (savedApplication) {

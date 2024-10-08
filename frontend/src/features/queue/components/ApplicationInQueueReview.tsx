@@ -1,55 +1,43 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+
+import "./ApplicationInQueueReview.scss";
+import { QueueBreadcrumb } from "./QueueBreadcrumb";
+import { PERMIT_REVIEW_CONTEXTS } from "../../permits/types/PermitReviewContext";
+import { useCompanyInfoDetailsQuery } from "../../manageProfile/apiManager/hooks";
+import { usePowerUnitSubTypesQuery } from "../../manageVehicles/hooks/powerUnits";
+import { useTrailerSubTypesQuery } from "../../manageVehicles/hooks/trailers";
+import { calculateFeeByDuration } from "../../permits/helpers/feeSummary";
+import { PermitReview } from "../../permits/pages/Application/components/review/PermitReview";
+import { Application } from "../../permits/types/application";
+import { DEFAULT_PERMIT_TYPE } from "../../permits/types/PermitType";
+import { useFetchSpecialAuthorizations } from "../../settings/hooks/specialAuthorizations";
+import { Nullable } from "../../../common/types/common";
+import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import {
-  applyWhenNotNullable,
-  getDefaultRequiredVal,
-} from "../../../common/helpers/util";
+  useApproveApplicationInQueueMutation,
+  useRejectApplicationInQueueMutation,
+} from "../hooks/hooks";
+
 import {
   APPLICATION_QUEUE_ROUTES,
   APPLICATION_STEPS,
   IDIR_ROUTES,
 } from "../../../routes/constants";
-import { useCompanyInfoDetailsQuery } from "../../manageProfile/apiManager/hooks";
-import { usePowerUnitSubTypesQuery } from "../../manageVehicles/hooks/powerUnits";
-import { useTrailerSubTypesQuery } from "../../manageVehicles/hooks/trailers";
-import { calculateFeeByDuration } from "../../permits/helpers/feeSummary";
-import { applyLCVToApplicationData } from "../../permits/helpers/getDefaultApplicationFormData";
-import { PermitReview } from "../../permits/pages/Application/components/review/PermitReview";
-import { Application } from "../../permits/types/application";
-import { DEFAULT_PERMIT_TYPE } from "../../permits/types/PermitType";
-import { useFetchSpecialAuthorizations } from "../../settings/hooks/specialAuthorizations";
-import { ReviewApplicationInQueueContext } from "../context/ReviewApplicationInQueueContext";
-import {
-  useApproveApplicationInQueueMutation,
-  useRejectApplicationInQueueMutation,
-} from "../hooks/hooks";
-import "./ApplicationInQueueReview.scss";
-import { QueueBreadcrumb } from "./QueueBreadcrumb";
-import { PERMIT_REVIEW_CONTEXTS } from "../../permits/types/PermitReviewContext";
 
-export const ApplicationInQueueReview = () => {
-  const { applicationData: applicationContextData } = useContext(
-    ReviewApplicationInQueueContext,
-  );
-
-  const companyId = applyWhenNotNullable(
-    (id) => `${id}`,
-    applicationContextData?.companyId,
-    0,
-  );
+export const ApplicationInQueueReview = ({
+  applicationData,
+}: {
+  applicationData?: Nullable<Application>;
+}) => {
+  const companyId = getDefaultRequiredVal(0, applicationData?.companyId);
 
   const { data: specialAuth } = useFetchSpecialAuthorizations(companyId);
-  const isLcvDesignated = Boolean(specialAuth?.isLcvAllowed);
   const isNoFeePermitType = Boolean(specialAuth?.noFeeType);
 
   const { data: companyInfo } = useCompanyInfoDetailsQuery(companyId);
   const doingBusinessAs = companyInfo?.alternateName;
-
-  const applicationData = applyLCVToApplicationData(
-    applicationContextData,
-    isLcvDesignated,
-  );
 
   const fee = isNoFeePermitType
     ? "0"
@@ -69,7 +57,7 @@ export const ApplicationInQueueReview = () => {
   const [isSubmitted] = useState(false);
 
   const handleEdit = () => {
-    navigate(APPLICATION_QUEUE_ROUTES.EDIT(applicationData?.applicationNumber));
+    navigate(APPLICATION_QUEUE_ROUTES.EDIT(companyId, applicationData?.permitId));
   };
 
   const isSuccess = (status?: number) => status === 201;
