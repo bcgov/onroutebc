@@ -528,9 +528,9 @@ export class PaymentService {
   }
 
   private validApplicationDates(application: Permit): boolean {
-    const today = dayjs().format('YYYY-MM-DD');
+    const today = dayjs(new Date()).format('YYYY-MM-DD');
     const { startDate, expiryDate } = application.permitData;
-    return startDate > today && expiryDate > today && startDate < expiryDate;
+    return startDate >= today && startDate <= expiryDate;
   }
 
   private validAmount(
