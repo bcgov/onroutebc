@@ -502,7 +502,7 @@ export class PaymentService {
     // Calculate and add amount for each requested application, as per the available backend data.
     for (const application of applications) {
       //Check if each application has a valid start date and valid expiry date.
-      if (isCVClientUser && !this.validDates(application))
+      if (isCVClientUser && !this.validApplicationDates(application))
         throw new UnprocessableEntityException(
           `Atleast one of the application has invalid startDate or expiryDate.`,
         );
@@ -527,7 +527,7 @@ export class PaymentService {
     return totalTransactionAmount;
   }
 
-  private validDates(application: Permit): boolean {
+  private validApplicationDates(application: Permit): boolean {
     const today = dayjs().format('YYYY-MM-DD');
     const { startDate, expiryDate } = application.permitData;
     return startDate > today && expiryDate > today && startDate < expiryDate;
