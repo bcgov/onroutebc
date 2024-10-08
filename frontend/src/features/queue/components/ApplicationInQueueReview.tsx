@@ -53,8 +53,9 @@ export const ApplicationInQueueReview = ({
   const methods = useForm<Application>();
 
   // For the confirmation checkboxes
-  const [isChecked, setIsChecked] = useState(false);
-  const [isSubmitted] = useState(false);
+  // For Applications in Queue review, confirmation checkboxes are checked and disabled by default
+  const [allConfirmed, setAllConfirmed] = useState(true);
+  const [hasAttemptedSubmission, setHasAttemptedSubmission] = useState(false);
 
   const handleEdit = () => {
     navigate(APPLICATION_QUEUE_ROUTES.EDIT(companyId, applicationData?.permitId));
@@ -69,6 +70,9 @@ export const ApplicationInQueueReview = ({
   } = useApproveApplicationInQueueMutation();
 
   const handleApprove = async (): Promise<void> => {
+    setHasAttemptedSubmission(true);
+    if (!allConfirmed) return;
+
     await approveApplication({
       applicationId: applicationData?.permitId,
       companyId,
@@ -88,6 +92,9 @@ export const ApplicationInQueueReview = ({
   } = useRejectApplicationInQueueMutation();
 
   const handleReject = async (): Promise<void> => {
+    setHasAttemptedSubmission(true);
+    if (!allConfirmed) return;
+    
     await rejectApplication({
       applicationId: applicationData?.permitId,
       companyId,
@@ -131,9 +138,9 @@ export const ApplicationInQueueReview = ({
           approveApplicationMutationPending={approveApplicationMutationPending}
           onReject={handleReject}
           rejectApplicationMutationPending={rejectApplicationMutationPending}
-          allChecked={isChecked}
-          setAllChecked={setIsChecked}
-          hasAttemptedCheckboxes={isSubmitted}
+          allConfirmed={allConfirmed}
+          setAllConfirmed={setAllConfirmed}
+          hasAttemptedCheckboxes={hasAttemptedSubmission}
           powerUnitSubTypes={powerUnitSubTypesQuery.data}
           trailerSubTypes={trailerSubTypesQuery.data}
           vehicleDetails={applicationData?.permitData?.vehicleDetails}

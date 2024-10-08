@@ -1,6 +1,5 @@
 import { Box } from "@mui/material";
 import { Dayjs } from "dayjs";
-import { Dispatch, SetStateAction } from "react";
 
 import "./PermitReview.scss";
 import { WarningBcGovBanner } from "../../../../../../common/components/banners/WarningBcGovBanner";
@@ -24,7 +23,7 @@ import {
 } from "../../../../types/PermitReviewContext";
 
 interface PermitReviewProps {
-  reviewContext?: Nullable<PermitReviewContext>;
+  reviewContext: PermitReviewContext;
   permitType?: Nullable<PermitType>;
   permitNumber?: Nullable<string>;
   applicationNumber?: Nullable<string>;
@@ -40,8 +39,8 @@ interface PermitReviewProps {
   isAmendAction: boolean;
   children?: React.ReactNode;
   hasAttemptedCheckboxes: boolean;
-  allChecked: boolean;
-  setAllChecked: Dispatch<SetStateAction<boolean>>;
+  allConfirmed: boolean;
+  setAllConfirmed: (confirmed: boolean) => void;
   powerUnitSubTypes?: Nullable<VehicleSubType[]>;
   trailerSubTypes?: Nullable<VehicleSubType[]>;
   vehicleDetails?: Nullable<PermitVehicleDetails>;
@@ -104,9 +103,9 @@ export const PermitReview = (props: PermitReviewProps) => {
         />
 
         <ReviewFeeSummary
-          isSubmitted={props.hasAttemptedCheckboxes}
-          isChecked={props.allChecked}
-          setIsChecked={props.setAllChecked}
+          hasAttemptedSubmission={props.hasAttemptedCheckboxes}
+          areAllConfirmed={props.allConfirmed}
+          setAreAllConfirmed={props.setAllConfirmed}
           permitType={props.permitType}
           fee={props.calculatedFee}
           reviewContext={props.reviewContext}

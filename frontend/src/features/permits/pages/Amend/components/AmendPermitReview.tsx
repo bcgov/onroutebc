@@ -56,12 +56,12 @@ export const AmendPermitReview = () => {
   const trailerSubTypesQuery = useTrailerSubTypesQuery();
 
   // For the confirmation checkboxes
-  const [isChecked, setIsChecked] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [allConfirmed, setAllConfirmed] = useState(false);
+  const [hasAttemptedSubmission, setHasAttemptedSubmission] = useState(false);
 
   const onSubmit = async () => {
-    setIsSubmitted(true);
-    if (!isChecked) return;
+    setHasAttemptedSubmission(true);
+    if (!allConfirmed) return;
 
     if (!amendmentApplication) {
       return navigate(ERROR_ROUTES.UNEXPECTED);
@@ -133,9 +133,9 @@ export const AmendPermitReview = () => {
         continueBtnText="Continue"
         onEdit={back}
         onContinue={onSubmit}
-        allChecked={isChecked}
-        setAllChecked={setIsChecked}
-        hasAttemptedCheckboxes={isSubmitted}
+        allConfirmed={allConfirmed}
+        setAllConfirmed={setAllConfirmed}
+        hasAttemptedCheckboxes={hasAttemptedSubmission}
         powerUnitSubTypes={powerUnitSubTypesQuery.data}
         trailerSubTypes={trailerSubTypesQuery.data}
         vehicleDetails={amendmentApplication?.permitData?.vehicleDetails}

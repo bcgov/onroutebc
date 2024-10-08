@@ -1,27 +1,26 @@
 import { Box, Typography } from "@mui/material";
-import { Dispatch, SetStateAction } from "react";
 
 import "./ReviewFeeSummary.scss";
 import { ConfirmationCheckboxes } from "./ConfirmationCheckboxes";
 import { FeeSummary } from "../../../../components/feeSummary/FeeSummary";
 import { PermitType } from "../../../../types/PermitType";
 import { Nullable } from "../../../../../../common/types/common";
-import { PermitReviewContext } from "../../../../types/PermitReviewContext";
+import { PERMIT_REVIEW_CONTEXTS, PermitReviewContext } from "../../../../types/PermitReviewContext";
 
 export const ReviewFeeSummary = ({
-  isSubmitted,
-  isChecked,
-  setIsChecked,
+  hasAttemptedSubmission,
+  areAllConfirmed,
+  setAreAllConfirmed,
   permitType,
   fee,
   reviewContext,
 }: {
-  isSubmitted: boolean;
-  isChecked: boolean;
-  setIsChecked: Dispatch<SetStateAction<boolean>>;
+  hasAttemptedSubmission: boolean;
+  areAllConfirmed: boolean;
+  setAreAllConfirmed: (allConfirmed: boolean) => void;
   permitType?: Nullable<PermitType>;
   fee: string;
-  reviewContext?: Nullable<PermitReviewContext>;
+  reviewContext: PermitReviewContext;
 }) => {
   return (
     <Box className="review-fee-summary">
@@ -33,10 +32,10 @@ export const ReviewFeeSummary = ({
           <FeeSummary permitType={permitType} feeSummary={fee} />
 
           <ConfirmationCheckboxes
-            isSubmitted={isSubmitted}
-            isChecked={isChecked}
-            setIsChecked={setIsChecked}
-            isDisabled={reviewContext === "QUEUE"}
+            hasAttemptedSubmission={hasAttemptedSubmission}
+            areAllChecked={areAllConfirmed}
+            setAreAllChecked={setAreAllConfirmed}
+            shouldDisableCheckboxes={reviewContext === PERMIT_REVIEW_CONTEXTS.QUEUE}
           />
         </Box>
       </Box>

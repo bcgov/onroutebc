@@ -67,8 +67,8 @@ export const ApplicationReview = () => {
   const methods = useForm<Application>();
 
   // For the confirmation checkboxes
-  const [isChecked, setIsChecked] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [allConfirmed, setAllConfirmed] = useState(false);
+  const [hasAttemptedSubmission, setHasAttemptedSubmission] = useState(false);
 
   // Send data to the backend API
   const saveApplicationMutation = useSaveApplicationMutation();
@@ -96,9 +96,9 @@ export const ApplicationReview = () => {
   };
 
   const handleAddToCart = async () => {
-    setIsSubmitted(true);
+    setHasAttemptedSubmission(true);
 
-    if (!isChecked) return;
+    if (!allConfirmed) return;
 
     const companyId = applicationData?.companyId;
     const permitId = applicationData?.permitId;
@@ -166,9 +166,9 @@ export const ApplicationReview = () => {
           contactDetails={applicationData?.permitData?.contactDetails}
           onEdit={back}
           onAddToCart={handleAddToCart}
-          allChecked={isChecked}
-          setAllChecked={setIsChecked}
-          hasAttemptedCheckboxes={isSubmitted}
+          allConfirmed={allConfirmed}
+          setAllConfirmed={setAllConfirmed}
+          hasAttemptedCheckboxes={hasAttemptedSubmission}
           powerUnitSubTypes={powerUnitSubTypesQuery.data}
           trailerSubTypes={trailerSubTypesQuery.data}
           vehicleDetails={applicationData?.permitData?.vehicleDetails}
