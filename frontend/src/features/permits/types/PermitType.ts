@@ -1,23 +1,7 @@
 import { Nullable } from "../../../common/types/common";
+import { getPermitCategory, getPermitCategoryName } from "./PermitCategory";
 
 export const PERMIT_TYPES = {
-  /* SINGLE TRIP */
-  // Single Trip Oversize
-  STOS: "STOS",
-  // Single Trip Oversize Overweight
-  STWS: "STWS",
-  // Single Trip Overweight / Increased GVW
-  // TODO are these the same thing?
-  STOW: "STOW",
-  // Extra Provincial Temp Operating Permit
-  EPTOP: "EPTOP",
-  // Empty - Single Trip Over Length 27.5
-  STOL: "STOL",
-  // Rig Move
-  RIG: "RIG",
-  // Motive Fuel User Permit
-  MFP: "MFP",
-
   /* TERM */
   // Term Oversize
   TROS: "TROS",
@@ -33,6 +17,23 @@ export const PERMIT_TYPES = {
   // TODO is this still a valid permit type?
   LCV: "LCV",
 
+  /* SINGLE TRIP */
+  // Extra Provincial Temp Operating Permit
+  EPTOP: "EPTOP",
+  // Single Trip Overweight / Increased GVW
+  // TODO are these the same thing?
+  STOW: "STOW",
+  // Single Trip Oversize
+  STOS: "STOS",
+  // Single Trip Oversize Overweight
+  STWS: "STWS",
+  // Empty - Single Trip Over Length 27.5
+  STOL: "STOL",
+  // Rig Move
+  RIG: "RIG",
+  // Increased GVW
+  IGVW: "IGVW",
+
   /* NON RESIDENT */
   // Quarterly ICBC Basic Insurance (FR)
   QRFR: "QRFR",
@@ -42,6 +43,9 @@ export const PERMIT_TYPES = {
   STFR: "STFR",
   // Single Trip Non-Resident
   NRSCV: "NRSCV",
+
+  /* MOTIVE FUEL USER PERMIT */
+  MFP: "MFP",
 } as const;
 
 export type PermitType = (typeof PERMIT_TYPES)[keyof typeof PERMIT_TYPES];
@@ -56,6 +60,18 @@ export const EMPTY_PERMIT_TYPE_SELECT = "Select";
  */
 export const getPermitTypeName = (permitType?: Nullable<string>) => {
   switch (permitType) {
+    /* TERM */
+    case PERMIT_TYPES.TROS:
+      return "Term Oversize";
+    case PERMIT_TYPES.TROW:
+      return "Term Overweight";
+    case PERMIT_TYPES.HC:
+      return "Highway Crossing";
+    case PERMIT_TYPES.TRAX:
+      return "Term Axle Overweight";
+    case PERMIT_TYPES.LCV:
+      return "Long Combination Vehicle";
+
     /* SINGLE TRIP */
     case PERMIT_TYPES.STOS:
       return "Single Trip Oversize";
@@ -69,20 +85,8 @@ export const getPermitTypeName = (permitType?: Nullable<string>) => {
       return "Single Trip Over Length";
     case PERMIT_TYPES.RIG:
       return "Rig Move";
-    case PERMIT_TYPES.MFP:
-      return "Motive Fuel User Permit";
-
-    /* TERM */
-    case PERMIT_TYPES.TROS:
-      return "Term Oversize";
-    case PERMIT_TYPES.TROW:
-      return "Term Overweight";
-    case PERMIT_TYPES.HC:
-      return "Highway Crossing";
-    case PERMIT_TYPES.TRAX:
-      return "Term Axle Overweight";
-    case PERMIT_TYPES.LCV:
-      return "Long Combination Vehicle";
+    case PERMIT_TYPES.IGVW:
+      return "Increased GVW";
 
     /* NON-RESIDENT */
     case PERMIT_TYPES.NRSCV:
@@ -93,6 +97,10 @@ export const getPermitTypeName = (permitType?: Nullable<string>) => {
       return "Quarterly ICBC Basic Insurance (FR)";
     case PERMIT_TYPES.STFR:
       return "Single Trip ICBC Basic Insurance (FR)";
+
+    /* MOTIVE FUEL USER PERMIT */
+    case PERMIT_TYPES.MFP:
+      return "Motive Fuel User Permit";
 
     default:
       return "";
@@ -106,22 +114,6 @@ export const getPermitTypeName = (permitType?: Nullable<string>) => {
  */
 export const getPermitTypeShortName = (permitType?: Nullable<string>) => {
   switch (permitType) {
-    /* SINGLE TRIP */
-    case PERMIT_TYPES.STOS:
-      return "Oversize";
-    case PERMIT_TYPES.STWS:
-      return "Oversize Overweight";
-    case PERMIT_TYPES.STOW:
-      return "Overweight";
-    case PERMIT_TYPES.EPTOP:
-      return "Extra-Provincial Temporary Operating";
-    case PERMIT_TYPES.STOL:
-      return "Over Length";
-    case PERMIT_TYPES.RIG:
-      return "Rig Move";
-    case PERMIT_TYPES.MFP:
-      return "Motive Fuel User Permit";
-
     /* TERM */
     case PERMIT_TYPES.TROS:
       return "Oversize";
@@ -134,6 +126,22 @@ export const getPermitTypeShortName = (permitType?: Nullable<string>) => {
     case PERMIT_TYPES.LCV:
       return "Long Combination Vehicle";
 
+    /* SINGLE TRIP */
+    case PERMIT_TYPES.EPTOP:
+      return "Extra-Provincial Temporary Operating Permit";
+    case PERMIT_TYPES.STOW:
+      return "Overweight";
+    case PERMIT_TYPES.STOS:
+      return "Oversize";
+    case PERMIT_TYPES.STWS:
+      return "Oversized Overweight";
+    case PERMIT_TYPES.STOL:
+      return "Empty - Length Over 27.5 m";
+    case PERMIT_TYPES.RIG:
+      return "Rig Move";
+    case PERMIT_TYPES.IGVW:
+      return "Increased GVW";
+
     /* NON RESIDENT */
     case PERMIT_TYPES.QRFR:
       return "Quarterly ICBC Basic Insurance (FR)";
@@ -143,59 +151,26 @@ export const getPermitTypeShortName = (permitType?: Nullable<string>) => {
       return "Single Trip ICBC Basic Insurance (FR)";
     case PERMIT_TYPES.NRSCV:
       return "Single Trip";
+
+    /* MOTIVE FUEL USER PERMIT */
+    case PERMIT_TYPES.MFP:
+      return "Motive Fuel User Permit";
+
     default:
       return "";
   }
 };
 
 /**
- * Gets display text for permit type.
+ * Gets formatted Permit Type name as "PermitCategory > PermitType". Used in the Select Permit Type dropdown
  * @param permitType Permit type (eg. TROS, STOS, etc)
- * @returns display text for the permit type
+ * @returns formatted display text for the permit category type
  */
-export const permitTypeDisplayText = (permitType?: Nullable<string>) => {
-  switch (permitType) {
-    /* SINGLE TRIP */
-    case PERMIT_TYPES.STOS:
-      return "Oversize: Single Trip";
-    case PERMIT_TYPES.STWS:
-      return "Oversize Overweight: Single Trip";
-    case PERMIT_TYPES.STOW:
-      return "Overweight: Single Trip";
-    case PERMIT_TYPES.EPTOP:
-      return "Extra-Provincial Temporary Operating: Single Trip";
-    case PERMIT_TYPES.STOL:
-      return "Over Length: Single Trip";
-    case PERMIT_TYPES.RIG:
-      return "Rig Move: Single Trip";
-    case PERMIT_TYPES.MFP:
-      return "Motive Fuel User Permit";
-
-    /* TERM */
-    case PERMIT_TYPES.TROS:
-      return "Oversize: Term";
-    case PERMIT_TYPES.TROW:
-      return "Overweight: Term";
-    case PERMIT_TYPES.HC:
-      return "Highway Crossing: Term";
-    case PERMIT_TYPES.TRAX:
-      return "Axle Overweight: Term";
-    case PERMIT_TYPES.LCV:
-      return "Long Combination Vehicle: Term";
-
-    /* NON RESIDENT */
-    case PERMIT_TYPES.NRSCV:
-      return "Single Trip: Non-Resident";
-    case PERMIT_TYPES.QNRBS:
-      return "Quarterly: Non-Resident";
-    case PERMIT_TYPES.QRFR:
-      return "Quarterly ICBC Basic Insurance (FR): Non-Resident";
-    case PERMIT_TYPES.STFR:
-      return "Single Trip ICBC Basic Insurance (FR): Non-Resident";
-
-    default:
-      return getPermitTypeName(permitType);
+export const getFormattedPermitTypeName = (permitType: PermitType) => {
+  if (permitType === PERMIT_TYPES.MFP) {
+    return getPermitTypeName(PERMIT_TYPES.MFP);
   }
+  return `${getPermitCategoryName(getPermitCategory(permitType))} > ${getPermitTypeShortName(permitType)}`;
 };
 
 /**

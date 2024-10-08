@@ -1,6 +1,6 @@
 @import "../../../../../../themes/orbcStyles.scss";
 
-$select-width: 240px;
+$select-width: 347px;
 
 .start-application-action {
   
@@ -16,24 +16,31 @@ $select-width: 240px;
   }
 
   & &__input {
-    display: inline-block;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     background-color: $white;
     padding: .5rem .75rem;
-    text-align: left;
-    text-overflow: ellipsis;
-    overflow: hidden;
     white-space: nowrap;
+    overflow: hidden;
     border: 2px solid;
     border-color: $bc-text-box-border-grey;
     color: $bc-black;
     margin-bottom: 0;
     width: $select-width;
+
     &:hover {
       background-color: $white;
     }
+
     &:active, &:focus {
       border-color: $border-blue;
       outline: none;
+    }
+
+
+    &--error {
+      border-color: $bc-red; 
     }
 
     &--open {
@@ -43,16 +50,34 @@ $select-width: 240px;
       // prevent input text shifting when menu is open
       padding-top: 6px;
     }
+
+  }
+   &__input-text {
+    text-align: left;
+    width: 40ch;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  & &__input-inner {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  &__input-tooltip {
+    max-width: fit-content;
   }
 
   &__menu-list {
-    padding: 0;
+    &.MuiList-root {
+      padding: 0;
+      
+      & > *:first-child {
+        border-top: 1px solid $bc-border-grey;
+      }
+    }
+  }
+
+  &__menu-item {
+    &.MuiButtonBase-root {
+      border-bottom: 1px solid $bc-border-grey;
+    }
   }
 
   &__menu-container {
@@ -77,9 +102,18 @@ $select-width: 240px;
   // NESTED MENUS
 
   &__nested-menu-list {
-    padding: 0;
+    &.MuiList-root {
+      padding: 0;
+    }
   }
-
+  
+  
+  &__nested-menu-item {
+    &.MuiButtonBase-root:not(:last-child) {
+      border-bottom: 1px solid $bc-border-grey;
+    }
+  }
+  
   &__nested-menu-container {
     &.MuiPaper-root {
       border-radius: 4px;
@@ -92,14 +126,19 @@ $select-width: 240px;
     }
   }
 
+  // SUBMIT BUTTON
+
   & &__btn {
     margin-left: 1.5rem;
     margin-bottom: 0;
     padding: 0 2rem;
     font-size: 1rem;
     font-weight: bold;
+  }
 
-    
+  &__error-msg {
+    position: absolute;
+    color: $bc-red
   }
 }
 
