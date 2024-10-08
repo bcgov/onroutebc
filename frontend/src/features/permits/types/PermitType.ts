@@ -20,8 +20,7 @@ export const PERMIT_TYPES = {
   /* SINGLE TRIP */
   // Extra Provincial Temp Operating Permit
   EPTOP: "EPTOP",
-  // Single Trip Overweight / Increased GVW
-  // TODO are these the same thing?
+  // Single Trip Overweight
   STOW: "STOW",
   // Single Trip Oversize
   STOS: "STOS",
