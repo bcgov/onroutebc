@@ -67,7 +67,7 @@ import {
   isFeatureEnabled,
 } from '../../../common/helper/common.helper';
 import { SpecialAuth } from 'src/modules/special-auth/entities/special-auth.entity';
-import dayjs from 'dayjs';
+import * as dayjs from 'dayjs';
 
 @Injectable()
 export class PaymentService {
@@ -528,10 +528,9 @@ export class PaymentService {
   }
 
   private validDates(application: Permit): boolean {
-    const today = dayjs().startOf('day').format('YYYY-MM-DD');
+    const today = dayjs().format('YYYY-MM-DD');
     const { startDate, expiryDate } = application.permitData;
-
-    return startDate < today || expiryDate < today || startDate > expiryDate;
+    return startDate > today && expiryDate > today && startDate < expiryDate;
   }
 
   private validAmount(
