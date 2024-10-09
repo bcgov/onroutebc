@@ -46,10 +46,11 @@ import { PermitHistoryDto } from '../permit/dto/response/permit-history.dto';
 import {
   calculatePermitAmount,
   permitFee,
+  validAmount,
 } from 'src/common/helper/permit-fee.helper';
 import { CfsTransactionDetail } from './entities/cfs-transaction.entity';
 import { CfsFileStatus } from 'src/common/enum/cfs-file-status.enum';
-import { isAmendmentApplication } from '../../../common/helper/permit-application.helper';
+import { isAmendmentApplication, validApplicationDates } from '../../../common/helper/permit-application.helper';
 import { isCfsPaymentMethodType } from 'src/common/helper/payment.helper';
 import { PgApprovesStatus } from 'src/common/enum/pg-approved-status-type.enum';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -67,7 +68,7 @@ import {
   isFeatureEnabled,
 } from '../../../common/helper/common.helper';
 import { SpecialAuth } from 'src/modules/special-auth/entities/special-auth.entity';
-import * as dayjs from 'dayjs';
+import { TIMEZONE_PACIFIC } from 'src/common/constants/permit.constant';
 
 @Injectable()
 export class PaymentService {
@@ -498,14 +499,17 @@ export class PaymentService {
     queryRunner: QueryRunner,
   ) {
     let totalTransactionAmountCalculated = 0;
+    const timezonePacific = TIMEZONE_PACIFIC;
     const isCVClientUser: boolean = isCVClient(currentUser.identity_provider);
     // Calculate and add amount for each requested application, as per the available backend data.
     for (const application of applications) {
       //Check if each application has a valid start date and valid expiry date.
-      if (isCVClientUser && !this.validApplicationDates(application))
+      if (isCVClientUser && !validApplicationDates(application, timezonePacific))
+      {
         throw new UnprocessableEntityException(
           `Atleast one of the application has invalid startDate or expiryDate.`,
         );
+      }
       totalTransactionAmountCalculated += await this.permitFeeCalculator(
         application,
         queryRunner,
@@ -517,7 +521,7 @@ export class PaymentService {
         0,
       );
     if (
-      !this.validAmount(
+      !validAmount(
         totalTransactionAmountCalculated,
         totalTransactionAmount,
         createTransactionDto.transactionTypeId,
@@ -527,32 +531,6 @@ export class PaymentService {
     return totalTransactionAmount;
   }
 
-  private validApplicationDates(application: Permit): boolean {
-    const timezonePacific = "America/Vancouver";
-    const todayUTC = dayjs(new Date());
-    const todayPacific = todayUTC.tz(timezonePacific).format("YYYY-MM-DD");
-    const { startDate, expiryDate } = application.permitData;
-    return startDate >= todayPacific && startDate <= expiryDate;
-  }
-
-  private validAmount(
-    calculatedAmount: number,
-    receivedAmount: number,
-    transactionType: TransactionType,
-  ): boolean {
-    const isAmountValid =
-      receivedAmount.toFixed(2) === Math.abs(calculatedAmount).toFixed(2);
-
-    // For refund transactions, ensure the calculated amount is negative.
-    const isRefundValid =
-      calculatedAmount < 0 && transactionType === TransactionType.REFUND;
-
-    // Return true if the amounts are valid or if it's a valid refund transaction
-    return (
-      isAmountValid &&
-      (isRefundValid || transactionType !== TransactionType.REFUND)
-    );
-  }
   @LogAsyncMethodExecution()
   async updateReceiptDocument(
     currentUser: IUserJWT,

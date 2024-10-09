@@ -52,6 +52,6 @@ export const isFeatureEnabled = async (
 
 export const isCVClient = (identityProvider: IDP): boolean => {
   return (
-    identityProvider != IDP.IDIR && identityProvider != IDP.SERVICE_ACCOUNT
+    identityProvider !== IDP.IDIR && identityProvider !== IDP.SERVICE_ACCOUNT
   );
 };
