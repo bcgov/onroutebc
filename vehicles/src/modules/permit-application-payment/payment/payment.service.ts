@@ -528,9 +528,11 @@ export class PaymentService {
   }
 
   private validApplicationDates(application: Permit): boolean {
-    const today = dayjs(new Date()).format('YYYY-MM-DD');
+    const timezonePacific = "America/Vancouver";
+    const todayUTC = dayjs(new Date());
+    const todayPacific = todayUTC.tz(timezonePacific).format("YYYY-MM-DD");
     const { startDate, expiryDate } = application.permitData;
-    return startDate >= today && startDate <= expiryDate;
+    return startDate >= todayPacific && startDate <= expiryDate;
   }
 
   private validAmount(
