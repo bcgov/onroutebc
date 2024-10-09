@@ -1,6 +1,6 @@
 {
   "name": "onroute-policy-engine",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Policy Engine library for commercial vehicle permitting",
   "main": "dist/index.js",
   "exports": {
