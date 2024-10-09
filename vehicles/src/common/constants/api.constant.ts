@@ -8,4 +8,4 @@ export const CRYPTO_ALGORITHM_MD5 = 'md5';
 export const CRYPTO_ALGORITHM_SHA256 = 'sha256';
 export const TOKEN_EXPIRY_BUFFER = 15;
 export const PERMISSIONS_KEY = 'permissions';
-export const GL_PROJ_CODE_PLACEHOLDER = 'PROJ';
+export const GL_PROJ_CODE_PLACEHOLDER = 'PROJECT';

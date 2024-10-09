@@ -122,7 +122,9 @@ export class PaymentService {
               CacheKey.PERMIT_TYPE_GL_CODE,
               permitType,
             )
-          ).replace(GL_PROJ_CODE_PLACEHOLDER, glProjCode),
+          )
+            ?.replace(GL_PROJ_CODE_PLACEHOLDER, glProjCode)
+            ?.trim(),
           amount: transactionAmount,
         }),
       ),
