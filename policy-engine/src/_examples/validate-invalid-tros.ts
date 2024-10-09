@@ -14,7 +14,7 @@ async function start() {
 
   // Set duration to 31 days (an invalid duration)
   validTros30Day.permitData.permitDuration = 31;
-  
+
   const validationResult2 = await policy.validate(validTros30Day);
   console.log(JSON.stringify(validationResult2, null, '   '));
 }
