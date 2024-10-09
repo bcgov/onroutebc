@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Box, Button } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
@@ -26,7 +27,8 @@ export const ReviewActions = ({
 }) => {
   return (
     <Box className="review-actions">
-      <Button
+      {/* TODO restore Edit button once edit application step is complete
+       <Button
         className="review-actions__btn review-actions__btn--edit"
         key="edit-application-button"
         aria-label="Edit"
@@ -39,7 +41,7 @@ export const ReviewActions = ({
           icon={faPencil}
         />
         Edit
-      </Button>
+      </Button> */}
 
       {hasToCartButton ? (
         <Button

@@ -40,6 +40,7 @@ export const ReviewApplicationInQueue = () => {
   if (!applicationData) {
     return <UniversalUnexpected />;
   }
+
   return (
     <div className="review-application-in-queue">
       <Box
