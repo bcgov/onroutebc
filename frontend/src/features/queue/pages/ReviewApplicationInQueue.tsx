@@ -1,30 +1,29 @@
 import { Box } from "@mui/material";
-import { useContext } from "react";
 import { Navigate, useParams } from "react-router-dom";
-
-import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
 import { Banner } from "../../../common/components/dashboard/components/banner/Banner";
 import { Loading } from "../../../common/pages/Loading";
-// import { UniversalUnauthorized } from "../../../common/pages/UniversalUnauthorized";
 import { useApplicationDetailsQuery } from "../../permits/hooks/hooks";
 import { ApplicationInQueueReview } from "../components/ApplicationInQueueReview";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../common/helpers/util";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../common/helpers/util";
 import { ERROR_ROUTES } from "../../../routes/constants";
+import { deserializeApplicationResponse } from "../../permits/helpers/deserializeApplication";
+import { UniversalUnexpected } from "../../../common/pages/UniversalUnexpected";
 
 export const ReviewApplicationInQueue = () => {
-  const { idirUserDetails } = useContext(OnRouteBCContext);
-  const {
-    companyId: companyIdParam,
-    permitId: permitIdParam,
-  } = useParams();
-  
-  const companyId: number = applyWhenNotNullable(id => Number(id), companyIdParam, 0);
+  const { companyId: companyIdParam, permitId: permitIdParam } = useParams();
+
+  const companyId: number = applyWhenNotNullable(
+    (id) => Number(id),
+    companyIdParam,
+    0,
+  );
   const permitId = getDefaultRequiredVal("", permitIdParam);
 
   const {
-    query: {
-      data: applicationData,
-    },
+    query: { data: applicationData, isLoading: applicationDataIsLoading },
   } = useApplicationDetailsQuery({
     companyId,
     permitId,
@@ -34,22 +33,13 @@ export const ReviewApplicationInQueue = () => {
     return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
   }
 
-  if (
-    typeof applicationData === "undefined" ||
-    typeof idirUserDetails === "undefined"
-  ) {
+  if (applicationDataIsLoading) {
     return <Loading />;
   }
-  
-  /*
-   * Find another way to authorize user, as application details doesn't have "claimedBy" field
-   *
-   * // If current user is not the claimant of the application, show unauthorized
-   * if (idirUserDetails.userName !== application?.claimedBy) {
-   *   return <UniversalUnauthorized />;
-   * }
-   */
 
+  if (!applicationData) {
+    return <UniversalUnexpected />;
+  }
   return (
     <div className="review-application-in-queue">
       <Box
@@ -61,8 +51,10 @@ export const ReviewApplicationInQueue = () => {
       >
         <Banner bannerText="Review and Confirm Details" />
       </Box>
-      
-      <ApplicationInQueueReview />
+
+      <ApplicationInQueueReview
+        applicationData={deserializeApplicationResponse(applicationData)}
+      />
     </div>
   );
 };

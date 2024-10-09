@@ -20,11 +20,7 @@ import {
   useRejectApplicationInQueueMutation,
 } from "../hooks/hooks";
 
-import {
-  APPLICATION_QUEUE_ROUTES,
-  APPLICATION_STEPS,
-  IDIR_ROUTES,
-} from "../../../routes/constants";
+import { APPLICATION_STEPS, IDIR_ROUTES } from "../../../routes/constants";
 
 export const ApplicationInQueueReview = ({
   applicationData,
@@ -58,7 +54,7 @@ export const ApplicationInQueueReview = ({
   const [hasAttemptedSubmission, setHasAttemptedSubmission] = useState(false);
 
   const handleEdit = () => {
-    navigate(APPLICATION_QUEUE_ROUTES.EDIT(companyId, applicationData?.permitId));
+    return;
   };
 
   const isSuccess = (status?: number) => status === 201;
@@ -94,7 +90,7 @@ export const ApplicationInQueueReview = ({
   const handleReject = async (): Promise<void> => {
     setHasAttemptedSubmission(true);
     if (!allConfirmed) return;
-    
+
     await rejectApplication({
       applicationId: applicationData?.permitId,
       companyId,

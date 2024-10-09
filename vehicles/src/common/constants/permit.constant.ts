@@ -11,4 +11,6 @@ export const TROW_MAX_VALID_DURATION = 366;
 
 export const PERMIT_TYPES_FOR_QUEUE: readonly PermitType[] = [
   PermitType.SINGLE_TRIP_OVERSIZE,
+  // TODO remove this
+  PermitType.TERM_OVERSIZE,
 ];

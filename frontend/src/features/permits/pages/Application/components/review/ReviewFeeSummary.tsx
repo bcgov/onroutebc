@@ -5,7 +5,10 @@ import { ConfirmationCheckboxes } from "./ConfirmationCheckboxes";
 import { FeeSummary } from "../../../../components/feeSummary/FeeSummary";
 import { PermitType } from "../../../../types/PermitType";
 import { Nullable } from "../../../../../../common/types/common";
-import { PERMIT_REVIEW_CONTEXTS, PermitReviewContext } from "../../../../types/PermitReviewContext";
+import {
+  PERMIT_REVIEW_CONTEXTS,
+  PermitReviewContext,
+} from "../../../../types/PermitReviewContext";
 
 export const ReviewFeeSummary = ({
   hasAttemptedSubmission,
@@ -35,7 +38,9 @@ export const ReviewFeeSummary = ({
             hasAttemptedSubmission={hasAttemptedSubmission}
             areAllChecked={areAllConfirmed}
             setAreAllChecked={setAreAllConfirmed}
-            shouldDisableCheckboxes={reviewContext === PERMIT_REVIEW_CONTEXTS.QUEUE}
+            shouldDisableCheckboxes={
+              reviewContext === PERMIT_REVIEW_CONTEXTS.QUEUE
+            }
           />
         </Box>
       </Box>
