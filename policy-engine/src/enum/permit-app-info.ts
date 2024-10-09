@@ -12,5 +12,5 @@ export enum PermitAppInfo {
   PermitDuration = '$.permitDuration',
   PowerUnitType = '$.vehicleDetails.vehicleSubType',
   TrailerList = '$.vehicleConfiguration.trailers',
-  Commodity = '$.permittedCommodity',
+  Commodity = '$.permittedCommodity.commodityType',
 }

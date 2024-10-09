@@ -35,6 +35,7 @@ import {
   PAYBC_PAYMENT_METHOD,
   PAYMENT_CURRENCY,
   CRYPTO_ALGORITHM_MD5,
+  GL_PROJ_CODE_PLACEHOLDER,
 } from '../../../common/constants/api.constant';
 import { convertToHash } from 'src/common/helper/crypto.helper';
 import { UpdatePaymentGatewayTransactionDto } from './dto/request/update-payment-gateway-transaction.dto';
@@ -106,15 +107,24 @@ export class PaymentService {
   private queryHash = async (transaction: Transaction) => {
     const redirectUrl = process.env.PAYBC_REDIRECT;
     const date = new Date().toISOString().split('T')[0];
+    const glProjCode = await getFromCache(
+      this.cacheManager,
+      CacheKey.PAYMENT_METHOD_TYPE_GL_PROJ_CODE,
+      transaction.paymentMethodTypeCode,
+    );
 
     const glCodeDetails = await Promise.all(
       transaction.permitTransactions.map(
         async ({ permit: { permitType }, transactionAmount }) => ({
-          glCode: await getFromCache(
-            this.cacheManager,
-            CacheKey.PERMIT_TYPE_GL_CODE,
-            permitType,
-          ),
+          glCode: (
+            await getFromCache(
+              this.cacheManager,
+              CacheKey.PERMIT_TYPE_GL_CODE,
+              permitType,
+            )
+          )
+            ?.replace(GL_PROJ_CODE_PLACEHOLDER, glProjCode)
+            ?.trim(),
           amount: transactionAmount,
         }),
       ),
