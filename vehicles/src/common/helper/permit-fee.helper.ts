@@ -200,3 +200,22 @@ export const calculatePermitAmount = (
 
   return amount;
 };
+
+export const validAmount = (
+  calculatedAmount: number,
+  receivedAmount: number,
+  transactionType: TransactionType,
+): boolean =>{
+  const isAmountValid =
+    receivedAmount.toFixed(2) === Math.abs(calculatedAmount).toFixed(2);
+
+  // For refund transactions, ensure the calculated amount is negative.
+  const isRefundValid =
+    calculatedAmount < 0 && transactionType === TransactionType.REFUND;
+
+  // Return true if the amounts are valid or if it's a valid refund transaction
+  return (
+    isAmountValid &&
+    (isRefundValid || transactionType !== TransactionType.REFUND)
+  );
+}
