@@ -784,6 +784,24 @@ export const completePolicyConfig: PolicyDefinition = {
             },
           },
         },
+        {
+          conditions: {
+            not: {
+              fact: 'permitData',
+              operator: 'stringMinimumLength',
+              value: 1,
+              path: '$.permittedCommodity.loadDescription',
+            },
+          },
+          event: {
+            type: 'violation',
+            params: {
+              message: 'Commodity load description is required',
+              code: 'field-validation-error',
+              fieldReference: 'permitData.permittedCommodity.loadDescription',
+            },
+          },
+        },
       ],
       costRules: [
         {
