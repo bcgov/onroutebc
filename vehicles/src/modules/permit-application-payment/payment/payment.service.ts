@@ -68,7 +68,7 @@ import {
   isFeatureEnabled,
 } from '../../../common/helper/common.helper';
 import { SpecialAuth } from 'src/modules/special-auth/entities/special-auth.entity';
-import { TIMEZONE_PACIFIC } from 'src/common/constants/permit.constant';
+import { TIMEZONE_PACIFIC } from 'src/common/constants/api.constant';
 
 @Injectable()
 export class PaymentService {
@@ -499,12 +499,11 @@ export class PaymentService {
     queryRunner: QueryRunner,
   ) {
     let totalTransactionAmountCalculated = 0;
-    const timezonePacific = TIMEZONE_PACIFIC;
     const isCVClientUser: boolean = isCVClient(currentUser.identity_provider);
     // Calculate and add amount for each requested application, as per the available backend data.
     for (const application of applications) {
       //Check if each application has a valid start date and valid expiry date.
-      if (isCVClientUser && !validApplicationDates(application, timezonePacific))
+      if (isCVClientUser && !validApplicationDates(application, TIMEZONE_PACIFIC))
       {
         throw new UnprocessableEntityException(
           `Atleast one of the application has invalid startDate or expiryDate.`,
