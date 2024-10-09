@@ -12,8 +12,10 @@
       color: $bc-red;
     }
     
-    &.Mui-disabled {
-      color: $disabled-colour;
+    &--checked {
+      &.confirmation-checkboxes__checkbox--disabled {
+        color: $disabled-colour;
+      }
     }
   }
 

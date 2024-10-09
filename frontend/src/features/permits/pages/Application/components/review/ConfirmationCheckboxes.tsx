@@ -32,7 +32,8 @@ export const ConfirmationCheckboxes = ({
     },
   ];
 
-  const [confirmationCheckboxes, setConfirmationCheckboxes] = useState(checkboxes);
+  const [confirmationCheckboxes, setConfirmationCheckboxes] =
+    useState(checkboxes);
 
   const handleCheck = (checkedName: string) => {
     if (shouldDisableCheckboxes) return;
@@ -46,11 +47,11 @@ export const ConfirmationCheckboxes = ({
           checked: !item.checked,
         };
       }
-      
+
       return item;
     });
     setConfirmationCheckboxes(updatedCheckboxes);
-    setAreAllChecked(!updatedCheckboxes.some(updated => !updated.checked));
+    setAreAllChecked(!updatedCheckboxes.some((updated) => !updated.checked));
   };
 
   return (
@@ -60,10 +61,7 @@ export const ConfirmationCheckboxes = ({
       </Typography>
 
       {confirmationCheckboxes.map(({ description, checked }) => (
-        <Box
-          key={description}
-          className="confirmation-checkboxes__attestation"
-        >
+        <Box key={description} className="confirmation-checkboxes__attestation">
           <Checkbox
             className={
               "confirmation-checkboxes__checkbox " +
@@ -73,6 +71,11 @@ export const ConfirmationCheckboxes = ({
                   : ""
               }`
             }
+            classes={{
+              root: "confirmation-checkboxes__checkbox",
+              disabled: "confirmation-checkboxes__checkbox--disabled",
+              checked: "confirmation-checkboxes__checkbox--checked",
+            }}
             key={description}
             checked={checked}
             disabled={shouldDisableCheckboxes}
