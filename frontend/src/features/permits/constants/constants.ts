@@ -32,25 +32,25 @@ export const termPermitList: PermitType[] = [
   PERMIT_TYPES.TROS,
   PERMIT_TYPES.TROW,
   /* TODO uncomment these as required */
-  // PERMIT_TYPES.HC,
-  // PERMIT_TYPES.TRAX,
-  // PERMIT_TYPES.LCV,
+  PERMIT_TYPES.HC,
+  PERMIT_TYPES.TRAX,
+  PERMIT_TYPES.LCV,
 ];
 
 export const singleTripPermitList: PermitType[] = [
+  PERMIT_TYPES.STOL,
+  PERMIT_TYPES.EPTOP,
+  PERMIT_TYPES.IGVW,
   PERMIT_TYPES.STOS,
   PERMIT_TYPES.STWS,
   PERMIT_TYPES.STOW,
-  PERMIT_TYPES.EPTOP,
-  PERMIT_TYPES.STOL,
   PERMIT_TYPES.RIG,
-  PERMIT_TYPES.IGVW,
 ];
 
 export const nonResidentPermitList: PermitType[] = [
-  PERMIT_TYPES.NRSCV,
   PERMIT_TYPES.QNRBS,
   PERMIT_TYPES.QRFR,
+  PERMIT_TYPES.NRSCV,
   PERMIT_TYPES.STFR,
 ];
 
@@ -64,26 +64,26 @@ export const ALL_PERMIT_TYPE_CHOOSE_FROM_OPTIONS: PermitTypeChooseFromItem[] = [
     })),
   },
   /* TODO uncomment these as required */
-  // {
-  //   value: PERMIT_CATEGORIES.SINGLE_TRIP,
-  //   label: getPermitCategoryName(PERMIT_CATEGORIES.SINGLE_TRIP),
-  //   items: singleTripPermitList.map((permitType: PermitType) => ({
-  //     value: permitType,
-  //     label: getPermitTypeShortName(permitType),
-  //   })),
-  // },
-  // {
-  //   value: PERMIT_CATEGORIES.NON_RESIDENT,
-  //   label: getPermitCategoryName(PERMIT_CATEGORIES.NON_RESIDENT),
-  //   items: nonResidentPermitList.map((permitType: PermitType) => ({
-  //     value: permitType,
-  //     label: getPermitTypeShortName(permitType),
-  //   })),
-  // },
-  // {
-  //   value: PERMIT_TYPES.MFP,
-  //   label: getPermitTypeShortName(PERMIT_TYPES.MFP),
-  // },
+  {
+    value: PERMIT_CATEGORIES.SINGLE_TRIP,
+    label: getPermitCategoryName(PERMIT_CATEGORIES.SINGLE_TRIP),
+    items: singleTripPermitList.map((permitType: PermitType) => ({
+      value: permitType,
+      label: getPermitTypeShortName(permitType),
+    })),
+  },
+  {
+    value: PERMIT_CATEGORIES.NON_RESIDENT,
+    label: getPermitCategoryName(PERMIT_CATEGORIES.NON_RESIDENT),
+    items: nonResidentPermitList.map((permitType: PermitType) => ({
+      value: permitType,
+      label: getPermitTypeShortName(permitType),
+    })),
+  },
+  {
+    value: PERMIT_TYPES.MFP,
+    label: getPermitTypeShortName(PERMIT_TYPES.MFP),
+  },
 ];
 
 export interface PermitTypeChooseFromItem {

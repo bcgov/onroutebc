@@ -68,7 +68,7 @@ $select-width: 347px;
     &.MuiList-root {
       padding: 0;
       
-      & > *:first-child {
+      & > * {
         border-top: 1px solid $bc-border-grey;
       }
     }
@@ -102,8 +102,9 @@ $select-width: 347px;
   // NESTED MENUS
 
   &__nested-menu-list {
-    &.MuiList-root {
+    &.MuiList-root.MuiMenu-list {
       padding: 0;
+      max-height: none ;
     }
   }
   
