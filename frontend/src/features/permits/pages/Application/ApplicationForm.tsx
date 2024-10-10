@@ -57,11 +57,11 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
   const companyInfo = companyInfoQuery.data;
 
   // Company id should be set by context, otherwise default to companyId in session and then the fetched companyId
-  const companyId = getDefaultRequiredVal(
-    "",
-    applyWhenNotNullable((id) => `${id}`, companyIdFromContext),
-    getCompanyIdFromSession(),
-    applyWhenNotNullable((id) => `${id}`, companyInfo?.companyId),
+  const companyId: number = getDefaultRequiredVal(
+    0,
+    companyIdFromContext,
+    applyWhenNotNullable(id => Number(id), getCompanyIdFromSession()),
+    companyInfo?.companyId,
   );
 
   const { data: specialAuthorizations } = useFetchSpecialAuthorizations(companyId);
@@ -206,7 +206,10 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     );
 
     const { application: savedApplication, status } =
-      await saveApplicationMutation.mutateAsync(applicationToBeSaved);
+      await saveApplicationMutation.mutateAsync({
+        data: applicationToBeSaved,
+        companyId,
+      });
 
     if (savedApplication) {
       const savedPermitId = onSaveSuccess(savedApplication, status);

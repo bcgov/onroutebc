@@ -15,7 +15,6 @@ import {
   getDefaultNullableVal,
   getDefaultRequiredVal,
 } from "../../../../common/helpers/util";
-import { useApplicationsInQueueQuery } from "../../hooks/hooks";
 import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
 import {
   defaultTableInitialStateOptions,
@@ -25,7 +24,8 @@ import {
 import { BANNER_MESSAGES } from "../../../../common/constants/bannerMessages";
 import { MRT_Row } from "material-react-table";
 import { ApplicationsInReviewRowOptions } from "./ApplicationsInReviewRowOptions";
-import { APPLICATION_QUEUE_STATUSES } from "../../types/ApplicationQueueStatus";
+import { APPLICATION_QUEUE_STATUSES } from "../../../queue/types/ApplicationQueueStatus";
+import { useApplicationsInQueueQuery } from "../../../queue/hooks/hooks";
 
 export const ApplicationsInReviewList = () => {
   const {
@@ -43,14 +43,14 @@ export const ApplicationsInReviewList = () => {
     isFetching,
   } = applicationsInQueueQuery;
 
-  const [showAIRTable, setShowAIRTable] = useState<boolean>(false);
+  const [showTable, setShowTable] = useState<boolean>(false);
 
   useEffect(() => {
     const totalCount = getDefaultRequiredVal(
       0,
       applicationsInQueue?.meta?.totalItems,
     );
-    setShowAIRTable(totalCount > 0);
+    setShowTable(totalCount > 0);
   }, [applicationsInQueue?.meta?.totalItems]);
 
   const { idirUserDetails, userDetails } = useContext(OnRouteBCContext);
@@ -149,7 +149,7 @@ export const ApplicationsInReviewList = () => {
 
   return (
     <>
-      {showAIRTable ? (
+      {showTable ? (
         <div className="applications-in-review-list table-container">
           <InfoBcGovBanner
             className="applications-in-review-banner"

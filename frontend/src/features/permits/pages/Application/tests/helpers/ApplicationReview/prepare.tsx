@@ -98,7 +98,7 @@ const server = setupServer(
   ),
 
   http.put(
-    `${APPLICATIONS_API_ROUTES.UPDATE(companyInfo.companyId.toString())}/:id`,
+    APPLICATIONS_API_ROUTES.UPDATE(companyInfo.companyId.toString(), ":id"),
     async ({ request, params }) => {
       const { id } = params;
       const reqBody = await request.json();

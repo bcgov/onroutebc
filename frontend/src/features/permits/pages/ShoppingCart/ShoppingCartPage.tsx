@@ -2,6 +2,7 @@ import { Box } from "@mui/material";
 import { useContext, useEffect } from "react";
 import { useSearchParams, useNavigate, Navigate } from "react-router-dom";
 import { FormProvider, useForm } from "react-hook-form";
+
 import "./ShoppingCartPage.scss";
 import { ApplicationContext } from "../../context/ApplicationContext";
 import { isZeroAmount } from "../../helpers/feeSummary";
@@ -9,12 +10,23 @@ import { PermitPayFeeSummary } from "../Application/components/pay/PermitPayFeeS
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { useIssuePermits, useStartTransaction } from "../../hooks/hooks";
 import { TRANSACTION_TYPES } from "../../types/payment";
+import { PaymentFailedBanner } from "../Application/components/pay/PaymentFailedBanner";
+import { ChoosePaymentMethod } from "../Application/components/pay/ChoosePaymentMethod";
+import { hasPermitsActionFailed } from "../../helpers/permitState";
+import { ShoppingCart } from "./components/ShoppingCart";
+import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
+import { useShoppingCart } from "./hooks/useShoppingCart";
+import { useCheckOutdatedCart } from "./hooks/useCheckOutdatedCart";
+import { EditCartItemDialog } from "../../components/cart/EditCartItemDialog";
+import { UpdateCartDialog } from "../../components/cart/UpdateCartDialog";
+import { BCeID_USER_ROLE } from "../../../../common/authentication/types";
+import { Loading } from "../../../../common/pages/Loading";
+import { CVPayInPersonInfo } from "../Application/components/pay/CVPayInPersonInfo";
 import {
   PAYMENT_METHOD_TYPE_CODE,
   PaymentCardTypeCode,
 } from "../../../../common/types/paymentMethods";
-import { PaymentFailedBanner } from "../Application/components/pay/PaymentFailedBanner";
-import { ChoosePaymentMethod } from "../Application/components/pay/ChoosePaymentMethod";
+
 import {
   DEFAULT_EMPTY_CARD_TYPE,
   DEFAULT_EMPTY_PAYMENT_TYPE,
@@ -26,14 +38,7 @@ import {
   isCashOrCheque,
   PaymentMethodData,
 } from "../Application/components/pay/types/PaymentMethodData";
-import { hasPermitsActionFailed } from "../../helpers/permitState";
-import { ShoppingCart } from "./components/ShoppingCart";
-import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
-import { useShoppingCart } from "./hooks/useShoppingCart";
-import { useCheckOutdatedCart } from "./hooks/useCheckOutdatedCart";
-import { EditCartItemDialog } from "../../components/cart/EditCartItemDialog";
-import { UpdateCartDialog } from "../../components/cart/UpdateCartDialog";
-import { BCeID_USER_ROLE } from "../../../../common/authentication/types";
+
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -45,8 +50,7 @@ import {
   PERMITS_ROUTES,
   SHOPPING_CART_ROUTES,
 } from "../../../../routes/constants";
-import { Loading } from "../../../../common/pages/Loading";
-import { CVPayInPersonInfo } from "../Application/components/pay/CVPayInPersonInfo";
+
 import {
   TOLL_FREE_NUMBER,
   PPC_EMAIL,
@@ -65,7 +69,7 @@ export const ShoppingCartPage = () => {
   const navigate = useNavigate();
   const { applicationData } = useContext(ApplicationContext);
   const { idirUserDetails, userDetails } = useContext(OnRouteBCContext);
-  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
+  const companyId: number = applyWhenNotNullable(id => Number(id), getCompanyIdFromSession(), 0);
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userRole);
   const isCompanyAdmin = Boolean(
     userDetails?.userRole === BCeID_USER_ROLE.COMPANY_ADMINISTRATOR,
@@ -109,7 +113,7 @@ export const ShoppingCartPage = () => {
     fetchStatusFor,
     setShowEditCartItemDialog,
     setShowUpdateCartDialog,
-  } = useCheckOutdatedCart(showAllApplications, cartItems);
+  } = useCheckOutdatedCart(companyId, showAllApplications, cartItems);
 
   const { mutation: startTransactionMutation, transaction } =
     useStartTransaction();
@@ -150,7 +154,10 @@ export const ShoppingCartPage = () => {
       } else if (isFeeZero || isStaffActingAsCompany) {
         // If purchase was for no-fee permits, or if staff payment transaction was created successfully,
         // simply proceed to issue permits
-        issuePermitMutation.mutate([...selectedIds]);
+        issuePermitMutation.mutate({
+          companyId,
+          applicationIds: [...selectedIds],
+        });
 
         // also update the cart and cart count
         cartQuery.refetch();
@@ -166,7 +173,7 @@ export const ShoppingCartPage = () => {
         }
       }
     }
-  }, [transaction, isStaffActingAsCompany, isFeeZero]);
+  }, [transaction, isStaffActingAsCompany, isFeeZero, companyId]);
 
   useEffect(() => {
     const issueFailed = hasPermitsActionFailed(issueResults);

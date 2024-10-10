@@ -25,7 +25,7 @@ import {
   VehicleType,
 } from "../../manageVehicles/types/Vehicle";
 
-export const usePermitVehicleManagement = (companyId: string) => {
+export const usePermitVehicleManagement = (companyId: number) => {
   // Mutations used to add/update vehicle details
   const addPowerUnitMutation = useAddPowerUnitMutation();
   const updatePowerUnitMutation = useUpdatePowerUnitMutation();

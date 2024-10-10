@@ -2,6 +2,7 @@ import { Controller, FormProvider } from "react-hook-form";
 import isEmail from "validator/lib/isEmail";
 import { Button, FormControl, FormHelperText } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
 import "./VoidPermitForm.scss";
 import { useVoidPermitForm } from "../hooks/useVoidPermitForm";
@@ -47,13 +48,19 @@ export const VoidPermitForm = ({
     useVoidPermitForm();
 
   const { mutation: revokePermitMutation, voidResults } = useVoidPermit();
+  const { companyId: companyIdParam } = useParams();
+
+  const companyId: number = getDefaultRequiredVal(
+    0,
+    permit?.companyId,
+    applyWhenNotNullable(id => Number(id), companyIdParam),
+  );
+
+  const originalPermitId = getDefaultRequiredVal("", permit?.originalPermitId);
 
   const { data: permitHistory } = usePermitHistoryQuery(
-    permit?.originalPermitId,
-    applyWhenNotNullable(
-      id => `${id}`,
-      permit?.companyId,
-    ),
+    companyId,
+    originalPermitId,
   );
 
   const transactionHistory = getDefaultRequiredVal([], permitHistory)

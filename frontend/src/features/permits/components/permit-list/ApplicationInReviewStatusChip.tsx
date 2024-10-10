@@ -4,7 +4,7 @@ import { OnRouteBCChip } from "../../../../common/components/chip/OnRouteBCChip"
 import {
   APPLICATION_QUEUE_STATUSES,
   ApplicationQueueStatus,
-} from "../../types/ApplicationQueueStatus";
+} from "../../../queue/types/ApplicationQueueStatus";
 
 /**
  * Returns the theme name for the chip based on the permit status.
