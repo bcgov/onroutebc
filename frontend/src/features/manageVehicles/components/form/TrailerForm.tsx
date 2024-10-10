@@ -36,7 +36,7 @@ export const TrailerForm = ({
   companyId,
   trailer,
 }: {
-  companyId: string;
+  companyId: number;
   trailer?: Trailer;
 }) => {
   const isEditMode = Boolean(trailer?.trailerId);

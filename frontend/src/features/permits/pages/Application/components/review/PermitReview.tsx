@@ -1,6 +1,5 @@
 import { Box } from "@mui/material";
 import { Dayjs } from "dayjs";
-import { Dispatch, SetStateAction } from "react";
 
 import "./PermitReview.scss";
 import { WarningBcGovBanner } from "../../../../../../common/components/banners/WarningBcGovBanner";
@@ -18,8 +17,13 @@ import { PermitContactDetails } from "../../../../types/PermitContactDetails";
 import { PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
 import { Application } from "../../../../types/application";
 import { PermitCondition } from "../../../../types/PermitCondition";
+import {
+  PERMIT_REVIEW_CONTEXTS,
+  PermitReviewContext,
+} from "../../../../types/PermitReviewContext";
 
 interface PermitReviewProps {
+  reviewContext: PermitReviewContext;
   permitType?: Nullable<PermitType>;
   permitNumber?: Nullable<string>;
   applicationNumber?: Nullable<string>;
@@ -35,8 +39,8 @@ interface PermitReviewProps {
   isAmendAction: boolean;
   children?: React.ReactNode;
   hasAttemptedCheckboxes: boolean;
-  allChecked: boolean;
-  setAllChecked: Dispatch<SetStateAction<boolean>>;
+  allConfirmed: boolean;
+  setAllConfirmed: (confirmed: boolean) => void;
   powerUnitSubTypes?: Nullable<VehicleSubType[]>;
   trailerSubTypes?: Nullable<VehicleSubType[]>;
   vehicleDetails?: Nullable<PermitVehicleDetails>;
@@ -44,6 +48,10 @@ interface PermitReviewProps {
   onEdit: () => void;
   onContinue?: () => Promise<void>;
   onAddToCart?: () => Promise<void>;
+  onApprove?: () => Promise<void>;
+  approveApplicationMutationPending?: boolean;
+  onReject?: () => Promise<void>;
+  rejectApplicationMutationPending?: boolean;
   showChangedFields?: boolean;
   oldFields?: Nullable<Partial<Application>>;
   calculatedFee: string;
@@ -95,11 +103,12 @@ export const PermitReview = (props: PermitReviewProps) => {
         />
 
         <ReviewFeeSummary
-          isSubmitted={props.hasAttemptedCheckboxes}
-          isChecked={props.allChecked}
-          setIsChecked={props.setAllChecked}
+          hasAttemptedSubmission={props.hasAttemptedCheckboxes}
+          areAllConfirmed={props.allConfirmed}
+          setAreAllConfirmed={props.setAllConfirmed}
           permitType={props.permitType}
           fee={props.calculatedFee}
+          reviewContext={props.reviewContext}
         />
 
         {props.children}
@@ -108,8 +117,16 @@ export const PermitReview = (props: PermitReviewProps) => {
           onEdit={props.onEdit}
           continueBtnText={props.continueBtnText}
           onContinue={props.onContinue}
-          hasToCartButton={!props.isAmendAction}
+          hasToCartButton={props.reviewContext === PERMIT_REVIEW_CONTEXTS.APPLY}
           onAddToCart={props.onAddToCart}
+          onApprove={props.onApprove}
+          approveApplicationMutationPending={
+            props.approveApplicationMutationPending
+          }
+          onReject={props.onReject}
+          rejectApplicationMutationPending={
+            props.rejectApplicationMutationPending
+          }
         />
       </Box>
     </Box>
