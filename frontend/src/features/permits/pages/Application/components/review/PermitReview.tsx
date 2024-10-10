@@ -127,6 +127,7 @@ export const PermitReview = (props: PermitReviewProps) => {
           rejectApplicationMutationPending={
             props.rejectApplicationMutationPending
           }
+          reviewContext={props.reviewContext}
         />
       </Box>
     </Box>
