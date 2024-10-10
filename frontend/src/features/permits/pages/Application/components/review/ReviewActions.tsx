@@ -1,8 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Box, Button } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import "./ReviewActions.scss";
+import {
+  PERMIT_REVIEW_CONTEXTS,
+  PermitReviewContext,
+} from "../../../../types/PermitReviewContext";
 
 export const ReviewActions = ({
   onEdit,
@@ -14,6 +17,7 @@ export const ReviewActions = ({
   approveApplicationMutationPending,
   onReject,
   rejectApplicationMutationPending,
+  reviewContext,
 }: {
   onEdit: () => void;
   continueBtnText?: string;
@@ -24,24 +28,29 @@ export const ReviewActions = ({
   approveApplicationMutationPending?: boolean;
   onReject?: () => Promise<void>;
   rejectApplicationMutationPending?: boolean;
+  reviewContext: PermitReviewContext;
 }) => {
   return (
     <Box className="review-actions">
-      {/* TODO restore Edit button once edit application step is complete
-       <Button
-        className="review-actions__btn review-actions__btn--edit"
-        key="edit-application-button"
-        aria-label="Edit"
-        variant="contained"
-        color="tertiary"
-        onClick={onEdit}
-      >
-        <FontAwesomeIcon
-          className="button-icon button-icon--edit"
-          icon={faPencil}
-        />
-        Edit
-      </Button> */}
+      {
+        // hide edit button until edit application in queue feature is complete
+        reviewContext !== PERMIT_REVIEW_CONTEXTS.QUEUE && (
+          <Button
+            className="review-actions__btn review-actions__btn--edit"
+            key="edit-application-button"
+            aria-label="Edit"
+            variant="contained"
+            color="tertiary"
+            onClick={onEdit}
+          >
+            <FontAwesomeIcon
+              className="button-icon button-icon--edit"
+              icon={faPencil}
+            />
+            Edit
+          </Button>
+        )
+      }
 
       {hasToCartButton ? (
         <Button
