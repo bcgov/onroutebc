@@ -10,9 +10,13 @@ import {
   TROS_TERM,
   TROW_MAX_VALID_DURATION,
   TROW_MIN_VALID_DURATION,
+  TROW_PRICE_PER_TERM,
+  TROW_TERM,
 } from '../constants/permit.constant';
 import { differenceBetween } from './date-time.helper';
 import * as dayjs from 'dayjs';
+import { ApplicationStatus } from '../enum/application-status.enum';
+import { Nullable } from '../types/common';
 
 /**
  * Calculates the permit fee based on the application and old amount.
@@ -22,13 +26,12 @@ import * as dayjs from 'dayjs';
  * @throws {NotAcceptableException} If the duration is invalid for TROS permit type.
  * @throws {BadRequestException} If the permit type is not recognized.
  */
-export const permitFee = (application: Permit, oldAmount: number): number => {
-  let duration =
-    differenceBetween(
-      application.permitData.startDate,
-      application.permitData.expiryDate,
-    ) + 1;
-
+export const permitFee = (
+  application: Permit,
+  isNoFee?: Nullable<boolean>,
+  oldAmount?: Nullable<number>,
+): number => {
+  let duration = calculateDuration(application);
   switch (application.permitType) {
     case PermitType.TERM_OVERSIZE: {
       const validDuration = isValidDuration(
@@ -56,6 +59,8 @@ export const permitFee = (application: Permit, oldAmount: number): number => {
         TROS_PRICE_PER_TERM,
         TROS_TERM,
         oldAmount,
+        application.permitStatus,
+        isNoFee,
       );
     }
     case PermitType.TERM_OVERWEIGHT: {
@@ -81,9 +86,11 @@ export const permitFee = (application: Permit, oldAmount: number): number => {
         duration = 360;
       return currentPermitFee(
         duration,
-        TROS_PRICE_PER_TERM,
-        TROS_TERM,
+        TROW_PRICE_PER_TERM,
+        TROW_TERM,
         oldAmount,
+        application.permitStatus,
+        isNoFee,
       );
     }
     default:
@@ -95,6 +102,24 @@ export const permitFee = (application: Permit, oldAmount: number): number => {
 
 export const yearlyPermit = (duration: number): boolean => {
   return duration <= 365 && duration >= 361;
+};
+
+export const calculateDuration = (application: Permit): number => {
+  let startDate = application.permitData.startDate;
+  const endDate = application.permitData.expiryDate;
+  const today = dayjs(new Date()).format('YYYY-MM-DD');
+  if (
+    application.permitStatus === ApplicationStatus.VOIDED &&
+    startDate < today
+  )
+    startDate = today;
+  if (
+    application.permitStatus === ApplicationStatus.VOIDED &&
+    today === startDate
+  )
+    startDate = dayjs(today).add(1, 'day').format('YYYY-MM-DD');
+  const duration = differenceBetween(startDate, endDate) + 1;
+  return duration;
 };
 
 export const leapYear = (
@@ -129,9 +154,25 @@ export const currentPermitFee = (
   duration: number,
   pricePerTerm: number,
   allowedPermitTerm: number,
-  oldAmount: number,
+  oldAmount?: Nullable<number>,
+  permitStatus?: Nullable<ApplicationStatus>,
+  isNoFee?: Nullable<boolean>,
 ): number => {
-  const permitTerms = Math.ceil(duration / allowedPermitTerm);
+  // Calculate the number of permit terms based on the duration
+  const permitTerms =
+    permitStatus === ApplicationStatus.VOIDED
+      ? Math.floor(duration / allowedPermitTerm)
+      : Math.ceil(duration / allowedPermitTerm);
+
+  // Special fee calculation for void permit
+  if (permitStatus === ApplicationStatus.VOIDED) {
+    // If the permit status is voided, return a refund of 0 for permit with no fees, or return the applicable refund amount
+    return oldAmount === 0 ? 0 : -pricePerTerm * permitTerms;
+  }
+  // For non void new application (exclude amendment application), if no fee applies, set the price per term to 0 for new application
+  if ((isNoFee && oldAmount === undefined) || oldAmount === 0) return 0;
+  if (oldAmount === undefined) oldAmount = 0;
+  // Calculate fee for non void permit.
   return oldAmount > 0
     ? pricePerTerm * permitTerms - oldAmount
     : pricePerTerm * permitTerms + oldAmount;
@@ -159,3 +200,22 @@ export const calculatePermitAmount = (
 
   return amount;
 };
+
+export const validAmount = (
+  calculatedAmount: number,
+  receivedAmount: number,
+  transactionType: TransactionType,
+): boolean =>{
+  const isAmountValid =
+    receivedAmount.toFixed(2) === Math.abs(calculatedAmount).toFixed(2);
+
+  // For refund transactions, ensure the calculated amount is negative.
+  const isRefundValid =
+    calculatedAmount < 0 && transactionType === TransactionType.REFUND;
+
+  // Return true if the amounts are valid or if it's a valid refund transaction
+  return (
+    isAmountValid &&
+    (isRefundValid || transactionType !== TransactionType.REFUND)
+  );
+}

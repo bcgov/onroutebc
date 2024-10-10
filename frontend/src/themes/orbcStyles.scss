@@ -10,6 +10,7 @@ $banner-grey: #ebeef3;
 $bc-background-blue: #38598a;
 $bc-background-blue-grey: #f4f5f8;
 $bc-background-light-grey: #f2f2f2;
+$bc-background-secondary-grey: #e6e6e6;
 $bc-black: #313132;
 $bc-border-grey: #dbdcdc;
 $bc-brown: #6c4a00;
@@ -27,6 +28,7 @@ $bc-messages-red-text: #a12722;
 $bc-text-links-blue: #1a5a96;
 $bc-primary-blue: #003366;
 $bc-red: #d8292f;
+$bc-red-disabled: #ebc0c1;
 $bc-text-box-border-grey: #b2b5b6;
 $bc-white: #ffffff;
 $black: #000000;
@@ -36,6 +38,9 @@ $disabled-colour: #b5c0cf;
 $focus-blue: #3b99fc;
 $shadow-colour: #00000029;
 $white: #ffffff;
+
+// Shadows
+$bc-shadow: 0 0 0.5rem #00000029;
 
 // Mixins
 @mixin form-layout($form-container-class) {

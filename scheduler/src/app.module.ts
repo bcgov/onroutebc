@@ -7,11 +7,12 @@ import * as path from 'path';
 import { TpsPermitModule } from './modules/tps-permit/tps-permit.module';
 import { FeatureFlagsModule } from './modules/feature-flags/feature-flags.module';
 import { ScheduleModule } from '@nestjs/schedule';
-import { TypeormCustomLogger } from './logger/typeorm-logger.config';
-import { getTypeormLogLevel } from './helper/logger.helper';
+import { TypeormCustomLogger } from './common/logger/typeorm-logger.config';
+import { getTypeormLogLevel } from './common/helper/logger.helper';
 import { CacheModule } from '@nestjs/cache-manager';
 import { CgiSftpModule } from './modules/cgi-sftp/cgi-sftp.module';
 import { TransactionModule } from './modules/transactions/transaction.module';
+import { PermitModule } from './modules/permit/permit.module';
 // import { MyService } from './helper/myservice';
 // import { DatabaseModule } from './modules/database/database.module';
 
@@ -35,9 +36,9 @@ const envPath = path.resolve(process.cwd() + '/../');
       autoLoadEntities: true, // Auto load all entities regiestered by typeorm forFeature method.
       synchronize: false, // This changes the DB schema to match changes to entities, which we might not want.
       maxQueryExecutionTime:
-        +process.env.TPS_API_MAX_QUERY_EXECUTION_TIME_MS || 5000, //5 seconds by default
+        +process.env.SCHEDULER_API_MAX_QUERY_EXECUTION_TIME_MS || 5000, //5 seconds by default
       logger: new TypeormCustomLogger(
-        getTypeormLogLevel(process.env.TPS_API_TYPEORM_LOG_LEVEL),
+        getTypeormLogLevel(process.env.SCHEDULER_API_TYPEORM_LOG_LEVEL),
       ),
     }),
     CacheModule.register({
@@ -50,6 +51,7 @@ const envPath = path.resolve(process.cwd() + '/../');
     FeatureFlagsModule,
     CgiSftpModule,
     TransactionModule,
+    PermitModule,
   ],
   controllers: [AppController],
   providers: [AppService],

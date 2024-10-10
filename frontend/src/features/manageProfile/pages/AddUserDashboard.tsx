@@ -27,7 +27,7 @@ import {
 } from "../types/manageProfile.d";
 import { PROFILE_ROUTES } from "../../../routes/constants";
 import { CustomActionLink } from "../../../common/components/links/CustomActionLink";
-import { BCeID_USER_AUTH_GROUP } from "../../../common/authentication/types";
+import { BCeID_USER_ROLE } from "../../../common/authentication/types";
 
 /**
  * BCeID User - Add User Page.
@@ -39,7 +39,7 @@ export const AddUserDashboard = React.memo(() => {
 
   const formMethods = useForm<BCeIDAddUserRequest>({
     defaultValues: {
-      userAuthGroup: BCeID_USER_AUTH_GROUP.PERMIT_APPLICANT,
+      userRole: BCeID_USER_ROLE.PERMIT_APPLICANT,
     },
     reValidateMode: "onBlur",
   });
@@ -135,7 +135,7 @@ export const AddUserDashboard = React.memo(() => {
             textDecoration: "underline",
           }}
         >
-          User Management
+          Add / Manage Users
         </Typography>
 
         <FontAwesomeIcon className="breadcrumb-icon" icon={faChevronRight} />
@@ -185,7 +185,7 @@ export const AddUserDashboard = React.memo(() => {
             </Stack>
             <Stack spacing={2}>
               <Controller
-                name="userAuthGroup"
+                name="userRole"
                 rules={{
                   required: { value: true, message: requiredMessage() },
                 }}

@@ -1,15 +1,14 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { LogAsyncMethodExecution } from './decorator/log-async-method-execution.decorator';
-import { CacheKey } from './enum/cache-key.enum';
+import { LogAsyncMethodExecution } from './common/decorator/log-async-method-execution.decorator';
+import { CacheKey } from './common/enum/cache-key.enum';
 import { FeatureFlagsService } from './modules/feature-flags/feature-flags.service';
-import { addToCache, createCacheMap } from './helper/cache.helper';
+import { addToCache, createCacheMap } from './common/helper/cache.helper';
 
 @Injectable()
 export class AppService {
   private readonly logger = new Logger(AppService.name);
-
   constructor(
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
@@ -24,6 +23,7 @@ export class AppService {
   async initializeCache() {
     const startDateTime = new Date();
     const featureFlags = await this.featureFlagsService.findAll();
+
     await addToCache(
       this.cacheManager,
       CacheKey.FEATURE_FLAG_TYPE,

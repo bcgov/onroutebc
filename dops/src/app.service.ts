@@ -62,7 +62,7 @@ export class AppService {
     await addToCache(
       this.cacheManager,
       CacheKey.PAYMENT_AND_REFUND_DETAILED_REPORT,
-      this.convertFiletoString(
+      this.convertFileToString(
         assetsPath + 'templates/payment-refund-detailed.report.hbs',
       ),
     );
@@ -70,7 +70,7 @@ export class AppService {
     await addToCache(
       this.cacheManager,
       CacheKey.PAYMENT_AND_REFUND_SUMMARY_REPORT,
-      this.convertFiletoString(
+      this.convertFileToString(
         assetsPath + 'templates/payment-refund-summary.report.hbs',
       ),
     );
@@ -78,34 +78,50 @@ export class AppService {
     await addToCache(
       this.cacheManager,
       CacheKey.EMAIL_TEMPLATE_PROFILE_REGISTRATION,
-      this.convertFiletoString(
+      this.convertFileToString(
         assetsPath + 'templates/profile-registration.email.hbs',
       ),
     );
     await addToCache(
       this.cacheManager,
       CacheKey.EMAIL_TEMPLATE_ISSUE_PERMIT,
-      this.convertFiletoString(assetsPath + 'templates/issue-permit.email.hbs'),
+      this.convertFileToString(assetsPath + 'templates/issue-permit.email.hbs'),
     );
     await addToCache(
       this.cacheManager,
       CacheKey.EMAIL_TEMPLATE_PAYMENT_RECEIPT,
-      this.convertFiletoString(
+      this.convertFileToString(
         assetsPath + 'templates/payment-receipt.email.hbs',
       ),
     );
     await addToCache(
       this.cacheManager,
       CacheKey.EMAIL_TEMPLATE_COMPANY_SUSPEND,
-      this.convertFiletoString(
+      this.convertFileToString(
         assetsPath + 'templates/suspend-company.email.hbs',
       ),
     );
     await addToCache(
       this.cacheManager,
       CacheKey.EMAIL_TEMPLATE_COMPANY_UNSUSPEND,
-      this.convertFiletoString(
+      this.convertFileToString(
         assetsPath + 'templates/unsuspend-company.email.hbs',
+      ),
+    );
+
+    await addToCache(
+      this.cacheManager,
+      CacheKey.EMAIL_TEMPLATE_APPLICATION_APPROVED,
+      this.convertFileToString(
+        assetsPath + 'templates/application-approved.email.hbs',
+      ),
+    );
+
+    await addToCache(
+      this.cacheManager,
+      CacheKey.EMAIL_TEMPLATE_APPLICATION_REJECTED,
+      this.convertFileToString(
+        assetsPath + 'templates/application-rejected.email.hbs',
       ),
     );
 
@@ -114,6 +130,97 @@ export class AppService {
       this.cacheManager,
       CacheKey.FEATURE_FLAG_TYPE,
       createCacheMap(featureFlags, 'featureKey', 'featureValue'),
+    );
+
+    await addToCache(
+      this.cacheManager,
+      CacheKey.IMG_HEADER_LOGO,
+      this.convertFileToString(
+        assetsPath + 'images/BC_Logo_MOTI.png',
+        true,
+        'base64',
+      ),
+    );
+    await addToCache(
+      this.cacheManager,
+      CacheKey.IMG_FOOTER_LOGO,
+      this.convertFileToString(
+        assetsPath + 'images/onRouteBC_Logo.png',
+        true,
+        'base64',
+      ),
+    );
+    await addToCache(
+      this.cacheManager,
+      CacheKey.IMG_DARK_MODE_HEADER_LOGO,
+      this.convertFileToString(
+        assetsPath + 'images/BC_Logo_Rev_MOTI.png',
+        true,
+        'base64',
+      ),
+    );
+    await addToCache(
+      this.cacheManager,
+      CacheKey.IMG_DARK_MODE_MED_HEADER_LOGO,
+      this.convertFileToString(
+        assetsPath + 'images/BC_Logo_Rev_MOTI@2x.png',
+        true,
+        'base64',
+      ),
+    );
+    await addToCache(
+      this.cacheManager,
+      CacheKey.IMG_DARK_MODE_FOOTER_LOGO,
+      this.convertFileToString(
+        assetsPath + 'images/onRouteBC_Rev_Logo.png',
+        true,
+        'base64',
+      ),
+    );
+    await addToCache(
+      this.cacheManager,
+      CacheKey.IMG_DARK_MODE_MED_FOOTER_LOGO,
+      this.convertFileToString(
+        assetsPath + 'images/onRouteBC_Rev_Logo@2x.png',
+        true,
+        'base64',
+      ),
+    );
+    await addToCache(
+      this.cacheManager,
+      CacheKey.IMG_WHITE_HEADER_LOGO,
+      this.convertFileToString(
+        assetsPath + 'images/BC_Logo_MOTI_White.jpg',
+        true,
+        'base64',
+      ),
+    );
+    await addToCache(
+      this.cacheManager,
+      CacheKey.IMG_WHITE_MED_HEADER_LOGO,
+      this.convertFileToString(
+        assetsPath + 'images/BC_Logo_MOTI_White@2x.jpg',
+        true,
+        'base64',
+      ),
+    );
+    await addToCache(
+      this.cacheManager,
+      CacheKey.IMG_WHITE_FOOTER_LOGO,
+      this.convertFileToString(
+        assetsPath + 'images/onRouteBC_Logo_White.jpg',
+        true,
+        'base64',
+      ),
+    );
+    await addToCache(
+      this.cacheManager,
+      CacheKey.IMG_WHITE_MED_FOOTER_LOGO,
+      this.convertFileToString(
+        assetsPath + 'images/onRouteBC_Logo_White@2x.jpg',
+        true,
+        'base64',
+      ),
     );
 
     const endDateTime = new Date();
@@ -125,12 +232,20 @@ export class AppService {
     );
   }
 
-  private convertFiletoString(filePath: string, encode?: string) {
-    const file = fs.readFileSync(filePath, 'utf-8');
-    if (encode) {
-      return Buffer.from(file).toString('base64');
-    } else {
-      return Buffer.from(file).toString();
-    }
+  /**
+   * Converts a file to a string representation.
+   *
+   * @param {string} filePath - The path to the file to convert.
+   * @param {boolean} [treatAsBinary=false] - Flag to indicate if the file should be read as binary.
+   * @param {BufferEncoding} [encode] - The optional encoding to use for the buffer conversion.
+   * @returns {string} - The string representation of the file.
+   */
+  private convertFileToString(
+    filePath: string,
+    treatAsBinary = false,
+    encode?: BufferEncoding,
+  ) {
+    const file = fs.readFileSync(filePath, treatAsBinary ? undefined : 'utf-8');
+    return Buffer.from(file).toString(encode);
   }
 }

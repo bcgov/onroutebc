@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req } from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -9,8 +9,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Request } from 'express';
-import { Role } from '../../enum/roles.enum';
-import { Roles } from '../../decorator/roles.decorator';
+import { Permissions } from '../../decorator/permissions.decorator';
 import { DmsService } from '../dms/dms.service';
 import { IUserJWT } from '../../interface/user-jwt.interface';
 import { FileDownloadModes } from '../../enum/file-download-modes.enum';
@@ -21,6 +20,11 @@ import { NotificationService } from './notification.service';
 import { ExceptionDto } from '../../exception/exception.dto';
 import { NotificationDocumentDto } from './dto/request/notification-document.dto';
 import { NotificationDto } from './dto/request/notification.dto';
+import { JwtOneOfAuthGuard } from '../../guard/jwt-one-of-auth.guard';
+import {
+  CLIENT_USER_ROLE_LIST,
+  IDIR_USER_ROLE_LIST,
+} from '../../enum/user-role.enum';
 
 @ApiBearerAuth()
 @ApiBadRequestResponse({
@@ -59,8 +63,12 @@ export class NotificationController {
     description:
       'Processes and sends an notification with specified documents as attachments to the given recipient(s), and returns a transaction ID for the operation.',
   })
+  @UseGuards(JwtOneOfAuthGuard)
   @Post('/document')
-  @Roles({ allOf: [Role.SEND_NOTIFICATION, Role.READ_DOCUMENT] })
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: IDIR_USER_ROLE_LIST,
+  })
   async notificationWithDocumentsFromDops(
     @Req() req: Request,
     @Body() notificationDocumentDto: NotificationDocumentDto,
@@ -69,7 +77,7 @@ export class NotificationController {
     // Retrieves the current user details from the request
     const currentUser = req.user as IUserJWT;
     // Destructures the required fields from the NotificationDocumentDto
-    const { subject, to, templateName, data, documentIds } =
+    const { subject, to, cc, bcc, fax, templateName, data, documentIds } =
       notificationDocumentDto;
 
     // Processes document IDs to attach them to the notification
@@ -99,19 +107,36 @@ export class NotificationController {
       );
     }
 
-    // Sends the notification with attachments and returns the transaction ID
-    const transactionId = await this.notificationService.sendEmailMessage(
+    // Sends the email notification with attachments and returns the transaction ID
+    const emailTransactionId = await this.notificationService.sendEmailMessage(
       templateName,
       data,
       subject,
       to,
+      false,
       attachments,
+      cc,
+      bcc,
     );
+
+    let faxTransactionId: string;
+
+    if (fax?.length) {
+      faxTransactionId = await this.notificationService.sendEmailMessage(
+        templateName,
+        data,
+        subject,
+        fax,
+        true,
+        attachments,
+      );
+    }
 
     // Returns a success message and the transaction ID of the sent notification
     return {
       message: 'Notification sent successfully.',
-      transactionId: transactionId,
+      emailTransactionId: emailTransactionId,
+      faxTransactionId: faxTransactionId,
     };
   }
 
@@ -128,13 +153,17 @@ export class NotificationController {
       'Sends a simple notification using the specified template to the given recipient(s), and returns a transaction ID for the operation.',
   })
   @Post()
-  @Roles(Role.SEND_NOTIFICATION)
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: IDIR_USER_ROLE_LIST,
+  })
   async notificationWithoutDocument(
     @Req() req: Request,
     @Body() notificationDocumentDto: NotificationDto,
   ) {
     // Destructures the required fields from the NotificationDocumentDto
-    const { subject, to, templateName, data } = notificationDocumentDto;
+    const { subject, to, cc, bcc, fax, templateName, data } =
+      notificationDocumentDto;
 
     // Sends the notification with attachments and returns the transaction ID
     const transactionId = await this.notificationService.sendEmailMessage(
@@ -142,12 +171,29 @@ export class NotificationController {
       data,
       subject,
       to,
+      false,
+      null,
+      cc,
+      bcc,
     );
+
+    let faxTransactionId: string;
+
+    if (fax?.length) {
+      faxTransactionId = await this.notificationService.sendEmailMessage(
+        templateName,
+        data,
+        subject,
+        fax,
+        true,
+      );
+    }
 
     // Returns a success message and the transaction ID of the sent notification
     return {
       message: 'Notification sent successfully.',
       transactionId: transactionId,
+      faxTransactionId: faxTransactionId,
     };
   }
 }

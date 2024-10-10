@@ -11,14 +11,14 @@ import { PermitApplicationOrigin as PermitApplicationOriginEnum } from '../enum/
 import { PermitApprovalSource as PermitApprovalSourceEnum } from '../enum/permit-approval-source.enum';
 import { randomInt } from 'crypto';
 import { Directory } from '../enum/directory.enum';
-import { doesUserHaveAuthGroup } from './auth.helper';
-import {
-  IDIR_USER_AUTH_GROUP_LIST,
-  UserAuthGroup,
-} from '../enum/user-auth-group.enum';
+import { doesUserHaveRole } from './auth.helper';
+import { IDIR_USER_ROLE_LIST, UserRole } from '../enum/user-role.enum';
 import { PPC_FULL_TEXT } from '../constants/api.constant';
 import { User } from '../../modules/company-user-management/users/entities/user.entity';
 import { ApplicationStatus } from '../enum/application-status.enum';
+import { PermitType } from '../enum/permit-type.enum';
+import { PERMIT_TYPES_FOR_QUEUE } from '../constants/permit.constant';
+import * as dayjs from 'dayjs';
 
 /**
  * Fetches and resolves various types of names associated with a permit using cache.
@@ -182,7 +182,7 @@ export const generatePermitNumber = async (
 
   let sequence: string;
   let randomNumber: string;
-  let revision: string = ''; // Initialize as empty string
+  let revision = ''; // Initialize as empty string
 
   // Use permitNumber for amendments and applicationNumber for new applications
   if (permit.permitNumber) {
@@ -206,17 +206,15 @@ export const generatePermitNumber = async (
  *   correct authorization group. Otherwise, it returns a predefined full text constant.
  * - For users from other directories, it returns the user's first and last name, concatenated.
  * @param applicationOwner The user object representing the owner of the application.
- * @param currentUserAuthGroup The authorization group of the current user.
+ * @param currentUserRole The authorization group of the current user.
  * @returns The display name of the application owner as a string.
  */
 export const getApplicantDisplay = (
   applicationOwner: User,
-  currentUserAuthGroup: UserAuthGroup,
+  currentUserRole: UserRole,
 ): string => {
   if (applicationOwner?.directory === Directory.IDIR) {
-    if (
-      doesUserHaveAuthGroup(currentUserAuthGroup, IDIR_USER_AUTH_GROUP_LIST)
-    ) {
+    if (doesUserHaveRole(currentUserRole, IDIR_USER_ROLE_LIST)) {
       return applicationOwner?.userName;
     } else {
       return PPC_FULL_TEXT;
@@ -254,3 +252,25 @@ export const isAmendmentApplication = ({
     revision > 0
   );
 };
+
+/**
+ * Checks if the given permit type is eligible to be added to a specific processing queue.
+ * This method essentially acts as a filter, determining whether the provided permit type
+ * exists in a predefined list of types that require additional processing in a queue.
+
+ * @param {PermitType} permitType - The type of the permit being checked.
+ * @returns {boolean} - Returns true if the permit type is in the list of types
+ * that are eligible for the queue, otherwise returns false.
+ */
+export const isPermitTypeEligibleForQueue = (
+  permitType: PermitType,
+): boolean => {
+  return PERMIT_TYPES_FOR_QUEUE.includes(permitType);
+};
+
+export const validApplicationDates = (application: Permit, timezone: string): boolean => {
+  const todayUTC = dayjs(new Date());
+  const todayPacific = todayUTC.tz(timezone).format("YYYY-MM-DD");
+  const { startDate, expiryDate } = application.permitData;
+  return startDate >= todayPacific && startDate <= expiryDate;
+}

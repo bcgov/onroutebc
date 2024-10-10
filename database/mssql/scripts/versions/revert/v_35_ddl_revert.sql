@@ -1,0 +1,47 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET NOCOUNT ON
+GO
+
+SET XACT_ABORT ON
+
+BEGIN TRY
+  BEGIN TRANSACTION
+DELETE
+FROM [access].[ORBC_GROUP_ROLE]
+WHERE USER_AUTH_GROUP_TYPE IN (
+      'PAPPLICANT',
+      'ORGADMIN',
+      'SYSADMIN',
+      'PPCCLERK',
+      'EOFFICER',
+      'CTPO'
+      )
+   AND ROLE_TYPE IN (
+      'ORBC-READ-NOFEE',
+      'ORBC-READ-LCV-FLAG',
+      'ORBC-READ-LOA',
+      'ORBC-READ-SPECIAL-AUTH',
+      'ORBC-WRITE-LOA',
+      'ORBC-WRITE-NOFEE'
+      )
+
+DELETE
+FROM [access].[ORBC_GROUP_ROLE]
+WHERE USER_AUTH_GROUP_TYPE = 'FINANCE'
+   AND ROLE_TYPE = 'ORBC-READ-LCV-FLAG'    
+  COMMIT
+END TRY
+
+BEGIN CATCH
+  IF @@TRANCOUNT > 0 
+    ROLLBACK;
+  THROW
+END CATCH
+
+DECLARE @VersionDescription VARCHAR(255)
+SET @VersionDescription = 'Reverting assignment of special authorization of roles to auth groups.'
+
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (34, @VersionDescription, getutcdate())

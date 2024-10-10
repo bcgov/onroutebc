@@ -15,10 +15,12 @@ import { AmendRevisionHistory } from "./form/AmendRevisionHistory";
 import { AmendReason } from "./form/AmendReason";
 import { Nullable } from "../../../../../common/types/common";
 import { ERROR_ROUTES } from "../../../../../routes/constants";
-import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
+import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { PermitVehicleDetails } from "../../../types/PermitVehicleDetails";
 import { AmendPermitFormData } from "../types/AmendPermitFormData";
 import { getDatetimes } from "./helpers/getDatetimes";
+import { PAST_START_DATE_STATUSES } from "../../../../../common/components/form/subFormComponents/CustomDatePicker";
+import { useFetchSpecialAuthorizations } from "../../../../settings/hooks/specialAuthorizations";
 import {
   dayjsToUtcStr,
   nowUtc,
@@ -34,6 +36,8 @@ import {
   minDurationForPermitType,
 } from "../../../helpers/dateSelection";
 
+const FEATURE = "amend-permit";
+
 export const AmendPermitForm = () => {
   const {
     permit,
@@ -46,14 +50,19 @@ export const AmendPermitForm = () => {
     getLinks,
   } = useContext(AmendPermitContext);
 
-  const { companyId } = useParams();
+  const { companyId: companyIdParam } = useParams();
+  const companyId: number = applyWhenNotNullable(id => Number(id), companyIdParam, 0);
   const navigate = useNavigate();
 
   const { data: companyInfo } = useCompanyInfoDetailsQuery(companyId);
   const doingBusinessAs = companyInfo?.alternateName;
 
+  const { data: specialAuthorizations } = useFetchSpecialAuthorizations(companyId);
+  const isLcvDesignated = Boolean(specialAuthorizations?.isLcvAllowed);
+
   const { formData, formMethods } = useAmendPermitForm(
     currentStepIndex === 0,
+    isLcvDesignated,
     companyInfo,
     permit,
     amendmentApplication,
@@ -63,9 +72,6 @@ export const AmendPermitForm = () => {
     amendmentApplication,
     permit,
   );
-
-  //The name of this feature that is used for id's, keys, and associating form components
-  const FEATURE = "amend-permit";
 
   const amendPermitMutation = useAmendPermit(companyId);
   const modifyAmendmentMutation = useModifyAmendmentApplication();
@@ -78,7 +84,7 @@ export const AmendPermitForm = () => {
     trailerSubTypes,
   } = usePermitVehicleManagement(companyId);
 
-  const { handleSubmit, getValues } = formMethods;
+  const { handleSubmit } = formMethods;
 
   // Helper method to return form field values as an Permit object
   const transformPermitFormData = (data: FieldValues) => {
@@ -134,14 +140,13 @@ export const AmendPermitForm = () => {
       return onSaveFailure();
     }
 
-    const formValues = getValues();
     const permitToBeAmended = transformPermitFormData(
       !savedVehicleInventoryDetails
-        ? formValues
+        ? formData
         : {
-            ...formValues,
+            ...formData,
             permitData: {
-              ...formValues.permitData,
+              ...formData.permitData,
               vehicleDetails: {
                 ...savedVehicleInventoryDetails,
                 saveVehicle: true,
@@ -160,7 +165,7 @@ export const AmendPermitForm = () => {
             permitToBeAmended.permitId,
           ),
           application: permitToBeAmended,
-          companyId: companyId as string,
+          companyId,
         })
       : await amendPermitMutation.mutateAsync(permitToBeAmended);
 
@@ -203,21 +208,17 @@ export const AmendPermitForm = () => {
           onCancel={goHome}
           onContinue={handleSubmit(onContinue)}
           isAmendAction={true}
-          permitType={formData.permitType}
-          applicationNumber={formData.applicationNumber}
           permitNumber={permit?.permitNumber}
           createdDateTime={createdDateTime}
           updatedDateTime={updatedDateTime}
-          permitStartDate={formData.permitData.startDate}
-          permitDuration={formData.permitData.permitDuration}
-          permitCommodities={formData.permitData.commodities}
-          vehicleDetails={formData.permitData.vehicleDetails}
           vehicleOptions={vehicleOptions}
           powerUnitSubTypes={powerUnitSubTypes}
           trailerSubTypes={trailerSubTypes}
           companyInfo={companyInfo}
           durationOptions={durationOptions}
           doingBusinessAs={doingBusinessAs}
+          pastStartDateStatus={PAST_START_DATE_STATUSES.WARNING}
+          isLcvDesignated={isLcvDesignated}
         >
           <AmendRevisionHistory revisionHistory={revisionHistory} />
           <AmendReason feature={FEATURE} />

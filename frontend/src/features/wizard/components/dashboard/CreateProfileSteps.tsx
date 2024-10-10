@@ -1,17 +1,16 @@
 import { Box, Step, StepConnector, StepLabel, Stepper } from "@mui/material";
 import React, { useContext } from "react";
-
 import { FormProvider, useForm } from "react-hook-form";
 import { useAuth } from "react-oidc-context";
-import { Nullable } from "vitest";
-import { LoadBCeIDUserRolesByCompany } from "../../../../common/authentication/LoadBCeIDUserRolesByCompany";
+
+import "./CreateProfileSteps.scss";
+import { Nullable } from "../../../../common/types/common";
+import { LoadBCeIDUserClaimsByCompany } from "../../../../common/authentication/LoadBCeIDUserClaimsByCompany";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { Banner } from "../../../../common/components/dashboard/components/banner/Banner";
-import "../../../../common/components/dashboard/Dashboard.scss";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { CreateCompanyRequest } from "../../../manageProfile/types/manageProfile";
 import { OnRouteBCProfileCreated } from "../../subcomponents/OnRouteBCProfileCreated";
-import "./CreateProfileSteps.scss";
 import { CompanyAndUserInfoSteps } from "../../subcomponents/CompanyAndUserInfoSteps";
 
 /**
@@ -92,7 +91,7 @@ export const CreateProfileSteps = React.memo(() => {
   if (clientNumber) {
     return (
       <>
-        <LoadBCeIDUserRolesByCompany />
+        <LoadBCeIDUserClaimsByCompany />
         <OnRouteBCProfileCreated onRouteBCClientNumber={clientNumber} />
       </>
     );
@@ -112,7 +111,7 @@ export const CreateProfileSteps = React.memo(() => {
         />
       </Box>
       <div
-        className="tabpanel-container create-profile-steps"
+        className="create-profile-steps-page create-profile-steps"
         id={`profile-steps`}
         aria-labelledby={`profile-steps`}
       >
@@ -145,13 +144,14 @@ export const CreateProfileSteps = React.memo(() => {
                         text: "step__step-number",
                         active: "step__icon--active",
                         completed: "step__icon--completed",
-                      }
+                      },
                     }}
-                  >{label}</StepLabel>
+                  >
+                    {label}
+                  </StepLabel>
                 </Step>
               ))}
             </Stepper>
-
           </div>
           <FormProvider {...companyAndUserFormMethods}>
             <CompanyAndUserInfoSteps

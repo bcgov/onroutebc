@@ -1,7 +1,7 @@
 import dayjs, { Dayjs } from "dayjs";
 
 import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBCContext";
-import { getMandatoryCommodities } from "./commodities";
+import { getMandatoryConditions, sortConditions } from "./conditions";
 import { Nullable } from "../../../common/types/common";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
 import { calculateFeeByDuration } from "./feeSummary";
@@ -12,6 +12,9 @@ import { PermitContactDetails } from "../types/PermitContactDetails";
 import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
 import { Application, ApplicationFormData } from "../types/application";
 import { minDurationForPermitType } from "./dateSelection";
+import { PermitCondition } from "../types/PermitCondition";
+import { LCV_CONDITION } from "../constants/constants";
+import { isVehicleSubtypeLCV } from "../../manageVehicles/helpers/vehicleSubtypes";
 import {
   getEndOfDate,
   getStartOfDate,
@@ -153,16 +156,97 @@ export const getExpiryDateOrDefault = (
 };
 
 /**
- * Gets default values for the application data, or populate with values from existing application data and company id/user details.
+ * Applying LCV designation to application data.
+ * @param applicationData Existing application data
+ * @param isLcvDesignated Whether or not the LCV designation is to be used
+ * @returns Application data after applying the LCV check
+ */
+export const applyLCVToApplicationData = <T extends Nullable<ApplicationFormData | Application>>(
+  applicationData: T,
+  isLcvDesignated: boolean,
+): T => {
+  // If application doesn't exist, no need to apply LCV at all
+  if (!applicationData) return applicationData;
+
+  if (!isLcvDesignated) {
+    // If LCV not designated, remove LCV condition from application data
+    const filteredConditions = applicationData.permitData.commodities.filter(
+      ({ condition }: PermitCondition) => condition !== LCV_CONDITION.condition,
+    );
+
+    if (isVehicleSubtypeLCV(applicationData.permitData.vehicleDetails.vehicleSubType)) {
+      // Furthermore, if selected vehicle has LCV subtype, clear the vehicle
+      return {
+        ...applicationData,
+        permitData: {
+          ...applicationData.permitData,
+          commodities: [...filteredConditions],
+          vehicleDetails: getDefaultVehicleDetails(),
+        },
+      };
+    }
+
+    // Otherwise, keep the existing vehicle
+    return {
+      ...applicationData,
+      permitData: {
+        ...applicationData.permitData,
+        commodities: [...filteredConditions],
+      },
+    };
+  }
+  
+  // If LCV is designated, and vehicle subtype in the application isn't LCV but conditions have LCV,
+  // then remove that LCV condition from the application
+  if (
+    !isVehicleSubtypeLCV(applicationData.permitData.vehicleDetails.vehicleSubType)
+    && applicationData.permitData.commodities.some(({ condition }) => condition === LCV_CONDITION.condition)
+  ) {
+    const filteredConditions = applicationData.permitData.commodities.filter(
+      ({ condition }: PermitCondition) => condition !== LCV_CONDITION.condition,
+    );
+
+    return {
+      ...applicationData,
+      permitData: {
+        ...applicationData.permitData,
+        commodities: [...filteredConditions],
+      },
+    };
+  }
+
+  // If LCV is designated, and vehicle subtype in the application is LCV but conditions don't have LCV,
+  // then add that LCV condition into the application
+  if (
+    isVehicleSubtypeLCV(applicationData.permitData.vehicleDetails.vehicleSubType)
+    && !applicationData.permitData.commodities.some(({ condition }) => condition === LCV_CONDITION.condition)
+  ) {
+    const conditionsWithLCV = sortConditions([...applicationData.permitData.commodities, LCV_CONDITION]);
+
+    return {
+      ...applicationData,
+      permitData: {
+        ...applicationData.permitData,
+        commodities: [...conditionsWithLCV],
+      },
+    };
+  }
+
+  // In other cases, the application data is valid
+  return applicationData;
+};
+
+/**
+ * Gets default values for the application data, or populate with values from existing application and relevant data.
  * @param permitType permit type for the application
- * @param companyInfo data from company profile information
+ * @param companyInfo data from company profile information (can be undefined, but must be passed as param)
  * @param applicationData existing application data, if any
  * @param userDetails user details of current user, if any
  * @returns default values for the application data
  */
 export const getDefaultValues = (
   permitType: PermitType,
-  companyInfo: Nullable<CompanyProfile>, // can be undefined, but must be passed as param
+  companyInfo: Nullable<CompanyProfile>,
   applicationData?: Nullable<Application | ApplicationFormData>,
   userDetails?: Nullable<BCeIDUserDetailContext>,
 ): ApplicationFormData => {
@@ -182,6 +266,11 @@ export const getDefaultValues = (
     applicationData?.permitData?.expiryDate,
   );
 
+  const defaultPermitType = getDefaultRequiredVal(
+    permitType,
+    applicationData?.permitType,
+  );
+
   return {
     originalPermitId: getDefaultRequiredVal(
       "",
@@ -194,10 +283,7 @@ export const getDefaultValues = (
     ),
     permitId: getDefaultRequiredVal("", applicationData?.permitId),
     permitNumber: getDefaultRequiredVal("", applicationData?.permitNumber),
-    permitType: getDefaultRequiredVal(
-      permitType,
-      applicationData?.permitType,
-    ),
+    permitType: defaultPermitType,
     permitStatus: getDefaultRequiredVal(
       PERMIT_STATUSES.IN_PROGRESS,
       applicationData?.permitStatus,
@@ -221,9 +307,9 @@ export const getDefaultValues = (
       permitDuration: durationOrDefault,
       expiryDate: expiryDateOrDefault,
       commodities: getDefaultRequiredVal(
-        getMandatoryCommodities(permitType),
+        getMandatoryConditions(permitType),
         applyWhenNotNullable(
-          (commodities) => commodities.map((commodity) => ({ ...commodity })),
+          (conditions) => conditions.map((condition) => ({ ...condition })),
           applicationData?.permitData?.commodities,
         ),
       ),
@@ -242,7 +328,7 @@ export const getDefaultValues = (
       vehicleDetails: getDefaultVehicleDetails(
         applicationData?.permitData?.vehicleDetails,
       ),
-      feeSummary: `${calculateFeeByDuration(durationOrDefault)}`,
+      feeSummary: `${calculateFeeByDuration(defaultPermitType, durationOrDefault)}`,
     },
   };
 };

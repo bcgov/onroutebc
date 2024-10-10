@@ -9,7 +9,7 @@ import { passportJwtSecret } from 'jwks-rsa';
 import { AuthService } from './auth.service';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { Request } from 'express';
-import { Role } from '../../common/enum/roles.enum';
+import { Claim } from '../../common/enum/claims.enum';
 import { IDP } from '../../common/enum/idp.enum';
 import {
   getDirectory,
@@ -18,10 +18,10 @@ import {
 } from '../../common/helper/auth.helper';
 import { DataNotFoundException } from '../../common/exception/data-not-found.exception';
 import {
-  ClientUserAuthGroup,
-  IDIRUserAuthGroup,
-  UserAuthGroup,
-} from '../../common/enum/user-auth-group.enum';
+  ClientUserRole,
+  IDIRUserRole,
+  UserRole,
+} from '../../common/enum/user-role.enum';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -47,20 +47,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(req: Request, payload: IUserJWT): Promise<IUserJWT> {
     let userGUID: string,
       userName: string,
-      roles: Role[],
+      claims: Claim[],
       associatedCompanies: number[],
       orbcUserFirstName: string,
       orbcUserLastName: string,
-      orbcUserAuthGroup:
-        | UserAuthGroup
-        | ClientUserAuthGroup
-        | IDIRUserAuthGroup;
+      orbcUserRole: UserRole | ClientUserRole | IDIRUserRole;
 
     let companyId: number;
-    if (req.params['companyId']) {
-      companyId = +req.params['companyId'];
-    } else if (req.query['companyId']) {
-      companyId = +req.query['companyId'];
+    if (req.params.companyId) {
+      companyId = +req.params.companyId;
+    } else if (req.query.companyId) {
+      companyId = +req.query.companyId;
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     } else if (req.body.companyId) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -86,7 +83,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     const orbcUserDirectory = getDirectory(payload);
 
-    if (req.headers['AuthOnly'] === 'false') {
+    if (req.headers.AuthOnly === 'false') {
       const user = await this.authService.getUserDetails(
         companyId,
         payload.identity_provider,
@@ -97,7 +94,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       }
       orbcUserFirstName = user?.at(0).firstName;
       orbcUserLastName = user?.at(0).lastName;
-      orbcUserAuthGroup = user?.at(0).userAuthGroup;
+      orbcUserRole = user?.at(0).userRole;
 
       if (payload.identity_provider !== IDP.IDIR) {
         const associatedCompanyMetadataList =
@@ -110,7 +107,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         companyId = associatedCompanies?.length
           ? associatedCompanies?.at(0)
           : companyId;
-
         if (
           !associatedCompanies.includes(companyId) ||
           associatedCompanyMetadataList?.at(0)?.isSuspended
@@ -119,7 +115,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         }
       }
 
-      roles = await this.authService.getRolesForUser(userGUID, companyId);
+      claims = await this.authService.getClaimsForUser(userGUID, companyId);
     }
 
     const access_token = req.headers.authorization;
@@ -127,13 +123,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const currentUser = {
       userName,
       userGUID,
-      roles,
+      claims,
       companyId,
       associatedCompanies,
       access_token,
       orbcUserFirstName,
       orbcUserLastName,
-      orbcUserAuthGroup,
+      orbcUserRole,
       orbcUserDirectory,
     };
 
@@ -152,14 +148,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     companyId: number,
   ) {
     let userGUIDParam: string;
-    if (req.params['userGUID']) {
-      userGUIDParam = req.params['userGUID'];
-    } else if (typeof req.query['userGUID'] === 'string') {
-      userGUIDParam = req.query['userGUID'];
+    if (req.params.userGUID) {
+      userGUIDParam = req.params.userGUID;
+    } else if (typeof req.query.userGUID === 'string') {
+      userGUIDParam = req.query.userGUID;
     }
 
     if (
-      req.headers['AuthOnly'] === 'false' &&
+      req.headers.AuthOnly === 'false' &&
       payload.identity_provider !== IDP.IDIR &&
       userGUIDParam
     ) {
@@ -179,14 +175,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       ) {
         throw new ForbiddenException();
       } else if (companyId && userGUIDParam !== payload.userGUID) {
-        let roles: Role[];
+        let claim: Claim;
         if (req.method === 'GET') {
-          roles = [Role.READ_USER];
+          claim = Claim.READ_USER;
         } else {
-          roles = [Role.WRITE_USER];
+          claim = Claim.WRITE_USER;
         }
         validateUserCompanyAndRoleContext(
-          roles,
+          claim,
           userGUIDParam,
           associatedCompanies,
           payload,

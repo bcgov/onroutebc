@@ -133,6 +133,7 @@ export class DmsService {
 
     if (
       currentUser.identity_provider !== IDP.IDIR &&
+      currentUser.identity_provider !== IDP.SERVICE_ACCOUNT &&
       file?.companyId != companyId
     ) {
       throw new ForbiddenException('Invalid Company Id');

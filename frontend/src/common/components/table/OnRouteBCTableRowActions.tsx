@@ -1,11 +1,9 @@
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import IconButton from "@mui/material/IconButton";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import * as React from "react";
-import { useCallback } from "react";
+import { faEllipsisVertical } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconButton, Menu, MenuItem, Tooltip } from "@mui/material";
+import { useState, useCallback, MouseEvent } from "react";
 
-const ITEM_HEIGHT = 48;
+import "./OnRouteBCTableRowActions.scss";
 
 /**
  * A reusable component meant to be used in table components for row actions.
@@ -15,42 +13,33 @@ export const OnRouteBCTableRowActions = ({
   options,
   disabled = false,
 }: {
-  /**
-   * Callback function to be called upon a user selecting an option.
-   * @param selectedOption The selected option as a string.
-   */
   onSelectOption: (selectedOption: string) => void;
-
-  /**
-   * The options to be shown in the menu.
-   */
   options: {
     label: string;
     value: string;
   }[];
-
-  /**
-   * Disables the row action icon if set to true. Defaults to false.
-   */
   disabled?: boolean;
 }) => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
+  // Used to determine the anchor element to position the actions menu to
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const isMenuOpen = Boolean(anchorEl);
 
-  const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  }, []);
+  const actionsButtonPressedClassName = isMenuOpen
+    ? " onroutebc-table-row-actions__button--pressed"
+    : "";
 
-  const handleClose = () => {
+  const handleOpenActionsMenu = useCallback(
+    (event: MouseEvent<HTMLElement>) => {
+      setAnchorEl(event.currentTarget);
+    },
+    [],
+  );
+
+  const handleCloseActionsMenu = () => {
     setAnchorEl(null);
   };
 
-  /**
-   * Event handler for an option select. Gives a callback to the
-   * callback function passed with the selected option as a parameter.
-   * @param event The click event containing the target value.
-   */
-  const onClickOption = (event: React.MouseEvent<HTMLElement>) => {
+  const onClickOption = (event: MouseEvent<HTMLElement>) => {
     const selectedOption = event.currentTarget.dataset.optionValue as string;
     onSelectOption(selectedOption);
     setAnchorEl(null);
@@ -58,44 +47,75 @@ export const OnRouteBCTableRowActions = ({
 
   return (
     <>
-      <IconButton
-        aria-label="more"
-        id="long-button"
-        aria-controls={open ? "long-menu" : undefined}
-        aria-expanded={open ? "true" : undefined}
-        aria-haspopup="true"
-        onClick={handleClick}
-        disabled={disabled}
-      >
-        <MoreVertIcon />
-      </IconButton>
-      <Menu
-        id="long-menu"
-        MenuListProps={{
-          "aria-labelledby": "long-button",
-        }}
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        slotProps={{
-          paper: {
-            style: {
-              maxHeight: ITEM_HEIGHT * 4.5,
-              width: "15ch",
-            },
-          },
-        }}
-      >
-        {options.map((option) => (
-          <MenuItem
-            key={`option-${option.value}`}
-            onClick={onClickOption}
-            data-option-value={option.value}
-          >
-            {option.label}
-          </MenuItem>
-        ))}
-      </Menu>
+      {
+        // if there are no options, return null to prevent returning an empty menu
+        options.length > 0 ? (
+          <div className="onroutebc-table-row-actions">
+            <Tooltip
+              title="Actions"
+              classes={{
+                popper: "popper onroutebc-table-row-actions__popper",
+                tooltip: "tooltip",
+                tooltipPlacementBottom: "tooltip--bottom",
+              }}
+            >
+              <IconButton
+                className={`onroutebc-table-row-actions__button ${actionsButtonPressedClassName}`}
+                classes={{
+                  disabled: "onroutebc-table-row-actions__button--disabled",
+                }}
+                aria-label="Actions"
+                id="actions-button"
+                aria-controls={isMenuOpen ? "actions-menu" : undefined}
+                aria-expanded={isMenuOpen ? "true" : undefined}
+                aria-haspopup="true"
+                onClick={handleOpenActionsMenu}
+                disabled={disabled}
+              >
+                <FontAwesomeIcon
+                  icon={faEllipsisVertical}
+                  className="onroutebc-table-row-actions__icon"
+                />
+              </IconButton>
+            </Tooltip>
+
+            <Menu
+              className="onroutebc-table-row-actions__menu"
+              id="actions-menu"
+              MenuListProps={{
+                "aria-labelledby": "actions-button",
+              }}
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                horizontal: "right",
+                vertical: "bottom",
+              }}
+              transformOrigin={{
+                horizontal: "right",
+                vertical: "top",
+              }}
+              open={isMenuOpen}
+              onClose={handleCloseActionsMenu}
+              slotProps={{
+                paper: {
+                  className: "onroutebc-table-row-actions__paper",
+                },
+              }}
+            >
+              {options.map((option) => (
+                <MenuItem
+                  key={`option-${option.value}`}
+                  className="onroutebc-table-row-actions__menu-item"
+                  onClick={onClickOption}
+                  data-option-value={option.value}
+                >
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Menu>
+          </div>
+        ) : null
+      }
     </>
   );
 };

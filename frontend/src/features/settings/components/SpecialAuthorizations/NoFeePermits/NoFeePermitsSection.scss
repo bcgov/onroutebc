@@ -1,0 +1,45 @@
+@import "../../../../../themes/orbcStyles";
+
+.no-fee-permits-section {
+  padding: 1.5rem 0 2.5rem 0;
+  border-bottom: 1px solid $bc-border-grey;
+  max-width: 59rem;
+  width: 100%;
+
+  &#{&}--readonly {
+    padding: 2.5rem 0;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+
+  &__title {
+    font-weight: bold;
+    font-size: 1.25rem;
+  }
+}
+
+.no-fee-options {
+  & &__title {
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+
+  &__type {
+    .no-fee-options &#{&}--disabled {
+      .no-fee-options {
+        &__radio {
+          color: $disabled-colour;
+        }
+
+        &__label {
+          color: $bc-black;
+        }
+      }
+    }
+  }
+}

@@ -4,6 +4,20 @@ import { Nullable } from "../../../common/types/common";
 import { getDefaultVehicleDetails } from "../helpers/getDefaultApplicationFormData";
 import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
 import {
+  usePowerUnitSubTypesQuery,
+  useAddPowerUnitMutation,
+  useUpdatePowerUnitMutation,
+  usePowerUnitsQuery,
+} from "../../manageVehicles/hooks/powerUnits";
+
+import {
+  useTrailerSubTypesQuery,
+  useAddTrailerMutation,
+  useUpdateTrailerMutation,
+  useTrailersQuery,
+} from "../../manageVehicles/hooks/trailers";
+
+import {
   PowerUnit,
   Trailer,
   VEHICLE_TYPES,
@@ -11,38 +25,38 @@ import {
   VehicleType,
 } from "../../manageVehicles/types/Vehicle";
 
-import {
-  useAddPowerUnitMutation,
-  useAddTrailerMutation,
-  usePowerUnitSubTypesQuery,
-  useTrailerSubTypesQuery,
-  useUpdatePowerUnitMutation,
-  useUpdateTrailerMutation,
-  useVehiclesQuery,
-} from "../../manageVehicles/apiManager/hooks";
-
-export const usePermitVehicleManagement = (companyId?: Nullable<string>) => {
+export const usePermitVehicleManagement = (companyId: number) => {
   // Mutations used to add/update vehicle details
   const addPowerUnitMutation = useAddPowerUnitMutation();
   const updatePowerUnitMutation = useUpdatePowerUnitMutation();
   const addTrailerMutation = useAddTrailerMutation();
   const updateTrailerMutation = useUpdateTrailerMutation();
 
-  // Queries used to populate select options for vehicle details
-  const allVehiclesQuery = useVehiclesQuery(companyId);
-  const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
-  const trailerSubTypesQuery = useTrailerSubTypesQuery();
+  // Queries used to fetch vehicle details to populate vehicle select options
+  const { data: powerUnitsData } = usePowerUnitsQuery(companyId);
+  const { data: trailersData } = useTrailersQuery(companyId);
+  const { data: powerUnitSubtypesData } = usePowerUnitSubTypesQuery();
+  const { data: trailerSubtypesData } = useTrailerSubTypesQuery();
 
-  // Vehicle details that have been fetched by vehicle details queries
-  const fetchedVehicles = getDefaultRequiredVal([], allVehiclesQuery.data);
-  const fetchedPowerUnitSubTypes = getDefaultRequiredVal(
-    [],
-    powerUnitSubTypesQuery.data,
-  );
-  const fetchedTrailerSubTypes = getDefaultRequiredVal(
-    [],
-    trailerSubTypesQuery.data,
-  );
+  const fetchedVehicles = [
+    ...getDefaultRequiredVal(
+      [],
+      powerUnitsData,
+    ).map(powerUnit => ({
+      ...powerUnit,
+      vehicleType: VEHICLE_TYPES.POWER_UNIT,
+    })),
+    ...getDefaultRequiredVal(
+      [],
+      trailersData,
+    ).map(trailer => ({
+      ...trailer,
+      vehicleType: VEHICLE_TYPES.TRAILER,
+    })),
+  ];
+
+  const powerUnitSubTypes = getDefaultRequiredVal([], powerUnitSubtypesData);
+  const trailerSubTypes = getDefaultRequiredVal([], trailerSubtypesData);
 
   const handleSaveVehicle = async (
     vehicleData?: Nullable<PermitVehicleDetails>,
@@ -134,10 +148,12 @@ export const usePermitVehicleManagement = (companyId?: Nullable<string>) => {
       // Either send a PUT or POST request based on powerUnitId
       const res = powerUnit.powerUnitId
         ? await updatePowerUnitMutation.mutateAsync({
+            companyId,
             powerUnit,
             powerUnitId: powerUnit.powerUnitId,
           })
         : await addPowerUnitMutation.mutateAsync({
+            companyId,
             powerUnit: {
               ...powerUnit,
               powerUnitId: getDefaultRequiredVal("", vehicle.vehicleId),
@@ -164,10 +180,12 @@ export const usePermitVehicleManagement = (companyId?: Nullable<string>) => {
       // Either send a PUT or POST request based on trailerId
       const res = trailer.trailerId
         ? await updateTrailerMutation.mutateAsync({
+            companyId,
             trailer,
             trailerId: trailer.trailerId,
           })
         : await addTrailerMutation.mutateAsync({
+            companyId,
             trailer: {
               ...trailer,
               trailerId: getDefaultRequiredVal("", vehicle.vehicleId),
@@ -190,8 +208,8 @@ export const usePermitVehicleManagement = (companyId?: Nullable<string>) => {
 
   return {
     handleSaveVehicle,
-    powerUnitSubTypes: fetchedPowerUnitSubTypes,
-    trailerSubTypes: fetchedTrailerSubTypes,
+    powerUnitSubTypes,
+    trailerSubTypes,
     vehicleOptions: fetchedVehicles,
   };
 };

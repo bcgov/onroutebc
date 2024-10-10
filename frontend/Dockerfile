@@ -1,4 +1,4 @@
-FROM node:20.12.0-alpine AS builder
+FROM node:20.15.1-alpine AS builder
 
 #  Set the working directory to /app inside the container
 WORKDIR /app
@@ -39,12 +39,14 @@ USER app
 EXPOSE 3000
 
 # Have only the compiled app, ready for production with Nginx
-FROM nginx:1.26-alpine as production-stage
+FROM nginx:1.27-alpine as production-stage
 RUN mkdir /app
 COPY --from=builder /app/build /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY static_home_page /usr/share/nginx/html
 CMD ["nginx", "-g", "daemon off;"]
 
+RUN apk add --no-cache curl
+
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost/:3000
+HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:3000/

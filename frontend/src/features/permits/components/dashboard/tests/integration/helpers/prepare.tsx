@@ -16,6 +16,7 @@ import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util"
 import { APPLICATION_STEPS } from "../../../../../../../routes/constants";
 import { Nullable, Optional } from "../../../../../../../common/types/common";
 import { PERMIT_STATUSES } from "../../../../../types/PermitStatus";
+import { SPECIAL_AUTH_API_ROUTES } from "../../../../../../settings/apiManager/endpoints/endpoints";
 import {
   PowerUnit,
   Trailer,
@@ -131,7 +132,7 @@ const server = setupServer(
 
   // Mock getting application
   http.get(
-    `${APPLICATIONS_API_ROUTES.GET(getDefaultUserDetails().companyId.toString())}/:permitId`,
+    `${APPLICATIONS_API_ROUTES.GET(getDefaultUserDetails().companyId.toString(), ":permitId")}`,
     () => {
       return HttpResponse.json({
         // get application from mock application store (there's only 1 application or empty), since we're testing save/create/edit behaviour
@@ -248,6 +249,20 @@ const server = setupServer(
       return HttpResponse.json({
         ...updatedTrailer,
       });
+    },
+  ),
+
+  http.get(
+    `${SPECIAL_AUTH_API_ROUTES.SPECIAL_AUTH.GET(companyInfo.companyId.toString())}`,
+    () => {
+      return HttpResponse.json(
+        {
+          companyId: companyInfo.companyId,
+          specialAuthId: 1,
+          isLcvAllowed: false,
+          noFeeType: null,
+        },
+      );
     },
   ),
 );

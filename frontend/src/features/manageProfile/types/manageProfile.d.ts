@@ -1,7 +1,7 @@
 import { Nullable } from "../../../common/types/common";
 import { BCeID_USER_STATUS } from "./userManagement";
 import {
-  BCeIDUserAuthGroupType,
+  BCeIDUserRoleType,
   VerifiedClient,
 } from "../../../common/authentication/types";
 
@@ -25,7 +25,7 @@ export type BCeIDUserStatusType =
  */
 export type BCeIDAddUserRequest = {
   userName: string;
-  userAuthGroup: BCeIDAuthGroup;
+  userRole: BCeIDAuthGroup;
 };
 
 /**
@@ -81,15 +81,14 @@ export type CompanyProfile = {
  */
 export type UpdateCompanyProfileRequest = Omit<
   CompanyProfile,
-  "clientNumber"
-  | "isSuspended"
+  "clientNumber" | "isSuspended"
 >;
 
 /**
  * The response structure of get user info API.
  */
 export type ReadUserInformationResponse = Contact & {
-  userAuthGroup: BCeIDUserAuthGroupType;
+  userRole: BCeIDUserRoleType;
   userGUID: string;
   userName: string;
   statusCode: BCeID_USER_STATUS;
@@ -101,7 +100,7 @@ export type ReadUserInformationResponse = Contact & {
  * The edit user info request body.
  */
 export type UserInfoRequest = Contact & {
-  userAuthGroup: BCeIDUserAuthGroupType;
+  userRole: BCeIDUserRoleType;
 };
 
 /**
@@ -174,4 +173,6 @@ export const BCEID_PROFILE_TABS = {
   MY_INFORMATION: "MyInformationTab",
   USER_MANAGEMENT: "UserManagementTab",
   PAYMENT_INFORMATION: "PaymentInformationTab",
+  SPECIAL_AUTH: "SpecialAuthorizationsTab",
+  CREDIT_ACCOUNT: "CreditAccountTab",
 } as const;

@@ -15,6 +15,7 @@ import { getDefaultCompanyInfo } from "../../../../../components/dashboard/tests
 import { VEHICLES_API } from "../../../../../../manageVehicles/apiManager/endpoints/endpoints";
 import { Nullable } from "../../../../../../../common/types/common";
 import { PERMIT_STATUSES } from "../../../../../types/PermitStatus";
+import { SPECIAL_AUTH_API_ROUTES } from "../../../../../../settings/apiManager/endpoints/endpoints";
 import {
   Application,
   CreateApplicationRequestData,
@@ -97,7 +98,7 @@ const server = setupServer(
   ),
 
   http.put(
-    `${APPLICATIONS_API_ROUTES.UPDATE(companyInfo.companyId.toString())}/:id`,
+    APPLICATIONS_API_ROUTES.UPDATE(companyInfo.companyId.toString(), ":id"),
     async ({ request, params }) => {
       const { id } = params;
       const reqBody = await request.json();
@@ -158,6 +159,20 @@ const server = setupServer(
     `${CART_API_ROUTES.COUNT(companyInfo.companyId.toString())}`,
     () => {
       return HttpResponse.json(1);
+    },
+  ),
+
+  http.get(
+    `${SPECIAL_AUTH_API_ROUTES.SPECIAL_AUTH.GET(companyInfo.companyId.toString())}`,
+    () => {
+      return HttpResponse.json(
+        {
+          companyId: companyInfo.companyId,
+          specialAuthId: 1,
+          isLcvAllowed: false,
+          noFeeType: null,
+        },
+      );
     },
   ),
 );

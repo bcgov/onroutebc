@@ -11,10 +11,10 @@ import { ERROR_ROUTES, IDIR_ROUTES } from "../../../../routes/constants";
 import { VoidPermitFormData } from "./types/VoidPermit";
 import { FinishVoid } from "./FinishVoid";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { USER_AUTH_GROUP } from "../../../../common/authentication/types";
+import { USER_ROLE } from "../../../../common/authentication/types";
 import { isPermitInactive } from "../../types/PermitStatus";
 import { Permit } from "../../types/permit";
-import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { Breadcrumb } from "../../../../common/components/breadcrumb/Breadcrumb";
 import { hasPermitExpired } from "../../helpers/permitState";
 import {
@@ -35,7 +35,13 @@ const isVoidable = (permit: Permit) => {
 
 export const VoidPermit = () => {
   const navigate = useNavigate();
-  const { permitId, companyId } = useParams();
+  const {
+    permitId: permitIdParam,
+    companyId: companyIdParam,
+  } = useParams();
+
+  const companyId: number = applyWhenNotNullable(id => Number(id), companyIdParam, 0);
+  const permitId = getDefaultRequiredVal("", permitIdParam);
   const [currentLink, setCurrentLink] = useState(0);
   const getBannerText = () =>
     currentLink === 0 ? "Void Permit" : "Finish Voiding";
@@ -114,7 +120,7 @@ export const VoidPermit = () => {
   );
 
   // If user is not SYSADMIN, show unauthorized page
-  if (idirUserDetails?.userAuthGroup !== USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR) {
+  if (idirUserDetails?.userRole !== USER_ROLE.SYSTEM_ADMINISTRATOR) {
     return <Navigate to={ERROR_ROUTES.UNAUTHORIZED} />;
   }
 

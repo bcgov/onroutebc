@@ -57,6 +57,12 @@ export class AppService {
       createCacheMap(permitTypes, 'permitTypeId', 'name'),
     );
 
+    await addToCache(
+      this.cacheManager,
+      CacheKey.PERMIT_TYPE_GL_CODE,
+      createCacheMap(permitTypes, 'permitTypeId', 'glCode'),
+    );
+
     const powerUnitTypes = await this.powerUnitTypeService.findAll();
     await addToCache(
       this.cacheManager,
@@ -83,6 +89,12 @@ export class AppService {
       this.cacheManager,
       CacheKey.PAYMENT_METHOD_TYPE,
       createCacheMap(paymentMethods, 'paymentMethodTypeCode', 'name'),
+    );
+
+    await addToCache(
+      this.cacheManager,
+      CacheKey.PAYMENT_METHOD_TYPE_GL_PROJ_CODE,
+      createCacheMap(paymentMethods, 'paymentMethodTypeCode', 'glProjCode'),
     );
 
     const paymentTypes =

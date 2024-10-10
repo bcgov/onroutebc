@@ -114,10 +114,10 @@ export const getLoginUsernameFromSession = (): string => {
 };
 
 /**
- * Retrieves company email from session.
+ * Retrieves user email from session.
  * @returns string | null | undefined
  */
-export const getCompanyEmailFromSession = (): Nullable<string> => {
+export const getUserEmailFromSession = (): Nullable<string> => {
   const parsedSessionObject = getDefaultRequiredVal(
     { profile: { email: "" } },
     getUserStorage(),
@@ -187,6 +187,22 @@ export const httpPOSTRequest = (url: string, data: any) => {
 };
 
 /**
+ * An HTTP POST Request with file upload.
+ * @param url The URL of the resource.
+ * @param data The request payload containing file to upload.
+ * @returns A Promise<Response> with the response from the API.
+ */
+export const httpPOSTRequestWithFile = (url: string, data: FormData) => {
+  return axios.post(url, data, {
+    headers: {
+      "Content-Type": `multipart/form-data`,
+      Authorization: getAccessToken(),
+      "X-Correlation-ID": getCorrelationId(),
+    },
+  });
+};
+
+/**
  * A generic HTTP PUT Request
  * @param url The URL of the resource.
  * @param data The request payload.
@@ -196,6 +212,22 @@ export const httpPUTRequest = (url: string, data: any) => {
   return axios.put(url, JSON.stringify(data), {
     headers: {
       "Content-Type": "application/json",
+      Authorization: getAccessToken(),
+      "X-Correlation-ID": getCorrelationId(),
+    },
+  });
+};
+
+/**
+ * An HTTP PUT Request with file upload.
+ * @param url The URL of the resource.
+ * @param data The request payload containing file to upload.
+ * @returns A Promise<Response> with the response from the API.
+ */
+export const httpPUTRequestWithFile = (url: string, data: FormData) => {
+  return axios.put(url, data, {
+    headers: {
+      "Content-Type": `multipart/form-data`,
       Authorization: getAccessToken(),
       "X-Correlation-ID": getCorrelationId(),
     },

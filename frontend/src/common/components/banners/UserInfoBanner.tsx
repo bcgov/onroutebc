@@ -2,15 +2,12 @@ import { Box, Typography } from "@mui/material";
 import { memo } from "react";
 
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
-import {
-  BCeIDUserAuthGroupType,
-} from "../../authentication/types";
-import { getLabelForBCeIDUserAuthGroup } from "../../helpers/util";
-
+import { BCeIDUserRoleType } from "../../authentication/types";
+import { getLabelForBCeIDUserRole } from "../../helpers/util";
 
 export const UserInfoBanner = memo(
-  ({ userAuthGroup }: { userAuthGroup?: BCeIDUserAuthGroupType }) => {
-    return userAuthGroup ? (
+  ({ userRole }: { userRole?: BCeIDUserRoleType }) => {
+    return userRole ? (
       <Box
         sx={{
           height: 100,
@@ -26,7 +23,7 @@ export const UserInfoBanner = memo(
         <div>
           <Typography variant="h5">USER GROUP</Typography>
           <Typography variant="h4">
-            {getLabelForBCeIDUserAuthGroup(userAuthGroup)}
+            {getLabelForBCeIDUserRole(userRole)}
           </Typography>
         </div>
       </Box>

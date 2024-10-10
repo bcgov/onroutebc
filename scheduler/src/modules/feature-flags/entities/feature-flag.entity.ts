@@ -1,5 +1,5 @@
 import { AutoMap } from '@automapper/classes';
-import { FeatureFlagValue } from 'src/enum/feature-flag-value.enum';
+import { FeatureFlagValue } from 'src/common/enum/feature-flag-value.enum';
 import { Base } from 'src/modules/common/entities/base.entity';
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 

@@ -5,7 +5,7 @@ import { OnRouteBCTableRowActions } from "../../../../common/components/table/On
 import PermitResendDialog from "./PermitResendDialog";
 import { viewReceiptPdf } from "../../../permits/helpers/permitPDFHelper";
 import * as routes from "../../../../routes/constants";
-import { USER_AUTH_GROUP } from "../../../../common/authentication/types";
+import { USER_ROLE } from "../../../../common/authentication/types";
 import { useResendPermit } from "../../../permits/hooks/hooks";
 import { SnackBarContext } from "../../../../App";
 import { EmailNotificationType } from "../../../permits/types/EmailNotificationType";
@@ -37,34 +37,34 @@ const permitActionLabel = (actionType: PermitActionType) => {
 
 interface PermitAction {
   action: PermitActionType;
-  isAuthorized: (isExpired: boolean, userAuthGroup?: string) => boolean;
+  isAuthorized: (isExpired: boolean, userRole?: string) => boolean;
 }
 
 const PERMIT_ACTIONS: PermitAction[] = [
   {
     action: PERMIT_ACTION_TYPES.RESEND,
-    isAuthorized: (_: boolean, userAuthGroup?: string) =>
-      userAuthGroup === USER_AUTH_GROUP.PPC_CLERK ||
-      userAuthGroup === USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
+    isAuthorized: (_: boolean, userRole?: string) =>
+      userRole === USER_ROLE.PPC_CLERK ||
+      userRole === USER_ROLE.SYSTEM_ADMINISTRATOR,
   },
   {
     action: PERMIT_ACTION_TYPES.VIEW_RECEIPT,
-    isAuthorized: (_: boolean, userAuthGroup?: string) =>
-      userAuthGroup === USER_AUTH_GROUP.PPC_CLERK ||
-      userAuthGroup === USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR ||
-      userAuthGroup === USER_AUTH_GROUP.ENFORCEMENT_OFFICER,
+    isAuthorized: (_: boolean, userRole?: string) =>
+      userRole === USER_ROLE.PPC_CLERK ||
+      userRole === USER_ROLE.SYSTEM_ADMINISTRATOR ||
+      userRole === USER_ROLE.ENFORCEMENT_OFFICER,
   },
   {
     action: PERMIT_ACTION_TYPES.AMEND,
-    isAuthorized: (isExpired: boolean, userAuthGroup?: string) =>
+    isAuthorized: (isExpired: boolean, userRole?: string) =>
       !isExpired &&
-      (userAuthGroup === USER_AUTH_GROUP.PPC_CLERK ||
-        userAuthGroup === USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR),
+      (userRole === USER_ROLE.PPC_CLERK ||
+        userRole === USER_ROLE.SYSTEM_ADMINISTRATOR),
   },
   {
     action: PERMIT_ACTION_TYPES.VOID_REVOKE,
-    isAuthorized: (isExpired: boolean, userAuthGroup?: string) =>
-      !isExpired && userAuthGroup === USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
+    isAuthorized: (isExpired: boolean, userRole?: string) =>
+      !isExpired && userRole === USER_ROLE.SYSTEM_ADMINISTRATOR,
   },
 ];
 
@@ -73,9 +73,9 @@ const PERMIT_ACTIONS: PermitAction[] = [
  * @param isExpired Has the permit expired?
  * @returns Action options that can be performed for the permit.
  */
-const getOptions = (isExpired: boolean, userAuthGroup?: string) => {
+const getOptions = (isExpired: boolean, userRole?: string) => {
   return PERMIT_ACTIONS.filter((action) =>
-    action.isAuthorized(isExpired, userAuthGroup),
+    action.isAuthorized(isExpired, userRole),
   ).map(({ action }) => ({
     label: permitActionLabel(action),
     value: action,
@@ -90,7 +90,7 @@ export const IDIRPermitSearchRowActions = ({
   isPermitInactive,
   permitNumber,
   email,
-  userAuthGroup,
+  userRole,
   companyId,
 }: {
   /**
@@ -110,11 +110,10 @@ export const IDIRPermitSearchRowActions = ({
    */
   email?: string;
   /**
-   * The auth group for the current user (eg. PPCCLERK or EOFFICER)
+   * The role for the current user (eg. PPCCLERK or EOFFICER)
    */
-  userAuthGroup?: string;
-
-  companyId?: string;
+  userRole?: string;
+  companyId: number;
 }) => {
   const [openResendDialog, setOpenResendDialog] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -129,7 +128,11 @@ export const IDIRPermitSearchRowActions = ({
     if (selectedOption === PERMIT_ACTION_TYPES.RESEND) {
       setOpenResendDialog(() => true);
     } else if (selectedOption === PERMIT_ACTION_TYPES.VIEW_RECEIPT) {
-      viewReceiptPdf(permitId, companyId);
+      viewReceiptPdf(
+        companyId,
+        permitId,
+        () => navigate(routes.ERROR_ROUTES.DOCUMENT_UNAVAILABLE),
+      );
     } else if (selectedOption === PERMIT_ACTION_TYPES.VOID_REVOKE) {
       navigate(`${routes.PERMITS_ROUTES.VOID(companyId, permitId)}`);
     } else if (selectedOption === PERMIT_ACTION_TYPES.AMEND) {
@@ -140,11 +143,13 @@ export const IDIRPermitSearchRowActions = ({
   const handleResend = async (
     permitId: string,
     email: string,
+    fax: string,
     notificationTypes: EmailNotificationType[],
   ) => {
     const response = await resendPermitMutation.mutateAsync({
       permitId,
       email,
+      fax,
       notificationTypes,
     });
 
@@ -165,7 +170,7 @@ export const IDIRPermitSearchRowActions = ({
     <>
       <OnRouteBCTableRowActions
         onSelectOption={onSelectOption}
-        options={getOptions(isPermitInactive, userAuthGroup)}
+        options={getOptions(isPermitInactive, userRole)}
         key={`idir-search-row-${permitNumber}`}
       />
 

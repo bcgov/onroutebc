@@ -43,12 +43,12 @@ export class AuthService {
    * @returns The Roles as a promise of type {@link Role[]}
    */
   @LogAsyncMethodExecution()
-  async getRolesForUser(
+  async getClaimsForUser(
     accessToken: string,
     companyId?: number,
   ): Promise<AxiosResponse> {
     return lastValueFrom(
-      this.httpService.get(process.env.ACCESS_API_URL + '/users/roles', {
+      this.httpService.get(process.env.ACCESS_API_URL + '/users/claims', {
         params: { companyId: companyId ? companyId : undefined },
         headers: {
           Authorization: accessToken,
@@ -81,5 +81,8 @@ export class AuthService {
         },
       ),
     );
+  }
+  validateServiceAccountUser(clientId: string): boolean {
+    return clientId === process.env.ORBC_SERVICE_ACCOUNT_CLIENT_ID;
   }
 }

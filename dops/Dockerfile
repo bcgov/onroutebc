@@ -1,5 +1,5 @@
 #  Build container.
-FROM node:20.12.1-alpine AS builder
+FROM node:20.15.1-alpine AS builder
 
 # Set the working directory to /app inside the container
 WORKDIR /app
@@ -21,7 +21,7 @@ RUN npm prune --production
 
 
 # Deployment container
-FROM node:20.12.1-alpine
+FROM node:20.15.1-alpine
 RUN npm cache clean --force
 
 # Create and Assign permissions to npm folder
@@ -66,6 +66,8 @@ ENV CDOGS_URL ${CDOGS_URL}
 ENV ACCESS_API_URL ${ACCESS_API_URL}
 ENV DOPS_URL ${DOPS_URL}
 ENV FRONTEND_URL ${FRONTEND_URL}
+ENV ORBC_SERVICE_ACCOUNT_CLIENT_ID ${ORBC_SERVICE_ACCOUNT_CLIENT_ID}
+ENV ORBC_SERVICE_ACCOUNT_AUDIENCE ${ORBC_SERVICE_ACCOUNT_AUDIENCE}
 
 # Copy production files from build
 COPY --from=builder /app/package*.json ./
@@ -78,7 +80,8 @@ RUN apk add --no-cache \
       freetype \
       harfbuzz \
       ca-certificates \
-      ttf-freefont 
+      ttf-freefont \
+      curl
      
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
@@ -99,4 +102,4 @@ EXPOSE 5001
 CMD ["npm", "run", "start:prod"]
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost/:5001
+HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:5001/

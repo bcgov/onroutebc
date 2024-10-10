@@ -1,24 +1,21 @@
 import { VEHICLES_API } from "./endpoints/endpoints";
 import { replaceEmptyValuesWithNull } from "../../../common/helpers/util";
-import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
-import { Nullable, RequiredOrNull } from "../../../common/types/common";
+import { Nullable } from "../../../common/types/common";
 import { EMPTY_VEHICLE_UNIT_NUMBER } from "../../../common/constants/constants";
 import {
   PowerUnit,
-  UpdatePowerUnit,
+  PowerUnitUpdateData,
   VehicleSubType,
   Trailer,
-  UpdateTrailer,
-  VehicleType,
-  BaseVehicle,
-  VEHICLE_TYPES,
+  TrailerUpdateData,
+  PowerUnitCreateData,
+  TrailerCreateData,
 } from "../types/Vehicle";
 
 import {
   httpPOSTRequest,
   httpPUTRequest,
   httpGETRequest,
-  getCompanyIdFromSession,
 } from "../../../common/apiManager/httpRequestHandler";
 
 const emptyUnitNumberToNull = (unitNumber?: Nullable<string>) => {
@@ -28,73 +25,54 @@ const emptyUnitNumberToNull = (unitNumber?: Nullable<string>) => {
 };
 
 /**
- * Fetch*
- * All Power Unit and Trailer Data
- * @return An array of combined PowerUnit and Trailers
- */
-export const getAllVehicles = async (
-  companyId: string,
-): Promise<(PowerUnit | Trailer)[]> => {
-  const powerUnits = await getAllPowerUnits(companyId);
-  const trailers = await getAllTrailers(companyId);
-
-  powerUnits.forEach((p: PowerUnit) => {
-    p.vehicleType = VEHICLE_TYPES.POWER_UNIT;
-  });
-
-  trailers.forEach((t: Trailer) => {
-    t.vehicleType = VEHICLE_TYPES.TRAILER;
-  });
-
-  const allVehicles: (PowerUnit | Trailer)[] = [...powerUnits, ...trailers];
-
-  return allVehicles;
-};
-
-/**
- * Fetch*
- * All Power Unit Data
- * @return {*}  {Promise<void>}
+ * Fetch all power units for a company.
+ * @param companyId Company id of company to fetch for
+ * @return Response of all power units
  */
 export const getAllPowerUnits = async (
-  companyId: string,
+  companyId: number,
 ): Promise<PowerUnit[]> => {
-  const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/powerUnits`;
+  const url = VEHICLES_API.POWER_UNITS.ALL(companyId);
   return httpGETRequest(url).then((response) => response.data);
 };
 
 /**
- * Gets a power unit by id.
- * @param powerUnitId The powerUnitId
- * @returns A Promise<Response> containing the API response.
+ * Fetch power unit details.
+ * @param powerUnitId The id of the power unit to fetch for
+ * @param companyId The id of the company to fetch for
+ * @returns Response data for power unit details
  */
 export const getPowerUnit = async (
   powerUnitId: string,
-  companyId: string,
+  companyId: number,
 ): Promise<PowerUnit> => {
-  const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/powerUnits/${powerUnitId}`;
+  const url = VEHICLES_API.POWER_UNITS.DETAIL(companyId, powerUnitId);
   return httpGETRequest(url).then((response) => response.data);
 };
 
 /**
- * Gets the power unit vehicle subtypes.
+ * Fetch power unit vehicle subtypes.
  * @returns List of vehicle subtypes for power units.
  */
-export const getPowerUnitSubTypes = async (): Promise<
-  Array<VehicleSubType>
-> => {
+export const getPowerUnitSubTypes = async (): Promise<VehicleSubType[]> => {
   const url = new URL(VEHICLES_API.POWER_UNIT_TYPES);
   return httpGETRequest(url.toString()).then((response) => response.data);
 };
 
 /**
- * Adds a power unit.
- * @param {PowerUnit} powerUnit The power unit to be added
- * @returns Promise containing the response from the create powerUnit API.
+ * Create a power unit.
+ * @param companyId Id of company to add to
+ * @param powerUnit Data for the power unit to be added
+ * @returns Response of the power unit creation operation
  */
-export const addPowerUnit = async ({ powerUnit }: { powerUnit: PowerUnit }) => {
-  const companyId = getCompanyIdFromSession();
-  const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/powerUnits`;
+export const addPowerUnit = async ({
+  companyId,
+  powerUnit,
+}: {
+  companyId: number;
+  powerUnit: PowerUnitCreateData;
+}) => {
+  const url = VEHICLES_API.POWER_UNITS.ADD(companyId);
 
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   const { powerUnitId: id, unitNumber, ...powerUnitReqData } = powerUnit;
@@ -106,19 +84,22 @@ export const addPowerUnit = async ({ powerUnit }: { powerUnit: PowerUnit }) => {
 };
 
 /**
- * Updates a power unit.
- * @param {UpdatePowerUnit} powerUnit The power unit to be updated
- * @returns Response from the update powerUnit API.
+ * Update a power unit.
+ * @param companyId Id of company to update power unit for
+ * @param powerUnit Updated data for the power unit
+ * @param powerUnitId Id of the power unit
+ * @returns Response of the power unit update operation
  */
 export const updatePowerUnit = async ({
+  companyId,
   powerUnit,
   powerUnitId,
 }: {
-  powerUnit: UpdatePowerUnit;
+  companyId: number;
+  powerUnit: PowerUnitUpdateData;
   powerUnitId: string;
 }) => {
-  const companyId = getCompanyIdFromSession();
-  const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/powerUnits/${powerUnitId}`;
+  const url = VEHICLES_API.POWER_UNITS.UPDATE(companyId, powerUnitId);
 
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   const { powerUnitId: id, unitNumber, ...powerUnitReqData } = powerUnit;
@@ -129,72 +110,52 @@ export const updatePowerUnit = async ({
 };
 
 /**
- * Fetch All Trailer Data
- * @return {Promise<Trailer[]>}  An array of trailers.
+ * Fetch all trailers for a company.
+ * @param companyId Id of the company to fetch for.
+ * @return Response of all trailers
  */
-export const getAllTrailers = async (companyId: string): Promise<Trailer[]> => {
-  const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/trailers`;
+export const getAllTrailers = async (companyId: number): Promise<Trailer[]> => {
+  const url = VEHICLES_API.TRAILERS.ALL(companyId);
   return httpGETRequest(url).then((response) => response.data);
 };
 
 /**
- * Get Trailer by Id
- * @param trailerId The trailer to be retrieved.
- * @returns A Promise<Trailer> with data from the API.
+ * Fetch trailer details.
+ * @param trailerId The id of the trailer to fetch for
+ * @param companyId The id of the company to fetch for
+ * @returns Response data for trailer details
  */
 export const getTrailer = async (
   trailerId: string,
-  companyId: string,
+  companyId: number,
 ): Promise<Trailer> => {
-  const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/trailers/${trailerId}`;
+  const url = VEHICLES_API.TRAILERS.DETAIL(companyId, trailerId);
   return httpGETRequest(url).then((response) => response.data);
 };
 
 /**
- * Get Vehicle by Id
- * @param vehicleId The vehicle to be retrieved.
- * @returns A Promise<Vehicle> with data from the API.
+ * Fetch trailer vehicle subtypes.
+ * @returns Response of vehicle subtypes for trailers.
  */
-export const getVehicleById = async (
-  companyId: string,
-  vehicleType: VehicleType,
-  vehicleId?: string,
-): Promise<RequiredOrNull<BaseVehicle>> => {
-  if (!vehicleId) return null;
-
-  let url = `${VEHICLES_URL}/companies/${companyId}/vehicles`;
-  if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
-    url += `/powerUnits/${vehicleId}`;
-  } else {
-    url += `/trailers/${vehicleId}`;
-  }
-
-  try {
-    const response = await httpGETRequest(url);
-    return response.data;
-  } catch (err) {
-    console.error(err);
-    return null;
-  }
-};
-
-/**
- * Gets the trailer vehicle subtypes.
- * @returns List of vehicle subtypes for trailers.
- */
-export const getTrailerSubTypes = async (): Promise<Array<VehicleSubType>> => {
+export const getTrailerSubTypes = async (): Promise<VehicleSubType[]> => {
   const url = new URL(VEHICLES_API.TRAILER_TYPES);
   return httpGETRequest(url.toString()).then((response) => response.data);
 };
 
 /**
- * Adds a trailer.
- * @param {Trailer} trailer The trailer to be added
- * @returns Promise containing the response from the create trailer API.
+ * Create a trailer.
+ * @param companyId Id of company to create the trailer for
+ * @param trailer Data of the trailer to be created
+ * @returns Response of the trailer creation operation
  */
-export const addTrailer = async ({ trailer }: { trailer: Trailer }) => {
-  const companyId = getCompanyIdFromSession();
-  const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/trailers`;
+export const addTrailer = async ({
+  companyId,
+  trailer,
+}: {
+  companyId: number;
+  trailer: TrailerCreateData;
+}) => {
+  const url = VEHICLES_API.TRAILERS.ADD(companyId);
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   const { trailerId, unitNumber, ...trailerReqData } = trailer;
   return await httpPOSTRequest(url, {
@@ -204,20 +165,22 @@ export const addTrailer = async ({ trailer }: { trailer: Trailer }) => {
 };
 
 /**
- * Updates a trailer.
- * @param trailerId The trailer id to be updated.
- * @param trailer The trailer request object.
- * @returns A Promise<Response> containing the response from the API.
+ * Update a trailer.
+ * @param companyId Id of the company to update the trailer for
+ * @param trailerId The id for the trailer to be updated
+ * @param trailer Updated data of the trailer
+ * @returns Response of the trailer update operation
  */
 export const updateTrailer = async ({
+  companyId,
   trailerId,
   trailer,
 }: {
+  companyId: number;
   trailerId: string;
-  trailer: UpdateTrailer;
+  trailer: TrailerUpdateData;
 }) => {
-  const companyId = getCompanyIdFromSession();
-  const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/trailers/${trailerId}`;
+  const url = VEHICLES_API.TRAILERS.UPDATE(companyId, trailerId);
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   const { trailerId: id, unitNumber, ...trailerReqData } = trailer;
   return await httpPUTRequest(url, {
@@ -227,24 +190,29 @@ export const updateTrailer = async ({
 };
 
 /**
- * Delete one or more vehicles.
- * @param vehicleIds Array of vehicle ids to be deleted.
- * @param vehicleType The type of the vehicle to be deleted.
- * @returns A Promise with the API response.
+ * Delete one or more power units.
+ * @param vehicleIds Ids for the power units to be deleted
+ * @param companyId Id of the company to delete from
+ * @returns Response of the delete operation
  */
-export const deleteVehicles = async (
-  vehicleIds: Array<string>,
-  vehicleType: VehicleType,
-  companyId: string,
+export const deletePowerUnits = async (
+  vehicleIds: string[],
+  companyId: number,
 ) => {
-  let url: RequiredOrNull<string> = null;
-  let requestBody: { powerUnits: Array<string> } | { trailers: Array<string> };
-  if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
-    url = `${VEHICLES_URL}/companies/${companyId}/vehicles/powerUnits/delete-requests`;
-    requestBody = { powerUnits: vehicleIds };
-  } else {
-    url = `${VEHICLES_URL}/companies/${companyId}/vehicles/trailers/delete-requests`;
-    requestBody = { trailers: vehicleIds };
-  }
-  return await httpPOSTRequest(url, replaceEmptyValuesWithNull(requestBody));
+  const url = VEHICLES_API.POWER_UNITS.DELETE(companyId);
+  return await httpPOSTRequest(url, replaceEmptyValuesWithNull({ powerUnits: vehicleIds }));
+};
+
+/**
+ * Delete one or more trailers.
+ * @param vehicleIds Ids for the trailers to be deleted
+ * @param companyId Id of the company to delete from
+ * @returns Response of the delete operation
+ */
+export const deleteTrailers = async (
+  vehicleIds: string[],
+  companyId: number,
+) => {
+  const url = VEHICLES_API.TRAILERS.DELETE(companyId);
+  return await httpPOSTRequest(url, replaceEmptyValuesWithNull({ trailers: vehicleIds }));
 };

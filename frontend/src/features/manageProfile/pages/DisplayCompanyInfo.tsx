@@ -4,9 +4,9 @@ import { Box, Button, Typography } from "@mui/material";
 import { memo } from "react";
 
 import "./DisplayCompanyInfo.scss";
-import { getCompanyEmailFromSession } from "../../../common/apiManager/httpRequestHandler";
-import { ROLES } from "../../../common/authentication/types";
-import { DoesUserHaveRoleWithContext } from "../../../common/authentication/util";
+import { getUserEmailFromSession } from "../../../common/apiManager/httpRequestHandler";
+import { CLAIMS } from "../../../common/authentication/types";
+import { DoesUserHaveClaimWithContext } from "../../../common/authentication/util";
 import { formatPhoneNumber } from "../../../common/components/form/subFormComponents/PhoneNumberInput";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { CompanyProfile } from "../types/manageProfile";
@@ -28,7 +28,7 @@ export const DisplayInfo = memo(
   }) => {
     if (!companyInfo) return <></>;
 
-    const companyEmail = getCompanyEmailFromSession();
+    const userEmail = getUserEmailFromSession();
     return (
       <div className="display-company-info">
         <Box>
@@ -53,7 +53,7 @@ export const DisplayInfo = memo(
 
           <Typography variant="h3">Company Contact Details</Typography>
           <Typography>
-            Email: {getDefaultRequiredVal("", companyInfo?.email, companyEmail)}
+            Email: {getDefaultRequiredVal("", companyInfo?.email, userEmail)}
           </Typography>
           <Typography>{`Phone: ${formatPhoneNumber(companyInfo?.phone)} ${
             companyInfo?.extension ? `Ext: ${companyInfo?.extension}` : ""
@@ -88,7 +88,7 @@ export const DisplayInfo = memo(
           </Typography>
           <Typography>{companyInfo?.primaryContact.city}</Typography>
         </Box>
-        {DoesUserHaveRoleWithContext(ROLES.WRITE_ORG) && (
+        {DoesUserHaveClaimWithContext(CLAIMS.WRITE_ORG) && (
           <div className="display-company-info__edit">
             <Button
               variant="contained"

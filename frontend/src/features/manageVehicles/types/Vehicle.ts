@@ -48,16 +48,24 @@ export interface VehicleSubType {
 }
 
 /**
- * Object type for updating a power unit.
- * It is identical to CreatePowerUnit.
+ * Request data type for creating a power unit.
  */
-export type UpdatePowerUnit = PowerUnit;
+export type PowerUnitCreateData = PowerUnit;
 
 /**
- * Object type for updating a trailer.
- * It is identical to CreateTrailer.
+ * Request data type for creating a trailer.
  */
-export type UpdateTrailer = Trailer;
+export type TrailerCreateData = Trailer;
+
+/**
+ * Request data type for updating a power unit.
+ */
+export type PowerUnitUpdateData = PowerUnit;
+
+/**
+ * Request data type for updating a trailer.
+ */
+export type TrailerUpdateData = Trailer;
 
 /**
  * Enum indicating the options of axle front group.

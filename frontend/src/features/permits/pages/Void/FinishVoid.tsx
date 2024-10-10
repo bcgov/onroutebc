@@ -1,4 +1,5 @@
 import { useContext, useEffect } from "react";
+import { useParams } from "react-router-dom";
 
 import { VoidPermitContext } from "./context/VoidPermitContext";
 import { RefundFormData } from "../Refund/types/RefundFormData";
@@ -11,7 +12,7 @@ import { useVoidPermit } from "./hooks/useVoidPermit";
 import { isValidTransaction } from "../../helpers/payment";
 import { Nullable } from "../../../../common/types/common";
 import { hasPermitsActionFailed } from "../../helpers/permitState";
-import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 export const FinishVoid = ({
   permit,
@@ -23,10 +24,21 @@ export const FinishVoid = ({
   onFail: () => void;
 }) => {
   const { voidPermitData } = useContext(VoidPermitContext);
+  const { companyId: companyIdParam } = useParams();
 
   const { email, additionalEmail, fax, reason } = voidPermitData;
+  const companyId: number = getDefaultRequiredVal(
+    0,
+    permit?.companyId,
+    applyWhenNotNullable(id => Number(id), companyIdParam),
+  );
 
-  const permitHistoryQuery = usePermitHistoryQuery(permit?.originalPermitId);
+  const originalPermitId = getDefaultRequiredVal("", permit?.originalPermitId);
+
+  const permitHistoryQuery = usePermitHistoryQuery(
+    companyId,
+    originalPermitId,
+  );
 
   const permitHistory = getDefaultRequiredVal([], permitHistoryQuery.data);
 
@@ -36,7 +48,7 @@ export const FinishVoid = ({
         isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
       );
 
-  const amountToRefund = !permit
+  const amountToRefund = !permit || transactionHistory.length === 0
     ? 0
     : -1 * calculateAmountForVoid(permit, transactionHistory);
 

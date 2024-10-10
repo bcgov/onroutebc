@@ -21,7 +21,7 @@ jobs:
       pull-requests: write
     timeout-minutes: 1
     steps:
-      - uses: bcgov-nr/action-pr-description-add@v1.1.1
+      - uses: bcgov-nr/action-pr-description-add@v1.1.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           add_markdown: |
@@ -33,6 +33,7 @@ jobs:
             - [Frontend](https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }})
             - [Vehicles](https://${{ env.PREFIX }}-vehicles.${{ env.DOMAIN }}/api)
             - [Dops](https://${{ env.PREFIX }}-dops.${{ env.DOMAIN }}/api)
+            - [Policy](https://${{ env.PREFIX }}-policy.${{ env.DOMAIN }}/api)
             - [Scheduler](https://${{ env.PREFIX }}-scheduler.${{ env.DOMAIN }}/api)
 
             Please create PRs in draft mode.  Mark as ready to enable:
@@ -61,10 +62,10 @@ jobs:
       packages: write
     strategy:
       matrix:
-        package: [dops, vehicles, frontend, scheduler]
+        package: [dops, vehicles, frontend, scheduler, policy]
     timeout-minutes: 10
     steps:
-      - uses: bcgov-nr/action-builder-ghcr@v2.0.2
+      - uses: bcgov-nr/action-builder-ghcr@v2.2.0
         with:
           #keep_versions: 50
           package: ${{ matrix.package }}
@@ -73,25 +74,10 @@ jobs:
           triggers: '${{ matrix.package }}/' #omit to build everything
 
   # https://github.com/bcgov-nr/action-deployer-openshift
-  deploys:
-    name: Deploys
+  deploys-dev:
+    name: Deploys (Dev)
     needs: [builds, vars]
-    uses: ./.github/workflows/deploy.yml
+    uses: ./.github/workflows/dev.yml
     secrets: inherit
     with:
-      autoscaling: false
-      repository: ${{ github.event.repository.name }}
-      environment: dev
-      release: ${{ needs.vars.outputs.pr }}
       tag: ${{ needs.vars.outputs.pr }}
-      triggers: '' #omit=always;
-      params: |
-        --set-string global.license='c28f0c' \
-        --set-string global.zone='dev' \
-        --set-string global.vault.role='nonprod' \
-        --set-string global.vault.zone='dev' \
-        --set-string global.pr_num='${{ needs.vars.outputs.pr }}' \
-        --set-json dops.containers[0].resources='{"limits": {"cpu": "1000m", "memory": "2000Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
-        --set-json frontend.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
-        --set-json scheduler.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
-        --set-json vehicles.containers[0].resources='{"limits": {"cpu": "300m", "memory": "500Mi"}, "requests": {"cpu": "200m", "memory": "400Mi"}}' \

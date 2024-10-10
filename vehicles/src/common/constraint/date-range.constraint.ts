@@ -14,33 +14,43 @@ export class DateRangeConstraint<T> implements ValidatorConstraintInterface {
   validate(toDateTime: string, args: ValidationArguments) {
     // Some destructuring
     const { constraints, object } = args;
-    const [
-      propertyToCompareAgainst,
-      {
-        difference: { maxDiff, unit },
-        rounding,
-      },
-    ] = constraints as [string, MaxDifferenceType];
+    const [propertyToCompareAgainst, maxDifference] = constraints as [
+      string,
+      MaxDifferenceType,
+    ];
     const fromDateTime = (object as T)[propertyToCompareAgainst] as string;
 
-    const difference = differenceBetween(fromDateTime, toDateTime, unit);
+    const difference = differenceBetween(
+      fromDateTime,
+      toDateTime,
+      maxDifference?.difference?.unit,
+    );
 
     // Transform the rounding duration to a unit specified by difference
     // to allow direct comparison.
-    const roundingDuration = getDuration(rounding).as(unit);
-    return difference > 0 && difference <= maxDiff + roundingDuration;
+    if (maxDifference?.difference) {
+      const roundingDuration = getDuration(maxDifference?.rounding).as(
+        maxDifference?.difference?.unit,
+      );
+      return (
+        difference > 0 &&
+        difference <= maxDifference?.difference?.maxDiff + roundingDuration
+      );
+    } else {
+      return difference > 0;
+    }
   }
 
   defaultMessage({ property, constraints }: ValidationArguments) {
-    const [
-      propertyToCompareAgainst,
-      {
-        difference: { maxDiff, unit },
-      },
-    ] = constraints as [string, MaxDifferenceType];
+    const [propertyToCompareAgainst, maxDifference] = constraints as [
+      string,
+      MaxDifferenceType,
+    ];
     return (
       `${property} must be after ${propertyToCompareAgainst}.` +
-      `Max difference allowed is ${maxDiff} ${unit}.`
+      (maxDifference
+        ? `Max difference allowed is ${maxDifference?.difference?.maxDiff} ${maxDifference?.difference?.unit}.`
+        : '')
     );
   }
 }

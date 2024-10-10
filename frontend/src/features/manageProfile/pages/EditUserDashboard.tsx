@@ -28,8 +28,9 @@ export const EditUserDashboard = React.memo(() => {
     queryKey: ["userByuserGUID", userGUID],
     queryFn: () => getCompanyUserByUserGUID(userGUID as string),
     retry: false,
+    refetchOnWindowFocus: false,
     enabled: true,
-    staleTime: Infinity,
+    gcTime: 0 // Disable saving in cache - Always fetch for latest data.
   });
 
   const onClickBreadcrumb = () => {
@@ -90,7 +91,7 @@ export const EditUserDashboard = React.memo(() => {
           className="breadcrumb-link breadcrumb-link--parent"
           onClick={onClickBreadcrumb}
         >
-          User Management
+          Add / Manage Users
         </Typography>
 
         <FontAwesomeIcon className="breadcrumb-icon" icon={faChevronRight} />

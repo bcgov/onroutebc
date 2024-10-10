@@ -1,9 +1,11 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   InternalServerErrorException,
   Logger,
   NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { CreateTransactionDto } from './dto/request/create-transaction.dto';
 import { ReadTransactionDto } from './dto/response/read-transaction.dto';
@@ -11,7 +13,14 @@ import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { Transaction } from './entities/transaction.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, In, QueryRunner, Repository, UpdateResult } from 'typeorm';
+import {
+  Brackets,
+  DataSource,
+  In,
+  QueryRunner,
+  Repository,
+  UpdateResult,
+} from 'typeorm';
 import { PermitTransaction } from './entities/permit-transaction.entity';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { callDatabaseSequence } from 'src/common/helper/database.helper';
@@ -27,22 +36,40 @@ import {
   PAYBC_PAYMENT_METHOD,
   PAYMENT_CURRENCY,
   CRYPTO_ALGORITHM_MD5,
+  GL_PROJ_CODE_PLACEHOLDER,
 } from '../../../common/constants/api.constant';
 import { convertToHash } from 'src/common/helper/crypto.helper';
 import { UpdatePaymentGatewayTransactionDto } from './dto/request/update-payment-gateway-transaction.dto';
 import { PaymentCardType } from './entities/payment-card-type.entity';
 import { PaymentMethodType } from './entities/payment-method-type.entity';
-import { LogMethodExecution } from '../../../common/decorator/log-method-execution.decorator';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
 import { PermitHistoryDto } from '../permit/dto/response/permit-history.dto';
 import {
   calculatePermitAmount,
   permitFee,
+  validAmount,
 } from 'src/common/helper/permit-fee.helper';
 import { CfsTransactionDetail } from './entities/cfs-transaction.entity';
 import { CfsFileStatus } from 'src/common/enum/cfs-file-status.enum';
-import { isAmendmentApplication } from '../../../common/helper/permit-application.helper';
+import { isAmendmentApplication, validApplicationDates } from '../../../common/helper/permit-application.helper';
 import { isCfsPaymentMethodType } from 'src/common/helper/payment.helper';
+import { PgApprovesStatus } from 'src/common/enum/pg-approved-status-type.enum';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import { CacheKey } from 'src/common/enum/cache-key.enum';
+import { getFromCache } from '../../../common/helper/cache.helper';
+import { doesUserHaveRole } from '../../../common/helper/auth.helper';
+import { IDIR_USER_ROLE_LIST } from '../../../common/enum/user-role.enum';
+import {
+  throwBadRequestException,
+  throwUnprocessableEntityException,
+} from '../../../common/helper/exception.helper';
+import {
+  isCVClient,
+  isFeatureEnabled,
+} from '../../../common/helper/common.helper';
+import { SpecialAuth } from 'src/modules/special-auth/entities/special-auth.entity';
+import { TIMEZONE_PACIFIC } from 'src/common/constants/api.constant';
 
 @Injectable()
 export class PaymentService {
@@ -57,9 +84,9 @@ export class PaymentService {
     private paymentMethodTypeRepository: Repository<PaymentMethodType>,
     @InjectRepository(PaymentCardType)
     private paymentCardTypeRepository: Repository<PaymentCardType>,
-    @InjectRepository(Permit)
-    private permitRepository: Repository<Permit>,
     @InjectMapper() private readonly classMapper: Mapper,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
 
   private generateHashExpiry = (currDate?: Date) => {
@@ -83,9 +110,41 @@ export class PaymentService {
     return `${year}${monthPadded}${dayPadded}${hoursPadded}${minutesPadded}`;
   };
 
-  private queryHash = (transaction: Transaction) => {
+  private queryHash = async (transaction: Transaction) => {
     const redirectUrl = process.env.PAYBC_REDIRECT;
     const date = new Date().toISOString().split('T')[0];
+    const glProjCode = await getFromCache(
+      this.cacheManager,
+      CacheKey.PAYMENT_METHOD_TYPE_GL_PROJ_CODE,
+      transaction.paymentMethodTypeCode,
+    );
+
+    const glCodeDetails = await Promise.all(
+      transaction.permitTransactions.map(
+        async ({ permit: { permitType }, transactionAmount }) => ({
+          glCode: (
+            await getFromCache(
+              this.cacheManager,
+              CacheKey.PERMIT_TYPE_GL_CODE,
+              permitType,
+            )
+          )
+            ?.replace(GL_PROJ_CODE_PLACEHOLDER, glProjCode)
+            ?.trim(),
+          amount: transactionAmount,
+        }),
+      ),
+    );
+
+    const groupedGlCodes = glCodeDetails.reduce((acc, { glCode, amount }) => {
+      acc.set(glCode, (acc.get(glCode) || 0) + amount);
+      return acc;
+    }, new Map<string, number>());
+
+    // Format the output string as <<index>>:<<gl code>>:<<transaction amount>> where index starts from 1
+    const revenue = Array.from(groupedGlCodes.entries())
+      .map(([glCode, amount], index) => `${index + 1}:${glCode}:${amount}`)
+      .join('|');
 
     // There should be a better way of doing this which is not as rigid - something like
     // dynamically removing the hashValue param from the actual query string instead of building
@@ -100,7 +159,7 @@ export class PaymentService {
       `&glDate=${date}` +
       `&paymentMethod=${PAYBC_PAYMENT_METHOD}` +
       `&currency=${PAYMENT_CURRENCY}` +
-      `&revenue=1:${process.env.GL_CODE}:${transaction.totalTransactionAmount}` +
+      `&revenue=${revenue}` +
       `&ref2=${transaction.transactionId}`;
 
     // Generate the hash using the query string and the MD5 algorithm
@@ -114,10 +173,10 @@ export class PaymentService {
     return { queryString, payBCHash, hashExpiry };
   };
 
-  @LogMethodExecution()
-  generateUrl(transaction: Transaction): string {
+  @LogAsyncMethodExecution()
+  async generateUrl(transaction: Transaction): Promise<string> {
     // Construct the URL with the transaction details for the payment gateway
-    const { queryString, payBCHash } = this.queryHash(transaction);
+    const { queryString, payBCHash } = await this.queryHash(transaction);
     const url =
       `${process.env.PAYBC_BASE_URL}?` +
       `${queryString}` +
@@ -207,6 +266,36 @@ export class PaymentService {
     createTransactionDto: CreateTransactionDto,
     nestedQueryRunner?: QueryRunner,
   ): Promise<ReadTransactionDto> {
+    if (
+      !doesUserHaveRole(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST) &&
+      createTransactionDto?.paymentMethodTypeCode !==
+        PaymentMethodTypeEnum.WEB &&
+      createTransactionDto?.paymentMethodTypeCode !==
+        PaymentMethodTypeEnum.ACCOUNT &&
+      createTransactionDto?.paymentMethodTypeCode !==
+        PaymentMethodTypeEnum.NO_PAYMENT
+    ) {
+      throwUnprocessableEntityException(
+        'Invalid payment method type for the user',
+      );
+    } else if (
+      createTransactionDto?.paymentMethodTypeCode ===
+        PaymentMethodTypeEnum.ACCOUNT &&
+      !(await isFeatureEnabled(this.cacheManager, 'CREDIT-ACCOUNT'))
+    ) {
+      throwUnprocessableEntityException('Disabled feature');
+    }
+
+    if (
+      createTransactionDto?.paymentMethodTypeCode ===
+        PaymentMethodTypeEnum.POS &&
+      !createTransactionDto?.paymentCardTypeCode
+    ) {
+      throwBadRequestException('paymentCardTypeCode', [
+        `paymentCardTypeCode is required when paymentMethodTypeCode is ${createTransactionDto?.paymentMethodTypeCode}`,
+      ]);
+    }
+
     let readTransactionDto: ReadTransactionDto;
     const queryRunner =
       nestedQueryRunner || this.dataSource.createQueryRunner();
@@ -240,12 +329,12 @@ export class PaymentService {
             'Application in its current status cannot be processed for payment.',
           );
       }
-      const totalTransactionAmount =
-        await this.validatePaymentAndCalculateAmount(
-          createTransactionDto,
-          existingApplications,
-          queryRunner,
-        );
+      const totalTransactionAmount = await this.validateApplicationAndPayment(
+        createTransactionDto,
+        existingApplications,
+        currentUser,
+        queryRunner,
+      );
       const transactionOrderNumber =
         await this.generateTransactionOrderNumber();
 
@@ -344,7 +433,7 @@ export class PaymentService {
         )
       ) {
         // Only payment using PayBC should generate the url
-        url = this.generateUrl(createdTransaction);
+        url = await this.generateUrl(createdTransaction);
       }
 
       if (
@@ -413,17 +502,27 @@ export class PaymentService {
    * @throws {BadRequestException} When the transaction amount in the request doesn't match with the calculated amount,
    * or if there's a transaction type and amount mismatch in case of refunds.
    */
-  private async validatePaymentAndCalculateAmount(
+  private async validateApplicationAndPayment(
     createTransactionDto: CreateTransactionDto,
     applications: Permit[],
+    currentUser: IUserJWT,
     queryRunner: QueryRunner,
   ) {
-    let totalTransactionAmountCalculated: number = 0;
+    let totalTransactionAmountCalculated = 0;
+    const isCVClientUser: boolean = isCVClient(currentUser.identity_provider);
     // Calculate and add amount for each requested application, as per the available backend data.
     for (const application of applications) {
-      totalTransactionAmountCalculated =
-        totalTransactionAmountCalculated +
-        (await this.permitFeeCalculator(application, queryRunner));
+      //Check if each application has a valid start date and valid expiry date.
+      if (isCVClientUser && !validApplicationDates(application, TIMEZONE_PACIFIC))
+      {
+        throw new UnprocessableEntityException(
+          `Atleast one of the application has invalid startDate or expiryDate.`,
+        );
+      }
+      totalTransactionAmountCalculated += await this.permitFeeCalculator(
+        application,
+        queryRunner,
+      );
     }
     const totalTransactionAmount =
       createTransactionDto.applicationDetails?.reduce(
@@ -431,20 +530,13 @@ export class PaymentService {
         0,
       );
     if (
-      totalTransactionAmount.toFixed(2) !=
-      Math.abs(totalTransactionAmountCalculated).toFixed(2)
-    ) {
-      throw new BadRequestException('Transaction Amount Mismatch');
-    }
-
-    //For transaction type refund, total transaction amount in backend should be less than zero and vice a versa.
-    //This extra check to compare transaction type and amount is only needed in case of refund, for other trasaction types, comparing amount is sufficient.
-    if (
-      totalTransactionAmountCalculated < 0 &&
-      createTransactionDto.transactionTypeId != TransactionType.REFUND
-    ) {
-      throw new BadRequestException('Transaction Type Mismatch');
-    }
+      !validAmount(
+        totalTransactionAmountCalculated,
+        totalTransactionAmount,
+        createTransactionDto.transactionTypeId,
+      )
+    )
+      throw new BadRequestException('Transaction amount mismatch.');
     return totalTransactionAmount;
   }
 
@@ -488,18 +580,17 @@ export class PaymentService {
     queryString: string,
   ): Promise<ReadPaymentGatewayTransactionDto> {
     let query: string, hashValue: string;
-    //Code QL fixes.
+    //Code QL fixes
     if (typeof queryString === 'string') {
+      const re = /\+/gi;
       query = queryString
         .substring(0, queryString.indexOf('hashValue=') - 1)
-        .replace('+', ' ');
-
+        .replace(re, ' ');
       hashValue = queryString.substring(
         queryString.indexOf('hashValue=') + 10,
         queryString.length,
       );
     }
-
     const validHash =
       convertToHash(
         `${query}${process.env.PAYBC_API_KEY}`,
@@ -552,6 +643,8 @@ export class PaymentService {
         {
           extraArgs: () => ({
             userName: currentUser.userName,
+            firstName: currentUser.orbcUserFirstName,
+            lastName: currentUser.orbcUserLastName,
             userGUID: currentUser.userGUID,
             timestamp: new Date(),
             directory: currentUser.orbcUserDirectory,
@@ -708,14 +801,31 @@ export class PaymentService {
       application.originalPermitId,
       queryRunner,
     );
+    const isNoFee = await this.findNoFee(
+      application.company.companyId,
+      queryRunner,
+    );
+    const oldAmount =
+      permitPaymentHistory.length > 0
+        ? calculatePermitAmount(permitPaymentHistory)
+        : undefined;
+    const fee = permitFee(application, isNoFee, oldAmount);
+    return fee;
+  }
 
-    if (application.permitStatus === ApplicationStatus.VOIDED) {
-      const oldAmount = calculatePermitAmount(permitPaymentHistory);
-      if (oldAmount > 0) return -oldAmount;
-      return oldAmount;
-    }
-    const oldAmount = calculatePermitAmount(permitPaymentHistory);
-    return permitFee(application, oldAmount);
+  @LogAsyncMethodExecution()
+  async findNoFee(
+    companyId: number,
+    queryRunner: QueryRunner,
+  ): Promise<boolean> {
+    const specialAuth = await queryRunner.manager
+      .createQueryBuilder()
+      .select('specialAuth')
+      .from(SpecialAuth, 'specialAuth')
+      .innerJoinAndSelect('specialAuth.company', 'company')
+      .where('company.companyId = :companyId', { companyId: companyId })
+      .getOne();
+    return !!specialAuth && !!specialAuth.noFeeType;
   }
 
   @LogAsyncMethodExecution()
@@ -737,6 +847,17 @@ export class PaymentService {
       .andWhere('permit.originalPermitId = :originalPermitId', {
         originalPermitId: originalPermitId,
       })
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where(
+            'transaction.paymentMethodTypeCode != :paymentType OR ( transaction.paymentMethodTypeCode = :paymentType AND transaction.pgApproved = :approved)',
+            {
+              paymentType: PaymentMethodTypeEnum.WEB,
+              approved: PgApprovesStatus.APPROVED,
+            },
+          );
+        }),
+      )
       .orderBy('transaction.transactionSubmitDate', 'DESC')
       .getMany();
 

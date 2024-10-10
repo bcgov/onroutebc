@@ -13,6 +13,7 @@ import {
   PowerUnit,
   Trailer,
 } from "../../features/manageVehicles/types/Vehicle";
+import { LOAFormData } from "../../features/settings/types/LOAFormData";
 
 export interface ApiErrorResponse {
   status: number;
@@ -32,7 +33,8 @@ export type ORBC_FormTypes =
   | BCeIDAddUserRequest
   | SearchFields
   | VerifyClientRequest
-  | PermitContactDetails;
+  | PermitContactDetails
+  | LOAFormData;
 
 /**
  * The options for pagination.
@@ -47,7 +49,7 @@ export interface PaginationOptions {
    * Max. value is 25.
    */
   take: number;
-};
+}
 
 /**
  * The sort directions.
@@ -73,7 +75,7 @@ export interface SortingConfig {
    * If not given a value, defaulted to false.
    */
   descending?: boolean;
-};
+}
 
 /**
  * Additional data filters that could be used for
@@ -85,15 +87,22 @@ export interface DataFilterOptions {
    */
   searchString?: string;
   /**
+   * The column to which the searchString will be applied.
+   */
+  // TODO create a type for the searchColumn which provides "applicationNumber" & "plate" and ensure that a default value is passed where necessary
+  searchColumn?: string;
+  /**
    * The sorting configuration selected by the user.
    */
   orderBy?: Array<SortingConfig>;
-};
+}
 
 /**
  * The options for pagination and filtering data.
  */
-export interface PaginationAndFilters extends PaginationOptions, DataFilterOptions {};
+export interface PaginationAndFilters
+  extends PaginationOptions,
+    DataFilterOptions {}
 
 /**
  * The metadata containing info about a page in the paginated response.
@@ -115,7 +124,7 @@ export interface PageMetadataInResponse extends PaginationOptions {
    * Is there a next page?
    */
   hasNextPage: boolean;
-};
+}
 
 /**
  * A generic paginated response structure for all the paginated responses from APIs.
@@ -129,7 +138,7 @@ export interface PaginatedResponse<T> {
    * Metadata about a page.
    */
   meta: PageMetadataInResponse;
-};
+}
 
 export type Optional<T> = T | undefined;
 export type RequiredOrNull<T> = T | null;

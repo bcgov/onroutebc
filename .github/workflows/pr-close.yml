@@ -12,10 +12,10 @@ concurrency:
 jobs:
   cleanup:
     name: Cleanup OpenShift and/or Promote Images
-    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@v0.1.0
+    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@v0.7.1
     secrets:
       oc_namespace: ${{ vars.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
     with:
       cleanup: helm
-      packages: dops frontend scheduler vehicles
+      packages: dops frontend scheduler vehicles policy

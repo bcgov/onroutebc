@@ -30,17 +30,16 @@ import { ReadPendingUserDto } from './dto/response/read-pending-user.dto';
 import { PendingUsersService } from './pending-users.service';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { Request } from 'express';
-import { Roles } from '../../../common/decorator/roles.decorator';
-import { Role } from '../../../common/enum/roles.enum';
+import { Permissions } from '../../../common/decorator/permissions.decorator';
 import { TPS_MIGRATED_USER } from '../../../common/constants/api.constant';
-
 import { DeleteDto } from '../../common/dto/response/delete.dto';
 import { DeletePendingUsersDto } from './dto/request/delete-pending-users.dto';
 import {
-  ClientUserAuthGroup,
-  IDIR_USER_AUTH_GROUP_LIST,
-} from '../../../common/enum/user-auth-group.enum';
-import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
+  ClientUserRole,
+  IDIR_USER_ROLE_LIST,
+  IDIRUserRole,
+} from '../../../common/enum/user-role.enum';
+import { doesUserHaveRole } from '../../../common/helper/auth.helper';
 
 @ApiTags('Company and User Management - Pending User')
 @ApiBadRequestResponse({
@@ -80,7 +79,14 @@ export class PendingUsersController {
     description: 'The Pending User Resource',
     type: ReadPendingUserDto,
   })
-  @Roles(Role.WRITE_USER)
+  @Permissions({
+    allowedBCeIDRoles: [ClientUserRole.COMPANY_ADMINISTRATOR],
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.CTPO,
+    ],
+  })
   @Post()
   async create(
     @Req() request: Request,
@@ -110,7 +116,14 @@ export class PendingUsersController {
     type: ReadPendingUserDto,
     isArray: true,
   })
-  @Roles(Role.READ_USER)
+  @Permissions({
+    allowedBCeIDRoles: [ClientUserRole.COMPANY_ADMINISTRATOR],
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.CTPO,
+    ],
+  })
   @Get()
   async findAll(
     @Param('companyId') companyId: number,
@@ -132,7 +145,14 @@ export class PendingUsersController {
     description: 'The Pending User Resource',
     type: ReadPendingUserDto,
   })
-  @Roles(Role.READ_USER)
+  @Permissions({
+    allowedBCeIDRoles: [ClientUserRole.COMPANY_ADMINISTRATOR],
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.CTPO,
+    ],
+  })
   @Get(':userName')
   async find(
     @Param('companyId') companyId: number,
@@ -170,7 +190,14 @@ export class PendingUsersController {
     description: 'The Pending User Resource',
     type: ReadPendingUserDto,
   })
-  @Roles(Role.WRITE_USER)
+  @Permissions({
+    allowedBCeIDRoles: [ClientUserRole.COMPANY_ADMINISTRATOR],
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.CTPO,
+    ],
+  })
   @Put(':userName')
   async update(
     @Req() request: Request,
@@ -206,7 +233,14 @@ export class PendingUsersController {
    * @returns A response encapsulated in {@link DeleteDto}, detailing the list of users successfully removed.
    * If no users are removed, a DataNotFoundException is thrown.
    */
-  @Roles(Role.WRITE_USER)
+  @Permissions({
+    allowedBCeIDRoles: [ClientUserRole.COMPANY_ADMINISTRATOR],
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.CTPO,
+    ],
+  })
   @ApiOperation({
     summary: 'Deletes pending users by username with authorization',
     description:
@@ -227,12 +261,8 @@ export class PendingUsersController {
   ): Promise<DeleteDto> {
     const currentUser = request.user as IUserJWT;
     if (
-      currentUser.orbcUserAuthGroup !==
-        ClientUserAuthGroup.COMPANY_ADMINISTRATOR &&
-      !doesUserHaveAuthGroup(
-        currentUser.orbcUserAuthGroup,
-        IDIR_USER_AUTH_GROUP_LIST,
-      )
+      currentUser.orbcUserRole !== ClientUserRole.COMPANY_ADMINISTRATOR &&
+      !doesUserHaveRole(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST)
     ) {
       throw new ForbiddenException();
     }

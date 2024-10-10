@@ -11,7 +11,7 @@ import {
 
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { Optional } from "../../../../common/types/common";
-import { USER_AUTH_GROUP } from "../../../../common/authentication/types";
+import { USER_ROLE } from "../../../../common/authentication/types";
 import { hasPermitExpired } from "../../../permits/helpers/permitState";
 import { isPermitInactive } from "../../../permits/types/PermitStatus";
 import { PermitListItem } from "../../../permits/types/permit";
@@ -25,21 +25,23 @@ import {
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
 import "./IDIRPermitSearchResults.scss";
+import { ERROR_ROUTES } from "../../../../routes/constants";
+import { useNavigate } from "react-router-dom";
 
 /**
  * Function to decide whether to show row actions icon or not.
- * @param userAuthGroup The auth group the user belongs to.
+ * @param userRole The role of the user.
  * @returns boolean
  */
-const shouldShowRowActions = (userAuthGroup: Optional<string>): boolean => {
-  if (!userAuthGroup) return false;
+const shouldShowRowActions = (userRole: Optional<string>): boolean => {
+  if (!userRole) return false;
   // Check if the user has PPC role to confirm
-  const allowableAuthGroups = [
-    USER_AUTH_GROUP.PPC_CLERK,
-    USER_AUTH_GROUP.ENFORCEMENT_OFFICER,
-    USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
+  const allowableRoles = [
+    USER_ROLE.PPC_CLERK,
+    USER_ROLE.ENFORCEMENT_OFFICER,
+    USER_ROLE.SYSTEM_ADMINISTRATOR,
   ] as string[];
-  return allowableAuthGroups.includes(userAuthGroup);
+  return allowableRoles.includes(userRole);
 };
 
 /*
@@ -93,9 +95,11 @@ export const IDIRPermitSearchResults = memo(
 
     const { data, isPending, isError } = searchResultsQuery;
 
+    const navigate = useNavigate();
+
     // Column definitions for the table
     const columns = useMemo<MRT_ColumnDef<PermitListItem>[]>(
-      () => PermitSearchResultColumnDef,
+      () => PermitSearchResultColumnDef(() => navigate(ERROR_ROUTES.DOCUMENT_UNAVAILABLE)),
       [],
     );
 
@@ -104,7 +108,9 @@ export const IDIRPermitSearchResults = memo(
      * @param initialData The initial data to filter by the active data toggle.
      * @returns List of permit items containing the data to be displayed in table.
      */
-    const getFilteredData = (initialData: PermitListItem[]): PermitListItem[] => {
+    const getFilteredData = (
+      initialData: PermitListItem[],
+    ): PermitListItem[] => {
       if (!initialData.length) return [];
       if (isActiveRecordsOnly) {
         // Returns unexpired permits
@@ -164,27 +170,30 @@ export const IDIRPermitSearchResults = memo(
           </Box>
         );
       },
-      renderRowActions: useCallback(({ row }: { row: MRT_Row<PermitListItem> }) => {
-        const isInactive =
-          hasPermitExpired(row.original.expiryDate) ||
-          isPermitInactive(row.original.permitStatus);
+      renderRowActions: useCallback(
+        ({ row }: { row: MRT_Row<PermitListItem> }) => {
+          const isInactive =
+            hasPermitExpired(row.original.expiryDate) ||
+            isPermitInactive(row.original.permitStatus);
 
-        if (shouldShowRowActions(idirUserDetails?.userAuthGroup)) {
-          return (
-            <Box className="idir-search-results__row-actions">
-              <IDIRPermitSearchRowActions
-                isPermitInactive={isInactive}
-                permitNumber={row.original.permitNumber}
-                permitId={row.original.permitId}
-                userAuthGroup={idirUserDetails?.userAuthGroup}
-                companyId={row.original.companyId?.toString()}
-              />
-            </Box>
-          );
-        } else {
-          return <></>;
-        }
-      }, []),
+          if (shouldShowRowActions(idirUserDetails?.userRole)) {
+            return (
+              <Box className="idir-search-results__row-actions">
+                <IDIRPermitSearchRowActions
+                  isPermitInactive={isInactive}
+                  permitNumber={row.original.permitNumber}
+                  permitId={row.original.permitId}
+                  userRole={idirUserDetails?.userRole}
+                  companyId={row.original.companyId}
+                />
+              </Box>
+            );
+          } else {
+            return <></>;
+          }
+        },
+        [],
+      ),
       muiToolbarAlertBannerProps: isError
         ? {
             color: "error",

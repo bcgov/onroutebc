@@ -6,8 +6,8 @@ import {
   RegisterOptions,
   useFormContext,
 } from "react-hook-form";
+
 import { ORBC_FormTypes } from "../../types/common";
-import { CustomDatePicker } from "./subFormComponents/CustomDatePicker";
 import { CustomOutlinedInput } from "./subFormComponents/CustomOutlinedInput";
 import { CustomSelect } from "./subFormComponents/CustomSelect";
 import { PhoneNumberInput } from "./subFormComponents/PhoneNumberInput";
@@ -17,7 +17,7 @@ import { CustomTextArea } from "./subFormComponents/CustomTextArea";
  * Properties of onRouteBC custom form components
  */
 export interface CustomFormComponentProps<T extends FieldValues> {
-  type: "input" | "select" | "phone" | "datePicker" | "textarea";
+  type: "input" | "select" | "phone" | "textarea";
   feature: string;
   options: CustomFormOptionsProps<T>;
   menuOptions?: JSX.Element[];
@@ -73,7 +73,7 @@ export const getErrorMessage = (errors: any, fieldPath: string): string => {
  * @param customHelperText Non-bold text to appear in parenthesis beside the label
  * @param menuOptions Menu items array for MUI Select component
  *
- * @returns An onRouteBc customized react form component
+ * @returns An onRouteBC customized react form component
  */
 export const CustomFormComponent = <T extends ORBC_FormTypes>({
   type,
@@ -97,13 +97,9 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
     formState: { errors },
   } = useFormContext();
 
-  /**
-   * Function to check the rules object for either required or required: { value: true}
-   * @returns true/false depending on field rule object
-   */
-  const isRequired = () => {
-    if (rules.required === true) return true;
-    if ((rules.required as any).value === true) return true;
+  const showOptionalLabel = () => {
+    if (rules.required === false) return true;
+    if ((rules.required as any)?.value === false) return true;
     return false;
   };
 
@@ -143,15 +139,6 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
             readOnly={readOnly}
           />
         );
-      case "datePicker":
-        return (
-          <CustomDatePicker
-            feature={feature}
-            name={name}
-            disabled={disabled}
-            readOnly={readOnly}
-          />
-        );
       case "textarea":
         return (
           <CustomTextArea
@@ -168,6 +155,7 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
         return null;
     }
   };
+
   return (
     <Box sx={className ? null : { width }} className={className}>
       <Controller
@@ -188,7 +176,7 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
               sx={{ fontWeight: "bold", marginBottom: "8px" }}
             >
               {label}
-              {!isRequired() && (
+              {showOptionalLabel() && (
                 <span style={{ fontWeight: "normal" }}> (optional)</span>
               )}
               {customHelperText && (

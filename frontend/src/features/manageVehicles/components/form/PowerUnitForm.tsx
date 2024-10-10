@@ -3,23 +3,24 @@ import { Box, Button, MenuItem } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 
-import "./VehicleForm.scss";
+import "./PowerUnitForm.scss";
 import { PowerUnit, VehicleSubType } from "../../types/Vehicle";
 import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
 import { SnackBarContext } from "../../../../App";
 import { VEHICLES_ROUTES } from "../../../../routes/constants";
+import { Nullable } from "../../../../common/types/common";
+import {
+  usePowerUnitSubTypesQuery,
+  useAddPowerUnitMutation,
+  useUpdatePowerUnitMutation,
+} from "../../hooks/powerUnits";
+
 import {
   getDefaultRequiredVal,
   getDefaultNullableVal,
   convertToNumberIfValid,
 } from "../../../../common/helpers/util";
-
-import {
-  useAddPowerUnitMutation,
-  usePowerUnitSubTypesQuery,
-  useUpdatePowerUnitMutation,
-} from "../../apiManager/hooks";
 
 import {
   invalidNumber,
@@ -28,24 +29,19 @@ import {
   invalidYearMin,
   requiredMessage,
 } from "../../../../common/helpers/validationMessages";
-import { Nullable } from "../../../../common/types/common";
 
-/**
- * Props used by the power unit form.
- */
-interface PowerUnitFormProps {
-  /**
-   * The power unit details to be displayed if in edit mode.
-   */
+const FEATURE = "power-unit";
+
+export const PowerUnitForm = ({
+  companyId,
+  powerUnit,
+}: {
+  companyId: number;
   powerUnit?: PowerUnit;
-}
+}) => {
+  const isEditMode = Boolean(powerUnit?.powerUnitId);
 
-/**
- * @returns React component containing the form for adding or editing a power unit.
- */
-export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
-  // Default values to register with React Hook Forms
-  // If data was passed to this component, then use that data, otherwise use empty or undefined values
+  // If data was passed to this component, then use that data, otherwise set fields to empty
   const powerUnitDefaultValues = {
     provinceCode: getDefaultRequiredVal("", powerUnit?.provinceCode),
     countryCode: getDefaultRequiredVal("", powerUnit?.countryCode),
@@ -72,23 +68,13 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
   const snackBar = useContext(SnackBarContext);
   const navigate = useNavigate();
 
-  /**
-   * Custom css overrides for the form fields
-   */
-  const formFieldStyle = {
-    fontWeight: "bold",
-    width: "490px",
-    marginLeft: "8px",
-  };
-
-  /**
-   * Adds a vehicle.
-   */
+  // Saving a vehicle
   const onAddOrUpdateVehicle = async (data: FieldValues) => {
-    if (powerUnit?.powerUnitId) {
+    if (isEditMode) {
       const powerUnitToBeUpdated = data as PowerUnit;
       const result = await updatePowerUnitMutation.mutateAsync({
-        powerUnitId: powerUnit?.powerUnitId,
+        companyId,
+        powerUnitId: (powerUnit as PowerUnit).powerUnitId as string,
         powerUnit: {
           ...powerUnitToBeUpdated,
           // need to explicitly convert form values to number here (since we can't use valueAsNumber prop)
@@ -117,6 +103,7 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
     } else {
       const powerUnitToBeAdded = data as PowerUnit;
       const result = await addPowerUnitMutation.mutateAsync({
+        companyId,
         powerUnit: {
           ...powerUnitToBeAdded,
           // need to explicitly convert form values to number here (since we can't use valueAsNumber prop)
@@ -147,22 +134,17 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
     }
   };
 
-  /**
-   * Changed view to the main Vehicle Inventory page
-   */
+  // Go back to the main Vehicle Inventory page on close
   const handleClose = () => {
     navigate(VEHICLES_ROUTES.MANAGE);
   };
 
-  /**
-   * The name of this feature that is used for id's, keys, and associating form components
-   */
-  const FEATURE = "power-unit";
+  const saveButtonText = isEditMode ? "Save" : "Add To Inventory";
 
   return (
-    <div>
-      <FormProvider {...formMethods}>
-        <div id="power-unit-form">
+    <FormProvider {...formMethods}>
+      <div className="power-unit-form">
+        <div className="power-unit-form__section">
           <CustomFormComponent
             type="input"
             feature={FEATURE}
@@ -170,8 +152,8 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
               name: "unitNumber",
               rules: { required: false, maxLength: 10 },
               label: "Unit #",
-              width: formFieldStyle.width,
             }}
+            className="power-unit-form__field"
           />
 
           <CustomFormComponent
@@ -184,8 +166,8 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
                 maxLength: 20,
               },
               label: "Make",
-              width: formFieldStyle.width,
             }}
+            className="power-unit-form__field"
           />
 
           <CustomFormComponent
@@ -204,8 +186,8 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
               },
               inputType: "number",
               label: "Year",
-              width: formFieldStyle.width,
             }}
+            className="power-unit-form__field"
           />
 
           <CustomFormComponent
@@ -219,9 +201,9 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
                 maxLength: 6,
               },
               label: "VIN",
-              width: formFieldStyle.width,
               customHelperText: "last 6 digits",
             }}
+            className="power-unit-form__field"
           />
 
           <CustomFormComponent
@@ -234,8 +216,8 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
                 maxLength: { value: 10, message: invalidPlateLength(10) },
               },
               label: "Plate",
-              width: formFieldStyle.width,
             }}
+            className="power-unit-form__field"
           />
 
           <CustomFormComponent
@@ -250,7 +232,6 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
                 },
               },
               label: "Vehicle Sub-type",
-              width: formFieldStyle.width,
             }}
             menuOptions={powerUnitSubTypesQuery?.data?.map(
               (data: VehicleSubType) => (
@@ -259,14 +240,18 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
                 </MenuItem>
               ),
             )}
+            className="power-unit-form__field"
           />
+          
           <CountryAndProvince
             feature={FEATURE}
             countryField="countryCode"
             provinceField="provinceCode"
             isProvinceRequired={true}
-            width={formFieldStyle.width}
+            provinceClassName="power-unit-form__field"
+            countryClassName="power-unit-form__field"
           />
+
           <CustomFormComponent
             type="input"
             feature={FEATURE}
@@ -280,9 +265,10 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
               },
               inputType: "number",
               label: "Licensed GVW",
-              width: formFieldStyle.width,
             }}
+            className="power-unit-form__field"
           />
+
           <CustomFormComponent
             type="input"
             feature={FEATURE}
@@ -296,34 +282,35 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
                 },
               },
               label: "Steer Axle Tire Size (mm)",
-              width: formFieldStyle.width,
             }}
+            className="power-unit-form__field"
           />
         </div>
-      </FormProvider>
 
-      <Box sx={{ margin: "32px 0px" }}>
-        <Button
-          key="cancel-add-vehicle-button"
-          aria-label="Cancel Add Vehicle"
-          variant="contained"
-          color="secondary"
-          onClick={handleClose}
-          sx={{ marginRight: "32px" }}
-        >
-          Cancel
-        </Button>
-        <Button
-          key="add-vehicle-button"
-          aria-label="Add To Inventory"
-          variant="contained"
-          color="primary"
-          onClick={handleSubmit(onAddOrUpdateVehicle)}
-        >
-          {powerUnit?.powerUnitId && "Save"}
-          {!powerUnit?.powerUnitId && "Add To Inventory"}
-        </Button>
-      </Box>
-    </div>
+        <Box className="power-unit-form__actions">
+          <Button
+            key="cancel-save-vehicle-button"
+            aria-label="Cancel"
+            variant="contained"
+            color="secondary"
+            onClick={handleClose}
+            className="power-unit-form__action-btn power-unit-form__action-btn--cancel"
+          >
+            Cancel
+          </Button>
+
+          <Button
+            key="save-vehicle-button"
+            aria-label={saveButtonText}
+            variant="contained"
+            color="primary"
+            onClick={handleSubmit(onAddOrUpdateVehicle)}
+            className="power-unit-form__action-btn power-unit-form__action-btn--submit"
+          >
+            {saveButtonText}
+          </Button>
+        </Box>
+      </div>
+    </FormProvider>
   );
 };

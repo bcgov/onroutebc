@@ -24,17 +24,17 @@ import { Request, Response } from 'express';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { FileDownloadModes } from '../../../common/enum/file-download-modes.enum';
 import { ReadFileDto } from '../../common/dto/response/read-file.dto';
-import { Roles } from 'src/common/decorator/roles.decorator';
-import { Role } from 'src/common/enum/roles.enum';
+import { Permissions } from 'src/common/decorator/permissions.decorator';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
 import { GetPermitQueryParamsDto } from './dto/request/queryParam/getPermit.query-params.dto';
 import {
-  ClientUserAuthGroup,
-  IDIR_USER_AUTH_GROUP_LIST,
-} from 'src/common/enum/user-auth-group.enum';
+  CLIENT_USER_ROLE_LIST,
+  ClientUserRole,
+  IDIR_USER_ROLE_LIST,
+} from 'src/common/enum/user-role.enum';
 import { ReadPermitMetadataDto } from './dto/response/read-permit-metadata.dto';
-import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
+import { doesUserHaveRole } from '../../../common/helper/auth.helper';
 import { PermitHistoryDto } from './dto/response/permit-history.dto';
 
 @ApiBearerAuth()
@@ -62,7 +62,10 @@ export class CompanyPermitController {
    *
    */
   @ApiPaginatedResponse(ReadPermitMetadataDto)
-  @Roles(Role.READ_PERMIT)
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: IDIR_USER_ROLE_LIST,
+  })
   @Get()
   async getPermit(
     @Req() request: Request,
@@ -71,19 +74,16 @@ export class CompanyPermitController {
   ): Promise<PaginationDto<ReadPermitMetadataDto>> {
     const currentUser = request.user as IUserJWT;
     if (
-      !doesUserHaveAuthGroup(
-        currentUser.orbcUserAuthGroup,
-        IDIR_USER_AUTH_GROUP_LIST,
-      ) &&
+      !doesUserHaveRole(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST) &&
       !companyId
     ) {
       throw new BadRequestException(
-        `Company Id is required for roles except ${IDIR_USER_AUTH_GROUP_LIST.join(', ')}.`,
+        `Company Id is required for roles except ${IDIR_USER_ROLE_LIST.join(', ')}.`,
       );
     }
 
     const userGuid =
-      ClientUserAuthGroup.PERMIT_APPLICANT === currentUser.orbcUserAuthGroup
+      ClientUserRole.PERMIT_APPLICANT === currentUser.orbcUserRole
         ? currentUser.userGUID
         : null;
 
@@ -105,7 +105,10 @@ export class CompanyPermitController {
     type: PermitHistoryDto,
     isArray: true,
   })
-  @Roles(Role.READ_PERMIT)
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: IDIR_USER_ROLE_LIST,
+  })
   @Get('/:permitId/history')
   async getPermitHisory(
     @Param('permitId') permitId: string,
@@ -123,7 +126,10 @@ export class CompanyPermitController {
     description:
       'Fetches a single permit detail by its permit ID for the current user.',
   })
-  @Roles(Role.READ_PERMIT)
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: IDIR_USER_ROLE_LIST,
+  })
   @Get('/:permitId')
   async getByPermitId(
     @Req() request: Request,
@@ -147,7 +153,10 @@ export class CompanyPermitController {
     description:
       'Retrieves the DOPS file for a given permit ID. Requires READ_PERMIT role.',
   })
-  @Roles(Role.READ_PERMIT)
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: IDIR_USER_ROLE_LIST,
+  })
   @Get('/:permitId/document')
   async getPermitDocument(
     @Req() request: Request,
@@ -176,7 +185,10 @@ export class CompanyPermitController {
     description:
       'Retrieves a PDF receipt for a given permit ID, ensuring the user has read permission.',
   })
-  @Roles(Role.READ_PERMIT)
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: IDIR_USER_ROLE_LIST,
+  })
   @Get('/:permitId/receipt')
   async getReceiptPDF(
     @Req() request: Request,

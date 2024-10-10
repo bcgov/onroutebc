@@ -1,5 +1,5 @@
 #  Build container
-FROM node:20.12.1-alpine AS builder
+FROM node:20.15.1-alpine AS builder
 
 # Set the working directory to /app inside the container
 WORKDIR /app
@@ -18,7 +18,7 @@ RUN npm prune --production
 
 
 # Deployment container
-FROM node:20.12.1-alpine
+FROM node:20.15.1-alpine
 RUN npm cache clean --force
 
 # Create and Assign permissions to npm folder
@@ -32,9 +32,9 @@ ENV NODE_ENV ${NODE_ENV}
 
 # Set environment variables
 ENV DB_TYPE ${DB_TYPE}
-ENV TPS_API_LOG_LEVEL ${TPS_API_LOG_LEVEL}
-ENV TPS_API_TYPEORM_LOG_LEVEL ${TPS_API_TYPEORM_LOG_LEVEL}
-ENV TPS_API_MAX_QUERY_EXECUTION_TIME_MS ${TPS_API_MAX_QUERY_EXECUTION_TIME_MS}
+ENV SCHEDULER_API_LOG_LEVEL ${SCHEDULER_API_LOG_LEVEL}
+ENV SCHEDULER_API_TYPEORM_LOG_LEVEL ${SCHEDULER_API_TYPEORM_LOG_LEVEL}
+ENV SCHEDULER_API_MAX_QUERY_EXECUTION_TIME_MS ${SCHEDULER_API_MAX_QUERY_EXECUTION_TIME_MS}
 ENV MSSQL_HOST ${MSSQL_HOST}
 ENV MSSQL_PORT ${MSSQL_PORT}
 ENV MSSQL_DB ${MSSQL_DB}
@@ -62,12 +62,20 @@ ENV CFS_SFTP_PORT ${CFS_SFTP_PORT}
 <<<<<<< HEAD
 =======
 ENV CFS_REMOTE_PATH ${CFS_REMOTE_PATH}
->>>>>>> main
+ENV ORBC_SERVICE_ACCOUNT_CLIENT_ID ${ORBC_SERVICE_ACCOUNT_CLIENT_ID}
+ENV ORBC_SERVICE_ACCOUNT_CLIENT_SECRET ${ORBC_SERVICE_ACCOUNT_CLIENT_SECRET}
+ENV ORBC_SERVICE_ACCOUNT_TOKEN_URL ${ORBC_SERVICE_ACCOUNT_TOKEN_URL}
+ENV ACCESS_API_URL ${ACCESS_API_URL}
+ENV ISSUE_PERMIT_LIMIT ${ISSUE_PERMIT_LIMIT}
+ENV DOC_GEN_LIMIT ${DOC_GEN_LIMIT}
+ENV PERMIT_SCHEDULE_POLLING_INTERVAL ${PERMIT_SCHEDULE_POLLING_INTERVAL}
 
 # Copy production files from build
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
+
+RUN apk add --no-cache curl
 
 # Expose Port
 EXPOSE 5050
@@ -79,4 +87,4 @@ USER node
 CMD ["npm", "run", "start:prod"]
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost/:5050
+HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:5050/

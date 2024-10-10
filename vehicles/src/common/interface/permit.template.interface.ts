@@ -11,6 +11,7 @@ export interface PermitTemplateData {
   issuedBy: string;
   revisions: Revision[];
   permitData?: PermitData;
+  loas?: string;
 }
 
 interface Revision {
@@ -26,9 +27,41 @@ export interface PermitData {
   contactDetails?: ContactDetails;
   vehicleDetails?: VehicleDetails;
   commodities: Commodities[];
+  loas: Loas[]; //Letter of Authorizations
   mailingAddress: MailingAddress;
   companyName: string;
   clientNumber: string;
+  vehicleConfiguration?: VehicleConfiguration;
+  applicationNotes?: string;
+  permittedCommodity?: PermittedCommodity;
+  permittedRoute?: PermittedRoute;
+}
+
+interface VehicleConfiguration {
+  overallLength: number;
+  overallWidth: number;
+  overallHeight: number;
+  frontProjection: number;
+  rearProjection: number;
+  trailers: VehicleDetails[];
+}
+
+interface PermittedRoute {
+  routeDetails: string;
+  manualRoute: ManualRoute;
+}
+
+interface PermittedCommodity {
+  commodityType: string;
+  loadDescription: string;
+}
+
+interface ManualRoute {
+  origin: string;
+  destination: string;
+  exitPoint?: string;
+  totalDistance?: number;
+  highwaySequence?: string[];
 }
 
 interface MailingAddress {
@@ -61,6 +94,7 @@ interface VehicleDetails {
   provinceCode: string;
   vehicleType: string;
   vehicleSubType: string;
+  licensedGVW?: number;
   saveVehicle?: boolean;
 }
 
@@ -68,6 +102,12 @@ interface Commodities {
   description: string;
   condition: string;
   conditionLink: string;
+  checked: boolean;
+  disabled?: boolean;
+}
+
+interface Loas {
+  loaId: string;
   checked: boolean;
   disabled?: boolean;
 }

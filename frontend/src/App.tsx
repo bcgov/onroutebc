@@ -1,7 +1,14 @@
 import { BrowserRouter as Router } from "react-router-dom";
 import { AppRoutes } from "./routes/Routes";
 import { ThemeProvider } from "@mui/material/styles";
-import { createContext, Dispatch, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, AuthProviderProps } from "react-oidc-context";
 import { WebStorageStateStore } from "oidc-client-ts";
@@ -14,7 +21,7 @@ import { NavIconSideBar } from "./common/components/naviconsidebar/NavIconSideBa
 import { NavIconHomeButton } from "./common/components/naviconsidebar/NavIconHomeButton";
 import { NavIconReportButton } from "./common/components/naviconsidebar/NavIconReportButton";
 import { Nullable, Optional } from "./common/types/common";
-import { VerifiedClient, UserRolesType } from "./common/authentication/types";
+import { VerifiedClient, UserClaimsType } from "./common/authentication/types";
 import { SuspendSnackBar } from "./common/components/snackbar/SuspendSnackBar";
 import { CartContextProvider } from "./features/permits/context/CartContextProvider";
 import {
@@ -55,7 +62,7 @@ export const SnackBarContext = createContext({
 });
 
 const App = () => {
-  const queryClient = new QueryClient();
+  const [queryClient] = useState(() => new QueryClient());
 
   // Globally used SnackBar component
   const [snackBar, setSnackBar] = useState<SnackBarOptions>({
@@ -65,12 +72,13 @@ const App = () => {
     alertType: "info",
   });
 
-  const [userRoles, setUserRoles] = useState<Nullable<UserRolesType[]>>();
+  const [userClaims, setUserClaims] = useState<Nullable<UserClaimsType[]>>();
   const [companyId, setCompanyId] = useState<Optional<number>>();
   const [onRouteBCClientNumber, setOnRouteBCClientNumber] =
     useState<Optional<string>>();
   const [companyLegalName, setCompanyLegalName] = useState<Optional<string>>();
-  const [isCompanySuspended, setIsCompanySuspended] = useState<Optional<boolean>>();
+  const [isCompanySuspended, setIsCompanySuspended] =
+    useState<Optional<boolean>>();
   const [userDetails, setUserDetails] =
     useState<Optional<BCeIDUserDetailContext>>();
   const [idirUserDetails, setIDIRUserDetails] =
@@ -110,8 +118,8 @@ const App = () => {
           <OnRouteBCContext.Provider
             value={useMemo(() => {
               return {
-                userRoles,
-                setUserRoles,
+                userClaims,
+                setUserClaims,
                 companyId,
                 setCompanyId,
                 userDetails,
@@ -131,7 +139,7 @@ const App = () => {
                 clearCompanyContext,
               };
             }, [
-              userRoles,
+              userClaims,
               companyId,
               userDetails,
               companyLegalName,

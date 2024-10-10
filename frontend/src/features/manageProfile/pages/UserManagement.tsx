@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { RowSelectionState } from "@tanstack/table-core";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useAuth } from "react-oidc-context";
@@ -13,8 +13,7 @@ import {
 import { SnackBarContext } from "../../../App";
 import { DeleteConfirmationDialog } from "../../../common/components/dialog/DeleteConfirmationDialog";
 import { NoRecordsFound } from "../../../common/components/table/NoRecordsFound";
-import { Trash } from "../../../common/components/table/options/Trash";
-import { ONE_HOUR } from "../../../common/constants/constants";
+import { TrashButton } from "../../../common/components/buttons/TrashButton";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
@@ -41,7 +40,9 @@ export const UserManagement = () => {
   const query = useQuery({
     queryKey: ["companyUsers"],
     queryFn: getCompanyUsers,
-    staleTime: ONE_HOUR,
+    placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false,
+    retry: 1,
   });
   const { data, isError, isLoading } = query;
   const { setSnackBar } = useContext(SnackBarContext);
@@ -184,7 +185,10 @@ export const UserManagement = () => {
     renderToolbarInternalActions: useCallback(
       () => (
         <Box className="table-container__toolbar-internal-actions">
-          <Trash onClickTrash={onClickTrashIcon} disabled={hasNoRowsSelected} />
+          <TrashButton
+            onClickTrash={onClickTrashIcon}
+            disabled={hasNoRowsSelected}
+          />
         </Box>
       ),
       [hasNoRowsSelected],
@@ -201,10 +205,10 @@ export const UserManagement = () => {
     <div className="table-container">
       <MaterialReactTable table={table} />
       <DeleteConfirmationDialog
-        onClickDelete={onConfirmDelete}
-        isOpen={isDeleteDialogOpen}
-        onClickCancel={onCancelDelete}
-        caption="user"
+        onDelete={onConfirmDelete}
+        showDialog={isDeleteDialogOpen}
+        onCancel={onCancelDelete}
+        itemToDelete="user"
       />
     </div>
   );

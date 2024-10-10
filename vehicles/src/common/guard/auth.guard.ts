@@ -10,7 +10,7 @@ import { IS_AUTH_ONLY_KEY } from '../decorator/auth-only.decorator';
 import { Request } from 'express';
 
 @Injectable()
-export class JwtAuthGuard extends AuthGuard('jwt') {
+export class JwtAuthGuard extends AuthGuard(['jwt', 'jwt-service-account']) {
   constructor(private reflector: Reflector) {
     super();
   }
@@ -31,9 +31,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     const request: Request = context.switchToHttp().getRequest();
 
     if (isAuthOnly) {
-      request.headers['AuthOnly'] = 'true';
+      request.headers.AuthOnly = 'true';
     } else {
-      request.headers['AuthOnly'] = 'false';
+      request.headers.AuthOnly = 'false';
     }
     return super.canActivate(context);
   }
