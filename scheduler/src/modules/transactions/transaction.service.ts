@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger} from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Transaction } from './transaction.entity';
 import { CfsTransactionDetail } from './transaction-detail.entity';
@@ -7,7 +7,7 @@ import { LogAsyncMethodExecution } from 'src/common/decorator/log-async-method-e
 import { generate } from 'src/helper/generator.helper';
 import { In, Repository } from 'typeorm';
 import { Holiday } from './holiday.entity';
-import dayjs from 'dayjs'; 
+import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { addToCache } from 'src/common/helper/cache.helper';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -41,39 +41,44 @@ export class TransactionService {
       this.cacheManager,
       CacheKey.HOLIDAYS,
     );
-    
-    if(!cachedHolidays){
+
+    if (!cachedHolidays) {
       this.holidays = await this.getBcHolidays();
-    }
-    else{
+    } else {
       cachedHolidays;
     }
-
   }
 
-async getHolidays(): Promise<Holiday[]> {
+  async getHolidays(): Promise<Holiday[]> {
     const now: Date = new Date();
     const year = now.getFullYear().toString();
     const holidays = await this.holidayRepository
-        .createQueryBuilder('holiday')
-        .where('YEAR(holiday.holidayDate) = :year', { year })
-        .getMany();
+      .createQueryBuilder('holiday')
+      .where('YEAR(holiday.holidayDate) = :year', { year })
+      .getMany();
 
     // Convert holidayDate to UTC format
-    return holidays.map(holiday => ({
-        ...holiday,
-        holidayDate: dayjs.utc(holiday.holidayDate).format('YYYY-MM-DD')
+    return holidays.map((holiday) => ({
+      ...holiday,
+      holidayDate: dayjs.utc(holiday.holidayDate).format('YYYY-MM-DD'),
     }));
-}
+  }
 
   async getTransactionDetails(): Promise<Transaction[]> {
-    const transactions = await this.transactionRepository.createQueryBuilder('transaction')
-    .innerJoinAndSelect('CfsTransactionDetail', 'detail', 'transaction.TRANSACTION_ID = detail.TRANSACTION_ID')
-    .where('detail.CFS_FILE_STATUS_TYPE = :status', { status: 'READY' })
-    .getMany();
+    const transactions = await this.transactionRepository
+      .createQueryBuilder('transaction')
+      .innerJoinAndSelect(
+        'CfsTransactionDetail',
+        'detail',
+        'transaction.TRANSACTION_ID = detail.TRANSACTION_ID',
+      )
+      .where('detail.CFS_FILE_STATUS_TYPE = :status', { status: 'READY' })
+      .getMany();
 
     // Extract transaction IDs from the results
-    transactionIds = transactions.map(transaction => transaction.TRANSACTION_ID);
+    transactionIds = transactions.map(
+      (transaction) => transaction.TRANSACTION_ID,
+    );
 
     if (transactions.length > 0) {
       this.logger.log(transactions);
@@ -87,15 +92,17 @@ async getHolidays(): Promise<Holiday[]> {
   async updateCfsFileStatusType(fileName: string): Promise<void> {
     const currentDate = new Date();
     const currentUTCTimestamp = currentDate;
-    const transactionDetails: CfsTransactionDetail[] = await this.cfsTransactionDetailRepo.find({
-      where: { TRANSACTION_ID: In(transactionIds) }
+    const transactionDetails: CfsTransactionDetail[] =
+      await this.cfsTransactionDetailRepo.find({
+        where: { TRANSACTION_ID: In(transactionIds) },
       });
-    const updatedTransactionDetails: CfsTransactionDetail[] = transactionDetails.map(detail => {
-      detail.CFS_FILE_STATUS_TYPE = 'SENT';
-      detail.PROCESSSING_DATE_TIME = currentUTCTimestamp;
-      detail.FILE_NAME = fileName;
-      return detail;
-    });
+    const updatedTransactionDetails: CfsTransactionDetail[] =
+      transactionDetails.map((detail) => {
+        detail.CFS_FILE_STATUS_TYPE = 'SENT';
+        detail.PROCESSSING_DATE_TIME = currentUTCTimestamp;
+        detail.FILE_NAME = fileName;
+        return detail;
+      });
 
     try {
       await this.cfsTransactionDetailRepo.save(updatedTransactionDetails);
@@ -106,24 +113,23 @@ async getHolidays(): Promise<Holiday[]> {
     }
   }
 
-private async getBcHolidays(): Promise<string[]> {
-  try {
-    const holidays: Holiday[] = await this.getHolidays();
+  private async getBcHolidays(): Promise<string[]> {
+    try {
+      const holidays: Holiday[] = await this.getHolidays();
 
-    const formatHoliday = (holiday: Holiday): string => {
-      return dayjs(holiday.holidayDate).format('YYYY-MM-DD');
-    };
+      const formatHoliday = (holiday: Holiday): string => {
+        return dayjs(holiday.holidayDate).format('YYYY-MM-DD');
+      };
 
-    const holidayStrings: string[] = holidays.map(formatHoliday);
-    const holidayString = holidayStrings.join(',');
-    await addToCache(this.cacheManager, CacheKey.HOLIDAYS, holidayString);
-    return holidayStrings;
-
-  } catch (error) {
-    this.logger.error('Error fetching BC holidays:', error);
-    return [];
+      const holidayStrings: string[] = holidays.map(formatHoliday);
+      const holidayString = holidayStrings.join(',');
+      await addToCache(this.cacheManager, CacheKey.HOLIDAYS, holidayString);
+      return holidayStrings;
+    } catch (error) {
+      this.logger.error('Error fetching BC holidays:', error);
+      return [];
+    }
   }
-}
 
   private isHoliday(date: Date): boolean {
     const formattedDate = date.toISOString().split('T')[0];
@@ -137,8 +143,8 @@ private async getBcHolidays(): Promise<string[]> {
     const now = new Date();
     if (this.isHoliday(now)) {
       this.logger.log('Today is a holiday. Skipping job execution.');
-       return;
-     }
+      return;
+    }
     const transactions: Promise<Transaction[]> = this.getTransactionDetails();
     const fileName = await generate(await transactions);
     await this.updateCfsFileStatusType(fileName[0]);

@@ -11,15 +11,15 @@ export class CgiSftpService {
   private readonly logger = new Logger(CgiSftpService.name);
 
   async upload(fileData: Express.Multer.File, fileName: string) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     const sftp = new Client();
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const connectionInfo: Client.ConnectOptions = getSFTPConnectionInfo();
     const remotePath = process.env.CFS_REMOTE_PATH; //Remote CFS Path
 
     try {
       await sftp.connect(connectionInfo);
-      this.logger.log(`Successfully connected to ${process.env.CFS_SFTP_HOST} via SFTP.`);
+      this.logger.log(
+        `Successfully connected to ${process.env.CFS_SFTP_HOST} via SFTP.`,
+      );
     } catch (error) {
       this.logger.error('Cannot connect to sftp.');
       this.logger.error(error);
@@ -34,7 +34,6 @@ export class CgiSftpService {
       throw new InternalServerErrorException('Failed to send file via SFTP.');
     } finally {
       this.logger.log('closing connection');
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       void sftp.end();
     }
   }

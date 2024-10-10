@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
 import { CfsTransactionDetail } from './transaction-detail.entity';
 
 @Entity('ORBC_TRANSACTION', { schema: 'permit' })
@@ -12,8 +18,7 @@ export class Transaction {
   @Column()
   TRANSACTION_TYPE: string;
 
-  @OneToOne(() => CfsTransactionDetail, detail => detail.transaction)
+  @OneToOne(() => CfsTransactionDetail, (detail) => detail.transaction)
   @JoinColumn({ name: 'TRANSACTION_ID' })
   detail: CfsTransactionDetail;
-  
 }

@@ -6,7 +6,9 @@ import { CfsTransactionDetail } from './transaction-detail.entity';
 import { Holiday } from './holiday.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Transaction, CfsTransactionDetail, Holiday])],
+  imports: [
+    TypeOrmModule.forFeature([Transaction, CfsTransactionDetail, Holiday]),
+  ],
   providers: [TransactionService],
   controllers: [],
   exports: [TransactionService],
