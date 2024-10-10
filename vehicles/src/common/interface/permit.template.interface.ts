@@ -31,6 +31,37 @@ export interface PermitData {
   mailingAddress: MailingAddress;
   companyName: string;
   clientNumber: string;
+  vehicleConfiguration?: VehicleConfiguration;
+  applicationNotes?: string;
+  permittedCommodity?: PermittedCommodity;
+  permittedRoute?: PermittedRoute;
+}
+
+interface VehicleConfiguration {
+  overallLength: number;
+  overallWidth: number;
+  overallHeight: number;
+  frontProjection: number;
+  rearProjection: number;
+  trailers: VehicleDetails[];
+}
+
+interface PermittedRoute {
+  routeDetails: string;
+  manualRoute: ManualRoute;
+}
+
+interface PermittedCommodity {
+  commodityType: string;
+  loadDescription: string;
+}
+
+interface ManualRoute {
+  origin: string;
+  destination: string;
+  exitPoint?: string;
+  totalDistance?: number;
+  highwaySequence?: string[];
 }
 
 interface MailingAddress {
@@ -63,6 +94,7 @@ interface VehicleDetails {
   provinceCode: string;
   vehicleType: string;
   vehicleSubType: string;
+  licensedGVW?: number;
   saveVehicle?: boolean;
 }
 

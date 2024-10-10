@@ -30,9 +30,9 @@ const envPath = path.resolve(process.cwd() + '/../');
       autoLoadEntities: true, // Auto load all entities regiestered by typeorm forFeature method.
       synchronize: false, // This changes the DB schema to match changes to entities, which we might not want.
       maxQueryExecutionTime:
-        +process.env.TPS_API_MAX_QUERY_EXECUTION_TIME_MS || 5000, //5 seconds by default
+        +process.env.SCHEDULER_API_MAX_QUERY_EXECUTION_TIME_MS || 5000, //5 seconds by default
       logger: new TypeormCustomLogger(
-        getTypeormLogLevel(process.env.TPS_API_TYPEORM_LOG_LEVEL),
+        getTypeormLogLevel(process.env.SCHEDULER_API_TYPEORM_LOG_LEVEL),
       ),
     }),
     CacheModule.register({

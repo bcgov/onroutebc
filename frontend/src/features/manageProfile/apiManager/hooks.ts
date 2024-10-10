@@ -8,8 +8,6 @@ import { IDPS } from "../../../common/types/idp";
 import { Nullable } from "../../../common/types/common";
 import { ERROR_ROUTES } from "../../../routes/constants";
 import { DeleteResponse } from "../types/manageProfile";
-import { getCompanyIdFromSession } from "../../../common/apiManager/httpRequestHandler";
-import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import {
   FIVE_MINUTES,
   FOUR_MINUTES,
@@ -20,9 +18,9 @@ import {
   deleteCompanyActiveUsers,
   getCompanyInfo,
   getCompanyInfoById,
-  getIDIRUserRoles,
+  getIDIRUserClaims,
   getUserContext,
-  getUserRolesByCompanyId,
+  getUserClaimsByCompanyId,
 } from "./manageProfileAPI";
 
 import OnRouteBCContext, {
@@ -31,15 +29,15 @@ import OnRouteBCContext, {
 } from "../../../common/authentication/OnRouteBCContext";
 
 import {
-  BCeIDUserAuthGroupType,
+  BCeIDUserRoleType,
   BCeIDUserContextType,
   IDIRUserContextType,
-  UserRolesType,
+  UserClaimsType,
 } from "../../../common/authentication/types";
 
 /**
  * Fetches company info of current user.
- * @returns company info of current user, or error if failed
+ * @returns Query object containing company info of current user
  */
 export const useCompanyInfoQuery = () => {
   return useQuery({
@@ -53,19 +51,15 @@ export const useCompanyInfoQuery = () => {
 
 /**
  * Fetches company info of specific company.
- * @returns company info or error if failed
+ * @param companyId Id of the company to get the info for
+ * @returns Query object containing company info
  */
 export const useCompanyInfoDetailsQuery = (
-  companyIdParam?: Nullable<string>,
+  companyId: number,
 ) => {
-  const companyId = getDefaultRequiredVal(
-    "",
-    getCompanyIdFromSession(),
-    companyIdParam,
-  );
   return useQuery({
     queryKey: ["companyInfo"],
-    queryFn: () => getCompanyInfoById(Number(companyId)),
+    queryFn: () => getCompanyInfoById(companyId),
     enabled: Boolean(companyId),
     refetchInterval: FIVE_MINUTES,
     refetchOnWindowFocus: false, // fixes issue where a query is run everytime the screen is brought to foreground
@@ -127,7 +121,7 @@ export const useUserContext = (
           lastName: user.lastName,
           userName: user.userName,
           email: user.email,
-          userAuthGroup: user.userAuthGroup,
+          userRole: user.userRole,
         } as IDIRUserDetailContext;
 
         setIDIRUserDetails?.(() => userDetails);
@@ -160,7 +154,7 @@ export const useUserContext = (
           phone2Extension: user.phone2Extension,
           email: user.email,
           fax: user.fax,
-          userAuthGroup: user.userAuthGroup as BCeIDUserAuthGroupType,
+          userRole: user.userRole as BCeIDUserRoleType,
         } as BCeIDUserDetailContext;
 
         setUserDetails?.(() => userDetails);
@@ -209,61 +203,61 @@ export const useUserContext = (
 };
 
 /**
- * Hook to fetching the user roles data from the api.
+ * Hook to fetching the user claims data from the api.
  * @returns UseQueryResult containing the query results.
  */
-export const useUserRolesByCompanyIdQuery = () => {
+export const useUserClaimsByCompanyIdQuery = () => {
   return useQuery({
-    queryKey: ["userRoles"],
+    queryKey: ["userClaims"],
     refetchInterval: FIVE_MINUTES,
-    queryFn: getUserRolesByCompanyId,
+    queryFn: getUserClaimsByCompanyId,
     retry: 1, // Retry once on failure
   });
 };
 
 /**
- * Hook to set up the user roles after fetching the data from the api.
- * @param userRolesResponseBody Response data for the user roles fetched.
+ * Hook to set up the user claims after fetching the data from the api.
+ * @param userClaimsResponseBody Response data for the user claims fetched.
  * @returns UseQueryResult containing the query results.
  */
-export const useUserRolesByCompanyId = (
-  userRolesResponseBody: Nullable<UserRolesType[]>,
+export const useUserClaimsByCompanyId = (
+  userClaimsResponseBody: Nullable<UserClaimsType[]>,
 ) => {
-  const { setUserRoles } = useContext(OnRouteBCContext);
+  const { setUserClaims } = useContext(OnRouteBCContext);
 
   useEffect(() => {
-    if (userRolesResponseBody) {
-      setUserRoles?.(() => userRolesResponseBody);
+    if (userClaimsResponseBody) {
+      setUserClaims?.(() => userClaimsResponseBody);
     }
-  }, [userRolesResponseBody]);
+  }, [userClaimsResponseBody]);
 };
 
 /**
- * Hook to fetching the IDIR user roles data from the api.
+ * Hook to fetching the IDIR user claims data from the api.
  * @returns UseQueryResult containing the query results.
  */
-export const useIDIRUserRolesQuery = () => {
+export const useIDIRUserClaimsQuery = () => {
   return useQuery({
-    queryKey: ["userIDIRRoles"],
+    queryKey: ["userIDIRClaims"],
     refetchInterval: FIVE_MINUTES,
-    queryFn: getIDIRUserRoles,
+    queryFn: getIDIRUserClaims,
     retry: 1, // Retry once on failure
   });
 };
 
 /**
- * Hook to set up the IDIR user roles after fetching the data from the api.
- * @param userRoles User roles data response from the api.
+ * Hook to set up the IDIR user claims after fetching the data from the api.
+ * @param userClaims User claims data response from the api.
  * @returns UseQueryResult containing the query results.
  */
-export const useIDIRUserRoles = (userRoles: Nullable<UserRolesType[]>) => {
-  const { setUserRoles } = useContext(OnRouteBCContext);
+export const useIDIRUserClaims = (userClaims: Nullable<UserClaimsType[]>) => {
+  const { setUserClaims } = useContext(OnRouteBCContext);
 
   useEffect(() => {
-    if (userRoles) {
-      setUserRoles?.(() => userRoles);
+    if (userClaims) {
+      setUserClaims?.(() => userClaims);
     }
-  }, [userRoles]);
+  }, [userClaims]);
 };
 
 /**

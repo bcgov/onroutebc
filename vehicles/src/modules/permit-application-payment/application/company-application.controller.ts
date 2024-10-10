@@ -31,22 +31,27 @@ import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { UpdateApplicationDto } from './dto/request/update-application.dto';
 import { DataNotFoundException } from 'src/common/exception/data-not-found.exception';
 import { ResultDto } from './dto/response/result.dto';
-import { Roles } from 'src/common/decorator/roles.decorator';
-import { Role } from 'src/common/enum/roles.enum';
+import { Permissions } from 'src/common/decorator/permissions.decorator';
 import { IssuePermitDto } from './dto/request/issue-permit.dto';
 import {
-  ClientUserAuthGroup,
-  IDIR_USER_AUTH_GROUP_LIST,
-} from 'src/common/enum/user-auth-group.enum';
+  CLIENT_USER_ROLE_LIST,
+  ClientUserRole,
+  IDIR_USER_ROLE_LIST,
+  IDIRUserRole,
+} from 'src/common/enum/user-role.enum';
 import { DeleteApplicationDto } from './dto/request/delete-application.dto';
 import { DeleteDto } from '../../common/dto/response/delete.dto';
 import { PermitApplicationOrigin } from '../../../common/enum/permit-application-origin.enum';
-import { doesUserHaveAuthGroup } from '../../../common/helper/auth.helper';
+import { doesUserHaveRole } from '../../../common/helper/auth.helper';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import { ReadApplicationMetadataDto } from './dto/response/read-application-metadata.dto';
 import { GetApplicationQueryParamsDto } from './dto/request/queryParam/getApplication.query-params.dto';
 import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
 import { PermitReceiptDocumentService } from '../permit-receipt-document/permit-receipt-document.service';
+import {
+  ApplicationQueueStatus,
+  convertApplicationQueueStatus,
+} from '../../../common/enum/case-status-type.enum';
 
 @ApiBearerAuth()
 @ApiTags('Company Application')
@@ -83,7 +88,14 @@ export class CompanyApplicationController {
       "If login user is PA then only fetch thier application else fetch all applications associated with logged in user's company. ",
   })
   @ApiPaginatedResponse(ReadApplicationMetadataDto)
-  @Roles(Role.READ_PERMIT)
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.CTPO,
+    ],
+  })
   @Get()
   async findAllApplication(
     @Req() request: Request,
@@ -92,7 +104,7 @@ export class CompanyApplicationController {
   ): Promise<PaginationDto<ReadApplicationMetadataDto>> {
     const currentUser = request.user as IUserJWT;
     const userGuid =
-      ClientUserAuthGroup.PERMIT_APPLICANT === currentUser.orbcUserAuthGroup
+      ClientUserRole.PERMIT_APPLICANT === currentUser.orbcUserRole
         ? currentUser.userGUID
         : null;
 
@@ -104,6 +116,13 @@ export class CompanyApplicationController {
       pendingPermits: getApplicationQueryParamsDto.pendingPermits,
       userGUID: userGuid,
       currentUser: currentUser,
+      applicationQueueStatus: convertApplicationQueueStatus(
+        (getApplicationQueryParamsDto?.applicationQueueStatus?.split(
+          ',',
+        ) as ApplicationQueueStatus[]) || [],
+      ),
+      searchColumn: getApplicationQueryParamsDto.searchColumn,
+      searchString: getApplicationQueryParamsDto.searchString,
     });
   }
   /**
@@ -120,7 +139,14 @@ export class CompanyApplicationController {
     description: 'The Permit Application Resource',
     type: ReadApplicationDto,
   })
-  @Roles(Role.WRITE_PERMIT)
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.CTPO,
+    ],
+  })
   @Post()
   async createPermitApplication(
     @Req() request: Request,
@@ -153,7 +179,14 @@ export class CompanyApplicationController {
     isArray: true,
   })
   @ApiQuery({ name: 'amendment', required: false })
-  @Roles(Role.READ_PERMIT)
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.CTPO,
+    ],
+  })
   @Get(':applicationId')
   async findOneApplication(
     @Req() request: Request,
@@ -181,10 +214,7 @@ export class CompanyApplicationController {
     // Validates the current user's permission to access the application or amendment
     // by comparing user's authentication group, company ID, and the application's origin
     if (
-      !doesUserHaveAuthGroup(
-        currentUser.orbcUserAuthGroup,
-        IDIR_USER_AUTH_GROUP_LIST,
-      ) &&
+      !doesUserHaveRole(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST) &&
       retApplicationDto.permitApplicationOrigin !==
         PermitApplicationOrigin.ONLINE
     ) {
@@ -208,7 +238,14 @@ export class CompanyApplicationController {
     description: 'The Permit Application Resource',
     type: ReadApplicationDto,
   })
-  @Roles(Role.WRITE_PERMIT)
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.CTPO,
+    ],
+  })
   @Put(':applicationId')
   async update(
     @Req() request: Request,
@@ -244,7 +281,14 @@ export class CompanyApplicationController {
       'Update Permit Application status for given id and set it to ISSUED.' +
       'Returns a list of updated application ids or throws exceptions for unauthorized access or operational failures.',
   })
-  @Roles(Role.WRITE_PERMIT)
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.CTPO,
+    ],
+  })
   @Post('/issue')
   async issuePermit(
     @Req() request: Request,
@@ -254,14 +298,11 @@ export class CompanyApplicationController {
     const currentUser = request.user as IUserJWT;
 
     if (
-      !doesUserHaveAuthGroup(
-        currentUser.orbcUserAuthGroup,
-        IDIR_USER_AUTH_GROUP_LIST,
-      ) &&
+      !doesUserHaveRole(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST) &&
       !companyId
     ) {
       throw new BadRequestException(
-        `Company Id is required for roles except ${IDIR_USER_AUTH_GROUP_LIST.join(', ')}.`,
+        `Company Id is required for roles except ${IDIR_USER_ROLE_LIST.join(', ')}.`,
       );
     }
 
@@ -288,7 +329,14 @@ export class CompanyApplicationController {
     return result;
   }
 
-  @Roles(Role.WRITE_PERMIT)
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.CTPO,
+    ],
+  })
   @Delete()
   @ApiOperation({
     summary:

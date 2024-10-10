@@ -9,7 +9,8 @@ SET XACT_ABORT ON
 
 BEGIN TRY
   BEGIN TRANSACTION
-    DROP TABLE [dbo].[ORBC_HOLIDAY]
+
+    DELETE FROM [access].[ORBC_GROUP_ROLE] WHERE ROLE_TYPE = 'ORBC-READ-CREDIT-ACCOUNT' AND USER_AUTH_GROUP_TYPE='PAPPLICANT'
   COMMIT
 END TRY
 
@@ -20,6 +21,6 @@ BEGIN CATCH
 END CATCH
 
 DECLARE @VersionDescription VARCHAR(255)
-SET @VersionDescription = 'Reverting holiday table creation plus history tables for v36'
+SET @VersionDescription = 'Reverting ORBC-READ-CREDIT-ACCOUNT role for PAPPLICANT.'
 
 INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (35, @VersionDescription, getutcdate())

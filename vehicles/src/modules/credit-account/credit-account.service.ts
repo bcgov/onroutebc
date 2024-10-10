@@ -1,6 +1,7 @@
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import {
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -42,13 +43,18 @@ import { CreditAccountActivity } from './entities/credit-account-activity.entity
 import { CreditAccountActivityType } from '../../common/enum/credit-account-activity-type.enum';
 import { User } from '../company-user-management/users/entities/user.entity';
 import { DataNotFoundException } from '../../common/exception/data-not-found.exception';
-import { ReadCreditAccountMetadataDto } from './dto/response/read-credit-account-metadata.dto';
+
 import { throwUnprocessableEntityException } from '../../common/helper/exception.helper';
 import {
-  ClientUserAuthGroup,
-  IDIRUserAuthGroup,
-  UserAuthGroup,
-} from '../../common/enum/user-auth-group.enum';
+  ClientUserRole,
+  IDIRUserRole,
+  UserRole,
+} from '../../common/enum/user-role.enum';
+import { ReadCreditAccountActivityDto } from './dto/response/read-credit-account-activity.dto';
+import { ReadCreditAccountMetadataDto } from './dto/response/read-credit-account-metadata.dto';
+import { ReadCreditAccountUserDetailsDto } from './dto/response/read-credit-account-user-details.dto';
+import { ReadCreditAccountLimitDto } from './dto/response/read-credit-account-limit.dto';
+import { doesUserHaveRole } from '../../common/helper/auth.helper';
 
 /**
  * Service functions for credit account operations.
@@ -223,72 +229,150 @@ export class CreditAccountService {
       }
     }
 
-    const creditAccountHolder = await this.classMapper.mapAsync(
-      companyInfo,
-      Company,
-      ReadCreditAccountUserDto,
-    );
-
     const createdCreditAccountDto = await this.classMapper.mapAsync(
       savedCreditAccount,
       CreditAccount,
       ReadCreditAccountDto,
-      {
-        extraArgs: () => ({
-          userAuthGroup: currentUser.orbcUserAuthGroup,
-          creditBalance: 0,
-          availableCredit: creditLimit,
-          creditLimit,
-        }),
-      },
     );
-    createdCreditAccountDto.creditAccountUsers = [creditAccountHolder];
+
     return createdCreditAccountDto;
   }
 
+  /**
+   * Retrieves detailed information about a credit account for a given company and user.
+   *
+   * This method fetches the credit account details based on company ID and optionally credit account ID.
+   * If the credit account does not exist, it throws a DataNotFoundException. It then maps the credit account
+   * details to a ReadCreditAccountDto with additional parameters derived from the user context.
+   *
+   * @param {number} companyId - The ID of the company.
+   * @param {Nullable<number>} creditAccountId - The optional ID of the credit account.
+   * @param {IUserJWT} currentUser - The current authenticated user.
+   * @returns {Promise<ReadCreditAccountDto>} - The data transfer object containing credit account details.
+   * @throws {DataNotFoundException} - If the specified credit account is not found.
+   */
   @LogAsyncMethodExecution()
-  async getCreditAccount(currentUser: IUserJWT, companyId: number) {
+  async getCreditAccount({
+    companyId,
+    creditAccountId,
+    currentUser,
+  }: {
+    companyId: number;
+    creditAccountId?: Nullable<number>;
+    currentUser: IUserJWT;
+  }): Promise<ReadCreditAccountDto> {
     const creditAccount = await this.findCreditAccountDetails(
       companyId,
       currentUser,
+      creditAccountId,
     );
 
     if (!creditAccount) {
       throw new DataNotFoundException();
+    } else if (
+      doesUserHaveRole(currentUser.orbcUserRole, [
+        ClientUserRole.COMPANY_ADMINISTRATOR,
+      ]) &&
+      creditAccount?.company.companyId !== companyId
+    ) {
+      // Throw exception if companyId is a Credit Account User and user is Company Admin.
+      throw new ForbiddenException();
+    } else if (
+      creditAccount?.company?.companyId === companyId &&
+      creditAccount?.creditAccountStatusType ===
+        CreditAccountStatus.ACCOUNT_CLOSED &&
+      !doesUserHaveRole(currentUser.orbcUserRole, [
+        IDIRUserRole.HQ_ADMINISTRATOR,
+        IDIRUserRole.SYSTEM_ADMINISTRATOR,
+        IDIRUserRole.FINANCE,
+        IDIRUserRole.PPC_CLERK,
+        IDIRUserRole.CTPO,
+      ])
+    ) {
+      throw new DataNotFoundException();
     }
-    creditAccount.creditAccountUsers =
-      creditAccount?.creditAccountUsers?.filter(
-        (creditAccountUser) => creditAccountUser.isActive,
-      );
 
     const readCreditAccountDto = await this.classMapper.mapAsync(
       creditAccount,
       CreditAccount,
       ReadCreditAccountDto,
-      {
-        extraArgs: () => ({
-          userAuthGroup: currentUser.orbcUserAuthGroup,
-          creditBalance: 0,
-          availableCredit: 0,
-          creditLimit: 0,
-        }),
-      },
     );
 
-    const mappedCreditAccountHolderInfo = await this.classMapper.mapAsync(
-      creditAccount?.company,
-      Company,
-      ReadCreditAccountUserDto,
-    );
-
-    if (readCreditAccountDto?.creditAccountUsers?.length) {
-      readCreditAccountDto?.creditAccountUsers?.unshift(
-        mappedCreditAccountHolderInfo,
-      );
-    } else {
-      readCreditAccountDto.creditAccountUsers = [mappedCreditAccountHolderInfo];
-    }
     return readCreditAccountDto;
+  }
+
+  /**
+   * Retrieves detailed information about a credit account for a given company and user.
+   *
+   * This method fetches the credit account details based on company ID and optionally credit account ID.
+   * If the credit account does not exist, it throws a DataNotFoundException. It then maps the credit account
+   * details to a ReadCreditAccountDto with additional parameters derived from the user context.
+   *
+   * @param {number} companyId - The ID of the company.
+   * @param {Nullable<number>} creditAccountId - The optional ID of the credit account.
+   * @param {IUserJWT} currentUser - The current authenticated user.
+   * @returns {Promise<ReadCreditAccountDto>} - The data transfer object containing credit account details.
+   * @throws {DataNotFoundException} - If the specified credit account is not found.
+   */
+  @LogAsyncMethodExecution()
+  async getCreditAccountMetadata({
+    companyId,
+    creditAccountId,
+    currentUser,
+  }: {
+    companyId: number;
+    creditAccountId?: Nullable<number>;
+    currentUser: IUserJWT;
+  }): Promise<ReadCreditAccountMetadataDto> {
+    const creditAccount = await this.findCreditAccountDetails(
+      companyId,
+      currentUser,
+      creditAccountId,
+    );
+
+    if (!creditAccount) {
+      throw new DataNotFoundException();
+    } else if (
+      creditAccount?.company?.companyId === companyId &&
+      creditAccount?.creditAccountStatusType ===
+        CreditAccountStatus.ACCOUNT_CLOSED &&
+      !doesUserHaveRole(currentUser.orbcUserRole, [
+        IDIRUserRole.HQ_ADMINISTRATOR,
+        IDIRUserRole.SYSTEM_ADMINISTRATOR,
+        IDIRUserRole.FINANCE,
+        IDIRUserRole.PPC_CLERK,
+        IDIRUserRole.CTPO,
+      ])
+    ) {
+      throw new DataNotFoundException();
+    }
+
+    creditAccount.creditAccountUsers =
+      creditAccount?.creditAccountUsers?.filter(
+        (creditAccountUser) => creditAccountUser.isActive,
+      );
+
+    const readCreditAccountMetadataDto = new ReadCreditAccountMetadataDto();
+    readCreditAccountMetadataDto.creditAccountId =
+      creditAccount.creditAccountId;
+
+    if (creditAccount?.company?.companyId === companyId)
+      readCreditAccountMetadataDto.userType =
+        CreditAccountUserType.ACCOUNT_HOLDER;
+    else {
+      readCreditAccountMetadataDto.userType =
+        CreditAccountUserType.ACCOUNT_USER;
+    }
+    if (
+      creditAccount?.creditAccountStatusType ===
+        CreditAccountStatus.ACCOUNT_ACTIVE &&
+      !creditAccount?.company.isSuspended
+    ) {
+      readCreditAccountMetadataDto.isValidPaymentMethod = true;
+    } else {
+      readCreditAccountMetadataDto.isValidPaymentMethod = false;
+    }
+    return readCreditAccountMetadataDto;
   }
 
   /**
@@ -438,7 +522,10 @@ export class CreditAccountService {
     } finally {
       await queryRunner.release();
     }
-    return await this.getCreditAccount(currentUser, creditAccountHolderId);
+    return await this.getCreditAccount({
+      currentUser,
+      companyId: creditAccountHolderId,
+    });
   }
 
   /**
@@ -540,14 +627,14 @@ export class CreditAccountService {
 
     // Check if there is an active credit account or if there are any active credit account users
     if (existingActiveAccount) {
-      const existingAccountMetadata = await this.classMapper.mapAsync(
+      const existingAccountUserDetails = await this.classMapper.mapAsync(
         existingActiveAccount,
         CreditAccount,
-        ReadCreditAccountMetadataDto,
+        ReadCreditAccountUserDetailsDto,
       );
       throwUnprocessableEntityException(
         'Client already associated with an active Credit Account',
-        existingAccountMetadata,
+        existingAccountUserDetails,
       );
     }
 
@@ -924,7 +1011,33 @@ export class CreditAccountService {
 
     if (!creditAccount) {
       throw new DataNotFoundException();
+    } else if (
+      doesUserHaveRole(currentUser.orbcUserRole, [
+        ClientUserRole.COMPANY_ADMINISTRATOR,
+      ]) &&
+      creditAccount?.company.companyId !== companyId
+    ) {
+      // Throw exception if companyId is a Credit Account User and user is Company Admin.
+      throw new ForbiddenException();
+    } else if (
+      creditAccount?.company?.companyId === companyId &&
+      creditAccount?.creditAccountStatusType ===
+        CreditAccountStatus.ACCOUNT_CLOSED &&
+      !doesUserHaveRole(currentUser.orbcUserRole, [
+        IDIRUserRole.HQ_ADMINISTRATOR,
+        IDIRUserRole.SYSTEM_ADMINISTRATOR,
+        IDIRUserRole.FINANCE,
+        IDIRUserRole.PPC_CLERK,
+        IDIRUserRole.CTPO,
+      ])
+    ) {
+      throw new DataNotFoundException();
     }
+
+    creditAccount.creditAccountUsers =
+      creditAccount?.creditAccountUsers?.filter(
+        (creditAccountUser) => creditAccountUser.isActive,
+      );
 
     let readCreditAccountUserDtoList: ReadCreditAccountUserDto[] = [];
     if (creditAccount?.creditAccountUsers?.length) {
@@ -951,6 +1064,116 @@ export class CreditAccountService {
     return readCreditAccountUserDtoList;
   }
 
+  /**
+   * Retrieves credit account limit information based on account holder and credit account ID.
+   *
+   * @param companyId - The ID of the company.
+   * @param creditAccountId - The ID of the credit account.
+   * @param currentUser - The current authenticated user.
+   * @returns {Promise<ReadCreditAccountLimitDto>} - The details of the credit account limit.
+   * @throws {DataNotFoundException} - If the credit account is not found.
+   * @throws {ForbiddenException} - If the user is a Company Admin but the company is a Credit Account User.
+   */
+  @LogAsyncMethodExecution()
+  public async getCreditAccountLimit({
+    companyId,
+    creditAccountId,
+    currentUser,
+  }: {
+    companyId: number;
+    creditAccountId: number;
+    currentUser: IUserJWT;
+  }): Promise<ReadCreditAccountLimitDto> {
+    const creditAccount = await this.findCreditAccountDetails(
+      companyId,
+      currentUser,
+      creditAccountId,
+    );
+
+    if (!creditAccount) {
+      throw new DataNotFoundException();
+    } else if (
+      creditAccount?.creditAccountStatusType ===
+        CreditAccountStatus.ACCOUNT_ON_HOLD &&
+      doesUserHaveRole(currentUser.orbcUserRole, [
+        ClientUserRole.COMPANY_ADMINISTRATOR,
+      ]) &&
+      creditAccount?.company.companyId === companyId
+    ) {
+      // Throw exception if companyId is a Credit Account User and user is Company Admin.
+      throw new ForbiddenException();
+    } else if (
+      creditAccount?.company?.companyId === companyId &&
+      creditAccount?.creditAccountStatusType ===
+        CreditAccountStatus.ACCOUNT_CLOSED &&
+      !doesUserHaveRole(currentUser.orbcUserRole, [
+        IDIRUserRole.HQ_ADMINISTRATOR,
+        IDIRUserRole.SYSTEM_ADMINISTRATOR,
+        IDIRUserRole.FINANCE,
+        IDIRUserRole.PPC_CLERK,
+        IDIRUserRole.CTPO,
+      ])
+    ) {
+      throw new DataNotFoundException();
+    } else if (
+      doesUserHaveRole(currentUser.orbcUserRole, [
+        ClientUserRole.COMPANY_ADMINISTRATOR,
+      ]) &&
+      creditAccount?.company.companyId !== companyId
+    ) {
+      // Throw exception if companyId is a Credit Account User and user is Company Admin.
+      throw new ForbiddenException();
+    }
+
+    // TODO Limit calculation is currently blocked and needs to be implemented
+    return await this.classMapper.mapAsync(
+      creditAccount,
+      CreditAccount,
+      ReadCreditAccountLimitDto,
+    );
+  }
+
+  /**
+   * Retrieves credit account activity based on account holder and credit account ID.
+   *
+   * @param companyId - The ID of the company.
+   * @param creditAccountId - The ID of the credit account.
+   * @param currentUser - The current user.
+   * @returns {Promise<ReadCreditAccountActivityDto[]>} - The list of credit account activities.
+   */
+  @LogAsyncMethodExecution()
+  public async getCreditAccountActivity({
+    companyId,
+    creditAccountId,
+    currentUser,
+  }: {
+    companyId: number;
+    creditAccountId: number;
+    currentUser: IUserJWT;
+  }): Promise<ReadCreditAccountActivityDto[]> {
+    const creditAccount = await this.findCreditAccountDetails(
+      companyId,
+      currentUser,
+      creditAccountId,
+    );
+
+    if (!creditAccount) {
+      throw new DataNotFoundException();
+    } else if (creditAccount?.company.companyId !== companyId) {
+      // Throw exception if companyId is a Credit Account User.
+      // History is only available to Credit Account Holders
+      throw new ForbiddenException();
+    }
+
+    if (creditAccount?.creditAccountActivities?.length) {
+      return await this.classMapper.mapArrayAsync(
+        creditAccount?.creditAccountActivities,
+        CreditAccountActivity,
+        ReadCreditAccountActivityDto,
+      );
+    }
+  }
+
   private async findCreditAccountDetails(
     companyId: number,
     currentUser: IUserJWT,
@@ -974,7 +1197,7 @@ export class CreditAccountService {
       },
       relations: this.granularAccessControl(
         CreditAccountUserType.ACCOUNT_HOLDER,
-        currentUser.orbcUserAuthGroup,
+        currentUser.orbcUserRole,
       ),
     });
 
@@ -993,7 +1216,7 @@ export class CreditAccountService {
         },
         relations: this.granularAccessControl(
           CreditAccountUserType.ACCOUNT_USER,
-          currentUser.orbcUserAuthGroup,
+          currentUser.orbcUserRole,
         ),
       });
       if (accountDetailsForUser) {
@@ -1011,51 +1234,58 @@ export class CreditAccountService {
    * specifying their access permissions.
    *
    * @param {CreditAccountUserType} creditAccountUserType - The type of the credit account user.
-   * @param {UserAuthGroup} userAuthGroup - The authorization group of the user.
+   * @param {UserRole} userRole - The authorization group of the user.
    * @returns {Object} - An object representing the access permissions for the user.
    */
   private granularAccessControl(
     creditAccountUserType: CreditAccountUserType,
-    userAuthGroup: UserAuthGroup,
+    userRole: UserRole,
   ) {
     switch (creditAccountUserType) {
       // Check if the user is an ACCOUNT_HOLDER
       case CreditAccountUserType.ACCOUNT_HOLDER:
-        switch (userAuthGroup) {
+        switch (userRole) {
           // Grant full finance access
-          case IDIRUserAuthGroup.FINANCE:
+          case IDIRUserRole.FINANCE:
             return {
               company: true,
               creditAccountUsers: { company: true },
               creditAccountActivities: { idirUser: true },
             };
           // Grant access to SYSTEM_ADMINISTRATOR, HQ_ADMINISTRATOR, PPC_CLERK, PPC_SUPERVISOR, and COMPANY_ADMINISTRATOR groups
-          case IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR:
-          case IDIRUserAuthGroup.HQ_ADMINISTRATOR:
-          case IDIRUserAuthGroup.PPC_CLERK:
-          case IDIRUserAuthGroup.PPC_SUPERVISOR:
-          case ClientUserAuthGroup.COMPANY_ADMINISTRATOR:
+          case IDIRUserRole.SYSTEM_ADMINISTRATOR:
+          case IDIRUserRole.HQ_ADMINISTRATOR:
+          case IDIRUserRole.PPC_CLERK:
+          case IDIRUserRole.CTPO:
+          case ClientUserRole.COMPANY_ADMINISTRATOR:
             return {
               company: true,
               creditAccountUsers: { company: true },
             };
+          case ClientUserRole.PERMIT_APPLICANT:
+            return { company: true };
         }
         break;
       // Check if the user is an ACCOUNT_USER
       case CreditAccountUserType.ACCOUNT_USER:
-        switch (userAuthGroup) {
+        switch (userRole) {
           // Grant full finance access
-          case IDIRUserAuthGroup.FINANCE:
+          case IDIRUserRole.FINANCE:
             return {
               company: true,
               creditAccountUsers: { company: true },
-              creditAccountActivities: { idirUser: true },
             };
-          // Grant partial access to SYSTEM_ADMINISTRATOR, HQ_ADMINISTRATOR, PPC_CLERK, and PPC_SUPERVISOR groups
-          case IDIRUserAuthGroup.SYSTEM_ADMINISTRATOR:
-          case IDIRUserAuthGroup.HQ_ADMINISTRATOR:
-          case IDIRUserAuthGroup.PPC_CLERK:
-          case IDIRUserAuthGroup.PPC_SUPERVISOR:
+          // Grant partial access to SYSTEM_ADMINISTRATOR, HQ_ADMINISTRATOR, PPC_CLERK, PPC_SUPERVISOR, COMPANY_ADMINISTRATOR, and PERMIT_APPLICANT groups
+          case IDIRUserRole.SYSTEM_ADMINISTRATOR:
+          case IDIRUserRole.HQ_ADMINISTRATOR:
+          case IDIRUserRole.PPC_CLERK:
+          case IDIRUserRole.CTPO:
+            return {
+              company: true,
+              creditAccountUsers: { company: true },
+            };
+          case ClientUserRole.COMPANY_ADMINISTRATOR:
+          case ClientUserRole.PERMIT_APPLICANT:
             return { company: true };
         }
         break;

@@ -11,5 +11,12 @@ export const BANNER_MESSAGES = {
   POLICY_REMINDER:
     "The applicant is responsible for ensuring they are following Legislation, policies, standards and guidelines in the operation of a commercial transportation business in British Columbia.",
   CANNOT_FIND_VEHICLE: "Can't find a vehicle from your inventory?",
-  ISSUED_PERMIT_NUMBER_7_YEARS: "Enter any Permit No. issued to the above Client No. in the last 7 years",
+  ISSUED_PERMIT_NUMBER_7_YEARS:
+    "Enter any Permit No. issued to the above Client No. in the last 7 years",
+  SELECT_VEHICLES_LOA:
+    "Only vehicles in the Vehicle Inventory can be designated to LOA(s).",
+  SELECT_VEHICLES_LOA_INFO:
+    "If you do not see the vehicle(s) you wish to designate here, please make sure you add them to the client's Vehicle Inventory first and come back to this page.",
+  REJECTED_APPLICATIONS:
+    "Rejected applications appear in Applications in Progress.",
 };

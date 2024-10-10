@@ -1,0 +1,56 @@
+@import "../../../themes/orbcStyles";
+
+.tabs-list {
+  /* Override to hide disabled scroll buttons */
+  .MuiTabs-scrollButtons.Mui-disabled {
+    display: none;
+  }
+
+  /* Override built-in MUI underline style */
+  .MuiTabs-indicator {
+    display: none;
+  }
+
+  &__tab {
+    margin-right: 2.5rem;
+    padding: 0;
+    align-items: flex-start;
+
+    .tab {
+      display: flex;
+      align-items: center;
+      
+      &__label {
+        margin-right: 0;
+        color: $bc-black;
+        opacity: 1;
+        padding: 0.875rem 0;
+      }
+      &__count {
+        font-size: 0.875rem;
+        color: $bc-black;
+        background-color: $bc-border-grey;
+        margin-left: 1rem;
+      }
+    }
+
+    &.Mui-selected {
+      .tab {
+        /* Only underline the tab label when selected */
+        &__label {
+          color: $bc-text-links-blue;
+          border-bottom: 2px solid $bc-text-links-blue;
+        }
+      }
+    }
+  }
+}
+
+@media (width < 600px) {
+  .tabs-list {
+    .MuiTabs-flexContainer {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}

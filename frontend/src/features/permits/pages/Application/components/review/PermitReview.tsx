@@ -1,6 +1,5 @@
 import { Box } from "@mui/material";
 import { Dayjs } from "dayjs";
-import { Dispatch, SetStateAction } from "react";
 
 import "./PermitReview.scss";
 import { WarningBcGovBanner } from "../../../../../../common/components/banners/WarningBcGovBanner";
@@ -12,16 +11,19 @@ import { ReviewFeeSummary } from "./ReviewFeeSummary";
 import { ReviewActions } from "./ReviewActions";
 import { CompanyProfile } from "../../../../../manageProfile/types/manageProfile";
 import { VehicleSubType } from "../../../../../manageVehicles/types/Vehicle";
-import { DEFAULT_PERMIT_TYPE, PermitType } from "../../../../types/PermitType";
-import { calculateFeeByDuration } from "../../../../helpers/feeSummary";
-import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
+import { PermitType } from "../../../../types/PermitType";
 import { Nullable } from "../../../../../../common/types/common";
 import { PermitContactDetails } from "../../../../types/PermitContactDetails";
 import { PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
 import { Application } from "../../../../types/application";
-import { PermitCommodity } from "../../../../types/PermitCommodity";
+import { PermitCondition } from "../../../../types/PermitCondition";
+import {
+  PERMIT_REVIEW_CONTEXTS,
+  PermitReviewContext,
+} from "../../../../types/PermitReviewContext";
 
 interface PermitReviewProps {
+  reviewContext: PermitReviewContext;
   permitType?: Nullable<PermitType>;
   permitNumber?: Nullable<string>;
   applicationNumber?: Nullable<string>;
@@ -32,34 +34,31 @@ interface PermitReviewProps {
   permitStartDate?: Nullable<Dayjs>;
   permitDuration?: Nullable<number>;
   permitExpiryDate?: Nullable<Dayjs>;
-  permitConditions?: Nullable<PermitCommodity[]>;
-  continueBtnText: string;
+  permitConditions?: Nullable<PermitCondition[]>;
+  continueBtnText?: string;
   isAmendAction: boolean;
   children?: React.ReactNode;
   hasAttemptedCheckboxes: boolean;
-  allChecked: boolean;
-  setAllChecked: Dispatch<SetStateAction<boolean>>;
+  allConfirmed: boolean;
+  setAllConfirmed: (confirmed: boolean) => void;
   powerUnitSubTypes?: Nullable<VehicleSubType[]>;
   trailerSubTypes?: Nullable<VehicleSubType[]>;
   vehicleDetails?: Nullable<PermitVehicleDetails>;
   vehicleWasSaved?: Nullable<boolean>;
   onEdit: () => void;
-  onContinue: () => Promise<void>;
+  onContinue?: () => Promise<void>;
   onAddToCart?: () => Promise<void>;
+  onApprove?: () => Promise<void>;
+  approveApplicationMutationPending?: boolean;
+  onReject?: () => Promise<void>;
+  rejectApplicationMutationPending?: boolean;
   showChangedFields?: boolean;
   oldFields?: Nullable<Partial<Application>>;
-  calculatedFee?: Nullable<string>;
+  calculatedFee: string;
   doingBusinessAs?: Nullable<string>;
 }
 
 export const PermitReview = (props: PermitReviewProps) => {
-  const feeSummary = props.calculatedFee
-    ? props.calculatedFee
-    : `${calculateFeeByDuration(
-        getDefaultRequiredVal(DEFAULT_PERMIT_TYPE, props.permitType),
-        getDefaultRequiredVal(0, props.permitDuration),
-      )}`;
-
   return (
     <Box className="permit-review layout-box">
       <Box className="permit-review__container">
@@ -104,21 +103,31 @@ export const PermitReview = (props: PermitReviewProps) => {
         />
 
         <ReviewFeeSummary
-          isSubmitted={props.hasAttemptedCheckboxes}
-          isChecked={props.allChecked}
-          setIsChecked={props.setAllChecked}
+          hasAttemptedSubmission={props.hasAttemptedCheckboxes}
+          areAllConfirmed={props.allConfirmed}
+          setAreAllConfirmed={props.setAllConfirmed}
           permitType={props.permitType}
-          fee={feeSummary}
+          fee={props.calculatedFee}
+          reviewContext={props.reviewContext}
         />
 
         {props.children}
 
         <ReviewActions
           onEdit={props.onEdit}
-          onContinue={props.onContinue}
-          hasToCartButton={!props.isAmendAction}
-          onAddToCart={props.onAddToCart}
           continueBtnText={props.continueBtnText}
+          onContinue={props.onContinue}
+          hasToCartButton={props.reviewContext === PERMIT_REVIEW_CONTEXTS.APPLY}
+          onAddToCart={props.onAddToCart}
+          onApprove={props.onApprove}
+          approveApplicationMutationPending={
+            props.approveApplicationMutationPending
+          }
+          onReject={props.onReject}
+          rejectApplicationMutationPending={
+            props.rejectApplicationMutationPending
+          }
+          reviewContext={props.reviewContext}
         />
       </Box>
     </Box>

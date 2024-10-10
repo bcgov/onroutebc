@@ -47,7 +47,7 @@ export type BCeIDUserContextType = {
   pendingCompanies: CompanyMetadata[];
   migratedClient: VerifiedClient;
   user?: {
-    userAuthGroup?: string;
+    userRole?: string;
     statusCode?: string;
     userGUID?: string;
     userName?: string;
@@ -66,11 +66,11 @@ export type BCeIDUserContextType = {
 };
 
 /**
- * The set of user roles.
+ * The set of user claims.
  *
- * Cross verify with the roles enum in the backend for any modifications.
+ * Cross verify with the claims enum in the backend for any modifications.
  */
-export const ROLES = {
+export const CLAIMS = {
   PUBLIC_AGENT: "ORBC-PUBLIC-AGENT",
   PUBLIC_ORG_ADMIN: "ORBC-PUBLIC-ORG-ADMIN",
   PUBLIC_USER_ADMIN: "ORBC-PUBLIC-USER-ADMIN",
@@ -118,69 +118,62 @@ export const ROLES = {
 } as const;
 
 /**
- * The enum type for user roles.
+ * The enum type for user claims.
  */
-export type UserRolesType = (typeof ROLES)[keyof typeof ROLES];
+export type UserClaimsType = (typeof CLAIMS)[keyof typeof CLAIMS];
 
 /**
- * The user auth group enum key-value pairs.
+ * The bceid user role enum key-value pairs.
  */
-export const USER_AUTH_GROUP = {
+export const BCeID_USER_ROLE = {
+  PERMIT_APPLICANT: "PAPPLICANT",
+  COMPANY_ADMINISTRATOR: "ORGADMIN",
+} as const;
+
+/**
+ * The enum type for BCeID user role.
+ */
+export type BCeIDUserRoleType =
+  (typeof BCeID_USER_ROLE)[keyof typeof BCeID_USER_ROLE];
+
+/**
+ * The idir user role enum associated with IDIR users.
+ */
+export const IDIR_USER_ROLE = {
+  PPC_CLERK: "PPCCLERK",
+  SYSTEM_ADMINISTRATOR: "SYSADMIN",
+  ENFORCEMENT_OFFICER: "EOFFICER",
+  HQ_ADMINISTRATOR: "HQADMIN",
+  FINANCE: "FINANCE",
+  CTPO: "CTPO",
+} as const;
+
+/**
+ * The enum type for idir user role.
+ */
+export type IDIRUserRoleType =
+  (typeof IDIR_USER_ROLE)[keyof typeof IDIR_USER_ROLE];
+
+/**
+ * The user role enum key-value pairs.
+ */
+export const USER_ROLE = {
+  ...IDIR_USER_ROLE,
+  ...BCeID_USER_ROLE,
   ANONYMOUS: "ANONYMOUS",
-  PERMIT_APPLICANT: "PAPPLICANT",
-  COMPANY_ADMINISTRATOR: "ORGADMIN",
-  PPC_CLERK: "PPCCLERK",
-  SYSTEM_ADMINISTRATOR: "SYSADMIN",
-  ENFORCEMENT_OFFICER: "EOFFICER",
-  HQ_ADMINISTRATOR: "HQADMIN",
-  FINANCE: "FINANCE",
-  CTPO: "CTPO",
 } as const;
 
 /**
- * The enum type for user auth group.
+ * The enum type for user role.
  */
-export type UserAuthGroupType =
-  (typeof USER_AUTH_GROUP)[keyof typeof USER_AUTH_GROUP];
-
-/**
- * The user auth group enum key-value pairs.
- */
-export const BCeID_USER_AUTH_GROUP = {
-  PERMIT_APPLICANT: "PAPPLICANT",
-  COMPANY_ADMINISTRATOR: "ORGADMIN",
-} as const;
-
-/**
- * The enum type for user auth group.
- */
-export type BCeIDUserAuthGroupType =
-  (typeof BCeID_USER_AUTH_GROUP)[keyof typeof BCeID_USER_AUTH_GROUP];
-
-/**
- * The user auth group enum associated with IDIR users.
- */
-export const IDIR_USER_AUTH_GROUP = {
-  PPC_CLERK: "PPCCLERK",
-  SYSTEM_ADMINISTRATOR: "SYSADMIN",
-  ENFORCEMENT_OFFICER: "EOFFICER",
-  HQ_ADMINISTRATOR: "HQADMIN",
-  FINANCE: "FINANCE",
-  CTPO: "CTPO",
-} as const;
-
-/**
- * The enum type for user auth group.
- */
-export type IDIRUserAuthGroupType =
-  (typeof IDIR_USER_AUTH_GROUP)[keyof typeof IDIR_USER_AUTH_GROUP];
+export type UserRoleType = (typeof USER_ROLE)[keyof typeof USER_ROLE];
 
 /**
  * IDIR User Context object type
  */
 export type IDIRUserContextType = {
   user?: {
-    userAuthGroup?: IDIRUserAuthGroupType;
+    userRole?: IDIRUserRoleType;
     statusCode?: string;
     userGUID?: string;
     userName?: string;

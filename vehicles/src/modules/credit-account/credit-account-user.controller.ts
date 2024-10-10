@@ -19,11 +19,9 @@ import {
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Request } from 'express';
-import { Roles } from '../../common/decorator/roles.decorator';
+import { Permissions } from '../../common/decorator/permissions.decorator';
 import { ExceptionDto } from '../../common/exception/exception.dto';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
-
-import { Role } from '../../common/enum/roles.enum';
 import { DeleteDto } from '../common/dto/response/delete.dto';
 import { CreditAccountService } from './credit-account.service';
 import { CreateCreditAccountUserDto } from './dto/request/create-credit-account-user.dto';
@@ -32,6 +30,7 @@ import { CreditAccountIdPathParamDto } from './dto/request/pathParam/creditAccou
 import { GetCreditAccountUserQueryParamsDto } from './dto/request/queryParam/getCreditAccountUser.query-params.dto';
 import { ReadCreditAccountUserDto } from './dto/response/read-credit-account-user.dto';
 import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-flag-enabled.decorator';
+import { ClientUserRole, IDIRUserRole } from '../../common/enum/user-role.enum';
 
 @ApiBearerAuth()
 @ApiTags('Credit Account Users')
@@ -53,7 +52,7 @@ import { IsFeatureFlagEnabled } from '../../common/decorator/is-feature-flag-ena
 })
 @IsFeatureFlagEnabled('CREDIT-ACCOUNT')
 @Controller(
-  'companies/:companyId/credit-account/:creditAccountId/credit-account-user',
+  'companies/:companyId/credit-accounts/:creditAccountId/credit-account-users',
 )
 export class CreditAccountUserController {
   constructor(private readonly creditAccountService: CreditAccountService) {}
@@ -76,7 +75,7 @@ export class CreditAccountUserController {
     type: ReadCreditAccountUserDto,
   })
   @Put()
-  @Roles(Role.WRITE_CREDIT_ACCOUNT)
+  @Permissions({ allowedIdirRoles: [IDIRUserRole.FINANCE] })
   async addOrActivateCreditAccountUser(
     @Req() request: Request,
     @Param() { companyId, creditAccountId }: CreditAccountIdPathParamDto,
@@ -109,7 +108,7 @@ export class CreditAccountUserController {
     type: DeleteDto,
   })
   @Delete()
-  @Roles(Role.WRITE_CREDIT_ACCOUNT)
+  @Permissions({ allowedIdirRoles: [IDIRUserRole.FINANCE] })
   async deactivateCreditAccountUser(
     @Req() request: Request,
     @Param() { companyId, creditAccountId }: CreditAccountIdPathParamDto,
@@ -141,7 +140,16 @@ export class CreditAccountUserController {
     type: [ReadCreditAccountUserDto],
   })
   @Get()
-  @Roles(Role.READ_CREDIT_ACCOUNT)
+  @Permissions({
+    allowedBCeIDRoles: [ClientUserRole.COMPANY_ADMINISTRATOR],
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.FINANCE,
+      IDIRUserRole.CTPO,
+      IDIRUserRole.HQ_ADMINISTRATOR,
+    ],
+  })
   async getCreditAccountUsers(
     @Req() request: Request,
     @Param() { companyId, creditAccountId }: CreditAccountIdPathParamDto,

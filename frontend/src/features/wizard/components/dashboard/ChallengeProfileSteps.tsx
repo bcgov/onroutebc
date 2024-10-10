@@ -1,4 +1,12 @@
-import { Box, Button, Stack, Step, StepConnector, StepLabel, Stepper } from "@mui/material";
+import {
+  Box,
+  Button,
+  Stack,
+  Step,
+  StepConnector,
+  StepLabel,
+  Stepper,
+} from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -7,9 +15,8 @@ import { useAuth } from "react-oidc-context";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router";
-import { LoadBCeIDUserRolesByCompany } from "../../../../common/authentication/LoadBCeIDUserRolesByCompany";
+import { LoadBCeIDUserClaimsByCompany } from "../../../../common/authentication/LoadBCeIDUserClaimsByCompany";
 import { Banner } from "../../../../common/components/dashboard/components/banner/Banner";
-import "../../../../common/components/dashboard/Dashboard.scss";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { Nullable } from "../../../../common/types/common";
 import { ERROR_ROUTES } from "../../../../routes/constants";
@@ -202,7 +209,7 @@ export const ChallengeProfileSteps = React.memo(() => {
   if (clientNumber) {
     return (
       <>
-        <LoadBCeIDUserRolesByCompany />
+        <LoadBCeIDUserClaimsByCompany />
         <OnRouteBCProfileCreated onRouteBCClientNumber={clientNumber} />
       </>
     );
@@ -223,7 +230,7 @@ export const ChallengeProfileSteps = React.memo(() => {
       </Box>
 
       <div
-        className="tabpanel-container create-profile-steps"
+        className="challenge-profile-steps create-profile-steps"
         id={`profile-steps`}
         aria-labelledby={`profile-steps`}
         style={{ paddingBottom: "10em" }}
@@ -260,9 +267,11 @@ export const ChallengeProfileSteps = React.memo(() => {
                         text: "step__step-number",
                         active: "step__icon--active",
                         completed: "step__icon--completed",
-                      }
+                      },
                     }}
-                  >{label}</StepLabel>
+                  >
+                    {label}
+                  </StepLabel>
                 </Step>
               ))}
             </Stepper>

@@ -1,5 +1,5 @@
--- Test that the Holidays have been inserted correctly
+-- Test that the role types have been inserted correctly against user auth groups
 SET NOCOUNT ON
 
-SELECT COUNT(*) FROM $(DB_NAME).[dbo].[ORBC_HOLIDAY] 
-WHERE HOLIDAY_DATE IN ('2024-01-01 00:00:00.0000000','2025-01-01 00:00:00.0000000')
+SELECT COUNT(*) FROM $(DB_NAME).[access].[ORBC_GROUP_ROLE] 
+WHERE ROLE_TYPE = 'ORBC-READ-CREDIT-ACCOUNT' AND USER_AUTH_GROUP_TYPE='PAPPLICANT'

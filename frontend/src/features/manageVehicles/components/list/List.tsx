@@ -3,7 +3,10 @@ import { Box, IconButton, InputAdornment } from "@mui/material";
 import { UseQueryResult } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleXmark, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCircleXmark,
+  faMagnifyingGlass,
+} from "@fortawesome/free-solid-svg-icons";
 import {
   memo,
   useCallback,
@@ -28,12 +31,18 @@ import { DeleteConfirmationDialog } from "../../../../common/components/dialog/D
 import { PowerUnitColumnDefinition, TrailerColumnDefinition } from "./Columns";
 import { SnackBarContext } from "../../../../App";
 import { ERROR_ROUTES, VEHICLES_ROUTES } from "../../../../routes/constants";
-import { DoesUserHaveRoleWithContext } from "../../../../common/authentication/util";
-import { ROLES } from "../../../../common/authentication/types";
+import { DoesUserHaveClaimWithContext } from "../../../../common/authentication/util";
+import { CLAIMS } from "../../../../common/authentication/types";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { useDeletePowerUnitsMutation, usePowerUnitSubTypesQuery } from "../../hooks/powerUnits";
-import { useDeleteTrailersMutation, useTrailerSubTypesQuery } from "../../hooks/trailers";
+import {
+  useDeletePowerUnitsMutation,
+  usePowerUnitSubTypesQuery,
+} from "../../hooks/powerUnits";
+import {
+  useDeleteTrailersMutation,
+  useTrailerSubTypesQuery,
+} from "../../hooks/trailers";
 import { Nullable } from "../../../../common/types/common";
 import { OnRouteBCTableRowActions } from "../../../../common/components/table/OnRouteBCTableRowActions";
 import {
@@ -71,7 +80,7 @@ export const List = memo(
   }: {
     vehicleType: VehicleType;
     query: UseQueryResult<Vehicle[]>;
-    companyId: string;
+    companyId: number;
   }) => {
     const navigate = useNavigate();
     const {
@@ -81,13 +90,17 @@ export const List = memo(
       isPending: vehiclesPending,
     } = query;
 
-    const canEditDeleteVehicles = Boolean(DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE));
+    const canEditDeleteVehicles = Boolean(
+      DoesUserHaveClaimWithContext(CLAIMS.WRITE_VEHICLE),
+    );
     const vehicleActionOptions = [
-      canEditDeleteVehicles ? {
-        label: "Edit",
-        value: "edit",
-      } : null,
-    ].filter(action => Boolean(action)) as {
+      canEditDeleteVehicles
+        ? {
+            label: "Edit",
+            value: "edit",
+          }
+        : null,
+    ].filter((action) => Boolean(action)) as {
       label: string;
       value: string;
     }[];
@@ -107,15 +120,11 @@ export const List = memo(
     const powerUnitSubTypes = getDefaultRequiredVal([], powerUnitSubtypesData);
     const trailerSubTypes = getDefaultRequiredVal([], trailerSubtypesData);
 
-    const {
-      mutateAsync: deletePowerUnits,
-      isError: deletePowerUnitsFailed,
-    } = useDeletePowerUnitsMutation();
+    const { mutateAsync: deletePowerUnits, isError: deletePowerUnitsFailed } =
+      useDeletePowerUnitsMutation();
 
-    const {
-      mutateAsync: deleteTrailers,
-      isError: deleteTrailersFailed,
-    } = useDeleteTrailersMutation();
+    const { mutateAsync: deleteTrailers, isError: deleteTrailersFailed } =
+      useDeleteTrailersMutation();
 
     const colTypeCodes = columns.filter(
       (item) => item.accessorKey === `${vehicleType}TypeCode`,
@@ -125,12 +134,10 @@ export const List = memo(
     );
 
     const transformVehicleCode = (code: string) => {
-      const vehicleSubtypesForCode = vehicleType === VEHICLE_TYPES.POWER_UNIT
-        ? powerUnitSubTypes.filter(
-          (value) => value.typeCode === code,
-        ) : trailerSubTypes.filter(
-          (value) => value.typeCode === code,
-        );
+      const vehicleSubtypesForCode =
+        vehicleType === VEHICLE_TYPES.POWER_UNIT
+          ? powerUnitSubTypes.filter((value) => value.typeCode === code)
+          : trailerSubTypes.filter((value) => value.typeCode === code);
       return getDefaultRequiredVal("", vehicleSubtypesForCode?.at(0)?.type);
     };
 
@@ -161,9 +168,10 @@ export const List = memo(
       const vehicleIds = Object.keys(rowSelection);
 
       try {
-        const response = vehicleType === VEHICLE_TYPES.POWER_UNIT
-          ? await deletePowerUnits({ companyId, vehicleIds })
-          : await deleteTrailers({ companyId, vehicleIds });
+        const response =
+          vehicleType === VEHICLE_TYPES.POWER_UNIT
+            ? await deletePowerUnits({ companyId, vehicleIds })
+            : await deleteTrailers({ companyId, vehicleIds });
 
         if (response.status === 200) {
           const responseBody = response.data;
@@ -203,9 +211,9 @@ export const List = memo(
 
     useEffect(() => {
       if (
-        fetchVehiclesFailed
-        || deletePowerUnitsFailed
-        || deleteTrailersFailed
+        fetchVehiclesFailed ||
+        deletePowerUnitsFailed ||
+        deleteTrailersFailed
       ) {
         handleError();
       }
@@ -246,8 +254,8 @@ export const List = memo(
         "mrt-row-actions": {
           header: "",
           muiTableBodyCellProps: {
-            className: "vehicles-list__row-actions"
-          }
+            className: "vehicles-list__row-actions",
+          },
         },
       },
       layoutMode: "grid",
@@ -257,36 +265,42 @@ export const List = memo(
       enableBottomToolbar: true,
       renderEmptyRowsFallback: () => <NoRecordsFound />,
       renderRowActions: useCallback(
-        ({ row }: { row: MRT_Row<Vehicle> }) => canEditDeleteVehicles ? (
-          <OnRouteBCTableRowActions
-            onSelectOption={() => {
-              if (!canEditDeleteVehicles) return;
+        ({ row }: { row: MRT_Row<Vehicle> }) =>
+          canEditDeleteVehicles ? (
+            <OnRouteBCTableRowActions
+              onSelectOption={() => {
+                if (!canEditDeleteVehicles) return;
 
-              if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
-                navigate(
-                  `${VEHICLES_ROUTES.POWER_UNIT_DETAILS}/${row.getValue(
-                    "powerUnitId",
-                  )}`,
-                );
-              } else if (vehicleType === VEHICLE_TYPES.TRAILER) {
-                navigate(
-                  `${VEHICLES_ROUTES.TRAILER_DETAILS}/${row.getValue(
-                    "trailerId",
-                  )}`,
-                );
-              }
-            }}
-            options={vehicleActionOptions}
-            disabled={!canEditDeleteVehicles}
-          />
-        ) : null,
+                if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
+                  navigate(
+                    `${VEHICLES_ROUTES.POWER_UNIT_DETAILS}/${row.getValue(
+                      "powerUnitId",
+                    )}`,
+                  );
+                } else if (vehicleType === VEHICLE_TYPES.TRAILER) {
+                  navigate(
+                    `${VEHICLES_ROUTES.TRAILER_DETAILS}/${row.getValue(
+                      "trailerId",
+                    )}`,
+                  );
+                }
+              }}
+              options={vehicleActionOptions}
+              disabled={!canEditDeleteVehicles}
+            />
+          ) : null,
         [canEditDeleteVehicles, vehicleActionOptions, vehicleType],
       ),
       filterFns: {
-        "defaultSearchFilter": (row, columnId, filterValue) => {
-          return (columnId === "plate" && row.getValue<string>(columnId).includes(filterValue))
-            || (columnId === "vin" && row.getValue<string>(columnId).includes(filterValue))
-            || (columnId === "unitNumber" && row.getValue<Nullable<string>>(columnId)?.includes(filterValue));
+        defaultSearchFilter: (row, columnId, filterValue) => {
+          return (
+            (columnId === "plate" &&
+              row.getValue<string>(columnId).includes(filterValue)) ||
+            (columnId === "vin" &&
+              row.getValue<string>(columnId).includes(filterValue)) ||
+            (columnId === "unitNumber" &&
+              row.getValue<Nullable<string>>(columnId)?.includes(filterValue))
+          );
         },
       },
       globalFilterFn: "defaultSearchFilter",
@@ -302,18 +316,25 @@ export const List = memo(
                 InputProps={{
                   className: "search-input__input-container",
                   startAdornment: (
-                    <FontAwesomeIcon icon={faMagnifyingGlass} className="search-icon" />
+                    <FontAwesomeIcon
+                      icon={faMagnifyingGlass}
+                      className="search-icon"
+                    />
                   ),
-                  endAdornment: searchFilterValue !== "" ? (
-                    <InputAdornment position="end">
-                      <IconButton
-                        className="search-input__clear-button"
-                        onClick={() => table.setGlobalFilter("")}
-                      >
-                        <FontAwesomeIcon icon={faCircleXmark} className="clear-icon" />
-                      </IconButton>
-                    </InputAdornment>
-                  ) : null,
+                  endAdornment:
+                    searchFilterValue !== "" ? (
+                      <InputAdornment position="end">
+                        <IconButton
+                          className="search-input__clear-button"
+                          onClick={() => table.setGlobalFilter("")}
+                        >
+                          <FontAwesomeIcon
+                            icon={faCircleXmark}
+                            className="clear-icon"
+                          />
+                        </IconButton>
+                      </InputAdornment>
+                    ) : null,
                 }}
                 inputProps={{
                   className: "search-input__input-textfield",
@@ -321,7 +342,7 @@ export const List = memo(
                 onChange={(e) => table.setGlobalFilter(e.target.value)}
               />
             </div>
-            
+
             {canEditDeleteVehicles ? (
               <DeleteButton
                 onClick={onClickTrashIcon}
@@ -338,10 +359,10 @@ export const List = memo(
       <div className="vehicles-list table-container">
         <MaterialReactTable table={table} />
         <DeleteConfirmationDialog
-          onClickDelete={onConfirmDelete}
-          isOpen={isDeleteDialogOpen}
-          onClickCancel={onCancelDelete}
-          caption="item"
+          onDelete={onConfirmDelete}
+          showDialog={isDeleteDialogOpen}
+          onCancel={onCancelDelete}
+          itemToDelete="item"
         />
       </div>
     );

@@ -5,10 +5,10 @@ import "./ManageVehiclesDashboard.scss";
 import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
 import { AddVehicleButton } from "./AddVehicleButton";
 import { List } from "../list/List";
-import { DoesUserHaveRoleWithContext } from "../../../../common/authentication/util";
-import { ROLES } from "../../../../common/authentication/types";
+import { DoesUserHaveClaimWithContext } from "../../../../common/authentication/util";
+import { CLAIMS } from "../../../../common/authentication/types";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
-import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { applyWhenNotNullable } from "../../../../common/helpers/util";
 import { VEHICLES_DASHBOARD_TABS } from "../../../../routes/constants";
 import { VEHICLE_TYPES } from "../../types/Vehicle";
 import { usePowerUnitsQuery } from "../../hooks/powerUnits";
@@ -35,7 +35,12 @@ const useTabIndexFromURL = (): number => {
  * React component to render the vehicle inventory
  */
 export const ManageVehiclesDashboard = memo(() => {
-  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
+  const companyId: number = applyWhenNotNullable(
+    id => Number(id),
+    getCompanyIdFromSession(),
+    0,
+  );
+  
   const staleTime = 5000;
   const powerUnitsQuery = usePowerUnitsQuery(companyId, staleTime);
   const trailersQuery = useTrailersQuery(companyId, staleTime);
@@ -68,7 +73,7 @@ export const ManageVehiclesDashboard = memo(() => {
       bannerText="Vehicle Inventory"
       selectedTabIndex={useTabIndexFromURL()}
       bannerButton={
-        DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) ? (
+        DoesUserHaveClaimWithContext(CLAIMS.WRITE_VEHICLE) ? (
           <AddVehicleButton />
         ) : undefined
       }

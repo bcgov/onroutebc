@@ -3,5 +3,9 @@
  * Index starts at 0.
  */
 export const SETTINGS_TABS = {
-  SUSPEND: 0,
+  SPECIAL_AUTH: 0,
+  CREDIT_ACCOUNT: 1,
+  SUSPEND: 2,
 } as const;
+
+export type SettingsTab = typeof SETTINGS_TABS[keyof typeof SETTINGS_TABS];

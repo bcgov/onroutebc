@@ -1,0 +1,115 @@
+@import "../../../../../../themes/orbcStyles";
+
+.loa-basic-info {
+  color: $bc-black;
+
+  &__header {
+    font-size: 1.25rem;
+    font-weight: bold;
+  }
+
+  &__section {
+    &--permit-types {
+      border-bottom: 1px solid $bc-border-grey;
+    }
+
+    &--dates, &--upload {
+      padding-top: 2.5rem;
+      padding-bottom: 2.5rem;
+      border-bottom: 1px solid $bc-border-grey;
+    }
+
+    &--notes {
+      padding-top: 2.5rem;
+    }
+  }
+
+  &__error {
+    color: $bc-red;
+    margin-top: 0.5rem;
+  }
+
+  .permit-type-selection {
+    padding-top: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(4, [col] 1fr);
+
+    &__category-header {
+      font-weight: bold;
+      grid-column: col / span 4;
+    }
+
+    &__option {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      grid-column: span 2;
+      padding-top: 1rem;
+      padding-bottom: 2.5rem;
+    }
+
+    &__checkbox {
+      padding: 0;
+      margin-left: 0;
+
+      &--invalid {
+        color: $bc-red;
+      }
+    }
+
+    &__label {
+      margin: 0 0 0 0.5rem;
+    }
+  }
+
+  &__date-selection {
+    margin-top: 1.5rem;
+  }
+
+  .loa-date-inputs {
+    display: flex;
+    
+    &__start {
+      width: 16.125rem;
+    }
+    
+    &__expiry {
+      margin-left: 2.5rem;
+      width: 16.125rem;
+    }
+  }
+
+  .loa-never-expires {
+    margin-top: 1.5rem;
+    display: flex;
+    align-items: center;
+
+    &__checkbox {
+      margin-left: 0;
+      padding: 0;
+    }
+
+    &__label {
+      margin: 0 0 0 0.5rem;
+    }
+  }
+
+  .upload-input {
+    max-width: 34.75rem;
+    margin-top: 1.5rem;
+  }
+
+  .uploaded-file {
+    margin-top: 1.5rem;
+    max-width: 34.75rem;
+  }
+
+  &__notes {
+    margin-top: 1.5rem;
+    max-width: 34.75rem;
+
+    .custom-form-control {
+      margin: 0;
+    }
+  }
+}

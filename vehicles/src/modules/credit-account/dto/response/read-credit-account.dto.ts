@@ -1,16 +1,12 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  CreditAccountLimit,
-  CreditAccountLimitType,
-} from '../../../../common/enum/credit-account-limit.enum';
+
 import {
   CreditAccountStatus,
   CreditAccountStatusType,
 } from '../../../../common/enum/credit-account-status-type.enum';
-import { ReadCreditAccountUserDto } from './read-credit-account-user.dto';
+
 import { CreditAccountType } from '../../../../common/enum/credit-account-type.enum';
-import { ReadCreditAccountActivityDto } from './read-credit-account-activity.dto';
 
 export class ReadCreditAccountDto {
   @AutoMap()
@@ -37,46 +33,8 @@ export class ReadCreditAccountDto {
 
   @AutoMap()
   @ApiProperty({
-    description: 'The collection of companies using this credit account.',
-    required: false,
-  })
-  creditAccountUsers: ReadCreditAccountUserDto[];
-
-  @AutoMap()
-  @ApiProperty({
     description: 'The status of the credit account.',
     example: CreditAccountStatus.ACCOUNT_ACTIVE,
   })
   creditAccountStatusType: CreditAccountStatusType;
-
-  @AutoMap()
-  @ApiProperty({
-    description: 'The credit account status update activity details .',
-    required: false,
-  })
-  creditAccountActivities?: ReadCreditAccountActivityDto[];
-
-  @AutoMap()
-  @ApiProperty({
-    description: 'The credit limit of the account.',
-    example: CreditAccountLimit[10000],
-    required: false,
-  })
-  creditLimit?: CreditAccountLimitType;
-
-  @AutoMap()
-  @ApiProperty({
-    description: 'The credit balance of the account.',
-    example: 1200,
-    required: false,
-  })
-  creditBalance?: number;
-
-  @AutoMap()
-  @ApiProperty({
-    description: 'The available credit of the account.',
-    example: 800,
-    required: false,
-  })
-  availableCredit?: number;
 }

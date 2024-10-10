@@ -4,6 +4,7 @@ import { VEHICLE_TYPES, VehicleType } from "../types/Vehicle";
 import { QUERY_KEYS } from "./queryKeys";
 import { getPowerUnit, getTrailer } from "../apiManager/vehiclesAPI";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
+import { Nullable } from "../../../common/types/common";
 
 /**
  * Hook that fetches vehicle details for a company.
@@ -13,9 +14,9 @@ import { getDefaultRequiredVal } from "../../../common/helpers/util";
  * @returns Query Results
  */
 export const useVehicleByIdQuery = (
-  companyId: string,
+  companyId: number,
   vehicleType: VehicleType,
-  vehicleId?: string,
+  vehicleId?: Nullable<string>,
 ) => {
   const queryKey = vehicleType === VEHICLE_TYPES.POWER_UNIT
     ? QUERY_KEYS.POWER_UNIT(companyId, vehicleId)
@@ -32,5 +33,6 @@ export const useVehicleByIdQuery = (
     refetchOnMount: "always", // always fetch when component is mounted
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
     enabled: Boolean(companyId) && Boolean(vehicleId), // does not perform the query at all if company or vehicle id is empty
+    gcTime: 0, // Do not store in cache - Refetch always
   });
 };

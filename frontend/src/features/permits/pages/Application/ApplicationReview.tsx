@@ -16,16 +16,43 @@ import { hasPermitsActionFailed } from "../../helpers/permitState";
 import { CartContext } from "../../context/CartContext";
 import { usePowerUnitSubTypesQuery } from "../../../manageVehicles/hooks/powerUnits";
 import { useTrailerSubTypesQuery } from "../../../manageVehicles/hooks/trailers";
+import { useFetchSpecialAuthorizations } from "../../../settings/hooks/specialAuthorizations";
+import { applyLCVToApplicationData } from "../../helpers/getDefaultApplicationFormData";
+import { calculateFeeByDuration } from "../../helpers/feeSummary";
+import { DEFAULT_PERMIT_TYPE } from "../../types/PermitType";
+import { PERMIT_REVIEW_CONTEXTS } from "../../types/PermitReviewContext";
 import {
   APPLICATIONS_ROUTES,
   APPLICATION_STEPS,
   ERROR_ROUTES,
-  SHOPPING_CART_ROUTES,
 } from "../../../../routes/constants";
 
 export const ApplicationReview = () => {
-  const { applicationData, setApplicationData } =
-    useContext(ApplicationContext);
+  const {
+    applicationData: applicationContextData,
+    setApplicationData: setApplicationContextData,
+  } = useContext(ApplicationContext);
+
+  const companyId = getDefaultRequiredVal(0, applicationContextData?.companyId);
+
+  const { data: specialAuth } = useFetchSpecialAuthorizations(companyId);
+  const isLcvDesignated = Boolean(specialAuth?.isLcvAllowed);
+  const isNoFeePermitType = Boolean(specialAuth?.noFeeType);
+
+  const { data: companyInfo } = useCompanyInfoQuery();
+  const doingBusinessAs = companyInfo?.alternateName;
+
+  const applicationData = applyLCVToApplicationData(
+    applicationContextData,
+    isLcvDesignated,
+  );
+
+  const fee = isNoFeePermitType
+    ? "0"
+    : `${calculateFeeByDuration(
+        getDefaultRequiredVal(DEFAULT_PERMIT_TYPE, applicationData?.permitType),
+        getDefaultRequiredVal(0, applicationData?.permitData?.permitDuration),
+      )}`;
 
   const { setSnackBar } = useContext(SnackBarContext);
   const { refetchCartCount } = useContext(CartContext);
@@ -35,16 +62,13 @@ export const ApplicationReview = () => {
 
   const navigate = useNavigate();
 
-  const { data: companyInfo } = useCompanyInfoQuery();
   const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
   const trailerSubTypesQuery = useTrailerSubTypesQuery();
   const methods = useForm<Application>();
 
-  const doingBusinessAs = companyInfo?.alternateName;
-
   // For the confirmation checkboxes
-  const [isChecked, setIsChecked] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [allConfirmed, setAllConfirmed] = useState(false);
+  const [hasAttemptedSubmission, setHasAttemptedSubmission] = useState(false);
 
   // Send data to the backend API
   const saveApplicationMutation = useSaveApplicationMutation();
@@ -54,12 +78,8 @@ export const ApplicationReview = () => {
     navigate(APPLICATIONS_ROUTES.DETAILS(permitId), { replace: true });
   };
 
-  const next = () => {
-    navigate(SHOPPING_CART_ROUTES.DETAILS());
-  };
-
   const proceedWithAddToCart = async (
-    companyId: string,
+    companyId: number,
     applicationIds: string[],
     onSuccess: () => void,
   ) => {
@@ -75,51 +95,10 @@ export const ApplicationReview = () => {
     }
   };
 
-  const handleContinue = async () => {
-    setIsSubmitted(true);
-
-    if (!isChecked) return;
-
-    if (!applicationData) {
-      return navigate(ERROR_ROUTES.UNEXPECTED);
-    }
-
-    const { application: savedApplication } =
-      await saveApplicationMutation.mutateAsync({
-        ...applicationData,
-        permitData: {
-          ...applicationData.permitData,
-          doingBusinessAs, // always set most recent DBA from company info
-        }
-      });
-
-    if (savedApplication) {
-      setApplicationData(savedApplication);
-
-      await proceedWithAddToCart(
-        `${savedApplication.companyId}`,
-        [savedApplication.permitId] as string[],
-        () => {
-          setSnackBar({
-            showSnackbar: true,
-            setShowSnackbar: () => true,
-            message: `Application ${savedApplication.applicationNumber} added to cart`,
-            alertType: "success",
-          });
-    
-          refetchCartCount();
-          next();
-        },
-      );
-    } else {
-      navigate(ERROR_ROUTES.UNEXPECTED);
-    }
-  };
-
   const handleAddToCart = async () => {
-    setIsSubmitted(true);
+    setHasAttemptedSubmission(true);
 
-    if (!isChecked) return;
+    if (!allConfirmed) return;
 
     const companyId = applicationData?.companyId;
     const permitId = applicationData?.permitId;
@@ -128,21 +107,35 @@ export const ApplicationReview = () => {
       return navigate(ERROR_ROUTES.UNEXPECTED);
     }
 
-    await proceedWithAddToCart(
-      `${companyId}`,
-      [permitId],
-      () => {
+    const { application: savedApplication } =
+      await saveApplicationMutation.mutateAsync({
+        data: {
+          ...applicationData,
+          permitData: {
+            ...applicationData.permitData,
+            doingBusinessAs, // always set most recent DBA from company info
+          },
+        },
+        companyId,
+      });
+
+    if (savedApplication) {
+      setApplicationContextData(savedApplication);
+
+      await proceedWithAddToCart(companyId, [permitId], () => {
         setSnackBar({
           showSnackbar: true,
           setShowSnackbar: () => true,
           message: `Application ${applicationNumber} added to cart`,
           alertType: "success",
         });
-  
+
         refetchCartCount();
         navigate(APPLICATIONS_ROUTES.BASE);
-      },
-    );
+      });
+    } else {
+      navigate(ERROR_ROUTES.UNEXPECTED);
+    }
   };
 
   useEffect(() => {
@@ -158,6 +151,7 @@ export const ApplicationReview = () => {
 
       <FormProvider {...methods}>
         <PermitReview
+          reviewContext={PERMIT_REVIEW_CONTEXTS.APPLY}
           permitType={applicationData?.permitType}
           permitNumber={applicationData?.permitNumber}
           applicationNumber={applicationData?.applicationNumber}
@@ -170,13 +164,11 @@ export const ApplicationReview = () => {
           updatedDateTime={applicationData?.updatedDateTime}
           companyInfo={companyInfo}
           contactDetails={applicationData?.permitData?.contactDetails}
-          continueBtnText="Checkout"
           onEdit={back}
-          onContinue={methods.handleSubmit(handleContinue)}
           onAddToCart={handleAddToCart}
-          allChecked={isChecked}
-          setAllChecked={setIsChecked}
-          hasAttemptedCheckboxes={isSubmitted}
+          allConfirmed={allConfirmed}
+          setAllConfirmed={setAllConfirmed}
+          hasAttemptedCheckboxes={hasAttemptedSubmission}
           powerUnitSubTypes={powerUnitSubTypesQuery.data}
           trailerSubTypes={trailerSubTypesQuery.data}
           vehicleDetails={applicationData?.permitData?.vehicleDetails}
@@ -184,6 +176,7 @@ export const ApplicationReview = () => {
             applicationData?.permitData?.vehicleDetails?.saveVehicle
           }
           doingBusinessAs={doingBusinessAs}
+          calculatedFee={fee}
         />
       </FormProvider>
     </div>

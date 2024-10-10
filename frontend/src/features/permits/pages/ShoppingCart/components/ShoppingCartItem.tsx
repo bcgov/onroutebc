@@ -1,7 +1,7 @@
 import { Checkbox } from "@mui/material";
 
 import "./ShoppingCartItem.scss";
-import { CartItem } from "../../../types/CartItem";
+import { SelectableCartItem } from "../../../types/CartItem";
 import { DATE_FORMATS, toLocal } from "../../../../../common/helpers/formatDate";
 import { CustomActionLink } from "../../../../../common/components/links/CustomActionLink";
 import { feeSummaryDisplayText } from "../../../helpers/feeSummary";
@@ -14,7 +14,7 @@ export const ShoppingCartItem = ({
   onDeselect,
   onEditCartItem,
 }: {
-  cartItemData: CartItem;
+  cartItemData: SelectableCartItem;
   isSelected: boolean;
   isDisabled?: boolean;
   onSelect: (id: string) => void;

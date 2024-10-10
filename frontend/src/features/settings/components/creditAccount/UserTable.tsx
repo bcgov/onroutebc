@@ -1,53 +1,59 @@
 import { Box, Button, Typography } from "@mui/material";
 import { RowSelectionState } from "@tanstack/table-core";
-import { useCallback, useContext, useEffect, useState } from "react";
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import {
   MRT_Row,
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
-import { RemoveUsersModal } from "./RemoveUsersModal";
+import { useCallback, useEffect, useState } from "react";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
-import { CreditAccountUserColumnsDefinition } from "../../types/CreditAccountUserColumns";
-import { canUpdateCreditAccount } from "../../helpers/permissions";
+import { useGetCreditAccountUsersQuery } from "../../hooks/creditAccount";
 import {
   CREDIT_ACCOUNT_USER_TYPE,
+  CreditAccountMetadata,
   CreditAccountUser,
 } from "../../types/creditAccount";
-import { useGetCreditAccountQuery } from "../../hooks/creditAccount";
+import { CreditAccountUserColumnsDefinition } from "../../types/CreditAccountUserColumns";
+import { RemoveUsersModal } from "./RemoveUsersModal";
 import "./UserTable.scss";
-import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
 /**
  * User Management Component for Credit Accounts.
  */
-export const UserTable = () => {
-  const { userRoles, companyId } = useContext(OnRouteBCContext);
-
+export const UserTable = ({
+  companyId,
+  creditAccountMetadata: { userType, creditAccountId },
+}: {
+  companyId: number;
+  creditAccountMetadata: CreditAccountMetadata;
+}) => {
   const {
-    data: creditAccount,
+    data: creditAccountUsers,
     isError,
     isLoading,
     refetch,
-  } = useGetCreditAccountQuery(getDefaultRequiredVal(0, companyId));
-
-  const creditAccountUsers = creditAccount?.creditAccountUsers;
+  } = useGetCreditAccountUsersQuery({ companyId, creditAccountId });
 
   const accountHolder = creditAccountUsers?.find(
     (user) => user.userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER,
   );
 
-  const isAccountHolder = companyId === accountHolder?.companyId;
+  const isAccountHolder = userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER;
 
-  const showCheckboxes = canUpdateCreditAccount(userRoles) && isAccountHolder;
-  const showRemoveUserButton =
-    canUpdateCreditAccount(userRoles) && isAccountHolder;
+  const canUserUpdateCreditAccount = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+      permissionMatrixFunctionKey:
+        "PERFORM_CREDIT_ACCOUNT_DETAIL_ACTIONS_ACCOUNT_HOLDER",
+    },
+    additionalConditionToCheck: () => isAccountHolder,
+  });
 
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const [userIds, setUserIds] = useState<number[]>([]);
@@ -93,10 +99,19 @@ export const UserTable = () => {
     setUserIds(getSelectedUsers());
   }, [rowSelection]);
 
+  let dataToBeShown: CreditAccountUser[] = [];
+  if (creditAccountUsers) {
+    if (isAccountHolder) {
+      dataToBeShown = creditAccountUsers;
+    } else if (accountHolder) {
+      dataToBeShown = [accountHolder];
+    }
+  }
+
   const table = useMaterialReactTable({
     ...defaultTableOptions,
     columns: CreditAccountUserColumnsDefinition,
-    data: isAccountHolder ? creditAccountUsers : [accountHolder],
+    data: dataToBeShown,
     initialState: {
       ...defaultTableInitialStateOptions,
     },
@@ -111,9 +126,9 @@ export const UserTable = () => {
     defaultColumn: {},
     enableGlobalFilter: false,
     renderEmptyRowsFallback: () => <NoRecordsFound />,
-    enableRowSelection: showCheckboxes
-      ? (row: MRT_Row<CreditAccountUser>): boolean => {
-          return row?.original?.userType !== CREDIT_ACCOUNT_USER_TYPE.HOLDER;
+    enableRowSelection: canUserUpdateCreditAccount
+      ? ({ original: { userType } }: MRT_Row<CreditAccountUser>): boolean => {
+          return userType !== CREDIT_ACCOUNT_USER_TYPE.HOLDER;
         }
       : false,
     onRowSelectionChange: setRowSelection,
@@ -134,7 +149,7 @@ export const UserTable = () => {
           <Typography variant="h3" className="user-table__heading">
             Credit Account Users
           </Typography>
-          {showRemoveUserButton && (
+          {canUserUpdateCreditAccount && (
             <Button
               className="user-table__button user-table__button--remove"
               onClick={handleRemoveButton}
@@ -145,7 +160,7 @@ export const UserTable = () => {
           )}
         </Box>
       ),
-      [showRemoveUserButton, handleRemoveButton, hasNoRowsSelected],
+      [canUserUpdateCreditAccount, handleRemoveButton, hasNoRowsSelected],
     ),
     muiTablePaperProps: {
       className: "user-table__paper",

@@ -14,8 +14,8 @@ import { PendingIdirUsersService } from './pending-idir-users.service';
 import { ReadPendingIdirUserDto } from './dto/response/read-pending-idir-user.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { Request } from 'express';
-import { Roles } from '../../../common/decorator/roles.decorator';
-import { Role } from '../../../common/enum/roles.enum';
+import { Permissions } from '../../../common/decorator/permissions.decorator';
+import { IDIRUserRole } from '../../../common/enum/user-role.enum';
 
 @ApiTags('User Management - Pending IDIR User')
 @ApiBadRequestResponse({
@@ -47,7 +47,9 @@ export class PendingIdirUsersController {
    * @param createPendingIdirUserDto
    * @returns
    */
-  @Roles(Role.STAFF_ADMIN)
+  @Permissions({
+    allowedIdirRoles: [IDIRUserRole.SYSTEM_ADMINISTRATOR],
+  })
   @Post()
   async create(
     @Req() request: Request,
@@ -61,7 +63,9 @@ export class PendingIdirUsersController {
     return pendingIdirUser;
   }
 
-  @Roles(Role.STAFF_ADMIN)
+  @Permissions({
+    allowedIdirRoles: [IDIRUserRole.SYSTEM_ADMINISTRATOR],
+  })
   @Get()
   async findPendingIdirUser(): Promise<ReadPendingIdirUserDto[]> {
     const pendingIdirUser = await this.pendingIdirUserService.findAll();

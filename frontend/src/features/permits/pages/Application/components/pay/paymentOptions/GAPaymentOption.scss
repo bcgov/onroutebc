@@ -1,0 +1,22 @@
+@use "./PaymentOptionStyles";
+@import "../../../../../../../themes/orbcStyles";
+
+@include PaymentOptionStyles.payment-option-style(".payment-option");
+
+.payment-option {
+  .label-text {
+    font-size: 1.25rem;
+    font-weight: bold;
+    letter-spacing: -0.4px;
+  }
+
+  &--service-bc {
+    .payment-details {
+      display: block;
+
+      &__info {
+        width: 100%;
+      }
+    }
+  }
+}
