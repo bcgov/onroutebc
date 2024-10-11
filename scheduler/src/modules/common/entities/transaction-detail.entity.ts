@@ -29,7 +29,7 @@ export class CfsTransactionDetail {
   @Column({ name: 'FILE_NAME', type: 'varchar', length: 255, nullable: false })
   FILE_NAME: string;
 
-  @OneToOne(() => Transaction, (transaction) => transaction.detail, {
+  @OneToOne(() => Transaction, (transaction) => transaction.transactionId, {
     cascade: false,
   })
   @JoinColumn({ name: 'TRANSACTION_ID' })

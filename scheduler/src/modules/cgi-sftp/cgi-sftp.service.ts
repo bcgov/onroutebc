@@ -4,14 +4,14 @@ import {
   Logger,
 } from '@nestjs/common';
 import { getSFTPConnectionInfo } from 'src/common/helper/sftp.helper';
-import * as Client from 'ssh2-sftp-client';
+import Client from 'ssh2-sftp-client';
 
 @Injectable()
 export class CgiSftpService {
   private readonly logger = new Logger(CgiSftpService.name);
 
   async upload(fileData: Express.Multer.File, fileName: string) {
-    const sftp = new Client();
+    const sftp  = new Client();
     const connectionInfo: Client.ConnectOptions = getSFTPConnectionInfo();
     const remotePath = process.env.CFS_REMOTE_PATH; //Remote CFS Path
 

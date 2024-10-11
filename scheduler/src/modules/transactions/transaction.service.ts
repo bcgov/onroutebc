@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Transaction } from './transaction.entity';
-import { CfsTransactionDetail } from './transaction-detail.entity';
+import { CfsTransactionDetail } from '../common/entities/transaction-detail.entity';
 import { Cron } from '@nestjs/schedule';
 import { LogAsyncMethodExecution } from 'src/common/decorator/log-async-method-execution.decorator';
 import { generate } from 'src/helper/generator.helper';

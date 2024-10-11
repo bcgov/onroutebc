@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
-import { Base } from '../../common/entities/base.entity';
-import { ApplicationStatus } from '../../common/enum/application-status.enum';
+import { Base } from './base.entity';
+import { ApplicationStatus } from '../enum/application-status.enum';
 import { PermitTransaction } from './permit-transaction.entity';
 
 @Entity({ name: 'permit.ORBC_PERMIT' })

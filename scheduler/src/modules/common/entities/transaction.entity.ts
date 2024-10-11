@@ -7,8 +7,8 @@ import {
   OneToMany,
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
-import { Base } from '../../common/entities/base.entity';
-import { Receipt } from './receipt.entity';
+import { Base } from './base.entity';
+import { Receipt } from '../../permit/entities/receipt.entity';
 import { PaymentMethodType } from '../../../common/enum/payment-method-type.enum';
 import { TransactionType } from '../../../common/enum/transaction-type.enum';
 import { PermitTransaction } from './permit-transaction.entity';
