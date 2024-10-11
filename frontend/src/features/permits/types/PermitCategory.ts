@@ -1,7 +1,7 @@
 import {
-  nonResidentPermitList,
-  singleTripPermitList,
-  termPermitList,
+  NON_RESIDENT_PERMIT_TYPES,
+  SINGLE_TRIP_PERMIT_TYPES,
+  TERM_PERMIT_TYPES,
 } from "../constants/constants";
 import { PermitType } from "./PermitType";
 
@@ -38,13 +38,13 @@ export const getPermitCategoryName = (permitCategory: PermitCategory) => {
  * @returns Name of the permit category, or empty string if no mapping exists for permit category
  */
 export const getPermitCategory = (permitType: PermitType) => {
-  if (termPermitList.includes(permitType)) {
+  if (TERM_PERMIT_TYPES.includes(permitType)) {
     return PERMIT_CATEGORIES.TERM;
   }
-  if (singleTripPermitList.includes(permitType)) {
+  if (SINGLE_TRIP_PERMIT_TYPES.includes(permitType)) {
     return PERMIT_CATEGORIES.SINGLE_TRIP;
   }
-  if (nonResidentPermitList.includes(permitType)) {
+  if (NON_RESIDENT_PERMIT_TYPES.includes(permitType)) {
     return PERMIT_CATEGORIES.NON_RESIDENT;
   }
   return "";

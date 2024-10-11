@@ -28,16 +28,14 @@ export const VEHICLE_TYPE_OPTIONS = [
   { value: VEHICLE_TYPES.TRAILER, label: "Trailer" },
 ];
 
-export const termPermitList: PermitType[] = [
+export const TERM_PERMIT_TYPES: PermitType[] = [
   PERMIT_TYPES.TROS,
   PERMIT_TYPES.TROW,
   /* TODO uncomment these as required */
-  PERMIT_TYPES.HC,
-  PERMIT_TYPES.TRAX,
-  PERMIT_TYPES.LCV,
+  // PERMIT_TYPES.HC,
 ];
 
-export const singleTripPermitList: PermitType[] = [
+export const SINGLE_TRIP_PERMIT_TYPES: PermitType[] = [
   PERMIT_TYPES.STOL,
   PERMIT_TYPES.EPTOP,
   PERMIT_TYPES.IGVW,
@@ -47,7 +45,7 @@ export const singleTripPermitList: PermitType[] = [
   PERMIT_TYPES.RIG,
 ];
 
-export const nonResidentPermitList: PermitType[] = [
+export const NON_RESIDENT_PERMIT_TYPES: PermitType[] = [
   PERMIT_TYPES.QNRBS,
   PERMIT_TYPES.QRFR,
   PERMIT_TYPES.NRSCV,
@@ -58,32 +56,32 @@ export const ALL_PERMIT_TYPE_CHOOSE_FROM_OPTIONS: PermitTypeChooseFromItem[] = [
   {
     value: PERMIT_CATEGORIES.TERM,
     label: getPermitCategoryName(PERMIT_CATEGORIES.TERM),
-    items: termPermitList.map((permitType: PermitType) => ({
+    items: TERM_PERMIT_TYPES.map((permitType: PermitType) => ({
       value: permitType,
       label: getPermitTypeShortName(permitType),
     })),
   },
   /* TODO uncomment these as required */
-  {
-    value: PERMIT_CATEGORIES.SINGLE_TRIP,
-    label: getPermitCategoryName(PERMIT_CATEGORIES.SINGLE_TRIP),
-    items: singleTripPermitList.map((permitType: PermitType) => ({
-      value: permitType,
-      label: getPermitTypeShortName(permitType),
-    })),
-  },
-  {
-    value: PERMIT_CATEGORIES.NON_RESIDENT,
-    label: getPermitCategoryName(PERMIT_CATEGORIES.NON_RESIDENT),
-    items: nonResidentPermitList.map((permitType: PermitType) => ({
-      value: permitType,
-      label: getPermitTypeShortName(permitType),
-    })),
-  },
-  {
-    value: PERMIT_TYPES.MFP,
-    label: getPermitTypeShortName(PERMIT_TYPES.MFP),
-  },
+  // {
+  //   value: PERMIT_CATEGORIES.SINGLE_TRIP,
+  //   label: getPermitCategoryName(PERMIT_CATEGORIES.SINGLE_TRIP),
+  //   items: SINGLE_TRIP_PERMIT_TYPES.map((permitType: PermitType) => ({
+  //     value: permitType,
+  //     label: getPermitTypeShortName(permitType),
+  //   })),
+  // },
+  // {
+  //   value: PERMIT_CATEGORIES.NON_RESIDENT,
+  //   label: getPermitCategoryName(PERMIT_CATEGORIES.NON_RESIDENT),
+  //   items: NON_RESIDENT_PERMIT_TYPES.map((permitType: PermitType) => ({
+  //     value: permitType,
+  //     label: getPermitTypeShortName(permitType),
+  //   })),
+  // },
+  // {
+  //   value: PERMIT_TYPES.MFP,
+  //   label: getPermitTypeShortName(PERMIT_TYPES.MFP),
+  // },
 ];
 
 export interface PermitTypeChooseFromItem {

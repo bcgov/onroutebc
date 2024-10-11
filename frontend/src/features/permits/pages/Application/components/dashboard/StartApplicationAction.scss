@@ -3,7 +3,6 @@
 $select-width: 347px;
 
 .start-application-action {
-  
   & &__label {
     font-weight: bold;
   }
@@ -67,7 +66,7 @@ $select-width: 347px;
   &__menu-list {
     &.MuiList-root {
       padding: 0;
-      
+
       & > * {
         border-top: 1px solid $bc-border-grey;
       }
@@ -86,7 +85,7 @@ $select-width: 347px;
       box-shadow: 0 0.5rem 0.5rem -0.2rem #00000029;
       // prevent menu from being wider than the input element itself
       width: calc($select-width - 4px);
-      transition-duration: 0ms !important;
+      transition-duration: 0ms;
     }
 
     &--open {
@@ -119,8 +118,8 @@ $select-width: 347px;
     &.MuiPaper-root {
       border-radius: 4px;
       box-shadow: $bc-shadow;
-      width: calc($select-width - 3.667px);
-      transition-duration: 0ms !important;
+      width: calc($select-width - 4px);
+      transition-duration: 0ms;
       border: 2px solid;
       border-color: $border-blue;
       margin-left: 8px;
@@ -143,10 +142,15 @@ $select-width: 347px;
   }
 }
 
-@media (width < 1200px) {
-  .start-application-action {
-    flex-direction: column;
-    align-items: flex-start;
+@media (width < 600px) {
+  .start-application-action  {
+    &__control {
+      flex-direction: column;
+    }
+
+    & &__input {
+      width: 100%;
+    }
 
     & &__btn {
       margin-left: 0;

@@ -8,14 +8,8 @@ export const PERMIT_TYPES = {
   // Term Overweight
   TROW: "TROW",
   // Highway Crossing
-  // TODO should this be HWYX ?
   HC: "HC",
   // Axle Overweight
-  // TODO is this still a valid permit type?
-  TRAX: "TRAX",
-  // Long Combination Vehicle
-  // TODO is this still a valid permit type?
-  LCV: "LCV",
 
   /* SINGLE TRIP */
   // Extra Provincial Temp Operating Permit
@@ -66,10 +60,6 @@ export const getPermitTypeName = (permitType?: Nullable<string>) => {
       return "Term Overweight";
     case PERMIT_TYPES.HC:
       return "Highway Crossing";
-    case PERMIT_TYPES.TRAX:
-      return "Term Axle Overweight";
-    case PERMIT_TYPES.LCV:
-      return "Long Combination Vehicle";
 
     /* SINGLE TRIP */
     case PERMIT_TYPES.STOS:
@@ -120,10 +110,6 @@ export const getPermitTypeShortName = (permitType?: Nullable<string>) => {
       return "Overweight";
     case PERMIT_TYPES.HC:
       return "Highway Crossing";
-    case PERMIT_TYPES.TRAX:
-      return "Axle Overweight";
-    case PERMIT_TYPES.LCV:
-      return "Long Combination Vehicle";
 
     /* SINGLE TRIP */
     case PERMIT_TYPES.EPTOP:
