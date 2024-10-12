@@ -17,7 +17,6 @@ import { CartContext } from "../../context/CartContext";
 import { usePowerUnitSubTypesQuery } from "../../../manageVehicles/hooks/powerUnits";
 import { useTrailerSubTypesQuery } from "../../../manageVehicles/hooks/trailers";
 import { useFetchSpecialAuthorizations } from "../../../settings/hooks/specialAuthorizations";
-import { applyLCVToApplicationData } from "../../helpers/permitLCV"; 
 import { calculateFeeByDuration } from "../../helpers/feeSummary";
 import { DEFAULT_PERMIT_TYPE } from "../../types/PermitType";
 import { PERMIT_REVIEW_CONTEXTS } from "../../types/PermitReviewContext";
@@ -29,23 +28,17 @@ import {
 
 export const ApplicationReview = () => {
   const {
-    applicationData: applicationContextData,
+    applicationData,
     setApplicationData: setApplicationContextData,
   } = useContext(ApplicationContext);
 
-  const companyId = getDefaultRequiredVal(0, applicationContextData?.companyId);
+  const companyId = getDefaultRequiredVal(0, applicationData?.companyId);
 
   const { data: specialAuth } = useFetchSpecialAuthorizations(companyId);
-  const isLcvDesignated = Boolean(specialAuth?.isLcvAllowed);
   const isNoFeePermitType = Boolean(specialAuth?.noFeeType);
 
   const { data: companyInfo } = useCompanyInfoQuery();
   const doingBusinessAs = companyInfo?.alternateName;
-
-  const applicationData = applyLCVToApplicationData(
-    applicationContextData,
-    isLcvDesignated,
-  );
 
   const fee = isNoFeePermitType
     ? "0"
