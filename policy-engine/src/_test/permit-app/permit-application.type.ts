@@ -54,10 +54,15 @@ type PermitData = {
   feeSummary?: string | null;
   startDate: string;
   expiryDate?: string | null;
-  permittedCommodity?: string | null;
+  permittedCommodity?: PermittedCommodity | null;
   vehicleConfiguration?: VehicleConfiguration | null;
   permittedRoute?: PermittedRoute | null;
   applicationNotes?: string | null;
+};
+
+type PermittedCommodity = {
+  commodityType: string;
+  loadDescription: string;
 };
 
 type VehicleInConfiguration = {
@@ -82,6 +87,8 @@ type ManualRoute = {
   highwaySequence: Array<string>;
   origin: string;
   destination: string;
+  exitPoint?: string;
+  totalDistance?: number;
 };
 
 type PermitApplication = {

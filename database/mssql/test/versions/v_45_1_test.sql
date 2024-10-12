@@ -1,8 +1,4 @@
--- Test that the new table for LoA assignment is created successfully
+-- Test that the GL_PROJ_CODE column has been added correctly
 SET NOCOUNT ON
-IF OBJECT_ID('[$(DB_NAME)].[permit].[ORBC_PERMIT_LOA]', 'U') IS NOT NULL
-AND OBJECT_ID('[$(DB_NAME)].[permit].[ORBC_PERMIT_LOA_HIST]', 'U') IS NOT NULL 
 
-    SELECT 1 
-ELSE
-    SELECT 0
+select COL_LENGTH('$(DB_NAME).[permit].[ORBC_PAYMENT_METHOD_TYPE]', 'GL_PROJ_CODE')

@@ -5,7 +5,7 @@ import {
   PERMIT_STATUSES,
   isPermitInactive,
 } from "../../types/PermitStatus";
-import { APPLICATION_QUEUE_STATUSES } from "../../types/ApplicationQueueStatus";
+import { APPLICATION_QUEUE_STATUSES } from "../../../queue/types/ApplicationQueueStatus";
 
 /**
  * Returns the theme name for the chip based on the permit status.

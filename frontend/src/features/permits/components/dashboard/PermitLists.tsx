@@ -1,4 +1,5 @@
 import React from "react";
+
 import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
 import { StartApplicationAction } from "../../pages/Application/components/dashboard/StartApplicationAction";
 import { ActivePermitList } from "../permit-list/ActivePermitList";
@@ -7,9 +8,17 @@ import { ApplicationsInProgressList } from "../permit-list/ApplicationsInProgres
 import { ApplicationsInReviewList } from "../permit-list/ApplicationsInReviewList";
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 import { RenderIf } from "../../../../common/components/reusable/RenderIf";
+import { applyWhenNotNullable } from "../../../../common/helpers/util";
+import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 
 export const PermitLists = React.memo(() => {
   const tabs = [];
+
+  const companyId: number = applyWhenNotNullable(
+    id => Number(id),
+    getCompanyIdFromSession(),
+    0,
+  );
 
   const showApplicationsInProgressTab = usePermissionMatrix({
     permissionMatrixKeys: {
@@ -21,7 +30,7 @@ export const PermitLists = React.memo(() => {
   if (showApplicationsInProgressTab) {
     tabs.push({
       label: "Applications in Progress",
-      component: <ApplicationsInProgressList />,
+      component: <ApplicationsInProgressList companyId={companyId} />,
     });
   }
 

@@ -68,7 +68,7 @@ export const ShoppingCartPage = () => {
   const navigate = useNavigate();
   const { applicationData } = useContext(ApplicationContext);
   const { idirUserDetails, userDetails } = useContext(OnRouteBCContext);
-  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
+  const companyId: number = applyWhenNotNullable(id => Number(id), getCompanyIdFromSession(), 0);
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userRole);
   const isCompanyAdmin = Boolean(
     userDetails?.userRole === BCeID_USER_ROLE.COMPANY_ADMINISTRATOR,
@@ -112,7 +112,7 @@ export const ShoppingCartPage = () => {
     fetchStatusFor,
     setShowEditCartItemDialog,
     setShowUpdateCartDialog,
-  } = useCheckOutdatedCart(showAllApplications, cartItems);
+  } = useCheckOutdatedCart(companyId, showAllApplications, cartItems);
 
   const { mutation: startTransactionMutation, transaction } =
     useStartTransaction();
@@ -153,7 +153,10 @@ export const ShoppingCartPage = () => {
       } else if (isFeeZero || isStaffActingAsCompany) {
         // If purchase was for no-fee permits, or if staff payment transaction was created successfully,
         // simply proceed to issue permits
-        issuePermitMutation.mutate([...selectedIds]);
+        issuePermitMutation.mutate({
+          companyId,
+          applicationIds: [...selectedIds],
+        });
 
         // also update the cart and cart count
         cartQuery.refetch();
@@ -169,7 +172,7 @@ export const ShoppingCartPage = () => {
         }
       }
     }
-  }, [transaction, isStaffActingAsCompany, isFeeZero]);
+  }, [transaction, isStaffActingAsCompany, isFeeZero, companyId]);
 
   useEffect(() => {
     const issueFailed = hasPermitsActionFailed(issueResults);

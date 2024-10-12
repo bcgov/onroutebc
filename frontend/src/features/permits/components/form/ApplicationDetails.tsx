@@ -7,7 +7,10 @@ import "./ApplicationDetails.scss";
 import { permitTypeDisplayText } from "../../types/PermitType";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import { Nullable } from "../../../../common/types/common";
-import { DATE_FORMATS, dayjsToLocalStr } from "../../../../common/helpers/formatDate";
+import {
+  DATE_FORMATS,
+  dayjsToLocalStr,
+} from "../../../../common/helpers/formatDate";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,

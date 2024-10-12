@@ -89,7 +89,7 @@ const transformByVehicleType = (
 const modifyVehicleSuccess = (status: number) =>
   status === 201 || status === 200;
 
-export const usePermitVehicleManagement = (companyId: string) => {
+export const usePermitVehicleManagement = (companyId: number) => {
   // Mutations used to add/update vehicle details
   const addPowerUnitMutation = useAddPowerUnitMutation();
   const updatePowerUnitMutation = useUpdatePowerUnitMutation();
