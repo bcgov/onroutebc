@@ -17,15 +17,13 @@ import { VEHICLE_CHOOSE_FROM } from "../../../../../../constants/constants";
 import { EMPTY_VEHICLE_UNIT_NUMBER } from "../../../../../../../../common/constants/constants";
 import { Nullable } from "../../../../../../../../common/types/common";
 import { PermitVehicleDetails } from "../../../../../../types/PermitVehicleDetails";
-
+import { LOADetail } from "../../../../../../../settings/types/SpecialAuthorization";
 import {
   PowerUnit,
   Trailer,
   VEHICLE_TYPES,
   Vehicle,
-  VehicleSubType,
 } from "../../../../../../../manageVehicles/types/Vehicle";
-import { LOADetail } from "../../../../../../../settings/types/SpecialAuthorization";
 
 const GroupHeader = styled("div")(({ theme }) => ({
   position: "sticky",
@@ -62,8 +60,8 @@ export const SelectVehicleDropdown = ({
   vehicleOptions: Vehicle[];
   handleSelectVehicle: (vehicle: Vehicle) => void;
   handleClearVehicle: () => void;
-  ineligiblePowerUnitSubtypes: VehicleSubType[];
-  ineligibleTrailerSubtypes: VehicleSubType[];
+  ineligiblePowerUnitSubtypes: string[];
+  ineligibleTrailerSubtypes: string[];
   loas: LOADetail[];
 }) => {
   const sortedVehicles = sortVehicles(chooseFrom, vehicleOptions);

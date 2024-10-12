@@ -26,7 +26,7 @@ export const LOATable = ({
   onSelectLOA,
 }: {
   loas: SelectableLOA[];
-  onSelectLOA?: (loaId: string) => void;
+  onSelectLOA?: (loaNumber: number) => void;
 }) => {
   return (
     <TableContainer className="loa-table" component={Paper}>
@@ -45,7 +45,7 @@ export const LOATable = ({
 
         <TableBody>
           {loas.map((selectableLOA) => (
-            <TableRow key={selectableLOA.loa.loaId} className="loa-table__row">
+            <TableRow key={selectableLOA.loa.loaNumber} className="loa-table__row">
               <TableCell
                 className="loa-table__cell loa-table__cell--loa-number"
                 component="td"
@@ -59,10 +59,10 @@ export const LOATable = ({
                           ? "loa-checkbox--disabled"
                           : ""
                       }`}
-                      key={selectableLOA.loa.loaId}
+                      key={selectableLOA.loa.loaNumber}
                       checked={selectableLOA.checked}
                       disabled={selectableLOA.disabled}
-                      onChange={() => onSelectLOA?.(selectableLOA.loa.loaId)}
+                      onChange={() => onSelectLOA?.(selectableLOA.loa.loaNumber)}
                     />
                   }
                   key={selectableLOA.loa.loaNumber}

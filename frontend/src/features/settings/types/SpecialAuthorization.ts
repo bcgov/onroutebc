@@ -30,8 +30,8 @@ export const noFeePermitTypeDescription = (noFeePermitType: NoFeePermitType) => 
 };
 
 export interface LOADetail {
-  loaId: string;
-  loaNumber: string;
+  loaId: number;
+  loaNumber: number;
   companyId: number;
   startDate: string;
   expiryDate?: Nullable<string>;
@@ -41,8 +41,8 @@ export interface LOADetail {
   comment?: Nullable<string>;
   powerUnits: string[];
   trailers: string[];
-  originalLoaId: string;
-  previousLoaId?: Nullable<string>;
+  originalLoaId: number;
+  previousLoaId?: Nullable<number>;
 }
 
 export interface CreateLOARequestData {

@@ -3,6 +3,18 @@ import dayjs, { Dayjs } from "dayjs";
 import { LOADetail } from "../../settings/types/SpecialAuthorization";
 import { PermitType } from "../types/PermitType";
 import { getEndOfDate, toLocalDayjs } from "../../../common/helpers/formatDate";
+import { Nullable } from "../../../common/types/common";
+import { Application, ApplicationFormData } from "../types/application";
+import { getDefaultRequiredVal } from "../../../common/helpers/util";
+import { PowerUnit, Trailer, VEHICLE_TYPES } from "../../manageVehicles/types/Vehicle";
+import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
+import { filterVehicles, getDefaultVehicleDetails } from "./permitVehicles";
+import {
+  durationOptionsForPermitType,
+  getAvailableDurationOptions,
+  getMinPermitExpiryDate,
+  handleUpdateDurationIfNeeded,
+} from "./dateSelection";
 
 /**
  * Filter valid LOAs for a given permit type.
@@ -35,7 +47,6 @@ export const filterNonExpiredLOAs = (
   ));
 };
 
-
 /**
  * Get the most recent expiry date for a list of LOAs.
  * @param loas LOAs with or without expiry dates
@@ -52,4 +63,167 @@ export const getMostRecentExpiryFromLOAs = (loas: LOADetail[]) => {
       const currExpiryDate = getEndOfDate(dayjs(currExpiry));
       return prevExpiryDate.isAfter(currExpiryDate) ? currExpiryDate : prevExpiryDate;
     }, firstLOAExpiryDate);
+};
+
+/**
+ * Get updated selectable LOAs with up-to-date information and selection state.
+ * This removes non-existent selected LOAs, and updates any existing selected LOAs with up-to-date info.
+ * @param upToDateLOAs Most recent up-to-date company LOAs
+ * @param prevSelectedLOAs Previously selected LOAs
+ * @param minPermitExpiryDate Min expiry date for a permit
+ * @returns Updated list of selectable LOAs with up-to-date information and selection state
+ */
+export const getUpdatedLOASelection = (
+  upToDateLOAs: LOADetail[],
+  prevSelectedLOAs: LOADetail[],
+  minPermitExpiryDate: Dayjs,
+) => {
+  // Each LOA should only be selected once, but there's a chance that an up-to-date LOA is also a previously selected LOA,
+  // which means that LOA should only be shown once.
+  // Thus, any overlapping LOA between the up-to-date LOAs and previously selected LOAs should only be included once,
+  // and all non-overlapping LOAs that are not part of the up-to-date LOAs should be removed
+  const prevSelectedLOANumbers = new Set([...prevSelectedLOAs.map(loa => loa.loaNumber)]);
+
+  return upToDateLOAs.map(loa => {
+    const wasSelected = prevSelectedLOANumbers.has(loa.loaNumber);
+    const isExpiringBeforeMinPermitExpiry = Boolean(loa.expiryDate)
+      && minPermitExpiryDate.isAfter(getEndOfDate(dayjs(loa.expiryDate)));
+
+    // Deselect and disable any LOAs expiring before min permit expiry date
+    const isSelected = wasSelected && !isExpiringBeforeMinPermitExpiry;
+    const isEnabled = !isExpiringBeforeMinPermitExpiry;
+    
+    return {
+      loa,
+      checked: isSelected,
+      disabled: !isEnabled,
+    };
+  });
+};
+
+/**
+ * Get updated vehicle details and options based on selected LOAs.
+ * @param selectedLOAs LOAs that are selected for the permit
+ * @param vehicleOptions Provided vehicle options for selection
+ * @param prevSelectedVehicle Previously selected vehicle details in the permit form
+ * @param ineligiblePowerUnitSubtypes Ineligible power unit subtypes
+ * @param ineligibleTrailerSubtypes Ineligible trailer subtypes
+ * @returns Updated vehicle details and filtered vehicle options
+ */
+export const getUpdatedVehicleDetailsForLOAs = (
+  selectedLOAs: LOADetail[],
+  vehicleOptions: (PowerUnit | Trailer)[],
+  prevSelectedVehicle: PermitVehicleDetails,
+  ineligiblePowerUnitSubtypes: string[],
+  ineligibleTrailerSubtypes: string[],
+) => {
+  const filteredVehicles = filterVehicles(
+    vehicleOptions,
+    ineligiblePowerUnitSubtypes,
+    ineligibleTrailerSubtypes,
+    selectedLOAs,
+  );
+  
+  const filteredVehicleIds = filteredVehicles.map(filteredVehicle => ({
+    filteredVehicleType: filteredVehicle.vehicleType,
+    filteredVehicleId: filteredVehicle.vehicleType === VEHICLE_TYPES.TRAILER
+      ? (filteredVehicle as Trailer).trailerId
+      : (filteredVehicle as PowerUnit).powerUnitId,
+  }));
+
+  // If vehicle selected is an existing vehicle but is not in list of vehicle options
+  // Clear the selected vehicle
+  const { vehicleId, vehicleType } = prevSelectedVehicle;
+  if (vehicleId && !filteredVehicleIds.some(({
+    filteredVehicleType,
+    filteredVehicleId,
+  }) => filteredVehicleType === vehicleType && filteredVehicleId === vehicleId)) {
+    return {
+      filteredVehicleOptions: filteredVehicles,
+      updatedVehicle: getDefaultVehicleDetails(),
+    };
+  }
+
+  return {
+    filteredVehicleOptions: filteredVehicles,
+    updatedVehicle: prevSelectedVehicle,
+  };
+};
+
+/**
+ * Applying the most up-to-date LOA info to application data.
+ * @param applicationData Existing application data
+ * @param upToDateLOAs Most recent up-to-date company LOAs
+ * @param inventoryVehicles Vehicle options from the inventory
+ * @param ineligiblePowerUnitSubtypes Ineligible power unit subtypes that cannot be used for vehicles
+ * @param ineligibleTrailerSubtypes Ineligible trailer subtypes that cannot be used for vehicles
+ * @returns Application data after applying the up-to-date LOAs
+ */
+export const applyUpToDateLOAsToApplication = <T extends Nullable<ApplicationFormData | Application>>(
+  applicationData: T,
+  upToDateLOAs: LOADetail[],
+  inventoryVehicles: (PowerUnit | Trailer)[],
+  ineligiblePowerUnitSubtypes: string[],
+  ineligibleTrailerSubtypes: string[],
+): T => {
+  // If application doesn't exist, no need to apply LOAs to it at all
+  if (!applicationData) return applicationData;
+
+  // Applicable LOAs must be:
+  // 1. Applicable for the current permit type
+  // 2. Have expiry date that is on or after the start date for an application
+  const applicableLOAs = filterNonExpiredLOAs(
+    filterLOAsForPermitType(
+      getDefaultRequiredVal([], upToDateLOAs),
+      applicationData.permitType,
+    ),
+    applicationData.permitData.startDate,
+  );
+
+  // Update selected LOAs in the permit data
+  const prevSelectedLOAs = getDefaultRequiredVal([], applicationData.permitData.loas);
+  const minPermitExpiryDate = getMinPermitExpiryDate(
+    applicationData.permitType,
+    applicationData.permitData.startDate,
+  );
+
+  const newSelectedLOAs = getUpdatedLOASelection(
+    applicableLOAs,
+    prevSelectedLOAs,
+    minPermitExpiryDate,
+  )
+    .filter(({ checked }) => checked)
+    .map(({ loa }) => loa);
+
+  // Update duration in permit if selected LOAs changed
+  const durationOptions = getAvailableDurationOptions(
+    durationOptionsForPermitType(applicationData.permitType),
+    newSelectedLOAs,
+    applicationData.permitData.startDate,
+  );
+
+  const updatedDuration = handleUpdateDurationIfNeeded(
+    applicationData.permitType,
+    applicationData.permitData.permitDuration,
+    durationOptions,
+  );
+
+  // Update vehicle details in permit if selected LOAs changed
+  const { updatedVehicle } = getUpdatedVehicleDetailsForLOAs(
+    newSelectedLOAs,
+    inventoryVehicles,
+    applicationData.permitData.vehicleDetails,
+    ineligiblePowerUnitSubtypes,
+    ineligibleTrailerSubtypes,
+  );
+
+  return {
+    ...applicationData,
+    permitData: {
+      ...applicationData.permitData,
+      permitDuration: updatedDuration,
+      loas: newSelectedLOAs,
+      vehicleDetails: updatedVehicle,
+    },
+  };
 };

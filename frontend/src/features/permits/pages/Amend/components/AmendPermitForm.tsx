@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import { FieldValues, FormProvider } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -11,8 +11,7 @@ import { PermitForm } from "../../Application/components/form/PermitForm";
 import { Application } from "../../../types/application";
 import { useCompanyInfoDetailsQuery } from "../../../../manageProfile/apiManager/hooks";
 import { Breadcrumb } from "../../../../../common/components/breadcrumb/Breadcrumb";
-import { AmendRevisionHistory } from "./form/AmendRevisionHistory";
-import { AmendReason } from "./form/AmendReason";
+import { ApplicationFormContext } from "../../../context/ApplicationFormContext";
 import { Nullable } from "../../../../../common/types/common";
 import { ERROR_ROUTES } from "../../../../../routes/constants";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
@@ -55,15 +54,34 @@ export const AmendPermitForm = () => {
   const companyId = getDefaultRequiredVal("", companyIdParam);
   const navigate = useNavigate();
 
+  const { data: activeLOAs } = useFetchLOAs(companyId, false);
   const { data: companyInfo } = useCompanyInfoDetailsQuery(companyId);
-  const doingBusinessAs = companyInfo?.alternateName;
-
   const { data: specialAuthorizations } = useFetchSpecialAuthorizations(companyId);
   const isLcvDesignated = Boolean(specialAuthorizations?.isLcvAllowed);
 
-  const { formData, formMethods } = useAmendPermitForm(
+  const {
+    handleSaveVehicle,
+    vehicleOptions,
+    powerUnitSubTypes,
+    trailerSubTypes,
+  } = usePermitVehicleManagement(companyId);
+
+  const {
+    initialFormData,
+    formData,
+    formMethods,
+    onSetDuration,
+    onSetExpiryDate,
+    onSetConditions,
+    onToggleSaveVehicle,
+    onSetVehicle,
+    onClearVehicle,
+    onUpdateLOAs,
+  } = useAmendPermitForm(
     currentStepIndex === 0,
     isLcvDesignated,
+    getDefaultRequiredVal([], activeLOAs),
+    vehicleOptions,
     companyInfo,
     permit,
     amendmentApplication,
@@ -74,20 +92,12 @@ export const AmendPermitForm = () => {
     permit,
   );
 
-  const { data: activeLOAs } = useFetchLOAs(companyId, false);
   const applicableLOAs = getDefaultRequiredVal([], activeLOAs)
     .filter(loa => loa.loaPermitType.includes(formData.permitType));
   
   const amendPermitMutation = useAmendPermit(companyId);
   const modifyAmendmentMutation = useModifyAmendmentApplication();
   const snackBar = useContext(SnackBarContext);
-
-  const {
-    handleSaveVehicle,
-    vehicleOptions,
-    powerUnitSubTypes,
-    trailerSubTypes,
-  } = usePermitVehicleManagement(companyId);
 
   const { handleSubmit } = formMethods;
 
@@ -203,32 +213,67 @@ export const AmendPermitForm = () => {
     (duration) => duration.value <= permitOldDuration,
   );
 
+  const applicationFormContextData = useMemo(() => ({
+    initialFormData,
+    formData,
+    durationOptions,
+    vehicleOptions,
+    powerUnitSubtypes: powerUnitSubTypes,
+    trailerSubtypes: trailerSubTypes,
+    isLcvDesignated,
+    feature: FEATURE,
+    companyInfo,
+    isAmendAction: true,
+    createdDateTime,
+    updatedDateTime,
+    pastStartDateStatus: PAST_START_DATE_STATUSES.WARNING,
+    companyLOAs: applicableLOAs,
+    revisionHistory,
+    onLeave: undefined,
+    onSave: undefined,
+    onCancel: goHome,
+    onContinue: handleSubmit(onContinue),
+    onSetDuration,
+    onSetExpiryDate,
+    onSetConditions,
+    onToggleSaveVehicle,
+    onSetVehicle,
+    onClearVehicle,
+    onUpdateLOAs,
+  }), [
+    initialFormData,
+    formData,
+    durationOptions,
+    vehicleOptions,
+    powerUnitSubTypes,
+    trailerSubTypes,
+    isLcvDesignated,
+    companyInfo,
+    createdDateTime,
+    updatedDateTime,
+    applicableLOAs,
+    revisionHistory,
+    goHome,
+    onContinue,
+    onSetDuration,
+    onSetExpiryDate,
+    onSetConditions,
+    onToggleSaveVehicle,
+    onSetVehicle,
+    onClearVehicle,
+    onUpdateLOAs,
+  ]);
+
   return (
     <div className="amend-permit-form">
       <Breadcrumb links={getLinks()} />
 
       <FormProvider {...formMethods}>
-        <PermitForm
-          feature={FEATURE}
-          onCancel={goHome}
-          onContinue={handleSubmit(onContinue)}
-          isAmendAction={true}
-          permitNumber={permit?.permitNumber}
-          createdDateTime={createdDateTime}
-          updatedDateTime={updatedDateTime}
-          vehicleOptions={vehicleOptions}
-          powerUnitSubTypes={powerUnitSubTypes}
-          trailerSubTypes={trailerSubTypes}
-          companyInfo={companyInfo}
-          durationOptions={durationOptions}
-          doingBusinessAs={doingBusinessAs}
-          pastStartDateStatus={PAST_START_DATE_STATUSES.WARNING}
-          companyLOAs={applicableLOAs}
-          isLcvDesignated={isLcvDesignated}
+        <ApplicationFormContext.Provider
+          value={applicationFormContextData}
         >
-          <AmendRevisionHistory revisionHistory={revisionHistory} />
-          <AmendReason feature={FEATURE} />
-        </PermitForm>
+          <PermitForm />
+        </ApplicationFormContext.Provider>
       </FormProvider>
     </div>
   );

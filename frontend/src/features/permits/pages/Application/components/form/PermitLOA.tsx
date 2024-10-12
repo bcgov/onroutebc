@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import dayjs, { Dayjs } from "dayjs";
+import { Dayjs } from "dayjs";
 import { Box, Typography } from "@mui/material";
 
 import "./PermitLOA.scss";
@@ -8,10 +8,9 @@ import { BANNER_MESSAGES } from "../../../../../../common/constants/bannerMessag
 import { LOADetail } from "../../../../../settings/types/SpecialAuthorization";
 import { LOATable } from "./LOATable";
 import { PermitType } from "../../../../types/PermitType";
-import { minDurationForPermitType } from "../../../../helpers/dateSelection";
-import { getExpiryDate } from "../../../../helpers/permitState";
-import { getEndOfDate } from "../../../../../../common/helpers/formatDate";
+import { getMinPermitExpiryDate } from "../../../../helpers/dateSelection";
 import { areArraysEqual } from "../../../../../../common/helpers/util";
+import { getUpdatedLOASelection } from "../../../../helpers/permitLOA";
 
 export const PermitLOA = ({
   permitType,
@@ -26,33 +25,14 @@ export const PermitLOA = ({
   companyLOAs: LOADetail[];
   onUpdateLOAs: (updatedLOAs: LOADetail[]) => void,
 }) => {
-  const minDuration = minDurationForPermitType(permitType);
-  const minPermitExpiryDate = getExpiryDate(startDate, minDuration);
+  const minPermitExpiryDate = getMinPermitExpiryDate(permitType, startDate);
 
   // Only show the current active company LOAs as selectable LOAs
-  const loasForTable = useMemo(() => {
-    // The LOA table should only show each LOA once, but there's a chance that an existing company LOA
-    // is also a selected LOA, which means that LOA should only be shown once.
-    // Thus, any overlapping LOA between company LOAs and selected LOAs should only be included once in the table,
-    // and all non-overlapping LOAs that are not the current active company LOAs shouldn't be included
-    const currentlySelectedIds = new Set([...selectedLOAs.map(loa => loa.loaId)]);
-
-    return companyLOAs.map(loa => {
-      const wasSelected = currentlySelectedIds.has(loa.loaId);
-      const isExpiringBeforeMinPermitExpiry = Boolean(loa.expiryDate)
-        && minPermitExpiryDate.isAfter(getEndOfDate(dayjs(loa.expiryDate)));
-      
-      // Deselect and disable any LOAs expiring before min permit expiry date
-      const isSelected = wasSelected && !isExpiringBeforeMinPermitExpiry;
-      const isEnabled = !isExpiringBeforeMinPermitExpiry;
-      
-      return {
-        loa,
-        checked: isSelected,
-        disabled: !isEnabled,
-      };
-    });
-  }, [
+  const loasForTable = useMemo(() => getUpdatedLOASelection(
+    companyLOAs,
+    selectedLOAs,
+    minPermitExpiryDate,
+  ), [
     companyLOAs,
     selectedLOAs,
     minPermitExpiryDate,
@@ -64,24 +44,24 @@ export const PermitLOA = ({
     .filter(selectableLOA => selectableLOA.checked)
     .map(selectableLOA => selectableLOA.loa);
 
-  const selectedLOAIds = selectedLOAs.map(loa => loa.loaId);
+  const selectedLOANumbers = selectedLOAs.map(loa => loa.loaNumber);
   
   useEffect(() => {
-    const selectedIdsInTable = selectedLOAsInTable.map(loa => loa.loaId);
-    if (!areArraysEqual(selectedLOAIds, selectedIdsInTable)) {
+    const selectedNumbersInTable = selectedLOAsInTable.map(loa => loa.loaNumber);
+    if (!areArraysEqual(selectedLOANumbers, selectedNumbersInTable)) {
       onUpdateLOAs([...selectedLOAsInTable]);
     }
-  }, [selectedLOAIds, selectedLOAsInTable]);
+  }, [selectedLOANumbers, selectedLOAsInTable]);
 
-  const handleSelectLOA = (loaId: string) => {
-    const loa = loasForTable.find(loaRow => loaRow.loa.loaId === loaId);
+  const handleSelectLOA = (loaNumber: number) => {
+    const loa = loasForTable.find(loaRow => loaRow.loa.loaNumber === loaNumber);
     if (!loa || loa?.disabled) return;
 
     const isLOASelected = Boolean(loa?.checked);
     if (isLOASelected) {
       // Deselect the LOA
       onUpdateLOAs(
-        selectedLOAs.filter(selectedLOA => selectedLOA.loaId !== loaId),
+        selectedLOAs.filter(selectedLOA => selectedLOA.loaNumber !== loaNumber),
       );
     } else {
       // Select the LOA

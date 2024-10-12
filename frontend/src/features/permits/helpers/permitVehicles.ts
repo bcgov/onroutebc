@@ -1,6 +1,11 @@
 import { PERMIT_TYPES, PermitType } from "../types/PermitType";
 import { TROW_INELIGIBLE_POWERUNITS, TROW_INELIGIBLE_TRAILERS } from "../constants/trow";
 import { TROS_INELIGIBLE_POWERUNITS, TROS_INELIGIBLE_TRAILERS } from "../constants/tros";
+import { LOADetail } from "../../settings/types/SpecialAuthorization";
+import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../common/helpers/util";
+import { Nullable } from "../../../common/types/common";
+import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
+import { isVehicleSubtypeLCV } from "../../manageVehicles/helpers/vehicleSubtypes";
 import {
   PowerUnit,
   Trailer,
@@ -9,7 +14,6 @@ import {
   VEHICLE_TYPES,
   Vehicle,
 } from "../../manageVehicles/types/Vehicle";
-import { LOADetail } from "../../settings/types/SpecialAuthorization";
 
 export const getIneligiblePowerUnitSubtypes = (permitType: PermitType) => {
   switch (permitType) {
@@ -32,6 +36,44 @@ export const getIneligibleTrailerSubtypes = (permitType: PermitType) => {
       return [];
   }
 };
+
+/**
+ * Get all ineligible power unit and trailer subtypes based on LCV designation and permit type.
+ * @param permitType Permit type
+ * @param isLcvDesignated Whether or not the LCV designation is used
+ * @returns All ineligible power unit and trailer subtypes
+ */
+export const getIneligibleSubtypes = (
+  permitType: PermitType,
+  isLcvDesignated: boolean,
+) => {
+  return {
+    ineligibleTrailerSubtypes: getIneligibleTrailerSubtypes(permitType),
+    ineligiblePowerUnitSubtypes: getIneligiblePowerUnitSubtypes(permitType)
+      .filter(subtype => !isLcvDesignated || !isVehicleSubtypeLCV(subtype.typeCode)),
+  };
+};
+
+/**
+ * Gets default values for vehicle details, or populate with values from existing vehicle details.
+ * @param vehicleDetails existing vehicle details, if any
+ * @returns default values for vehicle details
+ */
+export const getDefaultVehicleDetails = (
+  vehicleDetails?: Nullable<PermitVehicleDetails>,
+) => ({
+  vehicleId: getDefaultRequiredVal("", vehicleDetails?.vehicleId),
+  unitNumber: getDefaultRequiredVal("", vehicleDetails?.unitNumber),
+  vin: getDefaultRequiredVal("", vehicleDetails?.vin),
+  plate: getDefaultRequiredVal("", vehicleDetails?.plate),
+  make: getDefaultRequiredVal("", vehicleDetails?.make),
+  year: applyWhenNotNullable((year) => year, vehicleDetails?.year, null),
+  countryCode: getDefaultRequiredVal("", vehicleDetails?.countryCode),
+  provinceCode: getDefaultRequiredVal("", vehicleDetails?.provinceCode),
+  vehicleType: getDefaultRequiredVal("", vehicleDetails?.vehicleType),
+  vehicleSubType: getDefaultRequiredVal("", vehicleDetails?.vehicleSubType),
+  saveVehicle: false,
+});
 
 /**
  * A helper method that filters eligible power unit or trailer subtypes for dropdown lists.
@@ -76,8 +118,8 @@ export const filterVehicleSubtypes = (
  */
 export const filterVehicles = (
   vehicles: Vehicle[],
-  ineligiblePowerUnitSubtypes: VehicleSubType[],
-  ineligibleTrailerSubtypes: VehicleSubType[],
+  ineligiblePowerUnitSubtypes: string[],
+  ineligibleTrailerSubtypes: string[],
   loas: LOADetail[],
 ) => {
   const permittedPowerUnitIds = new Set([
@@ -101,14 +143,14 @@ export const filterVehicles = (
       const trailer = vehicle as Trailer;
       return permittedTrailerIds.has(trailer.trailerId as string)
         || !ineligibleTrailerSubtypes.some((ineligibleSubtype) => {
-          return trailer.trailerTypeCode === ineligibleSubtype.typeCode;
+          return trailer.trailerTypeCode === ineligibleSubtype;
         });
     }
 
     const powerUnit = vehicle as PowerUnit;
     return permittedPowerUnitIds.has(powerUnit.powerUnitId as string)
       || !ineligiblePowerUnitSubtypes.some((ineligibleSubtype) => {
-        return powerUnit.powerUnitTypeCode === ineligibleSubtype.typeCode;
+        return powerUnit.powerUnitTypeCode === ineligibleSubtype;
       });
   });
 };

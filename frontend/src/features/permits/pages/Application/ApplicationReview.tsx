@@ -17,7 +17,7 @@ import { CartContext } from "../../context/CartContext";
 import { usePowerUnitSubTypesQuery } from "../../../manageVehicles/hooks/powerUnits";
 import { useTrailerSubTypesQuery } from "../../../manageVehicles/hooks/trailers";
 import { useFetchSpecialAuthorizations } from "../../../settings/hooks/specialAuthorizations";
-import { applyLCVToApplicationData } from "../../helpers/getDefaultApplicationFormData";
+import { applyLCVToApplicationData } from "../../helpers/permitLCV"; 
 import { calculateFeeByDuration } from "../../helpers/feeSummary";
 import { DEFAULT_PERMIT_TYPE } from "../../types/PermitType";
 import {

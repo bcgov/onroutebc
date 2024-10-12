@@ -367,8 +367,8 @@ export const VehicleDetails = ({
                 vehicleOptions={vehicleOptions}
                 handleClearVehicle={() => onClearVehicle(saveVehicle)}
                 handleSelectVehicle={onSelectVehicle}
-                ineligiblePowerUnitSubtypes={ineligiblePowerUnitSubtypes}
-                ineligibleTrailerSubtypes={ineligibleTrailerSubtypes}
+                ineligiblePowerUnitSubtypes={ineligiblePowerUnitSubtypes.map(({ typeCode }) => typeCode)}
+                ineligibleTrailerSubtypes={ineligibleTrailerSubtypes.map(({ typeCode }) => typeCode)}
                 loas={selectedLOAs}
               />
             </Box>

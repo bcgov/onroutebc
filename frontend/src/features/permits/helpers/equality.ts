@@ -132,20 +132,20 @@ export const arePermitLOAsEqual = (
     return false;
 
   const loaMap1 = new Map(
-    (loas1 as LOADetail[]).map((loa) => [loa.loaId, loa]),
+    (loas1 as LOADetail[]).map((loa) => [loa.loaNumber, loa]),
   );
   const loaMap2 = new Map(
-    (loas2 as LOADetail[]).map((loa) => [loa.loaId, loa]),
+    (loas2 as LOADetail[]).map((loa) => [loa.loaNumber, loa]),
   );
 
-  for (const [loaId, loa] of loaMap1) {
-    if (!areLOADetailsEqual(loa, loaMap2.get(loaId))) {
+  for (const [loaNumber, loa] of loaMap1) {
+    if (!areLOADetailsEqual(loa, loaMap2.get(loaNumber))) {
       return false;
     }
   }
 
-  for (const [loaId, loa] of loaMap2) {
-    if (!areLOADetailsEqual(loa, loaMap1.get(loaId))) {
+  for (const [loaNumber, loa] of loaMap2) {
+    if (!areLOADetailsEqual(loa, loaMap1.get(loaNumber))) {
       return false;
     }
   }
