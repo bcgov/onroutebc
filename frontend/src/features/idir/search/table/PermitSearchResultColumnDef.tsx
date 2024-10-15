@@ -32,8 +32,6 @@ export const PermitSearchResultColumnDef = (
       const isPermitVoided = (permitStatus: PermitStatus) =>
         permitStatus === PERMIT_STATUSES.VOIDED;
 
-      console.log(isPermitVoided(permitStatus));
-
       return (
         <>
           <CustomActionLink
