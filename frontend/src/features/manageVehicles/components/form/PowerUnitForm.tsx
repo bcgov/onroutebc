@@ -242,7 +242,7 @@ export const PowerUnitForm = ({
             )}
             className="power-unit-form__field"
           />
-          
+
           <CountryAndProvince
             feature={FEATURE}
             countryField="countryCode"

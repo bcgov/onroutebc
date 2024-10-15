@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Autocomplete,
   FormControl,
@@ -71,18 +71,18 @@ export const SelectVehicleDropdown = ({
     ineligibleTrailerSubtypes,
   );
 
-  const selectedOption = selectedVehicle
-    ? getDefaultRequiredVal(
-        null,
-        eligibleVehicles.find((vehicle) =>
-          selectedVehicle.vehicleType === VEHICLE_TYPES.TRAILER
-            ? vehicle.vehicleType === VEHICLE_TYPES.TRAILER &&
-              (vehicle as Trailer).trailerId === selectedVehicle.vehicleId
-            : vehicle.vehicleType === VEHICLE_TYPES.POWER_UNIT &&
-              (vehicle as PowerUnit).powerUnitId === selectedVehicle.vehicleId,
-        ),
-      )
-    : null;
+  const selectedOption = useMemo(() => {
+    return getDefaultRequiredVal(
+      null,
+      eligibleVehicles.find((vehicle) =>
+        selectedVehicle?.vehicleType === VEHICLE_TYPES.TRAILER
+          ? vehicle.vehicleType === VEHICLE_TYPES.TRAILER &&
+            (vehicle as Trailer).trailerId === selectedVehicle.vehicleId
+          : vehicle.vehicleType === VEHICLE_TYPES.POWER_UNIT &&
+            (vehicle as PowerUnit).powerUnitId === selectedVehicle?.vehicleId,
+      ),
+    );
+  }, [selectedVehicle, eligibleVehicles]);
 
   const [vehicleTextValue, setVehicleTextValue] = useState<string>("");
 
@@ -95,10 +95,7 @@ export const SelectVehicleDropdown = ({
   }, [selectedOption]);
 
   return (
-    <FormControl
-      margin="normal"
-      className="select-vehicle-dropdown"
-    >
+    <FormControl margin="normal" className="select-vehicle-dropdown">
       <FormLabel className="select-vehicle-dropdown__label">{label}</FormLabel>
       <Autocomplete
         id="application-select-vehicle"

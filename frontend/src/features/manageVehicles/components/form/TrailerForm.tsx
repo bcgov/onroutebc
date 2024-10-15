@@ -69,6 +69,7 @@ export const TrailerForm = ({
 
   const onAddOrUpdateVehicle = async (data: FieldValues) => {
     if (isEditMode) {
+      console.log({ converted: Number(data.year) });
       const trailerToBeUpdated = data as Trailer;
       const result = await updateTrailerMutation.mutateAsync({
         companyId,
@@ -123,7 +124,7 @@ export const TrailerForm = ({
   const handleClose = () => {
     navigate(VEHICLES_ROUTES.TRAILER_TAB);
   };
-  
+
   const saveButtonText = isEditMode ? "Save" : "Add To Inventory";
 
   return (
@@ -272,7 +273,7 @@ export const TrailerForm = ({
             provinceClassName="trailer-form__field"
           />
         </div>
-        
+
         <Box className="trailer-form__actions">
           <Button
             key="cancel-save-vehicle-button"
