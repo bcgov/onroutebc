@@ -69,7 +69,6 @@ export const TrailerForm = ({
 
   const onAddOrUpdateVehicle = async (data: FieldValues) => {
     if (isEditMode) {
-      console.log({ converted: Number(data.year) });
       const trailerToBeUpdated = data as Trailer;
       const result = await updateTrailerMutation.mutateAsync({
         companyId,
