@@ -3,7 +3,11 @@ import { MRT_ColumnDef } from "material-react-table";
 
 import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
 import { PermitListItem } from "../../../permits/types/permit";
-import { PERMIT_EXPIRED } from "../../../permits/types/PermitStatus";
+import {
+  PERMIT_EXPIRED,
+  PERMIT_STATUSES,
+  PermitStatus,
+} from "../../../permits/types/PermitStatus";
 import { PermitChip } from "../../../permits/components/permit-list/PermitChip";
 import { viewPermitPdf } from "../../../permits/helpers/permitPDFHelper";
 import { hasPermitExpired } from "../../../permits/helpers/permitState";
@@ -25,21 +29,23 @@ export const PermitSearchResultColumnDef = (
       const permit = props.row.original as PermitListItem;
       const { permitId, permitStatus, expiryDate, companyId } = permit;
 
+      const isPermitVoided = (permitStatus: PermitStatus) =>
+        permitStatus === PERMIT_STATUSES.VOIDED;
+
+      console.log(isPermitVoided(permitStatus));
+
       return (
         <>
           <CustomActionLink
-            onClick={() =>{
-              viewPermitPdf(
-                companyId,
-                permitId,
-                () => onDocumentUnavailable(),
-              );
-            }  
-          }
+            onClick={() => {
+              viewPermitPdf(companyId, permitId, () => onDocumentUnavailable());
+            }}
           >
             {props.cell.getValue()}
           </CustomActionLink>
-          {hasPermitExpired(expiryDate) ? (
+          {isPermitVoided(permitStatus) ? (
+            <PermitChip permitStatus={permitStatus} />
+          ) : hasPermitExpired(expiryDate) ? (
             <PermitChip permitStatus={PERMIT_EXPIRED} />
           ) : (
             <PermitChip permitStatus={permitStatus} />
@@ -54,13 +60,13 @@ export const PermitSearchResultColumnDef = (
     header: "Permit Type",
     enableSorting: true,
     sortingFn: "alphanumeric",
-    Cell: (props: { cell: any; }) => {
-      const permitTypeName = getPermitTypeName(props.cell.getValue())
-      return <Tooltip title={permitTypeName}>
-        <Box>
-          {props.cell.getValue()}
-        </Box>
-      </Tooltip>
+    Cell: (props: { cell: any }) => {
+      const permitTypeName = getPermitTypeName(props.cell.getValue());
+      return (
+        <Tooltip title={permitTypeName}>
+          <Box>{props.cell.getValue()}</Box>
+        </Tooltip>
+      );
     },
     size: 20,
   },
