@@ -29,8 +29,20 @@ export const PermitSearchResultColumnDef = (
       const permit = props.row.original as PermitListItem;
       const { permitId, permitStatus, expiryDate, companyId } = permit;
 
-      const isPermitVoided = (permitStatus: PermitStatus) =>
-        permitStatus === PERMIT_STATUSES.VOIDED;
+      const getDisplayedPermitStatus = (
+        permitStatus: PermitStatus,
+        expiryDate: string,
+      ) => {
+        if (permitStatus === PERMIT_STATUSES.VOIDED) {
+          return PERMIT_STATUSES.VOIDED;
+        }
+
+        if (hasPermitExpired(expiryDate)) {
+          return PERMIT_EXPIRED;
+        }
+
+        return permitStatus;
+      };
 
       return (
         <>
@@ -41,13 +53,9 @@ export const PermitSearchResultColumnDef = (
           >
             {props.cell.getValue()}
           </CustomActionLink>
-          {isPermitVoided(permitStatus) ? (
-            <PermitChip permitStatus={permitStatus} />
-          ) : hasPermitExpired(expiryDate) ? (
-            <PermitChip permitStatus={PERMIT_EXPIRED} />
-          ) : (
-            <PermitChip permitStatus={permitStatus} />
-          )}
+          <PermitChip
+            permitStatus={getDisplayedPermitStatus(permitStatus, expiryDate)}
+          />
         </>
       );
     },
