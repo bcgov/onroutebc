@@ -6,6 +6,9 @@ import { PermitVehicleDetails } from "./PermitVehicleDetails";
 import { PermitMailingAddress } from "./PermitMailingAddress";
 import { LOADetail } from "../../settings/types/SpecialAuthorization";
 import { PermitCondition } from "./PermitCondition";
+import { PermittedCommodity } from "./PermittedCommodity";
+import { PermitVehicleConfiguration } from "./PermitVehicleConfiguration";
+import { PermittedRoute } from "./PermittedRoute";
 
 export interface PermitData {
   startDate: Dayjs;
@@ -20,4 +23,8 @@ export interface PermitData {
   doingBusinessAs?: Nullable<string>;
   clientNumber?: Nullable<string>;
   loas?: Nullable<LOADetail[]>;
+  permittedCommodity?: Nullable<PermittedCommodity>;
+  vehicleConfiguration?: Nullable<PermitVehicleConfiguration>;
+  permittedRoute?: Nullable<PermittedRoute>;
+  applicationNotes?: Nullable<string>;
 }
