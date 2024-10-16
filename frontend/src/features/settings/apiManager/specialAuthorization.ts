@@ -4,6 +4,7 @@ import { LOADetail, NoFeePermitType, SpecialAuthorizationData } from "../types/S
 import { LOAFormData, serializeLOAFormData } from "../types/LOAFormData";
 import { SPECIAL_AUTH_API_ROUTES } from "./endpoints/endpoints";
 import { streamDownloadFile } from "../../../common/helpers/util";
+import { RequiredOrNull } from "../../../common/types/common";
 import {
   httpDELETERequest,
   httpGETRequest,
@@ -12,7 +13,6 @@ import {
   httpPUTRequest,
   httpPUTRequestWithFile,
 } from "../../../common/apiManager/httpRequestHandler";
-import { RequiredOrNull } from "../../../common/types/common";
 
 /**
  * Get the LOAs for a given company.
@@ -38,7 +38,7 @@ export const getLOAs = async (
  */
 export const getLOADetail = async (
   companyId: number | string,
-  loaId: string,
+  loaId: number,
 ): Promise<LOADetail> => {
   const response = await httpGETRequest(
     SPECIAL_AUTH_API_ROUTES.LOA.DETAIL(companyId, loaId),
@@ -72,7 +72,7 @@ export const createLOA = async (
 export const updateLOA = async (
   LOAData: {
     companyId: number | string;
-    loaId: string;
+    loaId: number;
     data: LOAFormData;
   },
 ): Promise<AxiosResponse<LOADetail>> => {
@@ -91,7 +91,7 @@ export const updateLOA = async (
 export const removeLOA = async (
   LOAData: {
     companyId: number | string;
-    loaId: string;
+    loaId: number;
   },
 ): Promise<AxiosResponse<LOADetail>> => {
   const { companyId, loaId } = LOAData;
@@ -107,7 +107,7 @@ export const removeLOA = async (
  * @returns A Promise containing the dms reference string for the LOA download stream
  */
 export const downloadLOA = async (
-  loaId: string,
+  loaId: number,
   companyId: string | number,
 ) => {
   const url = SPECIAL_AUTH_API_ROUTES.LOA.DOWNLOAD(companyId, loaId);
@@ -123,7 +123,7 @@ export const downloadLOA = async (
 export const removeLOADocument = async (
   LOAData: {
     companyId: number | string;
-    loaId: string;
+    loaId: number;
   },
 ): Promise<AxiosResponse<LOADetail>> => {
   const { companyId, loaId } = LOAData;

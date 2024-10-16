@@ -1,3 +1,5 @@
+import { Dayjs } from "dayjs";
+
 import { BASE_DAYS_IN_YEAR, TERM_DURATION_INTERVAL_DAYS } from "../constants/constants";
 import { PERMIT_TYPES, PermitType } from "../types/PermitType";
 import {
@@ -13,6 +15,9 @@ import {
   TROW_DURATION_INTERVAL_DAYS,
   TROW_DURATION_OPTIONS,
 } from "../constants/trow";
+import { getExpiryDate } from "./permitState";
+import { LOADetail } from "../../settings/types/SpecialAuthorization";
+import { getMostRecentExpiryFromLOAs } from "./permitLOA";
 
 /**
  * Get list of selectable duration options for a given permit type.
@@ -61,4 +66,69 @@ export const getDurationIntervalDays  = (permitType: PermitType) => {
     default:
       return TERM_DURATION_INTERVAL_DAYS; // This needs to be updated once more permit types are added
   }
+};
+
+/**
+ * Get the minimum permit expiry date.
+ * @param permitType Permit type
+ * @param startDate Expected start date of the permit
+ * @returns The earliest date that the permit will expire on
+ */
+export const getMinPermitExpiryDate = (
+  permitType: PermitType,
+  startDate: Dayjs,
+) => {
+  const minDuration = minDurationForPermitType(permitType);
+  return getExpiryDate(startDate, minDuration);
+};
+
+/**
+ * Get available duration options for a permit based on selected LOAs and start date.
+ * @param fullDurationOptions Full duration select options for a permit
+ * @param selectedLOAs Selected LOAs for a permit
+ * @param startDate Start date for a permit
+ * @returns Updated available duration select options
+ */
+export const getAvailableDurationOptions = (
+  fullDurationOptions: {
+    value: number;
+    label: string;
+  }[],
+  selectedLOAs: LOADetail[],
+  startDate: Dayjs,
+) => {
+  const mostRecentLOAExpiry = getMostRecentExpiryFromLOAs(selectedLOAs);
+  if (!mostRecentLOAExpiry) return fullDurationOptions;
+
+  return fullDurationOptions
+    .filter(({ value: durationDays }) => !mostRecentLOAExpiry.isBefore(getExpiryDate(startDate, durationDays)));
+};
+
+/**
+ * Update permit duration if durations options change.
+ * Selected duration must be between min allowable permit duration and max available duration in the options.
+ * @param permitType Permit type
+ * @param currentDuration Currently selected duration for the permit
+ * @param durationOptions Available list of selectable duration options for the permit
+ * @returns Current permit duration if valid, or updated duration if no longer valid
+ */
+export const handleUpdateDurationIfNeeded = (
+  permitType: PermitType,
+  currentDuration: number,
+  durationOptions: {
+    value: number;
+    label: string;
+  }[],
+) => {
+  const minAllowableDuration = minDurationForPermitType(permitType);
+  const maxDurationInOptions = Math.max(...durationOptions.map(durationOption => durationOption.value));
+
+  if (currentDuration > maxDurationInOptions) {
+    if (maxDurationInOptions < minAllowableDuration) {
+      return minAllowableDuration;
+    }
+    return maxDurationInOptions;
+  }
+
+  return currentDuration;
 };

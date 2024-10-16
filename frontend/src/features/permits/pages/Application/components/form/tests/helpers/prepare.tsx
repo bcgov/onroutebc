@@ -61,6 +61,7 @@ const TestFormWrapper = (props: React.PropsWithChildren) => {
         permitDuration: defaultDuration,
         expiryDate: getExpiryDate(currentDt, defaultDuration),
         commodities: [],
+        loas: [],
       },
     },
     reValidateMode: "onBlur",

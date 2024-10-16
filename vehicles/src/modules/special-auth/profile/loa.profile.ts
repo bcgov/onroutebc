@@ -9,11 +9,11 @@ import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
 import { CreateLoaDto } from '../dto/request/create-loa.dto';
 import { LoaDetail } from '../entities/loa-detail.entity';
-import { ReadLoaDto } from '../dto/response/read-loa.dto';
 import { LoaPermitType } from '../entities/loa-permit-type-details.entity';
 import { LoaVehicle } from '../entities/loa-vehicles.entity';
 import * as dayjs from 'dayjs';
 import { UpdateLoaDto } from '../dto/request/update-loa.dto';
+import { ReadLoaDto } from '../dto/response/read-loa.dto';
 
 @Injectable()
 export class LoaProfile extends AutomapperProfile {
@@ -385,7 +385,6 @@ export class LoaProfile extends AutomapperProfile {
           ),
         ),
       );
-
       createMap(
         mapper,
         LoaDetail,

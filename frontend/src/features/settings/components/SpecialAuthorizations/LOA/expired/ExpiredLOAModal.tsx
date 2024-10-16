@@ -17,8 +17,8 @@ export const ExpiredLOAModal = ({
   showModal: boolean;
   allowEditLOA: boolean;
   handleCancel: () => void;
-  handleEdit: (loaId: string) => void;
-  handleDownload: (loaId: string) => void;
+  handleEdit: (loaId: number) => void;
+  handleDownload: (loaId: number) => void;
   expiredLOAs: LOADetail[];
 }) => {
   return (

@@ -21,7 +21,6 @@ import { EditCartItemDialog } from "../../components/cart/EditCartItemDialog";
 import { UpdateCartDialog } from "../../components/cart/UpdateCartDialog";
 import { BCeID_USER_ROLE } from "../../../../common/authentication/types";
 import { Loading } from "../../../../common/pages/Loading";
-import { CVPayInPersonInfo } from "../Application/components/pay/CVPayInPersonInfo";
 import {
   PAYMENT_METHOD_TYPE_CODE,
   PaymentCardTypeCode,
@@ -391,6 +390,7 @@ export const ShoppingCartPage = () => {
             <strong>{PPC_EMAIL}</strong>
           </p>
         </div>
+
         <ShoppingCart
           outdatedApplicationNumbers={outdatedApplicationNumbers}
           showCartFilter={enableCartFilter}
@@ -407,10 +407,12 @@ export const ShoppingCartPage = () => {
 
       <Box className="shopping-cart-page__right-container">
         <FormProvider {...formMethods}>
-          <ChoosePaymentMethod
-            availablePaymentMethods={availablePaymentMethods}
-          />
-          {!isStaffActingAsCompany && <CVPayInPersonInfo />}
+          {!isFeeZero ? (
+            <ChoosePaymentMethod
+              availablePaymentMethods={availablePaymentMethods}
+              showPayInPersonInfo={!isStaffActingAsCompany}
+            />
+          ) : null}
 
           {paymentFailed ? <PaymentFailedBanner /> : null}
 
