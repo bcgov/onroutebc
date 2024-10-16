@@ -13,6 +13,7 @@ export interface PermitVehicleDetails {
   saveVehicle?: Nullable<boolean>;
   unitNumber?: Nullable<string>;
   vehicleId: Nullable<string>; // either powerUnitId or trailerId, depending on vehicleType
+  licensedGVW?: Nullable<number>;
 }
 
 export const DEFAULT_VEHICLE_TYPE = VEHICLE_TYPES.POWER_UNIT;
