@@ -8,11 +8,8 @@ import { DiffChip } from "./DiffChip";
 import { Nullable } from "../../../../../../common/types/common";
 import { PermitCondition } from "../../../../types/PermitCondition";
 import { BASE_DAYS_IN_YEAR } from "../../../../constants/constants";
-import {
-  applyWhenNotNullable,
-  areValuesDifferent,
-} from "../../../../../../common/helpers/util";
-
+import { applyWhenNotNullable } from "../../../../../../common/helpers/util";
+import { areValuesDifferent } from "../../../../../../common/helpers/equality";
 import {
   DATE_FORMATS,
   dayjsToLocalStr,

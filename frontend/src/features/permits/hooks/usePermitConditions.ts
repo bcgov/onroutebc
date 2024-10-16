@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 
-import { areArraysEqual } from "../../../common/helpers/util";
 import { PermitCondition } from "../types/PermitCondition";
 import { getUpdatedConditionsForLCV } from "../helpers/permitLCV";
+import { doUniqueArraysHaveSameItems } from "../../../common/helpers/equality";
 
 export const usePermitConditions = (
   selectedConditions: PermitCondition[],
@@ -18,7 +18,7 @@ export const usePermitConditions = (
   );
 
   useEffect(() => {
-    if (!areArraysEqual(
+    if (!doUniqueArraysHaveSameItems(
       updatedConditions.map(({ condition }) => condition),
       selectedConditions.map(({ condition }: PermitCondition) => condition),
     )) {

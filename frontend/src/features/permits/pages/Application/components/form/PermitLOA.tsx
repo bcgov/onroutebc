@@ -9,8 +9,8 @@ import { LOADetail } from "../../../../../settings/types/SpecialAuthorization";
 import { LOATable } from "./LOATable";
 import { PermitType } from "../../../../types/PermitType";
 import { getMinPermitExpiryDate } from "../../../../helpers/dateSelection";
-import { areArraysEqual } from "../../../../../../common/helpers/util";
 import { getUpdatedLOASelection } from "../../../../helpers/permitLOA";
+import { doUniqueArraysHaveSameItems } from "../../../../../../common/helpers/equality";
 
 export const PermitLOA = ({
   permitType,
@@ -48,7 +48,7 @@ export const PermitLOA = ({
   
   useEffect(() => {
     const selectedNumbersInTable = selectedLOAsInTable.map(loa => loa.loaNumber);
-    if (!areArraysEqual(selectedLOANumbers, selectedNumbersInTable)) {
+    if (!doUniqueArraysHaveSameItems(selectedLOANumbers, selectedNumbersInTable)) {
       onUpdateLOAs([...selectedLOAsInTable]);
     }
   }, [selectedLOANumbers, selectedLOAsInTable]);

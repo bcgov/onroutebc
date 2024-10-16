@@ -1,4 +1,4 @@
-import { areArraysEqual } from "../../../common/helpers/util";
+import { doUniqueArraysHaveSameItems } from "../../../common/helpers/equality";
 import { Nullable, RequiredOrNull } from "../../../common/types/common";
 import { PermitType } from "../../permits/types/PermitType";
 
@@ -85,10 +85,10 @@ export const areLOADetailsEqual = (
     && loa1.expiryDate === loa2.expiryDate
     && loa1.documentId === loa2.documentId
     && loa1.fileName === loa2.fileName
-    && areArraysEqual<string>(loa1.loaPermitType, loa2.loaPermitType)
+    && doUniqueArraysHaveSameItems<string>(loa1.loaPermitType, loa2.loaPermitType)
     && loa1.comment === loa2.comment
-    && areArraysEqual<string>(loa1.powerUnits, loa2.powerUnits)
-    && areArraysEqual<string>(loa1.trailers, loa2.trailers)
+    && doUniqueArraysHaveSameItems<string>(loa1.powerUnits, loa2.powerUnits)
+    && doUniqueArraysHaveSameItems<string>(loa1.trailers, loa2.trailers)
     && loa1.originalLoaId === loa2.originalLoaId
     && loa1.previousLoaId === loa2.previousLoaId;
 };
