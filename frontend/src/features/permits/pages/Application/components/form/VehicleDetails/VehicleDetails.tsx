@@ -17,19 +17,21 @@ import { CustomFormComponent } from "../../../../../../../common/components/form
 import { InfoBcGovBanner } from "../../../../../../../common/components/banners/InfoBcGovBanner";
 import { mapToVehicleObjectById } from "../../../../../helpers/mappers";
 import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
-import { sortVehicleSubTypes } from "../../../../../helpers/sorter";
-import { filterVehicleSubtypes } from "../../../../../helpers/permitVehicles";
 import { CustomInputHTMLAttributes } from "../../../../../../../common/types/formElements";
 import { SelectUnitOrPlate } from "./customFields/SelectUnitOrPlate";
 import { SelectVehicleDropdown } from "./customFields/SelectVehicleDropdown";
 import { BANNER_MESSAGES } from "../../../../../../../common/constants/bannerMessages";
 import { PermitVehicleDetails } from "../../../../../types/PermitVehicleDetails";
-import { EMPTY_VEHICLE_SUBTYPE } from "../../../../../../manageVehicles/helpers/vehicleSubtypes";
 import { LOADetail } from "../../../../../../settings/types/SpecialAuthorization";
+import { getEligibleSubtypeOptions } from "../../../../../helpers/permitVehicles";
+import {
+  EMPTY_VEHICLE_SUBTYPE,
+  selectedVehicleSubtype,
+} from "../../../../../../manageVehicles/helpers/vehicleSubtypes";
+
 import {
   PowerUnit,
   Trailer,
-  BaseVehicle,
   VehicleSubType,
   VEHICLE_TYPES,
   Vehicle,
@@ -50,65 +52,6 @@ import {
   invalidYearMin,
   requiredMessage,
 } from "../../../../../../../common/helpers/validationMessages";
-
-const selectedVehicleSubtype = (vehicle: BaseVehicle) => {
-  switch (vehicle.vehicleType) {
-    case VEHICLE_TYPES.POWER_UNIT:
-      return (vehicle as PowerUnit).powerUnitTypeCode;
-    case VEHICLE_TYPES.TRAILER:
-      return (vehicle as Trailer).trailerTypeCode;
-    default:
-      return "";
-  }
-};
-
-// Returns correct subtype options based on vehicle type
-const getSubtypeOptions = (
-  vehicleType: string,
-  powerUnitSubtypes: VehicleSubType[],
-  trailerSubtypes: VehicleSubType[],
-) => {
-  if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
-    return [...powerUnitSubtypes];
-  }
-  if (vehicleType === VEHICLE_TYPES.TRAILER) {
-    return [...trailerSubtypes];
-  }
-  return [EMPTY_VEHICLE_SUBTYPE];
-};
-
-// Returns eligible subset of subtype options to be used by select field for vehicle subtype
-const getEligibleSubtypeOptions = (
-  powerUnitSubtypes: VehicleSubType[],
-  trailerSubtypes: VehicleSubType[],
-  ineligiblePowerUnitSubtypes: VehicleSubType[],
-  ineligibleTrailerSubtypes: VehicleSubType[],
-  allowedLOAPowerUnitSubtypes: string[],
-  allowedLOATrailerSubtypes: string[],
-  vehicleType?: string,
-) => {
-  if (
-    vehicleType !== VEHICLE_TYPES.POWER_UNIT &&
-    vehicleType !== VEHICLE_TYPES.TRAILER
-  ) {
-    return [EMPTY_VEHICLE_SUBTYPE];
-  }
-
-  // Sort vehicle subtypes alphabetically
-  const sortedVehicleSubtypes = sortVehicleSubTypes(
-    vehicleType,
-    getSubtypeOptions(vehicleType, powerUnitSubtypes, trailerSubtypes),
-  );
-
-  return filterVehicleSubtypes(
-    sortedVehicleSubtypes,
-    vehicleType,
-    ineligiblePowerUnitSubtypes,
-    ineligibleTrailerSubtypes,
-    allowedLOAPowerUnitSubtypes,
-    allowedLOATrailerSubtypes,
-  );
-};
 
 export const VehicleDetails = ({
   feature,
