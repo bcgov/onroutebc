@@ -4,6 +4,8 @@ import { PermitHistory } from "../types/PermitHistory";
 import { removeEmptyIdsFromPermitsActionResponse } from "../helpers/mappers";
 import { AmendPermitFormData } from "../pages/Amend/types/AmendPermitFormData";
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
+import { EmailNotificationType } from "../types/EmailNotificationType";
+import { APPLICATION_QUEUE_STATUSES } from "../../queue/types/ApplicationQueueStatus";
 import {
   IssuePermitsResponse,
   PermitListItem,
@@ -30,7 +32,6 @@ import {
 } from "../types/payment";
 
 import {
-  getCompanyIdFromSession,
   httpGETRequest,
   httpPUTRequest,
   httpPOSTRequest,
@@ -49,13 +50,14 @@ import {
   ApplicationResponseData,
   ApplicationListItem,
   ApplicationFormData,
+  ApplicationFilters,
 } from "../types/application";
 
 import {
-  APPLICATION_QUEUE_API_ROUTES,
   APPLICATIONS_API_ROUTES,
   PAYMENT_API_ROUTES,
   PERMITS_API_ROUTES,
+  STAFF_APPLICATIONS_API_ROUTES,
 } from "./endpoints/endpoints";
 
 import {
@@ -63,8 +65,6 @@ import {
   VoidPermitRequestData,
   VoidPermitResponseData,
 } from "../pages/Void/types/VoidPermit";
-import { EmailNotificationType } from "../types/EmailNotificationType";
-import { CaseActivityType } from "../types/CaseActivityType";
 
 /**
  * Create a new application.
@@ -73,8 +73,8 @@ import { CaseActivityType } from "../types/CaseActivityType";
  */
 export const createApplication = async (
   application: ApplicationFormData,
+  companyId: number,
 ): Promise<AxiosResponse<ApplicationResponseData>> => {
-  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   return await httpPOSTRequest(
     APPLICATIONS_API_ROUTES.CREATE(companyId),
     replaceEmptyValuesWithNull({
@@ -88,21 +88,16 @@ export const createApplication = async (
  * Update an existing application.
  * @param application application data
  * @param applicationId application number for the application to update
- * @param companyIdParam company id
+ * @param companyId id of the company that the application belongs to
  * @returns response with updated application data, or error if failed
  */
 export const updateApplication = async (
   application: ApplicationFormData,
   applicationId: string,
-  companyIdParam?: Nullable<string>,
+  companyId: number,
 ): Promise<AxiosResponse<ApplicationResponseData>> => {
-  const companyId = getDefaultRequiredVal(
-    "",
-    getCompanyIdFromSession(),
-    companyIdParam,
-  );
   return await httpPUTRequest(
-    `${APPLICATIONS_API_ROUTES.UPDATE(companyId)}/${applicationId}`,
+    APPLICATIONS_API_ROUTES.UPDATE(companyId, applicationId),
     replaceEmptyValuesWithNull({
       // must convert application to ApplicationRequestData (dayjs fields to strings)
       ...serializeForUpdateApplication(application),
@@ -110,18 +105,28 @@ export const updateApplication = async (
   );
 };
 
-const getApplications = async (
+export const getApplications = async (
   {
     page = 0,
     take = 10,
     searchString = "",
     orderBy = [],
+    searchColumn = "",
   }: PaginationAndFilters,
-  pendingPermitsOnly?: boolean,
-  applicationsInQueueOnly?: boolean,
+  {
+    pendingPermitsOnly,
+    applicationsInQueueOnly,
+    claimedApplicationsOnly,
+    unclaimedApplicationsOnly,
+    getStaffQueue,
+  }: ApplicationFilters,
+  companyId?: Nullable<number>,
 ): Promise<PaginatedResponse<ApplicationListItem>> => {
-  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
-  const applicationsURL = new URL(APPLICATIONS_API_ROUTES.GET(companyId));
+  // If the user is staff and not acting as a company, get timeInQueue and claimedBy properties 
+  // in addition to the ApplicationListItem response to be used in the ApplicationsInQueueList component
+  const applicationsURL = !getStaffQueue && companyId
+    ? new URL(APPLICATIONS_API_ROUTES.GET_APPLICATIONS(companyId))
+    : new URL(STAFF_APPLICATIONS_API_ROUTES.GET());
 
   // API pagination index starts at 1. Hence page + 1.
   applicationsURL.searchParams.set("page", `${page + 1}`);
@@ -136,8 +141,22 @@ const getApplications = async (
 
   if (typeof applicationsInQueueOnly !== "undefined") {
     applicationsURL.searchParams.set(
-      "applicationsInQueue",
-      `${Boolean(applicationsInQueueOnly)}`,
+      "applicationQueueStatus",
+      `${APPLICATION_QUEUE_STATUSES.PENDING_REVIEW},${APPLICATION_QUEUE_STATUSES.IN_REVIEW}`,
+    );
+  }
+
+  if (typeof claimedApplicationsOnly !== "undefined") {
+    applicationsURL.searchParams.set(
+      "applicationQueueStatus",
+      `${APPLICATION_QUEUE_STATUSES.IN_REVIEW}`,
+    );
+  }
+
+  if (typeof unclaimedApplicationsOnly !== "undefined") {
+    applicationsURL.searchParams.set(
+      "applicationQueueStatus",
+      `${APPLICATION_QUEUE_STATUSES.PENDING_REVIEW}`,
     );
   }
 
@@ -147,6 +166,10 @@ const getApplications = async (
 
   if (orderBy.length > 0) {
     applicationsURL.searchParams.set("orderBy", stringifyOrderBy(orderBy));
+  }
+
+  if (searchColumn.length > 0) {
+    applicationsURL.searchParams.set("searchColumn", searchColumn);
   }
 
   const applications = await httpGETRequest(applicationsURL.toString())
@@ -190,9 +213,14 @@ const getApplications = async (
  * @return A list of applications in the IN_PROGRESS and WAITING_PAYMENT statuses
  */
 export const getApplicationsInProgress = async (
+  companyId: number,
   paginationFilters: PaginationAndFilters,
 ): Promise<PaginatedResponse<ApplicationListItem>> => {
-  return await getApplications(paginationFilters, false);
+  return await getApplications(
+    paginationFilters,
+    { pendingPermitsOnly: false },
+    companyId,
+  );
 };
 
 /**
@@ -200,33 +228,28 @@ export const getApplicationsInProgress = async (
  * @return A list of pending permits in the PAYMENT_COMPLETE status
  */
 export const getPendingPermits = async (
+  companyId: number,
   paginationFilters: PaginationAndFilters,
 ): Promise<PaginatedResponse<ApplicationListItem>> => {
-  return await getApplications(paginationFilters, true);
-};
-
-/**
- * Fetch all applications in queue.
- * @return A list of applications in queue (PENDING_REVIEW, IN_REVIEW)
- */
-export const getApplicationsInQueue = async (
-  paginationFilters: PaginationAndFilters,
-): Promise<PaginatedResponse<ApplicationListItem>> => {
-  return await getApplications(paginationFilters, undefined, true);
+  return await getApplications(
+    paginationFilters,
+    { pendingPermitsOnly: true },
+    companyId,
+  );
 };
 
 /**
  * Fetch application by its permit id.
+ * @param companyId company id of the company who owns the application
  * @param permitId permit id of the application to fetch
  * @returns ApplicationResponseData data as response, or null if fetch failed
  */
-export const getApplicationByPermitId = async (
-  permitId?: Nullable<string>,
+export const getApplication = async (
+  companyId: number,
+  permitId: string,
 ): Promise<RequiredOrNull<ApplicationResponseData>> => {
   try {
-    const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
-    const url = `${APPLICATIONS_API_ROUTES.GET(companyId)}/${permitId}`;
-
+    const url = APPLICATIONS_API_ROUTES.GET(companyId, permitId);
     const response = await httpGETRequest(url);
     return response.data;
   } catch (err) {
@@ -236,14 +259,18 @@ export const getApplicationByPermitId = async (
 
 /**
  * Delete one or more applications.
- * @param permitIds Array of permit ids to be deleted.
+ * @param companyId id of the company to delete the applications from
+ * @param applicationIds List of permit ids of the applications to be deleted
  * @returns A Promise with the API response.
  */
-export const deleteApplications = async (applicationIds: Array<string>) => {
+export const deleteApplications = async (
+  companyId: number,
+  applicationIds: string[],
+) => {
   const requestBody = {
     applications: applicationIds,
   };
-  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
+  
   return await httpDELETERequest(
     `${APPLICATIONS_API_ROUTES.DELETE(companyId)}`,
     replaceEmptyValuesWithNull(requestBody),
@@ -258,36 +285,28 @@ const streamDownload = async (url: string) => {
 
 /**
  * Download permit application pdf file.
- * @param permitId permit id of the permit application.
- * @returns A Promise of dms reference string.
+ * @param companyId id of the company that the application belongs to
+ * @param permitId permit id of the permit application
+ * @returns A Promise of dms reference string
  */
 export const downloadPermitApplicationPdf = async (
+  companyId: number,
   permitId: string,
-  companyIdParam?: string,
 ) => {
-  const companyId = getDefaultRequiredVal(
-    "",
-    getCompanyIdFromSession(),
-    companyIdParam,
-  );
   const url = PERMITS_API_ROUTES.DOWNLOAD(companyId, permitId);
   return await streamDownload(url);
 };
 
 /**
  * Download permit receipt pdf file.
- * @param permitId permit id of the permit application associated with the receipt.
- * @returns A Promise of dms reference string.
+ * @param companyId id of the company that the receipt belongs to
+ * @param permitId permit id of the permit application associated with the receipt
+ * @returns A Promise of dms reference string
  */
 export const downloadReceiptPdf = async (
+  companyId: number,
   permitId: string,
-  companyIdParam?: string,
 ) => {
-  const companyId = getDefaultRequiredVal(
-    "",
-    getCompanyIdFromSession(),
-    companyIdParam,
-  );
   const url = PERMITS_API_ROUTES.RECEIPT(companyId, permitId);
   return await streamDownload(url);
 };
@@ -347,19 +366,15 @@ export const completeTransaction = async (transactionData: {
 
 /**
  * Issues the permits indicated by the application/permit ids.
- * @param applicationIds Application/permit ids for the permits to be issued.
- * @returns Successful and failed permit ids that were issued.
+ * @param companyId id of the company to issue permits for
+ * @param applicationIds Application/permit ids for the permits to be issued
+ * @returns Successful and failed permit ids that were issued
  */
 export const issuePermits = async (
+  companyId: number,
   applicationIds: string[],
-  companyIdParam?: Nullable<string>,
 ): Promise<IssuePermitsResponse> => {
   try {
-    const companyId = getDefaultRequiredVal(
-      "",
-      getCompanyIdFromSession(),
-      companyIdParam,
-    );
     const response = await httpPOSTRequest(
       PERMITS_API_ROUTES.ISSUE(companyId),
       replaceEmptyValuesWithNull({
@@ -387,21 +402,17 @@ export const issuePermits = async (
 };
 
 /**
- * Get permit by permit id
+ * Get permit details.
+ * @param companyId id of the company that the permit belongs to
  * @param permitId Permit id of the permit to be retrieved.
  * @returns Permit information if found, or undefined
  */
 export const getPermit = async (
-  permitId?: Nullable<string>,
-  companyIdParam?: Nullable<string>,
+  companyId: number,
+  permitId: string,
 ): Promise<RequiredOrNull<PermitResponseData>> => {
-  if (!permitId) return null;
+  if (!companyId || !permitId) return null;
 
-  const companyId = getDefaultRequiredVal(
-    "",
-    getCompanyIdFromSession(),
-    companyIdParam,
-  );
   const permitsURL = `${PERMITS_API_ROUTES.GET(companyId)}/${permitId}`;
 
   const response = await httpGETRequest(permitsURL);
@@ -410,22 +421,19 @@ export const getPermit = async (
 };
 
 /**
- * Get current application for amendment, if there is one
- * @param originalId Original permit id of the permit that is amended.
- * @returns Permit application information, if any
+ * Get current application for amendment, if there is one.
+ * @param companyId id of the company that the original permit belongs to
+ * @param originalId Original permit id of the permit that is amended
+ * @returns Current amendment application information, if any
  */
 export const getCurrentAmendmentApplication = async (
-  originalId?: Nullable<string>,
-  companyIdParam?: Nullable<string>,
+  companyId: number,
+  originalId: string,
 ): Promise<RequiredOrNull<ApplicationResponseData>> => {
-  if (!originalId) return null;
-  const companyId = getDefaultRequiredVal(
-    "",
-    getCompanyIdFromSession(),
-    companyIdParam,
-  );
+  if (!companyId || !originalId) return null;
+
   const permitsURL = new URL(
-    `${APPLICATIONS_API_ROUTES.GET(companyId)}/${originalId}`,
+    APPLICATIONS_API_ROUTES.GET(companyId, originalId),
   );
   permitsURL.searchParams.set("amendment", "true");
 
@@ -440,15 +448,16 @@ export const getCurrentAmendmentApplication = async (
 
 /**
  * Retrieve the list of active or expired permits.
- * @param expired If set to true, expired permits will be retrieved.
- * @param paginationOptions The pagination and filters applied.
- * @returns A list of permits.
+ * @param companyId id of the company to get permits for
+ * @param expired If set to true, expired permits will be retrieved
+ * @param paginationOptions The pagination and filters applied
+ * @returns A list of permits
  */
 export const getPermits = async (
+  companyId: number,
   { expired = false } = {},
   { page = 0, take = 10, searchString, orderBy = [] }: PaginationAndFilters,
 ): Promise<PaginatedResponse<PermitListItem>> => {
-  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   const permitsURL = new URL(PERMITS_API_ROUTES.GET(companyId));
 
   permitsURL.searchParams.set("expired", expired.toString());
@@ -502,17 +511,12 @@ export const getPermits = async (
 };
 
 export const getPermitHistory = async (
-  originalPermitId?: Nullable<string>,
-  companyIdParam?: Nullable<string>,
+  companyId: number,
+  originalPermitId: string,
 ) => {
   try {
-    if (!originalPermitId) return [];
+    if (!companyId || !originalPermitId) return [];
 
-    const companyId = getDefaultRequiredVal(
-      "",
-      getCompanyIdFromSession(),
-      companyIdParam,
-    );
     const response = await httpGETRequest(
       `${PERMITS_API_ROUTES.BASE(companyId)}/${originalPermitId}/history`,
     );
@@ -565,17 +569,13 @@ export const voidPermit = async (voidPermitParams: {
 /**
  * Amend a permit.
  * @param formData data for permit to be amended
+ * @param companyId id of the company that the permit belongs to
  * @returns Response with amended permit application, or error if failed
  */
 export const amendPermit = async (
   formData: AmendPermitFormData,
-  companyIdParam?: Nullable<string>,
+  companyId: number,
 ): Promise<AxiosResponse<ApplicationResponseData>> => {
-  const companyId = getDefaultRequiredVal(
-    "",
-    getCompanyIdFromSession(),
-    companyIdParam,
-  );
   return await httpPOSTRequest(
     PERMITS_API_ROUTES.AMEND(companyId),
     replaceEmptyValuesWithNull({
@@ -589,7 +589,7 @@ export const amendPermit = async (
  * Modify amendment application.
  * @param application amendment application data to be modified
  * @param applicationNumber application number of the amendment application
- * @param companyIdParam company id
+ * @param companyId id of the company that the amendment application belongs to
  * @returns response with amended permit data, or error if failed
  */
 export const modifyAmendmentApplication = async ({
@@ -599,7 +599,7 @@ export const modifyAmendmentApplication = async ({
 }: {
   application: AmendPermitFormData;
   applicationId: string;
-  companyId: string;
+  companyId: number;
 }) => {
   return await updateApplication(application, applicationId, companyId);
 };
@@ -608,7 +608,7 @@ export const modifyAmendmentApplication = async ({
  * Resend permit and/or receipt to email.
  * @param permitId Permit id of the permit to resend
  * @param email Email to resend to
- * @param [fax] Fax number to resend to
+ * @param fax Fax number to resend to
  * @param notificationTypes Types of email notifications to send (EMAIL_PERMIT and/or EMAIL_RECEIPT)
  * @returns Response if the resend action was successful
  */
@@ -637,27 +637,4 @@ export const resendPermit = async ({
     `${PERMITS_API_ROUTES.RESEND(permitId)}`,
     replaceEmptyValuesWithNull(data),
   );
-};
-
-export const updateApplicationQueueStatus = async (
-  applicationId: string,
-  caseActivityType: CaseActivityType,
-  comment?: string,
-) => {
-  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
-
-  const data: any = {
-    caseActivityType,
-  };
-
-  // Conditionally include the comment property if it is given as an argument and not an empty string
-  if (comment && comment.trim() !== "") {
-    data.comment = [comment];
-  }
-
-  const response = await httpPOSTRequest(
-    APPLICATION_QUEUE_API_ROUTES.UPDATE_QUEUE_STATUS(companyId, applicationId),
-    data,
-  );
-  return response;
 };

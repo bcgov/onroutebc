@@ -1,4 +1,5 @@
 import { MRT_ColumnDef } from "material-react-table";
+import { Box, Tooltip } from "@mui/material";
 
 import { viewPermitPdf } from "../../helpers/permitPDFHelper";
 import { PermitListItem } from "../../types/permit";
@@ -7,12 +8,13 @@ import { formatCellValuetoDatetime } from "../../../../common/helpers/tableHelpe
 import { CustomActionLink } from "../../../../common/components/links/CustomActionLink";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { getPermitTypeName } from "../../types/PermitType";
-import { Box, Tooltip } from "@mui/material";
 
 /**
  * The column definition for Permits.
  */
-export const PermitsColumnDefinition = (onDocumentUnavailable: () => void): MRT_ColumnDef<PermitListItem>[] => [
+export const PermitsColumnDefinition = (
+  onDocumentUnavailable: () => void,
+): MRT_ColumnDef<PermitListItem>[] => [
   {
     accessorKey: "permitNumber",
     id: "permitNumber",
@@ -25,8 +27,10 @@ export const PermitsColumnDefinition = (onDocumentUnavailable: () => void): MRT_
         <>
           <CustomActionLink
             onClick={() => viewPermitPdf(
+              props.row.original.companyId,
               props.row.original.permitId, 
-              () => onDocumentUnavailable())}
+              () => onDocumentUnavailable(),
+            )}
           >
             {props.cell.getValue()}
           </CustomActionLink>

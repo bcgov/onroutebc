@@ -8,8 +8,8 @@ import { LOADownloadCell } from "./LOADownloadCell";
 
 export const LOAListColumnDef = (
   allowEditLOA: boolean,
-  onEditLOA: (loaId: string) => void,
-  onDownload: (loaId: string) => void,
+  onEditLOA: (loaId: number) => void,
+  onDownload: (loaId: number) => void,
 ): MRT_ColumnDef<LOADetail>[] => [
   {
     Cell: (

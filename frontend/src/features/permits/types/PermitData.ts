@@ -4,6 +4,7 @@ import { Nullable } from "../../../common/types/common";
 import { PermitContactDetails } from "./PermitContactDetails";
 import { PermitVehicleDetails } from "./PermitVehicleDetails";
 import { PermitMailingAddress } from "./PermitMailingAddress";
+import { LOADetail } from "../../settings/types/SpecialAuthorization";
 import { PermitCondition } from "./PermitCondition";
 
 export interface PermitData {
@@ -18,4 +19,5 @@ export interface PermitData {
   companyName?: Nullable<string>;
   doingBusinessAs?: Nullable<string>;
   clientNumber?: Nullable<string>;
+  loas?: Nullable<LOADetail[]>;
 }
