@@ -1,11 +1,5 @@
 import { Nullable } from "../../../common/types/common";
 import { getPermitCategory, getPermitCategoryName } from "./PermitCategory";
-// import {
-//   NON_RESIDENT_PERMIT_TYPES,
-//   SINGLE_TRIP_PERMIT_TYPES,
-//   TERM_PERMIT_TYPES,
-// } from "../constants/constants";
-// import { getPermitCategory, getPermitCategoryName } from "./PermitCategory";
 
 export const PERMIT_TYPES = {
   /* TERM */
@@ -51,6 +45,30 @@ export type PermitType = (typeof PERMIT_TYPES)[keyof typeof PERMIT_TYPES];
 
 export const DEFAULT_PERMIT_TYPE = PERMIT_TYPES.TROS;
 export const EMPTY_PERMIT_TYPE_SELECT = "Select";
+
+export const TERM_PERMIT_LIST: PermitType[] = [
+  PERMIT_TYPES.TROS,
+  PERMIT_TYPES.TROW,
+  /* TODO uncomment this when required */
+  // PERMIT_TYPES.HC,
+];
+
+export const SINGLE_TRIP_PERMIT_LIST: PermitType[] = [
+  PERMIT_TYPES.STOL,
+  PERMIT_TYPES.EPTOP,
+  PERMIT_TYPES.IGVW,
+  PERMIT_TYPES.STOS,
+  PERMIT_TYPES.STWS,
+  PERMIT_TYPES.STOW,
+  PERMIT_TYPES.RIG,
+];
+
+export const NON_RESIDENT_PERMIT_LIST: PermitType[] = [
+  PERMIT_TYPES.QNRBS,
+  PERMIT_TYPES.QRFR,
+  PERMIT_TYPES.NRSCV,
+  PERMIT_TYPES.STFR,
+];
 
 /**
  * Returns the name/description of the permit type.

@@ -4,8 +4,11 @@ import {
   PERMIT_CATEGORIES,
   PermitCategory,
 } from "../types/PermitCategory";
-import { PermitType, getPermitTypeShortName } from "../types/PermitType";
-import { TERM_PERMIT_LIST } from "./permitLists";
+import {
+  PermitType,
+  TERM_PERMIT_LIST,
+  getPermitTypeShortName,
+} from "../types/PermitType";
 
 export const VEHICLE_CHOOSE_FROM = {
   UNIT_NUMBER: "unitNumber",

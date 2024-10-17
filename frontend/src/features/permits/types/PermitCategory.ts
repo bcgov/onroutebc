@@ -1,9 +1,9 @@
 import {
   NON_RESIDENT_PERMIT_LIST,
+  PermitType,
   SINGLE_TRIP_PERMIT_LIST,
   TERM_PERMIT_LIST,
-} from "../constants/permitLists";
-import { PermitType } from "./PermitType";
+} from "./PermitType";
 
 export const PERMIT_CATEGORIES = {
   TERM: "TERM",
