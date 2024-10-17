@@ -99,7 +99,7 @@ export const useApplicationFormContext = () => {
     onSetConditions,
   );
 
-  // Check to see if vehicle details is still valid after LOA has been deselected
+  // Get ineligible vehicle subtypes
   const ineligibleSubtypes = getIneligibleSubtypes(permitType, isLcvDesignated);
   const ineligiblePowerUnitSubtypes = useMemoizedArray(
     ineligibleSubtypes.ineligiblePowerUnitSubtypes,
@@ -113,24 +113,20 @@ export const useApplicationFormContext = () => {
     (subtype1, subtype2) => subtype1.typeCode === subtype2.typeCode,
   );
 
-  const ineligiblePowerUnitSubtypeCodes = useMemoizedArray(
-    ineligiblePowerUnitSubtypes.map(({ typeCode }) => typeCode),
-    (typeCode) => typeCode,
-    (typeCode1, typeCode2) => typeCode1 === typeCode2,
-  );
-
-  const ineligibleTrailerSubtypeCodes = useMemoizedArray(
-    ineligibleTrailerSubtypes.map(({ typeCode }) => typeCode),
-    (typeCode) => typeCode,
-    (typeCode1, typeCode2) => typeCode1 === typeCode2,
-  );
-
-  const { filteredVehicleOptions } = usePermitVehicleForLOAs(
+  // Check to see if vehicle details is still valid after LOA has been deselected
+  // Also get vehicle subtype options, and whether or not selected vehicle is an LOA vehicle
+  const {
+    filteredVehicleOptions,
+    subtypeOptions,
+    isSelectedLOAVehicle,
+  } = usePermitVehicleForLOAs(
     vehicleFormData,
     vehicleOptions,
     currentSelectedLOAs as PermitLOA[],
-    ineligiblePowerUnitSubtypeCodes,
-    ineligibleTrailerSubtypeCodes,
+    powerUnitSubtypes,
+    trailerSubtypes,
+    ineligiblePowerUnitSubtypes,
+    ineligibleTrailerSubtypes,
     () => onClearVehicle(Boolean(vehicleFormData.saveVehicle)),
   );
 
@@ -158,16 +154,12 @@ export const useApplicationFormContext = () => {
     startDate,
     expiryDate,
     currentSelectedLOAs,
-    permitConditions,
     vehicleFormData,
     allConditions,
     availableDurationOptions,
-    powerUnitSubtypes,
-    trailerSubtypes,
-    isLcvDesignated,
-    ineligiblePowerUnitSubtypes,
-    ineligibleTrailerSubtypes,
     filteredVehicleOptions,
+    subtypeOptions,
+    isSelectedLOAVehicle,
     feature,
     companyInfo,
     isAmendAction,

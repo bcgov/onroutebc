@@ -12,12 +12,10 @@ import {
 import "./SelectVehicleDropdown.scss";
 import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";
 import { sortVehicles } from "../../../../../../helpers/sorter";
-import { filterVehicles } from "../../../../../../helpers/permitVehicles";
 import { VEHICLE_CHOOSE_FROM } from "../../../../../../constants/constants";
 import { EMPTY_VEHICLE_UNIT_NUMBER } from "../../../../../../../../common/constants/constants";
 import { Nullable } from "../../../../../../../../common/types/common";
 import { PermitVehicleDetails } from "../../../../../../types/PermitVehicleDetails";
-import { PermitLOA } from "../../../../../../types/PermitLOA";
 import {
   PowerUnit,
   Trailer,
@@ -50,9 +48,6 @@ export const SelectVehicleDropdown = ({
   vehicleOptions,
   handleSelectVehicle,
   handleClearVehicle,
-  ineligiblePowerUnitSubtypes,
-  ineligibleTrailerSubtypes,
-  loas,
 }: {
   chooseFrom: string;
   selectedVehicle: Nullable<PermitVehicleDetails>;
@@ -60,18 +55,8 @@ export const SelectVehicleDropdown = ({
   vehicleOptions: Vehicle[];
   handleSelectVehicle: (vehicle: Vehicle) => void;
   handleClearVehicle: () => void;
-  ineligiblePowerUnitSubtypes: string[];
-  ineligibleTrailerSubtypes: string[];
-  loas: PermitLOA[];
 }) => {
-  const sortedVehicles = sortVehicles(chooseFrom, vehicleOptions);
-
-  const eligibleVehicles = filterVehicles(
-    sortedVehicles,
-    ineligiblePowerUnitSubtypes,
-    ineligibleTrailerSubtypes,
-    loas,
-  );
+  const eligibleVehicles = sortVehicles(chooseFrom, vehicleOptions);
 
   const selectedOption = selectedVehicle
     ? getDefaultRequiredVal(

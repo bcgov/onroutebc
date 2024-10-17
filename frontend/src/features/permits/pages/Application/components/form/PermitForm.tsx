@@ -22,11 +22,9 @@ export const PermitForm = () => {
     vehicleFormData,
     allConditions,
     availableDurationOptions,
-    powerUnitSubtypes,
-    trailerSubtypes,
-    ineligiblePowerUnitSubtypes,
-    ineligibleTrailerSubtypes,
     filteredVehicleOptions,
+    subtypeOptions,
+    isSelectedLOAVehicle,
     feature,
     companyInfo,
     isAmendAction,
@@ -86,11 +84,8 @@ export const PermitForm = () => {
           feature={feature}
           vehicleFormData={vehicleFormData}
           vehicleOptions={filteredVehicleOptions}
-          powerUnitSubtypes={powerUnitSubtypes}
-          trailerSubtypes={trailerSubtypes}
-          ineligiblePowerUnitSubtypes={ineligiblePowerUnitSubtypes}
-          ineligibleTrailerSubtypes={ineligibleTrailerSubtypes}
-          selectedLOAs={currentSelectedLOAs}
+          subtypeOptions={subtypeOptions}
+          isSelectedLOAVehicle={isSelectedLOAVehicle}
           onSetSaveVehicle={onToggleSaveVehicle}
           onSetVehicle={onSetVehicle}
           onClearVehicle={onClearVehicle}

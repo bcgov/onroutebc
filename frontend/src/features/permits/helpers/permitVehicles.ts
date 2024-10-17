@@ -5,7 +5,7 @@ import { PermitLOA } from "../types/PermitLOA";
 import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../common/helpers/util";
 import { Nullable } from "../../../common/types/common";
 import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
-import { isVehicleSubtypeLCV } from "../../manageVehicles/helpers/vehicleSubtypes";
+import { EMPTY_VEHICLE_SUBTYPE, isVehicleSubtypeLCV } from "../../manageVehicles/helpers/vehicleSubtypes";
 import {
   PowerUnit,
   Trailer,
@@ -14,6 +14,7 @@ import {
   VEHICLE_TYPES,
   Vehicle,
 } from "../../manageVehicles/types/Vehicle";
+import { sortVehicleSubTypes } from "./sorter";
 
 export const getIneligiblePowerUnitSubtypes = (permitType: PermitType) => {
   switch (permitType) {
@@ -153,4 +154,68 @@ export const filterVehicles = (
         return powerUnit.powerUnitTypeCode === ineligibleSubtype;
       });
   });
+};
+
+/**
+ * Get vehicle subtype options for given vehicle type.
+ * @param vehicleType Vehicle type
+ * @param powerUnitSubtypes Vehicle subtypes for power units
+ * @param trailerSubtypes Vehicle subtypes for trailers
+ * @returns Correct vehicle subtype options for vehicle type
+ */
+export const getSubtypeOptions = (
+  vehicleType: string,
+  powerUnitSubtypes: VehicleSubType[],
+  trailerSubtypes: VehicleSubType[],
+) => {
+  if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
+    return [...powerUnitSubtypes];
+  }
+  if (vehicleType === VEHICLE_TYPES.TRAILER) {
+    return [...trailerSubtypes];
+  }
+  return [EMPTY_VEHICLE_SUBTYPE];
+};
+
+/**
+ * Get eligible subset of vehicle subtype options given lists of available subtypes and criteria.
+ * @param powerUnitSubtypes All available power unit subtypes
+ * @param trailerSubtypes All available trailer subtypes
+ * @param ineligiblePowerUnitSubtypes List of ineligible power unit subtypes
+ * @param ineligibleTrailerSubtypes List of ineligible trailer subtypes
+ * @param allowedLOAPowerUnitSubtypes List of power unit subtypes allowed by LOAs
+ * @param allowedLOATrailerSubtypes List of trailer subtypes allowed by LOAs
+ * @param vehicleType Vehicle type
+ * @returns Eligible subset of vehicle subtype options
+ */
+export const getEligibleSubtypeOptions = (
+  powerUnitSubtypes: VehicleSubType[],
+  trailerSubtypes: VehicleSubType[],
+  ineligiblePowerUnitSubtypes: VehicleSubType[],
+  ineligibleTrailerSubtypes: VehicleSubType[],
+  allowedLOAPowerUnitSubtypes: string[],
+  allowedLOATrailerSubtypes: string[],
+  vehicleType?: string,
+) => {
+  if (
+    vehicleType !== VEHICLE_TYPES.POWER_UNIT &&
+    vehicleType !== VEHICLE_TYPES.TRAILER
+  ) {
+    return [EMPTY_VEHICLE_SUBTYPE];
+  }
+
+  // Sort vehicle subtypes alphabetically
+  const sortedVehicleSubtypes = sortVehicleSubTypes(
+    vehicleType,
+    getSubtypeOptions(vehicleType, powerUnitSubtypes, trailerSubtypes),
+  );
+
+  return filterVehicleSubtypes(
+    sortedVehicleSubtypes,
+    vehicleType,
+    ineligiblePowerUnitSubtypes,
+    ineligibleTrailerSubtypes,
+    allowedLOAPowerUnitSubtypes,
+    allowedLOATrailerSubtypes,
+  );
 };
