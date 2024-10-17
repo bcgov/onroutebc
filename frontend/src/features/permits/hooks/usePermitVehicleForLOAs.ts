@@ -2,13 +2,13 @@ import { useEffect } from "react";
 
 import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
 import { PowerUnit, Trailer } from "../../manageVehicles/types/Vehicle";
-import { LOADetail } from "../../settings/types/SpecialAuthorization";
 import { getUpdatedVehicleDetailsForLOAs } from "../helpers/permitLOA";
+import { PermitLOA } from "../types/PermitLOA";
 
 export const usePermitVehicleForLOAs = (
   vehicleFormData: PermitVehicleDetails,
   vehicleOptions: (PowerUnit | Trailer)[],
-  selectedLOAs: LOADetail[],
+  selectedLOAs: PermitLOA[],
   ineligiblePowerUnitSubtypes: string[],
   ineligibleTrailerSubtypes: string[],
   onClearVehicle: () => void,
@@ -35,7 +35,6 @@ export const usePermitVehicleForLOAs = (
   }, [
     vehicleIdInForm,
     updatedVehicleId,
-    onClearVehicle,
   ]);
 
   return {

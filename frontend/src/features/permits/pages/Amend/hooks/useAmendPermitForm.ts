@@ -10,20 +10,21 @@ import { CompanyProfile } from "../../../../manageProfile/types/manageProfile";
 import { applyLCVToApplicationData } from "../../../helpers/permitLCV";
 import { PermitCondition } from "../../../types/PermitCondition";
 import { EMPTY_VEHICLE_DETAILS, PermitVehicleDetails } from "../../../types/PermitVehicleDetails";
-import { LOADetail } from "../../../../settings/types/SpecialAuthorization";
+import { LOADetail } from "../../../../settings/types/LOADetail";
 import { getIneligibleSubtypes } from "../../../helpers/permitVehicles";
+import { applyUpToDateLOAsToApplication } from "../../../helpers/permitLOA";
+import { PowerUnit, Trailer } from "../../../../manageVehicles/types/Vehicle";
+import { PermitLOA } from "../../../types/PermitLOA";
 import {
   AmendPermitFormData,
   getDefaultFormDataFromApplication,
   getDefaultFormDataFromPermit,
 } from "../types/AmendPermitFormData";
-import { applyUpToDateLOAsToApplication } from "../../../helpers/permitLOA";
-import { PowerUnit, Trailer } from "../../../../manageVehicles/types/Vehicle";
 
 export const useAmendPermitForm = (
   repopulateFormData: boolean,
   isLcvDesignated: boolean,
-  loas: LOADetail[],
+  companyLOAs: LOADetail[],
   inventoryVehicles: (PowerUnit | Trailer)[],
   companyInfo: Nullable<CompanyProfile>,
   permit?: Nullable<Permit>,
@@ -51,7 +52,7 @@ export const useAmendPermitForm = (
           ),
           isLcvDesignated,
         ),
-        loas,
+        companyLOAs,
         inventoryVehicles,
         ineligiblePowerUnitSubtypes,
         ineligibleTrailerSubtypes,
@@ -87,7 +88,7 @@ export const useAmendPermitForm = (
         defaultPermitFormData,
         isLcvDesignated,
       ),
-      loas,
+      companyLOAs,
       inventoryVehicles,
       ineligiblePowerUnitSubtypes,
       ineligibleTrailerSubtypes,
@@ -98,7 +99,7 @@ export const useAmendPermitForm = (
     repopulateFormData,
     companyInfo,
     isLcvDesignated,
-    loas,
+    companyLOAs,
     inventoryVehicles,
   ]);
 
@@ -144,7 +145,7 @@ export const useAmendPermitForm = (
     });
   };
 
-  const onUpdateLOAs = (updatedLOAs: LOADetail[]) => {
+  const onUpdateLOAs = (updatedLOAs: PermitLOA[]) => {
     setValue("permitData.loas", updatedLOAs);
   };
 

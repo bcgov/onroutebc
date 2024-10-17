@@ -21,6 +21,7 @@ import { getDatetimes } from "./helpers/getDatetimes";
 import { PAST_START_DATE_STATUSES } from "../../../../../common/components/form/subFormComponents/CustomDatePicker";
 import { useFetchLOAs } from "../../../../settings/hooks/LOA";
 import { useFetchSpecialAuthorizations } from "../../../../settings/hooks/specialAuthorizations";
+import { filterLOAsForPermitType, filterNonExpiredLOAs } from "../../../helpers/permitLOA";
 import {
   dayjsToUtcStr,
   nowUtc,
@@ -92,8 +93,16 @@ export const AmendPermitForm = () => {
     permit,
   );
 
-  const applicableLOAs = getDefaultRequiredVal([], activeLOAs)
-    .filter(loa => loa.loaPermitType.includes(formData.permitType));
+  // Applicable LOAs must be:
+  // 1. Applicable for the current permit type
+  // 2. Have expiry date that is on or after the start date for an application
+  const applicableLOAs = filterNonExpiredLOAs(
+    filterLOAsForPermitType(
+      getDefaultRequiredVal([], activeLOAs),
+      formData.permitType,
+    ),
+    formData.permitData.startDate,
+  );
   
   const amendPermitMutation = useAmendPermit(companyId);
   const modifyAmendmentMutation = useModifyAmendmentApplication();

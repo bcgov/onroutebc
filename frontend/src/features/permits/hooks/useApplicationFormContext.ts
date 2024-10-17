@@ -2,11 +2,11 @@ import { useContext } from "react";
 
 import { ApplicationFormContext } from "../context/ApplicationFormContext";
 import { usePermitDateSelection } from "./usePermitDateSelection";
-import { LOADetail } from "../../settings/types/SpecialAuthorization";
 import { usePermitConditions } from "./usePermitConditions";
 import { getStartOfDate } from "../../../common/helpers/formatDate";
 import { getIneligibleSubtypes } from "../helpers/permitVehicles";
 import { usePermitVehicleForLOAs } from "./usePermitVehicleForLOAs";
+import { PermitLOA } from "../types/PermitLOA";
 
 export const useApplicationFormContext = () => {
   const {
@@ -52,7 +52,7 @@ export const useApplicationFormContext = () => {
     permitType,
     getStartOfDate(permitStartDate),
     durationOptions,
-    currentSelectedLOAs as LOADetail[],
+    currentSelectedLOAs as PermitLOA[],
     permitDuration,
     onSetDuration,
     onSetExpiryDate,
@@ -75,7 +75,7 @@ export const useApplicationFormContext = () => {
   const { filteredVehicleOptions } = usePermitVehicleForLOAs(
     vehicleFormData,
     vehicleOptions,
-    currentSelectedLOAs as LOADetail[],
+    currentSelectedLOAs as PermitLOA[],
     ineligiblePowerUnitSubtypes.map(({ typeCode }) => typeCode),
     ineligibleTrailerSubtypes.map(({ typeCode }) => typeCode),
     () => onClearVehicle(Boolean(vehicleFormData.saveVehicle)),

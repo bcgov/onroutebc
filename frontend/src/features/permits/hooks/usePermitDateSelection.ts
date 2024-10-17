@@ -2,9 +2,9 @@ import { useEffect } from "react";
 import { Dayjs } from "dayjs";
 
 import { getExpiryDate } from "../helpers/permitState";
-import { LOADetail } from "../../settings/types/SpecialAuthorization";
 import { PermitType } from "../types/PermitType";
 import { getAvailableDurationOptions, handleUpdateDurationIfNeeded } from "../helpers/dateSelection";
+import { PermitLOA } from "../types/PermitLOA";
 
 /**
  * Hook that manages permit date selection based on changing permit data.
@@ -22,7 +22,7 @@ export const usePermitDateSelection = (
     value: number;
     label: string;
   }[],
-  selectedLOAs: LOADetail[],
+  selectedLOAs: PermitLOA[],
   selectedDuration: number,
   onSetDuration: (duration: number) => void,
   onSetExpiryDate: (expiry: Dayjs) => void,
@@ -45,7 +45,6 @@ export const usePermitDateSelection = (
     onSetDuration(updatedDuration);
   }, [
     updatedDuration,
-    onSetDuration,
   ]);
   
   const expiryDate = getExpiryDate(startDate, selectedDuration);
@@ -53,7 +52,6 @@ export const usePermitDateSelection = (
     onSetExpiryDate(expiryDate);
   }, [
     expiryDate,
-    onSetExpiryDate,
   ]);
 
   return { availableDurationOptions };

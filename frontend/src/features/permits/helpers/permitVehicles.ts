@@ -1,7 +1,7 @@
 import { PERMIT_TYPES, PermitType } from "../types/PermitType";
 import { TROW_INELIGIBLE_POWERUNITS, TROW_INELIGIBLE_TRAILERS } from "../constants/trow";
 import { TROS_INELIGIBLE_POWERUNITS, TROS_INELIGIBLE_TRAILERS } from "../constants/tros";
-import { LOADetail } from "../../settings/types/SpecialAuthorization";
+import { PermitLOA } from "../types/PermitLOA";
 import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../common/helpers/util";
 import { Nullable } from "../../../common/types/common";
 import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
@@ -120,7 +120,7 @@ export const filterVehicles = (
   vehicles: Vehicle[],
   ineligiblePowerUnitSubtypes: string[],
   ineligibleTrailerSubtypes: string[],
-  loas: LOADetail[],
+  loas: PermitLOA[],
 ) => {
   const permittedPowerUnitIds = new Set([
     ...loas.map(loa => loa.powerUnits)

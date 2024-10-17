@@ -25,7 +25,7 @@ import { SelectVehicleDropdown } from "./customFields/SelectVehicleDropdown";
 import { BANNER_MESSAGES } from "../../../../../../../common/constants/bannerMessages";
 import { PermitVehicleDetails } from "../../../../../types/PermitVehicleDetails";
 import { EMPTY_VEHICLE_SUBTYPE } from "../../../../../../manageVehicles/helpers/vehicleSubtypes";
-import { LOADetail } from "../../../../../../settings/types/SpecialAuthorization";
+import { PermitLOA } from "../../../../../types/PermitLOA";
 import {
   PowerUnit,
   Trailer,
@@ -130,7 +130,7 @@ export const VehicleDetails = ({
   trailerSubtypes: VehicleSubType[];
   ineligiblePowerUnitSubtypes: VehicleSubType[];
   ineligibleTrailerSubtypes: VehicleSubType[];
-  selectedLOAs: LOADetail[];
+  selectedLOAs: PermitLOA[];
   onSetSaveVehicle: (saveVehicle: boolean) => void;
   onSetVehicle: (vehicleDetails: PermitVehicleDetails) => void;
   onClearVehicle: (saveVehicle: boolean) => void;

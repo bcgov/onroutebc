@@ -17,7 +17,7 @@ import { VEHICLE_CHOOSE_FROM } from "../../../../../../constants/constants";
 import { EMPTY_VEHICLE_UNIT_NUMBER } from "../../../../../../../../common/constants/constants";
 import { Nullable } from "../../../../../../../../common/types/common";
 import { PermitVehicleDetails } from "../../../../../../types/PermitVehicleDetails";
-import { LOADetail } from "../../../../../../../settings/types/SpecialAuthorization";
+import { PermitLOA } from "../../../../../../types/PermitLOA";
 import {
   PowerUnit,
   Trailer,
@@ -62,7 +62,7 @@ export const SelectVehicleDropdown = ({
   handleClearVehicle: () => void;
   ineligiblePowerUnitSubtypes: string[];
   ineligibleTrailerSubtypes: string[];
-  loas: LOADetail[];
+  loas: PermitLOA[];
 }) => {
   const sortedVehicles = sortVehicles(chooseFrom, vehicleOptions);
 
