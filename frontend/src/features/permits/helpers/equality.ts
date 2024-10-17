@@ -4,6 +4,7 @@ import { PermitMailingAddress } from "../types/PermitMailingAddress";
 import { PermitContactDetails } from "../types/PermitContactDetails";
 import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
 import { PermitData } from "../types/PermitData";
+import { areLOADetailsEqual, LOADetail } from "../../settings/types/SpecialAuthorization";
 import { PermitCondition } from "../types/PermitCondition";
 import {
   DATE_FORMATS,
@@ -114,6 +115,45 @@ const areVehicleDetailsEqual = (
 };
 
 /**
+ * Compare whether or not the LOAs for two permits are equal.
+ * @param loas1 LOAs for first permit
+ * @param loas2 LOAs for second permit
+ * @returns true when the selected LOAs are the same, false otherwise
+ */
+export const arePermitLOAsEqual = (
+  loas1: Nullable<LOADetail[]>,
+  loas2: Nullable<LOADetail[]>,
+) => {
+  const isLoas1Empty = !loas1 || loas1.length === 0;
+  const isLoas2Empty = !loas2 || loas2.length === 0;
+
+  if (isLoas1Empty && isLoas2Empty) return true;
+  if ((isLoas1Empty && !isLoas2Empty) || (!isLoas1Empty && isLoas2Empty))
+    return false;
+
+  const loaMap1 = new Map(
+    (loas1 as LOADetail[]).map((loa) => [loa.loaNumber, loa]),
+  );
+  const loaMap2 = new Map(
+    (loas2 as LOADetail[]).map((loa) => [loa.loaNumber, loa]),
+  );
+
+  for (const [loaNumber, loa] of loaMap1) {
+    if (!areLOADetailsEqual(loa, loaMap2.get(loaNumber))) {
+      return false;
+    }
+  }
+
+  for (const [loaNumber, loa] of loaMap2) {
+    if (!areLOADetailsEqual(loa, loaMap1.get(loaNumber))) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+/**
  * Compare whether or not two application data info are equal.
  * @param data1 first application data info
  * @param data2 second application data info
@@ -133,6 +173,7 @@ export const areApplicationDataEqual = (
     areVehicleDetailsEqual(data1.vehicleDetails, data2.vehicleDetails) &&
     areConditionsEqual(data1.commodities, data2.commodities) &&
     areMailingAddressesEqual(data1.mailingAddress, data2.mailingAddress) &&
+    arePermitLOAsEqual(data1.loas, data2.loas) &&
     ((!data1.companyName && !data2.companyName) ||
       data1.companyName === data2.companyName) &&
     ((!data1.doingBusinessAs && !data2.doingBusinessAs) ||

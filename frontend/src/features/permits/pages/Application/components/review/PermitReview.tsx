@@ -17,6 +17,8 @@ import { PermitContactDetails } from "../../../../types/PermitContactDetails";
 import { PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
 import { Application } from "../../../../types/application";
 import { PermitCondition } from "../../../../types/PermitCondition";
+import { ReviewPermitLOAs } from "./ReviewPermitLOAs";
+import { LOADetail } from "../../../../../settings/types/SpecialAuthorization";
 import {
   PERMIT_REVIEW_CONTEXTS,
   PermitReviewContext,
@@ -56,6 +58,7 @@ interface PermitReviewProps {
   oldFields?: Nullable<Partial<Application>>;
   calculatedFee: string;
   doingBusinessAs?: Nullable<string>;
+  loas?: Nullable<LOADetail[]>;
 }
 
 export const PermitReview = (props: PermitReviewProps) => {
@@ -81,6 +84,10 @@ export const PermitReview = (props: PermitReviewProps) => {
           contactDetails={props.contactDetails}
           showChangedFields={props.showChangedFields}
           oldFields={props.oldFields?.permitData?.contactDetails}
+        />
+
+        <ReviewPermitLOAs
+          loas={props.loas}
         />
 
         <ReviewPermitDetails

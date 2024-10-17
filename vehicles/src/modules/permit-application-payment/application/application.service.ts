@@ -10,7 +10,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, DataSource, Repository, SelectQueryBuilder } from 'typeorm';
+import {
+  Brackets,
+  DataSource,
+  In,
+  Repository,
+  SelectQueryBuilder,
+} from 'typeorm';
 import { CreateApplicationDto } from './dto/request/create-application.dto';
 import { ReadApplicationDto } from './dto/response/read-application.dto';
 import { Permit } from '../permit/entities/permit.entity';
@@ -77,6 +83,10 @@ import {
 } from '../../../common/helper/date-time.helper';
 import { ReadCaseActivityDto } from '../../case-management/dto/response/read-case-activity.dto';
 import * as dayjs from 'dayjs';
+import { ReadPermitLoaDto } from './dto/response/read-permit-loa.dto';
+import { CreatePermitLoaDto } from './dto/request/create-permit-loa.dto';
+import { PermitLoa } from './entities/permit-loa.entity';
+import { LoaDetail } from 'src/modules/special-auth/entities/loa-detail.entity';
 
 @Injectable()
 export class ApplicationService {
@@ -85,6 +95,10 @@ export class ApplicationService {
     @InjectMapper() private readonly classMapper: Mapper,
     @InjectRepository(Permit)
     private permitRepository: Repository<Permit>,
+    @InjectRepository(PermitLoa)
+    private permitLoaRepository: Repository<PermitLoa>,
+    @InjectRepository(LoaDetail)
+    private loaDetail: Repository<LoaDetail>,
     private dataSource: DataSource,
     private readonly dopsService: DopsService,
     private readonly paymentService: PaymentService,
@@ -1197,5 +1211,84 @@ export class ApplicationService {
     });
 
     return result;
+  }
+  @LogAsyncMethodExecution()
+  async createPermitLoa(
+    currentUser: IUserJWT,
+    permitId: string,
+    createPermitLoaDto: CreatePermitLoaDto,
+  ): Promise<ReadPermitLoaDto[]> {
+    const { loaIds: inputLoaIds } = createPermitLoaDto;
+    const existingPermitLoa = await this.findAllPermitLoa(permitId);
+    const permit = await this.findOne(permitId);
+    const existingLoaIds = existingPermitLoa.map((x) => x.loaId);
+    const loaIdsToDelete = existingLoaIds.filter(
+      (value) => !inputLoaIds.includes(value),
+    );
+    const loaIdsToInsert = inputLoaIds.filter(
+      (value) => !existingLoaIds.includes(value),
+    );
+
+    if (loaIdsToInsert.length) {
+      const loaDetails = await this.loaDetail.find({
+        where: {
+          loaId: In(loaIdsToInsert),
+          company: { companyId: permit.company.companyId },
+        },
+      });
+      if(loaDetails.length != loaIdsToInsert.length)
+        throw new BadRequestException('One or more loa(s) does not exist')
+      // Transform the permit LOA IDs from an array of numbers into individual records.
+      const singlePermitLoa = loaIdsToInsert.map((loaId) => ({
+        permitId,
+        loaIds: [loaId],
+      }));
+
+      const permitLoas = await this.classMapper.mapArrayAsync(
+        singlePermitLoa,
+        CreatePermitLoaDto,
+        PermitLoa,
+        {
+          extraArgs: () => ({
+            permitId,
+            userName: currentUser.userName,
+            userGUID: currentUser.userGUID,
+            timestamp: new Date(),
+            directory: currentUser.orbcUserDirectory,
+          }),
+        },
+      );
+
+      // Save new PermitLoas in bulk
+      await this.permitLoaRepository.save(permitLoas);
+    }
+
+    // Delete old PermitLoas in a single query
+    if (loaIdsToDelete?.length)
+      await this.permitLoaRepository.delete({
+        permitId: permitId,
+        loa: { loaId: In(loaIdsToDelete) },
+      });
+    return await this.findAllPermitLoa(permitId);
+  }
+  @LogAsyncMethodExecution()
+  async findAllPermitLoa(permitId: string): Promise<ReadPermitLoaDto[]> {
+    const savedPermitLoa = await this.permitLoaRepository
+      .createQueryBuilder('permitLoa')
+      .innerJoinAndSelect('permitLoa.loa', 'loa')
+      .innerJoinAndSelect('loa.company', 'company')
+      .innerJoinAndSelect('loa.loaVehicles', 'loaVehicles')
+      .innerJoinAndSelect('loa.loaPermitTypes', 'loaPermitTypes')
+      .where('permitLoa.permitId = :permitId', {
+        permitId: permitId,
+      })
+      .getMany();
+    const readPermitLoaDto: ReadPermitLoaDto[] =
+      await this.classMapper.mapArrayAsync(
+        savedPermitLoa,
+        PermitLoa,
+        ReadPermitLoaDto,
+      );
+    return readPermitLoaDto;
   }
 }

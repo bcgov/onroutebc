@@ -13,6 +13,8 @@ import { PermitReceiptDocumentModule } from '../permit-receipt-document/permit-r
 import { ApplicationController } from './application.controller';
 import { CaseManagementModule } from '../../case-management/case-management.module';
 import { CompanyApplicationQueueController } from './company-application-queue.controller';
+import { PermitLoa } from './entities/permit-loa.entity';
+import { LoaDetail } from 'src/modules/special-auth/entities/loa-detail.entity';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { CompanyApplicationQueueController } from './company-application-queue.c
       PermitType,
       PermitApplicationOrigin,
       PermitApprovalSource,
+      PermitLoa,
+      LoaDetail,
     ]),
     PaymentModule,
     PermitReceiptDocumentModule,

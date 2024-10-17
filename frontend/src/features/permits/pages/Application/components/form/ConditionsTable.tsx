@@ -73,15 +73,15 @@ export const ConditionsTable = ({
             <TableRow key={row.condition} className="conditions-table__row">
               <TableCell
                 className="conditions-table__cell conditions-table__cell--checkbox"
-                component="th"
+                component="td"
                 scope="row"
               >
                 <FormControlLabel
                   control={
                     <Checkbox
-                      className={`conditions-table__checkbox ${
+                      className={`condition-checkbox ${
                         row.disabled
-                          ? "conditions-table__checkbox--disabled"
+                          ? "condition-checkbox--disabled"
                           : ""
                       }`}
                       key={row.condition}
@@ -92,12 +92,21 @@ export const ConditionsTable = ({
                   }
                   key={row.description}
                   label={row.description}
+                  classes={{
+                    root: "conditions-table__form-control",
+                    disabled: "conditions-table__form-control conditions-table__form-control--disabled",
+                  }}
+                  slotProps={{
+                    typography: {
+                      className: "condition-description",
+                    },
+                  }}
                 />
               </TableCell>
 
               <TableCell
                 className="conditions-table__cell conditions-table__cell--condition"
-                component="th"
+                component="td"
                 scope="row"
               >
                 <CustomExternalLink
