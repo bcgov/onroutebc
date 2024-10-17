@@ -16,7 +16,7 @@ export const useMemoizedArray = <T, K extends (number | string)>(
   key: (item: T) => K,
   equalFn: (item1: T, item2: T) => boolean,
 ) => {
-  const [arrayItems, setArrayItems] = useState<T[]>([]);
+  const [arrayItems, setArrayItems] = useState<T[]>(items);
 
   useEffect(() => {
     if (!doUniqueArraysHaveSameObjects(

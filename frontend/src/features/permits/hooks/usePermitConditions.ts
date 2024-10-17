@@ -1,11 +1,9 @@
 import { useEffect, useMemo } from "react";
 
 import { PermitCondition } from "../types/PermitCondition";
-import { getUpdatedConditionsForLCV } from "../helpers/permitLCV";
 import { doUniqueArraysHaveSameItems } from "../../../common/helpers/equality";
 import { PermitType } from "../types/PermitType";
-import { getDefaultConditions } from "../helpers/conditions";
-import { isVehicleSubtypeLCV } from "../../manageVehicles/helpers/vehicleSubtypes";
+import { getPermitConditionSelectionState } from "../helpers/conditions";
 
 export const usePermitConditions = (
   permitType: PermitType,
@@ -16,30 +14,12 @@ export const usePermitConditions = (
 ) => {
   // All possible conditions to be used for conditions table, including non-selected ones
   const allConditions = useMemo(() => {
-    const defaultConditionsForPermitType = getDefaultConditions(
+    return getPermitConditionSelectionState(
       permitType,
-      isLcvDesignated && isVehicleSubtypeLCV(vehicleSubtype),
-    );
-
-    const updatedConditionsInForm = getUpdatedConditionsForLCV(
       isLcvDesignated,
-      selectedConditions,
       vehicleSubtype,
+      selectedConditions,
     );
-
-    return defaultConditionsForPermitType.map((defaultCondition) => {
-      // Select all conditions that were previously selected
-      const existingCondition = updatedConditionsInForm.find(
-        (c) => c.condition === defaultCondition.condition,
-      );
-  
-      return {
-        ...defaultCondition,
-        checked: existingCondition
-          ? existingCondition.checked
-          : defaultCondition.checked,
-      };
-    });
   }, [
     permitType,
     isLcvDesignated,

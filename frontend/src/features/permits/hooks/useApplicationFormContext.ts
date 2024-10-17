@@ -57,6 +57,20 @@ export const useApplicationFormContext = () => {
     vehicleDetails: vehicleFormData,
   } = formData.permitData;
 
+  const createdAt = useMemoizedObject(
+    createdDateTime,
+    (dateObj1, dateObj2) => Boolean(
+      (!dateObj1 && !dateObj2) || (dateObj1 && dateObj2 && dateObj1.isSame(dateObj2)),
+    ),
+  );
+
+  const updatedAt = useMemoizedObject(
+    updatedDateTime,
+    (dateObj1, dateObj2) => Boolean(
+      (!dateObj1 && !dateObj2) || (dateObj1 && dateObj2 && dateObj1.isSame(dateObj2)),
+    ),
+  );
+
   const startDate = useMemoizedObject(
     getStartOfDate(permitStartDate),
     (dateObj1, dateObj2) => dateObj1.isSame(dateObj2),
@@ -163,8 +177,8 @@ export const useApplicationFormContext = () => {
     feature,
     companyInfo,
     isAmendAction,
-    createdDateTime,
-    updatedDateTime,
+    createdDateTime: createdAt,
+    updatedDateTime: updatedAt,
     pastStartDateStatus,
     companyLOAs: memoizedCompanyLOAs,
     revisionHistory: memoizedRevisionHistory,

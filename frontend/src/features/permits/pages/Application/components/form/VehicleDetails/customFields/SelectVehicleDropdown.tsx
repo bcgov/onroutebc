@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Autocomplete,
   FormControl,
@@ -56,7 +56,10 @@ export const SelectVehicleDropdown = ({
   handleSelectVehicle: (vehicle: Vehicle) => void;
   handleClearVehicle: () => void;
 }) => {
-  const eligibleVehicles = sortVehicles(chooseFrom, vehicleOptions);
+  const eligibleVehicles = useMemo(() => sortVehicles(
+    chooseFrom,
+    vehicleOptions,
+  ), [chooseFrom, vehicleOptions]);
 
   const selectedOption = selectedVehicle
     ? getDefaultRequiredVal(
