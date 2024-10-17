@@ -4,11 +4,8 @@ import {
   PERMIT_CATEGORIES,
   PermitCategory,
 } from "../types/PermitCategory";
-import {
-  PERMIT_TYPES,
-  PermitType,
-  getPermitTypeShortName,
-} from "../types/PermitType";
+import { PermitType, getPermitTypeShortName } from "../types/PermitType";
+import { TERM_PERMIT_LIST } from "./permitLists";
 
 export const VEHICLE_CHOOSE_FROM = {
   UNIT_NUMBER: "unitNumber",
@@ -28,44 +25,20 @@ export const VEHICLE_TYPE_OPTIONS = [
   { value: VEHICLE_TYPES.TRAILER, label: "Trailer" },
 ];
 
-export const TERM_PERMIT_TYPES: PermitType[] = [
-  PERMIT_TYPES.TROS,
-  PERMIT_TYPES.TROW,
-  /* TODO uncomment these as required */
-  // PERMIT_TYPES.HC,
-];
-
-export const SINGLE_TRIP_PERMIT_TYPES: PermitType[] = [
-  PERMIT_TYPES.STOL,
-  PERMIT_TYPES.EPTOP,
-  PERMIT_TYPES.IGVW,
-  PERMIT_TYPES.STOS,
-  PERMIT_TYPES.STWS,
-  PERMIT_TYPES.STOW,
-  PERMIT_TYPES.RIG,
-];
-
-export const NON_RESIDENT_PERMIT_TYPES: PermitType[] = [
-  PERMIT_TYPES.QNRBS,
-  PERMIT_TYPES.QRFR,
-  PERMIT_TYPES.NRSCV,
-  PERMIT_TYPES.STFR,
-];
-
 export const ALL_PERMIT_TYPE_CHOOSE_FROM_OPTIONS: PermitTypeChooseFromItem[] = [
   {
     value: PERMIT_CATEGORIES.TERM,
     label: getPermitCategoryName(PERMIT_CATEGORIES.TERM),
-    items: TERM_PERMIT_TYPES.map((permitType: PermitType) => ({
+    items: TERM_PERMIT_LIST.map((permitType: PermitType) => ({
       value: permitType,
       label: getPermitTypeShortName(permitType),
     })),
   },
-  /* TODO uncomment these as required */
+  /* TODO uncomment these when required */
   // {
   //   value: PERMIT_CATEGORIES.SINGLE_TRIP,
   //   label: getPermitCategoryName(PERMIT_CATEGORIES.SINGLE_TRIP),
-  //   items: SINGLE_TRIP_PERMIT_TYPES.map((permitType: PermitType) => ({
+  //   items: SINGLE_TRIP_PERMIT_LIST.map((permitType: PermitType) => ({
   //     value: permitType,
   //     label: getPermitTypeShortName(permitType),
   //   })),
@@ -73,7 +46,7 @@ export const ALL_PERMIT_TYPE_CHOOSE_FROM_OPTIONS: PermitTypeChooseFromItem[] = [
   // {
   //   value: PERMIT_CATEGORIES.NON_RESIDENT,
   //   label: getPermitCategoryName(PERMIT_CATEGORIES.NON_RESIDENT),
-  //   items: NON_RESIDENT_PERMIT_TYPES.map((permitType: PermitType) => ({
+  //   items: NON_RESIDENT_PERMIT_LIST.map((permitType: PermitType) => ({
   //     value: permitType,
   //     label: getPermitTypeShortName(permitType),
   //   })),

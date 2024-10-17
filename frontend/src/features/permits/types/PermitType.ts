@@ -1,5 +1,11 @@
 import { Nullable } from "../../../common/types/common";
 import { getPermitCategory, getPermitCategoryName } from "./PermitCategory";
+// import {
+//   NON_RESIDENT_PERMIT_TYPES,
+//   SINGLE_TRIP_PERMIT_TYPES,
+//   TERM_PERMIT_TYPES,
+// } from "../constants/constants";
+// import { getPermitCategory, getPermitCategoryName } from "./PermitCategory";
 
 export const PERMIT_TYPES = {
   /* TERM */
@@ -176,6 +182,5 @@ export const isPermitTypeValid = (permitType?: Nullable<string>) => {
  * @returns Whether or not the permit of that type is considered a term permit
  */
 export const isTermPermitType = (permitType: PermitType) => {
-  return permitType === PERMIT_TYPES.TROS
-    || permitType === PERMIT_TYPES.TROW;
+  return permitType === PERMIT_TYPES.TROS || permitType === PERMIT_TYPES.TROW;
 };

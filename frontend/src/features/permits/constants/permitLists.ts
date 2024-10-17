@@ -1,0 +1,25 @@
+import { PERMIT_TYPES, PermitType } from "../types/PermitType";
+
+export const TERM_PERMIT_LIST: PermitType[] = [
+  PERMIT_TYPES.TROS,
+  PERMIT_TYPES.TROW,
+  /* TODO uncomment this when required */
+  // PERMIT_TYPES.HC,
+];
+
+export const SINGLE_TRIP_PERMIT_LIST: PermitType[] = [
+  PERMIT_TYPES.STOL,
+  PERMIT_TYPES.EPTOP,
+  PERMIT_TYPES.IGVW,
+  PERMIT_TYPES.STOS,
+  PERMIT_TYPES.STWS,
+  PERMIT_TYPES.STOW,
+  PERMIT_TYPES.RIG,
+];
+
+export const NON_RESIDENT_PERMIT_LIST: PermitType[] = [
+  PERMIT_TYPES.QNRBS,
+  PERMIT_TYPES.QRFR,
+  PERMIT_TYPES.NRSCV,
+  PERMIT_TYPES.STFR,
+];
