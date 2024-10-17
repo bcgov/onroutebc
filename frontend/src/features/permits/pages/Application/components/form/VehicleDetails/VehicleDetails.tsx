@@ -50,6 +50,7 @@ import {
   invalidYearMin,
   requiredMessage,
 } from "../../../../../../../common/helpers/validationMessages";
+import { disableMouseWheelInputOnNumberField } from "../../../../../../../common/helpers/disableMouseWheelInputOnNumberField";
 
 const selectedVehicleSubtype = (vehicle: BaseVehicle) => {
   switch (vehicle.vehicleType) {
@@ -175,47 +176,57 @@ export const VehicleDetails = ({
 
   // Find vehicle subtypes that are allowed by LOAs
   const permittedLOAPowerUnitIds = new Set([
-    ...selectedLOAs.map(loa => loa.powerUnits)
-      .reduce((prevPowerUnits, currPowerUnits) => [
-        ...prevPowerUnits,
-        ...currPowerUnits,
-      ], []),
+    ...selectedLOAs
+      .map((loa) => loa.powerUnits)
+      .reduce(
+        (prevPowerUnits, currPowerUnits) => [
+          ...prevPowerUnits,
+          ...currPowerUnits,
+        ],
+        [],
+      ),
   ]);
 
   const permittedLOATrailerIds = new Set([
-    ...selectedLOAs.map(loa => loa.trailers)
-      .reduce((prevTrailers, currTrailers) => [
-        ...prevTrailers,
-        ...currTrailers,
-      ], []),
+    ...selectedLOAs
+      .map((loa) => loa.trailers)
+      .reduce(
+        (prevTrailers, currTrailers) => [...prevTrailers, ...currTrailers],
+        [],
+      ),
   ]);
 
-  const powerUnitsInInventory = vehicleOptions
-    .filter(vehicle => vehicle.vehicleType === VEHICLE_TYPES.POWER_UNIT) as PowerUnit[];
+  const powerUnitsInInventory = vehicleOptions.filter(
+    (vehicle) => vehicle.vehicleType === VEHICLE_TYPES.POWER_UNIT,
+  ) as PowerUnit[];
 
-  const trailersInInventory = vehicleOptions
-    .filter(vehicle => vehicle.vehicleType === VEHICLE_TYPES.TRAILER) as Trailer[];
+  const trailersInInventory = vehicleOptions.filter(
+    (vehicle) => vehicle.vehicleType === VEHICLE_TYPES.TRAILER,
+  ) as Trailer[];
 
   const permittedLOAPowerUnitSubtypes = powerUnitsInInventory
-    .filter(powerUnit => permittedLOAPowerUnitIds.has(powerUnit.powerUnitId as string))
-    .map(powerUnit => powerUnit.powerUnitTypeCode);
+    .filter((powerUnit) =>
+      permittedLOAPowerUnitIds.has(powerUnit.powerUnitId as string),
+    )
+    .map((powerUnit) => powerUnit.powerUnitTypeCode);
 
   const permittedLOATrailerSubtypes = trailersInInventory
-    .filter(trailer => permittedLOATrailerIds.has(trailer.trailerId as string))
-    .map(trailer => trailer.trailerTypeCode);
+    .filter((trailer) =>
+      permittedLOATrailerIds.has(trailer.trailerId as string),
+    )
+    .map((trailer) => trailer.trailerTypeCode);
 
   // Check if selected vehicle is an LOA vehicle
-  const isSelectedVehicleAllowedByLOA = Boolean(vehicleFormData.vehicleId)
-    && (
-      permittedLOAPowerUnitIds.has(vehicleFormData.vehicleId as string)
-      || permittedLOATrailerIds.has(vehicleFormData.vehicleId as string)
-    )
-    && (
-      powerUnitsInInventory.map(powerUnit => powerUnit.powerUnitId)
-        .includes(vehicleFormData.vehicleId as string)
-      || trailersInInventory.map(trailer => trailer.trailerId)
-        .includes(vehicleFormData.vehicleId as string)
-    );
+  const isSelectedVehicleAllowedByLOA =
+    Boolean(vehicleFormData.vehicleId) &&
+    (permittedLOAPowerUnitIds.has(vehicleFormData.vehicleId as string) ||
+      permittedLOATrailerIds.has(vehicleFormData.vehicleId as string)) &&
+    (powerUnitsInInventory
+      .map((powerUnit) => powerUnit.powerUnitId)
+      .includes(vehicleFormData.vehicleId as string) ||
+      trailersInInventory
+        .map((trailer) => trailer.trailerId)
+        .includes(vehicleFormData.vehicleId as string));
 
   useEffect(() => {
     // Update subtype options when vehicle type changes
@@ -367,8 +378,12 @@ export const VehicleDetails = ({
                 vehicleOptions={vehicleOptions}
                 handleClearVehicle={() => onClearVehicle(saveVehicle)}
                 handleSelectVehicle={onSelectVehicle}
-                ineligiblePowerUnitSubtypes={ineligiblePowerUnitSubtypes.map(({ typeCode }) => typeCode)}
-                ineligibleTrailerSubtypes={ineligibleTrailerSubtypes.map(({ typeCode }) => typeCode)}
+                ineligiblePowerUnitSubtypes={ineligiblePowerUnitSubtypes.map(
+                  ({ typeCode }) => typeCode,
+                )}
+                ineligibleTrailerSubtypes={ineligibleTrailerSubtypes.map(
+                  ({ typeCode }) => typeCode,
+                )}
                 loas={selectedLOAs}
               />
             </Box>
@@ -426,6 +441,7 @@ export const VehicleDetails = ({
             <CustomFormComponent
               type="input"
               feature={feature}
+              onFocus={disableMouseWheelInputOnNumberField}
               options={{
                 name: "permitData.vehicleDetails.year",
                 rules: {
@@ -458,8 +474,12 @@ export const VehicleDetails = ({
             <CustomFormComponent
               type="select"
               feature={feature}
-              readOnly={disableVehicleTypeSelect || isSelectedVehicleAllowedByLOA}
-              disabled={disableVehicleTypeSelect || isSelectedVehicleAllowedByLOA}
+              readOnly={
+                disableVehicleTypeSelect || isSelectedVehicleAllowedByLOA
+              }
+              disabled={
+                disableVehicleTypeSelect || isSelectedVehicleAllowedByLOA
+              }
               options={{
                 name: "permitData.vehicleDetails.vehicleType",
                 rules: {
