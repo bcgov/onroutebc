@@ -4,7 +4,7 @@ import { Dayjs } from "dayjs";
 import { CompanyBanner } from "../../../../common/components/banners/CompanyBanner";
 import { CompanyInformation } from "./CompanyInformation";
 import "./ApplicationDetails.scss";
-import { permitTypeDisplayText } from "../../types/PermitType";
+import { getPermitTypeName } from "../../types/PermitType";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import { Nullable } from "../../../../common/types/common";
 import {
@@ -35,7 +35,7 @@ export const ApplicationDetails = ({
   isAmendAction?: Nullable<boolean>;
   doingBusinessAs?: Nullable<string>;
 }) => {
-  const applicationName = permitTypeDisplayText(
+  const applicationName = getPermitTypeName(
     getDefaultRequiredVal("", permitType),
   );
 
