@@ -11,18 +11,34 @@ type DimensionEntry = {
   trailer: TrailerSize;
 };
 
+enum ColumnNumbers {
+  NoSelfIssue = 0,
+  Commodity = 1,
+  PowerUnit = 2,
+  Trailer = 3,
+  AllowJeep = 4,
+  AllowBooster = 5,
+  FirstWidth = 6,
+  DefaultWidth = 15,
+  FrontProjection = 18,
+  RearProjection = 19,
+}
+
 function csvRowToObject(
   row: Array<string>,
   pol: Policy,
 ): DimensionEntry | null {
-  const commodityId = getIdFromName(pol.policyDefinition.commodities, row[1]);
+  const commodityId = getIdFromName(
+    pol.policyDefinition.commodities,
+    row[ColumnNumbers.Commodity],
+  );
   const puId = getIdFromName(
     pol.policyDefinition.vehicleTypes.powerUnitTypes,
-    row[2].trim(),
+    row[ColumnNumbers.PowerUnit].trim(),
   );
   const trId = getIdFromName(
     pol.policyDefinition.vehicleTypes.trailerTypes,
-    row[4].trim(),
+    row[ColumnNumbers.Trailer].trim(),
   );
   let entryObject: DimensionEntry | null = null;
   if (commodityId && puId && trId) {
@@ -31,16 +47,16 @@ function csvRowToObject(
       powerUnit: puId,
       trailer: {
         type: trId,
-        jeep: row[5] == 'X',
-        booster: row[6] == 'X',
-        selfIssue: row[0] != 'X',
+        jeep: row[ColumnNumbers.AllowJeep] == 'X' || row[ColumnNumbers.AllowJeep] == 'x',
+        booster: row[ColumnNumbers.AllowBooster] == 'X' || row[ColumnNumbers.AllowBooster] == 'x',
+        selfIssue: row[ColumnNumbers.NoSelfIssue] != 'X' && row[ColumnNumbers.NoSelfIssue] != 'x',
       },
     };
 
     const sizeDimension: SizeDimension = {};
 
-    const fp = parseFloat(row[19]);
-    const rp = parseFloat(row[20]);
+    const fp = parseFloat(row[ColumnNumbers.FrontProjection]);
+    const rp = parseFloat(row[ColumnNumbers.RearProjection]);
     if (!isNaN(fp)) {
       sizeDimension.fp = fp;
     }
@@ -49,9 +65,9 @@ function csvRowToObject(
     }
 
     // Populate the BC Default dimensions
-    const bcWidth = parseFloat(row[16]);
-    const bcHeight = parseFloat(row[17]);
-    const bcLength = parseFloat(row[18]);
+    const bcWidth = parseFloat(row[ColumnNumbers.DefaultWidth]);
+    const bcHeight = parseFloat(row[ColumnNumbers.DefaultWidth + 1]);
+    const bcLength = parseFloat(row[ColumnNumbers.DefaultWidth + 2]);
     if (!isNaN(bcWidth)) sizeDimension.w = bcWidth;
     if (!isNaN(bcHeight)) sizeDimension.h = bcHeight;
     if (!isNaN(bcLength)) sizeDimension.l = bcLength;
@@ -59,9 +75,9 @@ function csvRowToObject(
     const regionIds: Array<string> = ['LMN', 'KTN', 'PCE'];
     // Populate the 3 region dimensions
     for (let i = 0; i < regionIds.length; i++) {
-      const w = parseFloat(row[7 + i * 3]);
-      const h = parseFloat(row[8 + i * 3]);
-      const l = parseFloat(row[9 + i * 3]);
+      const w = parseFloat(row[ColumnNumbers.FirstWidth + i * 3]);
+      const h = parseFloat(row[ColumnNumbers.FirstWidth + 1 + i * 3]);
+      const l = parseFloat(row[ColumnNumbers.FirstWidth + 2 + i * 3]);
       if (
         (isNaN(w) || w == sizeDimension.w) &&
         (isNaN(h) || h == sizeDimension.h) &&
@@ -90,7 +106,7 @@ function csvRowToObject(
     return entryObject;
   } else {
     console.log(
-      `No entry in policy config for commodity '${row[1]}' and/or power unit '${row[2]}' and/or trailer '${row[4]}'`,
+      `No entry in policy config for commodity '${row[ColumnNumbers.Commodity]}' and/or power unit '${row[ColumnNumbers.PowerUnit]}' and/or trailer '${row[ColumnNumbers.Trailer]}'`,
     );
     return null;
   }
@@ -142,12 +158,14 @@ function processCsvRow(row: any) {
   }
 }
 
-fs.createReadStream('./os-dimensions-simplified-nodefault.csv')
-  .pipe(parse({ delimiter: ',', from_line: 1 }))
+fs.createReadStream('./Single Trip Oversize Dimension Set.csv')
+  .pipe(parse({ delimiter: ',', from_line: 3 }))
   .on('data', function (row) {
     processCsvRow(row);
   })
   .on('end', function () {
-    console.log(JSON.stringify(policy.policyDefinition, null, '   '));
+    console.log(
+      JSON.stringify(policy.policyDefinition.commodities, null, '  '),
+    );
     //console.log(JSON.stringify(policy.policyDefinition));
   });
