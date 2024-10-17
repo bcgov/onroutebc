@@ -29,6 +29,7 @@ import {
   invalidYearMin,
   requiredMessage,
 } from "../../../../common/helpers/validationMessages";
+import { disableMouseWheelInputOnNumberField } from "../../../../common/helpers/disableMouseWheelInputOnNumberField";
 
 const FEATURE = "power-unit";
 
@@ -173,6 +174,7 @@ export const PowerUnitForm = ({
           <CustomFormComponent
             type="input"
             feature={FEATURE}
+            onFocus={disableMouseWheelInputOnNumberField}
             options={{
               name: "year",
               rules: {
@@ -242,7 +244,7 @@ export const PowerUnitForm = ({
             )}
             className="power-unit-form__field"
           />
-          
+
           <CountryAndProvince
             feature={FEATURE}
             countryField="countryCode"
