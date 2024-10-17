@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
 import { PowerUnit, Trailer } from "../../manageVehicles/types/Vehicle";
@@ -15,15 +15,21 @@ export const usePermitVehicleForLOAs = (
 ) => {
   // Check to see if vehicle details is still valid after LOA has been deselected
   const {
-    filteredVehicleOptions,
     updatedVehicle,
-  } = getUpdatedVehicleDetailsForLOAs(
+    filteredVehicleOptions,
+  } = useMemo(() => getUpdatedVehicleDetailsForLOAs(
     selectedLOAs,
     vehicleOptions,
     vehicleFormData,
     ineligiblePowerUnitSubtypes,
     ineligibleTrailerSubtypes,
-  );
+  ), [
+    selectedLOAs,
+    vehicleOptions,
+    vehicleFormData,
+    ineligiblePowerUnitSubtypes,
+    ineligibleTrailerSubtypes,
+  ]);
 
   const vehicleIdInForm = vehicleFormData.vehicleId;
   const updatedVehicleId = updatedVehicle.vehicleId;

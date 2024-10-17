@@ -7,20 +7,23 @@ import { ContactDetails } from "../../../../components/form/ContactDetails";
 import { PermitDetails } from "./PermitDetails";
 import { VehicleDetails } from "./VehicleDetails/VehicleDetails";
 import { PermitLOASection } from "./PermitLOASection";
-import { PermitLOA } from "../../../../types/PermitLOA";
-import { isVehicleSubtypeLCV } from "../../../../../manageVehicles/helpers/vehicleSubtypes";
-import { getStartOfDate } from "../../../../../../common/helpers/formatDate";
 import { useApplicationFormContext } from "../../../../hooks/useApplicationFormContext";
 import { AmendReason } from "../../../Amend/components/form/AmendReason";
 import { AmendRevisionHistory } from "../../../Amend/components/form/AmendRevisionHistory";
 
 export const PermitForm = () => {
   const {
-    formData,
+    permitType,
+    applicationNumber,
+    permitNumber,
+    startDate,
+    expiryDate,
+    currentSelectedLOAs,
+    vehicleFormData,
+    allConditions,
     availableDurationOptions,
     powerUnitSubtypes,
     trailerSubtypes,
-    isLcvDesignated,
     ineligiblePowerUnitSubtypes,
     ineligibleTrailerSubtypes,
     filteredVehicleOptions,
@@ -42,15 +45,6 @@ export const PermitForm = () => {
     onClearVehicle,
     onUpdateLOAs,
   } = useApplicationFormContext();
-
-  const permitType = formData.permitType;
-  const applicationNumber = formData.applicationNumber;
-  const permitNumber = formData.permitNumber;
-  const startDate = getStartOfDate(formData.permitData.startDate);
-  const expiryDate = formData.permitData.expiryDate;
-  const permitConditions = formData.permitData.commodities;
-  const vehicleFormData = formData.permitData.vehicleDetails;
-  const currentSelectedLOAs = formData.permitData.loas as PermitLOA[];
 
   return (
     <Box className="permit-form layout-box">
@@ -81,15 +75,10 @@ export const PermitForm = () => {
         <PermitDetails
           feature={feature}
           expiryDate={expiryDate}
-          conditionsInPermit={permitConditions}
+          allConditions={allConditions}
           durationOptions={availableDurationOptions}
           disableStartDate={isAmendAction}
-          permitType={permitType}
           pastStartDateStatus={pastStartDateStatus}
-          includeLcvCondition={
-            isLcvDesignated
-            && isVehicleSubtypeLCV(vehicleFormData.vehicleSubType)
-          }
           onSetConditions={onSetConditions}
         />
         

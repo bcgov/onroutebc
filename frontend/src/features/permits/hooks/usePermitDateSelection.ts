@@ -5,6 +5,7 @@ import { getExpiryDate } from "../helpers/permitState";
 import { PermitType } from "../types/PermitType";
 import { getAvailableDurationOptions, handleUpdateDurationIfNeeded } from "../helpers/dateSelection";
 import { PermitLOA } from "../types/PermitLOA";
+import { useMemoizedArray } from "../../../common/hooks/useMemoizedArray";
 
 /**
  * Hook that manages permit date selection based on changing permit data.
@@ -28,10 +29,14 @@ export const usePermitDateSelection = (
   onSetExpiryDate: (expiry: Dayjs) => void,
 ) => {
   // Limit permit duration options based on selected LOAs
-  const availableDurationOptions = getAvailableDurationOptions(
-    durationOptions,
-    selectedLOAs,
-    startDate,
+  const availableDurationOptions = useMemoizedArray(
+    getAvailableDurationOptions(
+      durationOptions,
+      selectedLOAs,
+      startDate,
+    ),
+    (option) => option.value,
+    (option1, option2) => option1.value === option2.value,
   );
 
   // If duration options change, check if the current permit duration is still selectable

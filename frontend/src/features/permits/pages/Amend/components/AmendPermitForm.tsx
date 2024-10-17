@@ -56,6 +56,11 @@ export const AmendPermitForm = () => {
   const navigate = useNavigate();
 
   const { data: activeLOAs } = useFetchLOAs(companyId, false);
+  const companyLOAs = useMemo(() => getDefaultRequiredVal(
+    [],
+    activeLOAs,
+  ), [activeLOAs]);
+
   const { data: companyInfo } = useCompanyInfoDetailsQuery(companyId);
   const { data: specialAuthorizations } = useFetchSpecialAuthorizations(companyId);
   const isLcvDesignated = Boolean(specialAuthorizations?.isLcvAllowed);
@@ -81,7 +86,7 @@ export const AmendPermitForm = () => {
   } = useAmendPermitForm(
     currentStepIndex === 0,
     isLcvDesignated,
-    getDefaultRequiredVal([], activeLOAs),
+    companyLOAs,
     vehicleOptions,
     companyInfo,
     permit,
@@ -98,7 +103,7 @@ export const AmendPermitForm = () => {
   // 2. Have expiry date that is on or after the start date for an application
   const applicableLOAs = filterNonExpiredLOAs(
     filterLOAsForPermitType(
-      getDefaultRequiredVal([], activeLOAs),
+      companyLOAs,
       formData.permitType,
     ),
     formData.permitData.startDate,

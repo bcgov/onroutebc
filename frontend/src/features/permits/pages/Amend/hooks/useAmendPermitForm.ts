@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import dayjs, { Dayjs } from "dayjs";
 
@@ -116,38 +116,38 @@ export const useAmendPermitForm = (
     reset(defaultFormData);
   }, [defaultFormData]);
 
-  const onSetDuration = (duration: number) => {
+  const onSetDuration = useCallback((duration: number) => {
     setValue("permitData.permitDuration", duration);
-  };
+  }, [setValue]);
 
-  const onSetExpiryDate = (expiry: Dayjs) => {
+  const onSetExpiryDate = useCallback((expiry: Dayjs) => {
     setValue("permitData.expiryDate", dayjs(expiry));
-  };
+  }, [setValue]);
 
-  const onSetConditions = (conditions: PermitCondition[]) => {
+  const onSetConditions = useCallback((conditions: PermitCondition[]) => {
     setValue("permitData.commodities", [...conditions]);
-  };
+  }, [setValue]);
 
-  const onToggleSaveVehicle = (saveVehicle: boolean) => {
+  const onToggleSaveVehicle = useCallback((saveVehicle: boolean) => {
     setValue("permitData.vehicleDetails.saveVehicle", saveVehicle);
-  };
+  }, [setValue]);
 
-  const onSetVehicle = (vehicleDetails: PermitVehicleDetails) => {
+  const onSetVehicle = useCallback((vehicleDetails: PermitVehicleDetails) => {
     setValue("permitData.vehicleDetails", {
       ...vehicleDetails,
     });
-  };
+  }, [setValue]);
 
-  const onClearVehicle = (saveVehicle: boolean) => {
+  const onClearVehicle = useCallback((saveVehicle: boolean) => {
     setValue("permitData.vehicleDetails", {
       ...EMPTY_VEHICLE_DETAILS,
       saveVehicle,
     });
-  };
+  }, [setValue]);
 
-  const onUpdateLOAs = (updatedLOAs: PermitLOA[]) => {
+  const onUpdateLOAs = useCallback((updatedLOAs: PermitLOA[]) => {
     setValue("permitData.loas", updatedLOAs);
-  };
+  }, [setValue]);
 
   return {
     initialFormData: defaultFormData,

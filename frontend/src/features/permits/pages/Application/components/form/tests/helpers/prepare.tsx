@@ -79,20 +79,31 @@ export const renderTestComponent = (
   const user = userEvent.setup(userEventOptions);
   let selectedConditions = [...conditions];
   const expiryDate = getExpiryDate(startDate, duration);
+  const allConditions = getDefaultConditions(permitType, false)
+    .map(condition => {
+      const existingCondition = selectedConditions
+        .find(c => c.condition === condition.condition);
+
+      return {
+        ...condition,
+        checked: existingCondition
+          ? existingCondition.checked
+          : condition.checked,
+      };
+    });
+
   const renderedComponent = render(
     <TestFormWrapper>
       <PermitDetails
         feature={feature}
         expiryDate={expiryDate}
-        conditionsInPermit={selectedConditions}
+        allConditions={allConditions}
         durationOptions={allDurations.map((duration) => ({
           label: duration.text,
           value: duration.days,
         }))}
         disableStartDate={false}
-        permitType={permitType}
         pastStartDateStatus={PAST_START_DATE_STATUSES.FAIL}
-        includeLcvCondition={false}
         onSetConditions={(updatedConditions) => {
           selectedConditions = [...updatedConditions];
         }}

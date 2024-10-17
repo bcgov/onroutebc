@@ -6,7 +6,11 @@ import { usePermitConditions } from "./usePermitConditions";
 import { getStartOfDate } from "../../../common/helpers/formatDate";
 import { getIneligibleSubtypes } from "../helpers/permitVehicles";
 import { usePermitVehicleForLOAs } from "./usePermitVehicleForLOAs";
-import { PermitLOA } from "../types/PermitLOA";
+import { arePermitLOADetailsEqual, PermitLOA } from "../types/PermitLOA";
+import { useMemoizedArray } from "../../../common/hooks/useMemoizedArray";
+import { getDefaultRequiredVal } from "../../../common/helpers/util";
+import { arePermitConditionEqual } from "../types/PermitCondition";
+import { useMemoizedObject } from "../../../common/hooks/useMemoizedObject";
 
 export const useApplicationFormContext = () => {
   const {
@@ -38,19 +42,47 @@ export const useApplicationFormContext = () => {
     onUpdateLOAs,
   } = useContext(ApplicationFormContext);
 
-  const permitType = formData.permitType;
   const {
-    loas: currentSelectedLOAs,
+    permitType,
+    applicationNumber,
+    permitNumber,
+  } = formData;
+
+  const {
+    expiryDate: permitExpiryDate,
+    loas,
     permitDuration,
     startDate: permitStartDate,
-    commodities: permitConditions,
+    commodities,
     vehicleDetails: vehicleFormData,
   } = formData.permitData;
+
+  const startDate = useMemoizedObject(
+    getStartOfDate(permitStartDate),
+    (dateObj1, dateObj2) => dateObj1.isSame(dateObj2),
+  );
+
+  const expiryDate = useMemoizedObject(
+    permitExpiryDate,
+    (dateObj1, dateObj2) => dateObj1.isSame(dateObj2),
+  );
+
+  const currentSelectedLOAs = useMemoizedArray(
+    getDefaultRequiredVal([], loas),
+    ({ loaNumber }) => loaNumber,
+    arePermitLOADetailsEqual,
+  );
+
+  const permitConditions = useMemoizedArray(
+    commodities,
+    ({ condition }) => condition,
+    arePermitConditionEqual,
+  );
 
   // Update duration options and expiry when needed
   const { availableDurationOptions } = usePermitDateSelection(
     permitType,
-    getStartOfDate(permitStartDate),
+    startDate,
     durationOptions,
     currentSelectedLOAs as PermitLOA[],
     permitDuration,
@@ -59,7 +91,8 @@ export const useApplicationFormContext = () => {
   );
   
   // Update permit conditions when LCV designation or vehicle subtype changes
-  usePermitConditions(
+  const { allConditions } = usePermitConditions(
+    permitType,
     permitConditions,
     isLcvDesignated,
     vehicleFormData.vehicleSubType,
@@ -67,23 +100,67 @@ export const useApplicationFormContext = () => {
   );
 
   // Check to see if vehicle details is still valid after LOA has been deselected
-  const {
-    ineligiblePowerUnitSubtypes,
-    ineligibleTrailerSubtypes,
-  } = getIneligibleSubtypes(permitType, isLcvDesignated);
+  const ineligibleSubtypes = getIneligibleSubtypes(permitType, isLcvDesignated);
+  const ineligiblePowerUnitSubtypes = useMemoizedArray(
+    ineligibleSubtypes.ineligiblePowerUnitSubtypes,
+    (subtype) => subtype.typeCode,
+    (subtype1, subtype2) => subtype1.typeCode === subtype2.typeCode,
+  );
+
+  const ineligibleTrailerSubtypes = useMemoizedArray(
+    ineligibleSubtypes.ineligibleTrailerSubtypes,
+    (subtype) => subtype.typeCode,
+    (subtype1, subtype2) => subtype1.typeCode === subtype2.typeCode,
+  );
+
+  const ineligiblePowerUnitSubtypeCodes = useMemoizedArray(
+    ineligiblePowerUnitSubtypes.map(({ typeCode }) => typeCode),
+    (typeCode) => typeCode,
+    (typeCode1, typeCode2) => typeCode1 === typeCode2,
+  );
+
+  const ineligibleTrailerSubtypeCodes = useMemoizedArray(
+    ineligibleTrailerSubtypes.map(({ typeCode }) => typeCode),
+    (typeCode) => typeCode,
+    (typeCode1, typeCode2) => typeCode1 === typeCode2,
+  );
 
   const { filteredVehicleOptions } = usePermitVehicleForLOAs(
     vehicleFormData,
     vehicleOptions,
     currentSelectedLOAs as PermitLOA[],
-    ineligiblePowerUnitSubtypes.map(({ typeCode }) => typeCode),
-    ineligibleTrailerSubtypes.map(({ typeCode }) => typeCode),
+    ineligiblePowerUnitSubtypeCodes,
+    ineligibleTrailerSubtypeCodes,
     () => onClearVehicle(Boolean(vehicleFormData.saveVehicle)),
+  );
+
+  const memoizedCompanyLOAs = useMemoizedArray(
+    companyLOAs,
+    ({ loaNumber }) => loaNumber,
+    arePermitLOADetailsEqual,
+  );
+
+  const memoizedRevisionHistory = useMemoizedArray(
+    revisionHistory,
+    (historyItem) => `${historyItem.permitId}-${historyItem.revisionDateTime}`,
+    (historyItem1, historyItem2) =>
+      historyItem1.permitId === historyItem2.permitId
+        && historyItem1.revisionDateTime === historyItem2.revisionDateTime
+        && historyItem1.name === historyItem2.name
+        && historyItem1.comment === historyItem2.comment,
   );
 
   return {
     initialFormData,
-    formData,
+    permitType,
+    applicationNumber,
+    permitNumber,
+    startDate,
+    expiryDate,
+    currentSelectedLOAs,
+    permitConditions,
+    vehicleFormData,
+    allConditions,
     availableDurationOptions,
     powerUnitSubtypes,
     trailerSubtypes,
@@ -97,8 +174,8 @@ export const useApplicationFormContext = () => {
     createdDateTime,
     updatedDateTime,
     pastStartDateStatus,
-    companyLOAs,
-    revisionHistory,
+    companyLOAs: memoizedCompanyLOAs,
+    revisionHistory: memoizedRevisionHistory,
     onLeave,
     onSave,
     onCancel,
