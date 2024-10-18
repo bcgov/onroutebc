@@ -1,10 +1,10 @@
 @use "../../../../../../themes/orbcStyles";
 
-@include orbcStyles.permit-main-box-style(".permit-loa");
-@include orbcStyles.permit-left-box-style(".permit-loa__header");
-@include orbcStyles.permit-right-box-style(".permit-loa__body");
+@include orbcStyles.permit-main-box-style(".permit-loa-section");
+@include orbcStyles.permit-left-box-style(".permit-loa-section__header");
+@include orbcStyles.permit-right-box-style(".permit-loa-section__body");
 
-.permit-loa {
+.permit-loa-section {
   & &__header {
     h3 {
       padding-top: 1rem;

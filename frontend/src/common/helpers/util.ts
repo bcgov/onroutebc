@@ -123,25 +123,6 @@ export const getDefaultRequiredVal = <T>(
 };
 
 /**
- * Check if two nullable values are different.
- * @param val1 First nullable value to be compared
- * @param val2 Second nullable value to be compared
- * @returns boolean value indicating if values are different.
- */
-export const areValuesDifferent = <T>(
-  val1?: Nullable<T>,
-  val2?: Nullable<T>,
-): boolean => {
-  if (!val1 && !val2) return false; // both empty === equal
-
-  if ((val1 && !val2) || (!val1 && val2) || (val1 && val2 && val1 !== val2)) {
-    return true; // one empty, or both non-empty but different === different
-  }
-
-  return false; // values are equal otherwise
-};
-
-/**
  * Returns the file name for a file from API response.
  * @param headers The collection of headers in an API response.
  * @returns string | undefined.
@@ -273,28 +254,4 @@ export const setRedirectInSession = (redirectUri: string) => {
       console.log("Unable to parse redirect URL:", error);
     }
   }
-};
-
-/**
- * Determine whether or not two arrays have the same items.
- * @param arr1 First array
- * @param arr2 Second array
- * @returns Whether or not the two arrays contain the same items
- */
-export const areArraysEqual = <T extends (number | string)>(
-  arr1: T[],
-  arr2: T[],
-) => {
-  const set1 = new Set(arr1);
-  const set2 = new Set(arr2);
-
-  for (const val of set1) {
-    if (!set2.has(val)) return false;
-  }
-
-  for (const val of set2) {
-    if (!set1.has(val)) return false;
-  }
-  
-  return true;
 };

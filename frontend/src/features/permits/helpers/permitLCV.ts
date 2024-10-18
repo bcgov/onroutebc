@@ -1,10 +1,8 @@
 import { Nullable } from "../../../common/types/common";
 import { isVehicleSubtypeLCV } from "../../manageVehicles/helpers/vehicleSubtypes";
-import { LCV_CONDITION } from "../constants/constants";
 import { Application, ApplicationFormData } from "../types/application";
-import { PermitCondition } from "../types/PermitCondition";
 import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
-import { sortConditions } from "./conditions";
+import { getPermitConditionSelectionState } from "./conditions";
 import { getDefaultVehicleDetails } from "./permitVehicles";
 
 /**
@@ -27,49 +25,6 @@ export const getUpdatedVehicleDetailsForLCV = (
 };
 
 /**
- * Get updated permit conditions based on LCV designation and selected vehicle subtype.
- * @param isLcvDesignated Whether or not the LCV designation is to be used
- * @param prevSelectedConditions Previously selected permit conditions
- * @param vehicleSubtype Selected vehicle subtype
- * @returns Updated permit conditions
- */
-export const getUpdatedConditionsForLCV = (
-  isLcvDesignated: boolean,
-  prevSelectedConditions: PermitCondition[],
-  vehicleSubtype: string,
-) => {
-  if (!isLcvDesignated) {
-    // If LCV not designated, remove LCV condition
-    return prevSelectedConditions.filter(
-      ({ condition }: PermitCondition) => condition !== LCV_CONDITION.condition,
-    );
-  }
-  
-  // If LCV is designated, and vehicle subtype isn't LCV but conditions have LCV,
-  // then remove that LCV condition
-  if (
-    !isVehicleSubtypeLCV(vehicleSubtype)
-    && prevSelectedConditions.some(({ condition }) => condition === LCV_CONDITION.condition)
-  ) {
-    return prevSelectedConditions.filter(
-      ({ condition }: PermitCondition) => condition !== LCV_CONDITION.condition,
-    );
-  }
-
-  // If LCV is designated, and vehicle subtype is LCV but conditions don't have LCV,
-  // then add that LCV condition
-  if (
-    isVehicleSubtypeLCV(vehicleSubtype)
-    && !prevSelectedConditions.some(({ condition }) => condition === LCV_CONDITION.condition)
-  ) {
-    return sortConditions([...prevSelectedConditions, LCV_CONDITION]);
-  }
-
-  // In other cases, the conditions are valid
-  return prevSelectedConditions;
-};
-
-/**
  * Applying LCV designation to application data.
  * @param applicationData Existing application data
  * @param isLcvDesignated Whether or not the LCV designation is to be used
@@ -87,11 +42,12 @@ export const applyLCVToApplicationData = <T extends Nullable<ApplicationFormData
     applicationData.permitData.vehicleDetails,
   );
 
-  const updatedConditions = getUpdatedConditionsForLCV(
+  const updatedConditions = getPermitConditionSelectionState(
+    applicationData.permitType,
     isLcvDesignated,
-    applicationData.permitData.commodities,
     updatedVehicleDetails.vehicleSubType,
-  );
+    applicationData.permitData.commodities,
+  ).filter(({ checked }) => checked);
 
   return {
     ...applicationData,

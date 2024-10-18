@@ -3,12 +3,12 @@ import { Box, Typography } from "@mui/material";
 import "./ReviewPermitLOAs.scss";
 import { LOATable } from "../form/LOATable";
 import { Nullable } from "../../../../../../common/types/common";
-import { LOADetail } from "../../../../../settings/types/SpecialAuthorization";
+import { PermitLOA } from "../../../../types/PermitLOA";
 
 export const ReviewPermitLOAs = ({
   loas,
 }: {
-  loas?: Nullable<LOADetail[]>;
+  loas?: Nullable<PermitLOA[]>;
 }) => {
   return loas && loas.length > 0 ? (
     <Box className="review-permit-loas">
