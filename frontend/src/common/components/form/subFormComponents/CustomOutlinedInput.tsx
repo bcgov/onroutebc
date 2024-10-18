@@ -23,6 +23,7 @@ export interface CustomOutlinedInputProps<T extends FieldValues> {
   disabled?: boolean;
   readOnly?: boolean;
   onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
+  onWheel?: (event: React.WheelEvent<HTMLInputElement>) => void;
 }
 
 /**
@@ -67,6 +68,7 @@ export const CustomOutlinedInput = <T extends ORBC_FormTypes>(
       className={customInputClassName}
       {...register(props.name, props.rules)}
       onFocus={props.onFocus}
+      onWheel={props.onWheel}
     />
   );
 };
