@@ -2,6 +2,9 @@ import { Dayjs } from "dayjs";
 
 import { BASE_DAYS_IN_YEAR, TERM_DURATION_INTERVAL_DAYS } from "../constants/constants";
 import { PERMIT_TYPES, PermitType } from "../types/PermitType";
+import { getExpiryDate } from "./permitState";
+import { getMostRecentExpiryFromLOAs } from "./permitLOA";
+import { PermitLOA } from "../types/PermitLOA";
 import {
   MAX_TROS_DURATION,
   MIN_TROS_DURATION,
@@ -15,9 +18,6 @@ import {
   TROW_DURATION_INTERVAL_DAYS,
   TROW_DURATION_OPTIONS,
 } from "../constants/trow";
-import { getExpiryDate } from "./permitState";
-import { LOADetail } from "../../settings/types/SpecialAuthorization";
-import { getMostRecentExpiryFromLOAs } from "./permitLOA";
 
 /**
  * Get list of selectable duration options for a given permit type.
@@ -94,7 +94,7 @@ export const getAvailableDurationOptions = (
     value: number;
     label: string;
   }[],
-  selectedLOAs: LOADetail[],
+  selectedLOAs: PermitLOA[],
   startDate: Dayjs,
 ) => {
   const mostRecentLOAExpiry = getMostRecentExpiryFromLOAs(selectedLOAs);

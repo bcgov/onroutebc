@@ -2,7 +2,7 @@ import { createContext } from "react";
 import { Dayjs } from "dayjs";
 
 import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
-import { LOADetail } from "../../settings/types/SpecialAuthorization";
+import { LOADetail } from "../../settings/types/LOADetail";
 import { ApplicationFormData } from "../types/application";
 import { getDefaultValues } from "../helpers/getDefaultApplicationFormData";
 import { DEFAULT_PERMIT_TYPE } from "../types/PermitType";
@@ -10,6 +10,7 @@ import { PermitCondition } from "../types/PermitCondition";
 import { PowerUnit, Trailer, VehicleSubType } from "../../manageVehicles/types/Vehicle";
 import { Nullable } from "../../../common/types/common";
 import { CompanyProfile } from "../../manageProfile/types/manageProfile.d";
+import { PermitLOA } from "../types/PermitLOA";
 import {
   PAST_START_DATE_STATUSES,
   PastStartDateStatus,
@@ -49,7 +50,7 @@ interface ApplicationFormContextType {
   onToggleSaveVehicle: (saveVehicle: boolean) => void;
   onSetVehicle: (vehicleDetails: PermitVehicleDetails) => void;
   onClearVehicle: (saveVehicle: boolean) => void;
-  onUpdateLOAs: (updatedLOAs: LOADetail[]) => void;
+  onUpdateLOAs: (updatedLOAs: PermitLOA[]) => void;
 }
 
 export const ApplicationFormContext = createContext<ApplicationFormContextType>({
