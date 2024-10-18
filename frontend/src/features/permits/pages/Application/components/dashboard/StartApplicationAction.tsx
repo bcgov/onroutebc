@@ -63,6 +63,12 @@ export const StartApplicationAction = () => {
     setAnchorEl(e.currentTarget as HTMLDivElement);
   const handleClose = () => setAnchorEl(null);
 
+  const inputClass = "start-application-action__input";
+  const inputOpenClass = "start-application-action__input--open";
+  const inputErrorClass = "start-application-action__input--error";
+  const menuClass = "start-application-action__menu-container";
+  const menuOpenClass = "start-application-action__menu-container--open";
+
   return (
     <Box className="start-application-action">
       <FormLabel className="start-application-action__label">
@@ -78,7 +84,7 @@ export const StartApplicationAction = () => {
           }
         >
           <Button
-            className={`start-application-action__input ${open && "start-application-action__input--open"} ${isError && "start-application-action__input--error"}`}
+            className={`${inputClass} ${open ? inputOpenClass : ""} ${isError ? inputErrorClass : ""}`}
             onClick={handleClick}
           >
             <span className="start-application-action__input-text">
@@ -99,7 +105,7 @@ export const StartApplicationAction = () => {
           open={open}
           slotProps={{
             paper: {
-              className: `start-application-action__menu-container ${open && "start-application-action__menu-container--open"}`,
+              className: `${menuClass} ${open ? menuOpenClass : ""}`,
             },
           }}
           MenuListProps={{
@@ -151,11 +157,11 @@ export const StartApplicationAction = () => {
           Start Application
         </Button>
       </div>
-      {isError && (
+      {isError ? (
         <span className="start-application-action__error-msg">
           Select a permit type.
         </span>
-      )}
+      ) : null}
     </Box>
   );
 };
