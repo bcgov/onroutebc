@@ -12,46 +12,34 @@ import {
 
 import "./ConditionsTable.scss";
 import { CustomExternalLink } from "../../../../../../common/components/links/CustomExternalLink";
-import { PermitType } from "../../../../types/PermitType";
-import { getDefaultConditions } from "../../../../helpers/conditions";
 import { PermitCondition } from "../../../../types/PermitCondition";
 
 export const ConditionsTable = ({
-  conditionsInPermit,
-  permitType,
-  includeLcvCondition = false,
+  allConditions,
   onSetConditions,
 }: {
-  conditionsInPermit: PermitCondition[];
-  permitType: PermitType;
-  includeLcvCondition?: boolean;
+  allConditions: PermitCondition[];
   onSetConditions: (conditions: PermitCondition[]) => void;
 }) => {
-  const defaultConditions = getDefaultConditions(permitType, includeLcvCondition);
-  const allConditions = defaultConditions.map((defaultCondition) => {
-    // Application exists at this point, thus select all conditions that were selected in the application
-    const existingCondition = conditionsInPermit.find(
-      (c) => c.condition === defaultCondition.condition,
-    );
-
-    return {
-      ...defaultCondition,
-      checked: existingCondition
-        ? existingCondition.checked
-        : defaultCondition.checked,
-    };
-  });
-
   const handleSelect = (checkedCondition: string) => {
-    const updatedConditions = allConditions.map((condition) => {
-      if (condition.condition === checkedCondition) {
-        condition.checked = !condition.checked;
-      }
-      return condition;
-    }).filter(condition => condition.checked);
+    const conditionInTable = allConditions.find(({ condition }) => condition === checkedCondition);
+    if (!conditionInTable || conditionInTable.disabled) return;
 
-    onSetConditions(updatedConditions);
-  }
+    const isConditionChecked = Boolean(conditionInTable.checked);
+    if (isConditionChecked) {
+      onSetConditions(
+        allConditions.filter(({ condition, checked }) => checked && condition !== checkedCondition),
+      );
+    } else {
+      onSetConditions([
+        ...allConditions.filter(({ checked }) => checked),
+        {
+          ...conditionInTable,
+          checked: true,
+        },
+      ]);
+    }
+  };
 
   return (
     <TableContainer className="conditions-table" component={Paper}>

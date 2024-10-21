@@ -11,12 +11,12 @@ import {
 } from "@mui/material";
 
 import "./LOATable.scss";
-import { LOADetail } from "../../../../../settings/types/SpecialAuthorization";
 import { applyWhenNotNullable } from "../../../../../../common/helpers/util";
 import { DATE_FORMATS, toLocal } from "../../../../../../common/helpers/formatDate";
+import { PermitLOA } from "../../../../types/PermitLOA";
 
 interface SelectableLOA {
-  loa: LOADetail;
+  loa: PermitLOA;
   checked: boolean;
   disabled: boolean;
 }

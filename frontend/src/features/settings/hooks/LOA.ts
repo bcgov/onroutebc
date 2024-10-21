@@ -1,4 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 import { Nullable } from "../../../common/types/common";
 import {
@@ -8,7 +12,7 @@ import {
   removeLOA,
   removeLOADocument,
   updateLOA,
-} from "../apiManager/specialAuthorization";
+} from "../apiManager/loa";
 
 const QUERY_KEYS = {
   LOAS: (expired: boolean) => ["loas", expired],

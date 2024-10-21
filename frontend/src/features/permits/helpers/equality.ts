@@ -4,12 +4,13 @@ import { PermitMailingAddress } from "../types/PermitMailingAddress";
 import { PermitContactDetails } from "../types/PermitContactDetails";
 import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
 import { PermitData } from "../types/PermitData";
-import { areLOADetailsEqual, LOADetail } from "../../settings/types/SpecialAuthorization";
 import { PermitCondition } from "../types/PermitCondition";
+import { arePermitLOADetailsEqual, PermitLOA } from "../types/PermitLOA";
 import {
   DATE_FORMATS,
   dayjsToLocalStr,
 } from "../../../common/helpers/formatDate";
+import { doUniqueArraysHaveSameObjects } from "../../../common/helpers/equality";
 
 /**
  * Compare whether or not two mailing addresses are equal.
@@ -121,8 +122,8 @@ const areVehicleDetailsEqual = (
  * @returns true when the selected LOAs are the same, false otherwise
  */
 export const arePermitLOAsEqual = (
-  loas1: Nullable<LOADetail[]>,
-  loas2: Nullable<LOADetail[]>,
+  loas1: Nullable<PermitLOA[]>,
+  loas2: Nullable<PermitLOA[]>,
 ) => {
   const isLoas1Empty = !loas1 || loas1.length === 0;
   const isLoas2Empty = !loas2 || loas2.length === 0;
@@ -131,26 +132,12 @@ export const arePermitLOAsEqual = (
   if ((isLoas1Empty && !isLoas2Empty) || (!isLoas1Empty && isLoas2Empty))
     return false;
 
-  const loaMap1 = new Map(
-    (loas1 as LOADetail[]).map((loa) => [loa.loaNumber, loa]),
+  return doUniqueArraysHaveSameObjects(
+    loas1 as PermitLOA[],
+    loas2 as PermitLOA[],
+    (loa) => loa.loaNumber,
+    arePermitLOADetailsEqual,
   );
-  const loaMap2 = new Map(
-    (loas2 as LOADetail[]).map((loa) => [loa.loaNumber, loa]),
-  );
-
-  for (const [loaNumber, loa] of loaMap1) {
-    if (!areLOADetailsEqual(loa, loaMap2.get(loaNumber))) {
-      return false;
-    }
-  }
-
-  for (const [loaNumber, loa] of loaMap2) {
-    if (!areLOADetailsEqual(loa, loaMap1.get(loaNumber))) {
-      return false;
-    }
-  }
-
-  return true;
 };
 
 /**

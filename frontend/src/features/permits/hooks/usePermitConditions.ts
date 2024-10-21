@@ -1,34 +1,46 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
-import { areArraysEqual } from "../../../common/helpers/util";
 import { PermitCondition } from "../types/PermitCondition";
-import { getUpdatedConditionsForLCV } from "../helpers/permitLCV";
+import { doUniqueArraysHaveSameItems } from "../../../common/helpers/equality";
+import { PermitType } from "../types/PermitType";
+import { getPermitConditionSelectionState } from "../helpers/conditions";
 
 export const usePermitConditions = (
+  permitType: PermitType,
   selectedConditions: PermitCondition[],
   isLcvDesignated: boolean,
   vehicleSubtype: string,
   onSetConditions: (conditions: PermitCondition[]) => void,
 ) => {
-  // If conditions were changed as a result of LCV or vehicle subtype, update permit conditions
-  const updatedConditions = getUpdatedConditionsForLCV(
+  // All possible conditions to be used for conditions table, including non-selected ones
+  const allConditions = useMemo(() => {
+    return getPermitConditionSelectionState(
+      permitType,
+      isLcvDesignated,
+      vehicleSubtype,
+      selectedConditions,
+    );
+  }, [
+    permitType,
     isLcvDesignated,
-    selectedConditions,
     vehicleSubtype,
-  );
+    selectedConditions,
+  ]);
+
+  const updatedConditions = allConditions
+    .filter(({ checked }) => checked);
 
   useEffect(() => {
-    if (!areArraysEqual(
+    if (!doUniqueArraysHaveSameItems(
       updatedConditions.map(({ condition }) => condition),
-      selectedConditions.map(({ condition }: PermitCondition) => condition),
+      selectedConditions.map(({ condition }) => condition),
     )) {
       onSetConditions(updatedConditions);
     }
   }, [
     updatedConditions,
     selectedConditions,
-    onSetConditions,
   ]);
 
-  return { updatedConditions };
+  return { allConditions };
 };
