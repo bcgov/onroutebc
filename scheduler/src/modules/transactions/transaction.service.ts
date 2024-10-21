@@ -1,84 +1,85 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Transaction } from './transaction.entity';
 import { CfsTransactionDetail } from '../common/entities/transaction-detail.entity';
 import { Cron } from '@nestjs/schedule';
 import { LogAsyncMethodExecution } from 'src/common/decorator/log-async-method-execution.decorator';
-import { generate } from 'src/helper/generator.helper';
-import { In, Repository } from 'typeorm';
-import { Holiday } from './holiday.entity';
+import {
+  formatDateToCustomString,
+  populateBatchHeader,
+  populateBatchTrailer,
+  populateJournalHeader,
+  populateJournalVoucherDetail,
+  uploadFile,
+} from 'src/helper/generator.helper';
+import { Brackets, In, Repository } from 'typeorm';
+import { Transaction } from '../common/entities/transaction.entity';
+import { TransactionStatus } from '../common/enum/transaction-status.enum';
 import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import { addToCache } from 'src/common/helper/cache.helper';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { CacheKey } from 'src/common/enum/cache-key.enum';
-import { Cache } from 'cache-manager';
-import { getFromCache } from 'src/common/helper/cache.helper';
+import timezone from 'dayjs/plugin/timezone';
 
-dayjs.extend(utc);
+import { TIMEZONE_PACIFIC } from 'src/common/constants/api.constant';
+dayjs.extend(timezone);
 
-let transactionIds = [];
+
 
 @Injectable()
 export class TransactionService {
   private readonly logger = new Logger(TransactionService.name);
-  private holidays: string[] = [];
   constructor(
-    @Inject(CACHE_MANAGER)
-    private readonly cacheManager: Cache,
     @InjectRepository(Transaction)
     private readonly transactionRepository: Repository<Transaction>,
     @InjectRepository(CfsTransactionDetail)
-    private readonly cfsTransactionDetailRepo: Repository<CfsTransactionDetail>,
-    @InjectRepository(Holiday)
-    private readonly holidayRepository: Repository<Holiday>,
-  ) {
-    void this.initializeHolidays();
-  }
-
-  private async initializeHolidays(): Promise<void> {
-    const cachedHolidays = await getFromCache(
-      this.cacheManager,
-      CacheKey.HOLIDAYS,
-    );
-
-    if (!cachedHolidays) {
-      this.holidays = await this.getBcHolidays();
-    } else {
-      cachedHolidays;
-    }
-  }
-
-  async getHolidays(): Promise<Holiday[]> {
-    const now: Date = new Date();
-    const year = now.getFullYear().toString();
-    const holidays = await this.holidayRepository
-      .createQueryBuilder('holiday')
-      .where('YEAR(holiday.holidayDate) = :year', { year })
-      .getMany();
-
-    // Convert holidayDate to UTC format
-    return holidays.map((holiday) => ({
-      ...holiday,
-      holidayDate: dayjs.utc(holiday.holidayDate).format('YYYY-MM-DD'),
-    }));
-  }
+    private readonly cfsTransactionDetailRepo: Repository<CfsTransactionDetail>,) {}
 
   async getTransactionDetails(): Promise<Transaction[]> {
-    const transactions = await this.transactionRepository
-      .createQueryBuilder('transaction')
-      .innerJoinAndSelect(
-        'CfsTransactionDetail',
-        'detail',
-        'transaction.TRANSACTION_ID = detail.TRANSACTION_ID',
-      )
-      .where('detail.CFS_FILE_STATUS_TYPE = :status', { status: 'READY' })
-      .getMany();
+   const formatter = new Intl.DateTimeFormat('en-US', {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+    hour12: false,
+    timeZone: TIMEZONE_PACIFIC,
+    });
+    const today = new Date();
+    console.log('today is: ',today);
+    //2024-10-18T19:18:11.225Z
+    //const todayUTC = dayjs(new Date());
+  //const todayPacific = todayUTC.tz(timezone).format("YYYY-MM-DD");
+    console.log('todayPacific is: ',formatter.format(today));
 
+    const time = 'T21:00:00.000Z';
+    const yesterday = dayjs(dayjs(today).subtract(1,'day').format('YYYY-MM-DD')+time);
+    const dayBefore = dayjs(dayjs(today).subtract(2,'day').format('YYYY-MM-DD') +time);
+    yesterday
+    this.logger.log('yesterday time is: ',dayjs(yesterday));
+    this.logger.log('day before yesterday time is: ',dayjs(dayBefore));
+
+
+    let transactionsQuery =  this.transactionRepository
+      .createQueryBuilder('transaction')
+      .innerJoinAndSelect('CfsTransactionDetail','detail','transaction.TRANSACTION_ID = detail.TRANSACTION_ID',)
+      .innerJoinAndSelect('transaction.permitTransactions','permitTransactions',)
+      .innerJoinAndSelect('permitTransactions.permit','permit',)
+      .where('detail.cfsFileStatus = :status', { status: TransactionStatus.READY })
+      transactionsQuery = transactionsQuery.andWhere(
+        new Brackets((qb) => {
+          qb.where(
+            `detail.reprocessFlag = 'Y' OR (detail.createdDateTime >= :dayBefore AND detail.createdDateTime < :yesterday)`,
+            {
+              dayBefore: dayBefore,
+              yesterday: yesterday,
+            },
+          );
+        }),
+      );
+      const transactions = await transactionsQuery.getMany();
     // Extract transaction IDs from the results
-    transactionIds = transactions.map(
-      (transaction) => transaction.TRANSACTION_ID,
+    const transactionIds = transactions.map(
+      (transaction) => transaction.transactionId,
     );
+    await  this.updateCfsFileStatusType(TransactionStatus.PROCESSING, transactionIds);
 
     if (transactions.length > 0) {
       this.logger.log(transactions);
@@ -88,19 +89,22 @@ export class TransactionService {
       return [];
     }
   }
-
-  async updateCfsFileStatusType(fileName: string): Promise<void> {
+  async updateCfsFileStatusType(
+    status: TransactionStatus,
+    transactionIds: string [],
+    fileName?: string,
+  ): Promise<void> {
     const currentDate = new Date();
     const currentUTCTimestamp = currentDate;
     const transactionDetails: CfsTransactionDetail[] =
       await this.cfsTransactionDetailRepo.find({
-        where: { TRANSACTION_ID: In(transactionIds) },
+        where: { transactionId: In(transactionIds) },
       });
     const updatedTransactionDetails: CfsTransactionDetail[] =
       transactionDetails.map((detail) => {
-        detail.CFS_FILE_STATUS_TYPE = 'SENT';
-        detail.PROCESSSING_DATE_TIME = currentUTCTimestamp;
-        detail.FILE_NAME = fileName;
+        detail.cfsFileStatus = status;
+        if(status == TransactionStatus.SENT) detail.processingDateTime = currentUTCTimestamp;
+        if(fileName) detail.fileName = fileName;
         return detail;
       });
 
@@ -113,40 +117,51 @@ export class TransactionService {
     }
   }
 
-  private async getBcHolidays(): Promise<string[]> {
-    try {
-      const holidays: Holiday[] = await this.getHolidays();
-
-      const formatHoliday = (holiday: Holiday): string => {
-        return dayjs(holiday.holidayDate).format('YYYY-MM-DD');
-      };
-
-      const holidayStrings: string[] = holidays.map(formatHoliday);
-      const holidayString = holidayStrings.join(',');
-      await addToCache(this.cacheManager, CacheKey.HOLIDAYS, holidayString);
-      return holidayStrings;
-    } catch (error) {
-      this.logger.error('Error fetching BC holidays:', error);
-      return [];
-    }
-  }
-
-  private isHoliday(date: Date): boolean {
-    const formattedDate = date.toISOString().split('T')[0];
-    return this.holidays.includes(formattedDate);
-  }
-
   @Cron('0 30 16 * * 1-5')
   // @Cron(`${process.env.TPS_PENDING_POLLING_INTERVAL || '0 */1 * * * *'}`)
   @LogAsyncMethodExecution()
   async genterateCgifilesAndUpload() {
-    const now = new Date();
-    if (this.isHoliday(now)) {
-      this.logger.log('Today is a holiday. Skipping job execution.');
-      return;
+    try {
+      const transactions: Transaction[] = await this.getTransactionDetails();
+      const transactionIds = transactions.map(
+        (transaction) => transaction.transactionId,
+      );
+      let batchNumberCounter = 0;
+      let lastJVDCounter = 0;
+      let fileData = '';
+
+      if (transactions.length) {
+        const now: Date = new Date();
+        const cgiCustomString: string = formatDateToCustomString(now);
+        const cgiFileName =
+        `F` + process.env.FEEDER_NUMBER + `.${cgiCustomString}`;
+        const cgiTrigerFileName =
+            `F` + process.env.FEEDER_NUMBER + `.${cgiCustomString}.TRG`;
+        for (const transaction of transactions) {
+          batchNumberCounter++;
+          lastJVDCounter++;
+          const batchHeader: string = populateBatchHeader(batchNumberCounter);
+          const journalHeader: string = populateJournalHeader(transaction);
+          const journalVoucher = populateJournalVoucherDetail(transaction);
+          const lastJournalVoucher = populateJournalVoucherDetail(transaction, true, lastJVDCounter);
+          const batchTrailer: string = populateBatchTrailer(
+            transaction,
+            batchNumberCounter,
+          );
+          this.logger.log(`File generated: ${cgiFileName}`);
+          const cgiTrigerFileName =
+            `F` + process.env.FEEDER_NUMBER + `.${cgiCustomString}.TRG`;
+          this.logger.log(`${cgiTrigerFileName} generated.`);
+          fileData += batchHeader + journalHeader + journalVoucher + lastJournalVoucher + batchTrailer;
+           }
+           this.logger.log(fileData);
+          await  uploadFile(cgiFileName, Buffer.from(fileData, 'utf8'));
+          await  uploadFile(cgiTrigerFileName, Buffer.from('', 'utf8'));
+          await this.updateCfsFileStatusType(TransactionStatus.SENT,transactionIds,cgiFileName);
+      }  
+    } catch (e) {
+      this.logger.error(e);
     }
-    const transactions: Promise<Transaction[]> = this.getTransactionDetails();
-    const fileName = await generate(await transactions);
-    await this.updateCfsFileStatusType(fileName[0]);
+    return 'hello';
   }
 }

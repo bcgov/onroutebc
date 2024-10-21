@@ -9,8 +9,10 @@ export class CgiConstants {
   static readonly SERVICE_LINE = '10435'; // service line
   static readonly STOB = '1474'; // stob
   static readonly PROJECT = '5500000'; // project
-  static readonly LINE_CODE = 'C'; // line code
+  static readonly LINE_CODE_CREDIT = 'C'; // line code
+  static readonly LINE_CODE_DEBIT= 'D'; // line code
   static readonly TRANSACTION_TYPE_JH = 'JH'; // jounal header
+  static readonly TRANSACTION_TYPE_JD = 'JD'; // jounal header
   static readonly RECORD_TYPE = 'A'; // record type
   static readonly COUNTRY_CURRENCY_CODE = 'CAD'; // currency code
   static readonly TRANSACTION_TYPE_BT = 'BT'; // batch trailer

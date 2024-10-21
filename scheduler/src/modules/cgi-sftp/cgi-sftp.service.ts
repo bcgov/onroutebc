@@ -10,8 +10,8 @@ import Client from 'ssh2-sftp-client';
 export class CgiSftpService {
   private readonly logger = new Logger(CgiSftpService.name);
 
-  async upload(fileData: Express.Multer.File, fileName: string) {
-    const sftp  = new Client();
+  async upload(fileData: Buffer, fileName: string) {
+    const sftp = new Client();
     const connectionInfo: Client.ConnectOptions = getSFTPConnectionInfo();
     const remotePath = process.env.CFS_REMOTE_PATH; //Remote CFS Path
 
@@ -25,7 +25,7 @@ export class CgiSftpService {
       this.logger.error(error);
     }
     try {
-      const res = await sftp.put(fileData.buffer, remotePath + fileName);
+      const res = await sftp.put(fileData, remotePath + fileName);
       this.logger.log(`Successfully sent file ${fileName} via SFTP.`);
       return res;
     } catch (error) {

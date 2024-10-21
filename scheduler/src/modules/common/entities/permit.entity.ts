@@ -4,6 +4,7 @@ import { AutoMap } from '@automapper/classes';
 import { Base } from './base.entity';
 import { ApplicationStatus } from '../enum/application-status.enum';
 import { PermitTransaction } from './permit-transaction.entity';
+import { PermitType } from '../enum/permit-type.enum';
 
 @Entity({ name: 'permit.ORBC_PERMIT' })
 export class Permit extends Base {
@@ -86,6 +87,21 @@ export class Permit extends Base {
     (permitTransaction) => permitTransaction.permit,
   )
   public permitTransactions: PermitTransaction[];
+
+  @AutoMap()
+  @ApiProperty({
+    enum: PermitType,
+    description: 'Friendly name for the permit type',
+    example: PermitType.TERM_OVERSIZE,
+  })
+  @Column({
+    type: 'simple-enum',
+    enum: PermitType,
+    length: 10,
+    name: 'PERMIT_TYPE',
+    nullable: true,
+  })
+  permitType: PermitType;
 
   @AutoMap()
   @ApiProperty({

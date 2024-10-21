@@ -1,6 +1,7 @@
 services:
   sftp:
     container_name: sftp
+    hostname: sftp
     image: atmoz/sftp
     volumes:
         - ${LOCAL_SHARE_FOLDER}:${SFTP_SHARE_FOLDER}
@@ -266,6 +267,8 @@ services:
       ISSUE_PERMIT_LIMIT: ${ISSUE_PERMIT_LIMIT}
       DOC_GEN_LIMIT: ${DOC_GEN_LIMIT}
       PERMIT_SCHEDULE_POLLING_INTERVAL: ${PERMIT_SCHEDULE_POLLING_INTERVAL}
+      FEEDER_NUMBER: ${FEEDER_NUMBER}
+      SUPPLIER_NUMBER: ${SUPPLIER_NUMBER}
     healthcheck:
       test: "curl --silent --fail http://localhost:5050/ > /dev/null || exit 1"
       interval: 1m30s
