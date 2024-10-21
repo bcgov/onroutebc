@@ -1,6 +1,6 @@
 import { MRT_ColumnDef, MRT_Row } from "material-react-table";
 
-import { LOADetail } from "../../../../types/SpecialAuthorization";
+import { LOADetail } from "../../../../types/LOADetail";
 import { DATE_FORMATS, toLocal } from "../../../../../../common/helpers/formatDate";
 import { applyWhenNotNullable } from "../../../../../../common/helpers/util";
 import { LOANumberCell } from "./LOANumberCell";

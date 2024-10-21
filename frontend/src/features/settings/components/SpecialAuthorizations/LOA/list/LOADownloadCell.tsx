@@ -1,7 +1,7 @@
 import { MRT_Row } from "material-react-table";
 
 import { CustomActionLink } from "../../../../../../common/components/links/CustomActionLink";
-import { LOADetail } from "../../../../types/SpecialAuthorization";
+import { LOADetail } from "../../../../types/LOADetail";
 
 export const LOADownloadCell = ({
   onDownload,

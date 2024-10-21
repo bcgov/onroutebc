@@ -9,7 +9,7 @@ import {
 } from "material-react-table";
 
 import "./LOAList.scss";
-import { LOADetail } from "../../../../types/SpecialAuthorization";
+import { LOADetail } from "../../../../types/LOADetail";
 import { LOAListColumnDef } from "./LOAListColumnDef";
 import {
   defaultTableInitialStateOptions,

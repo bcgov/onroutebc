@@ -1,6 +1,6 @@
 import { MRT_Row } from "material-react-table";
 
-import { LOADetail } from "../../../../types/SpecialAuthorization";
+import { LOADetail } from "../../../../types/LOADetail";
 import { CustomActionLink } from "../../../../../../common/components/links/CustomActionLink";
 
 export const LOANumberCell = ({

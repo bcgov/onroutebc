@@ -2,17 +2,18 @@ import { useEffect, useMemo } from "react";
 import { Dayjs } from "dayjs";
 import { Box, Typography } from "@mui/material";
 
-import "./PermitLOA.scss";
+import "./PermitLOASection.scss";
 import { InfoBcGovBanner } from "../../../../../../common/components/banners/InfoBcGovBanner";
 import { BANNER_MESSAGES } from "../../../../../../common/constants/bannerMessages";
-import { LOADetail } from "../../../../../settings/types/SpecialAuthorization";
+import { LOADetail } from "../../../../../settings/types/LOADetail";
 import { LOATable } from "./LOATable";
 import { PermitType } from "../../../../types/PermitType";
 import { getMinPermitExpiryDate } from "../../../../helpers/dateSelection";
-import { areArraysEqual } from "../../../../../../common/helpers/util";
 import { getUpdatedLOASelection } from "../../../../helpers/permitLOA";
+import { doUniqueArraysHaveSameItems } from "../../../../../../common/helpers/equality";
+import { PermitLOA } from "../../../../types/PermitLOA";
 
-export const PermitLOA = ({
+export const PermitLOASection = ({
   permitType,
   startDate,
   selectedLOAs,
@@ -21,9 +22,9 @@ export const PermitLOA = ({
 }: {
   permitType: PermitType;
   startDate: Dayjs;
-  selectedLOAs: LOADetail[];
+  selectedLOAs: PermitLOA[];
   companyLOAs: LOADetail[];
-  onUpdateLOAs: (updatedLOAs: LOADetail[]) => void,
+  onUpdateLOAs: (updatedLOAs: PermitLOA[]) => void,
 }) => {
   const minPermitExpiryDate = getMinPermitExpiryDate(permitType, startDate);
 
@@ -48,7 +49,7 @@ export const PermitLOA = ({
   
   useEffect(() => {
     const selectedNumbersInTable = selectedLOAsInTable.map(loa => loa.loaNumber);
-    if (!areArraysEqual(selectedLOANumbers, selectedNumbersInTable)) {
+    if (!doUniqueArraysHaveSameItems(selectedLOANumbers, selectedNumbersInTable)) {
       onUpdateLOAs([...selectedLOAsInTable]);
     }
   }, [selectedLOANumbers, selectedLOAsInTable]);
@@ -71,14 +72,14 @@ export const PermitLOA = ({
   };
 
   return (
-    <Box className="permit-loa">
-      <Box className="permit-loa__header">
+    <Box className="permit-loa-section">
+      <Box className="permit-loa-section__header">
         <Typography variant={"h3"}>
           Letter of Authorization (LOA)
         </Typography>
       </Box>
 
-      <Box className="permit-details__body">
+      <Box className="permit-loa-section__body">
         <div className="loa-title">
           <span className="loa-title__title">Select the relevant LOA(s)</span>
           <span className="loa-title__title--optional">(optional)</span>

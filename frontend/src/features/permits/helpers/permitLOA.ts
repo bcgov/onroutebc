@@ -1,6 +1,6 @@
 import dayjs, { Dayjs } from "dayjs";
 
-import { LOADetail } from "../../settings/types/SpecialAuthorization";
+import { LOADetail } from "../../settings/types/LOADetail";
 import { PermitType } from "../types/PermitType";
 import { getEndOfDate, toLocalDayjs } from "../../../common/helpers/formatDate";
 import { Nullable } from "../../../common/types/common";
@@ -9,6 +9,7 @@ import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { PowerUnit, Trailer, VEHICLE_TYPES } from "../../manageVehicles/types/Vehicle";
 import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
 import { filterVehicles, getDefaultVehicleDetails } from "./permitVehicles";
+import { PermitLOA } from "../types/PermitLOA";
 import {
   durationOptionsForPermitType,
   getAvailableDurationOptions,
@@ -52,7 +53,7 @@ export const filterNonExpiredLOAs = (
  * @param loas LOAs with or without expiry dates
  * @returns The most recent expiry date for all the LOAs, or null if none of the LOAs expire
  */
-export const getMostRecentExpiryFromLOAs = (loas: LOADetail[]) => {
+export const getMostRecentExpiryFromLOAs = (loas: PermitLOA[]) => {
   const expiringLOAs = loas.filter(loa => Boolean(loa.expiryDate));
   if (expiringLOAs.length === 0) return null;
 
@@ -75,7 +76,7 @@ export const getMostRecentExpiryFromLOAs = (loas: LOADetail[]) => {
  */
 export const getUpdatedLOASelection = (
   upToDateLOAs: LOADetail[],
-  prevSelectedLOAs: LOADetail[],
+  prevSelectedLOAs: PermitLOA[],
   minPermitExpiryDate: Dayjs,
 ) => {
   // Each LOA should only be selected once, but there's a chance that an up-to-date LOA is also a previously selected LOA,
@@ -94,7 +95,18 @@ export const getUpdatedLOASelection = (
     const isEnabled = !isExpiringBeforeMinPermitExpiry;
     
     return {
-      loa,
+      loa: {
+        loaId: loa.loaId,
+        loaNumber: loa.loaNumber,
+        companyId: loa.companyId,
+        startDate: loa.startDate,
+        expiryDate: loa.expiryDate,
+        loaPermitType: loa.loaPermitType,
+        powerUnits: loa.powerUnits,
+        trailers: loa.trailers,
+        originalLoaId: loa.originalLoaId,
+        previousLoaId: loa.previousLoaId,
+      },
       checked: isSelected,
       disabled: !isEnabled,
     };
@@ -111,7 +123,7 @@ export const getUpdatedLOASelection = (
  * @returns Updated vehicle details and filtered vehicle options
  */
 export const getUpdatedVehicleDetailsForLOAs = (
-  selectedLOAs: LOADetail[],
+  selectedLOAs: PermitLOA[],
   vehicleOptions: (PowerUnit | Trailer)[],
   prevSelectedVehicle: PermitVehicleDetails,
   ineligiblePowerUnitSubtypes: string[],
