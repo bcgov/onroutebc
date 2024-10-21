@@ -317,6 +317,8 @@ export const VehicleDetails = ({
             <CustomFormComponent
               type="select"
               feature={feature}
+              readOnly={disableVehicleTypeSelect || isSelectedLOAVehicle}
+              disabled={disableVehicleTypeSelect || isSelectedLOAVehicle}
               options={{
                 name: "permitData.vehicleDetails.vehicleType",
                 rules: {
