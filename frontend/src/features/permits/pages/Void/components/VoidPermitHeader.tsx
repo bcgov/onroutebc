@@ -3,18 +3,14 @@ import { Box, Typography } from "@mui/material";
 import "./VoidPermitHeader.scss";
 import { Permit } from "../../../types/permit";
 import { CompanyBanner } from "../../../../../common/components/banners/CompanyBanner";
-import { permitTypeDisplayText } from "../../../types/PermitType";
+import { getPermitTypeName } from "../../../types/PermitType";
 import { Nullable } from "../../../../../common/types/common";
 import {
   DATE_FORMATS,
   toLocal,
 } from "../../../../../common/helpers/formatDate";
 
-export const VoidPermitHeader = ({
-  permit,
-}: {
-  permit: Nullable<Permit>;
-}) => {
+export const VoidPermitHeader = ({ permit }: { permit: Nullable<Permit> }) => {
   return permit ? (
     <div className="void-permit__header">
       <Typography
@@ -22,7 +18,7 @@ export const VoidPermitHeader = ({
         data-testid="void-permit-title"
         variant="h1"
       >
-        {permitTypeDisplayText(permit.permitType)}
+        {getPermitTypeName(permit.permitType)}
       </Typography>
 
       <Box className="permit-number">
