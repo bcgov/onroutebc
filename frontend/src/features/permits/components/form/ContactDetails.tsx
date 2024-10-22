@@ -95,7 +95,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
               rules: {
                 required: false,
                 validate: {
-                  validatePhone: (phone: string) =>
+                  validatePhone: (phone?: string) =>
                     !phone ||
                     phone.length === 0 ||
                     (phone.length >= 10 && phone.length <= 20) ||
@@ -156,7 +156,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
             rules: {
               required: false,
               validate: {
-                validateEmail: (email: string) =>
+                validateEmail: (email?: string) =>
                   !email ||
                   email.length === 0 ||
                   isEmail(email) ||
