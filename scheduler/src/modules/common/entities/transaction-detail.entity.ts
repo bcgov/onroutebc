@@ -29,7 +29,11 @@ export class CfsTransactionDetail {
   @Column({ name: 'DB_CREATE_TIMESTAMP', type: 'timestamp', nullable: false })
   createdDateTime: Date;
 
-  @Column({ name: 'DB_LAST_UPDATE_TIMESTAMP', type: 'timestamp', nullable: false })
+  @Column({
+    name: 'DB_LAST_UPDATE_TIMESTAMP',
+    type: 'timestamp',
+    nullable: false,
+  })
   updatedDateTime: Date;
 
   @Column({ name: 'FILE_NAME', type: 'varchar', length: 255, nullable: false })

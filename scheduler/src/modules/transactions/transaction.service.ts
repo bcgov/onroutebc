@@ -10,7 +10,7 @@ import {
   populateJournalHeader,
   populateJournalVoucherDetail,
   uploadFile,
-} from 'src/helper/generator.helper';
+} from 'src/common/helper/generator.helper';
 import { Brackets, In, Repository } from 'typeorm';
 import { Transaction } from '../common/entities/transaction.entity';
 import { TransactionStatus } from '../common/enum/transaction-status.enum';
@@ -18,11 +18,13 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { TIMEZONE_PACIFIC } from 'src/common/constants/api.constant';
+import { GlCodeType } from '../common/entities/gl-code-type.entity';
+import { GlType } from '../common/enum/gl-type.enum';
+import { PaymentMethodType } from 'src/common/enum/payment-method-type.enum';
+import { PaymentCardType } from 'src/common/enum/payment-card-type.enum';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
-
-
 
 @Injectable()
 export class TransactionService {
@@ -31,41 +33,71 @@ export class TransactionService {
     @InjectRepository(Transaction)
     private readonly transactionRepository: Repository<Transaction>,
     @InjectRepository(CfsTransactionDetail)
-    private readonly cfsTransactionDetailRepo: Repository<CfsTransactionDetail>,) {}
+    private readonly cfsTransactionDetailRepo: Repository<CfsTransactionDetail>,
+    @InjectRepository(GlCodeType)
+    private readonly glCodeTypeRepo: Repository<GlCodeType>,
+  ) {}
 
   async getTransactionDetails(): Promise<Transaction[]> {
-
     const today = new Date();
     //today PST/PDT timezone
     const pacificDate = dayjs(today).tz(TIMEZONE_PACIFIC);
     // Date logic to convert yesterday's 9pm PST/PDT to UTC
-    const yesterday = pacificDate.subtract(1,'day').set('hour', 21).set('minute', 0).set('second', 0).utc().format('YYYY-MM-DDTHH:mm:ssZ');
+    const yesterday = pacificDate
+      .subtract(1, 'day')
+      .set('hour', 21)
+      .set('minute', 0)
+      .set('second', 0)
+      .utc()
+      .format('YYYY-MM-DDTHH:mm:ssZ');
     // Date logic to convert day before yesterday's 9pm PST/PDT to UTC
-    const dayBefore = pacificDate.subtract(2,'day').set('hour', 21).set('minute', 0).set('second', 0).utc().format('YYYY-MM-DDTHH:mm:ssZ');
+    const dayBefore = pacificDate
+      .subtract(2, 'day')
+      .set('hour', 21)
+      .set('minute', 0)
+      .set('second', 0)
+      .utc()
+      .format('YYYY-MM-DDTHH:mm:ssZ');
+      console.log('today: ',today);
+      console.log('today: ',pacificDate);
+      console.log('yesterday: ',yesterday);
+      console.log('dayBefore: ',dayBefore);
 
-    let transactionsQuery =  this.transactionRepository
+    let transactionsQuery = this.transactionRepository
       .createQueryBuilder('transaction')
-      .innerJoinAndSelect('CfsTransactionDetail','detail','transaction.TRANSACTION_ID = detail.TRANSACTION_ID',)
-      .innerJoinAndSelect('transaction.permitTransactions','permitTransactions',)
-      .innerJoinAndSelect('permitTransactions.permit','permit',)
-      .where('detail.cfsFileStatus = :status', { status: TransactionStatus.READY })
-      transactionsQuery = transactionsQuery.andWhere(
-        new Brackets((qb) => {
-          qb.where(
-            `detail.reprocessFlag = 'Y' OR (detail.createdDateTime >= :dayBefore AND detail.createdDateTime < :yesterday)`,
-            {
-              dayBefore: dayBefore,
-              yesterday: yesterday,
-            },
-          );
-        }),
-      );
-      const transactions = await transactionsQuery.getMany();
+      .innerJoinAndSelect(
+        'CfsTransactionDetail',
+        'detail',
+        'transaction.TRANSACTION_ID = detail.TRANSACTION_ID',
+      )
+      .innerJoinAndSelect(
+        'transaction.permitTransactions',
+        'permitTransactions',
+      )
+      .innerJoinAndSelect('permitTransactions.permit', 'permit')
+      .where('detail.cfsFileStatus = :status', {
+        status: TransactionStatus.READY,
+      });
+    transactionsQuery = transactionsQuery.andWhere(
+      new Brackets((qb) => {
+        qb.where(
+          `detail.reprocessFlag = 'Y' OR (detail.createdDateTime >= :dayBefore AND detail.createdDateTime < :yesterday)`,
+          {
+            dayBefore: dayBefore,
+            yesterday: yesterday,
+          },
+        );
+      }),
+    );
+    const transactions = await transactionsQuery.getMany();
     // Extract transaction IDs from the results
     const transactionIds = transactions.map(
       (transaction) => transaction.transactionId,
     );
-    await  this.updateCfsFileStatusType(TransactionStatus.PROCESSING, transactionIds);
+    await this.updateCfsFileStatusType(
+      TransactionStatus.PROCESSING,
+      transactionIds,
+    );
 
     if (transactions.length > 0) {
       this.logger.log(transactions);
@@ -77,7 +109,7 @@ export class TransactionService {
   }
   async updateCfsFileStatusType(
     status: TransactionStatus,
-    transactionIds: string [],
+    transactionIds: string[],
     fileName?: string,
   ): Promise<void> {
     const currentDate = new Date();
@@ -89,8 +121,9 @@ export class TransactionService {
     const updatedTransactionDetails: CfsTransactionDetail[] =
       transactionDetails.map((detail) => {
         detail.cfsFileStatus = status;
-        if(status == TransactionStatus.SENT) detail.processingDateTime = currentUTCTimestamp;
-        if(fileName) detail.fileName = fileName;
+        if (status == TransactionStatus.SENT)
+          detail.processingDateTime = currentUTCTimestamp;
+        if (fileName) detail.fileName = fileName;
         return detail;
       });
 
@@ -120,16 +153,36 @@ export class TransactionService {
         const now: Date = new Date();
         const cgiCustomString: string = formatDateToCustomString(now);
         const cgiFileName =
-        `F` + process.env.FEEDER_NUMBER + `.${cgiCustomString}`;
+          `F` + process.env.FEEDER_NUMBER + `.${cgiCustomString}`;
         const cgiTrigerFileName =
-            `F` + process.env.FEEDER_NUMBER + `.${cgiCustomString}.TRG`;
+          `F` + process.env.FEEDER_NUMBER + `.${cgiCustomString}.TRG`;
         for (const transaction of transactions) {
           batchNumberCounter++;
           lastJVDCounter++;
+          const revenueGl = await this.getGlCodeType(
+            GlType.REVENUE_GL,
+            transaction.paymentMethodTypeCode,
+            transaction.paymentCardTypeCode,
+          );
+          console.log('revenueGl: ', revenueGl);
+          const balancingGl = await this.getGlCodeType(
+            GlType.BALANCING_GL,
+            transaction.paymentMethodTypeCode,
+            transaction.paymentCardTypeCode,
+          );
+          console.log('balancingGl: ', balancingGl);
           const batchHeader: string = populateBatchHeader(batchNumberCounter);
           const journalHeader: string = populateJournalHeader(transaction);
-          const journalVoucher = populateJournalVoucherDetail(transaction);
-          const lastJournalVoucher = populateJournalVoucherDetail(transaction, true, lastJVDCounter);
+          const journalVoucher = populateJournalVoucherDetail(
+            transaction,
+            revenueGl,
+          );
+          const lastJournalVoucher = populateJournalVoucherDetail(
+            transaction,
+            balancingGl,
+            true,
+            lastJVDCounter,
+          );
           const batchTrailer: string = populateBatchTrailer(
             transaction,
             batchNumberCounter,
@@ -138,16 +191,39 @@ export class TransactionService {
           const cgiTrigerFileName =
             `F` + process.env.FEEDER_NUMBER + `.${cgiCustomString}.TRG`;
           this.logger.log(`${cgiTrigerFileName} generated.`);
-          fileData += batchHeader + journalHeader + journalVoucher + lastJournalVoucher + batchTrailer;
-           }
-           this.logger.log(fileData);
-          await  uploadFile(cgiFileName, Buffer.from(fileData, 'utf8'));
-          await  uploadFile(cgiTrigerFileName, Buffer.from('', 'utf8'));
-          await this.updateCfsFileStatusType(TransactionStatus.SENT,transactionIds,cgiFileName);
-      }  
+          fileData +=
+            batchHeader +
+            journalHeader +
+            journalVoucher +
+            lastJournalVoucher +
+            batchTrailer;
+        }
+        this.logger.log(fileData);
+        await uploadFile(cgiFileName, Buffer.from(fileData, 'utf8'));
+        await uploadFile(cgiTrigerFileName, Buffer.from('', 'utf8'));
+        await this.updateCfsFileStatusType(
+          TransactionStatus.SENT,
+          transactionIds,
+          cgiFileName,
+        );
+      }
     } catch (e) {
       this.logger.error(e);
     }
     return 'hello';
+  }
+
+  async getGlCodeType(
+    glType: GlType,
+    paymentMethodTypeCode: PaymentMethodType,
+    paymentCardTypeCode?: PaymentCardType,
+  ): Promise<GlCodeType> {
+    const glCodeType = await this.glCodeTypeRepo.findOne({where: {
+      glType: glType,
+      paymentMethodTypeCode: paymentMethodTypeCode,
+      paymentCardTypeCode: paymentCardTypeCode,
+
+    }});
+    return glCodeType;
   }
 }

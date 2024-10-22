@@ -48,6 +48,7 @@ import { CgiConstants } from 'src/common/constants/cgi.constant';
 import dayjs from 'dayjs';
 import { Transaction } from 'src/modules/common/entities/transaction.entity';
 import { TransactionType } from 'src/common/enum/transaction-type.enum';
+import { GlCodeType } from 'src/modules/common/entities/gl-code-type.entity';
 
 export function formatDateToCustomString(date: Date): string {
   return dayjs(date).format('YYYYMMDDHHmmss');
@@ -67,12 +68,13 @@ export const getJournalName = (): string => {
   const randomChars = generateRandomNum(8);
   const journalName: string = prefix + randomChars;
   return journalName;
-}
+};
 
-export const generateRandomNum =  (length: number): string => {
- 
-const randoms = Array.from({length: length}, () => Math.floor(Math.random() * 10));
-return randoms.join('');
+export const generateRandomNum = (length: number): string => {
+  const randoms = Array.from({ length: length }, () =>
+    Math.floor(Math.random() * 10),
+  );
+  return randoms.join('');
 };
 
 export const getJournalBatchName = (): string => {
@@ -80,7 +82,7 @@ export const getJournalBatchName = (): string => {
   const prefix = CgiConstants.PREFIX; // Ministry Alpha identifier prefix
   const randomChars = generateRandomNum(23); // Generate 23 random characters
   return prefix + randomChars;
-}
+};
 
 export function getControlTotal(transaction: Transaction): string {
   // 15 characters
@@ -117,16 +119,6 @@ export function getGlEffectiveDate(): string {
   const day: string = currentDate.getDate().toString().padStart(2, '0');
 
   return `${year}${month}${day}`;
-}
-
-export function getLocation(): string {
-  // 6 chars
-  return `0`.repeat(6);
-}
-
-export function getFuture(): string {
-  // 4 chars
-  return `0`.repeat(4);
 }
 
 export function getUnusedFiller(): string {
@@ -181,7 +173,7 @@ export const populateJournalHeader = (transaction: Transaction): string => {
   const transactionType: string = CgiConstants.TRANSACTION_TYPE_JH;
   const delimiterHex = 0x1d;
   const delimiter = delimiterHex.toString(16);
-  const journalName: string =  getJournalName();
+  const journalName: string = getJournalName();
   const journalBatchName: string = getJournalBatchName();
   const controlTotal: string = getControlTotal(transaction);
   const recordType: string = CgiConstants.RECORD_TYPE;
@@ -205,35 +197,39 @@ export const populateJournalHeader = (transaction: Transaction): string => {
   return journalHeader;
 };
 
-export const populateJournalVoucherDetail =   (
+export const populateJournalVoucherDetail = (
   transaction: Transaction,
+  glCode: GlCodeType,
   lastJVDline?: boolean,
   lastJVDCounter?: number,
 ): string => {
   const feederNumber: string = process.env.FEEDER_NUMBER;
   const batchType: string = CgiConstants.BATCH_TYPE;
-  const delimiterHex = 0x1D;
+  const delimiterHex = 0x1d;
   const delimiter = delimiterHex.toString(16);
-  const journalName: string =  getJournalName();
+  const journalName: string = getJournalName();
   const flowThru: string = getFlowThru(110);
   const glEffectiveDate: string = getGlEffectiveDate();
-  const client: string = CgiConstants.CLIENT;
-  const responsibility: string = CgiConstants.RESPONSIBILITY; //getResponsibility();
-  const serviceLine: string = CgiConstants.SERVICE_LINE; //getServiceLine();
-  const stob: string = CgiConstants.STOB; //getStob();
-  const project: string = CgiConstants.PROJECT;
-  const location: string = getLocation();
-  const future: string = getFuture();
+  const client: string = glCode.client;
+  const responsibility: string = glCode.responsibility; //getResponsibility();
+  const serviceLine: string = glCode.serviceLine; //getServiceLine();
+  const stob: string = glCode.stob; //getStob();
+  const project: string = glCode.project;
+  const location: string = glCode.location;
+  const future: string = glCode.future;
   const unusedFiller: string = getUnusedFiller();
   const supplierNumber: string = process.env.SUPPLIER_NUMBER;
   const isRefund = transaction.transactionTypeId === TransactionType.REFUND;
-  const lineCode:string = (isRefund === !!lastJVDCounter) ? CgiConstants.LINE_CODE_CREDIT : CgiConstants.LINE_CODE_DEBIT;
+  const lineCode: string =
+    isRefund === !!lastJVDCounter
+      ? CgiConstants.LINE_CODE_CREDIT
+      : CgiConstants.LINE_CODE_DEBIT;
   const lineDescription: string = getLineDescription();
   const transactionType = CgiConstants.TRANSACTION_TYPE_JD;
   let journalVoucher = '';
   let jvLineNumberCounter = 0;
-  const lineTotal=getControlTotal(transaction);
-  if(lastJVDline){
+  const lineTotal = getControlTotal(transaction);
+  if (lastJVDline) {
     const jvLineNumber = getJvLineNumber(lastJVDCounter);
     journalVoucher += `${feederNumber}`;
     journalVoucher += `${batchType}`;
@@ -257,37 +253,35 @@ export const populateJournalVoucherDetail =   (
     journalVoucher += `${flowThru}`;
     journalVoucher += `${delimiter}`;
     journalVoucher += `\n`;
-
+  } else {
+    for (const permitTransaction of transaction.permitTransactions) {
+      const jvLineNumber = getJvLineNumber(++jvLineNumberCounter);
+      const lineTotal = getLineTotal(permitTransaction.transactionAmount);
+      journalVoucher += `${feederNumber}`;
+      journalVoucher += `${batchType}`;
+      journalVoucher += `${transactionType}`;
+      journalVoucher += `${delimiter}`;
+      journalVoucher += `${journalName}`;
+      journalVoucher += `${jvLineNumber}`;
+      journalVoucher += `${glEffectiveDate}`;
+      journalVoucher += `${client}`;
+      journalVoucher += `${responsibility}`;
+      journalVoucher += `${serviceLine}`;
+      journalVoucher += `${stob}`;
+      journalVoucher += `${project}`;
+      journalVoucher += `${location}`;
+      journalVoucher += `${future}`;
+      journalVoucher += `${unusedFiller}`;
+      journalVoucher += `${supplierNumber}`;
+      journalVoucher += `${lineTotal}`;
+      journalVoucher += `${lineCode}`;
+      journalVoucher += `${lineDescription}`;
+      journalVoucher += `${flowThru}`;
+      journalVoucher += `${delimiter}`;
+      journalVoucher += `\n`;
+      // fs.appendFileSync(cgiFileName, journalVoucher);
+    }
   }
-  else{
-  for (const permitTransaction of transaction.permitTransactions) {
-    const jvLineNumber = getJvLineNumber(++jvLineNumberCounter);
-    const lineTotal = getLineTotal(permitTransaction.transactionAmount);
-    journalVoucher += `${feederNumber}`;
-    journalVoucher += `${batchType}`;
-    journalVoucher += `${transactionType}`;
-    journalVoucher += `${delimiter}`;
-    journalVoucher += `${journalName}`;
-    journalVoucher += `${jvLineNumber}`;
-    journalVoucher += `${glEffectiveDate}`;
-    journalVoucher += `${client}`;
-    journalVoucher += `${responsibility}`;
-    journalVoucher += `${serviceLine}`;
-    journalVoucher += `${stob}`;
-    journalVoucher += `${project}`;
-    journalVoucher += `${location}`;
-    journalVoucher += `${future}`;
-    journalVoucher += `${unusedFiller}`;
-    journalVoucher += `${supplierNumber}`;
-    journalVoucher += `${lineTotal}`;
-    journalVoucher += `${lineCode}`;
-    journalVoucher += `${lineDescription}`;
-    journalVoucher += `${flowThru}`;
-    journalVoucher += `${delimiter}`;
-    journalVoucher += `\n`;
-    // fs.appendFileSync(cgiFileName, journalVoucher);
-  }
-}
   return journalVoucher;
 };
 
@@ -333,13 +327,15 @@ export function populateBatchTrailer(
   return batchTrailer;
 }
 
-export async function uploadFile(file: string, fileData: Buffer): Promise<string[]> {
-  const uploadedFiles: string[] = []
-try{
-      
-      const cgiSftpService: CgiSftpService = new CgiSftpService();
-      await cgiSftpService.upload(fileData, file);
-      uploadedFiles.push(file); // Collect the uploaded file names
+export async function uploadFile(
+  file: string,
+  fileData: Buffer,
+): Promise<string[]> {
+  const uploadedFiles: string[] = [];
+  try {
+    const cgiSftpService: CgiSftpService = new CgiSftpService();
+    await cgiSftpService.upload(fileData, file);
+    uploadedFiles.push(file); // Collect the uploaded file names
   } catch (err) {
     console.error('Error uploading files:', err);
   }
