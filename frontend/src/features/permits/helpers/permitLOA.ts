@@ -8,7 +8,7 @@ import { Application, ApplicationFormData } from "../types/application";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { PowerUnit, Trailer, VEHICLE_TYPES } from "../../manageVehicles/types/Vehicle";
 import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
-import { filterVehicles, getDefaultVehicleDetails } from "./permitVehicles";
+import { getAllowedVehicles, getDefaultVehicleDetails } from "./permitVehicles";
 import { PermitLOA } from "../types/PermitLOA";
 import {
   durationOptionsForPermitType,
@@ -118,21 +118,18 @@ export const getUpdatedLOASelection = (
  * @param selectedLOAs LOAs that are selected for the permit
  * @param vehicleOptions Provided vehicle options for selection
  * @param prevSelectedVehicle Previously selected vehicle details in the permit form
- * @param ineligiblePowerUnitSubtypes Ineligible power unit subtypes
- * @param ineligibleTrailerSubtypes Ineligible trailer subtypes
+ * @param eligibleSubtypes Set of eligible vehicle subtypes
  * @returns Updated vehicle details and filtered vehicle options
  */
 export const getUpdatedVehicleDetailsForLOAs = (
   selectedLOAs: PermitLOA[],
   vehicleOptions: (PowerUnit | Trailer)[],
   prevSelectedVehicle: PermitVehicleDetails,
-  ineligiblePowerUnitSubtypes: string[],
-  ineligibleTrailerSubtypes: string[],
+  eligibleSubtypes: Set<string>,
 ) => {
-  const filteredVehicles = filterVehicles(
+  const filteredVehicles = getAllowedVehicles(
     vehicleOptions,
-    ineligiblePowerUnitSubtypes,
-    ineligibleTrailerSubtypes,
+    eligibleSubtypes,
     selectedLOAs,
   );
   
@@ -167,16 +164,14 @@ export const getUpdatedVehicleDetailsForLOAs = (
  * @param applicationData Existing application data
  * @param upToDateLOAs Most recent up-to-date company LOAs
  * @param inventoryVehicles Vehicle options from the inventory
- * @param ineligiblePowerUnitSubtypes Ineligible power unit subtypes that cannot be used for vehicles
- * @param ineligibleTrailerSubtypes Ineligible trailer subtypes that cannot be used for vehicles
+ * @param eligibleVehicleSubtypes Set of eligible vehicle subtypes that can be used for vehicles
  * @returns Application data after applying the up-to-date LOAs
  */
 export const applyUpToDateLOAsToApplication = <T extends Nullable<ApplicationFormData | Application>>(
   applicationData: T,
   upToDateLOAs: LOADetail[],
   inventoryVehicles: (PowerUnit | Trailer)[],
-  ineligiblePowerUnitSubtypes: string[],
-  ineligibleTrailerSubtypes: string[],
+  eligibleVehicleSubtypes: Set<string>,
 ): T => {
   // If application doesn't exist, no need to apply LOAs to it at all
   if (!applicationData) return applicationData;
@@ -225,8 +220,7 @@ export const applyUpToDateLOAsToApplication = <T extends Nullable<ApplicationFor
     newSelectedLOAs,
     inventoryVehicles,
     applicationData.permitData.vehicleDetails,
-    ineligiblePowerUnitSubtypes,
-    ineligibleTrailerSubtypes,
+    eligibleVehicleSubtypes,
   );
 
   return {

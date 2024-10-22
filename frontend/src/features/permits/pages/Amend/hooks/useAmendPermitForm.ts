@@ -11,7 +11,7 @@ import { applyLCVToApplicationData } from "../../../helpers/permitLCV";
 import { PermitCondition } from "../../../types/PermitCondition";
 import { EMPTY_VEHICLE_DETAILS, PermitVehicleDetails } from "../../../types/PermitVehicleDetails";
 import { LOADetail } from "../../../../settings/types/LOADetail";
-import { getIneligibleSubtypes } from "../../../helpers/permitVehicles";
+import { getEligibleVehicleSubtypes } from "../../../helpers/permitVehicles";
 import { applyUpToDateLOAsToApplication } from "../../../helpers/permitLOA";
 import { PowerUnit, Trailer } from "../../../../manageVehicles/types/Vehicle";
 import { PermitLOA } from "../../../types/PermitLOA";
@@ -33,16 +33,10 @@ export const useAmendPermitForm = (
   // Default form data values to populate the amend form with
   const defaultFormData = useMemo(() => {
     if (amendmentApplication) {
-      const ineligibleSubtypes = getIneligibleSubtypes(
+      const eligibleSubtypes = getEligibleVehicleSubtypes(
         amendmentApplication.permitType,
         isLcvDesignated,
       );
-
-      const ineligiblePowerUnitSubtypes= ineligibleSubtypes.ineligiblePowerUnitSubtypes
-        .map(({ typeCode }) => typeCode);
-      
-      const ineligibleTrailerSubtypes = ineligibleSubtypes.ineligibleTrailerSubtypes
-        .map(({ typeCode }) => typeCode);
 
       return applyUpToDateLOAsToApplication(
         applyLCVToApplicationData(
@@ -54,8 +48,7 @@ export const useAmendPermitForm = (
         ),
         companyLOAs,
         inventoryVehicles,
-        ineligiblePowerUnitSubtypes,
-        ineligibleTrailerSubtypes,
+        eligibleSubtypes,
       );
     }
 
@@ -72,16 +65,10 @@ export const useAmendPermitForm = (
       ),
     );
 
-    const ineligibleSubtypes = getIneligibleSubtypes(
+    const eligibleSubtypes = getEligibleVehicleSubtypes(
       defaultPermitFormData.permitType,
       isLcvDesignated,
     );
-
-    const ineligiblePowerUnitSubtypes= ineligibleSubtypes.ineligiblePowerUnitSubtypes
-      .map(({ typeCode }) => typeCode);
-    
-    const ineligibleTrailerSubtypes = ineligibleSubtypes.ineligibleTrailerSubtypes
-      .map(({ typeCode }) => typeCode);
     
     return applyUpToDateLOAsToApplication(
       applyLCVToApplicationData(
@@ -90,8 +77,7 @@ export const useAmendPermitForm = (
       ),
       companyLOAs,
       inventoryVehicles,
-      ineligiblePowerUnitSubtypes,
-      ineligibleTrailerSubtypes,
+      eligibleSubtypes,
     );
   }, [
     amendmentApplication,

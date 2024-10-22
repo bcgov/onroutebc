@@ -68,11 +68,11 @@ export interface PermitTypeChooseFromItem {
 }
 
 export const BASE_DAYS_IN_YEAR = 365;
-export const COMMON_MIN_DURATION = 30;
+export const TERM_PERMIT_MIN_DURATION = 30;
 export const TERM_DURATION_INTERVAL_DAYS = 30;
 
-export const COMMON_DURATION_OPTIONS = [
-  { value: COMMON_MIN_DURATION, label: "30 Days" },
+export const TERM_PERMIT_DURATION_OPTIONS = [
+  { value: TERM_PERMIT_MIN_DURATION, label: "30 Days" },
   { value: 60, label: "60 Days" },
   { value: 90, label: "90 Days" },
   { value: 120, label: "120 Days" },
@@ -93,3 +93,16 @@ export const LCV_CONDITION = {
   checked: true,
   disabled: true,
 };
+
+export const LCV_VEHICLE_SUBTYPES = [
+  {
+    typeCode: "LCVRMDB",
+    type: "Long Combination Vehicles (LCV) - Rocky Mountain Doubles",
+    description: "LCV vehicles for approved carriers and routes only."
+  },
+  {
+    typeCode: "LCVTPDB",
+    type: "Long Combination Vehicles (LCV) - Turnpike Doubles",
+    description: "LCV vehicles for approved carriers and routes only."
+  },
+];

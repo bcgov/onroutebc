@@ -4,8 +4,7 @@ import { ApplicationFormContext } from "../context/ApplicationFormContext";
 import { usePermitDateSelection } from "./usePermitDateSelection";
 import { usePermitConditions } from "./usePermitConditions";
 import { getStartOfDate } from "../../../common/helpers/formatDate";
-import { getIneligibleSubtypes } from "../helpers/permitVehicles";
-import { usePermitVehicleForLOAs } from "./usePermitVehicleForLOAs";
+import { usePermitVehicles } from "./usePermitVehicles";
 import { arePermitLOADetailsEqual, PermitLOA } from "../types/PermitLOA";
 import { useMemoizedArray } from "../../../common/hooks/useMemoizedArray";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
@@ -113,34 +112,20 @@ export const useApplicationFormContext = () => {
     onSetConditions,
   );
 
-  // Get ineligible vehicle subtypes
-  const ineligibleSubtypes = getIneligibleSubtypes(permitType, isLcvDesignated);
-  const ineligiblePowerUnitSubtypes = useMemoizedArray(
-    ineligibleSubtypes.ineligiblePowerUnitSubtypes,
-    (subtype) => subtype.typeCode,
-    (subtype1, subtype2) => subtype1.typeCode === subtype2.typeCode,
-  );
-
-  const ineligibleTrailerSubtypes = useMemoizedArray(
-    ineligibleSubtypes.ineligibleTrailerSubtypes,
-    (subtype) => subtype.typeCode,
-    (subtype1, subtype2) => subtype1.typeCode === subtype2.typeCode,
-  );
-
   // Check to see if vehicle details is still valid after LOA has been deselected
   // Also get vehicle subtype options, and whether or not selected vehicle is an LOA vehicle
   const {
     filteredVehicleOptions,
     subtypeOptions,
     isSelectedLOAVehicle,
-  } = usePermitVehicleForLOAs(
+  } = usePermitVehicles(
+    permitType,
+    isLcvDesignated,
     vehicleFormData,
     vehicleOptions,
     currentSelectedLOAs as PermitLOA[],
     powerUnitSubtypes,
     trailerSubtypes,
-    ineligiblePowerUnitSubtypes,
-    ineligibleTrailerSubtypes,
     () => onClearVehicle(Boolean(vehicleFormData.saveVehicle)),
   );
 

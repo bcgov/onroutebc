@@ -12,7 +12,7 @@ import { applyUpToDateLOAsToApplication } from "../helpers/permitLOA";
 import { getDefaultValues } from "../helpers/getDefaultApplicationFormData";
 import { applyLCVToApplicationData } from "../helpers/permitLCV";
 import { PowerUnit, Trailer } from "../../manageVehicles/types/Vehicle";
-import { getIneligibleSubtypes } from "../helpers/permitVehicles";
+import { getEligibleVehicleSubtypes } from "../helpers/permitVehicles";
 import { PermitCondition } from "../types/PermitCondition";
 import { EMPTY_VEHICLE_DETAILS, PermitVehicleDetails } from "../types/PermitVehicleDetails";
 import { PermitLOA } from "../types/PermitLOA";
@@ -40,12 +40,7 @@ export const useInitApplicationFormData = (
   // Used to populate/initialize the form with
   // This will be updated whenever new application, company, and user data is fetched
   const initialFormData = useMemo(() => {
-    const ineligibleSubtypes = getIneligibleSubtypes(permitType, isLcvDesignated);
-    const ineligiblePowerUnitSubtypes= ineligibleSubtypes.ineligiblePowerUnitSubtypes
-      .map(({ typeCode }) => typeCode);
-    
-    const ineligibleTrailerSubtypes = ineligibleSubtypes.ineligibleTrailerSubtypes
-      .map(({ typeCode }) => typeCode);
+    const eligibleVehicleSubtypes = getEligibleVehicleSubtypes(permitType, isLcvDesignated);
     
     return applyUpToDateLOAsToApplication(
       applyLCVToApplicationData(
@@ -59,8 +54,7 @@ export const useInitApplicationFormData = (
       ),
       companyLOAs,
       inventoryVehicles,
-      ineligiblePowerUnitSubtypes,
-      ineligibleTrailerSubtypes,
+      eligibleVehicleSubtypes,
     );
   }, [
     permitType,

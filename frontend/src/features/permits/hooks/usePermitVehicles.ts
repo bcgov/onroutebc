@@ -1,9 +1,10 @@
 import { useEffect, useMemo } from "react";
 
+import { PermitType } from "../types/PermitType";
 import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
 import { getUpdatedVehicleDetailsForLOAs } from "../helpers/permitLOA";
 import { PermitLOA } from "../types/PermitLOA";
-import { getEligibleSubtypeOptions } from "../helpers/permitVehicles";
+import { getEligibleSubtypeOptions, getEligibleVehicleSubtypes } from "../helpers/permitVehicles";
 import {
   PowerUnit,
   Trailer,
@@ -11,16 +12,24 @@ import {
   VehicleSubType,
 } from "../../manageVehicles/types/Vehicle";
 
-export const usePermitVehicleForLOAs = (
+export const usePermitVehicles = (
+  permitType: PermitType,
+  isLcvDesignated: boolean,
   vehicleFormData: PermitVehicleDetails,
   vehicleOptions: (PowerUnit | Trailer)[],
   selectedLOAs: PermitLOA[],
   powerUnitSubtypes: VehicleSubType[],
   trailerSubtypes: VehicleSubType[],
-  ineligiblePowerUnitSubtypes: VehicleSubType[],
-  ineligibleTrailerSubtypes: VehicleSubType[],
   onClearVehicle: () => void,
 ) => {
+  const eligibleVehicleSubtypes = useMemo(() => getEligibleVehicleSubtypes(
+    permitType,
+    isLcvDesignated,
+  ), [
+    permitType,
+    isLcvDesignated,
+  ]);
+
   // Check to see if vehicle details is still valid after LOA has been deselected
   const {
     updatedVehicle,
@@ -30,15 +39,13 @@ export const usePermitVehicleForLOAs = (
       selectedLOAs,
       vehicleOptions,
       vehicleFormData,
-      ineligiblePowerUnitSubtypes.map(({ typeCode }) => typeCode),
-      ineligibleTrailerSubtypes.map(({ typeCode }) => typeCode),
+      eligibleVehicleSubtypes,
     );
   }, [
     selectedLOAs,
     vehicleOptions,
     vehicleFormData,
-    ineligiblePowerUnitSubtypes,
-    ineligibleTrailerSubtypes,
+    eligibleVehicleSubtypes,
   ]);
 
   const vehicleIdInForm = vehicleFormData.vehicleId;
@@ -59,7 +66,7 @@ export const usePermitVehicleForLOAs = (
     subtypeOptions,
     isSelectedLOAVehicle,
   } = useMemo(() => {
-    const permittedLOAPowerUnitIds = new Set([
+    const allowedLOAPowerUnitIds = new Set([
       ...selectedLOAs.map(loa => loa.powerUnits)
         .reduce((prevPowerUnits, currPowerUnits) => [
           ...prevPowerUnits,
@@ -67,7 +74,7 @@ export const usePermitVehicleForLOAs = (
         ], []),
     ]);
   
-    const permittedLOATrailerIds = new Set([
+    const allowedLOATrailerIds = new Set([
       ...selectedLOAs.map(loa => loa.trailers)
         .reduce((prevTrailers, currTrailers) => [
           ...prevTrailers,
@@ -83,19 +90,20 @@ export const usePermitVehicleForLOAs = (
     const trailersInInventory = vehicleOptions
       .filter(vehicle => vehicle.vehicleType === VEHICLE_TYPES.TRAILER) as Trailer[];
   
-    const permittedLOAPowerUnitSubtypes = powerUnitsInInventory
-      .filter(powerUnit => permittedLOAPowerUnitIds.has(powerUnit.powerUnitId as string))
-      .map(powerUnit => powerUnit.powerUnitTypeCode);
-  
-    const permittedLOATrailerSubtypes = trailersInInventory
-      .filter(trailer => permittedLOATrailerIds.has(trailer.trailerId as string))
-      .map(trailer => trailer.trailerTypeCode);
+    const allowedLOASubtypes = new Set([
+      ...powerUnitsInInventory
+        .filter(powerUnit => allowedLOAPowerUnitIds.has(powerUnit.powerUnitId as string))
+        .map(powerUnit => powerUnit.powerUnitTypeCode),
+      ...trailersInInventory
+        .filter(trailer => allowedLOATrailerIds.has(trailer.trailerId as string))
+        .map(trailer => trailer.trailerTypeCode),
+    ]);
   
     // Check if selected vehicle is an LOA vehicle
     const isSelectedLOAVehicle = Boolean(vehicleIdInForm)
       && (
-        permittedLOAPowerUnitIds.has(vehicleIdInForm as string)
-        || permittedLOATrailerIds.has(vehicleIdInForm as string)
+        allowedLOAPowerUnitIds.has(vehicleIdInForm as string)
+        || allowedLOATrailerIds.has(vehicleIdInForm as string)
       )
       && (
         powerUnitsInInventory.map(powerUnit => powerUnit.powerUnitId)
@@ -107,10 +115,8 @@ export const usePermitVehicleForLOAs = (
     const subtypeOptions = getEligibleSubtypeOptions(
       powerUnitSubtypes,
       trailerSubtypes,
-      ineligiblePowerUnitSubtypes,
-      ineligibleTrailerSubtypes,
-      permittedLOAPowerUnitSubtypes,
-      permittedLOATrailerSubtypes,
+      eligibleVehicleSubtypes,
+      allowedLOASubtypes,
       vehicleType,
     );
 
@@ -125,8 +131,7 @@ export const usePermitVehicleForLOAs = (
     vehicleIdInForm,
     powerUnitSubtypes,
     trailerSubtypes,
-    ineligiblePowerUnitSubtypes,
-    ineligibleTrailerSubtypes,
+    eligibleVehicleSubtypes,
   ]);
 
   return {
