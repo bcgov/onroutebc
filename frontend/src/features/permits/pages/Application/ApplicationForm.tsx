@@ -68,6 +68,11 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
   );
 
   const { data: activeLOAs } = useFetchLOAs(companyId, false);
+  const companyLOAs = useMemo(() => getDefaultRequiredVal(
+    [],
+    activeLOAs,
+  ), [activeLOAs]);
+
   const { data: specialAuthorizations } = useFetchSpecialAuthorizations(companyId);
   const isLcvDesignated = Boolean(specialAuthorizations?.isLcvAllowed);
 
@@ -97,7 +102,7 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
   } = useInitApplicationFormData(
     permitType,
     isLcvDesignated,
-    getDefaultRequiredVal([], activeLOAs),
+    companyLOAs,
     vehicleOptions,
     companyInfo,
     applicationContext?.applicationData,
@@ -109,7 +114,7 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
   // 2. Have expiry date that is on or after the start date for an application
   const applicableLOAs = filterNonExpiredLOAs(
     filterLOAsForPermitType(
-      getDefaultRequiredVal([], activeLOAs),
+      companyLOAs,
       permitType,
     ),
     currentFormData.permitData.startDate,

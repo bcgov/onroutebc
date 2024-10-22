@@ -16,7 +16,7 @@ import { DEFAULT_NO_FEE_PERMIT_TYPE, NoFeePermitType } from "../../types/Special
 import { NoFeePermitsSection } from "../../components/SpecialAuthorizations/NoFeePermits/NoFeePermitsSection";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { LCVSection } from "../../components/SpecialAuthorizations/LCV/LCVSection";
-import { downloadLOA } from "../../apiManager/specialAuthorization";
+import { downloadLOA } from "../../apiManager/loa";
 import {
   useFetchSpecialAuthorizations,
   useUpdateLCV,

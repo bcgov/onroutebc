@@ -24,6 +24,8 @@ export interface CustomFormComponentProps<T extends FieldValues> {
   className?: string;
   disabled?: boolean;
   readOnly?: boolean;
+  onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
+  onWheel?: (event: React.WheelEvent<HTMLInputElement>) => void;
 }
 
 /**
@@ -91,6 +93,8 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
   className,
   disabled,
   readOnly,
+  onFocus,
+  onWheel,
 }: CustomFormComponentProps<T>): JSX.Element => {
   const {
     control,
@@ -137,6 +141,8 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
             inputType={inputType}
             disabled={disabled}
             readOnly={readOnly}
+            onFocus={onFocus}
+            onWheel={onWheel}
           />
         );
       case "textarea":

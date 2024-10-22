@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import dayjs, { Dayjs } from "dayjs";
 
@@ -7,7 +7,7 @@ import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBC
 import { CompanyProfile } from "../../manageProfile/types/manageProfile";
 import { Nullable } from "../../../common/types/common";
 import { PermitType } from "../types/PermitType";
-import { LOADetail } from "../../settings/types/SpecialAuthorization";
+import { LOADetail } from "../../settings/types/LOADetail";
 import { applyUpToDateLOAsToApplication } from "../helpers/permitLOA";
 import { getDefaultValues } from "../helpers/getDefaultApplicationFormData";
 import { applyLCVToApplicationData } from "../helpers/permitLCV";
@@ -15,6 +15,7 @@ import { PowerUnit, Trailer } from "../../manageVehicles/types/Vehicle";
 import { getIneligibleSubtypes } from "../helpers/permitVehicles";
 import { PermitCondition } from "../types/PermitCondition";
 import { EMPTY_VEHICLE_DETAILS, PermitVehicleDetails } from "../types/PermitVehicleDetails";
+import { PermitLOA } from "../types/PermitLOA";
 
 /**
  * Custom hook for populating the form using fetched application data, as well as current company id and user details.
@@ -30,7 +31,7 @@ import { EMPTY_VEHICLE_DETAILS, PermitVehicleDetails } from "../types/PermitVehi
 export const useInitApplicationFormData = (
   permitType: PermitType,
   isLcvDesignated: boolean,
-  loas: LOADetail[],
+  companyLOAs: LOADetail[],
   inventoryVehicles: (PowerUnit | Trailer)[],
   companyInfo: Nullable<CompanyProfile>,
   applicationData?: Nullable<Application>,
@@ -56,7 +57,7 @@ export const useInitApplicationFormData = (
         ),
         isLcvDesignated,
       ),
-      loas,
+      companyLOAs,
       inventoryVehicles,
       ineligiblePowerUnitSubtypes,
       ineligibleTrailerSubtypes,
@@ -67,7 +68,7 @@ export const useInitApplicationFormData = (
     applicationData,
     userDetails,
     isLcvDesignated,
-    loas,
+    companyLOAs,
     inventoryVehicles,
   ]);
 
@@ -85,38 +86,38 @@ export const useInitApplicationFormData = (
     reset(initialFormData);
   }, [initialFormData]);
 
-  const onSetDuration = (duration: number) => {
+  const onSetDuration = useCallback((duration: number) => {
     setValue("permitData.permitDuration", duration);
-  };
+  }, [setValue]);
 
-  const onSetExpiryDate = (expiry: Dayjs) => {
+  const onSetExpiryDate = useCallback((expiry: Dayjs) => {
     setValue("permitData.expiryDate", dayjs(expiry));
-  };
+  }, [setValue]);
 
-  const onSetConditions = (conditions: PermitCondition[]) => {
+  const onSetConditions = useCallback((conditions: PermitCondition[]) => {
     setValue("permitData.commodities", [...conditions]);
-  };
+  }, [setValue]);
 
-  const onToggleSaveVehicle = (saveVehicle: boolean) => {
+  const onToggleSaveVehicle = useCallback((saveVehicle: boolean) => {
     setValue("permitData.vehicleDetails.saveVehicle", saveVehicle);
-  };
+  }, [setValue]);
 
-  const onSetVehicle = (vehicleDetails: PermitVehicleDetails) => {
+  const onSetVehicle = useCallback((vehicleDetails: PermitVehicleDetails) => {
     setValue("permitData.vehicleDetails", {
       ...vehicleDetails,
     });
-  };
+  }, [setValue]);
 
-  const onClearVehicle = (saveVehicle: boolean) => {
+  const onClearVehicle = useCallback((saveVehicle: boolean) => {
     setValue("permitData.vehicleDetails", {
       ...EMPTY_VEHICLE_DETAILS,
       saveVehicle,
     });
-  };
+  }, [setValue]);
 
-  const onUpdateLOAs = (updatedLOAs: LOADetail[]) => {
+  const onUpdateLOAs = useCallback((updatedLOAs: PermitLOA[]) => {
     setValue("permitData.loas", updatedLOAs);
-  };
+  }, [setValue]);
 
   return {
     initialFormData,
