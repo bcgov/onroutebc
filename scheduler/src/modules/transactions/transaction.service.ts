@@ -153,9 +153,9 @@ export class TransactionService {
         const now: Date = new Date();
         const cgiCustomString: string = formatDateToCustomString(now);
         const cgiFileName =
-          `F` + process.env.FEEDER_NUMBER + `.${cgiCustomString}`;
+          `F` + process.env.CGI_FEEDER_NUMBER + `.${cgiCustomString}`;
         const cgiTrigerFileName =
-          `F` + process.env.FEEDER_NUMBER + `.${cgiCustomString}.TRG`;
+          `F` + process.env.CGI_FEEDER_NUMBER + `.${cgiCustomString}.TRG`;
         for (const transaction of transactions) {
           batchNumberCounter++;
           lastJVDCounter++;
@@ -189,7 +189,7 @@ export class TransactionService {
           );
           this.logger.log(`File generated: ${cgiFileName}`);
           const cgiTrigerFileName =
-            `F` + process.env.FEEDER_NUMBER + `.${cgiCustomString}.TRG`;
+            `F` + process.env.CGI_FEEDER_NUMBER + `.${cgiCustomString}.TRG`;
           this.logger.log(`${cgiTrigerFileName} generated.`);
           fileData +=
             batchHeader +
