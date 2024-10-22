@@ -71,7 +71,7 @@ export const PermitLOASection = ({
     }
   };
 
-  return (
+  return loasForTable.length > 0 ? (
     <Box className="permit-loa-section">
       <Box className="permit-loa-section__header">
         <Typography variant={"h3"}>
@@ -101,5 +101,5 @@ export const PermitLOASection = ({
         />
       </Box>
     </Box>
-  );
+  ) : null;
 };

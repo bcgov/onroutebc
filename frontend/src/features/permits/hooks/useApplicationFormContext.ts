@@ -10,6 +10,7 @@ import { useMemoizedArray } from "../../../common/hooks/useMemoizedArray";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { arePermitConditionEqual } from "../types/PermitCondition";
 import { useMemoizedObject } from "../../../common/hooks/useMemoizedObject";
+import { usePermitCommodities } from "./usePermitCommodities";
 
 export const useApplicationFormContext = () => {
   const {
@@ -145,6 +146,8 @@ export const useApplicationFormContext = () => {
         && historyItem1.comment === historyItem2.comment,
   );
 
+  const { commodityOptions } = usePermitCommodities(permitType);
+
   return {
     initialFormData,
     permitType,
@@ -167,6 +170,7 @@ export const useApplicationFormContext = () => {
     pastStartDateStatus,
     companyLOAs: memoizedCompanyLOAs,
     revisionHistory: memoizedRevisionHistory,
+    commodityOptions,
     onLeave,
     onSave,
     onCancel,

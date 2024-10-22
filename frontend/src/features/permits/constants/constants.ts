@@ -4,7 +4,9 @@ import {
   PERMIT_CATEGORIES,
   PermitCategory,
 } from "../types/PermitCategory";
+
 import {
+  PERMIT_TYPES,
   PermitType,
   TERM_PERMIT_LIST,
   getPermitTypeShortName,
@@ -37,15 +39,21 @@ export const ALL_PERMIT_TYPE_CHOOSE_FROM_OPTIONS: PermitTypeChooseFromItem[] = [
       label: getPermitTypeShortName(permitType),
     })),
   },
+  {
+    value: PERMIT_CATEGORIES.SINGLE_TRIP,
+    label: getPermitCategoryName(PERMIT_CATEGORIES.SINGLE_TRIP),
+    items: [
+      {
+        value: PERMIT_TYPES.STOS,
+        label: getPermitTypeShortName(PERMIT_TYPES.STOS),
+      },
+    ],
+    // items: SINGLE_TRIP_PERMIT_LIST.map((permitType: PermitType) => ({
+    //   value: permitType,
+    //   label: getPermitTypeShortName(permitType),
+    // })),
+  },
   /* TODO uncomment these when required */
-  // {
-  //   value: PERMIT_CATEGORIES.SINGLE_TRIP,
-  //   label: getPermitCategoryName(PERMIT_CATEGORIES.SINGLE_TRIP),
-  //   items: SINGLE_TRIP_PERMIT_LIST.map((permitType: PermitType) => ({
-  //     value: permitType,
-  //     label: getPermitTypeShortName(permitType),
-  //   })),
-  // },
   // {
   //   value: PERMIT_CATEGORIES.NON_RESIDENT,
   //   label: getPermitCategoryName(PERMIT_CATEGORIES.NON_RESIDENT),

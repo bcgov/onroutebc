@@ -10,6 +10,7 @@ import { PermitLOASection } from "./PermitLOASection";
 import { useApplicationFormContext } from "../../../../hooks/useApplicationFormContext";
 import { AmendReason } from "../../../Amend/components/form/AmendReason";
 import { AmendRevisionHistory } from "../../../Amend/components/form/AmendRevisionHistory";
+import { CommodityDetailsSection } from "./CommodityDetailsSection";
 
 export const PermitForm = () => {
   const {
@@ -33,6 +34,7 @@ export const PermitForm = () => {
     pastStartDateStatus,
     companyLOAs,
     revisionHistory,
+    commodityOptions,
     onLeave,
     onSave,
     onCancel,
@@ -78,6 +80,12 @@ export const PermitForm = () => {
           disableStartDate={isAmendAction}
           pastStartDateStatus={pastStartDateStatus}
           onSetConditions={onSetConditions}
+        />
+
+        <CommodityDetailsSection
+          feature={feature}
+          permitType={permitType}
+          commodityOptions={commodityOptions}
         />
         
         <VehicleDetails
