@@ -15,9 +15,11 @@ import { Brackets, In, Repository } from 'typeorm';
 import { Transaction } from '../common/entities/transaction.entity';
 import { TransactionStatus } from '../common/enum/transaction-status.enum';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
-
 import { TIMEZONE_PACIFIC } from 'src/common/constants/api.constant';
+
+dayjs.extend(utc);
 dayjs.extend(timezone);
 
 
@@ -32,30 +34,14 @@ export class TransactionService {
     private readonly cfsTransactionDetailRepo: Repository<CfsTransactionDetail>,) {}
 
   async getTransactionDetails(): Promise<Transaction[]> {
-   const formatter = new Intl.DateTimeFormat('en-US', {
-    year: "numeric",
-    month: "numeric",
-    day: "numeric",
-    hour: "numeric",
-    minute: "numeric",
-    second: "numeric",
-    hour12: false,
-    timeZone: TIMEZONE_PACIFIC,
-    });
+
     const today = new Date();
-    console.log('today is: ',today);
-    //2024-10-18T19:18:11.225Z
-    //const todayUTC = dayjs(new Date());
-  //const todayPacific = todayUTC.tz(timezone).format("YYYY-MM-DD");
-    console.log('todayPacific is: ',formatter.format(today));
-
-    const time = 'T21:00:00.000Z';
-    const yesterday = dayjs(dayjs(today).subtract(1,'day').format('YYYY-MM-DD')+time);
-    const dayBefore = dayjs(dayjs(today).subtract(2,'day').format('YYYY-MM-DD') +time);
-    yesterday
-    this.logger.log('yesterday time is: ',dayjs(yesterday));
-    this.logger.log('day before yesterday time is: ',dayjs(dayBefore));
-
+    //today PST/PDT timezone
+    const pacificDate = dayjs(today).tz(TIMEZONE_PACIFIC);
+    // Date logic to convert yesterday's 9pm PST/PDT to UTC
+    const yesterday = pacificDate.subtract(1,'day').set('hour', 21).set('minute', 0).set('second', 0).utc().format('YYYY-MM-DDTHH:mm:ssZ');
+    // Date logic to convert day before yesterday's 9pm PST/PDT to UTC
+    const dayBefore = pacificDate.subtract(2,'day').set('hour', 21).set('minute', 0).set('second', 0).utc().format('YYYY-MM-DDTHH:mm:ssZ');
 
     let transactionsQuery =  this.transactionRepository
       .createQueryBuilder('transaction')
