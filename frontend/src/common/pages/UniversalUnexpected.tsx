@@ -1,5 +1,5 @@
 import "./UniversalUnexpected.scss";
-import { ONROUTE_WEBPAGE_LINKS } from "../../routes/constants";
+// import { ONROUTE_WEBPAGE_LINKS } from "../../routes/constants";
 import { ErrorPage } from "../components/error/ErrorPage";
 import { CustomExternalLink } from "../components/links/CustomExternalLink";
 
@@ -10,15 +10,19 @@ export const UniversalUnexpected = () => {
       msgNode={
         <div className="unexpected-error-msg">
           <span className="unexpected-error-msg__text">
-            Please return to
+            If this problem persists, please email
           </span>
-
-          <CustomExternalLink
-            className="unexpected-error-msg__link"
-            href={ONROUTE_WEBPAGE_LINKS.HOME}
-          >
-            onRouteBC
+          <br></br>
+          <span className="unexpected-error-msg__text">
+            the error reference number below to
+          </span>
+          <CustomExternalLink className="unexpected-error-msg__link">
+            PPCPermit@gov.bc.ca
           </CustomExternalLink>
+
+          <p className="unexpected-error-msg__correlation-id">
+            PERMIT-PPC-SEARCH-8ABCU9
+          </p>
         </div>
       }
     />
