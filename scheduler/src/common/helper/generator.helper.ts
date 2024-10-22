@@ -145,7 +145,7 @@ export function getControlCount(transaction: Transaction): string {
 }
 
 export const populateBatchHeader = (batchNumberCounter: number): string => {
-  const feederNumber: string = process.env.CGI_FEEDER_NUMBER;
+  const feederNumber = '3535';
   const batchType: string = CgiConstants.BATCH_TYPE;
   const transactionType: string = CgiConstants.TRANSACTION_TYPE_BH;
   const delimiterHex = 0x1d;
@@ -168,7 +168,7 @@ export const populateBatchHeader = (batchNumberCounter: number): string => {
 };
 
 export const populateJournalHeader = (transaction: Transaction): string => {
-  const feederNumber: string = process.env.CGI_FEEDER_NUMBER;
+  const feederNumber = '3535';
   const batchType: string = CgiConstants.BATCH_TYPE;
   const transactionType: string = CgiConstants.TRANSACTION_TYPE_JH;
   const delimiterHex = 0x1d;
@@ -203,7 +203,7 @@ export const populateJournalVoucherDetail = (
   lastJVDline?: boolean,
   lastJVDCounter?: number,
 ): string => {
-  const feederNumber: string = process.env.CGI_FEEDER_NUMBER;
+  const feederNumber = '3535';
   const batchType: string = CgiConstants.BATCH_TYPE;
   const delimiterHex = 0x1d;
   const delimiter = delimiterHex.toString(16);
@@ -218,7 +218,7 @@ export const populateJournalVoucherDetail = (
   const location: string = glCode.location;
   const future: string = glCode.future;
   const unusedFiller: string = getUnusedFiller();
-  const supplierNumber: string = process.env.CGI_SUPPLIER_NUMBER;
+  const supplierNumber = 'abcdefghi';
   const isRefund = transaction.transactionTypeId === TransactionType.REFUND;
   const lineCode: string =
     isRefund === !!lastJVDCounter
@@ -300,7 +300,7 @@ export function populateBatchTrailer(
   transaction: Transaction,
   batchNumberCounter: number,
 ): string {
-  const feederNumber: string = process.env.CGI_FEEDER_NUMBER;
+  const feederNumber = '3535';
   const batchType: string = CgiConstants.BATCH_TYPE;
   const transactionType: string = CgiConstants.TRANSACTION_TYPE_BT;
   const delimiterHex = 0x1d;
