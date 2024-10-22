@@ -12,6 +12,14 @@ export const NumberInput = <T extends ORBC_FormTypes>(
   props: CustomOutlinedInputProps<T>,
 ): JSX.Element => {
   const { register, setValue } = useFormContext();
+  /**
+   * Function to prevent non-numeric input as the user types
+   */
+  const filterNonNumericValue = (input?: string) => {
+    if (!input) return "";
+    // only allows 0-9 inputs
+    return input.replace(/[^\d]/g, "");
+  };
 
   // Everytime the user types, update the format of the users input
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,13 +39,4 @@ export const NumberInput = <T extends ORBC_FormTypes>(
       autoComplete="tel"
     />
   );
-};
-
-/**
- * Function to prevent non-numeric input as the user types
- */
-export const filterNonNumericValue = (input?: string) => {
-  if (!input) return "";
-  // only allows 0-9 inputs
-  return input.replace(/[^\d]/g, "");
 };

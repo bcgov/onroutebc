@@ -74,9 +74,9 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
                 required: false,
                 validate: {
                   validateExt1: (ext?: string) =>
-                    ext == null ||
-                    ext === "" ||
-                    (ext != null && ext !== "" && ext.length <= 5) ||
+                    !ext ||
+                    ext.length === 0 ||
+                    ext.length <= 5 ||
                     invalidExtensionLength(5),
                 },
               },
@@ -96,6 +96,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
                 required: false,
                 validate: {
                   validatePhone: (phone: string) =>
+                    !phone ||
                     phone.length === 0 ||
                     (phone.length >= 10 && phone.length <= 20) ||
                     invalidPhoneLength(10, 20),
@@ -115,9 +116,9 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
                 required: false,
                 validate: {
                   validateExt2: (ext?: string) =>
-                    ext == null ||
-                    ext === "" ||
-                    (ext != null && ext !== "" && ext.length <= 5) ||
+                    !ext ||
+                    ext.length === 0 ||
+                    ext.length <= 5 ||
                     invalidExtensionLength(5),
                 },
               },
@@ -156,7 +157,10 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
               required: false,
               validate: {
                 validateEmail: (email: string) =>
-                  email.length === 0 || isEmail(email) || invalidEmail(),
+                  !email ||
+                  email.length === 0 ||
+                  isEmail(email) ||
+                  invalidEmail(),
               },
             },
             label: "Additional Email",
