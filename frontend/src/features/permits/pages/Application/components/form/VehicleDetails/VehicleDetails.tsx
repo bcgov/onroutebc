@@ -23,6 +23,7 @@ import { SelectVehicleDropdown } from "./customFields/SelectVehicleDropdown";
 import { BANNER_MESSAGES } from "../../../../../../../common/constants/bannerMessages";
 import { PermitVehicleDetails } from "../../../../../types/PermitVehicleDetails";
 import { selectedVehicleSubtype } from "../../../../../../manageVehicles/helpers/vehicleSubtypes";
+import { disableMouseWheelInputOnNumberField } from "../../../../../../../common/helpers/disableMouseWheelInputOnNumberField";
 import {
   PowerUnit,
   Trailer,
@@ -283,6 +284,7 @@ export const VehicleDetails = ({
             <CustomFormComponent
               type="input"
               feature={feature}
+              onFocus={disableMouseWheelInputOnNumberField}
               options={{
                 name: "permitData.vehicleDetails.year",
                 rules: {
