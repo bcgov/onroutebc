@@ -29,22 +29,19 @@
 
     .vehicle-selection {
       display: flex;
-      gap: 2.5rem;
+      justify-content: space-between;
+      max-width: 30.625rem;
 
       .select-unit-or-plate {
         margin: 0;
-
-        &__select {
-          width: 180px;
-        }
+        max-width: 11.375rem;
+        width: 100%;
       }
 
       .select-vehicle-dropdown {
         margin: 0;
-
-        &__autocomplete {
-          width: 268px;
-        }
+        max-width: 16.75rem;
+        width: 100%;
       }
     }
   }
