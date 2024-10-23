@@ -12,12 +12,13 @@ import { CustomOutlinedInput } from "./subFormComponents/CustomOutlinedInput";
 import { CustomSelect } from "./subFormComponents/CustomSelect";
 import { PhoneNumberInput } from "./subFormComponents/PhoneNumberInput";
 import { CustomTextArea } from "./subFormComponents/CustomTextArea";
+import { NumberInput } from "./subFormComponents/NumberInput";
 
 /**
  * Properties of onRouteBC custom form components
  */
 export interface CustomFormComponentProps<T extends FieldValues> {
-  type: "input" | "select" | "phone" | "textarea";
+  type: "input" | "select" | "phone" | "textarea" | "number";
   feature: string;
   options: CustomFormOptionsProps<T>;
   menuOptions?: JSX.Element[];
@@ -153,6 +154,19 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
             rules={rules}
             inputProps={inputProps}
             invalid={invalid}
+            disabled={disabled}
+            readOnly={readOnly}
+          />
+        );
+      case "number":
+        return (
+          <NumberInput
+            feature={feature}
+            name={name}
+            rules={rules}
+            inputProps={inputProps}
+            invalid={invalid}
+            inputType={inputType}
             disabled={disabled}
             readOnly={readOnly}
           />
