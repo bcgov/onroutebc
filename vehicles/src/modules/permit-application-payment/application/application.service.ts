@@ -1236,8 +1236,8 @@ export class ApplicationService {
           company: { companyId: permit.company.companyId },
         },
       });
-      if(loaDetails.length != loaIdsToInsert.length)
-        throw new BadRequestException('One or more loa(s) does not exist')
+      if (loaDetails.length != loaIdsToInsert.length)
+        throw new BadRequestException('One or more loa(s) does not exist');
       // Transform the permit LOA IDs from an array of numbers into individual records.
       const singlePermitLoa = loaIdsToInsert.map((loaId) => ({
         permitId,

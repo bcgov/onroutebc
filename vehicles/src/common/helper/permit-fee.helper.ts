@@ -205,7 +205,7 @@ export const validAmount = (
   calculatedAmount: number,
   receivedAmount: number,
   transactionType: TransactionType,
-): boolean =>{
+): boolean => {
   const isAmountValid =
     receivedAmount.toFixed(2) === Math.abs(calculatedAmount).toFixed(2);
 
@@ -218,4 +218,4 @@ export const validAmount = (
     isAmountValid &&
     (isRefundValid || transactionType !== TransactionType.REFUND)
   );
-}
+};

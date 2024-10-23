@@ -268,9 +268,12 @@ export const isPermitTypeEligibleForQueue = (
   return PERMIT_TYPES_FOR_QUEUE.includes(permitType);
 };
 
-export const validApplicationDates = (application: Permit, timezone: string): boolean => {
+export const validApplicationDates = (
+  application: Permit,
+  timezone: string,
+): boolean => {
   const todayUTC = dayjs(new Date());
-  const todayPacific = todayUTC.tz(timezone).format("YYYY-MM-DD");
+  const todayPacific = todayUTC.tz(timezone).format('YYYY-MM-DD');
   const { startDate, expiryDate } = application.permitData;
   return startDate >= todayPacific && startDate <= expiryDate;
-}
+};
