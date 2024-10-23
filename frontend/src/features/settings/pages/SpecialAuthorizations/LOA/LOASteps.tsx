@@ -98,7 +98,8 @@ export const LOASteps = ({
       });
       onExit();
     } else {
-      navigate(ERROR_ROUTES.UNEXPECTED);
+      const correlationId = res.headers['x-correlation-id'];
+      navigate(ERROR_ROUTES.UNEXPECTED, { state: { correlationId } });
     }
   };
 
