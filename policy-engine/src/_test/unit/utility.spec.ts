@@ -21,11 +21,6 @@ describe('Permit Engine Utility Functions', () => {
     expect(commodities.size).toBe(5);
   });
 
-  it('should return the correct number of commodities for a single permit type', async () => {
-    const commodities: Map<string, string> = policy.getCommodities('STOS');
-    expect(commodities.size).toBe(3);
-  });
-
   it('should return the correct number of power unit types', async () => {
     const powerUnitTypes: Map<string, string> = policy.getPowerUnitTypes();
     expect(powerUnitTypes.size).toBe(27);

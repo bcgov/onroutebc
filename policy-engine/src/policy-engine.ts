@@ -132,7 +132,6 @@ export class Policy {
           }
           return false;
         }),
-        permitType.allowedCommodities,
       );
 
       // TODO when implementing overweight. Stub for now.

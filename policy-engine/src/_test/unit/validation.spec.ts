@@ -137,32 +137,6 @@ describe('Master Policy Configuration Validator', () => {
     const validationResult = await policy.validate(permit);
     expect(validationResult.violations).toHaveLength(0);
   });
-
-  it('should validate STOS successfully', async () => {
-    const permit = JSON.parse(JSON.stringify(testStos));
-    // Set startDate to today
-    permit.permitData.startDate = dayjs().format(
-      PermitAppInfo.PermitDateFormat.toString(),
-    );
-
-    const validationResult = await policy.validate(permit);
-    expect(validationResult.violations).toHaveLength(0);
-  });
-
-  it('should fail validation for STOS with invalid configuration', async () => {
-    const permit = JSON.parse(JSON.stringify(testStos));
-    // Set startDate to today
-    permit.permitData.startDate = dayjs().format(
-      PermitAppInfo.PermitDateFormat.toString(),
-    );
-    // Add an invalid trailer to the configuration list
-    permit.permitData.vehicleConfiguration.trailers.push({
-      vehicleSubType: '_INVALID',
-    });
-
-    const validationResult = await policy.validate(permit);
-    expect(validationResult.violations).toHaveLength(1);
-  });
 });
 
 describe('Policy Configuration Missing Elements', () => {

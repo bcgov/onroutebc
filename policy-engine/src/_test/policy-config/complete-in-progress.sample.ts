@@ -714,27 +714,6 @@ export const completePolicyConfig: PolicyDefinition = {
       weightDimensionRequired: false,
       sizeDimensionRequired: true,
       commodityRequired: true,
-      allowedCommodities: ['EMPTYXX', 'BRGBEAM', 'AUTOCRR', 'BRSHCUT'],
-      allowedVehicles: [
-        'DOLLIES',
-        'FEBGHSE',
-        'FECVYER',
-        'FEDRMMX',
-        'FEPNYTR',
-        'FESEMTR',
-        'FEWHELR',
-        'REDIMIX',
-        'CONCRET',
-        'CRAFTAT',
-        'CRAFTMB',
-        'GRADERS',
-        'MUNFITR',
-        'OGOILSW',
-        'OGSERVC',
-        'OGSRRAH',
-        'PICKRTT',
-        'TOWVEHC',
-      ],
       rules: [
         {
           conditions: {

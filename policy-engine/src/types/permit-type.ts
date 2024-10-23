@@ -6,7 +6,7 @@ export type PermitType = IdentifiedObject & {
   weightDimensionRequired: boolean;
   sizeDimensionRequired: boolean;
   commodityRequired: boolean;
-  allowedVehicles: Array<string>;
+  allowedVehicles?: Array<string>;
   allowedCommodities?: Array<string>;
   rules?: Array<RuleProperties>;
   costRules?: Array<CostRule>;
