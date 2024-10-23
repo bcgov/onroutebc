@@ -53,6 +53,7 @@ import { GlCodeType } from 'src/modules/common/entities/gl-code-type.entity';
 export function formatDateToCustomString(date: Date): string {
   return dayjs(date).format('YYYYMMDDHHmmss');
 }
+let journalName;
 
 export function getFiscalYear(): number {
   const currentYear = new Date().getFullYear();
@@ -123,7 +124,7 @@ export function getGlEffectiveDate(): string {
 
 export function getUnusedFiller(): string {
   // 16 chars
-  return ` `.repeat(16);
+  return `0`.repeat(16);
 }
 
 export function getLineDescription(): string {
@@ -173,7 +174,7 @@ export const populateJournalHeader = (transaction: Transaction): string => {
   const transactionType: string = CgiConstants.TRANSACTION_TYPE_JH;
   const delimiterHex = 0x1d;
   const delimiter = delimiterHex.toString(16);
-  const journalName: string = getJournalName();
+  journalName = getJournalName();
   const journalBatchName: string = getJournalBatchName();
   const controlTotal: string = getControlTotal(transaction);
   const recordType: string = CgiConstants.RECORD_TYPE;
@@ -205,9 +206,8 @@ export const populateJournalVoucherDetail = (
 ): string => {
   const feederNumber = '3535';
   const batchType: string = CgiConstants.BATCH_TYPE;
-  const delimiterHex = 0x1d;
-  const delimiter = delimiterHex.toString(16);
-  const journalName: string = getJournalName();
+  const delimiter = 0x1d;
+  //const delimiter = delimiterHex.toString(16);
   const flowThru: string = getFlowThru(110);
   const glEffectiveDate: string = getGlEffectiveDate();
   const client: string = glCode.client;
