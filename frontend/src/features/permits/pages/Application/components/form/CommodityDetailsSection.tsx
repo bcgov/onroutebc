@@ -1,4 +1,4 @@
-import { Box, MenuItem, Typography } from "@mui/material"
+import { Box, MenuItem } from "@mui/material"
 
 import "./CommodityDetailsSection.scss";
 import { CustomFormComponent } from "../../../../../../common/components/form/CustomFormComponents";
@@ -20,14 +20,14 @@ export const CommodityDetailsSection = ({
   return permitType === PERMIT_TYPES.STOS ? (
     <Box className="commodity-details-section">
       <Box className="commodity-details-section__header">
-        <Typography variant="h3">Commodity Details</Typography>
+        <h3>Commodity Details</h3>
       </Box>
 
       <Box className="commodity-details-section__body">
         <CustomFormComponent
           type="select"
           feature={feature}
-          className="commodity-details-section__input"
+          className="commodity-details-section__input commodity-details-section__input--commodity-type"
           options={{
             name: "permitData.permittedCommodity.commodityType",
             rules: {

@@ -8,7 +8,6 @@ import {
   Radio,
   RadioGroup,
   SelectChangeEvent,
-  Typography,
 } from "@mui/material";
 
 import "./VehicleDetails.scss";
@@ -183,27 +182,25 @@ export const VehicleDetails = ({
   return (
     <Box className="vehicle-details">
       <Box className="vehicle-details__header">
-        <Typography variant={"h3"}>Vehicle Details</Typography>
+        <h3>Vehicle Details</h3>
       </Box>
 
       <Box className="vehicle-details__body">
-        <Typography variant="h3">
+        <h4>
           Choose a saved vehicle from your inventory or enter new vehicle
           information below.
-        </Typography>
+        </h4>
 
         <div className="vehicle-details__info">
           <InfoBcGovBanner
-            msg={BANNER_MESSAGES.CANNOT_FIND_VEHICLE}
+            className="vehicle-details__info-banner"
+            msg={BANNER_MESSAGES.CANNOT_FIND_VEHICLE.TITLE}
             additionalInfo={
               <div className="vehicle-inventory-info">
-                Your vehicle may not be available in a permit application
-                because it cannot be used for the type of permit you are
-                applying for. <br />
+                {BANNER_MESSAGES.CANNOT_FIND_VEHICLE.DETAIL}
                 <br />
-                If you are creating a new vehicle, a desired Vehicle Sub-Type
-                may not be available because it is not eligible for the permit
-                application you are currently in.
+                <br />
+                {BANNER_MESSAGES.CANNOT_FIND_VEHICLE.INELIGIBLE_SUBTYPES}
               </div>
             }
           />
@@ -232,6 +229,7 @@ export const VehicleDetails = ({
             </Box>
 
             <CustomFormComponent
+              className="vehicle-details__input"
               type="input"
               feature={feature}
               options={{
@@ -242,7 +240,6 @@ export const VehicleDetails = ({
                   maxLength: 6,
                 },
                 label: "VIN",
-                width: formFieldStyle.width,
                 customHelperText: "last 6 digits",
               }}
               readOnly={isSelectedLOAVehicle}
@@ -250,6 +247,7 @@ export const VehicleDetails = ({
             />
 
             <CustomFormComponent
+              className="vehicle-details__input"
               type="input"
               feature={feature}
               options={{
@@ -259,13 +257,13 @@ export const VehicleDetails = ({
                   maxLength: { value: 10, message: invalidPlateLength(10) },
                 },
                 label: "Plate",
-                width: formFieldStyle.width,
               }}
               readOnly={isSelectedLOAVehicle}
               disabled={isSelectedLOAVehicle}
             />
 
             <CustomFormComponent
+              className="vehicle-details__input"
               type="input"
               feature={feature}
               options={{
@@ -275,13 +273,13 @@ export const VehicleDetails = ({
                   maxLength: 20,
                 },
                 label: "Make",
-                width: formFieldStyle.width,
               }}
               readOnly={isSelectedLOAVehicle}
               disabled={isSelectedLOAVehicle}
             />
 
             <CustomFormComponent
+              className="vehicle-details__input"
               type="input"
               feature={feature}
               onFocus={disableMouseWheelInputOnNumberField}
@@ -298,7 +296,6 @@ export const VehicleDetails = ({
                 },
                 inputType: "number",
                 label: "Year",
-                width: formFieldStyle.width,
               }}
               readOnly={isSelectedLOAVehicle}
               disabled={isSelectedLOAVehicle}
@@ -315,6 +312,7 @@ export const VehicleDetails = ({
             />
 
             <CustomFormComponent
+              className="vehicle-details__input"
               type="select"
               feature={feature}
               readOnly={disableVehicleTypeSelect || isSelectedLOAVehicle}
@@ -329,7 +327,6 @@ export const VehicleDetails = ({
                   onChange: handleChangeVehicleType,
                 },
                 label: "Vehicle Type",
-                width: formFieldStyle.width,
               }}
               menuOptions={VEHICLE_TYPE_OPTIONS.map((data) => (
                 <MenuItem
@@ -343,6 +340,7 @@ export const VehicleDetails = ({
             />
 
             <CustomFormComponent
+              className="vehicle-details__input"
               type="select"
               feature={feature}
               options={{
@@ -351,7 +349,6 @@ export const VehicleDetails = ({
                   required: { value: true, message: requiredMessage() },
                 },
                 label: "Vehicle Sub-type",
-                width: formFieldStyle.width,
               }}
               menuOptions={subtypeOptions.map((subtype) => (
                 <MenuItem
@@ -366,10 +363,10 @@ export const VehicleDetails = ({
               disabled={isSelectedLOAVehicle}
             />
 
-            <FormControl>
+            <FormControl className="save-to-inventory">
               <FormLabel
                 id="demo-radio-buttons-group-label"
-                sx={{ fontWeight: "bold", marginTop: "24px" }}
+                className="save-to-inventory__label"
               >
                 Would you like to add/update this vehicle to your Vehicle
                 Inventory?
@@ -382,7 +379,7 @@ export const VehicleDetails = ({
                 name="radio-buttons-group"
                 onChange={(e) => handleSaveVehicleRadioBtns(e.target.value)}
               >
-                <Box sx={{ display: "flex" }}>
+                <Box className="save-to-inventory__radio-btns">
                   <FormControlLabel
                     value={true}
                     control={
@@ -399,6 +396,7 @@ export const VehicleDetails = ({
                     }
                     label="Yes"
                   />
+
                   <FormControlLabel
                     value={false}
                     control={

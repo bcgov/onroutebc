@@ -1,4 +1,4 @@
-import { Box, MenuItem, Typography } from "@mui/material";
+import { Box, MenuItem } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 
 import "./PermitDetails.scss";
@@ -48,12 +48,13 @@ export const PermitDetails = ({
   return (
     <Box className="permit-details">
       <Box className="permit-details__header">
-        <Typography variant={"h3"}>Permit Details</Typography>
+        <h3>Permit Details</h3>
       </Box>
 
       <Box className="permit-details__body">
-        <Box className="permit-details__input-section">
+        <Box className="permit-details__date-selection">
           <CustomDatePicker
+            className="permit-details__input permit-details__input--start-date"
             feature={feature}
             name="permitData.startDate"
             disabled={disableStartDate}
@@ -67,6 +68,7 @@ export const PermitDetails = ({
           />
 
           <CustomFormComponent
+            className="permit-details__input permit-details__input--duration"
             type="select"
             feature={feature}
             options={{
@@ -88,9 +90,9 @@ export const PermitDetails = ({
         <PermitExpiryDateBanner expiryDate={formattedExpiryDate} />
 
         <Box className="permit-details__conditions">
-          <Typography variant="h3" className="conditions-title">
-            Select the commodities below and their respective CVSE forms.
-          </Typography>
+          <h4 className="conditions-title">
+            The following CVSE forms will be included in your permit
+          </h4>
 
           <InfoBcGovBanner
             msg={BANNER_MESSAGES.POLICY_REMINDER}

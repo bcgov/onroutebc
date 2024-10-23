@@ -11,6 +11,7 @@ import { useApplicationFormContext } from "../../../../hooks/useApplicationFormC
 import { AmendReason } from "../../../Amend/components/form/AmendReason";
 import { AmendRevisionHistory } from "../../../Amend/components/form/AmendRevisionHistory";
 import { CommodityDetailsSection } from "./CommodityDetailsSection";
+import { ApplicationNotesSection } from "./ApplicationNotesSection";
 
 export const PermitForm = () => {
   const {
@@ -97,6 +98,11 @@ export const PermitForm = () => {
           onSetSaveVehicle={onToggleSaveVehicle}
           onSetVehicle={onSetVehicle}
           onClearVehicle={onClearVehicle}
+        />
+
+        <ApplicationNotesSection
+          feature={feature}
+          permitType={permitType}
         />
 
         {isAmendAction ? (

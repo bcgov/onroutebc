@@ -225,6 +225,7 @@ export const getDefaultValues = (
       ),
       feeSummary: `${calculateFeeByDuration(defaultPermitType, durationOrDefault)}`,
       loas: getDefaultRequiredVal([], applicationData?.permitData?.loas),
+      applicationNotes: getDefaultRequiredVal(null, applicationData?.permitData?.applicationNotes),
     },
   };
 };
