@@ -150,7 +150,7 @@ export const populateBatchHeader = (batchNumberCounter: number): string => {
   const batchType: string = CgiConstants.BATCH_TYPE;
   const transactionType: string = CgiConstants.TRANSACTION_TYPE_BH;
   const delimiterHex = 0x1d;
-  const delimiter = delimiterHex.toString(16);
+  const delimiter = String.fromCharCode(delimiterHex);
   const fiscalYear: number = getFiscalYear();
   const batchNumber: string = getBatchNumber(batchNumberCounter);
   const messageVersion: string = CgiConstants.MESSAGE_VERSION;
@@ -173,7 +173,7 @@ export const populateJournalHeader = (transaction: Transaction): string => {
   const batchType: string = CgiConstants.BATCH_TYPE;
   const transactionType: string = CgiConstants.TRANSACTION_TYPE_JH;
   const delimiterHex = 0x1d;
-  const delimiter = delimiterHex.toString(16);
+  const delimiter = String.fromCharCode(delimiterHex);
   journalName = getJournalName();
   const journalBatchName: string = getJournalBatchName();
   const controlTotal: string = getControlTotal(transaction);
@@ -206,8 +206,8 @@ export const populateJournalVoucherDetail = (
 ): string => {
   const feederNumber = '3535';
   const batchType: string = CgiConstants.BATCH_TYPE;
-  const delimiter = 0x1d;
-  //const delimiter = delimiterHex.toString(16);
+  const delimiterHex = 0x1d;
+  const delimiter = String.fromCharCode(delimiterHex);;
   const flowThru: string = getFlowThru(110);
   const glEffectiveDate: string = getGlEffectiveDate();
   const client: string = glCode.client;
@@ -304,7 +304,7 @@ export function populateBatchTrailer(
   const batchType: string = CgiConstants.BATCH_TYPE;
   const transactionType: string = CgiConstants.TRANSACTION_TYPE_BT;
   const delimiterHex = 0x1d;
-  const delimiter = delimiterHex.toString(16);
+  const delimiter = String.fromCharCode(delimiterHex);;
   const fiscalYear: number = getFiscalYear();
   const batchNumber: string = getBatchNumber(batchNumberCounter);
   const controlTotal: string = getControlTotal(transaction);
