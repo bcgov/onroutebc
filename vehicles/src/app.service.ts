@@ -12,6 +12,7 @@ import { PaymentService } from './modules/permit-application-payment/payment/pay
 import { LogAsyncMethodExecution } from './common/decorator/log-async-method-execution.decorator';
 import { FeatureFlagsService } from './modules/feature-flags/feature-flags.service';
 import { ApplicationService } from './modules/permit-application-payment/application/application.service';
+import { PolicyService } from './modules/policy/policy.service';
 
 @Injectable()
 export class AppService {
@@ -27,6 +28,7 @@ export class AppService {
     private paymentService: PaymentService,
     private featureFlagsService: FeatureFlagsService,
     private applicationService: ApplicationService,
+    private policyService: PolicyService
   ) {}
 
   getHello(): string {
@@ -126,6 +128,13 @@ export class AppService {
       this.cacheManager,
       CacheKey.PERMIT_APPROVAL_SOURCE,
       createCacheMap(permitApprovalSource, 'id', 'code'),
+    );
+
+    const policyConfigs = await this.policyService.findAllActive();
+    await addToCache(
+      this.cacheManager,
+      CacheKey.POLICY_CONFIGURATIONS,
+      createCacheMap(policyConfigs, '??', 'policyJson'),
     );
 
     const endDateTime = new Date();
