@@ -1,26 +1,23 @@
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-
-import "./ApplicationInQueueReview.scss";
-import { QueueBreadcrumb } from "./QueueBreadcrumb";
-import { PERMIT_REVIEW_CONTEXTS } from "../../permits/types/PermitReviewContext";
+import { getDefaultRequiredVal } from "../../../common/helpers/util";
+import { Nullable } from "../../../common/types/common";
+import { APPLICATION_STEPS, IDIR_ROUTES } from "../../../routes/constants";
 import { useCompanyInfoDetailsQuery } from "../../manageProfile/apiManager/hooks";
 import { usePowerUnitSubTypesQuery } from "../../manageVehicles/hooks/powerUnits";
 import { useTrailerSubTypesQuery } from "../../manageVehicles/hooks/trailers";
 import { calculateFeeByDuration } from "../../permits/helpers/feeSummary";
 import { PermitReview } from "../../permits/pages/Application/components/review/PermitReview";
 import { Application } from "../../permits/types/application";
+import { PERMIT_REVIEW_CONTEXTS } from "../../permits/types/PermitReviewContext";
 import { DEFAULT_PERMIT_TYPE } from "../../permits/types/PermitType";
 import { useFetchSpecialAuthorizations } from "../../settings/hooks/specialAuthorizations";
-import { Nullable } from "../../../common/types/common";
-import { getDefaultRequiredVal } from "../../../common/helpers/util";
-import {
-  useApproveApplicationInQueueMutation,
-  useRejectApplicationInQueueMutation,
-} from "../hooks/hooks";
-
-import { APPLICATION_STEPS, IDIR_ROUTES } from "../../../routes/constants";
+import { useUpdateApplicationInQueueStatus } from "../hooks/hooks";
+import { CASE_ACTIVITY_TYPES } from "../types/CaseActivityType";
+import "./ApplicationInQueueReview.scss";
+import { QueueBreadcrumb } from "./QueueBreadcrumb";
+import { RejectApplicationModal } from "./RejectApplicationModal";
 
 export const ApplicationInQueueReview = ({
   applicationData,
@@ -28,6 +25,7 @@ export const ApplicationInQueueReview = ({
   applicationData?: Nullable<Application>;
 }) => {
   const companyId = getDefaultRequiredVal(0, applicationData?.companyId);
+  const applicationId = getDefaultRequiredVal("", applicationData?.permitId);
 
   const { data: specialAuth } = useFetchSpecialAuthorizations(companyId);
   const isNoFeePermitType = Boolean(specialAuth?.noFeeType);
@@ -60,48 +58,40 @@ export const ApplicationInQueueReview = ({
   const isSuccess = (status?: number) => status === 201;
 
   const {
-    mutateAsync: approveApplication,
-    data: approveApplicationResponse,
-    isPending: approveApplicationMutationPending,
-  } = useApproveApplicationInQueueMutation();
+    mutateAsync: updateApplication,
+    data: updateApplicationResponse,
+    isPending: updateApplicationMutationPending,
+  } = useUpdateApplicationInQueueStatus();
 
   const handleApprove = async (): Promise<void> => {
     setHasAttemptedSubmission(true);
-    if (!allConfirmed) return;
 
-    await approveApplication({
-      applicationId: applicationData?.permitId,
+    await updateApplication({
+      applicationId,
       companyId,
+      caseActivityType: CASE_ACTIVITY_TYPES.APPROVED,
     });
   };
 
-  useEffect(() => {
-    if (isSuccess(approveApplicationResponse?.status)) {
-      navigate(IDIR_ROUTES.STAFF_HOME);
-    }
-  }, [approveApplicationResponse, navigate]);
+  const [showRejectApplicationModal, setShowRejectApplicationModal] =
+    useState<boolean>(false);
 
-  const {
-    mutateAsync: rejectApplication,
-    data: rejectApplicationResponse,
-    isPending: rejectApplicationMutationPending,
-  } = useRejectApplicationInQueueMutation();
-
-  const handleReject = async (): Promise<void> => {
+  const handleReject = async (comment: string): Promise<void> => {
     setHasAttemptedSubmission(true);
-    if (!allConfirmed) return;
 
-    await rejectApplication({
-      applicationId: applicationData?.permitId,
+    await updateApplication({
+      applicationId,
       companyId,
+      caseActivityType: CASE_ACTIVITY_TYPES.REJECTED,
+      comment,
     });
   };
 
   useEffect(() => {
-    if (isSuccess(rejectApplicationResponse?.status)) {
+    if (isSuccess(updateApplicationResponse?.status)) {
       navigate(IDIR_ROUTES.STAFF_HOME);
     }
-  }, [rejectApplicationResponse, navigate]);
+  }, [updateApplicationResponse, navigate]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -131,9 +121,8 @@ export const ApplicationInQueueReview = ({
           contactDetails={applicationData?.permitData?.contactDetails}
           onEdit={handleEdit}
           onApprove={handleApprove}
-          approveApplicationMutationPending={approveApplicationMutationPending}
-          onReject={handleReject}
-          rejectApplicationMutationPending={rejectApplicationMutationPending}
+          updateApplicationMutationPending={updateApplicationMutationPending}
+          setShowRejectApplicationModal={setShowRejectApplicationModal}
           allConfirmed={allConfirmed}
           setAllConfirmed={setAllConfirmed}
           hasAttemptedCheckboxes={hasAttemptedSubmission}
@@ -147,6 +136,14 @@ export const ApplicationInQueueReview = ({
           calculatedFee={fee}
         />
       </FormProvider>
+      {showRejectApplicationModal && (
+        <RejectApplicationModal
+          showModal={showRejectApplicationModal}
+          onCancel={() => setShowRejectApplicationModal(false)}
+          onConfirm={handleReject}
+          isPending={updateApplicationMutationPending}
+        />
+      )}
     </div>
   );
 };

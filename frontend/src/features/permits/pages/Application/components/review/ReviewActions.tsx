@@ -1,11 +1,12 @@
-import { Box, Button } from "@mui/material";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
-import "./ReviewActions.scss";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Box, Button } from "@mui/material";
+import { Dispatch, SetStateAction } from "react";
 import {
   PERMIT_REVIEW_CONTEXTS,
   PermitReviewContext,
 } from "../../../../types/PermitReviewContext";
+import "./ReviewActions.scss";
 
 export const ReviewActions = ({
   onEdit,
@@ -14,9 +15,8 @@ export const ReviewActions = ({
   hasToCartButton,
   onAddToCart,
   onApprove,
-  approveApplicationMutationPending,
-  onReject,
-  rejectApplicationMutationPending,
+  updateApplicationMutationPending,
+  setShowRejectApplicationModal,
   reviewContext,
 }: {
   onEdit: () => void;
@@ -25,9 +25,8 @@ export const ReviewActions = ({
   hasToCartButton: boolean;
   onAddToCart?: () => Promise<void>;
   onApprove?: () => Promise<void>;
-  approveApplicationMutationPending?: boolean;
-  onReject?: () => Promise<void>;
-  rejectApplicationMutationPending?: boolean;
+  updateApplicationMutationPending?: boolean;
+  setShowRejectApplicationModal?: Dispatch<SetStateAction<boolean>>;
   reviewContext: PermitReviewContext;
 }) => {
   return (
@@ -80,7 +79,8 @@ export const ReviewActions = ({
         </Button>
       ) : null}
 
-      {onReject ? (
+      {reviewContext === PERMIT_REVIEW_CONTEXTS.QUEUE &&
+      setShowRejectApplicationModal ? (
         <Button
           className="review-actions__btn review-actions__btn--reject"
           key="reject-button"
@@ -88,8 +88,8 @@ export const ReviewActions = ({
           variant="contained"
           color="error"
           data-testid="reject-btn"
-          onClick={onReject}
-          disabled={rejectApplicationMutationPending}
+          onClick={() => setShowRejectApplicationModal(true)}
+          disabled={updateApplicationMutationPending}
         >
           Reject
         </Button>
@@ -104,7 +104,7 @@ export const ReviewActions = ({
           color="primary"
           data-testid="approve-btn"
           onClick={onApprove}
-          disabled={approveApplicationMutationPending}
+          disabled={updateApplicationMutationPending}
         >
           Approve
         </Button>
