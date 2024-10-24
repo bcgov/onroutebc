@@ -16,7 +16,10 @@ import { useVoidPermit } from "../hooks/useVoidPermit";
 import { mapToRevokeRequestData } from "../helpers/mapper";
 import { Nullable } from "../../../../../common/types/common";
 import { hasPermitsActionFailed } from "../../../helpers/permitState";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../common/helpers/util";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../../../common/helpers/util";
 import { usePermitHistoryQuery } from "../../../hooks/hooks";
 import {
   CustomFormComponent,
@@ -53,7 +56,7 @@ export const VoidPermitForm = ({
   const companyId: number = getDefaultRequiredVal(
     0,
     permit?.companyId,
-    applyWhenNotNullable(id => Number(id), companyIdParam),
+    applyWhenNotNullable((id) => Number(id), companyIdParam),
   );
 
   const originalPermitId = getDefaultRequiredVal("", permit?.originalPermitId);
@@ -63,13 +66,15 @@ export const VoidPermitForm = ({
     originalPermitId,
   );
 
-  const transactionHistory = getDefaultRequiredVal([], permitHistory)
-    .filter((history) =>
+  const transactionHistory = getDefaultRequiredVal([], permitHistory).filter(
+    (history) =>
       isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
-    );
-  
-  const amountToRefund = !permit || transactionHistory.length === 0
-    ? 0 : -1 * calculateAmountForVoid(permit, transactionHistory);
+  );
+
+  const amountToRefund =
+    !permit || transactionHistory.length === 0
+      ? 0
+      : -1 * calculateAmountForVoid(permit, transactionHistory);
 
   useEffect(() => {
     const revokeFailed = hasPermitsActionFailed(voidResults);
@@ -151,8 +156,11 @@ export const VoidPermitForm = ({
                 rules: {
                   required: false,
                   validate: {
-                    validateEmail: (email: string) =>
-                      email.length === 0 || isEmail(email) || invalidEmail(),
+                    validateEmail: (email?: string) =>
+                      !email ||
+                      email.length === 0 ||
+                      isEmail(email) ||
+                      invalidEmail(),
                   },
                 },
                 label: "Additional Email",
