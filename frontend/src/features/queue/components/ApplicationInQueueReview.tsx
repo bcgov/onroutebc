@@ -145,6 +145,7 @@ export const ApplicationInQueueReview = ({
           }
           doingBusinessAs={doingBusinessAs}
           calculatedFee={fee}
+          applicationRejectionHistory={applicationData?.rejectionHistory}
         />
       </FormProvider>
     </div>
