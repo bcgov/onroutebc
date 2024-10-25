@@ -2,6 +2,7 @@ import { Controller, FormProvider } from "react-hook-form";
 import isEmail from "validator/lib/isEmail";
 import { Button, FormControl, FormHelperText } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
 import "./VoidPermitForm.scss";
 import { useVoidPermitForm } from "../hooks/useVoidPermitForm";
@@ -15,7 +16,10 @@ import { useVoidPermit } from "../hooks/useVoidPermit";
 import { mapToRevokeRequestData } from "../helpers/mapper";
 import { Nullable } from "../../../../../common/types/common";
 import { hasPermitsActionFailed } from "../../../helpers/permitState";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../common/helpers/util";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../../../common/helpers/util";
 import { usePermitHistoryQuery } from "../../../hooks/hooks";
 import {
   CustomFormComponent,
@@ -47,22 +51,30 @@ export const VoidPermitForm = ({
     useVoidPermitForm();
 
   const { mutation: revokePermitMutation, voidResults } = useVoidPermit();
+  const { companyId: companyIdParam } = useParams();
 
-  const { data: permitHistory } = usePermitHistoryQuery(
-    permit?.originalPermitId,
-    applyWhenNotNullable(
-      id => `${id}`,
-      permit?.companyId,
-    ),
+  const companyId: number = getDefaultRequiredVal(
+    0,
+    permit?.companyId,
+    applyWhenNotNullable((id) => Number(id), companyIdParam),
   );
 
-  const transactionHistory = getDefaultRequiredVal([], permitHistory)
-    .filter((history) =>
+  const originalPermitId = getDefaultRequiredVal("", permit?.originalPermitId);
+
+  const { data: permitHistory } = usePermitHistoryQuery(
+    companyId,
+    originalPermitId,
+  );
+
+  const transactionHistory = getDefaultRequiredVal([], permitHistory).filter(
+    (history) =>
       isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
-    );
-  
-  const amountToRefund = !permit || transactionHistory.length === 0
-    ? 0 : -1 * calculateAmountForVoid(permit, transactionHistory);
+  );
+
+  const amountToRefund =
+    !permit || transactionHistory.length === 0
+      ? 0
+      : -1 * calculateAmountForVoid(permit, transactionHistory);
 
   useEffect(() => {
     const revokeFailed = hasPermitsActionFailed(voidResults);
@@ -144,8 +156,11 @@ export const VoidPermitForm = ({
                 rules: {
                   required: false,
                   validate: {
-                    validateEmail: (email: string) =>
-                      email.length === 0 || isEmail(email) || invalidEmail(),
+                    validateEmail: (email?: string) =>
+                      !email ||
+                      email.length === 0 ||
+                      isEmail(email) ||
+                      invalidEmail(),
                   },
                 },
                 label: "Additional Email",

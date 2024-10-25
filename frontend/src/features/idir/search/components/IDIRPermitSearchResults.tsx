@@ -184,7 +184,7 @@ export const IDIRPermitSearchResults = memo(
                   permitNumber={row.original.permitNumber}
                   permitId={row.original.permitId}
                   userRole={idirUserDetails?.userRole}
-                  companyId={row.original.companyId?.toString()}
+                  companyId={row.original.companyId}
                 />
               </Box>
             );

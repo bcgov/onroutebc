@@ -7,7 +7,7 @@ import { Nullable } from "../../../common/types/common";
 import { PermitApplicationOrigin } from "./PermitApplicationOrigin";
 import { PermitApprovalSource } from "./PermitApprovalSource";
 import { PermitData } from "./PermitData";
-import { ApplicationQueueStatus } from "./ApplicationQueueStatus";
+import { ApplicationQueueStatus } from "../../queue/types/ApplicationQueueStatus";
 
 /**
  * A partial permit type that consists of all common fields used for a permit.
@@ -108,6 +108,8 @@ export interface ApplicationListItem {
   vin?: Nullable<string>;
   plate?: Nullable<string>;
   applicationQueueStatus?: ApplicationQueueStatus;
+  timeInQueue?: string;
+  claimedBy?: string;
 }
 
 /**
@@ -122,4 +124,15 @@ export interface ApplicationFormData {
   applicationNumber?: Nullable<string>;
   permitNumber?: Nullable<string>;
   permitData: PermitData;
+}
+
+/**
+ * Type used for determining query parameters when fetching applications
+ */
+export interface ApplicationFilters {
+  pendingPermitsOnly?: boolean;
+  applicationsInQueueOnly?: boolean;
+  claimedApplicationsOnly?: boolean;
+  unclaimedApplicationsOnly?: boolean;
+  getStaffQueue?: boolean;
 }
