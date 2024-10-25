@@ -27,6 +27,7 @@ import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../common/helpers/util";
+import { getDefaultPermittedRoute } from "./permittedRoute";
 
 /**
  * Get default values for contact details, or populate with existing contact details and/or user details
@@ -225,6 +226,7 @@ export const getDefaultValues = (
       ),
       feeSummary: `${calculateFeeByDuration(defaultPermitType, durationOrDefault)}`,
       loas: getDefaultRequiredVal([], applicationData?.permitData?.loas),
+      permittedRoute: getDefaultPermittedRoute(permitType, applicationData?.permitData?.permittedRoute),
       applicationNotes: getDefaultRequiredVal(null, applicationData?.permitData?.applicationNotes),
     },
   };

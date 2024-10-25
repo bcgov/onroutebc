@@ -33,4 +33,8 @@ export const BANNER_MESSAGES = {
     "e.g. Use the credit account for payment.",
   APPLICATION_NOTES_INFO:
     "Application notes will not appear on the permit document.",
+  HIGHWAY_SEQUENCES: {
+    TITLE: "The sequence of highways should be in order of travel.",
+    EXAMPLE: "e.g. If the origin is Victoria, BC and the destination is Hope, BC, the sequence of highways travelled in order will be 17 1 3.",
+  },
 };

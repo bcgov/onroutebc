@@ -40,6 +40,7 @@ export const useApplicationFormContext = () => {
     onSetVehicle,
     onClearVehicle,
     onUpdateLOAs,
+    onUpdateHighwaySequence,
   } = useContext(ApplicationFormContext);
 
   const {
@@ -55,6 +56,7 @@ export const useApplicationFormContext = () => {
     startDate: permitStartDate,
     commodities,
     vehicleDetails: vehicleFormData,
+    permittedRoute,
   } = formData.permitData;
 
   const createdAt = useMemoizedObject(
@@ -148,6 +150,13 @@ export const useApplicationFormContext = () => {
 
   const { commodityOptions } = usePermitCommodities(permitType);
 
+  const highwaySequence = useMemoizedObject(
+    getDefaultRequiredVal([], permittedRoute?.manualRoute?.highwaySequence),
+    (seq1, seq2) =>
+      seq1.length === seq2.length
+      && seq1.every((num, index) => num === seq2[index]),
+  );
+
   return {
     initialFormData,
     permitType,
@@ -171,6 +180,7 @@ export const useApplicationFormContext = () => {
     companyLOAs: memoizedCompanyLOAs,
     revisionHistory: memoizedRevisionHistory,
     commodityOptions,
+    highwaySequence,
     onLeave,
     onSave,
     onCancel,
@@ -182,5 +192,6 @@ export const useApplicationFormContext = () => {
     onSetVehicle,
     onClearVehicle,
     onUpdateLOAs,
+    onUpdateHighwaySequence,
   };
 };

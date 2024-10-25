@@ -50,6 +50,8 @@ export const invalidAddressLength = (min: number, max: number) => {
   return replacePlaceholders(messageTemplate, placeholders, min, max);
 };
 
+export const invalidAddress = () => validationMessages.address.invalid;
+
 export const invalidCityLength = (min: number, max: number) => {
   const { messageTemplate, placeholders } = validationMessages.city.length;
   return replacePlaceholders(messageTemplate, placeholders, min, max);
@@ -100,6 +102,8 @@ export const requiredUpload = (uploadItem: string) => {
   const { messageTemplate, placeholders } = validationMessages.upload.required;
   return replacePlaceholders(messageTemplate, placeholders, uploadItem);
 };
+
+export const requiredHighway = () => validationMessages.highway.missing;
 
 /**
  * Checks if a given string is

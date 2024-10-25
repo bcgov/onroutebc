@@ -113,6 +113,13 @@ export const useInitApplicationFormData = (
     setValue("permitData.loas", updatedLOAs);
   }, [setValue]);
 
+  const onUpdateHighwaySequence = useCallback((updatedHighwaySequence: string[]) => {
+    setValue(
+      "permitData.permittedRoute.manualRoute.highwaySequence",
+      updatedHighwaySequence,
+    );
+  }, [setValue]);
+
   return {
     initialFormData,
     currentFormData,
@@ -124,5 +131,6 @@ export const useInitApplicationFormData = (
     onSetVehicle,
     onClearVehicle,
     onUpdateLOAs,
+    onUpdateHighwaySequence,
   };
 };

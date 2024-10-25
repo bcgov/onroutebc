@@ -12,6 +12,7 @@ import { AmendReason } from "../../../Amend/components/form/AmendReason";
 import { AmendRevisionHistory } from "../../../Amend/components/form/AmendRevisionHistory";
 import { CommodityDetailsSection } from "./CommodityDetailsSection";
 import { ApplicationNotesSection } from "./ApplicationNotesSection";
+import { TripDetailsSection } from "./TripDetailsSection/TripDetailsSection";
 
 export const PermitForm = () => {
   const {
@@ -36,6 +37,7 @@ export const PermitForm = () => {
     companyLOAs,
     revisionHistory,
     commodityOptions,
+    highwaySequence,
     onLeave,
     onSave,
     onCancel,
@@ -45,6 +47,7 @@ export const PermitForm = () => {
     onSetVehicle,
     onClearVehicle,
     onUpdateLOAs,
+    onUpdateHighwaySequence,
   } = useApplicationFormContext();
 
   return (
@@ -98,6 +101,13 @@ export const PermitForm = () => {
           onSetSaveVehicle={onToggleSaveVehicle}
           onSetVehicle={onSetVehicle}
           onClearVehicle={onClearVehicle}
+        />
+
+        <TripDetailsSection
+          feature={feature}
+          permitType={permitType}
+          highwaySequence={highwaySequence}
+          onUpdateHighwaySequence={onUpdateHighwaySequence}
         />
 
         <ApplicationNotesSection

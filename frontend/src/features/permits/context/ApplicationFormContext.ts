@@ -51,6 +51,7 @@ interface ApplicationFormContextType {
   onSetVehicle: (vehicleDetails: PermitVehicleDetails) => void;
   onClearVehicle: (saveVehicle: boolean) => void;
   onUpdateLOAs: (updatedLOAs: PermitLOA[]) => void;
+  onUpdateHighwaySequence: (updatedHighwaySequence: string[]) => void;
 }
 
 export const ApplicationFormContext = createContext<ApplicationFormContextType>({
@@ -80,4 +81,5 @@ export const ApplicationFormContext = createContext<ApplicationFormContextType>(
   onSetVehicle: () => undefined,
   onClearVehicle: () => undefined,
   onUpdateLOAs: () => undefined,
+  onUpdateHighwaySequence: () => undefined,
 });

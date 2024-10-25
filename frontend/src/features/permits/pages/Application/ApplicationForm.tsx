@@ -99,6 +99,7 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     onSetVehicle,
     onClearVehicle,
     onUpdateLOAs,
+    onUpdateHighwaySequence,
   } = useInitApplicationFormData(
     permitType,
     isLcvDesignated,
@@ -301,6 +302,7 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     onSetVehicle,
     onClearVehicle,
     onUpdateLOAs,
+    onUpdateHighwaySequence,
   }), [
     initialFormData,
     currentFormData,
@@ -324,6 +326,7 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     onSetVehicle,
     onClearVehicle,
     onUpdateLOAs,
+    onUpdateHighwaySequence,
   ]);
 
   return (

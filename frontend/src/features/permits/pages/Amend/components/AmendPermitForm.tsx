@@ -83,6 +83,7 @@ export const AmendPermitForm = () => {
     onSetVehicle,
     onClearVehicle,
     onUpdateLOAs,
+    onUpdateHighwaySequence,
   } = useAmendPermitForm(
     currentStepIndex === 0,
     isLcvDesignated,
@@ -254,6 +255,7 @@ export const AmendPermitForm = () => {
     onSetVehicle,
     onClearVehicle,
     onUpdateLOAs,
+    onUpdateHighwaySequence,
   }), [
     initialFormData,
     formData,
@@ -276,6 +278,7 @@ export const AmendPermitForm = () => {
     onSetVehicle,
     onClearVehicle,
     onUpdateLOAs,
+    onUpdateHighwaySequence,
   ]);
 
   return (

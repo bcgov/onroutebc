@@ -55,7 +55,8 @@
     "length": {
       "messageTemplate": "Address length must be between :min-:max characters",
       "placeholders": [":min", ":max"]
-    }
+    },
+    "invalid": "You must enter a valid address."
   },
   "dba": {
     "defaultMessage": "Invalid DBA format",
@@ -124,5 +125,8 @@
       "messageTemplate": "The :item must be uploaded",
       "placeholders": [":item"]
     }
+  },
+  "highway": {
+    "missing": "You must enter at least one highway."
   }
 }
