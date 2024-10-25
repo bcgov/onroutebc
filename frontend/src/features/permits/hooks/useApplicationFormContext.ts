@@ -10,7 +10,6 @@ import { useMemoizedArray } from "../../../common/hooks/useMemoizedArray";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { arePermitConditionEqual } from "../types/PermitCondition";
 import { useMemoizedObject } from "../../../common/hooks/useMemoizedObject";
-import { usePermitCommodities } from "./usePermitCommodities";
 
 export const useApplicationFormContext = () => {
   const {
@@ -29,6 +28,7 @@ export const useApplicationFormContext = () => {
     pastStartDateStatus,
     companyLOAs,
     revisionHistory,
+    commodityOptions,
     onLeave,
     onSave,
     onCancel,
@@ -147,8 +147,6 @@ export const useApplicationFormContext = () => {
         && historyItem1.name === historyItem2.name
         && historyItem1.comment === historyItem2.comment,
   );
-
-  const { commodityOptions } = usePermitCommodities(permitType);
 
   const highwaySequence = useMemoizedObject(
     getDefaultRequiredVal([], permittedRoute?.manualRoute?.highwaySequence),

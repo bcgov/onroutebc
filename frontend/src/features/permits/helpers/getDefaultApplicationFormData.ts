@@ -5,7 +5,7 @@ import { getMandatoryConditions } from "./conditions";
 import { Nullable } from "../../../common/types/common";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
 import { calculateFeeByDuration } from "./feeSummary";
-import { PermitType } from "../types/PermitType";
+import { PERMIT_TYPES, PermitType } from "../types/PermitType";
 import { getExpiryDate } from "./permitState";
 import { PermitMailingAddress } from "../types/PermitMailingAddress";
 import { PermitContactDetails } from "../types/PermitContactDetails";
@@ -28,6 +28,7 @@ import {
   getDefaultRequiredVal,
 } from "../../../common/helpers/util";
 import { getDefaultPermittedRoute } from "./permittedRoute";
+import { getDefaultPermittedCommodity } from "./permittedCommodity";
 
 /**
  * Get default values for contact details, or populate with existing contact details and/or user details
@@ -134,17 +135,19 @@ export const getExpiryDateOrDefault = (
 
 /**
  * Gets default values for the application data, or populate with values from existing application and relevant data.
- * @param permitType permit type for the application
- * @param companyInfo data from company profile information (can be undefined, but must be passed as param)
- * @param applicationData existing application data, if any
- * @param userDetails user details of current user, if any
- * @returns default values for the application data
+ * @param permitType Permit type for the application
+ * @param companyInfo Company profile information (can be undefined, but must be passed as param)
+ * @param applicationData Existing application data, if already exists
+ * @param userDetails User details of current user, if any
+ * @param permittedCommodityTypes Permitted commodity types, if applicable
+ * @returns Default values for the application data
  */
 export const getDefaultValues = (
   permitType: PermitType,
   companyInfo: Nullable<CompanyProfile>,
   applicationData?: Nullable<Application | ApplicationFormData>,
   userDetails?: Nullable<BCeIDUserDetailContext>,
+  permittedCommodityTypes?: Nullable<string[]>,
 ): ApplicationFormData => {
   const startDateOrDefault = getStartDateOrDefault(
     now(),
@@ -227,7 +230,13 @@ export const getDefaultValues = (
       feeSummary: `${calculateFeeByDuration(defaultPermitType, durationOrDefault)}`,
       loas: getDefaultRequiredVal([], applicationData?.permitData?.loas),
       permittedRoute: getDefaultPermittedRoute(permitType, applicationData?.permitData?.permittedRoute),
-      applicationNotes: getDefaultRequiredVal(null, applicationData?.permitData?.applicationNotes),
+      applicationNotes: permitType !== PERMIT_TYPES.STOS
+        ? null : getDefaultRequiredVal("", applicationData?.permitData?.applicationNotes),
+      permittedCommodity: getDefaultPermittedCommodity(
+        permitType,
+        getDefaultRequiredVal([], permittedCommodityTypes),
+        applicationData?.permitData?.permittedCommodity,
+      ),
     },
   };
 };

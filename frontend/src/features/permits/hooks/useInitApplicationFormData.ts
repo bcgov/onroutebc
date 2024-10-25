@@ -36,6 +36,7 @@ export const useInitApplicationFormData = (
   companyInfo: Nullable<CompanyProfile>,
   applicationData?: Nullable<Application>,
   userDetails?: BCeIDUserDetailContext,
+  permittedCommodityTypes?: Nullable<string[]>,
 ) => {
   // Used to populate/initialize the form with
   // This will be updated whenever new application, company, and user data is fetched
@@ -49,6 +50,7 @@ export const useInitApplicationFormData = (
           companyInfo,
           applicationData,
           userDetails,
+          permittedCommodityTypes,
         ),
         isLcvDesignated,
       ),

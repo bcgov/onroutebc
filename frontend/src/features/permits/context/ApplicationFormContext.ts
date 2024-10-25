@@ -40,6 +40,10 @@ interface ApplicationFormContextType {
     revisionDateTime: string;
     comment: string;
   }[];
+  commodityOptions: {
+    value: string;
+    label: string;
+  }[];
   onLeave?: () => void;
   onSave?: () => Promise<void>;
   onCancel?: () => void;
@@ -70,6 +74,7 @@ export const ApplicationFormContext = createContext<ApplicationFormContextType>(
   pastStartDateStatus: PAST_START_DATE_STATUSES.ALLOWED,
   companyLOAs: [],
   revisionHistory: [],
+  commodityOptions: [],
   onLeave: undefined,
   onSave: undefined,
   onCancel: undefined,

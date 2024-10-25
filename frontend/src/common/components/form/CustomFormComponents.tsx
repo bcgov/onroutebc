@@ -7,6 +7,7 @@ import {
   useFormContext,
 } from "react-hook-form";
 
+import "./CustomFormComponents.scss";
 import { ORBC_FormTypes } from "../../types/common";
 import { CustomOutlinedInput } from "./subFormComponents/CustomOutlinedInput";
 import { CustomSelect } from "./subFormComponents/CustomSelect";
@@ -177,7 +178,10 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
   };
 
   return (
-    <Box sx={className ? null : { width }} className={className}>
+    <Box
+      sx={className ? null : { width }}
+      className={`custom-form-components ${className}`}
+    >
       <Controller
         key={`controller-${feature}-${name}`}
         name={name}
@@ -188,25 +192,28 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
             className="custom-form-control"
             margin="normal"
             error={invalid}
-            sx={{ width: "100%" }}
           >
             <FormLabel
-              className="custom-form-control__label"
               id={`${feature}-${name}-label`}
-              sx={{ fontWeight: "bold", marginBottom: "8px" }}
+              classes={{
+                root: "custom-form-control__label",
+                error: "custom-form-control__label--error",
+              }}
             >
               {label}
-              {showOptionalLabel() && (
+              {showOptionalLabel() ? (
                 <span style={{ fontWeight: "normal" }}> (optional)</span>
-              )}
-              {customHelperText && (
+              ) : null}
+              {customHelperText ? (
                 <span style={{ fontWeight: "normal" }}>
                   {` (${customHelperText})`}
                 </span>
-              )}
+              ) : null}
             </FormLabel>
+
             {renderSubFormComponent(invalid)}
-            {invalid && (
+
+            {invalid ? (
               <FormHelperText
                 className="custom-form-control__helper-text"
                 data-testid={`alert-${name}`}
@@ -214,7 +221,7 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
               >
                 {getErrorMessage(errors, name)}
               </FormHelperText>
-            )}
+            ) : null}
           </FormControl>
         )}
       />

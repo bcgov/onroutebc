@@ -1,6 +1,6 @@
 import "./TripOriginDestination.scss";
 import { CustomFormComponent } from "../../../../../../../common/components/form/CustomFormComponents";
-import { requiredMessage } from "../../../../../../../common/helpers/validationMessages";
+import { invalidAddress } from "../../../../../../../common/helpers/validationMessages";
 
 export const TripOriginDestination = ({
   feature,
@@ -16,7 +16,7 @@ export const TripOriginDestination = ({
         options={{
           name: "permitData.permittedRoute.manualRoute.origin",
           rules: {
-            required: { value: true, message: requiredMessage() },
+            required: { value: true, message: invalidAddress() },
           },
           label: "Origin",
         }}
@@ -29,7 +29,7 @@ export const TripOriginDestination = ({
         options={{
           name: "permitData.permittedRoute.manualRoute.destination",
           rules: {
-            required: { value: true, message: requiredMessage() },
+            required: { value: true, message: invalidAddress() },
           },
           label: "Destination",
         }}

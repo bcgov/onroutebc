@@ -13,6 +13,7 @@ import { AmendRevisionHistory } from "../../../Amend/components/form/AmendRevisi
 import { CommodityDetailsSection } from "./CommodityDetailsSection";
 import { ApplicationNotesSection } from "./ApplicationNotesSection";
 import { TripDetailsSection } from "./TripDetailsSection/TripDetailsSection";
+import { LoadedDimensionsSection } from "./LoadedDimensionsSection/LoadedDimensionsSection";
 
 export const PermitForm = () => {
   const {
@@ -101,6 +102,11 @@ export const PermitForm = () => {
           onSetSaveVehicle={onToggleSaveVehicle}
           onSetVehicle={onSetVehicle}
           onClearVehicle={onClearVehicle}
+        />
+
+        <LoadedDimensionsSection
+          permitType={permitType}
+          feature={feature}
         />
 
         <TripDetailsSection

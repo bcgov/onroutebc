@@ -26,6 +26,8 @@ import { useFetchLOAs } from "../../../settings/hooks/LOA";
 import { useFetchSpecialAuthorizations } from "../../../settings/hooks/specialAuthorizations";
 import { ApplicationFormContext } from "../../context/ApplicationFormContext";
 import { filterLOAsForPermitType, filterNonExpiredLOAs } from "../../helpers/permitLOA";
+import { usePermitCommodities } from "../../hooks/usePermitCommodities";
+import { useMemoizedArray } from "../../../../common/hooks/useMemoizedArray";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -83,6 +85,19 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     trailerSubTypes,
   } = usePermitVehicleManagement(companyId);
 
+  const permitCommodities = usePermitCommodities(permitType);
+  const commodityOptions = useMemoizedArray(
+    permitCommodities.commodityOptions,
+    ({ value }) => value,
+    (commodityType1, commodityType2) => commodityType1.value === commodityType2.value,
+  );
+
+  const permittedCommodityTypes = useMemoizedArray(
+    commodityOptions.map(({ value }) => value),
+    commodityType => commodityType,
+    (commodityType1, commodityType2) => commodityType1 === commodityType2,
+  );
+
   // Use a custom hook that performs the following whenever page is rendered (or when application context is updated/changed):
   // 1. Get all data needed to initialize the application form (from application context, company, user details)
   // 2. Generate those default values and register them to the form
@@ -108,6 +123,7 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     companyInfo,
     applicationContext?.applicationData,
     userDetails,
+    permittedCommodityTypes,
   );
 
   // Applicable LOAs must be:
@@ -291,6 +307,7 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     pastStartDateStatus,
     companyLOAs: applicableLOAs,
     revisionHistory: [],
+    commodityOptions,
     onLeave: handleLeaveApplication,
     onSave,
     onCancel: undefined,
