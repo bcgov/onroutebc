@@ -1,6 +1,5 @@
 import { Box } from "@mui/material";
 import { Dayjs } from "dayjs";
-import { Dispatch, SetStateAction } from "react";
 import { WarningBcGovBanner } from "../../../../../../common/components/banners/WarningBcGovBanner";
 import { Nullable } from "../../../../../../common/types/common";
 import { CompanyProfile } from "../../../../../manageProfile/types/manageProfile";
@@ -50,9 +49,9 @@ interface PermitReviewProps {
   onEdit: () => void;
   onContinue?: () => Promise<void>;
   onAddToCart?: () => Promise<void>;
-  onApprove?: () => Promise<void>;
+  handleApproveButton?: () => Promise<void>;
   updateApplicationMutationPending?: boolean;
-  setShowRejectApplicationModal?: Dispatch<SetStateAction<boolean>>;
+  handleRejectButton?: () => void;
   showChangedFields?: boolean;
   oldFields?: Nullable<Partial<Application>>;
   calculatedFee: string;
@@ -118,19 +117,17 @@ export const PermitReview = (props: PermitReviewProps) => {
         {props.children}
 
         <ReviewActions
+          reviewContext={props.reviewContext}
           onEdit={props.onEdit}
           continueBtnText={props.continueBtnText}
           onContinue={props.onContinue}
           hasToCartButton={props.reviewContext === PERMIT_REVIEW_CONTEXTS.APPLY}
           onAddToCart={props.onAddToCart}
-          onApprove={props.onApprove}
-          updateApplicationMutationPending={
+          disableApproveAndRejectButtons={
             props.updateApplicationMutationPending
           }
-          setShowRejectApplicationModal={props.setShowRejectApplicationModal}
-          reviewContext={props.reviewContext}
-          startDate={props.permitStartDate}
-          expiryDate={props.permitExpiryDate}
+          handleApproveButton={props.handleApproveButton}
+          handleRejectButton={props.handleRejectButton}
         />
       </Box>
     </Box>
