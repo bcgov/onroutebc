@@ -1,6 +1,9 @@
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 
-import { BASE_DAYS_IN_YEAR, TERM_DURATION_INTERVAL_DAYS } from "../constants/constants";
+import {
+  BASE_DAYS_IN_YEAR,
+  TERM_DURATION_INTERVAL_DAYS,
+} from "../constants/constants";
 import { PERMIT_TYPES, PermitType } from "../types/PermitType";
 import { getExpiryDate } from "./permitState";
 import { getMostRecentExpiryFromLOAs } from "./permitLOA";
@@ -18,6 +21,7 @@ import {
   TROW_DURATION_INTERVAL_DAYS,
   TROW_DURATION_OPTIONS,
 } from "../constants/trow";
+import { Nullable } from "../../../common/types/common";
 
 /**
  * Get list of selectable duration options for a given permit type.
@@ -57,7 +61,7 @@ export const maxDurationForPermitType = (permitType: PermitType) => {
  * @param permitType Permit type to get duration interval for
  * @returns Number of days as duration interval for the permit type.
  */
-export const getDurationIntervalDays  = (permitType: PermitType) => {
+export const getDurationIntervalDays = (permitType: PermitType) => {
   switch (permitType) {
     case PERMIT_TYPES.TROW:
       return TROW_DURATION_INTERVAL_DAYS;
@@ -100,8 +104,10 @@ export const getAvailableDurationOptions = (
   const mostRecentLOAExpiry = getMostRecentExpiryFromLOAs(selectedLOAs);
   if (!mostRecentLOAExpiry) return fullDurationOptions;
 
-  return fullDurationOptions
-    .filter(({ value: durationDays }) => !mostRecentLOAExpiry.isBefore(getExpiryDate(startDate, durationDays)));
+  return fullDurationOptions.filter(
+    ({ value: durationDays }) =>
+      !mostRecentLOAExpiry.isBefore(getExpiryDate(startDate, durationDays)),
+  );
 };
 
 /**
@@ -121,7 +127,9 @@ export const handleUpdateDurationIfNeeded = (
   }[],
 ) => {
   const minAllowableDuration = minDurationForPermitType(permitType);
-  const maxDurationInOptions = Math.max(...durationOptions.map(durationOption => durationOption.value));
+  const maxDurationInOptions = Math.max(
+    ...durationOptions.map((durationOption) => durationOption.value),
+  );
 
   if (currentDuration > maxDurationInOptions) {
     if (maxDurationInOptions < minAllowableDuration) {
@@ -131,4 +139,17 @@ export const handleUpdateDurationIfNeeded = (
   }
 
   return currentDuration;
+};
+
+/**
+ * Determine if start date or expiry date of permit applicationare in the past
+ * @param startDate Start date of the permit
+ * @param expiryDate Expiry date of the permit
+ * @returns True if either startDate or expiryDate are in the past
+ */
+export const isPermitStartOrExpiryDateInPast = (
+  startDate: Nullable<Dayjs>,
+  expiryDate: Nullable<Dayjs>,
+) => {
+  return dayjs().isAfter(startDate) || dayjs().isAfter(expiryDate);
 };

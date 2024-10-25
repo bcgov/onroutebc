@@ -7,6 +7,9 @@ import {
   PermitReviewContext,
 } from "../../../../types/PermitReviewContext";
 import "./ReviewActions.scss";
+import { isPermitStartOrExpiryDateInPast } from "../../../../helpers/dateSelection";
+import { Nullable } from "../../../../../../common/types/common";
+import { Dayjs } from "dayjs";
 
 export const ReviewActions = ({
   onEdit,
@@ -18,6 +21,8 @@ export const ReviewActions = ({
   updateApplicationMutationPending,
   setShowRejectApplicationModal,
   reviewContext,
+  startDate,
+  expiryDate,
 }: {
   onEdit: () => void;
   continueBtnText?: string;
@@ -28,6 +33,8 @@ export const ReviewActions = ({
   updateApplicationMutationPending?: boolean;
   setShowRejectApplicationModal?: Dispatch<SetStateAction<boolean>>;
   reviewContext: PermitReviewContext;
+  startDate?: Nullable<Dayjs>;
+  expiryDate?: Nullable<Dayjs>;
 }) => {
   return (
     <Box className="review-actions">
@@ -104,7 +111,10 @@ export const ReviewActions = ({
           color="primary"
           data-testid="approve-btn"
           onClick={onApprove}
-          disabled={updateApplicationMutationPending}
+          disabled={
+            updateApplicationMutationPending ||
+            isPermitStartOrExpiryDateInPast(startDate, expiryDate)
+          }
         >
           Approve
         </Button>

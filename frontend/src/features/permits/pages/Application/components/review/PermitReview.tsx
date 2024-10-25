@@ -129,6 +129,8 @@ export const PermitReview = (props: PermitReviewProps) => {
           }
           setShowRejectApplicationModal={props.setShowRejectApplicationModal}
           reviewContext={props.reviewContext}
+          startDate={props.permitStartDate}
+          expiryDate={props.permitExpiryDate}
         />
       </Box>
     </Box>

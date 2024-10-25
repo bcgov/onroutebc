@@ -1,14 +1,12 @@
 import { useContext, useEffect, useState } from "react";
+import { SnackBarContext } from "../../../../App";
 import { OnRouteBCTableRowActions } from "../../../../common/components/table/OnRouteBCTableRowActions";
-import { ApplicationInReviewModal } from "./ApplicationInReviewModal";
-import { useNavigate } from "react-router-dom";
-import { ERROR_ROUTES } from "../../../../routes/constants";
 import {
   useInvalidateApplicationsInQueue,
   useUpdateApplicationInQueueStatus,
 } from "../../../queue/hooks/hooks";
 import { CASE_ACTIVITY_TYPES } from "../../../queue/types/CaseActivityType";
-import { SnackBarContext } from "../../../../App";
+import { ApplicationInReviewModal } from "./ApplicationInReviewModal";
 
 const PERMIT_ACTION_OPTION_TYPES = {
   WITHDRAW_APPLICATION: "withdrawApplication",
@@ -52,7 +50,6 @@ export const ApplicationsInReviewRowOptions = ({
   isInReview: boolean;
   permitId: string;
 }) => {
-  const navigate = useNavigate();
   const { invalidate } = useInvalidateApplicationsInQueue();
 
   const [isAIRModalOpen, setIsAIRModalOpen] = useState<boolean>(false);
@@ -70,13 +67,12 @@ export const ApplicationsInReviewRowOptions = ({
   } = useUpdateApplicationInQueueStatus();
 
   useEffect(() => {
-    if (isUpdateApplicationError) {
+    if (
+      isUpdateApplicationError &&
+      updateApplicationError.response?.status === 422
+    ) {
       // if the application has already been withdrawn by another user
-      if (updateApplicationError.response?.status === 422) {
-        return setIsAIRModalOpen(true);
-      }
-      // handle all other errors
-      navigate(ERROR_ROUTES.UNEXPECTED);
+      return setIsAIRModalOpen(true);
     }
   }, [isUpdateApplicationError, updateApplicationError]);
 
