@@ -43,7 +43,10 @@ export const testStos: PermitApplication = {
       countryCode: 'CA',
       postalCode: 'V8B1A2',
     },
-    permittedCommodity: 'EMPTYXX',
+    permittedCommodity: {
+      commodityType: 'EMPTYXX',
+      loadDescription: 'empty',
+    },
     vehicleConfiguration: {
       overallLength: 25,
       overallWidth: 3,

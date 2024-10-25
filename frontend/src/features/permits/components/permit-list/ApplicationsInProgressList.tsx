@@ -42,20 +42,24 @@ const getColumns = (
   return ApplicationInProgressColumnDefinition(userRole);
 };
 
-export const ApplicationsInProgressList = () => {
+export const ApplicationsInProgressList = ({
+  companyId,
+}: {
+  companyId: number;
+}) => {
   const {
     applicationsInProgressQuery,
     pagination,
     setPagination,
     sorting,
     setSorting,
-  } = useApplicationsInProgressQuery();
+  } = useApplicationsInProgressQuery(companyId);
 
   const {
     pendingPermits,
     pagination: pendingPermitPagination,
     setPagination: setPendingPermitPagination,
-  } = usePendingPermitsQuery();
+  } = usePendingPermitsQuery(companyId);
 
   const {
     data: applicationsInProgress,
@@ -104,7 +108,7 @@ export const ApplicationsInProgressList = () => {
 
   const onConfirmApplicationDelete = async () => {
     const applicationIds: string[] = Object.keys(rowSelection);
-    const response = await deleteApplications(applicationIds);
+    const response = await deleteApplications(companyId, applicationIds);
     if (response.status === 200) {
       const responseBody = response.data;
       setIsDeleteDialogOpen(() => false);

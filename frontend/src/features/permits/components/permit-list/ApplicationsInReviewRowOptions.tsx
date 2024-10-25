@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { OnRouteBCTableRowActions } from "../../../../common/components/table/OnRouteBCTableRowActions";
-import {
-  useUpdateApplicationQueueStatusMutation,
-  useInvalidateApplicationsInQueue,
-} from "../../hooks/hooks";
-import { CASE_ACTIVITY_TYPES } from "../../types/CaseActivityType";
 import { ApplicationInReviewModal } from "./ApplicationInReviewModal";
 import { useNavigate } from "react-router-dom";
 import { ERROR_ROUTES } from "../../../../routes/constants";
+import {
+  useInvalidateApplicationsInQueue,
+  useUpdateApplicationInQueueStatus,
+} from "../../../queue/hooks/hooks";
+import { CASE_ACTIVITY_TYPES } from "../../../queue/types/CaseActivityType";
+import { SnackBarContext } from "../../../../App";
 
 const PERMIT_ACTION_OPTION_TYPES = {
   WITHDRAW_APPLICATION: "withdrawApplication",
@@ -61,27 +62,46 @@ export const ApplicationsInReviewRowOptions = ({
     invalidate();
   };
 
-  const { mutateAsync, isError, error } =
-    useUpdateApplicationQueueStatusMutation();
+  const {
+    mutateAsync: updateApplication,
+    data: updateApplicationResponse,
+    isError: isUpdateApplicationError,
+    error: updateApplicationError,
+  } = useUpdateApplicationInQueueStatus();
 
   useEffect(() => {
-    if (isError) {
+    if (isUpdateApplicationError) {
       // if the application has already been withdrawn by another user
-      if (error.response?.status === 422) {
+      if (updateApplicationError.response?.status === 422) {
         return setIsAIRModalOpen(true);
       }
       // handle all other errors
       navigate(ERROR_ROUTES.UNEXPECTED);
     }
-  }, [isError, error]);
+  }, [isUpdateApplicationError, updateApplicationError]);
+
+  const isSuccess = (status?: number) => status === 201;
+  const { setSnackBar } = useContext(SnackBarContext);
+
+  useEffect(() => {
+    if (isSuccess(updateApplicationResponse?.status)) {
+      setSnackBar({
+        showSnackbar: true,
+        setShowSnackbar: () => true,
+        message: "Withdrawn to Applications in Progress",
+        alertType: "info",
+      });
+      invalidate();
+    }
+  }, [updateApplicationResponse]);
 
   /**
    * Action handler upon a select event.
    * @param selectedOption The option that was selected.
    */
-  const onSelectOptionCallback = (selectedOption: string) => {
+  const onSelectOptionCallback = async (selectedOption: string) => {
     if (selectedOption === PERMIT_ACTION_OPTION_TYPES.WITHDRAW_APPLICATION) {
-      mutateAsync({
+      await updateApplication({
         applicationId: permitId,
         caseActivityType: CASE_ACTIVITY_TYPES.WITHDRAWN,
       });

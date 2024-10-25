@@ -52,6 +52,9 @@ import {
   ApplicationQueueStatus,
   convertApplicationQueueStatus,
 } from '../../../common/enum/case-status-type.enum';
+import { ApplicationIdIdPathParamDto } from './dto/request/pathParam/applicationId.path-params.dto';
+import { CreatePermitLoaDto } from './dto/request/create-permit-loa.dto';
+import { ReadPermitLoaDto } from './dto/response/read-permit-loa.dto';
 
 @ApiBearerAuth()
 @ApiTags('Company Application')
@@ -366,5 +369,33 @@ export class CompanyApplicationController {
       throw new DataNotFoundException();
     }
     return deleteResult;
+  }
+  @ApiOperation({
+    summary: 'Designate LoA to permit.',
+    description:
+      'Designate LoA to permit. Returns the created permit LoA object from the database.',
+  })
+  @ApiCreatedResponse({
+    description: 'Permit Loa Details',
+    type: ReadPermitLoaDto,
+    isArray: true,
+  })
+  @Permissions({
+    allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
+    allowedIdirRoles: IDIR_USER_ROLE_LIST,
+  })
+  @Post(':applicationId/loas')
+  async createPermitLoa(
+    @Req() request: Request,
+    @Param() { applicationId }: ApplicationIdIdPathParamDto,
+    @Body() createPermitLoaDto: CreatePermitLoaDto,
+  ): Promise<ReadPermitLoaDto[]> {
+    const currentUser = request.user as IUserJWT;
+    const result = await this.applicationService.createPermitLoa(
+      currentUser,
+      applicationId,
+      createPermitLoaDto,
+    );
+    return result;
   }
 }

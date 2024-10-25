@@ -1,25 +1,30 @@
 import { Box } from "@mui/material";
 import { Dayjs } from "dayjs";
-import { Dispatch, SetStateAction } from "react";
-
-import "./PermitReview.scss";
 import { WarningBcGovBanner } from "../../../../../../common/components/banners/WarningBcGovBanner";
-import { ApplicationDetails } from "../../../../components/form/ApplicationDetails";
-import { ReviewContactDetails } from "./ReviewContactDetails";
-import { ReviewPermitDetails } from "./ReviewPermitDetails";
-import { ReviewVehicleInfo } from "./ReviewVehicleInfo";
-import { ReviewFeeSummary } from "./ReviewFeeSummary";
-import { ReviewActions } from "./ReviewActions";
+import { Nullable } from "../../../../../../common/types/common";
 import { CompanyProfile } from "../../../../../manageProfile/types/manageProfile";
 import { VehicleSubType } from "../../../../../manageVehicles/types/Vehicle";
-import { PermitType } from "../../../../types/PermitType";
-import { Nullable } from "../../../../../../common/types/common";
-import { PermitContactDetails } from "../../../../types/PermitContactDetails";
-import { PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
+import { ApplicationDetails } from "../../../../components/form/ApplicationDetails";
 import { Application } from "../../../../types/application";
 import { PermitCondition } from "../../../../types/PermitCondition";
+import { PermitContactDetails } from "../../../../types/PermitContactDetails";
+import { PermitLOA } from "../../../../types/PermitLOA";
+import {
+  PERMIT_REVIEW_CONTEXTS,
+  PermitReviewContext,
+} from "../../../../types/PermitReviewContext";
+import { PermitType } from "../../../../types/PermitType";
+import { PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
+import "./PermitReview.scss";
+import { ReviewActions } from "./ReviewActions";
+import { ReviewContactDetails } from "./ReviewContactDetails";
+import { ReviewFeeSummary } from "./ReviewFeeSummary";
+import { ReviewPermitDetails } from "./ReviewPermitDetails";
+import { ReviewPermitLOAs } from "./ReviewPermitLOAs";
+import { ReviewVehicleInfo } from "./ReviewVehicleInfo";
 
 interface PermitReviewProps {
+  reviewContext: PermitReviewContext;
   permitType?: Nullable<PermitType>;
   permitNumber?: Nullable<string>;
   applicationNumber?: Nullable<string>;
@@ -35,8 +40,8 @@ interface PermitReviewProps {
   isAmendAction: boolean;
   children?: React.ReactNode;
   hasAttemptedCheckboxes: boolean;
-  allChecked: boolean;
-  setAllChecked: Dispatch<SetStateAction<boolean>>;
+  allConfirmed: boolean;
+  setAllConfirmed: (confirmed: boolean) => void;
   powerUnitSubTypes?: Nullable<VehicleSubType[]>;
   trailerSubTypes?: Nullable<VehicleSubType[]>;
   vehicleDetails?: Nullable<PermitVehicleDetails>;
@@ -44,10 +49,14 @@ interface PermitReviewProps {
   onEdit: () => void;
   onContinue?: () => Promise<void>;
   onAddToCart?: () => Promise<void>;
+  handleApproveButton?: () => Promise<void>;
+  updateApplicationMutationPending?: boolean;
+  handleRejectButton?: () => void;
   showChangedFields?: boolean;
   oldFields?: Nullable<Partial<Application>>;
   calculatedFee: string;
   doingBusinessAs?: Nullable<string>;
+  loas?: Nullable<PermitLOA[]>;
 }
 
 export const PermitReview = (props: PermitReviewProps) => {
@@ -75,6 +84,8 @@ export const PermitReview = (props: PermitReviewProps) => {
           oldFields={props.oldFields?.permitData?.contactDetails}
         />
 
+        <ReviewPermitLOAs loas={props.loas} />
+
         <ReviewPermitDetails
           startDate={props.permitStartDate}
           permitDuration={props.permitDuration}
@@ -95,21 +106,28 @@ export const PermitReview = (props: PermitReviewProps) => {
         />
 
         <ReviewFeeSummary
-          isSubmitted={props.hasAttemptedCheckboxes}
-          isChecked={props.allChecked}
-          setIsChecked={props.setAllChecked}
+          hasAttemptedSubmission={props.hasAttemptedCheckboxes}
+          areAllConfirmed={props.allConfirmed}
+          setAreAllConfirmed={props.setAllConfirmed}
           permitType={props.permitType}
           fee={props.calculatedFee}
+          reviewContext={props.reviewContext}
         />
 
         {props.children}
 
         <ReviewActions
+          reviewContext={props.reviewContext}
           onEdit={props.onEdit}
           continueBtnText={props.continueBtnText}
           onContinue={props.onContinue}
-          hasToCartButton={!props.isAmendAction}
+          hasToCartButton={props.reviewContext === PERMIT_REVIEW_CONTEXTS.APPLY}
           onAddToCart={props.onAddToCart}
+          disableApproveAndRejectButtons={
+            props.updateApplicationMutationPending
+          }
+          handleApproveButton={props.handleApproveButton}
+          handleRejectButton={props.handleRejectButton}
         />
       </Box>
     </Box>
