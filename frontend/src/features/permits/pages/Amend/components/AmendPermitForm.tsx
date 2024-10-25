@@ -23,7 +23,7 @@ import { useFetchLOAs } from "../../../../settings/hooks/LOA";
 import { useFetchSpecialAuthorizations } from "../../../../settings/hooks/specialAuthorizations";
 import { filterLOAsForPermitType, filterNonExpiredLOAs } from "../../../helpers/permitLOA";
 import { DEFAULT_PERMIT_TYPE } from "../../../types/PermitType";
-import { usePermitCommodities } from "../../../hooks/usePermitCommodities";
+import { usePolicyEngine } from "../../../../policy/hooks/usePolicyEngine";
 import { useMemoizedArray } from "../../../../../common/hooks/useMemoizedArray";
 import {
   dayjsToUtcStr,
@@ -81,9 +81,9 @@ export const AmendPermitForm = () => {
     trailerSubTypes,
   } = usePermitVehicleManagement(companyId);
 
-  const permitCommodities = usePermitCommodities(permitType);
+  const { commodityOptions: commodities } = usePolicyEngine(permitType);
   const commodityOptions = useMemoizedArray(
-    permitCommodities.commodityOptions,
+    commodities,
     ({ value }) => value,
     (commodityType1, commodityType2) => commodityType1.value === commodityType2.value,
   );
