@@ -1,7 +1,6 @@
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Box, Button } from "@mui/material";
-import { Dispatch, SetStateAction } from "react";
 import {
   PERMIT_REVIEW_CONTEXTS,
   PermitReviewContext,
@@ -9,25 +8,25 @@ import {
 import "./ReviewActions.scss";
 
 export const ReviewActions = ({
+  reviewContext,
   onEdit,
   continueBtnText,
   onContinue,
   hasToCartButton,
   onAddToCart,
-  onApprove,
-  updateApplicationMutationPending,
-  setShowRejectApplicationModal,
-  reviewContext,
+  disableApproveAndRejectButtons,
+  handleApproveButton,
+  handleRejectButton,
 }: {
+  reviewContext: PermitReviewContext;
   onEdit: () => void;
   continueBtnText?: string;
   onContinue?: () => Promise<void>;
   hasToCartButton: boolean;
   onAddToCart?: () => Promise<void>;
-  onApprove?: () => Promise<void>;
-  updateApplicationMutationPending?: boolean;
-  setShowRejectApplicationModal?: Dispatch<SetStateAction<boolean>>;
-  reviewContext: PermitReviewContext;
+  disableApproveAndRejectButtons?: boolean;
+  handleApproveButton?: () => Promise<void>;
+  handleRejectButton?: () => void;
 }) => {
   return (
     <Box className="review-actions">
@@ -79,36 +78,34 @@ export const ReviewActions = ({
         </Button>
       ) : null}
 
-      {reviewContext === PERMIT_REVIEW_CONTEXTS.QUEUE &&
-      setShowRejectApplicationModal ? (
-        <Button
-          className="review-actions__btn review-actions__btn--reject"
-          key="reject-button"
-          aria-label="Reject"
-          variant="contained"
-          color="error"
-          data-testid="reject-btn"
-          onClick={() => setShowRejectApplicationModal(true)}
-          disabled={updateApplicationMutationPending}
-        >
-          Reject
-        </Button>
-      ) : null}
-
-      {onApprove ? (
-        <Button
-          className="review-actions__btn review-actions__btn--approve"
-          key="approve-button"
-          aria-label="Approve"
-          variant="contained"
-          color="primary"
-          data-testid="approve-btn"
-          onClick={onApprove}
-          disabled={updateApplicationMutationPending}
-        >
-          Approve
-        </Button>
-      ) : null}
+      {reviewContext === PERMIT_REVIEW_CONTEXTS.QUEUE && (
+        <>
+          <Button
+            className="review-actions__btn review-actions__btn--reject"
+            key="reject-button"
+            aria-label="Reject"
+            variant="contained"
+            color="error"
+            data-testid="reject-btn"
+            onClick={handleRejectButton}
+            disabled={disableApproveAndRejectButtons}
+          >
+            Reject
+          </Button>
+          <Button
+            className="review-actions__btn review-actions__btn--approve"
+            key="approve-button"
+            aria-label="Approve"
+            variant="contained"
+            color="primary"
+            data-testid="approve-btn"
+            onClick={handleApproveButton}
+            disabled={disableApproveAndRejectButtons}
+          >
+            Approve
+          </Button>
+        </>
+      )}
     </Box>
   );
 };

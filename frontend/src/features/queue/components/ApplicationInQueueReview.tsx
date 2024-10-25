@@ -76,6 +76,10 @@ export const ApplicationInQueueReview = ({
   const [showRejectApplicationModal, setShowRejectApplicationModal] =
     useState<boolean>(false);
 
+  const handleRejectButton = () => {
+    setShowRejectApplicationModal(true);
+  };
+
   const handleReject = async (comment: string): Promise<void> => {
     setHasAttemptedSubmission(true);
 
@@ -87,11 +91,13 @@ export const ApplicationInQueueReview = ({
     });
   };
 
+  const updateApplicationResponseStatus = updateApplicationResponse?.status;
+
   useEffect(() => {
-    if (isSuccess(updateApplicationResponse?.status)) {
+    if (isSuccess(updateApplicationResponseStatus)) {
       navigate(IDIR_ROUTES.STAFF_HOME);
     }
-  }, [updateApplicationResponse, navigate]);
+  }, [updateApplicationResponseStatus, navigate]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -120,9 +126,9 @@ export const ApplicationInQueueReview = ({
           companyInfo={companyInfo}
           contactDetails={applicationData?.permitData?.contactDetails}
           onEdit={handleEdit}
-          onApprove={handleApprove}
+          handleApproveButton={handleApprove}
           updateApplicationMutationPending={updateApplicationMutationPending}
-          setShowRejectApplicationModal={setShowRejectApplicationModal}
+          handleRejectButton={handleRejectButton}
           allConfirmed={allConfirmed}
           setAllConfirmed={setAllConfirmed}
           hasAttemptedCheckboxes={hasAttemptedSubmission}

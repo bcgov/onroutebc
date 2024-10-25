@@ -28,7 +28,7 @@ export const RejectApplicationModal = ({
 
   const handleCancel = () => onCancel();
 
-  const handleCloseAccount = () => {
+  const handleRejectApplication = () => {
     const { comment } = getValues();
     onConfirm(comment);
   };
@@ -90,8 +90,7 @@ export const RejectApplicationModal = ({
           <Button
             className="reject-application-modal__button reject-application-modal__button--confirm"
             key="reject-application-button"
-            aria-label="Close-account Company"
-            onClick={handleSubmit(handleCloseAccount)}
+            onClick={handleSubmit(handleRejectApplication)}
             data-testid="reject-application-button"
             disabled={isPending}
           >
