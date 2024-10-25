@@ -6,7 +6,8 @@ import {
 } from "../types/application";
 
 /**
- * Serializes Application form data to CreateApplicationRequestData so it can be used as payload for create application requests.
+ * Serializes Application form data to CreateApplicationRequestData.
+ * The result can be used as payload for create application requests.
  * @param application Application form data
  * @returns CreateApplicationRequestData object used for payload data to request to backend
  */
@@ -21,10 +22,24 @@ export const serializeForCreateApplication = (
     permitData: {
       startDate,
       expiryDate,
+      permittedRoute,
       ...restOfPermitData
     },
     comment,
   } = application;
+
+  const serializedPermittedRoute = permittedRoute
+    ? {
+      manualRoute: permittedRoute.manualRoute
+        ? {
+          ...permittedRoute.manualRoute,
+          highwaySequence: permittedRoute.manualRoute.highwaySequence
+            .filter(highwayNumber => Boolean(highwayNumber.trim())),
+        }
+        : null,
+      routeDetails: permittedRoute.routeDetails,
+    }
+    : null;
 
   return {
     permitId,
@@ -42,12 +57,14 @@ export const serializeForCreateApplication = (
         expiryDate,
         DATE_FORMATS.DATEONLY,
       ),
+      permittedRoute: serializedPermittedRoute,
     },
   };
 };
 
 /**
- * Serializes Application form data to UpdateApplicationRequestData so it can be used as payload for update application requests
+ * Serializes Application form data to UpdateApplicationRequestData.
+ * The result can be used as payload for update application requests.
  * @param application Application form data
  * @returns UpdateApplicationRequestData object used for payload to request to backend
  */
@@ -60,9 +77,23 @@ export const serializeForUpdateApplication = (
     permitData: {
       startDate,
       expiryDate,
+      permittedRoute,
       ...restOfPermitData
     },
   } = application;
+
+  const serializedPermittedRoute = permittedRoute
+    ? {
+      manualRoute: permittedRoute.manualRoute
+        ? {
+          ...permittedRoute.manualRoute,
+          highwaySequence: permittedRoute.manualRoute.highwaySequence
+            .filter(highwayNumber => Boolean(highwayNumber.trim())),
+        }
+        : null,
+      routeDetails: permittedRoute.routeDetails,
+    }
+    : null;
 
   return {
     permitType,
@@ -77,6 +108,7 @@ export const serializeForUpdateApplication = (
         expiryDate,
         DATE_FORMATS.DATEONLY,
       ),
+      permittedRoute: serializedPermittedRoute,
     },
   };
 };
