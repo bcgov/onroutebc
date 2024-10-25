@@ -26,13 +26,11 @@ export const usePolicyEngine = (permitType: PermitType) => {
       policyEngine?.getCommodities(permitType),
     );
 
-    return [
-      ...commodities.entries()
-        .map(([commodityType, commodityDescription]) => ({
-          value: commodityType,
-          label: commodityDescription,
-        })),
-    ];
+    return [...commodities.entries()]
+      .map(([commodityType, commodityDescription]) => ({
+        value: commodityType,
+        label: commodityDescription,
+      }));
   }, [policyEngine, permitType]);
 
   return {
