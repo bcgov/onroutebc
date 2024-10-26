@@ -29,6 +29,7 @@ import {
 } from "../../../common/helpers/util";
 import { getDefaultPermittedRoute } from "./permittedRoute";
 import { getDefaultPermittedCommodity } from "./permittedCommodity";
+import { getDefaultVehicleConfiguration } from "./vehicleConfiguration";
 
 /**
  * Get default values for contact details, or populate with existing contact details and/or user details
@@ -236,6 +237,10 @@ export const getDefaultValues = (
         permitType,
         getDefaultRequiredVal([], permittedCommodityTypes),
         applicationData?.permitData?.permittedCommodity,
+      ),
+      vehicleConfiguration: getDefaultVehicleConfiguration(
+        permitType,
+        applicationData?.permitData?.vehicleConfiguration,
       ),
     },
   };
