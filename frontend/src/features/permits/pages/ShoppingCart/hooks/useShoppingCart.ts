@@ -8,7 +8,7 @@ import { useFetchSpecialAuthorizations } from "../../../../settings/hooks/specia
 import { calculateFeeByDuration } from "../../../helpers/feeSummary";
 
 export const useShoppingCart = (
-  companyId: string,
+  companyId: number,
   enableCartFilter: boolean,
 ) => {
   const { refetchCartCount } = useContext(CartContext);
