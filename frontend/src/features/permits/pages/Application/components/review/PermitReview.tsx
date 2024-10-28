@@ -128,6 +128,8 @@ export const PermitReview = (props: PermitReviewProps) => {
           }
           handleApproveButton={props.handleApproveButton}
           handleRejectButton={props.handleRejectButton}
+          startDate={props.permitStartDate}
+          expiryDate={props.permitExpiryDate}
         />
       </Box>
     </Box>

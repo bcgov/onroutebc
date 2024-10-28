@@ -151,5 +151,7 @@ export const isPermitStartOrExpiryDateInPast = (
   startDate: Nullable<Dayjs>,
   expiryDate: Nullable<Dayjs>,
 ) => {
-  return dayjs().isAfter(startDate) || dayjs().isAfter(expiryDate);
+  return (
+    dayjs().isAfter(startDate, "day") || dayjs().isAfter(expiryDate, "day")
+  );
 };
