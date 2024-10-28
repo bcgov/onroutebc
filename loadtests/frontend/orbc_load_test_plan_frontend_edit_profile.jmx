@@ -85,7 +85,7 @@
       <com.googlecode.jmeter.plugins.webdriver.config.ChromeDriverConfig guiclass="com.googlecode.jmeter.plugins.webdriver.config.gui.ChromeDriverConfigGui" testclass="com.googlecode.jmeter.plugins.webdriver.config.ChromeDriverConfig" testname="jp@gc - Chrome Driver Config" enabled="true">
         <boolProp name="WebDriverConfig.acceptinsecurecerts">false</boolProp>
         <boolProp name="WebDriverConfig.reset_per_iteration">true</boolProp>
-        <stringProp name="WebDriverConfig.driver_path">C:\Users\brwang\Software\chromedriver-win64\chromedriver-win64-129\chromedriver.exe</stringProp>
+        <stringProp name="WebDriverConfig.driver_path">${__P(CHROME_DRIVER_PATH)}</stringProp>
         <boolProp name="WebDriverConfig.dev_mode">false</boolProp>
         <boolProp name="WebDriverConfig.headless">false</boolProp>
         <boolProp name="WebDriverConfig.maximize_browser">true</boolProp>

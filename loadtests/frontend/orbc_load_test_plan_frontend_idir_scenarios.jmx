@@ -21,7 +21,7 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="NUM_THREADS" elementType="Argument">
             <stringProp name="Argument.name">NUM_THREADS</stringProp>
-            <stringProp name="Argument.value">200</stringProp>
+            <stringProp name="Argument.value">1</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="FRONTEND_URL" elementType="Argument">
@@ -36,17 +36,17 @@
           </elementProp>
           <elementProp name="USER" elementType="Argument">
             <stringProp name="Argument.name">USER</stringProp>
-            <stringProp name="Argument.value"></stringProp>
+            <stringProp name="Argument.value">brwang</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="PASSWORD" elementType="Argument">
             <stringProp name="Argument.name">PASSWORD</stringProp>
-            <stringProp name="Argument.value"></stringProp>
+            <stringProp name="Argument.value">Dslcfjzbjhmdys_11</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="VOID_URL" elementType="Argument">
-            <stringProp name="Argument.name">VOID_URL</stringProp>
-            <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/companies/1/permits/457/void</stringProp>
+          <elementProp name="HOME_PAGE_URL" elementType="Argument">
+            <stringProp name="Argument.name">HOME_PAGE_URL</stringProp>
+            <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/idir/home</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -92,7 +92,7 @@
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
       <hashTree>
-        <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="voidApplications" enabled="true">
+        <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="login" enabled="true">
           <stringProp name="WebDriverSampler.script">import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
@@ -103,6 +103,7 @@ def frontendUrl = WDS.vars.get(&quot;FRONTEND_URL&quot;)
 WDS.browser.get(frontendUrl);
 Thread.sleep(5000)
 
+
 def loginButton = WDS.browser.findElement(By.id(&apos;login-idir&apos;))
 if (loginButton != null) {
     loginButton.click()
@@ -110,52 +111,208 @@ if (loginButton != null) {
 } else {
     WDS.log.info(&quot;Button with id &apos;login-bceid&apos; not found&quot;)
 }
+
+Thread.sleep(10000)
+/*
+def user = WDS.browser.findElement(By.id(&apos;user&apos;))
+def password = WDS.browser.findElement(By.id(&apos;password&apos;))
+
+def userValue = WDS.vars.get(&quot;USER&quot;)
+def passwordValue = WDS.vars.get(&quot;PASSWORD&quot;)
+user.sendKeys(userValue)
+password.sendKeys(passwordValue)
+Thread.sleep(5000)
+
+def submitButton = WDS.browser.findElement(By.name(&apos;btnSubmit&apos;))
+if (submitButton != null) {
+    submitButton.click()
+} else {
+    WDS.log.info(&apos;Submit button with name=&quot;btnSubmit&quot; not found&apos;)
+}
+*/
 Thread.sleep(10000)
 
-def searchIcon = WDS.browser.findElement(By.className(&apos;search-button&apos;))
-searchIcon.click()
+WDS.sampleResult.sampleEnd()</stringProp>
+          <stringProp name="WebDriverSampler.parameters"></stringProp>
+          <stringProp name="WebDriverSampler.language">groovy</stringProp>
+        </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+        <hashTree/>
+        <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="checkHomePage" enabled="false">
+          <stringProp name="WebDriverSampler.script">import org.openqa.selenium.By
+import org.openqa.selenium.support.ui.ExpectedConditions
+import org.openqa.selenium.support.ui.WebDriverWait
+import org.openqa.selenium.WebElement
+
+WDS.sampleResult.sampleStart() 
 Thread.sleep(5000)
 
-def company = WDS.browser.findElement(By.cssSelector(&apos;[value=&quot;companies&quot;]&apos;))
-company.click()
+// edit contact details
+def homePageUrl = WDS.vars.get(&quot;HOME_PAGE_URL&quot;)
+WDS.browser.get(homePageUrl);
+Thread.sleep(5000)
+
+// Check if the sidebar appears
+try {
+    // WebElement sidebar = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className(&quot;nav-icon-side-bar&quot;)))
+    def sidebar = WDS.browser.findElement(By.className(&apos;nav-icon-side-bar&apos;))// Adjust selector as needed
+    WDS.log.info(&quot;Sidebar is visible.&quot;)
+} catch (Exception e) {
+    WDS.log.error(&quot;Sidebar is not visible.&quot;)
+}
+
+// Check if the search button appears
+try {
+   def searchButton = WDS.browser.findElement(By.className(&apos;search-button&apos;)) //WebElement searchButton = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className(&quot;search-button&quot;))) // Adjust selector as needed
+    
+    WDS.log.info(&quot;Search button is visible.&quot;)
+} catch (Exception e) {
+    WDS.log.error(&quot;Search button is not visible.&quot;)
+}
+
+// report button works
+try {
+	def report = WDS.browser.findElement(By.className(&apos;nav-button--report&apos;))
+	WDS.browser.executeScript(&quot;window.scrollTo(0, arguments[0].getBoundingClientRect().top + window.pageYOffset - 100);&quot;, report)
+	report.click()
+	WDS.log.info(&quot;Report button works.&quot;)
+	Thread.sleep(5000)
+	} catch (Exception e){
+		WDS.log.info(&quot;Report button does not work.&quot;)
+		}
+
+// home button works
+try {
+	def home = WDS.browser.findElement(By.className(&apos;nav-button--home&apos;))
+	WDS.browser.executeScript(&quot;window.scrollTo(0, arguments[0].getBoundingClientRect().top + window.pageYOffset - 100);&quot;, home)
+	home.click()
+	WDS.log.info(&quot;Home button works.&quot;)
+	Thread.sleep(5000)
+	} catch (Exception e){
+		WDS.log.info(&quot;Home button does not work.&quot;)
+		}
+
+
+
+/*
+def edit = WDS.browser.findElement(By.className(&apos;css-5k7mli&apos;))
+WDS.browser.executeScript(&quot;window.scrollTo(0, arguments[0].getBoundingClientRect().top + window.pageYOffset - 100);&quot;, edit)
+edit.click()
+Thread.sleep(5000)
+
+def phone = WDS.browser.findElement(By.cssSelector(&apos;[name=&quot;phone&quot;]&apos;))
+phone.clear()
+phone.sendKeys(&quot;(250) 205-0006&quot;)
+Thread.sleep(5000)
+
+def extension = WDS.browser.findElement(By.cssSelector(&apos;[name=&quot;extension&quot;]&apos;))
+extension.clear()
+extension.sendKeys(&quot;0001&quot;)
+Thread.sleep(5000)
+
+def fax = WDS.browser.findElement(By.cssSelector(&apos;[name=&quot;fax&quot;]&apos;))
+fax.clear()
+fax.sendKeys(&quot;(250) 205-0007&quot;)
 Thread.sleep(5000)
 
 
-def searchInput = WDS.browser.findElement(By.className(&apos;css-1pog434&apos;))
-searchInput.sendKeys(&apos;p&apos;)
+
+def save = WDS.browser.findElement(By.className(&apos;css-xie432&apos;))
+WDS.browser.executeScript(&quot;window.scrollTo(0, arguments[0].getBoundingClientRect().top + window.pageYOffset - 100);&quot;, save)
+save.click()
 Thread.sleep(5000)
 
-def searchButton = WDS.browser.findElement(By.className(&apos;search-by__search&apos;))
-searchButton.click()
+*/
+
+WDS.sampleResult.sampleEnd()</stringProp>
+          <stringProp name="WebDriverSampler.parameters"></stringProp>
+          <stringProp name="WebDriverSampler.language">groovy</stringProp>
+        </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+        <hashTree/>
+        <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="checkReportPage" enabled="true">
+          <stringProp name="WebDriverSampler.script">import org.openqa.selenium.By
+import org.openqa.selenium.support.ui.ExpectedConditions
+import org.openqa.selenium.support.ui.WebDriverWait
+import org.openqa.selenium.WebElement
+
+WDS.sampleResult.sampleStart() 
 Thread.sleep(5000)
 
-def button = WDS.browser.findElement(By.xpath(&quot;//button[text()=&apos;Test Transport Inc.&apos;]&quot;))
-button.click()
-Thread.sleep(5000)
-def tab = WDS.browser.findElement(By.xpath(&quot;//div[@class=&apos;tab__label&apos; and text()=&apos;Active Permits&apos;]&quot;))
-tab.click()
+// edit contact details
+def homePageUrl = WDS.vars.get(&quot;HOME_PAGE_URL&quot;)
+WDS.browser.get(homePageUrl);
 Thread.sleep(5000)
 
-def voidUrl = WDS.vars.get(&quot;VOID_URL&quot;)
-WDS.browser.get(voidUrl);
+// Check if the sidebar appears
+try {
+    // WebElement sidebar = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className(&quot;nav-icon-side-bar&quot;)))
+    def sidebar = WDS.browser.findElement(By.className(&apos;nav-icon-side-bar&apos;))// Adjust selector as needed
+    WDS.log.info(&quot;Sidebar is visible.&quot;)
+} catch (Exception e) {
+    WDS.log.error(&quot;Sidebar is not visible.&quot;)
+}
+
+// Check if the search button appears
+try {
+   def searchButton = WDS.browser.findElement(By.className(&apos;search-button&apos;)) //WebElement searchButton = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className(&quot;search-button&quot;))) // Adjust selector as needed
+    
+    WDS.log.info(&quot;Search button is visible.&quot;)
+} catch (Exception e) {
+    WDS.log.error(&quot;Search button is not visible.&quot;)
+}
+
+// report button works
+try {
+	def report = WDS.browser.findElement(By.className(&apos;nav-button--report&apos;))
+	WDS.browser.executeScript(&quot;window.scrollTo(0, arguments[0].getBoundingClientRect().top + window.pageYOffset - 100);&quot;, report)
+	report.click()
+	WDS.log.info(&quot;Report button works.&quot;)
+	def viewReport = WDS.browser.findElement(By.className(&apos;css-xie432&apos;))
+	viewReport.click()
+	Thread.sleep(5000)
+
+	def paymentAndRefundDetails = WDS.browser.findElement(By.className(&apos;css-hyxlzm&apos;))
+	paymentAndRefundDetails.click()
+	Thread.sleep(5000)
+
+	viewReport.click()
+	
+	} catch (Exception e){
+		WDS.log.info(&quot;Report button does not work.&quot;)
+		}
+
+
+
+/*
+def edit = WDS.browser.findElement(By.className(&apos;css-5k7mli&apos;))
+WDS.browser.executeScript(&quot;window.scrollTo(0, arguments[0].getBoundingClientRect().top + window.pageYOffset - 100);&quot;, edit)
+edit.click()
 Thread.sleep(5000)
 
-def reason = WDS.browser.findElement(By.cssSelector(&apos;[name=&quot;reason&quot;]&apos;))
-reason.sendKeys(&quot;test to void a appliation&quot;)
+def phone = WDS.browser.findElement(By.cssSelector(&apos;[name=&quot;phone&quot;]&apos;))
+phone.clear()
+phone.sendKeys(&quot;(250) 205-0006&quot;)
 Thread.sleep(5000)
 
-def continueBtn = WDS.browser.findElement(By.xpath(&quot;//button[text()=&apos;Continue&apos;]&quot;))
-WDS.browser.executeScript(&quot;window.scrollTo(0, arguments[0].getBoundingClientRect().top + window.pageYOffset - 100);&quot;, continueBtn)
-continueBtn.click()
+def extension = WDS.browser.findElement(By.cssSelector(&apos;[name=&quot;extension&quot;]&apos;))
+extension.clear()
+extension.sendKeys(&quot;0001&quot;)
 Thread.sleep(5000)
 
-def finish = WDS.browser.findElement(By.xpath(&quot;//button[text()=&apos;Finish&apos;]&quot;))
-WDS.browser.executeScript(&quot;window.scrollTo(0, arguments[0].getBoundingClientRect().top + window.pageYOffset - 100);&quot;, finish)
-finish.click()
+def fax = WDS.browser.findElement(By.cssSelector(&apos;[name=&quot;fax&quot;]&apos;))
+fax.clear()
+fax.sendKeys(&quot;(250) 205-0007&quot;)
 Thread.sleep(5000)
 
-WDS.sampleResult.sampleEnd()
-</stringProp>
+
+
+def save = WDS.browser.findElement(By.className(&apos;css-xie432&apos;))
+WDS.browser.executeScript(&quot;window.scrollTo(0, arguments[0].getBoundingClientRect().top + window.pageYOffset - 100);&quot;, save)
+save.click()
+Thread.sleep(5000)
+
+*/
+
+WDS.sampleResult.sampleEnd()</stringProp>
           <stringProp name="WebDriverSampler.parameters"></stringProp>
           <stringProp name="WebDriverSampler.language">groovy</stringProp>
         </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
