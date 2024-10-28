@@ -1,28 +1,27 @@
 import { Box } from "@mui/material";
 import { Dayjs } from "dayjs";
-
-import "./PermitReview.scss";
 import { WarningBcGovBanner } from "../../../../../../common/components/banners/WarningBcGovBanner";
-import { ApplicationDetails } from "../../../../components/form/ApplicationDetails";
-import { ReviewContactDetails } from "./ReviewContactDetails";
-import { ReviewPermitDetails } from "./ReviewPermitDetails";
-import { ReviewVehicleInfo } from "./ReviewVehicleInfo";
-import { ReviewFeeSummary } from "./ReviewFeeSummary";
-import { ReviewActions } from "./ReviewActions";
+import { Nullable } from "../../../../../../common/types/common";
 import { CompanyProfile } from "../../../../../manageProfile/types/manageProfile";
 import { VehicleSubType } from "../../../../../manageVehicles/types/Vehicle";
-import { PermitType } from "../../../../types/PermitType";
-import { Nullable } from "../../../../../../common/types/common";
-import { PermitContactDetails } from "../../../../types/PermitContactDetails";
-import { PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
+import { ApplicationDetails } from "../../../../components/form/ApplicationDetails";
 import { Application } from "../../../../types/application";
 import { PermitCondition } from "../../../../types/PermitCondition";
-import { ReviewPermitLOAs } from "./ReviewPermitLOAs";
+import { PermitContactDetails } from "../../../../types/PermitContactDetails";
 import { PermitLOA } from "../../../../types/PermitLOA";
 import {
   PERMIT_REVIEW_CONTEXTS,
   PermitReviewContext,
 } from "../../../../types/PermitReviewContext";
+import { PermitType } from "../../../../types/PermitType";
+import { PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
+import "./PermitReview.scss";
+import { ReviewActions } from "./ReviewActions";
+import { ReviewContactDetails } from "./ReviewContactDetails";
+import { ReviewFeeSummary } from "./ReviewFeeSummary";
+import { ReviewPermitDetails } from "./ReviewPermitDetails";
+import { ReviewPermitLOAs } from "./ReviewPermitLOAs";
+import { ReviewVehicleInfo } from "./ReviewVehicleInfo";
 import { ApplicationRejectionHistory } from "../../../../types/ApplicationRejectionHistory";
 import { ReviewApplicationRejectionHistory } from "./ReviewApplicationRejectionHistory";
 
@@ -52,10 +51,9 @@ interface PermitReviewProps {
   onEdit: () => void;
   onContinue?: () => Promise<void>;
   onAddToCart?: () => Promise<void>;
-  onApprove?: () => Promise<void>;
-  approveApplicationMutationPending?: boolean;
-  onReject?: () => Promise<void>;
-  rejectApplicationMutationPending?: boolean;
+  handleApproveButton?: () => Promise<void>;
+  updateApplicationMutationPending?: boolean;
+  handleRejectButton?: () => void;
   showChangedFields?: boolean;
   oldFields?: Nullable<Partial<Application>>;
   calculatedFee: string;
@@ -128,20 +126,17 @@ export const PermitReview = (props: PermitReviewProps) => {
         {props.children}
 
         <ReviewActions
+          reviewContext={props.reviewContext}
           onEdit={props.onEdit}
           continueBtnText={props.continueBtnText}
           onContinue={props.onContinue}
           hasToCartButton={props.reviewContext === PERMIT_REVIEW_CONTEXTS.APPLY}
           onAddToCart={props.onAddToCart}
-          onApprove={props.onApprove}
-          approveApplicationMutationPending={
-            props.approveApplicationMutationPending
+          disableApproveAndRejectButtons={
+            props.updateApplicationMutationPending
           }
-          onReject={props.onReject}
-          rejectApplicationMutationPending={
-            props.rejectApplicationMutationPending
-          }
-          reviewContext={props.reviewContext}
+          handleApproveButton={props.handleApproveButton}
+          handleRejectButton={props.handleRejectButton}
         />
       </Box>
     </Box>

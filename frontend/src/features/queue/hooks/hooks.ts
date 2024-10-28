@@ -1,14 +1,16 @@
-import { useContext } from "react";
-import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
-import { IDIRUserRoleType } from "../../../common/authentication/types";
-import { canViewApplicationQueue } from "../helpers/canViewApplicationQueue";
-import { MRT_PaginationState, MRT_SortingState } from "material-react-table";
 import {
   keepPreviousData,
   useMutation,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
+import { AxiosError } from "axios";
+import { MRT_PaginationState, MRT_SortingState } from "material-react-table";
+import { useContext } from "react";
+import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
+import { IDIRUserRoleType } from "../../../common/authentication/types";
+import { Nullable } from "../../../common/types/common";
+import { useTableControls } from "../../permits/hooks/useTableControls";
 import {
   claimApplicationInQueue,
   getApplicationsInQueue,
@@ -16,11 +18,8 @@ import {
   getUnclaimedApplicationsInQueue,
   updateApplicationQueueStatus,
 } from "../apiManager/queueAPI";
-import { Nullable } from "../../../common/types/common";
-import { SnackBarContext } from "../../../App";
-import { CASE_ACTIVITY_TYPES } from "../types/CaseActivityType";
-import { AxiosError } from "axios";
-import { useTableControls } from "../../permits/hooks/useTableControls";
+import { canViewApplicationQueue } from "../helpers/canViewApplicationQueue";
+import { CaseActivityType } from "../types/CaseActivityType";
 
 const QUEUE_QUERY_KEYS_BASE = "queue";
 
@@ -159,70 +158,17 @@ export const useClaimApplicationInQueueMutation = () => {
   });
 };
 
-export const useWithdrawApplicationInQueueMutation = () => {
-  const { invalidate } = useInvalidateApplicationsInQueue();
-  const { setSnackBar } = useContext(SnackBarContext);
-
-  return useMutation({
-    mutationFn: (applicationId: string) => {
-      return updateApplicationQueueStatus({
-        applicationId,
-        caseActivityType: CASE_ACTIVITY_TYPES.WITHDRAWN,
-      });
-    },
-    onSuccess: () => {
-      setSnackBar({
-        showSnackbar: true,
-        setShowSnackbar: () => true,
-        message: "Withdrawn to Applications in Progress",
-        alertType: "info",
-      });
-      invalidate();
-    },
-    onError: (err: AxiosError) => err,
-  });
-};
-
-export const useApproveApplicationInQueueMutation = () => {
+export const useUpdateApplicationInQueueStatus = () => {
   const { invalidate } = useInvalidateApplicationsInQueue();
 
   return useMutation({
-    mutationFn: ({
-      applicationId,
-      companyId,
-    }: {
-      applicationId: Nullable<string>;
-      companyId: number;
+    mutationFn: (data: {
+      applicationId: string;
+      caseActivityType: CaseActivityType;
+      companyId?: number;
+      comment?: string;
     }) => {
-      return updateApplicationQueueStatus({
-        applicationId,
-        caseActivityType: CASE_ACTIVITY_TYPES.APPROVED,
-        companyId,
-      });
-    },
-    onSuccess: () => {
-      invalidate();
-    },
-    onError: (err: AxiosError) => err,
-  });
-};
-
-export const useRejectApplicationInQueueMutation = () => {
-  const { invalidate } = useInvalidateApplicationsInQueue();
-
-  return useMutation({
-    mutationFn: ({
-      applicationId,
-      companyId,
-    }: {
-      applicationId: Nullable<string>;
-      companyId: number;
-    }) => {
-      return updateApplicationQueueStatus({
-        applicationId,
-        caseActivityType: CASE_ACTIVITY_TYPES.REJECTED,
-        companyId,
-      });
+      return updateApplicationQueueStatus(data);
     },
     onSuccess: () => {
       invalidate();
