@@ -7,6 +7,7 @@ import { HttpService } from '@nestjs/axios';
 import { Cache } from 'cache-manager';
 import { AxiosResponse } from 'axios';
 import { ReadPolicyConfigDto } from '../../modules/policy/dto/response/read-policy-config.dto';
+import { Policy, ValidationResults } from 'onroute-policy-engine';
 
 export const convertToPolicyApplication = (
   application: Permit,
@@ -39,4 +40,18 @@ export const getActivePolicyDefinitions = async (
     },
   });
   return (await response.data.json()) as ReadPolicyConfigDto[];
+};
+
+export const validateWithPolicyEngine = async (
+  permitApplication: unknown,
+  cacheManager: Cache,
+): Promise<boolean> => {
+  const policyDefinitions: ReadPolicyConfigDto[] = await cacheManager.get(
+    'active-policy-definitions',
+  );
+  const policy = new Policy(policyDefinitions);
+  const validationResults: ValidationResults =
+    await policy.validate(permitApplication);
+
+  return validationResults.violations.length > 0;
 };

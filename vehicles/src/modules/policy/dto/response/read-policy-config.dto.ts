@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
+// import { PolicyDefinition } from 'onroute-policy-engine/types';
 
 export class ReadPolicyConfigDto {
   /**
@@ -19,7 +21,18 @@ export class ReadPolicyConfigDto {
   @ApiProperty({
     description: 'Policy configuration in JSON format.',
   })
-  policy: JSON;
+  policy: {
+    version: string;
+    geographicRegions: any;
+    permitTypes: any[];
+    commonRules: any[];
+    globalWeightDefaults: any;
+    globalSizeDefaults: any;
+    vehicleCategories: any;
+    vehicleTypes: any;
+    commodities: any[];
+    rangeMatrices?: any[];
+  };
 
   /**
    * Configuration effective date.
