@@ -21,7 +21,7 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="NUM_THREADS" elementType="Argument">
             <stringProp name="Argument.name">NUM_THREADS</stringProp>
-            <stringProp name="Argument.value">200</stringProp>
+            <stringProp name="Argument.value">1</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="FRONTEND_URL" elementType="Argument">
@@ -44,9 +44,39 @@
             <stringProp name="Argument.value"></stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="VOID_URL" elementType="Argument">
-            <stringProp name="Argument.name">VOID_URL</stringProp>
-            <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/companies/1/permits/457/void</stringProp>
+          <elementProp name="NEW_POWER_UNIT_URL" elementType="Argument">
+            <stringProp name="Argument.name">NEW_POWER_UNIT_URL</stringProp>
+            <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/manage-vehicles/add-powerunit</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="UPDATE_POWER_UNIT_URL" elementType="Argument">
+            <stringProp name="Argument.name">UPDATE_POWER_UNIT_URL</stringProp>
+            <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/manage-vehicles/power-units/106</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="MANAGE_VEHICLES_URL" elementType="Argument">
+            <stringProp name="Argument.name">MANAGE_VEHICLES_URL</stringProp>
+            <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/manage-vehicles</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="NEW_TRAILER_URL" elementType="Argument">
+            <stringProp name="Argument.name">NEW_TRAILER_URL</stringProp>
+            <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/manage-vehicles/add-trailer</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="UPDATE_TRAILER_URL" elementType="Argument">
+            <stringProp name="Argument.name">UPDATE_TRAILER_URL</stringProp>
+            <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/manage-vehicles/trailers/106</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="EDIT_CONTACT_URL" elementType="Argument">
+            <stringProp name="Argument.name">EDIT_CONTACT_URL</stringProp>
+            <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/manage-profiles</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="EDIT_USER_URL" elementType="Argument">
+            <stringProp name="Argument.name">EDIT_USER_URL</stringProp>
+            <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/manage-profiles/edit-user/EB1CA523856F4E7C92F7322C0194CA3E</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -92,7 +122,7 @@
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
       <hashTree>
-        <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="voidApplications" enabled="true">
+        <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="login" enabled="true">
           <stringProp name="WebDriverSampler.script">import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
@@ -103,59 +133,168 @@ def frontendUrl = WDS.vars.get(&quot;FRONTEND_URL&quot;)
 WDS.browser.get(frontendUrl);
 Thread.sleep(5000)
 
-def loginButton = WDS.browser.findElement(By.id(&apos;login-idir&apos;))
+
+def loginButton = WDS.browser.findElement(By.id(&apos;login-bceid&apos;))
 if (loginButton != null) {
     loginButton.click()
     WDS.log.info(&quot;Clicked on the login-bceid button&quot;)
 } else {
     WDS.log.info(&quot;Button with id &apos;login-bceid&apos; not found&quot;)
 }
+
+Thread.sleep(10000)
+def user = WDS.browser.findElement(By.id(&apos;user&apos;))
+def password = WDS.browser.findElement(By.id(&apos;password&apos;))
+
+def userValue = WDS.vars.get(&quot;USER&quot;)
+def passwordValue = WDS.vars.get(&quot;PASSWORD&quot;)
+user.sendKeys(userValue)
+password.sendKeys(passwordValue)
+Thread.sleep(5000)
+
+def submitButton = WDS.browser.findElement(By.name(&apos;btnSubmit&apos;))
+if (submitButton != null) {
+    submitButton.click()
+} else {
+    WDS.log.info(&apos;Submit button with name=&quot;btnSubmit&quot; not found&apos;)
+}
 Thread.sleep(10000)
 
-def searchIcon = WDS.browser.findElement(By.className(&apos;search-button&apos;))
-searchIcon.click()
+WDS.sampleResult.sampleEnd()</stringProp>
+          <stringProp name="WebDriverSampler.parameters"></stringProp>
+          <stringProp name="WebDriverSampler.language">groovy</stringProp>
+        </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+        <hashTree/>
+        <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="updateContactDetails" enabled="true">
+          <stringProp name="WebDriverSampler.script">import org.openqa.selenium.By
+import org.openqa.selenium.support.ui.ExpectedConditions
+import org.openqa.selenium.support.ui.WebDriverWait
+import org.openqa.selenium.WebElement
+
+WDS.sampleResult.sampleStart() 
 Thread.sleep(5000)
 
-def company = WDS.browser.findElement(By.cssSelector(&apos;[value=&quot;companies&quot;]&apos;))
-company.click()
+// edit contact details
+def editContactUrl = WDS.vars.get(&quot;EDIT_CONTACT_URL&quot;)
+WDS.browser.get(editContactUrl);
+Thread.sleep(5000)
+
+def edit = WDS.browser.findElement(By.className(&apos;css-5k7mli&apos;))
+WDS.browser.executeScript(&quot;window.scrollTo(0, arguments[0].getBoundingClientRect().top + window.pageYOffset - 100);&quot;, edit)
+edit.click()
+Thread.sleep(5000)
+
+def phone = WDS.browser.findElement(By.cssSelector(&apos;[name=&quot;phone&quot;]&apos;))
+phone.clear()
+phone.sendKeys(&quot;(250) 205-0006&quot;)
+Thread.sleep(5000)
+
+def extension = WDS.browser.findElement(By.cssSelector(&apos;[name=&quot;extension&quot;]&apos;))
+extension.clear()
+extension.sendKeys(&quot;0001&quot;)
+Thread.sleep(5000)
+
+def fax = WDS.browser.findElement(By.cssSelector(&apos;[name=&quot;fax&quot;]&apos;))
+fax.clear()
+fax.sendKeys(&quot;(250) 205-0007&quot;)
 Thread.sleep(5000)
 
 
-def searchInput = WDS.browser.findElement(By.className(&apos;css-1pog434&apos;))
-searchInput.sendKeys(&apos;p&apos;)
+
+def save = WDS.browser.findElement(By.className(&apos;css-xie432&apos;))
+WDS.browser.executeScript(&quot;window.scrollTo(0, arguments[0].getBoundingClientRect().top + window.pageYOffset - 100);&quot;, save)
+save.click()
 Thread.sleep(5000)
 
-def searchButton = WDS.browser.findElement(By.className(&apos;search-by__search&apos;))
-searchButton.click()
+WDS.sampleResult.sampleEnd()</stringProp>
+          <stringProp name="WebDriverSampler.parameters"></stringProp>
+          <stringProp name="WebDriverSampler.language">groovy</stringProp>
+        </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+        <hashTree/>
+        <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="updateMyInfo" enabled="true">
+          <stringProp name="WebDriverSampler.script">import org.openqa.selenium.By
+import org.openqa.selenium.support.ui.ExpectedConditions
+import org.openqa.selenium.support.ui.WebDriverWait
+import org.openqa.selenium.WebElement
+
+WDS.sampleResult.sampleStart() 
 Thread.sleep(5000)
 
-def button = WDS.browser.findElement(By.xpath(&quot;//button[text()=&apos;Test Transport Inc.&apos;]&quot;))
-button.click()
+// edit contact details
+def editContactUrl = WDS.vars.get(&quot;EDIT_CONTACT_URL&quot;)
+WDS.browser.get(editContactUrl);
 Thread.sleep(5000)
-def tab = WDS.browser.findElement(By.xpath(&quot;//div[@class=&apos;tab__label&apos; and text()=&apos;Active Permits&apos;]&quot;))
+
+def tab = WDS.browser.findElement(By.xpath(&quot;//div[@class=&apos;tab__label&apos; and text()=&apos;My Information&apos;]&quot;))
 tab.click()
 Thread.sleep(5000)
 
-def voidUrl = WDS.vars.get(&quot;VOID_URL&quot;)
-WDS.browser.get(voidUrl);
+def edit = WDS.browser.findElement(By.className(&apos;css-17ifrgy&apos;))
+WDS.browser.executeScript(&quot;window.scrollTo(0, arguments[0].getBoundingClientRect().top + window.pageYOffset - 100);&quot;, edit)
+edit.click()
 Thread.sleep(5000)
 
-def reason = WDS.browser.findElement(By.cssSelector(&apos;[name=&quot;reason&quot;]&apos;))
-reason.sendKeys(&quot;test to void a appliation&quot;)
+
+def extension = WDS.browser.findElement(By.cssSelector(&apos;[name=&quot;phone1Extension&quot;]&apos;))
+extension.clear()
+extension.sendKeys(&quot;0001&quot;)
 Thread.sleep(5000)
 
-def continueBtn = WDS.browser.findElement(By.xpath(&quot;//button[text()=&apos;Continue&apos;]&quot;))
-WDS.browser.executeScript(&quot;window.scrollTo(0, arguments[0].getBoundingClientRect().top + window.pageYOffset - 100);&quot;, continueBtn)
-continueBtn.click()
+def fax = WDS.browser.findElement(By.cssSelector(&apos;[name=&quot;fax&quot;]&apos;))
+fax.clear()
+fax.sendKeys(&quot;(250) 205-0007&quot;)
 Thread.sleep(5000)
 
-def finish = WDS.browser.findElement(By.xpath(&quot;//button[text()=&apos;Finish&apos;]&quot;))
-WDS.browser.executeScript(&quot;window.scrollTo(0, arguments[0].getBoundingClientRect().top + window.pageYOffset - 100);&quot;, finish)
-finish.click()
+
+
+def save = WDS.browser.findElement(By.className(&apos;css-xie432&apos;))
+WDS.browser.executeScript(&quot;window.scrollTo(0, arguments[0].getBoundingClientRect().top + window.pageYOffset - 100);&quot;, save)
+save.click()
 Thread.sleep(5000)
 
-WDS.sampleResult.sampleEnd()
-</stringProp>
+WDS.sampleResult.sampleEnd()</stringProp>
+          <stringProp name="WebDriverSampler.parameters"></stringProp>
+          <stringProp name="WebDriverSampler.language">groovy</stringProp>
+        </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+        <hashTree/>
+        <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="editUser" enabled="true">
+          <stringProp name="WebDriverSampler.script">import org.openqa.selenium.By
+import org.openqa.selenium.support.ui.ExpectedConditions
+import org.openqa.selenium.support.ui.WebDriverWait
+import org.openqa.selenium.WebElement
+
+WDS.sampleResult.sampleStart() 
+Thread.sleep(5000)
+
+// edit contact details
+def editUserUrl = WDS.vars.get(&quot;EDIT_USER_URL&quot;)
+WDS.browser.get(editUserUrl);
+Thread.sleep(5000)
+
+
+def phone2 = WDS.browser.findElement(By.cssSelector(&apos;[name=&quot;phone2&quot;]&apos;))
+phone2.clear()
+phone2.sendKeys(&quot;(250) 205-0007&quot;)
+Thread.sleep(5000)
+
+
+def extension = WDS.browser.findElement(By.cssSelector(&apos;[name=&quot;phone2Extension&quot;]&apos;))
+extension.clear()
+extension.sendKeys(&quot;0002&quot;)
+Thread.sleep(5000)
+
+def fax = WDS.browser.findElement(By.cssSelector(&apos;[name=&quot;fax&quot;]&apos;))
+fax.clear()
+fax.sendKeys(&quot;(250) 205-0009&quot;)
+Thread.sleep(5000)
+
+
+def save = WDS.browser.findElement(By.className(&apos;css-xie432&apos;))
+WDS.browser.executeScript(&quot;window.scrollTo(0, arguments[0].getBoundingClientRect().top + window.pageYOffset - 100);&quot;, save)
+save.click()
+Thread.sleep(5000)
+
+WDS.sampleResult.sampleEnd()</stringProp>
           <stringProp name="WebDriverSampler.parameters"></stringProp>
           <stringProp name="WebDriverSampler.language">groovy</stringProp>
         </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
