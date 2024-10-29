@@ -12,7 +12,8 @@ import { PaymentService } from './modules/permit-application-payment/payment/pay
 import { LogAsyncMethodExecution } from './common/decorator/log-async-method-execution.decorator';
 import { FeatureFlagsService } from './modules/feature-flags/feature-flags.service';
 import { ApplicationService } from './modules/permit-application-payment/application/application.service';
-import { PolicyService } from './modules/policy/policy.service';
+import { HttpService } from '@nestjs/axios';
+import { getActivePolicyDefinitions } from './common/helper/policy-engine.helper';
 
 @Injectable()
 export class AppService {
@@ -28,7 +29,7 @@ export class AppService {
     private paymentService: PaymentService,
     private featureFlagsService: FeatureFlagsService,
     private applicationService: ApplicationService,
-    private policyService: PolicyService
+    private readonly httpService: HttpService,
   ) {}
 
   getHello(): string {
@@ -130,7 +131,10 @@ export class AppService {
       createCacheMap(permitApprovalSource, 'id', 'code'),
     );
 
-    const policyConfigs = await this.policyService.findAllActive();
+    const policyConfigs = await getActivePolicyDefinitions(
+      this.httpService,
+      this.cacheManager,
+    );
     await addToCache(
       this.cacheManager,
       CacheKey.POLICY_CONFIGURATIONS,
