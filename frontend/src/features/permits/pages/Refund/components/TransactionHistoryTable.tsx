@@ -2,6 +2,7 @@ import { useMemo } from "react";
 
 import {
   MRT_ColumnDef,
+  MRT_Row,
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
@@ -18,6 +19,7 @@ import {
 import {
   feeSummaryDisplayText,
   isTransactionTypeRefund,
+  isZeroAmount,
 } from "../../../helpers/feeSummary";
 
 import {
@@ -80,7 +82,7 @@ export const TransactionHistoryTable = ({
             originalRow.pgTransactionId,
           ),
         id: "providerTransactionId",
-        header: "Transaction ID",
+        header: "Provider Tran ID",
         muiTableHeadCellProps: {
           className:
             "transaction-history-table__header transaction-history-table__header--transaction",
@@ -119,6 +121,25 @@ export const TransactionHistoryTable = ({
         enableSorting: false,
         enableColumnActions: false,
       },
+      {
+        id: "refundAmount",
+        header: "Refund Amount (CAD)",
+        muiTableHeadCellProps: {
+          className:
+            "transaction-history-table__header transaction-history-table__header--refund-amount",
+        },
+        muiTableBodyCellProps: {
+          className:
+            "transaction-history-table__data transaction-history-table__data--refund-amount",
+        },
+        size: 100,
+        enableSorting: false,
+        enableColumnActions: false,
+        Cell: () => (
+          // TODO render CustomFormComponent
+          <></>
+        ),
+      },
     ],
     [],
   );
@@ -131,7 +152,9 @@ export const TransactionHistoryTable = ({
     enableGlobalFilter: false,
     enableTopToolbar: false,
     enableBottomToolbar: false,
-    enableRowSelection: false,
+    enableRowSelection: (row: MRT_Row<PermitHistory>) =>
+      isTransactionTypeRefund(row.original.transactionTypeId) ||
+      !isZeroAmount(row.original.transactionAmount),
     initialState: {
       ...defaultTableInitialStateOptions,
       showGlobalFilter: false,

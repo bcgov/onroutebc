@@ -3,9 +3,16 @@ import { TRANSACTION_TYPES, TransactionType } from "../types/payment";
 import { Permit } from "../types/permit";
 import { isValidTransaction } from "./payment";
 import { Nullable } from "../../../common/types/common";
-import { PERMIT_STATES, daysLeftBeforeExpiry, getPermitState } from "./permitState";
+import {
+  PERMIT_STATES,
+  daysLeftBeforeExpiry,
+  getPermitState,
+} from "./permitState";
 import { PERMIT_TYPES, PermitType } from "../types/PermitType";
-import { getDurationIntervalDays, maxDurationForPermitType } from "./dateSelection";
+import {
+  getDurationIntervalDays,
+  maxDurationForPermitType,
+} from "./dateSelection";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -17,25 +24,33 @@ import {
  * @param duration Number of days for duration of permit
  * @returns Fee to be paid for the permit duration
  */
-export const calculateFeeByDuration = (permitType: PermitType, duration: number) => {
+export const calculateFeeByDuration = (
+  permitType: PermitType,
+  duration: number,
+) => {
   const maxAllowableDuration = maxDurationForPermitType(permitType);
-  
-  // Make sure that duration is between 0 and max allowable duration (for given permit type) 
-  const safeDuration = duration < 0
-    ? 0
-    : (duration > maxAllowableDuration) ? maxAllowableDuration : duration;
+
+  // Make sure that duration is between 0 and max allowable duration (for given permit type)
+  const safeDuration =
+    duration < 0
+      ? 0
+      : duration > maxAllowableDuration
+        ? maxAllowableDuration
+        : duration;
 
   const intervalDays = getDurationIntervalDays(permitType);
 
-  const intervalPeriodsToPay = safeDuration > 360
-    ? Math.ceil(360 / intervalDays) : Math.ceil(safeDuration / intervalDays);
-  
+  const intervalPeriodsToPay =
+    safeDuration > 360
+      ? Math.ceil(360 / intervalDays)
+      : Math.ceil(safeDuration / intervalDays);
+
   if (permitType === PERMIT_TYPES.TROW) {
     // Only for TROW, $100 per interval (30 days)
     return intervalPeriodsToPay * 100;
   }
   // Add more conditions for other permit types if needed
-  
+
   // For TROS, $30 per interval (30 days)
   return intervalPeriodsToPay * 30;
 };
@@ -56,9 +71,11 @@ export const feeSummaryDisplayText = (
     (numericStr) => Number(numericStr).toFixed(2),
     feeSummary,
   );
-  const feeFromDuration = duration && permitType ?
-    calculateFeeByDuration(permitType, duration).toFixed(2) : null;
-  
+  const feeFromDuration =
+    duration && permitType
+      ? calculateFeeByDuration(permitType, duration).toFixed(2)
+      : null;
+
   const fee = getDefaultRequiredVal("0.00", feeFromSummary, feeFromDuration);
   const numericFee = Number(fee);
   return numericFee >= 0 ? `$${fee}` : `-$${(numericFee * -1).toFixed(2)}`;
@@ -109,7 +126,10 @@ export const calculateAmountToRefund = (
   const netPaid = calculateNetAmount(permitHistory);
   if (isZeroAmount(netPaid)) return 0; // If total paid is $0 (eg. no-fee permits), then refund nothing
 
-  const feeForCurrDuration = calculateFeeByDuration(currPermitType, currDuration);
+  const feeForCurrDuration = calculateFeeByDuration(
+    currPermitType,
+    currDuration,
+  );
   return netPaid - feeForCurrDuration;
 };
 

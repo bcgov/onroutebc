@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import {
@@ -11,6 +12,8 @@ import {
   MenuItem,
   OutlinedInput,
   FormHelperText,
+  Typography,
+  Box,
 } from "@mui/material";
 
 import "./RefundPage.scss";
@@ -32,6 +35,7 @@ import {
   PAYMENT_METHOD_TYPE_DISPLAY,
   getPaymentMethod,
 } from "../../../../common/types/paymentMethods";
+import { RefundDetails } from "./components/RefundDetails";
 
 export const PERMIT_REFUND_ACTIONS = {
   VOID: "void",
@@ -98,6 +102,8 @@ export const RefundPage = ({
   const validTransactionHistory = permitHistory.filter((history) =>
     isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
   );
+
+  console.log(permitHistory);
 
   const getPrevValidTransaction = () => {
     if (!validTransactionHistory || validTransactionHistory.length === 0)
@@ -218,200 +224,55 @@ export const RefundPage = ({
 
   return (
     <div className="refund-page">
-      <div className="refund-page__section refund-page__section--left">
-        <div className="refund-info refund-info--transactions">
-          <div className="refund-info__header">Transaction History</div>
-          <TransactionHistoryTable permitHistory={validTransactionHistory} />
-        </div>
-        {showSendSection ? (
-          <div className="refund-info refund-info--send">
-            <div className="refund-info__header">
-              Send Permit and Receipt to
-            </div>
-            {email ? (
-              <div className="refund-info__info">
-                <span className="info-label">Company Email: </span>
-                <span className="info-value" data-testid="send-to-email">
-                  {email}
-                </span>
-              </div>
-            ) : null}
-            {additionalEmail ? (
-              <div className="refund-info__info">
-                <span className="info-label">Additional Email: </span>
-                <span
-                  className="info-value"
-                  data-testid="send-to-additional-email"
-                >
-                  {additionalEmail}
-                </span>
-              </div>
-            ) : null}
-            {fax ? (
-              <div className="refund-info__info">
-                <span className="info-label">Fax: </span>
-                <span className="info-value" data-testid="send-to-fax">
-                  {fax}
-                </span>
-              </div>
-            ) : null}
-          </div>
-        ) : null}
-        {showReasonSection ? (
-          <div className="refund-info refund-info--reason">
-            <div className="refund-info__header">
-              Reason for {permitActionText(permitAction)}
-            </div>
-            <div className="refund-info__info">{reason}</div>
-          </div>
-        ) : null}
-      </div>
-      <div className="refund-page__section refund-page__section--right">
-        {enableRefundMethodSelection ? (
-          <div className="refund-info refund-info--refund-methods">
-            <div className="refund-info__header">Choose a Refund Method</div>
-            <FormProvider {...formMethods}>
-              <Controller
-                control={control}
-                name="shouldUsePrevPaymentMethod"
-                render={({ field: { value } }) => (
-                  <RadioGroup
-                    className="refund-methods"
-                    defaultValue={value}
-                    value={value}
-                    onChange={(e) => handleRefundMethodChange(e.target.value)}
-                  >
-                    {!disableRefundCardSelection ? (
-                      <div
-                        className={`refund-method ${
-                          shouldUsePrevPaymentMethod
-                            ? "refund-method--active"
-                            : ""
-                        }`}
-                      >
-                        <FormControlLabel
-                          className="radio-label"
-                          label="Refund to Previous Payment Method"
-                          value={true}
-                          control={
-                            <Radio key="refund-by-prev-payment-method" />
-                          }
-                        />
-                        <div className="refund-payment">
-                          <Controller
-                            name="refundMethod"
-                            control={control}
-                            render={({ field: { value } }) => (
-                              <FormControl className="refund-payment__info refund-payment__info--method">
-                                <FormLabel className="refund-payment__label">
-                                  Payment Method
-                                </FormLabel>
-                                <Select
-                                  className="refund-payment__input refund-payment__input--method"
-                                  disabled={true}
-                                  value={value}
-                                >
-                                  {refundOptions.map((refundOption) => (
-                                    <MenuItem
-                                      key={refundOption}
-                                      value={refundOption}
-                                    >
-                                      {refundOption}
-                                    </MenuItem>
-                                  ))}
-                                </Select>
-                              </FormControl>
-                            )}
-                          />
+      <Typography variant="h2" className="refund-info__header">
+        Ameding Permit #: {permitNumber}
+      </Typography>
+      <RefundDetails />
+      <Typography variant="h2" className="refund-info__header">
+        Transaction History
+      </Typography>
+      <TransactionHistoryTable permitHistory={validTransactionHistory} />
 
-                          <Controller
-                            name="transactionId"
-                            control={control}
-                            rules={transactionIdRules}
-                            render={({
-                              field: { value },
-                              fieldState: { invalid },
-                            }) => (
-                              <FormControl
-                                className="refund-payment__info refund-payment__info--transaction"
-                                error={invalid}
-                              >
-                                <FormLabel className="refund-payment__label">
-                                  Transaction ID
-                                </FormLabel>
-                                <OutlinedInput
-                                  className={`refund-payment__input refund-payment__input--transaction ${
-                                    invalid ? "refund-payment__input--err" : ""
-                                  }`}
-                                  defaultValue={value}
-                                  {...register(
-                                    "transactionId",
-                                    transactionIdRules,
-                                  )}
-                                />
-                                {invalid ? (
-                                  <FormHelperText
-                                    className="refund-payment__err"
-                                    error
-                                  >
-                                    {getErrorMessage(errors, "transactionId")}
-                                  </FormHelperText>
-                                ) : null}
-                              </FormControl>
-                            )}
-                          />
-                        </div>
-                      </div>
-                    ) : null}
-
-                    <div
-                      className={`refund-method ${
-                        !shouldUsePrevPaymentMethod
-                          ? "refund-method--active"
-                          : ""
-                      }`}
-                    >
-                      <FormControlLabel
-                        className="radio-label"
-                        label="Refund by Cheque"
-                        value={false}
-                        control={<Radio key="refund-by-cheque" />}
-                      />
-                    </div>
-                  </RadioGroup>
-                )}
-              />
-            </FormProvider>
-          </div>
-        ) : null}
-        <div className="refund-info refund-info--fee-summary">
-          <div className="refund-fee-summary">
-            <div className="refund-fee-summary__header">
-              <div className="refund-fee-summary__title">
-                {getPermitTypeName(permitType)}
-              </div>
-              <div className="refund-fee-summary__permit-number">
-                <span>{permitActionText(permitAction)} Permit #: </span>
-                <span data-testid="voiding-permit-number">{permitNumber}</span>
-              </div>
+      {showSendSection ? (
+        <div className="refund-info refund-info--send">
+          <div className="refund-info__header">Send Permit and Receipt to</div>
+          {email ? (
+            <div className="refund-info__info">
+              <span className="info-label">Company Email: </span>
+              <span className="info-value" data-testid="send-to-email">
+                {email}
+              </span>
             </div>
-            <FeeSummary
-              permitType={permitType}
-              feeSummary={`${amountToRefund}`}
-            />
-            <div className="refund-fee-summary__footer">
-              <Button
-                className="finish-btn"
-                variant="contained"
-                color="primary"
-                onClick={handleSubmit(handleFinish)}
+          ) : null}
+          {additionalEmail ? (
+            <div className="refund-info__info">
+              <span className="info-label">Additional Email: </span>
+              <span
+                className="info-value"
+                data-testid="send-to-additional-email"
               >
-                Finish
-              </Button>
+                {additionalEmail}
+              </span>
             </div>
-          </div>
+          ) : null}
+          {fax ? (
+            <div className="refund-info__info">
+              <span className="info-label">Fax: </span>
+              <span className="info-value" data-testid="send-to-fax">
+                {fax}
+              </span>
+            </div>
+          ) : null}
         </div>
-      </div>
+      ) : null}
+      {showReasonSection ? (
+        <div className="refund-info refund-info--reason">
+          <div className="refund-info__header">
+            Reason for {permitActionText(permitAction)}
+          </div>
+          <div className="refund-info__info">{reason}</div>
+        </div>
+      ) : null}
     </div>
   );
 };

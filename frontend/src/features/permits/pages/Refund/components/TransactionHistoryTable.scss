@@ -8,7 +8,9 @@
 
   & &__table {
     width: 100%;
-    border: 1px solid $bc-border-grey;
+    border-left: 1px solid $bc-border-grey;
+    border-right: 1px solid $bc-border-grey;
+    // border-color: $bc-border-grey;
   }
 
   & &__header {
