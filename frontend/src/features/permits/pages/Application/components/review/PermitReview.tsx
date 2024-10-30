@@ -63,6 +63,11 @@ interface PermitReviewProps {
 }
 
 export const PermitReview = (props: PermitReviewProps) => {
+  const shouldShowRejectionHistory =
+    props.reviewContext === PERMIT_REVIEW_CONTEXTS.QUEUE &&
+    props.applicationRejectionHistory &&
+    props.applicationRejectionHistory.length > 0;
+
   return (
     <Box className="permit-review layout-box">
       <Box className="permit-review__container">
@@ -108,7 +113,7 @@ export const PermitReview = (props: PermitReviewProps) => {
           oldFields={props.oldFields?.permitData?.vehicleDetails}
         />
 
-        {props.applicationRejectionHistory && (
+        {shouldShowRejectionHistory && props.applicationRejectionHistory && (
           <ReviewApplicationRejectionHistory
             applicationRejectionHistory={props.applicationRejectionHistory}
           />

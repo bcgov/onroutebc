@@ -4,11 +4,13 @@ import { ApplicationRejectionHistory } from "../../../../types/ApplicationReject
 import "./ReviewApplicationRejectionHistory.scss";
 import {
   DATE_FORMATS,
-  dayjsToLocalStr,
+  toLocal,
 } from "../../../../../../common/helpers/formatDate";
 import { canViewApplicationQueue } from "../../../../../queue/helpers/canViewApplicationQueue";
 import { useContext } from "react";
 import OnRouteBCContext from "../../../../../../common/authentication/OnRouteBCContext";
+import { useMemoizedArray } from "../../../../../../common/hooks/useMemoizedArray";
+import dayjs from "dayjs";
 
 export const ReviewApplicationRejectionHistory = ({
   applicationRejectionHistory,
@@ -17,9 +19,21 @@ export const ReviewApplicationRejectionHistory = ({
 }) => {
   const { idirUserDetails } = useContext(OnRouteBCContext);
 
-  const reversedApplicationRejectionHistory = applicationRejectionHistory
-    .slice()
-    .reverse();
+  const sortRejectionHistoryByDate = (
+    history: ApplicationRejectionHistory[],
+  ): ApplicationRejectionHistory[] => {
+    return history.slice().sort((current, next) => {
+      const curentDate = dayjs(current.dateTime);
+      const nextDate = dayjs(next.dateTime);
+      return nextDate.valueOf() - curentDate.valueOf();
+    });
+  };
+
+  const reversedApplicationRejectionHistory = useMemoizedArray(
+    sortRejectionHistoryByDate(applicationRejectionHistory),
+    (rejectionHistoryItem) => rejectionHistoryItem.caseActivityId,
+    (current, next) => current === next,
+  );
 
   return (
     <Box className="rejection-history">
@@ -34,7 +48,7 @@ export const ReviewApplicationRejectionHistory = ({
       </Box>
       <Box className="rejection-history__body">
         <Box className="rejection-history__info">
-          {reversedApplicationRejectionHistory.map((item) => (
+          {applicationRejectionHistory.map((item) => (
             <Box
               className="rejection-history__item item"
               key={item.caseActivityId}
@@ -42,8 +56,8 @@ export const ReviewApplicationRejectionHistory = ({
               <div className="item__row item__row--flex">
                 <Typography>
                   {canViewApplicationQueue(idirUserDetails?.userRole)
-                    ? `${item.userName}, ${dayjsToLocalStr(item.dateTime, DATE_FORMATS.LONG)}`
-                    : dayjsToLocalStr(item.dateTime, DATE_FORMATS.LONG)}
+                    ? `${item.userName}, ${toLocal(item.dateTime, DATE_FORMATS.LONG)}`
+                    : toLocal(item.dateTime, DATE_FORMATS.LONG)}
                 </Typography>
               </div>
               <div className="item__row">
