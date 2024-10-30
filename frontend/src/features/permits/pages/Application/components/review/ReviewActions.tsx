@@ -6,9 +6,6 @@ import {
   PermitReviewContext,
 } from "../../../../types/PermitReviewContext";
 import "./ReviewActions.scss";
-import { isPermitStartOrExpiryDateInPast } from "../../../../helpers/dateSelection";
-import { Nullable } from "../../../../../../common/types/common";
-import { Dayjs } from "dayjs";
 
 export const ReviewActions = ({
   reviewContext,
@@ -17,11 +14,10 @@ export const ReviewActions = ({
   onContinue,
   hasToCartButton,
   onAddToCart,
-  disableApproveAndRejectButtons,
   handleApproveButton,
   handleRejectButton,
-  startDate,
-  expiryDate,
+  disableApproveButton,
+  disableRejectButton,
 }: {
   reviewContext: PermitReviewContext;
   onEdit: () => void;
@@ -29,11 +25,10 @@ export const ReviewActions = ({
   onContinue?: () => Promise<void>;
   hasToCartButton: boolean;
   onAddToCart?: () => Promise<void>;
-  disableApproveAndRejectButtons?: boolean;
   handleApproveButton?: () => Promise<void>;
   handleRejectButton?: () => void;
-  startDate?: Nullable<Dayjs>;
-  expiryDate?: Nullable<Dayjs>;
+  disableApproveButton?: boolean;
+  disableRejectButton?: boolean;
 }) => {
   return (
     <Box className="review-actions">
@@ -95,7 +90,7 @@ export const ReviewActions = ({
             color="error"
             data-testid="reject-btn"
             onClick={handleRejectButton}
-            disabled={disableApproveAndRejectButtons}
+            disabled={disableRejectButton}
           >
             Reject
           </Button>
@@ -107,10 +102,7 @@ export const ReviewActions = ({
             color="primary"
             data-testid="approve-btn"
             onClick={handleApproveButton}
-            disabled={
-              disableApproveAndRejectButtons ||
-              isPermitStartOrExpiryDateInPast(startDate, expiryDate)
-            }
+            disabled={disableApproveButton}
           >
             Approve
           </Button>

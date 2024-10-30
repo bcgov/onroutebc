@@ -22,6 +22,7 @@ import { ReviewFeeSummary } from "./ReviewFeeSummary";
 import { ReviewPermitDetails } from "./ReviewPermitDetails";
 import { ReviewPermitLOAs } from "./ReviewPermitLOAs";
 import { ReviewVehicleInfo } from "./ReviewVehicleInfo";
+import { isPermitStartOrExpiryDateInPast } from "../../../../helpers/dateSelection";
 
 interface PermitReviewProps {
   reviewContext: PermitReviewContext;
@@ -60,6 +61,14 @@ interface PermitReviewProps {
 }
 
 export const PermitReview = (props: PermitReviewProps) => {
+  const invalidPermitDates =
+    props.permitStartDate && props.permitExpiryDate
+      ? isPermitStartOrExpiryDateInPast(
+          props.permitStartDate,
+          props.permitExpiryDate,
+        )
+      : false;
+
   return (
     <Box className="permit-review layout-box">
       <Box className="permit-review__container">
@@ -94,6 +103,7 @@ export const PermitReview = (props: PermitReviewProps) => {
           showChangedFields={props.showChangedFields}
           oldStartDate={props.oldFields?.permitData?.startDate}
           oldDuration={props.oldFields?.permitData?.permitDuration}
+          showDateErrorBanner={invalidPermitDates}
         />
 
         <ReviewVehicleInfo
@@ -123,13 +133,12 @@ export const PermitReview = (props: PermitReviewProps) => {
           onContinue={props.onContinue}
           hasToCartButton={props.reviewContext === PERMIT_REVIEW_CONTEXTS.APPLY}
           onAddToCart={props.onAddToCart}
-          disableApproveAndRejectButtons={
-            props.updateApplicationMutationPending
-          }
           handleApproveButton={props.handleApproveButton}
           handleRejectButton={props.handleRejectButton}
-          startDate={props.permitStartDate}
-          expiryDate={props.permitExpiryDate}
+          disableApproveButton={
+            props.updateApplicationMutationPending || invalidPermitDates
+          }
+          disableRejectButton={props.updateApplicationMutationPending}
         />
       </Box>
     </Box>

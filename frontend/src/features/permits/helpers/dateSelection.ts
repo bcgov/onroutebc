@@ -21,7 +21,6 @@ import {
   TROW_DURATION_INTERVAL_DAYS,
   TROW_DURATION_OPTIONS,
 } from "../constants/trow";
-import { Nullable } from "../../../common/types/common";
 
 /**
  * Get list of selectable duration options for a given permit type.
@@ -148,8 +147,8 @@ export const handleUpdateDurationIfNeeded = (
  * @returns True if either startDate or expiryDate are in the past
  */
 export const isPermitStartOrExpiryDateInPast = (
-  startDate: Nullable<Dayjs>,
-  expiryDate: Nullable<Dayjs>,
+  startDate: Dayjs,
+  expiryDate: Dayjs,
 ) => {
   return (
     dayjs().isAfter(startDate, "day") || dayjs().isAfter(expiryDate, "day")

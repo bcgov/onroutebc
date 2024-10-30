@@ -62,19 +62,17 @@ export const ApplicationsInReviewRowOptions = ({
   const {
     mutateAsync: updateApplication,
     data: updateApplicationResponse,
-    isError: isUpdateApplicationError,
     error: updateApplicationError,
   } = useUpdateApplicationInQueueStatus();
 
+  const updateApplicationErrorStatus = updateApplicationError?.response?.status;
+
   useEffect(() => {
-    if (
-      isUpdateApplicationError &&
-      updateApplicationError.response?.status === 422
-    ) {
+    if (updateApplicationErrorStatus === 422) {
       // if the application has already been withdrawn by another user
       return setIsAIRModalOpen(true);
     }
-  }, [isUpdateApplicationError, updateApplicationError]);
+  }, [updateApplicationErrorStatus]);
 
   const isSuccess = (status?: number) => status === 201;
   const { setSnackBar } = useContext(SnackBarContext);

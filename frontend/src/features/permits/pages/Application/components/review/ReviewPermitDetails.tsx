@@ -14,7 +14,7 @@ import { PermitCondition } from "../../../../types/PermitCondition";
 import { DiffChip } from "./DiffChip";
 import { ReviewConditionsTable } from "./ReviewConditionsTable";
 import "./ReviewPermitDetails.scss";
-import { isPermitStartOrExpiryDateInPast } from "../../../../helpers/dateSelection";
+import { pastStartOrExpiryDate } from "../../../../../../common/helpers/validationMessages";
 
 export const ReviewPermitDetails = ({
   startDate,
@@ -24,6 +24,7 @@ export const ReviewPermitDetails = ({
   showChangedFields = false,
   oldStartDate,
   oldDuration,
+  showDateErrorBanner,
 }: {
   startDate?: Nullable<Dayjs>;
   permitDuration?: Nullable<number>;
@@ -106,11 +107,9 @@ export const ReviewPermitDetails = ({
           />
         </Box>
 
-        {isPermitStartOrExpiryDateInPast(startDate, expiryDate) && (
+        {showDateErrorBanner && (
           <Box className="permit-error-banner">
-            <ErrorBcGovBanner
-              msg={"Start Date and/or Permit Expiry Date is in the past."}
-            />
+            <ErrorBcGovBanner msg={pastStartOrExpiryDate()} />
           </Box>
         )}
         <Box className="permit-conditions">
