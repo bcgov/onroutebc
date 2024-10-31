@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useMemo } from "react";
 
 import {
+  MRT_Cell,
   MRT_ColumnDef,
   MRT_Row,
   MaterialReactTable,
@@ -27,6 +29,14 @@ import {
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../../common/helpers/tableHelper";
+import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
+import { FieldValues, FormProvider, useForm } from "react-hook-form";
+import {
+  MultiplePaymentMethodRefundFormData,
+  MultiplePaymentMethodRefundRowData,
+  PermitHistoryWithRefund,
+} from "../types/RefundFormData";
+import { Button, Checkbox, FormControlLabel } from "@mui/material";
 
 export const TransactionHistoryTable = ({
   permitHistory,
@@ -37,7 +47,15 @@ export const TransactionHistoryTable = ({
     isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
   );
 
-  const columns = useMemo<MRT_ColumnDef<PermitHistory>[]>(
+  const formMethods = useForm<MultiplePaymentMethodRefundFormData>();
+
+  const { handleSubmit } = formMethods;
+
+  const onSubmit = (data: FieldValues) => {
+    console.log(data);
+  };
+
+  const columns = useMemo<MRT_ColumnDef<PermitHistoryWithRefund>[]>(
     () => [
       {
         accessorKey: "permitNumber",
@@ -132,12 +150,84 @@ export const TransactionHistoryTable = ({
           className:
             "transaction-history-table__data transaction-history-table__data--refund-amount",
         },
-        size: 100,
+        size: 20,
         enableSorting: false,
         enableColumnActions: false,
-        Cell: () => (
-          // TODO render CustomFormComponent
-          <></>
+        Cell: ({ cell }: { cell: MRT_Cell<PermitHistoryWithRefund> }) => (
+          <CustomFormComponent
+            type="number"
+            feature="refund-permit"
+            options={{
+              name: `refundData.${cell.row.index}.refundAmount`,
+              rules: { required: false },
+            }}
+          />
+        ),
+      },
+      {
+        id: "refundTransactionId",
+        header: "Refund Tran ID",
+        muiTableHeadCellProps: {
+          className:
+            "transaction-history-table__header transaction-history-table__header--refund-transaction-id",
+        },
+        muiTableBodyCellProps: {
+          className:
+            "transaction-history-table__data transaction-history-table__data--refund-transaction-id",
+        },
+        size: 20,
+        enableSorting: false,
+        enableColumnActions: false,
+        Cell: ({ cell }: { cell: MRT_Cell<PermitHistoryWithRefund> }) => (
+          <CustomFormComponent
+            type="input"
+            feature="refund-permit"
+            options={{
+              name: `refundData.${cell.row.index}.refundTransactionId`,
+              rules: { required: false },
+            }}
+          />
+        ),
+      },
+      {
+        id: "chequeRefund",
+        header: "Cheque Refund",
+        muiTableHeadCellProps: {
+          className:
+            "transaction-history-table__header transaction-history-table__header--refund-cheque-refund",
+        },
+        muiTableBodyCellProps: {
+          className:
+            "transaction-history-table__data transaction-history-table__data--refund-cheque-refund",
+        },
+        size: 20,
+        enableSorting: false,
+        enableColumnActions: false,
+        Cell: ({ cell }: { cell: MRT_Cell<PermitHistoryWithRefund> }) => (
+          <FormControlLabel
+            control={
+              <Checkbox
+                className={`cheque-refund-checkbox ${
+                  // You can add any condition here if you need to disable it
+                  false // Replace with your actual condition if needed
+                }`}
+                checked={cell.getValue() as boolean} // Access the checkbox state from the cell value
+                onChange={() => {
+                  // Use react-hook-form to set the checkbox value
+                  const newValue = !cell.getValue(); // Toggle the value
+                  formMethods.setValue(
+                    `refundData.${cell.row.index}.chequeRefund`,
+                    newValue,
+                  );
+                }}
+              />
+            }
+            label="Cheque Refund" // You can replace this with the actual label you want
+            classes={{
+              root: "cheque-refund-label",
+              disabled: "cheque-refund-label--disabled",
+            }}
+          />
         ),
       },
     ],
@@ -152,9 +242,9 @@ export const TransactionHistoryTable = ({
     enableGlobalFilter: false,
     enableTopToolbar: false,
     enableBottomToolbar: false,
-    enableRowSelection: (row: MRT_Row<PermitHistory>) =>
-      isTransactionTypeRefund(row.original.transactionTypeId) ||
-      !isZeroAmount(row.original.transactionAmount),
+    // enableRowSelection: (row: MRT_Row<PermitHistory>) =>
+    //   isTransactionTypeRefund(row.original.transactionTypeId) ||
+    //   !isZeroAmount(row.original.transactionAmount),
     initialState: {
       ...defaultTableInitialStateOptions,
       showGlobalFilter: false,
@@ -170,5 +260,17 @@ export const TransactionHistoryTable = ({
     },
   });
 
-  return <MaterialReactTable table={table} />;
+  return (
+    <FormProvider {...formMethods}>
+      <MaterialReactTable table={table} />
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleSubmit(onSubmit)}
+        className="submit-btn"
+      >
+        Finish
+      </Button>
+    </FormProvider>
+  );
 };

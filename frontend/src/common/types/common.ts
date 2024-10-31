@@ -14,6 +14,7 @@ import {
   Trailer,
 } from "../../features/manageVehicles/types/Vehicle";
 import { LOAFormData } from "../../features/settings/types/LOAFormData";
+import { MultiplePaymentMethodRefundFormData } from "../../features/permits/pages/Refund/types/RefundFormData";
 
 export interface ApiErrorResponse {
   status: number;
@@ -34,7 +35,8 @@ export type ORBC_FormTypes =
   | SearchFields
   | VerifyClientRequest
   | PermitContactDetails
-  | LOAFormData;
+  | LOAFormData
+  | MultiplePaymentMethodRefundFormData;
 
 /**
  * The options for pagination.
