@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Box, Typography } from "@mui/material";
 import { ApplicationRejectionHistory } from "../../../../types/ApplicationRejectionHistory";
 import "./ReviewApplicationRejectionHistory.scss";
@@ -9,8 +8,6 @@ import {
 import { canViewApplicationQueue } from "../../../../../queue/helpers/canViewApplicationQueue";
 import { useContext } from "react";
 import OnRouteBCContext from "../../../../../../common/authentication/OnRouteBCContext";
-import { useMemoizedArray } from "../../../../../../common/hooks/useMemoizedArray";
-import dayjs from "dayjs";
 
 export const ReviewApplicationRejectionHistory = ({
   applicationRejectionHistory,
@@ -18,23 +15,6 @@ export const ReviewApplicationRejectionHistory = ({
   applicationRejectionHistory: ApplicationRejectionHistory[];
 }) => {
   const { idirUserDetails } = useContext(OnRouteBCContext);
-
-  const sortRejectionHistoryByDate = (
-    history: ApplicationRejectionHistory[],
-  ): ApplicationRejectionHistory[] => {
-    return history.slice().sort((current, next) => {
-      const curentDate = dayjs(current.dateTime);
-      const nextDate = dayjs(next.dateTime);
-      return nextDate.valueOf() - curentDate.valueOf();
-    });
-  };
-
-  const reversedApplicationRejectionHistory = useMemoizedArray(
-    sortRejectionHistoryByDate(applicationRejectionHistory),
-    (rejectionHistoryItem) => rejectionHistoryItem.caseActivityId,
-    (current, next) => current === next,
-  );
-
   return (
     <Box className="rejection-history">
       <Box className="rejection-history__header">
