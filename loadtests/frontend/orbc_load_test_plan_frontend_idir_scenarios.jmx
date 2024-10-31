@@ -49,6 +49,26 @@
             <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/idir/home</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="VEHICLES_API_URL" elementType="Argument">
+            <stringProp name="Argument.name">VEHICLES_API_URL</stringProp>
+            <stringProp name="Argument.value">https://onroutebc-test-vehicles.apps.silver.devops.gov.bc.ca</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="BEARER_TOKEN" elementType="Argument">
+            <stringProp name="Argument.name">BEARER_TOKEN</stringProp>
+            <stringProp name="Argument.value"></stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="SEARCH_PERMITE_URL" elementType="Argument">
+            <stringProp name="Argument.name">SEARCH_PERMITE_URL</stringProp>
+            <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/idir/search-results?searchEntity=permits&amp;searchByFilter=permitNumber&amp;searchString=1</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="RESEND_EMAIL" elementType="Argument">
+            <stringProp name="Argument.name">RESEND_EMAIL</stringProp>
+            <stringProp name="Argument.value">bruce.wang@gov.bc.ca</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
@@ -97,12 +117,24 @@
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
 import org.openqa.selenium.WebElement
+import org.openqa.selenium.devtools.DevTools;
+import org.openqa.selenium.devtools.v129.network.Network;
+import java.util.Optional;
+import org.openqa.selenium.logging.LogType
+import org.openqa.selenium.logging.LogEntries
+import org.openqa.selenium.chrome.ChromeOptions
+import org.openqa.selenium.logging.LoggingPreferences
+import java.util.logging.Level
+import java.util.function.Consumer
 
 WDS.sampleResult.sampleStart() 
-def frontendUrl = WDS.vars.get(&quot;FRONTEND_URL&quot;)
-WDS.browser.get(frontendUrl);
-Thread.sleep(5000)
 
+WDS.log.info &quot;Groovy version: ${GroovySystem.version}&quot;
+
+
+def frontendUrl = WDS.vars.get(&quot;FRONTEND_URL&quot;)
+WDS.browser.get(frontendUrl)
+Thread.sleep(5000)
 
 def loginButton = WDS.browser.findElement(By.id(&apos;login-idir&apos;))
 if (loginButton != null) {
@@ -112,27 +144,57 @@ if (loginButton != null) {
     WDS.log.info(&quot;Button with id &apos;login-bceid&apos; not found&quot;)
 }
 
-Thread.sleep(10000)
-/*
-def user = WDS.browser.findElement(By.id(&apos;user&apos;))
-def password = WDS.browser.findElement(By.id(&apos;password&apos;))
-
-def userValue = WDS.vars.get(&quot;USER&quot;)
-def passwordValue = WDS.vars.get(&quot;PASSWORD&quot;)
-user.sendKeys(userValue)
-password.sendKeys(passwordValue)
 Thread.sleep(5000)
 
-def submitButton = WDS.browser.findElement(By.name(&apos;btnSubmit&apos;))
-if (submitButton != null) {
-    submitButton.click()
-} else {
-    WDS.log.info(&apos;Submit button with name=&quot;btnSubmit&quot; not found&apos;)
+/*
+try {
+    def user = WDS.browser.findElement(By.id(&apos;user&apos;))
+    def password = WDS.browser.findElement(By.id(&apos;password&apos;))
+    if (user != null) {      
+	def userValue = WDS.vars.get(&quot;USER&quot;)
+	def passwordValue = WDS.vars.get(&quot;PASSWORD&quot;)
+	user.sendKeys(userValue)
+	password.sendKeys(passwordValue)
+	Thread.sleep(5000)
+	
+	def submitButton = WDS.browser.findElement(By.name(&apos;btnSubmit&apos;))
+	if (submitButton != null) {
+	    submitButton.click()
+	} else {
+	    WDS.log.info(&apos;Submit button with name=&quot;btnSubmit&quot; not found&apos;)
+	}
+	Thread.sleep(5000)
+	}
+} catch (NoSuchElementException e) {
+	WDS.log.info(&apos;User element not found.&apos;)
 }
 */
-Thread.sleep(10000)
+	
 
-WDS.sampleResult.sampleEnd()</stringProp>
+def devTools = ((org.openqa.selenium.chrome.ChromeDriver) WDS.browser).getDevTools()
+devTools.createSession()
+devTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()))
+devTools.addListener(Network.requestWillBeSent(), { request -&gt;
+    if (request.getRequest().getUrl().contains(&quot;https&quot;)) {
+        def headers = request.getRequest().getHeaders()
+        def authHeader = headers.get(&quot;Authorization&quot;)
+        if (authHeader != null &amp;&amp; authHeader.startsWith(&quot;Bearer &quot;)) {
+            def token = authHeader.replace(&quot;Bearer &quot;, &quot;&quot;)
+            WDS.log.info(&quot;Extracted Token: &quot; + token)
+            WDS.vars.put(&quot;BEARER_TOKEN&quot;, token)
+        }
+    }
+    else {
+    	WDS.log.info(&quot;no token: &quot;)
+    	}
+} as Consumer)
+Thread.sleep(5000)
+
+WDS.browser.get(frontendUrl)
+Thread.sleep(5000)
+
+WDS.sampleResult.sampleEnd()
+</stringProp>
           <stringProp name="WebDriverSampler.parameters"></stringProp>
           <stringProp name="WebDriverSampler.language">groovy</stringProp>
         </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
@@ -193,42 +255,12 @@ try {
 
 
 
-/*
-def edit = WDS.browser.findElement(By.className(&apos;css-5k7mli&apos;))
-WDS.browser.executeScript(&quot;window.scrollTo(0, arguments[0].getBoundingClientRect().top + window.pageYOffset - 100);&quot;, edit)
-edit.click()
-Thread.sleep(5000)
-
-def phone = WDS.browser.findElement(By.cssSelector(&apos;[name=&quot;phone&quot;]&apos;))
-phone.clear()
-phone.sendKeys(&quot;(250) 205-0006&quot;)
-Thread.sleep(5000)
-
-def extension = WDS.browser.findElement(By.cssSelector(&apos;[name=&quot;extension&quot;]&apos;))
-extension.clear()
-extension.sendKeys(&quot;0001&quot;)
-Thread.sleep(5000)
-
-def fax = WDS.browser.findElement(By.cssSelector(&apos;[name=&quot;fax&quot;]&apos;))
-fax.clear()
-fax.sendKeys(&quot;(250) 205-0007&quot;)
-Thread.sleep(5000)
-
-
-
-def save = WDS.browser.findElement(By.className(&apos;css-xie432&apos;))
-WDS.browser.executeScript(&quot;window.scrollTo(0, arguments[0].getBoundingClientRect().top + window.pageYOffset - 100);&quot;, save)
-save.click()
-Thread.sleep(5000)
-
-*/
-
 WDS.sampleResult.sampleEnd()</stringProp>
           <stringProp name="WebDriverSampler.parameters"></stringProp>
           <stringProp name="WebDriverSampler.language">groovy</stringProp>
         </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
         <hashTree/>
-        <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="checkReportPage" enabled="true">
+        <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="checkReportPage" enabled="false">
           <stringProp name="WebDriverSampler.script">import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
@@ -281,36 +313,98 @@ try {
 		}
 
 
+WDS.sampleResult.sampleEnd()</stringProp>
+          <stringProp name="WebDriverSampler.parameters"></stringProp>
+          <stringProp name="WebDriverSampler.language">groovy</stringProp>
+        </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ppcSearchPermitNumber" enabled="false">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">${VEHICLES_API_URL}/permits?searchColumn=permitNumber&amp;searchString=1&amp;page=1&amp;take=10 </stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Bearer ${BEARER_TOKEN}</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Accept</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Content-Type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
+        <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="ppcViewPdfsAndResend" enabled="true">
+          <stringProp name="WebDriverSampler.script">import org.openqa.selenium.By
+import org.openqa.selenium.support.ui.ExpectedConditions
+import org.openqa.selenium.support.ui.WebDriverWait
+import org.openqa.selenium.WebElement
 
-/*
-def edit = WDS.browser.findElement(By.className(&apos;css-5k7mli&apos;))
-WDS.browser.executeScript(&quot;window.scrollTo(0, arguments[0].getBoundingClientRect().top + window.pageYOffset - 100);&quot;, edit)
-edit.click()
+WDS.sampleResult.sampleStart() 
 Thread.sleep(5000)
 
-def phone = WDS.browser.findElement(By.cssSelector(&apos;[name=&quot;phone&quot;]&apos;))
-phone.clear()
-phone.sendKeys(&quot;(250) 205-0006&quot;)
+// edit contact details
+def searchPermitUrl = WDS.vars.get(&quot;SEARCH_PERMITE_URL&quot;)
+WDS.browser.get(searchPermitUrl);
 Thread.sleep(5000)
 
-def extension = WDS.browser.findElement(By.cssSelector(&apos;[name=&quot;extension&quot;]&apos;))
-extension.clear()
-extension.sendKeys(&quot;0001&quot;)
-Thread.sleep(5000)
-
-def fax = WDS.browser.findElement(By.cssSelector(&apos;[name=&quot;fax&quot;]&apos;))
-fax.clear()
-fax.sendKeys(&quot;(250) 205-0007&quot;)
-Thread.sleep(5000)
+def firstPermit = WDS.browser.findElement(By.className(&quot;css-mn35dv&quot;))
+firstPermit.click();
 
 
+def firstThreeDot = WDS.browser.findElement(By.className(&quot;css-15mydm5&quot;))
+firstThreeDot.click()
+Thread.sleep(2000)
 
-def save = WDS.browser.findElement(By.className(&apos;css-xie432&apos;))
-WDS.browser.executeScript(&quot;window.scrollTo(0, arguments[0].getBoundingClientRect().top + window.pageYOffset - 100);&quot;, save)
-save.click()
-Thread.sleep(5000)
 
-*/
+def viewReceipt = WDS.browser.findElement(By.cssSelector(&apos;[data-option-value=&quot;viewReceipt&quot;]&apos;))
+viewReceipt.click()
+Thread.sleep(2000)
+
+firstThreeDot.click()
+Thread.sleep(2000)
+
+def resend = WDS.browser.findElement(By.cssSelector(&apos;[data-option-value=&quot;resend&quot;]&apos;))
+resend.click()
+Thread.sleep(2000)
+
+def email = WDS.browser.findElement(By.cssSelector(&apos;[data-testid=&quot;input-email&quot;]&apos;))
+def resendEmail = WDS.vars.get(&quot;RESEND_EMAIL&quot;)
+email.sendKeys(resendEmail)
+Thread.sleep(2000)
+
+def checkboxes = WDS.browser.findElements(By.className(&apos;css-1nx7jar&apos;))
+checkboxes.each { checkbox -&gt;
+    WDS.browser.executeScript(&quot;window.scrollTo(0, arguments[0].getBoundingClientRect().top + window.pageYOffset - 100);&quot;, checkbox)
+    if (!checkbox.isSelected()) {
+        checkbox.click()
+    }
+}
+
+def resendButton = WDS.browser.findElement(By.className(&apos;css-xie432&apos;))
+resendButton.click()
+Thread.sleep(2000)
 
 WDS.sampleResult.sampleEnd()</stringProp>
           <stringProp name="WebDriverSampler.parameters"></stringProp>
