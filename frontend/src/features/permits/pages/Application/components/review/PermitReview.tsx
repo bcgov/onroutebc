@@ -24,6 +24,7 @@ import { ReviewPermitLOAs } from "./ReviewPermitLOAs";
 import { ReviewVehicleInfo } from "./ReviewVehicleInfo";
 import { ApplicationRejectionHistory } from "../../../../types/ApplicationRejectionHistory";
 import { ReviewApplicationRejectionHistory } from "./ReviewApplicationRejectionHistory";
+import { isPermitStartOrExpiryDateInPast } from "../../../../helpers/dateSelection";
 
 interface PermitReviewProps {
   reviewContext: PermitReviewContext;
@@ -67,6 +68,14 @@ export const PermitReview = (props: PermitReviewProps) => {
     props.reviewContext === PERMIT_REVIEW_CONTEXTS.QUEUE &&
     props.applicationRejectionHistory &&
     props.applicationRejectionHistory.length > 0;
+
+  const invalidPermitDates =
+    props.permitStartDate && props.permitExpiryDate
+      ? isPermitStartOrExpiryDateInPast(
+          props.permitStartDate,
+          props.permitExpiryDate,
+        )
+      : false;
 
   return (
     <Box className="permit-review layout-box">
