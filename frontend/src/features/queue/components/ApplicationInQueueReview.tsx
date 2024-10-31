@@ -13,11 +13,11 @@ import { Application } from "../../permits/types/application";
 import { PERMIT_REVIEW_CONTEXTS } from "../../permits/types/PermitReviewContext";
 import { DEFAULT_PERMIT_TYPE } from "../../permits/types/PermitType";
 import { useFetchSpecialAuthorizations } from "../../settings/hooks/specialAuthorizations";
-import { useUpdateApplicationInQueueStatus } from "../hooks/hooks";
 import { CASE_ACTIVITY_TYPES } from "../types/CaseActivityType";
 import "./ApplicationInQueueReview.scss";
 import { QueueBreadcrumb } from "./QueueBreadcrumb";
 import { RejectApplicationModal } from "./RejectApplicationModal";
+import { useUpdateApplicationInQueueStatus } from "../hooks/hooks";
 
 export const ApplicationInQueueReview = ({
   applicationData,
@@ -143,6 +143,14 @@ export const ApplicationInQueueReview = ({
           applicationRejectionHistory={applicationData?.rejectionHistory}
         />
       </FormProvider>
+      {showRejectApplicationModal && (
+        <RejectApplicationModal
+          showModal={showRejectApplicationModal}
+          onCancel={() => setShowRejectApplicationModal(false)}
+          onConfirm={handleReject}
+          isPending={updateApplicationMutationPending}
+        />
+      )}
       {showRejectApplicationModal && (
         <RejectApplicationModal
           showModal={showRejectApplicationModal}

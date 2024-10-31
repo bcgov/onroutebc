@@ -102,6 +102,7 @@ export const PermitReview = (props: PermitReviewProps) => {
           showChangedFields={props.showChangedFields}
           oldStartDate={props.oldFields?.permitData?.startDate}
           oldDuration={props.oldFields?.permitData?.permitDuration}
+          showDateErrorBanner={invalidPermitDates}
         />
 
         <ReviewVehicleInfo
@@ -137,11 +138,12 @@ export const PermitReview = (props: PermitReviewProps) => {
           onContinue={props.onContinue}
           hasToCartButton={props.reviewContext === PERMIT_REVIEW_CONTEXTS.APPLY}
           onAddToCart={props.onAddToCart}
-          disableApproveAndRejectButtons={
-            props.updateApplicationMutationPending
-          }
           handleApproveButton={props.handleApproveButton}
           handleRejectButton={props.handleRejectButton}
+          disableApproveButton={
+            props.updateApplicationMutationPending || invalidPermitDates
+          }
+          disableRejectButton={props.updateApplicationMutationPending}
         />
       </Box>
     </Box>
