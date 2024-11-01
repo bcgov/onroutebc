@@ -20,6 +20,8 @@ import {
 } from "../apiManager/queueAPI";
 import { canViewApplicationQueue } from "../helpers/canViewApplicationQueue";
 import { CaseActivityType } from "../types/CaseActivityType";
+import { useNavigate } from "react-router-dom";
+import { ERROR_ROUTES } from "../../../routes/constants";
 
 const QUEUE_QUERY_KEYS_BASE = "queue";
 
@@ -160,6 +162,7 @@ export const useClaimApplicationInQueueMutation = () => {
 
 export const useUpdateApplicationInQueueStatus = () => {
   const { invalidate } = useInvalidateApplicationsInQueue();
+  const navigate = useNavigate();
 
   return useMutation({
     mutationFn: (data: {
@@ -173,7 +176,13 @@ export const useUpdateApplicationInQueueStatus = () => {
     onSuccess: () => {
       invalidate();
     },
-    onError: (err: AxiosError) => err,
+    onError: (err: AxiosError) => {
+      if (err.response?.status === 422) {
+        return err;
+      } else {
+        navigate(ERROR_ROUTES.UNEXPECTED);
+      }
+    },
   });
 };
 
