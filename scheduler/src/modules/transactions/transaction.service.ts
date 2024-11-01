@@ -136,8 +136,7 @@ export class TransactionService {
     }
   }
 
-  @Cron('0 30 16 * * 1-5')
-  // @Cron(`${process.env.TPS_PENDING_POLLING_INTERVAL || '0 */1 * * * *'}`)
+  @Cron(`${process.env.CGI_FILE_POLLING_SCHEDULE || '0 30 16 * * 1-5'}`)
   @LogAsyncMethodExecution()
   async genterateCgifilesAndUpload() {
     try {
@@ -153,9 +152,9 @@ export class TransactionService {
         const now: Date = new Date();
         const cgiCustomString: string = formatDateToCustomString(now);
         const cgiFileName =
-          `F` + '3535' + `.${cgiCustomString}`;
+          `INBOX.F${process.env.CGI_FEEDER_NUMBER}.${cgiCustomString}`;
         const cgiTrigerFileName =
-          `F` + '3535'+ `.${cgiCustomString}.TRG`;
+          `INBOX.F${process.env.CGI_FEEDER_NUMBER}.${cgiCustomString}.TRG`;
         for (const transaction of transactions) {
           batchNumberCounter++;
           lastJVDCounter++;
@@ -188,8 +187,6 @@ export class TransactionService {
             batchNumberCounter,
           );
           this.logger.log(`File generated: ${cgiFileName}`);
-          const cgiTrigerFileName =
-            `F` + '3535' + `.${cgiCustomString}.TRG`;
           this.logger.log(`${cgiTrigerFileName} generated.`);
           fileData +=
             batchHeader +

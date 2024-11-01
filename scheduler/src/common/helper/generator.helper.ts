@@ -139,7 +139,9 @@ export function getFeederNumberClientSystem(): string {
 
 export function getControlCount(transaction: Transaction): string {
   // 15 chars
-  const numberStr = transaction.permitTransactions.length;
+  // Add 2 to the number of permit transactions to account for the
+  // balancing journal detail line and the journal header line
+  const numberStr = transaction.permitTransactions.length + 2;
   const desiredLength = 15;
   const paddedString = numberStr.toString().padStart(desiredLength, '0');
   return paddedString;
