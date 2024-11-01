@@ -33,8 +33,29 @@ export const usePolicyEngine = (permitType: PermitType) => {
       }));
   }, [policyEngine, permitType]);
 
+  const getNextAllowedVehicleSubtypes = useCallback(
+    (selectedCommodity: string, selectedSubtypes: string[]) => {
+      const nextAllowedSubtypes = getDefaultRequiredVal(
+        new Map<string, string>(),
+        policyEngine?.getNextPermittableVehicles(
+          permitType,
+          selectedCommodity,
+          selectedSubtypes,
+        ),
+      );
+
+      return [...nextAllowedSubtypes.entries()]
+        .map(([subtypeCode, subtypeFullName]) => ({
+          value: subtypeCode,
+          label: subtypeFullName,
+        }));
+    },
+    [policyEngine, permitType],
+  );
+
   return {
     validate,
+    getNextAllowedVehicleSubtypes,
     commodityOptions,
   };
 };

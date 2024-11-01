@@ -16,6 +16,7 @@ import { getEligibleVehicleSubtypes } from "../helpers/permitVehicles";
 import { PermitCondition } from "../types/PermitCondition";
 import { EMPTY_VEHICLE_DETAILS, PermitVehicleDetails } from "../types/PermitVehicleDetails";
 import { PermitLOA } from "../types/PermitLOA";
+import { VehicleInConfiguration } from "../types/PermitVehicleConfiguration";
 
 /**
  * Custom hook for populating the form using fetched application data, as well as current company id and user details.
@@ -122,6 +123,16 @@ export const useInitApplicationFormData = (
     );
   }, [setValue]);
 
+  const onUpdateVehicleConfigTrailers = useCallback(
+    (updatedTrailerSubtypes: VehicleInConfiguration[]) => {
+      setValue(
+        "permitData.vehicleConfiguration.trailers",
+        updatedTrailerSubtypes,
+      );
+    },
+    [setValue],
+  );
+
   return {
     initialFormData,
     currentFormData,
@@ -134,5 +145,6 @@ export const useInitApplicationFormData = (
     onClearVehicle,
     onUpdateLOAs,
     onUpdateHighwaySequence,
+    onUpdateVehicleConfigTrailers,
   };
 };

@@ -15,6 +15,7 @@ import { getEligibleVehicleSubtypes } from "../../../helpers/permitVehicles";
 import { applyUpToDateLOAsToApplication } from "../../../helpers/permitLOA";
 import { PowerUnit, Trailer } from "../../../../manageVehicles/types/Vehicle";
 import { PermitLOA } from "../../../types/PermitLOA";
+import { VehicleInConfiguration } from "../../../types/PermitVehicleConfiguration";
 import {
   AmendPermitFormData,
   getDefaultFormDataFromApplication,
@@ -142,6 +143,16 @@ export const useAmendPermitForm = (
     );
   }, [setValue]);
 
+  const onUpdateVehicleConfigTrailers = useCallback(
+    (updatedTrailerSubtypes: VehicleInConfiguration[]) => {
+      setValue(
+        "permitData.vehicleConfiguration.trailers",
+        updatedTrailerSubtypes,
+      );
+    },
+    [setValue],
+  );
+
   return {
     initialFormData: defaultFormData,
     formData,
@@ -154,5 +165,6 @@ export const useAmendPermitForm = (
     onClearVehicle,
     onUpdateLOAs,
     onUpdateHighwaySequence,
+    onUpdateVehicleConfigTrailers,
   };
 };

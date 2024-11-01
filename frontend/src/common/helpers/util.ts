@@ -176,7 +176,7 @@ export const streamDownloadFile = async (response: Response) => {
 };
 
 /**
- * Convers a string to a number.
+ * Converts a string to a number.
  * (Applicable for number fields in forms).
  *
  * @param str The string value.

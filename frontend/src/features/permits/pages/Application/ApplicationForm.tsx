@@ -30,6 +30,7 @@ import { usePolicyEngine } from "../../../policy/hooks/usePolicyEngine";
 import { useMemoizedArray } from "../../../../common/hooks/useMemoizedArray";
 import {
   applyWhenNotNullable,
+  convertToNumberIfValid,
   getDefaultRequiredVal,
 } from "../../../../common/helpers/util";
 
@@ -85,7 +86,11 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     trailerSubTypes,
   } = usePermitVehicleManagement(companyId);
 
-  const { commodityOptions: commodities } = usePolicyEngine(permitType);
+  const {
+    commodityOptions: commodities,
+    getNextAllowedVehicleSubtypes,
+  } = usePolicyEngine(permitType);
+
   const commodityOptions = useMemoizedArray(
     commodities,
     ({ value }) => value,
@@ -115,6 +120,7 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     onClearVehicle,
     onUpdateLOAs,
     onUpdateHighwaySequence,
+    onUpdateVehicleConfigTrailers,
   } = useInitApplicationFormData(
     permitType,
     isLcvDesignated,
@@ -173,6 +179,10 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
           year: !isNaN(Number(data.permitData.vehicleDetails.year))
             ? Number(data.permitData.vehicleDetails.year)
             : data.permitData.vehicleDetails.year,
+          licensedGVW: convertToNumberIfValid(
+            data.permitData.vehicleDetails.licensedGVW,
+            null,
+          ),
         },
       },
     } as ApplicationFormData;
@@ -320,6 +330,8 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     onClearVehicle,
     onUpdateLOAs,
     onUpdateHighwaySequence,
+    onUpdateVehicleConfigTrailers,
+    getNextAllowedVehicleSubtypes,
   }), [
     initialFormData,
     currentFormData,
@@ -344,6 +356,8 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     onClearVehicle,
     onUpdateLOAs,
     onUpdateHighwaySequence,
+    onUpdateVehicleConfigTrailers,
+    getNextAllowedVehicleSubtypes,
   ]);
 
   return (

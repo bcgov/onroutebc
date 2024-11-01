@@ -14,7 +14,7 @@ import { Breadcrumb } from "../../../../../common/components/breadcrumb/Breadcru
 import { ApplicationFormContext } from "../../../context/ApplicationFormContext";
 import { Nullable } from "../../../../../common/types/common";
 import { ERROR_ROUTES } from "../../../../../routes/constants";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../common/helpers/util";
+import { applyWhenNotNullable, convertToNumberIfValid, getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { PermitVehicleDetails } from "../../../types/PermitVehicleDetails";
 import { AmendPermitFormData } from "../types/AmendPermitFormData";
 import { getDatetimes } from "./helpers/getDatetimes";
@@ -81,7 +81,11 @@ export const AmendPermitForm = () => {
     trailerSubTypes,
   } = usePermitVehicleManagement(companyId);
 
-  const { commodityOptions: commodities } = usePolicyEngine(permitType);
+  const {
+    commodityOptions: commodities,
+    getNextAllowedVehicleSubtypes,
+  } = usePolicyEngine(permitType);
+
   const commodityOptions = useMemoizedArray(
     commodities,
     ({ value }) => value,
@@ -100,6 +104,7 @@ export const AmendPermitForm = () => {
     onClearVehicle,
     onUpdateLOAs,
     onUpdateHighwaySequence,
+    onUpdateVehicleConfigTrailers,
   } = useAmendPermitForm(
     currentStepIndex === 0,
     isLcvDesignated,
@@ -144,6 +149,10 @@ export const AmendPermitForm = () => {
           year: !isNaN(Number(data.permitData.vehicleDetails.year))
             ? Number(data.permitData.vehicleDetails.year)
             : data.permitData.vehicleDetails.year,
+          licensedGVW: convertToNumberIfValid(
+            data.permitDate.vehicleDetails.licensedGVW,
+            null,
+          ),
         },
       },
     } as AmendPermitFormData;
@@ -273,6 +282,8 @@ export const AmendPermitForm = () => {
     onClearVehicle,
     onUpdateLOAs,
     onUpdateHighwaySequence,
+    onUpdateVehicleConfigTrailers,
+    getNextAllowedVehicleSubtypes,
   }), [
     initialFormData,
     formData,
@@ -296,6 +307,8 @@ export const AmendPermitForm = () => {
     onClearVehicle,
     onUpdateLOAs,
     onUpdateHighwaySequence,
+    onUpdateVehicleConfigTrailers,
+    getNextAllowedVehicleSubtypes,
   ]);
 
   return (

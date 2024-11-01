@@ -5,7 +5,7 @@ import { FormActions } from "./FormActions";
 import { ApplicationDetails } from "../../../../components/form/ApplicationDetails";
 import { ContactDetails } from "../../../../components/form/ContactDetails";
 import { PermitDetails } from "./PermitDetails";
-import { VehicleDetails } from "./VehicleDetails/VehicleDetails";
+import { VehicleInformationSection } from "./VehicleInformationSection/VehicleInformationSection";
 import { PermitLOASection } from "./PermitLOASection";
 import { useApplicationFormContext } from "../../../../hooks/useApplicationFormContext";
 import { AmendReason } from "../../../Amend/components/form/AmendReason";
@@ -39,6 +39,9 @@ export const PermitForm = () => {
     revisionHistory,
     commodityOptions,
     highwaySequence,
+    nextAllowedSubtypes,
+    trailerSubtypes,
+    selectedVehicleConfigSubtypes,
     onLeave,
     onSave,
     onCancel,
@@ -49,6 +52,7 @@ export const PermitForm = () => {
     onClearVehicle,
     onUpdateLOAs,
     onUpdateHighwaySequence,
+    onUpdateVehicleConfigTrailers,
   } = useApplicationFormContext();
 
   return (
@@ -93,15 +97,20 @@ export const PermitForm = () => {
           commodityOptions={commodityOptions}
         />
         
-        <VehicleDetails
+        <VehicleInformationSection
+          permitType={permitType}
           feature={feature}
           vehicleFormData={vehicleFormData}
           vehicleOptions={filteredVehicleOptions}
           subtypeOptions={subtypeOptions}
           isSelectedLOAVehicle={isSelectedLOAVehicle}
+          nextAllowedSubtypes={nextAllowedSubtypes}
+          nextAllowedSubtypesMap={trailerSubtypes}
+          selectedConfigSubtypes={selectedVehicleConfigSubtypes}
           onSetSaveVehicle={onToggleSaveVehicle}
           onSetVehicle={onSetVehicle}
           onClearVehicle={onClearVehicle}
+          onUpdateVehicleConfigTrailers={onUpdateVehicleConfigTrailers}
         />
 
         <LoadedDimensionsSection

@@ -11,6 +11,7 @@ import { PowerUnit, Trailer, VehicleSubType } from "../../manageVehicles/types/V
 import { Nullable } from "../../../common/types/common";
 import { CompanyProfile } from "../../manageProfile/types/manageProfile.d";
 import { PermitLOA } from "../types/PermitLOA";
+import { VehicleInConfiguration } from "../types/PermitVehicleConfiguration";
 import {
   PAST_START_DATE_STATUSES,
   PastStartDateStatus,
@@ -56,6 +57,11 @@ interface ApplicationFormContextType {
   onClearVehicle: (saveVehicle: boolean) => void;
   onUpdateLOAs: (updatedLOAs: PermitLOA[]) => void;
   onUpdateHighwaySequence: (updatedHighwaySequence: string[]) => void;
+  onUpdateVehicleConfigTrailers: (updatedTrailerSubtypes: VehicleInConfiguration[]) => void;
+  getNextAllowedVehicleSubtypes: (selectedCommodity: string, selectedSubtypes: string[]) => {
+    value: string;
+    label: string;
+  }[];
 }
 
 export const ApplicationFormContext = createContext<ApplicationFormContextType>({
@@ -87,4 +93,6 @@ export const ApplicationFormContext = createContext<ApplicationFormContextType>(
   onClearVehicle: () => undefined,
   onUpdateLOAs: () => undefined,
   onUpdateHighwaySequence: () => undefined,
+  onUpdateVehicleConfigTrailers: () => undefined,
+  getNextAllowedVehicleSubtypes: () => [],
 });

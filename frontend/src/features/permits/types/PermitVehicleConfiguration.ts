@@ -1,6 +1,6 @@
 import { Nullable } from "../../../common/types/common";
 
-interface VehicleInConfiguration {
+export interface VehicleInConfiguration {
   vehicleSubType: string;
 }
 

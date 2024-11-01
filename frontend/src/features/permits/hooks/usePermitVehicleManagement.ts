@@ -41,6 +41,7 @@ const transformByVehicleType = (
     countryCode: vehicleFormData.countryCode,
     provinceCode: vehicleFormData.provinceCode,
     powerUnitTypeCode: vehicleFormData.vehicleSubType,
+    licensedGvw: vehicleFormData.licensedGVW,
   };
 
   const defaultTrailer: Trailer = {

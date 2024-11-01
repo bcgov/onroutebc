@@ -10,6 +10,7 @@ import { useMemoizedArray } from "../../../common/hooks/useMemoizedArray";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { arePermitConditionEqual } from "../types/PermitCondition";
 import { useMemoizedObject } from "../../../common/hooks/useMemoizedObject";
+import { useVehicleConfiguration } from "./useVehicleConfiguration";
 
 export const useApplicationFormContext = () => {
   const {
@@ -41,6 +42,8 @@ export const useApplicationFormContext = () => {
     onClearVehicle,
     onUpdateLOAs,
     onUpdateHighwaySequence,
+    onUpdateVehicleConfigTrailers,
+    getNextAllowedVehicleSubtypes,
   } = useContext(ApplicationFormContext);
 
   const {
@@ -57,6 +60,8 @@ export const useApplicationFormContext = () => {
     commodities,
     vehicleDetails: vehicleFormData,
     permittedRoute,
+    permittedCommodity,
+    vehicleConfiguration,
   } = formData.permitData;
 
   const createdAt = useMemoizedObject(
@@ -132,6 +137,19 @@ export const useApplicationFormContext = () => {
     () => onClearVehicle(Boolean(vehicleFormData.saveVehicle)),
   );
 
+  const selectedVehicleConfigSubtypes = useMemoizedArray(
+    getDefaultRequiredVal([], vehicleConfiguration?.trailers?.map(({ vehicleSubType }) => vehicleSubType)),
+    (subtype) => subtype,
+    (subtype1, subtype2) => subtype1 === subtype2,
+  );
+
+  const { nextAllowedSubtypes } = useVehicleConfiguration(
+    getDefaultRequiredVal("", permittedCommodity?.commodityType),
+    selectedVehicleConfigSubtypes,
+    vehicleFormData.vehicleSubType,
+    getNextAllowedVehicleSubtypes,
+  );
+
   const memoizedCompanyLOAs = useMemoizedArray(
     companyLOAs,
     ({ loaNumber }) => loaNumber,
@@ -179,6 +197,9 @@ export const useApplicationFormContext = () => {
     revisionHistory: memoizedRevisionHistory,
     commodityOptions,
     highwaySequence,
+    nextAllowedSubtypes,
+    trailerSubtypes,
+    selectedVehicleConfigSubtypes,
     onLeave,
     onSave,
     onCancel,
@@ -191,5 +212,6 @@ export const useApplicationFormContext = () => {
     onClearVehicle,
     onUpdateLOAs,
     onUpdateHighwaySequence,
+    onUpdateVehicleConfigTrailers,
   };
 };

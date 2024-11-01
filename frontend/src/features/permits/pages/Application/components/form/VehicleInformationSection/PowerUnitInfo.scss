@@ -1,0 +1,59 @@
+@import "../../../../../../../themes/orbcStyles";
+
+.power-unit-info {
+  padding: 1.5rem 0;
+  border-top: 1px solid $bc-text-box-border-grey;
+
+  & &__title {
+    margin-bottom: 0;
+  }
+
+  & &__display {
+    padding: 1.5rem 0;
+    display: grid;
+    grid-template-columns: repeat(4, [col] 1fr);
+    row-gap: 1rem;
+  }
+
+  & &__remove-btn {
+    background-color: $bc-background-light-grey;
+    padding: 0.875rem 1rem;
+    box-shadow: none;
+    line-height: normal;
+    min-height: inherit;
+    border: none;
+
+    &:hover {
+      background-color: $bc-background-light-grey;
+      border: 2px solid $bc-text-box-border-grey;
+      box-shadow: none;
+    }
+  }
+
+  & &__row {
+    display: flex;
+    margin-top: 1rem;
+
+    &--first {
+      margin-top: 0;
+    }
+  }
+
+  & &__data {
+    max-width: 15.75rem;
+    margin-left: 1.5rem;
+
+    &--unit, &--year {
+      margin-left: 0;
+    }
+  }
+
+  & &__label {
+    font-weight: bold;
+    color: $bc-black;
+  }
+
+  & &__value {
+    color: $bc-black;
+  }
+}

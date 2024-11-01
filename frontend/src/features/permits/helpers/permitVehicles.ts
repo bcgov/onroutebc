@@ -7,7 +7,7 @@ import { STOS_ELIGIBLE_VEHICLE_SUBTYPES } from "../constants/stos";
 import { PermitLOA } from "../types/PermitLOA";
 import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../common/helpers/util";
 import { Nullable } from "../../../common/types/common";
-import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
+import { DEFAULT_VEHICLE_TYPE, PermitVehicleDetails } from "../types/PermitVehicleDetails";
 import { EMPTY_VEHICLE_SUBTYPE } from "../../manageVehicles/helpers/vehicleSubtypes";
 import {
   PowerUnit,
@@ -56,8 +56,9 @@ export const getDefaultVehicleDetails = (
   year: applyWhenNotNullable((year) => year, vehicleDetails?.year, null),
   countryCode: getDefaultRequiredVal("", vehicleDetails?.countryCode),
   provinceCode: getDefaultRequiredVal("", vehicleDetails?.provinceCode),
-  vehicleType: getDefaultRequiredVal("", vehicleDetails?.vehicleType),
+  vehicleType: getDefaultRequiredVal(DEFAULT_VEHICLE_TYPE, vehicleDetails?.vehicleType),
   vehicleSubType: getDefaultRequiredVal("", vehicleDetails?.vehicleSubType),
+  licensedGVW: getDefaultRequiredVal(null, vehicleDetails?.licensedGVW),
   saveVehicle: false,
 });
 

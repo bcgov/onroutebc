@@ -29,4 +29,5 @@ export const EMPTY_VEHICLE_DETAILS = {
   provinceCode: "",
   vehicleType: DEFAULT_VEHICLE_TYPE,
   vehicleSubType: "",
+  licensedGVW: null,
 };
