@@ -8,7 +8,7 @@ import { VehicleInConfiguration } from "../../types/PermitVehicleConfiguration";
 import { EMPTY_VEHICLE_DETAILS, PermitVehicleDetails } from "../../types/PermitVehicleDetails";
 import { ApplicationFormData } from "../../types/application";
 
-export const useChangeApplicationFormValues = () => {
+export const useApplicationFormUpdateMethods = () => {
   const { setValue } = useFormContext<ApplicationFormData>();
 
   const onSetDuration = useCallback((duration: number) => {

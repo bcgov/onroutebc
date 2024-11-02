@@ -12,7 +12,7 @@ import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { arePermitConditionEqual } from "../../types/PermitCondition";
 import { useMemoizedObject } from "../../../../common/hooks/useMemoizedObject";
 import { useVehicleConfiguration } from "../useVehicleConfiguration";
-import { useChangeApplicationFormValues } from "./useChangeApplicationFormValues";
+import { useApplicationFormUpdateMethods } from "./useApplicationFormUpdateMethods";
 
 export const useApplicationFormContext = () => {
   const applicationFormContextData = useContext(ApplicationFormContext);
@@ -53,7 +53,7 @@ export const useApplicationFormContext = () => {
     onUpdateLOAs,
     onUpdateHighwaySequence,
     onUpdateVehicleConfigTrailers,
-  } = useChangeApplicationFormValues();
+  } = useApplicationFormUpdateMethods();
 
   const {
     permitType,
