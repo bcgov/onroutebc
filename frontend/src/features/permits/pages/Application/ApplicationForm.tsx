@@ -1,5 +1,5 @@
 import { FieldValues, FormProvider } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useContext, useMemo, useState } from "react";
 import dayjs from "dayjs";
 
@@ -16,7 +16,7 @@ import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext
 import { PermitForm } from "./components/form/PermitForm";
 import { usePermitVehicleManagement } from "../../hooks/usePermitVehicleManagement";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
-import { Nullable } from "../../../../common/types/common";
+import { isNull, isUndefined, Nullable } from "../../../../common/types/common";
 import { PermitType } from "../../types/PermitType";
 import { PermitVehicleDetails } from "../../types/PermitVehicleDetails";
 import { durationOptionsForPermitType } from "../../helpers/dateSelection";
@@ -28,6 +28,7 @@ import { ApplicationFormContext } from "../../context/ApplicationFormContext";
 import { filterLOAsForPermitType, filterNonExpiredLOAs } from "../../helpers/permitLOA";
 import { usePolicyEngine } from "../../../policy/hooks/usePolicyEngine";
 import { useMemoizedArray } from "../../../../common/hooks/useMemoizedArray";
+import { Loading } from "../../../../common/pages/Loading";
 import {
   applyWhenNotNullable,
   convertToNumberIfValid,
@@ -342,6 +343,9 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     onSave,
     onContinue,
   ]);
+
+  if (isUndefined(policyEngine)) return <Loading />;
+  if (isNull(policyEngine)) return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
 
   return (
     <div className="application-form">

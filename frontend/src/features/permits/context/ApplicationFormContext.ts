@@ -7,7 +7,7 @@ import { ApplicationFormData } from "../types/application";
 import { getDefaultValues } from "../helpers/getDefaultApplicationFormData";
 import { DEFAULT_PERMIT_TYPE } from "../types/PermitType";
 import { PowerUnit, Trailer } from "../../manageVehicles/types/Vehicle";
-import { Nullable, RequiredOrNull } from "../../../common/types/common";
+import { Nullable } from "../../../common/types/common";
 import { CompanyProfile } from "../../manageProfile/types/manageProfile.d";
 import {
   PAST_START_DATE_STATUSES,
@@ -17,7 +17,7 @@ import {
 interface ApplicationFormContextType {
   initialFormData: ApplicationFormData;
   formData: ApplicationFormData;
-  policyEngine: RequiredOrNull<Policy>;
+  policyEngine: Nullable<Policy>;
   durationOptions: {
     value: number;
     label: string;
@@ -52,7 +52,7 @@ interface ApplicationFormContextType {
 export const ApplicationFormContext = createContext<ApplicationFormContextType>({
   initialFormData: getDefaultValues(DEFAULT_PERMIT_TYPE, undefined),
   formData: getDefaultValues(DEFAULT_PERMIT_TYPE, undefined),
-  policyEngine: null,
+  policyEngine: undefined,
   durationOptions: [],
   allVehiclesFromInventory: [],
   powerUnitSubtypeNamesMap: new Map<string, string>(),

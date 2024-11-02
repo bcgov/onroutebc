@@ -1,4 +1,5 @@
 import { useContext } from "react";
+import { Policy } from "onroute-policy-engine";
 
 import { ApplicationFormContext } from "../../context/ApplicationFormContext";
 import { usePermitDateSelection } from "../usePermitDateSelection";
@@ -14,10 +15,10 @@ import { useVehicleConfiguration } from "../useVehicleConfiguration";
 import { useChangeApplicationFormValues } from "./useChangeApplicationFormValues";
 
 export const useApplicationFormContext = () => {
+  const applicationFormContextData = useContext(ApplicationFormContext);
   const {
     initialFormData,
     formData,
-    policyEngine,
     durationOptions,
     allVehiclesFromInventory,
     powerUnitSubtypeNamesMap,
@@ -36,7 +37,11 @@ export const useApplicationFormContext = () => {
     onSave,
     onCancel,
     onContinue,
-  } = useContext(ApplicationFormContext);
+  } = applicationFormContextData;
+
+  // This assignment is type-safe since the parent component ensured that
+  // the loading page or error page is rendered when policy engine is null/undefined
+  const policyEngine = applicationFormContextData.policyEngine as Policy;
 
   const {
     onSetDuration,

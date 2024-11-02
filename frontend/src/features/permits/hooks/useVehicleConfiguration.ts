@@ -1,12 +1,10 @@
 import { useCallback, useMemo } from "react";
 import { Policy } from "onroute-policy-engine";
 
-import { RequiredOrNull } from "../../../common/types/common";
 import { PermitType } from "../types/PermitType";
-import { getDefaultRequiredVal } from "../../../common/helpers/util";
 
 export const useVehicleConfiguration = (
-  policyEngine: RequiredOrNull<Policy>,
+  policyEngine: Policy,
   permitType: PermitType,
   selectedCommodity: string,
   selectedSubtypes: string[],
@@ -14,13 +12,10 @@ export const useVehicleConfiguration = (
 ) => {
   const getNextAllowedVehicleSubtypes = useCallback(
     (selectedCommodity: string, selectedSubtypes: string[]) => {
-      const nextAllowedSubtypes = getDefaultRequiredVal(
-        new Map<string, string>(),
-        policyEngine?.getNextPermittableVehicles(
-          permitType,
-          selectedCommodity,
-          selectedSubtypes,
-        ),
+      const nextAllowedSubtypes = policyEngine.getNextPermittableVehicles(
+        permitType,
+        selectedCommodity,
+        selectedSubtypes,
       );
 
       return [...nextAllowedSubtypes.entries()]

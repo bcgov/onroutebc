@@ -1,6 +1,6 @@
 import { useContext, useMemo } from "react";
 import { FieldValues, FormProvider } from "react-hook-form";
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 
 import "./AmendPermitForm.scss";
 import { usePermitVehicleManagement } from "../../../hooks/usePermitVehicleManagement";
@@ -12,7 +12,7 @@ import { Application } from "../../../types/application";
 import { useCompanyInfoDetailsQuery } from "../../../../manageProfile/apiManager/hooks";
 import { Breadcrumb } from "../../../../../common/components/breadcrumb/Breadcrumb";
 import { ApplicationFormContext } from "../../../context/ApplicationFormContext";
-import { Nullable } from "../../../../../common/types/common";
+import { isNull, isUndefined, Nullable } from "../../../../../common/types/common";
 import { ERROR_ROUTES } from "../../../../../routes/constants";
 import { applyWhenNotNullable, convertToNumberIfValid, getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { PermitVehicleDetails } from "../../../types/PermitVehicleDetails";
@@ -25,6 +25,7 @@ import { filterLOAsForPermitType, filterNonExpiredLOAs } from "../../../helpers/
 import { DEFAULT_PERMIT_TYPE } from "../../../types/PermitType";
 import { usePolicyEngine } from "../../../../policy/hooks/usePolicyEngine";
 import { useMemoizedArray } from "../../../../../common/hooks/useMemoizedArray";
+import { Loading } from "../../../../../common/pages/Loading";
 import {
   dayjsToUtcStr,
   nowUtc,
@@ -293,6 +294,9 @@ export const AmendPermitForm = () => {
     goHome,
     onContinue,
   ]);
+
+  if (isUndefined(policyEngine)) return <Loading />;
+  if (isNull(policyEngine)) return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
 
   return (
     <div className="amend-permit-form">
