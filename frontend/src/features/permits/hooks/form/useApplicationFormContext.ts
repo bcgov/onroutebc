@@ -1,16 +1,17 @@
 import { useContext } from "react";
 
-import { ApplicationFormContext } from "../context/ApplicationFormContext";
-import { usePermitDateSelection } from "./usePermitDateSelection";
-import { usePermitConditions } from "./usePermitConditions";
-import { getStartOfDate } from "../../../common/helpers/formatDate";
-import { usePermitVehicles } from "./usePermitVehicles";
-import { arePermitLOADetailsEqual, PermitLOA } from "../types/PermitLOA";
-import { useMemoizedArray } from "../../../common/hooks/useMemoizedArray";
-import { getDefaultRequiredVal } from "../../../common/helpers/util";
-import { arePermitConditionEqual } from "../types/PermitCondition";
-import { useMemoizedObject } from "../../../common/hooks/useMemoizedObject";
-import { useVehicleConfiguration } from "./useVehicleConfiguration";
+import { ApplicationFormContext } from "../../context/ApplicationFormContext";
+import { usePermitDateSelection } from "../usePermitDateSelection";
+import { usePermitConditions } from "../usePermitConditions";
+import { getStartOfDate } from "../../../../common/helpers/formatDate";
+import { usePermitVehicles } from "../usePermitVehicles";
+import { arePermitLOADetailsEqual, PermitLOA } from "../../types/PermitLOA";
+import { useMemoizedArray } from "../../../../common/hooks/useMemoizedArray";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { arePermitConditionEqual } from "../../types/PermitCondition";
+import { useMemoizedObject } from "../../../../common/hooks/useMemoizedObject";
+import { useVehicleConfiguration } from "../useVehicleConfiguration";
+import { useChangeApplicationFormValues } from "./useChangeApplicationFormValues";
 
 export const useApplicationFormContext = () => {
   const {
@@ -35,6 +36,9 @@ export const useApplicationFormContext = () => {
     onSave,
     onCancel,
     onContinue,
+  } = useContext(ApplicationFormContext);
+
+  const {
     onSetDuration,
     onSetExpiryDate,
     onSetConditions,
@@ -44,7 +48,7 @@ export const useApplicationFormContext = () => {
     onUpdateLOAs,
     onUpdateHighwaySequence,
     onUpdateVehicleConfigTrailers,
-  } = useContext(ApplicationFormContext);
+  } = useChangeApplicationFormValues();
 
   const {
     permitType,

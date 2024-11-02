@@ -7,7 +7,7 @@ import { ContactDetails } from "../../../../components/form/ContactDetails";
 import { PermitDetails } from "./PermitDetails";
 import { VehicleInformationSection } from "./VehicleInformationSection/VehicleInformationSection";
 import { PermitLOASection } from "./PermitLOASection";
-import { useApplicationFormContext } from "../../../../hooks/useApplicationFormContext";
+import { useApplicationFormContext } from "../../../../hooks/form/useApplicationFormContext";
 import { AmendReason } from "../../../Amend/components/form/AmendReason";
 import { AmendRevisionHistory } from "../../../Amend/components/form/AmendRevisionHistory";
 import { CommodityDetailsSection } from "./CommodityDetailsSection";

@@ -11,7 +11,7 @@ import { useSaveApplicationMutation } from "../../hooks/hooks";
 import { SnackBarContext } from "../../../../App";
 import { LeaveApplicationDialog } from "../../components/dialog/LeaveApplicationDialog";
 import { areApplicationDataEqual } from "../../helpers/equality";
-import { useInitApplicationFormData } from "../../hooks/useInitApplicationFormData";
+import { useInitApplicationFormData } from "../../hooks/form/useInitApplicationFormData";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { PermitForm } from "./components/form/PermitForm";
 import { usePermitVehicleManagement } from "../../hooks/usePermitVehicleManagement";
@@ -122,15 +122,6 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     initialFormData,
     currentFormData,
     formMethods,
-    onSetDuration,
-    onSetExpiryDate,
-    onSetConditions,
-    onToggleSaveVehicle,
-    onSetVehicle,
-    onClearVehicle,
-    onUpdateLOAs,
-    onUpdateHighwaySequence,
-    onUpdateVehicleConfigTrailers,
   } = useInitApplicationFormData(
     permitType,
     isLcvDesignated,
@@ -333,15 +324,6 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     onSave,
     onCancel: undefined,
     onContinue: handleSubmit(onContinue),
-    onSetDuration,
-    onSetExpiryDate,
-    onSetConditions,
-    onToggleSaveVehicle,
-    onSetVehicle,
-    onClearVehicle,
-    onUpdateLOAs,
-    onUpdateHighwaySequence,
-    onUpdateVehicleConfigTrailers,
   }), [
     initialFormData,
     currentFormData,
@@ -359,15 +341,6 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     handleLeaveApplication,
     onSave,
     onContinue,
-    onSetDuration,
-    onSetExpiryDate,
-    onSetConditions,
-    onToggleSaveVehicle,
-    onSetVehicle,
-    onClearVehicle,
-    onUpdateLOAs,
-    onUpdateHighwaySequence,
-    onUpdateVehicleConfigTrailers,
   ]);
 
   return (

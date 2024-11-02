@@ -142,7 +142,7 @@ export const usePermitVehicleManagement = (companyId: number) => {
     // Check if the vehicle that is to be saved was created from an existing vehicle
     const vehicleId = vehicle.vehicleId;
 
-    const existingVehicle = findFromExistingVehicles (
+    const existingVehicle = findFromExistingVehicles(
       allVehiclesFromInventory,
       vehicle.vehicleType as VehicleType,
       vehicleId,
