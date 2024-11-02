@@ -8,6 +8,14 @@ import { VehicleInConfiguration } from "../../types/PermitVehicleConfiguration";
 import { EMPTY_VEHICLE_DETAILS, PermitVehicleDetails } from "../../types/PermitVehicleDetails";
 import { ApplicationFormData } from "../../types/application";
 
+/**
+ * Hook that returns custom methods that update specific values in the application form.
+ * This allows a degree of control over encapsulation of the form methods (eg. without leaking/allowing form methods
+ * like setValue to be called directly everywhere throughout the child components).
+ * 
+ * NOTE: This hook must be used inside a component/hook that is a child of an application FormProvider.
+ * @returns Custom methods to update specific values in the application form
+ */
 export const useApplicationFormUpdateMethods = () => {
   const { setValue } = useFormContext<ApplicationFormData>();
 
