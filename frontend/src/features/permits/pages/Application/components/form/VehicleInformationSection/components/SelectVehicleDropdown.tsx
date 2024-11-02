@@ -12,7 +12,7 @@ import {
 import "./SelectVehicleDropdown.scss";
 import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";
 import { sortVehicles } from "../../../../../../helpers/sorter";
-import { VEHICLE_CHOOSE_FROM } from "../../../../../../constants/constants";
+import { VEHICLE_CHOOSE_FROM, VehicleChooseFrom } from "../../../../../../constants/constants";
 import { EMPTY_VEHICLE_UNIT_NUMBER } from "../../../../../../../../common/constants/constants";
 import { Nullable } from "../../../../../../../../common/types/common";
 import { PermitVehicleDetails } from "../../../../../../types/PermitVehicleDetails";
@@ -49,7 +49,7 @@ export const SelectVehicleDropdown = ({
   handleSelectVehicle,
   handleClearVehicle,
 }: {
-  chooseFrom: string;
+  chooseFrom: VehicleChooseFrom;
   selectedVehicle: Nullable<PermitVehicleDetails>;
   label: string;
   vehicleOptions: Vehicle[];
@@ -57,8 +57,8 @@ export const SelectVehicleDropdown = ({
   handleClearVehicle: () => void;
 }) => {
   const eligibleVehicles = useMemo(() => sortVehicles(
-    chooseFrom,
     vehicleOptions,
+    chooseFrom,
   ), [chooseFrom, vehicleOptions]);
 
   const selectedOption = selectedVehicle

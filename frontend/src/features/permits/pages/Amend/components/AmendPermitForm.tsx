@@ -76,15 +76,25 @@ export const AmendPermitForm = () => {
 
   const {
     handleSaveVehicle,
-    vehicleOptions,
-    powerUnitSubTypes,
-    trailerSubTypes,
+    allVehiclesFromInventory,
+    powerUnitSubtypeNamesMap,
+    trailerSubtypeNamesMap,
   } = usePermitVehicleManagement(companyId);
 
-  const {
-    commodityOptions: commodities,
-    getNextAllowedVehicleSubtypes,
-  } = usePolicyEngine(permitType);
+  const policyEngine = usePolicyEngine();
+
+  const commodities = useMemo(() => {
+    const commodities = getDefaultRequiredVal(
+      new Map<string, string>(),
+      policyEngine?.getCommodities(permitType),
+    );
+
+    return [...commodities.entries()]
+      .map(([commodityType, commodityDescription]) => ({
+        value: commodityType,
+        label: commodityDescription,
+      }));
+  }, [policyEngine, permitType]);
 
   const commodityOptions = useMemoizedArray(
     commodities,
@@ -109,7 +119,7 @@ export const AmendPermitForm = () => {
     currentStepIndex === 0,
     isLcvDesignated,
     companyLOAs,
-    vehicleOptions,
+    allVehiclesFromInventory,
     companyInfo,
     permit,
     amendmentApplication,
@@ -256,10 +266,11 @@ export const AmendPermitForm = () => {
   const applicationFormContextData = useMemo(() => ({
     initialFormData,
     formData,
+    policyEngine,
     durationOptions,
-    vehicleOptions,
-    powerUnitSubtypes: powerUnitSubTypes,
-    trailerSubtypes: trailerSubTypes,
+    allVehiclesFromInventory,
+    powerUnitSubtypeNamesMap,
+    trailerSubtypeNamesMap,
     isLcvDesignated,
     feature: FEATURE,
     companyInfo,
@@ -283,14 +294,14 @@ export const AmendPermitForm = () => {
     onUpdateLOAs,
     onUpdateHighwaySequence,
     onUpdateVehicleConfigTrailers,
-    getNextAllowedVehicleSubtypes,
   }), [
     initialFormData,
     formData,
+    policyEngine,
     durationOptions,
-    vehicleOptions,
-    powerUnitSubTypes,
-    trailerSubTypes,
+    allVehiclesFromInventory,
+    powerUnitSubtypeNamesMap,
+    trailerSubtypeNamesMap,
     isLcvDesignated,
     companyInfo,
     createdDateTime,
@@ -308,7 +319,6 @@ export const AmendPermitForm = () => {
     onUpdateLOAs,
     onUpdateHighwaySequence,
     onUpdateVehicleConfigTrailers,
-    getNextAllowedVehicleSubtypes,
   ]);
 
   return (

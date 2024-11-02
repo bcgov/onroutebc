@@ -1,86 +1,92 @@
-import { Optional } from "../../../common/types/common";
+import { VEHICLE_CHOOSE_FROM, VehicleChooseFrom } from "../constants/constants";
 import {
   VehicleSubType,
   BaseVehicle,
   Vehicle,
+  VEHICLE_TYPES,
 } from "../../manageVehicles/types/Vehicle";
 
 /**
- * Sort Power Unit or Trailer Types alphabetically and immutably
- * @param vehicleType string, either powerUnit or trailer
- * @param options array of Vehicle Types
- * @returns an array of sorted vehicle types alphabetically
+ * Sort vehicle subtypes alphabetically.
+ * @param vehicleType Vehicle type
+ * @param subtypeOptions Vehicle subtype options
+ * @returns Sorted list of vehicle subtypes
  */
-export const sortVehicleSubTypes = (
+export const sortVehicleSubtypes = (
   vehicleType: string,
-  options: Optional<VehicleSubType[]>,
+  subtypeOptions: VehicleSubType[],
 ) => {
-  if (!vehicleType || !options) return [];
-  const sorted = [...options]; // make copy of original array (original shouldn't be changed)
-  sorted.sort((a, b) => {
-    if (a.type?.toLowerCase() === b.type?.toLowerCase()) {
-      return a.typeCode > b.typeCode ? 1 : -1;
-    }
-    if (a.type && b.type) return a.type > b.type ? 1 : -1;
-    return 0;
-  });
+  if (!vehicleType) return [];
+
+  // Make copy of original array (original shouldn't be changed)
+  const sorted = [...subtypeOptions];
+  sorted.sort((subtype1, subtype2) => subtype1.type.localeCompare(subtype2.type));
+
   return sorted;
 };
 
 /**
- * @param a Vehicle a
- * @param b Vehicle b
- * @returns 1 or -1 depending on whether a's plate > b's plate
+ * Compare two vehicles by plate.
+ * @param vehicle1 First vehicle
+ * @param vehicle2 Second vehicle
+ * @returns Result of the compare operation between the two vehicles' plates
  */
-const sortByPlate = (a: BaseVehicle, b: BaseVehicle) => {
-  return a.plate > b.plate ? 1 : -1;
+const compareVehiclesByPlate = (vehicle1: BaseVehicle, vehicle2: BaseVehicle) => {
+  return vehicle1.plate.localeCompare(vehicle2.plate);
 };
 
 /**
- * @param a Vehicle a
- * @param b Vehicle b
- * @returns 1 or -1 depending on whether a's unitNumber > b's unitNumber
+ * Compare two vehicles by unit number.
+ * @param vehicle1 First vehicle
+ * @param vehicle2 Second vehicle
+ * @returns Result of the compare operation between the two vehicles' unit numbers
  */
-const sortByUnitNumber = (a: BaseVehicle, b: BaseVehicle) => {
-  return (a.unitNumber || -1) > (b.unitNumber || -1) ? 1 : -1;
+const compareVehiclesByUnitNumber = (vehicle1: BaseVehicle, vehicle2: BaseVehicle) => {
+  if (!vehicle1.unitNumber && !vehicle2.unitNumber)
+    return 0;
+
+  if (!vehicle1.unitNumber) return 1;
+  if (!vehicle2.unitNumber) return -1;
+  return vehicle1.unitNumber.localeCompare(vehicle2.unitNumber);
 };
 
 /**
- * @param a Vehicle a
- * @param b Vehicle b
- * @returns 1 or -1 depending on whether a's vehicleType > b's vehicleType
+ * Compare two vehicles by vehicle type.
+ * @param vehicle1 First vehicle
+ * @param vehicle2 Second vehicle
+ * @returns Result of the compare operation between the two vehicles' types
  */
-const sortByVehicleType = (a: BaseVehicle, b: BaseVehicle) => {
-  if (a.vehicleType && b.vehicleType) {
-    return a.vehicleType > b.vehicleType ? 1 : -1;
-  }
-  return 0;
+const compareVehiclesByVehicleType = (vehicle1: BaseVehicle, vehicle2: BaseVehicle) => {
+  if (!vehicle1.vehicleType && !vehicle2.vehicleType)
+    return 0;
+
+  if (!vehicle1.vehicleType) return 1;
+  if (!vehicle2.vehicleType) return -1;
+  if (vehicle1.vehicleType === vehicle2.vehicleType) return 0;
+
+  return vehicle1.vehicleType === VEHICLE_TYPES.POWER_UNIT ? -1 : 1;
 };
 
 /**
- * Sort Vehicles by Plates and Unit Number alphabetically and immutably
- * @param vehicleType string, either plate or unitNumber
- * @param options array of Vehicles (Power Units and Trailers)
- * @returns an array of sorted vehicles alphabetically
+ * Sort vehicles (by plate or unit number) alphabetically.
+ * @param vehicles Vehicles to sort
+ * @param sortBy Sort key (by plate or unit number)
+ * @returns Sorted vehicles
  */
 export const sortVehicles = (
-  chooseFrom: string,
-  options: Optional<Vehicle[]>,
+  vehicles: Vehicle[],
+  sortBy: VehicleChooseFrom,
 ) => {
-  if (!chooseFrom || !options) return [];
-
   // We shouldn't change original array, but make an copy and sort on that instead
-  const sortedVehicles = [...options];
-  sortedVehicles.sort((a, b) => {
-    // If the vehicle types (powerUnit | trailer) are the same, sort by plate or unitnumber
-    if (a.vehicleType?.toLowerCase() === b.vehicleType?.toLowerCase()) {
-      if (chooseFrom === "plate") {
-        return sortByPlate(a, b);
-      }
-      return sortByUnitNumber(a, b);
+  const sortedVehicles = [...vehicles];
+  sortedVehicles.sort((vehicle1, vehicle2) => {
+    const compareByVehicleTypeResult = compareVehiclesByVehicleType(vehicle1, vehicle2);
+    if (compareByVehicleTypeResult !== 0) return compareByVehicleTypeResult;
+
+    if (sortBy === VEHICLE_CHOOSE_FROM.PLATE) {
+      return compareVehiclesByPlate(vehicle1, vehicle2);
     }
-    // else sort by vehicle type
-    return sortByVehicleType(a, b);
+    return compareVehiclesByUnitNumber(vehicle1, vehicle2);
   });
 
   return sortedVehicles;

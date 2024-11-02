@@ -81,15 +81,25 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
 
   const {
     handleSaveVehicle,
-    vehicleOptions,
-    powerUnitSubTypes,
-    trailerSubTypes,
+    allVehiclesFromInventory,
+    powerUnitSubtypeNamesMap,
+    trailerSubtypeNamesMap,
   } = usePermitVehicleManagement(companyId);
 
-  const {
-    commodityOptions: commodities,
-    getNextAllowedVehicleSubtypes,
-  } = usePolicyEngine(permitType);
+  const policyEngine = usePolicyEngine();
+
+  const commodities = useMemo(() => {
+    const commodities = getDefaultRequiredVal(
+      new Map<string, string>(),
+      policyEngine?.getCommodities(permitType),
+    );
+
+    return [...commodities.entries()]
+      .map(([commodityType, commodityDescription]) => ({
+        value: commodityType,
+        label: commodityDescription,
+      }));
+  }, [policyEngine, permitType]);
 
   const commodityOptions = useMemoizedArray(
     commodities,
@@ -125,7 +135,7 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     permitType,
     isLcvDesignated,
     companyLOAs,
-    vehicleOptions,
+    allVehiclesFromInventory,
     companyInfo,
     applicationContext?.applicationData,
     userDetails,
@@ -304,10 +314,11 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
   const applicationFormContextData = useMemo(() => ({
     initialFormData,
     formData: currentFormData,
+    policyEngine,
     durationOptions,
-    vehicleOptions,
-    powerUnitSubtypes: powerUnitSubTypes,
-    trailerSubtypes: trailerSubTypes,
+    allVehiclesFromInventory,
+    powerUnitSubtypeNamesMap,
+    trailerSubtypeNamesMap,
     isLcvDesignated,
     feature: FEATURE,
     companyInfo,
@@ -331,14 +342,14 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     onUpdateLOAs,
     onUpdateHighwaySequence,
     onUpdateVehicleConfigTrailers,
-    getNextAllowedVehicleSubtypes,
   }), [
     initialFormData,
     currentFormData,
+    policyEngine,
     durationOptions,
-    vehicleOptions,
-    powerUnitSubTypes,
-    trailerSubTypes,
+    allVehiclesFromInventory,
+    powerUnitSubtypeNamesMap,
+    trailerSubtypeNamesMap,
     isLcvDesignated,
     companyInfo,
     createdDateTime,
@@ -357,7 +368,6 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     onUpdateLOAs,
     onUpdateHighwaySequence,
     onUpdateVehicleConfigTrailers,
-    getNextAllowedVehicleSubtypes,
   ]);
 
   return (

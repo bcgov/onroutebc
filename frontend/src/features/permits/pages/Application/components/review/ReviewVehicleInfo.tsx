@@ -6,16 +6,13 @@ import "./ReviewVehicleInfo.scss";
 import { DiffChip } from "./DiffChip";
 import { areValuesDifferent } from "../../../../../../common/helpers/equality";
 import { Nullable } from "../../../../../../common/types/common";
-import { PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
+import { VehicleType } from "../../../../../manageVehicles/types/Vehicle";
+import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
+import { DEFAULT_VEHICLE_TYPE, PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
 import {
-  mapTypeCodeToObject,
+  getSubtypeNameByCode,
   vehicleTypeDisplayText,
 } from "../../../../helpers/mappers";
-
-import {
-  VehicleSubType,
-  VehicleType,
-} from "../../../../../manageVehicles/types/Vehicle";
 
 import {
   formatCountry,
@@ -25,39 +22,29 @@ import {
 export const ReviewVehicleInfo = ({
   vehicleDetails,
   vehicleWasSaved,
-  powerUnitSubTypes,
-  trailerSubTypes,
+  powerUnitSubtypeNamesMap,
+  trailerSubtypeNamesMap,
   showChangedFields = false,
   oldFields,
 }: {
   vehicleDetails?: Nullable<PermitVehicleDetails>;
   vehicleWasSaved?: Nullable<boolean>;
-  powerUnitSubTypes?: Nullable<VehicleSubType[]>;
-  trailerSubTypes?: Nullable<VehicleSubType[]>;
+  powerUnitSubtypeNamesMap: Map<string, string>;
+  trailerSubtypeNamesMap: Map<string, string>;
   showChangedFields?: boolean;
   oldFields?: Nullable<PermitVehicleDetails>;
 }) => {
-  const DisplayVehicleType = () => {
-    const vehicleTypeCode = vehicleDetails?.vehicleType;
-    if (!vehicleTypeCode) return "";
-    return vehicleTypeDisplayText(vehicleTypeCode as VehicleType);
-  };
+  const vehicleType = getDefaultRequiredVal(
+    DEFAULT_VEHICLE_TYPE,
+    vehicleDetails?.vehicleType,
+  ) as VehicleType;
 
-  const DisplayVehicleSubType = () => {
-    const code = vehicleDetails?.vehicleSubType;
-    const vehicleTypeCode = vehicleDetails?.vehicleType;
-
-    if (!code || !vehicleTypeCode) return "";
-
-    const typeObject = mapTypeCodeToObject(
-      code,
-      vehicleTypeCode,
-      powerUnitSubTypes,
-      trailerSubTypes,
-    );
-
-    return typeObject?.type;
-  };
+  const vehicleSubtype = getSubtypeNameByCode(
+    powerUnitSubtypeNamesMap,
+    trailerSubtypeNamesMap,
+    vehicleType,
+    getDefaultRequiredVal("", vehicleDetails?.vehicleSubType),
+  );
 
   const changedFields = showChangedFields
     ? {
@@ -103,18 +90,21 @@ export const ReviewVehicleInfo = ({
       <Box className="review-vehicle-info__header">
         <Typography variant={"h3"}>Vehicle Information</Typography>
       </Box>
+
       <Box className="review-vehicle-info__body">
         <Box className="info-section">
           <Typography className="info-section__label">
             <span className="info-section__label-text">Unit #</span>
             {changedFields.unit ? <DiffChip /> : null}
           </Typography>
+
           <Typography
             className="info-section__data"
             data-testid="review-vehicle-unit-number"
           >
             {vehicleDetails?.unitNumber}
           </Typography>
+
           <Typography className="info-section__label">
             VIN{" "}
             <span className="info-section__label--indicator">
@@ -122,56 +112,67 @@ export const ReviewVehicleInfo = ({
             </span>
             {changedFields.vin ? <DiffChip /> : null}
           </Typography>
+
           <Typography
             className="info-section__data"
             data-testid="review-vehicle-vin"
           >
             {vehicleDetails?.vin}
           </Typography>
+
           <Typography className="info-section__label">
             <span className="info-section__label-text">Plate</span>
             {changedFields.plate ? <DiffChip /> : null}
           </Typography>
+
           <Typography
             className="info-section__data"
             data-testid="review-vehicle-plate"
           >
             {vehicleDetails?.plate}
           </Typography>
+
           <Typography className="info-section__label">
             <span className="info-section__label-text">Make</span>
             {changedFields.make ? <DiffChip /> : null}
           </Typography>
+
           <Typography
             className="info-section__data"
             data-testid="review-vehicle-make"
           >
             {vehicleDetails?.make}
           </Typography>
+
           <Typography className="info-section__label">
             <span className="info-section__label-text">Year</span>
             {changedFields.year ? <DiffChip /> : null}
           </Typography>
+
           <Typography
             className="info-section__data"
             data-testid="review-vehicle-year"
           >
             {vehicleDetails?.year}
           </Typography>
+
           <Typography className="info-section__label">
             <span className="info-section__label-text">Country</span>
             {changedFields.country ? <DiffChip /> : null}
           </Typography>
+
           <Typography
             className="info-section__data"
             data-testid="review-vehicle-country"
           >
             {formatCountry(vehicleDetails?.countryCode)}
           </Typography>
+
           <Typography className="info-section__label">
             <span className="info-section__label-text">Province / State</span>
             {changedFields.province ? <DiffChip /> : null}
           </Typography>
+
           <Typography
             className="info-section__data"
             data-testid="review-vehicle-province"
@@ -181,34 +182,39 @@ export const ReviewVehicleInfo = ({
               vehicleDetails?.provinceCode,
             )}
           </Typography>
+
           <Typography className="info-section__label">
             <span className="info-section__label-text">Vehicle Type</span>
             {changedFields.type ? <DiffChip /> : null}
           </Typography>
+
           <Typography
             className="info-section__data"
             data-testid="review-vehicle-type"
           >
-            {DisplayVehicleType()}
+            {vehicleTypeDisplayText(vehicleType)}
           </Typography>
+
           <Typography className="info-section__label">
             <span className="info-section__label-text">Vehicle Sub-type</span>
             {changedFields.subtype ? <DiffChip /> : null}
           </Typography>
+
           <Typography
             className="info-section__data"
             data-testid="review-vehicle-subtype"
           >
-            {DisplayVehicleSubType()}
+            {vehicleSubtype}
           </Typography>
-          {vehicleWasSaved && (
+
+          {vehicleWasSaved ? (
             <Typography className="info-section__msg">
               <FontAwesomeIcon className="icon" icon={faCircleCheck} />
               <span data-testid="review-vehicle-saved-msg">
                 This vehicle has been added/updated to your Vehicle Inventory.
               </span>
             </Typography>
-          )}
+          ) : null}
         </Box>
       </Box>
     </Box>

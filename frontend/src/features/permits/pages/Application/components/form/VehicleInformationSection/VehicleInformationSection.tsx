@@ -23,7 +23,7 @@ export const VehicleInformationSection = ({
   subtypeOptions,
   isSelectedLOAVehicle,
   nextAllowedSubtypes,
-  nextAllowedSubtypesMap,
+  trailerSubtypeNamesMap,
   selectedConfigSubtypes,
   onSetSaveVehicle,
   onSetVehicle,
@@ -40,7 +40,7 @@ export const VehicleInformationSection = ({
     value: string;
     label: string;
   }[];
-  nextAllowedSubtypesMap: VehicleSubType[];
+  trailerSubtypeNamesMap: Map<string, string>;
   selectedConfigSubtypes: string[];
   onSetSaveVehicle: (saveVehicle: boolean) => void;
   onSetVehicle: (vehicleDetails: PermitVehicleDetails) => void;
@@ -144,7 +144,7 @@ export const VehicleInformationSection = ({
           <AddTrailer
             selectedTrailerSubtypes={selectedConfigSubtypes}
             trailerSubtypeOptions={nextAllowedSubtypes}
-            trailerSubtypesMap={nextAllowedSubtypesMap}
+            trailerSubtypeNamesMap={trailerSubtypeNamesMap}
             onUpdateVehicleConfigTrailers={onUpdateVehicleConfigTrailers}
           />
         ) : null}

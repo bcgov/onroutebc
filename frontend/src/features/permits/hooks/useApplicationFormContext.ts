@@ -16,10 +16,11 @@ export const useApplicationFormContext = () => {
   const {
     initialFormData,
     formData,
+    policyEngine,
     durationOptions,
-    vehicleOptions,
-    powerUnitSubtypes,
-    trailerSubtypes,
+    allVehiclesFromInventory,
+    powerUnitSubtypeNamesMap,
+    trailerSubtypeNamesMap,
     isLcvDesignated,
     feature,
     companyInfo,
@@ -43,7 +44,6 @@ export const useApplicationFormContext = () => {
     onUpdateLOAs,
     onUpdateHighwaySequence,
     onUpdateVehicleConfigTrailers,
-    getNextAllowedVehicleSubtypes,
   } = useContext(ApplicationFormContext);
 
   const {
@@ -130,24 +130,28 @@ export const useApplicationFormContext = () => {
     permitType,
     isLcvDesignated,
     vehicleFormData,
-    vehicleOptions,
+    allVehiclesFromInventory,
     currentSelectedLOAs as PermitLOA[],
-    powerUnitSubtypes,
-    trailerSubtypes,
+    powerUnitSubtypeNamesMap,
+    trailerSubtypeNamesMap,
     () => onClearVehicle(Boolean(vehicleFormData.saveVehicle)),
   );
 
   const selectedVehicleConfigSubtypes = useMemoizedArray(
-    getDefaultRequiredVal([], vehicleConfiguration?.trailers?.map(({ vehicleSubType }) => vehicleSubType)),
+    getDefaultRequiredVal(
+      [],
+      vehicleConfiguration?.trailers?.map(({ vehicleSubType }) => vehicleSubType),
+    ),
     (subtype) => subtype,
     (subtype1, subtype2) => subtype1 === subtype2,
   );
 
   const { nextAllowedSubtypes } = useVehicleConfiguration(
+    policyEngine,
+    permitType,
     getDefaultRequiredVal("", permittedCommodity?.commodityType),
     selectedVehicleConfigSubtypes,
     vehicleFormData.vehicleSubType,
-    getNextAllowedVehicleSubtypes,
   );
 
   const memoizedCompanyLOAs = useMemoizedArray(
@@ -198,7 +202,7 @@ export const useApplicationFormContext = () => {
     commodityOptions,
     highwaySequence,
     nextAllowedSubtypes,
-    trailerSubtypes,
+    trailerSubtypeNamesMap,
     selectedVehicleConfigSubtypes,
     onLeave,
     onSave,

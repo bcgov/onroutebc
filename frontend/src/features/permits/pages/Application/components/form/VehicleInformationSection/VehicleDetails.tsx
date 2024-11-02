@@ -13,7 +13,7 @@ import {
 import "./VehicleDetails.scss";
 import { CountryAndProvince } from "../../../../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../../../../common/components/form/CustomFormComponents";
-import { mapToVehicleObjectById } from "../../../../../helpers/mappers";
+import { findFromExistingVehicles } from "../../../../../helpers/mappers";
 import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
 import { CustomInputHTMLAttributes } from "../../../../../../../common/types/formElements";
 import { SelectUnitOrPlate } from "./components/SelectUnitOrPlate";
@@ -86,7 +86,7 @@ export const VehicleDetails = ({
   // Enable only when user chooses to manually enter new vehicle info by clearing the vehicle details
   const shouldDisableVehicleTypeSelect = () => {
     const existingVehicle = vehicleType
-      ? mapToVehicleObjectById(
+      ? findFromExistingVehicles(
           vehicleOptions,
           vehicleType as VehicleType,
           vehicleFormData.vehicleId,
@@ -115,7 +115,7 @@ export const VehicleDetails = ({
         ? (selectedVehicle as PowerUnit).powerUnitId
         : (selectedVehicle as Trailer).trailerId;
 
-    const vehicle = mapToVehicleObjectById(
+    const vehicle = findFromExistingVehicles(
       vehicleOptions,
       vehicleType,
       vehicleId,

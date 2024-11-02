@@ -1,5 +1,16 @@
 import { Box } from "@mui/material";
 import { Dayjs } from "dayjs";
+import { useMemo } from "react";
+
+import "./PermitReview.scss";
+import { ReviewActions } from "./ReviewActions";
+import { ReviewContactDetails } from "./ReviewContactDetails";
+import { ReviewFeeSummary } from "./ReviewFeeSummary";
+import { ReviewPermitDetails } from "./ReviewPermitDetails";
+import { ReviewPermitLOAs } from "./ReviewPermitLOAs";
+import { ReviewVehicleInfo } from "./ReviewVehicleInfo";
+import { PermitType } from "../../../../types/PermitType";
+import { PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
 import { WarningBcGovBanner } from "../../../../../../common/components/banners/WarningBcGovBanner";
 import { Nullable } from "../../../../../../common/types/common";
 import { CompanyProfile } from "../../../../../manageProfile/types/manageProfile";
@@ -13,15 +24,7 @@ import {
   PERMIT_REVIEW_CONTEXTS,
   PermitReviewContext,
 } from "../../../../types/PermitReviewContext";
-import { PermitType } from "../../../../types/PermitType";
-import { PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
-import "./PermitReview.scss";
-import { ReviewActions } from "./ReviewActions";
-import { ReviewContactDetails } from "./ReviewContactDetails";
-import { ReviewFeeSummary } from "./ReviewFeeSummary";
-import { ReviewPermitDetails } from "./ReviewPermitDetails";
-import { ReviewPermitLOAs } from "./ReviewPermitLOAs";
-import { ReviewVehicleInfo } from "./ReviewVehicleInfo";
+import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 
 interface PermitReviewProps {
   reviewContext: PermitReviewContext;
@@ -60,6 +63,17 @@ interface PermitReviewProps {
 }
 
 export const PermitReview = (props: PermitReviewProps) => {
+  const { powerUnitSubTypes, trailerSubTypes } = props;
+  const powerUnitSubtypeNamesMap = useMemo(() => new Map<string, string>(
+    getDefaultRequiredVal([], powerUnitSubTypes)
+      .map(({ typeCode, type }) => [typeCode, type]),
+  ), [powerUnitSubTypes]);
+
+  const trailerSubtypeNamesMap = useMemo(() => new Map<string, string>(
+    getDefaultRequiredVal([], trailerSubTypes)
+      .map(({ typeCode, type }) => [typeCode, type]),
+  ), [trailerSubTypes]);
+
   return (
     <Box className="permit-review layout-box">
       <Box className="permit-review__container">
@@ -97,8 +111,8 @@ export const PermitReview = (props: PermitReviewProps) => {
         />
 
         <ReviewVehicleInfo
-          powerUnitSubTypes={props.powerUnitSubTypes}
-          trailerSubTypes={props.trailerSubTypes}
+          powerUnitSubtypeNamesMap={powerUnitSubtypeNamesMap}
+          trailerSubtypeNamesMap={trailerSubtypeNamesMap}
           vehicleDetails={props.vehicleDetails}
           vehicleWasSaved={props.vehicleWasSaved}
           showChangedFields={props.showChangedFields}

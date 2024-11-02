@@ -1,5 +1,6 @@
 import { createContext } from "react";
 import { Dayjs } from "dayjs";
+import { Policy } from "onroute-policy-engine";
 
 import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
 import { LOADetail } from "../../settings/types/LOADetail";
@@ -7,8 +8,8 @@ import { ApplicationFormData } from "../types/application";
 import { getDefaultValues } from "../helpers/getDefaultApplicationFormData";
 import { DEFAULT_PERMIT_TYPE } from "../types/PermitType";
 import { PermitCondition } from "../types/PermitCondition";
-import { PowerUnit, Trailer, VehicleSubType } from "../../manageVehicles/types/Vehicle";
-import { Nullable } from "../../../common/types/common";
+import { PowerUnit, Trailer } from "../../manageVehicles/types/Vehicle";
+import { Nullable, RequiredOrNull } from "../../../common/types/common";
 import { CompanyProfile } from "../../manageProfile/types/manageProfile.d";
 import { PermitLOA } from "../types/PermitLOA";
 import { VehicleInConfiguration } from "../types/PermitVehicleConfiguration";
@@ -20,13 +21,14 @@ import {
 interface ApplicationFormContextType {
   initialFormData: ApplicationFormData;
   formData: ApplicationFormData;
+  policyEngine: RequiredOrNull<Policy>;
   durationOptions: {
     value: number;
     label: string;
   }[];
-  vehicleOptions: (PowerUnit | Trailer)[];
-  powerUnitSubtypes: VehicleSubType[];
-  trailerSubtypes: VehicleSubType[];
+  allVehiclesFromInventory: (PowerUnit | Trailer)[];
+  powerUnitSubtypeNamesMap: Map<string, string>;
+  trailerSubtypeNamesMap: Map<string, string>;
   isLcvDesignated: boolean;
   feature: string;
   companyInfo?: Nullable<CompanyProfile>;
@@ -58,19 +60,16 @@ interface ApplicationFormContextType {
   onUpdateLOAs: (updatedLOAs: PermitLOA[]) => void;
   onUpdateHighwaySequence: (updatedHighwaySequence: string[]) => void;
   onUpdateVehicleConfigTrailers: (updatedTrailerSubtypes: VehicleInConfiguration[]) => void;
-  getNextAllowedVehicleSubtypes: (selectedCommodity: string, selectedSubtypes: string[]) => {
-    value: string;
-    label: string;
-  }[];
 }
 
 export const ApplicationFormContext = createContext<ApplicationFormContextType>({
   initialFormData: getDefaultValues(DEFAULT_PERMIT_TYPE, undefined),
   formData: getDefaultValues(DEFAULT_PERMIT_TYPE, undefined),
+  policyEngine: null,
   durationOptions: [],
-  vehicleOptions: [],
-  powerUnitSubtypes: [],
-  trailerSubtypes: [],
+  allVehiclesFromInventory: [],
+  powerUnitSubtypeNamesMap: new Map<string, string>(),
+  trailerSubtypeNamesMap: new Map<string, string>(),
   isLcvDesignated: false,
   feature: "",
   companyInfo: undefined,
@@ -94,5 +93,4 @@ export const ApplicationFormContext = createContext<ApplicationFormContextType>(
   onUpdateLOAs: () => undefined,
   onUpdateHighwaySequence: () => undefined,
   onUpdateVehicleConfigTrailers: () => undefined,
-  getNextAllowedVehicleSubtypes: () => [],
 });

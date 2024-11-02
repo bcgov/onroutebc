@@ -40,7 +40,7 @@ export const PermitForm = () => {
     commodityOptions,
     highwaySequence,
     nextAllowedSubtypes,
-    trailerSubtypes,
+    trailerSubtypeNamesMap,
     selectedVehicleConfigSubtypes,
     onLeave,
     onSave,
@@ -105,7 +105,7 @@ export const PermitForm = () => {
           subtypeOptions={subtypeOptions}
           isSelectedLOAVehicle={isSelectedLOAVehicle}
           nextAllowedSubtypes={nextAllowedSubtypes}
-          nextAllowedSubtypesMap={trailerSubtypes}
+          trailerSubtypeNamesMap={trailerSubtypeNamesMap}
           selectedConfigSubtypes={selectedVehicleConfigSubtypes}
           onSetSaveVehicle={onToggleSaveVehicle}
           onSetVehicle={onSetVehicle}

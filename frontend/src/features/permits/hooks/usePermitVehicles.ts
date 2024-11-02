@@ -9,17 +9,16 @@ import {
   PowerUnit,
   Trailer,
   VEHICLE_TYPES,
-  VehicleSubType,
 } from "../../manageVehicles/types/Vehicle";
 
 export const usePermitVehicles = (
   permitType: PermitType,
   isLcvDesignated: boolean,
   vehicleFormData: PermitVehicleDetails,
-  vehicleOptions: (PowerUnit | Trailer)[],
+  allVehiclesFromInventory: (PowerUnit | Trailer)[],
   selectedLOAs: PermitLOA[],
-  powerUnitSubtypes: VehicleSubType[],
-  trailerSubtypes: VehicleSubType[],
+  powerUnitSubtypeNamesMap: Map<string, string>,
+  trailerSubtypeNamesMap: Map<string, string>,
   onClearVehicle: () => void,
 ) => {
   const eligibleVehicleSubtypes = useMemo(() => getEligibleVehicleSubtypes(
@@ -37,13 +36,13 @@ export const usePermitVehicles = (
   } = useMemo(() => {
     return getUpdatedVehicleDetailsForLOAs(
       selectedLOAs,
-      vehicleOptions,
+      allVehiclesFromInventory,
       vehicleFormData,
       eligibleVehicleSubtypes,
     );
   }, [
     selectedLOAs,
-    vehicleOptions,
+    allVehiclesFromInventory,
     vehicleFormData,
     eligibleVehicleSubtypes,
   ]);
@@ -84,10 +83,10 @@ export const usePermitVehicles = (
   
     // Try to find all of the unfiltered vehicles in the inventory, and get a list of their subtypes
     // as some of these unfiltered subtypes can potentially be used by a selected LOA
-    const powerUnitsInInventory = vehicleOptions
+    const powerUnitsInInventory = allVehiclesFromInventory
       .filter(vehicle => vehicle.vehicleType === VEHICLE_TYPES.POWER_UNIT) as PowerUnit[];
   
-    const trailersInInventory = vehicleOptions
+    const trailersInInventory = allVehiclesFromInventory
       .filter(vehicle => vehicle.vehicleType === VEHICLE_TYPES.TRAILER) as Trailer[];
   
     const allowedLOASubtypes = new Set([
@@ -113,8 +112,16 @@ export const usePermitVehicles = (
       );
   
     const subtypeOptions = getEligibleSubtypeOptions(
-      powerUnitSubtypes,
-      trailerSubtypes,
+      [...powerUnitSubtypeNamesMap.entries()].map(([typeCode, type]) => ({
+        type,
+        typeCode,
+        description: "",
+      })),
+      [...trailerSubtypeNamesMap.entries()].map(([typeCode, type]) => ({
+        type,
+        typeCode,
+        description: "",
+      })),
       eligibleVehicleSubtypes,
       allowedLOASubtypes,
       vehicleType,
@@ -126,11 +133,11 @@ export const usePermitVehicles = (
     };
   }, [
     selectedLOAs,
-    vehicleOptions,
+    allVehiclesFromInventory,
     vehicleType,
     vehicleIdInForm,
-    powerUnitSubtypes,
-    trailerSubtypes,
+    powerUnitSubtypeNamesMap,
+    trailerSubtypeNamesMap,
     eligibleVehicleSubtypes,
   ]);
 

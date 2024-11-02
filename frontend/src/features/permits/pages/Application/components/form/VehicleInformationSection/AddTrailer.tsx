@@ -18,7 +18,6 @@ import "./AddTrailer.scss";
 import { CustomSelectDisplayProps } from "../../../../../../../common/types/formElements";
 import { useMemoizedArray } from "../../../../../../../common/hooks/useMemoizedArray";
 import { VehicleInConfiguration } from "../../../../../types/PermitVehicleConfiguration";
-import { VehicleSubType } from "../../../../../../manageVehicles/types/Vehicle";
 import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
 
 const DEFAULT_EMPTY_SUBTYPE = "-";
@@ -26,7 +25,7 @@ const DEFAULT_EMPTY_SUBTYPE = "-";
 export const AddTrailer = ({
   selectedTrailerSubtypes,
   trailerSubtypeOptions,
-  trailerSubtypesMap,
+  trailerSubtypeNamesMap,
   onUpdateVehicleConfigTrailers,
 }: {
   selectedTrailerSubtypes: string[];
@@ -34,7 +33,7 @@ export const AddTrailer = ({
     value: string;
     label: string;
   }[];
-  trailerSubtypesMap: VehicleSubType[];
+  trailerSubtypeNamesMap: Map<string, string>;
   onUpdateVehicleConfigTrailers: (updatedTrailerSubtypes: VehicleInConfiguration[]) => void;
 }) => {
   const [trailerSelection, setTrailerSelection] = useState<string>(DEFAULT_EMPTY_SUBTYPE);
@@ -48,8 +47,8 @@ export const AddTrailer = ({
   const selectedSubtypesDisplay = useMemoizedArray(
     selectedTrailerSubtypes.map(subtype => getDefaultRequiredVal(
       subtype,
-      trailerSubtypesMap.find(({ typeCode }) => typeCode === subtype)?.type),
-    ),
+      trailerSubtypeNamesMap.get(subtype),
+    )),
     (selectedSubtype) => selectedSubtype,
     (subtype1, subtype2) => subtype1 === subtype2,
   );
@@ -68,7 +67,7 @@ export const AddTrailer = ({
     onUpdateVehicleConfigTrailers([]);
   };
 
-  return (
+  return (selectedSubtypesDisplay.length > 0 || trailerSubtypeOptions.length > 0) ? (
     <div className="add-trailer">
       <h4 className="add-trailer__title">Add Trailer(s)</h4>
 
@@ -161,5 +160,5 @@ export const AddTrailer = ({
         </FormControl>
       ) : null}
     </div>
-  );
+  ) : null;
 };

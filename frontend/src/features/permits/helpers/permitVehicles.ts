@@ -1,5 +1,5 @@
 import { PERMIT_TYPES, PermitType } from "../types/PermitType";
-import { sortVehicleSubTypes } from "./sorter";
+import { sortVehicleSubtypes } from "./sorter";
 import { LCV_VEHICLE_SUBTYPES } from "../constants/constants";
 import { TROW_ELIGIBLE_VEHICLE_SUBTYPES } from "../constants/trow";
 import { TROS_ELIGIBLE_VEHICLE_SUBTYPES } from "../constants/tros";
@@ -161,7 +161,7 @@ export const getEligibleSubtypeOptions = (
   }
 
   // Sort vehicle subtypes alphabetically
-  const sortedVehicleSubtypes = sortVehicleSubTypes(
+  const sortedVehicleSubtypes = sortVehicleSubtypes(
     vehicleType,
     getSubtypeOptions(vehicleType, powerUnitSubtypes, trailerSubtypes),
   );

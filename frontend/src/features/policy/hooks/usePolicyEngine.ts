@@ -1,12 +1,13 @@
+import { useMemo } from "react";
 import { Policy } from "onroute-policy-engine";
-import { useCallback, useMemo } from "react";
 
 import { usePolicyConfigurationQuery } from "./usePolicyConfigurationQuery";
-import { PermitType } from "../../permits/types/PermitType";
-import { Application } from "../../permits/types/application";
-import { getDefaultRequiredVal } from "../../../common/helpers/util";
 
-export const usePolicyEngine = (permitType: PermitType) => {
+/**
+ * Hook that instantiates the policy engine instance.
+ * @returns Policy engine instance, or null if policy configuration isn't available
+ */
+export const usePolicyEngine = () => {
   const { data: policyConfiguration } = usePolicyConfigurationQuery();
 
   const policyEngine = useMemo(() => {
@@ -15,47 +16,5 @@ export const usePolicyEngine = (permitType: PermitType) => {
     return new Policy(policyConfiguration.policy);
   }, [policyConfiguration]);
 
-  const validate = useCallback(
-    (application: Application) => policyEngine?.validate(application),
-    [policyEngine],
-  );
-
-  const commodityOptions = useMemo(() => {
-    const commodities = getDefaultRequiredVal(
-      new Map<string, string>(),
-      policyEngine?.getCommodities(permitType),
-    );
-
-    return [...commodities.entries()]
-      .map(([commodityType, commodityDescription]) => ({
-        value: commodityType,
-        label: commodityDescription,
-      }));
-  }, [policyEngine, permitType]);
-
-  const getNextAllowedVehicleSubtypes = useCallback(
-    (selectedCommodity: string, selectedSubtypes: string[]) => {
-      const nextAllowedSubtypes = getDefaultRequiredVal(
-        new Map<string, string>(),
-        policyEngine?.getNextPermittableVehicles(
-          permitType,
-          selectedCommodity,
-          selectedSubtypes,
-        ),
-      );
-
-      return [...nextAllowedSubtypes.entries()]
-        .map(([subtypeCode, subtypeFullName]) => ({
-          value: subtypeCode,
-          label: subtypeFullName,
-        }));
-    },
-    [policyEngine, permitType],
-  );
-
-  return {
-    validate,
-    getNextAllowedVehicleSubtypes,
-    commodityOptions,
-  };
+  return policyEngine;
 };
