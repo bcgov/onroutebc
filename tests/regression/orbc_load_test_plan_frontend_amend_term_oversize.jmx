@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.4.1">
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.5">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
@@ -19,11 +19,6 @@
     <hashTree>
       <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
         <collectionProp name="Arguments.arguments">
-          <elementProp name="NUM_THREADS" elementType="Argument">
-            <stringProp name="Argument.name">NUM_THREADS</stringProp>
-            <stringProp name="Argument.value">200</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
           <elementProp name="FRONTEND_URL" elementType="Argument">
             <stringProp name="Argument.name">FRONTEND_URL</stringProp>
             <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca</stringProp>
@@ -92,6 +87,84 @@
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
       <hashTree>
+        <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="login" enabled="true">
+          <stringProp name="WebDriverSampler.script">import org.openqa.selenium.By
+import org.openqa.selenium.support.ui.ExpectedConditions
+import org.openqa.selenium.support.ui.WebDriverWait
+import org.openqa.selenium.WebElement
+import org.openqa.selenium.devtools.DevTools;
+import org.openqa.selenium.devtools.v129.network.Network;
+import java.util.Optional;
+import org.openqa.selenium.logging.LogType
+import org.openqa.selenium.logging.LogEntries
+import org.openqa.selenium.chrome.ChromeOptions
+import org.openqa.selenium.logging.LoggingPreferences
+import java.util.logging.Level
+import java.util.function.Consumer
+
+WDS.sampleResult.sampleStart() 
+
+WDS.log.info &quot;Groovy version: ${GroovySystem.version}&quot;
+
+
+def frontendUrl = WDS.vars.get(&quot;FRONTEND_URL&quot;)
+WDS.browser.get(frontendUrl)
+Thread.sleep(5000)
+
+def loginButton = WDS.browser.findElement(By.id(&apos;login-bceid&apos;))
+if (loginButton != null) {
+    loginButton.click()
+    WDS.log.info(&quot;Clicked on the login-bceid button&quot;)
+} else {
+    WDS.log.info(&quot;Button with id &apos;login-bceid&apos; not found&quot;)
+}
+
+Thread.sleep(10000)
+def user = WDS.browser.findElement(By.id(&apos;user&apos;))
+def password = WDS.browser.findElement(By.id(&apos;password&apos;))
+
+def userValue = WDS.vars.get(&quot;USER&quot;)
+def passwordValue = WDS.vars.get(&quot;PASSWORD&quot;)
+user.sendKeys(userValue)
+password.sendKeys(passwordValue)
+Thread.sleep(5000)
+
+def submitButton = WDS.browser.findElement(By.name(&apos;btnSubmit&apos;))
+if (submitButton != null) {
+    submitButton.click()
+} else {
+    WDS.log.info(&apos;Submit button with name=&quot;btnSubmit&quot; not found&apos;)
+}
+Thread.sleep(5000)
+
+def devTools = ((org.openqa.selenium.chrome.ChromeDriver) WDS.browser).getDevTools()
+devTools.createSession()
+devTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()))
+devTools.addListener(Network.requestWillBeSent(), { request -&gt;
+    if (request.getRequest().getUrl().contains(&quot;https&quot;)) {
+        def headers = request.getRequest().getHeaders()
+        def authHeader = headers.get(&quot;Authorization&quot;)
+        if (authHeader != null &amp;&amp; authHeader.startsWith(&quot;Bearer &quot;)) {
+            def token = authHeader.replace(&quot;Bearer &quot;, &quot;&quot;)
+            WDS.log.info(&quot;Extracted Token: &quot; + token)
+            WDS.vars.put(&quot;BEARER_TOKEN&quot;, token)
+        }
+    }
+    else {
+    	WDS.log.info(&quot;bruce test no token: &quot;)
+    	}
+} as Consumer)
+Thread.sleep(5000)
+
+WDS.browser.get(frontendUrl)
+Thread.sleep(5000)
+
+WDS.sampleResult.sampleEnd()
+</stringProp>
+          <stringProp name="WebDriverSampler.parameters"></stringProp>
+          <stringProp name="WebDriverSampler.language">groovy</stringProp>
+        </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+        <hashTree/>
         <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="amendApplications" enabled="true">
           <stringProp name="WebDriverSampler.script">import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions

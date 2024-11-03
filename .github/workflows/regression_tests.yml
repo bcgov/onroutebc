@@ -6,11 +6,6 @@ on:
   workflow_dispatch:
     inputs:
       ### Required
-      num_threads:
-        description: 'Number of concurrent threads (USERS) for each test in sequence'
-        default: 2
-        required: true
-        type: integer
       release:
         description: 'PR number, test or prod.'
         default: test
@@ -60,11 +55,10 @@ jobs:
           args: |
             --loglevel INFO 
             --jmeterlogconf=log.conf
-            -JNUM_THREADS=${{inputs.num_threads}}
             -JFRONTEND_API_URL=${{vars.frontend_api_url}}
-            -JRESULTS_DIR=results_frontend
-            -JUSER=${{vars.BCEID_TEST_USER}}
-            -JPASSWORD=${{secrets.BCEID_TEST_PASSWORD}}
+            -JRESULTS_DIR=tests/regression/results/
+            -JUSER=${{vars.BCEID_USER}}
+            -JPASSWORD=${{secrets.BCEID_PASSWORD}}
 
       - uses: actions/upload-artifact@v4.3.6
         with:
