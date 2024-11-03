@@ -1,0 +1,69 @@
+---
+name: Regression Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      ### Required
+      num_threads:
+        description: 'Number of concurrent threads (USERS) for each test in sequence'
+        default: 2
+        required: true
+        type: integer
+      release:
+        description: 'PR number, test or prod.'
+        default: test
+        required: true
+        type: string
+      username:
+        description: 'username of test account to use'
+        default: ''
+        required: true
+        type: string
+      password:
+        description: 'password of test account to use'
+        default: ''
+        required: true
+        type: string
+
+
+jobs:
+  vars:
+    name: Set Variables
+    outputs:
+      dops_api_url: ${{ steps.vars.outputs.dops_api_url }}
+      frontend_api_url: ${{ steps.vars.outputs.frontend_api_url }}
+      vehicles_api_url: ${{ steps.vars.outputs.vehicles_api_url }}
+    runs-on: ubuntu-22.04
+    steps:
+      - name: vars
+        id: vars
+        run: |
+          echo "dops_api_url=onroutebc-${{inputs.environment}}-dops.apps.silver.devops.gov.bc.ca" >> GITHUB_ENV
+          echo "frontend_api_url=onroutebc-${{inputs.environment}}-frontend.apps.silver.devops.gov.bc.ca" >> GITHUB_ENV
+          echo "vehicles_api_url=onroutebc-${{inputs.environment}}-vehicles.apps.silver.devops.gov.bc.ca" >> GITHUB_ENV
+  
+  amend_term_oversize:
+    name: Amend Term Oversize
+    environment: ${{ inputs.environment }}
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: rbhadti94/apache-jmeter-action@v0.5.0
+        with:
+          testFilePath: tests/regression/orbc_load_test_plan_frontend_amend_term_oversize.jmx
+          outputReportsFolder: tests/regression/results
+          args: |
+            --loglevel INFO 
+            --jmeterlogconf=log.conf
+            -JNUM_THREADS=${{inputs.num_threads}}
+            -JFRONTEND_API_URL=${{vars.frontend_api_url}}
+            -JRESULTS_DIR=results_frontend
+            -JUSER=${{vars.BCEID_TEST_USER}}
+            -JPASSWORD=${{secrets.BCEID_TEST_PASSWORD}}
+
+      - uses: actions/upload-artifact@v4.3.6
+        with:
+          name: jmeter-test-results-frontend
+          path: tests/regression/results 
