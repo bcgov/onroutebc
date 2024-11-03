@@ -2,6 +2,7 @@
 name: Regression Tests
 
 on:
+  pull_request:
   workflow_dispatch:
     inputs:
       ### Required
