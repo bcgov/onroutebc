@@ -296,7 +296,7 @@ WDS.sampleResult.sampleEnd()
             <connectTime>true</connectTime>
           </value>
         </objProp>
-        <stringProp name="filename">${RESULTS_DIR}/frontend.csv</stringProp>
+        <stringProp name="filename">${RESULTS_DIR}/amend_term_oversize.csv</stringProp>
       </ResultCollector>
       <hashTree/>
     </hashTree>
