@@ -22,6 +22,8 @@ import { ReviewFeeSummary } from "./ReviewFeeSummary";
 import { ReviewPermitDetails } from "./ReviewPermitDetails";
 import { ReviewPermitLOAs } from "./ReviewPermitLOAs";
 import { ReviewVehicleInfo } from "./ReviewVehicleInfo";
+import { ApplicationRejectionHistory } from "../../../../types/ApplicationRejectionHistory";
+import { ReviewApplicationRejectionHistory } from "./ReviewApplicationRejectionHistory";
 import { isPermitStartOrExpiryDateInPast } from "../../../../helpers/dateSelection";
 
 interface PermitReviewProps {
@@ -58,9 +60,15 @@ interface PermitReviewProps {
   calculatedFee: string;
   doingBusinessAs?: Nullable<string>;
   loas?: Nullable<PermitLOA[]>;
+  applicationRejectionHistory?: Nullable<ApplicationRejectionHistory[]>;
 }
 
 export const PermitReview = (props: PermitReviewProps) => {
+  const shouldShowRejectionHistory =
+    props.reviewContext === PERMIT_REVIEW_CONTEXTS.QUEUE &&
+    props.applicationRejectionHistory &&
+    props.applicationRejectionHistory.length > 0;
+
   const invalidPermitDates =
     props.permitStartDate && props.permitExpiryDate
       ? isPermitStartOrExpiryDateInPast(
@@ -114,6 +122,12 @@ export const PermitReview = (props: PermitReviewProps) => {
           showChangedFields={props.showChangedFields}
           oldFields={props.oldFields?.permitData?.vehicleDetails}
         />
+
+        {shouldShowRejectionHistory && props.applicationRejectionHistory && (
+          <ReviewApplicationRejectionHistory
+            applicationRejectionHistory={props.applicationRejectionHistory}
+          />
+        )}
 
         <ReviewFeeSummary
           hasAttemptedSubmission={props.hasAttemptedCheckboxes}
