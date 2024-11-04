@@ -39,7 +39,7 @@ jobs:
           echo "dops_api_url=onroutebc-${{inputs.release}}-dops.apps.silver.devops.gov.bc.ca" >> GITHUB_ENV
           echo "frontend_api_url=onroutebc-${{inputs.release}}-frontend.apps.silver.devops.gov.bc.ca" >> GITHUB_ENV
           echo "vehicles_api_url=onroutebc-${{inputs.release}}-vehicles.apps.silver.devops.gov.bc.ca" >> GITHUB_ENV
-          if [ "${{inputs.release}}" != "test" && "${{inputs.release}}" != "prod" ]; then
+          if [ "${{inputs.release}}" != "test" && "${{inputs.release}}" != "prod" && "${{inputs.release}}" != "" ]; then
            echo "environment=dev" >> GITHUB_ENV 
           else
            echo "environment=${{inputs.release}}" >> GITHUB_ENV 
