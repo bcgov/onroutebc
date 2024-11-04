@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 
 import {
   MRT_Cell,
@@ -30,12 +29,8 @@ import {
   defaultTableStateOptions,
 } from "../../../../../common/helpers/tableHelper";
 import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
-import { FieldValues, FormProvider, useForm } from "react-hook-form";
-import {
-  MultiplePaymentMethodRefundFormData,
-  MultiplePaymentMethodRefundRowData,
-  PermitHistoryWithRefund,
-} from "../types/RefundFormData";
+import { FieldValues, useFormContext } from "react-hook-form";
+import { PermitHistoryWithRefund } from "../types/RefundFormData";
 import { Button, Checkbox, FormControlLabel } from "@mui/material";
 import { requiredMessage } from "../../../../../common/helpers/validationMessages";
 
@@ -48,17 +43,7 @@ export const TransactionHistoryTable = ({
     isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
   );
 
-  const formMethods = useForm<MultiplePaymentMethodRefundFormData>({
-    defaultValues: {
-      refundData: validTransactionHistory.map(() => ({
-        refundAmount: "",
-        refundTransactionId: "",
-        chequeRefund: false,
-      })),
-    },
-    reValidateMode: "onChange",
-  });
-
+  const formMethods = useFormContext();
   const { handleSubmit, register, watch, setValue, trigger } = formMethods;
 
   const onSubmit = (data: FieldValues) => {
@@ -278,9 +263,6 @@ export const TransactionHistoryTable = ({
         enableSorting: false,
         enableColumnActions: false,
         Cell: ({ cell }: { cell: MRT_Cell<PermitHistoryWithRefund> }) => {
-          const chequeRefund = watch(
-            `refundData.${cell.row.index}.chequeRefund`,
-          );
           const refundAmount = watch(
             `refundData.${cell.row.index}.refundAmount`,
           );
@@ -355,7 +337,7 @@ export const TransactionHistoryTable = ({
   });
 
   return (
-    <FormProvider {...formMethods}>
+    <>
       <MaterialReactTable table={table} />
       <Button
         variant="contained"
@@ -365,6 +347,6 @@ export const TransactionHistoryTable = ({
       >
         Finish
       </Button>
-    </FormProvider>
+    </>
   );
 };

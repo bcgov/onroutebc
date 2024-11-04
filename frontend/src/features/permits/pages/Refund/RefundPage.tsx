@@ -18,7 +18,10 @@ import {
 
 import "./RefundPage.scss";
 import { getPermitTypeName, PermitType } from "../../types/PermitType";
-import { RefundFormData } from "./types/RefundFormData";
+import {
+  MultiplePaymentMethodRefundFormData,
+  RefundFormData,
+} from "./types/RefundFormData";
 import { requiredMessage } from "../../../../common/helpers/validationMessages";
 import { getErrorMessage } from "../../../../common/components/form/CustomFormComponents";
 import { PermitHistory } from "../../types/PermitHistory";
@@ -106,118 +109,129 @@ export const RefundPage = ({
     isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
   );
 
-  const getPrevValidTransaction = () => {
-    if (!validTransactionHistory || validTransactionHistory.length === 0)
-      return undefined;
-
-    return validTransactionHistory.find((history) => {
-      return (
-        history.paymentMethodTypeCode !== PAYMENT_METHOD_TYPE_CODE.NP &&
-        ((PAYMENT_METHODS_WITH_CARD.includes(history.paymentMethodTypeCode) &&
-          !!history.paymentCardTypeCode) ||
-          (!PAYMENT_METHODS_WITH_CARD.includes(history.paymentMethodTypeCode) &&
-            !history.paymentCardTypeCode))
-      );
-    });
-  };
-
-  // Get last valid transaction's payment method
-  // eg. zero dollar amounts (from amendment) is not considered valid payment method
-  // Also, if the transaction is of payment method type with an associated card type, then its card type must not be empty
-  const getPrevPaymentMethod = () => {
-    const prevValidTransaction = getPrevValidTransaction();
-
-    if (!prevValidTransaction) return undefined;
-
-    return getPaymentMethod(
-      prevValidTransaction.paymentMethodTypeCode,
-      prevValidTransaction.paymentCardTypeCode,
-    );
-  };
-
-  const getRefundMethodType = () => {
-    const prevPaymentMethod = getPrevPaymentMethod();
-
-    if (!prevPaymentMethod)
-      return CONSOLIDATED_PAYMENT_METHODS[DEFAULT_REFUND_OPTION]
-        .paymentMethodTypeCode;
-
-    return CONSOLIDATED_PAYMENT_METHODS[prevPaymentMethod]
-      .paymentMethodTypeCode;
-  };
-
-  const getRefundCardType = () => {
-    const prevPaymentMethod = getPrevPaymentMethod();
-
-    if (!prevPaymentMethod) {
-      return CONSOLIDATED_PAYMENT_METHODS[DEFAULT_REFUND_OPTION]
-        .paymentCardTypeCode;
-    }
-
-    return CONSOLIDATED_PAYMENT_METHODS[prevPaymentMethod].paymentCardTypeCode;
-  };
-
-  const getRefundOnlineMethod = () => {
-    const prevValidTransaction = getPrevValidTransaction();
-    if (!prevValidTransaction) return "";
-    return getDefaultRequiredVal("", prevValidTransaction.pgPaymentMethod);
-  };
-
-  const disableRefundCardSelection =
-    !getPrevPaymentMethod() || !getRefundCardType();
-
-  // only show refund method selection (both card selection and cheque) when amount to refund is greater than 0
-  const enableRefundMethodSelection = !isZeroAmount(amountToRefund);
-
-  const [shouldUsePrevPaymentMethod, setShouldUsePrevPaymentMethod] =
-    useState<boolean>(!disableRefundCardSelection);
-
-  const formMethods = useForm<RefundFormData>({
+  const formMethods = useForm<MultiplePaymentMethodRefundFormData>({
     defaultValues: {
-      shouldUsePrevPaymentMethod,
-      refundMethod: getPaymentMethod(
-        getRefundMethodType(),
-        getRefundCardType(),
-      ),
-      refundOnlineMethod: getRefundOnlineMethod(),
-      transactionId: "",
+      refundData: validTransactionHistory.map(() => ({
+        refundAmount: "",
+        refundTransactionId: "",
+        chequeRefund: false,
+      })),
     },
     reValidateMode: "onChange",
   });
 
-  const {
-    control,
-    getValues,
-    handleSubmit,
-    setValue,
-    formState: { errors },
-    register,
-    clearErrors,
-  } = formMethods;
+  // const getPrevValidTransaction = () => {
+  //   if (!validTransactionHistory || validTransactionHistory.length === 0)
+  //     return undefined;
 
-  useEffect(() => {
-    const refundMethod = getRefundMethodType();
-    const refundCardType = getRefundCardType();
-    setShouldUsePrevPaymentMethod(!disableRefundCardSelection);
-    setValue("refundMethod", getPaymentMethod(refundMethod, refundCardType));
-    setValue("refundOnlineMethod", getRefundOnlineMethod());
-  }, [permitHistory, permitHistory.length]);
+  //   return validTransactionHistory.find((history) => {
+  //     return (
+  //       history.paymentMethodTypeCode !== PAYMENT_METHOD_TYPE_CODE.NP &&
+  //       ((PAYMENT_METHODS_WITH_CARD.includes(history.paymentMethodTypeCode) &&
+  //         !!history.paymentCardTypeCode) ||
+  //         (!PAYMENT_METHODS_WITH_CARD.includes(history.paymentMethodTypeCode) &&
+  //           !history.paymentCardTypeCode))
+  //     );
+  //   });
+  // };
 
-  useEffect(() => {
-    setValue("shouldUsePrevPaymentMethod", shouldUsePrevPaymentMethod);
-  }, [shouldUsePrevPaymentMethod]);
+  // Get last valid transaction's payment method
+  // eg. zero dollar amounts (from amendment) is not considered valid payment method
+  // Also, if the transaction is of payment method type with an associated card type, then its card type must not be empty
+  // const getPrevPaymentMethod = () => {
+  //   const prevValidTransaction = getPrevValidTransaction();
 
-  const handleRefundMethodChange = (shouldUsePrev: string) => {
-    const usePrev = shouldUsePrev === "true";
-    setShouldUsePrevPaymentMethod(usePrev);
-    setValue("refundOnlineMethod", usePrev ? getRefundOnlineMethod() : "");
-    clearErrors("transactionId");
-  };
+  //   if (!prevValidTransaction) return undefined;
 
-  const handleFinish = () => {
-    const formValues = getValues();
-    onFinish(formValues);
-  };
+  //   return getPaymentMethod(
+  //     prevValidTransaction.paymentMethodTypeCode,
+  //     prevValidTransaction.paymentCardTypeCode,
+  //   );
+  // };
+
+  // const getRefundMethodType = () => {
+  //   const prevPaymentMethod = getPrevPaymentMethod();
+
+  //   if (!prevPaymentMethod)
+  //     return CONSOLIDATED_PAYMENT_METHODS[DEFAULT_REFUND_OPTION]
+  //       .paymentMethodTypeCode;
+
+  //   return CONSOLIDATED_PAYMENT_METHODS[prevPaymentMethod]
+  //     .paymentMethodTypeCode;
+  // };
+
+  // const getRefundCardType = () => {
+  //   const prevPaymentMethod = getPrevPaymentMethod();
+
+  //   if (!prevPaymentMethod) {
+  //     return CONSOLIDATED_PAYMENT_METHODS[DEFAULT_REFUND_OPTION]
+  //       .paymentCardTypeCode;
+  //   }
+
+  //   return CONSOLIDATED_PAYMENT_METHODS[prevPaymentMethod].paymentCardTypeCode;
+  // };
+
+  // const getRefundOnlineMethod = () => {
+  //   const prevValidTransaction = getPrevValidTransaction();
+  //   if (!prevValidTransaction) return "";
+  //   return getDefaultRequiredVal("", prevValidTransaction.pgPaymentMethod);
+  // };
+
+  // const disableRefundCardSelection =
+  //   !getPrevPaymentMethod() || !getRefundCardType();
+
+  // only show refund method selection (both card selection and cheque) when amount to refund is greater than 0
+  // const enableRefundMethodSelection = !isZeroAmount(amountToRefund);
+
+  // const [shouldUsePrevPaymentMethod, setShouldUsePrevPaymentMethod] =
+  //   useState<boolean>(!disableRefundCardSelection);
+
+  // const formMethods = useForm<RefundFormData>({
+  //   defaultValues: {
+  //     shouldUsePrevPaymentMethod,
+  //     refundMethod: getPaymentMethod(
+  //       getRefundMethodType(),
+  //       getRefundCardType(),
+  //     ),
+  //     refundOnlineMethod: getRefundOnlineMethod(),
+  //     transactionId: "",
+  //   },
+  //   reValidateMode: "onChange",
+  // });
+
+  // const {
+  //   control,
+  //   getValues,
+  //   handleSubmit,
+  //   setValue,
+  //   formState: { errors },
+  //   register,
+  //   clearErrors,
+  // } = formMethods;
+
+  // useEffect(() => {
+  //   const refundMethod = getRefundMethodType();
+  //   const refundCardType = getRefundCardType();
+  //   setShouldUsePrevPaymentMethod(!disableRefundCardSelection);
+  //   setValue("refundMethod", getPaymentMethod(refundMethod, refundCardType));
+  //   setValue("refundOnlineMethod", getRefundOnlineMethod());
+  // }, [permitHistory, permitHistory.length]);
+
+  // useEffect(() => {
+  //   setValue("shouldUsePrevPaymentMethod", shouldUsePrevPaymentMethod);
+  // }, [shouldUsePrevPaymentMethod]);
+
+  // const handleRefundMethodChange = (shouldUsePrev: string) => {
+  //   const usePrev = shouldUsePrev === "true";
+  //   setShouldUsePrevPaymentMethod(usePrev);
+  //   setValue("refundOnlineMethod", usePrev ? getRefundOnlineMethod() : "");
+  //   clearErrors("transactionId");
+  // };
+
+  // const handleFinish = () => {
+  //   const formValues = getValues();
+  //   onFinish(formValues);
+  // };
 
   const showSendSection = permitAction === "void" || permitAction === "revoke";
   const showReasonSection =
@@ -236,7 +250,9 @@ export const RefundPage = ({
       <Typography variant="h2" className="refund-info__header">
         Transaction History
       </Typography>
-      <TransactionHistoryTable permitHistory={validTransactionHistory} />
+      <FormProvider {...formMethods}>
+        <TransactionHistoryTable permitHistory={validTransactionHistory} />
+      </FormProvider>
 
       {showSendSection ? (
         <div className="refund-info refund-info--send">
