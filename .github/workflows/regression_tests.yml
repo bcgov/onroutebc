@@ -42,9 +42,9 @@ jobs:
       - name: vars
         id: vars
         run: |
-          echo "dops_api_url=onroutebc-${{inputs.release || 'test'}}-dops.apps.silver.devops.gov.bc.ca" >> GITHUB_OUTPUT
-          echo "frontend_api_url=onroutebc-${{inputs.release || 'test'}}-frontend.apps.silver.devops.gov.bc.ca" >> GITHUB_OUTPUT
-          echo "vehicles_api_url=onroutebc-${{inputs.release || 'test'}}-vehicles.apps.silver.devops.gov.bc.ca" >> GITHUB_OUTPUT
+          echo "dops_api_url=onroutebc-${{inputs.release || 'test'}}-dops.apps.silver.devops.gov.bc.ca" >> $GITHUB_OUTPUT
+          echo "frontend_api_url=onroutebc-${{inputs.release || 'test'}}-frontend.apps.silver.devops.gov.bc.ca" >> $GITHUB_OUTPUT
+          echo "vehicles_api_url=onroutebc-${{inputs.release || 'test'}}-vehicles.apps.silver.devops.gov.bc.ca" >> $GITHUB_OUTPUT
   
   amend_term_oversize:
     name: Amend Term Oversize
