@@ -39,7 +39,7 @@ jobs:
           echo "dops_api_url=onroutebc-${{inputs.release}}-dops.apps.silver.devops.gov.bc.ca" >> GITHUB_ENV
           echo "frontend_api_url=onroutebc-${{inputs.release}}-frontend.apps.silver.devops.gov.bc.ca" >> GITHUB_ENV
           echo "vehicles_api_url=onroutebc-${{inputs.release}}-vehicles.apps.silver.devops.gov.bc.ca" >> GITHUB_ENV
-          echo "environment=${{inputs.release || dev}}" >> GITHUB_ENV 
+          echo "environment=${{inputs.release || 'dev'}}" >> GITHUB_ENV 
   
   amend_term_oversize:
     name: Amend Term Oversize
