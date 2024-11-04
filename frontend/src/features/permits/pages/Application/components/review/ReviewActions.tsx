@@ -14,9 +14,10 @@ export const ReviewActions = ({
   onContinue,
   hasToCartButton,
   onAddToCart,
-  disableApproveAndRejectButtons,
   handleApproveButton,
   handleRejectButton,
+  disableApproveButton,
+  disableRejectButton,
 }: {
   reviewContext: PermitReviewContext;
   onEdit: () => void;
@@ -24,9 +25,10 @@ export const ReviewActions = ({
   onContinue?: () => Promise<void>;
   hasToCartButton: boolean;
   onAddToCart?: () => Promise<void>;
-  disableApproveAndRejectButtons?: boolean;
   handleApproveButton?: () => Promise<void>;
   handleRejectButton?: () => void;
+  disableApproveButton?: boolean;
+  disableRejectButton?: boolean;
 }) => {
   return (
     <Box className="review-actions">
@@ -88,7 +90,7 @@ export const ReviewActions = ({
             color="error"
             data-testid="reject-btn"
             onClick={handleRejectButton}
-            disabled={disableApproveAndRejectButtons}
+            disabled={disableRejectButton}
           >
             Reject
           </Button>
@@ -100,7 +102,7 @@ export const ReviewActions = ({
             color="primary"
             data-testid="approve-btn"
             onClick={handleApproveButton}
-            disabled={disableApproveAndRejectButtons}
+            disabled={disableApproveButton}
           >
             Approve
           </Button>
