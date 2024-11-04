@@ -30,18 +30,25 @@ jobs:
       dops_api_url: ${{ steps.vars.outputs.dops_api_url }}
       frontend_api_url: ${{ steps.vars.outputs.frontend_api_url }}
       vehicles_api_url: ${{ steps.vars.outputs.vehicles_api_url }}
+      environment: ${{ steps.vars.outputs.environment }}
     runs-on: ubuntu-22.04
     steps:
       - name: vars
         id: vars
         run: |
-          echo "dops_api_url=onroutebc-${{inputs.environment}}-dops.apps.silver.devops.gov.bc.ca" >> GITHUB_ENV
-          echo "frontend_api_url=onroutebc-${{inputs.environment}}-frontend.apps.silver.devops.gov.bc.ca" >> GITHUB_ENV
-          echo "vehicles_api_url=onroutebc-${{inputs.environment}}-vehicles.apps.silver.devops.gov.bc.ca" >> GITHUB_ENV
+          echo "dops_api_url=onroutebc-${{inputs.release}}-dops.apps.silver.devops.gov.bc.ca" >> GITHUB_ENV
+          echo "frontend_api_url=onroutebc-${{inputs.release}}-frontend.apps.silver.devops.gov.bc.ca" >> GITHUB_ENV
+          echo "vehicles_api_url=onroutebc-${{inputs.release}}-vehicles.apps.silver.devops.gov.bc.ca" >> GITHUB_ENV
+          if [ "${{inputs.release}}" != "test" && "${{inputs.release}}" != "prod" ]; then
+           echo "environment=dev" >> GITHUB_ENV 
+          else
+           echo "environment=${{inputs.release}}" >> GITHUB_ENV 
+          fi
   
   amend_term_oversize:
     name: Amend Term Oversize
-    environment: ${{ inputs.environment }}
+    needs: [ vars ]
+    environment: ${{ needs.vars.outputs.environment }}
     runs-on: ubuntu-22.04
     timeout-minutes: 60
     steps:
@@ -55,7 +62,7 @@ jobs:
           args: |
             --loglevel INFO 
             --jmeterlogconf=log.conf
-            -JFRONTEND_API_URL=${{vars.frontend_api_url}}
+            -JFRONTEND_API_URL=${{needs.vars.outputs.frontend_api_url}}
             -JRESULTS_DIR=tests/regression/results/
             -JUSER=${{vars.BCEID_USER}}
             -JPASSWORD=${{secrets.BCEID_PASSWORD}}
