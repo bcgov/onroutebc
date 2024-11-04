@@ -45,6 +45,7 @@ jobs:
     name: Amend Term Oversize
     needs: [ vars ]
     environment: ${{ needs.vars.outputs.environment }}
+    secrets: inherit
     runs-on: ubuntu-22.04
     timeout-minutes: 60
     steps:
