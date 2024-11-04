@@ -11,6 +11,12 @@ on:
         default: test
         required: true
         type: string
+      environment:
+        description: 'namespace to deploy to (dev/test/uat/prod)'
+        default: test
+        required: true
+        type: choice 
+        options: [dev,test,uat,prod]
       username:
         description: 'username of test account to use'
         default: ''
@@ -23,6 +29,7 @@ on:
         type: string
 
 
+
 jobs:
   vars:
     name: Set Variables
@@ -30,21 +37,20 @@ jobs:
       dops_api_url: ${{ steps.vars.outputs.dops_api_url }}
       frontend_api_url: ${{ steps.vars.outputs.frontend_api_url }}
       vehicles_api_url: ${{ steps.vars.outputs.vehicles_api_url }}
-      environment: ${{ steps.vars.outputs.environment }}
     runs-on: ubuntu-22.04
     steps:
       - name: vars
         id: vars
         run: |
+
           echo "dops_api_url=onroutebc-${{inputs.release}}-dops.apps.silver.devops.gov.bc.ca" >> GITHUB_ENV
           echo "frontend_api_url=onroutebc-${{inputs.release}}-frontend.apps.silver.devops.gov.bc.ca" >> GITHUB_ENV
           echo "vehicles_api_url=onroutebc-${{inputs.release}}-vehicles.apps.silver.devops.gov.bc.ca" >> GITHUB_ENV
-          echo "environment=${{inputs.release || 'dev'}}" >> GITHUB_ENV 
   
   amend_term_oversize:
     name: Amend Term Oversize
     needs: [ vars ]
-    environment: ${{ needs.vars.outputs.environment }}
+    environment: ${{ inputs.environment }}
     runs-on: ubuntu-22.04
     timeout-minutes: 60
     steps:
