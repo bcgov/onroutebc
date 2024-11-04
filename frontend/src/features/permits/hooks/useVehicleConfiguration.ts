@@ -1,7 +1,8 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Policy } from "onroute-policy-engine";
 
-import { PermitType } from "../types/PermitType";
+import { PERMIT_TYPES, PermitType } from "../types/PermitType";
+import { VehicleInConfiguration } from "../types/PermitVehicleConfiguration";
 
 export const useVehicleConfiguration = (
   policyEngine: Policy,
@@ -9,6 +10,8 @@ export const useVehicleConfiguration = (
   selectedCommodity: string,
   selectedSubtypes: string[],
   selectedPowerUnitSubtype: string,
+  onUpdateVehicleConfigTrailers:
+    (updatedTrailerSubtypes: VehicleInConfiguration[]) => void,
 ) => {
   const getNextAllowedVehicleSubtypes = useCallback(
     (selectedCommodity: string, selectedSubtypes: string[]) => {
@@ -27,8 +30,33 @@ export const useVehicleConfiguration = (
     [policyEngine, permitType],
   );
 
+  useEffect(() => {
+    if (permitType === PERMIT_TYPES.STOS) {
+      if (selectedSubtypes.length > 0 && !policyEngine.isConfigurationValid(
+        permitType,
+        selectedCommodity,
+        [selectedPowerUnitSubtype, ...selectedSubtypes],
+        true,
+      )) {
+        onUpdateVehicleConfigTrailers([]);
+      }
+    }
+  }, [
+    permitType,
+    policyEngine,
+    selectedCommodity,
+    selectedPowerUnitSubtype,
+    selectedSubtypes,
+    onUpdateVehicleConfigTrailers,
+  ]);
+
   const nextAllowedSubtypes = useMemo(() => {
-    if (!selectedCommodity || !selectedPowerUnitSubtype) return [];
+    if ((permitType !== PERMIT_TYPES.STOS)
+      || !selectedCommodity
+      || !selectedPowerUnitSubtype
+    ) {
+      return [];
+    }
 
     return getNextAllowedVehicleSubtypes(
       selectedCommodity,

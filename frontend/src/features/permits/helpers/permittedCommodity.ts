@@ -1,3 +1,5 @@
+import { Policy } from "onroute-policy-engine";
+
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { Nullable, RequiredOrNull } from "../../../common/types/common";
 import { PermittedCommodity } from "../types/PermittedCommodity";
@@ -28,4 +30,26 @@ export const getDefaultPermittedCommodity = (
       permittedCommodity?.loadDescription,
     ),
   };
+};
+
+/**
+ * Get list of permitted commodity options for a given permit type.
+ * @param permitType Permit type
+ * @param policyEngine Instance of the policy engine, if it exists
+ * @returns List of permitted commodity options
+ */
+export const getPermittedCommodityOptions = (
+  permitType: PermitType,
+  policyEngine?: Nullable<Policy>,
+) => {
+  const commodities = getDefaultRequiredVal(
+    new Map<string, string>(),
+    policyEngine?.getCommodities(permitType),
+  );
+
+  return [...commodities.entries()]
+    .map(([commodityType, commodityDescription]) => ({
+      value: commodityType,
+      label: commodityDescription,
+    }));
 };

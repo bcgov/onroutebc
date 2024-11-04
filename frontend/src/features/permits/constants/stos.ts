@@ -1,26 +1,5 @@
 import { PermitCondition } from "../types/PermitCondition";
 
-export const STOS_ELIGIBLE_VEHICLE_SUBTYPES = [
-  "DOLLIES",
-  "FEBGHSE",
-  "FECVYER",
-  "FEDRMMX",
-  "FEPNYTR",
-  "FESEMTR",
-  "FEWHELR",
-  "REDIMIX",
-  "CONCRET",
-  "CRAFTAT",
-  "CRAFTMB",
-  "GRADERS",
-  "MUNFITR",
-  "OGOILSW",
-  "OGSERVC",
-  "OGSRRAH",
-  "PICKRTT",
-  "TOWVEHC",
-];
-
 export const STOS_CONDITIONS: PermitCondition[] = [
   {
     description: "General Permit Conditions",

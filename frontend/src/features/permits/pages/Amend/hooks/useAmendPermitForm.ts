@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
+import { Policy } from "onroute-policy-engine";
 
 import { Nullable } from "../../../../../common/types/common";
 import { Permit } from "../../../types/permit";
@@ -25,6 +26,7 @@ export const useAmendPermitForm = (
   companyInfo: Nullable<CompanyProfile>,
   permit?: Nullable<Permit>,
   amendmentApplication?: Nullable<Application>,
+  policyEngine?: Nullable<Policy>,
 ) => {
   // Default form data values to populate the amend form with
   const defaultFormData = useMemo(() => {
@@ -32,6 +34,8 @@ export const useAmendPermitForm = (
       const eligibleSubtypes = getEligibleVehicleSubtypes(
         amendmentApplication.permitType,
         isLcvDesignated,
+        amendmentApplication.permitData.permittedCommodity?.commodityType,
+        policyEngine,
       );
 
       return applyUpToDateLOAsToApplication(
@@ -64,6 +68,8 @@ export const useAmendPermitForm = (
     const eligibleSubtypes = getEligibleVehicleSubtypes(
       defaultPermitFormData.permitType,
       isLcvDesignated,
+      defaultPermitFormData.permitData.permittedCommodity?.commodityType,
+      policyEngine,
     );
     
     return applyUpToDateLOAsToApplication(
@@ -83,6 +89,7 @@ export const useAmendPermitForm = (
     isLcvDesignated,
     companyLOAs,
     inventoryVehicles,
+    policyEngine,
   ]);
 
   // Register default values with react-hook-form

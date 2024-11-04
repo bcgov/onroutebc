@@ -22,9 +22,7 @@ import { PAST_START_DATE_STATUSES } from "../../../../../common/components/form/
 import { useFetchLOAs } from "../../../../settings/hooks/LOA";
 import { useFetchSpecialAuthorizations } from "../../../../settings/hooks/specialAuthorizations";
 import { filterLOAsForPermitType, filterNonExpiredLOAs } from "../../../helpers/permitLOA";
-import { DEFAULT_PERMIT_TYPE } from "../../../types/PermitType";
 import { usePolicyEngine } from "../../../../policy/hooks/usePolicyEngine";
-import { useMemoizedArray } from "../../../../../common/hooks/useMemoizedArray";
 import { Loading } from "../../../../../common/pages/Loading";
 import {
   dayjsToUtcStr,
@@ -55,12 +53,6 @@ export const AmendPermitForm = () => {
     getLinks,
   } = useContext(AmendPermitContext);
 
-  const permitType = getDefaultRequiredVal(
-    DEFAULT_PERMIT_TYPE,
-    amendmentApplication?.permitType,
-    permit?.permitType,
-  );
-
   const { companyId: companyIdParam } = useParams();
   const companyId: number = applyWhenNotNullable(id => Number(id), companyIdParam, 0);
   const navigate = useNavigate();
@@ -84,25 +76,6 @@ export const AmendPermitForm = () => {
 
   const policyEngine = usePolicyEngine();
 
-  const commodities = useMemo(() => {
-    const commodities = getDefaultRequiredVal(
-      new Map<string, string>(),
-      policyEngine?.getCommodities(permitType),
-    );
-
-    return [...commodities.entries()]
-      .map(([commodityType, commodityDescription]) => ({
-        value: commodityType,
-        label: commodityDescription,
-      }));
-  }, [policyEngine, permitType]);
-
-  const commodityOptions = useMemoizedArray(
-    commodities,
-    ({ value }) => value,
-    (commodityType1, commodityType2) => commodityType1.value === commodityType2.value,
-  );
-
   const {
     initialFormData,
     formData,
@@ -115,6 +88,7 @@ export const AmendPermitForm = () => {
     companyInfo,
     permit,
     amendmentApplication,
+    policyEngine,
   );
 
   const { createdDateTime, updatedDateTime } = getDatetimes(
@@ -272,7 +246,6 @@ export const AmendPermitForm = () => {
     pastStartDateStatus: PAST_START_DATE_STATUSES.WARNING,
     companyLOAs: applicableLOAs,
     revisionHistory,
-    commodityOptions,
     onLeave: undefined,
     onSave: undefined,
     onCancel: goHome,

@@ -27,7 +27,6 @@ import { useFetchSpecialAuthorizations } from "../../../settings/hooks/specialAu
 import { ApplicationFormContext } from "../../context/ApplicationFormContext";
 import { filterLOAsForPermitType, filterNonExpiredLOAs } from "../../helpers/permitLOA";
 import { usePolicyEngine } from "../../../policy/hooks/usePolicyEngine";
-import { useMemoizedArray } from "../../../../common/hooks/useMemoizedArray";
 import { Loading } from "../../../../common/pages/Loading";
 import {
   applyWhenNotNullable,
@@ -89,31 +88,6 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
 
   const policyEngine = usePolicyEngine();
 
-  const commodities = useMemo(() => {
-    const commodities = getDefaultRequiredVal(
-      new Map<string, string>(),
-      policyEngine?.getCommodities(permitType),
-    );
-
-    return [...commodities.entries()]
-      .map(([commodityType, commodityDescription]) => ({
-        value: commodityType,
-        label: commodityDescription,
-      }));
-  }, [policyEngine, permitType]);
-
-  const commodityOptions = useMemoizedArray(
-    commodities,
-    ({ value }) => value,
-    (commodityType1, commodityType2) => commodityType1.value === commodityType2.value,
-  );
-
-  const permittedCommodityTypes = useMemoizedArray(
-    commodityOptions.map(({ value }) => value),
-    commodityType => commodityType,
-    (commodityType1, commodityType2) => commodityType1 === commodityType2,
-  );
-
   // Use a custom hook that performs the following whenever page is rendered (or when application context is updated/changed):
   // 1. Get all data needed to initialize the application form (from application context, company, user details)
   // 2. Generate those default values and register them to the form
@@ -131,7 +105,7 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     companyInfo,
     applicationContext?.applicationData,
     userDetails,
-    permittedCommodityTypes,
+    policyEngine,
   );
 
   // Applicable LOAs must be:
@@ -320,7 +294,6 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     pastStartDateStatus,
     companyLOAs: applicableLOAs,
     revisionHistory: [],
-    commodityOptions,
     onLeave: handleLeaveApplication,
     onSave,
     onCancel: undefined,

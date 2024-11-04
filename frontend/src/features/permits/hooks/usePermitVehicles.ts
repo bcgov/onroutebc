@@ -1,10 +1,12 @@
 import { useEffect, useMemo } from "react";
+import { Policy } from "onroute-policy-engine";
 
 import { PermitType } from "../types/PermitType";
 import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
 import { getUpdatedVehicleDetailsForLOAs } from "../helpers/permitLOA";
 import { PermitLOA } from "../types/PermitLOA";
 import { getEligibleSubtypeOptions, getEligibleVehicleSubtypes } from "../helpers/permitVehicles";
+import { Nullable } from "../../../common/types/common";
 import {
   PowerUnit,
   Trailer,
@@ -12,6 +14,7 @@ import {
 } from "../../manageVehicles/types/Vehicle";
 
 export const usePermitVehicles = (
+  policyEngine: Policy,
   permitType: PermitType,
   isLcvDesignated: boolean,
   vehicleFormData: PermitVehicleDetails,
@@ -20,13 +23,20 @@ export const usePermitVehicles = (
   powerUnitSubtypeNamesMap: Map<string, string>,
   trailerSubtypeNamesMap: Map<string, string>,
   onClearVehicle: () => void,
+  selectedCommodity?: Nullable<string>,
 ) => {
-  const eligibleVehicleSubtypes = useMemo(() => getEligibleVehicleSubtypes(
+  const eligibleVehicleSubtypes = useMemo(() => {
+    return getEligibleVehicleSubtypes(
+      permitType,
+      isLcvDesignated,
+      selectedCommodity,
+      policyEngine,
+    );
+  }, [
+    policyEngine,
     permitType,
     isLcvDesignated,
-  ), [
-    permitType,
-    isLcvDesignated,
+    selectedCommodity,
   ]);
 
   // Check to see if vehicle details is still valid after LOA has been deselected

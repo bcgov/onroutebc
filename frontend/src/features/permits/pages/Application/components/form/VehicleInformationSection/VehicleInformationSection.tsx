@@ -65,6 +65,7 @@ export const VehicleInformationSection = ({
 
   const handleClosePowerUnitDialog = () => {
     onClearVehicle(false);
+    onUpdateVehicleConfigTrailers([]);
     setShowAddPowerUnitDialog(false);
   };
 
@@ -75,6 +76,11 @@ export const VehicleInformationSection = ({
     // Also, changing any of the inputs inside the dialog updates the values for the vehicleDetails
     // inside the application form data
     setShowAddPowerUnitDialog(false);
+  };
+
+  const handleRemovePowerUnit = () => {
+    onClearVehicle(false);
+    onUpdateVehicleConfigTrailers([]);
   };
 
   return (
@@ -137,7 +143,7 @@ export const VehicleInformationSection = ({
         <PowerUnitInfo
           showPowerUnitInfo={isPowerUnitSelectedForSingleTrip}
           powerUnitInfo={vehicleFormData}
-          onRemovePowerUnit={() => onClearVehicle(false)}
+          onRemovePowerUnit={handleRemovePowerUnit}
         />
 
         {isPowerUnitSelectedForSingleTrip ? (

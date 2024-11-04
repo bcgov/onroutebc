@@ -1,9 +1,10 @@
+import { Policy } from "onroute-policy-engine";
+
 import { PERMIT_TYPES, PermitType } from "../types/PermitType";
 import { sortVehicleSubtypes } from "./sorter";
 import { LCV_VEHICLE_SUBTYPES } from "../constants/constants";
 import { TROW_ELIGIBLE_VEHICLE_SUBTYPES } from "../constants/trow";
 import { TROS_ELIGIBLE_VEHICLE_SUBTYPES } from "../constants/tros";
-import { STOS_ELIGIBLE_VEHICLE_SUBTYPES } from "../constants/stos";
 import { PermitLOA } from "../types/PermitLOA";
 import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../common/helpers/util";
 import { Nullable } from "../../../common/types/common";
@@ -17,16 +18,41 @@ import {
   Vehicle,
 } from "../../manageVehicles/types/Vehicle";
 
+/**
+ * Get eligible vehicle subtypes based on given criteria.
+ * @param permitType Permit type
+ * @param isLcvDesignated Whether or not LCV flag is designated
+ * @param selectedCommodity The selected commodity, if applicable for this permit type
+ * @param policyEngine The policy engine used to find vehicle subtypes
+ * @returns List of eligible vehicle subtypes that can be used
+ */
 export const getEligibleVehicleSubtypes = (
   permitType: PermitType,
   isLcvDesignated: boolean,
+  selectedCommodity?: Nullable<string>,
+  policyEngine?: Nullable<Policy>,
 ) => {
   const lcvSubtypes = LCV_VEHICLE_SUBTYPES.map(({ typeCode }) => typeCode);
   switch (permitType) {
-    case PERMIT_TYPES.STOS:
+    case PERMIT_TYPES.STOS: {
+      if (!selectedCommodity || !policyEngine) return new Set<string>();
+
+      const subtypesMap = policyEngine.getPermittableVehicleTypes(permitType, selectedCommodity);
       return new Set(
-        STOS_ELIGIBLE_VEHICLE_SUBTYPES.concat(isLcvDesignated ? lcvSubtypes : []),
+        [
+          ...getDefaultRequiredVal(
+            new Map<string, string>(),
+            subtypesMap.get("powerUnits"),
+          ).keys(),
+          ...getDefaultRequiredVal(
+            new Map<string, string>(),
+            subtypesMap.get("trailers"),
+          ).keys(),
+        ].concat(isLcvDesignated ? lcvSubtypes : []),
       );
+    }
+    // Policy engine currently doesn't return vehicle subtypes unless a commodity is provided
+    // which TROW and TROS doesn't have, thus here the hardcoded subtypes are being used
     case PERMIT_TYPES.TROW:
       return new Set(
         TROW_ELIGIBLE_VEHICLE_SUBTYPES.concat(isLcvDesignated ? lcvSubtypes : []),

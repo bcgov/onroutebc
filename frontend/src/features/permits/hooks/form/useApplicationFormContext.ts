@@ -13,6 +13,7 @@ import { arePermitConditionEqual } from "../../types/PermitCondition";
 import { useMemoizedObject } from "../../../../common/hooks/useMemoizedObject";
 import { useVehicleConfiguration } from "../useVehicleConfiguration";
 import { useApplicationFormUpdateMethods } from "./useApplicationFormUpdateMethods";
+import { usePermittedCommodity } from "../usePermittedCommodity";
 
 export const useApplicationFormContext = () => {
   const applicationFormContextData = useContext(ApplicationFormContext);
@@ -32,7 +33,6 @@ export const useApplicationFormContext = () => {
     pastStartDateStatus,
     companyLOAs,
     revisionHistory,
-    commodityOptions,
     onLeave,
     onSave,
     onCancel,
@@ -129,6 +129,8 @@ export const useApplicationFormContext = () => {
     onSetConditions,
   );
 
+  const { commodityOptions } = usePermittedCommodity(policyEngine, permitType);
+
   // Check to see if vehicle details is still valid after LOA has been deselected
   // Also get vehicle subtype options, and whether or not selected vehicle is an LOA vehicle
   const {
@@ -136,6 +138,7 @@ export const useApplicationFormContext = () => {
     subtypeOptions,
     isSelectedLOAVehicle,
   } = usePermitVehicles(
+    policyEngine,
     permitType,
     isLcvDesignated,
     vehicleFormData,
@@ -144,6 +147,7 @@ export const useApplicationFormContext = () => {
     powerUnitSubtypeNamesMap,
     trailerSubtypeNamesMap,
     () => onClearVehicle(Boolean(vehicleFormData.saveVehicle)),
+    permittedCommodity?.commodityType,
   );
 
   const selectedVehicleConfigSubtypes = useMemoizedArray(
@@ -161,6 +165,7 @@ export const useApplicationFormContext = () => {
     getDefaultRequiredVal("", permittedCommodity?.commodityType),
     selectedVehicleConfigSubtypes,
     vehicleFormData.vehicleSubType,
+    onUpdateVehicleConfigTrailers,
   );
 
   const memoizedCompanyLOAs = useMemoizedArray(
