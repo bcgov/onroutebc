@@ -27,7 +27,7 @@ export const NumberInput = <T extends ORBC_FormTypes>(
     setValue<string>(props.name, formattedValue, { shouldValidate: true });
   };
 
-  const className = `custom-phone-input ${props.disabled ? "custom-phone-input--disabled" : ""} ${props.invalid ? "custom-phone-input--invalid" : ""}`;
+  const className = `custom-input ${props.disabled ? "custom-input--disabled" : ""} ${props.invalid ? "custom-input--invalid" : ""}`;
 
   return (
     <OutlinedInput
@@ -37,6 +37,7 @@ export const NumberInput = <T extends ORBC_FormTypes>(
       {...register(props.name, props.rules)}
       onChange={handleChange}
       autoComplete="tel"
+      disabled={props.disabled}
     />
   );
 };

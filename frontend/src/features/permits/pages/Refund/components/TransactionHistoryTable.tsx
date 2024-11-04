@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   MRT_Cell,
@@ -37,6 +37,7 @@ import {
   PermitHistoryWithRefund,
 } from "../types/RefundFormData";
 import { Button, Checkbox, FormControlLabel } from "@mui/material";
+import { requiredMessage } from "../../../../../common/helpers/validationMessages";
 
 export const TransactionHistoryTable = ({
   permitHistory,
@@ -47,12 +48,28 @@ export const TransactionHistoryTable = ({
     isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
   );
 
-  const formMethods = useForm<MultiplePaymentMethodRefundFormData>();
+  const formMethods = useForm<MultiplePaymentMethodRefundFormData>({
+    defaultValues: {
+      refundData: validTransactionHistory.map(() => ({
+        refundAmount: "",
+        refundTransactionId: "",
+        chequeRefund: false,
+      })),
+    },
+    reValidateMode: "onChange",
+  });
 
-  const { handleSubmit } = formMethods;
+  const { handleSubmit, register, watch, setValue, trigger } = formMethods;
 
   const onSubmit = (data: FieldValues) => {
     console.log(data);
+  };
+
+  const isRowSelectable = (row: MRT_Row<PermitHistoryWithRefund>): boolean => {
+    return (
+      !isTransactionTypeRefund(row.original.transactionTypeId) &&
+      !isZeroAmount(row.original.transactionAmount)
+    );
   };
 
   const columns = useMemo<MRT_ColumnDef<PermitHistoryWithRefund>[]>(
@@ -62,11 +79,11 @@ export const TransactionHistoryTable = ({
         header: "Permit #",
         muiTableHeadCellProps: {
           className:
-            "transaction-history-table__header transaction-history-table__header--permit",
+            "transaction-history-table__header transaction-history-table__header--permit-number",
         },
         muiTableBodyCellProps: {
           className:
-            "transaction-history-table__data transaction-history-table__data--permit",
+            "transaction-history-table__data transaction-history-table__data--permit-number",
         },
         size: 150,
         enableSorting: false,
@@ -83,11 +100,11 @@ export const TransactionHistoryTable = ({
         header: "Payment Method",
         muiTableHeadCellProps: {
           className:
-            "transaction-history-table__header transaction-history-table__header--payment",
+            "transaction-history-table__header transaction-history-table__header--payment-method",
         },
         muiTableBodyCellProps: {
           className:
-            "transaction-history-table__data transaction-history-table__data--payment",
+            "transaction-history-table__data transaction-history-table__data--payment-method",
         },
         size: 200,
         enableSorting: false,
@@ -103,11 +120,11 @@ export const TransactionHistoryTable = ({
         header: "Provider Tran ID",
         muiTableHeadCellProps: {
           className:
-            "transaction-history-table__header transaction-history-table__header--transaction",
+            "transaction-history-table__header transaction-history-table__header--provider-transaction-id",
         },
         muiTableBodyCellProps: {
           className:
-            "transaction-history-table__data transaction-history-table__data--transaction",
+            "transaction-history-table__data transaction-history-table__data--provider-transaction-id",
         },
         size: 100,
         enableSorting: false,
@@ -153,16 +170,33 @@ export const TransactionHistoryTable = ({
         size: 20,
         enableSorting: false,
         enableColumnActions: false,
-        Cell: ({ cell }: { cell: MRT_Cell<PermitHistoryWithRefund> }) => (
-          <CustomFormComponent
-            type="number"
-            feature="refund-permit"
-            options={{
-              name: `refundData.${cell.row.index}.refundAmount`,
-              rules: { required: false },
-            }}
-          />
-        ),
+        Cell: ({ cell }: { cell: MRT_Cell<PermitHistoryWithRefund> }) => {
+          const rowIsSelected = cell.row.getIsSelected();
+
+          // clear refundAmount when row is unselected
+          useEffect(() => {
+            if (!rowIsSelected) {
+              setValue(`refundData.${cell.row.index}.refundAmount`, "");
+            }
+          }, [rowIsSelected, setValue, cell.row.index]);
+
+          return (
+            isRowSelectable(cell.row) && (
+              <CustomFormComponent
+                type="number"
+                feature="refund-permit"
+                className="transaction-history-table__input transaction-history-table__input--refund-amount"
+                options={{
+                  name: `refundData.${cell.row.index}.refundAmount`,
+                  rules: { required: false },
+                  width: "200px",
+                  showOptionalLabel: false,
+                }}
+                disabled={!cell.row.getIsSelected()}
+              />
+            )
+          );
+        },
       },
       {
         id: "refundTransactionId",
@@ -178,16 +212,56 @@ export const TransactionHistoryTable = ({
         size: 20,
         enableSorting: false,
         enableColumnActions: false,
-        Cell: ({ cell }: { cell: MRT_Cell<PermitHistoryWithRefund> }) => (
-          <CustomFormComponent
-            type="input"
-            feature="refund-permit"
-            options={{
-              name: `refundData.${cell.row.index}.refundTransactionId`,
-              rules: { required: false },
-            }}
-          />
-        ),
+        Cell: ({ cell }: { cell: MRT_Cell<PermitHistoryWithRefund> }) => {
+          const rowIsSelected = cell.row.getIsSelected();
+          const refundAmount = watch(
+            `refundData.${cell.row.index}.refundAmount`,
+          );
+          const chequeRefund = watch(
+            `refundData.${cell.row.index}.chequeRefund`,
+          );
+
+          // clear refundTransactionId when refundAmount is cleared
+          useEffect(() => {
+            if (!refundAmount) {
+              setValue(`refundData.${cell.row.index}.refundTransactionId`, "");
+            }
+          }, [refundAmount, cell.row.index, setValue]);
+
+          // re-validate refundTransactionId when chequeRefund is checked/unchecked
+          useEffect(() => {
+            trigger(`refundData.${cell.row.index}.refundTransactionId`);
+          }, [chequeRefund, cell.row.index, trigger]);
+
+          // clear refundTransactionId when row is unselected
+          useEffect(() => {
+            if (!rowIsSelected) {
+              setValue(`refundData.${cell.row.index}.refundTransactionId`, "");
+            }
+          }, [rowIsSelected, setValue, cell.row.index]);
+
+          return (
+            isRowSelectable(cell.row) && (
+              <CustomFormComponent
+                type="input"
+                feature="refund-permit"
+                className="transaction-history-table__input"
+                options={{
+                  name: `refundData.${cell.row.index}.refundTransactionId`,
+                  rules: {
+                    required: {
+                      value: refundAmount !== "" && !chequeRefund,
+                      message: requiredMessage(),
+                    },
+                  },
+                  width: "200px",
+                  showOptionalLabel: false,
+                }}
+                disabled={!refundAmount || chequeRefund}
+              />
+            )
+          );
+        },
       },
       {
         id: "chequeRefund",
@@ -203,32 +277,50 @@ export const TransactionHistoryTable = ({
         size: 20,
         enableSorting: false,
         enableColumnActions: false,
-        Cell: ({ cell }: { cell: MRT_Cell<PermitHistoryWithRefund> }) => (
-          <FormControlLabel
-            control={
-              <Checkbox
-                className={`cheque-refund-checkbox ${
-                  // You can add any condition here if you need to disable it
-                  false // Replace with your actual condition if needed
-                }`}
-                checked={cell.getValue() as boolean} // Access the checkbox state from the cell value
-                onChange={() => {
-                  // Use react-hook-form to set the checkbox value
-                  const newValue = !cell.getValue(); // Toggle the value
-                  formMethods.setValue(
-                    `refundData.${cell.row.index}.chequeRefund`,
-                    newValue,
-                  );
+        Cell: ({ cell }: { cell: MRT_Cell<PermitHistoryWithRefund> }) => {
+          const chequeRefund = watch(
+            `refundData.${cell.row.index}.chequeRefund`,
+          );
+          const refundAmount = watch(
+            `refundData.${cell.row.index}.refundAmount`,
+          );
+          const refundTransactionId = watch(
+            `refundData.${cell.row.index}.refundTransactionId`,
+          );
+
+          const rowIsSelected = cell.row.getIsSelected();
+
+          // TODO this implementation is not currently working
+          // set chequeRefund to false when row is unselected
+          useEffect(() => {
+            if (!rowIsSelected) {
+              setValue(`refundData.${cell.row.index}.chequeRefund`, false);
+            }
+          }, [rowIsSelected, cell.row.index, setValue]);
+
+          return (
+            isRowSelectable(cell.row) && (
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    className="cheque-refund-checkbox"
+                    {...register(`refundData.${cell.row.index}.chequeRefund`)}
+                    disabled={
+                      !cell.row.getIsSelected() ||
+                      refundAmount === "" ||
+                      refundTransactionId !== ""
+                    }
+                  />
+                }
+                label="Cheque Refund"
+                classes={{
+                  root: "cheque-refund-label",
+                  disabled: "cheque-refund-label--disabled",
                 }}
               />
-            }
-            label="Cheque Refund" // You can replace this with the actual label you want
-            classes={{
-              root: "cheque-refund-label",
-              disabled: "cheque-refund-label--disabled",
-            }}
-          />
-        ),
+            )
+          );
+        },
       },
     ],
     [],
@@ -242,9 +334,8 @@ export const TransactionHistoryTable = ({
     enableGlobalFilter: false,
     enableTopToolbar: false,
     enableBottomToolbar: false,
-    // enableRowSelection: (row: MRT_Row<PermitHistory>) =>
-    //   isTransactionTypeRefund(row.original.transactionTypeId) ||
-    //   !isZeroAmount(row.original.transactionAmount),
+    enableRowSelection: (row: MRT_Row<PermitHistoryWithRefund>) =>
+      isRowSelectable(row),
     initialState: {
       ...defaultTableInitialStateOptions,
       showGlobalFilter: false,
@@ -256,8 +347,11 @@ export const TransactionHistoryTable = ({
       className: "transaction-history-table",
     },
     muiTableContainerProps: {
-      className: "transaction-history-table__table",
+      className: "transaction-history-table__container",
     },
+    muiTableBodyRowProps: ({ row }) => ({
+      className: `transaction-history-table__row ${row.getIsSelected() && "transaction-history-table__row--selected"}`,
+    }),
   });
 
   return (

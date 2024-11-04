@@ -6,56 +6,119 @@
     box-shadow: none;
   }
 
-  & &__table {
+  & &__container {
     width: 100%;
     border-left: 1px solid $bc-border-grey;
     border-right: 1px solid $bc-border-grey;
-    // border-color: $bc-border-grey;
+  }
+
+  & &__row {
+    &--selected {
+      background-color: $bc-messages-blue-background;
+    }
   }
 
   & &__header {
     background-color: $bc-background-light-grey;
 
-    &--permit {
+    &--permit-number {
       padding-left: 1rem;
       padding-right: 0.5rem;
     }
 
-    &--payment {
+    &--payment-method {
       padding-left: 0.5rem;
       padding-right: 0.5rem;
     }
 
-    &--transaction {
+    &--provider-transaction-id {
       padding-left: 0.5rem;
       padding-right: 0.5rem;
     }
 
     &--amount {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+    
+    &--refund-amount {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+
+    &--refund-transaction-id {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+
+    &--cheque-refund {
       padding-left: 0.5rem;
       padding-right: 1rem;
     }
   }
 
   & &__data {
-    &--permit {
+    &--permit-number {
       padding-left: 1rem;
       padding-right: 0.5rem;
     }
 
-    &--payment {
+    &--payment-method {
       padding-left: 0.5rem;
       padding-right: 0.5rem;
     }
 
-    &--transaction {
+    &--provider-transaction-id {
       padding-left: 0.5rem;
       padding-right: 0.5rem;
     }
 
     &--amount {
       padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+    
+    &--refund-amount {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+
+    &--refund-transaction-id {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+    
+    &--cheque-refund {
+      padding-left: 0.5rem;
       padding-right: 1rem;
+    }
+  }
+
+  &__input {
+    display: flex;
+    align-items: center;
+    &--refund-amount {
+      .MuiInputBase-input {
+        padding-left: 1.5rem;
+      } 
+      .MuiOutlinedInput-notchedOutline {
+        &::before {
+          content: "$";
+          position: absolute;
+          left: 10px; /* Adjust spacing as needed */
+          top: 18px;
+          transform: translateY(-50%);
+          color: #333; /* Adjust color as needed */
+        }
+      }
+    }
+
+    .MuiFormControl-root {
+      margin: 0;
+    }
+
+    .MuiFormLabel-root {
+      display: none;
     }
   }
 }

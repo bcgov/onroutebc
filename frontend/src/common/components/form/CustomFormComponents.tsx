@@ -40,6 +40,7 @@ interface CustomFormOptionsProps<T extends FieldValues> {
   width?: string;
   customHelperText?: string;
   inputType?: "number"; // currently only support number, add "date", "email" and other types later
+  showOptionalLabel?: boolean;
 }
 
 /**
@@ -89,6 +90,7 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
     width = "528px",
     customHelperText,
     inputType, // currently only used for "input" types, add for "select" types later
+    showOptionalLabel,
   },
   menuOptions,
   className,
@@ -102,7 +104,8 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
     formState: { errors },
   } = useFormContext();
 
-  const showOptionalLabel = () => {
+  const shouldShowOptionalLabel = () => {
+    if (!showOptionalLabel) return false;
     if (rules.required === false) return true;
     if ((rules.required as any)?.value === false) return true;
     return false;
@@ -196,7 +199,7 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
               sx={{ fontWeight: "bold", marginBottom: "8px" }}
             >
               {label}
-              {showOptionalLabel() && (
+              {shouldShowOptionalLabel() && (
                 <span style={{ fontWeight: "normal" }}> (optional)</span>
               )}
               {customHelperText && (

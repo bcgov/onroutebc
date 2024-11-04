@@ -25,7 +25,7 @@ import { PermitHistory } from "../../types/PermitHistory";
 import { TransactionHistoryTable } from "./components/TransactionHistoryTable";
 import { FeeSummary } from "../../components/feeSummary/FeeSummary";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { isZeroAmount } from "../../helpers/feeSummary";
+import { calculateNetAmount, isZeroAmount } from "../../helpers/feeSummary";
 import { isValidTransaction } from "../../helpers/payment";
 import { Nullable, Optional } from "../../../../common/types/common";
 import {
@@ -99,11 +99,12 @@ export const RefundPage = ({
   amountToRefund: number;
   onFinish: (refundData: RefundFormData) => void;
 }) => {
+  const currentPermitValue = calculateNetAmount(permitHistory);
+  const newPermitValue = currentPermitValue - Math.abs(amountToRefund);
+
   const validTransactionHistory = permitHistory.filter((history) =>
     isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
   );
-
-  console.log(permitHistory);
 
   const getPrevValidTransaction = () => {
     if (!validTransactionHistory || validTransactionHistory.length === 0)
@@ -227,7 +228,11 @@ export const RefundPage = ({
       <Typography variant="h2" className="refund-info__header">
         Ameding Permit #: {permitNumber}
       </Typography>
-      <RefundDetails />
+      <RefundDetails
+        totalRefundDue={amountToRefund}
+        currentPermitValue={currentPermitValue}
+        newPermitValue={newPermitValue}
+      />
       <Typography variant="h2" className="refund-info__header">
         Transaction History
       </Typography>

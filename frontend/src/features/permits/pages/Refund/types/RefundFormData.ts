@@ -9,7 +9,7 @@ export interface RefundFormData {
 }
 
 export interface MultiplePaymentMethodRefundRowData {
-  refundAmount: number;
+  refundAmount: string;
   refundTransactionId: string;
   chequeRefund: boolean;
 }

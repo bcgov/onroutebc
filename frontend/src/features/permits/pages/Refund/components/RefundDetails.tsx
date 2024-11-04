@@ -30,7 +30,15 @@ import { CloseCreditAccountModal } from "../../../../settings/components/creditA
 /**
  * Component that displays credit limit, available balance etc.
  */
-export const RefundDetails = () => {
+export const RefundDetails = ({
+  totalRefundDue,
+  currentPermitValue,
+  newPermitValue,
+}: {
+  totalRefundDue: number;
+  currentPermitValue: number;
+  newPermitValue: number;
+}) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [showHoldCreditAccountModal, setShowHoldCreditAccountModal] =
     useState<boolean>(false);
@@ -83,15 +91,21 @@ export const RefundDetails = () => {
       <Box className="refund-details__table">
         <Box className="refund-details__col">
           <dt className="refund-details__text">Total Refund Due</dt>
-          <dd className="refund-details__text">{renderValue(60)}</dd>
+          <dd className="refund-details__text">
+            {renderValue(Math.abs(totalRefundDue))}
+          </dd>
         </Box>
         <Box className="refund-details__col">
           <dt className="refund-details__text">Current Permit Value</dt>
-          <dd className="refund-details__text">{renderValue(60)}</dd>
+          <dd className="refund-details__text">
+            {renderValue(currentPermitValue)}
+          </dd>
         </Box>
         <Box className="refund-details__col">
           <dt className="refund-details__text">New Permit Value</dt>
-          <dd className="refund-details__text">{renderValue(0)}</dd>
+          <dd className="refund-details__text">
+            {renderValue(newPermitValue)}
+          </dd>
         </Box>
       </Box>
     </div>
