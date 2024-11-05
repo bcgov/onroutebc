@@ -44,11 +44,6 @@
             <stringProp name="Argument.value"></stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="AMEND_URL" elementType="Argument">
-            <stringProp name="Argument.name">AMEND_URL</stringProp>
-            <stringProp name="Argument.value">https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/companies/1/permits/421/amend</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
@@ -110,7 +105,8 @@ if (loginButton != null) {
 } else {
     WDS.log.info(&quot;Button with id &apos;login-bceid&apos; not found&quot;)
 }
-Thread.sleep(10000)
+Thread.sleep(5000)
+
 
 def searchIcon = WDS.browser.findElement(By.className(&apos;search-button&apos;))
 searchIcon.click()
@@ -122,22 +118,25 @@ Thread.sleep(5000)
 
 
 def searchInput = WDS.browser.findElement(By.className(&apos;css-1pog434&apos;))
-searchInput.sendKeys(&apos;p&apos;)
+searchInput.sendKeys(&apos;chief&apos;)
 Thread.sleep(5000)
 
 def searchButton = WDS.browser.findElement(By.className(&apos;search-by__search&apos;))
 searchButton.click()
 Thread.sleep(5000)
 
-def button = WDS.browser.findElement(By.xpath(&quot;//button[text()=&apos;Test Transport Inc.&apos;]&quot;))
+def button = WDS.browser.findElement(By.xpath(&quot;//button[text()=&apos;Chief, Master&apos;]&quot;))
 button.click()
 Thread.sleep(5000)
 def tab = WDS.browser.findElement(By.xpath(&quot;//div[@class=&apos;tab__label&apos; and text()=&apos;Active Permits&apos;]&quot;))
 tab.click()
 Thread.sleep(5000)
 
-def amendUrl = WDS.vars.get(&quot;AMEND_URL&quot;)
-WDS.browser.get(amendUrl);
+def firstDotButton = WDS.browser.findElement(By.className(&apos;css-15mydm5&apos;))
+firstDotButton.click()
+Thread.sleep(5000)
+def amendButton = WDS.browser.findElement(By.xpath(&quot;//li[text()=&apos;Amend&apos;]&quot;))
+amendButton.click()
 Thread.sleep(5000)
 
 def year = WDS.browser.findElement(By.cssSelector(&apos;[name=&quot;permitData.vehicleDetails.year&quot;]&apos;))
