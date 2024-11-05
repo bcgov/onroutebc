@@ -67,6 +67,7 @@ jobs:
             -JRESULTS_DIR=tests/regression/results/
             -JUSER=${{vars.BCEID_USER}}
             -JPASSWORD=${{secrets.BCEID_PASSWORD}}
+            -JCHROME_DRIVER_PATH=/usr/local/bin
 
       - uses: actions/upload-artifact@v4.3.6
         with:
