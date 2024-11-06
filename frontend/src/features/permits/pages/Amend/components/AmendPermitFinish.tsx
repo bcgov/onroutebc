@@ -107,7 +107,6 @@ export const AmendPermitFinish = () => {
         permitHistory={validTransactionHistory}
         amountToRefund={amountToRefund}
         permitNumber={permit?.permitNumber}
-        permitType={permit?.permitType}
         permitAction={PERMIT_REFUND_ACTIONS.AMEND}
         onFinish={handleFinish}
       />

@@ -8,16 +8,16 @@ export interface RefundFormData {
   transactionId?: string;
 }
 
-export interface MultiplePaymentMethodRefundRowData {
+export interface MultiplePaymentMethodRefundData extends PermitHistory {
   refundAmount: string;
   refundTransactionId: string;
   chequeRefund: boolean;
 }
 
-export interface MultiplePaymentMethodRefundFormData {
-  refundData: MultiplePaymentMethodRefundRowData[];
-}
+// export interface MultiplePaymentMethodRefundFormData {
+//   refundData: MultiplePaymentMethodRefundData[];
+// }
 
-export interface PermitHistoryWithRefund
-  extends PermitHistory,
-    MultiplePaymentMethodRefundRowData {}
+// export interface PermitHistoryWithRefund
+//   extends PermitHistory,
+//     MultiplePaymentMethodRefundFormData {}
