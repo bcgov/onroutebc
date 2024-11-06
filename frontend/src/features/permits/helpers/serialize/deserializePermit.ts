@@ -1,4 +1,4 @@
-import { Permit, PermitResponseData } from "../types/permit";
+import { Permit, PermitResponseData } from "../../types/permit";
 
 /**
  * Deserialize a PermitResponseData object (received from backend) to a Permit object.

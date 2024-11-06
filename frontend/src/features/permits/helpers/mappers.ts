@@ -35,7 +35,7 @@ export const findFromExistingVehicles = (
     if (existingVehicle.vehicleType !== vehicleType) return false;
     return vehicleType === VEHICLE_TYPES.TRAILER
       ? (existingVehicle as Trailer).trailerId === vehicleId
-      :(existingVehicle as PowerUnit).powerUnitId === vehicleId;
+      : (existingVehicle as PowerUnit).powerUnitId === vehicleId;
   });
 };
 

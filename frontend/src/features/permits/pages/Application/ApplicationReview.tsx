@@ -63,8 +63,7 @@ export const ApplicationReview = () => {
   const [allConfirmed, setAllConfirmed] = useState(false);
   const [hasAttemptedSubmission, setHasAttemptedSubmission] = useState(false);
 
-  // Send data to the backend API
-  const saveApplicationMutation = useSaveApplicationMutation();
+  const { mutateAsync: saveApplication } = useSaveApplicationMutation();
   const addToCartMutation = useAddToCart();
 
   const back = () => {
@@ -101,7 +100,7 @@ export const ApplicationReview = () => {
     }
 
     const { application: savedApplication } =
-      await saveApplicationMutation.mutateAsync({
+      await saveApplication({
         data: {
           ...applicationData,
           permitData: {

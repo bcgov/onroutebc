@@ -1,5 +1,7 @@
 import { BCeIDUserRoleType, BCeID_USER_ROLE } from "../authentication/types";
 import {
+  isNull,
+  isUndefined,
   Nullable,
   Optional,
   RequiredOrNull,
@@ -176,22 +178,26 @@ export const streamDownloadFile = async (response: Response) => {
 };
 
 /**
- * Converts a string to a number.
- * (Applicable for number fields in forms).
- *
- * @param str The string value.
- * @param valueToReturnWhenInvalid The value to return if invalid.
- * @returns A number or valueToReturnWhenInvalid.
+ * Converts a numeric value to a number if possible.
+ * @param numericVal The numeric value (can be number or string)
+ * @param fallbackWhenInvalid The value to return if invalid.
+ * @returns The converted number value, or fallback value when invalid
  */
-export const convertToNumberIfValid = (
-  str?: Nullable<string>,
-  valueToReturnWhenInvalid?: 0 | Nullable<number> | Nullable<string>,
+export const convertToNumberIfValid = <T extends Nullable<number | string>>(
+  numericVal?: Nullable<string | number>,
+  fallbackWhenInvalid?: T,
 ) => {
-  // return input as a number if it's a valid number value,
-  // or original value if invalid number
-  return str != null && str !== "" && !isNaN(Number(str))
-    ? Number(str)
-    : valueToReturnWhenInvalid;
+  const isNullable = isNull(numericVal) || isUndefined(numericVal);
+  const isNumberButInvalid = (typeof numericVal === "number") && isNaN(numericVal);
+  const isStringButInvalid = (typeof numericVal === "string")
+    && (numericVal.trim() === "" || isNaN(Number(numericVal.trim())));
+  
+  const isInvalid = isNullable
+    || ((typeof numericVal !== "number") && (typeof numericVal !== "string"))
+    || isNumberButInvalid
+    || isStringButInvalid;
+  
+  return !isInvalid ? Number(numericVal) : fallbackWhenInvalid;
 };
 
 /**

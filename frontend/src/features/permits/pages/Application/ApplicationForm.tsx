@@ -1,4 +1,4 @@
-import { FieldValues, FormProvider } from "react-hook-form";
+import { FormProvider } from "react-hook-form";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useContext, useMemo, useState } from "react";
 import dayjs from "dayjs";
@@ -10,7 +10,7 @@ import { ApplicationBreadcrumb } from "../../components/application-breadcrumb/A
 import { useSaveApplicationMutation } from "../../hooks/hooks";
 import { SnackBarContext } from "../../../../App";
 import { LeaveApplicationDialog } from "../../components/dialog/LeaveApplicationDialog";
-import { areApplicationDataEqual } from "../../helpers/equality";
+import { areApplicationPermitDataEqual } from "../../helpers/equality";
 import { useInitApplicationFormData } from "../../hooks/form/useInitApplicationFormData";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { PermitForm } from "./components/form/PermitForm";
@@ -28,9 +28,10 @@ import { ApplicationFormContext } from "../../context/ApplicationFormContext";
 import { filterLOAsForPermitType, filterNonExpiredLOAs } from "../../helpers/permitLOA";
 import { usePolicyEngine } from "../../../policy/hooks/usePolicyEngine";
 import { Loading } from "../../../../common/pages/Loading";
+import { serializePermitVehicleDetails } from "../../helpers/serialize/serializePermitVehicleDetails";
+import { serializePermitData } from "../../helpers/serialize/serializePermitData";
 import {
   applyWhenNotNullable,
-  convertToNumberIfValid,
   getDefaultRequiredVal,
 } from "../../../../common/helpers/util";
 
@@ -52,9 +53,7 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
 
   const {
     companyId: companyIdFromContext,
-    companyLegalName,
     userDetails,
-    onRouteBCClientNumber,
     idirUserDetails,
   } = useContext(OnRouteBCContext);
 
@@ -129,7 +128,7 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     applicationContext?.applicationData?.updatedDateTime,
   );
 
-  const saveApplicationMutation = useSaveApplicationMutation();
+  const { mutateAsync: saveApplication } = useSaveApplicationMutation();
   const snackBar = useContext(SnackBarContext);
 
   // Show leave application dialog
@@ -140,46 +139,18 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
 
   const navigate = useNavigate();
 
-  // Helper method to format form values to Application objects before saving them
-  const formattedFormData = (data: FieldValues) => {
-    return {
-      ...data,
-      applicationNumber: applicationContext.applicationData?.applicationNumber,
-      permitData: {
-        ...data.permitData,
-        companyName: companyLegalName,
-        clientNumber: onRouteBCClientNumber,
-        vehicleDetails: {
-          ...data.permitData.vehicleDetails,
-          // Convert year to number here, as React doesn't accept valueAsNumber prop for input component
-          year: !isNaN(Number(data.permitData.vehicleDetails.year))
-            ? Number(data.permitData.vehicleDetails.year)
-            : data.permitData.vehicleDetails.year,
-          licensedGVW: convertToNumberIfValid(
-            data.permitData.vehicleDetails.licensedGVW,
-            null,
-          ),
-        },
-      },
-    } as ApplicationFormData;
-  };
-
   // Check to see if all application values were already saved
   const isApplicationSaved = () => {
-    const currentFormattedFormData = formattedFormData(currentFormData);
-    const savedData = formattedFormData(initialFormData);
-
     // Check if all current form field values match field values already saved in application context
-    return areApplicationDataEqual(
-      currentFormattedFormData.permitData,
-      savedData.permitData,
+    return areApplicationPermitDataEqual(
+      serializePermitData(currentFormData.permitData),
+      serializePermitData(initialFormData.permitData),
     );
   };
 
   // When "Continue" button is clicked
-  const onContinue = async (data: FieldValues) => {
-    const applicationToBeSaved = formattedFormData(data);
-    const vehicleData = applicationToBeSaved.permitData.vehicleDetails;
+  const onContinue = async (data: ApplicationFormData) => {
+    const vehicleData = serializePermitVehicleDetails(data.permitData.vehicleDetails);
     const savedVehicleDetails = await handleSaveVehicle(vehicleData);
 
     // Save application before continuing
@@ -212,31 +183,25 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     additionalSuccessAction?: (permitId: string) => void,
     savedVehicleInventoryDetails?: Nullable<PermitVehicleDetails>,
   ) => {
-    if (
-      !savedVehicleInventoryDetails &&
-      typeof savedVehicleInventoryDetails !== "undefined"
-    ) {
-      // save vehicle to inventory failed (result is null), go to unexpected error page
+    if (isNull(savedVehicleInventoryDetails)) {
       return onSaveFailure();
     }
 
-    const applicationToBeSaved = formattedFormData(
-      !savedVehicleInventoryDetails
-        ? currentFormData
-        : {
-            ...currentFormData,
-            permitData: {
-              ...currentFormData.permitData,
-              vehicleDetails: {
-                ...savedVehicleInventoryDetails,
-                saveVehicle: true,
-              },
+    const applicationToBeSaved = !savedVehicleInventoryDetails
+      ? currentFormData
+      : {
+          ...currentFormData,
+          permitData: {
+            ...currentFormData.permitData,
+            vehicleDetails: {
+              ...savedVehicleInventoryDetails,
+              saveVehicle: true,
             },
           },
-    );
+        };
 
     const { application: savedApplication, status } =
-      await saveApplicationMutation.mutateAsync({
+      await saveApplication({
         data: applicationToBeSaved,
         companyId,
       });

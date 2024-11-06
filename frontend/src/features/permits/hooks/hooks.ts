@@ -8,17 +8,22 @@ import {
   keepPreviousData,
 } from "@tanstack/react-query";
 
-import { Application, ApplicationFormData } from "../types/application";
 import { IssuePermitsResponse } from "../types/permit";
 import { StartTransactionResponseData } from "../types/payment";
 import { APPLICATION_STEPS, ApplicationStep } from "../../../routes/constants";
 import { isPermitTypeValid } from "../types/PermitType";
 import { isPermitIdNumeric } from "../helpers/permitState";
-import { deserializeApplicationResponse } from "../helpers/deserializeApplication";
-import { deserializePermitResponse } from "../helpers/deserializePermit";
+import { deserializeApplicationResponse } from "../helpers/serialize/deserializeApplication";
+import { deserializePermitResponse } from "../helpers/serialize/deserializePermit";
 import { AmendPermitFormData } from "../pages/Amend/types/AmendPermitFormData";
 import { Nullable, Optional } from "../../../common/types/common";
 import { useTableControls } from "./useTableControls";
+import { getDefaultRequiredVal } from "../../../common/helpers/util";
+import {
+  Application,
+  ApplicationFormData,
+} from "../types/application";
+
 import {
   getApplication,
   getPermit,
@@ -35,7 +40,6 @@ import {
   resendPermit,
   getPendingPermits,
 } from "../apiManager/permitsAPI";
-import { getDefaultRequiredVal } from "../../../common/helpers/util";
 
 const QUERY_KEYS = {
   PERMIT_DETAIL: (

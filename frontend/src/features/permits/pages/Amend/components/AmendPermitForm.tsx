@@ -14,9 +14,8 @@ import { Breadcrumb } from "../../../../../common/components/breadcrumb/Breadcru
 import { ApplicationFormContext } from "../../../context/ApplicationFormContext";
 import { isNull, isUndefined, Nullable } from "../../../../../common/types/common";
 import { ERROR_ROUTES } from "../../../../../routes/constants";
-import { applyWhenNotNullable, convertToNumberIfValid, getDefaultRequiredVal } from "../../../../../common/helpers/util";
+import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { PermitVehicleDetails } from "../../../types/PermitVehicleDetails";
-import { AmendPermitFormData } from "../types/AmendPermitFormData";
 import { getDatetimes } from "./helpers/getDatetimes";
 import { PAST_START_DATE_STATUSES } from "../../../../../common/components/form/subFormComponents/CustomDatePicker";
 import { useFetchLOAs } from "../../../../settings/hooks/LOA";
@@ -24,6 +23,7 @@ import { useFetchSpecialAuthorizations } from "../../../../settings/hooks/specia
 import { filterLOAsForPermitType, filterNonExpiredLOAs } from "../../../helpers/permitLOA";
 import { usePolicyEngine } from "../../../../policy/hooks/usePolicyEngine";
 import { Loading } from "../../../../../common/pages/Loading";
+import { serializePermitVehicleDetails } from "../../../helpers/serialize/serializePermitVehicleDetails";
 import {
   dayjsToUtcStr,
   nowUtc,
@@ -107,37 +107,15 @@ export const AmendPermitForm = () => {
     formData.permitData.startDate,
   );
   
-  const amendPermitMutation = useAmendPermit(companyId);
-  const modifyAmendmentMutation = useModifyAmendmentApplication();
+  const { mutateAsync: createAmendment } = useAmendPermit(companyId);
+  const { mutateAsync: modifyAmendment } = useModifyAmendmentApplication();
   const snackBar = useContext(SnackBarContext);
 
   const { handleSubmit } = formMethods;
 
-  // Helper method to return form field values as an Permit object
-  const transformPermitFormData = (data: FieldValues) => {
-    return {
-      ...data,
-      permitData: {
-        ...data.permitData,
-        vehicleDetails: {
-          ...data.permitData.vehicleDetails,
-          // Convert year to number here, as React doesn't accept valueAsNumber prop for input component
-          year: !isNaN(Number(data.permitData.vehicleDetails.year))
-            ? Number(data.permitData.vehicleDetails.year)
-            : data.permitData.vehicleDetails.year,
-          licensedGVW: convertToNumberIfValid(
-            data.permitDate.vehicleDetails.licensedGVW,
-            null,
-          ),
-        },
-      },
-    } as AmendPermitFormData;
-  };
-
   // When "Continue" button is clicked
   const onContinue = async (data: FieldValues) => {
-    const permitToBeAmended = transformPermitFormData(data);
-    const vehicleData = permitToBeAmended.permitData.vehicleDetails;
+    const vehicleData = serializePermitVehicleDetails(data.permitData.vehicleDetails);
     const savedVehicle = await handleSaveVehicle(vehicleData);
 
     // Save application before continuing
@@ -163,34 +141,28 @@ export const AmendPermitForm = () => {
     additionalSuccessAction?: () => void,
     savedVehicleInventoryDetails?: Nullable<PermitVehicleDetails>,
   ) => {
-    if (
-      !savedVehicleInventoryDetails &&
-      typeof savedVehicleInventoryDetails !== "undefined"
-    ) {
-      // save vehicle to inventory failed (result is null), go to unexpected error page
+    if (isNull(savedVehicleInventoryDetails)) {
       return onSaveFailure();
     }
 
-    const permitToBeAmended = transformPermitFormData(
-      !savedVehicleInventoryDetails
-        ? formData
-        : {
-            ...formData,
-            permitData: {
-              ...formData.permitData,
-              vehicleDetails: {
-                ...savedVehicleInventoryDetails,
-                saveVehicle: true,
-              },
+    const permitToBeAmended = !savedVehicleInventoryDetails
+      ? formData
+      : {
+          ...formData,
+          permitData: {
+            ...formData.permitData,
+            vehicleDetails: {
+              ...savedVehicleInventoryDetails,
+              saveVehicle: true,
             },
           },
-    );
+        };
 
     const shouldUpdateApplication =
       permitToBeAmended.permitId !== permit?.permitId;
 
     const response = shouldUpdateApplication
-      ? await modifyAmendmentMutation.mutateAsync({
+      ? await modifyAmendment({
           applicationId: getDefaultRequiredVal(
             "",
             permitToBeAmended.permitId,
@@ -198,7 +170,7 @@ export const AmendPermitForm = () => {
           application: permitToBeAmended,
           companyId,
         })
-      : await amendPermitMutation.mutateAsync(permitToBeAmended);
+      : await createAmendment(permitToBeAmended);
 
     if (response.application) {
       onSaveSuccess(response.application);
