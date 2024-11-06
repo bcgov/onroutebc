@@ -1,4 +1,4 @@
-import { ICBCThirdPartyLiability } from "../enum/icbc-third-party-liability.enum";
+import { ThirdPartyLiability } from "../enum/third-party-liability.enum";
 
 // Data used to populate a .docx template
 export interface PermitTemplateData {
@@ -37,7 +37,7 @@ export interface PermitData {
   applicationNotes?: string;
   permittedCommodity?: PermittedCommodity;
   permittedRoute?: PermittedRoute;
-  thirdPartyLiability?: ICBCThirdPartyLiability;
+  thirdPartyLiability?: ThirdPartyLiability;
 }
 
 interface VehicleConfiguration {
