@@ -58,13 +58,13 @@ jobs:
       - uses: rbhadti94/apache-jmeter-action@v0.5.0
         with:
           testFilePath: tests/regression/orbc_load_test_plan_frontend_amend_term_oversize.jmx
-          outputReportsFolder: tests/regression/results
+          outputReportsFolder: ~/tests/regression/results
           plugins: "jpgc-webdriver"
           args: |
-            --loglevel DEBUG 
+            --loglevel=DEBUG 
             --jmeterlogconf=log.conf
             -JFRONTEND_API_URL=${{needs.vars.outputs.frontend_api_url}}
-            -JRESULTS_DIR=tests/regression/results/
+            -JRESULTS_DIR=~/tests/regression/results/
             -JUSER=${{vars.BCEID_USER}}
             -JPASSWORD=${{secrets.BCEID_PASSWORD}}
             -JCHROME_DRIVER_PATH=/usr/local/bin
