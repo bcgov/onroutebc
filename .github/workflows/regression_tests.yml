@@ -64,7 +64,6 @@ jobs:
             --loglevel=DEBUG 
             --jmeterlogconf=log.conf
             -JFRONTEND_API_URL=${{needs.vars.outputs.frontend_api_url}}
-            -JRESULTS_DIR=tests/regression/results/
             -JUSER=${{vars.BCEID_USER}}
             -JPASSWORD=${{secrets.BCEID_PASSWORD}}
             -JCHROME_DRIVER_PATH=/usr/local/bin
