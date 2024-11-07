@@ -1,28 +1,30 @@
 import { Box } from "@mui/material";
 import { Dayjs } from "dayjs";
-
-import "./PermitReview.scss";
 import { WarningBcGovBanner } from "../../../../../../common/components/banners/WarningBcGovBanner";
-import { ApplicationDetails } from "../../../../components/form/ApplicationDetails";
-import { ReviewContactDetails } from "./ReviewContactDetails";
-import { ReviewPermitDetails } from "./ReviewPermitDetails";
-import { ReviewVehicleInfo } from "./ReviewVehicleInfo";
-import { ReviewFeeSummary } from "./ReviewFeeSummary";
-import { ReviewActions } from "./ReviewActions";
+import { Nullable } from "../../../../../../common/types/common";
 import { CompanyProfile } from "../../../../../manageProfile/types/manageProfile";
 import { VehicleSubType } from "../../../../../manageVehicles/types/Vehicle";
-import { PermitType } from "../../../../types/PermitType";
-import { Nullable } from "../../../../../../common/types/common";
-import { PermitContactDetails } from "../../../../types/PermitContactDetails";
-import { PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
+import { ApplicationDetails } from "../../../../components/form/ApplicationDetails";
 import { Application } from "../../../../types/application";
 import { PermitCondition } from "../../../../types/PermitCondition";
-import { ReviewPermitLOAs } from "./ReviewPermitLOAs";
+import { PermitContactDetails } from "../../../../types/PermitContactDetails";
 import { PermitLOA } from "../../../../types/PermitLOA";
 import {
   PERMIT_REVIEW_CONTEXTS,
   PermitReviewContext,
 } from "../../../../types/PermitReviewContext";
+import { PermitType } from "../../../../types/PermitType";
+import { PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
+import "./PermitReview.scss";
+import { ReviewActions } from "./ReviewActions";
+import { ReviewContactDetails } from "./ReviewContactDetails";
+import { ReviewFeeSummary } from "./ReviewFeeSummary";
+import { ReviewPermitDetails } from "./ReviewPermitDetails";
+import { ReviewPermitLOAs } from "./ReviewPermitLOAs";
+import { ReviewVehicleInfo } from "./ReviewVehicleInfo";
+import { ApplicationRejectionHistory } from "../../../../types/ApplicationRejectionHistory";
+import { ReviewApplicationRejectionHistory } from "./ReviewApplicationRejectionHistory";
+import { isPermitStartOrExpiryDateInPast } from "../../../../helpers/dateSelection";
 
 interface PermitReviewProps {
   reviewContext: PermitReviewContext;
@@ -50,18 +52,31 @@ interface PermitReviewProps {
   onEdit: () => void;
   onContinue?: () => Promise<void>;
   onAddToCart?: () => Promise<void>;
-  onApprove?: () => Promise<void>;
-  approveApplicationMutationPending?: boolean;
-  onReject?: () => Promise<void>;
-  rejectApplicationMutationPending?: boolean;
+  handleApproveButton?: () => Promise<void>;
+  updateApplicationMutationPending?: boolean;
+  handleRejectButton?: () => void;
   showChangedFields?: boolean;
   oldFields?: Nullable<Partial<Application>>;
   calculatedFee: string;
   doingBusinessAs?: Nullable<string>;
   loas?: Nullable<PermitLOA[]>;
+  applicationRejectionHistory?: Nullable<ApplicationRejectionHistory[]>;
 }
 
 export const PermitReview = (props: PermitReviewProps) => {
+  const shouldShowRejectionHistory =
+    props.reviewContext === PERMIT_REVIEW_CONTEXTS.QUEUE &&
+    props.applicationRejectionHistory &&
+    props.applicationRejectionHistory.length > 0;
+
+  const invalidPermitDates =
+    props.permitStartDate && props.permitExpiryDate
+      ? isPermitStartOrExpiryDateInPast(
+          props.permitStartDate,
+          props.permitExpiryDate,
+        )
+      : false;
+
   return (
     <Box className="permit-review layout-box">
       <Box className="permit-review__container">
@@ -86,9 +101,7 @@ export const PermitReview = (props: PermitReviewProps) => {
           oldFields={props.oldFields?.permitData?.contactDetails}
         />
 
-        <ReviewPermitLOAs
-          loas={props.loas}
-        />
+        <ReviewPermitLOAs loas={props.loas} />
 
         <ReviewPermitDetails
           startDate={props.permitStartDate}
@@ -98,6 +111,7 @@ export const PermitReview = (props: PermitReviewProps) => {
           showChangedFields={props.showChangedFields}
           oldStartDate={props.oldFields?.permitData?.startDate}
           oldDuration={props.oldFields?.permitData?.permitDuration}
+          showDateErrorBanner={invalidPermitDates}
         />
 
         <ReviewVehicleInfo
@@ -108,6 +122,12 @@ export const PermitReview = (props: PermitReviewProps) => {
           showChangedFields={props.showChangedFields}
           oldFields={props.oldFields?.permitData?.vehicleDetails}
         />
+
+        {shouldShowRejectionHistory && props.applicationRejectionHistory && (
+          <ReviewApplicationRejectionHistory
+            applicationRejectionHistory={props.applicationRejectionHistory}
+          />
+        )}
 
         <ReviewFeeSummary
           hasAttemptedSubmission={props.hasAttemptedCheckboxes}
@@ -121,20 +141,18 @@ export const PermitReview = (props: PermitReviewProps) => {
         {props.children}
 
         <ReviewActions
+          reviewContext={props.reviewContext}
           onEdit={props.onEdit}
           continueBtnText={props.continueBtnText}
           onContinue={props.onContinue}
           hasToCartButton={props.reviewContext === PERMIT_REVIEW_CONTEXTS.APPLY}
           onAddToCart={props.onAddToCart}
-          onApprove={props.onApprove}
-          approveApplicationMutationPending={
-            props.approveApplicationMutationPending
+          handleApproveButton={props.handleApproveButton}
+          handleRejectButton={props.handleRejectButton}
+          disableApproveButton={
+            props.updateApplicationMutationPending || invalidPermitDates
           }
-          onReject={props.onReject}
-          rejectApplicationMutationPending={
-            props.rejectApplicationMutationPending
-          }
-          reviewContext={props.reviewContext}
+          disableRejectButton={props.updateApplicationMutationPending}
         />
       </Box>
     </Box>

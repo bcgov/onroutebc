@@ -27,7 +27,7 @@ export const getApplicationsInQueue = async (
     {
       applicationsInQueueOnly: true,
       getStaffQueue,
-    }, 
+    },
     companyId,
   );
 };
@@ -82,7 +82,7 @@ export const updateApplicationQueueStatus = async ({
 
   // Conditionally include the comment property if it is given as an argument and not an empty string
   if (comment && comment.trim() !== "") {
-    data.comment = [comment];
+    data.comment = comment;
   }
 
   const response = await httpPOSTRequest(
