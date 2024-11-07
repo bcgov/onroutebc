@@ -8,6 +8,7 @@ import { PermitApplicationOrigin } from "./PermitApplicationOrigin";
 import { PermitApprovalSource } from "./PermitApprovalSource";
 import { PermitData } from "./PermitData";
 import { ApplicationQueueStatus } from "../../queue/types/ApplicationQueueStatus";
+import { ApplicationRejectionHistory } from "./ApplicationRejectionHistory";
 
 /**
  * A partial permit type that consists of all common fields used for a permit.
@@ -39,6 +40,7 @@ export interface Application extends PartialApplication {
   updatedDateTime?: Nullable<Dayjs>;
   permitData: PermitData;
   applicant?: Nullable<string>;
+  rejectionHistory?: Nullable<ApplicationRejectionHistory[]>;
 }
 
 /**
