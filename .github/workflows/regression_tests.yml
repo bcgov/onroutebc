@@ -59,11 +59,11 @@ jobs:
 
       - uses: browser-actions/setup-chrome@v1
         with:
-          chrome-version: 129.0.6668.59
+          chrome-version: 129
 
       - uses: nanasess/setup-chromedriver@v2
         with:
-          chromedriver-version: 129.0.6668.59
+          chromedriver-version: 129
 
       - uses: rbhadti94/apache-jmeter-action@v0.5.0
         with:
