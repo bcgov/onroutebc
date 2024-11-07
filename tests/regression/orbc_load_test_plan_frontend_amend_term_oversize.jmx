@@ -87,6 +87,92 @@
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
       <hashTree>
+        <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="login" enabled="true">
+          <stringProp name="WebDriverSampler.script">import org.openqa.selenium.By
+import org.openqa.selenium.support.ui.ExpectedConditions
+import org.openqa.selenium.support.ui.WebDriverWait
+import org.openqa.selenium.WebElement
+import org.openqa.selenium.devtools.DevTools;
+import org.openqa.selenium.devtools.v129.network.Network;
+import java.util.Optional;
+import org.openqa.selenium.logging.LogType
+import org.openqa.selenium.logging.LogEntries
+import org.openqa.selenium.chrome.ChromeOptions
+import org.openqa.selenium.logging.LoggingPreferences
+import java.util.logging.Level
+import java.util.function.Consumer
+
+WDS.sampleResult.sampleStart() 
+
+WDS.log.info &quot;Groovy version: ${GroovySystem.version}&quot;
+
+
+def frontendUrl = WDS.vars.get(&quot;FRONTEND_URL&quot;)
+WDS.browser.get(frontendUrl)
+Thread.sleep(5000)
+
+def loginButton = WDS.browser.findElement(By.id(&apos;login-idir&apos;))
+if (loginButton != null) {
+    loginButton.click()
+    WDS.log.info(&quot;Clicked on the login-idir button&quot;)
+    Thread.sleep(5000)
+    /*
+    try {
+	    def user = WDS.browser.findElement(By.id(&apos;user&apos;))
+	    def password = WDS.browser.findElement(By.id(&apos;password&apos;))
+	    if (user != null) {      
+		def userValue = WDS.vars.get(&quot;USER&quot;)
+		def passwordValue = WDS.vars.get(&quot;PASSWORD&quot;)
+		user.sendKeys(userValue)
+		password.sendKeys(passwordValue)
+		Thread.sleep(5000)
+		
+		def submitButton = WDS.browser.findElement(By.name(&apos;btnSubmit&apos;))
+		if (submitButton != null) {
+		    submitButton.click()
+		} else {
+		    WDS.log.info(&apos;Submit button with name=&quot;btnSubmit&quot; not found&apos;)
+		}
+		Thread.sleep(5000)
+		}
+	} catch (NoSuchElementException e) {
+		WDS.log.info(&apos;User element not found.&apos;)
+	}
+	*/
+} else {
+    WDS.log.info(&quot;Button with id &apos;login-idir&apos; not found&quot;)
+}
+
+Thread.sleep(5000)	
+
+def devTools = ((org.openqa.selenium.chrome.ChromeDriver) WDS.browser).getDevTools()
+devTools.createSession()
+devTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()))
+devTools.addListener(Network.requestWillBeSent(), { request -&gt;
+    if (request.getRequest().getUrl().contains(&quot;https&quot;)) {
+        def headers = request.getRequest().getHeaders()
+        def authHeader = headers.get(&quot;Authorization&quot;)
+        if (authHeader != null &amp;&amp; authHeader.startsWith(&quot;Bearer &quot;)) {
+            def token = authHeader.replace(&quot;Bearer &quot;, &quot;&quot;)
+            WDS.log.info(&quot;Extracted Token: &quot; + token)
+            WDS.vars.put(&quot;BEARER_TOKEN&quot;, token)
+        }
+    }
+    else {
+    	WDS.log.info(&quot;bruce test no token: &quot;)
+    	}
+} as Consumer)
+Thread.sleep(5000)
+
+WDS.browser.get(frontendUrl)
+Thread.sleep(5000)
+
+WDS.sampleResult.sampleEnd()
+</stringProp>
+          <stringProp name="WebDriverSampler.parameters"></stringProp>
+          <stringProp name="WebDriverSampler.language">groovy</stringProp>
+        </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+        <hashTree/>
         <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="amendApplications" enabled="true">
           <stringProp name="WebDriverSampler.script">import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
@@ -97,7 +183,7 @@ WDS.sampleResult.sampleStart()
 def frontendUrl = WDS.vars.get(&quot;FRONTEND_URL&quot;)
 WDS.browser.get(frontendUrl);
 Thread.sleep(5000)
-
+/*
 def loginButton = WDS.browser.findElement(By.id(&apos;login-idir&apos;))
 if (loginButton != null) {
     loginButton.click()
@@ -107,6 +193,79 @@ if (loginButton != null) {
 }
 Thread.sleep(5000)
 
+
+def searchIcon = WDS.browser.findElement(By.className(&apos;search-button&apos;))
+searchIcon.click()
+Thread.sleep(5000)
+
+def company = WDS.browser.findElement(By.cssSelector(&apos;[value=&quot;companies&quot;]&apos;))
+company.click()
+Thread.sleep(5000)
+
+
+def searchInput = WDS.browser.findElement(By.className(&apos;css-1pog434&apos;))
+searchInput.sendKeys(&apos;chief&apos;)
+Thread.sleep(5000)
+
+def searchButton = WDS.browser.findElement(By.className(&apos;search-by__search&apos;))
+searchButton.click()
+Thread.sleep(5000)
+
+def button = WDS.browser.findElement(By.xpath(&quot;//button[text()=&apos;Chief, Master&apos;]&quot;))
+button.click()
+Thread.sleep(5000)
+def tab = WDS.browser.findElement(By.xpath(&quot;//div[@class=&apos;tab__label&apos; and text()=&apos;Active Permits&apos;]&quot;))
+tab.click()
+Thread.sleep(5000)
+
+def firstDotButton = WDS.browser.findElement(By.className(&apos;css-15mydm5&apos;))
+firstDotButton.click()
+Thread.sleep(5000)
+def amendButton = WDS.browser.findElement(By.xpath(&quot;//li[text()=&apos;Amend&apos;]&quot;))
+amendButton.click()
+Thread.sleep(5000)
+
+def year = WDS.browser.findElement(By.cssSelector(&apos;[name=&quot;permitData.vehicleDetails.year&quot;]&apos;))
+year.clear()
+year.sendKeys(&quot;2008&quot;)
+Thread.sleep(5000)
+
+def amendment = WDS.browser.findElement(By.cssSelector(&apos;[name=&quot;comment&quot;]&apos;))
+amendment.clear()
+amendment.sendKeys(&quot;Make year updated&quot;)
+Thread.sleep(5000)
+
+
+def continueButton = WDS.browser.findElement(By.cssSelector(&apos;[data-testid=&quot;continue-application-button&quot;]&apos;))
+Thread.sleep(5000)
+
+if (continueButton != null) {
+    continueButton.click()
+    WDS.log.info(&apos;Clicked the button with data-testid=&quot;continue-application-button&quot;&apos;)
+} else {
+    WDS.log.info(&apos;Button with data-testid=&quot;continue-application-button&quot; not found&apos;)
+}
+
+Thread.sleep(10000)
+def checkboxes = WDS.browser.findElements(By.cssSelector(&apos;input[type=&quot;checkbox&quot;]&apos;))
+checkboxes.each { checkbox -&gt;
+    WDS.browser.executeScript(&quot;window.scrollTo(0, arguments[0].getBoundingClientRect().top + window.pageYOffset - 100);&quot;, checkbox)
+    if (!checkbox.isSelected()) {
+        checkbox.click()
+    }
+}
+Thread.sleep(5000)
+
+def continueBtn = WDS.browser.findElement(By.xpath(&quot;//button[text()=&apos;Continue&apos;]&quot;))
+WDS.browser.executeScript(&quot;window.scrollTo(0, arguments[0].getBoundingClientRect().top + window.pageYOffset - 100);&quot;, continueBtn)
+continueBtn.click()
+Thread.sleep(5000)
+
+def finish = WDS.browser.findElement(By.xpath(&quot;//button[text()=&apos;Finish&apos;]&quot;))
+WDS.browser.executeScript(&quot;window.scrollTo(0, arguments[0].getBoundingClientRect().top + window.pageYOffset - 100);&quot;, finish)
+finish.click()
+Thread.sleep(5000)
+*/
 
 def searchIcon = WDS.browser.findElement(By.className(&apos;search-button&apos;))
 searchIcon.click()

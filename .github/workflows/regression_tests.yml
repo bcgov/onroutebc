@@ -61,7 +61,7 @@ jobs:
           outputReportsFolder: tests/regression/results
           plugins: "jpgc-webdriver"
           args: |
-            --loglevel INFO 
+            --loglevel DEBUG 
             --jmeterlogconf=log.conf
             -JFRONTEND_API_URL=${{needs.vars.outputs.frontend_api_url}}
             -JRESULTS_DIR=tests/regression/results/
