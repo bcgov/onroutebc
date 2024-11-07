@@ -17,20 +17,28 @@
       align-items: flex-start;
     }
 
-    .add-power-unit-btn {
-      display: flex;
-      align-items: center;
+    .add-power-unit {
       margin-top: 1.5rem;
-      color: orbcStyles.$bc-black;
 
-      &--disabled {
-        color: orbcStyles.$disabled-colour;
-        border-color: orbcStyles.$disabled-colour;
-        background-color: orbcStyles.$white;
+      .add-power-unit-btn {
+        display: flex;
+        align-items: center;
+        color: orbcStyles.$bc-black;
+  
+        &--disabled {
+          color: orbcStyles.$disabled-colour;
+          border-color: orbcStyles.$disabled-colour;
+          background-color: orbcStyles.$white;
+        }
+  
+        &__icon {
+          margin-right: 0.5rem;
+        }
       }
 
-      &__icon {
-        margin-right: 0.5rem;
+      &__error {
+        color: orbcStyles.$bc-red;
+        margin: 0.5rem 0 0 0;
       }
     }
 

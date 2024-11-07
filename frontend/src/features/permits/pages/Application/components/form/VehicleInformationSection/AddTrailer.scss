@@ -73,4 +73,9 @@
       box-shadow: none;
     }
   }
+
+  & &__error {
+    color: $bc-red;
+    margin: 0.5rem 0 0 0;
+  }
 }

@@ -80,7 +80,7 @@ export const useInitApplicationFormData = (
   // Register default values with react-hook-form
   const formMethods = useForm<ApplicationFormData>({
     defaultValues: initialFormData,
-    reValidateMode: "onBlur",
+    reValidateMode: "onChange",
   });
 
   const { watch, reset } = formMethods;

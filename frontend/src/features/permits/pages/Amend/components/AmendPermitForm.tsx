@@ -1,4 +1,4 @@
-import { useContext, useMemo } from "react";
+import { useContext, useMemo, useState } from "react";
 import { FieldValues, FormProvider } from "react-hook-form";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 
@@ -24,6 +24,9 @@ import { filterLOAsForPermitType, filterNonExpiredLOAs } from "../../../helpers/
 import { usePolicyEngine } from "../../../../policy/hooks/usePolicyEngine";
 import { Loading } from "../../../../../common/pages/Loading";
 import { serializePermitVehicleDetails } from "../../../helpers/serialize/serializePermitVehicleDetails";
+import { serializeForUpdateApplication } from "../../../helpers/serialize/serializeApplication";
+import { requiredPowerUnit } from "../../../../../common/helpers/validationMessages";
+import { PERMIT_TYPES } from "../../../types/PermitType";
 import {
   dayjsToUtcStr,
   nowUtc,
@@ -113,8 +116,49 @@ export const AmendPermitForm = () => {
 
   const { handleSubmit } = formMethods;
 
+  const [policyViolations, setPolicyViolations] = useState<Record<string, string>>({});
+
+  const clearViolation = (fieldReference: string) => {
+    if (fieldReference in policyViolations) {
+      const otherViolations = Object.entries(policyViolations)
+        .filter(([fieldRef]) => fieldRef !== fieldReference);
+      
+      setPolicyViolations(Object.fromEntries(otherViolations));
+    }
+  };
+
+  const triggerPolicyValidation = async () => {
+    const validationResults = await policyEngine?.validate(
+      serializeForUpdateApplication(formData),
+    );
+
+    const violations = getDefaultRequiredVal(
+      [],
+      validationResults?.violations
+        .filter(({ fieldReference }) => Boolean(fieldReference))
+        .map(violation => ({
+          fieldReference: violation.fieldReference as string,
+          message: violation.message,
+        })),
+    ).concat(formData.permitType === PERMIT_TYPES.STOS && !formData.permitData.vehicleDetails.vin ? [
+      { fieldReference: "permitData.vehicleDetails", message: requiredPowerUnit() },
+    ] : []);
+
+    const updatedViolations = Object.fromEntries(
+      violations.map(({ fieldReference, message }) => [fieldReference, message]),
+    );
+
+    setPolicyViolations(updatedViolations);
+    return updatedViolations;
+  };
+
   // When "Continue" button is clicked
   const onContinue = async (data: FieldValues) => {
+    const updatedViolations = await triggerPolicyValidation();
+    if (Object.keys(updatedViolations).length > 0) {
+      return;
+    }
+
     const vehicleData = serializePermitVehicleDetails(data.permitData.vehicleDetails);
     const savedVehicle = await handleSaveVehicle(vehicleData);
 
@@ -218,10 +262,13 @@ export const AmendPermitForm = () => {
     pastStartDateStatus: PAST_START_DATE_STATUSES.WARNING,
     companyLOAs: applicableLOAs,
     revisionHistory,
+    policyViolations,
     onLeave: undefined,
     onSave: undefined,
     onCancel: goHome,
     onContinue: handleSubmit(onContinue),
+    triggerPolicyValidation,
+    clearViolation,
   }), [
     initialFormData,
     formData,
@@ -236,8 +283,11 @@ export const AmendPermitForm = () => {
     updatedDateTime,
     applicableLOAs,
     revisionHistory,
+    policyViolations,
     goHome,
     onContinue,
+    triggerPolicyValidation,
+    clearViolation,
   ]);
 
   if (isUndefined(policyEngine)) return <Loading />;

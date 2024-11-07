@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Box, Button } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -14,6 +14,7 @@ import { PowerUnitInfo } from "./PowerUnitInfo";
 import { AddPowerUnitDialog } from "./AddPowerUnitDialog";
 import { AddTrailer } from "./AddTrailer";
 import { VehicleInConfiguration } from "../../../../../types/PermitVehicleConfiguration";
+import { ApplicationFormContext } from "../../../../../context/ApplicationFormContext";
 
 export const VehicleInformationSection = ({
   permitType,
@@ -63,10 +64,14 @@ export const VehicleInformationSection = ({
     setShowAddPowerUnitDialog(true);
   };
 
+  const powerUnitFieldRef = "permitData.vehicleDetails";
+  const { policyViolations, triggerPolicyValidation } = useContext(ApplicationFormContext);
+
   const handleClosePowerUnitDialog = () => {
     onClearVehicle(false);
     onUpdateVehicleConfigTrailers([]);
     setShowAddPowerUnitDialog(false);
+    triggerPolicyValidation();
   };
 
   const handleAddPowerUnit = () => {
@@ -76,11 +81,13 @@ export const VehicleInformationSection = ({
     // Also, changing any of the inputs inside the dialog updates the values for the vehicleDetails
     // inside the application form data
     setShowAddPowerUnitDialog(false);
+    triggerPolicyValidation();
   };
 
   const handleRemovePowerUnit = () => {
     onClearVehicle(false);
     onUpdateVehicleConfigTrailers([]);
+    triggerPolicyValidation();
   };
 
   return (
@@ -110,21 +117,29 @@ export const VehicleInformationSection = ({
           />
 
           {isSingleTrip ? (
-            <Button
-              classes={{
-                root: "add-power-unit-btn",
-                disabled: "add-power-unit-btn--disabled",
-              }}
-              key="add-power-unit-button"
-              aria-label="Add Power Unit"
-              variant="contained"
-              color="tertiary"
-              disabled={isPowerUnitSelectedForSingleTrip}
-              onClick={handleClickAddPowerUnit}
-            >
-              <FontAwesomeIcon className="add-power-unit-btn__icon" icon={faPlus} />
-              Add Power Unit
-            </Button>
+            <div className="add-power-unit">
+              <Button
+                classes={{
+                  root: "add-power-unit-btn",
+                  disabled: "add-power-unit-btn--disabled",
+                }}
+                key="add-power-unit-button"
+                aria-label="Add Power Unit"
+                variant="contained"
+                color="tertiary"
+                disabled={isPowerUnitSelectedForSingleTrip}
+                onClick={handleClickAddPowerUnit}
+              >
+                <FontAwesomeIcon className="add-power-unit-btn__icon" icon={faPlus} />
+                Add Power Unit
+              </Button>
+
+              {powerUnitFieldRef in policyViolations ? (
+                <p className="add-power-unit__error">
+                  {policyViolations[powerUnitFieldRef]}
+                </p>
+              ) : null}
+            </div>
           ) : (
             <VehicleDetails
               feature={feature}
@@ -156,22 +171,20 @@ export const VehicleInformationSection = ({
         ) : null}
       </Box>
 
-      {showAddPowerUnitDialog ? (
-        <AddPowerUnitDialog
-          open={showAddPowerUnitDialog}
-          feature={feature}
-          vehicleFormData={vehicleFormData}
-          vehicleOptions={vehicleOptions}
-          subtypeOptions={subtypeOptions}
-          isSelectedLOAVehicle={isSelectedLOAVehicle}
-          permitType={permitType}
-          onSetSaveVehicle={onSetSaveVehicle}
-          onSetVehicle={onSetVehicle}
-          onClearVehicle={onClearVehicle}
-          onCancel={handleClosePowerUnitDialog}
-          onClickAdd={handleAddPowerUnit}
-        />
-      ) : null}
+      <AddPowerUnitDialog
+        open={showAddPowerUnitDialog}
+        feature={feature}
+        vehicleFormData={vehicleFormData}
+        vehicleOptions={vehicleOptions}
+        subtypeOptions={subtypeOptions}
+        isSelectedLOAVehicle={isSelectedLOAVehicle}
+        permitType={permitType}
+        onSetSaveVehicle={onSetSaveVehicle}
+        onSetVehicle={onSetVehicle}
+        onClearVehicle={onClearVehicle}
+        onCancel={handleClosePowerUnitDialog}
+        onClickAdd={handleAddPowerUnit}
+      />
     </Box>
   );
 };

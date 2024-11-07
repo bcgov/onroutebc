@@ -128,5 +128,8 @@
   },
   "highway": {
     "missing": "You must enter at least one highway."
+  },
+  "powerUnit": {
+    "required": "A Power Unit must be added."
   }
 }

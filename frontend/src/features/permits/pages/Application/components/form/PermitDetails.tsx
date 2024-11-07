@@ -5,7 +5,6 @@ import "./PermitDetails.scss";
 import { InfoBcGovBanner } from "../../../../../../common/components/banners/InfoBcGovBanner";
 import { PermitExpiryDateBanner } from "../../../../../../common/components/banners/PermitExpiryDateBanner";
 import { CustomFormComponent } from "../../../../../../common/components/form/CustomFormComponents";
-import { PHONE_WIDTH } from "../../../../../../themes/bcGovStyles";
 import { ConditionsTable } from "./ConditionsTable";
 import { requiredMessage } from "../../../../../../common/helpers/validationMessages";
 import { ONROUTE_WEBPAGE_LINKS } from "../../../../../../routes/constants";
@@ -77,7 +76,6 @@ export const PermitDetails = ({
                 required: { value: true, message: requiredMessage() },
               },
               label: "Permit Duration",
-              width: PHONE_WIDTH,
             }}
             menuOptions={durationOptions.map((data) => (
               <MenuItem key={data.value} value={data.value}>

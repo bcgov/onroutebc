@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import {
   Button,
   FormControl,
@@ -19,6 +19,7 @@ import { CustomSelectDisplayProps } from "../../../../../../../common/types/form
 import { useMemoizedArray } from "../../../../../../../common/hooks/useMemoizedArray";
 import { VehicleInConfiguration } from "../../../../../types/PermitVehicleConfiguration";
 import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
+import { ApplicationFormContext } from "../../../../../context/ApplicationFormContext";
 
 const DEFAULT_EMPTY_SUBTYPE = "-";
 
@@ -37,6 +38,9 @@ export const AddTrailer = ({
   onUpdateVehicleConfigTrailers: (updatedTrailerSubtypes: VehicleInConfiguration[]) => void;
 }) => {
   const [trailerSelection, setTrailerSelection] = useState<string>(DEFAULT_EMPTY_SUBTYPE);
+
+  const trailersFieldRef = "permitData.vehicleConfiguration.trailers";
+  const { policyViolations, clearViolation } = useContext(ApplicationFormContext);
 
   const subtypeOptions = useMemoizedArray(
     [{ value: DEFAULT_EMPTY_SUBTYPE, label: "Select" }].concat(trailerSubtypeOptions),
@@ -60,11 +64,13 @@ export const AddTrailer = ({
       })).concat([{ vehicleSubType: subtype }]));
 
       setTrailerSelection(DEFAULT_EMPTY_SUBTYPE);
+      clearViolation(trailersFieldRef);
     }
   };
 
   const handleResetTrailerConfig = () => {
     onUpdateVehicleConfigTrailers([]);
+    clearViolation(trailersFieldRef);
   };
 
   return (selectedSubtypesDisplay.length > 0 || trailerSubtypeOptions.length > 0) ? (
@@ -158,6 +164,12 @@ export const AddTrailer = ({
             ))}
           </Select>
         </FormControl>
+      ) : null}
+
+      {trailersFieldRef in policyViolations ? (
+        <p className="add-trailer__error">
+          {policyViolations[trailersFieldRef]}
+        </p>
       ) : null}
     </div>
   ) : null;

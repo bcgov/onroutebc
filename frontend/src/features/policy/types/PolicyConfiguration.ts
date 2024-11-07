@@ -1,4 +1,4 @@
-import { PolicyDefinition } from "onroute-policy-engine/dist/types/policy-definition";
+import { PolicyDefinition } from "onroute-policy-engine/types";
 
 export interface PolicyConfiguration {
   policyConfigId: number;

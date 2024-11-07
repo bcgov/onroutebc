@@ -105,6 +105,8 @@ export const requiredUpload = (uploadItem: string) => {
 
 export const requiredHighway = () => validationMessages.highway.missing;
 
+export const requiredPowerUnit = () => validationMessages.powerUnit.required;
+
 /**
  * Checks if a given string is
  * null, empty or conforms to length requirements if it has a value.

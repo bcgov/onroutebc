@@ -17,7 +17,7 @@ import { PermitForm } from "./components/form/PermitForm";
 import { usePermitVehicleManagement } from "../../hooks/usePermitVehicleManagement";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { isNull, isUndefined, Nullable } from "../../../../common/types/common";
-import { PermitType } from "../../types/PermitType";
+import { PERMIT_TYPES, PermitType } from "../../types/PermitType";
 import { PermitVehicleDetails } from "../../types/PermitVehicleDetails";
 import { durationOptionsForPermitType } from "../../helpers/dateSelection";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
@@ -30,6 +30,12 @@ import { usePolicyEngine } from "../../../policy/hooks/usePolicyEngine";
 import { Loading } from "../../../../common/pages/Loading";
 import { serializePermitVehicleDetails } from "../../helpers/serialize/serializePermitVehicleDetails";
 import { serializePermitData } from "../../helpers/serialize/serializePermitData";
+import { requiredPowerUnit } from "../../../../common/helpers/validationMessages";
+import {
+  serializeForCreateApplication,
+  serializeForUpdateApplication,
+} from "../../helpers/serialize/serializeApplication";
+
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -139,6 +145,44 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
 
   const navigate = useNavigate();
 
+  const [policyViolations, setPolicyViolations] = useState<Record<string, string>>({});
+
+  const clearViolation = (fieldReference: string) => {
+    if (fieldReference in policyViolations) {
+      const otherViolations = Object.entries(policyViolations)
+        .filter(([fieldRef]) => fieldRef !== fieldReference);
+      
+      setPolicyViolations(Object.fromEntries(otherViolations));
+    }
+  };
+
+  const triggerPolicyValidation = async () => {
+    const validationResults = await policyEngine?.validate(
+      currentFormData.permitId
+        ? serializeForUpdateApplication(currentFormData)
+        : serializeForCreateApplication(currentFormData),
+    );
+
+    const violations = getDefaultRequiredVal(
+      [],
+      validationResults?.violations
+        .filter(({ fieldReference }) => Boolean(fieldReference))
+        .map(violation => ({
+          fieldReference: violation.fieldReference as string,
+          message: violation.message,
+        })),
+    ).concat(permitType === PERMIT_TYPES.STOS && !currentFormData.permitData.vehicleDetails.vin ? [
+      { fieldReference: "permitData.vehicleDetails", message: requiredPowerUnit() },
+    ] : []);
+
+    const updatedViolations = Object.fromEntries(
+      violations.map(({ fieldReference, message }) => [fieldReference, message]),
+    );
+
+    setPolicyViolations(updatedViolations);
+    return updatedViolations;
+  };
+
   // Check to see if all application values were already saved
   const isApplicationSaved = () => {
     // Check if all current form field values match field values already saved in application context
@@ -150,6 +194,11 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
 
   // When "Continue" button is clicked
   const onContinue = async (data: ApplicationFormData) => {
+    const updatedViolations = await triggerPolicyValidation();
+    if (Object.keys(updatedViolations).length > 0) {
+      return;
+    }
+
     const vehicleData = serializePermitVehicleDetails(data.permitData.vehicleDetails);
     const savedVehicleDetails = await handleSaveVehicle(vehicleData);
 
@@ -259,6 +308,9 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     pastStartDateStatus,
     companyLOAs: applicableLOAs,
     revisionHistory: [],
+    policyViolations,
+    clearViolation,
+    triggerPolicyValidation,
     onLeave: handleLeaveApplication,
     onSave,
     onCancel: undefined,
@@ -277,6 +329,9 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     updatedDateTime,
     pastStartDateStatus,
     applicableLOAs,
+    policyViolations,
+    clearViolation,
+    triggerPolicyValidation,
     handleLeaveApplication,
     onSave,
     onContinue,

@@ -39,6 +39,9 @@ interface ApplicationFormContextType {
     revisionDateTime: string;
     comment: string;
   }[];
+  policyViolations: Record<string, string>;
+  clearViolation: (fieldReference: string) => void;
+  triggerPolicyValidation: () => Promise<Record<string, string>>;
   onLeave?: () => void;
   onSave?: () => Promise<void>;
   onCancel?: () => void;
@@ -62,6 +65,9 @@ export const ApplicationFormContext = createContext<ApplicationFormContextType>(
   pastStartDateStatus: PAST_START_DATE_STATUSES.ALLOWED,
   companyLOAs: [],
   revisionHistory: [],
+  policyViolations: {},
+  clearViolation: () => undefined,
+  triggerPolicyValidation: async () => ({}),
   onLeave: undefined,
   onSave: undefined,
   onCancel: undefined,

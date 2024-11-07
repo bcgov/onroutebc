@@ -95,7 +95,7 @@ export const useAmendPermitForm = (
   // Register default values with react-hook-form
   const formMethods = useForm<AmendPermitFormData>({
     defaultValues: defaultFormData,
-    reValidateMode: "onBlur",
+    reValidateMode: "onChange",
   });
 
   const { reset, watch } = formMethods;

@@ -68,6 +68,7 @@ export const HighwaySequences = ({
   const {
     control,
     formState: { errors },
+    trigger,
   } = useFormContext<ApplicationFormData>();
 
   const handleHighwayInput = (
@@ -80,6 +81,7 @@ export const HighwaySequences = ({
       highwayRows.flat().map((highwayNumber, index) =>
         indexToUpdate === index ? updatedHighwayNumber : highwayNumber)
     );
+    trigger("permitData.permittedRoute.manualRoute.highwaySequence");
   };
 
   return (
