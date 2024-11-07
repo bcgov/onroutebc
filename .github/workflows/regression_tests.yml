@@ -56,6 +56,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: 'fix/loadtests9'
+
+      - uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: 129.0.6668.59
+
       - uses: nanasess/setup-chromedriver@v2
         with:
           chromedriver-version: 129.0.6668.59
