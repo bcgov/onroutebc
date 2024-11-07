@@ -40,6 +40,9 @@ import {
   validateEmailandFaxList,
 } from '../../../common/helper/notification.helper';
 import { getPermitTemplateName } from '../../../common/helper/template.helper';
+import { Transaction } from '../payment/entities/transaction.entity';
+import { PermitTransaction } from '../payment/entities/permit-transaction.entity';
+import { TransactionType } from '../../../common/enum/transaction-type.enum';
 
 @Injectable()
 export class PermitReceiptDocumentService {
@@ -98,6 +101,14 @@ export class PermitReceiptDocumentService {
       permits: Permit[];
     }[] = [];
 
+    // Function to check if a permitId already exists in transactionPermitList
+    // To avoid duplicate entries for Refund to Multiple Payment methods
+    function hasExistingPermit(permitId: string): boolean {
+      return transactionPermitList.some((item) =>
+        item.permits.some((p) => p.permitId === permitId),
+      );
+    }
+
     for (const transaction of transactions) {
       const fetchedApplications = await this.findManyWithSuccessfulTransaction(
         null,
@@ -106,7 +117,9 @@ export class PermitReceiptDocumentService {
       );
 
       if (
-        fetchedApplications?.length === transaction.permitCountPerTransactionId
+        fetchedApplications?.length ===
+          transaction.permitCountPerTransactionId &&
+        !fetchedApplications.some((app) => hasExistingPermit(app.permitId))
       ) {
         transactionPermitList.push({
           transactionId: transaction.transactionId,
@@ -407,15 +420,20 @@ export class PermitReceiptDocumentService {
       return resultDto;
     }
 
+    console.log('fetchedPermits', fetchedPermits);
+
     await Promise.allSettled(
       fetchedPermits?.map(async (fetchedPermit) => {
-        const permits = fetchedPermit.permits;
+        let permits = fetchedPermit.permits;
         const permitIds = permits?.map((permit) => permit.permitId);
+        permits = await this.findManyWithSuccessfulTransaction(permitIds,companyId)
+        console.log('permits', permits);
         if (permits?.length) {
           try {
             const permit = permits?.at(0);
             const company = permit?.company;
             const permitTransactions = permit?.permitTransactions;
+            console.log('permitTransactions', permitTransactions);
             const transaction = permitTransactions?.at(0)?.transaction;
             const receipt = transaction?.receipt;
             if (receipt.receiptDocumentId) {
@@ -429,6 +447,8 @@ export class PermitReceiptDocumentService {
               permit,
             );
 
+ 
+    
             const { companyName, companyAlternateName, permitData } =
               formatTemplateData(permit, fullNames, company);
             const permitDetails = await Promise.all(
@@ -439,19 +459,42 @@ export class PermitReceiptDocumentService {
                     CacheKey.PERMIT_TYPE,
                     permit?.permitType,
                   ),
-                  permitNumber: permit?.permitNumber,
-                  transactionAmount: formatAmount(
-                    transaction?.transactionTypeId,
-                    permit?.permitTransactions?.at(0)?.transactionAmount,
-                  ),
+                  permitNumber: permit?.permitNumber,                 
                 };
               }),
             );
 
+            const transactionList = await Promise.all(permits?.flatMap( (permit)=> permit?.permitTransactions?.map(async (permitTransaction) => {
+              return {
+                consolidatedPaymentMethod: (
+                  await getPaymentCodeFromCache(
+                    this.cacheManager,
+                    permitTransaction?.transaction?.paymentMethodTypeCode,
+                    permitTransaction?.transaction?.paymentCardTypeCode
+                  )
+                ).consolidatedPaymentMethod,
+                pgTransactionId: permitTransaction?.transaction?.pgTransactionId,
+                transactionOrderNumber: permitTransaction?.transaction?.transactionOrderNumber,
+                transactionAmount: formatAmount(
+                  transaction?.transactionTypeId,
+                  permitTransaction?.transactionAmount,
+                ),
+              };
+            })));
+            console.log('transactionList',transactionList);
+
+            const totalTransactionAmount = permits?.reduce(
+              (accumulator, item) => accumulator + item.permitTransactions.reduce((accumulator, item) => accumulator + item.transactionAmount,0),
+              0,
+            );
+
+            console.log('totalTransactionAmount',totalTransactionAmount);
+      
             const dopsRequestData = {
               templateName: TemplateName.PAYMENT_RECEIPT,
               generatedDocumentFileName: `Receipt_No_${receiptNumber}`,
               templateData: {
+                receiptType: transaction.transactionTypeId=== TransactionType.PURCHASE?"Receipt": "Refund Receipt",
                 receiptNo: receiptNumber,
                 companyName: companyName,
                 companyAlternateName: companyAlternateName,
@@ -465,22 +508,12 @@ export class PermitReceiptDocumentService {
                     : constants.SELF_ISSUED,
                 totalTransactionAmount: formatAmount(
                   transaction?.transactionTypeId,
-                  transaction?.totalTransactionAmount,
+                  totalTransactionAmount,
                 ),
                 permitDetails: permitDetails,
-                //Transaction Details
-                pgTransactionId: transaction?.pgTransactionId,
-                transactionOrderNumber: transaction?.transactionOrderNumber,
-                consolidatedPaymentMethod: (
-                  await getPaymentCodeFromCache(
-                    this.cacheManager,
-                    transaction?.paymentMethodTypeCode,
-                    transaction?.paymentCardTypeCode,
-                  )
-                ).consolidatedPaymentMethod,
+                transactions: transactionList,
                 transactionDate: convertUtcToPt(
-                  permit?.permitTransactions?.at(0)?.transaction
-                    ?.transactionSubmitDate,
+                  transaction?.transactionSubmitDate,
                   'MMM. D, YYYY, hh:mm a Z',
                 ),
               },
