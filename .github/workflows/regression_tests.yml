@@ -56,14 +56,14 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: 'fix/loadtests9'
-      - name: DEBUG
-        run: |
-          find . | grep tests
       - uses: nanasess/setup-chromedriver@v2
+        with:
+          chromedriver-version: 129.0.6668.59
+
       - uses: rbhadti94/apache-jmeter-action@v0.5.0
         with:
           testFilePath: tests/regression/orbc_load_test_plan_frontend_amend_term_oversize.jmx
-          outputReportsFolder: /tmp/results
+          outputReportsFolder: tests/regression/results
           plugins: "jpgc-webdriver"
           args: |
             --loglevel=DEBUG 
@@ -75,7 +75,7 @@ jobs:
       - uses: actions/upload-artifact@v4.3.6
         with:
           name: upload amend term oversize artifact 
-          path: /tmp/results
+          path: tests/regression/results
       
       - uses: actions/upload-artifact@v4.3.6
         with:
