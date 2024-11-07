@@ -67,7 +67,6 @@ jobs:
           plugins: "jpgc-webdriver"
           args: |
             --loglevel=DEBUG 
-            --logfile=/tmp/results/jmeter.log
             -JFRONTEND_API_URL=${{needs.vars.outputs.frontend_api_url}}
             -JUSER=${{vars.BCEID_USER}}
             -JPASSWORD=${{secrets.BCEID_PASSWORD}}
