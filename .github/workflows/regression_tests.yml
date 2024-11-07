@@ -65,8 +65,7 @@ jobs:
           plugins: "jpgc-webdriver"
           args: |
             --loglevel=DEBUG 
-            --jmeterlogfile=tests/regression/results/jmeter.log
-            --jmeterlogconf=log.conf
+            --jmeterlogfile=./tests/regression/results/jmeter.log
             -JFRONTEND_API_URL=${{needs.vars.outputs.frontend_api_url}}
             -JUSER=${{vars.BCEID_USER}}
             -JPASSWORD=${{secrets.BCEID_PASSWORD}}
@@ -76,3 +75,8 @@ jobs:
         with:
           name: upload amend term oversize artifact 
           path: tests/regression/results 
+      
+      - uses: actions/upload-artifact@v4.3.6
+        with:
+          name: DEBUG - log
+          path: jmeter_log.log 
