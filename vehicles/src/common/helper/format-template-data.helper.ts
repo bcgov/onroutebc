@@ -9,6 +9,7 @@ import {
   PermitTemplateData,
 } from '../interface/permit.template.interface';
 import { FullNamesForDgen } from '../interface/full-names-for-dgen.interface';
+import { formatAmount } from './payment.helper';
 
 /**
  * Formats the permit data so that it can be used in the templated word documents
@@ -86,10 +87,16 @@ export const formatTemplateData = (
   template.clientNumber = companyInfo.clientNumber;
   template.companyAlternateName = companyInfo.alternateName;
 
+  const transcation = permit.permitTransactions?.at(0)?.transaction;
+
   // Format Fee Summary
-  template.permitData.feeSummary = permit.permitTransactions
-    ?.at(0)
-    ?.transactionAmount.toString();
+  template.permitData.feeSummary = formatAmount(
+    transcation.transactionTypeId,
+    permit.permitTransactions?.reduce(
+      (accumulator, item) => accumulator + item.transactionAmount,
+      0,
+    ),
+  ).toString();
 
   revisionHistory?.forEach((revision) => {
     if (

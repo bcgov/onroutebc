@@ -40,6 +40,7 @@ import {
   PAYMENT_CURRENCY,
   CRYPTO_ALGORITHM_MD5,
   GL_PROJ_CODE_PLACEHOLDER,
+  PPC_FULL_TEXT,
 } from '../../../common/constants/api.constant';
 import { convertToHash } from 'src/common/helper/crypto.helper';
 import { UpdatePaymentGatewayTransactionDto } from './dto/request/update-payment-gateway-transaction.dto';
@@ -262,11 +263,17 @@ export class PaymentService {
   }
 
   /**
-   * Creates a Refund Transaction in ORBC System.
-   * @param currentUser - The current user object of type {@link IUserJWT}
-   * @param createTransactionDto - The createTransactionDto object of type
-   * {@link CreateTransactionDto} for creating a new Transaction.
-   * @returns {ReadTransactionDto[]} The created transaction list of type {@link ReadTransactionDto}.
+   * Creates a Refund Transaction in ORBC System, ensuring that payment methods align with user roles and enabled features.
+   * The method verifies transactions against application status and computes transaction amounts.
+   * It then creates and saves new transactions and their associated records, handling any CFS payment methods.
+   * 
+   * @param applicationId - The ID of the application related to the refund transactions.
+   * @param transactions - An array of transactions of type {@link RefundTransactionDto} to process.
+   * @param currentUser - The current user object of type {@link IUserJWT}.
+   * @param nestedQueryRunner - An optional query runner. If not provided, a new one is created.
+   * @returns {Promise<ReadTransactionDto[]>} The created list of transactions of type {@link ReadTransactionDto}.
+   * @throws UnprocessableEntityException - When the payment method type is invalid for the user or feature is disabled.
+   * @throws BadRequestException - When the application status is not valid for the transaction.
    */
   @LogAsyncMethodExecution()
   async createRefundTransactions({
@@ -364,8 +371,14 @@ export class PaymentService {
         newTransaction.pgCardType = transaction.paymentCardTypeCode;
         newTransaction.pgPaymentMethod = transaction.pgPaymentMethod;
         newTransaction.transactionOrderNumber = transactionOrderNumber;
-        newTransaction.pgApproved = 1;
-        setBaseEntityProperties({ entity: newTransaction, currentUser });
+        newTransaction.payerName = PPC_FULL_TEXT;
+        if (transaction.paymentMethodTypeCode === PaymentMethodTypeEnum.WEB) {
+          newTransaction.pgApproved = 1;
+        }
+        setBaseEntityProperties<Transaction>({
+          entity: newTransaction,
+          currentUser,
+        });
         newTransactionList.push(newTransaction);
       }
 
@@ -374,7 +387,7 @@ export class PaymentService {
       const receiptNumber = await this.generateReceiptNumber();
       let receipt = new Receipt();
       receipt.receiptNumber = receiptNumber;
-      setBaseEntityProperties({ entity: receipt, currentUser });
+      setBaseEntityProperties<Receipt>({ entity: receipt, currentUser });
       receipt = await queryRunner.manager.save(receipt);
 
       for (const newTransaction of newTransactionList) {
