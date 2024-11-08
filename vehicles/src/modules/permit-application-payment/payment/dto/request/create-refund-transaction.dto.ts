@@ -8,7 +8,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-import { RefundTransactionDto } from '../common/refund-transaction.dto';
+import { PaymentTransactionDto } from '../common/payment-transaction.dto';
 import { Type } from 'class-transformer';
 
 export class CreateRefundTransactionDto {
@@ -23,14 +23,13 @@ export class CreateRefundTransactionDto {
 
   @AutoMap()
   @ApiProperty({
-    description:
-      'The refund transaction details specific to application/permit.',
+    description: 'The transaction details specific to application/permit.',
     required: true,
-    type: [RefundTransactionDto],
+    type: [PaymentTransactionDto],
   })
   @IsArray()
   @ValidateNested({ each: true })
   @ArrayMinSize(1)
-  @Type(() => RefundTransactionDto)
-  transactions: RefundTransactionDto[];
+  @Type(() => PaymentTransactionDto)
+  transactions: PaymentTransactionDto[];
 }

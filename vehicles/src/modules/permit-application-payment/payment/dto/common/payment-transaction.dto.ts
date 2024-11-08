@@ -12,7 +12,7 @@ import {
 import { PaymentCardType } from '../../../../../common/enum/payment-card-type.enum';
 import { PaymentMethodType } from '../../../../../common/enum/payment-method-type.enum';
 
-export class RefundTransactionDto {
+export class PaymentTransactionDto {
   @AutoMap()
   @ApiProperty({
     example: '10000148',

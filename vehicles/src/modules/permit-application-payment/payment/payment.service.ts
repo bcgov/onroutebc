@@ -77,7 +77,7 @@ import {
 } from '../../../common/helper/common.helper';
 import { SpecialAuth } from 'src/modules/special-auth/entities/special-auth.entity';
 import { TIMEZONE_PACIFIC } from 'src/common/constants/api.constant';
-import { RefundTransactionDto } from './dto/common/refund-transaction.dto';
+import { PaymentTransactionDto } from './dto/common/payment-transaction.dto';
 import { Nullable } from '../../../common/types/common';
 
 @Injectable()
@@ -266,7 +266,7 @@ export class PaymentService {
    * Creates a Refund Transaction in ORBC System, ensuring that payment methods align with user roles and enabled features.
    * The method verifies transactions against application status and computes transaction amounts.
    * It then creates and saves new transactions and their associated records, handling any CFS payment methods.
-   * 
+   *
    * @param applicationId - The ID of the application related to the refund transactions.
    * @param transactions - An array of transactions of type {@link RefundTransactionDto} to process.
    * @param currentUser - The current user object of type {@link IUserJWT}.
@@ -283,7 +283,7 @@ export class PaymentService {
     nestedQueryRunner,
   }: {
     applicationId: string;
-    transactions: RefundTransactionDto[];
+    transactions: PaymentTransactionDto[];
     currentUser: IUserJWT;
     nestedQueryRunner?: Nullable<QueryRunner>;
   }): Promise<ReadTransactionDto[]> {
@@ -311,6 +311,16 @@ export class PaymentService {
         throwBadRequestException('paymentCardTypeCode', [
           `paymentCardTypeCode is required when paymentMethodTypeCode is ${transaction?.paymentMethodTypeCode}`,
         ]);
+      }
+
+      if (
+        transaction?.paymentMethodTypeCode !==
+          PaymentMethodTypeEnum.NO_PAYMENT &&
+        transaction?.transactionAmount === 0
+      ) {
+        throwUnprocessableEntityException(
+          `paymentMethodTypeCode should be ${PaymentMethodTypeEnum.NO_PAYMENT} when transaction amount is 0`,
+        );
       }
     }
 
@@ -477,6 +487,10 @@ export class PaymentService {
     createTransactionDto: CreateTransactionDto,
     nestedQueryRunner?: QueryRunner,
   ): Promise<ReadTransactionDto> {
+    if (createTransactionDto.transactionTypeId !== TransactionType.PURCHASE) {
+      throwUnprocessableEntityException('Invalid transaction type');
+    }
+
     if (
       !doesUserHaveRole(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST) &&
       createTransactionDto?.paymentMethodTypeCode !==
