@@ -14,7 +14,27 @@ GO
 DELETE FROM [permit].[ORBC_PERMIT_TYPE] WHERE PERMIT_TYPE IN ('QRFR', 'STFR')
 GO
 
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Reverting adding QRFR and STFR permit types to ORBC_PERMIT_TYPE table'
 
 INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (47, @VersionDescription, getutcdate())
+
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+
+COMMIT TRANSACTION
+GO
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+DECLARE @Success AS BIT
+SET @Success = 1
+SET NOEXEC OFF
+IF (@Success = 1) PRINT 'The database revert succeeded'
+ELSE BEGIN
+   IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION
+   PRINT 'The database revert failed'
+END
+GO
