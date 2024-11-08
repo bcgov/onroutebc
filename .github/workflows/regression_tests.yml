@@ -57,6 +57,11 @@ jobs:
         with:
           ref: 'fix/loadtests9'
 
+      - name: DEBUG
+        run: |
+          ls -al /opt/google/chrome
+          /opt/google/chrome/chrome --version
+
       - uses: browser-actions/setup-chrome@v1
         with:
           chrome-version: 129
@@ -68,7 +73,7 @@ jobs:
           whereis chrome
           chrome --version
           chromedriver --version
-          ls -al /opt/google/chrome
+          /opt/google/chrome/chrome --version
 
 
       
