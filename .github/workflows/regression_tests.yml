@@ -82,7 +82,7 @@ jobs:
         with:
           testFilePath: tests/regression/orbc_load_test_plan_frontend_amend_term_oversize.jmx
           outputReportsFolder: tests/regression/results
-          plugins: "selenium-webdriver"
+          plugins: "jpgc-webdriver"
           args: |
             --loglevel=DEBUG 
             -JFRONTEND_API_URL=${{needs.vars.outputs.frontend_api_url}}
