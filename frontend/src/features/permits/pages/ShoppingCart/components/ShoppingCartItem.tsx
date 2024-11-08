@@ -83,7 +83,7 @@ export const ShoppingCartItem = ({
               <span
                 className="shopping-cart-item__info shopping-cart-item__info--start-date"
               >
-                {toLocal(cartItemData.startDate, DATE_FORMATS.DATEONLY_ABBR_MONTH)}
+                {toLocal(cartItemData.startDate, DATE_FORMATS.DATEONLY_ABBR_MONTH, true)}
               </span>
             </div>
           </div>
@@ -113,7 +113,7 @@ export const ShoppingCartItem = ({
               <span
                 className="shopping-cart-item__info shopping-cart-item__info--end-date"
               >
-                {toLocal(cartItemData.expiryDate, DATE_FORMATS.DATEONLY_ABBR_MONTH)}
+                {toLocal(cartItemData.expiryDate, DATE_FORMATS.DATEONLY_ABBR_MONTH, true)}
               </span>
             </div>
           </div>

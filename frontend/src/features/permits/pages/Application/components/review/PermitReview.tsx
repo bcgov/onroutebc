@@ -20,11 +20,14 @@ import { Application } from "../../../../types/application";
 import { PermitCondition } from "../../../../types/PermitCondition";
 import { PermitContactDetails } from "../../../../types/PermitContactDetails";
 import { PermitLOA } from "../../../../types/PermitLOA";
+import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
+import { ApplicationRejectionHistory } from "../../../../types/ApplicationRejectionHistory";
+import { ReviewApplicationRejectionHistory } from "./ReviewApplicationRejectionHistory";
+import { isPermitStartOrExpiryDateInPast } from "../../../../helpers/dateSelection";
 import {
   PERMIT_REVIEW_CONTEXTS,
   PermitReviewContext,
 } from "../../../../types/PermitReviewContext";
-import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 
 interface PermitReviewProps {
   reviewContext: PermitReviewContext;
@@ -60,6 +63,7 @@ interface PermitReviewProps {
   calculatedFee: string;
   doingBusinessAs?: Nullable<string>;
   loas?: Nullable<PermitLOA[]>;
+  applicationRejectionHistory?: Nullable<ApplicationRejectionHistory[]>;
 }
 
 export const PermitReview = (props: PermitReviewProps) => {
@@ -73,6 +77,18 @@ export const PermitReview = (props: PermitReviewProps) => {
     getDefaultRequiredVal([], trailerSubTypes)
       .map(({ typeCode, type }) => [typeCode, type]),
   ), [trailerSubTypes]);
+  const shouldShowRejectionHistory =
+    props.reviewContext === PERMIT_REVIEW_CONTEXTS.QUEUE &&
+    props.applicationRejectionHistory &&
+    props.applicationRejectionHistory.length > 0;
+
+  const invalidPermitDates =
+    props.permitStartDate && props.permitExpiryDate
+      ? isPermitStartOrExpiryDateInPast(
+          props.permitStartDate,
+          props.permitExpiryDate,
+        )
+      : false;
 
   return (
     <Box className="permit-review layout-box">
@@ -108,6 +124,7 @@ export const PermitReview = (props: PermitReviewProps) => {
           showChangedFields={props.showChangedFields}
           oldStartDate={props.oldFields?.permitData?.startDate}
           oldDuration={props.oldFields?.permitData?.permitDuration}
+          showDateErrorBanner={invalidPermitDates}
         />
 
         <ReviewVehicleInfo
@@ -118,6 +135,12 @@ export const PermitReview = (props: PermitReviewProps) => {
           showChangedFields={props.showChangedFields}
           oldFields={props.oldFields?.permitData?.vehicleDetails}
         />
+
+        {shouldShowRejectionHistory && props.applicationRejectionHistory && (
+          <ReviewApplicationRejectionHistory
+            applicationRejectionHistory={props.applicationRejectionHistory}
+          />
+        )}
 
         <ReviewFeeSummary
           hasAttemptedSubmission={props.hasAttemptedCheckboxes}
@@ -137,11 +160,12 @@ export const PermitReview = (props: PermitReviewProps) => {
           onContinue={props.onContinue}
           hasToCartButton={props.reviewContext === PERMIT_REVIEW_CONTEXTS.APPLY}
           onAddToCart={props.onAddToCart}
-          disableApproveAndRejectButtons={
-            props.updateApplicationMutationPending
-          }
           handleApproveButton={props.handleApproveButton}
           handleRejectButton={props.handleRejectButton}
+          disableApproveButton={
+            props.updateApplicationMutationPending || invalidPermitDates
+          }
+          disableRejectButton={props.updateApplicationMutationPending}
         />
       </Box>
     </Box>

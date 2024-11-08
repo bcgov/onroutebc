@@ -31,4 +31,14 @@ sqlcmd -C -U ${ORBC_USER} -P "${ORBC_PASS}" -S ${ORBC_SERVER} -d ${ORBC_DATABASE
 echo "Setting credit account sequence restart to current timestamp (used only for lower environments)"
 sqlcmd -C -U ${ORBC_USER} -P "${ORBC_PASS}" -S ${ORBC_SERVER} -d ${ORBC_DATABASE} -i ${SCRIPT_DIR}/sampledata/permit.ORBC_CREDIT_ACCOUNT_NUMBER_SEQ.sql
 
+if [ -d "${SCRIPT_DIR}/sampledata/_private_sql" ] 
+then
+  echo "Running private SQL (non-repository)"
+  for f in ${SCRIPT_DIR}/sampledata/_private_sql/*.sql; 
+  do 
+    echo "Processing $f file..."; 
+    sqlcmd -C -U ${ORBC_USER} -P "${ORBC_PASS}" -S ${ORBC_SERVER} -d ${ORBC_DATABASE} -i $f
+  done
+fi
+
 echo "Finished loading sample data"

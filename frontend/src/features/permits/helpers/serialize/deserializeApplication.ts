@@ -2,10 +2,16 @@ import { Dayjs } from "dayjs";
 
 import { applyWhenNotNullable } from "../../../../common/helpers/util";
 import { Application, ApplicationResponseData } from "../../types/application";
-import { getEndOfDate, getStartOfDate, now, toLocalDayjs, utcToLocalDayjs } from "../../../../common/helpers/formatDate";
 import { getDurationOrDefault } from "../getDefaultApplicationFormData";
 import { getExpiryDate } from "../permitState";
 import { minDurationForPermitType } from "../dateSelection";
+import {
+  getEndOfDate,
+  getStartOfDate,
+  now,
+  toLocalDayjs,
+  utcToLocalDayjs,
+} from "../../../../common/helpers/formatDate";
 
 /**
  * Deserializes an ApplicationResponseData object (received from backend) to an Application object

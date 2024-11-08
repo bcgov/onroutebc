@@ -105,7 +105,7 @@ export const PermitSearchResultColumnDef = (
     enableSorting: true,
     sortingFn: dateTimeStringSortingFn,
     Cell: (props: { cell: any }) => {
-      const formattedDate = formatCellValuetoDatetime(props.cell.getValue());
+      const formattedDate = formatCellValuetoDatetime(props.cell.getValue(), true);
       return formattedDate;
     },
   },
@@ -115,7 +115,7 @@ export const PermitSearchResultColumnDef = (
     enableSorting: true,
     sortingFn: dateTimeStringSortingFn,
     Cell: (props: { cell: any }) => {
-      const formattedDate = formatCellValuetoDatetime(props.cell.getValue());
+      const formattedDate = formatCellValuetoDatetime(props.cell.getValue(), true);
       return formattedDate;
     },
   },

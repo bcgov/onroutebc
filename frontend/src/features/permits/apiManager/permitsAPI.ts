@@ -194,6 +194,7 @@ export const getApplications = async (
             startDate: toLocal(
               application?.startDate,
               DATE_FORMATS.DATEONLY_SHORT_NAME,
+              true,
             ),
           } as ApplicationListItem;
         });
@@ -492,10 +493,12 @@ export const getPermits = async (
             startDate: toLocal(
               permit.startDate,
               DATE_FORMATS.DATEONLY_SHORT_NAME,
+              true,
             ),
             expiryDate: toLocal(
               permit.expiryDate,
               DATE_FORMATS.DATEONLY_SHORT_NAME,
+              true,
             ),
           } as PermitListItem;
         },
