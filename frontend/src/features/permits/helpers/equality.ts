@@ -6,11 +6,11 @@ import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
 import { PermitData } from "../types/PermitData";
 import { PermitCondition } from "../types/PermitCondition";
 import { arePermitLOADetailsEqual, PermitLOA } from "../types/PermitLOA";
+import { doUniqueArraysHaveSameObjects } from "../../../common/helpers/equality";
 import {
   DATE_FORMATS,
   dayjsToLocalStr,
 } from "../../../common/helpers/formatDate";
-import { doUniqueArraysHaveSameObjects } from "../../../common/helpers/equality";
 
 /**
  * Compare whether or not two mailing addresses are equal.
