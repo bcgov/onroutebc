@@ -68,8 +68,7 @@ jobs:
           whereis chrome
           chrome --version
           chromedriver --version
-          ls -al /usr/bin/chromedriver
-          ls -al /usr/bin/chrome
+
 
       
       - uses: rbhadti94/apache-jmeter-action@v0.5.0
@@ -82,7 +81,7 @@ jobs:
             -JFRONTEND_API_URL=${{needs.vars.outputs.frontend_api_url}}
             -JUSER=${{vars.BCEID_USER}}
             -JPASSWORD=${{secrets.BCEID_PASSWORD}}
-            -JCHROME_DRIVER_PATH=/usr/bin/chromedriver
+            -JCHROME_DRIVER_PATH=/usr/local/share/chromedriver-linux64/chromedriver
 
       - uses: actions/upload-artifact@v4.3.6
         with:
