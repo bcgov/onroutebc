@@ -57,13 +57,12 @@ jobs:
         with:
           ref: 'fix/loadtests9'
 
-      - uses: browser-actions/setup-chrome@v1
-        with:
-          chrome-version: 129
-
       - uses: nanasess/setup-chromedriver@v2
-        with:
-          chromedriver-version: 129
+
+      - name: DEBUG
+        run: |
+          whereis chromedriver
+          ls /usr/local/bin | grep chrome
 
       - uses: rbhadti94/apache-jmeter-action@v0.5.0
         with:
@@ -75,7 +74,7 @@ jobs:
             -JFRONTEND_API_URL=${{needs.vars.outputs.frontend_api_url}}
             -JUSER=${{vars.BCEID_USER}}
             -JPASSWORD=${{secrets.BCEID_PASSWORD}}
-            -JCHROME_DRIVER_PATH=/usr/local/bin
+            -JCHROME_DRIVER_PATH=/usr/local/bin/chromedriver
 
       - uses: actions/upload-artifact@v4.3.6
         with:
