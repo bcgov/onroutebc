@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 import { Base } from '../../common/entities/base.entity';
-import { Transaction } from './transaction.entity';
+import { Transaction } from '../../common/entities/transaction.entity';
 
 @Entity({ name: 'permit.ORBC_RECEIPT' })
 export class Receipt extends Base {

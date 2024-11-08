@@ -7,9 +7,9 @@ import {
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 import { Base } from '../../common/entities/base.entity';
-import { Permit } from './permit.entity';
 import { Transaction } from './transaction.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { Permit } from './permit.entity';
 
 @Entity({ name: 'permit.ORBC_PERMIT_TRANSACTION' })
 export class PermitTransaction extends Base {
