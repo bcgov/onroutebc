@@ -11,8 +11,21 @@ SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
 BEGIN TRANSACTION
 GO
 
-DELETE FROM [permit].[ORBC_PERMIT_TYPE] WHERE PERMIT_TYPE IN ('QRFR', 'STFR')
-GO
+/*
+The following DELETE statement is intentionally commented out.
+This is because, these permit types are a permanent part of the production db
+and there is no expectation that they will be deleted at any point.
+
+If at all needed, the following query can be executed manually in prod at the team's discretion.
+
+IMPORTANT: Analyze the impact from foreign key constraints in child tables
+before deleting the permit types.
+
+*/
+
+-- DELETE FROM [permit].[ORBC_PERMIT_TYPE] WHERE PERMIT_TYPE IN ('QRFR', 'STFR')
+-- GO
+
 
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
