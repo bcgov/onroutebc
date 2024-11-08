@@ -30,7 +30,7 @@ import {
 } from "../../../helpers/permitLOA";
 import {
   dayjsToUtcStr,
-  nowUtc,
+  now,
 } from "../../../../../common/helpers/formatDate";
 
 import {
@@ -218,7 +218,7 @@ export const AmendPermitForm = () => {
       comment: getDefaultRequiredVal("", history.comment),
       name: history.commentUsername,
       revisionDateTime: getDefaultRequiredVal(
-        dayjsToUtcStr(nowUtc()),
+        dayjsToUtcStr(now()),
         history.transactionSubmitDate,
       ),
     }));
