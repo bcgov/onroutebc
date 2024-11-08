@@ -62,6 +62,10 @@ jobs:
           chrome-version: 129
           install-chromedriver: true
 
+      - run: |
+          ln -s /opt/hostedtoolcache/setup-chrome/chromium/129.0.6668.100/x64/* /opt/google/chrome
+          ls -al /opt/google/chrome
+
       - name: DEBUG
         run: |
           whereis chromedriver
