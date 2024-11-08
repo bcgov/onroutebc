@@ -59,12 +59,13 @@ jobs:
 
       - name: DEBUG
         run: |
+          ls -al /opt/google
           ls -al /opt/google/chrome
           /opt/google/chrome/chrome --version
 
       - uses: browser-actions/setup-chrome@v1
         with:
-          chrome-version: 129
+          chrome-version: 130.0.6723.91
           install-chromedriver: true
 
       - name: DEBUG
