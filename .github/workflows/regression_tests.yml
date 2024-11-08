@@ -68,6 +68,8 @@ jobs:
           whereis chrome
           chrome --version
           chromedriver --version
+          ls -al /usr/bin/chromedriver
+          ls -al /usr/bin/chrome
 
       
       - uses: rbhadti94/apache-jmeter-action@v0.5.0
