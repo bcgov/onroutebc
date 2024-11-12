@@ -2,22 +2,15 @@
 import { FormProvider, useForm, FieldValues } from "react-hook-form";
 import { Typography } from "@mui/material";
 import "./RefundPage.scss";
-import {
-  MultiplePaymentMethodRefundData,
-  RefundFormData,
-} from "./types/RefundFormData";
+import { MultiplePaymentMethodRefundData } from "./types/RefundFormData";
 import { PermitHistory } from "../../types/PermitHistory";
 import { TransactionHistoryTable } from "./components/TransactionHistoryTable";
 import { calculateNetAmount } from "../../helpers/feeSummary";
 import { isValidTransaction } from "../../helpers/payment";
 import { Nullable } from "../../../../common/types/common";
 import { RefundDetails } from "./components/RefundDetails";
-import {
-  getPaymentMethod,
-  PAYMENT_METHOD_TYPE_CODE,
-  PAYMENT_METHODS_WITH_CARD,
-} from "../../../../common/types/paymentMethods";
-import { useRefundPermitMutation } from "./hooks/hooks";
+import { useState } from "react";
+import { RefundErrorModal } from "./components/RefundErrorModal";
 
 export const PERMIT_REFUND_ACTIONS = {
   VOID: "void",
@@ -41,6 +34,7 @@ const permitActionText = (permitAction: PermitAction) => {
 };
 
 export const RefundPage = ({
+  permitId,
   permitHistory,
   email,
   additionalEmail,
@@ -49,8 +43,9 @@ export const RefundPage = ({
   permitNumber,
   permitAction,
   amountToRefund,
-  onFinish,
+  onSubmit,
 }: {
+  permitId: string;
   permitHistory: PermitHistory[];
   email?: Nullable<string>;
   additionalEmail?: Nullable<string>;
@@ -59,7 +54,7 @@ export const RefundPage = ({
   permitNumber?: Nullable<string>;
   permitAction: PermitAction;
   amountToRefund: number;
-  onFinish: (refundData: RefundFormData) => void;
+  onSubmit: (data: FieldValues) => void;
 }) => {
   const currentPermitValue = calculateNetAmount(permitHistory);
   const newPermitValue = currentPermitValue - Math.abs(amountToRefund);
@@ -68,62 +63,29 @@ export const RefundPage = ({
     isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
   );
 
+  const [showRefundErrorModal, setShowRefundErrorModal] =
+    useState<boolean>(false);
+
+  const handleCloseRefundErrorModal = () => {
+    setShowRefundErrorModal(false);
+  };
+
   const formMethods = useForm<MultiplePaymentMethodRefundData[]>({
     defaultValues: validTransactionHistory.map((transaction) => ({
-      permitNumber: transaction.permitNumber, // Use values from the validTransactionHistory
-      comment: transaction.comment,
-      commentUsername: transaction.commentUsername,
-      transactionAmount: transaction.transactionAmount,
-      transactionOrderNumber: transaction.transactionOrderNumber,
-      pgTransactionId: transaction.pgTransactionId,
+      permitNumber: transaction.permitNumber,
       pgPaymentMethod: transaction.pgPaymentMethod,
+      pgTransactionId: transaction.pgTransactionId,
+      transactionOrderNumber: transaction.transactionOrderNumber,
+      transactionTypeId: transaction.transactionTypeId,
       paymentCardTypeCode: transaction.paymentCardTypeCode,
       paymentMethodTypeCode: transaction.paymentMethodTypeCode,
-      transactionTypeId: transaction.transactionTypeId,
-      permitId: transaction.permitId,
-      transactionSubmitDate: transaction.transactionSubmitDate,
-      pgApproved: transaction.pgApproved,
-      refundAmount: "", // Default value for the refund field
-      refundTransactionId: "", // Default value for the refund field
-      chequeRefund: false, // Default value for the refund field
+      transactionAmount: transaction.transactionAmount,
+      refundAmount: "",
+      refundTransactionId: "",
+      chequeRefund: false,
     })),
     reValidateMode: "onChange",
   });
-
-  const { mutateAsync: refundPermit } = useRefundPermitMutation();
-
-  const onSubmit = (data: FieldValues) => {
-    console.log({
-      applicationId: data[0].permitId,
-      transactions: data.map(
-        (transaction: MultiplePaymentMethodRefundData) => ({
-          paymentMethodTypeCode: transaction.chequeRefund
-            ? PAYMENT_METHOD_TYPE_CODE.CHEQUE
-            : transaction.paymentMethodTypeCode,
-          paymentCardTypeCode: transaction.paymentCardTypeCode,
-          pgCardType: transaction.paymentCardTypeCode,
-          pgTransactionId: transaction.refundTransactionId,
-          pgPaymentMethod: transaction.pgPaymentMethod,
-          transactionAmount: Number(transaction.refundAmount),
-        }),
-      ),
-    });
-    // refundPermit({
-    //   applicationId: data[0].permitId,
-    //   transactions: data.map(
-    //     (transaction: MultiplePaymentMethodRefundData) => ({
-    //       paymentMethodTypeCode: transaction.chequeRefund
-    //         ? PAYMENT_METHOD_TYPE_CODE.CHEQUE
-    //         : transaction.paymentMethodTypeCode,
-    //       paymentCardTypeCode: transaction.paymentCardTypeCode,
-    //       pgCardType: transaction.paymentCardTypeCode,
-    //       pgTransactionId: transaction.pgTransactionId,
-    //       pgPaymentMethod: transaction.pgPaymentMethod,
-    //       transactionAmount: transaction.refundAmount,
-    //     }),
-    //   ),
-    // });
-  };
 
   const showSendSection = permitAction === "void" || permitAction === "revoke";
   const showReasonSection =
@@ -189,6 +151,14 @@ export const RefundPage = ({
           <div className="refund-info__info">{reason}</div>
         </div>
       ) : null}
+
+      {showRefundErrorModal && (
+        <RefundErrorModal
+          isOpen={showRefundErrorModal}
+          onCancel={handleCloseRefundErrorModal}
+          onConfirm={handleCloseRefundErrorModal}
+        />
+      )}
     </div>
   );
 };

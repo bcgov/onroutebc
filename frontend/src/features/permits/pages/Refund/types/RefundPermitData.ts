@@ -5,12 +5,11 @@ import {
 } from "../../../../../common/types/paymentMethods";
 
 interface RefundTransactionItem {
-  paymentMethodTypeCode: PaymentMethodTypeCode;
-  paymentCardTypeCode: PaymentCardTypeCode;
-  pgCardType: PaymentCardTypeCode;
   pgTransactionId: string;
   pgPaymentMethod: PaymentGatewayMethod;
   transactionAmount: number;
+  paymentMethodTypeCode: PaymentMethodTypeCode;
+  paymentCardTypeCode: PaymentCardTypeCode;
 }
 
 export interface RefundPermitData {

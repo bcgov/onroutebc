@@ -1,5 +1,10 @@
-import { PaymentGatewayMethod } from "../../../../../common/types/paymentMethods";
-import { PermitHistory } from "../../../types/PermitHistory";
+import { RequiredOrNull } from "../../../../../common/types/common";
+import {
+  PaymentCardTypeCode,
+  PaymentGatewayMethod,
+  PaymentMethodTypeCode,
+} from "../../../../../common/types/paymentMethods";
+import { TransactionType } from "../../../types/payment";
 
 export interface RefundFormData {
   shouldUsePrevPaymentMethod: boolean;
@@ -8,16 +13,16 @@ export interface RefundFormData {
   transactionId?: string;
 }
 
-export interface MultiplePaymentMethodRefundData extends PermitHistory {
+export interface MultiplePaymentMethodRefundData {
+  permitNumber: string;
+  pgPaymentMethod: RequiredOrNull<PaymentGatewayMethod>;
+  pgTransactionId: RequiredOrNull<string>;
+  transactionOrderNumber: string;
+  transactionTypeId: TransactionType;
+  paymentCardTypeCode: RequiredOrNull<PaymentCardTypeCode>;
+  paymentMethodTypeCode: PaymentMethodTypeCode;
+  transactionAmount: number;
   refundAmount: string;
   refundTransactionId: string;
   chequeRefund: boolean;
 }
-
-// export interface MultiplePaymentMethodRefundFormData {
-//   refundData: MultiplePaymentMethodRefundData[];
-// }
-
-// export interface PermitHistoryWithRefund
-//   extends PermitHistory,
-//     MultiplePaymentMethodRefundFormData {}

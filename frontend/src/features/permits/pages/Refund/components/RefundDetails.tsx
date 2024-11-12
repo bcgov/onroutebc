@@ -1,34 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  Box,
-  Button,
-  Menu,
-  MenuItem,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import { MouseEvent, useState } from "react";
+import { Box } from "@mui/material";
 import "./RefundDetails.scss";
 
-import { useQueryClient } from "@tanstack/react-query";
-import {
-  CREDIT_ACCOUNT_STATUS_TYPE,
-  CREDIT_ACCOUNT_USER_TYPE,
-  CreditAccountMetadata,
-  CreditAccountStatusType,
-  UPDATE_STATUS_ACTIONS,
-  UpdateStatusData,
-} from "../../../../settings/types/creditAccount";
-import { useUpdateCreditAccountStatusMutation } from "../../../../settings/hooks/creditAccount";
-import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
-import { RenderIf } from "../../../../../common/components/reusable/RenderIf";
-import { HoldCreditAccountModal } from "../../../../settings/components/creditAccount/HoldCreditAccountModal";
-import { CloseCreditAccountModal } from "../../../../settings/components/creditAccount/CloseCreditAccountModal";
-
 /**
- * Component that displays credit limit, available balance etc.
+ * Component that displays total refund due, current permit value and new permit value.
  */
 export const RefundDetails = ({
   totalRefundDue,
@@ -39,16 +13,6 @@ export const RefundDetails = ({
   currentPermitValue: number;
   newPermitValue: number;
 }) => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [showHoldCreditAccountModal, setShowHoldCreditAccountModal] =
-    useState<boolean>(false);
-  const [showCloseCreditAccountModal, setShowCloseCreditAccountModal] =
-    useState<boolean>(false);
-  const isMenuOpen = Boolean(anchorEl);
-  const queryClient = useQueryClient();
-
-  const { mutateAsync, isPending } = useUpdateCreditAccountStatusMutation();
-
   const toSentenceCase = (str: string): string => {
     if (!str) return str;
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
@@ -72,18 +36,6 @@ export const RefundDetails = ({
     } else {
       return formatValue(value);
     }
-  };
-
-  const handleMenuOpen = (e: MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(e.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const isActionSuccessful = (status: number) => {
-    return status === 200;
   };
 
   return (

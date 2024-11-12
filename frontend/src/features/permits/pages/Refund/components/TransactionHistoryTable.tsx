@@ -109,6 +109,7 @@ export const TransactionHistoryTable = ({
         enableColumnActions: false,
       },
       {
+        // TODO do we still need this?
         accessorFn: (originalRow) =>
           getDefaultRequiredVal(
             originalRow.transactionOrderNumber,
