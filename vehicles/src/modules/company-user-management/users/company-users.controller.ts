@@ -29,7 +29,7 @@ import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { Request } from 'express';
 import { Permissions } from '../../../common/decorator/permissions.decorator';
-import { UpdateUserDto } from './dto/request/update-user.dto';
+// import { UpdateUserDto } from './dto/request/update-user.dto';
 import { GetCompanyUserQueryParamsDto } from './dto/request/queryParam/getCompanyUser.query-params.dto';
 import { GetCompanyUserByUserGUIDPathParamsDto } from './dto/request/pathParam/getCompanyUserByUserGUID.path-params.dto';
 import { DeleteUsersDto } from './dto/request/delete-users.dto';
@@ -179,24 +179,32 @@ export class CompanyUsersController {
     ],
   })
   @Put(':userGUID')
-  async update(
-    @Req() request: Request,
-    @Param('companyId') companyId: number,
-    @Param('userGUID') userGUID: string,
-    @Body() updateUserDto: UpdateUserDto,
+  update(
+    // @Req() request: Request,
+    // @Param('companyId') companyId: number,
+    // @Param('userGUID') userGUID: string,
+    // @Body() updateUserDto: UpdateUserDto,
   ): Promise<ReadUserDto> {
-    const currentUser = request.user as IUserJWT;
-    const user = await this.userService.update(
-      userGUID,
-      updateUserDto,
-      companyId,
-      currentUser,
-    );
-    if (!user) {
-      throw new DataNotFoundException();
-    }
-    return user;
+    throw new DataNotFoundException();
   }
+  // async update(
+  //   @Req() request: Request,
+  //   @Param('companyId') companyId: number,
+  //   @Param('userGUID') userGUID: string,
+  //   @Body() updateUserDto: UpdateUserDto,
+  // ): Promise<ReadUserDto> {
+  //   const currentUser = request.user as IUserJWT;
+  //   const user = await this.userService.update(
+  //     userGUID,
+  //     updateUserDto,
+  //     companyId,
+  //     currentUser,
+  //   );
+  //   if (!user) {
+  //     throw new DataNotFoundException();
+  //   }
+  //   return user;
+  // }
 
   /**
    * Deletes one or more users associated with a specified company ID based on their GUIDs. This method requires
