@@ -159,9 +159,13 @@ export const List = memo(
       setIsDeleteDialogOpen(() => true);
     }, []);
 
-    const handleError = () => {
+    const handleError = (correlationId?: string) => {
       setIsDeleteDialogOpen(() => false);
-      navigate(ERROR_ROUTES.UNEXPECTED);
+      navigate(ERROR_ROUTES.UNEXPECTED, {
+        state: {
+          correlationId,
+        },
+      });
     };
 
     const onConfirmDelete = async () => {
@@ -193,7 +197,7 @@ export const List = memo(
             query.refetch();
           }
         } else {
-          handleError();
+          handleError(response.headers["x-correlation-id"]);
         }
       } catch {
         handleError();
