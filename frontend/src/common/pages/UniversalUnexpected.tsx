@@ -6,8 +6,8 @@ import { useLocation } from "react-router-dom";
 
 export const UniversalUnexpected = () => {
   const { state } = useLocation();
-  const { correlationId } = state as { correlationId: string };
-  if (!correlationId) {
+  // const { correlationId } = state as { correlationId: string };
+  if (!state?.correlationId) {
     return (
       <ErrorPage
         errorTitle="Unexpected Error"
@@ -44,7 +44,7 @@ export const UniversalUnexpected = () => {
 
           <p className="unexpected-error-msg__correlation-id">
             {/** Display just the first segment of the correlation id */}
-            {correlationId.split("-")[0].toUpperCase()}
+            {state.correlationId.split("-")[0].toUpperCase()}
           </p>
         </div>
       }
