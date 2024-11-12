@@ -47,6 +47,7 @@ export const VoidPermitHeader = ({ permit }: { permit: Nullable<Permit> }) => {
             {toLocal(
               permit.permitData.startDate,
               DATE_FORMATS.DATEONLY_ABBR_MONTH,
+              true,
             )}
           </Box>
         </Box>
@@ -62,6 +63,7 @@ export const VoidPermitHeader = ({ permit }: { permit: Nullable<Permit> }) => {
             {toLocal(
               permit.permitData.expiryDate,
               DATE_FORMATS.DATEONLY_ABBR_MONTH,
+              true,
             )}
           </Box>
         </Box>

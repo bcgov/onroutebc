@@ -51,7 +51,10 @@ import {
 } from 'src/common/helper/permit-fee.helper';
 import { CfsTransactionDetail } from './entities/cfs-transaction.entity';
 import { CfsFileStatus } from 'src/common/enum/cfs-file-status.enum';
-import { isAmendmentApplication, validApplicationDates } from '../../../common/helper/permit-application.helper';
+import {
+  isAmendmentApplication,
+  validApplicationDates,
+} from '../../../common/helper/permit-application.helper';
 import { isCfsPaymentMethodType } from 'src/common/helper/payment.helper';
 import { PgApprovesStatus } from 'src/common/enum/pg-approved-status-type.enum';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -513,8 +516,10 @@ export class PaymentService {
     // Calculate and add amount for each requested application, as per the available backend data.
     for (const application of applications) {
       //Check if each application has a valid start date and valid expiry date.
-      if (isCVClientUser && !validApplicationDates(application, TIMEZONE_PACIFIC))
-      {
+      if (
+        isCVClientUser &&
+        !validApplicationDates(application, TIMEZONE_PACIFIC)
+      ) {
         throw new UnprocessableEntityException(
           `Atleast one of the application has invalid startDate or expiryDate.`,
         );
