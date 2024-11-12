@@ -1,14 +1,14 @@
 describe('Login Test for OnRouteBC', () => {
   it('Should navigate to the login page, find the login button, and enter credentials', () => {
     // Retrieve the environment variables
-    const username = Cypress.env('idir_username');
-    const password = Cypress.env('idir_password');
+    const username = Cypress.env('bceid_username');
+    const password = Cypress.env('bceid_password');
 
     // Step 1: Visit the base URL
     cy.visit('/');
 
     // Step 2: Find and click the login button by its idir
-    cy.get('#login-idir').click();
+    cy.get('#login-bceid').click();
     cy.wait(5000);
 
     // Step 3: Enter credentials
