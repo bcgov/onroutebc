@@ -1,11 +1,13 @@
 name: Test Workflow
 
 on:
+  pull_request:
   workflow_call:
     inputs:
       ### Required
       target:
         description: 'PR number, test or prod.'
+        default: test
         required: true
         type: string
 
