@@ -7,7 +7,7 @@ on:
       ### Required
       target:
         description: 'PR number, test or prod.'
-        default: test
+        default: 'test'
         required: true
         type: string
 
@@ -28,7 +28,7 @@ jobs:
       - uses: cypress-io/github-action@v6.7.7
         name: Cypress run
         env:
-          CYPRESS_baseUrl: https://${{ github.event.repository.name }}-${{ inputs.target }}-frontend.apps.silver.devops.gov.bc.ca/
+          CYPRESS_baseUrl: https://${{ github.event.repository.name }}-${{ inputs.target || 'test' }}-frontend.apps.silver.devops.gov.bc.ca/
           CYPRESS_bceid_username: ${{vars.BCEID_USERNAME}}
           CYPRESS_bceid_password: ${{secrets.BCEID_PASSWORD}}
         with:
@@ -40,5 +40,12 @@ jobs:
         if: failure()
         with:
           name: cypress-screenshots
-          path: ./cypress/screenshots
+          path: cypress/screenshots
+          if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
+      
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-video
+          path: cypress/video
           if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
