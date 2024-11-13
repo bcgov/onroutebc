@@ -6,7 +6,6 @@ import { useLocation } from "react-router-dom";
 
 export const UniversalUnexpected = () => {
   const { state } = useLocation();
-  // const { correlationId } = state as { correlationId: string };
   if (!state?.correlationId) {
     return (
       <ErrorPage
