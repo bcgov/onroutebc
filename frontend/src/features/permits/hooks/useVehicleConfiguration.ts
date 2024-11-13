@@ -3,6 +3,7 @@ import { Policy } from "onroute-policy-engine";
 
 import { PERMIT_TYPES, PermitType } from "../types/PermitType";
 import { VehicleInConfiguration } from "../types/PermitVehicleConfiguration";
+import { DEFAULT_COMMODITY_SELECT_VALUE } from "../constants/constants";
 
 export const useVehicleConfiguration = (
   policyEngine: Policy,
@@ -31,8 +32,8 @@ export const useVehicleConfiguration = (
   );
 
   useEffect(() => {
-    if (permitType === PERMIT_TYPES.STOS) {
-      if (selectedSubtypes.length > 0 && !policyEngine.isConfigurationValid(
+    if (permitType === PERMIT_TYPES.STOS && selectedSubtypes.length > 0) {
+      if ((selectedCommodity === DEFAULT_COMMODITY_SELECT_VALUE) || !policyEngine.isConfigurationValid(
         permitType,
         selectedCommodity,
         [selectedPowerUnitSubtype, ...selectedSubtypes],
@@ -54,6 +55,7 @@ export const useVehicleConfiguration = (
     if ((permitType !== PERMIT_TYPES.STOS)
       || !selectedCommodity
       || !selectedPowerUnitSubtype
+      || (selectedCommodity === DEFAULT_COMMODITY_SELECT_VALUE)
     ) {
       return [];
     }

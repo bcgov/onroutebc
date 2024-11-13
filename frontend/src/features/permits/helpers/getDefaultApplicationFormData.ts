@@ -140,7 +140,6 @@ export const getExpiryDateOrDefault = (
  * @param companyInfo Company profile information (can be undefined, but must be passed as param)
  * @param applicationData Existing application data, if already exists
  * @param userDetails User details of current user, if any
- * @param permittedCommodityTypes Permitted commodity types, if applicable
  * @returns Default values for the application data
  */
 export const getDefaultValues = (
@@ -148,7 +147,6 @@ export const getDefaultValues = (
   companyInfo: Nullable<CompanyProfile>,
   applicationData?: Nullable<Application | ApplicationFormData>,
   userDetails?: Nullable<BCeIDUserDetailContext>,
-  permittedCommodityTypes?: Nullable<string[]>,
 ): ApplicationFormData => {
   const startDateOrDefault = getStartDateOrDefault(
     now(),
@@ -171,16 +169,18 @@ export const getDefaultValues = (
     applicationData?.permitType,
   );
 
+  const defaultApplicationNumber = getDefaultRequiredVal(
+    "",
+    applicationData?.applicationNumber,
+  );
+
   return {
     originalPermitId: getDefaultRequiredVal(
       "",
       applicationData?.originalPermitId,
     ),
     comment: getDefaultRequiredVal("", applicationData?.comment),
-    applicationNumber: getDefaultRequiredVal(
-      "",
-      applicationData?.applicationNumber,
-    ),
+    applicationNumber: defaultApplicationNumber,
     permitId: getDefaultRequiredVal("", applicationData?.permitId),
     permitNumber: getDefaultRequiredVal("", applicationData?.permitNumber),
     permitType: defaultPermitType,
@@ -214,8 +214,7 @@ export const getDefaultValues = (
         ),
       ),
       contactDetails: getDefaultContactDetails(
-        getDefaultRequiredVal("", applicationData?.applicationNumber).trim() ===
-          "",
+        defaultApplicationNumber.trim() === "",
         applicationData?.permitData?.contactDetails,
         userDetails,
         companyInfo?.email,
@@ -235,7 +234,6 @@ export const getDefaultValues = (
         ? null : getDefaultRequiredVal("", applicationData?.permitData?.applicationNotes),
       permittedCommodity: getDefaultPermittedCommodity(
         permitType,
-        getDefaultRequiredVal([], permittedCommodityTypes),
         applicationData?.permitData?.permittedCommodity,
       ),
       vehicleConfiguration: getDefaultVehicleConfiguration(

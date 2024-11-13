@@ -10,7 +10,7 @@ import { PermitLOASection } from "./PermitLOASection";
 import { useApplicationFormContext } from "../../../../hooks/form/useApplicationFormContext";
 import { AmendReason } from "../../../Amend/components/form/AmendReason";
 import { AmendRevisionHistory } from "../../../Amend/components/form/AmendRevisionHistory";
-import { CommodityDetailsSection } from "./CommodityDetailsSection";
+import { CommodityDetailsSection } from "./CommodityDetailsSection/CommodityDetailsSection";
 import { ApplicationNotesSection } from "./ApplicationNotesSection";
 import { TripDetailsSection } from "./TripDetailsSection/TripDetailsSection";
 import { LoadedDimensionsSection } from "./LoadedDimensionsSection/LoadedDimensionsSection";
@@ -42,6 +42,7 @@ export const PermitForm = () => {
     nextAllowedSubtypes,
     trailerSubtypeNamesMap,
     selectedVehicleConfigSubtypes,
+    commodityType,
     onLeave,
     onSave,
     onCancel,
@@ -53,6 +54,7 @@ export const PermitForm = () => {
     onUpdateLOAs,
     onUpdateHighwaySequence,
     onUpdateVehicleConfigTrailers,
+    onChangeCommodityType,
   } = useApplicationFormContext();
 
   return (
@@ -95,6 +97,8 @@ export const PermitForm = () => {
           feature={feature}
           permitType={permitType}
           commodityOptions={commodityOptions}
+          selectedCommodityType={commodityType}
+          onChangeCommodityType={onChangeCommodityType}
         />
         
         <VehicleInformationSection

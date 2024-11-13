@@ -2,7 +2,7 @@ import { Policy } from "onroute-policy-engine";
 
 import { PERMIT_TYPES, PermitType } from "../types/PermitType";
 import { sortVehicleSubtypes } from "./sorter";
-import { LCV_VEHICLE_SUBTYPES } from "../constants/constants";
+import { DEFAULT_COMMODITY_SELECT_VALUE, LCV_VEHICLE_SUBTYPES } from "../constants/constants";
 import { TROW_ELIGIBLE_VEHICLE_SUBTYPES } from "../constants/trow";
 import { TROS_ELIGIBLE_VEHICLE_SUBTYPES } from "../constants/tros";
 import { PermitLOA } from "../types/PermitLOA";
@@ -35,7 +35,8 @@ export const getEligibleVehicleSubtypes = (
   const lcvSubtypes = LCV_VEHICLE_SUBTYPES.map(({ typeCode }) => typeCode);
   switch (permitType) {
     case PERMIT_TYPES.STOS: {
-      if (!selectedCommodity || !policyEngine) return new Set<string>();
+      if (!selectedCommodity || !policyEngine || (selectedCommodity === DEFAULT_COMMODITY_SELECT_VALUE))
+        return new Set<string>();
 
       const subtypesMap = policyEngine.getPermittableVehicleTypes(permitType, selectedCommodity);
       return new Set(

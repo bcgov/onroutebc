@@ -1,4 +1,4 @@
-@use "../../../../../../themes/orbcStyles";
+@use "../../../../../../../themes/orbcStyles";
 
 @include orbcStyles.permit-main-box-style(".commodity-details-section");
 @include orbcStyles.permit-left-box-style(".commodity-details-section__header");
@@ -13,9 +13,8 @@
     }
 
     &--commodity-type {
-      .custom-form-control {
-        margin: 0;
-      }
+      margin: 0;
+      width: 100%;
     }
   }
 }

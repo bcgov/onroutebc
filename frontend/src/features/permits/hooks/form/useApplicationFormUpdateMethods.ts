@@ -7,6 +7,8 @@ import { PermitLOA } from "../../types/PermitLOA";
 import { VehicleInConfiguration } from "../../types/PermitVehicleConfiguration";
 import { EMPTY_VEHICLE_DETAILS, PermitVehicleDetails } from "../../types/PermitVehicleDetails";
 import { ApplicationFormData } from "../../types/application";
+import { getDefaultVehicleConfiguration } from "../../helpers/vehicleConfiguration";
+import { PermitType } from "../../types/PermitType";
 
 /**
  * Hook that returns custom methods that update specific values in the application form.
@@ -48,6 +50,10 @@ export const useApplicationFormUpdateMethods = () => {
     });
   }, [setValue]);
 
+  const onSetCommodityType = useCallback((commodityType: string) => {
+    setValue("permitData.permittedCommodity.commodityType", commodityType);
+  }, [setValue]);
+
   const onUpdateLOAs = useCallback((updatedLOAs: PermitLOA[]) => {
     setValue("permitData.loas", updatedLOAs);
   }, [setValue]);
@@ -69,6 +75,16 @@ export const useApplicationFormUpdateMethods = () => {
     [setValue],
   );
 
+  const onClearVehicleConfig = useCallback(
+    (permitType: PermitType) => {
+      setValue(
+        "permitData.vehicleConfiguration",
+        getDefaultVehicleConfiguration(permitType),
+      );
+    },
+    [setValue],
+  );
+
   return {
     onSetDuration,
     onSetExpiryDate,
@@ -79,5 +95,7 @@ export const useApplicationFormUpdateMethods = () => {
     onUpdateLOAs,
     onUpdateHighwaySequence,
     onUpdateVehicleConfigTrailers,
+    onSetCommodityType,
+    onClearVehicleConfig,
   };
 };

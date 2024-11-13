@@ -13,7 +13,6 @@ import { getDefaultValues } from "../../helpers/getDefaultApplicationFormData";
 import { applyLCVToApplicationData } from "../../helpers/permitLCV";
 import { PowerUnit, Trailer } from "../../../manageVehicles/types/Vehicle";
 import { getEligibleVehicleSubtypes } from "../../helpers/permitVehicles";
-import { getPermittedCommodityOptions } from "../../helpers/permittedCommodity";
 
 /**
  * Custom hook for populating the form using fetched application data, as well as current company id and user details.
@@ -48,9 +47,6 @@ export const useInitApplicationFormData = (
       policyEngine,
     );
 
-    const permittedCommodityTypes = getPermittedCommodityOptions(permitType, policyEngine)
-      .map(({ value }) => value);
-    
     return applyUpToDateLOAsToApplication(
       applyLCVToApplicationData(
         getDefaultValues(
@@ -58,7 +54,6 @@ export const useInitApplicationFormData = (
           companyInfo,
           applicationData,
           userDetails,
-          permittedCommodityTypes,
         ),
         isLcvDesignated,
       ),

@@ -14,6 +14,7 @@ import { useMemoizedObject } from "../../../../common/hooks/useMemoizedObject";
 import { useVehicleConfiguration } from "../useVehicleConfiguration";
 import { useApplicationFormUpdateMethods } from "./useApplicationFormUpdateMethods";
 import { usePermittedCommodity } from "../usePermittedCommodity";
+import { DEFAULT_COMMODITY_SELECT_VALUE } from "../../constants/constants";
 
 export const useApplicationFormContext = () => {
   const applicationFormContextData = useContext(ApplicationFormContext);
@@ -53,6 +54,8 @@ export const useApplicationFormContext = () => {
     onUpdateLOAs,
     onUpdateHighwaySequence,
     onUpdateVehicleConfigTrailers,
+    onSetCommodityType,
+    onClearVehicleConfig,
   } = useApplicationFormUpdateMethods();
 
   const {
@@ -129,7 +132,17 @@ export const useApplicationFormContext = () => {
     onSetConditions,
   );
 
-  const { commodityOptions } = usePermittedCommodity(policyEngine, permitType);
+  const {
+    commodityOptions,
+    onChangeCommodityType,
+  } = usePermittedCommodity(
+    policyEngine,
+    permitType,
+    onSetCommodityType,
+    () => onClearVehicle(Boolean(vehicleFormData.saveVehicle)),
+    onClearVehicleConfig,
+    permittedCommodity?.commodityType,
+  );
 
   // Check to see if vehicle details is still valid after LOA has been deselected
   // Also get vehicle subtype options, and whether or not selected vehicle is an LOA vehicle
@@ -162,7 +175,10 @@ export const useApplicationFormContext = () => {
   const { nextAllowedSubtypes } = useVehicleConfiguration(
     policyEngine,
     permitType,
-    getDefaultRequiredVal("", permittedCommodity?.commodityType),
+    getDefaultRequiredVal(
+      DEFAULT_COMMODITY_SELECT_VALUE,
+      permittedCommodity?.commodityType,
+    ),
     selectedVehicleConfigSubtypes,
     vehicleFormData.vehicleSubType,
     onUpdateVehicleConfigTrailers,
@@ -231,5 +247,7 @@ export const useApplicationFormContext = () => {
     onUpdateLOAs,
     onUpdateHighwaySequence,
     onUpdateVehicleConfigTrailers,
+    commodityType: permittedCommodity?.commodityType,
+    onChangeCommodityType,
   };
 };

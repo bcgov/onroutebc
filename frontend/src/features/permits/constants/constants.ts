@@ -114,3 +114,9 @@ export const LCV_VEHICLE_SUBTYPES = [
     description: "LCV vehicles for approved carriers and routes only."
   },
 ];
+
+export const DEFAULT_COMMODITY_SELECT_VALUE = "-";
+export const DEFAULT_COMMODITY_SELECT_OPTION = {
+  value: DEFAULT_COMMODITY_SELECT_VALUE,
+  label: "Select",
+};
