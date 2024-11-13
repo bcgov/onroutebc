@@ -78,7 +78,8 @@ export const PermitReview = (props: PermitReviewProps) => {
       .map(({ typeCode, type }) => [typeCode, type]),
   ), [trailerSubTypes]);
   const shouldShowRejectionHistory =
-    props.reviewContext === PERMIT_REVIEW_CONTEXTS.QUEUE &&
+    (props.reviewContext === PERMIT_REVIEW_CONTEXTS.QUEUE ||
+      props.reviewContext === PERMIT_REVIEW_CONTEXTS.APPLY) &&
     props.applicationRejectionHistory &&
     props.applicationRejectionHistory.length > 0;
 
