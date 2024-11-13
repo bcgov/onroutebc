@@ -33,7 +33,7 @@ jobs:
           CYPRESS_bceid_password: ${{secrets.BCEID_PASSWORD}}
         with:
           config: pageLoadTimeout=10000
-          working-directory: ./frontend
+          working-directory: ./tests
           browser: ${{ matrix.browser }}
 
       - uses: actions/upload-artifact@v4
