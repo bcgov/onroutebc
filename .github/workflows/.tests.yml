@@ -12,8 +12,8 @@ on:
         type: string
 
 jobs:
-  cypress-e2e:
-    name: E2E Tests
+  update-term-oversize:
+    name: (BCEID) Update Term Oversize 
     runs-on: ubuntu-22.04
     defaults:
       run:
@@ -33,7 +33,7 @@ jobs:
           CYPRESS_bceid_password: ${{secrets.BCEID_PASSWORD}}
         with:
           config: pageLoadTimeout=10000
-          working-directory: ./tests
+          spec: tests/cypress/e2e/bceid-update-term-oversize.cy.js
           browser: ${{ matrix.browser }}
 
       - uses: actions/upload-artifact@v4
@@ -44,7 +44,6 @@ jobs:
           if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
       
       - uses: actions/upload-artifact@v4
-        if: failure()
         with:
           name: cypress-video
           path: cypress/video
