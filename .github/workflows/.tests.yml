@@ -56,4 +56,5 @@ jobs:
         with:
           name: cypress-videos
           path: tests/cypress/videos/
+          overwrite: true
           if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
