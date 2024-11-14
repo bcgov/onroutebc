@@ -104,7 +104,6 @@ export const CommodityDetailsSection = ({
               }}
               helperText={error?.message ? {
                 errors: [error.message],
-                messages: [],
               } : undefined}
             />
           )}

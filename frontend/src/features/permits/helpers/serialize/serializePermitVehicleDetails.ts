@@ -1,5 +1,5 @@
 import { PermitVehicleDetails } from "../../types/PermitVehicleDetails";
-import { convertToNumberIfValid } from "../../../../common/helpers/util";
+import { convertToNumberIfValid } from "../../../../common/helpers/numeric/convertToNumberIfValid";
 
 /**
  * Serialize permit vehicles details data to be used as request payload.

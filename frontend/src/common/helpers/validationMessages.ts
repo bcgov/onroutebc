@@ -88,6 +88,15 @@ export const invalidPlateLength = (max: number) => {
   return replacePlaceholders(messageTemplate, placeholders, max);
 };
 
+export const licensedGVWExceeded = (max: number, localizeNumber?: boolean) => {
+  const { messageTemplate, placeholders } = validationMessages.licensedGVW.max;
+  return replacePlaceholders(
+    messageTemplate,
+    placeholders,
+    localizeNumber ? max.toLocaleString() : max,
+  );
+};
+
 export const invalidDBALength = (min: number, max: number) => {
   const { messageTemplate, placeholders } = validationMessages.dba.length;
   return replacePlaceholders(messageTemplate, placeholders, min, max);

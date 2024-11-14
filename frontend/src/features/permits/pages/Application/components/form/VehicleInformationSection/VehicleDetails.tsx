@@ -46,6 +46,7 @@ import {
   invalidPlateLength,
   invalidVINLength,
   invalidYearMin,
+  licensedGVWExceeded,
   requiredMessage,
 } from "../../../../../../../common/helpers/validationMessages";
 
@@ -356,10 +357,12 @@ export const VehicleDetails = ({
                 required: { value: true, message: requiredMessage() },
                 validate: {
                   isNumber: (v) => !isNaN(v) || invalidNumber(),
+                  exceed: (v) => (parseInt(v) <= 63500)
+                    || licensedGVWExceeded(63500, true),
                 },
               },
               inputType: "number",
-              label: "Licensed GVW",
+              label: "Licensed GVW (kg)",
             }}
           />
         ) : null}

@@ -119,6 +119,12 @@
       }
     }
   },
+  "licensedGVW": {
+    "max": {
+      "messageTemplate": "Can't Exceed :max",
+      "placeholders": [":max"]
+    }
+  },
   "upload": {
     "fileSize": {
       "exceeded": "File exceeds maximum size"

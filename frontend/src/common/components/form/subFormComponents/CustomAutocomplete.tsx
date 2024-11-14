@@ -26,8 +26,8 @@ export interface CustomAutocompleteProps<
     component: React.ReactNode;
   };
   helperText?: {
-    messages: string[];
-    errors: string[];
+    messages?: string[];
+    errors?: string[];
   };
   autocompleteProps: Omit<
     AutocompleteProps<Value, Multiple, DisableClearable, FreeSolo, ChipComponent>,

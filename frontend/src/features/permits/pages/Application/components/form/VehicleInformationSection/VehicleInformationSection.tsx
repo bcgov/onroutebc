@@ -1,4 +1,5 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
+import { Controller, useFormContext } from "react-hook-form";
 import { Box, Button } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -14,7 +15,8 @@ import { PowerUnitInfo } from "./PowerUnitInfo";
 import { AddPowerUnitDialog } from "./AddPowerUnitDialog";
 import { AddTrailer } from "./AddTrailer";
 import { VehicleInConfiguration } from "../../../../../types/PermitVehicleConfiguration";
-import { ApplicationFormContext } from "../../../../../context/ApplicationFormContext";
+import { requiredPowerUnit } from "../../../../../../../common/helpers/validationMessages";
+import { ApplicationFormData } from "../../../../../types/application";
 
 export const VehicleInformationSection = ({
   permitType,
@@ -59,35 +61,28 @@ export const VehicleInformationSection = ({
 
   const [showAddPowerUnitDialog, setShowAddPowerUnitDialog] = useState<boolean>(false);
 
+  const powerUnitFieldRef = "permitData.vehicleDetails";
+  const { clearErrors } = useFormContext<ApplicationFormData>();
+
   const handleClickAddPowerUnit = () => {
     if (isPowerUnitSelectedForSingleTrip) return;
     setShowAddPowerUnitDialog(true);
   };
 
-  const powerUnitFieldRef = "permitData.vehicleDetails";
-  const { policyViolations, triggerPolicyValidation } = useContext(ApplicationFormContext);
-
-  const handleClosePowerUnitDialog = () => {
-    onClearVehicle(false);
-    onUpdateVehicleConfigTrailers([]);
-    setShowAddPowerUnitDialog(false);
-    triggerPolicyValidation();
-  };
-
-  const handleAddPowerUnit = () => {
-    // Only thing the "Add" button does on the dialog is to close the dialog
-    // This is because the actually creation/update of the power unit is done by the application form
-    // when the "Save/Continue" button is clicked.
-    // Also, changing any of the inputs inside the dialog updates the values for the vehicleDetails
-    // inside the application form data
-    setShowAddPowerUnitDialog(false);
-    triggerPolicyValidation();
-  };
-
   const handleRemovePowerUnit = () => {
     onClearVehicle(false);
     onUpdateVehicleConfigTrailers([]);
-    triggerPolicyValidation();
+  };
+
+  const handleClosePowerUnitDialog = () => {
+    handleRemovePowerUnit();
+    setShowAddPowerUnitDialog(false);
+  };
+
+  const handleAddPowerUnit = (powerUnit: PermitVehicleDetails) => {
+    clearErrors(powerUnitFieldRef);
+    onSetVehicle(powerUnit);
+    setShowAddPowerUnitDialog(false);
   };
 
   return (
@@ -117,29 +112,37 @@ export const VehicleInformationSection = ({
           />
 
           {isSingleTrip ? (
-            <div className="add-power-unit">
-              <Button
-                classes={{
-                  root: "add-power-unit-btn",
-                  disabled: "add-power-unit-btn--disabled",
-                }}
-                key="add-power-unit-button"
-                aria-label="Add Power Unit"
-                variant="contained"
-                color="tertiary"
-                disabled={isPowerUnitSelectedForSingleTrip}
-                onClick={handleClickAddPowerUnit}
-              >
-                <FontAwesomeIcon className="add-power-unit-btn__icon" icon={faPlus} />
-                Add Power Unit
-              </Button>
+            <Controller
+              name={powerUnitFieldRef}
+              rules={{
+                validate: (v) => (v.vin.trim() !== "") || requiredPowerUnit(),
+              }}
+              render={({ fieldState: { error } }) => (
+                <div className="add-power-unit">
+                  <Button
+                    classes={{
+                      root: "add-power-unit-btn",
+                      disabled: "add-power-unit-btn--disabled",
+                    }}
+                    key="add-power-unit-button"
+                    aria-label="Add Power Unit"
+                    variant="contained"
+                    color="tertiary"
+                    disabled={isPowerUnitSelectedForSingleTrip}
+                    onClick={handleClickAddPowerUnit}
+                  >
+                    <FontAwesomeIcon className="add-power-unit-btn__icon" icon={faPlus} />
+                    Add Power Unit
+                  </Button>
 
-              {powerUnitFieldRef in policyViolations ? (
-                <p className="add-power-unit__error">
-                  {policyViolations[powerUnitFieldRef]}
-                </p>
-              ) : null}
-            </div>
+                  {error?.message ? (
+                    <p className="add-power-unit__error">
+                      {error.message}
+                    </p>
+                  ) : null}
+                </div>
+              )}
+            />
           ) : (
             <VehicleDetails
               feature={feature}
@@ -171,20 +174,19 @@ export const VehicleInformationSection = ({
         ) : null}
       </Box>
 
-      <AddPowerUnitDialog
-        open={showAddPowerUnitDialog}
-        feature={feature}
-        vehicleFormData={vehicleFormData}
-        vehicleOptions={vehicleOptions}
-        subtypeOptions={subtypeOptions}
-        isSelectedLOAVehicle={isSelectedLOAVehicle}
-        permitType={permitType}
-        onSetSaveVehicle={onSetSaveVehicle}
-        onSetVehicle={onSetVehicle}
-        onClearVehicle={onClearVehicle}
-        onCancel={handleClosePowerUnitDialog}
-        onClickAdd={handleAddPowerUnit}
-      />
+      {showAddPowerUnitDialog ? (
+        <AddPowerUnitDialog
+          open={showAddPowerUnitDialog}
+          feature={feature}
+          vehicleFormData={vehicleFormData}
+          vehicleOptions={vehicleOptions}
+          subtypeOptions={subtypeOptions}
+          isSelectedLOAVehicle={isSelectedLOAVehicle}
+          permitType={permitType}
+          onCancel={handleClosePowerUnitDialog}
+          onAddPowerUnit={handleAddPowerUnit}
+        />
+      ) : null}
     </Box>
   );
 };

@@ -5,7 +5,7 @@
     max-width: 66.75rem;
   }
 
-  &__header {
+  & &__header {
     padding: 1.5rem;
     display: flex;
     flex-direction: row;
@@ -13,7 +13,7 @@
     background-color: $bc-background-light-grey;
   }
 
-  &__icon {
+  & &__icon {
     width: 3rem;
     height: 3rem;
     display: flex;
@@ -29,14 +29,14 @@
     }
   }
 
-  &__title {
+  & &__title {
     font-weight: bold;
     font-size: 1.5rem;
     margin-left: 1rem;
     color: $bc-black;
   }
 
-  &__body {
+  & form &__body {
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
@@ -68,6 +68,10 @@
       background-color: $bc-background-light-grey;
       color: $bc-black;
       border: none;
+
+      &:hover {
+        border: 2px solid $bc-text-box-border-grey;
+      }
     }
 
     &--add {
@@ -76,6 +80,10 @@
       background-color: $bc-primary-blue;
       font-weight: bold;
       cursor: pointer;
+
+      &:hover {
+        background-color: $button-hover;
+      }
     }
   }
 }

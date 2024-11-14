@@ -1,4 +1,4 @@
-import { convertToNumberIfValid } from "../../../../common/helpers/util";
+import { convertToNumberIfValid } from "../../../../common/helpers/numeric/convertToNumberIfValid";
 import { Nullable, RequiredOrNull } from "../../../../common/types/common";
 import { PermitVehicleConfiguration } from "../../types/PermitVehicleConfiguration";
 

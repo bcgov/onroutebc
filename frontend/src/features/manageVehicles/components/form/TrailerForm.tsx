@@ -10,6 +10,8 @@ import { CustomFormComponent } from "../../../../common/components/form/CustomFo
 import { SnackBarContext } from "../../../../App";
 import { VEHICLES_ROUTES } from "../../../../routes/constants";
 import { now } from "../../../../common/helpers/formatDate";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { convertToNumberIfValid } from "../../../../common/helpers/numeric/convertToNumberIfValid";
 import {
   disableMouseWheelInputOnNumberField,
 } from "../../../../common/helpers/disableMouseWheelInputOnNumberField";
@@ -19,11 +21,6 @@ import {
   useAddTrailerMutation,
   useUpdateTrailerMutation,
 } from "../../hooks/trailers";
-
-import {
-  getDefaultRequiredVal,
-  convertToNumberIfValid,
-} from "../../../../common/helpers/util";
 
 import {
   invalidNumber,

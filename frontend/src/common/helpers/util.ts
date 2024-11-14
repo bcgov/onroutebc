@@ -1,7 +1,5 @@
 import { BCeIDUserRoleType, BCeID_USER_ROLE } from "../authentication/types";
 import {
-  isNull,
-  isUndefined,
   Nullable,
   Optional,
   RequiredOrNull,
@@ -175,29 +173,6 @@ export const streamDownloadFile = async (response: Response) => {
   const newRes = new Response(stream);
   const blobObj = await newRes.blob();
   return { blobObj, filename };
-};
-
-/**
- * Converts a numeric value to a number if possible.
- * @param numericVal The numeric value (can be number or string)
- * @param fallbackWhenInvalid The value to return if invalid.
- * @returns The converted number value, or fallback value when invalid
- */
-export const convertToNumberIfValid = <T extends Nullable<number | string>>(
-  numericVal?: Nullable<string | number>,
-  fallbackWhenInvalid?: T,
-) => {
-  const isNullable = isNull(numericVal) || isUndefined(numericVal);
-  const isNumberButInvalid = (typeof numericVal === "number") && isNaN(numericVal);
-  const isStringButInvalid = (typeof numericVal === "string")
-    && (numericVal.trim() === "" || isNaN(Number(numericVal.trim())));
-  
-  const isInvalid = isNullable
-    || ((typeof numericVal !== "number") && (typeof numericVal !== "string"))
-    || isNumberButInvalid
-    || isStringButInvalid;
-  
-  return !isInvalid ? Number(numericVal) : fallbackWhenInvalid;
 };
 
 /**

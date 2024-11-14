@@ -107,7 +107,7 @@ export const SelectVehicleDropdown = ({
         getOptionLabel={(option) => {
           if (!option) return "";
           if (!option.unitNumber) option.unitNumber = EMPTY_VEHICLE_UNIT_NUMBER;
-          return chooseFrom == "plate" ? option.plate : option.unitNumber;
+          return chooseFrom == VEHICLE_CHOOSE_FROM.PLATE ? option.plate : option.unitNumber;
         }}
         className="select-vehicle-dropdown__autocomplete"
         renderOption={(props, option) => {

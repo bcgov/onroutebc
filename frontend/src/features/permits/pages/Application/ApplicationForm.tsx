@@ -17,7 +17,7 @@ import { PermitForm } from "./components/form/PermitForm";
 import { usePermitVehicleManagement } from "../../hooks/usePermitVehicleManagement";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { isNull, isUndefined, Nullable } from "../../../../common/types/common";
-import { PERMIT_TYPES, PermitType } from "../../types/PermitType";
+import { PermitType } from "../../types/PermitType";
 import { PermitVehicleDetails } from "../../types/PermitVehicleDetails";
 import { durationOptionsForPermitType } from "../../helpers/dateSelection";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
@@ -30,7 +30,6 @@ import { usePolicyEngine } from "../../../policy/hooks/usePolicyEngine";
 import { Loading } from "../../../../common/pages/Loading";
 import { serializePermitVehicleDetails } from "../../helpers/serialize/serializePermitVehicleDetails";
 import { serializePermitData } from "../../helpers/serialize/serializePermitData";
-import { requiredPowerUnit } from "../../../../common/helpers/validationMessages";
 import {
   serializeForCreateApplication,
   serializeForUpdateApplication,
@@ -171,9 +170,7 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
           fieldReference: violation.fieldReference as string,
           message: violation.message,
         })),
-    ).concat(permitType === PERMIT_TYPES.STOS && !currentFormData.permitData.vehicleDetails.vin ? [
-      { fieldReference: "permitData.vehicleDetails", message: requiredPowerUnit() },
-    ] : []);
+    );
 
     const updatedViolations = Object.fromEntries(
       violations.map(({ fieldReference, message }) => [fieldReference, message]),
