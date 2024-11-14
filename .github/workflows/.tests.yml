@@ -32,9 +32,10 @@ jobs:
           CYPRESS_bceid_username: ${{vars.BCEID_USERNAME}}
           CYPRESS_bceid_password: ${{secrets.BCEID_PASSWORD}}
         with:
+          browser: ${{ matrix.browser }}
           config: pageLoadTimeout=10000
           spec: tests/cypress/e2e/bceid-update-term-oversize.cy.js
-          browser: ${{ matrix.browser }}
+          working-directory: ./tests
 
       - uses: actions/upload-artifact@v4
         if: failure()
