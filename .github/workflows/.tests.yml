@@ -37,6 +37,13 @@ jobs:
           spec: cypress/e2e/bceid-update-term-oversize.cy.js
           working-directory: tests
 
+      - name: DEBUG
+        run: |
+          ls
+          ls tests
+          find . | grep screenshots
+          find . | grep video
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
