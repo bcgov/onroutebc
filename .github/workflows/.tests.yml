@@ -33,7 +33,7 @@ jobs:
           CYPRESS_bceid_password: ${{secrets.BCEID_PASSWORD}}
         with:
           browser: ${{ matrix.browser }}
-          config: pageLoadTimeout=10000
+          config: pageLoadTimeout=10000,video=true
           spec: cypress/e2e/bceid-update-term-oversize.cy.js
           working-directory: tests
 
