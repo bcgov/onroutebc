@@ -34,8 +34,8 @@ jobs:
         with:
           browser: ${{ matrix.browser }}
           config: pageLoadTimeout=10000
-          spec: tests/cypress/e2e/bceid-update-term-oversize.cy.js
-          working-directory: ./tests
+          spec: cypress/e2e/bceid-update-term-oversize.cy.js
+          working-directory: tests
 
       - uses: actions/upload-artifact@v4
         if: failure()
