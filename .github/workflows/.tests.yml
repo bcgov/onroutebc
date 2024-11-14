@@ -38,7 +38,7 @@ jobs:
           working-directory: tests
 
       - uses: actions/upload-artifact@v4
-        if: failure()
+        if: always()
         with:
           name: cypress-screenshots
           path: cypress/screenshots
@@ -46,7 +46,6 @@ jobs:
       
       - uses: actions/upload-artifact@v4
         if: always()
-        continue-on-error: true
         with:
           name: cypress-video
           path: cypress/video
