@@ -10,9 +10,10 @@ module.exports = defineConfig({
     env: {
       idir_username: '', 
       idir_password: '',
-      bceid_username: '', 
-      bceid_password: '',
-      update_term_oversize_url: 'https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/applications/581',  
+      bceid_username: 'ORBCTST1', 
+      bceid_password: 'orbcTST2023+',
+      update_term_oversize_url: 'https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/applications/581', 
+      new_tros_url: 'https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca/create-application/TROS', 
     },
   },
 });
