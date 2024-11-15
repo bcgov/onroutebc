@@ -29,12 +29,7 @@ import {
 } from "../../../settings/types/creditAccount";
 import { canViewSpecialAuthorizations } from "../../../settings/helpers/permissions";
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
-
-interface ProfileDashboardTab {
-  label: string;
-  component: JSX.Element;
-  componentKey: string;
-}
+import { DashboardTab } from "../../../../common/types/common";
 
 /**
  * Returns a boolean indicating if the logged in user is a BCeID org admin.
@@ -95,7 +90,7 @@ export const ManageProfilesDashboard = React.memo(() => {
 
   const { state: stateFromNavigation } = useLocation();
 
-  const tabs: ProfileDashboardTab[] = [
+  const tabs: DashboardTab[] = [
     {
       label: "Company Information",
       component: <CompanyInfo companyInfoData={companyInfoData} />,
@@ -136,7 +131,7 @@ export const ManageProfilesDashboard = React.memo(() => {
           componentKey: BCEID_PROFILE_TABS.CREDIT_ACCOUNT,
         }
       : null,
-  ].filter((tab) => Boolean(tab)) as ProfileDashboardTab[];
+  ].filter((tab) => Boolean(tab)) as DashboardTab[];
 
   const getSelectedTabFromNavigation = (): number => {
     const tabIndex = tabs.findIndex(

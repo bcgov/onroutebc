@@ -78,6 +78,7 @@ export interface StartTransactionResponseData
   transactionTypeId: TransactionType;
   paymentMethodTypeCode: PaymentMethodTypeCode;
   paymentCardTypeCode?: Nullable<PaymentCardTypeCode>;
+  payerName: string;
   totalTransactionAmount: number;
   transactionSubmitDate: string;
   transactionOrderNumber: string;

@@ -37,9 +37,11 @@ import { requiredMessage } from "../../../../../common/helpers/validationMessage
 export const TransactionHistoryTable = ({
   permitHistory,
   onSubmit,
+  totalRefundDue,
 }: {
   permitHistory: PermitHistory[];
   onSubmit: (data: FieldValues) => void;
+  totalRefundDue: number;
 }) => {
   const validTransactionHistory = permitHistory.filter((history) =>
     isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
@@ -53,7 +55,8 @@ export const TransactionHistoryTable = ({
   ): boolean => {
     return (
       !isTransactionTypeRefund(row.original.transactionTypeId) &&
-      !isZeroAmount(row.original.transactionAmount)
+      !isZeroAmount(row.original.transactionAmount) &&
+      totalRefundDue !== 0
     );
   };
 
@@ -109,7 +112,6 @@ export const TransactionHistoryTable = ({
         enableColumnActions: false,
       },
       {
-        // TODO do we still need this?
         accessorFn: (originalRow) =>
           getDefaultRequiredVal(
             originalRow.transactionOrderNumber,
@@ -190,7 +192,7 @@ export const TransactionHistoryTable = ({
                 feature="refund-permit"
                 className="transaction-history-table__input transaction-history-table__input--refund-amount"
                 options={{
-                  name: `${cell.row.index}.refundAmount`,
+                  name: `refundData.${cell.row.index}.refundAmount`,
                   rules: { required: false },
                   width: "200px",
                   showOptionalLabel: false,
@@ -250,7 +252,7 @@ export const TransactionHistoryTable = ({
                 feature="refund-permit"
                 className="transaction-history-table__input"
                 options={{
-                  name: `${cell.row.index}.refundTransactionId`,
+                  name: `refundData.${cell.row.index}.refundTransactionId`,
                   rules: {
                     required: {
                       value: refundAmount !== "" && !chequeRefund,
@@ -343,6 +345,7 @@ export const TransactionHistoryTable = ({
     initialState: {
       ...defaultTableInitialStateOptions,
       showGlobalFilter: false,
+      columnVisibility: { chequeRefund: totalRefundDue !== 0 },
     },
     state: {
       ...defaultTableStateOptions,

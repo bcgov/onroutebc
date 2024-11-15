@@ -14,7 +14,7 @@ import {
   Trailer,
 } from "../../features/manageVehicles/types/Vehicle";
 import { LOAFormData } from "../../features/settings/types/LOAFormData";
-import { MultiplePaymentMethodRefundFormData } from "../../features/permits/pages/Refund/types/RefundFormData";
+import { MultiplePaymentMethodRefundData } from "../../features/permits/pages/Refund/types/RefundFormData";
 
 export interface ApiErrorResponse {
   status: number;
@@ -36,7 +36,7 @@ export type ORBC_FormTypes =
   | VerifyClientRequest
   | PermitContactDetails
   | LOAFormData
-  | MultiplePaymentMethodRefundFormData;
+  | { refundData: MultiplePaymentMethodRefundData[] };
 
 /**
  * The options for pagination.
@@ -148,3 +148,12 @@ export type Nullable<T> = Optional<RequiredOrNull<T>>;
 export type NullableFields<T> = {
   [P in keyof T]?: Nullable<T[P]>;
 };
+
+/**
+ * The type of item provided as a list to the TabLayout component
+ */
+export interface DashboardTab {
+  label: string;
+  component: JSX.Element;
+  componentKey: string;
+}

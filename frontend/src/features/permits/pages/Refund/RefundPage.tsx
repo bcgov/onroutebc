@@ -108,6 +108,7 @@ export const RefundPage = ({
         <TransactionHistoryTable
           permitHistory={validTransactionHistory}
           onSubmit={onSubmit}
+          totalRefundDue={amountToRefund}
         />
       </FormProvider>
 
