@@ -110,7 +110,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
 
           <CustomFormComponent
             className="side-by-side-inputs__right-input"
-            type="input"
+            type="number"
             feature={feature}
             options={{
               name: "permitData.contactDetails.phone2Extension",
