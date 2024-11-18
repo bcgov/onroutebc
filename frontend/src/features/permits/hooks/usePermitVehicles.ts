@@ -5,8 +5,9 @@ import { PermitType } from "../types/PermitType";
 import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
 import { getUpdatedVehicleDetailsForLOAs } from "../helpers/permitLOA";
 import { PermitLOA } from "../types/PermitLOA";
-import { getEligibleSubtypeOptions, getEligibleVehicleSubtypes } from "../helpers/permitVehicles";
+import { getEligibleSubtypeOptions } from "../helpers/vehicles/subtypes/getEligibleSubtypeOptions";
 import { Nullable } from "../../../common/types/common";
+import { getEligibleVehicleSubtypes } from "../helpers/vehicles/subtypes/getEligibleVehicleSubtypes";
 import {
   PowerUnit,
   Trailer,

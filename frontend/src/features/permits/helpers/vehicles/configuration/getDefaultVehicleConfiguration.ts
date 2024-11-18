@@ -1,7 +1,7 @@
-import { getDefaultRequiredVal } from "../../../common/helpers/util";
-import { Nullable } from "../../../common/types/common";
-import { PERMIT_TYPES, PermitType } from "../types/PermitType";
-import { PermitVehicleConfiguration } from "../types/PermitVehicleConfiguration";
+import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
+import { Nullable } from "../../../../../common/types/common";
+import { PERMIT_TYPES, PermitType } from "../../../types/PermitType";
+import { PermitVehicleConfiguration } from "../../../types/PermitVehicleConfiguration";
 
 export const getDefaultVehicleConfiguration = (
   permitType: PermitType,

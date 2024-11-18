@@ -3,7 +3,7 @@ import { useCallback, useMemo } from "react";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { findFromExistingVehicles } from "../helpers/mappers";
 import { Nullable } from "../../../common/types/common";
-import { getDefaultVehicleDetails } from "../helpers/permitVehicles";
+import { getDefaultVehicleDetails } from "../helpers/vehicles/getDefaultVehicleDetails";
 import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
 import {
   usePowerUnitSubTypesQuery,

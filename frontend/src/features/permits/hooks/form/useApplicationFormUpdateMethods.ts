@@ -7,7 +7,7 @@ import { PermitLOA } from "../../types/PermitLOA";
 import { VehicleInConfiguration } from "../../types/PermitVehicleConfiguration";
 import { EMPTY_VEHICLE_DETAILS, PermitVehicleDetails } from "../../types/PermitVehicleDetails";
 import { ApplicationFormData } from "../../types/application";
-import { getDefaultVehicleConfiguration } from "../../helpers/vehicleConfiguration";
+import { getDefaultVehicleConfiguration } from "../../helpers/vehicles/configuration/getDefaultVehicleConfiguration";
 import { PermitType } from "../../types/PermitType";
 
 /**

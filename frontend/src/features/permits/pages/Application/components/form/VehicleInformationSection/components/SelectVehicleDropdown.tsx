@@ -11,7 +11,7 @@ import {
 
 import "./SelectVehicleDropdown.scss";
 import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";
-import { sortVehicles } from "../../../../../../helpers/sorter";
+import { sortVehicles } from "../../../../../../helpers/vehicles/sortVehicles";
 import { VEHICLE_CHOOSE_FROM, VehicleChooseFrom } from "../../../../../../constants/constants";
 import { EMPTY_VEHICLE_UNIT_NUMBER } from "../../../../../../../../common/constants/constants";
 import { Nullable } from "../../../../../../../../common/types/common";

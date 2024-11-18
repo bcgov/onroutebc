@@ -21,6 +21,8 @@ import { SelectVehicleDropdown } from "./components/SelectVehicleDropdown";
 import { PermitVehicleDetails } from "../../../../../types/PermitVehicleDetails";
 import { selectedVehicleSubtype } from "../../../../../../manageVehicles/helpers/vehicleSubtypes";
 import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
+import { isUndefined } from "../../../../../../../common/types/common";
+import { gvwLimit, isPermitVehicleWithinGvwLimit } from "../../../../../helpers/vehicles/rules/gvw";
 import {
   disableMouseWheelInputOnNumberField,
 } from "../../../../../../../common/helpers/disableMouseWheelInputOnNumberField";
@@ -357,13 +359,24 @@ export const VehicleDetails = ({
                 required: { value: true, message: requiredMessage() },
                 validate: {
                   isNumber: (v) => !isNaN(v) || invalidNumber(),
-                  exceed: (v) => (parseInt(v) <= 63500)
-                    || licensedGVWExceeded(63500, true),
+                  exceededGvw: (v) => {
+                    const maxAllowedGvw = gvwLimit(permitType);
+                    return isSelectedLOAVehicle
+                      || isUndefined(maxAllowedGvw)
+                      || isPermitVehicleWithinGvwLimit(
+                        permitType,
+                        vehicleType as VehicleType,
+                        parseInt(v),
+                      )
+                      || licensedGVWExceeded(maxAllowedGvw, true);
+                  },
                 },
               },
               inputType: "number",
               label: "Licensed GVW (kg)",
             }}
+            readOnly={isSelectedLOAVehicle}
+            disabled={isSelectedLOAVehicle}
           />
         ) : null}
       </div>

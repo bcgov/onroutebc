@@ -11,7 +11,13 @@ import { PermitMailingAddress } from "../types/PermitMailingAddress";
 import { PermitContactDetails } from "../types/PermitContactDetails";
 import { Application, ApplicationFormData } from "../types/application";
 import { minDurationForPermitType } from "./dateSelection";
-import { getDefaultVehicleDetails } from "./permitVehicles";
+import { getDefaultVehicleDetails } from "./vehicles/getDefaultVehicleDetails";
+import { getDefaultPermittedRoute } from "./permittedRoute";
+import { getDefaultPermittedCommodity } from "./permittedCommodity";
+import {
+  getDefaultVehicleConfiguration
+} from "./vehicles/configuration/getDefaultVehicleConfiguration";
+
 import {
   getEndOfDate,
   getStartOfDate,
@@ -27,9 +33,6 @@ import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../common/helpers/util";
-import { getDefaultPermittedRoute } from "./permittedRoute";
-import { getDefaultPermittedCommodity } from "./permittedCommodity";
-import { getDefaultVehicleConfiguration } from "./vehicleConfiguration";
 
 /**
  * Get default values for contact details, or populate with existing contact details and/or user details

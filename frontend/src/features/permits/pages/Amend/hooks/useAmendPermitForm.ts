@@ -9,7 +9,7 @@ import { applyWhenNotNullable } from "../../../../../common/helpers/util";
 import { CompanyProfile } from "../../../../manageProfile/types/manageProfile";
 import { applyLCVToApplicationData } from "../../../helpers/permitLCV";
 import { LOADetail } from "../../../../settings/types/LOADetail";
-import { getEligibleVehicleSubtypes } from "../../../helpers/permitVehicles";
+import { getEligibleVehicleSubtypes } from "../../../helpers/vehicles/subtypes/getEligibleVehicleSubtypes";
 import { applyUpToDateLOAsToApplication } from "../../../helpers/permitLOA";
 import { PowerUnit, Trailer } from "../../../../manageVehicles/types/Vehicle";
 import {

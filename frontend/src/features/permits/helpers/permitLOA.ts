@@ -8,7 +8,8 @@ import { Application, ApplicationFormData } from "../types/application";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { PowerUnit, Trailer, VEHICLE_TYPES } from "../../manageVehicles/types/Vehicle";
 import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
-import { getAllowedVehicles, getDefaultVehicleDetails } from "./permitVehicles";
+import { getAllowedVehicles } from "./vehicles/getAllowedVehicles";
+import { getDefaultVehicleDetails } from "./vehicles/getDefaultVehicleDetails";
 import { PermitLOA } from "../types/PermitLOA";
 import {
   durationOptionsForPermitType,
