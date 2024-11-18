@@ -6,11 +6,12 @@ import { getEndOfDate, toLocalDayjs } from "../../../common/helpers/formatDate";
 import { Nullable } from "../../../common/types/common";
 import { Application, ApplicationFormData } from "../types/application";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
-import { PowerUnit, Trailer, VEHICLE_TYPES } from "../../manageVehicles/types/Vehicle";
+import { PowerUnit, Trailer, Vehicle, VEHICLE_TYPES } from "../../manageVehicles/types/Vehicle";
 import { PermitVehicleDetails } from "../types/PermitVehicleDetails";
 import { getAllowedVehicles } from "./vehicles/getAllowedVehicles";
 import { getDefaultVehicleDetails } from "./vehicles/getDefaultVehicleDetails";
 import { PermitLOA } from "../types/PermitLOA";
+import { isPermitVehicleWithinGvwLimit } from "./vehicles/rules/gvw";
 import {
   durationOptionsForPermitType,
   getAvailableDurationOptions,
@@ -120,6 +121,7 @@ export const getUpdatedLOASelection = (
  * @param vehicleOptions Provided vehicle options for selection
  * @param prevSelectedVehicle Previously selected vehicle details in the permit form
  * @param eligibleSubtypes Set of eligible vehicle subtypes
+ * @param vehicleRestrictions Restriction rules that each vehicle must meet
  * @returns Updated vehicle details and filtered vehicle options
  */
 export const getUpdatedVehicleDetailsForLOAs = (
@@ -127,11 +129,13 @@ export const getUpdatedVehicleDetailsForLOAs = (
   vehicleOptions: (PowerUnit | Trailer)[],
   prevSelectedVehicle: PermitVehicleDetails,
   eligibleSubtypes: Set<string>,
+  vehicleRestrictions: ((vehicle: Vehicle) => boolean)[],
 ) => {
   const filteredVehicles = getAllowedVehicles(
     vehicleOptions,
     eligibleSubtypes,
     selectedLOAs,
+    vehicleRestrictions,
   );
   
   const filteredVehicleIds = filteredVehicles.map(filteredVehicle => ({
@@ -222,6 +226,14 @@ export const applyUpToDateLOAsToApplication = <T extends Nullable<ApplicationFor
     inventoryVehicles,
     applicationData.permitData.vehicleDetails,
     eligibleVehicleSubtypes,
+    [
+      (v) => v.vehicleType !== VEHICLE_TYPES.POWER_UNIT
+        || isPermitVehicleWithinGvwLimit(
+          applicationData.permitType,
+          VEHICLE_TYPES.POWER_UNIT,
+          (v as PowerUnit).licensedGvw,
+        ),
+    ],
   );
 
   return {

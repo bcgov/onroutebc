@@ -8,6 +8,7 @@ import { PermitLOA } from "../types/PermitLOA";
 import { getEligibleSubtypeOptions } from "../helpers/vehicles/subtypes/getEligibleSubtypeOptions";
 import { Nullable } from "../../../common/types/common";
 import { getEligibleVehicleSubtypes } from "../helpers/vehicles/subtypes/getEligibleVehicleSubtypes";
+import { isPermitVehicleWithinGvwLimit } from "../helpers/vehicles/rules/gvw";
 import {
   PowerUnit,
   Trailer,
@@ -50,12 +51,21 @@ export const usePermitVehicles = (
       allVehiclesFromInventory,
       vehicleFormData,
       eligibleVehicleSubtypes,
+      [
+        (v) => v.vehicleType !== VEHICLE_TYPES.POWER_UNIT
+          || isPermitVehicleWithinGvwLimit(
+            permitType,
+            VEHICLE_TYPES.POWER_UNIT,
+            (v as PowerUnit).licensedGvw,
+          ),
+      ],
     );
   }, [
     selectedLOAs,
     allVehiclesFromInventory,
     vehicleFormData,
     eligibleVehicleSubtypes,
+    permitType,
   ]);
 
   const vehicleIdInForm = vehicleFormData.vehicleId;
