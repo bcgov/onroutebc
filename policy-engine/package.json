@@ -1,6 +1,6 @@
 {
   "name": "onroute-policy-engine",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Policy Engine library for commercial vehicle permitting",
   "main": "dist/index.js",
   "exports": {
@@ -26,6 +26,7 @@
   "license": "Apache-2.0",
   "homepage": "https://github.com/bcgov/onroutebc#readme",
   "devDependencies": {
+    "@iwsio/json-csv-core": "^1.1.7",
     "@types/jest": "^29.5.12",
     "@typescript-eslint/eslint-plugin": "^7.5.0",
     "csv": "^6.3.10",

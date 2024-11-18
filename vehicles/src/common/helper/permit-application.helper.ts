@@ -18,6 +18,7 @@ import { User } from '../../modules/company-user-management/users/entities/user.
 import { ApplicationStatus } from '../enum/application-status.enum';
 import { PermitType } from '../enum/permit-type.enum';
 import { PERMIT_TYPES_FOR_QUEUE } from '../constants/permit.constant';
+import * as dayjs from 'dayjs';
 
 /**
  * Fetches and resolves various types of names associated with a permit using cache.
@@ -265,4 +266,14 @@ export const isPermitTypeEligibleForQueue = (
   permitType: PermitType,
 ): boolean => {
   return PERMIT_TYPES_FOR_QUEUE.includes(permitType);
+};
+
+export const validApplicationDates = (
+  application: Permit,
+  timezone: string,
+): boolean => {
+  const todayUTC = dayjs(new Date());
+  const todayPacific = todayUTC.tz(timezone).format('YYYY-MM-DD');
+  const { startDate, expiryDate } = application.permitData;
+  return startDate >= todayPacific && startDate <= expiryDate;
 };

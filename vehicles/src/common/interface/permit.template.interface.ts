@@ -1,3 +1,5 @@
+import { ThirdPartyLiability } from '../enum/third-party-liability.enum';
+
 // Data used to populate a .docx template
 export interface PermitTemplateData {
   permitName: string;
@@ -33,8 +35,12 @@ export interface PermitData {
   clientNumber: string;
   vehicleConfiguration?: VehicleConfiguration;
   applicationNotes?: string;
-  permittedCommodity?: string;
+  permittedCommodity?: PermittedCommodity;
   permittedRoute?: PermittedRoute;
+  /**
+   * Third Party Liability for Non resident ICBC permits
+   */
+  thirdPartyLiability?: ThirdPartyLiability;
 }
 
 interface VehicleConfiguration {
@@ -51,10 +57,17 @@ interface PermittedRoute {
   manualRoute: ManualRoute;
 }
 
+interface PermittedCommodity {
+  commodityType: string;
+  loadDescription: string;
+}
+
 interface ManualRoute {
   origin: string;
   destination: string;
-  highwaySequence: string[];
+  exitPoint?: string;
+  totalDistance?: number;
+  highwaySequence?: string[];
 }
 
 interface MailingAddress {
@@ -87,6 +100,7 @@ interface VehicleDetails {
   provinceCode: string;
   vehicleType: string;
   vehicleSubType: string;
+  licensedGVW?: number;
   saveVehicle?: boolean;
 }
 

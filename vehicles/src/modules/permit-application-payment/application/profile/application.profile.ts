@@ -23,9 +23,14 @@ import { Permit } from '../../permit/entities/permit.entity';
 import { differenceBetween } from '../../../../common/helper/date-time.helper';
 import { Nullable } from '../../../../common/types/common';
 import {
-  ApplicationQueueStatus,
   CaseStatusType,
+  convertCaseStatus,
 } from '../../../../common/enum/case-status-type.enum';
+import { ReadCaseActivityDto } from '../../../case-management/dto/response/read-case-activity.dto';
+import { CreatePermitLoaDto } from '../dto/request/create-permit-loa.dto';
+import { PermitLoa } from '../entities/permit-loa.entity';
+import { ReadPermitLoaDto } from '../dto/response/read-permit-loa.dto';
+import * as dayjs from 'dayjs';
 
 @Injectable()
 export class ApplicationProfile extends AutomapperProfile {
@@ -207,6 +212,21 @@ export class ApplicationProfile extends AutomapperProfile {
             }
           }),
         ),
+        forMember(
+          (d) => d.rejectionHistory,
+          mapWithArguments(
+            (
+              s,
+              {
+                readCaseActivityList,
+              }: { readCaseActivityList: ReadCaseActivityDto[] },
+            ) => {
+              if (readCaseActivityList?.length) {
+                return readCaseActivityList;
+              }
+            },
+          ),
+        ),
       );
 
       createMap(
@@ -273,18 +293,13 @@ export class ApplicationProfile extends AutomapperProfile {
             (
               s,
               {
-                applicationsInQueue,
-              }: { applicationsInQueue?: Nullable<boolean> },
+                applicationQueueStatus,
+              }: { applicationQueueStatus?: Nullable<CaseStatusType[]> },
             ) => {
-              if (applicationsInQueue && s.cases?.length) {
-                switch (s.cases?.at(0)?.caseStatusType) {
-                  case CaseStatusType.OPEN:
-                    return ApplicationQueueStatus.PENDING_REVIEW;
-                  case CaseStatusType.IN_PROGRESS:
-                    return ApplicationQueueStatus.IN_REVIEW;
-                  case CaseStatusType.CLOSED:
-                    return ApplicationQueueStatus.CLOSED;
-                }
+              if (applicationQueueStatus?.length && s.cases?.length) {
+                return convertCaseStatus([s.cases?.at(0)?.caseStatusType])?.at(
+                  0,
+                );
               }
             },
           ),
@@ -297,15 +312,15 @@ export class ApplicationProfile extends AutomapperProfile {
               {
                 currentUserRole,
                 currentDateTime,
-                applicationsInQueue,
+                applicationQueueStatus,
               }: {
                 currentUserRole: UserRole;
                 currentDateTime: Date;
-                applicationsInQueue?: Nullable<boolean>;
+                applicationQueueStatus?: Nullable<CaseStatusType[]>;
               },
             ) => {
               if (
-                applicationsInQueue &&
+                applicationQueueStatus?.length &&
                 doesUserHaveRole(currentUserRole, IDIR_USER_ROLE_LIST)
               ) {
                 const diff = differenceBetween(
@@ -330,14 +345,14 @@ export class ApplicationProfile extends AutomapperProfile {
               s,
               {
                 currentUserRole,
-                applicationsInQueue,
+                applicationQueueStatus,
               }: {
                 currentUserRole: UserRole;
-                applicationsInQueue?: Nullable<boolean>;
+                applicationQueueStatus?: Nullable<CaseStatusType[]>;
               },
             ) => {
               if (
-                applicationsInQueue &&
+                applicationQueueStatus?.length &&
                 doesUserHaveRole(currentUserRole, IDIR_USER_ROLE_LIST) &&
                 s.cases?.length
               ) {
@@ -430,6 +445,135 @@ export class ApplicationProfile extends AutomapperProfile {
           (d) => d.permitData.permitDataId,
           mapWithArguments((updateApplicationDto, { permitDataId }) => {
             return permitDataId;
+          }),
+        ),
+      );
+      createMap(
+        mapper,
+        CreatePermitLoaDto,
+        PermitLoa,
+        forMember(
+          (d) => d.permitId,
+          mapWithArguments((_, { permitId }) => {
+            return permitId;
+          }),
+        ),
+        forMember(
+          (d) => d.loa.loaId,
+          mapFrom((s) => {
+            return s.loaIds[0];
+          }),
+        ),
+        forMember(
+          (d) => d.createdUserGuid,
+          mapWithArguments((_, { userGUID }) => {
+            return userGUID;
+          }),
+        ),
+        forMember(
+          (d) => d.createdUser,
+          mapWithArguments((_, { userName }) => {
+            return userName;
+          }),
+        ),
+        forMember(
+          (d) => d.createdUserDirectory,
+          mapWithArguments((_, { directory }) => {
+            return directory;
+          }),
+        ),
+
+        forMember(
+          (d) => d.createdDateTime,
+          mapWithArguments((_, { timestamp }) => {
+            return timestamp;
+          }),
+        ),
+
+        forMember(
+          (d) => d.updatedUserGuid,
+          mapWithArguments((_, { userGUID }) => {
+            return userGUID;
+          }),
+        ),
+        forMember(
+          (d) => d.updatedUser,
+          mapWithArguments((_, { userName }) => {
+            return userName;
+          }),
+        ),
+        forMember(
+          (d) => d.updatedUserDirectory,
+          mapWithArguments((_, { directory }) => {
+            return directory;
+          }),
+        ),
+
+        forMember(
+          (d) => d.updatedDateTime,
+          mapWithArguments((_, { timestamp }) => {
+            return timestamp;
+          }),
+        ),
+      );
+
+      createMap(
+        mapper,
+        PermitLoa,
+        ReadPermitLoaDto,
+        forMember(
+          (d) => d.permitLoaId,
+          mapFrom((s) => {
+            return s.permitLoaId;
+          }),
+        ),
+        forMember(
+          (d) => d.loaId,
+          mapFrom((s) => {
+            return s.loa.loaId;
+          }),
+        ),
+        forMember(
+          (d) => d.companyId,
+          mapFrom((s) => {
+            return s.loa.company.companyId;
+          }),
+        ),
+        forMember(
+          (d) => d.startDate,
+          mapFrom((s) => {
+            return dayjs(s.loa.startDate).format('YYYY-MM-DD');
+          }),
+        ),
+        forMember(
+          (d) => d.expiryDate,
+          mapFrom((s) => {
+            if (s.loa.expiryDate)
+              return dayjs(s.loa.expiryDate).format('YYYY-MM-DD');
+          }),
+        ),
+        forMember(
+          (d) => d.loaPermitType,
+          mapFrom((s) => {
+            return s.loa.loaPermitTypes.map((lpt) => lpt.permitType);
+          }),
+        ),
+        forMember(
+          (d) => d.powerUnits,
+          mapFrom((s) => {
+            if (s.loa.loaVehicles)
+              return s.loa.loaVehicles
+                .filter((lv) => lv.powerUnit)
+                .map((lv) => lv.powerUnit);
+          }),
+        ),
+        forMember(
+          (d) => d.trailers,
+          mapFrom((s) => {
+            if (s.loa.loaVehicles)
+              return s.loa.loaVehicles
+                .filter((lv) => lv.trailer)
+                .map((lv) => lv.trailer);
           }),
         ),
       );
