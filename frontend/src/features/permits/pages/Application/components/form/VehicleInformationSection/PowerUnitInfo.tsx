@@ -3,6 +3,11 @@ import { Button } from "@mui/material";
 import "./PowerUnitInfo.scss";
 import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
 import { PermitVehicleDetails } from "../../../../../types/PermitVehicleDetails";
+import { getProvinceFullName } from "../../../../../../../common/helpers/countries/getProvinceFullName";
+import { getCountryFullName } from "../../../../../../../common/helpers/countries/getCountryFullName";
+import {
+  countrySupportsProvinces,
+} from "../../../../../../../common/helpers/countries/countrySupportsProvinces";
 
 export const PowerUnitInfo = ({
   showPowerUnitInfo,
@@ -13,6 +18,10 @@ export const PowerUnitInfo = ({
   powerUnitInfo: PermitVehicleDetails;
   onRemovePowerUnit: () => void,
 }) => {
+  const provinceDisplay = countrySupportsProvinces(powerUnitInfo.countryCode)
+    ? getProvinceFullName(powerUnitInfo.countryCode, powerUnitInfo.provinceCode)
+    : getCountryFullName(powerUnitInfo.countryCode);
+
   return showPowerUnitInfo ? (
     <div className="power-unit-info">
       <h4 className="power-unit-info__title">Power Unit</h4>
@@ -74,7 +83,7 @@ export const PowerUnitInfo = ({
           </div>
 
           <div className="power-unit-info__value">
-            {powerUnitInfo.provinceCode}
+            {provinceDisplay}
           </div>
         </div>
 

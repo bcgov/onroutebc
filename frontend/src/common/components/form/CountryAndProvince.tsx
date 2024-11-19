@@ -3,8 +3,8 @@ import { useCallback, useEffect, useState } from "react";
 import { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 
-import { getDefaultRequiredVal } from "../../helpers/util";
 import { COUNTRIES } from "../../constants/countries";
+import { countrySupportsProvinces } from "../../helpers/countries/countrySupportsProvinces";
 import { DEFAULT_WIDTH } from "../../../themes/bcGovStyles";
 import { CustomFormComponent } from "./CustomFormComponents";
 import { Nullable, ORBC_FormTypes } from "../../types/common";
@@ -44,13 +44,6 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
   readOnly,
 }: CountryAndProvinceProps): JSX.Element => {
   const { resetField, watch, setValue } = useFormContext();
-
-  const countrySupportsProvinces = (countryCode: string) =>
-    getDefaultRequiredVal(
-      [],
-      COUNTRIES.find(country => country.code === countryCode)?.states,
-    ).length > 0;
-
   const countrySelected = watch(countryField);
   const provinceSelected = watch(provinceField);
 
