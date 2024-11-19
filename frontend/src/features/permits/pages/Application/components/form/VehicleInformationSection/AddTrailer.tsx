@@ -49,10 +49,13 @@ export const AddTrailer = ({
   );
 
   const selectedSubtypesDisplay = useMemoizedArray(
-    selectedTrailerSubtypes.map(subtype => getDefaultRequiredVal(
-      subtype,
-      trailerSubtypeNamesMap.get(subtype),
-    )),
+    selectedTrailerSubtypes.map(subtype => {
+      if (subtype === "NONEXXX") return "None";
+      return getDefaultRequiredVal(
+        subtype,
+        trailerSubtypeNamesMap.get(subtype),
+      );
+    }),
     (selectedSubtype) => selectedSubtype,
     (subtype1, subtype2) => subtype1 === subtype2,
   );

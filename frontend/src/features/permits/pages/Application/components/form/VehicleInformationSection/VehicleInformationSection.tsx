@@ -26,6 +26,7 @@ export const VehicleInformationSection = ({
   subtypeOptions,
   isSelectedLOAVehicle,
   nextAllowedSubtypes,
+  powerUnitSubtypeNamesMap,
   trailerSubtypeNamesMap,
   selectedConfigSubtypes,
   onSetSaveVehicle,
@@ -43,6 +44,7 @@ export const VehicleInformationSection = ({
     value: string;
     label: string;
   }[];
+  powerUnitSubtypeNamesMap: Map<string, string>;
   trailerSubtypeNamesMap: Map<string, string>;
   selectedConfigSubtypes: string[];
   onSetSaveVehicle: (saveVehicle: boolean) => void;
@@ -161,6 +163,7 @@ export const VehicleInformationSection = ({
         <PowerUnitInfo
           showPowerUnitInfo={isPowerUnitSelectedForSingleTrip}
           powerUnitInfo={vehicleFormData}
+          powerUnitSubtypeNamesMap={powerUnitSubtypeNamesMap}
           onRemovePowerUnit={handleRemovePowerUnit}
         />
 

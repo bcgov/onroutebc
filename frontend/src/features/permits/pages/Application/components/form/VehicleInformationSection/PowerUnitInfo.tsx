@@ -12,10 +12,12 @@ import {
 export const PowerUnitInfo = ({
   showPowerUnitInfo,
   powerUnitInfo,
+  powerUnitSubtypeNamesMap,
   onRemovePowerUnit,
 }: {
   showPowerUnitInfo: boolean;
   powerUnitInfo: PermitVehicleDetails;
+  powerUnitSubtypeNamesMap: Map<string, string>;
   onRemovePowerUnit: () => void,
 }) => {
   const provinceDisplay = countrySupportsProvinces(powerUnitInfo.countryCode)
@@ -93,7 +95,7 @@ export const PowerUnitInfo = ({
           </div>
 
           <div className="power-unit-info__value">
-            {powerUnitInfo.vehicleSubType}
+            {powerUnitSubtypeNamesMap.get(powerUnitInfo.vehicleSubType)}
           </div>
         </div>
 

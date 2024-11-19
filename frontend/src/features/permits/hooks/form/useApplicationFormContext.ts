@@ -232,6 +232,7 @@ export const useApplicationFormContext = () => {
     commodityOptions,
     highwaySequence,
     nextAllowedSubtypes,
+    powerUnitSubtypeNamesMap,
     trailerSubtypeNamesMap,
     selectedVehicleConfigSubtypes,
     onLeave,
