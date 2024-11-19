@@ -40,14 +40,14 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cypress-screenshots
+          name: (BCEID) Update Term Oversize
           path: tests/cypress/screenshots/
           if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
       
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cypress-videos
+          name: (BCEID) Update Term Oversize
           path: tests/cypress/videos/
           overwrite: true
           if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
@@ -80,14 +80,14 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cypress-screenshots
+          name: (BCEID) New Term Oversize
           path: tests/cypress/screenshots/
           if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
       
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cypress-videos
+          name: (BCEID) New Term Oversize
           path: tests/cypress/videos/
           overwrite: true
           if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
@@ -120,14 +120,14 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cypress-screenshots
+          name: (BCEID) New Term Overweight
           path: tests/cypress/screenshots/
           if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
       
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cypress-videos
+          name: (BCEID) New Term Overweight
           path: tests/cypress/videos/
           overwrite: true
           if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
