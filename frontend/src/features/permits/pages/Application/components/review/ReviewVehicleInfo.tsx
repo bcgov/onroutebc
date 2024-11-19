@@ -9,15 +9,12 @@ import { Nullable } from "../../../../../../common/types/common";
 import { VehicleType } from "../../../../../manageVehicles/types/Vehicle";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import { DEFAULT_VEHICLE_TYPE, PermitVehicleDetails } from "../../../../types/PermitVehicleDetails";
+import { getCountryFullName } from "../../../../../../common/helpers/countries/getCountryFullName";
+import { getProvinceFullName } from "../../../../../../common/helpers/countries/getProvinceFullName";
 import {
   getSubtypeNameByCode,
   vehicleTypeDisplayText,
 } from "../../../../helpers/mappers";
-
-import {
-  formatCountry,
-  formatProvince,
-} from "../../../../../../common/helpers/formatCountryProvince";
 
 export const ReviewVehicleInfo = ({
   vehicleDetails,
@@ -84,6 +81,11 @@ export const ReviewVehicleInfo = ({
         type: false,
         subtype: false,
       };
+
+  const provinceDisplay = getProvinceFullName(
+    vehicleDetails?.countryCode,
+    vehicleDetails?.provinceCode,
+  );
 
   return (
     <Box className="review-vehicle-info">
@@ -165,23 +167,24 @@ export const ReviewVehicleInfo = ({
             className="info-section__data"
             data-testid="review-vehicle-country"
           >
-            {formatCountry(vehicleDetails?.countryCode)}
+            {getCountryFullName(vehicleDetails?.countryCode)}
           </Typography>
 
-          <Typography className="info-section__label">
-            <span className="info-section__label-text">Province / State</span>
-            {changedFields.province ? <DiffChip /> : null}
-          </Typography>
+          {provinceDisplay ? (
+            <>
+              <Typography className="info-section__label">
+                <span className="info-section__label-text">Province / State</span>
+                {changedFields.province ? <DiffChip /> : null}
+              </Typography>
 
-          <Typography
-            className="info-section__data"
-            data-testid="review-vehicle-province"
-          >
-            {formatProvince(
-              vehicleDetails?.countryCode,
-              vehicleDetails?.provinceCode,
-            )}
-          </Typography>
+              <Typography
+                className="info-section__data"
+                data-testid="review-vehicle-province"
+              >
+                {provinceDisplay}
+              </Typography>
+            </>
+          ) : null}
 
           <Typography className="info-section__label">
             <span className="info-section__label-text">Vehicle Type</span>

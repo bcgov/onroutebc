@@ -3,10 +3,8 @@ import { Box, Typography } from "@mui/material";
 import "./CompanyInformation.scss";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import { Nullable } from "../../../../common/types/common";
-import {
-  formatCountry,
-  formatProvince,
-} from "../../../../common/helpers/formatCountryProvince";
+import { getProvinceFullName } from "../../../../common/helpers/countries/getProvinceFullName";
+import { getCountryFullName } from "../../../../common/helpers/countries/getCountryFullName";
 
 export const CompanyInformation = ({
   companyInfo,
@@ -15,6 +13,12 @@ export const CompanyInformation = ({
   companyInfo?: Nullable<CompanyProfile>;
   doingBusinessAs?: Nullable<string>;
 }) => {
+  const countryFullName = getCountryFullName(companyInfo?.mailingAddress?.countryCode);
+  const provinceFullName = getProvinceFullName(
+    companyInfo?.mailingAddress?.countryCode,
+    companyInfo?.mailingAddress?.provinceCode,
+  );
+
   return (
     <Box className="company-info">
       <Box className="company-info__header">
@@ -57,16 +61,17 @@ export const CompanyInformation = ({
                 {companyInfo.mailingAddress.addressLine1}
               </Typography>
 
-              <Typography data-testid="company-mail-addr-country">
-                {formatCountry(companyInfo.mailingAddress.countryCode)}
-              </Typography>
+              {countryFullName ? (
+                <Typography data-testid="company-mail-addr-country">
+                  {countryFullName}
+                </Typography>
+              ) : null}
 
-              <Typography data-testid="company-mail-addr-prov">
-                {formatProvince(
-                  companyInfo.mailingAddress.countryCode,
-                  companyInfo.mailingAddress.provinceCode,
-                )}
-              </Typography>
+              {provinceFullName ? (
+                <Typography data-testid="company-mail-addr-prov">
+                  {provinceFullName}
+                </Typography>
+              ) : null}
               
               <Typography data-testid="company-mail-addr-city-postal">
                 {`${companyInfo.mailingAddress.city} ${companyInfo.mailingAddress.postalCode}`}
