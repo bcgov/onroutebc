@@ -57,6 +57,7 @@ export const PermitForm = () => {
     onUpdateHighwaySequence,
     onUpdateVehicleConfigTrailers,
     onChangeCommodityType,
+    onUpdateVehicleConfig,
   } = useApplicationFormContext();
 
   return (
@@ -124,6 +125,7 @@ export const PermitForm = () => {
           permitType={permitType}
           feature={feature}
           vehicleConfiguration={vehicleConfiguration}
+          onUpdateVehicleConfiguration={onUpdateVehicleConfig}
         />
 
         <TripDetailsSection

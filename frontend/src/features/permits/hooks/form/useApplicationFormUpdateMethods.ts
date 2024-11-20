@@ -4,11 +4,12 @@ import { useFormContext } from "react-hook-form";
 
 import { PermitCondition } from "../../types/PermitCondition";
 import { PermitLOA } from "../../types/PermitLOA";
-import { VehicleInConfiguration } from "../../types/PermitVehicleConfiguration";
+import { PermitVehicleConfiguration, VehicleInConfiguration } from "../../types/PermitVehicleConfiguration";
 import { EMPTY_VEHICLE_DETAILS, PermitVehicleDetails } from "../../types/PermitVehicleDetails";
 import { ApplicationFormData } from "../../types/application";
 import { getDefaultVehicleConfiguration } from "../../helpers/vehicles/configuration/getDefaultVehicleConfiguration";
 import { PermitType } from "../../types/PermitType";
+import { RequiredOrNull } from "../../../../common/types/common";
 
 /**
  * Hook that returns custom methods that update specific values in the application form.
@@ -75,6 +76,16 @@ export const useApplicationFormUpdateMethods = () => {
     [setValue],
   );
 
+  const onUpdateVehicleConfig = useCallback(
+    (updatedVehicleConfig: RequiredOrNull<PermitVehicleConfiguration>) => {
+      setValue(
+        "permitData.vehicleConfiguration",
+        updatedVehicleConfig,
+      );
+    },
+    [setValue],
+  );
+
   const onClearVehicleConfig = useCallback(
     (permitType: PermitType) => {
       setValue(
@@ -96,6 +107,7 @@ export const useApplicationFormUpdateMethods = () => {
     onUpdateHighwaySequence,
     onUpdateVehicleConfigTrailers,
     onSetCommodityType,
+    onUpdateVehicleConfig,
     onClearVehicleConfig,
   };
 };

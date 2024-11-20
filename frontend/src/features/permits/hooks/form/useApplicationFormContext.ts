@@ -55,6 +55,7 @@ export const useApplicationFormContext = () => {
     onUpdateHighwaySequence,
     onUpdateVehicleConfigTrailers,
     onSetCommodityType,
+    onUpdateVehicleConfig,
     onClearVehicleConfig,
   } = useApplicationFormUpdateMethods();
 
@@ -251,5 +252,6 @@ export const useApplicationFormContext = () => {
     onUpdateVehicleConfigTrailers,
     commodityType: permittedCommodity?.commodityType,
     onChangeCommodityType,
+    onUpdateVehicleConfig,
   };
 };

@@ -10,7 +10,7 @@ import {
 import "./NumberInput.scss";
 import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../helpers/util";
 import { convertToNumberIfValid } from "../../../helpers/numeric/convertToNumberIfValid";
-import { isUndefined } from "../../../types/common";
+import { isUndefined, RequiredOrNull } from "../../../types/common";
 
 type NumberInputClassKey =
   "root" | "label";
@@ -26,7 +26,7 @@ export interface NumberInputProps {
     errors?: string[];
   };
   inputProps: Omit<OutlinedInputProps, "type" | "value"> & {
-    value: number | null;
+    value: RequiredOrNull<number>;
     maskFn?: (numericVal: number) => string;
   };
 }
