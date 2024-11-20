@@ -290,8 +290,12 @@ export const useUpdateCreditAccountStatusMutation = () => {
         ...getResultingSnackbarOptionsFromAction(updateStatusAction),
       });
     },
-    onError: () => {
-      navigate(ERROR_ROUTES.UNEXPECTED);
+    onError: (error: AxiosError) => {
+      navigate(ERROR_ROUTES.UNEXPECTED, {
+        state: {
+          correlationId: error?.response?.headers["x-correlation-id"],
+        },
+      });
     },
   });
 };
