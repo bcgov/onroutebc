@@ -181,7 +181,7 @@ export const List = memo(
           const responseBody = response.data;
           if (responseBody.failure.length > 0) {
             // Delete action for some vehicles failed
-            handleError();
+            handleError(response.headers["x-correlation-id"]);
           } else {
             setIsDeleteDialogOpen(() => false);
             snackBar.setSnackBar({
