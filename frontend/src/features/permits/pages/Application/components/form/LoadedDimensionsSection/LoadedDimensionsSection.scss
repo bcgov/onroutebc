@@ -16,13 +16,9 @@
 
   & &__input {
     max-width: 14.0625rem;
-    margin-left: 2.5rem;
+    margin: 0 0 0 2.5rem;
 
     &--first {
-      margin-left: 0;
-    }
-
-    .custom-form-control {
       margin: 0;
     }
   }

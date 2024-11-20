@@ -10,6 +10,22 @@
   "NaN": {
     "defaultMessage": "Must be a number"
   },
+  "greaterThan": {
+    "messageTemplate": "Must be greater than :val.",
+    "placeholders": [":val"]
+  },
+  "lessThan": {
+    "messageTemplate": "Must be less than :val.",
+    "placeholders": [":val"]
+  },
+  "greaterThanOrEq": {
+    "messageTemplate": "Must be greater than or equal to :val.",
+    "placeholders": [":val"]
+  },
+  "lessThanOrEq": {
+    "messageTemplate": "Must be less than or equal to :val.",
+    "placeholders": [":val"]
+  },
   "country": {
     "defaultMessage": "Invalid country code"
   },

@@ -44,6 +44,7 @@ export const PermitForm = () => {
     trailerSubtypeNamesMap,
     selectedVehicleConfigSubtypes,
     commodityType,
+    vehicleConfiguration,
     onLeave,
     onSave,
     onCancel,
@@ -122,6 +123,7 @@ export const PermitForm = () => {
         <LoadedDimensionsSection
           permitType={permitType}
           feature={feature}
+          vehicleConfiguration={vehicleConfiguration}
         />
 
         <TripDetailsSection

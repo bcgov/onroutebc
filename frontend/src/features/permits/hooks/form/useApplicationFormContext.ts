@@ -235,6 +235,7 @@ export const useApplicationFormContext = () => {
     powerUnitSubtypeNamesMap,
     trailerSubtypeNamesMap,
     selectedVehicleConfigSubtypes,
+    vehicleConfiguration,
     onLeave,
     onSave,
     onCancel,

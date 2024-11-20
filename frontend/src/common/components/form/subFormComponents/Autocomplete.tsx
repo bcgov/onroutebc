@@ -1,26 +1,26 @@
 import {
-  Autocomplete,
-  AutocompleteProps,
+  Autocomplete as MuiAutocomplete,
+  AutocompleteProps as MuiAutocompleteProps,
   FormControl,
   FormHelperText,
   FormLabel,
   TextField,
 } from "@mui/material";
 
-import "./CustomAutocomplete.scss";
+import "./Autocomplete.scss";
 import { getDefaultRequiredVal } from "../../../helpers/util";
 
-type CustomAutocompleteClassKey =
+type AutocompleteClassKey =
   "root" | "label";
 
-export interface CustomAutocompleteProps<
+export interface AutocompleteProps<
   Value,
   Multiple extends boolean | undefined,
   DisableClearable extends boolean | undefined,
   FreeSolo extends boolean | undefined,
   ChipComponent extends React.ElementType,
 > {
-  classes?: Partial<Record<CustomAutocompleteClassKey, string>>;
+  classes?: Partial<Record<AutocompleteClassKey, string>>;
   label?: {
     id: string;
     component: React.ReactNode;
@@ -30,18 +30,18 @@ export interface CustomAutocompleteProps<
     errors?: string[];
   };
   autocompleteProps: Omit<
-    AutocompleteProps<Value, Multiple, DisableClearable, FreeSolo, ChipComponent>,
+    MuiAutocompleteProps<Value, Multiple, DisableClearable, FreeSolo, ChipComponent>,
     "renderInput"
   >;
 }
 
-export const CustomAutocomplete = <
+export const Autocomplete = <
   Value,
   Multiple extends boolean | undefined = false,
   DisableClearable extends boolean | undefined = false,
   FreeSolo extends boolean | undefined = false,
   ChipComponent extends React.ElementType = "div",
->(props: CustomAutocompleteProps<
+>(props: AutocompleteProps<
   Value,
   Multiple,
   DisableClearable,
@@ -65,10 +65,10 @@ export const CustomAutocomplete = <
     <FormControl
       margin="normal"
       className={`
-        custom-autocomplete ${
+        autocomplete ${
           props.classes?.root ? props.classes.root : ""
         } ${
-          errorMessages.length > 0 ? "custom-autocomplete--error" : ""
+          errorMessages.length > 0 ? "autocomplete--error" : ""
         }
       `}
       error={errorMessages.length > 0}
@@ -76,7 +76,7 @@ export const CustomAutocomplete = <
       {props.label ? (
         <FormLabel
           id={props.label.id}
-          className={`custom-autocomplete__label ${
+          className={`autocomplete__label ${
             props.classes?.label ? props.classes.label : ""
           }`}
         >
@@ -84,10 +84,10 @@ export const CustomAutocomplete = <
         </FormLabel>
       ) : null}
 
-      <Autocomplete
+      <MuiAutocomplete
         {...props.autocompleteProps}
         className={
-          `custom-autocomplete__autocomplete ${
+          `autocomplete__autocomplete ${
             props.autocompleteProps.className ? props.autocompleteProps.className : ""
           }`
         }
@@ -98,22 +98,22 @@ export const CustomAutocomplete = <
               inputProps: {
                 ...params.inputProps,
                 className: `
-                  custom-autocomplete__input ${params.inputProps.className ? params.inputProps.className : ""}
+                  autocomplete__input ${params.inputProps.className ? params.inputProps.className : ""}
                 `,
               },
-              className: "custom-autocomplete__textfield",
+              className: "autocomplete__textfield",
             }}
           />
         )}
       />
 
       {helperTexts.length > 0 ? (
-        <div className="custom-autocomplete__helper-texts">
+        <div className="autocomplete__helper-texts">
           {helperTexts.map(({ message, type }) => (
             <FormHelperText
               key={message}
               className={`
-                custom-autocomplete__helper-text ${type === "error" ? "custom-autocomplete__helper-text--error" : ""}
+                autocomplete__helper-text ${type === "error" ? "autocomplete__helper-text--error" : ""}
               `}
               error={type === "error"}
             >

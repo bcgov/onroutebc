@@ -5,7 +5,7 @@ import "./CommodityDetailsSection.scss";
 import { CustomFormComponent } from "../../../../../../../common/components/form/CustomFormComponents";
 import { requiredMessage } from "../../../../../../../common/helpers/validationMessages";
 import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
-import { CustomAutocomplete } from "../../../../../../../common/components/form/subFormComponents/CustomAutocomplete";
+import { Autocomplete } from "../../../../../../../common/components/form/subFormComponents/Autocomplete";
 import { Controller, useFormContext } from "react-hook-form";
 import { Nullable } from "../../../../../../../common/types/common";
 import { DEFAULT_COMMODITY_SELECT_OPTION, DEFAULT_COMMODITY_SELECT_VALUE } from "../../../../../constants/constants";
@@ -77,7 +77,7 @@ export const CommodityDetailsSection = ({
             },
           }}
           render={({ fieldState: {error} }) => (
-            <CustomAutocomplete
+            <Autocomplete
               label={{
                 id: "commodity-type-label",
                 component: "Commodity Type",

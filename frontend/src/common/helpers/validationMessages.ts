@@ -16,6 +16,26 @@ export const requiredMessage = () => validationMessages.required.defaultMessage;
 export const selectionRequired = () =>
   validationMessages.selectionRequired.defaultMessage;
 export const invalidNumber = () => validationMessages.NaN.defaultMessage;
+export const mustBeGreaterThan = (val: number) => {
+  const { messageTemplate, placeholders } = validationMessages.greaterThan;
+  return replacePlaceholders(messageTemplate, placeholders, val);
+};
+
+export const mustBeLessThan = (val: number) => {
+  const { messageTemplate, placeholders } = validationMessages.lessThan;
+  return replacePlaceholders(messageTemplate, placeholders, val);
+};
+
+export const mustBeGreaterThanOrEqualTo = (val: number) => {
+  const { messageTemplate, placeholders } = validationMessages.greaterThanOrEq;
+  return replacePlaceholders(messageTemplate, placeholders, val);
+};
+
+export const mustBeLessThanOrEqualTo = (val: number) => {
+  const { messageTemplate, placeholders } = validationMessages.lessThanOrEq;
+  return replacePlaceholders(messageTemplate, placeholders, val);
+};
+
 export const invalidCountryCode = () =>
   validationMessages.country.defaultMessage;
 export const invalidProvinceCode = () =>
