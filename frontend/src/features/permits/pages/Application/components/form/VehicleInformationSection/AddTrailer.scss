@@ -8,22 +8,6 @@
     margin-top: 1rem;
   }
 
-  .trailer-list {
-    overflow: visible;
-    box-shadow: none;
-
-    &__table {
-      width: 100%;
-      border: 1px solid $bc-border-grey;
-      table-layout: fixed;
-    }
-
-    &__header {
-      background-color: $bc-background-light-grey;
-      font-weight: bold;
-    }
-  }
-
   & &__input {
     width: 100%;
     max-width: 30.625rem;

@@ -18,8 +18,10 @@ import { usePowerUnitSubTypesQuery } from "../../../manageVehicles/hooks/powerUn
 import { useTrailerSubTypesQuery } from "../../../manageVehicles/hooks/trailers";
 import { useFetchSpecialAuthorizations } from "../../../settings/hooks/specialAuthorizations";
 import { calculateFeeByDuration } from "../../helpers/feeSummary";
-import { DEFAULT_PERMIT_TYPE } from "../../types/PermitType";
+import { DEFAULT_PERMIT_TYPE, PERMIT_TYPES } from "../../types/PermitType";
 import { PERMIT_REVIEW_CONTEXTS } from "../../types/PermitReviewContext";
+import { usePolicyEngine } from "../../../policy/hooks/usePolicyEngine";
+import { useCommodityOptions } from "../../hooks/useCommodityOptions";
 import {
   APPLICATIONS_ROUTES,
   APPLICATION_STEPS,
@@ -38,10 +40,11 @@ export const ApplicationReview = () => {
   const { data: companyInfo } = useCompanyInfoQuery();
   const doingBusinessAs = companyInfo?.alternateName;
 
+  const permitType = getDefaultRequiredVal(DEFAULT_PERMIT_TYPE, applicationData?.permitType);
   const fee = isNoFeePermitType
     ? "0"
     : `${calculateFeeByDuration(
-        getDefaultRequiredVal(DEFAULT_PERMIT_TYPE, applicationData?.permitType),
+        permitType,
         getDefaultRequiredVal(0, applicationData?.permitData?.permitDuration),
       )}`;
 
@@ -53,6 +56,8 @@ export const ApplicationReview = () => {
 
   const navigate = useNavigate();
 
+  const policyEngine = usePolicyEngine();
+  const { commodityOptions } = useCommodityOptions(policyEngine, permitType);
   const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
   const trailerSubTypesQuery = useTrailerSubTypesQuery();
   const methods = useForm<Application>();
@@ -132,6 +137,19 @@ export const ApplicationReview = () => {
     window.scrollTo(0, 0);
   }, []);
 
+  const continueBtnText = permitType === PERMIT_TYPES.STOS
+    ? "Submit for Review" : undefined;
+
+  const handleSubmitForReview = async () => {
+    if (permitType !== PERMIT_TYPES.STOS) return;
+
+    setHasAttemptedSubmission(true);
+    if (!allConfirmed) return;
+
+    // TODO: Handle submit for review
+    
+  };
+
   return (
     <div className="application-review">
       <ApplicationBreadcrumb
@@ -142,7 +160,7 @@ export const ApplicationReview = () => {
       <FormProvider {...methods}>
         <PermitReview
           reviewContext={PERMIT_REVIEW_CONTEXTS.APPLY}
-          permitType={applicationData?.permitType}
+          permitType={permitType}
           permitNumber={applicationData?.permitNumber}
           applicationNumber={applicationData?.applicationNumber}
           isAmendAction={false}
@@ -150,11 +168,15 @@ export const ApplicationReview = () => {
           permitDuration={applicationData?.permitData?.permitDuration}
           permitExpiryDate={applicationData?.permitData?.expiryDate}
           permitConditions={applicationData?.permitData?.commodities}
+          permittedCommodity={applicationData?.permitData?.permittedCommodity}
+          commodityOptions={commodityOptions}
           createdDateTime={applicationData?.createdDateTime}
           updatedDateTime={applicationData?.updatedDateTime}
           companyInfo={companyInfo}
           contactDetails={applicationData?.permitData?.contactDetails}
           onEdit={back}
+          continueBtnText={continueBtnText}
+          onContinue={handleSubmitForReview}
           onAddToCart={handleAddToCart}
           allConfirmed={allConfirmed}
           setAllConfirmed={setAllConfirmed}
@@ -165,6 +187,9 @@ export const ApplicationReview = () => {
           vehicleWasSaved={
             applicationData?.permitData?.vehicleDetails?.saveVehicle
           }
+          vehicleConfiguration={applicationData?.permitData?.vehicleConfiguration}
+          route={applicationData?.permitData?.permittedRoute}
+          applicationNotes={applicationData?.permitData?.applicationNotes}
           doingBusinessAs={doingBusinessAs}
           calculatedFee={fee}
           loas={applicationData?.permitData?.loas}

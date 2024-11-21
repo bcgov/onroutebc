@@ -1,11 +1,12 @@
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Box, Button } from "@mui/material";
+
+import "./ReviewActions.scss";
 import {
   PERMIT_REVIEW_CONTEXTS,
   PermitReviewContext,
 } from "../../../../types/PermitReviewContext";
-import "./ReviewActions.scss";
 
 export const ReviewActions = ({
   reviewContext,
@@ -34,7 +35,7 @@ export const ReviewActions = ({
     <Box className="review-actions">
       {
         // hide edit button until edit application in queue feature is complete
-        reviewContext !== PERMIT_REVIEW_CONTEXTS.QUEUE && (
+        reviewContext !== PERMIT_REVIEW_CONTEXTS.QUEUE ? (
           <Button
             className="review-actions__btn review-actions__btn--edit"
             key="edit-application-button"
@@ -49,7 +50,7 @@ export const ReviewActions = ({
             />
             Edit
           </Button>
-        )
+        ) : null
       }
 
       {hasToCartButton ? (
@@ -80,7 +81,7 @@ export const ReviewActions = ({
         </Button>
       ) : null}
 
-      {reviewContext === PERMIT_REVIEW_CONTEXTS.QUEUE && (
+      {reviewContext === PERMIT_REVIEW_CONTEXTS.QUEUE ? (
         <>
           <Button
             className="review-actions__btn review-actions__btn--reject"
@@ -94,6 +95,7 @@ export const ReviewActions = ({
           >
             Reject
           </Button>
+
           <Button
             className="review-actions__btn review-actions__btn--approve"
             key="approve-button"
@@ -107,7 +109,7 @@ export const ReviewActions = ({
             Approve
           </Button>
         </>
-      )}
+      ) : null}
     </Box>
   );
 };

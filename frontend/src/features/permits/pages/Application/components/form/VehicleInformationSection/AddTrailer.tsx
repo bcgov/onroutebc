@@ -4,14 +4,7 @@ import {
   FormControl,
   FormLabel,
   MenuItem,
-  Paper,
   Select,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
 } from "@mui/material";
 
 import "./AddTrailer.scss";
@@ -20,6 +13,7 @@ import { useMemoizedArray } from "../../../../../../../common/hooks/useMemoizedA
 import { VehicleInConfiguration } from "../../../../../types/PermitVehicleConfiguration";
 import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
 import { ApplicationFormContext } from "../../../../../context/ApplicationFormContext";
+import { SelectedVehicleSubtypeList } from "../../common/SelectedVehicleSubtypeList";
 
 const DEFAULT_EMPTY_SUBTYPE = "-";
 
@@ -82,31 +76,9 @@ export const AddTrailer = ({
 
       {selectedSubtypesDisplay.length > 0 ? (
         <div className="add-trailer__trailer-list">
-          <TableContainer className="trailer-list" component={Paper}>
-            <Table className="trailer-list__table" aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <TableCell className="trailer-list__header">
-                    Vehicle Sub-type
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-
-              <TableBody>
-                {selectedSubtypesDisplay.map((subtype) => (
-                  <TableRow key={subtype} className="trailer-list__row">
-                    <TableCell
-                      className="trailer-list__cell"
-                      component="td"
-                      scope="row"
-                    >
-                      {subtype}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <SelectedVehicleSubtypeList
+            selectedSubtypesDisplay={selectedSubtypesDisplay}
+          />
 
           <Button
             key="reset-trailer-config-button"
