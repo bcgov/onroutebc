@@ -223,7 +223,7 @@ export class DgenService {
     let browser: Browser;
     let page: Page;
     try {
-       browser = await puppeteer.launch({
+      browser = await puppeteer.launch({
         args: [
           '--no-sandbox',
           '--disable-gpu',
@@ -239,7 +239,7 @@ export class DgenService {
           '--disable-breakpad',
           '--disable-client-side-phishing-detection',
           '--disable-extensions',
-          '--disable-plugins'
+          '--disable-plugins',
         ],
         pipe: true,
         headless: true,
@@ -247,7 +247,7 @@ export class DgenService {
           ELECTRON_DISABLE_SANDBOX: '1',
         },
       });
-       page = await browser.newPage();
+      page = await browser.newPage();
       await page.setContent(htmlBody);
       await page.emulateMediaType('print');
 
@@ -268,7 +268,7 @@ export class DgenService {
       this.logger.error(error);
       throw error;
     } finally {
-      if(page){
+      if (page) {
         await page.close();
       }
       if (browser) {
