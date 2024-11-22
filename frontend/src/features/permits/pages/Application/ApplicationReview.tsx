@@ -22,6 +22,7 @@ import { DEFAULT_PERMIT_TYPE, PERMIT_TYPES } from "../../types/PermitType";
 import { PERMIT_REVIEW_CONTEXTS } from "../../types/PermitReviewContext";
 import { usePolicyEngine } from "../../../policy/hooks/usePolicyEngine";
 import { useCommodityOptions } from "../../hooks/useCommodityOptions";
+import { useSubmitApplicationForReview } from "../../../queue/hooks/hooks";
 import {
   APPLICATIONS_ROUTES,
   APPLICATION_STEPS,
@@ -69,28 +70,22 @@ export const ApplicationReview = () => {
   const { mutateAsync: saveApplication } = useSaveApplicationMutation();
   const addToCartMutation = useAddToCart();
 
+  // Submit for review (if applicable)
+  const {
+    mutateAsync: submitForReview,
+  } = useSubmitApplicationForReview();
+
   const back = () => {
     navigate(APPLICATIONS_ROUTES.DETAILS(permitId), { replace: true });
   };
 
-  const proceedWithAddToCart = async (
-    companyId: number,
-    applicationIds: string[],
-    onSuccess: () => void,
+  const handleSaveApplication = async (
+    followUpAction: (
+      companyId: number,
+      permitId: string,
+      applicationNumber: string,
+    ) => Promise<void>,
   ) => {
-    const addResult = await addToCartMutation.mutateAsync({
-      companyId,
-      applicationIds,
-    });
-
-    if (hasPermitsActionFailed(addResult)) {
-      navigate(ERROR_ROUTES.UNEXPECTED);
-    } else {
-      onSuccess();
-    }
-  };
-
-  const handleAddToCart = async () => {
     setHasAttemptedSubmission(true);
 
     if (!allConfirmed) return;
@@ -116,7 +111,31 @@ export const ApplicationReview = () => {
 
     if (savedApplication) {
       setApplicationContextData(savedApplication);
+      await followUpAction(companyId, permitId, applicationNumber);
+    } else {
+      navigate(ERROR_ROUTES.UNEXPECTED);
+    }
+  };
 
+  const proceedWithAddToCart = async (
+    companyId: number,
+    applicationIds: string[],
+    onSuccess: () => void,
+  ) => {
+    const addResult = await addToCartMutation.mutateAsync({
+      companyId,
+      applicationIds,
+    });
+
+    if (hasPermitsActionFailed(addResult)) {
+      navigate(ERROR_ROUTES.UNEXPECTED);
+    } else {
+      onSuccess();
+    }
+  };
+
+  const handleAddToCart = async () => {
+    await handleSaveApplication(async (companyId, permitId, applicationNumber) => {
       await proceedWithAddToCart(companyId, [permitId], () => {
         setSnackBar({
           showSnackbar: true,
@@ -128,14 +147,8 @@ export const ApplicationReview = () => {
         refetchCartCount();
         navigate(APPLICATIONS_ROUTES.BASE);
       });
-    } else {
-      navigate(ERROR_ROUTES.UNEXPECTED);
-    }
+    });
   };
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   const continueBtnText = permitType === PERMIT_TYPES.STOS
     ? "Submit for Review" : undefined;
@@ -143,12 +156,31 @@ export const ApplicationReview = () => {
   const handleSubmitForReview = async () => {
     if (permitType !== PERMIT_TYPES.STOS) return;
 
-    setHasAttemptedSubmission(true);
-    if (!allConfirmed) return;
-
-    // TODO: Handle submit for review
-    
+    await handleSaveApplication(async (companyId, permitId, applicationNumber) => {
+      await submitForReview({
+        companyId,
+        applicationId: permitId,
+      }, {
+        onSuccess: () => {
+          setSnackBar({
+            showSnackbar: true,
+            setShowSnackbar: () => true,
+            message: `Application ${applicationNumber} submitted for review`,
+            alertType: "success",
+          });
+  
+          navigate(APPLICATIONS_ROUTES.BASE);
+        },
+        onError: () => {
+          navigate(ERROR_ROUTES.UNEXPECTED);
+        },
+      });
+    });
   };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="application-review">
