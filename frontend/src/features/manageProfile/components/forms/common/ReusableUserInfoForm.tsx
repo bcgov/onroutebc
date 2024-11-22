@@ -10,6 +10,7 @@ import {
   requiredMessage,
 } from "../../../../../common/helpers/validationMessages";
 import { CountryAndProvince } from "../../../../../common/components/form/CountryAndProvince";
+import { removeNonNumericValues } from "../../../../../common/helpers/removeNonNumericValues";
 
 /**
  * Reusable form for editing user information.
@@ -84,9 +85,14 @@ export const ReusableUserInfoForm = ({
             rules: {
               required: { value: true, message: requiredMessage() },
               validate: {
-                validatePhone1: (phone: string) =>
-                  (phone.length >= 10 && phone.length <= 20) ||
-                  invalidPhoneLength(10, 20),
+                validatePhone1: (phone: string) => {
+                  const filteredPhone = removeNonNumericValues(phone);
+                  return (
+                    (filteredPhone.length >= 10 &&
+                      filteredPhone.length <= 20) ||
+                    invalidPhoneLength(10, 20)
+                  );
+                },
               },
             },
             label: "Primary Phone",
@@ -122,14 +128,17 @@ export const ReusableUserInfoForm = ({
             rules: {
               required: false,
               validate: {
-                validatePhone2: (phone2?: string) =>
-                  phone2 == null ||
-                  phone2 === "" ||
-                  (phone2 != null &&
-                    phone2 !== "" &&
-                    phone2.length >= 10 &&
-                    phone2.length <= 20) ||
-                  invalidPhoneLength(10, 20),
+                validatePhone2: (phone?: string) => {
+                  if (!phone) return;
+
+                  const filteredPhone = removeNonNumericValues(phone);
+                  return (
+                    filteredPhone.length === 0 ||
+                    (filteredPhone.length >= 10 &&
+                      filteredPhone.length <= 20) ||
+                    invalidPhoneLength(10, 20)
+                  );
+                },
               },
             },
             label: "Alternate Phone",
@@ -164,14 +173,16 @@ export const ReusableUserInfoForm = ({
           rules: {
             required: false,
             validate: {
-              validateFax: (fax?: string) =>
-                fax == null ||
-                fax === "" ||
-                (fax != null &&
-                  fax !== "" &&
-                  fax.length >= 10 &&
-                  fax.length <= 20) ||
-                invalidPhoneLength(10, 20),
+              validateFax: (fax?: string) => {
+                if (!fax) return;
+
+                const filteredFax = removeNonNumericValues(fax);
+                return (
+                  filteredFax.length === 0 ||
+                  (filteredFax.length >= 10 && filteredFax.length <= 20) ||
+                  invalidPhoneLength(10, 20)
+                );
+              },
             },
           },
           label: "Fax",

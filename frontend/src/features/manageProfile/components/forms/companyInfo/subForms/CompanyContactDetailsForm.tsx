@@ -8,6 +8,7 @@ import {
   invalidPhoneLength,
   requiredMessage,
 } from "../../../../../../common/helpers/validationMessages";
+import { removeNonNumericValues } from "../../../../../../common/helpers/removeNonNumericValues";
 
 export const CompanyContactDetailsForm = ({
   feature,
@@ -49,9 +50,13 @@ export const CompanyContactDetailsForm = ({
           rules: {
             required: { value: true, message: requiredMessage() },
             validate: {
-              validatePhone: (phone: string) =>
-                (phone.length >= 10 && phone.length <= 20) ||
-                invalidPhoneLength(10, 20),
+              validatePhone: (phone: string) => {
+                const filteredPhone = removeNonNumericValues(phone);
+                return (
+                  (filteredPhone.length >= 10 && filteredPhone.length <= 20) ||
+                  invalidPhoneLength(10, 20)
+                );
+              },
             },
           },
           label: "Phone",
@@ -87,14 +92,16 @@ export const CompanyContactDetailsForm = ({
         rules: {
           required: false,
           validate: {
-            validateFax: (fax?: string) =>
-              fax == null ||
-              fax === "" ||
-              (fax != null &&
-                fax !== "" &&
-                fax.length >= 10 &&
-                fax.length <= 20) ||
-              invalidPhoneLength(10, 20),
+            validateFax: (fax?: string) => {
+              if (!fax) return;
+
+              const filteredFax = removeNonNumericValues(fax);
+              return (
+                filteredFax.length === 0 ||
+                (filteredFax.length >= 10 && filteredFax.length <= 20) ||
+                invalidPhoneLength(10, 20)
+              );
+            },
           },
         },
         label: "Fax",

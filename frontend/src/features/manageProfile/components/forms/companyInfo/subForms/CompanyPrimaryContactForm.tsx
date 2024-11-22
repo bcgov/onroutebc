@@ -12,6 +12,7 @@ import {
   invalidPhoneLength,
   requiredMessage,
 } from "../../../../../../common/helpers/validationMessages";
+import { removeNonNumericValues } from "../../../../../../common/helpers/removeNonNumericValues";
 
 export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
   <div className="company-primary-contact-form">
@@ -74,9 +75,13 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
           rules: {
             required: { value: true, message: requiredMessage() },
             validate: {
-              validatePhone1: (phone: string) =>
-                (phone.length >= 10 && phone.length <= 20) ||
-                invalidPhoneLength(10, 20),
+              validatePhone1: (phone: string) => {
+                const filteredPhone = removeNonNumericValues(phone);
+                return (
+                  (filteredPhone.length >= 10 && filteredPhone.length <= 20) ||
+                  invalidPhoneLength(10, 20)
+                );
+              },
             },
           },
           label: "Primary Phone",
@@ -112,14 +117,16 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
           rules: {
             required: false,
             validate: {
-              validatePhone2: (phone2?: string) =>
-                phone2 == null ||
-                phone2 === "" ||
-                (phone2 != null &&
-                  phone2 !== "" &&
-                  phone2.length >= 10 &&
-                  phone2.length <= 20) ||
-                invalidPhoneLength(10, 20),
+              validatePhone2: (phone?: string) => {
+                if (!phone) return;
+
+                const filteredPhone = removeNonNumericValues(phone);
+                return (
+                  filteredPhone.length === 0 ||
+                  (filteredPhone.length >= 10 && filteredPhone.length <= 20) ||
+                  invalidPhoneLength(10, 20)
+                );
+              },
             },
           },
           label: "Alternate Phone",
