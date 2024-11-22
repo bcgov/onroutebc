@@ -205,7 +205,7 @@ export const usePermitVehicleManagement = (companyId: number) => {
       if (!modifyVehicleSuccess(res.status)) return null;
 
       const { trailerId, trailerTypeCode, ...restOfTrailer } = res.data;
-      return getDefaultRequiredVal({
+      return getDefaultVehicleDetails({
         ...restOfTrailer,
         vehicleId: trailerId,
         vehicleSubType: trailerTypeCode,

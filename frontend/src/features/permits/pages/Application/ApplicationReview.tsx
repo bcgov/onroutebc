@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
+import { isAxiosError } from "axios";
 
 import "./ApplicationReview.scss";
 import { ApplicationContext } from "../../context/ApplicationContext";
@@ -23,6 +24,7 @@ import { PERMIT_REVIEW_CONTEXTS } from "../../types/PermitReviewContext";
 import { usePolicyEngine } from "../../../policy/hooks/usePolicyEngine";
 import { useCommodityOptions } from "../../hooks/useCommodityOptions";
 import { useSubmitApplicationForReview } from "../../../queue/hooks/hooks";
+import { deserializeApplicationResponse } from "../../helpers/serialize/deserializeApplication";
 import {
   APPLICATIONS_ROUTES,
   APPLICATION_STEPS,
@@ -97,24 +99,35 @@ export const ApplicationReview = () => {
       return navigate(ERROR_ROUTES.UNEXPECTED);
     }
 
-    const { application: savedApplication } =
-      await saveApplication({
-        data: {
-          ...applicationData,
-          permitData: {
-            ...applicationData.permitData,
-            doingBusinessAs, // always set most recent DBA from company info
-          },
+    await saveApplication({
+      data: {
+        ...applicationData,
+        permitData: {
+          ...applicationData.permitData,
+          doingBusinessAs, // always set most recent DBA from company info
         },
-        companyId,
-      });
-
-    if (savedApplication) {
-      setApplicationContextData(savedApplication);
-      await followUpAction(companyId, permitId, applicationNumber);
-    } else {
-      navigate(ERROR_ROUTES.UNEXPECTED);
-    }
+      },
+      companyId,
+    }, {
+      onSuccess: async ({ data: savedApplication }) => {
+        setApplicationContextData(
+          deserializeApplicationResponse(savedApplication),
+        );
+        await followUpAction(companyId, permitId, applicationNumber);
+      },
+      onError: (e) => {
+        console.error(e);
+        if (isAxiosError(e)) {
+          navigate(ERROR_ROUTES.UNEXPECTED, {
+            state: {
+              correlationId: e?.response?.headers["x-correlation-id"],
+            },
+          });
+        } else {
+          navigate(ERROR_ROUTES.UNEXPECTED);
+        }
+      },
+    });
   };
 
   const proceedWithAddToCart = async (

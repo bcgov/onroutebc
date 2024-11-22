@@ -68,7 +68,7 @@ const QUERY_KEYS = {
  */
 export const useSaveApplicationMutation = () => {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
+  
   return useMutation({
     mutationFn: async ({
       data,
@@ -77,33 +77,16 @@ export const useSaveApplicationMutation = () => {
       data: ApplicationFormData;
       companyId: number;
     }) => {
-      const res = data.permitId
+      return data.permitId
         ? await updateApplication(data, data.permitId, companyId)
-        : await createApplication(data, companyId);
-
+        : await createApplication(data, companyId);      
+    },
+    onSuccess: (res) => {
       if (res.status === 200 || res.status === 201) {
         queryClient.invalidateQueries({
           queryKey: ["application"],
         });
-
-        return {
-          application: deserializeApplicationResponse(res.data),
-          status: res.status,
-        };
-      } else {
-        return {
-          application: null,
-          status: res.status,
-        };
       }
-    },
-    onError: (error: AxiosError) => {
-      console.error(error);
-      navigate(ERROR_ROUTES.UNEXPECTED, {
-        state: {
-          correlationId: error?.response?.headers["x-correlation-id"],
-        },
-      });
     },
   });
 };

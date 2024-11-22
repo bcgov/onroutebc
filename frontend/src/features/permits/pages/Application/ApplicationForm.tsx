@@ -2,6 +2,7 @@ import { FormProvider } from "react-hook-form";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useContext, useMemo, useState } from "react";
 import dayjs from "dayjs";
+import { isAxiosError } from "axios";
 
 import "./ApplicationForm.scss";
 import { Application, ApplicationFormData } from "../../types/application";
@@ -30,6 +31,7 @@ import { usePolicyEngine } from "../../../policy/hooks/usePolicyEngine";
 import { Loading } from "../../../../common/pages/Loading";
 import { serializePermitVehicleDetails } from "../../helpers/serialize/serializePermitVehicleDetails";
 import { serializePermitData } from "../../helpers/serialize/serializePermitData";
+import { deserializeApplicationResponse } from "../../helpers/serialize/deserializeApplication";
 import {
   serializeForCreateApplication,
   serializeForUpdateApplication,
@@ -63,8 +65,7 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
   } = useContext(OnRouteBCContext);
 
   const isStaffUser = Boolean(idirUserDetails?.userRole);
-  const companyInfoQuery = useCompanyInfoQuery();
-  const companyInfo = companyInfoQuery.data;
+  const { data: companyInfo } = useCompanyInfoQuery();
 
   // Company id should be set by context, otherwise default to companyId in session and then the fetched companyId
   const companyId: number = getDefaultRequiredVal(
@@ -220,17 +221,13 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
     return getDefaultRequiredVal("", savedApplication.permitId);
   };
 
-  const onSaveFailure = () => {
-    navigate(ERROR_ROUTES.UNEXPECTED);
-  };
-
   // Whenever application is to be saved (either through "Save" or "Continue")
   const onSaveApplication = async (
     additionalSuccessAction?: (permitId: string) => void,
     savedVehicleInventoryDetails?: Nullable<PermitVehicleDetails>,
   ) => {
     if (isNull(savedVehicleInventoryDetails)) {
-      return onSaveFailure();
+      return navigate(ERROR_ROUTES.UNEXPECTED);
     }
 
     const applicationToBeSaved = !savedVehicleInventoryDetails
@@ -246,18 +243,28 @@ export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
           },
         };
 
-    const { application: savedApplication, status } =
-      await saveApplication({
-        data: applicationToBeSaved,
-        companyId,
-      });
-
-    if (savedApplication) {
-      const savedPermitId = onSaveSuccess(savedApplication, status);
-      additionalSuccessAction?.(savedPermitId);
-    } else {
-      onSaveFailure();
-    }
+    await saveApplication({
+      data: applicationToBeSaved,
+      companyId,
+    }, {
+      onSuccess: ({ data, status }) => {
+        const savedApplication = deserializeApplicationResponse(data);
+        const savedPermitId = onSaveSuccess(savedApplication, status);
+        additionalSuccessAction?.(savedPermitId);
+      },
+      onError: (e) => {
+        console.error(e);
+        if (isAxiosError(e)) {
+          navigate(ERROR_ROUTES.UNEXPECTED, {
+            state: {
+              correlationId: e?.response?.headers["x-correlation-id"],
+            },
+          });
+        } else {
+          navigate(ERROR_ROUTES.UNEXPECTED);
+        }
+      },
+    });
   };
 
   const onSave = async () => {
