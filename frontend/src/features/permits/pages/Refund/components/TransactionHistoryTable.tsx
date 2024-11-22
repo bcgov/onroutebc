@@ -61,14 +61,14 @@ export const TransactionHistoryTable = ({
   };
 
   const handleFormSubmit = (data: FieldValues) => {
+    // TODO ask praveen if this data is the correct shape expected by the BE
     const combinedData: MultiplePaymentMethodRefundData[] =
       validTransactionHistory.map((originalRow, index) => ({
         ...originalRow, // Spread the properties of PermitHistory
-        refundAmount: data[index]?.refundAmount || "", // Get the refundAmount from the submitted data
-        refundTransactionId: data[index]?.refundTransactionId || "", // Get the refundTransactionId from the submitted data
-        chequeRefund: data[index]?.chequeRefund || false, // Get the chequeRefund from the submitted data
+        refundAmount: data.refundData[index]?.refundAmount || "", // Get the refundAmount from the submitted data
+        refundTransactionId: data.refundData[index]?.refundTransactionId || "", // Get the refundTransactionId from the submitted data
+        chequeRefund: data.refundData[index]?.chequeRefund || false, // Get the chequeRefund from the submitted data
       }));
-
     // Call the onSubmit with the combined data
     onSubmit(combinedData);
   };
@@ -181,7 +181,7 @@ export const TransactionHistoryTable = ({
           // clear refundAmount when row is unselected
           useEffect(() => {
             if (!rowIsSelected) {
-              setValue(`${cell.row.index}.refundAmount`, "");
+              setValue(`refundData.${cell.row.index}.refundAmount`, "");
             }
           }, [rowIsSelected, setValue, cell.row.index]);
 
@@ -223,25 +223,29 @@ export const TransactionHistoryTable = ({
           cell: MRT_Cell<MultiplePaymentMethodRefundData>;
         }) => {
           const rowIsSelected = cell.row.getIsSelected();
-          const refundAmount = watch(`${cell.row.index}.refundAmount`);
-          const chequeRefund = watch(`${cell.row.index}.chequeRefund`);
+          const refundAmount = watch(
+            `refundData.${cell.row.index}.refundAmount`,
+          );
+          const chequeRefund = watch(
+            `refundData.${cell.row.index}.chequeRefund`,
+          );
 
           // clear refundTransactionId when refundAmount is empty or zero
           useEffect(() => {
             if (!refundAmount || Number(refundAmount) <= 0) {
-              setValue(`${cell.row.index}.refundTransactionId`, "");
+              setValue(`refundData.${cell.row.index}.refundTransactionId`, "");
             }
           }, [refundAmount, cell.row.index, setValue]);
 
           // re-validate refundTransactionId when chequeRefund is checked/unchecked
           useEffect(() => {
-            trigger(`${cell.row.index}.refundTransactionId`);
+            trigger(`refundData.${cell.row.index}.refundTransactionId`);
           }, [chequeRefund, cell.row.index, trigger]);
 
           // clear refundTransactionId when row is unselected
           useEffect(() => {
             if (!rowIsSelected) {
-              setValue(`${cell.row.index}.refundTransactionId`, "");
+              setValue(`refundData.${cell.row.index}.refundTransactionId`, "");
             }
           }, [rowIsSelected, setValue, cell.row.index]);
 
@@ -289,9 +293,11 @@ export const TransactionHistoryTable = ({
         }: {
           cell: MRT_Cell<MultiplePaymentMethodRefundData>;
         }) => {
-          const refundAmount = watch(`${cell.row.index}.refundAmount`);
+          const refundAmount = watch(
+            `refundData.${cell.row.index}.refundAmount`,
+          );
           const refundTransactionId = watch(
-            `${cell.row.index}.refundTransactionId`,
+            `refundData.${cell.row.index}.refundTransactionId`,
           );
 
           const rowIsSelected = cell.row.getIsSelected();
@@ -300,7 +306,7 @@ export const TransactionHistoryTable = ({
           // set chequeRefund to false when row is unselected
           useEffect(() => {
             if (!rowIsSelected) {
-              setValue(`${cell.row.index}.chequeRefund`, false);
+              setValue(`refundData.${cell.row.index}.chequeRefund`, false);
             }
           }, [rowIsSelected, cell.row.index, setValue]);
 
@@ -310,7 +316,7 @@ export const TransactionHistoryTable = ({
                 control={
                   <Checkbox
                     className="cheque-refund-checkbox"
-                    {...register(`${cell.row.index}.chequeRefund`)}
+                    {...register(`refundData.${cell.row.index}.chequeRefund`)}
                     disabled={
                       !cell.row.getIsSelected() ||
                       refundAmount === "" ||

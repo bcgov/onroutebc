@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FieldValues } from "react-hook-form";
@@ -63,6 +64,7 @@ export const AmendPermitFinish = () => {
   const { mutation: refundPermitMutation, transaction } =
     useRefundPermitMutation();
   const onSubmit = (data: FieldValues) => {
+    console.log(data);
     const totalRefundAmount = data.reduce(
       (sum: number, transaction: MultiplePaymentMethodRefundData) =>
         sum + Number(transaction.refundAmount),
@@ -74,7 +76,7 @@ export const AmendPermitFinish = () => {
       return;
     }
 
-    refundPermitMutation.mutate({
+    console.log({
       applicationId: permitId,
       transactions: data.map(
         (transaction: MultiplePaymentMethodRefundData) => ({
@@ -91,6 +93,24 @@ export const AmendPermitFinish = () => {
         }),
       ),
     });
+
+    // refundPermitMutation.mutate({
+    //   applicationId: permitId,
+    //   transactions: data.map(
+    //     (transaction: MultiplePaymentMethodRefundData) => ({
+    //       pgTransactionId: transaction.pgTransactionId,
+    //       pgPaymentMethod: transaction.pgPaymentMethod,
+    //       paymentCardTypeCode: transaction.paymentCardTypeCode,
+    //       transactionAmount: Number(transaction.refundAmount),
+    //       paymentMethodTypeCode:
+    //         Number(transaction.refundAmount) === 0
+    //           ? PAYMENT_METHOD_TYPE_CODE.NP
+    //           : transaction.chequeRefund
+    //             ? PAYMENT_METHOD_TYPE_CODE.CHEQUE
+    //             : transaction.paymentMethodTypeCode,
+    //     }),
+    //   ),
+    // });
   };
 
   const handleCloseRefundErrorModal = () => {
