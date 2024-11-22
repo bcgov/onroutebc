@@ -1,11 +1,11 @@
-@import "../../../../themes/orbcStyles";
+@use "../../../../themes/orbcStyles";
 
 .add-user {
   padding: 2.5rem 0;
-  border-bottom: 1px solid $bc-border-grey;
+  border-bottom: 1px solid orbcStyles.$bc-border-grey;
   
   label.Mui-error {
-    color: $bc-black;
+    color: orbcStyles.$bc-black;
   }
 
   & &__form {
@@ -23,15 +23,15 @@
     top: 47px;
     min-width: 87px;
     box-shadow: none;
-    border: 2px solid $bc-background-light-grey;
+    border: 2px solid orbcStyles.$bc-background-light-grey;
     padding: .75rem 1rem;
     line-height: normal;
     margin-left: 1.5rem;
 
     &:hover {
       box-shadow: none;
-      background-color: $bc-background-light-grey;
-      border-color: $bc-text-box-border-grey;
+      background-color: orbcStyles.$bc-background-light-grey;
+      border-color: orbcStyles.$bc-text-box-border-grey;
     }
   }
 }

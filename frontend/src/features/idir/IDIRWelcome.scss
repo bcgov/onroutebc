@@ -1,4 +1,4 @@
-@import "../../themes/orbcStyles";
+@use "../../themes/orbcStyles" as *;
 
 .idir-welcome-page {
   display: flex;

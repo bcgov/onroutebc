@@ -1,12 +1,12 @@
 @use "../../../../common/components/form/CustomFormComponents";
-@import "../../../../themes/orbcStyles";
+@use "../../../../themes/orbcStyles";
 
 @include CustomFormComponents.custom-form-component(".select-credit-limit__input");
 
 .select-credit-limit {
   &#{&} {
     font-size: 1rem;
-    color: $bc-black;
+    color: orbcStyles.$bc-black;
     margin: 0;
   }
 
@@ -16,7 +16,7 @@
   }
 
   & &__input {
-    background-color: $white;
+    background-color: orbcStyles.$white;
     width: 15.25rem;
     margin-bottom: 0;
   }

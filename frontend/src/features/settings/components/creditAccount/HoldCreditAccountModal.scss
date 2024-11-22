@@ -1,4 +1,4 @@
-@import "../../../../themes/orbcStyles";
+@use "../../../../themes/orbcStyles";
 
 .hold-account-modal {
   & &__container {
@@ -12,12 +12,12 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    background-color: $bc-background-light-grey;
+    background-color: orbcStyles.$bc-background-light-grey;
   }
 
   &__icon {
     .icon {
-      color: $bc-messages-gold-text;
+      color: orbcStyles.$bc-messages-gold-text;
       height: 2rem;
     }
   }
@@ -26,7 +26,7 @@
     font-weight: 600;
     font-size: 1.5rem;
     margin-left: 0.5em;
-    color: $bc-messages-gold-text;
+    color: orbcStyles.$bc-messages-gold-text;
   }
 
   &__body {
@@ -42,7 +42,7 @@
     &__label {
       font-weight: bold;
       font-size: 1rem;
-      color: $bc-black;
+      color: orbcStyles.$bc-black;
     }
 
     .custom-form-control {
@@ -50,7 +50,7 @@
     }
     
     .custom-text-area {
-      font-family: $default-font;
+      font-family: orbcStyles.$default-font;
     }
    }
 
@@ -66,27 +66,27 @@
     &--cancel {
       margin-right: 1.5rem;
       cursor: pointer;
-      background-color: $bc-background-light-grey;
-      color: $bc-black;
-      border: 2px solid $bc-background-light-grey;
+      background-color: orbcStyles.$bc-background-light-grey;
+      color: orbcStyles.$bc-black;
+      border: 2px solid orbcStyles.$bc-background-light-grey;
       box-shadow: none;
 
       &:hover, &:focus {
-        background-color: $bc-background-light-grey;
-        border: 2px solid $bc-border-grey;
+        background-color: orbcStyles.$bc-background-light-grey;
+        border: 2px solid orbcStyles.$bc-border-grey;
         box-shadow: none;
       }
     }
 
     &--confirm {
-      color: $white;
-      background-color: $bc-primary-blue;
+      color: orbcStyles.$white;
+      background-color: orbcStyles.$bc-primary-blue;
       font-weight: bold;
       cursor: pointer;
 
       &:disabled {
-        background-color: $disabled-colour;
-        color: $white;
+        background-color: orbcStyles.$disabled-colour;
+        color: orbcStyles.$white;
       }
     }
   }

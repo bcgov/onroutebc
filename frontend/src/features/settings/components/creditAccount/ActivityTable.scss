@@ -1,14 +1,14 @@
-@import "../../../../themes/orbcStyles";
+@use "../../../../themes/orbcStyles";
 
 .activity-table {
   padding: 2.5rem 0;
-  border-bottom: 1px solid $bc-border-grey;
+  border-bottom: 1px solid orbcStyles.$bc-border-grey;
   & &__paper {
     overflow: visible;
     box-shadow: none;
   }
   & &__container {
-    border: 1px solid $bc-border-grey;
+    border: 1px solid orbcStyles.$bc-border-grey;
     box-sizing: border-box;
   }
 
@@ -46,25 +46,25 @@
     }
 
     &--remove {
-      background-color: $white;
-      border-color: $bc-messages-red-background;
-      color: $bc-red;
+      background-color: orbcStyles.$white;
+      border-color: orbcStyles.$bc-messages-red-background;
+      color: orbcStyles.$bc-red;
 
       &:hover {
-        background-color: $bc-messages-red-background;
+        background-color: orbcStyles.$bc-messages-red-background;
       }
      
     }
     &:disabled {
-      background-color: $white;
-      border-color: $disabled-colour;
-      color: $disabled-colour;
+      background-color: orbcStyles.$white;
+      border-color: orbcStyles.$disabled-colour;
+      color: orbcStyles.$disabled-colour;
     }
   }
   
   & &__row {
     &--selected {
-      background-color: rgba($bc-messages-blue-background, 0.5);
+      background-color: rgba(orbcStyles.$bc-messages-blue-background, 0.5);
     }
   }
 

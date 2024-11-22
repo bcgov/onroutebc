@@ -1,4 +1,4 @@
-@import "../../../../themes/orbcStyles";
+@use "../../../../themes/orbcStyles";
 
 .status-chip {
   border-radius: .25rem;
@@ -7,17 +7,17 @@
   text-transform: capitalize;
 
   &--on-hold {
-    background-color: $bc-messages-gold-background;
-    color: $bc-messages-gold-text;
+    background-color: orbcStyles.$bc-messages-gold-background;
+    color: orbcStyles.$bc-messages-gold-text;
   }
 
   &--closed {
-    background-color: $bc-messages-red-background;
-    color: $bc-messages-red-text;
+    background-color: orbcStyles.$bc-messages-red-background;
+    color: orbcStyles.$bc-messages-red-text;
   }
 
   &--suspended {
-    background-color: $bc-messages-red-text;
-    color: $white;
+    background-color: orbcStyles.$bc-messages-red-text;
+    color: orbcStyles.$white;
   }
 }

@@ -1,4 +1,4 @@
-@import "../../../../themes/orbcStyles";
+@use "../../../../themes/orbcStyles";
 
 .add-user-modal {
   & &__container {
@@ -12,13 +12,13 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    background-color: $bc-background-light-grey;
-    border-bottom: 1px solid $bc-border-grey;
+    background-color: orbcStyles.$bc-background-light-grey;
+    border-bottom: 1px solid orbcStyles.$bc-border-grey;
   }
 
   &__icon {
     .icon {
-      color: $bc-black;
+      color: orbcStyles.$bc-black;
       height: 3rem;
     }
   }
@@ -27,7 +27,7 @@
     font-weight: 600;
     font-size: 1.5rem;
     margin: 0 0 0 0.5em;
-    color: $bc-black;
+    color: orbcStyles.$bc-black;
   }
 
   &__body {
@@ -61,7 +61,7 @@
 
   &__info, .info {
     width: 100%;
-    background-color: $bc-messages-blue-background;
+    background-color: orbcStyles.$bc-messages-blue-background;
     border-radius: 0.25rem;
     box-sizing: border-box;
     padding: 2rem 1.5rem;
@@ -93,7 +93,7 @@
     &__label {
       font-weight: bold;
       font-size: 1rem;
-      color: $bc-black;
+      color: orbcStyles.$bc-black;
     }
 
     .custom-form-control {
@@ -110,29 +110,29 @@
 
     .add-user-button {
       &--cancel {
-        background-color: $bc-background-light-grey;
+        background-color: orbcStyles.$bc-background-light-grey;
         border: 2px solid transparent;
         box-shadow: none;
-        color: $bc-black;
+        color: orbcStyles.$bc-black;
         cursor: pointer;
 
         &:hover {
-          background-color: $bc-background-light-grey;
-          border-color: $bc-text-box-border-grey;
+          background-color: orbcStyles.$bc-background-light-grey;
+          border-color: orbcStyles.$bc-text-box-border-grey;
           box-shadow: none;
         }
       }
 
       &--confirm {
-        background-color: $bc-primary-blue;
+        background-color: orbcStyles.$bc-primary-blue;
         box-shadow: none;
-        color: $white;
+        color: orbcStyles.$white;
         cursor: pointer;
         font-weight: bold;
 
         &:disabled {
-          background-color: $disabled-colour;
-          color: $white;
+          background-color: orbcStyles.$disabled-colour;
+          color: orbcStyles.$white;
         }
       }
     }
