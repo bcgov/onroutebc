@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { AxiosError } from "axios";
 import { MRT_PaginationState } from "material-react-table";
+import { useNavigate } from "react-router-dom";
 import {
   useQueryClient,
   useMutation,
@@ -10,7 +11,6 @@ import {
 
 import { IssuePermitsResponse } from "../types/permit";
 import { StartTransactionResponseData } from "../types/payment";
-import { APPLICATION_STEPS, ApplicationStep } from "../../../routes/constants";
 import { isPermitTypeValid } from "../types/PermitType";
 import { isPermitIdNumeric } from "../helpers/permitState";
 import { deserializeApplicationResponse } from "../helpers/serialize/deserializeApplication";
@@ -23,6 +23,12 @@ import {
   Application,
   ApplicationFormData,
 } from "../types/application";
+
+import {
+  APPLICATION_STEPS,
+  ApplicationStep,
+  ERROR_ROUTES,
+} from "../../../routes/constants";
 
 import {
   getApplication,
@@ -62,6 +68,7 @@ const QUERY_KEYS = {
  */
 export const useSaveApplicationMutation = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   return useMutation({
     mutationFn: async ({
       data,
@@ -89,6 +96,14 @@ export const useSaveApplicationMutation = () => {
           status: res.status,
         };
       }
+    },
+    onError: (error: AxiosError) => {
+      console.error(error);
+      navigate(ERROR_ROUTES.UNEXPECTED, {
+        state: {
+          correlationId: error?.response?.headers["x-correlation-id"],
+        },
+      });
     },
   });
 };
@@ -200,10 +215,7 @@ export const useApplicationDetailsQuery = ({
  * @param permitId permit id for the permit
  * @returns Query object containing the permit details
  */
-export const usePermitDetailsQuery = (
-  companyId: number,
-  permitId: string,
-) => {
+export const usePermitDetailsQuery = (companyId: number, permitId: string) => {
   return useQuery({
     queryKey: QUERY_KEYS.PERMIT_DETAIL(permitId, companyId),
     queryFn: async () => {
@@ -225,7 +237,7 @@ export const useStartTransaction = () => {
   const [transaction, setTransaction] =
     useState<Nullable<StartTransactionResponseData>>(undefined);
   const queryClient = useQueryClient();
-
+  const navigate = useNavigate();
   const mutation = useMutation({
     mutationFn: startTransaction,
     retry: false,
@@ -236,9 +248,14 @@ export const useStartTransaction = () => {
       queryClient.setQueryData(["transaction"], transactionData);
       setTransaction(transactionData);
     },
-    onError: (err: unknown) => {
-      console.error(err);
+    onError: (error: AxiosError) => {
+      console.error(error);
       setTransaction(undefined);
+      navigate(ERROR_ROUTES.UNEXPECTED, {
+        state: {
+          correlationId: error?.response?.headers["x-correlation-id"],
+        },
+      });
     },
   });
 
@@ -339,12 +356,9 @@ export const useIssuePermits = () => {
     useState<Nullable<IssuePermitsResponse>>(undefined);
 
   const queryClient = useQueryClient();
-
+  const navigate = useNavigate();
   const mutation = useMutation({
-    mutationFn: (data: {
-      companyId: number;
-      applicationIds: string[];
-    }) =>
+    mutationFn: (data: { companyId: number; applicationIds: string[] }) =>
       issuePermits(data.companyId, data.applicationIds),
     retry: false,
     onSuccess: (issueResponseData) => {
@@ -353,9 +367,14 @@ export const useIssuePermits = () => {
       });
       setIssueResults(issueResponseData);
     },
-    onError: (err: unknown) => {
-      console.error(err);
+    onError: (error: AxiosError) => {
+      console.error(error);
       setIssueResults(null);
+      navigate(ERROR_ROUTES.UNEXPECTED, {
+        state: {
+          correlationId: error?.response?.headers["x-correlation-id"],
+        },
+      });
     },
   });
 
@@ -372,6 +391,7 @@ export const useIssuePermits = () => {
  */
 export const useAmendPermit = (companyId: number) => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   return useMutation({
     mutationFn: async (data: AmendPermitFormData) => {
       const amendResult = await amendPermit(data, companyId);
@@ -386,10 +406,7 @@ export const useAmendPermit = (companyId: number) => {
           ),
         });
         queryClient.invalidateQueries({
-          queryKey: QUERY_KEYS.PERMIT_HISTORY(
-            data.originalPermitId,
-            companyId,
-          ),
+          queryKey: QUERY_KEYS.PERMIT_HISTORY(data.originalPermitId, companyId),
         });
 
         return {
@@ -402,11 +419,20 @@ export const useAmendPermit = (companyId: number) => {
         status: amendResult.status,
       };
     },
+    onError: (error: AxiosError) => {
+      console.error(error);
+      navigate(ERROR_ROUTES.UNEXPECTED, {
+        state: {
+          correlationId: error?.response?.headers["x-correlation-id"],
+        },
+      });
+    },
   });
 };
 
 export const useModifyAmendmentApplication = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   return useMutation({
     mutationFn: async (data: {
       application: AmendPermitFormData;
@@ -438,6 +464,14 @@ export const useModifyAmendmentApplication = () => {
         application: null,
         status: amendResult.status,
       };
+    },
+    onError: (error: AxiosError) => {
+      console.error(error);
+      navigate(ERROR_ROUTES.UNEXPECTED, {
+        state: {
+          correlationId: error?.response?.headers["x-correlation-id"],
+        },
+      });
     },
   });
 };
@@ -485,14 +519,11 @@ export const useApplicationsInProgressQuery = (companyId: number) => {
       sorting,
     ],
     queryFn: () =>
-      getApplicationsInProgress(
-        companyId,
-        {
-          page: pagination.pageIndex,
-          take: pagination.pageSize,
-          orderBy,
-        },
-      ),
+      getApplicationsInProgress(companyId, {
+        page: pagination.pageIndex,
+        take: pagination.pageSize,
+        orderBy,
+      }),
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
     refetchOnMount: "always",
     placeholderData: keepPreviousData,
@@ -522,13 +553,10 @@ export const usePendingPermitsQuery = (companyId: number) => {
   const { data: pendingPermits } = useQuery({
     queryKey: ["pendingPermits", pagination.pageIndex, pagination.pageSize],
     queryFn: () =>
-      getPendingPermits(
-        companyId,
-        {
-          page: pagination.pageIndex,
-          take: pagination.pageSize,
-        },
-      ),
+      getPendingPermits(companyId, {
+        page: pagination.pageIndex,
+        take: pagination.pageSize,
+      }),
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
     refetchOnMount: "always",
     placeholderData: keepPreviousData,
