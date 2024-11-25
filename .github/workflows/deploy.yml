@@ -8,7 +8,10 @@ on:
         description: 'PR number, test or prod.'
         required: true
         type: string
-      
+      appVersion:
+        description: 'PR number or Github Release Tag.'
+        required: true
+        type: string
       repository:
         description: 'repository name.'
         required: false
@@ -65,7 +68,10 @@ on:
         required: true
         type: string
         default: "demo"
-      
+      appVersion:
+        description: 'PR number or Github Release Tag.'
+        required: true
+        type: string
       repository:
         description: 'repository name.'
         required: false
@@ -107,6 +113,7 @@ on:
         type: string
 
 env:
+  app_version: ${{ inputs.appVersion | quote }}
   repo_release: ${{ inputs.repository }}-${{ inputs.release }}
   package_tag: ${{ inputs.tag }}
 
@@ -179,7 +186,8 @@ jobs:
           helm upgrade \
             --set global.autoscaling=${{ inputs.autoscaling }} \
             --set-string global.repository=${{ github.repository }} \
-            --set-string global.tag=${{ inputs.tag }} \
+            --set-string global.tag=${{ env.package_tag }} \
+            --set-string global.appVersion=${{ env.app_version }} \
             --install --wait --atomic ${{ env.repo_release }} \
             --timeout 10m --force \
             --values ${{ inputs.values }} \

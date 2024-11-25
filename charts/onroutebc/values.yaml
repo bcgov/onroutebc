@@ -1,5 +1,6 @@
 ---
 global:
+  appVersion: "" # The release version of the application 
   autoscaling: true
   license: "c28f0c"
   podAnnotations: |
@@ -34,7 +35,6 @@ frontend:
       ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
       POLICY_URL: "https://{{.Release.Name}}-policy.apps.silver.devops.gov.bc.ca"
       DEPLOY_ENVIRONMENT: "{{.Values.global.vault.zone}}"
-      FRONTEND_PR_NUM: "{{.Values.global.pr_num}}"
       config.js.template: |-
         const envConfig = (() => { return {
             "VITE_DEPLOY_ENVIRONMENT":"$DEPLOY_ENVIRONMENT",
@@ -64,11 +64,13 @@ frontend:
             key: POLICY_URL            
           - name: DEPLOY_ENVIRONMENT
             key: DEPLOY_ENVIRONMENT
-          - name: FRONTEND_PR_NUM
-            key: FRONTEND_PR_NUM
         fromValues:
           - name: TIMESTAMP
             value: "{{ now | toString }}"
+          - name: FRONTEND_PR_NUM
+            value: '{{.Values.global.pr_num}}'
+          - name: APPLICATION_VERSION
+            value: "{{.Values.global.appVersion}}"
       ports:
         - name: http
           containerPort: 3000
@@ -205,6 +207,8 @@ vehicles:
             value: "{{ now | toString }}"
           - name: VEHICLES_PR_NUM
             value: '{{.Values.global.pr_num}}'
+          - name: APPLICATION_VERSION
+            value: "{{.Values.global.appVersion}}"
       ports:
         - name: vehicles-api
           containerPort: 5000
@@ -340,10 +344,12 @@ dops:
           - name: ACCESS_API_URL
             key: ACCESS_API_URL
         fromValues:
-          - name: DOPS_PR_NUM
-            value: '{{.Values.global.pr_num}}'
           - name: TIMESTAMP
             value: "{{ now | toString }}"
+          - name: DOPS_PR_NUM
+            value: '{{.Values.global.pr_num}}'
+          - name: APPLICATION_VERSION
+            value: "{{.Values.global.appVersion}}"
       ports:
         - name: dops-api
           containerPort: 5001
@@ -474,10 +480,12 @@ scheduler:
           - name: ACCESS_API_URL
             key: ACCESS_API_URL
         fromValues:
-          - name: SCHEDULER_PR_NUM
-            value: '{{.Values.global.pr_num}}'
           - name: TIMESTAMP
             value: "{{ now | toString }}"
+          - name: SCHEDULER_PR_NUM
+            value: '{{.Values.global.pr_num}}'
+          - name: APPLICATION_VERSION
+            value: "{{.Values.global.appVersion}}"
       ports:
         - name: scheduler
           containerPort: 5050
@@ -576,10 +584,12 @@ policy:
       tag: "{{tpl .Values.global.tag .}}"
       env:        
         fromValues:
-          - name: POLICY_PR_NUM
-            value: '{{.Values.global.pr_num}}'
           - name: TIMESTAMP
             value: "{{ now | toString }}"
+          - name: POLICY_PR_NUM
+            value: '{{.Values.global.pr_num}}'
+          - name: APPLICATION_VERSION
+            value: "{{.Values.global.appVersion}}"
       ports:
         - name: policy-api
           containerPort: 5002

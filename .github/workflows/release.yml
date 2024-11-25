@@ -56,6 +56,7 @@ jobs:
     uses: ./.github/workflows/uat.yml
     secrets: inherit
     with:
+      appVersion: ${{ needs.vars.outputs.release-name }}
       tag: ${{ needs.vars.outputs.pr }}
   
   promote-images-uat:
@@ -82,6 +83,7 @@ jobs:
     uses: ./.github/workflows/prod.yml
     secrets: inherit
     with:
+      appVersion: ${{ needs.vars.outputs.release-name }}
       tag: ${{ needs.vars.outputs.pr }}
   
   promote-images-prod:

@@ -41,6 +41,7 @@ jobs:
     uses: ./.github/workflows/test.yml
     secrets: inherit
     with:
+      appVersion: ${{ needs.vars.outputs.pr }}
       tag: ${{ needs.vars.outputs.pr }}
 
   promote-images-test:

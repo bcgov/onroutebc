@@ -1,4 +1,4 @@
-name: PR
+name: PR Open
 
 on:
   pull_request:
@@ -80,4 +80,5 @@ jobs:
     uses: ./.github/workflows/dev.yml
     secrets: inherit
     with:
+      appVersion: ${{ needs.vars.outputs.pr }}
       tag: ${{ needs.vars.outputs.pr }}
