@@ -81,3 +81,12 @@ jobs:
     secrets: inherit
     with:
       tag: ${{ needs.vars.outputs.pr }}
+
+
+  regression-tests:
+    name: Regression Tests
+    needs: [deploys-dev, vars]
+    uses: ./.github/workflows/.tests.yml
+    secrets: inherit
+    with:
+      target: ${{ needs.vars.outputs.pr }}

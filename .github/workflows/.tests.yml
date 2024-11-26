@@ -1,7 +1,6 @@
 name: Test Workflow
 
 on:
-  pull_request:
   workflow_call:
     inputs:
       ### Required
