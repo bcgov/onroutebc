@@ -5,7 +5,7 @@ on:
     inputs:
       ### Required
       target:
-        description: 'PR number, test or prod.'
+        description: 'PR number, test, uat or prod.'
         default: 'test'
         required: true
         type: string
@@ -131,8 +131,8 @@ jobs:
           overwrite: true
           if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
 
-  idir-update-term-oversize:
-      name: (IDIR) Update Term Oversize 
+  idir-amend-term-oversize:
+      name: (IDIR) Amend Term Oversize 
       runs-on: ubuntu-22.04
       defaults:
         run:
@@ -159,7 +159,7 @@ jobs:
         - uses: actions/upload-artifact@v4
           if: always()
           with:
-            name: (IDIR) Update Term Oversize
+            name: (IDIR) Amend Term Oversize
             path: tests/cypress/screenshots/
             if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
         

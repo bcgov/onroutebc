@@ -85,6 +85,7 @@ jobs:
 
   regression-tests:
     name: Regression Tests
+    environment: dev
     needs: [deploys-dev, vars]
     uses: ./.github/workflows/.tests.yml
     secrets: inherit
