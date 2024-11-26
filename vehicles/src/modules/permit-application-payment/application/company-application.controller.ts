@@ -316,7 +316,7 @@ export class CompanyApplicationController {
     );
 
     if (result?.success?.length) {
-      await Promise.allSettled([
+      void Promise.allSettled([
         this.permitReceiptDocumentService.generatePermitDocuments(
           currentUser,
           result.success,
