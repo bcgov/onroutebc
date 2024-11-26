@@ -88,6 +88,5 @@ jobs:
     environment: dev
     needs: [deploys-dev, vars]
     uses: ./.github/workflows/.tests.yml
-    secrets: inherit
     with:
       target: ${{ needs.vars.outputs.pr }}
