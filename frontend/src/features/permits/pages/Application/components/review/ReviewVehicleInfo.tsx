@@ -265,6 +265,15 @@ export const ReviewVehicleInfo = ({
                 selectedSubtypesDisplay={selectedSubtypesDisplay}
               />
             </Box>
+
+            {vehicleWasSaved ? (
+              <Typography className="vehicle-saved">
+                <FontAwesomeIcon className="icon" icon={faCircleCheck} />
+                <span data-testid="review-vehicle-saved-msg">
+                  This vehicle has been added/updated to your Vehicle Inventory.
+                </span>
+              </Typography>
+            ) : null}
           </Box>
         )}
       </Box>

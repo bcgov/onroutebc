@@ -13,7 +13,7 @@ import { MANAGE_PROFILE_API } from "../../../../../../manageProfile/apiManager/e
 import { getDefaultCompanyInfo } from "../fixtures/getCompanyInfo";
 import { getDefaultUserDetails } from "../fixtures/getUserDetails";
 import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
-import { APPLICATION_STEPS } from "../../../../../../../routes/constants";
+import { APPLICATION_STEP_CONTEXTS, APPLICATION_STEPS } from "../../../../../../../routes/constants";
 import { Nullable } from "../../../../../../../common/types/common";
 import { PERMIT_STATUSES } from "../../../../../types/PermitStatus";
 import { SPECIAL_AUTH_API_ROUTES } from "../../../../../../settings/apiManager/endpoints/endpoints";
@@ -280,7 +280,10 @@ export const ComponentWithWrapper = (userDetails: OnRouteBCContextType) => {
   return (
     <ThemeProvider theme={bcGovTheme}>
       <OnRouteBCContext.Provider value={userDetails}>
-        <ApplicationStepPage applicationStep={APPLICATION_STEPS.DETAILS} />
+        <ApplicationStepPage
+          applicationStep={APPLICATION_STEPS.DETAILS}
+          applicationStepContext={APPLICATION_STEP_CONTEXTS.APPLY}
+        />
       </OnRouteBCContext.Provider>
     </ThemeProvider>
   );

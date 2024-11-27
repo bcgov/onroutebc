@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import "./ApplicationInQueueReview.scss";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { Nullable } from "../../../common/types/common";
-import { APPLICATION_STEPS, IDIR_ROUTES } from "../../../routes/constants";
+import { APPLICATION_QUEUE_ROUTES, APPLICATION_STEPS, IDIR_ROUTES } from "../../../routes/constants";
 import { useCompanyInfoDetailsQuery } from "../../manageProfile/apiManager/hooks";
 import { usePowerUnitSubTypesQuery } from "../../manageVehicles/hooks/powerUnits";
 import { useTrailerSubTypesQuery } from "../../manageVehicles/hooks/trailers";
@@ -58,7 +58,7 @@ export const ApplicationInQueueReview = ({
   const [hasAttemptedSubmission, setHasAttemptedSubmission] = useState(false);
 
   const handleEdit = () => {
-    return;
+    navigate(APPLICATION_QUEUE_ROUTES.EDIT(companyId, applicationId), { replace: true });
   };
 
   const isSuccess = (status?: number) => status === 201;
@@ -154,22 +154,15 @@ export const ApplicationInQueueReview = ({
           applicationRejectionHistory={applicationData?.rejectionHistory}
         />
       </FormProvider>
-      {showRejectApplicationModal && (
+
+      {showRejectApplicationModal ? (
         <RejectApplicationModal
           showModal={showRejectApplicationModal}
           onCancel={() => setShowRejectApplicationModal(false)}
           onConfirm={handleReject}
           isPending={updateApplicationMutationPending}
         />
-      )}
-      {showRejectApplicationModal && (
-        <RejectApplicationModal
-          showModal={showRejectApplicationModal}
-          onCancel={() => setShowRejectApplicationModal(false)}
-          onConfirm={handleReject}
-          isPending={updateApplicationMutationPending}
-        />
-      )}
+      ) : null}
     </div>
   );
 };

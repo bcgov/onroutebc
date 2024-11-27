@@ -34,23 +34,20 @@ export const ReviewActions = ({
   return (
     <Box className="review-actions">
       {
-        // hide edit button until edit application in queue feature is complete
-        reviewContext !== PERMIT_REVIEW_CONTEXTS.QUEUE ? (
-          <Button
-            className="review-actions__btn review-actions__btn--edit"
-            key="edit-application-button"
-            aria-label="Edit"
-            variant="contained"
-            color="tertiary"
-            onClick={onEdit}
-          >
-            <FontAwesomeIcon
-              className="button-icon button-icon--edit"
-              icon={faPencil}
-            />
-            Edit
-          </Button>
-        ) : null
+        <Button
+          className="review-actions__btn review-actions__btn--edit"
+          key="edit-application-button"
+          aria-label="Edit"
+          variant="contained"
+          color="tertiary"
+          onClick={onEdit}
+        >
+          <FontAwesomeIcon
+            className="button-icon button-icon--edit"
+            icon={faPencil}
+          />
+          Edit
+        </Button>
       }
 
       {hasToCartButton ? (

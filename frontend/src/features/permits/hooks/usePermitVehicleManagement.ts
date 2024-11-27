@@ -172,12 +172,13 @@ export const usePermitVehicleManagement = (companyId: number) => {
 
       if (!modifyVehicleSuccess(res.status)) return null;
 
-      const { powerUnitId, powerUnitTypeCode, ...restOfPowerUnit } = res.data;
+      const { powerUnitId, powerUnitTypeCode, licensedGvw, ...restOfPowerUnit } = res.data;
       return getDefaultVehicleDetails({
         ...restOfPowerUnit,
         vehicleId: powerUnitId,
         vehicleSubType: powerUnitTypeCode,
         vehicleType: VEHICLE_TYPES.POWER_UNIT,
+        licensedGVW: licensedGvw,
       });
     }
 

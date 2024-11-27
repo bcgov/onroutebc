@@ -16,12 +16,11 @@ import { useInitApplicationFormData } from "../../hooks/form/useInitApplicationF
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { PermitForm } from "./components/form/PermitForm";
 import { usePermitVehicleManagement } from "../../hooks/usePermitVehicleManagement";
-import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
+import { useCompanyInfoDetailsQuery } from "../../../manageProfile/apiManager/hooks";
 import { isNull, isUndefined, Nullable } from "../../../../common/types/common";
 import { PermitType } from "../../types/PermitType";
 import { PermitVehicleDetails } from "../../types/PermitVehicleDetails";
 import { durationOptionsForPermitType } from "../../helpers/dateSelection";
-import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import { PAST_START_DATE_STATUSES } from "../../../../common/components/form/subFormComponents/CustomDatePicker";
 import { useFetchLOAs } from "../../../settings/hooks/LOA";
 import { useFetchSpecialAuthorizations } from "../../../settings/hooks/specialAuthorizations";
@@ -54,26 +53,23 @@ const FEATURE = "application";
  * The first step in creating or saving an Application.
  * @returns A form component for users to save an Application
  */
-export const ApplicationForm = ({ permitType }: { permitType: PermitType }) => {
+export const ApplicationForm = ({
+  permitType,
+  companyId,
+}: {
+  permitType: PermitType;
+  companyId: number;
+}) => {
   // Context to hold all of the application data related to the application
   const applicationContext = useContext(ApplicationContext);
 
   const {
-    companyId: companyIdFromContext,
     userDetails,
     idirUserDetails,
   } = useContext(OnRouteBCContext);
 
   const isStaffUser = Boolean(idirUserDetails?.userRole);
-  const { data: companyInfo } = useCompanyInfoQuery();
-
-  // Company id should be set by context, otherwise default to companyId in session and then the fetched companyId
-  const companyId: number = getDefaultRequiredVal(
-    0,
-    companyIdFromContext,
-    applyWhenNotNullable(id => Number(id), getCompanyIdFromSession()),
-    companyInfo?.companyId,
-  );
+  const { data: companyInfo } = useCompanyInfoDetailsQuery(companyId);
 
   const { data: activeLOAs } = useFetchLOAs(companyId, false);
   const companyLOAs = useMemo(() => getDefaultRequiredVal(

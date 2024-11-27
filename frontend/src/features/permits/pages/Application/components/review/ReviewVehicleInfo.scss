@@ -44,6 +44,16 @@
           border-radius: 0;
         }
       }
+
+      .vehicle-saved {
+        margin-top: 1rem;
+        font-weight: bold;
+        color: orbcStyles.$bc-green;
+
+        .icon {
+          margin-right: 0.5rem;
+        }
+      }
     }
   }
 }

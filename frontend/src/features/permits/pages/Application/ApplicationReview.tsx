@@ -8,7 +8,7 @@ import { ApplicationContext } from "../../context/ApplicationContext";
 import { Application } from "../../types/application";
 import { useSaveApplicationMutation } from "../../hooks/hooks";
 import { ApplicationBreadcrumb } from "../../components/application-breadcrumb/ApplicationBreadcrumb";
-import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
+import { useCompanyInfoDetailsQuery } from "../../../manageProfile/apiManager/hooks";
 import { PermitReview } from "./components/review/PermitReview";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { SnackBarContext } from "../../../../App";
@@ -31,16 +31,18 @@ import {
   ERROR_ROUTES,
 } from "../../../../routes/constants";
 
-export const ApplicationReview = () => {
+export const ApplicationReview = ({
+  companyId,
+}: {
+  companyId: number;
+}) => {
   const { applicationData, setApplicationData: setApplicationContextData } =
     useContext(ApplicationContext);
-
-  const companyId = getDefaultRequiredVal(0, applicationData?.companyId);
 
   const { data: specialAuth } = useFetchSpecialAuthorizations(companyId);
   const isNoFeePermitType = Boolean(specialAuth?.noFeeType);
 
-  const { data: companyInfo } = useCompanyInfoQuery();
+  const { data: companyInfo } = useCompanyInfoDetailsQuery(companyId);
   const doingBusinessAs = companyInfo?.alternateName;
 
   const permitType = getDefaultRequiredVal(DEFAULT_PERMIT_TYPE, applicationData?.permitType);
