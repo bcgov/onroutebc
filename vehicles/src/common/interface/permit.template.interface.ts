@@ -1,3 +1,4 @@
+import { PermitType } from '../enum/permit-type.enum';
 import { ThirdPartyLiability } from '../enum/third-party-liability.enum';
 
 // Data used to populate a .docx template
@@ -112,8 +113,11 @@ interface Commodities {
   disabled?: boolean;
 }
 
-interface Loas {
-  loaId: string;
+export interface Loas {
+  loaId: number;
   checked: boolean;
+  loaPermitType: PermitType[];
+  powerUnits?: string[];
+  trailers?: string[];
   disabled?: boolean;
 }

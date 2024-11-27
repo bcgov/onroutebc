@@ -13,7 +13,7 @@ import { LoaDetail } from './loa-detail.entity';
 export class LoaVehicle extends Base {
   @AutoMap()
   @PrimaryGeneratedColumn({ type: 'int', name: 'LOA_VEHICLE_ID' })
-  loavehicleId: number;
+  loaVehicleId: number;
 
   @AutoMap(() => LoaDetail)
   @ManyToOne(() => LoaDetail, (LoaDetail) => LoaDetail.loaVehicles)

@@ -73,6 +73,9 @@ import {
 } from '../../../common/helper/common.helper';
 import { SpecialAuth } from 'src/modules/special-auth/entities/special-auth.entity';
 import { TIMEZONE_PACIFIC } from 'src/common/constants/api.constant';
+import { LoaDetail } from 'src/modules/special-auth/entities/loa-detail.entity';
+import { PermitData } from 'src/common/interface/permit.template.interface';
+import * as dayjs from 'dayjs';
 
 @Injectable()
 export class PaymentService {
@@ -90,6 +93,8 @@ export class PaymentService {
     @InjectMapper() private readonly classMapper: Mapper,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
+    @InjectRepository(LoaDetail)
+    private loaDetailRepository: Repository<LoaDetail>,
   ) {}
 
   private generateHashExpiry = (currDate?: Date) => {
@@ -331,6 +336,10 @@ export class PaymentService {
           throw new BadRequestException(
             'Application in its current status cannot be processed for payment.',
           );
+        const permitData = JSON.parse(
+          application.permitData.permitData,
+        ) as PermitData;
+        if (permitData.loas) await this.isValidLoa(application);
       }
       const totalTransactionAmount = await this.validateApplicationAndPayment(
         createTransactionDto,
@@ -886,5 +895,135 @@ export class PaymentService {
         pgApproved: permitTransaction.transaction.pgApproved,
       })),
     ) as PermitHistoryDto[];
+  }
+
+  /**
+   * Retrieves a single LOA (Letter of Authorization) detail for a specified company.
+   *
+   * Steps:
+   * 1. Fetches the LOA detail from the repository based on company ID and LOA ID.
+   * 2. Ensures the fetched LOA detail is active.
+   * 3. Includes relations (company, loaVehicles, loaPermitTypes) in the query.
+   *
+   * @param {number} companyId - ID of the company for which to fetch the LOA detail.
+   * @param {number} loaId - ID of the LOA to be fetched.
+   * @returns {Promise<LoaDetail>} - Returns a Promise that resolves to the LOA detail.
+   */
+  @LogAsyncMethodExecution()
+  async findLoasByIds(
+    companyId: number,
+    loaIds: number[],
+  ): Promise<LoaDetail[]> {
+    const loaDetails = await this.loaDetailRepository.find({
+      where: {
+        loaId: In(loaIds),
+        company: { companyId: companyId },
+      },
+      relations: ['company', 'loaVehicles', 'loaPermitTypes'],
+    });
+    return loaDetails;
+  }
+
+  async isValidLoa(permit: Permit): Promise<void> {
+    const companyId: number = permit.company.companyId;
+    const permitData = JSON.parse(permit.permitData.permitData) as PermitData;
+    const loaIds = permitData.loas.map((loa) => loa.loaId);
+    const loaDetails = await this.findLoasByIds(companyId, loaIds);
+    const allowedPowerUnits: string[] = [];
+    const allowedTrailers: string[] = [];
+    const allowedPermitTypes: string[] = [];
+    // Validate dates and collect allowed power units, trailers, and permit types
+    for (const loaDetail of loaDetails) {
+      if (!this.isValidDateForLoa(loaDetail, permit)) {
+        throw new BadRequestException(
+          'At least one of the applications had LOA with invalid dates.',
+        );
+      }
+
+      this.collectAllowedVehiclesAndPermitTypes(
+        loaDetail,
+        allowedPowerUnits,
+        allowedTrailers,
+        allowedPermitTypes,
+      );
+    }
+    let permitPowerUnits: string[] = [];
+    let permitTrailers: string[] = [];
+    let permitTypes: string[] = [];
+
+    for (const loa of permitData.loas) {
+      permitPowerUnits = permitPowerUnits.concat(loa.powerUnits);
+      permitTrailers = permitTrailers.concat(loa.trailers);
+      permitTypes = permitTypes.concat(loa.loaPermitType);
+    }
+    this.logger.log(
+      `${allowedPermitTypes.toString()} are allowed permit types`,
+    );
+    // Validate the collected data from LOAs and permit
+    this.validatePermitData(
+      allowedPowerUnits,
+      allowedTrailers,
+      allowedPermitTypes,
+      permitPowerUnits,
+      permitTrailers,
+      permitTypes,
+    );
+  }
+
+  private isValidDateForLoa(loaDetail: LoaDetail, permit: Permit): boolean {
+    let isValidDate: boolean;
+    if (loaDetail.expiryDate) {
+      isValidDate =
+        dayjs(loaDetail.startDate).format('YYYY-MM-DD') <=
+          permit.permitData.startDate &&
+        dayjs(loaDetail.expiryDate).format('YYYY-MM-DD') >=
+          permit.permitData.expiryDate;
+    } else {
+      isValidDate =
+        dayjs(loaDetail.startDate).format('YYYY-MM-DD') <=
+        permit.permitData.startDate;
+    }
+    return isValidDate;
+  }
+
+  private collectAllowedVehiclesAndPermitTypes(
+    loaDetail: LoaDetail,
+    allowedPowerUnits: string[],
+    allowedTrailers: string[],
+    allowedPermitTypes: string[],
+  ): void {
+    for (const loaVehicle of loaDetail.loaVehicles) {
+      if (loaVehicle.powerUnit) allowedPowerUnits.push(loaVehicle.powerUnit);
+      if (loaVehicle.trailer) allowedTrailers.push(loaVehicle.trailer);
+    }
+    for (const loaPermitType of loaDetail.loaPermitTypes) {
+      allowedPermitTypes.push(loaPermitType.permitType);
+    }
+  }
+
+  private validatePermitData(
+    allowedPowerUnits: string[],
+    allowedTrailers: string[],
+    allowedPermitTypes: string[],
+    permitPowerUnits: string[],
+    permitTrailers: string[],
+    permitTypes: string[],
+  ): void {
+    if (
+      !(
+        this.isSupersetOf(allowedPowerUnits, permitPowerUnits) &&
+        this.isSupersetOf(allowedTrailers, permitTrailers) &&
+        this.isSupersetOf(allowedPermitTypes, permitTypes)
+      )
+    ) {
+      throw new BadRequestException(
+        'At least one of the applications has invalid vehicle or permit type.',
+      );
+    }
+  }
+
+  // Helper function to check if an array contains element from the other array.
+  private isSupersetOf(arr1: string[], arr2: string[]): boolean {
+    return arr1.length >= arr2.length && arr2.every((ai) => arr1.includes(ai));
   }
 }
