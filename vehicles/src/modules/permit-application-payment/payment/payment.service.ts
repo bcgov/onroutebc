@@ -1011,9 +1011,9 @@ export class PaymentService {
   ): void {
     if (
       !(
-        this.areArraysEqual(allowedPowerUnits, permitPowerUnits) &&
-        this.areArraysEqual(allowedTrailers, permitTrailers) &&
-        this.areArraysEqual(allowedPermitTypes, permitTypes)
+        this.isSupersetOf(allowedPowerUnits, permitPowerUnits) &&
+        this.isSupersetOf(allowedTrailers, permitTrailers) &&
+        this.isSupersetOf(allowedPermitTypes, permitTypes)
       )
     ) {
       throw new BadRequestException(
@@ -1023,14 +1023,7 @@ export class PaymentService {
   }
 
   // Helper function to check if an array contains element from the other array.
-  private areArraysEqual(arr1: string[], arr2: string[]): boolean {
-    if (arr1.length !== arr2.length) {
-      return false;  // Arrays must be the same length to be equal
-    }
-  
-    const set1 = new Set(arr1);
-    const set2 = new Set(arr2);
-  
-    // Check if both sets have the same size and contain the same elements
-    return set1.size === set2.size && [...set1].every(item => set2.has(item));  }
+  private isSupersetOf(arr1: string[], arr2: string[]): boolean {
+    return arr1.length >= arr2.length && arr2.every((ai) => arr1.includes(ai));
+  }
 }
