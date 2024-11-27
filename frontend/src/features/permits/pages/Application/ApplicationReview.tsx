@@ -111,11 +111,11 @@ export const ApplicationReview = ({
       },
       companyId,
     }, {
-      onSuccess: async ({ data: savedApplication }) => {
+      onSuccess: ({ data: savedApplication }) => {
         setApplicationContextData(
           deserializeApplicationResponse(savedApplication),
         );
-        await followUpAction(companyId, permitId, applicationNumber);
+        followUpAction(companyId, permitId, applicationNumber);
       },
       onError: (e) => {
         console.error(e);
