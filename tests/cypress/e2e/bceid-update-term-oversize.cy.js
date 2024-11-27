@@ -3,7 +3,7 @@ describe('Login Test for OnRouteBC', () => {
     // Retrieve the environment variables
     const username = Cypress.env('bceid_username');
     const password = Cypress.env('bceid_password');
-    const update_term_oversize_url = Cypress.env('update_term_oversize_url');
+    // const update_term_oversize_url = Cypress.env('update_term_oversize_url');
 
     // Step 1: Visit the base URL
     cy.visit('/');
@@ -21,7 +21,7 @@ describe('Login Test for OnRouteBC', () => {
     cy.get('[name="btnSubmit"]').click();
     cy.wait(5000);
 
-    cy.visit(update_term_oversize_url);
+    cy.visit('/applications/581');
     cy.wait(5000);
 
     // update phone ext
