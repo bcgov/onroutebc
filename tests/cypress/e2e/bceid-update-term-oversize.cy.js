@@ -21,7 +21,7 @@ describe('Login Test for OnRouteBC', () => {
     cy.get('[name="btnSubmit"]').click();
     cy.wait(5000);
 
-    cy.visit('/applications/581');
+    cy.visit('/applications/12');
     cy.wait(5000);
 
     // update phone ext
