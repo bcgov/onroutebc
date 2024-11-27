@@ -76,6 +76,7 @@ import { TIMEZONE_PACIFIC } from 'src/common/constants/api.constant';
 import { LoaDetail } from 'src/modules/special-auth/entities/loa-detail.entity';
 import { PermitData } from 'src/common/interface/permit.template.interface';
 import * as dayjs from 'dayjs';
+import { PermitType } from 'src/common/enum/permit-type.enum';
 
 @Injectable()
 export class PaymentService {
@@ -947,14 +948,14 @@ export class PaymentService {
         allowedPermitTypes,
       );
     }
-    let permitPowerUnits: string[] = [];
-    let permitTrailers: string[] = [];
-    let permitTypes: string[] = [];
+    let permitLoaPowerUnits: string[] = [];
+    let permitLoaTrailers: string[] = [];
+    let permitTypesLoa: string[] = [];
 
     for (const loa of permitData.loas) {
-      permitPowerUnits = permitPowerUnits.concat(loa.powerUnits);
-      permitTrailers = permitTrailers.concat(loa.trailers);
-      permitTypes = permitTypes.concat(loa.loaPermitType);
+      permitLoaPowerUnits = permitLoaPowerUnits.concat(loa.powerUnits);
+      permitLoaTrailers = permitLoaTrailers.concat(loa.trailers);
+      permitTypesLoa = permitTypesLoa.concat(loa.loaPermitType);
     }
     this.logger.log(
       `${allowedPermitTypes.toString()} are allowed permit types`,
@@ -964,9 +965,10 @@ export class PaymentService {
       allowedPowerUnits,
       allowedTrailers,
       allowedPermitTypes,
-      permitPowerUnits,
-      permitTrailers,
-      permitTypes,
+      permit.permitType,
+      permitLoaPowerUnits,
+      permitLoaTrailers,
+      permitLoaTrailers, 
     );
   }
 
@@ -1005,15 +1007,17 @@ export class PaymentService {
     allowedPowerUnits: string[],
     allowedTrailers: string[],
     allowedPermitTypes: string[],
-    permitPowerUnits: string[],
-    permitTrailers: string[],
-    permitTypes: string[],
+    permitType: PermitType,
+    permitLoaPowerUnits: string[],
+    permitLoaTrailers: string[],
+    permitTypesLoa: string[],
   ): void {
     if (
       !(
-        this.isSupersetOf(allowedPowerUnits, permitPowerUnits) &&
-        this.isSupersetOf(allowedTrailers, permitTrailers) &&
-        this.isSupersetOf(allowedPermitTypes, permitTypes)
+        this.isSupersetOf(allowedPowerUnits, permitLoaPowerUnits) &&
+        this.isSupersetOf(allowedTrailers, permitLoaTrailers) &&
+        this.isSupersetOf(allowedPermitTypes, permitTypesLoa) &&
+        this.isSupersetOf(allowedPermitTypes, [permitType])
       )
     ) {
       throw new BadRequestException(
