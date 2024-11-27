@@ -968,7 +968,7 @@ export class PaymentService {
       permit.permitType,
       permitLoaPowerUnits,
       permitLoaTrailers,
-      permitLoaTrailers, 
+      permitLoaTrailers,
     );
   }
 
