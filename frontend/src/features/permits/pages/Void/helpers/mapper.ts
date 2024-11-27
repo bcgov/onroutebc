@@ -2,7 +2,6 @@ import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { isZeroAmount } from "../../../helpers/feeSummary";
 import { PERMIT_STATUSES } from "../../../types/PermitStatus";
 import { TRANSACTION_TYPES } from "../../../types/payment";
-import { RefundFormData } from "../../Refund/types/RefundFormData";
 import {
   CONSOLIDATED_PAYMENT_METHODS,
   PAYMENT_METHOD_TYPE_CODE,
@@ -13,6 +12,7 @@ import {
   VoidPermitFormData,
   VoidPermitRequestData,
 } from "../types/VoidPermit";
+import { FieldValues } from "react-hook-form";
 
 export const mapToRevokeRequestData = (
   voidPermitFormData: VoidPermitFormData,
@@ -38,7 +38,7 @@ export const mapToRevokeRequestData = (
 
 export const mapToVoidRequestData = (
   voidPermitFormData: VoidPermitFormData,
-  refundData: RefundFormData,
+  refundData: FieldValues,
   amountToRefund: number,
 ): VoidPermitRequestData => {
   const isRefundZeroAmount = isZeroAmount(amountToRefund);

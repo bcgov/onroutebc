@@ -4,6 +4,7 @@
   &#{&} {
     overflow: visible;
     box-shadow: none;
+    margin-bottom: 2.5rem;
   }
 
   & &__container {
@@ -15,6 +16,12 @@
   & &__row {
     &--selected {
       background-color: $bc-messages-blue-background;
+    }
+  }
+
+  & &__checkbox {
+    &--disabled {
+      display: none;
     }
   }
 

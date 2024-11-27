@@ -29,18 +29,16 @@ import {
   defaultTableStateOptions,
 } from "../../../../../common/helpers/tableHelper";
 import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
-import { FieldValues, useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { MultiplePaymentMethodRefundData } from "../types/RefundFormData";
-import { Button, Checkbox, FormControlLabel } from "@mui/material";
+import { Checkbox, FormControlLabel } from "@mui/material";
 import { requiredMessage } from "../../../../../common/helpers/validationMessages";
 
 export const TransactionHistoryTable = ({
   permitHistory,
-  onSubmit,
   totalRefundDue,
 }: {
   permitHistory: PermitHistory[];
-  onSubmit: (data: FieldValues) => void;
   totalRefundDue: number;
 }) => {
   const validTransactionHistory = permitHistory.filter((history) =>
@@ -48,7 +46,7 @@ export const TransactionHistoryTable = ({
   );
 
   const formMethods = useFormContext();
-  const { handleSubmit, register, watch, setValue, trigger } = formMethods;
+  const { register, watch, setValue, trigger } = formMethods;
 
   const isRowSelectable = (
     row: MRT_Row<MultiplePaymentMethodRefundData>,
@@ -58,19 +56,6 @@ export const TransactionHistoryTable = ({
       !isZeroAmount(row.original.transactionAmount) &&
       totalRefundDue !== 0
     );
-  };
-
-  const handleFormSubmit = (data: FieldValues) => {
-    // TODO ask praveen if this data is the correct shape expected by the BE
-    const combinedData: MultiplePaymentMethodRefundData[] =
-      validTransactionHistory.map((originalRow, index) => ({
-        ...originalRow, // Spread the properties of PermitHistory
-        refundAmount: data.refundData[index]?.refundAmount || "", // Get the refundAmount from the submitted data
-        refundTransactionId: data.refundData[index]?.refundTransactionId || "", // Get the refundTransactionId from the submitted data
-        chequeRefund: data.refundData[index]?.chequeRefund || false, // Get the chequeRefund from the submitted data
-      }));
-    // Call the onSubmit with the combined data
-    onSubmit(combinedData);
   };
 
   const columns = useMemo<MRT_ColumnDef<MultiplePaymentMethodRefundData>[]>(
@@ -107,7 +92,7 @@ export const TransactionHistoryTable = ({
           className:
             "transaction-history-table__data transaction-history-table__data--payment-method",
         },
-        size: 200,
+        size: 130,
         enableSorting: false,
         enableColumnActions: false,
       },
@@ -145,12 +130,10 @@ export const TransactionHistoryTable = ({
         muiTableHeadCellProps: {
           className:
             "transaction-history-table__header transaction-history-table__header--amount",
-          align: "right",
         },
         muiTableBodyCellProps: {
           className:
             "transaction-history-table__data transaction-history-table__data--amount",
-          align: "right",
         },
         id: "transactionAmount",
         size: 50,
@@ -342,12 +325,19 @@ export const TransactionHistoryTable = ({
     ...defaultTableOptions,
     columns: columns,
     data: validTransactionHistory,
+    displayColumnDefOptions: {
+      "mrt-row-select": {
+        size: 10,
+        header: "",
+      },
+    },
     enableRowActions: false,
     enableGlobalFilter: false,
     enableTopToolbar: false,
     enableBottomToolbar: false,
     enableRowSelection: (row: MRT_Row<MultiplePaymentMethodRefundData>) =>
       isRowSelectable(row),
+    enableSelectAll: false,
     initialState: {
       ...defaultTableInitialStateOptions,
       showGlobalFilter: false,
@@ -356,6 +346,13 @@ export const TransactionHistoryTable = ({
     state: {
       ...defaultTableStateOptions,
     },
+    muiSelectCheckboxProps: ({
+      row,
+    }: {
+      row: MRT_Row<MultiplePaymentMethodRefundData>;
+    }) => ({
+      className: `transaction-history-table__checkbox ${!isRowSelectable(row) && "transaction-history-table__checkbox--disabled"}`,
+    }),
     muiTablePaperProps: {
       className: "transaction-history-table",
     },
@@ -370,14 +367,6 @@ export const TransactionHistoryTable = ({
   return (
     <>
       <MaterialReactTable table={table} />
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleSubmit(handleFormSubmit)}
-        className="submit-btn"
-      >
-        Finish
-      </Button>
     </>
   );
 };

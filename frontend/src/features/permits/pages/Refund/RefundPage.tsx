@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { FormProvider, useForm, FieldValues } from "react-hook-form";
-import { Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import "./RefundPage.scss";
 import { MultiplePaymentMethodRefundData } from "./types/RefundFormData";
 import { PermitHistory } from "../../types/PermitHistory";
@@ -34,7 +34,6 @@ const permitActionText = (permitAction: PermitAction) => {
 };
 
 export const RefundPage = ({
-  permitId,
   permitHistory,
   email,
   additionalEmail,
@@ -45,7 +44,6 @@ export const RefundPage = ({
   amountToRefund,
   onSubmit,
 }: {
-  permitId: string;
   permitHistory: PermitHistory[];
   email?: Nullable<string>;
   additionalEmail?: Nullable<string>;
@@ -87,9 +85,20 @@ export const RefundPage = ({
     reValidateMode: "onChange",
   });
 
-  const showSendSection = permitAction === "void" || permitAction === "revoke";
-  const showReasonSection =
-    (permitAction === "void" || permitAction === "revoke") && reason;
+  const { handleSubmit } = formMethods;
+
+  const handleAmend = (data: FieldValues) => {
+    // TODO ask praveen if this data is the correct shape expected by the BE
+    const combinedData: MultiplePaymentMethodRefundData[] =
+      validTransactionHistory.map((originalRow, index) => ({
+        ...originalRow, // Spread the properties of PermitHistory
+        refundAmount: data.refundData[index]?.refundAmount || "", // Get the refundAmount from the submitted data
+        refundTransactionId: data.refundData[index]?.refundTransactionId || "", // Get the refundTransactionId from the submitted data
+        chequeRefund: data.refundData[index]?.chequeRefund || false, // Get the chequeRefund from the submitted data
+      }));
+    // Call the onSubmit with the combined data
+    onSubmit(combinedData);
+  };
 
   return (
     <div className="refund-page">
@@ -107,51 +116,74 @@ export const RefundPage = ({
       <FormProvider {...formMethods}>
         <TransactionHistoryTable
           permitHistory={validTransactionHistory}
-          onSubmit={onSubmit}
           totalRefundDue={amountToRefund}
         />
+
+        {permitAction === PERMIT_REFUND_ACTIONS.AMEND && (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSubmit(handleAmend)}
+            className="refund-page__submit-btn"
+          >
+            Finish
+          </Button>
+        )}
       </FormProvider>
 
-      {showSendSection ? (
-        <div className="refund-info refund-info--send">
-          <div className="refund-info__header">Send Permit and Receipt to</div>
-          {email ? (
-            <div className="refund-info__info">
-              <span className="info-label">Company Email: </span>
-              <span className="info-value" data-testid="send-to-email">
-                {email}
-              </span>
+      {(permitAction === PERMIT_REFUND_ACTIONS.VOID ||
+        permitAction === PERMIT_REFUND_ACTIONS.REVOKE) && (
+        <div>
+          <div className="refund-info refund-info--send">
+            <div className="refund-info__header">
+              Send Permit and Receipt to
             </div>
-          ) : null}
-          {additionalEmail ? (
-            <div className="refund-info__info">
-              <span className="info-label">Additional Email: </span>
-              <span
-                className="info-value"
-                data-testid="send-to-additional-email"
-              >
-                {additionalEmail}
-              </span>
-            </div>
-          ) : null}
-          {fax ? (
-            <div className="refund-info__info">
-              <span className="info-label">Fax: </span>
-              <span className="info-value" data-testid="send-to-fax">
-                {fax}
-              </span>
-            </div>
-          ) : null}
-        </div>
-      ) : null}
-      {showReasonSection ? (
-        <div className="refund-info refund-info--reason">
-          <div className="refund-info__header">
-            Reason for {permitActionText(permitAction)}
+            {email && (
+              <div className="refund-info__info">
+                <span className="info-label">Company Email: </span>
+                <span className="info-value" data-testid="send-to-email">
+                  {email}
+                </span>
+              </div>
+            )}
+            {additionalEmail && (
+              <div className="refund-info__info">
+                <span className="info-label">Additional Email: </span>
+                <span
+                  className="info-value"
+                  data-testid="send-to-additional-email"
+                >
+                  {additionalEmail}
+                </span>
+              </div>
+            )}
+            {fax && (
+              <div className="refund-info__info">
+                <span className="info-label">Fax: </span>
+                <span className="info-value" data-testid="send-to-fax">
+                  {fax}
+                </span>
+              </div>
+            )}
           </div>
-          <div className="refund-info__info">{reason}</div>
+          {reason && (
+            <div className="refund-info refund-info--reason">
+              <div className="refund-info__header">
+                Reason for {permitActionText(permitAction)}
+              </div>
+              <div className="refund-info__info">{reason}</div>
+            </div>
+          )}
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSubmit(onSubmit)}
+            className="refund-page__submit-btn"
+          >
+            Finish
+          </Button>
         </div>
-      ) : null}
+      )}
 
       {showRefundErrorModal && (
         <RefundErrorModal

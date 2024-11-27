@@ -4,7 +4,7 @@ import {
   PaymentMethodTypeCode,
 } from "../../../../../common/types/paymentMethods";
 
-interface RefundTransactionItem {
+export interface RefundTransactionItem {
   pgTransactionId: string;
   pgPaymentMethod: PaymentGatewayMethod;
   transactionAmount: number;

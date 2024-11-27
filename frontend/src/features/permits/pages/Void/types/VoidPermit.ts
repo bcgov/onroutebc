@@ -8,6 +8,7 @@ import {
   PaymentGatewayMethod,
   PAYMENT_METHOD_TYPE_CODE,
 } from "../../../../../common/types/paymentMethods";
+import { RefundTransactionItem } from "../../Refund/types/RefundPermitData";
 
 export interface VoidPermitFormData {
   permitId: string;
@@ -20,14 +21,9 @@ export interface VoidPermitFormData {
 
 export interface VoidPermitRequestData {
   status: Extract<PermitStatus, typeof PERMIT_STATUSES.VOIDED>;
-  pgTransactionId?: string;
-  paymentMethodTypeCode: PaymentMethodTypeCode;
-  transactionAmount: number;
-  pgTransactionDate?: string;
-  pgPaymentMethod?: PaymentGatewayMethod;
-  pgCardType?: PaymentCardTypeCode;
-  comment: string;
+  transactions: RefundTransactionItem[];
   transactionTypeId: TransactionType;
+  comment: string;
   fax?: Nullable<string>;
   additionalEmail?: Nullable<string>;
 }

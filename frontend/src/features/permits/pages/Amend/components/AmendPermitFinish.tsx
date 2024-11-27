@@ -63,6 +63,7 @@ export const AmendPermitFinish = () => {
   // Refund mutation
   const { mutation: refundPermitMutation, transaction } =
     useRefundPermitMutation();
+
   const onSubmit = (data: FieldValues) => {
     console.log(data);
     const totalRefundAmount = data.reduce(
@@ -76,25 +77,7 @@ export const AmendPermitFinish = () => {
       return;
     }
 
-    console.log({
-      applicationId: permitId,
-      transactions: data.map(
-        (transaction: MultiplePaymentMethodRefundData) => ({
-          pgTransactionId: transaction.pgTransactionId,
-          pgPaymentMethod: transaction.pgPaymentMethod,
-          paymentCardTypeCode: transaction.paymentCardTypeCode,
-          transactionAmount: Number(transaction.refundAmount),
-          paymentMethodTypeCode:
-            Number(transaction.refundAmount) === 0
-              ? PAYMENT_METHOD_TYPE_CODE.NP
-              : transaction.chequeRefund
-                ? PAYMENT_METHOD_TYPE_CODE.CHEQUE
-                : transaction.paymentMethodTypeCode,
-        }),
-      ),
-    });
-
-    // refundPermitMutation.mutate({
+    // console.log({
     //   applicationId: permitId,
     //   transactions: data.map(
     //     (transaction: MultiplePaymentMethodRefundData) => ({
@@ -111,6 +94,24 @@ export const AmendPermitFinish = () => {
     //     }),
     //   ),
     // });
+
+    refundPermitMutation.mutate({
+      applicationId: permitId,
+      transactions: data.map(
+        (transaction: MultiplePaymentMethodRefundData) => ({
+          pgTransactionId: transaction.pgTransactionId,
+          pgPaymentMethod: transaction.pgPaymentMethod,
+          paymentCardTypeCode: transaction.paymentCardTypeCode,
+          transactionAmount: Number(transaction.refundAmount),
+          paymentMethodTypeCode:
+            Number(transaction.refundAmount) === 0
+              ? PAYMENT_METHOD_TYPE_CODE.NP
+              : transaction.chequeRefund
+                ? PAYMENT_METHOD_TYPE_CODE.CHEQUE
+                : transaction.paymentMethodTypeCode,
+        }),
+      ),
+    });
   };
 
   const handleCloseRefundErrorModal = () => {
@@ -159,7 +160,6 @@ export const AmendPermitFinish = () => {
       <Breadcrumb links={getLinks()} />
 
       <RefundPage
-        permitId={permitId}
         permitHistory={validTransactionHistory}
         amountToRefund={amountToRefund}
         permitNumber={permit?.permitNumber}
