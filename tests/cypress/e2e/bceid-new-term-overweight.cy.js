@@ -3,7 +3,7 @@ describe('Login Test for OnRouteBC', () => {
     // Retrieve the environment variables
     const username = Cypress.env('bceid_username');
     const password = Cypress.env('bceid_password');
-    const new_trow_url = Cypress.env('new_tros_url');
+    const new_trow_url = '/create-application/TROW';
 
     // Step 1: Visit the base URL
     cy.visit('/');
