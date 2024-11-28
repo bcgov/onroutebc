@@ -12,6 +12,7 @@ import {
 import { PHONE_WIDTH, EXT_WIDTH } from "../../../../themes/orbcStyles";
 import { BANNER_MESSAGES } from "../../../../common/constants/bannerMessages";
 import isEmail from "validator/lib/isEmail";
+import { removeNonNumericValues } from "../../../../common/helpers/removeNonNumericValues";
 
 export const ContactDetails = ({ feature }: { feature: string }) => {
   return (
@@ -54,9 +55,14 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
               rules: {
                 required: { value: true, message: requiredMessage() },
                 validate: {
-                  validatePhone: (phone: string) =>
-                    (phone.length >= 10 && phone.length <= 20) ||
-                    invalidPhoneLength(10, 20),
+                  validatePhone1: (phone: string) => {
+                    const filteredPhone = removeNonNumericValues(phone);
+                    return (
+                      (filteredPhone.length >= 10 &&
+                        filteredPhone.length <= 20) ||
+                      invalidPhoneLength(10, 20)
+                    );
+                  },
                 },
               },
 
@@ -95,11 +101,17 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
               rules: {
                 required: false,
                 validate: {
-                  validatePhone: (phone?: string) =>
-                    !phone ||
-                    phone.length === 0 ||
-                    (phone.length >= 10 && phone.length <= 20) ||
-                    invalidPhoneLength(10, 20),
+                  validatePhone2: (phone?: string) => {
+                    if (!phone) return;
+
+                    const filteredPhone = removeNonNumericValues(phone);
+                    return (
+                      filteredPhone.length === 0 ||
+                      (filteredPhone.length >= 10 &&
+                        filteredPhone.length <= 20) ||
+                      invalidPhoneLength(10, 20)
+                    );
+                  },
                 },
               },
               label: "Alternate Number",
@@ -172,7 +184,21 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
           feature={feature}
           options={{
             name: "permitData.contactDetails.fax",
-            rules: { required: false },
+            rules: {
+              required: false,
+              validate: {
+                validateFax: (fax?: string) => {
+                  if (!fax) return;
+
+                  const filteredFax = removeNonNumericValues(fax);
+                  return (
+                    filteredFax.length === 0 ||
+                    (filteredFax.length >= 10 && filteredFax.length <= 20) ||
+                    invalidPhoneLength(10, 20)
+                  );
+                },
+              },
+            },
             label: "Fax",
             width: PHONE_WIDTH,
           }}

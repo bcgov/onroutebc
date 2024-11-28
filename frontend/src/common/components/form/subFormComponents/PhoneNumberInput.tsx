@@ -4,6 +4,7 @@ import { useFormContext } from "react-hook-form";
 import "./PhoneNumberInput.scss";
 import { ORBC_FormTypes } from "../../../types/common";
 import { CustomOutlinedInputProps } from "./CustomOutlinedInput";
+import { removeNonNumericValues } from "../../../helpers/removeNonNumericValues";
 
 /**
  * An onRouteBC customized MUI OutlineInput component
@@ -41,7 +42,7 @@ export const PhoneNumberInput = <T extends ORBC_FormTypes>(
 export const formatPhoneNumber = (input?: string): string => {
   if (!input) return "";
   // only allows 0-9 inputs
-  const currentValue = input.replace(/[^\d]/g, "");
+  const currentValue = removeNonNumericValues(input);
   const cvLength = currentValue.length;
 
   // Ignore formatting if the value length is greater than a standard Canada/US phone number

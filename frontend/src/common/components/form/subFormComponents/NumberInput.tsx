@@ -3,6 +3,7 @@ import { useFormContext } from "react-hook-form";
 import { ORBC_FormTypes } from "../../../types/common";
 import { CustomOutlinedInputProps } from "./CustomOutlinedInput";
 import "./NumberInput.scss";
+import { removeNonNumericValues } from "../../../helpers/removeNonNumericValues";
 
 /**
  * An onRouteBC customized MUI OutlineInput component
@@ -18,7 +19,7 @@ export const NumberInput = <T extends ORBC_FormTypes>(
   const filterNonNumericValue = (input?: string) => {
     if (!input) return "";
     // only allows 0-9 inputs
-    return input.replace(/[^\d]/g, "");
+    return removeNonNumericValues(input);
   };
 
   // Everytime the user types, update the format of the users input
