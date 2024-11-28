@@ -13,11 +13,14 @@ import { ApplicationInQueueReview } from "../../../queue/components/ApplicationI
 import { useApplicationForStepsQuery } from "../../hooks/hooks";
 import { PERMIT_STATUSES } from "../../types/PermitStatus";
 import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
 import {
   DEFAULT_PERMIT_TYPE,
+  PERMIT_TYPES,
   PermitType,
   isPermitTypeValid,
 } from "../../types/PermitType";
+
 import {
   APPLICATION_STEP_CONTEXTS,
   APPLICATION_STEPS,
@@ -55,6 +58,9 @@ export const ApplicationStepPage = ({
     applyWhenNotNullable(id => Number(id), getCompanyIdFromSession()),
   );
 
+  const { data: featureFlags } = useFeatureFlagsQuery();
+  const enableSTOS = featureFlags?.["STOS"] === "ENABLED";
+
   // Query for the application data whenever this page is rendered
   const {
     applicationData,
@@ -86,9 +92,23 @@ export const ApplicationStepPage = ({
     DEFAULT_PERMIT_TYPE,
     isPermitTypeValid(permitType)
       ? (permitType?.toUpperCase() as PermitType)
-      : null,
+      : null, // when permitType in the url param is empty or not a valid permit type
     applicationData?.permitType,
   );
+
+  // Currently onRouteBC only handles TROS and TROW permits, and STOS only if feature flag is enabled
+  const isPermitTypeAllowed = () => {
+    const allowedPermitTypes: string[] = enableSTOS ? [
+      PERMIT_TYPES.TROS,
+      PERMIT_TYPES.TROW,
+      PERMIT_TYPES.STOS,
+    ] : [
+      PERMIT_TYPES.TROS,
+      PERMIT_TYPES.TROW,
+    ];
+
+    return allowedPermitTypes.includes(applicationPermitType);
+  };
 
   // Permit must be an application in progress in order to allow application-related edit/review/add to cart steps
   // (ie. empty status for new application, or in progress and in queue)
@@ -121,7 +141,7 @@ export const ApplicationStepPage = ({
     );
   };
 
-  if (isInvalidApplication || !isValidApplicationStatus() || !companyId) {
+  if (isInvalidApplication || !isValidApplicationStatus() || !companyId || !isPermitTypeAllowed()) {
     return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
   }
 
