@@ -22,6 +22,6 @@ const envConfig = (() => {
     VITE_KEYCLOAK_AUDIENCE: "",
     VITE_SITEMINDER_LOG_OFF_URL: "",
     VITE_FRONTEND_PR_NUM: "",
-    VITE_POLICY_URL: "http://localhost:5002",
+    VITE_POLICY_URL: "",
   };
 })();
