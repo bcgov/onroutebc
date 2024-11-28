@@ -144,7 +144,7 @@ export class CompanyApplicationController {
     type: ReadApplicationDto,
   })
   @ApiUnprocessableEntityResponse({
-    description: 'The Applciation could not be processed.',
+    description: 'The Application could not be processed.',
     type: ExceptionDto,
   })
   @Permissions({
