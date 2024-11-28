@@ -36,7 +36,7 @@ export const LOAListColumnDef = (
   },
   {
     accessorFn: (originalRow) => {
-      return toLocal(originalRow.startDate, DATE_FORMATS.DATEONLY_SLASH);
+      return toLocal(originalRow.startDate, DATE_FORMATS.DATEONLY_SLASH, true);
     },
     id: "startDate",
     header: "Start Date",
@@ -54,7 +54,7 @@ export const LOAListColumnDef = (
   {
     accessorFn: (originalRow) =>
       applyWhenNotNullable(
-        (expiryDate) => toLocal(expiryDate, DATE_FORMATS.DATEONLY_SLASH),
+        (expiryDate) => toLocal(expiryDate, DATE_FORMATS.DATEONLY_SLASH, true),
         originalRow.expiryDate,
         "Never expires",
       ) as string,
