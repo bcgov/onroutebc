@@ -28,15 +28,28 @@ import { getEligibleVehicleSubtypes } from "../../helpers/vehicles/subtypes/getE
  * @returns Current application form data, methods to manage the form, and selectable input options
  */
 export const useInitApplicationFormData = (
-  permitType: PermitType,
-  isLcvDesignated: boolean,
-  companyLOAs: LOADetail[],
-  inventoryVehicles: (PowerUnit | Trailer)[],
-  companyInfo: Nullable<CompanyProfile>,
-  applicationData?: Nullable<Application>,
-  userDetails?: BCeIDUserDetailContext,
-  policyEngine?: Nullable<Policy>,
+  data: {
+    permitType: PermitType;
+    isLcvDesignated: boolean;
+    companyLOAs: LOADetail[];
+    inventoryVehicles: (PowerUnit | Trailer)[];
+    companyInfo: Nullable<CompanyProfile>;
+    applicationData?: Nullable<Application>;
+    userDetails?: BCeIDUserDetailContext;
+    policyEngine?: Nullable<Policy>;
+  },
 ) => {
+  const {
+    permitType,
+    isLcvDesignated,
+    companyLOAs,
+    inventoryVehicles,
+    companyInfo,
+    applicationData,
+    userDetails,
+    policyEngine,
+  } = data;
+
   // Used to populate/initialize the form with
   // This will be updated whenever new application, company, and user data is fetched
   const initialFormData = useMemo(() => {

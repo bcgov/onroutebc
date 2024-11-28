@@ -6,7 +6,7 @@ import { usePermitDateSelection } from "../usePermitDateSelection";
 import { usePermitConditions } from "../usePermitConditions";
 import { getStartOfDate } from "../../../../common/helpers/formatDate";
 import { usePermitVehicles } from "../usePermitVehicles";
-import { arePermitLOADetailsEqual, PermitLOA } from "../../types/PermitLOA";
+import { arePermitLOADetailsEqual } from "../../types/PermitLOA";
 import { useMemoizedArray } from "../../../../common/hooks/useMemoizedArray";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { arePermitConditionEqual } from "../../types/PermitCondition";
@@ -118,7 +118,7 @@ export const useApplicationFormContext = () => {
     permitType,
     startDate,
     durationOptions,
-    currentSelectedLOAs as PermitLOA[],
+    currentSelectedLOAs,
     permitDuration,
     onSetDuration,
     onSetExpiryDate,
@@ -151,18 +151,18 @@ export const useApplicationFormContext = () => {
     filteredVehicleOptions,
     subtypeOptions,
     isSelectedLOAVehicle,
-  } = usePermitVehicles(
+  } = usePermitVehicles({
     policyEngine,
     permitType,
     isLcvDesignated,
     vehicleFormData,
     allVehiclesFromInventory,
-    currentSelectedLOAs as PermitLOA[],
+    selectedLOAs: currentSelectedLOAs,
     powerUnitSubtypeNamesMap,
     trailerSubtypeNamesMap,
-    () => onClearVehicle(Boolean(vehicleFormData.saveVehicle)),
-    permittedCommodity?.commodityType,
-  );
+    onClearVehicle: () => onClearVehicle(Boolean(vehicleFormData.saveVehicle)),
+    selectedCommodity: permittedCommodity?.commodityType,
+  });
 
   const selectedVehicleConfigSubtypes = useMemoizedArray(
     getDefaultRequiredVal(

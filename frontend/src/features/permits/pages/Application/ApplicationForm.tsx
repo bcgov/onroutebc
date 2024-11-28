@@ -98,16 +98,16 @@ export const ApplicationForm = ({
     initialFormData,
     currentFormData,
     formMethods,
-  } = useInitApplicationFormData(
+  } = useInitApplicationFormData({
     permitType,
     isLcvDesignated,
     companyLOAs,
-    allVehiclesFromInventory,
+    inventoryVehicles: allVehiclesFromInventory,
     companyInfo,
-    applicationContext?.applicationData,
+    applicationData: applicationContext?.applicationData,
     userDetails,
     policyEngine,
-  );
+  });
 
   // Applicable LOAs must be:
   // 1. Applicable for the current permit type

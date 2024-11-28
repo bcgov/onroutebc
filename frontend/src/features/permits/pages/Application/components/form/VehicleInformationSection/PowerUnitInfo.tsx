@@ -5,17 +5,15 @@ import { PermitVehicleDetails } from "../../../../../types/PermitVehicleDetails"
 import { PowerUnitInfoDisplay } from "../../common/PowerUnitInfoDisplay";
 
 export const PowerUnitInfo = ({
-  showPowerUnitInfo,
   powerUnitInfo,
   powerUnitSubtypeNamesMap,
   onRemovePowerUnit,
 }: {
-  showPowerUnitInfo: boolean;
   powerUnitInfo: PermitVehicleDetails;
   powerUnitSubtypeNamesMap: Map<string, string>;
   onRemovePowerUnit: () => void,
 }) => {
-  return showPowerUnitInfo ? (
+  return (
     <div className="power-unit-info">
       <h4 className="power-unit-info__title">Power Unit</h4>
 
@@ -36,5 +34,5 @@ export const PowerUnitInfo = ({
         Remove
       </Button>
     </div>
-  ) : null;
+  );
 };

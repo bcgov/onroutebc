@@ -20,5 +20,5 @@ export const convertToNumberIfValid = <T extends Nullable<number | string>>(
     || isNumberButInvalid
     || isStringButInvalid;
   
-  return !isInvalid ? Number(numericVal) : fallbackWhenInvalid;
+  return !isInvalid ? Number(numericVal) : fallbackWhenInvalid as T;
 };

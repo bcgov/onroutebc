@@ -19,15 +19,28 @@ import {
 } from "../types/AmendPermitFormData";
 
 export const useAmendPermitForm = (
-  repopulateFormData: boolean,
-  isLcvDesignated: boolean,
-  companyLOAs: LOADetail[],
-  inventoryVehicles: (PowerUnit | Trailer)[],
-  companyInfo: Nullable<CompanyProfile>,
-  permit?: Nullable<Permit>,
-  amendmentApplication?: Nullable<Application>,
-  policyEngine?: Nullable<Policy>,
+  data: {
+    repopulateFormData: boolean;
+    isLcvDesignated: boolean;
+    companyLOAs: LOADetail[];
+    inventoryVehicles: (PowerUnit | Trailer)[];
+    companyInfo: Nullable<CompanyProfile>;
+    permit?: Nullable<Permit>;
+    amendmentApplication?: Nullable<Application>;
+    policyEngine?: Nullable<Policy>;
+  },
 ) => {
+  const {
+    repopulateFormData,
+    isLcvDesignated,
+    companyLOAs,
+    inventoryVehicles,
+    companyInfo,
+    permit,
+    amendmentApplication,
+    policyEngine,
+  } = data;
+
   // Default form data values to populate the amend form with
   const defaultFormData = useMemo(() => {
     if (amendmentApplication) {

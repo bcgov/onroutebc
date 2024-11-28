@@ -160,12 +160,13 @@ export const VehicleInformationSection = ({
           )}
         </div>
 
-        <PowerUnitInfo
-          showPowerUnitInfo={isPowerUnitSelectedForSingleTrip}
-          powerUnitInfo={vehicleFormData}
-          powerUnitSubtypeNamesMap={powerUnitSubtypeNamesMap}
-          onRemovePowerUnit={handleRemovePowerUnit}
-        />
+        {isPowerUnitSelectedForSingleTrip ? (
+          <PowerUnitInfo
+            powerUnitInfo={vehicleFormData}
+            powerUnitSubtypeNamesMap={powerUnitSubtypeNamesMap}
+            onRemovePowerUnit={handleRemovePowerUnit}
+          />
+        ) : null}
 
         {isPowerUnitSelectedForSingleTrip ? (
           <AddTrailer

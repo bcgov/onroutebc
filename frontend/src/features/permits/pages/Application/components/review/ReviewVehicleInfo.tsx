@@ -112,6 +112,10 @@ export const ReviewVehicleInfo = ({
     (subtype1, subtype2) => subtype1 === subtype2,
   );
 
+  const showDiffChip = (show: boolean) => {
+    return show ? <DiffChip /> : null;
+  };
+
   return (
     <Box className="review-vehicle-info">
       <Box className="review-vehicle-info__header">
@@ -123,7 +127,7 @@ export const ReviewVehicleInfo = ({
           <Box className="info-section">
             <Typography className="info-section__label">
               <span className="info-section__label-text">Unit #</span>
-              {changedFields.unit ? <DiffChip /> : null}
+              {showDiffChip(changedFields.unit)}
             </Typography>
 
             <Typography
@@ -138,7 +142,7 @@ export const ReviewVehicleInfo = ({
               <span className="info-section__label--indicator">
                 (last 6 digits)
               </span>
-              {changedFields.vin ? <DiffChip /> : null}
+              {showDiffChip(changedFields.vin)}
             </Typography>
 
             <Typography
@@ -150,7 +154,7 @@ export const ReviewVehicleInfo = ({
 
             <Typography className="info-section__label">
               <span className="info-section__label-text">Plate</span>
-              {changedFields.plate ? <DiffChip /> : null}
+              {showDiffChip(changedFields.plate)}
             </Typography>
 
             <Typography
@@ -162,7 +166,7 @@ export const ReviewVehicleInfo = ({
 
             <Typography className="info-section__label">
               <span className="info-section__label-text">Make</span>
-              {changedFields.make ? <DiffChip /> : null}
+              {showDiffChip(changedFields.make)}
             </Typography>
 
             <Typography
@@ -174,7 +178,7 @@ export const ReviewVehicleInfo = ({
 
             <Typography className="info-section__label">
               <span className="info-section__label-text">Year</span>
-              {changedFields.year ? <DiffChip /> : null}
+              {showDiffChip(changedFields.year)}
             </Typography>
 
             <Typography
@@ -186,7 +190,7 @@ export const ReviewVehicleInfo = ({
 
             <Typography className="info-section__label">
               <span className="info-section__label-text">Country</span>
-              {changedFields.country ? <DiffChip /> : null}
+              {showDiffChip(changedFields.country)}
             </Typography>
 
             <Typography
@@ -200,7 +204,7 @@ export const ReviewVehicleInfo = ({
               <>
                 <Typography className="info-section__label">
                   <span className="info-section__label-text">Province / State</span>
-                  {changedFields.province ? <DiffChip /> : null}
+                  {showDiffChip(changedFields.province)}
                 </Typography>
 
                 <Typography
@@ -214,7 +218,7 @@ export const ReviewVehicleInfo = ({
 
             <Typography className="info-section__label">
               <span className="info-section__label-text">Vehicle Type</span>
-              {changedFields.type ? <DiffChip /> : null}
+              {showDiffChip(changedFields.type)}
             </Typography>
 
             <Typography
@@ -226,7 +230,7 @@ export const ReviewVehicleInfo = ({
 
             <Typography className="info-section__label">
               <span className="info-section__label-text">Vehicle Sub-type</span>
-              {changedFields.subtype ? <DiffChip /> : null}
+              {showDiffChip(changedFields.subtype)}
             </Typography>
 
             <Typography

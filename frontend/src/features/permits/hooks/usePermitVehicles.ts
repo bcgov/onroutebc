@@ -16,17 +16,32 @@ import {
 } from "../../manageVehicles/types/Vehicle";
 
 export const usePermitVehicles = (
-  policyEngine: Policy,
-  permitType: PermitType,
-  isLcvDesignated: boolean,
-  vehicleFormData: PermitVehicleDetails,
-  allVehiclesFromInventory: (PowerUnit | Trailer)[],
-  selectedLOAs: PermitLOA[],
-  powerUnitSubtypeNamesMap: Map<string, string>,
-  trailerSubtypeNamesMap: Map<string, string>,
-  onClearVehicle: () => void,
-  selectedCommodity?: Nullable<string>,
+  data: {
+    policyEngine: Policy;
+    permitType: PermitType;
+    isLcvDesignated: boolean;
+    vehicleFormData: PermitVehicleDetails;
+    allVehiclesFromInventory: (PowerUnit | Trailer)[];
+    selectedLOAs: PermitLOA[];
+    powerUnitSubtypeNamesMap: Map<string, string>;
+    trailerSubtypeNamesMap: Map<string, string>;
+    onClearVehicle: () => void;
+    selectedCommodity?: Nullable<string>;
+  },
 ) => {
+  const {
+    policyEngine,
+    permitType,
+    isLcvDesignated,
+    vehicleFormData,
+    allVehiclesFromInventory,
+    selectedLOAs,
+    powerUnitSubtypeNamesMap,
+    trailerSubtypeNamesMap,
+    onClearVehicle,
+    selectedCommodity,
+  } = data;
+
   const eligibleVehicleSubtypes = useMemo(() => {
     return getEligibleVehicleSubtypes(
       permitType,

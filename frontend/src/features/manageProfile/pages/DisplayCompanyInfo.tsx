@@ -12,6 +12,7 @@ import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { CompanyProfile } from "../types/manageProfile";
 import { getProvinceFullName } from "../../../common/helpers/countries/getProvinceFullName";
 import { getCountryFullName } from "../../../common/helpers/countries/getCountryFullName";
+import { Nullable } from "../../../common/types/common";
 
 export const DisplayInfo = memo(
   ({
@@ -34,6 +35,12 @@ export const DisplayInfo = memo(
       companyInfo?.primaryContact?.provinceCode,
     );
 
+    const phoneDisplay = (phone: string, ext?: Nullable<string>) => {
+      return `${formatPhoneNumber(
+        phone,
+      )} ${ext ? `Ext: ${ext}` : ""}`;
+    };
+
     return companyInfo ? (
       <div className="display-company-info">
         <Box>
@@ -48,11 +55,9 @@ export const DisplayInfo = memo(
 
           <Typography>{companyInfo.mailingAddress.addressLine1}</Typography>
 
-          {mailingCountry ? (
-            <Typography>
-              {mailingCountry}
-            </Typography>
-          ) : null}
+          <Typography>
+            {mailingCountry}
+          </Typography>
 
           {mailingProvince ? (
             <Typography>
@@ -71,9 +76,7 @@ export const DisplayInfo = memo(
           </Typography>
 
           <Typography>
-            {`Phone: ${formatPhoneNumber(companyInfo.phone)} ${
-              companyInfo.extension ? `Ext: ${companyInfo.extension}` : ""
-            }`}
+            {`Phone: ${phoneDisplay(companyInfo.phone, companyInfo.extension)}`}
           </Typography>
 
           {companyInfo?.fax ? (
@@ -93,20 +96,15 @@ export const DisplayInfo = memo(
           </Typography>
 
           <Typography>
-            {`Primary Phone: ${formatPhoneNumber(
+            {`Primary Phone: ${phoneDisplay(
               companyInfo.primaryContact.phone1,
-            )} ${
-              companyInfo.primaryContact.phone1Extension
-                ? `Ext: ${companyInfo.primaryContact.phone1Extension}`
-                : ""
-            }`}
+              companyInfo.primaryContact.phone1Extension,
+            )}`}
           </Typography>
 
-          {primaryContactCountry ? (
-            <Typography>
-              {primaryContactCountry}
-            </Typography>
-          ) : null}
+          <Typography>
+            {primaryContactCountry}
+          </Typography>
 
           {primaryContactProvince ? (
             <Typography>

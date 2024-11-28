@@ -10,7 +10,7 @@ import {
 import "./NumberInput.scss";
 import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../helpers/util";
 import { convertToNumberIfValid } from "../../../helpers/numeric/convertToNumberIfValid";
-import { isUndefined, RequiredOrNull } from "../../../types/common";
+import { isNull, RequiredOrNull } from "../../../types/common";
 
 type NumberInputClassKey =
   "root" | "label";
@@ -57,10 +57,10 @@ export const NumberInput = (props: NumberInputProps) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const updatedVal = e.target.value;
-    const numericVal = convertToNumberIfValid(updatedVal, undefined);
+    const numericVal = convertToNumberIfValid(updatedVal, null);
 
     // If an invalid numeric string was inputted, do nothing
-    if (isUndefined(numericVal)) return;
+    if (isNull(numericVal)) return;
 
     // Otherwise display it without formatting it immediately (as that affects user's ability to input)
     setValueDisplay(updatedVal);
@@ -70,8 +70,8 @@ export const NumberInput = (props: NumberInputProps) => {
   // The user is free to enter numbers into the input field,
   // but as they leave the input will be formatted if a maskFn is available
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    const num = convertToNumberIfValid(valueDisplay, undefined);
-    if (maskFn && !isUndefined(num)) {
+    const num = convertToNumberIfValid(valueDisplay, null);
+    if (maskFn && !isNull(num)) {
       setValueDisplay(maskFn(num));
     }
     onBlur?.(e);

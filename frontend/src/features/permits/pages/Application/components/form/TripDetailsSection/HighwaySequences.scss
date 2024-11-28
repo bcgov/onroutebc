@@ -1,8 +1,8 @@
-@import "../../../../../../../themes/orbcStyles";
+@use "../../../../../../../themes/orbcStyles";
 
 .highway-sequences {
   & &__info {
-    color: $bc-black;
+    color: orbcStyles.$bc-black;
     margin: 1.5rem 0;
 
     .highway-sequences-info {
@@ -44,31 +44,31 @@
 
       &__error {
         margin-top: 0.5rem;
-        color: $bc-red;
+        color: orbcStyles.$bc-red;
       }
 
       .highway-number-form-control {
         &__label {
           font-size: 1rem;
           font-weight: bold;
-          color: $bc-black;
+          color: orbcStyles.$bc-black;
           margin-bottom: 0.5rem;
         }
 
         &__input {
           fieldset {
-            border: 2px solid $bc-text-box-border-grey;
+            border: 2px solid orbcStyles.$bc-text-box-border-grey;
           }
 
           &--focus {
             fieldset {
-              border: 2px solid $focus-blue;
+              border: 2px solid orbcStyles.$focus-blue;
             }
           }
 
           &--error {
             fieldset {
-              border: 2px solid $bc-red;
+              border: 2px solid orbcStyles.$bc-red;
             }
           }
         }

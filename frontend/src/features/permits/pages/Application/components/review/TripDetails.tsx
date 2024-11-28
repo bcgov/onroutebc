@@ -48,6 +48,10 @@ export const TripDetails = ({
         routeDetails: false,
       };
 
+  const showDiffChip = (show: boolean) => {
+    return show ? <DiffChip /> : null;
+  };
+
   return routeDetails ? (
     <Box className="review-trip-details">
       <Box className="review-trip-details__header">
@@ -64,7 +68,7 @@ export const TripDetails = ({
                 <Typography className="origin-destination__label">
                   <span className="origin-destination__label-text">Origin</span>
 
-                  {changedFields.origin ? <DiffChip /> : null}
+                  {showDiffChip(changedFields.origin)}
                 </Typography>
 
                 <Typography
@@ -81,7 +85,7 @@ export const TripDetails = ({
                 <Typography className="origin-destination__label">
                   <span className="origin-destination__label-text">Destination</span>
 
-                  {changedFields.destination ? <DiffChip /> : null}
+                  {showDiffChip(changedFields.destination)}
                 </Typography>
 
                 <Typography
@@ -102,7 +106,7 @@ export const TripDetails = ({
                 Sequences of highways to be travelled
               </Typography>
               
-              {changedFields.highwaySequences ? <DiffChip /> : null}
+              {showDiffChip(changedFields.highwaySequences)}
             </div>
             
             <div className="review-highway-sequences__sequences">
@@ -125,7 +129,7 @@ export const TripDetails = ({
                 Specific Route Details
               </span>
 
-              {changedFields.routeDetails ? <DiffChip /> : null}
+              {showDiffChip(changedFields.routeDetails)}
             </Typography>
 
             <Typography

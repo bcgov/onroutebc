@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import { Button, FormControl, FormLabel, OutlinedInput } from "@mui/material";
+import { Button, FormControl, FormLabel } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
@@ -11,6 +11,7 @@ import { BANNER_MESSAGES } from "../../../../../../../common/constants/bannerMes
 import { ONROUTE_WEBPAGE_LINKS } from "../../../../../../../routes/constants";
 import { requiredHighway } from "../../../../../../../common/helpers/validationMessages";
 import { ApplicationFormData } from "../../../../../types/application";
+import { HighwayNumberInput } from "./components/HighwayNumberInput";
 
 const toHighwayRows = (highwaySequence: string[]) => {
   return [
@@ -139,12 +140,12 @@ export const HighwaySequences = ({
             <div className="highway-sequence-rows">
               {highwayRows.map((highwayRow, rowIndex) => (
                 <div
-                  key={rowIndex}
+                  key={`sequences-${rowIndex * 8 + 1}-${(rowIndex + 1) * 8}`}
                   className={`highway-sequence-rows__row ${rowIndex === 0 ? "highway-sequence-rows__row--first" : ""}`}
                 >
                   {highwayRow.map((highwayNumber, colIndex) => (
                     <FormControl
-                      key={colIndex}
+                      key={`sequence-${rowIndex * 8 + colIndex + 1}`}
                       className="highway-sequence-rows__cell highway-number-form-control"
                       margin="normal"
                       error={invalid}
@@ -155,14 +156,12 @@ export const HighwaySequences = ({
                         {rowIndex * 8 + colIndex + 1}
                       </FormLabel>
                       
-                      <OutlinedInput
+                      <HighwayNumberInput
                         className="highway-number-form-control__input"
-                        classes={{
-                          focused: "highway-number-form-control__input--focus",
-                          error: "highway-number-form-control__input--error",
-                        }}
-                        value={highwayNumber}
-                        onChange={(e) => handleHighwayInput(e.target.value, rowIndex, colIndex)}
+                        highwayNumber={highwayNumber}
+                        onHighwayInputChange={handleHighwayInput}
+                        rowIndex={rowIndex}
+                        colIndex={colIndex}
                       />
                     </FormControl>
                   ))}

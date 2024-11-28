@@ -58,6 +58,13 @@ export const ReviewPermitDetails = ({
         duration: false,
       };
 
+  const displayDuration = (duration: number) => {
+    const measurementUnit = duration !== 1 ? "Days" : "Day";
+    return duration === BASE_DAYS_IN_YEAR
+      ? "1 Year"
+      : `${duration} ${measurementUnit}`;
+  };
+
   return (
     <Box className="review-permit-details">
       <Box className="review-permit-details__header">
@@ -98,10 +105,7 @@ export const ReviewPermitDetails = ({
               data-testid="permit-duration"
             >
               {applyWhenNotNullable(
-                (duration) =>
-                  duration === BASE_DAYS_IN_YEAR
-                    ? "1 Year"
-                    : `${duration} Day${duration !== 1 ? "s" : ""}`,
+                displayDuration,
                 permitDuration,
                 "",
               )}

@@ -149,12 +149,14 @@ export const ApplicationReview = ({
     }
   };
 
+  const setShowSnackbar = () => true;
+
   const handleAddToCart = async () => {
     await handleSaveApplication(async (companyId, permitId, applicationNumber) => {
       await proceedWithAddToCart(companyId, [permitId], () => {
         setSnackBar({
           showSnackbar: true,
-          setShowSnackbar: () => true,
+          setShowSnackbar,
           message: `Application ${applicationNumber} added to cart`,
           alertType: "success",
         });
@@ -179,7 +181,7 @@ export const ApplicationReview = ({
         onSuccess: () => {
           setSnackBar({
             showSnackbar: true,
-            setShowSnackbar: () => true,
+            setShowSnackbar,
             message: `Application ${applicationNumber} submitted for review`,
             alertType: "success",
           });

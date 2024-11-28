@@ -83,16 +83,16 @@ export const AmendPermitForm = () => {
     initialFormData,
     formData,
     formMethods,
-  } = useAmendPermitForm(
-    currentStepIndex === 0,
+  } = useAmendPermitForm({
+    repopulateFormData: currentStepIndex === 0,
     isLcvDesignated,
     companyLOAs,
-    allVehiclesFromInventory,
+    inventoryVehicles: allVehiclesFromInventory,
     companyInfo,
     permit,
     amendmentApplication,
     policyEngine,
-  );
+  });
 
   const { createdDateTime, updatedDateTime } = getDatetimes(
     amendmentApplication,
