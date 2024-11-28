@@ -36,9 +36,10 @@ export const DisplayInfo = memo(
     );
 
     const phoneDisplay = (phone: string, ext?: Nullable<string>) => {
+      const extDisplay = ext ? `Ext: ${ext}` : "";
       return `${formatPhoneNumber(
         phone,
-      )} ${ext ? `Ext: ${ext}` : ""}`;
+      )} ${extDisplay}`;
     };
 
     return companyInfo ? (
