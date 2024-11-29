@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@mui/material";
@@ -26,8 +26,11 @@ import {
 } from "../../hooks/specialAuthorizations";
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 
 export const SpecialAuthorizations = ({ companyId }: { companyId: number }) => {
+  const { idirUserDetails } = useContext(OnRouteBCContext);
+  const isStaffUser = Boolean(idirUserDetails?.userRole);
   const { data: featureFlags } = useFeatureFlagsQuery();
   const { data: specialAuthorizations, refetch: refetchSpecialAuth } =
     useFetchSpecialAuthorizations(
@@ -62,10 +65,15 @@ export const SpecialAuthorizations = ({ companyId }: { companyId: number }) => {
 
   const canViewNoFeePermits = usePermissionMatrix({
     featureFlag: "NO-FEE",
-    permissionMatrixKeys: {
-      permissionMatrixFeatureKey: "MANAGE_SETTINGS",
-      permissionMatrixFunctionKey: "VIEW_SPECIAL_AUTHORIZATIONS",
-    },
+    permissionMatrixKeys: isStaffUser
+      ? {
+          permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+          permissionMatrixFunctionKey: "VIEW_SPECIAL_AUTHORIZATIONS",
+        }
+      : {
+          permissionMatrixFeatureKey: "MANAGE_PROFILE",
+          permissionMatrixFunctionKey: "VIEW_SPECIAL_AUTHORIZATIONS",
+        },
   });
 
   const canUpdateLCV = usePermissionMatrix({
@@ -78,18 +86,28 @@ export const SpecialAuthorizations = ({ companyId }: { companyId: number }) => {
 
   const canViewLCV = usePermissionMatrix({
     featureFlag: "LCV",
-    permissionMatrixKeys: {
-      permissionMatrixFeatureKey: "MANAGE_SETTINGS",
-      permissionMatrixFunctionKey: "VIEW_SPECIAL_AUTHORIZATIONS",
-    },
+    permissionMatrixKeys: isStaffUser
+      ? {
+          permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+          permissionMatrixFunctionKey: "VIEW_SPECIAL_AUTHORIZATIONS",
+        }
+      : {
+          permissionMatrixFeatureKey: "MANAGE_PROFILE",
+          permissionMatrixFunctionKey: "VIEW_SPECIAL_AUTHORIZATIONS",
+        },
   });
 
   const canReadLOA = usePermissionMatrix({
     featureFlag: "LOA",
-    permissionMatrixKeys: {
-      permissionMatrixFeatureKey: "MANAGE_SETTINGS",
-      permissionMatrixFunctionKey: "VIEW_LOA",
-    },
+    permissionMatrixKeys: isStaffUser
+      ? {
+          permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+          permissionMatrixFunctionKey: "VIEW_LOA",
+        }
+      : {
+          permissionMatrixFeatureKey: "MANAGE_PROFILE",
+          permissionMatrixFunctionKey: "VIEW_LOA",
+        },
   });
 
   const canWriteLOA = usePermissionMatrix({

@@ -76,8 +76,14 @@ export const ManageProfilesDashboard = React.memo(() => {
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userRole);
   const isBCeIDAdmin = isBCeIDOrgAdmin(populatedUserClaims);
   const shouldAllowUserManagement = isBCeIDAdmin || isStaffActingAsCompany;
-  const showSpecialAuth =
-    !isStaffActingAsCompany &&
+  const showSpecialAuth = usePermissionMatrix({
+    additionalConditionToCheck: () => !isStaffActingAsCompany,
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_PROFILE",
+      permissionMatrixFunctionKey: "VIEW_SPECIAL_AUTHORIZATIONS",
+    },
+  });
+  !isStaffActingAsCompany &&
     canViewSpecialAuthorizations(userClaims, userDetails?.userRole) &&
     featureFlags?.["LOA"] === "ENABLED";
 
