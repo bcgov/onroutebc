@@ -79,6 +79,7 @@ interface PermitReviewProps {
   doingBusinessAs?: Nullable<string>;
   loas?: Nullable<PermitLOA[]>;
   applicationRejectionHistory?: Nullable<ApplicationRejectionHistory[]>;
+  isStaffUser: boolean;
 }
 
 export const PermitReview = (props: PermitReviewProps) => {
@@ -108,7 +109,7 @@ export const PermitReview = (props: PermitReviewProps) => {
       : false;
 
   const hasToCartButton = props.reviewContext === PERMIT_REVIEW_CONTEXTS.APPLY
-    && props.permitType !== PERMIT_TYPES.STOS;
+    && (props.permitType !== PERMIT_TYPES.STOS || props.isStaffUser);
 
   return (
     <Box className="permit-review layout-box">

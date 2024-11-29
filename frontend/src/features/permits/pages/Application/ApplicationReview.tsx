@@ -25,6 +25,7 @@ import { usePolicyEngine } from "../../../policy/hooks/usePolicyEngine";
 import { useCommodityOptions } from "../../hooks/useCommodityOptions";
 import { useSubmitApplicationForReview } from "../../../queue/hooks/hooks";
 import { deserializeApplicationResponse } from "../../helpers/serialize/deserializeApplication";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import {
   APPLICATIONS_ROUTES,
   APPLICATION_STEPS,
@@ -38,6 +39,9 @@ export const ApplicationReview = ({
 }) => {
   const { applicationData, setApplicationData: setApplicationContextData } =
     useContext(ApplicationContext);
+
+  const { idirUserDetails } = useContext(OnRouteBCContext);
+  const isStaffUser = Boolean(idirUserDetails?.userRole);
 
   const { data: specialAuth } = useFetchSpecialAuthorizations(companyId);
   const isNoFeePermitType = Boolean(specialAuth?.noFeeType);
@@ -167,11 +171,12 @@ export const ApplicationReview = ({
     });
   };
 
-  const continueBtnText = permitType === PERMIT_TYPES.STOS
+  const continueBtnText = permitType === PERMIT_TYPES.STOS && !isStaffUser
     ? "Submit for Review" : undefined;
 
   const handleSubmitForReview = async () => {
     if (permitType !== PERMIT_TYPES.STOS) return;
+    if (isStaffUser) return;
 
     await handleSaveApplication(async (companyId, permitId, applicationNumber) => {
       await submitForReview({
@@ -243,6 +248,7 @@ export const ApplicationReview = ({
           calculatedFee={fee}
           loas={applicationData?.permitData?.loas}
           applicationRejectionHistory={applicationData?.rejectionHistory}
+          isStaffUser={isStaffUser}
         />
       </FormProvider>
     </div>
