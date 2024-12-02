@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useMemo } from "react";
 
 import {
   MRT_Cell,
   MRT_ColumnDef,
   MRT_Row,
+  MRT_RowSelectionState,
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
@@ -30,16 +32,20 @@ import {
 } from "../../../../../common/helpers/tableHelper";
 import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
 import { useFormContext } from "react-hook-form";
-import { MultiplePaymentMethodRefundData } from "../types/RefundFormData";
+import { RefundFormData } from "../types/RefundFormData";
 import { Checkbox, FormControlLabel } from "@mui/material";
 import { requiredMessage } from "../../../../../common/helpers/validationMessages";
 
 export const TransactionHistoryTable = ({
   permitHistory,
   totalRefundDue,
+  rowSelection,
+  setRowSelection,
 }: {
   permitHistory: PermitHistory[];
   totalRefundDue: number;
+  rowSelection: MRT_RowSelectionState;
+  setRowSelection: (rowSelection: MRT_RowSelectionState) => void;
 }) => {
   const validTransactionHistory = permitHistory.filter((history) =>
     isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
@@ -48,9 +54,7 @@ export const TransactionHistoryTable = ({
   const formMethods = useFormContext();
   const { register, watch, setValue, trigger } = formMethods;
 
-  const isRowSelectable = (
-    row: MRT_Row<MultiplePaymentMethodRefundData>,
-  ): boolean => {
+  const isRowSelectable = (row: MRT_Row<RefundFormData>): boolean => {
     return (
       !isTransactionTypeRefund(row.original.transactionTypeId) &&
       !isZeroAmount(row.original.transactionAmount) &&
@@ -58,7 +62,7 @@ export const TransactionHistoryTable = ({
     );
   };
 
-  const columns = useMemo<MRT_ColumnDef<MultiplePaymentMethodRefundData>[]>(
+  const columns = useMemo<MRT_ColumnDef<RefundFormData>[]>(
     () => [
       {
         accessorKey: "permitNumber",
@@ -154,11 +158,7 @@ export const TransactionHistoryTable = ({
         size: 20,
         enableSorting: false,
         enableColumnActions: false,
-        Cell: ({
-          cell,
-        }: {
-          cell: MRT_Cell<MultiplePaymentMethodRefundData>;
-        }) => {
+        Cell: ({ cell }: { cell: MRT_Cell<RefundFormData> }) => {
           const rowIsSelected = cell.row.getIsSelected();
 
           // clear refundAmount when row is unselected
@@ -200,11 +200,7 @@ export const TransactionHistoryTable = ({
         size: 20,
         enableSorting: false,
         enableColumnActions: false,
-        Cell: ({
-          cell,
-        }: {
-          cell: MRT_Cell<MultiplePaymentMethodRefundData>;
-        }) => {
+        Cell: ({ cell }: { cell: MRT_Cell<RefundFormData> }) => {
           const rowIsSelected = cell.row.getIsSelected();
           const refundAmount = watch(
             `refundData.${cell.row.index}.refundAmount`,
@@ -242,16 +238,14 @@ export const TransactionHistoryTable = ({
                   name: `refundData.${cell.row.index}.refundTransactionId`,
                   rules: {
                     required: {
-                      value: refundAmount !== "" && !chequeRefund,
+                      value: refundAmount !== 0 && !chequeRefund,
                       message: requiredMessage(),
                     },
                   },
                   width: "200px",
                   showOptionalLabel: false,
                 }}
-                disabled={
-                  !refundAmount || Number(refundAmount) <= 0 || chequeRefund
-                }
+                disabled={!refundAmount || refundAmount <= 0 || chequeRefund}
               />
             )
           );
@@ -271,11 +265,7 @@ export const TransactionHistoryTable = ({
         size: 20,
         enableSorting: false,
         enableColumnActions: false,
-        Cell: ({
-          cell,
-        }: {
-          cell: MRT_Cell<MultiplePaymentMethodRefundData>;
-        }) => {
+        Cell: ({ cell }: { cell: MRT_Cell<RefundFormData> }) => {
           const refundAmount = watch(
             `refundData.${cell.row.index}.refundAmount`,
           );
@@ -302,7 +292,7 @@ export const TransactionHistoryTable = ({
                     {...register(`refundData.${cell.row.index}.chequeRefund`)}
                     disabled={
                       !cell.row.getIsSelected() ||
-                      refundAmount === "" ||
+                      Number(refundAmount) <= 0 ||
                       refundTransactionId !== ""
                     }
                   />
@@ -325,6 +315,14 @@ export const TransactionHistoryTable = ({
     ...defaultTableOptions,
     columns: columns,
     data: validTransactionHistory,
+    onRowSelectionChange: setRowSelection,
+    state: { ...defaultTableStateOptions, rowSelection },
+    initialState: {
+      ...defaultTableInitialStateOptions,
+      showGlobalFilter: false,
+      columnVisibility: { chequeRefund: totalRefundDue !== 0 },
+    },
+    getRowId: (row: RefundFormData) => row.permitNumber,
     displayColumnDefOptions: {
       "mrt-row-select": {
         size: 10,
@@ -335,22 +333,9 @@ export const TransactionHistoryTable = ({
     enableGlobalFilter: false,
     enableTopToolbar: false,
     enableBottomToolbar: false,
-    enableRowSelection: (row: MRT_Row<MultiplePaymentMethodRefundData>) =>
-      isRowSelectable(row),
+    enableRowSelection: (row: MRT_Row<RefundFormData>) => isRowSelectable(row),
     enableSelectAll: false,
-    initialState: {
-      ...defaultTableInitialStateOptions,
-      showGlobalFilter: false,
-      columnVisibility: { chequeRefund: totalRefundDue !== 0 },
-    },
-    state: {
-      ...defaultTableStateOptions,
-    },
-    muiSelectCheckboxProps: ({
-      row,
-    }: {
-      row: MRT_Row<MultiplePaymentMethodRefundData>;
-    }) => ({
+    muiSelectCheckboxProps: ({ row }: { row: MRT_Row<RefundFormData> }) => ({
       className: `transaction-history-table__checkbox ${!isRowSelectable(row) && "transaction-history-table__checkbox--disabled"}`,
     }),
     muiTablePaperProps: {

@@ -81,44 +81,45 @@ export const FinishVoid = ({
   const isRefundZeroAmount = isZeroAmount(amountToRefund);
 
   const onSubmit = (data: FieldValues) => {
-    console.log(data.refundData);
-    // const totalRefundAmount = data.refundData.reduce(
-    //   (sum: number, transaction: MultiplePaymentMethodRefundData) =>
-    //     sum + Number(transaction.refundAmount),
-    //   0,
-    // );
+    const totalRefundAmount = data.reduce(
+      (sum: number, transaction: MultiplePaymentMethodRefundData) =>
+        sum + Number(transaction.refundAmount),
+      0,
+    );
 
-    // if (totalRefundAmount !== Math.abs(amountToRefund)) {
-    //   setShowRefundErrorModal(true);
-    //   return;
-    // }
+    if (totalRefundAmount !== Math.abs(amountToRefund)) {
+      setShowRefundErrorModal(true);
+      return;
+    }
 
-    // console.log({
-    //   permitId: originalPermitId,
-    //   voidData: {
-    //     status: PERMIT_STATUSES.VOIDED,
-    //     transactions: data.map(
-    //       (transaction: MultiplePaymentMethodRefundData) => ({
-    //         pgTransactionId: transaction.pgTransactionId,
-    //         pgPaymentMethod: transaction.pgPaymentMethod,
-    //         paymentCardTypeCode: transaction.paymentCardTypeCode,
-    //         transactionAmount: Number(transaction.refundAmount),
-    //         paymentMethodTypeCode:
-    //           Number(transaction.refundAmount) === 0
-    //             ? PAYMENT_METHOD_TYPE_CODE.NP
-    //             : transaction.chequeRefund
-    //               ? PAYMENT_METHOD_TYPE_CODE.CHEQUE
-    //               : transaction.paymentMethodTypeCode,
-    //       }),
-    //     ),
-    //     transactionTypeId: isRefundZeroAmount
-    //       ? TRANSACTION_TYPES.P
-    //       : TRANSACTION_TYPES.R,
-    //     comment: data.comment,
-    //     fax: data.fax,
-    //     additionalEmail: data.additionalEmail,
-    //   },
-    // });
+    console.log(data);
+
+    console.log({
+      permitId: originalPermitId,
+      voidData: {
+        status: PERMIT_STATUSES.VOIDED,
+        transactions: data.map(
+          (transaction: MultiplePaymentMethodRefundData) => ({
+            pgTransactionId: transaction.pgTransactionId,
+            pgPaymentMethod: transaction.pgPaymentMethod,
+            paymentCardTypeCode: transaction.paymentCardTypeCode,
+            transactionAmount: Number(transaction.refundAmount),
+            paymentMethodTypeCode:
+              Number(transaction.refundAmount) === 0
+                ? PAYMENT_METHOD_TYPE_CODE.NP
+                : transaction.chequeRefund
+                  ? PAYMENT_METHOD_TYPE_CODE.CHEQUE
+                  : transaction.paymentMethodTypeCode,
+          }),
+        ),
+        transactionTypeId: isRefundZeroAmount
+          ? TRANSACTION_TYPES.P
+          : TRANSACTION_TYPES.R,
+        comment: voidPermitData.reason,
+        fax: voidPermitData.fax,
+        additionalEmail: voidPermitData.additionalEmail,
+      },
+    });
 
     // voidPermitMutation.mutate({
     //   permitId: originalPermitId,

@@ -7,13 +7,6 @@ import {
 import { TransactionType } from "../../../types/payment";
 
 export interface RefundFormData {
-  shouldUsePrevPaymentMethod: boolean;
-  refundMethod: string;
-  refundOnlineMethod: PaymentGatewayMethod | "";
-  transactionId?: string;
-}
-
-export interface MultiplePaymentMethodRefundData {
   permitNumber: string;
   pgPaymentMethod: RequiredOrNull<PaymentGatewayMethod>;
   pgTransactionId: RequiredOrNull<string>;
@@ -22,7 +15,7 @@ export interface MultiplePaymentMethodRefundData {
   paymentCardTypeCode: RequiredOrNull<PaymentCardTypeCode>;
   paymentMethodTypeCode: PaymentMethodTypeCode;
   transactionAmount: number;
-  refundAmount: string;
+  refundAmount: number;
   refundTransactionId: string;
   chequeRefund: boolean;
 }

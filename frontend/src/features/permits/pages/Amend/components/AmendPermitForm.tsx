@@ -28,10 +28,7 @@ import {
   filterLOAsForPermitType,
   filterNonExpiredLOAs,
 } from "../../../helpers/permitLOA";
-import {
-  dayjsToUtcStr,
-  now,
-} from "../../../../../common/helpers/formatDate";
+import { dayjsToUtcStr, now } from "../../../../../common/helpers/formatDate";
 
 import {
   useAmendPermit,

@@ -1,3 +1,4 @@
+import { RequiredOrNull } from "../../../../../common/types/common";
 import {
   PaymentCardTypeCode,
   PaymentGatewayMethod,
@@ -5,11 +6,11 @@ import {
 } from "../../../../../common/types/paymentMethods";
 
 export interface RefundTransactionItem {
-  pgTransactionId: string;
-  pgPaymentMethod: PaymentGatewayMethod;
+  pgTransactionId: RequiredOrNull<string>;
+  pgPaymentMethod: RequiredOrNull<PaymentGatewayMethod>;
   transactionAmount: number;
   paymentMethodTypeCode: PaymentMethodTypeCode;
-  paymentCardTypeCode: PaymentCardTypeCode;
+  paymentCardTypeCode: RequiredOrNull<PaymentCardTypeCode>;
 }
 
 export interface RefundPermitData {

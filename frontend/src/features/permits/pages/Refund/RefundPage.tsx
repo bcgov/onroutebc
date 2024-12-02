@@ -2,7 +2,7 @@
 import { FormProvider, useForm, FieldValues } from "react-hook-form";
 import { Button, Typography } from "@mui/material";
 import "./RefundPage.scss";
-import { MultiplePaymentMethodRefundData } from "./types/RefundFormData";
+import { RefundFormData } from "./types/RefundFormData";
 import { PermitHistory } from "../../types/PermitHistory";
 import { TransactionHistoryTable } from "./components/TransactionHistoryTable";
 import { calculateNetAmount } from "../../helpers/feeSummary";
@@ -11,6 +11,7 @@ import { Nullable } from "../../../../common/types/common";
 import { RefundDetails } from "./components/RefundDetails";
 import { useState } from "react";
 import { RefundErrorModal } from "./components/RefundErrorModal";
+import { MRT_RowSelectionState } from "material-react-table";
 
 export const PERMIT_REFUND_ACTIONS = {
   VOID: "void",
@@ -52,7 +53,7 @@ export const RefundPage = ({
   permitNumber?: Nullable<string>;
   permitAction: PermitAction;
   amountToRefund: number;
-  onSubmit: (data: FieldValues) => void;
+  onSubmit: (refundData: RefundFormData[]) => void;
 }) => {
   const currentPermitValue = calculateNetAmount(permitHistory);
   const newPermitValue = currentPermitValue - Math.abs(amountToRefund);
@@ -68,34 +69,58 @@ export const RefundPage = ({
     setShowRefundErrorModal(false);
   };
 
-  const formMethods = useForm<MultiplePaymentMethodRefundData[]>({
-    defaultValues: validTransactionHistory.map((transaction) => ({
-      permitNumber: transaction.permitNumber,
-      pgPaymentMethod: transaction.pgPaymentMethod,
-      pgTransactionId: transaction.pgTransactionId,
-      transactionOrderNumber: transaction.transactionOrderNumber,
-      transactionTypeId: transaction.transactionTypeId,
-      paymentCardTypeCode: transaction.paymentCardTypeCode,
-      paymentMethodTypeCode: transaction.paymentMethodTypeCode,
-      transactionAmount: transaction.transactionAmount,
-      refundAmount: "",
-      refundTransactionId: "",
-      chequeRefund: false,
-    })),
-    reValidateMode: "onChange",
+  const formMethods = useForm<{
+    refundData: RefundFormData[];
+  }>({
+    defaultValues: {
+      refundData: validTransactionHistory.map((transaction) => ({
+        permitNumber: transaction.permitNumber,
+        pgPaymentMethod: transaction.pgPaymentMethod,
+        pgTransactionId: transaction.pgTransactionId,
+        transactionOrderNumber: transaction.transactionOrderNumber,
+        transactionTypeId: transaction.transactionTypeId,
+        paymentCardTypeCode: transaction.paymentCardTypeCode,
+        paymentMethodTypeCode: transaction.paymentMethodTypeCode,
+        transactionAmount: transaction.transactionAmount,
+        refundAmount: 0,
+        refundTransactionId: "",
+        chequeRefund: false,
+      })),
+    },
+    reValidateMode: "onSubmit",
   });
 
   const { handleSubmit } = formMethods;
 
-  const handleAmend = (data: FieldValues) => {
+  const [rowSelection, setRowSelection] = useState<MRT_RowSelectionState>({});
+
+  const handleAmend = (data: { refundData: RefundFormData[] }) => {
+    // Get the selected row IDs based on permitNumber from rowSelection
+    const selectedRowIds = Object.keys(rowSelection).filter(
+      (id) => rowSelection[id],
+    );
+
+    // Filter table data to include only selected rows based on permitNumber
+    const selectedTransactions = data.refundData.filter(
+      (transaction: RefundFormData) =>
+        selectedRowIds.includes(transaction.permitNumber),
+    );
+
+    // Call the onSubmit with the selected transactions
+    console.log(selectedTransactions);
+    onSubmit(selectedTransactions);
+  };
+
+  const handleVoid = (data: FieldValues) => {
     // TODO ask praveen if this data is the correct shape expected by the BE
-    const combinedData: MultiplePaymentMethodRefundData[] =
-      validTransactionHistory.map((originalRow, index) => ({
+    const combinedData: RefundFormData[] = validTransactionHistory.map(
+      (originalRow, index) => ({
         ...originalRow, // Spread the properties of PermitHistory
         refundAmount: data.refundData[index]?.refundAmount || "", // Get the refundAmount from the submitted data
         refundTransactionId: data.refundData[index]?.refundTransactionId || "", // Get the refundTransactionId from the submitted data
         chequeRefund: data.refundData[index]?.chequeRefund || false, // Get the chequeRefund from the submitted data
-      }));
+      }),
+    );
     // Call the onSubmit with the combined data
     onSubmit(combinedData);
   };
@@ -103,7 +128,8 @@ export const RefundPage = ({
   return (
     <div className="refund-page">
       <Typography variant="h2" className="refund-info__header">
-        Ameding Permit #: {permitNumber}
+        {PERMIT_REFUND_ACTIONS.AMEND ? "Amending" : "Voiding"} Permit #:{" "}
+        {permitNumber}
       </Typography>
       <RefundDetails
         totalRefundDue={amountToRefund}
@@ -117,6 +143,8 @@ export const RefundPage = ({
         <TransactionHistoryTable
           permitHistory={validTransactionHistory}
           totalRefundDue={amountToRefund}
+          rowSelection={rowSelection}
+          setRowSelection={setRowSelection}
         />
 
         {permitAction === PERMIT_REFUND_ACTIONS.AMEND && (
@@ -177,7 +205,7 @@ export const RefundPage = ({
           <Button
             variant="contained"
             color="primary"
-            onClick={handleSubmit(onSubmit)}
+            onClick={handleSubmit(handleVoid)}
             className="refund-page__submit-btn"
           >
             Finish

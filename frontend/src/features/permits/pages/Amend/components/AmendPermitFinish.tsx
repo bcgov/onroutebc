@@ -23,11 +23,13 @@ import {
   ERROR_ROUTES,
 } from "../../../../../routes/constants";
 
-import { useIssuePermits } from "../../../hooks/hooks";
+import { useIssuePermits, useStartTransaction } from "../../../hooks/hooks";
 import { useRefundPermitMutation } from "../../Refund/hooks/hooks";
-import { MultiplePaymentMethodRefundData } from "../../Refund/types/RefundFormData";
+import { RefundFormData } from "../../Refund/types/RefundFormData";
 import { PAYMENT_METHOD_TYPE_CODE } from "../../../../../common/types/paymentMethods";
 import { PERMIT_TABS } from "../../../types/PermitTabs";
+import { TRANSACTION_TYPES } from "../../../types/payment";
+import { mapToRefundRequestData } from "../../Refund/helpers/mapper";
 
 export const AmendPermitFinish = () => {
   const navigate = useNavigate();
@@ -61,14 +63,18 @@ export const AmendPermitFinish = () => {
   const [showRefundErrorModal, setShowRefundErrorModal] = useState(false);
 
   // Refund mutation
-  const { mutation: refundPermitMutation, transaction } =
+  const { mutation: refundPermitMutation, transaction: refundTransaction } =
     useRefundPermitMutation();
 
-  const onSubmit = (data: FieldValues) => {
-    console.log(data);
-    const totalRefundAmount = data.reduce(
-      (sum: number, transaction: MultiplePaymentMethodRefundData) =>
-        sum + Number(transaction.refundAmount),
+  const {
+    mutation: startTransactionMutation,
+    transaction: paymentTransaction,
+  } = useStartTransaction();
+
+  const onSubmit = (refundData: RefundFormData[]) => {
+    const totalRefundAmount = refundData.reduce(
+      (sum: number, transaction: RefundFormData) =>
+        sum + transaction.refundAmount,
       0,
     );
 
@@ -77,41 +83,34 @@ export const AmendPermitFinish = () => {
       return;
     }
 
-    // console.log({
-    //   applicationId: permitId,
-    //   transactions: data.map(
-    //     (transaction: MultiplePaymentMethodRefundData) => ({
-    //       pgTransactionId: transaction.pgTransactionId,
-    //       pgPaymentMethod: transaction.pgPaymentMethod,
-    //       paymentCardTypeCode: transaction.paymentCardTypeCode,
-    //       transactionAmount: Number(transaction.refundAmount),
-    //       paymentMethodTypeCode:
-    //         Number(transaction.refundAmount) === 0
-    //           ? PAYMENT_METHOD_TYPE_CODE.NP
-    //           : transaction.chequeRefund
-    //             ? PAYMENT_METHOD_TYPE_CODE.CHEQUE
-    //             : transaction.paymentMethodTypeCode,
-    //     }),
-    //   ),
-    // });
+    // if (amountToRefund <= 0) {
+    //   startTransactionMutation.mutate({
+    //     transactionTypeId: TRANSACTION_TYPES.P,
+    //     paymentMethodTypeCode: data.refundData[0].paymentMethodTypeCode,
+    //     paymentCardTypeCode: data.refundData[0].paymentCardTypeCode,
+    //     applicationDetails: [
+    //       {
+    //         applicationId: permitId,
+    //         transactionAmount: 0,
+    //       },
+    //     ],
+    //   });
+    //   return;
+    // }
 
-    refundPermitMutation.mutate({
+    console.log({
       applicationId: permitId,
-      transactions: data.map(
-        (transaction: MultiplePaymentMethodRefundData) => ({
-          pgTransactionId: transaction.pgTransactionId,
-          pgPaymentMethod: transaction.pgPaymentMethod,
-          paymentCardTypeCode: transaction.paymentCardTypeCode,
-          transactionAmount: Number(transaction.refundAmount),
-          paymentMethodTypeCode:
-            Number(transaction.refundAmount) === 0
-              ? PAYMENT_METHOD_TYPE_CODE.NP
-              : transaction.chequeRefund
-                ? PAYMENT_METHOD_TYPE_CODE.CHEQUE
-                : transaction.paymentMethodTypeCode,
-        }),
+      transactions: refundData.map((transaction) =>
+        mapToRefundRequestData(transaction),
       ),
     });
+
+    // refundPermitMutation.mutate({
+    //   applicationId: permitId,
+    //   transactions: refundData.map((transaction) =>
+    //     mapToRefundRequestData(transaction),
+    //   ),
+    // });
   };
 
   const handleCloseRefundErrorModal = () => {
@@ -122,8 +121,8 @@ export const AmendPermitFinish = () => {
   const { mutation: issuePermitMutation, issueResults } = useIssuePermits();
 
   useEffect(() => {
-    if (transaction !== undefined) {
-      if (!transaction) {
+    if (refundTransaction !== undefined) {
+      if (!refundTransaction) {
         console.error("Refund failed.");
         navigate(ERROR_ROUTES.UNEXPECTED);
       } else {
@@ -133,7 +132,21 @@ export const AmendPermitFinish = () => {
         });
       }
     }
-  }, [transaction, permitId, companyId]);
+  }, [refundTransaction, permitId, companyId]);
+
+  useEffect(() => {
+    if (paymentTransaction !== undefined) {
+      if (!paymentTransaction) {
+        console.error("Payment failed.");
+        navigate(ERROR_ROUTES.UNEXPECTED);
+      } else {
+        issuePermitMutation.mutate({
+          companyId,
+          applicationIds: [permitId],
+        });
+      }
+    }
+  }, [paymentTransaction, permitId, companyId]);
 
   useEffect(() => {
     const issueFailed = hasPermitsActionFailed(issueResults);
