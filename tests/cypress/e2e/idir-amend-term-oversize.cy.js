@@ -29,11 +29,11 @@ describe('Login Test for OnRouteBC', () => {
     cy.wait(5000);
 
     // Step 7: Find elements to amend application
-    cy.get('.css-1pog434').type('chief');
+    cy.get('.css-1pog434').type('t');
     cy.wait(5000);
     cy.get('.search-by__search').click();
     cy.wait(5000);
-    cy.xpath("//button[text()='Chief, Master']").click();
+    cy.xpath("//button[text()='Test Transport Inc.']").click();
     cy.wait(5000);
     cy.xpath("//div[@class='tab__label' and text()='Active Permits']").click();
     cy.wait(5000);
