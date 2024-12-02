@@ -71,7 +71,7 @@ export const PermitsColumnDefinition = (
     header: "Permit Start Date",
     enableSorting: true,
     Cell: (props: { cell: any }) => {
-      const formattedDate = formatCellValuetoDatetime(props.cell.getValue());
+      const formattedDate = formatCellValuetoDatetime(props.cell.getValue(), true);
       return formattedDate;
     },
   },
@@ -81,7 +81,7 @@ export const PermitsColumnDefinition = (
     id: "expiryDate",
     enableSorting: true,
     Cell: (props: { cell: any }) => {
-      const formattedDate = formatCellValuetoDatetime(props.cell.getValue());
+      const formattedDate = formatCellValuetoDatetime(props.cell.getValue(), true);
       return formattedDate;
     },
   },

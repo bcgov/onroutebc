@@ -85,7 +85,7 @@ export const LOATable = ({
                 scope="row"
               >
                 {applyWhenNotNullable(
-                  expiryDate => toLocal(expiryDate, DATE_FORMATS.DATEONLY_SLASH),
+                  expiryDate => toLocal(expiryDate, DATE_FORMATS.DATEONLY_SLASH, true),
                   selectableLOA.loa.expiryDate,
                   "Never expires",
                 )}
