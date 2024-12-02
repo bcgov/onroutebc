@@ -114,9 +114,9 @@ describe('Crud for trailer', () => {
     // Retrieve the environment variables
     const username = Cypress.env('bceid_username');
     const password = Cypress.env('bceid_password');
-    const new_trailer_url = Cypress.env('new_trailer_url');
+    const new_trailer_url = '/manage-vehicles/add-trailer';
     const update_trailer_url = Cypress.env('update_trailer_url');
-    const manage_vehicle_url = Cypress.env('manage_vehicle_url');
+    const manage_vehicle_url = '/manage-vehicles';
 
     // Step 1: Visit the base URL
     cy.visit('/');
