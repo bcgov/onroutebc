@@ -17,6 +17,7 @@ export const usePolicyConfigurationQuery = () => {
       return getPolicyConfiguration(true);
     },
     retry: false,
+    enabled: false,
     refetchOnMount: "always",
     refetchOnWindowFocus: false,
   });

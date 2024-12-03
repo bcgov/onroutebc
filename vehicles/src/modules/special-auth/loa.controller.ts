@@ -89,6 +89,7 @@ export class LoaController {
     ],
   })
   @Post()
+  @IsFeatureFlagEnabled('LOA')
   @UseInterceptors(FileInterceptor('file'), JsonReqBodyInterceptor)
   async create(
     @Req() request: Request,
@@ -164,6 +165,7 @@ export class LoaController {
     ],
   })
   @Put('/:loaId')
+  @IsFeatureFlagEnabled('LOA')
   @UseInterceptors(FileInterceptor('file'), JsonReqBodyInterceptor)
   async update(
     @Req() request: Request,
@@ -202,6 +204,7 @@ export class LoaController {
     ],
   })
   @Delete('/:loaId')
+  @IsFeatureFlagEnabled('LOA')
   async delete(
     @Req() request: Request,
     @Param() { companyId, loaId }: LoaIdPathParamDto,
