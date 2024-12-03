@@ -27,7 +27,6 @@ import {
   CREDIT_ACCOUNT_USER_TYPE,
   CreditAccountMetadata,
 } from "../../../settings/types/creditAccount";
-import { canViewSpecialAuthorizations } from "../../../settings/helpers/permissions";
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
 interface ProfileDashboardTab {
@@ -65,7 +64,6 @@ export const ManageProfilesDashboard = React.memo(() => {
     userClaims,
     companyId: companyIdFromContext,
     idirUserDetails,
-    userDetails,
   } = useContext(OnRouteBCContext);
 
   const companyId = getDefaultRequiredVal(0, companyIdFromContext);
@@ -77,16 +75,16 @@ export const ManageProfilesDashboard = React.memo(() => {
   const isBCeIDAdmin = isBCeIDOrgAdmin(populatedUserClaims);
   const shouldAllowUserManagement = isBCeIDAdmin || isStaffActingAsCompany;
   const showSpecialAuth = usePermissionMatrix({
-    additionalConditionToCheck: () => !isStaffActingAsCompany,
+    additionalConditionToCheck: () =>
+      !isStaffActingAsCompany &&
+      (featureFlags?.["LOA"] === "ENABLED" ||
+        featureFlags?.["NO-FEE"] === "ENABLED" ||
+        featureFlags?.["LCV"] === "ENABLED"),
     permissionMatrixKeys: {
       permissionMatrixFeatureKey: "MANAGE_PROFILE",
       permissionMatrixFunctionKey: "VIEW_SPECIAL_AUTHORIZATIONS",
     },
   });
-  !isStaffActingAsCompany &&
-    canViewSpecialAuthorizations(userClaims, userDetails?.userRole) &&
-    featureFlags?.["LOA"] === "ENABLED";
-
   const isCreditAccountHolder =
     creditAccountMetadata?.userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER;
 
