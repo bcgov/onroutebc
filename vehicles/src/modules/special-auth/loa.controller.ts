@@ -51,7 +51,6 @@ import {
 
 @ApiBearerAuth()
 @ApiTags('Letter of Authorization (LoA)')
-@IsFeatureFlagEnabled('LOA')
 @Controller('companies/:companyId/loas')
 @ApiMethodNotAllowedResponse({
   description: 'The LoA Api Method Not Allowed Response',
