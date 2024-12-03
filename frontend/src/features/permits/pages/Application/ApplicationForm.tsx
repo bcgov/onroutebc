@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { FormProvider } from "react-hook-form";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useContext, useMemo, useState } from "react";
@@ -338,8 +337,8 @@ export const ApplicationForm = ({
     onContinue,
   ]);
 
-  // if (isUndefined(policyEngine)) return <Loading />;
-  // if (isNull(policyEngine)) return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
+  if (isUndefined(policyEngine)) return <Loading />;
+  if (isNull(policyEngine)) return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
 
   return (
     <div className="application-form">
