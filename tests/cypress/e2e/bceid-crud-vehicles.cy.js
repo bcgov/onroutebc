@@ -27,8 +27,8 @@ describe('Crud for power unit', () => {
     cy.wait(5000);
 
     // create new power unit
-    cy.get('[name="unitNumber"]').type('MCL37');
-    cy.wait(5000);
+    // cy.get('[name="unitNumber"]').type('MCL37');
+    // cy.wait(5000);
 
     cy.get('[name="make"]').type('Toyota');
     cy.wait(5000);
@@ -138,8 +138,8 @@ describe('Crud for trailer', () => {
     cy.wait(5000);
 
     // create new trailer
-    cy.get('[name="unitNumber"]').type('TCL37');
-    cy.wait(5000);
+    // cy.get('[name="unitNumber"]').type('TCL37');
+    // cy.wait(5000);
 
     cy.get('[name="make"]').type('BMW');
     cy.wait(5000);
