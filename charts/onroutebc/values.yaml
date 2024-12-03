@@ -563,7 +563,7 @@ policy:
   secret:
     enabled: false
   configmap:
-    enabled: false
+    enabled: true
     data:
       FRONTEND_URL: "https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca"
   containers:
