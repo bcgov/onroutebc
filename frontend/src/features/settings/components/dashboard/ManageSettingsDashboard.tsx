@@ -39,12 +39,12 @@ export const ManageSettingsDashboard = React.memo(() => {
 
   const [hideSuspendTab, setHideSuspendTab] = useState<boolean>(false);
   const showSuspendTab = canViewSuspend(userClaims) && !hideSuspendTab;
-  
+
   const showSpecialAuth = usePermissionMatrix({
     permissionMatrixKeys: {
       permissionMatrixFeatureKey: "MANAGE_SETTINGS",
       permissionMatrixFunctionKey: "VIEW_SPECIAL_AUTHORIZATIONS",
-    },
+    }
   });
 
   const showCreditAccountTab = usePermissionMatrix({
