@@ -141,7 +141,7 @@ describe('Crud for trailer', () => {
     // cy.get('[name="unitNumber"]').type('TCL37');
     // cy.wait(5000);
 
-    cy.get('[name="make"]').type('BMW');
+    cy.get('[name="make"]').type('NISSAN');
     cy.wait(5000);
 
     cy.get('[name="year"]').type('2005');
