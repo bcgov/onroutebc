@@ -547,7 +547,7 @@ scheduler:
     license: "{{.Values.global.license}}"
     secretPaths:
       - "keycloak-{{tpl $.Values.vault.zone $}}"
-      - "mssql-{{tpl $.Values.vault.zone $}}"      
+      - "mssql-{{tpl $.Values.vault.zone $}}"
       - "scheduler-{{tpl $.Values.vault.zone $}}"
       - "s3-{{tpl $.Values.vault.zone $}}"
       - "cfs-{{tpl $.Values.vault.zone $}}"
