@@ -28,6 +28,7 @@ import {
   CreditAccountMetadata,
 } from "../../../settings/types/creditAccount";
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
+import { useFetchSpecialAuthorizations } from "../../../settings/hooks/specialAuthorizations";
 
 interface ProfileDashboardTab {
   label: string;
@@ -74,12 +75,20 @@ export const ManageProfilesDashboard = React.memo(() => {
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userRole);
   const isBCeIDAdmin = isBCeIDOrgAdmin(populatedUserClaims);
   const shouldAllowUserManagement = isBCeIDAdmin || isStaffActingAsCompany;
+
+  const { data: specialAuthorizations, isPending: isSpecialAuthAPILoading } =
+    useFetchSpecialAuthorizations(companyId as number, true);
+
   const showSpecialAuth = usePermissionMatrix({
     additionalConditionToCheck: () =>
       !isStaffActingAsCompany &&
       (featureFlags?.["LOA"] === "ENABLED" ||
         featureFlags?.["NO-FEE"] === "ENABLED" ||
-        featureFlags?.["LCV"] === "ENABLED"),
+        featureFlags?.["LCV"] === "ENABLED") &&
+      !isSpecialAuthAPILoading &&
+      Boolean(
+        specialAuthorizations?.isLcvAllowed || specialAuthorizations?.noFeeType,
+      ),
     permissionMatrixKeys: {
       permissionMatrixFeatureKey: "MANAGE_PROFILE",
       permissionMatrixFunctionKey: "VIEW_SPECIAL_AUTHORIZATIONS",

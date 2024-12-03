@@ -12,13 +12,10 @@ import { usePermissionMatrix } from "../../../../common/authentication/Permissio
 import { useGetCreditAccountMetadataQuery } from "../../hooks/creditAccount";
 import { IDIR_USER_ROLE } from "../../../../common/authentication/types";
 import { CREDIT_ACCOUNT_USER_TYPE } from "../../types/creditAccount";
-import { useFetchSpecialAuthorizations } from "../../hooks/specialAuthorizations";
 
 export const ManageSettingsDashboard = React.memo(() => {
   const { userClaims, companyId, idirUserDetails } =
     useContext(OnRouteBCContext);
-  const { data: specialAuthorizations, isPending: isSpecialAuthAPILoading } =
-    useFetchSpecialAuthorizations(companyId as number, true);
   const { data: creditAccountMetadata, isPending } =
     useGetCreditAccountMetadataQuery(companyId as number);
 
@@ -45,14 +42,9 @@ export const ManageSettingsDashboard = React.memo(() => {
 
   const showSpecialAuth = usePermissionMatrix({
     permissionMatrixKeys: {
-      permissionMatrixFeatureKey: "MANAGE_PROFILE",
+      permissionMatrixFeatureKey: "MANAGE_SETTINGS",
       permissionMatrixFunctionKey: "VIEW_SPECIAL_AUTHORIZATIONS",
-    },
-    additionalConditionToCheck: () =>
-      !isSpecialAuthAPILoading &&
-      Boolean(
-        specialAuthorizations?.isLcvAllowed || specialAuthorizations?.noFeeType,
-      ),
+    }
   });
 
   const showCreditAccountTab = usePermissionMatrix({
