@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { FormProvider, useForm, FieldValues } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { Button, Typography } from "@mui/material";
 import "./RefundPage.scss";
 import { RefundFormData } from "./types/RefundFormData";
@@ -43,7 +42,7 @@ export const RefundPage = ({
   permitNumber,
   permitAction,
   amountToRefund,
-  onSubmit,
+  handleFinish,
 }: {
   permitHistory: PermitHistory[];
   email?: Nullable<string>;
@@ -53,7 +52,7 @@ export const RefundPage = ({
   permitNumber?: Nullable<string>;
   permitAction: PermitAction;
   amountToRefund: number;
-  onSubmit: (refundData: RefundFormData[]) => void;
+  handleFinish: (refundData: RefundFormData[]) => void;
 }) => {
   const currentPermitValue = calculateNetAmount(permitHistory);
   const newPermitValue = currentPermitValue - Math.abs(amountToRefund);
@@ -82,54 +81,42 @@ export const RefundPage = ({
         paymentCardTypeCode: transaction.paymentCardTypeCode,
         paymentMethodTypeCode: transaction.paymentMethodTypeCode,
         transactionAmount: transaction.transactionAmount,
-        refundAmount: 0,
+        refundAmount: "",
         refundTransactionId: "",
         chequeRefund: false,
       })),
     },
-    reValidateMode: "onSubmit",
+    reValidateMode: "onChange",
   });
 
   const { handleSubmit } = formMethods;
 
   const [rowSelection, setRowSelection] = useState<MRT_RowSelectionState>({});
 
-  const handleAmend = (data: { refundData: RefundFormData[] }) => {
-    // Get the selected row IDs based on permitNumber from rowSelection
-    const selectedRowIds = Object.keys(rowSelection).filter(
-      (id) => rowSelection[id],
-    );
+  const onSubmit = (data: { refundData: RefundFormData[] }) => {
+    if (amountToRefund <= 0) {
+      handleFinish(data.refundData);
+    } else {
+      // Get the selected row IDs based on permitNumber from rowSelection
+      const selectedRowIds = Object.keys(rowSelection).filter(
+        (id) => rowSelection[id],
+      );
 
-    // Filter table data to include only selected rows based on permitNumber
-    const selectedTransactions = data.refundData.filter(
-      (transaction: RefundFormData) =>
-        selectedRowIds.includes(transaction.permitNumber),
-    );
+      // Filter table data to include only selected rows based on permitNumber
+      const selectedTransactions = data.refundData.filter(
+        (transaction: RefundFormData) =>
+          selectedRowIds.includes(transaction.permitNumber),
+      );
 
-    // Call the onSubmit with the selected transactions
-    console.log(selectedTransactions);
-    onSubmit(selectedTransactions);
-  };
-
-  const handleVoid = (data: FieldValues) => {
-    // TODO ask praveen if this data is the correct shape expected by the BE
-    const combinedData: RefundFormData[] = validTransactionHistory.map(
-      (originalRow, index) => ({
-        ...originalRow, // Spread the properties of PermitHistory
-        refundAmount: data.refundData[index]?.refundAmount || "", // Get the refundAmount from the submitted data
-        refundTransactionId: data.refundData[index]?.refundTransactionId || "", // Get the refundTransactionId from the submitted data
-        chequeRefund: data.refundData[index]?.chequeRefund || false, // Get the chequeRefund from the submitted data
-      }),
-    );
-    // Call the onSubmit with the combined data
-    onSubmit(combinedData);
+      // Call the onSubmit with the selected transactions
+      handleFinish(selectedTransactions);
+    }
   };
 
   return (
     <div className="refund-page">
       <Typography variant="h2" className="refund-info__header">
-        {PERMIT_REFUND_ACTIONS.AMEND ? "Amending" : "Voiding"} Permit #:{" "}
-        {permitNumber}
+        {permitActionText(permitAction)} Permit #: {permitNumber}
       </Typography>
       <RefundDetails
         totalRefundDue={amountToRefund}
@@ -146,72 +133,61 @@ export const RefundPage = ({
           rowSelection={rowSelection}
           setRowSelection={setRowSelection}
         />
-
-        {permitAction === PERMIT_REFUND_ACTIONS.AMEND && (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit(handleAmend)}
-            className="refund-page__submit-btn"
-          >
-            Finish
-          </Button>
-        )}
-      </FormProvider>
-
-      {(permitAction === PERMIT_REFUND_ACTIONS.VOID ||
-        permitAction === PERMIT_REFUND_ACTIONS.REVOKE) && (
-        <div>
-          <div className="refund-info refund-info--send">
-            <div className="refund-info__header">
-              Send Permit and Receipt to
+        {(permitAction === PERMIT_REFUND_ACTIONS.VOID ||
+          permitAction === PERMIT_REFUND_ACTIONS.REVOKE) && (
+          <div>
+            <div className="refund-info refund-info--send">
+              <div className="refund-info__header">
+                Send Permit and Receipt to
+              </div>
+              {email && (
+                <div className="refund-info__info">
+                  <span className="info-label">Company Email: </span>
+                  <span className="info-value" data-testid="send-to-email">
+                    {email}
+                  </span>
+                </div>
+              )}
+              {additionalEmail && (
+                <div className="refund-info__info">
+                  <span className="info-label">Additional Email: </span>
+                  <span
+                    className="info-value"
+                    data-testid="send-to-additional-email"
+                  >
+                    {additionalEmail}
+                  </span>
+                </div>
+              )}
+              {fax && (
+                <div className="refund-info__info">
+                  <span className="info-label">Fax: </span>
+                  <span className="info-value" data-testid="send-to-fax">
+                    {fax}
+                  </span>
+                </div>
+              )}
             </div>
-            {email && (
-              <div className="refund-info__info">
-                <span className="info-label">Company Email: </span>
-                <span className="info-value" data-testid="send-to-email">
-                  {email}
-                </span>
-              </div>
-            )}
-            {additionalEmail && (
-              <div className="refund-info__info">
-                <span className="info-label">Additional Email: </span>
-                <span
-                  className="info-value"
-                  data-testid="send-to-additional-email"
-                >
-                  {additionalEmail}
-                </span>
-              </div>
-            )}
-            {fax && (
-              <div className="refund-info__info">
-                <span className="info-label">Fax: </span>
-                <span className="info-value" data-testid="send-to-fax">
-                  {fax}
-                </span>
+            {reason && (
+              <div className="refund-info refund-info--reason">
+                <div className="refund-info__header">
+                  Reason for {permitActionText(permitAction)}
+                </div>
+                <div className="refund-info__info">{reason}</div>
               </div>
             )}
           </div>
-          {reason && (
-            <div className="refund-info refund-info--reason">
-              <div className="refund-info__header">
-                Reason for {permitActionText(permitAction)}
-              </div>
-              <div className="refund-info__info">{reason}</div>
-            </div>
-          )}
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit(handleVoid)}
-            className="refund-page__submit-btn"
-          >
-            Finish
-          </Button>
-        </div>
-      )}
+        )}
+
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSubmit(onSubmit)}
+          className="refund-page__submit-btn"
+        >
+          Finish
+        </Button>
+      </FormProvider>
 
       {showRefundErrorModal && (
         <RefundErrorModal

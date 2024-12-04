@@ -1,7 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { FieldValues } from "react-hook-form";
 
 import "./AmendPermitFinish.scss";
 import { AmendPermitContext } from "../context/AmendPermitContext";
@@ -24,12 +22,13 @@ import {
 } from "../../../../../routes/constants";
 
 import { useIssuePermits, useStartTransaction } from "../../../hooks/hooks";
-import { useRefundPermitMutation } from "../../Refund/hooks/hooks";
+import { useRefundPermitMutation } from "../../Refund/hooks/useRefundPermit";
 import { RefundFormData } from "../../Refund/types/RefundFormData";
-import { PAYMENT_METHOD_TYPE_CODE } from "../../../../../common/types/paymentMethods";
 import { PERMIT_TABS } from "../../../types/PermitTabs";
-import { TRANSACTION_TYPES } from "../../../types/payment";
-import { mapToRefundRequestData } from "../../Refund/helpers/mapper";
+import {
+  mapToRefundRequestData,
+  mapToZeroDollarRefundRequestData,
+} from "../../Refund/helpers/mapper";
 
 export const AmendPermitFinish = () => {
   const navigate = useNavigate();
@@ -71,10 +70,10 @@ export const AmendPermitFinish = () => {
     transaction: paymentTransaction,
   } = useStartTransaction();
 
-  const onSubmit = (refundData: RefundFormData[]) => {
+  const handleFinish = (refundData: RefundFormData[]) => {
     const totalRefundAmount = refundData.reduce(
       (sum: number, transaction: RefundFormData) =>
-        sum + transaction.refundAmount,
+        sum + Number(transaction.refundAmount),
       0,
     );
 
@@ -83,34 +82,16 @@ export const AmendPermitFinish = () => {
       return;
     }
 
-    // if (amountToRefund <= 0) {
-    //   startTransactionMutation.mutate({
-    //     transactionTypeId: TRANSACTION_TYPES.P,
-    //     paymentMethodTypeCode: data.refundData[0].paymentMethodTypeCode,
-    //     paymentCardTypeCode: data.refundData[0].paymentCardTypeCode,
-    //     applicationDetails: [
-    //       {
-    //         applicationId: permitId,
-    //         transactionAmount: 0,
-    //       },
-    //     ],
-    //   });
-    //   return;
-    // }
-
-    console.log({
-      applicationId: permitId,
-      transactions: refundData.map((transaction) =>
-        mapToRefundRequestData(transaction),
-      ),
-    });
-
-    // refundPermitMutation.mutate({
-    //   applicationId: permitId,
-    //   transactions: refundData.map((transaction) =>
-    //     mapToRefundRequestData(transaction),
-    //   ),
-    // });
+    if (Math.abs(amountToRefund) <= 0) {
+      startTransactionMutation.mutate(
+        mapToZeroDollarRefundRequestData(refundData, permitId),
+      );
+    } else {
+      refundPermitMutation.mutate({
+        applicationId: permitId,
+        transactions: mapToRefundRequestData(refundData),
+      });
+    }
   };
 
   const handleCloseRefundErrorModal = () => {
@@ -177,7 +158,7 @@ export const AmendPermitFinish = () => {
         amountToRefund={amountToRefund}
         permitNumber={permit?.permitNumber}
         permitAction={PERMIT_REFUND_ACTIONS.AMEND}
-        onSubmit={onSubmit}
+        handleFinish={handleFinish}
       />
 
       {showRefundErrorModal && (

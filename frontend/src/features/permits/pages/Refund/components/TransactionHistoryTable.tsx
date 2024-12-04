@@ -238,14 +238,16 @@ export const TransactionHistoryTable = ({
                   name: `refundData.${cell.row.index}.refundTransactionId`,
                   rules: {
                     required: {
-                      value: refundAmount !== 0 && !chequeRefund,
+                      value: refundAmount !== "" && !chequeRefund,
                       message: requiredMessage(),
                     },
                   },
                   width: "200px",
                   showOptionalLabel: false,
                 }}
-                disabled={!refundAmount || refundAmount <= 0 || chequeRefund}
+                disabled={
+                  !refundAmount || Number(refundAmount) <= 0 || chequeRefund
+                }
               />
             )
           );

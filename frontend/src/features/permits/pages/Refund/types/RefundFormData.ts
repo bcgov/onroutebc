@@ -15,7 +15,7 @@ export interface RefundFormData {
   paymentCardTypeCode: RequiredOrNull<PaymentCardTypeCode>;
   paymentMethodTypeCode: PaymentMethodTypeCode;
   transactionAmount: number;
-  refundAmount: number;
+  refundAmount: string;
   refundTransactionId: string;
   chequeRefund: boolean;
 }
