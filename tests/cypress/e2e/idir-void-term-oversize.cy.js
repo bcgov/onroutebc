@@ -22,26 +22,26 @@ describe('Login Test for OnRouteBC', () => {
     cy.get('[name="btnSubmit"]').click();
     cy.wait(5000);
 
-    // // Step 5: Find the search button by its class name and click it
-    // cy.get('.search-button').click();
-    // cy.wait(5000);
+    // Step 5: Find the search button by its class name and click it
+    cy.get('.search-button').click();
+    cy.wait(5000);
 
-    // // Step 6: Find the element with value="companies" and interact with it
-    // cy.get('[value="companies"]').click();
-    // cy.wait(5000);
+    // Step 6: Find the element with value="companies" and interact with it
+    cy.get('[value="companies"]').click();
+    cy.wait(5000);
 
-    // // Step 7: Find elements to amend application
-    // cy.get('.css-1pog434').type('t');
-    // cy.wait(5000);
+    // Step 7: Find elements to amend application
+    cy.get('.css-1pog434').type('t');
+    cy.wait(5000);
 
-    // cy.get('.search-by__search').click();
-    // cy.wait(5000);
+    cy.get('.search-by__search').click();
+    cy.wait(5000);
 
-    // cy.xpath("//button[text()='Test Transport Inc.']").click();
-    // cy.wait(5000);
+    cy.xpath("//button[text()='Test Transport Inc.']").click();
+    cy.wait(5000);
 
-    // cy.xpath("//div[@class='tab__label' and text()='Active Permits']").click();
-    // cy.wait(5000);
+    cy.xpath("//div[@class='tab__label' and text()='Active Permits']").click();
+    cy.wait(5000);
 
     // create a permit first
     // click select
