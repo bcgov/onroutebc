@@ -157,3 +157,11 @@ export interface DashboardTab {
   component: JSX.Element;
   componentKey: string;
 }
+
+export const isNull = <T>(val?: Nullable<T>) => {
+  return !val && typeof val !== "undefined" && val == null;
+};
+
+export const isUndefined = <T>(val?: Nullable<T>) => {
+  return typeof val === "undefined";
+};

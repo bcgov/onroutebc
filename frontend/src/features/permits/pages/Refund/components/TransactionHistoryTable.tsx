@@ -31,10 +31,12 @@ import {
   defaultTableStateOptions,
 } from "../../../../../common/helpers/tableHelper";
 import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
-import { useFormContext } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 import { RefundFormData } from "../types/RefundFormData";
 import { Checkbox, FormControlLabel } from "@mui/material";
 import { requiredMessage } from "../../../../../common/helpers/validationMessages";
+import { NumberInput } from "../../../../../common/components/form/subFormComponents/NumberInput";
+import { convertToNumberIfValid } from "../../../../../common/helpers/numeric/convertToNumberIfValid";
 
 export const TransactionHistoryTable = ({
   permitHistory,
@@ -52,7 +54,7 @@ export const TransactionHistoryTable = ({
   );
 
   const formMethods = useFormContext();
-  const { register, watch, setValue, trigger } = formMethods;
+  const { register, watch, setValue, trigger, getValues } = formMethods;
 
   const isRowSelectable = (row: MRT_Row<RefundFormData>): boolean => {
     return (
@@ -170,17 +172,58 @@ export const TransactionHistoryTable = ({
 
           return (
             isRowSelectable(cell.row) && (
-              <CustomFormComponent
-                type="number"
-                feature="refund-permit"
-                className="transaction-history-table__input transaction-history-table__input--refund-amount"
-                options={{
-                  name: `refundData.${cell.row.index}.refundAmount`,
-                  rules: { required: false },
-                  width: "200px",
-                  showOptionalLabel: false,
-                }}
-                disabled={!cell.row.getIsSelected()}
+              // <CustomFormComponent
+              //   type="number"
+              //   feature="refund-permit"
+              //   className="transaction-history-table__input transaction-history-table__input--refund-amount"
+              //   options={{
+              //     name: `refundData.${cell.row.index}.refundAmount`,
+              //     rules: { required: false },
+              //     width: "200px",
+              //     showOptionalLabel: false,
+              //   }}
+              //   disabled={!cell.row.getIsSelected()}
+              // />
+
+              <Controller
+                name={`refundData.${cell.row.index}.refundAmount`}
+                rules={{ required: false }}
+                render={({ fieldState: { error } }) => (
+                  <NumberInput
+                    // label={label}
+                    classes={{
+                      root: "transaction-history-table__input transaction-history-table__input--refund-amount",
+                    }}
+                    inputProps={{
+                      value: getDefaultRequiredVal(
+                        null,
+                        getValues(`refundData.${cell.row.index}.refundAmount`),
+                      ),
+                      maskFn: (numericVal) => numericVal.toFixed(2),
+                      // onBlur: (e) => {
+                      //   onUpdateValue(
+                      //     getDefaultRequiredVal(
+                      //       null,
+                      //       convertToNumberIfValid(e.target.value, null),
+                      //     ),
+                      //   );
+                      // },
+                      slotProps: {
+                        input: {
+                          min: 0,
+                          step: 0.01,
+                        },
+                      },
+                    }}
+                    helperText={
+                      error?.message
+                        ? {
+                            errors: [error.message],
+                          }
+                        : undefined
+                    }
+                  />
+                )}
               />
             )
           );

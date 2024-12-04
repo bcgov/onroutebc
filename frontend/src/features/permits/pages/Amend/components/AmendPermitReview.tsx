@@ -17,6 +17,8 @@ import { DEFAULT_PERMIT_TYPE } from "../../../types/PermitType";
 import { usePowerUnitSubTypesQuery } from "../../../../manageVehicles/hooks/powerUnits";
 import { useTrailerSubTypesQuery } from "../../../../manageVehicles/hooks/trailers";
 import { PERMIT_REVIEW_CONTEXTS } from "../../../types/PermitReviewContext";
+import { usePolicyEngine } from "../../../../policy/hooks/usePolicyEngine";
+import { useCommodityOptions } from "../../../hooks/useCommodityOptions";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -56,6 +58,14 @@ export const AmendPermitReview = () => {
   const { data: companyInfo } = useCompanyInfoDetailsQuery(companyId);
   const doingBusinessAs = companyInfo?.alternateName;
 
+  const permitType = getDefaultRequiredVal(
+    DEFAULT_PERMIT_TYPE,
+    amendmentApplication?.permitType,
+    permit?.permitType,
+  );
+
+  const policyEngine = usePolicyEngine();
+  const { commodityOptions } = useCommodityOptions(policyEngine, permitType);
   const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
   const trailerSubTypesQuery = useTrailerSubTypesQuery();
 
@@ -109,11 +119,7 @@ export const AmendPermitReview = () => {
         0,
         amendmentApplication?.permitData?.permitDuration,
       ),
-      getDefaultRequiredVal(
-        DEFAULT_PERMIT_TYPE,
-        amendmentApplication?.permitType,
-        permit?.permitType,
-      ),
+      permitType,
     );
 
   return (
@@ -122,7 +128,7 @@ export const AmendPermitReview = () => {
 
       <PermitReview
         reviewContext={PERMIT_REVIEW_CONTEXTS.AMEND}
-        permitType={amendmentApplication?.permitType}
+        permitType={permitType}
         permitNumber={permit?.permitNumber}
         applicationNumber={amendmentApplication?.applicationNumber}
         isAmendAction={true}
@@ -130,6 +136,8 @@ export const AmendPermitReview = () => {
         permitDuration={amendmentApplication?.permitData?.permitDuration}
         permitExpiryDate={amendmentApplication?.permitData?.expiryDate}
         permitConditions={amendmentApplication?.permitData?.commodities}
+        permittedCommodity={amendmentApplication?.permitData?.permittedCommodity}
+        commodityOptions={commodityOptions}
         createdDateTime={createdDateTime}
         updatedDateTime={updatedDateTime}
         companyInfo={companyInfo}
@@ -146,6 +154,9 @@ export const AmendPermitReview = () => {
         vehicleWasSaved={
           amendmentApplication?.permitData?.vehicleDetails?.saveVehicle
         }
+        vehicleConfiguration={amendmentApplication?.permitData?.vehicleConfiguration}
+        route={amendmentApplication?.permitData?.permittedRoute}
+        applicationNotes={amendmentApplication?.permitData?.applicationNotes}
         showChangedFields={true}
         oldFields={{
           ...oldFields,
@@ -165,6 +176,7 @@ export const AmendPermitReview = () => {
         calculatedFee={`${amountToRefund}`}
         doingBusinessAs={doingBusinessAs}
         loas={amendmentApplication?.permitData?.loas}
+        isStaffUser={true}
       >
         {amendmentApplication?.comment ? (
           <ReviewReason reason={amendmentApplication.comment} />

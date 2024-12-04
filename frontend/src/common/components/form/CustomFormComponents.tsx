@@ -7,18 +7,19 @@ import {
   useFormContext,
 } from "react-hook-form";
 
+import "./CustomFormComponents.scss";
 import { ORBC_FormTypes } from "../../types/common";
 import { CustomOutlinedInput } from "./subFormComponents/CustomOutlinedInput";
 import { CustomSelect } from "./subFormComponents/CustomSelect";
 import { PhoneNumberInput } from "./subFormComponents/PhoneNumberInput";
 import { CustomTextArea } from "./subFormComponents/CustomTextArea";
-import { NumberInput } from "./subFormComponents/NumberInput";
+import { PhoneExtInput } from "./subFormComponents/PhoneExtInput";
 
 /**
  * Properties of onRouteBC custom form components
  */
 export interface CustomFormComponentProps<T extends FieldValues> {
-  type: "input" | "select" | "phone" | "textarea" | "number";
+  type: "input" | "select" | "phone" | "textarea" | "ext";
   feature: string;
   options: CustomFormOptionsProps<T>;
   menuOptions?: JSX.Element[];
@@ -104,13 +105,6 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
     formState: { errors },
   } = useFormContext();
 
-  const shouldShowOptionalLabel = () => {
-    if (!showOptionalLabel) return false;
-    if (rules.required === false) return true;
-    if ((rules.required as any)?.value === false) return true;
-    return false;
-  };
-
   const renderSubFormComponent = (invalid: boolean) => {
     switch (type) {
       case "select":
@@ -161,9 +155,9 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
             readOnly={readOnly}
           />
         );
-      case "number":
+      case "ext":
         return (
-          <NumberInput
+          <PhoneExtInput
             feature={feature}
             name={name}
             rules={rules}
@@ -180,7 +174,10 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
   };
 
   return (
-    <Box sx={className ? null : { width }} className={className}>
+    <Box
+      sx={className ? null : { width }}
+      className={`custom-form-components ${className}`}
+    >
       <Controller
         key={`controller-${feature}-${name}`}
         name={name}
@@ -191,25 +188,28 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
             className="custom-form-control"
             margin="normal"
             error={invalid}
-            sx={{ width: "100%" }}
           >
             <FormLabel
-              className="custom-form-control__label"
               id={`${feature}-${name}-label`}
-              sx={{ fontWeight: "bold", marginBottom: "8px" }}
+              classes={{
+                root: "custom-form-control__label",
+                error: "custom-form-control__label--error",
+              }}
             >
               {label}
-              {shouldShowOptionalLabel() && (
+              {showOptionalLabel ? (
                 <span style={{ fontWeight: "normal" }}> (optional)</span>
-              )}
-              {customHelperText && (
+              ) : null}
+              {customHelperText ? (
                 <span style={{ fontWeight: "normal" }}>
                   {` (${customHelperText})`}
                 </span>
-              )}
+              ) : null}
             </FormLabel>
+
             {renderSubFormComponent(invalid)}
-            {invalid && (
+
+            {invalid ? (
               <FormHelperText
                 className="custom-form-control__helper-text"
                 data-testid={`alert-${name}`}
@@ -217,7 +217,7 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
               >
                 {getErrorMessage(errors, name)}
               </FormHelperText>
-            )}
+            ) : null}
           </FormControl>
         )}
       />

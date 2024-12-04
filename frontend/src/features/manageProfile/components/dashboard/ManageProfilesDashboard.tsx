@@ -27,9 +27,9 @@ import {
   CREDIT_ACCOUNT_USER_TYPE,
   CreditAccountMetadata,
 } from "../../../settings/types/creditAccount";
-import { canViewSpecialAuthorizations } from "../../../settings/helpers/permissions";
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 import { DashboardTab } from "../../../../common/types/common";
+import { useFetchSpecialAuthorizations } from "../../../settings/hooks/specialAuthorizations";
 
 /**
  * Returns a boolean indicating if the logged in user is a BCeID org admin.
@@ -60,7 +60,6 @@ export const ManageProfilesDashboard = React.memo(() => {
     userClaims,
     companyId: companyIdFromContext,
     idirUserDetails,
-    userDetails,
   } = useContext(OnRouteBCContext);
 
   const companyId = getDefaultRequiredVal(0, companyIdFromContext);
@@ -71,11 +70,25 @@ export const ManageProfilesDashboard = React.memo(() => {
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userRole);
   const isBCeIDAdmin = isBCeIDOrgAdmin(populatedUserClaims);
   const shouldAllowUserManagement = isBCeIDAdmin || isStaffActingAsCompany;
-  const showSpecialAuth =
-    !isStaffActingAsCompany &&
-    canViewSpecialAuthorizations(userClaims, userDetails?.userRole) &&
-    featureFlags?.["LOA"] === "ENABLED";
 
+  const { data: specialAuthorizations, isPending: isSpecialAuthAPILoading } =
+    useFetchSpecialAuthorizations(companyId as number, true);
+
+  const showSpecialAuth = usePermissionMatrix({
+    additionalConditionToCheck: () =>
+      !isStaffActingAsCompany &&
+      (featureFlags?.["LOA"] === "ENABLED" ||
+        featureFlags?.["NO-FEE"] === "ENABLED" ||
+        featureFlags?.["LCV"] === "ENABLED") &&
+      !isSpecialAuthAPILoading &&
+      Boolean(
+        specialAuthorizations?.isLcvAllowed || specialAuthorizations?.noFeeType,
+      ),
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "MANAGE_PROFILE",
+      permissionMatrixFunctionKey: "VIEW_SPECIAL_AUTHORIZATIONS",
+    },
+  });
   const isCreditAccountHolder =
     creditAccountMetadata?.userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER;
 
