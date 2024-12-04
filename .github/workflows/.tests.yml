@@ -175,8 +175,8 @@ jobs:
           overwrite: true
           if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
 
-  bceid-crud-vehicles:
-    name: (BCEID) Crud vehicles 
+  bceid-crud-power-units:
+    name: (BCEID) Crud power units 
     environment: ${{inputs.target}}
     runs-on: ubuntu-22.04
     defaults:
@@ -198,23 +198,65 @@ jobs:
         with:
           browser: ${{ matrix.browser }}
           config: pageLoadTimeout=10000,video=true
-          spec: cypress/e2e/bceid-crud-vehicles.cy.js
+          spec: cypress/e2e/bceid-crud-power-units.cy.js
           working-directory: tests
 
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: (BCEID) CRUD Vehicles Screenshot
+          name: (BCEID) CRUD Power Units Screenshot
           path: tests/cypress/screenshots/
           if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
       
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: (BCEID) CRUD Vehicles Video
+          name: (BCEID) CRUD Power Units Video
           path: tests/cypress/videos/
           overwrite: true
           if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
+
+  bceid-crud-trailers:
+    name: (BCEID) Crud trailers 
+    environment: ${{inputs.target}}
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: tests/
+    strategy:
+      matrix:
+        browser: [chrome, firefox, edge]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: cypress-io/github-action@v6.7.7
+        name: Cypress run
+        env:
+          CYPRESS_baseUrl: https://${{ github.event.repository.name }}-${{ inputs.target || 'test' }}-frontend.apps.silver.devops.gov.bc.ca/
+          CYPRESS_bceid_username: ${{vars.BCEID_USERNAME}}
+          CYPRESS_bceid_password: ${{secrets.BCEID_PASSWORD}}
+        with:
+          browser: ${{ matrix.browser }}
+          config: pageLoadTimeout=10000,video=true
+          spec: cypress/e2e/bceid-crud-trailers.cy.js
+          working-directory: tests
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: (BCEID) CRUD Trailers Screenshot
+          path: tests/cypress/screenshots/
+          if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
+      
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: (BCEID) CRUD Trailers Video
+          path: tests/cypress/videos/
+          overwrite: true
+          if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
+
 
   idir-void-term-oversize:
     name: (IDIR) Void Term Oversize 
