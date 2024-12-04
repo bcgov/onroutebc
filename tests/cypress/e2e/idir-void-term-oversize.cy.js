@@ -137,8 +137,11 @@ describe('Login Test for OnRouteBC', () => {
     cy.get('.shopping-cart-button').click({force: true});
     cy.wait(5000);
 
-    cy.get('div.MuiSelect-select[aria-controls=":r1g:"]').click();
-    cy.wait(5000);
+    // cy.get('div.MuiSelect-select[aria-controls=":r1g:"]').click();
+    // cy.wait(5000);
+    cy.get('div[role="combobox"]')
+    .contains('Select')  
+    .click(); 
 
     cy.contains('li', 'Mastercard (Debit)').first().click();
     cy.wait(5000);
