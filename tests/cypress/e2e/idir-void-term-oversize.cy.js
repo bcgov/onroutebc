@@ -64,7 +64,7 @@ describe('Login Test for OnRouteBC', () => {
     cy.contains('li', 'Oversize').first().click();
     cy.wait(5000);
 
-    cy.get('body').click();
+    cy.get('body').click({force: true});
     cy.wait(5000);
 
     // click "start application"
