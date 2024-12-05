@@ -1,5 +1,5 @@
 export const IDPS = {
-  BCEID: "bceidboth",
+  BCEID: "bceidbusiness",
   IDIR: "idir",
 } as const;
 
