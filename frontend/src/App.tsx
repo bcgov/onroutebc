@@ -41,6 +41,7 @@ const authority =
 const client_id =
   import.meta.env.VITE_KEYCLOAK_AUDIENCE || envConfig.VITE_KEYCLOAK_AUDIENCE;
 
+
 /**
  * The OIDC Configuration needed for authentication.
  */
