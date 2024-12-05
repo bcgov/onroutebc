@@ -118,5 +118,4 @@ Chart.lock
 
 
 #Loadtest Results
-loadtests/results
-loadtests/*/results
+tests/*/results/*
