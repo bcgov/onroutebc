@@ -159,6 +159,11 @@ export const AmendPermitFinish = () => {
         permitNumber={permit?.permitNumber}
         permitAction={PERMIT_REFUND_ACTIONS.AMEND}
         handleFinish={handleFinish}
+        disableSubmitButton={
+          refundPermitMutation.isPending ||
+          startTransactionMutation.isPending ||
+          issuePermitMutation.isPending
+        }
       />
 
       {showRefundErrorModal && (

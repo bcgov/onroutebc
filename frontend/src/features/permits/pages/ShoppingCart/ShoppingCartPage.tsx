@@ -66,7 +66,11 @@ const AVAILABLE_CV_PAYMENT_METHODS = [PAYMENT_METHOD_TYPE_CODE.WEB];
 export const ShoppingCartPage = () => {
   const navigate = useNavigate();
   const { idirUserDetails, userDetails } = useContext(OnRouteBCContext);
-  const companyId: number = applyWhenNotNullable(id => Number(id), getCompanyIdFromSession(), 0);
+  const companyId: number = applyWhenNotNullable(
+    (id) => Number(id),
+    getCompanyIdFromSession(),
+    0,
+  );
   const isStaffActingAsCompany = Boolean(idirUserDetails?.userRole);
   const isCompanyAdmin = Boolean(
     userDetails?.userRole === BCeID_USER_ROLE.COMPANY_ADMINISTRATOR,
@@ -144,7 +148,7 @@ export const ShoppingCartPage = () => {
   useEffect(() => {
     // transaction is undefined when payment endpoint has not been requested
     // ie. "Pay Now" button has not been pressed
-    if (typeof transaction !== "undefined") {
+    if (typeof transaction !== "undefined" && selectedIds.length > 0) {
       if (!transaction) {
         // Payment failed - ie. transaction object is null
         navigate(SHOPPING_CART_ROUTES.DETAILS(true));
@@ -153,7 +157,7 @@ export const ShoppingCartPage = () => {
         // simply proceed to issue permits
         issuePermitMutation.mutate({
           companyId,
-          applicationIds: [...selectedIds],
+          applicationIds: selectedIds,
         });
 
         // also update the cart and cart count

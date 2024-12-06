@@ -43,6 +43,7 @@ export const RefundPage = ({
   permitAction,
   amountToRefund,
   handleFinish,
+  disableSubmitButton,
 }: {
   permitHistory: PermitHistory[];
   email?: Nullable<string>;
@@ -53,6 +54,7 @@ export const RefundPage = ({
   permitAction: PermitAction;
   amountToRefund: number;
   handleFinish: (refundData: RefundFormData[]) => void;
+  disableSubmitButton: boolean;
 }) => {
   const currentPermitValue = calculateNetAmount(permitHistory);
   const newPermitValue = currentPermitValue - Math.abs(amountToRefund);
@@ -183,6 +185,7 @@ export const RefundPage = ({
           variant="contained"
           color="primary"
           onClick={handleSubmit(onSubmit)}
+          disabled={disableSubmitButton}
           className="refund-page__submit-btn"
         >
           Finish

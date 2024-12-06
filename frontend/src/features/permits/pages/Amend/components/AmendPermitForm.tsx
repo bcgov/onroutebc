@@ -27,10 +27,6 @@ import { getDatetimes } from "./helpers/getDatetimes";
 import { PAST_START_DATE_STATUSES } from "../../../../../common/components/form/subFormComponents/CustomDatePicker";
 import { useFetchLOAs } from "../../../../settings/hooks/LOA";
 import { useFetchSpecialAuthorizations } from "../../../../settings/hooks/specialAuthorizations";
-import {
-  filterLOAsForPermitType,
-  filterNonExpiredLOAs,
-} from "../../../helpers/permitLOA";
 import { usePolicyEngine } from "../../../../policy/hooks/usePolicyEngine";
 import { Loading } from "../../../../../common/pages/Loading";
 import { serializePermitVehicleDetails } from "../../../helpers/serialize/serializePermitVehicleDetails";

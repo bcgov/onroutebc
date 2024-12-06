@@ -112,10 +112,10 @@
         &::before {
           content: "$";
           position: absolute;
-          left: 10px; /* Adjust spacing as needed */
+          left: 10px;
           top: 18px;
           transform: translateY(-50%);
-          color: #333; /* Adjust color as needed */
+          color: #333;
         }
       }
     }

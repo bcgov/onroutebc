@@ -106,6 +106,7 @@ export const FinishVoid = ({
         permitNumber={permit?.permitNumber}
         permitAction={PERMIT_REFUND_ACTIONS.VOID}
         handleFinish={handleFinish}
+        disableSubmitButton={voidPermitMutation.isPending}
       />
       {showRefundErrorModal && (
         <RefundErrorModal

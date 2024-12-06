@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   MRT_Cell,
@@ -31,12 +31,10 @@ import {
   defaultTableStateOptions,
 } from "../../../../../common/helpers/tableHelper";
 import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
-import { Controller, useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { RefundFormData } from "../types/RefundFormData";
 import { Checkbox, FormControlLabel } from "@mui/material";
 import { requiredMessage } from "../../../../../common/helpers/validationMessages";
-import { NumberInput } from "../../../../../common/components/form/subFormComponents/NumberInput";
-import { convertToNumberIfValid } from "../../../../../common/helpers/numeric/convertToNumberIfValid";
 
 export const TransactionHistoryTable = ({
   permitHistory,
@@ -54,7 +52,7 @@ export const TransactionHistoryTable = ({
   );
 
   const formMethods = useFormContext();
-  const { register, watch, setValue, trigger, getValues } = formMethods;
+  const { register, watch, setValue, trigger } = formMethods;
 
   const isRowSelectable = (row: MRT_Row<RefundFormData>): boolean => {
     return (
@@ -165,65 +163,23 @@ export const TransactionHistoryTable = ({
 
           // clear refundAmount when row is unselected
           useEffect(() => {
-            if (!rowIsSelected) {
+            !rowIsSelected &&
               setValue(`refundData.${cell.row.index}.refundAmount`, "");
-            }
           }, [rowIsSelected, setValue, cell.row.index]);
 
           return (
             isRowSelectable(cell.row) && (
-              // <CustomFormComponent
-              //   type="number"
-              //   feature="refund-permit"
-              //   className="transaction-history-table__input transaction-history-table__input--refund-amount"
-              //   options={{
-              //     name: `refundData.${cell.row.index}.refundAmount`,
-              //     rules: { required: false },
-              //     width: "200px",
-              //     showOptionalLabel: false,
-              //   }}
-              //   disabled={!cell.row.getIsSelected()}
-              // />
-
-              <Controller
-                name={`refundData.${cell.row.index}.refundAmount`}
-                rules={{ required: false }}
-                render={({ fieldState: { error } }) => (
-                  <NumberInput
-                    // label={label}
-                    classes={{
-                      root: "transaction-history-table__input transaction-history-table__input--refund-amount",
-                    }}
-                    inputProps={{
-                      value: getDefaultRequiredVal(
-                        null,
-                        getValues(`refundData.${cell.row.index}.refundAmount`),
-                      ),
-                      maskFn: (numericVal) => numericVal.toFixed(2),
-                      // onBlur: (e) => {
-                      //   onUpdateValue(
-                      //     getDefaultRequiredVal(
-                      //       null,
-                      //       convertToNumberIfValid(e.target.value, null),
-                      //     ),
-                      //   );
-                      // },
-                      slotProps: {
-                        input: {
-                          min: 0,
-                          step: 0.01,
-                        },
-                      },
-                    }}
-                    helperText={
-                      error?.message
-                        ? {
-                            errors: [error.message],
-                          }
-                        : undefined
-                    }
-                  />
-                )}
+              <CustomFormComponent
+                type="number"
+                feature="refund-permit"
+                className="transaction-history-table__input transaction-history-table__input--refund-amount"
+                options={{
+                  name: `refundData.${cell.row.index}.refundAmount`,
+                  rules: { required: false },
+                  width: "200px",
+                  showOptionalLabel: false,
+                }}
+                disabled={!rowIsSelected}
               />
             )
           );
@@ -266,9 +222,8 @@ export const TransactionHistoryTable = ({
 
           // clear refundTransactionId when row is unselected
           useEffect(() => {
-            if (!rowIsSelected) {
+            !rowIsSelected &&
               setValue(`refundData.${cell.row.index}.refundTransactionId`, "");
-            }
           }, [rowIsSelected, setValue, cell.row.index]);
 
           return (
@@ -320,13 +275,20 @@ export const TransactionHistoryTable = ({
 
           const rowIsSelected = cell.row.getIsSelected();
 
-          // TODO this implementation is not currently working
-          // set chequeRefund to false when row is unselected
+          // local state necessary for 'chequeRefund' checkbox column to allow setting it to false when row is unselected
+          const [chequeRefund, setChequeRefund] = useState(
+            watch(`refundData.${cell.row.index}.chequeRefund`),
+          );
+
+          // sync react-hook-form state when local state changes
           useEffect(() => {
-            if (!rowIsSelected) {
-              setValue(`refundData.${cell.row.index}.chequeRefund`, false);
-            }
-          }, [rowIsSelected, cell.row.index, setValue]);
+            setValue(`refundData.${cell.row.index}.chequeRefund`, chequeRefund);
+          }, [chequeRefund, setValue, cell.row.index]);
+
+          // clear chequeRefund when row is unselected
+          useEffect(() => {
+            !rowIsSelected && setChequeRefund(false);
+          }, [rowIsSelected]);
 
           return (
             isRowSelectable(cell.row) && (
@@ -335,6 +297,8 @@ export const TransactionHistoryTable = ({
                   <Checkbox
                     className="cheque-refund-checkbox"
                     {...register(`refundData.${cell.row.index}.chequeRefund`)}
+                    checked={chequeRefund}
+                    onChange={(e) => setChequeRefund(e.target.checked)}
                     disabled={
                       !cell.row.getIsSelected() ||
                       Number(refundAmount) <= 0 ||
