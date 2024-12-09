@@ -25,7 +25,7 @@ jobs:
         id: env
         run: |
           pr="${{github.event.workflow_run.pull_requests[0].number}}"
-          if [[pr]]; then
+          if [[ $pr ]]; then
             target="$pr"
             environment="dev"
           else
