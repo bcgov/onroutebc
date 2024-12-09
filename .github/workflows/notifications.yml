@@ -1,7 +1,7 @@
 name: Notifications
 on:
   workflow_run: 
-    workflows: [PR,Merge]
+    workflows: [PR Open,Merge]
     types:
       - completed
 jobs:

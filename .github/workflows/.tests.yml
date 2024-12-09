@@ -5,70 +5,296 @@ on:
     inputs:
       ### Required
       target:
-        description: 'PR number, test or prod.'
+        description: 'PR number, test, uat or prod.'
+        default: 'test'
         required: true
         type: string
 
 jobs:
-  integration-tests:
-    name: Integration Tests
-    runs-on: ubuntu-22.04
-    timeout-minutes: 1
-    steps:
-      - uses: actions/checkout@v4
-      - id: cache-npm
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-build-cache-node-modules-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-cache-node-modules-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-
-      - name: Integration tests
-        env:
-          API_NAME: nest
-          BASE_URL: https://${{ github.event.repository.name }}-${{ inputs.target }}-frontend.apps.silver.devops.gov.bc.ca
-        run: |
-          cd integration-tests
-          npm ci
-          node src/main.js
-
-  cypress-e2e:
-    name: E2E Tests
+  update-term-oversize:
+    name: (BCEID) Update Term Oversize
+    environment: ${{inputs.target}}
     runs-on: ubuntu-22.04
     defaults:
       run:
-        working-directory: frontend
+        working-directory: tests/
     strategy:
       matrix:
         browser: [chrome, firefox, edge]
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - id: cache-npm
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-build-cache-node-modules-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-cache-node-modules-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
 
-      - uses: cypress-io/github-action@v6
+      - uses: cypress-io/github-action@v6.7.7
         name: Cypress run
         env:
-          CYPRESS_baseUrl: https://${{ github.event.repository.name }}-${{ inputs.target }}-frontend.apps.silver.devops.gov.bc.ca/
+          CYPRESS_baseUrl: https://${{ github.event.repository.name }}-${{ inputs.target || 'test' }}-frontend.apps.silver.devops.gov.bc.ca/
+          CYPRESS_bceid_username: ${{vars.BCEID_USERNAME}}
+          CYPRESS_bceid_password: ${{secrets.BCEID_PASSWORD}}
         with:
-          config: pageLoadTimeout=10000
-          working-directory: ./frontend
           browser: ${{ matrix.browser }}
+          config: pageLoadTimeout=10000,video=true
+          spec: cypress/e2e/bceid-update-term-oversize.cy.js
+          working-directory: tests
 
       - uses: actions/upload-artifact@v4
-        if: failure()
+        if: always()
         with:
-          name: cypress-screenshots
-          path: ./cypress/screenshots
+          name: (BCEID) Update Term Oversize Screenshot
+          path: tests/cypress/screenshots/
           if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
+      
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: (BCEID) Update Term Oversize Video
+          path: tests/cypress/videos/
+          overwrite: true
+          if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
+  
+  new-term-oversize:
+    name: (BCEID) New Term Oversize 
+    environment: ${{inputs.target}}
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: tests/
+    strategy:
+      matrix:
+        browser: [chrome, firefox, edge]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: cypress-io/github-action@v6.7.7
+        name: Cypress run
+        env:
+          CYPRESS_baseUrl: https://${{ github.event.repository.name }}-${{ inputs.target || 'test' }}-frontend.apps.silver.devops.gov.bc.ca/
+          CYPRESS_bceid_username: ${{vars.BCEID_USERNAME}}
+          CYPRESS_bceid_password: ${{secrets.BCEID_PASSWORD}}
+        with:
+          browser: ${{ matrix.browser }}
+          config: pageLoadTimeout=10000,video=true
+          spec: cypress/e2e/bceid-new-term-oversize.cy.js
+          working-directory: tests
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: (BCEID) New Term Oversize Screenshot
+          path: tests/cypress/screenshots/
+          if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
+      
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: (BCEID) New Term Oversize Video
+          path: tests/cypress/videos/
+          overwrite: true
+          if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
+
+  new-term-overweight:
+    name: (BCEID) New Term Overweight 
+    environment: ${{inputs.target}}
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: tests/
+    strategy:
+      matrix:
+        browser: [chrome, firefox, edge]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: cypress-io/github-action@v6.7.7
+        name: Cypress run
+        env:
+          CYPRESS_baseUrl: https://${{ github.event.repository.name }}-${{ inputs.target || 'test' }}-frontend.apps.silver.devops.gov.bc.ca/
+          CYPRESS_bceid_username: ${{vars.BCEID_USERNAME}}
+          CYPRESS_bceid_password: ${{secrets.BCEID_PASSWORD}}
+        with:
+          browser: ${{ matrix.browser }}
+          config: pageLoadTimeout=10000,video=true
+          spec: cypress/e2e/bceid-new-term-overweight.cy.js
+          working-directory: tests
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: (BCEID) New Term Overweight Screenshot
+          path: tests/cypress/screenshots/
+          if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
+      
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: (BCEID) New Term Overweight Video
+          path: tests/cypress/videos/
+          overwrite: true
+          if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
+
+  idir-amend-term-oversize:
+    name: (IDIR) Amend Term Oversize 
+    environment: ${{inputs.target}}
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: tests/
+    strategy:
+      matrix:
+        browser: [chrome, firefox, edge]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: cypress-io/github-action@v6.7.7
+        name: Cypress run
+        env:
+          CYPRESS_baseUrl: https://${{ github.event.repository.name }}-${{ inputs.target || 'test' }}-frontend.apps.silver.devops.gov.bc.ca/
+          CYPRESS_idir_username: ${{vars.IDIR_USERNAME}}
+          CYPRESS_idir_password: ${{secrets.IDIR_PASSWORD}}
+        with:
+          browser: ${{ matrix.browser }}
+          config: pageLoadTimeout=10000,video=true
+          spec: cypress/e2e/idir-amend-term-oversize.cy.js
+          working-directory: tests
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: (IDIR) Amend Term Oversize Screenshot
+          path: tests/cypress/screenshots/
+          if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
+      
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: (IDIR) Update Term Oversize Video
+          path: tests/cypress/videos/
+          overwrite: true
+          if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
+
+  bceid-crud-power-units:
+    name: (BCEID) Crud power units 
+    environment: ${{inputs.target}}
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: tests/
+    strategy:
+      matrix:
+        browser: [chrome, firefox, edge]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: cypress-io/github-action@v6.7.7
+        name: Cypress run
+        env:
+          CYPRESS_baseUrl: https://${{ github.event.repository.name }}-${{ inputs.target || 'test' }}-frontend.apps.silver.devops.gov.bc.ca/
+          CYPRESS_bceid_username: ${{vars.BCEID_USERNAME}}
+          CYPRESS_bceid_password: ${{secrets.BCEID_PASSWORD}}
+        with:
+          browser: ${{ matrix.browser }}
+          config: pageLoadTimeout=10000,video=true
+          spec: cypress/e2e/bceid-crud-power-units.cy.js
+          working-directory: tests
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: (BCEID) CRUD Power Units Screenshot
+          path: tests/cypress/screenshots/
+          if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
+      
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: (BCEID) CRUD Power Units Video
+          path: tests/cypress/videos/
+          overwrite: true
+          if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
+
+  bceid-crud-trailers:
+    name: (BCEID) Crud trailers 
+    environment: ${{inputs.target}}
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: tests/
+    strategy:
+      matrix:
+        browser: [chrome, firefox, edge]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: cypress-io/github-action@v6.7.7
+        name: Cypress run
+        env:
+          CYPRESS_baseUrl: https://${{ github.event.repository.name }}-${{ inputs.target || 'test' }}-frontend.apps.silver.devops.gov.bc.ca/
+          CYPRESS_bceid_username: ${{vars.BCEID_USERNAME}}
+          CYPRESS_bceid_password: ${{secrets.BCEID_PASSWORD}}
+        with:
+          browser: ${{ matrix.browser }}
+          config: pageLoadTimeout=10000,video=true
+          spec: cypress/e2e/bceid-crud-trailers.cy.js
+          working-directory: tests
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: (BCEID) CRUD Trailers Screenshot
+          path: tests/cypress/screenshots/
+          if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
+      
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: (BCEID) CRUD Trailers Video
+          path: tests/cypress/videos/
+          overwrite: true
+          if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
+
+
+  idir-void-term-oversize:
+    name: (IDIR) Void Term Oversize 
+    environment: ${{inputs.target}}
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: tests/
+    strategy:
+      matrix:
+        browser: [chrome, firefox, edge]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: cypress-io/github-action@v6.7.7
+        name: Cypress run
+        env:
+          CYPRESS_baseUrl: https://${{ github.event.repository.name }}-${{ inputs.target || 'test' }}-frontend.apps.silver.devops.gov.bc.ca/
+          CYPRESS_idir_username: ${{vars.IDIR_USERNAME}}
+          CYPRESS_idir_password: ${{secrets.IDIR_PASSWORD}}
+        with:
+          browser: ${{ matrix.browser }}
+          config: pageLoadTimeout=10000,video=true
+          spec: cypress/e2e/idir-void-term-oversize.cy.js
+          working-directory: tests
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: (IDIR) Void Term Oversize Screenshot
+          path: tests/cypress/screenshots/
+          if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
+      
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: (IDIR) Void Term Oversize Video
+          path: tests/cypress/videos/
+          overwrite: true
+          if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn` 
