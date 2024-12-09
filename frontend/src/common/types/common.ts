@@ -14,7 +14,7 @@ import {
   Trailer,
 } from "../../features/manageVehicles/types/Vehicle";
 import { LOAFormData } from "../../features/settings/types/LOAFormData";
-import { MultiplePaymentMethodRefundData } from "../../features/permits/pages/Refund/types/RefundFormData";
+import { RefundFormData } from "../../features/permits/pages/Refund/types/RefundFormData";
 
 export interface ApiErrorResponse {
   status: number;
@@ -36,7 +36,7 @@ export type ORBC_FormTypes =
   | VerifyClientRequest
   | PermitContactDetails
   | LOAFormData
-  | { refundData: MultiplePaymentMethodRefundData[] };
+  | { refundData: RefundFormData[] };
 
 /**
  * The options for pagination.
