@@ -1,0 +1,11 @@
+on:
+  workflow_run:
+    workflows: [PR]
+    types: [completed]
+    branches: ["fix/loadtests9"]
+
+jobs:
+  on-success:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "{{github.event.workflow_run.pull_requests}}"
