@@ -1,8 +1,8 @@
 on:
   workflow_run:
-    workflows: ['PR Open']
+    workflows: ["PR Open"]
     types: [requested]
-    branches: ['fix/loadtests9']
+    branches: ["fix/loadtests9"]
 
 jobs:
   on-success:
