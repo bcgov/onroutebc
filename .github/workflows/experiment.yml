@@ -1,7 +1,7 @@
 on:
   workflow_run:
     workflows: ['PR Open']
-    types: [opened]
+    types: [requested]
     branches: ['fix/loadtests9']
 
 jobs:
