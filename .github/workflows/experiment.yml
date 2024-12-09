@@ -9,5 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: | 
+          echo "${{github.event.workflow_run}}"
           echo "${{github.event.workflow_run.pull_requests}}"
           echo "${{github.event.workflow_run.pull_requests[0]}}"
