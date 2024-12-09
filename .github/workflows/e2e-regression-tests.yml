@@ -35,7 +35,7 @@ jobs:
           echo target=$target | tee $GITHUB_OUTPUT
           echo environment=$environment | tee $GITHUB_OUTPUT
 
-  ${{matrix.test}}:
+  e2e-tests:
     name: ${{matrix.test}}
     needs: [vars]
     environment: ${{needs.vars.outputs.environment}}
