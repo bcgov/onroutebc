@@ -93,6 +93,7 @@ interface ContactDetails {
 }
 
 interface VehicleDetails {
+  vehicleId: string,
   vin: string;
   plate: string;
   make: string;
@@ -115,8 +116,11 @@ interface Commodities {
 
 export interface Loas {
   loaId: number;
+  loaNumber: string;
   checked: boolean;
   loaPermitType: PermitType[];
+  startDate: string,
+  expiryDate?: string,
   powerUnits?: string[];
   trailers?: string[];
   disabled?: boolean;

@@ -74,13 +74,13 @@ import {
 import { SpecialAuth } from 'src/modules/special-auth/entities/special-auth.entity';
 import { TIMEZONE_PACIFIC } from 'src/common/constants/api.constant';
 import { LoaDetail } from 'src/modules/special-auth/entities/loa-detail.entity';
-import { PermitData } from 'src/common/interface/permit.template.interface';
+import { Loas, PermitData } from 'src/common/interface/permit.template.interface';
 import * as dayjs from 'dayjs';
-import { PermitType } from 'src/common/enum/permit-type.enum';
 
 @Injectable()
 export class PaymentService {
   private readonly logger = new Logger(PaymentService.name);
+  private loaErrors;
   constructor(
     private dataSource: DataSource,
     @InjectRepository(Transaction)
@@ -915,79 +915,118 @@ export class PaymentService {
     companyId: number,
     loaIds: number[],
   ): Promise<LoaDetail[]> {
-    const loaDetails = await this.loaDetailRepository.find({
+    const loaDetails =  await this.loaDetailRepository.find({
       where: {
         loaId: In(loaIds),
-        company: { companyId: companyId },
+        isActive: true,
+        company: { companyId },
       },
       relations: ['company', 'loaVehicles', 'loaPermitTypes'],
     });
-    return loaDetails;
-  }
+    for(const loaDetail of loaDetails){
+if(!loaDetail.isActive)
+{
+ const loa =  await this.loaDetailRepository.findOne({
+    where: {
+      loaNumber: loaDetail.loaNumber,
+      isActive: true,
+      company: { companyId },
+    },
+    relations: ['company', 'loaVehicles', 'loaPermitTypes'],
+  });
+  loaDetails.splice(loaDetails.indexOf(loaDetail),1)
+  loaDetails.push(loa);
 
+}
+    }
+  }
+  
   async isValidLoa(permit: Permit): Promise<void> {
-    const companyId: number = permit.company.companyId;
+    const { companyId } = permit.company;
     const permitData = JSON.parse(permit.permitData.permitData) as PermitData;
-    const loaIds = permitData.loas.map((loa) => loa.loaId);
-    const loaDetails = await this.findLoasByIds(companyId, loaIds);
-    const allowedPowerUnits: string[] = [];
-    const allowedTrailers: string[] = [];
-    const allowedPermitTypes: string[] = [];
-    // Validate dates and collect allowed power units, trailers, and permit types
+    const { vehicleId: permitVehicleId, vehicleType: permitVehicleType } = permitData.vehicleDetails;
+    const loaNumbers = permitData.loas.map((loa) => loa.loaNumber);
+    const loaDetails = await this.findLoasByIds(companyId, loaNumbers);
+  
+    // Validate LOA details against the database.
+    this.validateLoaDetails(loaDetails, permit, permitVehicleId, permitVehicleType);
+  
+    // Validate permit data against LOA snapshot in the permit
+    this.validatePermitDataAgainstLoas(permitData, permit, permitVehicleId, permitVehicleType);
+  }
+  
+  private validateLoaDetails(
+    loaDetails: LoaDetail[],
+    permit: Permit,
+    permitVehicleId: string,
+    permitVehicleType: string,
+  ): void {
     for (const loaDetail of loaDetails) {
-      if (!this.isValidDateForLoa(loaDetail, permit)) {
-        throw new BadRequestException(
-          'At least one of the applications had LOA with invalid dates.',
-        );
-      }
-
-      this.collectAllowedVehiclesAndPermitTypes(
-        loaDetail,
-        allowedPowerUnits,
-        allowedTrailers,
-        allowedPermitTypes,
-      );
+      const allowedPowerUnits: string []= [];
+      const allowedTrailers: string []= [];
+      const allowedPermitTypes: string []= [];
+  
+  
+  
+      this.collectAllowedVehiclesAndPermitTypes(loaDetail, allowedPowerUnits, allowedTrailers, allowedPermitTypes);
+  
+      this.validateVehicleType(permitVehicleType, permitVehicleId, allowedPowerUnits, allowedTrailers);
+      this.validatePermitType(permit.permitType, allowedPermitTypes);
     }
-    let permitLoaPowerUnits: string[] = [];
-    let permitLoaTrailers: string[] = [];
-    let permitTypesLoa: string[] = [];
-
+  }
+  
+  private validatePermitDataAgainstLoas(
+    permitData: PermitData,
+    permit: Permit,
+    permitVehicleId: string,
+    permitVehicleType: string,
+  ): void {
+    const permitLoaPowerUnits: string []= []
+    const permitLoaTrailers: string []= []
+    const permitTypesLoa: string []= []
+  
     for (const loa of permitData.loas) {
-      permitLoaPowerUnits = permitLoaPowerUnits.concat(loa.powerUnits);
-      permitLoaTrailers = permitLoaTrailers.concat(loa.trailers);
-      permitTypesLoa = permitTypesLoa.concat(loa.loaPermitType);
+      permitLoaPowerUnits.push(...loa.powerUnits);
+      permitLoaTrailers.push(...loa.trailers);
+      permitTypesLoa.push(...loa.loaPermitType);
+  
+      if (!this.isValidDateForLoa(loa, permit)) {
+        throw new BadRequestException('At least one of the applications has LOA snapshot with invalid dates.');
+      }
+  
+      this.validateVehicleType(permitVehicleType, permitVehicleId, permitLoaPowerUnits, permitLoaTrailers);
+      this.validatePermitType(permit.permitType, permitTypesLoa);
     }
-    this.logger.log(
-      `${allowedPermitTypes.toString()} are allowed permit types`,
-    );
-    // Validate the collected data from LOAs and permit
-    this.validatePermitData(
-      allowedPowerUnits,
-      allowedTrailers,
-      allowedPermitTypes,
-      permit.permitType,
-      permitLoaPowerUnits,
-      permitLoaTrailers,
-      permitLoaTrailers,
-    );
   }
-
-  private isValidDateForLoa(loaDetail: LoaDetail, permit: Permit): boolean {
-    let isValidDate: boolean;
-    if (loaDetail.expiryDate) {
-      isValidDate =
-        dayjs(loaDetail.startDate).format('YYYY-MM-DD') <=
-          permit.permitData.startDate &&
-        dayjs(loaDetail.expiryDate).format('YYYY-MM-DD') >=
-          permit.permitData.expiryDate;
-    } else {
-      isValidDate =
-        dayjs(loaDetail.startDate).format('YYYY-MM-DD') <=
-        permit.permitData.startDate;
+  
+  private validateVehicleType(
+    permitVehicleType: string,
+    permitVehicleId: string,
+    allowedPowerUnits: string[],
+    allowedTrailers: string[],
+  ): void {
+    if (permitVehicleType === 'powerUnit' && !allowedPowerUnits.includes(permitVehicleId)) {
+      throw new BadRequestException('Permitted Vehicle is not part of at least one of the selected LoA.');
     }
-    return isValidDate;
+    if (permitVehicleType === 'trailer' && !allowedTrailers.includes(permitVehicleId)) {
+      throw new BadRequestException('Permitted Vehicle is not part of at least one of the selected LoA.');
+    }
   }
-
+  
+  private validatePermitType(permitType: string, allowedPermitTypes: string[]): void {
+    if (!allowedPermitTypes.includes(permitType)) {
+      throw new BadRequestException('Permit Type is not allowed by at least one of the selected LoA.');
+    }
+  }
+  
+  private isValidDateForLoa(loaDetail: LoaDetail | Loas, permit: Permit): boolean {
+    const { startDate, expiryDate } = loaDetail;
+    const { startDate: permitStartDate, expiryDate: permitExpiryDate } = permit.permitData;
+  
+    return dayjs(startDate).isBefore(permitStartDate, 'day') &&
+      (expiryDate ? dayjs(expiryDate).isAfter(permitExpiryDate, 'day') : true);
+  }
+  
   private collectAllowedVehiclesAndPermitTypes(
     loaDetail: LoaDetail,
     allowedPowerUnits: string[],
@@ -995,39 +1034,12 @@ export class PaymentService {
     allowedPermitTypes: string[],
   ): void {
     for (const loaVehicle of loaDetail.loaVehicles) {
-      if (loaVehicle.powerUnit) allowedPowerUnits.push(loaVehicle.powerUnit);
-      if (loaVehicle.trailer) allowedTrailers.push(loaVehicle.trailer);
+      if (loaVehicle.powerUnit) allowedPowerUnits.includes(loaVehicle.powerUnit);
+      if (loaVehicle.trailer) allowedTrailers.includes(loaVehicle.trailer);
     }
     for (const loaPermitType of loaDetail.loaPermitTypes) {
-      allowedPermitTypes.push(loaPermitType.permitType);
+      allowedPermitTypes.includes(loaPermitType.permitType);
     }
   }
-
-  private validatePermitData(
-    allowedPowerUnits: string[],
-    allowedTrailers: string[],
-    allowedPermitTypes: string[],
-    permitType: PermitType,
-    permitLoaPowerUnits: string[],
-    permitLoaTrailers: string[],
-    permitTypesLoa: string[],
-  ): void {
-    if (
-      !(
-        this.isSupersetOf(allowedPowerUnits, permitLoaPowerUnits) &&
-        this.isSupersetOf(allowedTrailers, permitLoaTrailers) &&
-        this.isSupersetOf(allowedPermitTypes, permitTypesLoa) &&
-        this.isSupersetOf(allowedPermitTypes, [permitType])
-      )
-    ) {
-      throw new BadRequestException(
-        'At least one of the applications has invalid vehicle or permit type.',
-      );
-    }
-  }
-
-  // Helper function to check if an array contains element from the other array.
-  private isSupersetOf(arr1: string[], arr2: string[]): boolean {
-    return arr1.length >= arr2.length && arr2.every((ai) => arr1.includes(ai));
-  }
+  
 }
