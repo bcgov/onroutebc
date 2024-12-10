@@ -8,12 +8,14 @@ import {
 } from "@mui/material";
 
 import "./NumberInput.scss";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../helpers/util";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../helpers/util";
 import { convertToNumberIfValid } from "../../../helpers/numeric/convertToNumberIfValid";
 import { isNull, RequiredOrNull } from "../../../types/common";
 
-type NumberInputClassKey =
-  "root" | "label";
+type NumberInputClassKey = "root" | "label";
 
 export interface NumberInputProps {
   classes?: Partial<Record<NumberInputClassKey, string>>;
@@ -35,20 +37,20 @@ export const NumberInput = (props: NumberInputProps) => {
   const helperMessages = getDefaultRequiredVal([], props.helperText?.messages);
   const errorMessages = getDefaultRequiredVal([], props.helperText?.errors);
   const helperTexts = [
-    ...helperMessages.map(message => ({
+    ...helperMessages.map((message) => ({
       type: "message",
       message,
     })),
-    ...errorMessages.map(message => ({
+    ...errorMessages.map((message) => ({
       type: "error",
       message,
     })),
   ];
 
-  const { maskFn, onChange, onBlur, ...inputProps} = props.inputProps;
+  const { maskFn, onChange, onBlur, ...inputProps } = props.inputProps;
   const inputSlotProps = inputProps.slotProps?.input;
   const initialValueDisplay = applyWhenNotNullable(
-    (num) => maskFn ? maskFn(num) : `${num}`,
+    (num) => (maskFn ? maskFn(num) : `${num}`),
     inputProps.value,
     "",
   );
@@ -81,9 +83,7 @@ export const NumberInput = (props: NumberInputProps) => {
     <FormControl
       margin="normal"
       className={`
-        number-input ${
-          props.classes?.root ? props.classes.root : ""
-        } ${
+        custom-input number-input ${props.classes?.root ? props.classes.root : ""} ${
           errorMessages.length > 0 ? "number-input--error" : ""
         }
       `}
@@ -102,11 +102,9 @@ export const NumberInput = (props: NumberInputProps) => {
 
       <OutlinedInput
         {...inputProps}
-        className={
-          `number-input__input ${
-            inputProps.className ? inputProps.className : ""
-          }`
-        }
+        className={`number-input__input ${
+          inputProps.className ? inputProps.className : ""
+        } ${inputProps.disabled ? "number-input__input--disabled" : ""}`}
         type="number"
         value={valueDisplay}
         onChange={handleChange}
@@ -116,6 +114,7 @@ export const NumberInput = (props: NumberInputProps) => {
           input: {
             ...inputSlotProps,
             type: "number",
+            className: "number-input__input",
           },
         }}
       />
