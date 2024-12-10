@@ -68,6 +68,8 @@ jobs:
           CYPRESS_baseUrl: https://${{ github.event.repository.name }}-${{ needs.vars.outputs.target || 'test' }}-frontend.apps.silver.devops.gov.bc.ca/
           CYPRESS_bceid_username: ${{vars.BCEID_USERNAME}}
           CYPRESS_bceid_password: ${{secrets.BCEID_PASSWORD}}
+          CYPRESS_idir_username: ${{vars.IDIR_USERNAME}}
+          CYPRESS_idir_password: ${{secrets.IDIR_PASSWORD}}
         with:
           browser: ${{ matrix.browser }}
           config: pageLoadTimeout=10000,video=true
