@@ -70,10 +70,7 @@ const transactionIdRules = {
       );
     },
     validateTransactionId: (value: Optional<string>) => {
-      return (
-        // (value != null && value.trim() !== "") ||
-        (value && value.length <= 20) || invalidTranactionIdLength(20)
-      );
+      return (value && value.length <= 15) || invalidTranactionIdLength(15);
     },
   },
 };
