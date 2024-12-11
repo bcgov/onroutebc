@@ -44,6 +44,9 @@ export const invalidDate = () => validationMessages.date.defaultMessage;
 export const invalidPastStartDate = () =>
   validationMessages.date.start.past.defaultMessage;
 
+export const warnPastStartDate = () =>
+  validationMessages.date.start.past.warningMessage;
+
 export const invalidMaxStartDate = (max: number) => {
   const { messageTemplate, placeholders } = validationMessages.date.start.max;
   return replacePlaceholders(messageTemplate, placeholders, max);
