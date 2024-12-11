@@ -122,6 +122,12 @@ export const invalidDBALength = (min: number, max: number) => {
   return replacePlaceholders(messageTemplate, placeholders, min, max);
 };
 
+export const invalidTranactionIdLength = (max: number) => {
+  const { messageTemplate, placeholders } =
+    validationMessages.transactionId.length;
+  return replacePlaceholders(messageTemplate, placeholders, max);
+};
+
 export const uploadSizeExceeded = () => {
   return validationMessages.upload.fileSize.exceeded;
 };
