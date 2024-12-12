@@ -190,7 +190,8 @@ export const ApplicationForm = ({
   // When "Continue" button is clicked
   const onContinue = async (data: ApplicationFormData) => {
     const updatedViolations = await triggerPolicyValidation();
-    if (Object.keys(updatedViolations).length > 0) {
+    // prevent CV client continuing if there are policy engine validation errors
+    if (Object.keys(updatedViolations).length > 0 && !isStaffUser) {
       return;
     }
 

@@ -144,6 +144,7 @@ export const ApplicationStepPage = ({
     !companyId ||
     !isPermitTypeAllowed()
   ) {
+    console.error("The application cannot be displayed or edited");
     return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
   }
 
