@@ -15,6 +15,7 @@ import { CaseManagementModule } from '../../case-management/case-management.modu
 import { CompanyApplicationQueueController } from './company-application-queue.controller';
 import { PermitLoa } from './entities/permit-loa.entity';
 import { LoaDetail } from 'src/modules/special-auth/entities/loa-detail.entity';
+import { CompanyApplicationValidateController } from './company-application-validate.controller';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { LoaDetail } from 'src/modules/special-auth/entities/loa-detail.entity';
     CompanyApplicationQueueController,
     CompanyApplicationController,
     ApplicationController,
+    CompanyApplicationValidateController,
   ],
   providers: [ApplicationService, ApplicationProfile],
   exports: [ApplicationService],

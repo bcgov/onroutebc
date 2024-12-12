@@ -5,7 +5,6 @@ import {
   InternalServerErrorException,
   Logger,
   NotFoundException,
-  UnprocessableEntityException,
 } from '@nestjs/common';
 import { CreateTransactionDto } from './dto/request/create-transaction.dto';
 import { ReadTransactionDto } from './dto/response/read-transaction.dto';
@@ -13,14 +12,7 @@ import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { Transaction } from './entities/transaction.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  Brackets,
-  DataSource,
-  In,
-  QueryRunner,
-  Repository,
-  UpdateResult,
-} from 'typeorm';
+import { DataSource, In, QueryRunner, Repository, UpdateResult } from 'typeorm';
 import { PermitTransaction } from './entities/permit-transaction.entity';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { callDatabaseSequence } from 'src/common/helper/database.helper';
@@ -43,20 +35,10 @@ import { UpdatePaymentGatewayTransactionDto } from './dto/request/update-payment
 import { PaymentCardType } from './entities/payment-card-type.entity';
 import { PaymentMethodType } from './entities/payment-method-type.entity';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
-import { PermitHistoryDto } from '../permit/dto/response/permit-history.dto';
-import {
-  calculatePermitAmount,
-  permitFee,
-  validAmount,
-} from 'src/common/helper/permit-fee.helper';
 import { CfsTransactionDetail } from './entities/cfs-transaction.entity';
 import { CfsFileStatus } from 'src/common/enum/cfs-file-status.enum';
-import {
-  isAmendmentApplication,
-  validApplicationDates,
-} from '../../../common/helper/permit-application.helper';
+import { isAmendmentApplication } from '../../../common/helper/permit-application.helper';
 import { isCfsPaymentMethodType } from 'src/common/helper/payment.helper';
-import { PgApprovesStatus } from 'src/common/enum/pg-approved-status-type.enum';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { CacheKey } from 'src/common/enum/cache-key.enum';
@@ -67,12 +49,7 @@ import {
   throwBadRequestException,
   throwUnprocessableEntityException,
 } from '../../../common/helper/exception.helper';
-import {
-  isCVClient,
-  isFeatureEnabled,
-} from '../../../common/helper/common.helper';
-import { SpecialAuth } from 'src/modules/special-auth/entities/special-auth.entity';
-import { TIMEZONE_PACIFIC } from 'src/common/constants/api.constant';
+import { isFeatureEnabled } from '../../../common/helper/common.helper';
 
 @Injectable()
 export class PaymentService {
@@ -332,12 +309,9 @@ export class PaymentService {
             'Application in its current status cannot be processed for payment.',
           );
       }
-      const totalTransactionAmount = await this.validateApplicationAndPayment(
-        createTransactionDto,
-        existingApplications,
-        currentUser,
-        queryRunner,
-      );
+      const totalTransactionAmount = createTransactionDto.applicationDetails
+        ?.reduce((accumulator, item) => accumulator + item.transactionAmount, 0)
+        .toFixed(2);
       const transactionOrderNumber =
         await this.generateTransactionOrderNumber();
 
@@ -487,62 +461,6 @@ export class PaymentService {
     }
 
     return readTransactionDto;
-  }
-
-  /**
-   * Validates the payment information in the request against the backend data, calculates the transaction amount,
-   * and checks for transaction type and amount consistency.
-   *
-   * This method first calculates the total transaction amount based on the backend permit data and
-   * compares it with the transaction amount sent in the request to ensure they match. If there's a mismatch, it throws an error.
-   * Additionally, for refund transactions, it checks if the total calculated transaction amount is negative as expected;
-   * if not, it throws an error.
-   *
-   * @param {CreateTransactionDto} createTransactionDto - The DTO containing the transaction details from the request.
-   * @param {Permit[]} applications - A list of permits associated with the transaction.
-   * @param {QueryRunner} nestedQueryRunner - The query runner to use for database operations within the method.
-   * @returns {Promise<number>} The total transaction amount calculated from the backend data.
-   * @throws {BadRequestException} When the transaction amount in the request doesn't match with the calculated amount,
-   * or if there's a transaction type and amount mismatch in case of refunds.
-   */
-  private async validateApplicationAndPayment(
-    createTransactionDto: CreateTransactionDto,
-    applications: Permit[],
-    currentUser: IUserJWT,
-    queryRunner: QueryRunner,
-  ) {
-    let totalTransactionAmountCalculated = 0;
-    const isCVClientUser: boolean = isCVClient(currentUser.identity_provider);
-    // Calculate and add amount for each requested application, as per the available backend data.
-    for (const application of applications) {
-      //Check if each application has a valid start date and valid expiry date.
-      if (
-        isCVClientUser &&
-        !validApplicationDates(application, TIMEZONE_PACIFIC)
-      ) {
-        throw new UnprocessableEntityException(
-          `Atleast one of the application has invalid startDate or expiryDate.`,
-        );
-      }
-      totalTransactionAmountCalculated += await this.permitFeeCalculator(
-        application,
-        queryRunner,
-      );
-    }
-    const totalTransactionAmount =
-      createTransactionDto.applicationDetails?.reduce(
-        (accumulator, item) => accumulator + item.transactionAmount,
-        0,
-      );
-    if (
-      !validAmount(
-        totalTransactionAmountCalculated,
-        totalTransactionAmount,
-        createTransactionDto.transactionTypeId,
-      )
-    )
-      throw new BadRequestException('Transaction amount mismatch.');
-    return totalTransactionAmount;
   }
 
   @LogAsyncMethodExecution()
@@ -784,107 +702,5 @@ export class PaymentService {
 
   async findAllPaymentCardTypeEntities(): Promise<PaymentCardType[]> {
     return await this.paymentCardTypeRepository.find();
-  }
-
-  /**
-   * Calculates the permit fee based on the application status, historical payments, and current permit data.
-   * If the application is revoked, it returns 0. For voided applications, it calculates the refund amount.
-   * Otherwise, it calculates the fee based on existing payments and current permit data.
-   *
-   * @param application - The Permit application for which to calculate the fee.
-   * @param queryRunner - An optional QueryRunner for database transactions.
-   * @returns {Promise<number>} - The calculated permit fee or refund amount.
-   */
-  @LogAsyncMethodExecution()
-  async permitFeeCalculator(
-    application: Permit,
-    queryRunner?: QueryRunner,
-  ): Promise<number> {
-    if (application.permitStatus === ApplicationStatus.REVOKED) return 0;
-
-    const permitPaymentHistory = await this.findPermitHistory(
-      application.originalPermitId,
-      queryRunner,
-    );
-    const isNoFee = await this.findNoFee(
-      application.company.companyId,
-      queryRunner,
-    );
-    const oldAmount =
-      permitPaymentHistory.length > 0
-        ? calculatePermitAmount(permitPaymentHistory)
-        : undefined;
-    const fee = permitFee(application, isNoFee, oldAmount);
-    return fee;
-  }
-
-  @LogAsyncMethodExecution()
-  async findNoFee(
-    companyId: number,
-    queryRunner: QueryRunner,
-  ): Promise<boolean> {
-    const specialAuth = await queryRunner.manager
-      .createQueryBuilder()
-      .select('specialAuth')
-      .from(SpecialAuth, 'specialAuth')
-      .innerJoinAndSelect('specialAuth.company', 'company')
-      .where('company.companyId = :companyId', { companyId: companyId })
-      .getOne();
-    return !!specialAuth && !!specialAuth.noFeeType;
-  }
-
-  @LogAsyncMethodExecution()
-  async findPermitHistory(
-    originalPermitId: string,
-    queryRunner: QueryRunner,
-  ): Promise<PermitHistoryDto[]> {
-    // Fetches the permit history for a given originalPermitId using the provided QueryRunner
-    // This includes all related transactions and filters permits by non-null permit numbers
-    // Orders the results by transaction submission date in descending order
-
-    const permits = await queryRunner.manager
-      .createQueryBuilder()
-      .select('permit')
-      .from(Permit, 'permit')
-      .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
-      .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
-      .where('permit.permitNumber IS NOT NULL')
-      .andWhere('permit.originalPermitId = :originalPermitId', {
-        originalPermitId: originalPermitId,
-      })
-      .andWhere(
-        new Brackets((qb) => {
-          qb.where(
-            'transaction.paymentMethodTypeCode != :paymentType OR ( transaction.paymentMethodTypeCode = :paymentType AND transaction.pgApproved = :approved)',
-            {
-              paymentType: PaymentMethodTypeEnum.WEB,
-              approved: PgApprovesStatus.APPROVED,
-            },
-          );
-        }),
-      )
-      .orderBy('transaction.transactionSubmitDate', 'DESC')
-      .getMany();
-
-    return permits.flatMap((permit) =>
-      permit.permitTransactions.map((permitTransaction) => ({
-        permitNumber: permit.permitNumber,
-        comment: permit.comment,
-        transactionOrderNumber:
-          permitTransaction.transaction.transactionOrderNumber,
-        transactionAmount: permitTransaction.transactionAmount,
-        transactionTypeId: permitTransaction.transaction.transactionTypeId,
-        pgPaymentMethod: permitTransaction.transaction.pgPaymentMethod,
-        pgTransactionId: permitTransaction.transaction.pgTransactionId,
-        paymentCardTypeCode: permitTransaction.transaction.paymentCardTypeCode,
-        paymentMethodTypeCode:
-          permitTransaction.transaction.paymentMethodTypeCode,
-        commentUsername: permit.createdUser,
-        permitId: +permit.permitId,
-        transactionSubmitDate:
-          permitTransaction.transaction.transactionSubmitDate,
-        pgApproved: permitTransaction.transaction.pgApproved,
-      })),
-    ) as PermitHistoryDto[];
   }
 }
