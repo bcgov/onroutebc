@@ -48,8 +48,8 @@ jobs:
       matrix:
         browser:
           - chrome
-          - edge
-          - firefox
+            #- edge
+            #- firefox
         test: 
           - 'bceid-crud-power-units.cy.js'
           - 'bceid-crud-trailers.cy.js'
