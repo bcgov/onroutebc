@@ -8,6 +8,10 @@ appVersion: "1.16.0"
 dependencies: # A list of the chart requirements (optional)
   - name: component
     repository: "https://bcgov.github.io/helm-service"
+    alias: homepage
+    version: 0.3.0
+  - name: component
+    repository: "https://bcgov.github.io/helm-service"
     alias: frontend
     version: 0.3.0
   - name: component

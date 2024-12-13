@@ -20,6 +20,7 @@ global:
   vault:
     role: "nonprod"
     zone: "dev"
+
 homepage:
   enabled: true
   deployment: # can be either a statefulSet or a deployment not both
@@ -43,7 +44,7 @@ homepage:
       env: 
         fromValues:
           - name: HOMEPAGE_PR_NUM
-            key: "{{.Values.global.pr_num}}"
+            value: '{{.Values.global.pr_num}}'
           - name: TIMESTAMP
             value: "{{ now | toString }}"
       ports:
@@ -298,10 +299,10 @@ vehicles:
           - name: PAYBC_REDIRECT
             key: PAYBC_REDIRECT
         fromValues:
-          - name: TIMESTAMP
-            value: "{{ now | toString }}"
           - name: VEHICLES_PR_NUM
             value: '{{.Values.global.pr_num}}'
+          - name: TIMESTAMP
+            value: "{{ now | toString }}"
       ports:
         - name: vehicles-api
           containerPort: 5000
