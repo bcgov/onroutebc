@@ -20,6 +20,103 @@ global:
   vault:
     role: "nonprod"
     zone: "dev"
+homepage:
+  enabled: true
+  deployment: # can be either a statefulSet or a deployment not both
+    enabled: true
+  statefulSet: # can be either a statefulSet or a deployment not both
+    enabled: false
+  secret:
+    enabled: false
+  configmap:
+    enabled: false
+  containers:
+    - name: homepage
+      command:
+        - "sh"
+        - "-c"
+        - "nginx -g 'daemon off;'"
+      registry: '{{ .Values.global.registry }}'
+      repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
+      image: frontend
+      tag: "{{tpl .Values.global.tag .}}"
+      env: 
+        fromValues:
+          - name: HOMEPAGE_PR_NUM
+            key: "{{.Values.global.pr_num}}"
+          - name: TIMESTAMP
+            value: "{{ now | toString }}"
+      ports:
+        - name: http
+          containerPort: 3000
+          protocol: TCP
+      resources: # this is optional
+        limits:
+          cpu: 75m
+          memory: 150Mi
+        requests:
+          cpu: 25m
+          memory: 50Mi
+      volumeMounts:
+        - name: writespace
+          mountPath: "/usr/share/nginx/html/config"
+  autoscaling:
+    #-- enable or disable autoscaling.
+    enabled: true
+    #-- the minimum number of replicas.
+    minReplicas: 2
+    #-- the maximum number of replicas.
+    maxReplicas: 3
+    #-- the target cpu utilization percentage, is from request cpu and NOT LIMIT CPU.
+    targetCPUUtilizationPercentage: 80
+    #-- the behavior for the autoscaling. it is optional and is an object.
+    behavior:
+      scaleDown:
+        stabilizationWindowSeconds: 300
+        policies:
+          - type: Percent
+            value: 10
+            periodSeconds: 60
+          - type: Pods
+            value: 2
+            periodSeconds: 60
+        selectPolicy: Min
+      scaleUp:
+        stabilizationWindowSeconds: 0
+        policies:
+          - type: Percent
+            value: 100
+            periodSeconds: 30
+          - type: Pods
+            value: 2
+            periodSeconds: 30
+        selectPolicy: Max
+  ingress:
+    className: openshift-default
+    annotations: 
+      route.openshift.io/termination: "edge"
+    enabled: true
+    hosts: 
+      - host: "{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca"
+        paths:
+          - path: /home
+            pathType: ImplementationSpecific
+    tls:
+      - {}
+  service:
+    enabled: true
+    type: ClusterIP
+    ports:
+      - name: 3000-tcp
+        protocol: TCP
+        port: 80
+        targetPort: 3000
+  vault:
+    enabled: false
+  volumes:
+    - name: writespace
+      emptyDir:
+        sizeLimit: 50Mi
 frontend:
   enabled: true
   deployment: # can be either a statefulSet or a deployment not both
