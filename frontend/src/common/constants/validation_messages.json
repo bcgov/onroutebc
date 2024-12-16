@@ -159,5 +159,12 @@
   },
   "powerUnit": {
     "required": "A Power Unit must be added."
+  },
+  "transactionId": {
+    "defaultMessage": "Invalid transaction ID",
+    "length": {
+      "messageTemplate": "Transaction ID length must be no longer than :max characters",
+      "placeholders": [":max"]
+    }
   }
 }
