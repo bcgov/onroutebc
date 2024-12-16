@@ -16,6 +16,7 @@ import { CompanyApplicationQueueController } from './company-application-queue.c
 import { PermitLoa } from './entities/permit-loa.entity';
 import { LoaDetail } from 'src/modules/special-auth/entities/loa-detail.entity';
 import { CompanyApplicationValidateController } from './company-application-validate.controller';
+import { ApplicationValidationService } from './application-validation.service';
 
 @Module({
   imports: [
@@ -38,7 +39,7 @@ import { CompanyApplicationValidateController } from './company-application-vali
     ApplicationController,
     CompanyApplicationValidateController,
   ],
-  providers: [ApplicationService, ApplicationProfile],
-  exports: [ApplicationService],
+  providers: [ApplicationService,ApplicationValidationService, ApplicationProfile],
+  exports: [ApplicationService, ApplicationValidationService],
 })
 export class ApplicationModule {}

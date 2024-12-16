@@ -12,7 +12,7 @@ import {
 import { ExceptionDto } from 'src/common/exception/exception.dto';
 import { Request } from 'express';
 import { CreateTransactionDto } from '../payment/dto/request/create-transaction.dto';
-import { ApplicationDataValidationDto } from './dto/response/cart-validation.dto';
+import { CartValidationDto } from './dto/response/cart-validation.dto';
 import {
   CLIENT_USER_ROLE_LIST,
   IDIRUserRole,
@@ -52,7 +52,7 @@ export class CompanyApplicationValidateController {
 
   @ApiCreatedResponse({
     description: 'The Applications Validation Data Response',
-    type: ApplicationDataValidationDto,
+    type: CartValidationDto,
   })
   @Permissions({
     allowedBCeIDRoles: CLIENT_USER_ROLE_LIST,
@@ -66,7 +66,7 @@ export class CompanyApplicationValidateController {
   async createTransactionDetails(
     @Req() request: Request,
     @Body() createTransactionDto: CreateTransactionDto,
-  ): Promise<ApplicationDataValidationDto[]> {
+  ): Promise<CartValidationDto> {
     console.log(request, createTransactionDto);
     const currentUser = request.user as IUserJWT;
 

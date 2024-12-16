@@ -1,3 +1,4 @@
+import { PermitType } from '../enum/permit-type.enum';
 import { ThirdPartyLiability } from '../enum/third-party-liability.enum';
 
 // Data used to populate a .docx template
@@ -92,6 +93,7 @@ interface ContactDetails {
 }
 
 interface VehicleDetails {
+  vehicleId: string;
   vin: string;
   plate: string;
   make: string;
@@ -112,8 +114,14 @@ interface Commodities {
   disabled?: boolean;
 }
 
-interface Loas {
-  loaId: string;
+export interface Loas {
+  loaId: number;
+  loaNumber: string;
   checked: boolean;
+  loaPermitType: PermitType[];
+  startDate: string,
+  expiryDate?: string,
+  powerUnits?: string[];
+  trailers?: string[];
   disabled?: boolean;
 }

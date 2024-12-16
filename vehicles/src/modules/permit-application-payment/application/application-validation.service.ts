@@ -4,7 +4,7 @@ import {
   Logger,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { Brackets, DataSource, In, QueryRunner } from 'typeorm';
+import { Brackets, DataSource, In, QueryRunner, Repository } from 'typeorm';
 import { Permit } from '../permit/entities/permit.entity';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
 import { ApplicationStatus } from '../../../common/enum/application-status.enum';
@@ -20,19 +20,30 @@ import {
 import { PermitHistoryDto } from '../permit/dto/response/permit-history.dto';
 import { SpecialAuth } from 'src/modules/special-auth/entities/special-auth.entity';
 import { validApplicationDates } from 'src/common/helper/permit-application.helper';
-import { CartValidationDto, Status } from './dto/response/cart-validation.dto';
+import { ApplicationDataValidationDto, CartValidationDto, Status } from './dto/response/cart-validation.dto';
+import { Loas, PermitData } from 'src/common/interface/permit.template.interface';
+import { LoaDetail } from 'src/modules/special-auth/entities/loa-detail.entity';
+import * as dayjs from 'dayjs';
+import { InjectRepository } from '@nestjs/typeorm';
+import { PaymentMethodType } from 'src/common/enum/payment-method-type.enum';
+import { PgApprovesStatus } from 'src/common/enum/pg-approved-status-type.enum';
+
 
 @Injectable()
 export class ApplicationValidationService {
   private readonly logger = new Logger(ApplicationValidationService.name);
-  constructor(private dataSource: DataSource) {}
+  private readonly validationDto = new CartValidationDto();
+
+  constructor(private dataSource: DataSource,
+    @InjectRepository(LoaDetail)
+    private loaDetailRepository: Repository<LoaDetail>,
+  ) {}
 
   async validateApplication(
     currentUser: IUserJWT,
 
     createTransactionDto: CreateTransactionDto,
-  ): Promise<CartValidationDto[]> {
-    const validationDto = new CartValidationDto();
+  ): Promise<CartValidationDto> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -56,12 +67,22 @@ export class ApplicationValidationService {
         );
       } catch (error) {
         if (error instanceof BadRequestException) {
-          validationDto.status = Status.ERROR;
-          validationDto.error = error.message;
+          this.validationDto.status = Status.ERROR;
+          this.validationDto.error = error.message;
         }
       }
+      for (const application of applications) {
+        const applicationDataValidationDto = new ApplicationDataValidationDto();
 
-      return [new CartValidationDto()];
+        applicationDataValidationDto.applicationNumber = application.applicationNumber;
+        applicationDataValidationDto.errors.push('Application in its current status cannot be processed for payment')
+        const permitData = JSON.parse(
+          application.permitData.permitData,
+        ) as PermitData;
+        if (permitData.loas) await this.isValidLoa(application);
+      }
+
+      return this.validationDto;
     } catch (error) {
       console.log(error);
     } finally {
@@ -194,7 +215,7 @@ export class ApplicationValidationService {
           qb.where(
             'transaction.paymentMethodTypeCode != :paymentType OR ( transaction.paymentMethodTypeCode = :paymentType AND transaction.pgApproved = :approved)',
             {
-              paymentType: PaymentMethodTypeEnum.WEB,
+              paymentType: PaymentMethodType.WEB,
               approved: PgApprovesStatus.APPROVED,
             },
           );
@@ -224,4 +245,226 @@ export class ApplicationValidationService {
       })),
     ) as PermitHistoryDto[];
   }
+
+  async isValidLoa(permit: Permit): Promise<void> {
+    const { companyId } = permit.company;
+    const permitData = JSON.parse(permit.permitData.permitData) as PermitData;
+    const { vehicleId: permitVehicleId, vehicleType: permitVehicleType } = permitData.vehicleDetails;
+    const loaIds = permitData.loas.map((loa) => loa.loaId);
+  
+    const loaDetails = await this.findLoasByIds(companyId, loaIds);
+  
+    // Validate LOA details and permit data against database entries
+    const loaValidationDto = this.validateLoaDetails(
+      loaDetails,
+      permit,
+      permitVehicleId,
+      permitVehicleType,
+    );
+  
+    this.mergeValidationResults(loaValidationDto);
+  
+    const permitValidationDto = this.validatePermitDataAgainstLoas(
+      permitData,
+      permit,
+      permitVehicleId,
+      permitVehicleType,
+    );
+  
+    this.mergeValidationResults(permitValidationDto);
+  }
+  private mergeValidationResults(applicationValidationDto: ApplicationDataValidationDto): void {
+    const existingValidationResult = this.validationDto?.applicationValidationResult?.find(
+      (dto) => dto.applicationNumber === applicationValidationDto.applicationNumber,
+    );
+  
+    if (existingValidationResult) {
+      // Merge errors if the validation DTO already exists
+      if (applicationValidationDto.errors) {
+        existingValidationResult.errors.push(...applicationValidationDto.errors);
+      }
+    } else {
+      // If no matching DTO is found, add it to the results
+      this.validationDto?.applicationValidationResult?.push(applicationValidationDto);
+    }
+  }
+  private validateLoaDetails(
+    loaDetails: LoaDetail[],
+    permit: Permit,
+    permitVehicleId: string,
+    permitVehicleType: string,
+  ): ApplicationDataValidationDto {
+    const applicationDataValidationDto = new ApplicationDataValidationDto();
+    applicationDataValidationDto.applicationNumber = permit.applicationNumber;
+    for (const loaDetail of loaDetails) {
+      const allowedPowerUnits: string []= [];
+      const allowedTrailers: string []= [];
+      const allowedPermitTypes: string []= [];
+      this.collectAllowedVehiclesAndPermitTypes(loaDetail, allowedPowerUnits, allowedTrailers, allowedPermitTypes);
+      if (!this.isValidDateForLoa(loaDetail, permit)) {
+        applicationDataValidationDto.errors.push('LoA with invalid date(s).')
+      }
+      if(!this.isVehicleTypeValid(permitVehicleType, permitVehicleId, allowedPowerUnits, allowedTrailers)){
+        applicationDataValidationDto.errors.push('LoA with invalid vehicle(s).')
+  
+       }
+        if(!this.isPermitTypeValid(permit.permitType, allowedPermitTypes)){
+          applicationDataValidationDto.errors.push('LoA snapshot with invalid permitType.')
+        }
+    }
+    return applicationDataValidationDto;
+  }
+  
+  private validatePermitDataAgainstLoas(
+    permitData: PermitData,
+    permit: Permit,
+    permitVehicleId: string,
+    permitVehicleType: string,
+  ): ApplicationDataValidationDto {
+    const permitLoaPowerUnits: string []= []
+    const permitLoaTrailers: string []= []
+    const permitTypesLoa: string []= []
+    const applicationDataValidationDto = new ApplicationDataValidationDto();
+    applicationDataValidationDto.applicationNumber = permit.applicationNumber;
+  
+    for (const loa of permitData.loas) {
+      permitLoaPowerUnits.push(...loa.powerUnits);
+      permitLoaTrailers.push(...loa.trailers);
+      permitTypesLoa.push(...loa.loaPermitType);
+      if (!this.isValidDateForLoa(loa, permit)) {
+
+        applicationDataValidationDto.errors.push('Application has and LoA snapshot with invalid date(s).')
+      }
+  
+     if(!this.isVehicleTypeValid(permitVehicleType, permitVehicleId, permitLoaPowerUnits, permitLoaTrailers)){
+      applicationDataValidationDto.errors.push('Application has and LoA snapshot with invalid vehicle(s).')
+
+     }
+      if(!this.isPermitTypeValid(permit.permitType, permitTypesLoa)){
+        applicationDataValidationDto.errors.push('Application has and LoA snapshot with invalid permitType.')
+      }
+    }
+    return applicationDataValidationDto;
+  }
+  
+  private isVehicleTypeValid(
+    permitVehicleType: string,
+    permitVehicleId: string,
+    allowedPowerUnits: string[],
+    allowedTrailers: string[],
+  ): boolean {
+    const isPowerUnitAllowed = permitVehicleType === 'powerUnit' 
+      ? allowedPowerUnits.includes(permitVehicleId) 
+      : true;
+  
+    const isTrailerAllowed = permitVehicleType === 'trailer' 
+      ? allowedTrailers.includes(permitVehicleId) 
+      : true;
+  
+    return isPowerUnitAllowed && isTrailerAllowed;
+  }
+  
+  private isPermitTypeValid(permitType: string, allowedPermitTypes: string[]): boolean {
+    return allowedPermitTypes.includes(permitType)
+  }
+  
+  private isValidDateForLoa(loaDetail: Loas| LoaDetail, permit: Permit): boolean {
+    const { startDate, expiryDate } = loaDetail;
+    const { startDate: permitStartDate, expiryDate: permitExpiryDate } = permit.permitData;
+  
+    return dayjs(startDate).isBefore(permitStartDate, 'day') &&
+      (expiryDate ? dayjs(expiryDate).isAfter(permitExpiryDate, 'day') : true);
+  }
+  
+  private collectAllowedVehiclesAndPermitTypes(
+    loaDetail: LoaDetail,
+    allowedPowerUnits: string[],
+    allowedTrailers: string[],
+    allowedPermitTypes: string[],
+  ): void {
+    for (const loaVehicle of loaDetail.loaVehicles) {
+      if (loaVehicle.powerUnit) allowedPowerUnits.includes(loaVehicle.powerUnit);
+      if (loaVehicle.trailer) allowedTrailers.includes(loaVehicle.trailer);
+    }
+    for (const loaPermitType of loaDetail.loaPermitTypes) {
+      allowedPermitTypes.includes(loaPermitType.permitType);
+    }
+  }
+  
+    /**
+   * Retrieves a single LOA (Letter of Authorization) detail for a specified company.
+   *
+   * Steps:
+   * 1. Fetches the LOA detail from the repository based on company ID and LOA ID.
+   * 2. Ensures the fetched LOA detail is active.
+   * 3. Includes relations (company, loaVehicles, loaPermitTypes) in the query.
+   *
+   * @param {number} companyId - ID of the company for which to fetch the LOA detail.
+   * @param {number} loaId - ID of the LOA to be fetched.
+   * @returns {Promise<LoaDetail>} - Returns a Promise that resolves to the LOA detail.
+   */
+  @LogAsyncMethodExecution()
+  async findLoasByIds(
+    companyId: number,
+    loaIds: number[],
+  ): Promise<LoaDetail[]> {
+    // Fetch initial active LOA details
+    const loaDetails = await this.loaDetailRepository.find({
+      where: {
+        loaId: In(loaIds),
+        isActive: true,
+        company: { companyId },
+      },
+      relations: ['company', 'loaVehicles', 'loaPermitTypes'],
+    });
+  
+    // Handle cases where LOA details may need replacements
+    const updatedLoaDetails = await this.validateAndUpdateLoaDetails(
+      loaDetails,
+      companyId,
+    );
+  
+    return updatedLoaDetails;
+  }
+  
+  private async validateAndUpdateLoaDetails(
+    loaDetails: LoaDetail[],
+    companyId: number,
+  ): Promise<LoaDetail[]> {
+    const updatedLoas: LoaDetail[] = [];
+  
+    for (const loaDetail of loaDetails) {
+      if (!loaDetail.isActive) {
+        const replacementLoa = await this.findActiveReplacementLoa(
+          loaDetail,
+          companyId,
+        );
+  
+        if (replacementLoa) {
+          updatedLoas.push(replacementLoa);
+        }
+      } else {
+        updatedLoas.push(loaDetail);
+      }
+    }
+  
+    return updatedLoas;
+  }
+  
+  private async findActiveReplacementLoa(
+    loaDetail: LoaDetail,
+    companyId: number,
+  ): Promise<LoaDetail | null> {
+    const loa = await this.loaDetailRepository.findOne({
+      where: {
+        loaNumber: loaDetail.loaNumber,
+        isActive: true,
+        company: { companyId },
+      },
+      relations: ['company', 'loaVehicles', 'loaPermitTypes'],
+    });
+  
+    return loa || null;
+  }
+  
 }
