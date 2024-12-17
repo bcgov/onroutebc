@@ -19,7 +19,7 @@ import {
 } from 'src/common/helper/permit-fee.helper';
 import { PermitHistoryDto } from '../permit/dto/response/permit-history.dto';
 import { SpecialAuth } from 'src/modules/special-auth/entities/special-auth.entity';
-import { validApplicationDates } from 'src/common/helper/permit-application.helper';
+import { isAmendmentApplication, validApplicationDates } from 'src/common/helper/permit-application.helper';
 import { ApplicationDataValidationDto, CartValidationDto, Status } from './dto/response/cart-validation.dto';
 import { Loas, PermitData } from 'src/common/interface/permit.template.interface';
 import { LoaDetail } from 'src/modules/special-auth/entities/loa-detail.entity';
@@ -44,6 +44,9 @@ export class ApplicationValidationService {
 
     createTransactionDto: CreateTransactionDto,
   ): Promise<CartValidationDto> {
+    this.validationDto.applicationValidationResult=[];
+    let totalTransactionAmountCalculated = 0;
+    const isCVClientUser: boolean = isCVClient(currentUser.identity_provider);
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -58,7 +61,7 @@ export class ApplicationValidationService {
         where: { permitId: In(applicationIds) },
         relations: { permitData: true },
       });
-      try {
+     try {
         await this.validateApplicationAndPayment(
           createTransactionDto,
           applications,
@@ -73,15 +76,50 @@ export class ApplicationValidationService {
       }
       for (const application of applications) {
         const applicationDataValidationDto = new ApplicationDataValidationDto();
-
+        applicationDataValidationDto.errors = [];
         applicationDataValidationDto.applicationNumber = application.applicationNumber;
-        applicationDataValidationDto.errors.push('Application in its current status cannot be processed for payment')
+
+         //Check if each application has a valid start date and valid expiry date.
+      if (
+        isCVClientUser &&
+        !validApplicationDates(application, TIMEZONE_PACIFIC)
+      ) {
+          applicationDataValidationDto.errors.push('Application in its current status cannot be processed for payment');
+      }
+      totalTransactionAmountCalculated += await this.permitFeeCalculator(
+        application,
+        queryRunner,
+      );
+        if (
+          !(
+            this.isVoidorRevoked(application.permitStatus) ||
+            this.isApplicationInCart(application.permitStatus) ||
+            isAmendmentApplication(application)
+          )
+        ){
+          applicationDataValidationDto.errors.push('Application in its current status cannot be processed for payment');
+          this.validationDto.applicationValidationResult.push(applicationDataValidationDto);
+        }
+
         const permitData = JSON.parse(
           application.permitData.permitData,
         ) as PermitData;
         if (permitData.loas) await this.isValidLoa(application);
       }
-
+      const totalTransactionAmount =
+      createTransactionDto.applicationDetails?.reduce(
+        (accumulator, item) => accumulator + item.transactionAmount,
+        0,
+      );
+    if (
+      !validAmount(
+        totalTransactionAmountCalculated,
+        totalTransactionAmount,
+        createTransactionDto.transactionTypeId,
+      )
+    )
+    this.validationDto.error = `Transaction amount mismatch.calculated ${totalTransactionAmountCalculated} and received ${totalTransactionAmount}`
+      //throw new BadRequestException('Transaction amount mismatch.');
       return this.validationDto;
     } catch (error) {
       console.log(error);
@@ -141,7 +179,8 @@ export class ApplicationValidationService {
         createTransactionDto.transactionTypeId,
       )
     )
-      throw new BadRequestException('Transaction amount mismatch.');
+    this.validationDto.error = `Transaction amount mismatch.calculated ${totalTransactionAmountCalculated} and received ${totalTransactionAmount}`
+      //throw new BadRequestException('Transaction amount mismatch.');
     return totalTransactionAmount;
   }
   /**
@@ -255,23 +294,25 @@ export class ApplicationValidationService {
     const loaDetails = await this.findLoasByIds(companyId, loaIds);
   
     // Validate LOA details and permit data against database entries
-    const loaValidationDto = this.validateLoaDetails(
+    //const loaValidationDto = 
+    this.validateLoaDetails(
       loaDetails,
       permit,
       permitVehicleId,
       permitVehicleType,
     );
   
-    this.mergeValidationResults(loaValidationDto);
+    //this.mergeValidationResults(loaValidationDto);
   
-    const permitValidationDto = this.validatePermitDataAgainstLoas(
+    //const permitValidationDto =
+     this.validatePermitDataAgainstLoas(
       permitData,
       permit,
       permitVehicleId,
       permitVehicleType,
     );
   
-    this.mergeValidationResults(permitValidationDto);
+  //  this.mergeValidationResults(permitValidationDto);
   }
   private mergeValidationResults(applicationValidationDto: ApplicationDataValidationDto): void {
     const existingValidationResult = this.validationDto?.applicationValidationResult?.find(
@@ -293,7 +334,7 @@ export class ApplicationValidationService {
     permit: Permit,
     permitVehicleId: string,
     permitVehicleType: string,
-  ): ApplicationDataValidationDto {
+  ) {
     const applicationDataValidationDto = new ApplicationDataValidationDto();
     applicationDataValidationDto.applicationNumber = permit.applicationNumber;
     for (const loaDetail of loaDetails) {
@@ -312,7 +353,7 @@ export class ApplicationValidationService {
           applicationDataValidationDto.errors.push('LoA snapshot with invalid permitType.')
         }
     }
-    return applicationDataValidationDto;
+    this.validationDto.applicationValidationResult.push(applicationDataValidationDto);
   }
   
   private validatePermitDataAgainstLoas(
@@ -320,7 +361,7 @@ export class ApplicationValidationService {
     permit: Permit,
     permitVehicleId: string,
     permitVehicleType: string,
-  ): ApplicationDataValidationDto {
+  ){
     const permitLoaPowerUnits: string []= []
     const permitLoaTrailers: string []= []
     const permitTypesLoa: string []= []
@@ -344,7 +385,7 @@ export class ApplicationValidationService {
         applicationDataValidationDto.errors.push('Application has and LoA snapshot with invalid permitType.')
       }
     }
-    return applicationDataValidationDto;
+    this.validationDto.applicationValidationResult.push(applicationDataValidationDto);
   }
   
   private isVehicleTypeValid(
@@ -465,6 +506,18 @@ export class ApplicationValidationService {
     });
   
     return loa || null;
+  }
+
+  
+  private isApplicationInCart(permitStatus: ApplicationStatus) {
+    return permitStatus === ApplicationStatus.IN_CART;
+  }
+
+  private isVoidorRevoked(permitStatus: ApplicationStatus) {
+    return (
+      permitStatus === ApplicationStatus.VOIDED ||
+      permitStatus === ApplicationStatus.REVOKED
+    );
   }
   
 }
