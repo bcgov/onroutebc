@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Box } from "@mui/material";
 import { Navigate, useParams } from "react-router-dom";
 import { useMemo } from "react";
@@ -12,7 +13,10 @@ import { Loading } from "../../../../common/pages/Loading";
 import { ApplicationInQueueReview } from "../../../queue/components/ApplicationInQueueReview";
 import { useApplicationForStepsQuery } from "../../hooks/hooks";
 import { PERMIT_STATUSES } from "../../types/PermitStatus";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../../common/helpers/util";
 import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
 import {
   DEFAULT_PERMIT_TYPE,
@@ -28,6 +32,7 @@ import {
   ApplicationStepContext,
   ERROR_ROUTES,
 } from "../../../../routes/constants";
+import { ApplicationReviewNew } from "../../pages/Application/ApplicationInReviewNew";
 
 const displayHeaderText = (stepKey: ApplicationStep) => {
   switch (stepKey) {
@@ -54,8 +59,8 @@ export const ApplicationStepPage = ({
 
   const companyId: number = getDefaultRequiredVal(
     0,
-    applyWhenNotNullable(id => Number(id), companyIdParam),
-    applyWhenNotNullable(id => Number(id), getCompanyIdFromSession()),
+    applyWhenNotNullable((id) => Number(id), companyIdParam),
+    applyWhenNotNullable((id) => Number(id), getCompanyIdFromSession()),
   );
 
   const { data: featureFlags } = useFeatureFlagsQuery();
@@ -98,14 +103,9 @@ export const ApplicationStepPage = ({
 
   // Currently onRouteBC only handles TROS and TROW permits, and STOS only if feature flag is enabled
   const isPermitTypeAllowed = () => {
-    const allowedPermitTypes: string[] = enableSTOS ? [
-      PERMIT_TYPES.TROS,
-      PERMIT_TYPES.TROW,
-      PERMIT_TYPES.STOS,
-    ] : [
-      PERMIT_TYPES.TROS,
-      PERMIT_TYPES.TROW,
-    ];
+    const allowedPermitTypes: string[] = enableSTOS
+      ? [PERMIT_TYPES.TROS, PERMIT_TYPES.TROW, PERMIT_TYPES.STOS]
+      : [PERMIT_TYPES.TROS, PERMIT_TYPES.TROW];
 
     return allowedPermitTypes.includes(applicationPermitType);
   };
@@ -117,31 +117,44 @@ export const ApplicationStepPage = ({
       !isInvalidApplication &&
       (!applicationData?.permitStatus ||
         applicationData?.permitStatus === PERMIT_STATUSES.IN_PROGRESS ||
-        applicationData?.permitStatus === PERMIT_STATUSES.IN_QUEUE
-      )
+        applicationData?.permitStatus === PERMIT_STATUSES.IN_QUEUE)
     );
   };
 
   const renderApplicationStep = () => {
     if (applicationStep === APPLICATION_STEPS.REVIEW) {
-      return applicationStepContext === APPLICATION_STEP_CONTEXTS.QUEUE ? (
-        <ApplicationInQueueReview applicationData={contextData.applicationData} />        
-      ) : (
-        <ApplicationReview
-          companyId={companyId}
+      return (
+        <ApplicationReviewNew
+          applicationData={contextData.applicationData}
+          applicationStepContext={applicationStepContext}
         />
       );
+
+      //   return applicationStepContext === APPLICATION_STEP_CONTEXTS.QUEUE ? (
+      //     <ApplicationInQueueReview applicationData={contextData.applicationData} />
+      //   ) : (
+      //     <ApplicationReview
+      //       companyId={companyId}
+      //     />
+      //   );
+      // }
     }
 
     return (
       <ApplicationForm
         permitType={applicationPermitType}
         companyId={companyId}
+        applicationStepContext={applicationStepContext}
       />
     );
   };
 
-  if (isInvalidApplication || !isValidApplicationStatus() || !companyId || !isPermitTypeAllowed()) {
+  if (
+    isInvalidApplication ||
+    !isValidApplicationStatus() ||
+    !companyId ||
+    !isPermitTypeAllowed()
+  ) {
     return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
   }
 
