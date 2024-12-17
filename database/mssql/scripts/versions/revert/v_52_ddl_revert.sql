@@ -219,7 +219,7 @@ GO
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Reverting addition of RECEIPT_ID col to ORBC_TRANSACTION and dropping TRANSACTION_ID from ORBC_RECEIPT.'
 
-INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (50, @VersionDescription, getutcdate())
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (51, @VersionDescription, getutcdate())
 
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
