@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { FormProvider } from "react-hook-form";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useContext, useMemo, useState } from "react";
@@ -46,7 +47,10 @@ import {
 
 import {
   APPLICATIONS_ROUTES,
+  APPLICATION_QUEUE_ROUTES,
   APPLICATION_STEPS,
+  APPLICATION_STEP_CONTEXTS,
+  ApplicationStepContext,
   ERROR_ROUTES,
 } from "../../../../routes/constants";
 
@@ -59,9 +63,11 @@ const FEATURE = "application";
 export const ApplicationForm = ({
   permitType,
   companyId,
+  applicationStepContext,
 }: {
   permitType: PermitType;
   companyId: number;
+  applicationStepContext: ApplicationStepContext;
 }) => {
   // Context to hold all of the application data related to the application
   const applicationContext = useContext(ApplicationContext);
@@ -198,13 +204,17 @@ export const ApplicationForm = ({
     const vehicleData = serializePermitVehicleDetails(
       data.permitData.vehicleDetails,
     );
+    // TODO show UnavailableApplicationModal here
     const savedVehicleDetails = await handleSaveVehicle(vehicleData);
 
     // Save application before continuing
-    await onSaveApplication(
-      (permitId) => navigate(APPLICATIONS_ROUTES.REVIEW(permitId)),
-      savedVehicleDetails,
-    );
+    await onSaveApplication((permitId) => {
+      return navigate(
+        applicationStepContext === APPLICATION_STEP_CONTEXTS.QUEUE
+          ? APPLICATION_QUEUE_ROUTES.REVIEW(companyId, permitId)
+          : APPLICATIONS_ROUTES.REVIEW(permitId),
+      );
+    }, savedVehicleDetails);
   };
 
   const onSaveSuccess = (savedApplication: Application, status: number) => {
@@ -242,7 +252,7 @@ export const ApplicationForm = ({
             },
           },
         };
-
+    // TODO show UnavailableApplicationModal here
     await saveApplication(
       {
         data: applicationToBeSaved,

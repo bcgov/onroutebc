@@ -3,7 +3,6 @@ import { Navigate, useParams } from "react-router-dom";
 import { Banner } from "../../../common/components/dashboard/components/banner/Banner";
 import { Loading } from "../../../common/pages/Loading";
 import { useApplicationDetailsQuery } from "../../permits/hooks/hooks";
-import { ApplicationInQueueReview } from "../components/ApplicationInQueueReview";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -11,6 +10,7 @@ import {
 import { ERROR_ROUTES } from "../../../routes/constants";
 import { deserializeApplicationResponse } from "../../permits/helpers/serialize/deserializeApplication";
 import { UniversalUnexpected } from "../../../common/pages/UniversalUnexpected";
+import { ApplicationInQueueReview } from "../components/ApplicationInQueueReview";
 
 export const ReviewApplicationInQueue = () => {
   const { companyId: companyIdParam, permitId: permitIdParam } = useParams();
