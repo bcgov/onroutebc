@@ -204,6 +204,7 @@ export const ApplicationForm = ({
     const vehicleData = serializePermitVehicleDetails(
       data.permitData.vehicleDetails,
     );
+    // TODO show UnavailableApplicationModal here
     const savedVehicleDetails = await handleSaveVehicle(vehicleData);
 
     // Save application before continuing
@@ -251,7 +252,7 @@ export const ApplicationForm = ({
             },
           },
         };
-
+    // TODO show UnavailableApplicationModal here
     await saveApplication(
       {
         data: applicationToBeSaved,
