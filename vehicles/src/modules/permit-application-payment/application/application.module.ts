@@ -17,6 +17,7 @@ import { PermitLoa } from './entities/permit-loa.entity';
 import { LoaDetail } from 'src/modules/special-auth/entities/loa-detail.entity';
 import { CompanyApplicationValidateController } from './company-application-validate.controller';
 import { ApplicationValidationService } from './application-validation.service';
+import { LoaProfile } from 'src/modules/special-auth/profile/loa.profile';
 
 @Module({
   imports: [
@@ -39,7 +40,12 @@ import { ApplicationValidationService } from './application-validation.service';
     ApplicationController,
     CompanyApplicationValidateController,
   ],
-  providers: [ApplicationService,ApplicationValidationService, ApplicationProfile],
+  providers: [
+    ApplicationService,
+    ApplicationValidationService,
+    ApplicationProfile,
+    LoaProfile,
+  ],
   exports: [ApplicationService, ApplicationValidationService],
 })
 export class ApplicationModule {}

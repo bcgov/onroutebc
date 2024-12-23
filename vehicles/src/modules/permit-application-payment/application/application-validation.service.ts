@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  Logger,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { Brackets, DataSource, In, QueryRunner, Repository } from 'typeorm';
 import { Permit } from '../permit/entities/permit.entity';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
@@ -19,22 +14,41 @@ import {
 } from 'src/common/helper/permit-fee.helper';
 import { PermitHistoryDto } from '../permit/dto/response/permit-history.dto';
 import { SpecialAuth } from 'src/modules/special-auth/entities/special-auth.entity';
-import { isAmendmentApplication, validApplicationDates } from 'src/common/helper/permit-application.helper';
-import { ApplicationDataValidationDto, CartValidationDto, Status } from './dto/response/cart-validation.dto';
-import { Loas, PermitData } from 'src/common/interface/permit.template.interface';
+import {
+  isAmendmentApplication,
+  validApplicationDates,
+} from 'src/common/helper/permit-application.helper';
+import {
+  ApplicationDataValidationDto,
+  CartValidationDto,
+} from './dto/response/cart-validation.dto';
+import {
+  Loas,
+  PermitData,
+} from 'src/common/interface/permit.template.interface';
 import { LoaDetail } from 'src/modules/special-auth/entities/loa-detail.entity';
 import * as dayjs from 'dayjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaymentMethodType } from 'src/common/enum/payment-method-type.enum';
 import { PgApprovesStatus } from 'src/common/enum/pg-approved-status-type.enum';
-
+import { InjectMapper } from '@automapper/nestjs';
+import { Mapper } from '@automapper/core';
+import { ReadLoaDto } from 'src/modules/special-auth/dto/response/read-loa.dto';
+import { PermitType } from 'src/common/enum/permit-type.enum';
+import { convertToHash } from 'src/common/helper/crypto.helper';
+import { todayDate } from 'src/common/helper/date-time.helper';
 
 @Injectable()
 export class ApplicationValidationService {
   private readonly logger = new Logger(ApplicationValidationService.name);
-  private readonly validationDto = new CartValidationDto();
+  private validationDto: CartValidationDto;
+  private applicationDataValidationDto: ApplicationDataValidationDto;
+  private errorCount;
 
-  constructor(private dataSource: DataSource,
+  constructor(
+    private dataSource: DataSource,
+    @InjectMapper() private readonly classMapper: Mapper,
+
     @InjectRepository(LoaDetail)
     private loaDetailRepository: Repository<LoaDetail>,
   ) {}
@@ -44,8 +58,9 @@ export class ApplicationValidationService {
 
     createTransactionDto: CreateTransactionDto,
   ): Promise<CartValidationDto> {
-    this.validationDto.applicationValidationResult=[];
-    let totalTransactionAmountCalculated = 0;
+    this.validationDto = new CartValidationDto();
+    this.errorCount = 0;
+    this.validationDto.applicationValidationResult = [];
     const isCVClientUser: boolean = isCVClient(currentUser.identity_provider);
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -55,133 +70,109 @@ export class ApplicationValidationService {
       createTransactionDto.applicationDetails.map(
         ({ applicationId }) => applicationId,
       );
-
     try {
       const applications: Permit[] = await queryRunner.manager.find(Permit, {
         where: { permitId: In(applicationIds) },
         relations: { permitData: true },
       });
-     try {
-        await this.validateApplicationAndPayment(
-          createTransactionDto,
-          applications,
-          currentUser,
+
+      //Loop to validate each application data for dates, application status, LoA, amount.
+      for (const application of applications) {
+        this.applicationDataValidationDto = new ApplicationDataValidationDto();
+        this.applicationDataValidationDto.errors = [];
+        this.applicationDataValidationDto.applicationNumber =
+          application.applicationNumber;
+
+        /* Check if each application has a valid start date and valid expiry date.
+        ** If an application has invalid dates then push the error to applicationDataValidationDto.error 
+        ** Also validate dates for client only as staff is allowed to work on back dated applications but client is not.*/
+        if (
+          isCVClientUser &&
+          !validApplicationDates(application, TIMEZONE_PACIFIC)
+        ) {
+          this.applicationDataValidationDto.errors.push(
+            'Application dates are invalid.',
+          );
+          this.errorCount += 1;
+        }
+        const transactionAmountCalculated = await this.permitFeeCalculator(
+          application,
           queryRunner,
         );
-      } catch (error) {
-        if (error instanceof BadRequestException) {
-          this.validationDto.status = Status.ERROR;
-          this.validationDto.error = error.message;
-        }
-      }
-      for (const application of applications) {
-        const applicationDataValidationDto = new ApplicationDataValidationDto();
-        applicationDataValidationDto.errors = [];
-        applicationDataValidationDto.applicationNumber = application.applicationNumber;
 
-         //Check if each application has a valid start date and valid expiry date.
-      if (
-        isCVClientUser &&
-        !validApplicationDates(application, TIMEZONE_PACIFIC)
-      ) {
-          applicationDataValidationDto.errors.push('Application in its current status cannot be processed for payment');
-      }
-      totalTransactionAmountCalculated += await this.permitFeeCalculator(
-        application,
-        queryRunner,
-      );
+        /* Check if each application has a valid amount as per its duration and permit type and special authorizations.
+        ** If an application has invalid amount then push the error to applicationDataValidationDto.error*/
+        if (
+          !validAmount(
+            transactionAmountCalculated,
+            createTransactionDto.applicationDetails[
+              createTransactionDto.applicationDetails.findIndex(
+                (a) => a.applicationId == application.permitId,
+              )
+            ].transactionAmount,
+            createTransactionDto.transactionTypeId,
+          )
+        ) {
+          this.applicationDataValidationDto.errors.push(
+            `Transaction amount mismatch`,
+          );
+          this.errorCount += 1;
+        }
+        /* Check if each application is in a valid status.
+        ** If an application has invalid status then push the error to applicationDataValidationDto.error */
         if (
           !(
             this.isVoidorRevoked(application.permitStatus) ||
             this.isApplicationInCart(application.permitStatus) ||
             isAmendmentApplication(application)
           )
-        ){
-          applicationDataValidationDto.errors.push('Application in its current status cannot be processed for payment');
-          this.validationDto.applicationValidationResult.push(applicationDataValidationDto);
+        ) {
+          this.applicationDataValidationDto.errors.push(
+            'Application in its current status cannot be processed for payment',
+          );
+          this.errorCount += 1;
         }
 
         const permitData = JSON.parse(
           application.permitData.permitData,
         ) as PermitData;
-        if (permitData.loas) await this.isValidLoa(application);
+        // If application includes LoAs then validate Loa data.
+        if (permitData.loas) 
+          {
+            await this.isValidLoa(application);
+          }
+        // Add application validation result to CartValidationDto.
+        this.validationDto.applicationValidationResult.push(
+          this.applicationDataValidationDto,
+        );
       }
-      const totalTransactionAmount =
-      createTransactionDto.applicationDetails?.reduce(
-        (accumulator, item) => accumulator + item.transactionAmount,
-        0,
-      );
-    if (
-      !validAmount(
-        totalTransactionAmountCalculated,
-        totalTransactionAmount,
-        createTransactionDto.transactionTypeId,
-      )
-    )
-    this.validationDto.error = `Transaction amount mismatch.calculated ${totalTransactionAmountCalculated} and received ${totalTransactionAmount}`
-      //throw new BadRequestException('Transaction amount mismatch.');
+      // Generate hash if all cart items are valid i.e. do not have any error.
+      if (this.errorCount === 0) {
+        const amount: number[] = createTransactionDto.applicationDetails.map(
+          ({ transactionAmount }) => transactionAmount,
+        );
+        this.generatevalidationHash(applicationIds, amount);
+      }
       return this.validationDto;
     } catch (error) {
-      console.log(error);
+      throw new InternalServerErrorException();
     } finally {
       await queryRunner.release();
     }
   }
-  /**
-   * Validates the payment information in the request against the backend data, calculates the transaction amount,
-   * and checks for transaction type and amount consistency.
-   *
-   * This method first calculates the total transaction amount based on the backend permit data and
-   * compares it with the transaction amount sent in the request to ensure they match. If there's a mismatch, it throws an error.
-   * Additionally, for refund transactions, it checks if the total calculated transaction amount is negative as expected;
-   * if not, it throws an error.
-   *
-   * @param {CreateTransactionDto} createTransactionDto - The DTO containing the transaction details from the request.
-   * @param {Permit[]} applications - A list of permits associated with the transaction.
-   * @param {QueryRunner} nestedQueryRunner - The query runner to use for database operations within the method.
-   * @returns {Promise<number>} The total transaction amount calculated from the backend data.
-   * @throws {BadRequestException} When the transaction amount in the request doesn't match with the calculated amount,
-   * or if there's a transaction type and amount mismatch in case of refunds.
-   */
-  private async validateApplicationAndPayment(
-    createTransactionDto: CreateTransactionDto,
-    applications: Permit[],
-    currentUser: IUserJWT,
-    queryRunner: QueryRunner,
-  ) {
-    let totalTransactionAmountCalculated = 0;
-    const isCVClientUser: boolean = isCVClient(currentUser.identity_provider);
-    // Calculate and add amount for each requested application, as per the available backend data.
-    for (const application of applications) {
-      //Check if each application has a valid start date and valid expiry date.
-      if (
-        isCVClientUser &&
-        !validApplicationDates(application, TIMEZONE_PACIFIC)
-      ) {
-        throw new UnprocessableEntityException(
-          `Atleast one of the application has invalid startDate or expiryDate.`,
-        );
-      }
-      totalTransactionAmountCalculated += await this.permitFeeCalculator(
-        application,
-        queryRunner,
-      );
-    }
-    const totalTransactionAmount =
-      createTransactionDto.applicationDetails?.reduce(
-        (accumulator, item) => accumulator + item.transactionAmount,
-        0,
-      );
-    if (
-      !validAmount(
-        totalTransactionAmountCalculated,
-        totalTransactionAmount,
-        createTransactionDto.transactionTypeId,
-      )
-    )
-    this.validationDto.error = `Transaction amount mismatch.calculated ${totalTransactionAmountCalculated} and received ${totalTransactionAmount}`
-      //throw new BadRequestException('Transaction amount mismatch.');
-    return totalTransactionAmount;
+  generatevalidationHash(applicationIds: string[], amount: number[]): void {
+    const date = new Date();
+    const hash =
+      applicationIds.join() +
+      amount.join() +
+      date.toString() +
+      todayDate() +
+      process.env.VALIDATION_HASH_SALT;
+    this.validationDto.validationDateTime = date;
+    this.validationDto.hash = convertToHash(
+      hash,
+      process.env.VALIDATION_HASH_ALGOROTHM,
+    );
   }
   /**
    * Calculates the permit fee based on the application status, historical payments, and current permit data.
@@ -288,151 +279,145 @@ export class ApplicationValidationService {
   async isValidLoa(permit: Permit): Promise<void> {
     const { companyId } = permit.company;
     const permitData = JSON.parse(permit.permitData.permitData) as PermitData;
-    const { vehicleId: permitVehicleId, vehicleType: permitVehicleType } = permitData.vehicleDetails;
-    const loaIds = permitData.loas.map((loa) => loa.loaId);
-  
-    const loaDetails = await this.findLoasByIds(companyId, loaIds);
-  
+    const { vehicleId: permitVehicleId, vehicleType: permitVehicleType } =
+      permitData.vehicleDetails;
+    const loaNumbers = permitData.loas.map((loa) => loa.loaNumber);
+    const readLoaDto = await this.findLoas(companyId, loaNumbers);
+
     // Validate LOA details and permit data against database entries
-    //const loaValidationDto = 
     this.validateLoaDetails(
-      loaDetails,
+      readLoaDto,
       permit,
       permitVehicleId,
       permitVehicleType,
     );
-  
-    //this.mergeValidationResults(loaValidationDto);
-  
-    //const permitValidationDto =
-     this.validatePermitDataAgainstLoas(
+
+    // validate LoA snapshot in permit Data
+    this.validatePermitDataAgainstLoas(
       permitData,
       permit,
       permitVehicleId,
       permitVehicleType,
     );
-  
-  //  this.mergeValidationResults(permitValidationDto);
-  }
-  private mergeValidationResults(applicationValidationDto: ApplicationDataValidationDto): void {
-    const existingValidationResult = this.validationDto?.applicationValidationResult?.find(
-      (dto) => dto.applicationNumber === applicationValidationDto.applicationNumber,
-    );
-  
-    if (existingValidationResult) {
-      // Merge errors if the validation DTO already exists
-      if (applicationValidationDto.errors) {
-        existingValidationResult.errors.push(...applicationValidationDto.errors);
-      }
-    } else {
-      // If no matching DTO is found, add it to the results
-      this.validationDto?.applicationValidationResult?.push(applicationValidationDto);
-    }
   }
   private validateLoaDetails(
-    loaDetails: LoaDetail[],
+    readLoaDtos: ReadLoaDto[],
     permit: Permit,
     permitVehicleId: string,
     permitVehicleType: string,
   ) {
-    const applicationDataValidationDto = new ApplicationDataValidationDto();
-    applicationDataValidationDto.applicationNumber = permit.applicationNumber;
-    for (const loaDetail of loaDetails) {
-      const allowedPowerUnits: string []= [];
-      const allowedTrailers: string []= [];
-      const allowedPermitTypes: string []= [];
-      this.collectAllowedVehiclesAndPermitTypes(loaDetail, allowedPowerUnits, allowedTrailers, allowedPermitTypes);
-      if (!this.isValidDateForLoa(loaDetail, permit)) {
-        applicationDataValidationDto.errors.push('LoA with invalid date(s).')
+    for (const readLoaDto of readLoaDtos) {
+      const loaPowerUnits = readLoaDto.powerUnits;
+      const loaTrailers = readLoaDto.trailers;
+      const loaPermitTypes = readLoaDto.loaPermitType;
+      if (!this.isValidDateForLoa(readLoaDto, permit)) {
+        this.applicationDataValidationDto.errors.push(
+          'LoA with invalid date(s).',
+        );
+        this.errorCount += 1;
       }
-      if(!this.isVehicleTypeValid(permitVehicleType, permitVehicleId, allowedPowerUnits, allowedTrailers)){
-        applicationDataValidationDto.errors.push('LoA with invalid vehicle(s).')
-  
-       }
-        if(!this.isPermitTypeValid(permit.permitType, allowedPermitTypes)){
-          applicationDataValidationDto.errors.push('LoA snapshot with invalid permitType.')
-        }
+      if (
+        !this.isVehicleTypeValid(
+          permitVehicleType,
+          permitVehicleId,
+          loaPowerUnits,
+          loaTrailers,
+        )
+      ) {
+        this.applicationDataValidationDto.errors.push(
+          'LoA with invalid vehicle(s).',
+        );
+        this.errorCount += 1;
+      }
+      if (!this.isPermitTypeValid(permit.permitType, loaPermitTypes)) {
+        this.applicationDataValidationDto.errors.push(
+          'LoA with invalid permitType.',
+        );
+        this.errorCount += 1;
+      }
     }
-    this.validationDto.applicationValidationResult.push(applicationDataValidationDto);
   }
-  
+
   private validatePermitDataAgainstLoas(
     permitData: PermitData,
     permit: Permit,
     permitVehicleId: string,
     permitVehicleType: string,
-  ){
-    const permitLoaPowerUnits: string []= []
-    const permitLoaTrailers: string []= []
-    const permitTypesLoa: string []= []
-    const applicationDataValidationDto = new ApplicationDataValidationDto();
-    applicationDataValidationDto.applicationNumber = permit.applicationNumber;
-  
+  ) {
     for (const loa of permitData.loas) {
-      permitLoaPowerUnits.push(...loa.powerUnits);
-      permitLoaTrailers.push(...loa.trailers);
-      permitTypesLoa.push(...loa.loaPermitType);
+      const permitLoaPowerUnits = loa.powerUnits;
+      const permitLoaTrailers = loa.trailers;
+      const permitTypesLoa = loa.loaPermitType;
       if (!this.isValidDateForLoa(loa, permit)) {
-
-        applicationDataValidationDto.errors.push('Application has and LoA snapshot with invalid date(s).')
+        this.applicationDataValidationDto.errors.push(
+          'Application has an LoA snapshot with invalid date(s).',
+        );
+        this.errorCount += 1;
       }
-  
-     if(!this.isVehicleTypeValid(permitVehicleType, permitVehicleId, permitLoaPowerUnits, permitLoaTrailers)){
-      applicationDataValidationDto.errors.push('Application has and LoA snapshot with invalid vehicle(s).')
 
-     }
-      if(!this.isPermitTypeValid(permit.permitType, permitTypesLoa)){
-        applicationDataValidationDto.errors.push('Application has and LoA snapshot with invalid permitType.')
+      if (
+        !this.isVehicleTypeValid(
+          permitVehicleType,
+          permitVehicleId,
+          permitLoaPowerUnits,
+          permitLoaTrailers,
+        )
+      ) {
+        this.applicationDataValidationDto.errors.push(
+          'Application has an LoA snapshot with invalid vehicle(s).',
+        );
+        this.errorCount += 1;
+      }
+      if (!this.isPermitTypeValid(permit.permitType, permitTypesLoa)) {
+        this.applicationDataValidationDto.errors.push(
+          'Application has an LoA snapshot with invalid permitType.',
+        );
+        this.errorCount += 1;
       }
     }
-    this.validationDto.applicationValidationResult.push(applicationDataValidationDto);
   }
-  
+
   private isVehicleTypeValid(
     permitVehicleType: string,
     permitVehicleId: string,
-    allowedPowerUnits: string[],
-    allowedTrailers: string[],
+    powerUnits?: string[],
+    trailers?: string[],
   ): boolean {
-    const isPowerUnitAllowed = permitVehicleType === 'powerUnit' 
-      ? allowedPowerUnits.includes(permitVehicleId) 
-      : true;
-  
-    const isTrailerAllowed = permitVehicleType === 'trailer' 
-      ? allowedTrailers.includes(permitVehicleId) 
-      : true;
-  
+    const isPowerUnitAllowed =
+      permitVehicleType === 'powerUnit'
+        ? powerUnits.includes(permitVehicleId)
+        : true;
+
+    const isTrailerAllowed =
+      permitVehicleType === 'trailer'
+        ? trailers.includes(permitVehicleId)
+        : true;
+
     return isPowerUnitAllowed && isTrailerAllowed;
   }
-  
-  private isPermitTypeValid(permitType: string, allowedPermitTypes: string[]): boolean {
-    return allowedPermitTypes.includes(permitType)
+
+  private isPermitTypeValid(
+    permitTypePermit: PermitType,
+    permitType: PermitType[],
+  ): boolean {
+    return permitType.includes(permitTypePermit);
   }
-  
-  private isValidDateForLoa(loaDetail: Loas| LoaDetail, permit: Permit): boolean {
+
+  private isValidDateForLoa(
+    loaDetail: Loas | ReadLoaDto,
+    permit: Permit,
+  ): boolean {
     const { startDate, expiryDate } = loaDetail;
-    const { startDate: permitStartDate, expiryDate: permitExpiryDate } = permit.permitData;
-  
-    return dayjs(startDate).isBefore(permitStartDate, 'day') &&
-      (expiryDate ? dayjs(expiryDate).isAfter(permitExpiryDate, 'day') : true);
+    const { startDate: permitStartDate, expiryDate: permitExpiryDate } =
+      permit.permitData;
+
+    return (
+      dayjs(startDate).isBefore(permitStartDate, 'day') &&
+      (expiryDate ? dayjs(expiryDate).isAfter(permitExpiryDate, 'day') : true)
+    );
   }
-  
-  private collectAllowedVehiclesAndPermitTypes(
-    loaDetail: LoaDetail,
-    allowedPowerUnits: string[],
-    allowedTrailers: string[],
-    allowedPermitTypes: string[],
-  ): void {
-    for (const loaVehicle of loaDetail.loaVehicles) {
-      if (loaVehicle.powerUnit) allowedPowerUnits.includes(loaVehicle.powerUnit);
-      if (loaVehicle.trailer) allowedTrailers.includes(loaVehicle.trailer);
-    }
-    for (const loaPermitType of loaDetail.loaPermitTypes) {
-      allowedPermitTypes.includes(loaPermitType.permitType);
-    }
-  }
-  
-    /**
+
+  /**
    * Retrieves a single LOA (Letter of Authorization) detail for a specified company.
    *
    * Steps:
@@ -445,70 +430,31 @@ export class ApplicationValidationService {
    * @returns {Promise<LoaDetail>} - Returns a Promise that resolves to the LOA detail.
    */
   @LogAsyncMethodExecution()
-  async findLoasByIds(
+  async findLoas(
     companyId: number,
-    loaIds: number[],
-  ): Promise<LoaDetail[]> {
+    loaNumbers: number[],
+  ): Promise<ReadLoaDto[]> {
     // Fetch initial active LOA details
     const loaDetails = await this.loaDetailRepository.find({
       where: {
-        loaId: In(loaIds),
+        loaNumber: In(loaNumbers),
         isActive: true,
         company: { companyId },
       },
       relations: ['company', 'loaVehicles', 'loaPermitTypes'],
     });
-  
-    // Handle cases where LOA details may need replacements
-    const updatedLoaDetails = await this.validateAndUpdateLoaDetails(
+
+    const readLoaDto = await this.classMapper.mapArrayAsync(
       loaDetails,
-      companyId,
-    );
-  
-    return updatedLoaDetails;
-  }
-  
-  private async validateAndUpdateLoaDetails(
-    loaDetails: LoaDetail[],
-    companyId: number,
-  ): Promise<LoaDetail[]> {
-    const updatedLoas: LoaDetail[] = [];
-  
-    for (const loaDetail of loaDetails) {
-      if (!loaDetail.isActive) {
-        const replacementLoa = await this.findActiveReplacementLoa(
-          loaDetail,
-          companyId,
-        );
-  
-        if (replacementLoa) {
-          updatedLoas.push(replacementLoa);
-        }
-      } else {
-        updatedLoas.push(loaDetail);
-      }
-    }
-  
-    return updatedLoas;
-  }
-  
-  private async findActiveReplacementLoa(
-    loaDetail: LoaDetail,
-    companyId: number,
-  ): Promise<LoaDetail | null> {
-    const loa = await this.loaDetailRepository.findOne({
-      where: {
-        loaNumber: loaDetail.loaNumber,
-        isActive: true,
-        company: { companyId },
+      LoaDetail,
+      ReadLoaDto,
+      {
+        extraArgs: () => ({ companyId: companyId }),
       },
-      relations: ['company', 'loaVehicles', 'loaPermitTypes'],
-    });
-  
-    return loa || null;
+    );
+    return readLoaDto;
   }
 
-  
   private isApplicationInCart(permitStatus: ApplicationStatus) {
     return permitStatus === ApplicationStatus.IN_CART;
   }
@@ -519,5 +465,4 @@ export class ApplicationValidationService {
       permitStatus === ApplicationStatus.REVOKED
     );
   }
-  
 }

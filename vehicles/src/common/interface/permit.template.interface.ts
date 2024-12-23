@@ -116,11 +116,11 @@ interface Commodities {
 
 export interface Loas {
   loaId: number;
-  loaNumber: string;
+  loaNumber: number;
   checked: boolean;
   loaPermitType: PermitType[];
-  startDate: string,
-  expiryDate?: string,
+  startDate: string;
+  expiryDate?: string;
   powerUnits?: string[];
   trailers?: string[];
   disabled?: boolean;

@@ -1,18 +1,13 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsEnum, IsString, ValidateNested } from 'class-validator';
-
-export enum Status {
-  SUCCESS = 'Success',
-  ERROR = 'Error',
-}
+import { IsArray, IsDate, IsString, ValidateNested } from 'class-validator';
 
 // Validation DTO
 export class CartValidationDto {
-  @IsEnum(Status)
-  status: Status;
-
   @IsString()
-  error: string;
+  hash: string;
+
+  @IsDate()
+  validationDateTime: Date;
 
   @IsArray()
   @ValidateNested({ each: true })

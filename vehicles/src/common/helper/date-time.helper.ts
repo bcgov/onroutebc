@@ -3,6 +3,7 @@ import * as utc from 'dayjs/plugin/utc';
 import * as timezone from 'dayjs/plugin/timezone';
 import * as duration from 'dayjs/plugin/duration';
 import { DurationDifference } from '../interface/duration-difference.interface';
+import { TIMEZONE_PACIFIC } from '../constants/api.constant';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -57,4 +58,10 @@ export const getDuration = ({
   unit = 'days',
 }: DurationDifference): duration.Duration => {
   return dayjs.duration(maxDiff, unit);
+};
+
+export const todayDate = (): string => {
+  const todayUTC = dayjs(new Date());
+  const todayPacific = todayUTC.tz(TIMEZONE_PACIFIC).format('YYYY-MM-DD');
+  return todayPacific;
 };
