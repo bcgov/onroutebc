@@ -1035,7 +1035,6 @@ export class PaymentService {
         extraArgs: () => ({ companyId: companyId }),
       },
     );
-    console.log('ReadLoaDto: ', readLoaDto);
     return readLoaDto;
   }
 }
