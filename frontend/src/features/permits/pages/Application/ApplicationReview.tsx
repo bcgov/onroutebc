@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useContext, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
@@ -115,6 +116,7 @@ export const ApplicationReview = ({
   const {
     mutateAsync: updateApplication,
     data: updateApplicationResponse,
+    error: updateApplicationError,
     isPending: updateApplicationMutationPending,
   } = useUpdateApplicationInQueueStatus();
 
@@ -274,18 +276,28 @@ export const ApplicationReview = ({
     navigate(IDIR_ROUTES.STAFF_HOME);
   };
 
+  const handleCloseUnavailableApplicationModal = () => {
+    setShowUnavailableApplicationModal(false);
+    showRejectApplicationModal && setShowRejectApplicationModal(false);
+  };
+
   useEffect(() => {
     if (updateApplicationResponseStatus === 201) {
       navigate(IDIR_ROUTES.STAFF_HOME);
     }
-    if (updateApplicationResponseStatus === 422) {
-      // TODO since I do not have access to two separate IDIR accounts, this will need to be checked in test environment
+  }, [updateApplicationResponse, updateApplicationResponseStatus, navigate]);
+
+  const updateApplicationErrorStatus = updateApplicationError?.response?.status;
+
+  useEffect(() => {
+    if (updateApplicationErrorStatus === 422) {
       setCurrentClaimant(
-        updateApplicationResponse?.data.error[0].additionalInfo.currentClaimant,
+        updateApplicationError.response.data.error[0].additionalInfo
+          .currentClaimant,
       );
       setShowUnavailableApplicationModal(true);
     }
-  }, [updateApplicationResponse, navigate]);
+  }, [updateApplicationError]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -377,7 +389,7 @@ export const ApplicationReview = ({
       {isQueueContext && showUnavailableApplicationModal && (
         <UnavailableApplicationModal
           showModal={showUnavailableApplicationModal}
-          onCancel={() => setShowUnavailableApplicationModal(false)}
+          onCancel={handleCloseUnavailableApplicationModal}
           onConfirm={handleCloseApplication}
           currentClaimant={currentClaimant}
         />

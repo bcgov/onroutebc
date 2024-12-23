@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { FormProvider } from "react-hook-form";
 import { Navigate, useNavigate } from "react-router-dom";
-import { useContext, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
 import { isAxiosError } from "axios";
 
@@ -131,7 +131,8 @@ export const ApplicationForm = ({
     applicationContext?.applicationData?.updatedDateTime,
   );
 
-  const { mutateAsync: saveApplication } = useSaveApplicationMutation();
+  const { mutateAsync: saveApplication, error: saveApplicationError } =
+    useSaveApplicationMutation();
   const snackBar = useContext(SnackBarContext);
 
   // Show leave application dialog
@@ -359,6 +360,23 @@ export const ApplicationForm = ({
 
   if (isUndefined(policyEngine)) return <Loading />;
   if (isNull(policyEngine)) return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
+
+  // TODO we will need to handle errors when attempting to save an application which has been claimed by another user
+  // once the BE is updated to handle this
+  const [currentClaimant, setCurrentClaimant] = useState<string>("");
+
+  // const saveApplicationErrorStatus = saveApplicationError?.response?.status;
+
+  useEffect(() => {
+    console.log({ saveApplicationError });
+    // if (saveApplicationErrorStatus === 422) {
+    //   setCurrentClaimant(
+    //     saveApplicationError.response.data.error[0].additionalInfo
+    //       .currentClaimant,
+    //   );
+    //   setShowUnavailableApplicationModal(true);
+    // }
+  }, [saveApplicationError]);
 
   return (
     <div className="application-form">
