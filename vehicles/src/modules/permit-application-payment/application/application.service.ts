@@ -1096,6 +1096,10 @@ export class ApplicationService {
         Permit,
         { permitId: applicationId },
         {
+          issuer:
+            caseActivityType === CaseActivityType.APPROVED
+              ? { userGUID: currentUser.userGUID }
+              : null,
           permitStatus:
             caseActivityType === CaseActivityType.APPROVED
               ? ApplicationStatus.IN_CART
