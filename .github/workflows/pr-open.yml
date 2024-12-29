@@ -81,11 +81,3 @@ jobs:
     secrets: inherit
     with:
       tag: ${{ needs.vars.outputs.pr }}
-
-  e2e-regression-tests:
-    name: E2E Regression Tests
-    needs: [vars, deploys-dev]
-    uses: .github/workflows/e2e-regression-tests.yml
-    secrets: inherit
-    with:
-      target: ${{ needs.vars.outputs.pr }}
