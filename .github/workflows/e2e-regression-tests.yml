@@ -94,14 +94,14 @@ jobs:
           working-directory: tests
 
       - uses: actions/upload-artifact@v4
-        if: failure() || ${{inputs.show_artifact}}
+        if: failure() || inputs.show_artifact
         with:
           name: ${{matrix.test}}-${{matrix.browser}} screenshot
           path: tests/cypress/screenshots/
           if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
       
       - uses: actions/upload-artifact@v4
-        if: failure() || ${{inputs.show_artifact}}
+        if: failure() || inputs.show_artifact
         with:
           name: ${{matrix.test}}-${{matrix.browser}} video
           path: tests/cypress/videos/
