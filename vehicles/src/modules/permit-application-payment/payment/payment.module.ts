@@ -11,7 +11,6 @@ import { PaymentMethodType } from './entities/payment-method-type.entity';
 import { PaymentReportService } from './payment-report.service';
 import { Permit } from '../permit/entities/permit.entity';
 import { CfsTransactionDetail } from './entities/cfs-transaction.entity';
-import { LoaDetail } from 'src/modules/special-auth/entities/loa-detail.entity';
 
 @Module({
   imports: [
@@ -23,7 +22,6 @@ import { LoaDetail } from 'src/modules/special-auth/entities/loa-detail.entity';
       PaymentCardType,
       PaymentMethodType,
       CfsTransactionDetail,
-      LoaDetail,
     ]),
   ],
   controllers: [PaymentController],
