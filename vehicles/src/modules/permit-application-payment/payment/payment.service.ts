@@ -50,6 +50,8 @@ import {
   throwUnprocessableEntityException,
 } from '../../../common/helper/exception.helper';
 import { isFeatureEnabled } from '../../../common/helper/common.helper';
+import { PermitData } from 'src/common/interface/permit.template.interface';
+import { isValidLoa } from 'src/common/helper/validate-loa.helper';
 
 @Injectable()
 export class PaymentService {
@@ -308,6 +310,13 @@ export class PaymentService {
           throw new BadRequestException(
             'Application in its current status cannot be processed for payment.',
           );
+        const permitData = JSON.parse(
+          application.permitData.permitData,
+        ) as PermitData;
+        // If application includes LoAs then validate Loa data.
+        if (permitData.loas) {
+          await isValidLoa(application, queryRunner, this.classMapper);
+        }
       }
       const totalTransactionAmount = createTransactionDto.applicationDetails
         ?.reduce((accumulator, item) => accumulator + item.transactionAmount, 0)
