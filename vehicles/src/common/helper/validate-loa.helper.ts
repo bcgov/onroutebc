@@ -177,7 +177,7 @@ export const validatePermitDataAgainstLoas = (
  * 3. Includes relations (company, loaVehicles, loaPermitTypes) in the query.
  *
  * @param {number} companyId - ID of the company for which to fetch the LOA detail.
- * @param {number} loaId - ID of the LOA to be fetched.
+ * @param {number} loaNumber - Number of the LOA to be fetched.
  * @returns {Promise<LoaDetail>} - Returns a Promise that resolves to the LOA detail.
  */
 export const findLoas = async (
