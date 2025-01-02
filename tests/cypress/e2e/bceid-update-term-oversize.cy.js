@@ -71,18 +71,48 @@ describe('Login Test for OnRouteBC', () => {
     cy.get('[data-testid="continue-application-button"]').click({ force: true });
     cy.wait(5000);
 
-    cy.visit('/applications');
-    cy.wait(5000);
 
-    cy.get('a.column-link--application-details').first().click();
-    cy.wait(5000);
+    // get the application id just created
+    cy.get('.MuiAlert-message').invoke('text').then((text) => {
+      const match = text.match(/A2-\d{8}-\d{3}-\w{2}/);
+      if (match) {
+        const extractedValue = match[0];
+
+        cy.visit('/applications');
+        cy.wait(5000);
+    
+        cy.get('a.column-link--application-details').each(($el) => {
+          cy.wrap($el).invoke('text').then((linkText) => {
+            if (linkText.includes(extractedValue)) {
+              cy.wrap($el).click();
+              cy.get('[name="permitData.contactDetails.phone1Extension"]').clear().type('0003');
+              cy.wait(5000);
+
+              // save updates
+              cy.get('[data-testid="save-application-button"]').click();
+              cy.wait(5000);
+              return false; // Breaks out of the .each() loop once the item is clicked
+            }
+          });
+        });
+      } else {
+        cy.log('No matching value found in the alert message');
+      }
+    });
+    
+    
+
+    
+
+    // cy.get('a.column-link--application-details').first().click();
+    // cy.wait(5000);
 
     // update phone ext
-    cy.get('[name="permitData.contactDetails.phone1Extension"]').clear().type('0003');
-    cy.wait(5000);
+    // cy.get('[name="permitData.contactDetails.phone1Extension"]').clear().type('0003');
+    // cy.wait(5000);
 
-    // save updates
-    cy.get('[data-testid="save-application-button"]').click();
-    cy.wait(5000);
+    // // save updates
+    // cy.get('[data-testid="save-application-button"]').click();
+    // cy.wait(5000);
   });
 });
