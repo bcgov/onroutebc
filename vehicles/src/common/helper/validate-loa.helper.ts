@@ -3,11 +3,16 @@ import { PermitType } from '../enum/permit-type.enum';
 import { Loas, PermitData } from '../interface/permit.template.interface';
 import { Permit } from 'src/modules/permit-application-payment/permit/entities/permit.entity';
 import * as dayjs from 'dayjs';
+import * as isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import * as isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+
 import { In, QueryRunner } from 'typeorm';
 import { LoaDetail } from 'src/modules/special-auth/entities/loa-detail.entity';
 import { Mapper } from '@automapper/core';
 import { UnprocessableEntityException } from '@nestjs/common';
 
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
 export const isVehicleTypeValid = (
   permitVehicleType: string,
   permitVehicleId: string,
@@ -49,10 +54,7 @@ export const isStartDateValid = (
   startDate: string,
   permitStartDate: string,
 ): boolean => {
-  return (
-    dayjs(startDate).isBefore(permitStartDate, 'day') ||
-    dayjs(startDate).isSame(permitStartDate, 'day')
-  );
+  return dayjs(startDate).isSameOrBefore(permitStartDate, 'day');
 };
 
 export const isEndDateValid = (
@@ -60,8 +62,7 @@ export const isEndDateValid = (
   permitExpiryDate: string,
 ): boolean => {
   return expiryDate
-    ? dayjs(expiryDate).isAfter(permitExpiryDate, 'day') ||
-        dayjs(expiryDate).isSame(permitExpiryDate, 'day')
+    ? dayjs(expiryDate).isSameOrAfter(permitExpiryDate, 'day')
     : true;
 };
 export const isValidLoa = async (
@@ -107,7 +108,6 @@ export const validateLoaDetails = (
       loaPermitType: loaPermitTypes,
     } = readLoaDto;
     if (!isValidDateForLoa(readLoaDto, permit)) {
-      console.log('ReadLoADetails: ', readLoaDto);
       throw new UnprocessableEntityException(
         `${permit.applicationNumber} has LoA with invalid date(s).`,
       );
@@ -143,9 +143,6 @@ export const validatePermitDataAgainstLoas = (
     const permitLoaTrailers = loa.trailers;
     const permitTypesLoa = loa.loaPermitType;
     if (!isValidDateForLoa(loa, permit)) {
-      console.log('loa: ', loa);
-      console.log('permit: ', permit);
-
       throw new UnprocessableEntityException(
         `${permit.applicationNumber} has LoA snapshot with invalid date(s).`,
       );
@@ -180,7 +177,7 @@ export const validatePermitDataAgainstLoas = (
  * 3. Includes relations (company, loaVehicles, loaPermitTypes) in the query.
  *
  * @param {number} companyId - ID of the company for which to fetch the LOA detail.
- * @param {number} loaId - ID of the LOA to be fetched.
+ * @param {number} loaNumber - Number of the LOA to be fetched.
  * @returns {Promise<LoaDetail>} - Returns a Promise that resolves to the LOA detail.
  */
 export const findLoas = async (
