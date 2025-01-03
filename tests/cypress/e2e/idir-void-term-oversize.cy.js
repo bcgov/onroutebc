@@ -38,7 +38,10 @@ describe('Login Test for OnRouteBC', () => {
     cy.get('.search-by__search').click();
     cy.wait(wait_time);
 
-    cy.xpath("//button[text()='Test Transport Inc.']").click();
+    // cy.xpath("//button[text()='Test Transport Inc.']").click();
+    cy.get('button.MuiTypography-root.MuiTypography-body2.MuiLink-root.MuiLink-underlineAlways.MuiLink-button.custom-action-link.css-mn35dv')
+      .first()
+      .click();
     cy.wait(wait_time);
 
     cy.xpath("//div[@class='tab__label' and text()='Active Permits']").click();
