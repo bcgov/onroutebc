@@ -109,7 +109,7 @@ export const validateLoaDetails = (
     } = readLoaDto;
     if (!isValidDateForLoa(readLoaDto, permit)) {
       throw new UnprocessableEntityException(
-        `${permit.applicationNumber} has LoA with invalid date(s).`,
+        `${permit.applicationNumber} has LoA ${readLoaDto.loaNumber} with invalid date(s).`,
       );
     }
     if (
@@ -121,12 +121,12 @@ export const validateLoaDetails = (
       )
     ) {
       throw new UnprocessableEntityException(
-        `${permit.applicationNumber} has LoA with invalid vehicle(s).`,
+        `${permit.applicationNumber} has LoA ${readLoaDto.loaNumber} with invalid vehicle(s).`,
       );
     }
     if (!isPermitTypeValid(permit.permitType, loaPermitTypes)) {
       throw new UnprocessableEntityException(
-        `${permit.applicationNumber} ha LoA with invalid permitType.`,
+        `${permit.applicationNumber} has LoA ${readLoaDto.loaNumber} with invalid permitType.`,
       );
     }
   }
@@ -144,7 +144,7 @@ export const validatePermitDataAgainstLoas = (
     const permitTypesLoa = loa.loaPermitType;
     if (!isValidDateForLoa(loa, permit)) {
       throw new UnprocessableEntityException(
-        `${permit.applicationNumber} has LoA snapshot with invalid date(s).`,
+        `${permit.applicationNumber} has LoA ${loa.loaNumber} snapshot with invalid date(s).`,
       );
     }
 
@@ -157,12 +157,12 @@ export const validatePermitDataAgainstLoas = (
       )
     ) {
       throw new UnprocessableEntityException(
-        `${permit.applicationNumber} has LoA snapshot with invalid vehicle(s).`,
+        `${permit.applicationNumber} has LoA ${loa.loaNumber}  snapshot with invalid vehicle(s).`,
       );
     }
     if (!isPermitTypeValid(permit.permitType, permitTypesLoa)) {
       throw new UnprocessableEntityException(
-        `${permit.applicationNumber} has LoA snapshot with invalid permitType.`,
+        `${permit.applicationNumber} has LoA ${loa.loaNumber} snapshot with invalid permitType.`,
       );
     }
   }
