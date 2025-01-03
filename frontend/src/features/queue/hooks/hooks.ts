@@ -1,6 +1,5 @@
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { AxiosError } from "axios";
 import { MRT_PaginationState, MRT_SortingState } from "material-react-table";
 import {
   keepPreviousData,
@@ -16,7 +15,10 @@ import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
 import { IDIRUserRoleType } from "../../../common/authentication/types";
 import { Nullable } from "../../../common/types/common";
 import { useTableControls } from "../../permits/hooks/useTableControls";
-import { APPLICATION_QUEUE_STATUSES, ApplicationQueueStatus } from "../types/ApplicationQueueStatus";
+import {
+  APPLICATION_QUEUE_STATUSES,
+  ApplicationQueueStatus,
+} from "../types/ApplicationQueueStatus";
 import {
   claimApplicationInQueue,
   getApplicationsInQueue,
@@ -33,23 +35,19 @@ const QUEUE_QUERY_KEYS_BASE = "queue";
  *
  * eg. ["queue"] and ["queue", undefined] refers to all (ApplicationQueueStatus) queue items
  * (regardless of pagination and sorting)
- * 
+ *
  * eg. ["queue", "IN_REVIEW"] only refers to "IN_REVIEW" queue items
  */
 const QUEUE_QUERY_KEYS = {
   ALL_ITEMS: [QUEUE_QUERY_KEYS_BASE] as const,
-  WITH_STATUS: (status?: ApplicationQueueStatus) => [
-    ...QUEUE_QUERY_KEYS.ALL_ITEMS,
-    status,
-  ] as const,
+  WITH_STATUS: (status?: ApplicationQueueStatus) =>
+    [...QUEUE_QUERY_KEYS.ALL_ITEMS, status] as const,
   WITH_PAGINATION: (
     pagination: MRT_PaginationState,
     sorting: MRT_SortingState,
     status?: ApplicationQueueStatus,
-  ) => [
-    ...QUEUE_QUERY_KEYS.WITH_STATUS(status),
-    { pagination, sorting },
-  ] as const,
+  ) =>
+    [...QUEUE_QUERY_KEYS.WITH_STATUS(status), { pagination, sorting }] as const,
 };
 
 /**
@@ -195,8 +193,9 @@ export const useUpdateApplicationInQueueStatus = () => {
     onSuccess: () => {
       invalidate();
     },
-    onError: (err: AxiosError) => {
+    onError: (err: any) => {
       if (err.response?.status === 422) {
+        // console.log({ err });
         return err;
       } else {
         navigate(ERROR_ROUTES.UNEXPECTED, {
@@ -215,14 +214,8 @@ export const useSubmitApplicationForReview = () => {
   const { invalidate } = useInvalidateApplicationsInQueue();
 
   return useMutation({
-    mutationFn: async (data: {
-      companyId: number;
-      applicationId: string;
-    }) => {
-      return submitApplicationForReview(
-        data.companyId,
-        data.applicationId,
-      );
+    mutationFn: async (data: { companyId: number; applicationId: string }) => {
+      return submitApplicationForReview(data.companyId, data.applicationId);
     },
     onSuccess: () => {
       invalidate();

@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { FormProvider } from "react-hook-form";
 import { Navigate, useNavigate } from "react-router-dom";
-import { useContext, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
 import { isAxiosError } from "axios";
 
@@ -46,7 +47,10 @@ import {
 
 import {
   APPLICATIONS_ROUTES,
+  APPLICATION_QUEUE_ROUTES,
   APPLICATION_STEPS,
+  APPLICATION_STEP_CONTEXTS,
+  ApplicationStepContext,
   ERROR_ROUTES,
 } from "../../../../routes/constants";
 
@@ -59,9 +63,11 @@ const FEATURE = "application";
 export const ApplicationForm = ({
   permitType,
   companyId,
+  applicationStepContext,
 }: {
   permitType: PermitType;
   companyId: number;
+  applicationStepContext: ApplicationStepContext;
 }) => {
   // Context to hold all of the application data related to the application
   const applicationContext = useContext(ApplicationContext);
@@ -125,7 +131,8 @@ export const ApplicationForm = ({
     applicationContext?.applicationData?.updatedDateTime,
   );
 
-  const { mutateAsync: saveApplication } = useSaveApplicationMutation();
+  const { mutateAsync: saveApplication, error: saveApplicationError } =
+    useSaveApplicationMutation();
   const snackBar = useContext(SnackBarContext);
 
   // Show leave application dialog
@@ -198,13 +205,17 @@ export const ApplicationForm = ({
     const vehicleData = serializePermitVehicleDetails(
       data.permitData.vehicleDetails,
     );
+    // TODO show UnavailableApplicationModal here
     const savedVehicleDetails = await handleSaveVehicle(vehicleData);
 
     // Save application before continuing
-    await onSaveApplication(
-      (permitId) => navigate(APPLICATIONS_ROUTES.REVIEW(permitId)),
-      savedVehicleDetails,
-    );
+    await onSaveApplication((permitId) => {
+      return navigate(
+        applicationStepContext === APPLICATION_STEP_CONTEXTS.QUEUE
+          ? APPLICATION_QUEUE_ROUTES.REVIEW(companyId, permitId)
+          : APPLICATIONS_ROUTES.REVIEW(permitId),
+      );
+    }, savedVehicleDetails);
   };
 
   const onSaveSuccess = (savedApplication: Application, status: number) => {
@@ -242,7 +253,7 @@ export const ApplicationForm = ({
             },
           },
         };
-
+    // TODO show UnavailableApplicationModal here
     await saveApplication(
       {
         data: applicationToBeSaved,
@@ -349,6 +360,23 @@ export const ApplicationForm = ({
 
   if (isUndefined(policyEngine)) return <Loading />;
   if (isNull(policyEngine)) return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
+
+  // TODO we will need to handle errors when attempting to save an application which has been claimed by another user
+  // once the BE is updated to handle this
+  const [currentClaimant, setCurrentClaimant] = useState<string>("");
+
+  // const saveApplicationErrorStatus = saveApplicationError?.response?.status;
+
+  useEffect(() => {
+    console.log({ saveApplicationError });
+    // if (saveApplicationErrorStatus === 422) {
+    //   setCurrentClaimant(
+    //     saveApplicationError.response.data.error[0].additionalInfo
+    //       .currentClaimant,
+    //   );
+    //   setShowUnavailableApplicationModal(true);
+    // }
+  }, [saveApplicationError]);
 
   return (
     <div className="application-form">
