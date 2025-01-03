@@ -17,6 +17,10 @@ import { differenceBetween } from './date-time.helper';
 import * as dayjs from 'dayjs';
 import { ApplicationStatus } from '../enum/application-status.enum';
 import { Nullable } from '../types/common';
+import { Brackets, QueryRunner } from 'typeorm';
+import { SpecialAuth } from 'src/modules/special-auth/entities/special-auth.entity';
+import { PaymentMethodType } from '../enum/payment-method-type.enum';
+import { PgApprovesStatus } from '../enum/pg-approved-status-type.enum';
 
 /**
  * Calculates the permit fee based on the application and old amount.
@@ -219,3 +223,104 @@ export const validAmount = (
     (isRefundValid || transactionType !== TransactionType.REFUND)
   );
 };
+
+  /**
+   * Calculates the permit fee based on the application status, historical payments, and current permit data.
+   * If the application is revoked, it returns 0. For voided applications, it calculates the refund amount.
+   * Otherwise, it calculates the fee based on existing payments and current permit data.
+   *
+   * @param application - The Permit application for which to calculate the fee.
+   * @param queryRunner - An optional QueryRunner for database transactions.
+   * @returns {Promise<number>} - The calculated permit fee or refund amount.
+   */
+export  const permitFeeCalculator = async (
+    application: Permit,
+    queryRunner?: QueryRunner,
+  ): Promise<number> => {
+    if (application.permitStatus === ApplicationStatus.REVOKED) return 0;
+
+    const permitPaymentHistory = await findPermitHistory(
+      application.originalPermitId,
+      queryRunner,
+    );
+    const isNoFee = await findNoFee(
+      application.company.companyId,
+      queryRunner,
+    );
+    const oldAmount =
+      permitPaymentHistory.length > 0
+        ? calculatePermitAmount(permitPaymentHistory)
+        : undefined;
+    const fee = permitFee(application, isNoFee, oldAmount);
+    return fee;
+  }
+
+  export const  findNoFee = async(
+    companyId: number,
+    queryRunner: QueryRunner,
+  ): Promise<boolean> => {
+    const specialAuth = await queryRunner.manager
+      .createQueryBuilder()
+      .select('specialAuth')
+      .from(SpecialAuth, 'specialAuth')
+      .innerJoinAndSelect('specialAuth.company', 'company')
+      .where('company.companyId = :companyId', { companyId: companyId })
+      .getOne();
+    return !!specialAuth && !!specialAuth.noFeeType;
+  }
+
+  export const  findPermitHistory = async(
+    originalPermitId: string,
+    queryRunner: QueryRunner,
+  ): Promise<PermitHistoryDto[]> => {
+    // Fetches the permit history for a given originalPermitId using the provided QueryRunner
+    // This includes all related transactions and filters permits by non-null permit numbers
+    // Orders the results by transaction submission date in descending order
+
+    const permits = await queryRunner.manager
+      .createQueryBuilder()
+      .select('permit')
+      .from(Permit, 'permit')
+      .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
+      .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
+      .where('permit.permitNumber IS NOT NULL')
+      .andWhere('permit.originalPermitId = :originalPermitId', {
+        originalPermitId: originalPermitId,
+      })
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where(
+            'transaction.paymentMethodTypeCode != :paymentType OR ( transaction.paymentMethodTypeCode = :paymentType AND transaction.pgApproved = :approved)',
+            {
+              paymentType: PaymentMethodType.WEB,
+              approved: PgApprovesStatus.APPROVED,
+            },
+          );
+        }),
+      )
+      .orderBy('transaction.transactionSubmitDate', 'DESC')
+      .getMany();
+
+    return permits.flatMap((permit) =>
+      permit.permitTransactions.map((permitTransaction) => ({
+        permitNumber: permit.permitNumber,
+        comment: permit.comment,
+        transactionOrderNumber:
+          permitTransaction.transaction.transactionOrderNumber,
+        transactionAmount: permitTransaction.transactionAmount,
+        transactionTypeId: permitTransaction.transaction.transactionTypeId,
+        pgPaymentMethod: permitTransaction.transaction.pgPaymentMethod,
+        pgTransactionId: permitTransaction.transaction.pgTransactionId,
+        paymentCardTypeCode: permitTransaction.transaction.paymentCardTypeCode,
+        paymentMethodTypeCode:
+          permitTransaction.transaction.paymentMethodTypeCode,
+        commentUsername: permit.createdUser,
+        permitId: +permit.permitId,
+        transactionSubmitDate:
+          permitTransaction.transaction.transactionSubmitDate,
+        pgApproved: permitTransaction.transaction.pgApproved,
+      })),
+    ) as PermitHistoryDto[];
+  }
+
+
