@@ -9,6 +9,8 @@ import {
 import { getFromCache } from './cache.helper';
 import { IPaymentCode } from '../interface/payment-code.interface';
 import { TransactionType } from '../enum/transaction-type.enum';
+import { todayDate } from './date-time.helper';
+import { convertToHash } from './crypto.helper';
 
 export const getPaymentCodeFromCache = async (
   cacheManager: Cache,
@@ -53,4 +55,18 @@ export const isCfsPaymentMethodType = (
   paymentMethodType: PaymentMethodType,
 ): paymentMethodType is CfsPaymentMethodType => {
   return paymentMethodType in CfsPaymentMethodType;
+};
+
+export const generateValidationHash = (
+  applicationIds: string[],
+  amount: number[],
+  dateTime: Date,
+): string => {
+  const hash =
+    applicationIds.join() +
+    amount.join() +
+    dateTime.toString() +
+    todayDate() +
+    process.env.VALIDATION_HASH_SALT;
+  return convertToHash(hash, process.env.VALIDATION_HASH_ALGOROTHM);
 };

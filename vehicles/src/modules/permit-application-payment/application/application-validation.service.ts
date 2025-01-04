@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { DataSource, In, Repository } from 'typeorm';
 import { Permit } from '../permit/entities/permit.entity';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
@@ -19,23 +23,20 @@ import {
   ApplicationDataValidationDto,
   CartValidationDto,
 } from './dto/response/cart-validation.dto';
-import {
-  PermitData,
-} from 'src/common/interface/permit.template.interface';
+import { PermitData } from 'src/common/interface/permit.template.interface';
 import { LoaDetail } from 'src/modules/special-auth/entities/loa-detail.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
-import { convertToHash } from 'src/common/helper/crypto.helper';
-import { todayDate } from 'src/common/helper/date-time.helper';
 import { isValidLoa } from 'src/common/helper/validate-loa.helper';
+import { generateValidationHash } from 'src/common/helper/payment.helper';
 
 @Injectable()
 export class ApplicationValidationService {
   private readonly logger = new Logger(ApplicationValidationService.name);
   private validationDto: CartValidationDto;
   private applicationDataValidationDto: ApplicationDataValidationDto;
-  private errorCount;
+  private errorCount: number;
 
   constructor(
     private dataSource: DataSource,
@@ -76,8 +77,8 @@ export class ApplicationValidationService {
           application.applicationNumber;
 
         /* Check if each application has a valid start date and valid expiry date.
-        ** If an application has invalid dates then push the error to applicationDataValidationDto.error 
-        ** Also validate dates for client only as staff is allowed to work on back dated applications but client is not.*/
+         ** If an application has invalid dates then push the error to applicationDataValidationDto.error
+         ** Also validate dates for client only as staff is allowed to work on back dated applications but client is not.*/
         if (
           isCVClientUser &&
           !validApplicationDates(application, TIMEZONE_PACIFIC)
@@ -85,7 +86,6 @@ export class ApplicationValidationService {
           this.applicationDataValidationDto.errors.push(
             'Application dates are invalid.',
           );
-          this.errorCount += 1;
         }
         const transactionAmountCalculated = await permitFeeCalculator(
           application,
@@ -93,7 +93,7 @@ export class ApplicationValidationService {
         );
 
         /* Check if each application has a valid amount as per its duration and permit type and special authorizations.
-        ** If an application has invalid amount then push the error to applicationDataValidationDto.error*/
+         ** If an application has invalid amount then push the error to applicationDataValidationDto.error*/
         if (
           !validAmount(
             transactionAmountCalculated,
@@ -108,10 +108,9 @@ export class ApplicationValidationService {
           this.applicationDataValidationDto.errors.push(
             `Transaction amount mismatch`,
           );
-          this.errorCount += 1;
         }
         /* Check if each application is in a valid status.
-        ** If an application has invalid status then push the error to applicationDataValidationDto.error */
+         ** If an application has invalid status then push the error to applicationDataValidationDto.error */
         if (
           !(
             isVoidorRevoked(application.permitStatus) ||
@@ -122,28 +121,43 @@ export class ApplicationValidationService {
           this.applicationDataValidationDto.errors.push(
             'Application in its current status cannot be processed for payment',
           );
-          this.errorCount += 1;
         }
 
         const permitData = JSON.parse(
           application.permitData.permitData,
         ) as PermitData;
         // If application includes LoAs then validate Loa data.
-        if (permitData.loas) 
-          {
-            await isValidLoa(application,queryRunner,this.classMapper);
-          }
+        if (permitData.loas) {
+          this.validationDto.applicationValidationResult.push(
+            await isValidLoa(
+              application,
+              queryRunner,
+              this.classMapper,
+              this.applicationDataValidationDto,
+            ),
+          );
+        }
         // Add application validation result to CartValidationDto.
         this.validationDto.applicationValidationResult.push(
           this.applicationDataValidationDto,
         );
       }
+      this.errorCount = this.validationDto.applicationValidationResult
+      .flatMap(applResult => applResult.errors)
+      .filter(error => error.length > 0)
+      .length;
       // Generate hash if all cart items are valid i.e. do not have any error.
       if (this.errorCount === 0) {
         const amount: number[] = createTransactionDto.applicationDetails.map(
           ({ transactionAmount }) => transactionAmount,
         );
-        this.generateValidationHash(applicationIds, amount);
+        const dateTime = new Date();
+        this.validationDto.hash = generateValidationHash(
+          applicationIds,
+          amount,
+          dateTime,
+        );
+        this.validationDto.validationDateTime = dateTime;
       }
       return this.validationDto;
     } catch (error) {
@@ -152,19 +166,4 @@ export class ApplicationValidationService {
       await queryRunner.release();
     }
   }
-  generateValidationHash(applicationIds: string[], amount: number[]): void {
-    const date = new Date();
-    const hash =
-      applicationIds.join() +
-      amount.join() +
-      date.toString() +
-      todayDate() +
-      process.env.VALIDATION_HASH_SALT;
-    this.validationDto.validationDateTime = date;
-    this.validationDto.hash = convertToHash(
-      hash,
-      process.env.VALIDATION_HASH_ALGOROTHM,
-    );
-  }
 }
-

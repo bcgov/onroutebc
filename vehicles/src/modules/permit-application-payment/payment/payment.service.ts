@@ -36,17 +36,15 @@ import { UpdatePaymentGatewayTransactionDto } from './dto/request/update-payment
 import { PaymentCardType } from './entities/payment-card-type.entity';
 import { PaymentMethodType } from './entities/payment-method-type.entity';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
-import {
-  permitFeeCalculator,
-  validAmount,
-} from 'src/common/helper/permit-fee.helper';
 import { CfsTransactionDetail } from './entities/cfs-transaction.entity';
 import { CfsFileStatus } from 'src/common/enum/cfs-file-status.enum';
 import {
   isAmendmentApplication,
-  validApplicationDates,
 } from '../../../common/helper/permit-application.helper';
-import { isCfsPaymentMethodType } from 'src/common/helper/payment.helper';
+import {
+  generateValidationHash,
+  isCfsPaymentMethodType,
+} from 'src/common/helper/payment.helper';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { CacheKey } from 'src/common/enum/cache-key.enum';
@@ -58,12 +56,8 @@ import {
   throwUnprocessableEntityException,
 } from '../../../common/helper/exception.helper';
 import {
-  isCVClient,
   isFeatureEnabled,
 } from '../../../common/helper/common.helper';
-import { TIMEZONE_PACIFIC } from 'src/common/constants/api.constant';
-import { PermitData } from 'src/common/interface/permit.template.interface';
-import { isValidLoa } from 'src/common/helper/validate-loa.helper';
 
 @Injectable()
 export class PaymentService {
@@ -260,6 +254,27 @@ export class PaymentService {
     createTransactionDto: CreateTransactionDto,
     nestedQueryRunner?: QueryRunner,
   ): Promise<ReadTransactionDto> {
+    const amount: number[] = createTransactionDto.applicationDetails.map(
+      ({ transactionAmount }) => transactionAmount,
+    );
+    //converting to comma separated string using join and then string array using split.
+    const applicationIds: string[] =
+      createTransactionDto.applicationDetails.map(
+        ({ applicationId }) => applicationId,
+      );
+    if (
+      (new Date().getTime() - createTransactionDto.hashDateTime.getTime()) /
+        60000 >
+      5
+    )
+      throw new UnprocessableEntityException('Hash expired');
+    const hash = generateValidationHash(
+      applicationIds,
+      amount,
+      createTransactionDto.hashDateTime,
+    );
+    if (hash === createTransactionDto.hash)
+      throw new UnprocessableEntityException('Invalid hash');
     if (
       !doesUserHaveRole(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST) &&
       createTransactionDto?.paymentMethodTypeCode !==
@@ -297,12 +312,6 @@ export class PaymentService {
       await queryRunner.connect();
       await queryRunner.startTransaction();
     }
-    //converting to comma separated string using join and then string array using split.
-    const applicationIds: string[] =
-      createTransactionDto.applicationDetails.map(
-        ({ applicationId }) => applicationId,
-      );
-
     try {
       const existingApplications: Permit[] = await queryRunner.manager.find(
         Permit,
@@ -322,20 +331,12 @@ export class PaymentService {
           throw new BadRequestException(
             'Application in its current status cannot be processed for payment.',
           );
-        const permitData = JSON.parse(
-          application.permitData.permitData,
-        ) as PermitData;
-        // If application includes LoAs then validate Loa data.
-        if (permitData.loas) {
-          await isValidLoa(application, queryRunner, this.classMapper);
-        }
       }
-      const totalTransactionAmount = await this.validateApplicationAndPayment(
-        createTransactionDto,
-        existingApplications,
-        currentUser,
-        queryRunner,
-      );
+      const totalTransactionAmount =
+        createTransactionDto.applicationDetails?.reduce(
+          (accumulator, item) => accumulator + item.transactionAmount,
+          0,
+        );
       const transactionOrderNumber =
         await this.generateTransactionOrderNumber();
 
@@ -485,62 +486,6 @@ export class PaymentService {
     }
 
     return readTransactionDto;
-  }
-
-  /**
-   * Validates the payment information in the request against the backend data, calculates the transaction amount,
-   * and checks for transaction type and amount consistency.
-   *
-   * This method first calculates the total transaction amount based on the backend permit data and
-   * compares it with the transaction amount sent in the request to ensure they match. If there's a mismatch, it throws an error.
-   * Additionally, for refund transactions, it checks if the total calculated transaction amount is negative as expected;
-   * if not, it throws an error.
-   *
-   * @param {CreateTransactionDto} createTransactionDto - The DTO containing the transaction details from the request.
-   * @param {Permit[]} applications - A list of permits associated with the transaction.
-   * @param {QueryRunner} nestedQueryRunner - The query runner to use for database operations within the method.
-   * @returns {Promise<number>} The total transaction amount calculated from the backend data.
-   * @throws {BadRequestException} When the transaction amount in the request doesn't match with the calculated amount,
-   * or if there's a transaction type and amount mismatch in case of refunds.
-   */
-  private async validateApplicationAndPayment(
-    createTransactionDto: CreateTransactionDto,
-    applications: Permit[],
-    currentUser: IUserJWT,
-    queryRunner: QueryRunner,
-  ) {
-    let totalTransactionAmountCalculated = 0;
-    const isCVClientUser: boolean = isCVClient(currentUser.identity_provider);
-    // Calculate and add amount for each requested application, as per the available backend data.
-    for (const application of applications) {
-      //Check if each application has a valid start date and valid expiry date.
-      if (
-        isCVClientUser &&
-        !validApplicationDates(application, TIMEZONE_PACIFIC)
-      ) {
-        throw new UnprocessableEntityException(
-          `Atleast one of the application has invalid startDate or expiryDate.`,
-        );
-      }
-      totalTransactionAmountCalculated += await permitFeeCalculator(
-        application,
-        queryRunner,
-      );
-    }
-    const totalTransactionAmount =
-      createTransactionDto.applicationDetails?.reduce(
-        (accumulator, item) => accumulator + item.transactionAmount,
-        0,
-      );
-    if (
-      !validAmount(
-        totalTransactionAmountCalculated,
-        totalTransactionAmount,
-        createTransactionDto.transactionTypeId,
-      )
-    )
-      throw new BadRequestException('Transaction amount mismatch.');
-    return totalTransactionAmount;
   }
 
   @LogAsyncMethodExecution()

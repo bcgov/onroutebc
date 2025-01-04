@@ -9,7 +9,7 @@ import * as isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import { In, QueryRunner } from 'typeorm';
 import { LoaDetail } from 'src/modules/special-auth/entities/loa-detail.entity';
 import { Mapper } from '@automapper/core';
-import { UnprocessableEntityException } from '@nestjs/common';
+import { ApplicationDataValidationDto } from 'src/modules/permit-application-payment/application/dto/response/cart-validation.dto';
 
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
@@ -69,6 +69,7 @@ export const isValidLoa = async (
   permit: Permit,
   queryRunner: QueryRunner,
   mapper: Mapper,
+  applicationDataValidationDto?: ApplicationDataValidationDto,
 ) => {
   const { companyId } = permit.company;
   const permitData = JSON.parse(permit.permitData.permitData) as PermitData;
@@ -84,22 +85,31 @@ export const isValidLoa = async (
     );
 
     // Validate LOA details and permit data against database entries
-    validateLoaDetails(readLoaDto, permit, permitVehicleId, permitVehicleType);
+    applicationDataValidationDto = validateLoaDetails(
+      readLoaDto,
+      permit,
+      permitVehicleId,
+      permitVehicleType,
+      applicationDataValidationDto,
+    );
 
     // validate LoA snapshot in permit Data
-    validatePermitDataAgainstLoas(
+    applicationDataValidationDto = validatePermitDataAgainstLoas(
       permitData,
       permit,
       permitVehicleId,
       permitVehicleType,
+      applicationDataValidationDto,
     );
   }
+  return applicationDataValidationDto;
 };
 export const validateLoaDetails = (
   readLoaDtos: ReadLoaDto[],
   permit: Permit,
   permitVehicleId: string,
   permitVehicleType: string,
+  applicationDataValidationDto: ApplicationDataValidationDto,
 ) => {
   for (const readLoaDto of readLoaDtos) {
     const {
@@ -108,7 +118,7 @@ export const validateLoaDetails = (
       loaPermitType: loaPermitTypes,
     } = readLoaDto;
     if (!isValidDateForLoa(readLoaDto, permit)) {
-      throw new UnprocessableEntityException(
+      applicationDataValidationDto.errors.push(
         `${permit.applicationNumber} has LoA ${readLoaDto.loaNumber} with invalid date(s).`,
       );
     }
@@ -120,16 +130,17 @@ export const validateLoaDetails = (
         loaTrailers,
       )
     ) {
-      throw new UnprocessableEntityException(
+      applicationDataValidationDto.errors.push(
         `${permit.applicationNumber} has LoA ${readLoaDto.loaNumber} with invalid vehicle(s).`,
       );
     }
     if (!isPermitTypeValid(permit.permitType, loaPermitTypes)) {
-      throw new UnprocessableEntityException(
+      applicationDataValidationDto.errors.push(
         `${permit.applicationNumber} has LoA ${readLoaDto.loaNumber} with invalid permitType.`,
       );
     }
   }
+  return applicationDataValidationDto;
 };
 
 export const validatePermitDataAgainstLoas = (
@@ -137,13 +148,14 @@ export const validatePermitDataAgainstLoas = (
   permit: Permit,
   permitVehicleId: string,
   permitVehicleType: string,
+  applicationDataValidationDto: ApplicationDataValidationDto,
 ) => {
   for (const loa of permitData.loas) {
     const permitLoaPowerUnits = loa.powerUnits;
     const permitLoaTrailers = loa.trailers;
     const permitTypesLoa = loa.loaPermitType;
     if (!isValidDateForLoa(loa, permit)) {
-      throw new UnprocessableEntityException(
+      applicationDataValidationDto.errors.push(
         `${permit.applicationNumber} has LoA ${loa.loaNumber} snapshot with invalid date(s).`,
       );
     }
@@ -156,16 +168,17 @@ export const validatePermitDataAgainstLoas = (
         permitLoaTrailers,
       )
     ) {
-      throw new UnprocessableEntityException(
+      applicationDataValidationDto.errors.push(
         `${permit.applicationNumber} has LoA ${loa.loaNumber}  snapshot with invalid vehicle(s).`,
       );
     }
     if (!isPermitTypeValid(permit.permitType, permitTypesLoa)) {
-      throw new UnprocessableEntityException(
+      applicationDataValidationDto.errors.push(
         `${permit.applicationNumber} has LoA ${loa.loaNumber} snapshot with invalid permitType.`,
       );
     }
   }
+  return applicationDataValidationDto;
 };
 
 /**

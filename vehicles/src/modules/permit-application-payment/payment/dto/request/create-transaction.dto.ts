@@ -56,4 +56,16 @@ export class CreateTransactionDto extends PaymentGatewayTransactionDto {
   @ArrayMinSize(1)
   @Type(() => CreateApplicationTransactionDto)
   applicationDetails: CreateApplicationTransactionDto[];
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'Payment hash creation date and time.',
+  })
+  hashDateTime: Date;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'Hash value for payment.',
+  })
+  hash: string;
 }
