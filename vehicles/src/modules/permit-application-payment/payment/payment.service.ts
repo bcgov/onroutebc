@@ -801,7 +801,7 @@ export class PaymentService {
 
     const permitPaymentHistory = await this.findPermitHistory(
       application.originalPermitId,
-      application.company.companyId,
+      companyId,
     );
     const isNoFee = await this.specialAuthService.findNoFee(companyId);
     const oldAmount =
