@@ -72,7 +72,8 @@ export const isValidLoa = async (
 ) => {
   const permitData = JSON.parse(permit.permitData.permitData) as PermitData;
   if (permitData.loas) {
-    const { vehicleId: permitVehicleId, vehicleType: permitVehicleType } = permitData.vehicleDetails;
+    const { vehicleId: permitVehicleId, vehicleType: permitVehicleType } =
+      permitData.vehicleDetails;
     const { companyId } = permit.company;
     const loaNumbers = permitData.loas.map((loa) => loa.loaNumber);
     const readLoaDto = await findLoas(

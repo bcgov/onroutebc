@@ -37,7 +37,8 @@ import { PaymentCardType } from './entities/payment-card-type.entity';
 import { PaymentMethodType } from './entities/payment-method-type.entity';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
 import {
-  permitFeeCalculator,
+  calculatePermitAmount,
+  permitFee,
   validAmount,
 } from 'src/common/helper/permit-fee.helper';
 import { CfsTransactionDetail } from './entities/cfs-transaction.entity';
@@ -64,6 +65,8 @@ import {
 import { TIMEZONE_PACIFIC } from 'src/common/constants/api.constant';
 import { PermitData } from 'src/common/interface/permit.template.interface';
 import { isValidLoa } from 'src/common/helper/validate-loa.helper';
+import { PermitHistoryDto } from '../permit/dto/response/permit-history.dto';
+import { SpecialAuthService } from 'src/modules/special-auth/special-auth.service';
 
 @Injectable()
 export class PaymentService {
@@ -78,6 +81,9 @@ export class PaymentService {
     private paymentMethodTypeRepository: Repository<PaymentMethodType>,
     @InjectRepository(PaymentCardType)
     private paymentCardTypeRepository: Repository<PaymentCardType>,
+    @InjectRepository(Permit)
+    private permitRepository: Repository<Permit>,
+    private readonly specialAuthService: SpecialAuthService,
     @InjectMapper() private readonly classMapper: Mapper,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
@@ -334,7 +340,6 @@ export class PaymentService {
         createTransactionDto,
         existingApplications,
         currentUser,
-        queryRunner,
       );
       const transactionOrderNumber =
         await this.generateTransactionOrderNumber();
@@ -507,7 +512,6 @@ export class PaymentService {
     createTransactionDto: CreateTransactionDto,
     applications: Permit[],
     currentUser: IUserJWT,
-    queryRunner: QueryRunner,
   ) {
     let totalTransactionAmountCalculated = 0;
     const isCVClientUser: boolean = isCVClient(currentUser.identity_provider);
@@ -522,10 +526,8 @@ export class PaymentService {
           `Atleast one of the application has invalid startDate or expiryDate.`,
         );
       }
-      totalTransactionAmountCalculated += await permitFeeCalculator(
-        application,
-        queryRunner,
-      );
+      totalTransactionAmountCalculated +=
+        await this.permitFeeCalculator(application);
     }
     const totalTransactionAmount =
       createTransactionDto.applicationDetails?.reduce(
@@ -782,5 +784,71 @@ export class PaymentService {
 
   async findAllPaymentCardTypeEntities(): Promise<PaymentCardType[]> {
     return await this.paymentCardTypeRepository.find();
+  }
+
+  /**
+   * Calculates the permit fee based on the application status, historical payments, and current permit data.
+   * If the application is revoked, it returns 0. For voided applications, it calculates the refund amount.
+   * Otherwise, it calculates the fee based on existing payments and current permit data.
+   *
+   * @param application - The Permit application for which to calculate the fee.
+   * @param queryRunner - An optional QueryRunner for database transactions.
+   * @returns {Promise<number>} - The calculated permit fee or refund amount.
+   */
+  async permitFeeCalculator(application: Permit): Promise<number> {
+    if (application.permitStatus === ApplicationStatus.REVOKED) return 0;
+    const companyId = application.company.companyId;
+
+    const permitPaymentHistory = await this.findPermitHistory(
+      application.originalPermitId,
+      application.company.companyId,
+    );
+    const isNoFee = await this.specialAuthService.findNoFee(companyId);
+    const oldAmount =
+      permitPaymentHistory.length > 0
+        ? calculatePermitAmount(permitPaymentHistory)
+        : undefined;
+    const fee = permitFee(application, isNoFee, oldAmount);
+    return fee;
+  }
+
+  @LogAsyncMethodExecution()
+  public async findPermitHistory(
+    originalPermitId: string,
+    companyId?: number,
+  ): Promise<PermitHistoryDto[]> {
+    const permits = await this.permitRepository
+      .createQueryBuilder('permit')
+      .leftJoinAndSelect('permit.company', 'company')
+      .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
+      .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
+      .where('permit.permitNumber IS NOT NULL')
+      .andWhere('permit.originalPermitId = :originalPermitId', {
+        originalPermitId: originalPermitId,
+      })
+      .andWhere('company.companyId = :companyId', { companyId: companyId })
+      .orderBy('transaction.transactionSubmitDate', 'DESC')
+      .getMany();
+
+    return permits.flatMap((permit) =>
+      permit.permitTransactions.map((permitTransaction) => ({
+        permitNumber: permit.permitNumber,
+        comment: permit.comment,
+        transactionOrderNumber:
+          permitTransaction.transaction.transactionOrderNumber,
+        transactionAmount: permitTransaction.transactionAmount,
+        transactionTypeId: permitTransaction.transaction.transactionTypeId,
+        pgPaymentMethod: permitTransaction.transaction.pgPaymentMethod,
+        pgTransactionId: permitTransaction.transaction.pgTransactionId,
+        paymentCardTypeCode: permitTransaction.transaction.paymentCardTypeCode,
+        paymentMethodTypeCode:
+          permitTransaction.transaction.paymentMethodTypeCode,
+        commentUsername: permit.createdUser,
+        permitId: +permit.permitId,
+        transactionSubmitDate:
+          permitTransaction.transaction.transactionSubmitDate,
+        pgApproved: permitTransaction.transaction.pgApproved,
+      })),
+    ) as PermitHistoryDto[];
   }
 }
