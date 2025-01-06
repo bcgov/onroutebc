@@ -35,7 +35,6 @@ import {
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { DopsService } from '../../common/dops.service';
-import { Directory } from '../../../common/enum/directory.enum';
 import { PermitIssuedBy } from '../../../common/enum/permit-issued-by.enum';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
 import { PageMetaDto } from '../../../common/dto/paginate/page-meta';
