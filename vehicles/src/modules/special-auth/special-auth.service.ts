@@ -128,9 +128,7 @@ export class SpecialAuthService {
 
   async findNoFee(companyId: number): Promise<boolean> {
     const specialAuth = await this.specialAuthRepository
-      .createQueryBuilder()
-      .select()
-      .from(SpecialAuth, 'specialAuth')
+      .createQueryBuilder('specialAuth')
       .innerJoinAndSelect('specialAuth.company', 'company')
       .where('company.companyId = :companyId', { companyId: companyId })
       .getOne();
