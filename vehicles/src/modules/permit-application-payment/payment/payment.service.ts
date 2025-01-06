@@ -60,7 +60,10 @@ import { PgApprovesStatus } from 'src/common/enum/pg-approved-status-type.enum';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { CacheKey } from 'src/common/enum/cache-key.enum';
-import { getFromCache } from '../../../common/helper/cache.helper';
+import {
+  getFromCache,
+  getMapFromCache,
+} from '../../../common/helper/cache.helper';
 import { doesUserHaveRole } from '../../../common/helper/auth.helper';
 import { IDIR_USER_ROLE_LIST } from '../../../common/enum/user-role.enum';
 import {
@@ -73,6 +76,7 @@ import {
 } from '../../../common/helper/common.helper';
 import { SpecialAuth } from 'src/modules/special-auth/entities/special-auth.entity';
 import { TIMEZONE_PACIFIC } from 'src/common/constants/api.constant';
+import { FeatureFlagValue } from '../../../common/enum/feature-flag-value.enum';
 
 @Injectable()
 export class PaymentService {
@@ -269,6 +273,18 @@ export class PaymentService {
     createTransactionDto: CreateTransactionDto,
     nestedQueryRunner?: QueryRunner,
   ): Promise<ReadTransactionDto> {
+    const featureFlags = await getMapFromCache(
+      this.cacheManager,
+      CacheKey.FEATURE_FLAG_TYPE,
+    );
+    if (
+      doesUserHaveRole(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST) &&
+      featureFlags?.['STAFF-CAN-PAY'] &&
+      (featureFlags['STAFF-CAN-PAY'] as FeatureFlagValue) !==
+        FeatureFlagValue.ENABLED
+    ) {
+      throwUnprocessableEntityException('Disabled feature');
+    }
     if (
       !doesUserHaveRole(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST) &&
       createTransactionDto?.paymentMethodTypeCode !==

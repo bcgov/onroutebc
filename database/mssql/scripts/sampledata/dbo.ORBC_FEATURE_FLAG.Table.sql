@@ -271,7 +271,7 @@ INSERT INTO
 VALUES
   (
     '12',
-    'PAY-IN-PERSON',
+    'STAFF-CAN-PAY',
     'DISABLED',
     NULL,
     N'dbo',
