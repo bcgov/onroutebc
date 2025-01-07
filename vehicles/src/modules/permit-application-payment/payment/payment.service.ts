@@ -828,9 +828,8 @@ export class PaymentService {
     return fee;
   }
 
-
   /**
-   * 
+   *
    * This function is deprecated and will be removed once the validation endpoints are established.
    */
   @LogAsyncMethodExecution()
