@@ -100,7 +100,7 @@ export const ApplicationReviewNew = ({
 
   const navigate = useNavigate();
 
-  const policyEngine = usePolicyEngine();
+  const policyEngine = usePolicyEngine(companyId);
   const { commodityOptions } = useCommodityOptions(policyEngine, permitType);
   const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
   const trailerSubTypesQuery = useTrailerSubTypesQuery();

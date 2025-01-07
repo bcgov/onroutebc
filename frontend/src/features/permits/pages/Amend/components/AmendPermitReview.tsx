@@ -60,7 +60,7 @@ export const AmendPermitReview = () => {
     permit?.permitType,
   );
 
-  const policyEngine = usePolicyEngine();
+  const policyEngine = usePolicyEngine(companyId);
   const { commodityOptions } = useCommodityOptions(policyEngine, permitType);
   const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
   const trailerSubTypesQuery = useTrailerSubTypesQuery();

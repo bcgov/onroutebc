@@ -94,7 +94,7 @@ export const ApplicationForm = ({
     trailerSubtypeNamesMap,
   } = usePermitVehicleManagement(companyId);
 
-  const policyEngine = usePolicyEngine();
+  const policyEngine = usePolicyEngine(companyId);
 
   // Use a custom hook that performs the following whenever page is rendered (or when application context is updated/changed):
   // 1. Get all data needed to initialize the application form (from application context, company, user details)
