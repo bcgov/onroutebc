@@ -128,7 +128,7 @@ describe('Login Test for OnRouteBC', () => {
     cy.wait(wait_time);
 
     cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
-    cy.wait(wait_time);
+    // cy.wait(wait_time);
 
     let permit_number = ''; // Define a variable to store the applicaion number
     let real_permit_number = '';
