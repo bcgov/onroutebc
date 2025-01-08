@@ -22,7 +22,7 @@ GO
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Reverting updates to policy configuration JSON allowing lcv vehicles for TROS and TROW'
 
-INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (53, @VersionDescription, getutcdate())
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (54, @VersionDescription, getutcdate())
 GO
 
 IF @@ERROR <> 0 SET NOEXEC ON
