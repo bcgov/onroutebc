@@ -130,103 +130,124 @@ describe('Login Test for OnRouteBC', () => {
     cy.get('[data-testid="add-to-cart-btn"]').click({force: true});
     cy.wait(1000);
 
-    let permit_number = ''; // Define a variable to store the applicaion number
-    let real_permit_number = '';
+    // got to the cart and get the first item to edit
+    cy.get('.shopping-cart-button').click({force: true});
+          cy.wait(wait_time);
 
-    cy.get('.MuiAlert-message') // Locate the element
-      .invoke('text') // Extract the text content
-      .then((text) => {
-        permit_number = text; 
-        cy.log('Stored text:', permit_number); 
-        // Use a regular expression to extract the middle part of the permit number
-        const regex = /A1-(\d+-\d+)-A00/;
-        const match = permit_number.match(regex);
+    cy.get('button.css-mn35dv')
+      .contains("-A00")  
+      .first()
+      .click();
 
-        if (match && match[1]) {
-          real_permit_number = match[1];
+    cy.wait(wait_time);
+
+    cy.get('button')
+      .contains("Edit Application")
+      .click();
+    cy.wait(wait_time);
+    cy.get('[name="permitData.vehicleDetails.year"').clear().type('2008');
+    cy.wait(wait_time);
+    cy.get('[data-testid="continue-application-button"]').click();
+    cy.wait(wait_time);
+    cy.get('[type="checkbox"]').check();
+    cy.wait(wait_time);
+    cy.xpath("//button[text()='Add to Cart']").click();
+    cy.wait(wait_time);
+
+    // let permit_number = '';
+    // let real_permit_number = '';
+
+    // cy.get('.MuiAlert-message') 
+    //   .invoke('text') 
+    //   .then((text) => {
+    //     permit_number = text; 
+    //     cy.log('Stored text:', permit_number); 
+    //     const regex = /A1-(\d+-\d+)-A00/;
+    //     const match = permit_number.match(regex);
+
+    //     if (match && match[1]) {
+    //       real_permit_number = match[1];
           
-          cy.get('.shopping-cart-button').click({force: true});
-          cy.wait(wait_time);
+    //       cy.get('.shopping-cart-button').click({force: true});
+    //       cy.wait(wait_time);
 
-          cy.get('button') // Select all button elements
-            .contains(real_permit_number) // Filter the buttons to find one containing the specific value
-            .first() // Get the first matching element
-            .click(); // Perform an action, like clicking the button (optional)
-          cy.wait(wait_time);
+    //       cy.get('button')
+    //         .contains(real_permit_number)
+    //         .first() 
+    //         .click(); 
+    //       cy.wait(wait_time);
 
-          cy.get('button') // Select all button elements
-            .contains("Edit Application") // Filter the buttons to find one containing the specific value
-            .click(); // Perform an action, like clicking the button (optional)
-          cy.wait(wait_time);
+    //       cy.get('button')
+    //         .contains("Edit Application")
+    //         .click();
+    //       cy.wait(wait_time);
 
-          // Disable idir account payment
-          // cy.get('div[role="combobox"]')
-          // .contains('Select')  
-          // .click(); 
+    //       // Disable idir account payment
+    //       // cy.get('div[role="combobox"]')
+    //       // .contains('Select')  
+    //       // .click(); 
 
-          // cy.contains('li', 'Mastercard (Debit)').first().click();
-          // cy.wait(wait_time);
+    //       // cy.contains('li', 'Mastercard (Debit)').first().click();
+    //       // cy.wait(wait_time);
 
-          // cy.get('[name="additionalPaymentData.icepayTransactionId"]').type(1234);
-          // cy.wait(wait_time);
+    //       // cy.get('[name="additionalPaymentData.icepayTransactionId"]').type(1234);
+    //       // cy.wait(wait_time);
 
-          // cy.get('button[data-testid="pay-now-btn"]').click({force: true});
-          // cy.wait(wait_time);
+    //       // cy.get('button[data-testid="pay-now-btn"]').click({force: true});
+    //       // cy.wait(wait_time);
 
+    //       // cy.visit('/');
+    //       // cy.wait(wait_time);
 
+    //       // // Find the search button by its class name and click it
+    //       // cy.get('.search-button').click();
+    //       // cy.wait(wait_time);
 
+    //       // // Find the element with value="companies" and interact with it
+    //       // cy.get('[value="companies"]').click();
+    //       // cy.wait(wait_time);
 
+    //       // // Find elements to amend application
+    //       // cy.get('.css-1pog434').type('t');
+    //       // cy.wait(wait_time);
+    //       // cy.get('.search-by__search').click();
+    //       // cy.wait(wait_time);
+    //       // // cy.xpath("//button[text()='Test Transport Inc.']").click();
+    //       // cy.get('button.MuiTypography-root.MuiTypography-body2.MuiLink-root.MuiLink-underlineAlways.MuiLink-button.custom-action-link.css-mn35dv')
+    //       //   .first()
+    //       //   .click();
+    //       // cy.wait(wait_time);
 
+    //       // cy.log('Extracted Part 3:', real_permit_number);
 
-          // cy.visit('/');
-          // cy.wait(wait_time);
+    //       // cy.xpath("//div[@class='tab__label' and text()='Active Permits']").click();
+    //       // cy.wait(wait_time);
 
-          // // Find the search button by its class name and click it
-          // cy.get('.search-button').click();
-          // cy.wait(wait_time);
+    //       // // Start the recursive search
+    //       // findRowAndClick(real_permit_number, wait_time);
 
-          // // Find the element with value="companies" and interact with it
-          // cy.get('[value="companies"]').click();
-          // cy.wait(wait_time);
-
-          // // Find elements to amend application
-          // cy.get('.css-1pog434').type('t');
-          // cy.wait(wait_time);
-          // cy.get('.search-by__search').click();
-          // cy.wait(wait_time);
-          // // cy.xpath("//button[text()='Test Transport Inc.']").click();
-          // cy.get('button.MuiTypography-root.MuiTypography-body2.MuiLink-root.MuiLink-underlineAlways.MuiLink-button.custom-action-link.css-mn35dv')
-          //   .first()
-          //   .click();
-          // cy.wait(wait_time);
-
-          // cy.log('Extracted Part 3:', real_permit_number);
-
-          // cy.xpath("//div[@class='tab__label' and text()='Active Permits']").click();
-          // cy.wait(wait_time);
-
-          // // Start the recursive search
-          // findRowAndClick(real_permit_number, wait_time);
-
-          // cy.xpath("//li[text()='Amend']").click();
-          // cy.wait(wait_time);
+    //       // cy.xpath("//li[text()='Amend']").click();
+    //       // cy.wait(wait_time);
 
 
 
-          cy.get('[name="permitData.vehicleDetails.year"').clear().type('2008');
-          cy.wait(wait_time);
-          // cy.get('[name="comment"').clear().type('Make year updated');
-          // cy.wait(wait_time);
-          cy.get('[data-testid="continue-application-button"]').click();
-          cy.wait(wait_time);
-          cy.get('[type="checkbox"]').check();
-          cy.wait(wait_time);
-          cy.xpath("//button[text()='Add to Cart']").click();
-          cy.wait(wait_time);
-          // cy.xpath("//button[text()='Finish']").click();
-          // cy.wait(wait_time);
-        }
-      });
+    //       cy.get('[name="permitData.vehicleDetails.year"').clear().type('2008');
+    //       cy.wait(wait_time);
+    //       // cy.get('[name="comment"').clear().type('Make year updated');
+    //       // cy.wait(wait_time);
+    //       cy.get('[data-testid="continue-application-button"]').click();
+    //       cy.wait(wait_time);
+    //       cy.get('[type="checkbox"]').check();
+    //       cy.wait(wait_time);
+    //       cy.xpath("//button[text()='Add to Cart']").click();
+    //       cy.wait(wait_time);
+    //       // cy.xpath("//button[text()='Finish']").click();
+    //       // cy.wait(wait_time);
+    //     }
+    //   });
+
+
+
   });
 });
 
