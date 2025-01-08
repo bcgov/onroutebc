@@ -198,6 +198,7 @@ export const ApplicationForm = ({
     const updatedViolations = await triggerPolicyValidation();
     // prevent CV client continuing if there are policy engine validation errors
     if (Object.keys(updatedViolations).length > 0 && !isStaffUser) {
+      console.log(updatedViolations);
       return;
     }
 
