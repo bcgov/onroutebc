@@ -3,8 +3,7 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  OneToOne,
-  JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 import { Base } from '../../../common/entities/base.entity';
@@ -43,7 +42,6 @@ export class Receipt extends Base {
   })
   receiptDocumentId: string;
 
-  @OneToOne(() => Transaction, (transaction) => transaction.receipt)
-  @JoinColumn({ name: 'TRANSACTION_ID' })
-  transaction: Transaction;
+  @OneToMany(() => Transaction, (transaction) => transaction.receipt)
+  public transactions: Transaction[];
 }

@@ -478,9 +478,10 @@ export class PaymentService {
         )
       ) {
         const receiptNumber = await this.generateReceiptNumber();
-        const receipt = new Receipt();
+        //const receipt = new Receipt();
+        let receipt = new Receipt();
         receipt.receiptNumber = receiptNumber;
-        receipt.transaction = createdTransaction;
+        //receipt.transaction = createdTransaction;
         receipt.createdDateTime = new Date();
         receipt.createdUser = currentUser.userName;
         receipt.createdUserDirectory = currentUser.orbcUserDirectory;
@@ -489,7 +490,20 @@ export class PaymentService {
         receipt.updatedUser = currentUser.userName;
         receipt.updatedUserDirectory = currentUser.orbcUserDirectory;
         receipt.updatedUserGuid = currentUser.userGUID;
-        await queryRunner.manager.save(receipt);
+        // await queryRunner.manager.save(receipt);
+        receipt = await queryRunner.manager.save(receipt);
+
+        await queryRunner.manager.update(
+          Transaction,
+          { transactionId: createdTransaction.transactionId },
+          {
+            receipt: receipt,
+            updatedDateTime: new Date(),
+            updatedUser: currentUser.userName,
+            updatedUserDirectory: currentUser.orbcUserDirectory,
+            updatedUserGuid: currentUser.userGUID,
+          },
+        );
       }
 
       readTransactionDto = await this.classMapper.mapAsync(
@@ -724,9 +738,10 @@ export class PaymentService {
 
       if (updateTransactionTemp.pgApproved === 1) {
         const receiptNumber = await this.generateReceiptNumber();
-        const receipt = new Receipt();
+        //const receipt = new Receipt();
+        let receipt = new Receipt();
         receipt.receiptNumber = receiptNumber;
-        receipt.transaction = updatedTransaction;
+        //receipt.transaction = updatedTransaction;
         receipt.receiptNumber = receiptNumber;
         receipt.createdDateTime = new Date();
         receipt.createdUser = currentUser.userName;
@@ -736,7 +751,20 @@ export class PaymentService {
         receipt.updatedUser = currentUser.userName;
         receipt.updatedUserDirectory = currentUser.orbcUserDirectory;
         receipt.updatedUserGuid = currentUser.userGUID;
-        await queryRunner.manager.save(receipt);
+        //await queryRunner.manager.save(receipt);
+        receipt = await queryRunner.manager.save(receipt);
+
+        await queryRunner.manager.update(
+          Transaction,
+          { transactionId: updatedTransaction.transactionId },
+          {
+            receipt: receipt,
+            updatedDateTime: new Date(),
+            updatedUser: currentUser.userName,
+            updatedUserDirectory: currentUser.orbcUserDirectory,
+            updatedUserGuid: currentUser.userGUID,
+          },
+        );
       }
 
       await queryRunner.commitTransaction();
