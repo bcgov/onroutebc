@@ -274,13 +274,26 @@ export class PaymentService {
       this.cacheManager,
       CacheKey.FEATURE_FLAG_TYPE,
     );
+    const isStaffCanPayEnabled =
+      featureFlags?.['STAFF-CAN-PAY'] &&
+      (featureFlags['STAFF-CAN-PAY'] as FeatureFlagValue) ===
+        FeatureFlagValue.ENABLED;
+    const isRefundOrNoPayment =
+      createTransactionDto.transactionTypeId == TransactionType.REFUND ||
+      createTransactionDto.paymentMethodTypeCode ===
+        PaymentMethodTypeEnum.NO_PAYMENT;
+
+    // If the user is a staff user,
+    // transacation is NOT a refund or no payment and STAFF-CAN-PAY is disabled,
+    // throw an error
     if (
       doesUserHaveRole(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST) &&
-      featureFlags?.['STAFF-CAN-PAY'] &&
-      (featureFlags['STAFF-CAN-PAY'] as FeatureFlagValue) !==
-        FeatureFlagValue.ENABLED
+      !isRefundOrNoPayment &&
+      !isStaffCanPayEnabled
     ) {
-      throwUnprocessableEntityException('Disabled feature');
+      throwUnprocessableEntityException(
+        'Disabled feature - Feature flag: STAFF-CAN-PAY',
+      );
     }
     if (
       !doesUserHaveRole(currentUser.orbcUserRole, IDIR_USER_ROLE_LIST) &&
@@ -828,9 +841,8 @@ export class PaymentService {
     return fee;
   }
 
-
   /**
-   * 
+   *
    * This function is deprecated and will be removed once the validation endpoints are established.
    */
   @LogAsyncMethodExecution()
