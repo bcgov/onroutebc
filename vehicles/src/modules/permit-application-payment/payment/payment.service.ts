@@ -369,6 +369,7 @@ export class PaymentService {
         createTransactionDto,
         existingApplications,
         currentUser,
+        queryRunner,
       );
       const transactionOrderNumber =
         await this.generateTransactionOrderNumber();
@@ -555,6 +556,7 @@ export class PaymentService {
     createTransactionDto: CreateTransactionDto,
     applications: Permit[],
     currentUser: IUserJWT,
+    queryRunner: QueryRunner,
   ) {
     let totalTransactionAmountCalculated = 0;
     const isCVClientUser: boolean = isCVClient(currentUser.identity_provider);
@@ -569,8 +571,10 @@ export class PaymentService {
           `Atleast one of the application has invalid startDate or expiryDate.`,
         );
       }
-      totalTransactionAmountCalculated +=
-        await this.permitFeeCalculator(application);
+      totalTransactionAmountCalculated += await this.permitFeeCalculator(
+        application,
+        queryRunner,
+      );
     }
     const totalTransactionAmount =
       createTransactionDto.applicationDetails?.reduce(
@@ -852,12 +856,17 @@ export class PaymentService {
    * @param queryRunner - An optional QueryRunner for database transactions.
    * @returns {Promise<number>} - The calculated permit fee or refund amount.
    */
-  async permitFeeCalculator(application: Permit): Promise<number> {
+  @LogAsyncMethodExecution()
+  async permitFeeCalculator(
+    application: Permit,
+    queryRunner?: QueryRunner,
+  ): Promise<number> {
     if (application.permitStatus === ApplicationStatus.REVOKED) return 0;
     const companyId = application.company.companyId;
 
     const permitPaymentHistory = await this.findPermitHistory(
       application.originalPermitId,
+      queryRunner,
       companyId,
     );
     const isNoFee = await this.specialAuthService.findNoFee(companyId);
@@ -876,10 +885,13 @@ export class PaymentService {
   @LogAsyncMethodExecution()
   public async findPermitHistory(
     originalPermitId: string,
+    queryRunner: QueryRunner,
     companyId?: number,
   ): Promise<PermitHistoryDto[]> {
-    const permits = await this.permitRepository
-      .createQueryBuilder('permit')
+    const permits = await queryRunner.manager
+      .createQueryBuilder()
+      .select('permit')
+      .from(Permit, 'permit')
       .leftJoinAndSelect('permit.company', 'company')
       .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
       .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
