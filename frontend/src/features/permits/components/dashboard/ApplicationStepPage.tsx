@@ -32,7 +32,6 @@ import {
   ApplicationStepContext,
   ERROR_ROUTES,
 } from "../../../../routes/constants";
-import { ApplicationReviewNew } from "../../pages/Application/ApplicationInReviewNew";
 
 const displayHeaderText = (stepKey: ApplicationStep) => {
   switch (stepKey) {
@@ -123,23 +122,14 @@ export const ApplicationStepPage = ({
 
   const renderApplicationStep = () => {
     if (applicationStep === APPLICATION_STEPS.REVIEW) {
-      return (
-        <ApplicationReviewNew
+      return applicationStepContext === APPLICATION_STEP_CONTEXTS.QUEUE ? (
+        <ApplicationInQueueReview
           applicationData={contextData.applicationData}
-          applicationStepContext={applicationStepContext}
         />
+      ) : (
+        <ApplicationReview companyId={companyId} />
       );
-
-      //   return applicationStepContext === APPLICATION_STEP_CONTEXTS.QUEUE ? (
-      //     <ApplicationInQueueReview applicationData={contextData.applicationData} />
-      //   ) : (
-      //     <ApplicationReview
-      //       companyId={companyId}
-      //     />
-      //   );
-      // }
     }
-
     return (
       <ApplicationForm
         permitType={applicationPermitType}
