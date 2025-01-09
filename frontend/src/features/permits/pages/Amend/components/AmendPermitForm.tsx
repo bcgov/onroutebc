@@ -77,7 +77,7 @@ export const AmendPermitForm = () => {
     trailerSubtypeNamesMap,
   } = usePermitVehicleManagement(companyId);
 
-  const policyEngine = usePolicyEngine(companyId);
+  const policyEngine = usePolicyEngine(specialAuthorizations);
 
   const {
     initialFormData,

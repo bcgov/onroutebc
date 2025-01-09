@@ -53,7 +53,7 @@ export const ApplicationInQueueReview = ({
 
   const navigate = useNavigate();
 
-  const policyEngine = usePolicyEngine(companyId);
+  const policyEngine = usePolicyEngine(specialAuth);
   const { commodityOptions } = useCommodityOptions(policyEngine, permitType);
   const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
   const trailerSubTypesQuery = useTrailerSubTypesQuery();

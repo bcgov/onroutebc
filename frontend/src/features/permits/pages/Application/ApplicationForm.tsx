@@ -94,7 +94,7 @@ export const ApplicationForm = ({
     trailerSubtypeNamesMap,
   } = usePermitVehicleManagement(companyId);
 
-  const policyEngine = usePolicyEngine(companyId);
+  const policyEngine = usePolicyEngine(specialAuthorizations);
 
   // Use a custom hook that performs the following whenever page is rendered (or when application context is updated/changed):
   // 1. Get all data needed to initialize the application form (from application context, company, user details)
@@ -198,7 +198,7 @@ export const ApplicationForm = ({
     const updatedViolations = await triggerPolicyValidation();
     // prevent CV client continuing if there are policy engine validation errors
     if (Object.keys(updatedViolations).length > 0 && !isStaffUser) {
-      console.log(updatedViolations);
+      console.error(updatedViolations);
       return;
     }
 
