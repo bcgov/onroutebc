@@ -50,7 +50,7 @@ export const ShoppingCartItem = ({
             Application #:
           </span>
 
-          {cartItemData.applicant === "Provincial Permit Center" ? (
+          {cartItemData.applicant === "Provincial Permit Centre" ? (
             cartItemData.applicationNumber
           ) : (
             <CustomActionLink
