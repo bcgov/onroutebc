@@ -8,6 +8,9 @@ import {
 } from "../../../../../common/helpers/formatDate";
 import { CustomActionLink } from "../../../../../common/components/links/CustomActionLink";
 import { feeSummaryDisplayText } from "../../../helpers/feeSummary";
+import { PERMIT_APPLICATION_ORIGINS } from "../../../types/PermitApplicationOrigin";
+import { useContext } from "react";
+import OnRouteBCContext from "../../../../../common/authentication/OnRouteBCContext";
 
 export const ShoppingCartItem = ({
   cartItemData,
@@ -34,6 +37,9 @@ export const ShoppingCartItem = ({
     }
   };
 
+  const { userDetails } = useContext(OnRouteBCContext);
+  const isBCeIDUser = Boolean(userDetails?.userRole);
+
   return (
     <div className="shopping-cart-item">
       <Checkbox
@@ -50,7 +56,8 @@ export const ShoppingCartItem = ({
             Application #:
           </span>
 
-          {cartItemData.applicant === "Provincial Permit Centre" ? (
+          {cartItemData.permitApplicationOrigin ===
+            PERMIT_APPLICATION_ORIGINS.PPC && isBCeIDUser ? (
             cartItemData.applicationNumber
           ) : (
             <CustomActionLink
