@@ -88,8 +88,9 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
         }}
         className="company-primary-contact-form__input company-primary-contact-form__input--left"
       />
+
       <CustomFormComponent
-        type="number"
+        type="ext"
         feature={feature}
         options={{
           name: "primaryContact.phone1Extension",
@@ -108,6 +109,7 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
         className="company-primary-contact-form__input company-primary-contact-form__input--right"
       />
     </div>
+
     <div className="side-by-side-inputs">
       <CustomFormComponent
         type="phone"
@@ -133,8 +135,9 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
         }}
         className="company-primary-contact-form__input company-primary-contact-form__input--left"
       />
+
       <CustomFormComponent
-        type="number"
+        type="ext"
         feature={feature}
         options={{
           name: "primaryContact.phone2Extension",

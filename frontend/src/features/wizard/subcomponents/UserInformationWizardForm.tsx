@@ -104,7 +104,7 @@ export const UserInformationWizardForm = memo(() => {
           className="user-info-wizard-form__input user-info-wizard-form__input--left"
         />
         <CustomFormComponent
-          type="number"
+          type="ext"
           feature={FEATURE}
           options={{
             name: "adminUser.phone1Extension",
@@ -150,7 +150,7 @@ export const UserInformationWizardForm = memo(() => {
           className="user-info-wizard-form__input user-info-wizard-form__input--left"
         />
         <CustomFormComponent
-          type="number"
+          type="ext"
           feature={FEATURE}
           options={{
             name: "adminUser.phone2Extension",
