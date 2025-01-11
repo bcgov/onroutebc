@@ -5,13 +5,10 @@ import "./ContactDetails.scss";
 import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
 import { BANNER_MESSAGES } from "../../../../common/constants/bannerMessages";
-import { removeNonNumericValues } from "../../../../common/helpers/removeNonNumericValues";
-import {
-  invalidEmail,
-  invalidExtensionLength,
-  invalidPhoneLength,
-  requiredMessage,
-} from "../../../../common/helpers/validationMessages";
+import { invalidEmail, requiredMessage } from "../../../../common/helpers/validationMessages";
+import { validatePhoneNumber } from "../../../../common/helpers/phone/validatePhoneNumber";
+import { validatePhoneExtension } from "../../../../common/helpers/phone/validatePhoneExtension";
+import { validateOptionalPhoneNumber } from "../../../../common/helpers/phone/validateOptionalPhoneNumber";
 
 export const ContactDetails = ({ feature }: { feature: string }) => {
   return (
@@ -57,14 +54,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
               rules: {
                 required: { value: true, message: requiredMessage() },
                 validate: {
-                  validatePhone1: (phone: string) => {
-                    const filteredPhone = removeNonNumericValues(phone);
-                    return (
-                      (filteredPhone.length >= 10 &&
-                        filteredPhone.length <= 20) ||
-                      invalidPhoneLength(10, 20)
-                    );
-                  },
+                  validatePhone1: (phone: string) => validatePhoneNumber(phone),
                 },
               },
 
@@ -82,10 +72,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
                 required: false,
                 validate: {
                   validateExt1: (ext?: string) =>
-                    !ext ||
-                    ext.length === 0 ||
-                    ext.length <= 5 ||
-                    invalidExtensionLength(5),
+                    validatePhoneExtension(ext),
                 },
               },
               label: "Ext",
@@ -103,17 +90,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
               rules: {
                 required: false,
                 validate: {
-                  validatePhone2: (phone?: string) => {
-                    if (!phone) return;
-
-                    const filteredPhone = removeNonNumericValues(phone);
-                    return (
-                      filteredPhone.length === 0 ||
-                      (filteredPhone.length >= 10 &&
-                        filteredPhone.length <= 20) ||
-                      invalidPhoneLength(10, 20)
-                    );
-                  },
+                  validatePhone2: (phone?: string) => validateOptionalPhoneNumber(phone),
                 },
               },
               label: "Alternate Number",
@@ -130,10 +107,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
                 required: false,
                 validate: {
                   validateExt2: (ext?: string) =>
-                    !ext ||
-                    ext.length === 0 ||
-                    ext.length <= 5 ||
-                    invalidExtensionLength(5),
+                    validatePhoneExtension(ext),
                 },
               },
               label: "Ext",
@@ -194,16 +168,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
             rules: {
               required: false,
               validate: {
-                validateFax: (fax?: string) => {
-                  if (!fax) return;
-
-                  const filteredFax = removeNonNumericValues(fax);
-                  return (
-                    filteredFax.length === 0 ||
-                    (filteredFax.length >= 10 && filteredFax.length <= 20) ||
-                    invalidPhoneLength(10, 20)
-                  );
-                },
+                validateFax: (fax?: string) => validateOptionalPhoneNumber(fax),
               },
             },
             label: "Fax",

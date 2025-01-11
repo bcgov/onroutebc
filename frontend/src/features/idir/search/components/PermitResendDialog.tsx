@@ -12,21 +12,22 @@ import {
 
 import "./PermitResendDialog.scss";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { Optional } from "../../../../common/types/common";
+import { validateOptionalPhoneNumber } from "../../../../common/helpers/phone/validateOptionalPhoneNumber";
 import {
-  invalidPhoneLength,
   requiredMessage,
   selectionRequired,
 } from "../../../../common/helpers/validationMessages";
+
 import {
   CustomFormComponent,
   getErrorMessage,
 } from "../../../../common/components/form/CustomFormComponents";
+
 import {
   EMAIL_NOTIFICATION_TYPES,
   EmailNotificationType,
 } from "../../../permits/types/EmailNotificationType";
-import { Optional } from "../../../../common/types/common";
-import { removeNonNumericValues } from "../../../../common/helpers/removeNonNumericValues";
 
 interface PermitResendFormData {
   permitId: string;
@@ -229,14 +230,7 @@ export default function PermitResendDialog({
                 required: false,
                 validate: {
                   validateFax: (fax?: string) => {
-                    if (!fax) return;
-
-                    const filteredFax = removeNonNumericValues(fax);
-                    return (
-                      filteredFax.length === 0 ||
-                      (filteredFax.length >= 10 && filteredFax.length <= 20) ||
-                      invalidPhoneLength(10, 20)
-                    );
+                    return validateOptionalPhoneNumber(fax);
                   },
                 },
               },

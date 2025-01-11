@@ -4,16 +4,16 @@ import isEmail from "validator/lib/isEmail";
 import "./UserInformationWizardForm.scss";
 import { CustomFormComponent } from "../../../common/components/form/CustomFormComponents";
 import { CountryAndProvince } from "../../../common/components/form/CountryAndProvince";
+import { validatePhoneNumber } from "../../../common/helpers/phone/validatePhoneNumber";
+import { validatePhoneExtension } from "../../../common/helpers/phone/validatePhoneExtension";
+import { validateOptionalPhoneNumber } from "../../../common/helpers/phone/validateOptionalPhoneNumber";
 import {
   invalidCityLength,
   invalidEmail,
-  invalidExtensionLength,
   invalidFirstNameLength,
   invalidLastNameLength,
-  invalidPhoneLength,
   requiredMessage,
 } from "../../../common/helpers/validationMessages";
-import { removeNonNumericValues } from "../../../common/helpers/removeNonNumericValues";
 
 /**
  * The User Information Form contains multiple subs forms including
@@ -43,6 +43,7 @@ export const UserInformationWizardForm = memo(() => {
         }}
         className="user-info-wizard-form__input"
       />
+
       <CustomFormComponent
         type="input"
         feature={FEATURE}
@@ -60,6 +61,7 @@ export const UserInformationWizardForm = memo(() => {
         }}
         className="user-info-wizard-form__input"
       />
+
       <CustomFormComponent
         type="input"
         feature={FEATURE}
@@ -89,20 +91,14 @@ export const UserInformationWizardForm = memo(() => {
                 message: requiredMessage(),
               },
               validate: {
-                validatePhone1: (phone: string) => {
-                  const filteredPhone = removeNonNumericValues(phone);
-                  return (
-                    (filteredPhone.length >= 10 &&
-                      filteredPhone.length <= 20) ||
-                    invalidPhoneLength(10, 20)
-                  );
-                },
+                validatePhone1: (phone: string) => validatePhoneNumber(phone),
               },
             },
             label: "Primary Phone",
           }}
           className="user-info-wizard-form__input user-info-wizard-form__input--left"
         />
+
         <CustomFormComponent
           type="ext"
           feature={FEATURE}
@@ -112,10 +108,7 @@ export const UserInformationWizardForm = memo(() => {
               required: false,
               validate: {
                 validateExt1: (ext?: string) =>
-                  ext == null ||
-                  ext === "" ||
-                  (ext != null && ext !== "" && ext.length <= 5) ||
-                  invalidExtensionLength(5),
+                  validatePhoneExtension(ext),
               },
             },
             label: "Ext",
@@ -123,6 +116,7 @@ export const UserInformationWizardForm = memo(() => {
           className="user-info-wizard-form__input user-info-wizard-form__input--right"
         />
       </div>
+
       <div className="side-by-side-inputs">
         <CustomFormComponent
           type="phone"
@@ -132,23 +126,14 @@ export const UserInformationWizardForm = memo(() => {
             rules: {
               required: false,
               validate: {
-                validatePhone2: (phone?: string) => {
-                  if (!phone) return;
-
-                  const filteredPhone = removeNonNumericValues(phone);
-                  return (
-                    filteredPhone.length === 0 ||
-                    (filteredPhone.length >= 10 &&
-                      filteredPhone.length <= 20) ||
-                    invalidPhoneLength(10, 20)
-                  );
-                },
+                validatePhone2: (phone?: string) => validateOptionalPhoneNumber(phone),
               },
             },
             label: "Alternate Phone",
           }}
           className="user-info-wizard-form__input user-info-wizard-form__input--left"
         />
+
         <CustomFormComponent
           type="ext"
           feature={FEATURE}
@@ -158,10 +143,7 @@ export const UserInformationWizardForm = memo(() => {
               required: false,
               validate: {
                 validateExt2: (ext?: string) =>
-                  ext == null ||
-                  ext === "" ||
-                  (ext != null && ext !== "" && ext.length <= 5) ||
-                  invalidExtensionLength(5),
+                  validatePhoneExtension(ext),
               },
             },
             label: "Ext",
@@ -169,6 +151,7 @@ export const UserInformationWizardForm = memo(() => {
           className="user-info-wizard-form__input user-info-wizard-form__input--right"
         />
       </div>
+
       <CustomFormComponent
         type="phone"
         feature={FEATURE}
@@ -177,22 +160,14 @@ export const UserInformationWizardForm = memo(() => {
           rules: {
             required: false,
             validate: {
-              validateFax: (fax?: string) => {
-                if (!fax) return;
-
-                const filteredFax = removeNonNumericValues(fax);
-                return (
-                  filteredFax.length === 0 ||
-                  (filteredFax.length >= 10 && filteredFax.length <= 20) ||
-                  invalidPhoneLength(10, 20)
-                );
-              },
+              validateFax: (fax?: string) => validateOptionalPhoneNumber(fax),
             },
           },
           label: "Fax",
         }}
         className="user-info-wizard-form__input user-info-wizard-form__input--left"
       />
+
       <CountryAndProvince
         feature={FEATURE}
         countryField="adminUser.countryCode"
@@ -202,6 +177,7 @@ export const UserInformationWizardForm = memo(() => {
         isProvinceRequired={true}
         provinceClassName="user-info-wizard-form__input"
       />
+
       <CustomFormComponent
         type="input"
         feature={FEATURE}
