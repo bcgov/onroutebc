@@ -9,7 +9,8 @@ import { invalidExtension, invalidExtensionLength } from "../validationMessages"
 export const validatePhoneExtension = (ext?: Nullable<string>) => {
   if (!ext) return true; // empty or not-provided phone extension is acceptable
 
+  if (ext.length > 5) return invalidExtensionLength(5);
+
   // Must have exactly 1-5 digits
-  if (!/^[0-9]{1,5}$/.test(ext)) return invalidExtension();
-  return ext.length <= 5 || invalidExtensionLength(5);
+  return /^[0-9]{1,5}$/.test(ext) || invalidExtension();
 };
