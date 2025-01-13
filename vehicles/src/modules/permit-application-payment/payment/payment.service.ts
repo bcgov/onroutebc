@@ -71,6 +71,8 @@ import { PermitData } from 'src/common/interface/permit.template.interface';
 import { isValidLoa } from 'src/common/helper/validate-loa.helper';
 import { PermitHistoryDto } from '../permit/dto/response/permit-history.dto';
 import { SpecialAuthService } from 'src/modules/special-auth/special-auth.service';
+import { ReadPolicyConfigDto } from '../../policy/dto/response/read-policy-config.dto';
+import { Policy, ValidationResults } from 'onroute-policy-engine/.';
 
 @Injectable()
 export class PaymentService {
@@ -258,6 +260,24 @@ export class PaymentService {
   }
 
   /**
+   * Validates with policy engine.
+   * @param permitApplication
+   * @returns
+   */
+  private async validateWithPolicyEngine(
+    permitApplication: Permit,
+  ): Promise<boolean> {
+    const policyDefinitions: ReadPolicyConfigDto = await this.cacheManager.get(
+      CacheKey.POLICY_CONFIGURATIONS,
+    );
+    const policy = new Policy(policyDefinitions.policy);
+    const validationResults: ValidationResults =
+      await policy.validate(permitApplication);
+
+    return validationResults.violations.length > 0;
+  }
+
+  /**
    * Creates a Transaction in ORBC System.
    * @param currentUser - The current user object of type {@link IUserJWT}
    * @param createTransactionDto - The createTransactionDto object of type
@@ -282,6 +302,10 @@ export class PaymentService {
       createTransactionDto.transactionTypeId == TransactionType.REFUND ||
       createTransactionDto.paymentMethodTypeCode ===
         PaymentMethodTypeEnum.NO_PAYMENT;
+    const isPolicyEngineEnabled =
+      featureFlags?.['VALIDATE-WITH-POLICY-ENGINE'] &&
+      (featureFlags['VALIDATE-WITH-POLICY-ENGINE'] as FeatureFlagValue) ===
+        FeatureFlagValue.ENABLED;
 
     // If the user is a staff user,
     // transacation is NOT a refund or no payment and STAFF-CAN-PAY is disabled,
@@ -363,6 +387,14 @@ export class PaymentService {
         // If application includes LoAs then validate Loa data.
         if (permitData.loas) {
           await isValidLoa(application, queryRunner, this.classMapper);
+        }
+        if (isPolicyEngineEnabled) {
+          const isValid = await this.validateWithPolicyEngine(application);
+          if (!isValid) {
+            throw new BadRequestException(
+              'Application data does not meet policy engine requirements.',
+            );
+          }
         }
       }
       const totalTransactionAmount = await this.validateApplicationAndPayment(

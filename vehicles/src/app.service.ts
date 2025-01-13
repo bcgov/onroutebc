@@ -138,7 +138,7 @@ export class AppService {
     await addToCache(
       this.cacheManager,
       CacheKey.POLICY_CONFIGURATIONS,
-      createCacheMap(policyConfigs, '??', 'policyJson'),
+      JSON.stringify(policyConfigs),
     );
 
     const endDateTime = new Date();
