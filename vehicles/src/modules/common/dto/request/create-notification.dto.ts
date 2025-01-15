@@ -4,8 +4,6 @@ import {
   ArrayMinSize,
   IsEmail,
   IsEnum,
-  IsNumberString,
-  IsOptional,
 } from 'class-validator';
 import { NotificationType } from '../../../../common/enum/notification-type.enum';
 
