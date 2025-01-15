@@ -41,7 +41,7 @@ export const getActivePolicyDefinitions = async (
   const policyConfigArray =
     (await response.data.json()) as ReadPolicyConfigDto[];
   if (!policyConfigArray.length) {
-    return {};
+    return null;
   }
   return policyConfigArray[0];
 };

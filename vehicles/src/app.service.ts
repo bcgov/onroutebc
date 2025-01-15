@@ -13,7 +13,6 @@ import { LogAsyncMethodExecution } from './common/decorator/log-async-method-exe
 import { FeatureFlagsService } from './modules/feature-flags/feature-flags.service';
 import { ApplicationService } from './modules/permit-application-payment/application/application.service';
 import { HttpService } from '@nestjs/axios';
-import { getActivePolicyDefinitions } from './common/helper/policy-engine.helper';
 
 @Injectable()
 export class AppService {
@@ -129,16 +128,6 @@ export class AppService {
       this.cacheManager,
       CacheKey.PERMIT_APPROVAL_SOURCE,
       createCacheMap(permitApprovalSource, 'id', 'code'),
-    );
-
-    const policyConfigs = await getActivePolicyDefinitions(
-      this.httpService,
-      this.cacheManager,
-    );
-    await addToCache(
-      this.cacheManager,
-      CacheKey.POLICY_CONFIGURATIONS,
-      JSON.stringify(policyConfigs),
     );
 
     const endDateTime = new Date();
