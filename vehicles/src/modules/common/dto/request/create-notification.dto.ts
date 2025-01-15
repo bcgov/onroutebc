@@ -20,17 +20,6 @@ export class CreateNotificationDto {
   @ArrayMinSize(1)
   to: string[];
 
-  @ApiProperty({
-    description: 'Notification fax numbers.',
-    example: ['9999999999', '8888888888'],
-  })
-  @IsOptional()
-  @IsNumberString(undefined, {
-    each: true,
-  })
-  @ArrayMinSize(1)
-  fax?: string[];
-
   @AutoMap()
   @ApiProperty({
     enum: NotificationType,
