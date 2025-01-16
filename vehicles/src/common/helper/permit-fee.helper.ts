@@ -15,7 +15,6 @@ import {
 } from '../constants/permit.constant';
 import { differenceBetween } from './date-time.helper';
 import * as dayjs from 'dayjs';
-import { ApplicationStatus } from '../enum/application-status.enum';
 import { Nullable } from '../types/common';
 
 /**
@@ -103,19 +102,8 @@ export const yearlyPermit = (duration: number): boolean => {
 };
 
 export const calculateDuration = (application: Permit): number => {
-  let startDate = application.permitData.startDate;
+  const startDate = application.permitData.startDate;
   const endDate = application.permitData.expiryDate;
-  const today = dayjs(new Date()).format('YYYY-MM-DD');
-  if (
-    application.permitStatus === ApplicationStatus.VOIDED &&
-    startDate < today
-  )
-    startDate = today;
-  if (
-    application.permitStatus === ApplicationStatus.VOIDED &&
-    today === startDate
-  )
-    startDate = dayjs(today).add(1, 'day').format('YYYY-MM-DD');
   const duration = differenceBetween(startDate, endDate) + 1;
   return duration;
 };
