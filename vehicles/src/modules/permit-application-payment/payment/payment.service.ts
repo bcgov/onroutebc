@@ -874,6 +874,7 @@ export class PaymentService {
       permitPaymentHistory.length > 0
         ? calculatePermitAmount(permitPaymentHistory)
         : undefined;
+    if (application.permitStatus === ApplicationStatus.VOIDED) return -oldAmount;    
     const fee = permitFee(application, isNoFee, oldAmount);
     return fee;
   }

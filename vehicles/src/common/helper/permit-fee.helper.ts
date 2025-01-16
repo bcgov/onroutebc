@@ -59,7 +59,6 @@ export const permitFee = (
         TROS_PRICE_PER_TERM,
         TROS_TERM,
         oldAmount,
-        application.permitStatus,
         isNoFee,
       );
     }
@@ -89,7 +88,6 @@ export const permitFee = (
         TROW_PRICE_PER_TERM,
         TROW_TERM,
         oldAmount,
-        application.permitStatus,
         isNoFee,
       );
     }
@@ -155,20 +153,11 @@ export const currentPermitFee = (
   pricePerTerm: number,
   allowedPermitTerm: number,
   oldAmount?: Nullable<number>,
-  permitStatus?: Nullable<ApplicationStatus>,
   isNoFee?: Nullable<boolean>,
 ): number => {
   // Calculate the number of permit terms based on the duration
-  const permitTerms =
-    permitStatus === ApplicationStatus.VOIDED
-      ? Math.floor(duration / allowedPermitTerm)
-      : Math.ceil(duration / allowedPermitTerm);
+  const permitTerms = Math.ceil(duration / allowedPermitTerm);
 
-  // Special fee calculation for void permit
-  if (permitStatus === ApplicationStatus.VOIDED) {
-    // If the permit status is voided, return a refund of 0 for permit with no fees, or return the applicable refund amount
-    return oldAmount === 0 ? 0 : -pricePerTerm * permitTerms;
-  }
   // For non void new application (exclude amendment application), if no fee applies, set the price per term to 0 for new application
   if ((isNoFee && oldAmount === undefined) || oldAmount === 0) return 0;
   if (oldAmount === undefined) oldAmount = 0;
@@ -206,6 +195,8 @@ export const validAmount = (
   receivedAmount: number,
   transactionType: TransactionType,
 ): boolean => {
+  console.log('calculated amount is ',calculatedAmount);
+  console.log('receivedAmount amount is ',receivedAmount);
   const isAmountValid =
     receivedAmount.toFixed(2) === Math.abs(calculatedAmount).toFixed(2);
 
