@@ -4,7 +4,6 @@ import "./CompanyContactDetailsForm.scss";
 import { CustomFormComponent } from "../../../../../../common/components/form/CustomFormComponents";
 import { validatePhoneNumber } from "../../../../../../common/helpers/phone/validatePhoneNumber";
 import { validatePhoneExtension } from "../../../../../../common/helpers/phone/validatePhoneExtension";
-import { validateOptionalPhoneNumber } from "../../../../../../common/helpers/phone/validateOptionalPhoneNumber";
 import { invalidEmail, requiredMessage } from "../../../../../../common/helpers/validationMessages";
 
 export const CompanyContactDetailsForm = ({
@@ -74,21 +73,5 @@ export const CompanyContactDetailsForm = ({
         className="company-contact-details-form__input company-contact-details-form__input--right"
       />
     </div>
-
-    <CustomFormComponent
-      type="phone"
-      feature={feature}
-      options={{
-        name: "fax",
-        rules: {
-          required: false,
-          validate: {
-            validateFax: (fax?: string) => validateOptionalPhoneNumber(fax),
-          },
-        },
-        label: "Fax",
-      }}
-      className="company-contact-details-form__input company-contact-details-form__input--left"
-    />
   </div>
 );

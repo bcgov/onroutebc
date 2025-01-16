@@ -152,24 +152,6 @@ export const ReusableUserInfoForm = ({
         />
       </div>
 
-      <CustomFormComponent
-        type="phone"
-        feature={FEATURE}
-        options={{
-          name: "fax",
-          rules: {
-            required: false,
-            validate: {
-              validateFax: (fax?: string) => {
-                return validateOptionalPhoneNumber(fax);
-              },
-            },
-          },
-          label: "Fax",
-        }}
-        className="my-info-form__input my-info-form__input--left"
-      />
-
       <CountryAndProvince
         feature={FEATURE}
         countryField="countryCode"

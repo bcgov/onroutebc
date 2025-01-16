@@ -19,7 +19,6 @@ import { hasPermitsActionFailed } from "../../../helpers/permitState";
 import { usePermitHistoryQuery } from "../../../hooks/hooks";
 import { isValidTransaction } from "../../../helpers/payment";
 import { invalidEmail, requiredMessage } from "../../../../../common/helpers/validationMessages";
-import { validateOptionalPhoneNumber } from "../../../../../common/helpers/phone/validateOptionalPhoneNumber";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -165,22 +164,6 @@ export const VoidPermitForm = ({
                 label: "Additional Email",
               }}
               className="void-input void-input--additional-email"
-            />
-
-            <CustomFormComponent
-              type="phone"
-              feature={FEATURE}
-              options={{
-                name: "fax",
-                rules: {
-                  required: false,
-                  validate: {
-                    validateFax: (fax?: string) => validateOptionalPhoneNumber(fax),
-                  },
-                },
-                label: "Fax",
-              }}
-              className="void-input void-input--fax"
             />
           </div>
         </div>

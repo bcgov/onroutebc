@@ -75,7 +75,6 @@ export const CompanyInfoForm = memo(
         email: getDefaultRequiredVal("", companyInfo?.email, userEmail),
         phone: applyWhenNotNullable(getFormattedPhoneNumber, companyInfo?.phone, ""),
         extension: getDefaultRequiredVal("", companyInfo?.extension),
-        fax: applyWhenNotNullable(getFormattedPhoneNumber, companyInfo?.fax, ""),
         primaryContact: {
           firstName: getDefaultRequiredVal(
             "",

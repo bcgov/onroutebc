@@ -158,22 +158,6 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
             label: "Additional Email",
           }}
         />
-
-        <CustomFormComponent
-          className="contact-details-form__input contact-details-form__input--fax"
-          type="phone"
-          feature={feature}
-          options={{
-            name: "permitData.contactDetails.fax",
-            rules: {
-              required: false,
-              validate: {
-                validateFax: (fax?: string) => validateOptionalPhoneNumber(fax),
-              },
-            },
-            label: "Fax",
-          }}
-        />
       </Box>
     </Box>
   );

@@ -25,6 +25,8 @@ import {
   BCeID_USER_ROLE,
 } from "../../../../../common/authentication/types";
 
+const FEATURE = "my-info-form";
+
 export const MyInfoForm = memo(
   ({
     myInfo,
@@ -44,7 +46,6 @@ export const MyInfoForm = memo(
         phone1Extension: getDefaultRequiredVal("", myInfo?.phone1Extension),
         phone2: applyWhenNotNullable(getFormattedPhoneNumber, myInfo?.phone2, ""),
         phone2Extension: getDefaultRequiredVal("", myInfo?.phone2Extension),
-        fax: applyWhenNotNullable(getFormattedPhoneNumber, myInfo?.fax, ""),
         countryCode: getDefaultRequiredVal("", myInfo?.countryCode),
         provinceCode: getDefaultRequiredVal("", myInfo?.provinceCode),
         city: getDefaultRequiredVal("", myInfo?.city),
@@ -80,13 +81,12 @@ export const MyInfoForm = memo(
       });
     };
 
-    const FEATURE = "my-info-form";
-
     return (
       <div className="my-info-form">
         <FormProvider {...formMethods}>
           <ReusableUserInfoForm feature={FEATURE} />
         </FormProvider>
+
         <div className="my-info-form__submission">
           <Button
             key="update-my-info-cancel-button"
@@ -98,6 +98,7 @@ export const MyInfoForm = memo(
           >
             Cancel
           </Button>
+
           <Button
             key="update-my-info-button"
             className="submit-btn"
