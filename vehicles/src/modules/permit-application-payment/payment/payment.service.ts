@@ -587,9 +587,10 @@ export class PaymentService {
         totalTransactionAmount,
         createTransactionDto.transactionTypeId,
       )
-    )
-    {
-      this.logger.error(`Reaceived amount id ${totalTransactionAmount}. calculated amount is ${totalTransactionAmount}`);
+    ) {
+      this.logger.error(
+        `Transaction amount mismatch. Received amount is ${totalTransactionAmount}. Calculated amount is ${totalTransactionAmount}`,
+      );
       throw new BadRequestException('Transaction amount mismatch.');
     }
     return totalTransactionAmount;
@@ -877,7 +878,8 @@ export class PaymentService {
       permitPaymentHistory.length > 0
         ? calculatePermitAmount(permitPaymentHistory)
         : undefined;
-    if (application.permitStatus === ApplicationStatus.VOIDED) return -oldAmount;    
+    if (application.permitStatus === ApplicationStatus.VOIDED)
+      return -oldAmount;
     const fee = permitFee(application, isNoFee, oldAmount);
     return fee;
   }
