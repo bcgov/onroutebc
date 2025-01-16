@@ -195,8 +195,6 @@ export const validAmount = (
   receivedAmount: number,
   transactionType: TransactionType,
 ): boolean => {
-  console.log('calculated amount is ',calculatedAmount);
-  console.log('receivedAmount amount is ',receivedAmount);
   const isAmountValid =
     receivedAmount.toFixed(2) === Math.abs(calculatedAmount).toFixed(2);
 

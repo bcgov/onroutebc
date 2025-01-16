@@ -588,7 +588,10 @@ export class PaymentService {
         createTransactionDto.transactionTypeId,
       )
     )
+    {
+      this.logger.error(`Reaceived amount id ${totalTransactionAmount}. calculated amount is ${totalTransactionAmount}`);
       throw new BadRequestException('Transaction amount mismatch.');
+    }
     return totalTransactionAmount;
   }
 
