@@ -589,8 +589,9 @@ export class PaymentService {
       )
     ) {
       this.logger.error(
-        `Transaction amount mismatch. Received amount is ${totalTransactionAmount}. Calculated amount is ${totalTransactionAmount}`,
+        `Transaction amount mismatch. Received amount is ${totalTransactionAmount}. Calculated amount is ${totalTransactionAmountCalculated}`,
       );
+
       throw new BadRequestException('Transaction amount mismatch.');
     }
     return totalTransactionAmount;
