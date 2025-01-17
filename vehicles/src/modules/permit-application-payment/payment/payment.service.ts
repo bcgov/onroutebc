@@ -52,6 +52,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { CacheKey } from 'src/common/enum/cache-key.enum';
 import {
+  addToCache,
   getFromCache,
   getMapFromCache,
 } from '../../../common/helper/cache.helper';
@@ -71,12 +72,17 @@ import { PermitData } from 'src/common/interface/permit.template.interface';
 import { isValidLoa } from 'src/common/helper/validate-loa.helper';
 import { PermitHistoryDto } from '../permit/dto/response/permit-history.dto';
 import { SpecialAuthService } from 'src/modules/special-auth/special-auth.service';
+import { ReadPolicyConfigDto } from '../../policy/dto/response/read-policy-config.dto';
+import { Policy, ValidationResults } from 'onroute-policy-engine/.';
+import { getActivePolicyDefinitions } from '../../../common/helper/policy-engine.helper';
+import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class PaymentService {
   private readonly logger = new Logger(PaymentService.name);
   constructor(
     private dataSource: DataSource,
+    private readonly httpService: HttpService,
     @InjectRepository(Transaction)
     private transactionRepository: Repository<Transaction>,
     @InjectRepository(Receipt)
@@ -258,6 +264,43 @@ export class PaymentService {
   }
 
   /**
+   * Validates with policy engine.
+   * @param permitApplication
+   * @returns
+   */
+  private async validateWithPolicyEngine(
+    permitApplication: Permit,
+  ): Promise<boolean> {
+    const policyDefinitions: string = await this.cacheManager.get(
+      CacheKey.POLICY_CONFIGURATIONS,
+    );
+    if (!policyDefinitions) {
+      const policyDefinitions = await getActivePolicyDefinitions(
+        this.httpService,
+        this.cacheManager,
+      );
+      if (!policyDefinitions) {
+        throw new InternalServerErrorException(
+          'Policy engine is not available',
+        );
+      }
+      await addToCache(
+        this.cacheManager,
+        CacheKey.POLICY_CONFIGURATIONS,
+        JSON.stringify(policyDefinitions),
+      );
+    }
+    const activePolicyDefintion = JSON.parse(
+      policyDefinitions,
+    ) as ReadPolicyConfigDto;
+    const policy = new Policy(activePolicyDefintion.policy);
+    const validationResults: ValidationResults =
+      await policy.validate(permitApplication);
+
+    return validationResults.violations.length > 0;
+  }
+
+  /**
    * Creates a Transaction in ORBC System.
    * @param currentUser - The current user object of type {@link IUserJWT}
    * @param createTransactionDto - The createTransactionDto object of type
@@ -282,6 +325,10 @@ export class PaymentService {
       createTransactionDto.transactionTypeId == TransactionType.REFUND ||
       createTransactionDto.paymentMethodTypeCode ===
         PaymentMethodTypeEnum.NO_PAYMENT;
+    const isPolicyEngineEnabled =
+      featureFlags?.['VALIDATE-WITH-POLICY-ENGINE'] &&
+      (featureFlags['VALIDATE-WITH-POLICY-ENGINE'] as FeatureFlagValue) ===
+        FeatureFlagValue.ENABLED;
 
     // If the user is a staff user,
     // transacation is NOT a refund or no payment and STAFF-CAN-PAY is disabled,
@@ -363,6 +410,14 @@ export class PaymentService {
         // If application includes LoAs then validate Loa data.
         if (permitData.loas) {
           await isValidLoa(application, queryRunner, this.classMapper);
+        }
+        if (isPolicyEngineEnabled) {
+          const isValid = await this.validateWithPolicyEngine(application);
+          if (!isValid) {
+            throw new BadRequestException(
+              'Application data does not meet policy engine requirements.',
+            );
+          }
         }
       }
       const totalTransactionAmount = await this.validateApplicationAndPayment(

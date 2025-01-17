@@ -12,6 +12,7 @@ import { PaymentService } from './modules/permit-application-payment/payment/pay
 import { LogAsyncMethodExecution } from './common/decorator/log-async-method-execution.decorator';
 import { FeatureFlagsService } from './modules/feature-flags/feature-flags.service';
 import { ApplicationService } from './modules/permit-application-payment/application/application.service';
+import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class AppService {
@@ -27,6 +28,7 @@ export class AppService {
     private paymentService: PaymentService,
     private featureFlagsService: FeatureFlagsService,
     private applicationService: ApplicationService,
+    private readonly httpService: HttpService,
   ) {}
 
   getHello(): string {
