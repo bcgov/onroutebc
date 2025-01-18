@@ -69,8 +69,15 @@ const transactionIdRules = {
         requiredMessage()
       );
     },
-    validateTransactionId: (value: Optional<string>) => {
-      return (value && value.length <= 15) || invalidTranactionIdLength(15);
+    validateTransactionId: (
+      value: Optional<string>,
+      formValues: RefundFormData,
+    ) => {
+      return (
+        !formValues.shouldUsePrevPaymentMethod ||
+        (value && value.length <= 15) ||
+        invalidTranactionIdLength(15)
+      );
     },
   },
 };
@@ -210,6 +217,7 @@ export const RefundPage = ({
     const usePrev = shouldUsePrev === "true";
     setShouldUsePrevPaymentMethod(usePrev);
     setValue("refundOnlineMethod", usePrev ? getRefundOnlineMethod() : "");
+    setValue("transactionId", "");
     clearErrors("transactionId");
   };
 
@@ -227,6 +235,7 @@ export const RefundPage = ({
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const formattedValue = filterNonNumericValue(e.target.value);
+    handleRefundMethodChange("true");
     setValue("transactionId", formattedValue, { shouldValidate: true });
   };
 
