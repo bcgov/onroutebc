@@ -56,8 +56,8 @@ jobs:
     uses: ./.github/workflows/uat.yml
     secrets: inherit
     with:
-      tag: ${{ needs.vars.outputs.pr }}
-  
+      tag: ${{ needs.vars.outputs.release-name }}
+        
   promote-images-uat:
     name: Promote Images - Uat
     needs: [vars,deploys-uat]
