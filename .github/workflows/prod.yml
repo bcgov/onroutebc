@@ -31,4 +31,4 @@ jobs:
         --set-string global.zone='prod' \
         --set-string global.vault.role='prod' \
         --set-string global.vault.zone='prod' \
-        --set-string global.pr_num='${{ inputs.tag }}' \
+        --set-string global.release_num='${{ inputs.tag }}' \
