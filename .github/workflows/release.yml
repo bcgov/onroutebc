@@ -82,7 +82,7 @@ jobs:
     uses: ./.github/workflows/prod.yml
     secrets: inherit
     with:
-      tag: ${{ needs.vars.outputs.pr }}
+      tag: ${{ needs.vars.outputs.release-name }}
   
   promote-images-prod:
     name: Promote Images - Prod
