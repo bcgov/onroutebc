@@ -81,3 +81,6 @@ jobs:
     secrets: inherit
     with:
       tag: ${{ needs.vars.outputs.pr }}
+      params: |
+        --set-string global.pr_num='${{ inputs.tag }}' \
+        --set-string global.release_num='${{ inputs.tag }}' \
