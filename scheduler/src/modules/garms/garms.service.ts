@@ -36,9 +36,9 @@ export class GarmsService {
   async connectToFtp() {
     try {
       await this.client.access({
-        host: 'bcsc01.gov.bc.ca', // Replace with your FTPS server host
-        user: 'PI74967', // Your username for the FTPS server
-        password: 'dummypwd', // Your password
+        host: process.env.GARMS_HOST, // Replace with your FTPS server host
+        user: process.env.GARMS_USER, // Your username for the FTPS server
+        password: process.env.GARMS_PASSWROD, // Your password
         secure: true, // Enabling FTPS (SSL/TLS encryption)
         secureOptions: {
           rejectUnauthorized: false, // Depending on your certificate, this can be true or false
