@@ -42,6 +42,7 @@ jobs:
         --set-string global.zone='dev' \
         --set-string global.vault.role='nonprod' \
         --set-string global.vault.zone='dev' \
+        --set-string global.pr_num='${{ inputs.tag }}' \
         --set-json dops.containers[0].resources='{"limits": {"cpu": "1000m", "memory": "2000Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
         --set-json frontend.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
         --set-json scheduler.containers[0].resources='{"limits": {"cpu": "75m", "memory": "150Mi"}, "requests": {"cpu": "25m", "memory": "50Mi"}}' \
