@@ -69,7 +69,7 @@ frontend:
         fromValues:
           - name: TIMESTAMP
             value: "{{ now | toString }}"
-        {{fromJson .Values.global.env}}
+        {{.Values.global.env}}
       ports:
         - name: http
           containerPort: 3000
