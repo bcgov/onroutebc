@@ -80,12 +80,6 @@ export const DisplayInfo = memo(
             {`Phone: ${phoneDisplay(companyInfo.phone, companyInfo.extension)}`}
           </Typography>
 
-          {companyInfo?.fax ? (
-            <Typography>
-              Fax: {getFormattedPhoneNumber(companyInfo.fax)}
-            </Typography>
-          ) : null}
-
           <Typography variant="h3">Company Primary Contact</Typography>
 
           <Typography>
