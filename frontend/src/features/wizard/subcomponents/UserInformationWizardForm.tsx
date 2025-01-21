@@ -152,22 +152,6 @@ export const UserInformationWizardForm = memo(() => {
         />
       </div>
 
-      <CustomFormComponent
-        type="phone"
-        feature={FEATURE}
-        options={{
-          name: "adminUser.fax",
-          rules: {
-            required: false,
-            validate: {
-              validateFax: (fax?: string) => validateOptionalPhoneNumber(fax),
-            },
-          },
-          label: "Fax",
-        }}
-        className="user-info-wizard-form__input user-info-wizard-form__input--left"
-      />
-
       <CountryAndProvince
         feature={FEATURE}
         countryField="adminUser.countryCode"
