@@ -8,6 +8,7 @@ export class GarmsService {
 
   constructor() {
     this.client = new Client();
+    this.client.ftp.verbose = true;
   }
 
   async ftpsFile(): Promise<string> {
@@ -17,6 +18,8 @@ export class GarmsService {
         console.log('GARMS PWD : ',process.env.GARMS_PWD)
       // Connect to FTP server
       await this.connectToFtp();
+      console.log('connect to ftp')
+      await this.client.connect();
       console.log('ftp cliet: ', this.client);
       console.log('directory',fs.Dir);
       await this.client.uploadFrom('Hello world', 'GARMD.GA4701.WS.BATCH(+1)');
