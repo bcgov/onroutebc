@@ -82,5 +82,8 @@ jobs:
     with:
       tag: ${{ needs.vars.outputs.pr }}
       params: |
-        --set-string global.env.pr_num='${{ inputs.tag }}' \
-        --set-string global.env.release_num='${{ inputs.tag }}' \
+        global.env:
+          - name: PR_NUM
+            value: ${{inputs.tag}}
+          - name: RELEASE_NUM
+            value: ${{inputs.tag}}
