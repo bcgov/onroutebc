@@ -12,6 +12,9 @@ export class GarmsService {
 
   async ftpsFile(): Promise<string> {
     try {
+        console.log('GARMS HOST : ',process.env.GARMS_HOST)
+        console.log('GARMS USER : ',process.env.GARMS_USER)
+        console.log('GARMS PWD : ',process.env.GARMS_PWD)
       // Connect to FTP server
       await this.connectToFtp();
       console.log('ftp cliet: ', this.client);
