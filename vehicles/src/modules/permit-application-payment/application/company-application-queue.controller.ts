@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   ForbiddenException,
+  Get,
   Param,
   Post,
   Req,
@@ -33,6 +34,7 @@ import { UpdateCaseActivity } from './dto/request/update-case-activity.dto';
 import { ReadCaseEvenDto } from '../../case-management/dto/response/read-case-event.dto';
 import { ApplicationIdIdPathParamDto } from './dto/request/pathParam/applicationId.path-params.dto';
 import { IsFeatureFlagEnabled } from '../../../common/decorator/is-feature-flag-enabled.decorator';
+import { ReadCaseMetaDto } from '../../case-management/dto/response/read-case-meta.dto';
 @ApiBearerAuth()
 @ApiTags('Company Application Queue')
 @IsFeatureFlagEnabled('APPLICATION-QUEUE')
@@ -191,6 +193,46 @@ export class CompanyApplicationQueueController {
     const currentUser = request.user as IUserJWT;
 
     const result = await this.applicationService.assingApplicationInQueue({
+      currentUser,
+      companyId,
+      applicationId,
+    });
+
+    return result;
+  }
+
+  /**
+   * Fetches details of the current assignee for a permit application
+   * identified by the application ID. This method enforces authorization
+   * checks based on user roles.
+   *
+   * @param request - The incoming request containing user information.
+   * @param companyId - The ID of the company associated with the application.
+   * @param applicationId - The ID of the application for which the current
+   * assignee details are to be fetched.
+   * @returns The case event information related to the current assignee of the application.
+   */
+  @ApiOperation({
+    summary: 'Get Current Assignee Details of Application',
+    description:
+      'Retrieves details of the current assignee or claimant for a permit application identified by the application ID. ' +
+      'Returns the case event information or throws exceptions if an error occurs during retrieval.',
+  })
+  @Permissions({
+    allowedIdirRoles: [
+      IDIRUserRole.PPC_CLERK,
+      IDIRUserRole.SYSTEM_ADMINISTRATOR,
+      IDIRUserRole.CTPO,
+    ],
+  })
+  @Get(':applicationId/queue/metadata')
+  async getCaseMetadata(
+    @Req() request: Request,
+    @Param() { companyId, applicationId }: ApplicationIdIdPathParamDto,
+  ): Promise<ReadCaseMetaDto> {
+    const currentUser = request.user as IUserJWT;
+
+    const result = await this.applicationService.getCaseMetadata({
       currentUser,
       companyId,
       applicationId,

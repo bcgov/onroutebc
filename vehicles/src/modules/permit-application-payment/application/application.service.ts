@@ -92,6 +92,7 @@ import { LoaDetail } from 'src/modules/special-auth/entities/loa-detail.entity';
 import { getFromCache } from '../../../common/helper/cache.helper';
 import { CacheKey } from '../../../common/enum/cache-key.enum';
 import { FeatureFlagValue } from '../../../common/enum/feature-flag-value.enum';
+import { ReadCaseMetaDto } from '../../case-management/dto/response/read-case-meta.dto';
 
 @Injectable()
 export class ApplicationService {
@@ -1244,6 +1245,51 @@ export class ApplicationService {
 
     return result;
   }
+
+  /**
+   * Retrieves metadata for a case linked to an application in queue.
+   * Before fetching, the function ensures the application's status and type are valid for processing.
+   *
+   * Input:
+   * - @param currentUser: IUserJWT - The user performing the operation.
+   * - @param companyId: number - The ID of the company associated with the application.
+   * - @param applicationId: string - The ID of the application to be analyzed.
+   *
+   * Output:
+   * - @returns Promise<ReadCaseMetaDto> - The metadata associated with the case of the application.
+   *
+   * Throws exceptions:
+   * - DataNotFoundException: When the application is not found.
+   * - UnprocessableEntityException: If the application is ineligible for queue.
+   *
+   */
+  @LogAsyncMethodExecution()
+  async getCaseMetadata({
+    currentUser,
+    companyId,
+    applicationId,
+  }: {
+    currentUser: IUserJWT;
+    companyId: number;
+    applicationId: string;
+  }): Promise<ReadCaseMetaDto> {
+    const application = await this.findOne(applicationId, companyId);
+    if (!application) {
+      throw new DataNotFoundException();
+    } else if (!isPermitTypeEligibleForQueue(application.permitType)) {
+      throwUnprocessableEntityException(
+        'Invalid permit type. Ineligible for queue.',
+      );
+    } else if (application.permitStatus !== ApplicationStatus.IN_QUEUE) {
+      throwUnprocessableEntityException('Invalid status.');
+    }
+    const result = await this.caseManagementService.getCaseMetadata({
+      currentUser: currentUser,
+      applicationId,
+    });
+    return result;
+  }
+
   @LogAsyncMethodExecution()
   async createPermitLoa(
     currentUser: IUserJWT,
