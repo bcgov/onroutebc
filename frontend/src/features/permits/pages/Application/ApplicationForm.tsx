@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { FormProvider } from "react-hook-form";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useContext, useMemo, useState } from "react";

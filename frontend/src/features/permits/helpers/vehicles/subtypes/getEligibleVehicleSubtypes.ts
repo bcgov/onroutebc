@@ -24,7 +24,10 @@ export const getEligibleVehicleSubtypes = (
   // permit type where commodity is required, hence the nullish
   // coalescing operator on the second parameter. An empty string will
   // result in an empty map returned.
-  const subtypesMap = policyEngine.getPermittableVehicleTypes(permitType, selectedCommodity ?? '-');
+  const subtypesMap = policyEngine.getPermittableVehicleTypes(
+    permitType,
+    getDefaultRequiredVal('-', selectedCommodity),
+  );
   return new Set(
     [
       ...getDefaultRequiredVal(
