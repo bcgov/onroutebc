@@ -74,7 +74,7 @@ import { ApplicationSearch } from '../../../common/enum/application-search.enum'
 
 import { CaseStatusType } from '../../../common/enum/case-status-type.enum';
 import { INotificationDocument } from '../../../common/interface/notification-document.interface';
-import { validateEmailandFaxList } from '../../../common/helper/notification.helper';
+import { validateEmailList } from '../../../common/helper/notification.helper';
 import { NotificationTemplate } from '../../../common/enum/notification-template.enum';
 import { PermitData } from '../../../common/interface/permit.template.interface';
 import { ApplicationApprovedNotification } from '../../../common/interface/application-approved.notification.interface';
@@ -92,6 +92,7 @@ import { LoaDetail } from 'src/modules/special-auth/entities/loa-detail.entity';
 import { getFromCache } from '../../../common/helper/cache.helper';
 import { CacheKey } from '../../../common/enum/cache-key.enum';
 import { FeatureFlagValue } from '../../../common/enum/feature-flag-value.enum';
+import { ReadCaseMetaDto } from '../../case-management/dto/response/read-case-meta.dto';
 
 @Injectable()
 export class ApplicationService {
@@ -609,12 +610,20 @@ export class ApplicationService {
       isPermitTypeEligibleForQueue(existingApplication.permitType) &&
       existingApplication.permitStatus === ApplicationStatus.IN_QUEUE
     ) {
+      const existingCase = await this.caseManagementService.getCaseMetadata({
+        applicationId,
+      });
+
       const permitData = JSON.parse(
         existingApplication?.permitData?.permitData,
       ) as PermitData;
       const currentDate = dayjs(new Date().toISOString())?.format('YYYY-MM-DD');
       if (differenceBetween(permitData?.startDate, currentDate, 'days') > 0) {
         throwUnprocessableEntityException('Start Date is in the past.');
+      } else if (existingCase.assignedUser !== currentUser.userName) {
+        throwUnprocessableEntityException(
+          `Application no longer available. This application is claimed by ${existingCase.assignedUser}`,
+        );
       }
     }
 
@@ -1164,7 +1173,7 @@ export class ApplicationService {
           ];
           const notificationDocument: INotificationDocument = {
             templateName: notificationTemplate,
-            to: validateEmailandFaxList(emailList),
+            to: validateEmailList(emailList),
             subject: subject,
             data: notificationData,
           };
@@ -1244,6 +1253,49 @@ export class ApplicationService {
 
     return result;
   }
+
+  /**
+   * Retrieves metadata for a case linked to an application in queue.
+   * Before fetching, the function ensures the application's status and type are valid for processing.
+   *
+   * Input:
+   * - @param currentUser: IUserJWT - The user performing the operation.
+   * - @param companyId: number - The ID of the company associated with the application.
+   * - @param applicationId: string - The ID of the application to be analyzed.
+   *
+   * Output:
+   * - @returns Promise<ReadCaseMetaDto> - The metadata associated with the case of the application.
+   *
+   * Throws exceptions:
+   * - DataNotFoundException: When the application is not found.
+   * - UnprocessableEntityException: If the application is ineligible for queue.
+   *
+   */
+  @LogAsyncMethodExecution()
+  async getCaseMetadata({
+    companyId,
+    applicationId,
+  }: {
+    currentUser: IUserJWT;
+    companyId: number;
+    applicationId: string;
+  }): Promise<ReadCaseMetaDto> {
+    const application = await this.findOne(applicationId, companyId);
+    if (!application) {
+      throw new DataNotFoundException();
+    } else if (!isPermitTypeEligibleForQueue(application.permitType)) {
+      throwUnprocessableEntityException(
+        'Invalid permit type. Ineligible for queue.',
+      );
+    } else if (application.permitStatus !== ApplicationStatus.IN_QUEUE) {
+      throwUnprocessableEntityException('Invalid status.');
+    }
+    const result = await this.caseManagementService.getCaseMetadata({
+      applicationId,
+    });
+    return result;
+  }
+
   @LogAsyncMethodExecution()
   async createPermitLoa(
     currentUser: IUserJWT,
