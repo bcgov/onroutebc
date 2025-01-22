@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Box } from "@mui/material";
 import { Navigate, useParams } from "react-router-dom";
 import { useMemo } from "react";
