@@ -356,7 +356,6 @@ export class CaseManagementService {
    * Retrieves metadata for an existing case, ensuring it is available and in an acceptable state.
    * If the case does not exist or is already closed, it throws appropriate exceptions.
    *
-   * @param currentUser - The current user executing the action.
    * @param queryRunner - Optional, existing QueryRunner instance.
    * @param caseId - Optional, the ID of the case to be queried.
    * @param originalCaseId - Optional, the original ID of the case.
@@ -374,7 +373,6 @@ export class CaseManagementService {
     applicationId,
     existingCase,
   }: {
-    currentUser: IUserJWT;
     queryRunner?: Nullable<QueryRunner>;
     caseId?: Nullable<number>;
     originalCaseId?: Nullable<number>;

@@ -610,12 +610,20 @@ export class ApplicationService {
       isPermitTypeEligibleForQueue(existingApplication.permitType) &&
       existingApplication.permitStatus === ApplicationStatus.IN_QUEUE
     ) {
+      const existingCase = await this.caseManagementService.getCaseMetadata({
+        applicationId,
+      });
+
       const permitData = JSON.parse(
         existingApplication?.permitData?.permitData,
       ) as PermitData;
       const currentDate = dayjs(new Date().toISOString())?.format('YYYY-MM-DD');
       if (differenceBetween(permitData?.startDate, currentDate, 'days') > 0) {
         throwUnprocessableEntityException('Start Date is in the past.');
+      } else if (existingCase.assignedUser !== currentUser.userName) {
+        throwUnprocessableEntityException(
+          `Application no longer available. This application is claimed by ${existingCase.assignedUser}`,
+        );
       }
     }
 
@@ -1265,7 +1273,6 @@ export class ApplicationService {
    */
   @LogAsyncMethodExecution()
   async getCaseMetadata({
-    currentUser,
     companyId,
     applicationId,
   }: {
@@ -1284,7 +1291,6 @@ export class ApplicationService {
       throwUnprocessableEntityException('Invalid status.');
     }
     const result = await this.caseManagementService.getCaseMetadata({
-      currentUser: currentUser,
       applicationId,
     });
     return result;
