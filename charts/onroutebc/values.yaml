@@ -66,11 +66,10 @@ frontend:
             key: DEPLOY_ENVIRONMENT
           - name: FRONTEND_PR_NUM
             key: FRONTEND_PR_NUM
-        fromValues: {{.Values.global.env}}
-          #- name: TIMESTAMP
-          #  value: "{{ now | toString }}"
-          #- name: PR_NUM
-          #  value: 
+        fromValues: 
+          #"{{- toYaml .Values.global.env | nindent 12 }}"
+          - name: TIMESTAMP
+            value: "{{ now | toString }}"
       ports:
         - name: http
           containerPort: 3000
