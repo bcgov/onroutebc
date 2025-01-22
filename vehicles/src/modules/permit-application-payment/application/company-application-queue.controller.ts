@@ -13,6 +13,7 @@ import {
   ApiInternalServerErrorResponse,
   ApiMethodNotAllowedResponse,
   ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
   ApiUnprocessableEntityResponse,
@@ -202,21 +203,24 @@ export class CompanyApplicationQueueController {
   }
 
   /**
-   * Fetches details of the current assignee for a permit application
-   * identified by the application ID. This method enforces authorization
-   * checks based on user roles.
+   * Fetches metadata information for a case identified by the
+   * application ID. This method enforces authorization checks based on user roles.
    *
    * @param request - The incoming request containing user information.
    * @param companyId - The ID of the company associated with the application.
-   * @param applicationId - The ID of the application for which the current
-   * assignee details are to be fetched.
-   * @returns The case event information related to the current assignee of the application.
+   * @param applicationId - The ID of the application for which the metadata
+   * information is to be fetched.
+   * @returns The case metadata information related to the application.
    */
   @ApiOperation({
-    summary: 'Get Current Assignee Details of Application',
+    summary: 'Fetch case metadata info for Application',
     description:
-      'Retrieves details of the current assignee or claimant for a permit application identified by the application ID. ' +
-      'Returns the case event information or throws exceptions if an error occurs during retrieval.',
+      `Returns the case metadata or throws exceptions if an error is encountered during the retrieval process. ` +
+      `Accessible only by ${IDIRUserRole.PPC_CLERK}, ${IDIRUserRole.SYSTEM_ADMINISTRATOR}, ${IDIRUserRole.CTPO}`,
+  })
+  @ApiOkResponse({
+    description: 'The retrieved case metadata.',
+    type: ReadCaseMetaDto,
   })
   @Permissions({
     allowedIdirRoles: [
@@ -225,7 +229,7 @@ export class CompanyApplicationQueueController {
       IDIRUserRole.CTPO,
     ],
   })
-  @Get(':applicationId/queue/metadata')
+  @Get(':applicationId/queue/meta-data')
   async getCaseMetadata(
     @Req() request: Request,
     @Param() { companyId, applicationId }: ApplicationIdIdPathParamDto,
