@@ -92,7 +92,7 @@ export class PaymentService {
     @InjectMapper() private readonly classMapper: Mapper,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
-    private commonService: CommonService,
+    private readonly commonService: CommonService,
   ) {}
 
   private generateHashExpiry = (currDate?: Date) => {
