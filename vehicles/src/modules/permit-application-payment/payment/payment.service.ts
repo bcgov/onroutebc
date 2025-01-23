@@ -373,9 +373,9 @@ export class PaymentService {
           await isValidLoa(application, queryRunner, this.classMapper);
         }
         if (isPolicyEngineEnabled) {
-          const isValid =
+          const validationResults =
             await this.commonService.validateWithPolicyEngine(application);
-          if (!isValid) {
+          if (validationResults?.violations?.length > 0) {
             throw new BadRequestException(
               'Application data does not meet policy engine requirements.',
             );
