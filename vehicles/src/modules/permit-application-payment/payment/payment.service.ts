@@ -52,7 +52,6 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { CacheKey } from 'src/common/enum/cache-key.enum';
 import {
-  addToCache,
   getFromCache,
   getMapFromCache,
 } from '../../../common/helper/cache.helper';
@@ -72,10 +71,8 @@ import { PermitData } from 'src/common/interface/permit.template.interface';
 import { isValidLoa } from 'src/common/helper/validate-loa.helper';
 import { PermitHistoryDto } from '../permit/dto/response/permit-history.dto';
 import { SpecialAuthService } from 'src/modules/special-auth/special-auth.service';
-import { ReadPolicyConfigDto } from '../../policy/dto/response/read-policy-config.dto';
-import { Policy, ValidationResults } from 'onroute-policy-engine/.';
-import { getActivePolicyDefinitions } from '../../../common/helper/policy-engine.helper';
 import { HttpService } from '@nestjs/axios';
+import { CommonService } from '../../common/common.service';
 
 @Injectable()
 export class PaymentService {
@@ -97,6 +94,7 @@ export class PaymentService {
     @InjectMapper() private readonly classMapper: Mapper,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
+    private commonService: CommonService,
   ) {}
 
   private generateHashExpiry = (currDate?: Date) => {
@@ -264,43 +262,6 @@ export class PaymentService {
   }
 
   /**
-   * Validates with policy engine.
-   * @param permitApplication
-   * @returns
-   */
-  private async validateWithPolicyEngine(
-    permitApplication: Permit,
-  ): Promise<boolean> {
-    const policyDefinitions: string = await this.cacheManager.get(
-      CacheKey.POLICY_CONFIGURATIONS,
-    );
-    if (!policyDefinitions) {
-      const policyDefinitions = await getActivePolicyDefinitions(
-        this.httpService,
-        this.cacheManager,
-      );
-      if (!policyDefinitions) {
-        throw new InternalServerErrorException(
-          'Policy engine is not available',
-        );
-      }
-      await addToCache(
-        this.cacheManager,
-        CacheKey.POLICY_CONFIGURATIONS,
-        JSON.stringify(policyDefinitions),
-      );
-    }
-    const activePolicyDefintion = JSON.parse(
-      policyDefinitions,
-    ) as ReadPolicyConfigDto;
-    const policy = new Policy(activePolicyDefintion.policy);
-    const validationResults: ValidationResults =
-      await policy.validate(permitApplication);
-
-    return validationResults.violations.length > 0;
-  }
-
-  /**
    * Creates a Transaction in ORBC System.
    * @param currentUser - The current user object of type {@link IUserJWT}
    * @param createTransactionDto - The createTransactionDto object of type
@@ -412,7 +373,8 @@ export class PaymentService {
           await isValidLoa(application, queryRunner, this.classMapper);
         }
         if (isPolicyEngineEnabled) {
-          const isValid = await this.validateWithPolicyEngine(application);
+          const isValid =
+            await this.commonService.validateWithPolicyEngine(application);
           if (!isValid) {
             throw new BadRequestException(
               'Application data does not meet policy engine requirements.',
