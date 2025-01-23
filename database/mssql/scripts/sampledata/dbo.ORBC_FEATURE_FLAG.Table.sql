@@ -301,16 +301,6 @@ VALUES
     N'dbo',
     GETUTCDATE()
   );
-  (
-    '14',
-    'VALIDATE-WITH-POLICY-ENGINE',
-    'ENABLED',
-    NULL,
-    N'dbo',
-    GETUTCDATE(),
-    N'dbo',
-    GETUTCDATE()
-  );
 SET
   IDENTITY_INSERT [dbo].[ORBC_FEATURE_FLAG] OFF
 GO
