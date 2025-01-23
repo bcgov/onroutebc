@@ -71,7 +71,6 @@ import { PermitData } from 'src/common/interface/permit.template.interface';
 import { isValidLoa } from 'src/common/helper/validate-loa.helper';
 import { PermitHistoryDto } from '../permit/dto/response/permit-history.dto';
 import { SpecialAuthService } from 'src/modules/special-auth/special-auth.service';
-import { HttpService } from '@nestjs/axios';
 import { CommonService } from '../../common/common.service';
 
 @Injectable()
@@ -79,7 +78,6 @@ export class PaymentService {
   private readonly logger = new Logger(PaymentService.name);
   constructor(
     private dataSource: DataSource,
-    private readonly httpService: HttpService,
     @InjectRepository(Transaction)
     private transactionRepository: Repository<Transaction>,
     @InjectRepository(Receipt)
