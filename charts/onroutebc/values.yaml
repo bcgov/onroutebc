@@ -35,7 +35,7 @@ frontend:
       ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
       POLICY_URL: "https://{{.Release.Name}}-policy.apps.silver.devops.gov.bc.ca"
       DEPLOY_ENVIRONMENT: "{{.Values.global.vault.zone}}"
-      FRONTEND_PR_NUM: "{{.Values.global.pr_num}}"
+      PR_NUM: "{{.Values.global.env.pr_num}}"
       config.js.template: |-
         const envConfig = (() => { return {
             "VITE_DEPLOY_ENVIRONMENT":"$DEPLOY_ENVIRONMENT",
