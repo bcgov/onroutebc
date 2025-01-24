@@ -36,6 +36,7 @@ frontend:
       POLICY_URL: "https://{{.Release.Name}}-policy.apps.silver.devops.gov.bc.ca"
       DEPLOY_ENVIRONMENT: "{{.Values.global.vault.zone}}"
       PR_NUM: "{{.Values.global.env.pr_num}}"
+      RELEASE_NUM: "{{.Values.global.env.release_num}}"
       config.js.template: |-
         const envConfig = (() => { return {
             "VITE_DEPLOY_ENVIRONMENT":"$DEPLOY_ENVIRONMENT",
@@ -44,7 +45,8 @@ frontend:
             "VITE_KEYCLOAK_ISSUER_URL":"$KEYCLOAK_ISSUER_URL",
             "VITE_KEYCLOAK_AUDIENCE":"$KEYCLOAK_AUDIENCE",
             "VITE_SITEMINDER_LOG_OFF_URL":"$SITEMINDER_LOG_OFF_URL",
-            "VITE_FRONTEND_PR_NUM":"$FRONTEND_PR_NUM",
+            "VITE_PR_NUM":"$PR_NUM",
+            "VITE_RELEASE_NUM":"$RELEASE_NUM",
           };
         })();
   containers:
