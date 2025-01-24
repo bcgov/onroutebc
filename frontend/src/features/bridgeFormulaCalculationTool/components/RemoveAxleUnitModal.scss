@@ -38,13 +38,26 @@
     gap: 1.5rem;
   }
 
-  &__button {
-    &--cancel {
+  & &__button {
+    box-shadow: none;
 
+    &:hover {
+      box-shadow: none;
     }
+    
+    &--cancel {
+      background-color: $bc-background-light-grey;
+      border: 2px solid $bc-background-light-grey;
+      border-radius: 4px;
+      color: $bc-black;
 
+      &:hover {
+        background-color: $bc-background-light-grey;
+        border-color: $bc-text-box-border-grey;
+      }
+    }
     &--remove {
-      
+      font-weight: bold;
     }
   }
 }

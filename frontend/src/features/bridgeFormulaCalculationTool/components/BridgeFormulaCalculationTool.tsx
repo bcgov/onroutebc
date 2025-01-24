@@ -196,7 +196,7 @@ export const BridgeFormulaCalculationTool = () => {
                 const numberOfAxles = watch(`axleUnits.${index}.numberOfAxles`);
                 const disabled = numberOfAxles === 1;
                 // TODO set axleSpread value to null when disabled is true
-                disabled && setValue(fieldName, null);
+                // disabled && setValue(fieldName, null);
                 return (
                   <td key={field.id} className="table__cell">
                     {index % 2 === 0 && (

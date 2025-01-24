@@ -50,7 +50,7 @@ export const RemoveAxleUnitModal = ({
           color="primary"
           onClick={onConfirm}
         >
-          Continue
+          Remove
         </Button>
       </div>
     </Dialog>
