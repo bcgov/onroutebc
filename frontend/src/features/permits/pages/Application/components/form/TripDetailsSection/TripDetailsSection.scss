@@ -11,11 +11,11 @@
 
   .highway-sequences {
     border-top: 1px solid orbcStyles.$bc-text-box-border-grey;
+    border-bottom: 1px solid orbcStyles.$bc-text-box-border-grey;
     padding: 1.5rem 0;
   }
 
   .specific-route-details {
-    border-top: 1px solid orbcStyles.$bc-text-box-border-grey;
     padding-top: 1.5rem;
   }
 }

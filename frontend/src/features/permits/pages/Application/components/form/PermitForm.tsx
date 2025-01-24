@@ -55,6 +55,7 @@ export const PermitForm = () => {
     onClearVehicle,
     onUpdateLOAs,
     onUpdateHighwaySequence,
+    onUpdateTripTotalDistance,
     onUpdateVehicleConfigTrailers,
     onChangeCommodityType,
     onUpdateVehicleConfig,
@@ -131,6 +132,7 @@ export const PermitForm = () => {
           permitType={permitType}
           highwaySequence={highwaySequence}
           onUpdateHighwaySequence={onUpdateHighwaySequence}
+          onUpdateTripTotalDistance={onUpdateTripTotalDistance}
         />
 
         <ApplicationNotesSection feature={feature} permitType={permitType} />
