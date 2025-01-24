@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   OutlinedInput,
   OutlinedInputProps,
@@ -50,13 +50,22 @@ export const NumberInput = (props: NumberInputProps) => {
 
   const { maskFn, onChange, onBlur, ...inputProps } = props.inputProps;
   const inputSlotProps = inputProps.slotProps?.input;
+  const inputValue = inputProps.value;
   const initialValueDisplay = applyWhenNotNullable(
     (num) => (maskFn ? maskFn(num) : `${num}`),
-    inputProps.value,
+    inputValue,
     "",
   );
 
   const [valueDisplay, setValueDisplay] = useState<string>(initialValueDisplay);
+
+  useEffect(() => {
+    setValueDisplay(applyWhenNotNullable(
+      (num) => (maskFn ? maskFn(num) : `${num}`),
+      inputValue,
+      "",
+    ));
+  }, [inputValue]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const updatedVal = e.target.value;
