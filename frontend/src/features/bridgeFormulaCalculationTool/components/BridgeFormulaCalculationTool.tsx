@@ -1,15 +1,14 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+import { useState } from "react";
+import { Button, IconButton, Tooltip } from "@mui/material";
+import { faMinus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
+
 import "./BridgeFormulaCalculationTool.scss";
 import { NumberInput } from "../../../common/components/form/subFormComponents/NumberInput";
 import { RequiredOrNull } from "../../../common/types/common";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { convertToNumberIfValid } from "../../../common/helpers/numeric/convertToNumberIfValid";
-import { requiredMessage } from "../../../common/helpers/validationMessages";
-import { useEffect, useState } from "react";
-import { Button, IconButton, Tooltip } from "@mui/material";
-import { faMinus } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { RemoveAxleUnitModal } from "./RemoveAxleUnitModal";
 
 interface AxleUnit {
@@ -24,13 +23,9 @@ interface AxleUnit {
 export const BridgeFormulaCalculationTool = () => {
   const {
     control,
-    register,
     handleSubmit,
     watch,
-    getValues,
     setValue,
-    formState,
-    resetField,
     reset,
   } = useForm<{
     axleUnits: AxleUnit[];
@@ -58,6 +53,8 @@ export const BridgeFormulaCalculationTool = () => {
     control,
     name: "axleUnits",
   });
+
+  const axleUnits = watch("axleUnits");
 
   const handleAddAxleUnit = () => {
     append({
@@ -153,6 +150,8 @@ export const BridgeFormulaCalculationTool = () => {
               <td className="row__label">Number of Axles</td>
               {fields.map((field, index) => {
                 const fieldName = `axleUnits.${index}.numberOfAxles` as const;
+                const axleSpreadFieldName = `axleUnits.${index}.axleSpread` as const;
+                const numberOfAxles = axleUnits[index].numberOfAxles;
                 return (
                   <td key={field.id} className="table__cell">
                     {index % 2 === 0 && (
@@ -168,15 +167,21 @@ export const BridgeFormulaCalculationTool = () => {
                             classes={{ root: "table__input-container" }}
                             inputProps={{
                               className: "table__input",
-                              value: watch(fieldName) as number,
+                              value: getDefaultRequiredVal(null, numberOfAxles),
                               onBlur: ({ target: { value } }) => {
+                                const updatedNumberOfAxles = getDefaultRequiredVal(
+                                  null,
+                                  convertToNumberIfValid(value, null),
+                                );
+
                                 setValue(
                                   fieldName,
-                                  getDefaultRequiredVal(
-                                    null,
-                                    convertToNumberIfValid(value, null),
-                                  ),
+                                  updatedNumberOfAxles,
                                 );
+
+                                if (updatedNumberOfAxles === 1) {
+                                  setValue(axleSpreadFieldName, null);
+                                }
                               },
                               maskFn: (numericVal) => numericVal.toFixed(0),
                               error: invalid,
@@ -193,10 +198,9 @@ export const BridgeFormulaCalculationTool = () => {
               <td className="row__label">Axle Spread (m)</td>
               {fields.map((field, index) => {
                 const fieldName = `axleUnits.${index}.axleSpread` as const;
-                const numberOfAxles = watch(`axleUnits.${index}.numberOfAxles`);
+                const axleSpread = axleUnits[index].axleSpread;
+                const numberOfAxles = axleUnits[index].numberOfAxles;
                 const disabled = numberOfAxles === 1;
-                // TODO set axleSpread value to null when disabled is true
-                disabled && setValue(fieldName, null);
                 return (
                   <td key={field.id} className="table__cell">
                     {index % 2 === 0 && (
@@ -215,7 +219,7 @@ export const BridgeFormulaCalculationTool = () => {
                         render={({ fieldState: { invalid } }) => (
                           <NumberInput
                             inputProps={{
-                              value: watch(fieldName) as number,
+                              value: getDefaultRequiredVal(null, axleSpread),
                               onBlur: ({ target: { value } }) =>
                                 setValue(
                                   fieldName,
@@ -226,6 +230,7 @@ export const BridgeFormulaCalculationTool = () => {
                                 ),
                               maskFn: (numericVal) => numericVal.toFixed(2),
                               error: invalid,
+                              readOnly: disabled,
                               disabled,
                             }}
                           />
@@ -241,6 +246,7 @@ export const BridgeFormulaCalculationTool = () => {
               {fields.map((field, index) => {
                 const fieldName =
                   `axleUnits.${index}.interaxleSpacing` as const;
+                const interaxleSpacing = axleUnits[index].interaxleSpacing;
                 return (
                   <td key={field.id} className="table__cell">
                     {index % 2 !== 0 && (
@@ -254,7 +260,7 @@ export const BridgeFormulaCalculationTool = () => {
                         render={({ fieldState: { invalid } }) => (
                           <NumberInput
                             inputProps={{
-                              value: watch(fieldName) as number,
+                              value: getDefaultRequiredVal(null, interaxleSpacing),
                               onBlur: ({ target: { value } }) =>
                                 setValue(
                                   fieldName,
@@ -278,6 +284,7 @@ export const BridgeFormulaCalculationTool = () => {
               <td className="row__label">Axle Unit Weight (kg)</td>
               {fields.map((field, index) => {
                 const fieldName = `axleUnits.${index}.axleUnitWeight` as const;
+                const axleUnitWeight = axleUnits[index].axleUnitWeight;
                 return (
                   <td key={field.id} className="table__cell">
                     {index % 2 === 0 && (
@@ -291,7 +298,7 @@ export const BridgeFormulaCalculationTool = () => {
                         render={({ fieldState: { invalid } }) => (
                           <NumberInput
                             inputProps={{
-                              value: watch(fieldName) as number,
+                              value: getDefaultRequiredVal(null, axleUnitWeight),
                               onBlur: ({ target: { value } }) =>
                                 setValue(
                                   fieldName,
