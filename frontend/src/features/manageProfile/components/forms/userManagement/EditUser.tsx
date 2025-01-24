@@ -28,6 +28,8 @@ import {
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
 
+const FEATURE = "user-info-form";
+
 /**
  * Edit User form for User Management.
  */
@@ -46,7 +48,6 @@ export const EditUserForm = memo(
         phone1Extension: getDefaultRequiredVal("", userInfo?.phone1Extension),
         phone2: applyWhenNotNullable(getFormattedPhoneNumber, userInfo?.phone2, ""),
         phone2Extension: getDefaultRequiredVal("", userInfo?.phone2Extension),
-        fax: applyWhenNotNullable(getFormattedPhoneNumber, userInfo?.fax, ""),
         countryCode: getDefaultRequiredVal("", userInfo?.countryCode),
         provinceCode: getDefaultRequiredVal("", userInfo?.provinceCode),
         city: getDefaultRequiredVal("", userInfo?.city),
@@ -56,15 +57,12 @@ export const EditUserForm = memo(
         ),
       },
     });
-    const { handleSubmit } = formMethods;
-    const FEATURE = "user-info-form";
 
+    const { handleSubmit } = formMethods;
+    
     const [isUserGroupsModalOpen, setIsUserGroupsModalOpen] =
       useState<boolean>(false);
 
-    /**
-     * On click handler for the breadcrumbs. Navigates to the parent pages.
-     */
     const onClickBreadcrumb = () => {
       navigate(PROFILE_ROUTES.MANAGE, {
         state: {
@@ -73,9 +71,6 @@ export const EditUserForm = memo(
       });
     };
 
-    /**
-     * Updates the user info.
-     */
     const updateUserInfoMutation = useMutation({
       mutationFn: updateUserInfo,
       onError: (error: AxiosError) => {
@@ -105,10 +100,6 @@ export const EditUserForm = memo(
       },
     });
 
-    /**
-     * On click handler for Save button.
-     * @param data The edit user form data.
-     */
     const onUpdateUserInfo = (data: UserInfoRequest) => {
       updateUserInfoMutation.mutate({
         userInfo: data,
@@ -138,8 +129,10 @@ export const EditUserForm = memo(
               >
                 User Details
               </Typography>
+
               <ReusableUserInfoForm feature={FEATURE} />
             </Stack>
+
             <Stack direction="row">
               <Stack>
                 <Typography
@@ -153,6 +146,7 @@ export const EditUserForm = memo(
                 >
                   Assign User Group
                 </Typography>
+
                 <Typography
                   variant={"h2"}
                   sx={{
@@ -169,6 +163,7 @@ export const EditUserForm = memo(
                   </CustomActionLink>
                 </Typography>
               </Stack>
+
               <Stack spacing={2}>
                 <Controller
                   name="userRole"
@@ -179,6 +174,7 @@ export const EditUserForm = memo(
                     <UserAuthRadioGroup field={field} fieldState={fieldState} />
                   )}
                 ></Controller>
+
                 <Stack direction="row" spacing={2}>
                   <Button
                     key="update-my-info-cancel-button"
@@ -189,6 +185,7 @@ export const EditUserForm = memo(
                   >
                     Cancel
                   </Button>
+
                   <Button
                     key="update-my-info-button"
                     aria-label="Update My Info"
@@ -202,7 +199,9 @@ export const EditUserForm = memo(
               </Stack>
             </Stack>
           </Stack>
+
           <br />
+
           <UserGroupsAndPermissionsModal
             isOpen={isUserGroupsModalOpen}
             onClickClose={() => setIsUserGroupsModalOpen(() => false)}
