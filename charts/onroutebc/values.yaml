@@ -1,5 +1,6 @@
 ---
 global:
+  env: {}
   autoscaling: true
   license: "c28f0c"
   podAnnotations: |
