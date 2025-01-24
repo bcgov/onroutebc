@@ -64,12 +64,13 @@ frontend:
             key: POLICY_URL            
           - name: DEPLOY_ENVIRONMENT
             key: DEPLOY_ENVIRONMENT
-          - name: FRONTEND_PR_NUM
-            key: FRONTEND_PR_NUM
         fromValues: 
-          #"{{- toYaml .Values.global.env | nindent 12 }}"
           - name: TIMESTAMP
             value: "{{ now | toString }}"
+          - name: PR_NUM
+            value: {{ .Values.global.env.pr_num }}
+          - name: RELEASE_NUM
+            value: {{ .Values.global.env.release_num }}
       ports:
         - name: http
           containerPort: 3000
@@ -204,8 +205,10 @@ vehicles:
         fromValues:
           - name: TIMESTAMP
             value: "{{ now | toString }}"
-          - name: VEHICLES_PR_NUM
-            value: '{{.Values.global.pr_num}}'
+          - name: PR_NUM
+            value: {{ .Values.global.env.pr_num }}
+          - name: RELEASE_NUM
+            value: {{ .Values.global.env.release_num }}
       ports:
         - name: vehicles-api
           containerPort: 5000
@@ -341,10 +344,12 @@ dops:
           - name: ACCESS_API_URL
             key: ACCESS_API_URL
         fromValues:
-          - name: DOPS_PR_NUM
-            value: '{{.Values.global.pr_num}}'
           - name: TIMESTAMP
             value: "{{ now | toString }}"
+          - name: PR_NUM
+            value: {{ .Values.global.env.pr_num }}
+          - name: RELEASE_NUM
+            value: {{ .Values.global.env.release_num }}
       ports:
         - name: dops-api
           containerPort: 5001
@@ -475,10 +480,12 @@ scheduler:
           - name: ACCESS_API_URL
             key: ACCESS_API_URL
         fromValues:
-          - name: SCHEDULER_PR_NUM
-            value: '{{.Values.global.pr_num}}'
           - name: TIMESTAMP
             value: "{{ now | toString }}"
+          - name: PR_NUM
+            value: {{ .Values.global.env.pr_num }}
+          - name: RELEASE_NUM
+            value: {{ .Values.global.env.release_num }}
       ports:
         - name: scheduler
           containerPort: 5050
@@ -582,10 +589,12 @@ policy:
           - name: FRONTEND_URL
             key: FRONTEND_URL
         fromValues:
-          - name: POLICY_PR_NUM
-            value: '{{.Values.global.pr_num}}'
           - name: TIMESTAMP
             value: "{{ now | toString }}"
+          - name: PR_NUM
+            value: {{ .Values.global.env.pr_num }}
+          - name: RELEASE_NUM
+            value: {{ .Values.global.env.release_num }}
       ports:
         - name: policy-api
           containerPort: 5002
