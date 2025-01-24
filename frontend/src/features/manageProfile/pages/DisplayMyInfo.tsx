@@ -41,10 +41,6 @@ export const DisplayMyInfo = memo(
             </Typography>
           ) : null}
 
-          {myInfo.fax ? (
-            <Typography>Fax: {getFormattedPhoneNumber(myInfo.fax)}</Typography>
-          ) : null}
-
           {countryFullName ? (
             <Typography>
               {countryFullName}
