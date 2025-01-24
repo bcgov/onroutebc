@@ -8,12 +8,14 @@ import {
 } from "@mui/material";
 
 import "./NumberInput.scss";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../helpers/util";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../helpers/util";
 import { convertToNumberIfValid } from "../../../helpers/numeric/convertToNumberIfValid";
 import { isNull, RequiredOrNull } from "../../../types/common";
 
-type NumberInputClassKey =
-  "root" | "label";
+type NumberInputClassKey = "root" | "label";
 
 export interface NumberInputProps {
   classes?: Partial<Record<NumberInputClassKey, string>>;
@@ -25,6 +27,7 @@ export interface NumberInputProps {
     messages?: string[];
     errors?: string[];
   };
+  invalid?: boolean;
   inputProps: Omit<OutlinedInputProps, "type" | "value"> & {
     value: RequiredOrNull<number>;
     maskFn?: (numericVal: number) => string;
@@ -35,20 +38,20 @@ export const NumberInput = (props: NumberInputProps) => {
   const helperMessages = getDefaultRequiredVal([], props.helperText?.messages);
   const errorMessages = getDefaultRequiredVal([], props.helperText?.errors);
   const helperTexts = [
-    ...helperMessages.map(message => ({
+    ...helperMessages.map((message) => ({
       type: "message",
       message,
     })),
-    ...errorMessages.map(message => ({
+    ...errorMessages.map((message) => ({
       type: "error",
       message,
     })),
   ];
 
-  const { maskFn, onChange, onBlur, ...inputProps} = props.inputProps;
+  const { maskFn, onChange, onBlur, ...inputProps } = props.inputProps;
   const inputSlotProps = inputProps.slotProps?.input;
   const initialValueDisplay = applyWhenNotNullable(
-    (num) => maskFn ? maskFn(num) : `${num}`,
+    (num) => (maskFn ? maskFn(num) : `${num}`),
     inputProps.value,
     "",
   );
@@ -57,12 +60,23 @@ export const NumberInput = (props: NumberInputProps) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const updatedVal = e.target.value;
+
+    // Allow clearing the input
+    if (updatedVal === "") {
+      setValueDisplay(updatedVal);
+      onChange?.(e);
+      return;
+    }
+
     const numericVal = convertToNumberIfValid(updatedVal, null);
 
     // If an invalid numeric string was inputted, do nothing
-    if (isNull(numericVal)) return;
+    if (isNull(numericVal)) {
+      return;
+    }
 
     // Otherwise display it without formatting it immediately (as that affects user's ability to input)
+
     setValueDisplay(updatedVal);
     onChange?.(e);
   };
@@ -81,9 +95,7 @@ export const NumberInput = (props: NumberInputProps) => {
     <FormControl
       margin="normal"
       className={`
-        number-input ${
-          props.classes?.root ? props.classes.root : ""
-        } ${
+        number-input ${props.classes?.root ? props.classes.root : ""} ${
           errorMessages.length > 0 ? "number-input--error" : ""
         }
       `}
@@ -102,12 +114,10 @@ export const NumberInput = (props: NumberInputProps) => {
 
       <OutlinedInput
         {...inputProps}
-        className={
-          `number-input__input ${
-            inputProps.className ? inputProps.className : ""
-          }`
-        }
-        type="number"
+        className={`number-input__input ${
+          inputProps.className ? inputProps.className : ""
+        }`}
+        type="text"
         value={valueDisplay}
         onChange={handleChange}
         onBlur={handleBlur}
@@ -115,7 +125,7 @@ export const NumberInput = (props: NumberInputProps) => {
           ...inputProps.slotProps,
           input: {
             ...inputSlotProps,
-            type: "number",
+            type: "text",
           },
         }}
       />

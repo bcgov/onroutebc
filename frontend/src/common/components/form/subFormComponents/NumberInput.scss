@@ -1,37 +1,41 @@
-@use "../../../../themes/orbcStyles";
+@import "../../../../themes/orbcStyles";
 
 .number-input {
   & &__label {
-    color: orbcStyles.$bc-black;
+    color: $bc-black;
     font-weight: bold;
     margin: 0 0 0.5rem 0;
   }
 
   &#{&}--error &__label {
-    color: orbcStyles.$bc-black;
+    color: $bc-black;
   }
-
+  
   &#{&}--error &__input {
     &:hover {
       fieldset {
-        border: 2px solid orbcStyles.$bc-red;   
+        border: 2px solid $bc-red;   
       }
     }
 
     fieldset {
-      border: 2px solid orbcStyles.$bc-red;   
+      border: 2px solid $bc-red;   
     }
   }
 
   & &__input {
     fieldset {
-      border: 2px solid orbcStyles.$bc-text-box-border-grey;   
+      border: 2px solid $bc-text-box-border-grey;   
     }
 
     &:focus-within {
       fieldset {
-        border: 2px solid orbcStyles.$focus-blue;   
+        border: 2px solid $focus-blue;   
       }
+    }
+
+    input:disabled + fieldset {
+      background-color: $bc-background-light-grey;
     }
   }
 }

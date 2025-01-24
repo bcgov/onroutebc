@@ -33,6 +33,7 @@ import OnRouteBCContext, {
   BCeIDUserDetailContext,
   IDIRUserDetailContext,
 } from "./common/authentication/OnRouteBCContext";
+import { NavIconBFCTButton } from "./common/components/naviconsidebar/NavIconBFCTButton";
 
 const authority =
   import.meta.env.VITE_KEYCLOAK_ISSUER_URL ||
@@ -171,6 +172,7 @@ const App = () => {
                     <NavIconSideBar>
                       <NavIconHomeButton />
                       <NavIconReportButton />
+                      <NavIconBFCTButton />
                     </NavIconSideBar>
                     <AppRoutes />
                   </Router>
