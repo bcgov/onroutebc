@@ -207,9 +207,9 @@ vehicles:
           - name: TIMESTAMP
             value: "{{ now | toString }}"
           - name: PR_NUM
-            value: {{ .Values.global.env.pr_num | quote }}
+            value: "{{ .Values.global.env.pr_num | toString }}"
           - name: RELEASE_NUM
-            value: {{ .Values.global.env.release_num | quote }}
+            value: "{{ .Values.global.env.release_num | toString }}"
       ports:
         - name: vehicles-api
           containerPort: 5000
@@ -348,9 +348,9 @@ dops:
           - name: TIMESTAMP
             value: "{{ now | toString }}"
           - name: PR_NUM
-            value: {{ .Values.global.env.pr_num | quote }}
+            value: "{{ .Values.global.env.pr_num | toString }}"
           - name: RELEASE_NUM
-            value: {{ .Values.global.env.release_num | quote }}
+            value: "{{ .Values.global.env.release_num | toString }}"
       ports:
         - name: dops-api
           containerPort: 5001
@@ -484,9 +484,9 @@ scheduler:
           - name: TIMESTAMP
             value: "{{ now | toString }}"
           - name: PR_NUM
-            value: {{ .Values.global.env.pr_num | quote }}
+            value: "{{ .Values.global.env.pr_num | toString }}"
           - name: RELEASE_NUM
-            value: {{ .Values.global.env.release_num | quote }}
+            value: "{{ .Values.global.env.release_num | toString }}"
       ports:
         - name: scheduler
           containerPort: 5050
@@ -593,9 +593,9 @@ policy:
           - name: TIMESTAMP
             value: "{{ now | toString }}"
           - name: PR_NUM
-            value: {{ .Values.global.env.pr_num | quote }}
+            value: "{{ .Values.global.env.pr_num | toString }}"
           - name: RELEASE_NUM
-            value: {{ .Values.global.env.release_num | quote }}
+            value: "{{ .Values.global.env.release_num | toString }}"
       ports:
         - name: policy-api
           containerPort: 5002
