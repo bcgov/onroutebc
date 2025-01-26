@@ -38,11 +38,11 @@ jobs:
   build-version:
     name: Calculate build version
     outputs:
-      dops:     ${{ steps.build_ver.outputs.dops }}
-      vehicles: ${{ steps.build_ver.outputs.vehicles }}
-      frontend: ${{ steps.build_ver.outputs.frontend }}
-      vehicles: ${{ steps.build_ver.outputs.scheduler }}
-      policy:   ${{ steps.build_ver.outputs.policy }}
+      dops:       ${{ steps.build_ver.outputs.dops }}
+      vehicles:   ${{ steps.build_ver.outputs.vehicles }}
+      frontend:   ${{ steps.build_ver.outputs.frontend }}
+      scheduler:  ${{ steps.build_ver.outputs.scheduler }}
+      policy:     ${{ steps.build_ver.outputs.policy }}
     runs-on: ubuntu-22.04
     permissions:
       packages: write
