@@ -34,6 +34,36 @@ jobs:
       - name: PR Number
         id: pr
         run: echo pr=${{ steps.pr_no.outputs.pr || inputs.pr}} >> $GITHUB_OUTPUT
+  
+  build-version:
+    name: Calculate build version
+    outputs:
+      ${{matrix.package}}: ${{ steps.semver.outputs.next }}
+    runs-on: ubuntu-22.04
+    permissions:
+      packages: write
+    strategy:
+      matrix:
+        package: [dops, vehicles, frontend, scheduler, policy]
+    timeout-minutes: 2
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: ${{ matrix.package }}
+          sparse-checkout-cone-mode: false
+
+      - name: Get Next Version
+        id: semver
+        uses: ietf-tools/semver-action@v1
+        with:
+          token: ${{ github.token }}
+          branch: main
+      
+      - name: Echo build version into GITHUB_OUTPUT
+        id: build_ver
+        run: |
+          echo "${{matrix.package}}=${{ steps.semver.outputs.next }}" >> $GITHUB_OUTPUT 
 
   deploys-test:
     name: Deploys (Test)
