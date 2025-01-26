@@ -64,6 +64,7 @@ jobs:
           token: ${{ github.token }}
           branch: main
           fallbackTag: latest
+          skipInvalidTags: true
       
       - name: Echo build version into GITHUB_OUTPUT
         id: build_ver
