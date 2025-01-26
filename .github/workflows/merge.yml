@@ -63,7 +63,7 @@ jobs:
         with:
           token: ${{ github.token }}
           branch: main
-          fallbackTag: 'v0.0.0'
+          fallbackTag: latest
       
       - name: Echo build version into GITHUB_OUTPUT
         id: build_ver
