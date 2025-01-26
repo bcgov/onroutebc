@@ -73,7 +73,7 @@ jobs:
 
   deploys-test:
     name: Deploys (Test)
-    needs: [vars]
+    needs: [vars, build-version]
     uses: ./.github/workflows/test.yml
     secrets: inherit
     with:
