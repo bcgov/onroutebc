@@ -181,3 +181,6 @@
 
 ### Version 55:
 - Updates to policy configuration JSON allowing lcv for TROS and TROW
+
+### Version 56:
+- Configure the MV4001 external form in OnRouteBC
