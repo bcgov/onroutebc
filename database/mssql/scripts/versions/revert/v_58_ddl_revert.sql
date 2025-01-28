@@ -22,7 +22,7 @@ GO
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Reverting updates to support new vehicle types for TROS and TROW'
 
-INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (56, @VersionDescription, getutcdate())
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (57, @VersionDescription, getutcdate())
 GO
 
 IF @@ERROR <> 0 SET NOEXEC ON
