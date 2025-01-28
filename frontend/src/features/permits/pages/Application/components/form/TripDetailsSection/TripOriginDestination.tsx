@@ -7,6 +7,8 @@ import { Controller } from "react-hook-form";
 import { NumberInput } from "../../../../../../../common/components/form/subFormComponents/NumberInput";
 import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
 import { convertToNumberIfValid } from "../../../../../../../common/helpers/numeric/convertToNumberIfValid";
+import { InfoBcGovBanner } from "../../../../../../../common/components/banners/InfoBcGovBanner";
+import { BANNER_MESSAGES } from "../../../../../../../common/constants/bannerMessages";
 
 export const TripOriginDestination = ({
   feature,
@@ -19,7 +21,8 @@ export const TripOriginDestination = ({
   totalDistance?: Nullable<number>;
   onUpdateTotalDistance: (updatedTotalDistance?: RequiredOrNull<number>) => void;
 }) => {
-  const showExitPointDistance = permitType === PERMIT_TYPES.MFP;
+  const showExitPoint = permitType === PERMIT_TYPES.MFP;
+  const showTotalDistance = permitType === PERMIT_TYPES.MFP;
 
   const handleUpdateTotalDistance = (numericStr: string) => {
     const updatedTotalDistance = getDefaultRequiredVal(
@@ -58,7 +61,7 @@ export const TripOriginDestination = ({
         }}
       />
       
-      {showExitPointDistance ? (
+      {showExitPoint ? (
         <CustomFormComponent
           className="trip-origin-destination__input"
           type="input"
@@ -73,7 +76,14 @@ export const TripOriginDestination = ({
         />
       ) : null}
 
-      {showExitPointDistance ? (
+      {showTotalDistance ? (
+        <InfoBcGovBanner
+          className="trip-origin-destination__info"
+          msg={BANNER_MESSAGES.TOTAL_DISTANCE}
+        />
+      ) : null}
+
+      {showTotalDistance ? (
         <Controller
           name="permitData.permittedRoute.manualRoute.totalDistance"
           rules={{
@@ -86,7 +96,7 @@ export const TripOriginDestination = ({
                 component: "Total Distance (km)",
               }}
               classes={{
-                root: "trip-origin-destination__input",
+                root: "trip-origin-destination__input trip-origin-destination__input--total-distance",
               }}
               inputProps={{
                 value: getDefaultRequiredVal(null, totalDistance),
