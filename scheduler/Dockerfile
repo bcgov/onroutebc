@@ -1,5 +1,6 @@
 #  Build container
 FROM node:20.15.1-alpine AS builder
+RUN apk update && apk add lftp
 
 # Set the working directory to /app inside the container
 WORKDIR /app
@@ -19,10 +20,14 @@ RUN npm prune --production
 
 # Deployment container
 FROM node:20.15.1-alpine
+
+RUN apk update && apk add lftp
+
 RUN npm cache clean --force
 
 # Create and Assign permissions to npm folder
 RUN mkdir /.npm && chmod 777 /.npm
+
 
 # Set the working directory to /app inside the deployment container
 WORKDIR /app
@@ -67,6 +72,10 @@ ENV ACCESS_API_URL ${ACCESS_API_URL}
 ENV ISSUE_PERMIT_LIMIT ${ISSUE_PERMIT_LIMIT}
 ENV DOC_GEN_LIMIT ${DOC_GEN_LIMIT}
 ENV PERMIT_SCHEDULE_POLLING_INTERVAL ${PERMIT_SCHEDULE_POLLING_INTERVAL}
+ENV GARMS_HOST ${GARMS_HOST}
+ENV GARMS_USER ${GARMS_USER}
+ENV GARMS_PWD ${GARMS_PWD}
+
 
 # Copy production files from build
 COPY --from=builder /app/package*.json ./
@@ -79,7 +88,7 @@ RUN apk add --no-cache curl
 EXPOSE 5050
 
 # Non-root user
-USER node
+USER root
 
 # Start the app
 CMD ["npm", "run", "start:prod"]
