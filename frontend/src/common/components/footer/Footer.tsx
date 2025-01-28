@@ -2,6 +2,8 @@ import { ONROUTE_WEBPAGE_LINKS } from "../../../routes/constants";
 import "./Footer.scss";
 
 export const Footer = () => {
+  const releaseNumber =
+    import.meta.env.VITE_RELEASE_NUM || envConfig.VITE_RELEASE_NUM;
   return (
     <footer className="footer">
       <div className="container">
@@ -56,7 +58,7 @@ export const Footer = () => {
               </a>
             </li>
             <li>
-              <span>{envConfig.VITE_RELEASE_NUM}</span>
+              <span>{releaseNumber}</span>
             </li>
           </ul>
         </div>
