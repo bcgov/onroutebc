@@ -12,7 +12,7 @@ import { PermitContactDetails } from "../types/PermitContactDetails";
 import { Application, ApplicationFormData } from "../types/application";
 import { minDurationForPermitType } from "./dateSelection";
 import { getDefaultVehicleDetails } from "./vehicles/getDefaultVehicleDetails";
-import { getDefaultPermittedRoute } from "./permittedRoute";
+import { getDefaultPermittedRoute } from "./route/getDefaultPermittedRoute";
 import { getDefaultPermittedCommodity } from "./permittedCommodity";
 import {
   getDefaultVehicleConfiguration

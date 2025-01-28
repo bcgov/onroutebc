@@ -9,8 +9,7 @@ import { EMPTY_VEHICLE_DETAILS, PermitVehicleDetails } from "../../types/PermitV
 import { ApplicationFormData } from "../../types/application";
 import { getDefaultVehicleConfiguration } from "../../helpers/vehicles/configuration/getDefaultVehicleConfiguration";
 import { PermitType } from "../../types/PermitType";
-import { Nullable, RequiredOrNull } from "../../../../common/types/common";
-import { ManualRoute } from "../../types/PermittedRoute";
+import { RequiredOrNull } from "../../../../common/types/common";
 
 /**
  * Hook that returns custom methods that update specific values in the application form.
@@ -67,10 +66,10 @@ export const useApplicationFormUpdateMethods = () => {
     );
   }, [setValue]);
 
-  const onUpdateManualRoute = useCallback((updatedManualRoute?: Nullable<ManualRoute>) => {
+  const onUpdateTotalDistance = useCallback((updatedTotalDistance?: RequiredOrNull<number>) => {
     setValue(
-      "permitData.permittedRoute.manualRoute",
-      updatedManualRoute,
+      "permitData.permittedRoute.manualRoute.totalDistance",
+      updatedTotalDistance,
     );
   }, [setValue]);
 
@@ -113,7 +112,7 @@ export const useApplicationFormUpdateMethods = () => {
     onClearVehicle,
     onUpdateLOAs,
     onUpdateHighwaySequence,
-    onUpdateManualRoute,
+    onUpdateTotalDistance,
     onUpdateVehicleConfigTrailers,
     onSetCommodityType,
     onUpdateVehicleConfig,

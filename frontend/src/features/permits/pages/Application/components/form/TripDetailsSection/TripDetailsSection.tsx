@@ -5,20 +5,22 @@ import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
 import { TripOriginDestination } from "./TripOriginDestination";
 import { SpecificRouteDetails } from "./SpecificRouteDetails";
 import { HighwaySequences } from "./HighwaySequences";
-import { Nullable } from "../../../../../../../common/types/common";
+import { Nullable, RequiredOrNull } from "../../../../../../../common/types/common";
 
 export const TripDetailsSection = ({
   feature,
   permitType,
   highwaySequence,
+  totalDistance,
   onUpdateHighwaySequence,
-  onUpdateTripTotalDistance,
+  onUpdateTotalDistance,
 }: {
   feature: string;
   permitType: PermitType;
   highwaySequence: string[];
+  totalDistance?: Nullable<number>;
   onUpdateHighwaySequence: (updatedHighwaySequence: string[]) => void;
-  onUpdateTripTotalDistance: (updatedTotalDistance?: Nullable<number>) => void;
+  onUpdateTotalDistance: (updatedTotalDistance?: RequiredOrNull<number>) => void;
 }) => {
   return (permitType === PERMIT_TYPES.STOS || permitType === PERMIT_TYPES.MFP) ? (
     <Box className="trip-details-section">
@@ -31,12 +33,17 @@ export const TripDetailsSection = ({
       <Box className="trip-details-section__body">
         <TripOriginDestination
           feature={feature}
+          permitType={permitType}
+          totalDistance={totalDistance}
+          onUpdateTotalDistance={onUpdateTotalDistance}
         />
 
-        <HighwaySequences
-          highwaySequence={highwaySequence}
-          onUpdateHighwaySequence={onUpdateHighwaySequence}
-        />
+        {permitType === PERMIT_TYPES.STOS ? (
+          <HighwaySequences
+            highwaySequence={highwaySequence}
+            onUpdateHighwaySequence={onUpdateHighwaySequence}
+          />
+        ) : null}
 
         <SpecificRouteDetails feature={feature} />
       </Box>
