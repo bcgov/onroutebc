@@ -155,7 +155,6 @@ export const useApplicationFormContext = () => {
   } = usePermitVehicles({
     policyEngine,
     permitType,
-    isLcvDesignated,
     vehicleFormData,
     allVehiclesFromInventory,
     selectedLOAs: currentSelectedLOAs,
