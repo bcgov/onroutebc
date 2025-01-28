@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, IconButton, Tooltip } from "@mui/material";
-import { faMinus } from "@fortawesome/free-solid-svg-icons";
+import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 
@@ -10,6 +10,8 @@ import { RequiredOrNull } from "../../../common/types/common";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { convertToNumberIfValid } from "../../../common/helpers/numeric/convertToNumberIfValid";
 import { RemoveAxleUnitModal } from "./RemoveAxleUnitModal";
+import { ResetModal } from "./ResetModal";
+import { usePolicyEngine } from "../../policy/hooks/usePolicyEngine";
 
 interface AxleUnit {
   numberOfAxles?: RequiredOrNull<number>;
@@ -20,8 +22,28 @@ interface AxleUnit {
   tireSize?: RequiredOrNull<number>;
 }
 
+// the type expected by the caculateBridge function in the policy engine
+interface AxleConfiguration {
+  numberOfAxles: number;
+  axleSpread?: number;
+  interaxleSpacing?: number;
+  axleUnitWeight: number;
+  numberOfTires?: number;
+  tireSize?: number;
+}
+
+interface BridgeCalculationResult {
+  startAxleUnit: number;
+  endAxleUnit: number;
+  maxBridge: number;
+  actualWeight: number;
+  success: boolean;
+}
+
 export const BridgeFormulaCalculationTool = () => {
-  const { control, handleSubmit, watch, setValue, reset } = useForm<{
+  const policy = usePolicyEngine();
+
+  const { control, handleSubmit, watch, setValue, reset, formState } = useForm<{
     axleUnits: AxleUnit[];
   }>({
     defaultValues: {
@@ -61,24 +83,55 @@ export const BridgeFormulaCalculationTool = () => {
     });
   };
 
-  const handleCloseRemoveAxleUnitModal = () => {
-    setAxleUnitsToRemove([]);
-    setIsRemoveAxleUnitModalOpen(false);
-  };
+  const [isRemoveAxleUnitModalOpen, setIsRemoveAxleUnitModalOpen] =
+    useState<boolean>(false);
 
   const [axleUnitsToRemove, setAxleUnitsToRemove] = useState<number[]>();
-
-  const handleRemoveAxleUnitButton = (index: number) => {
-    setAxleUnitsToRemove([index, index - 1]);
-    setIsRemoveAxleUnitModalOpen(true);
-  };
 
   const handleRemoveAxleUnits = () => {
     remove(axleUnitsToRemove);
     setIsRemoveAxleUnitModalOpen(false);
   };
 
-  const combineInteraxleSpacing = (axleUnits: AxleUnit[]) => {
+  const handleCloseRemoveAxleUnitModal = () => {
+    setAxleUnitsToRemove([]);
+    setIsRemoveAxleUnitModalOpen(false);
+  };
+
+  const handleRemoveAxleUnitButton = (index: number) => {
+    setAxleUnitsToRemove([index, index - 1]);
+    setIsRemoveAxleUnitModalOpen(true);
+  };
+
+  const [isResetModalOpen, setIsResetModalOpen] = useState<boolean>(false);
+
+  const handleReset = () => {
+    reset();
+    setBridgeCalculationResults([]);
+    setIsResetModalOpen(false);
+  };
+
+  const [bridgeCalculationResults, setBridgeCalculationResults] = useState<
+    BridgeCalculationResult[]
+  >([]);
+
+  const failedBridgeCalculationResults = bridgeCalculationResults.filter(
+    (result) => !result.success,
+  );
+
+  const bridgeCalculationSuccess = bridgeCalculationResults.length
+    ? bridgeCalculationResults.every((result) => result.success)
+    : false;
+
+  const shouldShowResultsSection =
+    formState.errors.axleUnits?.length ||
+    failedBridgeCalculationResults.length ||
+    bridgeCalculationSuccess;
+
+  const getFailedResultText = (failedResult: BridgeCalculationResult) =>
+    `⮾ Bridge calculation failed between Axle Unit ${failedResult.startAxleUnit} and ${failedResult.endAxleUnit}, Axle Group Weight is ${failedResult.actualWeight}, Bridge Formula Weight max is ${failedResult.maxBridge}.`;
+
+  const mergeInteraxleSpacingColumn = (axleUnits: AxleUnit[]) => {
     for (let i = 1; i < axleUnits.length - 1; i++) {
       axleUnits[i + 1].interaxleSpacing = axleUnits[i].interaxleSpacing;
       axleUnits.splice(i, 1);
@@ -86,16 +139,50 @@ export const BridgeFormulaCalculationTool = () => {
     return axleUnits;
   };
 
-  const handleReset = () => {
-    reset();
+  const convertMetreValuesToCentimetres = (axleUnit: AxleUnit) => {
+    return {
+      ...axleUnit,
+      axleSpread: axleUnit.axleSpread
+        ? Math.round(axleUnit.axleSpread * 100)
+        : axleUnit.axleSpread,
+      interaxleSpacing: axleUnit.interaxleSpacing
+        ? Math.round(axleUnit.interaxleSpacing * 100)
+        : axleUnit.interaxleSpacing,
+    };
+  };
+
+  const getDefaultAxleConfiguration = (
+    axleUnit: AxleUnit,
+  ): AxleConfiguration => {
+    return {
+      numberOfAxles: getDefaultRequiredVal(0, axleUnit.numberOfAxles),
+      axleSpread: getDefaultRequiredVal(undefined, axleUnit.axleSpread),
+      interaxleSpacing: getDefaultRequiredVal(
+        undefined,
+        axleUnit.interaxleSpacing,
+      ),
+      axleUnitWeight: getDefaultRequiredVal(0, axleUnit.axleUnitWeight),
+    };
   };
 
   const onSubmit = (data: { axleUnits: AxleUnit[] }) => {
-    console.log(combineInteraxleSpacing(data.axleUnits));
-  };
+    const mergedAxleUnitData = mergeInteraxleSpacingColumn(data.axleUnits);
 
-  const [isRemoveAxleUnitModalOpen, setIsRemoveAxleUnitModalOpen] =
-    useState<boolean>(false);
+    const convertedAxleUnitData = mergedAxleUnitData.map((axleUnit) =>
+      convertMetreValuesToCentimetres(axleUnit),
+    );
+
+    const serializedAxleUnitData = convertedAxleUnitData.map((axleUnit) =>
+      getDefaultAxleConfiguration(axleUnit),
+    );
+
+    const bridgeCalculationResults = policy?.calculateBridge(
+      serializedAxleUnitData,
+    );
+
+    bridgeCalculationResults &&
+      setBridgeCalculationResults(bridgeCalculationResults);
+  };
 
   return (
     <div className="bridge-formula-calculation-tool">
@@ -105,11 +192,34 @@ export const BridgeFormulaCalculationTool = () => {
             <tr>
               <th className="column__label">Axle Unit</th>
               {fields.map((field, index) => {
-                // Ensure the column number is shown for every axle unit (even and odd index)
+                const axleUnitNumber = Math.floor(index / 2) + 1;
+
+                // Check if this axle unit fails based on failedBridgeCalculationResults
+                const axleUnitFailure = failedBridgeCalculationResults.some(
+                  (result) =>
+                    axleUnitNumber >= result.startAxleUnit &&
+                    axleUnitNumber <= result.endAxleUnit,
+                );
+
+                // Check if the spacing column (odd index) is between two failing axle units
+                const spacingColumnFailure =
+                  index % 2 === 1 &&
+                  failedBridgeCalculationResults.some(
+                    (result) =>
+                      axleUnitNumber >= result.startAxleUnit &&
+                      axleUnitNumber < result.endAxleUnit,
+                  );
+
                 if (index % 2 === 0) {
-                  const axleUnitNumber = Math.floor(index / 2) + 1;
                   return (
-                    <th key={field.id} className="column__label">
+                    <th
+                      key={field.id}
+                      className={`${
+                        axleUnitFailure
+                          ? "column__label column__label--fail"
+                          : "column__label"
+                      }`}
+                    >
                       <div className="column-label__inner">
                         {axleUnitNumber}
                         {axleUnitNumber >= 3 && (
@@ -131,8 +241,15 @@ export const BridgeFormulaCalculationTool = () => {
                   );
                 } else {
                   return (
-                    <th key={field.id} className="column__label">
-                      {/* Blank column for odd indices */}
+                    <th
+                      key={field.id}
+                      className={`${
+                        spacingColumnFailure
+                          ? "column__label column__label--fail"
+                          : "column__label"
+                      }`}
+                    >
+                      {/* Blank column for interaxleSpacing */}
                     </th>
                   );
                 }
@@ -147,6 +264,7 @@ export const BridgeFormulaCalculationTool = () => {
                 const axleSpreadFieldName =
                   `axleUnits.${index}.axleSpread` as const;
                 const numberOfAxles = axleUnits[index].numberOfAxles;
+
                 return (
                   <td key={field.id} className="table__cell">
                     {index % 2 === 0 && (
@@ -194,14 +312,10 @@ export const BridgeFormulaCalculationTool = () => {
                 const axleSpread = axleUnits[index].axleSpread;
                 const numberOfAxles = axleUnits[index].numberOfAxles;
                 const disabled = numberOfAxles === 1;
+
                 return (
                   <td key={field.id} className="table__cell">
                     {index % 2 === 0 && (
-                      // <input
-                      //   type="text"
-                      //   {...register(fieldName)}
-                      //   disabled={disabled}
-                      // />
                       <Controller
                         name={fieldName}
                         control={control}
@@ -211,6 +325,7 @@ export const BridgeFormulaCalculationTool = () => {
                         }}
                         render={({ fieldState: { invalid } }) => (
                           <NumberInput
+                            classes={{ root: "table__input-container" }}
                             inputProps={{
                               value: getDefaultRequiredVal(null, axleSpread),
                               onBlur: ({ target: { value } }) =>
@@ -240,6 +355,7 @@ export const BridgeFormulaCalculationTool = () => {
                 const fieldName =
                   `axleUnits.${index}.interaxleSpacing` as const;
                 const interaxleSpacing = axleUnits[index].interaxleSpacing;
+
                 return (
                   <td key={field.id} className="table__cell">
                     {index % 2 !== 0 && (
@@ -252,6 +368,7 @@ export const BridgeFormulaCalculationTool = () => {
                         }}
                         render={({ fieldState: { invalid } }) => (
                           <NumberInput
+                            classes={{ root: "table__input-container" }}
                             inputProps={{
                               value: getDefaultRequiredVal(
                                 null,
@@ -281,6 +398,7 @@ export const BridgeFormulaCalculationTool = () => {
               {fields.map((field, index) => {
                 const fieldName = `axleUnits.${index}.axleUnitWeight` as const;
                 const axleUnitWeight = axleUnits[index].axleUnitWeight;
+
                 return (
                   <td key={field.id} className="table__cell">
                     {index % 2 === 0 && (
@@ -293,6 +411,7 @@ export const BridgeFormulaCalculationTool = () => {
                         }}
                         render={({ fieldState: { invalid } }) => (
                           <NumberInput
+                            classes={{ root: "table__input-container" }}
                             inputProps={{
                               value: getDefaultRequiredVal(
                                 null,
@@ -324,13 +443,14 @@ export const BridgeFormulaCalculationTool = () => {
           onClick={handleAddAxleUnit}
           className="button button--add"
         >
-          + Add Axle Unit
+          <FontAwesomeIcon icon={faPlus} />
+          Add Axle Unit
         </Button>
       </div>
       <div className="button-container">
         <Button
           variant="contained"
-          onClick={handleReset}
+          onClick={() => setIsResetModalOpen(true)}
           className="button button--reset"
         >
           Reset
@@ -344,10 +464,38 @@ export const BridgeFormulaCalculationTool = () => {
         </Button>
       </div>
 
+      {shouldShowResultsSection && (
+        <div className="results">
+          <h2 className="results__heading">
+            Bridge Formula Calculation Results
+          </h2>
+
+          {formState.errors.axleUnits?.length ? (
+            <p className="result__text">Insufficient and/or invalid data.</p>
+          ) : failedBridgeCalculationResults.length ? (
+            failedBridgeCalculationResults.map((failedResult, index) => (
+              <p key={index} className="results__text results__text--fail">
+                {getFailedResultText(failedResult)}
+              </p>
+            ))
+          ) : (
+            <p className="results__text results__text--success">
+              &#x2713; Bridge Calculation is ok.
+            </p>
+          )}
+        </div>
+      )}
+
       <RemoveAxleUnitModal
         isOpen={isRemoveAxleUnitModalOpen}
         onCancel={handleCloseRemoveAxleUnitModal}
         onConfirm={handleRemoveAxleUnits}
+      />
+
+      <ResetModal
+        isOpen={isResetModalOpen}
+        onCancel={() => setIsResetModalOpen(false)}
+        onConfirm={handleReset}
       />
     </div>
   );

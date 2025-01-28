@@ -1,6 +1,6 @@
 @import "../../../themes/orbcStyles";
 
-.remove-axle-unit-modal {
+.reset-modal {
   & &__container {
     width: 100%;
     display: flex;
@@ -56,7 +56,7 @@
         border-color: $bc-text-box-border-grey;
       }
     }
-    &--remove {
+    &--reset {
       font-weight: bold;
     }
   }
