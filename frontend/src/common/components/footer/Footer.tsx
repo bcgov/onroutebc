@@ -54,6 +54,9 @@ export const Footer = () => {
               Contact Us
             </a>
           </li>
+          <li style={{ right: "3em", position: "fixed" }}>
+            <span>{envConfig.VITE_RELEASE_NUMBER}</span>
+          </li>
         </ul>
       </div>
     </footer>
