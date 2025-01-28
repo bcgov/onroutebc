@@ -1,7 +1,7 @@
 #  Build container
 FROM node:20.15.1-alpine AS builder
 
-RUN apk update && apk add lftp
+RUN apk update && apk add lftp && apk add busybox-extras
 
 # Set the working directory to /app inside the container
 WORKDIR /app
@@ -21,7 +21,7 @@ RUN npm prune --production
 
 # Deployment container
 FROM node:20.15.1-alpine
-RUN apk update && apk add lftp
+RUN apk update && apk add lftp && apk add busybox-extras
 RUN npm cache clean --force
 
 # Create and Assign permissions to npm folder
