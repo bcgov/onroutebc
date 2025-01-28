@@ -56,7 +56,7 @@ export const Footer = () => {
               </a>
             </li>
             <li>
-              <span>{envConfig.VITE_RELEASE_NUMBER}</span>
+              <span>{envConfig.VITE_RELEASE_NUM}</span>
             </li>
           </ul>
         </div>
