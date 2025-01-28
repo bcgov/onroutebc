@@ -112,6 +112,7 @@ const App = () => {
     setDisplaySnackBar(snackBar.showSnackbar);
   }, [snackBar]);
 
+  
   return (
     <AuthProvider {...oidcConfig}>
       <ThemeProvider theme={bcGovTheme}>
