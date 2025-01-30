@@ -88,7 +88,7 @@ RUN apk add --no-cache curl
 EXPOSE 5050
 
 # Non-root user
-USER root
+USER node
 
 # Start the app
 CMD ["npm", "run", "start:prod"]

@@ -58,19 +58,25 @@ export class GarmsService {
     }
   }
   ftpsFile2() {
-    console.log('file data: ', fs.readFileSync('./dist/orbctest.txt', 'utf-8'));
+    console.log('file data from hello2: ', fs.readFileSync('./dist/orbctest.txt', 'utf-8'));
     const ftps = new FTPS({
       host: process.env.GARMS_HOST, // required
       username: process.env.GARMS_USER, // Optional. Use empty username for anonymous access.
       password: process.env.GARMS_PWD, // Required if username is not empty, except when requiresPassword: false
       // protocol is added on beginning of host, ex : sftp://domain.com in this case
       additionalLftpCommands:
-        'set cache:enable no;set ftp:passive-mode off;set ftp:use-size no;set ftp:ssl-protect-data yes;set ftp:ssl-force yes;set ftps:initial-prot "P";set net:connection-limit 1;set net:max-retries 1;debug 3', // Additional commands to pass to lftp, splitted by ';'
+        'set cache:enable no;set ftp:passive-mode on;set ftp:use-size no;set ftp:ssl-protect-data yes;set ftp:ssl-force yes;set ftps:initial-prot "P";set net:connection-limit 1;set net:max-retries 1;debug 3;', // Additional commands to pass to lftp, splitted by ';'
     });
+        const remoteFilePath = 'GARMD.GA4701.WS.BATCH(+1)';
+     const localFilePath = './dist/orbctest.txt'
+    console.log('executing quote');
+    ftps.raw('quote SITE LRecl=140')
+    console.log('executed quote');
     ftps.pwd().exec(console.log);
     const remoteFile = "'GARMD.GA4701.WS.BATCH(+1)'";
     console.log('Remote file is: ',remoteFile)
-    ftps.put('./dist/orbctest.txt', remoteFile).exec(console.log);
+    ftps.raw(`put -a ${localFilePath} -o "'${remoteFilePath}'"`);
+    ftps.raw('quit')
     ftps.pwd().exec(console.log);
   }
 
@@ -79,7 +85,7 @@ export class GarmsService {
     try {
       const remoteFilePath = 'GARMD.GA4701.WS.BATCH(+1)';
      const localFilePath = './dist/orbctest.txt'
-     const additionalParams = 'set cache:enable no;set ftp:passive-mode off;set ftp:use-size no;set ftp:ssl-protect-data yes;set ftp:ssl-force yes;set ftps:initial-prot P;set net:connection-limit 1;set net:max-retries 1;debug 5';
+     const additionalParams = 'set cache:enable no;set ftp:passive-mode on;set ftp:use-size no;set ftp:ssl-protect-data yes;set ftp:ssl-force yes;set ftps:initial-prot P;set net:connection-limit 1;set net:max-retries 1;debug 5';
 
       // Construct the lftp command
       const command = `
