@@ -31,7 +31,7 @@ export const StartApplicationAction = () => {
 
   const { data: featureFlags } = useFeatureFlagsQuery();
   const enableSTOS = featureFlags?.["STOS"] === "ENABLED";
-  const enableMFP = true;
+  const enableMFP = featureFlags?.["MFP"] === "ENABLED";
 
   const handleChooseFrom = (
     _event: React.MouseEvent<HTMLElement>,
