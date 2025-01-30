@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useContext, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
@@ -244,22 +243,21 @@ export const ApplicationReview = ({
     companyId,
   });
 
-  const [currentClaimant, setCurrentClaimant] = useState<string>("");
+  const assignedUser = getDefaultRequiredVal(
+    "",
+    applicationMetadata?.assignedUser,
+  );
 
-  const userIsCurrentClaimant = currentClaimant === idirUserDetails?.userName;
-
-  useEffect(() => {
-    applicationMetadata &&
-      setCurrentClaimant(applicationMetadata?.assignedUser);
-  }, [applicationMetadata]);
+  const currentUserIsAssignedUser = assignedUser === idirUserDetails?.userName;
 
   const handleApprove = async () => {
-    setHasAttemptedSubmission(true);
-
-    if (!userIsCurrentClaimant) {
+    if (!currentUserIsAssignedUser) {
       setShowUnavailableApplicationModal(true);
       return;
     }
+
+    setHasAttemptedSubmission(true);
+
     await updateApplication({
       applicationId: permitId,
       companyId,
@@ -271,7 +269,7 @@ export const ApplicationReview = ({
     useState<boolean>(false);
 
   const handleRejectButton = () => {
-    if (!userIsCurrentClaimant) {
+    if (!currentUserIsAssignedUser) {
       setShowUnavailableApplicationModal(true);
       return;
     }
@@ -400,7 +398,7 @@ export const ApplicationReview = ({
           showModal={showUnavailableApplicationModal}
           onCancel={handleCloseUnavailableApplicationModal}
           onConfirm={handleCloseApplication}
-          currentClaimant={currentClaimant}
+          assignedUser={assignedUser}
         />
       )}
     </div>

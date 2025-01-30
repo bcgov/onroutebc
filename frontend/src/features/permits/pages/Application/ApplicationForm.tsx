@@ -1,6 +1,6 @@
 import { FormProvider } from "react-hook-form";
 import { Navigate, useNavigate } from "react-router-dom";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import dayjs from "dayjs";
 import { isAxiosError } from "axios";
 
@@ -189,14 +189,12 @@ export const ApplicationForm = ({
     companyId,
   });
 
-  const [currentClaimant, setCurrentClaimant] = useState<string>("");
+  const assignedUser = getDefaultRequiredVal(
+    "",
+    applicationMetadata?.assignedUser,
+  );
 
-  const userIsCurrentClaimant = currentClaimant === idirUserDetails?.userName;
-
-  useEffect(() => {
-    applicationMetadata &&
-      setCurrentClaimant(applicationMetadata?.assignedUser);
-  }, [applicationMetadata]);
+  const currentUserIsAssignedUser = assignedUser === idirUserDetails?.userName;
 
   // Check to see if all application values were already saved
   const isApplicationSaved = () => {
@@ -209,7 +207,7 @@ export const ApplicationForm = ({
 
   // When "Continue" button is clicked
   const onContinue = async (data: ApplicationFormData) => {
-    if (!userIsCurrentClaimant) {
+    if (!currentUserIsAssignedUser) {
       return;
     }
 
@@ -223,7 +221,7 @@ export const ApplicationForm = ({
     const vehicleData = serializePermitVehicleDetails(
       data.permitData.vehicleDetails,
     );
-    // TODO show UnavailableApplicationModal here
+
     const savedVehicleDetails = await handleSaveVehicle(vehicleData);
 
     // Save application before continuing
@@ -255,7 +253,7 @@ export const ApplicationForm = ({
     additionalSuccessAction?: (permitId: string) => void,
     savedVehicleInventoryDetails?: Nullable<PermitVehicleDetails>,
   ) => {
-    if (!userIsCurrentClaimant) {
+    if (!currentUserIsAssignedUser) {
       return;
     }
 
@@ -381,8 +379,6 @@ export const ApplicationForm = ({
 
   if (isUndefined(policyEngine)) return <Loading />;
   if (isNull(policyEngine)) return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
-
-  // TODO we will need to handle errors when attempting to save an application which has been claimed by another user
 
   return (
     <div className="application-form">

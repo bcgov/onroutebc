@@ -244,6 +244,10 @@ export const useInvalidateApplicationsInQueue = () => {
   };
 };
 
+/**
+ * Hook that fetches additional information for a given applicationId.
+ * @returns Application Metadata including the "assignedUser" property used by the queue feature
+ */
 export const useApplicationInQueueMetadata = ({
   companyId,
   applicationId,

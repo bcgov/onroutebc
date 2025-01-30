@@ -6,12 +6,12 @@ export const UnavailableApplicationModal = ({
   showModal,
   onConfirm,
   onCancel,
-  currentClaimant,
+  assignedUser,
 }: {
   showModal: boolean;
   onConfirm: () => void;
   onCancel: () => void;
-  currentClaimant: string;
+  assignedUser: string;
 }) => {
   const formMethods = useForm<{ comment: string }>({
     defaultValues: {
@@ -41,7 +41,7 @@ export const UnavailableApplicationModal = ({
       <FormProvider {...formMethods}>
         <div className="unavailable-application-modal__body">
           <span className="unavailable-application-modal__text">
-            This application is claimed by <strong>{currentClaimant}.</strong>
+            This application is claimed by <strong>{assignedUser}.</strong>
           </span>
         </div>
 
