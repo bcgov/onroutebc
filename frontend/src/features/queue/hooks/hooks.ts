@@ -21,6 +21,7 @@ import {
 } from "../types/ApplicationQueueStatus";
 import {
   claimApplicationInQueue,
+  getApplicationInQueueMetadata,
   getApplicationsInQueue,
   getClaimedApplicationsInQueue,
   getUnclaimedApplicationsInQueue,
@@ -48,6 +49,10 @@ const QUEUE_QUERY_KEYS = {
     status?: ApplicationQueueStatus,
   ) =>
     [...QUEUE_QUERY_KEYS.WITH_STATUS(status), { pagination, sorting }] as const,
+  APPLICATION_METADATA: (applicationId: string) => [
+    QUEUE_QUERY_KEYS_BASE,
+    { applicationId },
+  ],
 };
 
 /**
@@ -237,4 +242,17 @@ export const useInvalidateApplicationsInQueue = () => {
       });
     },
   };
+};
+
+export const useApplicationInQueueMetadata = ({
+  companyId,
+  applicationId,
+}: {
+  companyId: number;
+  applicationId: string;
+}) => {
+  return useQuery({
+    queryKey: QUEUE_QUERY_KEYS.APPLICATION_METADATA(applicationId),
+    queryFn: () => getApplicationInQueueMetadata(companyId, applicationId),
+  });
 };

@@ -1,6 +1,6 @@
 import { FormProvider } from "react-hook-form";
 import { Navigate, useNavigate } from "react-router-dom";
-import { useContext, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
 import { isAxiosError } from "axios";
 
@@ -52,6 +52,7 @@ import {
   ApplicationStepContext,
   ERROR_ROUTES,
 } from "../../../../routes/constants";
+import { useApplicationInQueueMetadata } from "../../../queue/hooks/hooks";
 
 const FEATURE = "application";
 
@@ -183,6 +184,20 @@ export const ApplicationForm = ({
     return updatedViolations;
   };
 
+  const { data: applicationMetadata } = useApplicationInQueueMetadata({
+    applicationId: getDefaultRequiredVal("", currentFormData.permitId),
+    companyId,
+  });
+
+  const [currentClaimant, setCurrentClaimant] = useState<string>("");
+
+  const userIsCurrentClaimant = currentClaimant === idirUserDetails?.userName;
+
+  useEffect(() => {
+    applicationMetadata &&
+      setCurrentClaimant(applicationMetadata?.assignedUser);
+  }, [applicationMetadata]);
+
   // Check to see if all application values were already saved
   const isApplicationSaved = () => {
     // Check if all current form field values match field values already saved in application context
@@ -194,6 +209,10 @@ export const ApplicationForm = ({
 
   // When "Continue" button is clicked
   const onContinue = async (data: ApplicationFormData) => {
+    if (!userIsCurrentClaimant) {
+      return;
+    }
+
     const updatedViolations = await triggerPolicyValidation();
     // prevent CV client continuing if there are policy engine validation errors
     if (Object.keys(updatedViolations).length > 0 && !isStaffUser) {
@@ -236,6 +255,10 @@ export const ApplicationForm = ({
     additionalSuccessAction?: (permitId: string) => void,
     savedVehicleInventoryDetails?: Nullable<PermitVehicleDetails>,
   ) => {
+    if (!userIsCurrentClaimant) {
+      return;
+    }
+
     if (isNull(savedVehicleInventoryDetails)) {
       return navigate(ERROR_ROUTES.UNEXPECTED);
     }
@@ -252,7 +275,6 @@ export const ApplicationForm = ({
             },
           },
         };
-    // TODO show UnavailableApplicationModal here
     await saveApplication(
       {
         data: applicationToBeSaved,

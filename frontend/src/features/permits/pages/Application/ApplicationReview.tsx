@@ -39,6 +39,7 @@ import { CASE_ACTIVITY_TYPES } from "../../../queue/types/CaseActivityType";
 import { QueueBreadcrumb } from "../../../queue/components/QueueBreadcrumb";
 import { RejectApplicationModal } from "../../../queue/components/RejectApplicationModal";
 import {
+  useApplicationInQueueMetadata,
   useSubmitApplicationForReview,
   useUpdateApplicationInQueueStatus,
 } from "../../../queue/hooks/hooks";
@@ -116,7 +117,6 @@ export const ApplicationReview = ({
   const {
     mutateAsync: updateApplication,
     data: updateApplicationResponse,
-    error: updateApplicationError,
     isPending: updateApplicationMutationPending,
   } = useUpdateApplicationInQueueStatus();
 
@@ -239,8 +239,27 @@ export const ApplicationReview = ({
     );
   };
 
+  const { data: applicationMetadata } = useApplicationInQueueMetadata({
+    applicationId: permitId,
+    companyId,
+  });
+
+  const [currentClaimant, setCurrentClaimant] = useState<string>("");
+
+  const userIsCurrentClaimant = currentClaimant === idirUserDetails?.userName;
+
+  useEffect(() => {
+    applicationMetadata &&
+      setCurrentClaimant(applicationMetadata?.assignedUser);
+  }, [applicationMetadata]);
+
   const handleApprove = async () => {
     setHasAttemptedSubmission(true);
+
+    if (!userIsCurrentClaimant) {
+      setShowUnavailableApplicationModal(true);
+      return;
+    }
     await updateApplication({
       applicationId: permitId,
       companyId,
@@ -252,6 +271,10 @@ export const ApplicationReview = ({
     useState<boolean>(false);
 
   const handleRejectButton = () => {
+    if (!userIsCurrentClaimant) {
+      setShowUnavailableApplicationModal(true);
+      return;
+    }
     setShowRejectApplicationModal(true);
   };
 
@@ -267,8 +290,6 @@ export const ApplicationReview = ({
 
   const [showUnavailableApplicationModal, setShowUnavailableApplicationModal] =
     useState<boolean>(false);
-
-  const [currentClaimant, setCurrentClaimant] = useState<string>("");
 
   const updateApplicationResponseStatus = updateApplicationResponse?.status;
 
@@ -286,18 +307,6 @@ export const ApplicationReview = ({
       navigate(IDIR_ROUTES.STAFF_HOME);
     }
   }, [updateApplicationResponse, updateApplicationResponseStatus, navigate]);
-
-  const updateApplicationErrorStatus = updateApplicationError?.response?.status;
-
-  useEffect(() => {
-    if (updateApplicationErrorStatus === 422) {
-      setCurrentClaimant(
-        updateApplicationError.response.data.error[0].additionalInfo
-          .currentClaimant,
-      );
-      setShowUnavailableApplicationModal(true);
-    }
-  }, [updateApplicationError]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
