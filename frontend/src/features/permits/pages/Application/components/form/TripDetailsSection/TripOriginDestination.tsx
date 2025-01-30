@@ -100,7 +100,7 @@ export const TripOriginDestination = ({
               }}
               inputProps={{
                 value: getDefaultRequiredVal(null, totalDistance),
-                maskFn: (numericVal) => numericVal.toFixed(2),
+                maskFn: (numericVal) => numericVal.toFixed(0),
                 onBlur: (e) => {
                   handleUpdateTotalDistance(e.target.value);
                 },

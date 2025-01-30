@@ -4,7 +4,7 @@ import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBC
 import { getMandatoryConditions } from "./conditions";
 import { Nullable } from "../../../common/types/common";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
-import { calculateFeeByDuration } from "./feeSummary";
+import { calculatePermitFee } from "./feeSummary";
 import { PERMIT_TYPES, PermitType } from "../types/PermitType";
 import { getExpiryDate } from "./permitState";
 import { PermitMailingAddress } from "../types/PermitMailingAddress";
@@ -175,6 +175,11 @@ export const getDefaultValues = (
     applicationData?.applicationNumber,
   );
 
+  const defaultPermittedRoute = getDefaultPermittedRoute(
+    permitType,
+    applicationData?.permitData?.permittedRoute,
+  );
+
   return {
     originalPermitId: getDefaultRequiredVal(
       "",
@@ -228,9 +233,13 @@ export const getDefaultValues = (
       vehicleDetails: getDefaultVehicleDetails(
         applicationData?.permitData?.vehicleDetails,
       ),
-      feeSummary: `${calculateFeeByDuration(defaultPermitType, durationOrDefault)}`,
+      feeSummary: `${calculatePermitFee(
+        defaultPermitType,
+        durationOrDefault,
+        defaultPermittedRoute?.manualRoute?.totalDistance,
+      )}`,
       loas: getDefaultRequiredVal([], applicationData?.permitData?.loas),
-      permittedRoute: getDefaultPermittedRoute(permitType, applicationData?.permitData?.permittedRoute),
+      permittedRoute: defaultPermittedRoute,
       applicationNotes: permitType !== PERMIT_TYPES.STOS
         ? null : getDefaultRequiredVal("", applicationData?.permitData?.applicationNotes),
       permittedCommodity: getDefaultPermittedCommodity(

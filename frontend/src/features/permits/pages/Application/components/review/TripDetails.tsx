@@ -19,7 +19,7 @@ export const TripDetails = ({
   const origin = getDefaultRequiredVal("", routeDetails?.manualRoute?.origin);
   const destination = getDefaultRequiredVal("", routeDetails?.manualRoute?.destination);
   const exitPoint = getDefaultRequiredVal("", routeDetails?.manualRoute?.exitPoint);
-  const totalDistance = getDefaultRequiredVal(0, routeDetails?.manualRoute?.totalDistance);
+  const totalDistanceStr = getDefaultRequiredVal(0, routeDetails?.manualRoute?.totalDistance).toFixed(0);
   const highwaySequence = getDefaultRequiredVal([], routeDetails?.manualRoute?.highwaySequence);
   const details = getDefaultRequiredVal("", routeDetails?.routeDetails);
 
@@ -38,8 +38,8 @@ export const TripDetails = ({
           oldRouteDetails?.manualRoute?.exitPoint,
         ),
         totalDistance: areValuesDifferent(
-          routeDetails?.manualRoute?.totalDistance,
-          oldRouteDetails?.manualRoute?.totalDistance,
+          totalDistanceStr,
+          getDefaultRequiredVal(0, oldRouteDetails?.manualRoute?.totalDistance).toFixed(0),
         ),
         highwaySequences: areOrderedSequencesEqual(
           routeDetails?.manualRoute?.highwaySequence,
@@ -126,7 +126,7 @@ export const TripDetails = ({
               </div>
             ) : null}
 
-            {totalDistance > 0 ? (
+            {Number(totalDistanceStr) > 0 ? (
               <div className="manual-route__total-distance">
                 <Typography className="manual-route__label">
                   <span className="manual-route__label-text">Total Distance (km)</span>
@@ -138,7 +138,7 @@ export const TripDetails = ({
                   className="manual-route__data"
                   data-testid="permit-route-total-distance"
                 >
-                  {totalDistance}
+                  {totalDistanceStr}
                 </Typography>
               </div>
             ) : null}
