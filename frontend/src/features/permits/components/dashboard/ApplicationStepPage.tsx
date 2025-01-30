@@ -126,7 +126,6 @@ export const ApplicationStepPage = ({
         />
       );
     }
-
     return (
       <ApplicationForm
         permitType={applicationPermitType}
