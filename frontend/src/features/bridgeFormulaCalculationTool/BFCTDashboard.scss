@@ -1,5 +1,5 @@
 @use "../../common/components/dashboard/Dashboard";
-@import "../../themes/orbcStyles";
+@use "../../themes/orbcStyles";
 
 @include Dashboard.page-tabpanel-container-style(".bfct-dashboard");
 
@@ -8,7 +8,7 @@
     display: flex;
     gap: 3rem;
     padding: 4rem 0;
-    border-bottom: 1px solid $bc-border-grey;
+    border-bottom: 1px solid orbcStyles.$bc-border-grey;
   }
 
   &__info-banner {

@@ -27,7 +27,6 @@ export interface NumberInputProps {
     messages?: string[];
     errors?: string[];
   };
-  invalid?: boolean;
   inputProps: Omit<OutlinedInputProps, "type" | "value"> & {
     value: RequiredOrNull<number>;
     maskFn?: (numericVal: number) => string;
@@ -60,11 +59,13 @@ export const NumberInput = (props: NumberInputProps) => {
   const [valueDisplay, setValueDisplay] = useState<string>(initialValueDisplay);
 
   useEffect(() => {
-    setValueDisplay(applyWhenNotNullable(
-      (num) => (maskFn ? maskFn(num) : `${num}`),
-      inputValue,
-      "",
-    ));
+    setValueDisplay(
+      applyWhenNotNullable(
+        (num) => (maskFn ? maskFn(num) : `${num}`),
+        inputValue,
+        "",
+      ),
+    );
   }, [inputValue]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
