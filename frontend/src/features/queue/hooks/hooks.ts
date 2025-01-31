@@ -258,5 +258,8 @@ export const useApplicationInQueueMetadata = ({
   return useQuery({
     queryKey: QUEUE_QUERY_KEYS.APPLICATION_METADATA(applicationId),
     queryFn: () => getApplicationInQueueMetadata(companyId, applicationId),
+    // enable fetching only when applicationId is defined and user is IDIR user
+    enabled: Boolean(companyId && applicationId),
+    staleTime: 0,
   });
 };

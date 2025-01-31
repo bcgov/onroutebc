@@ -119,13 +119,33 @@ export const ApplicationReview = ({
     isPending: updateApplicationMutationPending,
   } = useUpdateApplicationInQueueStatus();
 
+  const applicationInQueueMetadataQuery =
+    applicationStepContext === APPLICATION_STEP_CONTEXTS.QUEUE
+      ? useApplicationInQueueMetadata({
+          applicationId: getDefaultRequiredVal("", permitId),
+          companyId,
+        })
+      : undefined;
+
+  const assignedUser = getDefaultRequiredVal(
+    "",
+    applicationInQueueMetadataQuery?.data?.assignedUser,
+  );
+
+  const currentUserIsAssignedUser = assignedUser === idirUserDetails?.userName;
+
   const handleEdit = () => {
-    navigate(
-      isQueueContext
-        ? APPLICATION_QUEUE_ROUTES.EDIT(companyId, applicationId)
-        : APPLICATIONS_ROUTES.DETAILS(permitId),
-      { replace: true },
-    );
+    if (isQueueContext) {
+      if (!currentUserIsAssignedUser) {
+        setShowUnavailableApplicationModal(true);
+        return;
+      }
+      navigate(APPLICATION_QUEUE_ROUTES.EDIT(companyId, applicationId), {
+        replace: true,
+      });
+    } else {
+      navigate(APPLICATIONS_ROUTES.DETAILS(permitId), { replace: true });
+    }
   };
 
   const handleSaveApplication = async (
@@ -237,18 +257,6 @@ export const ApplicationReview = ({
       },
     );
   };
-
-  const { data: applicationMetadata } = useApplicationInQueueMetadata({
-    applicationId: permitId,
-    companyId,
-  });
-
-  const assignedUser = getDefaultRequiredVal(
-    "",
-    applicationMetadata?.assignedUser,
-  );
-
-  const currentUserIsAssignedUser = assignedUser === idirUserDetails?.userName;
 
   const handleApprove = async () => {
     if (!currentUserIsAssignedUser) {

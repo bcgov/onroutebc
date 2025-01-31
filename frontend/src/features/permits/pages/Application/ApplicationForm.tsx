@@ -51,8 +51,10 @@ import {
   APPLICATION_STEP_CONTEXTS,
   ApplicationStepContext,
   ERROR_ROUTES,
+  IDIR_ROUTES,
 } from "../../../../routes/constants";
 import { useApplicationInQueueMetadata } from "../../../queue/hooks/hooks";
+import { UnavailableApplicationModal } from "../../../queue/components/UnavailableApplicationModal";
 
 const FEATURE = "application";
 
@@ -184,17 +186,34 @@ export const ApplicationForm = ({
     return updatedViolations;
   };
 
-  const { data: applicationMetadata } = useApplicationInQueueMetadata({
-    applicationId: getDefaultRequiredVal("", currentFormData.permitId),
-    companyId,
-  });
+  const isQueueContext =
+    applicationStepContext === APPLICATION_STEP_CONTEXTS.QUEUE;
+
+  const applicationInQueueMetadataQuery = isQueueContext
+    ? useApplicationInQueueMetadata({
+        applicationId: getDefaultRequiredVal("", currentFormData.permitId),
+        companyId,
+      })
+    : undefined;
+
+  // const { data: applicationMetadata } = useApplicationInQueueMetadata({
+  //   applicationId: getDefaultRequiredVal("", currentFormData.permitId),
+  //   companyId,
+  // });
 
   const assignedUser = getDefaultRequiredVal(
     "",
-    applicationMetadata?.assignedUser,
+    applicationInQueueMetadataQuery?.data?.assignedUser,
   );
 
   const currentUserIsAssignedUser = assignedUser === idirUserDetails?.userName;
+
+  const [showUnavailableApplicationModal, setShowUnavailableApplicationModal] =
+    useState<boolean>(false);
+
+  const handleCloseApplication = () => {
+    navigate(IDIR_ROUTES.STAFF_HOME);
+  };
 
   // Check to see if all application values were already saved
   const isApplicationSaved = () => {
@@ -207,10 +226,6 @@ export const ApplicationForm = ({
 
   // When "Continue" button is clicked
   const onContinue = async (data: ApplicationFormData) => {
-    if (!currentUserIsAssignedUser) {
-      return;
-    }
-
     const updatedViolations = await triggerPolicyValidation();
     // prevent CV client continuing if there are policy engine validation errors
     if (Object.keys(updatedViolations).length > 0 && !isStaffUser) {
@@ -227,7 +242,7 @@ export const ApplicationForm = ({
     // Save application before continuing
     await onSaveApplication((permitId) => {
       return navigate(
-        applicationStepContext === APPLICATION_STEP_CONTEXTS.QUEUE
+        isQueueContext
           ? APPLICATION_QUEUE_ROUTES.REVIEW(companyId, permitId)
           : APPLICATIONS_ROUTES.REVIEW(permitId),
       );
@@ -253,10 +268,10 @@ export const ApplicationForm = ({
     additionalSuccessAction?: (permitId: string) => void,
     savedVehicleInventoryDetails?: Nullable<PermitVehicleDetails>,
   ) => {
-    if (!currentUserIsAssignedUser) {
+    if (isQueueContext && !currentUserIsAssignedUser) {
+      setShowUnavailableApplicationModal(true);
       return;
     }
-
     if (isNull(savedVehicleInventoryDetails)) {
       return navigate(ERROR_ROUTES.UNEXPECTED);
     }
@@ -311,12 +326,16 @@ export const ApplicationForm = ({
     if (!isApplicationSaved()) {
       setShowLeaveApplicationDialog(true);
     } else {
-      navigate(APPLICATIONS_ROUTES.BASE);
+      navigate(
+        isQueueContext ? IDIR_ROUTES.STAFF_HOME : APPLICATIONS_ROUTES.BASE,
+      );
     }
   };
 
   const handleLeaveUnsaved = () => {
-    navigate(APPLICATIONS_ROUTES.BASE);
+    navigate(
+      isQueueContext ? IDIR_ROUTES.STAFF_HOME : APPLICATIONS_ROUTES.BASE,
+    );
   };
 
   const handleStayOnApplication = () => {
@@ -395,6 +414,15 @@ export const ApplicationForm = ({
         onContinueEditing={handleStayOnApplication}
         showDialog={showLeaveApplicationDialog}
       />
+
+      {showUnavailableApplicationModal && (
+        <UnavailableApplicationModal
+          showModal={showUnavailableApplicationModal}
+          onCancel={() => setShowUnavailableApplicationModal(false)}
+          onConfirm={handleCloseApplication}
+          assignedUser={assignedUser}
+        />
+      )}
     </div>
   );
 };
