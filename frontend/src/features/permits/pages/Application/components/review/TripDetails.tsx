@@ -19,7 +19,7 @@ export const TripDetails = ({
   const origin = getDefaultRequiredVal("", routeDetails?.manualRoute?.origin);
   const destination = getDefaultRequiredVal("", routeDetails?.manualRoute?.destination);
   const exitPoint = getDefaultRequiredVal("", routeDetails?.manualRoute?.exitPoint);
-  const totalDistanceStr = getDefaultRequiredVal(0, routeDetails?.manualRoute?.totalDistance).toFixed(0);
+  const totalDistanceStr = getDefaultRequiredVal(0, routeDetails?.manualRoute?.totalDistance).toFixed(2);
   const highwaySequence = getDefaultRequiredVal([], routeDetails?.manualRoute?.highwaySequence);
   const details = getDefaultRequiredVal("", routeDetails?.routeDetails);
 
@@ -39,7 +39,7 @@ export const TripDetails = ({
         ),
         totalDistance: areValuesDifferent(
           totalDistanceStr,
-          getDefaultRequiredVal(0, oldRouteDetails?.manualRoute?.totalDistance).toFixed(0),
+          getDefaultRequiredVal(0, oldRouteDetails?.manualRoute?.totalDistance).toFixed(2),
         ),
         highwaySequences: areOrderedSequencesEqual(
           routeDetails?.manualRoute?.highwaySequence,

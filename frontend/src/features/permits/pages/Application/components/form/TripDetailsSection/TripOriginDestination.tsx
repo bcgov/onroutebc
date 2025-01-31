@@ -1,6 +1,6 @@
 import "./TripOriginDestination.scss";
 import { CustomFormComponent } from "../../../../../../../common/components/form/CustomFormComponents";
-import { invalidAddress, requiredMessage } from "../../../../../../../common/helpers/validationMessages";
+import { invalidAddress, invalidInput, requiredMessage } from "../../../../../../../common/helpers/validationMessages";
 import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
 import { Nullable, RequiredOrNull } from "../../../../../../../common/types/common";
 import { Controller } from "react-hook-form";
@@ -88,6 +88,7 @@ export const TripOriginDestination = ({
           name="permitData.permittedRoute.manualRoute.totalDistance"
           rules={{
             required: { value: true, message: requiredMessage() },
+            min: { value: 0.01, message: invalidInput() },
           }}
           render={({ fieldState: {error} }) => (
             <NumberInput
@@ -100,7 +101,7 @@ export const TripOriginDestination = ({
               }}
               inputProps={{
                 value: getDefaultRequiredVal(null, totalDistance),
-                maskFn: (numericVal) => numericVal.toFixed(0),
+                maskFn: (numericVal) => numericVal.toFixed(2),
                 onBlur: (e) => {
                   handleUpdateTotalDistance(e.target.value);
                 },

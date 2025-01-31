@@ -44,6 +44,7 @@ import {
 } from "../../../../../constants/constants";
 
 import {
+  invalidInput,
   invalidNumber,
   invalidPlateLength,
   invalidVINLength,
@@ -359,6 +360,7 @@ export const VehicleDetails = ({
               name: "permitData.vehicleDetails.licensedGVW",
               rules: {
                 required: { value: true, message: requiredMessage() },
+                min: { value: 0, message: invalidInput() },
                 validate: {
                   isNumber: (v) => !isNaN(v) || invalidNumber(),
                   exceededGvw: (v) => {
