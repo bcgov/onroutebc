@@ -36,7 +36,7 @@ const MANAGE_VEHICLE_INVENTORY = {
     allowedIDIRRoles: [PC, SA, CTPO],
   },
   ADD_VEHICLE: {
-    allowedBCeIDRoles: [CA, PA],
+    allowedBCeIDRoles: ALL_BCeID_ROLES,
     allowedIDIRRoles: [PC, SA, CTPO],
   },
   /**
@@ -47,11 +47,11 @@ const MANAGE_VEHICLE_INVENTORY = {
     allowedIDIRRoles: [PC, SA, CTPO],
   },
   UPDATE_POWER_UNIT: {
-    allowedBCeIDRoles: [CA, PA],
+    allowedBCeIDRoles: ALL_BCeID_ROLES,
     allowedIDIRRoles: [PC, SA, CTPO],
   },
   DELETE_POWER_UNIT: {
-    allowedBCeIDRoles: [CA, PA],
+    allowedBCeIDRoles: ALL_BCeID_ROLES,
     allowedIDIRRoles: [PC, SA, CTPO],
   },
   /**
@@ -62,11 +62,11 @@ const MANAGE_VEHICLE_INVENTORY = {
     allowedIDIRRoles: [PC, SA, CTPO],
   },
   UPDATE_TRAILER: {
-    allowedBCeIDRoles: [CA, PA],
+    allowedBCeIDRoles: ALL_BCeID_ROLES,
     allowedIDIRRoles: [PC, SA, CTPO],
   },
   DELETE_TRAILER: {
-    allowedBCeIDRoles: [CA, PA],
+    allowedBCeIDRoles: ALL_BCeID_ROLES,
     allowedIDIRRoles: [PC, SA, CTPO],
   },
   /**
@@ -237,10 +237,10 @@ const MANAGE_SETTINGS = {
    * Special Authorizations Tab
    */
   VIEW_SPECIAL_AUTHORIZATIONS: { allowedIDIRRoles: ALL_IDIR_ROLES },
-  ADD_NO_FEE_FLAG: { allowedIDIRRoles: [SA, FIN, HQA] },
-  UPDATE_NO_FEE_FLAG: { allowedIDIRRoles: [SA, FIN, HQA] },
-  ADD_LCV_FLAG: { allowedIDIRRoles: [HQA] },
-  REMOVE_LCV_FLAG: { allowedIDIRRoles: [HQA] },
+  ADD_NO_FEE_FLAG: { allowedIDIRRoles: [SA, HQA] },
+  UPDATE_NO_FEE_FLAG: { allowedIDIRRoles: [SA, HQA] },
+  ADD_LCV_FLAG: { allowedIDIRRoles: [SA, HQA] },
+  REMOVE_LCV_FLAG: { allowedIDIRRoles: [SA, HQA] },
   ADD_AN_LOA: { allowedIDIRRoles: [SA, HQA] },
   EDIT_AN_LOA: { allowedIDIRRoles: [SA, HQA] },
   VIEW_LOA: { allowedIDIRRoles: ALL_IDIR_ROLES },

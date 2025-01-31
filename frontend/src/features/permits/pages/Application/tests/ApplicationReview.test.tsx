@@ -7,15 +7,12 @@ import { VehicleType } from "../../../../manageVehicles/types/Vehicle";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { calculateFeeByDuration } from "../../../helpers/feeSummary";
 import { getPermitTypeName } from "../../../types/PermitType";
+import { getCountryFullName } from "../../../../../common/helpers/countries/getCountryFullName";
+import { getProvinceFullName } from "../../../../../common/helpers/countries/getProvinceFullName";
 import {
   DATE_FORMATS,
   dayjsToLocalStr,
 } from "../../../../../common/helpers/formatDate";
-
-import {
-  formatCountry,
-  formatProvince,
-} from "../../../../../common/helpers/formatCountryProvince";
 
 import {
   applicationCreatedDate,
@@ -38,7 +35,6 @@ import {
   companyNameLabel,
   contactInfoAdditionalEmail,
   contactInfoEmail,
-  contactInfoFax,
   contactInfoHeaderTitle,
   contactInfoName,
   contactInfoPhone1,
@@ -167,8 +163,10 @@ describe("Review and Confirm Application Details", () => {
       // Assert
       const { addressLine1, city, countryCode, postalCode, provinceCode } =
         companyInfo.mailingAddress;
-      const country = formatCountry(countryCode);
-      const province = formatProvince(countryCode, provinceCode);
+
+      const country = getCountryFullName(countryCode);
+      const province = getProvinceFullName(countryCode, provinceCode);
+
       expect(await companyMailAddrHeaderTitle()).toHaveTextContent(
         companyMailAddrTitle,
       );
@@ -212,9 +210,6 @@ describe("Review and Confirm Application Details", () => {
       expect(await contactInfoAdditionalEmail()).toHaveTextContent(
         `${newAdditionalEmail}`,
       );
-      expect(await contactInfoFax()).toHaveTextContent(
-        `${fullContactInfo.fax}`,
-      );
     });
 
     it("should display proper partial contact info in the permit", async () => {
@@ -232,7 +227,6 @@ describe("Review and Confirm Application Details", () => {
         phone1Extension: undefined,
         phone2: undefined,
         phone2Extension: undefined,
-        fax: undefined,
       };
       const applicationData = {
         ...defaultApplicationData,
@@ -260,7 +254,6 @@ describe("Review and Confirm Application Details", () => {
         `${partialContactInfo.email}`,
       );
       expect(async () => await contactInfoAdditionalEmail()).rejects.toThrow();
-      expect(async () => await contactInfoFax()).rejects.toThrow();
     });
 
     it("should display proper permit details", async () => {
@@ -345,15 +338,17 @@ describe("Review and Confirm Application Details", () => {
         vehicleSubType,
       } = defaultApplicationData.permitData
         .vehicleDetails as PermitVehicleDetails;
+
       const unit = getDefaultRequiredVal("", unitNumber);
-      const country = formatCountry(countryCode);
-      const province = formatProvince(countryCode, provinceCode);
+      const country = getCountryFullName(countryCode);
+      const province = getProvinceFullName(countryCode, provinceCode);
       const vehicleTypeStr = vehicleTypeDisplayText(vehicleType as VehicleType);
       const vehicleSubtypeStr = getDefaultRequiredVal(
         "",
         vehicleSubtypes.find((subtype) => subtype.typeCode === vehicleSubType)
           ?.type,
       );
+      
       expect(await vehicleUnitNumber()).toHaveTextContent(unit);
       expect(await vehicleVIN()).toHaveTextContent(vin);
       expect(await vehiclePlate()).toHaveTextContent(plate);

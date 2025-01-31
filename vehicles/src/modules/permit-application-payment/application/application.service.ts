@@ -35,7 +35,6 @@ import {
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { DopsService } from '../../common/dops.service';
-import { Directory } from '../../../common/enum/directory.enum';
 import { PermitIssuedBy } from '../../../common/enum/permit-issued-by.enum';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
 import { PageMetaDto } from '../../../common/dto/paginate/page-meta';
@@ -47,7 +46,10 @@ import {
 } from '../../../common/enum/user-role.enum';
 import { DeleteDto } from '../../common/dto/response/delete.dto';
 import { ReadApplicationMetadataDto } from './dto/response/read-application-metadata.dto';
-import { doesUserHaveRole } from '../../../common/helper/auth.helper';
+import {
+  doesUserHaveRole,
+  isIdirOrSAUser,
+} from '../../../common/helper/auth.helper';
 import {
   ACTIVE_APPLICATION_STATUS,
   ACTIVE_APPLICATION_STATUS_FOR_ISSUANCE,
@@ -72,7 +74,7 @@ import { ApplicationSearch } from '../../../common/enum/application-search.enum'
 
 import { CaseStatusType } from '../../../common/enum/case-status-type.enum';
 import { INotificationDocument } from '../../../common/interface/notification-document.interface';
-import { validateEmailandFaxList } from '../../../common/helper/notification.helper';
+import { validateEmailList } from '../../../common/helper/notification.helper';
 import { NotificationTemplate } from '../../../common/enum/notification-template.enum';
 import { PermitData } from '../../../common/interface/permit.template.interface';
 import { ApplicationApprovedNotification } from '../../../common/interface/application-approved.notification.interface';
@@ -87,6 +89,10 @@ import { ReadPermitLoaDto } from './dto/response/read-permit-loa.dto';
 import { CreatePermitLoaDto } from './dto/request/create-permit-loa.dto';
 import { PermitLoa } from './entities/permit-loa.entity';
 import { LoaDetail } from 'src/modules/special-auth/entities/loa-detail.entity';
+import { getFromCache } from '../../../common/helper/cache.helper';
+import { CacheKey } from '../../../common/enum/cache-key.enum';
+import { FeatureFlagValue } from '../../../common/enum/feature-flag-value.enum';
+import { ReadCaseMetaDto } from '../../case-management/dto/response/read-case-meta.dto';
 
 @Injectable()
 export class ApplicationService {
@@ -123,6 +129,16 @@ export class ApplicationService {
     currentUser: IUserJWT,
     companyId: number,
   ): Promise<ReadApplicationDto> {
+    const permitTypeFeatureFlag = (await getFromCache(
+      this.cacheManager,
+      CacheKey.FEATURE_FLAG_TYPE,
+      createApplicationDto.permitType,
+    )) as FeatureFlagValue;
+    if (permitTypeFeatureFlag !== FeatureFlagValue.ENABLED) {
+      throwUnprocessableEntityException(
+        `Feature Disabled - ${createApplicationDto.permitType}`,
+      );
+    }
     const id = createApplicationDto.permitId;
     let fetchExistingApplication: Permit;
     //If permit id exists assign it to null to create new application.
@@ -257,6 +273,7 @@ export class ApplicationService {
       .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
       .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
       .innerJoinAndSelect('transaction.receipt', 'receipt')
+      .leftJoinAndSelect('permit.issuer', 'issuer')
       .leftJoinAndSelect('permit.applicationOwner', 'applicationOwner')
       .leftJoinAndSelect(
         'applicationOwner.userContact',
@@ -593,12 +610,20 @@ export class ApplicationService {
       isPermitTypeEligibleForQueue(existingApplication.permitType) &&
       existingApplication.permitStatus === ApplicationStatus.IN_QUEUE
     ) {
+      const existingCase = await this.caseManagementService.getCaseMetadata({
+        applicationId,
+      });
+
       const permitData = JSON.parse(
         existingApplication?.permitData?.permitData,
       ) as PermitData;
       const currentDate = dayjs(new Date().toISOString())?.format('YYYY-MM-DD');
       if (differenceBetween(permitData?.startDate, currentDate, 'days') > 0) {
         throwUnprocessableEntityException('Start Date is in the past.');
+      } else if (existingCase.assignedUser !== currentUser.userName) {
+        throwUnprocessableEntityException(
+          `Application no longer available. This application is claimed by ${existingCase.assignedUser}`,
+        );
       }
     }
 
@@ -684,6 +709,22 @@ export class ApplicationService {
           fetchedApplication.permitNumber = permitNumber;
           fetchedApplication.permitStatus = ApplicationStatus.ISSUED;
           fetchedApplication.permitIssueDateTime = new Date();
+          let issuer: string;
+          let permitIssuedBy: PermitIssuedBy;
+          if (fetchedApplication?.issuer?.userGUID) {
+            issuer = fetchedApplication?.issuer?.userGUID;
+            permitIssuedBy = isIdirOrSAUser(
+              fetchedApplication?.issuer?.directory,
+            )
+              ? PermitIssuedBy.PPC
+              : PermitIssuedBy.SELF_ISSUED;
+          } else {
+            issuer = currentUser.userGUID;
+            permitIssuedBy = isIdirOrSAUser(currentUser.orbcUserDirectory)
+              ? PermitIssuedBy.PPC
+              : PermitIssuedBy.SELF_ISSUED;
+          }
+
           const queryRunner = this.dataSource.createQueryRunner();
           await queryRunner.connect();
           await queryRunner.startTransaction();
@@ -694,13 +735,9 @@ export class ApplicationService {
               {
                 permitStatus: fetchedApplication.permitStatus,
                 permitNumber: fetchedApplication.permitNumber,
-                issuer: { userGUID: currentUser.userGUID },
+                issuer: { userGUID: issuer },
                 permitApprovalSource: PermitApprovalSourceEnum.AUTO, //TODO : Hardcoding for release 1
-                permitIssuedBy:
-                  currentUser.orbcUserDirectory == Directory.IDIR ||
-                  currentUser.orbcUserDirectory === Directory.SERVICE_ACCOUNT
-                    ? PermitIssuedBy.PPC
-                    : PermitIssuedBy.SELF_ISSUED,
+                permitIssuedBy: permitIssuedBy,
                 permitIssueDateTime: fetchedApplication.permitIssueDateTime,
                 updatedDateTime: new Date(),
                 updatedUser: currentUser.userName,
@@ -1079,6 +1116,10 @@ export class ApplicationService {
         Permit,
         { permitId: applicationId },
         {
+          issuer:
+            caseActivityType === CaseActivityType.APPROVED
+              ? { userGUID: currentUser.userGUID }
+              : null,
           permitStatus:
             caseActivityType === CaseActivityType.APPROVED
               ? ApplicationStatus.IN_CART
@@ -1132,7 +1173,7 @@ export class ApplicationService {
           ];
           const notificationDocument: INotificationDocument = {
             templateName: notificationTemplate,
-            to: validateEmailandFaxList(emailList),
+            to: validateEmailList(emailList),
             subject: subject,
             data: notificationData,
           };
@@ -1212,6 +1253,49 @@ export class ApplicationService {
 
     return result;
   }
+
+  /**
+   * Retrieves metadata for a case linked to an application in queue.
+   * Before fetching, the function ensures the application's status and type are valid for processing.
+   *
+   * Input:
+   * - @param currentUser: IUserJWT - The user performing the operation.
+   * - @param companyId: number - The ID of the company associated with the application.
+   * - @param applicationId: string - The ID of the application to be analyzed.
+   *
+   * Output:
+   * - @returns Promise<ReadCaseMetaDto> - The metadata associated with the case of the application.
+   *
+   * Throws exceptions:
+   * - DataNotFoundException: When the application is not found.
+   * - UnprocessableEntityException: If the application is ineligible for queue.
+   *
+   */
+  @LogAsyncMethodExecution()
+  async getCaseMetadata({
+    companyId,
+    applicationId,
+  }: {
+    currentUser: IUserJWT;
+    companyId: number;
+    applicationId: string;
+  }): Promise<ReadCaseMetaDto> {
+    const application = await this.findOne(applicationId, companyId);
+    if (!application) {
+      throw new DataNotFoundException();
+    } else if (!isPermitTypeEligibleForQueue(application.permitType)) {
+      throwUnprocessableEntityException(
+        'Invalid permit type. Ineligible for queue.',
+      );
+    } else if (application.permitStatus !== ApplicationStatus.IN_QUEUE) {
+      throwUnprocessableEntityException('Invalid status.');
+    }
+    const result = await this.caseManagementService.getCaseMetadata({
+      applicationId,
+    });
+    return result;
+  }
+
   @LogAsyncMethodExecution()
   async createPermitLoa(
     currentUser: IUserJWT,

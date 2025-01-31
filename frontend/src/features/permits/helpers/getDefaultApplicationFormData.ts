@@ -5,13 +5,19 @@ import { getMandatoryConditions } from "./conditions";
 import { Nullable } from "../../../common/types/common";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
 import { calculateFeeByDuration } from "./feeSummary";
-import { PermitType } from "../types/PermitType";
+import { PERMIT_TYPES, PermitType } from "../types/PermitType";
 import { getExpiryDate } from "./permitState";
 import { PermitMailingAddress } from "../types/PermitMailingAddress";
 import { PermitContactDetails } from "../types/PermitContactDetails";
 import { Application, ApplicationFormData } from "../types/application";
 import { minDurationForPermitType } from "./dateSelection";
-import { getDefaultVehicleDetails } from "./permitVehicles";
+import { getDefaultVehicleDetails } from "./vehicles/getDefaultVehicleDetails";
+import { getDefaultPermittedRoute } from "./permittedRoute";
+import { getDefaultPermittedCommodity } from "./permittedCommodity";
+import {
+  getDefaultVehicleConfiguration
+} from "./vehicles/configuration/getDefaultVehicleConfiguration";
+
 import {
   getEndOfDate,
   getStartOfDate,
@@ -52,7 +58,6 @@ export const getDefaultContactDetails = (
       phone2Extension: getDefaultRequiredVal("", userDetails?.phone2Extension),
       email: getDefaultRequiredVal("", companyEmail),
       additionalEmail: getDefaultRequiredVal("", userDetails?.email),
-      fax: getDefaultRequiredVal("", userDetails?.fax),
     };
   }
 
@@ -65,7 +70,6 @@ export const getDefaultContactDetails = (
     phone2Extension: getDefaultRequiredVal("", contactDetails?.phone2Extension),
     email: getDefaultRequiredVal("", contactDetails?.email, companyEmail),
     additionalEmail: getDefaultRequiredVal("", contactDetails?.additionalEmail),
-    fax: getDefaultRequiredVal("", contactDetails?.fax),
   };
 };
 
@@ -133,11 +137,11 @@ export const getExpiryDateOrDefault = (
 
 /**
  * Gets default values for the application data, or populate with values from existing application and relevant data.
- * @param permitType permit type for the application
- * @param companyInfo data from company profile information (can be undefined, but must be passed as param)
- * @param applicationData existing application data, if any
- * @param userDetails user details of current user, if any
- * @returns default values for the application data
+ * @param permitType Permit type for the application
+ * @param companyInfo Company profile information (can be undefined, but must be passed as param)
+ * @param applicationData Existing application data, if already exists
+ * @param userDetails User details of current user, if any
+ * @returns Default values for the application data
  */
 export const getDefaultValues = (
   permitType: PermitType,
@@ -166,16 +170,18 @@ export const getDefaultValues = (
     applicationData?.permitType,
   );
 
+  const defaultApplicationNumber = getDefaultRequiredVal(
+    "",
+    applicationData?.applicationNumber,
+  );
+
   return {
     originalPermitId: getDefaultRequiredVal(
       "",
       applicationData?.originalPermitId,
     ),
     comment: getDefaultRequiredVal("", applicationData?.comment),
-    applicationNumber: getDefaultRequiredVal(
-      "",
-      applicationData?.applicationNumber,
-    ),
+    applicationNumber: defaultApplicationNumber,
     permitId: getDefaultRequiredVal("", applicationData?.permitId),
     permitNumber: getDefaultRequiredVal("", applicationData?.permitNumber),
     permitType: defaultPermitType,
@@ -209,8 +215,7 @@ export const getDefaultValues = (
         ),
       ),
       contactDetails: getDefaultContactDetails(
-        getDefaultRequiredVal("", applicationData?.applicationNumber).trim() ===
-          "",
+        defaultApplicationNumber.trim() === "",
         applicationData?.permitData?.contactDetails,
         userDetails,
         companyInfo?.email,
@@ -225,6 +230,17 @@ export const getDefaultValues = (
       ),
       feeSummary: `${calculateFeeByDuration(defaultPermitType, durationOrDefault)}`,
       loas: getDefaultRequiredVal([], applicationData?.permitData?.loas),
+      permittedRoute: getDefaultPermittedRoute(permitType, applicationData?.permitData?.permittedRoute),
+      applicationNotes: permitType !== PERMIT_TYPES.STOS
+        ? null : getDefaultRequiredVal("", applicationData?.permitData?.applicationNotes),
+      permittedCommodity: getDefaultPermittedCommodity(
+        permitType,
+        applicationData?.permitData?.permittedCommodity,
+      ),
+      vehicleConfiguration: getDefaultVehicleConfiguration(
+        permitType,
+        applicationData?.permitData?.vehicleConfiguration,
+      ),
     },
   };
 };

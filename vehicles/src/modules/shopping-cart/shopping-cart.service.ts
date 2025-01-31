@@ -1,9 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, NotBrackets, Repository, SelectQueryBuilder } from 'typeorm';
+import { In, Repository, SelectQueryBuilder } from 'typeorm';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import { ApplicationStatus } from '../../common/enum/application-status.enum';
-import { Directory } from '../../common/enum/directory.enum';
 import {
   CLIENT_USER_ROLE_LIST,
   ClientUserRole,
@@ -199,17 +198,6 @@ export class ShoppingCartService {
         userGUID,
       });
     }
-    // If the user is a BCeID user, select only those applications
-    // where the applicationOwner isn't a staff user.
-    if (!doesUserHaveRole(orbcUserRole, IDIR_USER_ROLE_LIST)) {
-      queryBuilder.andWhere(
-        new NotBrackets((qb) => {
-          qb.where('applicationOwner.directory = :directory', {
-            directory: Directory.IDIR,
-          });
-        }),
-      );
-    }
     return queryBuilder;
   }
 
@@ -294,6 +282,10 @@ export class ShoppingCartService {
       .update()
       .set({
         permitStatus: statusToUpdateTo,
+        issuer:
+          statusToUpdateTo === ApplicationStatus.IN_CART
+            ? { userGUID: currentUser.userGUID }
+            : null,
         updatedUser: currentUser.userName,
         updatedDateTime: new Date(),
         updatedUserDirectory: currentUser.orbcUserDirectory,
@@ -323,7 +315,8 @@ export class ShoppingCartService {
     } else {
       const selectResult = await this.applicationRepository
         .createQueryBuilder('application')
-        .where('permitId IN (:...applicationIds)', {
+        .leftJoin('application.company', 'company')
+        .where('application.permitId IN (:...applicationIds)', {
           applicationIds,
         })
         .andWhere('company.companyId = :companyId', {

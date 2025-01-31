@@ -5,11 +5,9 @@ import { faPencil } from "@fortawesome/free-solid-svg-icons";
 
 import "./DisplayMyInfo.scss";
 import { ReadUserInformationResponse } from "../types/manageProfile";
-import { formatPhoneNumber } from "../../../common/components/form/subFormComponents/PhoneNumberInput";
-import {
-  formatProvince,
-  formatCountry,
-} from "../../../common/helpers/formatCountryProvince";
+import { getProvinceFullName } from "../../../common/helpers/countries/getProvinceFullName";
+import { getCountryFullName } from "../../../common/helpers/countries/getCountryFullName";
+import { getFormattedPhoneNumber } from "../../../common/helpers/phone/getFormattedPhoneNumber";
 
 export const DisplayMyInfo = memo(
   ({
@@ -19,33 +17,45 @@ export const DisplayMyInfo = memo(
     myInfo?: ReadUserInformationResponse;
     setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
   }) => {
-    if (!myInfo) return <></>;
-    return (
+    const countryFullName = getCountryFullName(myInfo?.countryCode);
+    const provinceFullName = getProvinceFullName(myInfo?.countryCode, myInfo?.provinceCode);
+
+    return myInfo ? (
       <div className="my-info-display">
         <Box>
           <Typography variant="h3">
             {`${myInfo.firstName} ${myInfo.lastName}`}
           </Typography>
+
           <Typography>Email: {myInfo.email}</Typography>
+
           <Typography>
-            Primary Phone: {formatPhoneNumber(myInfo.phone1)}{" "}
+            Primary Phone: {getFormattedPhoneNumber(myInfo.phone1)}{" "}
             {myInfo.phone1Extension ? `Ext: ${myInfo.phone1Extension}` : ""}
           </Typography>
+
           {myInfo.phone2 ? (
             <Typography>
-              Alternate Phone: {formatPhoneNumber(myInfo.phone2)}{" "}
+              Alternate Phone: {getFormattedPhoneNumber(myInfo.phone2)}{" "}
               {myInfo.phone2Extension ? `Ext: ${myInfo.phone2Extension}` : ""}
             </Typography>
           ) : null}
-          {myInfo.fax ? (
-            <Typography>Fax: {formatPhoneNumber(myInfo.fax)}</Typography>
+
+          {countryFullName ? (
+            <Typography>
+              {countryFullName}
+            </Typography>
           ) : null}
-          <Typography>{formatCountry(myInfo.countryCode)}</Typography>
-          <Typography>
-            {formatProvince(myInfo.countryCode, myInfo.provinceCode)}
-          </Typography>
+
+          {provinceFullName ? (
+            <Typography>
+              {provinceFullName}
+            </Typography>
+          ) : null}
+
           <Typography>{myInfo.city}</Typography>
         </Box>
+
         <div className="my-info-display__edit">
           <Button
             variant="contained"
@@ -57,7 +67,7 @@ export const DisplayMyInfo = memo(
           </Button>
         </div>
       </div>
-    );
+    ) : null;
   },
 );
 
