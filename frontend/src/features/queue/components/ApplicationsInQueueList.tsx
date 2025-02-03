@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { RowSelectionState } from "@tanstack/table-core";
 import {
   MaterialReactTable,
@@ -43,6 +42,7 @@ export const ApplicationsInQueueList = () => {
     isError: unclaimedApplicationsError,
     isPending: unclaimedApplicationsPending,
     isFetching: unclaimedapplicationsFetching,
+    refetch: refetchUnclaimedApplications,
   } = unclaimedApplicationsInQueueQuery;
 
   const [showTable, setShowTable] = useState<boolean>(false);
@@ -78,12 +78,10 @@ export const ApplicationsInQueueList = () => {
 
   const [selectedApplication, setSelectedApplication] =
     useState<ApplicationListItem>();
-
+  const [assignedUser, setAssignedUser] = useState<string>("");
   const [showClaimedApplicationModal, setShowClaimedApplicationModal] =
     useState<boolean>(false);
 
-  // TODO show ClaimedApplicationModal if application has already been claimed
-  // we may need to use the new getApplicationInQueueMetadata hook instead of using the application passed here
   const { refetch: refetchApplicationMetadata } = useApplicationInQueueMetadata(
     {
       applicationId: getDefaultRequiredVal("", selectedApplication?.permitId),
@@ -91,25 +89,31 @@ export const ApplicationsInQueueList = () => {
     },
   );
 
-  const handleFollowApplicationLink = async (
-    application: ApplicationListItem,
-  ) => {
-    setSelectedApplication(application);
-
+  const handleClaimApplication = async (application: ApplicationListItem) => {
     const { data: applicationMetadata } = await refetchApplicationMetadata();
 
-    const assignedUser = await applicationMetadata?.assignedUser;
-
-    if (assignedUser) {
-      console.log("assignedUser: ", assignedUser);
-      console.log("username: ", idirUserDetails?.userName);
-      if (assignedUser !== idirUserDetails?.userName) {
-        setShowClaimedApplicationModal(true);
-        return;
-      }
+    if (applicationMetadata?.assignedUser) {
+      setAssignedUser(applicationMetadata.assignedUser);
+      setShowClaimedApplicationModal(true);
+    } else {
+      await claimApplication({
+        companyId: application.companyId,
+        applicationId: application.permitId,
+      });
     }
-    console.log("no user assigned");
-    handleClaimApplication(application);
+  };
+
+  const handleFollowApplicationLink = (application: ApplicationListItem) => {
+    setSelectedApplication(application);
+  };
+
+  useEffect(() => {
+    selectedApplication && handleClaimApplication(selectedApplication);
+  }, [selectedApplication]);
+
+  const handleCloseClaimedApplicationModal = () => {
+    setShowClaimedApplicationModal(false);
+    refetchUnclaimedApplications();
   };
 
   const {
@@ -117,13 +121,6 @@ export const ApplicationsInQueueList = () => {
     data: claimApplicationResponse,
     isPending: claimApplicationPending,
   } = useClaimApplicationInQueueMutation();
-
-  const handleClaimApplication = async (application: ApplicationListItem) => {
-    await claimApplication({
-      companyId: application.companyId,
-      applicationId: application.permitId,
-    });
-  };
 
   const navigate = useNavigate();
 
@@ -216,11 +213,11 @@ export const ApplicationsInQueueList = () => {
       )}
       <ClaimedApplicationModal
         showModal={showClaimedApplicationModal}
-        onCancel={() => setShowClaimedApplicationModal(false)}
+        onCancel={handleCloseClaimedApplicationModal}
         onConfirm={() =>
           handleClaimApplication(selectedApplication as ApplicationListItem)
         }
-        assignedUser={getDefaultRequiredVal("", selectedApplication?.claimedBy)}
+        assignedUser={assignedUser}
       />
     </>
   );
