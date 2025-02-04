@@ -189,24 +189,14 @@ export const ApplicationForm = ({
   const isQueueContext =
     applicationStepContext === APPLICATION_STEP_CONTEXTS.QUEUE;
 
-  const applicationInQueueMetadataQuery = isQueueContext
-    ? useApplicationInQueueMetadata({
-        applicationId: getDefaultRequiredVal("", currentFormData.permitId),
-        companyId,
-      })
-    : undefined;
-
-  // const { data: applicationMetadata } = useApplicationInQueueMetadata({
-  //   applicationId: getDefaultRequiredVal("", currentFormData.permitId),
-  //   companyId,
-  // });
-
-  const assignedUser = getDefaultRequiredVal(
-    "",
-    applicationInQueueMetadataQuery?.data?.assignedUser,
+  const { refetch: refetchApplicationMetadata } = useApplicationInQueueMetadata(
+    {
+      applicationId: getDefaultRequiredVal("", currentFormData.permitId),
+      companyId,
+    },
   );
 
-  const currentUserIsAssignedUser = assignedUser === idirUserDetails?.userName;
+  const [assignedUser, setAssignedUser] = useState<string>("");
 
   const [showUnavailableApplicationModal, setShowUnavailableApplicationModal] =
     useState<boolean>(false);
@@ -268,12 +258,20 @@ export const ApplicationForm = ({
     additionalSuccessAction?: (permitId: string) => void,
     savedVehicleInventoryDetails?: Nullable<PermitVehicleDetails>,
   ) => {
-    if (isQueueContext && !currentUserIsAssignedUser) {
-      setShowUnavailableApplicationModal(true);
-      return;
-    }
     if (isNull(savedVehicleInventoryDetails)) {
       return navigate(ERROR_ROUTES.UNEXPECTED);
+    }
+
+    if (isQueueContext) {
+      const { data: applicationMetaData } = await refetchApplicationMetadata();
+
+      if (idirUserDetails?.userName !== applicationMetaData?.assignedUser) {
+        setAssignedUser(
+          getDefaultRequiredVal("", applicationMetaData?.assignedUser),
+        );
+        setShowUnavailableApplicationModal(true);
+        return;
+      }
     }
 
     const applicationToBeSaved = !savedVehicleInventoryDetails
