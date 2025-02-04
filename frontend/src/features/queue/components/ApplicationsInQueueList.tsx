@@ -89,6 +89,13 @@ export const ApplicationsInQueueList = () => {
     },
   );
 
+  const confirmClaimApplication = async (application: ApplicationListItem) => {
+    await claimApplication({
+      companyId: application.companyId,
+      applicationId: application.permitId,
+    });
+  };
+
   const handleClaimApplication = async (application: ApplicationListItem) => {
     const { data: applicationMetadata } = await refetchApplicationMetadata();
 
@@ -96,10 +103,7 @@ export const ApplicationsInQueueList = () => {
       setAssignedUser(applicationMetadata.assignedUser);
       setShowClaimedApplicationModal(true);
     } else {
-      await claimApplication({
-        companyId: application.companyId,
-        applicationId: application.permitId,
-      });
+      confirmClaimApplication(application);
     }
   };
 
@@ -215,7 +219,7 @@ export const ApplicationsInQueueList = () => {
         showModal={showClaimedApplicationModal}
         onCancel={handleCloseClaimedApplicationModal}
         onConfirm={() =>
-          handleClaimApplication(selectedApplication as ApplicationListItem)
+          confirmClaimApplication(selectedApplication as ApplicationListItem)
         }
         assignedUser={assignedUser}
       />
