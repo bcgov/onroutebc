@@ -37,4 +37,6 @@ export const BANNER_MESSAGES = {
     TITLE: "The sequence of highways should be in order of travel.",
     EXAMPLE: "e.g. If the origin is Victoria, BC and the destination is Hope, BC, the sequence of highways travelled in order will be 17 1 3.",
   },
+  TOTAL_DISTANCE:
+    "The total distance, in km, is the distance that will be travelled within BC (or from/to BC border). This is to include the return trip distance.",
 };
