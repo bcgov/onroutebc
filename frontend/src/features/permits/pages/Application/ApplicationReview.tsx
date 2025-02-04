@@ -119,33 +119,41 @@ export const ApplicationReview = ({
     isPending: updateApplicationMutationPending,
   } = useUpdateApplicationInQueueStatus();
 
-  const applicationInQueueMetadataQuery =
-    applicationStepContext === APPLICATION_STEP_CONTEXTS.QUEUE
-      ? useApplicationInQueueMetadata({
-          applicationId: getDefaultRequiredVal("", permitId),
-          companyId,
-        })
-      : undefined;
-
-  const assignedUser = getDefaultRequiredVal(
-    "",
-    applicationInQueueMetadataQuery?.data?.assignedUser,
+  const { refetch: refetchApplicationMetadata } = useApplicationInQueueMetadata(
+    {
+      applicationId: getDefaultRequiredVal("", permitId),
+      companyId,
+    },
   );
 
-  const currentUserIsAssignedUser = assignedUser === idirUserDetails?.userName;
+  const [assignedUser, setAssignedUser] = useState<string>("");
 
-  const handleEdit = () => {
-    if (isQueueContext) {
-      if (!currentUserIsAssignedUser) {
-        setShowUnavailableApplicationModal(true);
-        return;
-      }
-      navigate(APPLICATION_QUEUE_ROUTES.EDIT(companyId, applicationId), {
-        replace: true,
-      });
+  const [showUnavailableApplicationModal, setShowUnavailableApplicationModal] =
+    useState<boolean>(false);
+
+  const validateCurrentUser = async (onSuccess: () => void) => {
+    const { data: applicationMetaData } = await refetchApplicationMetadata();
+
+    if (idirUserDetails?.userName !== applicationMetaData?.assignedUser) {
+      setAssignedUser(
+        getDefaultRequiredVal("", applicationMetaData?.assignedUser),
+      );
+      setShowUnavailableApplicationModal(true);
     } else {
-      navigate(APPLICATIONS_ROUTES.DETAILS(permitId), { replace: true });
+      onSuccess();
     }
+  };
+
+  const handleEdit = async () => {
+    if (isQueueContext) {
+      await validateCurrentUser(() =>
+        navigate(APPLICATION_QUEUE_ROUTES.EDIT(companyId, applicationId), {
+          replace: true,
+        }),
+      );
+      return;
+    }
+    navigate(APPLICATIONS_ROUTES.DETAILS(permitId), { replace: true });
   };
 
   const handleSaveApplication = async (
@@ -259,29 +267,22 @@ export const ApplicationReview = ({
   };
 
   const handleApprove = async () => {
-    if (!currentUserIsAssignedUser) {
-      setShowUnavailableApplicationModal(true);
-      return;
-    }
+    await validateCurrentUser(async () => {
+      setHasAttemptedSubmission(true);
 
-    setHasAttemptedSubmission(true);
-
-    await updateApplication({
-      applicationId: permitId,
-      companyId,
-      caseActivityType: CASE_ACTIVITY_TYPES.APPROVED,
+      await updateApplication({
+        applicationId: permitId,
+        companyId,
+        caseActivityType: CASE_ACTIVITY_TYPES.APPROVED,
+      });
     });
   };
 
   const [showRejectApplicationModal, setShowRejectApplicationModal] =
     useState<boolean>(false);
 
-  const handleRejectButton = () => {
-    if (!currentUserIsAssignedUser) {
-      setShowUnavailableApplicationModal(true);
-      return;
-    }
-    setShowRejectApplicationModal(true);
+  const handleRejectButton = async () => {
+    await validateCurrentUser(() => setShowRejectApplicationModal(true));
   };
 
   const handleReject = async (comment: string) => {
@@ -293,9 +294,6 @@ export const ApplicationReview = ({
       comment,
     });
   };
-
-  const [showUnavailableApplicationModal, setShowUnavailableApplicationModal] =
-    useState<boolean>(false);
 
   const updateApplicationResponseStatus = updateApplicationResponse?.status;
 
