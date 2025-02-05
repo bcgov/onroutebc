@@ -63,8 +63,8 @@ INSERT INTO
 VALUES
   (
     '3',
-    'VALIDATE-WITH-POLICY-ENGINE',
-    'DISABLED',
+    'POLICY-CONFIG',
+    'ENABLED',
     NULL,
     N'dbo',
     GETUTCDATE(),
@@ -301,6 +301,7 @@ VALUES
     N'dbo',
     GETUTCDATE()
   );
+
 SET
   IDENTITY_INSERT [dbo].[ORBC_FEATURE_FLAG] OFF
 GO

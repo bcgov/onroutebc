@@ -71,7 +71,6 @@ import { PermitData } from 'src/common/interface/permit.template.interface';
 import { isValidLoa } from 'src/common/helper/validate-loa.helper';
 import { PermitHistoryDto } from '../permit/dto/response/permit-history.dto';
 import { SpecialAuthService } from 'src/modules/special-auth/special-auth.service';
-import { CommonService } from '../../common/common.service';
 
 @Injectable()
 export class PaymentService {
@@ -92,7 +91,6 @@ export class PaymentService {
     @InjectMapper() private readonly classMapper: Mapper,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
-    private readonly commonService: CommonService,
   ) {}
 
   private generateHashExpiry = (currDate?: Date) => {
@@ -284,10 +282,6 @@ export class PaymentService {
       createTransactionDto.transactionTypeId == TransactionType.REFUND ||
       createTransactionDto.paymentMethodTypeCode ===
         PaymentMethodTypeEnum.NO_PAYMENT;
-    const isPolicyEngineEnabled =
-      featureFlags?.['VALIDATE-WITH-POLICY-ENGINE'] &&
-      (featureFlags['VALIDATE-WITH-POLICY-ENGINE'] as FeatureFlagValue) ===
-        FeatureFlagValue.ENABLED;
 
     // If the user is a staff user,
     // transacation is NOT a refund or no payment and STAFF-CAN-PAY is disabled,
@@ -369,15 +363,6 @@ export class PaymentService {
         // If application includes LoAs then validate Loa data.
         if (permitData.loas) {
           await isValidLoa(application, queryRunner, this.classMapper);
-        }
-        if (isPolicyEngineEnabled) {
-          const validationResults =
-            await this.commonService.validateWithPolicyEngine(application);
-          if (validationResults?.violations?.length > 0) {
-            throw new BadRequestException(
-              'Application data does not meet policy engine requirements.',
-            );
-          }
         }
       }
       const totalTransactionAmount = await this.validateApplicationAndPayment(
