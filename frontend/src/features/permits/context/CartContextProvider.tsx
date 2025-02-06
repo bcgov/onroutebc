@@ -10,11 +10,13 @@ export const CartContextProvider = ({
 }: {
   children?: React.ReactNode;
 }) => {
-  const { companyId } = useContext(OnRouteBCContext);
+  const { companyId, userDetails } = useContext(OnRouteBCContext);
+  const doesUserDetailsExist = Boolean(userDetails);
 
   // Set cart count for company
   const cartCountQuery = useGetCartCount(
     getDefaultRequiredVal(0, companyId),
+    doesUserDetailsExist,
   );
 
   const { data: fetchedCartCount } = cartCountQuery;
