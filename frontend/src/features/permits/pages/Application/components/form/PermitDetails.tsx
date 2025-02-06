@@ -56,13 +56,14 @@ export const PermitDetails = ({
       </Box>
 
       <Box className="permit-details__body">
-        <Box className="permit-details__date-selection">
-          {showSTFRInfoBanner ? (
-            <InfoBcGovBanner
-              msg={BANNER_MESSAGES.PERMIT_SINGLE_ROUND_TRIP}
-            />
-          ) : null}
+        {showSTFRInfoBanner ? (
+          <InfoBcGovBanner
+            className="permit-details__info-banner--top"
+            msg={BANNER_MESSAGES.PERMIT_SINGLE_ROUND_TRIP}
+          />
+        ) : null}
 
+        <Box className="permit-details__date-selection">
           <CustomDatePicker
             className="permit-details__input permit-details__input--start-date"
             feature={feature}
