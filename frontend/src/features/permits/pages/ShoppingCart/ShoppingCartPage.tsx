@@ -117,8 +117,11 @@ export const ShoppingCartPage = () => {
     setShowUpdateCartDialog,
   } = useCheckOutdatedCart(companyId, showAllApplications, cartItems);
 
-  const { mutation: startTransactionMutation, transaction } =
-    useStartTransaction();
+  const {
+    mutation: startTransactionMutation,
+    transaction,
+    setTransaction,
+  } = useStartTransaction();
 
   const { mutation: issuePermitMutation, issueResults } = useIssuePermits();
   const { data: featureFlags } = useFeatureFlagsQuery();
@@ -161,6 +164,9 @@ export const ShoppingCartPage = () => {
           companyId,
           applicationIds: [...selectedIds],
         });
+
+        // this will reduce the number of requests to the /issue endpoint to 2
+        setTransaction(undefined);
 
         // also update the cart and cart count
         cartQuery.refetch();
