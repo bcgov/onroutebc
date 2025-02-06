@@ -154,7 +154,10 @@ export const ShoppingCartPage = () => {
       if (!transaction) {
         // Payment failed - ie. transaction object is null
         navigate(SHOPPING_CART_ROUTES.DETAILS(true));
-      } else if (isFeeZero || isStaffActingAsCompany) {
+      } else if (
+        isFeeZero ||
+        (isStaffActingAsCompany && selectedIds.length > 0)
+      ) {
         // If purchase was for no-fee permits, or if staff payment transaction was created successfully,
         // simply proceed to issue permits
         issuePermitMutation.mutate({
@@ -176,7 +179,7 @@ export const ShoppingCartPage = () => {
         }
       }
     }
-  }, [transaction, isStaffActingAsCompany, isFeeZero, companyId]);
+  }, [transaction, isStaffActingAsCompany, isFeeZero, companyId, selectedIds]);
 
   useEffect(() => {
     const issueFailed = hasPermitsActionFailed(issueResults);
