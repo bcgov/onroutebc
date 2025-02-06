@@ -86,6 +86,7 @@ export const PermitForm = () => {
 
         <PermitDetails
           feature={feature}
+          permitType={permitType}
           expiryDate={expiryDate}
           allConditions={allConditions}
           durationOptions={availableDurationOptions}

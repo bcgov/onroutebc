@@ -63,6 +63,8 @@ export const ApplicationStepPage = ({
 
   const { data: featureFlags } = useFeatureFlagsQuery();
   const enableSTOS = featureFlags?.["STOS"] === "ENABLED";
+  // const enableSTFR = featureFlags?.["STFR"] === "ENABLED";
+  const enableSTFR = true;
 
   // Query for the application data whenever this page is rendered
   const {
@@ -99,11 +101,12 @@ export const ApplicationStepPage = ({
     applicationData?.permitType,
   );
 
-  // Currently onRouteBC only handles TROS and TROW permits, and STOS only if feature flag is enabled
+  // Currently onRouteBC only handles TROS and TROW permits
+  // STOS is only allowed if feature flag is enabled, and same for MFP, STFR, etc.
   const isPermitTypeAllowed = () => {
-    const allowedPermitTypes: string[] = enableSTOS
-      ? [PERMIT_TYPES.TROS, PERMIT_TYPES.TROW, PERMIT_TYPES.STOS]
-      : [PERMIT_TYPES.TROS, PERMIT_TYPES.TROW];
+    const allowedPermitTypes: string[] = ([PERMIT_TYPES.TROS, PERMIT_TYPES.TROW] as string[])
+      .concat(enableSTOS ? [PERMIT_TYPES.STOS] : [])
+      .concat(enableSTFR ? [PERMIT_TYPES.STFR] : []);
 
     return allowedPermitTypes.includes(applicationPermitType);
   };

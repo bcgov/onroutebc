@@ -37,4 +37,6 @@ export const BANNER_MESSAGES = {
     TITLE: "The sequence of highways should be in order of travel.",
     EXAMPLE: "e.g. If the origin is Victoria, BC and the destination is Hope, BC, the sequence of highways travelled in order will be 17 1 3.",
   },
+  PERMIT_SINGLE_ROUND_TRIP: "This permit allows only one round trip into and out of the province during the permit duration.",
+  PERMIT_START_DATE_VALID_QUARTER: "The start date you choose determines the valid quarter for the permit. This permit allows multiple trips into and out of the province during the permit duration.",
 };
