@@ -272,7 +272,7 @@ VALUES
   (
     '12',
     'STAFF-CAN-PAY',
-    'DISABLED',
+    'ENABLED',
     NULL,
     N'dbo',
     GETUTCDATE(),
@@ -294,7 +294,7 @@ VALUES
   (
     '13',
     'CVCLIENT-PAY-IN-PERSON',
-    'DISABLED',
+    'ENABLED',
     NULL,
     N'dbo',
     GETUTCDATE(),
