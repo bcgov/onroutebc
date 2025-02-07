@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useSearchParams, useNavigate, Navigate } from "react-router-dom";
 import { FormProvider, useForm } from "react-hook-form";
 
@@ -117,11 +117,10 @@ export const ShoppingCartPage = () => {
     setShowUpdateCartDialog,
   } = useCheckOutdatedCart(companyId, showAllApplications, cartItems);
 
-  const {
-    mutation: startTransactionMutation,
-    transaction,
-    setTransaction,
-  } = useStartTransaction();
+  const { mutation: startTransactionMutation, transaction } =
+    useStartTransaction();
+
+  const [hasIssued, setHasIssued] = useState<boolean>(false);
 
   const { mutation: issuePermitMutation, issueResults } = useIssuePermits();
   const { data: featureFlags } = useFeatureFlagsQuery();
@@ -157,7 +156,7 @@ export const ShoppingCartPage = () => {
       if (!transaction) {
         // Payment failed - ie. transaction object is null
         navigate(SHOPPING_CART_ROUTES.DETAILS(true));
-      } else if (isFeeZero || isStaffActingAsCompany) {
+      } else if ((isFeeZero || isStaffActingAsCompany) && !hasIssued) {
         // If purchase was for no-fee permits, or if staff payment transaction was created successfully,
         // simply proceed to issue permits
         issuePermitMutation.mutate({
@@ -165,8 +164,8 @@ export const ShoppingCartPage = () => {
           applicationIds: [...selectedIds],
         });
 
-        // this will reduce the number of requests to the /issue endpoint to 2
-        setTransaction(undefined);
+        // prevent the issuePermitMutation from being called again
+        setHasIssued(true);
 
         // also update the cart and cart count
         cartQuery.refetch();
@@ -182,7 +181,7 @@ export const ShoppingCartPage = () => {
         }
       }
     }
-  }, [transaction, isStaffActingAsCompany, isFeeZero, companyId]);
+  }, [transaction, isStaffActingAsCompany, isFeeZero, companyId, hasIssued]);
 
   useEffect(() => {
     const issueFailed = hasPermitsActionFailed(issueResults);

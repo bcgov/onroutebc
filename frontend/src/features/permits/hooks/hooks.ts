@@ -242,7 +242,6 @@ export const useStartTransaction = () => {
   return {
     mutation,
     transaction,
-    setTransaction,
   };
 };
 
