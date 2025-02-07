@@ -8,9 +8,16 @@ import { InfoBcGovBanner } from "../../common/components/banners/InfoBcGovBanner
 import { BANNER_MESSAGES } from "../../common/constants/bannerMessages";
 import "./BFCTDashboard.scss";
 import { BridgeFormulaCalculationTool } from "./components/BridgeFormulaCalculationTool";
+import { useFeatureFlagsQuery } from "../../common/hooks/hooks";
+import { Navigate } from "react-router-dom";
+import { ERROR_ROUTES } from "../../routes/constants";
 
 export const BFCTDashboard = () => {
-  return (
+  const { data: featureFlags } = useFeatureFlagsQuery();
+  const enableBFCT =
+    featureFlags?.["BRIDGE-FORMULA-CALCULATION-TOOL"] === "ENABLED";
+
+  return enableBFCT ? (
     <>
       <Box className="layout-box">
         <Banner bannerText={getNavButtonTitle(NAV_BUTTON_TYPES.BFCT)} />
@@ -35,6 +42,8 @@ export const BFCTDashboard = () => {
         <BridgeFormulaCalculationTool />
       </div>
     </>
+  ) : (
+    <Navigate to={ERROR_ROUTES.UNEXPECTED} />
   );
 };
 
