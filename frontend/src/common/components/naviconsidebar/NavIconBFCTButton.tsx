@@ -5,7 +5,6 @@ import { IDIR_ROUTES } from "../../../routes/constants";
 import OnRouteBCContext from "../../authentication/OnRouteBCContext";
 import { NavButton } from "./NavButton";
 import { NAV_BUTTON_TYPES } from "./types/NavButtonType";
-import { useFeatureFlagsQuery } from "../../hooks/hooks";
 
 /**
  * Displays the navigation icon for the Bridge Formula Calculation Tool on the NavIconSideBar
@@ -16,12 +15,7 @@ export const NavIconBFCTButton = () => {
   const isActive = pathname === IDIR_ROUTES.WELCOME;
   const { clearCompanyContext } = useContext(OnRouteBCContext);
 
-  // Determine when to hide the BridgeFormulaCalculationTool button based on its corresponding feature flag
-  const { data: featureFlags } = useFeatureFlagsQuery();
-  const enableBFCT =
-    featureFlags?.["BRIDGE-FORMULA-CALCULATION-TOOL"] === "ENABLED";
-
-  return enableBFCT ? (
+  return (
     <NavButton
       type={NAV_BUTTON_TYPES.BFCT}
       onClick={() => {
@@ -30,5 +24,5 @@ export const NavIconBFCTButton = () => {
       }}
       isActive={isActive}
     />
-  ) : null;
+  );
 };

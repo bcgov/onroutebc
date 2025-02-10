@@ -18,8 +18,6 @@ import { Header } from "./common/components/header/Header";
 import { Footer } from "./common/components/footer/Footer";
 import { bcGovTheme } from "./themes/bcGovTheme";
 import { NavIconSideBar } from "./common/components/naviconsidebar/NavIconSideBar";
-import { NavIconHomeButton } from "./common/components/naviconsidebar/NavIconHomeButton";
-import { NavIconReportButton } from "./common/components/naviconsidebar/NavIconReportButton";
 import { Nullable, Optional } from "./common/types/common";
 import { VerifiedClient, UserClaimsType } from "./common/authentication/types";
 import { SuspendSnackBar } from "./common/components/snackbar/SuspendSnackBar";
@@ -33,7 +31,6 @@ import OnRouteBCContext, {
   BCeIDUserDetailContext,
   IDIRUserDetailContext,
 } from "./common/authentication/OnRouteBCContext";
-import { NavIconBFCTButton } from "./common/components/naviconsidebar/NavIconBFCTButton";
 
 const authority =
   import.meta.env.VITE_KEYCLOAK_ISSUER_URL ||
@@ -169,11 +166,7 @@ const App = () => {
                   <Router>
                     <Header />
                     <SuspendSnackBar />
-                    <NavIconSideBar>
-                      <NavIconHomeButton />
-                      <NavIconReportButton />
-                      <NavIconBFCTButton />
-                    </NavIconSideBar>
+                    <NavIconSideBar />
                     <AppRoutes />
                   </Router>
                 </CartContextProvider>
