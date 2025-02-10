@@ -23,6 +23,5 @@ const envConfig = (() => {
     VITE_SITEMINDER_LOG_OFF_URL: "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi",
     VITE_FRONTEND_PR_NUM: "",
     VITE_POLICY_URL: "http://localhost:5002",
-    VITE_RELEASE_NUM: "",
   };
 })();
