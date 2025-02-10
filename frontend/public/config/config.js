@@ -18,11 +18,11 @@ const envConfig = (() => {
   return {
     VITE_DEPLOY_ENVIRONMENT: "docker",
     VITE_API_VEHICLE_URL: "http://localhost:5000",
-    VITE_KEYCLOAK_ISSUER_URL: "https://dev.loginproxy.gov.bc.ca/auth/realms/standard",
-    VITE_KEYCLOAK_AUDIENCE: "on-route-bc-direct-no-basic-5862",
-    VITE_SITEMINDER_LOG_OFF_URL: "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi",
+    VITE_KEYCLOAK_ISSUER_URL: "",
+    VITE_KEYCLOAK_AUDIENCE: "",
+    VITE_SITEMINDER_LOG_OFF_URL: "",
     VITE_FRONTEND_PR_NUM: "",
-    VITE_POLICY_URL: "http://localhost:5002",
+    VITE_POLICY_URL: "",
     VITE_RELEASE_NUM: "",
   };
 })();
