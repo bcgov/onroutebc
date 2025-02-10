@@ -95,18 +95,7 @@ export const CommodityDetailsSection = ({
                 root: "commodity-details-section__input commodity-details-section__input--commodity-type",
               }}
               autocompleteProps={{
-                options: [
-                  ...commodityOptions.filter(
-                    (option) =>
-                      option.label === "Select" || option.label === "None",
-                  ), // Add "Select" and "None" first
-                  ...commodityOptions
-                    .filter(
-                      (option) =>
-                        option.label !== "Select" && option.label !== "None",
-                    ) // Then, sort the rest alphabetically
-                    .sort((a, b) => a.label.localeCompare(b.label)), // Sorting the rest alphabetically
-                ],
+                options: commodityOptions,
                 value: selectedCommodityOption,
                 onChange: (_, value) => {
                   if (!value) {
