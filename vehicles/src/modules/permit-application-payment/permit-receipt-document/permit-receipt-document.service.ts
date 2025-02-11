@@ -35,10 +35,7 @@ import { DopsService } from '../../common/dops.service';
 import { ResultDto } from '../permit/dto/response/result.dto';
 import { ApplicationStatus } from '../../../common/enum/application-status.enum';
 import { PaymentService } from '../payment/payment.service';
-import {
-  generateFaxEmail,
-  validateEmailandFaxList,
-} from '../../../common/helper/notification.helper';
+import { validateEmailList } from '../../../common/helper/notification.helper';
 import { getPermitTemplateName } from '../../../common/helper/template.helper';
 import { TransactionType } from '../../../common/enum/transaction-type.enum';
 import { Nullable } from '../../../common/types/common';
@@ -196,16 +193,14 @@ export class PermitReceiptDocumentService {
     currentUser: IUserJWT,
     cc?: string[],
     bcc?: string[],
-    fax?: string[],
   ) {
     const notificationDocument: INotificationDocument = {
       templateName: notificationTemplate,
-      to: validateEmailandFaxList(to),
+      to: validateEmailList(to),
       subject: subject,
       documentIds: [documentId],
-      cc: validateEmailandFaxList(cc),
-      bcc: validateEmailandFaxList(bcc),
-      fax: validateEmailandFaxList(fax),
+      cc: validateEmailList(cc),
+      bcc: validateEmailList(bcc),
     };
 
     void this.dopsService.notificationWithDocumentsFromDops(
@@ -337,11 +332,6 @@ export class PermitReceiptDocumentService {
               company?.email,
             ];
 
-            const faxEmail = generateFaxEmail(
-              permitDataForTemplate.permitData?.contactDetails?.fax,
-            );
-            const faxEmailList = [faxEmail];
-
             const subject = `onRouteBC Permits - ${company?.legalName}`;
             this.emailDocument(
               NotificationTemplate.ISSUE_PERMIT,
@@ -351,7 +341,6 @@ export class PermitReceiptDocumentService {
               currentUser,
               null,
               null,
-              faxEmailList,
             );
           } catch (error: unknown) {
             /**
@@ -568,11 +557,6 @@ export class PermitReceiptDocumentService {
                 company?.email,
               ];
 
-              const faxEmail = generateFaxEmail(
-                permitData?.contactDetails?.fax,
-              );
-              const faxEmailList = [faxEmail];
-
               const subject = `onRouteBC Permit Receipt - ${receiptNumber}`;
               this.emailDocument(
                 NotificationTemplate.PAYMENT_RECEIPT,
@@ -582,7 +566,6 @@ export class PermitReceiptDocumentService {
                 currentUser,
                 null,
                 null,
-                faxEmailList,
               );
             } catch (error: unknown) {
               /**

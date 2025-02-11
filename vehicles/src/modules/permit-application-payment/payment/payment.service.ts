@@ -598,6 +598,7 @@ export class PaymentService {
         createTransactionDto.transactionTypeId,
         existingApplications,
         currentUser,
+        queryRunner,
       );
       const transactionOrderNumber =
         await this.generateTransactionOrderNumber();
@@ -786,6 +787,7 @@ export class PaymentService {
     transactionType: TransactionType,
     applications: Permit[],
     currentUser: IUserJWT,
+    queryRunner: QueryRunner,
   ) {
     let totalTransactionAmountCalculated = 0;
     const isCVClientUser: boolean = isCVClient(currentUser.identity_provider);
@@ -800,8 +802,10 @@ export class PaymentService {
           `Atleast one of the application has invalid startDate or expiryDate.`,
         );
       }
-      totalTransactionAmountCalculated +=
-        await this.permitFeeCalculator(application);
+      totalTransactionAmountCalculated += await this.permitFeeCalculator(
+        application,
+        queryRunner,
+      );
     }
 
     if (
@@ -810,8 +814,13 @@ export class PaymentService {
         totalTransactionAmount,
         transactionType,
       )
-    )
+    ) {
+      this.logger.error(
+        `Transaction amount mismatch. Received amount is ${totalTransactionAmount}. Calculated amount is ${totalTransactionAmountCalculated}`,
+      );
+
       throw new BadRequestException('Transaction amount mismatch.');
+    }
     return totalTransactionAmount;
   }
 
@@ -1078,12 +1087,17 @@ export class PaymentService {
    * @param queryRunner - An optional QueryRunner for database transactions.
    * @returns {Promise<number>} - The calculated permit fee or refund amount.
    */
-  async permitFeeCalculator(application: Permit): Promise<number> {
+  @LogAsyncMethodExecution()
+  async permitFeeCalculator(
+    application: Permit,
+    queryRunner?: QueryRunner,
+  ): Promise<number> {
     if (application.permitStatus === ApplicationStatus.REVOKED) return 0;
     const companyId = application.company.companyId;
 
     const permitPaymentHistory = await this.findPermitHistory(
       application.originalPermitId,
+      queryRunner,
       companyId,
     );
     const isNoFee = await this.specialAuthService.findNoFee(companyId);
@@ -1091,6 +1105,8 @@ export class PaymentService {
       permitPaymentHistory.length > 0
         ? calculatePermitAmount(permitPaymentHistory)
         : undefined;
+    if (application.permitStatus === ApplicationStatus.VOIDED)
+      return -oldAmount;
     const fee = permitFee(application, isNoFee, oldAmount);
     return fee;
   }
@@ -1102,10 +1118,13 @@ export class PaymentService {
   @LogAsyncMethodExecution()
   public async findPermitHistory(
     originalPermitId: string,
+    queryRunner: QueryRunner,
     companyId?: number,
   ): Promise<PermitHistoryDto[]> {
-    const permits = await this.permitRepository
-      .createQueryBuilder('permit')
+    const permits = await queryRunner.manager
+      .createQueryBuilder()
+      .select('permit')
+      .from(Permit, 'permit')
       .leftJoinAndSelect('permit.company', 'company')
       .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
       .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
