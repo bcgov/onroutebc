@@ -56,11 +56,8 @@ import { CreateNotificationDto } from '../../common/dto/request/create-notificat
 import { ReadNotificationDto } from '../../common/dto/response/read-notification.dto';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { NotificationType } from '../../../common/enum/notification-type.enum';
-import {
-  generateFaxEmail,
-  validateEmailandFaxList,
-} from '../../../common/helper/notification.helper';
 import { TransactionType } from '../../../common/enum/transaction-type.enum';
+import { validateEmailList } from '../../../common/helper/notification.helper';
 
 @Injectable()
 export class PermitService {
@@ -319,6 +316,12 @@ export class PermitService {
         case PermitSearch.PLATE:
           permitsQuery = permitsQuery.andWhere(
             'permitData.plate like :searchString',
+            { searchString: `%${searchString}%` },
+          );
+          break;
+        case PermitSearch.VIN:
+          permitsQuery = permitsQuery.andWhere(
+            'permitData.vin like :searchString',
             { searchString: `%${searchString}%` },
           );
           break;
@@ -715,10 +718,6 @@ export class PermitService {
     const readNotificationDtoList: ReadNotificationDto[] = [];
     let notificationDocument: INotificationDocument;
 
-    const faxEmailList = createNotificationDto.fax?.map((fax) =>
-      generateFaxEmail(fax),
-    );
-
     if (
       createNotificationDto?.notificationType?.includes(
         NotificationType.EMAIL_PERMIT,
@@ -726,8 +725,7 @@ export class PermitService {
     ) {
       notificationDocument = {
         templateName: NotificationTemplate.ISSUE_PERMIT,
-        to: validateEmailandFaxList(createNotificationDto.to),
-        fax: validateEmailandFaxList(faxEmailList),
+        to: validateEmailList(createNotificationDto.to),
         subject: `onRouteBC Permits - ${companyInfo.legalName}`,
         documentIds: [permitDocumentId],
       };
@@ -749,8 +747,7 @@ export class PermitService {
     ) {
       notificationDocument = {
         templateName: NotificationTemplate.PAYMENT_RECEIPT,
-        to: validateEmailandFaxList(createNotificationDto.to),
-        fax: validateEmailandFaxList(faxEmailList),
+        to: validateEmailList(createNotificationDto.to),
         subject: `onRouteBC Permit Receipt - ${receipt?.receiptNumber}`,
         documentIds: [receipt?.receiptDocumentId],
       };

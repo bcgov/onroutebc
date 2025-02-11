@@ -23,6 +23,7 @@ import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
+import { useFetchSpecialAuthorizations } from "../../../../settings/hooks/specialAuthorizations";
 
 export const AmendPermitReview = () => {
   const navigate = useNavigate();
@@ -63,8 +64,9 @@ export const AmendPermitReview = () => {
     amendmentApplication?.permitType,
     permit?.permitType,
   );
+  const { data: specialAuthorizations } = useFetchSpecialAuthorizations(companyId);
 
-  const policyEngine = usePolicyEngine();
+  const policyEngine = usePolicyEngine(specialAuthorizations);
   const { commodityOptions } = useCommodityOptions(policyEngine, permitType);
   const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
   const trailerSubTypesQuery = useTrailerSubTypesQuery();
@@ -120,6 +122,7 @@ export const AmendPermitReview = () => {
         amendmentApplication?.permitData?.permitDuration,
       ),
       permitType,
+      amendmentApplication?.permitData?.permittedRoute?.manualRoute?.totalDistance,
     );
 
   return (

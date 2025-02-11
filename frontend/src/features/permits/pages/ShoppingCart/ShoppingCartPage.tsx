@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useSearchParams, useNavigate, Navigate } from "react-router-dom";
 import { FormProvider, useForm } from "react-hook-form";
 
@@ -53,6 +53,7 @@ import {
   TOLL_FREE_NUMBER,
   PPC_EMAIL,
 } from "../../../../common/constants/constants";
+import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
 
 const AVAILABLE_STAFF_PAYMENT_METHODS = [
   PAYMENT_METHOD_TYPE_CODE.ICEPAY,
@@ -119,7 +120,10 @@ export const ShoppingCartPage = () => {
   const { mutation: startTransactionMutation, transaction } =
     useStartTransaction();
 
+  const [hasIssued, setHasIssued] = useState<boolean>(false);
+
   const { mutation: issuePermitMutation, issueResults } = useIssuePermits();
+  const { data: featureFlags } = useFeatureFlagsQuery();
 
   const availablePaymentMethods = isStaffActingAsCompany
     ? AVAILABLE_STAFF_PAYMENT_METHODS
@@ -152,13 +156,16 @@ export const ShoppingCartPage = () => {
       if (!transaction) {
         // Payment failed - ie. transaction object is null
         navigate(SHOPPING_CART_ROUTES.DETAILS(true));
-      } else if (isFeeZero || isStaffActingAsCompany) {
+      } else if ((isFeeZero || isStaffActingAsCompany) && !hasIssued) {
         // If purchase was for no-fee permits, or if staff payment transaction was created successfully,
         // simply proceed to issue permits
         issuePermitMutation.mutate({
           companyId,
           applicationIds: selectedIds,
         });
+
+        // prevent the issuePermitMutation from being called again
+        setHasIssued(true);
 
         // also update the cart and cart count
         cartQuery.refetch();
@@ -174,7 +181,7 @@ export const ShoppingCartPage = () => {
         }
       }
     }
-  }, [transaction, isStaffActingAsCompany, isFeeZero, companyId]);
+  }, [transaction, isStaffActingAsCompany, isFeeZero, companyId, hasIssued]);
 
   useEffect(() => {
     const issueFailed = hasPermitsActionFailed(issueResults);
@@ -409,7 +416,10 @@ export const ShoppingCartPage = () => {
 
       <Box className="shopping-cart-page__right-container">
         <FormProvider {...formMethods}>
-          {!isFeeZero ? (
+          {!isFeeZero &&
+          ((isStaffActingAsCompany &&
+            featureFlags?.["STAFF-CAN-PAY"] === "ENABLED") ||
+            !isStaffActingAsCompany) ? (
             <ChoosePaymentMethod
               availablePaymentMethods={availablePaymentMethods}
               showPayInPersonInfo={!isStaffActingAsCompany}

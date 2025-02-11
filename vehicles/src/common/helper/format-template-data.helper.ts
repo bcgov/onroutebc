@@ -10,6 +10,11 @@ import {
 } from '../interface/permit.template.interface';
 import { FullNamesForDgen } from '../interface/full-names-for-dgen.interface';
 import { formatAmount } from './payment.helper';
+import { ThirdPartyLiability } from '../enum/third-party-liability.enum';
+import {
+  THIRD_PARTY_LIABILITY_DANGEROUS_GOODS,
+  THIRD_PARTY_LIABILITY_GENERAL_GOODS,
+} from '../constants/api.constant';
 
 /**
  * Formats the permit data so that it can be used in the templated word documents
@@ -38,6 +43,9 @@ export const formatTemplateData = (
     revisions: [],
     permitData: null,
     loas: '',
+    permitIssueDateTime: '',
+    revisionIssueDateTime: '',
+    thirdPartyLiability: '',
   };
 
   template.permitData = JSON.parse(permit.permitData.permitData) as PermitData;
@@ -98,24 +106,47 @@ export const formatTemplateData = (
     ),
   ).toString();
 
+  if (permit.revision > 0) {
+    template.revisionIssueDateTime = convertUtcToPt(
+      permit.permitIssueDateTime,
+      'MMM. D, YYYY, hh:mm a Z',
+    );
+  }
+
   revisionHistory?.forEach((revision) => {
     if (
       revision.permitStatus == ApplicationStatus.ISSUED ||
       revision.permitStatus == ApplicationStatus.VOIDED ||
       revision.permitStatus == ApplicationStatus.REVOKED ||
-      revision.permitId === permit.permitId
+      revision.permitStatus == ApplicationStatus.SUPERSEDED
     ) {
-      template.revisions.push({
-        timeStamp: convertUtcToPt(
-          revision.permitId === permit.permitId
-            ? permit.permitIssueDateTime
-            : revision.permitIssueDateTime,
+      if (permit.originalPermitId === revision.permitId) {
+        template.permitIssueDateTime = convertUtcToPt(
+          revision.permitIssueDateTime,
           'MMM. D, YYYY, hh:mm a Z',
-        ),
-        description: revision.comment,
-      });
+        );
+      } else {
+        template.revisions.push({
+          timeStamp: convertUtcToPt(
+            revision.permitIssueDateTime,
+            'MMM. D, YYYY, hh:mm a Z',
+          ),
+          description: revision.comment,
+        });
+      }
     }
   });
+
+  switch (template?.permitData?.thirdPartyLiability) {
+    case ThirdPartyLiability.DANGEROUS_GOODS:
+      template.thirdPartyLiability = THIRD_PARTY_LIABILITY_DANGEROUS_GOODS;
+      break;
+    case ThirdPartyLiability.GENERAL_GOODS:
+      template.thirdPartyLiability = THIRD_PARTY_LIABILITY_GENERAL_GOODS;
+      break;
+    default:
+      template.thirdPartyLiability = '';
+  }
 
   template.loas = template?.permitData?.loas
     ?.filter((item) => item.checked)

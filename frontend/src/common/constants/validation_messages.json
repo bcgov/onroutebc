@@ -10,6 +10,9 @@
   "NaN": {
     "defaultMessage": "Must be a number"
   },
+  "invalid": {
+    "defaultMessage": "Invalid input"
+  },
   "greaterThan": {
     "messageTemplate": "Must be greater than :val.",
     "placeholders": [":val"]
@@ -36,7 +39,8 @@
     "defaultMessage": "Your date is not valid",
     "start": {
       "past": {
-        "defaultMessage": "Start Date cannot be in the past."
+        "defaultMessage": "Start Date cannot be in the past.",
+        "warningMessage": "Start Date is in the past."
       },
       "max": {
         "messageTemplate": "Start Date must be within :max days.",
@@ -158,5 +162,12 @@
   },
   "powerUnit": {
     "required": "A Power Unit must be added."
+  },
+  "transactionId": {
+    "defaultMessage": "Invalid transaction ID",
+    "length": {
+      "messageTemplate": "Maximum :max characters",
+      "placeholders": [":max"]
+    }
   }
 }

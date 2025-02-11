@@ -27,10 +27,6 @@ export const mapToVoidRequestData = (
     comment: voidPermitFormData.reason,
   };
 
-  if (voidPermitFormData.fax) {
-    reqData.fax = voidPermitFormData.fax;
-  }
-
   if (voidPermitFormData.additionalEmail) {
     reqData.additionalEmail = voidPermitFormData.additionalEmail;
   }
@@ -52,10 +48,6 @@ export const mapToRevokeRequestData = (
     transactionTypeId: TRANSACTION_TYPES.P,
     comment: voidPermitFormData.reason,
   };
-
-  if (voidPermitFormData.fax) {
-    reqData.fax = voidPermitFormData.fax;
-  }
 
   if (voidPermitFormData.additionalEmail) {
     reqData.additionalEmail = voidPermitFormData.additionalEmail;

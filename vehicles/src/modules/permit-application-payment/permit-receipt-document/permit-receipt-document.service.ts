@@ -35,12 +35,10 @@ import { DopsService } from '../../common/dops.service';
 import { ResultDto } from '../permit/dto/response/result.dto';
 import { ApplicationStatus } from '../../../common/enum/application-status.enum';
 import { PaymentService } from '../payment/payment.service';
-import {
-  generateFaxEmail,
-  validateEmailandFaxList,
-} from '../../../common/helper/notification.helper';
+import { validateEmailList } from '../../../common/helper/notification.helper';
 import { getPermitTemplateName } from '../../../common/helper/template.helper';
 import { TransactionType } from '../../../common/enum/transaction-type.enum';
+import { Nullable } from '../../../common/types/common';
 
 @Injectable()
 export class PermitReceiptDocumentService {
@@ -68,10 +66,6 @@ export class PermitReceiptDocumentService {
     const permitQB = this.permitRepository.createQueryBuilder('permit');
     permitQB
       .select('transaction.transactionId', 'transactionId')
-      .addSelect(
-        'COUNT(permit.permitId) OVER (PARTITION BY transaction.transactionId)',
-        'permitCountPerTransactionId',
-      )
       .distinct(true)
       .leftJoin('permit.company', 'company')
       .innerJoin('permit.permitTransactions', 'permitTransactions')
@@ -91,7 +85,6 @@ export class PermitReceiptDocumentService {
 
     const transactions = await permitQB.getRawMany<{
       transactionId: string;
-      permitCountPerTransactionId: number;
     }>();
 
     const transactionPermitList: {
@@ -114,9 +107,11 @@ export class PermitReceiptDocumentService {
         transaction.transactionId,
       );
 
+      const unIssuedApplications = fetchedApplications.filter(
+        (application) => !application.permitNumber,
+      );
       if (
-        fetchedApplications?.length ===
-          transaction.permitCountPerTransactionId &&
+        !unIssuedApplications?.length &&
         !fetchedApplications.some((app) => hasExistingPermit(app.permitId))
       ) {
         transactionPermitList.push({
@@ -136,12 +131,14 @@ export class PermitReceiptDocumentService {
    * @param applicationIds Array of application IDs to filter the permits. If empty, will search by transactionId.
    * @param companyId The ID of the company to which the permits may belong, optional.
    * @param transactionId A specific transaction ID to find the related permit, optional. If provided, applicationIds should be empty.
+   * @param issued A boolean to filter results to return only issued permits.
    * @returns A promise that resolves with an array of permits matching the criteria.
    */
   private async findManyWithSuccessfulTransaction(
     permitIds: string[],
     companyId?: number,
     transactionId?: string,
+    issued?: Nullable<boolean>,
   ): Promise<Permit[]> {
     if (
       (!permitIds?.length && !transactionId) ||
@@ -163,8 +160,10 @@ export class PermitReceiptDocumentService {
         'applicationOwner.userContact',
         'applicationOwnerContact',
       )
-      .where('receipt.receiptNumber IS NOT NULL')
-      .where('permit.permitNumber IS NOT NULL');
+      .where('receipt.receiptNumber IS NOT NULL');
+    if (issued) {
+      permitQB.andWhere('permit.permitNumber IS NOT NULL');
+    }
 
     if (permitIds?.length) {
       permitQB.andWhere('permit.permitId IN (:...permitIds)', {
@@ -194,16 +193,14 @@ export class PermitReceiptDocumentService {
     currentUser: IUserJWT,
     cc?: string[],
     bcc?: string[],
-    fax?: string[],
   ) {
     const notificationDocument: INotificationDocument = {
       templateName: notificationTemplate,
-      to: validateEmailandFaxList(to),
+      to: validateEmailList(to),
       subject: subject,
       documentIds: [documentId],
-      cc: validateEmailandFaxList(cc),
-      bcc: validateEmailandFaxList(bcc),
-      fax: validateEmailandFaxList(fax),
+      cc: validateEmailList(cc),
+      bcc: validateEmailList(bcc),
     };
 
     void this.dopsService.notificationWithDocumentsFromDops(
@@ -244,6 +241,8 @@ export class PermitReceiptDocumentService {
     const fetchedPermits = await this.findManyWithSuccessfulTransaction(
       permitIds,
       companyId,
+      null,
+      true,
     );
 
     if (!fetchedPermits?.length) {
@@ -333,11 +332,6 @@ export class PermitReceiptDocumentService {
               company?.email,
             ];
 
-            const faxEmail = generateFaxEmail(
-              permitDataForTemplate.permitData?.contactDetails?.fax,
-            );
-            const faxEmailList = [faxEmail];
-
             const subject = `onRouteBC Permits - ${company?.legalName}`;
             this.emailDocument(
               NotificationTemplate.ISSUE_PERMIT,
@@ -347,7 +341,6 @@ export class PermitReceiptDocumentService {
               currentUser,
               null,
               null,
-              faxEmailList,
             );
           } catch (error: unknown) {
             /**
@@ -564,11 +557,6 @@ export class PermitReceiptDocumentService {
                 company?.email,
               ];
 
-              const faxEmail = generateFaxEmail(
-                permitData?.contactDetails?.fax,
-              );
-              const faxEmailList = [faxEmail];
-
               const subject = `onRouteBC Permit Receipt - ${receiptNumber}`;
               this.emailDocument(
                 NotificationTemplate.PAYMENT_RECEIPT,
@@ -578,7 +566,6 @@ export class PermitReceiptDocumentService {
                 currentUser,
                 null,
                 null,
-                faxEmailList,
               );
             } catch (error: unknown) {
               /**

@@ -12,7 +12,10 @@ import { Loading } from "../../../../common/pages/Loading";
 import { ApplicationInQueueReview } from "../../../queue/components/ApplicationInQueueReview";
 import { useApplicationForStepsQuery } from "../../hooks/hooks";
 import { PERMIT_STATUSES } from "../../types/PermitStatus";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../../common/helpers/util";
 import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
 import {
   DEFAULT_PERMIT_TYPE,
@@ -54,12 +57,13 @@ export const ApplicationStepPage = ({
 
   const companyId: number = getDefaultRequiredVal(
     0,
-    applyWhenNotNullable(id => Number(id), companyIdParam),
-    applyWhenNotNullable(id => Number(id), getCompanyIdFromSession()),
+    applyWhenNotNullable((id) => Number(id), companyIdParam),
+    applyWhenNotNullable((id) => Number(id), getCompanyIdFromSession()),
   );
 
   const { data: featureFlags } = useFeatureFlagsQuery();
   const enableSTOS = featureFlags?.["STOS"] === "ENABLED";
+  const enableMFP = featureFlags?.["MFP"] === "ENABLED";
 
   // Query for the application data whenever this page is rendered
   const {
@@ -96,16 +100,15 @@ export const ApplicationStepPage = ({
     applicationData?.permitType,
   );
 
-  // Currently onRouteBC only handles TROS and TROW permits, and STOS only if feature flag is enabled
+  // Currently onRouteBC only handles TROS and TROW permits, and STOS and MFP only if feature flag is enabled
   const isPermitTypeAllowed = () => {
-    const allowedPermitTypes: string[] = enableSTOS ? [
+    const allowedPermitTypes: string[] = [
       PERMIT_TYPES.TROS,
       PERMIT_TYPES.TROW,
       PERMIT_TYPES.STOS,
-    ] : [
-      PERMIT_TYPES.TROS,
-      PERMIT_TYPES.TROW,
-    ];
+      PERMIT_TYPES.MFP,
+    ].filter(pType => enableSTOS ? true : pType !== PERMIT_TYPES.STOS)
+      .filter(pType => enableMFP ? true : pType !== PERMIT_TYPES.MFP);
 
     return allowedPermitTypes.includes(applicationPermitType);
   };
@@ -117,31 +120,36 @@ export const ApplicationStepPage = ({
       !isInvalidApplication &&
       (!applicationData?.permitStatus ||
         applicationData?.permitStatus === PERMIT_STATUSES.IN_PROGRESS ||
-        applicationData?.permitStatus === PERMIT_STATUSES.IN_QUEUE
-      )
+        applicationData?.permitStatus === PERMIT_STATUSES.IN_QUEUE)
     );
   };
 
   const renderApplicationStep = () => {
     if (applicationStep === APPLICATION_STEPS.REVIEW) {
       return applicationStepContext === APPLICATION_STEP_CONTEXTS.QUEUE ? (
-        <ApplicationInQueueReview applicationData={contextData.applicationData} />        
-      ) : (
-        <ApplicationReview
-          companyId={companyId}
+        <ApplicationInQueueReview
+          applicationData={contextData.applicationData}
         />
+      ) : (
+        <ApplicationReview companyId={companyId} />
       );
     }
-
     return (
       <ApplicationForm
         permitType={applicationPermitType}
         companyId={companyId}
+        applicationStepContext={applicationStepContext}
       />
     );
   };
 
-  if (isInvalidApplication || !isValidApplicationStatus() || !companyId || !isPermitTypeAllowed()) {
+  if (
+    isInvalidApplication ||
+    !isValidApplicationStatus() ||
+    !companyId ||
+    !isPermitTypeAllowed()
+  ) {
+    console.error("The application cannot be displayed or edited");
     return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
   }
 

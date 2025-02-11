@@ -37,7 +37,6 @@ export const RefundPage = ({
   permitHistory,
   email,
   additionalEmail,
-  fax,
   reason,
   permitNumber,
   permitAction,
@@ -48,7 +47,6 @@ export const RefundPage = ({
   permitHistory: PermitHistory[];
   email?: Nullable<string>;
   additionalEmail?: Nullable<string>;
-  fax?: Nullable<string>;
   reason?: Nullable<string>;
   permitNumber?: Nullable<string>;
   permitAction: PermitAction;
@@ -158,14 +156,6 @@ export const RefundPage = ({
                     data-testid="send-to-additional-email"
                   >
                     {additionalEmail}
-                  </span>
-                </div>
-              )}
-              {fax && (
-                <div className="refund-info__info">
-                  <span className="info-label">Fax: </span>
-                  <span className="info-value" data-testid="send-to-fax">
-                    {fax}
                   </span>
                 </div>
               )}

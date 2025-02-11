@@ -14,15 +14,12 @@ export interface VoidPermitFormData {
   revoke: boolean;
   email?: Nullable<string>;
   additionalEmail?: Nullable<string>;
-  fax?: Nullable<string>;
 }
 
 export interface VoidPermitRequestData {
   status: Extract<PermitStatus, typeof PERMIT_STATUSES.VOIDED>;
   transactions: RefundTransactionItem[];
   transactionTypeId: TransactionType;
-  comment: string;
-  fax?: Nullable<string>;
   additionalEmail?: Nullable<string>;
 }
 

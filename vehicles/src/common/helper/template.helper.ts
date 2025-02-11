@@ -23,16 +23,46 @@ export const getPermitTemplateName = (
     [ApplicationStatus.ISSUED]: {
       [PermitType.SINGLE_TRIP_OVERSIZE]: TemplateName.PERMIT_STOS,
       [PermitType.MOTIVE_FUEL_USER]: TemplateName.PERMIT_MFP,
+      [PermitType.TERM_OVERWEIGHT]: TemplateName.PERMIT_TROW,
+      [PermitType.TERM_OVERSIZE]: TemplateName.PERMIT_TROS,
+      [PermitType.NON_RESIDENT_SINGLE_TRIP_CONDITIONAL_LICENSE]:
+        TemplateName.PERMIT_NRSCL,
+      [PermitType.NON_RESIDENT_QUARTERLY_CONDITIONAL_LICENSE]:
+        TemplateName.PERMIT_NRQCL,
+      [PermitType.NON_RESIDENT_SINGLE_TRIP_ICBC_BASIC_INSURANCE_FR]:
+        TemplateName.PERMIT_NRSCL,
+      [PermitType.NON_RESIDENT_QUARTERLY_ICBC_BASIC_INSURANCE_FR]:
+        TemplateName.PERMIT_NRQCL,
       default: TemplateName.PERMIT,
     },
     [ApplicationStatus.VOIDED]: {
       [PermitType.SINGLE_TRIP_OVERSIZE]: TemplateName.PERMIT_STOS_VOID,
       [PermitType.MOTIVE_FUEL_USER]: TemplateName.PERMIT_MFP_VOID,
+      [PermitType.TERM_OVERWEIGHT]: TemplateName.PERMIT_TROW_VOID,
+      [PermitType.TERM_OVERSIZE]: TemplateName.PERMIT_TROS_VOID,
+      [PermitType.NON_RESIDENT_SINGLE_TRIP_CONDITIONAL_LICENSE]:
+        TemplateName.PERMIT_NRSCL_VOID,
+      [PermitType.NON_RESIDENT_QUARTERLY_CONDITIONAL_LICENSE]:
+        TemplateName.PERMIT_NRQCL_VOID,
+      [PermitType.NON_RESIDENT_SINGLE_TRIP_ICBC_BASIC_INSURANCE_FR]:
+        TemplateName.PERMIT_NRSCL_VOID,
+      [PermitType.NON_RESIDENT_QUARTERLY_ICBC_BASIC_INSURANCE_FR]:
+        TemplateName.PERMIT_NRQCL_VOID,
       default: TemplateName.PERMIT_VOID,
     },
     [ApplicationStatus.REVOKED]: {
       [PermitType.SINGLE_TRIP_OVERSIZE]: TemplateName.PERMIT_STOS_REVOKED,
       [PermitType.MOTIVE_FUEL_USER]: TemplateName.PERMIT_MFP_REVOKED,
+      [PermitType.TERM_OVERWEIGHT]: TemplateName.PERMIT_TROW_REVOKED,
+      [PermitType.TERM_OVERSIZE]: TemplateName.PERMIT_TROS_REVOKED,
+      [PermitType.NON_RESIDENT_SINGLE_TRIP_CONDITIONAL_LICENSE]:
+        TemplateName.PERMIT_NRSCL_REVOKED,
+      [PermitType.NON_RESIDENT_QUARTERLY_CONDITIONAL_LICENSE]:
+        TemplateName.PERMIT_NRQCL_REVOKED,
+      [PermitType.NON_RESIDENT_SINGLE_TRIP_ICBC_BASIC_INSURANCE_FR]:
+        TemplateName.PERMIT_NRSCL_REVOKED,
+      [PermitType.NON_RESIDENT_QUARTERLY_ICBC_BASIC_INSURANCE_FR]:
+        TemplateName.PERMIT_NRQCL_REVOKED,
       default: TemplateName.PERMIT_REVOKED,
     },
   };

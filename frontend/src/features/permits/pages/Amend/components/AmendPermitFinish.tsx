@@ -57,6 +57,7 @@ export const AmendPermitFinish = () => {
         amendmentApplication?.permitType,
         permit?.permitType,
       ),
+      amendmentApplication?.permitData?.permittedRoute?.manualRoute?.totalDistance,
     );
 
   const [showRefundErrorModal, setShowRefundErrorModal] = useState(false);

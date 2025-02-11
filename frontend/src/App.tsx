@@ -18,8 +18,6 @@ import { Header } from "./common/components/header/Header";
 import { Footer } from "./common/components/footer/Footer";
 import { bcGovTheme } from "./themes/bcGovTheme";
 import { NavIconSideBar } from "./common/components/naviconsidebar/NavIconSideBar";
-import { NavIconHomeButton } from "./common/components/naviconsidebar/NavIconHomeButton";
-import { NavIconReportButton } from "./common/components/naviconsidebar/NavIconReportButton";
 import { Nullable, Optional } from "./common/types/common";
 import { VerifiedClient, UserClaimsType } from "./common/authentication/types";
 import { SuspendSnackBar } from "./common/components/snackbar/SuspendSnackBar";
@@ -46,6 +44,7 @@ const client_id =
  */
 const oidcConfig: AuthProviderProps = {
   authority: authority,
+  accessTokenExpiringNotificationTimeInSeconds: 120,
   client_id: client_id,
   redirect_uri: window.location.origin + "/",
   scope: "openid",
@@ -167,10 +166,7 @@ const App = () => {
                   <Router>
                     <Header />
                     <SuspendSnackBar />
-                    <NavIconSideBar>
-                      <NavIconHomeButton />
-                      <NavIconReportButton />
-                    </NavIconSideBar>
+                    <NavIconSideBar />
                     <AppRoutes />
                   </Router>
                 </CartContextProvider>

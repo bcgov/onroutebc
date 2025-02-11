@@ -27,16 +27,16 @@ import { getDatetimes } from "./helpers/getDatetimes";
 import { PAST_START_DATE_STATUSES } from "../../../../../common/components/form/subFormComponents/CustomDatePicker";
 import { useFetchLOAs } from "../../../../settings/hooks/LOA";
 import { useFetchSpecialAuthorizations } from "../../../../settings/hooks/specialAuthorizations";
+import {
+  filterLOAsForPermitType,
+  filterNonExpiredLOAs,
+} from "../../../helpers/permitLOA";
 import { usePolicyEngine } from "../../../../policy/hooks/usePolicyEngine";
 import { Loading } from "../../../../../common/pages/Loading";
 import { serializePermitVehicleDetails } from "../../../helpers/serialize/serializePermitVehicleDetails";
 import { serializeForUpdateApplication } from "../../../helpers/serialize/serializeApplication";
 import { requiredPowerUnit } from "../../../../../common/helpers/validationMessages";
 import { PERMIT_TYPES } from "../../../types/PermitType";
-import {
-  filterLOAsForPermitType,
-  filterNonExpiredLOAs,
-} from "../../../helpers/permitLOA";
 import { dayjsToUtcStr, now } from "../../../../../common/helpers/formatDate";
 
 import {
@@ -48,6 +48,7 @@ import {
   durationOptionsForPermitType,
   minDurationForPermitType,
 } from "../../../helpers/dateSelection";
+import OnRouteBCContext from "../../../../../common/authentication/OnRouteBCContext";
 
 const FEATURE = "amend-permit";
 
@@ -77,6 +78,10 @@ export const AmendPermitForm = () => {
     [activeLOAs],
   );
 
+  const { idirUserDetails } = useContext(OnRouteBCContext);
+
+  const isStaffUser = Boolean(idirUserDetails?.userRole);
+
   const { data: companyInfo } = useCompanyInfoDetailsQuery(companyId);
   const { data: specialAuthorizations } =
     useFetchSpecialAuthorizations(companyId);
@@ -89,7 +94,7 @@ export const AmendPermitForm = () => {
     trailerSubtypeNamesMap,
   } = usePermitVehicleManagement(companyId);
 
-  const policyEngine = usePolicyEngine();
+  const policyEngine = usePolicyEngine(specialAuthorizations);
 
   const { initialFormData, formData, formMethods } = useAmendPermitForm({
     repopulateFormData: currentStepIndex === 0,
@@ -174,7 +179,8 @@ export const AmendPermitForm = () => {
   // When "Continue" button is clicked
   const onContinue = async (data: FieldValues) => {
     const updatedViolations = await triggerPolicyValidation();
-    if (Object.keys(updatedViolations).length > 0) {
+    // prevent CV client continuing if there are policy engine validation errors
+    if (Object.keys(updatedViolations).length > 0 && !isStaffUser) {
       return;
     }
 

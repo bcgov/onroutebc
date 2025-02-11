@@ -1,46 +1,46 @@
-@import "../../../../themes/orbcStyles";
+@use "../../../../themes/orbcStyles.scss";
 
 .number-input {
   & &__label {
-    color: $bc-black;
+    color: orbcStyles.$bc-black;
     font-weight: bold;
     margin: 0 0 0.5rem 0;
   }
 
   &#{&}--error &__label {
-    color: $bc-black;
+    color: orbcStyles.$bc-black;
   }
-
+  
   &#{&}--error &__input {
     &:hover {
       fieldset {
-        border: 2px solid $bc-red;   
+        border: 2px solid orbcStyles.$bc-red;   
       }
     }
 
     fieldset {
-      border: 2px solid $bc-red;   
+      border: 2px solid orbcStyles.$bc-red;   
     }
   }
 
   & &__input {
     fieldset {
-      border: 2px solid $bc-text-box-border-grey;   
+      border: 2px solid orbcStyles.$bc-text-box-border-grey;   
     }
 
     &:focus-within {
       fieldset {
-        border: 2px solid $focus-blue;   
+        border: 2px solid orbcStyles.$focus-blue;   
       }
     }
 
     &--disabled {
       z-index: 1;
-      color: $bc-black;
-      -webkit-text-fill-color: $bc-black;
+      color: orbcStyles.$bc-black;
+      -webkit-text-fill-color: orbcStyles.$bc-black;
       fieldset {
-        background-color: $bc-background-light-grey;
-        border: 2px solid $bc-text-box-border-grey;
+        background-color: orbcStyles.$bc-background-light-grey;
+        border: 2px solid orbcStyles.$bc-text-box-border-grey;
       }
     }
 

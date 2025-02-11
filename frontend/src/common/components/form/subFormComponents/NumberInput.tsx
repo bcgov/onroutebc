@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   OutlinedInput,
   OutlinedInputProps,
@@ -49,22 +49,44 @@ export const NumberInput = (props: NumberInputProps) => {
 
   const { maskFn, onChange, onBlur, ...inputProps } = props.inputProps;
   const inputSlotProps = inputProps.slotProps?.input;
+  const inputValue = inputProps.value;
   const initialValueDisplay = applyWhenNotNullable(
     (num) => (maskFn ? maskFn(num) : `${num}`),
-    inputProps.value,
+    inputValue,
     "",
   );
 
   const [valueDisplay, setValueDisplay] = useState<string>(initialValueDisplay);
 
+  useEffect(() => {
+    setValueDisplay(
+      applyWhenNotNullable(
+        (num) => (maskFn ? maskFn(num) : `${num}`),
+        inputValue,
+        "",
+      ),
+    );
+  }, [inputValue]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const updatedVal = e.target.value;
+
+    // Allow clearing the input
+    if (updatedVal === "") {
+      setValueDisplay(updatedVal);
+      onChange?.(e);
+      return;
+    }
+
     const numericVal = convertToNumberIfValid(updatedVal, null);
 
     // If an invalid numeric string was inputted, do nothing
-    if (isNull(numericVal)) return;
+    if (isNull(numericVal)) {
+      return;
+    }
 
     // Otherwise display it without formatting it immediately (as that affects user's ability to input)
+
     setValueDisplay(updatedVal);
     onChange?.(e);
   };
@@ -105,7 +127,7 @@ export const NumberInput = (props: NumberInputProps) => {
         className={`number-input__input ${
           inputProps.className ? inputProps.className : ""
         } ${inputProps.disabled ? "number-input__input--disabled" : ""}`}
-        type="number"
+        type="text"
         value={valueDisplay}
         onChange={handleChange}
         onBlur={handleBlur}
@@ -113,8 +135,7 @@ export const NumberInput = (props: NumberInputProps) => {
           ...inputProps.slotProps,
           input: {
             ...inputSlotProps,
-            type: "number",
-            className: "number-input__input",
+            type: "text",
           },
         }}
       />

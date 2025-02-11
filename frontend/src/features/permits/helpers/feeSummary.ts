@@ -3,30 +3,29 @@ import { TRANSACTION_TYPES, TransactionType } from "../types/payment";
 import { Permit } from "../types/permit";
 import { isValidTransaction } from "./payment";
 import { Nullable } from "../../../common/types/common";
-import {
-  PERMIT_STATES,
-  daysLeftBeforeExpiry,
-  getPermitState,
-} from "./permitState";
+import { PERMIT_STATES, getPermitState } from "./permitState";
 import { PERMIT_TYPES, PermitType } from "../types/PermitType";
 import {
   getDurationIntervalDays,
   maxDurationForPermitType,
 } from "./dateSelection";
+
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../common/helpers/util";
 
 /**
- * Calculates the fee for a permit only by its duration.
+ * Calculates the fee for a permit.
  * @param permitType Type of permit
  * @param duration Number of days for duration of permit
- * @returns Fee to be paid for the permit duration
+ * @param totalDistance Total distance to travel for the route trip of the permit, if applicable
+ * @returns Fee to be paid for the permit
  */
-export const calculateFeeByDuration = (
+export const calculatePermitFee = (
   permitType: PermitType,
   duration: number,
+  totalDistance?: Nullable<number>,
 ) => {
   const maxAllowableDuration = maxDurationForPermitType(permitType);
 
@@ -47,6 +46,10 @@ export const calculateFeeByDuration = (
 
   switch (permitType) {
     // Add more conditions for other permit types if needed
+    case PERMIT_TYPES.MFP:
+      // MFP only calculate fee based on totalDistance
+      // minimum $20 no matter what, $0.11 per km
+      return Math.max(20, 0.11 * getDefaultRequiredVal(0, totalDistance));
     case PERMIT_TYPES.STOS:
       // STOS have constant fee of $15 (regardless of duration)
       return 15;
@@ -65,12 +68,14 @@ export const calculateFeeByDuration = (
  * @param feeSummary fee summary field for a permit (if exists)
  * @param duration duration field for a permit (if exists)
  * @param permitType type of permit (if exists)
+ * @param totalDistance total distance to travel for the route trip of a permit (if applicable)
  * @returns display text for the fee summary (currency amount to 2 decimal places)
  */
 export const feeSummaryDisplayText = (
   feeSummary?: Nullable<string>,
   duration?: Nullable<number>,
   permitType?: Nullable<PermitType>,
+  totalDistance?: Nullable<number>,
 ) => {
   const feeFromSummary = applyWhenNotNullable(
     (numericStr) => Number(numericStr).toFixed(2),
@@ -78,7 +83,7 @@ export const feeSummaryDisplayText = (
   );
   const feeFromDuration =
     duration && permitType
-      ? calculateFeeByDuration(permitType, duration).toFixed(2)
+      ? calculatePermitFee(permitType, duration, totalDistance).toFixed(2)
       : null;
 
   const fee = getDefaultRequiredVal("0.00", feeFromSummary, feeFromDuration);
@@ -117,25 +122,29 @@ export const calculateNetAmount = (permitHistory: PermitHistory[]) => {
 };
 
 /**
- * Calculates the amount that needs to be refunded (or paid if amount is negative) for a permit given a new duration period.
+ * Calculates the amount that needs to be refunded (or paid if amount is negative) for a permit.
  * @param permitHistory List of history objects that make up the history of a permit and its transactions
  * @param currDuration Current (updated) duration of the permit
- * @param currPermitType Permit type of current permit to refund
+ * @param currPermitType Permit type of current permit to refund for
+ * @param updatedTotalDistance Updated total distance of the route trip for the permit (if applicable)
  * @returns Amount that needs to be refunded, or if negative then the amount that still needs to be paid
  */
 export const calculateAmountToRefund = (
   permitHistory: PermitHistory[],
   currDuration: number,
   currPermitType: PermitType,
+  updatedTotalDistance?: Nullable<number>,
 ) => {
   const netPaid = calculateNetAmount(permitHistory);
   if (isZeroAmount(netPaid)) return 0; // If total paid is $0 (eg. no-fee permits), then refund nothing
 
-  const feeForCurrDuration = calculateFeeByDuration(
+  const updatedFee = calculatePermitFee(
     currPermitType,
     currDuration,
+    updatedTotalDistance,
   );
-  return netPaid - feeForCurrDuration;
+
+  return netPaid - updatedFee;
 };
 
 /**
@@ -162,13 +171,8 @@ export const calculateAmountForVoid = (
     return 0;
   }
 
-  const netAmountPaid = calculateNetAmount(transactionHistory);
-  if (isZeroAmount(netAmountPaid)) return 0; // If existing net paid is $0 (eg. no-fee permits), then refund nothing
+  const netPaid = calculateNetAmount(transactionHistory);
+  if (isZeroAmount(netPaid)) return 0; // If existing net paid is $0 (eg. no-fee permits), then refund nothing
 
-  const daysLeft = daysLeftBeforeExpiry(permit);
-  const intervalDays = getDurationIntervalDays(permit.permitType);
-  return calculateFeeByDuration(
-    permit.permitType,
-    Math.floor(daysLeft / intervalDays) * intervalDays,
-  );
+  return netPaid;
 };
