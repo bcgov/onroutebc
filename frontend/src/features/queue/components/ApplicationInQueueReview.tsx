@@ -5,11 +5,15 @@ import { useNavigate } from "react-router-dom";
 import "./ApplicationInQueueReview.scss";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { Nullable } from "../../../common/types/common";
-import { APPLICATION_QUEUE_ROUTES, APPLICATION_STEPS, IDIR_ROUTES } from "../../../routes/constants";
+import {
+  APPLICATION_QUEUE_ROUTES,
+  APPLICATION_STEPS,
+  IDIR_ROUTES,
+} from "../../../routes/constants";
 import { useCompanyInfoDetailsQuery } from "../../manageProfile/apiManager/hooks";
 import { usePowerUnitSubTypesQuery } from "../../manageVehicles/hooks/powerUnits";
 import { useTrailerSubTypesQuery } from "../../manageVehicles/hooks/trailers";
-import { calculateFeeByDuration } from "../../permits/helpers/feeSummary";
+import { calculatePermitFee } from "../../permits/helpers/feeSummary";
 import { PermitReview } from "../../permits/pages/Application/components/review/PermitReview";
 import { Application } from "../../permits/types/application";
 import { PERMIT_REVIEW_CONTEXTS } from "../../permits/types/PermitReviewContext";
@@ -36,17 +40,24 @@ export const ApplicationInQueueReview = ({
   const { data: companyInfo } = useCompanyInfoDetailsQuery(companyId);
   const doingBusinessAs = companyInfo?.alternateName;
 
-  const permitType = getDefaultRequiredVal(DEFAULT_PERMIT_TYPE, applicationData?.permitType);
+  const permitType = getDefaultRequiredVal(
+    DEFAULT_PERMIT_TYPE,
+    applicationData?.permitType,
+  );
   const fee = isNoFeePermitType
     ? "0"
-    : `${calculateFeeByDuration(
+    : `${calculatePermitFee(
         permitType,
-        getDefaultRequiredVal(0, applicationData?.permitData?.permitDuration),
+        getDefaultRequiredVal(
+          0,
+          applicationData?.permitData?.permitDuration,
+          applicationData?.permitData?.permittedRoute?.manualRoute?.totalDistance,
+        ),
       )}`;
 
   const navigate = useNavigate();
 
-  const policyEngine = usePolicyEngine();
+  const policyEngine = usePolicyEngine(specialAuth);
   const { commodityOptions } = useCommodityOptions(policyEngine, permitType);
   const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
   const trailerSubTypesQuery = useTrailerSubTypesQuery();
@@ -58,7 +69,9 @@ export const ApplicationInQueueReview = ({
   const [hasAttemptedSubmission, setHasAttemptedSubmission] = useState(false);
 
   const handleEdit = () => {
-    navigate(APPLICATION_QUEUE_ROUTES.EDIT(companyId, applicationId), { replace: true });
+    navigate(APPLICATION_QUEUE_ROUTES.EDIT(companyId, applicationId), {
+      replace: true,
+    });
   };
 
   const isSuccess = (status?: number) => status === 201;
@@ -146,7 +159,9 @@ export const ApplicationInQueueReview = ({
           vehicleWasSaved={
             applicationData?.permitData?.vehicleDetails?.saveVehicle
           }
-          vehicleConfiguration={applicationData?.permitData?.vehicleConfiguration}
+          vehicleConfiguration={
+            applicationData?.permitData?.vehicleConfiguration
+          }
           route={applicationData?.permitData?.permittedRoute}
           applicationNotes={applicationData?.permitData?.applicationNotes}
           doingBusinessAs={doingBusinessAs}
