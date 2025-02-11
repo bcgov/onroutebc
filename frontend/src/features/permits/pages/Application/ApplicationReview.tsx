@@ -42,17 +42,12 @@ import {
   useSubmitApplicationForReview,
   useUpdateApplicationInQueueStatus,
 } from "../../../queue/hooks/hooks";
-import { Nullable } from "../../../../common/types/common";
 import { UnavailableApplicationModal } from "../../../queue/components/UnavailableApplicationModal";
 
 export const ApplicationReview = ({
-  companyIdProp,
   applicationStepContext,
-  applicationData: queueApplicationData,
 }: {
   applicationStepContext: ApplicationStepContext;
-  companyIdProp?: Nullable<number>;
-  applicationData?: Nullable<Application>;
 }) => {
   const { applicationData, setApplicationData: setApplicationContextData } =
     useContext(ApplicationContext);
@@ -60,18 +55,7 @@ export const ApplicationReview = ({
   const isQueueContext =
     applicationStepContext === APPLICATION_STEP_CONTEXTS.QUEUE;
 
-  const application = isQueueContext ? queueApplicationData : applicationData;
-
-  const companyId = getDefaultRequiredVal(
-    0,
-    companyIdProp,
-    queueApplicationData?.companyId,
-  );
-
-  const applicationId = getDefaultRequiredVal(
-    queueApplicationData?.permitId,
-    applicationData?.permitId,
-  );
+  const companyId = getDefaultRequiredVal(0, applicationData?.companyId);
 
   const { idirUserDetails } = useContext(OnRouteBCContext);
   const isStaffUser = Boolean(idirUserDetails?.userRole);
@@ -84,13 +68,13 @@ export const ApplicationReview = ({
 
   const permitType = getDefaultRequiredVal(
     DEFAULT_PERMIT_TYPE,
-    application?.permitType,
+    applicationData?.permitType,
   );
   const fee = isNoFeePermitType
     ? "0"
     : `${calculateFeeByDuration(
         permitType,
-        getDefaultRequiredVal(0, application?.permitData?.permitDuration),
+        getDefaultRequiredVal(0, applicationData?.permitData?.permitDuration),
       )}`;
 
   const { setSnackBar } = useContext(SnackBarContext);
@@ -147,9 +131,12 @@ export const ApplicationReview = ({
   const handleEdit = async () => {
     if (isQueueContext) {
       await validateCurrentUser(() =>
-        navigate(APPLICATION_QUEUE_ROUTES.EDIT(companyId, applicationId), {
-          replace: true,
-        }),
+        navigate(
+          APPLICATION_QUEUE_ROUTES.EDIT(companyId, applicationData?.permitId),
+          {
+            replace: true,
+          },
+        ),
       );
       return;
     }
@@ -167,9 +154,9 @@ export const ApplicationReview = ({
 
     if (!allConfirmed) return;
 
-    const companyId = application?.companyId;
-    const permitId = application?.permitId;
-    const applicationNumber = application?.applicationNumber;
+    const companyId = applicationData?.companyId;
+    const permitId = applicationData?.permitId;
+    const applicationNumber = applicationData?.applicationNumber;
     if (!companyId || !permitId || !applicationNumber) {
       return navigate(ERROR_ROUTES.UNEXPECTED);
     }
@@ -177,9 +164,9 @@ export const ApplicationReview = ({
     await saveApplication(
       {
         data: {
-          ...application,
+          ...applicationData,
           permitData: {
-            ...application?.permitData,
+            ...applicationData?.permitData,
             doingBusinessAs,
           },
         },

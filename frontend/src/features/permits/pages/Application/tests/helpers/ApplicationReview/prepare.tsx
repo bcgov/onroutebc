@@ -209,7 +209,6 @@ const ComponentWithWrapper = ({
         )}
       >
         <ApplicationReview
-          companyIdProp={applicationData.companyId}
           applicationStepContext={APPLICATION_STEP_CONTEXTS.APPLY}
         />
       </ApplicationContext.Provider>

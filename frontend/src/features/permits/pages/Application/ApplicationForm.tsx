@@ -315,7 +315,11 @@ export const ApplicationForm = ({
 
   const onSave = async () => {
     await onSaveApplication((permitId) =>
-      navigate(APPLICATIONS_ROUTES.DETAILS(permitId)),
+      navigate(
+        isQueueContext
+          ? APPLICATION_QUEUE_ROUTES.EDIT(companyId, permitId)
+          : APPLICATIONS_ROUTES.DETAILS(permitId),
+      ),
     );
   };
 

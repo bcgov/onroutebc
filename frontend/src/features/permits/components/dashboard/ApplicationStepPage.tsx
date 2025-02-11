@@ -120,10 +120,7 @@ export const ApplicationStepPage = ({
   const renderApplicationStep = () => {
     if (applicationStep === APPLICATION_STEPS.REVIEW) {
       return (
-        <ApplicationReview
-          applicationData={contextData.applicationData}
-          applicationStepContext={applicationStepContext}
-        />
+        <ApplicationReview applicationStepContext={applicationStepContext} />
       );
     }
     return (

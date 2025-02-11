@@ -255,11 +255,12 @@ export const useApplicationInQueueMetadata = ({
   companyId: number;
   applicationId: string;
 }) => {
+  const { idirUserDetails } = useContext(OnRouteBCContext);
   return useQuery({
     queryKey: QUEUE_QUERY_KEYS.APPLICATION_METADATA(applicationId),
     queryFn: () => getApplicationInQueueMetadata(companyId, applicationId),
     // enable fetching only when applicationId is defined and user is IDIR user
-    enabled: Boolean(companyId && applicationId),
+    enabled: Boolean(companyId && applicationId && idirUserDetails),
     staleTime: 0,
   });
 };
