@@ -4,7 +4,7 @@ import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBC
 import { getMandatoryConditions } from "./conditions";
 import { Nullable } from "../../../common/types/common";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
-import { calculatePermitFee } from "./feeSummary";
+import { calculateFeeByDuration } from "./feeSummary";
 import { PERMIT_TYPES, PermitType } from "../types/PermitType";
 import { getExpiryDate } from "./permitState";
 import { PermitMailingAddress } from "../types/PermitMailingAddress";
@@ -12,7 +12,7 @@ import { PermitContactDetails } from "../types/PermitContactDetails";
 import { Application, ApplicationFormData } from "../types/application";
 import { minDurationForPermitType } from "./dateSelection";
 import { getDefaultVehicleDetails } from "./vehicles/getDefaultVehicleDetails";
-import { getDefaultPermittedRoute } from "./route/getDefaultPermittedRoute";
+import { getDefaultPermittedRoute } from "./permittedRoute";
 import { getDefaultPermittedCommodity } from "./permittedCommodity";
 import {
   getDefaultVehicleConfiguration
@@ -58,6 +58,7 @@ export const getDefaultContactDetails = (
       phone2Extension: getDefaultRequiredVal("", userDetails?.phone2Extension),
       email: getDefaultRequiredVal("", companyEmail),
       additionalEmail: getDefaultRequiredVal("", userDetails?.email),
+      fax: getDefaultRequiredVal("", userDetails?.fax),
     };
   }
 
@@ -70,6 +71,7 @@ export const getDefaultContactDetails = (
     phone2Extension: getDefaultRequiredVal("", contactDetails?.phone2Extension),
     email: getDefaultRequiredVal("", contactDetails?.email, companyEmail),
     additionalEmail: getDefaultRequiredVal("", contactDetails?.additionalEmail),
+    fax: getDefaultRequiredVal("", contactDetails?.fax),
   };
 };
 
@@ -175,11 +177,6 @@ export const getDefaultValues = (
     applicationData?.applicationNumber,
   );
 
-  const defaultPermittedRoute = getDefaultPermittedRoute(
-    permitType,
-    applicationData?.permitData?.permittedRoute,
-  );
-
   return {
     originalPermitId: getDefaultRequiredVal(
       "",
@@ -233,13 +230,9 @@ export const getDefaultValues = (
       vehicleDetails: getDefaultVehicleDetails(
         applicationData?.permitData?.vehicleDetails,
       ),
-      feeSummary: `${calculatePermitFee(
-        defaultPermitType,
-        durationOrDefault,
-        defaultPermittedRoute?.manualRoute?.totalDistance,
-      )}`,
+      feeSummary: `${calculateFeeByDuration(defaultPermitType, durationOrDefault)}`,
       loas: getDefaultRequiredVal([], applicationData?.permitData?.loas),
-      permittedRoute: defaultPermittedRoute,
+      permittedRoute: getDefaultPermittedRoute(permitType, applicationData?.permitData?.permittedRoute),
       applicationNotes: permitType !== PERMIT_TYPES.STOS
         ? null : getDefaultRequiredVal("", applicationData?.permitData?.applicationNotes),
       permittedCommodity: getDefaultPermittedCommodity(

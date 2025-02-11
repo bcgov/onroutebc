@@ -19,6 +19,7 @@ export const usePermitVehicles = (
   data: {
     policyEngine: Policy;
     permitType: PermitType;
+    isLcvDesignated: boolean;
     vehicleFormData: PermitVehicleDetails;
     allVehiclesFromInventory: (PowerUnit | Trailer)[];
     selectedLOAs: PermitLOA[];
@@ -31,6 +32,7 @@ export const usePermitVehicles = (
   const {
     policyEngine,
     permitType,
+    isLcvDesignated,
     vehicleFormData,
     allVehiclesFromInventory,
     selectedLOAs,
@@ -43,12 +45,14 @@ export const usePermitVehicles = (
   const eligibleVehicleSubtypes = useMemo(() => {
     return getEligibleVehicleSubtypes(
       permitType,
+      isLcvDesignated,
       selectedCommodity,
       policyEngine,
     );
   }, [
     policyEngine,
     permitType,
+    isLcvDesignated,
     selectedCommodity,
   ]);
 

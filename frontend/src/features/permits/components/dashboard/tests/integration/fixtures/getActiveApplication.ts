@@ -45,6 +45,7 @@ const activeApplicationSource = factory({
         phone2Extension: nullable(String),
         email: nullable(String),
         additionalEmail: nullable(String),
+        fax: nullable(String),
       },
       vehicleDetails: {
         vin: nullable(String),
@@ -153,6 +154,7 @@ export const getDefaultApplication = () => {
     phone2Extension: userDetails.phone2Extension,
     email: userDetails.email,
     additionalEmail: "",
+    fax: userDetails.fax,
   };
 
   const vehicle = getDefaultPowerUnits()[0];

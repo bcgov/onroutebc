@@ -16,9 +16,6 @@ export const requiredMessage = () => validationMessages.required.defaultMessage;
 export const selectionRequired = () =>
   validationMessages.selectionRequired.defaultMessage;
 export const invalidNumber = () => validationMessages.NaN.defaultMessage;
-
-export const invalidInput = () => validationMessages.invalid.defaultMessage;
-
 export const mustBeGreaterThan = (val: number) => {
   const { messageTemplate, placeholders } = validationMessages.greaterThan;
   return replacePlaceholders(messageTemplate, placeholders, val);
@@ -68,8 +65,6 @@ export const invalidPhoneLength = (min: number, max: number) => {
   const { messageTemplate, placeholders } = validationMessages.phone.length;
   return replacePlaceholders(messageTemplate, placeholders, min, max);
 };
-
-export const invalidExtension = () => validationMessages.extension.defaultMessage;
 
 export const invalidExtensionLength = (max: number) => {
   const { messageTemplate, placeholders } = validationMessages.extension.length;

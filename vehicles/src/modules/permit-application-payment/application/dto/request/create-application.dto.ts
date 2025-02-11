@@ -152,6 +152,7 @@ export class CreateApplicationDto {
         phone1Extension: '1',
         phone2: null,
         phone2Extension: null,
+        fax: null,
       },
       mailingAddress: {
         addressLine1: '123 Short Street',

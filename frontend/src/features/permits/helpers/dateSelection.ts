@@ -29,13 +29,6 @@ import {
   STOS_DURATION_OPTIONS,
 } from "../constants/stos";
 
-import {
-  MAX_MFP_DURATION,
-  MFP_DURATION_INTERVAL_DAYS,
-  MFP_DURATION_OPTIONS,
-  MIN_MFP_DURATION,
-} from "../constants/mfp";
-
 /**
  * Get list of selectable duration options for a given permit type.
  * @param permitType Permit type to get duration options for
@@ -43,8 +36,6 @@ import {
  */
 export const durationOptionsForPermitType = (permitType: PermitType) => {
   switch (permitType) {
-    case PERMIT_TYPES.MFP:
-      return MFP_DURATION_OPTIONS;
     case PERMIT_TYPES.STOS:
       return STOS_DURATION_OPTIONS;
     case PERMIT_TYPES.TROW:
@@ -63,8 +54,6 @@ export const durationOptionsForPermitType = (permitType: PermitType) => {
  */
 export const minDurationForPermitType = (permitType: PermitType) => {
   switch (permitType) {
-    case PERMIT_TYPES.MFP:
-      return MIN_MFP_DURATION;
     case PERMIT_TYPES.STOS:
       return MIN_STOS_DURATION;
     case PERMIT_TYPES.TROW:
@@ -83,8 +72,6 @@ export const minDurationForPermitType = (permitType: PermitType) => {
  */
 export const maxDurationForPermitType = (permitType: PermitType) => {
   switch (permitType) {
-    case PERMIT_TYPES.MFP:
-      return MAX_MFP_DURATION;
     case PERMIT_TYPES.STOS:
       return MAX_STOS_DURATION;
     case PERMIT_TYPES.TROW:
@@ -103,8 +90,6 @@ export const maxDurationForPermitType = (permitType: PermitType) => {
  */
 export const getDurationIntervalDays = (permitType: PermitType) => {
   switch (permitType) {
-    case PERMIT_TYPES.MFP:
-      return MFP_DURATION_INTERVAL_DAYS;
     case PERMIT_TYPES.STOS:
       return STOS_DURATION_INTERVAL_DAYS;
     case PERMIT_TYPES.TROW:

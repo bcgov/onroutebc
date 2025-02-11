@@ -8,21 +8,19 @@ import "./CompanyInfoForms.scss";
 import { CompanyInfoGeneralForm } from "./subForms/CompanyInfoGeneralForm";
 import { CompanyContactDetailsForm } from "./subForms/CompanyContactDetailsForm";
 import { CompanyPrimaryContactForm } from "./subForms/CompanyPrimaryContactForm";
+import { formatPhoneNumber } from "../../../../../common/components/form/subFormComponents/PhoneNumberInput";
 import { InfoBcGovBanner } from "../../../../../common/components/banners/InfoBcGovBanner";
-import { getUserEmailFromSession } from "../../../../../common/apiManager/httpRequestHandler";
-import { BANNER_MESSAGES } from "../../../../../common/constants/bannerMessages";
-import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
-import { getFormattedPhoneNumber } from "../../../../../common/helpers/phone/getFormattedPhoneNumber";
 import {
   CompanyProfile,
   UpdateCompanyProfileRequest,
 } from "../../../types/manageProfile";
-
+import { getUserEmailFromSession } from "../../../../../common/apiManager/httpRequestHandler";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
-
+import { BANNER_MESSAGES } from "../../../../../common/constants/bannerMessages";
+import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
 import {
   invalidDBALength,
   isValidOptionalString,
@@ -73,8 +71,9 @@ export const CompanyInfoForm = memo(
           ),
         },
         email: getDefaultRequiredVal("", companyInfo?.email, userEmail),
-        phone: applyWhenNotNullable(getFormattedPhoneNumber, companyInfo?.phone, ""),
+        phone: applyWhenNotNullable(formatPhoneNumber, companyInfo?.phone, ""),
         extension: getDefaultRequiredVal("", companyInfo?.extension),
+        fax: applyWhenNotNullable(formatPhoneNumber, companyInfo?.fax, ""),
         primaryContact: {
           firstName: getDefaultRequiredVal(
             "",
@@ -85,7 +84,7 @@ export const CompanyInfoForm = memo(
             companyInfo?.primaryContact?.lastName,
           ),
           phone1: applyWhenNotNullable(
-            getFormattedPhoneNumber,
+            formatPhoneNumber,
             companyInfo?.primaryContact?.phone1,
             "",
           ),
@@ -94,7 +93,7 @@ export const CompanyInfoForm = memo(
             companyInfo?.primaryContact?.phone1Extension,
           ),
           phone2: applyWhenNotNullable(
-            getFormattedPhoneNumber,
+            formatPhoneNumber,
             companyInfo?.primaryContact?.phone2,
             "",
           ),

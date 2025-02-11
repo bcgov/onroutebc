@@ -31,6 +31,8 @@ import { DeleteConfirmationDialog } from "../../../../common/components/dialog/D
 import { PowerUnitColumnDefinition, TrailerColumnDefinition } from "./Columns";
 import { SnackBarContext } from "../../../../App";
 import { ERROR_ROUTES, VEHICLES_ROUTES } from "../../../../routes/constants";
+import { DoesUserHaveClaimWithContext } from "../../../../common/authentication/util";
+import { CLAIMS } from "../../../../common/authentication/types";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import {
@@ -56,7 +58,6 @@ import {
   defaultTableInitialStateOptions,
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
-import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
 /**
  * Dynamically set the column definitions based on the vehicle type.
@@ -89,21 +90,11 @@ export const List = memo(
       isPending: vehiclesPending,
     } = query;
 
-    const canEditVehicles = usePermissionMatrix({
-      permissionMatrixKeys: {
-        permissionMatrixFeatureKey: "MANAGE_VEHICLE_INVENTORY",
-        permissionMatrixFunctionKey: "UPDATE_POWER_UNIT",
-      },
-    });
-
-    const canDeleteVehicles = usePermissionMatrix({
-      permissionMatrixKeys: {
-        permissionMatrixFeatureKey: "MANAGE_VEHICLE_INVENTORY",
-        permissionMatrixFunctionKey: "DELETE_POWER_UNIT",
-      },
-    });
+    const canEditDeleteVehicles = Boolean(
+      DoesUserHaveClaimWithContext(CLAIMS.WRITE_VEHICLE),
+    );
     const vehicleActionOptions = [
-      canEditVehicles
+      canEditDeleteVehicles
         ? {
             label: "Edit",
             value: "edit",
@@ -279,10 +270,10 @@ export const List = memo(
       renderEmptyRowsFallback: () => <NoRecordsFound />,
       renderRowActions: useCallback(
         ({ row }: { row: MRT_Row<Vehicle> }) =>
-          canEditVehicles ? (
+          canEditDeleteVehicles ? (
             <OnRouteBCTableRowActions
               onSelectOption={() => {
-                if (!canEditVehicles) return;
+                if (!canEditDeleteVehicles) return;
 
                 if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
                   navigate(
@@ -299,10 +290,10 @@ export const List = memo(
                 }
               }}
               options={vehicleActionOptions}
-              disabled={!canEditVehicles}
+              disabled={!canEditDeleteVehicles}
             />
           ) : null,
-        [canEditVehicles, vehicleActionOptions, vehicleType],
+        [canEditDeleteVehicles, vehicleActionOptions, vehicleType],
       ),
       filterFns: {
         defaultSearchFilter: (row, columnId, filterValue) => {
@@ -356,7 +347,7 @@ export const List = memo(
               />
             </div>
 
-            {canDeleteVehicles ? (
+            {canEditDeleteVehicles ? (
               <DeleteButton
                 onClick={onClickTrashIcon}
                 disabled={hasNoRowsSelected}
@@ -364,7 +355,7 @@ export const List = memo(
             ) : null}
           </Box>
         ),
-        [canDeleteVehicles, hasNoRowsSelected, searchFilterValue],
+        [canEditDeleteVehicles, hasNoRowsSelected, searchFilterValue],
       ),
     });
 

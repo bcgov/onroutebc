@@ -1,5 +1,3 @@
-import { Nullable } from "../../../common/types/common";
-import { PermitApplicationOrigin } from "./PermitApplicationOrigin";
 import { PermitStatus } from "./PermitStatus";
 import { PermitType } from "./PermitType";
 import { PermitsActionResponse } from "./permit";
@@ -20,8 +18,6 @@ export interface CartItem {
   startDate: string;
   expiryDate: string;
   duration: number;
-  totalDistance?: Nullable<number>;
-  permitApplicationOrigin: PermitApplicationOrigin
 };
 
 export interface SelectableCartItem extends CartItem {

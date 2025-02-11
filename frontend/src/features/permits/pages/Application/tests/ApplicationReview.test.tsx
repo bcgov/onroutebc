@@ -5,7 +5,7 @@ import { PermitVehicleDetails } from "../../../types/PermitVehicleDetails";
 import { vehicleTypeDisplayText } from "../../../helpers/mappers";
 import { VehicleType } from "../../../../manageVehicles/types/Vehicle";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
-import { calculatePermitFee } from "../../../helpers/feeSummary";
+import { calculateFeeByDuration } from "../../../helpers/feeSummary";
 import { getPermitTypeName } from "../../../types/PermitType";
 import { getCountryFullName } from "../../../../../common/helpers/countries/getCountryFullName";
 import { getProvinceFullName } from "../../../../../common/helpers/countries/getProvinceFullName";
@@ -35,6 +35,7 @@ import {
   companyNameLabel,
   contactInfoAdditionalEmail,
   contactInfoEmail,
+  contactInfoFax,
   contactInfoHeaderTitle,
   contactInfoName,
   contactInfoPhone1,
@@ -210,6 +211,9 @@ describe("Review and Confirm Application Details", () => {
       expect(await contactInfoAdditionalEmail()).toHaveTextContent(
         `${newAdditionalEmail}`,
       );
+      expect(await contactInfoFax()).toHaveTextContent(
+        `${fullContactInfo.fax}`,
+      );
     });
 
     it("should display proper partial contact info in the permit", async () => {
@@ -227,6 +231,7 @@ describe("Review and Confirm Application Details", () => {
         phone1Extension: undefined,
         phone2: undefined,
         phone2Extension: undefined,
+        fax: undefined,
       };
       const applicationData = {
         ...defaultApplicationData,
@@ -254,6 +259,7 @@ describe("Review and Confirm Application Details", () => {
         `${partialContactInfo.email}`,
       );
       expect(async () => await contactInfoAdditionalEmail()).rejects.toThrow();
+      expect(async () => await contactInfoFax()).rejects.toThrow();
     });
 
     it("should display proper permit details", async () => {
@@ -407,16 +413,13 @@ describe("Review and Confirm Application Details", () => {
       renderTestComponent(defaultApplicationData);
 
       // Assert
-      const feeSummary = `${calculatePermitFee(
+      const feeSummary = `${calculateFeeByDuration(
         defaultApplicationData.permitType,
         defaultApplicationData.permitData.permitDuration,
-        defaultApplicationData.permitData.permittedRoute?.manualRoute?.totalDistance,
       )}`;
-
       const permitTypeStr = getPermitTypeName(
         defaultApplicationData.permitType,
       );
-
       expect(await feeSummaryPermitType()).toHaveTextContent(permitTypeStr);
       expect(await feeSummaryPrice()).toHaveTextContent(`$${feeSummary}.00`);
       expect(await feeSummaryTotal()).toHaveTextContent(`$${feeSummary}.00`);

@@ -9,4 +9,5 @@ export interface PermitContactDetails {
   phone2Extension?: Nullable<string>;
   email: string;
   additionalEmail?: Nullable<string>;
+  fax?: Nullable<string>;
 }

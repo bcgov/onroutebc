@@ -17,7 +17,6 @@ export interface PermitTemplateData {
   loas?: string;
   permitIssueDateTime?: string;
   revisionIssueDateTime?: string;
-  thirdPartyLiability?: string;
 }
 
 interface Revision {
@@ -92,6 +91,7 @@ interface ContactDetails {
   phone2Extension?: string;
   email: string;
   additionalEmail?: string;
+  fax?: string;
 }
 
 interface VehicleDetails {

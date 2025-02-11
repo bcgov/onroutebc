@@ -55,6 +55,7 @@ export const useInitApplicationFormData = (
   const initialFormData = useMemo(() => {
     const eligibleVehicleSubtypes = getEligibleVehicleSubtypes(
       permitType,
+      isLcvDesignated,
       applicationData?.permitData?.permittedCommodity?.commodityType,
       policyEngine,
     );

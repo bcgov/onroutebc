@@ -5,13 +5,14 @@ import "./ManageVehiclesDashboard.scss";
 import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
 import { AddVehicleButton } from "./AddVehicleButton";
 import { List } from "../list/List";
+import { DoesUserHaveClaimWithContext } from "../../../../common/authentication/util";
+import { CLAIMS } from "../../../../common/authentication/types";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import { applyWhenNotNullable } from "../../../../common/helpers/util";
 import { VEHICLES_DASHBOARD_TABS } from "../../../../routes/constants";
 import { VEHICLE_TYPES } from "../../types/Vehicle";
 import { usePowerUnitsQuery } from "../../hooks/powerUnits";
 import { useTrailersQuery } from "../../hooks/trailers";
-import { RenderIf } from "../../../../common/components/reusable/RenderIf";
 
 /**
  * Returns the selected tab index (if there is one)
@@ -35,11 +36,11 @@ const useTabIndexFromURL = (): number => {
  */
 export const ManageVehiclesDashboard = memo(() => {
   const companyId: number = applyWhenNotNullable(
-    (id) => Number(id),
+    id => Number(id),
     getCompanyIdFromSession(),
     0,
   );
-
+  
   const staleTime = 5000;
   const powerUnitsQuery = usePowerUnitsQuery(companyId, staleTime);
   const trailersQuery = useTrailersQuery(companyId, staleTime);
@@ -72,13 +73,9 @@ export const ManageVehiclesDashboard = memo(() => {
       bannerText="Vehicle Inventory"
       selectedTabIndex={useTabIndexFromURL()}
       bannerButton={
-        <RenderIf
-          component={<AddVehicleButton />}
-          permissionMatrixKeys={{
-            permissionMatrixFeatureKey: "MANAGE_VEHICLE_INVENTORY",
-            permissionMatrixFunctionKey: "ADD_VEHICLE",
-          }}
-        />
+        DoesUserHaveClaimWithContext(CLAIMS.WRITE_VEHICLE) ? (
+          <AddVehicleButton />
+        ) : undefined
       }
       componentList={tabs}
     />

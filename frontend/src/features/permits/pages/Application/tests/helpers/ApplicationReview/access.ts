@@ -91,6 +91,10 @@ export const contactInfoAdditionalEmail = async () => {
   return await screen.findByTestId("review-contact-details-additional-email");
 };
 
+export const contactInfoFax = async () => {
+  return await screen.findByTestId("review-contact-details-fax");
+};
+
 export const permitStartDate = async () => {
   return await screen.findByTestId("permit-start-date");
 };

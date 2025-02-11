@@ -4,14 +4,13 @@ import isEmail from "validator/lib/isEmail";
 import "./UserInformationWizardForm.scss";
 import { CustomFormComponent } from "../../../common/components/form/CustomFormComponents";
 import { CountryAndProvince } from "../../../common/components/form/CountryAndProvince";
-import { validatePhoneNumber } from "../../../common/helpers/phone/validatePhoneNumber";
-import { validatePhoneExtension } from "../../../common/helpers/phone/validatePhoneExtension";
-import { validateOptionalPhoneNumber } from "../../../common/helpers/phone/validateOptionalPhoneNumber";
 import {
   invalidCityLength,
   invalidEmail,
+  invalidExtensionLength,
   invalidFirstNameLength,
   invalidLastNameLength,
+  invalidPhoneLength,
   requiredMessage,
 } from "../../../common/helpers/validationMessages";
 
@@ -43,7 +42,6 @@ export const UserInformationWizardForm = memo(() => {
         }}
         className="user-info-wizard-form__input"
       />
-
       <CustomFormComponent
         type="input"
         feature={FEATURE}
@@ -61,7 +59,6 @@ export const UserInformationWizardForm = memo(() => {
         }}
         className="user-info-wizard-form__input"
       />
-
       <CustomFormComponent
         type="input"
         feature={FEATURE}
@@ -91,14 +88,15 @@ export const UserInformationWizardForm = memo(() => {
                 message: requiredMessage(),
               },
               validate: {
-                validatePhone1: (phone: string) => validatePhoneNumber(phone),
+                validatePhone1: (phone: string) =>
+                  (phone.length >= 10 && phone.length <= 20) ||
+                  invalidPhoneLength(10, 20),
               },
             },
             label: "Primary Phone",
           }}
           className="user-info-wizard-form__input user-info-wizard-form__input--left"
         />
-
         <CustomFormComponent
           type="ext"
           feature={FEATURE}
@@ -108,7 +106,10 @@ export const UserInformationWizardForm = memo(() => {
               required: false,
               validate: {
                 validateExt1: (ext?: string) =>
-                  validatePhoneExtension(ext),
+                  ext == null ||
+                  ext === "" ||
+                  (ext != null && ext !== "" && ext.length <= 5) ||
+                  invalidExtensionLength(5),
               },
             },
             label: "Ext",
@@ -116,7 +117,6 @@ export const UserInformationWizardForm = memo(() => {
           className="user-info-wizard-form__input user-info-wizard-form__input--right"
         />
       </div>
-
       <div className="side-by-side-inputs">
         <CustomFormComponent
           type="phone"
@@ -126,14 +126,20 @@ export const UserInformationWizardForm = memo(() => {
             rules: {
               required: false,
               validate: {
-                validatePhone2: (phone?: string) => validateOptionalPhoneNumber(phone),
+                validatePhone2: (phone2?: string) =>
+                  phone2 == null ||
+                  phone2 === "" ||
+                  (phone2 != null &&
+                    phone2 !== "" &&
+                    phone2.length >= 10 &&
+                    phone2.length <= 20) ||
+                  invalidPhoneLength(10, 20),
               },
             },
             label: "Alternate Phone",
           }}
           className="user-info-wizard-form__input user-info-wizard-form__input--left"
         />
-
         <CustomFormComponent
           type="ext"
           feature={FEATURE}
@@ -143,7 +149,10 @@ export const UserInformationWizardForm = memo(() => {
               required: false,
               validate: {
                 validateExt2: (ext?: string) =>
-                  validatePhoneExtension(ext),
+                  ext == null ||
+                  ext === "" ||
+                  (ext != null && ext !== "" && ext.length <= 5) ||
+                  invalidExtensionLength(5),
               },
             },
             label: "Ext",
@@ -151,7 +160,28 @@ export const UserInformationWizardForm = memo(() => {
           className="user-info-wizard-form__input user-info-wizard-form__input--right"
         />
       </div>
-
+      <CustomFormComponent
+        type="phone"
+        feature={FEATURE}
+        options={{
+          name: "adminUser.fax",
+          rules: {
+            required: false,
+            validate: {
+              validateFax: (fax?: string) =>
+                fax == null ||
+                fax === "" ||
+                (fax != null &&
+                  fax !== "" &&
+                  fax.length >= 10 &&
+                  fax.length <= 20) ||
+                invalidPhoneLength(10, 20),
+            },
+          },
+          label: "Fax",
+        }}
+        className="user-info-wizard-form__input user-info-wizard-form__input--left"
+      />
       <CountryAndProvince
         feature={FEATURE}
         countryField="adminUser.countryCode"
@@ -161,7 +191,6 @@ export const UserInformationWizardForm = memo(() => {
         isProvinceRequired={true}
         provinceClassName="user-info-wizard-form__input"
       />
-
       <CustomFormComponent
         type="input"
         feature={FEATURE}

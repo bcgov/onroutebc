@@ -71,6 +71,13 @@ export class Contact extends Base {
   extension2: string;
 
   /**
+   * Fax number of the contact person.
+   */
+  @AutoMap()
+  @Column({ length: 20, name: 'FAX', nullable: true })
+  fax: string;
+
+  /**
    * City name of the contact person.
    */
   @AutoMap()

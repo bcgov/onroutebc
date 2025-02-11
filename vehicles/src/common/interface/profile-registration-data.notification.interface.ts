@@ -9,6 +9,7 @@ export interface ProfileRegistrationDataNotification {
   companyPostalCode: string;
   companyEmail: string;
   companyPhoneNumber: string;
+  companyFaxNumber?: string;
   primaryContactFirstname: string;
   primaryContactLastname: string;
   primaryContactEmail: string;

@@ -5,10 +5,12 @@ import "./ContactDetails.scss";
 import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
 import { BANNER_MESSAGES } from "../../../../common/constants/bannerMessages";
-import { invalidEmail, requiredMessage } from "../../../../common/helpers/validationMessages";
-import { validatePhoneNumber } from "../../../../common/helpers/phone/validatePhoneNumber";
-import { validatePhoneExtension } from "../../../../common/helpers/phone/validatePhoneExtension";
-import { validateOptionalPhoneNumber } from "../../../../common/helpers/phone/validateOptionalPhoneNumber";
+import {
+  invalidEmail,
+  invalidExtensionLength,
+  invalidPhoneLength,
+  requiredMessage,
+} from "../../../../common/helpers/validationMessages";
 
 export const ContactDetails = ({ feature }: { feature: string }) => {
   return (
@@ -54,7 +56,9 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
               rules: {
                 required: { value: true, message: requiredMessage() },
                 validate: {
-                  validatePhone1: (phone: string) => validatePhoneNumber(phone),
+                  validatePhone: (phone: string) =>
+                    (phone.length >= 10 && phone.length <= 20) ||
+                    invalidPhoneLength(10, 20),
                 },
               },
 
@@ -72,7 +76,10 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
                 required: false,
                 validate: {
                   validateExt1: (ext?: string) =>
-                    validatePhoneExtension(ext),
+                    !ext ||
+                    ext.length === 0 ||
+                    ext.length <= 5 ||
+                    invalidExtensionLength(5),
                 },
               },
               label: "Ext",
@@ -90,7 +97,11 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
               rules: {
                 required: false,
                 validate: {
-                  validatePhone2: (phone?: string) => validateOptionalPhoneNumber(phone),
+                  validatePhone: (phone?: string) =>
+                    !phone ||
+                    phone.length === 0 ||
+                    (phone.length >= 10 && phone.length <= 20) ||
+                    invalidPhoneLength(10, 20),
                 },
               },
               label: "Alternate Number",
@@ -107,7 +118,10 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
                 required: false,
                 validate: {
                   validateExt2: (ext?: string) =>
-                    validatePhoneExtension(ext),
+                    !ext ||
+                    ext.length === 0 ||
+                    ext.length <= 5 ||
+                    invalidExtensionLength(5),
                 },
               },
               label: "Ext",
@@ -156,6 +170,17 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
               },
             },
             label: "Additional Email",
+          }}
+        />
+
+        <CustomFormComponent
+          className="contact-details-form__input contact-details-form__input--fax"
+          type="phone"
+          feature={feature}
+          options={{
+            name: "permitData.contactDetails.fax",
+            rules: { required: false },
+            label: "Fax",
           }}
         />
       </Box>

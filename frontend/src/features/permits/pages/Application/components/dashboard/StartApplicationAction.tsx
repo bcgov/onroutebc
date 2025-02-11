@@ -16,7 +16,6 @@ import {
 
 import {
   EMPTY_PERMIT_TYPE_SELECT,
-  PERMIT_TYPES,
   PermitType,
   getFormattedPermitTypeName,
 } from "../../../../types/PermitType";
@@ -31,7 +30,6 @@ export const StartApplicationAction = () => {
 
   const { data: featureFlags } = useFeatureFlagsQuery();
   const enableSTOS = featureFlags?.["STOS"] === "ENABLED";
-  const enableMFP = featureFlags?.["MFP"] === "ENABLED";
 
   const handleChooseFrom = (
     _event: React.MouseEvent<HTMLElement>,
@@ -53,7 +51,6 @@ export const StartApplicationAction = () => {
   // Update the structure of menuItems to ensure the callback is applied correctly
   const menuItems = ALL_PERMIT_TYPE_CHOOSE_FROM_OPTIONS
     .filter(option => enableSTOS ? true : option.value !== PERMIT_CATEGORIES.SINGLE_TRIP)
-    .filter(option => enableMFP ? true : option.value !== PERMIT_TYPES.MFP)
     .map(
       (item: PermitTypeChooseFromItem) => ({
         ...item,

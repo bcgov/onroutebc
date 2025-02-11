@@ -10,11 +10,6 @@ import {
 } from '../interface/permit.template.interface';
 import { FullNamesForDgen } from '../interface/full-names-for-dgen.interface';
 import { formatAmount } from './payment.helper';
-import { ThirdPartyLiability } from '../enum/third-party-liability.enum';
-import {
-  THIRD_PARTY_LIABILITY_DANGEROUS_GOODS,
-  THIRD_PARTY_LIABILITY_GENERAL_GOODS,
-} from '../constants/api.constant';
 
 /**
  * Formats the permit data so that it can be used in the templated word documents
@@ -45,7 +40,6 @@ export const formatTemplateData = (
     loas: '',
     permitIssueDateTime: '',
     revisionIssueDateTime: '',
-    thirdPartyLiability: '',
   };
 
   template.permitData = JSON.parse(permit.permitData.permitData) as PermitData;
@@ -136,17 +130,6 @@ export const formatTemplateData = (
       }
     }
   });
-
-  switch (template?.permitData?.thirdPartyLiability) {
-    case ThirdPartyLiability.DANGEROUS_GOODS:
-      template.thirdPartyLiability = THIRD_PARTY_LIABILITY_DANGEROUS_GOODS;
-      break;
-    case ThirdPartyLiability.GENERAL_GOODS:
-      template.thirdPartyLiability = THIRD_PARTY_LIABILITY_GENERAL_GOODS;
-      break;
-    default:
-      template.thirdPartyLiability = '';
-  }
 
   template.loas = template?.permitData?.loas
     ?.filter((item) => item.checked)

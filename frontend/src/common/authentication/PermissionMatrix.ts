@@ -36,7 +36,7 @@ const MANAGE_VEHICLE_INVENTORY = {
     allowedIDIRRoles: [PC, SA, CTPO],
   },
   ADD_VEHICLE: {
-    allowedBCeIDRoles: ALL_BCeID_ROLES,
+    allowedBCeIDRoles: [CA, PA],
     allowedIDIRRoles: [PC, SA, CTPO],
   },
   /**
@@ -47,11 +47,11 @@ const MANAGE_VEHICLE_INVENTORY = {
     allowedIDIRRoles: [PC, SA, CTPO],
   },
   UPDATE_POWER_UNIT: {
-    allowedBCeIDRoles: ALL_BCeID_ROLES,
+    allowedBCeIDRoles: [CA, PA],
     allowedIDIRRoles: [PC, SA, CTPO],
   },
   DELETE_POWER_UNIT: {
-    allowedBCeIDRoles: ALL_BCeID_ROLES,
+    allowedBCeIDRoles: [CA, PA],
     allowedIDIRRoles: [PC, SA, CTPO],
   },
   /**
@@ -62,11 +62,11 @@ const MANAGE_VEHICLE_INVENTORY = {
     allowedIDIRRoles: [PC, SA, CTPO],
   },
   UPDATE_TRAILER: {
-    allowedBCeIDRoles: ALL_BCeID_ROLES,
+    allowedBCeIDRoles: [CA, PA],
     allowedIDIRRoles: [PC, SA, CTPO],
   },
   DELETE_TRAILER: {
-    allowedBCeIDRoles: ALL_BCeID_ROLES,
+    allowedBCeIDRoles: [CA, PA],
     allowedIDIRRoles: [PC, SA, CTPO],
   },
   /**
@@ -432,13 +432,6 @@ const MISCELLANEOUS = {
   // Add this in permissions matrix document.
   STAFF_ACT_AS_COMPANY: {
     allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
-  },
-
-  /**
-   * Bridge Formula Calculation Tool available from Sidebar
-   */
-  BRIDGE_FORMULA_CALCULATION_TOOL: {
-    allowedIDIRRoles: [HQA, SA, PC, CTPO, EO],
   },
 } as const;
 

@@ -46,6 +46,7 @@ export const useAmendPermitForm = (
     if (amendmentApplication) {
       const eligibleSubtypes = getEligibleVehicleSubtypes(
         amendmentApplication.permitType,
+        isLcvDesignated,
         amendmentApplication.permitData.permittedCommodity?.commodityType,
         policyEngine,
       );
@@ -79,6 +80,7 @@ export const useAmendPermitForm = (
 
     const eligibleSubtypes = getEligibleVehicleSubtypes(
       defaultPermitFormData.permitType,
+      isLcvDesignated,
       defaultPermitFormData.permitData.permittedCommodity?.commodityType,
       policyEngine,
     );

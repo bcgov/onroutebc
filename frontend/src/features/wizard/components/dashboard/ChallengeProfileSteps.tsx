@@ -61,6 +61,7 @@ export const ChallengeProfileSteps = React.memo(() => {
       phone1Extension: "",
       phone2: "",
       phone2Extension: "",
+      fax: "",
       countryCode: "",
       provinceCode: "",
       city: "",
@@ -135,6 +136,7 @@ export const ChallengeProfileSteps = React.memo(() => {
           },
           phone: getDefaultRequiredVal("", verifiedClient?.phone),
           extension: getDefaultRequiredVal("", verifiedClient?.extension),
+          fax: getDefaultRequiredVal("", verifiedClient?.fax),
           primaryContact: {
             firstName: getDefaultRequiredVal(
               "",

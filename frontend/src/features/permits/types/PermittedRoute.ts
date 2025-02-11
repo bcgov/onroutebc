@@ -1,6 +1,6 @@
 import { Nullable } from "../../../common/types/common";
 
-export interface ManualRoute {
+interface ManualRoute {
   highwaySequence: string[];
   origin: string;
   destination: string;

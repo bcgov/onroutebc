@@ -135,7 +135,7 @@ export const ShoppingCart = ({
           />
         )) : (
           <div className="shopping-cart__empty">
-            Cart is empty.
+            Nothing found.
           </div>
         )}
       </div>

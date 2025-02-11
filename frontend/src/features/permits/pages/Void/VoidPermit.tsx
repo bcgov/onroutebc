@@ -58,6 +58,7 @@ export const VoidPermit = () => {
     revoke: false,
     email: permit?.permitData?.contactDetails?.email,
     additionalEmail: permit?.permitData?.contactDetails?.additionalEmail,
+    fax: permit?.permitData?.contactDetails?.fax,
   });
 
   useEffect(() => {
@@ -65,10 +66,12 @@ export const VoidPermit = () => {
       ...voidPermitData,
       email: permit?.permitData?.contactDetails?.email,
       additionalEmail: permit?.permitData?.contactDetails?.additionalEmail,
+      fax: permit?.permitData?.contactDetails?.fax,
     });
   }, [
     permit?.permitData?.contactDetails?.email,
     permit?.permitData?.contactDetails?.additionalEmail,
+    permit?.permitData?.contactDetails?.fax,
   ]);
 
   const getBasePermitNumber = () => {

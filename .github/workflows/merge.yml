@@ -28,9 +28,9 @@ jobs:
     steps:
       # Get PR number for squash merges to main
       - name: Get PR Number From Event
-        if: github.event_name == 'push'
+        if: ${{ github.event_name == 'push' }}
         id: pr_no
-        uses: bcgov/action-get-pr@v0.0.1
+        uses: bcgov-nr/action-get-pr@v0.0.1
       - name: PR Number
         id: pr
         run: echo pr=${{ steps.pr_no.outputs.pr || inputs.pr}} >> $GITHUB_OUTPUT
@@ -42,9 +42,6 @@ jobs:
     secrets: inherit
     with:
       tag: ${{ needs.vars.outputs.pr }}
-      params: |
-        --set-string global.env.pr_num='${{ needs.vars.outputs.pr }}' \
-        --set-string global.env.release_num='${{ needs.vars.outputs.pr }}' \
 
   promote-images-test:
     name: Promote Images - Test

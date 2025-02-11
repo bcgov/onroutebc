@@ -1,6 +1,12 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { ArrayMinSize, IsEmail, IsEnum } from 'class-validator';
+import {
+  ArrayMinSize,
+  IsEmail,
+  IsEnum,
+  IsNumberString,
+  IsOptional,
+} from 'class-validator';
 import { NotificationType } from '../../../../common/enum/notification-type.enum';
 
 export class CreateNotificationDto {
@@ -13,6 +19,17 @@ export class CreateNotificationDto {
   })
   @ArrayMinSize(1)
   to: string[];
+
+  @ApiProperty({
+    description: 'Notification fax numbers.',
+    example: ['9999999999', '8888888888'],
+  })
+  @IsOptional()
+  @IsNumberString(undefined, {
+    each: true,
+  })
+  @ArrayMinSize(1)
+  fax?: string[];
 
   @AutoMap()
   @ApiProperty({

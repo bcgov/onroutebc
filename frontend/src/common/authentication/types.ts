@@ -29,6 +29,7 @@ export type PartialCompanyProfile = {
   };
   email: string;
   phone: string;
+  fax?: Nullable<string>;
   extension?: Nullable<string>;
   primaryContact?: Nullable<Contact>;
 };
@@ -54,6 +55,7 @@ export type BCeIDUserContextType = {
     lastName?: string;
     phone1?: string;
     phone2?: string;
+    fax?: string;
     email?: string;
     city?: string;
     provinceCode?: string;

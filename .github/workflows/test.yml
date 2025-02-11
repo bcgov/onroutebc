@@ -9,11 +9,6 @@ on:
         required: false
         type: string
         default: "test"
-      params:
-        description: 'Extra parameters to pass to helm upgrade'
-        default: ''
-        required: false
-        type: string
   workflow_call:
     inputs:
       tag:
@@ -21,11 +16,6 @@ on:
         required: false
         type: string
         default: "test"
-      params:
-        description: 'Extra parameters to pass to helm upgrade'
-        default: ''
-        required: false
-        type: string
   
 jobs:
   deploy-test:
@@ -33,7 +23,7 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
-      autoscaling: false
+      autoscaling: true
       environment: test
       release: test
       tag: ${{ inputs.tag }}
@@ -42,4 +32,4 @@ jobs:
         --set-string global.zone='test' \
         --set-string global.vault.role='nonprod' \
         --set-string global.vault.zone='test' \
-        ${{ inputs.params }} \
+        --set-string global.pr_num='${{ inputs.tag }}' \

@@ -2,7 +2,6 @@ import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { ApplicationStatus } from '../../../../common/enum/application-status.enum';
 import { PermitType } from '../../../../common/enum/permit-type.enum';
-import { PermitApplicationOrigin } from '../../../../common/enum/permit-application-origin.enum';
 
 export class ReadShoppingCartDto {
   @AutoMap()
@@ -88,18 +87,4 @@ export class ReadShoppingCartDto {
     example: 30,
   })
   duration: number;
-
-  @ApiProperty({
-    description: 'The total distance',
-    example: 30,
-  })
-  totalDistance?: number;
-
-  @AutoMap()
-  @ApiProperty({
-    enum: PermitApplicationOrigin,
-    example: PermitApplicationOrigin.ONLINE,
-    description: 'Unique identifier for the application origin.',
-  })
-  permitApplicationOrigin: PermitApplicationOrigin;
 }

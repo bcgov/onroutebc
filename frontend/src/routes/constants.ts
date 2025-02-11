@@ -71,7 +71,10 @@ const PERMITS_ROUTE_BASE = "/permits";
 export const PERMITS_ROUTES = {
   BASE: PERMITS_ROUTE_BASE,
   SUCCESS: `${PERMITS_ROUTE_BASE}/success`,
-  VOID: (companyId?: Nullable<number | string>, permitId?: Nullable<string>) =>
+  VOID: (
+    companyId?: Nullable<number | string>,
+    permitId?: Nullable<string>,
+  ) =>
     `${DYNAMIC_ROUTE_URI(
       "/companies",
       ROUTE_PLACEHOLDERS.COMPANY_ID,
@@ -81,7 +84,10 @@ export const PERMITS_ROUTES = {
       ROUTE_PLACEHOLDERS.PERMIT_ID,
       permitId,
     )}/void`,
-  AMEND: (companyId?: Nullable<number | string>, permitId?: Nullable<string>) =>
+  AMEND: (
+    companyId?: Nullable<number | string>,
+    permitId?: Nullable<string>,
+  ) =>
     `${DYNAMIC_ROUTE_URI(
       "/companies",
       ROUTE_PLACEHOLDERS.COMPANY_ID,
@@ -154,7 +160,10 @@ export const APPLICATION_QUEUE_ROUTES = {
       ROUTE_PLACEHOLDERS.PERMIT_ID,
       permitId,
     )}/review`,
-  EDIT: (companyId?: Nullable<number | string>, permitId?: Nullable<string>) =>
+  EDIT: (
+    companyId?: Nullable<number | string>,
+    permitId?: Nullable<string>,
+  ) =>
     `${DYNAMIC_ROUTE_URI(
       "/companies",
       ROUTE_PLACEHOLDERS.COMPANY_ID,
@@ -190,7 +199,6 @@ export const IDIR_ROUTES = {
   REPORTS: `${IDIR_ROUTE_BASE}/reports`,
   CREATE_COMPANY: `${IDIR_ROUTE_BASE}/create-company`,
   STAFF_HOME: `${IDIR_ROUTE_BASE}/home`,
-  BRIDGE_FORMULA_CALCULATION_TOOL: `${IDIR_ROUTE_BASE}/bridge-formula-calculation-tool`,
 };
 
 // Payment
@@ -221,5 +229,6 @@ export const ONROUTE_WEBPAGE_LINKS = {
     "https://www2.gov.bc.ca/gov/content/governments/organizational-structure/ministries-organizations/ministries/citizens-services/servicebc#locations",
   LIST_OF_BC_HIGHWAYS:
     "https://www2.gov.bc.ca/gov/content/transportation/transportation-reports-and-reference/reference-information/numbered-routes",
-  HEIGHT_CLEARANCE_TOOL: "https://www.drivebc.ca/cvrp/?c=hct",
+  HEIGHT_CLEARANCE_TOOL:
+    "https://www.drivebc.ca/cvrp/?c=hct",
 };

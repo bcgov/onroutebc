@@ -12,32 +12,25 @@ import { Application } from "../../../types/application";
 import { useCompanyInfoDetailsQuery } from "../../../../manageProfile/apiManager/hooks";
 import { Breadcrumb } from "../../../../../common/components/breadcrumb/Breadcrumb";
 import { ApplicationFormContext } from "../../../context/ApplicationFormContext";
-import {
-  isNull,
-  isUndefined,
-  Nullable,
-} from "../../../../../common/types/common";
+import { isNull, isUndefined, Nullable } from "../../../../../common/types/common";
 import { ERROR_ROUTES } from "../../../../../routes/constants";
-import {
-  applyWhenNotNullable,
-  getDefaultRequiredVal,
-} from "../../../../../common/helpers/util";
+import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { PermitVehicleDetails } from "../../../types/PermitVehicleDetails";
 import { getDatetimes } from "./helpers/getDatetimes";
 import { PAST_START_DATE_STATUSES } from "../../../../../common/components/form/subFormComponents/CustomDatePicker";
 import { useFetchLOAs } from "../../../../settings/hooks/LOA";
 import { useFetchSpecialAuthorizations } from "../../../../settings/hooks/specialAuthorizations";
-import {
-  filterLOAsForPermitType,
-  filterNonExpiredLOAs,
-} from "../../../helpers/permitLOA";
+import { filterLOAsForPermitType, filterNonExpiredLOAs } from "../../../helpers/permitLOA";
 import { usePolicyEngine } from "../../../../policy/hooks/usePolicyEngine";
 import { Loading } from "../../../../../common/pages/Loading";
 import { serializePermitVehicleDetails } from "../../../helpers/serialize/serializePermitVehicleDetails";
 import { serializeForUpdateApplication } from "../../../helpers/serialize/serializeApplication";
 import { requiredPowerUnit } from "../../../../../common/helpers/validationMessages";
 import { PERMIT_TYPES } from "../../../types/PermitType";
-import { dayjsToUtcStr, now } from "../../../../../common/helpers/formatDate";
+import {
+  dayjsToUtcStr,
+  now,
+} from "../../../../../common/helpers/formatDate";
 
 import {
   useAmendPermit,
@@ -48,7 +41,6 @@ import {
   durationOptionsForPermitType,
   minDurationForPermitType,
 } from "../../../helpers/dateSelection";
-import OnRouteBCContext from "../../../../../common/authentication/OnRouteBCContext";
 
 const FEATURE = "amend-permit";
 
@@ -65,26 +57,17 @@ export const AmendPermitForm = () => {
   } = useContext(AmendPermitContext);
 
   const { companyId: companyIdParam } = useParams();
-  const companyId: number = applyWhenNotNullable(
-    (id) => Number(id),
-    companyIdParam,
-    0,
-  );
+  const companyId: number = applyWhenNotNullable(id => Number(id), companyIdParam, 0);
   const navigate = useNavigate();
 
   const { data: activeLOAs } = useFetchLOAs(companyId, false);
-  const companyLOAs = useMemo(
-    () => getDefaultRequiredVal([], activeLOAs),
-    [activeLOAs],
-  );
-
-  const { idirUserDetails } = useContext(OnRouteBCContext);
-
-  const isStaffUser = Boolean(idirUserDetails?.userRole);
+  const companyLOAs = useMemo(() => getDefaultRequiredVal(
+    [],
+    activeLOAs,
+  ), [activeLOAs]);
 
   const { data: companyInfo } = useCompanyInfoDetailsQuery(companyId);
-  const { data: specialAuthorizations } =
-    useFetchSpecialAuthorizations(companyId);
+  const { data: specialAuthorizations } = useFetchSpecialAuthorizations(companyId);
   const isLcvDesignated = Boolean(specialAuthorizations?.isLcvAllowed);
 
   const {
@@ -94,9 +77,13 @@ export const AmendPermitForm = () => {
     trailerSubtypeNamesMap,
   } = usePermitVehicleManagement(companyId);
 
-  const policyEngine = usePolicyEngine(specialAuthorizations);
+  const policyEngine = usePolicyEngine();
 
-  const { initialFormData, formData, formMethods } = useAmendPermitForm({
+  const {
+    initialFormData,
+    formData,
+    formMethods,
+  } = useAmendPermitForm({
     repopulateFormData: currentStepIndex === 0,
     isLcvDesignated,
     companyLOAs,
@@ -116,26 +103,26 @@ export const AmendPermitForm = () => {
   // 1. Applicable for the current permit type
   // 2. Have expiry date that is on or after the start date for an application
   const applicableLOAs = filterNonExpiredLOAs(
-    filterLOAsForPermitType(companyLOAs, formData.permitType),
+    filterLOAsForPermitType(
+      companyLOAs,
+      formData.permitType,
+    ),
     formData.permitData.startDate,
   );
-
+  
   const { mutateAsync: createAmendment } = useAmendPermit(companyId);
   const { mutateAsync: modifyAmendment } = useModifyAmendmentApplication();
   const snackBar = useContext(SnackBarContext);
 
   const { handleSubmit } = formMethods;
 
-  const [policyViolations, setPolicyViolations] = useState<
-    Record<string, string>
-  >({});
+  const [policyViolations, setPolicyViolations] = useState<Record<string, string>>({});
 
   const clearViolation = (fieldReference: string) => {
     if (fieldReference in policyViolations) {
-      const otherViolations = Object.entries(policyViolations).filter(
-        ([fieldRef]) => fieldRef !== fieldReference,
-      );
-
+      const otherViolations = Object.entries(policyViolations)
+        .filter(([fieldRef]) => fieldRef !== fieldReference);
+      
       setPolicyViolations(Object.fromEntries(otherViolations));
     }
   };
@@ -149,27 +136,16 @@ export const AmendPermitForm = () => {
       [],
       validationResults?.violations
         .filter(({ fieldReference }) => Boolean(fieldReference))
-        .map((violation) => ({
+        .map(violation => ({
           fieldReference: violation.fieldReference as string,
           message: violation.message,
         })),
-    ).concat(
-      formData.permitType === PERMIT_TYPES.STOS &&
-        !formData.permitData.vehicleDetails.vin
-        ? [
-            {
-              fieldReference: "permitData.vehicleDetails",
-              message: requiredPowerUnit(),
-            },
-          ]
-        : [],
-    );
+    ).concat(formData.permitType === PERMIT_TYPES.STOS && !formData.permitData.vehicleDetails.vin ? [
+      { fieldReference: "permitData.vehicleDetails", message: requiredPowerUnit() },
+    ] : []);
 
     const updatedViolations = Object.fromEntries(
-      violations.map(({ fieldReference, message }) => [
-        fieldReference,
-        message,
-      ]),
+      violations.map(({ fieldReference, message }) => [fieldReference, message]),
     );
 
     setPolicyViolations(updatedViolations);
@@ -179,14 +155,11 @@ export const AmendPermitForm = () => {
   // When "Continue" button is clicked
   const onContinue = async (data: FieldValues) => {
     const updatedViolations = await triggerPolicyValidation();
-    // prevent CV client continuing if there are policy engine validation errors
-    if (Object.keys(updatedViolations).length > 0 && !isStaffUser) {
+    if (Object.keys(updatedViolations).length > 0) {
       return;
     }
 
-    const vehicleData = serializePermitVehicleDetails(
-      data.permitData.vehicleDetails,
-    );
+    const vehicleData = serializePermitVehicleDetails(data.permitData.vehicleDetails);
     const savedVehicle = await handleSaveVehicle(vehicleData);
 
     // Save application before continuing
@@ -234,7 +207,10 @@ export const AmendPermitForm = () => {
 
     const response = shouldUpdateApplication
       ? await modifyAmendment({
-          applicationId: getDefaultRequiredVal("", permitToBeAmended.permitId),
+          applicationId: getDefaultRequiredVal(
+            "",
+            permitToBeAmended.permitId,
+          ),
           application: permitToBeAmended,
           companyId,
         })
@@ -265,57 +241,54 @@ export const AmendPermitForm = () => {
     permit?.permitData?.permitDuration,
   );
 
-  const durationOptions = durationOptionsForPermitType(
-    formData.permitType,
-  ).filter((duration) => duration.value <= permitOldDuration);
-
-  const applicationFormContextData = useMemo(
-    () => ({
-      initialFormData,
-      formData,
-      policyEngine,
-      durationOptions,
-      allVehiclesFromInventory,
-      powerUnitSubtypeNamesMap,
-      trailerSubtypeNamesMap,
-      isLcvDesignated,
-      feature: FEATURE,
-      companyInfo,
-      isAmendAction: true,
-      createdDateTime,
-      updatedDateTime,
-      pastStartDateStatus: PAST_START_DATE_STATUSES.WARNING,
-      companyLOAs: applicableLOAs,
-      revisionHistory,
-      policyViolations,
-      onLeave: undefined,
-      onSave: undefined,
-      onCancel: goHome,
-      onContinue: handleSubmit(onContinue),
-      triggerPolicyValidation,
-      clearViolation,
-    }),
-    [
-      initialFormData,
-      formData,
-      policyEngine,
-      durationOptions,
-      allVehiclesFromInventory,
-      powerUnitSubtypeNamesMap,
-      trailerSubtypeNamesMap,
-      isLcvDesignated,
-      companyInfo,
-      createdDateTime,
-      updatedDateTime,
-      applicableLOAs,
-      revisionHistory,
-      policyViolations,
-      goHome,
-      onContinue,
-      triggerPolicyValidation,
-      clearViolation,
-    ],
+  const durationOptions = durationOptionsForPermitType(formData.permitType).filter(
+    (duration) => duration.value <= permitOldDuration,
   );
+
+  const applicationFormContextData = useMemo(() => ({
+    initialFormData,
+    formData,
+    policyEngine,
+    durationOptions,
+    allVehiclesFromInventory,
+    powerUnitSubtypeNamesMap,
+    trailerSubtypeNamesMap,
+    isLcvDesignated,
+    feature: FEATURE,
+    companyInfo,
+    isAmendAction: true,
+    createdDateTime,
+    updatedDateTime,
+    pastStartDateStatus: PAST_START_DATE_STATUSES.WARNING,
+    companyLOAs: applicableLOAs,
+    revisionHistory,
+    policyViolations,
+    onLeave: undefined,
+    onSave: undefined,
+    onCancel: goHome,
+    onContinue: handleSubmit(onContinue),
+    triggerPolicyValidation,
+    clearViolation,
+  }), [
+    initialFormData,
+    formData,
+    policyEngine,
+    durationOptions,
+    allVehiclesFromInventory,
+    powerUnitSubtypeNamesMap,
+    trailerSubtypeNamesMap,
+    isLcvDesignated,
+    companyInfo,
+    createdDateTime,
+    updatedDateTime,
+    applicableLOAs,
+    revisionHistory,
+    policyViolations,
+    goHome,
+    onContinue,
+    triggerPolicyValidation,
+    clearViolation,
+  ]);
 
   if (isUndefined(policyEngine)) return <Loading />;
   if (isNull(policyEngine)) return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
@@ -325,7 +298,9 @@ export const AmendPermitForm = () => {
       <Breadcrumb links={getLinks()} />
 
       <FormProvider {...formMethods}>
-        <ApplicationFormContext.Provider value={applicationFormContextData}>
+        <ApplicationFormContext.Provider
+          value={applicationFormContextData}
+        >
           <PermitForm />
         </ApplicationFormContext.Provider>
       </FormProvider>

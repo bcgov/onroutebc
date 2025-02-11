@@ -257,6 +257,7 @@ export class CompanyService {
         companyPostalCode: readCompanyUserDto.mailingAddress.postalCode,
         companyEmail: readCompanyUserDto.email,
         companyPhoneNumber: readCompanyUserDto.phone,
+        companyFaxNumber: readCompanyUserDto.fax,
         primaryContactFirstname: readCompanyUserDto.primaryContact.firstName,
         primaryContactLastname: readCompanyUserDto.primaryContact.lastName,
         primaryContactEmail: readCompanyUserDto.primaryContact.email,

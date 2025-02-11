@@ -5,7 +5,7 @@ import { useFetchCart, useRemoveFromCart } from "../../../hooks/cart";
 import { SelectableCartItem } from "../../../types/CartItem";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { useFetchSpecialAuthorizations } from "../../../../settings/hooks/specialAuthorizations";
-import { calculatePermitFee } from "../../../helpers/feeSummary";
+import { calculateFeeByDuration } from "../../../helpers/feeSummary";
 
 export const useShoppingCart = (
   companyId: number,
@@ -49,11 +49,7 @@ export const useShoppingCart = (
         isSelectable: true, // add user permission check (ie. CA can't select staff cart items)
         fee: isNoFeePermitType
           ? 0
-          : calculatePermitFee(
-            cartItem.permitType,
-            cartItem.duration,
-            cartItem.totalDistance,
-          ),
+          : calculateFeeByDuration(cartItem.permitType, cartItem.duration),
       })),
     );
   }, [cartItems, isNoFeePermitType]);

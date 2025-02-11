@@ -9,7 +9,6 @@
   align-items: flex-start;
   width: fit-content;
   width: -moz-fit-content; /* For Firefox, Firefox Android */
-  white-space: pre-wrap;
 
   &#{&}--error {
     background-color: orbcStyles.$bc-messages-red-text;

@@ -50,6 +50,7 @@ export const ReviewContactDetails = ({
           contactDetails?.additionalEmail,
           oldFields?.additionalEmail,
         ),
+        fax: areValuesDifferent(contactDetails?.fax, oldFields?.fax),
       }
     : {
         name: false,
@@ -57,6 +58,7 @@ export const ReviewContactDetails = ({
         phone2: false,
         email: false,
         additionalEmail: false,
+        fax: false,
       };
 
   return (
@@ -143,6 +145,21 @@ export const ReviewContactDetails = ({
               </span>
 
               {changedFields.additionalEmail ? <DiffChip /> : null}
+            </Typography>
+          ) : null}
+
+          {contactDetails?.fax ? (
+            <Typography className="contact-details__detail">
+              <span className="contact-details__label">Fax:</span>
+
+              <span
+                className="contact-details__data"
+                data-testid="review-contact-details-fax"
+              >
+                {phoneDisplay(contactDetails?.fax)}
+              </span>
+              
+              {changedFields.fax ? <DiffChip /> : null}
             </Typography>
           ) : null}
         </Box>

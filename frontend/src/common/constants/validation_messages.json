@@ -10,9 +10,6 @@
   "NaN": {
     "defaultMessage": "Must be a number"
   },
-  "invalid": {
-    "defaultMessage": "Invalid input"
-  },
   "greaterThan": {
     "messageTemplate": "Must be greater than :val.",
     "placeholders": [":val"]
@@ -166,7 +163,7 @@
   "transactionId": {
     "defaultMessage": "Invalid transaction ID",
     "length": {
-      "messageTemplate": "Maximum :max characters",
+      "messageTemplate": "Transaction ID length must be no longer than :max characters",
       "placeholders": [":max"]
     }
   }

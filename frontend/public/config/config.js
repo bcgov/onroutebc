@@ -23,6 +23,5 @@ const envConfig = (() => {
     VITE_SITEMINDER_LOG_OFF_URL: "",
     VITE_FRONTEND_PR_NUM: "",
     VITE_POLICY_URL: "",
-    VITE_RELEASE_NUM: "",
   };
 })();
