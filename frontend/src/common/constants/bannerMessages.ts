@@ -39,6 +39,8 @@ export const BANNER_MESSAGES = {
     EXAMPLE:
       "e.g. If the origin is Victoria, BC and the destination is Hope, BC, the sequence of highways travelled in order will be 17 1 3.",
   },
+  TOTAL_DISTANCE:
+    "The total distance, in km, is the distance that will be travelled within BC (or from/to BC border). This is to include the return trip distance.",
   BRIDGE_FORMULA_CALCULATION_TOOL:
     "This tool only calculates Bridge Formula, which is a mathematical equation that is used to calculate the maximum allowable weight allowed by permit for various axle groups in a combination. This tool is not confirming compliance with the CTR or CTPM.\n\nThe image on the right is for illustration purposes only.",
 };
