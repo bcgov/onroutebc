@@ -364,6 +364,7 @@ export class PaymentService {
         TransactionType.REFUND,
         [existingApplication],
         currentUser,
+        nestedQueryRunner
       );
 
       let newTransactionList: Transaction[] = [];
