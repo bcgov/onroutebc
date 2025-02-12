@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { FormProvider, useForm } from "react-hook-form";
 import { Button, Typography } from "@mui/material";
 import "./RefundPage.scss";
@@ -95,24 +94,23 @@ export const RefundPage = ({
   const [rowSelection, setRowSelection] = useState<MRT_RowSelectionState>({});
 
   const onSubmit = (data: { refundData: RefundFormData[] }) => {
-    console.log(data.refundData);
-    // if (amountToRefund <= 0) {
-    //   handleFinish(data.refundData);
-    // } else {
-    //   // Get the selected row IDs based on permitNumber from rowSelection
-    //   const selectedRowIds = Object.keys(rowSelection).filter(
-    //     (id) => rowSelection[id],
-    //   );
+    if (amountToRefund <= 0) {
+      handleFinish(data.refundData);
+    } else {
+      // Get the selected row IDs based on permitNumber from rowSelection
+      const selectedRowIds = Object.keys(rowSelection).filter(
+        (id) => rowSelection[id],
+      );
 
-    //   // Filter table data to include only selected rows based on permitNumber
-    //   const selectedTransactions = data.refundData.filter(
-    //     (transaction: RefundFormData) =>
-    //       selectedRowIds.includes(transaction.permitNumber),
-    //   );
+      // Filter table data to include only selected rows based on permitNumber
+      const selectedTransactions = data.refundData.filter(
+        (transaction: RefundFormData) =>
+          selectedRowIds.includes(transaction.permitNumber),
+      );
 
-    //   // Call the onSubmit with the selected transactions
-    //   handleFinish(selectedTransactions);
-    // }
+      // Call the onSubmit with the selected transactions
+      handleFinish(selectedTransactions);
+    }
   };
 
   return (
@@ -178,7 +176,7 @@ export const RefundPage = ({
           color="primary"
           onClick={handleSubmit(onSubmit)}
           disabled={disableSubmitButton}
-          className="refund-page__submit-btn"
+          className="button button--finish"
         >
           Finish
         </Button>

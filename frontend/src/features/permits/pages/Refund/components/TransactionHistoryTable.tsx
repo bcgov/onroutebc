@@ -30,13 +30,11 @@ import {
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../../common/helpers/tableHelper";
-import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
 import { Controller, useFormContext } from "react-hook-form";
 import { RefundFormData } from "../types/RefundFormData";
 import { Checkbox, FormControlLabel, FormHelperText } from "@mui/material";
 import { requiredMessage } from "../../../../../common/helpers/validationMessages";
 import { NumberInput } from "../../../../../common/components/form/subFormComponents/NumberInput";
-import { convertToNumberIfValid } from "../../../../../common/helpers/numeric/convertToNumberIfValid";
 
 export const TransactionHistoryTable = ({
   permitHistory,
@@ -54,15 +52,8 @@ export const TransactionHistoryTable = ({
   );
 
   const formMethods = useFormContext();
-  const {
-    register,
-    getValues,
-    setValue,
-    trigger,
-    control,
-    watch,
-    getFieldState,
-  } = formMethods;
+  const { register, getValues, setValue, trigger, control, watch } =
+    formMethods;
 
   const isRowSelectable = (row: MRT_Row<RefundFormData>): boolean => {
     return (
@@ -79,7 +70,7 @@ export const TransactionHistoryTable = ({
       {
         accessorKey: "permitNumber",
         header: "Permit #",
-        size: 150,
+        size: 160,
         enableSorting: false,
         enableColumnActions: false,
         Cell: ({ cell }: { cell: MRT_Cell<RefundFormData> }) => (
@@ -97,7 +88,7 @@ export const TransactionHistoryTable = ({
         },
         id: "paymentMethod",
         header: "Payment Method",
-        size: 130,
+        size: 100,
         enableSorting: false,
         enableColumnActions: false,
         Cell: ({ cell }: { cell: MRT_Cell<RefundFormData> }) => (
@@ -135,7 +126,7 @@ export const TransactionHistoryTable = ({
         },
         header: "Amount (CAD)",
         id: "transactionAmount",
-        size: 50,
+        size: 100,
         enableSorting: false,
         enableColumnActions: false,
         Cell: ({ cell }: { cell: MRT_Cell<RefundFormData> }) => (
@@ -147,7 +138,7 @@ export const TransactionHistoryTable = ({
       {
         id: "refundAmount",
         header: "Refund Amount (CAD)",
-        size: 20,
+        size: 100,
         enableSorting: false,
         enableColumnActions: false,
         Cell: ({ cell }: { cell: MRT_Cell<RefundFormData> }) => {
@@ -176,12 +167,14 @@ export const TransactionHistoryTable = ({
                         root: "transaction-history-table__input-container",
                       }}
                       inputProps={{
-                        className: "transaction-history-table__input",
+                        className:
+                          "transaction-history-table__input transaction-history-table__input--refundAmount",
                         value: fieldValue,
                         onChange: ({ target: { value } }) => {
                           setValue(fieldName, value);
                         },
                         disabled: !rowIsSelected,
+                        startAdornment: <span>$&nbsp;</span>,
                       }}
                       helperText={
                         error?.message
@@ -194,18 +187,6 @@ export const TransactionHistoryTable = ({
                   )}
                 />
               </div>
-              // <CustomFormComponent
-              //   type="number"
-              //   feature="refund-permit"
-              //   className="transaction-history-table__input"
-              //   options={{
-              //     name: fieldName,
-              //     rules: { required: false },
-              //     width: "200px",
-              //     showOptionalLabel: false,
-              //   }}
-              //   disabled={!rowIsSelected}
-              // />
             )
           );
         },
@@ -213,15 +194,7 @@ export const TransactionHistoryTable = ({
       {
         id: "refundTransactionId",
         header: "Refund Tran ID",
-        // muiTableHeadCellProps: {
-        //   className:
-        //     "transaction-history-table__header transaction-history-table__header--refund-transaction-id",
-        // },
-        muiTableBodyCellProps: {
-          className:
-            "transaction-history-table__cell transaction-history-table__cell--refund-transaction-id",
-        },
-        size: 20,
+        size: 100,
         enableSorting: false,
         enableColumnActions: false,
         Cell: ({ cell }: { cell: MRT_Cell<RefundFormData> }) => {
@@ -230,7 +203,6 @@ export const TransactionHistoryTable = ({
           const fieldName =
             `refundData.${fieldIndex}.refundTransactionId` as const;
           const fieldValue = refundData[fieldIndex].refundTransactionId;
-          const { error: fieldError } = getFieldState(fieldName);
 
           // must use getValues to access fields outside of the one we are rendering in order to get latest values
           const refundAmount = getValues(
@@ -265,7 +237,10 @@ export const TransactionHistoryTable = ({
                   control={control}
                   rules={{
                     required: {
-                      value: refundAmount !== "" && !chequeRefund,
+                      value:
+                        refundAmount !== "" &&
+                        Number(refundAmount) !== 0 &&
+                        !chequeRefund,
                       message: requiredMessage(),
                     },
                   }}
@@ -275,6 +250,7 @@ export const TransactionHistoryTable = ({
                         root: "transaction-history-table__input-container",
                       }}
                       inputProps={{
+                        className: "transaction-history-table__input",
                         value: fieldValue,
                         onChange: ({ target: { value } }) =>
                           setValue(fieldName, value),
@@ -293,35 +269,7 @@ export const TransactionHistoryTable = ({
                     />
                   )}
                 />
-                {/* {fieldError && (
-                  <FormHelperText
-                    key={fieldError.message}
-                    className="number-input__helper-text number-input__helper-text--error"
-                    error={true}
-                  >
-                    {fieldError.message}
-                  </FormHelperText>
-                )} */}
               </div>
-              // <CustomFormComponent
-              //   type="input"
-              //   feature="refund-permit"
-              //   className="transaction-history-table__input"
-              //   options={{
-              //     name: `refundData.${cell.row.index}.refundTransactionId`,
-              //     rules: {
-              //       required: {
-              //         value: refundAmount !== "" && !chequeRefund,
-              //         message: requiredMessage(),
-              //       },
-              //     },
-              //     width: "200px",
-              //     showOptionalLabel: false,
-              //   }}
-              //   disabled={
-              //     !refundAmount || Number(refundAmount) <= 0 || chequeRefund
-              //   }
-              // />
             )
           );
         },
@@ -329,15 +277,7 @@ export const TransactionHistoryTable = ({
       {
         id: "chequeRefund",
         header: "",
-        // muiTableHeadCellProps: {
-        //   className:
-        //     "transaction-history-table__header transaction-history-table__header--refund-cheque-refund",
-        // },
-        muiTableBodyCellProps: {
-          className:
-            "transaction-history-table__cell transaction-history-table__cell--refund-cheque-refund",
-        },
-        size: 20,
+        size: 100,
         enableSorting: false,
         enableColumnActions: false,
         Cell: ({ cell }: { cell: MRT_Cell<RefundFormData> }) => {
