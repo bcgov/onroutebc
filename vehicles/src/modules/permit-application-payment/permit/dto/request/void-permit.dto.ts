@@ -7,7 +7,6 @@ import {
   IsEnum,
   IsOptional,
   IsString,
-  Length,
   MinLength,
   ValidateNested,
 } from 'class-validator';
