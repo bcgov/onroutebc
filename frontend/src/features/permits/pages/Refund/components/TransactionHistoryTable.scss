@@ -20,6 +20,8 @@
   }
 
   & &__checkbox {
+    position: absolute;
+    top: 1.5rem;
     &--disabled {
       display: none;
     }
@@ -27,78 +29,31 @@
 
   & &__header {
     background-color: $bc-background-light-grey;
+  }
 
-    &--permit-number {
-      padding-left: 1rem;
-      padding-right: 0.5rem;
-    }
-
-    &--payment-method {
-      padding-left: 0.5rem;
-      padding-right: 0.5rem;
-    }
-
-    &--provider-transaction-id {
-      padding-left: 0.5rem;
-      padding-right: 0.5rem;
-    }
-
-    &--amount {
-      padding-left: 0.5rem;
-      padding-right: 0.5rem;
-    }
+  & &__cell {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
     
-    &--refund-amount {
-      padding-left: 0.5rem;
-      padding-right: 0.5rem;
+      &:nth-child(2) {
+        padding-left: 1rem;
+      }
+      &:last-child {
+        padding-right: 1rem;
+      }
+
+    .cell__inner {
+      position: absolute;
+      top: 1rem;
     }
 
-    &--refund-transaction-id {
-      padding-left: 0.5rem;
-      padding-right: 0.5rem;
-    }
-
-    &--cheque-refund {
-      padding-left: 0.5rem;
-      padding-right: 1rem;
+    .cell__value {
+      padding-top: .5rem;
     }
   }
 
-  & &__data {
-    &--permit-number {
-      padding-left: 1rem;
-      padding-right: 0.5rem;
-    }
-
-    &--payment-method {
-      padding-left: 0.5rem;
-      padding-right: 0.5rem;
-    }
-
-    &--provider-transaction-id {
-      padding-left: 0.5rem;
-      padding-right: 0.5rem;
-    }
-
-    &--amount {
-      padding-left: 0.5rem;
-      padding-right: 0.5rem;
-    }
-    
-    &--refund-amount {
-      padding-left: 0.5rem;
-      padding-right: 0.5rem;
-    }
-
-    &--refund-transaction-id {
-      padding-left: 0.5rem;
-      padding-right: 0.5rem;
-    }
-    
-    &--cheque-refund {
-      padding-left: 0.5rem;
-      padding-right: 1rem;
-    }
+  & &__input-container {
+    margin: 0;
   }
 
   &__input {
