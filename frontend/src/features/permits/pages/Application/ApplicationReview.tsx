@@ -374,7 +374,7 @@ export const ApplicationReview = ({
           calculatedFee={fee}
           loas={applicationData?.permitData?.loas}
           applicationRejectionHistory={applicationData?.rejectionHistory}
-          isStaffUser={isQueueContext || isStaffUser}
+          isStaffUser={isStaffUser}
         />
       </FormProvider>
 
