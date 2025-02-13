@@ -14,6 +14,7 @@ import { minDurationForPermitType } from "./dateSelection";
 import { getDefaultVehicleDetails } from "./vehicles/getDefaultVehicleDetails";
 import { getDefaultPermittedRoute } from "./route/getDefaultPermittedRoute";
 import { getDefaultPermittedCommodity } from "./permittedCommodity";
+import { DEFAULT_THIRD_PARTY_LIABILITY } from "../types/ThirdPartyLiability";
 import {
   getDefaultVehicleConfiguration
 } from "./vehicles/configuration/getDefaultVehicleConfiguration";
@@ -250,6 +251,21 @@ export const getDefaultValues = (
         permitType,
         applicationData?.permitData?.vehicleConfiguration,
       ),
+      thirdPartyLiability: ([
+        PERMIT_TYPES.STFR,
+        PERMIT_TYPES.QRFR,
+      ] as PermitType[]).includes(permitType)
+        ? getDefaultRequiredVal(
+          DEFAULT_THIRD_PARTY_LIABILITY,
+          applicationData?.permitData?.thirdPartyLiability
+        )
+        : null,
+      conditionalLicensingFee: ([
+        PERMIT_TYPES.NRSCV,
+        PERMIT_TYPES.QNRBS,
+      ] as PermitType[]).includes(permitType)
+        ? getDefaultRequiredVal("", applicationData?.permitData?.conditionalLicensingFee)
+        : null,
     },
   };
 };
