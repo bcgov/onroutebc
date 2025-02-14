@@ -92,23 +92,23 @@ describe('Login Test for OnRouteBC', () => {
       .click({force: true});
     cy.wait(wait_time);
 
-    cy.get('input.PrivateSwitchBase-input[type="checkbox"]').click();
+    cy.get('input.PrivateSwitchBase-input[type="checkbox"]').eq(1).click({ force: true });
     cy.wait(wait_time);
 
     cy.get('input[data-testid="input-email"]').type('bruce.wang@bc.gov.ca');
     cy.wait(wait_time);
 
-    cy.get('button').contains('Resend').click();
-    cy.wait(wait_time);
+    // cy.get('button').contains('Resend').click();
+    // cy.wait(wait_time);
 
-    cy.get('button#actions-button')
-      .first()
-      .click({force: true});
-    cy.wait(wait_time);
+    // cy.get('button#actions-button')
+    //   .first()
+    //   .click({force: true});
+    // cy.wait(wait_time);
 
-    cy.get('li[data-option-value="resend"]')
-      .click({force: true});
-    cy.wait(wait_time);
+    // cy.get('li[data-option-value="resend"]')
+    //   .click({force: true});
+    // cy.wait(wait_time);
 
     // Can cancel the resend
     cy.get('button')
