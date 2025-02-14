@@ -338,9 +338,12 @@ export class DopsService {
     const reqConfig: AxiosRequestConfig = {
       headers: {
         Authorization: `${currentUser.access_token}`,
-        'Content-Type': 'multipart/form-data',
+        'Content-Type': 'application/json',
         'x-correlation-id': this.cls.getId(),
+        'Accept-Encoding': 'gzip,deflate,br', // Add compression support
+        'accept': 'application/json',
       },
+      responseType: 'json', // Expecting a JSON response
     };
     // Calls the DOPS service, which converts the the template document into a pdf
     const dopsResponse = await lastValueFrom(
