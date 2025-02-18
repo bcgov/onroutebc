@@ -234,6 +234,7 @@ export class DgenService {
     try {
       browser = await puppeteer.launch({
         args: [
+          '--init',
           '--no-sandbox',
           '--disable-gpu',
           '--disable-software-rasterizer',
