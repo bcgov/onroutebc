@@ -275,6 +275,9 @@ export class DgenService {
        `,
       });
       generatedDocument.size = generatedDocument.buffer.length;
+      const pages = await browser.pages();
+      await Promise.allSettled(pages?.map(page => page.close()));
+      await browser.close();
     } catch (error) {
       this.logger.error(error);
       throw error;
