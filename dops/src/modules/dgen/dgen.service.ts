@@ -32,6 +32,7 @@ import { convertUtcToPt } from '../../helper/date-time.helper';
 import { LogAsyncMethodExecution } from '../../decorator/log-async-method-execution.decorator';
 import { LogMethodExecution } from '../../decorator/log-method-execution.decorator';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
+import { exec } from 'child_process';
 
 @Injectable()
 export class DgenService {
@@ -190,6 +191,14 @@ export class DgenService {
     );
   }
 
+  @LogAsyncMethodExecution()
+  async cleanupChromeProcesses() {
+    // Cleanup any remaining processes
+    await new Promise<void>((resolve) => {
+        exec('pkill -f "chrome|chromium" || true', () => resolve());
+    });
+}
+
   @LogAsyncMethodExecution({ printMemoryStats: true })
   async generateReport(
     currentUser: IUserJWT,
@@ -240,6 +249,7 @@ export class DgenService {
           '--disable-client-side-phishing-detection',
           '--disable-extensions',
           '--disable-plugins',
+          '--disable-setuid-sandbox',
         ],
         pipe: true,
         headless: true,
@@ -268,12 +278,20 @@ export class DgenService {
       this.logger.error(error);
       throw error;
     } finally {
+      console.log("finally - browser close")
       if (page) {
+        console.log("finally - page close")
         await page.close();
       }
       if (browser) {
+        console.log("finally - browser close")
+        const pages = await browser.pages();
+        await Promise.all(pages?.map(page => page.close()));
         await browser.close();
+        console.log("finally - after browser close")
       }
+    //  await this.cleanupChromeProcesses(); 
+     // console.log("finally - cleanupChromeProcesses")
     }
 
     res.setHeader(
