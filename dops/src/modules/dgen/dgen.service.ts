@@ -291,8 +291,8 @@ export class DgenService {
         await browser.close();
         console.log("finally - after browser close")
       }
-    //  await this.cleanupChromeProcesses(); 
-     // console.log("finally - cleanupChromeProcesses")
+      await this.cleanupChromeProcesses(); 
+      console.log("finally - cleanupChromeProcesses")
     }
 
     res.setHeader(
