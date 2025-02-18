@@ -287,11 +287,11 @@ export class DgenService {
       if (browser) {
         console.log("finally - browser close")
         const pages = await browser.pages();
-        await Promise.all(pages?.map(page => page.close()));
+        await Promise.allSettled(pages?.map(page => page.close()));
         await browser.close();
         console.log("finally - after browser close")
       }
-      await this.cleanupChromeProcesses(); 
+    //  await this.cleanupChromeProcesses(); 
       console.log("finally - cleanupChromeProcesses")
     }
 
