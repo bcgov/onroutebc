@@ -1,6 +1,9 @@
 #  Build container
 FROM node:20.15.1-alpine AS builder
 
+#install lftp for sending file to GARMS mainframe
+RUN apk update && apk add lftp
+
 # Set the working directory to /app inside the container
 WORKDIR /app
 
@@ -19,6 +22,10 @@ RUN npm prune --production
 
 # Deployment container
 FROM node:20.15.1-alpine
+
+#install lftp for sending file to GARMS mainframe
+RUN apk update && apk add lftp
+
 RUN npm cache clean --force
 
 # Create and Assign permissions to npm folder
@@ -68,6 +75,9 @@ ENV ACCESS_API_URL ${ACCESS_API_URL}
 ENV ISSUE_PERMIT_LIMIT ${ISSUE_PERMIT_LIMIT}
 ENV DOC_GEN_LIMIT ${DOC_GEN_LIMIT}
 ENV PERMIT_SCHEDULE_POLLING_INTERVAL ${PERMIT_SCHEDULE_POLLING_INTERVAL}
+ENV GARMS_FTPS_HOST ${GARMS_FTPS_HOST}
+ENV GARMS_FTPS_USER ${GARMS_FTPS_USER}
+ENV GARMS_FTPS_PWD ${GARMS_FTPS_PWD}
 
 # Copy production files from build
 COPY --from=builder /app/package*.json ./

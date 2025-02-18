@@ -12,6 +12,7 @@ import { getTypeormLogLevel } from './common/helper/logger.helper';
 import { CacheModule } from '@nestjs/cache-manager';
 import { CgiSftpModule } from './modules/cgi-sftp/cgi-sftp.module';
 import { PermitModule } from './modules/permit/permit.module';
+import { GarmsModule } from './modules/garms/garms.module';
 
 const envPath = path.resolve(process.cwd() + '/../');
 @Module({
@@ -44,6 +45,7 @@ const envPath = path.resolve(process.cwd() + '/../');
     FeatureFlagsModule,
     CgiSftpModule,
     PermitModule,
+    GarmsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
