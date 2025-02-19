@@ -31,10 +31,9 @@ export const StartApplicationAction = () => {
 
   const { data: featureFlags } = useFeatureFlagsQuery();
   const enableSTOS = featureFlags?.["STOS"] === "ENABLED";
-  //const enableSTFR = featureFlags?.["STFR"] === "ENABLED";
-  const enableSTFR = true;
   const enableMFP = featureFlags?.["MFP"] === "ENABLED";
-
+  const enableSTFR = featureFlags?.["STFR"] === "ENABLED";
+  
   const handleChooseFrom = (
     _event: React.MouseEvent<HTMLElement>,
     item: PermitTypeChooseFromItem,

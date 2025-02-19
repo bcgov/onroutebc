@@ -63,8 +63,7 @@ export const ApplicationStepPage = ({
   const { data: featureFlags } = useFeatureFlagsQuery();
   const enableSTOS = featureFlags?.["STOS"] === "ENABLED";
   const enableMFP = featureFlags?.["MFP"] === "ENABLED";
-  // const enableSTFR = featureFlags?.["STFR"] === "ENABLED";
-  const enableSTFR = true;
+  const enableSTFR = featureFlags?.["STFR"] === "ENABLED";
   
   // Query for the application data whenever this page is rendered
   const {
