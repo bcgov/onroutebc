@@ -376,6 +376,7 @@ export const ApplicationReview = ({
           loas={applicationData?.permitData?.loas}
           applicationRejectionHistory={applicationData?.rejectionHistory}
           isStaffUser={isStaffUser}
+          thirdPartyLiability={applicationData?.permitData?.thirdPartyLiability}
         />
       </FormProvider>
 

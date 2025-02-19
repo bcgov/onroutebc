@@ -176,6 +176,7 @@ export const AmendPermitReview = () => {
         doingBusinessAs={doingBusinessAs}
         loas={amendmentApplication?.permitData?.loas}
         isStaffUser={true}
+        thirdPartyLiability={amendmentApplication?.permitData?.thirdPartyLiability}
       >
         {amendmentApplication?.comment ? (
           <ReviewReason reason={amendmentApplication.comment} />
