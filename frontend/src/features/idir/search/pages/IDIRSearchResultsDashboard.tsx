@@ -25,6 +25,9 @@ const getBannerText = (searchFields: SearchFields): string => {
   if (searchByFilter === SEARCH_BY_FILTERS.PERMIT_NUMBER) {
     return `Search Results: Permit # ${searchString}`;
   }
+  if (searchByFilter === SEARCH_BY_FILTERS.VIN) {
+    return `Search Results: VIN ${searchString}`;
+  }
   return "";
 };
 
