@@ -89,6 +89,11 @@ export const VehicleDetails = ({
     PERMIT_TYPES.QRFR,
   ] as PermitType[]).includes(permitType);
 
+  const shouldValidateProvince = ([
+    PERMIT_TYPES.STFR,
+    PERMIT_TYPES.QRFR,
+  ] as PermitType[]).includes(permitType);
+
   const vehicleType = vehicleFormData.vehicleType;
 
   // Choose vehicle based on either Unit Number or Plate
@@ -309,7 +314,10 @@ export const VehicleDetails = ({
           disabled={isSelectedLOAVehicle}
           provinceValidationRules={{
             shouldNotBeInBC: (province?: string) =>
-              !province || province !== "BC" || provinceVehicleDoesNotRequirePermit("BC"),
+              !shouldValidateProvince
+              || !province
+              || province !== "BC"
+              || provinceVehicleDoesNotRequirePermit("BC"),
           }}
         />
 

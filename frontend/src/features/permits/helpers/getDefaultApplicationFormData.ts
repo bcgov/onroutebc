@@ -4,7 +4,6 @@ import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBC
 import { getMandatoryConditions } from "./conditions";
 import { Nullable } from "../../../common/types/common";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
-import { calculatePermitFee } from "./feeSummary";
 import { PERMIT_TYPES, PermitType } from "../types/PermitType";
 import { getExpiryDate } from "./permitState";
 import { PermitMailingAddress } from "../types/PermitMailingAddress";
@@ -234,11 +233,7 @@ export const getDefaultValues = (
       vehicleDetails: getDefaultVehicleDetails(
         applicationData?.permitData?.vehicleDetails,
       ),
-      feeSummary: `${calculatePermitFee(
-        defaultPermitType,
-        durationOrDefault,
-        defaultPermittedRoute?.manualRoute?.totalDistance,
-      )}`,
+      feeSummary: "", // not used, as actual fee is derived at the given locations when required
       loas: getDefaultRequiredVal([], applicationData?.permitData?.loas),
       permittedRoute: defaultPermittedRoute,
       applicationNotes: permitType !== PERMIT_TYPES.STOS
