@@ -7,7 +7,7 @@ import { Permit } from "../types/permit";
 import { isValidTransaction } from "./payment";
 import { Nullable } from "../../../common/types/common";
 import { PERMIT_STATES, getPermitState } from "./permitState";
-import { PERMIT_TYPES, PermitType } from "../types/PermitType";
+import { PermitType } from "../types/PermitType";
 import { ReplaceDayjsWithString } from "../types/utility";
 import {
   applyWhenNotNullable,
@@ -32,20 +32,6 @@ export const calculatePermitFee = async (
     .map(({ cost }) => getDefaultRequiredVal(0, cost))
     .reduce((cost1, cost2) => cost1 + cost2, 0);
   
-  // Still need to confirm if policy engine calculates fees for MFP,
-  // if not, the frontend needs to calculate manually
-  if (permit.permitType === PERMIT_TYPES.MFP) {
-    // MFP only calculate fee based on totalDistance
-    // minimum $20 no matter what, $0.11 per km
-    return Math.max(
-      20,
-      0.11 * getDefaultRequiredVal(
-        0,
-        permit.permitData.permittedRoute?.manualRoute?.totalDistance,
-      ),
-    );
-  }
-      
   return fee;
 };
 

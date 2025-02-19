@@ -58,6 +58,7 @@ export const useShoppingCart = (
                   destination: "", // required, but not used for fee calculation
                 },
               },
+              thirdPartyLiability: cartItem.thirdPartyLiability,
             },
           }, policyEngine);
 
