@@ -3,7 +3,6 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@mui/material";
 import { CustomActionLink } from "../../../../../common/components/links/CustomActionLink";
 import { LOAList } from "./list/LOAList";
-import "./LOASection.scss";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { useFetchLOAs, useRemoveLOAMutation } from "../../../hooks/LOA";
 import { usePermissionMatrix } from "../../../../../common/authentication/PermissionMatrix";
