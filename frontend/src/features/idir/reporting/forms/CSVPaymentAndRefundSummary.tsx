@@ -1,0 +1,172 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { Button, Divider, FormGroup, Stack } from "@mui/material";
+import dayjs from "dayjs";
+import { FormProvider, useForm } from "react-hook-form";
+import { useContext, useState } from "react";
+
+import { BC_COLOURS } from "../../../../themes/bcGovStyles";
+import { openBlobInNewTab } from "../../../permits/helpers/permitPDFHelper";
+import {
+  getPaymentAndRefundSummary,
+  getPaymentAndRefundSummaryMock,
+} from "../api/reports";
+import { IssuedByCheckBox } from "./subcomponents/IssuedByCheckBox";
+import { ReportDateTimePickers } from "./subcomponents/ReportDateTimePickers";
+import { SnackBarContext } from "../../../../App";
+import { Loading } from "../../../../common/pages/Loading";
+import {
+  PaymentAndRefundSummaryFormData,
+  PaymentAndRefundSummaryRequest,
+  REPORT_ISSUED_BY,
+} from "../types/types";
+import Papa from "papaparse";
+
+/**
+ * Component for Payment and Refund Summary form
+ */
+export const CSVPaymentAndRefundSummary = () => {
+  const { setSnackBar } = useContext(SnackBarContext);
+  const [isGeneratingReport, setIsGeneratingReport] = useState<boolean>(false);
+  const formMethods = useForm<PaymentAndRefundSummaryFormData>({
+    defaultValues: {
+      issuedBy: ["SELF_ISSUED", "PPC"],
+      fromDateTime: dayjs()
+        .subtract(1, "day")
+        .set("h", 21)
+        .set("m", 0)
+        .set("s", 0)
+        .set("ms", 0),
+      toDateTime: dayjs().set("h", 20).set("m", 59).set("s", 59).set("ms", 999),
+    },
+    reValidateMode: "onBlur",
+  });
+
+  const { watch, handleSubmit } = formMethods;
+
+  const issuedBy = watch("issuedBy");
+  const fromDateTime = watch("fromDateTime");
+  const toDateTime = watch("toDateTime");
+
+  /**
+   * Opens the report in a new tab.
+   */
+  const onClickViewReport = async () => {
+    setIsGeneratingReport(() => true);
+    try {
+      const response = await getPaymentAndRefundSummaryMock();
+      console.log("resonse::", response);
+      const csvString = Papa.unparse(
+        [
+          {
+            "ISSUED ON": "Jul. 17, 2023, 09:00 PM, PDT",
+            "PROVIDER TRAN ID": "56709123890",
+            "ORBC TRAN ID": "OR-678904512857",
+            "PAYMENT METHOD": "Cash",
+            "RECEIPT #": "45098721098",
+            "PERMIT #": "P2-72106199-468",
+            "PERMIT TYPE": "STOW",
+            USER: "ANPETRIC",
+            AMOUNT: "90",
+            "TRANSACTION TYPE": "Payment",
+          },
+          {
+            "ISSUED ON": "Jul. 17, 2023, 09:20 PM, PDT",
+            "PROVIDER TRAN ID": "56709123890",
+            "ORBC TRAN ID": "OR-678904512857",
+            "PAYMENT METHOD": "Cash",
+            "RECEIPT #": "56709123890",
+            "PERMIT #": "P2-87768836-955",
+            "PERMIT TYPE": "TROS",
+            USER: "JLESLIE",
+            AMOUNT: "90",
+            "TRANSACTION TYPE": "Payment",
+          },
+          {
+            "ISSUED ON": "Jul. 17, 2023, 09:20 PM, PDT",
+            "PROVIDER TRAN ID": "56709123890",
+            "ORBC TRAN ID": "OR-678904512857",
+            "PAYMENT METHOD": "Cash",
+            "RECEIPT #": "56709123891",
+            "PERMIT #": "P2-87768836-956",
+            "PERMIT TYPE": "TROS",
+            USER: "JLESLIE",
+            AMOUNT: "-90.54",
+            "TRANSACTION TYPE": "Refund",
+          },
+        ],
+        {
+          header: true,
+          quotes: false,
+        },
+      );
+
+      const csvData = new Blob([csvString], {
+        type: "text/csv;charset=utf-8;",
+      });
+      const csvURL = URL.createObjectURL(csvData);
+      const tempLink = document.createElement("a");
+      tempLink.style.display = "none";
+      tempLink.href = csvURL;
+      tempLink.setAttribute("download", "payment-summary.csv");
+      tempLink.click();
+    } catch (err) {
+      console.error(err);
+      setSnackBar({
+        message: "An unexpected error occurred.",
+        showSnackbar: true,
+        setShowSnackbar: () => true,
+        alertType: "error",
+      });
+    } finally {
+      setIsGeneratingReport(() => false);
+    }
+  };
+
+  return (
+    <FormProvider {...formMethods}>
+      <Stack style={{ width: "900px" }} spacing={2}>
+        <h2>Payment and Refund Summary</h2>
+        <Divider
+          flexItem
+          orientation="horizontal"
+          color={BC_COLOURS.bc_border_grey}
+        />
+        {isGeneratingReport && <Loading />}
+        {!isGeneratingReport && (
+          <FormGroup>
+            <span>
+              <strong>Issued By</strong>
+            </span>
+            <Stack direction="row" spacing={5}>
+              <IssuedByCheckBox
+                issuedByOption={REPORT_ISSUED_BY.SELF_ISSUED}
+                label="Self Issued"
+              />
+              <IssuedByCheckBox
+                issuedByOption={REPORT_ISSUED_BY.PPC}
+                label="PPC"
+              />
+            </Stack>
+            <br />
+            <Stack direction="row" spacing={3}>
+              <ReportDateTimePickers />
+            </Stack>
+            <br />
+            <Stack direction="row">
+              <Button
+                disabled={issuedBy.length === 0}
+                key="view-report-button"
+                aria-label="View Report"
+                variant="contained"
+                color="primary"
+                onClick={handleSubmit(onClickViewReport)}
+              >
+                View Report
+              </Button>
+            </Stack>
+          </FormGroup>
+        )}
+      </Stack>
+    </FormProvider>
+  );
+};
