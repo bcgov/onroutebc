@@ -191,14 +191,6 @@ export class DgenService {
     );
   }
 
-  @LogAsyncMethodExecution()
-  async cleanupChromeProcesses() {
-    // Cleanup any remaining processes
-    await new Promise<void>((resolve) => {
-        exec('pkill -f "chrome|chromium" || true', () => resolve());
-    });
-}
-
   @LogAsyncMethodExecution({ printMemoryStats: true })
   async generateReport(
     currentUser: IUserJWT,
@@ -275,9 +267,6 @@ export class DgenService {
        `,
       });
       generatedDocument.size = generatedDocument.buffer.length;
-      const pages = await browser.pages();
-      await Promise.allSettled(pages?.map(page => page.close()));
-      await browser.close();
     } catch (error) {
       this.logger.error(error);
       throw error;
@@ -294,8 +283,6 @@ export class DgenService {
         await browser.close();
         console.log("finally - after browser close")
       }
-    //  await this.cleanupChromeProcesses(); 
-      console.log("finally - cleanupChromeProcesses")
     }
 
     res.setHeader(
