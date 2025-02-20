@@ -4,7 +4,7 @@ export const STFR_CONDITIONS: PermitCondition[] = [
   {
     description: "Insurance Certificate Conditions",
     condition: "APV96",
-    conditionLink: "",
+    conditionLink: "https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1547",
     checked: true,
     disabled: true
   },
