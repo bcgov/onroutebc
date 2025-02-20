@@ -16,11 +16,9 @@ import { DeleteConfirmationDialog } from "../../../../../common/components/dialo
 export const LOASection = ({
   canReadLOA,
   companyId,
-  // enableLOA,
 }: {
   canReadLOA: boolean;
   companyId: number;
-  enableLOA: boolean;
 }) => {
   const [showExpiredLOAs, setShowExpiredLOAs] = useState<boolean>(false);
   const [loaToDelete, setLoaToDelete] = useState<RequiredOrNull<number>>(null);
