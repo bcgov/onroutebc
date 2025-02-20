@@ -18,7 +18,6 @@ import {
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 import { useFeatureFlagsQuery } from "../../../../common/hooks/hooks";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { useFetchLOAs } from "../../hooks/LOA";
 export const SpecialAuthorizations = ({ companyId }: { companyId: number }) => {
   const { idirUserDetails } = useContext(OnRouteBCContext);
   const isStaffUser = Boolean(idirUserDetails?.userRole);
@@ -29,8 +28,7 @@ export const SpecialAuthorizations = ({ companyId }: { companyId: number }) => {
       // At least one of the special auth feature flags must be enabled
       // to decide whether to enable the query.
       featureFlags?.["NO-FEE"] === "ENABLED" ||
-        featureFlags?.["LCV"] === "ENABLED" ||
-        featureFlags?.["LOA"] === "ENABLED",
+        featureFlags?.["LCV"] === "ENABLED",
     );
 
   const noFeeType = getDefaultRequiredVal(
@@ -41,20 +39,6 @@ export const SpecialAuthorizations = ({ companyId }: { companyId: number }) => {
     false,
     specialAuthorizations?.isLcvAllowed,
   );
-  const activeLOAsQuery = useFetchLOAs(companyId, false);
-  const expiredLOAsQuery = useFetchLOAs(companyId, true);
-  const activeLOAs = getDefaultRequiredVal([], activeLOAsQuery.data);
-  const expiredLOAs = getDefaultRequiredVal([], expiredLOAsQuery.data);
-  const canWriteLOA = usePermissionMatrix({
-    featureFlag: "LOA",
-    permissionMatrixKeys: {
-      permissionMatrixFeatureKey: "MANAGE_SETTINGS",
-      permissionMatrixFunctionKey: "EDIT_AN_LOA",
-    },
-  });
-  const isLoaAllowed =
-    activeLOAs.length > 0 || expiredLOAs.length > 0 || canWriteLOA;
-
   const canEditNoFeePermits = usePermissionMatrix({
     featureFlag: "NO-FEE",
     permissionMatrixKeys: {
@@ -170,11 +154,7 @@ export const SpecialAuthorizations = ({ companyId }: { companyId: number }) => {
       ) : null}
 
       {canReadLOA ? (
-        <LOASection
-          canReadLOA={canReadLOA}
-          companyId={companyId}
-          enableLOA={isLoaAllowed}
-        />
+        <LOASection canReadLOA={canReadLOA} companyId={companyId} />
       ) : null}
     </div>
   );
