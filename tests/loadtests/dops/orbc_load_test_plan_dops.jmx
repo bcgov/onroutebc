@@ -23,13 +23,13 @@
         <boolProp name="CacheManager.controlledByThread">false</boolProp>
       </CacheManager>
       <hashTree/>
-      <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager" enabled="true">
+      <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager">
         <collectionProp name="CookieManager.cookies"/>
         <boolProp name="CookieManager.clearEachIteration">true</boolProp>
         <boolProp name="CookieManager.controlledByThreadGroup">false</boolProp>
       </CookieManager>
       <hashTree/>
-      <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+      <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager">
         <collectionProp name="HeaderManager.headers">
           <elementProp name="Accept-Language" elementType="Header">
             <stringProp name="Header.name">Accept-Language</stringProp>
@@ -74,7 +74,7 @@
         <stringProp name="HTTPSampler.implementation"></stringProp>
       </ConfigTestElement>
       <hashTree/>
-      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
         <collectionProp name="Arguments.arguments">
           <elementProp name="NUM_THREADS" elementType="Argument">
             <stringProp name="Argument.name">NUM_THREADS</stringProp>
@@ -103,7 +103,7 @@
           </elementProp>
           <elementProp name="IDIR_BEARER_TOKEN" elementType="Argument">
             <stringProp name="Argument.name">IDIR_BEARER_TOKEN</stringProp>
-            <stringProp name="Argument.value">eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJJZFJzYmIzRDFsWHplM2dvU2E5Q3QtdDdnSG5DYkl1dkdUYlRsUHBKYzAwIn0.eyJleHAiOjE3MzgzNDg3NzIsImlhdCI6MTczODM0ODQ3MiwiYXV0aF90aW1lIjoxNzM4MzQ1ODMzLCJqdGkiOiI1MDdiMjY4YS0zZTNlLTQ0MGMtODhmYS1mZjkzYzhkYTg1YjQiLCJpc3MiOiJodHRwczovL2xvZ2lucHJveHkuZ292LmJjLmNhL2F1dGgvcmVhbG1zL3N0YW5kYXJkIiwiYXVkIjoib24tcm91dGUtYmMtZGlyZWN0LW5vLWJhc2ljLTU4NjIiLCJzdWIiOiJmOGVhN2Y1NWVkM2Y0OTY3ODNkODMwNjYwMWY3OGE0ZUBpZGlyIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoib24tcm91dGUtYmMtZGlyZWN0LW5vLWJhc2ljLTU4NjIiLCJzZXNzaW9uX3N0YXRlIjoiZGNmMmQzMGUtY2ViYy00NjM5LTgwMGUtOWIxYjE4OTYyNDI2Iiwic2NvcGUiOiJvcGVuaWQgYmNlaWRidXNpbmVzcyBlbWFpbCBwcm9maWxlIGlkaXIiLCJzaWQiOiJkY2YyZDMwZS1jZWJjLTQ2MzktODAwZS05YjFiMTg5NjI0MjYiLCJpZGlyX3VzZXJfZ3VpZCI6IkY4RUE3RjU1RUQzRjQ5Njc4M0Q4MzA2NjAxRjc4QTRFIiwiaWRlbnRpdHlfcHJvdmlkZXIiOiJpZGlyIiwiaWRpcl91c2VybmFtZSI6IlRST1JCQ1QxIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJuYW1lIjoiU2VydmljZSBBY2NvdW50IChUUk9SQkNUMSkiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJmOGVhN2Y1NWVkM2Y0OTY3ODNkODMwNjYwMWY3OGE0ZUBpZGlyIiwiZGlzcGxheV9uYW1lIjoiU2VydmljZSBBY2NvdW50IChUUk9SQkNUMSkiLCJnaXZlbl9uYW1lIjoiU2VydmljZSIsImZhbWlseV9uYW1lIjoiQWNjb3VudCJ9.likbs62NslRMj0xnyWLLEPNWO02z5essqta4Ne8saglUeXrEqvbH0W5NhgEM5w5EMoJS604I6MB-6PNDx5wRYdWxwuuMlEsYzCPu6xzMcPEsHbja_2qv6f-hCInaIf44JG4ChJyRCUG4tBbzNybY5BAOjuZpfYw5h73UwCm2RPlI569A-SWbqxKVAwa9nu1-NVQcWQMwzTJ4Jt6izlUUrENs6tUnAG3APhgBis__6-zLypdjmqi5Y6P-bHSn9AYYXS9fU1FISF_Zw48ILMzDJAITYlyvfmP3GBAtDsKaB0hBcV0tRyfM-PVBRneUhSJRx3PLtogofOb1PmwC4SNw3w</stringProp>
+            <stringProp name="Argument.value"></stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="COMPANY_ID" elementType="Argument">
@@ -114,7 +114,7 @@
         </collectionProp>
       </Arguments>
       <hashTree/>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="IDIR ppc create and download pdf - dops">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="IDIR ppc create and download pdf - dops" enabled="true">
         <stringProp name="ThreadGroup.num_threads">${NUM_THREADS}</stringProp>
         <stringProp name="ThreadGroup.ramp_time">${__P(rampup,0)}</stringProp>
         <stringProp name="ThreadGroup.duration">${__P(duration,3000)}</stringProp>

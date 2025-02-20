@@ -98,7 +98,7 @@
           </elementProp>
           <elementProp name="BEARER_TOKEN_IDIR" elementType="Argument">
             <stringProp name="Argument.name">BEARER_TOKEN_IDIR</stringProp>
-            <stringProp name="Argument.value">eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJJZFJzYmIzRDFsWHplM2dvU2E5Q3QtdDdnSG5DYkl1dkdUYlRsUHBKYzAwIn0.eyJleHAiOjE3MzgzNTk4MTIsImlhdCI6MTczODM1OTUxMiwiYXV0aF90aW1lIjoxNzM4MzUxNTQ1LCJqdGkiOiJiNTYwMDU4NC1jZTA2LTQxZDYtODFiMS04YTA0NzkxNGRjYzUiLCJpc3MiOiJodHRwczovL2xvZ2lucHJveHkuZ292LmJjLmNhL2F1dGgvcmVhbG1zL3N0YW5kYXJkIiwiYXVkIjoib24tcm91dGUtYmMtZGlyZWN0LW5vLWJhc2ljLTU4NjIiLCJzdWIiOiJkZDBmYWVmNGM3ODg0NTAwYWE0YzZkYzU2ODY5ZjlhNUBpZGlyIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoib24tcm91dGUtYmMtZGlyZWN0LW5vLWJhc2ljLTU4NjIiLCJzZXNzaW9uX3N0YXRlIjoiZjg1ZjkxZmUtMTJkYi00ZjNhLTg5NWYtZmJiM2M2YmVmMmFmIiwic2NvcGUiOiJvcGVuaWQgYmNlaWRidXNpbmVzcyBlbWFpbCBwcm9maWxlIGlkaXIiLCJzaWQiOiJmODVmOTFmZS0xMmRiLTRmM2EtODk1Zi1mYmIzYzZiZWYyYWYiLCJpZGlyX3VzZXJfZ3VpZCI6IkREMEZBRUY0Qzc4ODQ1MDBBQTRDNkRDNTY4NjlGOUE1IiwiaWRlbnRpdHlfcHJvdmlkZXIiOiJpZGlyIiwiaWRpcl91c2VybmFtZSI6IkJSV0FORyIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibmFtZSI6IldhbmcsIEJydWNlIE1PVEk6RVgiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJkZDBmYWVmNGM3ODg0NTAwYWE0YzZkYzU2ODY5ZjlhNUBpZGlyIiwiZGlzcGxheV9uYW1lIjoiV2FuZywgQnJ1Y2UgTU9USTpFWCIsImdpdmVuX25hbWUiOiJCcnVjZSIsImZhbWlseV9uYW1lIjoiV2FuZyIsImVtYWlsIjoiYnJ1Y2Uud2FuZ0Bnb3YuYmMuY2EifQ.IDqITD4DY71Oe_v4YWRuVCacjY5s_P35yeidx90ntyTY766uMKScOOPfV9vMcWfwUlEbQvwliM5_Wsf-vgdAk8MMrMNnlB-w8WUtc9Qcxm2kcnpy0uWyEQMNDbZ21eXKH7j98ydMf9G1HgwV1PnfvIK8-bpkZdmC2h4uU0mrblV0vI76baxn0_wxRH3ewDPdaCgLb8wzscLpRer8wHIcqtqGcB_WC2a-fY8UAa9jlpmBwoaLtkw0rrwYEaPRmoLmm5mM2_AHq6Y5F0R7mO7XDKu9eRL096hnaTf90NFwaDJwwOuNjkeVXxiVYkPbcv6lX5I9p2XIw7RhldPGI3Ngiw</stringProp>
+            <stringProp name="Argument.value"></stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="USER_GUID" elementType="Argument">
@@ -124,7 +124,7 @@
         </collectionProp>
       </Arguments>
       <hashTree/>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Company and User Management - User">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Company and User Management - User" enabled="true">
         <intProp name="ThreadGroup.num_threads">100</intProp>
         <stringProp name="ThreadGroup.ramp_time">${__P(rampup,0)}</stringProp>
         <stringProp name="ThreadGroup.duration">${__P(duration,3000)}</stringProp>
@@ -160,7 +160,7 @@
           <stringProp name="LoopController.loops">${numUsers}</stringProp>
         </LoopController>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ppcSearch">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ppcSearch" enabled="true">
           <stringProp name="HTTPSampler.path">${VEHICLES_API_URL}/permits?searchColumn=permitNumber&amp;searchString=1&amp;page=1&amp;take=10 </stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -261,7 +261,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="getPpcUsers">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="getPpcUsers" enabled="true">
           <stringProp name="HTTPSampler.path">${VEHICLES_API_URL}/users?userRole=PPCCLERK&amp;permitIssuerPPCUser=true</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -355,7 +355,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="getUserClaims">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="getUserClaims" enabled="true">
           <stringProp name="HTTPSampler.path">${VEHICLES_API_URL}/users/claims?companyId=${COMPANY_ID}</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -449,7 +449,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="verifyUserContext">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="verifyUserContext" enabled="true">
           <stringProp name="HTTPSampler.path">${VEHICLES_API_URL}/users/user-context</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -638,7 +638,7 @@
           <hashTree/>
         </hashTree>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="IDIR ppc retrived permit and receipt pdf">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="IDIR ppc retrived permit and receipt pdf" enabled="true">
         <stringProp name="ThreadGroup.num_threads">${USERS}</stringProp>
         <stringProp name="ThreadGroup.ramp_time">${__P(rampup,0)}</stringProp>
         <stringProp name="ThreadGroup.duration">${__P(duration,3000)}</stringProp>
@@ -719,7 +719,7 @@
         </HTTPSamplerProxy>
         <hashTree/>
       </hashTree>
-      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree">
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>
