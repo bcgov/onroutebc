@@ -54,7 +54,7 @@ export const ReportDateTimePickers = ({
     if (enableDateRangeValidation) {
       validateToDateTime();
     }
-  }, [fromDateTime, toDateTime]);
+  }, [fromDateTime, toDateTime, enableDateRangeValidation]);
 
   return (
     <>
