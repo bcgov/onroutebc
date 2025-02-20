@@ -53,10 +53,12 @@ export const useApplicationFormContext = () => {
     onClearVehicle,
     onUpdateLOAs,
     onUpdateHighwaySequence,
+    onUpdateTotalDistance,
     onUpdateVehicleConfigTrailers,
     onSetCommodityType,
     onUpdateVehicleConfig,
     onClearVehicleConfig,
+    onUpdateThirdPartyLiability,
   } = useApplicationFormUpdateMethods();
 
   const {
@@ -75,6 +77,7 @@ export const useApplicationFormContext = () => {
     permittedRoute,
     permittedCommodity,
     vehicleConfiguration,
+    thirdPartyLiability,
   } = formData.permitData;
 
   const createdAt = useMemoizedObject(
@@ -154,7 +157,6 @@ export const useApplicationFormContext = () => {
   } = usePermitVehicles({
     policyEngine,
     permitType,
-    isLcvDesignated,
     vehicleFormData,
     allVehiclesFromInventory,
     selectedLOAs: currentSelectedLOAs,
@@ -232,11 +234,13 @@ export const useApplicationFormContext = () => {
     revisionHistory: memoizedRevisionHistory,
     commodityOptions,
     highwaySequence,
+    totalDistance: permittedRoute?.manualRoute?.totalDistance,
     nextAllowedSubtypes,
     powerUnitSubtypeNamesMap,
     trailerSubtypeNamesMap,
     selectedVehicleConfigSubtypes,
     vehicleConfiguration,
+    thirdPartyLiability,
     onLeave,
     onSave,
     onCancel,
@@ -249,9 +253,11 @@ export const useApplicationFormContext = () => {
     onClearVehicle,
     onUpdateLOAs,
     onUpdateHighwaySequence,
+    onUpdateTotalDistance,
     onUpdateVehicleConfigTrailers,
     commodityType: permittedCommodity?.commodityType,
     onChangeCommodityType,
     onUpdateVehicleConfig,
+    onUpdateThirdPartyLiability,
   };
 };

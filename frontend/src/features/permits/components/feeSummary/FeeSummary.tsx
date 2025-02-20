@@ -1,24 +1,18 @@
+import "./FeeSummary.scss";
 import { Nullable } from "../../../../common/types/common";
 import { feeSummaryDisplayText } from "../../helpers/feeSummary";
 import { getPermitTypeName, PermitType } from "../../types/PermitType";
-import "./FeeSummary.scss";
 
 export const FeeSummary = ({
   permitType,
   feeSummary,
-  permitDuration,
   hideDescriptions,
 }: {
   permitType?: Nullable<PermitType>;
   feeSummary?: Nullable<string>;
-  permitDuration?: number;
   hideDescriptions?: boolean;
 }) => {
-  const feeDisplayText = feeSummaryDisplayText(
-    feeSummary,
-    permitDuration,
-    permitType,
-  );
+  const feeDisplayText = feeSummaryDisplayText(feeSummary);
 
   return (
     <div className="fee-summary">

@@ -347,6 +347,9 @@ const STICKY_SIDE_BAR = {
   MANAGE_PPC_USERS_BUTTON: {
     allowedIDIRRoles: [SA],
   },
+  BRIDGE_FORMULA_CALCULATION_TOOL_BUTTON: {
+    allowedIDIRRoles: [HQA, SA, PC, CTPO, EO],
+  },
 } as const;
 
 const MANAGE_PPC_USERS = {
@@ -432,6 +435,13 @@ const MISCELLANEOUS = {
   // Add this in permissions matrix document.
   STAFF_ACT_AS_COMPANY: {
     allowedIDIRRoles: [PC, SA, FIN, CTPO, HQA],
+  },
+
+  /**
+   * Bridge Formula Calculation Tool available from Sidebar
+   */
+  BRIDGE_FORMULA_CALCULATION_TOOL: {
+    allowedIDIRRoles: [HQA, SA, PC, CTPO, EO],
   },
 } as const;
 

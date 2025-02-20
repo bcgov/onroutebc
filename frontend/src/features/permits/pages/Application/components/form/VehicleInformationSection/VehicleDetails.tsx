@@ -44,11 +44,13 @@ import {
 } from "../../../../../constants/constants";
 
 import {
+  invalidInput,
   invalidNumber,
   invalidPlateLength,
   invalidVINLength,
   invalidYearMin,
   licensedGVWExceeded,
+  provinceVehicleDoesNotRequirePermit,
   requiredMessage,
 } from "../../../../../../../common/helpers/validationMessages";
 
@@ -73,7 +75,25 @@ export const VehicleDetails = ({
   onSetVehicle: (vehicleDetails: PermitVehicleDetails) => void;
   onClearVehicle: (saveVehicle: boolean) => void;
 }) => {
-  const powerUnitsOnly = permitType === PERMIT_TYPES.STOS;
+  const hideVehicleType = permitType === PERMIT_TYPES.STOS;
+  const disableVehicleType = ([
+    PERMIT_TYPES.MFP,
+    PERMIT_TYPES.STFR,
+    PERMIT_TYPES.QRFR,
+  ] as PermitType[]).includes(permitType);
+
+  const showGVW = ([
+    PERMIT_TYPES.STOS,
+    PERMIT_TYPES.MFP,
+    PERMIT_TYPES.STFR,
+    PERMIT_TYPES.QRFR,
+  ] as PermitType[]).includes(permitType);
+
+  const shouldValidateProvince = ([
+    PERMIT_TYPES.STFR,
+    PERMIT_TYPES.QRFR,
+  ] as PermitType[]).includes(permitType);
+
   const vehicleType = vehicleFormData.vehicleType;
 
   // Choose vehicle based on either Unit Number or Plate
@@ -96,7 +116,7 @@ export const VehicleDetails = ({
         )
       : undefined;
 
-    return Boolean(existingVehicle);
+    return disableVehicleType || Boolean(existingVehicle);
   };
 
   const disableVehicleTypeSelect = shouldDisableVehicleTypeSelect();
@@ -292,9 +312,16 @@ export const VehicleDetails = ({
           isProvinceRequired={true}
           readOnly={isSelectedLOAVehicle}
           disabled={isSelectedLOAVehicle}
+          provinceValidationRules={{
+            shouldNotBeInBC: (province?: string) =>
+              !shouldValidateProvince
+              || !province
+              || province !== "BC"
+              || provinceVehicleDoesNotRequirePermit("BC"),
+          }}
         />
 
-        {!powerUnitsOnly ? (
+        {!hideVehicleType ? (
           <CustomFormComponent
             className="vehicle-details__input"
             type="select"
@@ -348,7 +375,7 @@ export const VehicleDetails = ({
           disabled={isSelectedLOAVehicle}
         />
 
-        {powerUnitsOnly ? (
+        {showGVW ? (
           <CustomFormComponent
             className="vehicle-details__input"
             type="input"
@@ -357,6 +384,7 @@ export const VehicleDetails = ({
               name: "permitData.vehicleDetails.licensedGVW",
               rules: {
                 required: { value: true, message: requiredMessage() },
+                min: { value: 0, message: invalidInput() },
                 validate: {
                   isNumber: (v) => !isNaN(v) || invalidNumber(),
                   exceededGvw: (v) => {

@@ -16,6 +16,9 @@ export const requiredMessage = () => validationMessages.required.defaultMessage;
 export const selectionRequired = () =>
   validationMessages.selectionRequired.defaultMessage;
 export const invalidNumber = () => validationMessages.NaN.defaultMessage;
+
+export const invalidInput = () => validationMessages.invalid.defaultMessage;
+
 export const mustBeGreaterThan = (val: number) => {
   const { messageTemplate, placeholders } = validationMessages.greaterThan;
   return replacePlaceholders(messageTemplate, placeholders, val);
@@ -149,6 +152,13 @@ export const requiredUpload = (uploadItem: string) => {
 export const requiredHighway = () => validationMessages.highway.missing;
 
 export const requiredPowerUnit = () => validationMessages.powerUnit.required;
+
+export const provinceVehicleDoesNotRequirePermit = (province: string) => {
+  const { messageTemplate, placeholders }
+    = validationMessages.province.provinceVehicleDoesNotRequirePermit;
+  
+  return replacePlaceholders(messageTemplate, placeholders, province);
+};
 
 /**
  * Checks if a given string is

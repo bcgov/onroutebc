@@ -19,6 +19,7 @@ export const SEARCH_BY_FILTERS = {
   COMPANY_NAME: "companyName",
   ONROUTEBC_CLIENT_NUMBER: "onRouteBCClientNumber",
   APPLICATION_NUMBER: "applicationNumber",
+  VIN: "vin",
 } as const;
 
 export type SearchByFilter =

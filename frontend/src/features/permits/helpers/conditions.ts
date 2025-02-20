@@ -1,5 +1,7 @@
 import { isVehicleSubtypeLCV } from "../../manageVehicles/helpers/vehicleSubtypes";
 import { LCV_CONDITION } from "../constants/constants";
+import { MANDATORY_STFR_CONDITIONS, STFR_CONDITIONS } from "../constants/stfr";
+import { MANDATORY_MFP_CONDITIONS, MFP_CONDITIONS } from "../constants/mfp";
 import { MANDATORY_STOS_CONDITIONS, STOS_CONDITIONS } from "../constants/stos";
 import { MANDATORY_TROS_CONDITIONS, TROS_CONDITIONS } from "../constants/tros";
 import { MANDATORY_TROW_CONDITIONS, TROW_CONDITIONS } from "../constants/trow";
@@ -18,6 +20,10 @@ export const getMandatoryConditions = (
 ) => {
   const additionalConditions = includeLcvCondition ? [LCV_CONDITION] : [];
   switch (permitType) {
+    case PERMIT_TYPES.STFR:
+      return MANDATORY_STFR_CONDITIONS.concat(additionalConditions);
+    case PERMIT_TYPES.MFP:
+      return MANDATORY_MFP_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.STOS:
       return MANDATORY_STOS_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.TROW:
@@ -35,6 +41,10 @@ const getConditionsByPermitType = (
 ) => {
   const additionalConditions = includeLcvCondition ? [LCV_CONDITION] : [];
   switch (permitType) {
+    case PERMIT_TYPES.STFR:
+      return STFR_CONDITIONS.concat(additionalConditions);
+    case PERMIT_TYPES.MFP:
+      return MFP_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.STOS:
       return STOS_CONDITIONS.concat(additionalConditions);
     case PERMIT_TYPES.TROW:

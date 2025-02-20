@@ -9,7 +9,7 @@ import { arePermitLOADetailsEqual, PermitLOA } from "../types/PermitLOA";
 import { areOrderedSequencesEqual, doUniqueArraysHaveSameObjects } from "../../../common/helpers/equality";
 import { ReplaceDayjsWithString } from "../types/utility";
 import { PermittedCommodity } from "../types/PermittedCommodity";
-import { PermittedRoute } from "../types/PermittedRoute";
+import { ManualRoute, PermittedRoute } from "../types/PermittedRoute";
 import { PermitVehicleConfiguration } from "../types/PermitVehicleConfiguration";
 
 /**
@@ -184,10 +184,42 @@ export const areVehicleConfigurationsEqual = (
   ) && (
     getDefaultRequiredVal(0, vehicleConfig1?.rearProjection)
       === getDefaultRequiredVal(0, vehicleConfig2?.rearProjection)
+  ) && (
+    getDefaultRequiredVal(0, vehicleConfig1?.loadedGVW)
+      === getDefaultRequiredVal(0, vehicleConfig2?.loadedGVW)
   ) && areOrderedSequencesEqual(
     vehicleConfig1?.trailers,
     vehicleConfig2?.trailers,
     (trailer1, trailer2) => trailer1.vehicleSubType === trailer2.vehicleSubType,
+  );
+};
+
+/**
+ * Compare whether or not the manual route details for two permits are equal.
+ * @param manualRoute1 Manual route details belonging to the first permit
+ * @param manualRoute2 Manual route details belonging to the second permit
+ * @returns true when the manual route details are considered equivalent, false otherwise
+ */
+export const areManualRoutesEqual = (
+  manualRoute1?: Nullable<ManualRoute>,
+  manualRoute2?: Nullable<ManualRoute>,
+) => {
+  return (
+    getDefaultRequiredVal("", manualRoute1?.origin)
+      === getDefaultRequiredVal("", manualRoute2?.origin)
+  ) && (
+    getDefaultRequiredVal("", manualRoute1?.destination)
+      === getDefaultRequiredVal("", manualRoute2?.destination)
+  ) && (
+    getDefaultRequiredVal("", manualRoute1?.exitPoint)
+      === getDefaultRequiredVal("", manualRoute2?.exitPoint)
+  ) && (
+    getDefaultRequiredVal(0, manualRoute1?.totalDistance)
+      === getDefaultRequiredVal(0, manualRoute2?.totalDistance)
+  ) && areOrderedSequencesEqual(
+    manualRoute1?.highwaySequence,
+    manualRoute2?.highwaySequence,
+    (seqNumber1, seqNumber2) => seqNumber1 === seqNumber2,
   );
 };
 
@@ -201,25 +233,12 @@ export const arePermittedRoutesEqual = (
   permittedRoute1?: Nullable<PermittedRoute>,
   permittedRoute2?: Nullable<PermittedRoute>,
 ) => {
-  return (
-    getDefaultRequiredVal("", permittedRoute1?.manualRoute?.origin)
-      === getDefaultRequiredVal("", permittedRoute2?.manualRoute?.origin)
-  ) && (
-    getDefaultRequiredVal("", permittedRoute1?.manualRoute?.destination)
-      === getDefaultRequiredVal("", permittedRoute2?.manualRoute?.destination)
-  ) && (
-    getDefaultRequiredVal("", permittedRoute1?.manualRoute?.exitPoint)
-      === getDefaultRequiredVal("", permittedRoute2?.manualRoute?.exitPoint)
-  ) && (
-    getDefaultRequiredVal(0, permittedRoute1?.manualRoute?.totalDistance)
-      === getDefaultRequiredVal(0, permittedRoute2?.manualRoute?.totalDistance)
+  return areManualRoutesEqual(
+    permittedRoute1?.manualRoute,
+    permittedRoute2?.manualRoute,
   ) && (
     getDefaultRequiredVal("", permittedRoute1?.routeDetails)
       === getDefaultRequiredVal("", permittedRoute2?.routeDetails)
-  ) && areOrderedSequencesEqual(
-    permittedRoute1?.manualRoute?.highwaySequence,
-    permittedRoute2?.manualRoute?.highwaySequence,
-    (seqNumber1, seqNumber2) => seqNumber1 === seqNumber2,
   );
 };
 
@@ -247,6 +266,10 @@ export const areApplicationPermitDataEqual = (
     arePermittedRoutesEqual(data1.permittedRoute, data2.permittedRoute) &&
     (getDefaultRequiredVal("", data1.applicationNotes)
       === getDefaultRequiredVal("", data2.applicationNotes)) &&
+    (getDefaultRequiredVal("", data1.thirdPartyLiability)
+      === getDefaultRequiredVal("", data2.thirdPartyLiability)) &&
+    (getDefaultRequiredVal("", data1.conditionalLicensingFee)
+      === getDefaultRequiredVal("", data2.conditionalLicensingFee)) &&
     ((!data1.companyName && !data2.companyName) ||
       data1.companyName === data2.companyName) &&
     ((!data1.doingBusinessAs && !data2.doingBusinessAs) ||
