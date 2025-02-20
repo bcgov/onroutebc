@@ -54,61 +54,23 @@ export const CSVPaymentAndRefundSummary = () => {
     setIsGeneratingReport(() => true);
     try {
       const response = await getPaymentAndRefundSummaryMock();
-      console.log("resonse::", response);
-      const csvString = Papa.unparse(
-        [
-          {
-            "ISSUED ON": "Jul. 17, 2023, 09:00 PM, PDT",
-            "PROVIDER TRAN ID": "56709123890",
-            "ORBC TRAN ID": "OR-678904512857",
-            "PAYMENT METHOD": "Cash",
-            "RECEIPT #": "45098721098",
-            "PERMIT #": "P2-72106199-468",
-            "PERMIT TYPE": "STOW",
-            USER: "ANPETRIC",
-            AMOUNT: "90",
-            "TRANSACTION TYPE": "Payment",
-          },
-          {
-            "ISSUED ON": "Jul. 17, 2023, 09:20 PM, PDT",
-            "PROVIDER TRAN ID": "56709123890",
-            "ORBC TRAN ID": "OR-678904512857",
-            "PAYMENT METHOD": "Cash",
-            "RECEIPT #": "56709123890",
-            "PERMIT #": "P2-87768836-955",
-            "PERMIT TYPE": "TROS",
-            USER: "JLESLIE",
-            AMOUNT: "90",
-            "TRANSACTION TYPE": "Payment",
-          },
-          {
-            "ISSUED ON": "Jul. 17, 2023, 09:20 PM, PDT",
-            "PROVIDER TRAN ID": "56709123890",
-            "ORBC TRAN ID": "OR-678904512857",
-            "PAYMENT METHOD": "Cash",
-            "RECEIPT #": "56709123891",
-            "PERMIT #": "P2-87768836-956",
-            "PERMIT TYPE": "TROS",
-            USER: "JLESLIE",
-            AMOUNT: "-90.54",
-            "TRANSACTION TYPE": "Refund",
-          },
-        ],
-        {
+      if (response.status === 200) {
+        const { data } = response;
+        console.log("data::", data);
+        const csvString = Papa.unparse(data, {
           header: true,
           quotes: false,
-        },
-      );
-
-      const csvData = new Blob([csvString], {
-        type: "text/csv;charset=utf-8;",
-      });
-      const csvURL = URL.createObjectURL(csvData);
-      const tempLink = document.createElement("a");
-      tempLink.style.display = "none";
-      tempLink.href = csvURL;
-      tempLink.setAttribute("download", "payment-summary.csv");
-      tempLink.click();
+        });
+        const csvData = new Blob([csvString], {
+          type: "text/csv;charset=utf-8;",
+        });
+        const csvURL = URL.createObjectURL(csvData);
+        const tempLink = document.createElement("a");
+        tempLink.style.display = "none";
+        tempLink.href = csvURL;
+        tempLink.setAttribute("download", "payment-summary.csv");
+        tempLink.click();
+      }
     } catch (err) {
       console.error(err);
       setSnackBar({
