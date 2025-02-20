@@ -1,6 +1,5 @@
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { AxiosError } from "axios";
 import { MRT_PaginationState, MRT_SortingState } from "material-react-table";
 import {
   keepPreviousData,
@@ -8,23 +7,25 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-
-import { canViewApplicationQueue } from "../helpers/canViewApplicationQueue";
 import { CaseActivityType } from "../types/CaseActivityType";
 import { ERROR_ROUTES } from "../../../routes/constants";
 import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
-import { IDIRUserRoleType } from "../../../common/authentication/types";
 import { Nullable } from "../../../common/types/common";
 import { useTableControls } from "../../permits/hooks/useTableControls";
-import { APPLICATION_QUEUE_STATUSES, ApplicationQueueStatus } from "../types/ApplicationQueueStatus";
+import {
+  APPLICATION_QUEUE_STATUSES,
+  ApplicationQueueStatus,
+} from "../types/ApplicationQueueStatus";
 import {
   claimApplicationInQueue,
+  getApplicationInQueueMetadata,
   getApplicationsInQueue,
   getClaimedApplicationsInQueue,
   getUnclaimedApplicationsInQueue,
   submitApplicationForReview,
   updateApplicationQueueStatus,
 } from "../apiManager/queueAPI";
+import { usePermissionMatrix } from "../../../common/authentication/PermissionMatrix";
 
 const QUEUE_QUERY_KEYS_BASE = "queue";
 
@@ -33,23 +34,23 @@ const QUEUE_QUERY_KEYS_BASE = "queue";
  *
  * eg. ["queue"] and ["queue", undefined] refers to all (ApplicationQueueStatus) queue items
  * (regardless of pagination and sorting)
- * 
+ *
  * eg. ["queue", "IN_REVIEW"] only refers to "IN_REVIEW" queue items
  */
 const QUEUE_QUERY_KEYS = {
   ALL_ITEMS: [QUEUE_QUERY_KEYS_BASE] as const,
-  WITH_STATUS: (status?: ApplicationQueueStatus) => [
-    ...QUEUE_QUERY_KEYS.ALL_ITEMS,
-    status,
-  ] as const,
+  WITH_STATUS: (status?: ApplicationQueueStatus) =>
+    [...QUEUE_QUERY_KEYS.ALL_ITEMS, status] as const,
   WITH_PAGINATION: (
     pagination: MRT_PaginationState,
     sorting: MRT_SortingState,
     status?: ApplicationQueueStatus,
-  ) => [
-    ...QUEUE_QUERY_KEYS.WITH_STATUS(status),
-    { pagination, sorting },
-  ] as const,
+  ) =>
+    [...QUEUE_QUERY_KEYS.WITH_STATUS(status), { pagination, sorting }] as const,
+  APPLICATION_METADATA: (applicationId: string) => [
+    QUEUE_QUERY_KEYS_BASE,
+    { applicationId },
+  ],
 };
 
 /**
@@ -58,12 +59,18 @@ const QUEUE_QUERY_KEYS = {
  * @returns All applications in queue (PENDING_REVIEW and IN_REVIEW) along with pagination state and setter
  */
 export const useApplicationsInQueueQuery = () => {
-  const { idirUserDetails, companyId } = useContext(OnRouteBCContext);
-  const userRole = idirUserDetails?.userRole as IDIRUserRoleType;
+  const { companyId } = useContext(OnRouteBCContext);
+
+  const canViewApplicationQueue = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "STAFF_HOME_SCREEN",
+      permissionMatrixFunctionKey: "VIEW_QUEUE",
+    },
+  });
 
   // if typeof company === "undefined" here we know that the staff user is NOT acting as a company
   const getStaffQueue =
-    canViewApplicationQueue(userRole) && typeof companyId === "undefined";
+    canViewApplicationQueue && typeof companyId === "undefined";
 
   const { pagination, setPagination, sorting, setSorting, orderBy } =
     useTableControls();
@@ -195,8 +202,9 @@ export const useUpdateApplicationInQueueStatus = () => {
     onSuccess: () => {
       invalidate();
     },
-    onError: (err: AxiosError) => {
+    onError: (err: any) => {
       if (err.response?.status === 422) {
+        // console.log({ err });
         return err;
       } else {
         navigate(ERROR_ROUTES.UNEXPECTED, {
@@ -215,14 +223,8 @@ export const useSubmitApplicationForReview = () => {
   const { invalidate } = useInvalidateApplicationsInQueue();
 
   return useMutation({
-    mutationFn: async (data: {
-      companyId: number;
-      applicationId: string;
-    }) => {
-      return submitApplicationForReview(
-        data.companyId,
-        data.applicationId,
-      );
+    mutationFn: async (data: { companyId: number; applicationId: string }) => {
+      return submitApplicationForReview(data.companyId, data.applicationId);
     },
     onSuccess: () => {
       invalidate();
@@ -244,4 +246,25 @@ export const useInvalidateApplicationsInQueue = () => {
       });
     },
   };
+};
+
+/**
+ * Hook that fetches additional information for a given applicationId.
+ * @returns Application Metadata including the "assignedUser" property used by the queue feature
+ */
+export const useApplicationInQueueMetadata = ({
+  companyId,
+  applicationId,
+}: {
+  companyId: number;
+  applicationId: string;
+}) => {
+  const { idirUserDetails } = useContext(OnRouteBCContext);
+  return useQuery({
+    queryKey: QUEUE_QUERY_KEYS.APPLICATION_METADATA(applicationId),
+    queryFn: () => getApplicationInQueueMetadata(companyId, applicationId),
+    // enable fetching only when applicationId is defined and user is IDIR user
+    enabled: Boolean(companyId && applicationId && idirUserDetails),
+    staleTime: 0,
+  });
 };
