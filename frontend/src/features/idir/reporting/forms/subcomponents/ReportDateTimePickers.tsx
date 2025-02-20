@@ -125,6 +125,8 @@ export const ReportDateTimePickers = ({
              * The reports API account for a rounding value which allows this buffer.
              *
              * Hence the decision to add 1 minute to 30 days, to make life easier for user.
+             * 
+             * Note: Date range validation is not applicable for Summary Reports.
              */
             maxDateTime={
               enableDateRangeValidation
