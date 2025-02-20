@@ -7,12 +7,9 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-
-import { canViewApplicationQueue } from "../helpers/canViewApplicationQueue";
 import { CaseActivityType } from "../types/CaseActivityType";
 import { ERROR_ROUTES } from "../../../routes/constants";
 import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
-import { IDIRUserRoleType } from "../../../common/authentication/types";
 import { Nullable } from "../../../common/types/common";
 import { useTableControls } from "../../permits/hooks/useTableControls";
 import {
@@ -28,6 +25,7 @@ import {
   submitApplicationForReview,
   updateApplicationQueueStatus,
 } from "../apiManager/queueAPI";
+import { usePermissionMatrix } from "../../../common/authentication/PermissionMatrix";
 
 const QUEUE_QUERY_KEYS_BASE = "queue";
 
@@ -61,12 +59,18 @@ const QUEUE_QUERY_KEYS = {
  * @returns All applications in queue (PENDING_REVIEW and IN_REVIEW) along with pagination state and setter
  */
 export const useApplicationsInQueueQuery = () => {
-  const { idirUserDetails, companyId } = useContext(OnRouteBCContext);
-  const userRole = idirUserDetails?.userRole as IDIRUserRoleType;
+  const { companyId } = useContext(OnRouteBCContext);
+
+  const canViewApplicationQueue = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "STAFF_HOME_SCREEN",
+      permissionMatrixFunctionKey: "VIEW_QUEUE",
+    },
+  });
 
   // if typeof company === "undefined" here we know that the staff user is NOT acting as a company
   const getStaffQueue =
-    canViewApplicationQueue(userRole) && typeof companyId === "undefined";
+    canViewApplicationQueue && typeof companyId === "undefined";
 
   const { pagination, setPagination, sorting, setSorting, orderBy } =
     useTableControls();
