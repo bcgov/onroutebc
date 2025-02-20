@@ -98,6 +98,13 @@ export const PermitSearchResultColumnDef = (
     size: 20,
   },
   {
+    accessorKey: "vin",
+    header: "VIN (last 6 digits)",
+    enableSorting: true,
+    sortingFn: "alphanumeric",
+    size: 20,
+  },
+  {
     accessorKey: "legalName",
     header: "Company Name",
     enableSorting: true,
