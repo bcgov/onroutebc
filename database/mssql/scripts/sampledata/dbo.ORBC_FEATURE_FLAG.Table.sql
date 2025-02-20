@@ -362,7 +362,7 @@ VALUES
   (
     '16',
     'QRFR',
-    'DISABLED',
+    'ENABLED',
     NULL,
     N'dbo',
     GETUTCDATE(),
