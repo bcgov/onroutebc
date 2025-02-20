@@ -8,6 +8,7 @@ import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints"
 import { ONE_HOUR } from "../../../../common/constants/constants";
 import {
   httpGETRequest,
+  httpGETRequestStream,
   httpPOSTRequestStream,
 } from "../../../../common/apiManager/httpRequestHandler";
 
@@ -57,7 +58,7 @@ export const getPaymentAndRefundSummary = async (
 export const getPaymentAndRefundSummaryMock = async (
 ) => {
   const url = `${VEHICLES_URL}/permits/reports`;
-  return await httpGETRequest(url.toString());
+  return await httpGETRequestStream(url.toString());
 };
 
 /**

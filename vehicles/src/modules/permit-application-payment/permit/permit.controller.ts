@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Controller,
   Post,
@@ -8,6 +9,7 @@ import {
   Query,
   ForbiddenException,
   UseGuards,
+  Res,
 } from '@nestjs/common';
 import { PermitService } from './permit.service';
 import { ExceptionDto } from '../../../common/exception/exception.dto';
@@ -21,7 +23,7 @@ import {
   ApiOperation,
 } from '@nestjs/swagger';
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { Permissions } from 'src/common/decorator/permissions.decorator';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
@@ -40,6 +42,7 @@ import { ReadNotificationDto } from '../../common/dto/response/read-notification
 import { PermitReceiptDocumentService } from '../permit-receipt-document/permit-receipt-document.service';
 import { JwtServiceAccountAuthGuard } from 'src/common/guard/jwt-sa-auth.guard';
 import { PermitIdDto } from 'src/modules/permit-application-payment/permit/dto/request/permit-id.dto';
+import { Readable } from 'stream';
 
 @ApiBearerAuth()
 @ApiTags('Permit: API accessible exclusively to staff users.')
@@ -233,8 +236,8 @@ export class PermitController {
   }
 
   @Get('/reports')
-  getReportMockData() {
-    return [
+  getReportMockData(@Res() res: Response) {
+    const jsonToSend = Buffer.from([
       {
         'ISSUED ON': 'Jul. 17, 2023, 09:00 PM, PDT',
         'PROVIDER TRAN ID': '5609123890',
@@ -271,6 +274,61 @@ export class PermitController {
         AMOUNT: '-90.54',
         'TRANSACTION TYPE': 'Refund',
       },
-    ];
+    ].toString());
+    res.setHeader('Content-Length', jsonToSend.length);
+    res.setHeader('Content-Type', 'application/json');
+    const stream = new Readable();
+    stream.push(jsonToSend, 'utf-8');
+    stream.push(null); // indicates end-of-file basically - the end of the stream
+    stream.pipe(res);
+    /*Wait for the stream to end before sending the response status and
+        headers. This ensures that the client receives a complete response and
+        prevents any issues with partial responses or response headers being
+        sent prematurely.*/
+    stream.on('end', () => {
+      return null;
+    });
+    stream.on('error', () => {
+      throw new Error('An error occurred while reading the file.');
+    });
+    res.status(200);
+    // return [
+    //   {
+    //     'ISSUED ON': 'Jul. 17, 2023, 09:00 PM, PDT',
+    //     'PROVIDER TRAN ID': '5609123890',
+    //     'ORBC TRAN ID': 'OR-6904512857',
+    //     'PAYMENT METHOD': 'Cash',
+    //     'RECEIPT #': '458721098',
+    //     'PERMIT #': 'P2-78106199-468',
+    //     'PERMIT TYPE': 'STOW',
+    //     USER: 'USERABC',
+    //     AMOUNT: '90',
+    //     'TRANSACTION TYPE': 'Payment',
+    //   },
+    //   {
+    //     'ISSUED ON': 'Jul. 17, 2023, 09:20 PM, PDT',
+    //     'PROVIDER TRAN ID': '56799123890',
+    //     'ORBC TRAN ID': 'OR-678904012857',
+    //     'PAYMENT METHOD': 'Cash',
+    //     'RECEIPT #': '56709123690',
+    //     'PERMIT #': 'P2-87769836-955',
+    //     'PERMIT TYPE': 'TROS',
+    //     USER: 'USERBCD',
+    //     AMOUNT: '90',
+    //     'TRANSACTION TYPE': 'Payment',
+    //   },
+    //   {
+    //     'ISSUED ON': 'Jul. 17, 2023, 09:20 PM, PDT',
+    //     'PROVIDER TRAN ID': '36709123890',
+    //     'ORBC TRAN ID': 'OR-608904512857',
+    //     'PAYMENT METHOD': 'Cash',
+    //     'RECEIPT #': '56709123191',
+    //     'PERMIT #': 'P2-87768855-956',
+    //     'PERMIT TYPE': 'TROS',
+    //     USER: 'USEREFG',
+    //     AMOUNT: '-90.54',
+    //     'TRANSACTION TYPE': 'Refund',
+    //   },
+    // ];
   }
 }
