@@ -249,7 +249,7 @@ export const PaymentAndRefundDetail = () => {
                 </Stack>
               )}
               <Stack direction="row" spacing={3}>
-                <ReportDateTimePickers />
+                <ReportDateTimePickers enableDateRangeValidation={true}/>
               </Stack>
               <br />
               <Stack direction="row">
