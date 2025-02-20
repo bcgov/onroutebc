@@ -237,7 +237,8 @@ export class PermitController {
 
   @Get('/reports')
   getReportMockData(@Res() res: Response) {
-    const jsonToSend = Buffer.from([
+    // res.writeHead(200, {  'Content-Type': 'application/json' });
+    const stream = Readable.from(JSON.stringify([
       {
         'ISSUED ON': 'Jul. 17, 2023, 09:00 PM, PDT',
         'PROVIDER TRAN ID': '5609123890',
@@ -274,12 +275,12 @@ export class PermitController {
         AMOUNT: '-90.54',
         'TRANSACTION TYPE': 'Refund',
       },
-    ].toString());
-    res.setHeader('Content-Length', jsonToSend.length);
-    res.setHeader('Content-Type', 'application/json');
-    const stream = new Readable();
-    stream.push(jsonToSend, 'utf-8');
-    stream.push(null); // indicates end-of-file basically - the end of the stream
+    ]));
+    // res.setHeader('Content-Type', 'application/json');
+    // res.status(200);
+    
+    // stream.push(jsonToSend, 'utf-8');
+    // stream.push(null); // indicates end-of-file basically - the end of the stream
     stream.pipe(res);
     /*Wait for the stream to end before sending the response status and
         headers. This ensures that the client receives a complete response and
@@ -291,7 +292,7 @@ export class PermitController {
     stream.on('error', () => {
       throw new Error('An error occurred while reading the file.');
     });
-    res.status(200);
+    
     // return [
     //   {
     //     'ISSUED ON': 'Jul. 17, 2023, 09:00 PM, PDT',

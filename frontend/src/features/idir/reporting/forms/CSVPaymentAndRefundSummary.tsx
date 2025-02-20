@@ -54,22 +54,45 @@ export const CSVPaymentAndRefundSummary = () => {
     setIsGeneratingReport(() => true);
     try {
       const response = await getPaymentAndRefundSummaryMock();
-      if (response.status === 200) {
-        const { data } = response;
-        console.log("data::", data);
-        const csvString = Papa.unparse(data, {
-          header: true,
-          quotes: false,
+      console.log('response::', response);
+      if (response.status === 200 && response.body !== null) {
+        const reader = response.body.getReader();
+        const stream = new ReadableStream({
+          start: (controller) => {
+            const processRead = async () => {
+              const { done, value } = await reader.read();
+              if (done) {
+                // When no more data needs to be consumed, close the stream
+                controller.close();
+                return;
+              }
+              // Enqueue the next data chunk into our target stream
+              controller.enqueue(value);
+              await processRead();
+            };
+            processRead();
+          },
         });
-        const csvData = new Blob([csvString], {
-          type: "text/csv;charset=utf-8;",
-        });
-        const csvURL = URL.createObjectURL(csvData);
-        const tempLink = document.createElement("a");
-        tempLink.style.display = "none";
-        tempLink.href = csvURL;
-        tempLink.setAttribute("download", "payment-summary.csv");
-        tempLink.click();
+        const newRes = new Response(stream);
+        const blobObj = await newRes.arrayBuffer();
+        console.log('blobObj::',blobObj);
+        const jsonstring = new TextDecoder().decode(blobObj as ArrayBuffer);
+        console.log('jsonstring::', JSON.parse(jsonstring));
+        // const { data } = response;
+        // console.log("data::", data);
+        // const csvString = Papa.unparse(data, {
+        //   header: true,
+        //   quotes: false,
+        // });
+        // const csvData = new Blob([csvString], {
+        //   type: "text/csv;charset=utf-8;",
+        // });
+        // const csvURL = URL.createObjectURL(csvData);
+        // const tempLink = document.createElement("a");
+        // tempLink.style.display = "none";
+        // tempLink.href = csvURL;
+        // tempLink.setAttribute("download", "payment-summary.csv");
+        // tempLink.click();
       }
     } catch (err) {
       console.error(err);
