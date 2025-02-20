@@ -347,6 +347,9 @@ const STICKY_SIDE_BAR = {
   MANAGE_PPC_USERS_BUTTON: {
     allowedIDIRRoles: [SA],
   },
+  BRIDGE_FORMULA_CALCULATION_TOOL_BUTTON: {
+    allowedIDIRRoles: [HQA, SA, PC, CTPO, EO],
+  },
 } as const;
 
 const MANAGE_PPC_USERS = {
