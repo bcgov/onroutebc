@@ -29,20 +29,8 @@ export class CreatePaymentSummaryReportDto {
   @ApiProperty({
     example: '2023-10-27T23:26:51.170Z',
     description:
-      'Include records in the report till the given date and time.' +
-      'The difference between fromDateTime and toDateTime must not be' +
-      ' more than 31 days.',
+      'Include records in the report till the given date and time.'
   })
   @IsDateString()
-  @IsDateTimeAfter<CreatePaymentSummaryReportDto>('fromDateTime', {
-    difference: {
-      maxDiff: 31,
-      unit: 'days',
-    },
-    rounding: {
-      maxDiff: 1,
-      unit: 'hour',
-    },
-  })
   toDateTime: string;
 }
