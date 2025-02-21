@@ -4,7 +4,7 @@ import dayjs, { Dayjs } from "dayjs";
 import userEvent from "@testing-library/user-event";
 import { Options } from "@testing-library/user-event/dist/types/options";
 
-import { DEFAULT_PERMIT_TYPE } from "../../../../../../types/PermitType";
+import { DEFAULT_PERMIT_TYPE, isQuarterlyPermit } from "../../../../../../types/PermitType";
 import { getDefaultConditions, getMandatoryConditions } from "../../../../../../helpers/conditions";
 import { PermitDetails } from "../../PermitDetails";
 import { getExpiryDate } from "../../../../../../helpers/permitState";
@@ -59,7 +59,11 @@ const TestFormWrapper = (props: React.PropsWithChildren) => {
       permitData: {
         startDate: currentDt,
         permitDuration: defaultDuration,
-        expiryDate: getExpiryDate(currentDt, defaultDuration),
+        expiryDate: getExpiryDate(
+          currentDt,
+          isQuarterlyPermit(permitType),
+          defaultDuration,
+        ),
         commodities: [],
         loas: [],
       },
@@ -78,7 +82,12 @@ export const renderTestComponent = (
 ) => {
   const user = userEvent.setup(userEventOptions);
   let selectedConditions = [...conditions];
-  const expiryDate = getExpiryDate(startDate, duration);
+  const expiryDate = getExpiryDate(
+    startDate,
+    isQuarterlyPermit(permitType),
+    duration,
+  );
+
   const allConditions = getDefaultConditions(permitType, false)
     .map(condition => {
       const existingCondition = selectedConditions

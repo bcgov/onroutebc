@@ -64,6 +64,7 @@ export const ApplicationStepPage = ({
   const enableSTOS = featureFlags?.["STOS"] === "ENABLED";
   const enableMFP = featureFlags?.["MFP"] === "ENABLED";
   const enableSTFR = featureFlags?.["STFR"] === "ENABLED";
+  const enableQRFR = featureFlags?.["QRFR"] === "ENABLED";
   
   // Query for the application data whenever this page is rendered
   const {
@@ -101,12 +102,13 @@ export const ApplicationStepPage = ({
   );
 
   // Currently onRouteBC only handles TROS and TROW permits
-  // STOS is only allowed if feature flag is enabled, and same for MFP, STFR, etc.
+  // other permit types are only allowed if its feature flag is enabled
   const isPermitTypeAllowed = () => {
     const allowedPermitTypes: string[] = ([PERMIT_TYPES.TROS, PERMIT_TYPES.TROW] as string[])
       .concat(enableSTOS ? [PERMIT_TYPES.STOS] : [])
       .concat(enableMFP ? [PERMIT_TYPES.MFP] : [])
-      .concat(enableSTFR ? [PERMIT_TYPES.STFR] : []);
+      .concat(enableSTFR ? [PERMIT_TYPES.STFR] : [])
+      .concat(enableQRFR ? [PERMIT_TYPES.QRFR] : []);
 
     return allowedPermitTypes.includes(applicationPermitType);
   };

@@ -11,7 +11,7 @@ describe("Permit States", () => {
     const duration = 30;
 
     // Act
-    const expiryDate = getExpiryDate(startDate, duration);
+    const expiryDate = getExpiryDate(startDate, false, duration);
     const expiryDateStr = dayjsToLocalStr(expiryDate, DATE_FORMATS.DATEONLY);
 
     // Assert
@@ -24,7 +24,7 @@ describe("Permit States", () => {
     const duration = BASE_DAYS_IN_YEAR;
 
     // Act
-    const expiryDate = getExpiryDate(startDate, duration);
+    const expiryDate = getExpiryDate(startDate, false, duration);
     const expiryDateStr = dayjsToLocalStr(expiryDate, DATE_FORMATS.DATEONLY);
 
     // Assert
@@ -37,10 +37,22 @@ describe("Permit States", () => {
     const duration = BASE_DAYS_IN_YEAR;
 
     // Act
-    const expiryDate = getExpiryDate(startDate, duration);
+    const expiryDate = getExpiryDate(startDate, false, duration);
     const expiryDateStr = dayjsToLocalStr(expiryDate, DATE_FORMATS.DATEONLY);
 
     // Assert
     expect(expiryDateStr).toBe("2024-02-29"); // +366 (-1) days
+  });
+
+  it("yields correct expiry date for quarterly permit with given start date", () => {
+    // Arrange
+    const startDate = dayjs("2023-03-01");
+
+    // Act
+    const expiryDate = getExpiryDate(startDate, true, 0);
+    const expiryDateStr = dayjsToLocalStr(expiryDate, DATE_FORMATS.DATEONLY);
+
+    // Assert
+    expect(expiryDateStr).toBe("2023-04-30");
   });
 });
