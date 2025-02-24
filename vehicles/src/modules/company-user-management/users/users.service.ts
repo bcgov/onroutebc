@@ -68,7 +68,7 @@ export class UsersService {
    * returns the error.
    *
    * @param createUserDto Request object of type {@link CreateUserDto} for
-   * creating a new user.
+   * creating a new user in OnRouteBC.
    * @param companyId The company Id.
    * @param currentUser The current user details from the token.
    *
