@@ -2,7 +2,7 @@
 import { Button, Divider, FormGroup, Stack } from "@mui/material";
 import dayjs from "dayjs";
 import { FormProvider, useForm } from "react-hook-form";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { openBlobInNewTab } from "../../../permits/helpers/permitPDFHelper";
@@ -20,6 +20,7 @@ import {
   REPORT_ISSUED_BY,
 } from "../types/types";
 import Papa from "papaparse";
+import { getAccessToken } from "../../../../common/apiManager/httpRequestHandler";
 
 /**
  * Component for Payment and Refund Summary form
@@ -46,6 +47,25 @@ export const CSVPaymentAndRefundSummary = () => {
   const issuedBy = watch("issuedBy");
   const fromDateTime = watch("fromDateTime");
   const toDateTime = watch("toDateTime");
+  const worker: Worker = useMemo(
+    () =>
+      new Worker(new URL("./subcomponents/worker/worker.ts", import.meta.url), { type: "module"}),
+    [],
+  );
+  console.log('worker::', worker);
+
+  useEffect(() => {
+    if (window.Worker) {
+      worker.onmessage = (e: MessageEvent<{ csvURL: string }>) => {
+        console.log('Worker finished');
+        const tempLink = document.createElement("a");
+        tempLink.style.display = "none";
+        tempLink.href = e.data.csvURL;
+        tempLink.setAttribute("download", "payment-summary.csv");
+        tempLink.click();
+      };
+    }
+  }, [worker]);
 
   /**
    * Opens the report in a new tab.
@@ -53,47 +73,48 @@ export const CSVPaymentAndRefundSummary = () => {
   const onClickViewReport = async () => {
     setIsGeneratingReport(() => true);
     try {
-      const response = await getPaymentAndRefundSummaryMock();
-      console.log('response::', response);
-      if (response.status === 200 && response.body !== null) {
-        const reader = response.body.getReader();
-        const stream = new ReadableStream({
-          start: (controller) => {
-            const processRead = async () => {
-              const { done, value } = await reader.read();
-              if (done) {
-                // When no more data needs to be consumed, close the stream
-                controller.close();
-                return;
-              }
-              // Enqueue the next data chunk into our target stream
-              controller.enqueue(value);
-              await processRead();
-            };
-            processRead();
-          },
-        });
-        const newRes = new Response(stream);
-        const blobObj = await newRes.arrayBuffer();
-        console.log('blobObj::',blobObj);
-        const jsonstring = new TextDecoder().decode(blobObj as ArrayBuffer);
-        console.log('jsonstring::', JSON.parse(jsonstring));
-        // const { data } = response;
-        // console.log("data::", data);
-        // const csvString = Papa.unparse(data, {
-        //   header: true,
-        //   quotes: false,
-        // });
-        // const csvData = new Blob([csvString], {
-        //   type: "text/csv;charset=utf-8;",
-        // });
-        // const csvURL = URL.createObjectURL(csvData);
-        // const tempLink = document.createElement("a");
-        // tempLink.style.display = "none";
-        // tempLink.href = csvURL;
-        // tempLink.setAttribute("download", "payment-summary.csv");
-        // tempLink.click();
-      }
+      worker.postMessage({ command: "get-csv", accessToken: getAccessToken()});
+      // const response = await getPaymentAndRefundSummaryMock();
+      // console.log("response::", response);
+      // if (response.status === 200 && response.body !== null) {
+      //   const reader = response.body.getReader();
+      //   const stream = new ReadableStream({
+      //     start: (controller) => {
+      //       const processRead = async () => {
+      //         const { done, value } = await reader.read();
+      //         if (done) {
+      //           // When no more data needs to be consumed, close the stream
+      //           controller.close();
+      //           return;
+      //         }
+      //         // Enqueue the next data chunk into our target stream
+      //         controller.enqueue(value);
+      //         await processRead();
+      //       };
+      //       processRead();
+      //     },
+      //   });
+      //   const newRes = new Response(stream);
+      //   const blobObj = await newRes.arrayBuffer();
+      //   console.log("blobObj::", blobObj);
+      //   const jsonstring = new TextDecoder().decode(blobObj as ArrayBuffer);
+      //   console.log("jsonstring::", JSON.parse(jsonstring));
+      //   // const { data } = response;
+      //   // console.log("data::", data);
+      //   // const csvString = Papa.unparse(data, {
+      //   //   header: true,
+      //   //   quotes: false,
+      //   // });
+      //   // const csvData = new Blob([csvString], {
+      //   //   type: "text/csv;charset=utf-8;",
+      //   // });
+      //   // const csvURL = URL.createObjectURL(csvData);
+      //   // const tempLink = document.createElement("a");
+      //   // tempLink.style.display = "none";
+      //   // tempLink.href = csvURL;
+      //   // tempLink.setAttribute("download", "payment-summary.csv");
+      //   // tempLink.click();
+      // }
     } catch (err) {
       console.error(err);
       setSnackBar({
