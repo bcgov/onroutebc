@@ -193,3 +193,6 @@
 
 ### Version 59:
 - Configure ICBC (QRFR & STFR) permit templates
+
+### Version 60:
+- Configure the APV96 external form in OnRouteBC
