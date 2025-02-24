@@ -21,6 +21,7 @@ import {
 } from "../types/types";
 import Papa from "papaparse";
 import { getAccessToken } from "../../../../common/apiManager/httpRequestHandler";
+import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints";
 
 /**
  * Component for Payment and Refund Summary form
@@ -49,15 +50,17 @@ export const CSVPaymentAndRefundSummary = () => {
   const toDateTime = watch("toDateTime");
   const worker: Worker = useMemo(
     () =>
-      new Worker(new URL("./subcomponents/worker/worker.ts", import.meta.url), { type: "module"}),
+      new Worker(new URL("./subcomponents/worker/worker.ts", import.meta.url), {
+        type: "module",
+      }),
     [],
   );
-  console.log('worker::', worker);
+  console.log("worker::", worker);
 
   useEffect(() => {
     if (window.Worker) {
       worker.onmessage = (e: MessageEvent<{ csvURL: string }>) => {
-        console.log('Worker finished');
+        console.log("Worker finished");
         const tempLink = document.createElement("a");
         tempLink.style.display = "none";
         tempLink.href = e.data.csvURL;
@@ -73,7 +76,11 @@ export const CSVPaymentAndRefundSummary = () => {
   const onClickViewReport = async () => {
     setIsGeneratingReport(() => true);
     try {
-      worker.postMessage({ command: "get-csv", accessToken: getAccessToken()});
+      worker.postMessage({
+        command: "get-csv",
+        accessToken: getAccessToken(),
+        vehiclesURL: VEHICLES_URL,
+      });
       // const response = await getPaymentAndRefundSummaryMock();
       // console.log("response::", response);
       // if (response.status === 200 && response.body !== null) {

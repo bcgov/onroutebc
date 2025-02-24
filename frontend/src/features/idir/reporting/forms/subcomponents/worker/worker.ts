@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-restricted-globals */
 import Papa from "papaparse";
-import { VEHICLES_URL } from "../../../../../../common/apiManager/endpoints/endpoints";
 import { v4 as uuidv4 } from "uuid";
 
 const httpGETRequestStream = (url: string, accessToken: string) => {
@@ -17,17 +16,27 @@ const httpGETRequestStream = (url: string, accessToken: string) => {
  * @param requestObject The {@link PaymentAndRefundSummaryRequest} object
  * @returns A Promise containing the AxiosResponse
  */
-const getPaymentAndRefundSummaryMock = async (accessToken: string) => {
-  const url = `${VEHICLES_URL}/permits/reports`;
+const getPaymentAndRefundSummaryMock = async (
+  vehiclesURL: string,
+  accessToken: string,
+) => {
+  const url = `${vehiclesURL}/permits/reports`;
   return await httpGETRequestStream(url.toString(), accessToken);
 };
 
 self.onmessage = async function (
-  e: MessageEvent<{ command: string; accessToken: string }>,
+  e: MessageEvent<{
+    command: string;
+    accessToken: string;
+    vehiclesURL: string;
+  }>,
 ) {
   console.log("Message: ", e.data);
   if (e.data.command === "get-csv") {
-    const response = await getPaymentAndRefundSummaryMock(e.data.accessToken);
+    const response = await getPaymentAndRefundSummaryMock(
+      e.data.vehiclesURL,
+      e.data.accessToken,
+    );
     console.log("response::", response);
     if (response.status === 200 && response.body !== null) {
       const reader = response.body.getReader();
