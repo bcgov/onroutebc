@@ -99,7 +99,7 @@ export class UsersService {
       throw new BadRequestException('User not invited for this company.');
     }
     //Comment Begin: Business BCeID validation.
-    //In case of busines bceid, validate that the user's bceid matches the company bceid.
+    //In case of busines bceid, validate that the user's bceid matches the onroutebc company bceid.
     //If matches then create user else throw error.
     if (currentUser.bceid_business_guid) {
       const company = await this.companyService.findOneByCompanyGuid(
