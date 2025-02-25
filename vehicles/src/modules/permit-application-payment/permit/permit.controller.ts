@@ -238,7 +238,7 @@ export class PermitController {
   @Get('/reports')
   getReportMockData(@Res() res: Response) {
     // res.writeHead(200, {  'Content-Type': 'application/json' });
-    const stream = Readable.from(JSON.stringify([
+    const stream = Readable.from(JSON.stringify(Array(60000).fill([
       {
         'ISSUED ON': 'Jul. 17, 2023, 09:00 PM, PDT',
         'PROVIDER TRAN ID': '5609123890',
@@ -275,7 +275,7 @@ export class PermitController {
         AMOUNT: '-90.54',
         'TRANSACTION TYPE': 'Refund',
       },
-    ]));
+    ]).flat()));
     // res.setHeader('Content-Type', 'application/json');
     // res.status(200);
     
