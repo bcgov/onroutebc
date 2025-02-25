@@ -2,7 +2,6 @@ import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { ArrayMinSize, IsDateString, IsEnum } from 'class-validator';
 import { PermitIssuedBy } from '../../../../../common/enum/permit-issued-by.enum';
-import { IsDateTimeAfter } from '../../../../../common/decorator/is-date-time-after';
 
 export class CreatePaymentSummaryReportDto {
   @AutoMap()
