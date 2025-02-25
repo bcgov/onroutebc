@@ -28,8 +28,7 @@ export class CreatePaymentSummaryReportDto {
   @AutoMap()
   @ApiProperty({
     example: '2023-10-27T23:26:51.170Z',
-    description:
-      'Include records in the report till the given date and time.'
+    description: 'Include records in the report till the given date and time.',
   })
   @IsDateString()
   toDateTime: string;
