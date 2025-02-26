@@ -15,6 +15,7 @@ import {
   THIRD_PARTY_LIABILITY_DANGEROUS_GOODS,
   THIRD_PARTY_LIABILITY_GENERAL_GOODS,
 } from '../constants/api.constant';
+import { ConditionalLicensingFee } from '../enum/conditional-licensing-fee.enum';
 
 /**
  * Formats the permit data so that it can be used in the templated word documents
@@ -46,6 +47,7 @@ export const formatTemplateData = (
     permitIssueDateTime: '',
     revisionIssueDateTime: '',
     thirdPartyLiability: '',
+    conditionalLicensingFee: '',
   };
 
   template.permitData = JSON.parse(permit.permitData.permitData) as PermitData;
@@ -143,6 +145,29 @@ export const formatTemplateData = (
       break;
     default:
       template.thirdPartyLiability = '';
+  }
+
+  switch (template?.permitData?.conditionalLicensingFee) {
+    case ConditionalLicensingFee.NONE:
+      template.conditionalLicensingFee =
+        constants.CONDITIONAL_LICENSING_NONE_TEXT;
+      break;
+    case ConditionalLicensingFee.CONDITIONAL_LICENSING_FEE_RATE:
+      template.conditionalLicensingFee =
+        constants.CONDITIONAL_LICENSING_FEE_RATE_TEXT;
+      break;
+    case ConditionalLicensingFee.INDUSTRIAL_X_PLATE_TYPE_FEE_RATE:
+      template.conditionalLicensingFee =
+        constants.INDUSTRIAL_X_PLATE_TYPE_FEE_RATE_TEXT;
+      break;
+    case ConditionalLicensingFee.FARM_VEHICLE_FEE_RATE:
+      template.conditionalLicensingFee = constants.FARM_TRACTOR_FEE_RATE_TEXT;
+      break;
+    case ConditionalLicensingFee.FARM_TRACTOR_FEE_RATE:
+      template.conditionalLicensingFee = constants.FARM_TRACTOR_FEE_RATE_TEXT;
+      break;
+    default:
+      template.conditionalLicensingFee = '';
   }
 
   template.loas = template?.permitData?.loas
