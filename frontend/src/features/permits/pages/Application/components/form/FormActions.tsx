@@ -46,7 +46,7 @@ export const FormActions = ({
             data-testid="save-application-button"
           >
             <FontAwesomeIcon icon={faSave} />
-            Save
+            Save Application
           </Button>
         ) : null}
 
