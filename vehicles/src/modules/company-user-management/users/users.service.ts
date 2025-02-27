@@ -302,7 +302,7 @@ export class UsersService {
    * Finds user entities based on optional filtering criteria of userGUID,
    * companyId, and statusCode. Retrieves associated data for userContact,
    * province, country, companyUser, and company. It filters users by status
-   * code with a default of 'ACTIVE' if no status code is provided.
+   * code with a default of 'ACTIVE' if no status code is provided. 
    *
    * @param userGUID (Optional) The user GUID for filtering.
    * @param companyId (Optional) The company ID for filtering.
