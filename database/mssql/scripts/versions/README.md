@@ -199,3 +199,10 @@
 
 ### Version 61:
 - Configure NRQCL & NRSCL permit templates
+
+### Version 62:
+- Support for new GARMS file upload and processing 
+  - Add GARMS_SERVICE_CODE column to ORBC_PERMIT_TYPE table
+  - Add ORBC_GARMS_EXTRACT_TYPE table to define the two types of extract, CASH and CREDIT
+  - Add ORBC_GARMS_EXTRACT_FILE table to represent a file sent to GARMS of one of the two extract types
+  - Add ORBC_GARMS_FILE_TRANSACTION table to associate transactions to the GARMS file they have been sent in
