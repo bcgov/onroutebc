@@ -5,16 +5,20 @@ import {
   DATE_FORMATS,
   toLocal,
 } from "../../../../../../common/helpers/formatDate";
-import { canViewApplicationQueue } from "../../../../../queue/helpers/canViewApplicationQueue";
-import { useContext } from "react";
-import OnRouteBCContext from "../../../../../../common/authentication/OnRouteBCContext";
+import { usePermissionMatrix } from "../../../../../../common/authentication/PermissionMatrix";
 
 export const ReviewApplicationRejectionHistory = ({
   applicationRejectionHistory,
 }: {
   applicationRejectionHistory: ApplicationRejectionHistory[];
 }) => {
-  const { idirUserDetails } = useContext(OnRouteBCContext);
+  const canViewApplicationQueue = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "STAFF_HOME_SCREEN",
+      permissionMatrixFunctionKey: "VIEW_QUEUE",
+    },
+  });
+
   return (
     <Box className="rejection-history">
       <Box className="rejection-history__header">
@@ -35,7 +39,7 @@ export const ReviewApplicationRejectionHistory = ({
             >
               <div className="item__row item__row--flex">
                 <Typography>
-                  {canViewApplicationQueue(idirUserDetails?.userRole)
+                  {canViewApplicationQueue
                     ? `${item.userName}, ${toLocal(item.dateTime, DATE_FORMATS.LONG)}`
                     : toLocal(item.dateTime, DATE_FORMATS.LONG)}
                 </Typography>
