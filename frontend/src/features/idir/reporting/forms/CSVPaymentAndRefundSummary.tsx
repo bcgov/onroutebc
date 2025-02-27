@@ -60,6 +60,7 @@ export const CSVPaymentAndRefundSummary = () => {
   useEffect(() => {
     if (window.Worker) {
       worker.onmessage = (e: MessageEvent<{ csvURL: string }>) => {
+        setIsGeneratingReport(() => false);
         console.log("Worker finished");
         const tempLink = document.createElement("a");
         tempLink.style.display = "none";
@@ -131,7 +132,7 @@ export const CSVPaymentAndRefundSummary = () => {
         alertType: "error",
       });
     } finally {
-      setIsGeneratingReport(() => false);
+      // setIsGeneratingReport(() => false);
     }
   };
 
