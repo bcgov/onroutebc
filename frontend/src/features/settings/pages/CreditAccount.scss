@@ -12,31 +12,30 @@
     
     
   }
+}
 
+.account-info {
+  width: 66.6%;
+  .overview {
+    padding-bottom: 2rem;
+    border-bottom: 1px solid $bc-border-grey;
 
-  .account-info {
-    width: 66.6%;
-    .overview {
-      padding-bottom: 2rem;
-      border-bottom: 1px solid $bc-border-grey;
+    &__flex {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding-top: .5rem;
+      padding-bottom: 1rem;
+    }
 
-      &__flex {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        padding-top: .5rem;
-        padding-bottom: 1rem;
-      }
-
-      &__title {
-        font-size: 1.25rem;
-        font-weight: bold;
-        padding: 0;
-      }
-    
-      &__user-designation {
-        text-transform: capitalize;
-      }
+    &__title {
+      font-size: 1.25rem;
+      font-weight: bold;
+      padding: 0;
+    }
+  
+    &__user-designation {
+      text-transform: capitalize;
     }
   }
 }
@@ -45,6 +44,61 @@
   width: 33.3%;
   max-width: 529px; 
 }
+.info-non-finance{
+  /* Layout Properties */
+  top: 277px;
+  left: 120px;
+  width: 983px;
+  height: 120px;
+  /* UI Properties */
+  opacity: 1;
+
+    .overview{
+      /* Layout Properties */
+    top: 301px;
+    left: 144px;
+    width: 935px;
+    height: 72px;
+    /* UI Properties */
+    background: var(--bc-messages-blue-background) 0% 0% no-repeat padding-box;
+    background: #D9EAF7 0% 0% no-repeat padding-box;
+    border-radius: 4px;
+    opacity: 1;
+
+    .info_icon{
+      /* Layout Properties */
+      top: 325px;
+      left: 168px;
+      width: 24px;
+      height: 24px;
+      /* UI Properties */
+      font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-normal) var(--unnamed-font-size-24)/48px Font Awesome 6 Pro;
+      letter-spacing: var(--unnamed-character-spacing-0);
+      color: var(--bc-black);
+      text-align: left;
+      font: normal normal normal 24px/48px Font Awesome 6 Pro;
+      letter-spacing: 0px;
+      color: #313132;
+      opacity: 1;
+      }
+      .content{
+        /* Layout Properties */
+        top: 325px;
+        left: 208px;
+        width: 847px;
+        height: 24px;
+        /* UI Properties */
+        color: var(--bc-black);
+        text-align: left;
+        letter-spacing: -0.36px;
+        color: #313132;
+        opacity: 1;
+      }
+    }
+    
+
+}
+
 
 .add-credit-account-action {
   display: flex;
