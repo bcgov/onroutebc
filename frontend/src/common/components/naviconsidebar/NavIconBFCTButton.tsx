@@ -12,7 +12,7 @@ import { NAV_BUTTON_TYPES } from "./types/NavButtonType";
 export const NavIconBFCTButton = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const isActive = pathname === IDIR_ROUTES.WELCOME;
+  const isActive = pathname === IDIR_ROUTES.BRIDGE_FORMULA_CALCULATION_TOOL;
   const { clearCompanyContext } = useContext(OnRouteBCContext);
 
   return (

@@ -18,8 +18,8 @@ import {
   useUserContext,
   useUserContextQuery,
 } from "../../features/manageProfile/apiManager/hooks";
-import { canViewApplicationQueue } from "../../features/queue/helpers/canViewApplicationQueue";
 import { getDefaultRequiredVal } from "../helpers/util";
+import { usePermissionMatrix } from "./PermissionMatrix";
 
 const navigateBCeID = (
   userContextData: BCeIDUserContextType,
@@ -98,6 +98,13 @@ export const LoginRedirect = () => {
 
   useUserContext(userContextResponse);
 
+  const canViewApplicationQueue = usePermissionMatrix({
+    permissionMatrixKeys: {
+      permissionMatrixFeatureKey: "STAFF_HOME_SCREEN",
+      permissionMatrixFunctionKey: "VIEW_QUEUE",
+    },
+  });
+
   /**
    * Hook to determine where to navigate to.
    */
@@ -118,7 +125,7 @@ export const LoginRedirect = () => {
         const userContextData: Optional<IDIRUserContextType> =
           queryClient.getQueryData<IDIRUserContextType>(["userContext"]);
         // only IDIR users with PC, SA, CTPO or TRAIN should redirect to STAFF_HOME
-        if (canViewApplicationQueue(userContextData?.user?.userRole)) {
+        if (canViewApplicationQueue) {
           navigate(IDIR_ROUTES.STAFF_HOME);
         } else if (userContextData?.user?.userGUID) {
           navigate(IDIR_ROUTES.WELCOME);
