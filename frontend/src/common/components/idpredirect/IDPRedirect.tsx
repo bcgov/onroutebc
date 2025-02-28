@@ -16,7 +16,6 @@ const IDPRedirect = () => {
     switch (paramValue) {
       case IDPS.IDIR:
       case IDPS.BCEID:
-      case IDPS.BUSINESS_BCEID:
         signinRedirect({
           extraQueryParams: { kc_idp_hint: paramValue },
         });
