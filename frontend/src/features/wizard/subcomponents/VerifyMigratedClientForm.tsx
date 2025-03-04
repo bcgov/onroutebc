@@ -28,7 +28,7 @@ export const VerifyMigratedClientForm = () => {
 
       <InfoBcGovBanner
         className="create-profile-section create-profile-section--info"
-        msg={BANNER_MESSAGES.ISSUED_PERMIT_NUMBER_7_YEARS}
+        msg={BANNER_MESSAGES.ISSUED_PERMIT_NUMBER_2_YEARS}
       />
 
       <CustomFormComponent
