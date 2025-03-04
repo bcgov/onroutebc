@@ -224,7 +224,7 @@ export class DgenService {
     let page: Page;
     try {
       browser = await puppeteer.launch({
-        args: [
+        args: [          
           '--no-sandbox',
           '--disable-gpu',
           '--disable-software-rasterizer',
@@ -240,6 +240,7 @@ export class DgenService {
           '--disable-client-side-phishing-detection',
           '--disable-extensions',
           '--disable-plugins',
+          '--disable-setuid-sandbox',
         ],
         pipe: true,
         headless: true,
@@ -272,6 +273,8 @@ export class DgenService {
         await page.close();
       }
       if (browser) {
+        const pages = await browser.pages();
+        await Promise.allSettled(pages?.map((page) => page.close()));
         await browser.close();
       }
     }

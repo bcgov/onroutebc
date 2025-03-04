@@ -331,6 +331,8 @@ dops:
   containers:
     - name: dops
       command:
+        - "/usr/local/bin/dumb-init"
+        - "--"
         - "sh"
         - "-c"
         - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/ches-{{.Values.global.vault.zone}} && source /vault/secrets/cdogs-{{.Values.global.vault.zone}} && source /vault/secrets/dops-{{.Values.global.vault.zone}} && source /vault/secrets/s3-{{.Values.global.vault.zone}} && npm run start:prod"
