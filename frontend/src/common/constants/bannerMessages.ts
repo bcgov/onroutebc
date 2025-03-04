@@ -17,8 +17,8 @@ export const BANNER_MESSAGES = {
     INELIGIBLE_SUBTYPES:
       "If you are creating a new vehicle, a desired Vehicle Sub-Type may not be available because it is not eligible for the permit application you are currently in.",
   },
-  ISSUED_PERMIT_NUMBER_7_YEARS:
-    "Enter any Permit No. issued to the above Client No. in the last 7 years",
+  ISSUED_PERMIT_NUMBER_2_YEARS:
+    "Enter any Permit No. issued to the above Client No. in the last 2 years",
   SELECT_VEHICLES_LOA:
     "Only vehicles in the Vehicle Inventory can be designated to LOA(s).",
   SELECT_VEHICLES_LOA_INFO:
