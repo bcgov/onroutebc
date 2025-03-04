@@ -32,7 +32,7 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
-      autoscaling: false
+      autoscaling: true
       environment: dev
       release: ${{inputs.tag}}
       tag: ${{ inputs.tag }}
