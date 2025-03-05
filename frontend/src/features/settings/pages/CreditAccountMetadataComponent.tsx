@@ -18,36 +18,37 @@ export const CreditAccountMetadataComponent = ({
     useGetCreditAccountMetadataQuery(companyId);
   const { idirUserDetails } = useContext(OnRouteBCContext);
   const isFinanceUser = idirUserDetails?.userRole === IDIR_USER_ROLE.FINANCE;
-  if (!isFinanceUser) {
-    return (
-      <div className="non-finance-container">
-        <InfoBcGovBanner msg={BANNER_MESSAGES.NON_FINANCE_USER} />
-      </div>
-    );
-  } else {
-    if (!isPending) {
-      if (creditAccountMetadata) {
+  if (!isPending) {
+    if (creditAccountMetadata) {
+      return (
+        <ViewCreditAccount
+          companyId={companyId}
+          creditAccountMetadata={creditAccountMetadata}
+        />
+      );
+    } else {
+      // Todo: ORV2-2771 Display info box for non-finance staff users who
+      // do not have permission to create a new credit account.
+      if (!isFinanceUser) {
         return (
-          <ViewCreditAccount
-            companyId={companyId}
-            creditAccountMetadata={creditAccountMetadata}
-          />
-        );
-      } else {
-        // Todo: ORV2-2771 Display info box for non-finance staff users who
-        // do not have permission to create a new credit account.
-        return (
-          <RenderIf
-            component={<AddCreditAccount companyId={companyId} />}
-            permissionMatrixKeys={{
-              permissionMatrixFeatureKey: "MANAGE_SETTINGS",
-              permissionMatrixFunctionKey:
-                "ADD_CREDIT_ACCOUNT_NON_HOLDER_OR_USER",
-            }}
-          />
+          <div className="non-finance-container">
+            <InfoBcGovBanner msg={BANNER_MESSAGES.NON_FINANCE_USER} />
+          </div>
         );
       }
+
+      return (
+        <RenderIf
+          component={<AddCreditAccount companyId={companyId} />}
+          permissionMatrixKeys={{
+            permissionMatrixFeatureKey: "MANAGE_SETTINGS",
+            permissionMatrixFunctionKey:
+              "ADD_CREDIT_ACCOUNT_NON_HOLDER_OR_USER",
+          }}
+        />
+      );
     }
   }
+
   return <></>;
 };
