@@ -853,7 +853,7 @@ export class CompanyService {
         verifyClient.foundPermit = true;
         if (permit.company?.companyId === company?.companyId) {
           //Throw an error if the company has already been claimed
-          if (!company?.companyUsers?.length) {
+          if (company?.companyUsers?.length) {
             throwUnprocessableEntityException(
               `You do not have the necessary authorization to view this page. Please contact your administrator.`,
             );
