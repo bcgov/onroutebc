@@ -5,7 +5,9 @@ import { useGetCreditAccountMetadataQuery } from "../hooks/creditAccount";
 import { AddCreditAccount } from "./AddCreditAccount";
 import { ViewCreditAccount } from "./ViewCreditAccount";
 import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
-import { Box } from "@mui/material";
+import { InfoBcGovBanner } from "../../../common/components/banners/InfoBcGovBanner";
+import { BANNER_MESSAGES } from "../../../common/constants/bannerMessages";
+import "./CreditAccountMetadataComponent.scss";
 
 export const CreditAccountMetadataComponent = ({
   companyId,
@@ -18,15 +20,9 @@ export const CreditAccountMetadataComponent = ({
   const isFinanceUser = idirUserDetails?.userRole === IDIR_USER_ROLE.FINANCE;
   if (!isFinanceUser) {
     return (
-      <Box className="info-non-finance">
-        <div className="overview">
-          <div className="info_icon"></div>
-          <div className="content">
-            For Credit Accounts, please contact CVSE Revenue. Phone: (250)
-            952-0422 or Email: isfinance@gov.bc.ca
-          </div>
-        </div>
-      </Box>
+      <div className="non-finance-container">
+        <InfoBcGovBanner msg={BANNER_MESSAGES.NON_FINANCE_USER} />
+      </div>
     );
   } else {
     if (!isPending) {
