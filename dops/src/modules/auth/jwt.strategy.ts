@@ -68,6 +68,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       userName = payload.bceid_username;
     }
 
+    //Remove when Basic and Personal BCeID needs to be accepted
+    if (
+      payload.identity_provider === IDP.BCEID &&
+      !payload.bceid_business_guid
+    ) {
+      throw new UnauthorizedException();
+    }
+
     if (req.headers.AuthOnly === 'false') {
       ({
         claims,
