@@ -148,7 +148,7 @@ frontend:
     name: "{{ .Values.global.license }}-vault"
   vault:
     enabled: true
-    authPath: "{{tpl $.Values.global.vault.authPath $}}"
+    authPath: "{{ .Values.global.vault.authPath }}"
     resources: # this is optional
       limits:
         cpu: 100m
@@ -299,7 +299,7 @@ vehicles:
     name: "{{ .Values.global.license }}-vault"
   vault:
     enabled: true
-    authPath: "{{tpl $.Values.global.vault.authPath $}}"
+    authPath: "{{ .Values.global.vault.authPath }}"
     resources: # this is optional
       limits:
         cpu: 100m
@@ -443,7 +443,7 @@ dops:
     name: "{{ .Values.global.license }}-vault"
   vault:
     enabled: true
-    authPath: "{{tpl $.Values.global.vault.authPath $}}"
+    authPath: "{{ .Values.global.vault.authPath }}"
     resources: # this is optional
       limits:
         cpu: 100m
@@ -553,7 +553,7 @@ scheduler:
     name: "{{ .Values.global.license }}-vault"
   vault:
     enabled: true
-    authPath: "{{tpl $.Values.global.vault.authPath $}}"
+    authPath: "{{ .Values.global.vault.authPath }}"
     resources: # this is optional
       limits:
         cpu: 100m
@@ -689,7 +689,7 @@ policy:
     name: "{{ .Values.global.license }}-vault"
   vault:
     enabled: true
-    authPath: "{{tpl $.Values.global.vault.authPath $}}"
+    authPath: "{{ .Values.global.vault.authPath }}"
     resources: # this is optional
       limits:
         cpu: 100m
