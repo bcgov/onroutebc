@@ -47,6 +47,9 @@ frontend:
             "VITE_SITEMINDER_LOG_OFF_URL":"$SITEMINDER_LOG_OFF_URL",
             "VITE_PR_NUM":"$PR_NUM",
             "VITE_RELEASE_NUM":"$RELEASE_NUM",
+            "VITE_BC_GEOCODER_CLIENT_ID":"$BC_GEOCODER_CLIENT_ID",
+            "VITE_BC_GEOCODER_API_KEY":"$BC_GEOCODER_API_KEY",
+            "VITE_BC_GEOCODER_API_URL":"$BC_GEOCODER_API_URL",
           };
         })();
   containers:
@@ -54,7 +57,7 @@ frontend:
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && envsubst < /usr/share/nginx/html/config/config.js.template > /usr/share/nginx/html/config/config.js && nginx -g 'daemon off;'"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/geocoder-{{.Values.global.vault.zone}} && envsubst < /usr/share/nginx/html/config/config.js.template > /usr/share/nginx/html/config/config.js && nginx -g 'daemon off;'"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: frontend
@@ -158,6 +161,7 @@ frontend:
     license: "{{.Values.global.license}}"
     secretPaths:
       - "keycloak-{{tpl $.Values.vault.zone $}}"
+      - "geocoder-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
   volumes:
     - name: config
