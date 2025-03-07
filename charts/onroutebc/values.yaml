@@ -19,6 +19,7 @@ global:
     enabled: false
   domain: "apps.silver.devops.gov.bc.ca" # it is required, apps.silver.devops.gov.bc.ca for silver cluster
   vault:
+    authPath: "k8s-silver"
     role: "nonprod"
     zone: "dev"
 frontend:
@@ -150,6 +151,7 @@ frontend:
     name: "{{ .Values.global.license }}-vault"
   vault:
     enabled: true
+    authPath: "{{ .Values.global.vault.authPath }}"
     resources: # this is optional
       limits:
         cpu: 100m
@@ -301,6 +303,7 @@ vehicles:
     name: "{{ .Values.global.license }}-vault"
   vault:
     enabled: true
+    authPath: "{{ .Values.global.vault.authPath }}"
     resources: # this is optional
       limits:
         cpu: 100m
@@ -444,6 +447,7 @@ dops:
     name: "{{ .Values.global.license }}-vault"
   vault:
     enabled: true
+    authPath: "{{ .Values.global.vault.authPath }}"
     resources: # this is optional
       limits:
         cpu: 100m
@@ -553,6 +557,7 @@ scheduler:
     name: "{{ .Values.global.license }}-vault"
   vault:
     enabled: true
+    authPath: "{{ .Values.global.vault.authPath }}"
     resources: # this is optional
       limits:
         cpu: 100m
@@ -688,6 +693,7 @@ policy:
     name: "{{ .Values.global.license }}-vault"
   vault:
     enabled: true
+    authPath: "{{ .Values.global.vault.authPath }}"
     resources: # this is optional
       limits:
         cpu: 100m
