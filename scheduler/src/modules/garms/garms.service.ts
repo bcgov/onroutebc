@@ -14,7 +14,7 @@ import { PermitType } from '../common/entities/permit-type.entity';
 import {
   createGarmsCashFile,
   getPreviousDayAtNinePM,
-} from 'src/helper/garms.helper';
+} from 'src/common/helper/garms.helper';
 
 @Injectable()
 export class GarmsService {
@@ -43,10 +43,10 @@ export class GarmsService {
       toTimestamp,
       garmsExtractType,
     );
-
-    if (garmsExtractType === GarmsExtractType.CASH)
-      createGarmsCashFile(transactions, garmsExtractType);
-    await this.getPermitTypeServiceCodes();
+    const permitServiceCodes = await this.getPermitTypeServiceCodes();
+    if (garmsExtractType === GarmsExtractType.CASH) {
+      createGarmsCashFile(transactions, garmsExtractType, permitServiceCodes);
+    }
     await this.saveTransactionIds(transactions, fileId);
     await this.updateFileSubmitTimestamp(oldFile);
   }
@@ -180,13 +180,13 @@ export class GarmsService {
       .getMany();
     return result;
   }
-  private async getPermitTypeServiceCodes(): Promise<Map<string, string>> {
+  private async getPermitTypeServiceCodes(): Promise<Map<string, number>> {
     const permitTypes = await this.permitTypeRepository.find();
-    const permitTypeServiceCodes = new Map<string, string>();
+    const permitTypeServiceCodes = new Map<string, number>();
     permitTypes.forEach((permitType) => {
       permitTypeServiceCodes.set(
         permitType.permitTypeId,
-        permitType.serviceCode,
+        Number(permitType.serviceCode),
       );
     });
     console.log('service codes', permitTypeServiceCodes);
