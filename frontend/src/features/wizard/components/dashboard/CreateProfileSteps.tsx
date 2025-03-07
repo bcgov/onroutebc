@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Box, Step, StepConnector, StepLabel, Stepper } from "@mui/material";
 import React, { useContext } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -39,7 +40,7 @@ export const CreateProfileSteps = React.memo(() => {
           migratedClient?.mailingAddress?.addressLine1,
         ),
         addressLine2: getDefaultRequiredVal(
-          "",
+          null,
           migratedClient?.mailingAddress?.addressLine2,
         ),
         provinceCode: getDefaultRequiredVal(
@@ -105,7 +106,7 @@ export const CreateProfileSteps = React.memo(() => {
       >
         <Banner
           bannerText="Create a new onRouteBC Profile"
-          bannerSubtext="Please follow the steps below to set up your onRouteBC profile"
+          // bannerSubtext="Please follow the steps below to set up your onRouteBC profile"
         />
       </Box>
       <div
@@ -114,43 +115,6 @@ export const CreateProfileSteps = React.memo(() => {
         aria-labelledby={`profile-steps`}
       >
         <div className="create-profile-steps__create-profile">
-          <div className="create-profile-section create-profile-section--steps">
-            <Stepper
-              className="stepper"
-              activeStep={activeStep}
-              alternativeLabel
-              connector={
-                <StepConnector
-                  className="step__connector"
-                  classes={{ line: "step__connector-line" }}
-                />
-              }
-            >
-              {steps.map((label) => (
-                <Step className="step" key={label}>
-                  <StepLabel
-                    className="step__label"
-                    classes={{
-                      labelContainer: "step__label-container",
-                      active: "step__label--active",
-                      disabled: "step__label--disabled",
-                      completed: "step__label--completed",
-                    }}
-                    StepIconProps={{
-                      className: "step__icon",
-                      classes: {
-                        text: "step__step-number",
-                        active: "step__icon--active",
-                        completed: "step__icon--completed",
-                      },
-                    }}
-                  >
-                    {label}
-                  </StepLabel>
-                </Step>
-              ))}
-            </Stepper>
-          </div>
           <FormProvider {...companyAndUserFormMethods}>
             <CompanyAndUserInfoSteps
               activeStep={activeStep}

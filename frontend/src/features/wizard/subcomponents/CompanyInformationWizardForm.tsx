@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import Typography from "@mui/material/Typography";
 import { memo } from "react";
 
@@ -12,6 +13,7 @@ import { CompanyContactDetailsForm } from "../../manageProfile/components/forms/
 import { CompanyInfoGeneralForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyInfoGeneralForm";
 import { CompanyPrimaryContactForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyPrimaryContactForm";
 import "./CompanyInformationWizardForm.scss";
+import { ContactDetailsForm } from "./ContactDetailsForm";
 
 /**
  * The Company Wizard Form contains multiple subs forms including
@@ -67,6 +69,10 @@ export const CompanyInformationWizardForm = memo(
           }}
         />
         <Typography variant="h2" gutterBottom>
+          Contact Details
+        </Typography>
+        {/* <ContactDetailsForm feature={FEATURE} /> */}
+        <Typography variant="h2" gutterBottom>
           Company Mailing Address
         </Typography>
         <CompanyInfoGeneralForm feature={FEATURE} />
@@ -80,7 +86,7 @@ export const CompanyInformationWizardForm = memo(
           // Currently, companyName is displayed only for idir users
           // So, If idir user is creating a company, enable the email field.
           // i.e., showCompanyName and disableEmail have opposite values.
-          disableEmail={showCompanyName ? false : true }
+          disableEmail={showCompanyName ? false : true}
         />
 
         <Typography variant="h2" gutterBottom>

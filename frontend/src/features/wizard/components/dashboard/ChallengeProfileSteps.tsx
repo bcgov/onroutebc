@@ -31,7 +31,7 @@ import { ClientAndPermitReferenceInfoBox } from "../../subcomponents/ClientAndPe
 import { CompanyAndUserInfoSteps } from "../../subcomponents/CompanyAndUserInfoSteps";
 import { OnRouteBCProfileCreated } from "../../subcomponents/OnRouteBCProfileCreated";
 import { VerifyMigratedClientForm } from "../../subcomponents/VerifyMigratedClientForm";
-import { WizardCompanyBanner } from "../../subcomponents/WizardCompanyBanner";
+import { WizardClientBanner } from "../../subcomponents/WizardClientBanner";
 import "./CreateProfileSteps.scss";
 import { AxiosError } from "axios";
 
@@ -280,7 +280,7 @@ export const ChallengeProfileSteps = React.memo(() => {
           {activeStep === 0 && (
             <FormProvider {...verifyMigratedClientFormMethods}>
               <div className="create-profile-section create-profile-section--company">
-                <WizardCompanyBanner
+                <WizardClientBanner
                   legalName={getDefaultRequiredVal(
                     "",
                     user?.profile?.bceid_business_name as string,

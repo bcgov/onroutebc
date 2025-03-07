@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button, Stack } from "@mui/material";
@@ -18,7 +19,7 @@ import { createOnRouteBCProfile } from "../../manageProfile/apiManager/managePro
 import { CreateCompanyRequest } from "../../manageProfile/types/manageProfile";
 import { CompanyInformationWizardForm } from "./CompanyInformationWizardForm";
 import { UserInformationWizardForm } from "./UserInformationWizardForm";
-import { WizardCompanyBanner } from "./WizardCompanyBanner";
+import { WizardClientBanner } from "./WizardClientBanner";
 import { InfoBcGovBanner } from "../../../common/components/banners/InfoBcGovBanner";
 import { BANNER_MESSAGES } from "../../../common/constants/bannerMessages";
 import { AxiosError } from "axios";
@@ -128,15 +129,15 @@ export const CompanyAndUserInfoSteps = ({
   return (
     <>
       <input type="hidden" {...register("legalName")} />
-      {activeStep <= totalSteps - 1 && (
+      {/* {activeStep <= totalSteps - 1 && (
         <InfoBcGovBanner
           className="create-profile-section create-profile-section--info"
           msg={BANNER_MESSAGES.ALL_FIELDS_MANDATORY}
         />
-      )}
+      )} */}
       {activeStep === totalSteps - 2 && (
         <div className="create-profile-section create-profile-section--company">
-          <WizardCompanyBanner
+          <WizardClientBanner
             legalName={getDefaultRequiredVal(
               "",
               user?.profile?.bceid_business_name as string,
@@ -153,6 +154,36 @@ export const CompanyAndUserInfoSteps = ({
         </div>
       )}
       <div className="create-profile-section create-profile-section--nav">
+        {/* <Stack direction="row" spacing={3}>
+          <Button
+            key="cancel-create-profile-button"
+            aria-label="Cancel Create Profile"
+            variant="contained"
+            color="secondary"
+            onClick={() => {
+              // Go back
+              navigate(-1);
+            }}
+            disableElevation
+            sx={{
+              ":hover": {
+                background: BC_COLOURS.bc_background_light_grey,
+                border: `2px solid ${BC_COLOURS.bc_text_box_border_grey}`,
+              },
+              border: `2px solid ${BC_COLOURS.white}`,
+              borderRadius: "4px",
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleCreateProfileSubmit(onClickFinish)}
+            variant="contained"
+            className="proceed-btn proceed-btn--finish"
+          >
+            Finish
+          </Button>
+        </Stack> */}
         {activeStep === totalSteps - 2 && (
           <Stack direction="row" spacing={3}>
             <Button
