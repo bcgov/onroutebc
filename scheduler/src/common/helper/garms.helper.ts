@@ -23,15 +23,16 @@ import { GarmaCashHeader } from 'src/modules/garms/dto/garms-cash-header.dto';
 import { dateFormat } from './date-time.helper';
 import * as fs from 'fs';
 import * as path from 'path';
-import { InternalServerErrorException } from '@nestjs/common';
+import { InternalServerErrorException, Logger } from '@nestjs/common';
 
 export const createGarmsCashFile = (
   transactions: Transaction[],
   garmsExtractType: GarmsExtractType,
   permitServiceCodes: Map<string, number>,
+  logger: Logger,
 ) => {
+  const datetime = new Date().getMilliseconds();
   try {
-    const datetime = new Date().getMilliseconds();
     const fileName = path.join('/tmp', 'GARMS_CASH_FILE_' + datetime);
     const groupedTransactionsByDate = groupTransactionsByDate(transactions);
     groupedTransactionsByDate.forEach((transactionByDate) => {
@@ -67,8 +68,9 @@ export const createGarmsCashFile = (
     });
     return fileName;
   } catch (err) {
+    logger.error(err);
     throw new InternalServerErrorException(
-      `Garms ${garmsExtractType} File Creation Failed`,
+      `Garms ${garmsExtractType} File Creation Failed on ${datetime}`,
     );
   }
 };
