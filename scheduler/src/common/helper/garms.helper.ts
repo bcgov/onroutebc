@@ -33,8 +33,8 @@ export const createGarmsCashFile = (
   const fileName = path.join('/tmp', 'GARMS_CASH_FILE_' + datetime);
   const groupedTransactionsByDate = groupTransactionsByDate(transactions);
   groupedTransactionsByDate.forEach((transactionByDate) => {
-    const permitTypeAmounts = new Map<string, number>();
-    const permitTypeCount = new Map<string, number>();
+    const permitTypeAmounts = new Map<number, number>();
+    const permitTypeCount = new Map<number, number>();
     const paymentTypeAmounts = new Map<string, number>();
     const transactions = transactionByDate.transactions as Transaction[];
     transactions.forEach((transaction) => {
@@ -44,6 +44,7 @@ export const createGarmsCashFile = (
         permitTypeAmounts,
         permitTypeCount,
         garmsExtractType,
+        permitServiceCodes
       );
     });
     const sequenceNumber = permitTypeCount.size;
@@ -67,7 +68,7 @@ export const createGarmsCashFile = (
 export const createGarmsCashFileHeader = (
   paymentTypeAmounts: Map<string, number>,
   date: string,
-  permitTypeCount: Map<string, number>,
+  permitTypeCount: Map<number, number>,
   seqNumber: number,
   fileName: string,
 ) => {
@@ -76,38 +77,24 @@ export const createGarmsCashFileHeader = (
   gch.agentNumber = AGENT_NUMBER;
   gch.wsdate = dateFormat(date, GARMS_DATE_FORMAT);
   gch.recCount = formatRecCount(seqNumber);
-
-  const paymentMethods = [
-    PaymentMethodType.CASH,
-    PaymentMethodType.CHEQUE,
-    PaymentCardType.DEBIT,
-    PaymentCardType.VISA,
-    PaymentCardType.MASTERCARD,
-    PaymentCardType.AMEX,
-    PaymentMethodType.GA,
-  ];
-
-  let revAmount = 0;
-
-  paymentMethods.forEach((paymentMethod) => {
-    const amount = getValue(paymentTypeAmounts, paymentMethod);
-    gch[`${paymentMethod}Amount`] = formatAmount(parseFloat(amount.toFixed(2)));
-    revAmount += amount;
-  });
-
-  gch.revAmount = formatAmount(revAmount);
+  gch.revAmount = formatAmount(getTotalAmount(paymentTypeAmounts));
+  gch.totalCashAmount=formatAmount(getValue(paymentTypeAmounts, PaymentMethodType.CASH));
+  gch.totalChequeAmount=formatAmount(getValue(paymentTypeAmounts, PaymentMethodType.CHEQUE));
+  gch.totalDebitCardAmount=formatAmount(getValue(paymentTypeAmounts, PaymentCardType.DEBIT));
+  gch.totalVisaAmount=formatAmount(getValue(paymentTypeAmounts, PaymentCardType.VISA));;
+  gch.totalMasterCardAmount=formatAmount(getValue(paymentTypeAmounts, PaymentCardType.MASTERCARD));;
+  gch.totalAmexAmount=formatAmount(getValue(paymentTypeAmounts, PaymentCardType.AMEX));;
   gch.totalUSAmount = US_AMOUNT;
   gch.totalUSExchangeAmount = US_EXC_AMOUNT;
-  gch.totalGAAmount = formatAmount(parseFloat(getValue(paymentTypeAmounts, PaymentMethodType.GA).toFixed(2)));
+  gch.totalGAAmount = formatAmount(getValue(paymentTypeAmounts, PaymentMethodType.GA));
   gch.serviceQuantity = formatServiceQuantity(getServiceQuantity(permitTypeCount));
   gch.invQuantity = INV_QTY;
-
   const header = Object.values(gch).join('');
-  fs.appendFileSync(fileName, header);
+  fs.appendFileSync(fileName,header+'\n');
 };
 export const createGarmsCashFileDetails = (
-  permitTypeCount: Map<string, number>,
-  permitTypeAmounts: Map<string, number>,
+  permitTypeCount: Map<number, number>,
+  permitTypeAmounts: Map<number, number>,
   date: string,
   permitServiceCodes: Map<string, number>,
   fileName: string,
@@ -120,44 +107,33 @@ export const createGarmsCashFileDetails = (
     gcd.agentNumber = AGENT_NUMBER;
     gcd.wsdate = dateFormat(date, GARMS_DATE_FORMAT);
     gcd.seqNumber = formatSequenceNumber(seqNumber);
-    gcd.serviceCode = formatServiceCode(getValue(permitServiceCodes, key));
-    gcd.serviceQuantity = formatServiceQuantity(getValue(permitTypeCount, key));
+    gcd.serviceCode = formatServiceCode(key);
+    gcd.serviceQuantity = formatServiceQuantity(getValueNumber(permitTypeCount, key));
     gcd.invUnits = INV_UNITS;
     gcd.revAmount = formatAmount(parseFloat(value.toFixed(2)));
     gcd.serNoFrom = SER_NO_FROM;
     gcd.serNoTo = SER_NO_TO;
     gcd.voidInd = VOID_IND;
     gcd.f1 = GARMS_CASH_FILLER;
-    const details =
-      gcd.recType +
-      gcd.agentNumber +
-      gcd.wsdate +
-      gcd.seqNumber +
-      gcd.serviceCode +
-      gcd.serviceQuantity +
-      gcd.invUnits +
-      gcd.revAmount +
-      gcd.serNoFrom +
-      gcd.serNoTo +
-      gcd.voidInd +
-      gcd.f1;
-    fs.appendFileSync(fileName, details, 'utf8');
+    const details =Object.values(gcd).join('');
+    fs.appendFileSync(fileName, details+'\n');
   });
 };
 export const processPermitTransactions = (
   transaction: Transaction,
-  permitTypeAmounts: Map<string, number>,
-  permitTypeCount: Map<string, number>,
+  permitTypeAmounts: Map<number, number>,
+  permitTypeCount: Map<number, number>,
   garmsExtractType: GarmsExtractType,
+  permitServiceCodes: Map<string,number>
 ) => {
   transaction.permitTransactions.forEach((permitTransaction) => {
     const permitType = permitTransaction.permit.permitType;
     const paymentAmount = getPaymentAmount(transaction);
 
-    updateMap(permitTypeAmounts, permitType, paymentAmount);
+    updateMapServiceCode(permitTypeAmounts, permitType, paymentAmount,permitServiceCodes);
 
     if (garmsExtractType === GarmsExtractType.CASH) {
-      updateMap(permitTypeCount, permitType, 1);
+      updateMapServiceCode(permitTypeCount, permitType, 1,permitServiceCodes);
     }
   });
 };
@@ -226,6 +202,18 @@ export const updateMap = (
 ) => {
   return map.set(key, (map.get(key) || 0) + amount);
 };
+
+// Helper function to update amounts in the Map
+export const updateMapServiceCode = (
+  map: Map<number, number>,
+  key: string,
+  amount: number,
+  permitServiceCodes: Map<string,number>
+) => {
+  
+  return map.set(permitServiceCodes.get(key), (map.get(permitServiceCodes.get(key)) || 0) + amount);
+};
+
 export const formatAmount = (amount: number) => {
   if (amount > 0) return amount.toFixed(2).padStart(10, '0') + ' ';
   else if (amount === 0) return '0000000.00 ';
@@ -246,7 +234,18 @@ export const formatRecCount = (recCount: number) => {
 export const getValue = (map: Map<string, number>, key: string): number => {
   return map.has(key) ? map.get(key) : 0;
 };
-export const getServiceQuantity = (map: Map<string, number>) => {
+export const getValueNumber = (map: Map<number, number>, key: number): number => {
+  return map.has(key) ? map.get(key) : 0;
+};
+export const getServiceQuantity = (map: Map<number, number>) => {
+  let sum = 0;
+  map.forEach((value) => {
+    sum += value;
+  });
+
+  return sum;
+};
+export const getTotalAmount = (map: Map<string, number>) => {
   let sum = 0;
   map.forEach((value) => {
     sum += value;
