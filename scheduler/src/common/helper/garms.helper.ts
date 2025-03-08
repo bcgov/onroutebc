@@ -21,14 +21,17 @@ import { DateTransaction } from 'src/modules/garms/dto/DateTransation.dto';
 import { GarmaCashDetail } from 'src/modules/garms/dto/garms-cash-details.dto';
 import { GarmaCashHeader } from 'src/modules/garms/dto/garms-cash-header.dto';
 import { dateFormat } from './date-time.helper';
+import * as fs from 'fs';
+import * as path from 'path';
 
 export const createGarmsCashFile = (
   transactions: Transaction[],
   garmsExtractType: GarmsExtractType,
   permitServiceCodes: Map<string, number>,
 ) => {
+  const datetime = new Date().getMilliseconds();
+  const fileName = path.join('/tmp', 'GARMS_CASH_FILE_' + datetime);
   const groupedTransactionsByDate = groupTransactionsByDate(transactions);
-
   groupedTransactionsByDate.forEach((transactionByDate) => {
     const permitTypeAmounts = new Map<string, number>();
     const permitTypeCount = new Map<string, number>();
@@ -49,17 +52,15 @@ export const createGarmsCashFile = (
       transactionByDate.date,
       permitTypeCount,
       sequenceNumber,
+      fileName,
     );
     createGarmsCashFileDetails(
       permitTypeCount,
       permitTypeAmounts,
       transactionByDate.date,
       permitServiceCodes,
+      fileName,
     );
-    // Log the results
-    console.log('Amount by permit type:', permitTypeAmounts);
-    console.log('Amount by payment type:', paymentTypeAmounts);
-    console.log('Count by permit type:', permitTypeCount);
   });
 };
 
@@ -68,84 +69,48 @@ export const createGarmsCashFileHeader = (
   date: string,
   permitTypeCount: Map<string, number>,
   seqNumber: number,
+  fileName: string,
 ) => {
   const gch = new GarmaCashHeader();
   gch.recType = HEADER_REC_TYPE;
   gch.agentNumber = AGENT_NUMBER;
   gch.wsdate = dateFormat(date, GARMS_DATE_FORMAT);
   gch.recCount = formatRecCount(seqNumber);
-  gch.revAmount = formatAmount(
-    parseFloat(
-      (
-        getValue(paymentTypeAmounts, PaymentMethodType.CASH) +
-        getValue(paymentTypeAmounts, PaymentMethodType.CHEQUE) +
-        getValue(paymentTypeAmounts, PaymentCardType.DEBIT) +
-        getValue(paymentTypeAmounts, PaymentCardType.VISA) +
-        getValue(paymentTypeAmounts, PaymentCardType.MASTERCARD) +
-        getValue(paymentTypeAmounts, PaymentCardType.AMEX) +
-        0 +
-        0 +
-        getValue(paymentTypeAmounts, PaymentMethodType.GA)
-      ).toFixed(2),
-    ),
-  );
-  gch.totalCashAmount = formatAmount(
-    parseFloat(getValue(paymentTypeAmounts, PaymentMethodType.CASH).toFixed(2)),
-  );
-  gch.totalChequeAmount = formatAmount(
-    parseFloat(
-      getValue(paymentTypeAmounts, PaymentMethodType.CHEQUE).toFixed(2),
-    ),
-  );
-  gch.totalDebitCardAmount = formatAmount(
-    parseFloat(getValue(paymentTypeAmounts, PaymentCardType.DEBIT).toFixed(2)),
-  );
-  gch.totalVisaAmount = formatAmount(
-    parseFloat(getValue(paymentTypeAmounts, PaymentCardType.VISA).toFixed(2)),
-  );
-  gch.totalMasterCardAmount = formatAmount(
-    parseFloat(
-      getValue(paymentTypeAmounts, PaymentCardType.MASTERCARD).toFixed(2),
-    ),
-  );
-  gch.totalAmexAmount = formatAmount(
-    parseFloat(getValue(paymentTypeAmounts, PaymentCardType.AMEX).toFixed(2)),
-  );
+
+  const paymentMethods = [
+    PaymentMethodType.CASH,
+    PaymentMethodType.CHEQUE,
+    PaymentCardType.DEBIT,
+    PaymentCardType.VISA,
+    PaymentCardType.MASTERCARD,
+    PaymentCardType.AMEX,
+    PaymentMethodType.GA,
+  ];
+
+  let revAmount = 0;
+
+  paymentMethods.forEach((paymentMethod) => {
+    const amount = getValue(paymentTypeAmounts, paymentMethod);
+    gch[`${paymentMethod}Amount`] = formatAmount(parseFloat(amount.toFixed(2)));
+    revAmount += amount;
+  });
+
+  gch.revAmount = formatAmount(revAmount);
   gch.totalUSAmount = US_AMOUNT;
   gch.totalUSExchangeAmount = US_EXC_AMOUNT;
-  gch.totalGAAmount = formatAmount(
-    parseFloat(getValue(paymentTypeAmounts, PaymentMethodType.GA).toFixed(2)),
-  );
-  gch.serviceQuantity = formatServiceQuantity(
-    getServiceQuantity(permitTypeCount),
-  );
+  gch.totalGAAmount = formatAmount(parseFloat(getValue(paymentTypeAmounts, PaymentMethodType.GA).toFixed(2)));
+  gch.serviceQuantity = formatServiceQuantity(getServiceQuantity(permitTypeCount));
   gch.invQuantity = INV_QTY;
 
-  console.log(
-    'Header: ',
-    gch.recType +
-      gch.agentNumber +
-      gch.wsdate +
-      gch.recCount +
-      gch.revAmount +
-      gch.totalCashAmount +
-      gch.totalChequeAmount +
-      gch.totalDebitCardAmount +
-      gch.totalVisaAmount +
-      gch.totalMasterCardAmount +
-      gch.totalAmexAmount +
-      gch.totalUSAmount +
-      gch.totalUSExchangeAmount +
-      gch.totalGAAmount +
-      gch.serviceQuantity +
-      gch.invQuantity,
-  );
+  const header = Object.values(gch).join('');
+  fs.appendFileSync(fileName, header);
 };
 export const createGarmsCashFileDetails = (
   permitTypeCount: Map<string, number>,
   permitTypeAmounts: Map<string, number>,
   date: string,
   permitServiceCodes: Map<string, number>,
+  fileName: string,
 ) => {
   let seqNumber = 0;
   permitTypeAmounts.forEach((value, key) => {
@@ -163,21 +128,20 @@ export const createGarmsCashFileDetails = (
     gcd.serNoTo = SER_NO_TO;
     gcd.voidInd = VOID_IND;
     gcd.f1 = GARMS_CASH_FILLER;
-    console.log(
-      'Details Line:',
+    const details =
       gcd.recType +
-        gcd.agentNumber +
-        gcd.wsdate +
-        gcd.seqNumber +
-        gcd.serviceCode +
-        gcd.serviceQuantity +
-        gcd.invUnits +
-        gcd.revAmount +
-        gcd.serNoFrom +
-        gcd.serNoTo +
-        gcd.voidInd +
-        gcd.f1,
-    );
+      gcd.agentNumber +
+      gcd.wsdate +
+      gcd.seqNumber +
+      gcd.serviceCode +
+      gcd.serviceQuantity +
+      gcd.invUnits +
+      gcd.revAmount +
+      gcd.serNoFrom +
+      gcd.serNoTo +
+      gcd.voidInd +
+      gcd.f1;
+    fs.appendFileSync(fileName, details, 'utf8');
   });
 };
 export const processPermitTransactions = (
@@ -215,13 +179,6 @@ export const processPaymentMethod = (
   }
 };
 
-export const getPreviousDayAtNinePM = (): Date => {
-  const today = new Date();
-  today.setDate(today.getDate() - 1); // Move to yesterday
-  today.setHours(21, 0, 0, 0); // Set to 9 PM
-  console.log('previous day 9 pm: ', today);
-  return today;
-};
 // Determine the paymentType and transaction amount based on the condition
 export const getPaymentAmount = (transaction: Transaction) => {
   const amount = transaction.totalTransactionAmount;

@@ -11,10 +11,8 @@ import {
   GARMS_CREDIT_FILE_TRANSACTION_TYPE,
 } from 'src/common/enum/payment-method-type.enum';
 import { PermitType } from '../common/entities/permit-type.entity';
-import {
-  createGarmsCashFile,
-  getPreviousDayAtNinePM,
-} from 'src/common/helper/garms.helper';
+import { createGarmsCashFile } from 'src/common/helper/garms.helper';
+import { getToDateForGarms } from 'src/common/helper/date-time.helper';
 
 @Injectable()
 export class GarmsService {
@@ -32,11 +30,6 @@ export class GarmsService {
   async processTransactions(garmsExtractType: GarmsExtractType) {
     const oldFile = await this.getOldFile(garmsExtractType);
     const { fileId, fromTimestamp, toTimestamp } = oldFile;
-
-    if (garmsExtractType === GarmsExtractType.CASH) {
-      console.log(fileId, fromTimestamp, toTimestamp);
-    }
-
     // Fetch transactions based on the provided timestamps
     const transactions = await this.getTransactionWithPermitDetails(
       fromTimestamp,
@@ -80,13 +73,8 @@ export class GarmsService {
     const oldFile = await this.findUnsubmittedOldFile(garmsExtractType);
 
     if (oldFile) {
-      console.log(
-        'Found unsubmitted record. old unsubmitted record : ',
-        oldFile,
-      );
       return this.updateOldFileRecord(oldFile);
     } else {
-      console.log('Creating new record: ');
       return this.createNewFileRecord(garmsExtractType);
     }
   }
@@ -105,10 +93,8 @@ export class GarmsService {
   private async updateOldFileRecord(oldFile: GarmsExtractFile) {
     const updatedOldRecord = await this.garmsExtractFileRepository.save({
       ...oldFile,
-      toDate: getPreviousDayAtNinePM(),
+      toDate: getToDateForGarms(),
     });
-    console.log('updated old record to: ', updatedOldRecord);
-
     return {
       fileId: updatedOldRecord.fileId,
       fromTimestamp: updatedOldRecord.fromTimestamp,
@@ -119,22 +105,18 @@ export class GarmsService {
   private async createNewFileRecord(garmsExtractType: GarmsExtractType) {
     const latestFile = await this.getLatestFile(garmsExtractType);
     if (latestFile) {
-      console.log('latestFile found.');
-
       const newFile = new GarmsExtractFile();
       newFile.fromTimestamp = latestFile.toTimestamp;
-      newFile.toTimestamp = getPreviousDayAtNinePM();
+      newFile.toTimestamp = getToDateForGarms();
       newFile.garmsExtractType = garmsExtractType;
 
       const savedFile = await this.garmsExtractFileRepository.save(newFile);
-      console.log('savedfile: ', savedFile);
       return {
         fileId: savedFile.fileId,
         fromTimestamp: savedFile.fromTimestamp,
         toTimestamp: savedFile.toTimestamp,
       };
     }
-    console.log('No data to process for GARMS');
   }
 
   private async getLatestFile(garmsExtractType: GarmsExtractType) {
@@ -143,7 +125,6 @@ export class GarmsService {
       order: { toTimestamp: 'DESC' },
       take: 1,
     });
-    console.log('latest file: ', latestFile);
     return latestFile;
   }
 
@@ -189,7 +170,6 @@ export class GarmsService {
         Number(permitType.serviceCode),
       );
     });
-    console.log('service codes', permitTypeServiceCodes);
     return permitTypeServiceCodes;
   }
 }

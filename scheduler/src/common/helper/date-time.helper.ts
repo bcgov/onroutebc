@@ -17,6 +17,19 @@ export const convertUtcToPt = (dateTime: Date | string, format: string) => {
   return formattedDate;
 };
 
+export const getToDateForGarms = () => {
+  const today = dayjs().tz('Canada/Pacific');
+  const currentHour = today.hour();
+  // Set the base date to today, but at 9:00 PM PST
+  let lastRunDate = today.set('hour', 21).set('minute', 0).set('second', 0);
+
+  // If the current time is before 9:00 PM PST, set it to the previous day at 9:00 PM
+  if (currentHour <= 21) {
+    lastRunDate = lastRunDate.subtract(1, 'day');
+  }
+  return lastRunDate.utc().toDate(); // Convert to UTC before returning
+};
+
 export const dateFormat = (dateTime: string, format: string) => {
   const formattedDate = dayjs(dateTime).format(format);
   return formattedDate;
