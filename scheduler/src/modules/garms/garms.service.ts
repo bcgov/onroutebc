@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
+import FTPS from 'ftps';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GarmsExtractFile } from './entities/garms-extract-file.entity';
 import { IsNull, Repository } from 'typeorm';
@@ -16,6 +21,8 @@ import { getToDateForGarms } from 'src/common/helper/date-time.helper';
 
 @Injectable()
 export class GarmsService {
+  private readonly logger = new Logger(GarmsService.name);
+
   constructor(
     @InjectRepository(GarmsExtractFile)
     private garmsExtractFileRepository: Repository<GarmsExtractFile>,
@@ -38,7 +45,12 @@ export class GarmsService {
     );
     const permitServiceCodes = await this.getPermitTypeServiceCodes();
     if (garmsExtractType === GarmsExtractType.CASH) {
-      createGarmsCashFile(transactions, garmsExtractType, permitServiceCodes);
+      const fileName = createGarmsCashFile(
+        transactions,
+        garmsExtractType,
+        permitServiceCodes,
+      );
+      this.upload(fileName);
     }
     await this.saveTransactionIds(transactions, fileId);
     await this.updateFileSubmitTimestamp(oldFile);
@@ -171,5 +183,28 @@ export class GarmsService {
       );
     });
     return permitTypeServiceCodes;
+  }
+  upload(fileName: string) {
+    const options: FTPS.FTPOptions = {
+      host: process.env.GARMS_HOST,
+      username: process.env.GARMS_USER,
+      password: process.env.GARMS_PWD,
+      // additinal settings for lftp command.
+      additionalLftpCommands:
+        'set cache:enable no;set ftp:passive-mode on;set ftp:use-size no;set ftp:ssl-protect-data yes;set ftp:ssl-force yes;set ftps:initial-prot "P";set net:connection-limit 1;set net:max-retries 1;debug 3;', // Additional commands to pass to lftp, splitted by ';'
+    };
+    const ftps: FTPS = new FTPS(options);
+    try {
+      const remoteFilePath = 'GARMD.GA4701.WS.BATCH(+1)';
+      const localFilePath = fileName;
+      ftps.raw('quote SITE LRecl=140');
+      ftps.pwd().exec(console.log);
+      ftps.raw(`put -a ${localFilePath} -o "'${remoteFilePath}'"`);
+      ftps.pwd().exec(console.log);
+    } catch (e) {
+      throw new InternalServerErrorException(e);
+    } finally {
+      ftps.raw('quit');
+    }
   }
 }

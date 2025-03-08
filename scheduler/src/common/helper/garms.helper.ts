@@ -23,46 +23,54 @@ import { GarmaCashHeader } from 'src/modules/garms/dto/garms-cash-header.dto';
 import { dateFormat } from './date-time.helper';
 import * as fs from 'fs';
 import * as path from 'path';
+import { InternalServerErrorException } from '@nestjs/common';
 
 export const createGarmsCashFile = (
   transactions: Transaction[],
   garmsExtractType: GarmsExtractType,
   permitServiceCodes: Map<string, number>,
 ) => {
-  const datetime = new Date().getMilliseconds();
-  const fileName = path.join('/tmp', 'GARMS_CASH_FILE_' + datetime);
-  const groupedTransactionsByDate = groupTransactionsByDate(transactions);
-  groupedTransactionsByDate.forEach((transactionByDate) => {
-    const permitTypeAmounts = new Map<number, number>();
-    const permitTypeCount = new Map<number, number>();
-    const paymentTypeAmounts = new Map<string, number>();
-    const transactions = transactionByDate.transactions as Transaction[];
-    transactions.forEach((transaction) => {
-      processPaymentMethod(transaction, paymentTypeAmounts);
-      processPermitTransactions(
-        transaction,
-        permitTypeAmounts,
+  try {
+    const datetime = new Date().getMilliseconds();
+    const fileName = path.join('/tmp', 'GARMS_CASH_FILE_' + datetime);
+    const groupedTransactionsByDate = groupTransactionsByDate(transactions);
+    groupedTransactionsByDate.forEach((transactionByDate) => {
+      const permitTypeAmounts = new Map<number, number>();
+      const permitTypeCount = new Map<number, number>();
+      const paymentTypeAmounts = new Map<string, number>();
+      const transactions = transactionByDate.transactions as Transaction[];
+      transactions.forEach((transaction) => {
+        processPaymentMethod(transaction, paymentTypeAmounts);
+        processPermitTransactions(
+          transaction,
+          permitTypeAmounts,
+          permitTypeCount,
+          garmsExtractType,
+          permitServiceCodes,
+        );
+      });
+      const sequenceNumber = permitTypeCount.size;
+      createGarmsCashFileHeader(
+        paymentTypeAmounts,
+        transactionByDate.date,
         permitTypeCount,
-        garmsExtractType,
-        permitServiceCodes
+        sequenceNumber,
+        fileName,
+      );
+      createGarmsCashFileDetails(
+        permitTypeCount,
+        permitTypeAmounts,
+        transactionByDate.date,
+        permitServiceCodes,
+        fileName,
       );
     });
-    const sequenceNumber = permitTypeCount.size;
-    createGarmsCashFileHeader(
-      paymentTypeAmounts,
-      transactionByDate.date,
-      permitTypeCount,
-      sequenceNumber,
-      fileName,
+    return fileName;
+  } catch (err) {
+    throw new InternalServerErrorException(
+      `Garms ${garmsExtractType} File Creation Failed`,
     );
-    createGarmsCashFileDetails(
-      permitTypeCount,
-      permitTypeAmounts,
-      transactionByDate.date,
-      permitServiceCodes,
-      fileName,
-    );
-  });
+  }
 };
 
 export const createGarmsCashFileHeader = (
@@ -78,19 +86,35 @@ export const createGarmsCashFileHeader = (
   gch.wsdate = dateFormat(date, GARMS_DATE_FORMAT);
   gch.recCount = formatRecCount(seqNumber);
   gch.revAmount = formatAmount(getTotalAmount(paymentTypeAmounts));
-  gch.totalCashAmount=formatAmount(getValue(paymentTypeAmounts, PaymentMethodType.CASH));
-  gch.totalChequeAmount=formatAmount(getValue(paymentTypeAmounts, PaymentMethodType.CHEQUE));
-  gch.totalDebitCardAmount=formatAmount(getValue(paymentTypeAmounts, PaymentCardType.DEBIT));
-  gch.totalVisaAmount=formatAmount(getValue(paymentTypeAmounts, PaymentCardType.VISA));;
-  gch.totalMasterCardAmount=formatAmount(getValue(paymentTypeAmounts, PaymentCardType.MASTERCARD));;
-  gch.totalAmexAmount=formatAmount(getValue(paymentTypeAmounts, PaymentCardType.AMEX));;
+  gch.totalCashAmount = formatAmount(
+    getValue(paymentTypeAmounts, PaymentMethodType.CASH),
+  );
+  gch.totalChequeAmount = formatAmount(
+    getValue(paymentTypeAmounts, PaymentMethodType.CHEQUE),
+  );
+  gch.totalDebitCardAmount = formatAmount(
+    getValue(paymentTypeAmounts, PaymentCardType.DEBIT),
+  );
+  gch.totalVisaAmount = formatAmount(
+    getValue(paymentTypeAmounts, PaymentCardType.VISA),
+  );
+  gch.totalMasterCardAmount = formatAmount(
+    getValue(paymentTypeAmounts, PaymentCardType.MASTERCARD),
+  );
+  gch.totalAmexAmount = formatAmount(
+    getValue(paymentTypeAmounts, PaymentCardType.AMEX),
+  );
   gch.totalUSAmount = US_AMOUNT;
   gch.totalUSExchangeAmount = US_EXC_AMOUNT;
-  gch.totalGAAmount = formatAmount(getValue(paymentTypeAmounts, PaymentMethodType.GA));
-  gch.serviceQuantity = formatServiceQuantity(getServiceQuantity(permitTypeCount));
+  gch.totalGAAmount = formatAmount(
+    getValue(paymentTypeAmounts, PaymentMethodType.GA),
+  );
+  gch.serviceQuantity = formatServiceQuantity(
+    getServiceQuantity(permitTypeCount),
+  );
   gch.invQuantity = INV_QTY;
   const header = Object.values(gch).join('');
-  fs.appendFileSync(fileName,header+'\n');
+  fs.appendFileSync(fileName, header + '\n');
 };
 export const createGarmsCashFileDetails = (
   permitTypeCount: Map<number, number>,
@@ -108,15 +132,17 @@ export const createGarmsCashFileDetails = (
     gcd.wsdate = dateFormat(date, GARMS_DATE_FORMAT);
     gcd.seqNumber = formatSequenceNumber(seqNumber);
     gcd.serviceCode = formatServiceCode(key);
-    gcd.serviceQuantity = formatServiceQuantity(getValueNumber(permitTypeCount, key));
+    gcd.serviceQuantity = formatServiceQuantity(
+      getValueNumber(permitTypeCount, key),
+    );
     gcd.invUnits = INV_UNITS;
     gcd.revAmount = formatAmount(parseFloat(value.toFixed(2)));
     gcd.serNoFrom = SER_NO_FROM;
     gcd.serNoTo = SER_NO_TO;
     gcd.voidInd = VOID_IND;
     gcd.f1 = GARMS_CASH_FILLER;
-    const details =Object.values(gcd).join('');
-    fs.appendFileSync(fileName, details+'\n');
+    const details = Object.values(gcd).join('');
+    fs.appendFileSync(fileName, details + '\n');
   });
 };
 export const processPermitTransactions = (
@@ -124,16 +150,21 @@ export const processPermitTransactions = (
   permitTypeAmounts: Map<number, number>,
   permitTypeCount: Map<number, number>,
   garmsExtractType: GarmsExtractType,
-  permitServiceCodes: Map<string,number>
+  permitServiceCodes: Map<string, number>,
 ) => {
   transaction.permitTransactions.forEach((permitTransaction) => {
     const permitType = permitTransaction.permit.permitType;
     const paymentAmount = getPaymentAmount(transaction);
 
-    updateMapServiceCode(permitTypeAmounts, permitType, paymentAmount,permitServiceCodes);
+    updateMapServiceCode(
+      permitTypeAmounts,
+      permitType,
+      paymentAmount,
+      permitServiceCodes,
+    );
 
     if (garmsExtractType === GarmsExtractType.CASH) {
-      updateMapServiceCode(permitTypeCount, permitType, 1,permitServiceCodes);
+      updateMapServiceCode(permitTypeCount, permitType, 1, permitServiceCodes);
     }
   });
 };
@@ -208,10 +239,12 @@ export const updateMapServiceCode = (
   map: Map<number, number>,
   key: string,
   amount: number,
-  permitServiceCodes: Map<string,number>
+  permitServiceCodes: Map<string, number>,
 ) => {
-  
-  return map.set(permitServiceCodes.get(key), (map.get(permitServiceCodes.get(key)) || 0) + amount);
+  return map.set(
+    permitServiceCodes.get(key),
+    (map.get(permitServiceCodes.get(key)) || 0) + amount,
+  );
 };
 
 export const formatAmount = (amount: number) => {
@@ -234,7 +267,10 @@ export const formatRecCount = (recCount: number) => {
 export const getValue = (map: Map<string, number>, key: string): number => {
   return map.has(key) ? map.get(key) : 0;
 };
-export const getValueNumber = (map: Map<number, number>, key: number): number => {
+export const getValueNumber = (
+  map: Map<number, number>,
+  key: number,
+): number => {
   return map.has(key) ? map.get(key) : 0;
 };
 export const getServiceQuantity = (map: Map<number, number>) => {
