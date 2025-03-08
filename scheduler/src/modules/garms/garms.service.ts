@@ -3,7 +3,7 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import FTPS from 'ftps';
+import * as FTPS from 'ftps';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GarmsExtractFile } from './entities/garms-extract-file.entity';
 import { IsNull, Repository } from 'typeorm';
@@ -193,6 +193,7 @@ export class GarmsService {
       additionalLftpCommands:
         'set cache:enable no;set ftp:passive-mode on;set ftp:use-size no;set ftp:ssl-protect-data yes;set ftp:ssl-force yes;set ftps:initial-prot "P";set net:connection-limit 1;set net:max-retries 1;debug 3;', // Additional commands to pass to lftp, splitted by ';'
     };
+    console.log('ftps options: ',options)
     const ftps: FTPS = new FTPS(options);
     try {
       const remoteFilePath = 'GARMD.GA4701.WS.BATCH(+1)';
