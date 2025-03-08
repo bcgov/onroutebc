@@ -271,6 +271,9 @@ services:
       ISSUE_PERMIT_LIMIT: ${ISSUE_PERMIT_LIMIT}
       DOC_GEN_LIMIT: ${DOC_GEN_LIMIT}
       PERMIT_SCHEDULE_POLLING_INTERVAL: ${PERMIT_SCHEDULE_POLLING_INTERVAL}
+      GARMS_HOST: ${GARMS_HOST}
+      GARMS_USER: ${GARMS_USER}
+      GARMS_PWD: ${GARMS_PWD}
     healthcheck:
       test: "curl --silent --fail http://localhost:5050/ > /dev/null || exit 1"
       interval: 1m30s
