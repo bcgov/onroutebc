@@ -25,6 +25,10 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { InternalServerErrorException, Logger } from '@nestjs/common';
 
+export const deleteLocalFile= (fileName: string)=>{
+  fs.rmSync(fileName)
+}
+
 export const createGarmsCashFile = (
   transactions: Transaction[],
   garmsExtractType: GarmsExtractType,
@@ -118,6 +122,7 @@ export const createGarmsCashFileHeader = (
   const header = Object.values(gch).join('');
   fs.appendFileSync(fileName, header + '\n');
 };
+
 export const createGarmsCashFileDetails = (
   permitTypeCount: Map<number, number>,
   permitTypeAmounts: Map<number, number>,
@@ -147,6 +152,7 @@ export const createGarmsCashFileDetails = (
     fs.appendFileSync(fileName, details + '\n');
   });
 };
+
 export const processPermitTransactions = (
   transaction: Transaction,
   permitTypeAmounts: Map<number, number>,
@@ -227,6 +233,7 @@ export const groupTransactionsByDate = (transactions: Transaction[]) => {
 
   return result;
 };
+
 // Helper function to update amounts in the Map
 export const updateMap = (
   map: Map<string, number>,
@@ -254,27 +261,34 @@ export const formatAmount = (amount: number) => {
   else if (amount === 0) return '0000000.00 ';
   else return Math.abs(amount).toFixed(2).padStart(10, '0') + '-';
 };
+
 export const formatSequenceNumber = (seqNumber: number) => {
   return seqNumber.toString().padStart(4, '0');
 };
+
 export const formatServiceCode = (serviceCode: number) => {
   return serviceCode.toString().padStart(4, '0');
 };
+
 export const formatServiceQuantity = (serviceQty: number) => {
   return serviceQty.toString().padStart(5, '0');
 };
+
 export const formatRecCount = (recCount: number) => {
   return recCount.toString().padStart(6, '0');
 };
+
 export const getValue = (map: Map<string, number>, key: string): number => {
   return map.has(key) ? map.get(key) : 0;
 };
+
 export const getValueNumber = (
   map: Map<number, number>,
   key: number,
 ): number => {
   return map.has(key) ? map.get(key) : 0;
 };
+
 export const getServiceQuantity = (map: Map<number, number>) => {
   let sum = 0;
   map.forEach((value) => {
@@ -283,6 +297,7 @@ export const getServiceQuantity = (map: Map<number, number>) => {
 
   return sum;
 };
+
 export const getTotalAmount = (map: Map<string, number>) => {
   let sum = 0;
   map.forEach((value) => {

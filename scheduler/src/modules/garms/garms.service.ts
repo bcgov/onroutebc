@@ -16,7 +16,7 @@ import {
   GARMS_CREDIT_FILE_TRANSACTION_TYPE,
 } from 'src/common/enum/payment-method-type.enum';
 import { PermitType } from '../common/entities/permit-type.entity';
-import { createGarmsCashFile } from 'src/common/helper/garms.helper';
+import { createGarmsCashFile, deleteLocalFile } from 'src/common/helper/garms.helper';
 import { getToDateForGarms } from 'src/common/helper/date-time.helper';
 
 @Injectable()
@@ -52,6 +52,7 @@ export class GarmsService {
         this.logger,
       );
       this.upload(fileName);
+      deleteLocalFile(fileName)
     }
     await this.saveTransactionIds(transactions, fileId);
     await this.updateFileSubmitTimestamp(oldFile);
