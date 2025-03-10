@@ -12,9 +12,7 @@ import { VEHICLES_ROUTES } from "../../../../routes/constants";
 import { now } from "../../../../common/helpers/formatDate";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { convertToNumberIfValid } from "../../../../common/helpers/numeric/convertToNumberIfValid";
-import {
-  disableMouseWheelInputOnNumberField,
-} from "../../../../common/helpers/disableMouseWheelInputOnNumberField";
+import { disableMouseWheelInputOnNumberField } from "../../../../common/helpers/disableMouseWheelInputOnNumberField";
 
 import {
   useTrailerSubTypesQuery,
@@ -29,8 +27,9 @@ import {
   invalidYearMin,
   requiredMessage,
 } from "../../../../common/helpers/validationMessages";
+import { ORBC_FORM_FEATURES } from "../../../../common/types/common";
 
-const FEATURE = "trailer";
+const FEATURE = ORBC_FORM_FEATURES.TRAILER;
 
 export const TrailerForm = ({
   companyId,

@@ -12,13 +12,14 @@ import {
   invalidLastNameLength,
   requiredMessage,
 } from "../../../../../common/helpers/validationMessages";
+import { ORBC_FORM_FEATURES } from "../../../../../common/types/common";
 
 /**
  * Reusable form for editing user information.
  * Needs a form context.
  */
 export const ReusableUserInfoForm = ({
-  feature: FEATURE = "user-info",
+  feature: FEATURE = ORBC_FORM_FEATURES.USER_INFORMATION,
 }: {
   /**
    * The name of the feature that the form is being used for.
@@ -105,8 +106,7 @@ export const ReusableUserInfoForm = ({
             rules: {
               required: false,
               validate: {
-                validateExt1: (ext?: string) =>
-                  validatePhoneExtension(ext),
+                validateExt1: (ext?: string) => validatePhoneExtension(ext),
               },
             },
             label: "Ext",
@@ -142,8 +142,7 @@ export const ReusableUserInfoForm = ({
             rules: {
               required: false,
               validate: {
-                validateExt2: (ext?: string) =>
-                  validatePhoneExtension(ext),
+                validateExt2: (ext?: string) => validatePhoneExtension(ext),
               },
             },
             label: "Ext",

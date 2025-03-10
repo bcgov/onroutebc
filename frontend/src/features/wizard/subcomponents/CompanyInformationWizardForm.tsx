@@ -12,6 +12,7 @@ import { CompanyContactDetailsForm } from "../../manageProfile/components/forms/
 import { CompanyInfoGeneralForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyInfoGeneralForm";
 import { CompanyPrimaryContactForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyPrimaryContactForm";
 import "./CompanyInformationWizardForm.scss";
+import { ORBC_FORM_FEATURES } from "../../../common/types/common";
 
 /**
  * The Company Wizard Form contains multiple subs forms including
@@ -19,7 +20,7 @@ import "./CompanyInformationWizardForm.scss";
  */
 export const CompanyInformationWizardForm = memo(
   ({ showCompanyName = false }: { showCompanyName?: boolean }) => {
-    const FEATURE = "wizard";
+    const FEATURE = ORBC_FORM_FEATURES.COMPANY_INFORMATION_WIZARD;
 
     return (
       <div className="company-info-wizard-form">
@@ -80,7 +81,7 @@ export const CompanyInformationWizardForm = memo(
           // Currently, companyName is displayed only for idir users
           // So, If idir user is creating a company, enable the email field.
           // i.e., showCompanyName and disableEmail have opposite values.
-          disableEmail={showCompanyName ? false : true }
+          disableEmail={showCompanyName ? false : true}
         />
 
         <Typography variant="h2" gutterBottom>

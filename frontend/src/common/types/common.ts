@@ -21,6 +21,31 @@ export interface ApiErrorResponse {
 }
 
 /**
+ * The names of onRouteBC forms, used in classNames and determining which fields to show in reusable/shared forms
+ */
+export const ORBC_FORM_FEATURES = {
+  AMEND_PERMIT: "amend-permit",
+  APPLICATION: "application",
+  CLIENT_SEARCH: "client-search",
+  COMPANY_INFORMATION_WIZARD: "company-information-wizard",
+  COMPANY_PROFILE: "company-profile",
+  LOA: "loa",
+  MY_INFORMATION: "my-information",
+  MY_INFORMATION_WIZARD: "my-information-wizard",
+  PERMIT_RESEND: "permit-resend",
+  POWER_UNIT: "power-unit",
+  TEST_FEATURE: "test-feature",
+  TRAILER: "trailer",
+  USER_INFORMATION: "user-information",
+  USER_INFORMATION_WIZARD: "user-information-wizard",
+  VERIFY_MIGRATED_CLIENT: "verify-migrated-client",
+  VOID_PERMIT: "void-permit",
+} as const;
+
+export type ORBCFormFeatureType =
+  (typeof ORBC_FORM_FEATURES)[keyof typeof ORBC_FORM_FEATURES];
+
+/**
  * The types of onRouteBC forms that are supported by the custom form components
  */
 export type ORBC_FormTypes =
@@ -148,9 +173,9 @@ export type NullableFields<T> = {
 };
 
 export const isNull = <T>(val?: Nullable<T>) => {
-  return !val && (typeof val !== "undefined") && val == null;
+  return !val && typeof val !== "undefined" && val == null;
 };
 
 export const isUndefined = <T>(val?: Nullable<T>) => {
-  return (typeof val === "undefined");
+  return typeof val === "undefined";
 };
