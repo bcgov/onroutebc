@@ -13,8 +13,16 @@ import {
   invalidLastNameLength,
   requiredMessage,
 } from "../../../../../../common/helpers/validationMessages";
+import {
+  ORBC_FORM_FEATURES,
+  ORBCFormFeatureType,
+} from "../../../../../../common/types/common";
 
-export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
+export const CompanyPrimaryContactForm = ({
+  feature,
+}: {
+  feature: ORBCFormFeatureType;
+}) => (
   <div className="company-primary-contact-form">
     <CustomFormComponent
       type="input"
@@ -93,8 +101,7 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
           rules: {
             required: false,
             validate: {
-              validateExt1: (ext?: string) =>
-                validatePhoneExtension(ext),
+              validateExt1: (ext?: string) => validatePhoneExtension(ext),
             },
           },
           label: "Ext",
@@ -112,7 +119,8 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
           rules: {
             required: false,
             validate: {
-              validatePhone2: (phone?: string) => validateOptionalPhoneNumber(phone),
+              validatePhone2: (phone?: string) =>
+                validateOptionalPhoneNumber(phone),
             },
           },
           label: "Alternate Phone",
@@ -128,8 +136,7 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
           rules: {
             required: false,
             validate: {
-              validateExt2: (ext?: string) =>
-                validatePhoneExtension(ext),
+              validateExt2: (ext?: string) => validatePhoneExtension(ext),
             },
           },
           label: "Ext",
@@ -137,33 +144,35 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
         className="company-primary-contact-form__input company-primary-contact-form__input--right"
       />
     </div>
-
-    <CountryAndProvince
-      feature={feature}
-      countryField="primaryContact.countryCode"
-      isCountryRequired={true}
-      countryClassName="company-primary-contact-form__input"
-      provinceField="primaryContact.provinceCode"
-      isProvinceRequired={true}
-      provinceClassName="company-primary-contact-form__input"
-    />
-
-    <CustomFormComponent
-      type="input"
-      feature={feature}
-      options={{
-        name: "primaryContact.city",
-        rules: {
-          required: { value: true, message: requiredMessage() },
-          validate: {
-            validateCity: (city: string) =>
-              (city.length >= 1 && city.length <= 100) ||
-              invalidCityLength(1, 100),
-          },
-        },
-        label: "City",
-      }}
-      className="company-primary-contact-form__input"
-    />
+    {feature === ORBC_FORM_FEATURES.COMPANY_PROFILE && (
+      <>
+        <CountryAndProvince
+          feature={feature}
+          countryField="primaryContact.countryCode"
+          isCountryRequired={true}
+          countryClassName="company-primary-contact-form__input"
+          provinceField="primaryContact.provinceCode"
+          isProvinceRequired={true}
+          provinceClassName="company-primary-contact-form__input"
+        />
+        <CustomFormComponent
+          type="input"
+          feature={feature}
+          options={{
+            name: "primaryContact.city",
+            rules: {
+              required: { value: true, message: requiredMessage() },
+              validate: {
+                validateCity: (city: string) =>
+                  (city.length >= 1 && city.length <= 100) ||
+                  invalidCityLength(1, 100),
+              },
+            },
+            label: "City",
+          }}
+          className="company-primary-contact-form__input"
+        />
+      </>
+    )}
   </div>
 );

@@ -1,0 +1,14 @@
+.client-info-wizard-form {
+  width: 100%;
+
+  h2 {
+    width: 100%;
+  }
+
+  &__warning-banner {
+    margin-top: 1rem;
+    margin-bottom: .5rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}

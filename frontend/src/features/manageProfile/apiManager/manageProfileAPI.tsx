@@ -93,12 +93,11 @@ export const createMyOnRouteBCUserProfile = async ({
 export const createOnRouteBCProfile = (
   onRouteBCProfileRequestObject: CreateCompanyRequest,
 ) => {
-  console.log({ onRouteBCProfileRequestObject });
   return httpPOSTRequest(
     `${MANAGE_PROFILE_API.COMPANIES}`,
     // why are we calling replaceEmptyValuesWithNull here? This leads to an error from the server as fields must be defined
-    // replaceEmptyValuesWithNull(onRouteBCProfileRequestObject)
-    onRouteBCProfileRequestObject,
+    replaceEmptyValuesWithNull(onRouteBCProfileRequestObject),
+    // onRouteBCProfileRequestObject,
   );
 };
 

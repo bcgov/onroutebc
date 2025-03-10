@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Box,
   Button,
@@ -224,10 +225,7 @@ export const ChallengeProfileSteps = React.memo(() => {
           borderColor: "divider",
         }}
       >
-        <Banner
-          bannerText="Claim an existing Profile"
-          bannerSubtext="Please follow the steps below to claim an existing profile"
-        />
+        <Banner bannerText="Claim an existing Profile" />
       </Box>
 
       <div
@@ -240,43 +238,6 @@ export const ChallengeProfileSteps = React.memo(() => {
           className="create-profile-steps__create-profile"
           style={{ width: "50%" }}
         >
-          <div className="create-profile-section create-profile-section--steps">
-            <Stepper
-              className="stepper"
-              activeStep={activeStep}
-              alternativeLabel
-              connector={
-                <StepConnector
-                  className="step__connector"
-                  classes={{ line: "step__connector-line" }}
-                />
-              }
-            >
-              {steps.map((label) => (
-                <Step className="step" key={label}>
-                  <StepLabel
-                    className="step__label"
-                    classes={{
-                      labelContainer: "step__label-container",
-                      active: "step__label--active",
-                      disabled: "step__label--disabled",
-                      completed: "step__label--completed",
-                    }}
-                    StepIconProps={{
-                      className: "step__icon",
-                      classes: {
-                        text: "step__step-number",
-                        active: "step__icon--active",
-                        completed: "step__icon--completed",
-                      },
-                    }}
-                  >
-                    {label}
-                  </StepLabel>
-                </Step>
-              ))}
-            </Stepper>
-          </div>
           {activeStep === 0 && (
             <FormProvider {...verifyMigratedClientFormMethods}>
               <div className="create-profile-section create-profile-section--company">
