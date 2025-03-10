@@ -12,7 +12,10 @@ import {
   invalidLastNameLength,
   requiredMessage,
 } from "../../../../../common/helpers/validationMessages";
-import { ORBC_FORM_FEATURES } from "../../../../../common/types/common";
+import {
+  ORBC_FORM_FEATURES,
+  ORBCFormFeatureType,
+} from "../../../../../common/types/common";
 
 /**
  * Reusable form for editing user information.
@@ -24,7 +27,7 @@ export const ReusableUserInfoForm = ({
   /**
    * The name of the feature that the form is being used for.
    */
-  feature: string;
+  feature: ORBCFormFeatureType;
 }) => {
   return (
     <div className="my-info-form">

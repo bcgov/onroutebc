@@ -23,12 +23,14 @@ import {
   Contact,
   ReadUserInformationResponse,
 } from "../manageProfile/types/manageProfile";
+import { ORBC_FORM_FEATURES } from "../../common/types/common";
 
 /**
  * User Info wizard displays a user information form
  * when an invited user logs in for the first time.
  */
 export const UserInfoWizard = React.memo(() => {
+  const FEATURE = ORBC_FORM_FEATURES.USER_INFORMATION_WIZARD;
   const formMethods = useForm<Contact>();
 
   const { setUserDetails } = useContext(OnRouteBCContext);
@@ -106,7 +108,7 @@ export const UserInfoWizard = React.memo(() => {
               msg={BANNER_MESSAGES.ALL_FIELDS_MANDATORY}
             />
 
-            <ReusableUserInfoForm feature="my-info-wizard" />
+            <ReusableUserInfoForm feature={FEATURE} />
 
             <div className="create-profile-section create-profile-section--nav">
               <Button

@@ -5,12 +5,20 @@ import "./ContactDetails.scss";
 import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
 import { BANNER_MESSAGES } from "../../../../common/constants/bannerMessages";
-import { invalidEmail, requiredMessage } from "../../../../common/helpers/validationMessages";
+import {
+  invalidEmail,
+  requiredMessage,
+} from "../../../../common/helpers/validationMessages";
 import { validatePhoneNumber } from "../../../../common/helpers/phone/validatePhoneNumber";
 import { validatePhoneExtension } from "../../../../common/helpers/phone/validatePhoneExtension";
 import { validateOptionalPhoneNumber } from "../../../../common/helpers/phone/validateOptionalPhoneNumber";
+import { ORBCFormFeatureType } from "../../../../common/types/common";
 
-export const ContactDetails = ({ feature }: { feature: string }) => {
+export const ContactDetails = ({
+  feature,
+}: {
+  feature: ORBCFormFeatureType;
+}) => {
   return (
     <Box className="contact-details-form">
       <Box className="contact-details-form__header">
@@ -71,8 +79,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
               rules: {
                 required: false,
                 validate: {
-                  validateExt1: (ext?: string) =>
-                    validatePhoneExtension(ext),
+                  validateExt1: (ext?: string) => validatePhoneExtension(ext),
                 },
               },
               label: "Ext",
@@ -90,7 +97,8 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
               rules: {
                 required: false,
                 validate: {
-                  validatePhone2: (phone?: string) => validateOptionalPhoneNumber(phone),
+                  validatePhone2: (phone?: string) =>
+                    validateOptionalPhoneNumber(phone),
                 },
               },
               label: "Alternate Number",
@@ -106,8 +114,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
               rules: {
                 required: false,
                 validate: {
-                  validateExt2: (ext?: string) =>
-                    validatePhoneExtension(ext),
+                  validateExt2: (ext?: string) => validatePhoneExtension(ext),
                 },
               },
               label: "Ext",

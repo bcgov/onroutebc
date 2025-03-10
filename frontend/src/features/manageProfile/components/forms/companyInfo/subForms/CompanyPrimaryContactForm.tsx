@@ -13,8 +13,13 @@ import {
   invalidLastNameLength,
   requiredMessage,
 } from "../../../../../../common/helpers/validationMessages";
+import { ORBCFormFeatureType } from "../../../../../../common/types/common";
 
-export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
+export const CompanyPrimaryContactForm = ({
+  feature,
+}: {
+  feature: ORBCFormFeatureType;
+}) => (
   <div className="company-primary-contact-form">
     <CustomFormComponent
       type="input"
@@ -93,8 +98,7 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
           rules: {
             required: false,
             validate: {
-              validateExt1: (ext?: string) =>
-                validatePhoneExtension(ext),
+              validateExt1: (ext?: string) => validatePhoneExtension(ext),
             },
           },
           label: "Ext",
@@ -112,7 +116,8 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
           rules: {
             required: false,
             validate: {
-              validatePhone2: (phone?: string) => validateOptionalPhoneNumber(phone),
+              validatePhone2: (phone?: string) =>
+                validateOptionalPhoneNumber(phone),
             },
           },
           label: "Alternate Phone",
@@ -128,8 +133,7 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
           rules: {
             required: false,
             validate: {
-              validateExt2: (ext?: string) =>
-                validatePhoneExtension(ext),
+              validateExt2: (ext?: string) => validatePhoneExtension(ext),
             },
           },
           label: "Ext",
