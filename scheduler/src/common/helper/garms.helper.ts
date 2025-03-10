@@ -220,11 +220,11 @@ export const groupTransactionsByDate = (transactions: Transaction[]) => {
     acc[transactionDate].push(transaction);
 
     return acc;
-  }, {});
+  }, {} as Record<string, Transaction[]>);
 
   //Process the grouped data (example: sum the total amounts for each date)
   const result = Object.keys(groupedData).map((date) => {
-    const transactionsForDate = groupedData[date] as Transaction[];
+    const transactionsForDate = groupedData[date];
     const dateTransaction = new DateTransaction();
     dateTransaction.date = date;
     dateTransaction.transactions = [...transactionsForDate];
