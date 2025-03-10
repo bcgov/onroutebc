@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Box, Button, Stack } from "@mui/material";
 import React, { useContext, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
@@ -7,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 import "./IDIRCreateCompany.scss";
 import { Nullable } from "../../../common/types/common";
+import { InfoBcGovBanner } from "../../../common/components/banners/InfoBcGovBanner";
 import { Banner } from "../../../common/components/dashboard/components/banner/Banner";
 import { BANNER_MESSAGES } from "../../../common/constants/bannerMessages";
 import { ERROR_ROUTES } from "../../../routes/constants";
@@ -21,8 +21,6 @@ import {
   CompanyProfile,
 } from "../../manageProfile/types/manageProfile";
 import { AxiosError } from "axios";
-import { WarningBcGovBanner } from "../../../common/components/banners/WarningBcGovBanner";
-import { createProfileMutation } from "../hooks/hooks";
 
 /**
  * The form for a staff user to create a company.
@@ -91,32 +89,47 @@ export const IDIRCreateCompany = React.memo(() => {
 
   const { handleSubmit } = companyAndUserFormMethods;
 
-  const { mutate: createProfile } = createProfileMutation(setClientNumber);
-
   /**
    * On Click function for the Finish button
    * Validates and submits the form data to the API
    * @param data The form data.
    */
   const onClickFinish = function (data: CreateCompanyRequest) {
-    const updatedContact = {
-      ...data.primaryContact,
-      city: data.mailingAddress.city,
-      countryCode: data.mailingAddress.countryCode,
-      provinceCode: data.mailingAddress.provinceCode,
-    };
-
-    const profileToBeCreated = {
-      ...data,
-      email: data.primaryContact.email,
-      phone: data.primaryContact.phone1,
-      extension: data.primaryContact.phone1Extension,
-      primaryContact: updatedContact,
-      adminUser: updatedContact,
-    };
-
-    createProfile(profileToBeCreated);
+    const profileToBeCreated = data;
+    createProfileQuery.mutate({
+      ...profileToBeCreated,
+      primaryContact: {
+        ...profileToBeCreated.primaryContact,
+        city: profileToBeCreated.mailingAddress.city,
+        countryCode: profileToBeCreated.mailingAddress.countryCode,
+      },
+    });
   };
+
+  const createProfileQuery = useMutation({
+    mutationFn: createOnRouteBCProfile,
+    onSuccess: async (response) => {
+      if (response.status === 200 || response.status === 201) {
+        const { companyId, clientNumber, legalName } =
+          response.data as CompanyProfile;
+        // Handle context updates;
+        sessionStorage.setItem(
+          "onRouteBC.user.companyId",
+          companyId.toString(),
+        );
+        setCompanyId?.(() => companyId);
+        setCompanyLegalName?.(() => legalName);
+        setOnRouteBCClientNumber?.(() => clientNumber);
+        // By default a newly created company shouldn't be suspended, so no need for setIsCompanySuspended
+        setClientNumber(() => clientNumber);
+      }
+    },
+    onError: (error: AxiosError) => {
+      navigate(ERROR_ROUTES.UNEXPECTED, {
+        state: { correlationId: error.response?.headers["x-correlation-id"] },
+      });
+    },
+  });
 
   if (clientNumber) {
     return <OnRouteBCProfileCreated onRouteBCClientNumber={clientNumber} />;
@@ -130,7 +143,7 @@ export const IDIRCreateCompany = React.memo(() => {
           borderColor: "divider",
         }}
       >
-        <Banner bannerText="Create a new onRouteBC Profile" />
+        <Banner bannerText="Create Company" />
       </Box>
       <div
         className="idir-create-company create-profile-steps"
@@ -139,6 +152,7 @@ export const IDIRCreateCompany = React.memo(() => {
       >
         <div className="create-profile-steps__create-profile">
           <FormProvider {...companyAndUserFormMethods}>
+            <InfoBcGovBanner msg={BANNER_MESSAGES.ALL_FIELDS_MANDATORY} />
             <ClientInformationWizardForm showCompanyName />
             <div className="create-profile-section create-profile-section--nav">
               <Stack direction="row" spacing={3}>

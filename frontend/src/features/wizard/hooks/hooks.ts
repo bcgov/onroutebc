@@ -55,11 +55,17 @@ export const createProfileMutation = (
           userRole,
         };
 
+        /* Setting the companyId in the sessionStorage so that it can be used used outside of react components; */
+        sessionStorage.setItem(
+          "onRouteBC.user.companyId",
+          companyId.toString(),
+        );
+
         // Handle context updates;
         setCompanyId?.(companyId);
         setCompanyLegalName?.(legalName);
         setOnRouteBCClientNumber?.(clientNumber);
-        setClientNumber?.(clientNumber);
+        setClientNumber(clientNumber);
 
         /* By default a newly created company shouldn't be suspended, so no need for setIsCompanySuspended */
 
@@ -68,12 +74,6 @@ export const createProfileMutation = (
          redirected to the applications page.
          They should instead remain on the page and
          look at the profile created section which contains the client number. */
-
-        /* Setting the companyId in the sessionStorage so that it can be used used outside of react components; */
-        sessionStorage.setItem(
-          "onRouteBC.user.companyId",
-          companyId.toString(),
-        );
 
         if (!isIdir) {
           // Set the user context

@@ -46,3 +46,37 @@ export const createProfileMutation = (
     },
   });
 };
+
+// export const createProfileMutation = (
+//   setClientNumber: Dispatch<SetStateAction<Nullable<string>>>,
+// ) => {
+//   const { setCompanyId, setCompanyLegalName, setOnRouteBCClientNumber } =
+//     useContext(OnRouteBCContext);
+
+//   const navigate = useNavigate();
+
+//   return useMutation({
+//     mutationFn: createOnRouteBCProfile,
+//     onSuccess: async (response) => {
+//       if (response.status === 200 || response.status === 201) {
+//         const { companyId, clientNumber, legalName } =
+//           response.data as CompanyProfile;
+//         // Handle context updates;
+//         sessionStorage.setItem(
+//           "onRouteBC.user.companyId",
+//           companyId.toString(),
+//         );
+//         setCompanyId?.(() => companyId);
+//         setCompanyLegalName?.(() => legalName);
+//         setOnRouteBCClientNumber?.(() => clientNumber);
+//         // By default a newly created company shouldn't be suspended, so no need for setIsCompanySuspended
+//         setClientNumber(() => clientNumber);
+//       }
+//     },
+//     onError: (error: AxiosError) => {
+//       navigate(ERROR_ROUTES.UNEXPECTED, {
+//         state: { correlationId: error.response?.headers["x-correlation-id"] },
+//       });
+//     },
+//   });
+// };
