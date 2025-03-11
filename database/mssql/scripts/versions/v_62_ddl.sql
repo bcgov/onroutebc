@@ -113,19 +113,40 @@ GO
 -- Start of data patch up script --
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
--- Update transactions where type is not 'P' and method type is 'WEB', copying the submit date to the approved date
-UPDATE t
-SET TRANSACTION_APPROVED_DATE = t.TRANSACTION_SUBMIT_DATE
-FROM [permit].[ORBC_TRANSACTION] t
-WHERE t.TRANSACTION_TYPE <>'P' and t.PAYMENT_METHOD_TYPE='WEB' and t.RECEIPT_ID IS NOT NULL;
-
-IF @@ERROR <> 0 SET NOEXEC ON
-GO
--- Update transactions of type 'P' and method type 'WEB', setting the approved date to payment gateway's transaction date
+-- Updates TRANSACTION_APPROVED_DATE to match PG_TRANSACTION_DATE
+-- for payment gateway transactions meeting all conditions:
+--   - Transaction Type is Payment ('P')
+--   - Web payment method
+--   - Approved status confirmed (PG_TRANSACTION_APPROVED = '1')
+-- AND having valid receipt numbers
 UPDATE t
 SET TRANSACTION_APPROVED_DATE = t.PG_TRANSACTION_DATE
 FROM [permit].[ORBC_TRANSACTION] t
-WHERE t.TRANSACTION_TYPE ='P' and t.PAYMENT_METHOD_TYPE='WEB' and t.RECEIPT_ID IS NOT NULL;
+INNER JOIN [permit].[ORBC_RECEIPT] r ON t.RECEIPT_ID = r.RECEIPT_ID
+WHERE t.TRANSACTION_TYPE = 'P'
+	AND t.PAYMENT_METHOD_TYPE = 'WEB'
+	AND t.PG_TRANSACTION_APPROVED = '1'
+	AND r.RECEIPT_NUMBER IS NOT NULL;
+
+IF @@ERROR <> 0 SET NOEXEC ON
+GO
+-- Updates TRANSACTION_APPROVED_DATE to match TRANSACTION_SUBMIT_DATE
+-- for transactions meeting either:
+--   - Non-web payment methods OR
+--   - Web payment refunds (Type 'R')
+-- AND having valid receipt numbers
+UPDATE t
+SET TRANSACTION_APPROVED_DATE = t.TRANSACTION_SUBMIT_DATE
+FROM [permit].[ORBC_TRANSACTION] t
+INNER JOIN [permit].[ORBC_RECEIPT] r ON t.RECEIPT_ID = r.RECEIPT_ID
+WHERE (
+		t.PAYMENT_METHOD_TYPE <> 'WEB'
+		OR (
+			t.TRANSACTION_TYPE = 'R'
+			AND t.PAYMENT_METHOD_TYPE = 'WEB'
+			)
+		)
+	AND r.RECEIPT_NUMBER IS NOT NULL;
 
 -- End of data patch up script --
 
