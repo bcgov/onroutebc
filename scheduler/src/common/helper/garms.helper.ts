@@ -93,7 +93,7 @@ export const createGarmsCashFileHeader = (
   gch.agentNumber = AGENT_NUMBER;
   gch.wsdate = dateFormat(date, GARMS_DATE_FORMAT);
   gch.recCount = formatRecCount(seqNumber);
-  gch.revAmount = formatAmount(getTotalAmount(paymentTypeAmounts));
+  gch.revAmount = formatAmount(getSum(paymentTypeAmounts));
   gch.totalCashAmount = formatAmount(
     getValue(paymentTypeAmounts, PaymentMethodType.CASH),
   );
@@ -118,7 +118,7 @@ export const createGarmsCashFileHeader = (
     getValue(paymentTypeAmounts, PaymentMethodType.GA),
   );
   gch.serviceQuantity = formatServiceQuantity(
-    getServiceQuantity(permitTypeCount),
+    getSum(permitTypeCount),
   );
   gch.invQuantity = INV_QTY;
   const header = Object.values(gch).join('');
@@ -293,16 +293,7 @@ export const getValueNumber = (
   return map.has(key) ? map.get(key) : 0;
 };
 
-export const getServiceQuantity = (map: Map<number, number>) => {
-  let sum = 0;
-  map.forEach((value) => {
-    sum += value;
-  });
-
-  return sum;
-};
-
-export const getTotalAmount = (map: Map<string, number>) => {
+export const getSum = <K>(map: Map<K, number>) => {
   let sum = 0;
   map.forEach((value) => {
     sum += value;
