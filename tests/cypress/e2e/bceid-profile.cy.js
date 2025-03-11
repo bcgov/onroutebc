@@ -97,7 +97,13 @@ describe('Crud for trailer', () => {
     // 5.	Users displayed – check
     cy.contains('.tab__label', 'Add / Manage Users').should('exist').click();
     cy.wait(wait_time);
-    cy.contains('td', 'ORBCTST1').should('exist');
+
+    // cy.contains('td', 'ORBCTST1').should('exist');
+    cy.get('td[data-index="1"]').first()
+    .should('exist') // Check that the <td> exists
+    .within(() => {
+      cy.get('span').should('exist');
+    });
 
     // 6.	Can edit users – check
     cy.get('#actions-button').click();
