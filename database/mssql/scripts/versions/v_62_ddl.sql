@@ -22,7 +22,7 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and t
 
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
-ALTER TABLE [permit].[ORBC_TRANSACTION_HIST] ADD [TRANSACTION_APPROVED_DATE] [datetime2](7) NULL,
+ALTER TABLE [permit].[ORBC_TRANSACTION_HIST] ADD [TRANSACTION_APPROVED_DATE] [datetime2](7) NULL;
 
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
