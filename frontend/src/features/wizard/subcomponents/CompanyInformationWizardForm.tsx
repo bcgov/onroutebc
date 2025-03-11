@@ -11,13 +11,13 @@ import { CompanyInfoGeneralForm } from "../../manageProfile/components/forms/com
 import "./CompanyInformationWizardForm.scss";
 import { ORBC_FORM_FEATURES } from "../../../common/types/common";
 import { WarningBcGovBanner } from "../../../common/components/banners/WarningBcGovBanner";
-import { ClientPrimaryContactForm } from "../../manageProfile/components/forms/companyInfo/subForms/ClientPrimaryContactForm";
+import { CompanyPrimaryContactForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyPrimaryContactForm";
 
 /**
  * The Company Wizard Form contains multiple subs forms including
  * Company Info, Company Contact, and Primary Contact forms.
  */
-export const ClientInformationWizardForm = memo(
+export const CompanyInformationWizardForm = memo(
   ({ showCompanyName = false }: { showCompanyName?: boolean }) => {
     const FEATURE = ORBC_FORM_FEATURES.COMPANY_INFORMATION_WIZARD;
 
@@ -73,11 +73,11 @@ export const ClientInformationWizardForm = memo(
         <Typography variant="h2" gutterBottom>
           Contact Details
         </Typography>
-        <ClientPrimaryContactForm feature={FEATURE} />
+        <CompanyPrimaryContactForm feature={FEATURE} />
         <CompanyInfoGeneralForm feature={FEATURE} />
       </div>
     );
   },
 );
 
-ClientInformationWizardForm.displayName = "ClientInformationWizardForm";
+CompanyInformationWizardForm.displayName = "CompanyInformationWizardForm";

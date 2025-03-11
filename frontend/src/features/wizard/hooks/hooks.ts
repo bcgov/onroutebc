@@ -52,7 +52,7 @@ export const createProfileMutation = (
          They should instead remain on the page and
          look at the profile created section which contains the client number. */
 
-        // TODO test if this is working now
+        // if the user is BCeID then they are claiming/creating their first ORBC profile
         if (isBCeID) {
           const { adminUser } = response.data;
           const {

@@ -9,7 +9,7 @@ import { Nullable } from "../../../common/types/common";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import { CreateCompanyRequest } from "../../manageProfile/types/manageProfile";
-import { ClientInformationWizardForm } from "./ClientInformationWizardForm";
+import { CompanyInformationWizardForm } from "./CompanyInformationWizardForm";
 import { UserInformationWizardForm } from "./UserInformationWizardForm";
 import { WizardClientBanner } from "./WizardClientBanner";
 import { createProfileMutation } from "../hooks/hooks";
@@ -74,7 +74,7 @@ export const CompanyAndUserInfoSteps = ({
               user?.profile?.bceid_business_name as string,
             )}
           />
-          <ClientInformationWizardForm />
+          <CompanyInformationWizardForm />
         </div>
       )}
       {activeStep === totalSteps - 1 && (
