@@ -37,41 +37,44 @@ export const createGarmsCashFile = (
 ) => {
   const datetime = new Date().getMilliseconds();
   try {
-    const fileName = path.join('/tmp', 'GARMS_CASH_FILE_' + datetime);
+    let fileName: string = null;
     const groupedTransactionsByDate: DateTransaction[] =
       groupTransactionsByDate(transactions);
-    groupedTransactionsByDate.forEach((transactionByDate) => {
-      const permitTypeAmounts = new Map<number, number>();
-      const permitTypeCount = new Map<number, number>();
-      const paymentTypeAmounts = new Map<string, number>();
-      const transactions = transactionByDate.transactions as Transaction[];
-      transactions.forEach((transaction) => {
-        processPaymentMethod(transaction, paymentTypeAmounts);
-        processPermitTransactions(
-          transaction,
-          permitTypeAmounts,
+    if (groupTransactionsByDate && groupedTransactionsByDate.length > 0) {
+      fileName = path.join('/tmp', 'GARMS_CASH_FILE_' + datetime);
+      groupedTransactionsByDate.forEach((transactionByDate) => {
+        const permitTypeAmounts = new Map<number, number>();
+        const permitTypeCount = new Map<number, number>();
+        const paymentTypeAmounts = new Map<string, number>();
+        const transactions = transactionByDate.transactions as Transaction[];
+        transactions.forEach((transaction) => {
+          processPaymentMethod(transaction, paymentTypeAmounts);
+          processPermitTransactions(
+            transaction,
+            permitTypeAmounts,
+            permitTypeCount,
+            garmsExtractType,
+            permitServiceCodes,
+          );
+        });
+        const sequenceNumber = permitTypeCount.size;
+        createGarmsCashFileHeader(
+          paymentTypeAmounts,
+          transactionByDate.date,
           permitTypeCount,
-          garmsExtractType,
+          sequenceNumber,
+          fileName,
+        );
+        createGarmsCashFileDetails(
+          permitTypeCount,
+          permitTypeAmounts,
+          transactionByDate.date,
           permitServiceCodes,
+          fileName,
         );
       });
-      const sequenceNumber = permitTypeCount.size;
-      createGarmsCashFileHeader(
-        paymentTypeAmounts,
-        transactionByDate.date,
-        permitTypeCount,
-        sequenceNumber,
-        fileName,
-      );
-      createGarmsCashFileDetails(
-        permitTypeCount,
-        permitTypeAmounts,
-        transactionByDate.date,
-        permitServiceCodes,
-        fileName,
-      );
-    });
-    return fileName;
+      return fileName;
+    }
   } catch (err) {
     logger.error(err);
     throw new InternalServerErrorException(
@@ -128,7 +131,6 @@ export const createGarmsCashFileDetails = (
   permitTypeCount: Map<number, number>,
   permitTypeAmounts: Map<number, number>,
   date: string,
-  permitServiceCodes: Map<string, number>,
   fileName: string,
 ) => {
   let seqNumber = 0;

@@ -55,11 +55,15 @@ export class GarmsService {
       permitServiceCodes,
       this.logger,
     );
-    const remoteFilePath = process.env.GARMS_ENV + GARMS_CASH_FILE_LOCATION;
-    const recordLength = GARMS_CASH_FILE_LRECL;
-    this.upload(fileName, recordLength, remoteFilePath);
-    await this.saveTransactionIds(transactions, fileId);
-    await this.updateFileSubmitTimestamp(oldFile);
+    if (fileName) {
+      const remoteFilePath = process.env.GARMS_ENV + GARMS_CASH_FILE_LOCATION;
+      const recordLength = GARMS_CASH_FILE_LRECL;
+      this.upload(fileName, recordLength, remoteFilePath);
+      await this.saveTransactionIds(transactions, fileId);
+      await this.updateFileSubmitTimestamp(oldFile);
+    } else {
+      this.logger.log('No data to process for GARMS cash file');
+    }
   }
 
   private async saveTransactionIds(
