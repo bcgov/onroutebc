@@ -18,6 +18,8 @@ import {
 import { PermitType } from '../common/entities/permit-type.entity';
 import { createGarmsCashFile } from 'src/common/helper/garms.helper';
 import { getToDateForGarms } from 'src/common/helper/date-time.helper';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 
 @Injectable()
 export class GarmsService {
@@ -194,15 +196,17 @@ export class GarmsService {
       password: process.env.GARMS_PWD,
       // additinal settings for lftp command.
       additionalLftpCommands:
-        'set cache:enable no;set ftp:passive-mode on;set ftp:use-size no;set ftp:ssl-protect-data yes;set ftp:ssl-force yes;set ftps:initial-prot "P";set net:connection-limit 1;set net:max-retries 1;debug 3;', // Additional commands to pass to lftp, splitted by ';'
+        'set cache:enable no;set ftp:passive-mode on;set ftp:use-size no;set ftp:ssl-protect-data yes;set ftp:ssl-force yes;set ftps:initial-prot "P";set net:connection-limit 1;set net:max-retries 1;debug 5;', // Additional commands to pass to lftp, splitted by ';'
     };
     const ftps: FTPS = new FTPS(options);
     try {
       const remoteFilePath = 'GARMT.GA4701.WS.BATCH(+1)';
       const localFilePath = fileName;
-      ftps.raw('SITE LRecl=140');
-      ftps.pwd().exec(console.log);
-      ftps.raw(`put -a ${localFilePath} -o "'${remoteFilePath}'"`);
+      // Each ftps.raw command makes a new connection. So send site settings and file in the same command.
+      // It makes sure that site settings are persisted with put command
+      ftps.raw(
+        `SITE LRecl=140 ; put -a ${localFilePath} -o "'${remoteFilePath}'"`,
+      );
       ftps.pwd().exec(console.log);
     } catch (e) {
       throw new InternalServerErrorException(e);
