@@ -19,7 +19,7 @@ global:
     enabled: false
   domain: "apps.silver.devops.gov.bc.ca" # it is required, apps.silver.devops.gov.bc.ca for silver cluster
   vault:
-    authPath: "k8s-silver"
+    authPath: "auth/k8s-silver"
     role: "nonprod"
     zone: "dev"
 frontend:
