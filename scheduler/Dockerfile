@@ -34,10 +34,6 @@ RUN mkdir /.npm && chmod 777 /.npm
 # Set the working directory to /app inside the deployment container
 WORKDIR /app
 
-ENV GARMS_HOST=${GARMS_HOST}
-ENV GARMS_USER=${GARMS_USER}
-ENV GARMS_PWD=${GARMS_PWD}
-ENV GARMS_ENV=${GARMS_ENV}
 # Copy production files from build
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
