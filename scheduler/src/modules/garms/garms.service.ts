@@ -41,30 +41,34 @@ export class GarmsService {
   @Cron(`${process.env.GARMS_CASH_FILE_INTERVAL || '30 * * * * *'}`)
   async processCashTransactions(garmsExtractType: GarmsExtractType) {
     const oldFile = await this.getOldFile(garmsExtractType);
-    const { fileId, fromTimestamp, toTimestamp } = oldFile;
-    // Fetch transactions based on the provided timestamps
-    const transactions = await this.getTransactionWithPermitDetails(
-      fromTimestamp,
-      toTimestamp,
-      garmsExtractType,
-    );
-    if (transactions.length > 0) {
-      const permitServiceCodes = await this.getPermitTypeServiceCodes();
-      const fileName = createGarmsCashFile(
-        transactions,
+    if (oldFile) {
+      const { fileId, fromTimestamp, toTimestamp } = oldFile;
+      // Fetch transactions based on the provided timestamps
+      const transactions = await this.getTransactionWithPermitDetails(
+        fromTimestamp,
+        toTimestamp,
         garmsExtractType,
-        permitServiceCodes,
-        this.logger,
       );
+      if (transactions.length > 0) {
+        const permitServiceCodes = await this.getPermitTypeServiceCodes();
+        const fileName = createGarmsCashFile(
+          transactions,
+          garmsExtractType,
+          permitServiceCodes,
+          this.logger,
+        );
 
-      const remoteFilePath = process.env.GARMS_ENV + GARMS_CASH_FILE_LOCATION;
-      const recordLength = GARMS_CASH_FILE_LRECL;
-      this.upload(fileName, recordLength, remoteFilePath);
-      await this.saveTransactionIds(transactions, fileId);
+        const remoteFilePath = process.env.GARMS_ENV + GARMS_CASH_FILE_LOCATION;
+        const recordLength = GARMS_CASH_FILE_LRECL;
+        this.upload(fileName, recordLength, remoteFilePath);
+        await this.saveTransactionIds(transactions, fileId);
+      } else {
+        this.logger.log('No data to process for GARMS cash file');
+      }
+      await this.updateFileSubmitTimestamp(oldFile);
     } else {
-      this.logger.log('No data to process for GARMS cash file');
+      this.logger.log('No record to process for GARMS cash file');
     }
-    await this.updateFileSubmitTimestamp(oldFile);
   }
 
   private async saveTransactionIds(

@@ -117,9 +117,7 @@ export const createGarmsCashFileHeader = (
   gch.totalGAAmount = formatAmount(
     getValue(paymentTypeAmounts, PaymentMethodType.GA),
   );
-  gch.serviceQuantity = formatServiceQuantity(
-    getSum(permitTypeCount),
-  );
+  gch.serviceQuantity = formatServiceQuantity(getSum(permitTypeCount));
   gch.invQuantity = INV_QTY;
   const header = Object.values(gch).join('');
   fs.appendFileSync(fileName, header + '\n');
