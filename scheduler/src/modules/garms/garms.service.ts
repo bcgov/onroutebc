@@ -16,7 +16,7 @@ import {
   GARMS_CREDIT_FILE_TRANSACTION_TYPE,
 } from 'src/common/enum/payment-method-type.enum';
 import { PermitType } from '../common/entities/permit-type.entity';
-import { createGarmsCashFile, deleteLocalFile } from 'src/common/helper/garms.helper';
+import { createGarmsCashFile } from 'src/common/helper/garms.helper';
 import { getToDateForGarms } from 'src/common/helper/date-time.helper';
 
 @Injectable()
@@ -52,7 +52,6 @@ export class GarmsService {
         this.logger,
       );
       this.upload(fileName);
-      deleteLocalFile(fileName)
     }
     await this.saveTransactionIds(transactions, fileId);
     await this.updateFileSubmitTimestamp(oldFile);
@@ -201,7 +200,7 @@ export class GarmsService {
     try {
       const remoteFilePath = 'GARMD.GA4701.WS.BATCH(+1)';
       const localFilePath = fileName;
-      ftps.raw('quote SITE LRecl=140');
+      ftps.raw('SITE ("LRecl=140")');
       ftps.pwd().exec(console.log);
       ftps.raw(`put -a ${localFilePath} -o "'${remoteFilePath}'"`);
       ftps.pwd().exec(console.log);
@@ -210,5 +209,5 @@ export class GarmsService {
     } finally {
       ftps.raw('quit');
     }
-  }
+  } 
 }
