@@ -200,7 +200,7 @@ export class GarmsService {
     };
     const ftps: FTPS = new FTPS(options);
     try {
-      const remoteFilePath = 'GARMT.GA4701.WS.BATCH(+1)';
+      const remoteFilePath = `${process.env.GARMS_ENV}.GA4701.WS.BATCH(+1)`;
       const localFilePath = fileName;
       // Each ftps.raw command makes a new connection. So send site settings and file in the same command.
       // It makes sure that site settings are persisted with put command
