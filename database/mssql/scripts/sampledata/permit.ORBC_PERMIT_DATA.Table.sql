@@ -31,4 +31,11 @@ VALUES (
   4,
   N'{"companyName":"Rodriguez-Kertzmann Trucking","clientNumber":"R1-000010-277","startDate":"2025-01-01","expiryDate":"2025-01-30","permitDuration":30,"vehicleDetails":{"plate":"A66001","vin":"12333"}}')
 
+INSERT INTO permit.ORBC_PERMIT_DATA (
+  PERMIT_ID, 
+  PERMIT_DATA)
+VALUES (
+  5,
+  N'{"companyName":"Texas Flood","clientNumber":"E3-000082-999","startDate":"2025-01-01","expiryDate":"2025-01-30","permitDuration":30,"vehicleDetails":{"plate":"A66001","vin":"12333"}}')
+
 GO
