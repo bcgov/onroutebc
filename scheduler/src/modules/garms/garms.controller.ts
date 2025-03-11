@@ -12,6 +12,6 @@ export class GarmsController {
   })
   @Get()
   findAll(@Query('garmsExtractType') garmsExtractType: GarmsExtractType) {
-    return this.garmsService.processTransactions(garmsExtractType);
+    return this.garmsService.processCashTransactions(garmsExtractType);
   }
 }
