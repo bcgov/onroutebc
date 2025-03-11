@@ -48,7 +48,7 @@ export class GarmsService {
       toTimestamp,
       garmsExtractType,
     );
-    if (transactions) {
+    if (transactions.length>0) {
       const permitServiceCodes = await this.getPermitTypeServiceCodes();
       const fileName = createGarmsCashFile(
         transactions,
