@@ -68,7 +68,6 @@ export const createGarmsCashFile = (
           permitTypeCount,
           permitTypeAmounts,
           transactionByDate.date,
-          permitServiceCodes,
           fileName,
         );
       });
