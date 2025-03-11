@@ -18,8 +18,7 @@ import {
 import { PermitType } from '../common/entities/permit-type.entity';
 import { createGarmsCashFile } from 'src/common/helper/garms.helper';
 import { getToDateForGarms } from 'src/common/helper/date-time.helper';
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import { GARMS_CASH_FILE_LOCATION, GARMS_CASH_FILE_LRECL } from 'src/common/constants/garms.constant';
 
 @Injectable()
 export class GarmsService {
@@ -53,7 +52,9 @@ export class GarmsService {
         permitServiceCodes,
         this.logger,
       );
-      this.upload(fileName);
+      const remoteFilePath = process.env.GARMS_ENV+GARMS_CASH_FILE_LOCATION;
+      const recordLength = GARMS_CASH_FILE_LRECL;
+      this.upload(fileName,recordLength,remoteFilePath);
     }
     await this.saveTransactionIds(transactions, fileId);
     await this.updateFileSubmitTimestamp(oldFile);
@@ -189,7 +190,7 @@ export class GarmsService {
     return permitTypeServiceCodes;
   }
 
-  upload(fileName: string) {
+  upload(fileName: string,recordLength: number,remoteFilePath: string) {
     const options: FTPS.FTPOptions = {
       host: process.env.GARMS_HOST,
       username: process.env.GARMS_USER,
@@ -200,12 +201,11 @@ export class GarmsService {
     };
     const ftps: FTPS = new FTPS(options);
     try {
-      const remoteFilePath = `${process.env.GARMS_ENV}.GA4701.WS.BATCH(+1)`;
       const localFilePath = fileName;
       // Each ftps.raw command makes a new connection. So send site settings and file in the same command.
       // It makes sure that site settings are persisted with put command
       ftps.raw(
-        `SITE LRecl=140 ; put -a ${localFilePath} -o "'${remoteFilePath}'"`,
+        `SITE LRecl=${recordLength} ; put -a ${localFilePath} -o "'${remoteFilePath}'"`,
       );
       ftps.pwd().exec(console.log);
     } catch (e) {
