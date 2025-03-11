@@ -20,11 +20,8 @@ export const LogoutButton = () => {
         signoutRedirect({
           extraQueryParams: {
             // redirect_uri: `${siteMinderLogOffURL}?retnow=1&ret_url=${window.location.origin}`,
-            // post_logout_redirect_uri: 'https://onroutebc-test-frontend.apps.silver.devops.gov.bc.ca',
-            // redirect_uri: 'http://localhost:3000',
-            post_logout_redirect_uri: 'http://localhost:3000/',
-            // id_token_hint: user?.id_token || "",
-            id_token_hint: "krish",
+            post_logout_redirect_uri: `${window.location.origin}/`,
+            id_token_hint: user?.id_token as string,
           },
         });
       }}
