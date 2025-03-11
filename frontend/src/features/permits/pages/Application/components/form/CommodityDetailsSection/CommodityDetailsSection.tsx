@@ -7,7 +7,10 @@ import { requiredMessage } from "../../../../../../../common/helpers/validationM
 import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
 import { Autocomplete } from "../../../../../../../common/components/form/subFormComponents/Autocomplete";
 import { Controller, useFormContext } from "react-hook-form";
-import { Nullable } from "../../../../../../../common/types/common";
+import {
+  Nullable,
+  ORBCFormFeatureType,
+} from "../../../../../../../common/types/common";
 import {
   DEFAULT_COMMODITY_SELECT_OPTION,
   DEFAULT_COMMODITY_SELECT_VALUE,
@@ -23,7 +26,7 @@ export const CommodityDetailsSection = ({
   selectedCommodityType,
   onChangeCommodityType,
 }: {
-  feature: string;
+  feature: ORBCFormFeatureType;
   permitType: PermitType;
   commodityOptions: {
     value: string;

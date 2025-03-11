@@ -20,8 +20,8 @@ export const createProfileMutation = (
     setMigratedClient,
   } = useContext(OnRouteBCContext);
 
-  const { idirUserDetails } = useContext(OnRouteBCContext);
-  const isIdir = Boolean(idirUserDetails?.userRole);
+  const { userDetails } = useContext(OnRouteBCContext);
+  const isBCeID = Boolean(userDetails?.userRole);
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -30,30 +30,7 @@ export const createProfileMutation = (
     mutationFn: createOnRouteBCProfile,
     onSuccess: async (response) => {
       if (response.status === 200 || response.status === 201) {
-        const { companyId, clientNumber, legalName, adminUser } = response.data;
-        const {
-          firstName,
-          lastName,
-          userName,
-          phone1,
-          phone1Extension,
-          phone2,
-          phone2Extension,
-          email,
-          userRole,
-        } = adminUser;
-
-        const userDetails: BCeIDUserDetailContext = {
-          firstName,
-          lastName,
-          userName,
-          phone1,
-          phone1Extension,
-          phone2,
-          phone2Extension,
-          email,
-          userRole,
-        };
+        const { companyId, clientNumber, legalName } = response.data;
 
         /* Setting the companyId in the sessionStorage so that it can be used used outside of react components; */
         sessionStorage.setItem(
@@ -75,7 +52,32 @@ export const createProfileMutation = (
          They should instead remain on the page and
          look at the profile created section which contains the client number. */
 
-        if (!isIdir) {
+        // TODO test if this is working now
+        if (isBCeID) {
+          const { adminUser } = response.data;
+          const {
+            firstName,
+            lastName,
+            userName,
+            phone1,
+            phone1Extension,
+            phone2,
+            phone2Extension,
+            email,
+            userRole,
+          } = adminUser;
+
+          const userDetails: BCeIDUserDetailContext = {
+            firstName,
+            lastName,
+            userName,
+            phone1,
+            phone1Extension,
+            phone2,
+            phone2Extension,
+            email,
+            userRole,
+          };
           // Set the user context
           setUserDetails?.(userDetails);
           /* Clear any state in migrated client. We no longer need this

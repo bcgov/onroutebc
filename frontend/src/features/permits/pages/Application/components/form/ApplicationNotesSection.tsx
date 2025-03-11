@@ -1,24 +1,23 @@
-import { Box } from "@mui/material"
+import { Box } from "@mui/material";
 
 import "./ApplicationNotesSection.scss";
 import { CustomFormComponent } from "../../../../../../common/components/form/CustomFormComponents";
 import { PERMIT_TYPES, PermitType } from "../../../../types/PermitType";
 import { InfoBcGovBanner } from "../../../../../../common/components/banners/InfoBcGovBanner";
 import { BANNER_MESSAGES } from "../../../../../../common/constants/bannerMessages";
+import { ORBCFormFeatureType } from "../../../../../../common/types/common";
 
 export const ApplicationNotesSection = ({
   feature,
   permitType,
 }: {
-  feature: string;
+  feature: ORBCFormFeatureType;
   permitType: PermitType;
 }) => {
   return permitType === PERMIT_TYPES.STOS ? (
     <Box className="application-notes-section">
       <Box className="application-notes-section__header">
-        <h3 className="application-notes-section__title">
-          Application Notes
-        </h3>
+        <h3 className="application-notes-section__title">Application Notes</h3>
       </Box>
 
       <Box className="application-notes-section__body">
@@ -54,4 +53,3 @@ export const ApplicationNotesSection = ({
     </Box>
   ) : null;
 };
-
