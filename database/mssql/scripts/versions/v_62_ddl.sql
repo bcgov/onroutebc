@@ -14,7 +14,7 @@ GO
 
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
-ALTER TABLE [permit].[ORBC_TRANSACTION] ADD [TRANSACTION_APPROVED_DATE] [datetime2](7) NULL,
+ALTER TABLE [permit].[ORBC_TRANSACTION] ADD [TRANSACTION_APPROVED_DATE] [datetime2](7) NULL;
 
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
@@ -121,9 +121,9 @@ WHERE t.TRANSACTION_TYPE <>'P' and t.PAYMENT_METHOD_TYPE='WEB' and t.RECEIPT_ID 
 
 IF @@ERROR <> 0 SET NOEXEC ON
 GO
--- Update transactions of type 'P' and method type 'WEB', setting the approved date to payment gateway's approved date
+-- Update transactions of type 'P' and method type 'WEB', setting the approved date to payment gateway's transaction date
 UPDATE t
-SET TRANSACTION_APPROVED_DATE = t.PG_TRANSACTION_APPROVED
+SET TRANSACTION_APPROVED_DATE = t.PG_TRANSACTION_DATE
 FROM [permit].[ORBC_TRANSACTION] t
 WHERE t.TRANSACTION_TYPE ='P' and t.PAYMENT_METHOD_TYPE='WEB' and t.RECEIPT_ID IS NOT NULL;
 
