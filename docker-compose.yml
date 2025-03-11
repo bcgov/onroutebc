@@ -274,6 +274,7 @@ services:
       GARMS_HOST: ${GARMS_HOST}
       GARMS_USER: ${GARMS_USER}
       GARMS_PWD: ${GARMS_PWD}
+      GARMS_ENV: ${GARMS_ENV}
     healthcheck:
       test: "curl --silent --fail http://localhost:5050/ > /dev/null || exit 1"
       interval: 1m30s
