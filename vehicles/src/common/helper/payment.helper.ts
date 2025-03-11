@@ -54,3 +54,17 @@ export const isCfsPaymentMethodType = (
 ): paymentMethodType is CfsPaymentMethodType => {
   return paymentMethodType in CfsPaymentMethodType;
 };
+
+export const isTransactionPurchase = (transactionType: TransactionType) => {
+  return transactionType == TransactionType.PURCHASE;
+};
+
+export const isWebTransactionPurchase = (
+  paymentMethod: PaymentMethodType,
+  transactionType: TransactionType,
+) => {
+  return (
+    paymentMethod == PaymentMethodType.WEB &&
+    isTransactionPurchase(transactionType)
+  );
+};
