@@ -2,7 +2,7 @@
 FROM node:22.14.0-alpine AS builder
 
 #install lftp for sending file to GARMS mainframe
-RUN apk update && apk add lftp
+RUN apk update && apk add --no-cache lftp 
 
 # Set the working directory to /app inside the container
 WORKDIR /app
@@ -24,7 +24,7 @@ RUN npm prune --production
 FROM node:22.14.0-alpine
 
 #install lftp for sending file to GARMS mainframe
-RUN apk update && apk add lftp
+RUN apk update && apk add --no-cache lftp
 
 RUN npm cache clean --force
 

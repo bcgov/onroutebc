@@ -30,13 +30,13 @@ export class GarmsService {
 
   constructor(
     @InjectRepository(GarmsExtractFile)
-    private garmsExtractFileRepository: Repository<GarmsExtractFile>,
+    private readonly garmsExtractFileRepository: Repository<GarmsExtractFile>,
     @InjectRepository(GarmsFileTransaction)
-    private fileTransactionRepository: Repository<GarmsFileTransaction>,
+    private readonly fileTransactionRepository: Repository<GarmsFileTransaction>,
     @InjectRepository(Transaction)
-    private transactionRepository: Repository<Transaction>,
+    private readonly transactionRepository: Repository<Transaction>,
     @InjectRepository(PermitType)
-    private permitTypeRepository: Repository<PermitType>,
+    private readonly permitTypeRepository: Repository<PermitType>,
   ) {}
   @Cron(`${process.env.GARMS_CASH_FILE_INTERVAL || '30 * * * * *'}`)
   async processCashTransactions(garmsExtractType: GarmsExtractType) {

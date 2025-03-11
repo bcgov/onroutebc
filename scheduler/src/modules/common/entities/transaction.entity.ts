@@ -95,7 +95,6 @@ export class Transaction extends Base {
   })
   transactionSubmitDate: Date;
 
-  // TODO: Max length is 10?
   @AutoMap()
   @ApiProperty({
     example: 'T-1687586193681',
