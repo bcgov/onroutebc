@@ -18,7 +18,7 @@ export const CreditAccountMetadataComponent = ({
   const showApplicationsInProgressTab = usePermissionMatrix({
     permissionMatrixKeys: {
       permissionMatrixFeatureKey: "MANAGE_SETTINGS",
-      permissionMatrixFunctionKey: "VIEW_CREDIT_ACCOUNT_TAB_ACCOUNT_HOLDER",
+      permissionMatrixFunctionKey: "ADD_CREDIT_ACCOUNT_NON_HOLDER_OR_USER",
     },
   });
   if (!isPending) {
@@ -31,25 +31,19 @@ export const CreditAccountMetadataComponent = ({
       );
     } else {
       if (showApplicationsInProgressTab) {
-        console.log(
-          "showApplicationsInProgressTab",
-          showApplicationsInProgressTab,
-        );
+        console.log("Permission:", showApplicationsInProgressTab);
         return (
           <RenderIf
             component={<AddCreditAccount companyId={companyId} />}
             permissionMatrixKeys={{
               permissionMatrixFeatureKey: "MANAGE_SETTINGS",
               permissionMatrixFunctionKey:
-                "VIEW_CREDIT_ACCOUNT_DETAILS_ACCOUNT_USER",
+                "ADD_CREDIT_ACCOUNT_NON_HOLDER_OR_USER",
             }}
           />
         );
       } else {
-        console.log(
-          "showApplicationsInProgressTab2",
-          showApplicationsInProgressTab,
-        );
+        console.log("Permission:", showApplicationsInProgressTab);
         return (
           <div className="non-finance-container">
             <InfoBcGovBanner msg={BANNER_MESSAGES.NON_FINANCE_USER} />
@@ -58,9 +52,5 @@ export const CreditAccountMetadataComponent = ({
       }
     }
   }
-  return (
-    <div className="non-finance-container">
-      <InfoBcGovBanner msg={BANNER_MESSAGES.NON_FINANCE_USER} />
-    </div>
-  );
+  return null;
 };
