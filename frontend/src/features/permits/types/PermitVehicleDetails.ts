@@ -1,5 +1,5 @@
 import { Nullable } from "../../../common/types/common";
-import { VEHICLE_TYPES } from "../../manageVehicles/types/Vehicle";
+import { DEFAULT_VEHICLE_TYPE } from "../../manageVehicles/types/Vehicle";
 
 export interface PermitVehicleDetails {
   vin: string;
@@ -15,8 +15,6 @@ export interface PermitVehicleDetails {
   vehicleId: Nullable<string>; // either powerUnitId or trailerId, depending on vehicleType
   licensedGVW?: Nullable<number>;
 }
-
-export const DEFAULT_VEHICLE_TYPE = VEHICLE_TYPES.POWER_UNIT;
 
 export const EMPTY_VEHICLE_DETAILS = {
   vehicleId: "",

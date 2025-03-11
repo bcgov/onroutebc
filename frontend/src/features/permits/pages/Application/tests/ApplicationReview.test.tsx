@@ -2,7 +2,7 @@ import { Dayjs } from "dayjs";
 import { waitFor } from "@testing-library/react";
 
 import { PermitVehicleDetails } from "../../../types/PermitVehicleDetails";
-import { vehicleTypeDisplayText } from "../../../helpers/mappers";
+import { vehicleTypeDisplayText } from "../../../../manageVehicles/types/Vehicle";
 import { VehicleType } from "../../../../manageVehicles/types/Vehicle";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { getPermitTypeName } from "../../../types/PermitType";

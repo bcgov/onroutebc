@@ -2,13 +2,19 @@
 
 .loa-steps {
   padding-bottom: 3rem;
+
+  & &__step-label {
+    padding: 1.5rem 0;
+    margin: 0;
+    color: orbcStyles.$bc-black;
+    font-size: 1.5rem;
+    font-weight: bold;
+    border-bottom: 1px solid orbcStyles.$bc-text-box-border-grey;
+  }
   
   & &__step-component {
+    margin-top: 2.5rem;
     margin-bottom: 2.5rem;
-  }
-
-  .stepper {
-    margin: 2.5rem 0;
   }
 
   .steps-navigation {
@@ -46,72 +52,5 @@
         font-weight: bold;
       }
     }
-  }
-}
-
-.step {
-  .loa-steps &#{&}--first {
-    padding-left: 0;
-  }
-
-  .loa-steps & {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-  }
-
-  .loa-steps & &__label {
-    & {
-      align-items: flex-start;
-    }
-
-    &-container {
-      text-align: start;
-    }
-
-    &--active {
-      color: orbcStyles.$bc-background-blue;
-      font-weight: bold;
-    }
-
-    &--completed {
-      color: orbcStyles.$bc-green;
-      font-weight: bold;
-    }
-
-    &--disabled {
-      color: orbcStyles.$bc-text-box-border-grey;
-      font-weight: bold;
-    }
-  }
-
-  .loa-steps & &__icon {
-    overflow: visible;
-    fill: orbcStyles.$white;
-    stroke-width: 0.25rem;
-    stroke: orbcStyles.$bc-text-box-border-grey;
-
-    &--active {
-      stroke: orbcStyles.$bc-background-blue;
-    }
-
-    &--completed {
-      stroke: orbcStyles.$white;
-      stroke-width: 0;
-      fill: orbcStyles.$bc-green;
-      transform: scale(1.2);
-    }
-  }
-
-  .loa-steps & &__step-number {
-    display: none;
-  }
-
-  .loa-steps & &__connector-line {
-    border-width: 0.25rem;
-  }
-
-  .loa-steps & &__connector {
-    left: calc(-100% + 3.75rem);
-    right: calc(100% + 0.75rem);
   }
 }
