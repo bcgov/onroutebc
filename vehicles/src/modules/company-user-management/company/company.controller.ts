@@ -20,6 +20,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { ExceptionDto } from '../../../common/exception/exception.dto';
@@ -61,6 +62,10 @@ import { doesUserHaveRole } from '../../../common/helper/auth.helper';
 })
 @ApiInternalServerErrorResponse({
   description: 'The Company Api Internal Server Error Response',
+  type: ExceptionDto,
+})
+@ApiUnprocessableEntityResponse({
+  description: 'The Company Entity could not be processed.',
   type: ExceptionDto,
 })
 @ApiBearerAuth()
@@ -228,8 +233,9 @@ export class CompanyController {
   }
 
   /**
-   * A POST method defined with a route of /verify-client that verifies
-   * the existence of a migrated/onRoute BC client and their permit in the system.
+   * A POST method is defined with a route of /verify-client that verifies
+   * the existence of a migrated/OnRouteBC client and their permit in the system.
+   * A 422 unprocessable exception will be thrown if it is found that the company has already been claimed in OnRouteBC.
    *
    * @returns The verified client details with response object {@link ReadVerifyClientDto}.
    */
@@ -240,7 +246,7 @@ export class CompanyController {
   @ApiOperation({
     summary: 'Verify Migrated/onRouteBC Client',
     description:
-      'Verifies the existence of a migrated/onRouteBC client and their permit in the database',
+      'Verifies the existence of a migrated/onRouteBC client and their permit in the database. A 422 unprocessable exception will be thrown if it is found that the company has already been claimed in OnRouteBC.',
   })
   @AuthOnly()
   @Post('verify-client')
