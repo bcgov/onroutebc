@@ -174,7 +174,7 @@ export class GarmsService {
       .getMany();
     return result;
   }
-  
+
   private async getPermitTypeServiceCodes(): Promise<Map<string, number>> {
     const permitTypes = await this.permitTypeRepository.find();
     const permitTypeServiceCodes = new Map<string, number>();
@@ -198,9 +198,9 @@ export class GarmsService {
     };
     const ftps: FTPS = new FTPS(options);
     try {
-      const remoteFilePath = 'GARMD.GA4701.WS.BATCH(+1)';
+      const remoteFilePath = 'GARMT.GA4701.WS.BATCH(+1)';
       const localFilePath = fileName;
-      ftps.raw('SITE ("LRecl=140")');
+      ftps.raw('SITE LRecl=140');
       ftps.pwd().exec(console.log);
       ftps.raw(`put -a ${localFilePath} -o "'${remoteFilePath}'"`);
       ftps.pwd().exec(console.log);
@@ -209,5 +209,5 @@ export class GarmsService {
     } finally {
       ftps.raw('quit');
     }
-  } 
+  }
 }

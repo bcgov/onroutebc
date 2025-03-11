@@ -25,9 +25,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { InternalServerErrorException, Logger } from '@nestjs/common';
 
-export const deleteLocalFile= (fileName: string)=>{
-  fs.rmSync(fileName)
-}
+export const deleteLocalFile = (fileName: string) => {
+  fs.rmSync(fileName);
+};
 
 export const createGarmsCashFile = (
   transactions: Transaction[],
@@ -205,22 +205,25 @@ export const getPaymentAmount = (transaction: Transaction) => {
 
 export const groupTransactionsByDate = (transactions: Transaction[]) => {
   // Group transactions by the date (ignoring the time part)
-  const groupedData = transactions.reduce((acc, transaction) => {
-    // Extract just the date part (YYYY-MM-DD)
-    const transactionDate = transaction.transactionSubmitDate
-      .toISOString()
-      .split('T')[0];
+  const groupedData = transactions.reduce(
+    (acc, transaction) => {
+      // Extract just the date part (YYYY-MM-DD)
+      const transactionDate = transaction.transactionSubmitDate
+        .toISOString()
+        .split('T')[0];
 
-    // If the date group doesn't exist, create it
-    if (!acc[transactionDate]) {
-      acc[transactionDate] = [];
-    }
+      // If the date group doesn't exist, create it
+      if (!acc[transactionDate]) {
+        acc[transactionDate] = [];
+      }
 
-    // Add the transaction to the correct date group
-    acc[transactionDate].push(transaction);
+      // Add the transaction to the correct date group
+      acc[transactionDate].push(transaction);
 
-    return acc;
-  }, {} as Record<string, Transaction[]>);
+      return acc;
+    },
+    {} as Record<string, Transaction[]>,
+  );
 
   //Process the grouped data (example: sum the total amounts for each date)
   const result = Object.keys(groupedData).map((date) => {
