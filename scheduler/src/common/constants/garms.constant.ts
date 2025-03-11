@@ -12,10 +12,10 @@ export const US_AMOUNT = '0000000.00 ';
 export const US_EXC_AMOUNT = '0000000.00 ';
 export const GARMS_DATE_FORMAT = 'YYYYMMDD';
 
-export const GARMS_CASH_FILE_LOCATION='.GA4701.WS.BATCH(+1)'
-export const GARMS_CREDIT_FILE_LOCATION='.GA4702.WSCREDIT.INPUT(+1)'
-export const GARMS_CASH_FILE_LRECL=140
-export const GARMS_CREDIT_FILE_LRECL=182
+export const GARMS_CASH_FILE_LOCATION = '.GA4701.WS.BATCH(+1)';
+export const GARMS_CREDIT_FILE_LOCATION = '.GA4702.WSCREDIT.INPUT(+1)';
+export const GARMS_CASH_FILE_LRECL = 140;
+export const GARMS_CREDIT_FILE_LRECL = 182;
 // Constants group
 export const GARMS_CONFIG = {
   agentNumber: AGENT_NUMBER,

@@ -18,7 +18,11 @@ import {
 import { PermitType } from '../common/entities/permit-type.entity';
 import { createGarmsCashFile } from 'src/common/helper/garms.helper';
 import { getToDateForGarms } from 'src/common/helper/date-time.helper';
-import { GARMS_CASH_FILE_LOCATION, GARMS_CASH_FILE_LRECL } from 'src/common/constants/garms.constant';
+import {
+  GARMS_CASH_FILE_LOCATION,
+  GARMS_CASH_FILE_LRECL,
+} from 'src/common/constants/garms.constant';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class GarmsService {
@@ -34,8 +38,8 @@ export class GarmsService {
     @InjectRepository(PermitType)
     private permitTypeRepository: Repository<PermitType>,
   ) {}
-
-  async processTransactions(garmsExtractType: GarmsExtractType) {
+  @Cron(`${process.env.GARMS_CASH_FILE_INTERVAL || '30 * * * * *'}`)
+  async processCashTransactions(garmsExtractType: GarmsExtractType) {
     const oldFile = await this.getOldFile(garmsExtractType);
     const { fileId, fromTimestamp, toTimestamp } = oldFile;
     // Fetch transactions based on the provided timestamps
@@ -45,17 +49,15 @@ export class GarmsService {
       garmsExtractType,
     );
     const permitServiceCodes = await this.getPermitTypeServiceCodes();
-    if (garmsExtractType === GarmsExtractType.CASH) {
-      const fileName = createGarmsCashFile(
-        transactions,
-        garmsExtractType,
-        permitServiceCodes,
-        this.logger,
-      );
-      const remoteFilePath = process.env.GARMS_ENV+GARMS_CASH_FILE_LOCATION;
-      const recordLength = GARMS_CASH_FILE_LRECL;
-      this.upload(fileName,recordLength,remoteFilePath);
-    }
+    const fileName = createGarmsCashFile(
+      transactions,
+      garmsExtractType,
+      permitServiceCodes,
+      this.logger,
+    );
+    const remoteFilePath = process.env.GARMS_ENV + GARMS_CASH_FILE_LOCATION;
+    const recordLength = GARMS_CASH_FILE_LRECL;
+    this.upload(fileName, recordLength, remoteFilePath);
     await this.saveTransactionIds(transactions, fileId);
     await this.updateFileSubmitTimestamp(oldFile);
   }
@@ -190,7 +192,7 @@ export class GarmsService {
     return permitTypeServiceCodes;
   }
 
-  upload(fileName: string,recordLength: number,remoteFilePath: string) {
+  upload(fileName: string, recordLength: number, remoteFilePath: string) {
     const options: FTPS.FTPOptions = {
       host: process.env.GARMS_HOST,
       username: process.env.GARMS_USER,
