@@ -48,22 +48,23 @@ export class GarmsService {
       toTimestamp,
       garmsExtractType,
     );
-    const permitServiceCodes = await this.getPermitTypeServiceCodes();
-    const fileName = createGarmsCashFile(
-      transactions,
-      garmsExtractType,
-      permitServiceCodes,
-      this.logger,
-    );
-    if (fileName) {
+    if (transactions) {
+      const permitServiceCodes = await this.getPermitTypeServiceCodes();
+      const fileName = createGarmsCashFile(
+        transactions,
+        garmsExtractType,
+        permitServiceCodes,
+        this.logger,
+      );
+
       const remoteFilePath = process.env.GARMS_ENV + GARMS_CASH_FILE_LOCATION;
       const recordLength = GARMS_CASH_FILE_LRECL;
       this.upload(fileName, recordLength, remoteFilePath);
       await this.saveTransactionIds(transactions, fileId);
-      await this.updateFileSubmitTimestamp(oldFile);
     } else {
       this.logger.log('No data to process for GARMS cash file');
     }
+    await this.updateFileSubmitTimestamp(oldFile);
   }
 
   private async saveTransactionIds(

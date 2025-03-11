@@ -37,11 +37,10 @@ export const createGarmsCashFile = (
 ) => {
   const datetime = new Date().getMilliseconds();
   try {
-    let fileName: string = null;
+    const fileName = path.join('/tmp', 'GARMS_CASH_FILE_' + datetime);
     const groupedTransactionsByDate: DateTransaction[] =
       groupTransactionsByDate(transactions);
     if (groupTransactionsByDate && groupedTransactionsByDate.length > 0) {
-      fileName = path.join('/tmp', 'GARMS_CASH_FILE_' + datetime);
       groupedTransactionsByDate.forEach((transactionByDate) => {
         const permitTypeAmounts = new Map<number, number>();
         const permitTypeCount = new Map<number, number>();
