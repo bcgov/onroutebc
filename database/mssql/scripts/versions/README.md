@@ -199,3 +199,21 @@
 
 ### Version 61:
 - Configure NRQCL & NRSCL permit templates
+
+### Version 62:
+- Database Schema Updates
+  - Added new column TRANSACTION_APPROVED_DATE to track approval timestamps in ORBC transactions
+- Downtime Required - Yes
+- Data patch script for existing records - Included
+- Technical Details
+  - Column Specifications:
+   - Data Type: datetime2(7)
+   - Nullability: Nullable
+   - Default Value: Current UTC date/time using getutcdate()
+- Tables Modified:
+  - permit.ORBC_TRANSACTION
+  - permit.ORBC_TRANSACTION_HIST
+- Trigger Enhancements
+  - Updated ORBC_TXN_A_S_IUD_TR to maintain historical records
+  - Modified ORBC_TXN_I_S_U_TR for proper update handling
+
