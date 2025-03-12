@@ -220,10 +220,10 @@ export class GarmsService {
       qb = qb.leftJoinAndSelect('permit.permitData', 'permitData');
     }
     const result = await qb
-      .andWhere('transaction.transactionSubmitDate > :fromTimestamp', {
+      .andWhere('transaction.transactionApprovedDate > :fromTimestamp', {
         fromTimestamp,
       })
-      .andWhere('transaction.transactionSubmitDate <= :toTimestamp', {
+      .andWhere('transaction.transactionApprovedDate <= :toTimestamp', {
         toTimestamp,
       })
       .andWhere('transaction.paymentMethodTypeCode IN (:...garmsExtractType)', {

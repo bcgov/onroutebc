@@ -203,9 +203,19 @@
 ### Version 62:
 - Database Schema Updates
   - Added new column TRANSACTION_APPROVED_DATE to track approval timestamps in ORBC transactions
-- Downtime Required - Yes
-- Data patch script for existing records - Included
-- Technical Details
+  - Downtime Required - Yes
+  - Data patch script for existing records - Included
+  - Technical Details
+  - Column Specifications:
+  - Data Type: datetime2(7)
+  - Nullability: Nullable
+  - Default Value: Current UTC date/time using getutcdate()
+- Tables Modified:
+  - permit.ORBC_TRANSACTION
+  - permit.ORBC_TRANSACTION_HIST
+- Trigger Enhancements
+  - Updated ORBC_TXN_A_S_IUD_TR to maintain historical records
+  - Modified ORBC_TXN_I_S_U_TR for proper update handling
 ### Version 63:
 - Support for new GARMS file upload and processing 
   - Add GARMS_SERVICE_CODE column to ORBC_PERMIT_TYPE table
@@ -213,14 +223,5 @@
   - Add ORBC_GARMS_EXTRACT_FILE table to represent a file sent to GARMS of one of the two extract types
   - Add ORBC_GARMS_FILE_TRANSACTION table to associate transactions to the GARMS file they have been sent in
 
-  - Column Specifications:
-   - Data Type: datetime2(7)
-   - Nullability: Nullable
-   - Default Value: Current UTC date/time using getutcdate()
-- Tables Modified:
-  - permit.ORBC_TRANSACTION
-  - permit.ORBC_TRANSACTION_HIST
-- Trigger Enhancements
-  - Updated ORBC_TXN_A_S_IUD_TR to maintain historical records
-  - Modified ORBC_TXN_I_S_U_TR for proper update handling
+
 
