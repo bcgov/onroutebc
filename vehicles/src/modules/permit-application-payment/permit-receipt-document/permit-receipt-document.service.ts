@@ -472,7 +472,7 @@ export class PermitReceiptDocumentService {
                 ).consolidatedPaymentMethod,
                 transactionDate: convertUtcToPt(
                   permit?.permitTransactions?.at(0)?.transaction
-                    ?.transactionSubmitDate,
+                    ?.transactionApprovedDate,
                   'MMM. D, YYYY, hh:mm a Z',
                 ),
               },
