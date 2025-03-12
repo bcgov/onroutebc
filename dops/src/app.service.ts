@@ -35,7 +35,7 @@ export class AppService {
   @LogAsyncMethodExecution({ printMemoryStats: true })
   async initializeCache() {
     const startDateTime = new Date();
-    const templates = await this.dgenService.findAllTemplates();
+    const templates = await this.dgenService.getLatestTemplates();
     const templateFiles: TemplateFile[] = await Promise.all(
       templates.map(async (template: DocumentTemplate) => {
         const templateMetadata = await this.dmsService.findLatest(
