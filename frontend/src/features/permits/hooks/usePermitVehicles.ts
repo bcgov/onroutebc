@@ -93,26 +93,11 @@ export const usePermitVehicles = (
 
   // Get vehicle subtypes that are allowed by LOAs
   const vehicleType = vehicleFormData.vehicleType;
+  const vehicleSubtype = vehicleFormData.vehicleSubType;
   const {
     subtypeOptions,
     isSelectedLOAVehicle,
   } = useMemo(() => {
-    const allowedLOAPowerUnitIds = new Set([
-      ...selectedLOAs.map(loa => loa.powerUnits)
-        .reduce((prevPowerUnits, currPowerUnits) => [
-          ...prevPowerUnits,
-          ...currPowerUnits,
-        ], []),
-    ]);
-  
-    const allowedLOATrailerIds = new Set([
-      ...selectedLOAs.map(loa => loa.trailers)
-        .reduce((prevTrailers, currTrailers) => [
-          ...prevTrailers,
-          ...currTrailers,
-        ], []),
-    ]);
-  
     // Try to find all of the unfiltered vehicles in the inventory, and get a list of their subtypes
     // as some of these unfiltered subtypes can potentially be used by a selected LOA
     const powerUnitsInInventory = allVehiclesFromInventory
@@ -122,19 +107,14 @@ export const usePermitVehicles = (
       .filter(vehicle => vehicle.vehicleType === VEHICLE_TYPES.TRAILER) as Trailer[];
   
     const allowedLOASubtypes = new Set([
-      ...powerUnitsInInventory
-        .filter(powerUnit => allowedLOAPowerUnitIds.has(powerUnit.powerUnitId as string))
-        .map(powerUnit => powerUnit.powerUnitTypeCode),
-      ...trailersInInventory
-        .filter(trailer => allowedLOATrailerIds.has(trailer.trailerId as string))
-        .map(trailer => trailer.trailerTypeCode),
+      ...selectedLOAs.map((selectedLOA) => selectedLOA.vehicleSubtype),
     ]);
   
     // Check if selected vehicle is an LOA vehicle
-    const isSelectedLOAVehicle = Boolean(vehicleIdInForm)
+    const isSelectedLOAVehicle = selectedLOAs.length > 0
+      && Boolean(vehicleIdInForm)
       && (
-        allowedLOAPowerUnitIds.has(vehicleIdInForm as string)
-        || allowedLOATrailerIds.has(vehicleIdInForm as string)
+        allowedLOASubtypes.has(vehicleSubtype)
       )
       && (
         powerUnitsInInventory.map(powerUnit => powerUnit.powerUnitId)
@@ -167,6 +147,7 @@ export const usePermitVehicles = (
     selectedLOAs,
     allVehiclesFromInventory,
     vehicleType,
+    vehicleSubtype,
     vehicleIdInForm,
     powerUnitSubtypeNamesMap,
     trailerSubtypeNamesMap,

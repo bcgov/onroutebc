@@ -346,7 +346,7 @@ export const LOABasicInfo = ({
 
         <div className="loa-select-vehicle">
           <CustomFormComponent
-            className="loa-basic-info__vehicle-type"
+            className="loa-select-vehicle__vehicle-type"
             type="select"
             feature={FEATURE}
             options={{
@@ -372,7 +372,7 @@ export const LOABasicInfo = ({
           />
 
           <CustomFormComponent
-            className="loa-basic-info__vehicle-subtype"
+            className="loa-select-vehicle__vehicle-subtype"
             type="select"
             feature={FEATURE}
             options={{

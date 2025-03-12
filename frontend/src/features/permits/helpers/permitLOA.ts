@@ -104,8 +104,8 @@ export const getUpdatedLOASelection = (
         startDate: loa.startDate,
         expiryDate: loa.expiryDate,
         loaPermitType: loa.loaPermitType,
-        powerUnits: loa.powerUnits,
-        trailers: loa.trailers,
+        vehicleType: loa.vehicleType,
+        vehicleSubtype: loa.vehicleSubtype,
         originalLoaId: loa.originalLoaId,
         previousLoaId: loa.previousLoaId,
       },
@@ -117,7 +117,7 @@ export const getUpdatedLOASelection = (
 
 /**
  * Get updated vehicle details and options based on selected LOAs.
- * @param selectedLOAs LOAs that are selected for the permit
+ * @param selectedLOAs Selected LOAs for the permit
  * @param vehicleOptions Provided vehicle options for selection
  * @param prevSelectedVehicle Previously selected vehicle details in the permit form
  * @param eligibleSubtypes Set of eligible vehicle subtypes

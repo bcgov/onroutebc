@@ -1,4 +1,5 @@
 import { Nullable } from "../../../common/types/common";
+import { VehicleType } from "../../manageVehicles/types/Vehicle";
 import { PermitType } from "../../permits/types/PermitType";
 
 export interface LOADetail {
@@ -11,28 +12,8 @@ export interface LOADetail {
   fileName: string;
   loaPermitType: PermitType[];
   comment?: Nullable<string>;
-  powerUnits: string[];
-  trailers: string[];
+  vehicleType: VehicleType;
+  vehicleSubtype: string;
   originalLoaId: number;
   previousLoaId?: Nullable<number>;
-}
-
-export interface CreateLOARequestData {
-  startDate: string;
-  expiryDate?: Nullable<string>;
-  loaPermitType: PermitType[];
-  // document: Buffer;
-  comment?: Nullable<string>;
-  powerUnits: string[];
-  trailers: string[];
-}
-
-export interface UpdateLOARequestData {
-  startDate: string;
-  expiryDate?: Nullable<string>;
-  loaPermitType: PermitType[];
-  // document?: Buffer;
-  comment?: Nullable<string>;
-  powerUnits: string[];
-  trailers: string[];
 }
