@@ -29,6 +29,17 @@ export const deleteLocalFile = (fileName: string) => {
   fs.rmSync(fileName);
 };
 
+/**
+ * Create GARMS CASH file
+ * GRAMS cash file containd one heasder record for each date and multiple details record under one header.
+ * These detail records belong to same date but are consolidated on the bases of different service code wrt permit type.
+ * One file can contain multiple headers.
+ * @param transactions 
+ * @param garmsExtractType 
+ * @param permitServiceCodes 
+ * @param logger 
+ * @returns 
+ */
 export const createGarmsCashFile = (
   transactions: Transaction[],
   garmsExtractType: GarmsExtractType,
@@ -81,6 +92,14 @@ export const createGarmsCashFile = (
   }
 };
 
+/**
+ * Create Header record for GARMS file
+ * @param paymentTypeAmounts 
+ * @param date 
+ * @param permitTypeCount 
+ * @param seqNumber 
+ * @param fileName 
+ */
 export const createGarmsCashFileHeader = (
   paymentTypeAmounts: Map<string, number>,
   date: string,
@@ -123,6 +142,13 @@ export const createGarmsCashFileHeader = (
   fs.appendFileSync(fileName, header + '\n');
 };
 
+/**
+ * Create detail record fo GARMS file
+ * @param permitTypeCount 
+ * @param permitTypeAmounts 
+ * @param date 
+ * @param fileName 
+ */
 export const createGarmsCashFileDetails = (
   permitTypeCount: Map<number, number>,
   permitTypeAmounts: Map<number, number>,
@@ -152,6 +178,18 @@ export const createGarmsCashFileDetails = (
   });
 };
 
+/**
+ * Consolidate details to report to garms file as follows:
+ * Consolidate service codes wrt permit type into map permitServiceCodes
+ * Consolidate amount wrt service codes into map permitTypeAmounts
+ * Consolidate permit count wrt service codes into map permitTypeCount
+ * 
+ * @param transaction 
+ * @param permitTypeAmounts 
+ * @param permitTypeCount 
+ * @param garmsExtractType 
+ * @param permitServiceCodes 
+ */
 export const processPermitTransactions = (
   transaction: Transaction,
   permitTypeAmounts: Map<number, number>,
@@ -176,6 +214,12 @@ export const processPermitTransactions = (
   });
 };
 
+/**
+ * Consolidate payment types and total amount paid wrt payment type into map paymentTypeAmounts
+ * will be reported to GARMS in each header of GARMS Cash file
+ * @param transaction 
+ * @param paymentTypeAmounts 
+ */
 export const processPaymentMethod = (
   transaction: Transaction,
   paymentTypeAmounts: Map<string, number>,
@@ -202,6 +246,11 @@ export const getPaymentAmount = (transaction: Transaction) => {
   return isRefundOrVoid ? -amount : amount;
 };
 
+/**
+ * group transaction on the bases of transaction date
+ * @param transactions 
+ * @returns 
+ */
 export const groupTransactionsByDate = (transactions: Transaction[]) => {
   // Group transactions by the date (ignoring the time part)
   const groupedData = transactions.reduce(

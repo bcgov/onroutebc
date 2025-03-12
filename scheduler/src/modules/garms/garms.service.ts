@@ -71,6 +71,12 @@ export class GarmsService {
     }
   }
 
+  /**
+   * Save the file id and all its transaction ids 
+   * that has been sent to GARMS in ORBC_GARMS_FILE_TRANSACTION table
+   * @param transactions 
+   * @param fileId 
+   */
   private async saveTransactionIds(
     transactions: Transaction[],
     fileId: string,
@@ -88,6 +94,12 @@ export class GarmsService {
     await this.fileTransactionRepository.save(fileTransactions);
   }
 
+  /**
+   * After file is sent to GARMS successfuly.
+   * And transactions of files are saved in databse.
+   * Update file id with the submit timestamp
+   * @param oldFile 
+   */
   private async updateFileSubmitTimestamp(oldFile) {
     // Update submit timestamp in garms file extract table
     await this.garmsExtractFileRepository.save({
@@ -96,6 +108,14 @@ export class GarmsService {
     });
   }
 
+  /**
+   * check if unbsubmited record exists in GARMS
+   * by checking if record with null submit timestamp exits
+   * If exists then update the to timestamp, else create new record
+   * with new "from" and "to" date range for onRouteBC financial transactions to be processed for garms.
+   * @param garmsExtractType 
+   * @returns 
+   */
   private async getOldFile(garmsExtractType: GarmsExtractType) {
     const oldFile = await this.findUnsubmittedOldFile(garmsExtractType);
 
@@ -106,6 +126,9 @@ export class GarmsService {
     }
   }
 
+  /**
+   * find unsubmitted garms file record.
+   */
   private async findUnsubmittedOldFile(
     transactionType: GarmsExtractType,
   ): Promise<GarmsExtractFile | null> {
@@ -117,6 +140,11 @@ export class GarmsService {
     });
   }
 
+  /**
+   * Update "ToTimestamp" date range of an existing record.
+   * @param oldFile 
+   * @returns 
+   */
   private async updateOldFileRecord(oldFile: GarmsExtractFile) {
     const updatedOldRecord = await this.garmsExtractFileRepository.save({
       ...oldFile,
@@ -128,7 +156,12 @@ export class GarmsService {
       toTimestamp: updatedOldRecord.toTimestamp,
     };
   }
-
+/**
+ * Create new record with new "from" and "to" date range
+ * for onRouteBC financial transactions to be processed for garms
+ * @param garmsExtractType 
+ * @returns 
+ */
   private async createNewFileRecord(garmsExtractType: GarmsExtractType) {
     const latestFile = await this.getLatestFile(garmsExtractType);
     if (latestFile) {
@@ -146,6 +179,11 @@ export class GarmsService {
     }
   }
 
+  /**
+   * Get most recent garms file id from OnRouteBC database.
+   * @param garmsExtractType 
+   * @returns 
+   */
   private async getLatestFile(garmsExtractType: GarmsExtractType) {
     const [latestFile] = await this.garmsExtractFileRepository.find({
       where: { garmsExtractType: garmsExtractType },
@@ -155,6 +193,16 @@ export class GarmsService {
     return latestFile;
   }
 
+  /**
+   * Get onRouteBC financial transactions and permit details.
+   * These details will be reported to GARMS.
+   * More details are reported for garmsExtractType=CREDIT as compared to CASH
+   * 
+   * @param fromTimestamp 
+   * @param toTimestamp 
+   * @param garmsExtractType 
+   * @returns 
+   */
   async getTransactionWithPermitDetails(
     fromTimestamp: Date,
     toTimestamp: Date,
@@ -169,7 +217,7 @@ export class GarmsService {
       .leftJoinAndSelect('transaction.permitTransactions', 'permitTransaction')
       .leftJoinAndSelect('permitTransaction.permit', 'permit');
     if (garmsExtractType === GarmsExtractType.CREDIT) {
-      qb = qb.leftJoinAndSelect('permit.parmitData', 'permitData');
+      qb = qb.leftJoinAndSelect('permit.permitData', 'permitData');
     }
     const result = await qb
       .andWhere('transaction.transactionSubmitDate > :fromTimestamp', {
@@ -189,6 +237,10 @@ export class GarmsService {
     return result;
   }
 
+  /**
+   * Get service codes from OnRouteBc
+   * @returns 
+   */
   private async getPermitTypeServiceCodes(): Promise<Map<string, number>> {
     const permitTypes = await this.permitTypeRepository.find();
     const permitTypeServiceCodes = new Map<string, number>();
@@ -200,7 +252,12 @@ export class GarmsService {
     });
     return permitTypeServiceCodes;
   }
-
+/**
+ * upload file to GARMS mainframe.
+ * @param fileName 
+ * @param recordLength 
+ * @param remoteFilePath 
+ */
   upload(fileName: string, recordLength: number, remoteFilePath: string) {
     const options: FTPS.FTPOptions = {
       host: process.env.GARMS_HOST,
