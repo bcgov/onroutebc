@@ -7,8 +7,8 @@ export const INV_QTY = '00000';
 export const AGENT_NUMBER = '14035';
 export const DETAIL_REC_TYPE = '2';
 export const HEADER_REC_TYPE = '1';
-export const US_AMOUNT = '0000000.00 ';
-export const US_EXC_AMOUNT = '0000000.00 ';
+export const US_AMOUNT = '0000000.00'+' '.repeat(1);
+export const US_EXC_AMOUNT = '0000000.00'+' '.repeat(1);
 export const GARMS_DATE_FORMAT = 'YYYYMMDD';
 
 export const GARMS_CASH_FILE_LOCATION = '.GA4701.WS.BATCH(+1)';

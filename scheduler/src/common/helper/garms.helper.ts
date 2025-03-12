@@ -111,7 +111,7 @@ export const createGarmsCashFileHeader = (
   gch.recType = HEADER_REC_TYPE;
   gch.agentNumber = AGENT_NUMBER;
   gch.wsdate = dateFormat(date, GARMS_DATE_FORMAT);
-  gch.recCount = formatRecCount(seqNumber);
+  gch.recCount = formatNumber(seqNumber,6);
   gch.revAmount = formatAmount(getSum(paymentTypeAmounts));
   gch.totalCashAmount = formatAmount(
     getValue(paymentTypeAmounts, PaymentMethodType.CASH),
@@ -136,7 +136,7 @@ export const createGarmsCashFileHeader = (
   gch.totalGAAmount = formatAmount(
     getValue(paymentTypeAmounts, PaymentMethodType.GA),
   );
-  gch.serviceQuantity = formatServiceQuantity(getSum(permitTypeCount));
+  gch.serviceQuantity = formatNumber(getSum(permitTypeCount),5);
   gch.invQuantity = INV_QTY;
   const header = Object.values(gch).join('');
   fs.appendFileSync(fileName, header + '\n');
@@ -162,10 +162,10 @@ export const createGarmsCashFileDetails = (
     gcd.recType = DETAIL_REC_TYPE;
     gcd.agentNumber = AGENT_NUMBER;
     gcd.wsdate = dateFormat(date, GARMS_DATE_FORMAT);
-    gcd.seqNumber = formatSequenceNumber(seqNumber);
-    gcd.serviceCode = formatServiceCode(key);
-    gcd.serviceQuantity = formatServiceQuantity(
-      getValueNumber(permitTypeCount, key),
+    gcd.seqNumber = formatNumber(seqNumber,4);
+    gcd.serviceCode = formatNumber(key,4);
+    gcd.serviceQuantity = formatNumber(
+      getValue(permitTypeCount, key),5
     );
     gcd.invUnits = INV_UNITS;
     gcd.revAmount = formatAmount(parseFloat(value.toFixed(2)));
@@ -215,10 +215,14 @@ export const processPermitTransactions = (
 };
 
 /**
- * Consolidate payment types and total amount paid wrt payment type into map paymentTypeAmounts
- * will be reported to GARMS in each header of GARMS Cash file
- * @param transaction 
- * @param paymentTypeAmounts 
+ * Processes the payment method information from a transaction and updates the payment amounts in the given map.
+ * The function checks the presence of `paymentMethodTypeCode` and `paymentCardTypeCode` in the transaction.
+ * Based on the available information, it determines the payment type and the payment amount, then updates the
+ * `paymentTypeAmounts` map with the corresponding payment type and amount.
+ * 
+ * @param transaction The transaction object containing payment method details, including `paymentMethodTypeCode` and `paymentCardTypeCode`.
+ * @param paymentTypeAmounts A Map that stores the payment types (as keys) and their corresponding payment amounts (as values).
+ * @returns void
  */
 export const processPaymentMethod = (
   transaction: Transaction,
@@ -247,9 +251,10 @@ export const getPaymentAmount = (transaction: Transaction) => {
 };
 
 /**
- * group transaction on the bases of transaction date
+ * Group transaction on the bases of transaction date.
+ *  
  * @param transactions 
- * @returns 
+ * @returns Record<string, Transaction[]>
  */
 export const groupTransactionsByDate = (transactions: Transaction[]) => {
   // Group transactions by the date (ignoring the time part)
@@ -285,7 +290,16 @@ export const groupTransactionsByDate = (transactions: Transaction[]) => {
   return result;
 };
 
-// Helper function to update amounts in the Map
+/**
+ * Helper function to update the amount associated with a specific key in the map.
+ * If the key exists, the function adds the specified amount to the current value.
+ * If the key does not exist, the function initializes the key with the given amount.
+ * 
+ * @param map A Map that associates string keys with numeric values.
+ * @param key The key whose value needs to be updated.
+ * @param amount The amount to be added to the current value associated with the key.
+ * @returns The updated map with the new value for the specified key.
+ */
 export const updateMap = (
   map: Map<string, number>,
   key: string,
@@ -294,7 +308,18 @@ export const updateMap = (
   return map.set(key, (map.get(key) || 0) + amount);
 };
 
-// Helper function to update amounts in the Map
+/**
+ * Updates the value associated with a specific service code in the provided map.
+ * The function looks up the service code in the `permitServiceCodes` map using the provided key.
+ * If the service code exists, it updates the value in the `map` by adding the specified `amount`or `count`.
+ * If the service code does not exist in the `map`, it initializes the value with the `amount` or `count`.
+ * 
+ * @param map A Map where service codes are stored with their associated numeric values.
+ * @param key The key used to look up the service code in the `permitServiceCodes` map.
+ * @param amount The amount to be added to the current value associated with the service code.
+ * @param permitServiceCodes A Map that maps the key to a corresponding service code.
+ * @returns The updated `map` with the modified value for the specified service code.
+ */
 export const updateMapServiceCode = (
   map: Map<number, number>,
   key: string,
@@ -307,39 +332,55 @@ export const updateMapServiceCode = (
   );
 };
 
+/**
+ * Formats a given amount into a standardized string representation.
+ * - If the amount is positive, it formats the number with 2 decimal places, pads it to a length of 10 characters, 
+ *   and appends a space at the end.
+ * - If the amount is zero, it returns a specific string representing zero ('0000000.00 ').
+ * - If the amount is negative, it formats the absolute value with 2 decimal places, pads it to a length of 10 characters, 
+ *   and appends a minus sign ('-') at the end.
+ * 
+ * @param amount The numeric value to be formatted.
+ * @returns A string representation of the formatted amount.
+ */
 export const formatAmount = (amount: number) => {
   if (amount > 0) return amount.toFixed(2).padStart(10, '0') + ' ';
   else if (amount === 0) return '0000000.00 ';
   else return Math.abs(amount).toFixed(2).padStart(10, '0') + '-';
 };
 
-export const formatSequenceNumber = (seqNumber: number) => {
-  return seqNumber.toString().padStart(4, '0');
+/**
+ * Formats a number by padding it with leading zeros to ensure it meets the specified length.
+ * If the number is already the specified length or longer, it remains unchanged.
+ * 
+ * @param value The number to be formatted.
+ * @param length The desired length of the resulting string.
+ * @returns A string representation of the number, padded with leading zeros to the specified length.
+ */
+export const formatNumber = (value: number,length: number) => {
+  return value.toString().padStart(length, '0');
 };
 
-export const formatServiceCode = (serviceCode: number) => {
-  return serviceCode.toString().padStart(4, '0');
-};
-
-export const formatServiceQuantity = (serviceQty: number) => {
-  return serviceQty.toString().padStart(5, '0');
-};
-
-export const formatRecCount = (recCount: number) => {
-  return recCount.toString().padStart(6, '0');
-};
-
-export const getValue = (map: Map<string, number>, key: string): number => {
+/**
+ * Retrieves the value associated with a specific key from a map.
+ * If the key exists in the map, the corresponding value is returned.
+ * If the key does not exist, the method returns 0.
+ * 
+ * @param map A Map that associates keys (of type K) with numeric values.
+ * @param key The key to look up in the map (of type K).
+ * @returns The value associated with the key if it exists; otherwise, returns 0.
+ */
+export const getValue = <K>(map: Map<K, number>, key: K): number => {
   return map.has(key) ? map.get(key) : 0;
 };
 
-export const getValueNumber = (
-  map: Map<number, number>,
-  key: number,
-): number => {
-  return map.has(key) ? map.get(key) : 0;
-};
-
+/**
+ * Calculates the sum of all values in a map.
+ * This method iterates over the map and adds up the values associated with each key.
+ * 
+ * @param map A Map where the keys are of type K and the values are numbers.
+ * @returns The sum of all values in the map.
+ */
 export const getSum = <K>(map: Map<K, number>) => {
   let sum = 0;
   map.forEach((value) => {
