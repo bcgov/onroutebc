@@ -64,6 +64,14 @@ export class ReadTransactionDto extends PaymentGatewayTransactionDto {
 
   @AutoMap()
   @ApiProperty({
+    example: '2023-01-01 10:00:00.000000',
+    description:
+      'Represents the date that the transaction was approved in ORBC.',
+  })
+  transactionApprovedDate: string;
+
+  @AutoMap()
+  @ApiProperty({
     example: 'T-1687586193681',
     description: 'Represents the auth code of a transaction.',
   })
