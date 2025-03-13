@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Box, Button, Stack } from "@mui/material";
 import React, { useContext, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -87,11 +88,11 @@ export const IDIRCreateCompany = React.memo(() => {
   const onClickFinish = function (data: CreateCompanyRequest) {
     createProfile({
       ...data,
-      email: data.primaryContact.email,
       phone: data.primaryContact.phone1,
       extension: data.primaryContact.phone1Extension,
       primaryContact: {
         ...data.primaryContact,
+        email: data.email,
         countryCode: data.mailingAddress.countryCode,
         provinceCode: data.mailingAddress.provinceCode,
         city: data.mailingAddress.city,
@@ -111,7 +112,7 @@ export const IDIRCreateCompany = React.memo(() => {
           borderColor: "divider",
         }}
       >
-        <Banner bannerText="Create Company" />
+        <Banner bannerText="Create a new onRouteBC Profile" />
       </Box>
       <div
         className="idir-create-company create-profile-steps"
@@ -120,7 +121,6 @@ export const IDIRCreateCompany = React.memo(() => {
       >
         <div className="create-profile-steps__create-profile">
           <FormProvider {...companyAndUserFormMethods}>
-            <InfoBcGovBanner msg={BANNER_MESSAGES.ALL_FIELDS_MANDATORY} />
             <CompanyInformationWizardForm showCompanyName />
             <div className="create-profile-section create-profile-section--nav">
               <Stack direction="row" spacing={3}>

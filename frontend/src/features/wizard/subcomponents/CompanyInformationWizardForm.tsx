@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import Typography from "@mui/material/Typography";
 import { memo } from "react";
 import { CustomFormComponent } from "../../../common/components/form/CustomFormComponents";
@@ -12,7 +11,6 @@ import "./CompanyInformationWizardForm.scss";
 import { ORBC_FORM_FEATURES } from "../../../common/types/common";
 import { WarningBcGovBanner } from "../../../common/components/banners/WarningBcGovBanner";
 import { CompanyPrimaryContactForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyPrimaryContactForm";
-
 /**
  * The Company Wizard Form contains multiple subs forms including
  * Company Info, Company Contact, and Primary Contact forms.
@@ -25,10 +23,14 @@ export const CompanyInformationWizardForm = memo(
       <div className="company-info-wizard-form">
         {showCompanyName && (
           <>
-            <Typography variant="h2" gutterBottom>
+            <Typography
+              variant="h2"
+              className="company-info-wizard-form__heading"
+            >
               Client Name
             </Typography>
             <WarningBcGovBanner
+              className="company-info-wizard-form__banner"
               msg={BANNER_MESSAGES.CLIENT_NAME_MUST_BE_REGISTERED_OWNER}
             />
             <CustomFormComponent
@@ -45,12 +47,12 @@ export const CompanyInformationWizardForm = memo(
                       }) || invalidDBALength(1, 150),
                   },
                 },
-                label: "Company Name",
+                label: "Client Name",
               }}
             />
           </>
         )}
-        <Typography variant="h2" gutterBottom>
+        <Typography variant="h2" className="company-info-wizard-form__heading">
           Doing Business As (DBA)
         </Typography>
         <CustomFormComponent
@@ -70,7 +72,7 @@ export const CompanyInformationWizardForm = memo(
           }}
         />
 
-        <Typography variant="h2" gutterBottom>
+        <Typography variant="h2" className="company-info-wizard-form__heading">
           Contact Details
         </Typography>
         <CompanyPrimaryContactForm feature={FEATURE} />

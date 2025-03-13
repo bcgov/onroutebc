@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Button, Stack } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
 import { useFormContext } from "react-hook-form";
@@ -10,7 +9,6 @@ import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import { CreateCompanyRequest } from "../../manageProfile/types/manageProfile";
 import { CompanyInformationWizardForm } from "./CompanyInformationWizardForm";
-import { UserInformationWizardForm } from "./UserInformationWizardForm";
 import { WizardClientBanner } from "./WizardClientBanner";
 import { createProfileMutation } from "../hooks/hooks";
 
@@ -20,14 +18,8 @@ import { createProfileMutation } from "../hooks/hooks";
  */
 export const CompanyAndUserInfoSteps = ({
   setClientNumber,
-  activeStep,
-  setActiveStep,
-  totalSteps,
 }: {
   setClientNumber: Dispatch<SetStateAction<Nullable<string>>>;
-  activeStep: number;
-  setActiveStep: Dispatch<SetStateAction<number>>;
-  totalSteps: number;
 }) => {
   const navigate = useNavigate();
   const { handleSubmit: handleCreateProfileSubmit, register } =
@@ -65,25 +57,15 @@ export const CompanyAndUserInfoSteps = ({
   return (
     <>
       <input type="hidden" {...register("legalName")} />
-
-      {activeStep === totalSteps - 2 && (
-        <div className="create-profile-section create-profile-section--company">
-          <WizardClientBanner
-            legalName={getDefaultRequiredVal(
-              "",
-              user?.profile?.bceid_business_name as string,
-            )}
-          />
-          <CompanyInformationWizardForm />
-        </div>
-      )}
-      {activeStep === totalSteps - 1 && (
-        <div className="create-profile-section create-profile-section--user">
-          <h2>User Details</h2>
-          <hr></hr>
-          <UserInformationWizardForm />
-        </div>
-      )}
+      <div className="create-profile-section create-profile-section--company">
+        <WizardClientBanner
+          legalName={getDefaultRequiredVal(
+            "",
+            user?.profile?.bceid_business_name as string,
+          )}
+        />
+        <CompanyInformationWizardForm />
+      </div>
       <div className="create-profile-section create-profile-section--nav">
         <Stack direction="row" spacing={3}>
           <Button

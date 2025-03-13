@@ -1,13 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import {
-  Box,
-  Button,
-  Stack,
-  Step,
-  StepConnector,
-  StepLabel,
-  Stepper,
-} from "@mui/material";
+import { Box, Button, Stack } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -42,10 +33,7 @@ import { AxiosError } from "axios";
 export const ChallengeProfileSteps = React.memo(() => {
   const navigate = useNavigate();
   const { user } = useAuth();
-
-  const steps = ["Verify Profile", "Company Information", "My Information"];
   const [activeStep, setActiveStep] = useState(0);
-  const [isClientVerified, setIsClientVerified] = useState<boolean>(false);
   const [clientNumber, setClientNumber] = useState<Nullable<string>>(null);
 
   const defaultCompanyAndUserInfoValues = {
@@ -94,9 +82,10 @@ export const ChallengeProfileSteps = React.memo(() => {
       if (foundClient && foundPermit && verifiedClient) {
         // Clear form errors (if any)
         clearVerifyClientErrors();
-
-        setIsClientVerified(() => true);
         setActiveStep(() => 1);
+
+        console.log("user from TPS: ", verifiedClient);
+        console.log("user from BCeID: ", user?.profile);
 
         resetCompanyAndUserForm({
           ...defaultCompanyAndUserInfoValues,
@@ -140,18 +129,18 @@ export const ChallengeProfileSteps = React.memo(() => {
             firstName: getDefaultRequiredVal(
               "",
               verifiedClient?.primaryContact?.firstName,
+              user?.profile.given_name,
             ),
             lastName: getDefaultRequiredVal(
               "",
               verifiedClient?.primaryContact?.lastName,
+              user?.profile.family_name,
             ),
-            email: getDefaultRequiredVal(
-              "",
-              verifiedClient?.primaryContact?.email,
-            ),
+            email: getDefaultRequiredVal("", verifiedClient?.email),
             phone1: getDefaultRequiredVal(
               "",
               verifiedClient?.primaryContact?.phone1,
+              verifiedClient?.phone,
             ),
             phone1Extension: getDefaultRequiredVal(
               "",
@@ -249,54 +238,47 @@ export const ChallengeProfileSteps = React.memo(() => {
                 />
                 <VerifyMigratedClientForm />
                 <div className="create-profile-section create-profile-section--nav">
-                  {activeStep === 0 && (
-                    <Stack direction="row" spacing={3}>
-                      <Button
-                        key="cancel-create-profile-button"
-                        aria-label="Cancel Create Profile"
-                        variant="contained"
-                        color="secondary"
-                        onClick={() => {
-                          // Go back
-                          navigate(-1);
-                        }}
-                        disableElevation
-                        sx={{
-                          ":hover": {
-                            background: BC_COLOURS.bc_background_light_grey,
-                            border: `2px solid ${BC_COLOURS.bc_text_box_border_grey}`,
-                          },
-                          border: `2px solid ${BC_COLOURS.white}`,
-                          borderRadius: "4px",
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        className="proceed-btn proceed-btn--next"
-                        onClick={handleVerifyClientSubmit(
-                          handleNextVerifyClientStep,
-                        )}
-                        variant="contained"
-                        color="primary"
-                        endIcon={<FontAwesomeIcon icon={faArrowRight} />}
-                      >
-                        Next
-                      </Button>
-                    </Stack>
-                  )}
+                  <Stack direction="row" spacing={3}>
+                    <Button
+                      key="cancel-create-profile-button"
+                      aria-label="Cancel Create Profile"
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => {
+                        // Go back
+                        navigate(-1);
+                      }}
+                      disableElevation
+                      sx={{
+                        ":hover": {
+                          background: BC_COLOURS.bc_background_light_grey,
+                          border: `2px solid ${BC_COLOURS.bc_text_box_border_grey}`,
+                        },
+                        border: `2px solid ${BC_COLOURS.white}`,
+                        borderRadius: "4px",
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      className="proceed-btn proceed-btn--next"
+                      onClick={handleVerifyClientSubmit(
+                        handleNextVerifyClientStep,
+                      )}
+                      variant="contained"
+                      color="primary"
+                      endIcon={<FontAwesomeIcon icon={faArrowRight} />}
+                    >
+                      Next
+                    </Button>
+                  </Stack>
                 </div>
               </div>
             </FormProvider>
           )}
-          {activeStep !== 0 && isClientVerified && (
+          {activeStep === 1 && (
             <FormProvider {...companyAndUserFormMethods}>
-              <CompanyAndUserInfoSteps
-                activeStep={activeStep}
-                setActiveStep={setActiveStep}
-                setClientNumber={setClientNumber}
-                totalSteps={3}
-              />
+              <CompanyAndUserInfoSteps setClientNumber={setClientNumber} />
             </FormProvider>
           )}
         </div>

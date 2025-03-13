@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { Box, Step, StepConnector, StepLabel, Stepper } from "@mui/material";
+import { Box } from "@mui/material";
 import React, { useContext } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAuth } from "react-oidc-context";
@@ -18,14 +17,13 @@ import { CompanyAndUserInfoSteps } from "../../subcomponents/CompanyAndUserInfoS
  * The stepper component containing the necessary forms for creating profile.
  */
 export const CreateProfileSteps = React.memo(() => {
-  const steps = ["Company Information", "My Information"];
-
   const { migratedClient } = useContext(OnRouteBCContext);
   const { user } = useAuth();
-
-  const [activeStep, setActiveStep] = React.useState(0);
   const [clientNumber, setClientNumber] =
     React.useState<Nullable<string>>(null);
+
+  console.log("user: ", user?.profile);
+  console.log("migratedClient: ", migratedClient);
 
   const companyAndUserFormMethods = useForm<CreateCompanyRequest>({
     defaultValues: {
@@ -73,8 +71,8 @@ export const CreateProfileSteps = React.memo(() => {
         city: "",
       },
       primaryContact: {
-        firstName: "",
-        lastName: "",
+        firstName: getDefaultRequiredVal("", user?.profile?.given_name),
+        lastName: getDefaultRequiredVal("", user?.profile?.family_name),
         email: "",
         phone1: "",
         phone1Extension: "",
@@ -104,10 +102,7 @@ export const CreateProfileSteps = React.memo(() => {
           borderColor: "divider",
         }}
       >
-        <Banner
-          bannerText="Create a new onRouteBC Profile"
-          // bannerSubtext="Please follow the steps below to set up your onRouteBC profile"
-        />
+        <Banner bannerText="Create a new onRouteBC Profile" />
       </Box>
       <div
         className="create-profile-steps-page create-profile-steps"
@@ -116,12 +111,7 @@ export const CreateProfileSteps = React.memo(() => {
       >
         <div className="create-profile-steps__create-profile">
           <FormProvider {...companyAndUserFormMethods}>
-            <CompanyAndUserInfoSteps
-              activeStep={activeStep}
-              setActiveStep={setActiveStep}
-              setClientNumber={setClientNumber}
-              totalSteps={2}
-            />
+            <CompanyAndUserInfoSteps setClientNumber={setClientNumber} />
           </FormProvider>
         </div>
       </div>
