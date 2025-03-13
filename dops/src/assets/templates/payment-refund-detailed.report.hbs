@@ -298,7 +298,7 @@
 
                   <tr class="table-row">
                     <td class="table-cell issued-on">
-                      <p>{{convertUtcToPt this.issuedOn}}</p>
+                      <p>{{defaultToPending (convertUtcToPt this.issuedOn)}}</p>
                     </td>
                     <td class="table-cell provider-transaction-id">
                       <p>{{ this.providerTransactionId }}</p>
@@ -310,10 +310,10 @@
                       <p>{{ this.paymentMethod }}</p>
                     </td>
                     <td class="table-cell receipt-number">
-                      <p>{{ this.receiptNo }}</p>
+                      <p>{{defaultToPending this.receiptNo }}</p>
                     </td>
                     <td class="table-cell permit-number">
-                      <p>{{ this.permitNo }}</p>
+                      <p>{{defaultToPending this.permitNo }}</p>
                     </td>
                     <td class="table-cell permit-type">
                       <p>{{ this.permitType }}</p>
@@ -445,7 +445,9 @@
                     {{#each refunds}}
                     <tr class="table-row">
                       <td class="table-cell issued-on">
-                        <p>{{convertUtcToPt this.issuedOn}}</p>
+                        <p>
+                          {{defaultToPending (convertUtcToPt this.issuedOn)}}
+                        </p>
                       </td>
                       <td class="table-cell provider-transaction-id">
                         <p>{{ this.providerTransactionId }}</p>
@@ -457,10 +459,10 @@
                         <p>{{ this.paymentMethod }}</p>
                       </td>
                       <td class="table-cell receipt-number">
-                        <p>{{ this.receiptNo }}</p>
+                        <p>{{defaultToPending this.receiptNo }}</p>
                       </td>
                       <td class="table-cell permit-number">
-                        <p>{{ this.permitNo }}</p>
+                        <p>{{defaultToPending this.permitNo }}</p>
                       </td>
                       <td class="table-cell permit-type">
                         <p>{{ this.permitType }}</p>

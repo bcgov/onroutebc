@@ -87,13 +87,25 @@ export class Transaction extends Base {
       'Represents the date and time that the transaction was submitted (user clicks Pay Now).',
   })
   @Column({
-    insert: false,
+    insert: true,
     update: false,
     default: () => 'GETUTCDATETIME()',
     name: 'TRANSACTION_SUBMIT_DATE',
     nullable: false,
   })
   transactionSubmitDate: Date;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '2023-07-06T14:49:53.508Z',
+    description:
+      'Represents the date and time that the transaction was approved in ORBC.',
+  })
+  @Column({
+    name: 'TRANSACTION_APPROVED_DATE',
+    nullable: true,
+  })
+  transactionApprovedDate?: Date;
 
   // TODO: Max length is 10?
   @AutoMap()
