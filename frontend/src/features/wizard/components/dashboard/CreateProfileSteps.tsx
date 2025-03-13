@@ -71,8 +71,8 @@ export const CreateProfileSteps = React.memo(() => {
         city: "",
       },
       primaryContact: {
-        firstName: getDefaultRequiredVal("", user?.profile?.given_name),
-        lastName: getDefaultRequiredVal("", user?.profile?.family_name),
+        firstName: "",
+        lastName: "",
         email: "",
         phone1: "",
         phone1Extension: "",

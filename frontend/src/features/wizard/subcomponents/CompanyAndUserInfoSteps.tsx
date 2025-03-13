@@ -40,16 +40,19 @@ export const CompanyAndUserInfoSteps = ({
       city: data.mailingAddress.city,
       countryCode: data.mailingAddress.countryCode,
       provinceCode: data.mailingAddress.provinceCode,
+      email: data.email,
     };
 
     const profileToBeCreated = {
       ...data,
-      email: data.primaryContact.email,
       phone: data.primaryContact.phone1,
       extension: data.primaryContact.phone1Extension,
       primaryContact: updatedContact,
       adminUser: updatedContact,
     };
+
+    console.log({ data });
+    console.log({ profileToBeCreated });
 
     createProfile(profileToBeCreated);
   };
