@@ -14,6 +14,7 @@ import {
 } from 'class-validator';
 import { PermitType } from 'src/common/enum/permit-type.enum';
 import { IsDateTimeAfter } from '../../../../common/decorator/is-date-time-after';
+import { VehicleType } from '../../../../common/enum/vehicle-type.enum';
 
 export class CreateLoaDto {
   @AutoMap()
@@ -61,31 +62,19 @@ export class CreateLoaDto {
 
   @AutoMap()
   @ApiProperty({
-    description:
-      'Trailer IDs. At least one of trailers or power unit IDs is required.',
-    isArray: true,
-    type: String,
-    example: ['1', '2'],
+    description: `The vehicle type. It can have values ${Object.values(VehicleType).join(', ')}`,
+    example: VehicleType.POWER_UNIT,
+    enum: VehicleType,
   })
-  @ValidateIf((obj: CreateLoaDto) =>
-    Boolean(obj.trailers?.length || !obj.powerUnits?.length),
-  )
-  @IsNumberString({}, { each: true })
-  @ArrayMinSize(1)
-  trailers?: string[];
+  @IsEnum(VehicleType)
+  vehicleType: VehicleType;
 
   @AutoMap()
   @ApiProperty({
-    description:
-      'Power unit IDs. At least one of trailers or power unit IDs is required.',
-    isArray: true,
-    type: String,
-    example: ['1', '2'],
+    description: 'Power unit types or trailer types',
+    example: 'BUSCRUM',
   })
-  @ValidateIf((obj: CreateLoaDto) =>
-    Boolean(obj.powerUnits?.length || !obj.trailers?.length),
-  )
-  @IsNumberString({}, { each: true })
-  @ArrayMinSize(1)
-  powerUnits?: string[];
+  @IsString()
+  @Length(1, 7)
+  vehicleSubType: string;
 }
