@@ -3,13 +3,10 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import {
   IsEnum,
-  IsNumberString,
   IsOptional,
   IsString,
   MaxLength,
   IsDateString,
-  ArrayMinSize,
-  ValidateIf,
   Length,
 } from 'class-validator';
 import { PermitType } from 'src/common/enum/permit-type.enum';
