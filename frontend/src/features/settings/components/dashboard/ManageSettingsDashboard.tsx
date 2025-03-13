@@ -9,34 +9,10 @@ import { SpecialAuthorizations } from "../../pages/SpecialAuthorizations/Special
 import { canViewSuspend } from "../../helpers/permissions";
 import { CreditAccountMetadataComponent } from "../../pages/CreditAccountMetadataComponent";
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
-// import { useGetCreditAccountMetadataQuery } from "../../hooks/creditAccount";
-// import { IDIR_USER_ROLE } from "../../../../common/authentication/types";
-// import { CREDIT_ACCOUNT_USER_TYPE } from "../../types/creditAccount";
 
 export const ManageSettingsDashboard = React.memo(() => {
   const { userClaims, companyId /*idirUserDetails*/ } =
     useContext(OnRouteBCContext);
-  // const { data: creditAccountMetadata, isPending } =
-  //   useGetCreditAccountMetadataQuery(companyId as number);
-
-  // const isCreditAccountHolder =
-  //   creditAccountMetadata?.userType === CREDIT_ACCOUNT_USER_TYPE.HOLDER;
-
-  /**
-   * @returns The permission matrix function key.
-   */
-  // const getPermissionMatrixFunctionKey = () => {
-  //   if (!isPending && !creditAccountMetadata)
-  //     return "ADD_CREDIT_ACCOUNT_NON_HOLDER_OR_USER";
-  //   if (isCreditAccountHolder) {
-  //     return "VIEW_CREDIT_ACCOUNT_TAB_ACCOUNT_HOLDER";
-  //   } else {
-  //     return "VIEW_CREDIT_ACCOUNT_TAB_ACCOUNT_USER";
-  //   }
-  // };
-
-  // const isFinanceUser = idirUserDetails?.userRole === IDIR_USER_ROLE.FINANCE;
-
   const [hideSuspendTab, setHideSuspendTab] = useState<boolean>(false);
   const showSuspendTab = canViewSuspend(userClaims) && !hideSuspendTab;
 
@@ -46,18 +22,6 @@ export const ManageSettingsDashboard = React.memo(() => {
       permissionMatrixFunctionKey: "VIEW_SPECIAL_AUTHORIZATIONS",
     },
   });
-
-  // const showCreditAccountTab = usePermissionMatrix({
-  //   featureFlag: "CREDIT-ACCOUNT",
-  //   permissionMatrixKeys: {
-  //     permissionMatrixFeatureKey: "MANAGE_SETTINGS",
-  //     permissionMatrixFunctionKey: getPermissionMatrixFunctionKey(),
-  //   },
-  //   additionalConditionToCheck: () =>
-  //     // Show the tab if there is a credit account or if the user is a finance user.
-  //     // Todo: ORV2-2771 Display info box if there is no credit account.
-  //     Boolean(creditAccountMetadata) || isFinanceUser,
-  // });
 
   const { state: stateFromNavigation } = useLocation();
 
@@ -77,17 +41,12 @@ export const ManageSettingsDashboard = React.memo(() => {
           componentKey: SETTINGS_TABS.SPECIAL_AUTH,
         }
       : null,
-    // showCreditAccountTab
     {
       label: "Credit Account",
       component: <CreditAccountMetadataComponent companyId={companyId} />,
       componentKey: SETTINGS_TABS.CREDIT_ACCOUNT,
     },
-    // : {
-    //     label: "Credit Account",
-    //     component: <CreditAccountMetadataComponent companyId={companyId} />,
-    //     componentKey: SETTINGS_TABS.CREDIT_ACCOUNT,
-    //   },
+
     showSuspendTab
       ? {
           label: "Suspend",

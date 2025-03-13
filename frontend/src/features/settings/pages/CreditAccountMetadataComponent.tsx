@@ -6,6 +6,10 @@ import { InfoBcGovBanner } from "../../../common/components/banners/InfoBcGovBan
 import { BANNER_MESSAGES } from "../../../common/constants/bannerMessages";
 import "./CreditAccountMetadataComponent.scss";
 import { usePermissionMatrix } from "../../../common/authentication/PermissionMatrix";
+import {
+  CSVE_REVENUE_PHONE,
+  CVSE_REVENUE_EMAIL,
+} from "../../../common/constants/constants";
 
 export const CreditAccountMetadataComponent = ({
   companyId,
@@ -31,7 +35,6 @@ export const CreditAccountMetadataComponent = ({
       );
     } else {
       if (showApplicationsInProgressTab) {
-        console.log("Permission:", showApplicationsInProgressTab);
         return (
           <RenderIf
             component={<AddCreditAccount companyId={companyId} />}
@@ -43,10 +46,17 @@ export const CreditAccountMetadataComponent = ({
           />
         );
       } else {
-        console.log("Permission:", showApplicationsInProgressTab);
         return (
           <div className="non-finance-container">
-            <InfoBcGovBanner msg={BANNER_MESSAGES.NON_FINANCE_USER} />
+            <InfoBcGovBanner
+              msg={
+                <div>
+                  {BANNER_MESSAGES.NON_FINANCE_USER}
+                  Phone: <span>{CSVE_REVENUE_PHONE}</span> Email:{" "}
+                  <span>{CVSE_REVENUE_EMAIL}</span>
+                </div>
+              }
+            />
           </div>
         );
       }

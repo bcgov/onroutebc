@@ -1,4 +1,4 @@
-import { CSVE_REVENUE_PHONE, CVSE_REVENUE_EMAIL, TOLL_FREE_NUMBER } from "./constants";
+import {  TOLL_FREE_NUMBER } from "./constants";
 
 export const BANNER_MESSAGES = {
   COMPANY_CONTACT:
@@ -46,5 +46,5 @@ export const BANNER_MESSAGES = {
   BRIDGE_FORMULA_CALCULATION_TOOL:
     "This tool only calculates Bridge Formula, which is a mathematical equation that is used to calculate the maximum allowable weight allowed by permit for various axle groups in a combination. This tool is not confirming compliance with the CTR or CTPM.\n\nThe image on the right is for illustration purposes only.",
   NON_FINANCE_USER:
-    `For Credit Accounts, please contact CVSE Revenue. Phone: ${CSVE_REVENUE_PHONE} or Email: ${CVSE_REVENUE_EMAIL}`,
+    "For Credit Accounts, please contact CVSE Revenue. ",
 };
