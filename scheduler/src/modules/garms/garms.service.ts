@@ -17,7 +17,6 @@ import {
 } from 'src/common/enum/payment-method-type.enum';
 import { PermitType } from '../common/entities/permit-type.entity';
 import { createGarmsCashFile } from 'src/common/helper/garms.helper';
-import { getToDateForGarms } from 'src/common/helper/date-time.helper';
 import {
   GARMS_CASH_FILE_LOCATION,
   GARMS_CASH_FILE_LRECL,
@@ -40,9 +39,12 @@ export class GarmsService {
   ) {}
   @Cron(`${process.env.GARMS_CASH_FILE_INTERVAL || '30 * * * * *'}`)
   async processCashTransactions(garmsExtractType: GarmsExtractType) {
-    const oldFile = await this.getOldFile(garmsExtractType);
+    const toTimestamp = new Date();
+    const oldFile = await this.getOldFile(garmsExtractType, toTimestamp);
     if (oldFile) {
-      const { fileId, fromTimestamp, toTimestamp } = oldFile;
+      console.log();
+      const { fileId, fromTimestamp } = oldFile;
+      oldFile.toTimestamp = toTimestamp;
       // Fetch transactions based on the provided timestamps
       const transactions = await this.getTransactionWithPermitDetails(
         fromTimestamp,
@@ -116,13 +118,16 @@ export class GarmsService {
    * @param garmsExtractType
    * @returns
    */
-  private async getOldFile(garmsExtractType: GarmsExtractType) {
+  private async getOldFile(
+    garmsExtractType: GarmsExtractType,
+    toTimestamp: Date,
+  ) {
     const oldFile = await this.findUnsubmittedOldFile(garmsExtractType);
 
     if (oldFile) {
-      return this.updateOldFileRecord(oldFile);
+      return this.updateOldFileRecord(oldFile, toTimestamp);
     } else {
-      return this.createNewFileRecord(garmsExtractType);
+      return this.createNewFileRecord(garmsExtractType, toTimestamp);
     }
   }
 
@@ -145,10 +150,13 @@ export class GarmsService {
    * @param oldFile
    * @returns
    */
-  private async updateOldFileRecord(oldFile: GarmsExtractFile) {
+  private async updateOldFileRecord(
+    oldFile: GarmsExtractFile,
+    toTimestamp: Date,
+  ) {
     const updatedOldRecord = await this.garmsExtractFileRepository.save({
       ...oldFile,
-      toDate: getToDateForGarms(),
+      toTimestamp: toTimestamp,
     });
     return {
       fileId: updatedOldRecord.fileId,
@@ -162,12 +170,15 @@ export class GarmsService {
    * @param garmsExtractType
    * @returns
    */
-  private async createNewFileRecord(garmsExtractType: GarmsExtractType) {
+  private async createNewFileRecord(
+    garmsExtractType: GarmsExtractType,
+    toTimestamp: Date,
+  ) {
     const latestFile = await this.getLatestFile(garmsExtractType);
     if (latestFile) {
       const newFile = new GarmsExtractFile();
       newFile.fromTimestamp = latestFile.toTimestamp;
-      newFile.toTimestamp = getToDateForGarms();
+      newFile.toTimestamp = toTimestamp;
       newFile.garmsExtractType = garmsExtractType;
 
       const savedFile = await this.garmsExtractFileRepository.save(newFile);
@@ -220,10 +231,10 @@ export class GarmsService {
       qb = qb.leftJoinAndSelect('permit.permitData', 'permitData');
     }
     const result = await qb
-      .andWhere('transaction.transactionApprovedDate > :fromTimestamp', {
+      .andWhere('transaction.transactionApprovedDate >= :fromTimestamp', {
         fromTimestamp,
       })
-      .andWhere('transaction.transactionApprovedDate <= :toTimestamp', {
+      .andWhere('transaction.transactionApprovedDate < :toTimestamp', {
         toTimestamp,
       })
       .andWhere('transaction.paymentMethodTypeCode IN (:...garmsExtractType)', {

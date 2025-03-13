@@ -249,14 +249,17 @@ export const getPaymentAmount = (transaction: Transaction) => {
 };
 
 /**
- * Group transaction on the bases of transaction date.
+ * Groups transactions by the date part (YYYY-MM-DD), combines the transactions of the first two dates if possible,
+ * ( Why we need to combine the data of first two dates: GARMS service runs at 11 pm and rejects transactions of same date
+ * so all the transactions processed after garms scheduled run for that day, will be processsed as transaction from the following date)
+ * and then returns an array of DateTransaction entities.
  *
- * @param transactions
- * @returns Record<string, Transaction[]>
+ * @param transactions - The list of transactions to be grouped by date.
+ * @returns An array of DateTransaction entities, each containing a date and the corresponding transactions.
  */
 export const groupTransactionsByDate = (transactions: Transaction[]) => {
   // Group transactions by the date (ignoring the time part)
-  const groupedData = transactions.reduce(
+  const groupedData: Record<string, Transaction[]> = transactions.reduce(
     (acc, transaction) => {
       // Extract just the date part (YYYY-MM-DD)
       const transactionDate = transaction.transactionSubmitDate
@@ -276,16 +279,32 @@ export const groupTransactionsByDate = (transactions: Transaction[]) => {
     {} as Record<string, Transaction[]>,
   );
 
-  //Process the grouped data (example: sum the total amounts for each date)
-  const result = Object.keys(groupedData).map((date) => {
-    const transactionsForDate = groupedData[date];
+  const dates = Object.keys(groupedData);
+  // If there are less than 2 keys, just return the map as it is
+  if (dates.length > 1) {
+    // Combine the transactions of the first two dates
+    const firstDate = dates[0];
+    const secondDate = dates[1];
+    const combinedTransactions = [
+      ...groupedData[firstDate],
+      ...groupedData[secondDate],
+    ];
+
+    // Remove both the first and second dates
+    delete groupedData[firstDate];
+    delete groupedData[secondDate];
+
+    // Set the combined transactions under the second date
+    groupedData[secondDate] = combinedTransactions;
+  }
+
+  // Convert grouped data into DateTransaction entities
+  return Object.entries(groupedData).map(([date, transactions]) => {
     const dateTransaction = new DateTransaction();
     dateTransaction.date = date;
-    dateTransaction.transactions = [...transactionsForDate];
+    dateTransaction.transactions = transactions;
     return dateTransaction;
   });
-
-  return result;
 };
 
 /**
