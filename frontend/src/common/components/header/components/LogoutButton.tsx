@@ -19,9 +19,7 @@ export const LogoutButton = () => {
         removeUser();
         signoutRedirect({
           extraQueryParams: {
-            // redirect_uri: `${siteMinderLogOffURL}?retnow=1&ret_url=${window.location.origin}`,
-            // post_logout_redirect_uri: `${window.location.origin}`,
-            post_logout_redirect_uri: `${siteMinderLogOffURL}?retnow=1&ret_url=${window.location.origin}`,
+            post_logout_redirect_uri: `${siteMinderLogOffURL}?retnow=1&returl=${window.location.origin}`,
             id_token_hint: user?.id_token as string,
           },
         });
