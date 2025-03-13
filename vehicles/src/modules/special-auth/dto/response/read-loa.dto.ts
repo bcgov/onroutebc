@@ -2,6 +2,7 @@ import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum } from 'class-validator';
 import { PermitType } from 'src/common/enum/permit-type.enum';
+import { VehicleType } from '../../../../common/enum/vehicle-type.enum';
 
 export class ReadLoaDto {
   @AutoMap()
@@ -88,19 +89,16 @@ export class ReadLoaDto {
 
   @AutoMap()
   @ApiProperty({
-    description: 'List of trailer IDs associated with the LoA.',
-    isArray: true,
-    required: false,
-    example: ['1'],
+    description: `The vehicle type. It can have values ${Object.values(VehicleType).join(', ')}`,
+    example: VehicleType.POWER_UNIT,
+    enum: VehicleType,
   })
-  trailers?: string[];
+  vehicleType: VehicleType;
 
   @AutoMap()
   @ApiProperty({
-    description: 'List of power unit IDs associated with the LoA.',
-    isArray: true,
-    required: false,
-    example: ['1'],
+    description: 'Power unit types or trailer types',
+    example: 'BUSCRUM',
   })
-  powerUnits?: string[];
+  vehicleSubType: string;
 }

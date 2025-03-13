@@ -10,24 +10,20 @@ import { In, QueryRunner } from 'typeorm';
 import { LoaDetail } from 'src/modules/special-auth/entities/loa-detail.entity';
 import { Mapper } from '@automapper/core';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { VehicleType } from '../enum/vehicle-type.enum';
 
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 export const isVehicleTypeValid = (
-  permitVehicleType: string,
-  permitVehicleId: string,
-  powerUnits?: string[],
-  trailers?: string[],
+  permitVehicleType: VehicleType,
+  permitVehicleSubtype: string,
+  loaVehicleType: VehicleType,
+  loaVehicleSubtype: string,
 ): boolean => {
-  const isPowerUnitAllowed =
-    permitVehicleType === 'powerUnit'
-      ? powerUnits.includes(permitVehicleId)
-      : true;
-
-  const isTrailerAllowed =
-    permitVehicleType === 'trailer' ? trailers.includes(permitVehicleId) : true;
-
-  return isPowerUnitAllowed && isTrailerAllowed;
+  return (
+    permitVehicleType === loaVehicleType &&
+    permitVehicleSubtype === loaVehicleSubtype
+  );
 };
 
 export const isPermitTypeValid = (
@@ -72,8 +68,10 @@ export const isValidLoa = async (
 ) => {
   const permitData = JSON.parse(permit.permitData.permitData) as PermitData;
   if (permitData.loas) {
-    const { vehicleId: permitVehicleId, vehicleType: permitVehicleType } =
-      permitData.vehicleDetails;
+    const {
+      vehicleType: permitVehicleType,
+      vehicleSubType: permitVehicleSubtype,
+    } = permitData.vehicleDetails;
     const { companyId } = permit.company;
     const loaNumbers = permitData.loas.map((loa) => loa.loaNumber);
     const readLoaDto = await findLoas(
@@ -83,28 +81,34 @@ export const isValidLoa = async (
       mapper,
     );
 
+    const permitVehicleTypeEnum = VehicleType[permitVehicleType] as VehicleType;
     // Validate LOA details and permit data against database entries
-    validateLoaDetails(readLoaDto, permit, permitVehicleId, permitVehicleType);
+    validateLoaDetails(
+      readLoaDto,
+      permit,
+      permitVehicleTypeEnum,
+      permitVehicleSubtype,
+    );
 
     // validate LoA snapshot in permit Data
     validatePermitDataAgainstLoas(
       permitData,
       permit,
-      permitVehicleId,
-      permitVehicleType,
+      permitVehicleTypeEnum,
+      permitVehicleSubtype,
     );
   }
 };
 export const validateLoaDetails = (
   readLoaDtos: ReadLoaDto[],
   permit: Permit,
-  permitVehicleId: string,
-  permitVehicleType: string,
+  permitVehicleType: VehicleType,
+  permitVehicleSubtype: string,
 ) => {
   for (const readLoaDto of readLoaDtos) {
     const {
-      powerUnits: loaPowerUnits,
-      trailers: loaTrailers,
+      vehicleType: loaVehicleType,
+      vehicleSubType: loaVehicleSubtype,
       loaPermitType: loaPermitTypes,
     } = readLoaDto;
     if (!isValidDateForLoa(readLoaDto, permit)) {
@@ -115,9 +119,9 @@ export const validateLoaDetails = (
     if (
       !isVehicleTypeValid(
         permitVehicleType,
-        permitVehicleId,
-        loaPowerUnits,
-        loaTrailers,
+        permitVehicleSubtype,
+        loaVehicleType,
+        loaVehicleSubtype,
       )
     ) {
       throw new UnprocessableEntityException(
@@ -135,12 +139,12 @@ export const validateLoaDetails = (
 export const validatePermitDataAgainstLoas = (
   permitData: PermitData,
   permit: Permit,
-  permitVehicleId: string,
-  permitVehicleType: string,
+  permitVehicleType: VehicleType,
+  permitVehicleSubtype: string,
 ) => {
   for (const loa of permitData.loas) {
-    const permitLoaPowerUnits = loa.powerUnits;
-    const permitLoaTrailers = loa.trailers;
+    const permitLoaVehicleType = loa.vehicleType;
+    const permitLoaVehicleSubtype = loa.vehicleSubType;
     const permitTypesLoa = loa.loaPermitType;
     if (!isValidDateForLoa(loa, permit)) {
       throw new UnprocessableEntityException(
@@ -151,9 +155,9 @@ export const validatePermitDataAgainstLoas = (
     if (
       !isVehicleTypeValid(
         permitVehicleType,
-        permitVehicleId,
-        permitLoaPowerUnits,
-        permitLoaTrailers,
+        permitVehicleSubtype,
+        permitLoaVehicleType,
+        permitLoaVehicleSubtype,
       )
     ) {
       throw new UnprocessableEntityException(

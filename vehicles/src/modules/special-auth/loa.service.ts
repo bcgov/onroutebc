@@ -20,6 +20,7 @@ import { Response } from 'express';
 import { Nullable } from '../../common/types/common';
 import { Company } from '../company-user-management/company/entities/company.entity';
 import { UpdateLoaDto } from './dto/request/update-loa.dto';
+import { setBaseEntityProperties } from '../../common/helper/database.helper';
 
 @Injectable()
 export class LoaService {
@@ -61,6 +62,7 @@ export class LoaService {
       companyId,
       file,
     );
+    const dbActivitydate = new Date();
     const loa = await this.classMapper.mapAsync(
       createLoaDto,
       CreateLoaDto,
@@ -70,13 +72,17 @@ export class LoaService {
           companyId: companyId,
           documentId: readFileDto.documentId,
           isActive: true,
-          userName: currentUser.userName,
-          userGUID: currentUser.userGUID,
-          timestamp: new Date(),
-          directory: currentUser.orbcUserDirectory,
+          currentUser: currentUser,
+          dbActivitydate: dbActivitydate,
         }),
       },
     );
+    setBaseEntityProperties({
+      entity: loa,
+      currentUser,
+      date: dbActivitydate,
+    });
+
     const savedLoaDetail = await this.loaDetailRepository.save(loa);
     await this.loaDetailRepository
       .createQueryBuilder()
@@ -302,7 +308,8 @@ export class LoaService {
         isActive: false,
       });
       await queryRunner.manager.save(updatedLoaDetail);
-      const createLoaDetail = await this.classMapper.mapAsync(
+      const dbActivitydate = new Date();
+      const updateLoaDetail = await this.classMapper.mapAsync(
         updateLoaDto,
         UpdateLoaDto,
         LoaDetail,
@@ -314,15 +321,18 @@ export class LoaService {
             loaNumber: existingLoaDetail.loaNumber,
             previousLoaId: existingLoaDetail.loaId,
             originalLoaId: existingLoaDetail.originalLoaId,
-            userName: currentUser.userName,
-            userGUID: currentUser.userGUID,
-            timestamp: new Date(),
-            directory: currentUser.orbcUserDirectory,
+            dbActivitydate: dbActivitydate,
+            currentUser: currentUser,
           }),
         },
       );
+      setBaseEntityProperties({
+        entity: updateLoaDetail,
+        currentUser,
+        date: dbActivitydate,
+      });
 
-      savedLoaDetail = await queryRunner.manager.save(createLoaDetail);
+      savedLoaDetail = await queryRunner.manager.save(updateLoaDetail);
 
       await queryRunner.commitTransaction();
     } catch (error) {

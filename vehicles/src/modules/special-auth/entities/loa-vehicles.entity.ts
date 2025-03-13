@@ -22,15 +22,15 @@ export class LoaVehicle extends Base {
 
   @AutoMap()
   @Column({
-    name: 'POWER_UNIT_ID',
+    name: 'POWER_UNIT_TYPE',
     nullable: true,
   })
-  powerUnit?: string;
+  powerUnitType?: string;
 
   @AutoMap()
   @Column({
-    name: 'TRAILER_ID',
+    name: 'TRAILER_TYPE',
     nullable: true,
   })
-  trailer?: string;
+  trailerType?: string;
 }

@@ -14,6 +14,9 @@ import { LoaVehicle } from '../entities/loa-vehicles.entity';
 import * as dayjs from 'dayjs';
 import { UpdateLoaDto } from '../dto/request/update-loa.dto';
 import { ReadLoaDto } from '../dto/response/read-loa.dto';
+import { VehicleType } from '../../../common/enum/vehicle-type.enum';
+import { setBaseEntityProperties } from '../../../common/helper/database.helper';
+import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 
 @Injectable()
 export class LoaProfile extends AutomapperProfile {
@@ -58,72 +61,16 @@ export class LoaProfile extends AutomapperProfile {
           }),
         ),
         forMember(
-          (d) => d.createdUserGuid,
-          mapWithArguments((_, { userGUID }) => {
-            return userGUID;
-          }),
-        ),
-        forMember(
-          (d) => d.createdUser,
-          mapWithArguments((_, { userName }) => {
-            return userName;
-          }),
-        ),
-        forMember(
-          (d) => d.createdUserDirectory,
-          mapWithArguments((_, { directory }) => {
-            return directory;
-          }),
-        ),
-
-        forMember(
-          (d) => d.createdDateTime,
-          mapWithArguments((_, { timestamp }) => {
-            return timestamp;
-          }),
-        ),
-
-        forMember(
-          (d) => d.updatedUserGuid,
-          mapWithArguments((_, { userGUID }) => {
-            return userGUID;
-          }),
-        ),
-        forMember(
-          (d) => d.updatedUser,
-          mapWithArguments((_, { userName }) => {
-            return userName;
-          }),
-        ),
-        forMember(
-          (d) => d.updatedUserDirectory,
-          mapWithArguments((_, { directory }) => {
-            return directory;
-          }),
-        ),
-
-        forMember(
-          (d) => d.updatedDateTime,
-          mapWithArguments((_, { timestamp }) => {
-            return timestamp;
-          }),
-        ),
-
-        forMember(
           (d) => d.loaPermitTypes,
           mapWithArguments(
             (
               s,
               {
-                timestamp,
-                directory,
-                userName,
-                userGUID,
+                currentUser,
+                dbActivitydate,
               }: {
-                timestamp: Date;
-                directory: string;
-                userName: string;
-                userGUID: string;
+                currentUser: IUserJWT;
+                dbActivitydate: Date;
               },
             ) => {
               const loaPermitTypes: LoaPermitType[] =
@@ -131,14 +78,11 @@ export class LoaProfile extends AutomapperProfile {
               for (const permitType of s.loaPermitType) {
                 const loaPermitType: LoaPermitType = new LoaPermitType();
                 loaPermitType.permitType = permitType;
-                loaPermitType.createdDateTime = timestamp;
-                loaPermitType.createdUser = userName;
-                loaPermitType.createdUserGuid = userGUID;
-                loaPermitType.createdUserDirectory = directory;
-                loaPermitType.updatedDateTime = timestamp;
-                loaPermitType.updatedUser = userName;
-                loaPermitType.updatedUserDirectory = directory;
-                loaPermitType.updatedUserGuid = userGUID;
+                setBaseEntityProperties({
+                  entity: loaPermitType,
+                  currentUser,
+                  date: dbActivitydate,
+                });
                 loaPermitTypes.push(loaPermitType);
               }
               return loaPermitTypes;
@@ -152,50 +96,27 @@ export class LoaProfile extends AutomapperProfile {
             (
               s,
               {
-                timestamp,
-                directory,
-                userName,
-                userGUID,
+                currentUser,
+                dbActivitydate,
               }: {
-                timestamp: Date;
-                directory: string;
-                userName: string;
-                userGUID: string;
+                currentUser: IUserJWT;
+                dbActivitydate: Date;
               },
             ) => {
               const loaVehicles: LoaVehicle[] = new Array<LoaVehicle>();
-              if (s.powerUnits) {
-                for (const powerUnit of s.powerUnits) {
-                  const loaVehicle: LoaVehicle = new LoaVehicle();
-                  loaVehicle.powerUnit = powerUnit;
-                  loaVehicle.trailer = null;
-                  loaVehicle.createdDateTime = timestamp;
-                  loaVehicle.createdUser = userName;
-                  loaVehicle.createdUserGuid = userGUID;
-                  loaVehicle.createdUserDirectory = directory;
-                  loaVehicle.updatedDateTime = timestamp;
-                  loaVehicle.updatedUser = userName;
-                  loaVehicle.updatedUserDirectory = directory;
-                  loaVehicle.updatedUserGuid = userGUID;
-                  loaVehicles.push(loaVehicle);
-                }
+              const loaVehicle: LoaVehicle = new LoaVehicle();
+              if (s.vehicleType === VehicleType.POWER_UNIT) {
+                loaVehicle.powerUnitType = s.vehicleSubType;
+              } else {
+                loaVehicle.trailerType = s.vehicleSubType;
               }
-              if (s.trailers) {
-                for (const trailer of s.trailers) {
-                  const loaVehicle: LoaVehicle = new LoaVehicle();
-                  loaVehicle.trailer = trailer;
-                  loaVehicle.powerUnit = null;
-                  loaVehicle.createdDateTime = timestamp;
-                  loaVehicle.createdUser = userName;
-                  loaVehicle.createdUserGuid = userGUID;
-                  loaVehicle.createdUserDirectory = directory;
-                  loaVehicle.updatedDateTime = timestamp;
-                  loaVehicle.updatedUser = userName;
-                  loaVehicle.updatedUserDirectory = directory;
-                  loaVehicle.updatedUserGuid = userGUID;
-                  loaVehicles.push(loaVehicle);
-                }
-              }
+              setBaseEntityProperties({
+                entity: loaVehicle,
+                currentUser,
+                date: dbActivitydate,
+              });
+              loaVehicles.push(loaVehicle);
+
               return loaVehicles;
             },
           ),
@@ -242,72 +163,16 @@ export class LoaProfile extends AutomapperProfile {
           }),
         ),
         forMember(
-          (d) => d.createdUserGuid,
-          mapWithArguments((_, { userGUID }) => {
-            return userGUID;
-          }),
-        ),
-        forMember(
-          (d) => d.createdUser,
-          mapWithArguments((_, { userName }) => {
-            return userName;
-          }),
-        ),
-        forMember(
-          (d) => d.createdUserDirectory,
-          mapWithArguments((_, { directory }) => {
-            return directory;
-          }),
-        ),
-
-        forMember(
-          (d) => d.createdDateTime,
-          mapWithArguments((_, { timestamp }) => {
-            return timestamp;
-          }),
-        ),
-
-        forMember(
-          (d) => d.updatedUserGuid,
-          mapWithArguments((_, { userGUID }) => {
-            return userGUID;
-          }),
-        ),
-        forMember(
-          (d) => d.updatedUser,
-          mapWithArguments((_, { userName }) => {
-            return userName;
-          }),
-        ),
-        forMember(
-          (d) => d.updatedUserDirectory,
-          mapWithArguments((_, { directory }) => {
-            return directory;
-          }),
-        ),
-
-        forMember(
-          (d) => d.updatedDateTime,
-          mapWithArguments((_, { timestamp }) => {
-            return timestamp;
-          }),
-        ),
-
-        forMember(
           (d) => d.loaPermitTypes,
           mapWithArguments(
             (
               s,
               {
-                timestamp,
-                directory,
-                userName,
-                userGUID,
+                currentUser,
+                dbActivitydate,
               }: {
-                timestamp: Date;
-                directory: string;
-                userName: string;
-                userGUID: string;
+                currentUser: IUserJWT;
+                dbActivitydate: Date;
               },
             ) => {
               const loaPermitTypes: LoaPermitType[] =
@@ -315,14 +180,11 @@ export class LoaProfile extends AutomapperProfile {
               for (const permitType of s.loaPermitType) {
                 const loaPermitType: LoaPermitType = new LoaPermitType();
                 loaPermitType.permitType = permitType;
-                loaPermitType.createdDateTime = timestamp;
-                loaPermitType.createdUser = userName;
-                loaPermitType.createdUserGuid = userGUID;
-                loaPermitType.createdUserDirectory = directory;
-                loaPermitType.updatedDateTime = timestamp;
-                loaPermitType.updatedUser = userName;
-                loaPermitType.updatedUserDirectory = directory;
-                loaPermitType.updatedUserGuid = userGUID;
+                setBaseEntityProperties({
+                  entity: loaPermitType,
+                  currentUser,
+                  date: dbActivitydate,
+                });
                 loaPermitTypes.push(loaPermitType);
               }
               return loaPermitTypes;
@@ -336,50 +198,26 @@ export class LoaProfile extends AutomapperProfile {
             (
               s,
               {
-                timestamp,
-                directory,
-                userName,
-                userGUID,
+                currentUser,
+                dbActivitydate,
               }: {
-                timestamp: Date;
-                directory: string;
-                userName: string;
-                userGUID: string;
+                currentUser: IUserJWT;
+                dbActivitydate: Date;
               },
             ) => {
               const loaVehicles: LoaVehicle[] = new Array<LoaVehicle>();
-              if (s.powerUnits) {
-                for (const powerUnit of s.powerUnits) {
-                  const loaVehicle: LoaVehicle = new LoaVehicle();
-                  loaVehicle.powerUnit = powerUnit;
-                  loaVehicle.trailer = null;
-                  loaVehicle.createdDateTime = timestamp;
-                  loaVehicle.createdUser = userName;
-                  loaVehicle.createdUserGuid = userGUID;
-                  loaVehicle.createdUserDirectory = directory;
-                  loaVehicle.updatedDateTime = timestamp;
-                  loaVehicle.updatedUser = userName;
-                  loaVehicle.updatedUserDirectory = directory;
-                  loaVehicle.updatedUserGuid = userGUID;
-                  loaVehicles.push(loaVehicle);
-                }
+              const loaVehicle: LoaVehicle = new LoaVehicle();
+              if (s.vehicleType === VehicleType.POWER_UNIT) {
+                loaVehicle.powerUnitType = s.vehicleSubType;
+              } else {
+                loaVehicle.trailerType = s.vehicleSubType;
               }
-              if (s.trailers) {
-                for (const trailer of s.trailers) {
-                  const loaVehicle: LoaVehicle = new LoaVehicle();
-                  loaVehicle.trailer = trailer;
-                  loaVehicle.powerUnit = null;
-                  loaVehicle.createdDateTime = timestamp;
-                  loaVehicle.createdUser = userName;
-                  loaVehicle.createdUserGuid = userGUID;
-                  loaVehicle.createdUserDirectory = directory;
-                  loaVehicle.updatedDateTime = timestamp;
-                  loaVehicle.updatedUser = userName;
-                  loaVehicle.updatedUserDirectory = directory;
-                  loaVehicle.updatedUserGuid = userGUID;
-                  loaVehicles.push(loaVehicle);
-                }
-              }
+              setBaseEntityProperties({
+                entity: loaVehicle,
+                currentUser,
+                date: dbActivitydate,
+              });
+              loaVehicles.push(loaVehicle);
               return loaVehicles;
             },
           ),
@@ -414,21 +252,20 @@ export class LoaProfile extends AutomapperProfile {
           }),
         ),
         forMember(
-          (d) => d.powerUnits,
+          (d) => d.vehicleType,
           mapFrom((s) => {
-            if (s.loaVehicles)
-              return s.loaVehicles
-                .filter((lv) => lv.powerUnit)
-                .map((lv) => lv.powerUnit);
+            return s?.loaVehicles?.at(0)?.powerUnitType
+              ? VehicleType.POWER_UNIT
+              : VehicleType.TRAILER;
           }),
         ),
         forMember(
-          (d) => d.trailers,
+          (d) => d.vehicleSubType,
           mapFrom((s) => {
-            if (s.loaVehicles)
-              return s.loaVehicles
-                .filter((lv) => lv.trailer)
-                .map((lv) => lv.trailer);
+            return (
+              s?.loaVehicles?.at(0)?.powerUnitType ??
+              s?.loaVehicles?.at(0)?.trailerType
+            );
           }),
         ),
       );
