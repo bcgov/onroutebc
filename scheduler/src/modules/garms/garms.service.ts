@@ -102,12 +102,14 @@ export class GarmsService {
    * Update file id with the submit timestamp
    * @param oldFile
    */
-  private async updateFileSubmitTimestamp(oldFile) {
+  private async updateFileSubmitTimestamp(oldFile: GarmsExtractFile) {
     // Update submit timestamp in garms file extract table
-    await this.garmsExtractFileRepository.save({
-      ...oldFile,
-      fileSubmitTimestamp: new Date(),
-    });
+    await this.garmsExtractFileRepository.update(
+      { fileId: oldFile.fileId },
+      {
+        fileSubmitTimestamp: new Date(),
+      },
+    );
   }
 
   /**
@@ -146,6 +148,17 @@ export class GarmsService {
   }
 
   /**
+   * find unsubmitted garms file record.
+   */
+  private async findOne(fileId: string): Promise<GarmsExtractFile | null> {
+    return this.garmsExtractFileRepository.findOne({
+      where: {
+        fileId: fileId,
+      },
+    });
+  }
+
+  /**
    * Update "ToTimestamp" date range of an existing record.
    * @param oldFile
    * @returns
@@ -153,16 +166,14 @@ export class GarmsService {
   private async updateOldFileRecord(
     oldFile: GarmsExtractFile,
     toTimestamp: Date,
-  ) {
-    const updatedOldRecord = await this.garmsExtractFileRepository.save({
-      ...oldFile,
-      toTimestamp: toTimestamp,
-    });
-    return {
-      fileId: updatedOldRecord.fileId,
-      fromTimestamp: updatedOldRecord.fromTimestamp,
-      toTimestamp: updatedOldRecord.toTimestamp,
-    };
+  ): Promise<GarmsExtractFile> {
+    await this.garmsExtractFileRepository.update(
+      { fileId: oldFile.fileId },
+      {
+        toTimestamp: toTimestamp,
+      },
+    );
+    return await this.findOne(oldFile.fileId);
   }
   /**
    * Create new record with new "from" and "to" date range
@@ -173,7 +184,7 @@ export class GarmsService {
   private async createNewFileRecord(
     garmsExtractType: GarmsExtractType,
     toTimestamp: Date,
-  ) {
+  ): Promise<GarmsExtractFile> {
     const latestFile = await this.getLatestFile(garmsExtractType);
     if (latestFile) {
       const newFile = new GarmsExtractFile();
@@ -182,11 +193,7 @@ export class GarmsService {
       newFile.garmsExtractType = garmsExtractType;
 
       const savedFile = await this.garmsExtractFileRepository.save(newFile);
-      return {
-        fileId: savedFile.fileId,
-        fromTimestamp: savedFile.fromTimestamp,
-        toTimestamp: savedFile.toTimestamp,
-      };
+      return savedFile;
     }
   }
 
