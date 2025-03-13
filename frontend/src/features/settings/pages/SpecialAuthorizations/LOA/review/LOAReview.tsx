@@ -61,11 +61,11 @@ export const LOAReview = ({
       <div className="loa-review__section loa-review__section--vehicle">
         <div className="loa-review__header">Vehicle Information</div>
         <div className="loa-review__data">
-          <p>
+          <p className="loa-review__data-line">
             Vehicle Type: {vehicleTypeDisplayText(formData.vehicleType)}
           </p>
 
-          <p>
+          <p className="loa-review__data-line">
             Vehicle Sub-type: {vehicleSubtype}
           </p>
         </div>

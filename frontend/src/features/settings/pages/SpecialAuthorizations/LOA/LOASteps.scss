@@ -36,21 +36,23 @@
 
       &--prev {
         margin-right: 2.5rem;
-        border: 2px solid orbcStyles.$bc-primary-blue;
+        border: 2px solid orbcStyles.$bc-text-box-border-grey;
         border-radius: 0.25rem;
-        color: orbcStyles.$bc-primary-blue;
+        color: orbcStyles.$bc-black;
         background-color: orbcStyles.$white;
 
         &:hover {
-          color: orbcStyles.$white;
-          background-color: orbcStyles.$bc-text-links-blue;
-          border: 2px solid orbcStyles.$bc-text-links-blue;
+          background-color: orbcStyles.$bc-background-light-grey;
         }
       }
 
       &--next, &--finish {
         font-weight: bold;
       }
+    }
+
+    &__icon {
+      margin-right: 0.5rem;
     }
   }
 }

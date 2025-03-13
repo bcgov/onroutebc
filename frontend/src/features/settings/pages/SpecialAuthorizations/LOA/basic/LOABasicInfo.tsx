@@ -161,22 +161,33 @@ export const LOABasicInfo = ({
     value: string;
   }[]>([]);
 
+  // whenever the vehicleType changes (whether on first render or user action)
+  // update the vehicle subtype dropdown accordingly
   useEffect(() => {
-    setSubtypeOptions(
-      selectedVehicleSubtype === VEHICLE_TYPES.TRAILER
-        ? trailerSubtypeOptions
-        : powerUnitSubtypeOptions,
-    );
-  }, [selectedVehicleType]);
+    if (selectedVehicleType === VEHICLE_TYPES.TRAILER) {
+      setSubtypeOptions(trailerSubtypeOptions);
+    } else {
+      setSubtypeOptions(powerUnitSubtypeOptions);
+    }
+  }, [
+    selectedVehicleType,
+    trailerSubtypeOptions,
+    powerUnitSubtypeOptions,
+  ]);
 
+  // Whenever the subtype dropdown options change, always check the existing selected subtype
+  // If there are new dropdown options, and the existing subtype is found in these options
+  // then update the subtype to be the first subtype option in the updated dropdown list
   useEffect(() => {
     if (
       subtypeOptions.length > 0
       && !subtypeOptions.find(({ value }) => value === selectedVehicleSubtype)
     ) {
+      const updatedSubtype = subtypeOptions.length > 0 ? subtypeOptions[0].value : "";
+      
       setValue(
         "vehicleSubtype",
-        subtypeOptions.length > 0 ? subtypeOptions[0].value : "",
+        updatedSubtype,
       );
     }
   }, [subtypeOptions, selectedVehicleSubtype]);

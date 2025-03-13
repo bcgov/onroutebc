@@ -143,7 +143,11 @@ export const LOASteps = ({
           />
         );
     }
-  }, [activeStep]);
+  }, [
+    activeStep,
+    powerUnitSubtypes,
+    trailerSubtypes,
+  ]);
 
   return (
     <FormProvider {...formMethods}>
@@ -173,11 +177,11 @@ export const LOASteps = ({
               data-testid="loa-prev-button"
               onClick={handlePrev}
               variant="contained"
-              color="secondary"
-              startIcon={<FontAwesomeIcon icon={faPencil} />}
+              color="tertiary"
               className="steps-navigation__btn steps-navigation__btn--prev"
             >
-              <strong>Edit</strong>
+              <FontAwesomeIcon className="steps-navigation__icon" icon={faPencil} />
+              Edit
             </Button>
           ) : null}
 
