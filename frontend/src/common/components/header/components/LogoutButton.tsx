@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useAuth } from "react-oidc-context";
 
 import "./LogoutButton.scss";
