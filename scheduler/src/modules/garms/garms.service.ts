@@ -22,6 +22,7 @@ import {
   GARMS_CASH_FILE_LRECL,
 } from 'src/common/constants/garms.constant';
 import { Cron } from '@nestjs/schedule';
+import { getToDateForGarms } from 'src/common/helper/date-time.helper';
 
 @Injectable()
 export class GarmsService {
@@ -40,7 +41,7 @@ export class GarmsService {
   @Cron(`${process.env.GARMS_CASH_FILE_INTERVAL || '0 */30 * * * *'}`)
   async processCashTransactions() {
    const garmsExtractType = GarmsExtractType.CASH
-    const toTimestamp = new Date();
+    const toTimestamp = getToDateForGarms();
     const oldFile = await this.getOldFile(garmsExtractType, toTimestamp);
     if (oldFile) {
       console.log();
