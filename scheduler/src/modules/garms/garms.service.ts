@@ -37,8 +37,9 @@ export class GarmsService {
     @InjectRepository(PermitType)
     private readonly permitTypeRepository: Repository<PermitType>,
   ) {}
-  @Cron(`${process.env.GARMS_CASH_FILE_INTERVAL || '30 * * * * *'}`)
-  async processCashTransactions(garmsExtractType: GarmsExtractType) {
+  @Cron(`${process.env.GARMS_CASH_FILE_INTERVAL || '0 */30 * * * *'}`)
+  async processCashTransactions() {
+   const garmsExtractType = GarmsExtractType.CASH
     const toTimestamp = new Date();
     const oldFile = await this.getOldFile(garmsExtractType, toTimestamp);
     if (oldFile) {
@@ -190,6 +191,7 @@ export class GarmsService {
       const newFile = new GarmsExtractFile();
       newFile.fromTimestamp = latestFile.toTimestamp;
       newFile.toTimestamp = toTimestamp;
+      newFile.fileSubmitTimestamp=null;
       newFile.garmsExtractType = garmsExtractType;
 
       const savedFile = await this.garmsExtractFileRepository.save(newFile);
