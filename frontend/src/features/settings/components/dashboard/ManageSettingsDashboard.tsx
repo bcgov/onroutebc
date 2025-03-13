@@ -11,8 +11,7 @@ import { CreditAccountMetadataComponent } from "../../pages/CreditAccountMetadat
 import { usePermissionMatrix } from "../../../../common/authentication/PermissionMatrix";
 
 export const ManageSettingsDashboard = React.memo(() => {
-  const { userClaims, companyId /*idirUserDetails*/ } =
-    useContext(OnRouteBCContext);
+  const { userClaims, companyId } = useContext(OnRouteBCContext);
   const [hideSuspendTab, setHideSuspendTab] = useState<boolean>(false);
   const showSuspendTab = canViewSuspend(userClaims) && !hideSuspendTab;
 

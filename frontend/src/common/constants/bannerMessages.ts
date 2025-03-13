@@ -1,4 +1,4 @@
-import {  TOLL_FREE_NUMBER } from "./constants";
+import { TOLL_FREE_NUMBER } from "./constants";
 
 export const BANNER_MESSAGES = {
   COMPANY_CONTACT:

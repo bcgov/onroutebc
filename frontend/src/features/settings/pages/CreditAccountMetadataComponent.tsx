@@ -52,8 +52,8 @@ export const CreditAccountMetadataComponent = ({
               msg={
                 <div>
                   {BANNER_MESSAGES.NON_FINANCE_USER}
-                  Phone: <span>{CSVE_REVENUE_PHONE}</span> Email:{" "}
-                  <span>{CVSE_REVENUE_EMAIL}</span>
+                  Phone: <span>{CSVE_REVENUE_PHONE}</span>
+                  Email: <span>{CVSE_REVENUE_EMAIL}</span>
                 </div>
               }
             />
@@ -62,5 +62,5 @@ export const CreditAccountMetadataComponent = ({
       }
     }
   }
-  return null;
+  return <></>;
 };
