@@ -285,6 +285,7 @@ export class GarmsService {
       additionalLftpCommands:
         'set cache:enable no;set ftp:passive-mode on;set ftp:use-size no;set ftp:ssl-protect-data yes;set ftp:ssl-force yes;set ftps:initial-prot "P";set net:connection-limit 1;set net:max-retries 1;debug 5;', // Additional commands to pass to lftp, splitted by ';'
     };
+    this.logger.log(`FTP info host ${process.env.GARMS_HOST}, user ${process.env.GARMS_USER} pwd ${process.env.GARMS_PWD} `);
     const ftps: FTPS = new FTPS(options);
     try {
       const localFilePath = fileName;
