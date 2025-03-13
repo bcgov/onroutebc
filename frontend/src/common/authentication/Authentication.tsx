@@ -14,7 +14,7 @@ const LoginOptions = () => {
           id="login-bceid"
           variant="contained"
           onClick={() => {
-            signinRedirect({
+            signinRedirect({redirect_uri: window.location.origin,
               extraQueryParams: { kc_idp_hint: IDPS.BUSINESS_BCEID },
             });
           }}
