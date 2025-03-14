@@ -11,7 +11,7 @@ export interface PermitLOA {
   expiryDate?: Nullable<string>;
   loaPermitType: PermitType[];
   vehicleType: VehicleType;
-  vehicleSubtype: string;
+  vehicleSubType: string;
   originalLoaId: number;
   previousLoaId?: Nullable<number>;
 }
@@ -36,7 +36,7 @@ export const arePermitLOADetailsEqual = (
     && !areValuesDifferent(loa1.expiryDate, loa2.expiryDate)
     && doUniqueArraysHaveSameItems<string>(loa1.loaPermitType, loa2.loaPermitType)
     && loa1.vehicleType === loa2.vehicleType
-    && loa1.vehicleSubtype === loa2.vehicleSubtype
+    && loa1.vehicleSubType === loa2.vehicleSubType
     && loa1.originalLoaId === loa2.originalLoaId
     && !areValuesDifferent(loa1.previousLoaId, loa2.previousLoaId);
 };

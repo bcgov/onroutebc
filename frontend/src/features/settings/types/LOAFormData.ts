@@ -5,6 +5,7 @@ import { PERMIT_TYPES } from "../../permits/types/PermitType";
 import { VehicleType } from "../../manageVehicles/types/Vehicle";
 import { DEFAULT_VEHICLE_TYPE } from "../../manageVehicles/types/Vehicle";
 import { LOADetail } from "./LOADetail";
+import { DEFAULT_EMPTY_SELECT_VALUE } from "../../../common/constants/constants";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -72,7 +73,10 @@ export const loaDetailToFormData = (
   const neverExpires = !expiryDate;
   const additionalNotes = getDefaultRequiredVal("", loaDetail?.comment);
   const vehicleType = getDefaultRequiredVal(DEFAULT_VEHICLE_TYPE, loaDetail?.vehicleType);
-  const vehicleSubtype = getDefaultRequiredVal("", loaDetail?.vehicleSubtype);
+  const vehicleSubtype = getDefaultRequiredVal(
+    DEFAULT_EMPTY_SELECT_VALUE,
+    loaDetail?.vehicleSubType,
+  );
 
   const defaultFile = loaDetail?.documentId ? {
     fileName: getDefaultRequiredVal("", loaDetail?.fileName),
@@ -112,7 +116,7 @@ export const serializeLOAFormData = (loaFormData: LOAFormData) => {
     comment: getDefaultRequiredVal("", loaFormData.additionalNotes),
     loaPermitType: permitTypes,
     vehicleType: loaFormData.vehicleType,
-    vehicleSubtype: loaFormData.vehicleSubtype,
+    vehicleSubType: loaFormData.vehicleSubtype,
   };
 
   if (loaFormData.uploadFile instanceof File) {

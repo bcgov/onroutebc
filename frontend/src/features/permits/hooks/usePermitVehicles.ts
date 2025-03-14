@@ -107,7 +107,7 @@ export const usePermitVehicles = (
       .filter(vehicle => vehicle.vehicleType === VEHICLE_TYPES.TRAILER) as Trailer[];
   
     const allowedLOASubtypes = new Set([
-      ...selectedLOAs.map((selectedLOA) => selectedLOA.vehicleSubtype),
+      ...selectedLOAs.map((selectedLOA) => selectedLOA.vehicleSubType),
     ]);
   
     // Check if selected vehicle is an LOA vehicle

@@ -25,7 +25,7 @@ export const getAllowedVehicles = (
       const trailer = vehicle as Trailer;
       return loas.some(loa => (
         trailer.vehicleType === loa.vehicleType
-        && trailer.trailerTypeCode === loa.vehicleSubtype
+        && trailer.trailerTypeCode === loa.vehicleSubType
       )) || (
         eligibleSubtypes.has(trailer.trailerTypeCode)
           && restrictions.every(restriction => restriction(trailer))
@@ -35,7 +35,7 @@ export const getAllowedVehicles = (
     const powerUnit = vehicle as PowerUnit;
     return loas.some(loa => (
       powerUnit.vehicleType === loa.vehicleType
-      && powerUnit.powerUnitTypeCode === loa.vehicleSubtype
+      && powerUnit.powerUnitTypeCode === loa.vehicleSubType
     )) || (
       eligibleSubtypes.has(powerUnit.powerUnitTypeCode)
         && restrictions.every(restriction => restriction(powerUnit))

@@ -105,7 +105,7 @@ export const getUpdatedLOASelection = (
         expiryDate: loa.expiryDate,
         loaPermitType: loa.loaPermitType,
         vehicleType: loa.vehicleType,
-        vehicleSubtype: loa.vehicleSubtype,
+        vehicleSubType: loa.vehicleSubType,
         originalLoaId: loa.originalLoaId,
         previousLoaId: loa.previousLoaId,
       },

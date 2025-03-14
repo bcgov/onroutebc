@@ -17,7 +17,13 @@ import { UploadedFile } from "../../../../components/SpecialAuthorizations/LOA/u
 import { UploadInput } from "../../../../components/SpecialAuthorizations/LOA/upload/UploadInput";
 import { applyWhenNotNullable } from "../../../../../../common/helpers/util";
 import { DeleteConfirmationDialog } from "../../../../../../common/components/dialog/DeleteConfirmationDialog";
-import { VEHICLE_TYPE_OPTIONS, VEHICLE_TYPES, VehicleSubType, VehicleType } from "../../../../../manageVehicles/types/Vehicle";
+import {
+  VEHICLE_TYPE_OPTIONS,
+  VEHICLE_TYPES,
+  VehicleSubType,
+  VehicleType,
+} from "../../../../../manageVehicles/types/Vehicle";
+
 import {
   CustomDatePicker,
   PAST_START_DATE_STATUSES,
@@ -32,6 +38,7 @@ import {
   uploadSizeExceeded,
 } from "../../../../../../common/helpers/validationMessages";
 import { useMemoizedArray } from "../../../../../../common/hooks/useMemoizedArray";
+import { DEFAULT_EMPTY_SELECT_VALUE, DEFAULT_SELECT_OPTIONS } from "../../../../../../common/constants/constants";
 
 const FEATURE = "loa";
 
@@ -121,23 +128,29 @@ export const LOABasicInfo = ({
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
 
   const powerUnitSubtypeOptions = useMemoizedArray(
-    powerUnitSubtypes.map(({ typeCode, type }) => ({
-      value: typeCode,
-      label: type,
-    })).toSorted(
-      (subtype1, subtype2) => subtype1.label.localeCompare(subtype2.label),
-    ),
+    [
+      ...DEFAULT_SELECT_OPTIONS,
+      ...powerUnitSubtypes.map(({ typeCode, type }) => ({
+        value: typeCode,
+        label: type,
+      })).toSorted(
+        (subtype1, subtype2) => subtype1.label.localeCompare(subtype2.label),
+      ),
+    ],
     (subtype) => subtype.value,
     (subtype1, subtype2) => subtype1.value === subtype2.value,
   );
 
   const trailerSubtypeOptions = useMemoizedArray(
-    trailerSubtypes.map(({ typeCode, type }) => ({
-      value: typeCode,
-      label: type,
-    })).toSorted(
-      (subtype1, subtype2) => subtype1.label.localeCompare(subtype2.label),
-    ),
+    [
+      ...DEFAULT_SELECT_OPTIONS,
+      ...trailerSubtypes.map(({ typeCode, type }) => ({
+        value: typeCode,
+        label: type,
+      })).toSorted(
+        (subtype1, subtype2) => subtype1.label.localeCompare(subtype2.label),
+      ),
+    ],
     (subtype) => subtype.value,
     (subtype1, subtype2) => subtype1.value === subtype2.value,
   );
@@ -155,13 +168,16 @@ export const LOABasicInfo = ({
   const neverExpires = watch("neverExpires");
   const uploadFile = watch("uploadFile");
   const selectedVehicleType = watch("vehicleType");
-  const selectedVehicleSubtype = watch("vehicleSubtype");
   const [subtypeOptions, setSubtypeOptions] = useState<{
     label: string;
     value: string;
-  }[]>([]);
+  }[]>(
+    selectedVehicleType === VEHICLE_TYPES.TRAILER
+      ? trailerSubtypeOptions
+      : powerUnitSubtypeOptions,
+  );
 
-  // whenever the vehicleType changes (whether on first render or user action)
+  // Whenever the vehicleType changes (whether on first render or user action)
   // update the vehicle subtype dropdown accordingly
   useEffect(() => {
     if (selectedVehicleType === VEHICLE_TYPES.TRAILER) {
@@ -174,23 +190,6 @@ export const LOABasicInfo = ({
     trailerSubtypeOptions,
     powerUnitSubtypeOptions,
   ]);
-
-  // Whenever the subtype dropdown options change, always check the existing selected subtype
-  // If there are new dropdown options, and the existing subtype is found in these options
-  // then update the subtype to be the first subtype option in the updated dropdown list
-  useEffect(() => {
-    if (
-      subtypeOptions.length > 0
-      && !subtypeOptions.find(({ value }) => value === selectedVehicleSubtype)
-    ) {
-      const updatedSubtype = subtypeOptions.length > 0 ? subtypeOptions[0].value : "";
-      
-      setValue(
-        "vehicleSubtype",
-        updatedSubtype,
-      );
-    }
-  }, [subtypeOptions, selectedVehicleSubtype]);
 
   const fileExists = Boolean(uploadFile);
   const fileName = applyWhenNotNullable(
@@ -251,7 +250,12 @@ export const LOABasicInfo = ({
 
   const handleChangeVehicleType = (e: SelectChangeEvent) => {
     setValue("vehicleType", e.target.value as VehicleType);
+    setValue("vehicleSubtype", DEFAULT_EMPTY_SELECT_VALUE);
   };
+
+  const isValidVehicleSubtype = (subtype: string) =>
+    subtype !== DEFAULT_EMPTY_SELECT_VALUE
+    && subtypeOptions.map(({ value }) => value).includes(subtype);
 
   return (
     <div className="loa-basic-info">
@@ -390,6 +394,9 @@ export const LOABasicInfo = ({
               name: "vehicleSubtype",
               rules: {
                 required: { value: true, message: requiredMessage() },
+                validate: {
+                  nonEmpty: (value) => isValidVehicleSubtype(value) || requiredMessage(),
+                },
               },
               label: "Vehicle Sub-type",
             }}

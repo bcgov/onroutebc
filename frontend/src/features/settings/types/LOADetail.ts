@@ -13,7 +13,7 @@ export interface LOADetail {
   loaPermitType: PermitType[];
   comment?: Nullable<string>;
   vehicleType: VehicleType;
-  vehicleSubtype: string;
+  vehicleSubType: string;
   originalLoaId: number;
   previousLoaId?: Nullable<number>;
 }
