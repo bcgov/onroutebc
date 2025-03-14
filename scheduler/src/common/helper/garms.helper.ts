@@ -25,8 +25,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { InternalServerErrorException, Logger } from '@nestjs/common';
 
-export const deleteLocalFile =  (fileName: string,logger: Logger) => {
-  console.log('deleting file: ',fs.readFileSync(fileName))
+export const deleteLocalFile = (fileName: string, logger: Logger) => {
+  console.log('deleting file: ', fs.readFileSync(fileName));
   fs.rm(fileName, (err) => {
     try {
       if (err) throw err;
@@ -38,8 +38,8 @@ export const deleteLocalFile =  (fileName: string,logger: Logger) => {
   });
 };
 
-export const appendTofile =  (fileName: string,data:string) => {
-  fs.appendFile(fileName,data, (err) => {
+export const appendTofile = (fileName: string, data: string) => {
+  fs.appendFile(fileName, data, (err) => {
     if (err)
       try {
         if (err) throw err;
@@ -191,9 +191,8 @@ export const createGarmsCashFileDetails = (
     gcd.voidInd = VOID_IND;
     gcd.f1 = GARMS_CASH_FILLER;
     const details = Object.values(gcd).join('');
-    fs.appendFile(fileName, details + '\n',(err)=>{
-      if (err)
-        throw new InternalServerErrorException(err);
+    fs.appendFile(fileName, details + '\n', (err) => {
+      if (err) throw new InternalServerErrorException(err);
     });
   });
 };

@@ -5,7 +5,7 @@ import { GarmsService } from './garms.service';
 export class GarmsController {
   constructor(private readonly garmsService: GarmsService) {}
   @Get()
-  findAll() {
-    return this.garmsService.processCashTransactions();
+  async findAll() {
+    await this.garmsService.processCashTransactions();
   }
 }

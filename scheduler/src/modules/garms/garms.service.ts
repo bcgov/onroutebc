@@ -16,13 +16,14 @@ import {
   GARMS_CREDIT_FILE_TRANSACTION_TYPE,
 } from 'src/common/enum/payment-method-type.enum';
 import { PermitType } from '../common/entities/permit-type.entity';
-import { createGarmsCashFile, deleteLocalFile } from 'src/common/helper/garms.helper';
+import { createGarmsCashFile } from 'src/common/helper/garms.helper';
 import {
   GARMS_CASH_FILE_LOCATION,
   GARMS_CASH_FILE_LRECL,
 } from 'src/common/constants/garms.constant';
 import { Cron } from '@nestjs/schedule';
 import { getToDateForGarms } from 'src/common/helper/date-time.helper';
+import * as fs from 'fs';
 
 @Injectable()
 export class GarmsService {
@@ -40,7 +41,7 @@ export class GarmsService {
   ) {}
   @Cron(`${process.env.GARMS_CASH_FILE_INTERVAL || '0 */30 * * * *'}`)
   async processCashTransactions() {
-   const garmsExtractType = GarmsExtractType.CASH
+    const garmsExtractType = GarmsExtractType.CASH;
     const toTimestamp = getToDateForGarms();
     const oldFile = await this.getOldFile(garmsExtractType, toTimestamp);
     if (oldFile) {
@@ -66,7 +67,7 @@ export class GarmsService {
         const recordLength = GARMS_CASH_FILE_LRECL;
         await this.upload(fileName, recordLength, remoteFilePath);
         await this.saveTransactionIds(transactions, fileId);
-        deleteLocalFile(fileName,this.logger);
+        fs.rmSync(fileName);
       } else {
         this.logger.log('No data to process for GARMS cash file');
       }
@@ -193,7 +194,7 @@ export class GarmsService {
       const newFile = new GarmsExtractFile();
       newFile.fromTimestamp = latestFile.toTimestamp;
       newFile.toTimestamp = toTimestamp;
-      newFile.fileSubmitTimestamp=null;
+      newFile.fileSubmitTimestamp = null;
       newFile.garmsExtractType = garmsExtractType;
 
       const savedFile = await this.garmsExtractFileRepository.save(newFile);
@@ -280,32 +281,36 @@ export class GarmsService {
    * @param recordLength
    * @param remoteFilePath
    */
-  upload(fileName: string, recordLength: number, remoteFilePath: string):Promise<void> {
+  upload(
+    fileName: string,
+    recordLength: number,
+    remoteFilePath: string,
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
-    const options: FTPS.FTPOptions = {
-      host: process.env.GARMS_HOST,
-      username: process.env.GARMS_USER,
-      password: process.env.GARMS_PWD,
-      // additinal settings for lftp command.
-      additionalLftpCommands:
-        'set cache:enable no;set ftp:passive-mode on;set ftp:use-size no;set ftp:ssl-protect-data yes;set ftp:ssl-force yes;set ftps:initial-prot "P";set net:connection-limit 1;set net:max-retries 1;debug 3;', // Additional commands to pass to lftp, splitted by ';'
-    };
-    const ftps: FTPS = new FTPS(options);
-    try {
-      const localFilePath = fileName;
-      // Each ftps.raw command makes a new connection. So send site settings and file in the same command.
-      // It makes sure that site settings are persisted with put command
-      ftps.raw(
-        `SITE LRecl=${recordLength} ; put -a ${localFilePath} -o "'${remoteFilePath}'"`,
-      );
-      ftps.pwd().exec(console.log);
-      resolve();
-    } catch (e) {
-      reject(e);
-      throw new InternalServerErrorException(e);
-    } finally {
-      ftps.raw('quit');
-    }
-  });
+      const options: FTPS.FTPOptions = {
+        host: process.env.GARMS_HOST,
+        username: process.env.GARMS_USER,
+        password: process.env.GARMS_PWD,
+        // additinal settings for lftp command.
+        additionalLftpCommands:
+          'set cache:enable no;set ftp:passive-mode on;set ftp:use-size no;set ftp:ssl-protect-data yes;set ftp:ssl-force yes;set ftps:initial-prot "P";set net:connection-limit 1;set net:max-retries 1;debug 3;', // Additional commands to pass to lftp, splitted by ';'
+      };
+      const ftps: FTPS = new FTPS(options);
+      try {
+        const localFilePath = fileName;
+        // Each ftps.raw command makes a new connection. So send site settings and file in the same command.
+        // It makes sure that site settings are persisted with put command
+        ftps.raw(
+          `SITE LRecl=${recordLength} ; put -a ${localFilePath} -o "'${remoteFilePath}'"`,
+        );
+        ftps.pwd().exec(console.log);
+        resolve();
+      } catch (e) {
+        reject(e);
+        throw new InternalServerErrorException(e);
+      } finally {
+        ftps.raw('quit');
+      }
+    });
   }
 }
