@@ -24,16 +24,21 @@ export interface ApiErrorResponse {
  * The names of onRouteBC forms, used in classNames and determining which fields to show in reusable/shared forms
  */
 export const ORBC_FORM_FEATURES = {
+  ADD_USER: "add-user",
   AMEND_PERMIT: "amend-permit",
   APPLICATION: "application",
   CLIENT_SEARCH: "client-search",
+  CLOSE_CREDIT_ACCOUNT: "close-credit-account",
   COMPANY_INFORMATION_WIZARD: "company-information-wizard",
   COMPANY_PROFILE: "company-profile",
+  HOLD_CREDIT_ACCOUNT: "hold-credit-account",
   LOA: "loa",
   MY_INFORMATION: "my-information",
   MY_INFORMATION_WIZARD: "my-information-wizard",
   PERMIT_RESEND: "permit-resend",
   POWER_UNIT: "power-unit",
+  REJECT_APPLICATION: "reject-application",
+  SUSPEND_ACCOUNT: "suspend-account",
   TEST_FEATURE: "test-feature",
   TRAILER: "trailer",
   USER_INFORMATION: "user-information",

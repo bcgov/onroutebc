@@ -7,6 +7,7 @@ import { SpecificRouteDetails } from "./SpecificRouteDetails";
 import { HighwaySequences } from "./HighwaySequences";
 import {
   Nullable,
+  ORBCFormFeatureType,
   RequiredOrNull,
 } from "../../../../../../../common/types/common";
 
@@ -22,7 +23,7 @@ export const TripDetailsSection = ({
   onUpdateTripDestination,
   onUpdateTotalDistance,
 }: {
-  feature: string;
+  feature: ORBCFormFeatureType;
   permitType: PermitType;
   highwaySequence: string[];
   tripOrigin?: Nullable<string>;

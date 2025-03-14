@@ -7,7 +7,10 @@ import { requiredMessage } from "../../../../../../../common/helpers/validationM
 import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
 import { Autocomplete } from "../../../../../../../common/components/form/subFormComponents/Autocomplete";
 import { Controller, useFormContext } from "react-hook-form";
-import { Nullable } from "../../../../../../../common/types/common";
+import {
+  Nullable,
+  ORBCFormFeatureType,
+} from "../../../../../../../common/types/common";
 import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
 import { ApplicationFormData } from "../../../../../types/application";
 import { ChangeCommodityTypeDialog } from "./ChangeCommodityTypeDialog";
