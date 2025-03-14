@@ -26,6 +26,8 @@ import { getToDateForGarms } from 'src/common/helper/date-time.helper';
 import * as fs from 'fs';
 import path from 'path';
 import { Nullable } from 'src/common/types/common';
+import { v4 as uuidv4 } from 'uuid';
+
 
 @Injectable()
 export class GarmsService {
@@ -287,13 +289,16 @@ export class GarmsService {
    * @param remoteFilePath
    */
   upload(
-    fileData: string,
+    data: string,
     recordLength: number,
     remoteFilePath: string,
   ){
     const username = process.env.GARMS_USER;
     const password = process.env.GARMS_PWD;
-    if(username && password){      
+    if(username && password){  
+      const tempFileName = `temp-${uuidv4()}.txt`; // Unique temp file name
+        const tempFilePath = path.join('/tmp', tempFileName);
+      fs.writeFileSync(tempFilePath, data);    
       const options: FTPS.FTPOptions = {
         host: process.env.GARMS_HOST,
         username: process.env.GARMS_USER,
@@ -304,18 +309,18 @@ export class GarmsService {
       };
       const ftps: FTPS = new FTPS(options);
       try {
-        this.logger.log('file data is ',fileData);
-        const localFilePath = Buffer.from(fileData);
+        const localFilePath = fileName;
         // Each ftps.raw command makes a new connection. So send site settings and file in the same command.
         // It makes sure that site settings are persisted with put command
         ftps.raw(
           `SITE LRecl=${recordLength} ; put -a ${localFilePath} -o "'${remoteFilePath}'"`,
-        ).exec(console.log);
+        ).exec();
       } catch (e) {
         throw new InternalServerErrorException(e);
       } finally {
         ftps.raw('quit');
       }
+      fs.unlinkSync(tempFilePath);
     }
     else{
       this.logger.log('Unable to get username and password for ftp server')
