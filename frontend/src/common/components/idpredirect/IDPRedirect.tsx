@@ -5,28 +5,29 @@ import { useAuth } from "react-oidc-context";
 import { InitialLandingPage } from "../../../features/homePage/InitialLandingPage";
 
 const IDPRedirect = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { signinRedirect } = useAuth();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const { signinRedirect } = useAuth();
 
-  useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    const paramValue = searchParams.get("idpHint");
+    useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        const paramValue = searchParams.get('idpHint');
 
-    switch (paramValue) {
-      case IDPS.IDIR:
-      case IDPS.BCEID:
-        signinRedirect({
-          extraQueryParams: { kc_idp_hint: paramValue },
-        });
-        break;
+        switch(paramValue) {
+            case IDPS.IDIR:
+            case IDPS.BCEID:
+            case IDPS.BUSINESS_BCEID:
+                signinRedirect({
+                    extraQueryParams: { kc_idp_hint: paramValue },
+                });
+            break;
+            
+            default:
+            break;
+        }
+    }, [navigate, location.search]);
 
-      default:
-        break;
-    }
-  }, [navigate, location.search]);
-
-  return <InitialLandingPage />;
+    return <InitialLandingPage />;
 };
 
 export default IDPRedirect;
