@@ -34,12 +34,12 @@ import {
   VEHICLE_TYPES,
   Vehicle,
   VehicleType,
+  VEHICLE_TYPE_OPTIONS,
 } from "../../../../../../manageVehicles/types/Vehicle";
 
 import {
   CHOOSE_FROM_OPTIONS,
   VEHICLE_CHOOSE_FROM,
-  VEHICLE_TYPE_OPTIONS,
   VehicleChooseFrom,
 } from "../../../../../constants/constants";
 

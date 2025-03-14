@@ -5,6 +5,7 @@ import {
   OneToMany,
   ManyToOne,
   JoinColumn,
+  OneToOne,
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 import { Base } from 'src/modules/common/entities/base.entity';
@@ -88,8 +89,8 @@ export class LoaDetail extends Base {
   loaPermitTypes: LoaPermitType[];
 
   @AutoMap(() => LoaVehicle)
-  @OneToMany(() => LoaVehicle, (LoaVehicle) => LoaVehicle.loa, {
+  @OneToOne(() => LoaVehicle, (LoaVehicle) => LoaVehicle.loa, {
     cascade: true,
   })
-  loaVehicles: LoaVehicle[];
+  loaVehicle: LoaVehicle;
 }
