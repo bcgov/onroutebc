@@ -26,7 +26,6 @@ import { getToDateForGarms } from 'src/common/helper/date-time.helper';
 import * as fs from 'fs';
 import path from 'path';
 import { Nullable } from 'src/common/types/common';
-import { v4 as uuidv4 } from 'uuid';
 
 
 @Injectable()
@@ -296,7 +295,7 @@ export class GarmsService {
     const username = process.env.GARMS_USER;
     const password = process.env.GARMS_PWD;
     if(username && password){  
-      const tempFileName = `temp-${uuidv4()}.txt`; // Unique temp file name
+      const tempFileName = `temp-${Date.now()}.txt`; // Unique temp file name
         const tempFilePath = path.join('/tmp', tempFileName);
       fs.writeFileSync(tempFilePath, data);    
       const options: FTPS.FTPOptions = {
