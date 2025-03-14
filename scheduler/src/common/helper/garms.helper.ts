@@ -60,7 +60,7 @@ export const createGarmsCashFile = (
     const fileName = path.join('/tmp', 'GARMS_CASH_FILE_' + datetime);
     const groupedTransactionsByDate: DateTransaction[] =
       groupTransactionsByDate(transactions);
-    let fileData:string =null;
+    let fileData ='';
     if (groupTransactionsByDate && groupedTransactionsByDate.length > 0) {
       groupedTransactionsByDate.forEach((transactionByDate) => {
         const permitTypeAmounts = new Map<number, number>();
@@ -91,7 +91,7 @@ export const createGarmsCashFile = (
           transactionByDate.date,
           fileName,
         );
-        fileData = header + details;
+        fileData = fileData + header + details;
       });
       
       return fileData;
@@ -168,7 +168,7 @@ export const createGarmsCashFileDetails = (
   fileName: string,
 ) => {
   let seqNumber = 0;
-  let details:string =null;
+  let details ='';
   permitTypeAmounts.forEach((value, key) => {
     seqNumber = seqNumber + 1;
     const gcd = new GarmaCashDetail();
