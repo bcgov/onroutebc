@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createOnRouteBCProfile } from "../../manageProfile/apiManager/manageProfileAPI";
 import OnRouteBCContext, {
