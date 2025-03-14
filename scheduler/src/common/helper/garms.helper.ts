@@ -28,16 +28,24 @@ import { InternalServerErrorException, Logger } from '@nestjs/common';
 export const deleteLocalFile =  (fileName: string,logger: Logger) => {
   console.log('deleting file: ',fs.readFileSync(fileName))
   fs.rm(fileName, (err) => {
-    if (err)
-      throw new InternalServerErrorException(err);
-    logger.log('File deleted successfuly');
+    try {
+      if (err) throw err;
+      logger.log('File deleted successfuly');
+    } catch (e) {
+      logger.error(e);
+      throw new InternalServerErrorException(e);
+    }
   });
 };
 
 export const appendTofile =  (fileName: string,data:string) => {
   fs.appendFile(fileName,data, (err) => {
     if (err)
-      throw new InternalServerErrorException(err);
+      try {
+        if (err) throw err;
+      } catch (e) {
+        throw new InternalServerErrorException(e);
+      }
   });
 };
 /**
