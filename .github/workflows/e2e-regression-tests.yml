@@ -72,7 +72,7 @@ jobs:
           - 'bceid-new-term-oversize.cy.js'
           - 'bceid-new-term-overweight.cy.js'
           - 'bceid-update-term-oversize.cy.js'
-          - 'bceid-update-term-oversize-check-price.cy.js'
+          - 'bceid-new-term-oversize-check-price.cy.js'
           - 'bceid-profile.cy.js'
           - 'idir-amend-term-oversize.cy.js'
           # - 'idir-void-term-oversize.cy.js'
