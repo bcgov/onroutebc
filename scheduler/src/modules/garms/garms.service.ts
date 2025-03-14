@@ -312,7 +312,7 @@ export class GarmsService {
       // We use a promise to ensure FTP upload is complete before proceeding
       const uploadPromise = new Promise((resolve, reject) => {
         try {
-          const result = ftps.raw(ftpCommand).exec();
+          const result = ftps.raw(ftpCommand).exec(console.log);
           
           if (result.stderr) {
             reject(new Error(result.stderr));  // If there's an error, reject the promise
