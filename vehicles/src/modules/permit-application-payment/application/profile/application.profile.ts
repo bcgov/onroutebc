@@ -562,8 +562,8 @@ export class ApplicationProfile extends AutomapperProfile {
         forMember(
           (d) => d.vehicleType,
           mapFrom((s) => {
-            if (s?.loa?.loaVehicles) {
-              return s?.loa?.loaVehicles?.at(0)?.powerUnitType
+            if (s?.loa?.loaVehicle) {
+              return s?.loa?.loaVehicle?.powerUnitType
                 ? VehicleType.POWER_UNIT
                 : VehicleType.TRAILER;
             }
@@ -572,10 +572,10 @@ export class ApplicationProfile extends AutomapperProfile {
         forMember(
           (d) => d.vehicleSubType,
           mapFrom((s) => {
-            if (s?.loa?.loaVehicles) {
+            if (s?.loa?.loaVehicle) {
               return (
-                s?.loa?.loaVehicles?.at(0)?.powerUnitType ??
-                s?.loa?.loaVehicles?.at(0)?.trailerType
+                s?.loa?.loaVehicle?.powerUnitType ??
+                s?.loa?.loaVehicle?.trailerType
               );
             }
           }),

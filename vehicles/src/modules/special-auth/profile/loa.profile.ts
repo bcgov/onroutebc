@@ -91,7 +91,7 @@ export class LoaProfile extends AutomapperProfile {
         ),
         //Mapping string aray of power unit ids and trailer ids to LoaVehicle type.
         forMember(
-          (d) => d.loaVehicles,
+          (d) => d.loaVehicle,
           mapWithArguments(
             (
               s,
@@ -103,7 +103,6 @@ export class LoaProfile extends AutomapperProfile {
                 dbActivitydate: Date;
               },
             ) => {
-              const loaVehicles: LoaVehicle[] = new Array<LoaVehicle>();
               const loaVehicle: LoaVehicle = new LoaVehicle();
               if (s.vehicleType === VehicleType.POWER_UNIT) {
                 loaVehicle.powerUnitType = s.vehicleSubType;
@@ -115,9 +114,7 @@ export class LoaProfile extends AutomapperProfile {
                 currentUser,
                 date: dbActivitydate,
               });
-              loaVehicles.push(loaVehicle);
-
-              return loaVehicles;
+              return loaVehicle;
             },
           ),
         ),
@@ -193,7 +190,7 @@ export class LoaProfile extends AutomapperProfile {
         ),
         //Mapping string aray of power unit ids and trailer ids to LoaVehicle type.
         forMember(
-          (d) => d.loaVehicles,
+          (d) => d.loaVehicle,
           mapWithArguments(
             (
               s,
@@ -205,7 +202,6 @@ export class LoaProfile extends AutomapperProfile {
                 dbActivitydate: Date;
               },
             ) => {
-              const loaVehicles: LoaVehicle[] = new Array<LoaVehicle>();
               const loaVehicle: LoaVehicle = new LoaVehicle();
               if (s.vehicleType === VehicleType.POWER_UNIT) {
                 loaVehicle.powerUnitType = s.vehicleSubType;
@@ -217,8 +213,7 @@ export class LoaProfile extends AutomapperProfile {
                 currentUser,
                 date: dbActivitydate,
               });
-              loaVehicles.push(loaVehicle);
-              return loaVehicles;
+              return loaVehicle;
             },
           ),
         ),
@@ -254,7 +249,7 @@ export class LoaProfile extends AutomapperProfile {
         forMember(
           (d) => d.vehicleType,
           mapFrom((s) => {
-            return s?.loaVehicles?.at(0)?.powerUnitType
+            return s?.loaVehicle?.powerUnitType
               ? VehicleType.POWER_UNIT
               : VehicleType.TRAILER;
           }),
@@ -262,10 +257,7 @@ export class LoaProfile extends AutomapperProfile {
         forMember(
           (d) => d.vehicleSubType,
           mapFrom((s) => {
-            return (
-              s?.loaVehicles?.at(0)?.powerUnitType ??
-              s?.loaVehicles?.at(0)?.trailerType
-            );
+            return s?.loaVehicle?.powerUnitType ?? s?.loaVehicle?.trailerType;
           }),
         ),
       );
