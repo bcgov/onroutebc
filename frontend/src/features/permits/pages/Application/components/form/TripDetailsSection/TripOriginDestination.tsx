@@ -10,6 +10,7 @@ import {
 import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
 import {
   Nullable,
+  ORBCFormFeatureType,
   RequiredOrNull,
 } from "../../../../../../../common/types/common";
 import { NumberInput } from "../../../../../../../common/components/form/subFormComponents/NumberInput";
@@ -29,7 +30,7 @@ export const TripOriginDestination = ({
   onUpdateTripDestination,
   onUpdateTotalDistance,
 }: {
-  feature: string;
+  feature: ORBCFormFeatureType;
   permitType: PermitType;
   tripOrigin?: Nullable<string>;
   tripDestination?: Nullable<string>;
