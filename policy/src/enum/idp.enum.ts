@@ -1,5 +1,5 @@
 export enum IDP {
-  BCEID = 'bceidboth',
+  BCEID = 'bceidbusiness',
   IDIR = 'idir',
   SERVICE_ACCOUNT = 'SERVICE_ACCOUNT',
 }
