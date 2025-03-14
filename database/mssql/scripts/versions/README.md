@@ -234,3 +234,6 @@
 - Trigger Enhancements
   - Updated ORBC_LOA_VEHICLES_A_S_IUD_TR to handle new column structure
   - Modified historical record maintenance logic
+
+### Version 64:
+- Update/Config LOA in all permit template files.
