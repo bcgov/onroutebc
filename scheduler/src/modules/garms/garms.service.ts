@@ -295,9 +295,8 @@ export class GarmsService {
     const username = process.env.GARMS_USER;
     const password = process.env.GARMS_PWD;
     if(username && password){  
-      const tempFileName = `temp-${Date.now()}.txt`; // Unique temp file name
-        const tempFilePath = path.join('/tmp', tempFileName);
-      fs.writeFileSync(tempFilePath, data);    
+      const tempFileName = '/tmp/GARMS_CASH_'+Date.now(); // Unique temp file name
+      fs.writeFileSync(tempFileName, data);    
       const options: FTPS.FTPOptions = {
         host: process.env.GARMS_HOST,
         username: process.env.GARMS_USER,
@@ -308,7 +307,7 @@ export class GarmsService {
       };
       const ftps: FTPS = new FTPS(options);
       try {
-        const localFilePath = tempFilePath;
+        const localFilePath = tempFileName;
         // Each ftps.raw command makes a new connection. So send site settings and file in the same command.
         // It makes sure that site settings are persisted with put command
         ftps.raw(
@@ -319,7 +318,7 @@ export class GarmsService {
       } finally {
         ftps.raw('quit');
       }
-      fs.unlinkSync(tempFilePath);
+      fs.unlinkSync(tempFileName);
     }
     else{
       this.logger.log('Unable to get username and password for ftp server')
