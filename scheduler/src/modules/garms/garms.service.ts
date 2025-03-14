@@ -307,19 +307,33 @@ export class GarmsService {
       const ftps: FTPS = new FTPS(options);
       try {
         const localFilePath = tempFileName;
-        // Each ftps.raw command makes a new connection. So send site settings and file in the same command.
-        // It makes sure that site settings are persisted with put command
-        ftps.raw(
-          `SITE LRecl=${recordLength} ; put -a ${localFilePath} -o "'${remoteFilePath}'"`,
-        ).exec(console.log);
-      } catch (e) {
-        throw new InternalServerErrorException(e);
-      } finally {
-        ftps.raw('quit');
-      }
-      await fs.unlink(tempFileName);
+        const ftpCommand = `SITE LRecl=${recordLength}; put -a ${localFilePath} -o '${remoteFilePath}'`;
 
-   
+      // We use a promise to ensure FTP upload is complete before proceeding
+      const uploadPromise = new Promise((resolve, reject) => {
+        try {
+          const result = ftps.raw(ftpCommand).exec();
+          
+          if (result.stderr) {
+            reject(new Error(result.stderr));  // If there's an error, reject the promise
+          } else {
+            resolve(result.stdout);  // If successful, resolve with stdout
+          }
+        } catch (error) {
+          reject(error);  // Catch any errors that occur in the FTP process
+        }
+      });
+
+      // Wait for the upload to complete before proceeding
+      await uploadPromise;
+      // Step 4: Clean up - Delete the temporary file after the upload finishes
+      await fs.unlink(tempFileName);
+      this.logger.log(`Temporary file ${tempFileName} deleted successfully.`);
+
+      } catch (e) {
+        this.logger.error('Error during FTP upload or file operation', e);
+        throw new InternalServerErrorException(e);
+      } 
     }
     else{
       this.logger.log('Unable to get username and password for ftp server')
