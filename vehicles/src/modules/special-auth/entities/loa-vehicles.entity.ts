@@ -2,7 +2,7 @@ import {
   Column,
   Entity,
   JoinColumn,
-  ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
@@ -16,7 +16,7 @@ export class LoaVehicle extends Base {
   loavehicleId: number;
 
   @AutoMap(() => LoaDetail)
-  @ManyToOne(() => LoaDetail, (LoaDetail) => LoaDetail.loaVehicles)
+  @OneToOne(() => LoaDetail, (LoaDetail) => LoaDetail.loaVehicle)
   @JoinColumn({ name: 'LOA_ID' })
   loa: LoaDetail;
 
