@@ -20,6 +20,5 @@ import { PermitType } from '../common/entities/permit-type.entity';
   ],
   controllers: [GarmsController],
   providers: [GarmsService],
-  exports: [GarmsService],
 })
 export class GarmsModule {}

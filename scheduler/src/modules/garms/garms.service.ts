@@ -24,6 +24,8 @@ import {
 import { Cron } from '@nestjs/schedule';
 import { getToDateForGarms } from 'src/common/helper/date-time.helper';
 import * as fs from 'fs';
+import path from 'path';
+import { Nullable } from 'src/common/types/common';
 
 @Injectable()
 export class GarmsService {
@@ -45,7 +47,6 @@ export class GarmsService {
     const toTimestamp = getToDateForGarms();
     const oldFile = await this.getOldFile(garmsExtractType, toTimestamp);
     if (oldFile) {
-      console.log();
       const { fileId, fromTimestamp } = oldFile;
       oldFile.toTimestamp = toTimestamp;
       // Fetch transactions based on the provided timestamps
@@ -54,7 +55,7 @@ export class GarmsService {
         toTimestamp,
         garmsExtractType,
       );
-      if (transactions.length > 0) {
+      if (transactions?.length) {
         const permitServiceCodes = await this.getPermitTypeServiceCodes();
         const fileName = createGarmsCashFile(
           transactions,
@@ -65,7 +66,7 @@ export class GarmsService {
 
         const remoteFilePath = process.env.GARMS_ENV + GARMS_CASH_FILE_LOCATION;
         const recordLength = GARMS_CASH_FILE_LRECL;
-        await this.upload(fileName, recordLength, remoteFilePath);
+        this.upload(fileName, recordLength, remoteFilePath);
         await this.saveTransactionIds(transactions, fileId);
       } else {
         this.logger.log('No data to process for GARMS cash file');
@@ -111,6 +112,8 @@ export class GarmsService {
       { fileId: oldFile.fileId },
       {
         fileSubmitTimestamp: new Date(),
+        updatedDateTime: new Date(),
+        updatedUser: 'dbo',
       },
     );
   }
@@ -141,7 +144,7 @@ export class GarmsService {
    */
   private async findUnsubmittedOldFile(
     transactionType: GarmsExtractType,
-  ): Promise<GarmsExtractFile | null> {
+  ): Promise<Nullable<GarmsExtractFile>> {
     return this.garmsExtractFileRepository.findOne({
       where: {
         fileSubmitTimestamp: IsNull(),
@@ -171,9 +174,12 @@ export class GarmsService {
     toTimestamp: Date,
   ): Promise<GarmsExtractFile> {
     await this.garmsExtractFileRepository.update(
-      { fileId: oldFile.fileId },
+      { fileId: oldFile.fileId,
+       },
       {
         toTimestamp: toTimestamp,
+        updatedDateTime: new Date(),
+        updatedUser: 'dbo',
       },
     );
     return await this.findOne(oldFile.fileId);
@@ -284,8 +290,10 @@ export class GarmsService {
     fileName: string,
     recordLength: number,
     remoteFilePath: string,
-  ): Promise<void> {
-    return new Promise((resolve, reject) => {
+  ){
+    const username = process.env.GARMS_USER;
+    const password = process.env.GARMS_PWD;
+    if(username && password){      
       const options: FTPS.FTPOptions = {
         host: process.env.GARMS_HOST,
         username: process.env.GARMS_USER,
@@ -302,15 +310,53 @@ export class GarmsService {
         ftps.raw(
           `SITE LRecl=${recordLength} ; put -a ${localFilePath} -o "'${remoteFilePath}'"`,
         ).exec(console.log);
-        resolve();
       } catch (e) {
-        reject(e);
         throw new InternalServerErrorException(e);
       } finally {
         ftps.raw('quit');
       }
-      // Delete the file after uploading
-      fs.unlinkSync(fileName);
-    });
+    }
+    else{
+      this.logger.log('Unable to get username and password for ftp server')
+    }
+  }
+  /**
+   * Deletes files older than 5 minutes in the specified directory.
+   * This method will be executed periodically as a cron job.
+   */
+  @Cron('0 20 * * *')  // Run every day at 6 am
+  cleanOldFiles(): void {
+    const directoryPath = '/tmp'; // Specify the directory path here
+
+    try {
+      // Get the current time
+      const currentTime = Date.now();
+
+      // Read all files in the directory
+      const files = fs.readdirSync(directoryPath);
+
+       // Filter files that start with 'GARMS'
+       const garmsFiles = files.filter(file => file.startsWith('GARMS'));
+
+      // Iterate over each file
+      garmsFiles.forEach((fileName) => {
+        const filePath = path.join(directoryPath, fileName);
+
+        // Get the file stats (modification time)
+        const stats = fs.statSync(filePath);
+
+        // Check if the file is older than 5 minutes (5 * 60 * 1000 ms)
+        const fiveMinutesInMillis = 5 * 60 * 1000;
+        const fileAgeInMillis = currentTime - stats.mtimeMs;
+
+        if (fileAgeInMillis > fiveMinutesInMillis) {
+          // File is older than 5 minutes, so delete it
+          fs.rmSync(filePath);
+          this.logger.log(`Deleted file: ${filePath}`);
+        }
+      });
+    } catch (error) {
+      this.logger.error('Error while cleaning files:', error);
+    }
   }
 }

@@ -1,10 +1,11 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
+import { Base } from 'src/modules/common/entities/base.entity';
 import { GarmsExtractType } from 'src/modules/common/enum/garms-extract-type.enum';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'permit.ORBC_GARMS_EXTRACT_FILE' })
-export class GarmsExtractFile {
+export class GarmsExtractFile extends Base{
   @AutoMap()
   @ApiProperty({
     example: '1',
