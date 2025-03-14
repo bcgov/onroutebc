@@ -1,0 +1,11 @@
+@import "../../../themes/orbcStyles";
+
+.non-finance-container {
+  margin-top: 1.5rem;
+  div {
+    font-weight: normal; // Applies to all nested elements
+  }
+  span {
+    font-weight: bold;
+  }
+}
