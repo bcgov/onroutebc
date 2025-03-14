@@ -178,7 +178,7 @@ export const validatePermitDataAgainstLoas = (
  * Steps:
  * 1. Fetches the LOA detail from the repository based on company ID and LOA Number.
  * 2. Ensures the fetched LOA detail is active.
- * 3. Includes relations (company, loaVehicles, loaPermitTypes) in the query.
+ * 3. Includes relations (company, loaVehicle, loaPermitTypes) in the query.
  *
  * @param {number} companyId - ID of the company for which to fetch the LOA detail.
  * @param {number} loaNumber - Number of the LOA to be fetched.
@@ -197,7 +197,7 @@ export const findLoas = async (
       isActive: true,
       company: { companyId },
     },
-    relations: ['company', 'loaVehicles', 'loaPermitTypes'],
+    relations: ['company', 'loaVehicle', 'loaPermitTypes'],
   });
   const readLoaDto = await mapper.mapArrayAsync(
     loaDetails,
