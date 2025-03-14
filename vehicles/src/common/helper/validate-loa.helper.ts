@@ -81,12 +81,11 @@ export const isValidLoa = async (
       mapper,
     );
 
-    const permitVehicleTypeEnum = VehicleType[permitVehicleType] as VehicleType;
     // Validate LOA details and permit data against database entries
     validateLoaDetails(
       readLoaDto,
       permit,
-      permitVehicleTypeEnum,
+      permitVehicleType as VehicleType,
       permitVehicleSubtype,
     );
 
@@ -94,7 +93,7 @@ export const isValidLoa = async (
     validatePermitDataAgainstLoas(
       permitData,
       permit,
-      permitVehicleTypeEnum,
+      permitVehicleType as VehicleType,
       permitVehicleSubtype,
     );
   }
