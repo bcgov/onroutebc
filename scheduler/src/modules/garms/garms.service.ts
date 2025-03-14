@@ -302,8 +302,7 @@ export class GarmsService {
         // It makes sure that site settings are persisted with put command
         ftps.raw(
           `SITE LRecl=${recordLength} ; put -a ${localFilePath} -o "'${remoteFilePath}'"`,
-        );
-        ftps.pwd().exec(console.log);
+        ).exec(console.log);
         resolve();
       } catch (e) {
         reject(e);
