@@ -71,7 +71,7 @@ export const CreateProfileSteps = React.memo(() => {
         firstName: "",
         lastName: "",
         email: "",
-        phone1: "",
+        phone1: getDefaultRequiredVal("", migratedClient?.phone),
         phone1Extension: "",
         phone2: "",
         phone2Extension: "",
