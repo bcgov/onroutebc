@@ -64,7 +64,7 @@ export class GarmsService {
 
         const remoteFilePath = process.env.GARMS_ENV + GARMS_CASH_FILE_LOCATION;
         const recordLength = GARMS_CASH_FILE_LRECL;
-        this.upload(fileName, recordLength, remoteFilePath);
+        await this.upload(fileName, recordLength, remoteFilePath);
         await this.saveTransactionIds(transactions, fileId);
         deleteLocalFile(fileName);
       } else {
@@ -280,7 +280,8 @@ export class GarmsService {
    * @param recordLength
    * @param remoteFilePath
    */
-  upload(fileName: string, recordLength: number, remoteFilePath: string) {
+  upload(fileName: string, recordLength: number, remoteFilePath: string):Promise<void> {
+    return new Promise((resolve, reject) => {
     const options: FTPS.FTPOptions = {
       host: process.env.GARMS_HOST,
       username: process.env.GARMS_USER,
@@ -298,10 +299,13 @@ export class GarmsService {
         `SITE LRecl=${recordLength} ; put -a ${localFilePath} -o "'${remoteFilePath}'"`,
       );
       ftps.pwd().exec(console.log);
+      resolve();
     } catch (e) {
+      reject(e);
       throw new InternalServerErrorException(e);
     } finally {
       ftps.raw('quit');
     }
+  });
   }
 }
