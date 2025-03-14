@@ -67,7 +67,7 @@ export class GarmsService {
         const recordLength = GARMS_CASH_FILE_LRECL;
         await this.upload(fileName, recordLength, remoteFilePath);
         await this.saveTransactionIds(transactions, fileId);
-        fs.rmSync(fileName);
+        fs.rm(fileName,(err));
       } else {
         this.logger.log('No data to process for GARMS cash file');
       }
