@@ -307,7 +307,7 @@ export class GarmsService {
       const ftps: FTPS = new FTPS(options);
       try {
         const localFilePath = tempFileName;
-        const ftpCommand = `SITE LRecl=${recordLength}; put -a ${localFilePath} -o '${remoteFilePath}'`;
+        const ftpCommand = `SITE LRecl=${recordLength}; put -a ${localFilePath} -o "'${remoteFilePath}'"`;
 
       // We use a promise to ensure FTP upload is complete before proceeding
       const uploadPromise = new Promise((resolve, reject) => {
