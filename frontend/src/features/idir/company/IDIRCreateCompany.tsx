@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Box, Button, Stack } from "@mui/material";
 import React, { useContext, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
