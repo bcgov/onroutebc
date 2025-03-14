@@ -287,7 +287,7 @@ export class GarmsService {
    * @param remoteFilePath
    */
   upload(
-    fileName: string,
+    fileData: string,
     recordLength: number,
     remoteFilePath: string,
   ){
@@ -304,7 +304,8 @@ export class GarmsService {
       };
       const ftps: FTPS = new FTPS(options);
       try {
-        const localFilePath = fileName;
+        this.logger.log('file data is ',fileData);
+        const localFilePath = Buffer.from(fileData);
         // Each ftps.raw command makes a new connection. So send site settings and file in the same command.
         // It makes sure that site settings are persisted with put command
         ftps.raw(
