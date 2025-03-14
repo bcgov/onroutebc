@@ -297,6 +297,7 @@ export class GarmsService {
       ftps.raw(
         `SITE LRecl=${recordLength} ; put -a ${localFilePath} -o "'${remoteFilePath}'"`,
       );
+      ftps.pwd().exec(console.log);
     } catch (e) {
       throw new InternalServerErrorException(e);
     } finally {
