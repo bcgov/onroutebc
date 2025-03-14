@@ -10,7 +10,7 @@ import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import { CreateCompanyRequest } from "../../manageProfile/types/manageProfile";
 import { CompanyInformationWizardForm } from "./CompanyInformationWizardForm";
 import { WizardClientBanner } from "./WizardClientBanner";
-import { createProfileMutation } from "../hooks/hooks";
+import { useCreateProfileMutation } from "../hooks/hooks";
 
 /**
  * The company info and user info steps to be shared between
@@ -27,7 +27,7 @@ export const CompanyAndUserInfoSteps = ({
 
   const { user } = useAuth();
 
-  const { mutate: createProfile } = createProfileMutation(setClientNumber);
+  const { mutate: createProfile } = useCreateProfileMutation(setClientNumber);
 
   /**
    * On Click function for the Finish button
@@ -50,9 +50,6 @@ export const CompanyAndUserInfoSteps = ({
       primaryContact: updatedContact,
       adminUser: updatedContact,
     };
-
-    console.log({ data });
-    console.log({ profileToBeCreated });
 
     createProfile(profileToBeCreated);
   };

@@ -84,9 +84,6 @@ export const ChallengeProfileSteps = React.memo(() => {
         clearVerifyClientErrors();
         setActiveStep(() => 1);
 
-        console.log("user from TPS: ", verifiedClient);
-        console.log("user from BCeID: ", user?.profile);
-
         resetCompanyAndUserForm({
           ...defaultCompanyAndUserInfoValues,
           migratedClientHash: getDefaultRequiredVal(
@@ -129,12 +126,10 @@ export const ChallengeProfileSteps = React.memo(() => {
             firstName: getDefaultRequiredVal(
               "",
               verifiedClient?.primaryContact?.firstName,
-              user?.profile.given_name,
             ),
             lastName: getDefaultRequiredVal(
               "",
               verifiedClient?.primaryContact?.lastName,
-              user?.profile.family_name,
             ),
             email: getDefaultRequiredVal("", verifiedClient?.email),
             phone1: getDefaultRequiredVal(

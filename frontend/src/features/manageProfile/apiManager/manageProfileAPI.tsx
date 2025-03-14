@@ -79,7 +79,6 @@ export const createMyOnRouteBCUserProfile = async ({
 }: {
   myInfo: Contact;
 }) => {
-  console.log({ myInfo });
   return await httpPOSTRequest(
     `${MANAGE_PROFILE_API.COMPANIES}/${getCompanyIdFromSession()}/users`,
     replaceEmptyValuesWithNull(myInfo),

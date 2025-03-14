@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createOnRouteBCProfile } from "../../manageProfile/apiManager/manageProfileAPI";
 import OnRouteBCContext, {
@@ -9,7 +10,7 @@ import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { ERROR_ROUTES } from "../../../routes/constants";
 
-export const createProfileMutation = (
+export const useCreateProfileMutation = (
   setClientNumber: Dispatch<SetStateAction<Nullable<string>>>,
 ) => {
   const {
@@ -18,10 +19,8 @@ export const createProfileMutation = (
     setCompanyLegalName,
     setOnRouteBCClientNumber,
     setMigratedClient,
+    isNewBCeIDUser,
   } = useContext(OnRouteBCContext);
-
-  const { userDetails } = useContext(OnRouteBCContext);
-  const isBCeID = Boolean(userDetails?.userRole);
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -39,10 +38,10 @@ export const createProfileMutation = (
         );
 
         // Handle context updates;
-        setCompanyId?.(companyId);
-        setCompanyLegalName?.(legalName);
-        setOnRouteBCClientNumber?.(clientNumber);
-        setClientNumber(clientNumber);
+        setCompanyId?.(() => companyId);
+        setCompanyLegalName?.(() => legalName);
+        setOnRouteBCClientNumber?.(() => clientNumber);
+        setClientNumber(() => clientNumber);
 
         /* By default a newly created company shouldn't be suspended, so no need for setIsCompanySuspended */
 
@@ -52,8 +51,8 @@ export const createProfileMutation = (
          They should instead remain on the page and
          look at the profile created section which contains the client number. */
 
-        // if the user is BCeID then they are claiming/creating their first ORBC profile
-        if (isBCeID) {
+        // if the user is claiming/creating their first ORBC profile
+        if (isNewBCeIDUser) {
           const { adminUser } = response.data;
           const {
             firstName,
@@ -79,10 +78,10 @@ export const createProfileMutation = (
             userRole,
           };
           // Set the user context
-          setUserDetails?.(userDetails);
+          setUserDetails?.(() => userDetails);
           /* Clear any state in migrated client. We no longer need this
         once the user has successfully created/claimed their company. */
-          setMigratedClient?.(undefined);
+          setMigratedClient?.(() => undefined);
           queryClient.invalidateQueries({
             queryKey: ["userContext"],
           });
@@ -90,7 +89,6 @@ export const createProfileMutation = (
       }
     },
     onError: (error: AxiosError) => {
-      console.error(error);
       navigate(ERROR_ROUTES.UNEXPECTED, {
         state: { correlationId: error.response?.headers["x-correlation-id"] },
       });

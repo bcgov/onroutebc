@@ -22,8 +22,8 @@ export const CreateProfileSteps = React.memo(() => {
   const [clientNumber, setClientNumber] =
     React.useState<Nullable<string>>(null);
 
-  console.log("user: ", user?.profile);
-  console.log("migratedClient: ", migratedClient);
+  // console.log("user: ", user?.profile);
+  // console.log("migratedClient: ", migratedClient);
 
   const companyAndUserFormMethods = useForm<CreateCompanyRequest>({
     defaultValues: {

@@ -15,7 +15,7 @@ import { OnRouteBCProfileCreated } from "../../wizard/subcomponents/OnRouteBCPro
 import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { CreateCompanyRequest } from "../../manageProfile/types/manageProfile";
-import { createProfileMutation } from "../../wizard/hooks/hooks";
+import { useCreateProfileMutation } from "../../wizard/hooks/hooks";
 
 /**
  * The form for a staff user to create a company.
@@ -78,7 +78,7 @@ export const IDIRCreateCompany = React.memo(() => {
   });
 
   const { handleSubmit } = companyAndUserFormMethods;
-  const { mutate: createProfile } = createProfileMutation(setClientNumber);
+  const { mutate: createProfile } = useCreateProfileMutation(setClientNumber);
 
   /**
    * On Click function for the Finish button
