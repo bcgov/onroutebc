@@ -45,9 +45,15 @@ import { CfsTransactionDetail } from './entities/cfs-transaction.entity';
 import { CfsFileStatus } from 'src/common/enum/cfs-file-status.enum';
 import {
   isAmendmentApplication,
+  isApplicationInCart,
+  isVoidorRevoked,
   validApplicationDates,
 } from '../../../common/helper/permit-application.helper';
-import { isCfsPaymentMethodType } from 'src/common/helper/payment.helper';
+import {
+  isCfsPaymentMethodType,
+  isTransactionPurchase,
+  isWebTransactionPurchase,
+} from 'src/common/helper/payment.helper';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { CacheKey } from 'src/common/enum/cache-key.enum';
@@ -232,31 +238,6 @@ export class PaymentService {
     return receiptNumber;
   }
 
-  private isTransactionPurchase(transactionType: TransactionType) {
-    return transactionType == TransactionType.PURCHASE;
-  }
-
-  private isWebTransactionPurchase(
-    paymentMethod: PaymentMethodTypeEnum,
-    transactionType: TransactionType,
-  ) {
-    return (
-      paymentMethod == PaymentMethodTypeEnum.WEB &&
-      this.isTransactionPurchase(transactionType)
-    );
-  }
-
-  private isApplicationInCart(permitStatus: ApplicationStatus) {
-    return permitStatus === ApplicationStatus.IN_CART;
-  }
-
-  private isVoidorRevoked(permitStatus: ApplicationStatus) {
-    return (
-      permitStatus === ApplicationStatus.VOIDED ||
-      permitStatus === ApplicationStatus.REVOKED
-    );
-  }
-
   /**
    * Creates a Transaction in ORBC System.
    * @param currentUser - The current user object of type {@link IUserJWT}
@@ -349,8 +330,8 @@ export class PaymentService {
       for (const application of existingApplications) {
         if (
           !(
-            this.isVoidorRevoked(application.permitStatus) ||
-            this.isApplicationInCart(application.permitStatus) ||
+            isVoidorRevoked(application.permitStatus) ||
+            isApplicationInCart(application.permitStatus) ||
             isAmendmentApplication(application)
           )
         )
@@ -425,7 +406,7 @@ export class PaymentService {
           await queryRunner.manager.save(newCfsTransaction);
         }
         if (
-          this.isWebTransactionPurchase(
+          isWebTransactionPurchase(
             newTransaction.paymentMethodTypeCode,
             newTransaction.transactionTypeId,
           )
@@ -439,8 +420,8 @@ export class PaymentService {
 
           await queryRunner.manager.save(existingApplication);
         } else if (
-          this.isTransactionPurchase(newTransaction.transactionTypeId) &&
-          !this.isVoidorRevoked(existingApplication.permitStatus)
+          isTransactionPurchase(newTransaction.transactionTypeId) &&
+          !isVoidorRevoked(existingApplication.permitStatus)
         ) {
           existingApplication.permitStatus = ApplicationStatus.PAYMENT_COMPLETE;
           existingApplication.updatedDateTime = new Date();
@@ -463,7 +444,7 @@ export class PaymentService {
 
       let url: string = undefined;
       if (
-        this.isWebTransactionPurchase(
+        isWebTransactionPurchase(
           createdTransaction.paymentMethodTypeCode,
           createdTransaction.transactionTypeId,
         )
@@ -473,7 +454,7 @@ export class PaymentService {
       }
 
       if (
-        !this.isWebTransactionPurchase(
+        !isWebTransactionPurchase(
           createdTransaction.paymentMethodTypeCode,
           createdTransaction.transactionTypeId,
         )
@@ -927,6 +908,8 @@ export class PaymentService {
         permitId: +permit.permitId,
         transactionSubmitDate:
           permitTransaction.transaction.transactionSubmitDate,
+        transactionApprovedDate:
+          permitTransaction.transaction.transactionApprovedDate,
         pgApproved: permitTransaction.transaction.pgApproved,
       })),
     ) as PermitHistoryDto[];

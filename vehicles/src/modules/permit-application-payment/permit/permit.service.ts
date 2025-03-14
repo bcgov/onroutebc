@@ -458,6 +458,8 @@ export class PermitService {
         permitId: +permit.permitId,
         transactionSubmitDate:
           permitTransaction.transaction.transactionSubmitDate,
+        transactionApprovedDate:
+          permitTransaction.transaction.transactionApprovedDate,
         pgApproved: permitTransaction.transaction.pgApproved,
       })),
     ) as PermitHistoryDto[];

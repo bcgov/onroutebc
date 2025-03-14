@@ -321,8 +321,14 @@ export class DgenService {
       },
     );
 
+    Handlebars.registerHelper('defaultToPending', function (value: string) {
+      return value ?? 'Pending';
+    });
+
     Handlebars.registerHelper('convertUtcToPt', function (utcDate: string) {
-      return convertUtcToPt(utcDate, 'MMM. D, YYYY, hh:mm A Z');
+      return utcDate
+        ? convertUtcToPt(utcDate, 'MMM. D, YYYY, hh:mm A Z')
+        : null;
     });
 
     Handlebars.registerHelper(

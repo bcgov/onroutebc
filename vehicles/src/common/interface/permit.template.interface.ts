@@ -1,6 +1,7 @@
 import { ConditionalLicensingFee } from '../enum/conditional-licensing-fee.enum';
 import { PermitType } from '../enum/permit-type.enum';
 import { ThirdPartyLiability } from '../enum/third-party-liability.enum';
+import { VehicleType } from '../enum/vehicle-type.enum';
 import { Nullable } from '../types/common';
 
 // Data used to populate a .docx template
@@ -129,8 +130,8 @@ export interface Loas {
   loaPermitType: PermitType[];
   startDate: string;
   expiryDate?: Nullable<string>;
-  powerUnits?: Nullable<string[]>;
-  trailers?: Nullable<string[]>;
+  vehicleType: VehicleType;
+  vehicleSubType: string;
   originalLoaId?: Nullable<number>;
   previousLoaId?: Nullable<number>;
 }

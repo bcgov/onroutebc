@@ -31,6 +31,7 @@ import { CreatePermitLoaDto } from '../dto/request/create-permit-loa.dto';
 import { PermitLoa } from '../entities/permit-loa.entity';
 import { ReadPermitLoaDto } from '../dto/response/read-permit-loa.dto';
 import * as dayjs from 'dayjs';
+import { VehicleType } from '../../../../common/enum/vehicle-type.enum';
 
 @Injectable()
 export class ApplicationProfile extends AutomapperProfile {
@@ -559,21 +560,24 @@ export class ApplicationProfile extends AutomapperProfile {
           }),
         ),
         forMember(
-          (d) => d.powerUnits,
+          (d) => d.vehicleType,
           mapFrom((s) => {
-            if (s.loa.loaVehicles)
-              return s.loa.loaVehicles
-                .filter((lv) => lv.powerUnit)
-                .map((lv) => lv.powerUnit);
+            if (s?.loa?.loaVehicle) {
+              return s?.loa?.loaVehicle?.powerUnitType
+                ? VehicleType.POWER_UNIT
+                : VehicleType.TRAILER;
+            }
           }),
         ),
         forMember(
-          (d) => d.trailers,
+          (d) => d.vehicleSubType,
           mapFrom((s) => {
-            if (s.loa.loaVehicles)
-              return s.loa.loaVehicles
-                .filter((lv) => lv.trailer)
-                .map((lv) => lv.trailer);
+            if (s?.loa?.loaVehicle) {
+              return (
+                s?.loa?.loaVehicle?.powerUnitType ??
+                s?.loa?.loaVehicle?.trailerType
+              );
+            }
           }),
         ),
       );

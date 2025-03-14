@@ -277,3 +277,14 @@ export const validApplicationDates = (
   const { startDate, expiryDate } = application.permitData;
   return startDate >= todayPacific && startDate <= expiryDate;
 };
+
+export const isApplicationInCart = (permitStatus: ApplicationStatus) => {
+  return permitStatus === ApplicationStatus.IN_CART;
+};
+
+export const isVoidorRevoked = (permitStatus: ApplicationStatus) => {
+  return (
+    permitStatus === ApplicationStatus.VOIDED ||
+    permitStatus === ApplicationStatus.REVOKED
+  );
+};
