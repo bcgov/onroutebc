@@ -309,15 +309,8 @@ export class GarmsService {
       } finally {
         ftps.raw('quit');
       }
-      fs.rm(fileName,(err)=>{
-        try {
-          if (err) throw err;
-          this.logger.log('File deleted successfuly');
-        } catch (e) {
-          this.logger.error(e);
-          throw new InternalServerErrorException(e);
-        }
-      });
+      // Delete the file after uploading
+      fs.unlinkSync(fileName);
     });
   }
 }
