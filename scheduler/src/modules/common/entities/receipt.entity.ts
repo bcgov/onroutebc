@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
-import { Base } from '../../common/entities/base.entity';
+import { Base } from './base.entity';
 import { Transaction } from './transaction.entity';
 
 @Entity({ name: 'permit.ORBC_RECEIPT' })

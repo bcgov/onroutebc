@@ -17,8 +17,8 @@ sqlcmd -C -U ${ORBC_USER} -P "${ORBC_PASS}" -S ${ORBC_SERVER} -d ${ORBC_DATABASE
 for i in ${PAYBC_GL_CODE}
 do 
 	IFS=","; set -- $i
-	echo "Updating permit type ${1} with GL_CODE ${2}"
-  sqlcmd -C -U ${ORBC_USER} -P "${ORBC_PASS}" -S ${ORBC_SERVER} -d ${ORBC_DATABASE} -v PERMIT_TYPE=${1} GL_CODE=${2} -i ${SCRIPT_DIR}/sampledata/permit.ORBC_PERMIT_TYPE.Table.sql
+	echo "Updating permit type ${1} with GL_CODE ${2} and SERVICE_CODE ${3}"
+  sqlcmd -C -U ${ORBC_USER} -P "${ORBC_PASS}" -S ${ORBC_SERVER} -d ${ORBC_DATABASE} -v PERMIT_TYPE=${1} GL_CODE=${2} SERVICE_CODE=${3} -i ${SCRIPT_DIR}/sampledata/permit.ORBC_PERMIT_TYPE.Table.sql
 done
 )
 

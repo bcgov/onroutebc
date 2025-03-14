@@ -14,7 +14,7 @@ import { lastValueFrom, map } from 'rxjs';
 import { getAccessToken } from 'src/common/helper/gov-common-services.helper';
 import { GovCommonServices } from 'src/common/enum/gov-common-services.enum';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Permit } from './entities/permit.entity';
+import { Permit } from 'src/modules/common/entities/permit.entity';
 import { Repository } from 'typeorm';
 import { ApplicationStatus } from '../common/enum/application-status.enum';
 import { PermitIdDto } from './dto/permit-id.dto';

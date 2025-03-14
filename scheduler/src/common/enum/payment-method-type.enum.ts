@@ -33,3 +33,20 @@ export const CfsPaymentMethodType = {
   [PaymentMethodType.CASH]: PaymentMethodType.CASH,
   [PaymentMethodType.CHEQUE]: PaymentMethodType.CHEQUE,
 } as const;
+
+/**
+ * Transaction type eligible for GARMS Cash file
+ */
+export const GARMS_CASH_FILE_TRANSACTION_TYPE: readonly PaymentMethodType[] = [
+  PaymentMethodType.CASH,
+  PaymentMethodType.CHEQUE,
+  PaymentMethodType.GA,
+  PaymentMethodType.ICEPAY,
+  PaymentMethodType.POS,
+];
+
+/**
+ * Transaction type eligible for GARMS Credit file
+ */
+export const GARMS_CREDIT_FILE_TRANSACTION_TYPE: readonly PaymentMethodType[] =
+  [PaymentMethodType.ACCOUNT];

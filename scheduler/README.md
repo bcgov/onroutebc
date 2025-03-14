@@ -44,6 +44,12 @@ LOCAL_SHARE_FOLDER=C:\\Users\\<username>\\.ssh\\share
 SFTP_SHARE_FOLDER=/home/f3535t/data
 LOCAL_PUBLIC_KEY_LOCATION=<public key folder location on your local machine>
 SFTP_PUBLIC_KEY_LOCATION=/home/f3535t/.ssh/keys/cfs_key.pub:ro
+GARMS_HOST=bcsc01.gov.bc.ca
+GARMS_USER=
+GARMS_PWD=
+GARMS_ENV=GARMD
+GARMS_CASH_FILE_INTERVAL='0 0 20 * * *'
+GARMS_CREDIT_FILE_INTERVAL='0 0 20 * * *'
 
 ```
 

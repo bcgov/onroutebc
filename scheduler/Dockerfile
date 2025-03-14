@@ -1,6 +1,9 @@
 #  Build container
 FROM node:22.14.0-alpine AS builder
 
+#install lftp for sending file to GARMS mainframe
+RUN apk update && apk add --no-cache lftp 
+
 # Set the working directory to /app inside the container
 WORKDIR /app
 
@@ -19,6 +22,10 @@ RUN npm prune --production
 
 # Deployment container
 FROM node:22.14.0-alpine
+
+#install lftp for sending file to GARMS mainframe
+RUN apk update && apk add --no-cache lftp
+
 RUN npm cache clean --force
 
 # Create and Assign permissions to npm folder
