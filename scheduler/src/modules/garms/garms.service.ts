@@ -317,8 +317,9 @@ export class GarmsService {
         throw new InternalServerErrorException(e);
       } finally {
         ftps.raw('quit');
+        fs.unlinkSync(tempFileName);
       }
-      fs.unlinkSync(tempFileName);
+   
     }
     else{
       this.logger.log('Unable to get username and password for ftp server')
