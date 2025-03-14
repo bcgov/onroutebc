@@ -2,12 +2,9 @@ import { Box, Button, Stack } from "@mui/material";
 import React, { useContext, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-
 import "./IDIRCreateCompany.scss";
 import { Nullable } from "../../../common/types/common";
-import { InfoBcGovBanner } from "../../../common/components/banners/InfoBcGovBanner";
 import { Banner } from "../../../common/components/dashboard/components/banner/Banner";
-import { BANNER_MESSAGES } from "../../../common/constants/bannerMessages";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import { CompanyInformationWizardForm } from "../../wizard/subcomponents/CompanyInformationWizardForm";
 import { OnRouteBCProfileCreated } from "../../wizard/subcomponents/OnRouteBCProfileCreated";

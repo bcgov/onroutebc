@@ -1,5 +1,4 @@
 import isEmail from "validator/lib/isEmail";
-
 import "./CompanyPrimaryContactForm.scss";
 import { CountryAndProvince } from "../../../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../../../common/components/form/CustomFormComponents";
