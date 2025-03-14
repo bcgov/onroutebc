@@ -13,6 +13,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, AuthProviderProps } from "react-oidc-context";
 import { WebStorageStateStore } from "oidc-client-ts";
 
+
 import "./App.scss";
 import { Header } from "./common/components/header/Header";
 import { Footer } from "./common/components/footer/Footer";
