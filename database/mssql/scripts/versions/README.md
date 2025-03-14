@@ -217,3 +217,23 @@
   - Updated ORBC_TXN_A_S_IUD_TR to maintain historical records
   - Modified ORBC_TXN_I_S_U_TR for proper update handling
 
+### Version 63:
+- Database Schema Updates
+  - Replaced ID-based relationships with type-based categorization for power units and trailers in ORBC_LOA_VEHICLES
+- Downtime Required - Yes
+- Data patch script for existing records - N/A as there is no data in the table in the PRODUCTION DB
+- Technical Details
+ - Column Specifications:
+  - ADD - POWER_UNIT_TYPE: char(7), Nullable
+  - ADD - TRAILER_TYPE: char(7), Nullable
+  - DROP - POWER_UNIT_ID: bigint, Nullable
+  - DROP - TRAILER_ID: bigint, Nullable
+- Tables Modified:
+  - permit.ORBC_LOA_VEHICLES
+  - permit.ORBC_LOA_VEHICLES_HIST
+- Trigger Enhancements
+  - Updated ORBC_LOA_VEHICLES_A_S_IUD_TR to handle new column structure
+  - Modified historical record maintenance logic
+
+### Version 64:
+- Update/Config LOA in all permit template files.

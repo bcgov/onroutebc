@@ -9,6 +9,31 @@ export const VEHICLE_TYPES = {
 
 export type VehicleType = (typeof VEHICLE_TYPES)[keyof typeof VEHICLE_TYPES];
 
+export const DEFAULT_VEHICLE_TYPE = VEHICLE_TYPES.POWER_UNIT;
+
+/**
+ * Gets display text for vehicle type.
+ * @param vehicleType Vehicle type (power unit or trailer)
+ * @returns Display text for the vehicle type
+ */
+export const vehicleTypeDisplayText = (vehicleType: VehicleType) => {
+  if (vehicleType === VEHICLE_TYPES.TRAILER) {
+    return "Trailer";
+  }
+  return "Power Unit";
+};
+
+export const VEHICLE_TYPE_OPTIONS = [
+  {
+    value: VEHICLE_TYPES.POWER_UNIT,
+    label: vehicleTypeDisplayText(VEHICLE_TYPES.POWER_UNIT),
+  },
+  {
+    value: VEHICLE_TYPES.TRAILER,
+    label: vehicleTypeDisplayText(VEHICLE_TYPES.TRAILER),
+  },
+];
+
 /**
  * A base vehicle type. This is an incomplete object and meant to be extended for use.
  */
