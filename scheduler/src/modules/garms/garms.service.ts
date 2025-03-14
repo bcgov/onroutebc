@@ -67,15 +67,6 @@ export class GarmsService {
         const recordLength = GARMS_CASH_FILE_LRECL;
         await this.upload(fileName, recordLength, remoteFilePath);
         await this.saveTransactionIds(transactions, fileId);
-        fs.rm(fileName,(err)=>{
-          try {
-            if (err) throw err;
-            this.logger.log('File deleted successfuly');
-          } catch (e) {
-            this.logger.error(e);
-            throw new InternalServerErrorException(e);
-          }
-        });
       } else {
         this.logger.log('No data to process for GARMS cash file');
       }
@@ -318,6 +309,15 @@ export class GarmsService {
       } finally {
         ftps.raw('quit');
       }
+      fs.rm(fileName,(err)=>{
+        try {
+          if (err) throw err;
+          this.logger.log('File deleted successfuly');
+        } catch (e) {
+          this.logger.error(e);
+          throw new InternalServerErrorException(e);
+        }
+      });
     });
   }
 }
