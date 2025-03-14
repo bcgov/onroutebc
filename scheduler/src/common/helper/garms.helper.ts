@@ -25,11 +25,21 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { InternalServerErrorException, Logger } from '@nestjs/common';
 
-export const deleteLocalFile = (fileName: string) => {
+export const deleteLocalFile =  (fileName: string,logger: Logger) => {
   console.log('deleting file: ',fs.readFileSync(fileName))
-  fs.unlinkSync(fileName);
+  fs.rm(fileName, (err) => {
+    if (err)
+      throw new InternalServerErrorException(err);
+    logger.log('File deleted successfuly');
+  });
 };
 
+export const appendTofile =  (fileName: string,data:string) => {
+  fs.appendFile(fileName,data, (err) => {
+    if (err)
+      throw new InternalServerErrorException(err);
+  });
+};
 /**
  * Create GARMS CASH file
  * GRAMS cash file containd one heasder record for each date and multiple details record under one header.
@@ -140,7 +150,7 @@ export const createGarmsCashFileHeader = (
   gch.serviceQuantity = formatNumber(getSum(permitTypeCount), 5);
   gch.invQuantity = INV_QTY;
   const header = Object.values(gch).join('');
-  fs.appendFileSync(fileName, header + '\n');
+  appendTofile(fileName, header + '\n');
 };
 
 /**
@@ -173,7 +183,10 @@ export const createGarmsCashFileDetails = (
     gcd.voidInd = VOID_IND;
     gcd.f1 = GARMS_CASH_FILLER;
     const details = Object.values(gcd).join('');
-    fs.appendFileSync(fileName, details + '\n');
+    fs.appendFile(fileName, details + '\n',(err)=>{
+      if (err)
+        throw new InternalServerErrorException(err);
+    });
   });
 };
 
