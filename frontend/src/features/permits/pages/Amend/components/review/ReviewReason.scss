@@ -3,11 +3,3 @@
 @include orbcStyles.permit-main-box-style(".review-reason");
 @include orbcStyles.permit-left-box-style(".review-reason__header");
 @include orbcStyles.permit-right-box-style(".review-reason__body");
-
-.review-reason {
-  padding-bottom: 3rem;
-
-  &__body {
-    padding-top: 3rem;
-  }
-}
