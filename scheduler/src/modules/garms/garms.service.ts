@@ -16,7 +16,7 @@ import {
   GARMS_CREDIT_FILE_TRANSACTION_TYPE,
 } from 'src/common/enum/payment-method-type.enum';
 import { PermitType } from '../common/entities/permit-type.entity';
-import { createGarmsCashFile } from 'src/common/helper/garms.helper';
+import { createGarmsCashFile, deleteLocalFile } from 'src/common/helper/garms.helper';
 import {
   GARMS_CASH_FILE_LOCATION,
   GARMS_CASH_FILE_LRECL,
@@ -66,6 +66,7 @@ export class GarmsService {
         const recordLength = GARMS_CASH_FILE_LRECL;
         this.upload(fileName, recordLength, remoteFilePath);
         await this.saveTransactionIds(transactions, fileId);
+        deleteLocalFile(fileName);
       } else {
         this.logger.log('No data to process for GARMS cash file');
       }

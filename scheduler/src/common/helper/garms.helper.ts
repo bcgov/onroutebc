@@ -26,6 +26,7 @@ import * as path from 'path';
 import { InternalServerErrorException, Logger } from '@nestjs/common';
 
 export const deleteLocalFile = (fileName: string) => {
+  console.log('deleting file: ',fs.readFileSync(fileName))
   fs.rmSync(fileName);
 };
 
