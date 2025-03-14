@@ -1,4 +1,4 @@
-import { Controller, Delete, Get } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { GarmsService } from './garms.service';
 
 @Controller('garms')
@@ -7,9 +7,5 @@ export class GarmsController {
   @Get()
   async findAll() {
     await this.garmsService.processCashTransactions();
-  }
-  @Delete()
-  DeleteOldFile() {
-    this.garmsService.cleanOldFiles();
   }
 }
