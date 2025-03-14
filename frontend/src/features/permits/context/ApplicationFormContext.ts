@@ -7,7 +7,11 @@ import { ApplicationFormData } from "../types/application";
 import { getDefaultValues } from "../helpers/getDefaultApplicationFormData";
 import { DEFAULT_PERMIT_TYPE } from "../types/PermitType";
 import { PowerUnit, Trailer } from "../../manageVehicles/types/Vehicle";
-import { Nullable } from "../../../common/types/common";
+import {
+  Nullable,
+  ORBC_FORM_FEATURES,
+  ORBCFormFeatureType,
+} from "../../../common/types/common";
 import { CompanyProfile } from "../../manageProfile/types/manageProfile.d";
 import {
   PAST_START_DATE_STATUSES,
@@ -26,7 +30,7 @@ interface ApplicationFormContextType {
   powerUnitSubtypeNamesMap: Map<string, string>;
   trailerSubtypeNamesMap: Map<string, string>;
   isLcvDesignated: boolean;
-  feature: string;
+  feature: ORBCFormFeatureType;
   companyInfo?: Nullable<CompanyProfile>;
   isAmendAction: boolean;
   createdDateTime?: Nullable<Dayjs>;
@@ -58,7 +62,7 @@ export const ApplicationFormContext = createContext<ApplicationFormContextType>(
     powerUnitSubtypeNamesMap: new Map<string, string>(),
     trailerSubtypeNamesMap: new Map<string, string>(),
     isLcvDesignated: false,
-    feature: "",
+    feature: ORBC_FORM_FEATURES.APPLICATION,
     companyInfo: undefined,
     isAmendAction: false,
     createdDateTime: undefined,

@@ -3,17 +3,16 @@ import { useEffect, useState } from "react";
 import { FieldValues, FormProvider, useForm } from "react-hook-form";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
 import { requiredMessage } from "../../../../common/helpers/validationMessages";
-import {
-  useGetCompanyQuery
-} from "../../hooks/creditAccount";
+import { useGetCompanyQuery } from "../../hooks/creditAccount";
 import "./AddUser.scss";
 import { AddUserModal } from "./AddUserModal";
+import { ORBC_FORM_FEATURES } from "../../../../common/types/common";
 
 interface SearchClientFormData {
   clientNumber: string;
 }
 
-const FEATURE = "client-search";
+const FEATURE = ORBC_FORM_FEATURES.CLIENT_SEARCH;
 
 export const AddUser = ({
   companyId,

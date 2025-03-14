@@ -9,7 +9,10 @@ import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
 import { InfoBcGovBanner } from "../../../../../../../common/components/banners/InfoBcGovBanner";
 import { BANNER_MESSAGES } from "../../../../../../../common/constants/bannerMessages";
 import { PermitVehicleDetails } from "../../../../../types/PermitVehicleDetails";
-import { Vehicle, VehicleSubType } from "../../../../../../manageVehicles/types/Vehicle";
+import {
+  Vehicle,
+  VehicleSubType,
+} from "../../../../../../manageVehicles/types/Vehicle";
 import { VehicleDetails } from "./VehicleDetails";
 import { PowerUnitInfo } from "./PowerUnitInfo";
 import { AddPowerUnitDialog } from "./AddPowerUnitDialog";
@@ -17,6 +20,7 @@ import { AddTrailer } from "./AddTrailer";
 import { VehicleInConfiguration } from "../../../../../types/PermitVehicleConfiguration";
 import { requiredPowerUnit } from "../../../../../../../common/helpers/validationMessages";
 import { ApplicationFormData } from "../../../../../types/application";
+import { ORBCFormFeatureType } from "../../../../../../../common/types/common";
 
 export const VehicleInformationSection = ({
   permitType,
@@ -35,7 +39,7 @@ export const VehicleInformationSection = ({
   onUpdateVehicleConfigTrailers,
 }: {
   permitType: PermitType;
-  feature: string;
+  feature: ORBCFormFeatureType;
   vehicleFormData: PermitVehicleDetails;
   vehicleOptions: Vehicle[];
   subtypeOptions: VehicleSubType[];
@@ -50,18 +54,24 @@ export const VehicleInformationSection = ({
   onSetSaveVehicle: (saveVehicle: boolean) => void;
   onSetVehicle: (vehicleDetails: PermitVehicleDetails) => void;
   onClearVehicle: (saveVehicle: boolean) => void;
-  onUpdateVehicleConfigTrailers: (updatedTrailerSubtypes: VehicleInConfiguration[]) => void;
+  onUpdateVehicleConfigTrailers: (
+    updatedTrailerSubtypes: VehicleInConfiguration[],
+  ) => void;
 }) => {
   const isSingleTrip = permitType === PERMIT_TYPES.STOS;
-  const infoSectionClassName = `vehicle-information-section__info`
-    + `${isSingleTrip ? " vehicle-information-section__info--single-trip" : ""}`;
+  const infoSectionClassName =
+    `vehicle-information-section__info` +
+    `${isSingleTrip ? " vehicle-information-section__info--single-trip" : ""}`;
 
-  const infoBannerClassName = `vehicle-information-section__info-banner`
-    + `${isSingleTrip ? " vehicle-information-section__info-banner--single-trip" : ""}`;
+  const infoBannerClassName =
+    `vehicle-information-section__info-banner` +
+    `${isSingleTrip ? " vehicle-information-section__info-banner--single-trip" : ""}`;
 
-  const isPowerUnitSelectedForSingleTrip = isSingleTrip && Boolean(vehicleFormData.vin);
+  const isPowerUnitSelectedForSingleTrip =
+    isSingleTrip && Boolean(vehicleFormData.vin);
 
-  const [showAddPowerUnitDialog, setShowAddPowerUnitDialog] = useState<boolean>(false);
+  const [showAddPowerUnitDialog, setShowAddPowerUnitDialog] =
+    useState<boolean>(false);
 
   const powerUnitFieldRef = "permitData.vehicleDetails";
   const { clearErrors } = useFormContext<ApplicationFormData>();
@@ -117,7 +127,7 @@ export const VehicleInformationSection = ({
             <Controller
               name={powerUnitFieldRef}
               rules={{
-                validate: (v) => (v.vin.trim() !== "") || requiredPowerUnit(),
+                validate: (v) => v.vin.trim() !== "" || requiredPowerUnit(),
               }}
               render={({ fieldState: { error } }) => (
                 <div className="add-power-unit">
@@ -133,14 +143,15 @@ export const VehicleInformationSection = ({
                     disabled={isPowerUnitSelectedForSingleTrip}
                     onClick={handleClickAddPowerUnit}
                   >
-                    <FontAwesomeIcon className="add-power-unit-btn__icon" icon={faPlus} />
+                    <FontAwesomeIcon
+                      className="add-power-unit-btn__icon"
+                      icon={faPlus}
+                    />
                     Add Power Unit
                   </Button>
 
                   {error?.message ? (
-                    <p className="add-power-unit__error">
-                      {error.message}
-                    </p>
+                    <p className="add-power-unit__error">{error.message}</p>
                   ) : null}
                 </div>
               )}
@@ -194,4 +205,3 @@ export const VehicleInformationSection = ({
     </Box>
   );
 };
-

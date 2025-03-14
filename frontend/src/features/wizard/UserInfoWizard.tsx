@@ -23,6 +23,7 @@ import {
   Contact,
   ReadUserInformationResponse,
 } from "../manageProfile/types/manageProfile";
+import { ORBC_FORM_FEATURES } from "../../common/types/common";
 
 /**
  * User Info wizard displays a user information form
@@ -106,7 +107,9 @@ export const UserInfoWizard = React.memo(() => {
               msg={BANNER_MESSAGES.ALL_FIELDS_MANDATORY}
             />
 
-            <ReusableUserInfoForm feature="my-info-wizard" />
+            <ReusableUserInfoForm
+              feature={ORBC_FORM_FEATURES.MY_INFORMATION_WIZARD}
+            />
 
             <div className="create-profile-section create-profile-section--nav">
               <Button

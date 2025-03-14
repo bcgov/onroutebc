@@ -10,8 +10,13 @@ import {
   isValidOptionalString,
   requiredMessage,
 } from "../../../../../../common/helpers/validationMessages";
+import { ORBCFormFeatureType } from "../../../../../../common/types/common";
 
-export const CompanyInfoGeneralForm = ({ feature }: { feature: string }) => (
+export const CompanyInfoGeneralForm = ({
+  feature,
+}: {
+  feature: ORBCFormFeatureType;
+}) => (
   <div className="company-info-general-form">
     <CustomFormComponent
       type="input"

@@ -12,7 +12,11 @@ import "./LOABasicInfo.scss";
 import { LOAFormData } from "../../../../types/LOAFormData";
 import { PERMIT_TYPES } from "../../../../../permits/types/PermitType";
 import { CustomFormComponent } from "../../../../../../common/components/form/CustomFormComponents";
-import { Nullable, Optional } from "../../../../../../common/types/common";
+import {
+  Nullable,
+  Optional,
+  ORBC_FORM_FEATURES,
+} from "../../../../../../common/types/common";
 import { UploadedFile } from "../../../../components/SpecialAuthorizations/LOA/upload/UploadedFile";
 import { UploadInput } from "../../../../components/SpecialAuthorizations/LOA/upload/UploadInput";
 import { applyWhenNotNullable } from "../../../../../../common/helpers/util";
@@ -38,11 +42,14 @@ import {
   uploadSizeExceeded,
 } from "../../../../../../common/helpers/validationMessages";
 import { useMemoizedArray } from "../../../../../../common/hooks/useMemoizedArray";
-import { DEFAULT_EMPTY_SELECT_VALUE, DEFAULT_SELECT_OPTIONS } from "../../../../../../common/constants/constants";
+import {
+  DEFAULT_EMPTY_SELECT_VALUE,
+  DEFAULT_SELECT_OPTIONS,
+} from "../../../../../../common/constants/constants";
 
-const FEATURE = "loa";
+const FEATURE = ORBC_FORM_FEATURES.LOA;
 
-const permitTypeRules =  {
+const permitTypeRules = {
   validate: {
     requiredPermitTypes: (
       value: Optional<{
@@ -70,14 +77,18 @@ const permitTypeRules =  {
 const expiryRules = {
   validate: {
     requiredIfLOAExpires: (value: Nullable<Dayjs>, formValues: FieldValues) => {
-      return (!value && formValues.neverExpires)
-        || (Boolean(value) && !formValues.neverExpires)
-        || requiredMessage();
+      return (
+        (!value && formValues.neverExpires) ||
+        (Boolean(value) && !formValues.neverExpires) ||
+        requiredMessage()
+      );
     },
     mustBeAfterStartDate: (value: Nullable<Dayjs>, formValues: FieldValues) => {
-      return !value
-        || (value.isAfter(formValues.startDate))
-        || expiryMustBeAfterStart();
+      return (
+        !value ||
+        value.isAfter(formValues.startDate) ||
+        expiryMustBeAfterStart()
+      );
     },
   },
 };
@@ -85,35 +96,45 @@ const expiryRules = {
 const uploadRules = {
   validate: {
     requiredLOAUpload: (
-      value: Nullable<{
-        fileName: string;
-      }> | File,
+      value:
+        | Nullable<{
+            fileName: string;
+          }>
+        | File,
     ) => {
       return Boolean(value) || requiredUpload("LOA");
     },
     lessThanSizeLimit: (
-      value: Nullable<{
-        fileName: string;
-      }> | File,
+      value:
+        | Nullable<{
+            fileName: string;
+          }>
+        | File,
     ) => {
       const fileSizeLimit = 10 * 1024 * 1024;
-      return !value
-        || !(value instanceof File)
-        || value.size < fileSizeLimit
-        || uploadSizeExceeded();
+      return (
+        !value ||
+        !(value instanceof File) ||
+        value.size < fileSizeLimit ||
+        uploadSizeExceeded()
+      );
     },
     mustBePdf: (
-      value: Nullable<{
-        fileName: string;
-      }> | File,
+      value:
+        | Nullable<{
+            fileName: string;
+          }>
+        | File,
     ) => {
       const fileFormat = "application/pdf";
-      return !value
-        || !(value instanceof File)
-        || value.type === fileFormat
-        || invalidUploadFormat();
+      return (
+        !value ||
+        !(value instanceof File) ||
+        value.type === fileFormat ||
+        invalidUploadFormat()
+      );
     },
-  }
+  },
 };
 
 export const LOABasicInfo = ({
@@ -130,12 +151,14 @@ export const LOABasicInfo = ({
   const powerUnitSubtypeOptions = useMemoizedArray(
     [
       ...DEFAULT_SELECT_OPTIONS,
-      ...powerUnitSubtypes.map(({ typeCode, type }) => ({
-        value: typeCode,
-        label: type,
-      })).toSorted(
-        (subtype1, subtype2) => subtype1.label.localeCompare(subtype2.label),
-      ),
+      ...powerUnitSubtypes
+        .map(({ typeCode, type }) => ({
+          value: typeCode,
+          label: type,
+        }))
+        .toSorted((subtype1, subtype2) =>
+          subtype1.label.localeCompare(subtype2.label),
+        ),
     ],
     (subtype) => subtype.value,
     (subtype1, subtype2) => subtype1.value === subtype2.value,
@@ -144,12 +167,14 @@ export const LOABasicInfo = ({
   const trailerSubtypeOptions = useMemoizedArray(
     [
       ...DEFAULT_SELECT_OPTIONS,
-      ...trailerSubtypes.map(({ typeCode, type }) => ({
-        value: typeCode,
-        label: type,
-      })).toSorted(
-        (subtype1, subtype2) => subtype1.label.localeCompare(subtype2.label),
-      ),
+      ...trailerSubtypes
+        .map(({ typeCode, type }) => ({
+          value: typeCode,
+          label: type,
+        }))
+        .toSorted((subtype1, subtype2) =>
+          subtype1.label.localeCompare(subtype2.label),
+        ),
     ],
     (subtype) => subtype.value,
     (subtype1, subtype2) => subtype1.value === subtype2.value,
@@ -168,10 +193,12 @@ export const LOABasicInfo = ({
   const neverExpires = watch("neverExpires");
   const uploadFile = watch("uploadFile");
   const selectedVehicleType = watch("vehicleType");
-  const [subtypeOptions, setSubtypeOptions] = useState<{
-    label: string;
-    value: string;
-  }[]>(
+  const [subtypeOptions, setSubtypeOptions] = useState<
+    {
+      label: string;
+      value: string;
+    }[]
+  >(
     selectedVehicleType === VEHICLE_TYPES.TRAILER
       ? trailerSubtypeOptions
       : powerUnitSubtypeOptions,
@@ -185,15 +212,11 @@ export const LOABasicInfo = ({
     } else {
       setSubtypeOptions(powerUnitSubtypeOptions);
     }
-  }, [
-    selectedVehicleType,
-    trailerSubtypeOptions,
-    powerUnitSubtypeOptions,
-  ]);
+  }, [selectedVehicleType, trailerSubtypeOptions, powerUnitSubtypeOptions]);
 
   const fileExists = Boolean(uploadFile);
   const fileName = applyWhenNotNullable(
-    file => (file instanceof File) ? file.name : file?.fileName,
+    (file) => (file instanceof File ? file.name : file?.fileName),
     uploadFile,
     "",
   );
@@ -207,7 +230,7 @@ export const LOABasicInfo = ({
     selected: boolean,
   ) => {
     setValue(`permitTypes.${permitType}`, selected);
-    if (Object.values(permitTypes).filter(selected => selected).length > 0) {
+    if (Object.values(permitTypes).filter((selected) => selected).length > 0) {
       clearErrors("permitTypes");
     }
     trigger("permitTypes");
@@ -254,17 +277,13 @@ export const LOABasicInfo = ({
   };
 
   const isValidVehicleSubtype = (subtype: string) =>
-    subtype !== DEFAULT_EMPTY_SELECT_VALUE
-    && subtypeOptions.map(({ value }) => value).includes(subtype);
+    subtype !== DEFAULT_EMPTY_SELECT_VALUE &&
+    subtypeOptions.map(({ value }) => value).includes(subtype);
 
   return (
     <div className="loa-basic-info">
-      <div 
-        className="loa-basic-info__section loa-basic-info__section--permit-types"
-      >
-        <div className="loa-basic-info__header">
-          Select Permit Type(s)
-        </div>
+      <div className="loa-basic-info__section loa-basic-info__section--permit-types">
+        <div className="loa-basic-info__header">Select Permit Type(s)</div>
 
         {errors.permitTypes ? (
           <div className="loa-basic-info__error">
@@ -276,9 +295,7 @@ export const LOABasicInfo = ({
           name="permitTypes"
           control={control}
           rules={permitTypeRules}
-          render={({
-            fieldState: { invalid },
-          }) => (
+          render={({ fieldState: { invalid } }) => (
             <div className="permit-type-selection">
               <div className="permit-type-selection__category-header">
                 Oversize
@@ -288,18 +305,26 @@ export const LOABasicInfo = ({
                 <Checkbox
                   className={`permit-type-selection__checkbox ${invalid ? "permit-type-selection__checkbox--invalid" : ""}`}
                   checked={permitTypes.STOS}
-                  onChange={(_, selected) => selectPermitType(PERMIT_TYPES.STOS, selected)}
+                  onChange={(_, selected) =>
+                    selectPermitType(PERMIT_TYPES.STOS, selected)
+                  }
                 />
-                <div className="permit-type-selection__label">{PERMIT_TYPES.STOS}</div>
+                <div className="permit-type-selection__label">
+                  {PERMIT_TYPES.STOS}
+                </div>
               </div>
 
               <div className="permit-type-selection__option">
                 <Checkbox
                   className={`permit-type-selection__checkbox ${invalid ? "permit-type-selection__checkbox--invalid" : ""}`}
                   checked={permitTypes.TROS}
-                  onChange={(_, selected) => selectPermitType(PERMIT_TYPES.TROS, selected)}
+                  onChange={(_, selected) =>
+                    selectPermitType(PERMIT_TYPES.TROS, selected)
+                  }
                 />
-                <div className="permit-type-selection__label">{PERMIT_TYPES.TROS}</div>
+                <div className="permit-type-selection__label">
+                  {PERMIT_TYPES.TROS}
+                </div>
               </div>
 
               <div className="permit-type-selection__category-header">
@@ -310,18 +335,26 @@ export const LOABasicInfo = ({
                 <Checkbox
                   className={`permit-type-selection__checkbox ${invalid ? "permit-type-selection__checkbox--invalid" : ""}`}
                   checked={permitTypes.STOW}
-                  onChange={(_, selected) => selectPermitType(PERMIT_TYPES.STOW, selected)}
+                  onChange={(_, selected) =>
+                    selectPermitType(PERMIT_TYPES.STOW, selected)
+                  }
                 />
-                <div className="permit-type-selection__label">{PERMIT_TYPES.STOW}</div>
+                <div className="permit-type-selection__label">
+                  {PERMIT_TYPES.STOW}
+                </div>
               </div>
 
               <div className="permit-type-selection__option">
                 <Checkbox
                   className={`permit-type-selection__checkbox ${invalid ? "permit-type-selection__checkbox--invalid" : ""}`}
                   checked={permitTypes.TROW}
-                  onChange={(_, selected) => selectPermitType(PERMIT_TYPES.TROW, selected)}
+                  onChange={(_, selected) =>
+                    selectPermitType(PERMIT_TYPES.TROW, selected)
+                  }
                 />
-                <div className="permit-type-selection__label">{PERMIT_TYPES.TROW}</div>
+                <div className="permit-type-selection__label">
+                  {PERMIT_TYPES.TROW}
+                </div>
               </div>
 
               <div className="permit-type-selection__category-header">
@@ -332,32 +365,34 @@ export const LOABasicInfo = ({
                 <Checkbox
                   className={`permit-type-selection__checkbox ${invalid ? "permit-type-selection__checkbox--invalid" : ""}`}
                   checked={permitTypes.STOL}
-                  onChange={(_, selected) => selectPermitType(PERMIT_TYPES.STOL, selected)}
+                  onChange={(_, selected) =>
+                    selectPermitType(PERMIT_TYPES.STOL, selected)
+                  }
                 />
                 <div className="permit-type-selection__label">
                   {`${PERMIT_TYPES.STOL} (Length 27.5 - Empty)`}
                 </div>
               </div>
-              
+
               <div className="permit-type-selection__option">
                 <Checkbox
                   className={`permit-type-selection__checkbox ${invalid ? "permit-type-selection__checkbox--invalid" : ""}`}
                   checked={permitTypes.STWS}
-                  onChange={(_, selected) => selectPermitType(PERMIT_TYPES.STWS, selected)}
+                  onChange={(_, selected) =>
+                    selectPermitType(PERMIT_TYPES.STWS, selected)
+                  }
                 />
-                <div className="permit-type-selection__label">{PERMIT_TYPES.STWS}</div>
+                <div className="permit-type-selection__label">
+                  {PERMIT_TYPES.STWS}
+                </div>
               </div>
             </div>
           )}
         />
       </div>
 
-      <div 
-        className="loa-basic-info__section loa-basic-info__section--vehicle"
-      >
-        <div className="loa-basic-info__header">
-          Select Vehicle
-        </div>
+      <div className="loa-basic-info__section loa-basic-info__section--vehicle">
+        <div className="loa-basic-info__header">Select Vehicle</div>
 
         <div className="loa-select-vehicle">
           <CustomFormComponent
@@ -395,7 +430,8 @@ export const LOABasicInfo = ({
               rules: {
                 required: { value: true, message: requiredMessage() },
                 validate: {
-                  nonEmpty: (value) => isValidVehicleSubtype(value) || requiredMessage(),
+                  nonEmpty: (value) =>
+                    isValidVehicleSubtype(value) || requiredMessage(),
                 },
               },
               label: "Vehicle Sub-type",
@@ -413,9 +449,7 @@ export const LOABasicInfo = ({
         </div>
       </div>
 
-      <div 
-        className="loa-basic-info__section loa-basic-info__section--dates"
-      >
+      <div className="loa-basic-info__section loa-basic-info__section--dates">
         <div className="loa-basic-info__header">
           Choose a Start Date and Expiry Date
         </div>
@@ -446,7 +480,7 @@ export const LOABasicInfo = ({
               onChangeOverride={handleExpiryDateChange}
             />
           </div>
-          
+
           <div className="loa-never-expires">
             <Checkbox
               className={`loa-never-expires__checkbox`}
@@ -462,15 +496,9 @@ export const LOABasicInfo = ({
         name="uploadFile"
         control={control}
         rules={uploadRules}
-        render={({
-          fieldState: { error },
-        }) => (
-          <div 
-            className="loa-basic-info__section loa-basic-info__section--upload"
-          >
-            <div className="loa-basic-info__header">
-              Upload LOA
-            </div>
+        render={({ fieldState: { error } }) => (
+          <div className="loa-basic-info__section loa-basic-info__section--upload">
+            <div className="loa-basic-info__header">Upload LOA</div>
 
             {fileExists ? (
               <UploadedFile
@@ -478,26 +506,18 @@ export const LOABasicInfo = ({
                 onDelete={() => setShowDeleteDialog(true)}
               />
             ) : (
-              <UploadInput
-                onChooseFile={selectFile}
-              />
+              <UploadInput onChooseFile={selectFile} />
             )}
 
             {error?.message ? (
-              <div className="loa-basic-info__error">
-                {error.message}
-              </div>
+              <div className="loa-basic-info__error">{error.message}</div>
             ) : null}
           </div>
         )}
       />
 
-      <div 
-        className="loa-basic-info__section loa-basic-info__section--notes"
-      >
-        <div className="loa-basic-info__header">
-          Additional Notes
-        </div>
+      <div className="loa-basic-info__section loa-basic-info__section--notes">
+        <div className="loa-basic-info__header">Additional Notes</div>
 
         <CustomFormComponent
           type="textarea"

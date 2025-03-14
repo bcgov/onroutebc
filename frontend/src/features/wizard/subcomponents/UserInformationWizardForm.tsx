@@ -14,6 +14,7 @@ import {
   invalidLastNameLength,
   requiredMessage,
 } from "../../../common/helpers/validationMessages";
+import { ORBC_FORM_FEATURES } from "../../../common/types/common";
 
 /**
  * The User Information Form contains multiple subs forms including
@@ -22,7 +23,7 @@ import {
  * for state management and API calls
  */
 export const UserInformationWizardForm = memo(() => {
-  const FEATURE = "wizard";
+  const FEATURE = ORBC_FORM_FEATURES.USER_INFORMATION_WIZARD;
 
   return (
     <div className="user-info-wizard-form">
@@ -107,8 +108,7 @@ export const UserInformationWizardForm = memo(() => {
             rules: {
               required: false,
               validate: {
-                validateExt1: (ext?: string) =>
-                  validatePhoneExtension(ext),
+                validateExt1: (ext?: string) => validatePhoneExtension(ext),
               },
             },
             label: "Ext",
@@ -126,7 +126,8 @@ export const UserInformationWizardForm = memo(() => {
             rules: {
               required: false,
               validate: {
-                validatePhone2: (phone?: string) => validateOptionalPhoneNumber(phone),
+                validatePhone2: (phone?: string) =>
+                  validateOptionalPhoneNumber(phone),
               },
             },
             label: "Alternate Phone",
@@ -142,8 +143,7 @@ export const UserInformationWizardForm = memo(() => {
             rules: {
               required: false,
               validate: {
-                validateExt2: (ext?: string) =>
-                  validatePhoneExtension(ext),
+                validateExt2: (ext?: string) => validatePhoneExtension(ext),
               },
             },
             label: "Ext",

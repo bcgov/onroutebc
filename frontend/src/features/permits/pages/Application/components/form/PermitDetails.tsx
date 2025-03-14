@@ -22,6 +22,7 @@ import {
   PPC_EMAIL,
   TOLL_FREE_NUMBER,
 } from "../../../../../../common/constants/constants";
+import { ORBCFormFeatureType } from "../../../../../../common/types/common";
 
 export const PermitDetails = ({
   feature,
@@ -33,7 +34,7 @@ export const PermitDetails = ({
   pastStartDateStatus,
   onSetConditions,
 }: {
-  feature: string;
+  feature: ORBCFormFeatureType;
   permitType: PermitType;
   expiryDate: Dayjs;
   allConditions: PermitCondition[];

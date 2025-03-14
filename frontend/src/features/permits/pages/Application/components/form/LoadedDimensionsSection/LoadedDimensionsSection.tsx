@@ -2,7 +2,11 @@ import { Box } from "@mui/material";
 
 import "./LoadedDimensionsSection.scss";
 import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
-import { Nullable, RequiredOrNull } from "../../../../../../../common/types/common";
+import {
+  Nullable,
+  ORBCFormFeatureType,
+  RequiredOrNull,
+} from "../../../../../../../common/types/common";
 import { PermitVehicleConfiguration } from "../../../../../types/PermitVehicleConfiguration";
 import { LoadedDimensionInput } from "./components/LoadedDimensionInput";
 
@@ -13,10 +17,11 @@ export const LoadedDimensionsSection = ({
   onUpdateVehicleConfiguration,
 }: {
   permitType: PermitType;
-  feature: string;
+  feature: ORBCFormFeatureType;
   vehicleConfiguration?: Nullable<PermitVehicleConfiguration>;
-  onUpdateVehicleConfiguration:
-    (updatedVehicleConfig: RequiredOrNull<PermitVehicleConfiguration>) => void;
+  onUpdateVehicleConfiguration: (
+    updatedVehicleConfig: RequiredOrNull<PermitVehicleConfiguration>,
+  ) => void;
 }) => {
   return permitType === PERMIT_TYPES.STOS ? (
     <Box className="loaded-dimensions-section">
@@ -36,10 +41,12 @@ export const LoadedDimensionsSection = ({
             }}
             className="loaded-dimensions-section__input loaded-dimensions-section__input--first"
             value={vehicleConfiguration?.overallWidth}
-            onUpdateValue={(updatedValue) => onUpdateVehicleConfiguration({
-              ...vehicleConfiguration,
-              overallWidth: updatedValue,
-            })}
+            onUpdateValue={(updatedValue) =>
+              onUpdateVehicleConfiguration({
+                ...vehicleConfiguration,
+                overallWidth: updatedValue,
+              })
+            }
           />
 
           <LoadedDimensionInput
@@ -50,10 +57,12 @@ export const LoadedDimensionsSection = ({
             }}
             className="loaded-dimensions-section__input"
             value={vehicleConfiguration?.overallHeight}
-            onUpdateValue={(updatedValue) => onUpdateVehicleConfiguration({
-              ...vehicleConfiguration,
-              overallHeight: updatedValue,
-            })}
+            onUpdateValue={(updatedValue) =>
+              onUpdateVehicleConfiguration({
+                ...vehicleConfiguration,
+                overallHeight: updatedValue,
+              })
+            }
           />
 
           <LoadedDimensionInput
@@ -64,10 +73,12 @@ export const LoadedDimensionsSection = ({
             }}
             className="loaded-dimensions-section__input"
             value={vehicleConfiguration?.overallLength}
-            onUpdateValue={(updatedValue) => onUpdateVehicleConfiguration({
-              ...vehicleConfiguration,
-              overallLength: updatedValue,
-            })}
+            onUpdateValue={(updatedValue) =>
+              onUpdateVehicleConfiguration({
+                ...vehicleConfiguration,
+                overallLength: updatedValue,
+              })
+            }
           />
         </div>
 
@@ -80,10 +91,12 @@ export const LoadedDimensionsSection = ({
             }}
             className="loaded-dimensions-section__input loaded-dimensions-section__input--first"
             value={vehicleConfiguration?.frontProjection}
-            onUpdateValue={(updatedValue) => onUpdateVehicleConfiguration({
-              ...vehicleConfiguration,
-              frontProjection: updatedValue,
-            })}
+            onUpdateValue={(updatedValue) =>
+              onUpdateVehicleConfiguration({
+                ...vehicleConfiguration,
+                frontProjection: updatedValue,
+              })
+            }
           />
 
           <LoadedDimensionInput
@@ -94,10 +107,12 @@ export const LoadedDimensionsSection = ({
             }}
             className="loaded-dimensions-section__input"
             value={vehicleConfiguration?.rearProjection}
-            onUpdateValue={(updatedValue) => onUpdateVehicleConfiguration({
-              ...vehicleConfiguration,
-              rearProjection: updatedValue,
-            })}
+            onUpdateValue={(updatedValue) =>
+              onUpdateVehicleConfiguration({
+                ...vehicleConfiguration,
+                rearProjection: updatedValue,
+              })
+            }
           />
         </div>
       </Box>

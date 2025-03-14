@@ -4,7 +4,11 @@ import "./CompanyContactDetailsForm.scss";
 import { CustomFormComponent } from "../../../../../../common/components/form/CustomFormComponents";
 import { validatePhoneNumber } from "../../../../../../common/helpers/phone/validatePhoneNumber";
 import { validatePhoneExtension } from "../../../../../../common/helpers/phone/validatePhoneExtension";
-import { invalidEmail, requiredMessage } from "../../../../../../common/helpers/validationMessages";
+import {
+  invalidEmail,
+  requiredMessage,
+} from "../../../../../../common/helpers/validationMessages";
+import { ORBCFormFeatureType } from "../../../../../../common/types/common";
 
 export const CompanyContactDetailsForm = ({
   feature,
@@ -13,7 +17,7 @@ export const CompanyContactDetailsForm = ({
   /**
    * The name of the feature that this form is part of.
    */
-  feature: string;
+  feature: ORBCFormFeatureType;
   /**
    * Should the email be disabled? By default it is.
    */
@@ -64,8 +68,7 @@ export const CompanyContactDetailsForm = ({
           rules: {
             required: false,
             validate: {
-              validateExt: (ext?: string) =>
-                validatePhoneExtension(ext),
+              validateExt: (ext?: string) => validatePhoneExtension(ext),
             },
           },
           label: "Ext",

@@ -24,8 +24,9 @@ import {
   BCeIDUserRoleType,
   BCeID_USER_ROLE,
 } from "../../../../../common/authentication/types";
+import { ORBC_FORM_FEATURES } from "../../../../../common/types/common";
 
-const FEATURE = "my-info-form";
+const FEATURE = ORBC_FORM_FEATURES.MY_INFORMATION;
 
 export const MyInfoForm = memo(
   ({
@@ -42,9 +43,17 @@ export const MyInfoForm = memo(
         firstName: getDefaultRequiredVal("", myInfo?.firstName),
         lastName: getDefaultRequiredVal("", myInfo?.lastName),
         email: getDefaultRequiredVal("", myInfo?.email),
-        phone1: applyWhenNotNullable(getFormattedPhoneNumber, myInfo?.phone1, ""),
+        phone1: applyWhenNotNullable(
+          getFormattedPhoneNumber,
+          myInfo?.phone1,
+          "",
+        ),
         phone1Extension: getDefaultRequiredVal("", myInfo?.phone1Extension),
-        phone2: applyWhenNotNullable(getFormattedPhoneNumber, myInfo?.phone2, ""),
+        phone2: applyWhenNotNullable(
+          getFormattedPhoneNumber,
+          myInfo?.phone2,
+          "",
+        ),
         phone2Extension: getDefaultRequiredVal("", myInfo?.phone2Extension),
         countryCode: getDefaultRequiredVal("", myInfo?.countryCode),
         provinceCode: getDefaultRequiredVal("", myInfo?.provinceCode),

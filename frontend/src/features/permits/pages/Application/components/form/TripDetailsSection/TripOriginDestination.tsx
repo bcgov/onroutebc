@@ -2,9 +2,17 @@ import { Controller } from "react-hook-form";
 
 import "./TripOriginDestination.scss";
 import { CustomFormComponent } from "../../../../../../../common/components/form/CustomFormComponents";
-import { invalidAddress, invalidInput, requiredMessage } from "../../../../../../../common/helpers/validationMessages";
+import {
+  invalidAddress,
+  invalidInput,
+  requiredMessage,
+} from "../../../../../../../common/helpers/validationMessages";
 import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
-import { Nullable, RequiredOrNull } from "../../../../../../../common/types/common";
+import {
+  Nullable,
+  ORBCFormFeatureType,
+  RequiredOrNull,
+} from "../../../../../../../common/types/common";
 import { NumberInput } from "../../../../../../../common/components/form/subFormComponents/NumberInput";
 import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
 import { convertToNumberIfValid } from "../../../../../../../common/helpers/numeric/convertToNumberIfValid";
@@ -22,14 +30,16 @@ export const TripOriginDestination = ({
   onUpdateTripDestination,
   onUpdateTotalDistance,
 }: {
-  feature: string;
+  feature: ORBCFormFeatureType;
   permitType: PermitType;
   tripOrigin?: Nullable<string>;
   tripDestination?: Nullable<string>;
   totalDistance?: Nullable<number>;
   onUpdateTripOrigin: (updateTripOrigin: string) => void;
   onUpdateTripDestination: (updateTripDestination: string) => void;
-  onUpdateTotalDistance: (updatedTotalDistance?: RequiredOrNull<number>) => void;
+  onUpdateTotalDistance: (
+    updatedTotalDistance?: RequiredOrNull<number>,
+  ) => void;
 }) => {
   const showExitPoint = permitType === PERMIT_TYPES.MFP;
   const showTotalDistance = permitType === PERMIT_TYPES.MFP;
@@ -100,7 +110,7 @@ export const TripOriginDestination = ({
           />
         )}
       />
-      
+
       {showExitPoint ? (
         <CustomFormComponent
           className="trip-origin-destination__input"
@@ -130,7 +140,7 @@ export const TripOriginDestination = ({
             required: { value: true, message: requiredMessage() },
             min: { value: 0.01, message: invalidInput() },
           }}
-          render={({ fieldState: {error} }) => (
+          render={({ fieldState: { error } }) => (
             <NumberInput
               label={{
                 id: `${feature}-manual-route-total-distance-label`,
@@ -152,9 +162,13 @@ export const TripOriginDestination = ({
                   },
                 },
               }}
-              helperText={error?.message ? {
-                errors: [error.message],
-              } : undefined}
+              helperText={
+                error?.message
+                  ? {
+                      errors: [error.message],
+                    }
+                  : undefined
+              }
             />
           )}
         />

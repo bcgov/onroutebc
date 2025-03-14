@@ -17,7 +17,12 @@ import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext
 import { PermitForm } from "./components/form/PermitForm";
 import { usePermitVehicleManagement } from "../../hooks/usePermitVehicleManagement";
 import { useCompanyInfoDetailsQuery } from "../../../manageProfile/apiManager/hooks";
-import { isNull, isUndefined, Nullable } from "../../../../common/types/common";
+import {
+  isNull,
+  isUndefined,
+  Nullable,
+  ORBC_FORM_FEATURES,
+} from "../../../../common/types/common";
 import { PermitType } from "../../types/PermitType";
 import { PermitVehicleDetails } from "../../types/PermitVehicleDetails";
 import { durationOptionsForPermitType } from "../../helpers/dateSelection";
@@ -56,7 +61,7 @@ import {
 import { useApplicationInQueueMetadata } from "../../../queue/hooks/hooks";
 import { UnavailableApplicationModal } from "../../../queue/components/UnavailableApplicationModal";
 
-const FEATURE = "application";
+const FEATURE = ORBC_FORM_FEATURES.APPLICATION;
 
 /**
  * The first step in creating or saving an Application.

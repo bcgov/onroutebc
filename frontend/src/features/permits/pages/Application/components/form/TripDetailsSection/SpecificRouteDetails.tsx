@@ -1,11 +1,12 @@
 import "./SpecificRouteDetails.scss";
 import { CustomFormComponent } from "../../../../../../../common/components/form/CustomFormComponents";
 import { requiredMessage } from "../../../../../../../common/helpers/validationMessages";
+import { ORBCFormFeatureType } from "../../../../../../../common/types/common";
 
 export const SpecificRouteDetails = ({
   feature,
 }: {
-  feature: string;
+  feature: ORBCFormFeatureType;
 }) => {
   return (
     <div className="specific-route-details">
@@ -23,7 +24,8 @@ export const SpecificRouteDetails = ({
       />
 
       <p className="specific-route-details__helper-text">
-        e.g. From the Alberta/BC border to 10 km north on Highway 23 near Revelstoke.
+        e.g. From the Alberta/BC border to 10 km north on Highway 23 near
+        Revelstoke.
       </p>
     </div>
   );

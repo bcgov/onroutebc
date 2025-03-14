@@ -6,6 +6,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import "./SuspendModal.scss";
 import { requiredMessage } from "../../../../common/helpers/validationMessages";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
+import { ORBC_FORM_FEATURES } from "../../../../common/types/common";
 
 export const SuspendModal = ({
   showModal,
@@ -16,7 +17,7 @@ export const SuspendModal = ({
   onCancel: () => void;
   onConfirm: (reason: string) => void;
 }) => {
-  const formMethods = useForm<{ comment: string; }>({
+  const formMethods = useForm<{ comment: string }>({
     defaultValues: {
       comment: "",
     },
@@ -45,7 +46,7 @@ export const SuspendModal = ({
       open={showModal}
       onClose={handleCancel}
       PaperProps={{
-        className: "suspend-modal__container"
+        className: "suspend-modal__container",
       }}
     >
       <div className="suspend-modal__header">
@@ -53,9 +54,7 @@ export const SuspendModal = ({
           <FontAwesomeIcon className="icon" icon={faExclamationCircle} />
         </div>
 
-        <span className="suspend-modal__title">
-          Suspend this company?
-        </span>
+        <span className="suspend-modal__title">Suspend this company?</span>
       </div>
 
       <FormProvider {...formMethods}>
@@ -63,7 +62,7 @@ export const SuspendModal = ({
           <div className="suspend-form">
             <CustomFormComponent
               type="textarea"
-              feature="suspend-reason"
+              feature={ORBC_FORM_FEATURES.SUSPEND_ACCOUNT}
               options={{
                 label: "Reason for Suspension",
                 name: "comment",

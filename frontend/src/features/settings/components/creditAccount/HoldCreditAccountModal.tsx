@@ -9,6 +9,7 @@ import {
   UpdateStatusData,
 } from "../../types/creditAccount";
 import "./HoldCreditAccountModal.scss";
+import { ORBC_FORM_FEATURES } from "../../../../common/types/common";
 
 export const HoldCreditAccountModal = ({
   showModal,
@@ -70,7 +71,7 @@ export const HoldCreditAccountModal = ({
             <CustomFormComponent
               className="hold-account-form__input"
               type="textarea"
-              feature="hold-account-comment"
+              feature={ORBC_FORM_FEATURES.HOLD_CREDIT_ACCOUNT}
               options={{
                 label: "Reason for Account Hold",
                 name: "comment",

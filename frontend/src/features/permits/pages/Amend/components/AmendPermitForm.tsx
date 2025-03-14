@@ -16,6 +16,7 @@ import {
   isNull,
   isUndefined,
   Nullable,
+  ORBC_FORM_FEATURES,
 } from "../../../../../common/types/common";
 import { ERROR_ROUTES } from "../../../../../routes/constants";
 import {
@@ -50,7 +51,7 @@ import {
 } from "../../../helpers/dateSelection";
 import OnRouteBCContext from "../../../../../common/authentication/OnRouteBCContext";
 
-const FEATURE = "amend-permit";
+const FEATURE = ORBC_FORM_FEATURES.AMEND_PERMIT;
 
 export const AmendPermitForm = () => {
   const {

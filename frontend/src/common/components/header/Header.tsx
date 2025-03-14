@@ -48,6 +48,7 @@ const Navbar = ({
   isMobile?: boolean;
 }) => {
   const navbarClassName = isMobile ? "mobile" : "normal";
+
   return (
     <nav className={`navbar navbar--${navbarClassName}`}>
       <div className="navbar__links">

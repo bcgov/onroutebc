@@ -27,8 +27,9 @@ import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
+import { ORBC_FORM_FEATURES } from "../../../../../common/types/common";
 
-const FEATURE = "user-info-form";
+const FEATURE = ORBC_FORM_FEATURES.USER_INFORMATION;
 
 /**
  * Edit User form for User Management.
@@ -44,9 +45,17 @@ export const EditUserForm = memo(
         firstName: getDefaultRequiredVal("", userInfo?.firstName),
         lastName: getDefaultRequiredVal("", userInfo?.lastName),
         email: getDefaultRequiredVal("", userInfo?.email),
-        phone1: applyWhenNotNullable(getFormattedPhoneNumber, userInfo?.phone1, ""),
+        phone1: applyWhenNotNullable(
+          getFormattedPhoneNumber,
+          userInfo?.phone1,
+          "",
+        ),
         phone1Extension: getDefaultRequiredVal("", userInfo?.phone1Extension),
-        phone2: applyWhenNotNullable(getFormattedPhoneNumber, userInfo?.phone2, ""),
+        phone2: applyWhenNotNullable(
+          getFormattedPhoneNumber,
+          userInfo?.phone2,
+          "",
+        ),
         phone2Extension: getDefaultRequiredVal("", userInfo?.phone2Extension),
         countryCode: getDefaultRequiredVal("", userInfo?.countryCode),
         provinceCode: getDefaultRequiredVal("", userInfo?.provinceCode),
@@ -59,7 +68,7 @@ export const EditUserForm = memo(
     });
 
     const { handleSubmit } = formMethods;
-    
+
     const [isUserGroupsModalOpen, setIsUserGroupsModalOpen] =
       useState<boolean>(false);
 

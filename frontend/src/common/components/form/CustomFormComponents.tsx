@@ -8,7 +8,7 @@ import {
 } from "react-hook-form";
 
 import "./CustomFormComponents.scss";
-import { ORBC_FormTypes } from "../../types/common";
+import { ORBC_FormTypes, ORBCFormFeatureType } from "../../types/common";
 import { CustomOutlinedInput } from "./subFormComponents/CustomOutlinedInput";
 import { CustomSelect } from "./subFormComponents/CustomSelect";
 import { PhoneNumberInput } from "./subFormComponents/PhoneNumberInput";
@@ -20,7 +20,7 @@ import { PhoneExtInput } from "./subFormComponents/PhoneExtInput";
  */
 export interface CustomFormComponentProps<T extends FieldValues> {
   type: "input" | "select" | "phone" | "textarea" | "ext";
-  feature: string;
+  feature: ORBCFormFeatureType;
   options: CustomFormOptionsProps<T>;
   menuOptions?: JSX.Element[];
   className?: string;

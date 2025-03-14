@@ -27,6 +27,7 @@ import {
   invalidDBALength,
   isValidOptionalString,
 } from "../../../../../common/helpers/validationMessages";
+import { ORBC_FORM_FEATURES } from "../../../../../common/types/common";
 
 /**
  * The Company Information Form contains multiple subs forms including
@@ -73,7 +74,11 @@ export const CompanyInfoForm = memo(
           ),
         },
         email: getDefaultRequiredVal("", companyInfo?.email, userEmail),
-        phone: applyWhenNotNullable(getFormattedPhoneNumber, companyInfo?.phone, ""),
+        phone: applyWhenNotNullable(
+          getFormattedPhoneNumber,
+          companyInfo?.phone,
+          "",
+        ),
         extension: getDefaultRequiredVal("", companyInfo?.extension),
         primaryContact: {
           firstName: getDefaultRequiredVal(
@@ -137,7 +142,7 @@ export const CompanyInfoForm = memo(
       });
     };
 
-    const FEATURE = "company-profile";
+    const FEATURE = ORBC_FORM_FEATURES.COMPANY_PROFILE;
 
     return (
       <div className="company-info-form">

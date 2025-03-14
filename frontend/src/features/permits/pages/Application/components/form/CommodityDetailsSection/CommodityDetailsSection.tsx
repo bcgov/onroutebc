@@ -7,11 +7,17 @@ import { requiredMessage } from "../../../../../../../common/helpers/validationM
 import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
 import { Autocomplete } from "../../../../../../../common/components/form/subFormComponents/Autocomplete";
 import { Controller, useFormContext } from "react-hook-form";
-import { Nullable } from "../../../../../../../common/types/common";
+import {
+  Nullable,
+  ORBCFormFeatureType,
+} from "../../../../../../../common/types/common";
 import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
 import { ApplicationFormData } from "../../../../../types/application";
 import { ChangeCommodityTypeDialog } from "./ChangeCommodityTypeDialog";
-import { DEFAULT_EMPTY_SELECT_OPTION, DEFAULT_EMPTY_SELECT_VALUE } from "../../../../../../../common/constants/constants";
+import {
+  DEFAULT_EMPTY_SELECT_OPTION,
+  DEFAULT_EMPTY_SELECT_VALUE,
+} from "../../../../../../../common/constants/constants";
 
 export const CommodityDetailsSection = ({
   feature,
@@ -20,7 +26,7 @@ export const CommodityDetailsSection = ({
   selectedCommodityType,
   onChangeCommodityType,
 }: {
-  feature: string;
+  feature: ORBCFormFeatureType;
   permitType: PermitType;
   commodityOptions: {
     value: string;

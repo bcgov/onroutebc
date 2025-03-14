@@ -12,10 +12,17 @@ import {
 
 import "./AddPowerUnitDialog.scss";
 import { VehicleDetails } from "./VehicleDetails";
-import { EMPTY_VEHICLE_DETAILS, PermitVehicleDetails } from "../../../../../types/PermitVehicleDetails";
-import { Vehicle, VehicleSubType } from "../../../../../../manageVehicles/types/Vehicle";
+import {
+  EMPTY_VEHICLE_DETAILS,
+  PermitVehicleDetails,
+} from "../../../../../types/PermitVehicleDetails";
+import {
+  Vehicle,
+  VehicleSubType,
+} from "../../../../../../manageVehicles/types/Vehicle";
 import { PermitType } from "../../../../../types/PermitType";
 import { serializePermitVehicleDetails } from "../../../../../helpers/serialize/serializePermitVehicleDetails";
+import { ORBCFormFeatureType } from "../../../../../../../common/types/common";
 
 export const AddPowerUnitDialog = ({
   open,
@@ -29,7 +36,7 @@ export const AddPowerUnitDialog = ({
   onAddPowerUnit,
 }: {
   open: boolean;
-  feature: string;
+  feature: ORBCFormFeatureType;
   vehicleFormData: PermitVehicleDetails;
   vehicleOptions: Vehicle[];
   subtypeOptions: VehicleSubType[];
@@ -54,22 +61,31 @@ export const AddPowerUnitDialog = ({
   const { handleSubmit, setValue, watch } = formMethods;
   const selectedVehicle = watch("permitData.vehicleDetails");
 
-  const onToggleSaveVehicle = useCallback((saveVehicle: boolean) => {
-    setValue("permitData.vehicleDetails.saveVehicle", saveVehicle);
-  }, [setValue]);
+  const onToggleSaveVehicle = useCallback(
+    (saveVehicle: boolean) => {
+      setValue("permitData.vehicleDetails.saveVehicle", saveVehicle);
+    },
+    [setValue],
+  );
 
-  const onSetVehicle = useCallback((vehicleDetails: PermitVehicleDetails) => {
-    setValue("permitData.vehicleDetails", {
-      ...vehicleDetails,
-    });
-  }, [setValue]);
+  const onSetVehicle = useCallback(
+    (vehicleDetails: PermitVehicleDetails) => {
+      setValue("permitData.vehicleDetails", {
+        ...vehicleDetails,
+      });
+    },
+    [setValue],
+  );
 
-  const onClearVehicle = useCallback((saveVehicle: boolean) => {
-    setValue("permitData.vehicleDetails", {
-      ...EMPTY_VEHICLE_DETAILS,
-      saveVehicle,
-    });
-  }, [setValue]);
+  const onClearVehicle = useCallback(
+    (saveVehicle: boolean) => {
+      setValue("permitData.vehicleDetails", {
+        ...EMPTY_VEHICLE_DETAILS,
+        saveVehicle,
+      });
+    },
+    [setValue],
+  );
 
   const handleAdd = () => {
     const powerUnit = serializePermitVehicleDetails(selectedVehicle);
@@ -95,9 +111,7 @@ export const AddPowerUnitDialog = ({
               <FontAwesomeIcon className="icon" icon={faPlus} />
             </div>
 
-            <span className="add-power-unit-dialog__title">
-              Add Power Unit
-            </span>
+            <span className="add-power-unit-dialog__title">Add Power Unit</span>
           </DialogTitle>
 
           <DialogContent className="add-power-unit-dialog__body">
