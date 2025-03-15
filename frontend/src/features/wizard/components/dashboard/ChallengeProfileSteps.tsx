@@ -193,6 +193,13 @@ export const ChallengeProfileSteps = React.memo(() => {
       }
     },
     onError: (error: AxiosError) => {
+      if (error.response?.status === 422) {
+        // The new user is trying to claim a profile that is already claimed.
+        // Redirect to the error page.
+        navigate(ERROR_ROUTES.CLAIM_PROFILE_ERROR, {
+          state: { correlationId: error.response?.headers["x-correlation-id"] },
+        });
+      }
       navigate(ERROR_ROUTES.UNEXPECTED, {
         state: { correlationId: error.response?.headers["x-correlation-id"] },
       });
