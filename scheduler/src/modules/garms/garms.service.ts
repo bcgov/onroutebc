@@ -316,6 +316,9 @@ export class GarmsService {
           } catch (error) {
             reject(error); // Catch any errors that occur in the FTP process
           }
+          finally{
+            ftps.raw('QUIT')
+          }
         });
         this.logger.log('await upload promise')
         // Wait for the upload to complete before proceeding
