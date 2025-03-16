@@ -304,10 +304,13 @@ export class GarmsService {
         const ftpCommand = `SITE LRecl=${recordLength}; put -a ${localFilePath} -o "'${remoteFilePath}'"`;
 
         // We use a promise to ensure FTP upload is complete before proceeding
-        ftps.raw(ftpCommand);
-        ftps.pwd().exec(console.log);
+        const uploadPromise = new Promise(() => {
+          ftps.raw(ftpCommand)
+          ftps.pwd().exec(console.log);
+        });
         this.logger.log('await upload promise');
         // Wait for the upload to complete before proceeding
+        await uploadPromise;
         this.logger.log('deleting file');
         // Step 4: Clean up - Delete the temporary file after the upload finishes
         await fs.unlink(tempFileName);
