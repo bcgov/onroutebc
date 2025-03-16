@@ -290,6 +290,7 @@ export class GarmsService {
     if (username && password) {
       const tempFileName = '/tmp/GARMS_CASH_' + Date.now(); // Unique temp file name
       await fs.writeFile(tempFileName, data);
+      const filedata= await fs.readFile(tempFileName)
       const options: FTPS.FTPOptions = {
         host: process.env.GARMS_HOST,
         username: process.env.GARMS_USER,
@@ -300,17 +301,15 @@ export class GarmsService {
       };
       const ftps: FTPS = new FTPS(options);
       try {
-        const localFilePath = tempFileName;
-        const ftpCommand = `SITE LRecl=${recordLength}; put -a ${localFilePath} -o "'${remoteFilePath}'"`;
+       // const localFilePath = tempFileName;
+        const ftpCommand = `SITE LRecl=${recordLength}; put -a ${filedata} -o "'${remoteFilePath}'"`;
 
         // We use a promise to ensure FTP upload is complete before proceeding
-        const uploadPromise = new Promise(() => {
+  
           ftps.raw(ftpCommand)
           ftps.pwd().exec(console.log);
-        });
         this.logger.log('await upload promise');
         // Wait for the upload to complete before proceeding
-        await uploadPromise;
         this.logger.log('deleting file');
         // Step 4: Clean up - Delete the temporary file after the upload finishes
         await fs.unlink(tempFileName);
