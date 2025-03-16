@@ -296,7 +296,7 @@ export class GarmsService {
         password: process.env.GARMS_PWD,
         // additinal settings for lftp command.
         additionalLftpCommands:
-          'set cache:enable no;set ftp:passive-mode on;set ftp:use-size no;set ftp:ssl-protect-data yes;set ftp:ssl-force yes;set ftps:initial-prot "P";set net:connection-limit 1;set net:max-retries 1;debug 4;', // Additional commands to pass to lftp, splitted by ';'
+          'set cache:enable no;set ftp:passive-mode on;set ftp:use-size no;set ftp:ssl-protect-data yes;set ftp:ssl-force yes;set ftps:initial-prot "P";set net:connection-limit 1;set net:max-retries 1;debug 5;', // Additional commands to pass to lftp, splitted by ';'
       };
       const ftps: FTPS = new FTPS(options);
       try {
@@ -309,17 +309,17 @@ export class GarmsService {
             const result = ftps.raw(ftpCommand).exec(console.log);
 
             if (result.stderr) {
+              this.logger.log('reject error')
               reject(new Error(result.stderr)); // If there's an error, reject the promise
             } else {
+              this.logger.log('resolve promise')
               resolve(result.stdout); // If successful, resolve with stdout
             }
           } catch (error) {
+            this.logger.log('catch reject error')
             reject(error); // Catch any errors that occur in the FTP process
           }
-          finally{
-            ftps.raw('QUIT')
-          }
-        });
+          });
         this.logger.log('await upload promise')
         // Wait for the upload to complete before proceeding
         await uploadPromise;
