@@ -317,9 +317,10 @@ export class GarmsService {
             reject(error); // Catch any errors that occur in the FTP process
           }
         });
-
+        this.logger.log('await upload promise')
         // Wait for the upload to complete before proceeding
         await uploadPromise;
+        this.logger.log('deleting file')
         // Step 4: Clean up - Delete the temporary file after the upload finishes
         await fs.unlink(tempFileName);
         this.logger.log(`Temporary file ${tempFileName} deleted successfully.`);
