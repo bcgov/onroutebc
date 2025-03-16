@@ -5,7 +5,7 @@ import { GarmsExtractType } from 'src/modules/common/enum/garms-extract-type.enu
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'permit.ORBC_GARMS_EXTRACT_FILE' })
-export class GarmsExtractFile extends Base{
+export class GarmsExtractFile extends Base {
   @AutoMap()
   @ApiProperty({
     example: '1',

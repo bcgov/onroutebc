@@ -26,7 +26,6 @@ import { getToDateForGarms } from 'src/common/helper/date-time.helper';
 import * as fs from 'fs/promises';
 import { Nullable } from 'src/common/types/common';
 
-
 @Injectable()
 export class GarmsService {
   private readonly logger = new Logger(GarmsService.name);
@@ -174,8 +173,7 @@ export class GarmsService {
     toTimestamp: Date,
   ): Promise<GarmsExtractFile> {
     await this.garmsExtractFileRepository.update(
-      { fileId: oldFile.fileId,
-       },
+      { fileId: oldFile.fileId },
       {
         toTimestamp: toTimestamp,
         updatedDateTime: new Date(),
@@ -286,16 +284,12 @@ export class GarmsService {
    * @param recordLength
    * @param remoteFilePath
    */
-  async upload(
-    data: string,
-    recordLength: number,
-    remoteFilePath: string,
-  ){
+  async upload(data: string, recordLength: number, remoteFilePath: string) {
     const username = process.env.GARMS_USER;
     const password = process.env.GARMS_PWD;
-    if(username && password){  
-      const tempFileName = '/tmp/GARMS_CASH_'+Date.now(); // Unique temp file name
-      await fs.writeFile(tempFileName, data);    
+    if (username && password) {
+      const tempFileName = '/tmp/GARMS_CASH_' + Date.now(); // Unique temp file name
+      await fs.writeFile(tempFileName, data);
       const options: FTPS.FTPOptions = {
         host: process.env.GARMS_HOST,
         username: process.env.GARMS_USER,
@@ -309,34 +303,32 @@ export class GarmsService {
         const localFilePath = tempFileName;
         const ftpCommand = `SITE LRecl=${recordLength}; put -a ${localFilePath} -o "'${remoteFilePath}'"`;
 
-      // We use a promise to ensure FTP upload is complete before proceeding
-      const uploadPromise = new Promise((resolve, reject) => {
-        try {
-          const result = ftps.raw(ftpCommand).exec(console.log);
-          
-          if (result.stderr) {
-            reject(new Error(result.stderr));  // If there's an error, reject the promise
-          } else {
-            resolve(result.stdout);  // If successful, resolve with stdout
+        // We use a promise to ensure FTP upload is complete before proceeding
+        const uploadPromise = new Promise((resolve, reject) => {
+          try {
+            const result = ftps.raw(ftpCommand).exec(console.log);
+
+            if (result.stderr) {
+              reject(new Error(result.stderr)); // If there's an error, reject the promise
+            } else {
+              resolve(result.stdout); // If successful, resolve with stdout
+            }
+          } catch (error) {
+            reject(error); // Catch any errors that occur in the FTP process
           }
-        } catch (error) {
-          reject(error);  // Catch any errors that occur in the FTP process
-        }
-      });
+        });
 
-      // Wait for the upload to complete before proceeding
-      await uploadPromise;
-      // Step 4: Clean up - Delete the temporary file after the upload finishes
-      await fs.unlink(tempFileName);
-      this.logger.log(`Temporary file ${tempFileName} deleted successfully.`);
-
+        // Wait for the upload to complete before proceeding
+        await uploadPromise;
+        // Step 4: Clean up - Delete the temporary file after the upload finishes
+        await fs.unlink(tempFileName);
+        this.logger.log(`Temporary file ${tempFileName} deleted successfully.`);
       } catch (e) {
         this.logger.error('Error during FTP upload or file operation', e);
         throw new InternalServerErrorException(e);
-      } 
-    }
-    else{
-      this.logger.log('Unable to get username and password for ftp server')
+      }
+    } else {
+      this.logger.log('Unable to get username and password for ftp server');
     }
   }
 }

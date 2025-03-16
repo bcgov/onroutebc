@@ -60,7 +60,7 @@ export const createGarmsCashFile = (
     const fileName = path.join('/tmp', 'GARMS_CASH_FILE_' + datetime);
     const groupedTransactionsByDate: DateTransaction[] =
       groupTransactionsByDate(transactions);
-    let fileData ='';
+    let fileData = '';
     if (groupTransactionsByDate && groupedTransactionsByDate.length > 0) {
       groupedTransactionsByDate.forEach((transactionByDate) => {
         const permitTypeAmounts = new Map<number, number>();
@@ -78,14 +78,14 @@ export const createGarmsCashFile = (
           );
         });
         const sequenceNumber = permitTypeCount.size;
-        const header:string = createGarmsCashFileHeader(
+        const header: string = createGarmsCashFileHeader(
           paymentTypeAmounts,
           transactionByDate.date,
           permitTypeCount,
           sequenceNumber,
           fileName,
         );
-        const details:string = createGarmsCashFileDetails(
+        const details: string = createGarmsCashFileDetails(
           permitTypeCount,
           permitTypeAmounts,
           transactionByDate.date,
@@ -93,7 +93,7 @@ export const createGarmsCashFile = (
         );
         fileData = fileData + header + details;
       });
-      
+
       return fileData;
     }
   } catch (err) {
@@ -151,7 +151,7 @@ export const createGarmsCashFileHeader = (
   gch.serviceQuantity = formatNumber(getSum(permitTypeCount), 5);
   gch.invQuantity = INV_QTY;
   const header = Object.values(gch).join('');
-  return header+'\n';
+  return header + '\n';
 };
 
 /**
@@ -168,7 +168,7 @@ export const createGarmsCashFileDetails = (
   fileName: string,
 ) => {
   let seqNumber = 0;
-  let details ='';
+  let details = '';
   permitTypeAmounts.forEach((value, key) => {
     seqNumber = seqNumber + 1;
     const gcd = new GarmaCashDetail();
@@ -185,10 +185,9 @@ export const createGarmsCashFileDetails = (
     gcd.voidInd = VOID_IND;
     gcd.f1 = GARMS_CASH_FILLER;
     const detail = Object.values(gcd).join('');
-    details = details + detail+'\n'
+    details = details + detail + '\n';
   });
-  return details
-
+  return details;
 };
 
 /**
