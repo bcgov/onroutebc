@@ -306,7 +306,7 @@ export class GarmsService {
         // We use a promise to ensure FTP upload is complete before proceeding
         const uploadPromise = new Promise(() => {
           ftps.raw(ftpCommand)
-          ftps.raw('ls -l').exec(console.log);
+          ftps.pwd().exec(console.log);
         });
         this.logger.log('await upload promise');
         // Wait for the upload to complete before proceeding
