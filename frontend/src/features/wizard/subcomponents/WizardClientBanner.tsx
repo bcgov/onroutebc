@@ -2,10 +2,10 @@ import { Box, Typography } from "@mui/material";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
 
 /**
- * React component that displays company name in a banner.
+ * React component that displays client name in a banner.
  * To be used in wizard.
  */
-export const WizardCompanyBanner = ({ legalName }: { legalName: string }) => {
+export const WizardClientBanner = ({ legalName }: { legalName: string }) => {
   return (
     <Box
       sx={{
@@ -20,7 +20,7 @@ export const WizardCompanyBanner = ({ legalName }: { legalName: string }) => {
       }}
     >
       <div>
-        <Typography variant="h5">COMPANY NAME</Typography>
+        <Typography variant="h5">CLIENT NAME</Typography>
         <Typography variant="h4">{legalName}</Typography>
       </div>
     </Box>

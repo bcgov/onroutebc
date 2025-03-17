@@ -28,6 +28,7 @@ import {
 import { PROFILE_ROUTES } from "../../../routes/constants";
 import { CustomActionLink } from "../../../common/components/links/CustomActionLink";
 import { BCeID_USER_ROLE } from "../../../common/authentication/types";
+import { ORBC_FORM_FEATURES } from "../../../common/types/common";
 
 /**
  * BCeID User - Add User Page.
@@ -154,7 +155,7 @@ export const AddUserDashboard = React.memo(() => {
 
             <CustomFormComponent
               type="input"
-              feature="add-user"
+              feature={ORBC_FORM_FEATURES.ADD_USER}
               className="user-id__input"
               options={{
                 name: "userName",
