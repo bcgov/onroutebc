@@ -45,7 +45,9 @@ const PERMIT_ACTIONS: PermitAction[] = [
     action: PERMIT_ACTION_TYPES.RESEND,
     isAuthorized: (_: boolean, userRole?: string) =>
       userRole === USER_ROLE.PPC_CLERK ||
-      userRole === USER_ROLE.SYSTEM_ADMINISTRATOR,
+      userRole === USER_ROLE.SYSTEM_ADMINISTRATOR ||
+      userRole === USER_ROLE.HQ_ADMINISTRATOR ||
+      userRole === USER_ROLE.FINANCE,
   },
   {
     action: PERMIT_ACTION_TYPES.VIEW_RECEIPT,
