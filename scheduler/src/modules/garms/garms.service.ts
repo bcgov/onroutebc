@@ -199,7 +199,6 @@ export class GarmsService {
       newFile.toTimestamp = toTimestamp;
       newFile.fileSubmitTimestamp = null;
       newFile.garmsExtractType = garmsExtractType;
-
       const savedFile = await this.garmsExtractFileRepository.save(newFile);
       return savedFile;
     }
@@ -284,35 +283,25 @@ export class GarmsService {
    * @param recordLength
    * @param remoteFilePath
    */
-   upload(data: string, recordLength: number, remoteFilePath: string) {
+  upload(data: string, recordLength: number, remoteFilePath: string) {
     const username = process.env.GARMS_USER;
     const password = process.env.GARMS_PWD;
     if (username && password) {
-      const tempFileName = '/tmp/GARMS_CASH_' + Date.now(); // Unique temp file name
-      fs.writeFileSync(tempFileName, data);
+      const localFilePath = '/tmp/GARMS_CASH_' + Date.now(); // Unique temp file name
+      fs.writeFileSync(localFilePath, data);
       const options: FTPS.FTPOptions = {
         host: process.env.GARMS_HOST,
         username: process.env.GARMS_USER,
         password: process.env.GARMS_PWD,
-        // additinal settings for lftp command.
+        // additinal settings for lftp command. passive-mode is only on for onRoute because pf firewall, it is off for TPS.
         additionalLftpCommands:
-          'set cache:enable no;set ftp:passive-mode on;set ftp:use-size no;set ftp:ssl-protect-data yes;set ftp:ssl-force yes;set ftp:ssl-auth TLS;set ssl:verify-certificate no;set ftps:initial-prot "P";set net:connection-limit 1;set net:max-retries 1;debug 5;', // Additional commands to pass to lftp, splitted by ';'
+          'set cache:enable no;set ftp:passive-mode on;set ftp:use-size no;set ftp:ssl-protect-data yes;set ftp:ssl-force yes;set ftp:ssl-auth TLS;set ssl:verify-certificate no;set ftps:initial-prot "P";set net:connection-limit 1;set net:max-retries 1;debug 5;',
       };
       const ftps: FTPS = new FTPS(options);
       try {
-        const localFilePath = tempFileName;
+        // site command is to set record length to 140 for remote server. put -a is for ascii mode, -e to delete source file after successful transfer -o for remote file name.
         const ftpCommand = `SITE LRecl=${recordLength}; put -aE ${localFilePath}  -o "'${remoteFilePath}'"`;
-
-        // We use a promise to ensure FTP upload is complete before proceeding
-  
-          ftps.raw(ftpCommand)
-          ftps.pwd().exec(console.log);
-        this.logger.log('await upload promise');
-        // Wait for the upload to complete before proceeding
-        this.logger.log('deleting file');
-        // Step 4: Clean up - Delete the temporary file after the upload finishes
-         //fs.unlinkSync(tempFileName);
-        this.logger.log(`Temporary file ${tempFileName} deleted successfully.`);
+        ftps.raw(ftpCommand).exec(console.log);
       } catch (e) {
         this.logger.error('Error during FTP upload or file operation', e);
         throw new InternalServerErrorException(e);
