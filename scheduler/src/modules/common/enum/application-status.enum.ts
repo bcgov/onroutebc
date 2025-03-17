@@ -44,3 +44,13 @@ export const ALL_APPLICATION_STATUS: readonly ApplicationStatus[] = [
   ApplicationStatus.PAYMENT_COMPLETE,
   ApplicationStatus.IN_QUEUE,
 ];
+
+/**
+ * List of valid status for permit
+ */
+export const PERMIT_STATUS: readonly ApplicationStatus[] = [
+  ApplicationStatus.ISSUED,
+  ApplicationStatus.VOIDED,
+  ApplicationStatus.REVOKED,
+  ApplicationStatus.SUPERSEDED,
+];
