@@ -23,7 +23,7 @@ import {
 } from 'src/common/constants/garms.constant';
 import { Cron } from '@nestjs/schedule';
 import { getToDateForGarms } from 'src/common/helper/date-time.helper';
-import * as fs from 'fs/promises';
+import * as fs from 'fs';
 import { Nullable } from 'src/common/types/common';
 
 @Injectable()
@@ -65,7 +65,7 @@ export class GarmsService {
 
         const remoteFilePath = process.env.GARMS_ENV + GARMS_CASH_FILE_LOCATION;
         const recordLength = GARMS_CASH_FILE_LRECL;
-        await this.upload(fileName, recordLength, remoteFilePath);
+        this.upload(fileName, recordLength, remoteFilePath);
         await this.saveTransactionIds(transactions, fileId);
       } else {
         this.logger.log('No data to process for GARMS cash file');
@@ -284,13 +284,12 @@ export class GarmsService {
    * @param recordLength
    * @param remoteFilePath
    */
-  async upload(data: string, recordLength: number, remoteFilePath: string) {
+   upload(data: string, recordLength: number, remoteFilePath: string) {
     const username = process.env.GARMS_USER;
     const password = process.env.GARMS_PWD;
     if (username && password) {
       const tempFileName = '/tmp/GARMS_CASH_' + Date.now(); // Unique temp file name
-      await fs.writeFile(tempFileName, data);
-      const filedata= await fs.readFile(tempFileName)
+      fs.writeFileSync(tempFileName, data);
       const options: FTPS.FTPOptions = {
         host: process.env.GARMS_HOST,
         username: process.env.GARMS_USER,
@@ -301,8 +300,8 @@ export class GarmsService {
       };
       const ftps: FTPS = new FTPS(options);
       try {
-       // const localFilePath = tempFileName;
-        const ftpCommand = `SITE LRecl=${recordLength}; put -a ${filedata} -o "'${remoteFilePath}'"`;
+        const localFilePath = tempFileName;
+        const ftpCommand = `SITE LRecl=${recordLength}; put -a ${localFilePath} -o "'${remoteFilePath}'"`;
 
         // We use a promise to ensure FTP upload is complete before proceeding
   
@@ -312,7 +311,7 @@ export class GarmsService {
         // Wait for the upload to complete before proceeding
         this.logger.log('deleting file');
         // Step 4: Clean up - Delete the temporary file after the upload finishes
-        await fs.unlink(tempFileName);
+         fs.unlinkSync(tempFileName);
         this.logger.log(`Temporary file ${tempFileName} deleted successfully.`);
       } catch (e) {
         this.logger.error('Error during FTP upload or file operation', e);
