@@ -20,6 +20,7 @@ import { Response } from 'express';
 import { Nullable } from '../../common/types/common';
 import { Company } from '../company-user-management/company/entities/company.entity';
 import { UpdateLoaDto } from './dto/request/update-loa.dto';
+import { setBaseEntityProperties } from '../../common/helper/database.helper';
 
 @Injectable()
 export class LoaService {
@@ -61,6 +62,7 @@ export class LoaService {
       companyId,
       file,
     );
+    const dbActivitydate = new Date();
     const loa = await this.classMapper.mapAsync(
       createLoaDto,
       CreateLoaDto,
@@ -70,13 +72,17 @@ export class LoaService {
           companyId: companyId,
           documentId: readFileDto.documentId,
           isActive: true,
-          userName: currentUser.userName,
-          userGUID: currentUser.userGUID,
-          timestamp: new Date(),
-          directory: currentUser.orbcUserDirectory,
+          currentUser: currentUser,
+          dbActivitydate: dbActivitydate,
         }),
       },
     );
+    setBaseEntityProperties({
+      entity: loa,
+      currentUser,
+      date: dbActivitydate,
+    });
+
     const savedLoaDetail = await this.loaDetailRepository.save(loa);
     await this.loaDetailRepository
       .createQueryBuilder()
@@ -108,7 +114,7 @@ export class LoaService {
    * This method retrieves LOA (Letter of Authorization) details for a specified company.
    *
    * Steps:
-   * 1. Creates a query builder to fetch LOA details, joining necessary relations (company, loaVehicles, loaPermitTypes).
+   * 1. Creates a query builder to fetch LOA details, joining necessary relations (company, loaVehicle, loaPermitTypes).
    * 2. Adds a filter to the query to fetch LOAs for a specific company and active LOAs.
    * 3. Adds additional filters based on the 'expired' parameter to check if LOAs are expired, not expired, or both.
    * 4. Executes the query to get the LOA details.
@@ -127,7 +133,7 @@ export class LoaService {
     const loaDetailQB = this.loaDetailRepository
       .createQueryBuilder('loaDetail')
       .leftJoinAndSelect('loaDetail.company', 'company')
-      .leftJoinAndSelect('loaDetail.loaVehicles', 'loaVehicles')
+      .leftJoinAndSelect('loaDetail.loaVehicle', 'loaVehicle')
       .leftJoinAndSelect('loaDetail.loaPermitTypes', 'loaPermitTypes')
       .where('company.companyId = :companyId', { companyId: companyId })
       .andWhere('loaDetail.isActive = :isActive', { isActive: 'Y' });
@@ -162,7 +168,7 @@ export class LoaService {
    * Steps:
    * 1. Fetches the LOA detail from the repository based on company ID and LOA ID.
    * 2. Ensures the fetched LOA detail is active.
-   * 3. Includes relations (company, loaVehicles, loaPermitTypes) in the query.
+   * 3. Includes relations (company, loaVehicle, loaPermitTypes) in the query.
    *
    * @param {number} companyId - ID of the company for which to fetch the LOA detail.
    * @param {number} loaId - ID of the LOA to be fetched.
@@ -175,7 +181,7 @@ export class LoaService {
         loaId: loaId,
         company: { companyId: companyId },
       },
-      relations: ['company', 'loaVehicles', 'loaPermitTypes'],
+      relations: ['company', 'loaVehicle', 'loaPermitTypes'],
     });
   }
 
@@ -302,7 +308,8 @@ export class LoaService {
         isActive: false,
       });
       await queryRunner.manager.save(updatedLoaDetail);
-      const createLoaDetail = await this.classMapper.mapAsync(
+      const dbActivitydate = new Date();
+      const updateLoaDetail = await this.classMapper.mapAsync(
         updateLoaDto,
         UpdateLoaDto,
         LoaDetail,
@@ -314,15 +321,18 @@ export class LoaService {
             loaNumber: existingLoaDetail.loaNumber,
             previousLoaId: existingLoaDetail.loaId,
             originalLoaId: existingLoaDetail.originalLoaId,
-            userName: currentUser.userName,
-            userGUID: currentUser.userGUID,
-            timestamp: new Date(),
-            directory: currentUser.orbcUserDirectory,
+            dbActivitydate: dbActivitydate,
+            currentUser: currentUser,
           }),
         },
       );
+      setBaseEntityProperties({
+        entity: updateLoaDetail,
+        currentUser,
+        date: dbActivitydate,
+      });
 
-      savedLoaDetail = await queryRunner.manager.save(createLoaDetail);
+      savedLoaDetail = await queryRunner.manager.save(updateLoaDetail);
 
       await queryRunner.commitTransaction();
     } catch (error) {

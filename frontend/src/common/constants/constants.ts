@@ -20,4 +20,13 @@ export const CSVE_REVENUE_PHONE = "(250) 952-0422";
 export const CVSE_REVENUE_EMAIL = "isfinance@gov.bc.ca";
 export const PPC_EMAIL = "ppcpermit@gov.bc.ca";
 
-export const EMPTY_VEHICLE_UNIT_NUMBER = "-";
+// Select Dropdown Options
+export const DEFAULT_EMPTY_SELECT_VALUE = "-";
+export const DEFAULT_EMPTY_SELECT_OPTION = {
+  label: "Select",
+  value: DEFAULT_EMPTY_SELECT_VALUE,
+};
+
+export const DEFAULT_SELECT_OPTIONS = [DEFAULT_EMPTY_SELECT_OPTION];
+
+export const EMPTY_VEHICLE_UNIT_NUMBER = DEFAULT_EMPTY_SELECT_VALUE;

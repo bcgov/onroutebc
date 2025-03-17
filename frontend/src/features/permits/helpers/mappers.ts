@@ -61,18 +61,6 @@ export const getSubtypeNameByCode = (
 };
 
 /**
- * Gets display text for vehicle type.
- * @param vehicleType Vehicle type (power unit or trailer)
- * @returns Display text for the vehicle type
- */
-export const vehicleTypeDisplayText = (vehicleType: VehicleType) => {
-  if (vehicleType === VEHICLE_TYPES.TRAILER) {
-    return "Trailer";
-  }
-  return "Power Unit";
-};
-
-/**
  * Remove empty values from permits action response
  * @param res Permits action response received from backend
  * @returns Permits action response having empty values removed
