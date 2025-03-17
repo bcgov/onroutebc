@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dayjs } from "dayjs";
-import { Checkbox } from "@mui/material";
+import { Checkbox, MenuItem, SelectChangeEvent } from "@mui/material";
 import {
   useFormContext,
   FieldPathValue,
@@ -18,6 +18,13 @@ import { UploadInput } from "../../../../components/SpecialAuthorizations/LOA/up
 import { applyWhenNotNullable } from "../../../../../../common/helpers/util";
 import { DeleteConfirmationDialog } from "../../../../../../common/components/dialog/DeleteConfirmationDialog";
 import {
+  VEHICLE_TYPE_OPTIONS,
+  VEHICLE_TYPES,
+  VehicleSubType,
+  VehicleType,
+} from "../../../../../manageVehicles/types/Vehicle";
+
+import {
   CustomDatePicker,
   PAST_START_DATE_STATUSES,
 } from "../../../../../../common/components/form/subFormComponents/CustomDatePicker";
@@ -30,6 +37,8 @@ import {
   selectionRequired,
   uploadSizeExceeded,
 } from "../../../../../../common/helpers/validationMessages";
+import { useMemoizedArray } from "../../../../../../common/hooks/useMemoizedArray";
+import { DEFAULT_EMPTY_SELECT_VALUE, DEFAULT_SELECT_OPTIONS } from "../../../../../../common/constants/constants";
 
 const FEATURE = "loa";
 
@@ -109,10 +118,42 @@ const uploadRules = {
 
 export const LOABasicInfo = ({
   onRemoveDocument,
+  powerUnitSubtypes,
+  trailerSubtypes,
 }: {
   onRemoveDocument: () => Promise<boolean>;
+  powerUnitSubtypes: VehicleSubType[];
+  trailerSubtypes: VehicleSubType[];
 }) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
+
+  const powerUnitSubtypeOptions = useMemoizedArray(
+    [
+      ...DEFAULT_SELECT_OPTIONS,
+      ...powerUnitSubtypes.map(({ typeCode, type }) => ({
+        value: typeCode,
+        label: type,
+      })).toSorted(
+        (subtype1, subtype2) => subtype1.label.localeCompare(subtype2.label),
+      ),
+    ],
+    (subtype) => subtype.value,
+    (subtype1, subtype2) => subtype1.value === subtype2.value,
+  );
+
+  const trailerSubtypeOptions = useMemoizedArray(
+    [
+      ...DEFAULT_SELECT_OPTIONS,
+      ...trailerSubtypes.map(({ typeCode, type }) => ({
+        value: typeCode,
+        label: type,
+      })).toSorted(
+        (subtype1, subtype2) => subtype1.label.localeCompare(subtype2.label),
+      ),
+    ],
+    (subtype) => subtype.value,
+    (subtype1, subtype2) => subtype1.value === subtype2.value,
+  );
 
   const {
     control,
@@ -126,6 +167,29 @@ export const LOABasicInfo = ({
   const permitTypes = watch("permitTypes");
   const neverExpires = watch("neverExpires");
   const uploadFile = watch("uploadFile");
+  const selectedVehicleType = watch("vehicleType");
+  const [subtypeOptions, setSubtypeOptions] = useState<{
+    label: string;
+    value: string;
+  }[]>(
+    selectedVehicleType === VEHICLE_TYPES.TRAILER
+      ? trailerSubtypeOptions
+      : powerUnitSubtypeOptions,
+  );
+
+  // Whenever the vehicleType changes (whether on first render or user action)
+  // update the vehicle subtype dropdown accordingly
+  useEffect(() => {
+    if (selectedVehicleType === VEHICLE_TYPES.TRAILER) {
+      setSubtypeOptions(trailerSubtypeOptions);
+    } else {
+      setSubtypeOptions(powerUnitSubtypeOptions);
+    }
+  }, [
+    selectedVehicleType,
+    trailerSubtypeOptions,
+    powerUnitSubtypeOptions,
+  ]);
 
   const fileExists = Boolean(uploadFile);
   const fileName = applyWhenNotNullable(
@@ -183,6 +247,15 @@ export const LOABasicInfo = ({
     }
     setShowDeleteDialog(false);
   };
+
+  const handleChangeVehicleType = (e: SelectChangeEvent) => {
+    setValue("vehicleType", e.target.value as VehicleType);
+    setValue("vehicleSubtype", DEFAULT_EMPTY_SELECT_VALUE);
+  };
+
+  const isValidVehicleSubtype = (subtype: string) =>
+    subtype !== DEFAULT_EMPTY_SELECT_VALUE
+    && subtypeOptions.map(({ value }) => value).includes(subtype);
 
   return (
     <div className="loa-basic-info">
@@ -277,6 +350,67 @@ export const LOABasicInfo = ({
             </div>
           )}
         />
+      </div>
+
+      <div 
+        className="loa-basic-info__section loa-basic-info__section--vehicle"
+      >
+        <div className="loa-basic-info__header">
+          Select Vehicle
+        </div>
+
+        <div className="loa-select-vehicle">
+          <CustomFormComponent
+            className="loa-select-vehicle__vehicle-type"
+            type="select"
+            feature={FEATURE}
+            options={{
+              name: "vehicleType",
+              rules: {
+                required: {
+                  value: true,
+                  message: requiredMessage(),
+                },
+                onChange: handleChangeVehicleType,
+              },
+              label: "Vehicle Type",
+            }}
+            menuOptions={VEHICLE_TYPE_OPTIONS.map(({ value, label }) => (
+              <MenuItem
+                key={value}
+                value={value}
+                data-testid="vehicle-type-menu-item"
+              >
+                {label}
+              </MenuItem>
+            ))}
+          />
+
+          <CustomFormComponent
+            className="loa-select-vehicle__vehicle-subtype"
+            type="select"
+            feature={FEATURE}
+            options={{
+              name: "vehicleSubtype",
+              rules: {
+                required: { value: true, message: requiredMessage() },
+                validate: {
+                  nonEmpty: (value) => isValidVehicleSubtype(value) || requiredMessage(),
+                },
+              },
+              label: "Vehicle Sub-type",
+            }}
+            menuOptions={subtypeOptions.map((subtype) => (
+              <MenuItem
+                key={subtype.value}
+                value={subtype.value}
+                data-testid="subtype-menu-item"
+              >
+                {subtype.label}
+              </MenuItem>
+            ))}
+          />
+        </div>
       </div>
 
       <div 

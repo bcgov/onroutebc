@@ -14,7 +14,7 @@ import { useMemoizedObject } from "../../../../common/hooks/useMemoizedObject";
 import { useVehicleConfiguration } from "../useVehicleConfiguration";
 import { useApplicationFormUpdateMethods } from "./useApplicationFormUpdateMethods";
 import { usePermittedCommodity } from "../usePermittedCommodity";
-import { DEFAULT_COMMODITY_SELECT_VALUE } from "../../constants/constants";
+import { DEFAULT_EMPTY_SELECT_VALUE } from "../../../../common/constants/constants";
 
 export const useApplicationFormContext = () => {
   const applicationFormContextData = useContext(ApplicationFormContext);
@@ -181,7 +181,7 @@ export const useApplicationFormContext = () => {
     policyEngine,
     permitType,
     getDefaultRequiredVal(
-      DEFAULT_COMMODITY_SELECT_VALUE,
+      DEFAULT_EMPTY_SELECT_VALUE,
       permittedCommodity?.commodityType,
     ),
     selectedVehicleConfigSubtypes,
