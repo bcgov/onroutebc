@@ -12,9 +12,7 @@ import { VEHICLES_ROUTES } from "../../../../routes/constants";
 import { now } from "../../../../common/helpers/formatDate";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { convertToNumberIfValid } from "../../../../common/helpers/numeric/convertToNumberIfValid";
-import {
-  disableMouseWheelInputOnNumberField,
-} from "../../../../common/helpers/disableMouseWheelInputOnNumberField";
+import { disableMouseWheelInputOnNumberField } from "../../../../common/helpers/disableMouseWheelInputOnNumberField";
 
 import {
   usePowerUnitSubTypesQuery,
@@ -29,8 +27,9 @@ import {
   invalidYearMin,
   requiredMessage,
 } from "../../../../common/helpers/validationMessages";
+import { ORBC_FORM_FEATURES } from "../../../../common/types/common";
 
-const FEATURE = "power-unit";
+const FEATURE = ORBC_FORM_FEATURES.POWER_UNIT;
 
 export const PowerUnitForm = ({
   companyId,
@@ -52,7 +51,10 @@ export const PowerUnitForm = ({
     make: getDefaultRequiredVal("", powerUnit?.make),
     plate: getDefaultRequiredVal("", powerUnit?.plate),
     powerUnitTypeCode: getDefaultRequiredVal("", powerUnit?.powerUnitTypeCode),
-    steerAxleTireSize: convertToNumberIfValid(powerUnit?.steerAxleTireSize, null),
+    steerAxleTireSize: convertToNumberIfValid(
+      powerUnit?.steerAxleTireSize,
+      null,
+    ),
     vin: getDefaultRequiredVal("", powerUnit?.vin),
     year: convertToNumberIfValid(powerUnit?.year, defaultYear),
   };
@@ -81,10 +83,7 @@ export const PowerUnitForm = ({
           ...powerUnitToBeUpdated,
           // need to explicitly convert form values to number here (since we can't use valueAsNumber prop)
           year: convertToNumberIfValid(data.year, defaultYear),
-          licensedGvw: convertToNumberIfValid(
-            data.licensedGvw,
-            null,
-          ),
+          licensedGvw: convertToNumberIfValid(data.licensedGvw, null),
           steerAxleTireSize: convertToNumberIfValid(
             data.steerAxleTireSize,
             null,
