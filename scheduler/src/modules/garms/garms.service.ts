@@ -301,7 +301,7 @@ export class GarmsService {
       const ftps: FTPS = new FTPS(options);
       try {
         const localFilePath = tempFileName;
-        const ftpCommand = `SITE LRecl=${recordLength}; put -a ${localFilePath} -o "'${remoteFilePath}'"`;
+        const ftpCommand = `SITE LRecl=${recordLength}; mput -aE ${localFilePath} -O "'${remoteFilePath}'"`;
 
         // We use a promise to ensure FTP upload is complete before proceeding
   
@@ -311,7 +311,7 @@ export class GarmsService {
         // Wait for the upload to complete before proceeding
         this.logger.log('deleting file');
         // Step 4: Clean up - Delete the temporary file after the upload finishes
-         fs.unlinkSync(tempFileName);
+         //fs.unlinkSync(tempFileName);
         this.logger.log(`Temporary file ${tempFileName} deleted successfully.`);
       } catch (e) {
         this.logger.error('Error during FTP upload or file operation', e);
