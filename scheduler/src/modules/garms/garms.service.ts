@@ -328,7 +328,7 @@ export class GarmsService {
       const password = process.env.GARMS_PWD;
       // Running the shell script using execPromise with source and destination as parameters
       const { stdout, stderr } = await execPromise(
-        `../../common/helper/upload-file.helper.sh "${sourceFile}" "${destinationFile}" "${recordLength}" "${host}" "${username}" "${password}"`,
+        `./dist/common/helper/upload-file.helper.sh "${sourceFile}" "${destinationFile}" "${recordLength}" "${host}" "${username}" "${password}"`,
       );
 
       if (stderr) {
