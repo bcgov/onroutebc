@@ -24,7 +24,6 @@ import { convertUtcToPt, dateFormat } from './date-time.helper';
 import { InternalServerErrorException, Logger } from '@nestjs/common';
 import { PermitTransaction } from 'src/modules/common/entities/permit-transaction.entity';
 
-
 /**
  * Create GARMS CASH file
  * GRAMS cash file containd one heasder record for each date and multiple details record under one header.
@@ -69,11 +68,6 @@ export const createGarmsCashFile = (
             permitServiceCodes,
           );
         });
-        console.log('paymentTypeAmounts map ',paymentTypeAmounts)
-        console.log('permitServiceCodes map ',permitServiceCodes)
-        console.log('permitTypeAmounts map ',permitTypeAmounts)
-        console.log('permitTypeCount map ',permitTypeCount)
-
         const sequenceNumber = permitTypeCount.size;
         const header: string = createGarmsCashFileHeader(
           paymentTypeAmounts,
@@ -162,7 +156,7 @@ export const createGarmsCashFileDetails = (
 ) => {
   let seqNumber = 0;
   let details = '';
-  for(const key of permitTypeAmounts.keys()) {
+  for (const key of permitTypeAmounts.keys()) {
     seqNumber = seqNumber + 1;
     const gcd = new GarmaCashDetail();
     gcd.recType = DETAIL_REC_TYPE;
@@ -172,14 +166,16 @@ export const createGarmsCashFileDetails = (
     gcd.serviceCode = formatNumber(key, 4);
     gcd.serviceQuantity = formatNumber(getValue(permitTypeCount, key), 5);
     gcd.invUnits = INV_UNITS;
-    gcd.revAmount = formatAmount(parseFloat(permitTypeAmounts.get(key).toFixed(2)));
+    gcd.revAmount = formatAmount(
+      parseFloat(permitTypeAmounts.get(key).toFixed(2)),
+    );
     gcd.serNoFrom = SER_NO_FROM;
     gcd.serNoTo = SER_NO_TO;
     gcd.voidInd = VOID_IND;
     gcd.f1 = GARMS_CASH_FILLER;
     const detail = Object.values(gcd).join('');
     details = details + detail + '\n';
-  };
+  }
   return details;
 };
 
@@ -272,9 +268,11 @@ export const groupTransactionsByDate = (transactions: Transaction[]) => {
   // Group transactions by the date (ignoring the time part)
   const groupedData: Record<string, Transaction[]> = transactions.reduce(
     (acc, transaction) => {
-      
       // Extract just the date part (YYYY-MM-DD)
-      const transactionDate = convertUtcToPt(transaction.transactionSubmitDate,"YYYY-MM-DD");
+      const transactionDate = convertUtcToPt(
+        transaction.transactionSubmitDate,
+        'YYYY-MM-DD',
+      );
       // If the date group doesn't exist, create it
       if (!acc[transactionDate]) {
         acc[transactionDate] = [];

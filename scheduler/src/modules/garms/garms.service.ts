@@ -299,7 +299,8 @@ export class GarmsService {
       };
       const ftps: FTPS = new FTPS(options);
       try {
-        this.logger.log('sending file to garms',localFilePath);
+        this.logger.log('sending file to garms', localFilePath);
+        this.logger.log(data);
         ftps.pwd().exec(console.log);
         // site command is to set record length to 140 for remote server. put -a is for ascii mode, -e to delete source file after successful transfer -o for remote file name.
         const ftpCommand = `SITE LRecl=${recordLength}; put -aE ${localFilePath}  -o "'${remoteFilePath}'"`;
