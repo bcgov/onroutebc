@@ -157,7 +157,7 @@ export const createGarmsCashFileDetails = async (
   fileName: string,
 ) => {
   let seqNumber = 0;
-  let detailCount = permitTypeAmounts.size()
+  const detailCount: number = permitTypeAmounts.size;
   for (const key of permitTypeAmounts.keys()) {
     seqNumber = seqNumber + 1;
     const gcd = new GarmaCashDetail();
