@@ -44,7 +44,7 @@ export const ManageSettingsDashboard = React.memo(() => {
     permissionMatrixKeys: {
       permissionMatrixFeatureKey: "MANAGE_SETTINGS",
       permissionMatrixFunctionKey: "VIEW_SPECIAL_AUTHORIZATIONS",
-    }
+    },
   });
 
   const showCreditAccountTab = usePermissionMatrix({
