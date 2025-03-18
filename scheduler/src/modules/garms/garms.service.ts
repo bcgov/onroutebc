@@ -55,7 +55,7 @@ export class GarmsService {
       );
       if (transactions?.length) {
         const permitServiceCodes = await this.getPermitTypeServiceCodes();
-        const fileName =  createGarmsCashFile(
+        const fileName = createGarmsCashFile(
           transactions,
           garmsExtractType,
           permitServiceCodes,
@@ -295,14 +295,25 @@ export class GarmsService {
         additionalLftpCommands: `set cache:enable no;set ftp:passive-mode on;set ftp:use-size no;set ftp:ssl-protect-data yes;set ftp:ssl-force yes;set ftp:ssl-auth TLS;set ssl:verify-certificate no;set ftps:initial-prot "P";set net:connection-limit 1;set net:max-retries 1;debug 5;`,
       };
       const ftps: FTPS = new FTPS(options);
-        const uploadPromise = new Promise(() => {
-          this.logger.log('sending file to garms', localFilePath);
-          // site command is to set record length to 140 for remote server. put -a is for ascii mode, -e to delete source file after successful transfer -o for remote file name.
-          const ftpCommand = `SITE LRecl=${recordLength}; put -aE ${localFilePath}  -o "'${remoteFilePath}'"`;
-          ftps.raw(ftpCommand).exec(console.log);
+
+      // site command is to set record length to 140 for remote server. put -a is for ascii mode, -e to delete source file after successful transfer -o for remote file name.
+      const ftpCommand = `SITE LRecl=${recordLength}; put -aE ${localFilePath}  -o "'${remoteFilePath}'"`;
+
+      // Wrap the FTPS command inside a Promise
+      const uploadPromise = new Promise<void>((resolve, reject) => {
+        this.logger.log('sending file to garms', localFilePath);
+        ftps.raw(ftpCommand, (err, response) => {
+          if (err) {
+            this.logger.error('FTP upload failed', err);
+            reject(err); // Reject the promise if an error occurs
+          } else {
+            this.logger.log('FTP upload response:', response);
+            resolve(); // Resolve the promise when the upload is successful
+          }
         });
-        // Wait for the upload to complete before proceeding
-        await uploadPromise;
+      });
+      // Wait for the upload to complete before proceeding
+      await uploadPromise;
     } else {
       this.logger.log('Unable to get username and password for ftp server');
     }

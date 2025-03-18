@@ -68,14 +68,14 @@ export const createGarmsCashFile = (
           );
         });
         const sequenceNumber = permitTypeCount.size;
-         createGarmsCashFileHeader(
+        createGarmsCashFileHeader(
           paymentTypeAmounts,
           transactionByDate.date,
           permitTypeCount,
           sequenceNumber,
           fileName,
         );
-         createGarmsCashFileDetails(
+        createGarmsCashFileDetails(
           permitTypeCount,
           permitTypeAmounts,
           transactionByDate.date,
@@ -140,7 +140,7 @@ export const createGarmsCashFileHeader = (
   gch.serviceQuantity = formatNumber(getSum(permitTypeCount), 5);
   gch.invQuantity = INV_QTY;
   const header = Object.values(gch).join('');
-  fs.appendFileSync(fileName, header+'\n');
+  fs.appendFileSync(fileName, header + '\n');
 };
 
 /**
@@ -176,8 +176,8 @@ export const createGarmsCashFileDetails = (
     gcd.voidInd = VOID_IND;
     gcd.f1 = GARMS_CASH_FILLER;
     const detail = Object.values(gcd).join('');
-    if(seqNumber === detailCount) fs.appendFileSync(fileName, detail);
-    else fs.appendFileSync(fileName, detail+'\n');
+    if (seqNumber === detailCount) fs.appendFileSync(fileName, detail);
+    else fs.appendFileSync(fileName, detail + '\n');
   }
 };
 
