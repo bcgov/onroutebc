@@ -69,7 +69,7 @@ export class GarmsService {
         const recordLength = GARMS_CASH_FILE_LRECL;
         await this.updateFileSubmitTimestamp(oldFile);
         await this.saveTransactionIds(transactions, fileId);
-        await this.uploadFile(fileName, remoteFilePath, recordLength);
+        await this.upload(fileName, recordLength,remoteFilePath);
       } else {
         this.logger.log('No data to process for GARMS cash file');
       }
@@ -298,10 +298,6 @@ export class GarmsService {
         additionalLftpCommands: `set cache:enable no;set ftp:passive-mode on;set ftp:use-size no;set ftp:ssl-protect-data yes;set ftp:ssl-force yes;set ftp:ssl-auth TLS;set ssl:verify-certificate no;set ftps:initial-prot "P";set net:connection-limit 1;set net:max-retries 1;debug 5;`,
       };
       const ftps: FTPS = new FTPS(options);
-
-      // site command is to set record length to 140 for remote server. put -a is for ascii mode, -e to delete source file after successful transfer -o for remote file name.
-      const ftpCommand = `SITE LRecl=${recordLength}; put -aE ${localFilePath}  -o "'${remoteFilePath}'"`;
-
       // Wrap the FTPS command inside a Promise
       const uploadPromise = new Promise(() => {
         this.logger.log('sending file to garms', localFilePath);
@@ -317,17 +313,15 @@ export class GarmsService {
   }
 
   // This function will run the shell script for file upload with parameters
-  async uploadFile(
+   uploadFile(
     sourceFile: string,
     destinationFile: string,
     recordLength: number,
   ): Promise<string> {
     try {
-      const execPromise = promisify(exec);
       const host = process.env.GARMS_HOST;
       const username = process.env.GARMS_USER;
       const password = process.env.GARMS_PWD;
-      const scriptPath = path.resolve(__dirname, '../../../../tmp/upload-file.helper.sh')
       const lftpCommand = `
       lftp 
       set cache:enable no
@@ -349,7 +343,7 @@ export class GarmsService {
       put -a "${sourceFile}" -o "'${destinationFile}'"
     `;
       // Running the shell script using execPromise with source and destination as parameters
-      const { stdout, stderr } = await execPromise(lftpCommand);
+      const { stdout, stderr } =  exec(lftpCommand);
 
       if (stderr) {
         console.error('Error executing shell script:', stderr);
