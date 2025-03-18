@@ -64,7 +64,7 @@ export class GarmsService {
 
         const remoteFilePath = process.env.GARMS_ENV + GARMS_CASH_FILE_LOCATION;
         const recordLength = GARMS_CASH_FILE_LRECL;
-        await this.upload(fileName, recordLength, remoteFilePath);
+        this.upload(fileName, recordLength, remoteFilePath);
         await this.saveTransactionIds(transactions, fileId);
       } else {
         this.logger.log('No data to process for GARMS cash file');
@@ -282,7 +282,7 @@ export class GarmsService {
    * @param recordLength
    * @param remoteFilePath
    */
-  async upload(fileName: string, recordLength: number, remoteFilePath: string) {
+  upload(fileName: string, recordLength: number, remoteFilePath: string) {
     const username = process.env.GARMS_USER;
     const password = process.env.GARMS_PWD;
     if (username && password) {
