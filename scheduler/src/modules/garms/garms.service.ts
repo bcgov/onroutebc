@@ -304,9 +304,9 @@ export class GarmsService {
           const ftpCommand = `SITE LRecl=${recordLength}; put -aE ${localFilePath}  -o "'${remoteFilePath}'"`;
           ftps.raw(ftpCommand).exec(console.log);
         });
-        this.logger.log('await upload promise');
         // Wait for the upload to complete before proceeding
         await uploadPromise;
+        this.logger.log('Sent file successfully');
       } catch (e) {
         this.logger.error('Error during FTP upload or file operation', e);
         throw new InternalServerErrorException(e);
