@@ -296,14 +296,10 @@ export class GarmsService {
       };
       const ftps: FTPS = new FTPS(options);
       try {
-        const uploadPromise = new Promise(() => {
-          this.logger.log('sending file to garms', localFilePath);
-          // site command is to set record length to 140 for remote server. put -a is for ascii mode, -e to delete source file after successful transfer -o for remote file name.
-          const ftpCommand = `SITE LRecl=${recordLength}; put -aE ${localFilePath}  -o "'${remoteFilePath}'"`;
-          ftps.raw(ftpCommand).exec(console.log);
-        });
-        // Wait for the upload to complete before proceeding
-        await uploadPromise;
+        this.logger.log('sending file to garms', localFilePath);
+        // site command is to set record length to 140 for remote server. put -a is for ascii mode, -e to delete source file after successful transfer -o for remote file name.
+        const ftpCommand = `SITE LRecl=${recordLength}; put -aE ${localFilePath}  -o "'${remoteFilePath}'"`;
+        ftps.raw(ftpCommand).exec(console.log);
         this.logger.log('Sent file successfully');
       } catch (e) {
         this.logger.error('Error during FTP upload or file operation', e);
