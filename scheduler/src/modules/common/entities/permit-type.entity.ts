@@ -17,5 +17,5 @@ export class PermitType {
 
   @AutoMap()
   @Column({ name: 'GARMS_SERVICE_CODE', nullable: true })
-  serviceCode: string;
+  serviceCode: number;
 }
