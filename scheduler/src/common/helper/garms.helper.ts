@@ -157,7 +157,6 @@ export const createGarmsCashFileDetails = (
   fileName: string,
 ) => {
   let seqNumber = 0;
-  const detailCount: number = permitTypeAmounts.size;
   for (const key of permitTypeAmounts.keys()) {
     seqNumber = seqNumber + 1;
     const gcd = new GarmaCashDetail();
@@ -176,8 +175,7 @@ export const createGarmsCashFileDetails = (
     gcd.voidInd = VOID_IND;
     gcd.f1 = GARMS_CASH_FILLER;
     const detail = Object.values(gcd).join('');
-    if (seqNumber === detailCount) fs.appendFileSync(fileName, detail);
-    else fs.appendFileSync(fileName, detail + '\n');
+    fs.appendFileSync(fileName, detail + '\n');
   }
 };
 

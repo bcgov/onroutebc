@@ -328,10 +328,28 @@ export class GarmsService {
       const username = process.env.GARMS_USER;
       const password = process.env.GARMS_PWD;
       const scriptPath = path.resolve(__dirname, '../../../../tmp/upload-file.helper.sh')
+      const lftpCommand = `
+      lftp 
+      set cache:enable no
+      set ftp:passive-mode on
+      set ftp:use-size no
+      set ftp:ssl-protect-data true
+      set ftp:ssl-force true
+      set ftp:ssl-auth TLS
+      set ssl:verify-certificate no
+      set ftps:initial-prot "P"
+      set net:connection-limit 1
+      set net:max-retries 1
+      debug 5
+
+      open "${host}"
+      user "${username}" "${password}"
+
+      quote SITE LRecl="${recordLength}"
+      put -a "${sourceFile}" -o "'${destinationFile}'"
+    `;
       // Running the shell script using execPromise with source and destination as parameters
-      const { stdout, stderr } = await execPromise(
-        `${scriptPath} "${sourceFile}" "${destinationFile}" "${recordLength}" "${host}" "${username}" "${password}"`,
-      );
+      const { stdout, stderr } = await execPromise(lftpCommand);
 
       if (stderr) {
         console.error('Error executing shell script:', stderr);
