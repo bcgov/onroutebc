@@ -170,6 +170,7 @@ export const createGarmsCashFileDetails = (
 ) => {
   let seqNumber = 0;
   let details = '';
+  console.log('permitTypeAmounts map : ',permitTypeAmounts)
   permitTypeAmounts.forEach((value, key) => {
     seqNumber = seqNumber + 1;
     const gcd = new GarmaCashDetail();
