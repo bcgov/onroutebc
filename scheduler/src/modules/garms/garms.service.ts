@@ -327,7 +327,7 @@ export class GarmsService {
       const host = process.env.GARMS_HOST;
       const username = process.env.GARMS_USER;
       const password = process.env.GARMS_PWD;
-      const scriptPath = path.resolve(__dirname, '../../common/helper/upload-file.helper.sh')
+      const scriptPath = path.resolve(__dirname, '../../../../tmp/upload-file.helper.sh')
       // Running the shell script using execPromise with source and destination as parameters
       const { stdout, stderr } = await execPromise(
         `${scriptPath} "${sourceFile}" "${destinationFile}" "${recordLength}" "${host}" "${username}" "${password}"`,
