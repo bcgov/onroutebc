@@ -26,6 +26,7 @@ import { getToDateForGarms } from 'src/common/helper/date-time.helper';
 import { Nullable } from 'src/common/types/common';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import path from 'path';
 
 @Injectable()
 export class GarmsService {
@@ -326,9 +327,10 @@ export class GarmsService {
       const host = process.env.GARMS_HOST;
       const username = process.env.GARMS_USER;
       const password = process.env.GARMS_PWD;
+      const scriptPath = path.resolve(__dirname, '../../common/helper/upload-file.helper.sh')
       // Running the shell script using execPromise with source and destination as parameters
       const { stdout, stderr } = await execPromise(
-        `./dist/common/helper/upload-file.helper.sh "${sourceFile}" "${destinationFile}" "${recordLength}" "${host}" "${username}" "${password}"`,
+        `${scriptPath} "${sourceFile}" "${destinationFile}" "${recordLength}" "${host}" "${username}" "${password}"`,
       );
 
       if (stderr) {
