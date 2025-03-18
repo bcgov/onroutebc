@@ -26,7 +26,7 @@ import { getToDateForGarms } from 'src/common/helper/date-time.helper';
 import { Nullable } from 'src/common/types/common';
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import path from 'path';
+import * as path from 'path';
 
 @Injectable()
 export class GarmsService {
