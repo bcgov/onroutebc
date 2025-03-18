@@ -2,10 +2,12 @@
 
 .non-finance-container {
   margin-top: 1.5rem;
-  div {
-    font-weight: normal; // Applies to all nested elements
-  }
-  span {
-    font-weight: bold;
-  }
+}
+
+.non-finance-container__banner {
+  font-weight: normal;
+}
+
+.non-finance-container__info {
+  font-weight: bold;
 }
