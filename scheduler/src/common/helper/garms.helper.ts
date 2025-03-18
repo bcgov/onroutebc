@@ -43,10 +43,13 @@ export const createGarmsCashFile = (
 ) => {
   const fileName = '/tmp/GARMS_CASH_' + Date.now();
   try {
+    let count = 0;
     const groupedTransactionsByDate: DateTransaction[] =
       groupTransactionsByDate(transactions);
     if (groupTransactionsByDate && groupedTransactionsByDate.length > 0) {
       for (const transactionByDate of groupedTransactionsByDate) {
+        count += 1;
+        const lastHeader = (count === groupedTransactionsByDate.length)
         const permitTypeAmounts = new Map<number, number>();
         const permitTypeCount = new Map<number, number>();
         const paymentTypeAmounts = new Map<string, number>();
@@ -80,6 +83,7 @@ export const createGarmsCashFile = (
           permitTypeAmounts,
           transactionByDate.date,
           fileName,
+          lastHeader,
         );
       }
 
@@ -155,10 +159,12 @@ export const createGarmsCashFileDetails = (
   permitTypeAmounts: Map<number, number>,
   date: string,
   fileName: string,
+  lastHeader: boolean,
 ) => {
   let seqNumber = 0;
-  for (const key of permitTypeAmounts.keys()) {
+    for (const key of permitTypeAmounts.keys()) {
     seqNumber = seqNumber + 1;
+    const lastDetailLine = (permitTypeAmounts.size === seqNumber)
     const gcd = new GarmaCashDetail();
     gcd.recType = DETAIL_REC_TYPE;
     gcd.agentNumber = AGENT_NUMBER;
@@ -175,7 +181,8 @@ export const createGarmsCashFileDetails = (
     gcd.voidInd = VOID_IND;
     gcd.f1 = GARMS_CASH_FILLER;
     const detail = Object.values(gcd).join('');
-    fs.appendFileSync(fileName, detail + '\n');
+    if(lastHeader && lastDetailLine) fs.appendFileSync(fileName, detail + '\nEOF');
+    else fs.appendFileSync(fileName, detail + '\n');
   }
 };
 
