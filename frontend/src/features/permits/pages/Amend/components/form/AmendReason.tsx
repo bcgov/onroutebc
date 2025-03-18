@@ -1,8 +1,9 @@
 import "./AmendReason.scss";
 import { CustomFormComponent } from "../../../../../../common/components/form/CustomFormComponents";
 import { requiredMessage } from "../../../../../../common/helpers/validationMessages";
+import { ORBCFormFeatureType } from "../../../../../../common/types/common";
 
-export const AmendReason = ({ feature }: { feature: string }) => {
+export const AmendReason = ({ feature }: { feature: ORBCFormFeatureType }) => {
   return (
     <div className="amend-reason">
       <div className="amend-reason__label">Reason for Amendment</div>

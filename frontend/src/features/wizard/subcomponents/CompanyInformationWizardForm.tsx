@@ -1,33 +1,38 @@
 import Typography from "@mui/material/Typography";
 import { memo } from "react";
-
-import { InfoBcGovBanner } from "../../../common/components/banners/InfoBcGovBanner";
 import { CustomFormComponent } from "../../../common/components/form/CustomFormComponents";
 import { BANNER_MESSAGES } from "../../../common/constants/bannerMessages";
 import {
   invalidDBALength,
   isValidOptionalString,
 } from "../../../common/helpers/validationMessages";
-import { CompanyContactDetailsForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyContactDetailsForm";
 import { CompanyInfoGeneralForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyInfoGeneralForm";
-import { CompanyPrimaryContactForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyPrimaryContactForm";
 import "./CompanyInformationWizardForm.scss";
-
+import { ORBC_FORM_FEATURES } from "../../../common/types/common";
+import { WarningBcGovBanner } from "../../../common/components/banners/WarningBcGovBanner";
+import { CompanyPrimaryContactForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyPrimaryContactForm";
 /**
  * The Company Wizard Form contains multiple subs forms including
  * Company Info, Company Contact, and Primary Contact forms.
  */
 export const CompanyInformationWizardForm = memo(
   ({ showCompanyName = false }: { showCompanyName?: boolean }) => {
-    const FEATURE = "wizard";
+    const FEATURE = ORBC_FORM_FEATURES.COMPANY_INFORMATION_WIZARD;
 
     return (
       <div className="company-info-wizard-form">
         {showCompanyName && (
           <>
-            <Typography variant="h2" gutterBottom>
-              Company Name
+            <Typography
+              variant="h2"
+              className="company-info-wizard-form__heading"
+            >
+              Client Name
             </Typography>
+            <WarningBcGovBanner
+              className="company-info-wizard-form__banner"
+              msg={BANNER_MESSAGES.CLIENT_NAME_MUST_BE_REGISTERED_OWNER}
+            />
             <CustomFormComponent
               type="input"
               feature={FEATURE}
@@ -42,12 +47,12 @@ export const CompanyInformationWizardForm = memo(
                       }) || invalidDBALength(1, 150),
                   },
                 },
-                label: "Company Name",
+                label: "Client Name",
               }}
             />
           </>
         )}
-        <Typography variant="h2" gutterBottom>
+        <Typography variant="h2" className="company-info-wizard-form__heading">
           Doing Business As (DBA)
         </Typography>
         <CustomFormComponent
@@ -66,33 +71,12 @@ export const CompanyInformationWizardForm = memo(
             label: "DBA",
           }}
         />
-        <Typography variant="h2" gutterBottom>
-          Company Mailing Address
+
+        <Typography variant="h2" className="company-info-wizard-form__heading">
+          Contact Details
         </Typography>
-        <CompanyInfoGeneralForm feature={FEATURE} />
-
-        <Typography variant="h2" gutterBottom>
-          Company Contact Details
-        </Typography>
-
-        <CompanyContactDetailsForm
-          feature={FEATURE}
-          // Currently, companyName is displayed only for idir users
-          // So, If idir user is creating a company, enable the email field.
-          // i.e., showCompanyName and disableEmail have opposite values.
-          disableEmail={showCompanyName ? false : true }
-        />
-
-        <Typography variant="h2" gutterBottom>
-          Company Primary Contact
-        </Typography>
-
-        <InfoBcGovBanner
-          className="company-info-wizard-form__info-banner"
-          msg={BANNER_MESSAGES.COMPANY_CONTACT}
-        />
-
         <CompanyPrimaryContactForm feature={FEATURE} />
+        <CompanyInfoGeneralForm feature={FEATURE} />
       </div>
     );
   },
