@@ -22,8 +22,8 @@ import { GarmaCashDetail } from 'src/modules/garms/dto/garms-cash-details.dto';
 import { GarmaCashHeader } from 'src/modules/garms/dto/garms-cash-header.dto';
 import { convertUtcToPt, dateFormat } from './date-time.helper';
 import * as fs from 'fs';
-import * as path from 'path';
 import { InternalServerErrorException, Logger } from '@nestjs/common';
+import { PermitTransaction } from 'src/modules/common/entities/permit-transaction.entity';
 
 export const deleteLocalFile = (fileName: string, logger: Logger) => {
   console.log('deleting file: ', fs.readFileSync(fileName));
@@ -57,7 +57,6 @@ export const createGarmsCashFile = (
 ) => {
   const datetime = new Date().getMilliseconds();
   try {
-    const fileName = path.join('/tmp', 'GARMS_CASH_FILE_' + datetime);
     const groupedTransactionsByDate: DateTransaction[] =
       groupTransactionsByDate(transactions);
     let fileData = '';
@@ -68,7 +67,13 @@ export const createGarmsCashFile = (
         const paymentTypeAmounts = new Map<string, number>();
         const transactions = transactionByDate.transactions as Transaction[];
         transactions.forEach((transaction) => {
-          processPaymentMethod(transaction, paymentTypeAmounts);
+          transaction.permitTransactions.forEach((permitTransaction) => {
+            processPaymentMethod(
+              permitTransaction,
+              transaction,
+              paymentTypeAmounts,
+            );
+          });
           processPermitTransactions(
             transaction,
             permitTypeAmounts,
@@ -83,13 +88,11 @@ export const createGarmsCashFile = (
           transactionByDate.date,
           permitTypeCount,
           sequenceNumber,
-          fileName,
         );
         const details: string = createGarmsCashFileDetails(
           permitTypeCount,
           permitTypeAmounts,
           transactionByDate.date,
-          fileName,
         );
         fileData = fileData + header + details;
       });
@@ -117,7 +120,6 @@ export const createGarmsCashFileHeader = (
   date: string,
   permitTypeCount: Map<number, number>,
   seqNumber: number,
-  fileName: string,
 ) => {
   const gch = new GarmaCashHeader();
   gch.recType = HEADER_REC_TYPE;
@@ -165,7 +167,6 @@ export const createGarmsCashFileDetails = (
   permitTypeCount: Map<number, number>,
   permitTypeAmounts: Map<number, number>,
   date: string,
-  fileName: string,
 ) => {
   let seqNumber = 0;
   let details = '';
@@ -211,7 +212,7 @@ export const processPermitTransactions = (
 ) => {
   transaction.permitTransactions.forEach((permitTransaction) => {
     const permitType = permitTransaction.permit.permitType;
-    const paymentAmount = getPaymentAmount(transaction);
+    const paymentAmount = getPaymentAmount(permitTransaction, transaction);
 
     updateMapServiceCode(
       permitTypeAmounts,
@@ -237,6 +238,7 @@ export const processPermitTransactions = (
  * @returns void
  */
 export const processPaymentMethod = (
+  permitTransaction: PermitTransaction,
   transaction: Transaction,
   paymentTypeAmounts: Map<string, number>,
 ) => {
@@ -244,18 +246,21 @@ export const processPaymentMethod = (
 
   if (paymentMethodTypeCode && paymentCardTypeCode) {
     const paymentType = paymentCardTypeCode;
-    const paymentAmount = getPaymentAmount(transaction);
+    const paymentAmount = getPaymentAmount(permitTransaction, transaction);
     updateMap(paymentTypeAmounts, paymentType, paymentAmount);
   } else if (paymentMethodTypeCode) {
     const paymentType = paymentMethodTypeCode;
-    const paymentAmount = getPaymentAmount(transaction);
+    const paymentAmount = getPaymentAmount(permitTransaction, transaction);
     updateMap(paymentTypeAmounts, paymentType, paymentAmount);
   }
 };
 
 // Determine the paymentType and transaction amount based on the condition
-export const getPaymentAmount = (transaction: Transaction) => {
-  const amount = transaction.totalTransactionAmount;
+export const getPaymentAmount = (
+  permitTransaction: PermitTransaction,
+  transaction: Transaction,
+) => {
+  const amount = permitTransaction.transactionAmount;
   const isRefundOrVoid =
     transaction.transactionTypeId === TransactionType.REFUND ||
     transaction.transactionTypeId === TransactionType.VOID_REFUND;
@@ -275,9 +280,11 @@ export const groupTransactionsByDate = (transactions: Transaction[]) => {
   // Group transactions by the date (ignoring the time part)
   const groupedData: Record<string, Transaction[]> = transactions.reduce(
     (acc, transaction) => {
-      
       // Extract just the date part (YYYY-MM-DD)
-      const transactionDate = convertUtcToPt(transaction.transactionSubmitDate,"YYYY-MM-DD");
+      const transactionDate = convertUtcToPt(
+        transaction.transactionSubmitDate,
+        'YYYY-MM-DD',
+      );
       // If the date group doesn't exist, create it
       if (!acc[transactionDate]) {
         acc[transactionDate] = [];
