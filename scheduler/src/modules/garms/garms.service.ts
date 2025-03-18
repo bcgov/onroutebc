@@ -293,15 +293,14 @@ export class GarmsService {
         password: process.env.GARMS_PWD,
         // additinal settings for lftp command. passive-mode is only on for onRoute because pf firewall, it is off for TPS.
         additionalLftpCommands:
-          'set cache:enable no;set ftp:passive-mode on;set ftp:use-size no;set ftp:ssl-protect-data yes;set ftp:ssl-force yes;set ftp:ssl-auth TLS;set ssl:verify-certificate no;set ftps:initial-prot "P";set net:connection-limit 1;set net:max-retries 1;debug 4;',
+          `set cache:enable no;set ftp:passive-mode on;set ftp:use-size no;set ftp:ssl-protect-data yes;set ftp:ssl-force yes;set ftp:ssl-auth TLS;set ssl:verify-certificate no;set ftps:initial-prot "P";set net:connection-limit 1;set net:max-retries 1;debug 4;SITE LRecl=${recordLength};`,
       };
       const ftps: FTPS = new FTPS(options);
       try {
         const uploadPromise = new Promise(() => {
           this.logger.log('sending file to garms', localFilePath);
-          ftps.raw(`SITE LRecl=${recordLength}`).exec(console.log);
           // site command is to set record length to 140 for remote server. put -a is for ascii mode, -e to delete source file after successful transfer -o for remote file name.
-          const ftpCommand = `SITE LRecl=${recordLength}; put -aE ${localFilePath}  -o "'${remoteFilePath}'"`;
+          const ftpCommand = ` put -aE ${localFilePath}  -o "'${remoteFilePath}'"`;
           ftps.raw(ftpCommand).exec(console.log);
         });
         // Wait for the upload to complete before proceeding
