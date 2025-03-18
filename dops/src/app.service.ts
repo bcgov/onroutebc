@@ -222,6 +222,24 @@ export class AppService {
         'base64',
       ),
     );
+    await addToCache(
+      this.cacheManager,
+      CacheKey.IMG_WHITE_HEADER_ORBC_LOGO,
+      this.convertFileToString(
+        assetsPath + 'images/onRouteBC_Logo_Email_Header.jpg',
+        true,
+        'base64',
+      ),
+    );
+    await addToCache(
+      this.cacheManager,
+      CacheKey.IMG_WHITE_MED_FOOTER_LOGO,
+      this.convertFileToString(
+        assetsPath + 'images/onRouteBC_Logo@2x_Email_Header.jpg',
+        true,
+        'base64',
+      ),
+    );
 
     const endDateTime = new Date();
     const processingTime = endDateTime.getTime() - startDateTime.getTime();
