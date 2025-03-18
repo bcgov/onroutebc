@@ -316,11 +316,10 @@ export class CompanyService {
       companyGUID = uuidv4().replace(/-/g, '').toUpperCase();
     } else if (!existingClient && currentUser.identity_provider === IDP.BCEID) {
       accountSource = AccountSource.BCeID;
+      companyDirectory = getDirectory(currentUser);
       if (currentUser.bceid_business_guid) {
         companyGUID = currentUser.bceid_business_guid;
-        companyDirectory = Directory.BBCEID;
       } else {
-        companyDirectory = Directory.ORBC;
         companyGUID = uuidv4().replace(/-/g, '').toUpperCase();
       }
     }
@@ -856,8 +855,27 @@ export class CompanyService {
           if (company?.companyUsers?.length) {
             throwUnprocessableEntityException(
               `You do not have the necessary authorization to view this page. Please contact your administrator.`,
+              { errorCode: 'COMPANY_CLAIMED' },
+            );
+          } else if (
+            company?.directory === Directory.BBCEID &&
+            getDirectory(currentUser) === Directory.BCEID
+          ) {
+            throwUnprocessableEntityException(
+              `A basic bceid user cannot claim a business bceid (BBCEID) account.`,
+              { errorCode: 'BASIC_CLAIM_BUSINESS' },
+            );
+          } else if (
+            company?.directory === Directory.BBCEID &&
+            getDirectory(currentUser) === Directory.BBCEID &&
+            company?.companyGUID !== currentUser.bceid_business_guid
+          ) {
+            throwUnprocessableEntityException(
+              `Business Guid mismatch between the current user and Company`,
+              { errorCode: 'BUSINESS_GUID_MISMATCH' },
             );
           }
+
           verifyClient.verifiedClient =
             await this.mapCompanyEntityToCompanyDto(company);
         }
