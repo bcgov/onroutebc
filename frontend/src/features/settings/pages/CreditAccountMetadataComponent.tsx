@@ -47,8 +47,8 @@ export const CreditAccountMetadataComponent = ({
           msg={
             <div className="non-finance-container__banner">
               {BANNER_MESSAGES.NON_FINANCE_USER}
-              Phone: <span className="non-finance-container__info">{CSVE_REVENUE_PHONE} </span>
-              Email: <span className="non-finance-container__info">{CVSE_REVENUE_EMAIL}</span>
+              Phone:<span className="non-finance-container__info">{CSVE_REVENUE_PHONE} </span>
+              Email:<span className="non-finance-container__info">{CVSE_REVENUE_EMAIL}</span>
             </div>
           }
         />
