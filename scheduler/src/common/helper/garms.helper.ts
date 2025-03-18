@@ -42,11 +42,13 @@ export const createGarmsCashFile = async (
   logger: Logger,
 ) => {
   const fileName = '/tmp/GARMS_CASH_' + Date.now();
+  let headerCount = 0;
   try {
     const groupedTransactionsByDate: DateTransaction[] =
       groupTransactionsByDate(transactions);
     if (groupTransactionsByDate && groupedTransactionsByDate.length > 0) {
       for (const transactionByDate of groupedTransactionsByDate) {
+        headerCount += 1;
         const permitTypeAmounts = new Map<number, number>();
         const permitTypeCount = new Map<number, number>();
         const paymentTypeAmounts = new Map<string, number>();
@@ -74,6 +76,7 @@ export const createGarmsCashFile = async (
           permitTypeCount,
           sequenceNumber,
           fileName,
+          headerCount,
         );
         await createGarmsCashFileDetails(
           permitTypeCount,
@@ -107,6 +110,7 @@ export const createGarmsCashFileHeader = async (
   permitTypeCount: Map<number, number>,
   seqNumber: number,
   fileName: string,
+  headerCount: number,
 ) => {
   const gch = new GarmaCashHeader();
   gch.recType = HEADER_REC_TYPE;
@@ -140,7 +144,8 @@ export const createGarmsCashFileHeader = async (
   gch.serviceQuantity = formatNumber(getSum(permitTypeCount), 5);
   gch.invQuantity = INV_QTY;
   const header = Object.values(gch).join('');
-  await fs.appendFile(fileName, header + '\n');
+  if (headerCount > 1) await fs.appendFile(fileName, '\n' + header);
+  else await fs.appendFile(fileName, header);
 };
 
 /**
@@ -175,7 +180,7 @@ export const createGarmsCashFileDetails = async (
     gcd.voidInd = VOID_IND;
     gcd.f1 = GARMS_CASH_FILLER;
     const detail = Object.values(gcd).join('');
-    await fs.appendFile(fileName, detail + '\n');
+    await fs.appendFile(fileName, '\n' + detail);
   }
 };
 
