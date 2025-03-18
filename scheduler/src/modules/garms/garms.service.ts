@@ -24,6 +24,8 @@ import {
 import { Cron } from '@nestjs/schedule';
 import { getToDateForGarms } from 'src/common/helper/date-time.helper';
 import { Nullable } from 'src/common/types/common';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 
 @Injectable()
 export class GarmsService {
@@ -66,11 +68,10 @@ export class GarmsService {
         const recordLength = GARMS_CASH_FILE_LRECL;
         await this.updateFileSubmitTimestamp(oldFile);
         await this.saveTransactionIds(transactions, fileId);
-        await this.upload(fileName, recordLength, remoteFilePath);
+        await this.uploadFile(fileName, remoteFilePath, recordLength);
       } else {
         this.logger.log('No data to process for GARMS cash file');
       }
-     
     } else {
       this.logger.log('No record to process for GARMS cash file');
     }
@@ -311,6 +312,35 @@ export class GarmsService {
       await uploadPromise;
     } else {
       this.logger.log('Unable to get username and password for ftp server');
+    }
+  }
+
+  // This function will run the shell script for file upload with parameters
+  async uploadFile(
+    sourceFile: string,
+    destinationFile: string,
+    recordLength: number,
+  ): Promise<string> {
+    try {
+      const execPromise = promisify(exec);
+      const host = process.env.GARMS_HOST;
+      const username = process.env.GARMS_USER;
+      const password = process.env.GARMS_PWD;
+      // Running the shell script using execPromise with source and destination as parameters
+      const { stdout, stderr } = await execPromise(
+        `src/common/helper/upload_file.helper.sh "${sourceFile}" "${destinationFile}" "${recordLength}" "${host}" "${username}" "${password}"`,
+      );
+
+      if (stderr) {
+        console.error('Error executing shell script:', stderr);
+        throw new Error(stderr);
+      }
+
+      console.log('Shell script output:', stdout);
+      return stdout; // Return the output from the shell script
+    } catch (error) {
+      console.error('Error in file upload process:', error);
+      throw new InternalServerErrorException('Failed to upload file');
     }
   }
 }
