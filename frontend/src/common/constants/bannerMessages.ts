@@ -47,6 +47,8 @@ export const BANNER_MESSAGES = {
     "The total distance, in km, is the distance that will be travelled within BC (or from/to BC border). This is to include the return trip distance.",
   BRIDGE_FORMULA_CALCULATION_TOOL:
     "This tool only calculates Bridge Formula, which is a mathematical equation that is used to calculate the maximum allowable weight allowed by permit for various axle groups in a combination. This tool is not confirming compliance with the CTR or CTPM.\n\nThe image on the right is for illustration purposes only.",
+  NON_FINANCE_USER:
+    "For Credit Accounts, please contact CVSE Revenue. ",
   CLIENT_NAME_MUST_BE_REGISTERED_OWNER:
     "Client name must be the registered owner (company or individual) of the vehicles being permitted.",
 };
