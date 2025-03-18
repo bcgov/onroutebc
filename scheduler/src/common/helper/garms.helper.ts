@@ -21,22 +21,9 @@ import { DateTransaction } from 'src/modules/garms/dto/DateTransation.dto';
 import { GarmaCashDetail } from 'src/modules/garms/dto/garms-cash-details.dto';
 import { GarmaCashHeader } from 'src/modules/garms/dto/garms-cash-header.dto';
 import { convertUtcToPt, dateFormat } from './date-time.helper';
-import * as fs from 'fs';
 import { InternalServerErrorException, Logger } from '@nestjs/common';
 import { PermitTransaction } from 'src/modules/common/entities/permit-transaction.entity';
 
-export const deleteLocalFile = (fileName: string, logger: Logger) => {
-  console.log('deleting file: ', fs.readFileSync(fileName));
-  fs.rm(fileName, (err) => {
-    try {
-      if (err) throw err;
-      logger.log('File deleted successfuly');
-    } catch (e) {
-      logger.error(e);
-      throw new InternalServerErrorException(e);
-    }
-  });
-};
 
 /**
  * Create GARMS CASH file
@@ -82,6 +69,11 @@ export const createGarmsCashFile = (
             permitServiceCodes,
           );
         });
+        console.log('paymentTypeAmounts map ',paymentTypeAmounts)
+        console.log('permitServiceCodes map ',permitServiceCodes)
+        console.log('permitTypeAmounts map ',permitTypeAmounts)
+        console.log('permitTypeCount map ',permitTypeCount)
+
         const sequenceNumber = permitTypeCount.size;
         const header: string = createGarmsCashFileHeader(
           paymentTypeAmounts,
