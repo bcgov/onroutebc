@@ -280,11 +280,9 @@ export const groupTransactionsByDate = (transactions: Transaction[]) => {
   // Group transactions by the date (ignoring the time part)
   const groupedData: Record<string, Transaction[]> = transactions.reduce(
     (acc, transaction) => {
+      
       // Extract just the date part (YYYY-MM-DD)
-      const transactionDate = convertUtcToPt(
-        transaction.transactionSubmitDate,
-        'YYYY-MM-DD',
-      );
+      const transactionDate = convertUtcToPt(transaction.transactionSubmitDate,"YYYY-MM-DD");
       // If the date group doesn't exist, create it
       if (!acc[transactionDate]) {
         acc[transactionDate] = [];
