@@ -170,9 +170,7 @@ export const createGarmsCashFileDetails = (
 ) => {
   let seqNumber = 0;
   let details = '';
-  console.log('permitTypeAmounts map : ',permitTypeAmounts)
-  console.log('permitTypeCount: ',permitTypeCount)
-  permitTypeAmounts.forEach((value, key) => {
+  for(const key of permitTypeAmounts.keys()) {
     seqNumber = seqNumber + 1;
     const gcd = new GarmaCashDetail();
     gcd.recType = DETAIL_REC_TYPE;
@@ -182,14 +180,14 @@ export const createGarmsCashFileDetails = (
     gcd.serviceCode = formatNumber(key, 4);
     gcd.serviceQuantity = formatNumber(getValue(permitTypeCount, key), 5);
     gcd.invUnits = INV_UNITS;
-    gcd.revAmount = formatAmount(parseFloat(value.toFixed(2)));
+    gcd.revAmount = formatAmount(parseFloat(permitTypeAmounts.get(key).toFixed(2)));
     gcd.serNoFrom = SER_NO_FROM;
     gcd.serNoTo = SER_NO_TO;
     gcd.voidInd = VOID_IND;
     gcd.f1 = GARMS_CASH_FILLER;
     const detail = Object.values(gcd).join('');
     details = details + detail + '\n';
-  });
+  };
   return details;
 };
 
