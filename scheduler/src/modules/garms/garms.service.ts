@@ -64,12 +64,13 @@ export class GarmsService {
 
         const remoteFilePath = process.env.GARMS_ENV + GARMS_CASH_FILE_LOCATION;
         const recordLength = GARMS_CASH_FILE_LRECL;
-        await this.upload(fileName, recordLength, remoteFilePath);
+        await this.updateFileSubmitTimestamp(oldFile);
         await this.saveTransactionIds(transactions, fileId);
+        await this.upload(fileName, recordLength, remoteFilePath);
       } else {
         this.logger.log('No data to process for GARMS cash file');
       }
-      await this.updateFileSubmitTimestamp(oldFile);
+     
     } else {
       this.logger.log('No record to process for GARMS cash file');
     }
@@ -300,17 +301,11 @@ export class GarmsService {
       const ftpCommand = `SITE LRecl=${recordLength}; put -aE ${localFilePath}  -o "'${remoteFilePath}'"`;
 
       // Wrap the FTPS command inside a Promise
-      const uploadPromise = new Promise<void>((resolve, reject) => {
+      const uploadPromise = new Promise(() => {
         this.logger.log('sending file to garms', localFilePath);
-        ftps.raw(ftpCommand, (err, response) => {
-          if (err) {
-            this.logger.error('FTP upload failed', err);
-            reject(err); // Reject the promise if an error occurs
-          } else {
-            this.logger.log('FTP upload response:', response);
-            resolve(); // Resolve the promise when the upload is successful
-          }
-        });
+        // site command is to set record length to 140 for remote server. put -a is for ascii mode, -e to delete source file after successful transfer -o for remote file name.
+        const ftpCommand = `SITE LRecl=${recordLength}; put -aE ${localFilePath}  -o "'${remoteFilePath}'"`;
+        ftps.raw(ftpCommand).exec(console.log);
       });
       // Wait for the upload to complete before proceeding
       await uploadPromise;
