@@ -35,6 +35,7 @@ export const ChallengeProfileSteps = React.memo(() => {
   const { user } = useAuth();
   const [activeStep, setActiveStep] = useState(0);
   const [clientNumber, setClientNumber] = useState<Nullable<string>>(null);
+  const isBusinessBCeID = Boolean(user?.profile?.bceid_business_name);
 
   const defaultCompanyAndUserInfoValues = {
     legalName: getDefaultRequiredVal(
@@ -184,10 +185,11 @@ export const ChallengeProfileSteps = React.memo(() => {
         navigate(ERROR_ROUTES.CLAIM_PROFILE_ERROR, {
           state: { correlationId: error.response?.headers["x-correlation-id"] },
         });
+      } else {
+        navigate(ERROR_ROUTES.UNEXPECTED, {
+          state: { correlationId: error.response?.headers["x-correlation-id"] },
+        });
       }
-      navigate(ERROR_ROUTES.UNEXPECTED, {
-        state: { correlationId: error.response?.headers["x-correlation-id"] },
-      });
     },
   });
 
@@ -232,12 +234,14 @@ export const ChallengeProfileSteps = React.memo(() => {
           {activeStep === 0 && (
             <FormProvider {...verifyMigratedClientFormMethods}>
               <div className="create-profile-section create-profile-section--company">
-                <WizardClientBanner
-                  legalName={getDefaultRequiredVal(
-                    "",
-                    user?.profile?.bceid_business_name as string,
-                  )}
-                />
+                {isBusinessBCeID && (
+                  <WizardClientBanner
+                    legalName={getDefaultRequiredVal(
+                      "",
+                      user?.profile?.bceid_business_name as string,
+                    )}
+                  />
+                )}
                 <VerifyMigratedClientForm />
                 <div className="create-profile-section create-profile-section--nav">
                   <Stack direction="row" spacing={3}>
