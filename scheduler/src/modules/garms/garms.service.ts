@@ -23,7 +23,6 @@ import {
 } from 'src/common/constants/garms.constant';
 import { Cron } from '@nestjs/schedule';
 import { getToDateForGarms } from 'src/common/helper/date-time.helper';
-import * as fs from 'fs';
 import { Nullable } from 'src/common/types/common';
 
 @Injectable()
@@ -283,12 +282,11 @@ export class GarmsService {
    * @param recordLength
    * @param remoteFilePath
    */
-  upload(data: string, recordLength: number, remoteFilePath: string) {
+  upload(fileName: string, recordLength: number, remoteFilePath: string) {
     const username = process.env.GARMS_USER;
     const password = process.env.GARMS_PWD;
     if (username && password) {
-      const localFilePath = '/tmp/GARMS_CASH_' + Date.now(); // Unique temp file name
-      fs.writeFileSync(localFilePath, data);
+      const localFilePath = fileName; // Unique temp file name
       const options: FTPS.FTPOptions = {
         host: process.env.GARMS_HOST,
         username: process.env.GARMS_USER,
@@ -300,7 +298,6 @@ export class GarmsService {
       const ftps: FTPS = new FTPS(options);
       try {
         this.logger.log('sending file to garms', localFilePath);
-        this.logger.log(data);
         ftps.pwd().exec(console.log);
         // site command is to set record length to 140 for remote server. put -a is for ascii mode, -e to delete source file after successful transfer -o for remote file name.
         const ftpCommand = `SITE LRecl=${recordLength}; put -aE ${localFilePath}  -o "'${remoteFilePath}'"`;

@@ -23,6 +23,7 @@ import { GarmaCashHeader } from 'src/modules/garms/dto/garms-cash-header.dto';
 import { convertUtcToPt, dateFormat } from './date-time.helper';
 import { InternalServerErrorException, Logger } from '@nestjs/common';
 import { PermitTransaction } from 'src/modules/common/entities/permit-transaction.entity';
+import * as fs from 'fs';
 
 /**
  * Create GARMS CASH file
@@ -41,11 +42,10 @@ export const createGarmsCashFile = (
   permitServiceCodes: Map<string, number>,
   logger: Logger,
 ) => {
-  const datetime = new Date().getMilliseconds();
+  const fileName = '/tmp/GARMS_CASH_' + Date.now();
   try {
     const groupedTransactionsByDate: DateTransaction[] =
       groupTransactionsByDate(transactions);
-    let fileData = '';
     if (groupTransactionsByDate && groupedTransactionsByDate.length > 0) {
       groupedTransactionsByDate.forEach((transactionByDate) => {
         const permitTypeAmounts = new Map<number, number>();
@@ -69,26 +69,27 @@ export const createGarmsCashFile = (
           );
         });
         const sequenceNumber = permitTypeCount.size;
-        const header: string = createGarmsCashFileHeader(
+        createGarmsCashFileHeader(
           paymentTypeAmounts,
           transactionByDate.date,
           permitTypeCount,
           sequenceNumber,
+          fileName,
         );
-        const details: string = createGarmsCashFileDetails(
+        createGarmsCashFileDetails(
           permitTypeCount,
           permitTypeAmounts,
           transactionByDate.date,
+          fileName,
         );
-        fileData = fileData + header + details;
       });
 
-      return fileData;
+      return fileName;
     }
   } catch (err) {
     logger.error(err);
     throw new InternalServerErrorException(
-      `Garms ${garmsExtractType} File Creation Failed on ${datetime}`,
+      `Garms ${garmsExtractType} File Creation Failed`,
     );
   }
 };
@@ -106,6 +107,7 @@ export const createGarmsCashFileHeader = (
   date: string,
   permitTypeCount: Map<number, number>,
   seqNumber: number,
+  fileName: string,
 ) => {
   const gch = new GarmaCashHeader();
   gch.recType = HEADER_REC_TYPE;
@@ -139,7 +141,7 @@ export const createGarmsCashFileHeader = (
   gch.serviceQuantity = formatNumber(getSum(permitTypeCount), 5);
   gch.invQuantity = INV_QTY;
   const header = Object.values(gch).join('');
-  return header + '\n';
+  fs.appendFileSync(fileName, header + '\n');
 };
 
 /**
@@ -153,9 +155,9 @@ export const createGarmsCashFileDetails = (
   permitTypeCount: Map<number, number>,
   permitTypeAmounts: Map<number, number>,
   date: string,
+  fileName: string,
 ) => {
   let seqNumber = 0;
-  let details = '';
   for (const key of permitTypeAmounts.keys()) {
     seqNumber = seqNumber + 1;
     const gcd = new GarmaCashDetail();
@@ -174,9 +176,8 @@ export const createGarmsCashFileDetails = (
     gcd.voidInd = VOID_IND;
     gcd.f1 = GARMS_CASH_FILLER;
     const detail = Object.values(gcd).join('');
-    details = details + detail + '\n';
+    fs.appendFileSync(fileName, detail + '\n');
   }
-  return details;
 };
 
 /**
