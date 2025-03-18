@@ -55,7 +55,7 @@ export class GarmsService {
       );
       if (transactions?.length) {
         const permitServiceCodes = await this.getPermitTypeServiceCodes();
-        const fileName = await createGarmsCashFile(
+        const fileName =  createGarmsCashFile(
           transactions,
           garmsExtractType,
           permitServiceCodes,

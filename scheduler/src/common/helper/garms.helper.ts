@@ -23,7 +23,7 @@ import { GarmaCashHeader } from 'src/modules/garms/dto/garms-cash-header.dto';
 import { convertUtcToPt, dateFormat } from './date-time.helper';
 import { InternalServerErrorException, Logger } from '@nestjs/common';
 import { PermitTransaction } from 'src/modules/common/entities/permit-transaction.entity';
-import * as fs from 'fs/promises';
+import * as fs from 'fs';
 /**
  * Create GARMS CASH file
  * GRAMS cash file containd one heasder record for each date and multiple details record under one header.
@@ -35,7 +35,7 @@ import * as fs from 'fs/promises';
  * @param logger
  * @returns
  */
-export const createGarmsCashFile = async (
+export const createGarmsCashFile = (
   transactions: Transaction[],
   garmsExtractType: GarmsExtractType,
   permitServiceCodes: Map<string, number>,
@@ -68,14 +68,14 @@ export const createGarmsCashFile = async (
           );
         });
         const sequenceNumber = permitTypeCount.size;
-        await createGarmsCashFileHeader(
+         createGarmsCashFileHeader(
           paymentTypeAmounts,
           transactionByDate.date,
           permitTypeCount,
           sequenceNumber,
           fileName,
         );
-        await createGarmsCashFileDetails(
+         createGarmsCashFileDetails(
           permitTypeCount,
           permitTypeAmounts,
           transactionByDate.date,
@@ -101,7 +101,7 @@ export const createGarmsCashFile = async (
  * @param seqNumber
  * @param fileName
  */
-export const createGarmsCashFileHeader = async (
+export const createGarmsCashFileHeader = (
   paymentTypeAmounts: Map<string, number>,
   date: string,
   permitTypeCount: Map<number, number>,
@@ -140,7 +140,7 @@ export const createGarmsCashFileHeader = async (
   gch.serviceQuantity = formatNumber(getSum(permitTypeCount), 5);
   gch.invQuantity = INV_QTY;
   const header = Object.values(gch).join('');
-  await fs.appendFile(fileName, header+'\n');
+  fs.appendFileSync(fileName, header+'\n');
 };
 
 /**
@@ -150,7 +150,7 @@ export const createGarmsCashFileHeader = async (
  * @param date
  * @param fileName
  */
-export const createGarmsCashFileDetails = async (
+export const createGarmsCashFileDetails = (
   permitTypeCount: Map<number, number>,
   permitTypeAmounts: Map<number, number>,
   date: string,
@@ -176,8 +176,8 @@ export const createGarmsCashFileDetails = async (
     gcd.voidInd = VOID_IND;
     gcd.f1 = GARMS_CASH_FILLER;
     const detail = Object.values(gcd).join('');
-    if(seqNumber === detailCount) await fs.appendFile(fileName, detail);
-    else await fs.appendFile(fileName, detail+'\n');
+    if(seqNumber === detailCount) fs.appendFileSync(fileName, detail);
+    else fs.appendFileSync(fileName, detail+'\n');
   }
 };
 
