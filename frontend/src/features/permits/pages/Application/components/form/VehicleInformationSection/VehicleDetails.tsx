@@ -21,11 +21,15 @@ import { SelectVehicleDropdown } from "./components/SelectVehicleDropdown";
 import { PermitVehicleDetails } from "../../../../../types/PermitVehicleDetails";
 import { selectedVehicleSubtype } from "../../../../../../manageVehicles/helpers/vehicleSubtypes";
 import { PERMIT_TYPES, PermitType } from "../../../../../types/PermitType";
-import { isUndefined } from "../../../../../../../common/types/common";
-import { gvwLimit, isPermitVehicleWithinGvwLimit } from "../../../../../helpers/vehicles/rules/gvw";
 import {
-  disableMouseWheelInputOnNumberField,
-} from "../../../../../../../common/helpers/disableMouseWheelInputOnNumberField";
+  isUndefined,
+  ORBCFormFeatureType,
+} from "../../../../../../../common/types/common";
+import {
+  gvwLimit,
+  isPermitVehicleWithinGvwLimit,
+} from "../../../../../helpers/vehicles/rules/gvw";
+import { disableMouseWheelInputOnNumberField } from "../../../../../../../common/helpers/disableMouseWheelInputOnNumberField";
 
 import {
   PowerUnit,
@@ -65,7 +69,7 @@ export const VehicleDetails = ({
   onSetVehicle,
   onClearVehicle,
 }: {
-  feature: string;
+  feature: ORBCFormFeatureType;
   vehicleFormData: PermitVehicleDetails;
   vehicleOptions: Vehicle[];
   subtypeOptions: VehicleSubType[];
@@ -76,23 +80,22 @@ export const VehicleDetails = ({
   onClearVehicle: (saveVehicle: boolean) => void;
 }) => {
   const hideVehicleType = permitType === PERMIT_TYPES.STOS;
-  const disableVehicleType = ([
-    PERMIT_TYPES.MFP,
-    PERMIT_TYPES.STFR,
-    PERMIT_TYPES.QRFR,
-  ] as PermitType[]).includes(permitType);
+  const disableVehicleType = (
+    [PERMIT_TYPES.MFP, PERMIT_TYPES.STFR, PERMIT_TYPES.QRFR] as PermitType[]
+  ).includes(permitType);
 
-  const showGVW = ([
-    PERMIT_TYPES.STOS,
-    PERMIT_TYPES.MFP,
-    PERMIT_TYPES.STFR,
-    PERMIT_TYPES.QRFR,
-  ] as PermitType[]).includes(permitType);
+  const showGVW = (
+    [
+      PERMIT_TYPES.STOS,
+      PERMIT_TYPES.MFP,
+      PERMIT_TYPES.STFR,
+      PERMIT_TYPES.QRFR,
+    ] as PermitType[]
+  ).includes(permitType);
 
-  const shouldValidateProvince = ([
-    PERMIT_TYPES.STFR,
-    PERMIT_TYPES.QRFR,
-  ] as PermitType[]).includes(permitType);
+  const shouldValidateProvince = (
+    [PERMIT_TYPES.STFR, PERMIT_TYPES.QRFR] as PermitType[]
+  ).includes(permitType);
 
   const vehicleType = vehicleFormData.vehicleType;
 
@@ -292,8 +295,7 @@ export const VehicleDetails = ({
               maxLength: 4,
               validate: {
                 isNumber: (v) => !isNaN(v) || invalidNumber(),
-                lessThan1950: (v) =>
-                  parseInt(v) > 1950 || invalidYearMin(1950),
+                lessThan1950: (v) => parseInt(v) > 1950 || invalidYearMin(1950),
               },
             },
             inputType: "number",
@@ -314,10 +316,10 @@ export const VehicleDetails = ({
           disabled={isSelectedLOAVehicle}
           provinceValidationRules={{
             shouldNotBeInBC: (province?: string) =>
-              !shouldValidateProvince
-              || !province
-              || province !== "BC"
-              || provinceVehicleDoesNotRequirePermit("BC"),
+              !shouldValidateProvince ||
+              !province ||
+              province !== "BC" ||
+              provinceVehicleDoesNotRequirePermit("BC"),
           }}
         />
 
@@ -389,14 +391,16 @@ export const VehicleDetails = ({
                   isNumber: (v) => !isNaN(v) || invalidNumber(),
                   exceededGvw: (v) => {
                     const maxAllowedGvw = gvwLimit(permitType);
-                    return isSelectedLOAVehicle
-                      || isUndefined(maxAllowedGvw)
-                      || isPermitVehicleWithinGvwLimit(
+                    return (
+                      isSelectedLOAVehicle ||
+                      isUndefined(maxAllowedGvw) ||
+                      isPermitVehicleWithinGvwLimit(
                         permitType,
                         vehicleType as VehicleType,
                         parseInt(v),
-                      )
-                      || licensedGVWExceeded(maxAllowedGvw, true);
+                      ) ||
+                      licensedGVWExceeded(maxAllowedGvw, true)
+                    );
                   },
                 },
               },
@@ -414,8 +418,7 @@ export const VehicleDetails = ({
           id="demo-radio-buttons-group-label"
           className="save-to-inventory__label"
         >
-          Would you like to add/update this vehicle to your Vehicle
-          Inventory?
+          Would you like to add/update this vehicle to your Vehicle Inventory?
         </FormLabel>
 
         <RadioGroup

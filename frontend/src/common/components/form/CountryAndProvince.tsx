@@ -7,7 +7,11 @@ import { COUNTRIES } from "../../constants/countries";
 import { countrySupportsProvinces } from "../../helpers/countries/countrySupportsProvinces";
 import { DEFAULT_WIDTH } from "../../../themes/bcGovStyles";
 import { CustomFormComponent } from "./CustomFormComponents";
-import { Nullable, ORBC_FormTypes } from "../../types/common";
+import {
+  Nullable,
+  ORBC_FormTypes,
+  ORBCFormFeatureType,
+} from "../../types/common";
 import {
   invalidCountryCode,
   invalidProvinceCode,
@@ -15,7 +19,7 @@ import {
 } from "../../helpers/validationMessages";
 
 interface CountryAndProvinceProps {
-  feature: string;
+  feature: ORBCFormFeatureType;
   width?: string;
   countryField: string;
   provinceField: string;
@@ -25,8 +29,14 @@ interface CountryAndProvinceProps {
   provinceClassName?: string;
   readOnly?: boolean;
   disabled?: boolean;
-  countryValidationRules?: Record<string, (country?: string) => boolean | string>;
-  provinceValidationRules?: Record<string, (province?: string) => boolean | string>;
+  countryValidationRules?: Record<
+    string,
+    (country?: string) => boolean | string
+  >;
+  provinceValidationRules?: Record<
+    string,
+    (province?: string) => boolean | string
+  >;
 }
 
 /**

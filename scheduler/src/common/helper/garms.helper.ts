@@ -20,7 +20,7 @@ import { GarmsExtractType } from 'src/modules/common/enum/garms-extract-type.enu
 import { DateTransaction } from 'src/modules/garms/dto/DateTransation.dto';
 import { GarmaCashDetail } from 'src/modules/garms/dto/garms-cash-details.dto';
 import { GarmaCashHeader } from 'src/modules/garms/dto/garms-cash-header.dto';
-import { dateFormat } from './date-time.helper';
+import { convertUtcToPt, dateFormat } from './date-time.helper';
 import * as fs from 'fs';
 import * as path from 'path';
 import { InternalServerErrorException, Logger } from '@nestjs/common';
@@ -275,11 +275,9 @@ export const groupTransactionsByDate = (transactions: Transaction[]) => {
   // Group transactions by the date (ignoring the time part)
   const groupedData: Record<string, Transaction[]> = transactions.reduce(
     (acc, transaction) => {
+      
       // Extract just the date part (YYYY-MM-DD)
-      const transactionDate = transaction.transactionSubmitDate
-        .toISOString()
-        .split('T')[0];
-
+      const transactionDate = convertUtcToPt(transaction.transactionSubmitDate,"YYYY-MM-DD");
       // If the date group doesn't exist, create it
       if (!acc[transactionDate]) {
         acc[transactionDate] = [];
