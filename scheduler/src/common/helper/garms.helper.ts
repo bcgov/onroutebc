@@ -171,6 +171,7 @@ export const createGarmsCashFileDetails = (
   let seqNumber = 0;
   let details = '';
   console.log('permitTypeAmounts map : ',permitTypeAmounts)
+  console.log('permitTypeCount: ',permitTypeCount)
   permitTypeAmounts.forEach((value, key) => {
     seqNumber = seqNumber + 1;
     const gcd = new GarmaCashDetail();
