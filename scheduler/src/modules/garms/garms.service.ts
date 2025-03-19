@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import * as FTPS from 'ftps';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GarmsExtractFile } from './entities/garms-extract-file.entity';
@@ -20,6 +20,11 @@ import {
 import { Cron } from '@nestjs/schedule';
 import { getToDateForGarms } from 'src/common/helper/date-time.helper';
 import { Nullable } from 'src/common/types/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import { getFromCache } from '../../common/helper/cache.helper';
+import { FeatureFlagValue } from '../../common/enum/feature-flag-value.enum';
+import { CacheKey } from '../../common/enum/cache-key.enum';
 
 @Injectable()
 export class GarmsService {
@@ -34,9 +39,20 @@ export class GarmsService {
     private readonly transactionRepository: Repository<Transaction>,
     @InjectRepository(PermitType)
     private readonly permitTypeRepository: Repository<PermitType>,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
   @Cron(`${process.env.GARMS_CASH_FILE_INTERVAL || '0 */30 * * * *'}`)
   async processCashTransactions() {
+    const garmsCashFeatureFlag = (await getFromCache(
+      this.cacheManager,
+      CacheKey.FEATURE_FLAG_TYPE,
+      'GARMS_CASH_CRON_JOB',
+    )) as FeatureFlagValue;
+    if (garmsCashFeatureFlag !== FeatureFlagValue.ENABLED) {
+      this.logger.log('GARMS_CASH_CRON_JOB is DISABLED');
+      return false;
+    }
     const garmsExtractType = GarmsExtractType.CASH;
     const toTimestamp = getToDateForGarms();
     const oldFile = await this.getOldFile(garmsExtractType, toTimestamp);
