@@ -39,6 +39,7 @@ import { ShoppingCartModule } from './modules/shopping-cart/shopping-cart.module
 import { CreditAccountModule } from './modules/credit-account/credit-account.module';
 import { SpecialAuthModule } from './modules/special-auth/special-auth.module';
 import { CaseManagementModule } from './modules/case-management/case-management.module';
+import { VersionMatchMiddleware } from './common/middleware/version.middleware';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
@@ -114,6 +115,7 @@ export class AppModule implements OnApplicationBootstrap {
   constructor(private readonly appService: AppService) {}
   // let's add a middleware on all routes
   configure(consumer: MiddlewareConsumer) {
+    consumer.apply(VersionMatchMiddleware).forRoutes('*');
     consumer
       .apply(HTTPLoggerMiddleware)
       .exclude({ path: '/', method: RequestMethod.GET })
