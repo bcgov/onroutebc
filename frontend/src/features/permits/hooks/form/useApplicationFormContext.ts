@@ -14,7 +14,7 @@ import { useMemoizedObject } from "../../../../common/hooks/useMemoizedObject";
 import { useVehicleConfiguration } from "../useVehicleConfiguration";
 import { useApplicationFormUpdateMethods } from "./useApplicationFormUpdateMethods";
 import { usePermittedCommodity } from "../usePermittedCommodity";
-import { DEFAULT_COMMODITY_SELECT_VALUE } from "../../constants/constants";
+import { DEFAULT_EMPTY_SELECT_VALUE } from "../../../../common/constants/constants";
 
 export const useApplicationFormContext = () => {
   const applicationFormContextData = useContext(ApplicationFormContext);
@@ -53,6 +53,8 @@ export const useApplicationFormContext = () => {
     onClearVehicle,
     onUpdateLOAs,
     onUpdateHighwaySequence,
+    onUpdateTripOrigin,
+    onUpdateTripDestination,
     onUpdateTotalDistance,
     onUpdateVehicleConfigTrailers,
     onSetCommodityType,
@@ -179,7 +181,7 @@ export const useApplicationFormContext = () => {
     policyEngine,
     permitType,
     getDefaultRequiredVal(
-      DEFAULT_COMMODITY_SELECT_VALUE,
+      DEFAULT_EMPTY_SELECT_VALUE,
       permittedCommodity?.commodityType,
     ),
     selectedVehicleConfigSubtypes,
@@ -234,6 +236,8 @@ export const useApplicationFormContext = () => {
     revisionHistory: memoizedRevisionHistory,
     commodityOptions,
     highwaySequence,
+    tripOrigin: permittedRoute?.manualRoute?.origin,
+    tripDestination: permittedRoute?.manualRoute?.destination,
     totalDistance: permittedRoute?.manualRoute?.totalDistance,
     nextAllowedSubtypes,
     powerUnitSubtypeNamesMap,
@@ -253,6 +257,8 @@ export const useApplicationFormContext = () => {
     onClearVehicle,
     onUpdateLOAs,
     onUpdateHighwaySequence,
+    onUpdateTripOrigin,
+    onUpdateTripDestination,
     onUpdateTotalDistance,
     onUpdateVehicleConfigTrailers,
     commodityType: permittedCommodity?.commodityType,

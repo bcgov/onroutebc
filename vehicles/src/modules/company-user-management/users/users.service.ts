@@ -105,7 +105,7 @@ export class UsersService {
       const company = await this.companyService.findOneByCompanyGuid(
         currentUser.bceid_business_guid,
       );
-      if (pendingUsers.some((e) => e.companyId != company.companyId)) {
+      if (pendingUsers.some((e) => e.companyId != company?.companyId)) {
         throw new BadRequestException('User not invited for this company.');
       }
     }

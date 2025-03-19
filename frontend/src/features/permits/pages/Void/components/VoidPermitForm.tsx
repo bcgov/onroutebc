@@ -14,11 +14,17 @@ import { FeeSummary } from "../../../components/feeSummary/FeeSummary";
 import { VoidPermitFormData } from "../types/VoidPermit";
 import { useVoidPermit } from "../hooks/useVoidPermit";
 import { mapToRevokeRequestData } from "../helpers/mapper";
-import { Nullable } from "../../../../../common/types/common";
+import {
+  Nullable,
+  ORBC_FORM_FEATURES,
+} from "../../../../../common/types/common";
 import { hasPermitsActionFailed } from "../../../helpers/permitState";
 import { usePermitHistoryQuery } from "../../../hooks/hooks";
 import { isValidTransaction } from "../../../helpers/payment";
-import { invalidEmail, requiredMessage } from "../../../../../common/helpers/validationMessages";
+import {
+  invalidEmail,
+  requiredMessage,
+} from "../../../../../common/helpers/validationMessages";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -29,7 +35,7 @@ import {
   getErrorMessage,
 } from "../../../../../common/components/form/CustomFormComponents";
 
-const FEATURE = "void-permit";
+const FEATURE = ORBC_FORM_FEATURES.VOID_PERMIT;
 
 export const VoidPermitForm = ({
   permit,

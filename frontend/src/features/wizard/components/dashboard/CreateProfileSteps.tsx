@@ -1,4 +1,4 @@
-import { Box, Step, StepConnector, StepLabel, Stepper } from "@mui/material";
+import { Box } from "@mui/material";
 import React, { useContext } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAuth } from "react-oidc-context";
@@ -17,12 +17,8 @@ import { CompanyAndUserInfoSteps } from "../../subcomponents/CompanyAndUserInfoS
  * The stepper component containing the necessary forms for creating profile.
  */
 export const CreateProfileSteps = React.memo(() => {
-  const steps = ["Company Information", "My Information"];
-
   const { migratedClient } = useContext(OnRouteBCContext);
   const { user } = useAuth();
-
-  const [activeStep, setActiveStep] = React.useState(0);
   const [clientNumber, setClientNumber] =
     React.useState<Nullable<string>>(null);
 
@@ -39,7 +35,7 @@ export const CreateProfileSteps = React.memo(() => {
           migratedClient?.mailingAddress?.addressLine1,
         ),
         addressLine2: getDefaultRequiredVal(
-          "",
+          null,
           migratedClient?.mailingAddress?.addressLine2,
         ),
         provinceCode: getDefaultRequiredVal(
@@ -75,7 +71,7 @@ export const CreateProfileSteps = React.memo(() => {
         firstName: "",
         lastName: "",
         email: "",
-        phone1: "",
+        phone1: getDefaultRequiredVal("", migratedClient?.phone),
         phone1Extension: "",
         phone2: "",
         phone2Extension: "",
@@ -103,10 +99,7 @@ export const CreateProfileSteps = React.memo(() => {
           borderColor: "divider",
         }}
       >
-        <Banner
-          bannerText="Create a new onRouteBC Profile"
-          bannerSubtext="Please follow the steps below to set up your onRouteBC profile"
-        />
+        <Banner bannerText="Create a new onRouteBC Profile" />
       </Box>
       <div
         className="create-profile-steps-page create-profile-steps"
@@ -114,50 +107,8 @@ export const CreateProfileSteps = React.memo(() => {
         aria-labelledby={`profile-steps`}
       >
         <div className="create-profile-steps__create-profile">
-          <div className="create-profile-section create-profile-section--steps">
-            <Stepper
-              className="stepper"
-              activeStep={activeStep}
-              alternativeLabel
-              connector={
-                <StepConnector
-                  className="step__connector"
-                  classes={{ line: "step__connector-line" }}
-                />
-              }
-            >
-              {steps.map((label) => (
-                <Step className="step" key={label}>
-                  <StepLabel
-                    className="step__label"
-                    classes={{
-                      labelContainer: "step__label-container",
-                      active: "step__label--active",
-                      disabled: "step__label--disabled",
-                      completed: "step__label--completed",
-                    }}
-                    StepIconProps={{
-                      className: "step__icon",
-                      classes: {
-                        text: "step__step-number",
-                        active: "step__icon--active",
-                        completed: "step__icon--completed",
-                      },
-                    }}
-                  >
-                    {label}
-                  </StepLabel>
-                </Step>
-              ))}
-            </Stepper>
-          </div>
           <FormProvider {...companyAndUserFormMethods}>
-            <CompanyAndUserInfoSteps
-              activeStep={activeStep}
-              setActiveStep={setActiveStep}
-              setClientNumber={setClientNumber}
-              totalSteps={2}
-            />
+            <CompanyAndUserInfoSteps setClientNumber={setClientNumber} />
           </FormProvider>
         </div>
       </div>

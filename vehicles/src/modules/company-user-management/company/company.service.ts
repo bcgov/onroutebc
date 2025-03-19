@@ -53,6 +53,7 @@ import { ReadVerifyClientDto } from './dto/response/read-verify-client.dto';
 import { Permit } from '../../permit-application-payment/permit/entities/permit.entity';
 import { DopsService } from '../../common/dops.service';
 import { INotificationDocument } from '../../../common/interface/notification-document.interface';
+import { throwUnprocessableEntityException } from '../../../common/helper/exception.helper';
 
 @Injectable()
 export class CompanyService {
@@ -315,11 +316,10 @@ export class CompanyService {
       companyGUID = uuidv4().replace(/-/g, '').toUpperCase();
     } else if (!existingClient && currentUser.identity_provider === IDP.BCEID) {
       accountSource = AccountSource.BCeID;
+      companyDirectory = getDirectory(currentUser);
       if (currentUser.bceid_business_guid) {
         companyGUID = currentUser.bceid_business_guid;
-        companyDirectory = Directory.BBCEID;
       } else {
-        companyDirectory = Directory.ORBC;
         companyGUID = uuidv4().replace(/-/g, '').toUpperCase();
       }
     }
@@ -792,8 +792,9 @@ export class CompanyService {
    * The verifyClient() method attempts to validate the existence and correct linkage of a specified client
    * and their associated permit within the system. The process involves searching for a company using a provided
    * client number (including handling legacy client number scenarios) and then verifying the existence of a
-   * permit that correlates with the identified company. The outcome is encapsulated in a ReadVerifyClientDto
-   * object indicating the presence of the client, the permit, and the successful verification if applicable.
+   * permit that correlates with the identified company. If the company has been claimed already, an unprocessable
+   * entity error is thrown. The outcome is encapsulated in a ReadVerifyClientDto object indicating the presence
+   * of the client, the permit, and the successful verification if applicable.
    *
    * @param currentUser The current logged in user's JWT token.
    * @param verifyClientDto The DTO containing the client and permit number to verify.
@@ -850,6 +851,31 @@ export class CompanyService {
       if (permit) {
         verifyClient.foundPermit = true;
         if (permit.company?.companyId === company?.companyId) {
+          //Throw an error if the company has already been claimed
+          if (company?.companyUsers?.length) {
+            throwUnprocessableEntityException(
+              `You do not have the necessary authorization to view this page. Please contact your administrator.`,
+              { errorCode: 'COMPANY_CLAIMED' },
+            );
+          } else if (
+            company?.directory === Directory.BBCEID &&
+            getDirectory(currentUser) === Directory.BCEID
+          ) {
+            throwUnprocessableEntityException(
+              `A basic bceid user cannot claim a business bceid (BBCEID) account.`,
+              { errorCode: 'BASIC_CLAIM_BUSINESS' },
+            );
+          } else if (
+            company?.directory === Directory.BBCEID &&
+            getDirectory(currentUser) === Directory.BBCEID &&
+            company?.companyGUID !== currentUser.bceid_business_guid
+          ) {
+            throwUnprocessableEntityException(
+              `Business Guid mismatch between the current user and Company`,
+              { errorCode: 'BUSINESS_GUID_MISMATCH' },
+            );
+          }
+
           verifyClient.verifiedClient =
             await this.mapCompanyEntityToCompanyDto(company);
         }
