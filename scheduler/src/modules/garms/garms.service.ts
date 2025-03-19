@@ -51,7 +51,7 @@ export class GarmsService {
     )) as FeatureFlagValue;
     if (garmsCashFeatureFlag !== FeatureFlagValue.ENABLED) {
       this.logger.log('GARMS_CASH_CRON_JOB is DISABLED');
-      return true;
+      return false;
     }
     const garmsExtractType = GarmsExtractType.CASH;
     const toTimestamp = getToDateForGarms();
