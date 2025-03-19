@@ -49,6 +49,7 @@ export const useShoppingCart = (
           const fee = await calculatePermitFee({
             permitType: cartItem.permitType,
             permitData: {
+              startDate: cartItem.startDate,
               permitDuration: cartItem.duration,
               permittedRoute: {
                 manualRoute: {

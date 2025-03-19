@@ -1,6 +1,7 @@
 import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { Nullable } from "../../../../common/types/common";
-import { DEFAULT_VEHICLE_TYPE, PermitVehicleDetails } from "../../types/PermitVehicleDetails";
+import { DEFAULT_VEHICLE_TYPE } from "../../../manageVehicles/types/Vehicle";
+import { PermitVehicleDetails } from "../../types/PermitVehicleDetails";
 
 /**
  * Gets default values for vehicle details, or populate with values from existing vehicle details.
