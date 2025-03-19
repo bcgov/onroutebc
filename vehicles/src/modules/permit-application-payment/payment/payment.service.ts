@@ -349,7 +349,7 @@ export class PaymentService {
       );
 
       let newTransactionList: Transaction[] = [];
-
+      const date = new Date();
       for (const transaction of transactions) {
         const transactionOrderNumber =
           await this.generateTransactionOrderNumber();
@@ -363,6 +363,7 @@ export class PaymentService {
         newTransaction.pgCardType = transaction.paymentCardTypeCode;
         newTransaction.pgPaymentMethod = transaction.pgPaymentMethod;
         newTransaction.transactionOrderNumber = transactionOrderNumber;
+        newTransaction.transactionApprovedDate = date;
         newTransaction.payerName = PPC_FULL_TEXT;
         if (transaction.paymentMethodTypeCode === PaymentMethodTypeEnum.WEB) {
           newTransaction.pgApproved = 1;
@@ -370,6 +371,7 @@ export class PaymentService {
         setBaseEntityProperties<Transaction>({
           entity: newTransaction,
           currentUser,
+          date,
         });
         newTransactionList.push(newTransaction);
       }
@@ -386,18 +388,13 @@ export class PaymentService {
         let newPermitTransactions = new PermitTransaction();
         newPermitTransactions.transaction = newTransaction;
         newPermitTransactions.permit = existingApplication;
-        newPermitTransactions.createdDateTime = new Date();
-        newPermitTransactions.createdUser = currentUser.userName;
-        newPermitTransactions.createdUserDirectory =
-          currentUser.orbcUserDirectory;
-        newPermitTransactions.createdUserGuid = currentUser.userGUID;
-        newPermitTransactions.updatedDateTime = new Date();
-        newPermitTransactions.updatedUser = currentUser.userName;
-        newPermitTransactions.updatedUserDirectory =
-          currentUser.orbcUserDirectory;
-        newPermitTransactions.updatedUserGuid = currentUser.userGUID;
         newPermitTransactions.transactionAmount =
           newTransaction.totalTransactionAmount;
+        setBaseEntityProperties<PermitTransaction>({
+          entity: newPermitTransactions,
+          currentUser,
+          date,
+        });
         newPermitTransactions = await queryRunner.manager.save(
           newPermitTransactions,
         );
