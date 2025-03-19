@@ -42,6 +42,7 @@ export class FeatureFlagGuard implements CanActivate {
    * @returns {Promise<boolean>} - A promise that resolves to true if the feature flag is enabled, otherwise false.
    */
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    context.switchToHttp().getRequest();
     const featureFlagKey = this.reflector.getAllAndOverride<string>(
       IsFeatureFlagEnabled,
       [context.getHandler(), context.getClass()],

@@ -8,6 +8,7 @@ import { UsersModule } from '../company-user-management/users/users.module';
 import { PendingUsersModule } from '../company-user-management/pending-users/pending-users.module';
 import { PermissionsGuard } from '../../common/guard/permissions.guard';
 import { JwtServiceAccountStrategy } from './jwt-service-account.strategy';
+import { VersionGuard } from '../../common/guard/version.guard';
 
 @Module({
   imports: [
@@ -26,6 +27,10 @@ import { JwtServiceAccountStrategy } from './jwt-service-account.strategy';
     {
       provide: APP_GUARD,
       useClass: PermissionsGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: VersionGuard,
     },
   ],
   exports: [AuthService],

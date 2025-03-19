@@ -13,7 +13,10 @@ import {
 axios.interceptors.request.use(
   function (config) {
     const { headers } = config;
+    const releaseNumber =
+      import.meta.env.VITE_RELEASE_NUM || envConfig.VITE_RELEASE_NUM;
     headers.set("x-correlation-id", uuidv4());
+    headers.set("x-onroutebc-version", releaseNumber);
     return config;
   },
   function (error) {

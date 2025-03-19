@@ -4,6 +4,7 @@ import {
   ForbiddenException,
   Injectable,
   UnauthorizedException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { passportJwtSecret } from 'jwks-rsa';
 import { AuthService } from './auth.service';
@@ -45,6 +46,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(req: Request, payload: IUserJWT): Promise<IUserJWT> {
+    if (
+      !req.headers['x-onroutebc-version'] ||
+      req.headers['x-onroutebc-version'] !== process.env.ONROUTEBC_VERSION
+    ) {
+      throw new UnprocessableEntityException();
+    }
+
     let userGUID: string,
       userName: string,
       claims: Claim[],
