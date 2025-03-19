@@ -190,7 +190,7 @@ export class AppService {
       this.cacheManager,
       CacheKey.IMG_WHITE_HEADER_LOGO,
       this.convertFileToString(
-        assetsPath + 'images/BC_Logo_MOTI_White.jpg',
+        assetsPath + 'images/BC_TT_H_RGB_pos.jpg',
         true,
         'base64',
       ),
@@ -199,7 +199,7 @@ export class AppService {
       this.cacheManager,
       CacheKey.IMG_WHITE_MED_HEADER_LOGO,
       this.convertFileToString(
-        assetsPath + 'images/BC_Logo_MOTI_White@2x.jpg',
+        assetsPath + 'images/BC_TT_H_RGB_pos@2x.jpg',
         true,
         'base64',
       ),
@@ -218,6 +218,24 @@ export class AppService {
       CacheKey.IMG_WHITE_MED_FOOTER_LOGO,
       this.convertFileToString(
         assetsPath + 'images/onRouteBC_Logo_White@2x.jpg',
+        true,
+        'base64',
+      ),
+    );
+    await addToCache(
+      this.cacheManager,
+      CacheKey.IMG_WHITE_HEADER_ORBC_LOGO,
+      this.convertFileToString(
+        assetsPath + 'images/onRouteBC_Logo_Email_Header.jpg',
+        true,
+        'base64',
+      ),
+    );
+    await addToCache(
+      this.cacheManager,
+      CacheKey.IMG_WHITE_MED_FOOTER_LOGO,
+      this.convertFileToString(
+        assetsPath + 'images/onRouteBC_Logo@2x_Email_Header.jpg',
         true,
         'base64',
       ),
