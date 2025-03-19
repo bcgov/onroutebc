@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module, OnApplicationBootstrap } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -50,4 +50,12 @@ const envPath = path.resolve(process.cwd() + '/../');
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements OnApplicationBootstrap {
+  private readonly logger = new Logger(AppModule.name);
+  constructor(private readonly appService: AppService) {}
+  async onApplicationBootstrap() {
+    await this.appService.initializeCache().catch((err) => {
+      this.logger.error('Cache initialization failed:', err);
+    });
+  }
+}
