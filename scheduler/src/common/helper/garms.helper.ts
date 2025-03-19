@@ -145,7 +145,7 @@ export const createGarmsCashFileHeader = (
   gch.serviceQuantity = formatNumber(getSum(permitTypeCount), 5);
   gch.invQuantity = INV_QTY;
   const header = Object.values(gch).join('');
-  logStream.write(header);
+  logStream.write(header+'\n');
 };
 
 /**
@@ -183,7 +183,7 @@ export const createGarmsCashFileDetails = (
     gcd.f1 = GARMS_CASH_FILLER;
     const detail = Object.values(gcd).join('');
     if(lastHeader && lastDetailLine) logStream.end(detail);
-    else logStream.write(detail);
+    else logStream.write(detail+'\n');
   }
 };
 

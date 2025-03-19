@@ -1,6 +1,5 @@
 import {
   Injectable,
-  InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
 import * as FTPS from 'ftps';
