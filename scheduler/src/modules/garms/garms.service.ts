@@ -1,7 +1,4 @@
-import {
-  Injectable,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as FTPS from 'ftps';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GarmsExtractFile } from './entities/garms-extract-file.entity';
@@ -65,7 +62,7 @@ export class GarmsService {
         const recordLength = GARMS_CASH_FILE_LRECL;
         await this.updateFileSubmitTimestamp(oldFile);
         await this.saveTransactionIds(transactions, fileId);
-        await this.upload(fileName, recordLength,remoteFilePath);
+        await this.upload(fileName, recordLength, remoteFilePath);
       } else {
         this.logger.log('No data to process for GARMS cash file');
       }
@@ -291,7 +288,7 @@ export class GarmsService {
         username: process.env.GARMS_USER,
         password: process.env.GARMS_PWD,
         // additinal settings for lftp command. passive-mode is only on for onRoute because pf firewall, it is off for TPS.
-        additionalLftpCommands: `set cache:enable no;set ftp:passive-mode on;set ftp:use-size no;set ftp:ssl-protect-data yes;set ftp:ssl-force yes;set ftp:ssl-auth TLS;set ssl:verify-certificate no;set ftps:initial-prot "P";set net:connection-limit 1;set net:max-retries 1;debug 5;`,
+        additionalLftpCommands: `set cache:enable no;set ftp:passive-mode on;set ftp:use-size no;set ftp:ssl-protect-data yes;set ftp:ssl-force yes;set ftp:ssl-auth TLS;set ssl:verify-certificate no;set ftps:initial-prot "P";set net:connection-limit 1;set net:max-retries 1;debug 4;`,
       };
       const ftps: FTPS = new FTPS(options);
       // Wrap the FTPS command inside a Promise

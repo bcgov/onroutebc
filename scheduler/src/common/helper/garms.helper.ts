@@ -42,7 +42,9 @@ export const createGarmsCashFile = (
   logger: Logger,
 ) => {
   const fileName = '/tmp/GARMS_CASH_' + Date.now();
-  const logStream: fs.WriteStream = fs.createWriteStream(fileName, {flags: 'a'});
+  const logStream: fs.WriteStream = fs.createWriteStream(fileName, {
+    flags: 'a',
+  });
   try {
     let count = 0;
     const groupedTransactionsByDate: DateTransaction[] =
@@ -50,7 +52,7 @@ export const createGarmsCashFile = (
     if (groupTransactionsByDate && groupedTransactionsByDate.length > 0) {
       for (const transactionByDate of groupedTransactionsByDate) {
         count += 1;
-        const lastHeader = (count === groupedTransactionsByDate.length)
+        const lastHeader = count === groupedTransactionsByDate.length;
         const permitTypeAmounts = new Map<number, number>();
         const permitTypeCount = new Map<number, number>();
         const paymentTypeAmounts = new Map<string, number>();
@@ -145,7 +147,7 @@ export const createGarmsCashFileHeader = (
   gch.serviceQuantity = formatNumber(getSum(permitTypeCount), 5);
   gch.invQuantity = INV_QTY;
   const header = Object.values(gch).join('');
-  logStream.write(header+'\n');
+  logStream.write(header + '\n');
 };
 
 /**
@@ -163,9 +165,9 @@ export const createGarmsCashFileDetails = (
   lastHeader: boolean,
 ) => {
   let seqNumber = 0;
-    for (const key of permitTypeAmounts.keys()) {
+  for (const key of permitTypeAmounts.keys()) {
     seqNumber = seqNumber + 1;
-    const lastDetailLine = (permitTypeAmounts.size === seqNumber)
+    const lastDetailLine = permitTypeAmounts.size === seqNumber;
     const gcd = new GarmaCashDetail();
     gcd.recType = DETAIL_REC_TYPE;
     gcd.agentNumber = AGENT_NUMBER;
@@ -182,8 +184,8 @@ export const createGarmsCashFileDetails = (
     gcd.voidInd = VOID_IND;
     gcd.f1 = GARMS_CASH_FILLER;
     const detail = Object.values(gcd).join('');
-    if(lastHeader && lastDetailLine) logStream.end(detail);
-    else logStream.write(detail+'\n');
+    if (lastHeader && lastDetailLine) logStream.end(detail);
+    else logStream.write(detail + '\n');
   }
 };
 
