@@ -131,13 +131,9 @@ export const createGarmsCashFileHeader = (
     getValue(paymentTypeAmounts, PaymentCardType.DEBIT),
   );
   gch.totalVisaAmount =
-    formatAmount(getValue(paymentTypeAmounts, PaymentCardType.VISA)) +
-    formatAmount(getValue(paymentTypeAmounts, PaymentCardType.VISA_DEBIT));
+    formatAmount(getValue(paymentTypeAmounts, PaymentCardType.VISA) + getValue(paymentTypeAmounts, PaymentCardType.VISA_DEBIT));
   gch.totalMasterCardAmount =
-    formatAmount(getValue(paymentTypeAmounts, PaymentCardType.MASTERCARD)) +
-    formatAmount(
-      getValue(paymentTypeAmounts, PaymentCardType.MASTERCARD_DEBIT),
-    );
+    formatAmount(getValue(paymentTypeAmounts, PaymentCardType.MASTERCARD) + getValue(paymentTypeAmounts, PaymentCardType.MASTERCARD_DEBIT));
   gch.totalAmexAmount = formatAmount(
     getValue(paymentTypeAmounts, PaymentCardType.AMEX),
   );
