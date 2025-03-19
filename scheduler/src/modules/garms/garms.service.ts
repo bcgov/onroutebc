@@ -288,7 +288,7 @@ export class GarmsService {
         username: process.env.GARMS_USER,
         password: process.env.GARMS_PWD,
         // additinal settings for lftp command. passive-mode is only on for onRoute because pf firewall, it is off for TPS.
-        additionalLftpCommands: `set cache:enable no;set ftp:passive-mode on;set ftp:port-range 20-21;set ftp:use-size no;set ftp:ssl-protect-data yes;set ftp:ssl-force yes;set ftps:initial-prot "P";set net:connection-limit 1;set net:max-retries 1;debug 4;`,
+        additionalLftpCommands: `set cache:enable no;set ftp:passive-mode off;set ftp:use-size no;set ftp:ssl-protect-data yes;set ftp:ssl-force yes;set ftps:initial-prot "P";set net:connection-limit 1;set net:max-retries 1;debug 4;`,
       };
       const ftps: FTPS = new FTPS(options);
       // Wrap the FTPS command inside a Promise
