@@ -325,8 +325,8 @@ export class PaymentService {
 
       if (
         !(
-          this.isVoidorRevoked(existingApplication.permitStatus) ||
-          this.isApplicationInCart(existingApplication.permitStatus) ||
+          isVoidorRevoked(existingApplication.permitStatus) ||
+          isApplicationInCart(existingApplication.permitStatus) ||
           isAmendmentApplication(existingApplication)
         )
       ) {
