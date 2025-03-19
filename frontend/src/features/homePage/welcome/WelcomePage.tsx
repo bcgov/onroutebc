@@ -180,7 +180,7 @@ export const WelcomePage = React.memo(() => {
               Has this company purchased a commercial vehicle
             </div>
             <div style={{ alignSelf: "center", marginTop: "0px" }}>
-              permit in the last 7 years?
+              permit in the last 2 years?
             </div>
             <Container>
               <Stack direction="row" spacing={3}>

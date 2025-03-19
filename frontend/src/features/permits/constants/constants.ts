@@ -1,4 +1,3 @@
-import { VEHICLE_TYPES } from "../../manageVehicles/types/Vehicle";
 import {
   getPermitCategoryName,
   PERMIT_CATEGORIES,
@@ -25,11 +24,6 @@ export const CHOOSE_FROM_OPTIONS = [
   { value: VEHICLE_CHOOSE_FROM.PLATE, label: "Plate" },
 ];
 
-export const VEHICLE_TYPE_OPTIONS = [
-  { value: VEHICLE_TYPES.POWER_UNIT, label: "Power Unit" },
-  { value: VEHICLE_TYPES.TRAILER, label: "Trailer" },
-];
-
 export const ALL_PERMIT_TYPE_CHOOSE_FROM_OPTIONS: PermitTypeChooseFromItem[] = [
   {
     value: PERMIT_CATEGORIES.TERM,
@@ -54,14 +48,20 @@ export const ALL_PERMIT_TYPE_CHOOSE_FROM_OPTIONS: PermitTypeChooseFromItem[] = [
     // })),
   },
   /* TODO uncomment these when required */
-  // {
-  //   value: PERMIT_CATEGORIES.NON_RESIDENT,
-  //   label: getPermitCategoryName(PERMIT_CATEGORIES.NON_RESIDENT),
-  //   items: NON_RESIDENT_PERMIT_LIST.map((permitType: PermitType) => ({
-  //     value: permitType,
-  //     label: getPermitTypeShortName(permitType),
-  //   })),
-  // },
+  {
+    value: PERMIT_CATEGORIES.NON_RESIDENT,
+    label: getPermitCategoryName(PERMIT_CATEGORIES.NON_RESIDENT),
+    items: [
+      {
+        value: PERMIT_TYPES.STFR,
+        label: getPermitTypeShortName(PERMIT_TYPES.STFR),
+      },
+    ],
+    // items: NON_RESIDENT_PERMIT_LIST.map((permitType: PermitType) => ({
+    //   value: permitType,
+    //   label: getPermitTypeShortName(permitType),
+    // })),
+  },
   {
     value: PERMIT_TYPES.MFP,
     label: getPermitTypeShortName(PERMIT_TYPES.MFP),
@@ -114,9 +114,3 @@ export const LCV_VEHICLE_SUBTYPES = [
     description: "LCV vehicles for approved carriers and routes only."
   },
 ];
-
-export const DEFAULT_COMMODITY_SELECT_VALUE = "-";
-export const DEFAULT_COMMODITY_SELECT_OPTION = {
-  value: DEFAULT_COMMODITY_SELECT_VALUE,
-  label: "Select",
-};

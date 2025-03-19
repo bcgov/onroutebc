@@ -10,6 +10,7 @@ import { ApplicationFormData } from "../../types/application";
 import { getDefaultVehicleConfiguration } from "../../helpers/vehicles/configuration/getDefaultVehicleConfiguration";
 import { PermitType } from "../../types/PermitType";
 import { RequiredOrNull } from "../../../../common/types/common";
+import { ThirdPartyLiability } from "../../types/ThirdPartyLiability";
 
 /**
  * Hook that returns custom methods that update specific values in the application form.
@@ -66,6 +67,20 @@ export const useApplicationFormUpdateMethods = () => {
     );
   }, [setValue]);
 
+  const onUpdateTripOrigin = useCallback((updatedTripOrigin: string) => {
+    setValue(
+      "permitData.permittedRoute.manualRoute.origin",
+      updatedTripOrigin,
+    );
+  }, [setValue]);
+
+  const onUpdateTripDestination = useCallback((updatedTripDestination: string) => {
+    setValue(
+      "permitData.permittedRoute.manualRoute.destination",
+      updatedTripDestination,
+    );
+  }, [setValue]);
+
   const onUpdateTotalDistance = useCallback((updatedTotalDistance?: RequiredOrNull<number>) => {
     setValue(
       "permitData.permittedRoute.manualRoute.totalDistance",
@@ -103,6 +118,16 @@ export const useApplicationFormUpdateMethods = () => {
     [setValue],
   );
 
+  const onUpdateThirdPartyLiability = useCallback(
+    (updatedThirdPartyLiability: ThirdPartyLiability) => {
+      setValue(
+        "permitData.thirdPartyLiability",
+        updatedThirdPartyLiability,
+      );
+    },
+    [setValue],
+  );
+
   return {
     onSetDuration,
     onSetExpiryDate,
@@ -112,10 +137,13 @@ export const useApplicationFormUpdateMethods = () => {
     onClearVehicle,
     onUpdateLOAs,
     onUpdateHighwaySequence,
+    onUpdateTripOrigin,
+    onUpdateTripDestination,
     onUpdateTotalDistance,
     onUpdateVehicleConfigTrailers,
     onSetCommodityType,
     onUpdateVehicleConfig,
     onClearVehicleConfig,
+    onUpdateThirdPartyLiability,
   };
 };

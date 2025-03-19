@@ -1,5 +1,8 @@
+import { ConditionalLicensingFee } from '../enum/conditional-licensing-fee.enum';
 import { PermitType } from '../enum/permit-type.enum';
 import { ThirdPartyLiability } from '../enum/third-party-liability.enum';
+import { VehicleType } from '../enum/vehicle-type.enum';
+import { Nullable } from '../types/common';
 
 // Data used to populate a .docx template
 export interface PermitTemplateData {
@@ -18,6 +21,7 @@ export interface PermitTemplateData {
   permitIssueDateTime?: string;
   revisionIssueDateTime?: string;
   thirdPartyLiability?: string;
+  conditionalLicensingFee?: string;
 }
 
 interface Revision {
@@ -45,15 +49,18 @@ export interface PermitData {
    * Third Party Liability for Non resident ICBC permits
    */
   thirdPartyLiability?: ThirdPartyLiability;
+  conditionalLicensingFee?: Nullable<ConditionalLicensingFee>;
 }
 
 interface VehicleConfiguration {
-  overallLength: number;
-  overallWidth: number;
-  overallHeight: number;
-  frontProjection: number;
-  rearProjection: number;
-  trailers: VehicleDetails[];
+  overallLength?: Nullable<number>;
+  overallWidth?: Nullable<number>;
+  overallHeight?: Nullable<number>;
+  frontProjection?: Nullable<number>;
+  rearProjection?: Nullable<number>;
+  trailers?: VehicleDetails[];
+  loadedGVW?: Nullable<number>;
+  netWeight?: Nullable<number>;
 }
 
 interface PermittedRoute {
@@ -119,11 +126,12 @@ interface Commodities {
 export interface Loas {
   loaId: number;
   loaNumber: number;
-  checked: boolean;
+  companyId: number;
   loaPermitType: PermitType[];
   startDate: string;
-  expiryDate?: string;
-  powerUnits?: string[];
-  trailers?: string[];
-  disabled?: boolean;
+  expiryDate?: Nullable<string>;
+  vehicleType: VehicleType;
+  vehicleSubType: string;
+  originalLoaId?: Nullable<number>;
+  previousLoaId?: Nullable<number>;
 }

@@ -240,6 +240,7 @@ export class DgenService {
           '--disable-client-side-phishing-detection',
           '--disable-extensions',
           '--disable-plugins',
+          '--disable-setuid-sandbox',
         ],
         pipe: true,
         headless: true,
@@ -272,6 +273,8 @@ export class DgenService {
         await page.close();
       }
       if (browser) {
+        const pages = await browser.pages();
+        await Promise.allSettled(pages?.map((page) => page.close()));
         await browser.close();
       }
     }
@@ -318,8 +321,14 @@ export class DgenService {
       },
     );
 
+    Handlebars.registerHelper('defaultToPending', function (value: string) {
+      return value ?? 'Pending';
+    });
+
     Handlebars.registerHelper('convertUtcToPt', function (utcDate: string) {
-      return convertUtcToPt(utcDate, 'MMM. D, YYYY, hh:mm A Z');
+      return utcDate
+        ? convertUtcToPt(utcDate, 'MMM. D, YYYY, hh:mm A Z')
+        : null;
     });
 
     Handlebars.registerHelper(

@@ -193,3 +193,57 @@
 
 ### Version 59:
 - Configure ICBC (QRFR & STFR) permit templates
+
+### Version 60:
+- Configure the APV96 external form in OnRouteBC
+
+### Version 61:
+- Configure NRQCL & NRSCL permit templates
+
+### Version 62:
+- Database Schema Updates
+  - Added new column TRANSACTION_APPROVED_DATE to track approval timestamps in ORBC transactions
+  - Downtime Required - Yes
+  - Data patch script for existing records - Included
+  - Technical Details
+  - Column Specifications:
+  - Data Type: datetime2(7)
+  - Nullability: Nullable
+  - Default Value: Current UTC date/time using getutcdate()
+- Tables Modified:
+  - permit.ORBC_TRANSACTION
+  - permit.ORBC_TRANSACTION_HIST
+- Trigger Enhancements
+  - Updated ORBC_TXN_A_S_IUD_TR to maintain historical records
+  - Modified ORBC_TXN_I_S_U_TR for proper update handling
+
+### Version 63:
+- Database Schema Updates
+  - Replaced ID-based relationships with type-based categorization for power units and trailers in ORBC_LOA_VEHICLES
+- Downtime Required - Yes
+- Data patch script for existing records - N/A as there is no data in the table in the PRODUCTION DB
+- Technical Details
+ - Column Specifications:
+  - ADD - POWER_UNIT_TYPE: char(7), Nullable
+  - ADD - TRAILER_TYPE: char(7), Nullable
+  - DROP - POWER_UNIT_ID: bigint, Nullable
+  - DROP - TRAILER_ID: bigint, Nullable
+- Tables Modified:
+  - permit.ORBC_LOA_VEHICLES
+  - permit.ORBC_LOA_VEHICLES_HIST
+- Trigger Enhancements
+  - Updated ORBC_LOA_VEHICLES_A_S_IUD_TR to handle new column structure
+  - Modified historical record maintenance logic
+
+### Version 64:
+- Update/Config LOA in all permit template files.
+
+### Version 65:
+- Support for new GARMS file upload and processing 
+  - Add GARMS_SERVICE_CODE column to ORBC_PERMIT_TYPE table
+  - Add ORBC_GARMS_EXTRACT_TYPE table to define the two types of extract, CASH and CREDIT
+  - Add ORBC_GARMS_EXTRACT_FILE table to represent a file sent to GARMS of one of the two extract types
+  - Add ORBC_GARMS_FILE_TRANSACTION table to associate transactions to the GARMS file they have been sent in
+
+### Version 66:
+- Update email and receipt template to reflect MOTT logo

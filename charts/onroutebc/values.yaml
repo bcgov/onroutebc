@@ -19,6 +19,7 @@ global:
     enabled: false
   domain: "apps.silver.devops.gov.bc.ca" # it is required, apps.silver.devops.gov.bc.ca for silver cluster
   vault:
+    authPath: "auth/k8s-silver"
     role: "nonprod"
     zone: "dev"
 frontend:
@@ -47,6 +48,9 @@ frontend:
             "VITE_SITEMINDER_LOG_OFF_URL":"$SITEMINDER_LOG_OFF_URL",
             "VITE_PR_NUM":"$PR_NUM",
             "VITE_RELEASE_NUM":"$RELEASE_NUM",
+            "VITE_BC_GEOCODER_CLIENT_ID":"$BC_GEOCODER_CLIENT_ID",
+            "VITE_BC_GEOCODER_API_KEY":"$BC_GEOCODER_API_KEY",
+            "VITE_BC_GEOCODER_API_URL":"$BC_GEOCODER_API_URL",
           };
         })();
   containers:
@@ -54,7 +58,7 @@ frontend:
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && envsubst < /usr/share/nginx/html/config/config.js.template > /usr/share/nginx/html/config/config.js && nginx -g 'daemon off;'"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/geocoder-{{.Values.global.vault.zone}} && envsubst < /usr/share/nginx/html/config/config.js.template > /usr/share/nginx/html/config/config.js && nginx -g 'daemon off;'"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: frontend
@@ -147,6 +151,7 @@ frontend:
     name: "{{ .Values.global.license }}-vault"
   vault:
     enabled: true
+    authPath: "{{ .Values.global.vault.authPath }}"
     resources: # this is optional
       limits:
         cpu: 100m
@@ -158,6 +163,7 @@ frontend:
     license: "{{.Values.global.license}}"
     secretPaths:
       - "keycloak-{{tpl $.Values.vault.zone $}}"
+      - "geocoder-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
   volumes:
     - name: config
@@ -297,6 +303,7 @@ vehicles:
     name: "{{ .Values.global.license }}-vault"
   vault:
     enabled: true
+    authPath: "{{ .Values.global.vault.authPath }}"
     resources: # this is optional
       limits:
         cpu: 100m
@@ -331,6 +338,8 @@ dops:
   containers:
     - name: dops
       command:
+        - "/usr/local/bin/dumb-init"
+        - "--"
         - "sh"
         - "-c"
         - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/ches-{{.Values.global.vault.zone}} && source /vault/secrets/cdogs-{{.Values.global.vault.zone}} && source /vault/secrets/dops-{{.Values.global.vault.zone}} && source /vault/secrets/s3-{{.Values.global.vault.zone}} && npm run start:prod"
@@ -438,6 +447,7 @@ dops:
     name: "{{ .Values.global.license }}-vault"
   vault:
     enabled: true
+    authPath: "{{ .Values.global.vault.authPath }}"
     resources: # this is optional
       limits:
         cpu: 100m
@@ -473,7 +483,7 @@ scheduler:
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/s3-{{.Values.global.vault.zone}} && source /vault/secrets/scheduler-{{.Values.global.vault.zone}} && source /vault/secrets/cfs-{{.Values.global.vault.zone}} && source /vault/secrets/tps-{{.Values.global.vault.zone}} && npm run start:prod"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/s3-{{.Values.global.vault.zone}} && source /vault/secrets/scheduler-{{.Values.global.vault.zone}} && source /vault/secrets/cfs-{{.Values.global.vault.zone}} && source /vault/secrets/tps-{{.Values.global.vault.zone}} && source /vault/secrets/garms-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: scheduler
@@ -547,6 +557,7 @@ scheduler:
     name: "{{ .Values.global.license }}-vault"
   vault:
     enabled: true
+    authPath: "{{ .Values.global.vault.authPath }}"
     resources: # this is optional
       limits:
         cpu: 100m
@@ -563,6 +574,7 @@ scheduler:
       - "s3-{{tpl $.Values.vault.zone $}}"
       - "cfs-{{tpl $.Values.vault.zone $}}"
       - "tps-{{tpl $.Values.vault.zone $}}"
+      - "garms-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
 
 policy:
@@ -682,6 +694,7 @@ policy:
     name: "{{ .Values.global.license }}-vault"
   vault:
     enabled: true
+    authPath: "{{ .Values.global.vault.authPath }}"
     resources: # this is optional
       limits:
         cpu: 100m
