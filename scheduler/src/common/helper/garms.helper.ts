@@ -21,23 +21,9 @@ import { DateTransaction } from 'src/modules/garms/dto/DateTransation.dto';
 import { GarmaCashDetail } from 'src/modules/garms/dto/garms-cash-details.dto';
 import { GarmaCashHeader } from 'src/modules/garms/dto/garms-cash-header.dto';
 import { convertUtcToPt, dateFormat } from './date-time.helper';
-import * as fs from 'fs';
-import * as path from 'path';
 import { InternalServerErrorException, Logger } from '@nestjs/common';
-
-export const deleteLocalFile = (fileName: string, logger: Logger) => {
-  console.log('deleting file: ', fs.readFileSync(fileName));
-  fs.rm(fileName, (err) => {
-    try {
-      if (err) throw err;
-      logger.log('File deleted successfuly');
-    } catch (e) {
-      logger.error(e);
-      throw new InternalServerErrorException(e);
-    }
-  });
-};
-
+import { PermitTransaction } from 'src/modules/common/entities/permit-transaction.entity';
+import * as fs from 'fs';
 /**
  * Create GARMS CASH file
  * GRAMS cash file containd one heasder record for each date and multiple details record under one header.
@@ -55,20 +41,30 @@ export const createGarmsCashFile = (
   permitServiceCodes: Map<string, number>,
   logger: Logger,
 ) => {
-  const datetime = new Date().getMilliseconds();
+  const fileName = '/tmp/GARMS_CASH_' + Date.now();
+  const logStream: fs.WriteStream = fs.createWriteStream(fileName, {
+    flags: 'a',
+  });
   try {
-    const fileName = path.join('/tmp', 'GARMS_CASH_FILE_' + datetime);
+    let count = 0;
     const groupedTransactionsByDate: DateTransaction[] =
       groupTransactionsByDate(transactions);
-    let fileData = '';
     if (groupTransactionsByDate && groupedTransactionsByDate.length > 0) {
-      groupedTransactionsByDate.forEach((transactionByDate) => {
+      for (const transactionByDate of groupedTransactionsByDate) {
+        count += 1;
+        const lastHeader = count === groupedTransactionsByDate.length;
         const permitTypeAmounts = new Map<number, number>();
         const permitTypeCount = new Map<number, number>();
         const paymentTypeAmounts = new Map<string, number>();
         const transactions = transactionByDate.transactions as Transaction[];
         transactions.forEach((transaction) => {
-          processPaymentMethod(transaction, paymentTypeAmounts);
+          transaction.permitTransactions.forEach((permitTransaction) => {
+            processPaymentMethod(
+              permitTransaction,
+              transaction,
+              paymentTypeAmounts,
+            );
+          });
           processPermitTransactions(
             transaction,
             permitTypeAmounts,
@@ -78,28 +74,28 @@ export const createGarmsCashFile = (
           );
         });
         const sequenceNumber = permitTypeCount.size;
-        const header: string = createGarmsCashFileHeader(
+        createGarmsCashFileHeader(
           paymentTypeAmounts,
           transactionByDate.date,
           permitTypeCount,
           sequenceNumber,
-          fileName,
+          logStream,
         );
-        const details: string = createGarmsCashFileDetails(
+        createGarmsCashFileDetails(
           permitTypeCount,
           permitTypeAmounts,
           transactionByDate.date,
-          fileName,
+          logStream,
+          lastHeader,
         );
-        fileData = fileData + header + details;
-      });
+      }
 
-      return fileData;
+      return fileName;
     }
   } catch (err) {
     logger.error(err);
     throw new InternalServerErrorException(
-      `Garms ${garmsExtractType} File Creation Failed on ${datetime}`,
+      `Garms ${garmsExtractType} File Creation Failed`,
     );
   }
 };
@@ -117,7 +113,7 @@ export const createGarmsCashFileHeader = (
   date: string,
   permitTypeCount: Map<number, number>,
   seqNumber: number,
-  fileName: string,
+  logStream: fs.WriteStream,
 ) => {
   const gch = new GarmaCashHeader();
   gch.recType = HEADER_REC_TYPE;
@@ -151,7 +147,7 @@ export const createGarmsCashFileHeader = (
   gch.serviceQuantity = formatNumber(getSum(permitTypeCount), 5);
   gch.invQuantity = INV_QTY;
   const header = Object.values(gch).join('');
-  return header + '\n';
+  logStream.write(header + '\n');
 };
 
 /**
@@ -165,12 +161,13 @@ export const createGarmsCashFileDetails = (
   permitTypeCount: Map<number, number>,
   permitTypeAmounts: Map<number, number>,
   date: string,
-  fileName: string,
+  logStream: fs.WriteStream,
+  lastHeader: boolean,
 ) => {
   let seqNumber = 0;
-  let details = '';
-  permitTypeAmounts.forEach((value, key) => {
+  for (const key of permitTypeAmounts.keys()) {
     seqNumber = seqNumber + 1;
+    const lastDetailLine = permitTypeAmounts.size === seqNumber;
     const gcd = new GarmaCashDetail();
     gcd.recType = DETAIL_REC_TYPE;
     gcd.agentNumber = AGENT_NUMBER;
@@ -179,15 +176,17 @@ export const createGarmsCashFileDetails = (
     gcd.serviceCode = formatNumber(key, 4);
     gcd.serviceQuantity = formatNumber(getValue(permitTypeCount, key), 5);
     gcd.invUnits = INV_UNITS;
-    gcd.revAmount = formatAmount(parseFloat(value.toFixed(2)));
+    gcd.revAmount = formatAmount(
+      parseFloat(permitTypeAmounts.get(key).toFixed(2)),
+    );
     gcd.serNoFrom = SER_NO_FROM;
     gcd.serNoTo = SER_NO_TO;
     gcd.voidInd = VOID_IND;
     gcd.f1 = GARMS_CASH_FILLER;
     const detail = Object.values(gcd).join('');
-    details = details + detail + '\n';
-  });
-  return details;
+    if (lastHeader && lastDetailLine) logStream.end(detail);
+    else logStream.write(detail + '\n');
+  }
 };
 
 /**
@@ -211,7 +210,7 @@ export const processPermitTransactions = (
 ) => {
   transaction.permitTransactions.forEach((permitTransaction) => {
     const permitType = permitTransaction.permit.permitType;
-    const paymentAmount = getPaymentAmount(transaction);
+    const paymentAmount = getPaymentAmount(permitTransaction, transaction);
 
     updateMapServiceCode(
       permitTypeAmounts,
@@ -237,6 +236,7 @@ export const processPermitTransactions = (
  * @returns void
  */
 export const processPaymentMethod = (
+  permitTransaction: PermitTransaction,
   transaction: Transaction,
   paymentTypeAmounts: Map<string, number>,
 ) => {
@@ -244,18 +244,21 @@ export const processPaymentMethod = (
 
   if (paymentMethodTypeCode && paymentCardTypeCode) {
     const paymentType = paymentCardTypeCode;
-    const paymentAmount = getPaymentAmount(transaction);
+    const paymentAmount = getPaymentAmount(permitTransaction, transaction);
     updateMap(paymentTypeAmounts, paymentType, paymentAmount);
   } else if (paymentMethodTypeCode) {
     const paymentType = paymentMethodTypeCode;
-    const paymentAmount = getPaymentAmount(transaction);
+    const paymentAmount = getPaymentAmount(permitTransaction, transaction);
     updateMap(paymentTypeAmounts, paymentType, paymentAmount);
   }
 };
 
 // Determine the paymentType and transaction amount based on the condition
-export const getPaymentAmount = (transaction: Transaction) => {
-  const amount = transaction.totalTransactionAmount;
+export const getPaymentAmount = (
+  permitTransaction: PermitTransaction,
+  transaction: Transaction,
+) => {
+  const amount = permitTransaction.transactionAmount;
   const isRefundOrVoid =
     transaction.transactionTypeId === TransactionType.REFUND ||
     transaction.transactionTypeId === TransactionType.VOID_REFUND;
@@ -275,9 +278,11 @@ export const groupTransactionsByDate = (transactions: Transaction[]) => {
   // Group transactions by the date (ignoring the time part)
   const groupedData: Record<string, Transaction[]> = transactions.reduce(
     (acc, transaction) => {
-      
       // Extract just the date part (YYYY-MM-DD)
-      const transactionDate = convertUtcToPt(transaction.transactionSubmitDate,"YYYY-MM-DD");
+      const transactionDate = convertUtcToPt(
+        transaction.transactionSubmitDate,
+        'YYYY-MM-DD',
+      );
       // If the date group doesn't exist, create it
       if (!acc[transactionDate]) {
         acc[transactionDate] = [];

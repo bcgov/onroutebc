@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as FTPS from 'ftps';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GarmsExtractFile } from './entities/garms-extract-file.entity';
@@ -23,7 +19,6 @@ import {
 } from 'src/common/constants/garms.constant';
 import { Cron } from '@nestjs/schedule';
 import { getToDateForGarms } from 'src/common/helper/date-time.helper';
-import * as fs from 'fs';
 import { Nullable } from 'src/common/types/common';
 
 @Injectable()
@@ -65,12 +60,12 @@ export class GarmsService {
 
         const remoteFilePath = process.env.GARMS_ENV + GARMS_CASH_FILE_LOCATION;
         const recordLength = GARMS_CASH_FILE_LRECL;
-        this.upload(fileName, recordLength, remoteFilePath);
+        await this.updateFileSubmitTimestamp(oldFile);
         await this.saveTransactionIds(transactions, fileId);
+        await this.upload(fileName, recordLength, remoteFilePath);
       } else {
         this.logger.log('No data to process for GARMS cash file');
       }
-      await this.updateFileSubmitTimestamp(oldFile);
     } else {
       this.logger.log('No record to process for GARMS cash file');
     }
@@ -272,7 +267,7 @@ export class GarmsService {
     permitTypes.forEach((permitType) => {
       permitTypeServiceCodes.set(
         permitType.permitTypeId,
-        Number(permitType.serviceCode),
+        permitType.serviceCode,
       );
     });
     return permitTypeServiceCodes;
@@ -283,29 +278,28 @@ export class GarmsService {
    * @param recordLength
    * @param remoteFilePath
    */
-  upload(data: string, recordLength: number, remoteFilePath: string) {
+  async upload(fileName: string, recordLength: number, remoteFilePath: string) {
     const username = process.env.GARMS_USER;
     const password = process.env.GARMS_PWD;
     if (username && password) {
-      const localFilePath = '/tmp/GARMS_CASH_' + Date.now(); // Unique temp file name
-      fs.writeFileSync(localFilePath, data);
+      const localFilePath = fileName; // Unique temp file name
       const options: FTPS.FTPOptions = {
         host: process.env.GARMS_HOST,
         username: process.env.GARMS_USER,
         password: process.env.GARMS_PWD,
         // additinal settings for lftp command. passive-mode is only on for onRoute because pf firewall, it is off for TPS.
-        additionalLftpCommands:
-          'set cache:enable no;set ftp:passive-mode on;set ftp:use-size no;set ftp:ssl-protect-data yes;set ftp:ssl-force yes;set ftp:ssl-auth TLS;set ssl:verify-certificate no;set ftps:initial-prot "P";set net:connection-limit 1;set net:max-retries 1;debug 4;',
+        additionalLftpCommands: `set cache:enable no;set ftp:passive-mode on;set ftp:use-size no;set ftp:ssl-protect-data yes;set ftp:ssl-force yes;set ftps:initial-prot "P";set net:connection-limit 1;set net:max-retries 1;debug 4;`,
       };
       const ftps: FTPS = new FTPS(options);
-      try {
+      // Wrap the FTPS command inside a Promise
+      const uploadPromise = new Promise(() => {
+        this.logger.log('sending file to garms', localFilePath);
         // site command is to set record length to 140 for remote server. put -a is for ascii mode, -e to delete source file after successful transfer -o for remote file name.
         const ftpCommand = `SITE LRecl=${recordLength}; put -aE ${localFilePath}  -o "'${remoteFilePath}'"`;
         ftps.raw(ftpCommand).exec(console.log);
-      } catch (e) {
-        this.logger.error('Error during FTP upload or file operation', e);
-        throw new InternalServerErrorException(e);
-      }
+      });
+      // Wait for the upload to complete before proceeding
+      await uploadPromise;
     } else {
       this.logger.log('Unable to get username and password for ftp server');
     }
