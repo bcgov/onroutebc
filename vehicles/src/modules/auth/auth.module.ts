@@ -26,7 +26,7 @@ import { JwtServiceAccountStrategy } from './jwt-service-account.strategy';
     {
       provide: APP_GUARD,
       useClass: PermissionsGuard,
-    }
+    },
   ],
   exports: [AuthService],
 })
