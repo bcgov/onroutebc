@@ -42,7 +42,19 @@ async function bootstrap() {
     const config = new DocumentBuilder()
       .setTitle('Vehicles API')
       .setDescription('The vehicles API description')
-      .setVersion('1.0')
+      .setVersion(process.env.ONROUTEBC_VERSION ?? '1.0')
+      .addGlobalParameters({
+        in: 'header',
+        name: 'x-onroutebc-version',
+        required: true,
+        allowEmptyValue: false,
+        description:
+          'The version of onRouteBC; It should be the same as the version deployed.',
+        schema: {
+          type: 'string',
+        },
+        example: '1.0',
+      })
       .addBearerAuth()
       .build();
 

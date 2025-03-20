@@ -14,7 +14,7 @@ axios.interceptors.request.use(
   function (config) {
     const { headers } = config;
     const releaseNumber =
-      import.meta.env.VITE_RELEASE_NUM || envConfig.VITE_RELEASE_NUM;
+      import.meta.env.VITE_ONROUTEBC_VERSION || envConfig.VITE_RELEASE_NUM;
     headers.set("x-correlation-id", uuidv4());
     headers.set("x-onroutebc-version", releaseNumber);
     return config;
