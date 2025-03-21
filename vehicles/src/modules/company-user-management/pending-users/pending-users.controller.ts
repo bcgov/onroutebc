@@ -8,6 +8,7 @@ import {
   Delete,
   Req,
   ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common';
 
 import {
@@ -38,6 +39,7 @@ import {
   IDIRUserRole,
 } from '../../../common/enum/user-role.enum';
 import { doesUserHaveRole } from '../../../common/helper/auth.helper';
+import { TPS_MIGRATED_USER } from '../../../common/constants/api.constant';
 
 @ApiTags('Company and User Management - Pending User')
 @ApiBadRequestResponse({
@@ -199,6 +201,13 @@ export class PendingUsersController {
     @Body() updatePendingUserDto: UpdatePendingUserDto,
   ): Promise<ReadPendingUserDto> {
     const currentUser = request.user as IUserJWT;
+    /* Before removing the below condition - Create User method needs to be revisited.
+      UserName vs UserGUID mismatch scenarios need to be handled*/
+    if (userName?.toUpperCase() === TPS_MIGRATED_USER.toUpperCase()) {
+      throw new BadRequestException(
+        `Update not allowed for username ${userName}`,
+      );
+    }
     const pendingUser = await this.pendingUserService.update(
       companyId,
       userName,
