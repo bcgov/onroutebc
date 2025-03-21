@@ -709,3 +709,11 @@ policy:
       - "mssql-{{tpl $.Values.vault.zone $}}"      
       - "policy-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
+networkPolicy:
+  enabled: true
+  ingress:
+    - from:
+        - ipBlock:
+            cidr: "142.34.36.42/32"  # Only this specific IP address is allowed
+      ports:
+        - protocol: TCP  # Allows all TCP traffic from that I
