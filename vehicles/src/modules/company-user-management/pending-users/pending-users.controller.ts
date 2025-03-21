@@ -7,7 +7,6 @@ import {
   Put,
   Delete,
   Req,
-  BadRequestException,
   ForbiddenException,
 } from '@nestjs/common';
 
@@ -31,7 +30,6 @@ import { PendingUsersService } from './pending-users.service';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { Request } from 'express';
 import { Permissions } from '../../../common/decorator/permissions.decorator';
-import { TPS_MIGRATED_USER } from '../../../common/constants/api.constant';
 import { DeleteDto } from '../../common/dto/response/delete.dto';
 import { DeletePendingUsersDto } from './dto/request/delete-pending-users.dto';
 import {
@@ -158,11 +156,6 @@ export class PendingUsersController {
     @Param('companyId') companyId: number,
     @Param('userName') userName: string,
   ): Promise<ReadPendingUserDto> {
-    if (userName?.toUpperCase() === TPS_MIGRATED_USER.toUpperCase()) {
-      throw new BadRequestException(
-        `Action not allowed for username ${userName}`,
-      );
-    }
     const pendingUser = await this.pendingUserService.findPendingUsersDto(
       userName,
       companyId,
@@ -206,11 +199,6 @@ export class PendingUsersController {
     @Body() updatePendingUserDto: UpdatePendingUserDto,
   ): Promise<ReadPendingUserDto> {
     const currentUser = request.user as IUserJWT;
-    if (userName?.toUpperCase() === TPS_MIGRATED_USER.toUpperCase()) {
-      throw new BadRequestException(
-        `Update not allowed for username ${userName}`,
-      );
-    }
     const pendingUser = await this.pendingUserService.update(
       companyId,
       userName,
