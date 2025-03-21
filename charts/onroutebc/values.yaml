@@ -714,6 +714,6 @@ networkPolicy:
   ingress:
     - from:
         - ipBlock:
-            cidr: "142.34.36.42/32"  # Only this specific IP address is allowed
+            cidr: "142.34.36.41/32"  # Only this specific IP address is allowed
       ports:
         - protocol: TCP  # Allows all TCP traffic from that I
