@@ -576,7 +576,14 @@ scheduler:
       - "tps-{{tpl $.Values.vault.zone $}}"
       - "garms-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
-
+  networkPolicy:
+    enabled: true
+    ingress:
+      - from:
+          - ipBlock:
+              cidr: "142.34.36.41/32"  # Only this specific IP address is allowed
+        ports:
+          - protocol: TCP  # Allows all TCP traffic from that I
 policy:
   enabled: true
   deployment: # can be either a statefulSet or a deployment not both
@@ -709,11 +716,3 @@ policy:
       - "mssql-{{tpl $.Values.vault.zone $}}"      
       - "policy-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
-  networkPolicy:
-    enabled: true
-    ingress:
-      - from:
-          - ipBlock:
-              cidr: "142.34.36.41/32"  # Only this specific IP address is allowed
-        ports:
-          - protocol: TCP  # Allows all TCP traffic from that I
