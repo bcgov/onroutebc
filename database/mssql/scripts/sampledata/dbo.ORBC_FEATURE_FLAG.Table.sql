@@ -63,8 +63,8 @@ INSERT INTO
 VALUES
   (
     '3',
-    'POLICY-CONFIG',
-    'ENABLED',
+    'VALIDATE-WITH-POLICY-ENGINE',
+    'DISABLED',
     NULL,
     N'dbo',
     GETUTCDATE(),
