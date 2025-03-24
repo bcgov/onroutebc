@@ -35,6 +35,7 @@ export const ERROR_ROUTES = {
   UNAUTHORIZED: "/unauthorized",
   UNEXPECTED: "/unexpected-error",
   ISSUANCE: "/issuance-error",
+  SERVICE: "/service-unavailable",
   DOCUMENT_UNAVAILABLE: "/document-unavailable",
 };
 

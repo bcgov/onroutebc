@@ -1,0 +1,10 @@
+@import "../../themes/orbcStyles";
+
+.service-unavailable-error-page {
+	&__msg {
+		&--top {
+			margin-top: 0;
+			margin-bottom: 1.5rem;
+		}
+	}
+}
