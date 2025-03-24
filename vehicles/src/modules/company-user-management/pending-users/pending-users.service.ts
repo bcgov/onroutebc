@@ -8,7 +8,6 @@ import { UpdatePendingUserDto } from './dto/request/update-pending-user.dto';
 import { ReadPendingUserDto } from './dto/response/read-pending-user.dto';
 import { PendingUser } from './entities/pending-user.entity';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
-import { TPS_MIGRATED_USER } from '../../../common/constants/api.constant';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
 import { DeleteDto } from '../../common/dto/response/delete.dto';
 import { User } from '../users/entities/user.entity';
@@ -190,10 +189,6 @@ export class PendingUsersService {
       queryBuilder.andWhere('pendingUser.userGUID= :userGUID', {
         userGUID: userGUID,
       });
-    } else {
-      queryBuilder.andWhere('pendingUser.userName != :tpsMigratedUserName', {
-        tpsMigratedUserName: TPS_MIGRATED_USER,
-      });
     }
 
     return await queryBuilder.getMany();
@@ -251,10 +246,6 @@ export class PendingUsersService {
    */
   @LogAsyncMethodExecution()
   async removeAll(userNames: string[], companyId: number): Promise<DeleteDto> {
-    if (userNames.some((name) => name === TPS_MIGRATED_USER)) {
-      throw new BadRequestException('Cannot delete TPS migrated pending user');
-    }
-
     // Retrieve a list of users by company ID before deletion
     const pendingUsersToDelete = await this.pendingUserRepository.find({
       where: {

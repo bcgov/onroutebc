@@ -247,3 +247,10 @@
 
 ### Version 66:
 - Update email and receipt template to reflect MOTT logo
+
+#### Version 67:
+- Update policy configuration and vehicle types to reflect changes from business review
+  - Added 2 new trailer types to trailer type table
+  - Updated 3 trailer types to be inactive (IS_ACTIVE=0)
+  - Updated 3 power unit types to be inactive (IS_ACTIVE=0)
+  - Inserted new policy configuration json with updated permittable vehicles and STOS dimension set
