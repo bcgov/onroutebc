@@ -12,6 +12,7 @@ import { getMinPermitExpiryDate } from "../../../../helpers/dateSelection";
 import { getUpdatedLOASelection } from "../../../../helpers/permitLOA";
 import { doUniqueArraysHaveSameItems } from "../../../../../../common/helpers/equality";
 import { PermitLOA } from "../../../../types/PermitLOA";
+import { Nullable } from "../../../../../../common/types/common";
 
 export const PermitLOASection = ({
   permitType,
@@ -33,17 +34,19 @@ export const PermitLOASection = ({
     companyLOAs,
     selectedLOAs,
     minPermitExpiryDate,
+    startDate,
   ), [
     companyLOAs,
     selectedLOAs,
     minPermitExpiryDate,
+    startDate,
   ]);
 
   // Since certain LOAs might have been removed from the table, we need to make sure
   // that the selected LOAs in the permit form matches the selection state of the table
   const selectedLOAsInTable = loasForTable
-    .filter(selectableLOA => selectableLOA.checked)
-    .map(selectableLOA => selectableLOA.loa);
+    .filter(selectableLOA => selectableLOA.checked && Boolean(selectableLOA.loa))
+    .map(selectableLOA => selectableLOA.loa) as PermitLOA[];
 
   const selectedLOANumbers = selectedLOAs.map(loa => loa.loaNumber);
   
@@ -54,24 +57,22 @@ export const PermitLOASection = ({
     }
   }, [selectedLOANumbers, selectedLOAsInTable]);
 
-  const handleSelectLOA = (loaNumber: number) => {
-    const loa = loasForTable.find(loaRow => loaRow.loa.loaNumber === loaNumber);
-    if (!loa || loa?.disabled) return;
-
-    const isLOASelected = Boolean(loa?.checked);
-    if (isLOASelected) {
-      // Deselect the LOA
-      onUpdateLOAs(
-        selectedLOAs.filter(selectedLOA => selectedLOA.loaNumber !== loaNumber),
-      );
-    } else {
-      // Select the LOA
-      const { loa: loaToSelect } = loa;
-      onUpdateLOAs([...selectedLOAs, loaToSelect]);
+  const handleSelectLOA = (loaNumber?: Nullable<number>) => {
+    if (!loaNumber) {
+      // Selected "None" for LOAs
+      onUpdateLOAs([]);
+      return;
     }
+
+    const loa = loasForTable.find(loaRow => loaRow.loa?.loaNumber === loaNumber);
+    if (!loa || loa?.disabled || loa?.checked) return;
+
+    // Select the LOA
+    const { loa: loaToSelect } = loa;
+    onUpdateLOAs(loaToSelect ? [loaToSelect] : []);
   };
 
-  return loasForTable.length > 0 ? (
+  return loasForTable.length > 1 ? (
     <Box className="permit-loa-section">
       <Box className="permit-loa-section__header">
         <h3>

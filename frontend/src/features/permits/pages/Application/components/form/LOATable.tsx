@@ -1,7 +1,7 @@
 import {
-  Checkbox,
   FormControlLabel,
   Paper,
+  Radio,
   Table,
   TableBody,
   TableCell,
@@ -11,22 +11,19 @@ import {
 } from "@mui/material";
 
 import "./LOATable.scss";
-import { applyWhenNotNullable } from "../../../../../../common/helpers/util";
+import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import { DATE_FORMATS, toLocal } from "../../../../../../common/helpers/formatDate";
-import { PermitLOA } from "../../../../types/PermitLOA";
+import { SelectableLOA } from "../../../../types/PermitLOA";
+import { Nullable } from "../../../../../../common/types/common";
 
-interface SelectableLOA {
-  loa: PermitLOA;
-  checked: boolean;
-  disabled: boolean;
-}
+const DEFAULT_EMPTY_LOA_NUMBER = 0;
 
 export const LOATable = ({
   loas,
   onSelectLOA,
 }: {
   loas: SelectableLOA[];
-  onSelectLOA?: (loaNumber: number) => void;
+  onSelectLOA?: (loaNumber?: Nullable<number>) => void;
 }) => {
   return (
     <TableContainer className="loa-table" component={Paper}>
@@ -45,7 +42,13 @@ export const LOATable = ({
 
         <TableBody>
           {loas.map((selectableLOA) => (
-            <TableRow key={selectableLOA.loa.loaNumber} className="loa-table__row">
+            <TableRow
+              key={getDefaultRequiredVal(
+                DEFAULT_EMPTY_LOA_NUMBER,
+                selectableLOA.loa?.loaNumber,
+              )}
+              className="loa-table__row"
+            >
               <TableCell
                 className="loa-table__cell loa-table__cell--loa-number"
                 component="td"
@@ -53,20 +56,30 @@ export const LOATable = ({
               >
                 <FormControlLabel
                   control={
-                    <Checkbox
+                    <Radio
                       className={`loa-checkbox ${
                         selectableLOA.disabled
                           ? "loa-checkbox--disabled"
                           : ""
                       }`}
-                      key={selectableLOA.loa.loaNumber}
+                      key={getDefaultRequiredVal(
+                        DEFAULT_EMPTY_LOA_NUMBER,
+                        selectableLOA.loa?.loaNumber,
+                      )}
                       checked={selectableLOA.checked}
                       disabled={selectableLOA.disabled}
-                      onChange={() => onSelectLOA?.(selectableLOA.loa.loaNumber)}
+                      onChange={() => onSelectLOA?.(selectableLOA.loa?.loaNumber)}
                     />
                   }
-                  key={selectableLOA.loa.loaNumber}
-                  label={selectableLOA.loa.loaNumber}
+                  key={getDefaultRequiredVal(
+                    DEFAULT_EMPTY_LOA_NUMBER,
+                    selectableLOA.loa?.loaNumber,
+                  )}
+                  label={applyWhenNotNullable(
+                    (loaNum) => `${loaNum}`,
+                    selectableLOA.loa?.loaNumber,
+                    DEFAULT_EMPTY_LOA_NUMBER,
+                  )}
                   classes={{
                     root: "loa-table__form-control",
                     disabled: "loa-table__form-control loa-table__form-control--disabled",
@@ -86,7 +99,7 @@ export const LOATable = ({
               >
                 {applyWhenNotNullable(
                   expiryDate => toLocal(expiryDate, DATE_FORMATS.DATEONLY_SLASH, true),
-                  selectableLOA.loa.expiryDate,
+                  selectableLOA.loa?.expiryDate,
                   "Never expires",
                 )}
               </TableCell>

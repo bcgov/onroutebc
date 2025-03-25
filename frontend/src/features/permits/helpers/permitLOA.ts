@@ -2,7 +2,7 @@ import dayjs, { Dayjs } from "dayjs";
 
 import { LOADetail } from "../../settings/types/LOADetail";
 import { PermitType } from "../types/PermitType";
-import { getEndOfDate, toLocalDayjs } from "../../../common/helpers/formatDate";
+import { getEndOfDate, getStartOfDate, toLocalDayjs } from "../../../common/helpers/formatDate";
 import { Nullable } from "../../../common/types/common";
 import { Application, ApplicationFormData } from "../types/application";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
@@ -80,6 +80,7 @@ export const getUpdatedLOASelection = (
   upToDateLOAs: LOADetail[],
   prevSelectedLOAs: PermitLOA[],
   minPermitExpiryDate: Dayjs,
+  permitStartDate: Dayjs,
 ) => {
   // Each LOA should only be selected once, but there's a chance that an up-to-date LOA is also a previously selected LOA,
   // which means that LOA should only be shown once.
@@ -87,14 +88,22 @@ export const getUpdatedLOASelection = (
   // and all non-overlapping LOAs that are not part of the up-to-date LOAs should be removed
   const prevSelectedLOANumbers = new Set([...prevSelectedLOAs.map(loa => loa.loaNumber)]);
 
-  return upToDateLOAs.map(loa => {
+  // Updated selection for LOAs, not including empty selection option "None"
+  const updatedSelection = upToDateLOAs.map(loa => {
     const wasSelected = prevSelectedLOANumbers.has(loa.loaNumber);
     const isExpiringBeforeMinPermitExpiry = Boolean(loa.expiryDate)
       && minPermitExpiryDate.isAfter(getEndOfDate(dayjs(loa.expiryDate)));
 
-    // Deselect and disable any LOAs expiring before min permit expiry date
-    const isSelected = wasSelected && !isExpiringBeforeMinPermitExpiry;
-    const isEnabled = !isExpiringBeforeMinPermitExpiry;
+    const isStartingAfterPermitStartDate =
+      permitStartDate.isBefore(getStartOfDate(dayjs(loa.startDate)));
+
+    // Deselect and disable any LOAs expiring before min permit expiry date,
+    // or hasn't started yet (ie. LOA starts after permit start date)
+    const isSelected = wasSelected
+      && !isExpiringBeforeMinPermitExpiry
+      && !isStartingAfterPermitStartDate;
+    
+    const isEnabled = !isExpiringBeforeMinPermitExpiry && !isStartingAfterPermitStartDate;
     
     return {
       loa: {
@@ -113,6 +122,15 @@ export const getUpdatedLOASelection = (
       disabled: !isEnabled,
     };
   });
+
+  // Empty LOA selection state
+  const emptyLOASelection = {
+    loa: null,
+    checked: updatedSelection.filter(({ checked }) => checked).length === 0,
+    disabled: false,
+  };
+
+  return [emptyLOASelection, ...updatedSelection];
 };
 
 /**
@@ -203,9 +221,10 @@ export const applyUpToDateLOAsToApplication = <T extends Nullable<ApplicationFor
     applicableLOAs,
     prevSelectedLOAs,
     minPermitExpiryDate,
+    applicationData.permitData.startDate,
   )
-    .filter(({ checked }) => checked)
-    .map(({ loa }) => loa);
+    .filter(({ checked, loa }) => checked && Boolean(loa))
+    .map(({ loa }) => loa) as PermitLOA[];
 
   // Update duration in permit if selected LOAs changed
   const durationOptions = getAvailableDurationOptions(
