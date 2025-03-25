@@ -89,8 +89,6 @@ export const List = memo(
       isPending: vehiclesPending,
     } = query;
 
-    console.log({ vehiclesData });
-
     const canEditVehicles = usePermissionMatrix({
       permissionMatrixKeys: {
         permissionMatrixFeatureKey: "MANAGE_VEHICLE_INVENTORY",
@@ -121,8 +119,6 @@ export const List = memo(
       [],
     );
 
-    console.log({ columns });
-
     const snackBar = useContext(SnackBarContext);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
@@ -146,40 +142,33 @@ export const List = memo(
       (item) => item.accessorKey !== `${vehicleType}TypeCode`,
     );
 
-    const transformVehicleCode = (code: string) => {
-      const vehicleSubtypesForCode =
-        vehicleType === VEHICLE_TYPES.POWER_UNIT
-          ? powerUnitSubTypes.filter((value) => value.typeCode === code)
-          : trailerSubTypes.filter((value) => value.typeCode === code);
-      return getDefaultRequiredVal("", vehicleSubtypesForCode?.at(0)?.type);
-    };
-
-    const newVehiclesData = getDefaultRequiredVal([], vehiclesData).map(
-      (vehicle) => {
-        if (
-          vehicleType === VEHICLE_TYPES.POWER_UNIT &&
-          "powerUnitTypeCode" in vehicle
-        ) {
-          return {
-            ...vehicle,
-            powerUnitTypeCode: transformVehicleCode(vehicle.powerUnitTypeCode),
-          };
-        } else if (
-          vehicleType === VEHICLE_TYPES.TRAILER &&
-          "trailerTypeCode" in vehicle
-        ) {
-          return {
-            ...vehicle,
-            trailerTypeCode: transformVehicleCode(vehicle.trailerTypeCode),
-          };
-        }
-
-        // Fallback case
-        return vehicle;
+    const transformVehicleCode = useCallback(
+      (code: string) => {
+        const vehicleSubtypesForCode =
+          vehicleType === VEHICLE_TYPES.POWER_UNIT
+            ? powerUnitSubTypes.filter((value) => value.typeCode === code)
+            : trailerSubTypes.filter((value) => value.typeCode === code);
+        return getDefaultRequiredVal("", vehicleSubtypesForCode?.at(0)?.type);
       },
+      [vehicleType, powerUnitSubTypes, trailerSubTypes],
     );
 
-    console.log({ newVehiclesData });
+    const transformedVehiclesData = useMemo(() => {
+      return vehiclesData?.map((vehicle) => {
+        const isPowerUnit = "powerUnitTypeCode" in vehicle;
+        const isTrailer = "trailerTypeCode" in vehicle;
+
+        return {
+          ...vehicle,
+          transformedPowerUnitType: isPowerUnit
+            ? transformVehicleCode(vehicle.powerUnitTypeCode)
+            : undefined,
+          transformedTrailerType: isTrailer
+            ? transformVehicleCode(vehicle.trailerTypeCode)
+            : undefined,
+        };
+      });
+    }, [vehiclesData, transformVehicleCode]);
 
     if (colTypeCodes?.length === 1) {
       const colTypeCode = colTypeCodes?.at(0);
@@ -270,7 +259,7 @@ export const List = memo(
 
     const table = useMaterialReactTable({
       ...defaultTableOptions,
-      data: getDefaultRequiredVal([], vehiclesData),
+      data: getDefaultRequiredVal([], transformedVehiclesData),
       columns: newColumns,
       initialState: {
         ...defaultTableInitialStateOptions,

@@ -1,13 +1,9 @@
-import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { LCV_VEHICLE_SUBTYPES } from "../../permits/constants/constants";
-import { usePowerUnitSubTypesQuery } from "../hooks/powerUnits";
-import { useTrailerSubTypesQuery } from "../hooks/trailers";
 import {
   BaseVehicle,
   PowerUnit,
   Trailer,
   VEHICLE_TYPES,
-  VehicleType,
 } from "../types/Vehicle";
 
 /**
@@ -34,20 +30,4 @@ export const selectedVehicleSubtype = (vehicle: BaseVehicle) => {
     default:
       return "";
   }
-};
-
-export const transformVehicleCodeToSubtype = (
-  vehicleType: VehicleType,
-  code: string,
-) => {
-  const { data: powerUnitSubtypesData } = usePowerUnitSubTypesQuery();
-  const { data: trailerSubtypesData } = useTrailerSubTypesQuery();
-  const powerUnitSubTypes = getDefaultRequiredVal([], powerUnitSubtypesData);
-  const trailerSubTypes = getDefaultRequiredVal([], trailerSubtypesData);
-
-  const vehicleSubtypesForCode =
-    vehicleType === VEHICLE_TYPES.POWER_UNIT
-      ? powerUnitSubTypes.filter((value) => value.typeCode === code)
-      : trailerSubTypes.filter((value) => value.typeCode === code);
-  return getDefaultRequiredVal("", vehicleSubtypesForCode?.at(0)?.type);
 };
