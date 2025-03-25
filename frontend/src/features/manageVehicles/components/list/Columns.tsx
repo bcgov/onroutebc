@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { MRT_ColumnDef } from "material-react-table";
 
-import { Vehicle } from "../../types/Vehicle";
+import { Vehicle, VEHICLE_TYPES } from "../../types/Vehicle";
 import { formatCellValuetoDatetime } from "../../../../common/helpers/tableHelper";
+import { transformVehicleCodeToSubtype } from "../../helpers/vehicleSubtypes";
 
 const CommonVehicleColumnDefinition: MRT_ColumnDef<Vehicle>[] = [
   {
@@ -51,6 +53,18 @@ export const PowerUnitColumnDefinition: MRT_ColumnDef<Vehicle>[] = [
     accessorKey: "powerUnitTypeCode",
     header: "Vehicle Sub-Type",
     size: 200,
+    // sortingFn: (rowA, rowB, columnId) => {
+    //   const valueA = transformVehicleCodeToSubtype(
+    //     VEHICLE_TYPES.POWER_UNIT,
+    //     rowA.getValue(columnId),
+    //   );
+    //   const valueB = transformVehicleCodeToSubtype(
+    //     VEHICLE_TYPES.POWER_UNIT,
+    //     rowB.getValue(columnId),
+    //   );
+
+    //   return valueA.localeCompare(valueB);
+    // },
   },
   CreatedAtColumnDefinition,
 ];

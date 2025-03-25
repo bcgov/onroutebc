@@ -89,6 +89,8 @@ export const List = memo(
       isPending: vehiclesPending,
     } = query;
 
+    console.log({ vehiclesData });
+
     const canEditVehicles = usePermissionMatrix({
       permissionMatrixKeys: {
         permissionMatrixFeatureKey: "MANAGE_VEHICLE_INVENTORY",
@@ -118,6 +120,8 @@ export const List = memo(
       () => getColumns(vehicleType),
       [],
     );
+
+    console.log({ columns });
 
     const snackBar = useContext(SnackBarContext);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -149,6 +153,33 @@ export const List = memo(
           : trailerSubTypes.filter((value) => value.typeCode === code);
       return getDefaultRequiredVal("", vehicleSubtypesForCode?.at(0)?.type);
     };
+
+    const newVehiclesData = getDefaultRequiredVal([], vehiclesData).map(
+      (vehicle) => {
+        if (
+          vehicleType === VEHICLE_TYPES.POWER_UNIT &&
+          "powerUnitTypeCode" in vehicle
+        ) {
+          return {
+            ...vehicle,
+            powerUnitTypeCode: transformVehicleCode(vehicle.powerUnitTypeCode),
+          };
+        } else if (
+          vehicleType === VEHICLE_TYPES.TRAILER &&
+          "trailerTypeCode" in vehicle
+        ) {
+          return {
+            ...vehicle,
+            trailerTypeCode: transformVehicleCode(vehicle.trailerTypeCode),
+          };
+        }
+
+        // Fallback case
+        return vehicle;
+      },
+    );
+
+    console.log({ newVehiclesData });
 
     if (colTypeCodes?.length === 1) {
       const colTypeCode = colTypeCodes?.at(0);
