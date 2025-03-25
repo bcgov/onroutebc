@@ -47,7 +47,7 @@ export const PowerUnitColumnDefinition: MRT_ColumnDef<Vehicle>[] = [
   },
   ...CommonVehicleColumnDefinition,
   {
-    accessorKey: "transformedPowerUnitType",
+    accessorKey: "vehicleSubType",
     header: "Vehicle Sub-Type",
     size: 200,
   },
@@ -61,7 +61,7 @@ export const TrailerColumnDefinition: MRT_ColumnDef<Vehicle>[] = [
   },
   ...CommonVehicleColumnDefinition,
   {
-    accessorKey: "transformedTrailerType",
+    accessorKey: "vehicleSubType",
     header: "Vehicle Sub-Type",
     size: 200,
   },

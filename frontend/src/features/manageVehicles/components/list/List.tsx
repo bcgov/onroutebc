@@ -160,12 +160,11 @@ export const List = memo(
 
         return {
           ...vehicle,
-          transformedPowerUnitType: isPowerUnit
-            ? transformVehicleCode(vehicle.powerUnitTypeCode)
-            : undefined,
-          transformedTrailerType: isTrailer
-            ? transformVehicleCode(vehicle.trailerTypeCode)
-            : undefined,
+          vehicleSubType: isPowerUnit
+            ? transformVehicleCode(vehicle.powerUnitTypeCode) // Use transformed code for PowerUnit
+            : isTrailer
+              ? transformVehicleCode(vehicle.trailerTypeCode) // Use transformed code for Trailer
+              : undefined, // Default case if neither PowerUnit nor Trailer
         };
       });
     }, [vehiclesData, transformVehicleCode]);
